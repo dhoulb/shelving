@@ -1,0 +1,8 @@
+# Always ignored folders.
+/node_modules/
+/dist/
+/coverage/
+
+# Always ignored files.
+.DS_Store
+/*/*.js

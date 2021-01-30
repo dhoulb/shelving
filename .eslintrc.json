@@ -1,0 +1,87 @@
+{
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"sourceType": "module",
+		"ecmaVersion": 2019,
+		"project": "./tsconfig.json"
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:prettier/recommended",
+		"plugin:import/typescript",
+		"plugin:import/recommended"
+	],
+	"env": {
+		"node": true,
+		// "browser": true,
+		"es6": true,
+		"jest": true
+	},
+	"rules": {
+		"class-methods-use-this": 0, // DH: Sometimes you want to make a potential static method a class method for consistency.
+		"eqeqeq": 2,
+		"lines-between-class-members": 0, // DH: This is fine for methods but ugly for properties (and should really be handled by Prettier!)
+		"no-alert": 2,
+		"no-caller": 2,
+		"no-console": 2,
+		"no-eval": 2,
+		"no-extend-native": 2,
+		"no-extra-parens": 0, // DH: False positive on `!(await etc)` syntax.
+		"no-floating-decimal": 2,
+		"no-implicit-globals": 2,
+		"no-import-assign": 2,
+		"no-labels": 2,
+		"no-lonely-if": 0, // DH: This sometimes forces you to write code that is less clear.
+		"no-nested-ternary": 0, // DH: Gets in the way of clean terse code, especially in JSX.
+		"no-new-func": 2,
+		"no-new-require": 2,
+		"no-new-wrappers": 2,
+		"no-new": 2,
+		"no-param-reassign": 2,
+		"no-path-concat": 2,
+		"no-self-compare": 2,
+		"no-sequences": 2,
+		"no-shadow": 2,
+		"no-template-curly-in-string": 2,
+		"no-throw-literal": 2,
+		"no-unmodified-loop-condition": 2,
+		"no-useless-rename": 2,
+		"no-var": 2,
+		"prefer-const": 2,
+		"prefer-destructuring": 0, // DH: Of course we _prefer_ destructuring, but forcing it sometimes creates uglier syntax.
+		"prefer-regex-literals": 2,
+		"prefer-spread": 2,
+		"require-await": 2,
+		"strict": 2,
+		"wrap-iife": 2,
+		"yoda": 2,
+		"@typescript-eslint/no-floating-promises": 2, // DH: Catch places where promises aren't awaited.
+		"@typescript-eslint/no-misused-promises": 2, // DH: Catch places where promises aren't awaited.
+		"@typescript-eslint/explicit-function-return-type": 0, // DH: This is annoying, mainly for for little arrow functions where type is trivially inferred.
+		"@typescript-eslint/no-use-before-define": 0, // DH: End up turning this off a lot when you have functions that cross-reference each other (and TS already protects against using block-scoped variables before they are defined).
+		"import/extensions": [2, { "extensions": [".ts", ".tsx", ".jsx"] }], // DH: Add all valid extensions.
+		"import/first": 2, // DH: Imports should be first.
+		"import/newline-after-import": 2, // DH: Newline after import.
+		"import/no-default-export": 2, // DH: Force use of  named exports.
+		"import/no-extraneous-dependencies": 0, // DH: We import a lot from _parent_ package.json files, and it's annoying to repeat the dependencies in both files.
+		"import/no-relative-parent-imports": 2, // DH: Enforce using `"shelving/module"` style absolute imports rather than parent imports.
+		"import/order": 2, // DH: Enforce sensible sort order of imports (builtin → npm → shared → parent dirs → this dir)
+		"import/prefer-default-export": 0 // DH: Using named exports is clearer because the importing file knows what it is importing.
+	},
+	"overrides": [
+		{
+			// DH: Allow more scrappyness in tests.
+			"files": ["*.test.js", "*.test.jsx", "*.test.ts", "*.test.tsx"],
+			"rules": {
+				"prefer-template": 0,
+				"@typescript-eslint/no-explicit-any": 0,
+				"@typescript-eslint/no-empty-function": 0,
+				"@typescript-eslint/no-unused-vars": 0,
+				"@typescript-eslint/ban-ts-ignore": 0,
+				"@typescript-eslint/ban-ts-comment": 0
+			}
+		}
+	]
+}

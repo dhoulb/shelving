@@ -1,0 +1,52 @@
+{
+	"name": "shelving",
+	"description": "Toolkit for using data in JavaScript.",
+	"version": "0.0.0",
+	"repository": "https://github.com/dhoulb/shelving",
+	"author": "Dave Houlbrooke <dave@shax.com>",
+	"license": "0BSD",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"engineStrict": true,
+	"engines": {
+		"node": ">=10.0.0"
+	},
+	"release": {
+		"pkgRoot": "dist",
+		"dryRun": true
+	},
+	"scripts": {
+		"fix": "npm run fix:prettier && npm run fix:eslint",
+		"fix:prettier": "prettier --write './**/*.{md,json}'",
+		"fix:eslint": "eslint --fix './**/*.{ts,tsx}'",
+		"test": "npm run test:prettier && npm run test:eslint && npm run test:typescript && npm run test:jest",
+		"test:prettier": "prettier --check './**/*.{md,json}'",
+		"test:eslint": "eslint './**/*.{ts,tsx}'",
+		"test:typescript": "tsc --noEmit",
+		"test:jest": "jest",
+		"test:jest:watch": "jest --watchAll",
+		"build": "tsc && cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md"
+	},
+	"dependencies": {
+		"shelving": "file:."
+	},
+	"devDependencies": {
+		"@types/jest": "^26.0.15",
+		"@types/react": "^17.0.0",
+		"@typescript-eslint/eslint-plugin": "^4.6.0",
+		"@typescript-eslint/parser": "^4.6.0",
+		"eslint": "^7.12.1",
+		"eslint-config-prettier": "^7.0.0",
+		"eslint-plugin-import": "^2.22.1",
+		"eslint-plugin-prettier": "^3.1.4",
+		"jest": "^26.6.1",
+		"prettier": "^2.1.2",
+		"ts-jest": "^26.4.3",
+		"typescript": "^4.0.5"
+	},
+	"optionalDependencies": {
+		"firebase": "^8.2.4",
+		"firebase-admin": "^9.4.2",
+		"react": "^17.0.1"
+	}
+}
