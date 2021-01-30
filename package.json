@@ -1,7 +1,7 @@
 {
 	"name": "shelving",
 	"description": "Toolkit for using data in JavaScript.",
-	"version": "0.0.0",
+	"version": "0.0.0-semantic",
 	"repository": "https://github.com/dhoulb/shelving",
 	"author": "Dave Houlbrooke <dave@shax.com>",
 	"license": "0BSD",
@@ -10,10 +10,6 @@
 	"engineStrict": true,
 	"engines": {
 		"node": ">=10.0.0"
-	},
-	"release": {
-		"pkgRoot": "dist",
-		"dryRun": true
 	},
 	"scripts": {
 		"fix": "npm run fix:prettier && npm run fix:eslint",
