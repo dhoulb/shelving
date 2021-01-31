@@ -2,6 +2,7 @@
 # If changes were made and the tests pass, commit the changes back.
 name: Upgrade
 on:
+  workflow_dispatch:
   schedule:
     - cron: "* 2 * * SUN"
 jobs:
