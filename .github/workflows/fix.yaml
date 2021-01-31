@@ -14,6 +14,6 @@ jobs:
       - run: npm ci
       - run: npm run fix
       - run: |
-        git config user.name "Shelving Fix Bot"
-        git config user.email "<>"
+          git config user.name "Shelving Fix Bot"
+          git config user.email "<>"
       - run: "git commit -am 'chore: npm upgrade' && git push origin master || echo 'Nothing to commit'"
