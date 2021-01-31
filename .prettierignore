@@ -3,20 +3,5 @@
 /dist/
 /coverage/
 
-# Ignore all files except specific types.
-/**/*.*
-!/**/*.md
-!/**/*.ts
-!/**/*.tsx
-!/**/*.js
-!/**/*.jsx
-!/**/*.json
-!/**/*.jsonc
-!/**/*.yml
-!/**/*.yaml
-!/**/*.css
-!/**/*.scss
-!/**/*.html
-
 # Always ignore lock files.
 package-lock.json
