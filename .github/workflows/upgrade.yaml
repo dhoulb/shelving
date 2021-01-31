@@ -3,7 +3,7 @@
 name: Upgrade
 on:
   schedule:
-    - cron: "* 1 * * 7"
+    - cron: "* 2 * * SUN"
 jobs:
   upgrade:
     name: Upgrade
