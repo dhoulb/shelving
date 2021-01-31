@@ -10,6 +10,10 @@ test("MemoryProvider: set/get/delete documents", async () => {
 	const db = createTestDatabase(provider);
 	const basics = db.collection("basics");
 	const people = db.collection("people");
+
+
+
+	
 	// Add documents.
 	expect(() => basics.doc("basic1").set(basic1)).not.toThrow();
 	expect(() => basics.doc("basic2").set(basic2)).not.toThrow();
