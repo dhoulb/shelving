@@ -1,7 +1,5 @@
 {
 	"branches": [{ "name": "main", "channel": false }],
-	"dryRun": true,
-	"debug": true,
 	"plugins": [
 		"@semantic-release/commit-analyzer",
 		"@semantic-release/release-notes-generator",
