@@ -1,0 +1,19 @@
+# Run `npm run fix` on any push or pull request.
+# If changes were made and the tests pass, commit the changes back.
+name: Fix
+on: [push, pull_request]
+jobs:
+  fix:
+    name: Fix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - run: npm ci
+      - run: npm run fix
+      - run: |
+        git config user.name "Shelving Fix Bot"
+        git config user.email "<>"
+      - run: "git commit -am 'chore: npm upgrade' && git push origin master || echo 'Nothing to commit'"
