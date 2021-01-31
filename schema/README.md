@@ -1,17 +1,11 @@
-# Schemaglobin: Validate unknown user input against schemas
+# shelving/schema: Validate unknown user input against schemas
 
-[![Semantic Release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat)](https://github.com/semantic-release/semantic-release)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
-[![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-[![GitHub Actions](https://github.com/dhoulb/schemaglobin/workflows/CI/badge.svg?branch=master)](https://github.com/dhoulb/schemaglobin/actions)
-[![npm](https://img.shields.io/npm/dm/schemaglobin.svg)](https://www.npmjs.com/package/schemaglobin)
-
-**Schemaglobin** is a schema validator for user input written for JavaScript and TypeScript with special attention paid to TypeScript types.
+**shelving/schema** is a schema validator for user input written for JavaScript and TypeScript with special attention paid to TypeScript types.
 
 ## Installation
 
 ```sh
-npm install schemaglobin
+npm install shelving
 ```
 
 ## Usage
@@ -149,7 +143,7 @@ console.log(invalid.messages); // { "1": "Must be string", "2": "Required" }
 Schemaglobin contains a bunch of different schema types you can use:
 
 ```ts
-import { boolean, string, number, date, distance, email, phone, url, key, array, object, map } from "shelving/schema";
+import { boolean, string, number, date, email, phone, url, key, array, object, map } from "shelving/schema";
 
 // Create schemas.
 const booleanSchema = boolean({ required: true, ...etc });
@@ -157,7 +151,6 @@ const stringSchema = string({ required: true, ...etc });
 const numberSchema = number({ required: true, ...etc });
 const colorSchema = color({ required: true, ...etc });
 const dateSchema = date({ required: true, ...etc });
-const distanceSchema = distance({ required: true, unit: "foot", ...etc });
 const emailSchema = email({ required: true, ...etc });
 const phoneSchema = phone({ required: true, ...etc });
 const urlSchema = url({ required: true, ...etc });
@@ -172,7 +165,6 @@ stringSchema.validate("abc"); // Returns "abc"
 numberSchema.validate(12345); // Returns 12345
 colorSchema.validate("#00CCFF"); // Returns "#00CCFF"
 dateSchema.validate("1995"); // Returns "1995-01-01"
-distanceSchema.validate("100 yd"); // Returns 300 (converted to feet).
 emailSchema.validate("me@x.com"); // Returns "me@x.com"
 phoneSchema.validate("+1234567890"); // Returns "+1234567890"
 urlSchema.validate("http://x.com"); // Returns "http://x.com"
@@ -185,7 +177,6 @@ mapSchema.validate({ a: "A" }); // Returns { a: "A" }
 stringSchema.validate(true); // Throws InvalidFeedback("Must be string")
 numberSchema.validate(true); // Throws InvalidFeedback("Must be number")
 dateSchema.validate("aaaaaaa"); // Throws InvalidFeedback("Invalid date")
-distanceSchema.validate("aaaaaaa"); // Throws InvalidFeedback("Invalid format")
 colorSchema.validate(true); // Throws InvalidFeedback("Must be string")
 emailSchema.validate("111111"); // Throws InvalidFeedback("Invalid format")
 phoneSchema.validate("aaaaaa"); // Throws InvalidFeedback("Invalid format")
@@ -361,26 +352,6 @@ The `date()` creator function creates a `DateSchema` instance that can validate 
 - `options.min: string = null` - The minimum date allowed.
 - `options.max: string = null` - The maximum date allowed.
 
-### `distance()`
-
-The `distance()` creator function creates a `DistanceSchema` instance that can validate distance numbers:
-
-- Numbers are valid values (and are assumed to be the base unit).
-- Numeric strings are valid values and are converted to numbers.
-- Numeric strings with unit suffixes (e.g. `10km` or `99 inches`) are valid values and are converted to a number and converted to the base unit.
-- `0` zero is a valid value.
-- Falsy values are converted to `null`
-- `null` is an invalid value if `options.required` is truthy.
-
-`distance()` also allows the following options:
-
-- `options.value: number | null = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `InvalidFeedback("Required")`
-- `options.min: number = null` - The minimum number allowed.
-- `options.max: number = null` - The maximum number allowed.
-- `options.step: number = null` - The step size for the the number (the value will be rounded to the closest step).
-- `options.unit: DistanceUnit = "meter"` - The base unit for this schema.
-
 ### `email()`
 
 The `email()` creator function creates a `EmailSchema` instance that can validate email addresses:
@@ -449,6 +420,7 @@ The `number()` creator function creates a `NumberSchema` instance that can valid
   1. An array of numbers where each number is an allowed value.
   2. An object where each number key is an allowed value and the corresponding value can be a user-facing title for the option.
 - `options.step: number = null` - The step size for the the number (the value will be rounded to the closest step).
+- `options.unit: Unit = null` - The base unit for this schema (e.g. `"meter"` or `"feet"`). Compatible units (e.g. `"280 inches"`) will be converted to the base unit.
 
 ### `phone()`
 
@@ -528,7 +500,7 @@ The `url()` creator function creates a `UrlSchema` instance that can validate UR
 The following static values are available as shortcuts attached to the creator functions for all simple values:
 
 ```js
-import { boolean, date, distance, email, key, number, phone, string, url } from "shelving/schema";
+import { boolean, date, email, key, number, phone, string, url } from "shelving/schema";
 
 // The following is equivalent to e.g. boolean({ required: true }).validate()
 boolean.required.validate(true);
@@ -537,8 +509,6 @@ color.required.validate("#00CCFF");
 color.optional.validate(null);
 date.required.validate(new Date());
 date.optional.validate(null);
-distance.required.validate("123 km");
-distance.optional.validate(null);
 email.required.validate("dave@x.com");
 email.optional.validate(null);
 key.required.validate("abc123");
@@ -574,4 +544,4 @@ map.optional(boolean.required).validate(null);
 
 ## Changelog
 
-See [Releases](https://github.com/dhoulb/schemaglobin/releases)
+See [Releases](https://github.com/dhoulb/shelving/releases)
