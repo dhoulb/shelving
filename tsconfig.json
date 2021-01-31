@@ -17,6 +17,5 @@
 		"checkJs": true,
 		"declaration": true
 	},
-	"include": ["./**/*.ts"],
-	"exclude": ["./**/*.test.ts"]
+	"include": ["./**/*.ts"]
 }

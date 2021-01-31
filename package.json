@@ -21,7 +21,7 @@
 		"test:typescript": "tsc --noEmit",
 		"test:jest": "jest",
 		"test:jest:watch": "jest --watchAll",
-		"build": "tsc && cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md"
+		"build": "tsc -p ./tsconfig.build.json && cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md"
 	},
 	"dependencies": {
 		"shelving": "file:."
