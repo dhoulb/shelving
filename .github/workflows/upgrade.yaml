@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14
-      - run: npm install
+      - run: npm ci
       - run: npm outdated && echo 'Nothing to upgrade' || npm upgrade
       - run: npm run fix # Run fix after upgrade so updates to Prettier and ESLint upgrade the codebase too.
       - run: npm run test
