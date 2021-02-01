@@ -1,6 +1,16 @@
 {
 	"name": "shelving",
 	"description": "Toolkit for using data in JavaScript.",
+	"keywords": [
+		"javascript",
+		"typescript",
+		"schema",
+		"validation",
+		"database",
+		"database-connector",
+		"state-management",
+		"query-builder"
+	],
 	"version": "0.0.0-semantic",
 	"repository": "https://github.com/dhoulb/shelving",
 	"author": "Dave Houlbrooke <dave@shax.com>",
