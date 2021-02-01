@@ -1,20 +1,20 @@
 {
 	"compilerOptions": {
 		"moduleResolution": "node",
-		"module": "commonjs",
+		"module": "es2020",
 		"target": "es2019",
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
 		"jsx": "react-jsx",
 		"resolveJsonModule": true,
-		"esModuleInterop": true,
 		"outDir": "dist",
 		"noEmitOnError": true,
 		"noErrorTruncation": true,
 		"skipLibCheck": true,
 		"allowJs": true,
 		"checkJs": true,
-		"declaration": true
+		"declaration": true,
+		"forceConsistentCasingInFileNames": true
 	},
 	"include": ["./**/*.ts"]
 }

@@ -17,6 +17,10 @@
 npm install shelving
 ```
 
+## Usage
+
+Shelving is an [ES module](https://nodejs.org/api/esm.html) using `import { etc } from "shelving";` syntax. It does not generate code for CommonJS `require()` style imports, so requires a system that supports that like Dino or Node 12 or higher.
+
 ## Modules
 
 @todo

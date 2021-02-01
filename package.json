@@ -5,11 +5,16 @@
 	"repository": "https://github.com/dhoulb/shelving",
 	"author": "Dave Houlbrooke <dave@shax.com>",
 	"license": "0BSD",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"type": "module",
+	"module": "./index.js",
+	"exports": {
+		".": "./index.js",
+		"./*": "./*/index.js"
+	},
+	"sideEffects": false,
 	"engineStrict": true,
 	"engines": {
-		"node": ">=10.0.0"
+		"node": ">=12.0.0"
 	},
 	"scripts": {
 		"fix": "npm run fix:prettier && npm run fix:eslint",
