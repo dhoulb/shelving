@@ -50,7 +50,7 @@ class Database<D extends DataSchemas, C extends DataSchemas> implements Database
 		return this.provider.reset();
 	}
 	clone(): this {
-		return cloneObject(this);
+		return cloneObject<this>(this);
 	}
 }
 
@@ -74,7 +74,7 @@ abstract class Reference<T extends Data, D extends DataSchemas, C extends DataSc
 	}
 	validateChange(change: ImmutableObject | undefined): Change<T> {
 		try {
-			return this.schema.change.validate(change);
+			return this.schema.partial.validate(change);
 		} catch (thrown: unknown) {
 			if (isFeedback(thrown)) throw new ReferenceValidationError(this, thrown, change);
 			else throw thrown;
@@ -152,14 +152,14 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		return this.db.provider.onDocument<T>(this, r => dispatch(onNext, r, onError), onError);
 	}
 	set(change: Change<T>, options: DocumentSetOptions & { merge: true }): Promise<Change<T>>;
-	set(data: ImmutableObject, options: DocumentSetOptions & { validate: false }): Promise<Change<T>>;
+	set(data: ImmutableObject, options: DocumentSetOptions & { validate: false }): Promise<ImmutableObject>;
 	set(data: T, options?: DocumentSetOptions): Promise<Change<T>>;
-	set(input: T, options?: DocumentSetOptions): Promise<Change<T>> {
-		const data = !options?.validate ? input : options?.merge ? this.validateChange(input) : this.validate(input);
+	set(input: ImmutableObject, options?: DocumentSetOptions): Promise<Change<T>> {
+		const data: Change<T> = !options?.validate ? (input as Change<T>) : options?.merge ? this.validateChange(input) : this.validate(input);
 		return this.db.provider.mergeDocument<T>(this, data);
 	}
 	merge(change: Change<T>): Promise<Change<T>> {
-		return this.db.provider.mergeDocument(this, this.validateChange(change));
+		return this.db.provider.mergeDocument<T>(this, this.validateChange(change));
 	}
 	delete(): Promise<void> {
 		return this.db.provider.deleteDocument<T>(this);
@@ -207,15 +207,15 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 		return this.db.provider.mergeCollection<T>(this, this.validateChanges(changes));
 	}
 	async setAll(data: T): Promise<Changes<T>> {
-		const changes = mapObject(await this.db.provider.getCollection(this), this.validate(data));
+		const changes = mapObject(await this.db.provider.getCollection<T>(this), this.validate(data));
 		return this.db.provider.mergeCollection<T>(this, changes);
 	}
 	async mergeAll(change: Change<T>): Promise<Changes<T>> {
-		const changes = mapObject(await this.db.provider.getCollection(this), this.validateChange(change));
+		const changes = mapObject(await this.db.provider.getCollection<T>(this), this.validateChange(change));
 		return this.db.provider.mergeCollection<T>(this, changes);
 	}
 	async deleteAll(): Promise<Changes<T>> {
-		const changes = mapObject(await this.db.provider.getCollection(this), undefined);
+		const changes = mapObject(await this.db.provider.getCollection<T>(this), undefined);
 		return this.db.provider.mergeCollection<T>(this, changes);
 	}
 	is<K extends "id" | keyof T>(key: K, value: K extends "id" ? string : T[K]): this {
@@ -252,7 +252,7 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 		return { __proto__: Collection.prototype, ...this, query: this.query.limit(limit) };
 	}
 	*[Symbol.iterator](): Generator<[string, T], void, undefined> {
-		yield* Object.entries(this.db.provider.getCollection(this));
+		yield* Object.entries(this.db.provider.getCollection<T>(this));
 	}
 	toString(): string {
 		return `${this.path}?${this.query}`;
