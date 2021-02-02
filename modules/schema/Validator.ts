@@ -1,4 +1,4 @@
-import { isObject, ImmutableObject } from "../object";
+import { isObject, ImmutableObject, DeepPartial } from "../object";
 
 /**
  * Validator: an object that can validate something.
@@ -16,6 +16,9 @@ export interface Validator<T = unknown> {
 	 * @throws `InvalidFeedback` If the value is invalid and cannot be fixed and we want to explain why to an end user.
 	 */
 	validate(unsafeValue?: unknown): T;
+
+	/** Any validator might implement a partial schema generator. */
+	readonly partial?: Validator<DeepPartial<T & ImmutableObject>>;
 }
 
 /** Extract the type from a Validator. */

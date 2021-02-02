@@ -1,8 +1,9 @@
-import { MutableObject, isObject, ImmutableObject } from "../object";
+import { MutableObject, isObject, ImmutableObject, DeepPartial, convertObject } from "../object";
 import { Data } from "../data";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Schema, SchemaOptions, RequiredOptions } from "./Schema";
-import { Validators } from "./Validator";
+import { Validator, Validators } from "./Validator";
+import { withPartial } from "./undefined";
 
 export type ObjectOptions<T extends ImmutableObject | null> = SchemaOptions & {
 	readonly props: Validators<T & ImmutableObject>;
@@ -16,7 +17,7 @@ export type ObjectOptions<T extends ImmutableObject | null> = SchemaOptions & {
  * Checks that value is an object, and optionally matches the format or items specific contents in the object.
  * Only returns a new instance of the object if it changes (for immutability).
  */
-export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Readonly<T>> {
+export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> implements Validator<T> {
 	readonly value: Partial<T> | null = null;
 
 	/**
@@ -31,7 +32,7 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		this.props = props;
 	}
 
-	validate(unsafeValue: unknown = this.value): Readonly<T> {
+	validate(unsafeValue: unknown = this.value): T {
 		// Coorce.
 		const unsafeObj = isObject(unsafeValue) ? unsafeValue : null;
 
@@ -50,13 +51,23 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		// Validate the object against `this.props`
 		let changed = false;
 		let invalid = false;
+		let notFound = 0;
 		const safeObj: MutableObject = {};
 		const details: MutableObject<Feedback> = {};
 		const propSchemas = Object.entries(this.props);
 		for (const [key, validator] of propSchemas) {
+			const exists = key in unsafeObj;
+			if (!exists) notFound++;
+			const unsafeProp = exists ? unsafeObj[key] : undefined;
 			try {
-				const unsafeProp = unsafeObj[key];
 				const safeProp = validator.validate(unsafeProp);
+
+				// Don't add this prop to `safeObj` if it didn't exist in `unsafeObj` and is undefined.
+				// This allows lets partial objects pass through validation without every prop being set to `undefined`
+				// The validator above would have thrown if `undefined` is not an allowed value.
+				if (!exists && safeProp === undefined) continue;
+
+				// Set the prop.
 				if (safeProp !== unsafeProp) changed = true;
 				safeObj[key] = safeProp;
 			} catch (feedback: unknown) {
@@ -68,7 +79,7 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		}
 
 		// If input has keys that aren't in props, then these keys are _excess_ and we need to return output.
-		if (Object.keys(unsafeObj).length > propSchemas.length) changed = true;
+		if (Object.keys(unsafeObj).length + notFound > propSchemas.length) changed = true;
 
 		// If any Schema threw Invalid, return an Invalids.
 		if (invalid) throw new InvalidFeedback("Invalid format", details);
@@ -76,11 +87,26 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		// Return immuatably (return output if changes were made, or exact input otherwise).
 		return (changed ? safeObj : unsafeObj) as T;
 	}
+
+	/** Get a partial validator for this object (i.e. validate an object where the props are allowed to be unset or an explicit `undefined`). */
+	get partial(): Validator<DeepPartial<T & ImmutableObject>> {
+		// Lazy created and cached.
+		return (this._partial ||= new ObjectSchema({
+			props: convertObject(
+				this.props,
+				withPartial as (
+					value: Validators<T & ImmutableObject<unknown>>[string],
+					key: string,
+				) => Validators<DeepPartial<T & ImmutableObject<unknown>>>[string],
+			),
+		}));
+	}
+	private _partial?: Validator<DeepPartial<T & ImmutableObject>>;
 }
 
 /** Shortcuts for ObjectSchema. */
 export const object: {
-	<T extends ImmutableObject | null>(options: ObjectOptions<T> & RequiredOptions): ObjectSchema<T>;
+	<T extends ImmutableObject>(options: ObjectOptions<T> & RequiredOptions): ObjectSchema<T>;
 	<T extends ImmutableObject | null>(options: ObjectOptions<T>): ObjectSchema<T | null>;
 	required<T extends ImmutableObject>(props: Validators<T>): ObjectSchema<T>;
 	optional<T extends ImmutableObject | null>(props: Validators<T & ImmutableObject>): ObjectSchema<T | null>;

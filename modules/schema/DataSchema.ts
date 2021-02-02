@@ -1,9 +1,9 @@
-import { Data, Change, Changes, Results } from "../data";
-import { EmptyObject, ImmutableObject, mapObject } from "../object";
+import { Data, Change } from "../data";
+import { EmptyObject, ImmutableObject } from "../object";
 import { withUndefined } from "./undefined";
 import { MapSchema } from "./MapSchema";
 import { ObjectSchema } from "./ObjectSchema";
-import { Validator, Validators } from "./Validator";
+import { Validators } from "./Validator";
 import { SchemaOptions } from "./Schema";
 
 /** A generic data schema whose values are not known. */
@@ -41,49 +41,20 @@ export class DataSchema<T extends Data, D extends DataSchemas, C extends DataSch
 		this.collections = collections;
 	}
 
-	/** Get a change validator for this object (i.e. object itself or its props can be `undefined`, and where `undefined` means delete). */
-	get change(): Validator<Change<T>> {
+	/** Schema that validates a set of results (i.e. as returned by `Collection.get()`) for this data. */
+	get results(): MapSchema<T> {
 		// Lazy created.
-		return (this._change ||= toChangeValidator(this));
+		return (this._results ||= new MapSchema({ items: this }));
 	}
-	private _change?: Validator<Change<T>>;
+	private _results?: MapSchema<T>;
 
-	/** Schema that validates collection results at this locus. */
-	get results(): MapSchema<Results<T>> {
+	/** Schema that validates a set of changes (i.e. as provided to `Collection.change()`) for this data. */
+	get changes(): MapSchema<Change<T> | undefined> {
 		// Lazy created.
-		return (this._results ||= new MapSchema<Results<T>>({ items: this }));
+		return (this._changes ||= new MapSchema({ items: withUndefined(this.partial) }));
 	}
-	private _results?: MapSchema<Results<T>>;
-
-	/** Schema that validates collection changes at this locus. */
-	get changes(): MapSchema<Changes<T>> {
-		// Lazy created.
-		return (this._changes ||= new MapSchema<Changes<T>>({ items: withUndefined(this.change) }));
-	}
-	private _changes?: MapSchema<Changes<T>>;
+	private _changes?: MapSchema<Change<T> | undefined>;
 }
-
-/**
- * Modify an input MapSchema or ObjectSchema schema to make it allow partial object props.
- * - i.e. if schema validates an object, all props of that object can be their normal value _or_ `undefined`.
- * - If schema does not validate an object (i.e. it's not an `ObjectSchema` or `MapSchema`) then it won't be modified.
- * - Works deeply, so nested `ObjectSchema` or `MapSchemas` under the input schema will also allow partial object props.
- */
-const toChangeValidator = <T>(schema: Validator<T>): Validator<T | Change<T & Data>> => {
-	// If schema is an ObjectSchema, modify its props option so each of them is partial and undefined.
-	if (schema instanceof ObjectSchema) return new ObjectSchema<Change<T & Data>>({ props: toChangeValidators(schema.props) });
-	// If schema is an MapSchema, modify its items option so it is partial and undefined.
-	if (schema instanceof MapSchema) return new MapSchema<Change<T & Data>>({ items: toChangeOrUndefinedValidator(schema.items) });
-	// Else return the unmodified schema.
-	return schema;
-};
-
-/** Modify a set of Validators to change  */
-const toChangeValidators = <T extends Data>(props: Validators<T>): Validators<Change<T>> =>
-	mapObject<Validator<T[keyof T]>, Validator<unknown>>(props, toChangeOrUndefinedValidator) as Validators<Change<T>>;
-
-/** Modify an input schema to make it allow to be undefined and allow partial object props. */
-const toChangeOrUndefinedValidator = <T>(schema: Validator<T>): Validator<T | Change<T & Data> | undefined> => withUndefined(toChangeValidator(schema));
 
 /** Shortcuts for DataSchema. */
 export const data: {

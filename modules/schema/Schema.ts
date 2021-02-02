@@ -47,6 +47,7 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 		this.required = required;
 	}
 
+	/** Every schema must implement a `validate()` method. */
 	abstract validate(unsafeValue?: unknown): T;
 }
 

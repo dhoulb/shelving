@@ -1,11 +1,12 @@
-import { MutableObject, ImmutableObject, isObject } from "../object";
+import { MutableObject, ImmutableObject, isObject, DeepPartial } from "../object";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Schema, SchemaOptions } from "./Schema";
 import { Validator } from "./Validator";
+import { withPartial } from "./undefined";
 
-export type MapOptions<T extends ImmutableObject> = SchemaOptions & {
-	readonly items: Validator<T[string]>;
-	readonly value?: T;
+export type MapOptions<T> = SchemaOptions & {
+	readonly items: Validator<T>;
+	readonly value?: ImmutableObject<T>;
 	readonly required?: boolean;
 	readonly min?: number | null;
 	readonly max?: number | null;
@@ -15,14 +16,14 @@ export type MapOptions<T extends ImmutableObject> = SchemaOptions & {
  * Schema that defines a valid object with typed key: value props (like ES6 Map class but works with plain objects).
  * Different from ObjectSchema because that has fixed props, and this has an unknown number of props that are all the same type.
  */
-export class MapSchema<T extends ImmutableObject> extends Schema<T> {
-	readonly value: T;
+export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validator<ImmutableObject<T>> {
+	readonly value: ImmutableObject<T>;
 
 	/**
 	 * Define a validator for _all_ props in the object.
 	 * JSON Schema calls this `additionalProperties`, we call it `items` to match ArraySchema.
 	 */
-	readonly items: Validator<T[string]>;
+	readonly items: Validator<T>;
 
 	/**
 	 * Describe the minimum and maximum numbers of items.
@@ -31,7 +32,7 @@ export class MapSchema<T extends ImmutableObject> extends Schema<T> {
 	readonly min: number | null = null;
 	readonly max: number | null = null;
 
-	constructor({ items, min = null, max = null, value = {} as T, ...rest }: MapOptions<T>) {
+	constructor({ items, min = null, max = null, value = {} as ImmutableObject<T>, ...rest }: MapOptions<T>) {
 		super(rest);
 		this.items = items;
 		this.min = min;
@@ -39,7 +40,7 @@ export class MapSchema<T extends ImmutableObject> extends Schema<T> {
 		this.value = value;
 	}
 
-	validate(unsafeValue: unknown = this.value): T {
+	validate(unsafeValue: unknown = this.value): ImmutableObject<T> {
 		// Coorce.
 		const unsafeObject = !unsafeValue ? {} : isObject(unsafeValue) ? unsafeValue : undefined;
 		if (!unsafeObject) throw new InvalidFeedback("Must be object");
@@ -55,7 +56,7 @@ export class MapSchema<T extends ImmutableObject> extends Schema<T> {
 
 			// Return empty object.
 			// We know this type assertion is sound because we know value is empty.
-			return unsafeObject as T;
+			return unsafeObject as ImmutableObject<T>;
 		}
 
 		// Check min and max.
@@ -65,7 +66,7 @@ export class MapSchema<T extends ImmutableObject> extends Schema<T> {
 		// Check value against against `this.items`
 		let changed = false;
 		let invalid = false;
-		const output: MutableObject<T[string]> = {};
+		const output: MutableObject<T> = {};
 		const details: MutableObject<Feedback> = {};
 		for (const [key, unsafeItem] of entries) {
 			try {
@@ -84,16 +85,25 @@ export class MapSchema<T extends ImmutableObject> extends Schema<T> {
 		if (invalid) throw new InvalidFeedback("Invalid items", details);
 
 		// Return immuatably (return output if changes were made, or exact input otherwise).
-		return (changed ? output : unsafeObject) as T;
+		return (changed ? output : unsafeObject) as ImmutableObject<T>;
 	}
+
+	/** Get a partial validator for this object (i.e. validate an object where the props are allowed to be unset or an explicit `undefined`). */
+	get partial(): Validator<DeepPartial<ImmutableObject<T>>> {
+		// Lazy created and cached.
+		return (this._partial ||= new MapSchema({
+			items: withPartial(this.items),
+		}) as Validator<DeepPartial<ImmutableObject<T>>>);
+	}
+	private _partial?: Validator<DeepPartial<ImmutableObject<T>>>;
 }
 
 /** Shortcuts for MapSchema. */
 export const map: {
-	<T extends ImmutableObject>(options: MapOptions<T>): MapSchema<T>;
-	required<T extends ImmutableObject>(items: Validator<T[string]>): MapSchema<T>;
-	optional<T extends ImmutableObject>(items: Validator<T[string]>): MapSchema<T>;
-} = Object.assign(<T extends ImmutableObject>(options: MapOptions<T>): MapSchema<T> => new MapSchema<T>(options), {
-	required: <T extends ImmutableObject>(items: Validator<T[string]>): MapSchema<T> => new MapSchema<T>({ items, required: true }),
-	optional: <T extends ImmutableObject>(items: Validator<T[string]>): MapSchema<T> => new MapSchema<T>({ items, required: false }),
+	<T>(options: MapOptions<T>): MapSchema<T>;
+	required<T>(items: Validator<T>): MapSchema<T>;
+	optional<T>(items: Validator<T>): MapSchema<T>;
+} = Object.assign(<T>(options: MapOptions<T>): MapSchema<T> => new MapSchema<T>(options), {
+	required: <T>(items: Validator<T>): MapSchema<T> => new MapSchema<T>({ items, required: true }),
+	optional: <T>(items: Validator<T>): MapSchema<T> => new MapSchema<T>({ items, required: false }),
 });
