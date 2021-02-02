@@ -36,10 +36,10 @@
 		"test:typescript": "tsc --noEmit",
 		"test:jest": "jest",
 		"test:jest:watch": "jest --watchAll",
-		"build": "tsc -p ./tsconfig.build.json && cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md"
-	},
-	"dependencies": {
-		"shelving": "file:."
+		"build": "build:typescript && build:copy && build:check",
+		"build:typescript": "tsc -p ./tsconfig.build.json",
+		"build:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md",
+		"build:check": "node -c dist/index.js"
 	},
 	"devDependencies": {
 		"@types/jest": "^26.0.15",
@@ -50,9 +50,13 @@
 		"eslint-config-prettier": "^7.0.0",
 		"eslint-plugin-import": "^2.22.1",
 		"eslint-plugin-prettier": "^3.1.4",
-		"jest": "^26.6.1",
+		"firebase": "^8.2.5",
+		"firebase-admin": "^9.4.2",
+		"jest": "^26.6.3",
 		"prettier": "^2.1.2",
+		"react": "^17.0.1",
 		"ts-jest": "^26.4.3",
+		"ts-node": "^9.1.1",
 		"typescript": "^4.0.5"
 	},
 	"peerDependencies": {

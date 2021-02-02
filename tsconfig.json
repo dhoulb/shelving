@@ -7,6 +7,7 @@
 		"noUncheckedIndexedAccess": true,
 		"jsx": "react-jsx",
 		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
 		"outDir": "dist",
 		"noEmitOnError": true,
 		"noErrorTruncation": true,
@@ -16,5 +17,5 @@
 		"declaration": true,
 		"forceConsistentCasingInFileNames": true
 	},
-	"include": ["./**/*.ts"]
+	"include": ["./**/*.ts", "./**/*.js"]
 }
