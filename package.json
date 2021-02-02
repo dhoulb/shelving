@@ -21,6 +21,7 @@
 		".": "./index.js",
 		"./*": "./*/index.js"
 	},
+	"types": "./index.d.ts",
 	"sideEffects": false,
 	"engineStrict": true,
 	"engines": {
