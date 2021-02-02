@@ -66,22 +66,22 @@ export class Feedback implements FeedbackJSON {
 		const obj = typeof json === "string" ? JSON.parse(json) : json;
 
 		// See if it's an object now.
-		if (isObject(obj) && typeof obj.message === "string") {
-			const { status, message, details } = obj;
-			const parsedDetails = isObject(details) ? mapObject(details, Feedback.fromJSON) : undefined;
+		if (isFeedbackJSON(obj)) {
+			const { status, message, details: unhydratedDetails } = obj;
+			const details = unhydratedDetails ? mapObject(unhydratedDetails, Feedback.fromJSON) : undefined;
 
 			// If this status is a registered type, create the correct new class.
 			switch (status) {
 				case "success":
-					return new SuccessFeedback(message, parsedDetails);
+					return new SuccessFeedback(message, details);
 				case "warning":
-					return new WarningFeedback(message, parsedDetails);
+					return new WarningFeedback(message, details);
 				case "error":
-					return new ErrorFeedback(message, parsedDetails);
+					return new ErrorFeedback(message, details);
 				case "invalid":
-					return new InvalidFeedback(message, parsedDetails);
+					return new InvalidFeedback(message, details);
 				case undefined:
-					return new Feedback(message, parsedDetails);
+					return new Feedback(message, details);
 			}
 		}
 
@@ -115,3 +115,9 @@ export class InvalidFeedback extends ErrorFeedback {
  * - This is a TypeScript assertion function, so if this function returns `true` the type is also asserted to be a `Schema`.
  */
 export const isFeedback = <T extends Feedback>(v: T | unknown): v is T => v instanceof Feedback;
+
+/**
+ * Is an unknown value a `FeedbackJSON` instance?
+ */
+export const isFeedbackJSON = (v: unknown): v is FeedbackJSON =>
+	isObject(v) && typeof v.message === "string" && (v.details === undefined || isObject(v.details));
