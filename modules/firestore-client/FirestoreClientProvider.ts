@@ -6,7 +6,6 @@ import {
 	Entry,
 	arrayChunk,
 	isObject,
-	mapObject,
 	MutableObject,
 	Change,
 	Changes,
@@ -17,6 +16,7 @@ import {
 	Document,
 	Collection,
 	Matcher,
+	convertObject,
 } from "..";
 import { UnsupportedError } from "../errors";
 
@@ -28,7 +28,7 @@ const BATCH = 100; // Actual limit is 500 but smaller batches allow for addition
 
 /** Map all `undefined` values in an object to the `DELETE` sentinel */
 const mapSentinels = (value: unknown): unknown =>
-	value === undefined ? DELETE : isObject(value) && !(value instanceof Array) ? mapObject(value, mapSentinels) : value;
+	value === undefined ? DELETE : isObject(value) && !(value instanceof Array) ? convertObject(value, mapSentinels) : value;
 
 // Map `Filter.types` to `WhereFilterOp`
 const FILTERS: { [K in Matcher]: firebase.firestore.WhereFilterOp } = {
@@ -95,7 +95,7 @@ class FirestoreClientProvider implements Provider {
 	}
 
 	async mergeDocument<T extends Data>(ref: Document<T>, change: Change<T>): Promise<Change<T>> {
-		await this.firestore.doc(ref.path).set(mapObject<unknown, unknown>(change, mapSentinels), { merge: true });
+		await this.firestore.doc(ref.path).set(convertObject(change, mapSentinels), { merge: true });
 		return change;
 	}
 
@@ -138,7 +138,7 @@ class FirestoreClientProvider implements Provider {
 			const batch = this.firestore.batch();
 			for (const [id, change] of chunk) {
 				const docRef = this.firestore.doc(`${ref.path}/${id}`);
-				if (change) batch.set(docRef, mapObject<unknown, unknown>(change, mapSentinels), { merge: true });
+				if (change) batch.set(docRef, convertObject(change, mapSentinels), { merge: true });
 				else batch.delete(docRef);
 			}
 			await batch.commit();
