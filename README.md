@@ -20,10 +20,11 @@ npm install shelving
 yarn add shelving
 ```
 
-Import from Skypack CDN:
+Import from Skypack CDN (the `?dts` enables TypeScript types in Deno):
 
 ```js
 import { createDatabase } from "https://cdn.skypack.dev/shelving";
+import { createDatabase } from "https://cdn.skypack.dev/shelving?dts";
 ```
 
 ## Usage
