@@ -23,7 +23,71 @@ Shelving is an [ES module](https://nodejs.org/api/esm.html) using `import { etc 
 
 ## Modules
 
-@todo
+Shelving is created from small individual modules which can be imported individually (using e.g. `import { addProp } from "shelving/object`). Modules marked with `✅` are also re-exported from the main `"shelving"` module.
+
+@todo Write these docs!
+
+### Data storage
+
+- [`shelving/schema`](https://github.com/dhoulb/shelving/blob/main/modules/schema/README.md) ✅ - Validate unknown user input against schemas
+- `shelving/db` ✅
+- `shelving/query` ✅
+
+### Data storage providers
+
+- `shelving/memory` ✅
+- `shelving/firestore-client`
+- `shelving/firestore-server`
+
+### State management
+
+- `shelving/event` ✅
+- `shelving/state` ✅
+
+### Data type helpers
+
+- `shelving/null` ✅
+- `shelving/undefined` ✅
+- `shelving/boolean` ✅
+- `shelving/string` ✅
+- `shelving/number` ✅
+- `shelving/array` ✅
+- `shelving/constructor` ✅
+- `shelving/data` ✅
+- `shelving/date` ✅
+- `shelving/entry` ✅
+- `shelving/function` ✅
+- `shelving/object` ✅
+- `shelving/url` ✅
+
+### Data manipulation helpers
+
+- `shelving/equal` ✅
+- `shelving/clone` ✅
+- `shelving/merge` ✅
+- `shelving/diff` ✅
+- `shelving/filter` ✅
+- `shelving/sort` ✅
+
+### Error helpers
+
+- `shelving/dispatch` ✅
+- `shelving/assert` ✅
+- `shelving/console` ✅
+- `shelving/debug` ✅
+- `shelving/feedback` ✅
+
+### Other helpers
+
+- `shelving/fingerprint` ✅
+- [`shelving/template`](https://github.com/dhoulb/shelving/blob/main/modules/template/README.md) ✅ - Simple string template rendering and matching
+- `shelving/lazy` ✅
+- `shelving/random` ✅
+- `shelving/units` ✅
+
+### Testing
+
+- `shelving/test`
 
 ## Changelog
 

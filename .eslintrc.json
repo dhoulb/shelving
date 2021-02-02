@@ -66,7 +66,6 @@
 		"import/newline-after-import": 2, // DH: Newline after import.
 		"import/no-default-export": 2, // DH: Force use of  named exports.
 		"import/no-extraneous-dependencies": 0, // DH: We import a lot from _parent_ package.json files, and it's annoying to repeat the dependencies in both files.
-		"import/no-relative-parent-imports": 2, // DH: Enforce using `"shelving/module"` style absolute imports rather than parent imports.
 		"import/order": 2, // DH: Enforce sensible sort order of imports (builtin → npm → shared → parent dirs → this dir)
 		"import/prefer-default-export": 0 // DH: Using named exports is clearer because the importing file knows what it is importing.
 	},
