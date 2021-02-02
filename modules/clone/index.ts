@@ -1,5 +1,5 @@
 import { isArray, mapArray, ImmutableArray } from "../array";
-import { EmptyObject, isObject, mapObject, ImmutableObject } from "../object";
+import { EmptyObject, isObject, ImmutableObject, convertObject } from "../object";
 
 /** Cloneable object implement a `clone()` function that returns a cloned copy. */
 export interface Cloneable {
@@ -21,4 +21,4 @@ export const cloneArray = <T extends ImmutableArray>(arr: T, recursor = clone): 
 
 /** Clone an object. */
 export const cloneObject = <T extends EmptyObject | ImmutableObject>(obj: T, recursor = clone): T =>
-	recursor === clone ? { __proto__: Object.getPrototypeOf(obj), ...obj } : mapObject(obj, recursor);
+	recursor === clone ? { __proto__: Object.getPrototypeOf(obj), ...obj } : convertObject<T, T>(obj, recursor);

@@ -151,16 +151,6 @@ export function mapObjectKeys<V extends unknown>(
  * - Immutable so if the values don't change then the same instance will be returned.
  * - Prototype of the object will be the same as the input object.
  */
-// Exact type mapping (used when the same prop passes straight through the mapper).
-export function mapObject<T extends ImmutableObject>(
-	input: T, //
-	mapper: <P extends ObjectType<T>>(value: P, key: string) => P,
-): T;
-// Exact type promised mapping (used when the same prop passes straight through the mapper asynronously).
-export function mapObject<T extends ImmutableObject>(
-	input: T, //
-	mapper: <P extends ObjectType<T>>(value: P, key: string) => P | Promise<P>,
-): Promise<T>;
 // Use the object like a promised dictionary.
 export function mapObject<I, O>(
 	input: ImmutableEntries<I> | ImmutableObject<I>, //
@@ -188,6 +178,16 @@ export function mapObject<I extends unknown, O extends unknown>(
 	}
 	return promises ? resolveObject(output) : changed ? (output as ImmutableObject<O>) : (input as ImmutableObject<O>);
 }
+
+/**
+ * Convert an object from an exact object type to an exact other object type with a mapper function.
+ * - This is a copy of mapObject but with different generics that allow you to specify the exact input and output types as generics.
+ * - It can't be an overload of `mapObject()` because the overloads are too similar and there's no way for TypeScript to distinguish between them.
+ */
+export const convertObject: <I extends ImmutableObject, O extends ImmutableObject>(
+	input: I, //
+	mapper: (value: I[string], key: string) => O[string],
+) => O = mapObject;
 
 /**
  * Map an array of object keys into an object using a mapper function or a single value.

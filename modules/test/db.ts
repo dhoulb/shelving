@@ -34,7 +34,7 @@ export const allBasics = {
 	basic6: { str: "fff", num: 600, group: "b", tags: ["even"] } as typeof basicSchema.DATA,
 	basic9: { str: "iii", num: 900, group: "c", tags: ["odd"] } as typeof basicSchema.DATA,
 };
-export const deleteBasics = mapObject(allBasics, () => undefined);
+export const deleteBasics = mapObject(allBasics, undefined);
 
 // People values.
 export const allPeople = {
@@ -44,7 +44,7 @@ export const allPeople = {
 	person4: { name: { first: "Jilly", last: "Jones" }, birthday: null } as typeof personSchema.DATA,
 	person5: { name: { first: "Terry", last: "Times" }, birthday: "1964-08-01" } as typeof personSchema.DATA,
 };
-export const deletePeople = mapObject(allPeople, () => undefined);
+export const deletePeople = mapObject(allPeople, undefined);
 
 // Make a new database around the above collections and a provider.
 export const createTestDatabase = <P extends Provider>(provider: P): Database<EmptyObject, typeof collections> => createDatabase({ collections, provider });
