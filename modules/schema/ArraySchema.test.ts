@@ -11,24 +11,29 @@ const randomArray = [{ a: 1 }, 2, { iii: { three: 3 } }, false];
 describe("ArraySchema", () => {
 	test("TypeScript", () => {
 		// Test array.optional()
-		const s1: ArraySchema<number | null> = array.optional(number.optional);
-		const v1: ReadonlyArray<number | null> = s1.validate([123]);
-		const ss1: Schema<number | null> = s1.items;
-		const sr1: number | null = ss1.validate(123);
+		const optionalSchema = array.optional(number.optional);
+		const optionalType: ArraySchema<number | null> = optionalSchema;
+		const optionalv1: ReadonlyArray<number | null> = optionalSchema.validate([123]);
+		const optionalItemsSchema: Schema<number | null> = optionalSchema.items;
+		const optionalItemsValue: number | null = optionalItemsSchema.validate(123);
 
 		// Test array.required()
-		const s2: ArraySchema<number> = array.required(number.required);
-		const v2: ReadonlyArray<number> = s2.validate([123]);
-		const ss2: Schema<number> = s2.items;
-		const sr2: number = ss2.validate(123);
+		const requiredSchema = array.required(number.required);
+		const requiredType: ArraySchema<number> = requiredSchema;
+		const requiredv2: ReadonlyArray<number> = requiredSchema.validate([123]);
+		const requiredItemsSchema: Schema<number> = requiredSchema.items;
+		const requiredItemsValue: number = requiredItemsSchema.validate(123);
 
 		// Test array()
-		const s4: ArraySchema<string> = array({ items: string.required, required: true });
-		const v4: ReadonlyArray<string> = s4.validate([123]);
-		const s5: ArraySchema<string> = array({ items: string.required, required: false });
-		const v5: ReadonlyArray<string> = s5.validate([123]);
-		const s3: ArraySchema<string> = array({ items: string.required });
-		const v3: ReadonlyArray<string> = s3.validate([123]);
+		const arrayRequiredSchema = array({ items: string.required, required: true });
+		const arrayRequiredType: ArraySchema<string> = arrayRequiredSchema;
+		const arrayRequiredv4: ReadonlyArray<string> = arrayRequiredSchema.validate([123]);
+		const arrayOptionalSchema = array({ items: string.required, required: false });
+		const arrayOptionalType: ArraySchema<string> = arrayOptionalSchema;
+		const arrayOptionalv5: ReadonlyArray<string> = arrayOptionalSchema.validate([123]);
+		const arrayAutoSchema = array({ items: string.required });
+		const arrayAutoType: ArraySchema<string> = arrayAutoSchema;
+		const arrayAutov3: ReadonlyArray<string> = arrayAutoSchema.validate([123]);
 	});
 	test("Constructs correctly", () => {
 		const items = string.required;
@@ -80,13 +85,13 @@ describe("ArraySchema", () => {
 			const schema = array({ max: 1, items: string.required });
 			expect(() => schema.validate(numberArray)).toThrow(InvalidFeedback);
 		});
-		test("Arrays with less items than maximum return unchanged", () => {
+		test("Arrays with leItemsSchema than maximum return unchanged", () => {
 			const schema = array({ max: 10, items: number.required });
 			expect(schema.validate(numberArray)).toBe(numberArray);
 		});
 	});
 	describe("options.min", () => {
-		test("Arrays with less items than minimum are invalid", () => {
+		test("Arrays with leItemsSchema than minimum are invalid", () => {
 			const schema = array({ min: 10, items: string.required });
 			expect(() => schema.validate(numberArray)).toThrow(InvalidFeedback);
 		});
@@ -124,7 +129,7 @@ describe("ArraySchema", () => {
 			const schema2 = array({ items: string.optional });
 			expect(() => schema2.validate(randomArray)).toThrow(InvalidFeedback);
 		});
-		test("Arrays with errors in format subschemas provide access to those errors via Invalid", () => {
+		test("Arrays with errors in format subschemas provide acceItemsSchema those errors via Invalid", () => {
 			// Validate and catch Invalids.
 			const arr = ["abc", 123, "abc"];
 			const schema = array({ items: number.required });
@@ -133,9 +138,9 @@ describe("ArraySchema", () => {
 				expect(false).toBe(true); // Not reached.
 			} catch (invalid: any) {
 				expect(invalid).toBeInstanceOf(InvalidFeedback);
-				expect(invalid.messages[0]).toBe("Must be number"); // arr[0] failed.
-				expect(invalid.messages[2]).toBe("Must be number"); // arr[2] failed.
-				expect(Object.keys(invalid.messages).length).toBe(2); // No additional errors (arr[1] passed).
+				expect(invalid.meItemsSchema[0]).toBe("Must be number"); // arr[0] failed.
+				expect(invalid.meItemsSchema[2]).toBe("Must be number"); // arr[2] failed.
+				expect(Object.keys(invalid.meItemsSchema).length).toBe(2); // No additional errors (arr[1] paItemsSchema).
 			}
 		});
 	});

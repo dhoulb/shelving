@@ -4,24 +4,31 @@ import { InvalidFeedback, Validator, object, number, StringSchema, NumberSchema,
 describe("ObjectSchema", () => {
 	test("TypeScript validate()", () => {
 		// Test object.optional()
-		const s1: ObjectSchema<{ num: number | null } | null> = object.optional({ num: number.optional });
-		const r1: { num: number | null } | null = s1.validate({ num: 123 });
-		const ss1: Validator<number | null> = s1.props.num;
-		const sr1: number | null = ss1.validate(123);
+		const optionalSchema = object.optional({ num: number.optional });
+		const optionalType: ObjectSchema<{ num: number | null } | null> = optionalSchema;
+		const optionalValue: { num: number | null } | null = optionalSchema.validate({ num: 123 });
+		const optionalPropSchema = optionalSchema.props.num;
+		const optionalPropType: Validator<number | null> = optionalPropSchema;
+		const optionalPropValue: number | null = optionalPropSchema.validate(123);
 
 		// Test object.required()
-		const s2: ObjectSchema<{ num: number }> = object.required({ num: number.required });
-		const r2: { num: number } = s2.validate({ num: 123 });
-		const ss2: Validator<number> = s2.props.num;
-		const sr2: number = ss2.validate(123);
+		const requiredSchema = object.required({ num: number.required });
+		const requiredType: ObjectSchema<{ num: number }> = requiredSchema;
+		const requiredValue: { num: number } = requiredSchema.validate({ num: 123 });
+		const requiredPropSchema = requiredSchema.props.num;
+		const requiredPropType: Validator<number> = requiredPropSchema;
+		const requiredPropValue: number = requiredPropSchema.validate(123);
 
 		// Test object()
-		const s3: ObjectSchema<{ num: number }> = object({ props: { num: number.required }, required: true });
-		const v3: { num: number } = s3.validate({ num: 123 });
-		const s4: ObjectSchema<{ num: number } | null> = object({ props: { num: number.required }, required: false });
-		const v4: { num: number } | null = s4.validate({ num: 123 });
-		const s5: ObjectSchema<{ num: number } | null> = object({ props: { num: number.required } });
-		const v5: { num: number } | null = s5.validate({ num: 123 });
+		const objectRequiredSchema = object({ props: { num: number.required }, required: true });
+		const objectRequiredType: ObjectSchema<{ num: number }> = objectRequiredSchema;
+		const objectRequiredValue: { num: number } = objectRequiredSchema.validate({ num: 123 });
+		const objectOptionalSchema = object({ props: { num: number.required }, required: false });
+		const objectOptionalType: ObjectSchema<{ num: number } | null> = objectOptionalSchema;
+		const objectOptionalValue: { num: number } | null = objectOptionalSchema.validate({ num: 123 });
+		const objectAutoSchema = object({ props: { num: number.required } });
+		const objectAutoType: ObjectSchema<{ num: number } | null> = objectAutoSchema;
+		const objectAutoValue: { num: number } | null = objectAutoSchema.validate({ num: 123 });
 	});
 	test("Constructs correctly", () => {
 		const props = {};

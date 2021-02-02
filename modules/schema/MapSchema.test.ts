@@ -4,24 +4,31 @@ import { InvalidFeedback, ImmutableObject, map, string, number, boolean, MapSche
 describe("MapSchema", () => {
 	test("TypeScript", () => {
 		// Test map.optional()
-		const s1: MapSchema<ImmutableObject<number | null>> = map.optional(number.optional);
-		const v1: Record<string, number | null> = s1.validate({ a: 1 });
-		const ss1: Validator<number | null> = s1.items;
-		const sr1: number | null = ss1.validate(123);
+		const optionalSchema = map.optional(number.optional);
+		const optionalType: MapSchema<number | null> = optionalSchema;
+		const optionalValue: Record<string, number | null> = optionalSchema.validate({ a: 1 });
+		const optionalItemsSchema = optionalSchema.items;
+		const optionalItemsType: Validator<number | null> = optionalItemsSchema;
+		const optionalItemsValue: number | null = optionalItemsSchema.validate(123);
 
 		// Test map.required()
-		const s2: MapSchema<ImmutableObject<number>> = map.required(number.required);
-		const v2: ImmutableObject<number> = s2.validate({ a: 1 });
-		const ss2: Validator<number> = s2.items;
-		const sr2: number = ss2.validate(134);
+		const requiredSchema = map.required(number.required);
+		const requiredType: MapSchema<number> = requiredSchema;
+		const requiredValue: Record<string, number> = requiredSchema.validate({ a: 1 });
+		const requiredItemsSchema = requiredSchema.items;
+		const requiredItemsType: Validator<number> = requiredItemsSchema;
+		const requiredItemsValue: number = requiredItemsSchema.validate(123);
 
 		// Test map()
-		const s3: MapSchema<ImmutableObject<number>> = map({ items: number.required, required: true });
-		const v3: ImmutableObject<number> = s3.validate({ a: 1 });
-		const s4: MapSchema<ImmutableObject<number>> = map({ items: number.required, required: false });
-		const v4: ImmutableObject<number> = s4.validate({ a: 1 });
-		const s5: MapSchema<ImmutableObject<number>> = map({ items: number.required });
-		const v5: ImmutableObject<number> = s5.validate({ a: 1 });
+		const mapRequiredSchema = map({ items: number.required, required: true });
+		const mapRequiredType: MapSchema<number> = mapRequiredSchema;
+		const mapRequiredValue: ImmutableObject<number> = mapRequiredSchema.validate({ a: 1 });
+		const mapOptionalSchema = map({ items: number.required, required: false });
+		const mapOptionalType: MapSchema<number> = mapOptionalSchema;
+		const mapOptionalValue: ImmutableObject<number> = mapOptionalSchema.validate({ a: 1 });
+		const mapAutoSchema = map({ items: number.required });
+		const mapAutoType: MapSchema<number> = mapAutoSchema;
+		const mapAutoValue: ImmutableObject<number> = mapAutoSchema.validate({ a: 1 });
 	});
 	test("Constructs correctly", () => {
 		const items = string.required;
