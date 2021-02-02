@@ -13,13 +13,24 @@
 
 ## Installation
 
+Install via `npm` or `yarn`:
+
 ```sh
 npm install shelving
+yarn add shelving
+```
+
+Import from Skypack CDN:
+
+```js
+import { createDatabase } from "https://cdn.skypack.dev/shelving";
 ```
 
 ## Usage
 
-Shelving is an [ES module](https://nodejs.org/api/esm.html) using `import { etc } from "shelving";` syntax. It does not generate code for CommonJS `require()` style imports, so requires a system that supports that like Dino or Node 12 or higher.
+Shelving is an [ES module](https://nodejs.org/api/esm.html) supporting `import { createQuery } from "shelving";` syntax and can be used natively in systems/browsers that support that (e.g. Chrome 61+, Deno, Node 12+).
+
+Shelving does not include code for CommonJS `require()` imports, so using it in older projects will require transpiling.
 
 ## Modules
 
@@ -29,15 +40,15 @@ Shelving is created from small individual modules which can be imported individu
 
 ### Data storage
 
-- [`shelving/schema`](https://github.com/dhoulb/shelving/blob/main/modules/schema/README.md) ✅ - Validate unknown user input against schemas
+- [`shelving/schema`](https://github.com/dhoulb/shelving/blob/main/modules/schema/README.md) ✅ — Validate unknown user input against schemas
 - `shelving/db` ✅
 - `shelving/query` ✅
 
 ### Data storage providers
 
-- `shelving/memory` ✅
-- `shelving/firestore-client`
-- `shelving/firestore-server`
+- `shelving/memory` ✅ — Fast in-memory database provider
+- `shelving/firestore-client` — Provider for Firestore in client apps (using `firebase`)
+- `shelving/firestore-server` — Provider for Firestore on servers (using `firebase-admin`)
 
 ### State management
 
@@ -80,14 +91,14 @@ Shelving is created from small individual modules which can be imported individu
 ### Other helpers
 
 - `shelving/fingerprint` ✅
-- [`shelving/template`](https://github.com/dhoulb/shelving/blob/main/modules/template/README.md) ✅ - Simple string template rendering and matching
+- [`shelving/template`](https://github.com/dhoulb/shelving/blob/main/modules/template/README.md) ✅ — Simple string template rendering and matching
 - `shelving/lazy` ✅
 - `shelving/random` ✅
 - `shelving/units` ✅
 
 ### Testing
 
-- `shelving/test`
+- `shelving/test` — Internal reusable testing tools
 
 ## Changelog
 
