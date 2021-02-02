@@ -13,14 +13,14 @@ describe("ArraySchema", () => {
 		// Test array.optional()
 		const optionalSchema = array.optional(number.optional);
 		const optionalType: ArraySchema<number | null> = optionalSchema;
-		const optionalv1: ReadonlyArray<number | null> = optionalSchema.validate([123]);
+		const optionalValue: ReadonlyArray<number | null> = optionalSchema.validate([123]);
 		const optionalItemsSchema: Schema<number | null> = optionalSchema.items;
 		const optionalItemsValue: number | null = optionalItemsSchema.validate(123);
 
 		// Test array.required()
 		const requiredSchema = array.required(number.required);
 		const requiredType: ArraySchema<number> = requiredSchema;
-		const requiredv2: ReadonlyArray<number> = requiredSchema.validate([123]);
+		const requiredValue: ReadonlyArray<number> = requiredSchema.validate([123]);
 		const requiredItemsSchema: Schema<number> = requiredSchema.items;
 		const requiredItemsValue: number = requiredItemsSchema.validate(123);
 
@@ -138,9 +138,9 @@ describe("ArraySchema", () => {
 				expect(false).toBe(true); // Not reached.
 			} catch (invalid: any) {
 				expect(invalid).toBeInstanceOf(InvalidFeedback);
-				expect(invalid.meItemsSchema[0]).toBe("Must be number"); // arr[0] failed.
-				expect(invalid.meItemsSchema[2]).toBe("Must be number"); // arr[2] failed.
-				expect(Object.keys(invalid.meItemsSchema).length).toBe(2); // No additional errors (arr[1] paItemsSchema).
+				expect(invalid.messages[0]).toBe("Must be number"); // arr[0] failed.
+				expect(invalid.messages[2]).toBe("Must be number"); // arr[2] failed.
+				expect(Object.keys(invalid.messages).length).toBe(2); // No additional errors (arr[1] paItemsSchema).
 			}
 		});
 	});
