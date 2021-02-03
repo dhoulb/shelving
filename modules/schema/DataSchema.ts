@@ -16,6 +16,7 @@ export type DataOptions<T extends Data, D extends DataSchemas, C extends DataSch
 	props: Validators<T>;
 	documents?: D;
 	collections?: C;
+	value?: Partial<T>;
 };
 
 /**
@@ -26,8 +27,14 @@ export type DataOptions<T extends Data, D extends DataSchemas, C extends DataSch
  * - Has `.partial`, `.change`, `.results`, `.changes` props that create schemas (based off this) that allow `undefined` in the right places.
  */
 export class DataSchema<T extends Data, D extends DataSchemas, C extends DataSchemas> extends ObjectSchema<T> {
-	/** Type (exposed so we can easily reuse T). */
-	readonly DATA!: T;
+	/**
+	 * Empty data for this schema.
+	 * - Primarily so we can use this as a type, e.g. `typeof schema["data"]`
+	 * - The value returns is the result of validating `this.value`, so it might throw `InvalidFeedback` if fields are missing but required.
+	 */
+	get data(): T {
+		return this.validate(this.value);
+	}
 
 	/** Any nested documents that sit below this data. */
 	readonly documents: D;
@@ -35,8 +42,8 @@ export class DataSchema<T extends Data, D extends DataSchemas, C extends DataSch
 	/** Any nested collections that sit below this data. */
 	readonly collections: C;
 
-	constructor({ props = {} as Validators<T>, documents = {} as D, collections = {} as C, ...rest }: DataOptions<T, D, C>) {
-		super({ ...rest, props, required: true, value: {} });
+	constructor({ props = {} as Validators<T>, documents = {} as D, collections = {} as C, value = {}, ...rest }: DataOptions<T, D, C>) {
+		super({ ...rest, props, required: true, value });
 		this.documents = documents;
 		this.collections = collections;
 	}
