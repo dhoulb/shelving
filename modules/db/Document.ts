@@ -29,7 +29,7 @@ export type DocumentSetOptions = {
 };
 
 /** Get Document type for a given DataSchema. */
-export type DocumentForData<S extends AnyDataSchema> = Document<S["data"], S["documents"], S["collections"]>;
+export type SchemaDocumentType<S extends AnyDataSchema> = Document<S["data"], S["documents"], S["collections"]>;
 
 /** Type for a document instance. */
 export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Cloneable {

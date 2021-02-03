@@ -11,7 +11,7 @@ import type { Document } from "./Document";
 export type AnyCollection = Collection<Data, DataSchemas, DataSchemas>;
 
 /** Get the corresponding collection for a DataSchema. */
-export type CollectionForData<S extends AnyDataSchema> = Collection<S["data"], S["documents"], S["collections"]>;
+export type SchemaCollectionType<S extends AnyDataSchema> = Collection<S["data"], S["documents"], S["collections"]>;
 
 /**
  * Collection reference: Allows a set of documents in a collection to be read or deleted from a database.
