@@ -10,8 +10,8 @@ import type { Document } from "./Document";
 /** A generic collection whose generics are not known. */
 export type AnyCollection = Collection<Data, DataSchemas, DataSchemas>;
 
-/** Get the corresponding collection for a DataSchema. */
-export type SchemaCollectionType<S extends AnyDataSchema> = Collection<S["data"], S["documents"], S["collections"]>;
+/** Get a `Collection` for a `DataSchema`. */
+export type SchemaCollection<S extends AnyDataSchema> = Collection<S["type"], S["documents"], S["collections"]>;
 
 /**
  * Collection reference: Allows a set of documents in a collection to be read or deleted from a database.

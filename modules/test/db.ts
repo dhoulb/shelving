@@ -24,25 +24,25 @@ export const collections = {
 
 // Basic values.
 export const allBasics = {
-	basic3: { str: "ccc", num: 300, group: "a", tags: ["odd", "prime"] } as typeof basicSchema.data,
-	basic5: { str: "eee", num: 500, group: "b", tags: ["odd", "prime"] } as typeof basicSchema.data,
-	basic7: { str: "ggg", num: 700, group: "c", tags: ["odd", "prime"] } as typeof basicSchema.data,
-	basic4: { str: "ddd", num: 400, group: "b", tags: ["even"] } as typeof basicSchema.data,
-	basic1: { str: "aaa", num: 100, group: "a", tags: ["odd", "prime"] } as typeof basicSchema.data,
-	basic2: { str: "bbb", num: 200, group: "a", tags: ["even", "prime"] } as typeof basicSchema.data,
-	basic8: { str: "hhh", num: 800, group: "c", tags: ["even"] } as typeof basicSchema.data,
-	basic6: { str: "fff", num: 600, group: "b", tags: ["even"] } as typeof basicSchema.data,
-	basic9: { str: "iii", num: 900, group: "c", tags: ["odd"] } as typeof basicSchema.data,
+	basic3: { str: "ccc", num: 300, group: "a", tags: ["odd", "prime"] } as typeof basicSchema.type,
+	basic5: { str: "eee", num: 500, group: "b", tags: ["odd", "prime"] } as typeof basicSchema.type,
+	basic7: { str: "ggg", num: 700, group: "c", tags: ["odd", "prime"] } as typeof basicSchema.type,
+	basic4: { str: "ddd", num: 400, group: "b", tags: ["even"] } as typeof basicSchema.type,
+	basic1: { str: "aaa", num: 100, group: "a", tags: ["odd", "prime"] } as typeof basicSchema.type,
+	basic2: { str: "bbb", num: 200, group: "a", tags: ["even", "prime"] } as typeof basicSchema.type,
+	basic8: { str: "hhh", num: 800, group: "c", tags: ["even"] } as typeof basicSchema.type,
+	basic6: { str: "fff", num: 600, group: "b", tags: ["even"] } as typeof basicSchema.type,
+	basic9: { str: "iii", num: 900, group: "c", tags: ["odd"] } as typeof basicSchema.type,
 };
 export const deleteBasics = mapObject(allBasics, undefined);
 
 // People values.
 export const allPeople = {
-	person1: { name: { first: "Dave", last: "Brook" }, birthday: "1985-12-06" } as typeof personSchema.data,
-	person2: { name: { first: "Sally", last: "Callister" }, birthday: "1973-11-19" } as typeof personSchema.data,
-	person3: { name: { first: "Sammy", last: "Canister" }, birthday: null } as typeof personSchema.data,
-	person4: { name: { first: "Jilly", last: "Jones" }, birthday: null } as typeof personSchema.data,
-	person5: { name: { first: "Terry", last: "Times" }, birthday: "1964-08-01" } as typeof personSchema.data,
+	person1: { name: { first: "Dave", last: "Brook" }, birthday: "1985-12-06" } as typeof personSchema.type,
+	person2: { name: { first: "Sally", last: "Callister" }, birthday: "1973-11-19" } as typeof personSchema.type,
+	person3: { name: { first: "Sammy", last: "Canister" }, birthday: null } as typeof personSchema.type,
+	person4: { name: { first: "Jilly", last: "Jones" }, birthday: null } as typeof personSchema.type,
+	person5: { name: { first: "Terry", last: "Times" }, birthday: "1964-08-01" } as typeof personSchema.type,
 };
 export const deletePeople = mapObject(allPeople, undefined);
 

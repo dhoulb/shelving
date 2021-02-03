@@ -27,15 +27,6 @@ export type DataOptions<T extends Data, D extends DataSchemas, C extends DataSch
  * - Has `.partial`, `.change`, `.results`, `.changes` props that create schemas (based off this) that allow `undefined` in the right places.
  */
 export class DataSchema<T extends Data, D extends DataSchemas, C extends DataSchemas> extends ObjectSchema<T> {
-	/**
-	 * Empty data for this schema.
-	 * - Primarily so we can use this as a type, e.g. `typeof schema["data"]`
-	 * - The value returns is the result of validating `this.value`, so it might throw `InvalidFeedback` if fields are missing but required.
-	 */
-	get data(): T {
-		return this.validate(this.value);
-	}
-
 	/** Any nested documents that sit below this data. */
 	readonly documents: D;
 

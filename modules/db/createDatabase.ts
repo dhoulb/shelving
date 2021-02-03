@@ -40,16 +40,16 @@ class Database<D extends DataSchemas, C extends DataSchemas> implements Database
 		this._collections = collections;
 		this._provider = provider;
 	}
-	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["data"], D[K]["documents"], D[K]["collections"]> {
-		return new Document<D[K]["data"], D[K]["documents"], D[K]["collections"]>(this._documents[name], this._provider, DOCUMENT_PATH, name as string);
+	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["type"], D[K]["documents"], D[K]["collections"]> {
+		return new Document<D[K]["type"], D[K]["documents"], D[K]["collections"]>(this._documents[name], this._provider, DOCUMENT_PATH, name as string);
 	}
-	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["data"], C[K]["documents"], C[K]["collections"]> {
-		return new Collection<C[K]["data"], C[K]["documents"], C[K]["collections"]>(this._collections[name], this._provider, name as string);
+	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["type"], C[K]["documents"], C[K]["collections"]> {
+		return new Collection<C[K]["type"], C[K]["documents"], C[K]["collections"]>(this._collections[name], this._provider, name as string);
 	}
-	get documents(): DocumentInterface<D[keyof D]["data"], D[keyof D]["documents"], D[keyof D]["collections"]>[] {
+	get documents(): DocumentInterface<D[keyof D]["type"], D[keyof D]["documents"], D[keyof D]["collections"]>[] {
 		return Object.keys(this._documents).map(name => this.doc(name));
 	}
-	get collections(): CollectionInterface<C[keyof C]["data"], C[keyof C]["documents"], C[keyof C]["collections"]>[] {
+	get collections(): CollectionInterface<C[keyof C]["type"], C[keyof C]["documents"], C[keyof C]["collections"]>[] {
 		return Object.keys(this._collections).map(name => this.collection(name));
 	}
 	clone(): this {
@@ -118,21 +118,21 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		this.parent = parent;
 		this.id = id;
 	}
-	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["data"], D[K]["documents"], D[K]["collections"]> {
-		return new Document<D[K]["data"], D[K]["documents"], D[K]["collections"]>(
+	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["type"], D[K]["documents"], D[K]["collections"]> {
+		return new Document<D[K]["type"], D[K]["documents"], D[K]["collections"]>(
 			this._schema.documents[name],
 			this._provider,
 			`${this.path}/${DOCUMENT_PATH}`,
 			name.toString(),
 		);
 	}
-	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["data"], C[K]["documents"], C[K]["collections"]> {
-		return new Collection<C[K]["data"], C[K]["documents"], C[K]["collections"]>(this._schema.collections[name], this._provider, `${this.path}/${name}`);
+	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["type"], C[K]["documents"], C[K]["collections"]> {
+		return new Collection<C[K]["type"], C[K]["documents"], C[K]["collections"]>(this._schema.collections[name], this._provider, `${this.path}/${name}`);
 	}
-	get documents(): DocumentInterface<D[keyof D]["data"], D[keyof D]["documents"], D[keyof D]["collections"]>[] {
+	get documents(): DocumentInterface<D[keyof D]["type"], D[keyof D]["documents"], D[keyof D]["collections"]>[] {
 		return Object.keys(this._schema.documents).map(name => this.doc(name));
 	}
-	get collections(): CollectionInterface<C[keyof C]["data"], C[keyof C]["documents"], C[keyof C]["collections"]>[] {
+	get collections(): CollectionInterface<C[keyof C]["type"], C[keyof C]["documents"], C[keyof C]["collections"]>[] {
 		return Object.keys(this._schema.collections).map(name => this.collection(name));
 	}
 	get(options: DocumentGetOptions & { required: true }): Promise<T>;
