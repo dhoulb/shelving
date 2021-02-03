@@ -3,19 +3,23 @@ import type { DataSchemas, AnyDataSchema } from "../schema";
 import type { AsyncDispatcher, ErrorDispatcher, UnsubscribeDispatcher } from "../dispatch";
 import type { Entry } from "../entry";
 import type { Queryable, Query } from "../query";
-import type { Reference } from "./Reference";
+import { Cloneable } from "../clone";
+import { ImmutableObject } from "../object";
 import type { Document } from "./Document";
 
 /** A generic collection whose generics are not known. */
 export type AnyCollection = Collection<Data, DataSchemas, DataSchemas>;
 
 /** Get the corresponding collection for a DataSchema. */
-export type DataCollection<S extends AnyDataSchema> = Collection<S["DATA"], S["documents"], S["collections"]>;
+export type CollectionForData<S extends AnyDataSchema> = Collection<S["data"], S["documents"], S["collections"]>;
 
 /**
  * Collection reference: Allows a set of documents in a collection to be read or deleted from a database.
  */
-export interface Collection<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Reference<T>, Queryable<T> {
+export interface Collection<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Queryable<T>, Cloneable {
+	/** Full path to the data (e.g. `dogs/fido`) */
+	readonly path: string;
+
 	/** Query that filters and sorts these documents. */
 	readonly query: Query<T>;
 
@@ -112,6 +116,45 @@ export interface Collection<T extends Data, D extends DataSchemas = DataSchemas,
 	 * - Not called `delete()` because it's trying to be more clear.
 	 */
 	deleteAll(): Promise<Changes<T>>;
+
+	/**
+	 * Validate unknown data and return valid data for this collection.
+	 *
+	 * @param data The (potentially invalid) input data.
+	 * @returns Data object matching this reference's schema.
+	 * - If the input data is already exactly valid, the exact same instance is returned.
+	 * @throws InvalidError If the input data is not valid and cannot be fixed.
+	 */
+	validate(data: ImmutableObject): T;
+
+	/**
+	 * Validate an unknown value and return a valid change for this Collection.
+	 *
+	 * @param change The (potentially invalid) partial data, or `undefined` to indicate a deleted document.
+	 * @returns Change matching this reference's schema.
+	 * - If the input data is already exactly valid, the exact same instance is returned.
+	 * @throws InvalidError If the input change is not valid and cannot be fixed.
+	 */
+	validateChange(change: ImmutableObject | undefined): Change<T>;
+
+	/**
+	 * Validate a set of results to this collection.
+	 *
+	 * @param results An object indexed by ID containing document data.
+	 * @returns The set of results after validation.
+	 */
+	validateResults(results: ImmutableObject): Results<T>;
+
+	/**
+	 * Validate a set of changes to this collection.
+	 *
+	 * @param changes An object indexed by ID containing either partial values to merge in, or `undefined` to indicate the document should be deleted.
+	 * @returns The set of changes after validation.
+	 */
+	validateChanges(changes: ImmutableObject): Changes<T>;
+
+	// Must implement toString()
+	toString(): string;
 
 	// Must implement iterator protocol.
 	[Symbol.iterator](): Generator<[string, T], void, undefined>;

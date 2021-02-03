@@ -1,9 +1,9 @@
 import type { ImmutableObject } from "../object";
-import type { Data, Change, Result } from "../data";
+import type { Data, Change, Result, Results, Changes } from "../data";
 import type { DataSchemas, AnyDataSchema } from "../schema";
 import type { AsyncDispatcher, ErrorDispatcher, UnsubscribeDispatcher } from "../dispatch";
+import type { Cloneable } from "../clone";
 import type { Collection } from "./Collection";
-import type { Reference } from "./Reference";
 
 /** A generic document whose generics are not known. */
 export type AnyDocument = Document<Data, DataSchemas, DataSchemas>;
@@ -29,10 +29,13 @@ export type DocumentSetOptions = {
 };
 
 /** Get Document type for a given DataSchema. */
-export type DataDocument<S extends AnyDataSchema> = Document<S["DATA"], S["documents"], S["collections"]>;
+export type DocumentForData<S extends AnyDataSchema> = Document<S["data"], S["documents"], S["collections"]>;
 
 /** Type for a document instance. */
-export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Reference<T> {
+export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Cloneable {
+	/** Full path to the data (e.g. `dogs/fido`) */
+	readonly path: string;
+
 	/** Path for document's collection. */
 	readonly parent: string;
 
@@ -44,26 +47,26 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * @param name Document name, e.g. `options`
 	 * @example `db.collection("dogs").doc("fido").doc("options").get()`
 	 */
-	doc<K extends keyof D>(name: K): Document<D[K]["DATA"], D[K]["documents"], D[K]["collections"]>;
+	doc<K extends keyof D>(name: K): Document<D[K]["data"], D[K]["documents"], D[K]["collections"]>;
 
 	/**
 	 * Get a `Collection` instance for a named subcollection of this reference.
 	 * @param name Collection name, e.g. `puppies`
 	 * @example `db.collection("dogs").doc("fido").collection("puppies").get()`
 	 */
-	collection<K extends keyof C>(name: K): Collection<C[K]["DATA"], C[K]["documents"], C[K]["collections"]>;
+	collection<K extends keyof C>(name: K): Collection<C[K]["data"], C[K]["documents"], C[K]["collections"]>;
 
 	/**
 	 * Get `Document` refs for all named subdocuments of this document.
 	 * @returns Array of `Document` instances.
 	 */
-	readonly docs: Document<D[string]["DATA"], D[string]["documents"], D[string]["collections"]>[];
+	readonly documents: Document<D[keyof D]["data"], D[keyof D]["documents"], D[keyof D]["collections"]>[];
 
 	/**
 	 * Get `Collection` refs for all named subcollections of this document.
 	 * @returns Array of `Collection` instances.
 	 */
-	readonly collections: Collection<D[string]["DATA"], C[string]["documents"], C[string]["collections"]>[];
+	readonly collections: Collection<C[keyof C]["data"], C[keyof C]["documents"], C[keyof C]["collections"]>[];
 
 	/**
 	 * Get the result of this document.
@@ -138,4 +141,43 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * @returns The change that was made to the document (most likely `undefined`, unless this document's provider has different behaviour).
 	 */
 	delete(): Promise<void>;
+
+	/**
+	 * Validate unknown data and return valid data for this collection.
+	 *
+	 * @param data The (potentially invalid) input data.
+	 * @returns Data object matching this reference's schema.
+	 * - If the input data is already exactly valid, the exact same instance is returned.
+	 * @throws InvalidError If the input data is not valid and cannot be fixed.
+	 */
+	validate(data: ImmutableObject): T;
+
+	/**
+	 * Validate an unknown value and return a valid change for this Collection.
+	 *
+	 * @param change The (potentially invalid) partial data, or `undefined` to indicate a deleted document.
+	 * @returns Change matching this reference's schema.
+	 * - If the input data is already exactly valid, the exact same instance is returned.
+	 * @throws InvalidError If the input change is not valid and cannot be fixed.
+	 */
+	validateChange(change: ImmutableObject | undefined): Change<T>;
+
+	/**
+	 * Validate a set of results to this collection.
+	 *
+	 * @param results An object indexed by ID containing document data.
+	 * @returns The set of results after validation.
+	 */
+	validateResults(results: ImmutableObject): Results<T>;
+
+	/**
+	 * Validate a set of changes to this collection.
+	 *
+	 * @param changes An object indexed by ID containing either partial values to merge in, or `undefined` to indicate the document should be deleted.
+	 * @returns The set of changes after validation.
+	 */
+	validateChanges(changes: ImmutableObject): Changes<T>;
+
+	// Must implement toString()
+	toString(): string;
 }

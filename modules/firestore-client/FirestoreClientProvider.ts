@@ -18,7 +18,6 @@ import {
 	Matcher,
 	convertObject,
 } from "..";
-import { UnsupportedError } from "../errors";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the ID and the entire path of the document. `__id__` is just ID.
@@ -145,10 +144,6 @@ class FirestoreClientProvider implements Provider {
 		}
 
 		return changes;
-	}
-
-	reset(): Promise<void> {
-		throw new UnsupportedError("FirestoreClientProvider.reset(): Firestore database cannot be reset");
 	}
 }
 

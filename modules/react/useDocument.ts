@@ -1,4 +1,4 @@
-import { AsyncDispatcher, Data, ErrorDispatcher, Result, Document, ReferenceRequiredError } from "..";
+import { AsyncDispatcher, Data, ErrorDispatcher, Result, Document, DocumentRequiredError } from "..";
 import { useSource, useLiveSource } from "./useSource";
 
 // Getters.
@@ -33,7 +33,7 @@ export const useDocument = <T extends Data>(document: Document<T> | undefined, m
  */
 export const useDocumentData = <T extends Data>(document: Document<T>, maxAgeSeconds?: number): T => {
 	const result = useDocument(document, maxAgeSeconds);
-	if (!result) throw new ReferenceRequiredError(document);
+	if (!result) throw new DocumentRequiredError(document);
 	return result;
 };
 

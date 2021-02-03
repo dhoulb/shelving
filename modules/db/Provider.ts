@@ -93,12 +93,4 @@ export interface Provider {
 	 * @return Set of changes to merge into the collection.
 	 */
 	mergeCollection<T extends Data>(ref: Collection<T>, changes: Changes<T>): Promise<Changes<T>>;
-
-	/**
-	 * Reset the database to its empty state and destroy all data.
-	 * - Not all databases will support this and should throw an error if necessary.
-	 *
-	 * @return `void` or a `Promise` that resolves when the database has been reset successfully.
-	 */
-	reset(): Promise<void>;
 }

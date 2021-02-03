@@ -8,13 +8,13 @@ import { isFeedback } from "../feedback";
 import { createQuery, Query } from "../query";
 import { Entry } from "../entry";
 import { ArrayType, ImmutableArray } from "../array";
+import { ValidationError } from "../errors";
 import { Document as DocumentInterface, DocumentGetOptions, DocumentSetOptions } from "./Document";
 import { DOCUMENT_PATH } from "./constants";
 import type { Provider } from "./Provider";
 import type { Database as DatabaseInterface } from "./Database";
 import type { Collection as CollectionInterface } from "./Collection";
-import type { Reference as ReferenceInterface } from "./Reference";
-import { ReferenceRequiredError, ReferenceValidationError } from "./errors";
+import { DocumentRequiredError } from "./errors";
 
 /** Options when creating a database instance. */
 type DatabaseCreateOptions<D extends DataSchemas, C extends DataSchemas> = {
@@ -32,67 +32,70 @@ export const createDatabase = <D extends DataSchemas = EmptyObject, C extends Da
 
 // Implement Database.
 class Database<D extends DataSchemas, C extends DataSchemas> implements DatabaseInterface<D, C> {
-	private readonly documents: D;
-	private readonly collections: C;
-	readonly provider: Provider;
+	protected readonly _documents: D;
+	protected readonly _collections: C;
+	protected readonly _provider: Provider;
 	constructor(documents: D, collections: C, provider: Provider) {
-		this.documents = documents;
-		this.collections = collections;
-		this.provider = provider;
+		this._documents = documents;
+		this._collections = collections;
+		this._provider = provider;
 	}
-	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["DATA"], D[K]["documents"], D[K]["collections"]> {
-		return new Document<D[K]["DATA"], D[K]["documents"], D[K]["collections"]>(this.documents[name], this, DOCUMENT_PATH, name as string);
+	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["data"], D[K]["documents"], D[K]["collections"]> {
+		return new Document<D[K]["data"], D[K]["documents"], D[K]["collections"]>(this._documents[name], this._provider, DOCUMENT_PATH, name as string);
 	}
-	collection<K extends keyof C>(name: K): Collection<C[K]["DATA"], C[K]["documents"], C[K]["collections"]> {
-		return new Collection<C[K]["DATA"], C[K]["documents"], C[K]["collections"]>(this.collections[name], this, name as string);
+	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["data"], C[K]["documents"], C[K]["collections"]> {
+		return new Collection<C[K]["data"], C[K]["documents"], C[K]["collections"]>(this._collections[name], this._provider, name as string);
 	}
-	reset(): Promise<void> {
-		return this.provider.reset();
+	get documents(): DocumentInterface<D[keyof D]["data"], D[keyof D]["documents"], D[keyof D]["collections"]>[] {
+		return Object.keys(this._documents).map(name => this.doc(name));
+	}
+	get collections(): CollectionInterface<C[keyof C]["data"], C[keyof C]["documents"], C[keyof C]["collections"]>[] {
+		return Object.keys(this._collections).map(name => this.collection(name));
 	}
 	clone(): this {
 		return cloneObject<this>(this);
 	}
 }
 
-// Implement Reference.
-abstract class Reference<T extends Data, D extends DataSchemas, C extends DataSchemas> implements ReferenceInterface<T> {
-	protected readonly schema: DataSchema<T, D, C>;
-	protected readonly db: DatabaseInterface<DataSchemas, DataSchemas>;
+// Path is a shared base for both Document and Collection that defines a single path in the database.
+abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas> {
+	protected readonly _schema: DataSchema<T, D, C>;
+	protected readonly _provider: Provider;
 	readonly path: string;
-	constructor(schema: DataSchema<T, D, C>, db: DatabaseInterface<DataSchemas, DataSchemas>, path: string) {
-		this.schema = schema;
-		this.db = db;
+	constructor(schema: DataSchema<T, D, C>, provider: Provider, path: string) {
+		this._schema = schema;
+		this._provider = provider;
 		this.path = path;
 	}
 	validate(data: ImmutableObject): T {
 		try {
-			return this.schema.validate(data);
+			return this._schema.validate(data);
 		} catch (thrown: unknown) {
-			if (isFeedback(thrown)) throw new ReferenceValidationError(this, thrown, data);
+			if (isFeedback(thrown)) throw new ValidationError(`Invalid value for: "${this.path}"`, thrown, data);
 			else throw thrown;
 		}
 	}
 	validateChange(change: ImmutableObject | undefined): Change<T> {
 		try {
-			return this.schema.partial.validate(change);
+			return this._schema.partial.validate(change);
 		} catch (thrown: unknown) {
-			if (isFeedback(thrown)) throw new ReferenceValidationError(this, thrown, change);
+			if (isFeedback(thrown)) throw new ValidationError(`Invalid change for: "${this.path}"`, thrown, change);
 			else throw thrown;
 		}
 	}
 	validateResults(results: ImmutableObject): Results<T> {
 		try {
-			return this.schema.results.validate(results);
+			return this._schema.results.validate(results);
 		} catch (thrown: unknown) {
-			if (isFeedback(thrown)) throw new ReferenceValidationError(this, thrown, results);
+			if (isFeedback(thrown)) throw new ValidationError(`Invalid results for: "${this.path}"`, thrown, results);
 			else throw thrown;
 		}
 	}
 	validateChanges(changes: ImmutableObject): Changes<T> {
 		try {
-			return this.schema.changes.validate(changes);
+			return this._schema.changes.validate(changes);
 		} catch (thrown: unknown) {
-			if (isFeedback(thrown)) throw new ReferenceValidationError(this, thrown, changes);
+			if (isFeedback(thrown)) throw new ValidationError(`Invalid changes for: "${this.path}"`, thrown, changes);
 			else throw thrown;
 		}
 	}
@@ -107,36 +110,36 @@ abstract class Reference<T extends Data, D extends DataSchemas, C extends DataSc
 const REQUIRED = { required: true };
 
 // Implement Document.
-class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> extends Reference<T, D, C> implements DocumentInterface<T, D, C> {
+class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> extends Path<T, D, C> implements DocumentInterface<T, D, C> {
 	readonly parent: string;
 	readonly id: string;
-	constructor(locus: DataSchema<T, D, C>, db: DatabaseInterface<DataSchemas, DataSchemas>, parent: string, id: string) {
-		super(locus, db, `${parent}/${id}`);
+	constructor(locus: DataSchema<T, D, C>, provider: Provider, parent: string, id: string) {
+		super(locus, provider, `${parent}/${id}`);
 		this.parent = parent;
 		this.id = id;
 	}
-	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["DATA"], D[K]["documents"], D[K]["collections"]> {
-		return new Document<D[K]["DATA"], D[K]["documents"], D[K]["collections"]>(
-			this.schema.documents[name],
-			this.db,
+	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["data"], D[K]["documents"], D[K]["collections"]> {
+		return new Document<D[K]["data"], D[K]["documents"], D[K]["collections"]>(
+			this._schema.documents[name],
+			this._provider,
 			`${this.path}/${DOCUMENT_PATH}`,
 			name.toString(),
 		);
 	}
-	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["DATA"], C[K]["documents"], C[K]["collections"]> {
-		return new Collection<C[K]["DATA"], C[K]["documents"], C[K]["collections"]>(this.schema.collections[name], this.db, `${this.path}/${name}`);
+	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["data"], C[K]["documents"], C[K]["collections"]> {
+		return new Collection<C[K]["data"], C[K]["documents"], C[K]["collections"]>(this._schema.collections[name], this._provider, `${this.path}/${name}`);
 	}
-	get docs(): DocumentInterface<D[string]["DATA"], D[string]["documents"], D[string]["collections"]>[] {
-		return Object.keys(this.schema.documents).map(name => this.doc(name));
+	get documents(): DocumentInterface<D[keyof D]["data"], D[keyof D]["documents"], D[keyof D]["collections"]>[] {
+		return Object.keys(this._schema.documents).map(name => this.doc(name));
 	}
-	get collections(): CollectionInterface<D[string]["DATA"], C[string]["documents"], C[string]["collections"]>[] {
-		return Object.keys(this.schema.collections).map(name => this.collection(name));
+	get collections(): CollectionInterface<C[keyof C]["data"], C[keyof C]["documents"], C[keyof C]["collections"]>[] {
+		return Object.keys(this._schema.collections).map(name => this.collection(name));
 	}
 	get(options: DocumentGetOptions & { required: true }): Promise<T>;
 	get(options?: DocumentGetOptions): Promise<T>;
 	async get(options?: DocumentGetOptions): Promise<Result<T>> {
-		const result = await this.db.provider.getDocument<T>(this);
-		if (options?.required && !result) throw new ReferenceRequiredError(this);
+		const result = await this._provider.getDocument<T>(this);
+		if (options?.required && !result) throw new DocumentRequiredError(this);
 		return result;
 	}
 	get exists(): Promise<boolean> {
@@ -149,20 +152,20 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		return this.get(REQUIRED);
 	}
 	on(onNext: AsyncDispatcher<Result<T>>, onError: ErrorDispatcher = logError): UnsubscribeDispatcher {
-		return this.db.provider.onDocument<T>(this, r => dispatch(onNext, r, onError), onError);
+		return this._provider.onDocument<T>(this, r => dispatch(onNext, r, onError), onError);
 	}
 	set(change: Change<T>, options: DocumentSetOptions & { merge: true }): Promise<Change<T>>;
-	set(data: ImmutableObject, options: DocumentSetOptions & { validate: false }): Promise<ImmutableObject>;
+	set(data: ImmutableObject, options: DocumentSetOptions & { validate: false }): Promise<Change<T>>;
 	set(data: T, options?: DocumentSetOptions): Promise<Change<T>>;
 	set(input: ImmutableObject, options?: DocumentSetOptions): Promise<Change<T>> {
 		const data: Change<T> = !options?.validate ? (input as Change<T>) : options?.merge ? this.validateChange(input) : this.validate(input);
-		return this.db.provider.mergeDocument<T>(this, data);
+		return this._provider.mergeDocument<T>(this, data);
 	}
 	merge(change: Change<T>): Promise<Change<T>> {
-		return this.db.provider.mergeDocument<T>(this, this.validateChange(change));
+		return this._provider.mergeDocument<T>(this, this.validateChange(change));
 	}
 	delete(): Promise<void> {
-		return this.db.provider.deleteDocument<T>(this);
+		return this._provider.deleteDocument<T>(this);
 	}
 }
 
@@ -170,53 +173,53 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 const EMPTY_QUERY = createQuery<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
 // Implement collection.
-class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> extends Reference<T, D, C> implements CollectionInterface<T, D, C> {
+class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> extends Path<T, D, C> implements CollectionInterface<T, D, C> {
 	readonly query: Query<T> = EMPTY_QUERY;
 	doc(id: string): Document<T, D, C> {
-		return new Document(this.schema, this.db, this.path, id);
+		return new Document(this._schema, this._provider, this.path, id);
 	}
 	add(data: T): Promise<Entry<T>> {
 		const safeData = this.validate(data);
-		return this.db.provider.addDocument<T>(this, safeData);
+		return this._provider.addDocument<T>(this, safeData);
 	}
 	get(): Promise<Results<T>> {
-		return this.db.provider.getCollection<T>(this);
+		return this._provider.getCollection<T>(this);
 	}
 	get results(): Promise<Results<T>> {
-		return this.db.provider.getCollection<T>(this);
+		return this._provider.getCollection<T>(this);
 	}
 	get count(): Promise<number> {
-		return this.db.provider.countCollection<T>(this);
+		return this._provider.countCollection<T>(this);
 	}
 	get ids(): Promise<string[]> {
-		return this.db.provider.getCollection<T>(this).then(Object.keys);
+		return this._provider.getCollection<T>(this).then(Object.keys);
 	}
 	on(onNext: AsyncDispatcher<Results<T>>, onError: ErrorDispatcher = logError): UnsubscribeDispatcher {
-		return this.db.provider.onCollection<T>(this, r => dispatch(onNext, r, onError), onError);
+		return this._provider.onCollection<T>(this, r => dispatch(onNext, r, onError), onError);
 	}
 	get first(): Promise<Entry<T> | undefined> {
-		return this.db.provider.getCollection<T>(this.limit(1)).then(getFirstProp);
+		return this._provider.getCollection<T>(this.limit(1)).then(getFirstProp);
 	}
 	get last(): Promise<Entry<T> | undefined> {
-		return this.db.provider.getCollection<T>(this.limit(1)).then(getLastProp);
+		return this._provider.getCollection<T>(this.limit(1)).then(getLastProp);
 	}
 	set(results: Results<T>): Promise<Changes<T>> {
-		return this.db.provider.mergeCollection<T>(this, this.validateResults(results));
+		return this._provider.mergeCollection<T>(this, this.validateResults(results));
 	}
 	change(changes: Changes<T>): Promise<Changes<T>> {
-		return this.db.provider.mergeCollection<T>(this, this.validateChanges(changes));
+		return this._provider.mergeCollection<T>(this, this.validateChanges(changes));
 	}
 	async setAll(data: T): Promise<Changes<T>> {
-		const changes = mapObject(await this.db.provider.getCollection<T>(this), this.validate(data));
-		return this.db.provider.mergeCollection<T>(this, changes);
+		const changes = mapObject(await this._provider.getCollection<T>(this), this.validate(data));
+		return this._provider.mergeCollection<T>(this, changes);
 	}
 	async mergeAll(change: Change<T>): Promise<Changes<T>> {
-		const changes = mapObject(await this.db.provider.getCollection<T>(this), this.validateChange(change));
-		return this.db.provider.mergeCollection<T>(this, changes);
+		const changes = mapObject(await this._provider.getCollection<T>(this), this.validateChange(change));
+		return this._provider.mergeCollection<T>(this, changes);
 	}
 	async deleteAll(): Promise<Changes<T>> {
-		const changes = mapObject(await this.db.provider.getCollection<T>(this), undefined);
-		return this.db.provider.mergeCollection<T>(this, changes);
+		const changes = mapObject(await this._provider.getCollection<T>(this), undefined);
+		return this._provider.mergeCollection<T>(this, changes);
 	}
 	is<K extends "id" | keyof T>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.is<K>(key, value) };
@@ -252,7 +255,7 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 		return { __proto__: Collection.prototype, ...this, query: this.query.limit(limit) };
 	}
 	*[Symbol.iterator](): Generator<[string, T], void, undefined> {
-		yield* Object.entries(this.db.provider.getCollection<T>(this));
+		yield* Object.entries(this._provider.getCollection<T>(this));
 	}
 	toString(): string {
 		return `${this.path}?${this.query}`;
