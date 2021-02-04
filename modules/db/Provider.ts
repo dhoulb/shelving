@@ -1,5 +1,4 @@
 import type { Change, Changes, Data, Result, Results } from "../data";
-import type { Entry } from "../entry";
 import type { ErrorDispatcher, Dispatcher, UnsubscribeDispatcher } from "../dispatch";
 import type { Document } from "./Document";
 import type { Collection } from "./Collection";
@@ -36,7 +35,7 @@ export interface Provider {
 	 * @param ref Collection specifying which collection to add the document to.
 	 * @return Document that was added (pointer that includes `.id` and `.data` props).
 	 */
-	addDocument<T extends Data>(ref: Collection<T>, data: T): Promise<Entry<T>>;
+	addDocument<T extends Data>(ref: Collection<T>, data: T): Promise<string>;
 
 	/**
 	 * Merge changes into a document.
@@ -47,7 +46,7 @@ export interface Provider {
 	 * @param change The change to update the document (either a diff to update the value, or `undefined` for delete).
 	 * @return The change that was applied to the document (either a diff of what was updated on the value, or `undefined` for deleted), or `undefined` if no change was made.
 	 */
-	mergeDocument<T extends Data>(ref: Document<T>, change: Change<T>): Promise<Change<T>>;
+	mergeDocument<T extends Data>(ref: Document<T>, change: Change<T>): Promise<void>;
 
 	/**
 	 * Delete a document.
@@ -86,11 +85,11 @@ export interface Provider {
 	onCollection<T extends Data>(ref: Collection<T>, onNext: Dispatcher<Results<T>>, onError: ErrorDispatcher): UnsubscribeDispatcher;
 
 	/**
-	 * Merge a set of changes into a collection.
+	 * Change a set of documents in a collection.
 	 *
 	 * @param ref Collection specifying which collection to to merge the changes into.
-	 * @param changes Set of changes to merge into the collection.
+	 * @param changes Set of changes (deletes or merges) to merge into the collection indexed by document ID.
 	 * @return Set of changes to merge into the collection.
 	 */
-	mergeCollection<T extends Data>(ref: Collection<T>, changes: Changes<T>): Promise<Changes<T>>;
+	changeDocuments<T extends Data>(ref: Collection<T>, changes: Changes<T>): Promise<void>;
 }

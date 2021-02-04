@@ -12,12 +12,12 @@ test("MemoryProvider: set/get/delete documents", async () => {
 	const people = db.collection("people");
 
 	// Add documents.
-	expect(() => basics.doc("basic1").set(basic1)).not.toThrow();
-	expect(() => basics.doc("basic2").set(basic2)).not.toThrow();
-	expect(() => basics.doc("basic3").set(basic3)).not.toThrow();
-	expect(() => people.doc("person1").set(person1)).not.toThrow();
-	expect(() => people.doc("person2").set(person2)).not.toThrow();
-	expect(() => people.doc("person3").set(person3)).not.toThrow();
+	expect(await basics.doc("basic1").set(basic1)).toBe(undefined);
+	expect(await basics.doc("basic2").set(basic2)).toBe(undefined);
+	expect(await basics.doc("basic3").set(basic3)).toBe(undefined);
+	expect(await people.doc("person1").set(person1)).toBe(undefined);
+	expect(await people.doc("person2").set(person2)).toBe(undefined);
+	expect(await people.doc("person3").set(person3)).toBe(undefined);
 	// Check documents.
 	expect(await basics.doc("basic1").result).toBe(basic1);
 	expect(await basics.doc("basic2").result).toBe(basic2);
@@ -30,17 +30,15 @@ test("MemoryProvider: set/get/delete documents", async () => {
 	expect(await people.doc("peopleNone").result).toBe(undefined);
 	expect(await people.count).toBe(3);
 	// Merge documents.
-	expect(await basics.doc("basic1").merge({ str: "NEW" })).toMatchObject({ str: "NEW" });
+	expect(await basics.doc("basic1").merge({ str: "NEW" })).toBe(undefined);
 	expect(await basics.doc("basic1").result).toMatchObject({ ...basic1, str: "NEW" });
-	expect(await people.doc("person3").merge({ name: { first: "NEW" } })).toMatchObject({ name: { first: "NEW" } });
+	expect(await people.doc("person3").merge({ name: { first: "NEW" } })).toBe(undefined);
 	expect(await people.doc("person3").result).toMatchObject({ ...person3, name: { ...person3.name, first: "NEW" } });
 	// Add new documents (with random IDs).
-	const [addedBasicId, addedBasicValue] = await basics.add(basic9);
+	const addedBasicId = await basics.add(basic9);
 	expect(typeof addedBasicId).toBe("string");
-	expect(addedBasicValue).toBe(basic9);
-	const [addedPersonId, addedPersonValue] = await people.add(person5);
+	const addedPersonId = await people.add(person5);
 	expect(typeof addedPersonId).toBe("string");
-	expect(addedPersonValue).toBe(person5);
 	// Delete documents.
 	expect(await basics.doc("basic2").delete()).toBe(undefined);
 	expect(await basics.count).toBe(3);
@@ -67,8 +65,8 @@ test("MemoryProvider: set/get/delete collections", async () => {
 	expect(await people.doc("person4").result).toEqual(person4);
 	expect(await people.doc("peopleNone").result).toBe(undefined);
 	// Delete collections.
-	expect(await basics.deleteAll()).toEqual(deleteBasics);
-	expect(await people.deleteAll()).toEqual(deletePeople);
+	expect(await basics.deleteAll()).toBe(undefined);
+	expect(await people.deleteAll()).toBe(undefined);
 	// Check collections.
 	expect(await people.results).toEqual({});
 	expect(await basics.results).toEqual({});
@@ -158,7 +156,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(1, {}); // Empty at first (no last argument).
 	// Add id1.
-	const [id1] = await collection.add(basic1);
+	const id1 = await collection.add(basic1);
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(2, { [id1]: basic1 }); // id1 is added.
 	// Subscribe.

@@ -3,7 +3,6 @@
 import type { Collection, Document, Provider } from "../db";
 import { randomId } from "../random";
 import type { Changes, Data, Result, Results, Change } from "../data";
-import type { Entry } from "../entry";
 import { Dispatcher, UnsubscribeDispatcher } from "../dispatch";
 import { MutableObject, objectFromEntries } from "../object";
 import { deepMergeObject } from "../merge";
@@ -89,17 +88,16 @@ class MemoryProvider implements Provider {
 		});
 	}
 
-	async addDocument<T extends Data>({ path }: Collection<T>, data: T): Promise<Entry<T>> {
+	async addDocument<T extends Data>({ path }: Collection<T>, data: T): Promise<string> {
 		const id = this.randomId(path);
 		this._changeDocument(path, id, data);
 		this._subs[path]?.fire([id]);
-		return [id, data];
+		return id;
 	}
 
-	async mergeDocument<T extends Data>({ parent, id }: Document<T>, change: Change<T>): Promise<Change<T>> {
+	async mergeDocument<T extends Data>({ parent, id }: Document<T>, change: Change<T>): Promise<void> {
 		const changed = this._changeDocument(parent, id, change);
 		if (changed) this._subs[parent]?.fire([id]);
-		return change;
 	}
 
 	async deleteDocument<T extends Data>({ parent, id }: Document<T>): Promise<void> {
@@ -170,17 +168,10 @@ class MemoryProvider implements Provider {
 		});
 	}
 
-	async mergeCollection<T extends Data>({ path }: Collection<T>, changes: Changes<T>): Promise<Changes<T>> {
-		let changed = false;
-		const appliedChanges: { [id: string]: Change<T> | undefined } = {};
-		for (const [id, change] of Object.entries(changes)) {
-			if (this._changeDocument<T>(path, id, change)) {
-				appliedChanges[id] = change;
-				changed = true;
-			}
-		}
-		if (changed) this._subs[path]?.fire(Object.keys(appliedChanges));
-		return appliedChanges;
+	async changeDocuments<T extends Data>({ path }: Collection<T>, changes: Changes<T>): Promise<void> {
+		const applied: string[] = [];
+		for (const [id, change] of Object.entries(changes)) if (this._changeDocument<T>(path, id, change)) applied.push(id);
+		if (applied.length) this._subs[path]?.fire(applied);
 	}
 
 	async reset(): Promise<void> {

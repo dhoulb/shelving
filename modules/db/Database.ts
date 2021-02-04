@@ -13,6 +13,12 @@ export type AnyDatabase = Database<DataSchemas, DataSchemas>;
  * @param provider Provider that allows data to be read/written.
  */
 export interface Database<D extends DataSchemas, C extends DataSchemas> {
+	/** Any nested documents that sit below this data. */
+	readonly documents: D;
+
+	/** Any nested collections that sit below this data. */
+	readonly collections: C;
+
 	/**
 	 * Get a `Document` ref for a named subdocument of this document.
 	 * @param name Document name, e.g. `options`

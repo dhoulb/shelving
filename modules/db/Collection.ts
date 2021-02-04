@@ -1,5 +1,5 @@
 import type { Changes, Data, Change, Results } from "../data";
-import type { DataSchemas, AnyDataSchema } from "../schema";
+import type { DataSchemas, AnyDataSchema, DataSchema } from "../schema";
 import type { AsyncDispatcher, ErrorDispatcher, UnsubscribeDispatcher } from "../dispatch";
 import type { Entry } from "../entry";
 import type { Queryable, Query } from "../query";
@@ -10,6 +10,12 @@ import type { Document } from "./Document";
 /** A generic collection whose generics are not known. */
 export type AnyCollection = Collection<Data, DataSchemas, DataSchemas>;
 
+/** Options that modify a delete operation. */
+export type CollectionDeleteOptions = {
+	/** Whether to delete this document and all its children (defaults to false). */
+	deep?: boolean;
+};
+
 /** Get a `Collection` for a `DataSchema`. */
 export type SchemaCollection<S extends AnyDataSchema> = Collection<S["type"], S["documents"], S["collections"]>;
 
@@ -17,6 +23,9 @@ export type SchemaCollection<S extends AnyDataSchema> = Collection<S["type"], S[
  * Collection reference: Allows a set of documents in a collection to be read or deleted from a database.
  */
 export interface Collection<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Queryable<T>, Cloneable {
+	/** Data schema that validates this document. */
+	readonly schema: DataSchema<T, D, C>;
+
 	/** Full path to the data (e.g. `dogs/fido`) */
 	readonly path: string;
 
@@ -34,7 +43,7 @@ export interface Collection<T extends Data, D extends DataSchemas = DataSchemas,
 	 * Create a new document (with a random ID).
 	 * Input data must be valid according's schema or error will be thrown.
 	 */
-	add(data: T): Promise<Entry<T>>;
+	add(data: T): Promise<string>;
 
 	/**
 	 * Get the set of results.
@@ -81,7 +90,7 @@ export interface Collection<T extends Data, D extends DataSchemas = DataSchemas,
 	 * @param results An object indexed by ID containing either partial data to merge in, or `undefined` to indicate the document should be deleted.
 	 * @returns The set of changes after validation.
 	 */
-	set(results: Results<T>): Promise<Changes<T>>;
+	set(results: Results<T>): Promise<void>;
 
 	/**
 	 * Apply a set of changes.
@@ -93,29 +102,29 @@ export interface Collection<T extends Data, D extends DataSchemas = DataSchemas,
 	 * @param changes An object indexed by ID containing either partial data to merge in, or `undefined` to indicate the document should be deleted.
 	 * @returns The set of changes after validation.
 	 */
-	change(changes: Changes<T>): Promise<Changes<T>>;
+	change(changes: Changes<T>): Promise<void>;
 
 	/**
 	 * Set a complete set of data on all matched documents.
 	 * - All documents matched by the current query will have their data set to `data`
 	 * - Subscriptions are only fired once after all changes are made.
 	 */
-	setAll(data: T): Promise<Changes<T>>;
+	setAll(data: T): Promise<void>;
 
 	/**
 	 * Merge a single set of data into all matched documents.
 	 * - All documents matched by the current query will have `partial` merged into their data.
 	 * - Subscriptions are only fired once after all changes are made.
 	 */
-	mergeAll(change: Change<T>): Promise<Changes<T>>;
+	mergeAll(change: Change<T>): Promise<void>;
 
 	/**
 	 * Delete all matched documents.
 	 * - All documents matched by the current query will be deleted.
 	 * - Subscriptions are only fired once after all changes are made.
-	 * - Not called `delete()` because it's trying to be more clear.
+	 * - Not called `delete()` so it's harder to delete everything.
 	 */
-	deleteAll(): Promise<Changes<T>>;
+	deleteAll(options?: CollectionDeleteOptions): Promise<void>;
 
 	/**
 	 * Validate unknown data and return valid data for this collection.

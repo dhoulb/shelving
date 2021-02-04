@@ -2,7 +2,6 @@ import admin from "firebase-admin";
 import {
 	Dispatcher,
 	ErrorDispatcher,
-	Entry,
 	arrayChunk,
 	isObject,
 	MutableObject,
@@ -87,14 +86,13 @@ class FirestoreServerProvider implements Provider {
 		return this.firestore.doc(ref.path).onSnapshot(s => onNext(documentResult(ref, s)), onError);
 	}
 
-	async addDocument<T extends Data>(ref: Collection<T>, data: T): Promise<Entry<T>> {
+	async addDocument<T extends Data>(ref: Collection<T>, data: T): Promise<string> {
 		const { id } = await this.firestore.collection(ref.path).add(data);
-		return [id, data];
+		return id;
 	}
 
-	async mergeDocument<T extends Data>(ref: Document<T>, change: Change<T>): Promise<Change<T>> {
+	async mergeDocument<T extends Data>(ref: Document<T>, change: Change<T>): Promise<void> {
 		await this.firestore.doc(ref.path).set(convertObject(change, mapSentinels), { merge: true });
-		return change;
 	}
 
 	async deleteDocument<T extends Data>(ref: Document<T>): Promise<void> {
@@ -125,12 +123,10 @@ class FirestoreServerProvider implements Provider {
 		}, onError);
 	}
 
-	async mergeCollection<T extends Data>(ref: Collection<T>, changes: Changes<T>): Promise<Changes<T>> {
-		const entries = Object.entries(changes);
-		if (!entries.length) return changes;
-
+	async changeDocuments<T extends Data>(ref: Collection<T>, changes: Changes<T>): Promise<void> {
 		// Chunk into batches of sets/deletes and commit each batch in order.
 		// Don't commit the batches in parallel or you'll overwhelm the pipe.
+		const entries = Object.entries(changes);
 		const chunks = arrayChunk(entries, BATCH);
 		for (const chunk of chunks) {
 			const batch = this.firestore.batch();
@@ -141,8 +137,6 @@ class FirestoreServerProvider implements Provider {
 			}
 			await batch.commit();
 		}
-
-		return changes;
 	}
 }
 

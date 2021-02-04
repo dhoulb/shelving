@@ -1,6 +1,6 @@
 import type { ImmutableObject } from "../object";
 import type { Data, Change, Result, Results, Changes } from "../data";
-import type { DataSchemas, AnyDataSchema } from "../schema";
+import type { DataSchemas, AnyDataSchema, DataSchema } from "../schema";
 import type { AsyncDispatcher, ErrorDispatcher, UnsubscribeDispatcher } from "../dispatch";
 import type { Cloneable } from "../clone";
 import type { Collection } from "./Collection";
@@ -28,11 +28,20 @@ export type DocumentSetOptions = {
 	merge?: boolean;
 };
 
+/** Options that modify a delete operation. */
+export type DocumentDeleteOptions = {
+	/** Whether to delete this document and all its children (defaults to false). */
+	deep?: boolean;
+};
+
 /** Get a `Document` for a given `DataSchema`. */
 export type SchemaDocument<S extends AnyDataSchema> = Document<S["type"], S["documents"], S["collections"]>;
 
 /** Type for a document instance. */
 export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Cloneable {
+	/** Data schema that validates this document. */
+	readonly schema: DataSchema<T, D, C>;
+
 	/** Full path to the data (e.g. `dogs/fido`) */
 	readonly path: string;
 
@@ -55,18 +64,6 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * @example `db.collection("dogs").doc("fido").collection("puppies").get()`
 	 */
 	collection<K extends keyof C>(name: K): Collection<C[K]["type"], C[K]["documents"], C[K]["collections"]>;
-
-	/**
-	 * Get `Document` refs for all named subdocuments of this document.
-	 * @returns Array of `Document` instances.
-	 */
-	readonly documents: Document<D[keyof D]["type"], D[keyof D]["documents"], D[keyof D]["collections"]>[];
-
-	/**
-	 * Get `Collection` refs for all named subcollections of this document.
-	 * @returns Array of `Collection` instances.
-	 */
-	readonly collections: Collection<C[keyof C]["type"], C[keyof C]["documents"], C[keyof C]["collections"]>[];
 
 	/**
 	 * Get the result of this document.
@@ -120,9 +117,9 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * @param data The (potentially invalid) input value.
 	 * @returns The change that was made to the document (most likely the value that was passed in (after validation), unless this document's provider has different behaviour).
 	 */
-	set(change: Change<T>, options: DocumentSetOptions & { merge: true }): Promise<Change<T>>;
-	set(data: ImmutableObject, options: DocumentSetOptions & { validate: false }): Promise<Change<T>>;
-	set(data: T, options?: DocumentSetOptions): Promise<Change<T>>;
+	set(change: Change<T>, options: DocumentSetOptions & { merge: true }): Promise<void>;
+	set(data: ImmutableObject, options: DocumentSetOptions & { validate: false }): Promise<void>;
+	set(data: T, options?: DocumentSetOptions): Promise<void>;
 
 	/**
 	 * Merge a partial value into an existing document.
@@ -134,13 +131,13 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * @param change The (potentially invalid) partial input value.
 	 * @returns The change that was made to the document (most likely the value that was passed in (after validation), unless this document's provider has different behaviour).
 	 */
-	merge(change: Change<T>): Promise<Change<T>>;
+	merge(change: Change<T>): Promise<void>;
 
 	/**
 	 * Delete an existing document.
 	 * @returns The change that was made to the document (most likely `undefined`, unless this document's provider has different behaviour).
 	 */
-	delete(): Promise<void>;
+	delete(options?: DocumentDeleteOptions): Promise<void>;
 
 	/**
 	 * Validate unknown data and return valid data for this collection.
