@@ -1,3 +1,4 @@
+import { Dependencies } from "../array";
 import { Validator } from "../schema";
 
 /**
@@ -13,7 +14,16 @@ import { Validator } from "../schema";
 export interface Resource<P, R> {
 	readonly payload: Validator<P>;
 	readonly result: Validator<R>;
+	resolve<D extends Dependencies>(resolver: ResourceResolver<P, unknown, D>, payload: unknown, ...deps: D): Promise<R>;
 }
 
-export type PayloadType<R extends Resource<unknown, unknown>> = ReturnType<R["payload"]["validate"]>;
-export type ResultType<R extends Resource<unknown, unknown>> = ReturnType<R["result"]["validate"]>;
+export type ResourcePayloadType<R extends Resource<unknown, unknown>> = ReturnType<R["payload"]["validate"]>;
+export type ResourceResultType<R extends Resource<unknown, unknown>> = ReturnType<R["result"]["validate"]>;
+
+/**
+ * Function that resolves a resource by dispatching its payload and return its return type.
+ * @param payload The payload for the resource.
+ * @param deps Any additional arguments you want to pass into the resolver.
+ * @param result THe result of the resource.
+ */
+export type ResourceResolver<P, R, D extends Dependencies> = (payload: P, ...deps: D) => R;
