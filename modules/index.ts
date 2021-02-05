@@ -24,6 +24,7 @@ export * from "./object";
 export * from "./url";
 
 // General helpers.
+export * from "./api";
 export * from "./assert";
 export * from "./clone";
 export * from "./console";
