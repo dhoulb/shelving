@@ -11,6 +11,9 @@ import { logError } from "../console";
  */
 export type Dispatcher<T> = (value: T) => void;
 
+/** Type of Dispatcher that takes no value. */
+export type EmptyDispatcher = () => void;
+
 /**
  * Unhandled dispatcher: a type of function that dispatches a value but might throw or return a rejecting promise.
  * - We never care about the returned value of a dispatcher.
@@ -19,6 +22,9 @@ export type Dispatcher<T> = (value: T) => void;
  * - Returns `Promise<unknown>` to ensure the return type is handled.
  */
 export type AsyncDispatcher<T> = (value: T) => void | Promise<void>;
+
+/** Type of Dispatcher that takes no value but might throw or return a rejecting promise. */
+export type EmptyAsyncDispatcher = () => void | Promise<void>;
 
 /**
  * UnsubscribeDispatcher: a function that unsubscribes from a value.
