@@ -238,3 +238,15 @@ export const deleteItem = <T>(arr: Array<T>, value: T): void => {
 		i = arr.indexOf(value, i);
 	}
 };
+
+/**
+ * Merge two arrays.
+ * - If both arrays have length, they will be merged.
+ * - If left array is empty, exact right array will be returned.
+ * - If right array is empty, exact left array will be returned.
+ */
+export const mergeArrays = <T>(left: ImmutableArray<T>, right: ImmutableArray<T>): ImmutableArray<T> => {
+	if (!left.length) return right;
+	if (!right.length) return left;
+	return [...left, ...right];
+};
