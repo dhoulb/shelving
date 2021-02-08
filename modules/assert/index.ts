@@ -39,6 +39,12 @@ export function assertArray<T extends unknown[] | readonly unknown[]>(value: T |
 	if (!isArray(value)) throw new AssertionError(`Must be array`, value);
 }
 
+/** Assert that a value has a specific length (or length is in a specific range). */
+export function assertLength<T extends { length: number }>(value: T | unknown, min: number, max = min): asserts value is T {
+	if (!isObject(value) || typeof value.length !== "number" || value.length < min || value.length > max)
+		throw new AssertionError(`Must have length ${min}–${max}`, value);
+}
+
 /** Assert that a value is an instance of something. */
 export function assertInstance<O>(value: O | unknown, constructor: Constructor<O>): asserts value is O {
 	if (!(value instanceof constructor)) throw new AssertionError(`Must be instance of ${debug(constructor)}`, value);
