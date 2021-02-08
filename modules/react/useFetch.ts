@@ -11,7 +11,7 @@ import { SourceFetcher, useSource } from "./useSource";
  * @param maxAgeSeconds How 'out of date' data is allowed to be before it'll be refetched.
  */
 export function useFetch<T, D extends Dependencies>(fetch: (...deps: D) => T | Promise<T>, deps: D, maxAgeSeconds?: number): T;
-export function useFetch<T, D extends Dependencies>(fetch: T, deps: D, maxAgeSeconds?: number): T;
+export function useFetch<T, D extends Dependencies>(fetch: T | Promise<T>, deps: D, maxAgeSeconds?: number): T;
 export function useFetch<T, D extends Dependencies>(fetch: SourceFetcher<T, D>, deps: D, maxAgeSeconds?: number): T;
 export function useFetch<T, D extends Dependencies>(fetch: SourceFetcher<T, D>, deps: D, maxAgeSeconds?: number): T {
 	const source = useSource<T>(`${fingerprint(fetch)}: ${fingerprint(deps)}`);

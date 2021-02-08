@@ -16,7 +16,7 @@ import { useState } from "./useState";
 export type SourceSubscriber<T, D extends Dependencies> = (onNext: AsyncDispatcher<T>, onError: ErrorDispatcher, ...deps: D) => UnsubscribeDispatcher;
 
 /** Function that can fetch a value (possibly asyncronously). */
-export type SourceFetcher<T, D extends Dependencies> = T | ((...deps: D) => T | Promise<T>);
+export type SourceFetcher<T, D extends Dependencies> = T | Promise<T> | ((...deps: D) => T | Promise<T>);
 
 /** Default max age for data. */
 const MAX_AGE_SECONDS = 60;
