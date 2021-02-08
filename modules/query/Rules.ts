@@ -18,6 +18,9 @@ export abstract class Rules<D extends Data, C extends Rule<D>> extends Rule<D> {
 	get last(): C | undefined {
 		return this.rules[this.rules.length - 1];
 	}
+	get length(): number {
+		return this.rules.length;
+	}
 
 	constructor(rules: C[] = []) {
 		super();
