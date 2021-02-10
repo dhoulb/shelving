@@ -31,8 +31,11 @@ import { assertArray, assertObject } from "../assert";
  * - Once a state has loaded once it cannot be set back to loading again.
  */
 export class State<T> extends Event<T> {
-	/** Current internal state. */
-	protected _value: Promise<T> | T;
+	/** Current value. */
+	protected _value: T | Promise<T>;
+
+	/** Last fired value. */
+	protected _fired: T | Promise<T>;
 
 	/**
 	 * Detect whether this state is loading (i.e. its internal value is a `Promise`).
@@ -64,30 +67,38 @@ export class State<T> extends Event<T> {
 	constructor(initial: Promise<T> | T | typeof LOADING) {
 		super();
 
-		// What is initial value?
+		// If initial is a promise, set value of this state when it resolves.
 		if (initial instanceof Promise) {
-			// Promise value: when it resolves, set this value.
-			initial.then(v => this.set(v), logError);
-		} else if (initial !== LOADING) {
-			// Normal value: set it now.
-			this._value = initial;
-			return;
+			initial.then(v => {
+				// Only if the value of this State hasn't already changed.
+				// No need to fire listeners for the initial value.
+				if (this._value === initial) {
+					this._value = v;
+					this._fired = v;
+				}
+			}, logError);
 		}
 
-		// If initial was a Promise or LOADING, set value to a Promise that resolves on the first non-promised value.
-		this._value = new Promise<T>(r => void this.one(r));
+		// Save value (if value is LOADING, set value to a self-initialised Promise).
+		this._value = initial === LOADING ? new Promise<T>(r => void this.one(r)) : initial;
+		this._fired = this._value;
 	}
 
 	/**
 	 * Override the `fire` function to check the value, save the value, and ignore the value if it's a `Promise`.
-	 * - We keep this `fire()` protected and expose `set()` because that name makes more sense for a state.
+	 * - Multiple state updates in a single tick will only fire event listeners once (at the end of the tick).
+	 * - Only fires the listeners if the value has changed.
 	 */
 	fire(value: T): void {
-		if (this._value !== value) {
-			this._value = value;
-			super.fire(value);
-		}
+		this._value = value;
+		Promise.resolve().then(this._fire, logError);
 	}
+	private _fire = (): void => {
+		if (!(this._value instanceof Promise) && this._fired !== this._value) {
+			this._fired = this._value;
+			super.fire(this._value);
+		}
+	};
 
 	/**
 	 * Set a new value for this value.
@@ -158,9 +169,20 @@ export class State<T> extends Event<T> {
 	 * @returns New `State` instance derived from this one.
 	 */
 	derive<U>(derive: (value: T) => Promise<U> | U): State<U> {
-		const state = new State<U>(this._value instanceof Promise ? this._value.then(v => derive(v)) : derive(this._value));
+		const state = new State<U>(this._value instanceof Promise ? this.then(derive) : derive(this._value));
 		this.on(v => state.set(derive(v)));
 		return state;
+	}
+
+	/**
+	 * Thenable implementation.
+	 * - You can `await` this state to get its current value.
+	 * - If the current value is still loading this will resolve when it resolves.
+	 * - Otherwise this will resolve immediately.
+	 */
+	then<U, V = never>(onNext?: (value: T) => Promise<U> | U, onError?: () => V): Promise<U | V> {
+		const promise = this._value instanceof Promise ? new Promise<T>(r => void this.one(r)) : Promise.resolve(this._value);
+		return promise.then(onNext, onError);
 	}
 }
 

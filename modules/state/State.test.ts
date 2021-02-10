@@ -1,6 +1,9 @@
 import { RequiredError, LOADING, NOFUNC, State } from "..";
+import { createState } from "./State";
 
-test("State() with initial value", () => {
+const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
+
+test("State() with initial value", async () => {
 	const state = new State<number>(111);
 	expect(state).toBeInstanceOf(State);
 	expect(state.value).toBe(111);
@@ -17,19 +20,35 @@ test("State() with initial value", () => {
 	// Set new value.
 	expect(state.set(222)).toBe(undefined);
 	expect(state.value).toBe(222);
+	await microtasks();
 	// Set new value.
 	expect(state.set(333)).toBe(undefined);
 	expect(state.value).toBe(333);
+	await microtasks();
 	// Set same value again (doesn't fire again).
 	expect(state.set(333)).toBe(undefined);
 	expect(state.value).toBe(333);
+	await microtasks();
 	// Checks.
 	expect(fn1.mock.calls).toEqual([[222], [333]]);
 	expect(fn2.mock.calls).toEqual([[222]]);
 	expect(fn3.mock.calls).toEqual([[222], [333]]);
 	expect(fn4.mock.calls).toEqual([[222]]);
 });
-test("State() data value throws if undefined", () => {
+test("State() multiple updates in one tick only call listeners once", async () => {
+	const state = new State<number>(111);
+	const fn1 = jest.fn();
+	state.on(fn1);
+	// Set several times synchronously.
+	state.set(222);
+	state.set(333);
+	state.set(444);
+	state.set(555);
+	await microtasks();
+	// Checks.
+	expect(fn1.mock.calls).toEqual([[555]]);
+});
+test("State() data value throws if undefined", async () => {
 	const state = new State<number | undefined>(undefined);
 	expect(state).toBeInstanceOf(State);
 	expect(state.value).toBe(undefined);
@@ -42,15 +61,17 @@ test("State() data value throws if undefined", () => {
 	expect(state.set(123)).toBe(undefined);
 	expect(state.value).toBe(123);
 	expect(state.data).toBe(123);
+	await microtasks();
 	// Set undefined value.
 	expect(state.set(undefined)).toBe(undefined);
 	expect(state.value).toBe(undefined);
 	expect(() => state.data).toThrow(RequiredError);
 	expect(() => state.data).toThrow(new RequiredError("State.data: State data does not exist"));
+	await microtasks();
 	// Checks.
 	expect(fn1.mock.calls).toEqual([[123], [undefined]]);
 });
-test("State() updating works correctly", () => {
+test("State() updating works correctly", async () => {
 	const state = new State<{ a: number; b: number }>({ a: 1, b: 2 });
 	expect(state).toBeInstanceOf(State);
 	expect(state.value).toEqual({ a: 1, b: 2 });
@@ -62,11 +83,12 @@ test("State() updating works correctly", () => {
 	// Merge.
 	expect(state.update({ a: 111 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: 2 });
+	await microtasks();
 	// Checks.
 	expect(fn1.mock.calls).toEqual([[{ a: 111, b: 2 }]]);
 	expect(fn2.mock.calls).toEqual([[{ a: 111, b: 2 }]]);
 });
-test("State() array with initial value", () => {
+test("State() array with initial value", async () => {
 	const state = new State<number[]>([1, 2, 3]);
 	expect(state).toBeInstanceOf(State);
 	expect(state.value).toEqual([1, 2, 3]);
@@ -83,9 +105,11 @@ test("State() array with initial value", () => {
 	// Add.
 	expect(state.add(4)).toBe(undefined);
 	expect(state.value).toEqual([1, 2, 3, 4]);
+	await microtasks();
 	// Remove.
 	expect(state.remove(2)).toBe(undefined);
 	expect(state.value).toEqual([1, 3, 4]);
+	await microtasks();
 	// Has.
 	expect(state.value.includes(1)).toBe(true);
 	expect(state.value.includes(2)).toBe(false);
@@ -117,11 +141,10 @@ test("State() initial LOADING", async () => {
 		thrown.then(fn3);
 	}
 	expect(state.set(123)).toBe(undefined);
-	await Promise.resolve();
-	await Promise.resolve();
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(123);
 	expect(state.data).toBe(123);
+	await microtasks();
 	expect(fn1.mock.calls).toEqual([[123]]);
 	expect(fn2.mock.calls).toEqual([[123]]);
 	expect(fn3.mock.calls).toEqual([[123]]);
@@ -150,12 +173,12 @@ test("State() initial promise", async () => {
 		thrown.then(fn3);
 	}
 	expect(resolve(123)).toBe(undefined);
-	await Promise.resolve(); // Wait for Promise queue to finish.
-	await Promise.resolve();
+	await microtasks();
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(123);
 	expect(state.data).toBe(123);
-	expect(fn1.mock.calls).toEqual([[123]]);
+	await microtasks();
+	expect(fn1.mock.calls).toEqual([]); // Listeners are not called for initial value.
 	expect(fn2.mock.calls).toEqual([[123]]);
 	expect(fn3.mock.calls).toEqual([[123]]);
 });
@@ -167,22 +190,29 @@ test("State() promise in set", async () => {
 	expect(state.value).toBe(111);
 	expect(state.data).toBe(111);
 	expect(state.set(Promise.resolve(222))).toBe(undefined);
-	await Promise.resolve(); // Wait for Promise queue to finish.
+	await microtasks();
 	expect(state.value).toBe(222);
 	expect(state.data).toBe(222);
+	await microtasks();
 	expect(fn1.mock.calls).toEqual([[222]]);
 });
-test("State() derived state", () => {
+test("State() derived state", async () => {
 	const state = new State<number>(10);
 	const derived = state.derive(num => num * num);
 	expect(derived.value).toBe(100);
 	const fn1 = jest.fn();
 	derived.on(fn1);
 	expect(state.set(2)).toBe(undefined);
+	expect(state.value).toBe(2);
+	await microtasks();
 	expect(derived.value).toBe(4);
 	expect(state.set(3)).toBe(undefined);
+	expect(state.value).toBe(3);
+	await microtasks();
 	expect(derived.value).toBe(9);
 	expect(state.set(4)).toBe(undefined);
+	expect(state.value).toBe(4);
+	await microtasks();
 	expect(derived.value).toBe(16);
 	expect(fn1.mock.calls).toEqual([[4], [9], [16]]);
 });
@@ -190,23 +220,25 @@ test("State() derived async state", async () => {
 	const state = new State<number>(10);
 	const derived = state.derive(async num => num * (await Promise.resolve(num)));
 	expect(derived.loading).toBe(true);
-	await Promise.resolve(); // Wait for Promise queue to finish.
-	await Promise.resolve(); // Wait for Promise queue to finish.
+	expect(() => derived.value).toThrow(Promise);
+	await microtasks();
 	expect(derived.loading).toBe(false);
 	expect(derived.value).toBe(100);
 	const fn1 = jest.fn();
 	derived.on(fn1);
 	expect(state.set(2)).toBe(undefined);
-	await Promise.resolve(); // Wait for Promise queue to finish.
-	await Promise.resolve(); // Wait for Promise queue to finish.
+	await microtasks();
 	expect(derived.value).toBe(4);
 	expect(state.set(3)).toBe(undefined);
-	await Promise.resolve(); // Wait for Promise queue to finish.
-	await Promise.resolve(); // Wait for Promise queue to finish.
+	await microtasks();
 	expect(derived.value).toBe(9);
 	expect(state.set(4)).toBe(undefined);
-	await Promise.resolve(); // Wait for Promise queue to finish.
-	await Promise.resolve(); // Wait for Promise queue to finish.
+	await microtasks();
 	expect(derived.value).toBe(16);
 	expect(fn1.mock.calls).toEqual([[4], [9], [16]]);
+});
+test("State() thenable", async () => {
+	const state = createState<number>(LOADING);
+	setTimeout(() => state.set(123), 50);
+	expect(await state).toBe(123);
 });
