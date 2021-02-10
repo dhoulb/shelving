@@ -34,6 +34,11 @@ export function assertObject<T extends ImmutableObject>(value: T | unknown): ass
 	if (!isObject(value)) throw new AssertionError(`Must be object`, value);
 }
 
+/** Assert that a value is an object with a specific property. */
+export function assertProp<K extends string | number | symbol, T extends { [L in K]: unknown }>(value: T | unknown, key: K): asserts value is T {
+	if (!isObject(value) || !(key in value)) throw new AssertionError(`Must have prop "${key}"`, value);
+}
+
 /** Assert that a value is an array. */
 export function assertArray<T extends unknown[] | readonly unknown[]>(value: T | unknown): asserts value is T {
 	if (!isArray(value)) throw new AssertionError(`Must be array`, value);
