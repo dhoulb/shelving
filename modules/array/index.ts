@@ -87,12 +87,12 @@ export const toggleItem = <T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T
 };
 
 /**
- * Replace all instances of an item from an array.
+ * Swap all instances of an item from an array.
  *
  * @return New array with or without the specified item.
  * - If the item does not already exist in the array (using `indexOf()`) then the exact same input array will be returned.
  */
-export const replaceItem = <T>(arr: ImmutableArray<T>, oldItem: T, newItem: T): ImmutableArray<T> => {
+export const swapItem = <T>(arr: ImmutableArray<T>, oldItem: T, newItem: T): ImmutableArray<T> => {
 	let i = arr.indexOf(oldItem);
 	if (i < 0) return arr;
 	const output = arr.slice();
