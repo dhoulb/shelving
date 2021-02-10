@@ -1,4 +1,3 @@
-import { DeepPartial, ImmutableObject } from "../object";
 import type { Validator } from "./Validator";
 
 /** Validator that always returns undefined. */
