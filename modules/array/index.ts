@@ -219,7 +219,7 @@ export const resolveArray = async <V>(arr: ResolvableArray<V>): Promise<Array<V>
 };
 
 /**
- * Adds an item to an array by reference.
+ * Add an item to an array by reference.
  * - If the item already exists in the array (using `indexOf()`) then it won't be added again.
  */
 export const addItem = <T>(arr: MutableArray<T>, item: T): void => {
@@ -227,10 +227,10 @@ export const addItem = <T>(arr: MutableArray<T>, item: T): void => {
 };
 
 /**
- * Delete an item from an array by reference.
+ * Remove an item from an array by reference.
  * - Deletes all instances of an item from an array by reference, and returns void.
  */
-export const deleteItem = <T>(arr: MutableArray<T>, value: T): void => {
+export const removeItem = <T>(arr: MutableArray<T>, value: T): void => {
 	let i = arr.indexOf(value);
 	if (i < 0) return;
 	while (i >= 0) {

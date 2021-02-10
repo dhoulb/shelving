@@ -1,5 +1,5 @@
 import { dispatch, AsyncDispatcher, UnsubscribeDispatcher, ErrorDispatcher } from "../dispatch";
-import { addItem, deleteItem } from "../array";
+import { addItem, removeItem } from "../array";
 
 /**
  * Listener can be either...
@@ -60,8 +60,8 @@ export class Event<T> {
 
 	/** Detach a listener. */
 	off(listener: Listener<T>): void {
-		deleteItem(this._ons, listener);
-		deleteItem(this._ones, listener);
+		removeItem(this._ons, listener);
+		removeItem(this._ones, listener);
 	}
 
 	/** Reset this listenable by removing all listeners. */
