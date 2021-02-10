@@ -1,4 +1,4 @@
-import { SKIP, arrayChunk, toggleItem, withItem, withoutItem, replaceItem, getNextItem, getPrevItem, shuffle, isArray, mapArray } from "..";
+import { SKIP, arrayChunk, toggleItem, withItem, withoutItem, swapItem, getNextItem, getPrevItem, shuffle, isArray, mapArray } from "..";
 import { uniqueItems } from ".";
 
 test("isArray()", () => {
@@ -45,9 +45,9 @@ test("withoutItem()", () => {
 });
 test("replaceItem()", () => {
 	const arr = [1, 2, 3];
-	expect(replaceItem(arr, 2, 222)).toEqual([1, 222, 3]);
-	expect(replaceItem(arr, 2, 222)).not.toBe(arr);
-	expect(replaceItem(arr, 4, 444)).toBe(arr);
+	expect(swapItem(arr, 2, 222)).toEqual([1, 222, 3]);
+	expect(swapItem(arr, 2, 222)).not.toBe(arr);
+	expect(swapItem(arr, 4, 444)).toBe(arr);
 });
 test("getNextItem()", () => {
 	const arr = [1, 2, 3];
