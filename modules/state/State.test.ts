@@ -81,10 +81,10 @@ test("State() array with initial value", () => {
 	expect(state.value.includes(3)).toBe(true);
 	expect(state.value.includes(4)).toBe(false);
 	// Add.
-	expect(state.withItem(4)).toBe(undefined);
+	expect(state.add(4)).toBe(undefined);
 	expect(state.value).toEqual([1, 2, 3, 4]);
 	// Remove.
-	expect(state.withoutItem(2)).toBe(undefined);
+	expect(state.remove(2)).toBe(undefined);
 	expect(state.value).toEqual([1, 3, 4]);
 	// Has.
 	expect(state.value.includes(1)).toBe(true);

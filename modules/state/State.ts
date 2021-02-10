@@ -2,7 +2,7 @@ import { RequiredError } from "../errors";
 import { LOADING } from "../constants";
 import { logError } from "../console";
 import { ImmutableObject, updateProps } from "../object";
-import { ImmutableArray, ArrayType, replaceItem, withoutItem, withItem } from "../array";
+import { ImmutableArray, ArrayType, swapItem, withoutItem, withItem } from "../array";
 import { Event } from "../event";
 import { assertArray, assertObject } from "../assert";
 
@@ -121,7 +121,7 @@ export class State<T> extends Event<T> {
 	 *
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
-	withItem(item: ArrayType<T & ImmutableArray>): void {
+	add(item: ArrayType<T & ImmutableArray>): void {
 		assertArray(this._value);
 		this.fire(withItem(this._value, item) as T & ImmutableArray);
 	}
@@ -132,7 +132,7 @@ export class State<T> extends Event<T> {
 	 *
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
-	withoutItem(item: ArrayType<T & ImmutableArray>): void {
+	remove(item: ArrayType<T & ImmutableArray>): void {
 		assertArray(this._value);
 		this.fire(withoutItem(this._value, item) as T & ImmutableArray);
 	}
@@ -143,9 +143,9 @@ export class State<T> extends Event<T> {
 	 *
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
-	replaceItem(oldItem: ArrayType<T & ImmutableArray>, newItem: ArrayType<T & ImmutableArray>): void {
+	swap(oldItem: ArrayType<T & ImmutableArray>, newItem: ArrayType<T & ImmutableArray>): void {
 		assertArray(this._value);
-		this.fire(replaceItem(this._value, oldItem, newItem) as T & ImmutableArray);
+		this.fire(swapItem(this._value, oldItem, newItem) as T & ImmutableArray);
 	}
 
 	/**
