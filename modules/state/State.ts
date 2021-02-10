@@ -110,9 +110,9 @@ export class State<T> extends Event<T> {
 	 *
 	 * @throws AssertionError if current value of this `State` is not an object.
 	 */
-	update(partial: Partial<T & ImmutableObject>): void {
+	update<X extends T & ImmutableObject>(partial: Partial<X>): void {
 		assertObject(this._value);
-		this.fire(updateProps<T & ImmutableObject>(this.value as T & ImmutableObject, partial));
+		this.fire(updateProps<X>(this.value as X, partial));
 	}
 
 	/**
@@ -121,9 +121,9 @@ export class State<T> extends Event<T> {
 	 *
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
-	add(item: ArrayType<T & ImmutableArray>): void {
+	add<X extends T & ImmutableArray>(item: ArrayType<X>): void {
 		assertArray(this._value);
-		this.fire(withItem(this._value, item) as T & ImmutableArray);
+		this.fire(withItem(this._value, item) as X);
 	}
 
 	/**
@@ -132,9 +132,9 @@ export class State<T> extends Event<T> {
 	 *
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
-	remove(item: ArrayType<T & ImmutableArray>): void {
+	remove<X extends T & ImmutableArray>(item: ArrayType<X>): void {
 		assertArray(this._value);
-		this.fire(withoutItem(this._value, item) as T & ImmutableArray);
+		this.fire(withoutItem(this._value, item) as X);
 	}
 
 	/**
@@ -143,9 +143,9 @@ export class State<T> extends Event<T> {
 	 *
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
-	swap(oldItem: ArrayType<T & ImmutableArray>, newItem: ArrayType<T & ImmutableArray>): void {
+	swap<X extends T & ImmutableArray>(oldItem: ArrayType<X>, newItem: ArrayType<X>): void {
 		assertArray(this._value);
-		this.fire(swapItem(this._value, oldItem, newItem) as T & ImmutableArray);
+		this.fire(swapItem(this._value, oldItem, newItem) as X);
 	}
 
 	/**
