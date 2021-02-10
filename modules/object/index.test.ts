@@ -11,6 +11,7 @@ import {
 	mapObjectKeys,
 	ImmutableEntries,
 	ImmutableObject,
+	updateProps,
 } from "..";
 
 const obj: ImmutableObject<number> = { a: 1, b: 2, c: 3, d: 4 };
@@ -116,9 +117,13 @@ test("updateProp()", () => {
 	expect(updateProp(obj, "d", 4444)).not.toBe(obj);
 	// If prop isn't changed same instance is returned.
 	expect(updateProp(obj, "d", 4)).toBe(obj);
-	// Error is thrown (prop doesn't exist).
-	expect(() => updateProp(obj, "NOPE" as any, 9999)).toThrow(Error);
-	expect(() => updateProp(obj, "NOPE" as any, 9999)).toThrow('Property "NOPE" does not exist');
+});
+test("updateProps()", () => {
+	// Prop is set (existing prop).
+	expect(updateProps(obj, { d: 4444 })).toEqual({ a: 1, b: 2, c: 3, d: 4444 });
+	expect(updateProps(obj, { d: 4444 })).not.toBe(obj);
+	// If prop isn't changed same instance is returned.
+	expect(updateProps(obj, { d: 4 })).toBe(obj);
 });
 test("getProp()", () => {
 	const testObj = { a: "A", 1: 1 };
