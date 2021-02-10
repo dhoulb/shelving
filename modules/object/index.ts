@@ -1,4 +1,3 @@
-import { AssertionError } from "../errors";
 import { ImmutableArray } from "../array";
 import type { Entry, ImmutableEntries, ResolvableEntries } from "../entry";
 import { SKIP } from "../constants";
@@ -278,9 +277,26 @@ export const withoutProp = <O extends ImmutableObject, K extends keyof O>(obj: O
  * - If value is exactly the same (using `===`) then the exact same input object will be returned.
  */
 export const updateProp = <O extends ImmutableObject, K extends keyof O>(obj: O, key: K, value: O[K]): O => {
-	if (!(key in obj)) throw new AssertionError(`updateProp(): Property "${key}" does not exist in object`);
 	if (obj[key] === value) return obj;
 	return { ...obj, [key]: value };
+};
+
+/**
+ * Return a new object where several named properties has been updated.
+ * - Different from `withProp()` because it won't create the property if it doesn't exist.
+ *
+ * @return New object with the specified prop value.
+ * - If value is exactly the same (using `===`) then the exact same input object will be returned.
+ */
+export const updateProps = <O extends ImmutableObject>(obj: O, partial: Partial<O>): O => {
+	let changed = false;
+	const entries: [keyof O, O[keyof O]][] = Object.entries(partial);
+	for (const [k, v] of entries)
+		if (obj[k] !== v) {
+			changed = true;
+			break;
+		}
+	return changed ? { ...obj, ...partial } : obj;
 };
 
 /** Extract a named (possibly deep) prop from an object. */
