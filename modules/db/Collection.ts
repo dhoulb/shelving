@@ -94,6 +94,7 @@ export interface Collection<T extends Data, D extends DataSchemas = DataSchemas,
 
 	/**
 	 * Apply a set of changes.
+	 * - Change means 'merge' or 'delete'.
 	 * - Any changes in the set of changes (indexed by their ID) will be updated or deleted.
 	 * - e.g. `{ "abc": null }` will delete the record with key `abc`
 	 * - e.g. `{ "abc": { title: "ABC" } }` will update the title of the record with key `abc`

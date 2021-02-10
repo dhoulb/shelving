@@ -240,13 +240,13 @@ export const deleteItem = <T>(arr: MutableArray<T>, value: T): void => {
 };
 
 /**
- * Merge two arrays.
- * - If both arrays have length, they will be merged.
- * - If left array is empty, exact right array will be returned.
- * - If right array is empty, exact left array will be returned.
+ * Return an element where only unique items are kept.
+ * - Removes duplicate instances of values from the array.
+ * - Returns the same instance if no changes were made.
  */
-export const mergeArrays = <T>(left: ImmutableArray<T>, right: ImmutableArray<T>): ImmutableArray<T> => {
-	if (!left.length) return right;
-	if (!right.length) return left;
-	return [...left, ...right];
+export const uniqueItems = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
+	if (!arr.length) return arr;
+	const unique = arr.filter(filterUnique);
+	return unique.length === arr.length ? arr : unique;
 };
+const filterUnique = <T>(item: T, i: number, arr: ImmutableArray<T>) => i === arr.indexOf(item);

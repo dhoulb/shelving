@@ -1,4 +1,5 @@
 import { SKIP, arrayChunk, toggleItem, withItem, withoutItem, replaceItem, getNextItem, getPrevItem, shuffle, isArray, mapArray } from "..";
+import { uniqueItems } from ".";
 
 test("isArray()", () => {
 	expect(isArray([])).toBe(true);
@@ -92,4 +93,9 @@ test("mapArray()", async () => {
 	expect(mapArray(obj, n => n * n)).not.toBe(obj);
 	expect(mapArray(obj, n => n)).toEqual(arr);
 	expect(mapArray(obj, n => n)).not.toBe(obj);
+});
+test("uniqueItems()", () => {
+	const arr = [1, 2, 3];
+	expect(uniqueItems(arr)).toBe(arr);
+	expect(uniqueItems([1, 1, 1])).toEqual([1]);
 });

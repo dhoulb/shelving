@@ -1,4 +1,4 @@
-import { isEqual, isDeepEqual, isArrayEqual, isObjectEqual } from "..";
+import { isExactlyEqual, isDeepEqual, isArrayEqual, isObjectEqual } from "..";
 
 const arrFlat = [1, "b", true, false, null];
 const arrFlatSame = [1, "b", true, false, null];
@@ -27,23 +27,23 @@ const objDeepMissing = { obj1: objFlat, obj2: { a: 1 } };
 
 describe("isEqual()", () => {
 	test("isEqual(): Equal values", () => {
-		expect(isEqual("abc", "abc")).toBe(true);
-		expect(isEqual(123, 123)).toBe(true);
-		expect(isEqual(true, true)).toBe(true);
-		expect(isEqual(false, false)).toBe(true);
-		expect(isEqual(null, null)).toBe(true);
-		expect(isEqual(arrFlatEmpty, arrFlatEmpty)).toBe(true);
-		expect(isEqual(objFlatEmpty, objFlatEmpty)).toBe(true);
+		expect(isExactlyEqual("abc", "abc")).toBe(true);
+		expect(isExactlyEqual(123, 123)).toBe(true);
+		expect(isExactlyEqual(true, true)).toBe(true);
+		expect(isExactlyEqual(false, false)).toBe(true);
+		expect(isExactlyEqual(null, null)).toBe(true);
+		expect(isExactlyEqual(arrFlatEmpty, arrFlatEmpty)).toBe(true);
+		expect(isExactlyEqual(objFlatEmpty, objFlatEmpty)).toBe(true);
 	});
 	test("isEqual() Unequal values", () => {
-		expect(isEqual("123", 123)).toBe(false);
-		expect(isEqual(123, "123")).toBe(false);
-		expect(isEqual(true, 1)).toBe(false);
-		expect(isEqual(1, true)).toBe(false);
-		expect(isEqual(false, 0)).toBe(false);
-		expect(isEqual(0, false)).toBe(false);
-		expect(isEqual([], [])).toBe(false);
-		expect(isEqual({}, {})).toBe(false);
+		expect(isExactlyEqual("123", 123)).toBe(false);
+		expect(isExactlyEqual(123, "123")).toBe(false);
+		expect(isExactlyEqual(true, 1)).toBe(false);
+		expect(isExactlyEqual(1, true)).toBe(false);
+		expect(isExactlyEqual(false, 0)).toBe(false);
+		expect(isExactlyEqual(0, false)).toBe(false);
+		expect(isExactlyEqual([], [])).toBe(false);
+		expect(isExactlyEqual({}, {})).toBe(false);
 	});
 });
 describe("isDeepEqual()", () => {
