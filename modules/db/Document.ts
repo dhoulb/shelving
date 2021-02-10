@@ -1,44 +1,19 @@
 import type { ImmutableObject } from "../object";
-import type { Data, Change, Result, Results, Changes } from "../data";
-import type { DataSchemas, AnyDataSchema, DataSchema } from "../schema";
+import type { Data, Result } from "../data";
+import type { DataSchemas, AnyDataSchema, DataSchema, Validator } from "../schema";
 import type { AsyncDispatcher, ErrorDispatcher, UnsubscribeDispatcher } from "../dispatch";
 import type { Cloneable } from "../clone";
 import type { Collection } from "./Collection";
+import type { DeleteOptions, GetOptions, SetOptions } from "./options";
 
 /** A generic document whose generics are not known. */
 export type AnyDocument = Document<Data, DataSchemas, DataSchemas>;
-
-/** Options that modify a get operation. */
-export type DocumentGetOptions = {
-	/** Throw a `RequiredError` if the document does not exist (defaults to `false`). */
-	required?: boolean;
-};
-
-/** Options that modify a set operation. */
-export type DocumentSetOptions = {
-	/**
-	 * Whether to apply validation to the input value (defaults to `true`).
-	 * - Warning: This allow **ANY** data to be directly set to the database.
-	 */
-	validate?: boolean;
-	/**
-	 * Whether the input value is partial and should be merged in, or not (defaults to `false`).
-	 * - Partial input values are merged into the existing value.
-	 */
-	merge?: boolean;
-};
-
-/** Options that modify a delete operation. */
-export type DocumentDeleteOptions = {
-	/** Whether to delete this document and all its children (defaults to false). */
-	deep?: boolean;
-};
 
 /** Get a `Document` for a given `DataSchema`. */
 export type SchemaDocument<S extends AnyDataSchema> = Document<S["type"], S["documents"], S["collections"]>;
 
 /** Type for a document instance. */
-export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Cloneable {
+export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Cloneable, Validator<T> {
 	/** Data schema that validates this document. */
 	readonly schema: DataSchema<T, D, C>;
 
@@ -72,8 +47,8 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 *
 	 * @returns Document's data, or `undefined` if it doesn't exist. Uses a `Promise` if the provider is async, or a non-promise otherwise.
 	 */
-	get(options: DocumentGetOptions & { required: true }): Promise<T>;
-	get(options?: DocumentGetOptions): Promise<T>;
+	get(options: GetOptions & { required: true }): Promise<T>;
+	get(options?: GetOptions): Promise<T>;
 
 	/**
 	 * Does this document exist?
@@ -117,12 +92,11 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * @param data The (potentially invalid) input value.
 	 * @returns The change that was made to the document (most likely the value that was passed in (after validation), unless this document's provider has different behaviour).
 	 */
-	set(change: Change<T>, options: DocumentSetOptions & { merge: true }): Promise<void>;
-	set(data: ImmutableObject, options: DocumentSetOptions & { validate: false }): Promise<void>;
-	set(data: T, options?: DocumentSetOptions): Promise<void>;
+	set(unsafeData: ImmutableObject, options: SetOptions & { validate: false }): Promise<void>;
+	set(data: T, options?: SetOptions): Promise<void>;
 
 	/**
-	 * Merge a partial value into an existing document.
+	 * Update an existing document by merging in a partial new value.
 	 * - Equivalent to `document.set(value, { merge: true })`
 	 * - Requires only a partial value (any missing properties are ignored).
 	 * - Props specified in the input value must be valid according to this collection's schema or error will be thrown.
@@ -131,49 +105,14 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * @param change The (potentially invalid) partial input value.
 	 * @returns The change that was made to the document (most likely the value that was passed in (after validation), unless this document's provider has different behaviour).
 	 */
-	merge(change: Change<T>): Promise<void>;
+	update(unsafeChange: ImmutableObject, options?: SetOptions & { validate: false }): Promise<void>;
+	update(change: Partial<T>, options?: SetOptions): Promise<void>;
 
 	/**
 	 * Delete an existing document.
 	 * @returns The change that was made to the document (most likely `undefined`, unless this document's provider has different behaviour).
 	 */
-	delete(options?: DocumentDeleteOptions): Promise<void>;
-
-	/**
-	 * Validate unknown data and return valid data for this collection.
-	 *
-	 * @param data The (potentially invalid) input data.
-	 * @returns Data object matching this reference's schema.
-	 * - If the input data is already exactly valid, the exact same instance is returned.
-	 * @throws InvalidError If the input data is not valid and cannot be fixed.
-	 */
-	validate(data: ImmutableObject): T;
-
-	/**
-	 * Validate an unknown value and return a valid change for this Collection.
-	 *
-	 * @param change The (potentially invalid) partial data, or `undefined` to indicate a deleted document.
-	 * @returns Change matching this reference's schema.
-	 * - If the input data is already exactly valid, the exact same instance is returned.
-	 * @throws InvalidError If the input change is not valid and cannot be fixed.
-	 */
-	validateChange(change: ImmutableObject | undefined): Change<T>;
-
-	/**
-	 * Validate a set of results to this collection.
-	 *
-	 * @param results An object indexed by ID containing document data.
-	 * @returns The set of results after validation.
-	 */
-	validateResults(results: ImmutableObject): Results<T>;
-
-	/**
-	 * Validate a set of changes to this collection.
-	 *
-	 * @param changes An object indexed by ID containing either partial values to merge in, or `undefined` to indicate the document should be deleted.
-	 * @returns The set of changes after validation.
-	 */
-	validateChanges(changes: ImmutableObject): Changes<T>;
+	delete(options?: DeleteOptions): Promise<void>;
 
 	// Must implement toString()
 	toString(): string;

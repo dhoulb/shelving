@@ -1,4 +1,4 @@
-import type { Change, Changes, Data, Result, Results } from "../data";
+import type { Data, Result, Results } from "../data";
 import type { ErrorDispatcher, Dispatcher, UnsubscribeDispatcher } from "../dispatch";
 import type { Document } from "./Document";
 import type { Collection } from "./Collection";
@@ -38,15 +38,30 @@ export interface Provider {
 	addDocument<T extends Data>(ref: Collection<T>, data: T): Promise<string>;
 
 	/**
-	 * Merge changes into a document.
-	 * - If the document exists, merge the new value into it (deeply).
-	 * - If the document doesn't exist, create it at `ref.path`
+	 * Set an existing document.
+	 * - If the document exists, set the value of it.
+	 * - If the document doesn't exist, set it at path.
 	 *
 	 * @param ref Document specifying which document to merge into.
 	 * @param change The change to update the document (either a diff to update the value, or `undefined` for delete).
 	 * @return The change that was applied to the document (either a diff of what was updated on the value, or `undefined` for deleted), or `undefined` if no change was made.
+	 *
+	 * @throws RequiredError if the document doesn't exist.
 	 */
-	mergeDocument<T extends Data>(ref: Document<T>, change: Change<T>): Promise<void>;
+	setDocument<T extends Data>(ref: Document<T>, data: T): Promise<void>;
+
+	/**
+	 * Update an existing document.
+	 * - If the document exists, merge the new value into it (deeply).
+	 * - If the document doesn't exist, throw an error.
+	 *
+	 * @param ref Document specifying which document to merge into.
+	 * @param updates Set of updates to make to the document.
+	 * @return The change that was applied to the document (either a diff of what was updated on the value, or `undefined` for deleted), or `undefined` if no change was made.
+	 *
+	 * @throws RequiredError if the document doesn't exist.
+	 */
+	updateDocument<T extends Data>(ref: Document<T>, updates: Partial<T>): Promise<void>;
 
 	/**
 	 * Delete a document.
@@ -83,13 +98,4 @@ export interface Provider {
 	 * @return Function that unsubscribes the subscription listener.
 	 */
 	onCollection<T extends Data>(ref: Collection<T>, onNext: Dispatcher<Results<T>>, onError: ErrorDispatcher): UnsubscribeDispatcher;
-
-	/**
-	 * Change a set of documents in a collection.
-	 *
-	 * @param ref Collection specifying which collection to to merge the changes into.
-	 * @param changes Set of changes (deletes or merges) to merge into the collection indexed by document ID.
-	 * @return Set of changes to merge into the collection.
-	 */
-	changeDocuments<T extends Data>(ref: Collection<T>, changes: Changes<T>): Promise<void>;
 }

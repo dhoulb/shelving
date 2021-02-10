@@ -1,7 +1,7 @@
-import { cloneObject } from "../clone";
-import { EmptyObject, getFirstProp, getLastProp, ImmutableObject, mapObject } from "../object";
-import { DataSchemas, DataSchema } from "../schema";
-import { Data, Change, Result, Results, Changes } from "../data";
+import { Cloneable, cloneObject } from "../clone";
+import { EmptyObject, getFirstProp, getLastProp, ImmutableObject } from "../object";
+import { DataSchemas, DataSchema, Validator, ValidateOptions, PARTIAL } from "../schema";
+import { Data, Result, Results } from "../data";
 import { AsyncDispatcher, dispatch, ErrorDispatcher, UnsubscribeDispatcher } from "../dispatch";
 import { logError } from "../console";
 import { isFeedback } from "../feedback";
@@ -9,12 +9,13 @@ import { createQuery, Query } from "../query";
 import { Entry } from "../entry";
 import { ArrayType, ImmutableArray } from "../array";
 import { ValidationError } from "../errors";
-import { Document as DocumentInterface, DocumentDeleteOptions, DocumentGetOptions, DocumentSetOptions } from "./Document";
+import { Document as DocumentInterface } from "./Document";
 import { DOCUMENT_PATH } from "./constants";
 import type { Provider } from "./Provider";
 import type { Database as DatabaseInterface } from "./Database";
-import type { Collection as CollectionInterface, CollectionDeleteOptions } from "./Collection";
+import type { Collection as CollectionInterface } from "./Collection";
 import { DocumentRequiredError } from "./errors";
+import { GetOptions, DeleteOptions, SetOptions, REQUIRED, DEEP, UNVALIDATED } from "./options";
 
 /** Options when creating a database instance. */
 type DatabaseCreateOptions<D extends DataSchemas, C extends DataSchemas> = {
@@ -52,7 +53,7 @@ class Database<D extends DataSchemas, C extends DataSchemas> implements Database
 }
 
 // Path is a shared base for both Document and Collection that defines a single path in the database.
-abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas> {
+abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas> implements Cloneable, Validator<T> {
 	protected readonly _provider: Provider;
 	readonly schema: DataSchema<T, D, C>;
 	readonly path: string;
@@ -61,35 +62,11 @@ abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas
 		this._provider = provider;
 		this.path = path;
 	}
-	validate(data: ImmutableObject): T {
+	validate(data: ImmutableObject, options?: ValidateOptions): T {
 		try {
-			return this.schema.validate(data);
+			return this.schema.validate(data, options);
 		} catch (thrown: unknown) {
-			if (isFeedback(thrown)) throw new ValidationError(`Invalid value for: "${this.path}"`, thrown, data);
-			else throw thrown;
-		}
-	}
-	validateChange(change: ImmutableObject | undefined): Change<T> {
-		try {
-			return this.schema.partial.validate(change);
-		} catch (thrown: unknown) {
-			if (isFeedback(thrown)) throw new ValidationError(`Invalid change for: "${this.path}"`, thrown, change);
-			else throw thrown;
-		}
-	}
-	validateResults(results: ImmutableObject): Results<T> {
-		try {
-			return this.schema.results.validate(results);
-		} catch (thrown: unknown) {
-			if (isFeedback(thrown)) throw new ValidationError(`Invalid results for: "${this.path}"`, thrown, results);
-			else throw thrown;
-		}
-	}
-	validateChanges(changes: ImmutableObject): Changes<T> {
-		try {
-			return this.schema.changes.validate(changes);
-		} catch (thrown: unknown) {
-			if (isFeedback(thrown)) throw new ValidationError(`Invalid changes for: "${this.path}"`, thrown, changes);
+			if (isFeedback(thrown)) throw new ValidationError(`Invalid ${options?.partial ? "partial data" : "data"} for: "${this.path}"`, thrown, data);
 			else throw thrown;
 		}
 	}
@@ -100,8 +77,6 @@ abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas
 		return cloneObject(this);
 	}
 }
-
-const REQUIRED = { required: true };
 
 // Implement Document.
 class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> extends Path<T, D, C> implements DocumentInterface<T, D, C> {
@@ -123,9 +98,9 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["type"], C[K]["documents"], C[K]["collections"]> {
 		return new Collection<C[K]["type"], C[K]["documents"], C[K]["collections"]>(this.schema.collections[name], this._provider, `${this.path}/${name}`);
 	}
-	get(options: DocumentGetOptions & { required: true }): Promise<T>;
-	get(options?: DocumentGetOptions): Promise<T>;
-	async get(options?: DocumentGetOptions): Promise<Result<T>> {
+	get(options: GetOptions & { required: true }): Promise<T>;
+	get(options?: GetOptions): Promise<Result<T>>;
+	async get(options?: GetOptions): Promise<Result<T>> {
 		const result = await this._provider.getDocument<T>(this);
 		if (options?.required && !result) throw new DocumentRequiredError(this);
 		return result;
@@ -142,22 +117,20 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 	on(onNext: AsyncDispatcher<Result<T>>, onError: ErrorDispatcher = logError): UnsubscribeDispatcher {
 		return this._provider.onDocument<T>(this, r => dispatch(onNext, r, onError), onError);
 	}
-	set(change: Change<T>, options: DocumentSetOptions & { merge: true }): Promise<void>;
-	set(data: ImmutableObject, options: DocumentSetOptions & { validate: false }): Promise<void>;
-	set(data: T, options?: DocumentSetOptions): Promise<void>;
-	set(input: ImmutableObject, options?: DocumentSetOptions): Promise<void> {
-		const data: Change<T> = !options?.validate ? (input as Change<T>) : options?.merge ? this.validateChange(input) : this.validate(input);
-		return this._provider.mergeDocument<T>(this, data);
+	set(unsafeData: ImmutableObject, options?: SetOptions): Promise<void> {
+		const data: T = !options?.validate ? (unsafeData as T) : this.validate(unsafeData);
+		return this._provider.setDocument<T>(this, data);
 	}
-	merge(change: Change<T>): Promise<void> {
-		return this._provider.mergeDocument<T>(this, this.validateChange(change));
+	update(unsafePartial: ImmutableObject, options?: SetOptions): Promise<void> {
+		const partial: Partial<T> = !options?.validate ? (unsafePartial as Partial<T>) : this.validate(unsafePartial, PARTIAL);
+		return this._provider.updateDocument<T>(this, partial);
 	}
-	async delete(options?: DocumentDeleteOptions): Promise<void> {
+	async delete(options?: DeleteOptions): Promise<void> {
 		await this._provider.deleteDocument<T>(this);
 		if (options?.deep) {
-			await Promise.all<Promise<unknown>>([
-				...Object.keys(this.schema.documents).map(key => this.doc(key).delete({ deep: true })),
-				...Object.keys(this.schema.collections).map(key => this.collection(key).deleteAll({ deep: true })),
+			await Promise.all([
+				...Object.keys(this.schema.documents).map(key => this.doc(key).delete(DEEP)),
+				...Object.keys(this.schema.collections).map(key => this.collection(key).delete(DEEP)),
 			]);
 		}
 	}
@@ -197,24 +170,20 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 	get last(): Promise<Entry<T> | undefined> {
 		return this._provider.getCollection<T>(this.limit(1)).then(getLastProp);
 	}
-	set(results: Results<T>): Promise<void> {
-		return this._provider.changeDocuments<T>(this, this.validateResults(results));
+	async set(unsafeData: T, options?: SetOptions): Promise<void> {
+		const data = !options?.validate ? (unsafeData as T) : this.validate(unsafeData);
+		const ids = await this.ids;
+		await Promise.all(ids.map(id => this.doc(id).set(data, UNVALIDATED)));
 	}
-	change(changes: Changes<T>): Promise<void> {
-		return this._provider.changeDocuments<T>(this, this.validateChanges(changes));
+	async update(unsafePartial: Partial<T>, options?: SetOptions): Promise<void> {
+		const partial = !options?.validate ? (unsafePartial as Partial<T>) : this.validate(unsafePartial, PARTIAL);
+		const ids = await this.ids;
+		await Promise.all(ids.map(id => this.doc(id).update(partial, UNVALIDATED)));
 	}
-	async setAll(data: T): Promise<void> {
-		const changes = mapObject(await this._provider.getCollection<T>(this), this.validate(data));
-		await this._provider.changeDocuments<T>(this, changes);
-	}
-	async mergeAll(change: Change<T>): Promise<void> {
-		const changes = mapObject(await this._provider.getCollection<T>(this), this.validateChange(change));
-		return this._provider.changeDocuments<T>(this, changes);
-	}
-	async deleteAll(options?: CollectionDeleteOptions): Promise<void> {
-		const changes = mapObject(await this._provider.getCollection<T>(this), undefined);
-		await this._provider.changeDocuments<T>(this, changes);
-		if (options?.deep) await Promise.all(Object.keys(changes).map(id => this.doc(id).delete({ deep: true })));
+	async delete(options?: DeleteOptions): Promise<void> {
+		const ids = await this.ids;
+		const suboptions = options?.deep ? DEEP : undefined;
+		await Promise.all(ids.map(id => this.doc(id).delete(suboptions)));
 	}
 	is<K extends "id" | keyof T>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.is<K>(key, value) };

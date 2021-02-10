@@ -1,3 +1,4 @@
+export * from "./options";
 export * from "./Provider";
 export * from "./Database";
 export * from "./Collection";
