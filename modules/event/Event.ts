@@ -70,11 +70,7 @@ export class Event<T> {
 		this._ones.splice(0);
 	}
 
-	/**
-	 * Fire attached listeners now.
-	 * - Listeners are not called syncronously.
-	 * - Errors thrown in listeners are reported to `reportError()`
-	 */
+	/** Fire attached listeners now. */
 	fire(value: T): void {
 		const listeners = this._ons.slice(typeof this._fires === "number" ? 0 - this._fires : undefined);
 		for (const listener of listeners) {
