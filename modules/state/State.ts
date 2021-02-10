@@ -1,10 +1,10 @@
 import { RequiredError } from "../errors";
 import { LOADING } from "../constants";
 import { logError } from "../console";
-import { DeepPartial, ImmutableObject } from "../object";
-import { deepMerge } from "../merge";
-import { ImmutableArray, ArrayType, replaceItem, isArray, withoutItem, withItem } from "../array";
+import { ImmutableObject, updateProps } from "../object";
+import { ImmutableArray, ArrayType, replaceItem, withoutItem, withItem } from "../array";
 import { Event } from "../event";
+import { assertArray, assertObject } from "../assert";
 
 /**
  * State: store some global state in memory.
@@ -21,8 +21,8 @@ import { Event } from "../event";
  * - Note: when using Promises it's possible to create race conditions, so be careful.
  *
  * Object/array state:
- * - If state is an object, you can merge values into it using `state.merge(partialState)`
- * - If state is an array, you can add/remove items from the array using `state.add(item)` and `state.remove(item)`
+ * - If state is an object, you can update its props using `state.update(partialState)`
+ * - If state is an array, you can add/remove items from the array using `state.withItem(item)` and `state.withoutItem(item)` and `state.removeItem(old, new)`
  *
  * Loading state:
  * - Set the initial value to a `Promise` or the `LOADING` symbol and its internal value will be set to loading.
@@ -90,14 +90,14 @@ export class State<T> extends Event<T> {
 	}
 
 	/**
-	 * Set a new value for this value and fire all attached listeners.
-	 * - Listeners will only be fired if the value changes.
+	 * Set a new value for this value.
+	 * - Listeners will fire (if value is different).
 	 * - If value is a Promise, it is awaited and set after the value resolves.
 	 */
 	set(value: Promise<T> | T): void {
 		if (value instanceof Promise) {
 			// Value is a `Promise` so wait for it to resolve before calling listeners.
-			value.then(v => this.fire(v), logError);
+			value.then(v => this.set(v), logError);
 		} else {
 			// Value is not a `Promise` so fire now.
 			this.fire(value);
@@ -105,46 +105,47 @@ export class State<T> extends Event<T> {
 	}
 
 	/**
-	 * Merge a new value into this value and fire all attached listeners.
-	 * - Listeners will only be fired if the value changes.
-	 * - If current value of this state is not an array, nothing will change.
-	 * - If value is a Promise, it is awaited and merged after the partial value resolves.
+	 * Update properties in this State
+	 * - Listeners will fire (if value is different).
+	 *
+	 * @throws AssertionError if current value of this `State` is not an object.
 	 */
-	merge(partial: Promise<DeepPartial<T & ImmutableObject>> | DeepPartial<T & ImmutableObject>): void {
-		if (partial instanceof Promise) {
-			// Value is a `Promise` so wait for it to resolve before calling listeners.
-			partial.then(v => this.merge(v), logError);
-		} else {
-			// Value is not a `Promise` so fire now if current value is an object.
-			this.fire(deepMerge(this.value, partial) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
-		}
-	}
-
-	/**
-	 * Treat this state as an array and replace an item in its value, and fire all attached listeners.
-	 * - Listeners will only be fired if the array changes (i.e. the item does not already exist in the array).
-	 * - If current value of this state is not an array, nothing will change.
-	 */
-	withItem(item: ArrayType<T & ImmutableArray>): void {
-		if (isArray(this._value)) this.fire(withItem(this._value, item) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
-	}
-
-	/**
-	 * Treat this state as an array and replace an item in its value, and fire all attached listeners.
-	 * - Listeners will only be fired if the array changes (i.e. the item exists in the array).
-	 * - If current value of this state is not an array, nothing will change.
-	 */
-	withoutItem(item: ArrayType<T & ImmutableArray>): void {
-		if (isArray(this._value)) this.fire(withoutItem(this._value, item) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+	update(partial: Partial<T & ImmutableObject>): void {
+		assertObject(this._value);
+		this.fire(updateProps<T & ImmutableObject>(this.value as T & ImmutableObject, partial));
 	}
 
 	/**
 	 * Treat this state as an array and replace an item in its value.
-	 * - Listeners will only be fired if the array changes (i.e. the item does exist in the array).
-	 * - If current value of this state is not an array, nothing will change.
+	 * - Listeners will fire (if value is different).
+	 *
+	 * @throws AssertionError if current value of this `State` is not an array.
+	 */
+	withItem(item: ArrayType<T & ImmutableArray>): void {
+		assertArray(this._value);
+		this.fire(withItem(this._value, item) as T & ImmutableArray);
+	}
+
+	/**
+	 * Treat this state as an array and replace an item in its value.
+	 * - Listeners will fire (if value is different).
+	 *
+	 * @throws AssertionError if current value of this `State` is not an array.
+	 */
+	withoutItem(item: ArrayType<T & ImmutableArray>): void {
+		assertArray(this._value);
+		this.fire(withoutItem(this._value, item) as T & ImmutableArray);
+	}
+
+	/**
+	 * Treat this state as an array and replace an item in its value.
+	 * - Listeners will fire (if value is different).
+	 *
+	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
 	replaceItem(oldItem: ArrayType<T & ImmutableArray>, newItem: ArrayType<T & ImmutableArray>): void {
-		if (isArray(this._value)) this.fire(replaceItem(this._value, oldItem, newItem) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+		assertArray(this._value);
+		this.fire(replaceItem(this._value, oldItem, newItem) as T & ImmutableArray);
 	}
 
 	/**

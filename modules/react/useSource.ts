@@ -35,7 +35,7 @@ class Source<T> extends State<SourceState<T>> {
 		this.set({ value });
 		this._fetched = Date.now();
 	};
-	protected _onError: ErrorDispatcher = (error: unknown) => this.merge({ error });
+	protected _onError: ErrorDispatcher = (error: unknown) => this.update({ error });
 
 	constructor(value: T | typeof LOADING = LOADING) {
 		super(value === LOADING ? LOADING : { value });

@@ -50,7 +50,7 @@ test("State() data value throws if undefined", () => {
 	// Checks.
 	expect(fn1.mock.calls).toEqual([[123], [undefined]]);
 });
-test("State() merging works correctly", () => {
+test("State() updating works correctly", () => {
 	const state = new State<{ a: number; b: number }>({ a: 1, b: 2 });
 	expect(state).toBeInstanceOf(State);
 	expect(state.value).toEqual({ a: 1, b: 2 });
@@ -60,7 +60,7 @@ test("State() merging works correctly", () => {
 	state.on(fn1);
 	state.one(fn2);
 	// Merge.
-	expect(state.merge({ a: 111 })).toBe(undefined);
+	expect(state.update({ a: 111 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: 2 });
 	// Checks.
 	expect(fn1.mock.calls).toEqual([[{ a: 111, b: 2 }]]);
