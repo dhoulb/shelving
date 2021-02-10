@@ -1,34 +1,18 @@
-import admin from "firebase-admin";
-import {
-	Dispatcher,
-	ErrorDispatcher,
-	arrayChunk,
-	isObject,
-	MutableObject,
-	Change,
-	Changes,
-	Data,
-	Result,
-	Results,
-	Provider,
-	Document,
-	Collection,
-	Matcher,
-	convertObject,
-} from "..";
+import type {
+	Firestore,
+	WhereFilterOp as FirestoreWhereFilterOp,
+	Query as FirestoreQuery,
+	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
+	DocumentSnapshot as FirestoreDocumentSnapshot,
+} from "@google-cloud/firestore";
+import { Dispatcher, ErrorDispatcher, MutableObject, Data, Result, Results, Provider, Document, Collection, Matcher } from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the ID and the entire path of the document. `__id__` is just ID.
 const ID = "__id__"; // Internal way Firestore Queries can reference the ID of the current document.
-const DELETE = admin.firestore.FieldValue.delete(); // Delete sentinel is used to mark fields for deletion.
-const BATCH = 100; // Actual limit is 500 but smaller batches allow for additional reads etc in the request.
-
-/** Map all `undefined` values in an object to the `DELETE` sentinel */
-const mapSentinels = (value: unknown): unknown =>
-	value === undefined ? DELETE : isObject(value) && !(value instanceof Array) ? convertObject(value, mapSentinels) : value;
 
 // Map `Filter.types` to `WhereFilterOp`
-const FILTERS: { [K in Matcher]: FirebaseFirestore.WhereFilterOp } = {
+const FILTERS: { [K in Matcher]: FirestoreWhereFilterOp } = {
 	is: "==",
 	not: "!=",
 	in: "in",
@@ -40,11 +24,8 @@ const FILTERS: { [K in Matcher]: FirebaseFirestore.WhereFilterOp } = {
 };
 
 /** Create a corresponding `QueryReference` from a Query. */
-const buildQuery = <T extends Data>(
-	firestore: FirebaseFirestore.Firestore,
-	{ path, query: { filters, sorts, slice } }: Collection<T>,
-): FirebaseFirestore.Query => {
-	let query: FirebaseFirestore.Query = firestore.collection(path);
+const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filters, sorts, slice } }: Collection<T>): FirestoreQuery => {
+	let query: FirestoreQuery = firestore.collection(path);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key.toString(), direction);
 	for (const { type, key, value } of filters) query = query.where(key === "id" ? ID : key.toString(), FILTERS[type], value);
 	if (slice.limit !== null) query = query.limit(slice.limit);
@@ -52,16 +33,16 @@ const buildQuery = <T extends Data>(
 };
 
 /** Extract the correct value from a document snapshot. */
-const collectionResult = <T extends Data>(ref: Collection<T>, snapshot: FirebaseFirestore.QueryDocumentSnapshot): T => ref.validate(snapshot.data());
+const collectionResult = <T extends Data>(ref: Collection<T>, snapshot: FirestoreQueryDocumentSnapshot): T => ref.validate(snapshot.data());
 
 /** Extract the correct value from a document snapshot. */
-const documentResult = <T extends Data>(ref: Document<T>, snapshot: FirebaseFirestore.DocumentSnapshot): Result<T> => {
+const documentResult = <T extends Data>(ref: Document<T>, snapshot: FirestoreDocumentSnapshot): Result<T> => {
 	const data = snapshot.data();
 	return data && ref.validate(data);
 };
 
 type FirestoreOptions = {
-	firestore: FirebaseFirestore.Firestore;
+	firestore: Firestore;
 };
 
 /**
@@ -70,7 +51,7 @@ type FirestoreOptions = {
  * - Equality hash is set on returned values so `deepEqual()` etc can use it to quickly compare results without needing to look deeply.
  */
 class FirestoreServerProvider implements Provider {
-	readonly firestore: FirebaseFirestore.Firestore;
+	readonly firestore: Firestore;
 
 	constructor({ firestore }: FirestoreOptions) {
 		this.firestore = firestore;
@@ -91,8 +72,12 @@ class FirestoreServerProvider implements Provider {
 		return id;
 	}
 
-	async mergeDocument<T extends Data>(ref: Document<T>, change: Change<T>): Promise<void> {
-		await this.firestore.doc(ref.path).set(convertObject(change, mapSentinels), { merge: true });
+	async setDocument<T extends Data>(ref: Document<T>, data: T): Promise<void> {
+		await this.firestore.doc(ref.path).set(data);
+	}
+
+	async updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): Promise<void> {
+		await this.firestore.doc(ref.path).update(partial);
 	}
 
 	async deleteDocument<T extends Data>(ref: Document<T>): Promise<void> {
@@ -121,22 +106,6 @@ class FirestoreServerProvider implements Provider {
 			for (const s of snapshot.docs) next[s.id] = collectionResult(ref, s);
 			onNext(next);
 		}, onError);
-	}
-
-	async changeDocuments<T extends Data>(ref: Collection<T>, changes: Changes<T>): Promise<void> {
-		// Chunk into batches of sets/deletes and commit each batch in order.
-		// Don't commit the batches in parallel or you'll overwhelm the pipe.
-		const entries = Object.entries(changes);
-		const chunks = arrayChunk(entries, BATCH);
-		for (const chunk of chunks) {
-			const batch = this.firestore.batch();
-			for (const [id, change] of chunk) {
-				const docRef = this.firestore.doc(`${ref.path}/${id}`);
-				if (change) batch.set(docRef, convertObject(change, mapSentinels), { merge: true });
-				else batch.delete(docRef);
-			}
-			await batch.commit();
-		}
 	}
 }
 
