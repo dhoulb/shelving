@@ -1,12 +1,49 @@
 /* eslint-disable require-await */
 
-import type { Collection, Document, Provider } from "../db";
+import { Collection, Document, DocumentRequiredError, Provider } from "../db";
 import { randomId } from "../random";
-import type { Changes, Data, Result, Results, Change } from "../data";
+import type { Data, Result, Results } from "../data";
 import { Dispatcher, UnsubscribeDispatcher } from "../dispatch";
-import { MutableObject, objectFromEntries } from "../object";
-import { deepMergeObject } from "../merge";
-import { createEvent, Event } from "../event";
+import { MutableObject, objectFromEntries, updateProps } from "../object";
+import { addItem, ImmutableArray, MutableArray } from "../array";
+import { Event } from "../event";
+import { logError } from "../console";
+
+/**
+ * An individual table of data.
+ * - Fires with an array of strings.
+ */
+class Table<T extends Data> extends Event<ImmutableArray<string>> {
+	/** Actual data for this table. */
+	readonly docs: MutableObject<T> = {};
+	readonly changes: MutableArray<string> = [];
+
+	setDoc(id: string, data: T): void {
+		if (data !== this.docs[id]) {
+			this.docs[id] = data;
+			addItem(this.changes, id);
+			this.fire();
+		}
+	}
+
+	deleteDoc(id: string): void {
+		if (this.docs[id]) {
+			delete this.docs[id];
+			addItem(this.changes, id);
+			this.fire();
+		}
+	}
+
+	fire() {
+		Promise.resolve().then(this._fire, logError);
+	}
+	private _fire = (): void => {
+		if (this.changes.length) {
+			super.fire(this.changes);
+			this.changes.splice(0);
+		}
+	};
+}
 
 /**
  * Fast in-memory database provider.
@@ -17,120 +54,79 @@ import { createEvent, Event } from "../event";
  * Equality hash is set on returned values so `deepEqual()` etc can use it to quickly compare results without needing to look deeply.
  */
 class MemoryProvider implements Provider {
-	// Stored data indexed by string collection path and string ID.
-	private _data: MutableObject<MutableObject<Data>> = {};
-
-	// Set of Event instances (keyed by string collection path).
-	// Each sub is fired with an array of changed items.
-	private _subs: MutableObject<Event<string[]>> = {};
-
-	/**
-	 * Internal collection getter.
-	 * Gets or creates the collection specified by `path`
-	 */
-	private _collection<T extends Data>(path: string) {
-		return (path in this._data ? this._data[path] : (this._data[path] = {})) as MutableObject<T>;
-	}
-
-	/**
-	 * Internal setter.
-	 *
-	 * @param path The collection path.
-	 * @param id The document ID within the collection.
-	 * @returns `true` if the document was updated and `false` if it wasn't (i.e. because the change didn't change anything).
-	 */
-	private _changeDocument<T extends Data>(path: string, id: string, change: Change<T> | undefined): boolean {
-		const docs = this._collection<T>(path);
-		if (!change) {
-			// Delete the doc.
-			if (docs[id]) {
-				delete docs[id];
-				return true;
-			}
-		} else {
-			// Update the doc.
-			const prev = docs[id]; // Might be undefined.
-			if (prev) {
-				const next = deepMergeObject(prev, change); // Diff against current value to avoid excess changes.
-				if (next !== prev) {
-					docs[id] = next;
-					return true;
-				}
-			} else {
-				docs[id] = change as T;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/** Generate a random unique ID for a collection. */
-	private randomId(path: string): string {
-		const collection = this._collection(path);
-		let id = randomId();
-		while (id in collection) id = randomId(); // Regenerate until unique.
-		return id;
+	// Registry of collections in `{ path: Table<T> }` format.
+	private data: MutableObject<Table<Data>> = {};
+	table<X extends Data>(path: string): Table<X> {
+		return ((this.data[path] as Table<X>) ||= new Table<X>());
 	}
 
 	async getDocument<T extends Data>({ parent, id }: Document<T>): Promise<Result<T>> {
-		return this._collection<T>(parent)[id];
+		return this.table<T>(parent).docs[id];
 	}
 
 	onDocument<T extends Data>({ id, parent }: Document<T>, onNext: Dispatcher<Result<T>>): UnsubscribeDispatcher {
-		const collection = this._collection<T>(parent);
+		const table = this.table<T>(parent);
 
-		// Call onNext() with initial results (on next tick).
-		onNext(collection[id]);
+		// Call onNext() with initial results.
+		onNext(table.docs[id]);
 
 		// Call onNext() every time the collection changes.
-		return (this._subs[parent] ||= createEvent<string[]>()).on(changes => {
-			if (changes.includes(id)) onNext(collection[id]);
+		return table.on(changed => {
+			if (changed.includes(id)) onNext(table.docs[id]);
 		});
 	}
 
 	async addDocument<T extends Data>({ path }: Collection<T>, data: T): Promise<string> {
-		const id = this.randomId(path);
-		this._changeDocument(path, id, data);
-		this._subs[path]?.fire([id]);
+		const table = this.table<T>(path);
+		let id = randomId();
+		while (table.docs[id]) id = randomId(); // Regenerate until unique.
+		table.setDoc(id, data);
 		return id;
 	}
 
-	async mergeDocument<T extends Data>({ parent, id }: Document<T>, change: Change<T>): Promise<void> {
-		const changed = this._changeDocument(parent, id, change);
-		if (changed) this._subs[parent]?.fire([id]);
+	async setDocument<T extends Data>({ parent, id }: Document<T>, data: T): Promise<void> {
+		this.table<T>(parent).setDoc(id, data);
+	}
+
+	async updateDocument<T extends Data>(document: Document<T>, updates: Partial<T>): Promise<void> {
+		const { parent, id } = document;
+		const table = this.table<T>(parent);
+		const data = table.docs[id];
+		if (data) {
+			const merged = updateProps(data, updates);
+			if (merged !== updates) table.setDoc(id, merged);
+		} else {
+			throw new DocumentRequiredError(document);
+		}
 	}
 
 	async deleteDocument<T extends Data>({ parent, id }: Document<T>): Promise<void> {
-		const changed = this._changeDocument(parent, id, undefined);
-		if (changed) this._subs[parent]?.fire([id]);
+		this.table<T>(parent).deleteDoc(id);
 	}
 
 	async countCollection<T extends Data>({ path, query }: Collection<T>): Promise<number> {
-		const collection = this._collection<T>(path);
-		return query.count(collection);
+		return query.count(this.table<T>(path).docs);
 	}
 
 	async getCollection<T extends Data>({ path, query }: Collection<T>): Promise<Results<T>> {
-		const collection = this._collection<T>(path);
-		return query.results(collection);
+		return query.results(this.table<T>(path).docs);
 	}
 
 	onCollection<T extends Data>({ path, query }: Collection<T>, onNext: Dispatcher<Results<T>>): UnsubscribeDispatcher {
-		const collection = this._collection<T>(path); // Entire collection.
-		let filtered = objectFromEntries(query.sorts.apply(query.filters.apply(Object.entries(collection))));
+		const table = this.table<T>(path);
+		let filtered = objectFromEntries(query.sorts.apply(query.filters.apply(Object.entries(table.docs))));
 		let last = query.slice.results(filtered);
 
 		// Call onNext() with initial results (on next tick).
 		void Promise.resolve(last).then(onNext);
 
 		// Call onNext() when the collection changes.
-		return (this._subs[path] ||= createEvent<string[]>()).on(async changes => {
+		return table.on(changes => {
+			// Loop through changes and update `filtered` with any changed items.
 			let updated = 0;
 			let removed = 0;
-
-			// Loop through changes and update `filtered` with any changed items.
 			for (const id of changes) {
-				const doc = collection[id];
+				const doc = table.docs[id];
 				if (doc && query.match(id, doc)) {
 					filtered[id] = doc; // Doc should be part of the filtered list.
 					updated++;
@@ -140,43 +136,29 @@ class MemoryProvider implements Provider {
 				}
 			}
 
-			// Skip calling onNext() if nothing changed.
+			// Nothing changed.
 			if (!updated && !removed) return;
 
-			// Apply the sort.
-			if (updated) {
-				// Only sort if results were updated (skip sorting if only deletions happened).
-				filtered = query.sorts.results(filtered);
-			}
+			// Updates they need to be sorted again.
+			if (updated) filtered = query.sorts.results(filtered);
 
 			// Apply the slice.
-			let next = query.slice.results(filtered);
-			if (next !== filtered) {
-				// If a slice was applied all the changes might have happened _after_ the end of the limit slice.
-				// So if every changed ID are not in `next` or `last`, there's no need to call `onNext()`
-				if (changes.every(id => !last[id] && !next[id])) return;
-			} else {
-				// Make `next` a _copy_ and not the exact `filtered` instance (don't expose `filtered` to `onNext()` where it could be modified).
-				next = { ...next };
-			}
+			const sliced = query.slice.results(filtered);
+
+			// If a slice was applied all the changes might have happened _after_ the end of the limit slice.
+			// So if every changed ID are not in `next` or `last`, there's no need to call `onNext()`
+			if (sliced !== filtered && changes.every(id => !last[id] && !sliced[id])) return;
 
 			// Call onNext() with the next result.
-			onNext(next);
+			onNext(sliced);
 
 			// Iterate.
-			last = next;
+			last = sliced;
 		});
 	}
 
-	async changeDocuments<T extends Data>({ path }: Collection<T>, changes: Changes<T>): Promise<void> {
-		const applied: string[] = [];
-		for (const [id, change] of Object.entries(changes)) if (this._changeDocument<T>(path, id, change)) applied.push(id);
-		if (applied.length) this._subs[path]?.fire(applied);
-	}
-
 	async reset(): Promise<void> {
-		this._data = {};
-		this._subs = {};
+		this.data = {};
 	}
 }
 
