@@ -1,8 +1,7 @@
-import { MutableObject, ImmutableObject, isObject, DeepPartial } from "../object";
+import { MutableObject, ImmutableObject, isObject } from "../object";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Schema, SchemaOptions } from "./Schema";
 import { Validator } from "./Validator";
-import { withPartial } from "./undefined";
 
 export type MapOptions<T> = SchemaOptions & {
 	readonly items: Validator<T>;
@@ -87,15 +86,6 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 		// Return immuatably (return output if changes were made, or exact input otherwise).
 		return (changed ? output : unsafeObject) as ImmutableObject<T>;
 	}
-
-	/** Get a partial validator for this object (i.e. validate an object where the props are allowed to be unset or an explicit `undefined`). */
-	get partial(): Validator<DeepPartial<ImmutableObject<T>>> {
-		// Lazy created and cached.
-		return (this._partial ||= new MapSchema({
-			items: withPartial(this.items),
-		}) as Validator<DeepPartial<ImmutableObject<T>>>);
-	}
-	private _partial?: Validator<DeepPartial<ImmutableObject<T>>>;
 }
 
 /** Shortcuts for MapSchema. */

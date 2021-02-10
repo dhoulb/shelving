@@ -1,7 +1,5 @@
-import { Data, Change } from "../data";
+import { Data } from "../data";
 import { EmptyObject, ImmutableObject } from "../object";
-import { withUndefined } from "./undefined";
-import { MapSchema } from "./MapSchema";
 import { ObjectSchema } from "./ObjectSchema";
 import { Validators } from "./Validator";
 import { SchemaOptions } from "./Schema";
@@ -38,20 +36,6 @@ export class DataSchema<T extends Data, D extends DataSchemas, C extends DataSch
 		this.documents = documents;
 		this.collections = collections;
 	}
-
-	/** Schema that validates a set of results (i.e. as returned by `Collection.get()`) for this data. */
-	get results(): MapSchema<T> {
-		// Lazy created.
-		return (this._results ||= new MapSchema({ items: this }));
-	}
-	private _results?: MapSchema<T>;
-
-	/** Schema that validates a set of changes (i.e. as provided to `Collection.change()`) for this data. */
-	get changes(): MapSchema<Change<T> | undefined> {
-		// Lazy created.
-		return (this._changes ||= new MapSchema({ items: withUndefined(this.partial) }));
-	}
-	private _changes?: MapSchema<Change<T> | undefined>;
 }
 
 /** Shortcuts for DataSchema. */

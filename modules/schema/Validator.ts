@@ -1,4 +1,16 @@
-import { isObject, ImmutableObject, DeepPartial } from "../object";
+import { isObject, ImmutableObject } from "../object";
+
+/** Options for the `validate()` method. */
+export type ValidateOptions = {
+	/** Whether partial object values are allowed, e.g. missing values aren't invalid. */
+	partial?: boolean;
+
+	/** Any additional options are passed through to the Provider. */
+	[additional: string]: unknown;
+};
+
+/** Validate a partial value rather than a full value. */
+export const PARTIAL = { partial: true } as const;
 
 /**
  * Validator: an object that can validate something.
@@ -15,10 +27,7 @@ export interface Validator<T = unknown> {
 	 * @throws `Error` If the value is invalid and cannot be fixed.
 	 * @throws `InvalidFeedback` If the value is invalid and cannot be fixed and we want to explain why to an end user.
 	 */
-	validate(unsafeValue?: unknown): T;
-
-	/** Any validator might implement a partial schema generator. */
-	readonly partial?: Validator<DeepPartial<T & ImmutableObject>>;
+	validate(unsafeValue?: unknown, options?: ValidateOptions): T;
 }
 
 /** Extract the type from a Validator. */
