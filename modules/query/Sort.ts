@@ -1,7 +1,7 @@
 import { Data } from "../data";
 import { Entry, ImmutableEntries } from "../entry";
-import { getProp } from "../object";
 import { DIRECTIONS, Direction, sort, CompareFunction } from "../sort";
+import { getQueryProp } from "./helpers";
 import { Rule } from "./Rule";
 
 /**
@@ -21,10 +21,8 @@ export class Sort<T extends Data> extends Rule<T> {
 	}
 
 	/** Compare two entries of this type for sorting. */
-	compare(left: Entry<T>, right: Entry<T>): number {
-		return this.key === "id"
-			? DIRECTIONS[this.direction](left[0], right[0])
-			: DIRECTIONS[this.direction](getProp(left[1], this.key), getProp(right[1], this.key));
+	compare([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
+		return DIRECTIONS[this.direction](getQueryProp(leftId, leftData, this.key), getQueryProp(rightId, rightData, this.key));
 	}
 
 	// Override to call `sort()` on the entries with a custom compare function.

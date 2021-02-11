@@ -1,8 +1,8 @@
 import { Data } from "../data";
 import { Entry, ImmutableEntries } from "../entry";
-import { getProp } from "../object";
 import { OPERATORS, Operator, filter, FilterFunction } from "../filter";
 import { Rule } from "./Rule";
+import { getQueryProp } from "./helpers";
 
 /**
  * Filter: filters a list of documents.
@@ -24,7 +24,7 @@ export class Filter<T extends Data> extends Rule<T> {
 	}
 
 	match(id: string, data: T): boolean {
-		return OPERATORS[this.operator](this.value, this.key === "id" ? id : getProp(data, this.key));
+		return OPERATORS[this.operator](this.value, getQueryProp(id, data, this.key));
 	}
 
 	// Override to call `filter()` on the entries with a custom filter function.
