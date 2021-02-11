@@ -5,14 +5,14 @@ import type {
 	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
 	DocumentSnapshot as FirestoreDocumentSnapshot,
 } from "@firebase/firestore-types";
-import { Dispatcher, ErrorDispatcher, MutableObject, Data, Result, Results, Provider, Document, Collection, Matcher } from "..";
+import { Dispatcher, ErrorDispatcher, MutableObject, Data, Result, Results, Provider, Document, Collection, Operator } from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the ID and the entire path of the document. `__id__` is just ID.
 const ID = "__id__"; // Internal way Firestore Queries can reference the ID of the current document.
 
 // Map `Filter.types` to `WhereFilterOp`
-const FILTERS: { [K in Matcher]: FirestoreWhereFilterOp } = {
+const OPERATORS: { readonly [K in Operator]: FirestoreWhereFilterOp } = {
 	is: "==",
 	not: "!=",
 	in: "in",
@@ -27,7 +27,7 @@ const FILTERS: { [K in Matcher]: FirestoreWhereFilterOp } = {
 const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filters, sorts, slice } }: Collection<T>): FirestoreQuery => {
 	let query: FirestoreQuery = firestore.collection(path);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key.toString(), direction);
-	for (const { type, key, value } of filters) query = query.where(key === "id" ? ID : key.toString(), FILTERS[type], value);
+	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key.toString(), OPERATORS[operator], value);
 	if (slice.limit !== null) query = query.limit(slice.limit);
 	return query;
 };
