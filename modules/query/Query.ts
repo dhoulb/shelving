@@ -1,11 +1,13 @@
 import type { Data, Results } from "../data";
 import type { ImmutableEntries } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
+import { assertLength, assertProp } from "../assert";
 import { Slice } from "./Slice";
 import { Filters } from "./Filters";
 import { Sorts } from "./Sorts";
 import { Rule } from "./Rule";
 import type { Queryable } from "./types";
+import { getQueryProp } from "./helpers";
 
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -51,6 +53,29 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	}
 	contains<K extends keyof T>(key: K, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
 		return { __proto__: Query.prototype, ...this, filters: this.filters.contains(key, value) };
+	}
+
+	/**
+	 * Get query that begins after a given record.
+	 * - Offset are based on the sort orders the collection's query uses.
+	 * - Every key used for sorting (e.g. `date, title` must be defined in `data`
+	 *
+	 * @throws AssertionError if this query currently has no sort orders.
+	 * @throws AssertionError if the input `data` did not contain a sorted value.
+	 */
+	after(id: string, data: T): this {
+		const sorts = this.sorts;
+		assertLength(sorts, 1);
+		let filters = this.filters;
+		const last = sorts.last;
+		for (const sort of sorts) {
+			const { key, direction } = sort;
+			const compare = sort === last ? (direction === "asc" ? "gt" : "lt") : direction === "asc" ? "gte" : "lte";
+			if (key !== "id") assertProp(data, key);
+			const value = getQueryProp(id, data, key);
+			filters = filters[compare](key, value);
+		}
+		return { __proto__: Query.prototype, ...this, filters };
 	}
 
 	/**

@@ -209,6 +209,9 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 	contains<K extends keyof T>(key: K, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.contains<K>(key, value) };
 	}
+	after(id: string, data: T): this {
+		return { __proto__: Collection.prototype, ...this, query: this.query.after(id, data) };
+	}
 	asc(key: "id" | keyof T = "id"): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.asc(key) };
 	}
