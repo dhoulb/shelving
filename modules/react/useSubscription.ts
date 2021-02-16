@@ -1,4 +1,4 @@
-import { fingerprint, Subscriptor, getSource, Source, Dependencies } from "..";
+import { fingerprint, Subscriptor, getSource, Dependencies } from "..";
 import { useState } from "./useState";
 
 /**
@@ -10,7 +10,7 @@ import { useState } from "./useState";
  * @param deps Value the promise relies on like `useEffect()` and `useMemo()` etc. Deps are passed as the arguments to `subscriber()` if it's a function.
  */
 export const useSubscription = <T, D extends Dependencies>(subscribe: Subscriptor<T, D>, deps: D): T => {
-	const source: Source<T> = getSource<T>(`${fingerprint(subscribe)}: ${fingerprint(deps)}`);
+	const source = getSource<T>(`${fingerprint(subscribe)}: ${fingerprint(deps)}`);
 	void useState(source.subscription); // Use `source.subscription` not `source` directly to indicate this is a subscription.
 	source.subscribeTo(subscribe, deps);
 	return source.value;
