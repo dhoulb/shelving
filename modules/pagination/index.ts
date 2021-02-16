@@ -1,7 +1,7 @@
 import { assert, assertLength } from "../assert";
 import { Data, Results } from "../data";
 import { Collection } from "../db";
-import { dispatch, EmptyDispatcher } from "../dispatch";
+import { dispatch, EmptyDispatcher } from "../function";
 import { getLastProp } from "../object";
 import { createState, State } from "../state";
 

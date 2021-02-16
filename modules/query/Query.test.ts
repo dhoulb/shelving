@@ -1,4 +1,4 @@
-import { Query, Filter, Sort, Filters, Sorts, Slice } from "./";
+import { Query, Filter, Sort, Filters, Sorts, Slice } from "..";
 
 type T = { str: string; num: number; type: "alpha" | "beta" };
 const a: T = { str: "Z", num: 3, type: "alpha" };

@@ -1,19 +1,17 @@
-import { fingerprint } from "..";
-import type { Dependencies } from "..";
-import { SourceSubscriber, useLiveSource } from "./useSource";
+import { fingerprint, Subscriptor, getSource, Source, Dependencies } from "..";
+import { useState } from "./useState";
 
 /**
  * Use a subscription in a React component.
- * - If the subscription hasn't loaded for the first time yet this will throw a `Promise` (to be caught by a `<Suspense>` above it).
+ * - If the subscription hasn't loaded for the first time yet this will throw a promise (to be caught by a `<Suspense>` above it).
  * - The dependencies MUST uniquely identify this async value! This is very important or you may get wrong values.
  *
  * @param subscribe Function that creates a subscription and returns an unsubscribe callback.
  * @param deps Value the promise relies on like `useEffect()` and `useMemo()` etc. Deps are passed as the arguments to `subscriber()` if it's a function.
  */
-export const useSubscription = <T, D extends Dependencies>(subscribe: SourceSubscriber<T, D>, deps: D): T => {
-	const source = useLiveSource<T>(`${fingerprint(subscribe)}: ${fingerprint(deps)}`);
-	source.subscribe(subscribe, deps);
-	const { value, error } = source.value;
-	if (error) throw error;
-	return value;
+export const useSubscription = <T, D extends Dependencies>(subscribe: Subscriptor<T, D>, deps: D): T => {
+	const source: Source<T> = getSource<T>(`${fingerprint(subscribe)}: ${fingerprint(deps)}`);
+	void useState(source.subscription); // Use `source.subscription` not `source` directly to indicate this is a subscription.
+	source.subscribeTo(subscribe, deps);
+	return source.value;
 };

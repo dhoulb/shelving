@@ -1,5 +1,6 @@
 import type { Data, Result, Results } from "../data";
-import type { ErrorDispatcher, Dispatcher, UnsubscribeDispatcher } from "../dispatch";
+import type { Unsubscriber } from "../function";
+import type { Stream } from "../stream";
 import type { Document } from "./Document";
 import type { Collection } from "./Collection";
 
@@ -20,13 +21,10 @@ export interface Provider {
 	 * - Expect that `onNext()` is called immediately with the initial value.
 	 *
 	 * @param ref Document specifying which document to subscribe to.
-	 * @param onNext(next, last?) Function that is called whenever doc changes.
-	 *     @param next First param of `onNext()` should always return the current result.
-	 *     @param last Second param of `onNext()` returns the result from the last time `onNext()` was called (this allows `next` and `last` to be diffed for changes etc).
-	 * @param onError(err) Function that is called if there is an error in the onNext callback or th internal operation of the subscription.
+	 * @param stream Stream to report the result back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onDocument<T extends Data>(ref: Document<T>, onNext: Dispatcher<Result<T>>, onError: ErrorDispatcher): UnsubscribeDispatcher;
+	onDocument<T extends Data>(ref: Document<T>, stream: Stream<Result<T>>): Unsubscriber;
 
 	/**
 	 * Create a new document in a collection by generating a unique ID.
@@ -93,9 +91,8 @@ export interface Provider {
 	 * - Expect that `onNext()` is called immediately with the initial value.
 	 *
 	 * @param ref Collection specifying which collection to to subscribe to.
-	 * @param onNext(docs) Function that is called whenever the collection changes.
-	 * @param onError(err) Function that is called if there is an error in the onNext callback or th internal operation of the subscription.
+	 * @param stream Stream to report the results back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onCollection<T extends Data>(ref: Collection<T>, onNext: Dispatcher<Results<T>>, onError: ErrorDispatcher): UnsubscribeDispatcher;
+	onCollection<T extends Data>(ref: Collection<T>, stream: Stream<Results<T>>): Unsubscriber;
 }

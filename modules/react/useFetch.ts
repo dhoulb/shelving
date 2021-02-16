@@ -1,9 +1,10 @@
-import { Dependencies, isObject, ImmutableObject, fingerprint, RequiredError } from "..";
-import { SourceFetcher, useSource } from "./useSource";
+import { Dependencies, isObject, ImmutableObject, fingerprint, RequiredError, Fetcher } from "..";
+import { getSource } from "../source";
+import { useState } from "./useState";
 
 /**
  * Use an async/promised value in a React component.
- * - If the value hasn't loaded yet this will throw a `Promise` (to be caught by a `<Suspense>` above it).
+ * - If the value hasn't loaded yet this will throw a promise (to be caught by a `<Suspense>` above it).
  * - The dependencies MUST uniquely identify this async value! This is very important or you may get wrong values.
  *
  * @param fetch Plain value or fetch function that returns a plain value or async/promised value.
@@ -12,13 +13,12 @@ import { SourceFetcher, useSource } from "./useSource";
  */
 export function useFetch<T, D extends Dependencies>(fetch: (...deps: D) => T | Promise<T>, deps: D, maxAgeSeconds?: number): T;
 export function useFetch<T, D extends Dependencies>(fetch: T | Promise<T>, deps: D, maxAgeSeconds?: number): T;
-export function useFetch<T, D extends Dependencies>(fetch: SourceFetcher<T, D>, deps: D, maxAgeSeconds?: number): T;
-export function useFetch<T, D extends Dependencies>(fetch: SourceFetcher<T, D>, deps: D, maxAgeSeconds?: number): T {
-	const source = useSource<T>(`${fingerprint(fetch)}: ${fingerprint(deps)}`);
-	source.fetch(fetch, deps, maxAgeSeconds);
-	const { value, error } = source.value;
-	if (error) throw error;
-	return value;
+export function useFetch<T, D extends Dependencies>(fetch: Fetcher<T, D>, deps: D, maxAgeSeconds?: number): T;
+export function useFetch<T, D extends Dependencies>(fetch: Fetcher<T, D>, deps: D, maxAgeSeconds?: number): T {
+	const source = getSource<T>(`${fingerprint(fetch)}: ${fingerprint(deps)}`);
+	void useState(source);
+	source.fetchFrom(fetch, deps, maxAgeSeconds);
+	return source.value;
 }
 
 /**
@@ -34,8 +34,8 @@ export function useFetch<T, D extends Dependencies>(fetch: SourceFetcher<T, D>, 
  */
 export function useFetchData<T, D extends Dependencies>(fetch: (...deps: D) => T | Promise<T>, deps: D, maxAgeSeconds?: number): T & ImmutableObject;
 export function useFetchData<T, D extends Dependencies>(fetch: T, deps: D, maxAgeSeconds?: number): T & ImmutableObject;
-export function useFetchData<T, D extends Dependencies>(fetch: SourceFetcher<T, D>, deps: D, maxAgeSeconds?: number): T & ImmutableObject;
-export function useFetchData<T, D extends Dependencies>(fetch: SourceFetcher<T, D>, deps: D, maxAgeSeconds?: number): T & ImmutableObject {
+export function useFetchData<T, D extends Dependencies>(fetch: Fetcher<T, D>, deps: D, maxAgeSeconds?: number): T & ImmutableObject;
+export function useFetchData<T, D extends Dependencies>(fetch: Fetcher<T, D>, deps: D, maxAgeSeconds?: number): T & ImmutableObject {
 	const result = useFetch<T, D>(fetch, deps, maxAgeSeconds);
 	if (!isObject(result)) throw new RequiredError("useFetchData(): Fetched data was null or undefined");
 	return result;

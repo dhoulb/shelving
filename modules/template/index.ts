@@ -63,7 +63,7 @@ const getTemplateName = (chunk: Chunk) => chunk.name;
 /**
  * Turn ":year-:month" and "2016-06..." etc into `{ year: "2016"... }`
  *
- * @param lazyTemplates Either a single template string, or an array/function/generator of template strings.
+ * @param lazyTemplates Either a single template string, or an arr../function of template strings.
  * - Template strings can include placeholders (e.g. `:name-${country}/{city}`).
  * @param target The string containing values, e.g. `Dave-UK/Manchester`
  * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.

@@ -1,6 +1,6 @@
-import { Entry, ImmutableEntries } from "../entry";
-import { sort, CompareFunction } from "../sort";
-import { Data } from "../data";
+import type { Entry, ImmutableEntries } from "../entry";
+import type { Data } from "../data";
+import { sort, Comparer } from "../sort";
 import type { Sortable } from "./types";
 import { Sort } from "./Sort";
 import { Rules } from "./Rules";
@@ -29,5 +29,5 @@ export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable
 		if (!this.rules.length || !entries.length) return entries;
 		return sort(entries, (this._compareFunction ||= this.compare.bind(this)));
 	}
-	private _compareFunction?: CompareFunction<Entry<T>>; // Store the created compare function so it's not recreated on every `apply()` call.
+	private _compareFunction?: Comparer<Entry<T>>; // Store the created compare function so it's not recreated on every `apply()` call.
 }

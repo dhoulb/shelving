@@ -1,10 +1,11 @@
-import { AsyncDispatcher, Data, ErrorDispatcher, Result, Document, DocumentRequiredError } from "..";
-import { useSource, useLiveSource } from "./useSource";
+import { Data, Result, Document, DocumentRequiredError } from "..";
+import { Observer } from "../observe";
+import { getSource } from "../source";
+import { useState } from "./useState";
 
 // Getters.
 const getDocumentResult = <T extends Data>(document: Document<T>) => document.result;
-const getDocumentSubscription = <T extends Data>(onNext: AsyncDispatcher<Result<T>>, onError: ErrorDispatcher, document: Document<T>) =>
-	document.on(onNext, onError);
+const getDocumentSubscription = <T extends Data>(observer: Observer<Result<T>>, document: Document<T>) => document.subscribe(observer);
 
 /**
  * Use the result of a Shelving collection document in a React component.
@@ -15,11 +16,10 @@ const getDocumentSubscription = <T extends Data>(onNext: AsyncDispatcher<Result<
  * @throws Unknown error when something goes wrong.
  */
 export const useDocument = <T extends Data>(document: Document<T> | undefined, maxAgeSeconds?: number): Result<T> => {
-	const source = useSource<Result<T>>(document ? document.toString() : "undefined");
-	if (document) source.fetch<[Document<T>]>(getDocumentResult, [document], maxAgeSeconds);
-	const { value, error } = source.value;
-	if (error) throw error;
-	return value;
+	const source = getSource<Result<T>>(document ? document.toString() : "undefined");
+	void useState(source);
+	if (document) source.fetchFrom<[Document<T>]>(getDocumentResult, [document], maxAgeSeconds);
+	return source.value;
 };
 
 /**
@@ -44,9 +44,8 @@ export const useDocumentData = <T extends Data>(document: Document<T>, maxAgeSec
  * @throws Unknown error when something goes wrong.
  */
 export const useDocumentSubscription = <T extends Data>(document: Document<T> | undefined): Result<T> => {
-	const source = useLiveSource<Result<T>>(document ? document.toString() : "undefined");
-	if (document) source.subscribe<[Document<T>]>(getDocumentSubscription, [document]);
-	const { value, error } = source.value;
-	if (error) throw error;
-	return value;
+	const source = getSource<Result<T>>(document ? document.toString() : "undefined");
+	void useState(source.subscription); // Use `source.subscribers` not `source` directly to indicate this is a subscription.
+	if (document) source.subscribeTo<[Document<T>]>(getDocumentSubscription, [document]);
+	return source.value;
 };

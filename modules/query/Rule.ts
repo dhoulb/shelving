@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import { Cloneable, cloneObject } from "../clone";
 import type { Data, Results } from "../data";
 import type { MutableEntries, ImmutableEntries } from "../entry";
+import { Cloneable, cloneObject } from "../clone";
 import { objectFromEntries } from "../object";
 
 /** Something that can be used to query against a result set or an array of entries. */
@@ -10,6 +8,7 @@ export abstract class Rule<T extends Data> implements Cloneable {
 	/**
 	 * Match an individual document against this rule.
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	match(id: string, data: T): boolean {
 		return true;
 	}

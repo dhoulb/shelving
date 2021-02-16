@@ -1,13 +1,10 @@
-import type { Data, Results, ErrorDispatcher, AsyncDispatcher, UnsubscribeDispatcher, Collection } from "..";
-import { useSource, useLiveSource } from "./useSource";
+import { Data, Results, Unsubscriber, Collection, getSource } from "..";
+import { Observer } from "../observe";
+import { useState } from "./useState";
 
 // Getters.
 const getCollectionResults = <T extends Data>(collection: Collection<T>): Promise<Results<T>> => collection.results;
-const getCollectionSubscription = <T extends Data>(
-	onNext: AsyncDispatcher<Results<T>>,
-	onError: ErrorDispatcher,
-	collection: Collection<T>,
-): UnsubscribeDispatcher => collection.on(onNext, onError);
+const getCollectionSubscription = <T extends Data>(observer: Observer<Results<T>>, collection: Collection<T>): Unsubscriber => collection.subscribe(observer);
 
 /**
  * Use the results of a Shelving collection in a React component (once).
@@ -20,11 +17,10 @@ const getCollectionSubscription = <T extends Data>(
  * @throws Unknown error when something goes wrong.
  */
 export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAgeSeconds?: number): Results<T> => {
-	const source = useSource<Results<T>>(collection ? collection.toString() : "undefined");
-	if (collection) source.fetch<[Collection<T>]>(getCollectionResults, [collection], maxAgeSeconds);
-	const { value, error } = source.value;
-	if (error) throw error;
-	return value;
+	const source = getSource<Results<T>>(collection ? collection.toString() : "undefined");
+	void useState(source);
+	if (collection) source.fetchFrom<[Collection<T>]>(getCollectionResults, [collection], maxAgeSeconds);
+	return source.value;
 };
 
 /**
@@ -38,9 +34,8 @@ export const useCollection = <T extends Data>(collection: Collection<T> | undefi
  * @throws Unknown error when something goes wrong.
  */
 export const useCollectionSubscription = <T extends Data>(collection: Collection<T> | undefined): Results<T> => {
-	const source = useLiveSource<Results<T>>(collection ? collection.toString() : "undefined");
-	if (collection) source.subscribe<[Collection<T>]>(getCollectionSubscription, [collection]);
-	const { value, error } = source.value;
-	if (error) throw error;
-	return value;
+	const source = getSource<Results<T>>(collection ? collection.toString() : "undefined");
+	void useState(source.subscription); // Use `source.subscribers` not `source` directly to indicate this is a subscription.
+	if (collection) source.subscribeTo<[Collection<T>]>(getCollectionSubscription, [collection]);
+	return source.value;
 };

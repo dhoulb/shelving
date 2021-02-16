@@ -118,7 +118,7 @@ test("MemoryProvider: subscribing to documents", async () => {
 	const doc = basics.doc("basic1");
 	// Subscribe.
 	const fn1 = jest.fn();
-	const un1 = doc.on(fn1);
+	const un1 = doc.subscribe(fn1);
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(1, undefined);
 	// Set.
@@ -153,7 +153,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	const basics = db.collection("basics");
 	// Subscribe.
 	const fn1 = jest.fn();
-	const un1 = basics.on(fn1);
+	const un1 = basics.subscribe(fn1);
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(1, {}); // Empty at first (no last argument).
 	// Add id1.
@@ -162,7 +162,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	expect(fn1).nthCalledWith(2, { [id1]: basic1 }); // id1 is added.
 	// Subscribe.
 	const fn2 = jest.fn();
-	const un2 = basics.on(fn2);
+	const un2 = basics.subscribe(fn2);
 	await Promise.resolve();
 	expect(fn2).nthCalledWith(1, { [id1]: basic1 });
 	// Set basic2.
@@ -221,7 +221,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	await basics.doc("basic7").set(basic7);
 	// Subscribe (should find only basic7).
 	const fn1 = jest.fn();
-	const un1 = basics.contains("tags", "odd").on(fn1); // Query for odds.
+	const un1 = basics.contains("tags", "odd").subscribe(fn1); // Query for odds.
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(1, {
 		basic7: expect.objectContaining(basic7),
@@ -263,7 +263,7 @@ test("MemoryProvider: subscribing to limit query", async () => {
 	await Promise.all(Object.entries(allBasics).map(([k, v]) => basics.doc(k).set(v)));
 	// Subscribe (should find only basic7).
 	const fn1 = jest.fn();
-	const un1 = basics.asc("id").limit(2).on(fn1); // Query for odds.
+	const un1 = basics.asc("id").limit(2).subscribe(fn1); // Query for odds.
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(1, {
 		basic1: expect.objectContaining(basic1),

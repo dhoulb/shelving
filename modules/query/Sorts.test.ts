@@ -1,4 +1,4 @@
-import { Sorts, Sort } from "./";
+import { Sorts, Sort } from "..";
 
 const a = { first: "B", second: 1 };
 const b = { first: "B", second: 2 };

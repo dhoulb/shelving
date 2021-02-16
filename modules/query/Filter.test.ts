@@ -1,5 +1,5 @@
 import { allBasics } from "../test";
-import { Filter } from "./";
+import { Filter } from "..";
 
 const { basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9 } = allBasics;
 

@@ -141,7 +141,7 @@ export function mapObjectKeys<V extends unknown>(
  * @param input An input object whose property values you want to modify.
  *
  * @param mapper Mapping function that receives the key and returns the new value.
- * - Mapper can return a `Promise`. If it does will return a Promise that resolves once every value has resolved.
+ * - Mapper can return a promise. If it does will return a Promise that resolves once every value has resolved.
  * - Return the `SKIP` symbol from the mapper to skip that property and not include it in the output object.
  * - `SKIP` is useful because using `filter(Boolean)` doesn't currently filter in TypeScript (and requires another loop anyway).
  * - Mapper can be a static value and all the values will be set to that value.
@@ -194,7 +194,7 @@ export const convertObject: <I extends ImmutableObject, O extends ImmutableObjec
  * @param keys An array of keys to map into an object.
  *
  * @param mapper Mapping function that receives the key and returns the corresponding value.
- * - Mapper can return a `Promise`. If it does will return a Promise that resolves once every value has resolved.
+ * - Mapper can return a promise. If it does will return a Promise that resolves once every value has resolved.
  * - Return the `SKIP` symbol from the mapper to skip that property and not include it in the output object.
  * - `SKIP` is useful because using `filter(Boolean)` doesn't currently filter in TypeScript (and requires another loop anyway).
  * - Mapper can be a static value and all the values will be set to that value.

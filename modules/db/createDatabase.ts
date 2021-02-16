@@ -2,13 +2,14 @@ import { Cloneable, cloneObject } from "../clone";
 import { EmptyObject, getFirstProp, getLastProp, ImmutableObject } from "../object";
 import { DataSchemas, DataSchema, Validator, ValidateOptions, PARTIAL } from "../schema";
 import { Data, Result, Results } from "../data";
-import { AsyncDispatcher, dispatch, ErrorDispatcher, UnsubscribeDispatcher } from "../dispatch";
-import { logError } from "../console";
+import { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import { isFeedback } from "../feedback";
 import { createQuery, Query } from "../query";
 import { Entry } from "../entry";
 import { ArrayType, ImmutableArray } from "../array";
 import { ValidationError } from "../errors";
+import { Observer } from "../observe";
+import { createStream } from "../stream";
 import { Document as DocumentInterface } from "./Document";
 import { DOCUMENT_PATH } from "./constants";
 import type { Provider } from "./Provider";
@@ -87,6 +88,7 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		this.parent = parent;
 		this.id = id;
 	}
+
 	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["type"], D[K]["documents"], D[K]["collections"]> {
 		return new Document<D[K]["type"], D[K]["documents"], D[K]["collections"]>(
 			this.schema.documents[name],
@@ -114,8 +116,9 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 	get data(): Promise<T> {
 		return this.get(REQUIRED);
 	}
-	on(onNext: AsyncDispatcher<Result<T>>, onError: ErrorDispatcher = logError): UnsubscribeDispatcher {
-		return this._provider.onDocument<T>(this, r => dispatch(onNext, r, onError), onError);
+	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
+		const stream = createStream<Result<T>>(next, error, complete);
+		return this._provider.onDocument<T>(this, stream);
 	}
 	set(unsafeData: ImmutableObject, options?: SetOptions): Promise<void> {
 		const data: T = !options?.validate ? (unsafeData as T) : this.validate(unsafeData);
@@ -161,8 +164,9 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 	get ids(): Promise<string[]> {
 		return this._provider.getCollection<T>(this).then(Object.keys);
 	}
-	on(onNext: AsyncDispatcher<Results<T>>, onError: ErrorDispatcher = logError): UnsubscribeDispatcher {
-		return this._provider.onCollection<T>(this, r => dispatch(onNext, r, onError), onError);
+	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
+		const stream = createStream<Results<T>>(next, error, complete);
+		return this._provider.onCollection<T>(this, stream);
 	}
 	get first(): Promise<Entry<T> | undefined> {
 		return this._provider.getCollection<T>(this.limit(1)).then(getFirstProp);

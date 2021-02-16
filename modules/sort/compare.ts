@@ -1,4 +1,11 @@
-export type CompareFunction<T = unknown> = (left: T, right: T) => number;
+/** Allowed direction references for sorting. */
+export type Direction = "asc" | "desc";
+
+/**
+ * Comparer: a function that takes in a value and returns zero if the values are equal, negative if `right` is higher, positive if `right` is lower).
+ * - Consistent with: `Dispatcher`, `Deriver`, `Filterer`, `Comparer`, `Matcher`
+ */
+export type Comparer<T = unknown> = (left: T, right: T) => number;
 
 /**
  * Comparison function that sorts into ascending order in a pragmatic way.
@@ -17,7 +24,7 @@ export type CompareFunction<T = unknown> = (left: T, right: T) => number;
  *
  * @returns Number below zero if `a` is higher, number above zero if `b` is higher, or `0` if they're equally sorted.
  */
-export const compareAscending: CompareFunction = (left, right) => {
+const asc: Comparer = (left, right) => {
 	// Exactly equal is easy.
 	if (left === right) return 0;
 
@@ -56,16 +63,13 @@ export const compareAscending: CompareFunction = (left, right) => {
 	return -1;
 };
 
-/** Inverse of `compareAscending()` to reverse the order of results. */
-export const compareDescending: CompareFunction = (left, right) => 0 - compareAscending(left, right);
-
-/** Allowed direction references for sorting. */
-export type Direction = "asc" | "desc";
+// To compare in descending order just invert the ascending order.
+const desc: Comparer = (left, right) => 0 - asc(left, right);
 
 /** List of matching functions along with their string direction reference. */
-export const DIRECTIONS: {
-	readonly [K in Direction]: CompareFunction;
+export const COMPARE: {
+	readonly [K in Direction]: Comparer;
 } = {
-	asc: compareAscending,
-	desc: compareDescending,
+	asc,
+	desc,
 };

@@ -12,6 +12,3 @@ export const NOERROR: unique symbol = Symbol("shelving/NOERROR");
 
 /** The NOVALUE symbol indicates something that definitely isn't a value (for situations where `undefined` is a valid value) */
 export const NOVALUE: unique symbol = Symbol("shelving/NOVALUE");
-
-/** Function that always returns undefined. */
-export const NOFUNC = (): void | undefined => undefined;

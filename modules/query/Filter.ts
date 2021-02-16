@@ -1,6 +1,6 @@
-import { Data } from "../data";
-import { Entry, ImmutableEntries } from "../entry";
-import { OPERATORS, Operator, filter, FilterFunction } from "../filter";
+import type { Data } from "../data";
+import type { Entry, ImmutableEntries } from "../entry";
+import { MATCH, Operator, filter, Filterer } from "../filter";
 import { Rule } from "./Rule";
 import { getQueryProp } from "./helpers";
 
@@ -24,15 +24,15 @@ export class Filter<T extends Data> extends Rule<T> {
 	}
 
 	match(id: string, data: T): boolean {
-		return OPERATORS[this.operator](this.value, getQueryProp(id, data, this.key));
+		return MATCH[this.operator](getQueryProp(id, data, this.key), this.value);
 	}
 
 	// Override to call `filter()` on the entries with a custom filter function.
 	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!entries.length) return entries;
-		return filter(entries, (this._filterFunction ||= ([id, data]) => this.match(id, data)));
+		return filter(entries, (this._filterer ||= ([id, data]) => this.match(id, data)));
 	}
-	private _filterFunction?: FilterFunction<Entry<T>>; // Store the created filter function so it's not recreated on every `apply()` call.
+	private _filterer?: Filterer<Entry<T>>; // Store the created filter function so it's not recreated on every `apply()` call.
 
 	// Implement toString()
 	toString(): string {

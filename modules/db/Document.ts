@@ -1,8 +1,9 @@
 import type { ImmutableObject } from "../object";
 import type { Data, Result } from "../data";
 import type { DataSchemas, AnyDataSchema, DataSchema, Validator } from "../schema";
-import type { AsyncDispatcher, ErrorDispatcher, UnsubscribeDispatcher } from "../dispatch";
+import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import type { Cloneable } from "../clone";
+import type { Observer, Subscribable } from "../observe";
 import type { Collection } from "./Collection";
 import type { DeleteOptions, GetOptions, SetOptions } from "./options";
 
@@ -13,7 +14,10 @@ export type AnyDocument = Document<Data, DataSchemas, DataSchemas>;
 export type SchemaDocument<S extends AnyDataSchema> = Document<S["type"], S["documents"], S["collections"]>;
 
 /** Type for a document instance. */
-export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends Cloneable, Validator<T> {
+export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas>
+	extends Cloneable,
+		Validator<T>,
+		Subscribable<Result<T>> {
 	/** Data schema that validates this document. */
 	readonly schema: DataSchema<T, D, C>;
 
@@ -45,14 +49,14 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * - Alternate syntax for `this.result`
 	 * - If `options.required = true` then throws `ReferenceRequiredError` if the document doesn't exist.
 	 *
-	 * @returns Document's data, or `undefined` if it doesn't exist. Uses a `Promise` if the provider is async, or a non-promise otherwise.
+	 * @returns Document's data, or `undefined` if it doesn't exist. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
 	get(options: GetOptions & { required: true }): Promise<T>;
 	get(options?: GetOptions): Promise<T>;
 
 	/**
 	 * Does this document exist?
-	 * @returns `true` if the document exists and `false` if it doesn't. Uses a `Promise` if the provider is async, or a non-promise otherwise.
+	 * @returns `true` if the document exists and `false` if it doesn't. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
 	readonly exists: Promise<boolean>;
 
@@ -60,7 +64,7 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * Get the result of this document.
 	 * - Shortcut for `document.get()`
 	 *
-	 * @returns Document's data, or `undefined` if the document doesn't exist. Uses a `Promise` if the provider is async, or a non-promise otherwise.
+	 * @returns Document's data, or `undefined` if the document doesn't exist. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
 	readonly result: Promise<Result<T>>;
 
@@ -69,20 +73,25 @@ export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C
 	 * - Handy for destructuring, e.g. `{ name, title } = documentThatMustExist.data`
 	 * - Shortcut for `document.get({ required: true })`
 	 *
-	 * @returns Document's data. Uses a `Promise` if the provider is async, or a non-promise otherwise.
+	 * @returns Document's data. Uses a promise if the provider is async, or a non-promise otherwise.
 	 * @throws RequiredError If the document's result was undefined.
 	 */
 	readonly data: Promise<T>;
 
 	/**
-	 * Subscribe to the data of this document.
-	 * - Called immediately with the current result, and again any time the result changes.
+	 * Subscribe to the result of this document (indefinitely).
+	 * - Called immediately with the first result, and again any time the results change.
 	 *
-	 * @param onNext Callback that is called when this document changes. Called with the document's data, or `undefined` if it doesn't exist.
-	 * @param onError Callback that is called if an error occurs.
-	 * @returns UnsubscribeDispatcher function that ends the subscription.
+	 * @param observer Observer with `next`, `error`, or `complete` methods.
+	 * @param next Callback that is called when this document changes. Called with the document's data, or `undefined` if it doesn't exist.
+	 * @param error Callback that is called if an error occurs.
+	 * @param complete Callback that is called when the subscription is done.
+	 *
+	 * @returns Function that ends the subscription.
 	 */
-	on(onNext: AsyncDispatcher<Result<T>>, onError?: ErrorDispatcher): UnsubscribeDispatcher;
+	subscribe(observer: Observer<Result<T>>): Unsubscriber;
+	subscribe(next: AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
+	subscribe(either: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 
 	/**
 	 * Set the entire data of this document.

@@ -1,2 +1,2 @@
-export * from "./operator";
+export * from "./match";
 export * from "./filter";

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useRef, useState as useReactState } from "react";
-import { Dependencies, AnyFunction, UnsubscribeDispatcher, isArrayEqual, State, createState, NOVALUE } from "..";
+import { Dependencies, AnyFunction, Unsubscriber, isArrayEqual, State, createState, NOVALUE } from "..";
 
 type StateInternal<T> = {
 	state: State<T>;
 	deps?: Dependencies;
-	effect: () => void | UnsubscribeDispatcher;
+	effect: () => void | Unsubscriber;
 };
 
 /**
@@ -41,7 +41,7 @@ export function useState<T>(input: State<T> | T | ((...d: Dependencies) => T), d
 		effect = () => {
 			if (state) {
 				if (!state.loading) setValue(state.value);
-				return state.on(setValue);
+				return state.subscribe(setValue);
 			}
 		};
 		ref.current = { state, deps, effect };

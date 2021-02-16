@@ -5,7 +5,7 @@ import type {
 	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
 	DocumentSnapshot as FirestoreDocumentSnapshot,
 } from "@google-cloud/firestore";
-import { Dispatcher, ErrorDispatcher, MutableObject, Data, Result, Results, Provider, Document, Collection, Operator } from "..";
+import type { MutableObject, Data, Result, Results, Provider, Document, Collection, Operator, Stream } from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the ID and the entire path of the document. `__id__` is just ID.
@@ -63,8 +63,11 @@ class FirestoreServerProvider implements Provider {
 		return documentResult(ref, snapshot);
 	}
 
-	onDocument<T extends Data>(ref: Document<T>, onNext: Dispatcher<Result<T>>, onError: ErrorDispatcher): () => void {
-		return this.firestore.doc(ref.path).onSnapshot(s => onNext(documentResult(ref, s)), onError);
+	onDocument<T extends Data>(ref: Document<T>, stream: Stream<Result<T>>): () => void {
+		return this.firestore.doc(ref.path).onSnapshot(
+			snapshot => stream.next(documentResult(ref, snapshot)),
+			error => stream.error(error),
+		);
 	}
 
 	async addDocument<T extends Data>(ref: Collection<T>, data: T): Promise<string> {
@@ -100,12 +103,15 @@ class FirestoreServerProvider implements Provider {
 		return snapshot.size;
 	}
 
-	onCollection<T extends Data>(ref: Collection<T>, onNext: Dispatcher<Results<T>>, onError?: ErrorDispatcher): () => void {
-		return buildQuery(this.firestore, ref).onSnapshot(snapshot => {
-			const next: MutableObject<T> = {};
-			for (const s of snapshot.docs) next[s.id] = collectionResult(ref, s);
-			onNext(next);
-		}, onError);
+	onCollection<T extends Data>(ref: Collection<T>, stream: Stream<Results<T>>): () => void {
+		return buildQuery(this.firestore, ref).onSnapshot(
+			snapshot => {
+				const next: MutableObject<T> = {};
+				for (const s of snapshot.docs) next[s.id] = collectionResult(ref, s);
+				stream.next(next);
+			},
+			error => stream.error(error),
+		);
 	}
 }
 

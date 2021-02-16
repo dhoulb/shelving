@@ -150,7 +150,7 @@ export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
  * @param arr The input array or object to map (if an object, `Object.entries()` will be performed automatically and the second argument to `mapper()` will be the string key).
  *
  * @param mapper Mapping function that receives the value and key and returns the corresponding value.
- * - Mapper can return a `Promise`. If it does will return a Promise that resolves once every value has resolved.
+ * - Mapper can return a promise. If it does will return a Promise that resolves once every value has resolved.
  * - Return the `SKIP` symbol from the mapper to skip that property and not include it in the output object.
  * - `SKIP` is useful because using `filter(Boolean)` doesn't currently filter in TypeScript (and requires another loop anyway).
  * - Mapper can be a non-function static value and all the values will be set to that value.

@@ -3,22 +3,23 @@
 import { Collection, Document, DocumentRequiredError, Provider } from "../db";
 import { randomId } from "../random";
 import type { Data, Result, Results } from "../data";
-import { Dispatcher, UnsubscribeDispatcher } from "../dispatch";
+import { dispatch, Dispatcher, Unsubscriber } from "../function";
 import { MutableObject, objectFromEntries, updateProps } from "../object";
-import { addItem, ImmutableArray, MutableArray } from "../array";
-import { Event } from "../event";
+import { addItem, ImmutableArray, MutableArray, removeItem } from "../array";
+import { Stream } from "../stream";
 import { logError } from "../console";
 
 /**
  * An individual table of data.
  * - Fires with an array of strings.
  */
-class Table<T extends Data> extends Event<ImmutableArray<string>> {
-	/** Actual data for this table. */
-	readonly docs: MutableObject<T> = {};
-	readonly changes: MutableArray<string> = [];
+class Table<T extends Data> {
+	private readonly dispatchers: Dispatcher<ImmutableArray<string>>[] = [];
+	private readonly changes: MutableArray<string> = [];
 
-	setDoc(id: string, data: T): void {
+	readonly docs: MutableObject<T> = {};
+
+	set(id: string, data: T): void {
 		if (data !== this.docs[id]) {
 			this.docs[id] = data;
 			addItem(this.changes, id);
@@ -26,7 +27,7 @@ class Table<T extends Data> extends Event<ImmutableArray<string>> {
 		}
 	}
 
-	deleteDoc(id: string): void {
+	delete(id: string): void {
 		if (this.docs[id]) {
 			delete this.docs[id];
 			addItem(this.changes, id);
@@ -34,15 +35,20 @@ class Table<T extends Data> extends Event<ImmutableArray<string>> {
 		}
 	}
 
-	fire() {
+	private fire() {
 		Promise.resolve().then(this._fire, logError);
 	}
 	private _fire = (): void => {
 		if (this.changes.length) {
-			super.fire(this.changes);
+			for (const dispatcher of this.dispatchers) dispatch(dispatcher, this.changes);
 			this.changes.splice(0);
 		}
 	};
+
+	on(dispatcher: Dispatcher<ImmutableArray<string>>): Unsubscriber {
+		this.dispatchers.push(dispatcher);
+		return () => removeItem(this.dispatchers, dispatcher);
+	}
 }
 
 /**
@@ -64,15 +70,15 @@ class MemoryProvider implements Provider {
 		return this.table<T>(parent).docs[id];
 	}
 
-	onDocument<T extends Data>({ id, parent }: Document<T>, onNext: Dispatcher<Result<T>>): UnsubscribeDispatcher {
+	onDocument<T extends Data>({ id, parent }: Document<T>, stream: Stream<Result<T>>): Unsubscriber {
 		const table = this.table<T>(parent);
 
-		// Call onNext() with initial results.
-		onNext(table.docs[id]);
+		// Call next() with initial results.
+		stream.next(table.docs[id]);
 
-		// Call onNext() every time the collection changes.
+		// Call next() every time the collection changes.
 		return table.on(changed => {
-			if (changed.includes(id)) onNext(table.docs[id]);
+			if (changed.includes(id)) stream.next(table.docs[id]);
 		});
 	}
 
@@ -80,12 +86,12 @@ class MemoryProvider implements Provider {
 		const table = this.table<T>(path);
 		let id = randomId();
 		while (table.docs[id]) id = randomId(); // Regenerate until unique.
-		table.setDoc(id, data);
+		table.set(id, data);
 		return id;
 	}
 
 	async setDocument<T extends Data>({ parent, id }: Document<T>, data: T): Promise<void> {
-		this.table<T>(parent).setDoc(id, data);
+		this.table<T>(parent).set(id, data);
 	}
 
 	async updateDocument<T extends Data>(document: Document<T>, updates: Partial<T>): Promise<void> {
@@ -94,14 +100,14 @@ class MemoryProvider implements Provider {
 		const data = table.docs[id];
 		if (data) {
 			const merged = updateProps(data, updates);
-			if (merged !== updates) table.setDoc(id, merged);
+			if (merged !== updates) table.set(id, merged);
 		} else {
 			throw new DocumentRequiredError(document);
 		}
 	}
 
 	async deleteDocument<T extends Data>({ parent, id }: Document<T>): Promise<void> {
-		this.table<T>(parent).deleteDoc(id);
+		this.table<T>(parent).delete(id);
 	}
 
 	async countCollection<T extends Data>({ path, query }: Collection<T>): Promise<number> {
@@ -112,15 +118,15 @@ class MemoryProvider implements Provider {
 		return query.results(this.table<T>(path).docs);
 	}
 
-	onCollection<T extends Data>({ path, query }: Collection<T>, onNext: Dispatcher<Results<T>>): UnsubscribeDispatcher {
+	onCollection<T extends Data>({ path, query }: Collection<T>, stream: Stream<Results<T>>): Unsubscriber {
 		const table = this.table<T>(path);
 		let filtered = objectFromEntries(query.sorts.apply(query.filters.apply(Object.entries(table.docs))));
 		let last = query.slice.results(filtered);
 
-		// Call onNext() with initial results (on next tick).
-		void Promise.resolve(last).then(onNext);
+		// Call next() with initial results (on next tick).
+		stream.next(last);
 
-		// Call onNext() when the collection changes.
+		// Possibly call next() when the collection changes if the changes affect the subscription.
 		return table.on(changes => {
 			// Loop through changes and update `filtered` with any changed items.
 			let updated = 0;
@@ -146,11 +152,11 @@ class MemoryProvider implements Provider {
 			const sliced = query.slice.results(filtered);
 
 			// If a slice was applied all the changes might have happened _after_ the end of the limit slice.
-			// So if every changed ID are not in `next` or `last`, there's no need to call `onNext()`
+			// So if every changed ID are not in `next` or `last`, there's no need to call `next()`
 			if (sliced !== filtered && changes.every(id => !last[id] && !sliced[id])) return;
 
-			// Call onNext() with the next result.
-			onNext(sliced);
+			// Call next() with the next result.
+			stream.next(sliced);
 
 			// Iterate.
 			last = sliced;

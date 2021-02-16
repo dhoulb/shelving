@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import type { ImmutableEntries } from "../entry";
 import type { Data, Results } from "../data";
 import { Rule } from "./Rule";

@@ -1,6 +1,6 @@
-import { Data } from "../data";
-import { Entry, ImmutableEntries } from "../entry";
-import { DIRECTIONS, Direction, sort, CompareFunction } from "../sort";
+import type { Data } from "../data";
+import type { Entry, ImmutableEntries } from "../entry";
+import { COMPARE, Direction, sort, Comparer } from "../sort";
 import { getQueryProp } from "./helpers";
 import { Rule } from "./Rule";
 
@@ -22,7 +22,7 @@ export class Sort<T extends Data> extends Rule<T> {
 
 	/** Compare two entries of this type for sorting. */
 	compare([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
-		return DIRECTIONS[this.direction](getQueryProp(leftId, leftData, this.key), getQueryProp(rightId, rightData, this.key));
+		return COMPARE[this.direction](getQueryProp(leftId, leftData, this.key), getQueryProp(rightId, rightData, this.key));
 	}
 
 	// Override to call `sort()` on the entries with a custom compare function.
@@ -30,7 +30,7 @@ export class Sort<T extends Data> extends Rule<T> {
 		if (!entries.length) return entries;
 		return sort(entries, (this._compareFunction ||= this.compare.bind(this)));
 	}
-	private _compareFunction?: CompareFunction<Entry<T>>; // Store the created compare function so it's not recreated on every `apply()` call.
+	private _compareFunction?: Comparer<Entry<T>>; // Store the created compare function so it's not recreated on every `apply()` call.
 
 	// Implement toString()
 	toString(): string {

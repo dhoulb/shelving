@@ -1,4 +1,4 @@
-import { Sort } from "./";
+import { Sort } from "..";
 
 const a = { str: "B", num: 3 };
 const b = { str: "C", num: 1 };

@@ -1,10 +1,11 @@
 import type { Data, Results } from "../data";
 import type { DataSchemas, AnyDataSchema, DataSchema, Validator } from "../schema";
-import type { AsyncDispatcher, ErrorDispatcher, UnsubscribeDispatcher } from "../dispatch";
+import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import type { Entry } from "../entry";
 import type { Queryable, Query } from "../query";
 import type { Cloneable } from "../clone";
-import { ImmutableObject } from "../object";
+import type { ImmutableObject } from "../object";
+import type { Observer, Subscribable } from "../observe";
 import type { Document } from "./Document";
 import type { DeleteOptions, SetOptions } from "./options";
 
@@ -20,7 +21,8 @@ export type SchemaCollection<S extends AnyDataSchema> = Collection<S["type"], S[
 export interface Collection<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas>
 	extends Queryable<T>,
 		Validator<T>,
-		Cloneable {
+		Cloneable,
+		Subscribable<Results<T>> {
 	/** Data schema that validates this document. */
 	readonly schema: DataSchema<T, D, C>;
 
@@ -52,27 +54,36 @@ export interface Collection<T extends Data, D extends DataSchemas = DataSchemas,
 	 * Get the set of results.
 	 * - Alternate syntax for `this.get()`
 	 *
-	 * @returns Document's data, or `undefined` if the document doesn't exist. Uses a `Promise` if the provider is async, or a non-promise otherwise.
+	 * @returns Document's data, or `undefined` if the document doesn't exist. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
 	readonly results: Promise<Results<T>>;
 
 	/**
 	 * Count the result of this document.
-	 * @returns Number of documents in the collection. Uses a `Promise` if the provider is async, or a non-promise otherwise.
+	 * @returns Number of documents in the collection. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
 	readonly count: Promise<number>;
 
 	/**
 	 * Get the IDs as an array of strings.
-	 * @returns Array of strings representing the documents in the current collection. Uses a `Promise` if the provider is async, or a non-promise otherwise.
+	 * @returns Array of strings representing the documents in the current collection. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
 	readonly ids: Promise<string[]>;
 
 	/**
-	 * Subscribe to the results.
-	 * - Called immediately with the current results, and again any time the results change.
+	 * Subscribe to the results of this collection (indefinitely).
+	 * - Called once with the first set of results, and again any time the results change.
+	 *
+	 * @param observer Observer with `next`, `error`, or `complete` methods.
+	 * @param next Callback that is called when this document changes. Called with the document's data, or `undefined` if it doesn't exist.
+	 * @param error Callback that is called if an error occurs.
+	 * @param complete Callback that is called when the subscription is done.
+	 *
+	 * @returns Function that ends the subscription.
 	 */
-	on(onNext: AsyncDispatcher<Results<T>>, onError?: ErrorDispatcher): UnsubscribeDispatcher;
+	subscribe(observer: Observer<Results<T>>): Unsubscriber;
+	subscribe(next: AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
+	subscribe(either: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 
 	/** Get a pointer first result (i.e. an object containing `.id` and `.data`, or `undefined` if no documents match this collecton). */
 	readonly first: Promise<Entry<T> | undefined>;
