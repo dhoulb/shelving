@@ -37,6 +37,7 @@ export * from "./fingerprint";
 export * from "./lazy";
 export * from "./merge";
 export * from "./observe";
+export * from "./pagination";
 export * from "./random";
 export * from "./sort";
 export * from "./source";
