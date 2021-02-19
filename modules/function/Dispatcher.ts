@@ -36,7 +36,9 @@ export type AsyncCatcher = (reason: Error | unknown) => void | Promise<void>;
  * @param value The value to dispatch into the dispatcher function.
  * @param catcher The catcher callback function that any thrown or rejected errors are dispatched to.
  */
-export function dispatch<I = void>(dispatcher: AsyncDispatcher<I>, value: Promise<I> | I, catcher = logError): void {
+export function dispatch(dispatcher: AsyncEmptyDispatcher, value?: undefined, catcher?: Catcher): void;
+export function dispatch<I = void>(dispatcher: AsyncDispatcher<I>, value: Promise<I> | I, catcher?: Catcher): void;
+export function dispatch<I = void>(dispatcher: Dispatcher<I> | AsyncDispatcher<I>, value: Promise<I> | I, catcher = logError): void {
 	if (value instanceof Promise) {
 		void _dispatchAsync(dispatcher, value, catcher);
 	} else {
@@ -61,6 +63,8 @@ async function _dispatchAsync<I>(dispatcher: AsyncDispatcher<I>, value: Promise<
  * - Name is a combination of `dispatch` and `this`.
  * - Yes it's weird but it's a one-word name and life's short.
  */
+export function thispatch(that: ImmutableObject<any>, dispatcher: AsyncEmptyDispatcher, value?: undefined, catcher?: Catcher): void;
+export function thispatch<I = void>(that: ImmutableObject<any>, dispatcher: AsyncDispatcher<I>, value: Promise<I> | I, catcher?: Catcher): void;
 export function thispatch<I = void>(that: ImmutableObject<any>, dispatcher: AsyncDispatcher<I>, value: Promise<I> | I, catcher = logError): void {
 	if (value instanceof Promise) {
 		void _thispatchAsync(that, dispatcher, value, catcher);
