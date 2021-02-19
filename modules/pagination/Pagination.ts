@@ -1,4 +1,4 @@
-import { getLastItem } from "../array";
+import { getFirstItem, getLastItem } from "../array";
 import { assert, assertLength } from "../assert";
 import { Data, Results } from "../data";
 import { Collection } from "../db";
@@ -12,7 +12,8 @@ type PaginationState<T extends Data> = {
 	done: boolean;
 	results: Results<T>;
 	entries: ImmutableEntries<T>;
-	more: EmptyDispatcher;
+	backward: EmptyDispatcher;
+	forward: EmptyDispatcher;
 };
 
 /**
@@ -42,7 +43,8 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 			done: initial ? entries.length < slice.limit : false,
 			results,
 			entries,
-			more: () => this.more(),
+			backward: () => this.backward(),
+			forward: () => this.forward(),
 		});
 		this.collection = collection;
 		this.limit = slice.limit;
@@ -52,18 +54,24 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 		if (!initial) void this._more(); // Call `_more()` directly to skip loading check.
 	}
 
-	/** Call this function to load more results. */
-	more(): void {
+	/** Load more results before the start. */
+	backward(): void {
 		const { loading, done } = this.value;
-		if (!loading && !done) {
-			this.update({ loading: true });
-			void this._more();
-		}
+		if (!loading && !done) void this._more("before");
 	}
-	private async _more(): Promise<void> {
-		const lastEntry = getLastItem(this.value.entries);
-		const offsetCollection = lastEntry ? this.collection.after(...lastEntry) : this.collection;
+
+	/** Load more results after the end. */
+	forward(): void {
+		const { loading, done } = this.value;
+		if (!loading && !done) void this._more("after");
+	}
+
+	private async _more(offset: "after" | "before" = "after"): Promise<void> {
+		this.update({ loading: true });
+		const lastEntry = offset === "after" ? getLastItem(this.value.entries) : getFirstItem(this.value.entries);
+		const offsetCollection = lastEntry ? this.collection[offset](...lastEntry) : this.collection;
 		this.merge(await offsetCollection.results);
+		this.update({ loading: false });
 	}
 
 	/**
@@ -77,7 +85,6 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 
 		if (!moreCount) {
 			this.update({
-				loading: false,
 				done: true,
 			});
 		} else {
@@ -85,7 +92,6 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 			const entries = Object.entries(results);
 			this.sorts.apply(entries);
 			this.update({
-				loading: false,
 				results,
 				entries,
 				done: moreCount < this.limit,
