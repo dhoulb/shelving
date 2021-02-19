@@ -2,7 +2,7 @@ import { getFirstItem, getLastItem } from "../array";
 import { assert, assertLength } from "../assert";
 import { Data, Results } from "../data";
 import { Collection } from "../db";
-import { ImmutableEntries } from "../entry";
+import { Entry, ImmutableEntries } from "../entry";
 import { EmptyDispatcher } from "../function";
 import { Sorts } from "../query";
 import { State } from "../state";
@@ -56,20 +56,19 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 
 	/** Load more results before the start. */
 	backward(): void {
-		const { loading, done } = this.value;
-		if (!loading && !done) void this._more("before");
+		const { loading, done, entries } = this.value;
+		if (!loading && !done) void this._more("before", getFirstItem(entries));
 	}
 
 	/** Load more results after the end. */
 	forward(): void {
-		const { loading, done } = this.value;
-		if (!loading && !done) void this._more("after");
+		const { loading, done, entries } = this.value;
+		if (!loading && !done) void this._more("after", getLastItem(entries));
 	}
 
-	private async _more(offset: "after" | "before" = "after"): Promise<void> {
+	private async _more(offset: "after" | "before" = "after", entry?: Entry<T>): Promise<void> {
 		this.update({ loading: true });
-		const lastEntry = offset === "after" ? getLastItem(this.value.entries) : getFirstItem(this.value.entries);
-		const offsetCollection = lastEntry ? this.collection[offset](...lastEntry) : this.collection;
+		const offsetCollection = entry ? this.collection[offset](...entry) : this.collection;
 		this.merge(await offsetCollection.results);
 		this.update({ loading: false });
 	}
