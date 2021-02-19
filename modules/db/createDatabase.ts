@@ -216,6 +216,9 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 	after(id: string, data: T): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.after(id, data) };
 	}
+	before(id: string, data: T): this {
+		return { __proto__: Collection.prototype, ...this, query: this.query.before(id, data) };
+	}
 	asc(key: "id" | keyof T = "id"): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.asc(key) };
 	}

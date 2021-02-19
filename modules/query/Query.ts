@@ -67,10 +67,33 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 		const sorts = this.sorts;
 		assertLength(sorts, 1);
 		let filters = this.filters;
-		const last = sorts.last;
+		const lastSort = sorts.last;
 		for (const sort of sorts) {
 			const { key, direction } = sort;
-			const compare = sort === last ? (direction === "asc" ? "gt" : "lt") : direction === "asc" ? "gte" : "lte";
+			const compare = sort === lastSort ? (direction === "asc" ? "gt" : "lt") : direction === "asc" ? "gte" : "lte";
+			if (key !== "id") assertProp(data, key);
+			const value = getQueryProp(id, data, key);
+			filters = filters[compare](key, value);
+		}
+		return { __proto__: Query.prototype, ...this, filters };
+	}
+
+	/**
+	 * Get query that begins before a given record.
+	 * - Offset are based on the sort orders the collection's query uses.
+	 * - Every key used for sorting (e.g. `date, title` must be defined in `data`
+	 *
+	 * @throws AssertionError if this query currently has no sort orders.
+	 * @throws AssertionError if the input `data` did not contain a sorted value.
+	 */
+	before(id: string, data: T): this {
+		const sorts = this.sorts;
+		assertLength(sorts, 1);
+		let filters = this.filters;
+		const lastSort = sorts.last;
+		for (const sort of sorts) {
+			const { key, direction } = sort;
+			const compare = sort === lastSort ? (direction === "asc" ? "lt" : "gt") : direction === "asc" ? "lte" : "gte";
 			if (key !== "id") assertProp(data, key);
 			const value = getQueryProp(id, data, key);
 			filters = filters[compare](key, value);

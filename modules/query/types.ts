@@ -31,4 +31,5 @@ export interface Sliceable {
 export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T>, Sliceable {
 	// These methods combine sorting and filtering to provide offsetting.
 	after(id: string, data: T): this;
+	before(id: string, data: T): this;
 }
