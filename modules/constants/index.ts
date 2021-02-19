@@ -7,6 +7,12 @@ export const SKIP: unique symbol = Symbol("shelving/SKIP");
 /** The EQUAL symbol indicates equality. */
 export const LOADING: unique symbol = Symbol("shelving/LOADING");
 
+/** The COMPLETE symbol indicates completion. */
+export const COMPLETE: unique symbol = Symbol("shelving/COMPLETE");
+
+/** The ERROR symbol indicates an error state. */
+export const ERROR: unique symbol = Symbol("shelving/ERROR");
+
 /** The NOERROR symbol indicates something that definitely isn't an error (because you can throw `undefined` this is sometimes necessary to differentiate) */
 export const NOERROR: unique symbol = Symbol("shelving/NOERROR");
 
