@@ -1,5 +1,4 @@
-import { RequiredError, LOADING, BLACKHOLE, State } from "..";
-import { createState } from "./State";
+import { RequiredError, LOADING, BLACKHOLE, State, createState } from "..";
 
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 

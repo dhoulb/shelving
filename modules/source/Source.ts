@@ -98,5 +98,4 @@ export class Source<T> extends State<T> {
 }
 
 /** Create a new `Source` instance. */
-export const createSource = <T>(initial: Promise<T> | T): Source<T> => new Source<T>(initial);
-export const createLoadingSource = <T>(): Source<T> => new Source<T>(LOADING);
+export const createSource = <T>(initial: Promise<T> | T | typeof LOADING): Source<T> => new Source<T>(initial);

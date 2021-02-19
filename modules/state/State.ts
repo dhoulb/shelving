@@ -235,8 +235,7 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 }
 
 /** Create a new `State` instance. */
-export const createState = <T>(initial: Promise<T> | T): State<T> => new State(initial);
-export const createLoadingState = <T>(): State<T> => new State<T>(LOADING);
+export const createState = <T>(initial: Promise<T> | T | typeof LOADING): State<T> => new State(initial);
 
 /**
  * Is an unknown value a `State` instance?

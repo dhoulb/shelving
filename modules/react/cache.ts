@@ -1,4 +1,4 @@
-import { createLoadingSource, createSource, Source } from "..";
+import { createSource, LOADING, Source } from "..";
 
 // How long to wait before removing errored sources.
 const ERROR_CLEANUP_MS = 10000;
@@ -16,7 +16,7 @@ const sources: { [fingerprint: string]: Source<any> } = {
 export const getCachedSource = <T>(key: string): Source<T> => {
 	let source = sources[key];
 	if (!source) {
-		source = createLoadingSource<T>();
+		source = createSource<T>(LOADING);
 		source.subscribe({
 			// If the source errors, remove it from the sources list after a delay.
 			// This allows the source to be retried (e.g. if the error came from being offline, maybe we're online now).
