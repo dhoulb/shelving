@@ -1,7 +1,8 @@
 import { assert, assertLength } from "../assert";
+import { SKIP } from "../constants";
 import { Data, Results } from "../data";
 import { Collection } from "../db";
-import { thispatch } from "../function";
+import { EmptyDispatcher } from "../function";
 import { getLastProp } from "../object";
 import { State } from "../state";
 
@@ -10,6 +11,7 @@ type PaginationState<T extends Data> = {
 	done: boolean;
 	results: Results<T>;
 	count: number;
+	more: EmptyDispatcher;
 };
 
 /**
@@ -31,7 +33,8 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 
 		const count = initial ? Object.keys(initial).length : 0;
 		const results = initial || {};
-		super(initial ? { loading: false, done: count < slice.limit, count, results } : { loading: false, done: false, count, results });
+		const done = count < slice.limit;
+		super({ loading: false, done, count, results, more: () => this.more() });
 		this._collection = collection;
 		this._limit = slice.limit;
 
@@ -41,29 +44,26 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 
 	/** Call this function to load more results. */
 	more(): void {
-		thispatch(this, this._more, undefined);
+		this.next(this._more());
 	}
-	private async _more(): Promise<void> {
-		try {
-			const { loading, done, results, count } = this.value;
-			if (loading || done) return;
+	private async _more(): Promise<typeof SKIP | PaginationState<T>> {
+		const { loading, done, results, count, more } = this.value;
+		if (loading || done) return SKIP;
 
-			this.update({ loading: true });
+		this.update({ loading: true });
 
-			const lastEntry = getLastProp(results);
-			const offsetCollection = lastEntry ? this._collection.after(...lastEntry) : this._collection;
-			const moreResults = await offsetCollection.results;
-			const moreCount = Object.keys(results).length;
+		const lastEntry = getLastProp(results);
+		const offsetCollection = lastEntry ? this._collection.after(...lastEntry) : this._collection;
+		const moreResults = await offsetCollection.results;
+		const moreCount = Object.keys(results).length;
 
-			this.set({
-				loading: false,
-				done: moreCount < this._limit,
-				results: moreCount ? { ...results, ...moreResults } : results,
-				count: count + moreCount,
-			});
-		} catch (thrown) {
-			this.error(thrown);
-		}
+		return {
+			loading: false,
+			done: moreCount < this._limit,
+			results: moreCount ? { ...results, ...moreResults } : results,
+			count: count + moreCount,
+			more,
+		};
 	}
 }
 
