@@ -1,6 +1,5 @@
-import { Data, Result, Document, DocumentRequiredError } from "..";
-import { Observer } from "../observe";
-import { getSource } from "../source";
+import { Data, Result, Document, DocumentRequiredError, Observer } from "..";
+import { getCachedSource } from "./cache";
 import { useState } from "./useState";
 
 // Getters.
@@ -15,10 +14,10 @@ const getDocumentSubscription = <T extends Data>(observer: Observer<Result<T>>, 
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  * @throws Unknown error when something goes wrong.
  */
-export const useDocument = <T extends Data>(document: Document<T> | undefined, maxAgeSeconds?: number): Result<T> => {
-	const source = getSource<Result<T>>(document ? document.toString() : "undefined");
+export const useDocument = <T extends Data>(document: Document<T> | undefined, maxAge?: number): Result<T> => {
+	const source = getCachedSource<Result<T>>(`document:${document ? document.toString() : "undefined"}`);
 	void useState(source);
-	if (document) source.fetchFrom<[Document<T>]>(getDocumentResult, [document], maxAgeSeconds);
+	if (document) source.fetchFrom<[Document<T>]>(getDocumentResult, [document], maxAge);
 	return source.value;
 };
 
@@ -31,8 +30,8 @@ export const useDocument = <T extends Data>(document: Document<T> | undefined, m
  * @throws `RequiredError` when document does not exist.
  * @throws Unknown error when something goes wrong.
  */
-export const useDocumentData = <T extends Data>(document: Document<T>, maxAgeSeconds?: number): T => {
-	const result = useDocument(document, maxAgeSeconds);
+export const useDocumentData = <T extends Data>(document: Document<T>, maxAge?: number): T => {
+	const result = useDocument(document, maxAge);
 	if (!result) throw new DocumentRequiredError(document);
 	return result;
 };
@@ -44,7 +43,7 @@ export const useDocumentData = <T extends Data>(document: Document<T>, maxAgeSec
  * @throws Unknown error when something goes wrong.
  */
 export const useDocumentSubscription = <T extends Data>(document: Document<T> | undefined): Result<T> => {
-	const source = getSource<Result<T>>(document ? document.toString() : "undefined");
+	const source = getCachedSource<Result<T>>(`document:${document ? document.toString() : "undefined"}`);
 	void useState(source.subscription); // Use `source.subscribers` not `source` directly to indicate this is a subscription.
 	if (document) source.subscribeTo<[Document<T>]>(getDocumentSubscription, [document]);
 	return source.value;
