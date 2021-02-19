@@ -23,10 +23,10 @@ export type AsyncEmptyDispatcher = () => void | Promise<void>;
 export type Unsubscriber = () => void;
 
 /** `Dispatcher` that dispatches an error. */
-export type Catcher = (thrown: Error | unknown) => void;
+export type Catcher = (reason: Error | unknown) => void;
 
 /** `Dispatcher` that dispatches an error and might return `Promise` */
-export type AsyncCatcher = (thrown: Error | unknown) => void | Promise<void>;
+export type AsyncCatcher = (reason: Error | unknown) => void | Promise<void>;
 
 /**
  * Dispatch: call a dispatcher function safely.

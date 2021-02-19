@@ -33,15 +33,15 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 	 * - Calls `next()` on all subscribers.
 	 * - Skips subscribers where `subscriber.closed` is truthy.
 	 */
-	next(next: T | typeof SKIP): void {
+	next(value: T | typeof SKIP): void {
 		if (this.closed) return;
-		if (next === SKIP) return;
+		if (value === SKIP) return;
 
 		const subscribers = this._subscribers.slice(this._sliceStart, this._sliceEnd);
 		for (const subscriber of subscribers) {
 			if (!subscriber.closed) {
 				const cb = subscriber.next;
-				if (cb) thispatch(subscriber, cb, next);
+				if (cb) thispatch(subscriber, cb, value);
 			}
 
 			// Remove any closed subscribers to free up memory.
@@ -54,8 +54,8 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 	 * - Calls `error()` on the subscribers.
 	 * - Skips subscribers where `subscriber.closed` is truthy.
 	 */
-	error(error: Error | unknown): void {
-		logError(error); // Just in case.
+	error(reason: Error | unknown): void {
+		logError(reason); // Just in case.
 
 		// Remove all subscribers (to free memory) since this stream has definitely closed now.
 		const subscribers = this._subscribers.splice(0);
@@ -65,7 +65,7 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		for (const subscriber of subscribers) {
 			if (!subscriber.closed) {
 				const cb = subscriber.error;
-				if (cb) thispatch(subscriber, cb, error);
+				if (cb) thispatch(subscriber, cb, reason);
 			}
 		}
 	}
@@ -143,11 +143,11 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 	 * PromiseLike implementation.
 	 * - Allows you to `await` this stream to get the next value.
 	 */
-	then<U = T, V = never>(next?: (value: T) => PromiseLike<U> | U, error?: (thrown: Error | unknown) => PromiseLike<V> | V): Promise<U | V> {
-		return new Promise<T>((resolve: AsyncDispatcher<T>, reject: AsyncCatcher): void => {
-			this.take(1).subscribe({ next: resolve, error: reject });
-		}).then<U, V>(next, error);
+	then<X = T, Y = never>(next?: (value: T) => PromiseLike<X> | X, error?: (reason: Error | unknown) => PromiseLike<Y> | Y): Promise<X | Y> {
+		this._executor ||= (resolve, reject): void => void this.take(1).subscribe({ next: resolve, error: reject });
+		return new Promise<T>(this._executor).then<X, Y>(next, error);
 	}
+	private _executor?: (resolve: AsyncDispatcher<T>, reject: AsyncCatcher) => void;
 }
 
 /**
