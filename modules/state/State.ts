@@ -1,9 +1,9 @@
 import type { AsyncDeriver } from "../function";
 import type { Observer, Subscribable } from "../observe";
 import { RequiredError } from "../errors";
-import { LOADING, NOERROR, SKIP } from "../constants";
+import { LOADING, SKIP } from "../constants";
 import { logError } from "../console";
-import { ImmutableObject, updateProps } from "../object";
+import { ImmutableObject, Mutable, updateProps } from "../object";
 import { ImmutableArray, ArrayType, swapItem, withoutItem, withItem } from "../array";
 import { Stream } from "../stream";
 import { assertArray, assertObject } from "../assert";
@@ -41,28 +41,26 @@ import { assertArray, assertObject } from "../assert";
  * - While the `State` has an error calls to `state.value` and `state.data` will throw that error.
  */
 export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, Subscribable<T> {
-	/** Current value. */
-	protected _value: T | Promise<T>;
+	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
+	private _fired: T | typeof LOADING = LOADING; // Last value that was fired.
+	private _closed = false;
 
-	/** Current error. */
-	protected _error: unknown | typeof NOERROR = NOERROR;
+	readonly reason?: Error | unknown; // The error that caused this state to close.
+	readonly updated?: number; // Time we last updated a new value.
 
-	/**
-	 * Detect whether this state is loading (i.e. its internal value is a promise).
-	 * @returns `true` if this state is loading or `false` otherwise.
-	 */
+	/** Whether the state has loaded yet, or not. */
 	get loading(): boolean {
-		return this._value instanceof Promise;
+		return this._value === LOADING;
 	}
 
 	/**
 	 * Get current value.
-	 * @throws unknown if the value currently has an error.
+	 * @throws `Error | unknown` if this state has errored.
 	 * @throws Promise if the value is currently loading (Promise resolves when a non-Promise value is set).
 	 */
 	get value(): T {
-		if (this._error !== NOERROR) throw this._error;
-		if (this._value instanceof Promise) throw this._value;
+		if (this.reason) throw this.reason;
+		if (this._value === LOADING) throw super.then();
 		return this._value;
 	}
 
@@ -77,61 +75,79 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 		return value as Exclude<T, undefined>;
 	}
 
-	constructor(initial: Promise<T | typeof SKIP> | T | typeof SKIP | typeof LOADING) {
+	constructor(value: Promise<T | typeof SKIP> | T | typeof SKIP | typeof LOADING) {
 		super();
-		if (initial instanceof Promise) {
+		if (value instanceof Promise) {
 			// If initial is a promise, set value of this state when it resolves.
-			initial.then(next => void this.next(next), logError);
-			this._value = super.then();
-		} else if (initial === LOADING || initial === SKIP) {
-			// If initial is LOADING or SKIP, set value to a Promise that resolves after `next()` is called.
-			this._value = super.then();
-		} else {
+			void this._asyncNext(value);
+		} else if (value !== LOADING && value !== SKIP) {
 			// If initial is an explicit value, save it.
-			this._value = initial;
+			this._value = value;
+			(this as Mutable<this>).updated = Date.now();
 		}
 	}
 
-	// Override `next()` so it 1) sets the value and resets the error, and 2) only fires listeners once per tick.
-	next(next: T | typeof SKIP): void {
-		if (this.closed) return;
-		if (next === SKIP) return;
-		this._value = next;
+	// Override `next()` to save the value and defer calling listeners to the end of the tick.
+	// This ensures that if `next()` is called multiple times within a tick the listeners will only be called once.
+	next(value: Promise<T | typeof SKIP> | T | typeof SKIP): void {
+		if (this._closed) return;
+		if (value === SKIP) return;
+		if (value instanceof Promise) {
+			void this._asyncNext(value);
+		} else {
+			this._value = value;
+			(this as Mutable<this>).updated = Date.now();
+			Promise.resolve().then(this._tick, logError);
+		}
+	}
+	private async _asyncNext(value: Promise<T | typeof SKIP>): Promise<void> {
+		try {
+			this.next(await value);
+		} catch (thrown) {
+			this.error(thrown);
+		}
+	}
+
+	// Override `error()` to save the error and defer calling listeners to the end of the tick.
+	error(reason: Error | unknown): void {
+		if (this._closed) return;
+		(this as Mutable<this>).reason = reason;
+		this._closed = true;
 		Promise.resolve().then(this._tick, logError);
 	}
 
-	// Run at the end of a tick to call `next()` on subscribers.
+	// Override `complete()` to defer calling listeners to the end of the tick.
+	// This ensures that if `next()` is called before `complete()`, the `next()` listeners will correctly be called before `complete()`
+	complete(): void {
+		if (this._closed) return;
+		this._closed = true;
+		Promise.resolve().then(this._tick, logError);
+	}
+
+	// Run at the end of a tick to call listeners.
 	private _tick = (): void => {
 		if (this.closed) return;
-		if (this._value instanceof Promise) return; // Shouldn't happen.
-		if (this._value !== this._lastValue) {
-			const value = this._value;
-			this._lastValue = value;
-			super.next(value);
+		if (this.reason) {
+			// If there's an error call `error()`
+			super.error(this.reason);
+		} else {
+			// Otherwise call `next()` and possibly `complete()`
+			if (this._value !== this._fired && this._value !== LOADING) {
+				this._fired = this._value;
+				super.next(this._value);
+			}
+			if (this._closed) super.complete();
 		}
 	};
-	private _lastValue: T | typeof LOADING = LOADING;
-
-	// Override `error()` so it saves the error.
-	error(error: Error | unknown): void {
-		if (this.closed) return;
-		this._error = error;
-		super.error(error);
-	}
 
 	/**
 	 * Set a new value for this value.
 	 * - Listeners will fire (if value is different).
-	 * - If value is a Promise, it is awaited and set after the value resolves.
+	 * - If value is a Promise, it's awaited and set after it value resolves.
 	 */
-	set(value: Promise<T> | T): void {
-		if (value instanceof Promise) {
-			// Value is a promise so wait for it to resolve before calling listeners.
-			value.then(v => this.set(v), logError);
-		} else if (this._value !== value) {
-			// This is the next value.
-			this.next(value);
-		}
+	set(value: Promise<T | typeof SKIP> | T | typeof SKIP): void {
+		// This is the next value.
+		this.next(value);
 	}
 
 	/**
@@ -142,7 +158,7 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 */
 	update<X extends T & ImmutableObject>(partial: Partial<X>): void {
 		assertObject(this._value);
-		this.set(updateProps<X>(this._value as X, partial));
+		this.next(updateProps<X>(this._value as X, partial));
 	}
 
 	/**
@@ -153,7 +169,7 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 */
 	add<X extends T & ImmutableArray>(item: ArrayType<X>): void {
 		assertArray(this._value);
-		this.set(withItem(this._value, item) as X);
+		this.next(withItem(this._value, item) as X);
 	}
 
 	/**
@@ -164,7 +180,7 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 */
 	remove<X extends T & ImmutableArray>(item: ArrayType<X>): void {
 		assertArray(this._value);
-		this.set(withoutItem(this._value, item) as X);
+		this.next(withoutItem(this._value, item) as X);
 	}
 
 	/**
@@ -175,7 +191,7 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 */
 	swap<X extends T & ImmutableArray>(oldItem: ArrayType<X>, newItem: ArrayType<X>): void {
 		assertArray(this._value);
-		this.set(swapItem(this._value, oldItem, newItem) as X);
+		this.next(swapItem(this._value, oldItem, newItem) as X);
 	}
 
 	/**
@@ -191,7 +207,7 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	derive<TT>(deriver?: AsyncDeriver<T, TT | typeof SKIP>): State<T> | State<TT> {
 		if (deriver) {
 			// Make a state to hold the derived value, and set it using the current value of this state
-			const derivedState = new State<TT>(this._value instanceof Promise ? this._value.then(deriver) : deriver(this._value));
+			const derivedState = new State<TT>(this._value === LOADING ? super.then(deriver) : deriver(this._value));
 			// Create a stream that produces a derived value every time this state updates.
 			const derivedStream = super.derive<TT>(deriver);
 			// Subscribe our new state to the derived value stream.
@@ -200,7 +216,7 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 			return derivedState;
 		} else {
 			// If there's no deriver function just return a copy state and set it using the current value of this state.
-			const copyState = new State<T>(this._value instanceof Promise ? this._value.then() : this._value);
+			const copyState = new State<T>(this._value === LOADING ? super.then() : this._value);
 			this.subscribe(copyState);
 			return copyState;
 		}
@@ -212,14 +228,15 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 * - If the current value is still loading this will resolve when it resolves.
 	 * - Otherwise this will resolve immediately.
 	 */
-	then<U = T, V = never>(next?: (value: T) => PromiseLike<U> | U, error?: (thrown: Error | unknown) => PromiseLike<V> | V): Promise<U | V> {
-		if (this._value instanceof Promise) return this._value.then(next, error);
+	then<X = T, Y = never>(next?: (value: T) => PromiseLike<X> | X, error?: (reason: Error | unknown) => PromiseLike<Y> | Y): Promise<X | Y> {
+		if (this._value === LOADING) return super.then(next, error);
 		return Promise.resolve(this._value).then(next, error);
 	}
 }
 
 /** Create a new `State` instance. */
-export const createState = <T>(initial: Promise<T> | T | typeof LOADING): State<T> => new State(initial);
+export const createState = <T>(initial: Promise<T> | T): State<T> => new State(initial);
+export const createLoadingState = <T>(): State<T> => new State<T>(LOADING);
 
 /**
  * Is an unknown value a `State` instance?
