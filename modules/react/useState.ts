@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useRef, useState as useReactState } from "react";
-import { Dependencies, AnyFunction, Unsubscriber, isArrayEqual, State, createState, NOVALUE } from "..";
+import { Dependencies, AnyFunction, Unsubscriber, isArrayEqual, State, createState, NOVALUE, COMPLETE, ERROR } from "..";
 
 type StateInternal<T> = {
 	state: State<T>;
@@ -27,7 +27,7 @@ export function useState<S extends State<any>>(input: S, deps?: Dependencies): S
 export function useState<T, D extends Dependencies>(input: (...deps: D) => T, deps: D): State<T>; // Detect initialiser functions (dependencies are required and must match
 export function useState<T>(input: Exclude<T, AnyFunction>, deps?: Dependencies): State<T>; // Detect plain values (dependencies are optional).
 export function useState<T>(input: State<T> | T | ((...d: Dependencies) => T), deps?: Dependencies): State<T> {
-	const setValue = useReactState<T | typeof NOVALUE>(NOVALUE)[1];
+	const setValue = useReactState<T | typeof NOVALUE | typeof ERROR | typeof COMPLETE>(NOVALUE)[1];
 
 	const ref = useRef<StateInternal<T>>();
 	let state = ref.current?.state;
@@ -41,7 +41,11 @@ export function useState<T>(input: State<T> | T | ((...d: Dependencies) => T), d
 		effect = () => {
 			if (state) {
 				if (!state.loading) setValue(state.value);
-				return state.subscribe(setValue);
+				return state.subscribe({
+					next: setValue, // Refresh when State gets a new value.
+					error: () => setValue(ERROR), // Refresh when State errors.
+					complete: () => setValue(COMPLETE), // Refresh when State completes.
+				});
 			}
 		};
 		ref.current = { state, deps, effect };
