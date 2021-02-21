@@ -154,6 +154,3 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 		return `${this.filters},${this.sorts},${this.slice}`;
 	}
 }
-
-/** Create a new Query instance. */
-export const createQuery = <T extends Data>(): Query<T> => new Query<T>();

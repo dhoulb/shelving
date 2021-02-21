@@ -1,7 +1,9 @@
 import type { Data, Results } from "../data";
-import type { MutableEntries, ImmutableEntries } from "../entry";
+import type { ImmutableEntries, Entry } from "../entry";
 import { Cloneable, cloneObject } from "../clone";
 import { objectFromEntries } from "../object";
+import { bindMethod } from "../class";
+import { filter } from "../filter";
 
 /** Something that can be used to query against a result set or an array of entries. */
 export abstract class Rule<T extends Data> implements Cloneable {
@@ -14,6 +16,14 @@ export abstract class Rule<T extends Data> implements Cloneable {
 	}
 
 	/**
+	 * Return a Filterer function that can filter an array of entries
+	 */
+	@bindMethod // Bind this so we can use it directly in `filter()`
+	filterer([id, data]: Entry<T>): boolean {
+		return this.match(id, data);
+	}
+
+	/**
 	 * Apply this queryable to a set of results and return the (potentially) modified results.
 	 * @returns Either a new Results object (if `results` was modified), or the exact same instance (if no changes were made).
 	 */
@@ -23,19 +33,10 @@ export abstract class Rule<T extends Data> implements Cloneable {
 		return entries === applied ? results : objectFromEntries(applied);
 	}
 
-	/**
-	 * Modify an array of entries (in place, modifying the original object).
-	 * @returns The new array, or the exact old array instance if no changes were made.
-	 */
+	// Override to call `filter()` on the entries with a custom filter function.
 	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!entries.length) return entries;
-		let changed = false;
-		const matched: MutableEntries<T> = [];
-		for (const entry of entries) {
-			if (this.match(entry[0], entry[1])) matched.push(entry);
-			else changed = true;
-		}
-		return changed ? matched : entries;
+		return filter(entries, this.filterer);
 	}
 
 	// Implement toString()

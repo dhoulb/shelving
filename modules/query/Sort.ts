@@ -1,6 +1,7 @@
+import { bindMethod } from "../class";
 import type { Data } from "../data";
 import type { Entry, ImmutableEntries } from "../entry";
-import { COMPARE, Direction, sort, Comparer } from "../sort";
+import { COMPARE, Direction, sort } from "../sort";
 import { getQueryProp } from "./helpers";
 import { Rule } from "./Rule";
 
@@ -21,16 +22,16 @@ export class Sort<T extends Data> extends Rule<T> {
 	}
 
 	/** Compare two entries of this type for sorting. */
-	compare([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
+	@bindMethod // Bind this so we can use it directly in `sort()`
+	comparer([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
 		return COMPARE[this.direction](getQueryProp(leftId, leftData, this.key), getQueryProp(rightId, rightData, this.key));
 	}
 
 	// Override to call `sort()` on the entries with a custom compare function.
 	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!entries.length) return entries;
-		return sort(entries, (this._compareFunction ||= this.compare.bind(this)));
+		return sort(entries, this.comparer);
 	}
-	private _compareFunction?: Comparer<Entry<T>>; // Store the created compare function so it's not recreated on every `apply()` call.
 
 	// Implement toString()
 	toString(): string {

@@ -1,5 +1,6 @@
-import type { ImmutableEntries } from "../entry";
+import type { Entry, ImmutableEntries } from "../entry";
 import type { Data, Results } from "../data";
+import { bindMethod } from "..";
 import { Rule } from "./Rule";
 
 export const JOIN_RULES = ",";
@@ -7,7 +8,7 @@ export const JOIN_RULES = ",";
 const getRuleString = (rule: Rule<Data>) => rule.toString();
 
 /** Type of Rule that is powered by several sub-rules (e.g. `Filters` and `Sorts` and `Query` itself extend this). */
-export abstract class Rules<D extends Data, C extends Rule<D>> extends Rule<D> {
+export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
 	protected readonly rules: C[];
 
 	get first(): C | undefined {
@@ -28,17 +29,25 @@ export abstract class Rules<D extends Data, C extends Rule<D>> extends Rule<D> {
 	/**
 	 * Match an individual document against this rule.
 	 */
-	match(id: string, data: D): boolean {
+	match(id: string, data: T): boolean {
 		// If any rule returns false, return false.
 		for (const rule of this.rules) if (!rule.match(id, data)) return false;
 		return true;
 	}
 
 	/**
+	 * Return a Filterer function that can filter an array of entries
+	 */
+	@bindMethod // Bind this so we can use it directly in `filter()`
+	filterer([id, data]: Entry<T>): boolean {
+		return this.match(id, data);
+	}
+
+	/**
 	 * Apply this queryable to a set of results and return the (potentially) modified results.
 	 * @returns Either a new Results object (if `results` was modified), or the exact same instance (if no changes were made).
 	 */
-	results(results: Results<D>): Results<D> {
+	results(results: Results<T>): Results<T> {
 		if (!this.rules.length) return results;
 		return super.results(results);
 	}
@@ -47,7 +56,7 @@ export abstract class Rules<D extends Data, C extends Rule<D>> extends Rule<D> {
 	 * Modify an array of entries (in place, modifying the original object).
 	 * @returns The new array, or the exact old array instance if no changes were made.
 	 */
-	apply(entries: ImmutableEntries<D>): ImmutableEntries<D> {
+	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!this.rules.length || !entries.length) return entries;
 		// Push the list of entries through each of the rules (in order) and return the resulting entries.
 		let applied = entries;

@@ -1,6 +1,7 @@
 import type { Entry, ImmutableEntries } from "../entry";
 import type { Data } from "../data";
-import { sort, Comparer } from "../sort";
+import { sort } from "../sort";
+import { bindMethod } from "../class";
 import type { Sortable } from "./types";
 import { Sort } from "./Sort";
 import { Rules } from "./Rules";
@@ -16,9 +17,10 @@ export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable
 	}
 
 	/** Compare two entries of this type for sorting. */
-	compare(left: Entry<T>, right: Entry<T>): number {
+	@bindMethod // Bind this so we can use it directly in `sort()`
+	comparer(left: Entry<T>, right: Entry<T>): number {
 		for (const rule of this.rules) {
-			const l = rule.compare(left, right);
+			const l = rule.comparer(left, right);
 			if (l !== 0) return l;
 		}
 		return 0;
@@ -27,7 +29,6 @@ export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable
 	// Override to sort by all child `Sort` instances with a single compare function.
 	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!this.rules.length || !entries.length) return entries;
-		return sort(entries, (this._compareFunction ||= this.compare.bind(this)));
+		return sort(entries, this.comparer);
 	}
-	private _compareFunction?: Comparer<Entry<T>>; // Store the created compare function so it's not recreated on every `apply()` call.
 }
