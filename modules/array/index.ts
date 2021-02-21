@@ -32,7 +32,7 @@ export type Dependencies = readonly unknown[];
 export type ArrayType<T extends ImmutableArray> = T[number];
 
 /** Is a value an array? */
-export const isArray = <T extends unknown[]>(v: T | unknown): v is T => v instanceof Array;
+export const isArray = <T extends ImmutableArray>(v: T | unknown): v is T => v instanceof Array;
 
 /**
  * Break an array into equal sized chunks (last chunk might be smaller).
@@ -40,7 +40,7 @@ export const isArray = <T extends unknown[]>(v: T | unknown): v is T => v instan
  * @return New array with one or more sub-arrays for each chunk.
  * - The last chunk might not contain a full set of items.
  */
-export const arrayChunk = <T extends unknown>(arr: T[], size: number): T[][] => {
+export const arrayChunk = <T>(arr: T[], size: number): T[][] => {
 	const chunks: T[][] = [];
 	for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
 	return chunks;
@@ -53,10 +53,12 @@ export const arrayChunk = <T extends unknown>(arr: T[], size: number): T[][] => 
  * @return New array with the specified item.
  * - If the item already exists in the array (using `indexOf()`) then the item won't be added again and the exact same input array will be returned.
  */
-export const withItem = <T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T> => {
+export function withItem<T extends ImmutableArray>(arr: T, item: ArrayType<T>): T;
+export function withItem<T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T>;
+export function withItem<T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T> {
 	const i = arr.indexOf(item);
 	return i >= 0 ? arr : [...arr, item];
-};
+}
 
 /**
  * Remove an item from an array.
@@ -65,7 +67,9 @@ export const withItem = <T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T> 
  * @return New array without the specified item.
  * - If the item does not already exist in the array (using `indexOf()`) then the exact same input array will be returned.
  */
-export const withoutItem = <T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T> => {
+export function withoutItem<T extends ImmutableArray>(arr: T, item: ArrayType<T>): T;
+export function withoutItem<T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T>;
+export function withoutItem<T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T> {
 	let i = arr.indexOf(item);
 	if (i < 0) return arr;
 	const output = arr.slice();
@@ -74,17 +78,19 @@ export const withoutItem = <T>(arr: ImmutableArray<T>, item: T): ImmutableArray<
 		i = output.indexOf(item, i);
 	}
 	return output;
-};
+}
 
 /**
  * Toggle an item in and out of an array.
  *
  * @return New array with or without the specified item.
  */
-export const toggleItem = <T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T> => {
+export function toggleItem<T extends ImmutableArray>(arr: T, item: ArrayType<T>): T;
+export function toggleItem<T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T>;
+export function toggleItem<T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T> {
 	const i = arr.indexOf(item);
 	return i >= 0 ? withoutItem(arr, item) : [...arr, item];
-};
+}
 
 /**
  * Swap all instances of an item from an array.
@@ -92,7 +98,9 @@ export const toggleItem = <T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T
  * @return New array with or without the specified item.
  * - If the item does not already exist in the array (using `indexOf()`) then the exact same input array will be returned.
  */
-export const swapItem = <T>(arr: ImmutableArray<T>, oldItem: T, newItem: T): ImmutableArray<T> => {
+export function swapItem<T extends ImmutableArray>(arr: T, oldItem: ArrayType<T>, newItem: ArrayType<T>): T;
+export function swapItem<T>(arr: ImmutableArray<T>, oldItem: T, newItem: T): ImmutableArray<T>;
+export function swapItem<T>(arr: ImmutableArray<T>, oldItem: T, newItem: T): ImmutableArray<T> {
 	let i = arr.indexOf(oldItem);
 	if (i < 0) return arr;
 	const output = arr.slice();
@@ -101,7 +109,7 @@ export const swapItem = <T>(arr: ImmutableArray<T>, oldItem: T, newItem: T): Imm
 		i = output.indexOf(newItem, i + 1);
 	}
 	return output;
-};
+}
 
 /** Get the first item from an array. */
 export const getFirstItem = <T>(arr: ImmutableArray<T>): T | undefined => arr[0];
@@ -222,22 +230,26 @@ export const resolveArray = async <V>(arr: ResolvableArray<V>): Promise<Array<V>
  * Add an item to an array by reference.
  * - If the item already exists in the array (using `indexOf()`) then it won't be added again.
  */
-export const addItem = <T>(arr: MutableArray<T>, item: T): void => {
+export function addItem<T extends MutableArray>(arr: T, item: ArrayType<T>): void;
+export function addItem<T>(arr: MutableArray<T>, item: T): void;
+export function addItem<T>(arr: MutableArray<T>, item: T): void {
 	if (arr.indexOf(item) < 0) arr.push(item);
-};
+}
 
 /**
  * Remove an item from an array by reference.
  * - Deletes all instances of an item from an array by reference, and returns void.
  */
-export const removeItem = <T>(arr: MutableArray<T>, value: T): void => {
+export function removeItem<T extends MutableArray>(arr: T, value: ArrayType<T>): void;
+export function removeItem<T>(arr: MutableArray<T>, value: T): void;
+export function removeItem<T>(arr: MutableArray<T>, value: T): void {
 	let i = arr.indexOf(value);
 	if (i < 0) return;
 	while (i >= 0) {
 		arr.splice(i, 1);
 		i = arr.indexOf(value, i);
 	}
-};
+}
 
 /**
  * Return an element where only unique items are kept.
