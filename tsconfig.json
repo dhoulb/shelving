@@ -15,7 +15,8 @@
 		"allowJs": true,
 		"checkJs": true,
 		"declaration": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"experimentalDecorators": true
 	},
 	"include": ["./**/*.ts", "./**/*.js"]
 }
