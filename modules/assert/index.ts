@@ -1,8 +1,9 @@
 import { AssertionError } from "../errors";
 import { ImmutableObject, isObject } from "../object";
 import { isArray } from "../array";
-import type { Constructor } from "../constructor";
+import type { Constructor } from "../class";
 import { debug } from "../debug";
+import { AnyFunction } from "../function";
 
 /** Assert a boolean condition is true. */
 export function assert(condition: unknown, ...received: unknown[]): asserts condition {
@@ -53,4 +54,9 @@ export function assertLength<T extends { length: number }>(value: T | unknown, m
 /** Assert that a value is an instance of something. */
 export function assertInstance<O>(value: O | unknown, constructor: Constructor<O>): asserts value is O {
 	if (!(value instanceof constructor)) throw new AssertionError(`Must be instance of ${debug(constructor)}`, value);
+}
+
+/** Assert that a value is a function. */
+export function assertFunction<T extends AnyFunction>(value: T | unknown): asserts value is T {
+	if (typeof value !== "function") throw new AssertionError(`Must be function`, value);
 }

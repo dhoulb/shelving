@@ -15,12 +15,12 @@ export * from "./boolean";
 export * from "./string";
 export * from "./number";
 export * from "./array";
-export * from "./constructor";
 export * from "./data";
 export * from "./date";
 export * from "./entry";
 export * from "./function";
 export * from "./object";
+export * from "./class";
 export * from "./url";
 
 // General helpers.
