@@ -1,6 +1,6 @@
 import { SKIP } from "../constants";
 import { Resolvable } from "../data";
-import { AsyncDeriver, dispatch, methodDispatch, Unsubscriber } from "../function";
+import { AsyncDeriver, dispatch, thispatch, Unsubscriber } from "../function";
 import { Subscribable } from "./Subscribable";
 import { Observer } from "./Observer";
 
@@ -19,7 +19,7 @@ class Subscription<T> implements Observer<T> {
 		try {
 			this._cleanup = source.subscribe(this);
 		} catch (thrown) {
-			methodDispatch(this.target, "error", thrown);
+			thispatch(this.target, "error", thrown);
 		}
 	}
 	get closed(): boolean {
@@ -27,21 +27,21 @@ class Subscription<T> implements Observer<T> {
 	}
 	next(next: Resolvable<T>): void {
 		if (!this._cleanup) {
-			methodDispatch(this.target, "next", next, this, "error");
+			thispatch(this.target, "next", next, this, "error");
 		}
 	}
 	error(error: Error | unknown): void {
 		if (this._cleanup) {
 			dispatch(this._cleanup);
 			this._cleanup = undefined;
-			methodDispatch(this.target, "error", error, this, "error");
+			thispatch(this.target, "error", error, this, "error");
 		}
 	}
 	complete(): void {
 		if (this._cleanup) {
 			dispatch(this._cleanup);
 			this._cleanup = undefined;
-			methodDispatch(this.target, "complete", undefined, this, "error");
+			thispatch(this.target, "complete", undefined, this, "error");
 		}
 	}
 }
@@ -57,7 +57,7 @@ class DerivingSubscription<I, O> extends Subscription<any> implements Observer<I
 	}
 	next(value: Resolvable<I>): void {
 		if (this.closed || value === SKIP) return;
-		if (value instanceof Promise) return methodDispatch(this, "next", value);
+		if (value instanceof Promise) return thispatch(this, "next", value);
 		try {
 			this.derived(this._deriver(value));
 		} catch (thrown) {
