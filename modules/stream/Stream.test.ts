@@ -1,9 +1,9 @@
-import { Stream, createStream } from "..";
+import { Stream } from "..";
 
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
-test("createStream() works correctly", async () => {
-	const stream = createStream<number>();
+test("Stream: works correctly", async () => {
+	const stream = new Stream<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	// Ons and onces.
 	const fnNormal = jest.fn();
@@ -42,8 +42,8 @@ test("createStream() works correctly", async () => {
 	expect(fnObOne.mock.calls).toEqual([[111]]);
 	expect(fnObUn.mock.calls).toEqual([[111]]);
 });
-test("createStream() all listeners are fired even if one errors", () => {
-	const stream = createStream<number>();
+test("Stream: all listeners are fired even if one errors", () => {
+	const stream = new Stream<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	// Ons and onces.
 	const fnBefore = jest.fn();
@@ -64,11 +64,11 @@ test("createStream() all listeners are fired even if one errors", () => {
 	expect(fnAfter.mock.calls).toEqual([[111]]);
 	expect(fnAfter.mock.results).toEqual([{ type: "return", value: undefined }]);
 });
-test("State() then() implementation", async () => {
-	const stream = createStream<number>();
+test("State() Promise implementation", async () => {
+	const stream = new Stream<number>();
 	const fn1 = jest.fn();
 	stream.subscribe(fn1);
-	const promise = stream.then();
+	const promise = stream.promise;
 	expect(promise).toBeInstanceOf(Promise);
 	const fn2 = jest.fn();
 	expect(promise.then(fn2)).toBeInstanceOf(Promise);

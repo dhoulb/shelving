@@ -22,6 +22,14 @@ type PaginationState<T extends Data> = {
  * - If you don't pass in initial values, it will autoload the first page.
  */
 export class Pagination<T extends Data> extends State<PaginationState<T>> {
+	/**
+	 * Create a new `Pagination` instance.
+	 * - Static function so you can use it with `useLazy()` and for consistency with `State`
+	 */
+	static for<X extends Data>(collection: Collection<X>, initial?: Results<X>): Pagination<X> {
+		return new Pagination<X>(collection, initial);
+	}
+
 	/** Collection this pagination is based on. */
 	readonly collection: Collection<T>;
 
@@ -31,7 +39,7 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 	/** Sorts of the collection's query. */
 	readonly sorts: Sorts<T>;
 
-	constructor(collection: Collection<T>, initial?: Results<T>) {
+	protected constructor(collection: Collection<T>, initial?: Results<T>) {
 		const { slice, sorts } = collection.query;
 		assert(slice.limit, slice.limit); // Collection must have a limit to paginate (otherwise you'd just get the result normally).
 		assertLength(sorts, 1, Infinity); // Collection must have at least one sort order to paginate.
@@ -98,6 +106,3 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 		}
 	}
 }
-
-/** Create a new `Pagination` instance. */
-export const createPagination = <T extends Data>(collection: Collection<T>, initial?: Results<T>): Pagination<T> => new Pagination<T>(collection, initial);

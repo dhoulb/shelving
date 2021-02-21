@@ -1,20 +1,21 @@
+import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
+import type { Entry } from "../entry";
+import type { ArrayType, ImmutableArray } from "../array";
+import type { Observer } from "../observe";
 import { Cloneable, cloneObject } from "../clone";
 import { EmptyObject, getFirstProp, getLastProp, ImmutableObject } from "../object";
 import { DataSchemas, DataSchema, Validator, ValidateOptions, PARTIAL } from "../schema";
 import { Data, Result, Results } from "../data";
-import { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import { isFeedback } from "../feedback";
-import { createQuery, Query } from "../query";
-import { Entry } from "../entry";
-import { ArrayType, ImmutableArray } from "../array";
+import { Query } from "../query";
 import { ValidationError } from "../errors";
-import { Observer } from "../observe";
-import { createStream } from "../stream";
-import { Document as DocumentInterface } from "./Document";
-import { DOCUMENT_PATH } from "./constants";
+import { Stream } from "../stream";
+import { cacheMethod } from "../class";
 import type { Provider } from "./Provider";
 import type { Database as DatabaseInterface } from "./Database";
 import type { Collection as CollectionInterface } from "./Collection";
+import type { Document as DocumentInterface } from "./Document";
+import { DOCUMENT_PATH } from "./constants";
 import { DocumentRequiredError } from "./errors";
 import { GetOptions, DeleteOptions, SetOptions, REQUIRED, DEEP, UNVALIDATED } from "./options";
 
@@ -117,7 +118,8 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		return this.get(REQUIRED);
 	}
 	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		const stream = createStream<Result<T>>(next, error, complete);
+		const stream = new Stream<Result<T>>();
+		stream.subscribe(next, error, complete);
 		return this._provider.onDocument<T>(this, stream);
 	}
 	set(unsafeData: ImmutableObject, options?: SetOptions): Promise<void> {
@@ -140,7 +142,7 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 }
 
 /** Collection defaults to empty query. */
-const EMPTY_QUERY = createQuery<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+const EMPTY_QUERY = new Query<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
 // Implement collection.
 class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> extends Path<T, D, C> implements CollectionInterface<T, D, C> {
@@ -165,7 +167,8 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 		return this._provider.getCollection<T>(this).then(Object.keys);
 	}
 	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		const stream = createStream<Results<T>>(next, error, complete);
+		const stream = new Stream<Results<T>>();
+		stream.subscribe(next, error, complete);
 		return this._provider.onCollection<T>(this, stream);
 	}
 	get first(): Promise<Entry<T> | undefined> {
@@ -231,6 +234,7 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 	*[Symbol.iterator](): Generator<[string, T], void, undefined> {
 		yield* Object.entries(this._provider.getCollection<T>(this));
 	}
+	@cacheMethod // Calculating the full path string is expensive so only do it once.
 	toString(): string {
 		return `${this.path}?${this.query}`;
 	}

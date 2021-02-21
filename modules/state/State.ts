@@ -1,5 +1,5 @@
-import type { AsyncDeriver } from "../function";
-import type { Observer, Subscribable } from "../observe";
+import { AsyncDeriver, thispatch } from "../function";
+import { isSubscribable, Observer, Subscribable, deriveFrom } from "../observe";
 import { RequiredError } from "../errors";
 import { LOADING, SKIP } from "../constants";
 import { logError } from "../console";
@@ -7,12 +7,13 @@ import { ImmutableObject, Mutable, updateProps } from "../object";
 import { ImmutableArray, ArrayType, swapItem, withoutItem, withItem } from "../array";
 import { Stream } from "../stream";
 import { assertArray, assertObject } from "../assert";
+import { Resolvable } from "../data";
 
 /**
  * State: store some global state in memory.
  *
  * Usage:
- * - Make a state with `createState(initialState)`
+ * - Make a state with `new State(initialState)`
  * - Basic state can be retrieved with `state.value`
  * - Data state can be retrieved with `state.data` (throws a `RequiredError` if the state is currently undefined)
  * - New entire state can be set with `state.set(newState)`
@@ -40,18 +41,23 @@ import { assertArray, assertObject } from "../assert";
  * - When `error()` is called the `State` is said to have an error (and will remain so until `set()` is called with a non-error value.
  * - While the `State` has an error calls to `state.value` and `state.data` will throw that error.
  */
-export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, Subscribable<T> {
-	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
-	private _fired: T | typeof LOADING = LOADING; // Last value that was fired.
-	private _closed = false;
-
-	readonly reason?: Error | unknown; // The error that caused this state to close.
-	readonly updated?: number; // Time we last updated a new value.
-
-	/** Whether the state has loaded yet, or not. */
-	get loading(): boolean {
-		return this._value === LOADING;
+export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> {
+	/**
+	 * Create a new state.
+	 * - Static function so you can use it with `useLazy()` and for consistency with `State.derive()` and `Stream.take()`
+	 */
+	static create<X>(source: Subscribable<X> | Promise<X | typeof SKIP> | X | typeof SKIP | typeof LOADING = LOADING): State<X> {
+		return new State<X>(source);
 	}
+
+	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
+	private _fired: T | typeof LOADING; // Last value that was fired (so we don't fire the same value twice in a row).
+
+	readonly loading: boolean = true; // Whether we're currently loading or we have a value.
+	readonly pending: boolean = false; // Whether we have still need to call the subscribers, or not.
+	readonly closing: boolean = false; // Whether we're pending to close (either through error or completion).
+	readonly reason: Error | unknown = undefined; // The error that caused this state to close.
+	readonly updated: number | undefined = undefined; // Time the value was last updated.
 
 	/**
 	 * Get current value.
@@ -60,7 +66,7 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 */
 	get value(): T {
 		if (this.reason) throw this.reason;
-		if (this._value === LOADING) throw super.then();
+		if (this._value === LOADING) throw super.promise;
 		return this._value;
 	}
 
@@ -70,64 +76,63 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 * @throws Promise if the value is currently loading (Promise resolves when a non-Promise value is set).
 	 */
 	get data(): Exclude<T, undefined> {
-		const value: T | Exclude<T, undefined> = this.value;
+		const value = this.value;
 		if (value === undefined) throw new RequiredError("State.data: State data does not exist");
 		return value as Exclude<T, undefined>;
 	}
 
-	constructor(value: Promise<T | typeof SKIP> | T | typeof SKIP | typeof LOADING) {
-		super();
-		if (value instanceof Promise) {
-			// If initial is a promise, set value of this state when it resolves.
-			void this._asyncNext(value);
-		} else if (value !== LOADING && value !== SKIP) {
-			// If initial is an explicit value, save it.
-			this._value = value;
-			(this as Mutable<this>).updated = Date.now();
+	constructor(source: Subscribable<T> | Promise<T | typeof SKIP> | T | typeof SKIP | typeof LOADING) {
+		super(isSubscribable(source) ? source : undefined);
+		if (isSubscribable(source)) {
+			// If source is a State, subscribe it.
+			if (source instanceof State && !source.loading) void this.next(source.value);
+		} else if (source !== LOADING && source !== SKIP) {
+			// If source is a value, set it.
+			void this.next(source);
 		}
+
+		// Set fired to value.
+		// If value is set synchronously somewhere in `constructor()`, `next()` listeners won't be called with the initial value at the end of the tick.
+		this._fired = this._value;
 	}
 
-	// Override `next()` to save the value and defer calling listeners to the end of the tick.
-	// This ensures that if `next()` is called multiple times within a tick the listeners will only be called once.
-	next(value: Promise<T | typeof SKIP> | T | typeof SKIP): void {
-		if (this._closed) return;
-		if (value === SKIP) return;
-		if (value instanceof Promise) {
-			void this._asyncNext(value);
-		} else {
-			this._value = value;
-			(this as Mutable<this>).updated = Date.now();
-			Promise.resolve().then(this._tick, logError);
-		}
-	}
-	private async _asyncNext(value: Promise<T | typeof SKIP>): Promise<void> {
-		try {
-			this.next(await value);
-		} catch (thrown) {
-			this.error(thrown);
-		}
+	next(value: Resolvable<T | typeof LOADING>): void {
+		if (value === SKIP || this.closing) return;
+		if (value instanceof Promise) return thispatch(this, "next", value, this, "error");
+
+		this._value = value;
+		(this as Mutable<this>).loading = value === LOADING;
+		(this as Mutable<this>).updated = Date.now();
+		(this as Mutable<this>).pending = true;
+		Promise.resolve().then(this._fire, logError);
 	}
 
-	// Override `error()` to save the error and defer calling listeners to the end of the tick.
 	error(reason: Error | unknown): void {
-		if (this._closed) return;
+		if (this.closing) return;
+		if (reason instanceof Promise) return thispatch(this, "error", reason);
+
 		(this as Mutable<this>).reason = reason;
-		this._closed = true;
-		Promise.resolve().then(this._tick, logError);
+		(this as Mutable<this>).closing = true;
+		(this as Mutable<this>).pending = true;
+		Promise.resolve().then(this._fire, logError);
 	}
 
-	// Override `complete()` to defer calling listeners to the end of the tick.
-	// This ensures that if `next()` is called before `complete()`, the `next()` listeners will correctly be called before `complete()`
 	complete(): void {
-		if (this._closed) return;
-		this._closed = true;
-		Promise.resolve().then(this._tick, logError);
+		if (this.closing) return;
+
+		(this as Mutable<this>).closing = true;
+		(this as Mutable<this>).pending = true;
+		Promise.resolve().then(this._fire, logError);
 	}
 
 	// Run at the end of a tick to call listeners.
-	private _tick = (): void => {
-		if (this.closed) return;
-		if (this.reason) {
+	private _fire = (): void => {
+		// Don't tick twice.
+		if (!this.closed || !this.pending) return;
+		(this as Mutable<this>).pending = false;
+
+		// Call the subscribers.
+		if (this.reason !== undefined) {
 			// If there's an error call `error()`
 			super.error(this.reason);
 		} else {
@@ -136,17 +141,17 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 				this._fired = this._value;
 				super.next(this._value);
 			}
-			if (this._closed) super.complete();
+			if (this.closing) super.complete();
 		}
 	};
 
 	/**
-	 * Set a new value for this value.
+	 * Set a new value for this state.
 	 * - Listeners will fire (if value is different).
 	 * - If value is a Promise, it's awaited and set after it value resolves.
+	 * - Same as `next()` but with grammar that makes more sense for a state.
 	 */
-	set(value: Promise<T | typeof SKIP> | T | typeof SKIP): void {
-		// This is the next value.
+	set(value: Resolvable<T>): void {
 		this.next(value);
 	}
 
@@ -156,9 +161,9 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 *
 	 * @throws AssertionError if current value of this `State` is not an object.
 	 */
-	update<X extends T & ImmutableObject>(partial: Partial<X>): void {
-		assertObject(this._value);
-		this.next(updateProps<X>(this._value as X, partial));
+	update(partial: Partial<T & ImmutableObject>): void {
+		assertObject<T & ImmutableObject>(this._value);
+		this.next(updateProps<T & ImmutableObject>(this._value, partial));
 	}
 
 	/**
@@ -167,9 +172,9 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 *
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
-	add<X extends T & ImmutableArray>(item: ArrayType<X>): void {
-		assertArray(this._value);
-		this.next(withItem(this._value, item) as X);
+	add(item: ArrayType<T & ImmutableArray>): void {
+		assertArray<T & ImmutableArray>(this._value);
+		this.next(withItem<T & ImmutableArray>(this._value, item));
 	}
 
 	/**
@@ -178,9 +183,9 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 *
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
-	remove<X extends T & ImmutableArray>(item: ArrayType<X>): void {
-		assertArray(this._value);
-		this.next(withoutItem(this._value, item) as X);
+	remove(item: ArrayType<T & ImmutableArray>): void {
+		assertArray<T & ImmutableArray>(this._value);
+		this.next(withoutItem<T & ImmutableArray>(this._value, item));
 	}
 
 	/**
@@ -189,9 +194,9 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 *
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
-	swap<X extends T & ImmutableArray>(oldItem: ArrayType<X>, newItem: ArrayType<X>): void {
-		assertArray(this._value);
-		this.next(swapItem(this._value, oldItem, newItem) as X);
+	swap(oldItem: ArrayType<T & ImmutableArray>, newItem: ArrayType<T & ImmutableArray>): void {
+		assertArray<T & ImmutableArray>(this._value);
+		this.next(swapItem<T & ImmutableArray>(this._value, oldItem, newItem));
 	}
 
 	/**
@@ -203,39 +208,22 @@ export class State<T> extends Stream<T> implements PromiseLike<T>, Observer<T>, 
 	 * @returns New `State` instance with a state derived from this one.
 	 */
 	derive(): State<T>;
-	derive<TT>(deriver?: AsyncDeriver<T, TT | typeof SKIP>): State<TT>;
-	derive<TT>(deriver?: AsyncDeriver<T, TT | typeof SKIP>): State<T> | State<TT> {
+	derive<TT>(deriver: AsyncDeriver<T, TT>): State<TT>;
+	derive<TT>(deriver?: AsyncDeriver<T, TT>): State<T> | State<TT> {
 		if (deriver) {
-			// Make a state to hold the derived value, and set it using the current value of this state
-			const derivedState = new State<TT>(this._value === LOADING ? super.then(deriver) : deriver(this._value));
-			// Create a stream that produces a derived value every time this state updates.
-			const derivedStream = super.derive<TT>(deriver);
-			// Subscribe our new state to the derived value stream.
-			derivedStream.subscribe(derivedState);
-			// Return the derived state.
-			return derivedState;
+			const state = new State<TT>(this._value !== LOADING ? deriver(this._value) : this._value);
+			deriveFrom(this, deriver, state);
+			return state;
 		} else {
-			// If there's no deriver function just return a copy state and set it using the current value of this state.
-			const copyState = new State<T>(this._value === LOADING ? super.then() : this._value);
-			this.subscribe(copyState);
-			return copyState;
+			return new State<T>(this);
 		}
 	}
 
-	/**
-	 * PromiseLike implementation.
-	 * - Lets you `await` this state to get its current value (if there is one) or the next value (when it's set).
-	 * - If the current value is still loading this will resolve when it resolves.
-	 * - Otherwise this will resolve immediately.
-	 */
-	then<X = T, Y = never>(next?: (value: T) => PromiseLike<X> | X, error?: (reason: Error | unknown) => PromiseLike<Y> | Y): Promise<X | Y> {
-		if (this._value === LOADING) return super.then(next, error);
-		return Promise.resolve(this._value).then(next, error);
+	// Override `promise` to get use the current value if there is one.
+	get promise(): Promise<T> {
+		return this._value === LOADING ? super.promise : Promise.resolve(this._value);
 	}
 }
-
-/** Create a new `State` instance. */
-export const createState = <T>(initial: Promise<T> | T | typeof LOADING): State<T> => new State(initial);
 
 /**
  * Is an unknown value a `State` instance?
