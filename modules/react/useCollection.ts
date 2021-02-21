@@ -1,6 +1,5 @@
-import { Data, Results, Unsubscriber, Collection, Observer } from "..";
-import { getCachedSource } from "./cache";
-import { useState } from "./useState";
+import { Data, Results, Unsubscriber, Collection, Observer, Source } from "..";
+import { useSubscribe } from "./useSubscribe";
 
 // Getters.
 const getCollectionResults = <T extends Data>(collection: Collection<T>): Promise<Results<T>> => collection.results;
@@ -10,16 +9,16 @@ const getCollectionSubscription = <T extends Data>(observer: Observer<Results<T>
  * Use the results of a Shelving collection in a React component (once).
  *
  * @param collection Instance of `Collection` to get the results of, or an explicit `undefined`
- * - The `undefined` value allows for this hook to be called conditionally.
  * - If `collection` is `undefined` then `{}` empty results will always be returned.
+ * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
  *
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  * @throws Unknown error when something goes wrong.
  */
-export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAgeSeconds?: number): Results<T> => {
-	const source = getCachedSource<Results<T>>(`collection:${collection ? collection.toString() : "empty"}`);
-	void useState(source);
-	if (collection) source.fetchFrom<[Collection<T>]>(getCollectionResults, [collection], maxAgeSeconds);
+export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAge?: number): Results<T> => {
+	const source = Source.get<Results<T>>(`collection:${collection ? collection.toString() : "empty"}`);
+	useSubscribe(source);
+	if (collection) source.fetchFrom<[Collection<T>]>(getCollectionResults, [collection], maxAge);
 	return source.value;
 };
 
@@ -27,15 +26,14 @@ export const useCollection = <T extends Data>(collection: Collection<T> | undefi
  * Subscribe to the results of a Shelving collection in a React component.
  *
  * @param collection Instance of `Collection` to subscribe to, or an explicit `undefined`
- * - The `undefined` value allows for this hook to be called conditionally.
  * - If `collection` is `undefined` then `{}` empty results will always be returned.
  *
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  * @throws Unknown error when something goes wrong.
  */
-export const useCollectionSubscription = <T extends Data>(collection: Collection<T> | undefined): Results<T> => {
-	const source = getCachedSource<Results<T>>(`collection:${collection ? collection.toString() : "empty"}`);
-	void useState(source.subscription); // Use `source.subscribers` not `source` directly to indicate this is a subscription.
+export const useCollectionSubscribe = <T extends Data>(collection: Collection<T> | undefined): Results<T> => {
+	const source = Source.get<Results<T>>(`collection:${collection ? collection.toString() : "empty"}`);
+	useSubscribe(source.active); // Use `source.subscribers` not `source` directly to indicate this is a subscription.
 	if (collection) source.subscribeTo<[Collection<T>]>(getCollectionSubscription, [collection]);
 	return source.value;
 };
