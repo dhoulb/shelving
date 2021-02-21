@@ -84,7 +84,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 
 		// Check enum format.
 		if (isArray(this.options)) {
-			if (!this.options.includes(value)) throw new InvalidFeedback("Unknown value");
+			if (!this.options.includes(value as T)) throw new InvalidFeedback("Unknown value");
 		} else if (isObject(this.options)) {
 			if (!Object.keys(this.options).includes(value.toString())) throw new InvalidFeedback("Unknown value");
 		}
