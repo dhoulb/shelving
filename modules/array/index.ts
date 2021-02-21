@@ -1,4 +1,5 @@
 import type { ImmutableObject, Mutable } from "../object";
+import type { Resolvable } from "../data";
 import { SKIP } from "../constants";
 
 /**
@@ -18,7 +19,7 @@ export type ImmutableArray<T = unknown> = readonly T[];
  * - Items can be `SKIP` symbol (and they will be removed).
  * - Items can be `Promise` instances (and they will be awaited).
  */
-export type ResolvableArray<T> = readonly (typeof SKIP | T | Promise<typeof SKIP | T>)[];
+export type ResolvableArray<T> = readonly Resolvable<T>[];
 
 /**
  * Dependencies: a readonly unknown array that is being used as a set of dependencies.

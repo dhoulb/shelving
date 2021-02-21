@@ -1,3 +1,5 @@
+import type { SKIP } from "../constants";
+
 /**
  * Data: an object with string keys containing only plain values.
  * - This subset of values is likely to be supported by most database engines.
@@ -10,3 +12,6 @@ export type Result<T extends Data> = T | undefined;
 
 /** Results: a set of results for documents indexed by their ID. */
 export type Results<T extends Data> = { readonly [id: string]: T };
+
+/** Resolvable value. */
+export type Resolvable<T> = typeof SKIP | T | Promise<typeof SKIP | T>;

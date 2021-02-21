@@ -1,5 +1,6 @@
-import { ImmutableArray } from "../array";
 import type { Entry, ImmutableEntries, ResolvableEntries } from "../entry";
+import type { Resolvable } from "../data";
+import { ImmutableArray } from "../array";
 import { SKIP } from "../constants";
 
 /**
@@ -30,7 +31,7 @@ export type MutableObject<T = unknown> = { [key: string]: T };
  * - Property values can be `SKIP` symbol (and they will be removed).
  * - Property values can be `Promise` instances (and they will be awaited).
  */
-export type ResolvableObject<T> = { readonly [key: string]: typeof SKIP | T | Promise<typeof SKIP | T> };
+export type ResolvableObject<T> = { readonly [key: string]: Resolvable<T> };
 
 /**
  * Object type: extract the type for the props of an object.
