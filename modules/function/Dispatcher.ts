@@ -95,8 +95,8 @@ export async function _asyncDispatch<T, C extends string>(
 export function thispatch<M extends string>(obj: { [K in M]?: AsyncEmptyDispatcher }, key: M, value?: undefined, catcherObj?: Catcher): void; // prettier-ignore
 export function thispatch<M extends string, C extends string>( obj: { [K in M]?: AsyncEmptyDispatcher }, key: M, value: undefined, catcherObj: { [K in C]: Catcher }, catcherKey: C, ): void; // prettier-ignore
 // Overrides for typed dispatchers.
-export function thispatch<M extends string, T>(obj: { [K in M]?: AsyncDispatcher<T> }, key: M, value: Resolvable<T>, catcherObj?: Catcher): void; // prettier-ignore
-export function thispatch<M extends string, C extends string, T>( obj: { [K in M]?: AsyncDispatcher<T> }, key: M, value: Resolvable<T>, catcherObj: { [K in C]: Catcher }, catcherKey: C): void; // prettier-ignore
+export function thispatch<T, M extends string>(obj: { [K in M]?: AsyncDispatcher<T> }, key: M, value: Resolvable<T>, catcherObj?: Catcher): void; // prettier-ignore
+export function thispatch<T, M extends string, C extends string>( obj: { [K in M]?: AsyncDispatcher<T> }, key: M, value: Resolvable<T>, catcherObj: { [K in C]: Catcher }, catcherKey: C): void; // prettier-ignore
 // Overrides for unknown dispatchers.
 export function thispatch<M extends string>(obj: { [K in M]?: AsyncDispatcher<unknown> }, key: M, value: unknown, catcherObj?: Catcher): void; // prettier-ignore
 export function thispatch<M extends string, C extends string>(obj: { [K in M]?: AsyncDispatcher<unknown> }, key: M, value: unknown, catcherObj: { [K in C]: Catcher }, catcherKey: C): void; // prettier-ignore
