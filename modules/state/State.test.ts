@@ -190,7 +190,7 @@ test("State: promise in set", async () => {
 	await microtasks();
 	expect(fn1.mock.calls).toEqual([[222]]);
 });
-test("State: derived state", async () => {
+test("State: derived(): state", async () => {
 	const state = new State<number>(10);
 	const derived = state.derive(num => num * num);
 	expect(derived.value).toBe(100);
@@ -210,7 +210,7 @@ test("State: derived state", async () => {
 	expect(derived.value).toBe(16);
 	expect(fn1.mock.calls).toEqual([[4], [9], [16]]);
 });
-test("State: derived async state", async () => {
+test("State: derived(): async state", async () => {
 	const state = new State<number>(10);
 	const derived = state.derive(async num => num * (await Promise.resolve(num)));
 	expect(derived.loading).toBe(true);
@@ -231,7 +231,7 @@ test("State: derived async state", async () => {
 	expect(derived.value).toBe(16);
 	expect(fn1.mock.calls).toEqual([[4], [9], [16]]);
 });
-test("State: Promise implementation", async () => {
+test("State: promise: works correctly", async () => {
 	const state = new State<number>(LOADING);
 	setTimeout(() => state.set(123), 50);
 	expect(await state.promise).toBe(123);

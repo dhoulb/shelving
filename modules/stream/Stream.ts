@@ -37,7 +37,6 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 
 	private _subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
 	private _cleanup: Unsubscriber | undefined = undefined; // Function that unsubscribes from the source on error or complete.
-	private _take = Infinity; // Maximum number of times to call `next()` before stream auto completes.
 	private _target = 0; // Number of subscribers to call when calling `next()`
 
 	/** Is this observer open or closed. */
@@ -70,10 +69,6 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		const start = this._target && this._target < 0 ? this._target : 0;
 		const end = this._target && this._target > 0 ? this._target : undefined;
 		for (const subscriber of this._subscribers.slice(start, end)) thispatch(subscriber, "next", value);
-
-		// Complete if we reached the limit.
-		this._take--;
-		if (this._take <= 0) this.complete();
 	}
 
 	/**

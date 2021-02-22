@@ -128,7 +128,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 	// Run at the end of a tick to call listeners.
 	private _fire = (): void => {
 		// Don't tick twice.
-		if (!this.closed || !this.pending) return;
+		if (!this.pending) return;
 		(this as Mutable<this>).pending = false;
 
 		// Call the subscribers.

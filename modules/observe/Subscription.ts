@@ -26,7 +26,7 @@ class Subscription<T> implements Observer<T> {
 		return !this._cleanup;
 	}
 	next(next: Resolvable<T>): void {
-		if (!this._cleanup) {
+		if (this._cleanup) {
 			thispatch(this.target, "next", next, this, "error");
 		}
 	}

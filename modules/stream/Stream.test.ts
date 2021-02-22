@@ -3,47 +3,43 @@ import { Stream } from "..";
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
 test("Stream: works correctly", async () => {
-	const stream = new Stream<number>();
+	const stream = Stream.create<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	// Ons and onces.
-	const fnNormal = jest.fn();
-	const fnOne = jest.fn();
-	const fnUn = jest.fn();
-	const fnObNormal = jest.fn();
-	const obNormal = { next: fnObNormal };
-	const fnObOne = jest.fn();
-	const obOne = { next: fnObOne };
-	const fnObUn = jest.fn();
-	const obUn = { next: fnObUn };
-	stream.subscribe(fnNormal);
-	stream.take(1).subscribe(fnOne);
-	const fnUnUn = stream.subscribe(fnUn);
-	stream.subscribe(obNormal);
-	stream.take(1).subscribe(obOne);
-	const obUnUn = stream.subscribe(obUn);
-	expect(stream.subscribers).toEqual(6);
+	const next1 = jest.fn();
+	const complete1 = jest.fn();
+	const error1 = jest.fn();
+	const unsub1 = stream.subscribe(next1, complete1, error1);
+	const next2 = jest.fn();
+	const complete2 = jest.fn();
+	const error2 = jest.fn();
+	const unsub2 = stream.subscribe({ next: next2, complete: complete2, error: error2 });
+	expect(stream.subscribers).toEqual(2);
 	// Fire.
 	expect(stream.next(111)).toBe(undefined);
 	await microtasks();
-	expect(stream.subscribers).toEqual(4);
-	// Unsubscribes.
-	expect(fnUnUn()).toBe(undefined);
-	expect(obUnUn()).toBe(undefined);
-	expect(stream.subscribers).toEqual(2);
+	// Unsubscribe 1.
+	expect(unsub1()).toBe(undefined);
+	expect(stream.subscribers).toEqual(1);
 	// Fire.
 	expect(stream.next(222)).toBe(undefined);
 	await microtasks();
-	expect(stream.subscribers).toEqual(2);
+	// Unsubscribe 2.
+	expect(unsub2()).toBe(undefined);
+	expect(stream.subscribers).toEqual(0);
+	// Fire.
+	expect(stream.next(333)).toBe(undefined);
+	await microtasks();
 	// Checks.
-	expect(fnNormal.mock.calls).toEqual([[111], [222]]);
-	expect(fnOne.mock.calls).toEqual([[111]]);
-	expect(fnUn.mock.calls).toEqual([[111]]);
-	expect(fnObNormal.mock.calls).toEqual([[111], [222]]);
-	expect(fnObOne.mock.calls).toEqual([[111]]);
-	expect(fnObUn.mock.calls).toEqual([[111]]);
+	expect(next1.mock.calls).toEqual([[111]]);
+	expect(complete1.mock.calls).toEqual([]);
+	expect(error1.mock.calls).toEqual([]);
+	expect(next2.mock.calls).toEqual([[111], [222]]);
+	expect(complete2.mock.calls).toEqual([]);
+	expect(error2.mock.calls).toEqual([]);
 });
 test("Stream: all listeners are fired even if one errors", () => {
-	const stream = new Stream<number>();
+	const stream = Stream.create<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	// Ons and onces.
 	const fnBefore = jest.fn();
@@ -64,8 +60,8 @@ test("Stream: all listeners are fired even if one errors", () => {
 	expect(fnAfter.mock.calls).toEqual([[111]]);
 	expect(fnAfter.mock.results).toEqual([{ type: "return", value: undefined }]);
 });
-test("State() Promise implementation", async () => {
-	const stream = new Stream<number>();
+test("Stream: promise: works", async () => {
+	const stream = Stream.create<number>();
 	const fn1 = jest.fn();
 	stream.subscribe(fn1);
 	const promise = stream.promise;
@@ -76,4 +72,56 @@ test("State() Promise implementation", async () => {
 	await microtasks();
 	expect(fn1.mock.calls).toEqual([[123]]);
 	expect(fn2.mock.calls).toEqual([[123]]);
+});
+test("Stream: take(): taking a limited number of values", async () => {
+	const stream = Stream.create<number>();
+	const taken = stream.take(2);
+	expect(taken).toBeInstanceOf(Stream);
+	const next1 = jest.fn();
+	const complete1 = jest.fn();
+	const error1 = jest.fn();
+	taken.subscribe(next1, error1, complete1);
+	const next2 = jest.fn();
+	const complete2 = jest.fn();
+	const error2 = jest.fn();
+	taken.subscribe({ next: next2, complete: complete2, error: error2 });
+	expect(stream.subscribers).toBe(1);
+	expect(taken.subscribers).toBe(2);
+	expect(stream.next(2)).toBe(undefined);
+	expect(stream.next(3)).toBe(undefined);
+	expect(stream.next(4)).toBe(undefined);
+	await microtasks();
+	expect(error1.mock.calls).toEqual([]);
+	expect(next1.mock.calls).toEqual([[2], [3]]);
+	expect(complete1.mock.calls).toEqual([[undefined]]);
+	expect(error2.mock.calls).toEqual([]);
+	expect(next2.mock.calls).toEqual([[2], [3]]);
+	expect(complete2.mock.calls).toEqual([[undefined]]);
+});
+test("Stream: derive(): derived stream", async () => {
+	const stream = Stream.create<number>();
+	const derived = stream.derive(num => num * num);
+	const fn1 = jest.fn();
+	derived.subscribe(fn1);
+	expect(stream.next(2)).toBe(undefined);
+	await microtasks();
+	expect(stream.next(3)).toBe(undefined);
+	await microtasks();
+	expect(stream.next(4)).toBe(undefined);
+	await microtasks();
+	expect(fn1.mock.calls).toEqual([[4], [9], [16]]);
+});
+test("Stream: derive(): derived async stream", async () => {
+	const stream = Stream.create<number>();
+	const derived = stream.derive(async num => num * (await Promise.resolve(num)));
+	await microtasks();
+	const fn1 = jest.fn();
+	derived.subscribe(fn1);
+	expect(stream.next(2)).toBe(undefined);
+	await microtasks();
+	expect(stream.next(3)).toBe(undefined);
+	await microtasks();
+	expect(stream.next(4)).toBe(undefined);
+	await microtasks();
+	expect(fn1.mock.calls).toEqual([[4], [9], [16]]);
 });
