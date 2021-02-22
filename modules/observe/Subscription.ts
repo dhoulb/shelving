@@ -12,14 +12,14 @@ import { Observer } from "./Observer";
  * - Knows how to deal with `Promises` and `SKIP` in
  */
 class Subscription<T> implements Observer<T> {
-	readonly target: Observer<T>;
+	private _target: Observer<T>;
 	private _cleanup: Unsubscriber | undefined;
 	constructor(source: Subscribable<T>, target: Observer<T>) {
-		this.target = target;
+		this._target = target;
 		try {
 			this._cleanup = source.subscribe(this);
 		} catch (thrown) {
-			thispatch(this.target, "error", thrown);
+			thispatch(this._target, "error", thrown);
 		}
 	}
 	get closed(): boolean {
@@ -27,21 +27,21 @@ class Subscription<T> implements Observer<T> {
 	}
 	next(next: Resolvable<T>): void {
 		if (this._cleanup) {
-			thispatch(this.target, "next", next, this, "error");
+			thispatch(this._target, "next", next, this, "error");
 		}
 	}
 	error(error: Error | unknown): void {
 		if (this._cleanup) {
 			dispatch(this._cleanup);
 			this._cleanup = undefined;
-			thispatch(this.target, "error", error, this, "error");
+			thispatch(this._target, "error", error);
 		}
 	}
 	complete(): void {
 		if (this._cleanup) {
 			dispatch(this._cleanup);
 			this._cleanup = undefined;
-			thispatch(this.target, "complete", undefined, this, "error");
+			thispatch(this._target, "complete", undefined);
 		}
 	}
 }
