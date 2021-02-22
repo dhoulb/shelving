@@ -98,7 +98,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 
 	next(value: Resolvable<T | typeof LOADING>): void {
 		if (value === SKIP || this.closing) return;
-		if (value instanceof Promise) return thispatch(this, "next", value, this, "error");
+		if (value instanceof Promise) return thispatch<T | typeof LOADING, "next", "error">(this, "next", value, this, "error");
 
 		this._value = value;
 		(this as Mutable<this>).loading = value === LOADING;

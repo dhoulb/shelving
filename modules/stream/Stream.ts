@@ -64,7 +64,7 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 	 */
 	next(value: Resolvable<T>): void {
 		if (this.closed || value === SKIP) return;
-		if (value instanceof Promise) return thispatch(this, "next", value, this, "error");
+		if (value instanceof Promise) return thispatch<T, "next", "error">(this, "next", value, this, "error");
 
 		const start = this._target && this._target < 0 ? this._target : 0;
 		const end = this._target && this._target > 0 ? this._target : undefined;
@@ -83,7 +83,9 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 
 		(this as Mutable<this>).closed = true;
 		if (this._cleanup) this._cleanup = void this._cleanup();
-		for (const subscriber of this._subscribers.slice()) thispatch(subscriber, "error", reason);
+		for (const subscriber of this._subscribers.slice()) {
+			thispatch(subscriber, "error", reason);
+		}
 	}
 
 	/**
