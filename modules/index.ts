@@ -34,7 +34,6 @@ export * from "./equal";
 export * from "./feedback";
 export * from "./filter";
 export * from "./fingerprint";
-export * from "./lazy";
 export * from "./merge";
 export * from "./observe";
 export * from "./pagination";

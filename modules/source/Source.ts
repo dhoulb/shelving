@@ -1,7 +1,6 @@
-import type { Dependencies } from "../array";
+import type { Arguments, Subscriptor, Unsubscriber, AsyncFetcher } from "../function";
 import { logError } from "../console";
 import { LOADING } from "../constants";
-import type { Subscriptor, Unsubscriber, AsyncFetcher } from "../function";
 import { State } from "../state";
 import { Stream } from "../stream";
 
@@ -50,10 +49,10 @@ export class Source<T> extends State<T> {
 	/**
 	 * Fetch this source's data from a data source.
 	 * @param fetcher The fetcher function to call to fetch the data.
-	 * @param deps Any dependencies the fetcher needs.
+	 * @param ...args Any arguments the fetcher needs.
 	 * @param maxAge Skip the fetch if we already have a cached result that's younger than this (in milliseconds).
 	 */
-	fetchFrom<D extends Dependencies>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge = MAX_AGE_MS): void {
+	fetchFrom<A extends Arguments>(fetcher: AsyncFetcher<T, A>, args: A, maxAge = MAX_AGE_MS): void {
 		// No need to subscribe if:
 		// 1. This source is closed.
 		// 2. A subscriber is already queued.
@@ -71,13 +70,17 @@ export class Source<T> extends State<T> {
 
 		// Queue to fetch at the end of the tick.
 		// Fetches and subscribes are deferred to the end of the tick so that we don't subscribe and fetch from the same source (which would be wasteful!)
-		this._queuedFetch = () => this.next(fetcher(...deps));
+		this._queuedFetch = () => this.next(fetcher(...args));
 		Promise.resolve().then(this._start, logError);
 	}
 	_queuedFetch?: () => void;
 
-	/** Subcribe this source to a data source. */
-	subscribeTo<D extends Dependencies>(subscriptor: Subscriptor<T, D>, deps: D): void {
+	/**
+	 * Subcribe this source to a data source.
+	 * @param subscriptor The subscriptor function to call to start the subscription.
+	 * @param ...args Any additional arguments the subscriptor needs.
+	 */
+	subscribeTo<A extends Arguments>(subscriptor: Subscriptor<T, A>, args: A): void {
 		// No need to subscribe if:
 		// 1. This source is closed.
 		// 2. A subscriber is already queued.
@@ -86,7 +89,7 @@ export class Source<T> extends State<T> {
 
 		// Queue to subscribe at the end of the tick.
 		// Fetches and subscribes are deferred to the end of the tick so that we don't subscribe and fetch from the same source (which would be wasteful!)
-		this._queuedSubscribe = () => subscriptor(this, ...deps);
+		this._queuedSubscribe = () => subscriptor(this, ...args);
 		Promise.resolve().then(this._start, logError);
 	}
 	_queuedSubscribe?: () => Unsubscriber;

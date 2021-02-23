@@ -19,12 +19,7 @@ export type ImmutableArray<T = unknown> = readonly T[];
  * - Items can be `SKIP` symbol (and they will be removed).
  * - Items can be `Promise` instances (and they will be awaited).
  */
-export type ResolvableArray<T> = readonly Resolvable<T>[];
-
-/**
- * Dependencies: a readonly unknown array that is being used as a set of dependencies.
- */
-export type Dependencies = readonly unknown[];
+export type ResolvableArray<T = unknown> = readonly Resolvable<T>[];
 
 /**
  * Array type: extract the type for the items of an array or readonly array.
@@ -148,7 +143,8 @@ export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
 	const shuffled = arr.slice();
 	for (let i = shuffled.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
-		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]] as [T, T];
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		[shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
 	}
 	return shuffled;
 };
@@ -191,20 +187,20 @@ export function mapArray<I extends unknown, O extends unknown>(
 	arr: ImmutableObject<I>,
 	mapper: ((value: I, key: string) => typeof SKIP | O) | O,
 ): ImmutableArray<O>;
-export function mapArray<I extends unknown, O extends unknown>(
-	arr: ImmutableArray<I> | ImmutableObject<I>,
-	mapper: ((value: I, key: number | string) => typeof SKIP | O | Promise<typeof SKIP | O>) | O,
-): ImmutableArray<O> | Promise<ImmutableArray<O>> {
+export function mapArray(
+	arr: ImmutableArray | ImmutableObject,
+	mapper: ((value: unknown, key: number | string) => Resolvable<unknown>) | Resolvable<unknown>,
+): ImmutableArray | Promise<ImmutableArray> {
 	let promises = false;
-	let changed = !(arr instanceof Array);
-	const output: Mutable<ResolvableArray<O>> = [];
+	let changed = false;
+	const output: Mutable<ResolvableArray<unknown>> = [];
 	for (const [key, current] of Object.entries(arr)) {
-		const next = mapper instanceof Function ? mapper(current, key) : mapper;
+		const next = typeof mapper === "function" ? mapper(current, key) : mapper;
 		if (next instanceof Promise) promises = true;
 		if (next !== SKIP) output.push(next);
 		if (next !== current) changed = true;
 	}
-	return promises ? resolveArray(output) : changed ? (output as O[]) : (arr as O[]);
+	return promises ? resolveArray<unknown>(output) : changed || !(arr instanceof Array) ? output : arr;
 }
 
 /**
@@ -216,7 +212,7 @@ export function mapArray<I extends unknown, O extends unknown>(
  *
  * @returns Array containing resolved items.
  */
-export const resolveArray = async <V>(arr: ResolvableArray<V>): Promise<Array<V>> => {
+export const resolveArray = async <V>(arr: ResolvableArray<V>): Promise<ImmutableArray<V>> => {
 	const resolved: V[] = [];
 	await Promise.all(
 		arr.map(async current => {

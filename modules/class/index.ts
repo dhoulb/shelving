@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Dependencies } from "../array";
+import type { Arguments } from "../array";
+import type { EmptyObject, ImmutableObject } from "../object";
 import { assertFunction } from "../assert";
-import { EmptyObject, ImmutableObject } from "../object";
 
 /**
  * Constructor: a class constructor that can be used with `new X` to generate an object of type `T`
@@ -67,8 +67,8 @@ export function cacheMethod(target: object, key: string, { value: method }: Prop
 	return {
 		configurable: true,
 		get() {
-			return (...deps: Dependencies) => {
-				const value = method.call(this, ...deps);
+			return (...args: Arguments) => {
+				const value = method.call(this, ...args);
 				Object.defineProperty(this, key, { value: () => value, configurable: false, writable: false });
 				return value;
 			};

@@ -145,5 +145,5 @@ async function awaitSafely<T, C extends string>(promised: Promise<T>, catcher?: 
 
 /** Dispatch a thrown value to a catcher. */
 function dispatchToCatcher<C extends string>(thrown: unknown, catcher?: Catcher | { [K in C]: Catcher }, method?: C) {
-	catcher instanceof Function ? catcher(thrown) : catcher && typeof method === "string" ? catcher[method](thrown) : logError(thrown);
+	typeof catcher === "function" ? catcher(thrown) : catcher && typeof method === "string" ? catcher[method](thrown) : logError(thrown);
 }

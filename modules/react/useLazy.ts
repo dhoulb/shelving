@@ -1,10 +1,5 @@
 import { useRef } from "react";
-import { isArrayEqual, Dependencies } from "..";
-
-type LazyInternal<T, D extends Dependencies> = {
-	value: T;
-	deps: D;
-};
+import { isArrayEqual, Arguments } from "..";
 
 /**
  * Lazy: a value that only changes when its dependencies change.
@@ -17,19 +12,21 @@ type LazyInternal<T, D extends Dependencies> = {
  * If the initialiser function doesn't require any arguments or you want to use a simple value rather than an initialiser function, use `useMemo()` instead.
  *
  * @param value The value or an initialiser function for the value.
- * @param deps Array of dependencies that the initialiser relies on.
+ * @param ...args Any arguments the initialiser needs.
  * @returns The value returned from the initialiser (if the dependencies haven't changed, will be the same exact instance as the last call).
  */
-export const useLazy = <T, D extends Dependencies>(initialiser: (...args: D) => T, deps: D): T => {
-	const internals = (useRef<LazyInternal<T, D>>().current ||= {
-		value: initialiser(...deps),
-		deps,
+export const useLazy = <T, A extends Arguments>(initialiser: (...args: A) => T, args: A): T => {
+	const internals = (useRef<{
+		value: T;
+		args: A;
+	}>().current ||= {
+		value: initialiser(...args),
+		args,
 	});
 
-	// Refresh value if the deps change.
-	if (!isArrayEqual<D>(deps, internals.deps)) {
-		internals.value = initialiser(...deps);
-		internals.deps = deps;
+	if (!isArrayEqual<A>(args, internals.args)) {
+		internals.value = initialiser(...args);
+		internals.args = args;
 	}
 
 	return internals.value;

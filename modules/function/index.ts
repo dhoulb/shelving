@@ -4,3 +4,4 @@ export * from "./Deriver";
 export * from "./Dispatcher";
 export * from "./Fetcher";
 export * from "./Subscriptor";
+export * from "./Initialiser";

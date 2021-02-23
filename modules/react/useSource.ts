@@ -1,4 +1,4 @@
-import { Dependencies, AsyncFetcher, fingerprint, Source, Subscriptor } from "..";
+import { Arguments, AsyncFetcher, fingerprint, Source, Subscriptor } from "..";
 import { useSubscribe } from "./useSubscribe";
 
 /**
@@ -10,7 +10,7 @@ import { useSubscribe } from "./useSubscribe";
  *
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  */
-export function useSource<T, D extends Dependencies>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge?: number): T {
+export function useSource<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge?: number): T {
 	const source = Source.get<T>(`${fingerprint(fetcher)}:${fingerprint(deps)}`);
 	useSubscribe(source);
 	source.fetchFrom(fetcher, deps, maxAge);
@@ -27,7 +27,7 @@ export function useSource<T, D extends Dependencies>(fetcher: AsyncFetcher<T, D>
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  * @throws `RequiredError` when document does not exist.
  */
-export function useSourceData<T, D extends Dependencies>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge?: number): Exclude<T, undefined> {
+export function useSourceData<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge?: number): Exclude<T, undefined> {
 	const source = Source.get<T>(`${fingerprint(fetcher)}:${fingerprint(deps)}`);
 	useSubscribe(source);
 	source.fetchFrom(fetcher, deps, maxAge);
@@ -44,7 +44,7 @@ export function useSourceData<T, D extends Dependencies>(fetcher: AsyncFetcher<T
  *
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  */
-export const useSourceSubscribe = <T, D extends Dependencies>(subscriptor: Subscriptor<T, D>, deps: D): T => {
+export const useSourceSubscribe = <T, D extends Arguments>(subscriptor: Subscriptor<T, D>, deps: D): T => {
 	const source = Source.get<T>(`${fingerprint(subscriptor)}:${fingerprint(deps)}`);
 	useSubscribe(source.active); // Use `source.active` not `source` directly to indicate we need an active subscription.
 	source.subscribeTo(subscriptor, deps);

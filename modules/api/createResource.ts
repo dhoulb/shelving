@@ -1,4 +1,4 @@
-import { Dependencies } from "../array";
+import type { Arguments } from "../function";
 import { UNDEFINED_VALIDATOR, Validator } from "../schema";
 import type { Resource as ResourceInterface, ResourceResolver } from "./Resource";
 
@@ -21,7 +21,7 @@ class Resource<P, R> implements ResourceInterface<P, R> {
 		this.payload = payload;
 		this.result = result;
 	}
-	async resolve<D extends Dependencies>(resolver: ResourceResolver<P, unknown, D>, payload: unknown, ...deps: D): Promise<R> {
-		return this.result.validate(await resolver(this.payload.validate(payload), ...deps));
+	async resolve<A extends Arguments>(resolver: ResourceResolver<P, unknown, A>, payload: unknown, ...args: A): Promise<R> {
+		return this.result.validate(await resolver(this.payload.validate(payload), ...args));
 	}
 }

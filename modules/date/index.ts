@@ -35,7 +35,7 @@ export const toDate = (value: unknown): Date | null => {
 	if (value === "yesterday") return addDays(-1, getMidnight());
 	if (value === null || value === "") return null; // We know empty string is always an invalid date.
 	if (typeof value === "string" || typeof value === "number") return toDate(new Date(value));
-	if (value instanceof Function) return toDate(value());
+	if (typeof value === "function") return toDate(value());
 	return null;
 };
 

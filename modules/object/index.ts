@@ -31,7 +31,7 @@ export type MutableObject<T = unknown> = { [key: string]: T };
  * - Property values can be `SKIP` symbol (and they will be removed).
  * - Property values can be `Promise` instances (and they will be awaited).
  */
-export type ResolvableObject<T> = { readonly [key: string]: Resolvable<T> };
+export type ResolvableObject<T = unknown> = { readonly [key: string]: Resolvable<T> };
 
 /**
  * Object type: extract the type for the props of an object.
@@ -124,16 +124,20 @@ export const getLastProp = <T>(obj: ImmutableObject<T>): Entry<T> | undefined =>
 export function mapObjectKeys<V extends unknown>(
 	input: ImmutableObject<V> | ImmutableEntries<V>, //
 	mapper: (key: string, value: V) => typeof SKIP | string,
-): ImmutableObject<V> {
+): ImmutableObject<V>;
+export function mapObjectKeys(
+	input: ImmutableObject | ImmutableEntries, //
+	mapper: (key: string, value: unknown) => typeof SKIP | string,
+): ImmutableObject {
 	let changed = false;
-	const output: MutableObject<V> = {};
+	const output: MutableObject = {};
 	const entries = input instanceof Array ? input : Object.entries(input);
 	for (const [current, value] of entries) {
 		const next = mapper(current, value);
 		if (next !== SKIP) output[next] = value;
 		if (next !== current) changed = true;
 	}
-	return changed ? output : (input as ImmutableObject<V>);
+	return changed || input instanceof Array ? output : input;
 }
 
 /**
@@ -162,21 +166,21 @@ export function mapObject<I, O>(
 	mapper: ((value: I, key: string) => typeof SKIP | O) | O,
 ): ImmutableObject<O>;
 //
-export function mapObject<I extends unknown, O extends unknown>(
-	input: ImmutableObject<I> | ImmutableEntries<I>,
-	mapper: ((value: I, key: string) => typeof SKIP | O | Promise<typeof SKIP | O>) | O,
-): ImmutableObject<O> | Promise<ImmutableObject<O>> {
+export function mapObject(
+	input: ImmutableObject | ImmutableEntries,
+	mapper: ((value: unknown, key: string) => Resolvable<unknown>) | Resolvable<unknown>,
+): ImmutableObject | Promise<ImmutableObject> {
 	let promises = false;
 	let changed = false;
-	const output: Mutable<ResolvableObject<O>> = input instanceof Array ? {} : { __proto__: Object.getPrototypeOf(input) };
+	const output: Mutable<ResolvableObject> = input instanceof Array ? {} : { __proto__: Object.getPrototypeOf(input) };
 	const entries = input instanceof Array ? input : Object.entries(input);
 	for (const [key, current] of entries) {
-		const next = mapper instanceof Function ? mapper(current, key) : mapper;
+		const next = typeof mapper === "function" ? mapper(current, key) : mapper;
 		if (next instanceof Promise) promises = true;
 		if (next !== SKIP) output[key] = next;
 		if (next !== current) changed = true;
 	}
-	return promises ? resolveObject(output) : changed ? (output as ImmutableObject<O>) : (input as ImmutableObject<O>);
+	return promises ? resolveObject(output) : changed || input instanceof Array ? output : input;
 }
 
 /**
@@ -214,15 +218,19 @@ export function objectFromKeys<O>(
 export function objectFromKeys<O>(
 	keys: ImmutableArray<string>, //
 	mapper: ((key: string) => typeof SKIP | O) | O,
-): ImmutableObject<O> | Promise<ImmutableObject<O>> {
+): ImmutableObject<O> | Promise<ImmutableObject<O>>;
+export function objectFromKeys(
+	keys: ImmutableArray<string>, //
+	mapper: ((key: string) => Resolvable<unknown>) | Resolvable<unknown>,
+): ImmutableObject | Promise<ImmutableObject> {
 	let promises = false;
-	const output: Mutable<ResolvableObject<O>> = {};
+	const output: Mutable<ResolvableObject> = {};
 	for (const key of keys) {
-		const next = mapper instanceof Function ? mapper(key) : mapper;
+		const next = typeof mapper === "function" ? mapper(key) : mapper;
 		if (next instanceof Promise) promises = true;
 		if (next !== SKIP) output[key] = next;
 	}
-	return promises ? resolveObject(output) : (output as ImmutableObject<O>);
+	return promises ? resolveObject(output) : output;
 }
 
 /**
