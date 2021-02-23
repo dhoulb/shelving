@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { Arguments } from "../array";
+import type { Arguments } from "../function";
 import type { EmptyObject, ImmutableObject } from "../object";
 import { assertFunction } from "../assert";
 
