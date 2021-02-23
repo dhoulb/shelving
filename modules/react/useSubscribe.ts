@@ -1,39 +1,32 @@
-import { useEffect, useRef, useState } from "react";
-import { Subscribable, Unsubscriber, LOADING, ERROR, NOERROR } from "..";
-
-type SubscribeInternal<T> = {
-	subscribable: Subscribable<T>;
-	effect(): Unsubscriber;
-	value: T | typeof LOADING;
-	error: Error | unknown | typeof NOERROR;
-};
+import { useEffect, useRef, useState as useReactState } from "react";
+import { Subscribable, Unsubscriber, LOADING, NOERROR } from "..";
 
 /**
- * Connect any `Subscribable` to a component so the component refreshes when the subscribable issues a new value or errors.
- * - First returned value will always be `LOADING` symbol and nth will be the issued value.
- * - If the subscribable errors, the resulting error will be thrown.
+ * Connect any `Subscribable` to a React component.
+ * - So the component refreshes when the subscribable issues a new value or errors.
+ *
+ * @returns The dispatched next value, or the `LOADING` symbol if no values have been dispatched yet.
+ * @throws Any error caught by the subscribable.
  */
 export const useSubscribe = <T>(subscribable: Subscribable<T>): T | typeof LOADING => {
-	const setValue = useState<T | typeof LOADING | typeof ERROR>(LOADING)[1];
-	const ref: SubscribeInternal<T> = (useRef<SubscribeInternal<T>>().current ||= {
+	const [next, setNext] = useReactState<T | typeof LOADING>(LOADING);
+	const [error, setError] = useReactState<Error | unknown | typeof NOERROR>(NOERROR);
+
+	const internals: {
+		subscribable: Subscribable<T>;
+		effect(): Unsubscriber;
+	} = (useRef<{
+		subscribable: Subscribable<T>;
+		effect(): Unsubscriber;
+	}>().current ||= {
 		subscribable,
-		effect: () =>
-			ref.subscribable.subscribe({
-				next: value => {
-					ref.value = value;
-					setValue(value);
-				},
-				error: thrown => {
-					ref.error = thrown;
-					setValue(ERROR);
-				},
-			}),
-		error: NOERROR,
-		value: LOADING,
+		effect: () => internals.subscribable.subscribe(setNext, setError),
 	});
-	ref.subscribable = subscribable;
-	const effect = ref.effect;
+	internals.subscribable = subscribable;
+
+	const { effect } = internals;
 	useEffect(effect, [effect, subscribable]);
-	if (ref.error) throw ref.error;
-	return ref.value;
+
+	if (error) throw error;
+	return next;
 };
