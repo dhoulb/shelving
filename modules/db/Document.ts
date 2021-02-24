@@ -1,20 +1,17 @@
 import type { ImmutableObject } from "../object";
 import type { Data, Result } from "../data";
-import type { DataSchemas, AnyDataSchema, DataSchema, Validator } from "../schema";
+import type { DataSchemas, DataSchema, Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import type { Cloneable } from "../clone";
 import type { Observer, Subscribable } from "../observe";
 import type { Collection } from "./Collection";
 import type { DeleteOptions, GetOptions, SetOptions } from "./options";
 
-/** A generic document whose generics are not known. */
-export type AnyDocument = Document<Data, DataSchemas, DataSchemas>;
-
 /** Get a `Document` for a given `DataSchema`. */
-export type SchemaDocument<S extends AnyDataSchema> = Document<S["type"], S["documents"], S["collections"]>;
+export type SchemaDocument<S extends DataSchema> = Document<S["type"], S["documents"], S["collections"]>;
 
 /** Type for a document instance. */
-export interface Document<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas>
+export interface Document<T extends Data = Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas>
 	extends Cloneable,
 		Validator<T>,
 		Subscribable<Result<T>> {

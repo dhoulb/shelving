@@ -4,11 +4,8 @@ import { ObjectSchema } from "./ObjectSchema";
 import { Validators } from "./Validator";
 import { SchemaOptions } from "./Schema";
 
-/** A generic data schema whose values are not known. */
-export type AnyDataSchema = DataSchema<Data, DataSchemas, DataSchemas>;
-
 /** A set of named data schemas whose values are not known. */
-export type DataSchemas = ImmutableObject<AnyDataSchema>;
+export type DataSchemas = ImmutableObject<DataSchema>;
 
 export type DataOptions<T extends Data, D extends DataSchemas, C extends DataSchemas> = Exclude<SchemaOptions, "required"> & {
 	props: Validators<T>;
@@ -24,7 +21,7 @@ export type DataOptions<T extends Data, D extends DataSchemas, C extends DataSch
  * - Accepts `options.documents` and `options.collections` to define data nested under it.
  * - Has `.partial`, `.change`, `.results`, `.changes` props that create schemas (based off this) that allow `undefined` in the right places.
  */
-export class DataSchema<T extends Data, D extends DataSchemas, C extends DataSchemas> extends ObjectSchema<T> {
+export class DataSchema<T extends Data = Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> extends ObjectSchema<T> {
 	/** Any nested documents that sit below this data. */
 	readonly documents: D;
 

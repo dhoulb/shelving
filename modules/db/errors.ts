@@ -1,10 +1,10 @@
 import { RequiredError } from "../errors";
-import type { AnyDocument } from "./Document";
+import type { Document } from "./Document";
 
 /** Error thrown when a document doesn't exist. */
 export class DocumentRequiredError extends RequiredError {
-	document: AnyDocument;
-	constructor(document: AnyDocument) {
+	document: Document;
+	constructor(document: Document) {
 		super(`Path does not exist: "${document.path}"`);
 		this.document = document;
 	}

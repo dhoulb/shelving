@@ -1,5 +1,5 @@
 import type { Data, Results } from "../data";
-import type { DataSchemas, AnyDataSchema, DataSchema, Validator } from "../schema";
+import type { DataSchemas, DataSchema, Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import type { Entry } from "../entry";
 import type { Queryable, Query } from "../query";
@@ -9,16 +9,13 @@ import type { Observer, Subscribable } from "../observe";
 import type { Document } from "./Document";
 import type { DeleteOptions, SetOptions } from "./options";
 
-/** A generic collection whose generics are not known. */
-export type AnyCollection = Collection<Data, DataSchemas, DataSchemas>;
-
 /** Get a `Collection` for a `DataSchema`. */
-export type SchemaCollection<S extends AnyDataSchema> = Collection<S["type"], S["documents"], S["collections"]>;
+export type SchemaCollection<S extends DataSchema> = Collection<S["type"], S["documents"], S["collections"]>;
 
 /**
  * Collection reference: Allows a set of documents in a collection to be read or deleted from a database.
  */
-export interface Collection<T extends Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas>
+export interface Collection<T extends Data = Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas>
 	extends Queryable<T>,
 		Validator<T>,
 		Cloneable,

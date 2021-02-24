@@ -2,9 +2,6 @@ import type { DataSchemas } from "../schema";
 import type { Document } from "./Document";
 import type { Collection } from "./Collection";
 
-/** A generic database whose generics are not known. */
-export type AnyDatabase = Database<DataSchemas, DataSchemas>;
-
 /**
  * Database: combines a set of document and collection loci for the root level of the database, and links them to a Provider.
  *
@@ -12,7 +9,7 @@ export type AnyDatabase = Database<DataSchemas, DataSchemas>;
  * @param collections Set of loci describing collections at the root level of the database.
  * @param provider Provider that allows data to be read/written.
  */
-export interface Database<D extends DataSchemas, C extends DataSchemas> {
+export interface Database<D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> {
 	/** Any nested documents that sit below this data. */
 	readonly documents: D;
 
