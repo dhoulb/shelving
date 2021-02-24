@@ -1,5 +1,5 @@
 import { MutableObject, isObject, ImmutableObject } from "../object";
-import { initialise, Initialiser } from "../function";
+import { initialise, Lazy } from "../function";
 import { ImmutableArray } from "../array";
 
 type Chunk = { pre: string; name: string; placeholder: string; post: string };
@@ -69,7 +69,7 @@ const getTemplateName = (chunk: Chunk) => chunk.name;
  * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.
  */
 export const matchTemplate = (
-	lazyTemplates: Initialiser<string | string[] | Iterable<string> | Generator<string>, [string]>,
+	lazyTemplates: Lazy<string | string[] | Iterable<string> | Generator<string>, [string]>,
 	target: string,
 ): TemplateValues | undefined => {
 	const templates = initialise(lazyTemplates, target);
