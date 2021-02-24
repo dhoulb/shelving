@@ -12,10 +12,10 @@ import { Rule } from "./Rule";
  * @param direction A direction string, either "asc" or "desc"
  */
 export class Sort<T extends Data> extends Rule<T> {
-	readonly key: "id" | keyof T;
+	readonly key: "id" | string;
 	readonly direction: Direction;
 
-	constructor(key: "id" | keyof T, direction: Direction = "asc") {
+	constructor(key: "id" | string, direction: Direction = "asc") {
 		super();
 		this.key = key;
 		this.direction = direction;

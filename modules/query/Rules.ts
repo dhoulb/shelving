@@ -3,7 +3,7 @@ import type { Data, Results } from "../data";
 import { bindMethod } from "..";
 import { Rule } from "./Rule";
 
-export const JOIN_RULES = ",";
+const JOIN_RULES = ",";
 
 const getRuleString = (rule: Rule<Data>) => rule.toString();
 

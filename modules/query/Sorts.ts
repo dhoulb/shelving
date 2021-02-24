@@ -9,10 +9,10 @@ import { Rules } from "./Rules";
 /** A set of sorts. */
 export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable<T> {
 	// Add sorts.
-	asc(key: "id" | keyof T): this {
+	asc(key: "id" | (keyof T & string)): this {
 		return { __proto__: Sorts.prototype, ...this, rules: [...this.rules, new Sort<T>(key, "asc")] };
 	}
-	desc(key: "id" | keyof T): this {
+	desc(key: "id" | (keyof T & string)): this {
 		return { __proto__: Sorts.prototype, ...this, rules: [...this.rules, new Sort<T>(key, "desc")] };
 	}
 

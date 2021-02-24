@@ -11,11 +11,11 @@ import { getQueryProp } from "./helpers";
  * @param value Value the specified property should be matched against.
  */
 export class Filter<T extends Data> extends Rule<T> {
-	readonly key: "id" | keyof T;
+	readonly key: "id" | string;
 	readonly operator: Operator;
 	readonly value: unknown;
 
-	constructor(key: "id" | keyof T, operator: Operator, value: unknown) {
+	constructor(key: "id" | string, operator: Operator, value: unknown) {
 		super();
 		this.key = key;
 		this.operator = operator;

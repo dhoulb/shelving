@@ -192,28 +192,28 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 		const suboptions = options?.deep ? DEEP : undefined;
 		await Promise.all(ids.map(id => this.doc(id).delete(suboptions)));
 	}
-	is<K extends "id" | keyof T>(key: K, value: K extends "id" ? string : T[K]): this {
+	is<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.is<K>(key, value) };
 	}
-	not<K extends "id" | keyof T>(key: K, value: K extends "id" ? string : T[K]): this {
+	not<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.not<K>(key, value) };
 	}
-	in<K extends "id" | keyof T>(key: K, value: K extends "id" ? readonly string[] : readonly T[K][]): this {
+	in<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? readonly string[] : readonly T[K][]): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.in<K>(key, value) };
 	}
-	lt<K extends "id" | keyof T>(key: K, value: K extends "id" ? string : T[K]): this {
+	lt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.lt<K>(key, value) };
 	}
-	lte<K extends "id" | keyof T>(key: K, value: K extends "id" ? string : T[K]): this {
+	lte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.lte<K>(key, value) };
 	}
-	gt<K extends "id" | keyof T>(key: K, value: K extends "id" ? string : T[K]): this {
+	gt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.gt<K>(key, value) };
 	}
-	gte<K extends "id" | keyof T>(key: K, value: K extends "id" ? string : T[K]): this {
+	gte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.gte<K>(key, value) };
 	}
-	contains<K extends keyof T>(key: K, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
+	contains<K extends keyof T>(key: K & string, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.contains<K>(key, value) };
 	}
 	after(id: string, data: T): this {
@@ -222,10 +222,10 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 	before(id: string, data: T): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.before(id, data) };
 	}
-	asc(key: "id" | keyof T = "id"): this {
+	asc(key: "id" | (keyof T & string) = "id"): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.asc(key) };
 	}
-	desc(key: "id" | keyof T = "id"): this {
+	desc(key: "id" | (keyof T & string) = "id"): this {
 		return { __proto__: Collection.prototype, ...this, query: this.query.desc(key) };
 	}
 	limit(limit: number | null): this {

@@ -26,8 +26,8 @@ const OPERATORS: { readonly [K in Operator]: FirestoreWhereFilterOp } = {
 /** Create a corresponding `QueryReference` from a Query. */
 const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filters, sorts, slice } }: Collection<T>): FirestoreQuery => {
 	let query: FirestoreQuery = firestore.collection(path);
-	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key.toString(), direction);
-	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key.toString(), OPERATORS[operator], value);
+	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, direction);
+	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
 	if (slice.limit !== null) query = query.limit(slice.limit);
 	return query;
 };

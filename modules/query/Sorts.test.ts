@@ -1,4 +1,4 @@
-import { Sorts, Sort } from "..";
+import { Sorts, Sort, Data } from "..";
 
 const a = { first: "B", second: 1 };
 const b = { first: "B", second: 2 };
@@ -6,7 +6,12 @@ const c = { first: "A", second: 4 };
 const d = { first: "A", second: 3 };
 const all = { b, c, a, d };
 
-test("Sorts", () => {
+test("Sorts: types", () => {
+	const sort1: Sorts<{ a: number }> = new Sorts<{ a: number }>();
+	// Should allow a wider type.
+	const sort2: Sorts<Data> = new Sorts<{ a: number }>();
+});
+test("Sorts: sorting", () => {
 	// One sort order.
 	expect(Object.keys(new Sorts([new Sort("id")]).results(all))).toEqual(["a", "b", "c", "d"]);
 	expect(Object.keys(new Sorts([new Sort("id", "desc")]).results(all))).toEqual(["d", "c", "b", "a"]);
