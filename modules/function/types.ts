@@ -5,7 +5,7 @@
  * - Exists because it's hard to remember the `...args: any[]` syntax, and annoying to disable `no-explicit-any` every time.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyFunction = (...args: any[]) => unknown;
+export type AnyFunction = (...args: any) => any;
 
 /**
  * Arguments: a readonly unknown array that is being used as a set of arguments to a function.

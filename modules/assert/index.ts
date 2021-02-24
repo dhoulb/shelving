@@ -1,7 +1,7 @@
 import { AssertionError } from "../errors";
 import { ImmutableObject, isObject } from "../object";
 import { isArray } from "../array";
-import type { Constructor } from "../class";
+import type { Class } from "../class";
 import { debug } from "../debug";
 import { AnyFunction } from "../function";
 
@@ -52,7 +52,7 @@ export function assertLength<T extends { length: number }>(value: T | unknown, m
 }
 
 /** Assert that a value is an instance of something. */
-export function assertInstance<O>(value: O | unknown, constructor: Constructor<O>): asserts value is O {
+export function assertInstance<O>(value: O | unknown, constructor: Class<O>): asserts value is O {
 	if (!(value instanceof constructor)) throw new AssertionError(`Must be instance of ${debug(constructor)}`, value);
 }
 
