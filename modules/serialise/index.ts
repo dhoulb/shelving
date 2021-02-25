@@ -1,7 +1,6 @@
 import { isArray } from "../array";
-import { getEntryKey } from "../entry";
+import { AssertionError } from "../errors";
 import { isObject } from "../object";
-import { sortAscending } from "../sort";
 
 const R_QUOTE = /"/g;
 
@@ -17,7 +16,7 @@ export function serialise(value: unknown): string {
 	if (value === true) return "true";
 	if (value === false) return "false";
 	if (value === undefined) return `{"$type":"undefined"}`;
-	if (value === null) return `{"$type":"null"}`;
+	if (value === null) return `null`;
 	if (typeof value === "number") return value.toString();
 	if (typeof value === "string") return escapeString(value);
 	if (typeof value === "symbol") return value.description ? `{"$type":"symbol","description":${escapeString(value.description)}}` : `{"$type":"symbol"}`;
@@ -31,10 +30,13 @@ export function serialise(value: unknown): string {
 		if (type && value.toString !== Object.prototype.toString) return `{"$type":${escapeString(type)},"value":${escapeString(value.toString())}}`;
 
 		// Otherwise crawl the object and sort the props ascendingly.
-		const entries = sortAscending(Object.entries(value), getEntryKey);
-		return `{${type ? `"$type":${escapeString(type)}${entries.length ? "," : ""}` : ""}${entries.map(serialiseEntry).join(",")}}`;
+		const props = Object.entries(value).map(serialiseEntry).sort();
+		return `{${type ? `"$type":${escapeString(type)}${props.length ? "," : ""}` : ""}${props.join(",")}}`;
 	}
-	return "";
+	throw new AssertionError("toJSON(): Unknown value", value);
 }
-const serialiseEntry = ([key, value]: [string, unknown]) => `${escapeString(key)}:${serialise(value)}`;
+const serialiseEntry = ([key, value]: [string, unknown]) => {
+	const prop = serialise(value);
+	return prop ? `${escapeString(key)}:${prop}` : "";
+};
 const escapeString = (str: string): string => `"${str.replace(R_QUOTE, `\\"`)}"`;

@@ -5,7 +5,7 @@ describe("serialise()", () => {
 		// Primitives.
 		expect(serialise(true)).toBe("true");
 		expect(serialise(false)).toBe("false");
-		expect(serialise(null)).toBe(`{"$type":"null"}`);
+		expect(serialise(null)).toBe("null");
 		expect(serialise(undefined)).toBe(`{"$type":"undefined"}`);
 		expect(serialise(123)).toBe("123");
 		expect(serialise(123.456)).toBe("123.456");
