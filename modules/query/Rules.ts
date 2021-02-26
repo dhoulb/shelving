@@ -1,6 +1,5 @@
-import type { Entry, ImmutableEntries } from "../entry";
+import type { ImmutableEntries } from "../entry";
 import type { Data, Results } from "../data";
-import { bindMethod } from "..";
 import { Rule } from "./Rule";
 
 const JOIN_RULES = ",";
@@ -33,14 +32,6 @@ export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
 		// If any rule returns false, return false.
 		for (const rule of this.rules) if (!rule.match(id, data)) return false;
 		return true;
-	}
-
-	/**
-	 * Return a Filterer function that can filter an array of entries
-	 */
-	@bindMethod // Bind this so we can use it directly in `filter()`
-	filterer([id, data]: Entry<T>): boolean {
-		return this.match(id, data);
 	}
 
 	/**
