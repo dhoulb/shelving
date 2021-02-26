@@ -4,6 +4,8 @@
 
 **Shelving** is a toolkit for using data in JavaScript and TypeScript, including:
 
+> Note: The `1.x` branch of Shelving is in active development and is not observing semver for breaking changes (from `2.x` onward semver will be followed).
+
 - Schemas (validation)
 - Databases (via providers including in-memory, Firestore, IndexedDB)
 - Querying (sorting, filtering, slicing)
@@ -39,63 +41,67 @@ Shelving is created from small individual modules which can be imported individu
 
 @todo Write these docs!
 
+### Internal
+
+- `shelving/constants`
+
 ### Data storage
 
 - [`shelving/schema`](https://github.com/dhoulb/shelving/blob/main/modules/schema/README.md) ✅ — Validate unknown user input against schemas
 - `shelving/db` ✅
 - `shelving/query` ✅
 
-### Data storage providers
+### Data providers
 
 - `shelving/memory` ✅ — Fast in-memory database provider
 - `shelving/firestore-client` — Provider for Firestore in client apps (using `firebase`)
 - `shelving/firestore-server` — Provider for Firestore on servers (using `firebase-admin`)
 
-### State management
+### Data types
 
-- `shelving/event` ✅
-- `shelving/state` ✅
-
-### Data type helpers
-
-- `shelving/null` ✅
-- `shelving/undefined` ✅
-- `shelving/boolean` ✅
-- `shelving/string` ✅
-- `shelving/number` ✅
 - `shelving/array` ✅
-- `shelving/constructor` ✅
+- `shelving/boolean` ✅
+- `shelving/class` ✅
 - `shelving/data` ✅
 - `shelving/date` ✅
 - `shelving/entry` ✅
 - `shelving/function` ✅
+- `shelving/null` ✅
+- `shelving/number` ✅
 - `shelving/object` ✅
+- `shelving/string` ✅
+- `shelving/undefined` ✅
+- `shelving/units` ✅
 - `shelving/url` ✅
 
-### Data manipulation helpers
+### Data manipulation
 
-- `shelving/equal` ✅
 - `shelving/clone` ✅
-- `shelving/merge` ✅
 - `shelving/diff` ✅
+- `shelving/equal` ✅
 - `shelving/filter` ✅
+- `shelving/markup` ✅
+- `shelving/merge` ✅
+- `shelving/random` ✅
+- `shelving/serialise` ✅
 - `shelving/sort` ✅
+- [`shelving/template`](https://github.com/dhoulb/shelving/blob/main/modules/template/README.md) ✅ — Simple string template rendering and matching
 
-### Error helpers
+### Streams
 
-- `shelving/dispatch` ✅
+- `shelving/observe` ✅
+- `shelving/pagination` ✅
+- `shelving/source` ✅
+- `shelving/state` ✅
+- `shelving/stream` ✅
+
+### Errors
+
 - `shelving/assert` ✅
 - `shelving/console` ✅
 - `shelving/debug` ✅
+- `shelving/errors` ✅
 - `shelving/feedback` ✅
-
-### Other helpers
-
-- `shelving/fingerprint` ✅
-- [`shelving/template`](https://github.com/dhoulb/shelving/blob/main/modules/template/README.md) ✅ — Simple string template rendering and matching
-- `shelving/lazy` ✅
-- `shelving/random` ✅
-- `shelving/units` ✅
 
 ### Testing
 
