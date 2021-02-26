@@ -2,7 +2,7 @@
 
 import type { MarkupRule, MarkupOptions, MarkupNode } from "./types";
 import { cleanMarkup } from "./helpers";
-import { markupRules, markupUgcRules } from "./rules";
+import { MARKUP_RULES } from "./rules";
 
 /** Convert a string into an array of React nodes using a set of rules. */
 const renderString = (content: string, options: MarkupOptions): MarkupNode => {
@@ -109,7 +109,7 @@ const renderNode = (node: MarkupNode, options: MarkupOptions): MarkupNode => {
 };
 
 const defaultMarkupOptions: MarkupOptions = {
-	rules: markupRules,
+	rules: Object.values(MARKUP_RULES),
 	context: "block",
 	rel: undefined,
 	schemes: ["http:", "https:"],
@@ -153,7 +153,19 @@ export const renderMarkup = (content: string, options?: Partial<MarkupOptions>):
 
 const defaultMarkupUgcOptions: MarkupOptions = {
 	...defaultMarkupOptions,
-	rules: markupUgcRules,
+	rules: [
+		MARKUP_RULES.UL,
+		MARKUP_RULES.OL,
+		MARKUP_RULES.PARAGRAPH,
+		MARKUP_RULES.LINK,
+		MARKUP_RULES.AUTOLINK,
+		MARKUP_RULES.CODE,
+		MARKUP_RULES.STRONG,
+		MARKUP_RULES.EM,
+		MARKUP_RULES.INS,
+		MARKUP_RULES.DEL,
+		MARKUP_RULES.BR,
+	],
 	rel: "nofollow ugc",
 };
 

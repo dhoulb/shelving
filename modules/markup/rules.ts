@@ -1,5 +1,5 @@
 import { formatUrl } from "../url";
-import type { MarkupElement, MarkupRule, MarkupRuleMatcher, MarkupRules } from "./types";
+import type { MarkupElement, MarkupRule, MarkupRuleMatcher } from "./types";
 
 // Regular expression partials (`\` slashes must be escaped as `\\`).
 const LINE = "[^\\n]*"; // Match line of content (anything that's not a newline).
@@ -45,7 +45,7 @@ const createWrappedMatcher = (chars: string, middle = WORDS): MarkupRuleMatcher 
  * - Same as Markdown syntax.
  * - Markdown's underline syntax is not supported (for simplification).
  */
-export const headingRule: MarkupRule = {
+const HEADING: MarkupRule = {
 	match: createLineMatcher(`(#{1,6}) +(${LINE})`),
 	render: ([, prefix = "", children = ""]) => ({ type: `h${prefix.length}`, key: null, props: { children } }),
 	contexts: ["block"],
@@ -59,7 +59,7 @@ export const headingRule: MarkupRule = {
  * - Character must be the same every time (can't mix)
  * - Might have infinite number of spaces between the characters.
  */
-export const hrRule: MarkupRule = {
+const HR: MarkupRule = {
 	match: createLineMatcher(`([${BULLETS}])(?: *\\1){2,}`),
 	render: () => ({ type: "hr", key: null, props: {} }),
 	contexts: ["block"],
@@ -72,7 +72,7 @@ export const hrRule: MarkupRule = {
  * - Lists can be created with `•` bullet characters (in addition to `-` dash, `+` plus, and `*` asterisk).
  * - Second-level list can be indented with 1-2 spaces.
  */
-export const ulRule: MarkupRule = {
+const UL: MarkupRule = {
 	match: createBlockMatcher(`${UNORDERED}(${BLOCK})`),
 	render: ([, list = ""]) => {
 		const children = list.split(SPLIT_UL_ITEMS).map(mapUnorderedItem);
@@ -92,7 +92,7 @@ const mapUnorderedItem = (item: string, key: number): MarkupElement => {
  * - No leading spaces are allowed for the top-level list.
  * - Second-level list can be indented with 1-3 spaces.
  */
-export const olRule: MarkupRule = {
+const OL: MarkupRule = {
 	match: createBlockMatcher(`(${ORDERED}${BLOCK})`),
 	render: ([, list = ""]) => {
 		const children = list.split(SPLIT_OL_ITEMS).map(mapOrderedItem);
@@ -118,7 +118,7 @@ const mapOrderedItem = (item: string, key: number): MarkupElement => {
  * - Block continues until it finds a line that doesn't start with `>`
  * - Quote indent symbol can be followed by zero or more spaces.
  */
-export const blockquoteRule: MarkupRule = {
+const BLOCKQUOTE: MarkupRule = {
 	match: createLineMatcher(`(>${LINE}(?:\\n>${LINE})*)`),
 	render: ([, quote = ""]) => ({
 		type: "blockquote",
@@ -137,7 +137,7 @@ const BLOCKQUOTE_LINES = /^>/gm;
  * - If there's no closing fence the code block will run to the end of the current string.
  * - Markdown-style four-space indent syntax is not supported (only fenced code, since it's easier to use).
  */
-export const fencedRule: MarkupRule = {
+const FENCED: MarkupRule = {
 	// Matcher has its own end that only stops when it reaches a matching closing fence or the end of the string.
 	match: createBlockMatcher(`(\`{3,}|~{3,}) *(${LINE})\\n(${BLOCK})`, `\\n\\1\\n+|\\n\\1$|$`),
 	render: ([, , file, children]) => ({
@@ -158,7 +158,7 @@ export const fencedRule: MarkupRule = {
  * Paragraph.
  * - When ordering rules, paragraph should go after other "block" context elements (because it has a very generous capture).
  */
-export const paragraphRule: MarkupRule = {
+const PARAGRAPH: MarkupRule = {
 	match: createBlockMatcher(` *(${BLOCK})`),
 	render: ([, children]) => ({ type: `p`, key: null, props: { children } }),
 	contexts: ["block"],
@@ -174,7 +174,7 @@ export const paragraphRule: MarkupRule = {
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only `http://` or `https://` links will work (if invalid the unparsed text will be returned).
  */
-export const linkRule: MarkupRule = {
+const LINK: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
 	match: (content, { schemes }) => {
 		const matches = content.match(LINK_RULE);
@@ -203,7 +203,7 @@ const LINK_RULE = /\[ *([^\]]*?) *\]\( *([^)]*?) *\)/;
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in the `options.schemes` will match (defaults to `http:` and `https:`).
  */
-export const urlRule: MarkupRule = {
+const AUTOLINK: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
 	match: (content, { schemes }) => {
 		const matches = content.match(URL_RULE);
@@ -227,7 +227,7 @@ export const urlRule: MarkupRule = {
 		}
 	},
 	// Use the same renderer as `linkRule`
-	render: linkRule.render,
+	render: LINK.render,
 	contexts: ["inline", "list"],
 	childContext: "link",
 };
@@ -242,7 +242,7 @@ const URL_RULE = new RegExp(`(${SPACE_BEFORE})(${URL_ROUGH})(?: +(?:\\( *([^)]*?
  * - Closing characters must exactly match opening characters.
  * - Same as Markdown syntax.
  */
-export const codeRule: MarkupRule = {
+const CODE: MarkupRule = {
 	match: createWrappedMatcher("`{1,}", BLOCK), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
 	render: ([, children]) => ({ type: "code", key: null, props: { children } }),
 	contexts: ["inline", "list"],
@@ -257,7 +257,7 @@ export const codeRule: MarkupRule = {
  * - Closing characters must exactly match opening characters.
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
-export const strongRule: MarkupRule = {
+const STRONG: MarkupRule = {
 	match: createWrappedMatcher("\\*{1,}"),
 	render: ([, children]) => ({ type: "strong", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
@@ -272,7 +272,7 @@ export const strongRule: MarkupRule = {
  * - Closing characters must exactly match opening characters.
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
-export const emRule: MarkupRule = {
+const EM: MarkupRule = {
 	match: createWrappedMatcher("_{1,}"),
 	render: ([, children]) => ({ type: "em", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
@@ -287,7 +287,7 @@ export const emRule: MarkupRule = {
  * - Closing characters must exactly match opening characters.
  * - Markdown doesn't have this.
  */
-export const insRule: MarkupRule = {
+const INS: MarkupRule = {
 	match: createWrappedMatcher("\\+{1,}"),
 	render: ([, children]) => ({ type: "ins", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
@@ -302,7 +302,7 @@ export const insRule: MarkupRule = {
  * - Closing characters must exactly match opening characters.
  * - Markdown doesn't have this.
  */
-export const delRule: MarkupRule = {
+const DEL: MarkupRule = {
 	match: createWrappedMatcher("-{1,}"),
 	render: ([, children]) => ({ type: "del", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
@@ -317,7 +317,7 @@ export const delRule: MarkupRule = {
  *   - This is more intuitive (a linebreak becomes a linebreak is isn't silently ignored).
  *   - This works better with textareas that wrap text (since manually breaking up long lines is no longer necessary).
  */
-export const brRule: MarkupRule = {
+const BR: MarkupRule = {
 	match: createMatcher(/\n/),
 	render: () => ({ type: "br", key: null, props: {} }),
 	contexts: ["inline", "list", "link"],
@@ -333,42 +333,4 @@ export const brRule: MarkupRule = {
  *   3. more aligned with smaller textboxes and editors that have line wrapping
  * - HTML tags and character entities are never allowed (our use cases generally require a locked-down subset of syntax).
  */
-export const markupRules = [
-	headingRule,
-	hrRule,
-	ulRule,
-	olRule,
-	blockquoteRule,
-	fencedRule,
-	paragraphRule,
-	linkRule,
-	urlRule,
-	codeRule,
-	strongRule,
-	emRule,
-	insRule,
-	delRule,
-	brRule,
-];
-
-/**
- * Subset of rules used for user-generated content.
- * - e.g. things like headings and fenced code would be weird in e.g. posts.
- */
-export const markupUgcRules: MarkupRules = [
-	// headingRule, // Not allowed.
-	// hrRule, // Not allowed.
-	ulRule,
-	olRule,
-	// blockquoteRule, // Not allowed.
-	// fencedRule, // Not allowed.
-	paragraphRule,
-	linkRule,
-	urlRule,
-	codeRule,
-	strongRule,
-	emRule,
-	insRule,
-	delRule,
-	brRule,
-];
+export const MARKUP_RULES = { HEADING, HR, UL, OL, BLOCKQUOTE, FENCED, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR };
