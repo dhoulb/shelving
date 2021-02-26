@@ -1,21 +1,51 @@
+import { serialise } from "../serialise";
 import type { MarkupNode } from "./types";
 
 /**
- * Take a JSX node and strip all tags from it to produce a plain text string.
- * - Equivalent to the `DOMElement.textContent` property on an HTML DOM node.
- * - Should work (but not tested) on any `React.Element` instance too.
+ * Take a Markup JSX node and strip all tags from it to produce a plain text string.
  *
  * @param node A JsxNode, e.g. either a JSX element, a plain string, or null/undefined (or an array of those things).
  * @returns The combined string made from the JSX node.
  *
  * @example `- Item with *strong*\n- Item with _em_` becomes `Item with strong Item with em`
  */
-export const markupToString = (node: MarkupNode): string => {
+export const nodeToText = (node: MarkupNode): string => {
 	if (typeof node === "string") return node;
-	if (node instanceof Array) return node.map(markupToString).join(" ");
-	if (typeof node === "object" && node) return markupToString(node.props.children);
+	if (node instanceof Array) return node.map(nodeToText).join(" ");
+	if (typeof node === "object" && node) return nodeToText(node.props.children);
 	return "";
 };
+
+/**
+ * Take a Markup JSX node and convert it to an HTML string.
+ *
+ * @param node Any `MarkupNode`, i.e. a string, `MarkupElement`, or array of those.
+ * - Any props in the node will be rendered if they are strings or numbers or `true`. All other props are skipped.
+ * @returns The HTML generated from the node.
+ *
+ * @example `- Item with *strong*\n- Item with _em_` becomes `<ul><li>Item with <strong>strong</strong></li><li>Item with <em>em</em></ul>`
+ */
+export const nodeToHtml = (node: MarkupNode): string => {
+	if (typeof node === "string") return node;
+	if (node instanceof Array) return node.map(nodeToHtml).join("");
+	if (typeof node === "object" && node) {
+		const {
+			type,
+			props: { children, ...props },
+		} = node;
+		const strings = Object.entries(props).map(propToString).filter(Boolean);
+		return `<${type}${strings.length ? ` ${strings.join(" ")}` : ""}>${nodeToHtml(children)}</${type}>`;
+	}
+	return "";
+};
+const propToString = ([key, value]: [string, unknown]) =>
+	value === true
+		? key
+		: typeof value === "number" && Number.isFinite(value)
+		? `${key}="${value.toString()}"`
+		: typeof value === "string"
+		? `${key}=${escape(value)}`
+		: "";
 
 // Regular expressions used for preprocessing.
 const ROGUE_WHITESPACE = /[^\S\n ]/g; // Match whitespace that isn't "\n" line feed or ` ` space (includes tabs).

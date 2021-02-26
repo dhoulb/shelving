@@ -1,11 +1,19 @@
-import { cleanMarkup, markupToString, renderMarkup } from "..";
+import { cleanMarkup, nodeToText, nodeToHtml, renderMarkup } from "..";
 
-describe("plainNode()", () => {
+describe("nodeToText()", () => {
 	test("Nodes can be converted to plain text", () => {
-		expect(markupToString(renderMarkup("PARAGRAPH"))).toBe("PARAGRAPH");
-		expect(markupToString(renderMarkup("- ITEM1\n- ITEM2"))).toBe("ITEM1 ITEM2");
-		expect(markupToString(renderMarkup("- ITEM\n  - ITEM1\n  - ITEM2"))).toBe("ITEM ITEM1 ITEM2");
-		expect(markupToString(renderMarkup("1. ITEM1\n2. ITEM2\n3. ITEM3"))).toBe("ITEM1 ITEM2 ITEM3");
+		expect(nodeToText(renderMarkup("PARAGRAPH"))).toBe("PARAGRAPH");
+		expect(nodeToText(renderMarkup("- ITEM1\n- ITEM2"))).toBe("ITEM1 ITEM2");
+		expect(nodeToText(renderMarkup("- ITEM\n  - ITEM1\n  - ITEM2"))).toBe("ITEM ITEM1 ITEM2");
+		expect(nodeToText(renderMarkup("1. ITEM1\n2. ITEM2\n3. ITEM3"))).toBe("ITEM1 ITEM2 ITEM3");
+	});
+});
+describe("nodeToHtml()", () => {
+	test("Nodes can be converted to plain text", () => {
+		expect(nodeToHtml(renderMarkup("PARAGRAPH"))).toBe("<p>PARAGRAPH</p>");
+		expect(nodeToHtml(renderMarkup("- ITEM1\n- ITEM2"))).toBe("<ul><li>ITEM1</li><li>ITEM2</li></ul>");
+		expect(nodeToHtml(renderMarkup("- ITEM\n  - ITEM1\n  - ITEM2"))).toBe("<ul><li>ITEM<ul><li>ITEM1</li><li>ITEM2</li></ul></li></ul>");
+		expect(nodeToHtml(renderMarkup("1. ITEM1\n2. ITEM2\n3. ITEM3"))).toBe(`<ol><li value="1">ITEM1</li><li>ITEM2</li><li value="2">ITEM3</li></ol>`);
 	});
 });
 test("cleanMarkup()", () => {
