@@ -33,6 +33,7 @@ export * from "./diff";
 export * from "./equal";
 export * from "./feedback";
 export * from "./filter";
+export * from "./markup";
 export * from "./merge";
 export * from "./observe";
 export * from "./pagination";
