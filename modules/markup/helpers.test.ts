@@ -16,6 +16,7 @@ describe("nodeToHtml()", () => {
 		expect(nodeToHtml(renderMarkup("1. ITEM1\n2. ITEM2\n3. ITEM3"))).toBe(
 			`<ol><li value="1">ITEM1</li><li value="2">ITEM2</li><li value="3">ITEM3</li></ol>`,
 		);
+		expect(nodeToHtml(renderMarkup("[GOOG](https://google.com)"))).toBe(`<p><a href="https://google.com/">GOOG</a></p>`);
 	});
 });
 test("cleanMarkup()", () => {

@@ -44,7 +44,7 @@ const propToString = ([key, value]: [string, unknown]) =>
 		: typeof value === "number" && Number.isFinite(value)
 		? `${key}="${value.toString()}"`
 		: typeof value === "string"
-		? `${key}=${escape(value)}`
+		? `${key}=${serialise(value)}`
 		: "";
 
 // Regular expressions used for preprocessing.
