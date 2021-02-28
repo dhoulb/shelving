@@ -19,6 +19,9 @@
 	"module": "./index.js",
 	"exports": {
 		".": "./index.js",
+		"./firestore-client": "./firestore-client/index.js",
+		"./firestore-server": "./firestore-server/index.js",
+		"./react": "./react/index.js",
 		"./*": "./*/index.js"
 	},
 	"types": "./index.d.ts",
