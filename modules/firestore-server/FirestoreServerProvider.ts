@@ -1,3 +1,4 @@
+import "firebase-admin";
 import type {
 	Firestore,
 	WhereFilterOp as FirestoreWhereFilterOp,

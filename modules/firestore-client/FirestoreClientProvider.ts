@@ -1,3 +1,5 @@
+import "firebase/app";
+import "firebase/firestore";
 import type {
 	FirebaseFirestore as Firestore,
 	WhereFilterOp as FirestoreWhereFilterOp,
