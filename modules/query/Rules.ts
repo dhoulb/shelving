@@ -2,8 +2,6 @@ import type { ImmutableEntries } from "../entry";
 import type { Data, Results } from "../data";
 import { Rule } from "./Rule";
 
-const JOIN_RULES = ",";
-
 const getRuleString = (rule: Rule<Data>) => rule.toString();
 
 /** Type of Rule that is powered by several sub-rules (e.g. `Filters` and `Sorts` and `Query` itself extend this). */
@@ -62,6 +60,6 @@ export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
 
 	// Implement toString()
 	toString(): string {
-		return this.rules.map(getRuleString).join(JOIN_RULES);
+		return this.rules.map(getRuleString).join("&");
 	}
 }

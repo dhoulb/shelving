@@ -18,6 +18,6 @@ export class Slice<D extends Data> extends Rule<D> {
 
 	// Implement toString()
 	toString(): string {
-		return `limit:${typeof this.limit === "number" ? this.limit : "null"}`;
+		return `limit=${typeof this.limit === "number" ? this.limit : "null"}`;
 	}
 }

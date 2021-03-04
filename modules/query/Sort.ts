@@ -35,6 +35,6 @@ export class Sort<T extends Data> extends Rule<T> {
 
 	// Implement toString()
 	toString(): string {
-		return `${this.key}:${this.direction}`;
+		return `${this.key}:sort=${this.direction}`;
 	}
 }

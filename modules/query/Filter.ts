@@ -28,6 +28,6 @@ export class Filter<T extends Data> extends Rule<T> {
 
 	// Implement toString()
 	toString(): string {
-		return `${this.key}:${this.operator}:${JSON.stringify(this.value)}`;
+		return `${this.key}:${this.operator}=${JSON.stringify(this.value)}`;
 	}
 }
