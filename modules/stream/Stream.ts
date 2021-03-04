@@ -24,8 +24,10 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 	 * Create a new stream.
 	 * - Static function so you can use it with `useLazy()` and for consistency with `Stream.take()`
 	 */
-	static create<X>(source?: Subscribable<X>): Stream<X> {
-		return new Stream<X>(source);
+	static create<X = undefined>(): Stream<X | undefined>;
+	static create<X>(source: Subscribable<X>): Stream<X>;
+	static create(source?: Subscribable<unknown>): Stream<unknown> {
+		return new Stream(source);
 	}
 
 	/** Create a new stream that only targets some of its subscribers when `next()` is called. */
