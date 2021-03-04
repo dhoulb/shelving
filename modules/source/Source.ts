@@ -15,9 +15,10 @@ const ERROR_CLEANUP_MS = 10000;
 
 /**
  * Source is a type of State that can fetch or subscribe to a remote source.
- * - Sources are considered global, and are indexed by unique keys.
- * - Sources can fetch data once (with an expiry time for refreshing)
- * - Sources can subscribe to data to get it fresh in real time.
+ * - Sources are unique and global, and are indexed by unique keys.
+ * - Use `Source.get(key)` to get a source, and start a fetch or subscribe process with `.fetchFrom()` or `.subscribeTo()`
+ * - The source won't fetch twice if it has recently refreshed (or has begun to fetch or subscribe).
+ * - The source won't subscribe again if it's already subscribed (or has begun to).
  */
 export class Source<T> extends State<T> {
 	/**
@@ -62,7 +63,7 @@ export class Source<T> extends State<T> {
 		if (
 			this.closed ||
 			this._queuedSubscribe ||
-			this.fetchFrom ||
+			this._queuedFetch ||
 			this._unsubscribe ||
 			(typeof this.updated === "number" && Date.now() - this.updated < maxAge)
 		)
@@ -123,7 +124,7 @@ export class Source<T> extends State<T> {
 	}
 	private _timeout?: NodeJS.Timeout;
 
-	// Override error to remove self from cache after we've errored.
+	// Override error to remove self from cache a few seconds after an error occurs.
 	error(reason: Error | unknown): void {
 		super.error(reason);
 		setTimeout(() => delete cache[this.key], ERROR_CLEANUP_MS);
