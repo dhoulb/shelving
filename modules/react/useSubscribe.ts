@@ -27,6 +27,6 @@ export const useSubscribe = <T>(subscribable: Subscribable<T>): T | typeof LOADI
 	const { effect } = internals;
 	useEffect(effect, [effect, subscribable]);
 
-	if (error) throw error;
+	if (error !== NOERROR) throw error;
 	return next;
 };
