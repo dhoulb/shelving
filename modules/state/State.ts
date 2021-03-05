@@ -46,8 +46,10 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 	 * Create a new state.
 	 * - Static function so you can use it with `useLazy()` and for consistency with `State.derive()` and `Stream.take()`
 	 */
-	static create<X>(source: Subscribable<X> | Promise<X | typeof SKIP> | X | typeof SKIP | typeof LOADING = LOADING): State<X> {
-		return new State<X>(source);
+	static create<X = undefined>(): State<X | undefined>;
+	static create<X>(source: Subscribable<X> | Promise<X | typeof SKIP> | X | typeof SKIP | typeof LOADING): State<X>;
+	static create(source?: Subscribable<unknown> | Promise<unknown | typeof SKIP> | unknown | typeof SKIP | typeof LOADING): State<unknown> {
+		return new State(source);
 	}
 
 	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
