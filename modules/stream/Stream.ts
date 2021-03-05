@@ -20,14 +20,15 @@ import { bindMethod } from "../class";
  * @param O The output type, used for `subscribe()`
  */
 export class Stream<T> implements Observer<T>, Subscribable<T> {
-	/** Create a new stream. */
-	static create<X = unknown>(): Stream<X | undefined>;
-	/** Create a new stream that subscribes to a source. */
-	static create<X>(source: Subscribable<X>): Stream<X>;
 	/**
 	 * Create a new stream.
 	 * - Static function so you can use it with `useLazy()` and for consistency with `Stream.take()`
+	 *
+	 * @param source An optional source `Subscribable` instance that this stream subscribes to when it's constructed.
+	 * - If not set this stream is not subscribed to anything. You can set its values manually using `stream.next()` etc.
 	 */
+	static create<X = unknown>(): Stream<X>;
+	static create<X>(source: Subscribable<X>): Stream<X>;
 	static create(source?: Subscribable<unknown>): Stream<unknown> {
 		return new Stream(source);
 	}
