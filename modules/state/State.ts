@@ -48,7 +48,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 	 */
 	static create<X = undefined>(): State<X | undefined>;
 	static create<X>(source: Subscribable<X> | Promise<X | typeof SKIP> | X | typeof SKIP | typeof LOADING): State<X>;
-	static create(source?: Subscribable<unknown> | Promise<unknown | typeof SKIP> | unknown | typeof SKIP | typeof LOADING): State<unknown> {
+	static create(source: Subscribable<unknown> | Promise<unknown | typeof SKIP> | unknown | typeof SKIP | typeof LOADING = undefined): State<unknown> {
 		return new State(source);
 	}
 
