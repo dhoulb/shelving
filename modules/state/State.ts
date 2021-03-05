@@ -42,22 +42,19 @@ import { Resolvable } from "../data";
  * - While the `State` has an error calls to `state.value` and `state.data` will throw that error.
  */
 export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> {
-	/** Create a new state whose initial value is loading. */
-	static create<X>(source: typeof LOADING): State<X>;
-	/** Create a new state whose initial value is `undefined` */
-	static create<X = undefined>(): State<X | undefined>;
-	/** Create a new state that subscribes to a source state and whose initial value is the source state's value. */
-	static create<X>(source: State<X>): State<X>;
-	/** Create a new state that subscribes to a source and whose initial value is loading. */
-	static create<X>(source: Subscribable<X>): State<X>;
-	/** Create a new state whose initial value is loading but will be set when the promise resolves. */
-	static create<X>(source: Promise<X>): State<X>;
-	/** Create a new state whose initial value is a known value. */
-	static create<X>(source: X): State<X>;
 	/**
 	 * Create a new state.
 	 * - Static function so you can use it with `useLazy()` and for consistency with `State.derive()` and `Stream.take()`
+	 *
+	 * @param source Any of the following:
+	 * - `LOADING` constant: Create a new state whose initial value is loading.
+	 * - `State<X>`: Create a new state that subscribes to a source state and whose initial value is the source state's value.
+	 * - `Subscribable<X>`: Create a new state that subscribes to a source and whose initial value is loading.
+	 * - `Promise<X>`: Create a new state whose initial value is loading but will be set when the promise resolves.
+	 * - `X` (anything else): Create a new state whose initial value is a known value.
 	 */
+	static create<X = undefined>(): State<X | undefined>;
+	static create<X>(source: typeof LOADING | State<X> | Subscribable<X> | Promise<X> | X): State<X>;
 	static create(source: Subscribable<unknown> | Promise<unknown> | unknown | typeof LOADING = undefined): State<unknown> {
 		return new State(source);
 	}
