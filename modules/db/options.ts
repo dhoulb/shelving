@@ -13,10 +13,10 @@ export type SetOptions = {
 	validate?: boolean;
 
 	/**
-	 * Whether the set operation is optional (defaults to `false`).
-	 * - If this is `true` then `update()` won't throw `RequiredError` if the document doesnt exist (it'll silently do nothing).
+	 * Whether the set operation is required (defaults to `true`).
+	 * - If this is `false` then `update()` won't throw `RequiredError` if the document doesnt exist (it'll silently do nothing).
 	 */
-	optional?: boolean;
+	required?: boolean;
 };
 
 /** Options that modify a delete operation. */

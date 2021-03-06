@@ -23,7 +23,7 @@ const GET_REQUIRED = { required: true } as const;
 const SET_UNVALIDATED = { validate: false } as const;
 const DELETE_DEEP = { deep: true } as const;
 
-const rethrowIfExists = (thrown: RequiredError | unknown): void => {
+const dontThrowRequiredError = (thrown: RequiredError | unknown): void => {
 	if (!(thrown instanceof RequiredError)) throw thrown;
 };
 
@@ -136,7 +136,7 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 	}
 	update(unvalidatedPartial: ImmutableObject, options?: SetOptions): Promise<void> {
 		const partial: Partial<T> = !options?.validate ? (unvalidatedPartial as Partial<T>) : this.validate(unvalidatedPartial, PARTIAL);
-		if (options?.optional) return this._provider.updateDocument<T>(this, partial).catch(rethrowIfExists);
+		if (options?.required === false) return this._provider.updateDocument<T>(this, partial).catch(dontThrowRequiredError);
 		return this._provider.updateDocument<T>(this, partial);
 	}
 	async delete(options?: DeleteOptions): Promise<void> {
