@@ -17,7 +17,11 @@ import type { Collection as CollectionInterface } from "./Collection";
 import type { Document as DocumentInterface } from "./Document";
 import { DOCUMENT_PATH } from "./constants";
 import { DocumentRequiredError } from "./errors";
-import { GetOptions, DeleteOptions, SetOptions, REQUIRED, DEEP, UNVALIDATED } from "./options";
+import { GetOptions, DeleteOptions, SetOptions } from "./options";
+
+const GET_REQUIRED = { required: true } as const;
+const SET_UNVALIDATED = { validate: false } as const;
+const DELETE_DEEP = { deep: true } as const;
 
 /** Options when creating a database instance. */
 type DatabaseCreateOptions<D extends DataSchemas, C extends DataSchemas> = {
@@ -115,7 +119,7 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		return this.get();
 	}
 	get data(): Promise<T> {
-		return this.get(REQUIRED);
+		return this.get(GET_REQUIRED);
 	}
 	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
 		const stream = new Stream<Result<T>>();
@@ -134,8 +138,8 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		await this._provider.deleteDocument<T>(this);
 		if (options?.deep) {
 			await Promise.all([
-				...Object.keys(this.schema.documents).map(key => this.doc(key).delete(DEEP)),
-				...Object.keys(this.schema.collections).map(key => this.collection(key).delete(DEEP)),
+				...Object.keys(this.schema.documents).map(key => this.doc(key).delete(DELETE_DEEP)),
+				...Object.keys(this.schema.collections).map(key => this.collection(key).delete(DELETE_DEEP)),
 			]);
 		}
 	}
@@ -180,16 +184,16 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 	async set(unvalidatedData: T, options?: SetOptions): Promise<void> {
 		const data = !options?.validate ? (unvalidatedData as T) : this.validate(unvalidatedData);
 		const ids = await this.ids;
-		await Promise.all(ids.map(id => this.doc(id).set(data, UNVALIDATED)));
+		await Promise.all(ids.map(id => this.doc(id).set(data, SET_UNVALIDATED)));
 	}
 	async update(unvalidatedPartial: Partial<T>, options?: SetOptions): Promise<void> {
 		const partial = !options?.validate ? (unvalidatedPartial as Partial<T>) : this.validate(unvalidatedPartial, PARTIAL);
 		const ids = await this.ids;
-		await Promise.all(ids.map(id => this.doc(id).update(partial, UNVALIDATED)));
+		await Promise.all(ids.map(id => this.doc(id).update(partial, SET_UNVALIDATED)));
 	}
 	async delete(options?: DeleteOptions): Promise<void> {
 		const ids = await this.ids;
-		const suboptions = options?.deep ? DEEP : undefined;
+		const suboptions = options?.deep ? DELETE_DEEP : undefined;
 		await Promise.all(ids.map(id => this.doc(id).delete(suboptions)));
 	}
 	is<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
