@@ -11,6 +11,12 @@ export type SetOptions = {
 	 * - Warning: This allow **ANY** data to be directly set to the database.
 	 */
 	validate?: boolean;
+
+	/**
+	 * Whether the set operation is optional (defaults to `false`).
+	 * - If this is `true` then `update()` won't throw `RequiredError` if the document doesnt exist (it'll silently do nothing).
+	 */
+	optional?: boolean;
 };
 
 /** Options that modify a delete operation. */
