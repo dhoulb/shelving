@@ -122,12 +122,12 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		stream.subscribe(next, error, complete);
 		return this._provider.onDocument<T>(this, stream);
 	}
-	set(unsafeData: ImmutableObject, options?: SetOptions): Promise<void> {
-		const data: T = !options?.validate ? (unsafeData as T) : this.validate(unsafeData);
+	set(unvalidatedData: ImmutableObject, options?: SetOptions): Promise<void> {
+		const data: T = !options?.validate ? (unvalidatedData as T) : this.validate(unvalidatedData);
 		return this._provider.setDocument<T>(this, data);
 	}
-	update(unsafePartial: ImmutableObject, options?: SetOptions): Promise<void> {
-		const partial: Partial<T> = !options?.validate ? (unsafePartial as Partial<T>) : this.validate(unsafePartial, PARTIAL);
+	update(unvalidatedPartial: ImmutableObject, options?: SetOptions): Promise<void> {
+		const partial: Partial<T> = !options?.validate ? (unvalidatedPartial as Partial<T>) : this.validate(unvalidatedPartial, PARTIAL);
 		return this._provider.updateDocument<T>(this, partial);
 	}
 	async delete(options?: DeleteOptions): Promise<void> {
@@ -177,13 +177,13 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 	get last(): Promise<Entry<T> | undefined> {
 		return this._provider.getCollection<T>(this.limit(1)).then(getLastProp);
 	}
-	async set(unsafeData: T, options?: SetOptions): Promise<void> {
-		const data = !options?.validate ? (unsafeData as T) : this.validate(unsafeData);
+	async set(unvalidatedData: T, options?: SetOptions): Promise<void> {
+		const data = !options?.validate ? (unvalidatedData as T) : this.validate(unvalidatedData);
 		const ids = await this.ids;
 		await Promise.all(ids.map(id => this.doc(id).set(data, UNVALIDATED)));
 	}
-	async update(unsafePartial: Partial<T>, options?: SetOptions): Promise<void> {
-		const partial = !options?.validate ? (unsafePartial as Partial<T>) : this.validate(unsafePartial, PARTIAL);
+	async update(unvalidatedPartial: Partial<T>, options?: SetOptions): Promise<void> {
+		const partial = !options?.validate ? (unvalidatedPartial as Partial<T>) : this.validate(unvalidatedPartial, PARTIAL);
 		const ids = await this.ids;
 		await Promise.all(ids.map(id => this.doc(id).update(partial, UNVALIDATED)));
 	}

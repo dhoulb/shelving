@@ -93,7 +93,7 @@ export interface Document<T extends Data = Data, D extends DataSchemas = DataSch
 	/**
 	 * Set the entire data of this document.
 	 * - The entire input data must be valid (or fixable) according to this collection's schema or error will be thrown.
-	 * - Value is validated before being set. Can use `document.set(value, { validate: false })`
+	 * - Data is validated before being set. Can use `document.set(value, { validate: false })` to skip validation.
 	 *
 	 * @param data The (potentially invalid) input value.
 	 * @returns The change that was made to the document (most likely the value that was passed in (after validation), unless this document's provider has different behaviour).
@@ -103,16 +103,17 @@ export interface Document<T extends Data = Data, D extends DataSchemas = DataSch
 
 	/**
 	 * Update an existing document by merging in a partial new value.
-	 * - Equivalent to `document.set(value, { merge: true })`
 	 * - Requires only a partial value (any missing properties are ignored).
 	 * - Props specified in the input value must be valid according to this collection's schema or error will be thrown.
 	 * - Props missing from the input value cause no errors.
+	 * - Partial data is validated before being updated. Can use `document.set(value, { validate: false })` to skip validation.
+	 * - Document must exist or an error will be thrown.
 	 *
 	 * @param change The (potentially invalid) partial input value.
 	 * @returns The change that was made to the document (most likely the value that was passed in (after validation), unless this document's provider has different behaviour).
 	 */
-	update(unsafeChange: ImmutableObject, options?: SetOptions & { validate: false }): Promise<void>;
-	update(change: Partial<T>, options?: SetOptions): Promise<void>;
+	update(unsafePartial: ImmutableObject, options?: SetOptions & { validate: false }): Promise<void>;
+	update(partial: Partial<T>, options?: SetOptions): Promise<void>;
 
 	/**
 	 * Delete an existing document.
