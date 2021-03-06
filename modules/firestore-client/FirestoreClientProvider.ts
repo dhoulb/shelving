@@ -7,7 +7,7 @@ import type {
 	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
 	DocumentSnapshot as FirestoreDocumentSnapshot,
 } from "@firebase/firestore-types";
-import type { MutableObject, Data, Result, Results, Provider, Document, Collection, Operator, Stream } from "..";
+import { DocumentRequiredError, isObject, MutableObject, Data, Result, Results, Provider, Document, Collection, Operator, Stream } from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the ID and the entire path of the document. `__id__` is just ID.
@@ -82,7 +82,12 @@ class FirestoreClientProvider implements Provider {
 	}
 
 	async updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): Promise<void> {
-		await this.firestore.doc(ref.path).update(partial);
+		try {
+			await this.firestore.doc(ref.path).update(partial);
+		} catch (thrown: unknown) {
+			if (isObject(thrown) && thrown.code === "not-found") throw new DocumentRequiredError(ref);
+			throw thrown;
+		}
 	}
 
 	async deleteDocument<T extends Data>(ref: Document<T>): Promise<void> {
