@@ -2,9 +2,6 @@
 export type GetOptions = {
 	/** Throw a `RequiredError` if the document does not exist (defaults to `false`). */
 	required?: boolean;
-
-	/** Any additional options are passed through to the Provider. */
-	[additional: string]: unknown;
 };
 
 export const REQUIRED = { required: true } as const;
@@ -16,9 +13,6 @@ export type SetOptions = {
 	 * - Warning: This allow **ANY** data to be directly set to the database.
 	 */
 	validate?: boolean;
-
-	/** Any additional options are passed through to the Provider. */
-	[additional: string]: unknown;
 };
 
 export const UNVALIDATED = { validate: false } as const;
@@ -27,9 +21,6 @@ export const UNVALIDATED = { validate: false } as const;
 export type DeleteOptions = {
 	/** Whether to delete this document and all its children (defaults to false). */
 	deep?: boolean;
-
-	/** Any additional options are passed through to the Provider. */
-	[additional: string]: unknown;
 };
 
 export const DEEP = { deep: true } as const;
