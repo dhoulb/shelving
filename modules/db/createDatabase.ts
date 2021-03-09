@@ -248,3 +248,12 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 		return `${this.path}?${this.query}`;
 	}
 }
+
+/** Is an unknown value a Collection instance. */
+export const isCollection = <T extends CollectionInterface>(collection: T | unknown): collection is T => collection instanceof Collection;
+
+/** Is an unknown value a Document instance. */
+export const isDocument = <T extends DocumentInterface>(document: T | unknown): document is T => document instanceof Document;
+
+/** Is an unknown value a Database instance. */
+export const isDatabase = <T extends DatabaseInterface>(database: T | unknown): database is T => database instanceof Database;
