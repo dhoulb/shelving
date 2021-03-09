@@ -10,7 +10,6 @@ import { State } from "../state";
 type PaginationState<T extends Data> = {
 	loading: boolean;
 	done: boolean;
-	results: Results<T>;
 	entries: ImmutableEntries<T>;
 	backward: EmptyDispatcher;
 	forward: EmptyDispatcher;
@@ -29,6 +28,8 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 	static for<X extends Data>(collection: Collection<X>, initial?: Results<X>): Pagination<X> {
 		return new Pagination<X>(collection, initial);
 	}
+
+	private _results: Results<T>; // Cached current set of results.
 
 	/** Collection this pagination is based on. */
 	readonly collection: Collection<T>;
@@ -49,11 +50,11 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 		super({
 			loading: initial ? false : true,
 			done: initial ? entries.length < slice.limit : false,
-			results,
 			entries,
 			backward: () => this.backward(),
 			forward: () => this.forward(),
 		});
+		this._results = results;
 		this.collection = collection;
 		this.limit = slice.limit;
 		this.sorts = sorts;
@@ -88,21 +89,14 @@ export class Pagination<T extends Data> extends State<PaginationState<T>> {
 	 */
 	merge(moreResults: Results<T>): void {
 		const moreCount = Object.keys(moreResults).length;
-		const { results: existingResults } = this.value;
 
 		if (!moreCount) {
-			this.update({
-				done: true,
-			});
+			this.update({ done: true });
 		} else {
-			const results = { ...existingResults, ...moreResults };
-			const entries = Object.entries(results);
+			this._results = { ...this._results, ...moreResults };
+			const entries = Object.entries(this._results);
 			this.sorts.apply(entries);
-			this.update({
-				results,
-				entries,
-				done: moreCount < this.limit,
-			});
+			this.update({ entries, done: moreCount < this.limit });
 		}
 	}
 }
