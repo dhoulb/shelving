@@ -5,9 +5,9 @@ import { Collection } from "../db";
 import { Entry, ImmutableEntries } from "../entry";
 import { EmptyDispatcher } from "../function";
 import { Sorts } from "../query";
-import { State } from "../state";
+import { State } from ".";
 
-type PaginationState<T extends Data> = {
+type PaginationValue<T extends Data> = {
 	loading: boolean;
 	done: boolean;
 	entries: ImmutableEntries<T>;
@@ -20,7 +20,7 @@ type PaginationState<T extends Data> = {
  * - If you pass in initial values, it will use that as the first page.
  * - If you don't pass in initial values, it will autoload the first page.
  */
-export class Pagination<T extends Data> extends State<PaginationState<T>> {
+export class Pagination<T extends Data> extends State<PaginationValue<T>> {
 	/**
 	 * Create a new `Pagination` instance.
 	 * - Static function so you can use it with `useLazy()` and for consistency with `State`

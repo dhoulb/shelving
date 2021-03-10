@@ -90,7 +90,6 @@ Shelving is created from small individual modules which can be imported individu
 ### Streams
 
 - `shelving/observe` ✅
-- `shelving/pagination` ✅
 - `shelving/source` ✅
 - `shelving/state` ✅
 - `shelving/stream` ✅
