@@ -1,3 +1,5 @@
+import type { ImmutableArray } from "../array";
+
 /**
  * Filterer: a function that takes a single result and returns true or false.
  * - Consistent with: `Dispatcher`, `Deriver`, `Filterer`, `Comparer`, `Matcher`
@@ -14,7 +16,7 @@ export type Filterer<T = unknown> = (value: T) => boolean;
  * @returns Array with items for which the match function returned true.
  * - If the filtering did not remove any items the exact same input instance is returned.
  */
-export function filter<T>(input: ReadonlyArray<T>, filterer: Filterer<T>): ReadonlyArray<T> {
+export function filter<T>(input: ImmutableArray<T>, filterer: Filterer<T>): ImmutableArray<T> {
 	if (!input.length) return input;
 	const output: T[] = input.filter(filterer);
 	return input.length === output.length ? input : output;

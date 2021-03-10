@@ -1,4 +1,5 @@
-import { Deriver } from "../function";
+import type { ImmutableArray } from "../array";
+import type { Deriver } from "../function";
 import { COMPARE } from "../sort";
 
 /** Possible operator references. */
@@ -38,9 +39,9 @@ export const MATCH: {
  * @returns Array with items for which the match function returned true.
  * - If the filtering did not remove any items the exact same input instance is returned.
  */
-export function match<T>(lefts: ReadonlyArray<T>, matcher: Matcher<T>, right: T): ReadonlyArray<T>;
-export function match<T, TT>(lefts: ReadonlyArray<T>, matcher: Matcher<TT>, right: T, deriver?: Deriver<T, TT>): ReadonlyArray<TT>;
-export function match(lefts: ReadonlyArray<unknown>, matcher: Matcher<unknown>, right: unknown, deriver?: Deriver<unknown, unknown>): ReadonlyArray<unknown> {
+export function match<T>(lefts: ImmutableArray<T>, matcher: Matcher<T>, right: T): ImmutableArray<T>;
+export function match<T, TT>(lefts: ImmutableArray<T>, matcher: Matcher<TT>, right: T, deriver?: Deriver<T, TT>): ImmutableArray<TT>;
+export function match(lefts: ImmutableArray<unknown>, matcher: Matcher<unknown>, right: unknown, deriver?: Deriver<unknown, unknown>): ImmutableArray<unknown> {
 	if (!lefts.length) return lefts;
 	const filtered = [];
 	for (const left of lefts) if (matcher(deriver ? deriver(left) : left, right)) filtered.push(left);

@@ -1,3 +1,4 @@
+import type { ImmutableArray } from "../array";
 import type { Deriver } from "../function";
 import { Comparer, COMPARE } from "./compare";
 
@@ -62,9 +63,9 @@ const quickSort = (
  *
  * @returns New array that is sorted (or the old array if no changes were made).
  */
-export function sort<T>(items: ReadonlyArray<T>, comparer: Comparer<T>): ReadonlyArray<T>;
-export function sort<T, TT>(items: ReadonlyArray<T>, comparer: Comparer<TT>, deriver?: Deriver<T, TT>): ReadonlyArray<T>;
-export function sort(items: ReadonlyArray<unknown>, comparer: Comparer<unknown> = COMPARE.asc, deriver?: Deriver<unknown, unknown>): ReadonlyArray<unknown> {
+export function sort<T>(items: ImmutableArray<T>, comparer: Comparer<T>): ImmutableArray<T>;
+export function sort<T, TT>(items: ImmutableArray<T>, comparer: Comparer<TT>, deriver?: Deriver<T, TT>): ImmutableArray<T>;
+export function sort(items: ImmutableArray<unknown>, comparer: Comparer<unknown> = COMPARE.asc, deriver?: Deriver<unknown, unknown>): ImmutableArray<unknown> {
 	if (items.length <= 1) return items;
 	const sorted = items.slice();
 	return quickSort(sorted, comparer, deriver) ? sorted : items;
@@ -75,11 +76,11 @@ export function sort(items: ReadonlyArray<unknown>, comparer: Comparer<unknown> 
  * @param deriver An extract function that takes a value and extracts the value the sorting is actually done on (e.g. to sort on an object property or deep property).
  * @returns New array that is sorted (or the old array if no changes were made).
  */
-export const sortAscending = <T>(items: ReadonlyArray<T>, deriver?: Deriver<T>): ReadonlyArray<T> => sort(items, COMPARE.asc, deriver);
+export const sortAscending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, COMPARE.asc, deriver);
 
 /**
  * Sort an array in descending order (optionally specifying an extractor function).
  * @param deriver An extract function that takes a value and extracts the value the sorting is actually done on (e.g. to sort on an object property or deep property).
  * @returns New array that is sorted (or the old array if no changes were made).
  */
-export const sortDescending = <T>(items: ReadonlyArray<T>, deriver?: Deriver<T>): ReadonlyArray<T> => sort(items, COMPARE.desc, deriver);
+export const sortDescending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, COMPARE.desc, deriver);
