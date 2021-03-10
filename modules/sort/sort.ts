@@ -56,6 +56,7 @@ const quickSort = (
 
 /**
  * Sort an array.
+ * - Consistent with `filter()`, `search()`
  *
  * @param items An array of items to sort. Can be of any type.
  * @param comparer A comparer function that takes a left/right value and returns 1/0/-1 (like `Array.prototype.sort()`).
@@ -63,9 +64,10 @@ const quickSort = (
  *
  * @returns New array that is sorted (or the old array if no changes were made).
  */
+export function sort<T>(items: ImmutableArray<T>): ImmutableArray<T>;
 export function sort<T>(items: ImmutableArray<T>, comparer: Comparer<T>): ImmutableArray<T>;
 export function sort<T, TT>(items: ImmutableArray<T>, comparer: Comparer<TT>, deriver?: Deriver<T, TT>): ImmutableArray<T>;
-export function sort(items: ImmutableArray<unknown>, comparer: Comparer<unknown> = COMPARE.asc, deriver?: Deriver<unknown, unknown>): ImmutableArray<unknown> {
+export function sort(items: ImmutableArray, comparer: Comparer = COMPARE.asc, deriver?: Deriver): ImmutableArray {
 	if (items.length <= 1) return items;
 	const sorted = items.slice();
 	return quickSort(sorted, comparer, deriver) ? sorted : items;

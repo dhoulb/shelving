@@ -37,6 +37,6 @@ export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filt
 	// Override to filter by all child `Filter` instances with a single filter function.
 	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!this.rules.length || !entries.length) return entries;
-		return filter(entries, this.filterer);
+		return filter(entries, this.matcher);
 	}
 }

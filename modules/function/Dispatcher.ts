@@ -5,7 +5,7 @@ import { SKIP } from "../constants";
 /**
  * Dispatcher: a function that dispatches a value.
  * - We never care about the returned value of a dispatcher.
- * - Consistent with: `Dispatcher`, `Deriver`, `Filterer`, `Comparer`, `Matcher`
+ * - Consistent with: `Dispatcher`, `Deriver`, `Ranker`, `Comparer`, `Matcher`
  */
 export type Dispatcher<T> = (value: T) => void;
 

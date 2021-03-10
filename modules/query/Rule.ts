@@ -16,10 +16,10 @@ export abstract class Rule<T extends Data> implements Cloneable {
 	}
 
 	/**
-	 * Return a Filterer function that can filter an array of entries
+	 * Return a `Matcher` function that can filter an array of entries
 	 */
 	@bindMethod // Bind this so we can use it directly in `filter()`
-	filterer([id, data]: Entry<T>): boolean {
+	matcher([id, data]: Entry<T>): boolean {
 		return this.match(id, data);
 	}
 
@@ -36,7 +36,7 @@ export abstract class Rule<T extends Data> implements Cloneable {
 	// Override to call `filter()` on the entries with a custom filter function.
 	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!entries.length) return entries;
-		return filter(entries, this.filterer);
+		return filter(entries, this.matcher);
 	}
 
 	// Implement toString()

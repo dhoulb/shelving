@@ -3,7 +3,7 @@ export type Direction = "asc" | "desc";
 
 /**
  * Comparer: a function that takes in a value and returns zero if the values are equal, negative if `right` is higher, positive if `right` is lower).
- * - Consistent with: `Dispatcher`, `Deriver`, `Filterer`, `Comparer`, `Matcher`
+ * - Consistent with: `Dispatcher`, `Deriver`, `Searcher`, `Comparer`, `Matcher`
  */
 export type Comparer<T = unknown> = (left: T, right: T) => number;
 
