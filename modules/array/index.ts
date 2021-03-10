@@ -108,10 +108,25 @@ export function swapItem<T>(arr: ImmutableArray<T>, oldItem: T, newItem: T): Imm
 }
 
 /** Get the first item from an array. */
-export const getFirstItem = <T>(arr: ImmutableArray<T>): T | undefined => arr[0];
+export function getFirstItem<T>(arr: [T, ...unknown[]]): T;
+export function getFirstItem<T>(arr: ImmutableArray<T>): T | undefined;
+export function getFirstItem<T>(arr: ImmutableArray<T>): T | undefined {
+	return arr[0];
+}
+
+/** Get the second item from an array. */
+export function getSecondItem<T>(arr: [unknown, T, ...unknown[]]): T;
+export function getSecondItem<T>(arr: ImmutableArray<T>): T | undefined;
+export function getSecondItem<T>(arr: ImmutableArray<T>): T | undefined {
+	return arr[1];
+}
 
 /** Get the last entry from an object or array. */
-export const getLastItem = <T>(arr: ImmutableArray<T>): T | undefined => arr[arr.length - 1];
+export function getLastItem<T>(arr: [...unknown[], T]): T;
+export function getLastItem<T>(arr: ImmutableArray<T>): T | undefined;
+export function getLastItem<T>(arr: ImmutableArray<T>): T | undefined {
+	return arr[arr.length - 1];
+}
 
 /**
  * Get the next array item in a list.
