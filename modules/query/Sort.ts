@@ -22,9 +22,14 @@ export class Sort<T extends Data> extends Rule<T> {
 	}
 
 	/** Compare two entries of this type for sorting. */
-	@bindMethod // Bind this so we can use it directly in `sort()`
-	comparer([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
+	compare([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
 		return COMPARE[this.direction](getQueryProp(leftId, leftData, this.key), getQueryProp(rightId, rightData, this.key));
+	}
+
+	/** Return a bound `Comparer` function for using in `sort()` */
+	@bindMethod
+	comparer(left: Entry<T>, right: Entry<T>): number {
+		return this.compare(left, right);
 	}
 
 	// Override to call `sort()` on the entries with a custom compare function.
