@@ -11,28 +11,28 @@ import { Rules } from "./Rules";
 export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filterable<T> {
 	// Add filters.
 	is<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "is", value)] };
+		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "IS", value)] };
 	}
 	not<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "not", value)] };
+		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "NOT", value)] };
 	}
 	in<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? readonly string[] : readonly T[K][]): this {
-		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "in", value)] };
+		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "IN", value)] };
 	}
 	lt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "lt", value)] };
+		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "LT", value)] };
 	}
 	lte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "lte", value)] };
+		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "LTE", value)] };
 	}
 	gt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "gt", value)] };
+		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "GT", value)] };
 	}
 	gte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "gte", value)] };
+		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "GTE", value)] };
 	}
 	contains<K extends keyof T>(key: K & string, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
-		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "contains", value)] };
+		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "CONTAINS", value)] };
 	}
 
 	/**

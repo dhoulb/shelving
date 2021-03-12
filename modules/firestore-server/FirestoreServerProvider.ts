@@ -2,11 +2,12 @@ import "firebase-admin";
 import type {
 	Firestore,
 	WhereFilterOp as FirestoreWhereFilterOp,
+	OrderByDirection as FirestoreOrderByDirection,
 	Query as FirestoreQuery,
 	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
 	DocumentSnapshot as FirestoreDocumentSnapshot,
 } from "@google-cloud/firestore";
-import { MutableObject, Data, Result, Results, Provider, Document, Collection, Operator, Stream, isObject, DocumentRequiredError } from "..";
+import { MutableObject, Data, Result, Results, Provider, Document, Collection, Operator, Stream, isObject, DocumentRequiredError, Direction } from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the ID and the entire path of the document. `__id__` is just ID.
@@ -14,20 +15,26 @@ const ID = "__id__"; // Internal way Firestore Queries can reference the ID of t
 
 // Map `Filter.types` to `WhereFilterOp`
 const OPERATORS: { readonly [K in Operator]: FirestoreWhereFilterOp } = {
-	is: "==",
-	not: "!=",
-	in: "in",
-	gt: ">",
-	gte: ">=",
-	lt: "<",
-	lte: "<=",
-	contains: "array-contains",
+	IS: "==",
+	NOT: "!=",
+	IN: "in",
+	GT: ">",
+	GTE: ">=",
+	LT: "<",
+	LTE: "<=",
+	CONTAINS: "array-contains",
+};
+
+// Map `Filter.types` to `OrderByDirection`
+const DIRECTIONS: { readonly [K in Direction]: FirestoreOrderByDirection } = {
+	ASC: "asc",
+	DESC: "desc",
 };
 
 /** Create a corresponding `QueryReference` from a Query. */
 const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filters, sorts, slice } }: Collection<T>): FirestoreQuery => {
 	let query: FirestoreQuery = firestore.collection(path);
-	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, direction);
+	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
 	if (slice.limit !== null) query = query.limit(slice.limit);
 	return query;

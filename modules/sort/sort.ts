@@ -67,7 +67,7 @@ const quickSort = (
 export function sort<T>(items: ImmutableArray<T>): ImmutableArray<T>;
 export function sort<T>(items: ImmutableArray<T>, comparer: Comparer<T>): ImmutableArray<T>;
 export function sort<T, TT>(items: ImmutableArray<T>, comparer: Comparer<TT>, deriver?: Deriver<T, TT>): ImmutableArray<T>;
-export function sort(items: ImmutableArray, comparer: Comparer = COMPARE.asc, deriver?: Deriver): ImmutableArray {
+export function sort(items: ImmutableArray, comparer: Comparer = COMPARE.ASC, deriver?: Deriver): ImmutableArray {
 	if (items.length <= 1) return items;
 	const sorted = items.slice();
 	return quickSort(sorted, comparer, deriver) ? sorted : items;
@@ -78,11 +78,11 @@ export function sort(items: ImmutableArray, comparer: Comparer = COMPARE.asc, de
  * @param deriver An extract function that takes a value and extracts the value the sorting is actually done on (e.g. to sort on an object property or deep property).
  * @returns New array that is sorted (or the old array if no changes were made).
  */
-export const sortAscending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, COMPARE.asc, deriver);
+export const sortAscending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, COMPARE.ASC, deriver);
 
 /**
  * Sort an array in descending order (optionally specifying an extractor function).
  * @param deriver An extract function that takes a value and extracts the value the sorting is actually done on (e.g. to sort on an object property or deep property).
  * @returns New array that is sorted (or the old array if no changes were made).
  */
-export const sortDescending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, COMPARE.desc, deriver);
+export const sortDescending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, COMPARE.DESC, deriver);

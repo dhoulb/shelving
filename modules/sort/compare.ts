@@ -1,5 +1,5 @@
 /** Allowed direction references for sorting. */
-export type Direction = "asc" | "desc";
+export type Direction = "ASC" | "DESC";
 
 /**
  * Comparer: a function that takes in a value and returns zero if the values are equal, negative if `right` is higher, positive if `right` is lower).
@@ -24,7 +24,7 @@ export type Comparer<T = unknown> = (left: T, right: T) => number;
  *
  * @returns Number below zero if `a` is higher, number above zero if `b` is higher, or `0` if they're equally sorted.
  */
-const asc: Comparer = (left, right) => {
+const compareAscending: Comparer = (left, right) => {
 	// Exactly equal is easy.
 	if (left === right) return 0;
 
@@ -64,12 +64,12 @@ const asc: Comparer = (left, right) => {
 };
 
 // To compare in descending order just invert the ascending order.
-const desc: Comparer = (left, right) => 0 - asc(left, right);
+const compareDescending: Comparer = (left, right) => 0 - compareAscending(left, right);
 
 /** List of matching functions along with their string direction reference. */
 export const COMPARE: {
 	readonly [K in Direction]: Comparer;
 } = {
-	asc,
-	desc,
+	ASC: compareAscending,
+	DESC: compareDescending,
 };

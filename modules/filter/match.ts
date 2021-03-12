@@ -1,7 +1,7 @@
 import { COMPARE } from "../sort";
 
 /** Possible operator references. */
-export type Operator = "is" | "not" | "in" | "contains" | "lt" | "lte" | "gt" | "gte";
+export type Operator = "IS" | "NOT" | "IN" | "CONTAINS" | "LT" | "LTE" | "GT" | "GTE";
 
 /**
  * Function that matches an item against a target value and returns `true` if they match.
@@ -13,12 +13,12 @@ export type Matcher<L = unknown, R = unknown> = (item: L, target: R) => boolean;
 export const MATCH: {
 	readonly [K in Operator]: Matcher;
 } = {
-	is: (item, target) => item === target,
-	not: (item, target) => item !== target,
-	in: (item, target) => (target instanceof Array ? target.includes(item) : false),
-	contains: (item, target) => (item instanceof Array ? item.includes(target) : false),
-	lt: (item, target) => COMPARE.asc(item, target) < 0,
-	lte: (item, target) => COMPARE.asc(item, target) <= 0,
-	gt: (item, target) => COMPARE.asc(item, target) > 0,
-	gte: (item, target) => COMPARE.asc(item, target) >= 0,
+	IS: (item, target) => item === target,
+	NOT: (item, target) => item !== target,
+	IN: (item, target) => (target instanceof Array ? target.includes(item) : false),
+	CONTAINS: (item, target) => (item instanceof Array ? item.includes(target) : false),
+	LT: (item, target) => COMPARE.ASC(item, target) < 0,
+	LTE: (item, target) => COMPARE.ASC(item, target) <= 0,
+	GT: (item, target) => COMPARE.ASC(item, target) > 0,
+	GTE: (item, target) => COMPARE.ASC(item, target) >= 0,
 };

@@ -15,7 +15,7 @@ export class Sort<T extends Data> extends Rule<T> {
 	readonly key: "id" | string;
 	readonly direction: Direction;
 
-	constructor(key: "id" | string, direction: Direction = "asc") {
+	constructor(key: "id" | string, direction: Direction = "ASC") {
 		super();
 		this.key = key;
 		this.direction = direction;

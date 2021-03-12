@@ -70,7 +70,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 		const lastSort = sorts.last;
 		for (const sort of sorts) {
 			const { key, direction } = sort;
-			const compare = sort === lastSort ? (direction === "asc" ? "gt" : "lt") : direction === "asc" ? "gte" : "lte";
+			const compare = sort === lastSort ? (direction === "ASC" ? "gt" : "lt") : direction === "ASC" ? "gte" : "lte";
 			if (key !== "id") assertProp(data, key);
 			const value = getQueryProp(id, data, key);
 			filters = filters[compare](key, value);
@@ -93,7 +93,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 		const lastSort = sorts.last;
 		for (const sort of sorts) {
 			const { key, direction } = sort;
-			const compare = sort === lastSort ? (direction === "asc" ? "lt" : "gt") : direction === "asc" ? "lte" : "gte";
+			const compare = sort === lastSort ? (direction === "ASC" ? "lt" : "gt") : direction === "ASC" ? "lte" : "gte";
 			if (key !== "id") assertProp(data, key);
 			const value = getQueryProp(id, data, key);
 			filters = filters[compare](key, value);

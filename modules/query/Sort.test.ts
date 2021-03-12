@@ -16,26 +16,26 @@ test("Sort", () => {
 	// Check initial keys.
 	expect(Object.keys(all)).toEqual(["a", "b", "c", "d"]);
 	// Sort empty.
-	expect(new Sort("str", "asc").results(empty)).toBe(empty);
+	expect(new Sort("str", "ASC").results(empty)).toBe(empty);
 	// Sort by id (change).
 	expect(Object.keys(new Sort("id").results({ b, d, c, a }))).toEqual(["a", "b", "c", "d"]);
-	expect(Object.keys(new Sort("id", "asc").results({ b, d, c, a }))).toEqual(["a", "b", "c", "d"]);
+	expect(Object.keys(new Sort("id", "ASC").results({ b, d, c, a }))).toEqual(["a", "b", "c", "d"]);
 	// Sort by id (no change).
 	expect(new Sort("id").results(all)).toBe(all);
-	expect(new Sort("id", "desc").results(allDesc)).toBe(allDesc);
-	expect(new Sort("id", "asc").results(all)).toBe(all);
-	expect(new Sort("id", "desc").results(allDesc)).toBe(allDesc);
+	expect(new Sort("id", "DESC").results(allDesc)).toBe(allDesc);
+	expect(new Sort("id", "ASC").results(all)).toBe(all);
+	expect(new Sort("id", "DESC").results(allDesc)).toBe(allDesc);
 	// Sort by string (change).
 	expect(Object.keys(new Sort("str").results(all))).toEqual(["c", "a", "b", "d"]);
-	expect(Object.keys(new Sort("str", "asc").results(all))).toEqual(["c", "a", "b", "d"]);
-	expect(Object.keys(new Sort("str", "desc").results(all))).toEqual(["d", "b", "a", "c"]);
+	expect(Object.keys(new Sort("str", "ASC").results(all))).toEqual(["c", "a", "b", "d"]);
+	expect(Object.keys(new Sort("str", "DESC").results(all))).toEqual(["d", "b", "a", "c"]);
 	// Sort by string (no change).
-	expect(new Sort("str", "asc").results(byStr)).toBe(byStr);
-	expect(new Sort("str", "desc").results(byStrDesc)).toBe(byStrDesc);
+	expect(new Sort("str", "ASC").results(byStr)).toBe(byStr);
+	expect(new Sort("str", "DESC").results(byStrDesc)).toBe(byStrDesc);
 	// Sort by number (change).
 	expect(Object.keys(new Sort("num").results(all))).toEqual(["b", "d", "a", "c"]);
-	expect(Object.keys(new Sort("num", "desc").results(all))).toEqual(["c", "a", "d", "b"]);
+	expect(Object.keys(new Sort("num", "DESC").results(all))).toEqual(["c", "a", "d", "b"]);
 	// Sort by number (no change).
-	expect(new Sort("num", "asc").results(byNum)).toBe(byNum);
-	expect(new Sort("num", "desc").results(byNumDesc)).toBe(byNumDesc);
+	expect(new Sort("num", "ASC").results(byNum)).toBe(byNum);
+	expect(new Sort("num", "DESC").results(byNumDesc)).toBe(byNumDesc);
 });

@@ -8,18 +8,18 @@ const d: T = { str: "X", num: 2, type: "beta" };
 const all = { a, b, c, d };
 const empty = {};
 
-const filterNum = new Filter<T>("num", "gt", 2);
-const filterStr = new Filter<T>("str", "in", ["Z", "X"]);
-const filterType = new Filter<T>("type", "is", "alpha");
+const filterNum = new Filter<T>("num", "GT", 2);
+const filterStr = new Filter<T>("str", "IN", ["Z", "X"]);
+const filterType = new Filter<T>("type", "IS", "alpha");
 
-const sortIdAsc = new Sort<T>("id", "asc");
-const sortIdDesc = new Sort<T>("id", "desc");
-const sortStrAsc = new Sort<T>("str", "asc");
-const sortStrDesc = new Sort<T>("str", "desc");
-const sortNumAsc = new Sort<T>("num", "asc");
-const sortNumDesc = new Sort<T>("num", "desc");
-const sortTypeAsc = new Sort<T>("type", "asc");
-const sortTypeDesc = new Sort<T>("type", "desc");
+const sortIdAsc = new Sort<T>("id", "ASC");
+const sortIdDesc = new Sort<T>("id", "DESC");
+const sortStrAsc = new Sort<T>("str", "ASC");
+const sortStrDesc = new Sort<T>("str", "DESC");
+const sortNumAsc = new Sort<T>("num", "ASC");
+const sortNumDesc = new Sort<T>("num", "DESC");
+const sortTypeAsc = new Sort<T>("type", "ASC");
+const sortTypeDesc = new Sort<T>("type", "DESC");
 
 describe("Query", () => {
 	test("Basic tests", () => {
@@ -53,7 +53,7 @@ describe("Query", () => {
 	});
 	test("Filtering", () => {
 		// Creating.
-		expect(new Query().is("id", "abc")).toEqual(new Query(new Filters([new Filter("id", "is", "abc")])));
+		expect(new Query().is("id", "abc")).toEqual(new Query(new Filters([new Filter("id", "IS", "abc")])));
 		// Constructing with filtering.
 		expect(new Query(new Filters([filterNum])).results(all)).toEqual({ a, c });
 		expect(new Query(new Filters([filterStr])).results(all)).toEqual({ a, d });
