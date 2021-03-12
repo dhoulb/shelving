@@ -1,6 +1,6 @@
 import { formatDate, toYmd } from "../date";
 import { isObject } from "../object";
-import { isArray } from "../array";
+import { ImmutableArray, isArray, MutableArray } from "../array";
 import { formatNumber } from "../number";
 
 /** Is a value a string? */
@@ -50,8 +50,32 @@ export const toTitle = (value: unknown): string => {
 	return "Unknown";
 };
 
-const R_SPACES = /[^a-z0-9]+/g; // Runs of non alphanumeric characters.
-const R_STRIP = /^-|-$/g; // Strip hyphen at start and end.
-
 /** Convert a string to a `kebab-case` slug. */
-export const toSlug = (value: string): string => value.toLowerCase().replace(R_SPACES, "-").replace(R_STRIP, "");
+export const toSlug = (value: string): string => value.toLowerCase().replace(REPLACE_SPACES, "-").replace(REPLACE_HYPHENS, "");
+const REPLACE_SPACES = /[^a-z0-9]+/g; // Runs of non alphanumeric characters.
+const REPLACE_HYPHENS = /^-|-$/g; // Strip hyphen at start and end.
+
+/**
+ * Split a string into its separate words.
+ * - Words enclosed "in quotes" are a single word.
+ *
+ * @param value The input string.
+ */
+export const toWords = (value: string): ImmutableArray<string> => {
+	const words: MutableArray<string> = [];
+	for (const matches of value.matchAll(MATCH_WORD)) words.push(matches[1] || (matches[0] as string));
+	return words;
+};
+const MATCH_WORD = /[^\s"]+|"([^"]*)"/g;
+
+/**
+ * Convert a string to a regular expression that matches that string.
+ *
+ * @param value The input string.
+ * @param flags RegExp flags that are passed into the created RegExp.
+ */
+export const toRegExp = (value: string, flags = ""): RegExp => new RegExp(escapeRegExp(value), flags);
+
+/** Escape special characters in a string regular expression. */
+export const escapeRegExp = (str: string): string => str.replace(REPLACE_ESCAPED, "\\$&");
+const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;

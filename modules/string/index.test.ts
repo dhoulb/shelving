@@ -1,4 +1,4 @@
-import { toString, toTitle, toSlug } from "..";
+import { toString, toTitle, toSlug, toWords } from "..";
 
 describe("toString()", () => {
 	test("toString(): Correct response for supported things", () => {
@@ -50,4 +50,16 @@ describe("toSlug()", () => {
 		expect(toSlug("trim-hyphens----")).toBe("trim-hyphens");
 		expect(toSlug("----trim-hyphens")).toBe("trim-hyphens");
 	});
+});
+test("toWords()", () => {
+	// Simple words.
+	expect(toWords("aaa bbb")).toEqual(["aaa", "bbb"]);
+	expect(toWords("    aaa    bbb    ")).toEqual(["aaa", "bbb"]);
+
+	// Quoted words.
+	expect(toWords(`"aaa bbb"`)).toEqual(["aaa bbb"]);
+	expect(toWords(`    "aaa    bbb"    `)).toEqual(["aaa    bbb"]);
+	expect(toWords(`    "aaa"    "bbb"    `)).toEqual(["aaa", "bbb"]);
+	expect(toWords(`aaa bbb "ccc ddd" eee fff`)).toEqual(["aaa", "bbb", "ccc ddd", "eee", "fff"]);
+	expect(toWords(`aaa "bbb ccc" ddd "eee fff" ggg`)).toEqual(["aaa", "bbb ccc", "ddd", "eee fff", "ggg"]);
 });
