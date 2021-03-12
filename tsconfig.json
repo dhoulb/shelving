@@ -18,7 +18,8 @@
 		"checkJs": true,
 		"declaration": true,
 		"forceConsistentCasingInFileNames": true,
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"isolatedModules": true
 	},
 	"include": ["./**/*.ts", "./**/*.js"]
 }
