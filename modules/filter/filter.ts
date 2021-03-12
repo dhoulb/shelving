@@ -16,9 +16,10 @@ import type { Matcher } from "./match";
  * @returns Array with items for which the matcher function returned true.
  * - If the filtering did not remove any items the exact same input instance is returned.
  */
-export function filter<T>(items: ImmutableArray<T>, matcher: Matcher<T, undefined>, target?: undefined): ImmutableArray<T>;
-export function filter<T>(items: ImmutableArray<T>, matcher: Matcher<T, unknown>, target: T): ImmutableArray<T>;
-export function filter<T, TT>(items: ImmutableArray<T>, matcher: Matcher<TT, unknown>, target: T, deriver?: Deriver<T, TT>): ImmutableArray<TT>;
+export function filter<L>(items: ImmutableArray<L>, matcher: Matcher<L, undefined>): ImmutableArray<L>;
+export function filter<L, R>(items: ImmutableArray<L>, matcher: Matcher<L, R>, target: R): ImmutableArray<L>;
+export function filter<L, R>(items: ImmutableArray<L>, matcher: Matcher<L, R>, target: R): ImmutableArray<L>;
+export function filter<L, LL, R>(items: ImmutableArray<L>, matcher: Matcher<LL, R>, target: R, deriver?: Deriver<L, LL>): ImmutableArray<LL>;
 export function filter(items: ImmutableArray, matcher: Matcher<any, any>, target?: unknown, deriver?: Deriver): ImmutableArray {
 	if (!items.length) return items;
 	const filtered = [];
