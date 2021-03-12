@@ -33,10 +33,10 @@
 	"scripts": {
 		"fix": "npm run fix:prettier && npm run fix:eslint",
 		"fix:prettier": "prettier --write './**/*.{md,json}'",
-		"fix:eslint": "eslint --fix './**/*.{ts,tsx}'",
+		"fix:eslint": "eslint --cache --fix './**/*.{ts,tsx}'",
 		"test": "npm run test:prettier && npm run test:eslint && npm run test:typescript && npm run test:jest",
 		"test:prettier": "prettier --check './**/*.{md,json}'",
-		"test:eslint": "eslint './**/*.{ts,tsx}'",
+		"test:eslint": "eslint --cache './**/*.{ts,tsx}'",
 		"test:typescript": "tsc --noEmit",
 		"test:jest": "jest",
 		"test:jest:watch": "jest --watchAll",

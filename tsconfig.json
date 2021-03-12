@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"incremental": true,
 		"moduleResolution": "node",
 		"module": "es2020",
 		"lib": ["DOM", "DOM.Iterable", "ES2020"],
