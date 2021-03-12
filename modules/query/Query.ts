@@ -139,11 +139,6 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 		return this.slice.apply(this.filters.apply(entries)).length;
 	}
 
-	// Override `match()` to defer straight to `Filters` (neither `Sorts` or `Slice` use match).
-	match(id: string, data: T): boolean {
-		return this.filters.match(id, data);
-	}
-
 	// Override `apply()` to apply filters, sorts, and limit (in that order).
 	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		return this.slice.apply(this.sorts.apply(this.filters.apply(entries)));

@@ -1,7 +1,8 @@
-import type { ImmutableEntries } from "../entry";
+import type { Entry, ImmutableEntries } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
 import { filter } from "../filter";
 import type { Data } from "../data";
+import { bindMethod } from "../class";
 import type { Filterable } from "./types";
 import { Filter } from "./Filter";
 import { Rules } from "./Rules";
@@ -32,6 +33,23 @@ export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filt
 	}
 	contains<K extends keyof T>(key: K & string, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
 		return { __proto__: Filters.prototype, ...this, rules: [...this.rules, new Filter<T>(key, "contains", value)] };
+	}
+
+	/**
+	 * Match an individual document against this rule.
+	 */
+	match(id: string, data: T): boolean {
+		// If any rule returns false, return false.
+		for (const rule of this.rules) if (!rule.match(id, data)) return false;
+		return true;
+	}
+
+	/**
+	 * Return a `Matcher` function that can filter an array of entries
+	 */
+	@bindMethod // Bind this so we can use it directly in `filter()`
+	matcher([id, data]: Entry<T>): boolean {
+		return this.match(id, data);
 	}
 
 	// Override to filter by all child `Filter` instances with a single filter function.

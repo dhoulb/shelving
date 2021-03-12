@@ -1,5 +1,7 @@
 import type { Data } from "../data";
-import { MATCH, Operator } from "../filter";
+import { filter, MATCH, Operator } from "../filter";
+import { Entry, ImmutableEntries } from "../entry";
+import { bindMethod } from "../class";
 import { Rule } from "./Rule";
 import { getQueryProp } from "./helpers";
 
@@ -24,6 +26,20 @@ export class Filter<T extends Data> extends Rule<T> {
 
 	match(id: string, data: T): boolean {
 		return MATCH[this.operator](getQueryProp(id, data, this.key), this.value);
+	}
+
+	/**
+	 * Return a `Matcher` function that can filter an array of entries
+	 */
+	@bindMethod // Bind this so we can use it directly in `filter()`
+	matcher([id, data]: Entry<T>): boolean {
+		return this.match(id, data);
+	}
+
+	// Implement apply()
+	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+		if (!entries.length) return entries;
+		return filter(entries, this.matcher);
 	}
 
 	// Implement toString()

@@ -24,15 +24,6 @@ export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
 	}
 
 	/**
-	 * Match an individual document against this rule.
-	 */
-	match(id: string, data: T): boolean {
-		// If any rule returns false, return false.
-		for (const rule of this.rules) if (!rule.match(id, data)) return false;
-		return true;
-	}
-
-	/**
 	 * Apply this queryable to a set of results and return the (potentially) modified results.
 	 * @returns Either a new Results object (if `results` was modified), or the exact same instance (if no changes were made).
 	 */

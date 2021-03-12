@@ -133,7 +133,7 @@ class MemoryProvider implements Provider {
 			let removed = 0;
 			for (const id of changes) {
 				const doc = table.docs[id];
-				if (doc && query.match(id, doc)) {
+				if (doc && query.filters.match(id, doc)) {
 					filtered[id] = doc; // Doc should be part of the filtered list.
 					updated++;
 				} else if (filtered[id]) {
