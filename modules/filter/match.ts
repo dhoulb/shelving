@@ -9,9 +9,6 @@ export type Operator = "is" | "not" | "in" | "contains" | "lt" | "lte" | "gt" | 
  */
 export type Matcher<L = unknown, R = unknown> = (item: L, target: R) => boolean;
 
-// Use the ascending order comparison.
-const { asc } = COMPARE;
-
 /** List of matching functions along with their matcher references. */
 export const MATCH: {
 	readonly [K in Operator]: Matcher;
@@ -20,8 +17,8 @@ export const MATCH: {
 	not: (item, target) => item !== target,
 	in: (item, target) => (target instanceof Array ? target.includes(item) : false),
 	contains: (item, target) => (item instanceof Array ? item.includes(target) : false),
-	lt: (item, target) => asc(item, target) < 0,
-	lte: (item, target) => asc(item, target) <= 0,
-	gt: (item, target) => asc(item, target) > 0,
-	gte: (item, target) => asc(item, target) >= 0,
+	lt: (item, target) => COMPARE.asc(item, target) < 0,
+	lte: (item, target) => COMPARE.asc(item, target) <= 0,
+	gt: (item, target) => COMPARE.asc(item, target) > 0,
+	gte: (item, target) => COMPARE.asc(item, target) >= 0,
 };
