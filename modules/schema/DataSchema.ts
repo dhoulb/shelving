@@ -28,7 +28,7 @@ export class DataSchema<T extends Data = Data, D extends DataSchemas = DataSchem
 	/** Any nested collections that sit below this data. */
 	readonly collections: C;
 
-	constructor({ props = {} as Validators<T>, documents = {} as D, collections = {} as C, value = {}, ...rest }: DataOptions<T, D, C>) {
+	constructor({ props = {} as Validators<T>, documents = {} as D, collections = {} as C, value = {}, ...rest }: Partial<DataOptions<T, D, C>>) {
 		super({ ...rest, props, required: true, value });
 		this.documents = documents;
 		this.collections = collections;
@@ -40,5 +40,4 @@ export const data: {
 	<T extends Data = EmptyObject, D extends DataSchemas = EmptyObject, C extends DataSchemas = EmptyObject>(
 		options: Partial<DataOptions<T, D, C>>,
 	): DataSchema<T, D, C>;
-} = <T extends Data, D extends DataSchemas, C extends DataSchemas>(options: Partial<DataOptions<T, D, C>>): DataSchema<T, D, C> =>
-	new DataSchema(options as DataOptions<T, D, C>);
+} = <T extends Data, D extends DataSchemas, C extends DataSchemas>(options: Partial<DataOptions<T, D, C>>): DataSchema<T, D, C> => new DataSchema(options);
