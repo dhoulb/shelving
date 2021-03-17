@@ -325,7 +325,7 @@ const BR: MarkupRule = {
 };
 
 /**
- * Default markup rules.
+ * All markup rules.
  * - Syntax parsed by `renderMarkup()` is defined entirely by the list of rules (i.e. not by code).
  * - These default rules define a syntax similar to Markdown but:
  *   1. less weird and awkward
@@ -334,3 +334,6 @@ const BR: MarkupRule = {
  * - HTML tags and character entities are never allowed (our use cases generally require a locked-down subset of syntax).
  */
 export const MARKUP_RULES = { HEADING, HR, UL, OL, BLOCKQUOTE, FENCED, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR };
+
+/** Default markup rules for user-generated-content rendering. */
+export const MARKUP_RULES_UGC = { UL, OL, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR };

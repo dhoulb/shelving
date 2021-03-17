@@ -2,7 +2,7 @@
 
 import type { MarkupRule, MarkupOptions, MarkupNode } from "./types";
 import { cleanMarkup } from "./helpers";
-import { MARKUP_RULES } from "./rules";
+import { MARKUP_RULES, MARKUP_RULES_UGC } from "./rules";
 
 /** Convert a string into an array of React nodes using a set of rules. */
 const renderString = (content: string, options: MarkupOptions): MarkupNode => {
@@ -18,7 +18,7 @@ const renderString = (content: string, options: MarkupOptions): MarkupNode => {
 		let matchedIndex = Number.MAX_SAFE_INTEGER;
 		let matchedRule: MarkupRule | undefined = undefined;
 		let matchedResult: RegExpMatchArray | undefined = undefined;
-		for (const rule of options.rules) {
+		for (const rule of Object.values(options.rules)) {
 			const { priority = 0, match, contexts } = rule;
 			// Only apply this rule if both:
 			// 1. The priority is equal or higher to the current priority.
@@ -109,7 +109,7 @@ const renderNode = (node: MarkupNode, options: MarkupOptions): MarkupNode => {
 };
 
 const defaultMarkupOptions: MarkupOptions = {
-	rules: Object.values(MARKUP_RULES),
+	rules: MARKUP_RULES,
 	context: "block",
 	rel: undefined,
 	schemes: ["http:", "https:"],
@@ -153,19 +153,7 @@ export const renderMarkup = (content: string, options?: Partial<MarkupOptions>):
 
 const defaultMarkupUgcOptions: MarkupOptions = {
 	...defaultMarkupOptions,
-	rules: [
-		MARKUP_RULES.UL,
-		MARKUP_RULES.OL,
-		MARKUP_RULES.PARAGRAPH,
-		MARKUP_RULES.LINK,
-		MARKUP_RULES.AUTOLINK,
-		MARKUP_RULES.CODE,
-		MARKUP_RULES.STRONG,
-		MARKUP_RULES.EM,
-		MARKUP_RULES.INS,
-		MARKUP_RULES.DEL,
-		MARKUP_RULES.BR,
-	],
+	rules: MARKUP_RULES_UGC,
 	rel: "nofollow ugc",
 };
 

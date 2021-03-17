@@ -1,3 +1,5 @@
+import type { ImmutableObject } from "../object";
+
 /**
  * JSX element.
  * - Compatible with but _slightly_ more flexible than `React.ReactElement`
@@ -52,7 +54,7 @@ export type MarkupOptions = {
 	/** The current parsing context, e.g. "block" or "inline" */
 	readonly context: string | undefined;
 	/** The current list of parsing rules. */
-	readonly rules: readonly MarkupRule[];
+	readonly rules: readonly MarkupRule[] | ImmutableObject<MarkupRule>;
 	/** Set the `$$typeof` property for any created JSX elements (used for React security, see https://github.com/facebook/react/pull/4832) */
 	/**
 	 * Set a function that post-processes any created elements
