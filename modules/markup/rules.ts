@@ -1,5 +1,5 @@
 import { formatUrl } from "../url";
-import { createPropIterator } from "../object";
+import { PropIterator } from "../object";
 import type { MarkupElement, MarkupRule, MarkupRuleMatcher } from "./types";
 
 // Regular expression partials (`\` slashes must be escaped as `\\`).
@@ -334,7 +334,7 @@ const BR: MarkupRule = {
  *   3. more aligned with smaller textboxes and editors that have line wrapping
  * - HTML tags and character entities are never allowed (our use cases generally require a locked-down subset of syntax).
  */
-export const MARKUP_RULES = createPropIterator({ HEADING, HR, UL, OL, BLOCKQUOTE, FENCED, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR });
+export const MARKUP_RULES = PropIterator.create({ HEADING, HR, UL, OL, BLOCKQUOTE, FENCED, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR });
 
 /** Default markup rules for user-generated-content rendering. */
-export const MARKUP_RULES_UGC = createPropIterator({ UL, OL, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR });
+export const MARKUP_RULES_UGC = PropIterator.create({ UL, OL, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR });

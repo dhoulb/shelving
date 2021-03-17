@@ -322,19 +322,23 @@ export function getProp<O extends ImmutableObject>(obj: O, key: string | number,
 	return current;
 }
 
-/** Return a copy of an object that's able to iterate over its own enumerable own property values. */
-export const createPropIterator = <T extends ImmutableObject>(obj: T): T & PropIterator<T[keyof T]> =>
-	Object.assign(Object.create(PropIterator.prototype), obj);
-class PropIterator<T> {
-	*[Symbol.iterator](): Generator<T, void, undefined> {
+/** Object that's able to iterate over its own enumerable own property values. */
+export class PropIterator<T extends ImmutableObject> implements Iterable<ObjectType<T>> {
+	/** Make a new object that's able to iterate over its own enumerable own property values. */
+	static create<X extends ImmutableObject>(obj: X): X & PropIterator<X> {
+		return Object.assign(Object.create(PropIterator.prototype), obj);
+	}
+	*[Symbol.iterator](): Generator<ObjectType<T>, void, undefined> {
 		yield* Object.values(this);
 	}
 }
 
-/** Return a copy of an object that's able to iterate over its own enumerable own property values. */
-export const createEntryIterator = <T extends ImmutableObject>(obj: T): T & EntryIterator<T[keyof T]> =>
-	Object.assign(Object.create(EntryIterator.prototype), obj);
-class EntryIterator<T> {
+/** Object that's able to iterate over its own enumerable own property entries. */
+export class EntryIterator<T extends ImmutableObject> implements Iterable<Entry<T>> {
+	/** Make a new object that's able to iterate over its own enumerable own property entries. */
+	static create<X extends ImmutableObject>(obj: X): X & EntryIterator<X> {
+		return Object.assign(Object.create(EntryIterator.prototype), obj);
+	}
 	*[Symbol.iterator](): Generator<Entry<T>, void, undefined> {
 		yield* Object.entries(this);
 	}
