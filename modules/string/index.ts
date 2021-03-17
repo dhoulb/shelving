@@ -53,7 +53,7 @@ export const toTitle = (value: unknown): string => {
 /** Convert a string to a `kebab-case` slug. */
 export const toSlug = (value: string): string => value.toLowerCase().replace(TO_HYPHEN, "-").replace(TRIM_HYPHENS, "");
 const TO_HYPHEN = /[^a-z0-9]+/g; // Anything that isn't [a-z0-9] becomes a hyphen.
-const TRIM_HYPHENS = /^-|-$/g; // Trim excess hyphens at start and end.
+const TRIM_HYPHENS = /^-+|-+$/g; // Trim excess hyphens at start and end.
 
 /**
  * Split a string into its separate words.
