@@ -18,7 +18,7 @@ const renderString = (content: string, options: MarkupOptions): MarkupNode => {
 		let matchedIndex = Number.MAX_SAFE_INTEGER;
 		let matchedRule: MarkupRule | undefined = undefined;
 		let matchedResult: RegExpMatchArray | undefined = undefined;
-		for (const rule of Object.values(options.rules)) {
+		for (const rule of options.rules) {
 			const { priority = 0, match, contexts } = rule;
 			// Only apply this rule if both:
 			// 1. The priority is equal or higher to the current priority.
@@ -108,13 +108,6 @@ const renderNode = (node: MarkupNode, options: MarkupOptions): MarkupNode => {
 	return node;
 };
 
-const defaultMarkupOptions: MarkupOptions = {
-	rules: MARKUP_RULES,
-	context: "block",
-	rel: undefined,
-	schemes: ["http:", "https:"],
-};
-
 /**
  * Parse a text string as Markdownish syntax and render it as a JSX node.
  * - Syntax is not defined by this code, but by the rules supplied to it.
@@ -149,12 +142,15 @@ const defaultMarkupOptions: MarkupOptions = {
  * @returns ReactNode, i.e. either a complete `ReactElement`, `null`, `undefined`, `string`, or an array of zero or more of those.
  */
 export const renderMarkup = (content: string, options?: Partial<MarkupOptions>): MarkupNode =>
-	renderString(cleanMarkup(content), options ? { ...defaultMarkupOptions, ...options } : defaultMarkupOptions);
-
-const defaultMarkupUgcOptions: MarkupOptions = {
-	...defaultMarkupOptions,
-	rules: MARKUP_RULES_UGC,
-	rel: "nofollow ugc",
+	renderString(
+		cleanMarkup(content),
+		{ ...defaults, ...options, rules: Array.from(options?.rules || defaults.rules) }, // Convert rules to an array — slightly more efficient when we might call the iterator thousands of times.
+	);
+const defaults: MarkupOptions = {
+	rules: MARKUP_RULES,
+	context: "block",
+	rel: undefined,
+	schemes: ["http:", "https:"],
 };
 
 /**
@@ -162,4 +158,12 @@ const defaultMarkupUgcOptions: MarkupOptions = {
  * - Like `renderMarkup()` but only enables a subset of rules and applies `rel="nofollow ugc"` to all links.
  */
 export const renderUgcMarkup = (content: string, options?: Partial<MarkupOptions>): MarkupNode =>
-	renderString(cleanMarkup(content), options ? { ...defaultMarkupUgcOptions, ...options } : defaultMarkupUgcOptions);
+	renderString(
+		cleanMarkup(content),
+		{ ...defaultsUgc, ...options, rules: Array.from(options?.rules || defaultsUgc.rules) }, // Convert rules to an array — slightly more efficient when we might call the iterator thousands of times.
+	);
+const defaultsUgc: MarkupOptions = {
+	...defaults,
+	rules: MARKUP_RULES_UGC,
+	rel: "nofollow ugc",
+};
