@@ -2,7 +2,6 @@ import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber 
 import type { Entry } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
 import type { Observer } from "../observe";
-import { Cloneable, cloneObject } from "../clone";
 import { EmptyObject, getFirstProp, getLastProp, ImmutableObject } from "../object";
 import { DataSchemas, DataSchema, Validator, ValidateOptions, PARTIAL } from "../schema";
 import { Data, Result, Results } from "../data";
@@ -57,13 +56,10 @@ class Database<D extends DataSchemas, C extends DataSchemas> implements Database
 	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["type"], C[K]["documents"], C[K]["collections"]> {
 		return new Collection<C[K]["type"], C[K]["documents"], C[K]["collections"]>(this.collections[name], this._provider, name as string);
 	}
-	clone(): this {
-		return cloneObject<this>(this);
-	}
 }
 
 // Path is a shared base for both Document and Collection that defines a single path in the database.
-abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas> implements Cloneable, Validator<T> {
+abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas> implements Validator<T> {
 	protected readonly _provider: Provider;
 	readonly schema: DataSchema<T, D, C>;
 	readonly path: string;
@@ -82,9 +78,6 @@ abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas
 	}
 	toString(): string {
 		return this.path;
-	}
-	clone(): this {
-		return cloneObject(this);
 	}
 }
 

@@ -2,7 +2,6 @@ import type { ImmutableObject } from "../object";
 import type { Data, Result } from "../data";
 import type { DataSchemas, DataSchema, Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
-import type { Cloneable } from "../clone";
 import type { Observer, Subscribable } from "../observe";
 import type { Collection } from "./Collection";
 import type { DeleteOptions, GetOptions, SetOptions } from "./options";
@@ -12,8 +11,7 @@ export type SchemaDocument<S extends DataSchema> = Document<S["type"], S["docume
 
 /** Type for a document instance. */
 export interface Document<T extends Data = Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas>
-	extends Cloneable,
-		Validator<T>,
+	extends Validator<T>,
 		Subscribable<Result<T>> {
 	/** Data schema that validates this document. */
 	readonly schema: DataSchema<T, D, C>;

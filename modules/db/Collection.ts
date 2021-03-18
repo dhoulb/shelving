@@ -3,7 +3,6 @@ import type { DataSchemas, DataSchema, Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import type { Entry } from "../entry";
 import type { Queryable, Query } from "../query";
-import type { Cloneable } from "../clone";
 import type { ImmutableObject } from "../object";
 import type { Observer, Subscribable } from "../observe";
 import type { Document } from "./Document";
@@ -18,7 +17,6 @@ export type SchemaCollection<S extends DataSchema> = Collection<S["type"], S["do
 export interface Collection<T extends Data = Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas>
 	extends Queryable<T>,
 		Validator<T>,
-		Cloneable,
 		Subscribable<Results<T>> {
 	/** Data schema that validates this document. */
 	readonly schema: DataSchema<T, D, C>;
