@@ -52,6 +52,7 @@ const renderString = (content: string, options: MarkupOptions): MarkupNode => {
 			// Call the rule's `render()` function to generate the node.
 			const childOptions = { ...options, context: matchedRule.childContext };
 			const element = matchedRule.render(matchedResult, childOptions);
+			element.rule = matchedRule;
 			appendNode(nodes, renderNode(element, childOptions));
 
 			// Decrement the content.

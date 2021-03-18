@@ -7,6 +7,8 @@ export type MarkupElement = {
 	key: string | number | null;
 	props: MarkupElementProps;
 	$$typeof?: symbol;
+	/** This specifies the rule that created this element. */
+	rule?: MarkupRule;
 };
 export type MarkupElementProps = {
 	[prop: string]: unknown;
