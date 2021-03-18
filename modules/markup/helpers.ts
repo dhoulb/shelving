@@ -1,5 +1,5 @@
 import { serialise } from "../serialise";
-import type { MarkupNode } from "./types";
+import type { MarkupElement, MarkupNode } from "./types";
 
 /**
  * Take a Markup JSX node and strip all tags from it to produce a plain text string.
@@ -68,3 +68,15 @@ export const cleanMarkup = (content: string): string =>
 		.replace(TRAILING_SPACES, "") // Strip trailing whitespaces on any lines.
 		.replace(CONTROL_CHARS, "") // Strip trailing spaces on any lines.
 		.trimStart(); // Trim the start (including leading newlines).
+
+/**
+ * Iterate through all elements in a node.
+ * - This is useful if you, e.g. want to apply a `className` to all `<h1>` elements, or make a list of all URLs found in a Node.
+ */
+export function* iterateElements(node: MarkupNode): Generator<MarkupElement> {
+	if (node instanceof Array) for (const n of node) yield* iterateElements(n);
+	else if (typeof node === "object" && node) {
+		yield node;
+		if (node.props.children) yield* iterateElements(node.props.children);
+	}
+}

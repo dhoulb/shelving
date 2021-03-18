@@ -1,4 +1,5 @@
 import { cleanMarkup, nodeToText, nodeToHtml, renderMarkup } from "..";
+import { iterateElements } from "./helpers";
 
 describe("nodeToText()", () => {
 	test("Nodes can be converted to plain text", () => {
@@ -9,7 +10,7 @@ describe("nodeToText()", () => {
 	});
 });
 describe("nodeToHtml()", () => {
-	test("Nodes can be converted to plain text", () => {
+	test("Nodes can be converted to plain HTML", () => {
 		expect(nodeToHtml(renderMarkup("PARAGRAPH"))).toBe("<p>PARAGRAPH</p>");
 		expect(nodeToHtml(renderMarkup("- ITEM1\n- ITEM2"))).toBe("<ul><li>ITEM1</li><li>ITEM2</li></ul>");
 		expect(nodeToHtml(renderMarkup("- ITEM\n  - ITEM1\n  - ITEM2"))).toBe("<ul><li>ITEM<ul><li>ITEM1</li><li>ITEM2</li></ul></li></ul>");
@@ -32,4 +33,13 @@ test("cleanMarkup()", () => {
 	expect(cleanMarkup("aaa\r")).toEqual("aaa\n");
 	// Tabs and other weird whitespaces are converted to spaces.
 	expect(cleanMarkup("aaa\taaa\faaa")).toEqual("aaa aaa aaa");
+});
+test("iterateElements()", () => {
+	expect(Array.from(iterateElements(renderMarkup("PARAGRAPH")))).toHaveLength(1);
+	expect(Array.from(iterateElements(renderMarkup("PARAGRAPH")))).toMatchObject([{ type: "p" }]);
+	expect(Array.from(iterateElements(renderMarkup("- ITEM1\n- ITEM2")))).toMatchObject([
+		{ type: "ul" },
+		{ type: "li", props: { children: "ITEM1" } },
+		{ type: "li", props: { children: "ITEM2" } },
+	]);
 });
