@@ -5,7 +5,7 @@ import type { SKIP } from "../constants";
  * - Consistency with `UnknownObject`
  * - Always readonly.
  */
-export type Entry<T> = readonly [string, T];
+export type Entry<T = unknown> = readonly [string, T];
 
 /**
  * Unknown entry.
