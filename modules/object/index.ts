@@ -1,6 +1,5 @@
 import type { Entry, ImmutableEntries, ResolvableEntries } from "../entry";
 import type { Resolvable } from "../data";
-import { ImmutableArray } from "../array";
 import { SKIP } from "../constants";
 
 /**
@@ -78,10 +77,17 @@ export type DeepReadonly<T extends ImmutableObject> = { +readonly [K in keyof T]
 export const isObject = <T extends ImmutableObject>(value: T | unknown): value is T => typeof value === "object" && value !== null;
 
 /**
+ * Is a value an iterable object?
+ * - Any object with a `Symbol.iterator` property is iterable.
+ * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
+ */
+export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => isObject(value) && Symbol.iterator in value;
+
+/**
  * Turn an array of entries into an object.
  * - Eventually when browser support is good enough this can be changed to ES2019's `Object.fromEntries()`
  */
-export const objectFromEntries = <V>(entries: ImmutableEntries<V>): MutableObject<V> => {
+export const objectFromEntries = <V>(entries: Iterable<Entry<V>>): MutableObject<V> => {
 	// Builtin is probably faster (if it exists).
 	if (Object.fromEntries) return Object.fromEntries<V>(entries);
 	// Otherwise build the object manually.
@@ -155,32 +161,29 @@ export function mapObjectKeys(
  * - Immutable so if the values don't change then the same instance will be returned.
  * - Prototype of the object will be the same as the input object.
  */
-// Use the object like a promised dictionary.
 export function mapObject<I, O>(
-	input: ImmutableEntries<I> | ImmutableObject<I>, //
+	input: ImmutableObject<I> | Iterable<Entry<I>>, //
 	mapper: (value: I, key: string) => Promise<typeof SKIP | O>,
 ): Promise<ImmutableObject<O>>;
-// Use the object like a dictionary.
 export function mapObject<I, O>(
-	input: ImmutableEntries<I> | ImmutableObject<I>, //
+	input: ImmutableObject<I> | Iterable<Entry<I>>, //
 	mapper: ((value: I, key: string) => typeof SKIP | O) | O,
 ): ImmutableObject<O>;
-//
 export function mapObject(
-	input: ImmutableObject | ImmutableEntries,
+	input: ImmutableObject | Iterable<Entry>,
 	mapper: ((value: unknown, key: string) => Resolvable<unknown>) | Resolvable<unknown>,
 ): ImmutableObject | Promise<ImmutableObject> {
 	let promises = false;
 	let changed = false;
-	const output: Mutable<ResolvableObject> = input instanceof Array ? {} : { __proto__: Object.getPrototypeOf(input) };
-	const entries = input instanceof Array ? input : Object.entries(input);
-	for (const [key, current] of entries) {
+	const output: Mutable<ResolvableObject> = {};
+	const iterable = isIterable(input) ? input : Object.entries(input);
+	for (const [key, current] of iterable) {
 		const next = typeof mapper === "function" ? mapper(current, key) : mapper;
 		if (next instanceof Promise) promises = true;
 		if (next !== SKIP) output[key] = next;
 		if (next !== current) changed = true;
 	}
-	return promises ? resolveObject(output) : changed || input instanceof Array ? output : input;
+	return promises ? resolveObject(output) : !changed && input !== iterable ? (input as ImmutableObject) : output;
 }
 
 /**
@@ -208,19 +211,19 @@ export const convertObject: <I extends ImmutableObject, O extends ImmutableObjec
  * - Immutable so if the values don't change then the same instance will be returned.
  */
 export function objectFromKeys<O>(
-	keys: ImmutableArray<string>, //
+	keys: Iterable<string>, //
 	mapper: (key: string) => Promise<typeof SKIP | O>,
 ): Promise<ImmutableObject<O>>;
 export function objectFromKeys<O>(
-	keys: ImmutableArray<string>, //
+	keys: Iterable<string>, //
 	mapper: ((key: string) => typeof SKIP | O) | O,
 ): ImmutableObject<O>;
 export function objectFromKeys<O>(
-	keys: ImmutableArray<string>, //
+	keys: Iterable<string>, //
 	mapper: ((key: string) => typeof SKIP | O) | O,
 ): ImmutableObject<O> | Promise<ImmutableObject<O>>;
 export function objectFromKeys(
-	keys: ImmutableArray<string>, //
+	keys: Iterable<string>, //
 	mapper: ((key: string) => Resolvable<unknown>) | Resolvable<unknown>,
 ): ImmutableObject | Promise<ImmutableObject> {
 	let promises = false;

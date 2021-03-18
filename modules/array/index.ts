@@ -1,4 +1,4 @@
-import type { ImmutableObject, Mutable } from "../object";
+import { ImmutableObject, isIterable, Mutable } from "../object";
 import type { Resolvable } from "../data";
 import { SKIP } from "../constants";
 
@@ -167,7 +167,7 @@ export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
 /**
  * Map the items in an array.
  *
- * @param arr The input array or object to map (if an object, `Object.entries()` will be performed automatically and the second argument to `mapper()` will be the string key).
+ * @param arr|obj|iterable The input array or object to map (if an object, `Object.entries()` will be performed automatically and the second argument to `mapper()` will be the string key).
  *
  * @param mapper Mapping function that receives the value and key and returns the corresponding value.
  * - Mapper can return a promise. If it does will return a Promise that resolves once every value has resolved.
@@ -178,45 +178,48 @@ export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
  * @returns The mapped array.
  * - Immutable so if the values don't change then the same instance will be returned.
  */
-export function mapArray<T extends ImmutableArray<unknown>>(
-	arr: T, //
-	mapper: (value: ArrayType<T>, key: number) => ArrayType<T>,
-): T;
-export function mapArray<T extends ImmutableArray<unknown>>(
-	arr: T, //
-	mapper: (value: ArrayType<T>, key: number) => ArrayType<T> | Promise<ArrayType<T>>,
-): Promise<T>;
 export function mapArray<I extends unknown, O extends unknown>(
-	arr: ImmutableArray<I>, //
-	mapper: (value: I, key: number) => Promise<typeof SKIP | O>,
+	arr: Iterable<I>, //
+	mapper: (value: I) => Promise<typeof SKIP | O>,
 ): Promise<ImmutableArray<O>>;
 export function mapArray<I extends unknown, O extends unknown>(
-	arr: ImmutableArray<I>, //
-	mapper: ((value: I, key: number) => typeof SKIP | O) | O,
+	arr: Iterable<I>, //
+	mapper: ((value: I) => typeof SKIP | O) | O,
 ): ImmutableArray<O>;
 export function mapArray<I extends unknown, O extends unknown>(
-	arr: ImmutableObject<I>,
-	mapper: (value: I, key: string) => Promise<typeof SKIP | O>,
+	obj: ImmutableObject<I>, //
+	mapper: (value: I) => Promise<typeof SKIP | O>,
 ): Promise<ImmutableArray<O>>;
 export function mapArray<I extends unknown, O extends unknown>(
-	arr: ImmutableObject<I>,
-	mapper: ((value: I, key: string) => typeof SKIP | O) | O,
+	obj: ImmutableObject<I>, //
+	mapper: ((value: I) => typeof SKIP | O) | O,
 ): ImmutableArray<O>;
 export function mapArray(
-	arr: ImmutableArray | ImmutableObject,
+	input: ImmutableArray | ImmutableObject | Iterable<unknown>,
 	mapper: ((value: unknown, key: number | string) => Resolvable<unknown>) | Resolvable<unknown>,
 ): ImmutableArray | Promise<ImmutableArray> {
 	let promises = false;
 	let changed = false;
 	const output: Mutable<ResolvableArray<unknown>> = [];
-	for (const [key, current] of Object.entries(arr)) {
-		const next = typeof mapper === "function" ? mapper(current, key) : mapper;
+	const iterable = isIterable(input) ? input : Object.values(input);
+	for (const current of iterable) {
+		const next = typeof mapper === "function" ? mapper(current) : mapper;
 		if (next instanceof Promise) promises = true;
 		if (next !== SKIP) output.push(next);
 		if (next !== current) changed = true;
 	}
-	return promises ? resolveArray<unknown>(output) : changed || !(arr instanceof Array) ? output : arr;
+	return promises ? resolveArray<unknown>(output) : !changed && isArray(input) ? input : output;
 }
+
+/**
+ * Convert an array from an exact array type to an exact other array type with a mapper function.
+ * - This is a copy of mapArray but with different generics that allow you to specify the exact input and output types as generics.
+ * - It can't be an overload of `mapArray()` because the overloads are too similar and there's no way for TypeScript to distinguish between them.
+ */
+export const convertArray: <I extends ImmutableArray, O extends ImmutableArray>(
+	input: I, //
+	mapper: (value: I[keyof I], key: string) => O[keyof O],
+) => O = mapArray;
 
 /**
  * Resolve the items in an array.
