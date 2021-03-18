@@ -1,6 +1,6 @@
 import {
 	SKIP,
-	mapObject,
+	mapProps,
 	objectFromKeys,
 	withoutProp,
 	withProp,
@@ -8,7 +8,7 @@ import {
 	getProp,
 	objectFromEntries,
 	isObject,
-	mapObjectKeys,
+	mapKeys,
 	ImmutableEntries,
 	ImmutableObject,
 	updateProps,
@@ -36,49 +36,49 @@ test("objectFromEntries()", () => {
 	expect(objectFromEntries(entries)).toEqual(obj);
 	expect(objectFromEntries(entries)).not.toBe(entries);
 });
-test("mapObject()", async () => {
+test("mapProps()", async () => {
 	// Square each number (input is object).
-	expect(mapObject(obj, n => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
-	expect(mapObject(obj, n => n * n)).not.toBe(obj);
+	expect(mapProps(obj, n => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
+	expect(mapProps(obj, n => n * n)).not.toBe(obj);
 	// Square each number (input is entries).
-	expect(mapObject(entries, n => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
-	expect(mapObject(entries, n => n * n)).not.toBe(entries);
+	expect(mapProps(entries, n => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
+	expect(mapProps(entries, n => n * n)).not.toBe(entries);
 	// Works with promises (input is object).
-	expect(mapObject(obj, n => Promise.resolve(n * n))).toBeInstanceOf(Promise);
-	expect(await mapObject(obj, n => Promise.resolve(n * n))).toEqual({ a: 1, b: 4, c: 9, d: 16 });
+	expect(mapProps(obj, n => Promise.resolve(n * n))).toBeInstanceOf(Promise);
+	expect(await mapProps(obj, n => Promise.resolve(n * n))).toEqual({ a: 1, b: 4, c: 9, d: 16 });
 	// Works with promises (input is entries).
-	expect(mapObject(entries, n => Promise.resolve(n * n))).toBeInstanceOf(Promise);
-	expect(await mapObject(entries, n => Promise.resolve(n * n))).toEqual({ a: 1, b: 4, c: 9, d: 16 });
+	expect(mapProps(entries, n => Promise.resolve(n * n))).toBeInstanceOf(Promise);
+	expect(await mapProps(entries, n => Promise.resolve(n * n))).toEqual({ a: 1, b: 4, c: 9, d: 16 });
 	// Use SKIP to skip odd numbers (input is object).
-	expect(mapObject(obj, n => (n % 2 ? n : SKIP))).toEqual({ a: 1, c: 3 });
-	expect(mapObject(obj, n => (n % 2 ? n : SKIP))).not.toBe(obj);
+	expect(mapProps(obj, n => (n % 2 ? n : SKIP))).toEqual({ a: 1, c: 3 });
+	expect(mapProps(obj, n => (n % 2 ? n : SKIP))).not.toBe(obj);
 	// Use SKIP to skip odd numbers (input is entries).
-	expect(mapObject(entries, n => (n % 2 ? n : SKIP))).toEqual({ a: 1, c: 3 });
-	expect(mapObject(entries, n => (n % 2 ? n : SKIP))).not.toBe(entries);
+	expect(mapProps(entries, n => (n % 2 ? n : SKIP))).toEqual({ a: 1, c: 3 });
+	expect(mapProps(entries, n => (n % 2 ? n : SKIP))).not.toBe(entries);
 	// Use a flat value instead of a mapper function (input is object).
-	expect(mapObject(obj, null)).toEqual({ a: null, b: null, c: null, d: null });
-	expect(mapObject(obj, null)).not.toBe(obj);
+	expect(mapProps(obj, null)).toEqual({ a: null, b: null, c: null, d: null });
+	expect(mapProps(obj, null)).not.toBe(obj);
 	// Use a flat value instead of a mapper function (input is entries).
-	expect(mapObject(entries, null)).toEqual({ a: null, b: null, c: null, d: null });
-	expect(mapObject(entries, null)).not.toBe(entries);
+	expect(mapProps(entries, null)).toEqual({ a: null, b: null, c: null, d: null });
+	expect(mapProps(entries, null)).not.toBe(entries);
 	// Return same instance if no numbers changed.
-	expect(mapObject(obj, n => n)).toBe(obj);
+	expect(mapProps(obj, n => n)).toBe(obj);
 });
-test("mapObjectKeys()", () => {
+test("mapKeys()", () => {
 	// Square each number (input is object).
-	expect(mapObjectKeys(obj, k => k.toUpperCase())).toEqual({ A: 1, B: 2, C: 3, D: 4 });
-	expect(mapObjectKeys(obj, k => k.toUpperCase())).not.toBe(obj);
+	expect(mapKeys(obj, k => k.toUpperCase())).toEqual({ A: 1, B: 2, C: 3, D: 4 });
+	expect(mapKeys(obj, k => k.toUpperCase())).not.toBe(obj);
 	// Square each number (input is entries).
-	expect(mapObjectKeys(entries, k => k.toUpperCase())).toEqual({ A: 1, B: 2, C: 3, D: 4 });
-	expect(mapObjectKeys(entries, k => k.toUpperCase())).not.toBe(entries);
+	expect(mapKeys(entries, k => k.toUpperCase())).toEqual({ A: 1, B: 2, C: 3, D: 4 });
+	expect(mapKeys(entries, k => k.toUpperCase())).not.toBe(entries);
 	// Use SKIP to skip odd numbers (input is object).
-	expect(mapObjectKeys(obj, (k, n) => (n % 2 ? k.toUpperCase() : SKIP))).toEqual({ A: 1, C: 3 });
-	expect(mapObjectKeys(obj, (k, n) => (n % 2 ? k.toUpperCase() : SKIP))).not.toBe(obj);
+	expect(mapKeys(obj, (k, n) => (n % 2 ? k.toUpperCase() : SKIP))).toEqual({ A: 1, C: 3 });
+	expect(mapKeys(obj, (k, n) => (n % 2 ? k.toUpperCase() : SKIP))).not.toBe(obj);
 	// Use SKIP to skip odd numbers (input is object).
-	expect(mapObjectKeys(entries, (k, n) => (n % 2 ? k.toUpperCase() : SKIP))).toEqual({ A: 1, C: 3 });
-	expect(mapObjectKeys(entries, (k, n) => (n % 2 ? k.toUpperCase() : SKIP))).not.toBe(obj);
+	expect(mapKeys(entries, (k, n) => (n % 2 ? k.toUpperCase() : SKIP))).toEqual({ A: 1, C: 3 });
+	expect(mapKeys(entries, (k, n) => (n % 2 ? k.toUpperCase() : SKIP))).not.toBe(obj);
 	// Return same instance if no keys changed.
-	expect(mapObjectKeys(obj, k => k)).toBe(obj);
+	expect(mapKeys(obj, k => k)).toBe(obj);
 });
 test("objectFromKeys()", async () => {
 	// Square each number.

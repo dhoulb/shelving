@@ -178,23 +178,23 @@ export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
  * @returns The mapped array.
  * - Immutable so if the values don't change then the same instance will be returned.
  */
-export function mapArray<I extends unknown, O extends unknown>(
+export function mapItems<I extends unknown, O extends unknown>(
 	arr: Iterable<I>, //
 	mapper: (value: I) => Promise<typeof SKIP | O>,
 ): Promise<ImmutableArray<O>>;
-export function mapArray<I extends unknown, O extends unknown>(
+export function mapItems<I extends unknown, O extends unknown>(
 	arr: Iterable<I>, //
 	mapper: ((value: I) => typeof SKIP | O) | O,
 ): ImmutableArray<O>;
-export function mapArray<I extends unknown, O extends unknown>(
+export function mapItems<I extends unknown, O extends unknown>(
 	obj: ImmutableObject<I>, //
 	mapper: (value: I) => Promise<typeof SKIP | O>,
 ): Promise<ImmutableArray<O>>;
-export function mapArray<I extends unknown, O extends unknown>(
+export function mapItems<I extends unknown, O extends unknown>(
 	obj: ImmutableObject<I>, //
 	mapper: ((value: I) => typeof SKIP | O) | O,
 ): ImmutableArray<O>;
-export function mapArray(
+export function mapItems(
 	input: ImmutableArray | ImmutableObject | Iterable<unknown>,
 	mapper: ((value: unknown, key: number | string) => Resolvable<unknown>) | Resolvable<unknown>,
 ): ImmutableArray | Promise<ImmutableArray> {
@@ -212,14 +212,14 @@ export function mapArray(
 }
 
 /**
- * Convert an array from an exact array type to an exact other array type with a mapper function.
- * - This is a copy of mapArray but with different generics that allow you to specify the exact input and output types as generics.
+ * Map an entire array.
+ * - This is a copy of `mapItems()` but with different generics that allow you to specify the exact input and output types.
  * - It can't be an overload of `mapArray()` because the overloads are too similar and there's no way for TypeScript to distinguish between them.
  */
-export const convertArray: <I extends ImmutableArray, O extends ImmutableArray>(
+export const mapArray: <I extends ImmutableArray, O extends ImmutableArray>(
 	input: I, //
 	mapper: (value: I[keyof I], key: string) => O[keyof O],
-) => O = mapArray;
+) => O = mapItems;
 
 /**
  * Resolve the items in an array.

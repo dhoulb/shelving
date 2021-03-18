@@ -1,5 +1,5 @@
-import { isArray, ImmutableArray, convertArray } from "../array";
-import { EmptyObject, isObject, ImmutableObject, convertObject } from "../object";
+import { isArray, ImmutableArray, mapArray } from "../array";
+import { EmptyObject, isObject, ImmutableObject, mapObject } from "../object";
 
 /** Cloneable object implement a `clone()` function that returns a cloned copy. */
 export interface Cloneable {
@@ -18,14 +18,14 @@ export function deepClone<T>(value: T, recursor = deepClone): T {
 
 /** Clone an array. */
 export const cloneArray = <T extends ImmutableArray>(arr: T, recursor = clone): T => {
-	const output = convertArray(arr, recursor);
+	const output = mapArray(arr, recursor);
 	Object.setPrototypeOf(arr, Object.getPrototypeOf(arr));
 	return output;
 };
 
 /** Clone an object. */
 export const cloneObject = <T extends EmptyObject | ImmutableObject>(obj: T, recursor = clone): T => {
-	const output = convertObject<T, T>(obj, recursor);
+	const output = mapObject<T, T>(obj, recursor);
 	Object.setPrototypeOf(obj, Object.getPrototypeOf(obj));
 	return output;
 };

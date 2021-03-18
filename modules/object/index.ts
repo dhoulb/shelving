@@ -127,11 +127,11 @@ export const getLastProp = <T>(obj: ImmutableObject<T>): Entry<T> | undefined =>
  * @returns The mapped object.
  * - Immutable so if the values don't change then the same instance will be returned.
  */
-export function mapObjectKeys<V extends unknown>(
+export function mapKeys<V extends unknown>(
 	input: ImmutableObject<V> | ImmutableEntries<V>, //
 	mapper: (key: string, value: V) => typeof SKIP | string,
 ): ImmutableObject<V>;
-export function mapObjectKeys(
+export function mapKeys(
 	input: ImmutableObject | ImmutableEntries, //
 	mapper: (key: string, value: unknown) => typeof SKIP | string,
 ): ImmutableObject {
@@ -161,15 +161,15 @@ export function mapObjectKeys(
  * - Immutable so if the values don't change then the same instance will be returned.
  * - Prototype of the object will be the same as the input object.
  */
-export function mapObject<I, O>(
+export function mapProps<I, O>(
 	input: ImmutableObject<I> | Iterable<Entry<I>>, //
 	mapper: (value: I, key: string) => Promise<typeof SKIP | O>,
 ): Promise<ImmutableObject<O>>;
-export function mapObject<I, O>(
+export function mapProps<I, O>(
 	input: ImmutableObject<I> | Iterable<Entry<I>>, //
 	mapper: ((value: I, key: string) => typeof SKIP | O) | O,
 ): ImmutableObject<O>;
-export function mapObject(
+export function mapProps(
 	input: ImmutableObject | Iterable<Entry>,
 	mapper: ((value: unknown, key: string) => Resolvable<unknown>) | Resolvable<unknown>,
 ): ImmutableObject | Promise<ImmutableObject> {
@@ -187,14 +187,14 @@ export function mapObject(
 }
 
 /**
- * Convert an object from an exact object type to an exact other object type with a mapper function.
- * - This is a copy of mapObject but with different generics that allow you to specify the exact input and output types as generics.
+ * Map an entire object from an exact object type to an exact other object type with a mapper function.
+ * - This is a copy of `mapProps()` but with different generics that allow you to specify the exact input and output types.
  * - It can't be an overload of `mapObject()` because the overloads are too similar and there's no way for TypeScript to distinguish between them.
  */
-export const convertObject: <I extends ImmutableObject, O extends ImmutableObject>(
+export const mapObject: <I extends ImmutableObject, O extends ImmutableObject>(
 	input: I, //
 	mapper: (value: I[string], key: string) => O[string],
-) => O = mapObject;
+) => O = mapProps;
 
 /**
  * Map an array of object keys into an object using a mapper function or a single value.

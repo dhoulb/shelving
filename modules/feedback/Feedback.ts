@@ -1,4 +1,4 @@
-import { ImmutableObject, mapObject, isObject } from "../object";
+import { ImmutableObject, mapProps, isObject } from "../object";
 
 const entryToString = ([key, feedback]: [string, Feedback]) => `- ${key}: ${feedback.toString().replace(/\n/g, "\n  ")}`;
 const messageToString = (feedback: Feedback) => feedback.message;
@@ -42,7 +42,7 @@ export class Feedback implements FeedbackJSON {
 
 	/** Convert the children of this `Feedback` into an object in `{ name: message }` format. */
 	get messages(): ImmutableObject<string> | undefined {
-		return this.details && mapObject(this.details, messageToString);
+		return this.details && mapProps(this.details, messageToString);
 	}
 
 	/**
@@ -68,7 +68,7 @@ export class Feedback implements FeedbackJSON {
 		// See if it's an object now.
 		if (isFeedbackJSON(obj)) {
 			const { status, message, details: unhydratedDetails } = obj;
-			const details = unhydratedDetails ? mapObject(unhydratedDetails, Feedback.fromJSON) : undefined;
+			const details = unhydratedDetails ? mapProps(unhydratedDetails, Feedback.fromJSON) : undefined;
 
 			// If this status is a registered type, create the correct new class.
 			switch (status) {

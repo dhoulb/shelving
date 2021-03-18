@@ -1,4 +1,4 @@
-import { createTestDatabase, allBasics, allPeople, deleteBasics, deletePeople } from "../test";
+import { createTestDatabase, allBasics, allPeople } from "../test";
 import { provideMemory } from "..";
 
 const { basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9 } = allBasics;
