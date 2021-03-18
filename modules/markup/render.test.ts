@@ -1,4 +1,4 @@
-import { createElement, isValidElement } from "react";
+import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
 import { renderMarkup, MarkupElement } from "..";
 
@@ -555,19 +555,19 @@ describe("renderMarkup(): Block rules", () => {
 	});
 });
 describe("renderMarkup(): React compatibility", () => {
-	test("Using `React.createElement()` as `options.createElement` creates valid React elements including $$typeof security key", () => {
-		expect(isValidElement(renderMarkup("abc", { createElement }))).toBe(true);
-		expect(renderMarkup("abc", { createElement })).toMatchObject({ type: "p", $$typeof });
-		expect(isValidElement(renderMarkup("- ITEM", { createElement }))).toBe(true);
-		expect(renderMarkup("- ITEM", { createElement })).toMatchObject({
+	test("Creates valid React elements including $$typeof security key", () => {
+		expect(isValidElement(renderMarkup("abc"))).toBe(true);
+		expect(renderMarkup("abc")).toMatchObject({ type: "p", $$typeof });
+		expect(isValidElement(renderMarkup("- ITEM"))).toBe(true);
+		expect(renderMarkup("- ITEM")).toMatchObject({
 			type: "ul",
 			$$typeof,
 			props: {
 				children: [{ type: "li", $$typeof }],
 			},
 		});
-		expect(isValidElement(renderMarkup("```\nCODE", { createElement }))).toBe(true);
-		expect(renderMarkup("```\nCODE", { createElement })).toMatchObject({
+		expect(isValidElement(renderMarkup("```\nCODE"))).toBe(true);
+		expect(renderMarkup("```\nCODE")).toMatchObject({
 			type: "pre",
 			$$typeof,
 			props: {
@@ -576,9 +576,9 @@ describe("renderMarkup(): React compatibility", () => {
 		});
 	});
 	test("Generated elements can be rendered without error", () => {
-		expect(() => renderToString(renderMarkup("PARAGRAPH", { createElement }) as MarkupElement)).not.toThrow();
-		expect(() => renderToString(renderMarkup("- ITEM", { createElement }) as MarkupElement)).not.toThrow();
-		expect(() => renderToString(renderMarkup("```\nCODE", { createElement }) as MarkupElement)).not.toThrow();
+		expect(() => renderToString(renderMarkup("PARAGRAPH") as MarkupElement)).not.toThrow();
+		expect(() => renderToString(renderMarkup("- ITEM") as MarkupElement)).not.toThrow();
+		expect(() => renderToString(renderMarkup("```\nCODE") as MarkupElement)).not.toThrow();
 	});
 });
 describe("renderMarkup(): Weird cases", () => {

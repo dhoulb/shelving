@@ -6,6 +6,7 @@ export type MarkupElement = {
 	type: string;
 	key: string | number | null;
 	props: MarkupElementProps;
+	$$typeof?: symbol;
 };
 export type MarkupElementProps = {
 	[prop: string]: unknown;
@@ -53,14 +54,6 @@ export type MarkupOptions = {
 	readonly context: string | undefined;
 	/** The current list of parsing rules. */
 	readonly rules: Iterable<MarkupRule>;
-	/** Set the `$$typeof` property for any created JSX elements (used for React security, see https://github.com/facebook/react/pull/4832) */
-	/**
-	 * Set a function that post-processes any created elements
-	 * - React inserts a `$$typeof` security symbol into create elements (see https://github.com/facebook/react/pull/4832)
-	 * - If you don't include the `$$typeof` key then React will refuse to render the element.
-	 * - Set this option `React.createElement()` and that will happen automatically.
-	 */
-	readonly createElement?: MarkupElementCreator;
 	/** Set the `rel=""` property used for any links (e.g. `rel="nofollow ugc"`). */
 	readonly rel: string | undefined;
 	/** Valid URL schemes/protocols for links (including trailing commas), defaults to `[`http:`, `https:`]` */

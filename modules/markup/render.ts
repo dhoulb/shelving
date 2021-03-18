@@ -102,11 +102,13 @@ const renderNode = (node: MarkupNode, options: MarkupOptions): MarkupNode => {
 	if (typeof node === "string") return renderString(node, options);
 	if (node instanceof Array) return node.map(n => renderNode(n, options));
 	if (typeof node === "object" && node) {
+		node.$$typeof = REACT_SECURITY_SYMBOL; // Inject React security type. See https://github.com/facebook/react/pull/4832
 		if (node.props.children) node.props.children = renderNode(node.props.children, options);
-		return options.createElement ? options.createElement(node.type, { key: node.key, ...node.props }) : node;
+		return node;
 	}
 	return node;
 };
+const REACT_SECURITY_SYMBOL = Symbol.for("react.element");
 
 /**
  * Parse a text string as Markdownish syntax and render it as a JSX node.
