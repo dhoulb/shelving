@@ -84,7 +84,7 @@ const CONTROLS_MULTILINE = /(?![\t\n])[\x00-\x1F\x7F-\x9F]/g; // Control charact
  * - Convert spaces/separators/punctuation to " " single space (e.g. line breaks, non-breaking space, dashes, full stops).
  * - Convert to lowercase and trim excess whitespace.
  *
- * @example normalizeString("Dave-is REALLY excitable—apparently!!!    😂"); // Returns "dave is really excitable apparently"
+ * @example normalizeString("Däve-is REALLY éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
  */
 export const normalizeString = (value: string): string =>
 	sanitizeString(value).normalize("NFD").replace(STRIP, "").replace(SEPARATORS, " ").trim().toLowerCase();
