@@ -1,4 +1,4 @@
-import { toWords, escapeRegExp } from "../string";
+import { toWords, escapeRegExp, normalizeString } from "../string";
 import { ImmutableArray } from "../array";
 import { Matcher } from "../filter";
 import { isObject } from "../object";
@@ -37,7 +37,7 @@ const match: Matcher<unknown, RegExp> = (item, regexp) => {
 const prepWords = (query: string) => {
 	if (query !== preppedWordsQuery) {
 		preppedWordsQuery = query;
-		preppedWordsRegExps = toWords(query).map(toWordsRegExp);
+		preppedWordsRegExps = toWords(query).map(normalizeString).map(toWordsRegExp);
 	}
 	return preppedWordsRegExps;
 };

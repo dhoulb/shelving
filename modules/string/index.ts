@@ -1,7 +1,10 @@
+/* eslint-disable no-control-regex */
+
 import { formatDate, toYmd } from "../date";
 import { isObject } from "../object";
-import { ImmutableArray, isArray, MutableArray } from "../array";
+import { ImmutableArray, isArray, mapItems } from "../array";
 import { formatNumber } from "../number";
+import { SKIP } from "../constants";
 
 /** Is a value a string? */
 export const isString = (v: unknown): v is string => typeof v === "string";
@@ -50,22 +53,62 @@ export const toTitle = (value: unknown): string => {
 	return "Unknown";
 };
 
-/** Convert a string to a `kebab-case` slug. */
-export const toSlug = (value: string): string => value.toLowerCase().replace(TO_HYPHEN, "-").replace(TRIM_HYPHENS, "");
-const TO_HYPHEN = /[^a-z0-9]+/g; // Anything that isn't [a-z0-9] becomes a hyphen.
+/**
+ * Sanitize unexpected characters from a string by:
+ * - Stripping control characters.
+ * - Normalising all space characters to " " space.
+ *
+ * @param value The dirty input string.
+ * @param multiline If `true`, `\t` horizontal tabs and `\r` newlines are allowed (defaults to `false` which strips these characters).
+ * @returns The clean output string.
+ */
+export const sanitizeString = (value: string): string => value.replace(CONTROLS, "").replace(SPACES, " ");
+const SPACES = /\s/g; // All spaces.
+const CONTROLS = /[\x00-\x1F\x7F-\x9F]/g; // All control characters (`\x00`-`\x1F`, `\x7F`-`\x9F`)
+
+/**
+ * Sanitize a multiline string.
+ * - Like `sanitizeString()` but allos `\t` horizontal tab and `\r` newline.
+ */
+export const sanitizeLines = (value: string): string => value.replace(CONTROLS_MULTILINE, "").replace(SPACES_MULTILINE, "");
+const SPACES_MULTILINE = /(?![\t\n])\s/; // All spaces except `\r` horizontal tab and `\n` new line.
+const CONTROLS_MULTILINE = /(?![\t\n])[\x00-\x1F\x7F-\x9F]/g; // Control characters except `\t` horizontal tab and `\n` new line.
+
+/**
+ * Normalize a string so it can be compared to another string (free from upper/lower cases, symbols, punctuation).
+ *
+ * Does the following:
+ * - Santize the string to remove control characters.
+ * - Remove symbols (e.g. `$` dollar).
+ * - Remove marks (e.g. the umlout dots above `ö`).
+ * - Convert spaces/separators/punctuation to " " single space (e.g. line breaks, non-breaking space, dashes, full stops).
+ * - Convert to lowercase and trim excess whitespace.
+ *
+ * @example normalizeString("Dave-is REALLY excitable—apparently!!!    😂"); // Returns "dave is really excitable apparently"
+ */
+export const normalizeString = (value: string): string =>
+	sanitizeString(value).normalize("NFD").replace(STRIP, "").replace(SEPARATORS, " ").trim().toLowerCase();
+const STRIP = /[\p{Symbol}\p{Mark}]+/gu;
+const SEPARATORS = /[\s\p{Punctuation}]+/gu;
+
+/**
+ * Convert a string to a `kebab-case` URL slug.
+ * - Change all characters not in the range (a-z)
+ */
+export const toSlug = (value: string): string => value.toLowerCase().replace(NON_ALPHANUMERIC, "-").replace(TRIM_HYPHENS, "");
+const NON_ALPHANUMERIC = /[^a-z0-9]+/g; // Anything that isn't [a-z0-9] becomes a hyphen.
 const TRIM_HYPHENS = /^-+|-+$/g; // Trim excess hyphens at start and end.
 
 /**
  * Split a string into its separate words.
  * - Words enclosed "in quotes" are a single word.
+ * - Performs no processing on the words, so control chars, punctuation, symbols, and case are all preserved.
  *
- * @param value The input string.
+ * @param value The input string, e.g. `yellow dog   "Golden Retriever"`
+ * @returns Array of the found words, e.g. `["yellow", "dog", "Golden Retriever"
  */
-export const toWords = (value: string): ImmutableArray<string> => {
-	const words: MutableArray<string> = [];
-	for (const matches of value.matchAll(MATCH_WORD)) words.push(matches[1] || (matches[0] as string));
-	return words;
-};
+export const toWords = (value: string): ImmutableArray<string> => mapItems(value.matchAll(MATCH_WORD), toWord);
+const toWord = (matches: RegExpMatchArray) => matches[1] || matches[0] || SKIP;
 const MATCH_WORD = /[^\s"]+|"([^"]*)"/g;
 
 /**

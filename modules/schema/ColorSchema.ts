@@ -22,7 +22,7 @@ export class ColorSchema<T extends string> extends StringSchema<T> {
 	 * Clean a color string by removing characters that aren't 0-F.
 	 * Might be empty string if the string contained only invalid characters.
 	 */
-	clean(str: string): string {
+	sanitize(str: string): string {
 		const digits = str.toUpperCase().replace(R_STRIP, "");
 		return digits ? `#${digits.slice(0, 6)}` : "";
 	}

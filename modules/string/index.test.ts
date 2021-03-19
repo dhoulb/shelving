@@ -1,4 +1,4 @@
-import { toString, toTitle, toSlug, toWords } from "..";
+import { toString, toTitle, toSlug, toWords, normalizeString, sanitizeString, sanitizeLines } from "..";
 
 describe("toString()", () => {
 	test("toString(): Correct response for supported things", () => {
@@ -35,6 +35,27 @@ describe("toTitle()", () => {
 	test("toTitle(): Correct response for unsupported things", () => {
 		expect(toTitle({})).toBe("Unknown");
 		expect(toTitle(Symbol())).toBe("Unknown");
+	});
+});
+describe("sanitizeString()", () => {
+	test("sanitizeString(): Removes control characters", () => {
+		expect(sanitizeString("abc\0def")).toBe("abcdef");
+		expect(sanitizeString("a\x01b\x1Fcd\x7Fe\x9Ff")).toBe("abcdef");
+		expect(sanitizeString("a\rb\nc\fd\tef")).toBe("abcdef");
+	});
+});
+describe("sanitizeLines()", () => {
+	test("sanitizeLines(): Ignores tab and newline in multiline mode", () => {
+		expect(sanitizeLines("a\0b\tc\0d\ne\0f")).toBe("ab\tcd\nef");
+	});
+});
+describe("normalizeString()", () => {
+	test("normalizeString(): Works correctly", () => {
+		expect(normalizeString("ABC")).toBe("abc");
+		expect(normalizeString("    abc    ")).toBe("abc");
+		expect(normalizeString("aaa    bbb    ccc")).toBe("aaa bbb ccc");
+		expect(normalizeString("$^$%@£$ symbols £$%%£@^&@")).toBe("symbols"); // Symbols are removed.
+		expect(normalizeString("[aaa](bbb):ccc:")).toBe("aaa bbb ccc"); // Punctuation becomes spaces.
 	});
 });
 describe("toSlug()", () => {

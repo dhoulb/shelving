@@ -24,8 +24,8 @@ export class UrlSchema<T extends string> extends StringSchema<T> {
 		this.hosts = hosts;
 	}
 
-	clean(uncleanString: string): string {
-		const cleanString = super.clean(uncleanString);
+	sanitize(uncleanString: string): string {
+		const cleanString = super.sanitize(uncleanString);
 		if (!cleanString) return cleanString;
 
 		// Parse the URL using URL class (available in Node 10 and modern browsers).

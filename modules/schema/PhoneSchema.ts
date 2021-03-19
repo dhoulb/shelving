@@ -19,7 +19,7 @@ export class PhoneSchema<T extends string> extends StringSchema<T> {
 	 * Clean a phone number string by removing characters that aren't digits.
 	 * - Might be empty string if the string contained only invalid characters.
 	 */
-	clean(str: string): string {
+	sanitize(str: string): string {
 		// Strip characters that aren't 0-9 or `+` plus (including whitespace).
 		const digits = str.replace(/[^0-9+]/g, "");
 		// Allow `+` plus only if it's first character.

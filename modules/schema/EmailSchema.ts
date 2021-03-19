@@ -24,8 +24,8 @@ export class EmailSchema<T extends string> extends StringSchema<T> {
 	readonly match = R_MATCH;
 	readonly multiline = false;
 
-	clean(str: string): string {
-		const clean = super.clean(str);
+	sanitize(str: string): string {
+		const clean = super.sanitize(str);
 		return typeof clean === "string" ? clean.toLowerCase() : clean;
 	}
 }

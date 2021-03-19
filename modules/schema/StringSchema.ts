@@ -1,13 +1,8 @@
-/* eslint-disable no-control-regex */
-
 import { isObject } from "../object";
-import { toString } from "../string";
+import { sanitizeLines, sanitizeString, toString } from "../string";
 import { isArray } from "../array";
 import { InvalidFeedback } from "../feedback";
 import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
-
-const R_CONTROL_CHARS = /[\x00-\x1F\x7F-\x9F]/g; // Match all control characters (00-1F, 7F-9F).
-const R_CONTROL_CHARS_MULTILINE = /[\x00-\x08\x0B-\x1F\x7F-\x9F]/g; // Match all control characters (00-1F, 7F-9F) except `\x09` horizontal tab and `\x0A` line feed
 
 export type StringOptions<T extends string> = SchemaOptions & {
 	readonly value?: string;
@@ -16,6 +11,7 @@ export type StringOptions<T extends string> = SchemaOptions & {
 	readonly max?: number | null;
 	readonly match?: RegExp | null;
 	readonly multiline?: boolean;
+	readonly trim?: boolean;
 	readonly options?: ReadonlyArray<T> | { readonly [K in T]: string } | null;
 };
 
@@ -50,8 +46,9 @@ export class StringSchema<T extends string> extends Schema<T> {
 	readonly options: ReadonlyArray<T> | { readonly [K in T]?: string } | null;
 	readonly match: RegExp | null;
 	readonly multiline: boolean;
+	readonly trim: boolean;
 
-	constructor({ value = "", min = 0, max = null, options = null, match = null, multiline = false, ...rest }: StringOptions<T>) {
+	constructor({ value = "", min = 0, max = null, options = null, match = null, multiline = false, trim = true, ...rest }: StringOptions<T>) {
 		super(rest);
 		this.value = value;
 		this.min = min;
@@ -59,6 +56,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 		this.options = options;
 		this.match = match;
 		this.multiline = multiline;
+		this.trim = trim;
 	}
 
 	validate(unsafeValue: unknown = this.value): T {
@@ -67,7 +65,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 		if (!uncleanValue && unsafeValue) throw new InvalidFeedback("Must be string"); // If original input was truthy, we know its format must have been wrong.
 
 		// Clean.
-		const value = this.clean(uncleanValue);
+		const value = this.sanitize(uncleanValue);
 
 		// Empty?
 		if (!value.length) {
@@ -100,9 +98,14 @@ export class StringSchema<T extends string> extends Schema<T> {
 	 * Clean a string by removing characters that aren't digits.
 	 * Might be empty string if the string contained only invalid characters.
 	 */
-	clean(str: string): string {
-		// Trim and always strip `\r` — only strip `\n` if multiline is truthy.
-		return str.trim().replace(this.multiline ? R_CONTROL_CHARS_MULTILINE : R_CONTROL_CHARS, "");
+	sanitize(str: string): string {
+		if (this.multiline) {
+			const clean = sanitizeLines(str);
+			return this.trim ? clean.replace(/\s+$/gm, "") : clean;
+		} else {
+			const clean = sanitizeString(str);
+			return this.trim ? clean.trim() : clean;
+		}
 	}
 }
 
