@@ -112,21 +112,35 @@ describe("StringSchema", () => {
 	});
 	describe("options.multiline", () => {
 		test("Control characters are stripped", () => {
-			const schema1 = string({});
+			const schema1 = string({ trim: false });
 			const value1 =
 				"abc\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x7F\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9Fdef";
 			expect(schema1.validate(value1)).toBe("abcdef");
 		});
 		test("String without multiline strips tab and line feed newline", () => {
-			const schema1 = string({});
+			const schema1 = string({ trim: false });
 			expect(schema1.validate("abc\t\ndef")).toBe("abcdef");
 		});
-		test("String without multiline strips tab and line feed newline", () => {
-			const schema1 = string({ multiline: true });
-			expect(schema1.validate("abc\x09\x0A\x0B\x0Cdef")).toBe("abc\t\ndef");
+		test("String with multiline keeps tab and line feed newline", () => {
+			const schema1 = string({ multiline: true, trim: false });
+			expect(schema1.validate("ab\x09\x0Bcd\x0A\x0Cef")).toBe("ab\tcd\nef");
 			const value1 =
 				"abc\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x7F\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9Fdef";
 			expect(schema1.validate(value1)).toBe("abc\t\ndef");
+		});
+	});
+	describe("options.trim", () => {
+		test("String with trim trims the string", () => {
+			const schema1 = string({ trim: true });
+			expect(schema1.validate("    abc    ")).toBe("abc");
+			const schema2 = string({}); // true is the default.
+			expect(schema2.validate("    abc    ")).toBe("abc");
+		});
+		test("String with trim and multiline trims the ends of each line", () => {
+			const schema1 = string({ multiline: true, trim: true });
+			expect(schema1.validate("    aaa    \n    bbb    ")).toBe("    aaa\n    bbb");
+			const schema2 = string({ multiline: true }); // true is the default.
+			expect(schema2.validate("    aaa    \n    bbb    ")).toBe("    aaa\n    bbb");
 		});
 	});
 	describe("options.min", () => {

@@ -70,8 +70,8 @@ const CONTROLS = /[\x00-\x1F\x7F-\x9F]/g; // All control characters (`\x00`-`\x1
  * Sanitize a multiline string.
  * - Like `sanitizeString()` but allos `\t` horizontal tab and `\r` newline.
  */
-export const sanitizeLines = (value: string): string => value.replace(CONTROLS_MULTILINE, "").replace(SPACES_MULTILINE, "");
-const SPACES_MULTILINE = /(?![\t\n])\s/; // All spaces except `\r` horizontal tab and `\n` new line.
+export const sanitizeLines = (value: string): string => value.replace(CONTROLS_MULTILINE, "").replace(SPACES_MULTILINE, " ");
+const SPACES_MULTILINE = /(?![\t\n])\s/g; // All spaces except `\r` horizontal tab and `\n` new line.
 const CONTROLS_MULTILINE = /(?![\t\n])[\x00-\x1F\x7F-\x9F]/g; // Control characters except `\t` horizontal tab and `\n` new line.
 
 /**
