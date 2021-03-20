@@ -13,31 +13,17 @@ const BULLETS = "-*•+"; // Anything that can be a bullet (used for unordered l
 const UNORDERED = `[${BULLETS}] +`; // Anything that can be a bullet (used for unordered lists and horizontal rules).
 const ORDERED = "[0-9]+[.):] +"; // Number for a numbered list (e.g. `1.` or `2)` or `3:`)
 const WORDS = `\\S(?:[\\s\\S]*?\\S)?`; // Run of text that starts and ends with non-space characters (possibly multi-line).
-const SPACE_BEFORE = "\\s|^"; // Space (or end of string) must appear before something (DH: ideally this would use a lookbehind but Safari doesn't support them as of September 2020).
-const SPACE_AFTER = "(?=\\s|$)"; // Space (or end of string) must appear after something (uses a lookahead so it doesn't take up space).
 
 // Regular expressions.
 const REPLACE_INDENT = /^ {1,2}/gm;
 
 // Regular expression makers.
-const createMatcher = (regexp: RegExp): MarkupRuleMatcher => c => c.match(regexp);
+const createMatcher = (regexp: RegExp): MarkupRuleMatcher => content => content.match(regexp);
 const createBlockMatcher = (middle = BLOCK, end = BLOCK_END, start = BLOCK_START) => createMatcher(new RegExp(`(?:${start})${middle}(?:${end})`));
 const createLineMatcher = (middle = LINE, end = LINE_END, start = LINE_START) => createMatcher(new RegExp(`(?:${start})${middle}(?:${end})`));
-const createWrappedMatcher = (chars: string, middle = WORDS): MarkupRuleMatcher => {
-	const regexp = new RegExp(`(${SPACE_BEFORE})(${chars})(${middle})\\2${SPACE_AFTER}`);
-	return content => {
-		const matches = content.match(regexp);
-		if (matches && typeof matches.index === "number") {
-			const [all = "", spaces = "", , children = ""] = matches; // Skip chars
-			// Create a clean match array that doesn't have `SPACE_BEFORE` and `chars`
-			const clean: RegExpMatchArray = [
-				all.substr(spaces.length), // Adjust for `SPACE_BEFORE`
-				children,
-			];
-			clean.index = matches.index + spaces.length; // Adjust for `SPACE_BEFORE`
-			return clean;
-		}
-	};
+const createWrapMatcher = (chars: string, middle = WORDS): MarkupRuleMatcher => {
+	const regexp = new RegExp(`(${chars})(${middle})\\1`);
+	return content => content.match(regexp);
 };
 
 /**
@@ -178,11 +164,13 @@ const PARAGRAPH: MarkupRule = {
 const LINK: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
 	match: (content, { schemes }) => {
-		const matches = content.match(LINK_RULE);
+		const matches = content.match(MATCH_LINK);
 		if (matches && typeof matches.index === "number") {
 			try {
-				const url = new URL(matches[2] as string, window.location.href);
+				const [, title = "", href = ""] = matches;
+				const url = new URL(href, window.location.href);
 				if (url.protocol && schemes.includes(url.protocol)) {
+					matches[1] = title.trim();
 					matches[2] = url.href; // Use fixed URL from `new URL`
 					return matches;
 				}
@@ -191,11 +179,15 @@ const LINK: MarkupRule = {
 			}
 		}
 	},
-	render: ([, title = "", href = ""], { rel }) => ({ type: "a", key: null, props: { children: title || formatUrl(href), href, rel } }),
+	render: ([, title = "", href = ""], { rel }) => ({
+		type: href ? "a" : "span",
+		key: null,
+		props: { children: title || formatUrl(href), href: href || undefined, rel },
+	}),
 	contexts: ["inline", "list"],
 	childContext: "link",
 };
-const LINK_RULE = /\[ *([^\]]*?) *\]\( *([^)]*?) *\)/;
+const MATCH_LINK = /\[([^\]]*?)\]\(([^)]*?)\)/;
 
 /**
  * Autolinked URL starts with `http:` or `https:` and matches an unlimited number of non-space characters.
@@ -207,45 +199,37 @@ const LINK_RULE = /\[ *([^\]]*?) *\]\( *([^)]*?) *\)/;
 const AUTOLINK: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
 	match: (content, { schemes }) => {
-		const matches = content.match(URL_RULE);
+		const matches = content.match(MATCH_AUTOLINK);
 		if (matches && typeof matches.index === "number") {
-			const [all = "", spaces = "", href = "", title1 = "", title2 = ""] = matches;
 			try {
+				const [, href = "", title1 = "", title2 = ""] = matches;
 				const url = new URL(href, window.location.href);
 				if (url.protocol && schemes.includes(url.protocol)) {
-					// Create a clean match array that doesn't have `SPACE_BEFORE` and flips title and href into the order used by `linkRule.render`
-					const clean: RegExpMatchArray = [
-						all.substr(spaces.length), // Adjust for `SPACE_BEFORE`
-						title1 || title2, // Use either title.
-						url.href, // Use fixed URL from `new URL`
-					];
-					clean.index = matches.index + spaces.length; // Adjust for `SPACE_BEFORE`
-					return clean;
+					matches[1] = (title1 || title2).trim();
+					matches[2] = url.href;
+					return matches;
 				}
 			} catch {
 				// `new URL()` threw — no match.
 			}
 		}
 	},
-	// Use the same renderer as `linkRule`
-	render: LINK.render,
+	render: LINK.render, // Use the same renderer as `LINK`
 	contexts: ["inline", "list"],
 	childContext: "link",
 };
-const URL_ROUGH = "[a-zA-Z][a-zA-Z0-9-]*:\\S+"; // A rough entire URL (e.g. `http:abc` or `mailto:def`).
-const URL_RULE = new RegExp(`(${SPACE_BEFORE})(${URL_ROUGH})(?: +(?:\\( *([^)]*?) *\\)|\\[ *([^\\]]*?) *\\]))?`);
+const MATCH_AUTOLINK = /([a-z][a-z0-9-]*[a-z0-9]:\S+)(?: +(?:\(([^)]*?)\)|\[([^\]]*?)\]))?/i;
 
 /**
  * Inline code.
  * - Text surrounded by one or more "`" backtick tilde characters.
- * - Must be surrounded by space (e.g. ` \`abc\` `) — so formatting cannot be applied inside a word (e.g. `a\`b\`c`).
  * - Unlike strong/emphasis first or last character of the element can be space, (e.g. `- abc -` will not work).
  * - Closing characters must exactly match opening characters.
  * - Same as Markdown syntax.
  */
 const CODE: MarkupRule = {
-	match: createWrappedMatcher("`{1,}", BLOCK), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
-	render: ([, children]) => ({ type: "code", key: null, props: { children } }),
+	match: createWrapMatcher("`+", BLOCK), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
+	render: ([, , children]) => ({ type: "code", key: null, props: { children } }),
 	contexts: ["inline", "list"],
 	priority: 10, // Higher priority than other inlines so it matches first before e.g. `strong` or `em` (from CommonMark spec: "Code span backticks have higher precedence than any other inline constructs except HTML tags and autolinks.")
 };
@@ -259,8 +243,8 @@ const CODE: MarkupRule = {
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
 const STRONG: MarkupRule = {
-	match: createWrappedMatcher("\\*{1,}"),
-	render: ([, children]) => ({ type: "strong", key: null, props: { children } }),
+	match: createWrapMatcher("\\*+"),
+	render: ([, , children]) => ({ type: "strong", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
 };
@@ -268,14 +252,14 @@ const STRONG: MarkupRule = {
 /**
  * Inline emphasis.
  * - Inline text wrapped in one or more `_` underscore symbols.
- * - Must be surrounded by space (e.g. ` _abc_ `) — so formatting cannot be applied inside a word (e.g. `a_b_c`).
+ * - Works inside words (e.g. `magi_carp_carp`).
  * - Whitespace cannot be the first or last character of the element (e.g. `_ abc _` will not work).
  * - Closing characters must exactly match opening characters.
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
 const EM: MarkupRule = {
-	match: createWrappedMatcher("_{1,}"),
-	render: ([, children]) => ({ type: "em", key: null, props: { children } }),
+	match: createWrapMatcher("_+"),
+	render: ([, , children]) => ({ type: "em", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
 };
@@ -283,29 +267,29 @@ const EM: MarkupRule = {
 /**
  * Inserted text (`<ins>` tag),
  * - Inline text wrapped in one or more `+` pluses.
- * - Must be surrounded by space (e.g. ` +abc+ `) — so formatting cannot be applied inside a word (e.g. `a+b+c`).
+ * - Works inside words (e.g. `magi+karp+carp`).
  * - Whitespace cannot be the first or last character of the element (e.g. `+ abc +` will not work).
  * - Closing characters must exactly match opening characters.
  * - Markdown doesn't have this.
  */
 const INS: MarkupRule = {
-	match: createWrappedMatcher("\\+{1,}"),
-	render: ([, children]) => ({ type: "ins", key: null, props: { children } }),
+	match: createWrapMatcher("\\++"),
+	render: ([, , children]) => ({ type: "ins", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
 };
 
 /**
  * Deleted text (`<del>` tag),
- * - Inline text wrapped in one or more `-` hyphens.
- * - Must be surrounded by space (e.g. ` -abc- `) — so formatting cannot be applied inside a word (e.g. `a-b-c`).
- * - Whitespace cannot be the first or last character of the element (e.g. `- abc -` will not work).
+ * - Inline text wrapped in one or more `~` tildes.
+ * - Works inside words (e.g. `magi~karp~carp`).
+ * - Whitespace cannot be the first or last character of the element (e.g. `~ abc ~` will not work).
  * - Closing characters must exactly match opening characters.
  * - Markdown doesn't have this.
  */
 const DEL: MarkupRule = {
-	match: createWrappedMatcher("-{1,}"),
-	render: ([, children]) => ({ type: "del", key: null, props: { children } }),
+	match: createWrapMatcher("~+"),
+	render: ([, , children]) => ({ type: "del", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
 };
