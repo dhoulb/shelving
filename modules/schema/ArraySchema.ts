@@ -1,5 +1,6 @@
 import type { MutableObject } from "../object";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
+import { uniqueItems } from "../array";
 import { Schema, SchemaOptions } from "./Schema";
 
 export type ArrayOptions<T> = SchemaOptions & {
@@ -7,6 +8,7 @@ export type ArrayOptions<T> = SchemaOptions & {
 	readonly value?: ReadonlyArray<T>;
 	readonly min?: number;
 	readonly max?: number | null;
+	readonly unique?: boolean;
 	readonly required?: boolean;
 };
 
@@ -40,6 +42,9 @@ export type ArrayOptions<T> = SchemaOptions & {
 export class ArraySchema<T> extends Schema<ReadonlyArray<T>> {
 	readonly value: ReadonlyArray<T>;
 
+	/** Whether to de-duplicate items in the array (i.e. items in the array are unique). */
+	readonly unique: boolean;
+
 	/** Describe the minimum and maximum numbers of items. */
 	readonly min: number;
 	readonly max: number | null;
@@ -47,9 +52,10 @@ export class ArraySchema<T> extends Schema<ReadonlyArray<T>> {
 	/** Describe the format for _all_ items in the array. */
 	readonly items: Schema<T>;
 
-	constructor({ items, min = 0, max = null, value = [], ...rest }: ArrayOptions<T>) {
+	constructor({ items, unique = false, min = 0, max = null, value = [], ...rest }: ArrayOptions<T>) {
 		super(rest);
 		this.items = items;
+		this.unique = unique;
 		this.min = min;
 		this.max = max;
 		this.value = value;
@@ -69,12 +75,6 @@ export class ArraySchema<T> extends Schema<ReadonlyArray<T>> {
 			// We know this assertion is okay because we know the array is empty.
 			return unsafeArray as ReadonlyArray<T>;
 		}
-
-		// Array shorter than min length returns Invalid.
-		if (typeof this.min === "number" && unsafeArray.length < this.min) throw new InvalidFeedback(`Minimum ${this.min} items`);
-
-		// Array longer than max length returns Invalid.
-		if (typeof this.max === "number" && unsafeArray.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`);
 
 		// Check each item against `this.items`
 		let changed = false;
@@ -96,12 +96,22 @@ export class ArraySchema<T> extends Schema<ReadonlyArray<T>> {
 			}
 		}
 
+		// Possibly de-duplicate the array.
+		const finalArray = this.unique ? uniqueItems(safeArray) : safeArray;
+		if (finalArray !== safeArray) changed = true;
+
+		// Array shorter than min length returns Invalid.
+		if (typeof this.min === "number" && finalArray.length < this.min) throw new InvalidFeedback(`Minimum ${this.min} items`);
+
+		// Array longer than max length returns Invalid.
+		if (typeof this.max === "number" && finalArray.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`);
+
 		// If any Schema was invalid then throw.
 		if (invalid) throw new InvalidFeedback("Invalid items", details);
 
 		// Return the new array if it changed.
 		// We know this assertion is okay because if it wasn't, we would've returned Invalid.
-		return (changed ? safeArray : unsafeArray) as ReadonlyArray<T>;
+		return (changed ? finalArray : unsafeArray) as ReadonlyArray<T>;
 	}
 }
 

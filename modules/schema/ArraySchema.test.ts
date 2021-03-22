@@ -80,6 +80,24 @@ describe("ArraySchema", () => {
 			expect(schema.validate("")).toEqual([]);
 		});
 	});
+	describe("options.unique", () => {
+		test("Arrays with duplicate items are made unique", () => {
+			const schema = array({ items: string.required, unique: true });
+			expect(schema.validate(["a", "b", "c", "a"])).toEqual(["a", "b", "c"]);
+		});
+		test("Arrays without duplicate items return the same instance", () => {
+			const arr = ["a", "b", "c"];
+			const schema = array({ items: string.required, unique: true });
+			expect(schema.validate(arr)).toBe(arr);
+		});
+		test("Duplicates are allowed if unique is false", () => {
+			const arr = ["a", "b", "c", "a"];
+			const schema1 = array({ items: string.required }); // False is the default.
+			expect(schema1.validate(arr)).toBe(arr);
+			const schema2 = array({ items: string.required, unique: false });
+			expect(schema2.validate(arr)).toBe(arr);
+		});
+	});
 	describe("options.max", () => {
 		test("Arrays with more items than maximum are invalid", () => {
 			const schema = array({ max: 1, items: string.required });
