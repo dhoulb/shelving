@@ -7,7 +7,7 @@ import { SchemaOptions } from "./Schema";
 /** A set of named data schemas whose values are not known. */
 export type DataSchemas = ImmutableObject<DataSchema>;
 
-export type DataOptions<T extends Data, D extends DataSchemas, C extends DataSchemas> = Exclude<SchemaOptions, "required"> & {
+export type DataOptions<T extends Data, D extends DataSchemas, C extends DataSchemas> = Exclude<SchemaOptions<T>, "required"> & {
 	props: Validators<T>;
 	documents?: D;
 	collections?: C;

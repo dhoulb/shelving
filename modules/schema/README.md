@@ -280,6 +280,7 @@ All schema creator functions allow the following options (and may allow others t
 - `options.title: string = ""` - A title for the schema (for showing in a user-facing field).
 - `options.description: string = ""` - A description for the schema (for showing in a user-facing field).
 - `options.placeholder: string = ""` - A placeholder for the schema (for showing in a user-facing field).
+- `options.validator?: (value: T) => T` - Additional validation function that is called after all built in validation.
 
 ### `array()`
 
@@ -470,7 +471,8 @@ The `string()` creator function creates a `StringSchema` instance:
   1. An array of strings where each string is an allowed value.
   2. An object where each string key is an allowed value, and the corresponding value is a user-facing title for the option.
 - `options.match: RegExp = null` - A regular expression that the string must match.
-- `options.multiline: boolean = false` - Whether the string allows newlines or not
+- `options.multiline: boolean = false` - Whether the string allows newlines or not.
+- `options.sanitizer?: (value: string) => string` - Additional sanitization function that runs after initial string conversion (e.g. strip disallowed characters).
 
 ### `url()`
 

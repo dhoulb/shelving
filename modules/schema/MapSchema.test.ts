@@ -135,4 +135,21 @@ describe("MapSchema", () => {
 			}
 		});
 	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = map({
+				items: string.required,
+				validator: () => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate({ a: "A" });
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
+	});
 });

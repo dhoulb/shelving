@@ -4,7 +4,7 @@ import { Validator } from "./Validator";
  * SchemaOptions enforces types on the options bag that is passed into SchemaClass to create Schema.
  * - Most schemas will allow additional options but these ones are enforced.
  */
-export interface SchemaOptions {
+export interface SchemaOptions<T> {
 	/** Title of the schema, e.g. for using as the title of a corresponding field. */
 	readonly title?: string;
 	/** Description of the schema, e.g. for using as a description in a corresponding field. */
@@ -13,6 +13,8 @@ export interface SchemaOptions {
 	readonly placeholder?: string;
 	/** Is the schema required or not? */
 	readonly required?: boolean;
+	/** Additional validation function that is performed after everything else. */
+	readonly validator?: (value: T) => T;
 }
 
 /**
@@ -50,15 +52,22 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 	/** The default value for the schema. */
 	readonly value?: unknown;
 
-	constructor({ title = "", description = "", placeholder = "", required = false }: SchemaOptions) {
+	/** Additional validation function that is called after all built in validation. */
+	readonly validator?: (value: T) => T;
+
+	constructor({ title = "", description = "", placeholder = "", required = false, validator }: SchemaOptions<T>) {
 		this.title = title;
 		this.description = description;
 		this.placeholder = placeholder;
 		this.required = required;
+		this.validator = validator;
 	}
 
 	/** Every schema must implement a `validate()` method. */
-	abstract validate(unsafeValue?: unknown): T;
+	validate(unsafeValue: unknown = this.value): T {
+		// Call the schema's additional `validator()` function if one exists.
+		return this.validator ? this.validator(unsafeValue as T) : (unsafeValue as T);
+	}
 }
 
 /**

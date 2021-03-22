@@ -2,7 +2,7 @@ import { InvalidFeedback } from "../feedback";
 import { toDate, getYmd, PossibleOptionalDate } from "../date";
 import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
 
-export type DateOptions = SchemaOptions & {
+export type DateOptions<T extends string | null> = SchemaOptions<T> & {
 	readonly required?: boolean;
 	readonly value?: PossibleOptionalDate;
 	readonly min?: PossibleOptionalDate;
@@ -19,7 +19,7 @@ export class DateSchema<T extends string | null> extends Schema<T> {
 	readonly min: PossibleOptionalDate;
 	readonly max: PossibleOptionalDate;
 
-	constructor({ value = null, min = null, max = null, ...rest }: DateOptions) {
+	constructor({ value = null, min = null, max = null, ...rest }: DateOptions<T>) {
 		super(rest);
 		this.value = value;
 		this.min = min;
@@ -39,8 +39,7 @@ export class DateSchema<T extends string | null> extends Schema<T> {
 			if (this.required) throw new InvalidFeedback("Required");
 
 			// Return null.
-			// We know this type assertion is sound because `null` can never be returned if `this.required == true`.
-			return null as T;
+			return super.validate(null);
 		}
 
 		// Enforce min/max.
@@ -49,18 +48,18 @@ export class DateSchema<T extends string | null> extends Schema<T> {
 		const maxDate = toDate(this.max);
 		if (maxDate && value.getTime() > maxDate.getTime()) throw new InvalidFeedback(`Maximum ${maxDate.toLocaleDateString()}`);
 
-		// Return the valid date string.
-		return getYmd(value) as T;
+		// Return date string.
+		return super.validate(getYmd(value));
 	}
 }
 
 /** Shortcuts for DateSchema. */
 export const date: {
-	(options: DateOptions & RequiredOptions): DateSchema<string>;
-	(options: DateOptions): DateSchema<string | null>;
+	<T extends string | null>(options: DateOptions<T> & RequiredOptions): DateSchema<string>;
+	<T extends string | null>(options: DateOptions<T>): DateSchema<string | null>;
 	required: DateSchema<string>;
 	optional: DateSchema<string | null>;
-} = Object.assign(<T extends string | null>(options: DateOptions): DateSchema<T> => new DateSchema<T>(options), {
+} = Object.assign(<T extends string | null>(options: DateOptions<T>): DateSchema<T> => new DateSchema<T>(options), {
 	required: new DateSchema<string>({ required: true, value: "now" }),
 	optional: new DateSchema<string | null>({ required: false }),
 });

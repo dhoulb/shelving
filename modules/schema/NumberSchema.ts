@@ -5,7 +5,7 @@ import { isObject } from "../object";
 import { Unit, detectUnit, convertUnits } from "../units";
 import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
 
-export type NumberOptions<T extends number | null> = SchemaOptions & {
+export type NumberOptions<T extends number | null> = SchemaOptions<T> & {
 	readonly value?: number | null;
 	readonly unit?: Unit | null;
 	readonly required?: boolean;
@@ -54,8 +54,7 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 			if (this.required) throw new InvalidFeedback("Required");
 
 			// Return null.
-			// We know this type assertion is sound because `null` can never be returned if `this.required == true`.
-			return null as T;
+			return super.validate(null);
 		}
 
 		// Convert units, e.g. `10km` into the target dimension.
@@ -80,7 +79,7 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 		}
 
 		// Return number.
-		return value as T;
+		return super.validate(value);
 	}
 }
 

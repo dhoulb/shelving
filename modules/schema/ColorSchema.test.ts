@@ -101,4 +101,20 @@ describe("ColorSchema", () => {
 			expect(() => schema.validate(false)).toThrow(InvalidFeedback);
 		});
 	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = color({
+				validator: () => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate("#00ccff");
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
+	});
 });

@@ -153,4 +153,20 @@ describe("EmailSchema", () => {
 			expect(() => schema.validate("")).toThrow(InvalidFeedback);
 		});
 	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = email({
+				validator: () => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate("dave@test.com");
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
+	});
 });

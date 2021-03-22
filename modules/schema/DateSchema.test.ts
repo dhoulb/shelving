@@ -124,4 +124,20 @@ describe("DateSchema", () => {
 			expect(() => schema2.validate(1530586357001)).toThrow(InvalidFeedback);
 		});
 	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = date({
+				validator: () => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate("1997-04-04");
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
+	});
 });

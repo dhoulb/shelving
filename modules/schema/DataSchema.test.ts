@@ -1,4 +1,4 @@
-import { data, DataSchema, DataSchemas, number, Validator } from "..";
+import { data, DataSchema, DataSchemas, InvalidFeedback, number, Validator } from "..";
 
 // Tests.
 describe("DataSchema", () => {
@@ -10,5 +10,22 @@ describe("DataSchema", () => {
 		const dataPropSchema = dataSchema.props.num;
 		const dataPropType: Validator<number | null> = dataPropSchema;
 		const dataPropValue: number | null = dataPropSchema.validate(123);
+	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = data({
+				props: { num: number.optional },
+				validator: props => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate({ num: 123 });
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
 	});
 });

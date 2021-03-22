@@ -214,4 +214,20 @@ describe("NumberSchema", () => {
 			expect(() => schema.validate("200x")).toThrow(InvalidFeedback);
 		});
 	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = number({
+				validator: () => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate(123);
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
+	});
 });

@@ -3,7 +3,7 @@ import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Schema, SchemaOptions } from "./Schema";
 import { Validator } from "./Validator";
 
-export type MapOptions<T> = SchemaOptions & {
+export type MapOptions<T> = SchemaOptions<ImmutableObject<T>> & {
 	readonly items: Validator<T>;
 	readonly value?: ImmutableObject<T>;
 	readonly required?: boolean;
@@ -54,8 +54,7 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 			if (this.required) throw new InvalidFeedback("Required");
 
 			// Return empty object.
-			// We know this type assertion is sound because we know value is empty.
-			return unsafeObject as ImmutableObject<T>;
+			return super.validate(unsafeObject);
 		}
 
 		// Check min and max.
@@ -83,8 +82,8 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 		// If any Schema threw Invalid, return an Invalids.
 		if (invalid) throw new InvalidFeedback("Invalid items", details);
 
-		// Return immuatably (return output if changes were made, or exact input otherwise).
-		return (changed ? output : unsafeObject) as ImmutableObject<T>;
+		// Return object (same instance if no changes were made).
+		return super.validate(changed ? output : unsafeObject);
 	}
 }
 

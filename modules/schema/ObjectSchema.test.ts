@@ -193,4 +193,21 @@ describe("ObjectSchema", () => {
 			expect(schema.validate({ bool: true, str: undefined }, PARTIAL)).toEqual({ bool: true });
 		});
 	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = object({
+				props: { num: number.required },
+				validator: props => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate({ num: 123 });
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
+	});
 });

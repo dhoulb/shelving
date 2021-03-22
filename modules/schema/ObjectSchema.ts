@@ -4,7 +4,7 @@ import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Schema, SchemaOptions, RequiredOptions } from "./Schema";
 import { ValidateOptions, Validator, Validators } from "./Validator";
 
-export type ObjectOptions<T extends ImmutableObject | null> = SchemaOptions & {
+export type ObjectOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
 	readonly props: Validators<T & ImmutableObject>;
 	readonly value?: Partial<T> | null;
 	readonly required?: boolean;
@@ -45,8 +45,8 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> im
 			// Check requiredness.
 			if (this.required) throw new InvalidFeedback("Required");
 
-			// Return.
-			return null as T;
+			// Return empty object.
+			return super.validate(null);
 		}
 
 		// Validate the object against `this.props`
@@ -78,8 +78,8 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> im
 		// If any Schema threw Invalid, return an Invalids.
 		if (invalid) throw new InvalidFeedback("Invalid format", details);
 
-		// Return immuatably (return output if changes were made, or exact input otherwise).
-		return (changed ? safeObj : unsafeObj) as T;
+		// Return object (same instance if no changes were made).
+		return super.validate(changed ? safeObj : unsafeObj);
 	}
 }
 

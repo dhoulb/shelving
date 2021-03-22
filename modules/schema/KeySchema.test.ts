@@ -92,4 +92,20 @@ describe("KeySchema", () => {
 			expect(schema.validate(undefined)).toBe("abc");
 		});
 	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = key({
+				validator: () => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate("a");
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
+	});
 });

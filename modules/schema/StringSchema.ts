@@ -4,7 +4,7 @@ import { isArray } from "../array";
 import { InvalidFeedback } from "../feedback";
 import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
 
-export type StringOptions<T extends string> = SchemaOptions & {
+export type StringOptions<T extends string> = SchemaOptions<T> & {
 	readonly value?: string;
 	readonly required?: boolean;
 	readonly min?: number;
@@ -13,6 +13,7 @@ export type StringOptions<T extends string> = SchemaOptions & {
 	readonly multiline?: boolean;
 	readonly trim?: boolean;
 	readonly options?: ReadonlyArray<T> | { readonly [K in T]: string } | null;
+	readonly sanitizer?: (value: string) => string;
 };
 
 export type StringOptionOptions<T extends string> = {
@@ -47,8 +48,9 @@ export class StringSchema<T extends string> extends Schema<T> {
 	readonly match: RegExp | null;
 	readonly multiline: boolean;
 	readonly trim: boolean;
+	readonly sanitizer?: (value: string) => string;
 
-	constructor({ value = "", min = 0, max = null, options = null, match = null, multiline = false, trim = true, ...rest }: StringOptions<T>) {
+	constructor({ value = "", min = 0, max = null, options = null, match = null, multiline = false, trim = true, sanitizer, ...rest }: StringOptions<T>) {
 		super(rest);
 		this.value = value;
 		this.min = min;
@@ -57,6 +59,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 		this.match = match;
 		this.multiline = multiline;
 		this.trim = trim;
+		this.sanitizer = sanitizer;
 	}
 
 	validate(unsafeValue: unknown = this.value): T {
@@ -72,8 +75,8 @@ export class StringSchema<T extends string> extends Schema<T> {
 			// Check requiredness.
 			if (this.required) throw new InvalidFeedback("Required");
 
-			// Return.
-			return value as T;
+			// Return empty string.
+			return super.validate(value);
 		}
 
 		// Check max/min.
@@ -91,21 +94,24 @@ export class StringSchema<T extends string> extends Schema<T> {
 		if (this.match && !this.match.test(value)) throw new InvalidFeedback("Invalid format");
 
 		// Return string.
-		return value as T;
+		return super.validate(value);
 	}
 
 	/**
 	 * Clean a string by removing characters that aren't digits.
-	 * Might be empty string if the string contained only invalid characters.
+	 * - Might be empty string if the string contained only invalid characters.
+	 * - Applies `options.sanitizer` too (if it's set).
 	 */
 	sanitize(str: string): string {
+		let output = str;
 		if (this.multiline) {
-			const clean = sanitizeLines(str);
-			return this.trim ? clean.replace(/\s+$/gm, "") : clean;
+			output = sanitizeLines(str);
+			if (this.trim) output = output.replace(/\s+$/gm, "");
 		} else {
-			const clean = sanitizeString(str);
-			return this.trim ? clean.trim() : clean;
+			output = sanitizeString(str);
+			if (this.trim) output = output.trim();
 		}
+		return this.sanitizer ? this.sanitizer(output) : output;
 	}
 }
 

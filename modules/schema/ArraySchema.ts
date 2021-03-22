@@ -1,11 +1,11 @@
 import type { MutableObject } from "../object";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import { uniqueItems } from "../array";
+import { ImmutableArray, uniqueItems } from "../array";
 import { Schema, SchemaOptions } from "./Schema";
 
-export type ArrayOptions<T> = SchemaOptions & {
+export type ArrayOptions<T> = SchemaOptions<ImmutableArray<T>> & {
 	readonly items: Schema<T>;
-	readonly value?: ReadonlyArray<T>;
+	readonly value?: ImmutableArray<T>;
 	readonly min?: number;
 	readonly max?: number | null;
 	readonly unique?: boolean;
@@ -39,8 +39,8 @@ export type ArrayOptions<T> = SchemaOptions & {
  *  schema.validate(["a", "a"], schema); // Returns ["a", "a"]
  *  schema.validate(["a", null], schema); // Throws Invalids({ "1": Invalid('Must be a string') });
  */
-export class ArraySchema<T> extends Schema<ReadonlyArray<T>> {
-	readonly value: ReadonlyArray<T>;
+export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
+	readonly value: ImmutableArray<T>;
 
 	/** Whether to de-duplicate items in the array (i.e. items in the array are unique). */
 	readonly unique: boolean;
@@ -61,7 +61,7 @@ export class ArraySchema<T> extends Schema<ReadonlyArray<T>> {
 		this.value = value;
 	}
 
-	validate(unsafeValue: unknown = this.value): ReadonlyArray<T> {
+	validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
 		// Coorce.
 		const unsafeArray = !unsafeValue ? [] : unsafeValue instanceof Array ? unsafeValue : undefined;
 		if (!unsafeArray) throw new InvalidFeedback("Must be array");
@@ -72,8 +72,7 @@ export class ArraySchema<T> extends Schema<ReadonlyArray<T>> {
 			if (this.required) throw new InvalidFeedback("Required");
 
 			// Return empty array.
-			// We know this assertion is okay because we know the array is empty.
-			return unsafeArray as ReadonlyArray<T>;
+			return super.validate(unsafeArray);
 		}
 
 		// Check each item against `this.items`
@@ -109,9 +108,8 @@ export class ArraySchema<T> extends Schema<ReadonlyArray<T>> {
 		// If any Schema was invalid then throw.
 		if (invalid) throw new InvalidFeedback("Invalid items", details);
 
-		// Return the new array if it changed.
-		// We know this assertion is okay because if it wasn't, we would've returned Invalid.
-		return (changed ? finalArray : unsafeArray) as ReadonlyArray<T>;
+		// Return array (same instance if no changes were made).
+		return super.validate(changed ? finalArray : unsafeArray);
 	}
 }
 

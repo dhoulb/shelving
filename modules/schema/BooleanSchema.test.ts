@@ -85,4 +85,20 @@ describe("BooleanSchema()", () => {
 			expect(schema.validate(false)).toBe(false);
 		});
 	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = boolean({
+				validator: () => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate(true);
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
+	});
 });

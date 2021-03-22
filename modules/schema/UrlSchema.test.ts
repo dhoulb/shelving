@@ -268,4 +268,20 @@ describe("UrlSchema", () => {
 			expect(() => schema.validate("https://y.com/")).toThrow(InvalidFeedback);
 		});
 	});
+	describe("options.validator", () => {
+		test("Works correctly", () => {
+			const feedback = new InvalidFeedback("WORKS");
+			const schema = url({
+				validator: () => {
+					throw feedback;
+				},
+			});
+			try {
+				schema.validate("a");
+				expect(false).toBe(true);
+			} catch (thrown) {
+				expect(thrown).toBe(feedback);
+			}
+		});
+	});
 });
