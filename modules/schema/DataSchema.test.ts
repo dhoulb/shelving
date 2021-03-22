@@ -10,6 +10,9 @@ describe("DataSchema", () => {
 		const dataPropSchema = dataSchema.props.num;
 		const dataPropType: Validator<number | null> = dataPropSchema;
 		const dataPropValue: number | null = dataPropSchema.validate(123);
+
+		// Test empty `DataSchema` type.
+		const checkType: DataSchema = dataSchema;
 	});
 	describe("options.validator", () => {
 		test("Works correctly", () => {

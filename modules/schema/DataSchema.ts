@@ -1,14 +1,12 @@
 import { Data } from "../data";
 import { EmptyObject, ImmutableObject } from "../object";
-import { ObjectSchema } from "./ObjectSchema";
-import { Validators } from "./Validator";
-import { SchemaOptions } from "./Schema";
+import { ObjectOptions, ObjectSchema } from "./ObjectSchema";
+import type { Validators } from "./Validator";
 
 /** A set of named data schemas whose values are not known. */
 export type DataSchemas = ImmutableObject<DataSchema>;
 
-export type DataOptions<T extends Data, D extends DataSchemas, C extends DataSchemas> = Exclude<SchemaOptions<T>, "required"> & {
-	props: Validators<T>;
+export type DataOptions<T extends Data, D extends DataSchemas, C extends DataSchemas> = ObjectOptions<T> & {
 	documents?: D;
 	collections?: C;
 	value?: Partial<T>;
