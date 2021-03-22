@@ -298,6 +298,7 @@ The `array()` creator function creates a `ArraySchema` instance that can validat
 - `options.min: number = null` - The minimum number of items allowed.
 - `options.max: number = null` - The maximum number of items allowed.
 - `options.items: Schema` (required) - Schema that will be used to validate the contents of the array.
+- `options.unique: boolean` - Specify that items cannot appear in the array more than once (duplicates will be de-duped automatically).
 
 ### `boolean()`
 
