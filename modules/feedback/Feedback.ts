@@ -1,17 +1,19 @@
-import { ImmutableObject, mapProps, isObject } from "../object";
+import { AssertionError } from "../errors";
+import { ImmutableObject, mapProps, isObject, MutableObject } from "../object";
 
-const entryToString = ([key, feedback]: [string, Feedback]) => `- ${key}: ${feedback.toString().replace(/\n/g, "\n  ")}`;
-const messageToString = (feedback: Feedback) => feedback.message;
+const entryToString = ([key, feedback]: [string, Feedback | string]) => `- ${key}: ${feedback.toString().replace(/\n/g, "\n  ")}`;
+const messageToString = (feedback: Feedback | string) => (typeof feedback === "string" ? feedback : feedback.message);
 
 /** Possible status strings for feedback. */
-export type FeedbackStatus = "success" | "warning" | "error" | "invalid";
+export type FeedbackStatus = "" | "success" | "warning" | "error" | "invalid";
 
 /** Format we convert messages to in JSON. */
-type FeedbackJSON = {
+type FeedbackInterface = {
 	readonly status?: FeedbackStatus;
 	readonly message: string;
-	readonly details?: ImmutableObject<FeedbackJSON>;
+	readonly details?: ImmutableObject<FeedbackRaw>;
 };
+type FeedbackRaw = string | FeedbackInterface | Feedback;
 
 /**
  * The `Feedback` class represents a message that should be shown to the user.
@@ -25,9 +27,38 @@ type FeedbackJSON = {
  * @param message String message that is safe to show to users.
  * @param details Set of other `Feedback` instances describing the issue in further detail.
  */
-export class Feedback implements FeedbackJSON {
+export class Feedback implements FeedbackInterface {
+	static STATUS: FeedbackStatus = "";
+
+	/** Create a new Feedback instance from anything that can be converted to it. */
+	static create(raw: FeedbackRaw): Feedback {
+		if (raw instanceof Feedback) return raw;
+		const obj = isObject(raw) ? raw : { message: raw };
+		if (isObject(obj) && typeof obj.message === "string") {
+			const { status = this.STATUS, message, details = undefined } = obj;
+			switch (status) {
+				case "success":
+					return new SuccessFeedback(message, details);
+				case "warning":
+					return new WarningFeedback(message, details);
+				case "error":
+					return new ErrorFeedback(message, details);
+				case "invalid":
+					return new InvalidFeedback(message, details);
+				case "":
+					return new Feedback(message, details);
+			}
+		}
+		throw new AssertionError("Invalid feedback format", raw);
+	}
+
+	/** Parse a JSON string and create a new Feedback from it. */
+	static parse(json: string): Feedback {
+		return this.create(JSON.parse(json) as FeedbackRaw);
+	}
+
 	/** Optional status string for this feedback. */
-	readonly status?: FeedbackStatus;
+	readonly status?: FeedbackStatus = (this.constructor as typeof Feedback).STATUS;
 
 	/** String feedback message that is safe to show to a user. */
 	readonly message: string;
@@ -35,9 +66,13 @@ export class Feedback implements FeedbackJSON {
 	/** Nested sub-feedback instances providing deeper feedback. */
 	readonly details?: ImmutableObject<Feedback>;
 
-	constructor(message: string, details?: ImmutableObject<Feedback>) {
+	constructor(message: string, details?: ImmutableObject<FeedbackRaw>) {
 		this.message = message;
-		this.details = details;
+		if (details) {
+			const feedbacks: MutableObject<Feedback> = {};
+			for (const [key, detail] of Object.entries(details)) feedbacks[key] = (this.constructor as typeof Feedback).create(detail);
+			this.details = feedbacks;
+		}
 	}
 
 	/** Convert the children of this `Feedback` into an object in `{ name: message }` format. */
@@ -59,55 +94,26 @@ export class Feedback implements FeedbackJSON {
 		const messages = this.details ? Object.entries(this.details).map(entryToString).join("\n") : "";
 		return `${this.message}${messages ? `\n${messages}` : ""}`;
 	}
-
-	/** Create a Feedback from its corresponding JSON format. */
-	static fromJSON(json: unknown): Feedback {
-		// If it's a string try to parse it as JSON.
-		const obj = typeof json === "string" ? JSON.parse(json) : json;
-
-		// See if it's an object now.
-		if (isFeedbackJSON(obj)) {
-			const { status, message, details: unhydratedDetails } = obj;
-			const details = unhydratedDetails ? mapProps(unhydratedDetails, Feedback.fromJSON) : undefined;
-
-			// If this status is a registered type, create the correct new class.
-			switch (status) {
-				case "success":
-					return new SuccessFeedback(message, details);
-				case "warning":
-					return new WarningFeedback(message, details);
-				case "error":
-					return new ErrorFeedback(message, details);
-				case "invalid":
-					return new InvalidFeedback(message, details);
-				case undefined:
-					return new Feedback(message, details);
-			}
-		}
-
-		// Anything else is impossible.
-		throw new SyntaxError("Feedback.fromJSON(): Incorrect JSON format");
-	}
 }
 
 /** Specific type of `Feedback` to indicate success (something went right!). */
 export class SuccessFeedback extends Feedback {
-	readonly status: FeedbackStatus = "success";
+	static STATUS: FeedbackStatus = "success";
 }
 
 /** Specific type of `Feedback` to indicate warning (something might go wrong soon). */
 export class WarningFeedback extends Feedback {
-	readonly status: FeedbackStatus = "warning";
+	static STATUS: FeedbackStatus = "warning";
 }
 
 /** Specific type of `Feedback` to indicate an error (something went wrong). */
 export class ErrorFeedback extends Feedback {
-	readonly status: FeedbackStatus = "error";
+	static STATUS: FeedbackStatus = "error";
 }
 
 /** Specific type of `Feedback` returned from `validate()` when a value is invalid. */
 export class InvalidFeedback extends ErrorFeedback {
-	readonly status: FeedbackStatus = "invalid";
+	static STATUS: FeedbackStatus = "invalid";
 }
 
 /**
@@ -115,9 +121,3 @@ export class InvalidFeedback extends ErrorFeedback {
  * - This is a TypeScript assertion function, so if this function returns `true` the type is also asserted to be a `Schema`.
  */
 export const isFeedback = <T extends Feedback>(v: T | unknown): v is T => v instanceof Feedback;
-
-/**
- * Is an unknown value a `FeedbackJSON` instance?
- */
-export const isFeedbackJSON = (v: unknown): v is FeedbackJSON =>
-	isObject(v) && typeof v.message === "string" && (v.details === undefined || isObject(v.details));
