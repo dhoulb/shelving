@@ -52,11 +52,6 @@ export class Feedback implements FeedbackInterface {
 		throw new AssertionError("Invalid feedback format", raw);
 	}
 
-	/** Parse a JSON string and create a new Feedback from it. */
-	static parse(json: string): Feedback {
-		return this.create(JSON.parse(json) as FeedbackRaw);
-	}
-
 	/** Optional status string for this feedback. */
 	readonly status?: FeedbackStatus = (this.constructor as typeof Feedback).STATUS;
 

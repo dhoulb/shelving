@@ -104,19 +104,5 @@ describe("Feedback", () => {
 			expect(() => Feedback.create({ message: 123 } as any)).toThrow(AssertionError); // Message not a string.
 			expect(() => Feedback.create({ message: "A", status: "NOPE" } as any)).toThrow(AssertionError); // Status not a valid status.
 		});
-		test(".parse(): Works correctly", () => {
-			expect(Feedback.parse(JSON.stringify(json0))).toEqual(feedback0);
-			expect(Feedback.parse(JSON.stringify(json1))).toEqual(feedback1);
-			expect(Feedback.parse(JSON.stringify(json2))).toEqual(feedback2);
-			expect(Feedback.parse(JSON.stringify(json3))).toEqual(feedback3);
-			expect(Feedback.parse(JSON.stringify(json4))).toEqual(feedback4);
-		});
-		test(".parse(): Errors correctly", () => {
-			expect(() => Feedback.parse("abc")).toThrow(SyntaxError); // Invalid JSON stirng.
-			expect(() => Feedback.parse("{")).toThrow(SyntaxError); // Invalid JSON stirng.
-			expect(() => Feedback.parse(123 as any)).toThrow(AssertionError); // Invalid JSON stirng.
-			expect(() => Feedback.parse(`{"message":123}`)).toThrow(AssertionError); // Message not a string.
-			expect(() => Feedback.parse(`{"message":"A","status":"NOPE"}`)).toThrow(AssertionError); // Status not a valid status.
-		});
 	});
 });
