@@ -27,8 +27,11 @@ export type ResolvableArray<T = unknown> = readonly Resolvable<T>[];
  */
 export type ArrayType<T extends ImmutableArray> = T[number];
 
-/** Is a value an array? */
+/** Is an unknown value an array? */
 export const isArray = <T extends ImmutableArray>(v: T | unknown): v is T => v instanceof Array;
+
+/** Is an unknown value an item in a specified array? */
+export const isItem = <T extends unknown>(arr: ImmutableArray<T>, item: T | unknown): item is T => arr.includes(item as T);
 
 /**
  * Break an array into equal sized chunks (last chunk might be smaller).
