@@ -34,19 +34,21 @@ export class Feedback implements FeedbackInterface {
 	static create(raw: FeedbackRaw): Feedback {
 		if (raw instanceof Feedback) return raw;
 		const obj = isObject(raw) ? raw : { message: raw };
-		if (isObject(obj) && typeof obj.message === "string") {
+		if (isObject(obj)) {
 			const { status = this.STATUS, message, details = undefined } = obj;
-			switch (status) {
-				case "success":
-					return new SuccessFeedback(message, details);
-				case "warning":
-					return new WarningFeedback(message, details);
-				case "error":
-					return new ErrorFeedback(message, details);
-				case "invalid":
-					return new InvalidFeedback(message, details);
-				case "":
-					return new Feedback(message, details);
+			if (typeof message === "string") {
+				switch (status) {
+					case "success":
+						return new SuccessFeedback(message, details);
+					case "warning":
+						return new WarningFeedback(message, details);
+					case "error":
+						return new ErrorFeedback(message, details);
+					case "invalid":
+						return new InvalidFeedback(message, details);
+					case "":
+						return new Feedback(message, details);
+				}
 			}
 		}
 		throw new AssertionError("Invalid feedback format", raw);
