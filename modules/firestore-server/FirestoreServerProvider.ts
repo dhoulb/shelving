@@ -4,10 +4,24 @@ import type {
 	WhereFilterOp as FirestoreWhereFilterOp,
 	OrderByDirection as FirestoreOrderByDirection,
 	Query as FirestoreQuery,
-	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
+	QuerySnapshot as FirestoreQuerySnapshot,
 	DocumentSnapshot as FirestoreDocumentSnapshot,
 } from "@google-cloud/firestore";
-import { MutableObject, Data, Result, Results, Provider, Document, Collection, Operator, Stream, isObject, DocumentRequiredError, Direction } from "..";
+import {
+	DocumentRequiredError,
+	isObject,
+	MutableObject,
+	Data,
+	Result,
+	Results,
+	Provider,
+	Document,
+	Collection,
+	Operator,
+	Stream,
+	Direction,
+	ImmutableObject,
+} from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the ID and the entire path of the document. `__id__` is just ID.
@@ -40,8 +54,12 @@ const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filte
 	return query;
 };
 
-/** Extract the correct value from a document snapshot. */
-const collectionResult = <T extends Data>(ref: Collection<T>, snapshot: FirestoreQueryDocumentSnapshot): T => ref.validate(snapshot.data());
+/** Validate a set of results from a collection snapshot. */
+const collectionResults = <T extends Data>(ref: Collection<T>, snapshot: FirestoreQuerySnapshot): Results<T> => {
+	const results: MutableObject<ImmutableObject> = {};
+	for (const s of snapshot.docs) results[s.id] = s.data();
+	return ref.validateResults(results);
+};
 
 /** Extract the correct value from a document snapshot. */
 const documentResult = <T extends Data>(ref: Document<T>, snapshot: FirestoreDocumentSnapshot): Result<T> => {
@@ -103,9 +121,7 @@ class FirestoreServerProvider implements Provider {
 
 	async getCollection<T extends Data>(ref: Collection<T>): Promise<Results<T>> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
-		const value: MutableObject<T> = {};
-		for (const s of snapshot.docs) value[s.id] = collectionResult(ref, s);
-		return value;
+		return collectionResults(ref, snapshot);
 	}
 
 	// Count the documents in the collection.
@@ -118,11 +134,7 @@ class FirestoreServerProvider implements Provider {
 
 	onCollection<T extends Data>(ref: Collection<T>, stream: Stream<Results<T>>): () => void {
 		return buildQuery(this.firestore, ref).onSnapshot(
-			snapshot => {
-				const next: MutableObject<T> = {};
-				for (const s of snapshot.docs) next[s.id] = collectionResult(ref, s);
-				stream.next(next);
-			},
+			snapshot => stream.next(collectionResults(ref, snapshot)),
 			error => stream.error(error),
 		);
 	}

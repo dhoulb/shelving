@@ -107,6 +107,11 @@ export interface Collection<T extends Data = Data, D extends DataSchemas = DataS
 	 */
 	delete(options?: DeleteOptions): Promise<void>;
 
+	/**
+	 * Validate a set of results and throw a single `ValidationError` that shows all found errors.
+	 */
+	validateResults(results: ImmutableObject<ImmutableObject>): Results<T>;
+
 	// Must implement toString()
 	toString(): string;
 

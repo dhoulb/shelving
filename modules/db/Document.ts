@@ -1,5 +1,5 @@
 import type { ImmutableObject } from "../object";
-import type { Data, Result } from "../data";
+import type { Data, Result, Results } from "../data";
 import type { DataSchemas, DataSchema, Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import type { Observer, Subscribable } from "../observe";
@@ -118,6 +118,11 @@ export interface Document<T extends Data = Data, D extends DataSchemas = DataSch
 	 * @returns The change that was made to the document (most likely `undefined`, unless this document's provider has different behaviour).
 	 */
 	delete(options?: DeleteOptions): Promise<void>;
+
+	/**
+	 * Validate a set of results and throw a single `ValidationError` that shows all found errors.
+	 */
+	validateResults(results: ImmutableObject<ImmutableObject>): Results<T>;
 
 	// Must implement toString()
 	toString(): string;

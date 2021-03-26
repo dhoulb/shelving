@@ -2,10 +2,10 @@ import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber 
 import type { Entry } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
 import type { Observer } from "../observe";
-import { EmptyObject, getFirstProp, getLastProp, ImmutableObject } from "../object";
+import { EmptyObject, getFirstProp, getLastProp, ImmutableObject, MutableObject } from "../object";
 import { DataSchemas, DataSchema, Validator, ValidateOptions, PARTIAL } from "../schema";
 import { Data, Result, Results } from "../data";
-import { isFeedback } from "../feedback";
+import { InvalidFeedback, isFeedback } from "../feedback";
 import { Query } from "../query";
 import { RequiredError, ValidationError } from "../errors";
 import { Stream } from "../stream";
@@ -75,6 +75,22 @@ abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas
 			if (isFeedback(thrown)) throw new ValidationError(`Invalid ${options?.partial ? "partial data" : "data"} for: "${this.path}"`, thrown, data);
 			else throw thrown;
 		}
+	}
+	validateResults(results: ImmutableObject<ImmutableObject>): Results<T> {
+		const validated: MutableObject<T> = {};
+		const invalids: MutableObject<InvalidFeedback> = {};
+		let invalid = false;
+		for (const [id, data] of Object.entries(results)) {
+			try {
+				validated[id] = this.schema.validate(data);
+			} catch (thrown) {
+				if (isFeedback(thrown)) invalids[id] = thrown;
+				else throw thrown;
+				invalid = true;
+			}
+		}
+		if (invalid) throw new ValidationError(`Invalid documents for: "${this.path}"`, new InvalidFeedback("Invalid documents", invalids), results);
+		return validated;
 	}
 	toString(): string {
 		return this.path;
