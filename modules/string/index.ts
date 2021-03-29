@@ -95,8 +95,10 @@ const SEPARATORS = /[\s\p{Punctuation}]+/gu;
  * Convert a string to a `kebab-case` URL slug.
  * - Change all characters not in the range (a-z)
  */
-export const toSlug = (value: string): string => value.toLowerCase().replace(NON_ALPHANUMERIC, "-").replace(TRIM_HYPHENS, "");
-const NON_ALPHANUMERIC = /[^a-z0-9]+/g; // Anything that isn't [a-z0-9] becomes a hyphen.
+export const toSlug = (value: string): string =>
+	value.toLowerCase().normalize("NFD").replace(TO_HYPHEN, "-").replace(NON_ALPHANUMERIC, "").replace(TRIM_HYPHENS, "");
+const TO_HYPHEN = /[\s-_]+/g; // Anything that is a space becomes a hyphen.
+const NON_ALPHANUMERIC = /[^a-z0-9-]+/gu; // Anything that isn't [a-z0-9-] gets removed.
 const TRIM_HYPHENS = /^-+|-+$/g; // Trim excess hyphens at start and end.
 
 /**
