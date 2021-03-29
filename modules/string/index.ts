@@ -79,25 +79,26 @@ const CONTROLS_MULTILINE = /(?![\t\n])[\x00-\x1F\x7F-\x9F]/g; // Control charact
  *
  * Does the following:
  * - Santize the string to remove control characters.
- * - Remove symbols (e.g. `$` dollar).
+ * - Remove symbols (e.g. `$` dollar) and punctuation (e.g. `"` double quote).
  * - Remove marks (e.g. the umlout dots above `ö`).
- * - Convert spaces/separators/punctuation to " " single space (e.g. line breaks, non-breaking space, dashes, full stops).
+ * - Convert spaces/separators to " " single space (e.g. line breaks, non-breaking space).
  * - Convert to lowercase and trim excess whitespace.
  *
  * @example normalizeString("Däve-is REALLY éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
  */
 export const normalizeString = (value: string): string =>
 	sanitizeString(value).normalize("NFD").replace(STRIP, "").replace(SEPARATORS, " ").trim().toLowerCase();
-const STRIP = /[\p{Symbol}\p{Mark}]+/gu;
-const SEPARATORS = /[\s\p{Punctuation}]+/gu;
+const STRIP = /[\p{Symbol}\p{Mark}\p{Punctuation}]+/gu;
+const SEPARATORS = /\s+/gu;
 
 /**
  * Convert a string to a `kebab-case` URL slug.
- * - Change all characters not in the range (a-z)
+ * - Remove any characters not in the range `[a-z0-9-]`
+ * - Change all spaces/separators/hyphens/dashes/underscores to `-` single hyphen.
  */
 export const toSlug = (value: string): string =>
 	value.toLowerCase().normalize("NFD").replace(TO_HYPHEN, "-").replace(NON_ALPHANUMERIC, "").replace(TRIM_HYPHENS, "");
-const TO_HYPHEN = /[\s-_]+/g; // Anything that is a space becomes a hyphen.
+const TO_HYPHEN = /[\s-–—_]+/g; // Anything that is a space becomes a hyphen.
 const NON_ALPHANUMERIC = /[^a-z0-9-]+/gu; // Anything that isn't [a-z0-9-] gets removed.
 const TRIM_HYPHENS = /^-+|-+$/g; // Trim excess hyphens at start and end.
 
