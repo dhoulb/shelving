@@ -1,4 +1,5 @@
 import { Arguments, AsyncFetcher, serialise, Source, Subscriptor } from "..";
+import { LOADING } from "../constants";
 import { useSubscribe } from "./useSubscribe";
 
 /**
@@ -11,7 +12,7 @@ import { useSubscribe } from "./useSubscribe";
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  */
 export function useSource<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge?: number): T {
-	const source = Source.get<T>(`${serialise(fetcher)}:${serialise(deps)}`);
+	const source = Source.get<T>(`${serialise(fetcher)}:${serialise(deps)}`, LOADING);
 	useSubscribe(source);
 	source.fetchFrom(fetcher, deps, maxAge);
 	return source.value;
@@ -28,7 +29,7 @@ export function useSource<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, d
  * @throws `RequiredError` when document does not exist.
  */
 export function useSourceData<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge?: number): Exclude<T, undefined> {
-	const source = Source.get<T>(`${serialise(fetcher)}:${serialise(deps)}`);
+	const source = Source.get<T>(`${serialise(fetcher)}:${serialise(deps)}`, LOADING);
 	useSubscribe(source);
 	source.fetchFrom(fetcher, deps, maxAge);
 	return source.data;
@@ -45,7 +46,7 @@ export function useSourceData<T, D extends Arguments>(fetcher: AsyncFetcher<T, D
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  */
 export const useSourceSubscribe = <T, D extends Arguments>(subscriptor: Subscriptor<T, D>, deps: D): T => {
-	const source = Source.get<T>(`${serialise(subscriptor)}:${serialise(deps)}`);
+	const source = Source.get<T>(`${serialise(subscriptor)}:${serialise(deps)}`, LOADING);
 	useSubscribe(source.active); // Use `source.active` not `source` directly to indicate we need an active subscription.
 	source.subscribeTo(subscriptor, deps);
 	return source.value;

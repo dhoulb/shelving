@@ -1,4 +1,4 @@
-import { Data, Result, Document, DocumentRequiredError, Observer, Source } from "..";
+import { Data, Result, Document, DocumentRequiredError, Observer, Source, LOADING } from "..";
 import { useSubscribe } from "./useSubscribe";
 
 // Getters.
@@ -15,7 +15,7 @@ const getDocumentSubscription = <T extends Data>(observer: Observer<Result<T>>, 
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  */
 export const useDocument = <T extends Data>(document: Document<T> | undefined, maxAge?: number): Result<T> => {
-	const source = Source.get<Result<T>>(`document:${document ? document.toString() : "undefined"}`);
+	const source = Source.get<Result<T>>(`document:${document ? document.toString() : "undefined"}`, document ? LOADING : undefined);
 	useSubscribe(source);
 	if (document) source.fetchFrom<[Document<T>]>(getDocumentResult, [document], maxAge);
 	return source.value;
@@ -45,7 +45,7 @@ export const useDocumentData = <T extends Data>(document: Document<T>, maxAge?: 
  * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
  */
 export const useDocumentSubscribe = <T extends Data>(document: Document<T> | undefined): Result<T> => {
-	const source = Source.get<Result<T>>(`document:${document ? document.toString() : "undefined"}`);
+	const source = Source.get<Result<T>>(`document:${document ? document.toString() : "undefined"}`, document ? LOADING : undefined);
 	useSubscribe(source.active); // Use `source.subscribers` not `source` directly to indicate this is a subscription.
 	if (document) source.subscribeTo<[Document<T>]>(getDocumentSubscription, [document]);
 	return source.value;

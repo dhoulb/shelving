@@ -25,8 +25,10 @@ export class Source<T> extends State<T> {
 	 * Get a named source from the source cache.
 	 * @todo This might need garbage collection in future.
 	 */
-	static get<X>(key: string, initial: X | typeof LOADING = LOADING): Source<X> {
-		return cache[key] || new Source<X>(key, initial);
+	static get<X = undefined>(key: string): Source<X | undefined>;
+	static get<X>(key: string, source: X | Promise<X> | typeof LOADING): Source<X>;
+	static get(key: string, initial: unknown | Promise<unknown> | typeof LOADING = undefined): Source<unknown> {
+		return cache[key] || new Source<unknown>(key, initial);
 	}
 
 	private _unsubscribe?: Unsubscriber; // Function to call to stop the active subscription.
@@ -41,7 +43,7 @@ export class Source<T> extends State<T> {
 	readonly key: string;
 
 	// Private; use `Source.get()` instead.
-	private constructor(key: string, initial: T | typeof LOADING) {
+	private constructor(key: string, initial: T | Promise<T> | typeof LOADING) {
 		super(initial);
 		this.key = key;
 		cache[key] = this;
@@ -132,7 +134,3 @@ export class Source<T> extends State<T> {
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cache: { [fingerprint: string]: Source<any> } = {};
-
-// Initialise a couple of values.
-Source.get("undefined", undefined);
-Source.get("empty", {});

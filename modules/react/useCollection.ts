@@ -1,4 +1,4 @@
-import { Data, Results, Unsubscriber, Collection, Observer, Source } from "..";
+import { Data, Results, Unsubscriber, Collection, Observer, Source, LOADING } from "..";
 import { useSubscribe } from "./useSubscribe";
 
 // Getters.
@@ -16,7 +16,7 @@ const getCollectionSubscription = <T extends Data>(observer: Observer<Results<T>
  * @throws Unknown error when something goes wrong.
  */
 export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAge?: number): Results<T> => {
-	const source = Source.get<Results<T>>(`collection:${collection ? collection.toString() : "empty"}`);
+	const source = Source.get<Results<T>>(`collection:${collection ? collection.toString() : "undefined"}`, collection ? LOADING : {});
 	useSubscribe(source);
 	if (collection) source.fetchFrom<[Collection<T>]>(getCollectionResults, [collection], maxAge);
 	return source.value;
@@ -32,7 +32,7 @@ export const useCollection = <T extends Data>(collection: Collection<T> | undefi
  * @throws Unknown error when something goes wrong.
  */
 export const useCollectionSubscribe = <T extends Data>(collection: Collection<T> | undefined): Results<T> => {
-	const source = Source.get<Results<T>>(`collection:${collection ? collection.toString() : "empty"}`);
+	const source = Source.get<Results<T>>(`collection:${collection ? collection.toString() : "undefined"}`, collection ? LOADING : {});
 	useSubscribe(source.active); // Use `source.subscribers` not `source` directly to indicate this is a subscription.
 	if (collection) source.subscribeTo<[Collection<T>]>(getCollectionSubscription, [collection]);
 	return source.value;
