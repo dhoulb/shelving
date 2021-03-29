@@ -63,7 +63,7 @@ export const toTitle = (value: unknown): string => {
  * @returns The clean output string.
  */
 export const sanitizeString = (value: string): string => value.replace(CONTROLS, "").replace(SPACES, " ");
-const SPACES = /\s/g; // All spaces.
+const SPACES = /\s/g; // Sanitize zero-width spacers etc.
 const CONTROLS = /[\x00-\x1F\x7F-\x9F]/g; // All control characters (`\x00`-`\x1F`, `\x7F`-`\x9F`)
 
 /**
@@ -89,7 +89,7 @@ const CONTROLS_MULTILINE = /(?![\t\n])[\x00-\x1F\x7F-\x9F]/g; // Control charact
 export const normalizeString = (value: string): string =>
 	sanitizeString(value).normalize("NFD").replace(STRIP, "").replace(SEPARATORS, " ").trim().toLowerCase();
 const STRIP = /[\p{Symbol}\p{Mark}\p{Punctuation}]+/gu;
-const SEPARATORS = /\s+/gu;
+const SEPARATORS = /\s+/g;
 
 /**
  * Convert a string to a `kebab-case` URL slug.
