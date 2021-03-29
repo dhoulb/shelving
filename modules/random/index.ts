@@ -15,7 +15,7 @@ const CHARS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", 
  * Get a random item from an array.
  * - Assumes the array is fully filled and doesn't have any missing items between zero and `arr.length`
  */
-export const randomItem = <T>(arr: ImmutableArray<T>): T => arr[randomNumber(0, arr.length - 1)] as T;
+export const randomItem = <T>(arr: ImmutableArray<T>): T => arr[randomInteger(0, arr.length - 1)] as T;
 
-/** Generate a random number between two numbers. */
-export const randomNumber = (min: number, max: number): number => Math.random() * (max - min) + min;
+/** Generate a random integer between two numbers. */
+export const randomInteger = (min: number, max: number): number => Math.round(Math.random() * (max - min) + min);
