@@ -140,11 +140,11 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		return this._provider.onDocument<T>(this, stream);
 	}
 	set(unvalidatedData: ImmutableObject, options?: SetOptions): Promise<void> {
-		const data: T = !options?.validate ? (unvalidatedData as T) : this.validate(unvalidatedData);
+		const data: T = options?.validate === false ? (unvalidatedData as T) : this.validate(unvalidatedData);
 		return this._provider.setDocument<T>(this, data);
 	}
 	update(unvalidatedPartial: ImmutableObject, options?: SetOptions): Promise<void> {
-		const partial: Partial<T> = !options?.validate ? (unvalidatedPartial as Partial<T>) : this.validate(unvalidatedPartial, PARTIAL);
+		const partial: Partial<T> = options?.validate === false ? (unvalidatedPartial as Partial<T>) : this.validate(unvalidatedPartial, PARTIAL);
 		if (options?.required === false) return this._provider.updateDocument<T>(this, partial).catch(dontThrowRequiredError);
 		return this._provider.updateDocument<T>(this, partial);
 	}
@@ -196,12 +196,12 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 		return this._provider.getCollection<T>(this.limit(1)).then(getLastProp);
 	}
 	async set(unvalidatedData: T, options?: SetOptions): Promise<void> {
-		const data = !options?.validate ? (unvalidatedData as T) : this.validate(unvalidatedData);
+		const data = options?.validate === false ? (unvalidatedData as T) : this.validate(unvalidatedData);
 		const ids = await this.ids;
 		await Promise.all(ids.map(id => this.doc(id).set(data, SET_UNVALIDATED)));
 	}
 	async update(unvalidatedPartial: Partial<T>, options?: SetOptions): Promise<void> {
-		const partial = !options?.validate ? (unvalidatedPartial as Partial<T>) : this.validate(unvalidatedPartial, PARTIAL);
+		const partial = options?.validate === false ? (unvalidatedPartial as Partial<T>) : this.validate(unvalidatedPartial, PARTIAL);
 		const ids = await this.ids;
 		await Promise.all(ids.map(id => this.doc(id).update(partial, SET_UNVALIDATED)));
 	}
