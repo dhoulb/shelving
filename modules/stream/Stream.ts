@@ -52,7 +52,8 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		return this._subscribers.length;
 	}
 
-	constructor(source?: Subscribable<T>) {
+	// Protected to encourage `Stream.create()`
+	protected constructor(source?: Subscribable<T>) {
 		if (source) {
 			try {
 				this._cleanup = source.subscribe(this);

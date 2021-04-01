@@ -90,7 +90,8 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 		return value as Exclude<T, undefined>;
 	}
 
-	constructor(source: Subscribable<T> | Promise<T | typeof SKIP> | T | typeof SKIP | typeof LOADING) {
+	// Protected to encourage `State.create()`
+	protected constructor(source: Subscribable<T> | Promise<T | typeof SKIP> | T | typeof SKIP | typeof LOADING) {
 		super(isSubscribable(source) ? source : undefined);
 		if (isSubscribable(source)) {
 			// If source is a State, subscribe it.

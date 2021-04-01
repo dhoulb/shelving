@@ -135,7 +135,7 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		return this.get(GET_REQUIRED);
 	}
 	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		const stream = new Stream<Result<T>>();
+		const stream = Stream.create<Result<T>>();
 		stream.subscribe(next, error, complete);
 		return this._provider.onDocument<T>(this, stream);
 	}
@@ -185,7 +185,7 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 		return this._provider.getCollection<T>(this).then(Object.keys);
 	}
 	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		const stream = new Stream<Results<T>>();
+		const stream = Stream.create<Results<T>>();
 		stream.subscribe(next, error, complete);
 		return this._provider.onCollection<T>(this, stream);
 	}

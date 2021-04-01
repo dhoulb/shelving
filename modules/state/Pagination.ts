@@ -40,6 +40,7 @@ export class Pagination<T extends Data> extends State<PaginationValue<T>> {
 	/** Sorts of the collection's query. */
 	readonly sorts: Sorts<T>;
 
+	// Protected to encourage `Pagination.for()`
 	protected constructor(collection: Collection<T>, initial?: Results<T>) {
 		const { slice, sorts } = collection.query;
 		assert(slice.limit, slice.limit); // Collection must have a limit to paginate (otherwise you'd just get the result normally).

@@ -37,12 +37,12 @@ export class Source<T> extends State<T> {
 	 * Derive a state that consumers who need realtime active data can subscribe to.
 	 * - This is separate so we can count the number of live subscribers vs components that just need the fetched data.
 	 */
-	readonly active: Stream<T> = new Stream(this);
+	readonly active: Stream<T> = Stream.create(this);
 
 	/** String key that this . */
 	readonly key: string;
 
-	// Private; use `Source.get()` instead.
+	// Private to encourage `Source.get()`
 	private constructor(key: string, initial: T | Promise<T> | typeof LOADING) {
 		super(initial);
 		this.key = key;
