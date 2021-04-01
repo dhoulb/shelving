@@ -31,15 +31,8 @@ export interface RequiredOptions {
  * - `validate()` returns `Invalid` if value was not valid.
  */
 export abstract class Schema<T = unknown> implements Validator<T> {
-	/**
-	 * Type for this schema.
-	 * - Primarily so we can use this as a type, e.g. `typeof schema.type`
-	 * - The value returns is the result of validating `this.value`
-	 * - Will probably throw `InvalidFeedback` if fields are missing but required.
-	 */
-	get type(): T {
-		return this.validate(this.value);
-	}
+	/** Expose the `T` internal type of this schema. */
+	readonly TYPE: T = undefined as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	/** Title, e.g. for showing in fields. */
 	readonly title: string = "";
@@ -74,7 +67,7 @@ export abstract class Schema<T = unknown> implements Validator<T> {
  * Convert a `Schema` into its resulting type (i.e. what will be returned from `validate()`)
  * @param X A `Schema` instance to extract the type from.
  */
-export type SchemaType<X extends Schema> = X["type"];
+export type SchemaType<X extends Schema> = X["TYPE"];
 
 /**
  * Is an unknown value a `Schema` instance?
