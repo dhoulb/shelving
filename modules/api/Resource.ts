@@ -1,4 +1,6 @@
-import type { Arguments } from "../function";
+import { isFeedback } from "../feedback";
+import { ValidationError } from "../errors";
+import type { Arguments, AsyncFetcher } from "../function";
 import { UNDEFINED_VALIDATOR, Validator } from "../schema";
 
 /**
@@ -38,13 +40,23 @@ export class Resource<P, R> {
 	 * - Validates the payload (before dispatching).
 	 * - Validates the result (after dispatching).
 	 *
+	 * @param resource A resource function corresponding to the type of this resource.
 	 * @param payload The payload to send to the resource (validated against the payload validator).
 	 * @param ...args Any additional arguments to send to the resource.
 	 *
 	 * @returns The result returned from the resource (validated against the result validator).
-	 * @throws InvalidFeedback If the payload or result could not be validated.
+	 *
+	 * @throws InvalidFeedback If the payload could not be validated.
+	 * @throws unknown Anything the function itself throws is thrown.
+	 * @throws ValidationError If the result could not be validated.
 	 */
-	async call<A extends Arguments>(dispatcher: (payload: P, ...args: A) => R, payload: unknown, ...args: A): Promise<R> {
-		return this.result.validate(await dispatcher(this.payload.validate(payload), ...args));
+	async call<A extends Arguments>(resource: AsyncFetcher<R, [P, ...A]>, payload: unknown, ...args: A): Promise<R> {
+		const result = await resource(this.payload.validate(payload), ...args);
+		try {
+			return this.result.validate(result);
+		} catch (thrown) {
+			if (isFeedback(thrown)) throw new ValidationError("Resource returned invalid result", thrown, result);
+			throw thrown;
+		}
 	}
 }
