@@ -1,35 +1,50 @@
 import type { Arguments } from "../function";
-import type { Validator } from "../schema";
+import { UNDEFINED_VALIDATOR, Validator } from "../schema";
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions..
- * Multiple resources are composed into a complete API for an app.
  *
- * Resource is defined by the following properties:
- *
- * @param auth Whether an auth token must be supplied to run this function.
  * @param payload The `Validator` the payload must conform to (defaults to `undefined` if not specified).
- * @param ...args Any additional arguments to send to the resource.
  * @param returns The `Validator` the function's returned value must conform to (defaults to `undefined` if not specified).
  */
-export interface Resource<P, R> {
+export class Resource<P, R> {
+	static create<X, Y>(payload: Validator<X>, result: Validator<Y>): Resource<X, Y>;
+	static create<Y>(payload: undefined, result: Y): Resource<undefined, Y>;
+	static create<X>(payload: Validator<X>, result?: undefined): Resource<X, undefined>;
+	static create(payload?: undefined, result?: undefined): Resource<undefined, undefined>;
+	static create(payload: Validator<unknown> = UNDEFINED_VALIDATOR, result: Validator<unknown> = UNDEFINED_VALIDATOR): Resource<unknown, unknown> {
+		return new Resource(payload, result);
+	}
+
 	/** Expose the `P` internal payload type of this resource. */
-	readonly PAYLOAD: P;
+	readonly PAYLOAD: P = undefined as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
 	/** Expose the `R` internal result type of this resource. */
-	readonly RESULT: R;
+	readonly RESULT: R = undefined as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	/** Payload validator. */
 	readonly payload: Validator<P>;
+
 	/** Result validator. */
 	readonly result: Validator<R>;
 
-	resolve<A extends Arguments>(resolver: ResourceResolver<P, unknown, A>, payload: unknown, ...args: A): Promise<R>;
-}
+	protected constructor(payload: Validator<P>, result: Validator<R>) {
+		this.payload = payload;
+		this.result = result;
+	}
 
-/**
- * Function that resolves a resource by dispatching its payload and return its return type.
- * @param payload The payload for the resource.
- * @param ...args Any additional arguments to send to the resolver.
- * @returns The result of the resource.
- */
-export type ResourceResolver<P, R, A extends Arguments> = (payload: P, ...args: A) => R;
+	/**
+	 * Call a resource of this type, with a payload, and return the (async) result.
+	 * - Validates the payload (before dispatching).
+	 * - Validates the result (after dispatching).
+	 *
+	 * @param payload The payload to send to the resource (validated against the payload validator).
+	 * @param ...args Any additional arguments to send to the resource.
+	 *
+	 * @returns The result returned from the resource (validated against the result validator).
+	 * @throws InvalidFeedback If the payload or result could not be validated.
+	 */
+	async call<A extends Arguments>(dispatcher: (payload: P, ...args: A) => R, payload: unknown, ...args: A): Promise<R> {
+		return this.result.validate(await dispatcher(this.payload.validate(payload), ...args));
+	}
+}
