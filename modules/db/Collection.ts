@@ -9,7 +9,7 @@ import type { Document } from "./Document";
 import type { DeleteOptions, SetOptions } from "./options";
 
 /** Get a `Collection` for a `DataSchema`. */
-export type SchemaCollection<S extends DataSchema> = Collection<S["type"], S["documents"], S["collections"]>;
+export type SchemaCollection<S extends DataSchema> = Collection<S["TYPE"], S["documents"], S["collections"]>;
 
 /**
  * Collection reference: Allows a set of documents in a collection to be read or deleted from a database.

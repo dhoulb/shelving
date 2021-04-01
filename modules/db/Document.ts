@@ -7,7 +7,7 @@ import type { Collection } from "./Collection";
 import type { DeleteOptions, GetOptions, SetOptions } from "./options";
 
 /** Get a `Document` for a given `DataSchema`. */
-export type SchemaDocument<S extends DataSchema> = Document<S["type"], S["documents"], S["collections"]>;
+export type SchemaDocument<S extends DataSchema> = Document<S["TYPE"], S["documents"], S["collections"]>;
 
 /** Type for a document instance. */
 export interface Document<T extends Data = Data, D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas>
@@ -30,14 +30,14 @@ export interface Document<T extends Data = Data, D extends DataSchemas = DataSch
 	 * @param name Document name, e.g. `options`
 	 * @example `db.collection("dogs").doc("fido").doc("options").get()`
 	 */
-	doc<K extends keyof D>(name: K): Document<D[K]["type"], D[K]["documents"], D[K]["collections"]>;
+	doc<K extends keyof D>(name: K): Document<D[K]["TYPE"], D[K]["documents"], D[K]["collections"]>;
 
 	/**
 	 * Get a `Collection` instance for a named subcollection of this reference.
 	 * @param name Collection name, e.g. `puppies`
 	 * @example `db.collection("dogs").doc("fido").collection("puppies").get()`
 	 */
-	collection<K extends keyof C>(name: K): Collection<C[K]["type"], C[K]["documents"], C[K]["collections"]>;
+	collection<K extends keyof C>(name: K): Collection<C[K]["TYPE"], C[K]["documents"], C[K]["collections"]>;
 
 	/**
 	 * Get the result of this document.

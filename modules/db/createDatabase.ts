@@ -50,11 +50,11 @@ class Database<D extends DataSchemas, C extends DataSchemas> implements Database
 		this.collections = collections;
 		this._provider = provider;
 	}
-	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["type"], D[K]["documents"], D[K]["collections"]> {
-		return new Document<D[K]["type"], D[K]["documents"], D[K]["collections"]>(this.documents[name], this._provider, DOCUMENT_PATH, name as string);
+	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["TYPE"], D[K]["documents"], D[K]["collections"]> {
+		return new Document<D[K]["TYPE"], D[K]["documents"], D[K]["collections"]>(this.documents[name], this._provider, DOCUMENT_PATH, name as string);
 	}
-	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["type"], C[K]["documents"], C[K]["collections"]> {
-		return new Collection<C[K]["type"], C[K]["documents"], C[K]["collections"]>(this.collections[name], this._provider, name as string);
+	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["TYPE"], C[K]["documents"], C[K]["collections"]> {
+		return new Collection<C[K]["TYPE"], C[K]["documents"], C[K]["collections"]>(this.collections[name], this._provider, name as string);
 	}
 }
 
@@ -107,16 +107,16 @@ class Document<T extends Data, D extends DataSchemas, C extends DataSchemas> ext
 		this.id = id;
 	}
 
-	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["type"], D[K]["documents"], D[K]["collections"]> {
-		return new Document<D[K]["type"], D[K]["documents"], D[K]["collections"]>(
+	doc<K extends keyof D>(name: K): DocumentInterface<D[K]["TYPE"], D[K]["documents"], D[K]["collections"]> {
+		return new Document<D[K]["TYPE"], D[K]["documents"], D[K]["collections"]>(
 			this.schema.documents[name],
 			this._provider,
 			`${this.path}/${DOCUMENT_PATH}`,
 			name.toString(),
 		);
 	}
-	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["type"], C[K]["documents"], C[K]["collections"]> {
-		return new Collection<C[K]["type"], C[K]["documents"], C[K]["collections"]>(this.schema.collections[name], this._provider, `${this.path}/${name}`);
+	collection<K extends keyof C>(name: K): CollectionInterface<C[K]["TYPE"], C[K]["documents"], C[K]["collections"]> {
+		return new Collection<C[K]["TYPE"], C[K]["documents"], C[K]["collections"]>(this.schema.collections[name], this._provider, `${this.path}/${name}`);
 	}
 	get(options: GetOptions & { required: true }): Promise<T>;
 	get(options?: GetOptions): Promise<Result<T>>;

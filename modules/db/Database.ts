@@ -21,12 +21,12 @@ export interface Database<D extends DataSchemas = DataSchemas, C extends DataSch
 	 * @param name Document name, e.g. `options`
 	 * @example `db.collection("dogs").doc("fido").doc("options").get()`
 	 */
-	doc<K extends keyof D>(name: K): Document<D[K]["type"], D[K]["documents"], D[K]["collections"]>;
+	doc<K extends keyof D>(name: K): Document<D[K]["TYPE"], D[K]["documents"], D[K]["collections"]>;
 
 	/**
 	 * Get a `Collection` ref for a named subcollection of this document.
 	 * @param name Collection name, e.g. `puppies`
 	 * @example `db.collection("dogs").doc("fido").collection("puppies").get()`
 	 */
-	collection<K extends keyof C>(name: K): Collection<C[K]["type"], C[K]["documents"], C[K]["collections"]>;
+	collection<K extends keyof C>(name: K): Collection<C[K]["TYPE"], C[K]["documents"], C[K]["collections"]>;
 }
