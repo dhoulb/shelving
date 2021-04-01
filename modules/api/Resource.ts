@@ -13,10 +13,16 @@ import type { Validator } from "../schema";
  * @param returns The `Validator` the function's returned value must conform to (defaults to `undefined` if not specified).
  */
 export interface Resource<P, R> {
+	/** Expose the `P` internal payload type of this resource. */
 	readonly PAYLOAD: P;
+	/** Expose the `R` internal result type of this resource. */
 	readonly RESULT: R;
+
+	/** Payload validator. */
 	readonly payload: Validator<P>;
+	/** Result validator. */
 	readonly result: Validator<R>;
+
 	resolve<A extends Arguments>(resolver: ResourceResolver<P, unknown, A>, payload: unknown, ...args: A): Promise<R>;
 }
 
