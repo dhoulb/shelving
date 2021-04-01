@@ -61,7 +61,7 @@ describe("normalizeString()", () => {
 		expect(normalizeString("    abc    ")).toBe("abc");
 		expect(normalizeString("aaa    bbb    ccc")).toBe("aaa bbb ccc");
 		expect(normalizeString("$^$%@£$ symbols £$%%£@^&@")).toBe("symbols"); // Symbols are removed.
-		expect(normalizeString("[aaa](bbb):ccc:")).toBe("aaa bbb ccc"); // Punctuation becomes spaces.
+		expect(normalizeString("[aaa](bbb):ccc:")).toBe("aaabbbccc"); // Punctuation becomes spaces.
 	});
 });
 describe("toSlug()", () => {
