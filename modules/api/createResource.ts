@@ -15,6 +15,12 @@ export function createResource(
 }
 
 class Resource<P, R> implements ResourceInterface<P, R> {
+	get PAYLOAD() {
+		return this.payload.validate();
+	}
+	get RESULT() {
+		return this.result.validate();
+	}
 	readonly payload: Validator<P>;
 	readonly result: Validator<R>;
 	constructor(payload: Validator<P>, result: Validator<R>) {
