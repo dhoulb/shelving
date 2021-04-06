@@ -33,10 +33,7 @@ export function serialise(value: unknown): string {
 		const props = Object.entries(value).map(serialiseEntry).sort();
 		return `{${type ? `"$type":${escapeString(type)}${props.length ? "," : ""}` : ""}${props.join(",")}}`;
 	}
-	throw new AssertionError("toJSON(): Unknown value", value);
+	throw new AssertionError("serialize(): Unknown value", value);
 }
-const serialiseEntry = ([key, value]: [string, unknown]) => {
-	const prop = serialise(value);
-	return prop ? `${escapeString(key)}:${prop}` : "";
-};
+const serialiseEntry = ([key, value]: [string, unknown]) => `${escapeString(key)}:${serialise(value)}`;
 const escapeString = (str: string): string => `"${str.replace(R_QUOTE, `\\"`)}"`;

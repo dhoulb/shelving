@@ -65,7 +65,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 	validate(unsafeValue: unknown = this.value): T {
 		// Coorce.
 		const uncleanValue = toString(unsafeValue);
-		if (!uncleanValue && unsafeValue) throw new InvalidFeedback("Must be string"); // If original input was truthy, we know its format must have been wrong.
+		if (!uncleanValue && unsafeValue) throw new InvalidFeedback("Must be string", { value: unsafeValue }); // If original input was truthy, we know its format must have been wrong.
 
 		// Clean.
 		const value = this.sanitize(uncleanValue);
@@ -73,25 +73,25 @@ export class StringSchema<T extends string> extends Schema<T> {
 		// Empty?
 		if (!value.length) {
 			// Check requiredness.
-			if (this.required) throw new InvalidFeedback("Required");
+			if (this.required) throw new InvalidFeedback("Required", { value: uncleanValue });
 
 			// Return empty string.
 			return super.validate(value);
 		}
 
 		// Check max/min.
-		if (typeof this.max === "number" && value.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} characters`);
-		if (typeof this.min === "number" && value.length < this.min) throw new InvalidFeedback(`Minimum ${this.min} characters`);
+		if (typeof this.max === "number" && value.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} characters`, { value });
+		if (typeof this.min === "number" && value.length < this.min) throw new InvalidFeedback(`Minimum ${this.min} characters`, { value });
 
 		// Check enum format.
 		if (isArray(this.options)) {
-			if (!this.options.includes(value as T)) throw new InvalidFeedback("Unknown value");
+			if (!this.options.includes(value as T)) throw new InvalidFeedback("Unknown value", { value });
 		} else if (isObject(this.options)) {
-			if (!Object.keys(this.options).includes(value.toString())) throw new InvalidFeedback("Unknown value");
+			if (!Object.keys(this.options).includes(value.toString())) throw new InvalidFeedback("Unknown value", { value });
 		}
 
 		// Check RegExp match format.
-		if (this.match && !this.match.test(value)) throw new InvalidFeedback("Invalid format");
+		if (this.match && !this.match.test(value)) throw new InvalidFeedback("Invalid format", { value });
 
 		// Return string.
 		return super.validate(value);

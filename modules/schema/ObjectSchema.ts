@@ -40,10 +40,10 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> im
 		// Null means 'no object'
 		if (unsafeObj === null) {
 			// If original input was truthy, we know its format must have been wrong.
-			if (unsafeValue) throw new InvalidFeedback("Must be object");
+			if (unsafeValue) throw new InvalidFeedback("Must be object", { unsafeValue });
 
 			// Check requiredness.
-			if (this.required) throw new InvalidFeedback("Required");
+			if (this.required) throw new InvalidFeedback("Required", { unsafeValue });
 
 			// Return empty object.
 			return super.validate(null);

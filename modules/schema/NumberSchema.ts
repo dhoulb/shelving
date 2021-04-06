@@ -48,10 +48,10 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 		// Null means 'no number'
 		if (value === null) {
 			// If original input was truthy, we know its format must have been wrong.
-			if (unsafeValue) throw new InvalidFeedback("Must be number");
+			if (unsafeValue) throw new InvalidFeedback("Must be number", { value: unsafeValue });
 
 			// Check requiredness.
-			if (this.required) throw new InvalidFeedback("Required");
+			if (this.required) throw new InvalidFeedback("Required", { value: unsafeValue });
 
 			// Return null.
 			return super.validate(null);
@@ -60,22 +60,22 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 		// Convert units, e.g. `10km` into the target dimension.
 		if (this.unit && typeof value === "number" && typeof unsafeValue === "string") {
 			const detectedUnit = detectUnit(unsafeValue, this.unit);
-			if (!detectedUnit) throw new InvalidFeedback("Invalid distance");
+			if (!detectedUnit) throw new InvalidFeedback("Invalid unit", { value: unsafeValue });
 			if (detectedUnit !== this.unit) value = convertUnits(value, detectedUnit, this.unit);
 		}
 
 		// Check min and max.
-		if (typeof this.max === "number" && value > this.max) throw new InvalidFeedback(`Maximum ${this.max}`);
-		if (typeof this.min === "number" && value < this.min) throw new InvalidFeedback(`Minimum ${this.min}`);
+		if (typeof this.max === "number" && value > this.max) throw new InvalidFeedback(`Maximum ${this.max}`, { value });
+		if (typeof this.min === "number" && value < this.min) throw new InvalidFeedback(`Minimum ${this.min}`, { value });
 
 		// Round to step.
 		if (typeof this.step === "number") value = roundNumber(value, this.step);
 
 		// Check options format.
 		if (isArray(this.options)) {
-			if (!this.options.includes(value)) throw new InvalidFeedback("Unknown value");
+			if (!this.options.includes(value)) throw new InvalidFeedback("Unknown value", { value });
 		} else if (isObject(this.options)) {
-			if (!Object.keys(this.options).includes(value.toString())) throw new InvalidFeedback("Unknown value");
+			if (!Object.keys(this.options).includes(value.toString())) throw new InvalidFeedback("Unknown value", { value });
 		}
 
 		// Return number.

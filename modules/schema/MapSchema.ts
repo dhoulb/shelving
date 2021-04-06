@@ -42,7 +42,7 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 	validate(unsafeValue: unknown = this.value): ImmutableObject<T> {
 		// Coorce.
 		const unsafeObject = !unsafeValue ? {} : isObject(unsafeValue) ? unsafeValue : undefined;
-		if (!unsafeObject) throw new InvalidFeedback("Must be object");
+		if (!unsafeObject) throw new InvalidFeedback("Must be object", { value: unsafeValue });
 
 		// Get number of properties.
 		const entries = Object.entries(unsafeObject);
@@ -51,15 +51,15 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 		// Has contents?
 		if (!length) {
 			// Check requiredness.
-			if (this.required) throw new InvalidFeedback("Required");
+			if (this.required) throw new InvalidFeedback("Required", unsafeObject);
 
 			// Return empty object.
 			return super.validate(unsafeObject);
 		}
 
 		// Check min and max.
-		if (typeof this.min === "number" && length < this.min) throw new InvalidFeedback(`Minimum ${this.min} items`);
-		if (typeof this.max === "number" && length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`);
+		if (typeof this.min === "number" && length < this.min) throw new InvalidFeedback(`Minimum ${this.min} items`, { value: unsafeObject });
+		if (typeof this.max === "number" && length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`, { value: unsafeObject });
 
 		// Check value against against `this.items`
 		let changed = false;

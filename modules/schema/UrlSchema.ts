@@ -35,20 +35,20 @@ export class UrlSchema<T extends string> extends StringSchema<T> {
 			url = new URL(cleanString.includes(":") ? cleanString : `http://${cleanString}`);
 		} catch (e) {
 			// Definitely not valid.
-			throw new InvalidFeedback("Invalid format");
+			throw new InvalidFeedback("Invalid format", { value: uncleanString });
 		}
 
 		// Check scheme and domain exist in whitelists.
-		if (!this.schemes.includes(url.protocol)) throw new InvalidFeedback(`Scheme "${url.protocol}" is not allowed`);
-		if (this.hosts && !this.hosts.includes(url.host)) throw new InvalidFeedback(`Domain "${url.host}" is not allowed`);
+		if (!this.schemes.includes(url.protocol)) throw new InvalidFeedback(`Scheme "${url.protocol}" is not allowed`, { value: cleanString });
+		if (this.hosts && !this.hosts.includes(url.host)) throw new InvalidFeedback(`Domain "${url.host}" is not allowed`, { value: cleanString });
 
-		// Check domain.
+		// Check host.
 		if (url.host.length) {
 			// No more than 253 total characters for a host.
-			if (url.host.length > 253) throw new InvalidFeedback(`Invalid format`);
+			if (url.host.length > 253) throw new InvalidFeedback("Invalid host", { value: cleanString });
 			// Each host segment is no more than 63 characters.
 			const bits = url.host.split(".");
-			for (const bit of bits) if (bit.length > 63) throw new InvalidFeedback(`Invalid format`);
+			for (const bit of bits) if (bit.length > 63) throw new InvalidFeedback("Invalid host", { value: cleanString });
 		}
 
 		// Return the clean URL.

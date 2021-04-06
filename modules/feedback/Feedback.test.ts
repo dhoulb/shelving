@@ -5,27 +5,22 @@ describe("Feedback", () => {
 	test("Constructs correctly", () => {
 		const feedback1 = new Feedback("ABC");
 		expect(feedback1).toBeInstanceOf(Feedback);
-		expect(feedback1.message).toBe("ABC");
-		expect(feedback1.details).toBe(undefined);
+		expect(feedback1.feedback).toBe("ABC");
+		expect(feedback1.details).toEqual({});
 		const feedback2 = new Feedback("ABC", { a: new Feedback("A"), b: new Feedback("B") });
 		expect(feedback2).toBeInstanceOf(Feedback);
-		expect(feedback2.message).toBe("ABC");
-		expect(feedback2.details?.a).toBeInstanceOf(Feedback);
-		expect(feedback2.details?.a?.message).toBe("A");
-		expect(feedback2.details?.a?.details).toBe(undefined);
-		expect(feedback2.details?.b).toBeInstanceOf(Feedback);
-		expect(feedback2.details?.b?.message).toBe("B");
-		expect(feedback2.details?.b?.details).toBe(undefined);
+		expect(feedback2.feedback).toBe("ABC");
+		expect(feedback2.details).toEqual({ a: new Feedback("A"), b: new Feedback("B") });
 	});
 	test(".details", () => {
 		const feedback1 = new Feedback("ABC");
-		expect(feedback1.details).toEqual(undefined);
+		expect(feedback1.details).toEqual({});
 		const feedback2 = new Feedback("ABC", { a: new Feedback("A"), b: new Feedback("B") });
 		expect(feedback2.details).toEqual({ a: new Feedback("A"), b: new Feedback("B") });
 	});
 	test(".messages", () => {
 		const feedback1 = new Feedback("ABC");
-		expect(feedback1.messages).toEqual(undefined);
+		expect(feedback1.messages).toEqual({});
 		const feedback2 = new Feedback("ABC", { a: new Feedback("A"), b: new Feedback("B") });
 		expect(feedback2.messages).toEqual({ a: "A", b: "B" });
 	});
@@ -40,19 +35,19 @@ describe("Feedback", () => {
 	describe("Creating and parsing", () => {
 		// Simple.
 		const feedback0 = new Feedback("ABC");
-		const json0 = { message: "ABC", status: "" as const };
+		const json0 = { feedback: "ABC" };
 
 		// Details.
 		const feedback1 = new Feedback("ABC", { a: new Feedback("A"), b: new Feedback("B") });
-		const json1 = { message: "ABC", details: { a: { message: "A", status: "" as const }, b: { message: "B" } } };
+		const json1 = { feedback: "ABC", details: { a: { feedback: "A", status: "" }, b: { feedback: "B" } } };
 
 		// Deep details.
 		const feedback2 = new Feedback("ABC", { a: new Feedback("A", { a1: new Feedback("A1"), a2: new Feedback("A2") }) });
-		const json2 = { message: "ABC", details: { a: { message: "A", details: { a1: { message: "A1" }, a2: { message: "A2" } } } } };
+		const json2 = { feedback: "ABC", details: { a: { feedback: "A", details: { a1: { feedback: "A1" }, a2: { feedback: "A2" } } } } };
 
 		// Different types.
 		const feedback3 = new SuccessFeedback("ABC");
-		const json3 = { status: "success" as const, message: "ABC" };
+		const json3 = { status: "success", feedback: "ABC" };
 
 		// Different type and deep details.
 		const feedback4 = new ErrorFeedback("ABC", {
@@ -62,19 +57,20 @@ describe("Feedback", () => {
 			}),
 		});
 		const json4 = {
-			status: "error" as const,
-			message: "ABC",
+			status: "error",
+			feedback: "ABC",
 			details: {
 				a: {
-					message: "A",
-					status: "invalid" as const,
+					feedback: "A",
+					status: "invalid",
 					details: {
 						a1: {
-							status: "warning" as const,
-							message: "A1",
+							status: "warning",
+							feedback: "A1",
 						},
 						a2: {
-							message: "A2",
+							feedback: "A2",
+							// status: "invalid" // Should inherit status from its parent.
 						},
 					},
 				},
@@ -101,8 +97,8 @@ describe("Feedback", () => {
 			expect(WarningFeedback.create("abc")).toEqual(new WarningFeedback("abc"));
 		});
 		test(".create(): Errors correctly", () => {
-			expect(() => Feedback.create({ message: 123 } as any)).toThrow(AssertionError); // Message not a string.
-			expect(() => Feedback.create({ message: "A", status: "NOPE" } as any)).toThrow(AssertionError); // Status not a valid status.
+			expect(() => Feedback.create({ feedback: 123 } as any)).toThrow(AssertionError); // Message not a string.
+			expect(() => Feedback.create({ feedback: "A", status: "NOPE" } as any)).toThrow(AssertionError); // Status not a valid status.
 		});
 	});
 });

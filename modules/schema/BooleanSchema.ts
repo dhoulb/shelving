@@ -22,7 +22,7 @@ export class BooleanSchema<T extends boolean> extends Schema<T> {
 		const value = !!unsafeValue;
 
 		// Check requiredness.
-		if (this.required && !value) throw new InvalidFeedback("Required");
+		if (this.required && !value) throw new InvalidFeedback("Required", { value });
 
 		// Return boolean.
 		return super.validate(value);

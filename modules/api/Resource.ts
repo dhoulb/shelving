@@ -55,7 +55,7 @@ export class Resource<P, R> {
 		try {
 			return this.result.validate(result);
 		} catch (thrown) {
-			if (isFeedback(thrown)) throw new ValidationError("Resource returned invalid result", thrown, result);
+			if (isFeedback(thrown)) throw new ValidationError("Resource returned invalid result", thrown);
 			throw thrown;
 		}
 	}

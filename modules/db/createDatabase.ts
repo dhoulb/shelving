@@ -5,7 +5,7 @@ import type { Observer } from "../observe";
 import { EmptyObject, getFirstProp, getLastProp, ImmutableObject, MutableObject } from "../object";
 import { DataSchemas, DataSchema, Validator, ValidateOptions, PARTIAL } from "../schema";
 import { Data, Result, Results } from "../data";
-import { InvalidFeedback, isFeedback } from "../feedback";
+import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Query } from "../query";
 import { RequiredError, ValidationError } from "../errors";
 import { Stream } from "../stream";
@@ -72,13 +72,13 @@ abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas
 		try {
 			return this.schema.validate(data, options);
 		} catch (thrown: unknown) {
-			if (isFeedback(thrown)) throw new ValidationError(`Invalid ${options?.partial ? "partial data" : "data"} for: "${this.path}"`, thrown, data);
+			if (isFeedback(thrown)) throw new ValidationError(`Invalid ${options?.partial ? "partial data" : "data"} for: "${this.path}"`, thrown);
 			else throw thrown;
 		}
 	}
 	validateResults(results: ImmutableObject<ImmutableObject>): Results<T> {
 		const validated: MutableObject<T> = {};
-		const invalids: MutableObject<InvalidFeedback> = {};
+		const invalids: MutableObject<Feedback> = {};
 		let invalid = false;
 		for (const [id, data] of Object.entries(results)) {
 			try {
@@ -89,7 +89,7 @@ abstract class Path<T extends Data, D extends DataSchemas, C extends DataSchemas
 				invalid = true;
 			}
 		}
-		if (invalid) throw new ValidationError(`Invalid documents for: "${this.path}"`, new InvalidFeedback("Invalid documents", invalids), results);
+		if (invalid) throw new ValidationError(`Invalid documents for: "${this.path}"`, new InvalidFeedback("Invalid documents", invalids));
 		return validated;
 	}
 	toString(): string {

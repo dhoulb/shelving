@@ -64,12 +64,12 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
 		// Coorce.
 		const unsafeArray = !unsafeValue ? [] : unsafeValue instanceof Array ? unsafeValue : undefined;
-		if (!unsafeArray) throw new InvalidFeedback("Must be array");
+		if (!unsafeArray) throw new InvalidFeedback("Must be array", { unsafeValue });
 
 		// Has contents?
 		if (!unsafeArray.length) {
 			// Check requiredness.
-			if (this.required) throw new InvalidFeedback("Required");
+			if (this.required) throw new InvalidFeedback("Required", { unsafeArray });
 
 			// Return empty array.
 			return super.validate(unsafeArray);
@@ -95,18 +95,18 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 			}
 		}
 
+		// If any Schema was invalid then throw.
+		if (invalid) throw new InvalidFeedback("Invalid items", details);
+
 		// Possibly de-duplicate the array.
 		const finalArray = this.unique ? uniqueItems(safeArray) : safeArray;
 		if (finalArray !== safeArray) changed = true;
 
 		// Array shorter than min length returns Invalid.
-		if (typeof this.min === "number" && finalArray.length < this.min) throw new InvalidFeedback(`Minimum ${this.min} items`);
+		if (typeof this.min === "number" && finalArray.length < this.min) throw new InvalidFeedback(`Minimum ${this.min} items`, { value: finalArray });
 
 		// Array longer than max length returns Invalid.
-		if (typeof this.max === "number" && finalArray.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`);
-
-		// If any Schema was invalid then throw.
-		if (invalid) throw new InvalidFeedback("Invalid items", details);
+		if (typeof this.max === "number" && finalArray.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`, { value: finalArray });
 
 		// Return array (same instance if no changes were made).
 		return super.validate(changed ? finalArray : unsafeArray);

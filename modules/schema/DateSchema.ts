@@ -33,10 +33,10 @@ export class DateSchema<T extends string | null> extends Schema<T> {
 		// Explicit null means 'no date'.
 		if (value === null) {
 			// If original input was truthy, we know its format must have been wrong.
-			if (unsafeValue) throw new InvalidFeedback("Invalid date");
+			if (unsafeValue) throw new InvalidFeedback("Invalid date", { value: unsafeValue });
 
 			// Check requiredness.
-			if (this.required) throw new InvalidFeedback("Required");
+			if (this.required) throw new InvalidFeedback("Required", { value: unsafeValue });
 
 			// Return null.
 			return super.validate(null);
@@ -44,9 +44,9 @@ export class DateSchema<T extends string | null> extends Schema<T> {
 
 		// Enforce min/max.
 		const minDate = toDate(this.min);
-		if (minDate && value.getTime() < minDate.getTime()) throw new InvalidFeedback(`Minimum ${minDate.toLocaleDateString()}`);
+		if (minDate && value.getTime() < minDate.getTime()) throw new InvalidFeedback(`Minimum ${minDate.toLocaleDateString()}`, { value });
 		const maxDate = toDate(this.max);
-		if (maxDate && value.getTime() > maxDate.getTime()) throw new InvalidFeedback(`Maximum ${maxDate.toLocaleDateString()}`);
+		if (maxDate && value.getTime() > maxDate.getTime()) throw new InvalidFeedback(`Maximum ${maxDate.toLocaleDateString()}`, { value });
 
 		// Return date string.
 		return super.validate(getYmd(value));
