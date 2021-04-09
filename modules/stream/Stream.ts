@@ -40,8 +40,8 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		return stream;
 	}
 
+	private _cleanup?: Unsubscriber; // Unsubscriber function for the source this stream is attached to.
 	private _subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
-	private _cleanup: Unsubscriber | undefined = undefined; // Function that unsubscribes from the source on error or complete.
 	private _target = 0; // Number of subscribers to call when calling `next()`
 
 	/** Is this observer open or closed. */
@@ -54,13 +54,7 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 
 	// Protected to encourage `Stream.create()`
 	protected constructor(source?: Subscriptor<T> | Subscribable<T>) {
-		if (source) {
-			try {
-				this._cleanup = typeof source === "function" ? source(this) : source.subscribe(this);
-			} catch (thrown) {
-				this.error(thrown);
-			}
-		}
+		if (source) this._cleanup = typeof source === "function" ? source(this) : source.subscribe(this);
 	}
 
 	/**
@@ -89,9 +83,7 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 
 		(this as Mutable<this>).closed = true;
 		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
-		for (const subscriber of this._subscribers.slice()) {
-			thispatch(subscriber, "error", reason);
-		}
+		for (const subscriber of this._subscribers.slice()) thispatch(subscriber, "error", reason);
 	}
 
 	/**
