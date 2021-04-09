@@ -72,8 +72,8 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		if (this.closed || value === SKIP) return;
 		if (value instanceof Promise) return thispatch<T, "next", "error">(this, "next", value, this, "error");
 
-		const start = this._target && this._target < 0 ? this._target : 0;
-		const end = this._target && this._target > 0 ? this._target : undefined;
+		const start = this._target < 0 ? this._target : 0;
+		const end = this._target > 0 ? this._target : undefined;
 		for (const subscriber of this._subscribers.slice(start, end)) thispatch(subscriber, "next", value);
 	}
 
@@ -112,12 +112,16 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 	subscribe(next: Observer<T> | AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
 		const subscriber: Observer<T> = typeof next === "function" ? { next, error, complete } : next;
 		addItem(this._subscribers, subscriber);
-		return () => removeItem(this._subscribers, subscriber);
+		return this.unsubscribe.bind(this, subscriber);
+	}
+
+	/** Unsubscribe from this `Stream` */
+	unsubscribe(subscriber: Observer<T>): void {
+		removeItem(this._subscribers, subscriber);
 	}
 
 	/**
 	 * Create a new derived stream that completes itself after a limited number of values.
-	 * - The name `take()` matches RxJS.
 	 *
 	 * @param num Number of values to take before `complete()` is called.
 	 */
