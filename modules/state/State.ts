@@ -90,6 +90,11 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 		return value as Exclude<T, undefined>;
 	}
 
+	/** Age of the current data in milliseconds. */
+	get age(): number {
+		return typeof this.updated === "number" ? Date.now() - this.updated : Infinity;
+	}
+
 	// Protected to encourage `State.create()`
 	protected constructor(source: Subscriptor<T> | Subscribable<T> | Promise<T | typeof SKIP> | T | typeof SKIP | typeof LOADING) {
 		super(isSubscribable(source) || isSubscriptor(source) ? source : undefined);
