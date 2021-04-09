@@ -1,4 +1,4 @@
-import { AsyncDeriver, thispatch } from "../function";
+import { AsyncDeriver, isSubscriptor, Subscriptor, thispatch } from "../function";
 import { isSubscribable, Observer, Subscribable, deriveFrom } from "../observe";
 import { RequiredError } from "../errors";
 import { LOADING, SKIP } from "../constants";
@@ -54,15 +54,15 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 	 * - `X` (anything else): Create a new state whose initial value is a known value.
 	 */
 	static create<X = undefined>(): State<X | undefined>;
-	static create<X>(source: typeof LOADING | State<X> | Subscribable<X> | Promise<X> | X): State<X>;
-	static create(source: Subscribable<unknown> | Promise<unknown> | unknown | typeof LOADING = undefined): State<unknown> {
+	static create<X>(source: typeof LOADING | State<X> | Subscriptor<X> | Subscribable<X> | Promise<X> | X): State<X>;
+	static create(source: Subscriptor<unknown> | Subscribable<unknown> | Promise<unknown> | unknown | typeof LOADING = undefined): State<unknown> {
 		return new State(source);
 	}
 
 	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
 	private _fired: T | typeof LOADING; // Last value that was fired (so we don't fire the same value twice in a row).
 
-	readonly loading: boolean = true; // Whether we're currently loading or we have a value.
+	readonly loading: boolean = true; // Whether we're currently loading or we have a value (if false, reading `state.value` will not throw).
 	readonly pending: boolean = false; // Whether we have still need to call the subscribers, or not.
 	readonly closing: boolean = false; // Whether we're pending to close (either through error or completion).
 	readonly reason: Error | unknown = undefined; // The error that caused this state to close.
@@ -91,9 +91,9 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 	}
 
 	// Protected to encourage `State.create()`
-	protected constructor(source: Subscribable<T> | Promise<T | typeof SKIP> | T | typeof SKIP | typeof LOADING) {
-		super(isSubscribable(source) ? source : undefined);
-		if (isSubscribable(source)) {
+	protected constructor(source: Subscriptor<T> | Subscribable<T> | Promise<T | typeof SKIP> | T | typeof SKIP | typeof LOADING) {
+		super(isSubscribable(source) || isSubscriptor(source) ? source : undefined);
+		if (isSubscribable(source) || isSubscriptor(source)) {
 			// If source is a State, subscribe it.
 			if (source instanceof State && !source.loading) void this.next(source.value);
 		} else if (source !== LOADING && source !== SKIP) {

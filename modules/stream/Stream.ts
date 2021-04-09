@@ -2,7 +2,7 @@ import type { Mutable } from "../object";
 import type { Resolvable } from "../data";
 import { Observer, Subscribable, takeFrom, deriveFrom } from "../observe";
 import { addItem, MutableArray, removeItem } from "../array";
-import { AsyncEmptyDispatcher, AsyncDispatcher, AsyncCatcher, thispatch, Unsubscriber, AsyncDeriver } from "../function";
+import { AsyncEmptyDispatcher, AsyncDispatcher, AsyncCatcher, thispatch, Unsubscriber, AsyncDeriver, Subscriptor, dispatch } from "../function";
 import { SKIP } from "../constants";
 import { bindMethod } from "../class";
 
@@ -28,8 +28,8 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 	 * - If not set this stream is not subscribed to anything. You can set its values manually using `stream.next()` etc.
 	 */
 	static create<X = unknown>(): Stream<X>;
-	static create<X>(source: Subscribable<X>): Stream<X>;
-	static create(source?: Subscribable<unknown>): Stream<unknown> {
+	static create<X>(source: Subscriptor<X> | Subscribable<X>): Stream<X>;
+	static create(source?: Subscriptor<unknown> | Subscribable<unknown>): Stream<unknown> {
 		return new Stream(source);
 	}
 
@@ -53,10 +53,10 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 	}
 
 	// Protected to encourage `Stream.create()`
-	protected constructor(source?: Subscribable<T>) {
+	protected constructor(source?: Subscriptor<T> | Subscribable<T>) {
 		if (source) {
 			try {
-				this._cleanup = source.subscribe(this);
+				this._cleanup = typeof source === "function" ? source(this) : source.subscribe(this);
 			} catch (thrown) {
 				this.error(thrown);
 			}
@@ -88,7 +88,7 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		if (reason instanceof Promise) return thispatch(this, "error", reason);
 
 		(this as Mutable<this>).closed = true;
-		if (this._cleanup) this._cleanup = void this._cleanup();
+		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
 		for (const subscriber of this._subscribers.slice()) {
 			thispatch(subscriber, "error", reason);
 		}
@@ -104,7 +104,7 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		if (this.closed) return;
 
 		(this as Mutable<this>).closed = true;
-		if (this._cleanup) this._cleanup = void this._cleanup();
+		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
 		for (const subscriber of this._subscribers.slice()) thispatch(subscriber, "complete");
 	}
 

@@ -17,3 +17,6 @@ export interface PolymorphicSubscriptor<T> {
 	(next: AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	(either: Observer<T> | AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 }
+
+/** Is an unknown value a subscriptor function. */
+export const isSubscriptor = <T extends Subscriptor<unknown>>(v: T | unknown): v is T => typeof v === "function";
