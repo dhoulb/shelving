@@ -62,14 +62,7 @@ export class Source<T> extends State<T> {
 		// 3. A fetcher is already queued.
 		// 4. The source is already subscribed.
 		// 5. We have a fetched result and it's younger than `maxAge`
-		if (
-			this.closed ||
-			this._queuedSubscribe ||
-			this._queuedFetch ||
-			this._unsubscribe ||
-			(typeof this.updated === "number" && Date.now() - this.updated < maxAge)
-		)
-			return;
+		if (this.closed || this._queuedSubscribe || this._queuedFetch || this._unsubscribe || this.age < maxAge) return;
 
 		// Queue to fetch at the end of the tick.
 		// Fetches and subscribes are deferred to the end of the tick so that we don't subscribe and fetch from the same source (which would be wasteful!)
@@ -127,6 +120,8 @@ export class Source<T> extends State<T> {
 	private _timeout?: NodeJS.Timeout;
 
 	// Override error to remove self from cache a few seconds after an error occurs.
+	// This allows time for the error to throw in a React componetn and be shown to the user.
+	// But when the user tries again, the loading will be retried.
 	error(reason: Error | unknown): void {
 		super.error(reason);
 		setTimeout(() => delete cache[this.key], ERROR_CLEANUP_MS);
