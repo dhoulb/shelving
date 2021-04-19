@@ -6,7 +6,11 @@ import { Unsubscriber } from "../function";
  * Subscribe or create a new Shelving `State` instance.
  *
  * @param initial The initial value of the state.
- * @param depend Dependency that is tested (with shallow equality) to see if the state should be reset and recreated.
+ * - `initial` is a `State` instance: the component will subscribe to it.
+ * - `initial` is not a `State instance: the component will create a new `State` instance and subscribe to it.
+ * @param depend Dependency array that is used to control whether a new `State` instance is created.
+ * - This is only used if `initial` is not a `State` instance.
+ *
  * @returns The value returned from the initialiser (if the dependencies haven't changed, will be the same exact instance as the last call).
  */
 export const useState = <T>(initial: State<T> | T | Promise<T>, depend?: unknown): State<T> => {
@@ -27,9 +31,12 @@ export const useState = <T>(initial: State<T> | T | Promise<T>, depend?: unknown
 		effect: () => internals.state.subscribe(setNext, setError),
 	});
 
-	// Refresh value if the deps change.
-	if (!isShallowEqual(depend, internals.depend)) {
-		internals.state = initial instanceof State ? initial : State.create(initial);
+	// Refresh value if the initial value changes.
+	if (initial instanceof State) {
+		internals.state = initial;
+		internals.depend = depend;
+	} else if (!isShallowEqual(depend, internals.depend)) {
+		internals.state = State.create(initial);
 		internals.depend = depend;
 	}
 

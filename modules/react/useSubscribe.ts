@@ -1,34 +1,29 @@
-import { useEffect, useRef, useState as useReactState } from "react";
-import { Subscribable, Unsubscriber, LOADING, NOERROR } from "..";
+import { Arguments, serialise, State, Subscriptor } from "..";
+import { LOADING } from "../constants";
+import { Source, Sources } from "./Source";
+import { useState } from "./useState";
+
+/** Store a list of named cached `Source` instances. */
+const sources = new Sources();
 
 /**
- * Use the next value of a `Subscribable` object in a React component.
- * - `Subscribable` objects are those that implement a `subcribe()` function that can be called with an `Observer` to receive a stream of values.
- * - RxJS calls these `Observable`
- * - So the component refreshes when the subscribable issues a new value or errors.
+ * Subscribe to a value in a React component.
+ * - If the subscription hasn't loaded for the first time yet this will throw a promise (to be caught by a `<Suspense>` above it).
+ * - The dependencies MUST uniquely identify this async value! This is very important or you may get wrong values.
  *
- * @returns The dispatched next value, or the `LOADING` symbol if no values have been dispatched yet.
- * @throws Any error received by the subscribable.
+ * @param subscriptor Function that creates a subscription and returns an unsubscribe callback.
+ * @param deps Value the promise relies on like `useEffect()` and `useMemo()` etc. Deps are passed as the arguments to `subscriber()` if it's a function.
+ *
+ * @returns `State` instance for the current value of the subscription.
+ * - `state.value` of the state allows you to read the data.
+ * - If the data hasn't loaded yet, reading `state.value` will throw a `Promise` which can be caught by a `<Suspense />` element.
+ *   - `state.loading` can tell you if the data is still loading before you read `state.value`
+ * - If the data results in an error, reading `state.value` will throw that error.
+ *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useSubscribe = <T>(subscribable: Subscribable<T>): T | typeof LOADING => {
-	const [next, setNext] = useReactState<T | typeof LOADING>(LOADING);
-	const [error, setError] = useReactState<Error | unknown | typeof NOERROR>(NOERROR);
-
-	const internals: {
-		subscribable: Subscribable<T>;
-		effect(): Unsubscriber;
-	} = (useRef<{
-		subscribable: Subscribable<T>;
-		effect(): Unsubscriber;
-	}>().current ||= {
-		subscribable,
-		effect: () => internals.subscribable.subscribe(setNext, setError),
-	});
-	internals.subscribable = subscribable;
-
-	const { effect } = internals;
-	useEffect(effect, [effect, subscribable]);
-
-	if (error !== NOERROR) throw error;
-	return next;
-};
+export function useSubscribe<T, D extends Arguments>(subscriptor: Subscriptor<T, D>, deps: D): State<T> {
+	const key = `${serialise(subscriptor)}:${serialise(deps)}`;
+	const source: Source<T> = sources.get<T>(key, LOADING);
+	source.subscribeTo(subscriptor, deps);
+	return useState(source);
+}

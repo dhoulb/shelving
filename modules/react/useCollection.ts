@@ -1,5 +1,9 @@
-import { Data, Results, Unsubscriber, Collection, Observer, Source, LOADING } from "..";
-import { useSubscribe } from "./useSubscribe";
+import { Data, Results, Unsubscriber, Collection, Observer, LOADING, State } from "..";
+import { Sources, Source } from "./Source";
+import { useState } from "./useState";
+
+/** Store a list of named cached `Source` instances. */
+const sources = new Sources();
 
 // Getters.
 const getCollectionResults = <T extends Data>(collection: Collection<T>): Promise<Results<T>> => collection.results;
@@ -11,29 +15,21 @@ const getCollectionSubscription = <T extends Data>(observer: Observer<Results<T>
  * @param collection Instance of `Collection` to get the results of, or an explicit `undefined`
  * - If `collection` is `undefined` then `{}` empty results will always be returned.
  * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
+ * - If `maxAge` is true, a realtime subscription to the data will be created.
  *
- * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
- * @throws Unknown error when something goes wrong.
+ * @returns `State` instance for the results of the collection.
+ * - `state.value` of the state allows you to read the data.
+ * - If the data hasn't loaded yet, reading `state.value` will throw a `Promise` which can be caught by a `<Suspense />` element.
+ *   - `state.loading` can tell you if the data is still loading before you read `state.value`
+ * - If the data results in an error, reading `state.value` will throw that error.
+ *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAge?: number): Results<T> => {
-	const source = Source.get<Results<T>>(`collection:${collection ? collection.toString() : "undefined"}`, collection ? LOADING : {});
-	useSubscribe(source);
-	if (collection) source.fetchFrom<[Collection<T>]>(getCollectionResults, [collection], maxAge);
-	return source.value;
-};
-
-/**
- * Subscribe to the results of a Shelving collection in a React component.
- *
- * @param collection Instance of `Collection` to subscribe to, or an explicit `undefined`
- * - If `collection` is `undefined` then `{}` empty results will always be returned.
- *
- * @throws `Promise` when loading, which should be caught with a `<Suspense>` block higher up.
- * @throws Unknown error when something goes wrong.
- */
-export const useCollectionSubscribe = <T extends Data>(collection: Collection<T> | undefined): Results<T> => {
-	const source = Source.get<Results<T>>(`collection:${collection ? collection.toString() : "undefined"}`, collection ? LOADING : {});
-	useSubscribe(source.active); // Use `source.subscribers` not `source` directly to indicate this is a subscription.
-	if (collection) source.subscribeTo<[Collection<T>]>(getCollectionSubscription, [collection]);
-	return source.value;
+export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAge?: number | true): State<Results<T>> => {
+	const key = `collection:${collection ? collection.toString() : "undefined"}`;
+	const source: Source<Results<T>> = sources.get<Results<T>>(key, collection ? LOADING : {});
+	if (collection) {
+		if (maxAge === true) source.subscribeTo<[Collection<T>]>(getCollectionSubscription, [collection]);
+		else source.fetchFrom<[Collection<T>]>(getCollectionResults, [collection], maxAge);
+	}
+	return useState(source);
 };

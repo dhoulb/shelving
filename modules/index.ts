@@ -48,7 +48,6 @@ export * from "./template";
 
 // Streams.
 export * from "./observe";
-export * from "./source";
 export * from "./state";
 export * from "./stream";
 
