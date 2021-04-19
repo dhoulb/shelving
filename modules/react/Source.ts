@@ -1,13 +1,20 @@
-import type { Arguments, Subscriptor, Unsubscriber, AsyncFetcher } from "../function";
+import type { Subscriptor, Unsubscriber, AsyncFetcher } from "../function";
 import { LOADING } from "../constants";
 import { State } from "../state";
 import { Observer } from "../observe";
+import { assert } from "..";
 
 /** Default max age for data. */
 const MAX_AGE_MS = 60000;
 
 /** How long to wait to stop unused subscriptions. */
 const UNSUBSCRIBE_MS = 60000;
+
+type SourceOptions<T> = {
+	readonly initial?: T | Promise<T>;
+	readonly fetcher?: AsyncFetcher<T>;
+	readonly subscriptor?: Subscriptor<T>;
+};
 
 /**
  * Source is a type of State that can fetch or subscribe to a remote source.
@@ -17,50 +24,81 @@ const UNSUBSCRIBE_MS = 60000;
  * - The source won't subscribe again if it's already subscribed (or has begun to).
  */
 export class Source<T> extends State<T> {
+	private readonly _fetcher?: AsyncFetcher<T>;
+	private readonly _subscriptor?: Subscriptor<T>;
 	private _unsubscribe?: Unsubscriber; // Function to call to stop the active subscription.
 
 	// Private to encourage `Source.get()`
-	constructor(initial: T | Promise<T> | typeof LOADING) {
-		super(initial);
+	constructor(options: SourceOptions<T>) {
+		super("initial" in options ? (options.initial as T | Promise<T>) : LOADING);
+		this._subscriptor = options.subscriptor;
 	}
 
 	/**
-	 * Fetch this source's data from a data source.
+	 * Queue a fetch using this source's defined `Fetcher`
+	 *
 	 * @param fetcher The fetcher function to call to fetch the data.
 	 * @param ...args Any arguments the fetcher needs.
 	 * @param maxAge Skip the fetch if we already have a cached result that's younger than this (in milliseconds).
 	 */
-	fetchFrom<A extends Arguments>(fetcher: AsyncFetcher<T, A>, args: A, maxAge = MAX_AGE_MS): void {
+	possiblyFetch(maxAge = MAX_AGE_MS): void {
+		// Must be a source with a defined fetcher.
+		assert(this._fetcher);
+
+		// No need to fetch if:
+		// 1. This source is closed.
+		// 2. A value is pending.
+		// 3. A fetch timeout is already queued.
+		// 3. This source is already subscribed.
+		// 4. We have a fetched result and it's younger than `maxAge`
+		if (this.closed || this.pending || this._queuedFetch || this._unsubscribe || this.age < maxAge) return;
+
+		// Queue a callback to fetch the next value.
+		this._queuedFetch = setTimeout(() => this.fetch());
+	}
+	private _queuedFetch?: NodeJS.Timeout;
+
+	/**
+	 * Fetch immediately using this source's defined `Fetcher`
+	 */
+	fetch(): void {
+		// Must be a source with a defined fetcher.
+		assert(this._fetcher);
+
+		// Clear any queued fetch.
+		if (this._queuedFetch) this._queuedFetch = void clearTimeout(this._queuedFetch);
+
 		// No need to subscribe if:
 		// 1. This source is closed.
-		// 2. A fetcher is already queued.
-		// 3. The source is already subscribed.
-		// 4. We have a fetched result and it's younger than `maxAge`
-		if (this.closed || this.pending || this._unsubscribe || this.age < maxAge) return;
+		// 2. A value is pending.
+		// 3. This source is already subscribed.
+		if (this.closed || this.pending || this._unsubscribe) return;
 
-		// Fetch the next value.
 		try {
-			this.next(fetcher(...args));
+			this.next(this._fetcher());
 		} catch (thrown) {
 			this.error(thrown);
 		}
 	}
-	_queuedFetch?: () => void;
 
 	/**
-	 * Subcribe this source to a data source.
-	 * @param subscriptor The subscriptor function to call to start the subscription.
-	 * @param ...args Any additional arguments the subscriptor needs.
+	 * Start a subscription to this source's defined `Subscriptor`
 	 */
-	subscribeTo<A extends Arguments>(subscriptor: Subscriptor<T, A>, args: A): void {
+	startSubscription(): void {
+		// Must be a source with a defined subscriptor.
+		assert(this._subscriptor);
+
 		// No need to subscribe if:
 		// 1. This source is closed.
 		// 2. A subscriber is already queued.
 		// 3. The source is already subscribed.
 		if (this.closed || this._unsubscribe) return;
 
+		// Clear any queued fetch (subscribing overrides fetching).
+		if (this._queuedFetch) this._queuedFetch = void clearTimeout(this._queuedFetch);
+
 		try {
-			this._unsubscribe = subscriptor(this, ...args);
+			this._unsubscribe = this._subscriptor(this);
 			this._cleanupSubscription();
 		} catch (thrown) {
 			this.error(thrown);
@@ -76,27 +114,5 @@ export class Source<T> extends State<T> {
 	unsubscribe(subscriber: Observer<T>): void {
 		super.unsubscribe(subscriber);
 		if (!this._unsubscribe && !this.subscribers) this._cleanupSubscription();
-	}
-}
-
-/**
- * Cache of named `Source` instances indexed by string key.
- */
-export class Sources {
-	/** Cache of named `Source` instances indexed by string key. */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private _cache: { [key: string]: Source<any> } = {};
-
-	/** Get a named source from the source cache. */
-	get<X = undefined>(key: string): Source<X | undefined>;
-	get<X>(key: string, source: X | Promise<X> | typeof LOADING): Source<X>;
-	get(key: string, initial: unknown | Promise<unknown> | typeof LOADING = undefined): Source<unknown> {
-		const source = this._cache[key] || new Source<unknown>(initial);
-
-		// If the state has closed, remove it from the cache in a few seconds.
-		// This means that on the next render, the fetch or subscription will be retried.
-		if (source.closed) setTimeout(() => source === this._cache[key] && delete this._cache[key], 3000);
-
-		return source;
 	}
 }

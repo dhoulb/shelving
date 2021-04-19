@@ -1,10 +1,10 @@
 import { Arguments, AsyncFetcher, serialise, State } from "..";
-import { LOADING } from "../constants";
 import { useState } from "./useState";
-import { Source, Sources } from "./Source";
+import { Source } from "./Source";
 
 /** Store a list of named cached `Source` instances. */
-const sources = new Sources();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sources: { [key: string]: Source<any> } = {};
 
 /**
  * Fetch a value in a React component.
@@ -22,7 +22,9 @@ const sources = new Sources();
  */
 export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge = 60000): State<T> {
 	const key = `${serialise(fetcher)}:${serialise(deps)}`;
-	const source: Source<T> = sources.get<T>(key, LOADING);
-	source.fetchFrom(fetcher, deps, maxAge);
-	return useState(source);
+	const source: Source<T> = (sources[key] ||= new Source<T>({ fetcher: () => fetcher(...deps) }));
+	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
+	source.possiblyFetch(maxAge);
+	useState(source);
+	return source;
 }

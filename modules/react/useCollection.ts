@@ -1,13 +1,10 @@
-import { Data, Results, Unsubscriber, Collection, Observer, LOADING, State } from "..";
-import { Sources, Source } from "./Source";
+import { Data, Results, Collection } from "..";
+import { Source } from "./Source";
 import { useState } from "./useState";
 
 /** Store a list of named cached `Source` instances. */
-const sources = new Sources();
-
-// Getters.
-const getCollectionResults = <T extends Data>(collection: Collection<T>): Promise<Results<T>> => collection.results;
-const getCollectionSubscription = <T extends Data>(observer: Observer<Results<T>>, collection: Collection<T>): Unsubscriber => collection.subscribe(observer);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sources: { [key: string]: Source<any> } = {};
 
 /**
  * Use the results of a Shelving collection in a React component (once).
@@ -24,12 +21,23 @@ const getCollectionSubscription = <T extends Data>(observer: Observer<Results<T>
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAge?: number | true): State<Results<T>> => {
+export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAge?: number | true): Source<Results<T>> => {
 	const key = `collection:${collection ? collection.toString() : "undefined"}`;
-	const source: Source<Results<T>> = sources.get<Results<T>>(key, collection ? LOADING : {});
+	const source: Source<Results<T>> = (sources[key] ||= new Source<Results<T>>(
+		collection
+			? {
+					subscriptor: s => collection.subscribe(s),
+					fetcher: () => collection.results,
+			  }
+			: {
+					initial: undefined,
+			  },
+	));
+	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
 	if (collection) {
-		if (maxAge === true) source.subscribeTo<[Collection<T>]>(getCollectionSubscription, [collection]);
-		else source.fetchFrom<[Collection<T>]>(getCollectionResults, [collection], maxAge);
+		if (maxAge === true) source.startSubscription();
+		else source.possiblyFetch(maxAge);
 	}
-	return useState(source);
+	useState(source);
+	return source;
 };

@@ -1,13 +1,10 @@
-import { Data, Result, Document, Observer, LOADING, State } from "..";
-import { Source, Sources } from "./Source";
+import { Data, Result, Document } from "..";
+import { Source } from "./Source";
 import { useState } from "./useState";
 
 /** Store a list of named cached `Source` instances. */
-const sources = new Sources();
-
-// Getters.
-const getDocumentResult = <T extends Data>(document: Document<T>) => document.result;
-const getDocumentSubscription = <T extends Data>(observer: Observer<Result<T>>, document: Document<T>) => document.subscribe(observer);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sources: { [key: string]: Source<any> } = {};
 
 /**
  * Use the result of a Shelving collection document in a React component.
@@ -25,12 +22,24 @@ const getDocumentSubscription = <T extends Data>(observer: Observer<Result<T>>, 
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useDocument = <T extends Data>(document: Document<T> | undefined, maxAge?: number | true): State<Result<T>> => {
+export const useDocument = <T extends Data>(document: Document<T> | undefined, maxAge?: number | true): Source<Result<T>> => {
 	const key = `document:${document ? document.toString() : "undefined"}`;
-	const source: Source<Result<T>> = sources.get<Result<T>>(key, document ? LOADING : undefined);
+	// const source: Source<Result<T>> = sources.get<Result<T>>(key, document ? LOADING : undefined);
+	const source: Source<Result<T>> = (sources[key] ||= new Source<Result<T>>(
+		document
+			? {
+					subscriptor: s => document.subscribe(s),
+					fetcher: () => document.result,
+			  }
+			: {
+					initial: undefined,
+			  },
+	));
+	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
 	if (document) {
-		if (maxAge === true) source.subscribeTo<[Document<T>]>(getDocumentSubscription, [document]);
-		else source.fetchFrom<[Document<T>]>(getDocumentResult, [document], maxAge);
+		if (maxAge === true) source.startSubscription();
+		else source.possiblyFetch(maxAge);
 	}
-	return useState(source);
+	useState(source);
+	return source;
 };

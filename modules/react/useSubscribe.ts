@@ -1,10 +1,10 @@
-import { Arguments, serialise, State, Subscriptor } from "..";
-import { LOADING } from "../constants";
-import { Source, Sources } from "./Source";
+import { Arguments, serialise, Subscriptor } from "..";
+import { Source } from "./Source";
 import { useState } from "./useState";
 
 /** Store a list of named cached `Source` instances. */
-const sources = new Sources();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sources: { [key: string]: Source<any> } = {};
 
 /**
  * Subscribe to a value in a React component.
@@ -21,9 +21,11 @@ const sources = new Sources();
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export function useSubscribe<T, D extends Arguments>(subscriptor: Subscriptor<T, D>, deps: D): State<T> {
+export function useSubscribe<T, D extends Arguments>(subscriptor: Subscriptor<T, D>, deps: D): Source<T> {
 	const key = `${serialise(subscriptor)}:${serialise(deps)}`;
-	const source: Source<T> = sources.get<T>(key, LOADING);
-	source.subscribeTo(subscriptor, deps);
-	return useState(source);
+	const source: Source<T> = (sources[key] ||= new Source<T>({ subscriptor: s => subscriptor(s, ...deps) }));
+	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
+	source.startSubscription();
+	useState(source);
+	return source;
 }
