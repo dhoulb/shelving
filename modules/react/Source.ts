@@ -32,6 +32,7 @@ export class Source<T> extends State<T> {
 	constructor(options: SourceOptions<T>) {
 		super("initial" in options ? (options.initial as T | Promise<T>) : LOADING);
 		this._subscriptor = options.subscriptor;
+		this._fetcher = options.fetcher;
 	}
 
 	/**
