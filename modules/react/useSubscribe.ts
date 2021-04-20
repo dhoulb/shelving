@@ -23,9 +23,9 @@ const sources: { [key: string]: Source<any> } = {};
  */
 export function useSubscribe<T, D extends Arguments>(subscriptor: Subscriptor<T, D>, deps: D): Source<T> {
 	const key = `${serialise(subscriptor)}:${serialise(deps)}`;
-	const source: Source<T> = (sources[key] ||= new Source<T>({ subscriptor: s => subscriptor(s, ...deps) }));
+	const source: Source<T> = (sources[key] ||= new Source<T>({ subscribe: s => subscriptor(s, ...deps) }));
 	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
-	source.startSubscription();
+	source.start();
 	useState(source);
 	return source;
 }

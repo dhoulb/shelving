@@ -11,7 +11,7 @@ const sources: { [key: string]: Source<any> } = {};
  *
  * @param collection Instance of `Collection` to get the results of, or an explicit `undefined`
  * - If `collection` is `undefined` then `{}` empty results will always be returned.
- * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
+ * @param maxAgeMs How 'out of date' data is allowed to be before it'll be refetched.
  * - If `maxAge` is true, a realtime subscription to the data will be created.
  *
  * @returns `State` instance for the results of the collection.
@@ -21,22 +21,15 @@ const sources: { [key: string]: Source<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAge?: number | true): Source<Results<T>> => {
+export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAgeMs?: number | true): Source<Results<T>> => {
 	const key = `collection:${collection ? collection.toString() : "undefined"}`;
 	const source: Source<Results<T>> = (sources[key] ||= new Source<Results<T>>(
-		collection
-			? {
-					subscriptor: s => collection.subscribe(s),
-					fetcher: () => collection.results,
-			  }
-			: {
-					initial: undefined,
-			  },
+		collection ? { subscribe: collection, fetch: collection } : { initial: undefined },
 	));
 	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
 	if (collection) {
-		if (maxAge === true) source.startSubscription();
-		else source.possiblyFetch(maxAge);
+		if (maxAgeMs === true) source.start();
+		else source.queueFetch(maxAgeMs);
 	}
 	useState(source);
 	return source;

@@ -11,7 +11,7 @@ const sources: { [key: string]: Source<any> } = {};
  *
  * @param fetcher Plain value or fetch function that returns a plain value or async/promised value.
  * @param deps Value the async value relies on like `useEffect()` and `useMemo()` etc. Deps are passed as the arguments to `fetch()` if it's a function.
- * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
+ * @param maxAgeMs How 'out of date' data is allowed to be before it'll be refetched.
  *
  * @returns `State` instance for the results of the fetch.
  * - `state.value` of the state allows you to read the data.
@@ -20,11 +20,11 @@ const sources: { [key: string]: Source<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge = 60000): State<T> {
+export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAgeMs = 60000): State<T> {
 	const key = `${serialise(fetcher)}:${serialise(deps)}`;
-	const source: Source<T> = (sources[key] ||= new Source<T>({ fetcher: () => fetcher(...deps) }));
+	const source: Source<T> = (sources[key] ||= new Source<T>({ fetch: () => fetcher(...deps) }));
 	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
-	source.possiblyFetch(maxAge);
+	source.queueFetch(maxAgeMs);
 	useState(source);
 	return source;
 }

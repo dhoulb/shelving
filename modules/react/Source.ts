@@ -1,8 +1,7 @@
 import type { Subscriptor, Unsubscriber, AsyncFetcher } from "../function";
 import { LOADING } from "../constants";
 import { State } from "../state";
-import { Observer } from "../observe";
-import { assert } from "..";
+import { Observer, Subscribable } from "../observe";
 
 /** Default max age for data. */
 const MAX_AGE_MS = 60000;
@@ -12,8 +11,8 @@ const UNSUBSCRIBE_MS = 60000;
 
 type SourceOptions<T> = {
 	readonly initial?: T | Promise<T>;
-	readonly fetcher?: AsyncFetcher<T>;
-	readonly subscriptor?: Subscriptor<T>;
+	readonly fetch?: AsyncFetcher<T> | { get: () => Promise<T> };
+	readonly subscribe?: Subscriptor<T> | Subscribable<T>;
 };
 
 /**
@@ -24,27 +23,25 @@ type SourceOptions<T> = {
  * - The source won't subscribe again if it's already subscribed (or has begun to).
  */
 export class Source<T> extends State<T> {
-	private readonly _fetcher?: AsyncFetcher<T>;
-	private readonly _subscriptor?: Subscriptor<T>;
+	private readonly _fetch?: AsyncFetcher<T> | { get: () => Promise<T> };
+	private readonly _subscribe?: Subscriptor<T> | Subscribable<T>;
 	private _unsubscribe?: Unsubscriber; // Function to call to stop the active subscription.
 
 	// Private to encourage `Source.get()`
 	constructor(options: SourceOptions<T>) {
 		super("initial" in options ? (options.initial as T | Promise<T>) : LOADING);
-		this._subscriptor = options.subscriptor;
-		this._fetcher = options.fetcher;
+		this._subscribe = options.subscribe;
+		this._fetch = options.fetch;
 	}
 
 	/**
-	 * Queue a fetch using this source's defined `Fetcher`
+	 * Queue a fetch using this source's defined `Fetcher`, if the current data is older than `maxAge`
 	 *
-	 * @param fetcher The fetcher function to call to fetch the data.
-	 * @param ...args Any arguments the fetcher needs.
-	 * @param maxAge Skip the fetch if we already have a cached result that's younger than this (in milliseconds).
+	 * @param maxAgeMs Skip the fetch if we already have a cached result that's younger than this (in milliseconds).
 	 */
-	possiblyFetch(maxAge = MAX_AGE_MS): void {
+	queueFetch(maxAgeMs = MAX_AGE_MS): void {
 		// Must be a source with a defined fetcher.
-		assert(this._fetcher);
+		if (!this._fetch) throw new Error("Source is not fetchable");
 
 		// No need to fetch if:
 		// 1. This source is closed.
@@ -52,7 +49,7 @@ export class Source<T> extends State<T> {
 		// 3. A fetch timeout is already queued.
 		// 3. This source is already subscribed.
 		// 4. We have a fetched result and it's younger than `maxAge`
-		if (this.closed || this.pending || this._queuedFetch || this._unsubscribe || this.age < maxAge) return;
+		if (this.closed || this.pending || this._queuedFetch || this._unsubscribe || this.age < maxAgeMs) return;
 
 		// Queue a callback to fetch the next value.
 		this._queuedFetch = setTimeout(() => this.fetch());
@@ -64,7 +61,7 @@ export class Source<T> extends State<T> {
 	 */
 	fetch(): void {
 		// Must be a source with a defined fetcher.
-		assert(this._fetcher);
+		if (!this._fetch) throw new Error("Source is not fetchable");
 
 		// Clear any queued fetch.
 		if (this._queuedFetch) this._queuedFetch = void clearTimeout(this._queuedFetch);
@@ -76,7 +73,7 @@ export class Source<T> extends State<T> {
 		if (this.closed || this.pending || this._unsubscribe) return;
 
 		try {
-			this.next(this._fetcher());
+			this.next(typeof this._fetch === "function" ? this._fetch() : this._fetch.get());
 		} catch (thrown) {
 			this.error(thrown);
 		}
@@ -85,9 +82,9 @@ export class Source<T> extends State<T> {
 	/**
 	 * Start a subscription to this source's defined `Subscriptor`
 	 */
-	startSubscription(): void {
+	start(): void {
 		// Must be a source with a defined subscriptor.
-		assert(this._subscriptor);
+		if (!this._subscribe) throw new Error("Source is not subscribable");
 
 		// No need to subscribe if:
 		// 1. This source is closed.
@@ -99,7 +96,7 @@ export class Source<T> extends State<T> {
 		if (this._queuedFetch) this._queuedFetch = void clearTimeout(this._queuedFetch);
 
 		try {
-			this._unsubscribe = this._subscriptor(this);
+			this._unsubscribe = typeof this._subscribe === "function" ? this._subscribe(this) : this._subscribe.subscribe(this);
 			this._cleanupSubscription();
 		} catch (thrown) {
 			this.error(thrown);

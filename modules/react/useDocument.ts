@@ -11,7 +11,7 @@ const sources: { [key: string]: Source<any> } = {};
  *
  * @param document Shelving `Document` object representing the document to be retrieved.
  * - If `document` is `undefined` then `undefined` will always be returned.
- * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
+ * @param maxAgeMs How 'out of date' data is allowed to be before it'll be refetched.
  * - If `maxAge` is true, a realtime subscription to the data will be created.
  *
  * @returns `State` instance for the result of the document.
@@ -22,23 +22,15 @@ const sources: { [key: string]: Source<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useDocument = <T extends Data>(document: Document<T> | undefined, maxAge?: number | true): Source<Result<T>> => {
+export const useDocument = <T extends Data>(document: Document<T> | undefined, maxAgeMs?: number | true): Source<Result<T>> => {
 	const key = `document:${document ? document.toString() : "undefined"}`;
-	// const source: Source<Result<T>> = sources.get<Result<T>>(key, document ? LOADING : undefined);
 	const source: Source<Result<T>> = (sources[key] ||= new Source<Result<T>>(
-		document
-			? {
-					subscriptor: s => document.subscribe(s),
-					fetcher: () => document.result,
-			  }
-			: {
-					initial: undefined,
-			  },
+		document ? { subscribe: document, fetch: document } : { initial: undefined }, //
 	));
 	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
 	if (document) {
-		if (maxAge === true) source.startSubscription();
-		else source.possiblyFetch(maxAge);
+		if (maxAgeMs === true) source.start();
+		else source.queueFetch(maxAgeMs);
 	}
 	useState(source);
 	return source;
