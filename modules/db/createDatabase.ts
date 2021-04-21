@@ -247,6 +247,7 @@ class Collection<T extends Data, D extends DataSchemas, C extends DataSchemas> e
 		return { __proto__: Collection.prototype, ...this, query: this.query.desc(key) };
 	}
 	limit(limit: number | null): this {
+		if (limit === this.query.slice.limit) return this;
 		return { __proto__: Collection.prototype, ...this, query: this.query.limit(limit) };
 	}
 	*[Symbol.iterator](): Generator<[string, T], void, undefined> {

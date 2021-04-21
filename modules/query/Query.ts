@@ -125,6 +125,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	 * @returns New instance with new query rules.
 	 */
 	limit(limit: number | null): this {
+		if (limit === this.slice.limit) return this;
 		return { __proto__: Query.prototype, ...this, slice: new Slice(limit) };
 	}
 
