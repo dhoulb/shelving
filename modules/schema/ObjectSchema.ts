@@ -7,7 +7,6 @@ import { ValidateOptions, Validator, Validators } from "./Validator";
 export type ObjectOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
 	readonly props: Validators<T & ImmutableObject>;
 	readonly value?: Partial<T> | null;
-	readonly required?: boolean;
 };
 
 /**

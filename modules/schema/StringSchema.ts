@@ -6,7 +6,6 @@ import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
 
 export type StringOptions<T extends string> = SchemaOptions<T> & {
 	readonly value?: string;
-	readonly required?: boolean;
 	readonly min?: number;
 	readonly max?: number | null;
 	readonly match?: RegExp | null;

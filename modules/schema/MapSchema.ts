@@ -6,7 +6,6 @@ import { Validator } from "./Validator";
 export type MapOptions<T> = SchemaOptions<ImmutableObject<T>> & {
 	readonly items: Validator<T>;
 	readonly value?: ImmutableObject<T>;
-	readonly required?: boolean;
 	readonly min?: number | null;
 	readonly max?: number | null;
 };

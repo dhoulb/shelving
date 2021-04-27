@@ -3,7 +3,6 @@ import { toDate, getYmd, PossibleOptionalDate } from "../date";
 import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
 
 export type DateOptions<T extends string | null> = SchemaOptions<T> & {
-	readonly required?: boolean;
 	readonly value?: PossibleOptionalDate;
 	readonly min?: PossibleOptionalDate;
 	readonly max?: PossibleOptionalDate;

@@ -9,7 +9,6 @@ export type ArrayOptions<T> = SchemaOptions<ImmutableArray<T>> & {
 	readonly min?: number;
 	readonly max?: number | null;
 	readonly unique?: boolean;
-	readonly required?: boolean;
 };
 
 /**

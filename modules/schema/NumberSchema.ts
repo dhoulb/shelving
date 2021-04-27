@@ -8,7 +8,6 @@ import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
 export type NumberOptions<T extends number | null> = SchemaOptions<T> & {
 	readonly value?: number | null;
 	readonly unit?: Unit | null;
-	readonly required?: boolean;
 	readonly min?: number | null;
 	readonly max?: number | null;
 	readonly step?: number | null;
