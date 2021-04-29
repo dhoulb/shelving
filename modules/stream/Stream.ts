@@ -100,16 +100,20 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		for (const subscriber of this._subscribers.slice()) thispatch(subscriber, "complete");
 	}
 
-	/** Subscribe to this `Stream` and return an `UnsubscribeDispatcher` */
+	/** Subscribe to this `Stream` and return an unsubscriber function. */
 	subscribe(next: Observer<T> | AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		const subscriber: Observer<T> = typeof next === "function" ? { next, error, complete } : next;
-		addItem(this._subscribers, subscriber);
-		return this.unsubscribe.bind(this, subscriber);
+		return this.on(typeof next === "object" ? next : { next, error, complete });
 	}
 
-	/** Unsubscribe from this `Stream` */
-	unsubscribe(subscriber: Observer<T>): void {
-		removeItem(this._subscribers, subscriber);
+	/** Add an observer to this stream and return an `Unsubscriber` function. */
+	on(observer: Observer<T>): Unsubscriber {
+		addItem(this._subscribers, observer);
+		return this.off.bind(this, observer);
+	}
+
+	/** Remove an observer from this stream. */
+	off(observer: Observer<T>): void {
+		removeItem(this._subscribers, observer);
 	}
 
 	/**

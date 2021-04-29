@@ -97,20 +97,20 @@ export class Source<T> extends State<T> {
 
 		try {
 			this._unsubscribe = typeof this._subscribe === "function" ? this._subscribe(this) : this._subscribe.subscribe(this);
-			this._cleanupSubscription();
+			this._scheduleUnsubscribe();
 		} catch (thrown) {
 			this.error(thrown);
 		}
 	}
 
 	/** Clean up any unnecessary subscriptions if we have no subscribers. */
-	private _cleanupSubscription() {
+	private _scheduleUnsubscribe() {
 		setTimeout(() => this._unsubscribe && !this.subscribers && (this._unsubscribe = void this._unsubscribe()), UNSUBSCRIBE_MS);
 	}
 
-	// Override `unsubscribe()` to unsubscribe from the source if we ended the last subscription.
-	unsubscribe(subscriber: Observer<T>): void {
-		super.unsubscribe(subscriber);
-		if (!this._unsubscribe && !this.subscribers) this._cleanupSubscription();
+	// Override `off()` to trigger cleanup if we remove the last subscription.
+	off(subscriber: Observer<T>): void {
+		super.off(subscriber);
+		if (!this._unsubscribe && !this.subscribers) this._scheduleUnsubscribe();
 	}
 }
