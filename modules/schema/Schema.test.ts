@@ -1,8 +1,8 @@
-import { isSchema, string } from "..";
+import { isSchema, schema } from "..";
 
 test("isSchema()", () => {
 	// Yes.
-	expect(isSchema(string.required)).toEqual(true);
+	expect(isSchema(schema.string.required)).toEqual(true);
 	// No.
 	expect(isSchema("a")).toEqual(false);
 	expect(isSchema({})).toEqual(false);

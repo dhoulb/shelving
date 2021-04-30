@@ -2,10 +2,11 @@ import { isObject } from "../object";
 import { sanitizeLines, sanitizeString, toString } from "../string";
 import { isArray } from "../array";
 import { InvalidFeedback } from "../feedback";
-import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
+import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
 
-export type StringOptions<T extends string> = SchemaOptions<T> & {
+type StringSchemaOptions<T extends string> = SchemaOptions<T> & {
 	readonly value?: string;
+	readonly type?: string;
 	readonly min?: number;
 	readonly max?: number | null;
 	readonly match?: RegExp | null;
@@ -15,7 +16,7 @@ export type StringOptions<T extends string> = SchemaOptions<T> & {
 	readonly sanitizer?: (value: string) => string;
 };
 
-export type StringOptionOptions<T extends string> = {
+type StringOptionOptions<T extends string> = {
 	readonly options: ReadonlyArray<T> | { readonly [K in T]: string };
 };
 
@@ -40,7 +41,16 @@ export type StringOptionOptions<T extends string> = {
  *  schema.validate('j'); // Throws 'Minimum 3 chaacters'
  */
 export class StringSchema<T extends string> extends Schema<T> {
+	static create<X extends string>(options: StringSchemaOptions<X> & StringOptionOptions<X> & RequiredSchemaOptions): StringSchema<X>;
+	static create<X extends string>(options: StringSchemaOptions<X> & StringOptionOptions<X>): StringSchema<X | "">;
+	static create(options: StringSchemaOptions<string> & RequiredSchemaOptions): StringSchema<string>;
+	static create(options: StringSchemaOptions<string>): StringSchema<string | "">;
+	static create(options: StringSchemaOptions<string>): StringSchema<string> {
+		return new StringSchema(options);
+	}
+
 	readonly value;
+	readonly type: string;
 	readonly min: number;
 	readonly max: number | null;
 	readonly options: ReadonlyArray<T> | { readonly [K in T]?: string } | null;
@@ -49,8 +59,20 @@ export class StringSchema<T extends string> extends Schema<T> {
 	readonly trim: boolean;
 	readonly sanitizer?: (value: string) => string;
 
-	constructor({ value = "", min = 0, max = null, options = null, match = null, multiline = false, trim = true, sanitizer, ...rest }: StringOptions<T>) {
+	protected constructor({
+		value = "",
+		type = "text",
+		min = 0,
+		max = null,
+		options = null,
+		match = null,
+		multiline = false,
+		trim = true,
+		sanitizer,
+		...rest
+	}: StringSchemaOptions<T>) {
 		super(rest);
+		this.type = type;
 		this.value = value;
 		this.min = min;
 		this.max = max;
@@ -113,16 +135,3 @@ export class StringSchema<T extends string> extends Schema<T> {
 		return this.sanitizer ? this.sanitizer(output) : output;
 	}
 }
-
-/** Shortcuts for StringSchema. */
-export const string: {
-	<T extends string>(options: StringOptions<T> & StringOptionOptions<T> & RequiredOptions): StringSchema<T>;
-	<T extends string>(options: StringOptions<T> & StringOptionOptions<T>): StringSchema<T | "">;
-	(options: StringOptions<string> & RequiredOptions): StringSchema<string>;
-	(options: StringOptions<string>): StringSchema<string | "">;
-	required: StringSchema<string>;
-	optional: StringSchema<string>;
-} = Object.assign(<T extends string>(options: StringOptions<T>): StringSchema<T> => new StringSchema<T>(options), {
-	required: new StringSchema<string>({ required: true }),
-	optional: new StringSchema<string>({ required: false }),
-});

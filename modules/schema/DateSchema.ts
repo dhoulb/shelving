@@ -1,8 +1,8 @@
 import { InvalidFeedback } from "../feedback";
 import { toDate, getYmd, PossibleOptionalDate } from "../date";
-import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
+import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
 
-export type DateOptions<T extends string | null> = SchemaOptions<T> & {
+type DateOptions<T extends string | null> = SchemaOptions<T> & {
 	readonly value?: PossibleOptionalDate;
 	readonly min?: PossibleOptionalDate;
 	readonly max?: PossibleOptionalDate;
@@ -14,11 +14,17 @@ export type DateOptions<T extends string | null> = SchemaOptions<T> & {
  * - `null` is also a valid value if this field is not required.
  */
 export class DateSchema<T extends string | null> extends Schema<T> {
+	static create<X extends string>(options: DateOptions<X> & RequiredSchemaOptions): DateSchema<X>;
+	static create<X extends string | null>(options: DateOptions<X>): DateSchema<X | null>;
+	static create(options: DateOptions<string | null>): DateSchema<string | null> {
+		return new DateSchema(options);
+	}
+
 	readonly value: PossibleOptionalDate;
 	readonly min: PossibleOptionalDate;
 	readonly max: PossibleOptionalDate;
 
-	constructor({ value = null, min = null, max = null, ...rest }: DateOptions<T>) {
+	protected constructor({ value = null, min = null, max = null, ...rest }: DateOptions<T>) {
 		super(rest);
 		this.value = value;
 		this.min = min;
@@ -51,14 +57,3 @@ export class DateSchema<T extends string | null> extends Schema<T> {
 		return super.validate(getYmd(value));
 	}
 }
-
-/** Shortcuts for DateSchema. */
-export const date: {
-	<T extends string | null>(options: DateOptions<T> & RequiredOptions): DateSchema<string>;
-	<T extends string | null>(options: DateOptions<T>): DateSchema<string | null>;
-	required: DateSchema<string>;
-	optional: DateSchema<string | null>;
-} = Object.assign(<T extends string | null>(options: DateOptions<T>): DateSchema<T> => new DateSchema<T>(options), {
-	required: new DateSchema<string>({ required: true, value: "now" }),
-	optional: new DateSchema<string | null>({ required: false }),
-});

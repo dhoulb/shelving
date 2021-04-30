@@ -1,26 +1,23 @@
-import type { RequiredOptions } from "./Schema";
-import { StringOptionOptions, StringOptions, StringSchema } from "./StringSchema";
+import type { SchemaOptions } from "./Schema";
+import { StringSchema } from "./StringSchema";
 
-const R_MATCH = /[a-zA-Z0-9]{1,64}/;
+type KeySchemaOptions = SchemaOptions<string> & {
+	readonly min?: number;
+	readonly max?: number | null;
+	readonly value?: string;
+};
 
 /**
  * Type of `StringSchema` that defines a valid database key.
- * Ensures value is a non-empty string key matching `[a-zA-Z0-9]{1,64}`
+ * - Minimum key length is 1 character.
+ * - Maximum key length is 64 characters.
  */
-export class KeySchema<T extends string> extends StringSchema<T> {
-	readonly match = R_MATCH;
-	readonly multiline = false;
-}
+export class KeySchema extends StringSchema<string> {
+	static create(options: KeySchemaOptions): KeySchema {
+		return new KeySchema(options);
+	}
 
-/** Shortcuts for KeySchema. */
-export const key: {
-	<T extends string>(options: StringOptions<T> & StringOptionOptions<T> & RequiredOptions): KeySchema<T>;
-	<T extends string>(options: StringOptions<T> & StringOptionOptions<T>): KeySchema<T | "">;
-	(options: StringOptions<string> & RequiredOptions): KeySchema<string>;
-	(options: StringOptions<string>): KeySchema<string | "">;
-	required: KeySchema<string>;
-	optional: KeySchema<string>;
-} = Object.assign(<T extends string>(options: StringOptions<T>): KeySchema<T> => new KeySchema<T>(options), {
-	required: new KeySchema({ required: true }),
-	optional: new KeySchema({ required: false }),
-});
+	readonly multiline = false;
+	readonly min = 1;
+	readonly max = 64;
+}

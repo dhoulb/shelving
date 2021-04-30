@@ -1,8 +1,12 @@
-import type { RequiredOptions } from "./Schema";
-import { StringOptionOptions, StringOptions, StringSchema } from "./StringSchema";
+import { RequiredSchemaOptions, SchemaOptions } from "..";
+import { StringSchema } from "./StringSchema";
 
 const R_MATCH = /^#[0-9A-F]{6}$/;
 const R_STRIP = /[^0-9A-F]/g;
+
+type ColorSchemaOptions = SchemaOptions<string> & {
+	readonly value?: string;
+};
 
 /**
  * Type of `StringSchema` that defines a valid Color.
@@ -13,7 +17,14 @@ const R_STRIP = /[^0-9A-F]/g;
  *
  * Colors are limited to 512 characters (this can be changed with `max`), but generally these won't be data: URIs so this is a reasonable limit.
  */
-export class ColorSchema<T extends string> extends StringSchema<T> {
+export class ColorSchema extends StringSchema<string> {
+	static create(options: ColorSchemaOptions & RequiredSchemaOptions): ColorSchema;
+	static create(options: ColorSchemaOptions): ColorSchema;
+	static create(options: ColorSchemaOptions): ColorSchema {
+		return new ColorSchema(options);
+	}
+
+	readonly type = "color";
 	readonly multiline = false;
 	readonly max = 7;
 	readonly match = R_MATCH;
@@ -27,16 +38,3 @@ export class ColorSchema<T extends string> extends StringSchema<T> {
 		return digits ? `#${digits.slice(0, 6)}` : "";
 	}
 }
-
-/** Shortcuts for ColorSchema. */
-export const color: {
-	<T extends string>(options: StringOptions<T> & StringOptionOptions<T> & RequiredOptions): ColorSchema<T>;
-	<T extends string>(options: StringOptions<T> & StringOptionOptions<T>): ColorSchema<T | "">;
-	(options: StringOptions<string> & RequiredOptions): ColorSchema<string>;
-	(options: StringOptions<string>): ColorSchema<string | "">;
-	required: ColorSchema<string>;
-	optional: ColorSchema<string>;
-} = Object.assign(<T extends string>(options: StringOptions<T>): ColorSchema<T> => new ColorSchema<T>(options), {
-	required: new ColorSchema<string>({ required: true }),
-	optional: new ColorSchema<string>({ required: false }),
-});

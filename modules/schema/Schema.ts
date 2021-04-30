@@ -20,8 +20,7 @@ export interface SchemaOptions<T> {
 /**
  * Required schema has a `required: true` prop.
  */
-export interface RequiredOptions {
-	/** This schema is possibly required. */
+export interface RequiredSchemaOptions {
 	readonly required: true;
 }
 

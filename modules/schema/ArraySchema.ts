@@ -3,7 +3,7 @@ import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { ImmutableArray, uniqueItems } from "../array";
 import { Schema, SchemaOptions } from "./Schema";
 
-export type ArrayOptions<T> = SchemaOptions<ImmutableArray<T>> & {
+type ArraySchemaOptions<T> = SchemaOptions<ImmutableArray<T>> & {
 	readonly items: Schema<T>;
 	readonly value?: ImmutableArray<T>;
 	readonly min?: number;
@@ -39,19 +39,24 @@ export type ArrayOptions<T> = SchemaOptions<ImmutableArray<T>> & {
  *  schema.validate(["a", null], schema); // Throws Invalids({ "1": Invalid('Must be a string') });
  */
 export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
+	static create<X>(options: ArraySchemaOptions<X>): ArraySchema<X> {
+		return new ArraySchema(options);
+	}
+
 	readonly value: ImmutableArray<T>;
 
 	/** Whether to de-duplicate items in the array (i.e. items in the array are unique). */
 	readonly unique: boolean;
 
-	/** Describe the minimum and maximum numbers of items. */
+	/** Describe the minimum numbers of items. */
 	readonly min: number;
+	/** Describe the maximum numbers of items. */
 	readonly max: number | null;
 
 	/** Describe the format for _all_ items in the array. */
 	readonly items: Schema<T>;
 
-	constructor({ items, unique = false, min = 0, max = null, value = [], ...rest }: ArrayOptions<T>) {
+	protected constructor({ items, unique = false, min = 0, max = null, value = [], ...rest }: ArraySchemaOptions<T>) {
 		super(rest);
 		this.items = items;
 		this.unique = unique;
@@ -111,13 +116,3 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		return super.validate(changed ? finalArray : unsafeArray);
 	}
 }
-
-/** Shortcuts for ArraySchema. */
-export const array: {
-	<T>(options: ArrayOptions<T>): ArraySchema<T>;
-	required<T>(items: Schema<T>): ArraySchema<T>;
-	optional<T>(items: Schema<T>): ArraySchema<T>;
-} = Object.assign(<T>(options: ArrayOptions<T>): ArraySchema<T> => new ArraySchema<T>(options), {
-	required: <T>(items: Schema<T>): ArraySchema<T> => new ArraySchema<T>({ items, required: true }),
-	optional: <T>(items: Schema<T>): ArraySchema<T> => new ArraySchema<T>({ items, required: false }),
-});

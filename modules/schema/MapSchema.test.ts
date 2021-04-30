@@ -1,10 +1,10 @@
-import { InvalidFeedback, ImmutableObject, map, string, number, boolean, MapSchema, Validator } from "..";
+import { InvalidFeedback, ImmutableObject, schema as shortcuts, MapSchema, Validator } from "..";
 
 // Tests.
 describe("MapSchema", () => {
 	test("TypeScript", () => {
 		// Test map.optional()
-		const optionalSchema = map.optional(number.optional);
+		const optionalSchema = shortcuts.map.optional(shortcuts.number.optional);
 		const optionalType: MapSchema<number | null> = optionalSchema;
 		const optionalValue: Record<string, number | null> = optionalSchema.validate({ a: 1 });
 		const optionalItemsSchema = optionalSchema.items;
@@ -12,7 +12,7 @@ describe("MapSchema", () => {
 		const optionalItemsValue: number | null = optionalItemsSchema.validate(123);
 
 		// Test map.required()
-		const requiredSchema = map.required(number.required);
+		const requiredSchema = shortcuts.map.required(shortcuts.number.required);
 		const requiredType: MapSchema<number> = requiredSchema;
 		const requiredValue: Record<string, number> = requiredSchema.validate({ a: 1 });
 		const requiredItemsSchema = requiredSchema.items;
@@ -20,37 +20,37 @@ describe("MapSchema", () => {
 		const requiredItemsValue: number = requiredItemsSchema.validate(123);
 
 		// Test map()
-		const mapRequiredSchema = map({ items: number.required, required: true });
+		const mapRequiredSchema = shortcuts.map({ items: shortcuts.number.required, required: true });
 		const mapRequiredType: MapSchema<number> = mapRequiredSchema;
 		const mapRequiredValue: ImmutableObject<number> = mapRequiredSchema.validate({ a: 1 });
-		const mapOptionalSchema = map({ items: number.required, required: false });
+		const mapOptionalSchema = shortcuts.map({ items: shortcuts.number.required, required: false });
 		const mapOptionalType: MapSchema<number> = mapOptionalSchema;
 		const mapOptionalValue: ImmutableObject<number> = mapOptionalSchema.validate({ a: 1 });
-		const mapAutoSchema = map({ items: number.required });
+		const mapAutoSchema = shortcuts.map({ items: shortcuts.number.required });
 		const mapAutoType: MapSchema<number> = mapAutoSchema;
 		const mapAutoValue: ImmutableObject<number> = mapAutoSchema.validate({ a: 1 });
 	});
 	test("Constructs correctly", () => {
-		const items = string.required;
-		const schema1 = map({ items });
+		const items = shortcuts.string.required;
+		const schema1 = shortcuts.map({ items });
 		expect(schema1).toBeInstanceOf(MapSchema);
 		expect(schema1.required).toBe(false);
 		expect(schema1.items).toBe(items);
-		const schema2 = map.required(items);
+		const schema2 = shortcuts.map.required(items);
 		expect(schema2).toBeInstanceOf(MapSchema);
 		expect(schema2.required).toBe(true);
 		expect(schema2.items).toBe(items);
-		const schema3 = map.required(items);
+		const schema3 = shortcuts.map.required(items);
 		expect(schema3).toBeInstanceOf(MapSchema);
 		expect(schema3.required).toBe(true);
 		expect(schema3.items).toBe(items);
 	});
 	describe("validate()", () => {
-		const schema = map({ items: string.required });
+		const schema = shortcuts.map({ items: shortcuts.string.required });
 		test("Non-objects throw error", () => {
-			expect(() => map.required(string.required).validate("abc")).toThrow(InvalidFeedback);
-			expect(() => map.required(number.required).validate(123)).toThrow(InvalidFeedback);
-			expect(() => map.required(boolean.required).validate(true)).toThrow(InvalidFeedback);
+			expect(() => shortcuts.map.required(shortcuts.string.required).validate("abc")).toThrow(InvalidFeedback);
+			expect(() => shortcuts.map.required(shortcuts.number.required).validate(123)).toThrow(InvalidFeedback);
+			expect(() => shortcuts.map.required(shortcuts.boolean.required).validate(true)).toThrow(InvalidFeedback);
 		});
 		// test("Non-pure objects throw error", () => {
 		// 	class RandomClass {}
@@ -78,11 +78,11 @@ describe("MapSchema", () => {
 	});
 	describe("options.value", () => {
 		test("Undefined returns default value (empty object)", () => {
-			const schema = map({ items: string.required });
+			const schema = shortcuts.map({ items: shortcuts.string.required });
 			expect(schema.validate(undefined)).toEqual({});
 		});
 		test("Undefined returns explicit default value", () => {
-			const schema = map({ items: number.required, value: { a: 1, b: 2 } });
+			const schema = shortcuts.map({ items: shortcuts.number.required, value: { a: 1, b: 2 } });
 			expect(schema.validate(undefined)).toEqual({
 				a: 1,
 				b: 2,
@@ -90,24 +90,24 @@ describe("MapSchema", () => {
 		});
 		test("Undefined returns exact same instance of default value", () => {
 			const defaultObj = { a: 1, b: 2, c: 3 };
-			const schema = map({ items: number.required, value: defaultObj });
+			const schema = shortcuts.map({ items: shortcuts.number.required, value: defaultObj });
 			const validObj = schema.validate(undefined);
 			expect(validObj).toBe(defaultObj);
 		});
 	});
 	describe("options.required", () => {
 		test("Required falsy values return Required", () => {
-			const schema = map({ items: string.required, required: true });
+			const schema = shortcuts.map({ items: shortcuts.string.required, required: true });
 			expect(() => schema.validate(0)).toThrow(InvalidFeedback);
 			expect(() => schema.validate(null)).toThrow(InvalidFeedback);
 			expect(() => schema.validate(false)).toThrow(InvalidFeedback);
 		});
 		test("Required empty objects return Required", () => {
-			const schema = map({ items: string.required, required: true });
+			const schema = shortcuts.map({ items: shortcuts.string.required, required: true });
 			expect(() => schema.validate({})).toThrow(InvalidFeedback);
 		});
 		test("Non-required empty objects do not return Required", () => {
-			const schema = map({ items: string.required, required: false });
+			const schema = shortcuts.map({ items: shortcuts.string.required, required: false });
 			const obj = {};
 			expect(schema.validate(obj)).toBe(obj);
 		});
@@ -115,18 +115,18 @@ describe("MapSchema", () => {
 	describe("options.items", () => {
 		test("Object with items and passing schema validates its fields", () => {
 			const o = { num1: 123, num2: 456 };
-			const schema = map({ items: number.required });
+			const schema = shortcuts.map({ items: shortcuts.number.required });
 			expect(schema.validate(o)).toBe(o);
 		});
 		test("Object with items and fixable schema validates its fields", () => {
-			const schema = map({
-				items: number.required,
+			const schema = shortcuts.map({
+				items: shortcuts.number.required,
 			});
 			expect(schema.validate({ num1: 123, num2: "456" })).toEqual({ num1: 123, num2: 456 });
 		});
 		test("Object with items rejects invalid props", () => {
 			try {
-				const schema = map({ items: number.required });
+				const schema = shortcuts.map({ items: shortcuts.number.required });
 				schema.validate({ num1: 123, num2: 456, str: "abc" });
 			} catch (invalid: any) {
 				expect(invalid).toBeInstanceOf(InvalidFeedback);
@@ -138,8 +138,8 @@ describe("MapSchema", () => {
 	describe("options.validator", () => {
 		test("Works correctly", () => {
 			const feedback = new InvalidFeedback("WORKS");
-			const schema = map({
-				items: string.required,
+			const schema = shortcuts.map({
+				items: shortcuts.string.required,
 				validator: () => {
 					throw feedback;
 				},

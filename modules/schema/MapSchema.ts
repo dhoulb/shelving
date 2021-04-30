@@ -3,7 +3,7 @@ import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Schema, SchemaOptions } from "./Schema";
 import { Validator } from "./Validator";
 
-export type MapOptions<T> = SchemaOptions<ImmutableObject<T>> & {
+type MapSchemaOptions<T> = SchemaOptions<ImmutableObject<T>> & {
 	readonly items: Validator<T>;
 	readonly value?: ImmutableObject<T>;
 	readonly min?: number | null;
@@ -15,6 +15,10 @@ export type MapOptions<T> = SchemaOptions<ImmutableObject<T>> & {
  * Different from ObjectSchema because that has fixed props, and this has an unknown number of props that are all the same type.
  */
 export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validator<ImmutableObject<T>> {
+	static create<X>(options: MapSchemaOptions<X>): MapSchema<X> {
+		return new MapSchema(options);
+	}
+
 	readonly value: ImmutableObject<T>;
 
 	/**
@@ -30,7 +34,7 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 	readonly min: number | null = null;
 	readonly max: number | null = null;
 
-	constructor({ items, min = null, max = null, value = {} as ImmutableObject<T>, ...rest }: MapOptions<T>) {
+	protected constructor({ items, min = null, max = null, value = {} as ImmutableObject<T>, ...rest }: MapSchemaOptions<T>) {
 		super(rest);
 		this.items = items;
 		this.min = min;
@@ -85,13 +89,3 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 		return super.validate(changed ? output : unsafeObject);
 	}
 }
-
-/** Shortcuts for MapSchema. */
-export const map: {
-	<T>(options: MapOptions<T>): MapSchema<T>;
-	required<T>(items: Validator<T>): MapSchema<T>;
-	optional<T>(items: Validator<T>): MapSchema<T>;
-} = Object.assign(<T>(options: MapOptions<T>): MapSchema<T> => new MapSchema<T>(options), {
-	required: <T>(items: Validator<T>): MapSchema<T> => new MapSchema<T>({ items, required: true }),
-	optional: <T>(items: Validator<T>): MapSchema<T> => new MapSchema<T>({ items, required: false }),
-});

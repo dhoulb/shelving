@@ -1,39 +1,39 @@
-import { InvalidFeedback, getYmd, date, DateSchema } from "..";
+import { InvalidFeedback, getYmd, schema as shortcuts, DateSchema } from "..";
 
 // Tests.
 describe("DateSchema", () => {
 	test("TypeScript", () => {
 		// Test date.optional
-		const s1: DateSchema<string | null> = date.optional;
+		const s1: DateSchema<string | null> = shortcuts.date.optional;
 		const r1: string | null = s1.validate("2015-09-12");
 
 		// Test date.required
-		const s2: DateSchema<string> = date.required;
+		const s2: DateSchema<string> = shortcuts.date.required;
 		const r2: string = s2.validate("2015-09-12");
 
 		// Test date()
-		const s3: DateSchema<string | null> = date({});
+		const s3: DateSchema<string | null> = shortcuts.date({});
 		const r3: string | null = s3.validate("2015-09-12");
-		const s4: DateSchema<string> = date({ required: true });
+		const s4: DateSchema<string> = shortcuts.date({ required: true });
 		const r4: string = s4.validate("2015-09-12");
-		const s5: DateSchema<string | null> = date({ required: false });
+		const s5: DateSchema<string | null> = shortcuts.date({ required: false });
 		const r5: string | null = s5.validate("2015-09-12");
-		const s6: DateSchema<string | null> = date({});
+		const s6: DateSchema<string | null> = shortcuts.date({});
 		const r6: string | null = s6.validate("2015-09-12");
 	});
 	test("Constructs correctly", () => {
-		const schema1 = date({});
+		const schema1 = shortcuts.date({});
 		expect(schema1).toBeInstanceOf(DateSchema);
 		expect(schema1.required).toBe(false);
-		const schema2 = date.required;
+		const schema2 = shortcuts.date.required;
 		expect(schema2).toBeInstanceOf(DateSchema);
 		expect(schema2.required).toBe(true);
-		const schema3 = date.required;
+		const schema3 = shortcuts.date.required;
 		expect(schema3).toBeInstanceOf(DateSchema);
 		expect(schema3.required).toBe(true);
 	});
 	describe("validate()", () => {
-		const schema = date({});
+		const schema = shortcuts.date({});
 		test("Date instances are converted to strings", () => {
 			const d1 = new Date("2018-08-09");
 			expect(schema.validate(d1)).toBe("2018-08-09");
@@ -71,31 +71,31 @@ describe("DateSchema", () => {
 	});
 	describe("options.value", () => {
 		test("Undefined with no value returns null", () => {
-			const schema = date({});
+			const schema = shortcuts.date({});
 			expect(schema.validate(undefined)).toEqual(null);
 		});
 		test("Undefined with default value returns default value", () => {
-			const schema1 = date({ value: "1995" });
+			const schema1 = shortcuts.date({ value: "1995" });
 			expect(schema1.validate(undefined)).toEqual("1995-01-01");
-			const schema2 = date({ value: 1530586357000 });
+			const schema2 = shortcuts.date({ value: 1530586357000 });
 			expect(schema2.validate(undefined)).toEqual("2018-07-03");
-			const schema3 = date({ value: new Date("1995") });
+			const schema3 = shortcuts.date({ value: new Date("1995") });
 			expect(schema3.validate(undefined)).toEqual("1995-01-01");
 		});
 		test("Using `Date.now` as a default value returns now() as value", () => {
-			const schema = date({ value: Date.now });
+			const schema = shortcuts.date({ value: Date.now });
 			expect(schema.validate(undefined)).toBe(getYmd(new Date()));
 		});
 	});
 	describe("options.required", () => {
 		test("Non-required but falsy dates return null", () => {
-			const schema = date({});
+			const schema = shortcuts.date({});
 			expect(schema.validate(undefined)).toBe(null);
 			expect(schema.validate(false)).toBe(null);
 			expect(schema.validate(null)).toBe(null);
 		});
 		test("Required but falsy dates return Required", () => {
-			const schema = date({ required: true });
+			const schema = shortcuts.date({ required: true });
 			expect(() => schema.validate(undefined)).toThrow(InvalidFeedback);
 			expect(() => schema.validate(false)).toThrow(InvalidFeedback);
 			expect(() => schema.validate(null)).toThrow(InvalidFeedback);
@@ -103,23 +103,23 @@ describe("DateSchema", () => {
 	});
 	describe("options.min", () => {
 		test("Date outside minimum is invalid", () => {
-			const schema1 = date({ min: new Date("2016") });
+			const schema1 = shortcuts.date({ min: new Date("2016") });
 			expect(schema1.validate("2016")).toBe("2016-01-01");
 			expect(() => schema1.validate("2015")).toThrow(InvalidFeedback);
-			const schema2 = date({ min: "2016-01-01" });
+			const schema2 = shortcuts.date({ min: "2016-01-01" });
 			expect(schema2.validate("2016")).toBe("2016-01-01");
 			expect(() => schema2.validate("2015")).toThrow(InvalidFeedback);
-			const schema3 = date({ min: new Date(1530586357001) });
+			const schema3 = shortcuts.date({ min: new Date(1530586357001) });
 			expect(schema3.validate(1530586357001)).toBe("2018-07-03");
 			expect(() => schema3.validate(1530586357000)).toThrow(InvalidFeedback);
 		});
 	});
 	describe("options.max", () => {
 		test("Date outside maximum is invalid", () => {
-			const schema1 = date({ max: new Date("2016") });
+			const schema1 = shortcuts.date({ max: new Date("2016") });
 			expect(schema1.validate("2016")).toBe("2016-01-01");
 			expect(() => schema1.validate("2017")).toThrow(InvalidFeedback);
-			const schema2 = date({ max: new Date(1530586357000) });
+			const schema2 = shortcuts.date({ max: new Date(1530586357000) });
 			expect(schema2.validate(1530586357000)).toBe("2018-07-03");
 			expect(() => schema2.validate(1530586357001)).toThrow(InvalidFeedback);
 		});
@@ -127,7 +127,7 @@ describe("DateSchema", () => {
 	describe("options.validator", () => {
 		test("Works correctly", () => {
 			const feedback = new InvalidFeedback("WORKS");
-			const schema = date({
+			const schema = shortcuts.date({
 				validator: () => {
 					throw feedback;
 				},

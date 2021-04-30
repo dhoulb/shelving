@@ -1,10 +1,11 @@
 import { InvalidFeedback } from "../feedback";
-import type { RequiredOptions } from "./Schema";
-import { StringOptionOptions, StringOptions, StringSchema } from "./StringSchema";
+import type { SchemaOptions } from "./Schema";
+import { StringSchema } from "./StringSchema";
 
-export type UrlOptions<T extends string> = StringOptions<T> & {
+type UrlSchemaOptions = SchemaOptions<string> & {
 	readonly schemes?: string[];
 	readonly hosts?: string[] | null;
+	readonly value?: string;
 };
 
 /**
@@ -13,12 +14,17 @@ export type UrlOptions<T extends string> = StringOptions<T> & {
  * - URLs are limited to 512 characters, but generally these won't be data: URIs so this is a reasonable limit.
  * - Falsy values are converted to `""` empty string.
  */
-export class UrlSchema<T extends string> extends StringSchema<T> {
+export class UrlSchema extends StringSchema<string> {
+	static create(options: UrlSchemaOptions): UrlSchema {
+		return new UrlSchema(options);
+	}
+
+	readonly type = "url";
 	readonly schemes: string[] = ["http:", "https:"];
 	readonly hosts: string[] | null = null;
 	readonly max = 512;
 
-	constructor({ schemes = ["http:", "https:"], hosts = null, ...rest }: UrlOptions<T> = {}) {
+	protected constructor({ schemes = ["http:", "https:"], hosts = null, ...rest }: UrlSchemaOptions = {}) {
 		super(rest);
 		this.schemes = schemes;
 		this.hosts = hosts;
@@ -55,16 +61,3 @@ export class UrlSchema<T extends string> extends StringSchema<T> {
 		return url.href;
 	}
 }
-
-/** Shortcuts for UrlSchema. */
-export const url: {
-	<T extends string>(options: UrlOptions<T> & StringOptionOptions<T> & RequiredOptions): UrlSchema<T>;
-	<T extends string>(options: UrlOptions<T> & StringOptionOptions<T>): UrlSchema<T | "">;
-	(options: UrlOptions<string> & RequiredOptions): UrlSchema<string>;
-	(options: UrlOptions<string>): UrlSchema<string | "">;
-	required: UrlSchema<string>;
-	optional: UrlSchema<string>;
-} = Object.assign(<T extends string>(options: UrlOptions<T>): UrlSchema<T> => new UrlSchema<T>(options), {
-	required: new UrlSchema<string>({ required: true }),
-	optional: new UrlSchema<string>({ required: false }),
-});

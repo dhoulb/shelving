@@ -1,7 +1,7 @@
 import { InvalidFeedback } from "../feedback";
-import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
+import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
 
-export type BooleanOptions<T extends boolean> = SchemaOptions<T> & {
+type BooleanSchemaOptions<T extends boolean> = SchemaOptions<T> & {
 	readonly value?: boolean;
 	readonly required?: boolean;
 };
@@ -10,9 +10,15 @@ export type BooleanOptions<T extends boolean> = SchemaOptions<T> & {
  * Schema that defines a valid boolean.
  */
 export class BooleanSchema<T extends boolean> extends Schema<T> {
+	static create(options: BooleanSchemaOptions<boolean> & RequiredSchemaOptions): BooleanSchema<true>;
+	static create(options: BooleanSchemaOptions<boolean>): BooleanSchema<boolean>;
+	static create(options: BooleanSchemaOptions<boolean>): BooleanSchema<boolean> {
+		return new BooleanSchema(options);
+	}
+
 	readonly value: boolean;
 
-	constructor({ value = false, ...rest }: BooleanOptions<T>) {
+	protected constructor({ value = false, ...rest }: BooleanSchemaOptions<T>) {
 		super(rest);
 		this.value = value;
 	}
@@ -28,14 +34,3 @@ export class BooleanSchema<T extends boolean> extends Schema<T> {
 		return super.validate(value);
 	}
 }
-
-/** Shortcuts for BooleanSchema. */
-export const boolean: {
-	<T extends boolean>(options: BooleanOptions<T> & RequiredOptions): BooleanSchema<true>;
-	<T extends boolean>(options: BooleanOptions<T>): BooleanSchema<boolean>;
-	required: BooleanSchema<true>;
-	optional: BooleanSchema<boolean>;
-} = Object.assign(<T extends boolean>(options: BooleanOptions<T>): BooleanSchema<T> => new BooleanSchema<T>(options), {
-	required: new BooleanSchema<true>({ required: true }),
-	optional: new BooleanSchema<boolean>({ required: false }),
-});

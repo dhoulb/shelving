@@ -3,9 +3,9 @@ import { toNumber, roundNumber } from "../number";
 import { isArray } from "../array";
 import { isObject } from "../object";
 import { Unit, detectUnit, convertUnits } from "../units";
-import { RequiredOptions, Schema, SchemaOptions } from "./Schema";
+import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
 
-export type NumberOptions<T extends number | null> = SchemaOptions<T> & {
+type NumberSchemaOptions<T extends number | null> = SchemaOptions<T> & {
 	readonly value?: number | null;
 	readonly unit?: Unit | null;
 	readonly min?: number | null;
@@ -14,7 +14,7 @@ export type NumberOptions<T extends number | null> = SchemaOptions<T> & {
 	readonly options?: (T extends number ? ReadonlyArray<T> | { readonly [K in T]: string } : never) | null;
 };
 
-export type NumberOptionOptions<T extends number> = {
+type NumberSchemaOptionOptions<T extends number> = {
 	readonly options: ReadonlyArray<T> | { readonly [K in T]: string };
 };
 
@@ -23,6 +23,14 @@ export type NumberOptionOptions<T extends number> = {
  * Ensures/converts value to number, enforces min/max number, and precision.
  */
 export class NumberSchema<T extends number | null> extends Schema<T> {
+	static create<X extends number>(options: NumberSchemaOptions<X> & NumberSchemaOptionOptions<X> & RequiredSchemaOptions): NumberSchema<X>;
+	static create<X extends number>(options: NumberSchemaOptions<X> & NumberSchemaOptionOptions<X>): NumberSchema<X | null>;
+	static create(options: NumberSchemaOptions<number | null> & RequiredSchemaOptions): NumberSchema<number>;
+	static create(options: NumberSchemaOptions<number | null>): NumberSchema<number | null>;
+	static create(options: NumberSchemaOptions<number | null>): NumberSchema<number | null> {
+		return new NumberSchema(options);
+	}
+
 	readonly value: number | null;
 	readonly unit?: Unit | null;
 	readonly min: number | null;
@@ -30,7 +38,7 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 	readonly step: number | null;
 	readonly options: (T extends number ? ReadonlyArray<T> | { readonly [K in T]: string } : never) | null;
 
-	constructor({ value = null, unit = null, min = null, max = null, step = null, options = null, ...rest }: NumberOptions<T>) {
+	protected constructor({ value = null, unit = null, min = null, max = null, step = null, options = null, ...rest }: NumberSchemaOptions<T>) {
 		super(rest);
 		this.value = value;
 		this.unit = unit;
@@ -81,19 +89,3 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 		return super.validate(value);
 	}
 }
-
-/** Shortcuts for NumberSchema. */
-export const number: {
-	<T extends number>(options: NumberOptions<T> & NumberOptionOptions<T> & RequiredOptions): NumberSchema<T>;
-	<T extends number>(options: NumberOptions<T> & NumberOptionOptions<T>): NumberSchema<T | null>;
-	(options: NumberOptions<number | null> & RequiredOptions): NumberSchema<number>;
-	(options: NumberOptions<number | null>): NumberSchema<number | null>;
-	required: NumberSchema<number>;
-	optional: NumberSchema<number | null>;
-	/** An number representing a valid Unix timestamp in milliseconds, e.g. as returned by `Date.now()` */
-	timestamp: NumberSchema<number>;
-} = Object.assign(<T extends number | null>(options: NumberOptions<T>): NumberSchema<T> => new NumberSchema<T>(options), {
-	required: new NumberSchema<number>({ required: true, value: 0 }),
-	optional: new NumberSchema<number | null>({ required: false }),
-	timestamp: new NumberSchema<number>({ required: true, min: -62167219125000, max: 253370764800000 }), // Limited to four-digit years: 0000–9999
-});

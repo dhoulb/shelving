@@ -1,8 +1,8 @@
-import { InvalidFeedback, string, withUndefined } from "..";
+import { InvalidFeedback, schema as shortcuts, withUndefined } from "..";
 
 describe("withUndefined()", () => {
 	test("Modifies a schema to allow undefined", () => {
-		const schema = string.required;
+		const schema = shortcuts.string.required;
 		const modifiedSchema = withUndefined(schema);
 		expect(schema).not.toBe(modifiedSchema);
 		expect(() => schema.validate(undefined)).toThrow(InvalidFeedback); // Normally will be invalid.

@@ -1,10 +1,9 @@
 import { MutableObject, isObject, ImmutableObject } from "../object";
-import { Data } from "../data";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import { Schema, SchemaOptions, RequiredOptions } from "./Schema";
+import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
 import { ValidateOptions, Validator, Validators } from "./Validator";
 
-export type ObjectOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
+type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
 	readonly props: Validators<T & ImmutableObject>;
 	readonly value?: Partial<T> | null;
 };
@@ -16,6 +15,12 @@ export type ObjectOptions<T extends ImmutableObject | null> = SchemaOptions<T> &
  * Only returns a new instance of the object if it changes (for immutability).
  */
 export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> implements Validator<T> {
+	static create<X extends ImmutableObject>(options: ObjectSchemaOptions<X> & RequiredSchemaOptions): ObjectSchema<X>;
+	static create<X extends ImmutableObject | null>(options: ObjectSchemaOptions<X>): ObjectSchema<X | null>;
+	static create(options: ObjectSchemaOptions<ImmutableObject | null>): ObjectSchema<ImmutableObject | null> {
+		return new ObjectSchema(options);
+	}
+
 	readonly value: Partial<T> | null = null;
 
 	/**
@@ -24,7 +29,7 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> im
 	 */
 	readonly props: Validators<T & ImmutableObject>;
 
-	constructor({ value = null, props, ...options }: ObjectOptions<T>) {
+	protected constructor({ value = null, props, ...options }: ObjectSchemaOptions<T>) {
 		super(options);
 		this.value = value;
 		this.props = props;
@@ -81,14 +86,3 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> im
 		return super.validate(changed ? safeObj : unsafeObj);
 	}
 }
-
-/** Shortcuts for ObjectSchema. */
-export const object: {
-	<T extends ImmutableObject>(options: ObjectOptions<T> & RequiredOptions): ObjectSchema<T>;
-	<T extends ImmutableObject | null>(options: ObjectOptions<T>): ObjectSchema<T | null>;
-	required<T extends ImmutableObject>(props: Validators<T>): ObjectSchema<T>;
-	optional<T extends ImmutableObject | null>(props: Validators<T & ImmutableObject>): ObjectSchema<T | null>;
-} = Object.assign(<T extends ImmutableObject | null>(options: ObjectOptions<T>): ObjectSchema<T> => new ObjectSchema<T>(options), {
-	required: <T extends ImmutableObject>(props: Validators<T>): ObjectSchema<T> => new ObjectSchema<T>({ props, required: true, value: {} }),
-	optional: <T extends ImmutableObject | null>(props: Validators<T & Data>): ObjectSchema<T | null> => new ObjectSchema<T | null>({ props, required: false }),
-});
