@@ -2,19 +2,25 @@ import type { Data, Result, Results } from "../data";
 import type { Unsubscriber } from "../function";
 import type { Stream } from "../stream";
 import type { Document } from "./Document";
-import type { Collection } from "./Collection";
+import type { Documents } from "./Documents";
 
 /**
  * Provider interface: Implemented by classes that provide access to data (e.g. IndexedDB, Firebase, or in-memory cache providers).
  */
 export interface Provider {
 	/**
+	 * Whether results from this provider need to be validated when read.
+	 * - i.e. results from `MemoryProvider` don't need validation because they were validated when they were written and can't be modified in memory.
+	 */
+	readonly VALIDATE: boolean;
+
+	/**
 	 * Get a document.
 	 *
 	 * @param ref Document specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	getDocument<T extends Data>(ref: Document<T>): Promise<Result<T>>;
+	getDocument(ref: Document): Promise<Result>;
 
 	/**
 	 * Subscribe to a document.
@@ -24,75 +30,99 @@ export interface Provider {
 	 * @param stream Stream to report the result back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onDocument<T extends Data>(ref: Document<T>, stream: Stream<Result<T>>): Unsubscriber;
+	onDocument(ref: Document, stream: Stream<Result>): Unsubscriber;
 
 	/**
 	 * Create a new document in a collection by generating a unique ID.
 	 * - Created document is guaranteed to have a unique ID.
 	 *
-	 * @param ref Collection specifying which collection to add the document to.
-	 * @return Document that was added (pointer that includes `.id` and `.data` props).
+	 * @param ref Which collection to add the document to.
+	 * @return Promise that resolves to the string ID of the created document when done.
 	 */
-	addDocument<T extends Data>(ref: Collection<T>, data: T): Promise<string>;
+	addDocument(ref: Documents, data: Data): Promise<string>;
 
 	/**
-	 * Set an existing document.
+	 * Set a document.
 	 * - If the document exists, set the value of it.
 	 * - If the document doesn't exist, set it at path.
 	 *
 	 * @param ref Document specifying which document to merge into.
 	 * @param change The change to update the document (either a diff to update the value, or `undefined` for delete).
-	 * @return The change that was applied to the document (either a diff of what was updated on the value, or `undefined` for deleted), or `undefined` if no change was made.
 	 *
+	 * @return Promise that resolves when done.
 	 * @throws RequiredError if the document doesn't exist.
 	 */
-	setDocument<T extends Data>(ref: Document<T>, data: T): Promise<void>;
+	setDocument(ref: Document, data: Data): Promise<void>;
 
 	/**
-	 * Update an existing document.
+	 * Update an existing document with a partial value.
 	 * - If the document exists, merge the new value into it (deeply).
 	 * - If the document doesn't exist, throw an error.
 	 *
 	 * @param ref Document specifying which document to merge into.
-	 * @param updates Set of updates to make to the document.
-	 * @return The change that was applied to the document (either a diff of what was updated on the value, or `undefined` for deleted), or `undefined` if no change was made.
+	 * @param partial Set of updates to make to the document.
 	 *
+	 * @return Promise that resolves when done.
 	 * @throws RequiredError if the document doesn't exist.
 	 */
-	updateDocument<T extends Data>(ref: Document<T>, updates: Partial<T>): Promise<void>;
+	updateDocument(ref: Document, partial: Data): Promise<void>;
 
 	/**
 	 * Delete a document.
 	 *
 	 * @param ref Document specifying which document document to delete.
-	 * @return The change that was applied to the document (either a diff of what was updated on the value, or `undefined` for deleted), or `undefined` if no change was made.
+	 * @return Promise that resolves when done.
 	 */
-	deleteDocument<T extends Data>(ref: Document<T>): Promise<void>;
+	deleteDocument(ref: Document): Promise<void>;
 
 	/**
-	 * Count a list of documents.
-	 * - This is implemented separately to `getCollection()` because sometimes counting is significantly more efficient than reading every document.
+	 * Count all matching documents.
+	 * - This is implemented separately to `getDocuments()` because sometimes counting is significantly more efficient than reading every document.
 	 *
-	 * @param ref Collection specifying which collection to count documents from.
+	 * @param ref Which collection to count documents from.
 	 * @return Array of documents matching the rules.
 	 */
-	countCollection<T extends Data>(ref: Collection<T>): Promise<number>;
+	countDocuments(ref: Documents): Promise<number>;
 
 	/**
-	 * Get a list of documents.
+	 * Get all matching documents.
 	 *
-	 * @param ref Collection specifying which collection to get documents from.
+	 * @param ref Which collection to get documents from.
 	 * @return Array of documents matching the rules.
 	 */
-	getCollection<T extends Data>(ref: Collection<T>): Promise<Results<T>>;
+	getDocuments(ref: Documents): Promise<Results>;
 
 	/**
-	 * Subscribe to a list of documents.
+	 * Subscribe to all matching documents.
 	 * - Expect that `onNext()` is called immediately with the initial value.
 	 *
-	 * @param ref Collection specifying which collection to to subscribe to.
+	 * @param ref Which collection to to subscribe to.
 	 * @param stream Stream to report the results back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onCollection<T extends Data>(ref: Collection<T>, stream: Stream<Results<T>>): Unsubscriber;
+	onDocuments(ref: Documents, stream: Stream<Results>): Unsubscriber;
+
+	/**
+	 * Set all matching documents to the same value.
+	 *
+	 * @param ref Which collection to set.
+	 * @return Promise that resolves when done.
+	 */
+	setDocuments(ref: Documents, data: Data): Promise<void>;
+
+	/**
+	 * Update all matching documents with the same partial value.
+	 *
+	 * @param ref Which collection to update.
+	 * @return Promise that resolves when done.
+	 */
+	updateDocuments(ref: Documents, partial: Data): Promise<void>;
+
+	/**
+	 * Delete all matching documents.
+	 *
+	 * @param ref Which collection to delete.
+	 * @return Promise that resolves when done.
+	 */
+	deleteDocuments(ref: Documents): Promise<void>;
 }

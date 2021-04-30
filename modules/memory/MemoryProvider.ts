@@ -1,6 +1,6 @@
 /* eslint-disable require-await */
 
-import { Collection, Document, DocumentRequiredError, Provider } from "../db";
+import { Documents, Document, DocumentRequiredError, Provider } from "../db";
 import { randomId } from "../random";
 import type { Data, Result, Results } from "../data";
 import { dispatch, Dispatcher, Unsubscriber } from "../function";
@@ -11,15 +11,15 @@ import { logError } from "../console";
 
 /**
  * An individual table of data.
- * - Fires with an array of strings.
+ * - Fires with an array of string IDs.
  */
-class Table<T extends Data> {
+class Table {
 	private readonly dispatchers: Dispatcher<ImmutableArray<string>>[] = [];
 	private readonly changes: MutableArray<string> = [];
 
-	readonly docs: MutableObject<T> = {};
+	readonly docs: MutableObject<Data> = {};
 
-	set(id: string, data: T): void {
+	set(id: string, data: Data): void {
 		if (data !== this.docs[id]) {
 			this.docs[id] = data;
 			addItem(this.changes, id);
@@ -59,19 +59,32 @@ class Table<T extends Data> {
  *
  * Equality hash is set on returned values so `deepEqual()` etc can use it to quickly compare results without needing to look deeply.
  */
-class MemoryProvider implements Provider {
-	// Registry of collections in `{ path: Table<T> }` format.
-	private data: MutableObject<Table<Data>> = {};
-	table<X extends Data>(path: string): Table<X> {
-		return ((this.data[path] as Table<X>) ||= new Table<X>());
+export class MemoryProvider implements Provider {
+	/** Create a new MemoryProvider. */
+	static create(): MemoryProvider {
+		return new MemoryProvider();
 	}
 
-	async getDocument<T extends Data>({ parent, id }: Document<T>): Promise<Result<T>> {
-		return this.table<T>(parent).docs[id];
+	// MemoryProvider doesn't need validation when results are got, because they were validated when saved and
+	VALIDATE = false;
+
+	// Empty so it can be protected.
+	protected constructor() {
+		//
 	}
 
-	onDocument<T extends Data>({ id, parent }: Document<T>, stream: Stream<Result<T>>): Unsubscriber {
-		const table = this.table<T>(parent);
+	// Registry of collections in `{ path: Table }` format.
+	private _data: MutableObject<Table> = {};
+	private _table(path: string): Table {
+		return ((this._data[path] as Table) ||= new Table());
+	}
+
+	async getDocument({ collection, id }: Document): Promise<Result> {
+		return this._table(collection).docs[id];
+	}
+
+	onDocument({ id, collection }: Document, stream: Stream<Result>): Unsubscriber {
+		const table = this._table(collection);
 
 		// Call next() with initial results.
 		stream.next(table.docs[id]);
@@ -82,44 +95,40 @@ class MemoryProvider implements Provider {
 		});
 	}
 
-	async addDocument<T extends Data>({ path }: Collection<T>, data: T): Promise<string> {
-		const table = this.table<T>(path);
+	async addDocument({ path }: Documents, data: Data): Promise<string> {
+		const table = this._table(path);
 		let id = randomId();
 		while (table.docs[id]) id = randomId(); // Regenerate until unique.
 		table.set(id, data);
 		return id;
 	}
 
-	async setDocument<T extends Data>({ parent, id }: Document<T>, data: T): Promise<void> {
-		this.table<T>(parent).set(id, data);
+	async setDocument({ collection, id }: Document, data: Data): Promise<void> {
+		this._table(collection).set(id, data);
 	}
 
-	async updateDocument<T extends Data>(document: Document<T>, updates: Partial<T>): Promise<void> {
-		const { parent, id } = document;
-		const table = this.table<T>(parent);
+	async updateDocument(document: Document, partial: Data): Promise<void> {
+		const { collection, id } = document;
+		const table = this._table(collection);
 		const data = table.docs[id];
-		if (data) {
-			const merged = updateProps(data, updates);
-			if (merged !== updates) table.set(id, merged);
-		} else {
-			throw new DocumentRequiredError(document);
-		}
+		if (!data) throw new DocumentRequiredError(document);
+		table.set(id, updateProps(data, partial));
 	}
 
-	async deleteDocument<T extends Data>({ parent, id }: Document<T>): Promise<void> {
-		this.table<T>(parent).delete(id);
+	async deleteDocument({ collection, id }: Document): Promise<void> {
+		this._table(collection).delete(id);
 	}
 
-	async countCollection<T extends Data>({ path, query }: Collection<T>): Promise<number> {
-		return query.count(this.table<T>(path).docs);
+	async countDocuments({ path, query }: Documents): Promise<number> {
+		return query.count(Object.entries(this._table(path).docs));
 	}
 
-	async getCollection<T extends Data>({ path, query }: Collection<T>): Promise<Results<T>> {
-		return query.results(this.table<T>(path).docs);
+	async getDocuments({ path, query }: Documents): Promise<Results> {
+		return query.results(this._table(path).docs);
 	}
 
-	onCollection<T extends Data>({ path, query }: Collection<T>, stream: Stream<Results<T>>): Unsubscriber {
-		const table = this.table<T>(path);
+	onDocuments({ path, query }: Documents, stream: Stream<Results>): Unsubscriber {
+		const table = this._table(path);
 		let filtered = objectFromEntries(query.sorts.apply(query.filters.apply(Object.entries(table.docs))));
 		let last = query.slice.results(filtered);
 
@@ -163,10 +172,25 @@ class MemoryProvider implements Provider {
 		});
 	}
 
+	async setDocuments({ path, query }: Documents, data: Data): Promise<void> {
+		const table = this._table(path);
+		const entries = query.apply(Object.entries(table.docs));
+		for (const [id] of entries) table.set(id, data);
+	}
+
+	async updateDocuments({ path, query }: Documents, partial: Data): Promise<void> {
+		const table = this._table(path);
+		const entries = query.apply(Object.entries(table.docs));
+		for (const [id, data] of entries) table.set(id, updateProps(data, partial));
+	}
+
+	async deleteDocuments({ path, query }: Documents): Promise<void> {
+		const table = this._table(path);
+		const entries = query.apply(Object.entries(table.docs));
+		for (const [id] of entries) table.delete(id);
+	}
+
 	async reset(): Promise<void> {
-		this.data = {};
+		this._data = {};
 	}
 }
-
-/** Create a new MemoryProvider instance. */
-export const provideMemory = (): MemoryProvider => new MemoryProvider();

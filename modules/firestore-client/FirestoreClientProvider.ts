@@ -6,26 +6,11 @@ import type {
 	OrderByDirection as FirestoreOrderByDirection,
 	Query as FirestoreQuery,
 	QuerySnapshot as FirestoreQuerySnapshot,
-	DocumentSnapshot as FirestoreDocumentSnapshot,
 } from "@firebase/firestore-types";
-import {
-	DocumentRequiredError,
-	isObject,
-	MutableObject,
-	Data,
-	Result,
-	Results,
-	Provider,
-	Document,
-	Collection,
-	Operator,
-	Stream,
-	Direction,
-	ImmutableObject,
-} from "..";
+import { DocumentRequiredError, isObject, Data, Results, Provider, Document, Documents, Operator, Stream, Direction, Mutable, Result } from "..";
 
 // Constants.
-// const ID = "__name__"; // DH: `__name__` is the ID and the entire path of the document. `__id__` is just ID.
+// const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
 const ID = "__id__"; // Internal way Firestore Queries can reference the ID of the current document.
 
 // Map `Filter.types` to `WhereFilterOp`
@@ -47,7 +32,7 @@ const DIRECTIONS: { readonly [K in Direction]: FirestoreOrderByDirection } = {
 };
 
 /** Create a corresponding `QueryReference` from a Query. */
-const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filters, sorts, slice } }: Collection<T>): FirestoreQuery => {
+const buildQuery = (firestore: Firestore, { path, query: { filters, sorts, slice } }: Documents): FirestoreQuery => {
 	let query: FirestoreQuery = firestore.collection(path);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
@@ -55,17 +40,11 @@ const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filte
 	return query;
 };
 
-/** Validate a set of results from a collection snapshot. */
-const collectionResults = <T extends Data>(ref: Collection<T>, snapshot: FirestoreQuerySnapshot): Results<T> => {
-	const results: MutableObject<ImmutableObject> = {};
+/** Create a set of results from a collection snapshot. */
+const collectionResults = (snapshot: FirestoreQuerySnapshot): Results => {
+	const results: Mutable<Results> = {};
 	for (const s of snapshot.docs) results[s.id] = s.data();
-	return ref.validateResults(results);
-};
-
-/** Extract the correct value from a document snapshot. */
-const documentResult = <T extends Data>(ref: Document<T>, snapshot: FirestoreDocumentSnapshot): Result<T> => {
-	const data = snapshot.data();
-	return data && ref.validate(data);
+	return results;
 };
 
 type FirestoreOptions = {
@@ -77,36 +56,42 @@ type FirestoreOptions = {
  * - Works with the JS client SDK.
  * @todo Maybe find a way to generate a unique hash of
  */
-class FirestoreClientProvider implements Provider {
+export class FirestoreClientProvider implements Provider {
+	/** Create a new FirestoreClientProvider. */
+	static create(options: FirestoreOptions): FirestoreClientProvider {
+		return new FirestoreClientProvider(options);
+	}
+
+	readonly VALIDATE = true;
 	readonly firestore: Firestore;
 
-	constructor({ firestore }: FirestoreOptions) {
+	protected constructor({ firestore }: FirestoreOptions) {
 		this.firestore = firestore;
 	}
 
-	async getDocument<T extends Data>(ref: Document<T>): Promise<Result<T>> {
+	async getDocument(ref: Document): Promise<Result> {
 		const doc = this.firestore.doc(ref.path);
 		const snapshot = await doc.get();
-		return documentResult(ref, snapshot);
+		return snapshot.data();
 	}
 
-	onDocument<T extends Data>(ref: Document<T>, stream: Stream<Result<T>>): () => void {
+	onDocument(ref: Document, stream: Stream<Result>): () => void {
 		return this.firestore.doc(ref.path).onSnapshot(
-			snapshot => stream.next(documentResult(ref, snapshot)),
+			snapshot => stream.next(snapshot.data()),
 			error => stream.error(error),
 		);
 	}
 
-	async addDocument<T extends Data>(ref: Collection<T>, data: T): Promise<string> {
+	async addDocument(ref: Documents, data: Data): Promise<string> {
 		const { id } = await this.firestore.collection(ref.path).add(data);
 		return id;
 	}
 
-	async setDocument<T extends Data>(ref: Document<T>, data: T): Promise<void> {
+	async setDocument(ref: Document, data: Data): Promise<void> {
 		await this.firestore.doc(ref.path).set(data);
 	}
 
-	async updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): Promise<void> {
+	async updateDocument(ref: Document, partial: Data): Promise<void> {
 		try {
 			await this.firestore.doc(ref.path).update(partial);
 		} catch (thrown: unknown) {
@@ -115,31 +100,43 @@ class FirestoreClientProvider implements Provider {
 		}
 	}
 
-	async deleteDocument<T extends Data>(ref: Document<T>): Promise<void> {
+	async deleteDocument(ref: Document): Promise<void> {
 		await this.firestore.doc(ref.path).delete();
 		return undefined;
 	}
 
-	async getCollection<T extends Data>(ref: Collection<T>): Promise<Results<T>> {
+	async getDocuments(ref: Documents): Promise<Results> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
-		return collectionResults(ref, snapshot);
+		return collectionResults(snapshot);
 	}
 
 	// Count the documents in the collection.
 	// Note: Firestore will charge you for reading every document in this collection!
 	// If you're going to read the documents anyway, don't count before reading or you'll be charged twice and it'll take twice as long.
-	async countCollection<T extends Data>(ref: Collection<T>): Promise<number> {
+	async countDocuments(ref: Documents): Promise<number> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
 		return snapshot.size;
 	}
 
-	onCollection<T extends Data>(ref: Collection<T>, stream: Stream<Results<T>>): () => void {
+	onDocuments(ref: Documents, stream: Stream<Results>): () => void {
 		return buildQuery(this.firestore, ref).onSnapshot(
-			snapshot => stream.next(collectionResults(ref, snapshot)),
+			snapshot => stream.next(collectionResults(snapshot)),
 			error => stream.error(error),
 		);
 	}
-}
 
-/** Create a new FirestoreClientProvider instance. */
-export const provideFirestore = (options: FirestoreOptions): FirestoreClientProvider => new FirestoreClientProvider(options);
+	async setDocuments(ref: Documents, data: Data): Promise<void> {
+		const snapshot = await buildQuery(this.firestore, ref).get();
+		await Promise.all(snapshot.docs.map(s => s.ref.set(data)));
+	}
+
+	async updateDocuments(ref: Documents, partial: Data): Promise<void> {
+		const snapshot = await buildQuery(this.firestore, ref).get();
+		await Promise.all(snapshot.docs.map(s => s.ref.update(partial)));
+	}
+
+	async deleteDocuments(ref: Documents): Promise<void> {
+		const snapshot = await buildQuery(this.firestore, ref).get();
+		await Promise.all(snapshot.docs.map(s => s.ref.delete()));
+	}
+}

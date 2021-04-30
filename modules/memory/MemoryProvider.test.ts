@@ -1,15 +1,15 @@
 import { createTestDatabase, allBasics, allPeople } from "../test";
-import { provideMemory } from "..";
+import { MemoryProvider } from "..";
 
 const { basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9 } = allBasics;
 const { person1, person2, person3, person4, person5 } = allPeople;
 
 test("MemoryProvider: set/get/delete documents", async () => {
 	// Setup.
-	const provider = provideMemory();
+	const provider = MemoryProvider.create();
 	const db = createTestDatabase(provider);
-	const basics = db.collection("basics");
-	const people = db.collection("people");
+	const basics = db.docs("basics");
+	const people = db.docs("people");
 
 	// Add documents.
 	expect(await basics.doc("basic1").set(basic1)).toBe(undefined);
@@ -19,22 +19,22 @@ test("MemoryProvider: set/get/delete documents", async () => {
 	expect(await people.doc("person2").set(person2)).toBe(undefined);
 	expect(await people.doc("person3").set(person3)).toBe(undefined);
 	// Check documents.
-	expect(await basics.doc("basic1").result).toBe(basic1);
-	expect(await basics.doc("basic2").result).toBe(basic2);
-	expect(await basics.doc("basic3").result).toBe(basic3);
-	expect(await basics.doc("basicNone").result).toBe(undefined);
+	expect(await basics.doc("basic1").get()).toBe(basic1);
+	expect(await basics.doc("basic2").get()).toBe(basic2);
+	expect(await basics.doc("basic3").get()).toBe(basic3);
+	expect(await basics.doc("basicNone").get()).toBe(undefined);
 	expect(await basics.count).toBe(3);
-	expect(await people.doc("person1").result).toBe(person1);
-	expect(await people.doc("person2").result).toBe(person2);
-	expect(await people.doc("person3").result).toBe(person3);
-	expect(await people.doc("peopleNone").result).toBe(undefined);
+	expect(await people.doc("person1").get()).toBe(person1);
+	expect(await people.doc("person2").get()).toBe(person2);
+	expect(await people.doc("person3").get()).toBe(person3);
+	expect(await people.doc("peopleNone").get()).toBe(undefined);
 	expect(await people.count).toBe(3);
 	// Update documents.
 	expect(await basics.doc("basic1").update({ str: "NEW" })).toBe(undefined);
-	expect(await basics.doc("basic1").result).toMatchObject({ ...basic1, str: "NEW" });
+	expect(await basics.doc("basic1").get()).toMatchObject({ ...basic1, str: "NEW" });
 	// expect(await people.doc("person3").merge({ name: { first: "NEW" } })).toBe(undefined);
 	// Merge documents.
-	// expect(await people.doc("person3").result).toMatchObject({ ...person3, name: { ...person3.name, first: "NEW" } });
+	// expect(await people.doc("person3").get()).toMatchObject({ ...person3, name: { ...person3.name, first: "NEW" } });
 	// Add new documents (with random IDs).
 	const addedBasicId = await basics.add(basic9);
 	expect(typeof addedBasicId).toBe("string");
@@ -50,21 +50,21 @@ test("MemoryProvider: set/get/delete documents", async () => {
 });
 test("MemoryProvider: set/get/delete collections", async () => {
 	// Setup.
-	const provider = provideMemory();
+	const provider = MemoryProvider.create();
 	const db = createTestDatabase(provider);
-	const basics = db.collection("basics");
-	const people = db.collection("people");
+	const basics = db.docs("basics");
+	const people = db.docs("people");
 	// Change collections.
 	await Promise.all(Object.entries(allBasics).map(([k, v]) => basics.doc(k).set(v)));
 	await Promise.all(Object.entries(allPeople).map(([k, v]) => people.doc(k).set(v)));
 	// Check collections.
 	expect(await basics.results).toEqual(allBasics);
-	expect(await basics.doc("basic1").result).toEqual(basic1);
-	expect(await basics.doc("basic6").result).toEqual(basic6);
-	expect(await basics.doc("basicNone").result).toBe(undefined);
+	expect(await basics.doc("basic1").get()).toEqual(basic1);
+	expect(await basics.doc("basic6").get()).toEqual(basic6);
+	expect(await basics.doc("basicNone").get()).toBe(undefined);
 	expect(await people.results).toEqual(allPeople);
-	expect(await people.doc("person4").result).toEqual(person4);
-	expect(await people.doc("peopleNone").result).toBe(undefined);
+	expect(await people.doc("person4").get()).toEqual(person4);
+	expect(await people.doc("peopleNone").get()).toBe(undefined);
 	// Delete collections.
 	expect(await basics.delete()).toBe(undefined);
 	expect(await people.delete()).toBe(undefined);
@@ -74,9 +74,9 @@ test("MemoryProvider: set/get/delete collections", async () => {
 });
 test("MemoryProvider: get queries", async () => {
 	// Setup.
-	const provider = provideMemory();
+	const provider = MemoryProvider.create();
 	const db = createTestDatabase(provider);
-	const basics = db.collection("basics");
+	const basics = db.docs("basics");
 	await Promise.all(Object.entries(allBasics).map(([k, v]) => basics.doc(k).set(v)));
 	// Equal queries.
 	expect(await basics.is("str", "aaa").results).toEqual({ basic1 });
@@ -112,9 +112,9 @@ test("MemoryProvider: get queries", async () => {
 });
 test("MemoryProvider: subscribing to documents", async () => {
 	// Setup.
-	const provider = provideMemory();
+	const provider = MemoryProvider.create();
 	const db = createTestDatabase(provider);
-	const basics = db.collection("basics");
+	const basics = db.docs("basics");
 	const doc = basics.doc("basic1");
 	// Subscribe.
 	const fn1 = jest.fn();
@@ -148,9 +148,9 @@ test("MemoryProvider: subscribing to documents", async () => {
 });
 test("MemoryProvider: subscribing to collections", async () => {
 	// Setup.
-	const provider = provideMemory();
+	const provider = MemoryProvider.create();
 	const db = createTestDatabase(provider);
-	const basics = db.collection("basics");
+	const basics = db.docs("basics");
 	// Subscribe.
 	const fn1 = jest.fn();
 	const un1 = basics.subscribe(fn1);
@@ -214,9 +214,9 @@ test("MemoryProvider: subscribing to collections", async () => {
 });
 test("MemoryProvider: subscribing to filter query", async () => {
 	// Setup.
-	const provider = provideMemory();
+	const provider = MemoryProvider.create();
 	const db = createTestDatabase(provider);
-	const basics = db.collection("basics");
+	const basics = db.docs("basics");
 	await basics.doc("basic6").set(basic6);
 	await basics.doc("basic7").set(basic7);
 	// Subscribe (should find only basic7).
@@ -257,9 +257,9 @@ test("MemoryProvider: subscribing to filter query", async () => {
 });
 test("MemoryProvider: subscribing to limit query", async () => {
 	// Setup.
-	const provider = provideMemory();
+	const provider = MemoryProvider.create();
 	const db = createTestDatabase(provider);
-	const basics = db.collection("basics");
+	const basics = db.docs("basics");
 	await Promise.all(Object.entries(allBasics).map(([k, v]) => basics.doc(k).set(v)));
 	// Subscribe (should find only basic7).
 	const fn1 = jest.fn();

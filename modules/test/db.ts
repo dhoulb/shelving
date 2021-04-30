@@ -1,21 +1,16 @@
-import { object, array, string, number, date, data } from "../schema";
-import { Provider, Database, createDatabase } from "../db";
-import { EmptyObject } from "../object";
+import { schema } from "../schema";
+import { Provider, Database } from "../db";
 
 // Schemas.
-export const basicSchema = data({
-	props: {
-		str: string.required,
-		num: number.required,
-		group: string({ options: ["a", "b", "c"] as const }),
-		tags: array.optional(string.required),
-	},
+export const basicSchema = schema.data({
+	str: schema.string.required,
+	num: schema.number.required,
+	group: schema.string({ options: ["a", "b", "c"] as const }),
+	tags: schema.array.optional(schema.string.required),
 });
-export const personSchema = data({
-	props: {
-		name: object.required({ first: string.required, last: string.required }),
-		birthday: date.optional,
-	},
+export const personSchema = schema.data({
+	name: schema.object.required({ first: schema.string.required, last: schema.string.required }),
+	birthday: schema.date.optional,
 });
 export const collections = {
 	basics: basicSchema,
@@ -45,4 +40,9 @@ export const allPeople = {
 };
 
 // Make a new database around the above collections and a provider.
-export const createTestDatabase = <P extends Provider>(provider: P): Database<EmptyObject, typeof collections> => createDatabase({ collections, provider });
+export const createTestDatabase = <P extends Provider>(
+	provider: P,
+): Database<{
+	basics: typeof basicSchema.TYPE;
+	people: typeof personSchema.TYPE;
+}> => Database.create(collections, provider);

@@ -1,4 +1,4 @@
-import type { Data, Results } from "../data";
+import type { Data } from "../data";
 import type { ImmutableEntries } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
 import { assertLength, assertProp } from "../assert";
@@ -134,8 +134,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	 * - Slightly more efficient than `.apply().length` because counting doesn't require the results to be sorted.
 	 * - Don't count if you're then going to use the result, because you'll be filtering twice.
 	 */
-	count(input: Results<T>): number {
-		const entries = Object.entries(input);
+	count(entries: ImmutableEntries<T>): number {
 		if (!entries.length) return 0;
 		return this.slice.apply(this.filters.apply(entries)).length;
 	}

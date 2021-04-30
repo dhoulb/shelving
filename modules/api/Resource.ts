@@ -1,7 +1,7 @@
 import { isFeedback } from "../feedback";
 import { ValidationError } from "../errors";
 import type { Arguments, AsyncFetcher } from "../function";
-import { UNDEFINED_VALIDATOR, Validator } from "../schema";
+import { schema, Validator } from "../schema";
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions..
@@ -14,7 +14,7 @@ export class Resource<P, R> {
 	static create<Y>(payload: undefined, result: Y): Resource<undefined, Y>;
 	static create<X>(payload: Validator<X>, result?: undefined): Resource<X, undefined>;
 	static create(payload?: undefined, result?: undefined): Resource<undefined, undefined>;
-	static create(payload: Validator<unknown> = UNDEFINED_VALIDATOR, result: Validator<unknown> = UNDEFINED_VALIDATOR): Resource<unknown, unknown> {
+	static create(payload: Validator<unknown> = schema.undefined, result: Validator<unknown> = schema.undefined): Resource<unknown, unknown> {
 		return new Resource(payload, result);
 	}
 

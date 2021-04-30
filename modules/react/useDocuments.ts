@@ -1,4 +1,4 @@
-import { Data, Results, Collection } from "..";
+import { Data, Results, Documents } from "..";
 import { Source } from "./Source";
 import { useState } from "./useState";
 
@@ -7,9 +7,9 @@ import { useState } from "./useState";
 const sources: { [key: string]: Source<any> } = {};
 
 /**
- * Use the results of a Shelving collection in a React component (once).
+ * Use a set of documents in a React component.
  *
- * @param collection Instance of `Collection` to get the results of, or an explicit `undefined`
+ * @param ref Shelving `Documents` reference, or an explicit `undefined`
  * - If `collection` is `undefined` then `{}` empty results will always be returned.
  * @param maxAgeMs How 'out of date' data is allowed to be before it'll be refetched.
  * - If `maxAge` is true, a realtime subscription to the data will be created.
@@ -21,13 +21,11 @@ const sources: { [key: string]: Source<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useCollection = <T extends Data>(collection: Collection<T> | undefined, maxAgeMs?: number | true): Source<Results<T>> => {
-	const key = `collection:${collection ? collection.toString() : "undefined"}`;
-	const source: Source<Results<T>> = (sources[key] ||= new Source<Results<T>>(
-		collection ? { subscribe: collection, fetch: collection } : { initial: undefined },
-	));
+export const useDocuments = <T extends Data>(ref: Documents<T> | undefined, maxAgeMs?: number | true): Source<Results<T>> => {
+	const key = ref ? ref.toString() : "undefined";
+	const source: Source<Results<T>> = (sources[key] ||= new Source<Results<T>>(ref ? { subscribe: ref, fetch: ref } : { initial: undefined }));
 	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
-	if (collection) {
+	if (ref) {
 		if (maxAgeMs === true) source.start();
 		else source.queueFetch(maxAgeMs);
 	}

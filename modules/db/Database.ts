@@ -1,6 +1,8 @@
-import type { DataSchemas } from "../schema";
-import type { Document } from "./Document";
-import type { Collection } from "./Collection";
+import type { Datas } from "../data";
+import type { Validators } from "../schema";
+import type { Provider } from "./Provider";
+import { Document } from "./Document";
+import { Documents } from "./Documents";
 
 /**
  * Database: combines a set of document and collection loci for the root level of the database, and links them to a Provider.
@@ -9,24 +11,40 @@ import type { Collection } from "./Collection";
  * @param collections Set of loci describing collections at the root level of the database.
  * @param provider Provider that allows data to be read/written.
  */
-export interface Database<D extends DataSchemas = DataSchemas, C extends DataSchemas = DataSchemas> {
-	/** Any nested documents that sit below this data. */
-	readonly documents: D;
+export class Database<C extends Datas = Datas> {
+	/** Create a new Database. */
+	static create<X extends Datas>(schemas: Validators<X>, provider: Provider): Database<X> {
+		return new Database(schemas, provider);
+	}
 
-	/** Any nested collections that sit below this data. */
-	readonly collections: C;
+	/** List of schemas validators for the collections in this database. */
+	readonly schemas: Validators<C>;
+
+	/** The provider that powers this database. */
+	readonly provider: Provider;
+
+	protected constructor(schemas: Validators<C>, provider: Provider) {
+		this.schemas = schemas;
+		this.provider = provider;
+	}
 
 	/**
-	 * Get a `Document` ref for a named subdocument of this document.
-	 * @param name Document name, e.g. `options`
-	 * @example `db.collection("dogs").doc("fido").doc("options").get()`
-	 */
-	doc<K extends keyof D>(name: K): Document<D[K]["TYPE"], D[K]["documents"], D[K]["collections"]>;
-
-	/**
-	 * Get a `Collection` ref for a named subcollection of this document.
+	 * Get a `Documents` ref for a set of documents in a collection in this database.
 	 * @param name Collection name, e.g. `puppies`
-	 * @example `db.collection("dogs").doc("fido").collection("puppies").get()`
+	 * @example `db.docs("dogs").doc("fido").get()`
 	 */
-	collection<K extends keyof C>(name: K): Collection<C[K]["TYPE"], C[K]["documents"], C[K]["collections"]>;
+	docs<K extends keyof C>(collection: K): Documents<C[K]> {
+		// @ts-expect-error Documents instances should only be created from databases.
+		return new Documents(this.schemas[collection], this.provider, collection as string);
+	}
+
+	/**
+	 * Get a `Document` ref for a document in a collection in this database.
+	 * @param name Document name, e.g. `fido`
+	 * @example `db.docs("dogs", "fido").get()`
+	 */
+	doc<K extends keyof C>(collection: K, id: string): Document<C[K]> {
+		// @ts-expect-error Document instances should only be created from databases.
+		return new Document(this.schemas[collection], this.provider, collection as string, id);
+	}
 }

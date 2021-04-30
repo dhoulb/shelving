@@ -25,13 +25,13 @@ yarn add shelving
 Import from Skypack CDN (the `?dts` enables TypeScript types in Deno):
 
 ```js
-import { createDatabase } from "https://cdn.skypack.dev/shelving";
-import { createDatabase } from "https://cdn.skypack.dev/shelving?dts";
+import { Database } from "https://cdn.skypack.dev/shelving";
+import { Database } from "https://cdn.skypack.dev/shelving?dts";
 ```
 
 ## Usage
 
-Shelving is an [ES module](https://nodejs.org/api/esm.html) supporting `import { createQuery } from "shelving";` syntax and can be used natively in systems/browsers that support that (e.g. Chrome 61+, Deno, Node 12+).
+Shelving is an [ES module](https://nodejs.org/api/esm.html) supporting `import { Query } from "shelving";` syntax and can be used natively in systems/browsers that support that (e.g. Chrome 61+, Deno, Node 12+).
 
 Shelving does not include code for CommonJS `require()` imports, so using it in older projects will require transpiling.
 

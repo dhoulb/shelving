@@ -5,26 +5,11 @@ import type {
 	OrderByDirection as FirestoreOrderByDirection,
 	Query as FirestoreQuery,
 	QuerySnapshot as FirestoreQuerySnapshot,
-	DocumentSnapshot as FirestoreDocumentSnapshot,
 } from "@google-cloud/firestore";
-import {
-	DocumentRequiredError,
-	isObject,
-	MutableObject,
-	Data,
-	Result,
-	Results,
-	Provider,
-	Document,
-	Collection,
-	Operator,
-	Stream,
-	Direction,
-	ImmutableObject,
-} from "..";
+import { DocumentRequiredError, isObject, Data, Results, Provider, Document, Documents, Operator, Stream, Direction, Mutable, Result } from "..";
 
 // Constants.
-// const ID = "__name__"; // DH: `__name__` is the ID and the entire path of the document. `__id__` is just ID.
+// const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
 const ID = "__id__"; // Internal way Firestore Queries can reference the ID of the current document.
 
 // Map `Filter.types` to `WhereFilterOp`
@@ -46,7 +31,7 @@ const DIRECTIONS: { readonly [K in Direction]: FirestoreOrderByDirection } = {
 };
 
 /** Create a corresponding `QueryReference` from a Query. */
-const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filters, sorts, slice } }: Collection<T>): FirestoreQuery => {
+const buildQuery = (firestore: Firestore, { path, query: { filters, sorts, slice } }: Documents): FirestoreQuery => {
 	let query: FirestoreQuery = firestore.collection(path);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
@@ -54,17 +39,11 @@ const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filte
 	return query;
 };
 
-/** Validate a set of results from a collection snapshot. */
-const collectionResults = <T extends Data>(ref: Collection<T>, snapshot: FirestoreQuerySnapshot): Results<T> => {
-	const results: MutableObject<ImmutableObject> = {};
+/** Create a set of results from a collection snapshot. */
+const snapshotResults = (snapshot: FirestoreQuerySnapshot): Results => {
+	const results: Mutable<Results> = {};
 	for (const s of snapshot.docs) results[s.id] = s.data();
-	return ref.validateResults(results);
-};
-
-/** Extract the correct value from a document snapshot. */
-const documentResult = <T extends Data>(ref: Document<T>, snapshot: FirestoreDocumentSnapshot): Result<T> => {
-	const data = snapshot.data();
-	return data && ref.validate(data);
+	return results;
 };
 
 type FirestoreOptions = {
@@ -76,36 +55,42 @@ type FirestoreOptions = {
  * - Works with the Node.JS admin SDK.
  * - Equality hash is set on returned values so `deepEqual()` etc can use it to quickly compare results without needing to look deeply.
  */
-class FirestoreServerProvider implements Provider {
+export class FirestoreServerProvider implements Provider {
+	/** Create a new FirestoreClientProvider. */
+	static create(options: FirestoreOptions): FirestoreServerProvider {
+		return new FirestoreServerProvider(options);
+	}
+
+	readonly VALIDATE = true;
 	readonly firestore: Firestore;
 
-	constructor({ firestore }: FirestoreOptions) {
+	protected constructor({ firestore }: FirestoreOptions) {
 		this.firestore = firestore;
 	}
 
-	async getDocument<T extends Data>(ref: Document<T>): Promise<Result<T>> {
+	async getDocument(ref: Document): Promise<Result> {
 		const doc = this.firestore.doc(ref.path);
 		const snapshot = await doc.get();
-		return documentResult(ref, snapshot);
+		return snapshot.data();
 	}
 
-	onDocument<T extends Data>(ref: Document<T>, stream: Stream<Result<T>>): () => void {
+	onDocument(ref: Document, stream: Stream<Result>): () => void {
 		return this.firestore.doc(ref.path).onSnapshot(
-			snapshot => stream.next(documentResult(ref, snapshot)),
+			snapshot => stream.next(snapshot.data()),
 			error => stream.error(error),
 		);
 	}
 
-	async addDocument<T extends Data>(ref: Collection<T>, data: T): Promise<string> {
+	async addDocument(ref: Documents, data: Data): Promise<string> {
 		const { id } = await this.firestore.collection(ref.path).add(data);
 		return id;
 	}
 
-	async setDocument<T extends Data>(ref: Document<T>, data: T): Promise<void> {
+	async setDocument(ref: Document, data: Data): Promise<void> {
 		await this.firestore.doc(ref.path).set(data);
 	}
 
-	async updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): Promise<void> {
+	async updateDocument(ref: Document, partial: Data): Promise<void> {
 		try {
 			await this.firestore.doc(ref.path).update(partial);
 		} catch (thrown: unknown) {
@@ -114,31 +99,69 @@ class FirestoreServerProvider implements Provider {
 		}
 	}
 
-	async deleteDocument<T extends Data>(ref: Document<T>): Promise<void> {
+	async deleteDocument(ref: Document): Promise<void> {
 		await this.firestore.doc(ref.path).delete();
 		return undefined;
 	}
 
-	async getCollection<T extends Data>(ref: Collection<T>): Promise<Results<T>> {
+	async getDocuments(ref: Documents): Promise<Results> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
-		return collectionResults(ref, snapshot);
+		return snapshotResults(snapshot);
 	}
 
 	// Count the documents in the collection.
 	// Note: Firestore will charge you for reading every document in this collection!
 	// If you're going to read the documents anyway, don't count before reading or you'll be charged twice and it'll take twice as long.
-	async countCollection<T extends Data>(ref: Collection<T>): Promise<number> {
+	async countDocuments(ref: Documents): Promise<number> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
 		return snapshot.size;
 	}
 
-	onCollection<T extends Data>(ref: Collection<T>, stream: Stream<Results<T>>): () => void {
+	onDocuments(ref: Documents, stream: Stream<Results>): () => void {
 		return buildQuery(this.firestore, ref).onSnapshot(
-			snapshot => stream.next(collectionResults(ref, snapshot)),
+			snapshot => stream.next(snapshotResults(snapshot)),
 			error => stream.error(error),
 		);
 	}
+
+	async setDocuments(ref: Documents, data: Data): Promise<void> {
+		const writer = this.firestore.bulkWriter();
+		const query = buildQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
+		let current: typeof query | false = query;
+		while (current) {
+			const snapshot = await query.get();
+			for (const s of snapshot.docs) void writer.set(s.ref, data);
+			current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
+			void writer.flush();
+		}
+		await writer.close();
+	}
+
+	async updateDocuments(ref: Documents, partial: Data): Promise<void> {
+		const writer = this.firestore.bulkWriter();
+		const query = buildQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
+		let current: typeof query | false = query;
+		while (current) {
+			const snapshot = await query.get();
+			for (const s of snapshot.docs) void writer.update(s.ref, partial);
+			current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
+			void writer.flush();
+		}
+		await writer.close();
+	}
+
+	async deleteDocuments(ref: Documents): Promise<void> {
+		const writer = this.firestore.bulkWriter();
+		const query = buildQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
+		let current: typeof query | false = query;
+		while (current) {
+			const snapshot = await query.get();
+			for (const s of snapshot.docs) void writer.delete(s.ref);
+			current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
+			void writer.flush();
+		}
+		await writer.close();
+	}
 }
 
-/** Create a new FirestoreServerProvider instance. */
-export const provideFirestore = (options: FirestoreOptions): FirestoreServerProvider => new FirestoreServerProvider(options);
+const BATCH_SIZE = 1000;
