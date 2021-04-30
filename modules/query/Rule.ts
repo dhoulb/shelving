@@ -5,7 +5,7 @@ import { objectFromEntries } from "../object";
 /** Something that can be used to query against a result set or an array of entries. */
 export abstract class Rule<T extends Data> {
 	/**
-	 * Apply this queryable to a set of results and return the (potentially) modified results.
+	 * Apply this rule to a set of results and return the new results.
 	 * @returns Either a new Results object (if `results` was modified), or the exact same instance (if no changes were made).
 	 */
 	results(results: Results<T>): Results<T> {
@@ -14,7 +14,10 @@ export abstract class Rule<T extends Data> {
 		return entries === applied ? results : objectFromEntries(applied);
 	}
 
-	// Override to call `filter()` on the entries with a custom filter function.
+	/**
+	 * Apply this rule to an array of entries in `[id, data]` format and return the new array.
+	 * @returns Either a new array (if `entries` was modified), or the exact same instance (if no changes were made).
+	 */
 	abstract apply(entries: ImmutableEntries<T>): ImmutableEntries<T>;
 
 	// Implement toString()
