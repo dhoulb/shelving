@@ -23,6 +23,9 @@ type NumberSchemaOptionOptions<T extends number> = {
  * Ensures/converts value to number, enforces min/max number, and precision.
  */
 export class NumberSchema<T extends number | null> extends Schema<T> {
+	static REQUIRED: NumberSchema<number> = new NumberSchema({ required: true });
+	static OPTIONAL: NumberSchema<number | null> = new NumberSchema({ required: false });
+
 	static create<X extends number>(options: NumberSchemaOptions<X> & NumberSchemaOptionOptions<X> & RequiredSchemaOptions): NumberSchema<X>;
 	static create<X extends number>(options: NumberSchemaOptions<X> & NumberSchemaOptionOptions<X>): NumberSchema<X | null>;
 	static create(options: NumberSchemaOptions<number | null> & RequiredSchemaOptions): NumberSchema<number>;

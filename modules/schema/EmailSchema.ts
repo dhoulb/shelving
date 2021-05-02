@@ -24,6 +24,9 @@ type EmailSchemaOptions = SchemaOptions<string> & {
  *     - TLD is a segment of 2-63 characters, possibly in `xn--` international format.
  */
 export class EmailSchema extends StringSchema<string> {
+	static REQUIRED = new EmailSchema({ required: true });
+	static OPTIONAL = new EmailSchema({ required: false });
+
 	static create(options: EmailSchemaOptions): EmailSchema {
 		return new EmailSchema(options);
 	}

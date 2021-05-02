@@ -1,39 +1,36 @@
-import { InvalidFeedback, schema as shortcuts, EmailSchema } from "..";
+import { InvalidFeedback, EmailSchema } from "..";
 
 // Tests.
 describe("EmailSchema", () => {
 	test("TypeScript", () => {
-		// Test email.optional
-		const s1: EmailSchema = shortcuts.email.optional;
+		const s1: EmailSchema = EmailSchema.OPTIONAL;
 		const r1: string = s1.validate("dave@test.com");
 
-		// Test email.required
-		const s2: EmailSchema = shortcuts.email.required;
+		const s2: EmailSchema = EmailSchema.REQUIRED;
 		const r2: string = s2.validate("dave@test.com");
 
-		// Test email({})
-		const s3: EmailSchema = shortcuts.email({});
+		const s3: EmailSchema = EmailSchema.create({});
 		const r3: string = s3.validate("dave@test.com");
-		const s4: EmailSchema = shortcuts.email({ required: true });
+		const s4: EmailSchema = EmailSchema.create({ required: true });
 		const r4: string = s4.validate("dave@test.com");
-		const s5: EmailSchema = shortcuts.email({ required: false });
+		const s5: EmailSchema = EmailSchema.create({ required: false });
 		const r5: string = s5.validate("dave@test.com");
-		const s6: EmailSchema = shortcuts.email({});
+		const s6: EmailSchema = EmailSchema.create({});
 		const r6: string = s6.validate("dave@test.com");
 	});
 	test("Constructs correctly", () => {
-		const schema1 = shortcuts.email({});
+		const schema1 = EmailSchema.create({});
 		expect(schema1).toBeInstanceOf(EmailSchema);
 		expect(schema1.required).toBe(false);
-		const schema2 = shortcuts.email.required;
+		const schema2 = EmailSchema.REQUIRED;
 		expect(schema2).toBeInstanceOf(EmailSchema);
 		expect(schema2.required).toBe(true);
-		const schema3 = shortcuts.email.required;
+		const schema3 = EmailSchema.REQUIRED;
 		expect(schema3).toBeInstanceOf(EmailSchema);
 		expect(schema3.required).toBe(true);
 	});
 	describe("validate()", () => {
-		const schema = shortcuts.email({});
+		const schema = EmailSchema.create({});
 		describe("username", () => {
 			test("Valid usernames are valid", () => {
 				expect(schema.validate("jo@google.com")).toBe("jo@google.com");
@@ -123,22 +120,22 @@ describe("EmailSchema", () => {
 	});
 	describe("options.value", () => {
 		test("Undefined returns default default value (empty string)", () => {
-			const schema = shortcuts.email({});
+			const schema = EmailSchema.create({});
 			expect(schema.validate(undefined)).toBe("");
 		});
 		test("Undefined with default value returns default value", () => {
-			const schema = shortcuts.email({ value: "jo@x.com" });
+			const schema = EmailSchema.create({ value: "jo@x.com" });
 			expect(schema.validate(undefined)).toBe("jo@x.com");
 		});
 	});
 	describe("options.required", () => {
 		test("Non-required value allows falsy", () => {
-			const schema = shortcuts.email({ required: false });
+			const schema = EmailSchema.create({ required: false });
 			expect(schema.validate(null)).toBe("");
 			expect(schema.validate("")).toBe("");
 		});
 		test("Required value disallows null", () => {
-			const schema = shortcuts.email({ required: true });
+			const schema = EmailSchema.create({ required: true });
 			expect(() => schema.validate(null)).toThrow(InvalidFeedback);
 			expect(() => schema.validate("")).toThrow(InvalidFeedback);
 		});
@@ -146,7 +143,7 @@ describe("EmailSchema", () => {
 	describe("options.validator", () => {
 		test("Works correctly", () => {
 			const feedback = new InvalidFeedback("WORKS");
-			const schema = shortcuts.email({
+			const schema = EmailSchema.create({
 				validator: () => {
 					throw feedback;
 				},

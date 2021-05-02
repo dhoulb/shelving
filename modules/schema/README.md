@@ -495,57 +495,45 @@ The `schema.url()` creator function creates a `UrlSchema` instance that can vali
 
 ### Shortcuts
 
-The following static values are available as shortcuts attached to the creator functions for all simple values:
+The following static schemas are available as shortcuts for simple schemas that will be used a lot:
 
 ```js
 import { schema } from "shelving";
 
 // These shortcuts save having to pass `options.required` into the creator function.
-schema.boolean.required.validate(true);
-schema.boolean.optional.validate(false);
-schema.color.required.validate("#00CCFF");
-schema.color.optional.validate(null);
-schema.date.required.validate(new Date());
-schema.date.optional.validate(null);
-schema.email.required.validate("dave@x.com");
-schema.email.optional.validate(null);
-schema.key.required.validate("abc123");
-schema.key.optional.validate(null);
-schema.number.required.validate(12345);
-schema.number.optional.validate(null);
-schema.number.timestamp.validate(Date.now());
-schema.phone.required.validate("+44123456789");
-schema.phone.optional.validate(null);
-schema.string.required.validate("AAAAA");
-schema.string.optional.validate("");
-schema.url.required.validate("https://x.com");
-schema.url.optional.validate(null);
-
-// These schemas always return fixed values.
-schema.null.validate(null);
-schema.undefined.validate(undefined);
+BooleanSchema.REQUIRED.validate(true);
+BooleanSchema.OPTIONAL.validate(false);
+ColorSchema.REQUIRED.validate("#00CCFF");
+ColorSchema.OPTIONAL.validate(null);
+DateSchema.REQUIRED.validate(new Date());
+DateSchema.OPTIONAL.validate(null);
+EmailSchema.REQUIRED.validate("dave@x.com");
+EmailSchema.OPTIONAL.validate(null);
+KeySchema.REQUIRED.validate("abc123");
+KeySchema.OPTIONAL.validate(null);
+NumberSchema.REQUIRED.validate(12345);
+NumberSchema.OPTIONAL.validate(null);
+PhoneSchema.REQUIRED.validate("+44123456789");
+PhoneSchema.OPTIONAL.validate(null);
+StringSchema.REQUIRED.validate("AAAAA");
+StringSchema.OPTIONAL.validate("");
+UrlSchema.REQUIRED.validate("https://x.com");
+UrlSchema.OPTIONAL.validate(null);
 ```
 
-Object schemas also provide shortcuts, but as `options.props` and `options.items` are required these must be passed in as the only argument:
+Object schemas also provide sugary shortcuts, but as `options.props` and `options.items` are required, they work as functions too:
 
 ```js
 import { schema } from "shelving";
 
 // Object shortcuts accept `options.props` as an argument.
-schema.object.required({ num: schema.number.optional }).validate({ num: 123 });
-schema.object.optional({ num: schema.number.required }).validate(null);
-
-// Data objects are required objects whose values must be plain values.
-// Data objects accept `options.props` as their argument.
-schema.data({ name: schema.string.required }).validate({ name: "Dave" });
+ObjectSchema.of({ num: schema.number.optional }).validate({ num: 123 });
 
 // Array shortcuts accept `options.items` as an argument.
-schema.array.required(schema.string.required).validate([1, 2, 3]);
-schema.array.optional(schema.string.required).validate([]);
+ArraySchema.of(schema.string.required).validate([1, 2, 3]);
 
 // Map shortcuts accept `options.items` as an argument.
-schema.map.required(schema.boolean.required).validate({ a: 1, b: 2, c: 3 });
-schema.map.optional(schema.boolean.required).validate(null);
+MapSchema.of(schema.boolean.required).validate({ a: 1, b: 2, c: 3 });
 ```
 
 ## Changelog

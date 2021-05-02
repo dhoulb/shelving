@@ -1,16 +1,16 @@
-import { schema } from "../schema";
+import { ArraySchema, DateSchema, NumberSchema, ObjectSchema, StringSchema } from "../schema";
 import { Provider, Database } from "../db";
 
 // Schemas.
-export const basicSchema = schema.data({
-	str: schema.string.required,
-	num: schema.number.required,
-	group: schema.string({ options: ["a", "b", "c"] as const }),
-	tags: schema.array.optional(schema.string.required),
+export const basicSchema = ObjectSchema.of({
+	str: StringSchema.REQUIRED,
+	num: NumberSchema.REQUIRED,
+	group: StringSchema.create({ options: ["a", "b", "c"] as const }),
+	tags: ArraySchema.of(StringSchema.REQUIRED),
 });
-export const personSchema = schema.data({
-	name: schema.object.required({ first: schema.string.required, last: schema.string.required }),
-	birthday: schema.date.optional,
+export const personSchema = ObjectSchema.of({
+	name: ObjectSchema.of({ first: StringSchema.REQUIRED, last: StringSchema.REQUIRED }),
+	birthday: DateSchema.OPTIONAL,
 });
 export const collections = {
 	basics: basicSchema,

@@ -1,74 +1,74 @@
-import { InvalidFeedback, schema as shortcuts, UrlSchema } from "..";
+import { InvalidFeedback, UrlSchema } from "..";
 
 // Tests.
 describe("UrlSchema", () => {
 	test("TypeScript", () => {
 		// Test url.optional
-		const s1: UrlSchema = shortcuts.url.optional;
+		const s1: UrlSchema = UrlSchema.OPTIONAL;
 		const r1: string = s1.validate("https://test.com");
 
 		// Test url.required
-		const s2: UrlSchema = shortcuts.url.required;
+		const s2: UrlSchema = UrlSchema.REQUIRED;
 		const r2: string = s2.validate("https://test.com");
 
 		// Test schema.url({})
-		const s3: UrlSchema = shortcuts.url({});
+		const s3: UrlSchema = UrlSchema.create({});
 		const r3: string = s3.validate("https://test.com");
-		const s4: UrlSchema = shortcuts.url({ required: true });
+		const s4: UrlSchema = UrlSchema.create({ required: true });
 		const r4: string = s4.validate("https://test.com");
-		const s5: UrlSchema = shortcuts.url({ required: false });
+		const s5: UrlSchema = UrlSchema.create({ required: false });
 		const r5: string = s5.validate("https://test.com");
-		const s6: UrlSchema = shortcuts.url({});
+		const s6: UrlSchema = UrlSchema.create({});
 		const r6: string = s6.validate("https://test.com");
 	});
 	test("Constructs correctly", () => {
-		const schema1 = shortcuts.url({});
+		const schema1 = UrlSchema.create({});
 		expect(schema1).toBeInstanceOf(UrlSchema);
 		expect(schema1.required).toBe(false);
-		const schema2 = shortcuts.url.required;
+		const schema2 = UrlSchema.REQUIRED;
 		expect(schema2).toBeInstanceOf(UrlSchema);
 		expect(schema2.required).toBe(true);
-		const schema3 = shortcuts.url.required;
+		const schema3 = UrlSchema.REQUIRED;
 		expect(schema3).toBeInstanceOf(UrlSchema);
 		expect(schema3.required).toBe(true);
 	});
 	describe("validate()", () => {
-		const schema = shortcuts.url.optional;
+		const schema = UrlSchema.OPTIONAL;
 		describe("URLs", () => {
 			test("Valid URLs are valid.", () => {
 				const u1 = "data:image/svg+xml;base64,SGVsbG8gd29ybGQ=";
-				expect(shortcuts.url({ schemes: ["data:"] }).validate(u1)).toBe(u1);
+				expect(UrlSchema.create({ schemes: ["data:"] }).validate(u1)).toBe(u1);
 				const u2 = "feed:https://example.com/entries.atom"; // Weirdly feed can be either.
-				expect(shortcuts.url({ schemes: ["feed:"] }).validate(u2)).toBe(u2);
+				expect(UrlSchema.create({ schemes: ["feed:"] }).validate(u2)).toBe(u2);
 				const u3 = "feed://example.com/entries.atom"; // Weirdly feed can be either.
-				expect(shortcuts.url({ schemes: ["feed:"] }).validate(u3)).toBe(u3);
+				expect(UrlSchema.create({ schemes: ["feed:"] }).validate(u3)).toBe(u3);
 				const u4 = "file:///etc/fstab";
-				expect(shortcuts.url({ schemes: ["file:"] }).validate(u4)).toBe(u4);
+				expect(UrlSchema.create({ schemes: ["file:"] }).validate(u4)).toBe(u4);
 				const u5 = "ftp://ftp.funet.fi/pub/standards/RFC/rfc959.txt";
-				expect(shortcuts.url({ schemes: ["ftp:"] }).validate(u5)).toBe(u5);
+				expect(UrlSchema.create({ schemes: ["ftp:"] }).validate(u5)).toBe(u5);
 				const u6 = "geo:37.786971;-122.399677";
-				expect(shortcuts.url({ schemes: ["geo:"] }).validate(u6)).toBe(u6);
+				expect(UrlSchema.create({ schemes: ["geo:"] }).validate(u6)).toBe(u6);
 				const u7 = "https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Technical_overview";
-				expect(shortcuts.url({ schemes: ["https:"] }).validate(u7)).toBe(u7);
+				expect(UrlSchema.create({ schemes: ["https:"] }).validate(u7)).toBe(u7);
 				const u8 =
 					"http://www.google.ps/search?hl=en&client=firefox-a&hs=42F&rls=org.mozilla%3Aen-US%3Aofficial&q=The+type+%27Microsoft.Practices.ObjectBuilder.Locator%27+is+defined+in+an+assembly+that+is+not+referenced.+You+must+add+a+reference+to+assembly+&aq=f&aqi=&aql=&oq=";
-				expect(shortcuts.url({ schemes: ["http:"] }).validate(u8)).toBe(u8);
+				expect(UrlSchema.create({ schemes: ["http:"] }).validate(u8)).toBe(u8);
 				const u9 = "irc://irc.efnet.org:6667/DiscworldMUD";
-				expect(shortcuts.url({ schemes: ["irc:"] }).validate(u9)).toBe(u9);
+				expect(UrlSchema.create({ schemes: ["irc:"] }).validate(u9)).toBe(u9);
 				const u10 = "mailto:dave@shax.com";
-				expect(shortcuts.url({ schemes: ["mailto:"] }).validate(u10)).toBe(u10);
+				expect(UrlSchema.create({ schemes: ["mailto:"] }).validate(u10)).toBe(u10);
 				const u11 = "magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&dn";
-				expect(shortcuts.url({ schemes: ["magnet:"] }).validate(u11)).toBe(u11);
+				expect(UrlSchema.create({ schemes: ["magnet:"] }).validate(u11)).toBe(u11);
 				const u12 = "tel:+44123456789";
-				expect(shortcuts.url({ schemes: ["tel:"] }).validate(u12)).toBe(u12);
+				expect(UrlSchema.create({ schemes: ["tel:"] }).validate(u12)).toBe(u12);
 				const u13 = "telnet://rainmaker.wunderground.com";
-				expect(shortcuts.url({ schemes: ["telnet:"] }).validate(u13)).toBe(u13);
+				expect(UrlSchema.create({ schemes: ["telnet:"] }).validate(u13)).toBe(u13);
 				const u14 = "urn:isbn:0-486-27557-4";
-				expect(shortcuts.url({ schemes: ["urn:"] }).validate(u14)).toBe(u14);
+				expect(UrlSchema.create({ schemes: ["urn:"] }).validate(u14)).toBe(u14);
 				const u15 = "webcal://espn.go.com/travel/sports/calendar/export/espnCal?teams=6_23";
-				expect(shortcuts.url({ schemes: ["webcal:"] }).validate(u15)).toBe(u15);
+				expect(UrlSchema.create({ schemes: ["webcal:"] }).validate(u15)).toBe(u15);
 				const u16 = "ws://localhost:8080/websocket/wsserver";
-				expect(shortcuts.url({ schemes: ["ws:"] }).validate(u16)).toBe(u16);
+				expect(UrlSchema.create({ schemes: ["ws:"] }).validate(u16)).toBe(u16);
 			});
 			test("Falsy values return empty string", () => {
 				expect(schema.validate("")).toBe("");
@@ -205,7 +205,7 @@ describe("UrlSchema", () => {
 	});
 	describe("options.value", () => {
 		test("Undefined returns default value (empty string)", () => {
-			const schema = shortcuts.url.optional;
+			const schema = UrlSchema.OPTIONAL;
 			expect(schema.validate(undefined)).toBe("");
 		});
 		test("Undefined with default value returns default value", () => {
@@ -229,12 +229,12 @@ describe("UrlSchema", () => {
 	});
 	describe("options.schemes", () => {
 		test("Scheme in default whitelist is allowed", () => {
-			const schema = shortcuts.url.optional;
+			const schema = UrlSchema.OPTIONAL;
 			expect(schema.validate("http://x.com/")).toBe("http://x.com/");
 			expect(schema.validate("https://x.com/")).toBe("https://x.com/");
 		});
 		test("Scheme not in default whitelist is invalid", () => {
-			const schema = shortcuts.url.optional;
+			const schema = UrlSchema.OPTIONAL;
 			expect(() => schema.validate("webcal://x.com")).toThrow(InvalidFeedback);
 		});
 		test("Scheme in specified whitelist is valid", () => {
@@ -261,7 +261,7 @@ describe("UrlSchema", () => {
 	describe("options.validator", () => {
 		test("Works correctly", () => {
 			const feedback = new InvalidFeedback("WORKS");
-			const schema = shortcuts.url({
+			const schema = UrlSchema.create({
 				validator: () => {
 					throw feedback;
 				},

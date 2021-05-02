@@ -4,6 +4,10 @@ import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
 import { ValidateOptions, Validator, Validators } from "./Validator";
 
 type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
+	/**
+	 * Describe the format for individual props in the object.
+	 * JSON Schema calls this `properties`, we call it `props` to match React and because it's shorter.
+	 */
 	readonly props: Validators<T & ImmutableObject>;
 	readonly value?: Partial<T> | null;
 };
@@ -21,12 +25,12 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> im
 		return new ObjectSchema(options);
 	}
 
-	readonly value: Partial<T> | null = null;
+	/** Create a new `ObjectSchema` of the specified properties (sugar for `ObjectSchema.create({ props: etc })`). */
+	static of<X extends ImmutableObject>(props: Validators<X>): ObjectSchema<X> {
+		return new ObjectSchema({ props, required: true, value: {} });
+	}
 
-	/**
-	 * Describe the format for individual props in the object.
-	 * JSON Schema calls this `properties`, we call it `props` to match React and because it's shorter.
-	 */
+	readonly value: Partial<T> | null = null;
 	readonly props: Validators<T & ImmutableObject>;
 
 	protected constructor({ value = null, props, ...options }: ObjectSchemaOptions<T>) {

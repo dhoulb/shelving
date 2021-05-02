@@ -13,6 +13,9 @@ type KeySchemaOptions = SchemaOptions<string> & {
  * - Maximum key length is 64 characters.
  */
 export class KeySchema extends StringSchema<string> {
+	static REQUIRED = new KeySchema({ required: true });
+	static OPTIONAL = new KeySchema({ required: false });
+
 	static create(options: KeySchemaOptions): KeySchema {
 		return new KeySchema(options);
 	}

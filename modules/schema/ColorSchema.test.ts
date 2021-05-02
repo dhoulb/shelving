@@ -1,39 +1,36 @@
-import { InvalidFeedback, schema as shortcuts, ColorSchema } from "..";
+import { InvalidFeedback, ColorSchema } from "..";
 
 // Tests.
 describe("ColorSchema", () => {
 	test("TypeScript", () => {
-		// Test color.optional
-		const s1: ColorSchema = shortcuts.color.optional;
+		const s1: ColorSchema = ColorSchema.OPTIONAL;
 		const r1: string = s1.validate("#FFCC00");
 
-		// Test color.required
-		const s2: ColorSchema = shortcuts.color.required;
+		const s2: ColorSchema = ColorSchema.REQUIRED;
 		const r2: string = s2.validate("#FFCC00");
 
-		// Test color({})
-		const s3: ColorSchema = shortcuts.color({});
+		const s3: ColorSchema = ColorSchema.create({});
 		const r3: string = s3.validate("#FFCC00");
-		const s4: ColorSchema = shortcuts.color({ required: true });
+		const s4: ColorSchema = ColorSchema.create({ required: true });
 		const r4: string = s4.validate("#FFCC00");
-		const s5: ColorSchema = shortcuts.color({ required: false });
+		const s5: ColorSchema = ColorSchema.create({ required: false });
 		const r5: string = s5.validate("#FFCC00");
-		const s6: ColorSchema = shortcuts.color({});
+		const s6: ColorSchema = ColorSchema.create({});
 		const r6: string = s6.validate("#FFCC00");
 	});
 	test("Constructs correctly", () => {
-		const schema1 = shortcuts.color({});
+		const schema1 = ColorSchema.create({});
 		expect(schema1).toBeInstanceOf(ColorSchema);
 		expect(schema1.required).toBe(false);
-		const schema2 = shortcuts.color.required;
+		const schema2 = ColorSchema.REQUIRED;
 		expect(schema2).toBeInstanceOf(ColorSchema);
 		expect(schema2.required).toBe(true);
-		const schema3 = shortcuts.color.required;
+		const schema3 = ColorSchema.REQUIRED;
 		expect(schema3).toBeInstanceOf(ColorSchema);
 		expect(schema3.required).toBe(true);
 	});
 	describe("validate()", () => {
-		const schema = shortcuts.color({});
+		const schema = ColorSchema.create({});
 		test("Valid color numbers are valid", () => {
 			expect(schema.validate("#000000")).toBe("#000000");
 			expect(schema.validate("#00CCFF")).toBe("#00CCFF");
@@ -69,23 +66,23 @@ describe("ColorSchema", () => {
 	});
 	describe("options.value", () => {
 		test("Undefined returns default default value (empty string)", () => {
-			const schema = shortcuts.color({});
+			const schema = ColorSchema.create({});
 			expect(schema.validate(undefined)).toBe("");
 		});
 		test("Undefined with default value returns default value", () => {
-			const schema = shortcuts.color({ value: "#00CCFF" });
+			const schema = ColorSchema.create({ value: "#00CCFF" });
 			expect(schema.validate(undefined)).toBe("#00CCFF");
 		});
 	});
 	describe("options.required", () => {
 		test("Non-required value allows empty string", () => {
-			const schema = shortcuts.color({ required: false });
+			const schema = ColorSchema.create({ required: false });
 			expect(schema.validate(null)).toBe("");
 			expect(schema.validate("")).toBe("");
 			expect(schema.validate(false)).toBe("");
 		});
 		test("Required value disallows null", () => {
-			const schema = shortcuts.color({ required: true });
+			const schema = ColorSchema.create({ required: true });
 			expect(() => schema.validate(null)).toThrow(InvalidFeedback);
 			expect(() => schema.validate("")).toThrow(InvalidFeedback);
 			expect(() => schema.validate(false)).toThrow(InvalidFeedback);
@@ -94,7 +91,7 @@ describe("ColorSchema", () => {
 	describe("options.validator", () => {
 		test("Works correctly", () => {
 			const feedback = new InvalidFeedback("WORKS");
-			const schema = shortcuts.color({
+			const schema = ColorSchema.create({
 				validator: () => {
 					throw feedback;
 				},

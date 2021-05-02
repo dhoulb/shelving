@@ -18,6 +18,9 @@ type ColorSchemaOptions = SchemaOptions<string> & {
  * Colors are limited to 512 characters (this can be changed with `max`), but generally these won't be data: URIs so this is a reasonable limit.
  */
 export class ColorSchema extends StringSchema<string> {
+	static REQUIRED = new ColorSchema({ required: true });
+	static OPTIONAL = new ColorSchema({ required: false });
+
 	static create(options: ColorSchemaOptions & RequiredSchemaOptions): ColorSchema;
 	static create(options: ColorSchemaOptions): ColorSchema;
 	static create(options: ColorSchemaOptions): ColorSchema {

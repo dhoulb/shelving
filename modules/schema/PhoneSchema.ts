@@ -16,6 +16,9 @@ type PhoneSchemaOptions = SchemaOptions<string> & {
  * - Falsy values are converted to `""` empty string.
  */
 export class PhoneSchema extends StringSchema<string> {
+	static REQUIRED = new PhoneSchema({ required: true });
+	static OPTIONAL = new PhoneSchema({ required: false });
+
 	static create(options: PhoneSchemaOptions): PhoneSchema {
 		return new PhoneSchema(options);
 	}

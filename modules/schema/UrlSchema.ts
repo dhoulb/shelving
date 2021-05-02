@@ -15,6 +15,9 @@ type UrlSchemaOptions = SchemaOptions<string> & {
  * - Falsy values are converted to `""` empty string.
  */
 export class UrlSchema extends StringSchema<string> {
+	static REQUIRED = new UrlSchema({ required: true });
+	static OPTIONAL = new UrlSchema({ required: false });
+
 	static create(options: UrlSchemaOptions): UrlSchema {
 		return new UrlSchema(options);
 	}

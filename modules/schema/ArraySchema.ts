@@ -2,9 +2,10 @@ import type { MutableObject } from "../object";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { ImmutableArray, uniqueItems } from "../array";
 import { Schema, SchemaOptions } from "./Schema";
+import { Validator } from "./Validator";
 
 type ArraySchemaOptions<T> = SchemaOptions<ImmutableArray<T>> & {
-	readonly items: Schema<T>;
+	readonly items: Validator<T>;
 	readonly value?: ImmutableArray<T>;
 	readonly min?: number;
 	readonly max?: number | null;
@@ -43,6 +44,11 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		return new ArraySchema(options);
 	}
 
+	/** Create a new `ArraySchema` of with the specified items (sugar for `ArraySchema.create({ items: etc })`). */
+	static of<X>(items: Validator<X>): ArraySchema<X> {
+		return new ArraySchema({ items });
+	}
+
 	readonly value: ImmutableArray<T>;
 
 	/** Whether to de-duplicate items in the array (i.e. items in the array are unique). */
@@ -54,7 +60,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	readonly max: number | null;
 
 	/** Describe the format for _all_ items in the array. */
-	readonly items: Schema<T>;
+	readonly items: Validator<T>;
 
 	protected constructor({ items, unique = false, min = 0, max = null, value = [], ...rest }: ArraySchemaOptions<T>) {
 		super(rest);

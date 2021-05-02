@@ -41,6 +41,9 @@ type StringOptionOptions<T extends string> = {
  *  schema.validate('j'); // Throws 'Minimum 3 chaacters'
  */
 export class StringSchema<T extends string> extends Schema<T> {
+	static REQUIRED: StringSchema<string> = new StringSchema({ required: true });
+	static OPTIONAL: StringSchema<string> = new StringSchema({ required: false });
+
 	static create<X extends string>(options: StringSchemaOptions<X> & StringOptionOptions<X> & RequiredSchemaOptions): StringSchema<X>;
 	static create<X extends string>(options: StringSchemaOptions<X> & StringOptionOptions<X>): StringSchema<X | "">;
 	static create(options: StringSchemaOptions<string> & RequiredSchemaOptions): StringSchema<string>;
