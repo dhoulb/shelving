@@ -10,7 +10,7 @@ const randomArray = [{ a: 1 }, 2, { iii: { three: 3 } }, false];
 // Tests.
 describe("ArraySchema", () => {
 	test("TypeScript", () => {
-		const requiredSchema = ArraySchema.of(NumberSchema.REQUIRED);
+		const requiredSchema = ArraySchema.with(NumberSchema.REQUIRED);
 		const requiredType: ArraySchema<number> = requiredSchema;
 		const requiredValue: ReadonlyArray<number> = requiredSchema.validate([123]);
 		const requiredItemsSchema: Validator<number> = requiredSchema.items;
@@ -32,7 +32,7 @@ describe("ArraySchema", () => {
 		expect(schema1).toBeInstanceOf(ArraySchema);
 		expect(schema1.required).toBe(false);
 		expect(schema1.items).toBe(items);
-		const schema2 = ArraySchema.of(items);
+		const schema2 = ArraySchema.with(items);
 		expect(schema2).toBeInstanceOf(ArraySchema);
 		expect(schema2.required).toBe(false);
 		expect(schema2.items).toBe(items);
@@ -40,10 +40,10 @@ describe("ArraySchema", () => {
 	describe("validate()", () => {
 		const schema = ArraySchema.create({ items: StringSchema.REQUIRED });
 		test("Valid arrays are unchanged (same instance)", () => {
-			expect(ArraySchema.of(StringSchema.REQUIRED).validate(stringArray)).toBe(stringArray);
-			expect(ArraySchema.of(NumberSchema.REQUIRED).validate(numberArray)).toBe(numberArray);
-			expect(ArraySchema.of(StringSchema.REQUIRED).validate(longArray)).toBe(longArray);
-			expect(ArraySchema.of(ObjectSchema.of({ title: StringSchema.REQUIRED })).validate(nestedArray)).toBe(nestedArray);
+			expect(ArraySchema.with(StringSchema.REQUIRED).validate(stringArray)).toBe(stringArray);
+			expect(ArraySchema.with(NumberSchema.REQUIRED).validate(numberArray)).toBe(numberArray);
+			expect(ArraySchema.with(StringSchema.REQUIRED).validate(longArray)).toBe(longArray);
+			expect(ArraySchema.with(ObjectSchema.with({ title: StringSchema.REQUIRED })).validate(nestedArray)).toBe(nestedArray);
 		});
 		test("Non-arrays are invalid", () => {
 			expect(() => schema.validate("abc")).toThrow(InvalidFeedback);

@@ -527,13 +527,13 @@ Object schemas also provide sugary shortcuts, but as `options.props` and `option
 import { schema } from "shelving";
 
 // Object shortcuts accept `options.props` as an argument.
-ObjectSchema.of({ num: schema.number.optional }).validate({ num: 123 });
+ObjectSchema.with({ num: schema.number.optional }).validate({ num: 123 });
 
 // Array shortcuts accept `options.items` as an argument.
-ArraySchema.of(schema.string.required).validate([1, 2, 3]);
+ArraySchema.with(schema.string.required).validate([1, 2, 3]);
 
 // Map shortcuts accept `options.items` as an argument.
-MapSchema.of(schema.boolean.required).validate({ a: 1, b: 2, c: 3 });
+MapSchema.with(schema.boolean.required).validate({ a: 1, b: 2, c: 3 });
 ```
 
 ## Changelog

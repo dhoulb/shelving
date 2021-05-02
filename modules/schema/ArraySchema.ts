@@ -45,7 +45,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	}
 
 	/** Create a new `ArraySchema` of with the specified items (sugar for `ArraySchema.create({ items: etc })`). */
-	static of<X>(items: Validator<X>): ArraySchema<X> {
+	static with<X>(items: Validator<X>): ArraySchema<X> {
 		return new ArraySchema({ items });
 	}
 

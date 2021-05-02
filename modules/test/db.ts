@@ -2,14 +2,14 @@ import { ArraySchema, DateSchema, NumberSchema, ObjectSchema, StringSchema } fro
 import { Provider, Database } from "../db";
 
 // Schemas.
-export const basicSchema = ObjectSchema.of({
+export const basicSchema = ObjectSchema.with({
 	str: StringSchema.REQUIRED,
 	num: NumberSchema.REQUIRED,
 	group: StringSchema.create({ options: ["a", "b", "c"] as const }),
-	tags: ArraySchema.of(StringSchema.REQUIRED),
+	tags: ArraySchema.with(StringSchema.REQUIRED),
 });
-export const personSchema = ObjectSchema.of({
-	name: ObjectSchema.of({ first: StringSchema.REQUIRED, last: StringSchema.REQUIRED }),
+export const personSchema = ObjectSchema.with({
+	name: ObjectSchema.with({ first: StringSchema.REQUIRED, last: StringSchema.REQUIRED }),
 	birthday: DateSchema.OPTIONAL,
 });
 export const collections = {

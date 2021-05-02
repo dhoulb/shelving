@@ -3,7 +3,7 @@ import { InvalidFeedback, ImmutableObject, MapSchema, Validator, BooleanSchema, 
 // Tests.
 describe("MapSchema", () => {
 	test("TypeScript", () => {
-		const requiredSchema = MapSchema.of(NumberSchema.REQUIRED);
+		const requiredSchema = MapSchema.with(NumberSchema.REQUIRED);
 		const requiredType: MapSchema<number> = requiredSchema;
 		const requiredValue: Record<string, number> = requiredSchema.validate({ a: 1 });
 		const requiredItemsSchema = requiredSchema.items;
@@ -26,7 +26,7 @@ describe("MapSchema", () => {
 		expect(schema1).toBeInstanceOf(MapSchema);
 		expect(schema1.required).toBe(false);
 		expect(schema1.items).toBe(items);
-		const schema2 = MapSchema.of(items);
+		const schema2 = MapSchema.with(items);
 		expect(schema2).toBeInstanceOf(MapSchema);
 		expect(schema2.required).toBe(false);
 		expect(schema2.items).toBe(items);
@@ -34,9 +34,9 @@ describe("MapSchema", () => {
 	describe("validate()", () => {
 		const schema = MapSchema.create({ items: StringSchema.REQUIRED });
 		test("Non-objects throw error", () => {
-			expect(() => MapSchema.of(StringSchema.REQUIRED).validate("abc")).toThrow(InvalidFeedback);
-			expect(() => MapSchema.of(NumberSchema.REQUIRED).validate(123)).toThrow(InvalidFeedback);
-			expect(() => MapSchema.of(BooleanSchema.REQUIRED).validate(true)).toThrow(InvalidFeedback);
+			expect(() => MapSchema.with(StringSchema.REQUIRED).validate("abc")).toThrow(InvalidFeedback);
+			expect(() => MapSchema.with(NumberSchema.REQUIRED).validate(123)).toThrow(InvalidFeedback);
+			expect(() => MapSchema.with(BooleanSchema.REQUIRED).validate(true)).toThrow(InvalidFeedback);
 		});
 		// test("Non-pure objects throw error", () => {
 		// 	class RandomClass {}

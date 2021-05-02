@@ -20,7 +20,7 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 	}
 
 	/** Create a new `MapSchema` of with the specified items (sugar for `MapSchema.create({ items: etc })`). */
-	static of<X>(items: Validator<X>): MapSchema<X> {
+	static with<X>(items: Validator<X>): MapSchema<X> {
 		return new MapSchema({ items });
 	}
 
