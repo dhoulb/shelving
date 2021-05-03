@@ -47,8 +47,8 @@ const collectionResults = (snapshot: FirestoreQuerySnapshot): Results => {
 	return results;
 };
 
-type FirestoreOptions = {
-	firestore: Firestore;
+type FirestoreClientProviderOptions = {
+	readonly firestore: Firestore;
 };
 
 /**
@@ -58,14 +58,14 @@ type FirestoreOptions = {
  */
 export class FirestoreClientProvider implements Provider {
 	/** Create a new FirestoreClientProvider. */
-	static create(options: FirestoreOptions): FirestoreClientProvider {
+	static create(options: FirestoreClientProviderOptions): FirestoreClientProvider {
 		return new FirestoreClientProvider(options);
 	}
 
 	readonly VALIDATE = true;
 	readonly firestore: Firestore;
 
-	protected constructor({ firestore }: FirestoreOptions) {
+	protected constructor({ firestore }: FirestoreClientProviderOptions) {
 		this.firestore = firestore;
 	}
 

@@ -1,19 +1,16 @@
 import { isObject, ImmutableObject } from "../object";
 
-/** Options for the `validate()` method. */
+/** Options for a validator's `validate()` method. */
 export type ValidateOptions = {
 	/** Whether partial object values are allowed, e.g. missing values aren't invalid. */
-	partial?: boolean;
-
-	/** Any additional options are passed through to the Provider. */
-	[additional: string]: unknown;
+	readonly partial?: boolean;
 };
 
 /** Validate a partial value rather than a full value. */
 export const PARTIAL = { partial: true } as const;
 
 /**
- * Validator: an object that can validate something.
+ * Validator: an object that can validate something via its `validate()` method.
  */
 export interface Validator<T = unknown> {
 	/**
@@ -33,11 +30,10 @@ export interface Validator<T = unknown> {
 /** Extract the type from a Validator. */
 export type ValidatorType<T extends Validator> = ReturnType<T["validate"]>;
 
-/**
- * Is a given value a valid schema?
- * - This is a TypeScript assertion function, so if this function returns `true` the type is also asserted to implement `Validator`.
- */
+/** Is a given value a validator? */
 export const isValidator = <T extends Validator>(validator: T | unknown): validator is T => isObject(validator) && typeof validator.validate === "function";
 
 /** A set of named validators in `{ key: Validator }` format. */
-export type Validators<T extends ImmutableObject> = { readonly [K in keyof T]: Validator<T[K]> };
+export type Validators<T extends ImmutableObject> = {
+	readonly [K in keyof T]: Validator<T[K]>;
+};

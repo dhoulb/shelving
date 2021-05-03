@@ -9,7 +9,7 @@ type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & 
 	 * JSON Schema calls this `properties`, we call it `props` to match React and because it's shorter.
 	 */
 	readonly props: Validators<T & ImmutableObject>;
-	readonly value?: Partial<T> | null;
+	readonly value?: Partial<Readonly<T> | T> | null;
 };
 
 /**
@@ -18,7 +18,7 @@ type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & 
  * Checks that value is an object, and optionally matches the format or items specific contents in the object.
  * Only returns a new instance of the object if it changes (for immutability).
  */
-export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> implements Validator<T> {
+export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Readonly<T>> implements Validator<T> {
 	static create<X extends ImmutableObject>(options: ObjectSchemaOptions<X> & RequiredSchemaOptions): ObjectSchema<X>;
 	static create<X extends ImmutableObject | null>(options: ObjectSchemaOptions<X>): ObjectSchema<X | null>;
 	static create(options: ObjectSchemaOptions<ImmutableObject | null>): ObjectSchema<ImmutableObject | null> {
@@ -30,7 +30,7 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> im
 		return new ObjectSchema({ props, required: true, value: {} });
 	}
 
-	readonly value: Partial<T> | null = null;
+	readonly value: Partial<Readonly<T>> | null = null;
 	readonly props: Validators<T & ImmutableObject>;
 
 	protected constructor({ value = null, props, ...options }: ObjectSchemaOptions<T>) {
@@ -39,9 +39,9 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> im
 		this.props = props;
 	}
 
-	validate(unsafeValue: unknown, options: ValidateOptions & { partial: true }): Partial<T>;
-	validate(unsafeValue?: unknown, options?: ValidateOptions): T;
-	validate(unsafeValue: unknown = this.value, options?: ValidateOptions): T {
+	validate(unsafeValue: unknown, options: ValidateOptions & { partial: true }): Partial<Readonly<T>>;
+	validate(unsafeValue?: unknown, options?: ValidateOptions): Readonly<T>;
+	validate(unsafeValue: unknown = this.value, options?: ValidateOptions): Readonly<T> {
 		// Coorce.
 		const unsafeObj = isObject(unsafeValue) ? unsafeValue : null;
 
