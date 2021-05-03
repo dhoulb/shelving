@@ -52,7 +52,7 @@ export class Resource<P, R> {
 	 * @throws unknown Anything the function itself throws is thrown.
 	 * @throws ValidationError If the result could not be validated.
 	 */
-	async call<A extends Arguments>(resource: AsyncFetcher<R, [P, ...A]>, payload: unknown, ...args: A): Promise<R> {
+	async call<A extends Arguments>(resource: AsyncFetcher<R, [P, ...A]>, payload: P, ...args: A): Promise<R> {
 		const result = await resource(this.payload.validate(payload), ...args);
 		try {
 			return this.result.validate(result);
