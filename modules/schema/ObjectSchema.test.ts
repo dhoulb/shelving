@@ -3,7 +3,7 @@ import { InvalidFeedback, Validator, StringSchema, NumberSchema, BooleanSchema, 
 // Tests.
 describe("ObjectSchema", () => {
 	test("TypeScript validate()", () => {
-		const requiredSchema = ObjectSchema.with({ num: NumberSchema.REQUIRED });
+		const requiredSchema = ObjectSchema.from({ num: NumberSchema.REQUIRED });
 		const requiredType: ObjectSchema<{ num: number }> = requiredSchema;
 		const requiredValue: { num: number } = requiredSchema.validate({ num: 123 });
 		const requiredPropSchema = requiredSchema.props.num;
@@ -26,11 +26,11 @@ describe("ObjectSchema", () => {
 		expect(schema1).toBeInstanceOf(ObjectSchema);
 		expect(schema1.required).toBe(false);
 		expect(schema1.props).toBe(props);
-		const schema2 = ObjectSchema.with(props);
+		const schema2 = ObjectSchema.from(props);
 		expect(schema2).toBeInstanceOf(ObjectSchema);
 		expect(schema2.required).toBe(true);
 		expect(schema2.props).toBe(props);
-		const schema3 = ObjectSchema.with(props);
+		const schema3 = ObjectSchema.from(props);
 		expect(schema3).toBeInstanceOf(ObjectSchema);
 		expect(schema3.required).toBe(true);
 		expect(schema3.props).toBe(props);

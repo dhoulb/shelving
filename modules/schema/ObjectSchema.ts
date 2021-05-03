@@ -25,8 +25,8 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<T> im
 		return new ObjectSchema(options);
 	}
 
-	/** Create a new `ObjectSchema` with the specified properties (sugar for `ObjectSchema.create({ props: etc })`). */
-	static with<X extends ImmutableObject>(props: Validators<X>): ObjectSchema<X> {
+	/** Create a new `ObjectSchema` from the specified property validators (sugar for `ObjectSchema.create({ props: etc })`). */
+	static from<X extends ImmutableObject>(props: Validators<X>): ObjectSchema<X> {
 		return new ObjectSchema({ props, required: true, value: {} });
 	}
 
