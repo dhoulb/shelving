@@ -7,7 +7,9 @@ import { assertFunction } from "../assert";
 /**
  * Constructor: a class constructor that can be used with `new X` to generate an object of type `T`
  */
-export type Class<T extends EmptyObject | ImmutableObject> = new (...args: any[]) => T;
+// The `Function & prototype` form matches classes which have `protected constructor()` (which are not matched by the `new` form).
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Class<T extends EmptyObject | ImmutableObject> = (new (...args: any[]) => T) | (Function & { prototype: T });
 
 /**
  * Any class constructor.
