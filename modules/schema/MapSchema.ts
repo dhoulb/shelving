@@ -5,7 +5,7 @@ import { Validator } from "./Validator";
 
 type MapSchemaOptions<T> = SchemaOptions<ImmutableObject<T>> & {
 	readonly items: Validator<T>;
-	readonly value?: ImmutableObject<T>;
+	readonly value?: ImmutableObject;
 	readonly min?: number | null;
 	readonly max?: number | null;
 };
@@ -24,7 +24,7 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 		return new MapSchema({ items });
 	}
 
-	readonly value: ImmutableObject<T>;
+	readonly value: ImmutableObject;
 
 	/**
 	 * Define a validator for _all_ props in the object.
@@ -39,7 +39,7 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 	readonly min: number | null = null;
 	readonly max: number | null = null;
 
-	protected constructor({ items, min = null, max = null, value = {} as ImmutableObject<T>, ...rest }: MapSchemaOptions<T>) {
+	protected constructor({ items, min = null, max = null, value = {}, ...rest }: MapSchemaOptions<T>) {
 		super(rest);
 		this.items = items;
 		this.min = min;

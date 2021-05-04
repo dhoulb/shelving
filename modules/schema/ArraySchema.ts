@@ -6,7 +6,7 @@ import { Validator } from "./Validator";
 
 type ArraySchemaOptions<T> = SchemaOptions<ImmutableArray<T>> & {
 	readonly items: Validator<T>;
-	readonly value?: ImmutableArray<T>;
+	readonly value?: ImmutableArray;
 	readonly min?: number;
 	readonly max?: number | null;
 	readonly unique?: boolean;
@@ -49,7 +49,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		return new ArraySchema({ items });
 	}
 
-	readonly value: ImmutableArray<T>;
+	readonly value: ImmutableArray;
 
 	/** Whether to de-duplicate items in the array (i.e. items in the array are unique). */
 	readonly unique: boolean;

@@ -9,7 +9,7 @@ type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & 
 	 * JSON Schema calls this `properties`, we call it `props` to match React and because it's shorter.
 	 */
 	readonly props: Validators<T & ImmutableObject>;
-	readonly value?: Partial<Readonly<T> | T> | null;
+	readonly value?: Partial<T> | null;
 };
 
 /**
@@ -30,7 +30,7 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		return new ObjectSchema({ props, required: true, value: {} });
 	}
 
-	readonly value: Partial<Readonly<T>> | null = null;
+	readonly value: Readonly<Partial<T>> | null = null;
 	readonly props: Validators<T & ImmutableObject>;
 
 	protected constructor({ value = null, props, ...options }: ObjectSchemaOptions<T>) {
@@ -39,7 +39,7 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		this.props = props;
 	}
 
-	validate(unsafeValue: unknown, options: ValidateOptions & { partial: true }): Partial<Readonly<T>>;
+	validate(unsafeValue: unknown, options: ValidateOptions & { partial: true }): Readonly<Partial<T>>;
 	validate(unsafeValue?: unknown, options?: ValidateOptions): Readonly<T>;
 	validate(unsafeValue: unknown = this.value, options?: ValidateOptions): Readonly<T> {
 		// Coorce.
