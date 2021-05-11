@@ -37,9 +37,9 @@ export class Source<T> extends State<T> {
 	/**
 	 * Queue a fetch using this source's defined `Fetcher`, if the current data is older than `maxAge`
 	 *
-	 * @param maxAgeMs Skip the fetch if we already have a cached result that's younger than this (in milliseconds).
+	 * @param maxAge Skip the fetch if we already have a cached result that's younger than this (in milliseconds).
 	 */
-	queueFetch(maxAgeMs = MAX_AGE_MS): void {
+	queueFetch(maxAge = MAX_AGE_MS): void {
 		// Must be a source with a defined fetcher.
 		if (!this._fetch) throw new Error("Source is not fetchable");
 
@@ -49,7 +49,7 @@ export class Source<T> extends State<T> {
 		// 3. A fetch timeout is already queued.
 		// 3. This source is already subscribed.
 		// 4. We have a fetched result and it's younger than `maxAge`
-		if (this.closed || this.pending || this._queuedFetch || this._unsubscribe || this.age < maxAgeMs) return;
+		if (this.closed || this.pending || this._queuedFetch || this._unsubscribe || this.age < maxAge) return;
 
 		// Queue a callback to fetch the next value.
 		this._queuedFetch = setTimeout(() => this.fetch());
