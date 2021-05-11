@@ -100,10 +100,10 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 		super(isSubscribable(source) || isSubscriptor(source) ? source : undefined);
 		if (isSubscribable(source) || isSubscriptor(source)) {
 			// If source is a State, subscribe it.
-			if (source instanceof State && !source.loading) void this.next(source.value);
+			if (source instanceof State && !source.loading) this.next(source.value);
 		} else if (source !== LOADING && source !== SKIP) {
 			// If source is a value, set it.
-			void this.next(source);
+			this.next(source);
 		}
 
 		// Set fired to value.
@@ -166,7 +166,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 	 * - If value is a Promise, it's awaited and set after it value resolves.
 	 * - Same as `next()` but with grammar that makes more sense for a state.
 	 */
-	set(value: Resolvable<T>): void {
+	set(value: Resolvable<T | typeof LOADING>): void {
 		this.next(value);
 	}
 
