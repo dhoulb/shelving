@@ -105,6 +105,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 				this.next(value);
 				this._value = value;
 				this._fired = value;
+				(this as Mutable<this>).loading = false;
 				(this as Mutable<this>).updated = Date.now();
 			}
 		} else if (source !== LOADING && source !== SKIP) {
@@ -113,6 +114,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 			else {
 				this._value = source;
 				this._fired = source;
+				(this as Mutable<this>).loading = false;
 				(this as Mutable<this>).updated = Date.now();
 			}
 		}
