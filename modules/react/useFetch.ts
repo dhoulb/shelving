@@ -20,11 +20,11 @@ const sources: { [key: string]: Source<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAgeMs = 60000): State<T> {
+export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, options?: { maxAge?: number; initial?: T }): State<T> {
 	const key = `${serialise(fetcher)}:${serialise(deps)}`;
-	const source: Source<T> = (sources[key] ||= new Source<T>({ fetch: () => fetcher(...deps) }));
+	const source: Source<T> = (sources[key] ||= new Source<T>({ ...options, fetcher: () => fetcher(...deps) }));
 	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
-	source.queueFetch(maxAgeMs);
+	source.queueFetch(options?.maxAge);
 	useState(source);
 	return source;
 }

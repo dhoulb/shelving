@@ -21,9 +21,9 @@ const sources: { [key: string]: Source<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export function useSubscribe<T, D extends Arguments>(subscriptor: Subscriptor<T, D>, deps: D): Source<T> {
+export function useSubscribe<T, D extends Arguments>(subscriptor: Subscriptor<T, D>, deps: D, options?: { initial?: T }): Source<T> {
 	const key = `${serialise(subscriptor)}:${serialise(deps)}`;
-	const source: Source<T> = (sources[key] ||= new Source<T>({ subscribe: s => subscriptor(s, ...deps) }));
+	const source: Source<T> = (sources[key] ||= new Source<T>({ ...options, subscriptor: s => subscriptor(s, ...deps) }));
 	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
 	source.start();
 	useState(source);

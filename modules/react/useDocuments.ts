@@ -21,13 +21,18 @@ const sources: { [key: string]: Source<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useDocuments = <T extends Data>(ref: Documents<T> | undefined, maxAgeMs?: number | true): Source<Results<T>> => {
+export const useDocuments = <T extends Data>(
+	ref: Documents<T> | undefined,
+	options: { subscribe?: boolean; maxAge?: number; initial?: Results<T> },
+): Source<Results<T>> => {
 	const key = ref ? ref.toString() : "undefined";
-	const source: Source<Results<T>> = (sources[key] ||= new Source<Results<T>>(ref ? { subscribe: ref, fetch: ref } : { initial: undefined }));
+	const source: Source<Results<T>> = (sources[key] ||= new Source<Results<T>>(
+		!ref ? { initial: undefined } : { ...options, subscriptor: ref, fetcher: ref }, //
+	));
 	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
 	if (ref) {
-		if (maxAgeMs === true) source.start();
-		else source.queueFetch(maxAgeMs);
+		if (options.subscribe === true) source.start();
+		else source.queueFetch(options.maxAge);
 	}
 	useState(source);
 	return source;

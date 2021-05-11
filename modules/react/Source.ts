@@ -11,8 +11,8 @@ const UNSUBSCRIBE_MS = 60000;
 
 type SourceOptions<T> = {
 	readonly initial?: T | Promise<T>;
-	readonly fetch?: AsyncFetcher<T> | { get: () => Promise<T> };
-	readonly subscribe?: Subscriptor<T> | Subscribable<T>;
+	readonly fetcher?: AsyncFetcher<T> | { get: () => Promise<T> };
+	readonly subscriptor?: Subscriptor<T> | Subscribable<T>;
 };
 
 /**
@@ -23,15 +23,15 @@ type SourceOptions<T> = {
  * - The source won't subscribe again if it's already subscribed (or has begun to).
  */
 export class Source<T> extends State<T> {
-	private readonly _fetch?: AsyncFetcher<T> | { get: () => Promise<T> };
-	private readonly _subscribe?: Subscriptor<T> | Subscribable<T>;
+	private readonly _fetcher?: AsyncFetcher<T> | { get: () => Promise<T> };
+	private readonly _subscriptor?: Subscriptor<T> | Subscribable<T>;
 	private _unsubscribe?: Unsubscriber; // Function to call to stop the active subscription.
 
 	// Private to encourage `Source.get()`
 	constructor(options: SourceOptions<T>) {
 		super("initial" in options ? (options.initial as T | Promise<T>) : LOADING);
-		this._subscribe = options.subscribe;
-		this._fetch = options.fetch;
+		this._subscriptor = options.subscriptor;
+		this._fetcher = options.fetcher;
 	}
 
 	/**
@@ -41,7 +41,7 @@ export class Source<T> extends State<T> {
 	 */
 	queueFetch(maxAge = MAX_AGE_MS): void {
 		// Must be a source with a defined fetcher.
-		if (!this._fetch) throw new Error("Source is not fetchable");
+		if (!this._fetcher) throw new Error("Source is not fetchable");
 
 		// No need to fetch if:
 		// 1. This source is closed.
@@ -61,7 +61,7 @@ export class Source<T> extends State<T> {
 	 */
 	fetch(): void {
 		// Must be a source with a defined fetcher.
-		if (!this._fetch) throw new Error("Source is not fetchable");
+		if (!this._fetcher) throw new Error("Source is not fetchable");
 
 		// Clear any queued fetch.
 		if (this._queuedFetch) this._queuedFetch = void clearTimeout(this._queuedFetch);
@@ -73,7 +73,7 @@ export class Source<T> extends State<T> {
 		if (this.closed || this.pending || this._unsubscribe) return;
 
 		try {
-			this.next(typeof this._fetch === "function" ? this._fetch() : this._fetch.get());
+			this.next(typeof this._fetcher === "function" ? this._fetcher() : this._fetcher.get());
 		} catch (thrown) {
 			this.error(thrown);
 		}
@@ -84,7 +84,7 @@ export class Source<T> extends State<T> {
 	 */
 	start(): void {
 		// Must be a source with a defined subscriptor.
-		if (!this._subscribe) throw new Error("Source is not subscribable");
+		if (!this._subscriptor) throw new Error("Source is not subscribable");
 
 		// No need to subscribe if:
 		// 1. This source is closed.
@@ -96,7 +96,7 @@ export class Source<T> extends State<T> {
 		if (this._queuedFetch) this._queuedFetch = void clearTimeout(this._queuedFetch);
 
 		try {
-			this._unsubscribe = typeof this._subscribe === "function" ? this._subscribe(this) : this._subscribe.subscribe(this);
+			this._unsubscribe = typeof this._subscriptor === "function" ? this._subscriptor(this) : this._subscriptor.subscribe(this);
 			this._scheduleUnsubscribe();
 		} catch (thrown) {
 			this.error(thrown);
