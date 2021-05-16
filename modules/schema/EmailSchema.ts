@@ -1,5 +1,5 @@
-import type { SchemaOptions } from "./Schema";
 import { StringSchema } from "./StringSchema";
+import type { SchemaOptions } from "./Schema";
 
 const R_MATCH = /^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.){1,3}(?:[a-z]{2,63}|xn--[a-z0-9-]{0,58}[a-z0-9])$/;
 

@@ -2,12 +2,12 @@
 
 import { Documents, Document, DocumentRequiredError, Provider } from "../db";
 import { randomId } from "../random";
-import type { Data, Result, Results } from "../data";
 import { dispatch, Dispatcher, Unsubscriber } from "../function";
 import { MutableObject, objectFromEntries, updateProps } from "../object";
 import { addItem, ImmutableArray, MutableArray, removeItem } from "../array";
 import { Stream } from "../stream";
 import { logError } from "../console";
+import type { Data, Result, Results } from "../data";
 
 /**
  * An individual table of data.

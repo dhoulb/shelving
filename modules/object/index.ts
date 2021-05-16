@@ -1,6 +1,6 @@
+import { SKIP } from "../constants";
 import type { Entry, ImmutableEntries, ResolvableEntries } from "../entry";
 import type { Resolvable } from "../data";
-import { SKIP } from "../constants";
 
 /**
  * Empty object: an object with no properties.

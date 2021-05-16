@@ -1,10 +1,10 @@
-import type { Entry, ImmutableEntries } from "../entry";
-import type { Data } from "../data";
 import { sort } from "../sort";
 import { bindMethod } from "../class";
-import type { Sortable } from "./types";
 import { Sort } from "./Sort";
 import { Rules } from "./Rules";
+import type { Sortable } from "./types";
+import type { Data } from "../data";
+import type { Entry, ImmutableEntries } from "../entry";
 
 /** A set of sorts. */
 export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable<T> {

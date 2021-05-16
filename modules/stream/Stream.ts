@@ -1,10 +1,10 @@
-import type { Mutable } from "../object";
-import type { Resolvable } from "../data";
 import { Observer, Subscribable, takeFrom, deriveFrom } from "../observe";
 import { addItem, MutableArray, removeItem } from "../array";
 import { AsyncEmptyDispatcher, AsyncDispatcher, AsyncCatcher, thispatch, Unsubscriber, AsyncDeriver, Subscriptor, dispatch } from "../function";
 import { SKIP } from "../constants";
 import { bindMethod } from "../class";
+import type { Resolvable } from "../data";
+import type { Mutable } from "../object";
 
 /**
  * Stream: a subscribable observer.

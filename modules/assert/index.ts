@@ -1,9 +1,9 @@
 import { AssertionError } from "../errors";
 import { ImmutableObject, isObject } from "../object";
 import { isArray } from "../array";
-import type { Class } from "../class";
 import { debug } from "../debug";
 import { AnyFunction } from "../function";
+import type { Class } from "../class";
 
 /** Assert a boolean condition is true. */
 export function assert(condition: unknown, ...received: unknown[]): asserts condition {

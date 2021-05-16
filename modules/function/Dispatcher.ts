@@ -1,6 +1,6 @@
-import type { Resolvable } from "../data";
 import { logError } from "../console";
 import { SKIP } from "../constants";
+import type { Resolvable } from "../data";
 
 /**
  * Dispatcher: a function that dispatches a value.

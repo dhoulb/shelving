@@ -1,7 +1,7 @@
-import type { Arguments, AsyncFetcher } from "../function";
-import type { Validator } from "../schema";
 import { isFeedback } from "../feedback";
 import { ValidationError } from "../errors";
+import type { Arguments, AsyncFetcher } from "../function";
+import type { Validator } from "../schema";
 
 const UNDEFINED_SCHEMA: Validator<undefined> = { validate: () => undefined };
 

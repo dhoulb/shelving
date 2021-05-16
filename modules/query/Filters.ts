@@ -1,11 +1,11 @@
-import type { Entry, ImmutableEntries } from "../entry";
-import type { ArrayType, ImmutableArray } from "../array";
 import { filter } from "../filter";
-import type { Data } from "../data";
 import { bindMethod } from "../class";
-import type { Filterable } from "./types";
 import { Filter } from "./Filter";
 import { Rules } from "./Rules";
+import type { Entry, ImmutableEntries } from "../entry";
+import type { ArrayType, ImmutableArray } from "../array";
+import type { Data } from "../data";
+import type { Filterable } from "./types";
 
 /** A set of filters. */
 export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filterable<T> {

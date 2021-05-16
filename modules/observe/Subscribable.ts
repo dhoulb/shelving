@@ -1,5 +1,5 @@
-import type { PolymorphicSubscriptor } from "../function";
 import { isObject } from "../object";
+import type { PolymorphicSubscriptor } from "../function";
 
 /**
  * Subscribable is any class that has:

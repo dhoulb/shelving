@@ -1,9 +1,9 @@
 import { bindMethod } from "../class";
-import type { Data } from "../data";
-import type { Entry, ImmutableEntries } from "../entry";
 import { COMPARE, Direction, sort } from "../sort";
 import { getQueryProp } from "./helpers";
 import { Rule } from "./Rule";
+import type { Entry, ImmutableEntries } from "../entry";
+import type { Data } from "../data";
 
 /**
  * Sorts a list of values.

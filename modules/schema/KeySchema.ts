@@ -1,5 +1,5 @@
-import type { SchemaOptions } from "./Schema";
 import { StringSchema } from "./StringSchema";
+import type { SchemaOptions } from "./Schema";
 
 type KeySchemaOptions = SchemaOptions<string> & {
 	readonly min?: number;

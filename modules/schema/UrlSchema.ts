@@ -1,6 +1,6 @@
 import { InvalidFeedback } from "../feedback";
-import type { SchemaOptions } from "./Schema";
 import { StringSchema } from "./StringSchema";
+import type { SchemaOptions } from "./Schema";
 
 type UrlSchemaOptions = SchemaOptions<string> & {
 	readonly schemes?: string[];

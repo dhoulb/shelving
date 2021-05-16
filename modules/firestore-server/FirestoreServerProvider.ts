@@ -1,4 +1,5 @@
 import "firebase-admin";
+import { DocumentRequiredError, isObject, Data, Results, Provider, Document, Documents, Operator, Stream, Direction, Mutable, Result } from "..";
 import type {
 	Firestore,
 	WhereFilterOp as FirestoreWhereFilterOp,
@@ -6,7 +7,6 @@ import type {
 	Query as FirestoreQuery,
 	QuerySnapshot as FirestoreQuerySnapshot,
 } from "@google-cloud/firestore";
-import { DocumentRequiredError, isObject, Data, Results, Provider, Document, Documents, Operator, Stream, Direction, Mutable, Result } from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.

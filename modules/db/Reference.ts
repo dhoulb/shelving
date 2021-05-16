@@ -1,8 +1,8 @@
+import { ValidationError } from "../errors";
+import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import type { Data, Results } from "../data";
 import type { ImmutableObject, MutableObject } from "../object";
 import type { Validator, ValidateOptions } from "../schema";
-import { ValidationError } from "../errors";
-import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import type { Provider } from "./Provider";
 
 /** Reference is a shared base for both Document and Documents that defines a single path in the database. */

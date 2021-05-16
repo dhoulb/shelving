@@ -18,7 +18,10 @@ const WORDS = `\\S(?:[\\s\\S]*?\\S)?`; // Run of text that starts and ends with 
 const REPLACE_INDENT = /^ {1,2}/gm;
 
 // Regular expression makers.
-const createMatcher = (regexp: RegExp): MarkupRuleMatcher => content => content.match(regexp);
+const createMatcher =
+	(regexp: RegExp): MarkupRuleMatcher =>
+	content =>
+		content.match(regexp);
 const createBlockMatcher = (middle = BLOCK, end = BLOCK_END, start = BLOCK_START) => createMatcher(new RegExp(`(?:${start})${middle}(?:${end})`));
 const createLineMatcher = (middle = LINE, end = LINE_END, start = LINE_START) => createMatcher(new RegExp(`(?:${start})${middle}(?:${end})`));
 const createWrapMatcher = (chars: string, middle = WORDS): MarkupRuleMatcher => {

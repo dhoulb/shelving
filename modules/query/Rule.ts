@@ -1,6 +1,6 @@
+import { objectFromEntries } from "../object";
 import type { Data, Results } from "../data";
 import type { ImmutableEntries } from "../entry";
-import { objectFromEntries } from "../object";
 
 /** Something that can be used to query against a result set or an array of entries. */
 export abstract class Rule<T extends Data> {

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { assertFunction } from "../assert";
 import type { Arguments } from "../function";
 import type { EmptyObject, ImmutableObject } from "../object";
-import { assertFunction } from "../assert";
 
 /**
  * Constructor: a class constructor that can be used with `new X` to generate an object of type `T`

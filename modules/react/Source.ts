@@ -1,7 +1,7 @@
-import type { Subscriptor, Unsubscriber, AsyncFetcher } from "../function";
 import { LOADING } from "../constants";
 import { State } from "../state";
 import { Observer, Subscribable } from "../observe";
+import type { Subscriptor, Unsubscriber, AsyncFetcher } from "../function";
 
 /** Default max age for data. */
 const MAX_AGE_MS = 60000;

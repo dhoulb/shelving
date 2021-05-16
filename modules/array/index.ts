@@ -1,6 +1,6 @@
 import { ImmutableObject, isIterable, Mutable } from "../object";
-import type { Resolvable } from "../data";
 import { SKIP } from "../constants";
+import type { Resolvable } from "../data";
 
 /**
  * Mutable array: an array that can be changed.

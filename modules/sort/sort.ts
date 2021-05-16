@@ -1,6 +1,6 @@
+import { Comparer, COMPARE } from "./compare";
 import type { ImmutableArray } from "../array";
 import type { Deriver } from "../function";
-import { Comparer, COMPARE } from "./compare";
 
 /**
  * Quick sort algorithm.
