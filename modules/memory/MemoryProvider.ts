@@ -22,23 +22,23 @@ class Table {
 	set(id: string, data: Data): void {
 		if (data !== this.docs[id]) {
 			this.docs[id] = data;
-			addItem(this.changes, id);
-			this.fire();
+			this._changed(id);
 		}
 	}
 
 	delete(id: string): void {
 		if (this.docs[id]) {
 			delete this.docs[id];
-			addItem(this.changes, id);
-			this.fire();
+			this._changed(id);
 		}
 	}
 
-	private fire() {
-		Promise.resolve().then(this._fire, logError);
+	private _changed(id: string) {
+		if (!this.changes.length) Promise.resolve().then(this._dispatch, logError);
+		addItem(this.changes, id);
 	}
-	private _fire = (): void => {
+
+	private _dispatch = (): void => {
 		if (this.changes.length) {
 			for (const dispatcher of this.dispatchers) dispatch(dispatcher, this.changes);
 			this.changes.splice(0);
@@ -46,7 +46,7 @@ class Table {
 	};
 
 	on(dispatcher: Dispatcher<ImmutableArray<string>>): Unsubscriber {
-		this.dispatchers.push(dispatcher);
+		addItem(this.dispatchers, dispatcher);
 		return () => removeItem(this.dispatchers, dispatcher);
 	}
 }
