@@ -101,8 +101,8 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 		if (isSubscribable(source) || isSubscriptor(source)) {
 			// If source is a State, subscribe it.
 			if (source instanceof State && !source.loading) {
+				// Set the value to the source state's value now.
 				const value = source.value;
-				this.next(value);
 				this._value = value;
 				this._fired = value;
 				(this as Mutable<this>).loading = false;
@@ -110,8 +110,11 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 			}
 		} else if (source !== LOADING && source !== SKIP) {
 			// If source is a value, set it.
-			if (source instanceof Promise) this.next(source);
-			else {
+			if (source instanceof Promise) {
+				// Set the value after it has resolved.
+				this.next(source);
+			} else {
+				// Set the value now.
 				this._value = source;
 				this._fired = source;
 				(this as Mutable<this>).loading = false;
