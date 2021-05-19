@@ -242,7 +242,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Subscribable<T> 
 	derive<TT>(deriver: AsyncDeriver<T, TT>): State<TT>;
 	derive<TT>(deriver?: AsyncDeriver<T, TT>): State<T> | State<TT> {
 		if (deriver) {
-			const state = new State<TT>(this._value !== LOADING ? deriver(this._value) : this._value);
+			const state = new State<TT>(this._value !== LOADING ? deriver(this._value) : LOADING);
 			deriveFrom(this, deriver, state);
 			return state;
 		} else {
