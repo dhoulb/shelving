@@ -20,7 +20,7 @@ export interface Provider {
 	 * @param ref Document specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	getDocument(ref: Document): Promise<Result>;
+	getDocument(ref: Document): Result | Promise<Result>;
 
 	/**
 	 * Subscribe to a document.
@@ -39,7 +39,7 @@ export interface Provider {
 	 * @param ref Which collection to add the document to.
 	 * @return Promise that resolves to the string ID of the created document when done.
 	 */
-	addDocument(ref: Documents, data: Data): Promise<string>;
+	addDocument(ref: Documents, data: Data): string | Promise<string>;
 
 	/**
 	 * Set a document.
@@ -52,7 +52,7 @@ export interface Provider {
 	 * @return Promise that resolves when done.
 	 * @throws RequiredError if the document doesn't exist.
 	 */
-	setDocument(ref: Document, data: Data): Promise<void>;
+	setDocument(ref: Document, data: Data): void | Promise<void>;
 
 	/**
 	 * Update an existing document with a partial value.
@@ -65,7 +65,7 @@ export interface Provider {
 	 * @return Promise that resolves when done.
 	 * @throws RequiredError if the document doesn't exist.
 	 */
-	updateDocument(ref: Document, partial: Data): Promise<void>;
+	updateDocument(ref: Document, partial: Data): void | Promise<void>;
 
 	/**
 	 * Delete a document.
@@ -73,7 +73,7 @@ export interface Provider {
 	 * @param ref Document specifying which document document to delete.
 	 * @return Promise that resolves when done.
 	 */
-	deleteDocument(ref: Document): Promise<void>;
+	deleteDocument(ref: Document): void | Promise<void>;
 
 	/**
 	 * Count all matching documents.
@@ -82,7 +82,7 @@ export interface Provider {
 	 * @param ref Which collection to count documents from.
 	 * @return Array of documents matching the rules.
 	 */
-	countDocuments(ref: Documents): Promise<number>;
+	countDocuments(ref: Documents): number | Promise<number>;
 
 	/**
 	 * Get all matching documents.
@@ -90,7 +90,7 @@ export interface Provider {
 	 * @param ref Which collection to get documents from.
 	 * @return Array of documents matching the rules.
 	 */
-	getDocuments(ref: Documents): Promise<Results>;
+	getDocuments(ref: Documents): Results | Promise<Results>;
 
 	/**
 	 * Subscribe to all matching documents.
@@ -108,7 +108,7 @@ export interface Provider {
 	 * @param ref Which collection to set.
 	 * @return Promise that resolves when done.
 	 */
-	setDocuments(ref: Documents, data: Data): Promise<void>;
+	setDocuments(ref: Documents, data: Data): void | Promise<void>;
 
 	/**
 	 * Update all matching documents with the same partial value.
@@ -116,7 +116,7 @@ export interface Provider {
 	 * @param ref Which collection to update.
 	 * @return Promise that resolves when done.
 	 */
-	updateDocuments(ref: Documents, partial: Data): Promise<void>;
+	updateDocuments(ref: Documents, partial: Data): void | Promise<void>;
 
 	/**
 	 * Delete all matching documents.
@@ -124,5 +124,5 @@ export interface Provider {
 	 * @param ref Which collection to delete.
 	 * @return Promise that resolves when done.
 	 */
-	deleteDocuments(ref: Documents): Promise<void>;
+	deleteDocuments(ref: Documents): void | Promise<void>;
 }

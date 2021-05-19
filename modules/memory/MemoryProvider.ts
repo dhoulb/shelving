@@ -1,5 +1,3 @@
-/* eslint-disable require-await */
-
 import { Documents, Document, DocumentRequiredError, Provider } from "../db";
 import { randomId } from "../random";
 import type { Data, Result, Results } from "../data";
@@ -79,7 +77,7 @@ export class MemoryProvider implements Provider {
 		return ((this._data[path] as Table) ||= new Table());
 	}
 
-	async getDocument({ collection, id }: Document): Promise<Result> {
+	getDocument({ collection, id }: Document): Result {
 		return this._table(collection).docs[id];
 	}
 
@@ -95,7 +93,7 @@ export class MemoryProvider implements Provider {
 		});
 	}
 
-	async addDocument({ path }: Documents, data: Data): Promise<string> {
+	addDocument({ path }: Documents, data: Data): string {
 		const table = this._table(path);
 		let id = randomId();
 		while (table.docs[id]) id = randomId(); // Regenerate until unique.
@@ -103,11 +101,11 @@ export class MemoryProvider implements Provider {
 		return id;
 	}
 
-	async setDocument({ collection, id }: Document, data: Data): Promise<void> {
+	setDocument({ collection, id }: Document, data: Data): void {
 		this._table(collection).set(id, data);
 	}
 
-	async updateDocument(document: Document, partial: Data): Promise<void> {
+	updateDocument(document: Document, partial: Data): void {
 		const { collection, id } = document;
 		const table = this._table(collection);
 		const data = table.docs[id];
@@ -115,15 +113,15 @@ export class MemoryProvider implements Provider {
 		table.set(id, updateProps(data, partial));
 	}
 
-	async deleteDocument({ collection, id }: Document): Promise<void> {
+	deleteDocument({ collection, id }: Document): void {
 		this._table(collection).delete(id);
 	}
 
-	async countDocuments({ path, query }: Documents): Promise<number> {
+	countDocuments({ path, query }: Documents): number {
 		return query.count(Object.entries(this._table(path).docs));
 	}
 
-	async getDocuments({ path, query }: Documents): Promise<Results> {
+	getDocuments({ path, query }: Documents): Results {
 		return query.results(this._table(path).docs);
 	}
 
@@ -172,25 +170,25 @@ export class MemoryProvider implements Provider {
 		});
 	}
 
-	async setDocuments({ path, query }: Documents, data: Data): Promise<void> {
+	setDocuments({ path, query }: Documents, data: Data): void {
 		const table = this._table(path);
 		const entries = query.apply(Object.entries(table.docs));
 		for (const [id] of entries) table.set(id, data);
 	}
 
-	async updateDocuments({ path, query }: Documents, partial: Data): Promise<void> {
+	updateDocuments({ path, query }: Documents, partial: Data): void {
 		const table = this._table(path);
 		const entries = query.apply(Object.entries(table.docs));
 		for (const [id, data] of entries) table.set(id, updateProps(data, partial));
 	}
 
-	async deleteDocuments({ path, query }: Documents): Promise<void> {
+	deleteDocuments({ path, query }: Documents): void {
 		const table = this._table(path);
 		const entries = query.apply(Object.entries(table.docs));
 		for (const [id] of entries) table.delete(id);
 	}
 
-	async reset(): Promise<void> {
+	reset(): void {
 		this._data = {};
 	}
 }

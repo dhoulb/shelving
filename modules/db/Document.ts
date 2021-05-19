@@ -14,10 +14,6 @@ const OPTIONS = {};
 const REQUIRED = { required: true } as const;
 const PARTIAL = { partial: true } as const;
 
-const dontThrowRequiredError = (thrown: RequiredError | unknown): void => {
-	if (!(thrown instanceof RequiredError)) throw thrown;
-};
-
 /** Type for a document instance. */
 export class Document<T extends Data = Data> extends Reference<T> implements Validator<T>, Subscribable<Result<T>> {
 	/** Path for document's collection. */
@@ -122,11 +118,12 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	set(unsafeData: ImmutableObject, options: DatabaseWriteOptions & { validate: false }): Promise<void>;
-	set(data: T, options?: DatabaseWriteOptions): Promise<void>;
-	set(unvalidatedData: ImmutableObject, { validate = true, required = false }: DatabaseWriteOptions = OPTIONS): Promise<void> {
+	async set(unsafeData: ImmutableObject, options: DatabaseWriteOptions & { validate: false }): Promise<void>;
+	async set(data: T, options?: DatabaseWriteOptions): Promise<void>;
+	async set(unvalidatedData: ImmutableObject, { validate = true, required = false }: DatabaseWriteOptions = OPTIONS): Promise<void> {
 		const data = validate === false ? (unvalidatedData as Data) : this.validate(unvalidatedData);
-		return required ? this.provider.updateDocument(this, data) : this.provider.setDocument(this, data);
+		if (required) await this.provider.updateDocument(this, data);
+		else await this.provider.setDocument(this, data);
 	}
 
 	/**
@@ -143,12 +140,15 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	update(unsafePartial: ImmutableObject, options?: DatabaseWriteOptions & { validate: false }): Promise<void>;
-	update(partial: Partial<T>, options?: DatabaseWriteOptions): Promise<void>;
-	update(unvalidatedPartial: ImmutableObject, { validate = true, required = true }: DatabaseWriteOptions = OPTIONS): Promise<void> {
+	async update(unsafePartial: ImmutableObject, options?: DatabaseWriteOptions & { validate: false }): Promise<void>;
+	async update(partial: Partial<T>, options?: DatabaseWriteOptions): Promise<void>;
+	async update(unvalidatedPartial: ImmutableObject, { validate = true, required = true }: DatabaseWriteOptions = OPTIONS): Promise<void> {
 		const partial = validate === false ? (unvalidatedPartial as Data) : this.validate(unvalidatedPartial, PARTIAL);
-		if (required === false) return this.provider.updateDocument(this, partial).catch(dontThrowRequiredError);
-		return this.provider.updateDocument(this, partial);
+		try {
+			await this.provider.updateDocument(this, partial);
+		} catch (thrown) {
+			if (!(thrown instanceof RequiredError) || required !== false) throw thrown;
+		}
 	}
 
 	/**
