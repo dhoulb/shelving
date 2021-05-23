@@ -1,6 +1,6 @@
-import { Rule } from "./Rule";
 import type { ImmutableEntries } from "../entry";
 import type { Data } from "../data";
+import { Rule } from "./Rule";
 
 export class Slice<D extends Data> extends Rule<D> {
 	readonly limit: number | null;

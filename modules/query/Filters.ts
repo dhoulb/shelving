@@ -1,10 +1,10 @@
 import { filter } from "../filter";
 import { bindMethod } from "../class";
-import { Filter } from "./Filter";
-import { Rules } from "./Rules";
 import type { Entry, ImmutableEntries } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
 import type { Data } from "../data";
+import { Rules } from "./Rules";
+import { Filter } from "./Filter";
 import type { Filterable } from "./types";
 
 /** A set of filters. */

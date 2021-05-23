@@ -1,9 +1,9 @@
 import { filter, MATCH, Operator } from "../filter";
 import { Entry, ImmutableEntries } from "../entry";
 import { bindMethod } from "../class";
+import type { Data } from "../data";
 import { Rule } from "./Rule";
 import { getQueryProp } from "./helpers";
-import type { Data } from "../data";
 
 /**
  * Filter: filters a list of documents.

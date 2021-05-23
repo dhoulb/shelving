@@ -2,14 +2,14 @@ import { Queryable, Query } from "../query";
 import { getFirstProp, getLastProp, ImmutableObject } from "../object";
 import { Stream } from "../stream";
 import { cacheMethod } from "../class";
-import { Document } from "./Document";
-import { Reference } from "./Reference";
 import type { Data, Results } from "../data";
 import type { Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import type { Entry } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
 import type { Observer, Subscribable } from "../observe";
+import { Reference } from "./Reference";
+import { Document } from "./Document";
 import type { DatabaseReadOptions, DatabaseWriteOptions } from "./options";
 
 const OPTIONS = {};

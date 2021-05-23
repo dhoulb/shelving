@@ -1,7 +1,7 @@
-import { Document } from "./Document";
-import { Documents } from "./Documents";
 import type { Datas } from "../data";
 import type { Validators } from "../schema";
+import { Document } from "./Document";
+import { Documents } from "./Documents";
 import type { Provider } from "./Provider";
 
 /**

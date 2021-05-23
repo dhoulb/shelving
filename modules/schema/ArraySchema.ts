@@ -1,8 +1,8 @@
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { ImmutableArray, uniqueItems } from "../array";
+import type { MutableObject } from "../object";
 import { Schema, SchemaOptions } from "./Schema";
 import { Validator } from "./Validator";
-import type { MutableObject } from "../object";
 
 type ArraySchemaOptions<T> = SchemaOptions<ImmutableArray<T>> & {
 	readonly items: Validator<T>;

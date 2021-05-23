@@ -1,13 +1,13 @@
 import { assertLength, assertProp } from "../assert";
+import type { ArrayType, ImmutableArray } from "../array";
+import type { ImmutableEntries } from "../entry";
+import type { Data } from "../data";
 import { Slice } from "./Slice";
 import { Filters } from "./Filters";
 import { Sorts } from "./Sorts";
 import { Rule } from "./Rule";
 import { getQueryProp } from "./helpers";
 import type { Queryable } from "./types";
-import type { ArrayType, ImmutableArray } from "../array";
-import type { ImmutableEntries } from "../entry";
-import type { Data } from "../data";
 
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any

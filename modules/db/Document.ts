@@ -1,12 +1,12 @@
 import { Stream } from "../stream";
 import { RequiredError } from "../errors";
-import { Reference } from "./Reference";
-import { DocumentRequiredError } from "./errors";
 import type { ImmutableObject } from "../object";
 import type { Data, Result } from "../data";
 import type { Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import type { Observer, Subscribable } from "../observe";
+import { DocumentRequiredError } from "./errors";
+import { Reference } from "./Reference";
 import type { DatabaseReadOptions, DatabaseWriteOptions } from "./options";
 import type { Provider } from "./Provider";
 
