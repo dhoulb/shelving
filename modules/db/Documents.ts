@@ -3,10 +3,9 @@ import type { Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
 import type { Entry } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
-import type { Observer, Subscribable } from "../observe";
 import { Queryable, Query } from "../query";
 import { getFirstProp, getLastProp, ImmutableObject } from "../object";
-import { Stream } from "../stream";
+import { DerivingStream, Observer, Observable } from "../stream";
 import { cacheMethod } from "../class";
 import { Document } from "./Document";
 import type { DatabaseReadOptions, DatabaseWriteOptions } from "./options";
@@ -19,7 +18,7 @@ const EMPTY_QUERY = new Query<any>(); // eslint-disable-line @typescript-eslint/
 /**
  * Documents reference: Allows a set of documents in a collection to be read or deleted from a database.
  */
-export class Documents<T extends Data = Data> extends Reference<T> implements Queryable<T>, Validator<T>, Subscribable<Results<T>> {
+export class Documents<T extends Data = Data> extends Reference<T> implements Queryable<T>, Validator<T>, Observable<Results<T>> {
 	/** Query that filters and sorts these documents. */
 	readonly query: Query<T> = EMPTY_QUERY;
 
@@ -37,11 +36,11 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 * Create a new document (with a random ID).
 	 * - Input data must be valid according's schema or error will be thrown unless `options.validate` is `false`
 	 */
-	add(unsafeData: ImmutableObject, options: DatabaseWriteOptions & { validate: false }): Promise<string>;
-	add(data: T, options?: DatabaseWriteOptions): Promise<string>;
-	add(unvalidatedData: ImmutableObject, { validate = true }: DatabaseWriteOptions = OPTIONS): Promise<string> {
+	async add(unsafeData: ImmutableObject, options: DatabaseWriteOptions & { validate: false }): Promise<string>;
+	async add(data: T, options?: DatabaseWriteOptions): Promise<string>;
+	async add(unvalidatedData: ImmutableObject, { validate = true }: DatabaseWriteOptions = OPTIONS): Promise<string> {
 		const data = validate === false ? (unvalidatedData as Data) : this.validate(unvalidatedData);
-		return this.provider.addDocument(this, data);
+		return await this.provider.addDocument(this, data);
 	}
 
 	/**
@@ -71,7 +70,7 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 * @returns Number of documents in the collection. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
 	get count(): Promise<number> {
-		return this.provider.countDocuments(this);
+		return Promise.resolve(this.provider.countDocuments(this));
 	}
 
 	/**
@@ -81,7 +80,7 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 * @returns Array of strings representing the documents in the current collection. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
 	get ids(): Promise<string[]> {
-		return this.provider.getDocuments(this).then(Object.keys);
+		return Promise.resolve(this.provider.getDocuments(this)).then(Object.keys);
 	}
 
 	/**
@@ -112,10 +111,13 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	on(observer: Observer<Results>, options: DatabaseReadOptions & { validate: false }): Unsubscriber;
 	on(observer: Observer<Results<T>>, options?: DatabaseReadOptions): Unsubscriber;
 	on(observer: Observer<Results>, { validate = this.provider.VALIDATE }: DatabaseReadOptions = OPTIONS): Unsubscriber {
-		const stream = Stream.create<Results>();
-		if (validate === false) stream.on(observer);
-		else stream.derive(v => this.validateResults(v)).on(observer);
-		return this.provider.onDocuments(this, stream);
+		if (validate === false) {
+			return this.provider.onDocuments(this, observer);
+		} else {
+			const stream = new DerivingStream<Results, Results>(v => this.validateResults(v));
+			stream.on(observer);
+			return this.provider.onDocuments(this, stream);
+		}
 	}
 
 	/** Get a pointer first result (i.e. an object containing `.id` and `.data`, or `undefined` if no documents match this collecton). */
@@ -137,11 +139,11 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	set(unsafeData: ImmutableObject, options: DatabaseWriteOptions & { validate: false }): Promise<void>;
-	set(data: T, options?: DatabaseWriteOptions): Promise<void>;
-	set(unvalidatedData: ImmutableObject, { validate = true }: DatabaseWriteOptions = OPTIONS): Promise<void> {
+	async set(unsafeData: ImmutableObject, options: DatabaseWriteOptions & { validate: false }): Promise<void>;
+	async set(data: T, options?: DatabaseWriteOptions): Promise<void>;
+	async set(unvalidatedData: ImmutableObject, { validate = true }: DatabaseWriteOptions = OPTIONS): Promise<void> {
 		const data = validate === false ? (unvalidatedData as Data) : this.validate(unvalidatedData);
-		return this.provider.updateDocuments(this, data);
+		await this.provider.updateDocuments(this, data);
 	}
 
 	/**
@@ -153,11 +155,11 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	update(unsafePartial: ImmutableObject, options?: DatabaseWriteOptions & { validate: false }): Promise<void>;
-	update(partial: Partial<T>, options?: DatabaseWriteOptions): Promise<void>;
-	update(unvalidatedPartial: ImmutableObject, { validate = true }: DatabaseWriteOptions = OPTIONS): Promise<void> {
+	async update(unsafePartial: ImmutableObject, options?: DatabaseWriteOptions & { validate: false }): Promise<void>;
+	async update(partial: Partial<T>, options?: DatabaseWriteOptions): Promise<void>;
+	async update(unvalidatedPartial: ImmutableObject, { validate = true }: DatabaseWriteOptions = OPTIONS): Promise<void> {
 		const partial = validate === false ? (unvalidatedPartial as Data) : this.validate(unvalidatedPartial, PARTIAL);
-		return this.provider.updateDocuments(this, partial);
+		await this.provider.updateDocuments(this, partial);
 	}
 
 	/**
@@ -165,8 +167,8 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	delete(): Promise<void> {
-		return this.provider.deleteDocuments(this);
+	async delete(): Promise<void> {
+		await this.provider.deleteDocuments(this);
 	}
 
 	// Implement Queryable

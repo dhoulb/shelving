@@ -6,7 +6,22 @@ import type {
 	Query as FirestoreQuery,
 	QuerySnapshot as FirestoreQuerySnapshot,
 } from "@google-cloud/firestore";
-import { DocumentRequiredError, isObject, Data, Results, Provider, Document, Documents, Operator, Stream, Direction, Mutable, Result } from "..";
+import {
+	DocumentRequiredError,
+	isObject,
+	Data,
+	Results,
+	Provider,
+	Document,
+	Documents,
+	Operator,
+	Observer,
+	Direction,
+	Mutable,
+	Result,
+	dispatchNext,
+	dispatchError,
+} from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -74,10 +89,10 @@ export class FirestoreServerProvider implements Provider {
 		return snapshot.data();
 	}
 
-	onDocument(ref: Document, stream: Stream<Result>): () => void {
+	onDocument(ref: Document, observer: Observer<Result>): () => void {
 		return this.firestore.doc(ref.path).onSnapshot(
-			snapshot => stream.next(snapshot.data()),
-			error => stream.error(error),
+			snapshot => dispatchNext(observer, snapshot.data()),
+			error => dispatchError(observer, error),
 		);
 	}
 
@@ -117,10 +132,10 @@ export class FirestoreServerProvider implements Provider {
 		return snapshot.size;
 	}
 
-	onDocuments(ref: Documents, stream: Stream<Results>): () => void {
+	onDocuments(ref: Documents, observer: Observer<Results>): () => void {
 		return buildQuery(this.firestore, ref).onSnapshot(
-			snapshot => stream.next(snapshotResults(snapshot)),
-			error => stream.error(error),
+			snapshot => dispatchNext(observer, snapshotResults(snapshot)),
+			error => dispatchError(observer, error),
 		);
 	}
 

@@ -45,10 +45,6 @@ export * from "./random";
 export * from "./serialise";
 export * from "./sort";
 export * from "./template";
-
-// Streams.
-export * from "./observe";
-export * from "./state";
 export * from "./stream";
 
 // Errors.

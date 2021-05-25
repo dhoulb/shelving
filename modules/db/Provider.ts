@@ -1,6 +1,6 @@
 import type { Data, Result, Results } from "../data";
 import type { Unsubscriber } from "../function";
-import type { Stream } from "../stream";
+import type { Observer } from "../stream";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
 
@@ -27,10 +27,10 @@ export interface Provider {
 	 * - Expect that `onNext()` is called immediately with the initial value.
 	 *
 	 * @param ref Document specifying which document to subscribe to.
-	 * @param stream Stream to report the result back to.
+	 * @param observer Observer to report the result back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onDocument(ref: Document, stream: Stream<Result>): Unsubscriber;
+	onDocument(ref: Document, observer: Observer<Result>): Unsubscriber;
 
 	/**
 	 * Create a new document in a collection by generating a unique ID.
@@ -97,10 +97,10 @@ export interface Provider {
 	 * - Expect that `onNext()` is called immediately with the initial value.
 	 *
 	 * @param ref Which collection to to subscribe to.
-	 * @param stream Stream to report the results back to.
+	 * @param observer Observer to report the result back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onDocuments(ref: Documents, stream: Stream<Results>): Unsubscriber;
+	onDocuments(ref: Documents, observer: Observer<Results>): Unsubscriber;
 
 	/**
 	 * Set all matching documents to the same value.

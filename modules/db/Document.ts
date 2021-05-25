@@ -2,8 +2,7 @@ import type { ImmutableObject } from "../object";
 import type { Data, Result } from "../data";
 import type { Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
-import type { Observer, Subscribable } from "../observe";
-import { Stream } from "../stream";
+import { DerivingStream, Observer, Observable } from "../stream";
 import { RequiredError } from "../errors";
 import type { DatabaseReadOptions, DatabaseWriteOptions } from "./options";
 import type { Provider } from "./Provider";
@@ -15,7 +14,7 @@ const REQUIRED = { required: true } as const;
 const PARTIAL = { partial: true } as const;
 
 /** Type for a document instance. */
-export class Document<T extends Data = Data> extends Reference<T> implements Validator<T>, Subscribable<Result<T>> {
+export class Document<T extends Data = Data> extends Reference<T> implements Validator<T>, Observable<Result<T>> {
 	/** Path for document's collection. */
 	readonly collection: string;
 
@@ -101,10 +100,13 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	on(observer: Observer<Result>, options: DatabaseReadOptions & { validate: false }): Unsubscriber;
 	on(observer: Observer<Result<T>>, options?: DatabaseReadOptions): Unsubscriber;
 	on(observer: Observer<Result>, { validate = this.provider.VALIDATE }: DatabaseReadOptions = OPTIONS): Unsubscriber {
-		const stream = Stream.create<Result>();
-		if (validate === false) stream.on(observer);
-		else stream.derive(v => (v ? this.validate(v) : undefined)).on(observer);
-		return this.provider.onDocument(this, stream);
+		if (validate === false) {
+			return this.provider.onDocument(this, observer);
+		} else {
+			const stream = new DerivingStream<Result, Result>(v => (v ? this.validate(v) : undefined));
+			stream.on(observer);
+			return this.provider.onDocument(this, stream);
+		}
 	}
 
 	/**

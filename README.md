@@ -86,12 +86,6 @@ Shelving is created from small individual modules which can be imported individu
 - `shelving/serialise` ✅
 - `shelving/sort` ✅
 - [`shelving/template`](https://github.com/dhoulb/shelving/blob/main/modules/template/README.md) ✅ — Simple string template rendering and matching
-
-### Streams
-
-- `shelving/observe` ✅
-- `shelving/source` ✅
-- `shelving/state` ✅
 - `shelving/stream` ✅
 
 ### Errors

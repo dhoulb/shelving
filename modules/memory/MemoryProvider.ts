@@ -4,7 +4,7 @@ import type { Data, Result, Results } from "../data";
 import { dispatch, Dispatcher, Unsubscriber } from "../function";
 import { MutableObject, objectFromEntries, updateProps } from "../object";
 import { addItem, ImmutableArray, MutableArray, removeItem } from "../array";
-import { Stream } from "../stream";
+import { dispatchNext, Observer } from "../stream";
 import { logError } from "../console";
 
 /**
@@ -81,15 +81,15 @@ export class MemoryProvider implements Provider {
 		return this._table(collection).docs[id];
 	}
 
-	onDocument({ id, collection }: Document, stream: Stream<Result>): Unsubscriber {
+	onDocument({ id, collection }: Document, observer: Observer<Result>): Unsubscriber {
 		const table = this._table(collection);
 
 		// Call next() with initial results.
-		stream.next(table.docs[id]);
+		dispatchNext(observer, table.docs[id]);
 
 		// Call next() every time the collection changes.
 		return table.on(changed => {
-			if (changed.includes(id)) stream.next(table.docs[id]);
+			if (changed.includes(id)) dispatchNext(observer, table.docs[id]);
 		});
 	}
 
@@ -125,13 +125,13 @@ export class MemoryProvider implements Provider {
 		return query.results(this._table(path).docs);
 	}
 
-	onDocuments({ path, query }: Documents, stream: Stream<Results>): Unsubscriber {
+	onDocuments({ path, query }: Documents, observer: Observer<Results>): Unsubscriber {
 		const table = this._table(path);
 		let filtered = objectFromEntries(query.sorts.apply(query.filters.apply(Object.entries(table.docs))));
 		let last = query.slice.results(filtered);
 
 		// Call next() with initial results (on next tick).
-		stream.next(last);
+		dispatchNext(observer, last);
 
 		// Possibly call next() when the collection changes if the changes affect the subscription.
 		return table.on(changes => {
@@ -163,7 +163,7 @@ export class MemoryProvider implements Provider {
 			if (sliced !== filtered && changes.every(id => !last[id] && !sliced[id])) return;
 
 			// Call next() with the next result.
-			stream.next(sliced);
+			dispatchNext(observer, sliced);
 
 			// Iterate.
 			last = sliced;

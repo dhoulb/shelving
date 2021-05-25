@@ -7,7 +7,22 @@ import type {
 	Query as FirestoreQuery,
 	QuerySnapshot as FirestoreQuerySnapshot,
 } from "@firebase/firestore-types";
-import { DocumentRequiredError, isObject, Data, Results, Provider, Document, Documents, Operator, Stream, Direction, Mutable, Result } from "..";
+import {
+	DocumentRequiredError,
+	isObject,
+	Data,
+	Results,
+	Provider,
+	Document,
+	Documents,
+	Operator,
+	Direction,
+	Mutable,
+	Result,
+	Observer,
+	dispatchNext,
+} from "..";
+import { dispatchError } from "../stream";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -41,7 +56,7 @@ const buildQuery = (firestore: Firestore, { path, query: { filters, sorts, slice
 };
 
 /** Create a set of results from a collection snapshot. */
-const collectionResults = (snapshot: FirestoreQuerySnapshot): Results => {
+const snapshotResults = (snapshot: FirestoreQuerySnapshot): Results => {
 	const results: Mutable<Results> = {};
 	for (const s of snapshot.docs) results[s.id] = s.data();
 	return results;
@@ -75,10 +90,10 @@ export class FirestoreClientProvider implements Provider {
 		return snapshot.data();
 	}
 
-	onDocument(ref: Document, stream: Stream<Result>): () => void {
+	onDocument(ref: Document, observer: Observer<Result>): () => void {
 		return this.firestore.doc(ref.path).onSnapshot(
-			snapshot => stream.next(snapshot.data()),
-			error => stream.error(error),
+			snapshot => dispatchNext(observer, snapshot.data()),
+			error => dispatchError(observer, error),
 		);
 	}
 
@@ -107,7 +122,7 @@ export class FirestoreClientProvider implements Provider {
 
 	async getDocuments(ref: Documents): Promise<Results> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
-		return collectionResults(snapshot);
+		return snapshotResults(snapshot);
 	}
 
 	// Count the documents in the collection.
@@ -118,10 +133,10 @@ export class FirestoreClientProvider implements Provider {
 		return snapshot.size;
 	}
 
-	onDocuments(ref: Documents, stream: Stream<Results>): () => void {
+	onDocuments(ref: Documents, observer: Observer<Results>): () => void {
 		return buildQuery(this.firestore, ref).onSnapshot(
-			snapshot => stream.next(collectionResults(snapshot)),
-			error => stream.error(error),
+			snapshot => dispatchNext(observer, snapshotResults(snapshot)),
+			error => dispatchError(observer, error),
 		);
 	}
 

@@ -1,50 +1,24 @@
 import type { Mutable } from "../object";
-import type { Resolvable } from "../data";
-import { Observer, Subscribable, takeFrom, deriveFrom } from "../observe";
 import { addItem, MutableArray, removeItem } from "../array";
-import { AsyncEmptyDispatcher, AsyncDispatcher, AsyncCatcher, thispatch, Unsubscriber, AsyncDeriver, Subscriptor, dispatch } from "../function";
+import { AsyncEmptyDispatcher, AsyncDispatcher, AsyncCatcher, thispatch, Unsubscriber, AsyncDeriver } from "../function";
+import { Resolvable } from "../data";
 import { SKIP } from "../constants";
-import { bindMethod } from "../class";
+import { dispatchComplete, dispatchError, dispatchNext, Observer } from "./Observer";
+import { Observable } from "./Observable";
 
 /**
- * Stream: a subscribable observer.
+ * Stream: an object that can be subscribed to and passes along any next values to its subscribers.
  *
- * - Wraps multiple sub-observers.
  * - Provide a normalised `.closed` property that is `true` initially and `false` after `complete()` has been called.
  * - Ensure that `next()`, `error()`, `complete()` aren't called again after `.closed` is true.
- * - Logs everything that's passed to `error()` to the console.
- * - Catches synchronously thrown errors in `next()`, `error()` and `complete()` and logs them to the console.
- * - Catches asynchronously rejected errors in `next()`, `error()` and `complete()` and logs them to the console.
- *
- * @param I The input type, used for `next()`
- * @param O The output type, used for `subscribe()`
  */
-export class Stream<T> implements Observer<T>, Subscribable<T> {
+export class Stream<T> implements Observer<T>, Observable<T> {
+	protected _subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
+
 	/**
-	 * Create a new stream.
-	 * - Static function so you can use it with `useLazy()` and for consistency with `Stream.take()`
-	 *
-	 * @param source An optional source `Subscribable` instance that this stream subscribes to when it's constructed.
-	 * - If not set this stream is not subscribed to anything. You can set its values manually using `stream.next()` etc.
+	 * Is this stream open or closed.
+	 * - Closed streams no longer pass their values through to their subscribers.
 	 */
-	static create<X = unknown>(): Stream<X>;
-	static create<X>(source: Subscriptor<X> | Subscribable<X>): Stream<X>;
-	static create(source?: Subscriptor<unknown> | Subscribable<unknown>): Stream<unknown> {
-		return new Stream(source);
-	}
-
-	/** Create a new stream that only targets some of its subscribers when `next()` is called. */
-	static target<X>(num: number, source?: Subscribable<X>): Stream<X> {
-		const stream = new Stream<X>(source);
-		stream._target = num;
-		return stream;
-	}
-
-	private _cleanup?: Unsubscriber; // Unsubscriber function for the source this stream is attached to.
-	private _subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
-	private _target = 0; // Number of subscribers to call when calling `next()`
-
-	/** Is this observer open or closed. */
 	readonly closed: boolean = false;
 
 	/** Get the current subscriber count. */
@@ -52,63 +26,56 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		return this._subscribers.length;
 	}
 
-	// Protected to encourage `Stream.create()`
-	protected constructor(source?: Subscriptor<T> | Subscribable<T>) {
-		if (source) this._cleanup = typeof source === "function" ? source(this) : source.subscribe(this);
-	}
-
 	/**
 	 * Send the next value to this stream's subscribers.
 	 * - Calls `next()` on all subscribers.
-	 * - Skips subscribers where `subscriber.closed` is truthy.
 	 */
 	next(value: Resolvable<T>): void {
 		if (this.closed || value === SKIP) return;
-		if (value instanceof Promise) return thispatch<T, "next", "error">(this, "next", value, this, "error");
-
-		const start = this._target < 0 ? this._target : 0;
-		const end = this._target > 0 ? this._target : undefined;
-		for (const subscriber of this._subscribers.slice(start, end)) thispatch(subscriber, "next", value);
+		if (value instanceof Promise) return dispatchNext(this, value);
+		for (const subscriber of this._subscribers.slice()) dispatchNext(subscriber, value);
 	}
 
 	/**
 	 * Complete this stream with an error.
 	 * - Calls `error()` on the subscribers.
-	 * - Unsubscribe from the source (if there is one).
-	 * - Close this stream.
+	 * - Unsubscribes from the source (if there is one).
+	 * - Closes this stream.
 	 */
 	error(reason: Error | unknown): void {
 		if (this.closed) return;
-		if (reason instanceof Promise) return thispatch(this, "error", reason);
-
 		(this as Mutable<this>).closed = true;
-		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
-		for (const subscriber of this._subscribers.slice()) thispatch(subscriber, "error", reason);
+		for (const subscriber of this._subscribers.slice()) dispatchError(subscriber, reason);
 	}
 
 	/**
 	 * Complete this stream successfully.
 	 * - Calls `complete()` on the subscribers.
-	 * - Unsubscribe from the source (if there is one).
-	 * - Close this stream.
+	 * - Unsubscribes from the source (if there is one).
+	 * - Closes this stream.
 	 */
 	complete(): void {
 		if (this.closed) return;
-
 		(this as Mutable<this>).closed = true;
-		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
-		for (const subscriber of this._subscribers.slice()) thispatch(subscriber, "complete");
+		for (const subscriber of this._subscribers.slice()) dispatchComplete(subscriber);
 	}
 
-	/** Subscribe to this `Stream` and return an unsubscriber function. */
+	/**
+	 * Subscribe to this `Stream` and return an unsubscriber function.
+	 * - Allows either an `Observer` object or  separate `next()`, `error()` and `complete()` functions.
+	 */
 	subscribe(next: Observer<T> | AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return this.on(typeof next === "object" ? next : { next, error, complete });
+		const observer = typeof next === "object" ? next : { next, error, complete };
+		this.on(observer);
+		return this.off.bind(this, observer);
 	}
 
-	/** Add an observer to this stream and return an `Unsubscriber` function. */
-	on(observer: Observer<T>): Unsubscriber {
+	/**
+	 * Add an observer to this stream.
+	 * - Like `subscribe()` but only allows an `Observer` object.
+	 */
+	on(observer: Observer<T>): void {
 		addItem(this._subscribers, observer);
-		return this.off.bind(this, observer);
 	}
 
 	/** Remove an observer from this stream. */
@@ -116,58 +83,139 @@ export class Stream<T> implements Observer<T>, Subscribable<T> {
 		removeItem(this._subscribers, observer);
 	}
 
+	/** Return a new stream that takes a specific number of values from this stream then completes itself. */
+	take(num: number): Stream<T> {
+		return new LimitedStream(num, this);
+	}
+
 	/**
-	 * Create a new derived stream that completes itself after a limited number of values.
-	 *
-	 * @param num Number of values to take before `complete()` is called.
+	 * Derive a new stream from this stream.
+	 * - Optionally supply a `deriver()` function that modifies the stream.
 	 */
 	derive(): Stream<T>;
 	derive<TT>(deriver: AsyncDeriver<T, TT>): Stream<TT>;
 	derive<TT>(deriver?: AsyncDeriver<T, TT>): Stream<T> | Stream<TT> {
-		if (deriver) {
-			const stream = new Stream<TT>();
-			deriveFrom(this, deriver, stream);
-			return stream;
-		} else {
-			return new Stream<T>(this);
-		}
-	}
-
-	/**
-	 * Create a new derived stream that completes itself after a limited number of values.
-	 * - The name `take()` matches RxJS.
-	 *
-	 * @param num Number of values to take before `complete()` is called.
-	 */
-	take(num: number): Stream<T> {
-		const stream = new Stream<T>();
-		takeFrom(this, num, stream);
-		return stream;
-	}
-
-	/**
-	 * Create a new derived stream that only targets some of its subscribers when `next()` is called.
-	 * @param num Number of subscribers to call, e.g. `3` for the first three, or `-1` for the last one.
-	 */
-	target(num: number): Stream<T> {
-		const stream = new Stream<T>(this);
-		stream._target = num;
-		return stream;
-	}
-
-	/** Get a Promise that resolves to the next value. */
-	get promise(): Promise<T> {
-		return new Promise<T>(this._promiseExecutor);
-	}
-
-	@bindMethod
-	private _promiseExecutor(resolve: AsyncDispatcher<T>, reject: AsyncCatcher): void {
-		takeFrom(this, 1, { next: resolve, error: reject });
+		return deriver ? new SourceStream(new DerivingStream(deriver, this)) : new SourceStream(this);
 	}
 }
 
-/**
- * Is an unknown value a `Stream` instance?
- * - This is a TypeScript assertion function, so if this function returns `true` the type is also asserted to be a `Stream`.
- */
-export const isStream = <T extends Stream<unknown>>(state: T | unknown): state is T => state instanceof Stream;
+/** SlicingStream: stream that, when new values are received, calls a specified slice of its subscribers (not all of them!) */
+export class SlicingStream<T> extends Stream<T> {
+	private _start: number;
+	private _end: number | undefined;
+
+	constructor(start: number, end: number | undefined = undefined) {
+		super();
+		this._start = start;
+		this._end = end;
+	}
+
+	/**
+	 * Send the next value to this stream's subscribers.
+	 * - Calls `next()` on all subscribers.
+	 * - Knows how to deal with resolvable values (i.e. Promised or SKIP values).
+	 */
+	next(value: Resolvable<T>): void {
+		if (this.closed || value === SKIP) return;
+		if (value instanceof Promise) return dispatchNext(this, value);
+		for (const subscriber of this._subscribers.slice(this._start, this._end)) dispatchNext(subscriber, value);
+	}
+}
+
+/** SourceStream: subscribes to a source observable. */
+export class SourceStream<T> extends Stream<T> {
+	private _cleanup?: Unsubscriber; // Unsubscriber function for the source this stream is attached to.
+	readonly source?: Observable<T>;
+
+	constructor(source?: Observable<T>) {
+		super();
+		this.source = source;
+	}
+
+	// Starts the connection to the source.
+	start(): void {
+		if (!this.closed && !this._cleanup) {
+			try {
+				this._cleanup = this.source?.subscribe(this);
+			} catch (thrown) {
+				this.error(thrown);
+			}
+		}
+	}
+
+	/** Stops the subscription to the source observable. */
+	stop(): void {
+		if (this._cleanup) this._cleanup = void this._cleanup();
+	}
+
+	// When an observer is added, start the subscription to the source observable.
+	on(observer: Observer<T>): void {
+		super.on(observer);
+		if (this._subscribers.length) this.start();
+	}
+
+	// When the last observer is removed, stop the subscription to the source observable.
+	off(observer: Observer<T>): void {
+		super.off(observer);
+		if (!this._subscribers.length) this.stop();
+	}
+
+	// When the stream completes, stop the subscription to the source observable.
+	error(reason: Error | unknown): void {
+		this.stop();
+		super.error(reason);
+	}
+
+	// When the stream completes, stop the subscription to the source observable.
+	complete(): void {
+		this.stop();
+		super.complete();
+	}
+}
+
+/** LimitedStream: takes a specified number of values from a source then completes itself. */
+export class LimitedStream<T> extends SourceStream<T> {
+	private _remaining: number;
+
+	constructor(num: number, source: Observable<T>) {
+		super(source);
+		this._remaining = num;
+	}
+
+	next(value: Resolvable<T>): void {
+		if (this.closed || value === SKIP) return;
+		if (value instanceof Promise) return dispatchNext(this, value);
+		super.next(value);
+		this._remaining--;
+		if (this._remaining <= 0) this.complete();
+	}
+}
+
+/** Deriving stream: a stream that modifies the next value before repeating it. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export class DerivingStream<I, O> extends SourceStream<any> {
+	private _deriver: AsyncDeriver<I, O>;
+
+	constructor(deriver: AsyncDeriver<I, O>, source?: Observable<I>) {
+		super(source);
+		this._deriver = deriver;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore We know this signature is correct.
+	next(value: Resolvable<I>): void {
+		if (this.closed || value === SKIP) return;
+		if (value instanceof Promise) return dispatchNext(this, value);
+		try {
+			// Call `this.derived()` with the new value and `this.error()`
+			thispatch<O, "derived", "error">(this, "derived", this._deriver(value), this, "error");
+		} catch (thrown) {
+			this.error(thrown); // Calling this._deriver() might throw.
+		}
+	}
+
+	/** Receive a derived value to the target. */
+	derived(value: O): void {
+		super.next(value);
+	}
+}
