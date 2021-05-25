@@ -21,8 +21,8 @@ import {
 	Result,
 	Observer,
 	dispatchNext,
+	dispatchError,
 } from "..";
-import { dispatchError } from "../stream";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
