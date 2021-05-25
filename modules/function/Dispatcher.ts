@@ -40,42 +40,43 @@ export type AsyncCatcher = (reason: Error | unknown) => void | Promise<void>;
  */
 // Overrides for empty dispatchers.
 export function dispatch(dispatcher: AsyncEmptyDispatcher, value?: undefined, catcherObj?: Catcher): void; // prettier-ignore
-export function dispatch<C extends string>(dispatcher: AsyncEmptyDispatcher, value: undefined, catcherObj: { [K in C]: Catcher }, catcherKey: C): void; // prettier-ignore
+export function dispatch<C extends string>(dispatcher: AsyncEmptyDispatcher, value: undefined, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void; // prettier-ignore
 // Overrides for typed dispatchers.
 export function dispatch<T>(dispatcher: AsyncDispatcher<T>, value: Resolvable<T>, catcherObj?: Catcher): void; // prettier-ignore
-export function dispatch<T, C extends string>(dispatcher: AsyncDispatcher<T>, value: Resolvable<T>, catcherObj: { [K in C]: Catcher }, catcherKey: C): void; // prettier-ignore
+export function dispatch<T, C extends string>(dispatcher: AsyncDispatcher<T>, value: Resolvable<T>, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void; // prettier-ignore
 // Overrides for unknown dispatchers.
 export function dispatch(dispatcher: AsyncDispatcher<unknown>, value: unknown, catcherObj?: Catcher): void; // prettier-ignore
-export function dispatch<C extends string>(dispatcher: AsyncDispatcher<unknown>, value: unknown, catcherObj: { [K in C]: Catcher }, catcherKey: C): void; // prettier-ignore
+export function dispatch<C extends string>(dispatcher: AsyncDispatcher<unknown>, value: unknown, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void; // prettier-ignore
 // Definition.
 export function dispatch<T, C extends string>(
 	dispatcher: AsyncDispatcher<T>,
 	value: Resolvable<T>,
-	catcherObj?: Catcher | { [K in C]: Catcher },
+	catcherObj?: Catcher | { [K in C]?: Catcher },
 	catcherKey?: C,
 ): void {
 	if (value instanceof Promise) return void _asyncDispatch(dispatcher, value, catcherObj);
 	try {
 		if (value !== SKIP) {
 			const returned = dispatcher(value);
-			if (returned instanceof Promise) void awaitSafely(returned, catcherObj, catcherKey);
+			if (returned instanceof Promise) void _awaitSafely(returned, catcherObj, catcherKey);
 		}
 	} catch (thrown: unknown) {
-		dispatchToCatcher(thrown, catcherObj, catcherKey);
+		_dispatchToCatcher(thrown, catcherObj, catcherKey);
 	}
 }
+
 // Async definition (used when a promised value is received).
-export async function _asyncDispatch<T, C extends string>(
+async function _asyncDispatch<T, C extends string>(
 	dispatcher: AsyncDispatcher<T>,
 	value: Promise<T | typeof SKIP>,
-	catcherObj?: Catcher | { [K in C]: Catcher },
+	catcherObj?: Catcher | { [K in C]?: Catcher },
 	catcherKey?: C,
 ): Promise<void> {
 	try {
 		const awaited = await value;
 		if (awaited !== SKIP) await dispatcher(awaited);
 	} catch (thrown) {
-		dispatchToCatcher(thrown, catcherObj, catcherKey);
+		_dispatchToCatcher(thrown, catcherObj, catcherKey);
 	}
 }
 
@@ -93,57 +94,60 @@ export async function _asyncDispatch<T, C extends string>(
  */
 // Overrides for empty dispatchers.
 export function thispatch<M extends string>(obj: { [K in M]?: AsyncEmptyDispatcher }, key: M, value?: undefined, catcherObj?: Catcher): void; // prettier-ignore
-export function thispatch<M extends string, C extends string>( obj: { [K in M]?: AsyncEmptyDispatcher }, key: M, value: undefined, catcherObj: { [K in C]: Catcher }, catcherKey: C, ): void; // prettier-ignore
+export function thispatch<M extends string, C extends string>( obj: { [K in M]?: AsyncEmptyDispatcher }, key: M, value: undefined, catcherObj: { [K in C]?: Catcher }, catcherKey: C, ): void; // prettier-ignore
 // Overrides for typed dispatchers.
 export function thispatch<T, M extends string>(obj: { [K in M]?: AsyncDispatcher<T> }, key: M, value: Resolvable<T>, catcherObj?: Catcher): void; // prettier-ignore
-export function thispatch<T, M extends string, C extends string>( obj: { [K in M]?: AsyncDispatcher<T> }, key: M, value: Resolvable<T>, catcherObj: { [K in C]: Catcher }, catcherKey: C): void; // prettier-ignore
+export function thispatch<T, M extends string, C extends string>( obj: { [K in M]?: AsyncDispatcher<T> }, key: M, value: Resolvable<T>, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void; // prettier-ignore
 // Overrides for unknown dispatchers.
 export function thispatch<M extends string>(obj: { [K in M]?: AsyncDispatcher<unknown> }, key: M, value: unknown, catcherObj?: Catcher): void; // prettier-ignore
-export function thispatch<M extends string, C extends string>(obj: { [K in M]?: AsyncDispatcher<unknown> }, key: M, value: unknown, catcherObj: { [K in C]: Catcher }, catcherKey: C): void; // prettier-ignore
+export function thispatch<M extends string, C extends string>(obj: { [K in M]?: AsyncDispatcher<unknown> }, key: M, value: unknown, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void; // prettier-ignore
 // Definition.
 export function thispatch<T, M extends string, C extends string>(
 	obj: { [K in M]?: AsyncDispatcher<T> },
 	key: M,
 	value: Resolvable<T>,
-	catcherObj?: Catcher | { [K in C]: Catcher },
+	catcherObj?: Catcher | { [K in C]?: Catcher },
 	catcherKey?: C,
 ): void {
 	if (value instanceof Promise) return void _asyncMethodDispatch(obj, key, value, catcherObj);
 	try {
 		if (value !== SKIP) {
 			const returned = obj[key]?.(value);
-			if (returned instanceof Promise) void awaitSafely(returned, catcherObj, catcherKey);
+			if (returned instanceof Promise) void _awaitSafely(returned, catcherObj, catcherKey);
 		}
 	} catch (thrown: unknown) {
-		void dispatchToCatcher(thrown, catcherObj, catcherKey);
+		void _dispatchToCatcher(thrown, catcherObj, catcherKey);
 	}
 }
+
 // Async definition (used when a promised value is received).
 async function _asyncMethodDispatch<T, M extends string, C extends string>(
 	obj: { [K in M]?: AsyncDispatcher<T> },
 	method: M,
 	value: Promise<T | typeof SKIP>,
-	catcher?: Catcher | { [K in C]: Catcher },
+	catcher?: Catcher | { [K in C]?: Catcher },
 	catcherMethod?: C,
 ): Promise<void> {
 	try {
 		const awaited = await value;
 		if (awaited !== SKIP) await obj[method]?.(awaited);
 	} catch (thrown) {
-		void dispatchToCatcher(thrown, catcher, catcherMethod);
+		void _dispatchToCatcher(thrown, catcher, catcherMethod);
 	}
 }
 
 /** Wait for a value to resolve and if it throws call a catcher. */
-async function awaitSafely<T, C extends string>(promised: Promise<T>, catcher?: Catcher | { [K in C]: Catcher }, method?: C) {
+async function _awaitSafely<T, C extends string>(promised: Promise<T>, catcher?: Catcher | { [K in C]?: Catcher }, method?: C) {
 	try {
 		await promised;
 	} catch (thrown) {
-		dispatchToCatcher(thrown, catcher, method);
+		_dispatchToCatcher(thrown, catcher, method);
 	}
 }
 
 /** Dispatch a thrown value to a catcher. */
-function dispatchToCatcher<C extends string>(thrown: unknown, catcher?: Catcher | { [K in C]: Catcher }, method?: C) {
-	typeof catcher === "function" ? catcher(thrown) : catcher && typeof method === "string" ? catcher[method](thrown) : logError(thrown);
+function _dispatchToCatcher<C extends string>(thrown: unknown, catcher?: Catcher | { [K in C]?: Catcher }, method?: C) {
+	if (typeof catcher === "function") catcher(thrown);
+	else if (catcher && typeof method === "string" && typeof catcher[method] === "function") (catcher[method] as Catcher)(thrown);
+	else logError(thrown);
 }
