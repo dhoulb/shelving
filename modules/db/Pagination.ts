@@ -1,11 +1,11 @@
 import { getFirstItem, getLastItem } from "../array";
 import { assert, assertLength } from "../assert";
 import { Data, Results } from "../data";
-import { Documents } from "../db";
 import { ImmutableEntries } from "../entry";
 import { Sorts } from "../query";
 import { bindMethod } from "../class";
-import { State } from "../state";
+import { State } from "../stream";
+import { Documents } from "./Documents";
 
 /**
  * State that wraps a `Documents` reference to enable pagination.
@@ -13,14 +13,6 @@ import { State } from "../state";
  * - If you don't pass in initial values, it will autoload the first page.
  */
 export class Pagination<T extends Data> extends State<ImmutableEntries<T>> {
-	/**
-	 * Create a new `Pagination` instance.
-	 * - Static function so you can use it with `useLazy()` and for consistency with `State`
-	 */
-	static for<X extends Data>(ref: Documents<X>, initial?: Results<X>): Pagination<X> {
-		return new Pagination<X>(ref, initial);
-	}
-
 	private _results: Results<T>; // Cached current set of results.
 
 	/** Documents ref this pagination is based on. */
@@ -32,8 +24,7 @@ export class Pagination<T extends Data> extends State<ImmutableEntries<T>> {
 	/** Sorts of the collection's query. */
 	readonly sorts: Sorts<T>;
 
-	// Protected to encourage `Pagination.for()`
-	protected constructor(ref: Documents<T>, initial?: Results<T>) {
+	constructor(ref: Documents<T>, initial?: Results<T>) {
 		const { slice, sorts } = ref.query;
 		assert(slice.limit, slice.limit); // Collection must have a limit to paginate (otherwise you'd just get the result normally).
 		assertLength(sorts, 1, Infinity); // Collection must have at least one sort order to paginate.
@@ -97,7 +88,7 @@ export class Pagination<T extends Data> extends State<ImmutableEntries<T>> {
 			this._results = { ...this._results, ...moreResults };
 			const entries: ImmutableEntries<T> = Object.entries(this._results);
 			this.sorts.apply(entries);
-			this.set(entries);
+			this.next(entries);
 			if (moreCount < this.limit) this.complete();
 			return entries;
 		}

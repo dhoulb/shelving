@@ -1,10 +1,10 @@
-import { Arguments, AsyncFetcher, serialise, State } from "..";
-import { useState } from "./useState";
-import { Source } from "./Source";
+import { Arguments, AsyncFetcher, serialise, State, LOADING } from "..";
 
-/** Store a list of named cached `Source` instances. */
+import { useState } from "./useState";
+
+/** Store a list of named cached `State` instances. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const sources: { [key: string]: Source<any> } = {};
+const sources: { [key: string]: State<any> } = {};
 
 /**
  * Fetch a value in a React component.
@@ -20,11 +20,15 @@ const sources: { [key: string]: Source<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, options?: { maxAge?: number; initial?: T }): State<T> {
+export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge = 86400000): State<T> {
 	const key = `${serialise(fetcher)}:${serialise(deps)}`;
-	const source: Source<T> = (sources[key] ||= new Source<T>({ ...options, fetcher: () => fetcher(...deps) }));
-	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
-	source.queueFetch(options?.maxAge);
-	useState(source);
-	return source;
+	const state: State<T> = (sources[key] ||= State.create<T>(LOADING));
+
+	// Clean up source in a few seconds if it's closed.
+	if (state.closed) setTimeout(() => state === sources[key] && delete sources[key], 3000);
+	// Fetch if no value is pending and source's ages is less than `maxAge`
+	else if (!state.pending || state.age < maxAge) state.next(fetcher(...deps));
+
+	useState(state);
+	return state;
 }
