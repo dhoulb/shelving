@@ -14,10 +14,6 @@ import { getNextValue } from "./helpers";
  * State: a stream the retains its msot recent value and makes it available at `state.value` and `state.data`
  */
 export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
-	static create<X>(initial: State<X> | Resolvable<X> | typeof LOADING): State<X> {
-		return new State<X>(initial);
-	}
-
 	private _cleanup?: Unsubscriber;
 	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
 
@@ -53,8 +49,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 		return typeof this.updated === "number" ? Date.now() - this.updated : Infinity;
 	}
 
-	// Protected to encourage `State.create()`
-	protected constructor(initial: State<T> | Observable<T> | Resolvable<T> | typeof LOADING) {
+	constructor(initial: State<T> | Observable<T> | Resolvable<T> | typeof LOADING) {
 		super();
 		if (initial instanceof State) {
 			if (!initial.loading) this.next(initial.value);

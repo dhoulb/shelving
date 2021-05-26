@@ -26,7 +26,7 @@ export const useState = <T>(initial: State<T> | T | Promise<T>, depend?: unknown
 		depend?: unknown;
 		effect: () => Unsubscriber;
 	}>().current ||= {
-		state: initial instanceof State ? initial : State.create(initial),
+		state: initial instanceof State ? initial : new State(initial),
 		depend,
 		effect: () => internals.state.subscribe(setNext, setError),
 	});
@@ -36,7 +36,7 @@ export const useState = <T>(initial: State<T> | T | Promise<T>, depend?: unknown
 		internals.state = initial;
 		internals.depend = depend;
 	} else if (!isShallowEqual(depend, internals.depend)) {
-		internals.state = State.create(initial);
+		internals.state = new State(initial);
 		internals.depend = depend;
 	}
 
