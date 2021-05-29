@@ -1,10 +1,10 @@
-import { Data, Document, Result } from "..";
-import { Source } from "./Source";
+import { Data, Document, Result, State } from "..";
 import { useState } from "./useState";
 
-/** Store a list of named cached `Source` instances. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const sources: { [key: string]: Source<any> } = {};
+const UNDEFINED_STATE = new State<any>(undefined);
+
+type UseDocumentProps = { subscribe?: boolean; maxAge?: number };
 
 /**
  * Use a single document in a React component.
@@ -22,19 +22,22 @@ const sources: { [key: string]: Source<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useDocument = <T extends Data>(
-	ref: Document<T> | undefined,
-	options?: { subscribe?: boolean; maxAge?: number; initial?: T },
-): Source<Result<T>> => {
-	const key = ref ? ref.toString() : "undefined";
-	const source: Source<Result<T>> = (sources[key] ||= new Source<Result<T>>(
-		!ref ? { initial: undefined } : { ...options, subscriptor: ref, fetcher: ref }, //
-	));
-	if (source.closed) setTimeout(() => source === sources[key] && delete sources[key], 3000);
-	if (ref) {
-		if (options?.subscribe) source.start();
-		else source.queueFetch(options?.maxAge);
+export const useDocument = <T extends Data>(ref: Document<T> | undefined, { subscribe, maxAge = 1000 }: UseDocumentProps = {}): State<Result<T>> => {
+	const state: State<Result<T>> = ref ? ref.current() : UNDEFINED_STATE;
+	if (ref && !state.closed) {
+		if (subscribe) {
+			// Start a source subscription on the state if there isn't one.
+			if (!state.started) {
+				// Start a subscription to the reference.
+				state.start(ref);
+				// If the state doesn't have any subscribers in a few seconds, stop the subscription again.
+				setTimeout(() => !state.subscribers && state.stop(), 5000);
+			}
+		} else {
+			// Get the next value from the ref if there's no subscription and the current one is too old.
+			if (!state.started && !state.pending && state.age < maxAge) state.next(ref.result);
+		}
 	}
-	useState(source);
-	return source;
+	useState(state);
+	return state;
 };
