@@ -1,6 +1,6 @@
 import type { Mutable } from "../object";
 import { addItem, MutableArray, removeItem } from "../array";
-import { AsyncEmptyDispatcher, AsyncDispatcher, AsyncCatcher, thispatch, Unsubscriber, AsyncDeriver } from "../function";
+import { AsyncEmptyDispatcher, AsyncDispatcher, AsyncCatcher, thispatch, Unsubscriber, AsyncDeriver, dispatch } from "../function";
 import { Resolvable } from "../data";
 import { SKIP } from "../constants";
 import { dispatchComplete, dispatchError, dispatchNext, Observer } from "./Observer";
@@ -13,6 +13,7 @@ import { Observable } from "./Observable";
  * - Ensure that `next()`, `error()`, `complete()` aren't called again after `.closed` is true.
  */
 export class Stream<T> implements Observer<T>, Observable<T> {
+	private _cleanup?: Unsubscriber; // Unsubscriber function for the source this stream is attached to.
 	protected _subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
 
 	/**
@@ -21,9 +22,18 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 */
 	readonly closed: boolean = false;
 
+	constructor(source?: Observable<T>) {
+		if (source) this.start(source);
+	}
+
 	/** Get the current subscriber count. */
 	get subscribers(): number {
 		return this._subscribers.length;
+	}
+
+	/** Get whether we're currently subscribed to a source or not. */
+	get started(): boolean {
+		return !!this._cleanup;
 	}
 
 	/**
@@ -95,7 +105,22 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	derive(): Stream<T>;
 	derive<TT>(deriver: AsyncDeriver<T, TT>): Stream<TT>;
 	derive<TT>(deriver?: AsyncDeriver<T, TT>): Stream<T> | Stream<TT> {
-		return deriver ? new SourceStream(new DerivingStream(deriver, this)) : new SourceStream(this);
+		return deriver ? new LazyStream(new DerivingStream(deriver, this)) : new LazyStream(this);
+	}
+
+	/**
+	 * Start a subscription to a source observable.
+	 */
+	start(source: Observable<T>): void {
+		this.stop();
+		this._cleanup = source.subscribe(this);
+	}
+
+	/**
+	 * Stop a subscription to the current source.
+	 */
+	stop(): void {
+		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
 	}
 }
 
@@ -122,30 +147,18 @@ export class SlicingStream<T> extends Stream<T> {
 	}
 }
 
-/** SourceStream: subscribes to a source observable. */
-export class SourceStream<T> extends Stream<T> {
-	private _cleanup?: Unsubscriber; // Unsubscriber function for the source this stream is attached to.
-	readonly source?: Observable<T>;
+/** LazyStream: stream that only subscribes to its source when it has a subscriber itself (and stops whenever it has no subscribers). */
+export class LazyStream<T> extends Stream<T> {
+	readonly source: Observable<T>;
 
-	constructor(source?: Observable<T>) {
+	constructor(source: Observable<T>) {
 		super();
 		this.source = source;
 	}
 
 	// Starts the connection to the source.
-	start(): void {
-		if (!this.closed && !this._cleanup) {
-			try {
-				this._cleanup = this.source?.subscribe(this);
-			} catch (thrown) {
-				this.error(thrown);
-			}
-		}
-	}
-
-	/** Stops the subscription to the source observable. */
-	stop(): void {
-		if (this._cleanup) this._cleanup = void this._cleanup();
+	start(source: Observable<T> = this.source): void {
+		super.start(source);
 	}
 
 	// When an observer is added, start the subscription to the source observable.
@@ -159,22 +172,10 @@ export class SourceStream<T> extends Stream<T> {
 		super.off(observer);
 		if (!this._subscribers.length) this.stop();
 	}
-
-	// When the stream completes, stop the subscription to the source observable.
-	error(reason: Error | unknown): void {
-		this.stop();
-		super.error(reason);
-	}
-
-	// When the stream completes, stop the subscription to the source observable.
-	complete(): void {
-		this.stop();
-		super.complete();
-	}
 }
 
 /** LimitedStream: takes a specified number of values from a source then completes itself. */
-export class LimitedStream<T> extends SourceStream<T> {
+export class LimitedStream<T> extends Stream<T> {
 	private _remaining: number;
 
 	constructor(num: number, source: Observable<T>) {
@@ -193,7 +194,7 @@ export class LimitedStream<T> extends SourceStream<T> {
 
 /** Deriving stream: a stream that modifies the next value before repeating it. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class DerivingStream<I, O> extends SourceStream<any> {
+export class DerivingStream<I, O> extends Stream<any> {
 	private _deriver: AsyncDeriver<I, O>;
 
 	constructor(deriver: AsyncDeriver<I, O>, source?: Observable<I>) {

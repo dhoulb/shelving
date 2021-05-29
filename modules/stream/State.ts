@@ -1,4 +1,4 @@
-import { AsyncDeriver, dispatch, Unsubscriber } from "../function";
+import { AsyncDeriver } from "../function";
 import { RequiredError } from "../errors";
 import { LOADING, SKIP } from "../constants";
 import { ImmutableObject, Mutable, updateProps } from "../object";
@@ -14,7 +14,6 @@ import { getNextValue } from "./helpers";
  * State: a stream the retains its msot recent value and makes it available at `state.value` and `state.data`
  */
 export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
-	private _cleanup?: Unsubscriber;
 	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
 
 	readonly updated: number | undefined = undefined; // Time the value was last updated.
@@ -44,7 +43,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 		return value as Exclude<T, undefined>;
 	}
 
-	/** Age of the current data in milliseconds. */
+	/** Age of the current data (in milliseconds). */
 	get age(): number {
 		return typeof this.updated === "number" ? Date.now() - this.updated : Infinity;
 	}
@@ -53,9 +52,9 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 		super();
 		if (initial instanceof State) {
 			if (!initial.loading) this.next(initial.value);
-			this._cleanup = initial.subscribe(this);
+			this.start(initial);
 		} else if (isObservable(initial)) {
-			this._cleanup = initial.subscribe(this);
+			this.start(initial);
 		} else {
 			this.next(initial);
 		}
@@ -123,7 +122,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	// Override `error()` to save the reason at `this.reason` and clean up.
 	error(reason: Error | unknown): void {
 		(this as Mutable<this>).pending = false;
-		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
+		this.stop();
 		if (this.closed) return;
 		(this as Mutable<this>).reason = reason;
 		super.error(reason);
@@ -132,7 +131,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	// Override `complete()` to clean up.
 	complete(): void {
 		(this as Mutable<this>).pending = false;
-		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
+		this.stop();
 		super.complete();
 	}
 
