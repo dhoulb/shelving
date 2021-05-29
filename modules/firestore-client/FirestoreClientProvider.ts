@@ -23,6 +23,7 @@ import {
 	dispatchNext,
 	dispatchError,
 } from "..";
+import { State } from "../stream";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -84,6 +85,10 @@ export class FirestoreClientProvider implements Provider {
 		this.firestore = firestore;
 	}
 
+	currentDocument(): State<Result> {
+		throw new Error("FirestoreClientProvider does not support current state");
+	}
+
 	async getDocument(ref: Document): Promise<Result> {
 		const doc = this.firestore.doc(ref.path);
 		const snapshot = await doc.get();
@@ -118,6 +123,10 @@ export class FirestoreClientProvider implements Provider {
 	async deleteDocument(ref: Document): Promise<void> {
 		await this.firestore.doc(ref.path).delete();
 		return undefined;
+	}
+
+	currentDocuments(): State<Results> {
+		throw new Error("FirestoreClientProvider does not support current state");
 	}
 
 	async getDocuments(ref: Documents): Promise<Results> {

@@ -2,7 +2,7 @@ import type { ImmutableObject } from "../object";
 import type { Data, Result } from "../data";
 import type { Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
-import { DerivingStream, Observer, Observable } from "../stream";
+import { DerivingStream, Observer, Observable, State } from "../stream";
 import { RequiredError } from "../errors";
 import type { DatabaseReadOptions, DatabaseWriteOptions } from "./options";
 import type { Provider } from "./Provider";
@@ -73,6 +73,20 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	 */
 	get data(): Promise<T> {
 		return this.get(REQUIRED);
+	}
+
+	/**
+	 * Get current state for this document.
+	 * - Not all providers will support `currentDocument()` (it's primarily for caching or in-memory providers).
+	 *
+	 * @returns `State` instance representing the current state of the document's data.
+	 * - State will be in a `LOADING` state if the value is not available synchronously.
+	 */
+	current(options: DatabaseReadOptions & { validate: false }): State<Result>;
+	current(options?: DatabaseReadOptions): State<Result<T>>;
+	current({ validate = this.provider.VALIDATE }: DatabaseReadOptions = OPTIONS): State<Result> | State<Result<T>> {
+		const state = this.provider.currentDocument(this);
+		return validate ? state.derive((v): Result<T> => (v ? this.validate(v) : undefined)) : state;
 	}
 
 	/**

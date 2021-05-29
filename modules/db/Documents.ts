@@ -5,7 +5,7 @@ import type { Entry } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
 import { Queryable, Query } from "../query";
 import { getFirstProp, getLastProp, ImmutableObject } from "../object";
-import { DerivingStream, Observer, Observable } from "../stream";
+import { DerivingStream, Observer, Observable, State } from "../stream";
 import { cacheMethod } from "../class";
 import { Document } from "./Document";
 import type { DatabaseReadOptions, DatabaseWriteOptions } from "./options";
@@ -81,6 +81,20 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 */
 	get ids(): Promise<string[]> {
 		return Promise.resolve(this.provider.getDocuments(this)).then(Object.keys);
+	}
+
+	/**
+	 * Get current state for this document.
+	 * - Not all providers will support `currentDocument()` (it's primarily for caching or in-memory providers).
+	 *
+	 * @returns `State` instance representing the current state of the document's data.
+	 * - State will be in a `LOADING` state if the value is not available synchronously.
+	 */
+	current(options: DatabaseReadOptions & { validate: false }): State<Results>;
+	current(options?: DatabaseReadOptions): State<Results<T>>;
+	current({ validate = this.provider.VALIDATE }: DatabaseReadOptions = OPTIONS): State<Results> | State<Results<T>> {
+		const state = this.provider.currentDocuments(this);
+		return validate ? state.derive((v): Results<T> => this.validateResults(v)) : state;
 	}
 
 	/**

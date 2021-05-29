@@ -4,7 +4,7 @@ import type { Data, Result, Results } from "../data";
 import { dispatch, Dispatcher, Unsubscriber } from "../function";
 import { MutableObject, objectFromEntries, updateProps } from "../object";
 import { addItem, ImmutableArray, MutableArray, removeItem } from "../array";
-import { dispatchNext, Observer } from "../stream";
+import { dispatchNext, Observer, State } from "../stream";
 import { logError } from "../console";
 
 /**
@@ -77,6 +77,10 @@ export class MemoryProvider implements Provider {
 		return ((this._data[path] as Table) ||= new Table());
 	}
 
+	currentDocument(ref: Document): State<Result> {
+		return new State(this.getDocument(ref));
+	}
+
 	getDocument({ collection, id }: Document): Result {
 		return this._table(collection).docs[id];
 	}
@@ -115,6 +119,10 @@ export class MemoryProvider implements Provider {
 
 	deleteDocument({ collection, id }: Document): void {
 		this._table(collection).delete(id);
+	}
+
+	currentDocuments(ref: Documents): State<Results> {
+		return new State(this.getDocuments(ref));
 	}
 
 	countDocuments({ path, query }: Documents): number {
