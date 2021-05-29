@@ -1,11 +1,11 @@
-import { Documents, Document, DocumentRequiredError, Provider } from "../db";
-import { randomId } from "../random";
-import type { Data, Result, Results } from "../data";
-import { dispatch, Dispatcher, Unsubscriber } from "../function";
-import { MutableObject, objectFromEntries, updateProps } from "../object";
-import { addItem, ImmutableArray, MutableArray, removeItem } from "../array";
-import { dispatchNext, Observer, State } from "../stream";
-import { logError } from "../console";
+import { Documents, Document, DocumentRequiredError, Provider } from "../../db";
+import { randomId } from "../../random";
+import type { Data, Result, Results } from "../../data";
+import { dispatch, Dispatcher, Unsubscriber } from "../../function";
+import { MutableObject, objectFromEntries, updateProps } from "../../object";
+import { addItem, ImmutableArray, MutableArray, removeItem } from "../../array";
+import { dispatchNext, Observer, State } from "../../stream";
+import { logError } from "../../console";
 
 /**
  * An individual table of data.

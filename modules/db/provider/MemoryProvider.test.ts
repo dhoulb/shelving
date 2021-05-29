@@ -1,5 +1,5 @@
-import { createTestDatabase, allBasics, allPeople } from "../test";
-import { MemoryProvider } from "..";
+import { createTestDatabase, allBasics, allPeople } from "../../test";
+import { MemoryProvider } from "../..";
 
 const { basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9 } = allBasics;
 const { person1, person2, person3, person4, person5 } = allPeople;

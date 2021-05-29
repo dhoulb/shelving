@@ -14,7 +14,6 @@ export * from "./query";
 export * from "./api";
 
 // Data providers.
-export * from "./memory";
 // export * from "./firestore-client"; // Not exported.
 // export * from "./firestore-server"; // Not exported.
 
