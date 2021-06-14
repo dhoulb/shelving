@@ -14,7 +14,7 @@ import { getNextValue } from "./helpers";
  * State: a stream the retains its msot recent value and makes it available at `state.value` and `state.data`
  */
 export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
-	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
+	#value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
 
 	readonly updated: number | undefined = undefined; // Time the value was last updated.
 	readonly loading: boolean = true; // Whether we're currently loading or we have a value (if false, reading `state.value` will not throw).
@@ -28,8 +28,8 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	 */
 	get value(): T {
 		if (this.reason) throw this.reason;
-		if (this._value === LOADING) throw getNextValue(this);
-		return this._value;
+		if (this.#value === LOADING) throw getNextValue(this);
+		return this.#value;
 	}
 
 	/**
@@ -49,13 +49,10 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	}
 
 	constructor(initial: State<T> | Observable<T> | Resolvable<T> | typeof LOADING) {
-		super();
+		super(isObservable(initial) ? initial : undefined);
 		if (initial instanceof State) {
 			if (!initial.loading) this.next(initial.value);
-			this.start(initial);
-		} else if (isObservable(initial)) {
-			this.start(initial);
-		} else {
+		} else if (!isObservable(initial)) {
 			this.next(initial);
 		}
 	}
@@ -63,13 +60,13 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	next(value: Resolvable<T | typeof LOADING>): void {
 		(this as Mutable<this>).pending = false;
 
-		if (this.closed || value === SKIP || value === this._value) return;
+		if (this.closed || value === SKIP || value === this.#value) return;
 		if (value instanceof Promise) {
 			(this as Mutable<this>).pending = true;
 			return dispatchNext(this, value);
 		}
 
-		this._value = value;
+		this.#value = value;
 		(this as Mutable<this>).loading = value === LOADING;
 		(this as Mutable<this>).updated = Date.now();
 		if (value !== LOADING) super.next(value);
@@ -82,8 +79,8 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	 * @throws AssertionError if current value of this `State` is not an object.
 	 */
 	update(partial: Partial<T & ImmutableObject>): void {
-		assertObject<T & ImmutableObject>(this._value);
-		this.next(updateProps<T & ImmutableObject>(this._value, partial));
+		assertObject<T & ImmutableObject>(this.#value);
+		this.next(updateProps<T & ImmutableObject>(this.#value, partial));
 	}
 
 	/**
@@ -93,8 +90,8 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
 	add(item: ArrayType<T & ImmutableArray>): void {
-		assertArray<T & ImmutableArray>(this._value);
-		this.next(withItem<T & ImmutableArray>(this._value, item));
+		assertArray<T & ImmutableArray>(this.#value);
+		this.next(withItem<T & ImmutableArray>(this.#value, item));
 	}
 
 	/**
@@ -104,8 +101,8 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
 	remove(item: ArrayType<T & ImmutableArray>): void {
-		assertArray<T & ImmutableArray>(this._value);
-		this.next(withoutItem<T & ImmutableArray>(this._value, item));
+		assertArray<T & ImmutableArray>(this.#value);
+		this.next(withoutItem<T & ImmutableArray>(this.#value, item));
 	}
 
 	/**
@@ -115,23 +112,20 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	 * @throws AssertionError if current value of this `State` is not an array.
 	 */
 	swap(oldItem: ArrayType<T & ImmutableArray>, newItem: ArrayType<T & ImmutableArray>): void {
-		assertArray<T & ImmutableArray>(this._value);
-		this.next(swapItem<T & ImmutableArray>(this._value, oldItem, newItem));
+		assertArray<T & ImmutableArray>(this.#value);
+		this.next(swapItem<T & ImmutableArray>(this.#value, oldItem, newItem));
 	}
 
 	// Override `error()` to save the reason at `this.reason` and clean up.
 	error(reason: Error | unknown): void {
 		(this as Mutable<this>).pending = false;
-		this.stop();
-		if (this.closed) return;
-		(this as Mutable<this>).reason = reason;
+		if (this.closed) (this as Mutable<this>).reason = reason;
 		super.error(reason);
 	}
 
 	// Override `complete()` to clean up.
 	complete(): void {
 		(this as Mutable<this>).pending = false;
-		this.stop();
 		super.complete();
 	}
 
@@ -149,12 +143,10 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 		if (deriver) {
 			const deriving = new DerivingStream(deriver, this); // New deriving stream subscribed to this.
 			const derived = new State<TT>(deriving); // New derived state subscribed to the deriving stream.
-			if (this._value !== LOADING) deriving.next(this._value); // Send the next value to the deriving stream, which derives the new value and sends it to the derived state.
+			if (this.#value !== LOADING) deriving.next(this.#value); // Send the next value to the deriving stream, which derives the new value and sends it to the derived state.
 			return derived;
 		} else {
-			const derived = new State<T>(this._value !== LOADING ? this._value : LOADING);
-			this.on(derived);
-			return derived;
+			return new State<T>(this);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 import { RequiredError, LOADING, BLACKHOLE, State, getNextValue } from "..";
+import { ResolvablePromise } from "../util";
 
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
@@ -128,8 +129,7 @@ test("State: initial LOADING", async () => {
 	expect(fn3.mock.calls).toEqual([[123]]);
 });
 test("State: initial promise", async () => {
-	let resolve: (num: number) => void = BLACKHOLE;
-	const promise = new Promise<number>(r => void (resolve = r));
+	const promise = new ResolvablePromise<number>();
 	const state = new State(promise);
 	const fn1 = jest.fn();
 	state.subscribe(fn1);
@@ -150,7 +150,7 @@ test("State: initial promise", async () => {
 		expect(thrown).toBeInstanceOf(Promise);
 		thrown.then(fn3);
 	}
-	expect(resolve(123)).toBe(undefined);
+	expect(promise.resolve(123)).toBe(undefined);
 	await microtasks();
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(123);

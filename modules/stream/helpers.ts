@@ -1,4 +1,4 @@
-import type { Observable } from "./Observable";
+import { Observable } from "./Observable";
 import { LimitedStream } from "./Stream";
 
 /**

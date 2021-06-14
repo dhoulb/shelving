@@ -13,7 +13,7 @@ export interface Observer<T> {
 	readonly error?: AsyncCatcher;
 	/** End the subscription with success. */
 	readonly complete?: AsyncEmptyDispatcher;
-	/** End the subscription has ended (either with success or failure). */
+	/** Whether the subscription has ended (either with success or failure). */
 	readonly closed?: boolean;
 }
 

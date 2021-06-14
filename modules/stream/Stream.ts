@@ -13,8 +13,8 @@ import { Observable } from "./Observable";
  * - Ensure that `next()`, `error()`, `complete()` aren't called again after `.closed` is true.
  */
 export class Stream<T> implements Observer<T>, Observable<T> {
-	private _cleanup?: Unsubscriber; // Unsubscriber function for the source this stream is attached to.
-	protected _subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
+	#cleanup?: Unsubscriber;
+	#subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
 
 	/**
 	 * Is this stream open or closed.
@@ -22,18 +22,13 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 */
 	readonly closed: boolean = false;
 
-	constructor(source?: Observable<T>) {
-		if (source) this.start(source);
-	}
-
 	/** Get the current subscriber count. */
 	get subscribers(): number {
-		return this._subscribers.length;
+		return this.#subscribers.length;
 	}
 
-	/** Get whether we're currently subscribed to a source or not. */
-	get started(): boolean {
-		return !!this._cleanup;
+	constructor(source?: Observable<T>) {
+		if (source) this.#cleanup = source.subscribe(this);
 	}
 
 	/**
@@ -43,7 +38,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	next(value: Resolvable<T>): void {
 		if (this.closed || value === SKIP) return;
 		if (value instanceof Promise) return dispatchNext(this, value);
-		for (const subscriber of this._subscribers.slice()) dispatchNext(subscriber, value);
+		for (const subscriber of this.#subscribers.slice()) dispatchNext(subscriber, value);
 	}
 
 	/**
@@ -53,9 +48,10 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * - Closes this stream.
 	 */
 	error(reason: Error | unknown): void {
+		if (this.#cleanup) this.#cleanup = void dispatch(this.#cleanup);
 		if (this.closed) return;
 		(this as Mutable<this>).closed = true;
-		for (const subscriber of this._subscribers.slice()) dispatchError(subscriber, reason);
+		for (const subscriber of this.#subscribers.slice()) dispatchError(subscriber, reason);
 	}
 
 	/**
@@ -65,14 +61,16 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * - Closes this stream.
 	 */
 	complete(): void {
+		if (this.#cleanup) this.#cleanup = void dispatch(this.#cleanup);
 		if (this.closed) return;
 		(this as Mutable<this>).closed = true;
-		for (const subscriber of this._subscribers.slice()) dispatchComplete(subscriber);
+		for (const subscriber of this.#subscribers.slice()) dispatchComplete(subscriber);
 	}
 
 	/**
-	 * Subscribe to this `Stream` and return an unsubscriber function.
+	 * Subscribe to this stream and return an unsubscriber function.
 	 * - Allows either an `Observer` object or  separate `next()`, `error()` and `complete()` functions.
+	 * - Implements `Observable`
 	 */
 	subscribe(next: Observer<T> | AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
 		const observer = typeof next === "object" ? next : { next, error, complete };
@@ -80,22 +78,14 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 		return this.off.bind(this, observer);
 	}
 
-	/**
-	 * Add an observer to this stream.
-	 * - Like `subscribe()` but only allows an `Observer` object.
-	 */
+	/** Add an observer to this stream. */
 	on(observer: Observer<T>): void {
-		addItem(this._subscribers, observer);
+		addItem(this.#subscribers, observer);
 	}
 
 	/** Remove an observer from this stream. */
 	off(observer: Observer<T>): void {
-		removeItem(this._subscribers, observer);
-	}
-
-	/** Return a new stream that takes a specific number of values from this stream then completes itself. */
-	take(num: number): Stream<T> {
-		return new LimitedStream(num, this);
+		removeItem(this.#subscribers, observer);
 	}
 
 	/**
@@ -105,34 +95,25 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	derive(): Stream<T>;
 	derive<TT>(deriver: AsyncDeriver<T, TT>): Stream<TT>;
 	derive<TT>(deriver?: AsyncDeriver<T, TT>): Stream<T> | Stream<TT> {
-		return deriver ? new LazyStream(new DerivingStream(deriver, this)) : new LazyStream(this);
+		return deriver ? new Stream(new DerivingStream(deriver, this)) : new Stream(this);
 	}
 
-	/**
-	 * Start a subscription to a source observable.
-	 */
-	start(source: Observable<T>): void {
-		this.stop();
-		this._cleanup = source.subscribe(this);
-	}
-
-	/**
-	 * Stop a subscription to the current source.
-	 */
-	stop(): void {
-		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
+	/** Get a stream that takes the next X number of values from this stream then completes itself. */
+	take(num: number): Stream<T> {
+		return new LimitedStream(num, this);
 	}
 }
 
 /** SlicingStream: stream that, when new values are received, calls a specified slice of its subscribers (not all of them!) */
 export class SlicingStream<T> extends Stream<T> {
-	private _start: number;
-	private _end: number | undefined;
+	#subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
+	#start: number;
+	#end: number | undefined;
 
 	constructor(start: number, end: number | undefined = undefined) {
 		super();
-		this._start = start;
-		this._end = end;
+		this.#start = start;
+		this.#end = end;
 	}
 
 	/**
@@ -143,52 +124,25 @@ export class SlicingStream<T> extends Stream<T> {
 	next(value: Resolvable<T>): void {
 		if (this.closed || value === SKIP) return;
 		if (value instanceof Promise) return dispatchNext(this, value);
-		for (const subscriber of this._subscribers.slice(this._start, this._end)) dispatchNext(subscriber, value);
-	}
-}
-
-/** LazyStream: stream that only subscribes to its source when it has a subscriber itself (and stops whenever it has no subscribers). */
-export class LazyStream<T> extends Stream<T> {
-	readonly source: Observable<T>;
-
-	constructor(source: Observable<T>) {
-		super();
-		this.source = source;
-	}
-
-	// Starts the connection to the source.
-	start(source: Observable<T> = this.source): void {
-		super.start(source);
-	}
-
-	// When an observer is added, start the subscription to the source observable.
-	on(observer: Observer<T>): void {
-		super.on(observer);
-		if (this._subscribers.length) this.start();
-	}
-
-	// When the last observer is removed, stop the subscription to the source observable.
-	off(observer: Observer<T>): void {
-		super.off(observer);
-		if (!this._subscribers.length) this.stop();
+		for (const subscriber of this.#subscribers.slice(this.#start, this.#end)) dispatchNext(subscriber, value);
 	}
 }
 
 /** LimitedStream: takes a specified number of values from a source then completes itself. */
 export class LimitedStream<T> extends Stream<T> {
-	private _remaining: number;
+	#remaining: number;
 
-	constructor(num: number, source: Observable<T>) {
+	constructor(num: number, source?: Observable<T>) {
 		super(source);
-		this._remaining = num;
+		this.#remaining = num;
 	}
 
 	next(value: Resolvable<T>): void {
 		if (this.closed || value === SKIP) return;
 		if (value instanceof Promise) return dispatchNext(this, value);
 		super.next(value);
-		this._remaining--;
-		if (this._remaining <= 0) this.complete();
+		this.#remaining--;
+		if (this.#remaining <= 0) this.complete();
 	}
 }
 
