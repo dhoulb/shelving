@@ -1,4 +1,4 @@
-import { Arguments, AsyncFetcher, serialise, State, LOADING } from "..";
+import { Arguments, AsyncFetcher, serialise, State, LOADING, removeEntry } from "..";
 
 import { useState } from "./useState";
 
@@ -25,7 +25,7 @@ export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, de
 	const state: State<T> = (sources[key] ||= new State<T>(LOADING));
 
 	// Clean up source in a few seconds if it's closed.
-	if (state.closed) setTimeout(() => state === sources[key] && delete sources[key], 3000);
+	if (state.closed) setTimeout(() => removeEntry(sources, key, state), 3000);
 	// Fetch if no value is pending and source's ages is less than `maxAge`
 	else if (!state.pending || state.age < maxAge) state.next(fetcher(...deps));
 

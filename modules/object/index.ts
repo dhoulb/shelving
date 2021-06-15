@@ -325,6 +325,22 @@ export function getProp<O extends ImmutableObject>(obj: O, key: string | number,
 	return current;
 }
 
+/**
+ * Add a key/value pair to an object.
+ * @param value The value of the entry. If the object's property isn't exactly this value, it won't be removed.
+ */
+export function addEntry<T>(obj: MutableObject<T>, key: string | number, value: T): void {
+	obj[key] = value;
+}
+
+/**
+ * Delete a key/value pair from an object (by reference).
+ * @param value The value of the entry. If the object's property isn't exactly this value, it won't be removed.
+ */
+export function removeEntry<T>(obj: MutableObject<T>, key: string | number, value: T): void {
+	if (obj[key] === value) delete obj[key];
+}
+
 /** Object that's able to iterate over its own enumerable own property values. */
 export class PropIterator<T extends ImmutableObject> implements Iterable<ObjectType<T>> {
 	/** Make a new object that's able to iterate over its own enumerable own property values. */
@@ -346,3 +362,6 @@ export class EntryIterator<T extends ImmutableObject> implements Iterable<Entry<
 		yield* Object.entries(this);
 	}
 }
+
+/** Count the own enumerable properties of an object. */
+export const countProps = (obj: ImmutableObject): number => Object.keys(obj).length;
