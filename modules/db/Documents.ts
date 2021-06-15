@@ -4,23 +4,28 @@ import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber 
 import type { Entry } from "../entry";
 import type { ArrayType, ImmutableArray } from "../array";
 import { Queryable, Query } from "../query";
-import { getFirstProp, getLastProp, ImmutableObject } from "../object";
-import { DerivingStream, Observer, Observable, State } from "../stream";
-import { cacheMethod } from "../class";
+import { countProps, getFirstProp, getLastProp } from "../object";
+import { Observer, Observable, State } from "../stream";
 import { Document } from "./Document";
-import type { DatabaseReadOptions, DatabaseWriteOptions } from "./options";
-import { Reference } from "./Reference";
+import type { Reference } from "./Reference";
+import { Provider } from "./Provider";
 
-const OPTIONS = {};
-const PARTIAL = { partial: true } as const;
 const EMPTY_QUERY = new Query<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /**
- * Documents reference: Allows a set of documents in a collection to be read or deleted from a database.
+ * Documents reference: allows reading from / writing to a list of documents in a database, optionally with query filtering and sorting.
  */
-export class Documents<T extends Data = Data> extends Reference<T> implements Queryable<T>, Validator<T>, Observable<Results<T>> {
-	/** Query that filters and sorts these documents. */
+export class Documents<T extends Data = Data> implements Reference<T>, Queryable<T>, Observable<Results<T>> {
+	readonly provider: Provider;
+	readonly schema: Validator<T>;
+	readonly path: string;
 	readonly query: Query<T> = EMPTY_QUERY;
+
+	protected constructor(schema: Validator<T>, provider: Provider, collection: string) {
+		this.schema = schema;
+		this.provider = provider;
+		this.path = collection;
+	}
 
 	/**
 	 * Get a `Document` instance for a document.
@@ -36,21 +41,15 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 * Create a new document (with a random ID).
 	 * - Input data must be valid according's schema or error will be thrown unless `options.validate` is `false`
 	 */
-	async add(unsafeData: ImmutableObject, options: DatabaseWriteOptions & { validate: false }): Promise<string>;
-	async add(data: T, options?: DatabaseWriteOptions): Promise<string>;
-	async add(unvalidatedData: ImmutableObject, { validate = true }: DatabaseWriteOptions = OPTIONS): Promise<string> {
-		const data = validate === false ? (unvalidatedData as Data) : this.validate(unvalidatedData);
-		return await this.provider.addDocument(this, data);
+	add(data: T): string | Promise<string> {
+		return this.provider.addDocument(this, data);
 	}
 
 	/**
 	 * Get the set of results matching the current query.
 	 */
-	async get(options: DatabaseReadOptions & { validate: false }): Promise<Results>;
-	async get(options?: DatabaseReadOptions): Promise<Results<T>>;
-	async get({ validate = this.provider.VALIDATE }: DatabaseReadOptions = OPTIONS): Promise<Results> {
-		const unvalidatedData = await this.provider.getDocuments(this);
-		return validate ? this.validateResults(unvalidatedData) : unvalidatedData;
+	get(): Results<T> | Promise<Results<T>> {
+		return this.provider.getDocuments(this);
 	}
 
 	/**
@@ -59,7 +58,7 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 *
 	 * @returns Document's data, or `undefined` if the document doesn't exist. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
-	get results(): Promise<Results<T>> {
+	get results(): Results<T> | Promise<Results<T>> {
 		return this.get();
 	}
 
@@ -69,8 +68,9 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 *
 	 * @returns Number of documents in the collection. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
-	get count(): Promise<number> {
-		return Promise.resolve(this.provider.countDocuments(this));
+	get count(): number | Promise<number> {
+		const results = this.provider.getDocuments(this);
+		return results instanceof Promise ? results.then(countProps) : countProps(results);
 	}
 
 	/**
@@ -79,8 +79,9 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 *
 	 * @returns Array of strings representing the documents in the current collection. Uses a promise if the provider is async, or a non-promise otherwise.
 	 */
-	get ids(): Promise<string[]> {
-		return Promise.resolve(this.provider.getDocuments(this)).then(Object.keys);
+	get ids(): string[] | Promise<string[]> {
+		const results = this.provider.getDocuments(this);
+		return results instanceof Promise ? results.then(Object.keys) : Object.keys(results);
 	}
 
 	/**
@@ -90,11 +91,8 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 * @returns `State` instance representing the current state of the document's data.
 	 * - State will be in a `LOADING` state if the value is not available synchronously.
 	 */
-	current(options: DatabaseReadOptions & { validate: false }): State<Results>;
-	current(options?: DatabaseReadOptions): State<Results<T>>;
-	current({ validate = this.provider.VALIDATE }: DatabaseReadOptions = OPTIONS): State<Results> | State<Results<T>> {
-		const state = this.provider.currentDocuments(this);
-		return validate ? state.derive((v): Results<T> => this.validateResults(v)) : state;
+	get current(): State<Results<T>> {
+		return this.provider.currentDocuments(this);
 	}
 
 	/**
@@ -112,36 +110,21 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	subscribe(next: AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(either: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return typeof next === "object" ? this.on(next) : this.on({ next, error, complete });
-	}
-
-	/**
-	 * Subscribe to the results of this collection (indefinitely).
-	 * - Like `subscribe()` but first argument must be an observer and a `DatabaseGetOptions` can be set as the second argument.
-	 *
-	 * @param observer Observer with `next`, `error`, or `complete` methods.
-	 * @returns Function that ends the subscription.
-	 */
-	on(observer: Observer<Results>, options: DatabaseReadOptions & { validate: false }): Unsubscriber;
-	on(observer: Observer<Results<T>>, options?: DatabaseReadOptions): Unsubscriber;
-	on(observer: Observer<Results>, { validate = this.provider.VALIDATE }: DatabaseReadOptions = OPTIONS): Unsubscriber {
-		if (validate === false) {
-			return this.provider.onDocuments(this, observer);
-		} else {
-			const stream = new DerivingStream<Results, Results>(v => this.validateResults(v));
-			stream.on(observer);
-			return this.provider.onDocuments(this, stream);
-		}
+		return typeof next === "object" ? this.provider.onDocuments(this, next) : this.provider.onDocuments(this, { next, error, complete });
 	}
 
 	/** Get a pointer first result (i.e. an object containing `.id` and `.data`, or `undefined` if no documents match this collecton). */
-	get first(): Promise<Entry<T> | undefined> {
-		return this.limit(1).get().then(getFirstProp);
+	get first(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
+		const results = this.limit(1).get();
+		if (results instanceof Promise) return results.then(getFirstProp);
+		return getFirstProp(results);
 	}
 
 	/** Get a pointer last result (i.e. an object containing `.id` and `.data`, or `undefined` if no documents match this collecton). */
-	get last(): Promise<Entry<T> | undefined> {
-		return this.limit(1).get().then(getLastProp);
+	get last(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
+		const results = this.limit(1).get();
+		if (results instanceof Promise) return results.then(getLastProp);
+		return getLastProp(results);
 	}
 
 	/**
@@ -153,11 +136,8 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	async set(unsafeData: ImmutableObject, options: DatabaseWriteOptions & { validate: false }): Promise<void>;
-	async set(data: T, options?: DatabaseWriteOptions): Promise<void>;
-	async set(unvalidatedData: ImmutableObject, { validate = true }: DatabaseWriteOptions = OPTIONS): Promise<void> {
-		const data = validate === false ? (unvalidatedData as Data) : this.validate(unvalidatedData);
-		await this.provider.updateDocuments(this, data);
+	async set(data: T): Promise<void> {
+		await this.provider.setDocuments(this, data);
 	}
 
 	/**
@@ -169,10 +149,7 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	async update(unsafePartial: ImmutableObject, options?: DatabaseWriteOptions & { validate: false }): Promise<void>;
-	async update(partial: Partial<T>, options?: DatabaseWriteOptions): Promise<void>;
-	async update(unvalidatedPartial: ImmutableObject, { validate = true }: DatabaseWriteOptions = OPTIONS): Promise<void> {
-		const partial = validate === false ? (unvalidatedPartial as Data) : this.validate(unvalidatedPartial, PARTIAL);
+	async update(partial: Partial<T>): Promise<void> {
 		await this.provider.updateDocuments(this, partial);
 	}
 
@@ -227,13 +204,12 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 		return { __proto__: Documents.prototype, ...this, query: this.query.limit(limit) };
 	}
 
-	// Must implement toString()
-	@cacheMethod // Calculating the full path string is expensive so only do it once.
+	// Implement toString()
 	toString(): string {
-		return `${this.path}?${this.query}`;
+		return `${this.path}?${this.query.toString()}`;
 	}
 
-	// Must implement iterator protocol.
+	// Implement iterator protocol.
 	*[Symbol.iterator](): Generator<[string, T], void, undefined> {
 		yield* Object.entries(this.get());
 	}

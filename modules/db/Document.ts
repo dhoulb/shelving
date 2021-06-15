@@ -1,30 +1,27 @@
-import type { ImmutableObject } from "../object";
 import type { Data, Result } from "../data";
-import type { Validator } from "../schema";
+import { Validator } from "../schema";
 import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
-import { DerivingStream, Observer, Observable, State } from "../stream";
-import { RequiredError } from "../errors";
-import type { DatabaseReadOptions, DatabaseWriteOptions } from "./options";
+import { Observer, Observable, State } from "../stream";
 import type { Provider } from "./Provider";
-import { Reference } from "./Reference";
+import type { Reference } from "./Reference";
 import { DocumentRequiredError } from "./errors";
 
-const OPTIONS = {};
-const REQUIRED = { required: true } as const;
-const PARTIAL = { partial: true } as const;
-
-/** Type for a document instance. */
-export class Document<T extends Data = Data> extends Reference<T> implements Validator<T>, Observable<Result<T>> {
-	/** Path for document's collection. */
+/**
+ * Document reference: allows reading from / writing to a specific document in a database.
+ */
+export class Document<T extends Data = Data> implements Reference<T>, Observable<Result<T>> {
+	readonly provider: Provider;
+	readonly schema: Validator<T>;
+	readonly path: string;
 	readonly collection: string;
-
-	/** String ID of the specific document in the collection. */
 	readonly id: string;
 
 	protected constructor(schema: Validator<T>, provider: Provider, collection: string, id: string) {
-		super(schema, provider, `${collection}/${id}`);
+		this.provider = provider;
+		this.schema = schema;
 		this.collection = collection;
 		this.id = id;
+		this.path = `${collection}/${id}`;
 	}
 
 	/**
@@ -34,23 +31,17 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	 *
 	 * @returns Document's data, or `undefined` if it doesn't exist.
 	 */
-	async get(options: DatabaseReadOptions & { required: true; validate: false }): Promise<Data>;
-	async get(options: DatabaseReadOptions & { validate: false }): Promise<Result>;
-	async get(options: DatabaseReadOptions & { required: true }): Promise<T>;
-	async get(options?: DatabaseReadOptions): Promise<Result<T>>;
-	async get({ validate = this.provider.VALIDATE, required = false }: DatabaseReadOptions = OPTIONS): Promise<Result> {
-		const result = await this.provider.getDocument(this);
-		if (result) return validate === false ? result : this.validate(result);
-		if (required) throw new DocumentRequiredError(this);
-		return undefined;
+	get(): Result<T> | Promise<Result<T>> {
+		return this.provider.getDocument(this);
 	}
 
 	/**
 	 * Does this document exist?
 	 * @returns `true` if the document exists and `false` if it doesn't.
 	 */
-	get exists(): Promise<boolean> {
-		return this.get().then(Boolean);
+	get exists(): boolean | Promise<boolean> {
+		const result = this.get();
+		return result instanceof Promise ? result.then(Boolean) : !!result;
 	}
 
 	/**
@@ -59,7 +50,7 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	 *
 	 * @returns Document's data, or `undefined` if the document doesn't exist.
 	 */
-	get result(): Promise<Result<T>> {
+	get result(): Result<T> | Promise<Result<T>> {
 		return this.get();
 	}
 
@@ -71,8 +62,15 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	 * @returns Document's data.
 	 * @throws RequiredError If the document's result was undefined.
 	 */
-	get data(): Promise<T> {
-		return this.get(REQUIRED);
+	get data(): T | Promise<T> {
+		const result = this.get();
+		if (result instanceof Promise)
+			return result.then(r => {
+				if (!r) throw new DocumentRequiredError(this);
+				return r;
+			});
+		if (!result) throw new DocumentRequiredError(this);
+		return result;
 	}
 
 	/**
@@ -82,11 +80,8 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	 * @returns `State` instance representing the current state of the document's data.
 	 * - State will be in a `LOADING` state if the value is not available synchronously.
 	 */
-	current(options: DatabaseReadOptions & { validate: false }): State<Result>;
-	current(options?: DatabaseReadOptions): State<Result<T>>;
-	current({ validate = this.provider.VALIDATE }: DatabaseReadOptions = OPTIONS): State<Result> | State<Result<T>> {
-		const state = this.provider.currentDocument(this);
-		return validate ? state.derive((v): Result<T> => (v ? this.validate(v) : undefined)) : state;
+	get current(): State<Result> | State<Result<T>> {
+		return this.provider.currentDocument(this);
 	}
 
 	/**
@@ -104,42 +99,20 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	subscribe(next: AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(either: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return typeof next === "object" ? this.on(next) : this.on({ next, error, complete });
-	}
-
-	/**
-	 * Subscribe to the result of this document (indefinitely).
-	 * - Like `subscribe()` but first argument must be an observer and a `DatabaseGetOptions` can be set as the second argument.
-	 */
-	on(observer: Observer<Result>, options: DatabaseReadOptions & { validate: false }): Unsubscriber;
-	on(observer: Observer<Result<T>>, options?: DatabaseReadOptions): Unsubscriber;
-	on(observer: Observer<Result>, { validate = this.provider.VALIDATE }: DatabaseReadOptions = OPTIONS): Unsubscriber {
-		if (validate === false) {
-			return this.provider.onDocument(this, observer);
-		} else {
-			const stream = new DerivingStream<Result, Result>(v => (v ? this.validate(v) : undefined));
-			stream.on(observer);
-			return this.provider.onDocument(this, stream);
-		}
+		return typeof next === "object" ? this.provider.onDocument(this, next) : this.provider.onDocument(this, { next, error, complete });
 	}
 
 	/**
 	 * Set the entire data of this document.
 	 * - The entire input data must be valid (or fixable) according to this collection's schema or error will be thrown.
-	 * - Data is validated before being set. Can use `document.set(value, { validate: false })` to skip validation.
 	 *
 	 * @param data The (potentially invalid) data to apply to the document.
-	 * @param options.validate Whether the data is validated (defaults to `true`)
 	 * @param options.required Throw an error if the document does not exist (defaults to `false`)
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	async set(unsafeData: ImmutableObject, options: DatabaseWriteOptions & { validate: false }): Promise<void>;
-	async set(data: T, options?: DatabaseWriteOptions): Promise<void>;
-	async set(unvalidatedData: ImmutableObject, { validate = true, required = false }: DatabaseWriteOptions = OPTIONS): Promise<void> {
-		const data = validate === false ? (unvalidatedData as Data) : this.validate(unvalidatedData);
-		if (required) await this.provider.updateDocument(this, data);
-		else await this.provider.setDocument(this, data);
+	set(data: T): void | Promise<void> {
+		return this.provider.setDocument(this, data);
 	}
 
 	/**
@@ -147,24 +120,15 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	 * - Requires only a partial value (any missing properties are ignored).
 	 * - Props specified in the input value must be valid according to this collection's schema or error will be thrown.
 	 * - Props missing from the input value cause no errors.
-	 * - Partial data is validated before being updated. Can use `document.set(value, { validate: false })` to skip validation.
 	 * - Document must exist or an error will be thrown.
 	 *
 	 * @param partial The (potentially invalid) partial data to apply to the document.
-	 * @param options.validate Whether the partial data is validated (defaults to `true`)
 	 * @param options.required Throw an error if the document does not exist (defaults to `true`)
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	async update(unsafePartial: ImmutableObject, options?: DatabaseWriteOptions & { validate: false }): Promise<void>;
-	async update(partial: Partial<T>, options?: DatabaseWriteOptions): Promise<void>;
-	async update(unvalidatedPartial: ImmutableObject, { validate = true, required = true }: DatabaseWriteOptions = OPTIONS): Promise<void> {
-		const partial = validate === false ? (unvalidatedPartial as Data) : this.validate(unvalidatedPartial, PARTIAL);
-		try {
-			await this.provider.updateDocument(this, partial);
-		} catch (thrown) {
-			if (!(thrown instanceof RequiredError) || required !== false) throw thrown;
-		}
+	update(partial: Partial<T>): void | Promise<void> {
+		return this.provider.updateDocument(this, partial);
 	}
 
 	/**
@@ -174,5 +138,10 @@ export class Document<T extends Data = Data> extends Reference<T> implements Val
 	 */
 	async delete(): Promise<void> {
 		await this.provider.deleteDocument(this);
+	}
+
+	// Implement toString()
+	toString(): string {
+		return this.path;
 	}
 }

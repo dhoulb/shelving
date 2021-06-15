@@ -9,18 +9,12 @@ import type { Documents } from "./Documents";
  */
 export interface Provider {
 	/**
-	 * Whether results from this provider need to be validated when read.
-	 * - i.e. results from `MemoryProvider` don't need validation because they were validated when they were written and can't be modified in memory.
-	 */
-	readonly VALIDATE: boolean;
-
-	/**
 	 * Get current state for a document.
 	 *
 	 * @param ref Document reference specifying which document to get.
 	 * @return A `State` instance representing the current state of the document (with `state.value`, `state.loading` and `state.updated` props).
 	 */
-	currentDocument(ref: Document): State<Result>;
+	currentDocument<T extends Data>(ref: Document<T>): State<Result<T>>;
 
 	/**
 	 * Get a document.
@@ -28,7 +22,7 @@ export interface Provider {
 	 * @param ref Document reference specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	getDocument(ref: Document): Result | Promise<Result>;
+	getDocument<T extends Data>(ref: Document<T>): Result<T> | Promise<Result<T>>;
 
 	/**
 	 * Subscribe to a document.
@@ -38,7 +32,7 @@ export interface Provider {
 	 * @param observer Observer to report the result back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onDocument(ref: Document, observer: Observer<Result>): Unsubscriber;
+	onDocument<T extends Data>(ref: Document<T>, observer: Observer<Result<T>>): Unsubscriber;
 
 	/**
 	 * Create a new document in a collection by generating a unique ID.
@@ -47,7 +41,7 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to add the document to.
 	 * @return Promise that resolves to the string ID of the created document when done.
 	 */
-	addDocument(ref: Documents, data: Data): string | Promise<string>;
+	addDocument<T extends Data>(ref: Documents<T>, data: T): string | Promise<string>;
 
 	/**
 	 * Set a document.
@@ -60,7 +54,7 @@ export interface Provider {
 	 * @return Promise that resolves when done.
 	 * @throws RequiredError if the document doesn't exist.
 	 */
-	setDocument(ref: Document, data: Data): void | Promise<void>;
+	setDocument<T extends Data>(ref: Document<T>, data: T): void | Promise<void>;
 
 	/**
 	 * Update an existing document with a partial value.
@@ -73,7 +67,7 @@ export interface Provider {
 	 * @return Promise that resolves when done.
 	 * @throws RequiredError if the document doesn't exist.
 	 */
-	updateDocument(ref: Document, partial: Data): void | Promise<void>;
+	updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): void | Promise<void>;
 
 	/**
 	 * Delete a document.
@@ -81,7 +75,7 @@ export interface Provider {
 	 * @param ref Document reference specifying which document document to delete.
 	 * @return Promise that resolves when done.
 	 */
-	deleteDocument(ref: Document): void | Promise<void>;
+	deleteDocument<T extends Data>(ref: Document<T>): void | Promise<void>;
 
 	/**
 	 * Get current state for a document.
@@ -89,16 +83,7 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to count documents from.
 	 * @return A `State` instance representing the current state of the documents (with `state.value`, `state.loading` and `state.updated` props).
 	 */
-	currentDocuments(ref: Documents): State<Results>;
-
-	/**
-	 * Count all matching documents.
-	 * - This is implemented separately to `getDocuments()` because sometimes counting is significantly more efficient than reading every document.
-	 *
-	 * @param ref Documents reference specifying which collection to count documents from.
-	 * @return Array of documents matching the rules.
-	 */
-	countDocuments(ref: Documents): number | Promise<number>;
+	currentDocuments<T extends Data>(ref: Documents<T>): State<Results<T>>;
 
 	/**
 	 * Get all matching documents.
@@ -106,7 +91,7 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Array of documents matching the rules.
 	 */
-	getDocuments(ref: Documents): Results | Promise<Results>;
+	getDocuments<T extends Data>(ref: Documents<T>): Results<T> | Promise<Results<T>>;
 
 	/**
 	 * Subscribe to all matching documents.
@@ -116,7 +101,7 @@ export interface Provider {
 	 * @param observer Observer to report the result back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onDocuments(ref: Documents, observer: Observer<Results>): Unsubscriber;
+	onDocuments<T extends Data>(ref: Documents<T>, observer: Observer<Results<T>>): Unsubscriber;
 
 	/**
 	 * Set all matching documents to the same value.
@@ -124,7 +109,7 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to set.
 	 * @return Promise that resolves when done.
 	 */
-	setDocuments(ref: Documents, data: Data): void | Promise<void>;
+	setDocuments<T extends Data>(ref: Documents<T>, data: T): void | Promise<void>;
 
 	/**
 	 * Update all matching documents with the same partial value.
@@ -132,7 +117,7 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to update.
 	 * @return Promise that resolves when done.
 	 */
-	updateDocuments(ref: Documents, partial: Data): void | Promise<void>;
+	updateDocuments<T extends Data>(ref: Documents<T>, partial: Partial<T>): void | Promise<void>;
 
 	/**
 	 * Delete all matching documents.
@@ -140,5 +125,5 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to delete.
 	 * @return Promise that resolves when done.
 	 */
-	deleteDocuments(ref: Documents): void | Promise<void>;
+	deleteDocuments<T extends Data>(ref: Documents<T>): void | Promise<void>;
 }

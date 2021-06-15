@@ -12,18 +12,13 @@ import { Documents } from "./Documents";
  * @param provider Provider that allows data to be read/written.
  */
 export class Database<C extends Datas = Datas> {
-	/** Create a new Database. */
-	static create<X extends Datas>(schemas: Validators<X>, provider: Provider): Database<X> {
-		return new Database(schemas, provider);
-	}
-
 	/** List of schemas validators for the collections in this database. */
 	readonly schemas: Validators<C>;
 
 	/** The provider that powers this database. */
 	readonly provider: Provider;
 
-	protected constructor(schemas: Validators<C>, provider: Provider) {
+	constructor(schemas: Validators<C>, provider: Provider) {
 		this.schemas = schemas;
 		this.provider = provider;
 	}

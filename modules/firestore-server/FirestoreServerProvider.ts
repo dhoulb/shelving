@@ -47,23 +47,19 @@ const DIRECTIONS: { readonly [K in Direction]: FirestoreOrderByDirection } = {
 };
 
 /** Create a corresponding `QueryReference` from a Query. */
-const buildQuery = (firestore: Firestore, { path, query: { filters, sorts, slice } }: Documents): FirestoreQuery => {
+const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filters, sorts, slice } }: Documents<T>): FirestoreQuery<T> => {
 	let query: FirestoreQuery = firestore.collection(path);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
 	if (slice.limit !== null) query = query.limit(slice.limit);
-	return query;
+	return query as FirestoreQuery<T>;
 };
 
 /** Create a set of results from a collection snapshot. */
-const snapshotResults = (snapshot: FirestoreQuerySnapshot): Results => {
-	const results: Mutable<Results> = {};
+const snapshotResults = <T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Results<T> => {
+	const results: Mutable<Results<T>> = {};
 	for (const s of snapshot.docs) results[s.id] = s.data();
 	return results;
-};
-
-type FirestoreClientProviderOptions = {
-	readonly firestore: Firestore;
 };
 
 /**
@@ -72,45 +68,39 @@ type FirestoreClientProviderOptions = {
  * - Equality hash is set on returned values so `deepEqual()` etc can use it to quickly compare results without needing to look deeply.
  */
 export class FirestoreServerProvider implements Provider {
-	/** Create a new FirestoreClientProvider. */
-	static create(options: FirestoreClientProviderOptions): FirestoreServerProvider {
-		return new FirestoreServerProvider(options);
-	}
-
-	readonly VALIDATE = true;
 	readonly firestore: Firestore;
 
-	protected constructor({ firestore }: FirestoreClientProviderOptions) {
+	constructor({ firestore }: { firestore: Firestore }) {
 		this.firestore = firestore;
 	}
 
-	currentDocument(): State<Result<Data>> {
+	currentDocument<T extends Data>(): State<Result<T>> {
 		throw new Error("FirestoreServerProvider does not support current state");
 	}
 
-	async getDocument(ref: Document): Promise<Result> {
+	async getDocument<T extends Data>(ref: Document<T>): Promise<Result<T>> {
 		const doc = this.firestore.doc(ref.path);
 		const snapshot = await doc.get();
-		return snapshot.data();
+		return snapshot.data() as Result<T>;
 	}
 
-	onDocument(ref: Document, observer: Observer<Result>): () => void {
+	onDocument<T extends Data>(ref: Document<T>, observer: Observer<Result<T>>): () => void {
 		return this.firestore.doc(ref.path).onSnapshot(
-			snapshot => dispatchNext(observer, snapshot.data()),
+			snapshot => dispatchNext(observer, snapshot.data() as Result<T>),
 			error => dispatchError(observer, error),
 		);
 	}
 
-	async addDocument(ref: Documents, data: Data): Promise<string> {
+	async addDocument<T extends Data>(ref: Documents<T>, data: Data): Promise<string> {
 		const { id } = await this.firestore.collection(ref.path).add(data);
 		return id;
 	}
 
-	async setDocument(ref: Document, data: Data): Promise<void> {
+	async setDocument<T extends Data>(ref: Document<T>, data: Data): Promise<void> {
 		await this.firestore.doc(ref.path).set(data);
 	}
 
-	async updateDocument(ref: Document, partial: Data): Promise<void> {
+	async updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): Promise<void> {
 		try {
 			await this.firestore.doc(ref.path).update(partial);
 		} catch (thrown: unknown) {
@@ -119,36 +109,28 @@ export class FirestoreServerProvider implements Provider {
 		}
 	}
 
-	async deleteDocument(ref: Document): Promise<void> {
+	async deleteDocument<T extends Data>(ref: Document<T>): Promise<void> {
 		await this.firestore.doc(ref.path).delete();
 		return undefined;
 	}
 
-	currentDocuments(): State<Results<Data>> {
+	currentDocuments<T extends Data>(): State<Results<T>> {
 		throw new Error("FirestoreServerProvider does not support current state");
 	}
 
-	async getDocuments(ref: Documents): Promise<Results> {
+	async getDocuments<T extends Data>(ref: Documents<T>): Promise<Results<T>> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
 		return snapshotResults(snapshot);
 	}
 
-	// Count the documents in the collection.
-	// Note: Firestore will charge you for reading every document in this collection!
-	// If you're going to read the documents anyway, don't count before reading or you'll be charged twice and it'll take twice as long.
-	async countDocuments(ref: Documents): Promise<number> {
-		const snapshot = await buildQuery(this.firestore, ref).get();
-		return snapshot.size;
-	}
-
-	onDocuments(ref: Documents, observer: Observer<Results>): () => void {
+	onDocuments<T extends Data>(ref: Documents<T>, observer: Observer<Results<T>>): () => void {
 		return buildQuery(this.firestore, ref).onSnapshot(
 			snapshot => dispatchNext(observer, snapshotResults(snapshot)),
 			error => dispatchError(observer, error),
 		);
 	}
 
-	async setDocuments(ref: Documents, data: Data): Promise<void> {
+	async setDocuments<T extends Data>(ref: Documents<T>, data: T): Promise<void> {
 		const writer = this.firestore.bulkWriter();
 		const query = buildQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
 		let current: typeof query | false = query;
@@ -161,7 +143,7 @@ export class FirestoreServerProvider implements Provider {
 		await writer.close();
 	}
 
-	async updateDocuments(ref: Documents, partial: Data): Promise<void> {
+	async updateDocuments<T extends Data>(ref: Documents<T>, partial: Partial<T>): Promise<void> {
 		const writer = this.firestore.bulkWriter();
 		const query = buildQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
 		let current: typeof query | false = query;
@@ -174,7 +156,7 @@ export class FirestoreServerProvider implements Provider {
 		await writer.close();
 	}
 
-	async deleteDocuments(ref: Documents): Promise<void> {
+	async deleteDocuments<T extends Data>(ref: Documents<T>): Promise<void> {
 		const writer = this.firestore.bulkWriter();
 		const query = buildQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
 		let current: typeof query | false = query;
