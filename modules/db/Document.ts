@@ -80,7 +80,7 @@ export class Document<T extends Data = Data> implements Reference<T>, Observable
 	 * @returns `State` instance representing the current state of the document's data.
 	 * - State will be in a `LOADING` state if the value is not available synchronously.
 	 */
-	get current(): State<Result> | State<Result<T>> {
+	get state(): State<Result> | State<Result<T>> {
 		return this.provider.currentDocument(this);
 	}
 

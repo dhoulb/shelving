@@ -91,7 +91,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	 * @returns `State` instance representing the current state of the document's data.
 	 * - State will be in a `LOADING` state if the value is not available synchronously.
 	 */
-	get current(): State<Results<T>> {
+	get state(): State<Results<T>> {
 		return this.provider.currentDocuments(this);
 	}
 
