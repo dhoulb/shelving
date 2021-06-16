@@ -1,10 +1,23 @@
-import type { Mutable } from "../object";
-import { addItem, MutableArray, removeItem } from "../array";
-import { AsyncEmptyDispatcher, AsyncDispatcher, AsyncCatcher, thispatch, Unsubscriber, AsyncDeriver, dispatch } from "../function";
-import { Resolvable } from "../data";
-import { SKIP } from "../constants";
-import { dispatchComplete, dispatchError, dispatchNext, Observer } from "./Observer";
-import { Observable } from "./Observable";
+import {
+	Mutable,
+	addItem,
+	MutableArray,
+	removeItem,
+	AsyncEmptyDispatcher,
+	AsyncDispatcher,
+	AsyncCatcher,
+	thispatch,
+	Unsubscriber,
+	AsyncDeriver,
+	dispatch,
+	Resolvable,
+	SKIP,
+	Observable,
+	dispatchComplete,
+	dispatchError,
+	dispatchNext,
+	Observer,
+} from "../util";
 
 /**
  * Stream: an object that can be subscribed to and passes along any next values to its subscribers.

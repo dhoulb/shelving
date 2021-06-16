@@ -1,8 +1,5 @@
 import { InvalidFeedback } from "../feedback";
-import { toNumber, roundNumber } from "../number";
-import { isArray } from "../array";
-import { isObject } from "../object";
-import { Unit, detectUnit, convertUnits } from "../units";
+import { toNumber, roundNumber, isArray, isObject, Unit, detectUnit, convertUnits } from "../util";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
 
 type NumberSchemaOptions<T extends number | null> = SchemaOptions<T> & {

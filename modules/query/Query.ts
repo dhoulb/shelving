@@ -1,7 +1,4 @@
-import type { Data } from "../data";
-import type { ImmutableEntries } from "../entry";
-import type { ArrayType, ImmutableArray } from "../array";
-import { assertLength, assertProp } from "../assert";
+import { Data, ImmutableEntries, ArrayType, ImmutableArray, assertLength, assertProp } from "../util";
 import { Slice } from "./Slice";
 import { Filters } from "./Filters";
 import { Sorts } from "./Sorts";

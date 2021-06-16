@@ -1,6 +1,5 @@
-import type { MutableObject } from "../object";
+import { MutableObject, ImmutableArray, uniqueItems } from "../util";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import { ImmutableArray, uniqueItems } from "../array";
 import { Schema, SchemaOptions } from "./Schema";
 import { Validator } from "./Validator";
 

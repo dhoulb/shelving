@@ -1,5 +1,4 @@
-import type { ImmutableEntries } from "../entry";
-import type { Data } from "../data";
+import type { ImmutableEntries, Data } from "../util";
 import { Rule } from "./Rule";
 
 export class Slice<D extends Data> extends Rule<D> {

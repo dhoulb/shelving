@@ -1,10 +1,23 @@
-import type { Data, Result, Results } from "../data";
-import { randomId } from "../random";
-import { dispatch, Dispatcher, Unsubscriber } from "../function";
-import { MutableObject, objectFromEntries, updateProps } from "../object";
-import { addItem, ImmutableArray, MutableArray, removeItem } from "../array";
-import { dispatchNext, Observer, State } from "../stream";
-import { logError } from "../console";
+import {
+	Data,
+	Result,
+	Results,
+	randomId,
+	MutableObject,
+	objectFromEntries,
+	updateProps,
+	addItem,
+	ImmutableArray,
+	MutableArray,
+	removeItem,
+	logError,
+	dispatch,
+	Dispatcher,
+	Unsubscriber,
+	dispatchNext,
+	Observer,
+} from "../util";
+import { State } from "../stream";
 import type { Provider } from "./Provider";
 import type { Documents } from "./Documents";
 import type { Document } from "./Document";

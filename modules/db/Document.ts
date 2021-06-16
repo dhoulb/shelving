@@ -1,7 +1,6 @@
-import type { Data, Result } from "../data";
+import type { Data, Result, AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber, Observer, Observable } from "../util";
 import { Validator } from "../schema";
-import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
-import { Observer, Observable, State } from "../stream";
+import { State } from "../stream";
 import type { Provider } from "./Provider";
 import type { Reference } from "./Reference";
 import { DocumentRequiredError } from "./errors";
@@ -80,7 +79,7 @@ export class Document<T extends Data = Data> implements Reference<T>, Observable
 	 * @returns `State` instance representing the current state of the document's data.
 	 * - State will be in a `LOADING` state if the value is not available synchronously.
 	 */
-	get state(): State<Result> | State<Result<T>> {
+	get state(): State<Result<T>> {
 		return this.provider.currentDocument(this);
 	}
 

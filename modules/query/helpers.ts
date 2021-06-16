@@ -1,4 +1,4 @@
-import { getProp, ImmutableObject } from "../object";
+import { getProp, ImmutableObject } from "../util";
 
 /**
  * Get a named property value from some data.

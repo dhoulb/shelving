@@ -1,5 +1,4 @@
-import type { ImmutableEntries } from "../entry";
-import type { Data, Results } from "../data";
+import type { ImmutableEntries, Data, Results } from "../util";
 import { Rule } from "./Rule";
 
 const getRuleString = (rule: Rule<Data>) => rule.toString();

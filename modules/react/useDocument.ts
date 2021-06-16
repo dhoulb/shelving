@@ -4,8 +4,6 @@ import { useState } from "./useState";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const UNDEFINED_STATE = new State<any>(undefined);
 
-type UseDocumentProps = { subscribe?: boolean; maxAge?: number };
-
 /**
  * Use a single document in a React component.
  *
@@ -22,10 +20,10 @@ type UseDocumentProps = { subscribe?: boolean; maxAge?: number };
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useDocument = <T extends Data>(ref: Document<T> | undefined, { subscribe, maxAge = 1000 }: UseDocumentProps = {}): State<Result<T>> => {
-	const state: State<Result<T>> = ref ? ref.current() : UNDEFINED_STATE;
+export const useDocument = <T extends Data>(ref: Document<T> | undefined, maxAge: number | true = 1000): State<Result<T>> => {
+	const state: State<Result<T>> = ref ? ref.state : UNDEFINED_STATE;
 	if (ref && !state.closed) {
-		if (subscribe) {
+		if (maxAge === true) {
 			// Start a source subscription on the state if there isn't one.
 			if (!state.started) {
 				// Start a subscription to the reference.

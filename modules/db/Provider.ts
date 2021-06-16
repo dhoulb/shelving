@@ -1,6 +1,5 @@
-import type { Data, Result, Results } from "../data";
-import type { Unsubscriber } from "../function";
-import type { Observer, State } from "../stream";
+import type { Observer, Unsubscriber, Data, Result, Results } from "../util";
+import type { State } from "../stream";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
 

@@ -1,8 +1,4 @@
-import type { Entry, ImmutableEntries } from "../entry";
-import type { ArrayType, ImmutableArray } from "../array";
-import { filter } from "../filter";
-import type { Data } from "../data";
-import { bindMethod } from "../class";
+import { Entry, ImmutableEntries, ArrayType, ImmutableArray, Data, filter, bindMethod } from "../util";
 import type { Filterable } from "./types";
 import { Filter } from "./Filter";
 import { Rules } from "./Rules";

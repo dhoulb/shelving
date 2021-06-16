@@ -1,6 +1,4 @@
-import { isObject } from "../object";
-import { sanitizeLines, sanitizeString, toString } from "../string";
-import { isArray } from "../array";
+import { isObject, sanitizeLines, sanitizeString, toString, isArray } from "../util";
 import { InvalidFeedback } from "../feedback";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
 

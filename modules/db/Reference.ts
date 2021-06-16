@@ -1,4 +1,4 @@
-import type { Data } from "../data";
+import type { Data } from "../util";
 import type { Validator } from "../schema";
 
 /**

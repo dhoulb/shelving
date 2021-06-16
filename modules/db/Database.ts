@@ -1,4 +1,4 @@
-import type { Datas } from "../data";
+import type { Datas } from "../util/data";
 import type { Validators } from "../schema";
 import type { Provider } from "./Provider";
 import { Document } from "./Document";

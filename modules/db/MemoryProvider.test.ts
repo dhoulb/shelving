@@ -6,7 +6,7 @@ const { person1, person2, person3, person4, person5 } = allPeople;
 
 test("MemoryProvider: set/get/delete documents", async () => {
 	// Setup.
-	const provider = MemoryProvider.create();
+	const provider = new MemoryProvider();
 	const db = createTestDatabase(provider);
 	const basics = db.docs("basics");
 	const people = db.docs("people");
@@ -50,7 +50,7 @@ test("MemoryProvider: set/get/delete documents", async () => {
 });
 test("MemoryProvider: set/get/delete collections", async () => {
 	// Setup.
-	const provider = MemoryProvider.create();
+	const provider = new MemoryProvider();
 	const db = createTestDatabase(provider);
 	const basics = db.docs("basics");
 	const people = db.docs("people");
@@ -74,7 +74,7 @@ test("MemoryProvider: set/get/delete collections", async () => {
 });
 test("MemoryProvider: get queries", async () => {
 	// Setup.
-	const provider = MemoryProvider.create();
+	const provider = new MemoryProvider();
 	const db = createTestDatabase(provider);
 	const basics = db.docs("basics");
 	await Promise.all(Object.entries(allBasics).map(([k, v]) => basics.doc(k).set(v)));
@@ -112,7 +112,7 @@ test("MemoryProvider: get queries", async () => {
 });
 test("MemoryProvider: subscribing to documents", async () => {
 	// Setup.
-	const provider = MemoryProvider.create();
+	const provider = new MemoryProvider();
 	const db = createTestDatabase(provider);
 	const basics = db.docs("basics");
 	const doc = basics.doc("basic1");
@@ -148,7 +148,7 @@ test("MemoryProvider: subscribing to documents", async () => {
 });
 test("MemoryProvider: subscribing to collections", async () => {
 	// Setup.
-	const provider = MemoryProvider.create();
+	const provider = new MemoryProvider();
 	const db = createTestDatabase(provider);
 	const basics = db.docs("basics");
 	// Subscribe.
@@ -214,7 +214,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 });
 test("MemoryProvider: subscribing to filter query", async () => {
 	// Setup.
-	const provider = MemoryProvider.create();
+	const provider = new MemoryProvider();
 	const db = createTestDatabase(provider);
 	const basics = db.docs("basics");
 	await basics.doc("basic6").set(basic6);
@@ -257,7 +257,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 });
 test("MemoryProvider: subscribing to limit query", async () => {
 	// Setup.
-	const provider = MemoryProvider.create();
+	const provider = new MemoryProvider();
 	const db = createTestDatabase(provider);
 	const basics = db.docs("basics");
 	await Promise.all(Object.entries(allBasics).map(([k, v]) => basics.doc(k).set(v)));

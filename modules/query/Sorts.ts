@@ -1,7 +1,4 @@
-import type { Entry, ImmutableEntries } from "../entry";
-import type { Data } from "../data";
-import { sort } from "../sort";
-import { bindMethod } from "../class";
+import { Entry, ImmutableEntries, Data, sort, bindMethod } from "../util";
 import type { Sortable } from "./types";
 import { Sort } from "./Sort";
 import { Rules } from "./Rules";

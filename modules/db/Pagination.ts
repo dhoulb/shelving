@@ -1,9 +1,5 @@
-import { getFirstItem, getLastItem } from "../array";
-import { assert, assertLength } from "../assert";
-import { Data, Results } from "../data";
-import { ImmutableEntries } from "../entry";
+import { getFirstItem, getLastItem, ImmutableEntries, bindMethod, assert, assertLength, Data, Results } from "../util";
 import { Sorts } from "../query";
-import { bindMethod } from "../class";
 import { State } from "../stream";
 import { Documents } from "./Documents";
 

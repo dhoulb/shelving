@@ -1,4 +1,4 @@
-import { Mutable } from "../object";
+import type { Mutable } from "./object";
 
 export class ResolvablePromise<T> extends Promise<T> {
 	readonly resolve!: (value: T) => void;

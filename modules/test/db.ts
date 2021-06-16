@@ -45,4 +45,4 @@ export const createTestDatabase = <P extends Provider>(
 ): Database<{
 	basics: typeof basicSchema.TYPE;
 	people: typeof personSchema.TYPE;
-}> => Database.create(collections, provider);
+}> => new Database(collections, provider);

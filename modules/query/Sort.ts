@@ -1,7 +1,4 @@
-import { bindMethod } from "../class";
-import type { Data } from "../data";
-import type { Entry, ImmutableEntries } from "../entry";
-import { COMPARE, Direction, sort } from "../sort";
+import { bindMethod, Data, Entry, ImmutableEntries, COMPARE, Direction, sort } from "../util";
 import { getQueryProp } from "./helpers";
 import { Rule } from "./Rule";
 

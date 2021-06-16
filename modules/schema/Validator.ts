@@ -1,4 +1,4 @@
-import { isObject, ImmutableObject } from "../object";
+import { isObject, ImmutableObject } from "../util";
 
 /** Options for a validator's `validate()` method. */
 export type ValidateOptions = {

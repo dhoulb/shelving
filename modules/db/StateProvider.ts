@@ -1,8 +1,5 @@
-import { LOADING } from "../constants";
-import type { Data, Result, Results } from "../data";
-import { dispatch, Unsubscriber } from "../function";
-import { MutableObject, removeEntry } from "../object";
-import { State, Observer, Stream } from "../stream";
+import { LOADING, Data, Result, Results, dispatch, Unsubscriber, MutableObject, removeEntry, Observer } from "../util";
+import { State, Stream } from "../stream";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
 import type { Provider } from "./Provider";

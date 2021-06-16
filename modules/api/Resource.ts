@@ -1,4 +1,4 @@
-import type { Arguments, AsyncFetcher } from "../function";
+import type { Arguments, AsyncFetcher } from "../util";
 import type { Validator } from "../schema";
 import { isFeedback } from "../feedback";
 import { ValidationError } from "../errors";

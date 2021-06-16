@@ -1,4 +1,4 @@
-import { serialise } from "../serialise";
+import { serialise } from "../util";
 import type { MarkupElement, MarkupNode } from "./types";
 
 /**

@@ -1,11 +1,9 @@
-import type { Provider } from "..";
-import type { Data, Result, Results } from "../data";
+import type { Data, Result, Results, Unsubscriber, ImmutableObject, MutableObject, Observer } from "../util";
 import { ValidationError } from "../errors";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import type { Unsubscriber } from "../function";
-import type { ImmutableObject, MutableObject } from "../object";
 import type { ValidateOptions } from "../schema";
-import { State, Observer, DerivingStream } from "../stream";
+import { State, DerivingStream } from "../stream";
+import type { Provider } from "./Provider";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
 import type { Reference } from "./Reference";

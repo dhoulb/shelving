@@ -1,13 +1,25 @@
-import { AsyncDeriver } from "../function";
+import {
+	AsyncDeriver,
+	LOADING,
+	SKIP,
+	ImmutableObject,
+	Mutable,
+	updateProps,
+	ImmutableArray,
+	ArrayType,
+	swapItem,
+	withoutItem,
+	withItem,
+	assertArray,
+	assertObject,
+	Resolvable,
+	dispatchNext,
+	Observer,
+	isObservable,
+	Observable,
+} from "../util";
 import { RequiredError } from "../errors";
-import { LOADING, SKIP } from "../constants";
-import { ImmutableObject, Mutable, updateProps } from "../object";
-import { ImmutableArray, ArrayType, swapItem, withoutItem, withItem } from "../array";
-import { assertArray, assertObject } from "../assert";
-import { Resolvable } from "../data";
-import { dispatchNext, Observer } from "./Observer";
 import { DerivingStream, Stream } from "./Stream";
-import { isObservable, Observable } from "./Observable";
 import { getNextValue } from "./helpers";
 
 /**

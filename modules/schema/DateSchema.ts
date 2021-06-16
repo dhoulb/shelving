@@ -1,5 +1,5 @@
 import { InvalidFeedback } from "../feedback";
-import { toDate, getYmd, PossibleOptionalDate } from "../date";
+import { toDate, getYmd, PossibleOptionalDate } from "../util";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
 
 type DateOptions<T extends string | null> = SchemaOptions<T> & {

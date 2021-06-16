@@ -1,11 +1,22 @@
-import type { Data, Results } from "../data";
+import {
+	Data,
+	Results,
+	AsyncDispatcher,
+	AsyncEmptyDispatcher,
+	AsyncCatcher,
+	Unsubscriber,
+	Entry,
+	ArrayType,
+	ImmutableArray,
+	countProps,
+	getFirstProp,
+	getLastProp,
+	Observer,
+	Observable,
+} from "../util";
 import type { Validator } from "../schema";
-import type { AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber } from "../function";
-import type { Entry } from "../entry";
-import type { ArrayType, ImmutableArray } from "../array";
 import { Queryable, Query } from "../query";
-import { countProps, getFirstProp, getLastProp } from "../object";
-import { Observer, Observable, State } from "../stream";
+import { State } from "../stream";
 import { Document } from "./Document";
 import type { Reference } from "./Reference";
 import { Provider } from "./Provider";

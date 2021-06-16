@@ -1,4 +1,4 @@
-import { MutableObject, ImmutableObject, isObject } from "../object";
+import { MutableObject, ImmutableObject, isObject } from "../util";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Schema, SchemaOptions } from "./Schema";
 import { Validator } from "./Validator";

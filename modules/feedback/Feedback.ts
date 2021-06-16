@@ -1,7 +1,5 @@
-import { debug } from "../debug";
-import { toString } from "../string";
+import { debug, toString, ImmutableObject, isObject, MutableObject } from "../util";
 import { AssertionError } from "../errors";
-import { ImmutableObject, isObject, MutableObject } from "../object";
 
 /** Possible status strings for feedback. */
 export type FeedbackStatus = "" | "success" | "warning" | "error" | "invalid";

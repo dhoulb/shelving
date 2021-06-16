@@ -1,4 +1,4 @@
-import { debug } from "../debug";
+import { debug } from "../util";
 
 /**
  * Thrown when the program receives a value it didn't expect.

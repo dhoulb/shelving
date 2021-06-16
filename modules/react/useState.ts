@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState as useReactState } from "react";
-import { isShallowEqual, LOADING, NOERROR, State } from "..";
-import { Unsubscriber } from "../function";
+import { isShallowEqual, LOADING, NOERROR, State, Unsubscriber } from "..";
 
 /**
  * Subscribe or create a new Shelving `State` instance.

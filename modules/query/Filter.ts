@@ -1,7 +1,4 @@
-import type { Data } from "../data";
-import { filter, MATCH, Operator } from "../filter";
-import { Entry, ImmutableEntries } from "../entry";
-import { bindMethod } from "../class";
+import { Data, Entry, ImmutableEntries, bindMethod, filter, MATCH, Operator } from "../util";
 import { Rule } from "./Rule";
 import { getQueryProp } from "./helpers";
 

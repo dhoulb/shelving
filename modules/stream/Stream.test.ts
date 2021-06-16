@@ -1,5 +1,4 @@
-import { getNextValue, Stream } from "..";
-import { SKIP } from "../constants";
+import { getNextValue, Stream, SKIP } from "..";
 
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
