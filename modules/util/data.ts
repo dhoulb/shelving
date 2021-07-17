@@ -1,3 +1,4 @@
+import { RequiredError } from "../errors";
 import type { SKIP } from "./constants";
 
 /** Data: an object with string keys containing only plain values. */
@@ -17,3 +18,13 @@ export type Results<T extends Data = Data> = { readonly [id: string]: T };
 
 /** Resolvable value. */
 export type Resolvable<T> = typeof SKIP | T | Promise<typeof SKIP | T>;
+
+/**
+ * Get a required value.
+ * @returns Value if it's not `undefined`
+ * @throws RequiredError if value is `undefined`
+ */
+export const getRequired = <T>(v: T): Exclude<T, undefined> => {
+	if (v === undefined) throw new RequiredError("Value is undefined");
+	return v as Exclude<T, undefined>;
+};

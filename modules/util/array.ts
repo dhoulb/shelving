@@ -1,6 +1,7 @@
 import type { Resolvable } from "./data";
 import { ImmutableObject, isIterable, Mutable } from "./object";
 import { SKIP } from "./constants";
+import { isAsync } from "./promise";
 
 /**
  * Mutable array: an array that can be changed.
@@ -207,7 +208,7 @@ export function mapItems(
 	const iterable = isIterable(input) ? input : Object.values(input);
 	for (const current of iterable) {
 		const next = typeof mapper === "function" ? mapper(current) : mapper;
-		if (next instanceof Promise) promises = true;
+		if (isAsync(next)) promises = true;
 		if (next !== SKIP) output.push(next);
 		if (next !== current) changed = true;
 	}

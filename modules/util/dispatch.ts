@@ -1,6 +1,7 @@
 import type { Resolvable } from "./data";
 import { logError } from "./console";
 import { SKIP } from "./constants";
+import { isAsync } from "./promise";
 
 /**
  * Dispatcher: a function that dispatches a value.
@@ -54,11 +55,11 @@ export function dispatch<T, C extends string>(
 	catcherObj?: Catcher | { [K in C]?: Catcher },
 	catcherKey?: C,
 ): void {
-	if (value instanceof Promise) return void _asyncDispatch(dispatcher, value, catcherObj);
+	if (isAsync(value)) return void _asyncDispatch(dispatcher, value, catcherObj);
 	try {
 		if (value !== SKIP) {
 			const returned = dispatcher(value);
-			if (returned instanceof Promise) void _awaitSafely(returned, catcherObj, catcherKey);
+			if (isAsync(returned)) void _awaitSafely(returned, catcherObj, catcherKey);
 		}
 	} catch (thrown: unknown) {
 		_dispatchToCatcher(thrown, catcherObj, catcherKey);
@@ -109,11 +110,11 @@ export function thispatch<T, M extends string, C extends string>(
 	catcherObj?: Catcher | { [K in C]?: Catcher },
 	catcherKey?: C,
 ): void {
-	if (value instanceof Promise) return void _asyncMethodDispatch(obj, key, value, catcherObj);
+	if (isAsync(value)) return void _asyncMethodDispatch(obj, key, value, catcherObj);
 	try {
 		if (value !== SKIP) {
 			const returned = obj[key]?.(value);
-			if (returned instanceof Promise) void _awaitSafely(returned, catcherObj, catcherKey);
+			if (isAsync(returned)) void _awaitSafely(returned, catcherObj, catcherKey);
 		}
 	} catch (thrown: unknown) {
 		void _dispatchToCatcher(thrown, catcherObj, catcherKey);

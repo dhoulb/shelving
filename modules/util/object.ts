@@ -1,6 +1,7 @@
 import type { Entry, ImmutableEntries, ResolvableEntries } from "./entry";
 import type { Resolvable } from "./data";
 import { SKIP } from "./constants";
+import { isAsync } from "./promise";
 
 /**
  * Empty object: an object with no properties.
@@ -179,7 +180,7 @@ export function mapProps(
 	const iterable = isIterable(input) ? input : Object.entries(input);
 	for (const [key, current] of iterable) {
 		const next = typeof mapper === "function" ? mapper(current, key) : mapper;
-		if (next instanceof Promise) promises = true;
+		if (isAsync(next)) promises = true;
 		if (next !== SKIP) output[key] = next;
 		if (next !== current) changed = true;
 	}
@@ -230,7 +231,7 @@ export function objectFromKeys(
 	const output: Mutable<ResolvableObject> = {};
 	for (const key of keys) {
 		const next = typeof mapper === "function" ? mapper(key) : mapper;
-		if (next instanceof Promise) promises = true;
+		if (isAsync(next)) promises = true;
 		if (next !== SKIP) output[key] = next;
 	}
 	return promises ? resolveObject(output) : output;
