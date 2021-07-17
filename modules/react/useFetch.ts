@@ -1,5 +1,4 @@
 import { Arguments, AsyncFetcher, serialise, State, LOADING, removeEntry } from "..";
-
 import { useState } from "./useState";
 
 /** Store a list of named cached `State` instances. */
