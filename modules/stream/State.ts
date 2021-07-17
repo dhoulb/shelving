@@ -17,10 +17,11 @@ import {
 	Observer,
 	isObservable,
 	Observable,
+	isAsync,
+	getRequired,
+	throwAsync,
 } from "../util";
-import { RequiredError } from "../errors";
 import { DerivingStream, Stream } from "./Stream";
-import { getNextValue } from "./helpers";
 
 /**
  * State: a stream the retains its msot recent value and makes it available at `state.value` and `state.data`
@@ -34,25 +35,47 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	readonly reason: Error | unknown = undefined; // The error that caused this state to close.
 
 	/**
-	 * Get current value.
+	 * Get current value (synchronously).
+	 * @returns Current value of this state.
+	 * @throws Promise if the value is currently loading.
 	 * @throws `Error | unknown` if this state has errored.
-	 * @throws Promise if the value is currently loading (Promise resolves when a non-Promise value is set).
 	 */
 	get value(): T {
-		if (this.reason) throw this.reason;
-		if (this.#value === LOADING) throw getNextValue(this);
-		return this.#value;
+		return throwAsync(this.asyncValue);
 	}
 
 	/**
-	 * Get current data value.
-	 * @throws RequiredError if the value is currently `undefined` or `null`
-	 * @throws Promise if the value is currently loading (Promise resolves when a non-Promise value is set).
+	 * Get current or next value (asynchronously).
+	 * - Gets current value synchronously (if value is not still loading).
+	 * - Gets next value asynchronously (if value is still loading).
+	 *
+	 * @returns Current value of this state (possibly promised).
+	 * @throws `Error | unknown` if this state has errored.
+	 */
+	get asyncValue(): T | Promise<T> {
+		if (this.reason) throw this.reason;
+		return this.#value === LOADING ? this.nextValue : this.#value;
+	}
+
+	/**
+	 * Get current required data value (synchronously).
+	 * @throws Promise if the value is currently loading.
+	 * @throws RequiredError if the value is currently `undefined`
+	 * @throws `Error | unknown` if this state has errored.
 	 */
 	get data(): Exclude<T, undefined> {
-		const value = this.value;
-		if (value === undefined) throw new RequiredError("State.data: State data does not exist");
-		return value as Exclude<T, undefined>;
+		return throwAsync(this.asyncData);
+	}
+
+	/**
+	 * Get current required data value (synchronously).
+	 * @throws Promise if the value is currently loading.
+	 * @throws RequiredError if the value is currently `undefined`
+	 * @throws `Error | unknown` if this state has errored.
+	 */
+	get asyncData(): Exclude<T, undefined> | Promise<Exclude<T, undefined>> {
+		const value = this.asyncValue;
+		return isAsync(value) ? value.then(getRequired) : getRequired(value);
 	}
 
 	/** Age of the current data (in milliseconds). */
@@ -73,7 +96,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 		(this as Mutable<this>).pending = false;
 
 		if (this.closed || value === SKIP || value === this.#value) return;
-		if (value instanceof Promise) {
+		if (isAsync(value)) {
 			(this as Mutable<this>).pending = true;
 			return dispatchNext(this, value);
 		}

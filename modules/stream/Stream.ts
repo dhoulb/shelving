@@ -17,6 +17,7 @@ import {
 	dispatchError,
 	dispatchNext,
 	Observer,
+	isAsync,
 } from "../util";
 
 /**
@@ -26,8 +27,8 @@ import {
  * - Ensure that `next()`, `error()`, `complete()` aren't called again after `.closed` is true.
  */
 export class Stream<T> implements Observer<T>, Observable<T> {
-	#cleanup?: Unsubscriber;
-	#subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
+	readonly #cleanup?: Unsubscriber;
+	readonly #subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
 
 	/**
 	 * Is this stream open or closed.
@@ -40,6 +41,10 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 		return this.#subscribers.length;
 	}
 
+	get nextValue(): Promise<T> {
+		return getNextValue(this);
+	}
+
 	constructor(source?: Observable<T>) {
 		if (source) this.#cleanup = source.subscribe(this);
 	}
@@ -50,7 +55,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 */
 	next(value: Resolvable<T>): void {
 		if (this.closed || value === SKIP) return;
-		if (value instanceof Promise) return dispatchNext(this, value);
+		if (isAsync(value)) return dispatchNext(this, value);
 		for (const subscriber of this.#subscribers.slice()) dispatchNext(subscriber, value);
 	}
 
@@ -61,9 +66,9 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * - Closes this stream.
 	 */
 	error(reason: Error | unknown): void {
-		if (this.#cleanup) this.#cleanup = void dispatch(this.#cleanup);
 		if (this.closed) return;
 		(this as Mutable<this>).closed = true;
+		if (this.#cleanup) dispatch(this.#cleanup);
 		for (const subscriber of this.#subscribers.slice()) dispatchError(subscriber, reason);
 	}
 
@@ -74,9 +79,9 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * - Closes this stream.
 	 */
 	complete(): void {
-		if (this.#cleanup) this.#cleanup = void dispatch(this.#cleanup);
 		if (this.closed) return;
 		(this as Mutable<this>).closed = true;
+		if (this.#cleanup) dispatch(this.#cleanup);
 		for (const subscriber of this.#subscribers.slice()) dispatchComplete(subscriber);
 	}
 
@@ -136,7 +141,7 @@ export class SlicingStream<T> extends Stream<T> {
 	 */
 	next(value: Resolvable<T>): void {
 		if (this.closed || value === SKIP) return;
-		if (value instanceof Promise) return dispatchNext(this, value);
+		if (isAsync(value)) return dispatchNext(this, value);
 		for (const subscriber of this.#subscribers.slice(this.#start, this.#end)) dispatchNext(subscriber, value);
 	}
 }
@@ -152,7 +157,7 @@ export class LimitedStream<T> extends Stream<T> {
 
 	next(value: Resolvable<T>): void {
 		if (this.closed || value === SKIP) return;
-		if (value instanceof Promise) return dispatchNext(this, value);
+		if (isAsync(value)) return dispatchNext(this, value);
 		super.next(value);
 		this.#remaining--;
 		if (this.#remaining <= 0) this.complete();
@@ -173,7 +178,7 @@ export class DerivingStream<I, O> extends Stream<any> {
 	// @ts-ignore We know this signature is correct.
 	next(value: Resolvable<I>): void {
 		if (this.closed || value === SKIP) return;
-		if (value instanceof Promise) return dispatchNext(this, value);
+		if (isAsync(value)) return dispatchNext(this, value);
 		try {
 			// Call `this.derived()` with the new value and `this.error()`
 			thispatch<O, "derived", "error">(this, "derived", this._deriver(value), this, "error");
@@ -187,3 +192,9 @@ export class DerivingStream<I, O> extends Stream<any> {
 		super.next(value);
 	}
 }
+
+/**
+ * Get a Promise that resolves to the next value issued by an observable.
+ * - Internally uses a `LimitedStream` instance that unsubscribes itself after receiving one value.
+ */
+export const getNextValue = <T>(observable: Observable<T>): Promise<T> => new Promise<T>((next, error) => new LimitedStream(1, observable).on({ next, error }));
