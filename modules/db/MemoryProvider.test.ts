@@ -23,12 +23,12 @@ test("MemoryProvider: set/get/delete documents", async () => {
 	expect(await basics.doc("basic2").get()).toBe(basic2);
 	expect(await basics.doc("basic3").get()).toBe(basic3);
 	expect(await basics.doc("basicNone").get()).toBe(undefined);
-	expect(await basics.count).toBe(3);
+	expect(await basics.asyncCount).toBe(3);
 	expect(await people.doc("person1").get()).toBe(person1);
 	expect(await people.doc("person2").get()).toBe(person2);
 	expect(await people.doc("person3").get()).toBe(person3);
 	expect(await people.doc("peopleNone").get()).toBe(undefined);
-	expect(await people.count).toBe(3);
+	expect(await people.asyncCount).toBe(3);
 	// Update documents.
 	expect(await basics.doc("basic1").update({ str: "NEW" })).toBe(undefined);
 	expect(await basics.doc("basic1").get()).toMatchObject({ ...basic1, str: "NEW" });
@@ -42,11 +42,11 @@ test("MemoryProvider: set/get/delete documents", async () => {
 	expect(typeof addedPersonId).toBe("string");
 	// Delete documents.
 	expect(await basics.doc("basic2").delete()).toBe(undefined);
-	expect(await basics.count).toBe(3);
+	expect(await basics.asyncCount).toBe(3);
 	expect(await people.doc("personNone").delete()).toBe(undefined);
 	expect(await people.doc("person3").delete()).toBe(undefined);
 	expect(await people.doc("personNone").delete()).toBe(undefined);
-	expect(await people.count).toBe(3);
+	expect(await people.asyncCount).toBe(3);
 });
 test("MemoryProvider: set/get/delete collections", async () => {
 	// Setup.
@@ -58,19 +58,19 @@ test("MemoryProvider: set/get/delete collections", async () => {
 	await Promise.all(Object.entries(allBasics).map(([k, v]) => basics.doc(k).set(v)));
 	await Promise.all(Object.entries(allPeople).map(([k, v]) => people.doc(k).set(v)));
 	// Check collections.
-	expect(await basics.results).toEqual(allBasics);
+	expect(await basics.asyncValue).toEqual(allBasics);
 	expect(await basics.doc("basic1").get()).toEqual(basic1);
 	expect(await basics.doc("basic6").get()).toEqual(basic6);
 	expect(await basics.doc("basicNone").get()).toBe(undefined);
-	expect(await people.results).toEqual(allPeople);
+	expect(await people.asyncValue).toEqual(allPeople);
 	expect(await people.doc("person4").get()).toEqual(person4);
 	expect(await people.doc("peopleNone").get()).toBe(undefined);
 	// Delete collections.
 	expect(await basics.delete()).toBe(undefined);
 	expect(await people.delete()).toBe(undefined);
 	// Check collections.
-	expect(await people.results).toEqual({});
-	expect(await basics.results).toEqual({});
+	expect(await people.asyncValue).toEqual({});
+	expect(await basics.asyncValue).toEqual({});
 });
 test("MemoryProvider: get queries", async () => {
 	// Setup.
@@ -79,36 +79,36 @@ test("MemoryProvider: get queries", async () => {
 	const basics = db.docs("basics");
 	await Promise.all(Object.entries(allBasics).map(([k, v]) => basics.doc(k).set(v)));
 	// Equal queries.
-	expect(await basics.is("str", "aaa").results).toEqual({ basic1 });
-	expect(await basics.is("str", "NOPE").results).toEqual({});
-	expect(await basics.is("num", 300).results).toEqual({ basic3 });
-	expect(await basics.is("num", 999999).results).toEqual({});
-	expect(await basics.is("group", "a").results).toEqual({ basic1, basic2, basic3 });
-	expect(await basics.is("group", "b").results).toEqual({ basic4, basic5, basic6 });
-	expect(await basics.is("group", "c").results).toEqual({ basic7, basic8, basic9 });
+	expect(await basics.is("str", "aaa").asyncValue).toEqual({ basic1 });
+	expect(await basics.is("str", "NOPE").asyncValue).toEqual({});
+	expect(await basics.is("num", 300).asyncValue).toEqual({ basic3 });
+	expect(await basics.is("num", 999999).asyncValue).toEqual({});
+	expect(await basics.is("group", "a").asyncValue).toEqual({ basic1, basic2, basic3 });
+	expect(await basics.is("group", "b").asyncValue).toEqual({ basic4, basic5, basic6 });
+	expect(await basics.is("group", "c").asyncValue).toEqual({ basic7, basic8, basic9 });
 	// ArrayContains queries.
-	expect(await basics.contains("tags", "odd").results).toEqual({ basic1, basic3, basic5, basic7, basic9 });
-	expect(await basics.contains("tags", "even").results).toEqual({ basic2, basic4, basic6, basic8 });
-	expect(await basics.contains("tags", "prime").results).toEqual({ basic1, basic2, basic3, basic5, basic7 });
-	expect(await basics.contains("tags", "NOPE").results).toEqual({});
+	expect(await basics.contains("tags", "odd").asyncValue).toEqual({ basic1, basic3, basic5, basic7, basic9 });
+	expect(await basics.contains("tags", "even").asyncValue).toEqual({ basic2, basic4, basic6, basic8 });
+	expect(await basics.contains("tags", "prime").asyncValue).toEqual({ basic1, basic2, basic3, basic5, basic7 });
+	expect(await basics.contains("tags", "NOPE").asyncValue).toEqual({});
 	// In queries.
-	expect(await basics.in("num", [200, 600, 900, 999999]).results).toEqual({ basic2, basic6, basic9 });
-	expect(await basics.in("str", ["aaa", "ddd", "eee", "NOPE"]).results).toEqual({ basic1, basic4, basic5 });
-	expect(await basics.in("num", []).results).toEqual({});
-	expect(await basics.in("str", []).results).toEqual({});
+	expect(await basics.in("num", [200, 600, 900, 999999]).asyncValue).toEqual({ basic2, basic6, basic9 });
+	expect(await basics.in("str", ["aaa", "ddd", "eee", "NOPE"]).asyncValue).toEqual({ basic1, basic4, basic5 });
+	expect(await basics.in("num", []).asyncValue).toEqual({});
+	expect(await basics.in("str", []).asyncValue).toEqual({});
 	// Sorting.
-	expect(Object.keys(await basics.asc().results)).toEqual(Object.keys(allBasics).sort());
-	expect(Object.keys(await basics.desc().results)).toEqual(Object.keys(allBasics).sort().reverse());
-	expect(Object.keys(await basics.asc("str").results)).toEqual(Object.keys(allBasics).sort());
-	expect(Object.keys(await basics.desc("str").results)).toEqual(Object.keys(allBasics).sort().reverse());
-	expect(Object.keys(await basics.asc("num").results)).toEqual(Object.keys(allBasics).sort());
-	expect(Object.keys(await basics.desc("num").results)).toEqual(Object.keys(allBasics).sort().reverse());
+	expect(Object.keys(await basics.asc().asyncValue)).toEqual(Object.keys(allBasics).sort());
+	expect(Object.keys(await basics.desc().asyncValue)).toEqual(Object.keys(allBasics).sort().reverse());
+	expect(Object.keys(await basics.asc("str").asyncValue)).toEqual(Object.keys(allBasics).sort());
+	expect(Object.keys(await basics.desc("str").asyncValue)).toEqual(Object.keys(allBasics).sort().reverse());
+	expect(Object.keys(await basics.asc("num").asyncValue)).toEqual(Object.keys(allBasics).sort());
+	expect(Object.keys(await basics.desc("num").asyncValue)).toEqual(Object.keys(allBasics).sort().reverse());
 	// Limiting.
-	expect(await basics.asc().limit(2).results).toEqual({ basic1, basic2 });
+	expect(await basics.asc().limit(2).asyncValue).toEqual({ basic1, basic2 });
 	// Combinations.
-	expect(await basics.asc("id").limit(2).results).toEqual({ basic1, basic2 });
-	expect(await basics.desc("id").limit(1).results).toEqual({ basic9 });
-	expect(Object.keys(await basics.contains("tags", "prime").desc("id").limit(2).results)).toEqual(["basic7", "basic5"]);
+	expect(await basics.asc("id").limit(2).asyncValue).toEqual({ basic1, basic2 });
+	expect(await basics.desc("id").limit(1).asyncValue).toEqual({ basic9 });
+	expect(Object.keys(await basics.contains("tags", "prime").desc("id").limit(2).asyncValue)).toEqual(["basic7", "basic5"]);
 });
 test("MemoryProvider: subscribing to documents", async () => {
 	// Setup.
@@ -253,7 +253,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	// Unsubscribe fn1.
 	expect(un1()).toBe(undefined);
 	// Check end result.
-	expect(await basics.results).toMatchObject({ basic6, basic7 });
+	expect(await basics.asyncValue).toMatchObject({ basic6, basic7 });
 });
 test("MemoryProvider: subscribing to limit query", async () => {
 	// Setup.
@@ -304,5 +304,5 @@ test("MemoryProvider: subscribing to limit query", async () => {
 	await Promise.resolve();
 	expect(fn1).toBeCalledTimes(5);
 	// Check end result.
-	expect(await basics.results).toEqual({});
+	expect(await basics.asyncValue).toEqual({});
 });

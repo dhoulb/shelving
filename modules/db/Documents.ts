@@ -13,10 +13,11 @@ import {
 	getLastProp,
 	Observer,
 	Observable,
+	throwAsync,
+	isAsync,
 } from "../util";
 import type { Validator } from "../schema";
 import { Queryable, Query } from "../query";
-import { State } from "../stream";
 import { Document } from "./Document";
 import type { Reference } from "./Reference";
 import { Provider } from "./Provider";
@@ -58,52 +59,63 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 
 	/**
 	 * Get the set of results matching the current query.
+	 * @returns Set of document results (possibly promised).
 	 */
 	get(): Results<T> | Promise<Results<T>> {
 		return this.provider.getDocuments(this);
 	}
 
 	/**
-	 * Get the set of results.
-	 * - Alternate syntax for `this.get()`
-	 *
-	 * @returns Document's data, or `undefined` if the document doesn't exist. Uses a promise if the provider is async, or a non-promise otherwise.
+	 * Get value of this document (synchronously).
+	 * @returns Set of document results.
+	 * @throws Promise if the value was not synchronous.
 	 */
-	get results(): Results<T> | Promise<Results<T>> {
+	get value(): Results<T> {
+		return throwAsync(this.asyncValue);
+	}
+
+	/**
+	 * Get the value of this document (asynchronously).
+	 * @returns Set of document results (possibly promised).
+	 */
+	get asyncValue(): Results<T> | Promise<Results<T>> {
 		return this.get();
 	}
 
 	/**
-	 * Count the result of this document.
-	 * - Often more efficient than plain `get()` because it doesn't always need to read all the data.
-	 *
-	 * @returns Number of documents in the collection. Uses a promise if the provider is async, or a non-promise otherwise.
+	 * Count the number of results of this set of documents (synchronously).
+	 * @returns Number of documents in the collection.
+	 * @throws Promise if the value was not synchronous.
 	 */
-	get count(): number | Promise<number> {
-		const results = this.provider.getDocuments(this);
-		return results instanceof Promise ? results.then(countProps) : countProps(results);
+	get count(): number {
+		return throwAsync(this.asyncCount);
 	}
 
 	/**
-	 * Get the IDs as an array of strings.
-	 * - More efficient than plain `get()` because it doesn't need to validate the returned data.
-	 *
-	 * @returns Array of strings representing the documents in the current collection. Uses a promise if the provider is async, or a non-promise otherwise.
+	 * Count the number of results of this set of documents (asynchronously).
+	 * @returns Number of documents in the collection (possibly promised).
 	 */
-	get ids(): string[] | Promise<string[]> {
+	get asyncCount(): number | Promise<number> {
 		const results = this.provider.getDocuments(this);
-		return results instanceof Promise ? results.then(Object.keys) : Object.keys(results);
+		return isAsync(results) ? results.then(countProps) : countProps(results);
 	}
 
 	/**
-	 * Get current state for this document.
-	 * - Not all providers will support `currentDocument()` (it's primarily for caching or in-memory providers).
-	 *
-	 * @returns `State` instance representing the current state of the document's data.
-	 * - State will be in a `LOADING` state if the value is not available synchronously.
+	 * Get an array of string IDs for this set of documents (asynchronously).
+	 * @returns Array of strings representing the documents in the current collection (possibly promised).
+	 * @throws Promise if the value was not synchronous.
 	 */
-	get state(): State<Results<T>> {
-		return this.provider.currentDocuments(this);
+	get ids(): ImmutableArray<string> {
+		return throwAsync(this.asyncIds);
+	}
+
+	/**
+	 * Get an array of string IDs for this set of documents (asynchronously).
+	 * @returns Array of strings representing the documents in the current collection (possibly promised).
+	 */
+	get asyncIds(): ImmutableArray<string> | Promise<ImmutableArray<string>> {
+		const results = this.provider.getDocuments(this);
+		return isAsync(results) ? results.then(Object.keys) : Object.keys(results);
 	}
 
 	/**
@@ -124,17 +136,41 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 		return typeof next === "object" ? this.provider.onDocuments(this, next) : this.provider.onDocuments(this, { next, error, complete });
 	}
 
-	/** Get a pointer first result (i.e. an object containing `.id` and `.data`, or `undefined` if no documents match this collecton). */
-	get first(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
+	/**
+	 * Get an entry for the first result in this set of documents (synchronously).
+	 * @returns Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents.
+	 * @throws Promise if the value was not synchronous.
+	 */
+	get first(): Entry<T> | undefined {
+		return throwAsync(this.asyncFirst);
+	}
+
+	/**
+	 * Get an entry for the first result in this set of documents (asynchronously).
+	 * @returns Entry in `[id, data]` format for the last document, or `undefined` if there are no matching documents (possibly promised).
+	 */
+	get asyncFirst(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
 		const results = this.limit(1).get();
-		if (results instanceof Promise) return results.then(getFirstProp);
+		if (isAsync(results)) return results.then(getFirstProp);
 		return getFirstProp(results);
 	}
 
-	/** Get a pointer last result (i.e. an object containing `.id` and `.data`, or `undefined` if no documents match this collecton). */
-	get last(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
+	/**
+	 * Get an entry for the last result in this set of documents (synchronously).
+	 * @returns Entry in `[id, data]` format for the last document, or `undefined` if there are no matching documents.
+	 * @throws Promise if the value was not synchronous.
+	 */
+	get last(): Entry<T> | undefined {
+		return throwAsync(this.asyncLast);
+	}
+
+	/**
+	 * Get an entry for the last result in this set of documents (asynchronously).
+	 * @returns Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents (possibly promised).
+	 */
+	get asyncLast(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
 		const results = this.limit(1).get();
-		if (results instanceof Promise) return results.then(getLastProp);
+		if (isAsync(results)) return results.then(getLastProp);
 		return getLastProp(results);
 	}
 

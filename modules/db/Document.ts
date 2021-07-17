@@ -1,6 +1,5 @@
-import type { Data, Result, AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber, Observer, Observable } from "../util";
+import { Data, Result, AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber, Observer, Observable, isAsync, throwAsync } from "../util";
 import { Validator } from "../schema";
-import { State } from "../stream";
 import type { Provider } from "./Provider";
 import type { Reference } from "./Reference";
 import { DocumentRequiredError } from "./errors";
@@ -35,52 +34,67 @@ export class Document<T extends Data = Data> implements Reference<T>, Observable
 	}
 
 	/**
-	 * Does this document exist?
+	 * Does this document exist (synchronously).
 	 * @returns `true` if the document exists and `false` if it doesn't.
 	 */
-	get exists(): boolean | Promise<boolean> {
-		const result = this.get();
-		return result instanceof Promise ? result.then(Boolean) : !!result;
+	get exists(): boolean {
+		return throwAsync(this.asyncExists);
 	}
 
 	/**
-	 * Get the result of this document.
-	 * - Shortcut for `document.get()`
-	 *
-	 * @returns Document's data, or `undefined` if the document doesn't exist.
+	 * Does this document exist?
+	 * @returns `true` if the document exists and `false` if it doesn't.
 	 */
-	get result(): Result<T> | Promise<Result<T>> {
+	get asyncExists(): boolean | Promise<boolean> {
+		const result = this.get();
+		return isAsync(result) ? result.then(Boolean) : !!result;
+	}
+
+	/**
+	 * Get value of this document (synchronously).
+	 * @returns Document's data, or `undefined` if the document doesn't exist.
+	 * @throws Promise if the value was not synchronous.
+	 */
+	get value(): Result<T> {
+		return throwAsync(this.asyncValue);
+	}
+
+	/**
+	 * Get the value of this document (asynchronously).
+	 * @returns Document's data, or `undefined` if the document doesn't exist (possibly promised).
+	 */
+	get asyncValue(): Result<T> | Promise<Result<T>> {
 		return this.get();
 	}
 
 	/**
-	 * Get the data of this document.
-	 * - Handy for destructuring, e.g. `{ name, title } = documentThatMustExist.data`
-	 * - Shortcut for `document.get({ required: true })`
+	 * Get the data of this document (asynchronously).
+	 * - Useful for destructuring, e.g. `{ name, title } = documentThatMustExist.data`
 	 *
 	 * @returns Document's data.
-	 * @throws RequiredError If the document's result was undefined.
+	 * @throws Promise if the data was not synchronous.
+	 * @throws RequiredError if the document's result was undefined.
 	 */
-	get data(): T | Promise<T> {
+	get data(): T {
+		return throwAsync(this.asyncData);
+	}
+
+	/**
+	 * Get the data of this document (asynchronously).
+	 * - Useful for destructuring, e.g. `{ name, title } = await documentThatMustExist.asyncData`
+	 *
+	 * @returns Document's data (possibly promised).
+	 * @throws RequiredError if the document's result was undefined.
+	 */
+	get asyncData(): T | Promise<T> {
 		const result = this.get();
-		if (result instanceof Promise)
+		if (isAsync(result))
 			return result.then(r => {
 				if (!r) throw new DocumentRequiredError(this);
 				return r;
 			});
 		if (!result) throw new DocumentRequiredError(this);
 		return result;
-	}
-
-	/**
-	 * Get current state for this document.
-	 * - Not all providers will support `currentDocument()` (it's primarily for caching or in-memory providers).
-	 *
-	 * @returns `State` instance representing the current state of the document's data.
-	 * - State will be in a `LOADING` state if the value is not available synchronously.
-	 */
-	get state(): State<Result<T>> {
-		return this.provider.currentDocument(this);
 	}
 
 	/**

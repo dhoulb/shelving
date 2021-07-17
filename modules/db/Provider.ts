@@ -1,5 +1,4 @@
 import type { Observer, Unsubscriber, Data, Result, Results } from "../util";
-import type { State } from "../stream";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
 
@@ -7,14 +6,6 @@ import type { Documents } from "./Documents";
  * Provider interface: Implemented by classes that provide access to data (e.g. IndexedDB, Firebase, or in-memory cache providers).
  */
 export interface Provider {
-	/**
-	 * Get current state for a document.
-	 *
-	 * @param ref Document reference specifying which document to get.
-	 * @return A `State` instance representing the current state of the document (with `state.value`, `state.loading` and `state.updated` props).
-	 */
-	currentDocument<T extends Data>(ref: Document<T>): State<Result<T>>;
-
 	/**
 	 * Get a document.
 	 *
@@ -75,14 +66,6 @@ export interface Provider {
 	 * @return Promise that resolves when done.
 	 */
 	deleteDocument<T extends Data>(ref: Document<T>): void | Promise<void>;
-
-	/**
-	 * Get current state for a document.
-	 *
-	 * @param ref Documents reference specifying which collection to count documents from.
-	 * @return A `State` instance representing the current state of the documents (with `state.value`, `state.loading` and `state.updated` props).
-	 */
-	currentDocuments<T extends Data>(ref: Documents<T>): State<Results<T>>;
 
 	/**
 	 * Get all matching documents.

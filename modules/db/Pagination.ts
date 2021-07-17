@@ -9,6 +9,10 @@ import { Documents } from "./Documents";
  * - If you don't pass in initial values, it will autoload the first page.
  */
 export class Pagination<T extends Data> extends State<ImmutableEntries<T>> {
+	static create<X extends Data>(ref: Documents<X>, initial?: Results<X>): Pagination<X> {
+		return new Pagination<X>(ref, initial);
+	}
+
 	private _results: Results<T>; // Cached current set of results.
 
 	/** Documents ref this pagination is based on. */

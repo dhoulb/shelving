@@ -1,8 +1,8 @@
-import type { Data, Result, Results, Unsubscriber, ImmutableObject, MutableObject, Observer } from "../util";
+import { Data, Result, Results, Unsubscriber, ImmutableObject, MutableObject, Observer, isAsync } from "../util";
 import { ValidationError } from "../errors";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import type { ValidateOptions } from "../schema";
-import { State, DerivingStream } from "../stream";
+import { DerivingStream } from "../stream";
 import type { Provider } from "./Provider";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
@@ -21,13 +21,9 @@ export class ValidationProvider implements Provider {
 		this.#source = source;
 	}
 
-	currentDocument<T extends Data>(ref: Document<T>): State<Result<T>> {
-		return this.#source.currentDocument(ref).derive(v => (v ? validateData(ref, v) : undefined));
-	}
-
 	getDocument<T extends Data>(ref: Document<T>): Result<T> | Promise<Result<T>> {
 		const result = this.#source.getDocument(ref);
-		if (result instanceof Promise) return this.#awaitGetDocument(ref, result);
+		if (isAsync(result)) return this.#awaitGetDocument(ref, result);
 		return result ? validateData(ref, result) : undefined;
 	}
 	async #awaitGetDocument<T extends Data>(ref: Document<T>, asyncResult: Promise<Result<T>>): Promise<Result<T>> {
@@ -57,13 +53,9 @@ export class ValidationProvider implements Provider {
 		return this.#source.deleteDocument(ref);
 	}
 
-	currentDocuments<T extends Data>(ref: Documents<T>): State<Results<T>> {
-		return this.#source.currentDocuments(ref).derive(v => validateResults(ref, v));
-	}
-
 	getDocuments<T extends Data>(ref: Documents<T>): Results<T> | Promise<Results<T>> {
 		const results = this.#source.getDocuments(ref);
-		if (results instanceof Promise) return this.#awaitGetDocuments(ref, results);
+		if (isAsync(results)) return this.#awaitGetDocuments(ref, results);
 		return validateResults(ref, results);
 	}
 	async #awaitGetDocuments<T extends Data>(ref: Documents<T>, asyncResult: Promise<Results<T>>): Promise<Results<T>> {

@@ -17,7 +17,6 @@ import {
 	dispatchNext,
 	Observer,
 } from "../util";
-import { State } from "../stream";
 import type { Provider } from "./Provider";
 import type { Documents } from "./Documents";
 import type { Document } from "./Document";
@@ -40,10 +39,6 @@ export class MemoryProvider implements Provider {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	#table(path: string): Table<any> {
 		return (this.#data[path] ||= new Table());
-	}
-
-	currentDocument<T extends Data>(ref: Document<T>): State<Result<T>> {
-		return new State(this.getDocument(ref));
 	}
 
 	getDocument<T extends Data>({ collection, id }: Document<T>): Result<T> {
@@ -84,10 +79,6 @@ export class MemoryProvider implements Provider {
 
 	deleteDocument<T extends Data>({ collection, id }: Document<T>): void {
 		this.#table(collection).delete(id);
-	}
-
-	currentDocuments<T extends Data>(ref: Documents<T>): State<Results<T>> {
-		return new State(this.getDocuments(ref));
 	}
 
 	getDocuments<T extends Data>({ path, query }: Documents<T>): Results<T> {
