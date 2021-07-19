@@ -167,11 +167,11 @@ export class LimitedStream<T> extends Stream<T> {
 /** Deriving stream: a stream that modifies the next value before repeating it. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class DerivingStream<I, O> extends Stream<any> {
-	private _deriver: AsyncDeriver<I, O>;
+	#deriver: AsyncDeriver<I, O>;
 
 	constructor(deriver: AsyncDeriver<I, O>, source?: Observable<I>) {
 		super(source);
-		this._deriver = deriver;
+		this.#deriver = deriver;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -181,7 +181,7 @@ export class DerivingStream<I, O> extends Stream<any> {
 		if (isAsync(value)) return dispatchNext(this, value);
 		try {
 			// Call `this.derived()` with the new value and `this.error()`
-			thispatch<O, "derived", "error">(this, "derived", this._deriver(value), this, "error");
+			thispatch<O, "derived", "error">(this, "derived", this.#deriver(value), this, "error");
 		} catch (thrown) {
 			this.error(thrown); // Calling this._deriver() might throw.
 		}
