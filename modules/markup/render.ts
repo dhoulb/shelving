@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 
-import type { MarkupRule, MarkupOptions, MarkupNode } from "./types";
 import { cleanMarkup } from "./helpers";
 import { MARKUP_RULES, MARKUP_RULES_UGC } from "./rules";
+import type { MarkupRule, MarkupOptions, MarkupNode } from "./types";
 
 /** Convert a string into an array of React nodes using a set of rules. */
 const renderString = (content: string, options: MarkupOptions): MarkupNode => {

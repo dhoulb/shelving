@@ -1,5 +1,5 @@
-import type { SchemaOptions } from "./Schema";
 import { StringSchema } from "./StringSchema";
+import type { SchemaOptions } from "./Schema";
 
 // Valid phone number is max 16 digits made up of:
 // - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).

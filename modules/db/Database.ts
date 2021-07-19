@@ -1,8 +1,8 @@
 import type { Datas } from "../util/data";
 import type { Validators } from "../schema";
-import type { Provider } from "./Provider";
 import { Document } from "./Document";
 import { Documents } from "./Documents";
+import type { Provider } from "./Provider";
 
 /**
  * Database: combines a set of document and collection loci for the root level of the database, and links them to a Provider.

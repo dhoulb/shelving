@@ -3,8 +3,8 @@ import { Slice } from "./Slice";
 import { Filters } from "./Filters";
 import { Sorts } from "./Sorts";
 import { Rule } from "./Rule";
-import type { Queryable } from "./types";
 import { getQueryProp } from "./helpers";
+import type { Queryable } from "./types";
 
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
