@@ -45,20 +45,20 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 	readonly value?: unknown;
 
 	/** Additional validation function that is called after all built in validation. */
-	private readonly validator?: (value: unknown) => T;
+	readonly #validator?: (value: unknown) => T;
 
 	constructor({ title = "", description = "", placeholder = "", required = false, validator }: SchemaOptions<T>) {
 		this.title = title;
 		this.description = description;
 		this.placeholder = placeholder;
 		this.required = required;
-		this.validator = validator as (value: unknown) => T;
+		this.#validator = validator as (value: unknown) => T;
 	}
 
 	/** Every schema must implement a `validate()` method. */
 	validate(unsafeValue: unknown = this.value): T {
 		// Call the schema's additional `validator()` function if one exists.
-		return this.validator ? this.validator(unsafeValue) : (unsafeValue as T);
+		return this.#validator ? this.#validator(unsafeValue) : (unsafeValue as T);
 	}
 }
 
