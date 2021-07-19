@@ -35,7 +35,6 @@ test("State: data value throws if undefined", async () => {
 	expect(state).toBeInstanceOf(State);
 	expect(state.value).toBe(undefined);
 	expect(() => state.data).toThrow(RequiredError);
-	expect(() => state.data).toThrow(new RequiredError("State.data: State data does not exist"));
 	// Ons and onces.
 	const fn1 = jest.fn();
 	state.subscribe(fn1);
@@ -48,7 +47,6 @@ test("State: data value throws if undefined", async () => {
 	expect(state.next(undefined)).toBe(undefined);
 	expect(state.value).toBe(undefined);
 	expect(() => state.data).toThrow(RequiredError);
-	expect(() => state.data).toThrow(new RequiredError("State.data: State data does not exist"));
 	await microtasks();
 	// Checks.
 	expect(fn1.mock.calls).toEqual([[123], [undefined]]);
