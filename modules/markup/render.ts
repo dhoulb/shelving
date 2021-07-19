@@ -152,6 +152,7 @@ export const renderMarkup = (content: string, options?: Partial<MarkupOptions>):
 const defaults: MarkupOptions = {
 	rules: MARKUP_RULES,
 	context: "block",
+	url: undefined,
 	rel: undefined,
 	schemes: ["http:", "https:"],
 };

@@ -1,4 +1,4 @@
-import { formatUrl, PropIterator } from "../util";
+import { formatUrl, getWindowUrl, PropIterator } from "../util";
 import type { MarkupElement, MarkupRule, MarkupRuleMatcher } from "./types";
 
 // Regular expression partials (`\` slashes must be escaped as `\\`).
@@ -165,12 +165,12 @@ const PARAGRAPH: MarkupRule = {
  */
 const LINK: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
-	match: (content, { schemes }) => {
+	match: (content, { schemes, url: baseUrl = getWindowUrl() }) => {
 		const matches = content.match(MATCH_LINK);
 		if (matches && typeof matches.index === "number") {
 			try {
 				const [, title = "", href = ""] = matches;
-				const url = new URL(href, window.location.href);
+				const url = new URL(href, baseUrl);
 				if (url.protocol && schemes.includes(url.protocol)) {
 					matches[1] = title.trim();
 					matches[2] = url.href; // Use fixed URL from `new URL`
@@ -200,12 +200,12 @@ const MATCH_LINK = /\[([^\]]*?)\]\(([^)]*?)\)/;
  */
 const AUTOLINK: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
-	match: (content, { schemes }) => {
+	match: (content, { schemes, url: baseUrl = getWindowUrl() }) => {
 		const matches = content.match(MATCH_AUTOLINK);
 		if (matches && typeof matches.index === "number") {
 			try {
 				const [, href = "", title1 = "", title2 = ""] = matches;
-				const url = new URL(href, window.location.href);
+				const url = new URL(href, baseUrl);
 				if (url.protocol && schemes.includes(url.protocol)) {
 					matches[1] = (title1 || title2).trim();
 					matches[2] = url.href;

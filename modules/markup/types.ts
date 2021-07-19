@@ -56,6 +56,8 @@ export type MarkupOptions = {
 	readonly context: string | undefined;
 	/** The current list of parsing rules. */
 	readonly rules: Iterable<MarkupRule>;
+	/** Set the base URL that any relative links will be relative to (defaults to `window.location.href`, if undefined then relative links won't work). */
+	readonly url: string | undefined;
 	/** Set the `rel=""` property used for any links (e.g. `rel="nofollow ugc"`). */
 	readonly rel: string | undefined;
 	/** Valid URL schemes/protocols for links (including trailing commas), defaults to `[`http:`, `https:`]` */
