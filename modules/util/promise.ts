@@ -1,15 +1,19 @@
-import type { Mutable } from "./object";
+import type { Dispatcher, Catcher } from "./dispatch";
 
 /** Extension of `Promise` that exposes its `resolve()` and `reject()` function as public parameters. */
 export class ResolvablePromise<T> extends Promise<T> {
-	readonly resolve!: (value: T) => void;
-	readonly reject!: (error: Error | unknown) => void;
-	constructor(initiator?: (resolve: (value: T) => void, reject: (error: Error | unknown) => void) => void) {
+	readonly resolve: Dispatcher<T>;
+	readonly reject: Catcher;
+	constructor(initiator?: (resolve: Dispatcher<T>, reject: Catcher) => void) {
+		let thisResolve: Dispatcher<T>;
+		let thisReject: Catcher;
 		super((resolve, reject) => {
-			(this as Mutable<this>).resolve = resolve;
-			(this as Mutable<this>).reject = reject;
+			thisResolve = resolve;
+			thisReject = reject;
 			if (initiator) initiator(resolve, reject);
 		});
+		this.resolve = thisResolve!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		this.reject = thisReject!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 	}
 }
 
