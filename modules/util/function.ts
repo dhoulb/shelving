@@ -22,15 +22,10 @@ export const PASSTHROUGH = <T>(value: T): T => value;
 export const BLACKHOLE: (...args: any[]) => void | undefined = () => undefined;
 
 /**
- * Initialiser function: a function that returns a (possibly expensive) initial value.
- * @param ...args Any arguments the initialiser needs.
- */
-export type Initialiser<T, A extends Arguments = []> = ((...args: A) => T) | T;
-
-/**
  * Lazy value: a plain value, or an initialiser function that returns that value.
+ * @param ...args Any arguments the lazy value needs if it's a funtion.
  */
-export type Lazy<T, A extends Arguments = []> = Initialiser<T, A> | T;
+export type Lazy<T, A extends Arguments = []> = ((...args: A) => T) | T;
 
 /**
  * Initialise a lazy value.
@@ -38,8 +33,9 @@ export type Lazy<T, A extends Arguments = []> = Initialiser<T, A> | T;
  * @param value The lazy value to resolve.
  * @param ...args Any additional arguments the initialiser needs.
  */
-export function initialise<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T;
-export function initialise(value: Lazy<unknown, unknown[]>, ...args: unknown[]): unknown {
+export function getLazy<T, A extends Arguments = []>(value: (...args: A) => T, ...args: A): T;
+export function getLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T;
+export function getLazy(value: Lazy<unknown, unknown[]>, ...args: unknown[]): unknown {
 	return typeof value === "function" ? value(...args) : value;
 }
 
