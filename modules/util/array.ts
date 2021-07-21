@@ -40,7 +40,7 @@ export const isItem = <T extends unknown>(arr: ImmutableArray<T>, item: T | unkn
  * @return New array with one or more sub-arrays for each chunk.
  * - The last chunk might not contain a full set of items.
  */
-export const arrayChunk = <T>(arr: T[], size: number): T[][] => {
+export const arrayChunk = <T>(arr: ImmutableArray<T>, size: number): ImmutableArray<ImmutableArray<T>> => {
 	const chunks: T[][] = [];
 	for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
 	return chunks;
