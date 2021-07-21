@@ -14,8 +14,8 @@ import { Initialiser } from "../util";
  * - This means you can create the function once (outside the component) rather than creating it on every render.
  * - This improves performance (though probably only noticeable on functions that render 1,000s of times).
  */
-export function usePureMemo<T>(initialiser: T, args: Arguments): T;
 export function usePureMemo<T, A extends Arguments>(initialiser: Initialiser<T, A>, args: A): T;
+export function usePureMemo<T>(initialiser: T, args: Arguments): T;
 export function usePureMemo<T, A extends Arguments>(initialiser: T | Initialiser<T, A>, args: A): T {
 	const internals = (useRef<{
 		value: T;
