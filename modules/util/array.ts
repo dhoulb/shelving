@@ -46,6 +46,10 @@ export const arrayChunk = <T>(arr: T[], size: number): T[][] => {
 	return chunks;
 };
 
+/** Sum an array of numbers and return the total. */
+export const arraySum = (arr: ImmutableArray<number>): number => arr.reduce(arraySumReducer, 0);
+const arraySumReducer = (a: number, b: number) => a + b;
+
 /**
  * Add an item to an array.
  * - Returns an array that definitely contains the specified item.
