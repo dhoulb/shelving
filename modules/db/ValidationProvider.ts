@@ -1,14 +1,11 @@
 import { Data, Result, Results, Unsubscriber, ImmutableObject, MutableObject, Observer, isAsync } from "../util";
 import { ValidationError } from "../errors";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import type { ValidateOptions } from "../schema";
+import { ObjectSchema } from "../schema";
 import { DerivingStream } from "../stream";
 import type { Provider } from "./Provider";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
-import type { Reference } from "./Reference";
-
-const PARTIAL = { partial: true } as const;
 
 /**
  * Validation provider: validates any values that are read from or written a the source provider.
@@ -46,7 +43,7 @@ export class ValidationProvider implements Provider {
 	}
 
 	updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): void | Promise<void> {
-		return this.#source.updateDocument(ref, validateData(ref, partial, PARTIAL));
+		return this.#source.updateDocument(ref, validateData(ref, partial, true));
 	}
 
 	deleteDocument<T extends Data>(ref: Document<T>): void | Promise<void> {
@@ -73,7 +70,7 @@ export class ValidationProvider implements Provider {
 	}
 
 	updateDocuments<T extends Data>(ref: Documents<T>, partial: Partial<T>): void | Promise<void> {
-		return this.#source.updateDocuments(ref, validateData(ref, partial, PARTIAL));
+		return this.#source.updateDocuments(ref, validateData(ref, partial, true));
 	}
 
 	deleteDocuments<T extends Data>(ref: Documents<T>): void | Promise<void> {
@@ -82,23 +79,25 @@ export class ValidationProvider implements Provider {
 }
 
 /** Validate a single document at this path. */
-function validateData<T extends Data>(ref: Reference<T>, data: ImmutableObject, options?: ValidateOptions): T {
+function validateData<T extends Data>(ref: Document<T> | Documents<T>, data: ImmutableObject, partial = false): T {
 	try {
-		return ref.schema.validate(data, options);
+		const schema = ref.db.schemas[ref.collection] as ObjectSchema<T>;
+		return schema.validate(data, partial);
 	} catch (thrown: unknown) {
-		if (isFeedback(thrown)) throw new ValidationError(`Invalid ${options?.partial ? "partial data" : "data"} for: "${ref.path}"`, thrown);
+		if (isFeedback(thrown)) throw new ValidationError(`Invalid ${partial ? "partial data" : "data"} for: "${ref.path}"`, thrown);
 		else throw thrown;
 	}
 }
 
 /** Validate a set of documents at this path. */
-function validateResults<T extends Data>(ref: Reference<T>, results: ImmutableObject<ImmutableObject>): Results<T> {
+function validateResults<T extends Data>(ref: Documents<T>, results: ImmutableObject<ImmutableObject>): Results<T> {
 	const validated: MutableObject<T> = {};
 	const invalids: MutableObject<Feedback> = {};
 	let invalid = false;
 	for (const [id, data] of Object.entries(results)) {
 		try {
-			validated[id] = ref.schema.validate(data);
+			const schema = ref.db.schemas[ref.collection] as ObjectSchema<T>;
+			validated[id] = schema.validate(data);
 		} catch (thrown) {
 			if (isFeedback(thrown)) invalids[id] = thrown;
 			else throw thrown;
