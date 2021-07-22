@@ -1,42 +1,41 @@
 import {
 	Data,
-	Results,
-	AsyncDispatcher,
-	AsyncEmptyDispatcher,
-	AsyncCatcher,
-	Unsubscriber,
-	Entry,
-	ArrayType,
-	ImmutableArray,
-	countProps,
-	getFirstProp,
-	getLastProp,
-	Observer,
 	Observable,
+	Results,
 	throwAsync,
 	isAsync,
+	countProps,
+	ImmutableArray,
+	Observer,
+	Unsubscriber,
+	AsyncDispatcher,
+	AsyncCatcher,
+	AsyncEmptyDispatcher,
+	Entry,
+	getFirstProp,
+	getLastProp,
+	ArrayType,
 } from "../util";
-import type { Validator } from "../schema";
-import { Queryable, Query } from "../query";
+import { Query, Queryable } from "../query";
+import { Database } from "./Database";
 import { Document } from "./Document";
-import type { Reference } from "./Reference";
-import { Provider } from "./Provider";
 
 const EMPTY_QUERY = new Query<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /**
  * Documents reference: allows reading from / writing to a list of documents in a database, optionally with query filtering and sorting.
  */
-export class Documents<T extends Data = Data> implements Reference<T>, Queryable<T>, Observable<Results<T>> {
-	readonly provider: Provider;
-	readonly schema: Validator<T>;
+export class Documents<T extends Data = Data> implements Queryable<T>, Observable<Results<T>> {
+	readonly db: Database;
 	readonly path: string;
+	readonly collection: string;
 	readonly query: Query<T> = EMPTY_QUERY;
 
-	protected constructor(schema: Validator<T>, provider: Provider, collection: string) {
-		this.schema = schema;
-		this.provider = provider;
+	protected constructor(db: Database, collection: string, query: Query<T> = EMPTY_QUERY) {
+		this.db = db;
 		this.path = collection;
+		this.collection = collection;
+		this.query = query;
 	}
 
 	/**
@@ -46,7 +45,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	 */
 	doc(id: string): Document<T> {
 		// @ts-expect-error Documents should only be created from databases.
-		return new Document(this.schema, this.provider, this.path, id);
+		return new Document(this.schema, this.db.provider, this.path, id);
 	}
 
 	/**
@@ -54,7 +53,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	 * - Input data must be valid according's schema or error will be thrown unless `options.validate` is `false`
 	 */
 	add(data: T): string | Promise<string> {
-		return this.provider.addDocument(this, data);
+		return this.db.provider.addDocument(this, data);
 	}
 
 	/**
@@ -62,7 +61,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	 * @returns Set of document results (possibly promised).
 	 */
 	get(): Results<T> | Promise<Results<T>> {
-		return this.provider.getDocuments(this);
+		return this.db.provider.getDocuments(this);
 	}
 
 	/**
@@ -96,7 +95,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	 * @returns Number of documents in the collection (possibly promised).
 	 */
 	get asyncCount(): number | Promise<number> {
-		const results = this.provider.getDocuments(this);
+		const results = this.db.provider.getDocuments(this);
 		return isAsync(results) ? results.then(countProps) : countProps(results);
 	}
 
@@ -114,7 +113,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	 * @returns Array of strings representing the documents in the current collection (possibly promised).
 	 */
 	get asyncIds(): ImmutableArray<string> | Promise<ImmutableArray<string>> {
-		const results = this.provider.getDocuments(this);
+		const results = this.db.provider.getDocuments(this);
 		return isAsync(results) ? results.then(Object.keys) : Object.keys(results);
 	}
 
@@ -133,7 +132,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	subscribe(next: AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(either: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return typeof next === "object" ? this.provider.onDocuments(this, next) : this.provider.onDocuments(this, { next, error, complete });
+		return typeof next === "object" ? this.db.provider.onDocuments(this, next) : this.db.provider.onDocuments(this, { next, error, complete });
 	}
 
 	/**
@@ -184,7 +183,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	 * @return Promise that resolves when done.
 	 */
 	async set(data: T): Promise<void> {
-		await this.provider.setDocuments(this, data);
+		await this.db.provider.setDocuments(this, data);
 	}
 
 	/**
@@ -197,7 +196,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	 * @return Promise that resolves when done.
 	 */
 	async update(partial: Partial<T>): Promise<void> {
-		await this.provider.updateDocuments(this, partial);
+		await this.db.provider.updateDocuments(this, partial);
 	}
 
 	/**
@@ -206,7 +205,7 @@ export class Documents<T extends Data = Data> implements Reference<T>, Queryable
 	 * @return Promise that resolves when done.
 	 */
 	async delete(): Promise<void> {
-		await this.provider.deleteDocuments(this);
+		await this.db.provider.deleteDocuments(this);
 	}
 
 	// Implement Queryable

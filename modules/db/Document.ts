@@ -1,25 +1,21 @@
-import { Data, Result, AsyncDispatcher, AsyncEmptyDispatcher, AsyncCatcher, Unsubscriber, Observer, Observable, isAsync, throwAsync } from "../util";
-import { Validator } from "../schema";
-import type { Provider } from "./Provider";
-import type { Reference } from "./Reference";
+import { Data, Observable, Result, throwAsync, isAsync, Observer, Unsubscriber, AsyncDispatcher, AsyncCatcher, AsyncEmptyDispatcher } from "../util";
+import { Database } from "./Database";
 import { DocumentRequiredError } from "./errors";
 
 /**
  * Document reference: allows reading from / writing to a specific document in a database.
  */
-export class Document<T extends Data = Data> implements Reference<T>, Observable<Result<T>> {
-	readonly provider: Provider;
-	readonly schema: Validator<T>;
+export class Document<T extends Data = Data> implements Observable<Result<T>> {
+	readonly db: Database;
 	readonly path: string;
 	readonly collection: string;
 	readonly id: string;
 
-	protected constructor(schema: Validator<T>, provider: Provider, collection: string, id: string) {
-		this.provider = provider;
-		this.schema = schema;
+	protected constructor(db: Database, collection: string, id: string) {
+		this.db = db;
+		this.path = `${collection}/${id}`;
 		this.collection = collection;
 		this.id = id;
-		this.path = `${collection}/${id}`;
 	}
 
 	/**
@@ -30,7 +26,7 @@ export class Document<T extends Data = Data> implements Reference<T>, Observable
 	 * @returns Document's data, or `undefined` if it doesn't exist.
 	 */
 	get(): Result<T> | Promise<Result<T>> {
-		return this.provider.getDocument(this);
+		return this.db.provider.getDocument(this);
 	}
 
 	/**
@@ -112,7 +108,7 @@ export class Document<T extends Data = Data> implements Reference<T>, Observable
 	subscribe(next: AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(either: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return typeof next === "object" ? this.provider.onDocument(this, next) : this.provider.onDocument(this, { next, error, complete });
+		return typeof next === "object" ? this.db.provider.onDocument(this, next) : this.db.provider.onDocument(this, { next, error, complete });
 	}
 
 	/**
@@ -125,7 +121,7 @@ export class Document<T extends Data = Data> implements Reference<T>, Observable
 	 * @return Promise that resolves when done.
 	 */
 	set(data: T): void | Promise<void> {
-		return this.provider.setDocument(this, data);
+		return this.db.provider.setDocument(this, data);
 	}
 
 	/**
@@ -139,9 +135,10 @@ export class Document<T extends Data = Data> implements Reference<T>, Observable
 	 * @param options.required Throw an error if the document does not exist (defaults to `true`)
 	 *
 	 * @return Promise that resolves when done.
+	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
 	update(partial: Partial<T>): void | Promise<void> {
-		return this.provider.updateDocument(this, partial);
+		return this.db.provider.updateDocument(this, partial);
 	}
 
 	/**
@@ -150,7 +147,7 @@ export class Document<T extends Data = Data> implements Reference<T>, Observable
 	 * @return Promise that resolves when done.
 	 */
 	async delete(): Promise<void> {
-		await this.provider.deleteDocument(this);
+		await this.db.provider.deleteDocument(this);
 	}
 
 	// Implement toString()

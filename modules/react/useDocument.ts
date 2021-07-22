@@ -27,7 +27,7 @@ export const useDocument = <T extends Data>(ref: Document<T> | undefined, maxAge
 	let state: State<Result<T>> = UNDEFINED_STATE;
 
 	if (ref) {
-		const provider = ref.provider;
+		const provider = ref.db.provider;
 		assertInstance(provider, StateProvider);
 		state = provider.getDocumentState<T>(ref);
 		provider.refreshDocumentState(ref, maxAge);
