@@ -1,7 +1,7 @@
 import { MutableObject, isObject, ImmutableObject } from "../util";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
-import { ValidateOptions, Validator, Validators } from "./Validator";
+import { Validator, Validators } from "./Validator";
 
 type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
 	/**
@@ -39,9 +39,9 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		this.props = props;
 	}
 
-	validate(unsafeValue: unknown, options: ValidateOptions & { partial: true }): Readonly<Partial<T>>;
-	validate(unsafeValue?: unknown, options?: ValidateOptions): Readonly<T>;
-	validate(unsafeValue: unknown = this.value, options?: ValidateOptions): Readonly<T> {
+	validate(unsafeValue: unknown, partial: true): Readonly<Partial<T>>;
+	validate(unsafeValue?: unknown, partial?: boolean): Readonly<T>;
+	validate(unsafeValue: unknown = this.value, partial = false): Readonly<T> {
 		// Coorce.
 		const unsafeObj = isObject(unsafeValue) ? unsafeValue : null;
 
@@ -65,7 +65,7 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		const propSchemas = Object.entries(this.props);
 		for (const [key, validator] of propSchemas) {
 			const unsafeProp = unsafeObj[key];
-			if (unsafeProp === undefined && options?.partial) continue;
+			if (unsafeProp === undefined && partial) continue;
 			try {
 				const safeProp = validator.validate(unsafeProp);
 

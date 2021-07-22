@@ -1,4 +1,4 @@
-import { Validator } from "./Validator";
+import type { Validator } from "./Validator";
 
 /**
  * SchemaOptions enforces types on the options bag that is passed into SchemaClass to create Schema.
