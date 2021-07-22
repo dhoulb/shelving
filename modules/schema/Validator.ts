@@ -6,9 +6,6 @@ export type ValidateOptions = {
 	readonly partial?: boolean;
 };
 
-/** Validate a partial value rather than a full value. */
-export const PARTIAL = { partial: true } as const;
-
 /**
  * Validator: an object that can validate something via its `validate()` method.
  */
