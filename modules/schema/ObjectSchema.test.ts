@@ -179,11 +179,11 @@ describe("ObjectSchema", () => {
 			expect(() => schema.validate({ bool: true, str: undefined })).toThrow(InvalidFeedback);
 
 			// Partial schema does not flag invalid props.
-			expect(schema.validate({}, { partial: true })).toEqual({});
-			expect(schema.validate({ str: "abc" }, { partial: true })).toEqual({ str: "abc" });
-			expect(schema.validate({ bool: true }, { partial: true })).toEqual({ bool: true });
-			expect(schema.validate({ bool: undefined, str: "abc" }, { partial: true })).toEqual({ str: "abc" });
-			expect(schema.validate({ bool: true, str: undefined }, { partial: true })).toEqual({ bool: true });
+			expect(schema.validate({}, true)).toEqual({});
+			expect(schema.validate({ str: "abc" }, true)).toEqual({ str: "abc" });
+			expect(schema.validate({ bool: true }, true)).toEqual({ bool: true });
+			expect(schema.validate({ bool: undefined, str: "abc" }, true)).toEqual({ str: "abc" });
+			expect(schema.validate({ bool: true, str: undefined }, true)).toEqual({ bool: true });
 		});
 	});
 	describe("options.validator", () => {
