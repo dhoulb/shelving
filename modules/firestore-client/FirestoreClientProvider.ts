@@ -70,7 +70,7 @@ const snapshotResults = (snapshot: FirestoreQuerySnapshot): Results => {
 export class FirestoreClientProvider implements Provider {
 	readonly firestore: Firestore;
 
-	constructor({ firestore }: { firestore: Firestore }) {
+	constructor(firestore: Firestore) {
 		this.firestore = firestore;
 	}
 
