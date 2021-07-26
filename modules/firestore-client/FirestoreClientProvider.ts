@@ -47,17 +47,17 @@ const DIRECTIONS: { readonly [K in Direction]: FirestoreOrderByDirection } = {
 };
 
 /** Create a corresponding `QueryReference` from a Query. */
-const buildQuery = <T extends Data>(firestore: Firestore, { path, query: { filters, sorts, slice } }: Documents<T>): FirestoreQuery<T> => {
+const buildQuery = (firestore: Firestore, { path, query: { filters, sorts, slice } }: Documents): FirestoreQuery => {
 	let query: FirestoreQuery = firestore.collection(path);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
 	if (slice.limit !== null) query = query.limit(slice.limit);
-	return query as FirestoreQuery<T>;
+	return query as FirestoreQuery;
 };
 
 /** Create a set of results from a collection snapshot. */
-const snapshotResults = <T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Results<T> => {
-	const results: Mutable<Results<T>> = {};
+const snapshotResults = (snapshot: FirestoreQuerySnapshot): Results => {
+	const results: Mutable<Results> = {};
 	for (const s of snapshot.docs) results[s.id] = s.data();
 	return results;
 };
@@ -74,29 +74,29 @@ export class FirestoreClientProvider implements Provider {
 		this.firestore = firestore;
 	}
 
-	async getDocument<T extends Data>(ref: Document<T>): Promise<Result<T>> {
+	async getDocument(ref: Document): Promise<Result> {
 		const doc = this.firestore.doc(ref.path);
 		const snapshot = await doc.get();
-		return snapshot.data() as T;
+		return snapshot.data();
 	}
 
-	onDocument<T extends Data>(ref: Document<T>, observer: Observer<Result<T>>): () => void {
+	onDocument(ref: Document, observer: Observer<Result>): () => void {
 		return this.firestore.doc(ref.path).onSnapshot(
-			snapshot => dispatchNext(observer, snapshot.data() as T),
+			snapshot => dispatchNext(observer, snapshot.data()),
 			error => dispatchError(observer, error),
 		);
 	}
 
-	async addDocument<T extends Data>(ref: Documents<T>, data: Data): Promise<string> {
+	async addDocument(ref: Documents, data: Data): Promise<string> {
 		const { id } = await this.firestore.collection(ref.path).add(data);
 		return id;
 	}
 
-	async setDocument<T extends Data>(ref: Document<T>, data: Data): Promise<void> {
+	async setDocument(ref: Document, data: Data): Promise<void> {
 		await this.firestore.doc(ref.path).set(data);
 	}
 
-	async updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): Promise<void> {
+	async updateDocument(ref: Document, partial: Partial<Data>): Promise<void> {
 		try {
 			await this.firestore.doc(ref.path).update(partial);
 		} catch (thrown: unknown) {
@@ -105,34 +105,34 @@ export class FirestoreClientProvider implements Provider {
 		}
 	}
 
-	async deleteDocument<T extends Data>(ref: Document<T>): Promise<void> {
+	async deleteDocument(ref: Document): Promise<void> {
 		await this.firestore.doc(ref.path).delete();
 		return undefined;
 	}
 
-	async getDocuments<T extends Data>(ref: Documents<T>): Promise<Results<T>> {
+	async getDocuments(ref: Documents): Promise<Results> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
 		return snapshotResults(snapshot);
 	}
 
-	onDocuments<T extends Data>(ref: Documents<T>, observer: Observer<Results<T>>): () => void {
+	onDocuments(ref: Documents, observer: Observer<Results>): () => void {
 		return buildQuery(this.firestore, ref).onSnapshot(
 			snapshot => dispatchNext(observer, snapshotResults(snapshot)),
 			error => dispatchError(observer, error),
 		);
 	}
 
-	async setDocuments<T extends Data>(ref: Documents<T>, data: T): Promise<void> {
+	async setDocuments(ref: Documents, data: Data): Promise<void> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
 		await Promise.all(snapshot.docs.map(s => s.ref.set(data)));
 	}
 
-	async updateDocuments<T extends Data>(ref: Documents<T>, partial: Partial<T>): Promise<void> {
+	async updateDocuments(ref: Documents, data: Partial<Data>): Promise<void> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
-		await Promise.all(snapshot.docs.map(s => s.ref.update(partial)));
+		await Promise.all(snapshot.docs.map(s => s.ref.update(data)));
 	}
 
-	async deleteDocuments<T extends Data>(ref: Documents<T>): Promise<void> {
+	async deleteDocuments(ref: Documents): Promise<void> {
 		const snapshot = await buildQuery(this.firestore, ref).get();
 		await Promise.all(snapshot.docs.map(s => s.ref.delete()));
 	}

@@ -1,7 +1,7 @@
 import { Data, Result, Results, Unsubscriber, ImmutableObject, MutableObject, Observer, isAsync } from "../util";
 import { ValidationError } from "../errors";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import { ObjectSchema } from "../schema";
+import { ObjectSchema, Schema } from "../schema";
 import { DerivingStream } from "../stream";
 import type { Provider } from "./Provider";
 import type { Document } from "./Document";
@@ -18,71 +18,73 @@ export class ValidationProvider implements Provider {
 		this.#source = source;
 	}
 
-	getDocument<T extends Data>(ref: Document<T>): Result<T> | Promise<Result<T>> {
+	getDocument(ref: Document): Result | Promise<Result> {
 		const result = this.#source.getDocument(ref);
 		if (isAsync(result)) return this.#awaitGetDocument(ref, result);
 		return result ? validateData(ref, result) : undefined;
 	}
-	async #awaitGetDocument<T extends Data>(ref: Document<T>, asyncResult: Promise<Result<T>>): Promise<Result<T>> {
+	async #awaitGetDocument(ref: Document, asyncResult: Promise<Result>): Promise<Result> {
 		const result = await asyncResult;
 		return result ? validateData(ref, result) : undefined;
 	}
 
-	onDocument<T extends Data>(ref: Document<T>, observer: Observer<Result<T>>): Unsubscriber {
-		const stream = new DerivingStream<Result<T>, Result<T>>(v => (v ? validateData(ref, v) : undefined));
+	onDocument(ref: Document, observer: Observer<Result>): Unsubscriber {
+		const stream = new DerivingStream<Result, Result>(v => (v ? validateData(ref, v) : undefined));
 		stream.subscribe(observer);
 		return this.#source.onDocument(ref, stream);
 	}
 
-	addDocument<T extends Data>(ref: Documents<T>, data: T): string | Promise<string> {
-		return this.#source.addDocument(ref, validateData(ref, data));
+	addDocument(ref: Documents, data: Data): string | Promise<string> {
+		return this.#source.addDocument(ref, validateData(ref, data, true));
 	}
 
-	setDocument<T extends Data>(ref: Document<T>, data: T): void | Promise<void> {
-		return this.#source.setDocument(ref, validateData(ref, data));
+	setDocument(ref: Document, data: Data): void | Promise<void> {
+		return this.#source.setDocument(ref, validateData(ref, data, true));
 	}
 
-	updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): void | Promise<void> {
-		return this.#source.updateDocument(ref, validateData(ref, partial, true));
+	updateDocument(ref: Document, data: Partial<Data>): void | Promise<void> {
+		return this.#source.updateDocument(ref, validateData(ref, data, true));
 	}
 
-	deleteDocument<T extends Data>(ref: Document<T>): void | Promise<void> {
+	deleteDocument(ref: Document): void | Promise<void> {
 		return this.#source.deleteDocument(ref);
 	}
 
-	getDocuments<T extends Data>(ref: Documents<T>): Results<T> | Promise<Results<T>> {
+	getDocuments(ref: Documents): Results | Promise<Results> {
 		const results = this.#source.getDocuments(ref);
 		if (isAsync(results)) return this.#awaitGetDocuments(ref, results);
 		return validateResults(ref, results);
 	}
-	async #awaitGetDocuments<T extends Data>(ref: Documents<T>, asyncResult: Promise<Results<T>>): Promise<Results<T>> {
+	async #awaitGetDocuments(ref: Documents, asyncResult: Promise<Results>): Promise<Results> {
 		return validateResults(ref, await asyncResult);
 	}
 
-	onDocuments<T extends Data>(ref: Documents<T>, observer: Observer<Results<T>>): Unsubscriber {
-		const stream = new DerivingStream<Results<Data>, Results<T>>(v => validateResults(ref, v));
+	onDocuments(ref: Documents, observer: Observer<Results>): Unsubscriber {
+		const stream = new DerivingStream<Results<Data>, Results>(v => validateResults(ref, v));
 		stream.subscribe(observer);
 		return this.#source.onDocuments(ref, stream);
 	}
 
-	setDocuments<T extends Data>(ref: Documents<T>, data: T): void | Promise<void> {
-		return this.#source.setDocuments(ref, validateData(ref, data));
+	setDocuments(ref: Documents, data: Data): void | Promise<void> {
+		return this.#source.setDocuments(ref, validateData(ref, data, true));
 	}
 
-	updateDocuments<T extends Data>(ref: Documents<T>, partial: Partial<T>): void | Promise<void> {
-		return this.#source.updateDocuments(ref, validateData(ref, partial, true));
+	updateDocuments(ref: Documents, data: Partial<Data>): void | Promise<void> {
+		return this.#source.updateDocuments(ref, validateData(ref, data, true));
 	}
 
-	deleteDocuments<T extends Data>(ref: Documents<T>): void | Promise<void> {
+	deleteDocuments(ref: Documents): void | Promise<void> {
 		return this.#source.deleteDocuments(ref);
 	}
 }
 
 /** Validate a single document at this path. */
-function validateData<T extends Data>(ref: Document<T> | Documents<T>, data: ImmutableObject, partial = false): T {
+function validateData(ref: Document | Documents, data: Partial<Data>, partial: true): Data;
+function validateData(ref: Document | Documents, data: Data, partial?: boolean): Data;
+function validateData(ref: Document | Documents, data: Data | Partial<Data>, partial?: boolean): Data {
 	try {
-		const schema = ref.db.schemas[ref.collection] as ObjectSchema<T>;
-		return schema.validate(data, partial);
+		const schema = ref.db.schemas[ref.collection];
+		return schema && schema instanceof ObjectSchema ? schema.validate(data, partial) : data;
 	} catch (thrown: unknown) {
 		if (isFeedback(thrown)) throw new ValidationError(`Invalid ${partial ? "partial data" : "data"} for: "${ref.path}"`, thrown);
 		else throw thrown;
@@ -90,20 +92,20 @@ function validateData<T extends Data>(ref: Document<T> | Documents<T>, data: Imm
 }
 
 /** Validate a set of documents at this path. */
-function validateResults<T extends Data>(ref: Documents<T>, results: ImmutableObject<ImmutableObject>): Results<T> {
-	const validated: MutableObject<T> = {};
+function validateResults(ref: Documents, results: ImmutableObject<ImmutableObject>): Results {
+	const validated: MutableObject<Data> = {};
 	const invalids: MutableObject<Feedback> = {};
 	let invalid = false;
 	for (const [id, data] of Object.entries(results)) {
 		try {
-			const schema = ref.db.schemas[ref.collection] as ObjectSchema<T>;
-			validated[id] = schema.validate(data);
+			const schema = ref.db.schemas[ref.collection];
+			validated[id] = schema && schema instanceof Schema ? schema.validate(data) : data;
 		} catch (thrown) {
 			if (isFeedback(thrown)) invalids[id] = thrown;
 			else throw thrown;
 			invalid = true;
 		}
 	}
-	if (invalid) throw new ValidationError(`Invalid documents for: "${ref.path}"`, new InvalidFeedback("Invalid documents", invalids));
+	if (invalid) throw new ValidationError(`Invalid documents for "${ref.path}"`, new InvalidFeedback("Invalid documents", invalids));
 	return validated;
 }

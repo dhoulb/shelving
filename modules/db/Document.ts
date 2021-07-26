@@ -26,7 +26,7 @@ export class Document<T extends Data = Data> implements Observable<Result<T>> {
 	 * @returns Document's data, or `undefined` if it doesn't exist.
 	 */
 	get(): Result<T> | Promise<Result<T>> {
-		return this.db.provider.getDocument(this);
+		return this.db.provider.getDocument(this) as Result<T> | Promise<Result<T>>;
 	}
 
 	/**
@@ -108,7 +108,9 @@ export class Document<T extends Data = Data> implements Observable<Result<T>> {
 	subscribe(next: AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(either: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return typeof next === "object" ? this.db.provider.onDocument(this, next) : this.db.provider.onDocument(this, { next, error, complete });
+		return typeof next === "object"
+			? this.db.provider.onDocument(this, next as Observer<Result>)
+			: this.db.provider.onDocument(this, { next: next as AsyncDispatcher<Result>, error, complete });
 	}
 
 	/**
@@ -131,14 +133,14 @@ export class Document<T extends Data = Data> implements Observable<Result<T>> {
 	 * - Props missing from the input value cause no errors.
 	 * - Document must exist or an error will be thrown.
 	 *
-	 * @param partial The (potentially invalid) partial data to apply to the document.
+	 * @param data The (potentially invalid) partial data to apply to the document.
 	 * @param options.required Throw an error if the document does not exist (defaults to `true`)
 	 *
 	 * @return Promise that resolves when done.
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	update(partial: Partial<T>): void | Promise<void> {
-		return this.db.provider.updateDocument(this, partial);
+	update(data: Partial<T>): void | Promise<void> {
+		return this.db.provider.updateDocument(this, data);
 	}
 
 	/**

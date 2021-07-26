@@ -33,19 +33,19 @@ import { DocumentRequiredError } from "./errors";
 export class MemoryProvider implements Provider {
 	/** List of tables in `{ path: Table }` format. */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	#data: MutableObject<Table<any>> = {};
+	#data: MutableObject<Table> = {};
 
 	// Get a named collection (or create a new one).
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	#table(path: string): Table<any> {
+	#table(path: string): Table {
 		return (this.#data[path] ||= new Table());
 	}
 
-	getDocument<T extends Data>({ collection, id }: Document<T>): Result<T> {
+	getDocument({ collection, id }: Document): Result {
 		return this.#table(collection).docs[id];
 	}
 
-	onDocument<T extends Data>({ id, collection }: Document<T>, observer: Observer<Result<T>>): Unsubscriber {
+	onDocument({ id, collection }: Document, observer: Observer<Result>): Unsubscriber {
 		const table = this.#table(collection);
 
 		// Call next() with initial results.
@@ -57,7 +57,7 @@ export class MemoryProvider implements Provider {
 		});
 	}
 
-	addDocument<T extends Data>({ path }: Documents<T>, data: T): string {
+	addDocument({ path }: Documents, data: Data): string {
 		const table = this.#table(path);
 		let id = randomId();
 		while (table.docs[id]) id = randomId(); // Regenerate until unique.
@@ -65,27 +65,27 @@ export class MemoryProvider implements Provider {
 		return id;
 	}
 
-	setDocument<T extends Data>({ collection, id }: Document<T>, data: T): void {
+	setDocument({ collection, id }: Document, data: Data): void {
 		this.#table(collection).set(id, data);
 	}
 
-	updateDocument<T extends Data>(document: Document<T>, partial: Partial<T>): void {
+	updateDocument(document: Document, data: Partial<Data>): void {
 		const { collection, id } = document;
 		const table = this.#table(collection);
-		const data = table.docs[id];
-		if (!data) throw new DocumentRequiredError(document);
-		table.set(id, updateProps(data, partial));
+		const existing = table.docs[id];
+		if (!existing) throw new DocumentRequiredError(document);
+		table.set(id, updateProps(existing, data));
 	}
 
-	deleteDocument<T extends Data>({ collection, id }: Document<T>): void {
+	deleteDocument({ collection, id }: Document): void {
 		this.#table(collection).delete(id);
 	}
 
-	getDocuments<T extends Data>({ path, query }: Documents<T>): Results<T> {
+	getDocuments({ path, query }: Documents): Results {
 		return query.results(this.#table(path).docs);
 	}
 
-	onDocuments<T extends Data>({ path, query }: Documents<T>, observer: Observer<Results<T>>): Unsubscriber {
+	onDocuments({ path, query }: Documents, observer: Observer<Results>): Unsubscriber {
 		const table = this.#table(path);
 		let filtered = objectFromEntries(query.sorts.apply(query.filters.apply(Object.entries(table.docs))));
 		let last = query.slice.results(filtered);
@@ -130,19 +130,19 @@ export class MemoryProvider implements Provider {
 		});
 	}
 
-	setDocuments<T extends Data>({ path, query }: Documents<T>, data: T): void {
+	setDocuments({ path, query }: Documents, data: Data): void {
 		const table = this.#table(path);
 		const entries = query.apply(Object.entries(table.docs));
 		for (const [id] of entries) table.set(id, data);
 	}
 
-	updateDocuments<T extends Data>({ path, query }: Documents<T>, partial: Partial<T>): void {
+	updateDocuments({ path, query }: Documents, data: Partial<Data>): void {
 		const table = this.#table(path);
 		const entries = query.apply(Object.entries(table.docs));
-		for (const [id, data] of entries) table.set(id, updateProps(data, partial));
+		for (const [id, existing] of entries) table.set(id, updateProps(existing, data));
 	}
 
-	deleteDocuments<T extends Data>({ path, query }: Documents<T>): void {
+	deleteDocuments({ path, query }: Documents): void {
 		const table = this.#table(path);
 		const entries = query.apply(Object.entries(table.docs));
 		for (const [id] of entries) table.delete(id);
@@ -157,13 +157,13 @@ export class MemoryProvider implements Provider {
  * An individual table of data.
  * - Fires with an array of string IDs.
  */
-class Table<T extends Data> {
+class Table {
 	readonly #dispatchers: Dispatcher<ImmutableArray<string>>[] = [];
 	readonly #changes: MutableArray<string> = [];
 
-	readonly docs: MutableObject<T> = {};
+	readonly docs: MutableObject<Data> = {};
 
-	set(id: string, data: T): void {
+	set(id: string, data: Data): void {
 		if (data !== this.docs[id]) {
 			this.docs[id] = data;
 			this.#changed(id);

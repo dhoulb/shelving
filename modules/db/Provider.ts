@@ -12,7 +12,7 @@ export interface Provider {
 	 * @param ref Document reference specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	getDocument<T extends Data>(ref: Document<T>): Result<T> | Promise<Result<T>>;
+	getDocument(ref: Document): Result | Promise<Result>;
 
 	/**
 	 * Subscribe to a document.
@@ -22,42 +22,45 @@ export interface Provider {
 	 * @param observer Observer to report the result back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onDocument<T extends Data>(ref: Document<T>, observer: Observer<Result<T>>): Unsubscriber;
+	onDocument(ref: Document, observer: Observer<Result>): Unsubscriber;
 
 	/**
 	 * Create a new document in a collection by generating a unique ID.
 	 * - Created document is guaranteed to have a unique ID.
 	 *
 	 * @param ref Documents reference specifying which collection to add the document to.
+	 * @param data Complete or partial data to set the document to.
+	 * - Assumes missing fields in `data` will be handled or set to their default value by the database provider.
+	 *
 	 * @return Promise that resolves to the string ID of the created document when done.
 	 */
-	addDocument<T extends Data>(ref: Documents<T>, data: T): string | Promise<string>;
+	addDocument(ref: Documents, data: Data): string | Promise<string>;
 
 	/**
 	 * Set a document.
 	 * - If the document exists, set the value of it.
 	 * - If the document doesn't exist, set it at path.
 	 *
-	 * @param ref Document reference specifying which document to merge into.
-	 * @param change The change to update the document (either a diff to update the value, or `undefined` for delete).
+	 * @param ref Document reference specifying which document to set.
+	 * @param data Data to set the document to.
+	 * - Assumes missing fields in `data` will be handled or set to their default value by the database provider.
 	 *
 	 * @return Promise that resolves when done.
-	 * @throws RequiredError if the document doesn't exist.
 	 */
-	setDocument<T extends Data>(ref: Document<T>, data: T): void | Promise<void>;
+	setDocument(ref: Document, data: Data): void | Promise<void>;
 
 	/**
-	 * Update an existing document with a partial value.
+	 * Update an existing document.
 	 * - If the document exists, merge the new value into it (deeply).
 	 * - If the document doesn't exist, throw an error.
 	 *
 	 * @param ref Document reference specifying which document to merge into.
-	 * @param partial Set of updates to make to the document.
+	 * @param data Partial data to merge into the existing document.
 	 *
 	 * @return Promise that resolves when done.
 	 * @throws RequiredError if the document doesn't exist.
 	 */
-	updateDocument<T extends Data>(ref: Document<T>, partial: Partial<T>): void | Promise<void>;
+	updateDocument(ref: Document, data: Partial<Data>): void | Promise<void>;
 
 	/**
 	 * Delete a document.
@@ -65,7 +68,7 @@ export interface Provider {
 	 * @param ref Document reference specifying which document document to delete.
 	 * @return Promise that resolves when done.
 	 */
-	deleteDocument<T extends Data>(ref: Document<T>): void | Promise<void>;
+	deleteDocument(ref: Document): void | Promise<void>;
 
 	/**
 	 * Get all matching documents.
@@ -73,33 +76,39 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Array of documents matching the rules.
 	 */
-	getDocuments<T extends Data>(ref: Documents<T>): Results<T> | Promise<Results<T>>;
+	getDocuments(ref: Documents): Results | Promise<Results>;
 
 	/**
 	 * Subscribe to all matching documents.
 	 * - Expect that `onNext()` is called immediately with the initial value.
 	 *
-	 * @param ref Documents reference specifying which collection to to subscribe to.
+	 * @param ref Documents reference specifying which collection to subscribe to.
 	 * @param observer Observer to report the result back to.
 	 * @return Function that unsubscribes the subscription listener.
 	 */
-	onDocuments<T extends Data>(ref: Documents<T>, observer: Observer<Results<T>>): Unsubscriber;
+	onDocuments(ref: Documents, observer: Observer<Results>): Unsubscriber;
 
 	/**
-	 * Set all matching documents to the same value.
+	 * Set all matching documents to the same exact value.
 	 *
 	 * @param ref Documents reference specifying which collection to set.
+	 * @param data Data to set every matching document to.
+	 * - Assumes missing fields in `data` will be handled or set to their default value by the database provider.
+	 *
 	 * @return Promise that resolves when done.
 	 */
-	setDocuments<T extends Data>(ref: Documents<T>, data: T): void | Promise<void>;
+	setDocuments(ref: Documents, data: Data): void | Promise<void>;
 
 	/**
 	 * Update all matching documents with the same partial value.
 	 *
 	 * @param ref Documents reference specifying which collection to update.
+	 * @param data Partial data to merge into every matching document.
+	 * - Assumes missing fields in `data` will be handled or set to their default value by the database provider.
+	 *
 	 * @return Promise that resolves when done.
 	 */
-	updateDocuments<T extends Data>(ref: Documents<T>, partial: Partial<T>): void | Promise<void>;
+	updateDocuments(ref: Documents, data: Partial<Data>): void | Promise<void>;
 
 	/**
 	 * Delete all matching documents.
@@ -107,5 +116,5 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to delete.
 	 * @return Promise that resolves when done.
 	 */
-	deleteDocuments<T extends Data>(ref: Documents<T>): void | Promise<void>;
+	deleteDocuments(ref: Documents): void | Promise<void>;
 }

@@ -61,7 +61,7 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 	 * @returns Set of document results (possibly promised).
 	 */
 	get(): Results<T> | Promise<Results<T>> {
-		return this.db.provider.getDocuments(this);
+		return this.db.provider.getDocuments(this) as Results<T> | Promise<Results<T>>;
 	}
 
 	/**
@@ -132,7 +132,9 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 	subscribe(next: AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(either: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return typeof next === "object" ? this.db.provider.onDocuments(this, next) : this.db.provider.onDocuments(this, { next, error, complete });
+		return typeof next === "object"
+			? this.db.provider.onDocuments(this, next as Observer<Results>)
+			: this.db.provider.onDocuments(this, { next: next as AsyncDispatcher<Results>, error, complete });
 	}
 
 	/**
@@ -190,13 +192,13 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 	 * Update all matched documents with the specified partial data.
 	 * - All documents matched by the current query will have `partial` merged into their data.
 	 *
-	 * @param partial The (potentially invalid) partial data to apply to all matched documents.
+	 * @param data The (potentially invalid) partial data to apply to all matched documents.
 	 * @param options.validate Whether the partial data is validated (defaults to `true`)
 	 *
 	 * @return Promise that resolves when done.
 	 */
-	async update(partial: Partial<T>): Promise<void> {
-		await this.db.provider.updateDocuments(this, partial);
+	async update(data: Partial<T>): Promise<void> {
+		await this.db.provider.updateDocuments(this, data);
 	}
 
 	/**
