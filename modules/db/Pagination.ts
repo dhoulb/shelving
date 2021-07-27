@@ -11,7 +11,7 @@ const EMPTY_RESULTS: Results<any> = {};
  * - If you pass in initial values, it will use that as the first page.
  * - If you don't pass in initial values, it will autoload the first page.
  */
-export class Pagination<T extends Data> extends State<ImmutableEntries<T>> {
+export class PaginationState<T extends Data> extends State<ImmutableEntries<T>> {
 	#results: Results<T>; // Cached current set of results.
 
 	/** Documents ref this pagination is based on. */
