@@ -1,7 +1,6 @@
 import {
 	AsyncDeriver,
 	LOADING,
-	SKIP,
 	ImmutableObject,
 	Mutable,
 	updateProps,
@@ -13,7 +12,6 @@ import {
 	assertArray,
 	assertObject,
 	Resolvable,
-	dispatchNext,
 	Observer,
 	isObservable,
 	Observable,
@@ -21,12 +19,12 @@ import {
 	getRequired,
 	throwAsync,
 } from "../util";
-import { DerivingStream, Stream } from "./Stream";
+import { Stream } from "./Stream";
 
 /**
  * State: a stream the retains its msot recent value and makes it available at `state.value` and `state.data`
  */
-export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
+export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<T>, Observable<T> {
 	#value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
 
 	readonly updated: number | undefined = undefined; // Time the value was last updated.
@@ -93,18 +91,18 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	}
 
 	next(value: Resolvable<T | typeof LOADING>): void {
+		if (isAsync(value)) (this as Mutable<this>).pending = true;
+		super.next(value);
+	}
+
+	// Override `dispatchNext()` to save the current value and only dispatch non-loading values.
+	protected dispatchNext(value: T | typeof LOADING): void {
+		if (value === this.#value) return;
 		(this as Mutable<this>).pending = false;
-
-		if (this.closed || value === SKIP || value === this.#value) return;
-		if (isAsync(value)) {
-			(this as Mutable<this>).pending = true;
-			return dispatchNext(this, value);
-		}
-
 		this.#value = value;
 		(this as Mutable<this>).loading = value === LOADING;
 		(this as Mutable<this>).updated = Date.now();
-		if (value !== LOADING) super.next(value);
+		if (value !== LOADING) super.dispatchNext(value);
 	}
 
 	/**
@@ -151,17 +149,17 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 		this.next(swapItem<T & ImmutableArray>(this.#value, oldItem, newItem));
 	}
 
-	// Override `error()` to save the reason at `this.reason` and clean up.
-	error(reason: Error | unknown): void {
+	// Override `dispatchError()` to save the reason at `this.reason` and clean up.
+	protected dispatchError(reason: Error | unknown): void {
 		(this as Mutable<this>).pending = false;
-		if (this.closed) (this as Mutable<this>).reason = reason;
-		super.error(reason);
+		(this as Mutable<this>).reason = reason;
+		super.dispatchError(reason);
 	}
 
-	// Override `complete()` to clean up.
-	complete(): void {
+	// Override `dispatchComplete()` to clean up.
+	protected dispatchComplete(): void {
 		(this as Mutable<this>).pending = false;
-		super.complete();
+		super.dispatchComplete();
 	}
 
 	/**
@@ -176,7 +174,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	derive<TT>(deriver: AsyncDeriver<T, TT>): State<TT>;
 	derive<TT>(deriver?: AsyncDeriver<T, TT>): State<T> | State<TT> {
 		if (deriver) {
-			const deriving = new DerivingStream(deriver, this); // New deriving stream subscribed to this.
+			const deriving = super.derive(deriver); // New deriving stream subscribed to this.
 			const derived = new State<TT>(deriving); // New derived state subscribed to the deriving stream.
 			if (this.#value !== LOADING) deriving.next(this.#value); // Send the next value to the deriving stream, which derives the new value and sends it to the derived state.
 			return derived;

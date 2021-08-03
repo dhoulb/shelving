@@ -6,7 +6,6 @@ import {
 	AsyncEmptyDispatcher,
 	AsyncDispatcher,
 	AsyncCatcher,
-	thispatch,
 	Unsubscriber,
 	AsyncDeriver,
 	dispatch,
@@ -18,7 +17,9 @@ import {
 	dispatchNext,
 	Observer,
 	isAsync,
+	therive,
 } from "../util";
+import { StreamClosedError } from "./errors";
 
 /**
  * Stream: an object that can be subscribed to and passes along any next values to its subscribers.
@@ -26,9 +27,10 @@ import {
  * - Provide a normalised `.closed` property that is `true` initially and `false` after `complete()` has been called.
  * - Ensure that `next()`, `error()`, `complete()` aren't called again after `.closed` is true.
  */
-export class Stream<T> implements Observer<T>, Observable<T> {
+export class Stream<I, O = I> implements Observer<I>, Observable<O> {
+	readonly #deriver?: AsyncDeriver<I, O>;
 	readonly #cleanup?: Unsubscriber;
-	readonly #subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
+	readonly #subscribers: MutableArray<Observer<O>> = []; // List of subscribed observers.
 
 	/**
 	 * Is this stream open or closed.
@@ -41,21 +43,32 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 		return this.#subscribers.length;
 	}
 
-	get nextValue(): Promise<T> {
+	get nextValue(): Promise<O> {
 		return getNextValue(this);
 	}
 
-	constructor(source?: Observable<T>) {
+	constructor(source?: Observable<I>, deriver?: AsyncDeriver<I, O>) {
 		if (source) this.#cleanup = source.subscribe(this);
+		this.#deriver = deriver;
 	}
 
 	/**
 	 * Send the next value to this stream's subscribers.
 	 * - Calls `next()` on all subscribers.
 	 */
-	next(value: Resolvable<T>): void {
-		if (this.closed || value === SKIP) return;
+	next(value: Resolvable<I>): void {
+		if (this.closed) throw new StreamClosedError(this);
+		if (value === SKIP) return;
 		if (isAsync(value)) return dispatchNext(this, value);
+		if (this.#deriver) {
+			// Derive the value using the deriver then call `this.dispatchNext()` with that new value (or `this.error()` if anything goes wrong).
+			therive<I, O, "dispatchNext", "error">(value, this.#deriver, this as unknown as { dispatchNext(v: O): void }, "dispatchNext", this, "error"); // Unknown cast to allow calling protected `this.dispatchNext()`
+		} else {
+			// Call `this.dispatchNext()` directly.
+			this.dispatchNext(value as unknown as O); // Unknown cast because we know I is O (because there's no deriver).
+		}
+	}
+	protected dispatchNext(value: O): void {
 		for (const subscriber of this.#subscribers.slice()) dispatchNext(subscriber, value);
 	}
 
@@ -66,9 +79,12 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * - Closes this stream.
 	 */
 	error(reason: Error | unknown): void {
-		if (this.closed) return;
+		if (this.closed) throw new StreamClosedError(this);
 		(this as Mutable<this>).closed = true;
 		if (this.#cleanup) dispatch(this.#cleanup);
+		this.dispatchError(reason);
+	}
+	protected dispatchError(reason: Error | unknown): void {
 		for (const subscriber of this.#subscribers.slice()) dispatchError(subscriber, reason);
 	}
 
@@ -79,9 +95,12 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * - Closes this stream.
 	 */
 	complete(): void {
-		if (this.closed) return;
+		if (this.closed) throw new StreamClosedError(this);
 		(this as Mutable<this>).closed = true;
 		if (this.#cleanup) dispatch(this.#cleanup);
+		this.dispatchComplete();
+	}
+	protected dispatchComplete(): void {
 		for (const subscriber of this.#subscribers.slice()) dispatchComplete(subscriber);
 	}
 
@@ -90,19 +109,20 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * - Allows either an `Observer` object or  separate `next()`, `error()` and `complete()` functions.
 	 * - Implements `Observable`
 	 */
-	subscribe(next: Observer<T> | AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
+	subscribe(next: Observer<O> | AsyncDispatcher<O>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
 		const observer = typeof next === "object" ? next : { next, error, complete };
 		this.on(observer);
 		return this.off.bind(this, observer);
 	}
 
 	/** Add an observer to this stream. */
-	on(observer: Observer<T>): void {
+	on(observer: Observer<O>): void {
+		if (this.closed) throw new StreamClosedError(this);
 		addItem(this.#subscribers, observer);
 	}
 
 	/** Remove an observer from this stream. */
-	off(observer: Observer<T>): void {
+	off(observer: Observer<O>): void {
 		removeItem(this.#subscribers, observer);
 	}
 
@@ -110,26 +130,26 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * Derive a new stream from this stream.
 	 * - Optionally supply a `deriver()` function that modifies the stream.
 	 */
-	derive(): Stream<T>;
-	derive<TT>(deriver: AsyncDeriver<T, TT>): Stream<TT>;
-	derive<TT>(deriver?: AsyncDeriver<T, TT>): Stream<T> | Stream<TT> {
-		return deriver ? new Stream(new DerivingStream(deriver, this)) : new Stream(this);
+	derive(): Stream<O, O>;
+	derive<X>(deriver: AsyncDeriver<O, X>): Stream<O, X>;
+	derive<X>(deriver?: AsyncDeriver<O, X>): Stream<O, O> | Stream<O, X> {
+		return deriver ? new Stream<O, X>(this, deriver) : new Stream<O, O>(this);
 	}
 
 	/** Get a stream that takes the next X number of values from this stream then completes itself. */
-	take(num: number): Stream<T> {
+	take(num: number): Stream<O, O> {
 		return new LimitedStream(num, this);
 	}
 }
 
 /** SlicingStream: stream that, when new values are received, calls a specified slice of its subscribers (not all of them!) */
-export class SlicingStream<T> extends Stream<T> {
-	#subscribers: MutableArray<Observer<T>> = []; // List of subscribed observers.
+export class SlicingStream<I, O = I> extends Stream<I, O> {
+	#subscribers: MutableArray<Observer<O>> = []; // List of subscribed observers.
 	#start: number;
 	#end: number | undefined;
 
-	constructor(start: number, end: number | undefined = undefined) {
-		super();
+	constructor(start: number, end: number | undefined = undefined, source?: Observable<I>, deriver?: AsyncDeriver<I, O>) {
+		super(source, deriver);
 		this.#start = start;
 		this.#end = end;
 	}
@@ -139,57 +159,24 @@ export class SlicingStream<T> extends Stream<T> {
 	 * - Calls `next()` on all subscribers.
 	 * - Knows how to deal with resolvable values (i.e. Promised or SKIP values).
 	 */
-	next(value: Resolvable<T>): void {
-		if (this.closed || value === SKIP) return;
-		if (isAsync(value)) return dispatchNext(this, value);
+	protected dispatchNext(value: O): void {
 		for (const subscriber of this.#subscribers.slice(this.#start, this.#end)) dispatchNext(subscriber, value);
 	}
 }
 
 /** LimitedStream: takes a specified number of values from a source then completes itself. */
-export class LimitedStream<T> extends Stream<T> {
+export class LimitedStream<I, O = I> extends Stream<I, O> {
 	#remaining: number;
 
-	constructor(num: number, source?: Observable<T>) {
-		super(source);
+	constructor(num: number, source?: Observable<I>, deriver?: AsyncDeriver<I, O>) {
+		super(source, deriver);
 		this.#remaining = num;
 	}
 
-	next(value: Resolvable<T>): void {
-		if (this.closed || value === SKIP) return;
-		if (isAsync(value)) return dispatchNext(this, value);
-		super.next(value);
+	protected dispatchNext(value: O): void {
+		super.dispatchNext(value);
 		this.#remaining--;
 		if (this.#remaining <= 0) this.complete();
-	}
-}
-
-/** Deriving stream: a stream that modifies the next value before repeating it. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class DerivingStream<I, O> extends Stream<any> {
-	#deriver: AsyncDeriver<I, O>;
-
-	constructor(deriver: AsyncDeriver<I, O>, source?: Observable<I>) {
-		super(source);
-		this.#deriver = deriver;
-	}
-
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore We know this signature is correct.
-	next(value: Resolvable<I>): void {
-		if (this.closed || value === SKIP) return;
-		if (isAsync(value)) return dispatchNext(this, value);
-		try {
-			// Call `this.derived()` with the new value and `this.error()`
-			thispatch<O, "derived", "error">(this, "derived", this.#deriver(value), this, "error");
-		} catch (thrown) {
-			this.error(thrown); // Calling this._deriver() might throw.
-		}
-	}
-
-	/** Receive a derived value to the target. */
-	derived(value: O): void {
-		super.next(value);
 	}
 }
 
@@ -197,4 +184,5 @@ export class DerivingStream<I, O> extends Stream<any> {
  * Get a Promise that resolves to the next value issued by an observable.
  * - Internally uses a `LimitedStream` instance that unsubscribes itself after receiving one value.
  */
-export const getNextValue = <T>(observable: Observable<T>): Promise<T> => new Promise<T>((next, error) => new LimitedStream(1, observable).on({ next, error }));
+export const getNextValue = <T>(observable: Observable<T>): Promise<T> =>
+	new Promise<T>((next, error) => new LimitedStream<T, T>(1, observable).on({ next, error }));
