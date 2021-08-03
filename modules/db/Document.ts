@@ -1,5 +1,6 @@
 import { Data, Observable, Result, throwAsync, isAsync, Observer, Unsubscriber, AsyncDispatcher, AsyncCatcher, AsyncEmptyDispatcher } from "../util";
 import type { Database } from "./Database";
+import { DocumentState } from "./DocumentState";
 import { DocumentRequiredError } from "./errors";
 
 /**
@@ -94,6 +95,17 @@ export class Document<T extends Data = Data> implements Observable<Result<T>> {
 			});
 		if (!result) throw new DocumentRequiredError(this);
 		return result;
+	}
+
+	/**
+	 * Get the global document state for this document.
+	 * - This state can be updated manually by calling `state.refresh()` on the returned `DocumentState`
+	 * - Add a `StateProvider` to your database provider stack and `DocumentState` instances will be updated on all reads and writes.
+	 *
+	 * @return Unique global `State` instance specifying the current global state for this document.
+	 */
+	get state(): DocumentState<T> {
+		return DocumentState.get(this);
 	}
 
 	/**

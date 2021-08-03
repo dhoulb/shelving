@@ -4,6 +4,10 @@ export * from "./Document";
 export * from "./Documents";
 export * from "./Pagination";
 
+// States.
+export * from "./DocumentState";
+export * from "./DocumentsState";
+
 // Providers.
 export * from "./Provider";
 export * from "./MemoryProvider";
