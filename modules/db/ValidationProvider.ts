@@ -1,8 +1,8 @@
-import { Data, Result, Results, Unsubscriber, ImmutableObject, MutableObject, Observer, isAsync } from "../util";
+import { Data, Result, Results, Unsubscriber, MutableObject, Observer, isAsync } from "../util";
 import { ValidationError } from "../errors";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { ObjectSchema, Schema } from "../schema";
-import { DerivingStream } from "../stream";
+import { Stream } from "../stream";
 import type { Provider } from "./Provider";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
@@ -11,77 +11,64 @@ import type { Documents } from "./Documents";
  * Validation provider: validates any values that are read from or written a the source provider.
  */
 export class ValidationProvider implements Provider {
-	/** The source provider. */
 	readonly #source: Provider;
-
 	constructor(source: Provider) {
 		this.#source = source;
 	}
-
-	getDocument(ref: Document): Result | Promise<Result> {
+	getDocument<X extends Data>(ref: Document<X>): Result<X> | Promise<Result<X>> {
 		const result = this.#source.getDocument(ref);
 		if (isAsync(result)) return this.#awaitGetDocument(ref, result);
 		return result ? validateData(ref, result) : undefined;
 	}
-	async #awaitGetDocument(ref: Document, asyncResult: Promise<Result>): Promise<Result> {
+	async #awaitGetDocument<X extends Data>(ref: Document<X>, asyncResult: Promise<Result<X>>): Promise<Result<X>> {
 		const result = await asyncResult;
 		return result ? validateData(ref, result) : undefined;
 	}
-
-	onDocument(ref: Document, observer: Observer<Result>): Unsubscriber {
-		const stream = new DerivingStream<Result, Result>(v => (v ? validateData(ref, v) : undefined));
+	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result>): Unsubscriber {
+		const stream = new Stream<Result<X>, Result<X>>(undefined, v => (v ? validateData(ref, v) : undefined));
 		stream.subscribe(observer);
 		return this.#source.onDocument(ref, stream);
 	}
-
-	addDocument(ref: Documents, data: Data): string | Promise<string> {
-		return this.#source.addDocument(ref, validateData(ref, data, true));
+	addDocument<X extends Data>(ref: Documents<X>, data: X): string | Promise<string> {
+		return this.#source.addDocument(ref, validateData(ref, data));
 	}
-
-	setDocument(ref: Document, data: Data): void | Promise<void> {
-		return this.#source.setDocument(ref, validateData(ref, data, true));
+	setDocument<X extends Data>(ref: Document<X>, data: X): void | Promise<void> {
+		return this.#source.setDocument(ref, validateData(ref, data));
 	}
-
-	updateDocument(ref: Document, data: Partial<Data>): void | Promise<void> {
+	updateDocument<X extends Data>(ref: Document<X>, data: Partial<X>): void | Promise<void> {
 		return this.#source.updateDocument(ref, validateData(ref, data, true));
 	}
-
-	deleteDocument(ref: Document): void | Promise<void> {
+	deleteDocument<X extends Data>(ref: Document<X>): void | Promise<void> {
 		return this.#source.deleteDocument(ref);
 	}
-
-	getDocuments(ref: Documents): Results | Promise<Results> {
+	getDocuments<X extends Data>(ref: Documents<X>): Results<X> | Promise<Results<X>> {
 		const results = this.#source.getDocuments(ref);
 		if (isAsync(results)) return this.#awaitGetDocuments(ref, results);
-		return validateResults(ref, results);
+		return validateResults<X>(ref, results);
 	}
-	async #awaitGetDocuments(ref: Documents, asyncResult: Promise<Results>): Promise<Results> {
-		return validateResults(ref, await asyncResult);
+	async #awaitGetDocuments<X extends Data>(ref: Documents<X>, asyncResult: Promise<Results<X>>): Promise<Results<X>> {
+		return validateResults<X>(ref, await asyncResult);
 	}
-
-	onDocuments(ref: Documents, observer: Observer<Results>): Unsubscriber {
-		const stream = new DerivingStream<Results<Data>, Results>(v => validateResults(ref, v));
+	onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber {
+		const stream = new Stream<Results<X>>(undefined, v => validateResults(ref, v));
 		stream.subscribe(observer);
 		return this.#source.onDocuments(ref, stream);
 	}
-
-	setDocuments(ref: Documents, data: Data): void | Promise<void> {
-		return this.#source.setDocuments(ref, validateData(ref, data, true));
+	setDocuments<X extends Data>(ref: Documents<X>, data: X): void | Promise<void> {
+		return this.#source.setDocuments(ref, validateData(ref, data));
 	}
-
-	updateDocuments(ref: Documents, data: Partial<Data>): void | Promise<void> {
+	updateDocuments<X extends Data>(ref: Documents<X>, data: Partial<X>): void | Promise<void> {
 		return this.#source.updateDocuments(ref, validateData(ref, data, true));
 	}
-
-	deleteDocuments(ref: Documents): void | Promise<void> {
+	deleteDocuments<X extends Data>(ref: Documents<X>): void | Promise<void> {
 		return this.#source.deleteDocuments(ref);
 	}
 }
 
 /** Validate a single document at this path. */
-function validateData(ref: Document | Documents, data: Partial<Data>, partial: true): Data;
-function validateData(ref: Document | Documents, data: Data, partial?: boolean): Data;
-function validateData(ref: Document | Documents, data: Data | Partial<Data>, partial?: boolean): Data {
+function validateData<X extends Data>(ref: Document<X> | Documents<X>, data: Partial<X>, partial: true): Partial<X>;
+function validateData<X extends Data>(ref: Document<X> | Documents<X>, data: X, partial?: boolean): X;
+function validateData<X extends Data>(ref: Document<X> | Documents<X>, data: X | Partial<X>, partial?: boolean): X | Partial<X> {
 	try {
 		const schema = ref.db.schemas[ref.collection];
 		return schema && schema instanceof ObjectSchema ? schema.validate(data, partial) : data;
@@ -92,8 +79,8 @@ function validateData(ref: Document | Documents, data: Data | Partial<Data>, par
 }
 
 /** Validate a set of documents at this path. */
-function validateResults(ref: Documents, results: ImmutableObject<ImmutableObject>): Results {
-	const validated: MutableObject<Data> = {};
+function validateResults<X extends Data>(ref: Documents<X>, results: Results<X>): Results<X> {
+	const validated: MutableObject<X> = {};
 	const invalids: MutableObject<Feedback> = {};
 	let invalid = false;
 	for (const [id, data] of Object.entries(results)) {

@@ -17,10 +17,11 @@ import {
 	ArrayType,
 } from "../util";
 import { Query, Queryable } from "../query";
-import { Database } from "./Database";
+import type { Database } from "./Database";
 import { Document } from "./Document";
 
-const EMPTY_QUERY = new Query<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const EMPTY_QUERY = new Query<any>();
 
 /**
  * Documents reference: allows reading from / writing to a list of documents in a database, optionally with query filtering and sorting.
@@ -40,6 +41,7 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Get a `Document` instance for a document.
+	 *
 	 * @param id Document ID, e.g. `fido`
 	 * @example `db.docs("puppies").doc("fido").get()`
 	 */
@@ -49,8 +51,11 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 	}
 
 	/**
-	 * Create a new document (with a random ID).
-	 * - Input data must be valid according's schema or error will be thrown unless `options.validate` is `false`
+	 * Create a new document with a random ID.
+	 * - Created document is guaranteed to have a unique ID.
+	 *
+	 * @param data Complete data to set the document to.
+	 * @return String ID for the created document (possibly promised).
 	 */
 	add(data: T): string | Promise<string> {
 		return this.db.provider.addDocument(this, data);
@@ -58,15 +63,17 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Get the set of results matching the current query.
-	 * @returns Set of document results (possibly promised).
+	 *
+	 * @return Set of results in `id: data` format (possibly promised).
 	 */
 	get(): Results<T> | Promise<Results<T>> {
-		return this.db.provider.getDocuments(this) as Results<T> | Promise<Results<T>>;
+		return this.db.provider.getDocuments(this);
 	}
 
 	/**
 	 * Get value of this document (synchronously).
-	 * @returns Set of document results.
+	 *
+	 * @return Set of results in `id: data` format.
 	 * @throws Promise if the value was not synchronous.
 	 */
 	get value(): Results<T> {
@@ -75,7 +82,8 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Get the value of this document (asynchronously).
-	 * @returns Set of document results (possibly promised).
+	 *
+	 * @return Set of results in `id: data` format (possibly promised).
 	 */
 	get asyncValue(): Results<T> | Promise<Results<T>> {
 		return this.get();
@@ -83,7 +91,8 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Count the number of results of this set of documents (synchronously).
-	 * @returns Number of documents in the collection.
+	 *
+	 * @return Number of documents in the collection.
 	 * @throws Promise if the value was not synchronous.
 	 */
 	get count(): number {
@@ -92,7 +101,8 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Count the number of results of this set of documents (asynchronously).
-	 * @returns Number of documents in the collection (possibly promised).
+	 *
+	 * @return Number of documents in the collection (possibly promised).
 	 */
 	get asyncCount(): number | Promise<number> {
 		const results = this.db.provider.getDocuments(this);
@@ -101,7 +111,8 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Get an array of string IDs for this set of documents (asynchronously).
-	 * @returns Array of strings representing the documents in the current collection (possibly promised).
+	 *
+	 * @return Array of strings representing the documents in the current collection (possibly promised).
 	 * @throws Promise if the value was not synchronous.
 	 */
 	get ids(): ImmutableArray<string> {
@@ -110,7 +121,8 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Get an array of string IDs for this set of documents (asynchronously).
-	 * @returns Array of strings representing the documents in the current collection (possibly promised).
+	 *
+	 * @return Array of strings representing the documents in the current collection (possibly promised).
 	 */
 	get asyncIds(): ImmutableArray<string> | Promise<ImmutableArray<string>> {
 		const results = this.db.provider.getDocuments(this);
@@ -118,28 +130,27 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 	}
 
 	/**
-	 * Subscribe to the results of this collection (indefinitely).
-	 * - Called once with the first set of results, and again any time the results change.
+	 * Subscribe to all matching documents.
+	 * - `next()` is called once with the initial results, and again any time the results change.
 	 *
-	 * @param observer Observer with `next`, `error`, or `complete` methods.
-	 * @param next Callback that is called when this document changes. Called with the document's data, or `undefined` if it doesn't exist.
+	 * @param observer Observer with `next`, `error`, or `complete` methods that the document results are reported back to.
+	 * @param next Callback that is called once initially and again whenever the results change.
 	 * @param error Callback that is called if an error occurs.
 	 * @param complete Callback that is called when the subscription is done.
 	 *
-	 * @returns Function that ends the subscription.
+	 * @return Function that ends the subscription.
 	 */
 	subscribe(observer: Observer<Results<T>>): Unsubscriber;
 	subscribe(next: AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(either: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return typeof next === "object"
-			? this.db.provider.onDocuments(this, next as Observer<Results>)
-			: this.db.provider.onDocuments(this, { next: next as AsyncDispatcher<Results>, error, complete });
+		return typeof next === "object" ? this.db.provider.onDocuments(this, next) : this.db.provider.onDocuments(this, { next, error, complete });
 	}
 
 	/**
 	 * Get an entry for the first result in this set of documents (synchronously).
-	 * @returns Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents.
+	 *
+	 * @return Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents.
 	 * @throws Promise if the value was not synchronous.
 	 */
 	get first(): Entry<T> | undefined {
@@ -148,7 +159,8 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Get an entry for the first result in this set of documents (asynchronously).
-	 * @returns Entry in `[id, data]` format for the last document, or `undefined` if there are no matching documents (possibly promised).
+	 *
+	 * @return Entry in `[id, data]` format for the last document, or `undefined` if there are no matching documents (possibly promised).
 	 */
 	get asyncFirst(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
 		const results = this.limit(1).get();
@@ -158,7 +170,8 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Get an entry for the last result in this set of documents (synchronously).
-	 * @returns Entry in `[id, data]` format for the last document, or `undefined` if there are no matching documents.
+	 *
+	 * @return Entry in `[id, data]` format for the last document, or `undefined` if there are no matching documents.
 	 * @throws Promise if the value was not synchronous.
 	 */
 	get last(): Entry<T> | undefined {
@@ -167,7 +180,8 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 
 	/**
 	 * Get an entry for the last result in this set of documents (asynchronously).
-	 * @returns Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents (possibly promised).
+	 *
+	 * @return Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents (possibly promised).
 	 */
 	get asyncLast(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
 		const results = this.limit(1).get();
@@ -176,38 +190,33 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 	}
 
 	/**
-	 * Set all matched documents with the specified partial data.
-	 * - All documents matched by the current query will have their data set to `data`
+	 * Set all matching documents to the same exact value.
 	 *
-	 * @param data The (potentially invalid) data to apply to all matched documents.
-	 * @param options.validate Whether the data is validated (defaults to `true`)
-	 *
-	 * @return Promise that resolves when done.
+	 * @param data Complete data to set the document to.
+	 * @return Nothing (possibly promised).
 	 */
-	async set(data: T): Promise<void> {
-		await this.db.provider.setDocuments(this, data);
+	set(data: T): void | Promise<void> {
+		return this.db.provider.setDocuments(this, data);
 	}
 
 	/**
-	 * Update all matched documents with the specified partial data.
-	 * - All documents matched by the current query will have `partial` merged into their data.
+	 * Update all matching documents with the same partial value.
 	 *
-	 * @param data The (potentially invalid) partial data to apply to all matched documents.
-	 * @param options.validate Whether the partial data is validated (defaults to `true`)
+	 * @param data Partial data to merge into every matching document.
 	 *
-	 * @return Promise that resolves when done.
+	 * @return Nothing (possibly promised).
 	 */
-	async update(data: Partial<T>): Promise<void> {
-		await this.db.provider.updateDocuments(this, data);
+	update(data: Partial<T>): void | Promise<void> {
+		return this.db.provider.updateDocuments(this, data);
 	}
 
 	/**
-	 * Delete all matched documents.
+	 * Delete all matching documents.
 	 *
-	 * @return Promise that resolves when done.
+	 * @return Nothing (possibly promised).
 	 */
-	async delete(): Promise<void> {
-		await this.db.provider.deleteDocuments(this);
+	delete(): void | Promise<void> {
+		return this.db.provider.deleteDocuments(this);
 	}
 
 	// Implement Queryable

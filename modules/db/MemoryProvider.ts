@@ -10,12 +10,12 @@ import {
 	ImmutableArray,
 	MutableArray,
 	removeItem,
-	logError,
 	dispatch,
 	Dispatcher,
 	Unsubscriber,
 	dispatchNext,
 	Observer,
+	thispatch,
 } from "../util";
 import type { Provider } from "./Provider";
 import type { Documents } from "./Documents";
@@ -33,65 +33,67 @@ import { DocumentRequiredError } from "./errors";
 export class MemoryProvider implements Provider {
 	/** List of tables in `{ path: Table }` format. */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	#data: MutableObject<Table> = {};
+	#tables: MutableObject<Table<any>> = {};
 
 	// Get a named collection (or create a new one).
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	#table(path: string): Table {
-		return (this.#data[path] ||= new Table());
+	#table<X extends Data>({ collection }: Document<X> | Documents<X>): Table<X> {
+		return (this.#tables[collection] ||= new Table());
 	}
 
-	getDocument({ collection, id }: Document): Result {
-		return this.#table(collection).docs[id];
+	getDocument<X extends Data>(ref: Document<X>): Result<X> {
+		return this.#table<X>(ref).result(ref.id);
 	}
 
-	onDocument({ id, collection }: Document, observer: Observer<Result>): Unsubscriber {
-		const table = this.#table(collection);
+	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result<X>>): Unsubscriber {
+		const table = this.#table(ref);
+		const id = ref.id;
 
 		// Call next() with initial results.
-		dispatchNext(observer, table.docs[id]);
+		dispatchNext(observer, table.results()[id]);
 
 		// Call next() every time the collection changes.
 		return table.on(changed => {
-			if (changed.includes(id)) dispatchNext(observer, table.docs[id]);
+			if (changed.includes(id)) dispatchNext(observer, table.results()[id]);
 		});
 	}
 
-	addDocument({ path }: Documents, data: Data): string {
-		const table = this.#table(path);
+	addDocument<X extends Data>(ref: Documents<X>, data: X): string {
+		const table = this.#table(ref);
 		let id = randomId();
-		while (table.docs[id]) id = randomId(); // Regenerate until unique.
+		while (table.result(id)) id = randomId(); // Regenerate ID until unique.
 		table.set(id, data);
 		return id;
 	}
 
-	setDocument({ collection, id }: Document, data: Data): void {
-		this.#table(collection).set(id, data);
+	setDocument<X extends Data>(ref: Document<X>, data: X): void {
+		this.#table(ref).set(ref.id, data);
 	}
 
-	updateDocument(document: Document, data: Partial<Data>): void {
-		const { collection, id } = document;
-		const table = this.#table(collection);
-		const existing = table.docs[id];
-		if (!existing) throw new DocumentRequiredError(document);
+	updateDocument<X extends Data>(ref: Document<X>, data: Partial<X>): void {
+		const table = this.#table(ref);
+		const id = ref.id;
+		const existing = table.result(id);
+		if (!existing) throw new DocumentRequiredError(ref);
 		table.set(id, updateProps(existing, data));
 	}
 
-	deleteDocument({ collection, id }: Document): void {
-		this.#table(collection).delete(id);
+	deleteDocument<X extends Data>(ref: Document<X>): void {
+		this.#table(ref).set(ref.id, undefined);
 	}
 
-	getDocuments({ path, query }: Documents): Results {
-		return query.results(this.#table(path).docs);
+	getDocuments<X extends Data>(ref: Documents<X>): Results<X> {
+		return ref.query.results(this.#table(ref).results());
 	}
 
-	onDocuments({ path, query }: Documents, observer: Observer<Results>): Unsubscriber {
-		const table = this.#table(path);
-		let filtered = objectFromEntries(query.sorts.apply(query.filters.apply(Object.entries(table.docs))));
-		let last = query.slice.results(filtered);
+	onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber {
+		const table = this.#table(ref);
+		const { filters, sorts, slice } = ref.query;
+		let filtered = objectFromEntries(sorts.apply(filters.apply(Object.entries(table.results()))));
+		let sliced = slice.results(filtered);
 
 		// Call next() with initial results (on next tick).
-		dispatchNext(observer, last);
+		dispatchNext(observer, sliced);
 
 		// Possibly call next() when the collection changes if the changes affect the subscription.
 		return table.on(changes => {
@@ -99,9 +101,9 @@ export class MemoryProvider implements Provider {
 			let updated = 0;
 			let removed = 0;
 			for (const id of changes) {
-				const doc = table.docs[id];
-				if (doc && query.filters.match(id, doc)) {
-					filtered[id] = doc; // Doc should be part of the filtered list.
+				const result = table.result(id);
+				if (result && filters.match(id, result)) {
+					filtered[id] = result; // Doc should be part of the filtered list.
 					updated++;
 				} else if (filtered[id]) {
 					delete filtered[id]; // Doc shouldn't be part of the filtered list.
@@ -113,81 +115,80 @@ export class MemoryProvider implements Provider {
 			if (!updated && !removed) return;
 
 			// Updates they need to be sorted again.
-			if (updated) filtered = query.sorts.results(filtered);
+			if (updated) filtered = sorts.results(filtered);
 
 			// Apply the slice.
-			const sliced = query.slice.results(filtered);
+			const newSliced = slice.results(filtered);
 
 			// If a slice was applied all the changes might have happened _after_ the end of the limit slice.
 			// So if every changed ID are not in `next` or `last`, there's no need to call `next()`
-			if (sliced !== filtered && changes.every(id => !last[id] && !sliced[id])) return;
+			if (newSliced !== filtered && changes.every(id => !sliced[id] && !newSliced[id])) return;
 
 			// Call next() with the next result.
-			dispatchNext(observer, sliced);
+			dispatchNext(observer, newSliced);
 
 			// Iterate.
-			last = sliced;
+			sliced = newSliced;
 		});
 	}
 
-	setDocuments({ path, query }: Documents, data: Data): void {
-		const table = this.#table(path);
-		const entries = query.apply(Object.entries(table.docs));
+	setDocuments<X extends Data>(ref: Documents<X>, data: X): void {
+		const table = this.#table(ref);
+		const entries = ref.query.apply(Object.entries(table.results()));
 		for (const [id] of entries) table.set(id, data);
 	}
 
-	updateDocuments({ path, query }: Documents, data: Partial<Data>): void {
-		const table = this.#table(path);
-		const entries = query.apply(Object.entries(table.docs));
+	updateDocuments<X extends Data>(ref: Documents<X>, data: Partial<X>): void {
+		const table = this.#table(ref);
+		const entries = ref.query.apply(Object.entries(table.results()));
 		for (const [id, existing] of entries) table.set(id, updateProps(existing, data));
 	}
 
-	deleteDocuments({ path, query }: Documents): void {
-		const table = this.#table(path);
-		const entries = query.apply(Object.entries(table.docs));
-		for (const [id] of entries) table.delete(id);
+	deleteDocuments<X extends Data>(ref: Documents<X>): void {
+		const table = this.#table(ref);
+		const entries = ref.query.apply(Object.entries(table.results()));
+		for (const [id] of entries) table.set(id, undefined);
 	}
 
 	reset(): void {
-		this.#data = {};
+		this.#tables = {};
 	}
 }
+
+const UNDEFINED_PROMISE: Promise<void> = Promise.resolve(undefined);
 
 /**
  * An individual table of data.
  * - Fires with an array of string IDs.
  */
-class Table {
+class Table<X extends Data> {
 	readonly #dispatchers: Dispatcher<ImmutableArray<string>>[] = [];
 	readonly #changes: MutableArray<string> = [];
+	readonly #results: MutableObject<X> = {};
 
-	readonly docs: MutableObject<Data> = {};
+	results(): Results<X> {
+		return this.#results;
+	}
 
-	set(id: string, data: Data): void {
-		if (data !== this.docs[id]) {
-			this.docs[id] = data;
-			this.#changed(id);
+	result(id: string): Result<X> {
+		return this.#results[id];
+	}
+
+	set(id: string, value: X | undefined): void {
+		if (value !== this.#results[id]) {
+			if (value) this.#results[id] = value as X;
+			else delete this.#results[id];
+			if (!this.#changes.length) thispatch<void, "fire">(this, "fire", UNDEFINED_PROMISE);
+			addItem(this.#changes, id);
 		}
 	}
 
-	delete(id: string): void {
-		if (this.docs[id]) {
-			delete this.docs[id];
-			this.#changed(id);
-		}
-	}
-
-	#changed(id: string) {
-		if (!this.#changes.length) Promise.resolve().then(this.#dispatch, logError);
-		addItem(this.#changes, id);
-	}
-
-	#dispatch = (): void => {
+	fire(): void {
 		if (this.#changes.length) {
 			for (const dispatcher of this.#dispatchers) dispatch(dispatcher, this.#changes);
 			this.#changes.splice(0);
 		}
-	};
+	}
 
 	on(dispatcher: Dispatcher<ImmutableArray<string>>): Unsubscriber {
 		addItem(this.#dispatchers, dispatcher);
