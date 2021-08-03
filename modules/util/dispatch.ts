@@ -62,8 +62,8 @@ export function dispatch<C extends string>(dispatcher: AsyncEmptyDispatcher, val
 export function dispatch<T>(dispatcher: AsyncDispatcher<T>, value: Resolvable<T>, catcherObj?: Catcher): void;
 export function dispatch<T, C extends string>(dispatcher: AsyncDispatcher<T>, value: Resolvable<T>, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void;
 // Overrides for unknown dispatchers.
-// export function dispatch(dispatcher: AsyncDispatcher<unknown>, value: unknown, catcherObj?: Catcher): void;
-// export function dispatch<C extends string>(dispatcher: AsyncDispatcher<unknown>, value: unknown, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void;
+export function dispatch(dispatcher: AsyncDispatcher<unknown>, value: unknown, catcherObj?: Catcher): void;
+export function dispatch<C extends string>(dispatcher: AsyncDispatcher<unknown>, value: unknown, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void;
 // Flexible override.
 export function dispatch<T, C extends string>(
 	dispatcher: AsyncDispatcher<T>,
@@ -133,14 +133,14 @@ export function thispatch<T, M extends string, C extends string>(
 	catcherKey: C,
 ): void;
 // Overrides for unknown dispatchers.
-// export function thispatch<M extends string>(obj: { [K in M]?: AsyncDispatcher<unknown> }, key: M, value: unknown, catcherObj?: Catcher): void;
-// export function thispatch<M extends string, C extends string>(
-// 	obj: { [K in M]?: AsyncDispatcher<unknown> },
-// 	key: M,
-// 	value: unknown,
-// 	catcherObj: { [K in C]?: Catcher },
-// 	catcherKey: C,
-// ): void;
+export function thispatch<M extends string>(obj: { [K in M]?: AsyncDispatcher<unknown> }, key: M, value: unknown, catcherObj?: Catcher): void;
+export function thispatch<M extends string, C extends string>(
+	obj: { [K in M]?: AsyncDispatcher<unknown> },
+	key: M,
+	value: unknown,
+	catcherObj: { [K in C]?: Catcher },
+	catcherKey: C,
+): void;
 // Flexible override.
 export function thispatch<T, M extends string, C extends string>(
 	obj: { [K in M]?: AsyncDispatcher<T> },
@@ -271,21 +271,21 @@ export function therive<I, O, M extends string, C extends string>(
 	catcherKey: C,
 ): void;
 // Overrides for unknown dispatchers.
-// export function therive<M extends string>(
-// 	value: unknown,
-// 	deriver: AsyncDeriver<unknown, unknown>,
-// 	obj: { [K in M]?: AsyncDispatcher<unknown> },
-// 	key: M,
-// 	catcherObj?: Catcher,
-// ): void;
-// export function therive<M extends string, C extends string>(
-// 	value: unknown,
-// 	deriver: AsyncDeriver<unknown, unknown>,
-// 	obj: { [K in M]?: AsyncDispatcher<unknown> },
-// 	key: M,
-// 	catcherObj: { [K in C]?: Catcher },
-// 	catcherKey: C,
-// ): void;
+export function therive<M extends string>(
+	value: unknown,
+	deriver: AsyncDeriver<unknown, unknown>,
+	obj: { [K in M]?: AsyncDispatcher<unknown> },
+	key: M,
+	catcherObj?: Catcher,
+): void;
+export function therive<M extends string, C extends string>(
+	value: unknown,
+	deriver: AsyncDeriver<unknown, unknown>,
+	obj: { [K in M]?: AsyncDispatcher<unknown> },
+	key: M,
+	catcherObj: { [K in C]?: Catcher },
+	catcherKey: C,
+): void;
 // Flexible override.
 export function therive<I, O, M extends string, C extends string>(
 	value: Resolvable<I>,
