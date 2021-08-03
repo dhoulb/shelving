@@ -12,7 +12,7 @@ export class Document<T extends Data = Data> implements Observable<Result<T>> {
 	readonly collection: string;
 	readonly id: string;
 
-	protected constructor(db: Database, collection: string, id: string) {
+	constructor(db: Database, collection: string, id: string) {
 		this.db = db;
 		this.path = `${collection}/${id}`;
 		this.collection = collection;

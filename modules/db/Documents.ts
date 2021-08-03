@@ -31,9 +31,9 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 	readonly db: Database;
 	readonly path: string;
 	readonly collection: string;
-	readonly query: Query<T> = EMPTY_QUERY;
+	readonly query: Query<T>;
 
-	protected constructor(db: Database, collection: string, query: Query<T> = EMPTY_QUERY) {
+	constructor(db: Database, collection: string, query: Query<T> = EMPTY_QUERY) {
 		this.db = db;
 		this.path = collection;
 		this.collection = collection;
@@ -47,8 +47,7 @@ export class Documents<T extends Data = Data> implements Queryable<T>, Observabl
 	 * @example `db.docs("puppies").doc("fido").get()`
 	 */
 	doc(id: string): Document<T> {
-		// @ts-expect-error Documents should only be created from databases.
-		return new Document(this.schema, this.db.provider, this.path, id);
+		return new Document(this.db, this.collection, id);
 	}
 
 	/**

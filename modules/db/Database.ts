@@ -11,14 +11,14 @@ import { Documents } from "./Documents";
  * @param collections Set of loci describing collections at the root level of the database.
  * @param provider Provider that allows data to be read/written.
  */
-export class Database<C extends Datas = Datas> {
+export class Database<T extends Datas = Datas> {
 	/** List of schemas validators for the collections in this database. */
-	readonly schemas: Validators<C>;
+	readonly schemas: Validators<T>;
 
 	/** The provider that powers this database. */
 	readonly provider: Provider;
 
-	constructor(schemas: Validators<C>, provider: Provider) {
+	constructor(schemas: Validators<T>, provider: Provider) {
 		this.schemas = schemas;
 		this.provider = provider;
 	}
@@ -28,18 +28,16 @@ export class Database<C extends Datas = Datas> {
 	 * @param name Collection name, e.g. `puppies`
 	 * @example `db.docs("dogs").doc("fido").get()`
 	 */
-	docs<K extends keyof C>(collection: K): Documents<C[K]> {
-		// @ts-expect-error Documents instances should only be created from databases.
-		return new Documents(this.schemas[collection], this.provider, collection as string);
+	docs<C extends keyof T & string>(collection: C): Documents<T[C]> {
+		return new Documents<T[C]>(this as unknown as Database, collection); // Unknown cast allows this to be used.
 	}
 
 	/**
 	 * Get a `Document` ref for a document in a collection in this database.
 	 * @param name Document name, e.g. `fido`
-	 * @example `db.docs("dogs", "fido").get()`
+	 * @example `db.doc("dogs", "fido").get()`
 	 */
-	doc<K extends keyof C>(collection: K, id: string): Document<C[K]> {
-		// @ts-expect-error Document instances should only be created from databases.
-		return new Document(this.schemas[collection], this.provider, collection as string, id);
+	doc<C extends keyof T & string>(collection: C, id: string): Document<T[C]> {
+		return new Document<T[C]>(this as unknown as Database, collection, id); // Unknown cast allows this to be used.
 	}
 }
