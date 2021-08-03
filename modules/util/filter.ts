@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { ImmutableArray } from "./array";
-import type { Deriver } from "./function";
+import type { Deriver } from "./dispatch";
 import { COMPARE } from "./compare";
 
 /** Possible operator references. */

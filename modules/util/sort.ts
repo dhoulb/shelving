@@ -1,4 +1,4 @@
-import type { Deriver } from "./function";
+import type { Deriver } from "./dispatch";
 import type { ImmutableArray } from "./array";
 import { Comparer, COMPARE } from "./compare";
 
