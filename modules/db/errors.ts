@@ -2,7 +2,7 @@ import type { Data } from "../util";
 import { RequiredError } from "../errors";
 import type { Document } from "./Document";
 
-/** Error thrown when a document doesn't exist. */
+/** Thrown if a document doesn't exist. */
 export class DocumentRequiredError<T extends Data = Data> extends RequiredError {
 	document: Document<T>;
 	constructor(document: Document<T>) {
