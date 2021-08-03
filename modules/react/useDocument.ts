@@ -1,10 +1,6 @@
-import { assertInstance, Data, Document, Result, State, StateProvider, Unsubscriber } from "..";
+import { Data, Document, Unsubscriber, DocumentState } from "..";
 import { usePureEffect } from "./usePureEffect";
-import { usePureMemo } from "./usePureMemo";
-import { useState } from "./useState";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const UNDEFINED_STATE = new State<Result<any>>(undefined);
+import { useObserve } from "./useObserve";
 
 /**
  * Use a single document in a React component.
@@ -23,25 +19,17 @@ const UNDEFINED_STATE = new State<Result<any>>(undefined);
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export const useDocument = <T extends Data>(ref: Document<T> | undefined, maxAge: number | true = 1000): State<Result<T>> => {
-	let state: State<Result<T>> = UNDEFINED_STATE;
-
-	if (ref) {
-		const provider = ref.db.provider;
-		assertInstance(provider, StateProvider);
-		state = provider.getDocumentState<T>(ref);
-		provider.refreshDocumentState(ref, maxAge);
-	}
-
-	// Subscribe to the state so when it changes the component is rerendered.
-	useState(state);
-
-	// Keep any realtime subscriptions open for the lifespan of this component.
-	usePureEffect(subscribeEffect, [usePureMemo(ref, [ref?.path]), maxAge]);
-
+export function useDocument<T extends Data>(ref: Document<T>, maxAge?: number | true): DocumentState<T>;
+export function useDocument(ref: undefined, maxAge?: number | true): undefined;
+export function useDocument<T extends Data>(ref: Document<T> | undefined, maxAge?: number | true): DocumentState<T> | undefined;
+export function useDocument<T extends Data>(ref: Document<T> | undefined, maxAge: number | true = 1000): DocumentState<T> | undefined {
+	const state = ref?.state;
+	if (state) state.refreshOutdated(maxAge); // If we have a `DocumentState` refresh it if it's outdated.
+	usePureEffect(realtimeEffect, [state, maxAge]);
+	useObserve(state);
 	return state;
-};
+}
 
-/** Effect that keeps the realtime subscription (if `maxAge` is `true`) open for the lifespan of the component. */
-const subscribeEffect = <T extends Data>(ref: Document<T> | undefined, maxAge: number | true): Unsubscriber | void =>
-	ref && maxAge === true ? () => ref.subscribe({}) : undefined;
+/** Effect that keeps the realtime subscription alive (if `maxAge` is `true`) for the lifespan of the component. */
+const realtimeEffect = <T extends Data>(state: DocumentState<T> | undefined, maxAge: number | true): Unsubscriber | void =>
+	state && maxAge === true ? state.start() : undefined;
