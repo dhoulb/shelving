@@ -28,6 +28,31 @@ import { StreamClosedError } from "./errors";
  * - Ensure that `next()`, `error()`, `complete()` aren't called again after `.closed` is true.
  */
 export class Stream<I, O = I> implements Observer<I>, Observable<O> {
+	/** Create a new Stream that's empty. */
+	static create<X>(): Stream<X> {
+		return new Stream<X>();
+	}
+
+	/** Create a new stream from a source. */
+	static from<X>(source: Observable<X>): Stream<X, X> {
+		return new Stream(source);
+	}
+
+	/** Create a new stream that derives a value using an `AsyncDeriver` function. */
+	static derive<X, Y>(deriver: AsyncDeriver<X, Y>, source?: Observable<X>): Stream<X, Y> {
+		return new Stream(source, deriver);
+	}
+
+	/** Create a new stream that only fires a slice of its subscribers. */
+	static slice<X>(start: number, end: number | undefined = undefined, source?: Observable<X>): Stream<X, X> {
+		return new SlicingStream(start, end, source);
+	}
+
+	/** Create a new stream that takes a limited number of values then closes itself. */
+	static take<X>(num: number, source?: Observable<X>): Stream<X, X> {
+		return new LimitedStream(num, source);
+	}
+
 	readonly #deriver?: AsyncDeriver<I, O>;
 	readonly #cleanup?: Unsubscriber;
 	readonly #subscribers: MutableArray<Observer<O>> = []; // List of subscribed observers.
@@ -47,7 +72,8 @@ export class Stream<I, O = I> implements Observer<I>, Observable<O> {
 		return getNextValue(this);
 	}
 
-	constructor(source?: Observable<I>, deriver?: AsyncDeriver<I, O>) {
+	// Protected (use `Stream.from()` and `Stream.derived()` instead).
+	protected constructor(source?: Observable<I>, deriver?: AsyncDeriver<I, O>) {
 		if (source) this.#cleanup = source.subscribe(this);
 		this.#deriver = deriver;
 	}
@@ -136,6 +162,11 @@ export class Stream<I, O = I> implements Observer<I>, Observable<O> {
 		return deriver ? new Stream<O, X>(this, deriver) : new Stream<O, O>(this);
 	}
 
+	/** Get a new stream subscribed to this stream that only fires a slice of its subscribers. */
+	slice(start: number, end: number | undefined = undefined): Stream<O, O> {
+		return new SlicingStream(start, end, this);
+	}
+
 	/** Get a stream that takes the next X number of values from this stream then completes itself. */
 	take(num: number): Stream<O, O> {
 		return new LimitedStream(num, this);
@@ -143,7 +174,11 @@ export class Stream<I, O = I> implements Observer<I>, Observable<O> {
 }
 
 /** SlicingStream: stream that, when new values are received, calls a specified slice of its subscribers (not all of them!) */
-export class SlicingStream<I, O = I> extends Stream<I, O> {
+class SlicingStream<I, O = I> extends Stream<I, O> {
+	create<X, Y>(start: number, end: number | undefined = undefined): SlicingStream<X, Y> {
+		return new SlicingStream<X, Y>(start, end);
+	}
+
 	#subscribers: MutableArray<Observer<O>> = []; // List of subscribed observers.
 	#start: number;
 	#end: number | undefined;
@@ -165,7 +200,7 @@ export class SlicingStream<I, O = I> extends Stream<I, O> {
 }
 
 /** LimitedStream: takes a specified number of values from a source then completes itself. */
-export class LimitedStream<I, O = I> extends Stream<I, O> {
+class LimitedStream<I, O = I> extends Stream<I, O> {
 	#remaining: number;
 
 	constructor(num: number, source?: Observable<I>, deriver?: AsyncDeriver<I, O>) {

@@ -25,7 +25,7 @@ export class ValidationProvider implements Provider {
 		return result ? validateData(ref, result) : undefined;
 	}
 	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result>): Unsubscriber {
-		const stream = new Stream<Result<X>, Result<X>>(undefined, v => (v ? validateData(ref, v) : undefined));
+		const stream = Stream.derive<Result<X>, Result<X>>(v => (v ? validateData(ref, v) : undefined));
 		stream.subscribe(observer);
 		return this.#source.onDocument(ref, stream);
 	}
@@ -50,7 +50,7 @@ export class ValidationProvider implements Provider {
 		return validateResults<X>(ref, await asyncResult);
 	}
 	onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber {
-		const stream = new Stream<Results<X>>(undefined, v => validateResults(ref, v));
+		const stream = Stream.derive<Results<X>, Results<X>>(v => validateResults(ref, v));
 		stream.subscribe(observer);
 		return this.#source.onDocuments(ref, stream);
 	}

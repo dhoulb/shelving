@@ -13,7 +13,7 @@ import { useObserve } from "./useObserve";
  */
 export const useState = <T>(initial: State<T> | T | Promise<T> | typeof LOADING): State<T> => {
 	// Create a memoized `State` instance from the initial value (if it's not a state itself).
-	const memoizedState = (useRef<State<T>>().current ||= initial instanceof State ? initial : new State<T>(initial));
+	const memoizedState = (useRef<State<T>>().current ||= initial instanceof State ? initial : State.create<T>(initial));
 
 	// Select either the `State` instance from the input parameters (if there is one) or use the memoized `State` instance from the initial value.
 	const whichState = initial instanceof State ? initial : memoizedState;

@@ -25,6 +25,19 @@ import { Stream } from "./Stream";
  * State: a stream the retains its msot recent value and makes it available at `state.value` and `state.data`
  */
 export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<T>, Observable<T> {
+	/**
+	 * Create a new `State` instance.
+	 *
+	 * @param initial The initial value for the state, a `Promise` that resolves to the initial value, a source `Observable` to subscribe to, or another `State` instance to take the initial value from and subscribe to.
+	 * - Not setting `initial` sets the initial value to `undefined`
+	 * - To set the `initial` value to `LOADING` explicitly set it to `LOADING`
+	 */
+	static create<X>(): State<X | undefined>;
+	static create<X>(initial: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X>;
+	static create<X>(initial?: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X> {
+		return new State<X>(initial as Resolvable<X>);
+	}
+
 	#value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
 
 	readonly updated: number | undefined = undefined; // Time the value was last updated.
@@ -81,7 +94,8 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 		return typeof this.updated === "number" ? Date.now() - this.updated : Infinity;
 	}
 
-	constructor(initial: State<T> | Observable<T> | Resolvable<T> | typeof LOADING) {
+	// Protected (use `State.create()` to create new `State` instances).
+	protected constructor(initial: State<T> | Observable<T> | Resolvable<T> | typeof LOADING) {
 		super(isObservable(initial) ? initial : undefined);
 		if (initial instanceof State) {
 			if (!initial.loading) this.next(initial.value);
@@ -106,7 +120,16 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 	}
 
 	/**
-	 * Update properties in this State
+	 * Set the entire value of this State.
+	 * - Listeners will fire (if value is different).
+	 * - Similar to `next()` (since this is an Observer) but only allows exact T (not `SKIP` or `Promise<T>` etc).
+	 */
+	set(value: T): void {
+		this.next(value);
+	}
+
+	/**
+	 * Update properties in this State.
 	 * - Listeners will fire (if value is different).
 	 *
 	 * @throws AssertionError if current value of this `State` is not an object.

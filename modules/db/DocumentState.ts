@@ -50,6 +50,7 @@ export class DocumentState<T extends Data = Data> extends State<Result<T>> {
 		return !!this.#stop;
 	}
 
+	// Protected (access through static `get()` etc instead).
 	protected constructor(ref: Document<T>, value: Result<T> | Promise<Result<T>> | typeof LOADING = LOADING) {
 		super(value);
 		this.#ref = ref;
