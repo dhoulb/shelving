@@ -3,6 +3,7 @@
 import type { Arguments } from "./function";
 import type { EmptyObject, ImmutableObject } from "./object";
 import { assertFunction } from "./assert";
+import { isUppercaseLetter } from "./string";
 
 /**
  * Constructor: a class constructor that can be used with `new X` to generate an object of type `T`
@@ -18,6 +19,10 @@ export type Class<T extends EmptyObject | ImmutableObject> = (new (...args: any[
  * - Exists because it's hard to remember the `...args: any[]` syntax, and annoying to allow the `any` every time.
  */
 export type AnyClass = new (...args: any) => any;
+
+/** Is a given value a class constructor? */
+export const isClass = <T extends AnyClass>(v: T | unknown): v is T =>
+	typeof v === "function" && v.prototype && v.prototype.name && isUppercaseLetter(v.prototype.name);
 
 /** Bind a class method (lazily on first access). */
 // eslint-disable-next-line @typescript-eslint/ban-types

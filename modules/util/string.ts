@@ -3,7 +3,7 @@
 import { formatDate, toYmd } from "./date";
 import { isObject } from "./object";
 import { ImmutableArray, isArray, mapItems } from "./array";
-import { formatNumber } from "./number";
+import { formatNumber, isBetween } from "./number";
 import { SKIP } from "./constants";
 
 /** Is a value a string? */
@@ -125,3 +125,9 @@ export const toRegExp = (value: string, flags = ""): RegExp => new RegExp(escape
 /** Escape special characters in a string regular expression. */
 export const escapeRegExp = (str: string): string => str.replace(REPLACE_ESCAPED, "\\$&");
 const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
+
+/** Is the first character of a string an uppercase letter? */
+export const isUppercaseLetter = (str: string): boolean => isBetween(str.charCodeAt(0), 65, 90);
+
+/** Is the first character of a string a lowercase letter? */
+export const isLowercaseLetter = (str: string): boolean => isBetween(str.charCodeAt(0), 97, 122);

@@ -1,3 +1,5 @@
+import { isClass } from "./class";
+
 /**
  * Any function.
  * - Consistency with `AnyConstructor`
@@ -23,18 +25,25 @@ export const BLACKHOLE: (...args: any[]) => void | undefined = () => undefined;
  * Lazy value: a plain value, or an initialiser function that returns that value.
  * @param ...args Any arguments the lazy value needs if it's a funtion.
  */
-export type Lazy<T, A extends Arguments = []> = ((...args: A) => T) | T;
+export type Lazy<T, A extends Arguments = []> = ((...args: A) => T) | (new (...args: A) => T) | T;
 
 /**
  * Initialise a lazy value.
  *
  * @param value The lazy value to resolve.
+ * - If this is a plain value, that value is returned.
+ * - If this is a function, it is called and its returned value is returned.
+ * - If this is a class constructor, a new instance of that class is instantiated and returned.
+ * - Class constructors are detected by whether the value is a function with a `name` property whose first character is an uppercase character.
+ *
  * @param ...args Any additional arguments the initialiser needs.
+ * - This array of values is passed into the function or class constructor as its parameters.
  */
-export function getLazy<T, A extends Arguments = []>(value: (...args: A) => T, ...args: A): T;
+export function getLazy<T, A extends Arguments = []>(value: (...args: A) => T, ...args: A): T; // Generics flow through this overload better than using `Lazy`
+export function getLazy<T, A extends Arguments = []>(value: new (...args: A) => T, ...args: A): T; // Generics flow through this overload better than using `Lazy`
 export function getLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T;
 export function getLazy(value: Lazy<unknown, unknown[]>, ...args: unknown[]): unknown {
-	return typeof value === "function" ? value(...args) : value;
+	return typeof value !== "function" ? value : isClass(value) ? new value(...args) : value(...args);
 }
 
 /**

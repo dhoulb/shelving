@@ -57,3 +57,12 @@ export const roundNumber = (num: number, step = 1): number => {
  * @returns The number formatted as a string in the browser's current locale.
  */
 export const formatNumber = (num: number, precision = 10): string => new Intl.NumberFormat(undefined, { maximumFractionDigits: precision }).format(num);
+
+/**
+ * Is a number within a specified range?
+ *
+ * @param num The number to test, e.g. `17`
+ * @param start The start of the range, e.g. `10`
+ * @param end The end of the range, e.g. `20`
+ */
+export const isBetween = (num: number, start: number, end: number): boolean => num >= start && num <= end;
