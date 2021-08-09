@@ -1,5 +1,5 @@
 import type { ImmutableArray } from "./array";
-import type { Lazy } from "./function";
+import { getLazy, Lazy } from "./function";
 import { MutableObject, isObject, ImmutableObject } from "./object";
 
 type Chunk = { pre: string; name: string; placeholder: string; post: string };
@@ -72,7 +72,7 @@ export const matchTemplate = (
 	lazyTemplates: Lazy<string | string[] | Iterable<string> | Generator<string>, [string]>,
 	target: string,
 ): TemplateValues | undefined => {
-	const templates = typeof lazyTemplates === "function" ? lazyTemplates(target) : lazyTemplates;
+	const templates = getLazy(lazyTemplates, target);
 	if (typeof templates === "string") {
 		const values = matchInternal(templates, target);
 		if (values) return values;
