@@ -20,7 +20,7 @@ import {
 import type { Provider } from "./Provider";
 import type { Documents } from "./Documents";
 import type { Document } from "./Document";
-import { DocumentRequiredError } from "./errors";
+import { ReferenceRequiredError } from "./errors";
 
 /**
  * Memory provider: fast in-memory store for data.
@@ -74,7 +74,7 @@ export class MemoryProvider implements Provider {
 		const table = this.#table(ref);
 		const id = ref.id;
 		const existing = table.result(id);
-		if (!existing) throw new DocumentRequiredError(ref);
+		if (!existing) throw new ReferenceRequiredError(ref);
 		table.set(id, updateProps(existing, data));
 	}
 

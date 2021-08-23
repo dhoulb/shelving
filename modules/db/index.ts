@@ -1,5 +1,6 @@
 // Core.
 export * from "./Database";
+export * from "./Reference";
 export * from "./Document";
 export * from "./Documents";
 export * from "./Pagination";

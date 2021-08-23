@@ -1,21 +1,17 @@
 import { Data, Observable, Result, throwAsync, isAsync, Observer, Unsubscriber, AsyncDispatcher, AsyncCatcher, AsyncEmptyDispatcher } from "../util";
 import type { Database } from "./Database";
 import { DocumentState } from "./DocumentState";
-import { DocumentRequiredError } from "./errors";
+import { ReferenceRequiredError } from "./errors";
+import { Reference } from "./Reference";
 
 /**
  * Document reference: allows reading from / writing to a specific document in a database.
  */
-export class Document<T extends Data = Data> implements Observable<Result<T>> {
-	readonly db: Database;
-	readonly path: string;
-	readonly collection: string;
+export class Document<T extends Data = Data> extends Reference<T> implements Observable<Result<T>> {
 	readonly id: string;
 
 	constructor(db: Database, collection: string, id: string) {
-		this.db = db;
-		this.path = `${collection}/${id}`;
-		this.collection = collection;
+		super(db, collection, `${collection}/${id}`);
 		this.id = id;
 	}
 
@@ -90,10 +86,10 @@ export class Document<T extends Data = Data> implements Observable<Result<T>> {
 		const result = this.get();
 		if (isAsync(result))
 			return result.then(r => {
-				if (!r) throw new DocumentRequiredError(this);
+				if (!r) throw new ReferenceRequiredError(this);
 				return r;
 			});
-		if (!result) throw new DocumentRequiredError(this);
+		if (!result) throw new ReferenceRequiredError(this);
 		return result;
 	}
 
@@ -160,10 +156,5 @@ export class Document<T extends Data = Data> implements Observable<Result<T>> {
 	 */
 	delete(): void | Promise<void> {
 		return this.db.provider.deleteDocument(this);
-	}
-
-	// Implement toString()
-	toString(): string {
-		return this.path;
 	}
 }

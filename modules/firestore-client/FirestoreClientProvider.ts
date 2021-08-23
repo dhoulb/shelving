@@ -9,22 +9,7 @@ import type {
 	DocumentReference as FirestoreDocumentReference,
 	CollectionReference as FirestoreCollectionReference,
 } from "@firebase/firestore-types";
-import {
-	DocumentRequiredError,
-	isObject,
-	Data,
-	Results,
-	Provider,
-	Document,
-	Documents,
-	Operator,
-	Direction,
-	Mutable,
-	Result,
-	Observer,
-	dispatchNext,
-	dispatchError,
-} from "..";
+import { Data, Results, Provider, Document, Documents, Operator, Direction, Mutable, Result, Observer, dispatchNext, dispatchError } from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -108,12 +93,7 @@ export class FirestoreClientProvider implements Provider {
 	}
 
 	async updateDocument<X extends Data>(ref: Document<X>, partial: Partial<X>): Promise<void> {
-		try {
-			await getDocument(this.firestore, ref).update(partial);
-		} catch (thrown: unknown) {
-			if (isObject(thrown) && thrown.code === "not-found") throw new DocumentRequiredError(ref);
-			throw thrown;
-		}
+		await getDocument(this.firestore, ref).update(partial);
 	}
 
 	async deleteDocument<X extends Data>(ref: Document<X>): Promise<void> {

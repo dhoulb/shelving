@@ -20,6 +20,7 @@ import { Query, Queryable } from "../query";
 import type { Database } from "./Database";
 import { Document } from "./Document";
 import { DocumentsState } from "./DocumentsState";
+import { Reference } from "./Reference";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EMPTY_QUERY = new Query<any>();
@@ -27,16 +28,11 @@ const EMPTY_QUERY = new Query<any>();
 /**
  * Documents reference: allows reading from / writing to a list of documents in a database, optionally with query filtering and sorting.
  */
-export class Documents<T extends Data = Data> implements Queryable<T>, Observable<Results<T>> {
-	readonly db: Database;
-	readonly path: string;
-	readonly collection: string;
+export class Documents<T extends Data = Data> extends Reference<T> implements Queryable<T>, Observable<Results<T>> {
 	readonly query: Query<T>;
 
 	constructor(db: Database, collection: string, query: Query<T> = EMPTY_QUERY) {
-		this.db = db;
-		this.path = collection;
-		this.collection = collection;
+		super(db, collection, collection);
 		this.query = query;
 	}
 
