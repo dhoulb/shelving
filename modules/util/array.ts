@@ -1,5 +1,5 @@
 import type { Resolvable } from "./data";
-import { ImmutableObject, isIterable, Mutable } from "./object";
+import type { ImmutableObject, Mutable } from "./object";
 import { SKIP } from "./constants";
 import { isAsync } from "./promise";
 
@@ -35,6 +35,13 @@ export const isArray = <T extends ImmutableArray>(v: T | unknown): v is T => v i
 export const isItem = <T extends unknown>(arr: ImmutableArray<T>, item: T | unknown): item is T => arr.includes(item as T);
 
 /**
+ * Is a value an iterable object?
+ * - Any object with a `Symbol.iterator` property is iterable.
+ * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
+ */
+export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.iterator in value;
+
+/**
  * Break an array into equal sized chunks (last chunk might be smaller).
  *
  * @return New array with one or more sub-arrays for each chunk.
@@ -51,7 +58,7 @@ export const arraySum = (arr: ImmutableArray<number>): number => arr.reduce(arra
 const arraySumReducer = (a: number, b: number) => a + b;
 
 /**
- * Add an item to an array.
+ * Add an item to an array (immutably).
  * - Returns an array that definitely contains the specified item.
  *
  * @return New array with the specified item.
@@ -65,7 +72,20 @@ export function withItem<T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T> 
 }
 
 /**
- * Remove an item from an array.
+ * Add multiple items to an array (immutably).
+ * - Returns an array that definitely contains the specified item.
+ *
+ * @return New array with the specified item.
+ * - If all items already exist in the array (using `indexOf()`) then the items won't be added again and the exact same input array will be returned.
+ */
+export function withItems<T extends ImmutableArray>(arr: T, items: ImmutableArray<ArrayType<T>>): T;
+export function withItems<T>(arr: ImmutableArray<T>, items: ImmutableArray<T>): ImmutableArray<T>;
+export function withItems<T>(arr: ImmutableArray<T>, items: ImmutableArray<T>): ImmutableArray<T> {
+	return items.reduce<ImmutableArray<T>>(withItem, arr);
+}
+
+/**
+ * Remove an item from an array (immutably).
  * - Finds all instances of the item from the array and returns an array that definitely does not contain it.
  *
  * @return New array without the specified item.
@@ -85,7 +105,21 @@ export function withoutItem<T>(arr: ImmutableArray<T>, item: T): ImmutableArray<
 }
 
 /**
- * Toggle an item in and out of an array.
+ * Remove multiple items from an array (immutably).
+ * - Finds all instances of a number of items from an array and returns an array that definitely does not contain them.
+ *
+ * @return New array without the specified item.
+ * - If the items do not already exist in the array (using `indexOf()`) then the exact same input array will be returned.
+ */
+export function withoutItems<T extends ImmutableArray>(arr: T, items: ImmutableArray<ArrayType<T>>): T;
+export function withoutItems<T>(arr: ImmutableArray<T>, items: ImmutableArray<T>): ImmutableArray<T>;
+export function withoutItems<T>(arr: ImmutableArray<T>, items: ImmutableArray<T>): ImmutableArray<T> {
+	return items.reduce<ImmutableArray<T>>(withoutItem, arr);
+}
+
+/**
+ * Toggle an item in and out of an array (immutably).
+ * - If the item is being removed from the array ALL instances of that item in the array will be removed.
  *
  * @return New array with or without the specified item.
  */
@@ -97,7 +131,20 @@ export function toggleItem<T>(arr: ImmutableArray<T>, item: T): ImmutableArray<T
 }
 
 /**
- * Swap all instances of an item from an array.
+ * Toggle an item in and out of an array (immutably).
+ * - If an item is being removed from the array ALL instances of that item in the array will be removed.
+ *
+ * @return New array with or without the specified item.
+ */
+export function toggleItems<T extends ImmutableArray>(arr: T, items: ImmutableArray<ArrayType<T>>): T;
+export function toggleItems<T>(arr: ImmutableArray<T>, items: ImmutableArray<T>): ImmutableArray<T>;
+export function toggleItems<T>(arr: ImmutableArray<T>, items: ImmutableArray<T>): ImmutableArray<T> {
+	return items.reduce<ImmutableArray<T>>(toggleItem, arr);
+}
+
+/**
+ * Swap an item in an array for a new item.
+ * - All instances of the item in the array will be swapped for the new item.
  *
  * @return New array with or without the specified item.
  * - If the item does not already exist in the array (using `indexOf()`) then the exact same input array will be returned.
@@ -129,7 +176,7 @@ export function getSecondItem<T>(arr: ImmutableArray<T>): T | undefined {
 	return arr[1];
 }
 
-/** Get the last entry from an object or array. */
+/** Get the last item from an array. */
 export function getLastItem<T>(arr: [...unknown[], T]): T;
 export function getLastItem<T>(arr: ImmutableArray<T>): T | undefined;
 export function getLastItem<T>(arr: ImmutableArray<T>): T | undefined {
@@ -137,8 +184,10 @@ export function getLastItem<T>(arr: ImmutableArray<T>): T | undefined {
 }
 
 /**
- * Get the next array item in a list.
- * @return The item after the specified one, or `undefined` if the specified item does not exist in the array.
+ * Get the next item in an array.
+ * @param arr The target array.
+ * @param value The value of the target item.
+ * @return The item after the target item, or `undefined` if that item does not exist in the array.
  */
 export const getNextItem = <T>(arr: ImmutableArray<T>, value: T): T | undefined => {
 	const i = arr.indexOf(value);
@@ -147,8 +196,10 @@ export const getNextItem = <T>(arr: ImmutableArray<T>, value: T): T | undefined 
 };
 
 /**
- * Get the previous array item in a list.
- * @return The item before the specified one, or `undefined` if the specified item does not exist in the array.
+ * Get the previous item in an array.
+ * @param arr The target array.
+ * @param value The value of the target item.
+ * @return The item before the target item, or `undefined` if that item does not exist in the array.
  */
 export const getPrevItem = <T>(arr: ImmutableArray<T>, value: T): T | undefined => {
 	const i = arr.indexOf(value);
@@ -160,6 +211,7 @@ export const getPrevItem = <T>(arr: ImmutableArray<T>, value: T): T | undefined 
  * Return a shuffled version of an array.
  * - Uses Fisher Yates algorithm.
  *
+ * @param The target array.
  * @returns Copy of the input array in a random order.
  */
 export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
@@ -175,7 +227,7 @@ export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
 /**
  * Map the items in an array.
  *
- * @param arr|obj|iterable The input array or object to map (if an object, `Object.entries()` will be performed automatically and the second argument to `mapper()` will be the string key).
+ * @param input The input array or map-like object to iterate over.
  *
  * @param mapper Mapping function that receives the value and key and returns the corresponding value.
  * - Mapper can return a promise. If it does will return a Promise that resolves once every value has resolved.
@@ -187,23 +239,15 @@ export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
  * - Immutable so if the values don't change then the same instance will be returned.
  */
 export function mapItems<I extends unknown, O extends unknown>(
-	arr: Iterable<I>, //
+	input: Iterable<I> | ImmutableObject<I>, //
 	mapper: (value: I) => Promise<typeof SKIP | O>,
 ): Promise<ImmutableArray<O>>;
 export function mapItems<I extends unknown, O extends unknown>(
-	arr: Iterable<I>, //
-	mapper: ((value: I) => typeof SKIP | O) | O,
-): ImmutableArray<O>;
-export function mapItems<I extends unknown, O extends unknown>(
-	obj: ImmutableObject<I>, //
-	mapper: (value: I) => Promise<typeof SKIP | O>,
-): Promise<ImmutableArray<O>>;
-export function mapItems<I extends unknown, O extends unknown>(
-	obj: ImmutableObject<I>, //
+	input: Iterable<I> | ImmutableObject<I>, //
 	mapper: ((value: I) => typeof SKIP | O) | O,
 ): ImmutableArray<O>;
 export function mapItems(
-	input: ImmutableArray | ImmutableObject | Iterable<unknown>,
+	input: ImmutableObject | Iterable<unknown>,
 	mapper: ((value: unknown, key: number | string) => Resolvable<unknown>) | Resolvable<unknown>,
 ): ImmutableArray | Promise<ImmutableArray> {
 	let promises = false;
@@ -250,7 +294,7 @@ export const resolveArray = async <V>(arr: ResolvableArray<V>): Promise<Immutabl
 };
 
 /**
- * Add an item to an array by reference.
+ * Add an item to an array (by reference).
  * - If the item already exists in the array (using `indexOf()`) then it won't be added again.
  */
 export function addItem<T extends MutableArray>(arr: T, item: ArrayType<T>): void;
@@ -260,7 +304,7 @@ export function addItem<T>(arr: MutableArray<T>, item: T): void {
 }
 
 /**
- * Remove an item from an array by reference.
+ * Remove an item from an array (by reference).
  * - Deletes all instances of an item from an array by reference, and returns void.
  */
 export function removeItem<T extends MutableArray>(arr: T, value: ArrayType<T>): void;

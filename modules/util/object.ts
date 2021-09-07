@@ -1,5 +1,7 @@
 import type { Entry, ImmutableEntries, ResolvableEntries } from "./entry";
 import type { Resolvable } from "./data";
+import type { ImmutableArray } from "./array";
+import { isArray, isIterable } from "./array";
 import { SKIP } from "./constants";
 import { isAsync } from "./promise";
 
@@ -78,13 +80,6 @@ export type DeepReadonly<T extends ImmutableObject> = { +readonly [K in keyof T]
 export const isObject = <T extends ImmutableObject>(value: T | unknown): value is T => typeof value === "object" && value !== null;
 
 /**
- * Is a value an iterable object?
- * - Any object with a `Symbol.iterator` property is iterable.
- * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
- */
-export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => isObject(value) && Symbol.iterator in value;
-
-/**
  * Turn an array of entries into an object.
  * - Eventually when browser support is good enough this can be changed to ES2019's `Object.fromEntries()`
  */
@@ -148,7 +143,7 @@ export function mapKeys(
 }
 
 /**
- * Map the (own) property values of an object (i.e. to change the prop values).
+ * Map the key/value entries of an object (i.e. to change the values).
  *
  * @param input An input object whose property values you want to modify.
  *
@@ -259,60 +254,13 @@ export const resolveObject = async <V>(input: ResolvableObject<V> | ResolvableEn
 };
 
 /**
- * Add a property to an object.
- * - Different from `updateProp()` because it will create the property if it doesn't exist.
+ * Extract a named prop from an object.
+ * - Extraction is possibly deep if deeper keys are specified.
  *
- * @return New object with the specified prop.
- * - If `key` already exists in `obj` and is exactly the same (using `===`) then the exact same input object will be returned.
+ * @param obj The target object to get from.
+ * @param key The key of the prop in the object to get.
+ * @param deeperKeys An array of deeper keys to recurse into the object.
  */
-export const withProp = <O extends ImmutableObject, K extends string | keyof O, V>(obj: O, key: K, value: V): O & { [X in K]: V } => {
-	if (key in obj && obj[key] === value) return obj as O & { [X in K]: V };
-	return { ...obj, [key]: value };
-};
-
-/**
- * Remove a property from an object.
- *
- * @return New object without the specified prop.
- * - If `key` doesn't already exist in `obj` then the exact same input object will be returned.
- */
-export const withoutProp = <O extends ImmutableObject, K extends keyof O>(obj: O, key: K): Pick<O, Exclude<keyof O, K>> => {
-	if (!(key in obj)) return obj as Pick<O, Exclude<keyof O, K>>;
-	const { [key]: gone, ...returned } = obj; // eslint-disable-line @typescript-eslint/no-unused-vars
-	return returned;
-};
-
-/**
- * Return a new object where a named property has been updated.
- * - Different from `withProp()` because it won't create the property if it doesn't exist.
- *
- * @return New object with the specified prop value.
- * - If value is exactly the same (using `===`) then the exact same input object will be returned.
- */
-export const updateProp = <O extends ImmutableObject, K extends keyof O>(obj: O, key: K, value: O[K]): O => {
-	if (obj[key] === value) return obj;
-	return { ...obj, [key]: value };
-};
-
-/**
- * Return a new object where several named properties has been updated.
- * - Different from `withProp()` because it won't create the property if it doesn't exist.
- *
- * @return New object with the specified prop value.
- * - If value is exactly the same (using `===`) then the exact same input object will be returned.
- */
-export const updateProps = <O extends ImmutableObject>(obj: O, partial: Partial<O>): O => {
-	let changed = false;
-	const entries: [keyof O, O[keyof O]][] = Object.entries(partial);
-	for (const [k, v] of entries)
-		if (obj[k] !== v) {
-			changed = true;
-			break;
-		}
-	return changed ? { ...obj, ...partial } : obj;
-};
-
-/** Extract a named (possibly deep) prop from an object. */
 export function getProp<O extends ImmutableObject, K extends keyof O | string | number>(obj: O, key: K): K extends keyof O ? O[K] : undefined;
 export function getProp<O extends ImmutableObject>(obj: O, key: string | number, ...deeperKeys: (string | number)[]): unknown;
 export function getProp<O extends ImmutableObject>(obj: O, key: string | number, ...deeperKeys: (string | number)[]): unknown {
@@ -327,7 +275,138 @@ export function getProp<O extends ImmutableObject>(obj: O, key: string | number,
 }
 
 /**
- * Add a key/value pair to an object.
+ * Extract a key/value entry from a map-like object.
+ *
+ * @param obj The target object to get from.
+ * @param key The key of the entry in the object to get.
+ */
+export function getEntry<T>(obj: ImmutableObject<T>, key: string): T | undefined {
+	return obj[key];
+}
+
+/**
+ * Set the property of an object with a known shape.
+ *
+ * @param input The input object.
+ * @param key The key of the prop to set.
+ * @param value The value of the prop to set.
+ *
+ * @return New object with the specified prop set.
+ * - If `key` already exists in `obj` and is exactly the same (using `===`) then the exact same input object will be returned.
+ */
+export function withProp<O extends ImmutableObject>(input: O, key: string & keyof O, value: O[string & keyof O]): O;
+export function withProp<O extends ImmutableObject, K extends string, V>(input: O, key: string, value: V): O & { [KK in K]: V };
+export function withProp<O extends ImmutableObject, K extends string, V>(input: O, key: string, value: V): O & { [KK in K]: V } {
+	if (key in input && input[key] === value) return input as O & { [KK in K]: V };
+	return { ...input, [key]: value };
+}
+
+/**
+ * Set several properties of an object with a known shape.
+ *
+ * @param input The input object.
+ *
+ * @return New object with the specified prop added.
+ * - If every prop already exists and has the same value the exact same input object will be returned.
+ */
+export function withProps<O extends ImmutableObject>(input: O, props: Partial<O>): O;
+export function withProps<O extends ImmutableObject, P extends ImmutableObject>(input: O, props: P): O & P;
+export function withProps<O extends ImmutableObject>(input: O, props: Iterable<Entry<O[keyof O]>> | Partial<O>): O {
+	let changed = false;
+	const output = { ...input };
+	const entries = isIterable(props) ? props : Object.entries(props);
+	for (const [key, value] of entries as [keyof O, O[keyof O]][])
+		if (input[key] !== value) {
+			output[key] = value;
+			changed = true;
+		}
+	return changed ? output : input;
+}
+
+/**
+ * Add a key/value entry to a map-like object (immutably).
+ *
+ * @param input The input object.
+ * @param key The key of the entry to add.
+ * @param value The value of the entry to add.
+ *
+ * @return New map-like object with the specified entry added.
+ */
+export const withEntry: <T>(input: ImmutableObject<T>, key: string, value: T) => ImmutableObject<T> = withProp;
+
+/**
+ * Add several a key/value enties to a map-like object (immutably).
+ *
+ * @param input The input object.
+ * @param entries The set of entries to add to the map-like object in either `{ key: value }` object format or as an iterable list of entries in `[key, value]` format.
+ *
+ * @return New object with the specified entry.
+ */
+export const withEntries: <T>(input: ImmutableObject<T>, entries: Iterable<Entry<T>> | ImmutableObject<T>) => ImmutableObject<T> = withProps;
+
+/**
+ * Remove a key/value entry from a map-like object (immutably).
+ *
+ * @param input The input object.
+ * @param key The key of the entry to remove.
+ * @param value The value of the entry to remove. If set, the entry will only be removed if its current value is exactly `value`
+ *
+ * @return New object without the specified prop.
+ * - If `key` doesn't already exist in `obj` then the exact same input object will be returned.
+ */
+export function withoutEntry<T>(input: ImmutableObject<T>, key: string, value?: T): ImmutableObject<T> {
+	if (!(key in input)) return input;
+	if (value !== undefined && input[key] !== value) return input;
+	const { [key]: unused, ...output } = input; // eslint-disable-line @typescript-eslint/no-unused-vars
+	return output;
+}
+
+/**
+ * Remove several key/value entries from a map-like object (immutably).
+ *
+ * @param input The input object.
+ * @param keys Array of keys of entries to remove.
+ *
+ * @return New object without the specified props.
+ * - If every prop already exists and has the same value the exact same input object will be returned.
+ */
+export function withoutEntries<T>(input: ImmutableObject<T>, keys: Iterable<string>): ImmutableObject<T> {
+	let changed = false;
+	const output: MutableObject<T> = { ...input };
+	for (const key of keys)
+		if (key in input) {
+			delete output[key];
+			changed = true;
+		}
+	return changed ? output : input;
+}
+
+/**
+ * Set a single named prop on an object with a known shape (by reference).
+ *
+ * @param obj The target object to modify.
+ * @param key The key of the prop in the object to set.
+ * @param value The value to set the prop to.
+ */
+export function setProp<O extends MutableObject, K extends string>(obj: O, key: K, value: O[K]): void {
+	obj[key] = value;
+}
+
+/**
+ * Set several named props on an object with a known shape (by reference).
+ *
+ * @param obj The target object to modify.
+ * @param props An object containing new props to set on the object.
+ */
+export function setProps<O extends MutableObject>(obj: O, props: Partial<O>): void {
+	for (const [k, v] of Object.entries(props) as [keyof O, O[keyof O]][]) obj[k] = v;
+}
+
+/**
+ * Add a key/value entry to a map-like object (by reference).
+ *
+ * @param obj The target object to modify.
+ * @param key The key of the entry to add.
  * @param value The value of the entry. If the object's property isn't exactly this value, it won't be removed.
  */
 export function addEntry<T>(obj: MutableObject<T>, key: string | number, value: T): void {
@@ -335,25 +414,24 @@ export function addEntry<T>(obj: MutableObject<T>, key: string | number, value: 
 }
 
 /**
- * Delete a key/value pair from an object (by reference).
- * @param value The value of the entry. If the object's property isn't exactly this value, it won't be removed.
+ * Remove a key/value entry from a map-like object (by reference).
+ *
+ * @param obj The target object to modify.
+ * @param key The key of the entry to remove.
+ * @param value The value of the entry to remove. If set, the entry will only be removed if its current value is exactly `value`
  */
-export function removeEntry<T>(obj: MutableObject<T>, key: string | number, value: T): void {
-	if (obj[key] === value) delete obj[key];
+export function removeEntry<T>(obj: MutableObject<T>, key: string | number, value?: T): void {
+	if (value === undefined || obj[key] === value) delete obj[key];
 }
 
-/** Object that's able to iterate over its own enumerable own property values. */
-export class PropIterator<T extends ImmutableObject> implements Iterable<ObjectType<T>> {
-	/** Make a new object that's able to iterate over its own enumerable own property values. */
-	static create<X extends ImmutableObject>(obj: X): X & PropIterator<X> {
-		return Object.assign(Object.create(PropIterator.prototype), obj);
-	}
-	*[Symbol.iterator](): Generator<ObjectType<T>, void, undefined> {
-		yield* Object.values(this);
-	}
-}
+/**
+ * Count the entries of a map-like object.
+ * - Only counts the object's own enumerable properties.
+ * @param obj The target object to count the props of.
+ */
+export const countEntries = (obj: ImmutableObject | ImmutableArray): number => (isArray(obj) ? obj.length : Object.keys(obj).length);
 
-/** Object that's able to iterate over its own enumerable own property entries. */
+/** Object that's able to iterate over its props as entries. */
 export class EntryIterator<T extends ImmutableObject> implements Iterable<Entry<T>> {
 	/** Make a new object that's able to iterate over its own enumerable own property entries. */
 	static create<X extends ImmutableObject>(obj: X): X & EntryIterator<X> {
@@ -364,5 +442,13 @@ export class EntryIterator<T extends ImmutableObject> implements Iterable<Entry<
 	}
 }
 
-/** Count the own enumerable properties of an object. */
-export const countProps = (obj: ImmutableObject): number => Object.keys(obj).length;
+/** Object that's able to iterate over its props. */
+export class PropIterator<T extends ImmutableObject> implements Iterable<ObjectType<T>> {
+	/** Make a new object that's able to iterate over its own enumerable own property values. */
+	static create<X extends ImmutableObject>(obj: X): X & PropIterator<X> {
+		return Object.assign(Object.create(PropIterator.prototype), obj);
+	}
+	*[Symbol.iterator](): Generator<ObjectType<T>, void, undefined> {
+		yield* Object.values(this);
+	}
+}

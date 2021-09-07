@@ -2,16 +2,16 @@ import {
 	SKIP,
 	mapProps,
 	objectFromKeys,
-	withoutProp,
+	withoutEntry,
 	withProp,
-	updateProp,
+	setProp,
 	getProp,
 	objectFromEntries,
 	isObject,
 	mapKeys,
 	ImmutableEntries,
 	ImmutableObject,
-	updateProps,
+	setProps,
 } from "..";
 
 const obj: ImmutableObject<number> = { a: 1, b: 2, c: 3, d: 4 };
@@ -94,12 +94,12 @@ test("objectFromKeys()", async () => {
 	expect(objectFromKeys(keys, null)).toEqual({ a: null, b: null, c: null, d: null });
 	expect(objectFromKeys(keys, null)).not.toBe(obj);
 });
-test("withoutProp()", () => {
+test("withoutEntry()", () => {
 	// Prop is deleted.
-	expect(withoutProp(obj, "c")).toEqual({ a: 1, b: 2, d: 4 });
-	expect(withoutProp(obj, "c")).not.toBe(obj);
+	expect(withoutEntry(obj, "c")).toEqual({ a: 1, b: 2, d: 4 });
+	expect(withoutEntry(obj, "c")).not.toBe(obj);
 	// If prop isn't deleted same instance is returned.
-	expect(withoutProp(obj, "NOPE" as any)).toBe(obj);
+	expect(withoutEntry(obj, "NOPE" as any)).toBe(obj);
 });
 test("withProp()", () => {
 	// Prop is set (existing prop).
@@ -111,19 +111,19 @@ test("withProp()", () => {
 	// If prop isn't changed same instance is returned.
 	expect(withProp(obj, "d", 4)).toBe(obj);
 });
-test("updateProp()", () => {
+test("setProp()", () => {
 	// Prop is set (existing prop).
-	expect(updateProp(obj, "d", 4444)).toEqual({ a: 1, b: 2, c: 3, d: 4444 });
-	expect(updateProp(obj, "d", 4444)).not.toBe(obj);
+	expect(setProp(obj, "d", 4444)).toEqual({ a: 1, b: 2, c: 3, d: 4444 });
+	expect(setProp(obj, "d", 4444)).not.toBe(obj);
 	// If prop isn't changed same instance is returned.
-	expect(updateProp(obj, "d", 4)).toBe(obj);
+	expect(setProp(obj, "d", 4)).toBe(obj);
 });
-test("updateProps()", () => {
+test("setProps()", () => {
 	// Prop is set (existing prop).
-	expect(updateProps(obj, { d: 4444 })).toEqual({ a: 1, b: 2, c: 3, d: 4444 });
-	expect(updateProps(obj, { d: 4444 })).not.toBe(obj);
+	expect(setProps(obj, { d: 4444 })).toEqual({ a: 1, b: 2, c: 3, d: 4444 });
+	expect(setProps(obj, { d: 4444 })).not.toBe(obj);
 	// If prop isn't changed same instance is returned.
-	expect(updateProps(obj, { d: 4 })).toBe(obj);
+	expect(setProps(obj, { d: 4 })).toBe(obj);
 });
 test("getProp()", () => {
 	const testObj = { a: "A", 1: 1 };
