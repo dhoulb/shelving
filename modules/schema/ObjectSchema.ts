@@ -39,19 +39,17 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		this.props = props;
 	}
 
-	validate(unsafeValue: unknown, partial: true): Readonly<Partial<T>>;
-	validate(unsafeValue?: unknown, partial?: boolean): Readonly<T>;
-	validate(unsafeValue: unknown = this.value, partial = false): Readonly<T> {
+	validate(unsafeValue: unknown = this.value): Readonly<T> {
 		// Coorce.
 		const unsafeObj = isObject(unsafeValue) ? unsafeValue : null;
 
 		// Null means 'no object'
 		if (unsafeObj === null) {
 			// If original input was truthy, we know its format must have been wrong.
-			if (unsafeValue) throw new InvalidFeedback("Must be object", { unsafeValue });
+			if (unsafeValue) throw new InvalidFeedback("Must be object", { value: unsafeValue });
 
 			// Check requiredness.
-			if (this.required) throw new InvalidFeedback("Required", { unsafeValue });
+			if (this.required) throw new InvalidFeedback("Required", { value: unsafeValue });
 
 			// Return empty object.
 			return super.validate(null);
@@ -65,7 +63,6 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		const propSchemas = Object.entries(this.props);
 		for (const [key, validator] of propSchemas) {
 			const unsafeProp = unsafeObj[key];
-			if (unsafeProp === undefined && partial) continue;
 			try {
 				const safeProp = validator.validate(unsafeProp);
 
