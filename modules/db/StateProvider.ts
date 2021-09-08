@@ -1,4 +1,4 @@
-import { Data, Result, Results, Unsubscriber, Observer } from "../util";
+import { Data, Result, Results, Unsubscriber, Observer, Transforms } from "../util";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
 import type { Provider } from "./Provider";
@@ -30,9 +30,9 @@ export class StateProvider implements Provider {
 		await this.#source.setDocument(ref, data);
 		DocumentState.set(ref, data);
 	}
-	async updateDocument<X extends Data>(ref: Document<X>, data: Partial<X>): Promise<void> {
-		await this.#source.updateDocument(ref, data);
-		DocumentState.update(ref, data);
+	async updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): Promise<void> {
+		await this.#source.updateDocument(ref, transforms);
+		DocumentState.update(ref, transforms);
 	}
 	async deleteDocument<X extends Data>(ref: Document<X>): Promise<void> {
 		await this.#source.deleteDocument(ref);

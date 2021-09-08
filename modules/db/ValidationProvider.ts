@@ -1,6 +1,5 @@
-import { Data, Result, Results, Unsubscriber, MutableObject, Observer, isAsync, assertInstance } from "../util";
+import { Data, Result, Results, Unsubscriber, MutableObject, Observer, isAsync, isObject, Transforms, isTransform, Transform } from "../util";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import { ObjectSchema } from "../schema";
 import { Stream } from "../stream";
 import type { Provider } from "./Provider";
 import type { Document } from "./Document";
@@ -18,25 +17,25 @@ export class ValidationProvider implements Provider {
 	getDocument<X extends Data>(ref: Document<X>): Result<X> | Promise<Result<X>> {
 		const result = this.#source.getDocument(ref);
 		if (isAsync(result)) return this.#awaitGetDocument(ref, result);
-		return result ? ref.validate(result) : undefined;
+		return validateResult(ref, result);
 	}
 	async #awaitGetDocument<X extends Data>(ref: Document<X>, asyncResult: Promise<Result<X>>): Promise<Result<X>> {
 		const result = await asyncResult;
-		return result ? ref.validate(result) : undefined;
+		return validateResult(ref, result);
 	}
 	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result>): Unsubscriber {
-		const stream = Stream.derive<Result<X>, Result<X>>(v => (v ? ref.validate(v) : undefined));
+		const stream = Stream.derive<Result<X>, Result<X>>(v => validateResult(ref, v));
 		stream.subscribe(observer);
 		return this.#source.onDocument(ref, stream);
 	}
 	addDocument<X extends Data>(ref: Documents<X>, data: X): string | Promise<string> {
-		return this.#source.addDocument(ref, ref.validate(data));
+		return this.#source.addDocument(ref, validateData(ref, data));
 	}
 	setDocument<X extends Data>(ref: Document<X>, data: X): void | Promise<void> {
-		return this.#source.setDocument(ref, ref.validate(data));
+		return this.#source.setDocument(ref, validateData(ref, data));
 	}
-	updateDocument<X extends Data>(ref: Document<X>, data: Partial<X>): void | Promise<void> {
-		return this.#source.updateDocument(ref, ref.validate(data, true));
+	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void | Promise<void> {
+		return this.#source.updateDocument(ref, validateTransforms(ref, transforms));
 	}
 	deleteDocument<X extends Data>(ref: Document<X>): void | Promise<void> {
 		return this.#source.deleteDocument(ref);
@@ -57,23 +56,69 @@ export class ValidationProvider implements Provider {
 	setDocuments<X extends Data>(ref: Documents<X>, data: X): void | Promise<void> {
 		return this.#source.setDocuments(ref, ref.validate(data));
 	}
-	updateDocuments<X extends Data>(ref: Documents<X>, data: Partial<X>): void | Promise<void> {
-		return this.#source.updateDocuments(ref, ref.validate(data, true));
+	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void | Promise<void> {
+		return this.#source.updateDocuments(ref, validateTransforms(ref, transforms));
 	}
 	deleteDocuments<X extends Data>(ref: Documents<X>): void | Promise<void> {
 		return this.#source.deleteDocuments(ref);
 	}
 }
 
-/** Validate a set of documents at this path. */
+/** Validate a set of data for a path. */
+function validateData<X extends Data>(ref: Document<X> | Documents<X>, data: X): X {
+	return ref.schema.validate(data);
+}
+
+/** Validate a set of transforms for a path. */
+function validateTransforms<X extends Data>(ref: Document<X> | Documents<X>, unsafeTransforms: Transforms<X>): Transforms<X> {
+	if (!isObject(unsafeTransforms)) throw new InvalidFeedback("Must be object", { value: unsafeTransforms });
+	const schema = ref.schema;
+	let changed = false;
+	let invalid = false;
+	const safeTransforms: MutableObject<Transform | X[keyof X]> = {};
+	const details: MutableObject = {};
+	const validators = Object.entries(schema.props);
+	for (const [key, validator] of validators) {
+		const unsafeTransform = unsafeTransforms[key];
+		if (unsafeTransform === undefined) {
+			continue; // Skip undefined.
+		} else if (isTransform(unsafeTransform)) {
+			safeTransforms[key] = unsafeTransform;
+		} else {
+			try {
+				const safeTransform = validator.validate(unsafeTransform);
+				if (safeTransform !== unsafeTransform) changed = true;
+				safeTransforms[key] = safeTransform;
+			} catch (feedback: unknown) {
+				invalid = true;
+				details[key] = feedback;
+			}
+		}
+	}
+	if (Object.keys(unsafeTransforms).length > validators.length) changed = true;
+	if (invalid) throw new InvalidFeedback("Invalid transforms", details);
+	return changed ? (safeTransforms as Transforms<X>) : unsafeTransforms;
+}
+
+/** Validate a result for a path. */
+function validateResult<X extends Data>(ref: Document<X>, result: Result<X>): Result<X> {
+	if (!result) return undefined;
+	const schema = ref.schema;
+	try {
+		schema.validate(result);
+	} catch (err: unknown) {
+		throw isFeedback(err) ? new ReferenceValidationError(ref, err) : err;
+	}
+}
+
+/** Validate a set of results for a path. */
 function validateResults<X extends Data>(ref: Documents<X>, results: Results<X>): Results<X> {
+	const schema = ref.schema;
 	const validated: MutableObject<X> = {};
 	const invalids: MutableObject<Feedback> = {};
 	let invalid = false;
 	for (const [id, data] of Object.entries(results)) {
 		try {
-			const schema = ref.db.schemas[ref.collection];
-			assertInstance<ObjectSchema<X>>(schema, ObjectSchema);
 			validated[id] = schema.validate(data);
 		} catch (thrown) {
 			if (isFeedback(thrown)) {

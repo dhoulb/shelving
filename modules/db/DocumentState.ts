@@ -1,5 +1,5 @@
 import { State, StreamClosedError } from "../stream";
-import { Data, dispatch, LOADING, MutableObject, Observer, Result, Unsubscriber } from "../util";
+import { Data, dispatch, LOADING, MutableObject, Observer, Result, Transforms, Unsubscriber } from "../util";
 import type { Document } from "./Document";
 
 /**
@@ -21,10 +21,10 @@ export class DocumentState<T extends Data = Data> extends State<Result<T>> {
 		if (state && !state.closed) state.next(result);
 		else this.#states[key] = new DocumentState(ref, result);
 	}
-	static update<X extends Data>(ref: Document<X>, data: Partial<X>): void {
+	static update<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void {
 		const key = ref.toString();
 		const state = this.#states[key];
-		if (state && !state.loading && !state.closed) state.update(data);
+		if (state && !state.loading && !state.closed) state.update(transforms);
 	}
 	static start<X extends Data>(ref: Document<X>, observer?: Observer<Result<X>>): Unsubscriber {
 		const key = ref.toString();

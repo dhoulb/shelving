@@ -1,4 +1,4 @@
-import type { Observer, Unsubscriber, Data, Result, Results } from "../util";
+import type { Observer, Unsubscriber, Data, Result, Results, Transforms } from "../util";
 import type { Document } from "./Document";
 import type { Documents } from "./Documents";
 
@@ -54,12 +54,12 @@ export interface Provider {
 	 * - If the document doesn't exist, throw an error.
 	 *
 	 * @param ref Document reference specifying which document to merge into.
-	 * @param data Partial data to merge into the existing document.
+	 * @param transforms Set of transforms to apply to the existing document.
 	 *
 	 * @return Nothing (possibly promised).
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	updateDocument<X extends Data>(ref: Document<X>, data: Partial<X>): void | Promise<void>;
+	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void | Promise<void>;
 
 	/**
 	 * Delete an existing document.
@@ -105,11 +105,11 @@ export interface Provider {
 	 * Update all matching documents with the same partial value.
 	 *
 	 * @param ref Documents reference specifying which collection to update.
-	 * @param data Partial data to merge into every matching document.
+	 * @param transforms Set of transforms to apply to every matching document.
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	updateDocuments<X extends Data>(ref: Documents<X>, data: Partial<X>): void | Promise<void>;
+	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void | Promise<void>;
 
 	/**
 	 * Delete all matching documents.

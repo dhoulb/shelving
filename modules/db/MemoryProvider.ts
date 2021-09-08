@@ -5,7 +5,6 @@ import {
 	randomId,
 	MutableObject,
 	objectFromEntries,
-	updateProps,
 	addItem,
 	ImmutableArray,
 	MutableArray,
@@ -16,6 +15,8 @@ import {
 	dispatchNext,
 	Observer,
 	thispatch,
+	transformProps,
+	Transforms,
 } from "../util";
 import type { Provider } from "./Provider";
 import type { Documents } from "./Documents";
@@ -70,12 +71,12 @@ export class MemoryProvider implements Provider {
 		this.#table(ref).set(ref.id, data);
 	}
 
-	updateDocument<X extends Data>(ref: Document<X>, data: Partial<X>): void {
+	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void {
 		const table = this.#table(ref);
 		const id = ref.id;
 		const existing = table.result(id);
 		if (!existing) throw new ReferenceRequiredError(ref);
-		table.set(id, updateProps(existing, data));
+		table.set(id, transformProps(existing, transforms));
 	}
 
 	deleteDocument<X extends Data>(ref: Document<X>): void {
@@ -138,10 +139,10 @@ export class MemoryProvider implements Provider {
 		for (const [id] of entries) table.set(id, data);
 	}
 
-	updateDocuments<X extends Data>(ref: Documents<X>, data: Partial<X>): void {
+	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void {
 		const table = this.#table(ref);
 		const entries = ref.query.apply(Object.entries(table.results()));
-		for (const [id, existing] of entries) table.set(id, updateProps(existing, data));
+		for (const [id, existing] of entries) table.set(id, transformProps(existing, transforms));
 	}
 
 	deleteDocuments<X extends Data>(ref: Documents<X>): void {

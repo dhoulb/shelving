@@ -19,14 +19,18 @@ export class Reference<T extends Data = Data> implements Validator<T> {
 		this.path = path;
 	}
 
+	/** Get the corresponding `ObjectSchema` for this reference. */
+	get schema(): ObjectSchema<T> {
+		const schema = this.db.schemas[this.collection];
+		assertInstance<ObjectSchema<T>>(schema, ObjectSchema);
+		return schema;
+	}
+
 	// Implement `Validator`
-	validate(data: unknown, partial: true): Partial<T>;
-	validate(data: unknown, partial?: false): T;
-	validate(data: unknown, partial = false): T | Partial<T> {
+	validate(data: unknown): T {
+		const schema = this.schema;
 		try {
-			const schema = this.db.schemas[this.collection];
-			assertInstance<ObjectSchema<T>>(schema, ObjectSchema);
-			return schema.validate(data, partial);
+			return schema.validate(data);
 		} catch (thrown: unknown) {
 			throw isFeedback(thrown) ? new ReferenceValidationError(this, thrown) : thrown;
 		}

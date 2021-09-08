@@ -4,7 +4,7 @@ import {
 	Results,
 	throwAsync,
 	isAsync,
-	countProps,
+	countEntries,
 	ImmutableArray,
 	Observer,
 	Unsubscriber,
@@ -102,7 +102,7 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	 */
 	get asyncCount(): number | Promise<number> {
 		const results = this.db.provider.getDocuments(this);
-		return isAsync(results) ? results.then(countProps) : countProps(results);
+		return isAsync(results) ? results.then(countEntries) : countEntries(results);
 	}
 
 	/**
