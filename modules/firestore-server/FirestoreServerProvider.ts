@@ -1,4 +1,4 @@
-import "firebase-admin";
+import firebase from "firebase-admin";
 import type {
 	Firestore,
 	WhereFilterOp as FirestoreWhereFilterOp,
@@ -8,7 +8,28 @@ import type {
 	DocumentReference as FirestoreDocumentReference,
 	CollectionReference as FirestoreCollectionReference,
 } from "@google-cloud/firestore";
-import { Data, Results, Provider, Document, Documents, Operator, Observer, Direction, Mutable, Result, dispatchNext, dispatchError } from "..";
+import {
+	Data,
+	Results,
+	Provider,
+	Document,
+	Documents,
+	Operator,
+	Observer,
+	Direction,
+	Mutable,
+	Result,
+	dispatchNext,
+	dispatchError,
+	MutableObject,
+	Transforms,
+	isTransform,
+	IncrementTransform,
+	AddItemTransform,
+	RemoveItemsTransform,
+	AddEntriesTransform,
+	RemoveEntriesTransform,
+} from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -59,6 +80,27 @@ function getResults<X extends Data>(snapshot: FirestoreQuerySnapshot<X>): Result
 	return results;
 }
 
+/** Convert a set of Shelving `Transform` instances into the corresponding Firestore `FieldValue` instances. */
+function convertTransforms<X extends Data>(transforms: Transforms<X>) {
+	const output: MutableObject = {};
+	for (const [key, transform] of Object.entries(transforms)) {
+		if (isTransform(transform)) {
+			if (transform instanceof IncrementTransform) {
+				output[key] = firebase.firestore.FieldValue.increment(transform.amount);
+			} else if (transform instanceof AddItemTransform) {
+				output[key] = firebase.firestore.FieldValue.arrayUnion(...transform.items);
+			} else if (transform instanceof RemoveItemsTransform) {
+				output[key] = firebase.firestore.FieldValue.arrayRemove(...transform.items);
+			} else if (transform instanceof AddEntriesTransform) {
+				for (const [k, v] of Object.entries(transform.props)) output[`${key}.${k}`] = v;
+			} else if (transform instanceof RemoveEntriesTransform) {
+				for (const k of transform.props) output[`${key}.${k}`] = firebase.firestore.FieldValue.delete();
+			} else throw Error("Unsupported transform");
+		} else output[key] = transform;
+	}
+	return output;
+}
+
 /**
  * Firestore server database provider.
  * - Works with the Node.JS admin SDK.
@@ -91,8 +133,9 @@ export class FirestoreServerProvider implements Provider {
 		await getDocument(this.firestore, ref).set(data);
 	}
 
-	async updateDocument<X extends Data>(ref: Document<X>, data: Partial<Data>): Promise<void> {
-		await getDocument(this.firestore, ref).update(data);
+	async updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): Promise<void> {
+		const updates = convertTransforms(transforms);
+		await getDocument(this.firestore, ref).update(updates);
 	}
 
 	async deleteDocument<X extends Data>(ref: Document<X>): Promise<void> {
@@ -125,13 +168,14 @@ export class FirestoreServerProvider implements Provider {
 		await writer.close();
 	}
 
-	async updateDocuments<X extends Data>(ref: Documents<X>, data: Partial<X>): Promise<void> {
+	async updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): Promise<void> {
+		const updates = convertTransforms(transforms);
 		const writer = this.firestore.bulkWriter();
 		const query = getQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
 		let current: typeof query | false = query;
 		while (current) {
 			const snapshot = await query.get();
-			for (const s of snapshot.docs) void writer.update(s.ref, data);
+			for (const s of snapshot.docs) void writer.update(s.ref, updates);
 			current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
 			void writer.flush();
 		}

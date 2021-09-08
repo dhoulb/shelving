@@ -1,4 +1,4 @@
-import "firebase/app";
+import firebase from "firebase/app";
 import "firebase/firestore";
 import type {
 	FirebaseFirestore as Firestore,
@@ -9,7 +9,8 @@ import type {
 	DocumentReference as FirestoreDocumentReference,
 	CollectionReference as FirestoreCollectionReference,
 } from "@firebase/firestore-types";
-import { Data, Results, Provider, Document, Documents, Operator, Direction, Mutable, Result, Observer, dispatchNext, dispatchError } from "..";
+import { Data, Results, Provider, Document, Documents, Operator, Direction, Mutable, Result, Observer, dispatchNext, dispatchError, Transforms } from "..";
+import { AddItemTransform, AddEntriesTransform, IncrementTransform, isTransform, MutableObject, RemoveItemsTransform, RemoveEntriesTransform } from "../util";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -60,6 +61,27 @@ function getResults<X extends Data>(snapshot: FirestoreQuerySnapshot<X>): Result
 	return results;
 }
 
+/** Convert a set of Shelving `Transform` instances into the corresponding Firestore `FieldValue` instances. */
+function convertTransforms<X extends Data>(transforms: Transforms<X>) {
+	const output: MutableObject = {};
+	for (const [key, transform] of Object.entries(transforms)) {
+		if (isTransform(transform)) {
+			if (transform instanceof IncrementTransform) {
+				output[key] = firebase.firestore.FieldValue.increment(transform.amount);
+			} else if (transform instanceof AddItemTransform) {
+				output[key] = firebase.firestore.FieldValue.arrayUnion(...transform.items);
+			} else if (transform instanceof RemoveItemsTransform) {
+				output[key] = firebase.firestore.FieldValue.arrayRemove(...transform.items);
+			} else if (transform instanceof AddEntriesTransform) {
+				for (const [k, v] of Object.entries(transform.props)) output[`${key}.${k}`] = v;
+			} else if (transform instanceof RemoveEntriesTransform) {
+				for (const k of transform.props) output[`${key}.${k}`] = firebase.firestore.FieldValue.delete();
+			} else throw Error("Unsupported transform");
+		} else output[key] = transform;
+	}
+	return output;
+}
+
 /**
  * Firestore client database provider.
  * - Works with the JS client SDK.
@@ -92,8 +114,9 @@ export class FirestoreClientProvider implements Provider {
 		await getDocument(this.firestore, ref).set(data);
 	}
 
-	async updateDocument<X extends Data>(ref: Document<X>, partial: Partial<X>): Promise<void> {
-		await getDocument(this.firestore, ref).update(partial);
+	async updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): Promise<void> {
+		const updates = convertTransforms(transforms);
+		await getDocument(this.firestore, ref).update(updates);
 	}
 
 	async deleteDocument<X extends Data>(ref: Document<X>): Promise<void> {
@@ -116,9 +139,10 @@ export class FirestoreClientProvider implements Provider {
 		await Promise.all(snapshot.docs.map(s => s.ref.set(data)));
 	}
 
-	async updateDocuments<X extends Data>(ref: Documents<X>, data: Partial<Data>): Promise<void> {
+	async updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): Promise<void> {
 		const snapshot = await getQuery(this.firestore, ref).get();
-		await Promise.all(snapshot.docs.map(s => s.ref.update(data)));
+		const updates = convertTransforms(transforms);
+		await Promise.all(snapshot.docs.map(s => s.ref.update(updates)));
 	}
 
 	async deleteDocuments<X extends Data>(ref: Documents<X>): Promise<void> {
