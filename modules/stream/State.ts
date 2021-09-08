@@ -3,7 +3,6 @@ import {
 	LOADING,
 	ImmutableObject,
 	Mutable,
-	updateProps,
 	ImmutableArray,
 	ArrayType,
 	swapItem,
@@ -18,6 +17,8 @@ import {
 	isAsync,
 	getRequired,
 	throwAsync,
+	Transforms,
+	transformProps,
 } from "../util";
 import { Stream } from "./Stream";
 
@@ -134,9 +135,9 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 	 *
 	 * @throws AssertionError if current value of this `State` is not an object.
 	 */
-	update(partial: Partial<T & ImmutableObject>): void {
+	update(transforms: Transforms<T & ImmutableObject>): void {
 		assertObject<T & ImmutableObject>(this.#value);
-		this.next(updateProps<T & ImmutableObject>(this.#value, partial));
+		this.next(transformProps<T & ImmutableObject>(this.#value, transforms));
 	}
 
 	/**
