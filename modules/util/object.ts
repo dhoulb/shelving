@@ -388,7 +388,7 @@ export function withoutEntries<T>(input: ImmutableObject<T>, keys: Iterable<stri
  * @param key The key of the prop in the object to set.
  * @param value The value to set the prop to.
  */
-export function setProp<O extends MutableObject, K extends string>(obj: O, key: K, value: O[K]): void {
+export function setProp<O extends MutableObject, K extends keyof O>(obj: O, key: K, value: O[K]): void {
 	obj[key] = value;
 }
 
