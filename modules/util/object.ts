@@ -311,11 +311,11 @@ export function withProp<O extends ImmutableObject, K extends string, V>(input: 
  */
 export function withProps<O extends ImmutableObject>(input: O, props: Partial<O>): O;
 export function withProps<O extends ImmutableObject, P extends ImmutableObject>(input: O, props: P): O & P;
-export function withProps<O extends ImmutableObject>(input: O, props: Iterable<Entry<O[keyof O]>> | Partial<O>): O {
+export function withProps<O extends ImmutableObject>(input: O, props: Partial<O> | Iterable<Entry<O[keyof O]>>): O {
 	let changed = false;
 	const output = { ...input };
-	const entries = isIterable(props) ? props : Object.entries(props);
-	for (const [key, value] of entries as [keyof O, O[keyof O]][])
+	const entries = (isIterable(props) ? props : Object.entries(props)) as [keyof O, O[keyof O]][];
+	for (const [key, value] of entries)
 		if (input[key] !== value) {
 			output[key] = value;
 			changed = true;
@@ -398,8 +398,9 @@ export function setProp<O extends MutableObject, K extends keyof O>(obj: O, key:
  * @param obj The target object to modify.
  * @param props An object containing new props to set on the object.
  */
-export function setProps<O extends MutableObject>(obj: O, props: Partial<O>): void {
-	for (const [k, v] of Object.entries(props) as [keyof O, O[keyof O]][]) obj[k] = v;
+export function setProps<O extends MutableObject>(obj: O, props: Partial<O> | Iterable<Entry<O[keyof O]>>): void {
+	const entries = (isIterable(props) ? props : Object.entries(props)) as [keyof O, O[keyof O]][];
+	for (const [k, v] of entries) obj[k] = v;
 }
 
 /**
@@ -409,9 +410,16 @@ export function setProps<O extends MutableObject>(obj: O, props: Partial<O>): vo
  * @param key The key of the entry to add.
  * @param value The value of the entry. If the object's property isn't exactly this value, it won't be removed.
  */
-export function addEntry<T>(obj: MutableObject<T>, key: string | number, value: T): void {
-	obj[key] = value;
-}
+export const addEntry: <T>(obj: MutableObject<T>, key: string | number, value: T) => void = setProp;
+
+/**
+ * Add several key/value entries to a map-like object (by reference).
+ *
+ * @param obj The target object to modify.
+ * @param key The key of the entry to add.
+ * @param value The value of the entry. If the object's property isn't exactly this value, it won't be removed.
+ */
+export const addEntries: <T>(obj: MutableObject<T>, entries: ImmutableObject<T> | Iterable<Entry<T>>) => void = setProps;
 
 /**
  * Remove a key/value entry from a map-like object (by reference).
@@ -422,6 +430,17 @@ export function addEntry<T>(obj: MutableObject<T>, key: string | number, value: 
  */
 export function removeEntry<T>(obj: MutableObject<T>, key: string | number, value?: T): void {
 	if (value === undefined || obj[key] === value) delete obj[key];
+}
+
+/**
+ * Remove several key/value entries from a map-like object (by reference).
+ *
+ * @param obj The target object to modify.
+ * @param key The key of the entry to add.
+ * @param value The value of the entry. If the object's property isn't exactly this value, it won't be removed.
+ */
+export function removeEntries<T>(obj: MutableObject<T>, keys: Iterable<string>): void {
+	for (const key of keys) delete obj[key];
 }
 
 /**
