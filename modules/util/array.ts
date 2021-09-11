@@ -374,3 +374,17 @@ export function uniqueItems<T>(input: Iterable<T>): ImmutableArray<T> {
 	for (const item of input) if (output.indexOf(item) < 0) output.push(item);
 	return output;
 }
+
+/**
+ * Count the number of items in an array or iterable.
+ *
+ * @param items The input array or iterable to count.
+ *
+ * @return Number of items.
+ */
+export function countItems<T>(items: Iterable<T>): number {
+	if (isArray(items)) return items.length;
+	let count = 0;
+	for (const unused of items) count++; // eslint-disable-line @typescript-eslint/no-unused-vars
+	return count;
+}
