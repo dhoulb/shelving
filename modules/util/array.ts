@@ -369,10 +369,10 @@ export function removeItems<T>(arr: MutableArray<T>, items: Iterable<T>): void {
  * @return New array where any duplicate items have been removed.
  * - Returns the same instance if no changes were made.
  */
-export function uniqueItems<T>(input: Iterable<T>): ImmutableArray<T> {
+export function uniqueItems<T>(input: ImmutableArray<T> | Iterable<T>): ImmutableArray<T> {
 	const output: MutableArray<T> = [];
 	for (const item of input) if (output.indexOf(item) < 0) output.push(item);
-	return output;
+	return isArray(input) && input.length === output.length ? input : output;
 }
 
 /**
