@@ -3,12 +3,6 @@ import {
 	LOADING,
 	ImmutableObject,
 	Mutable,
-	ImmutableArray,
-	ArrayType,
-	swapItem,
-	withoutItem,
-	withItem,
-	assertArray,
 	assertObject,
 	Resolvable,
 	Observer,
@@ -35,8 +29,8 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 	 */
 	static create<X>(): State<X | undefined>;
 	static create<X>(initial: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X>;
-	static create<X>(initial?: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X> {
-		return new State<X>(initial as Resolvable<X>);
+	static create<X>(initial?: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X | undefined> {
+		return new State<X | undefined>(initial);
 	}
 
 	#value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
@@ -138,39 +132,6 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 	update(transforms: Transforms<T & ImmutableObject>): void {
 		assertObject<T & ImmutableObject>(this.#value);
 		this.next(transformProps<T & ImmutableObject>(this.#value, transforms));
-	}
-
-	/**
-	 * Treat this state as an array and replace an item in its value.
-	 * - Listeners will fire (if value is different).
-	 *
-	 * @throws AssertionError if current value of this `State` is not an array.
-	 */
-	add(item: ArrayType<T & ImmutableArray>): void {
-		assertArray<T & ImmutableArray>(this.#value);
-		this.next(withItem<T & ImmutableArray>(this.#value, item));
-	}
-
-	/**
-	 * Treat this state as an array and replace an item in its value.
-	 * - Listeners will fire (if value is different).
-	 *
-	 * @throws AssertionError if current value of this `State` is not an array.
-	 */
-	remove(item: ArrayType<T & ImmutableArray>): void {
-		assertArray<T & ImmutableArray>(this.#value);
-		this.next(withoutItem<T & ImmutableArray>(this.#value, item));
-	}
-
-	/**
-	 * Treat this state as an array and replace an item in its value.
-	 * - Listeners will fire (if value is different).
-	 *
-	 * @throws AssertionError if current value of this `State` is not an array.
-	 */
-	swap(oldItem: ArrayType<T & ImmutableArray>, newItem: ArrayType<T & ImmutableArray>): void {
-		assertArray<T & ImmutableArray>(this.#value);
-		this.next(swapItem<T & ImmutableArray>(this.#value, oldItem, newItem));
 	}
 
 	// Override `dispatchError()` to save the reason at `this.reason` and clean up.
