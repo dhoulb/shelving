@@ -362,16 +362,15 @@ export function removeItems<T>(arr: MutableArray<T>, items: Iterable<T>): void {
 }
 
 /**
- * Remove duplicate items from an array (immutably).
+ * Return an array of the unique items in an array or iterable.
  *
- * @param arr The array to make unique.
+ * @param input The array or iterable to make unique.
  *
  * @return New array where any duplicate items have been removed.
  * - Returns the same instance if no changes were made.
  */
-export const uniqueItems = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
-	if (!arr.length) return arr;
-	const unique = arr.filter(filterUnique);
-	return unique.length === arr.length ? arr : unique;
-};
-const filterUnique = <T>(item: T, i: number, arr: ImmutableArray<T>) => i === arr.indexOf(item);
+export function uniqueItems<T>(input: Iterable<T>): ImmutableArray<T> {
+	const output: MutableArray<T> = [];
+	for (const item of input) if (output.indexOf(item) < 0) output.push(item);
+	return output;
+}
