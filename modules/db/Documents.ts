@@ -15,6 +15,7 @@ import {
 	getFirstProp,
 	getLastProp,
 	ArrayType,
+	Transforms,
 } from "../util";
 import { Query, Queryable } from "../query";
 import type { Database } from "./Database";
@@ -208,12 +209,12 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	/**
 	 * Update all matching documents with the same partial value.
 	 *
-	 * @param data Partial data to merge into every matching document.
+	 * @param transforms Set of transforms to apply to every matching document.
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	update(data: Partial<T>): void | Promise<void> {
-		return this.db.provider.updateDocuments(this, data);
+	update(transforms: Transforms<T>): void | Promise<void> {
+		return this.db.provider.updateDocuments(this, transforms);
 	}
 
 	/**

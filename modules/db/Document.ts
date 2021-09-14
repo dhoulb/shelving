@@ -1,4 +1,16 @@
-import { Data, Observable, Result, throwAsync, isAsync, Observer, Unsubscriber, AsyncDispatcher, AsyncCatcher, AsyncEmptyDispatcher } from "../util";
+import {
+	Data,
+	Observable,
+	Result,
+	throwAsync,
+	isAsync,
+	Observer,
+	Unsubscriber,
+	AsyncDispatcher,
+	AsyncCatcher,
+	AsyncEmptyDispatcher,
+	Transforms,
+} from "../util";
 import type { Database } from "./Database";
 import { DocumentState } from "./DocumentState";
 import { ReferenceRequiredError } from "./errors";
@@ -138,13 +150,13 @@ export class Document<T extends Data = Data> extends Reference<T> implements Obs
 	 * - If the document exists, merge the partial data into it.
 	 * - If the document doesn't exist, throw an error.
 	 *
-	 * @param data Partial data to merge into the existing document.
+	 * @param transforms Set of transforms to apply to the existing document.
 	 *
 	 * @return Nothing (possibly promised).
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	update(data: Partial<T>): void | Promise<void> {
-		return this.db.provider.updateDocument(this, data);
+	update(transforms: Transforms<T>): void | Promise<void> {
+		return this.db.provider.updateDocument(this, transforms);
 	}
 
 	/**
