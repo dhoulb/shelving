@@ -14,6 +14,8 @@ export abstract class Transform<T = unknown> {
  * - Hint: you can use negative numbers to decrement the number too!
  */
 export class IncrementTransform extends Transform<number> {
+	static INCREMENT_ONE = new IncrementTransform(1);
+	static DECREMENT_ONE = new IncrementTransform(-1);
 	static create(amount: number): IncrementTransform {
 		return new IncrementTransform(amount);
 	}
