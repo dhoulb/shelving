@@ -28,9 +28,9 @@ export class IncrementTransform extends Transform<number> {
 }
 
 /** Add array item transform: an object that adds a specific item to an array. */
-export class AddItemTransform<T> extends Transform<ImmutableArray<T>> {
-	static create<X>(...items: ImmutableArray<X>): AddItemTransform<X> {
-		return new AddItemTransform(items);
+export class AddItemsTransform<T> extends Transform<ImmutableArray<T>> {
+	static create<X>(...items: ImmutableArray<X>): AddItemsTransform<X> {
+		return new AddItemsTransform(items);
 	}
 	readonly items: ImmutableArray<T>;
 	protected constructor(items: ImmutableArray<T>) {

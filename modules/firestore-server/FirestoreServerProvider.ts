@@ -25,7 +25,7 @@ import {
 	Transforms,
 	isTransform,
 	IncrementTransform,
-	AddItemTransform,
+	AddItemsTransform,
 	RemoveItemsTransform,
 	AddEntriesTransform,
 	RemoveEntriesTransform,
@@ -87,7 +87,7 @@ function convertTransforms<X extends Data>(transforms: Transforms<X>) {
 		if (isTransform(transform)) {
 			if (transform instanceof IncrementTransform) {
 				output[key] = firebase.firestore.FieldValue.increment(transform.amount);
-			} else if (transform instanceof AddItemTransform) {
+			} else if (transform instanceof AddItemsTransform) {
 				output[key] = firebase.firestore.FieldValue.arrayUnion(...transform.items);
 			} else if (transform instanceof RemoveItemsTransform) {
 				output[key] = firebase.firestore.FieldValue.arrayRemove(...transform.items);

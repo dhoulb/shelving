@@ -10,7 +10,7 @@ import type {
 	CollectionReference as FirestoreCollectionReference,
 } from "@firebase/firestore-types";
 import { Data, Results, Provider, Document, Documents, Operator, Direction, Mutable, Result, Observer, dispatchNext, dispatchError, Transforms } from "..";
-import { AddItemTransform, AddEntriesTransform, IncrementTransform, isTransform, MutableObject, RemoveItemsTransform, RemoveEntriesTransform } from "../util";
+import { AddItemsTransform, AddEntriesTransform, IncrementTransform, isTransform, MutableObject, RemoveItemsTransform, RemoveEntriesTransform } from "../util";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -68,7 +68,7 @@ function convertTransforms<X extends Data>(transforms: Transforms<X>) {
 		if (isTransform(transform)) {
 			if (transform instanceof IncrementTransform) {
 				output[key] = firebase.firestore.FieldValue.increment(transform.amount);
-			} else if (transform instanceof AddItemTransform) {
+			} else if (transform instanceof AddItemsTransform) {
 				output[key] = firebase.firestore.FieldValue.arrayUnion(...transform.items);
 			} else if (transform instanceof RemoveItemsTransform) {
 				output[key] = firebase.firestore.FieldValue.arrayRemove(...transform.items);
