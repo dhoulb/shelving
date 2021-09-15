@@ -96,7 +96,9 @@ function convertTransforms<X extends Data>(transforms: Transforms<X>) {
 			} else if (transform instanceof RemoveEntriesTransform) {
 				for (const k of transform.props) output[`${key}.${k}`] = firebase.firestore.FieldValue.delete();
 			} else throw Error("Unsupported transform");
-		} else output[key] = transform;
+		} else if (transform !== undefined) {
+			output[key] = transform;
+		}
 	}
 	return output;
 }
