@@ -1,5 +1,5 @@
 import { AssertionError } from "../errors";
-import { State } from "../stream";
+import { State, StreamClosedError } from "../stream";
 import { Data, dispatch, LOADING, MutableObject, Observer, Results, Unsubscriber } from "../util";
 import type { Documents } from "./Documents";
 import { DocumentState } from "./DocumentState";
@@ -78,28 +78,40 @@ export class DocumentsState<T extends Data = Data> extends State<Results<T>> {
 	}
 
 	/**
-	 * Force refresh this state from the source provider.
+	 * Refresh the state.
+	 * @param maxAge How old the data can be before it's outdated.
+	 * - If `maxAge` is undefined or falsy, always refresh the state.
+	 * - If `maxAge` is a number this specifies how old (in milliseconds) the data can be before it's refreshed.
+	 * - If `maxAge` is `true` a subscription to the data is started for 10 seconds.
 	 */
-	refresh(): void {
-		this.next(this.#ref.get());
-	}
-
-	/**
-	 * Conditionally refresh a documents state if it's outdated.
-	 * @param maxAge
-	 * - If `maxAge` is a number this specifies how old (in milliseconds
-	 */
-	refreshOutdated(maxAge: number | true): void {
+	refresh(maxAge?: number | true): void {
+		if (this.closed) throw new StreamClosedError(this);
 		// No need to refresh if there's an active subscription.
 		if (!this.#stop) {
 			if (maxAge === true) {
 				// Create a subscription that lasts for 10 seconds.
 				setTimeout(this.#ref.subscribe({}), 10000);
 			} else {
-				// Fetch the refeshed data once if there isn't an existing subscription, and a fetch isn't already pending, and the data is older than `maxAge`
-				if (!this.pending && this.age < maxAge) this.refresh();
+				// Refresh the data if a fetch isn't already pending, and either `maxAge` is falsy or the existing state is older than `maxAge`
+				if (!this.pending && (!maxAge || this.age > maxAge)) this.next(this.#ref.get());
 			}
 		}
+	}
+
+	/**
+	 * Get the current value, or refetch the data again if it's outdated.
+	 * @param maxAge How old the data can be before it's outdated.
+	 * - If `maxAge` is undefined or falsy, always return fresh state.
+	 * - If `maxAge` is a number this specifies how old (in milliseconds) the data can be before it's refreshed.
+	 * - If `maxAge` is `true` a subscription to the data is started for 10 seconds.
+	 */
+	get(maxAge = 0): Results<T> | Promise<Results<T>> {
+		// Return the current state if its not loading and there's a subscription or the existing state is younger than `maxAge`
+		if (!this.loading && (this.#stop || this.age < maxAge)) return this.value;
+		// Refresh the state and return the next value after the refresh.
+		const next = this.#ref.get();
+		this.next(next);
+		return next;
 	}
 
 	// Override dispatchNext to set the state for every individual document too.

@@ -23,7 +23,7 @@ export function useDocuments(ref: undefined, maxAge?: number | true): undefined;
 export function useDocuments<T extends Data>(ref: Documents<T> | undefined, maxAge?: number | true): DocumentsState<T> | undefined;
 export function useDocuments<T extends Data>(ref: Documents<T> | undefined, maxAge: number | true = 1000): DocumentsState<T> | undefined {
 	const state = ref?.state;
-	if (state) state.refreshOutdated(maxAge); // If we have a `DocumentsState` refresh it if it's outdated.
+	if (state) state.refresh(maxAge); // If we have a `DocumentsState` refresh it if it's outdated.
 	usePureEffect(realtimeEffect, [state, maxAge]);
 	useObserve(state);
 	return state;
