@@ -1,6 +1,21 @@
 import { AssertionError } from "../errors";
 import { formatNumber } from "./number";
 
+/** One minute in millseconds. */
+export const MINUTE = 60 * 1000;
+
+/** One hour in millseconds. */
+export const HOUR = MINUTE * 60;
+
+/** One day in millseconds. */
+export const DAY = HOUR * 24;
+
+/** One week in millseconds. */
+export const WEEK = DAY * 7;
+
+/** One year in millseconds. */
+export const YEAR = DAY * 365;
+
 /** Is a value a date? */
 export const isDate = (v: unknown): v is Date => v instanceof Date;
 
