@@ -58,7 +58,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 	readonly match: RegExp | null;
 	readonly multiline: boolean;
 	readonly trim: boolean;
-	readonly sanitizer?: (value: string) => string;
+	readonly sanitizer: ((value: string) => string) | undefined;
 
 	protected constructor({
 		value = "",

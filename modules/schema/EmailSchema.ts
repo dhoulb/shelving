@@ -36,7 +36,7 @@ export class EmailSchema extends StringSchema<string> {
 	readonly match = R_MATCH;
 	readonly multiline = false;
 
-	sanitize(str: string): string {
+	override sanitize(str: string): string {
 		const clean = super.sanitize(str);
 		return typeof clean === "string" ? clean.toLowerCase() : clean;
 	}

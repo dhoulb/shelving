@@ -1,8 +1,4 @@
-// Export schema.
-export * from "./Validator";
 export * from "./Schema";
-
-// Export schemas.
 export * from "./ArraySchema";
 export * from "./BooleanSchema";
 export * from "./ColorSchema";

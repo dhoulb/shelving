@@ -29,7 +29,7 @@ export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable
 	}
 
 	// Override to sort by all child `Sort` instances with a single compare function.
-	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!this.rules.length || !entries.length) return entries;
 		return sort(entries, this.comparer);
 	}

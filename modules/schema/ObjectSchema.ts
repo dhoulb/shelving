@@ -1,7 +1,6 @@
-import { MutableObject, isObject, ImmutableObject } from "../util";
+import { MutableObject, isObject, ImmutableObject, Validator, Validators } from "../util";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
-import { Validator, Validators } from "./Validator";
 
 type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
 	/**
@@ -39,7 +38,7 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		this.props = props;
 	}
 
-	validate(unsafeValue: unknown = this.value): Readonly<T> {
+	override validate(unsafeValue: unknown = this.value): Readonly<T> {
 		// Coorce.
 		const unsafeObj = isObject(unsafeValue) ? unsafeValue : null;
 

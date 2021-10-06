@@ -1,7 +1,6 @@
-import { MutableObject, ImmutableArray, uniqueItems } from "../util";
+import { MutableObject, ImmutableArray, uniqueItems, Validator } from "../util";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Schema, SchemaOptions } from "./Schema";
-import { Validator } from "./Validator";
 
 type ArraySchemaOptions<T> = SchemaOptions<ImmutableArray<T>> & {
 	readonly items: Validator<T>;
@@ -70,7 +69,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		this.value = value;
 	}
 
-	validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
+	override validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
 		// Coorce.
 		const unsafeArray = !unsafeValue ? [] : unsafeValue instanceof Array ? unsafeValue : undefined;
 		if (!unsafeArray) throw new InvalidFeedback("Must be array", { unsafeValue });

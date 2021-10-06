@@ -34,7 +34,7 @@ export class DateSchema<T extends string | null> extends Schema<T> {
 		this.max = max;
 	}
 
-	validate(unsafeValue: unknown = this.value): T {
+	override validate(unsafeValue: unknown = this.value): T {
 		// Coorce.
 		const value = toDate(unsafeValue);
 

@@ -117,11 +117,11 @@ export class DocumentState<T extends Data = Data> extends State<Result<T>> {
 	}
 
 	// Override to stop any realtime subscription on error or complete.
-	protected dispatchError(reason: Error | unknown): void {
+	protected override dispatchError(reason: Error | unknown): void {
 		this.stop();
 		super.dispatchError(reason);
 	}
-	protected dispatchComplete(): void {
+	protected override dispatchComplete(): void {
 		this.stop();
 		super.dispatchComplete();
 	}

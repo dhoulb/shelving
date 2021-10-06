@@ -48,7 +48,7 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 		this.options = options;
 	}
 
-	validate(unsafeValue: unknown = this.value): T {
+	override validate(unsafeValue: unknown = this.value): T {
 		// Coorce.
 		let value = toNumber(unsafeValue);
 

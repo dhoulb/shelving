@@ -31,3 +31,4 @@ export * from "./transform";
 export * from "./undefined";
 export * from "./units";
 export * from "./url";
+export * from "./validate";

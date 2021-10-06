@@ -18,6 +18,7 @@ import {
 	Observer,
 	isAsync,
 	therive,
+	createObserver,
 } from "../util";
 import { StreamClosedError } from "./errors";
 
@@ -75,7 +76,7 @@ export class Stream<I, O = I> implements Observer<I>, Observable<O> {
 	// Protected (use `Stream.from()` and `Stream.derived()` instead).
 	protected constructor(source?: Observable<I>, deriver?: AsyncDeriver<I, O>) {
 		if (source) this.#cleanup = source.subscribe(this);
-		this.#deriver = deriver;
+		if (deriver) this.#deriver = deriver;
 	}
 
 	/**
@@ -136,7 +137,7 @@ export class Stream<I, O = I> implements Observer<I>, Observable<O> {
 	 * - Implements `Observable`
 	 */
 	subscribe(next: Observer<O> | AsyncDispatcher<O>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		const observer = typeof next === "object" ? next : { next, error, complete };
+		const observer = createObserver(next, error, complete);
 		this.on(observer);
 		return this.off.bind(this, observer);
 	}

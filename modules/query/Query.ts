@@ -137,12 +137,12 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	}
 
 	// Override `apply()` to apply filters, sorts, and limit (in that order).
-	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		return this.slice.apply(this.sorts.apply(this.filters.apply(entries)));
 	}
 
 	// Implement toString()
-	toString(): string {
+	override toString(): string {
 		return `${this.filters},${this.sorts},${this.slice}`;
 	}
 }

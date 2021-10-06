@@ -34,13 +34,13 @@ export class Filter<T extends Data> extends Rule<T> {
 	}
 
 	// Implement apply()
-	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!entries.length) return entries;
 		return filter(entries, this.matcher);
 	}
 
 	// Implement toString()
-	toString(): string {
+	override toString(): string {
 		return `${this.key}:${this.operator}=${JSON.stringify(this.value)}`;
 	}
 }

@@ -36,7 +36,7 @@ export class ColorSchema extends StringSchema<string> {
 	 * Clean a color string by removing characters that aren't 0-F.
 	 * Might be empty string if the string contained only invalid characters.
 	 */
-	sanitize(str: string): string {
+	override sanitize(str: string): string {
 		const digits = str.toUpperCase().replace(R_STRIP, "");
 		return digits ? `#${digits.slice(0, 6)}` : "";
 	}

@@ -36,3 +36,11 @@ export const dispatchComplete = <T>(observer: Observer<T>): void => thispatch(ob
 
 /** Dispatch an error value to an observer. */
 export const dispatchError = <T>(observer: Observer<T>, error: Error | unknown): void => thispatch(observer, "error", error);
+
+/** Create an `Observer` from a set `next()`, `error()` and `complete()` functions. */
+export function createObserver<T>(observer: Observer<T>): Observer<T>;
+export function createObserver<T>(next: AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Observer<T>;
+export function createObserver<T>(either: Observer<T> | AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Observer<T>;
+export function createObserver<T>(next: Observer<T> | AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Observer<T> {
+	return typeof next === "object" ? next : ({ next, error, complete } as Observer<T>);
+}

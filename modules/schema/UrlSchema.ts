@@ -33,7 +33,7 @@ export class UrlSchema extends StringSchema<string> {
 		this.hosts = hosts;
 	}
 
-	sanitize(uncleanString: string): string {
+	override sanitize(uncleanString: string): string {
 		const cleanString = super.sanitize(uncleanString);
 		if (!cleanString) return cleanString;
 

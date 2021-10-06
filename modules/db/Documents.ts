@@ -16,6 +16,7 @@ import {
 	getLastProp,
 	ArrayType,
 	Transforms,
+	createObserver,
 } from "../util";
 import { Query, Queryable } from "../query";
 import type { Database } from "./Database";
@@ -141,7 +142,7 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	subscribe(next: AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(either: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return typeof next === "object" ? this.db.provider.onDocuments(this, next) : this.db.provider.onDocuments(this, { next, error, complete });
+		return this.db.provider.onDocuments(this, createObserver(next, error, complete));
 	}
 
 	/**

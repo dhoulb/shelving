@@ -1,6 +1,6 @@
 import { isFeedback } from "../feedback";
-import { ObjectSchema, Validator } from "../schema";
-import { assertInstance, Data } from "../util";
+import { ObjectSchema } from "../schema";
+import { assertInstance, Data, Validator } from "../util";
 import { ReferenceValidationError } from "./errors";
 import type { Database } from "./Database";
 

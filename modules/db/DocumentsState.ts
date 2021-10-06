@@ -115,17 +115,17 @@ export class DocumentsState<T extends Data = Data> extends State<Results<T>> {
 	}
 
 	// Override dispatchNext to set the state for every individual document too.
-	protected dispatchNext(results: Results<T>): void {
+	protected override dispatchNext(results: Results<T>): void {
 		super.dispatchNext(results);
 		for (const [id, data] of Object.entries(results)) DocumentState.set(this.#ref.doc(id), data);
 	}
 
 	// Override to stop any realtime subscription on error or complete.
-	protected dispatchError(reason: Error | unknown): void {
+	protected override dispatchError(reason: Error | unknown): void {
 		this.stop();
 		super.dispatchError(reason);
 	}
-	protected dispatchComplete(): void {
+	protected override dispatchComplete(): void {
 		this.stop();
 		super.dispatchComplete();
 	}

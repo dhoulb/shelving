@@ -30,13 +30,13 @@ export class Sort<T extends Data> extends Rule<T> {
 	}
 
 	// Override to call `sort()` on the entries with a custom compare function.
-	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!entries.length) return entries;
 		return sort(entries, this.comparer);
 	}
 
 	// Implement toString()
-	toString(): string {
+	override toString(): string {
 		return `${this.key}:sort=${this.direction}`;
 	}
 }

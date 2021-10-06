@@ -26,7 +26,7 @@ export class BooleanSchema<T extends boolean> extends Schema<T> {
 		this.value = value;
 	}
 
-	validate(unsafeValue: unknown = this.value): T {
+	override validate(unsafeValue: unknown = this.value): T {
 		// Coorce.
 		const value = !!unsafeValue;
 

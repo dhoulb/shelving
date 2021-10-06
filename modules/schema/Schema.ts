@@ -1,4 +1,4 @@
-import type { Validator } from "./Validator";
+import type { Validator } from "../util";
 
 /**
  * SchemaOptions enforces types on the options bag that is passed into SchemaClass to create Schema.
@@ -45,14 +45,14 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 	readonly value?: unknown;
 
 	/** Additional validation function that is called after all built in validation. */
-	readonly #validator?: (value: unknown) => T;
+	readonly #validator: ((value: unknown) => T) | undefined;
 
 	constructor({ title = "", description = "", placeholder = "", required = false, validator }: SchemaOptions<T>) {
 		this.title = title;
 		this.description = description;
 		this.placeholder = placeholder;
 		this.required = required;
-		this.#validator = validator as (value: unknown) => T;
+		if (validator) this.#validator = validator as (value: unknown) => T;
 	}
 
 	/** Every schema must implement a `validate()` method. */

@@ -10,6 +10,7 @@ import {
 	AsyncCatcher,
 	AsyncEmptyDispatcher,
 	Transforms,
+	createObserver,
 } from "../util";
 import type { Database } from "./Database";
 import { DocumentState } from "./DocumentState";
@@ -131,7 +132,7 @@ export class Document<T extends Data = Data> extends Reference<T> implements Obs
 	subscribe(next: AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(either: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber;
 	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
-		return typeof next === "object" ? this.db.provider.onDocument<T>(this, next) : this.db.provider.onDocument(this, { next, error, complete });
+		return this.db.provider.onDocument<T>(this, createObserver(next, error, complete));
 	}
 
 	/**

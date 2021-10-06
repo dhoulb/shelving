@@ -1,7 +1,6 @@
-import { MutableObject, ImmutableObject, isObject } from "../util";
+import { MutableObject, ImmutableObject, isObject, Validator } from "../util";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
 import { Schema, SchemaOptions } from "./Schema";
-import { Validator } from "./Validator";
 
 type MapSchemaOptions<T> = SchemaOptions<ImmutableObject<T>> & {
 	readonly items: Validator<T>;
@@ -47,7 +46,7 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 		this.value = value;
 	}
 
-	validate(unsafeValue: unknown = this.value): ImmutableObject<T> {
+	override validate(unsafeValue: unknown = this.value): ImmutableObject<T> {
 		// Coorce.
 		const unsafeObject = !unsafeValue ? {} : isObject(unsafeValue) ? unsafeValue : undefined;
 		if (!unsafeObject) throw new InvalidFeedback("Must be object", { value: unsafeValue });

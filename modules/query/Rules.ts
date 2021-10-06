@@ -26,7 +26,7 @@ export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
 	 * Apply this queryable to a set of results and return the (potentially) modified results.
 	 * @returns Either a new Results object (if `results` was modified), or the exact same instance (if no changes were made).
 	 */
-	results(results: Results<T>): Results<T> {
+	override results(results: Results<T>): Results<T> {
 		if (!this.rules.length) return results;
 		return super.results(results);
 	}
@@ -35,7 +35,7 @@ export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
 	 * Modify an array of entries (in place, modifying the original object).
 	 * @returns The new array, or the exact old array instance if no changes were made.
 	 */
-	apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!this.rules.length || !entries.length) return entries;
 		// Push the list of entries through each of the rules (in order) and return the resulting entries.
 		let applied = entries;
@@ -49,7 +49,7 @@ export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
 	}
 
 	// Implement toString()
-	toString(): string {
+	override toString(): string {
 		return this.rules.map(getRuleString).join("&");
 	}
 }

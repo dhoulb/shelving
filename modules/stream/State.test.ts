@@ -1,5 +1,5 @@
 import { RequiredError, LOADING, BLACKHOLE, State, getNextValue } from "..";
-import { ResolvablePromise } from "../util";
+import { assertInstance, ResolvablePromise } from "../util";
 
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
@@ -77,7 +77,8 @@ test("State: initial LOADING", async () => {
 	} catch (thrown) {
 		expect(thrown).toBeInstanceOf(Promise);
 		expect(state.subscribers).toBe(2);
-		thrown.then(fn2);
+		assertInstance(thrown, Promise);
+		(thrown as Promise<number>).then(fn2); //eslint-disable-line @typescript-eslint/no-floating-promises
 	}
 	const fn3 = jest.fn();
 	try {
@@ -86,7 +87,7 @@ test("State: initial LOADING", async () => {
 	} catch (thrown) {
 		expect(thrown).toBeInstanceOf(Promise);
 		expect(state.subscribers).toBe(3);
-		thrown.then(fn3);
+		(thrown as Promise<number>).then(fn3); //eslint-disable-line @typescript-eslint/no-floating-promises
 	}
 	expect(state.next(123)).toBe(undefined);
 	expect(state.loading).toBe(false);
@@ -110,7 +111,7 @@ test("State: initial promise", async () => {
 		expect(false).toBe(true); // Not reached.
 	} catch (thrown) {
 		expect(thrown).toBeInstanceOf(Promise);
-		thrown.then(fn2);
+		(thrown as Promise<number>).then(fn2); //eslint-disable-line @typescript-eslint/no-floating-promises
 	}
 	const fn3 = jest.fn();
 	try {
@@ -118,7 +119,7 @@ test("State: initial promise", async () => {
 		expect(false).toBe(true); // Not reached.
 	} catch (thrown) {
 		expect(thrown).toBeInstanceOf(Promise);
-		thrown.then(fn3);
+		(thrown as Promise<number>).then(fn3); //eslint-disable-line @typescript-eslint/no-floating-promises
 	}
 	expect(promise.resolve(123)).toBe(undefined);
 	await microtasks();
