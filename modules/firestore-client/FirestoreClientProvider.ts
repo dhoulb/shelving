@@ -1,16 +1,55 @@
-import firebase from "firebase/app";
-import "firebase/firestore";
 import type {
-	FirebaseFirestore as Firestore,
-	WhereFilterOp as FirestoreWhereFilterOp,
-	OrderByDirection as FirestoreOrderByDirection,
-	Query as FirestoreQuery,
-	QuerySnapshot as FirestoreQuerySnapshot,
+	Firestore,
 	DocumentReference as FirestoreDocumentReference,
 	CollectionReference as FirestoreCollectionReference,
-} from "@firebase/firestore-types";
-import { Data, Results, Provider, Document, Documents, Operator, Direction, Mutable, Result, Observer, dispatchNext, dispatchError, Transforms } from "..";
-import { AddItemsTransform, AddEntriesTransform, IncrementTransform, isTransform, MutableObject, RemoveItemsTransform, RemoveEntriesTransform } from "../util";
+	Query as FirestoreQueryReference,
+	QuerySnapshot as FirestoreQuerySnapshot,
+	QueryConstraint as FirestoreQueryConstraint,
+	WhereFilterOp as FirestoreWhereFilterOp,
+	OrderByDirection as FirestoreOrderByDirection,
+} from "firebase/firestore";
+import {
+	getDoc,
+	orderBy,
+	where,
+	limit,
+	addDoc,
+	increment,
+	arrayUnion,
+	arrayRemove,
+	deleteField,
+	collection as getFirestoreCollection,
+	doc as getFirestoreDoc,
+	query as getFirestoreQuery,
+	onSnapshot,
+	setDoc,
+	updateDoc,
+	deleteDoc,
+	getDocs,
+} from "firebase/firestore";
+import {
+	Data,
+	Results,
+	Provider,
+	Document,
+	Documents,
+	Operator,
+	Direction,
+	Mutable,
+	Result,
+	Observer,
+	dispatchNext,
+	dispatchError,
+	Transforms,
+	AddItemsTransform,
+	AddEntriesTransform,
+	IncrementTransform,
+	isTransform,
+	MutableObject,
+	RemoveItemsTransform,
+	RemoveEntriesTransform,
+	ImmutableObject,
+} from "..";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -35,23 +74,23 @@ const DIRECTIONS: { readonly [K in Direction]: FirestoreOrderByDirection } = {
 };
 
 /** Get a Firestore DocumentReference for a given Shelving `Document` instance. */
-function getDocument<X extends Data>(firestore: Firestore, { path }: Document<X>): FirestoreDocumentReference<X> {
-	return firestore.doc(path) as FirestoreDocumentReference<X>;
+function getDocumentReference<X extends Data>(firestore: Firestore, { path }: Document<X>): FirestoreDocumentReference<X> {
+	return getFirestoreDoc(firestore, path) as FirestoreDocumentReference<X>;
 }
 
 /** Get a Firestore CollectionReference for a given Shelving `Document` instance. */
-function getCollection<X extends Data>(firestore: Firestore, { path }: Documents<X>): FirestoreCollectionReference<X> {
-	return firestore.collection(path) as FirestoreCollectionReference<X>;
+function getCollectionReference<X extends Data>(firestore: Firestore, { path }: Documents<X>): FirestoreCollectionReference<X> {
+	return getFirestoreCollection(firestore, path) as FirestoreCollectionReference<X>;
 }
 
 /** Create a corresponding `QueryReference` from a Query. */
-function getQuery<X extends Data>(firestore: Firestore, ref: Documents<X>): FirestoreQuery<X> {
+function getQueryReference<X extends Data>(firestore: Firestore, ref: Documents<X>): FirestoreQueryReference<X> {
 	const { sorts, filters, slice } = ref.query;
-	let query: FirestoreQuery<X> = getCollection(firestore, ref);
-	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
-	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
-	if (slice.limit !== null) query = query.limit(slice.limit);
-	return query;
+	const constraints: FirestoreQueryConstraint[] = [];
+	for (const { key, direction } of sorts) constraints.push(orderBy(key === "id" ? ID : key, DIRECTIONS[direction]));
+	for (const { operator, key, value } of filters) constraints.push(where(key === "id" ? ID : key, OPERATORS[operator], value));
+	if (slice.limit !== null) constraints.push(limit(slice.limit));
+	return getFirestoreQuery(getCollectionReference(firestore, ref), ...constraints);
 }
 
 /** Create a set of results from a collection snapshot. */
@@ -62,20 +101,20 @@ function getResults<X extends Data>(snapshot: FirestoreQuerySnapshot<X>): Result
 }
 
 /** Convert a set of Shelving `Transform` instances into the corresponding Firestore `FieldValue` instances. */
-function convertTransforms<X extends Data>(transforms: Transforms<X>) {
+function convertTransforms<X extends Data>(transforms: Transforms<X>): ImmutableObject {
 	const output: MutableObject = {};
 	for (const [key, transform] of Object.entries(transforms)) {
 		if (isTransform(transform)) {
 			if (transform instanceof IncrementTransform) {
-				output[key] = firebase.firestore.FieldValue.increment(transform.amount);
+				output[key] = increment(transform.amount);
 			} else if (transform instanceof AddItemsTransform) {
-				output[key] = firebase.firestore.FieldValue.arrayUnion(...transform.items);
+				output[key] = arrayUnion(...transform.items);
 			} else if (transform instanceof RemoveItemsTransform) {
-				output[key] = firebase.firestore.FieldValue.arrayRemove(...transform.items);
+				output[key] = arrayRemove(...transform.items);
 			} else if (transform instanceof AddEntriesTransform) {
 				for (const [k, v] of Object.entries(transform.props)) output[`${key}.${k}`] = v;
 			} else if (transform instanceof RemoveEntriesTransform) {
-				for (const k of transform.props) output[`${key}.${k}`] = firebase.firestore.FieldValue.delete();
+				for (const k of transform.props) output[`${key}.${k}`] = deleteField();
 			} else throw Error("Unsupported transform");
 		} else if (transform !== undefined) {
 			output[key] = transform;
@@ -86,8 +125,9 @@ function convertTransforms<X extends Data>(transforms: Transforms<X>) {
 
 /**
  * Firestore client database provider.
- * - Works with the JS client SDK.
- * @todo Maybe find a way to generate a unique hash of
+ * - Works with the Firebase JS SDK.
+ * - Supports offline mode.
+ * - Supports realtime subscriptions.
  */
 export class FirestoreClientProvider implements Provider {
 	readonly firestore: Firestore;
@@ -97,58 +137,60 @@ export class FirestoreClientProvider implements Provider {
 	}
 
 	async getDocument<X extends Data>(ref: Document<X>): Promise<Result<X>> {
-		const snapshot = await getDocument(this.firestore, ref).get();
+		const snapshot = await getDoc(getDocumentReference(this.firestore, ref));
 		return snapshot.data();
 	}
 
 	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result<X>>): () => void {
-		return getDocument(this.firestore, ref).onSnapshot(
+		return onSnapshot(
+			getDocumentReference(this.firestore, ref),
 			snapshot => dispatchNext(observer, snapshot.data()),
 			error => dispatchError(observer, error),
 		);
 	}
 
 	async addDocument<X extends Data>(ref: Documents<X>, data: X): Promise<string> {
-		return (await getCollection(this.firestore, ref).add(data)).id;
+		const reference = await addDoc<any>(getCollectionReference(this.firestore, ref), data); // eslint-disable-line @typescript-eslint/no-explicit-any
+		return reference.id;
 	}
 
 	async setDocument<X extends Data>(ref: Document<X>, data: X): Promise<void> {
-		await getDocument(this.firestore, ref).set(data);
+		await setDoc<any>(getDocumentReference(this.firestore, ref), data); // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
 	async updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): Promise<void> {
-		const updates = convertTransforms(transforms);
-		await getDocument(this.firestore, ref).update(updates);
+		await updateDoc<any>(getDocumentReference(this.firestore, ref), convertTransforms(transforms)); // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
 	async deleteDocument<X extends Data>(ref: Document<X>): Promise<void> {
-		await getDocument(this.firestore, ref).delete();
+		await deleteDoc(getDocumentReference(this.firestore, ref));
 	}
 
 	async getDocuments<X extends Data>(ref: Documents<X>): Promise<Results<X>> {
-		return getResults(await getQuery(this.firestore, ref).get());
+		return getResults(await getDocs(getQueryReference(this.firestore, ref)));
 	}
 
 	onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): () => void {
-		return getQuery(this.firestore, ref).onSnapshot(
+		return onSnapshot(
+			getQueryReference(this.firestore, ref),
 			snapshot => dispatchNext(observer, getResults(snapshot)),
 			error => dispatchError(observer, error),
 		);
 	}
 
 	async setDocuments<X extends Data>(ref: Documents<X>, data: X): Promise<void> {
-		const snapshot = await getQuery(this.firestore, ref).get();
-		await Promise.all(snapshot.docs.map(s => s.ref.set(data)));
+		const snapshot = await getDocs(getQueryReference(this.firestore, ref));
+		await Promise.all(snapshot.docs.map(s => setDoc<any>(s.ref, data))); // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
 	async updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): Promise<void> {
-		const snapshot = await getQuery(this.firestore, ref).get();
+		const snapshot = await getDocs(getQueryReference(this.firestore, ref));
 		const updates = convertTransforms(transforms);
-		await Promise.all(snapshot.docs.map(s => s.ref.update(updates)));
+		await Promise.all(snapshot.docs.map(s => updateDoc<any>(s.ref, updates))); // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
 	async deleteDocuments<X extends Data>(ref: Documents<X>): Promise<void> {
-		const snapshot = await getQuery(this.firestore, ref).get();
-		await Promise.all(snapshot.docs.map(s => s.ref.delete()));
+		const snapshot = await getDocs(getQueryReference(this.firestore, ref));
+		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 	}
 }

@@ -1,4 +1,3 @@
-import firebase from "firebase-admin";
 import type {
 	Firestore,
 	WhereFilterOp as FirestoreWhereFilterOp,
@@ -8,6 +7,7 @@ import type {
 	DocumentReference as FirestoreDocumentReference,
 	CollectionReference as FirestoreCollectionReference,
 } from "@google-cloud/firestore";
+import firebase from "firebase-admin";
 import {
 	Data,
 	Results,
@@ -29,6 +29,7 @@ import {
 	RemoveItemsTransform,
 	AddEntriesTransform,
 	RemoveEntriesTransform,
+	ImmutableObject,
 } from "..";
 
 // Constants.
@@ -81,7 +82,7 @@ function getResults<X extends Data>(snapshot: FirestoreQuerySnapshot<X>): Result
 }
 
 /** Convert a set of Shelving `Transform` instances into the corresponding Firestore `FieldValue` instances. */
-function convertTransforms<X extends Data>(transforms: Transforms<X>) {
+function convertTransforms<X extends Data>(transforms: Transforms<X>): ImmutableObject {
 	const output: MutableObject = {};
 	for (const [key, transform] of Object.entries(transforms)) {
 		if (isTransform(transform)) {
@@ -105,8 +106,7 @@ function convertTransforms<X extends Data>(transforms: Transforms<X>) {
 
 /**
  * Firestore server database provider.
- * - Works with the Node.JS admin SDK.
- * - Equality hash is set on returned values so `deepEqual()` etc can use it to quickly compare results without needing to look deeply.
+ * - Works with the Firebase Admin SDK for Node.JS
  */
 export class FirestoreServerProvider implements Provider {
 	readonly firestore: Firestore;
@@ -136,8 +136,7 @@ export class FirestoreServerProvider implements Provider {
 	}
 
 	async updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): Promise<void> {
-		const updates = convertTransforms(transforms);
-		await getDocument(this.firestore, ref).update(updates);
+		await getDocument(this.firestore, ref).update(convertTransforms(transforms));
 	}
 
 	async deleteDocument<X extends Data>(ref: Document<X>): Promise<void> {
