@@ -62,6 +62,7 @@
 		"@typescript-eslint/no-misused-promises": 2, // DH: Catch places where promises aren't awaited.
 		"@typescript-eslint/explicit-function-return-type": 0, // DH: This is annoying, mainly for for little arrow functions where type is trivially inferred.
 		"@typescript-eslint/no-use-before-define": 0, // DH: End up turning this off a lot when you have functions that cross-reference each other (and TS already protects against using block-scoped variables before they are defined).
+		"@typescript-eslint/no-unnecessary-type-constraint": 0, // DH: Incorrectly flags `extends unknown` as doing nothing when it in fact makes the type `unknown` instead of `any`
 		"import/extensions": [2, { "extensions": [".ts", ".tsx", ".jsx"] }], // DH: Add all valid extensions.
 		"import/first": 2, // DH: Imports should be first.
 		"import/newline-after-import": 2, // DH: Newline after import.
