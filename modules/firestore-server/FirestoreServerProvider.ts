@@ -7,7 +7,7 @@ import type {
 	DocumentReference as FirestoreDocumentReference,
 	CollectionReference as FirestoreCollectionReference,
 } from "@google-cloud/firestore";
-import firebase from "firebase-admin";
+import { FieldValue } from "@google-cloud/firestore";
 import {
 	Data,
 	Results,
@@ -87,15 +87,15 @@ function convertTransforms<X extends Data>(transforms: Transforms<X>): Immutable
 	for (const [key, transform] of Object.entries(transforms)) {
 		if (isTransform(transform)) {
 			if (transform instanceof IncrementTransform) {
-				output[key] = firebase.firestore.FieldValue.increment(transform.amount);
+				output[key] = FieldValue.increment(transform.amount);
 			} else if (transform instanceof AddItemsTransform) {
-				output[key] = firebase.firestore.FieldValue.arrayUnion(...transform.items);
+				output[key] = FieldValue.arrayUnion(...transform.items);
 			} else if (transform instanceof RemoveItemsTransform) {
-				output[key] = firebase.firestore.FieldValue.arrayRemove(...transform.items);
+				output[key] = FieldValue.arrayRemove(...transform.items);
 			} else if (transform instanceof AddEntriesTransform) {
 				for (const [k, v] of Object.entries(transform.props)) output[`${key}.${k}`] = v;
 			} else if (transform instanceof RemoveEntriesTransform) {
-				for (const k of transform.props) output[`${key}.${k}`] = firebase.firestore.FieldValue.delete();
+				for (const k of transform.props) output[`${key}.${k}`] = FieldValue.delete();
 			} else throw Error("Unsupported transform");
 		} else if (transform !== undefined) {
 			output[key] = transform;
