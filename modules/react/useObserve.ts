@@ -1,6 +1,6 @@
 import { useState as useReactState } from "react";
-import { Dispatcher, LOADING, Observable } from "..";
-import { usePureEffect } from "./usePureEffect";
+import { Dispatcher, LOADING, Observable } from "../index.js";
+import { usePureEffect } from "./usePureEffect.js";
 
 /**
  * Subscribe to an `Observable` such that when the observer issues a next value or an error the component refreshes.

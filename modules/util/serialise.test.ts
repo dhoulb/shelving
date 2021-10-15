@@ -1,4 +1,4 @@
-import { serialise } from "..";
+import { serialise } from "../index.js";
 
 describe("serialise()", () => {
 	test("Works correctly", () => {

@@ -1,4 +1,4 @@
-import type { SKIP } from "./constants";
+import type { SKIP } from "./constants.js";
 
 /**
  * Single entry.

@@ -1,9 +1,9 @@
-import { Data, Result, Results, Unsubscriber, Observer, Transforms } from "../util";
-import type { Document } from "./Document";
-import type { Documents } from "./Documents";
-import type { Provider } from "./Provider";
-import { DocumentsState } from "./DocumentsState";
-import { DocumentState } from "./DocumentState";
+import { Data, Result, Results, Unsubscriber, Observer, Transforms } from "../util/index.js";
+import type { Document } from "./Document.js";
+import type { Documents } from "./Documents.js";
+import type { Provider } from "./Provider.js";
+import { DocumentsState } from "./DocumentsState.js";
+import { DocumentState } from "./DocumentState.js";
 
 /**
  * State provider: keeps track of, and provides access to, the most recent value for a source provider.

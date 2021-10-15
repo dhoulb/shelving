@@ -1,4 +1,4 @@
-import { Data, Results, ImmutableEntries, objectFromEntries } from "../util";
+import { Data, Results, ImmutableEntries, objectFromEntries } from "../util/index.js";
 
 /** Something that can be used to query against a result set or an array of entries. */
 export abstract class Rule<T extends Data> {

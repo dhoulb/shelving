@@ -1,5 +1,5 @@
-import { isObject, ImmutableObject } from "./object";
-import { ImmutableArray, isArray, MutableArray } from "./array";
+import { isObject, ImmutableObject } from "./object.js";
+import { ImmutableArray, isArray, MutableArray } from "./array.js";
 
 type MergeRecursor = (left: unknown, right: unknown) => unknown;
 

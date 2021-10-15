@@ -30,7 +30,7 @@ import {
 	AddEntriesTransform,
 	RemoveEntriesTransform,
 	ImmutableObject,
-} from "..";
+} from "../index.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.

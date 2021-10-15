@@ -1,4 +1,4 @@
-import { isSchema, StringSchema } from "..";
+import { isSchema, StringSchema } from "../index.js";
 
 test("isSchema()", () => {
 	// Yes.

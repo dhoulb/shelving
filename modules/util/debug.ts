@@ -1,4 +1,4 @@
-import type { ImmutableObject } from "./object";
+import type { ImmutableObject } from "./object.js";
 
 /** Debug a random value as a string. */
 export const debug = (value: unknown): string =>

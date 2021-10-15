@@ -1,6 +1,6 @@
-import { MutableObject, isObject, ImmutableObject, Validator, Validators } from "../util";
-import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
+import { MutableObject, isObject, ImmutableObject, Validator, Validators } from "../util/index.js";
+import { Feedback, InvalidFeedback, isFeedback } from "../feedback/index.js";
+import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
 
 type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
 	/**
@@ -29,7 +29,8 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		return new ObjectSchema({ props, required: true, value: {} });
 	}
 
-	readonly value: Readonly<Partial<T>> | null = null;
+	override readonly value: Readonly<Partial<T>> | null = null;
+
 	readonly props: Validators<T & ImmutableObject>;
 
 	protected constructor({ value = null, props, ...options }: ObjectSchemaOptions<T>) {

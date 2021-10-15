@@ -18,7 +18,7 @@ import {
 	withoutItems,
 	removeItem,
 	removeItems,
-} from "..";
+} from "../index.js";
 
 test("isArray()", () => {
 	expect(isArray([])).toBe(true);

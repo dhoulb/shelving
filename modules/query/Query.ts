@@ -1,10 +1,10 @@
-import { Data, ImmutableEntries, ArrayType, ImmutableArray, assertLength, assertProp } from "../util";
-import { Slice } from "./Slice";
-import { Filters } from "./Filters";
-import { Sorts } from "./Sorts";
-import { Rule } from "./Rule";
-import { getQueryProp } from "./helpers";
-import type { Queryable } from "./types";
+import { Data, ImmutableEntries, ArrayType, ImmutableArray, assertLength, assertProp } from "../util/index.js";
+import { Slice } from "./Slice.js";
+import { Filters } from "./Filters.js";
+import { Sorts } from "./Sorts.js";
+import { Rule } from "./Rule.js";
+import { getQueryProp } from "./helpers.js";
+import type { Queryable } from "./types.js";
 
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any

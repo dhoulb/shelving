@@ -1,6 +1,6 @@
-import type { Deriver } from "./dispatch";
-import type { ImmutableArray } from "./array";
-import { Comparer, COMPARE } from "./compare";
+import type { Deriver } from "./dispatch.js";
+import type { ImmutableArray } from "./array.js";
+import { Comparer, COMPARE } from "./compare.js";
 
 /**
  * Quick sort algorithm.

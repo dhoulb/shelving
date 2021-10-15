@@ -1,4 +1,4 @@
-import { InvalidFeedback, ColorSchema } from "..";
+import { InvalidFeedback, ColorSchema } from "../index.js";
 
 // Tests.
 describe("ColorSchema", () => {

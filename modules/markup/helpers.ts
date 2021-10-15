@@ -1,5 +1,5 @@
-import { serialise } from "../util";
-import type { MarkupElement, MarkupNode } from "./types";
+import { serialise } from "../util/index.js";
+import type { MarkupElement, MarkupNode } from "./types.js";
 
 /**
  * Take a Markup JSX node and strip all tags from it to produce a plain text string.

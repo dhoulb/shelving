@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { ArrayState, ImmutableArray, ImmutableObject, LOADING, MapState, State } from "..";
-import { useObserve } from "./useObserve";
+import { ArrayState, ImmutableArray, ImmutableObject, LOADING, MapState, State } from "../index.js";
+import { useObserve } from "./useObserve.js";
 
 /**
  * Subscribe or create a new Shelving `State` instance.

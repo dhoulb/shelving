@@ -1,6 +1,6 @@
-import { MutableObject, ImmutableArray, uniqueItems, Validator } from "../util";
-import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import { Schema, SchemaOptions } from "./Schema";
+import { MutableObject, ImmutableArray, uniqueItems, Validator } from "../util/index.js";
+import { Feedback, InvalidFeedback, isFeedback } from "../feedback/index.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 type ArraySchemaOptions<T> = SchemaOptions<ImmutableArray<T>> & {
 	readonly items: Validator<T>;
@@ -47,7 +47,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		return new ArraySchema({ items });
 	}
 
-	readonly value: ImmutableArray;
+	override readonly value: ImmutableArray;
 
 	/** Whether to de-duplicate items in the array (i.e. items in the array are unique). */
 	readonly unique: boolean;

@@ -1,5 +1,5 @@
-import { ImmutableObject, isObject } from "./object";
-import { isArray } from "./array";
+import { ImmutableObject, isObject } from "./object.js";
+import { isArray } from "./array.js";
 
 type EqualRecursor = (left: unknown, right: unknown) => boolean;
 

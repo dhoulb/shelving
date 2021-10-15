@@ -1,4 +1,4 @@
-import { isExactlyEqual, isDeepEqual, isArrayEqual, isObjectEqual } from "..";
+import { isExactlyEqual, isDeepEqual, isArrayEqual, isObjectEqual } from "../index.js";
 
 const arrFlat = [1, "b", true, false, null];
 const arrFlatSame = [1, "b", true, false, null];

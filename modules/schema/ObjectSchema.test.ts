@@ -1,4 +1,4 @@
-import { InvalidFeedback, Validator, StringSchema, NumberSchema, BooleanSchema, ObjectSchema } from "..";
+import { InvalidFeedback, Validator, StringSchema, NumberSchema, BooleanSchema, ObjectSchema } from "../index.js";
 
 // Tests.
 describe("ObjectSchema", () => {

@@ -13,8 +13,8 @@ import {
 	throwAsync,
 	Transforms,
 	transformProps,
-} from "../util";
-import { Stream } from "./Stream";
+} from "../util/index.js";
+import { Stream } from "./Stream.js";
 
 /**
  * State: a stream the retains its msot recent value and makes it available at `state.value` and `state.data`
@@ -27,9 +27,9 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 	 * - Not setting `initial` sets the initial value to `undefined`
 	 * - To set the `initial` value to `LOADING` explicitly set it to `LOADING`
 	 */
-	static create<X>(): State<X | undefined>;
-	static create<X>(initial: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X>;
-	static create<X>(initial?: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X | undefined> {
+	static override create<X>(): State<X | undefined>;
+	static override create<X>(initial: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X>;
+	static override create<X>(initial?: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X | undefined> {
 		return new State<X | undefined>(initial);
 	}
 
@@ -99,13 +99,13 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 		}
 	}
 
-	next(value: Resolvable<T | typeof LOADING>): void {
+	override next(value: Resolvable<T | typeof LOADING>): void {
 		if (isAsync(value)) (this as Mutable<this>).pending = true;
 		super.next(value);
 	}
 
 	// Override `dispatchNext()` to save the current value and only dispatch non-loading values.
-	protected dispatchNext(value: T | typeof LOADING): void {
+	protected override dispatchNext(value: T | typeof LOADING): void {
 		if (value === this.#value) return;
 		(this as Mutable<this>).pending = false;
 		this.#value = value;
@@ -135,14 +135,14 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 	}
 
 	// Override `dispatchError()` to save the reason at `this.reason` and clean up.
-	protected dispatchError(reason: Error | unknown): void {
+	protected override dispatchError(reason: Error | unknown): void {
 		(this as Mutable<this>).pending = false;
 		(this as Mutable<this>).reason = reason;
 		super.dispatchError(reason);
 	}
 
 	// Override `dispatchComplete()` to clean up.
-	protected dispatchComplete(): void {
+	protected override dispatchComplete(): void {
 		(this as Mutable<this>).pending = false;
 		super.dispatchComplete();
 	}
@@ -155,9 +155,9 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 	 * @param deriver Deriver function that does the deriving. Accepts the state value from this state and returns the new derived state value.
 	 * @returns New `State` instance with a state derived from this one.
 	 */
-	derive(): State<T>;
-	derive<TT>(deriver: AsyncDeriver<T, TT>): State<TT>;
-	derive<TT>(deriver?: AsyncDeriver<T, TT>): State<T> | State<TT> {
+	override derive(): State<T>;
+	override derive<TT>(deriver: AsyncDeriver<T, TT>): State<TT>;
+	override derive<TT>(deriver?: AsyncDeriver<T, TT>): State<T> | State<TT> {
 		if (deriver) {
 			const deriving = super.derive(deriver); // New deriving stream subscribed to this.
 			const derived = new State<TT>(deriving); // New derived state subscribed to the deriving stream.

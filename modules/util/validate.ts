@@ -1,4 +1,4 @@
-import { isObject, ImmutableObject } from "./object";
+import { isObject, ImmutableObject } from "./object.js";
 
 /**
  * Validator: an object that can validate something via its `validate()` method.

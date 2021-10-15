@@ -1,7 +1,7 @@
-import type { Resolvable } from "./data";
-import { logError } from "./console";
-import { SKIP } from "./constants";
-import { isAsync } from "./promise";
+import type { Resolvable } from "./data.js";
+import { logError } from "./console.js";
+import { SKIP } from "./constants.js";
+import { isAsync } from "./promise.js";
 
 /** Catcher: function that receives a thrown error. */
 export type Catcher = (reason: Error | unknown) => void;

@@ -1,4 +1,4 @@
-import { SEARCH } from "..";
+import { SEARCH } from "../index.js";
 
 test("SEARCH.WORDS.ALL: Works correctly", () => {
 	// Search empty query.

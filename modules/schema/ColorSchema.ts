@@ -1,5 +1,5 @@
-import { RequiredSchemaOptions, SchemaOptions } from "..";
-import { StringSchema } from "./StringSchema";
+import { RequiredSchemaOptions, SchemaOptions } from "../index.js";
+import { StringSchema } from "./StringSchema.js";
 
 const R_MATCH = /^#[0-9A-F]{6}$/;
 const R_STRIP = /[^0-9A-F]/g;
@@ -18,19 +18,19 @@ type ColorSchemaOptions = SchemaOptions<string> & {
  * Colors are limited to 512 characters (this can be changed with `max`), but generally these won't be data: URIs so this is a reasonable limit.
  */
 export class ColorSchema extends StringSchema<string> {
-	static REQUIRED = new ColorSchema({ required: true });
-	static OPTIONAL = new ColorSchema({ required: false });
+	static override REQUIRED = new ColorSchema({ required: true });
+	static override OPTIONAL = new ColorSchema({ required: false });
 
-	static create(options: ColorSchemaOptions & RequiredSchemaOptions): ColorSchema;
-	static create(options: ColorSchemaOptions): ColorSchema;
-	static create(options: ColorSchemaOptions): ColorSchema {
+	static override create(options: ColorSchemaOptions & RequiredSchemaOptions): ColorSchema;
+	static override create(options: ColorSchemaOptions): ColorSchema;
+	static override create(options: ColorSchemaOptions): ColorSchema {
 		return new ColorSchema(options);
 	}
 
-	readonly type = "color";
-	readonly multiline = false;
-	readonly max = 7;
-	readonly match = R_MATCH;
+	override readonly max = 7;
+	override readonly type = "color";
+	override readonly multiline = false;
+	override readonly match = R_MATCH;
 
 	/**
 	 * Clean a color string by removing characters that aren't 0-F.

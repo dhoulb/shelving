@@ -1,4 +1,4 @@
-import { Sorts, Sort, Data } from "..";
+import { Sorts, Sort, Data } from "../index.js";
 
 const a = { first: "B", second: 1 };
 const b = { first: "B", second: 2 };

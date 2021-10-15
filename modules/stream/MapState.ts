@@ -1,10 +1,10 @@
-import { countEntries, Entry, ImmutableObject, LOADING, Observable, Resolvable, withEntry, withoutEntry } from "../util";
-import { State } from "./State";
+import { countEntries, Entry, ImmutableObject, LOADING, Observable, Resolvable, withEntry, withoutEntry } from "../util/index.js";
+import { State } from "./State.js";
 
 /** State that stores a map-like object. */
 export class MapState<T> extends State<ImmutableObject<T>> implements Iterable<Entry<T>> {
 	/** Create a new MapState. */
-	static create<X>(initial: MapState<X> | Observable<ImmutableObject<X>> | Resolvable<ImmutableObject<X>> | typeof LOADING = {}): MapState<X> {
+	static override create<X>(initial: MapState<X> | Observable<ImmutableObject<X>> | Resolvable<ImmutableObject<X>> | typeof LOADING = {}): MapState<X> {
 		return new MapState<X>(initial);
 	}
 

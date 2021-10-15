@@ -1,4 +1,4 @@
-import type { ArrayType, ImmutableArray, Data } from "../util";
+import type { ArrayType, ImmutableArray, Data } from "../util/index.js";
 
 /** Interface to make sure an object implements all matchers. */
 export interface Filterable<T extends Data> {

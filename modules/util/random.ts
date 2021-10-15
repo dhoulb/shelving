@@ -1,4 +1,4 @@
-import type { ImmutableArray } from "./array";
+import type { ImmutableArray } from "./array.js";
 
 /**
  * Make a random ID for a document, e.g. "xs23rsdxe4mrugef"

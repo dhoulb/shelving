@@ -1,4 +1,4 @@
-import { toString, toTitle, toSlug, toWords, normalizeString, sanitizeString, sanitizeLines } from "..";
+import { toString, toTitle, toSlug, toWords, normalizeString, sanitizeString, sanitizeLines } from "../index.js";
 
 describe("toString()", () => {
 	test("toString(): Correct response for supported things", () => {

@@ -1,4 +1,4 @@
-import { formatNumber } from "./number";
+import { formatNumber } from "./number.js";
 
 /**
  * Valid distance unit names.

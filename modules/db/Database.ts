@@ -1,7 +1,7 @@
-import type { Datas, Validators } from "../util";
-import type { Provider } from "./Provider";
-import { Document } from "./Document";
-import { Documents } from "./Documents";
+import type { Datas, Validators } from "../util/index.js";
+import type { Provider } from "./Provider.js";
+import { Document } from "./Document.js";
+import { Documents } from "./Documents.js";
 
 /**
  * Database: combines a set of document and collection loci for the root level of the database, and links them to a Provider.

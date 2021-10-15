@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 
-import { matchTemplate, renderTemplate, getPlaceholders } from "..";
+import { matchTemplate, renderTemplate, getPlaceholders } from "../index.js";
 
 // Tests.
 describe("matchTemplate()", () => {

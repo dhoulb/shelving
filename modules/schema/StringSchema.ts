@@ -1,6 +1,6 @@
-import { isObject, sanitizeLines, sanitizeString, toString, isArray } from "../util";
-import { InvalidFeedback } from "../feedback";
-import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
+import { isObject, sanitizeLines, sanitizeString, toString, isArray } from "../util/index.js";
+import { InvalidFeedback } from "../feedback/index.js";
+import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
 
 type StringSchemaOptions<T extends string> = SchemaOptions<T> & {
 	readonly value?: string;
@@ -50,7 +50,8 @@ export class StringSchema<T extends string> extends Schema<T> {
 		return new StringSchema(options);
 	}
 
-	readonly value;
+	override readonly value;
+
 	readonly type: string;
 	readonly min: number;
 	readonly max: number | null;
@@ -84,7 +85,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 		this.sanitizer = sanitizer;
 	}
 
-	validate(unsafeValue: unknown = this.value): T {
+	override validate(unsafeValue: unknown = this.value): T {
 		// Coorce.
 		const uncleanValue = toString(unsafeValue);
 		if (!uncleanValue && unsafeValue) throw new InvalidFeedback("Must be string", { value: unsafeValue }); // If original input was truthy, we know its format must have been wrong.

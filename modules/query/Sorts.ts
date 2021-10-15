@@ -1,7 +1,7 @@
-import { Entry, ImmutableEntries, Data, sort, bindMethod } from "../util";
-import type { Sortable } from "./types";
-import { Sort } from "./Sort";
-import { Rules } from "./Rules";
+import { Entry, ImmutableEntries, Data, sort, bindMethod } from "../util/index.js";
+import type { Sortable } from "./types.js";
+import { Sort } from "./Sort.js";
+import { Rules } from "./Rules.js";
 
 /** A set of sorts. */
 export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable<T> {

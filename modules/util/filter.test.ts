@@ -1,4 +1,4 @@
-import { filter, MATCH, SEARCH } from "..";
+import { filter, MATCH, SEARCH } from "../index.js";
 
 test("filter(): Works correctly with MATCH", () => {
 	// Filters correctly.

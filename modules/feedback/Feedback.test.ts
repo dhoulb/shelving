@@ -1,5 +1,5 @@
-import { Feedback, SuccessFeedback, InvalidFeedback, WarningFeedback, ErrorFeedback } from "..";
-import { AssertionError } from "../errors";
+import { Feedback, SuccessFeedback, InvalidFeedback, WarningFeedback, ErrorFeedback } from "../index.js";
+import { AssertionError } from "../errors/index.js";
 
 describe("Feedback", () => {
 	test("Constructs correctly", () => {

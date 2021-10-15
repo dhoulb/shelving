@@ -1,5 +1,5 @@
-import { isArray, ImmutableArray, mapArray } from "./array";
-import { EmptyObject, isObject, ImmutableObject, mapObject } from "./object";
+import { isArray, ImmutableArray, mapArray } from "./array.js";
+import { EmptyObject, isObject, ImmutableObject, mapObject } from "./object.js";
 
 /** Cloneable object implement a `clone()` function that returns a cloned copy. */
 export interface Cloneable {

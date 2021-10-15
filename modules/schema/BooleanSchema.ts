@@ -1,5 +1,5 @@
-import { InvalidFeedback } from "../feedback";
-import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
+import { InvalidFeedback } from "../feedback/index.js";
+import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
 
 type BooleanSchemaOptions<T extends boolean> = SchemaOptions<T> & {
 	readonly value?: boolean;
@@ -19,7 +19,7 @@ export class BooleanSchema<T extends boolean> extends Schema<T> {
 		return new BooleanSchema(options);
 	}
 
-	readonly value: boolean;
+	override readonly value: boolean;
 
 	protected constructor({ value = false, ...rest }: BooleanSchemaOptions<T>) {
 		super(rest);

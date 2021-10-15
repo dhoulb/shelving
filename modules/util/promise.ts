@@ -1,4 +1,4 @@
-import type { Dispatcher, Catcher } from "./dispatch";
+import type { Dispatcher, Catcher } from "./dispatch.js";
 
 /** Extension of `Promise` that exposes its `resolve()` and `reject()` function as public parameters. */
 export class ResolvablePromise<T> extends Promise<T> {

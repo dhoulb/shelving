@@ -1,19 +1,19 @@
 // Core.
-export * from "./Database";
-export * from "./Reference";
-export * from "./Document";
-export * from "./Documents";
-export * from "./Pagination";
+export * from "./Database.js";
+export * from "./Reference.js";
+export * from "./Document.js";
+export * from "./Documents.js";
+export * from "./Pagination.js";
 
 // States.
-export * from "./DocumentState";
-export * from "./DocumentsState";
+export * from "./DocumentState.js";
+export * from "./DocumentsState.js";
 
 // Providers.
-export * from "./Provider";
-export * from "./MemoryProvider";
-export * from "./ValidationProvider";
-export * from "./StateProvider";
+export * from "./Provider.js";
+export * from "./MemoryProvider.js";
+export * from "./ValidationProvider.js";
+export * from "./StateProvider.js";
 
 // Other.
-export * from "./errors";
+export * from "./errors.js";

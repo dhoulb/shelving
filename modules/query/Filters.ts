@@ -1,7 +1,7 @@
-import { Entry, ImmutableEntries, ArrayType, ImmutableArray, Data, filter, bindMethod } from "../util";
-import type { Filterable } from "./types";
-import { Filter } from "./Filter";
-import { Rules } from "./Rules";
+import { Entry, ImmutableEntries, ArrayType, ImmutableArray, Data, filter, bindMethod } from "../util/index.js";
+import type { Filterable } from "./types.js";
+import { Filter } from "./Filter.js";
+import { Rules } from "./Rules.js";
 
 /** A set of filters. */
 export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filterable<T> {

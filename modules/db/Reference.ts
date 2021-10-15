@@ -1,8 +1,8 @@
-import { isFeedback } from "../feedback";
-import { ObjectSchema } from "../schema";
-import { assertInstance, Data, Validator } from "../util";
-import { ReferenceValidationError } from "./errors";
-import type { Database } from "./Database";
+import { isFeedback } from "../feedback/index.js";
+import { ObjectSchema } from "../schema/index.js";
+import { assertInstance, Data, Validator } from "../util/index.js";
+import { ReferenceValidationError } from "./errors.js";
+import type { Database } from "./Database.js";
 
 /**
  * Reference: a location in a database

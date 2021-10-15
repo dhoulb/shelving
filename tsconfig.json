@@ -1,12 +1,6 @@
 {
-	"ts-node": {
-		"moduleTypes": {
-			"jest.config.ts": "cjs"
-		}
-	},
 	"compilerOptions": {
 		"allowJs": true,
-		"allowSyntheticDefaultImports": true,
 		"checkJs": true,
 		"declaration": true,
 		"emitDecoratorMetadata": true,
@@ -20,15 +14,15 @@
 		"lib": ["DOM", "DOM.Iterable", "ES2020"],
 		"module": "es2020",
 		"moduleResolution": "node",
+		// "moduleResolution": "node12", // @todo DH: Enable this from Typescript 4.5
 		"noEmitOnError": true,
 		"noErrorTruncation": true,
+		"noImplicitOverride": true,
 		"noUncheckedIndexedAccess": true,
 		"outDir": "dist",
-		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"target": "es2019"
-		// "noImplicitOverride": true,
 	},
-	"include": ["./**/*.ts", "./**/*.js"]
+	"include": ["./**/*.ts", "./**/*.cjs"]
 }

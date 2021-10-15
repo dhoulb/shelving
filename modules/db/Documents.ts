@@ -17,12 +17,12 @@ import {
 	ArrayType,
 	Transforms,
 	createObserver,
-} from "../util";
-import { Query, Queryable } from "../query";
-import type { Database } from "./Database";
-import { Document } from "./Document";
-import { DocumentsState } from "./DocumentsState";
-import { Reference } from "./Reference";
+} from "../util/index.js";
+import { Query, Queryable } from "../query/index.js";
+import type { Database } from "./Database.js";
+import { Document } from "./Document.js";
+import { DocumentsState } from "./DocumentsState.js";
+import { Reference } from "./Reference.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EMPTY_QUERY = new Query<any>();
@@ -270,7 +270,7 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 	}
 
 	// Implement toString()
-	toString(): string {
+	override toString(): string {
 		return `${this.path}?${this.query.toString()}`;
 	}
 

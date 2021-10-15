@@ -1,6 +1,6 @@
-import type { Observer, Unsubscriber, Data, Result, Results, Transforms } from "../util";
-import type { Document } from "./Document";
-import type { Documents } from "./Documents";
+import type { Observer, Unsubscriber, Data, Result, Results, Transforms } from "../util/index.js";
+import type { Document } from "./Document.js";
+import type { Documents } from "./Documents.js";
 
 /**
  * Provider interface: Implemented by classes that provide access to data (e.g. IndexedDB, Firebase, or in-memory cache providers).

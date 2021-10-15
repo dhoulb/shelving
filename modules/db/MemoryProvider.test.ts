@@ -1,5 +1,6 @@
-import { createTestDatabase, allBasics, allPeople } from "../test";
-import { MemoryProvider } from "..";
+import { jest } from "@jest/globals";
+import { createTestDatabase, allBasics, allPeople } from "../test/index.js";
+import { MemoryProvider } from "../index.js";
 
 const { basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9 } = allBasics;
 const { person1, person2, person3, person4, person5 } = allPeople;
@@ -117,7 +118,7 @@ test("MemoryProvider: subscribing to documents", async () => {
 	const basics = db.docs("basics");
 	const doc = basics.doc("basic1");
 	// Subscribe.
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	const un1 = doc.subscribe(fn1);
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(1, undefined);
@@ -152,7 +153,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	const db = createTestDatabase(provider);
 	const basics = db.docs("basics");
 	// Subscribe.
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	const un1 = basics.subscribe(fn1);
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(1, {}); // Empty at first (no last argument).
@@ -161,7 +162,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(2, { [id1]: basic1 }); // id1 is added.
 	// Subscribe.
-	const fn2 = jest.fn();
+	const fn2 = jest.fn<any, any>();
 	const un2 = basics.subscribe(fn2);
 	await Promise.resolve();
 	expect(fn2).nthCalledWith(1, { [id1]: basic1 });
@@ -220,7 +221,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	await basics.doc("basic6").set(basic6);
 	await basics.doc("basic7").set(basic7);
 	// Subscribe (should find only basic7).
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	const un1 = basics.contains("tags", "odd").subscribe(fn1); // Query for odds.
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(1, {
@@ -262,7 +263,7 @@ test("MemoryProvider: subscribing to limit query", async () => {
 	const basics = db.docs("basics");
 	await Promise.all(Object.entries(allBasics).map(([k, v]) => basics.doc(k).set(v)));
 	// Subscribe (should find only basic7).
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	const un1 = basics.asc("id").limit(2).subscribe(fn1); // Query for odds.
 	await Promise.resolve();
 	expect(fn1).nthCalledWith(1, {

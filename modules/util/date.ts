@@ -1,5 +1,5 @@
-import { AssertionError } from "../errors";
-import { formatNumber } from "./number";
+import { AssertionError } from "../errors/index.js";
+import { formatNumber } from "./number.js";
 
 /** One minute in millseconds. */
 export const MINUTE = 60 * 1000;

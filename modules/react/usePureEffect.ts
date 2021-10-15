@@ -1,5 +1,5 @@
 import { useRef, useEffect as useReactEffect } from "react";
-import { Arguments, Unsubscriber } from "..";
+import { Arguments, Unsubscriber } from "../index.js";
 
 /**
  * Version of React's `useEffect()` that allows the use of a pure (side-effect free) function.

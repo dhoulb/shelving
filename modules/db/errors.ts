@@ -1,8 +1,8 @@
-import type { Data } from "../util";
-import { RequiredError, ValidationError } from "../errors";
-import type { Feedback } from "../feedback";
-import type { Document } from "./Document";
-import type { Reference } from "./Reference";
+import type { Data } from "../util/index.js";
+import { RequiredError, ValidationError } from "../errors/index.js";
+import type { Feedback } from "../feedback/index.js";
+import type { Document } from "./Document.js";
+import type { Reference } from "./Reference.js";
 
 /** Thrown if a `Document` doesn't exist. */
 export class ReferenceRequiredError<T extends Data = Data> extends RequiredError {

@@ -1,4 +1,4 @@
-import type { Stream } from "./Stream";
+import type { Stream } from "./Stream.js";
 
 /** Thrown if we're dispatching to a Stream that has already closed. */
 export class StreamClosedError<I, O> extends Error {

@@ -1,4 +1,4 @@
-import type { Catcher } from "./dispatch";
+import type { Catcher } from "./dispatch.js";
 
 /**
  * Catch an error and log to the console.

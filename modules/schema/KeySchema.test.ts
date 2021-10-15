@@ -1,4 +1,4 @@
-import { InvalidFeedback, KeySchema } from "..";
+import { InvalidFeedback, KeySchema } from "../index.js";
 
 // Tests.
 describe("KeySchema", () => {

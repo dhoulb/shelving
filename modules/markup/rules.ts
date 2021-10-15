@@ -1,5 +1,5 @@
-import { formatUrl, getWindowUrl, PropIterator } from "../util";
-import type { MarkupElement, MarkupRule, MarkupRuleMatcher } from "./types";
+import { formatUrl, getWindowUrl, PropIterator } from "../util/index.js";
+import type { MarkupElement, MarkupRule, MarkupRuleMatcher } from "./types.js";
 
 // Regular expression partials (`\` slashes must be escaped as `\\`).
 const LINE = "[^\\n]*"; // Match line of content (anything that's not a newline).

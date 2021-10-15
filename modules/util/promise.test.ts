@@ -1,4 +1,4 @@
-import { ResolvablePromise } from "./promise";
+import { ResolvablePromise } from "./promise.js";
 
 test("ResolvablePromise works correctly", async () => {
 	const promise = new ResolvablePromise<string>();

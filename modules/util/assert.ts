@@ -1,9 +1,9 @@
-import { AssertionError } from "../errors";
-import type { AnyFunction } from "./function";
-import type { Class } from "./class";
-import { debug } from "./debug";
-import { ImmutableObject, isObject } from "./object";
-import { isArray } from "./array";
+import { AssertionError } from "../errors/index.js";
+import type { AnyFunction } from "./function.js";
+import type { Class } from "./class.js";
+import { debug } from "./debug.js";
+import { ImmutableObject, isObject } from "./object.js";
+import { isArray } from "./array.js";
 
 /** Assert a boolean condition is true. */
 export function assert(condition: unknown, ...received: unknown[]): asserts condition {

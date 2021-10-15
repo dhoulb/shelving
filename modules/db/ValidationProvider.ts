@@ -1,10 +1,10 @@
-import { Data, Result, Results, Unsubscriber, MutableObject, Observer, isAsync, isObject, Transforms, isTransform, Transform } from "../util";
-import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import { Stream } from "../stream";
-import type { Provider } from "./Provider";
-import type { Document } from "./Document";
-import type { Documents } from "./Documents";
-import { ReferenceValidationError } from "./errors";
+import { Data, Result, Results, Unsubscriber, MutableObject, Observer, isAsync, isObject, Transforms, isTransform, Transform } from "../util/index.js";
+import { Feedback, InvalidFeedback, isFeedback } from "../feedback/index.js";
+import { Stream } from "../stream/index.js";
+import type { Provider } from "./Provider.js";
+import type { Document } from "./Document.js";
+import type { Documents } from "./Documents.js";
+import { ReferenceValidationError } from "./errors.js";
 
 /**
  * Validation provider: validates any values that are read from or written a the source provider.

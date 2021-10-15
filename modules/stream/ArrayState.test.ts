@@ -1,4 +1,5 @@
-import { ArrayState } from "./ArrayState";
+import { jest } from "@jest/globals";
+import { ArrayState } from "./ArrayState.js";
 
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
@@ -7,7 +8,7 @@ test("ArrayState: array with initial value", async () => {
 	expect(state).toBeInstanceOf(ArrayState);
 	expect(state.value).toEqual([1, 2, 3]);
 	// Ons and onces.
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	state.subscribe(fn1);
 	// Has.
 	expect(state.value.includes(1)).toBe(true);

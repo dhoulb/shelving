@@ -1,4 +1,4 @@
-import { InvalidFeedback, EmailSchema } from "..";
+import { InvalidFeedback, EmailSchema } from "../index.js";
 
 // Tests.
 describe("EmailSchema", () => {

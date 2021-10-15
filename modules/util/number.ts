@@ -1,4 +1,4 @@
-import { AssertionError } from "../errors";
+import { AssertionError } from "../errors/index.js";
 
 /** Is a value a number? */
 export const isNumber = (v: unknown): v is number => typeof v === "number";

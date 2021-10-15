@@ -1,4 +1,4 @@
-import { InvalidFeedback, UrlSchema } from "..";
+import { InvalidFeedback, UrlSchema } from "../index.js";
 
 // Tests.
 describe("UrlSchema", () => {

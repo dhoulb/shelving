@@ -1,4 +1,4 @@
-import { formatNumber, roundNumber, stringToNumber } from "..";
+import { formatNumber, roundNumber, stringToNumber } from "../index.js";
 
 test("formatNumber(): Works correctly", () => {
 	expect(formatNumber(123)).toBe("123");

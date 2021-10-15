@@ -1,8 +1,8 @@
-import { AssertionError } from "../errors";
-import { State, StreamClosedError } from "../stream";
-import { Data, dispatch, LOADING, MutableObject, Observer, Results, Unsubscriber } from "../util";
-import type { Documents } from "./Documents";
-import { DocumentState } from "./DocumentState";
+import { AssertionError } from "../errors/index.js";
+import { State, StreamClosedError } from "../stream/index.js";
+import { Data, dispatch, LOADING, MutableObject, Observer, Results, Unsubscriber } from "../util/index.js";
+import type { Documents } from "./Documents.js";
+import { DocumentState } from "./DocumentState.js";
 
 /**
  * Documents state: stores the global state of a set of documents.

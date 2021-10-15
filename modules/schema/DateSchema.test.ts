@@ -1,4 +1,4 @@
-import { InvalidFeedback, getYmd, DateSchema } from "..";
+import { InvalidFeedback, getYmd, DateSchema } from "../index.js";
 
 // Tests.
 describe("DateSchema", () => {

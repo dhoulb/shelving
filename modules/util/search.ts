@@ -1,7 +1,7 @@
-import type { ImmutableArray } from "./array";
-import type { Matcher } from "./filter";
-import { toWords, escapeRegExp, normalizeString } from "./string";
-import { isObject } from "./object";
+import type { ImmutableArray } from "./array.js";
+import type { Matcher } from "./filter.js";
+import { toWords, escapeRegExp, normalizeString } from "./string.js";
+import { isObject } from "./object.js";
 
 /**
  * Filter matcher that supports fulltext searching.

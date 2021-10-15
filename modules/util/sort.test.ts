@@ -1,4 +1,4 @@
-import { getProp, isObject, sortAscending, sortDescending } from "..";
+import { getProp, isObject, sortAscending, sortDescending } from "../index.js";
 
 describe("sortAscending()", () => {
 	test("sortAscending(): Zero items returns same instance", () => {

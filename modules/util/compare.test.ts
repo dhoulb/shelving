@@ -1,4 +1,4 @@
-import { COMPARE } from "..";
+import { COMPARE } from "../index.js";
 
 describe("compare()", () => {
 	test("Different types are sorted correctly", () => {

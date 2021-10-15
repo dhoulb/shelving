@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { ImmutableArray } from "./array";
-import type { Deriver } from "./dispatch";
-import { COMPARE } from "./compare";
+import type { ImmutableArray } from "./array.js";
+import type { Deriver } from "./dispatch.js";
+import { COMPARE } from "./compare.js";
 
 /** Possible operator references. */
 export type Operator = "IS" | "NOT" | "IN" | "CONTAINS" | "LT" | "LTE" | "GT" | "GTE";

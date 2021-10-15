@@ -1,10 +1,10 @@
-import { ImmutableArray, LOADING, Observable, Resolvable, swapItem, toggleItem, withItem, withoutItem, countItems } from "../util";
-import { State } from "./State";
+import { ImmutableArray, LOADING, Observable, Resolvable, swapItem, toggleItem, withItem, withoutItem, countItems } from "../util/index.js";
+import { State } from "./State.js";
 
 /** State that stores an array. */
 export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<T> {
 	/** Create a new ArrayState. */
-	static create<X>(initial: ArrayState<X> | Observable<ImmutableArray<X>> | Resolvable<ImmutableArray<X>> | typeof LOADING = []): ArrayState<X> {
+	static override create<X>(initial: ArrayState<X> | Observable<ImmutableArray<X>> | Resolvable<ImmutableArray<X>> | typeof LOADING = []): ArrayState<X> {
 		return new ArrayState<X>(initial);
 	}
 

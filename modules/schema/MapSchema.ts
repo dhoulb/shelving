@@ -1,6 +1,6 @@
-import { MutableObject, ImmutableObject, isObject, Validator } from "../util";
-import { Feedback, InvalidFeedback, isFeedback } from "../feedback";
-import { Schema, SchemaOptions } from "./Schema";
+import { MutableObject, ImmutableObject, isObject, Validator } from "../util/index.js";
+import { Feedback, InvalidFeedback, isFeedback } from "../feedback/index.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 type MapSchemaOptions<T> = SchemaOptions<ImmutableObject<T>> & {
 	readonly items: Validator<T>;
@@ -23,7 +23,7 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 		return new MapSchema({ items });
 	}
 
-	readonly value: ImmutableObject;
+	override readonly value: ImmutableObject;
 
 	/**
 	 * Define a validator for _all_ props in the object.

@@ -1,6 +1,6 @@
-import { bindMethod, Data, Entry, ImmutableEntries, COMPARE, Direction, sort } from "../util";
-import { getQueryProp } from "./helpers";
-import { Rule } from "./Rule";
+import { bindMethod, Data, Entry, ImmutableEntries, COMPARE, Direction, sort } from "../util/index.js";
+import { getQueryProp } from "./helpers.js";
+import { Rule } from "./Rule.js";
 
 /**
  * Sorts a list of values.

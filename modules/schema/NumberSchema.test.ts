@@ -1,4 +1,4 @@
-import { InvalidFeedback, NumberSchema } from "..";
+import { InvalidFeedback, NumberSchema } from "../index.js";
 
 // Tests.
 describe("NumberSchema", () => {

@@ -1,6 +1,6 @@
-import { Data, Entry, ImmutableEntries, bindMethod, filter, MATCH, Operator } from "../util";
-import { Rule } from "./Rule";
-import { getQueryProp } from "./helpers";
+import { Data, Entry, ImmutableEntries, bindMethod, filter, MATCH, Operator } from "../util/index.js";
+import { Rule } from "./Rule.js";
+import { getQueryProp } from "./helpers.js";
 
 /**
  * Filter: filters a list of documents.

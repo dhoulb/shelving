@@ -1,6 +1,6 @@
-import { Documents, Results, Data, PaginationState } from "..";
-import { useObserve } from "./useObserve";
-import { usePureMemo } from "./usePureMemo";
+import { Documents, Results, Data, PaginationState } from "../index.js";
+import { useObserve } from "./useObserve.js";
+import { usePureMemo } from "./usePureMemo.js";
 
 /**
  * Use a `Pagination` for a collection.

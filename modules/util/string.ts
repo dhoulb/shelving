@@ -1,10 +1,10 @@
 /* eslint-disable no-control-regex */
 
-import { formatDate, toYmd } from "./date";
-import { isObject } from "./object";
-import { ImmutableArray, isArray, mapItems } from "./array";
-import { formatNumber, isBetween } from "./number";
-import { SKIP } from "./constants";
+import { formatDate, toYmd } from "./date.js";
+import { isObject } from "./object.js";
+import { ImmutableArray, isArray, mapItems } from "./array.js";
+import { formatNumber, isBetween } from "./number.js";
+import { SKIP } from "./constants.js";
 
 /** Is a value a string? */
 export const isString = (v: unknown): v is string => typeof v === "string";

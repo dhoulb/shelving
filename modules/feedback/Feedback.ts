@@ -1,5 +1,5 @@
-import { debug, toString, ImmutableObject, isObject, MutableObject } from "../util";
-import { AssertionError } from "../errors";
+import { debug, toString, ImmutableObject, isObject, MutableObject } from "../util/index.js";
+import { AssertionError } from "../errors/index.js";
 
 /** Possible status strings for feedback. */
 export type FeedbackStatus = "" | "success" | "warning" | "error" | "invalid";
@@ -106,22 +106,22 @@ export class Feedback implements Feedbackish {
 
 /** Specific type of `Feedback` to indicate success (something went right!). */
 export class SuccessFeedback extends Feedback {
-	static STATUS: FeedbackStatus = "success";
+	static override STATUS: FeedbackStatus = "success";
 }
 
 /** Specific type of `Feedback` to indicate warning (something might go wrong soon). */
 export class WarningFeedback extends Feedback {
-	static STATUS: FeedbackStatus = "warning";
+	static override STATUS: FeedbackStatus = "warning";
 }
 
 /** Specific type of `Feedback` to indicate an error (something went wrong). */
 export class ErrorFeedback extends Feedback {
-	static STATUS: FeedbackStatus = "error";
+	static override STATUS: FeedbackStatus = "error";
 }
 
 /** Specific type of `ErrorFeedback` returned from `validate()` when a value is invalid. */
 export class InvalidFeedback extends ErrorFeedback {
-	static STATUS: FeedbackStatus = "invalid";
+	static override STATUS: FeedbackStatus = "invalid";
 }
 
 /**

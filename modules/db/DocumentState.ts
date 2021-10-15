@@ -1,6 +1,6 @@
-import { State, StreamClosedError } from "../stream";
-import { Data, dispatch, LOADING, MutableObject, Observer, Result, Transforms, Unsubscriber } from "../util";
-import type { Document } from "./Document";
+import { State, StreamClosedError } from "../stream/index.js";
+import { Data, dispatch, LOADING, MutableObject, Observer, Result, Transforms, Unsubscriber } from "../util/index.js";
+import type { Document } from "./Document.js";
 
 /**
  * Document state: stores the global state of a specific document.

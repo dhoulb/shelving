@@ -1,5 +1,5 @@
-import { StringSchema } from "./StringSchema";
-import type { SchemaOptions } from "./Schema";
+import { StringSchema } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
 
 type KeySchemaOptions = SchemaOptions<string> & {
 	readonly min?: number;
@@ -13,14 +13,14 @@ type KeySchemaOptions = SchemaOptions<string> & {
  * - Maximum key length is 64 characters.
  */
 export class KeySchema extends StringSchema<string> {
-	static REQUIRED = new KeySchema({ required: true });
-	static OPTIONAL = new KeySchema({ required: false });
+	static override REQUIRED = new KeySchema({ required: true });
+	static override OPTIONAL = new KeySchema({ required: false });
 
-	static create(options: KeySchemaOptions): KeySchema {
+	static override create(options: KeySchemaOptions): KeySchema {
 		return new KeySchema(options);
 	}
 
-	readonly multiline = false;
-	readonly min = 1;
-	readonly max = 64;
+	override readonly multiline = false;
+	override readonly min = 1;
+	override readonly max = 64;
 }

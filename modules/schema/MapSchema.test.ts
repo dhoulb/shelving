@@ -1,4 +1,4 @@
-import { InvalidFeedback, ImmutableObject, MapSchema, Validator, BooleanSchema, NumberSchema, StringSchema } from "..";
+import { InvalidFeedback, ImmutableObject, MapSchema, Validator, BooleanSchema, NumberSchema, StringSchema } from "../index.js";
 
 // Tests.
 describe("MapSchema", () => {

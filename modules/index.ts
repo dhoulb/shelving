@@ -5,24 +5,24 @@
  */
 
 // Data storage.
-export * from "./schema";
-export * from "./db";
-export * from "./query";
-export * from "./api";
+export * from "./schema/index.js";
+export * from "./db/index.js";
+export * from "./query/index.js";
+export * from "./api/index.js";
 
 // Data providers.
-// export * from "./firestore-client"; // Not exported.
-// export * from "./firestore-server"; // Not exported.
+// export * from "./firestore-client/index.js"; // Not exported.
+// export * from "./firestore-server/index.js"; // Not exported.
 
 // Utilities.
-export * from "./util";
-export * from "./stream";
-export * from "./markup";
-export * from "./errors";
-export * from "./feedback";
+export * from "./util/index.js";
+export * from "./stream/index.js";
+export * from "./markup/index.js";
+export * from "./errors/index.js";
+export * from "./feedback/index.js";
 
 // Integrations.
-// export * from "./react"; // Not exported.
+// export * from "./react/index.js"; // Not exported.
 
 // Testing.
-// export * from "./test"; // Not exported.
+// export * from "./test/index.js"; // Not exported.

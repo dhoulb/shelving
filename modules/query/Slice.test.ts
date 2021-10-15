@@ -1,4 +1,4 @@
-import { Slice } from "..";
+import { Slice } from "../index.js";
 
 const a = { str: "Z", num: 3, type: "alpha" };
 const b = { str: "Y", num: 1, type: "alpha" };

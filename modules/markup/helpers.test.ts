@@ -1,5 +1,5 @@
-import { cleanMarkup, nodeToText, nodeToHtml, renderMarkup } from "..";
-import { iterateElements } from "./helpers";
+import { cleanMarkup, nodeToText, nodeToHtml, renderMarkup } from "../index.js";
+import { iterateElements } from "./helpers.js";
 
 describe("nodeToText()", () => {
 	test("Nodes can be converted to plain text", () => {

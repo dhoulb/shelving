@@ -1,5 +1,5 @@
-import { Arguments, AsyncFetcher, serialise, State, LOADING, removeEntry } from "..";
-import { useState } from "./useState";
+import { Arguments, AsyncFetcher, serialise, State, LOADING, removeEntry } from "../index.js";
+import { useState } from "./useState.js";
 
 /** Store a list of named cached `State` instances. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

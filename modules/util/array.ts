@@ -1,7 +1,7 @@
-import type { Resolvable } from "./data";
-import type { ImmutableObject, Mutable } from "./object";
-import { SKIP } from "./constants";
-import { isAsync } from "./promise";
+import type { Resolvable } from "./data.js";
+import type { ImmutableObject, Mutable } from "./object.js";
+import { SKIP } from "./constants.js";
+import { isAsync } from "./promise.js";
 
 /**
  * Mutable array: an array that can be changed.

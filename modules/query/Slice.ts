@@ -1,5 +1,5 @@
-import type { ImmutableEntries, Data } from "../util";
-import { Rule } from "./Rule";
+import type { ImmutableEntries, Data } from "../util/index.js";
+import { Rule } from "./Rule.js";
 
 export class Slice<D extends Data> extends Rule<D> {
 	readonly limit: number | null;

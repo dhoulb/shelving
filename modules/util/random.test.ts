@@ -1,4 +1,4 @@
-import { randomItem, randomCharacter, randomId, randomInteger } from "..";
+import { randomItem, randomCharacter, randomId, randomInteger } from "../index.js";
 
 test("randomCharacter()", () => {
 	expect(typeof randomCharacter()).toBe("string");

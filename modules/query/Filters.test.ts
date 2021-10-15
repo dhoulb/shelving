@@ -1,4 +1,4 @@
-import { Data, Filters } from "..";
+import { Data, Filters } from "../index.js";
 
 test("Filters: types", () => {
 	const filter1: Filters<{ a: number }> = new Filters<{ a: number }>();

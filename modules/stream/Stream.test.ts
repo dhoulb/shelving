@@ -1,4 +1,5 @@
-import { getNextValue, Stream, SKIP } from "..";
+import { jest } from "@jest/globals";
+import { getNextValue, Stream, SKIP } from "../index.js";
 
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
@@ -8,22 +9,22 @@ test("Stream: works correctly", () => {
 	expect(stream.closed).toBe(false);
 	expect(stream.subscribers).toBe(0);
 	// Ons and onces.
-	const next1 = jest.fn();
-	const error1 = jest.fn();
-	const complete1 = jest.fn();
+	const next1 = jest.fn<any, any>();
+	const error1 = jest.fn<any, any>();
+	const complete1 = jest.fn<any, any>();
 	const unsub1 = stream.subscribe(next1, error1, complete1);
-	const next2 = jest.fn();
-	const error2 = jest.fn();
-	const complete2 = jest.fn();
+	const next2 = jest.fn<any, any>();
+	const error2 = jest.fn<any, any>();
+	const complete2 = jest.fn<any, any>();
 	const unsub2 = stream.subscribe({ next: next2, error: error2, complete: complete2 });
-	const next3 = jest.fn();
-	const error3 = jest.fn();
-	const complete3 = jest.fn();
+	const next3 = jest.fn<any, any>();
+	const error3 = jest.fn<any, any>();
+	const complete3 = jest.fn<any, any>();
 	const stream3 = stream.derive();
 	stream3.subscribe(next3, error3, complete3);
-	const next4 = jest.fn();
-	const error4 = jest.fn();
-	const complete4 = jest.fn();
+	const next4 = jest.fn<any, any>();
+	const error4 = jest.fn<any, any>();
+	const complete4 = jest.fn<any, any>();
 	const stream4 = stream.derive();
 	stream4.subscribe({ next: next4, error: error4, complete: complete4 });
 	expect(stream.subscribers).toEqual(4);
@@ -69,11 +70,11 @@ test("Stream: all listeners are fired even if one errors", () => {
 	const stream = Stream.create<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	// Ons and onces.
-	const fnBefore = jest.fn();
+	const fnBefore = jest.fn<any, any>();
 	const fnError = jest.fn(() => {
 		throw new Error("ERROR");
 	});
-	const fnAfter = jest.fn();
+	const fnAfter = jest.fn<any, any>();
 	stream.subscribe(fnBefore);
 	stream.subscribe(fnError);
 	stream.subscribe(fnAfter);
@@ -89,7 +90,7 @@ test("Stream: all listeners are fired even if one errors", () => {
 });
 test("Stream: promised value as next value", async () => {
 	const stream = Stream.create<number>();
-	const fn = jest.fn();
+	const fn = jest.fn<any, any>();
 	stream.subscribe(fn);
 	// Fire.
 	stream.next(Promise.resolve(111));
@@ -101,7 +102,7 @@ test("Stream: promised value as next value", async () => {
 });
 test("Stream: SKIP value as next value", () => {
 	const stream = Stream.create<number>();
-	const fn = jest.fn();
+	const fn = jest.fn<any, any>();
 	stream.subscribe(fn);
 	// Fire.
 	stream.next(111);

@@ -1,1 +1,1 @@
-export * from "./FirestoreClientProvider";
+export * from "./FirestoreClientProvider.js";

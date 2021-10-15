@@ -11,11 +11,11 @@ import {
 	AsyncEmptyDispatcher,
 	Transforms,
 	createObserver,
-} from "../util";
-import type { Database } from "./Database";
-import { DocumentState } from "./DocumentState";
-import { ReferenceRequiredError } from "./errors";
-import { Reference } from "./Reference";
+} from "../util/index.js";
+import type { Database } from "./Database.js";
+import { DocumentState } from "./DocumentState.js";
+import { ReferenceRequiredError } from "./errors.js";
+import { Reference } from "./Reference.js";
 
 /**
  * Document reference: allows reading from / writing to a specific document in a database.

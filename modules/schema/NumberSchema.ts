@@ -1,6 +1,6 @@
-import { InvalidFeedback } from "../feedback";
-import { toNumber, roundNumber, isArray, isObject, Unit, detectUnit, convertUnits } from "../util";
-import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema";
+import { InvalidFeedback } from "../feedback/index.js";
+import { toNumber, roundNumber, isArray, isObject, Unit, detectUnit, convertUnits } from "../util/index.js";
+import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
 
 type NumberSchemaOptions<T extends number | null> = SchemaOptions<T> & {
 	readonly value?: number | null;
@@ -31,7 +31,8 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 		return new NumberSchema(options);
 	}
 
-	readonly value: number | null;
+	override readonly value: number | null;
+
 	readonly unit?: Unit | null;
 	readonly min: number | null;
 	readonly max: number | null;

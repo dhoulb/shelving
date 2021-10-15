@@ -1,6 +1,6 @@
-import type { ImmutableArray } from "./array";
-import { getLazy, Lazy } from "./function";
-import { MutableObject, isObject, ImmutableObject } from "./object";
+import type { ImmutableArray } from "./array.js";
+import { getLazy, Lazy } from "./function.js";
+import { MutableObject, isObject, ImmutableObject } from "./object.js";
 
 type Chunk = { pre: string; name: string; placeholder: string; post: string };
 type Chunks = ImmutableArray<Chunk>;

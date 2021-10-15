@@ -1,4 +1,4 @@
-import { isClass } from "./class";
+import { isClass } from "./class.js";
 
 /**
  * Any function.

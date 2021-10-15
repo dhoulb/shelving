@@ -1,6 +1,6 @@
-import { Data, Document, Unsubscriber, DocumentState } from "..";
-import { usePureEffect } from "./usePureEffect";
-import { useObserve } from "./useObserve";
+import { Data, Document, Unsubscriber, DocumentState } from "../index.js";
+import { usePureEffect } from "./usePureEffect.js";
+import { useObserve } from "./useObserve.js";
 
 /**
  * Use a single document in a React component.

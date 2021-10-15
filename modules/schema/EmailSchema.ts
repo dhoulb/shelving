@@ -1,5 +1,5 @@
-import { StringSchema } from "./StringSchema";
-import type { SchemaOptions } from "./Schema";
+import { StringSchema } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
 
 const R_MATCH = /^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.){1,3}(?:[a-z]{2,63}|xn--[a-z0-9-]{0,58}[a-z0-9])$/;
 
@@ -24,17 +24,17 @@ type EmailSchemaOptions = SchemaOptions<string> & {
  *     - TLD is a segment of 2-63 characters, possibly in `xn--` international format.
  */
 export class EmailSchema extends StringSchema<string> {
-	static REQUIRED = new EmailSchema({ required: true });
-	static OPTIONAL = new EmailSchema({ required: false });
+	static override REQUIRED = new EmailSchema({ required: true });
+	static override OPTIONAL = new EmailSchema({ required: false });
 
-	static create(options: EmailSchemaOptions): EmailSchema {
+	static override create(options: EmailSchemaOptions): EmailSchema {
 		return new EmailSchema(options);
 	}
 
-	readonly type = "email";
-	readonly max = 254;
-	readonly match = R_MATCH;
-	readonly multiline = false;
+	override readonly type = "email";
+	override readonly max = 254;
+	override readonly match = R_MATCH;
+	override readonly multiline = false;
 
 	override sanitize(str: string): string {
 		const clean = super.sanitize(str);

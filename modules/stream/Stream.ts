@@ -19,8 +19,8 @@ import {
 	isAsync,
 	therive,
 	createObserver,
-} from "../util";
-import { StreamClosedError } from "./errors";
+} from "../util/index.js";
+import { StreamClosedError } from "./errors.js";
 
 /**
  * Stream: an object that can be subscribed to and passes along any next values to its subscribers.
@@ -195,7 +195,7 @@ class SlicingStream<I, O = I> extends Stream<I, O> {
 	 * - Calls `next()` on all subscribers.
 	 * - Knows how to deal with resolvable values (i.e. Promised or SKIP values).
 	 */
-	protected dispatchNext(value: O): void {
+	protected override dispatchNext(value: O): void {
 		for (const subscriber of this.#subscribers.slice(this.#start, this.#end)) dispatchNext(subscriber, value);
 	}
 }
@@ -209,7 +209,7 @@ class LimitedStream<I, O = I> extends Stream<I, O> {
 		this.#remaining = num;
 	}
 
-	protected dispatchNext(value: O): void {
+	protected override dispatchNext(value: O): void {
 		super.dispatchNext(value);
 		this.#remaining--;
 		if (this.#remaining <= 0) this.complete();

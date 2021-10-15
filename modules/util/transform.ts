@@ -1,5 +1,5 @@
-import { withItems, ImmutableArray, isArray, withoutItems } from "./array";
-import { ImmutableObject, isObject, withoutEntries, withProps } from "./object";
+import { withItems, ImmutableArray, isArray, withoutItems } from "./array.js";
+import { ImmutableObject, isObject, withoutEntries, withProps } from "./object.js";
 
 /** Is an unknown value a Transform instance? */
 export const isTransform = <T extends Transform>(v: T | unknown): v is T => v instanceof Transform;

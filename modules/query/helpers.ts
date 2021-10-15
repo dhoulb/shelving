@@ -1,4 +1,4 @@
-import { getProp, ImmutableObject } from "../util";
+import { getProp, ImmutableObject } from "../util/index.js";
 
 /**
  * Get a named property value from some data.

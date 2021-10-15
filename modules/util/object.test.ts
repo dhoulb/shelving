@@ -13,8 +13,13 @@ import {
 	ImmutableObject,
 	setProps,
 	withEntry,
-} from "..";
-import { addEntries, addEntry, MutableObject, removeEntries, removeEntry, withEntries } from "./object";
+	addEntries,
+	addEntry,
+	MutableObject,
+	removeEntries,
+	removeEntry,
+	withEntries,
+} from "../index.js";
 
 const fixedObj = { a: 1, b: "B", c: true };
 const maplikeObj: ImmutableObject<number> = { a: 1, b: 2, c: 3, d: 4 };

@@ -1,5 +1,5 @@
-import { StringSchema } from "./StringSchema";
-import type { SchemaOptions } from "./Schema";
+import { StringSchema } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
 
 // Valid phone number is max 16 digits made up of:
 // - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).
@@ -16,16 +16,16 @@ type PhoneSchemaOptions = SchemaOptions<string> & {
  * - Falsy values are converted to `""` empty string.
  */
 export class PhoneSchema extends StringSchema<string> {
-	static REQUIRED = new PhoneSchema({ required: true });
-	static OPTIONAL = new PhoneSchema({ required: false });
+	static override REQUIRED = new PhoneSchema({ required: true });
+	static override OPTIONAL = new PhoneSchema({ required: false });
 
-	static create(options: PhoneSchemaOptions): PhoneSchema {
+	static override create(options: PhoneSchemaOptions): PhoneSchema {
 		return new PhoneSchema(options);
 	}
 
-	readonly type = "phone";
-	readonly match = R_MATCH;
-	readonly max: number = 16; // Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
+	override readonly type = "phone";
+	override readonly match = R_MATCH;
+	override readonly max: number = 16; // Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
 
 	/**
 	 * Clean a phone number string by removing characters that aren't digits.

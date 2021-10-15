@@ -1,4 +1,4 @@
-import { shallowMerge, deepMerge, mergeArray, mergeObject, ImmutableArray } from "..";
+import { shallowMerge, deepMerge, mergeArray, mergeObject, ImmutableArray } from "../index.js";
 
 const arrFlat = [1, "b", true, false, null];
 const arrFlatSame = [1, "b", true, false, null];

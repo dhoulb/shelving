@@ -1,7 +1,7 @@
-import { EQUAL } from "./constants";
-import { isArrayEqual, isDeepEqual } from "./equal";
-import { isArray } from "./array";
-import { DeepPartial, isObject, MutableObject, ImmutableObject } from "./object";
+import { EQUAL } from "./constants.js";
+import { isArrayEqual, isDeepEqual } from "./equal.js";
+import { isArray } from "./array.js";
+import { DeepPartial, isObject, MutableObject, ImmutableObject } from "./object.js";
 
 /**
  * Deeply diff two unknown values to produce the transformation needed to transform `left` into `right`, or the `EQUAL` constant if they are deeply equal.

@@ -17,11 +17,11 @@ import {
 	thispatch,
 	transformProps,
 	Transforms,
-} from "../util";
-import type { Provider } from "./Provider";
-import type { Documents } from "./Documents";
-import type { Document } from "./Document";
-import { ReferenceRequiredError } from "./errors";
+} from "../util/index.js";
+import type { Provider } from "./Provider.js";
+import type { Documents } from "./Documents.js";
+import type { Document } from "./Document.js";
+import { ReferenceRequiredError } from "./errors.js";
 
 /**
  * Memory provider: fast in-memory store for data.

@@ -1,5 +1,5 @@
-import { AsyncDispatcher, AsyncEmptyDispatcher, Unsubscriber, AsyncCatcher, thispatch } from "./dispatch";
-import { isObject } from "./object";
+import { AsyncDispatcher, AsyncEmptyDispatcher, Unsubscriber, AsyncCatcher, thispatch } from "./dispatch.js";
+import { isObject } from "./object.js";
 
 /** Observable is any object that has a `subscribe()` method that allows either an `Observer` or separate `next()`, `error()` and `complete()` functions. */
 export interface Observable<T> {

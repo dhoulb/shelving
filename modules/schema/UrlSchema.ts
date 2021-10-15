@@ -1,6 +1,6 @@
-import { InvalidFeedback } from "../feedback";
-import { StringSchema } from "./StringSchema";
-import type { SchemaOptions } from "./Schema";
+import { InvalidFeedback } from "../feedback/index.js";
+import { StringSchema } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
 
 type UrlSchemaOptions = SchemaOptions<string> & {
 	readonly schemes?: string[];
@@ -15,17 +15,18 @@ type UrlSchemaOptions = SchemaOptions<string> & {
  * - Falsy values are converted to `""` empty string.
  */
 export class UrlSchema extends StringSchema<string> {
-	static REQUIRED = new UrlSchema({ required: true });
-	static OPTIONAL = new UrlSchema({ required: false });
+	static override REQUIRED = new UrlSchema({ required: true });
+	static override OPTIONAL = new UrlSchema({ required: false });
 
-	static create(options: UrlSchemaOptions): UrlSchema {
+	static override create(options: UrlSchemaOptions): UrlSchema {
 		return new UrlSchema(options);
 	}
 
-	readonly type = "url";
+	override readonly type = "url";
+	override readonly max = 512;
+
 	readonly schemes: string[] = ["http:", "https:"];
 	readonly hosts: string[] | null = null;
-	readonly max = 512;
 
 	protected constructor({ schemes = ["http:", "https:"], hosts = null, ...rest }: UrlSchemaOptions = {}) {
 		super(rest);

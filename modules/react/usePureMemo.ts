@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Arguments, isArrayEqual, getLazy, Lazy } from "..";
+import { Arguments, isArrayEqual, getLazy, Lazy } from "../index.js";
 
 /**
  * Version of React's `useMemo()` that allows the use of a pure (side-effect free) function.

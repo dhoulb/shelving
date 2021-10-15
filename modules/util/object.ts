@@ -1,9 +1,9 @@
-import type { Entry, ImmutableEntries, ResolvableEntries } from "./entry";
-import type { Resolvable } from "./data";
-import type { ImmutableArray } from "./array";
-import { isArray, isIterable } from "./array";
-import { SKIP } from "./constants";
-import { isAsync } from "./promise";
+import type { Entry, ImmutableEntries, ResolvableEntries } from "./entry.js";
+import type { Resolvable } from "./data.js";
+import type { ImmutableArray } from "./array.js";
+import { isArray, isIterable } from "./array.js";
+import { SKIP } from "./constants.js";
+import { isAsync } from "./promise.js";
 
 /**
  * Empty object: an object with no properties.

@@ -19,16 +19,27 @@
 	"module": "./index.js",
 	"exports": {
 		".": "./index.js",
+		"./api": "./api/index.js",
+		"./db": "./db/index.js",
+		"./errors": "./errors/index.js",
+		"./feedback": "./feedback/index.js",
 		"./firestore-client": "./firestore-client/index.js",
+		"./firestore-lite": "./firestore-lite/index.js",
 		"./firestore-server": "./firestore-server/index.js",
+		"./markup": "./markup/index.js",
+		"./query": "./query/index.js",
 		"./react": "./react/index.js",
-		"./*": "./*/index.js"
+		"./schema": "./schema/index.js",
+		"./stream": "./stream/index.js",
+		"./test": "./test/index.js",
+		"./util": "./util/index.js"
 	},
+	"main": "./index.js",
 	"types": "./index.d.ts",
 	"sideEffects": false,
 	"engineStrict": true,
 	"engines": {
-		"node": ">=12.0.0"
+		"node": ">=14.0.0"
 	},
 	"scripts": {
 		"fix": "npm run fix:prettier && npm run fix:eslint",
@@ -38,7 +49,7 @@
 		"test:prettier": "prettier --check './**/*.{md,json}'",
 		"test:eslint": "eslint --cache './**/*.{ts,tsx}'",
 		"test:typescript": "tsc --noEmit",
-		"test:jest": "jest",
+		"test:jest": "npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js",
 		"test:jest:watch": "jest --watchAll",
 		"build": "npm run build:typescript && npm run build:copy && npm run build:check",
 		"build:typescript": "tsc -p ./tsconfig.build.json",
@@ -61,8 +72,6 @@
 		"prettier": "^2.3.0",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
-		"ts-jest": "^27.0.5",
-		"ts-node": "^10.2.1",
 		"typescript": "^4.3.2"
 	},
 	"peerDependencies": {

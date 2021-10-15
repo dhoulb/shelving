@@ -4,7 +4,8 @@
 		"sourceType": "module",
 		"ecmaVersion": 2019,
 		"project": "./tsconfig.json",
-		"cache": true
+		"cache": true,
+		"extraFileExtensions": [".cjs"]
 	},
 	"extends": [
 		"eslint:recommended",
@@ -15,10 +16,9 @@
 		"plugin:import/recommended"
 	],
 	"env": {
-		"node": true,
-		// "browser": true,
-		"es6": true,
-		"jest": true
+		"node": true
+		// "es6": true,
+		// "jest": true
 	},
 	"rules": {
 		"class-methods-use-this": 0, // DH: Sometimes you want to make a potential static method a class method for consistency.
@@ -63,13 +63,15 @@
 		"@typescript-eslint/explicit-function-return-type": 0, // DH: This is annoying, mainly for for little arrow functions where type is trivially inferred.
 		"@typescript-eslint/no-use-before-define": 0, // DH: End up turning this off a lot when you have functions that cross-reference each other (and TS already protects against using block-scoped variables before they are defined).
 		"@typescript-eslint/no-unnecessary-type-constraint": 0, // DH: Incorrectly flags `extends unknown` as doing nothing when it in fact makes the type `unknown` instead of `any`
-		"import/extensions": [2, { "extensions": [".ts", ".tsx", ".jsx"] }], // DH: Add all valid extensions.
+		"import/extensions": [2, "ignorePackages", { "js": "always", "json": "never" }], // DH: Add all valid extensions.
 		"import/first": 2, // DH: Imports should be first.
 		"import/newline-after-import": 2, // DH: Newline after import.
 		"import/no-default-export": 2, // DH: Force use of  named exports.
 		"import/no-extraneous-dependencies": 0, // DH: We import a lot from _parent_ package.json files, and it's annoying to repeat the dependencies in both files.
 		"import/order": 2, // DH: Enforce sensible sort order of imports (builtin → npm → shared → parent dirs → this dir)
-		"import/prefer-default-export": 0 // DH: Using named exports is clearer because the importing file knows what it is importing.
+		"import/prefer-default-export": 0, // DH: Using named exports is clearer because the importing file knows what it is importing.
+		"import/named": 0, // DH: Enforced by Typescript (and at one point was false-positive on when types were imported without `import type`).
+		"import/no-unresolved": 0 // DH: Enforced by Typescript.
 	},
 	"overrides": [
 		{

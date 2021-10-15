@@ -1,4 +1,4 @@
-import { detectUnit, formatUnit, convertUnits } from "..";
+import { detectUnit, formatUnit, convertUnits } from "../index.js";
 
 describe("detectDistanceUnit()", () => {
 	test("Works correctly", () => {

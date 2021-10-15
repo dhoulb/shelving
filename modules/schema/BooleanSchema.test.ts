@@ -1,4 +1,4 @@
-import { InvalidFeedback, BooleanSchema } from "..";
+import { InvalidFeedback, BooleanSchema } from "../index.js";
 
 // Tests.
 describe("BooleanSchema()", () => {

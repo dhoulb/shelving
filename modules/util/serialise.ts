@@ -1,6 +1,6 @@
-import { AssertionError } from "../errors";
-import { isArray } from "./array";
-import { isObject } from "./object";
+import { AssertionError } from "../errors/index.js";
+import { isArray } from "./array.js";
+import { isObject } from "./object.js";
 
 const R_QUOTE = /"/g;
 

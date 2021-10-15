@@ -1,4 +1,4 @@
-import { toDate, getYmd, toYmd } from "..";
+import { toDate, getYmd, toYmd } from "../index.js";
 
 describe("toDate()", () => {
 	test("toDate(): Parses valid possible dates to Date instances", () => {

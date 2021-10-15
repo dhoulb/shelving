@@ -1,5 +1,5 @@
-import { ArraySchema, DateSchema, NumberSchema, ObjectSchema, StringSchema } from "../schema";
-import { Provider, Database } from "../db";
+import { ArraySchema, DateSchema, NumberSchema, ObjectSchema, StringSchema } from "../schema/index.js";
+import { Provider, Database } from "../db/index.js";
 
 // Schemas.
 export const basicSchema = ObjectSchema.from({

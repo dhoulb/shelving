@@ -1,5 +1,6 @@
-import { RequiredError, LOADING, BLACKHOLE, State, getNextValue } from "..";
-import { assertInstance, ResolvablePromise } from "../util";
+import { jest } from "@jest/globals";
+import { RequiredError, LOADING, BLACKHOLE, State, getNextValue } from "../index.js";
+import { assertInstance, ResolvablePromise } from "../util/index.js";
 
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
@@ -10,8 +11,8 @@ test("State: with initial value", async () => {
 	expect(state.value).toBe(111);
 	expect(state.data).toBe(111);
 	// Ons and onces.
-	const fn1 = jest.fn();
-	const fn2 = jest.fn();
+	const fn1 = jest.fn<any, any>();
+	const fn2 = jest.fn<any, any>();
 	state.subscribe(fn1);
 	state.subscribe(fn2);
 	// Set new value.
@@ -36,7 +37,7 @@ test("State: data value throws if undefined", async () => {
 	expect(state.value).toBe(undefined);
 	expect(() => state.data).toThrow(RequiredError);
 	// Ons and onces.
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	state.subscribe(fn1);
 	// Set truthy value.
 	expect(state.next(123)).toBe(undefined);
@@ -56,7 +57,7 @@ test("State: updating works correctly", async () => {
 	expect(state).toBeInstanceOf(State);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	state.subscribe(fn1);
 	// Merge.
 	expect(state.update({ a: 111 })).toBe(undefined);
@@ -67,10 +68,10 @@ test("State: updating works correctly", async () => {
 });
 test("State: initial LOADING", async () => {
 	const state = State.create<number>(LOADING);
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	state.subscribe(fn1);
 	expect(state.loading).toBe(true);
-	const fn2 = jest.fn();
+	const fn2 = jest.fn<any, any>();
 	try {
 		state.value;
 		expect(false).toBe(true); // Not reached.
@@ -80,7 +81,7 @@ test("State: initial LOADING", async () => {
 		assertInstance(thrown, Promise);
 		(thrown as Promise<number>).then(fn2); //eslint-disable-line @typescript-eslint/no-floating-promises
 	}
-	const fn3 = jest.fn();
+	const fn3 = jest.fn<any, any>();
 	try {
 		state.data;
 		expect(false).toBe(true); // Not reached.
@@ -102,10 +103,10 @@ test("State: initial LOADING", async () => {
 test("State: initial promise", async () => {
 	const promise = new ResolvablePromise<number>();
 	const state = State.create(promise);
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	state.subscribe(fn1);
 	expect(state.loading).toBe(true);
-	const fn2 = jest.fn();
+	const fn2 = jest.fn<any, any>();
 	try {
 		state.value;
 		expect(false).toBe(true); // Not reached.
@@ -113,7 +114,7 @@ test("State: initial promise", async () => {
 		expect(thrown).toBeInstanceOf(Promise);
 		(thrown as Promise<number>).then(fn2); //eslint-disable-line @typescript-eslint/no-floating-promises
 	}
-	const fn3 = jest.fn();
+	const fn3 = jest.fn<any, any>();
 	try {
 		state.data;
 		expect(false).toBe(true); // Not reached.
@@ -139,7 +140,7 @@ test("State: initial promise", async () => {
 });
 test("State: promise in set", async () => {
 	const state = State.create<number>(111);
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	state.subscribe(fn1);
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(111);
@@ -155,7 +156,7 @@ test("State: derived(): state", async () => {
 	const state = State.create<number>(10);
 	const derived = state.derive(num => num * num);
 	expect(derived.value).toBe(100);
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	derived.subscribe(fn1);
 	expect(state.next(2)).toBe(undefined);
 	expect(state.value).toBe(2);
@@ -179,7 +180,7 @@ test("State: derived(): async state", async () => {
 	await microtasks();
 	expect(derived.loading).toBe(false);
 	expect(derived.value).toBe(100);
-	const fn1 = jest.fn();
+	const fn1 = jest.fn<any, any>();
 	derived.subscribe(fn1);
 	expect(state.next(2)).toBe(undefined);
 	await microtasks();

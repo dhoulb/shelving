@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 
-import type { Arguments, AnyFunction } from "./function";
-import type { EmptyObject, ImmutableObject } from "./object";
-import { assertFunction } from "./assert";
-import { isUppercaseLetter } from "./string";
+import type { Arguments, AnyFunction } from "./function.js";
+import type { EmptyObject, ImmutableObject } from "./object.js";
+import { assertFunction } from "./assert.js";
+import { isUppercaseLetter } from "./string.js";
 
 /**
  * Constructor: a class constructor that can be used with `new X` to generate an object of type `T`

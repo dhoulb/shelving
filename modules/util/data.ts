@@ -1,5 +1,5 @@
-import { RequiredError } from "../errors";
-import type { SKIP } from "./constants";
+import { RequiredError } from "../errors/index.js";
+import type { SKIP } from "./constants.js";
 
 /** Data: an object with string keys containing only plain values. */
 export type Data = { readonly [key: string]: Plain };
