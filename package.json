@@ -57,6 +57,7 @@
 		"build:check": "node -c dist/index.js"
 	},
 	"devDependencies": {
+		"@google-cloud/firestore": "^4.15.1",
 		"@types/jest": "^27.0.2",
 		"@types/react": "^17.0.19",
 		"@types/react-dom": "^17.0.3",
@@ -67,7 +68,6 @@
 		"eslint-plugin-import": "^2.24.1",
 		"eslint-plugin-prettier": "^4.0.0",
 		"firebase": "^9.1.1",
-		"firebase-admin": "^9.11.1",
 		"jest": ">=26.6.3",
 		"prettier": "^2.3.0",
 		"react": "^17.0.2",
@@ -76,7 +76,7 @@
 	},
 	"peerDependencies": {
 		"firebase": ">=9.0.0",
-		"firebase-admin": ">=9.5.0",
+		"@google-cloud/firestore": ">=4.0.0",
 		"react": ">=17.0.0"
 	}
 }
