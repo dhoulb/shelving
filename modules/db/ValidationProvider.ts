@@ -10,57 +10,57 @@ import { ReferenceValidationError } from "./errors.js";
  * Validation provider: validates any values that are read from or written a the source provider.
  */
 export class ValidationProvider implements Provider {
-	readonly #source: Provider;
+	private readonly _source: Provider;
 	constructor(source: Provider) {
-		this.#source = source;
+		this._source = source;
 	}
 	getDocument<X extends Data>(ref: Document<X>): Result<X> | Promise<Result<X>> {
-		const result = this.#source.getDocument(ref);
-		if (isAsync(result)) return this.#awaitGetDocument(ref, result);
+		const result = this._source.getDocument(ref);
+		if (isAsync(result)) return this._awaitGetDocument(ref, result);
 		return validateResult(ref, result);
 	}
-	async #awaitGetDocument<X extends Data>(ref: Document<X>, asyncResult: Promise<Result<X>>): Promise<Result<X>> {
+	private async _awaitGetDocument<X extends Data>(ref: Document<X>, asyncResult: Promise<Result<X>>): Promise<Result<X>> {
 		const result = await asyncResult;
 		return validateResult(ref, result);
 	}
 	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result>): Unsubscriber {
 		const stream = Stream.derive<Result<X>, Result<X>>(v => validateResult(ref, v));
 		stream.subscribe(observer);
-		return this.#source.onDocument(ref, stream);
+		return this._source.onDocument(ref, stream);
 	}
 	addDocument<X extends Data>(ref: Documents<X>, data: X): string | Promise<string> {
-		return this.#source.addDocument(ref, validateData(ref, data));
+		return this._source.addDocument(ref, validateData(ref, data));
 	}
 	setDocument<X extends Data>(ref: Document<X>, data: X): void | Promise<void> {
-		return this.#source.setDocument(ref, validateData(ref, data));
+		return this._source.setDocument(ref, validateData(ref, data));
 	}
 	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void | Promise<void> {
-		return this.#source.updateDocument(ref, validateTransforms(ref, transforms));
+		return this._source.updateDocument(ref, validateTransforms(ref, transforms));
 	}
 	deleteDocument<X extends Data>(ref: Document<X>): void | Promise<void> {
-		return this.#source.deleteDocument(ref);
+		return this._source.deleteDocument(ref);
 	}
 	getDocuments<X extends Data>(ref: Documents<X>): Results<X> | Promise<Results<X>> {
-		const results = this.#source.getDocuments(ref);
-		if (isAsync(results)) return this.#awaitGetDocuments(ref, results);
+		const results = this._source.getDocuments(ref);
+		if (isAsync(results)) return this._awaitGetDocuments(ref, results);
 		return validateResults<X>(ref, results);
 	}
-	async #awaitGetDocuments<X extends Data>(ref: Documents<X>, asyncResult: Promise<Results<X>>): Promise<Results<X>> {
+	private async _awaitGetDocuments<X extends Data>(ref: Documents<X>, asyncResult: Promise<Results<X>>): Promise<Results<X>> {
 		return validateResults<X>(ref, await asyncResult);
 	}
 	onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber {
 		const stream = Stream.derive<Results<X>, Results<X>>(v => validateResults(ref, v));
 		stream.subscribe(observer);
-		return this.#source.onDocuments(ref, stream);
+		return this._source.onDocuments(ref, stream);
 	}
 	setDocuments<X extends Data>(ref: Documents<X>, data: X): void | Promise<void> {
-		return this.#source.setDocuments(ref, ref.validate(data));
+		return this._source.setDocuments(ref, ref.validate(data));
 	}
 	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void | Promise<void> {
-		return this.#source.updateDocuments(ref, validateTransforms(ref, transforms));
+		return this._source.updateDocuments(ref, validateTransforms(ref, transforms));
 	}
 	deleteDocuments<X extends Data>(ref: Documents<X>): void | Promise<void> {
-		return this.#source.deleteDocuments(ref);
+		return this._source.deleteDocuments(ref);
 	}
 }
 

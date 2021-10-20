@@ -12,7 +12,7 @@ const EMPTY_RESULTS: Results<any> = {};
  * - If you don't pass in initial values, it will autoload the first page.
  */
 export class PaginationState<T extends Data> extends State<ImmutableEntries<T>> {
-	#results: Results<T>; // Cached current set of results.
+	private _results: Results<T>; // Cached current set of results.
 
 	/** Documents ref this pagination is based on. */
 	readonly ref: Documents<T>;
@@ -25,7 +25,7 @@ export class PaginationState<T extends Data> extends State<ImmutableEntries<T>> 
 
 	constructor(ref: Documents<T>, results: Results<T> = EMPTY_RESULTS) {
 		super(Object.entries(results));
-		this.#results = results;
+		this._results = results;
 
 		const { slice, sorts } = ref.query;
 		assertNumber(slice.limit); // Collection must have a numeric limit to paginate (otherwise you'd be retrieving the entire set of documents).
@@ -36,7 +36,7 @@ export class PaginationState<T extends Data> extends State<ImmutableEntries<T>> 
 
 		if (results === EMPTY_RESULTS) {
 			// Automatically load more results if initial results was `undefined`
-			this.next(this.#mergeReference(ref));
+			this.next(this._mergeReference(ref));
 		} else {
 			// Automatically complete the pagination if there are fewer entries than the slice limit.
 			if (this.value.length < this.limit) void this.complete();
@@ -48,7 +48,7 @@ export class PaginationState<T extends Data> extends State<ImmutableEntries<T>> 
 	backward(): void {
 		if (!this.pending && !this.closed) {
 			const entry = getFirstItem(this.value);
-			this.next(this.#mergeReference(entry ? this.ref.before(...entry) : this.ref));
+			this.next(this._mergeReference(entry ? this.ref.before(...entry) : this.ref));
 		}
 	}
 
@@ -57,7 +57,7 @@ export class PaginationState<T extends Data> extends State<ImmutableEntries<T>> 
 	forward(): void {
 		if (!this.pending && !this.closed) {
 			const entry = getLastItem(this.value);
-			this.next(this.#mergeReference(entry ? this.ref.after(...entry) : this.ref));
+			this.next(this._mergeReference(entry ? this.ref.after(...entry) : this.ref));
 		}
 	}
 
@@ -67,23 +67,23 @@ export class PaginationState<T extends Data> extends State<ImmutableEntries<T>> 
 	 * - The results are sorted when they're added, so whether they're prepended or appended doesn't matter.
 	 */
 	merge(moreResults: Results<T>): void {
-		this.next(this.#mergeResults(moreResults));
+		this.next(this._mergeResults(moreResults));
 	}
 
 	/** Get the result of merging our current results with some new results loaded from a `Documents` reference. */
-	async #mergeReference(ref: Documents<T>): Promise<ImmutableEntries<T>> {
-		return this.#mergeResults(await ref.get());
+	private async _mergeReference(ref: Documents<T>): Promise<ImmutableEntries<T>> {
+		return this._mergeResults(await ref.get());
 	}
 
 	/** Get the result of merging our current results and some new results. */
-	#mergeResults(moreResults: Results<T>): ImmutableEntries<T> {
+	private _mergeResults(moreResults: Results<T>): ImmutableEntries<T> {
 		const moreCount = Object.keys(moreResults).length;
 		if (!moreCount) {
 			this.complete();
 			return this.value;
 		} else {
-			this.#results = { ...this.#results, ...moreResults };
-			const entries: ImmutableEntries<T> = Object.entries(this.#results);
+			this._results = { ...this._results, ...moreResults };
+			const entries: ImmutableEntries<T> = Object.entries(this._results);
 			this.sorts.apply(entries);
 			this.next(entries);
 			if (moreCount < this.limit) this.complete(); // Automatically complete the pagination if there are fewer entries than the slice limit.

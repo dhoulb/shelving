@@ -33,7 +33,7 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 		return new State<X | undefined>(initial);
 	}
 
-	#value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
+	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
 
 	readonly updated: number | undefined = undefined; // Time the value was last updated.
 	readonly loading: boolean = true; // Whether we're currently loading or we have a value (if false, reading `state.value` will not throw).
@@ -60,7 +60,7 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 	 */
 	get asyncValue(): T | Promise<T> {
 		if (this.reason) throw this.reason;
-		return this.#value === LOADING ? this.nextValue : this.#value;
+		return this._value === LOADING ? this.nextValue : this._value;
 	}
 
 	/**
@@ -106,9 +106,9 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 
 	// Override `dispatchNext()` to save the current value and only dispatch non-loading values.
 	protected override dispatchNext(value: T | typeof LOADING): void {
-		if (value === this.#value) return;
+		if (value === this._value) return;
 		(this as Mutable<this>).pending = false;
-		this.#value = value;
+		this._value = value;
 		(this as Mutable<this>).loading = value === LOADING;
 		(this as Mutable<this>).updated = Date.now();
 		if (value !== LOADING) super.dispatchNext(value);
@@ -130,8 +130,8 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 	 * @throws AssertionError if current value of this `State` is not an object.
 	 */
 	update(transforms: Transforms<T & ImmutableObject>): void {
-		assertObject<T & ImmutableObject>(this.#value);
-		this.next(transformProps<T & ImmutableObject>(this.#value, transforms));
+		assertObject<T & ImmutableObject>(this._value);
+		this.next(transformProps<T & ImmutableObject>(this._value, transforms));
 	}
 
 	// Override `dispatchError()` to save the reason at `this.reason` and clean up.
@@ -161,7 +161,7 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 		if (deriver) {
 			const deriving = super.derive(deriver); // New deriving stream subscribed to this.
 			const derived = new State<TT>(deriving); // New derived state subscribed to the deriving stream.
-			if (this.#value !== LOADING) deriving.next(this.#value); // Send the next value to the deriving stream, which derives the new value and sends it to the derived state.
+			if (this._value !== LOADING) deriving.next(this._value); // Send the next value to the deriving stream, which derives the new value and sends it to the derived state.
 			return derived;
 		} else {
 			return new State<T>(this);

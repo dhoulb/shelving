@@ -9,51 +9,51 @@ import type { Document } from "./Document.js";
  */
 export class DocumentState<T extends Data = Data> extends State<Result<T>> {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static #states: MutableObject<DocumentState<any>> = {};
+	private static _states: MutableObject<DocumentState<any>> = {};
 
 	static get<X extends Data>(ref: Document<X>): DocumentState<X> {
 		const key = ref.toString();
-		return (this.#states[key] ||= new DocumentState<X>(ref));
+		return (this._states[key] ||= new DocumentState<X>(ref));
 	}
 	static set<X extends Data>(ref: Document<X>, result: Result<X> | Promise<Result<X>>): void {
 		const key = ref.toString();
-		const state = this.#states[key];
+		const state = this._states[key];
 		if (state && !state.closed) state.next(result);
-		else this.#states[key] = new DocumentState(ref, result);
+		else this._states[key] = new DocumentState(ref, result);
 	}
 	static update<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void {
 		const key = ref.toString();
-		const state = this.#states[key];
+		const state = this._states[key];
 		if (state && !state.loading && !state.closed) state.update(transforms);
 	}
 	static start<X extends Data>(ref: Document<X>, observer?: Observer<Result<X>>): Unsubscriber {
 		const key = ref.toString();
-		const state = this.#states[key];
+		const state = this._states[key];
 		if (state && !state.closed) return state.start(observer);
-		return (this.#states[key] = new DocumentState(ref)).start(observer);
+		return (this._states[key] = new DocumentState(ref)).start(observer);
 	}
 
 	/** Reference this state points to. */
-	#ref: Document<T>;
+	private _ref: Document<T>;
 
 	/**
 	 * Number of observers that require this state to have a realtime subscription to its source.
 	 * - The realtime subscription can be cleaned up if all realtime subscribers end.
 	 */
-	#realtime = 0;
+	private _realtime = 0;
 
 	/** The unsubscriber function to call to end any current realtime subscription this state has to its source. */
-	#stop: Unsubscriber | undefined = undefined;
+	private _stop: Unsubscriber | undefined = undefined;
 
 	/** Whether we currently have an active realtime subscription, or not. */
 	get started(): boolean {
-		return !!this.#stop;
+		return !!this._stop;
 	}
 
 	// Protected (access through static `get()` etc instead).
 	protected constructor(ref: Document<T>, value: Result<T> | Promise<Result<T>> | typeof LOADING = LOADING) {
 		super(value);
-		this.#ref = ref;
+		this._ref = ref;
 	}
 
 	/**
@@ -62,12 +62,12 @@ export class DocumentState<T extends Data = Data> extends State<Result<T>> {
 	 */
 	start(observer?: Observer<Result<T>>): Unsubscriber {
 		if (this.closed) throw new StreamClosedError(this);
-		this.#realtime++;
-		if (!this.#stop) this.#stop = this.#ref.subscribe(this);
+		this._realtime++;
+		if (!this._stop) this._stop = this._ref.subscribe(this);
 		if (observer) this.on(observer);
 		return () => {
-			this.#realtime--;
-			if (this.#realtime <= 0) this.stop();
+			this._realtime--;
+			if (this._realtime <= 0) this.stop();
 			if (observer) this.off(observer);
 		};
 	}
@@ -77,7 +77,7 @@ export class DocumentState<T extends Data = Data> extends State<Result<T>> {
 	 * - Stops regardless of whether anything is using the subscription!
 	 */
 	stop(): void {
-		if (this.#stop) this.#stop = void dispatch(this.#stop);
+		if (this._stop) this._stop = void dispatch(this._stop);
 	}
 
 	/**
@@ -90,13 +90,13 @@ export class DocumentState<T extends Data = Data> extends State<Result<T>> {
 	refresh(maxAge?: number | true): void {
 		if (this.closed) throw new StreamClosedError(this);
 		// No need to refresh if there's an active subscription.
-		if (!this.#stop) {
+		if (!this._stop) {
 			if (maxAge === true) {
 				// Start a realtime subscription for ten seconds.
 				setTimeout(this.start(), 10000);
 			} else {
 				// Refresh the data if a fetch isn't already pending, and either `maxAge` is falsy or the existing state is older than `maxAge`
-				if (!this.pending && (!maxAge || this.age > maxAge)) this.next(this.#ref.get());
+				if (!this.pending && (!maxAge || this.age > maxAge)) this.next(this._ref.get());
 			}
 		}
 	}
@@ -109,9 +109,9 @@ export class DocumentState<T extends Data = Data> extends State<Result<T>> {
 	 */
 	get(maxAge = 0): Result<T> | Promise<Result<T>> {
 		// Return the current state if its not loading and there's a subscription or the existing state is younger than `maxAge`
-		if (!this.loading && (this.#stop || this.age < maxAge)) return this.value;
+		if (!this.loading && (this._stop || this.age < maxAge)) return this.value;
 		// Refresh the state and return the next value after the refresh.
-		const next = this.#ref.get();
+		const next = this._ref.get();
 		this.next(next);
 		return next;
 	}

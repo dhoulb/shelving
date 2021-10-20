@@ -34,20 +34,20 @@ import { ReferenceRequiredError } from "./errors.js";
 export class MemoryProvider implements Provider {
 	/** List of tables in `{ path: Table }` format. */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	#tables: MutableObject<Table<any>> = {};
+	private _tables: MutableObject<Table<any>> = {};
 
 	// Get a named collection (or create a new one).
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	#table<X extends Data>({ collection }: Document<X> | Documents<X>): Table<X> {
-		return (this.#tables[collection] ||= new Table());
+	private _table<X extends Data>({ collection }: Document<X> | Documents<X>): Table<X> {
+		return (this._tables[collection] ||= new Table());
 	}
 
 	getDocument<X extends Data>(ref: Document<X>): Result<X> {
-		return this.#table<X>(ref).result(ref.id);
+		return this._table<X>(ref).result(ref.id);
 	}
 
 	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result<X>>): Unsubscriber {
-		const table = this.#table(ref);
+		const table = this._table(ref);
 		const id = ref.id;
 
 		// Call next() with initial results.
@@ -60,7 +60,7 @@ export class MemoryProvider implements Provider {
 	}
 
 	addDocument<X extends Data>(ref: Documents<X>, data: X): string {
-		const table = this.#table(ref);
+		const table = this._table(ref);
 		let id = randomId();
 		while (table.result(id)) id = randomId(); // Regenerate ID until unique.
 		table.set(id, data);
@@ -68,11 +68,11 @@ export class MemoryProvider implements Provider {
 	}
 
 	setDocument<X extends Data>(ref: Document<X>, data: X): void {
-		this.#table(ref).set(ref.id, data);
+		this._table(ref).set(ref.id, data);
 	}
 
 	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void {
-		const table = this.#table(ref);
+		const table = this._table(ref);
 		const id = ref.id;
 		const existing = table.result(id);
 		if (!existing) throw new ReferenceRequiredError(ref);
@@ -80,15 +80,15 @@ export class MemoryProvider implements Provider {
 	}
 
 	deleteDocument<X extends Data>(ref: Document<X>): void {
-		this.#table(ref).set(ref.id, undefined);
+		this._table(ref).set(ref.id, undefined);
 	}
 
 	getDocuments<X extends Data>(ref: Documents<X>): Results<X> {
-		return ref.query.results(this.#table(ref).results());
+		return ref.query.results(this._table(ref).results());
 	}
 
 	onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber {
-		const table = this.#table(ref);
+		const table = this._table(ref);
 		const { filters, sorts, slice } = ref.query;
 		let filtered = objectFromEntries(sorts.apply(filters.apply(Object.entries(table.results()))));
 		let sliced = slice.results(filtered);
@@ -134,25 +134,25 @@ export class MemoryProvider implements Provider {
 	}
 
 	setDocuments<X extends Data>(ref: Documents<X>, data: X): void {
-		const table = this.#table(ref);
+		const table = this._table(ref);
 		const entries = ref.query.apply(Object.entries(table.results()));
 		for (const [id] of entries) table.set(id, data);
 	}
 
 	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void {
-		const table = this.#table(ref);
+		const table = this._table(ref);
 		const entries = ref.query.apply(Object.entries(table.results()));
 		for (const [id, existing] of entries) table.set(id, transformProps(existing, transforms));
 	}
 
 	deleteDocuments<X extends Data>(ref: Documents<X>): void {
-		const table = this.#table(ref);
+		const table = this._table(ref);
 		const entries = ref.query.apply(Object.entries(table.results()));
 		for (const [id] of entries) table.set(id, undefined);
 	}
 
 	reset(): void {
-		this.#tables = {};
+		this._tables = {};
 	}
 }
 
@@ -163,36 +163,36 @@ const UNDEFINED_PROMISE: Promise<void> = Promise.resolve(undefined);
  * - Fires with an array of string IDs.
  */
 class Table<X extends Data> {
-	readonly #dispatchers: Dispatcher<ImmutableArray<string>>[] = [];
-	readonly #changes: MutableArray<string> = [];
-	readonly #results: MutableObject<X> = {};
+	private readonly _dispatchers: Dispatcher<ImmutableArray<string>>[] = [];
+	private readonly _changes: MutableArray<string> = [];
+	private readonly _results: MutableObject<X> = {};
 
 	results(): Results<X> {
-		return this.#results;
+		return this._results;
 	}
 
 	result(id: string): Result<X> {
-		return this.#results[id];
+		return this._results[id];
 	}
 
 	set(id: string, value: X | undefined): void {
-		if (value !== this.#results[id]) {
-			if (value) this.#results[id] = value as X;
-			else delete this.#results[id];
-			if (!this.#changes.length) thispatch<void, "fire">(this, "fire", UNDEFINED_PROMISE);
-			addItem(this.#changes, id);
+		if (value !== this._results[id]) {
+			if (value) this._results[id] = value as X;
+			else delete this._results[id];
+			if (!this._changes.length) thispatch<void, "fire">(this, "fire", UNDEFINED_PROMISE);
+			addItem(this._changes, id);
 		}
 	}
 
 	fire(): void {
-		if (this.#changes.length) {
-			for (const dispatcher of this.#dispatchers) dispatch(dispatcher, this.#changes);
-			this.#changes.splice(0);
+		if (this._changes.length) {
+			for (const dispatcher of this._dispatchers) dispatch(dispatcher, this._changes);
+			this._changes.splice(0);
 		}
 	}
 
 	on(dispatcher: Dispatcher<ImmutableArray<string>>): Unsubscriber {
-		addItem(this.#dispatchers, dispatcher);
-		return () => removeItem(this.#dispatchers, dispatcher);
+		addItem(this._dispatchers, dispatcher);
+		return () => removeItem(this._dispatchers, dispatcher);
 	}
 }
