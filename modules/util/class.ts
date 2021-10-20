@@ -4,7 +4,6 @@
 import type { Arguments, AnyFunction } from "./function.js";
 import type { EmptyObject, ImmutableObject } from "./object.js";
 import { assertFunction } from "./assert.js";
-import { isUppercaseLetter } from "./string.js";
 
 /**
  * Constructor: a class constructor that can be used with `new X` to generate an object of type `T`
@@ -20,11 +19,8 @@ export type Class<T extends EmptyObject | ImmutableObject> = (new (...args: any[
  */
 export type AnyClass = new (...args: any) => any;
 
-/**
- * Is a given value a class constructor?
- * - Based on whether the value is a function whose first letter is a capital letter.
- */
-export const isClass = <T extends AnyClass>(v: T | unknown): v is T => typeof v === "function" && isUppercaseLetter(v.name);
+/** Is a given value a class constructor? */
+export const isClass = <T extends AnyClass>(v: T | unknown): v is T => typeof v === "function" && v.toString().startsWith("class");
 
 /** Bind a class method (lazily on first access). */
 export function bindMethod<T extends AnyFunction>(target: Object, key: string, { value: method }: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> {

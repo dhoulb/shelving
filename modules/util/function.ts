@@ -34,7 +34,6 @@ export type Lazy<T, A extends Arguments = []> = ((...args: A) => T) | (new (...a
  * - If this is a plain value, that value is returned.
  * - If this is a function, it is called and its returned value is returned.
  * - If this is a class constructor, a new instance of that class is instantiated and returned.
- * - Class constructors are detected by whether the value is a function with a `name` property whose first character is an uppercase character.
  *
  * @param ...args Any additional arguments the initialiser needs.
  * - This array of values is passed into the function or class constructor as its parameters.
