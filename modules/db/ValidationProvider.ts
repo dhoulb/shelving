@@ -105,7 +105,7 @@ function validateResult<X extends Data>(ref: Document<X>, result: Result<X>): Re
 	if (!result) return undefined;
 	const schema = ref.schema;
 	try {
-		schema.validate(result);
+		return schema.validate(result);
 	} catch (err: unknown) {
 		throw isFeedback(err) ? new ReferenceValidationError(ref, err) : err;
 	}
