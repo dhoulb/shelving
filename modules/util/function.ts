@@ -1,5 +1,8 @@
 import { isClass } from "./class.js";
 
+/** Is a value a function? */
+export const isFunction = <X extends AnyFunction>(v: X | unknown): v is X => typeof v === "function";
+
 /**
  * Any function.
  * - Consistency with `AnyConstructor`
