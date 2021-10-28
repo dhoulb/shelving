@@ -10,7 +10,7 @@ export type Catcher = (reason: Error | unknown) => void;
 export type AsyncCatcher = (reason: Error | unknown) => void | Promise<void>;
 
 /** Wait for a value to resolve and if it throws call a catcher. */
-async function _catch<T, C extends string>(promised: Promise<T>, catcher?: Catcher | { [K in C]?: Catcher }, method?: C) {
+async function _catch<T, C extends string | symbol>(promised: Promise<T>, catcher?: Catcher | { [K in C]?: Catcher }, method?: C) {
 	try {
 		await promised;
 	} catch (thrown) {
@@ -19,7 +19,7 @@ async function _catch<T, C extends string>(promised: Promise<T>, catcher?: Catch
 }
 
 /** Dispatch a thrown value to a catcher. */
-function _caught<C extends string>(thrown: Error | unknown, catcher?: Catcher | { [K in C]?: Catcher }, method?: C) {
+function _caught<C extends string | symbol>(thrown: Error | unknown, catcher?: Catcher | { [K in C]?: Catcher }, method?: C) {
 	if (typeof catcher === "function") catcher(thrown);
 	else if (catcher && typeof method === "string" && typeof catcher[method] === "function") (catcher[method] as Catcher)(thrown);
 	else logError(thrown);
@@ -57,22 +57,37 @@ export type Unsubscriber = () => void;
  */
 // Empty dispatchers.
 export function dispatch(dispatcher: AsyncEmptyDispatcher, value?: undefined, catcherObj?: Catcher): void;
-export function dispatch<C extends string>(dispatcher: AsyncEmptyDispatcher, value: undefined, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void;
+export function dispatch<C extends string | symbol>(
+	dispatcher: AsyncEmptyDispatcher,
+	value: undefined,
+	catcherObj: { [K in C]?: Catcher },
+	catcherKey: C,
+): void;
 // Typed dispatchers.
 export function dispatch<T>(dispatcher: AsyncDispatcher<T>, value: Resolvable<T>, catcherObj?: Catcher): void;
-export function dispatch<T, C extends string>(dispatcher: AsyncDispatcher<T>, value: Resolvable<T>, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void;
+export function dispatch<T, C extends string | symbol>(
+	dispatcher: AsyncDispatcher<T>,
+	value: Resolvable<T>,
+	catcherObj: { [K in C]?: Catcher },
+	catcherKey: C,
+): void;
 // Overrides for unknown dispatchers.
 export function dispatch(dispatcher: AsyncDispatcher<unknown>, value: unknown, catcherObj?: Catcher): void;
-export function dispatch<C extends string>(dispatcher: AsyncDispatcher<unknown>, value: unknown, catcherObj: { [K in C]?: Catcher }, catcherKey: C): void;
+export function dispatch<C extends string | symbol>(
+	dispatcher: AsyncDispatcher<unknown>,
+	value: unknown,
+	catcherObj: { [K in C]?: Catcher },
+	catcherKey: C,
+): void;
 // Flexible override.
-export function dispatch<T, C extends string>(
+export function dispatch<T, C extends string | symbol>(
 	dispatcher: AsyncDispatcher<T>,
 	value: Resolvable<T>,
 	catcherObj?: Catcher | { [K in C]?: Catcher },
 	catcherKey?: C,
 ): void;
 // Definition.
-export function dispatch<T, C extends string>(
+export function dispatch<T, C extends string | symbol>(
 	dispatcher: AsyncDispatcher<T>,
 	value: Resolvable<T>,
 	catcherObj?: Catcher | { [K in C]?: Catcher },
@@ -88,7 +103,7 @@ export function dispatch<T, C extends string>(
 		_caught(thrown, catcherObj, catcherKey);
 	}
 }
-async function _dispatchAsync<T, C extends string>(
+async function _dispatchAsync<T, C extends string | symbol>(
 	dispatcher: AsyncDispatcher<T>,
 	value: Promise<T | typeof SKIP>,
 	catcherObj?: Catcher | { [K in C]?: Catcher },
@@ -115,8 +130,8 @@ async function _dispatchAsync<T, C extends string>(
  * @param catcherKey Catcher method name in `catcherObj`
  */
 // Empty dispatchers.
-export function thispatch<M extends string>(obj: { [K in M]?: AsyncEmptyDispatcher }, key: M, value?: undefined, catcherObj?: Catcher): void;
-export function thispatch<M extends string, C extends string>(
+export function thispatch<M extends string | symbol>(obj: { [K in M]?: AsyncEmptyDispatcher }, key: M, value?: undefined, catcherObj?: Catcher): void;
+export function thispatch<M extends string | symbol, C extends string | symbol>(
 	obj: { [K in M]?: AsyncEmptyDispatcher },
 	key: M,
 	value: undefined,
@@ -124,8 +139,8 @@ export function thispatch<M extends string, C extends string>(
 	catcherKey: C,
 ): void;
 // Typed dispatchers.
-export function thispatch<T, M extends string>(obj: { [K in M]?: AsyncDispatcher<T> }, key: M, value: Resolvable<T>, catcherObj?: Catcher): void;
-export function thispatch<T, M extends string, C extends string>(
+export function thispatch<T, M extends string | symbol>(obj: { [K in M]?: AsyncDispatcher<T> }, key: M, value: Resolvable<T>, catcherObj?: Catcher): void;
+export function thispatch<T, M extends string | symbol, C extends string | symbol>(
 	obj: { [K in M]?: AsyncDispatcher<T> },
 	key: M,
 	value: Resolvable<T>,
@@ -133,8 +148,8 @@ export function thispatch<T, M extends string, C extends string>(
 	catcherKey: C,
 ): void;
 // Overrides for unknown dispatchers.
-export function thispatch<M extends string>(obj: { [K in M]?: AsyncDispatcher<unknown> }, key: M, value: unknown, catcherObj?: Catcher): void;
-export function thispatch<M extends string, C extends string>(
+export function thispatch<M extends string | symbol>(obj: { [K in M]?: AsyncDispatcher<unknown> }, key: M, value: unknown, catcherObj?: Catcher): void;
+export function thispatch<M extends string | symbol, C extends string | symbol>(
 	obj: { [K in M]?: AsyncDispatcher<unknown> },
 	key: M,
 	value: unknown,
@@ -142,7 +157,7 @@ export function thispatch<M extends string, C extends string>(
 	catcherKey: C,
 ): void;
 // Flexible override.
-export function thispatch<T, M extends string, C extends string>(
+export function thispatch<T, M extends string | symbol, C extends string | symbol>(
 	obj: { [K in M]?: AsyncDispatcher<T> },
 	key: M,
 	value: Resolvable<T>,
@@ -150,7 +165,7 @@ export function thispatch<T, M extends string, C extends string>(
 	catcherKey?: C,
 ): void;
 // Definition.
-export function thispatch<T, M extends string, C extends string>(
+export function thispatch<T, M extends string | symbol, C extends string | symbol>(
 	obj: { [K in M]?: AsyncDispatcher<T> },
 	key: M,
 	value: Resolvable<T>,
@@ -167,7 +182,7 @@ export function thispatch<T, M extends string, C extends string>(
 		void _caught(thrown, catcherObj, catcherKey);
 	}
 }
-async function _thispatchAsync<T, M extends string, C extends string>(
+async function _thispatchAsync<T, M extends string | symbol, C extends string | symbol>(
 	obj: { [K in M]?: AsyncDispatcher<T> },
 	method: M,
 	value: Promise<T | typeof SKIP>,
@@ -197,7 +212,7 @@ export type AsyncDeriver<T = unknown, TT = unknown> = (input: T) => TT | typeof 
  */
 // Typed derivers.
 export function derive<I, O>(value: Resolvable<I>, deriver: AsyncDeriver<I, O>, dispatcher: AsyncDispatcher<O>, catcherObj?: Catcher): void;
-export function derive<I, O, C extends string>(
+export function derive<I, O, C extends string | symbol>(
 	value: Resolvable<I>,
 	deriver: AsyncDeriver<I, O>,
 	dispatcher: AsyncDispatcher<O>,
@@ -214,7 +229,7 @@ export function derive<I, O, C extends string>(
 // 	catcherKey: C,
 // ): void;
 // Flexible override.
-export function derive<I, O, C extends string>(
+export function derive<I, O, C extends string | symbol>(
 	value: Resolvable<I>,
 	deriver: AsyncDeriver<I, O>,
 	dispatcher: AsyncDispatcher<O>,
@@ -222,7 +237,7 @@ export function derive<I, O, C extends string>(
 	catcherKey?: C,
 ): void;
 // Definition.
-export function derive<I, O, C extends string>(
+export function derive<I, O, C extends string | symbol>(
 	value: Resolvable<I>,
 	deriver: AsyncDeriver<I, O>,
 	dispatcher: AsyncDispatcher<O>,
@@ -236,7 +251,7 @@ export function derive<I, O, C extends string>(
 		void _caught(thrown, catcherObj, catcherKey);
 	}
 }
-async function _deriveAsync<I, O, C extends string>(
+async function _deriveAsync<I, O, C extends string | symbol>(
 	value: Promise<I | typeof SKIP>,
 	deriver: AsyncDeriver<I, O>,
 	dispatcher: AsyncDispatcher<O>,
@@ -255,14 +270,14 @@ async function _deriveAsync<I, O, C extends string>(
  * Method derive: derive a value using a `Deriver` or `AsyncDeriver` function, then dispatch it to a `Dispatcher` or `AsyncDispatcher` method on an object safely.
  */
 // Typed derivers.
-export function therive<I, O, M extends string>(
+export function therive<I, O, M extends string | symbol>(
 	value: Resolvable<I>,
 	deriver: AsyncDeriver<I, O>,
 	obj: { [K in M]?: AsyncDispatcher<O> },
 	key: M,
 	catcherObj?: Catcher,
 ): void;
-export function therive<I, O, M extends string, C extends string>(
+export function therive<I, O, M extends string | symbol, C extends string | symbol>(
 	value: Resolvable<I>,
 	deriver: AsyncDeriver<I, O>,
 	obj: { [K in M]?: AsyncDispatcher<O> },
@@ -271,14 +286,14 @@ export function therive<I, O, M extends string, C extends string>(
 	catcherKey: C,
 ): void;
 // Overrides for unknown dispatchers.
-export function therive<M extends string>(
+export function therive<M extends string | symbol>(
 	value: unknown,
 	deriver: AsyncDeriver<unknown, unknown>,
 	obj: { [K in M]?: AsyncDispatcher<unknown> },
 	key: M,
 	catcherObj?: Catcher,
 ): void;
-export function therive<M extends string, C extends string>(
+export function therive<M extends string | symbol, C extends string | symbol>(
 	value: unknown,
 	deriver: AsyncDeriver<unknown, unknown>,
 	obj: { [K in M]?: AsyncDispatcher<unknown> },
@@ -287,7 +302,7 @@ export function therive<M extends string, C extends string>(
 	catcherKey: C,
 ): void;
 // Flexible override.
-export function therive<I, O, M extends string, C extends string>(
+export function therive<I, O, M extends string | symbol, C extends string | symbol>(
 	value: Resolvable<I>,
 	deriver: AsyncDeriver<I, O>,
 	obj: { [K in M]?: AsyncDispatcher<O> },
@@ -296,7 +311,7 @@ export function therive<I, O, M extends string, C extends string>(
 	catcherKey?: C,
 ): void;
 // Definition.
-export function therive<I, O, M extends string, C extends string>(
+export function therive<I, O, M extends string | symbol, C extends string | symbol>(
 	value: Resolvable<I>,
 	deriver: AsyncDeriver<I, O>,
 	obj: { [K in M]?: AsyncDispatcher<O> },
@@ -311,7 +326,7 @@ export function therive<I, O, M extends string, C extends string>(
 		void _caught(thrown, catcherObj, catcherKey);
 	}
 }
-async function _theriveAsync<I, O, M extends string, C extends string>(
+async function _theriveAsync<I, O, M extends string | symbol, C extends string | symbol>(
 	value: Resolvable<I>,
 	deriver: AsyncDeriver<I, O>,
 	obj: { [K in M]?: AsyncDispatcher<O> },
