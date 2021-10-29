@@ -77,7 +77,7 @@ test("State: initial LOADING", async () => {
 		expect(false).toBe(true); // Not reached.
 	} catch (thrown) {
 		expect(thrown).toBeInstanceOf(Promise);
-		expect(state.subscribers).toBe(2);
+		expect((state as any)._subscribers).toBe(2);
 		assertInstance(thrown, Promise);
 		(thrown as Promise<number>).then(fn2); //eslint-disable-line @typescript-eslint/no-floating-promises
 	}
@@ -87,14 +87,14 @@ test("State: initial LOADING", async () => {
 		expect(false).toBe(true); // Not reached.
 	} catch (thrown) {
 		expect(thrown).toBeInstanceOf(Promise);
-		expect(state.subscribers).toBe(3);
+		expect((state as any)._subscribers).toBe(3);
 		(thrown as Promise<number>).then(fn3); //eslint-disable-line @typescript-eslint/no-floating-promises
 	}
 	expect(state.next(123)).toBe(undefined);
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(123);
 	expect(state.data).toBe(123);
-	expect(state.subscribers).toBe(1); // 2 and 3 unsubscribed after they received a value.
+	expect((state as any)._subscribers).toBe(1); // 2 and 3 unsubscribed after they received a value.
 	await microtasks();
 	expect(fn1.mock.calls).toEqual([[123]]);
 	expect(fn2.mock.calls).toEqual([[123]]);

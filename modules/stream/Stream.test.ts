@@ -4,10 +4,10 @@ import { getNextValue, Stream, SKIP } from "../index.js";
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
 test("Stream: works correctly", () => {
-	const stream = Stream.create<number>();
+	const stream = new Stream<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	expect(stream.closed).toBe(false);
-	expect(stream.subscribers).toBe(0);
+	expect((stream as any)._subscribers).toBe(0);
 	// Ons and onces.
 	const next1 = jest.fn<any, any>();
 	const error1 = jest.fn<any, any>();
@@ -20,37 +20,37 @@ test("Stream: works correctly", () => {
 	const next3 = jest.fn<any, any>();
 	const error3 = jest.fn<any, any>();
 	const complete3 = jest.fn<any, any>();
-	const stream3 = stream.derive();
+	const stream3 = new Stream(stream);
 	stream3.subscribe(next3, error3, complete3);
 	const next4 = jest.fn<any, any>();
 	const error4 = jest.fn<any, any>();
 	const complete4 = jest.fn<any, any>();
-	const stream4 = stream.derive();
+	const stream4 = new Stream(stream);
 	stream4.subscribe({ next: next4, error: error4, complete: complete4 });
-	expect(stream.subscribers).toEqual(4);
+	expect((stream as any)._subscribers).toEqual(4);
 	// Fire.
 	expect(stream.next(111)).toBe(undefined);
 	// Unsubscribe 1.
 	expect(unsub1()).toBe(undefined);
-	expect(stream.subscribers).toEqual(3);
+	expect((stream as any)._subscribers).toEqual(3);
 	// Fire.
 	expect(stream.next(222)).toBe(undefined);
 	// Unsubscribe 2.
 	expect(unsub2()).toBe(undefined);
-	expect(stream.subscribers).toEqual(2);
+	expect((stream as any)._subscribers).toEqual(2);
 	// Fire.
 	expect(stream.next(333)).toBe(undefined);
 	expect(stream.closed).toBe(false);
 	// Unsubscribe 3 (by completing the stream).
 	expect(stream3.complete()).toBe(undefined);
 	expect(stream3.closed).toBe(true);
-	expect(stream.subscribers).toEqual(1);
+	expect((stream as any)._subscribers).toEqual(1);
 	expect(stream.closed).toBe(false);
 	// Error.
 	expect(stream4.closed).toBe(false);
 	expect(stream.error("nah")).toBe(undefined);
 	expect(stream.closed).toBe(true);
-	expect(stream.subscribers).toEqual(0);
+	expect((stream as any)._subscribers).toEqual(0);
 	expect(stream4.closed).toBe(true);
 	// Checks.
 	expect(next1.mock.calls).toEqual([[111]]);
@@ -67,7 +67,7 @@ test("Stream: works correctly", () => {
 	expect(complete4.mock.calls).toEqual([]);
 });
 test("Stream: all listeners are fired even if one errors", () => {
-	const stream = Stream.create<number>();
+	const stream = new Stream<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	// Ons and onces.
 	const fnBefore = jest.fn<any, any>();
@@ -89,7 +89,7 @@ test("Stream: all listeners are fired even if one errors", () => {
 	expect(fnAfter.mock.results).toEqual([{ type: "return", value: undefined }]);
 });
 test("Stream: promised value as next value", async () => {
-	const stream = Stream.create<number>();
+	const stream = new Stream<number>();
 	const fn = jest.fn<any, any>();
 	stream.subscribe(fn);
 	// Fire.
@@ -101,7 +101,7 @@ test("Stream: promised value as next value", async () => {
 	expect(fn.mock.calls).toEqual([[111]]);
 });
 test("Stream: SKIP value as next value", () => {
-	const stream = Stream.create<number>();
+	const stream = new Stream<number>();
 	const fn = jest.fn<any, any>();
 	stream.subscribe(fn);
 	// Fire.
@@ -112,7 +112,7 @@ test("Stream: SKIP value as next value", () => {
 	expect(fn.mock.calls).toEqual([[111], [222]]);
 });
 test("toPromise(): works correctly", async () => {
-	const state = Stream.create<number>();
+	const state = new Stream<number>();
 	setTimeout(() => state.next(123), 50);
 	expect(await getNextValue(state)).toBe(123);
 });
