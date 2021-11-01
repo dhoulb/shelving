@@ -79,6 +79,7 @@
 			"files": ["*.test.js", "*.test.jsx", "*.test.ts", "*.test.tsx"],
 			"rules": {
 				"prefer-template": 0,
+				"@typescript-eslint/no-floating-promises": 0,
 				"@typescript-eslint/no-explicit-any": 0,
 				"@typescript-eslint/no-empty-function": 0,
 				"@typescript-eslint/no-unused-vars": 0,
