@@ -219,15 +219,6 @@ export function derive<I, O, C extends string | symbol>(
 	catcherObj: { [K in C]?: Catcher },
 	catcherKey: C,
 ): void;
-// Overrides for unknown dispatchers.
-// export function derive(value: unknown, deriver: AsyncDeriver<unknown, unknown>, dispatcher: AsyncDispatcher<unknown>, catcherObj?: Catcher): void;
-// export function derive<C extends string>(
-// 	value: unknown,
-// 	deriver: AsyncDeriver<unknown, unknown>,
-// 	dispatcher: AsyncDispatcher<unknown>,
-// 	catcherObj: { [K in C]?: Catcher },
-// 	catcherKey: C,
-// ): void;
 // Flexible override.
 export function derive<I, O, C extends string | symbol>(
 	value: Resolvable<I>,
@@ -281,22 +272,6 @@ export function therive<I, O, M extends string | symbol, C extends string | symb
 	value: Resolvable<I>,
 	deriver: AsyncDeriver<I, O>,
 	obj: { [K in M]?: AsyncDispatcher<O> },
-	key: M,
-	catcherObj: { [K in C]?: Catcher },
-	catcherKey: C,
-): void;
-// Overrides for unknown dispatchers.
-export function therive<M extends string | symbol>(
-	value: unknown,
-	deriver: AsyncDeriver<unknown, unknown>,
-	obj: { [K in M]?: AsyncDispatcher<unknown> },
-	key: M,
-	catcherObj?: Catcher,
-): void;
-export function therive<M extends string | symbol, C extends string | symbol>(
-	value: unknown,
-	deriver: AsyncDeriver<unknown, unknown>,
-	obj: { [K in M]?: AsyncDispatcher<unknown> },
 	key: M,
 	catcherObj: { [K in C]?: Catcher },
 	catcherKey: C,
