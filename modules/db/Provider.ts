@@ -119,3 +119,29 @@ export interface Provider {
 	 */
 	deleteDocuments<X extends Data>(ref: Documents<X>): void | Promise<void>;
 }
+
+/** Provider with a fully synchronous interface */
+export interface SynchronousProvider extends Provider {
+	getDocument<X extends Data>(ref: Document<X>): Result<X>;
+	addDocument<X extends Data>(ref: Documents<X>, data: X): string;
+	setDocument<X extends Data>(ref: Document<X>, data: X): void;
+	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void;
+	deleteDocument<X extends Data>(ref: Document<X>): void;
+	getDocuments<X extends Data>(ref: Documents<X>): Results<X>;
+	setDocuments<X extends Data>(ref: Documents<X>, data: X): void;
+	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void;
+	deleteDocuments<X extends Data>(ref: Documents<X>): void;
+}
+
+/** Provider with a fully asynchronous interface */
+export interface AsynchronousProvider extends Provider {
+	getDocument<X extends Data>(ref: Document<X>): Promise<Result<X>>;
+	addDocument<X extends Data>(ref: Documents<X>, data: X): Promise<string>;
+	setDocument<X extends Data>(ref: Document<X>, data: X): Promise<void>;
+	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): Promise<void>;
+	deleteDocument<X extends Data>(ref: Document<X>): Promise<void>;
+	getDocuments<X extends Data>(ref: Documents<X>): Promise<Results<X>>;
+	setDocuments<X extends Data>(ref: Documents<X>, data: X): Promise<void>;
+	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): Promise<void>;
+	deleteDocuments<X extends Data>(ref: Documents<X>): Promise<void>;
+}

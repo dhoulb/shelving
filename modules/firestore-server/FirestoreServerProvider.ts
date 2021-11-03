@@ -30,6 +30,7 @@ import {
 	AddEntriesTransform,
 	RemoveEntriesTransform,
 	ImmutableObject,
+	AsynchronousProvider,
 } from "../index.js";
 
 // Constants.
@@ -108,7 +109,7 @@ function convertTransforms<X extends Data>(transforms: Transforms<X>): Immutable
  * Firestore server database provider.
  * - Works with the Firebase Admin SDK for Node.JS
  */
-export class FirestoreServerProvider implements Provider {
+export class FirestoreServerProvider implements Provider, AsynchronousProvider {
 	readonly firestore: Firestore;
 
 	constructor(firestore: Firestore) {

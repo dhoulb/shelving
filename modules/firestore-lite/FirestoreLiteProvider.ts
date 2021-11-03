@@ -45,6 +45,7 @@ import {
 	RemoveItemsTransform,
 	RemoveEntriesTransform,
 	ImmutableObject,
+	AsynchronousProvider,
 } from "../index.js";
 
 // Constants.
@@ -125,7 +126,7 @@ function convertTransforms<X extends Data>(transforms: Transforms<X>): Immutable
  * - Does not support offline mode.
  * - Does not support realtime subscriptions.
  */
-export class FirestoreClientProvider implements Provider {
+export class FirestoreClientProvider implements Provider, AsynchronousProvider {
 	readonly firestore: Firestore;
 
 	constructor(firestore: Firestore) {

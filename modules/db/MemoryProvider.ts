@@ -18,7 +18,7 @@ import {
 	transformProps,
 	Transforms,
 } from "../util/index.js";
-import type { Provider } from "./Provider.js";
+import type { Provider, SynchronousProvider } from "./Provider.js";
 import type { Documents } from "./Documents.js";
 import type { Document } from "./Document.js";
 import { ReferenceRequiredError } from "./errors.js";
@@ -31,13 +31,12 @@ import { ReferenceRequiredError } from "./errors.js";
  *
  * Equality hash is set on returned values so `deepEqual()` etc can use it to quickly compare results without needing to look deeply.
  */
-export class MemoryProvider implements Provider {
+export class MemoryProvider implements Provider, SynchronousProvider {
 	/** List of tables in `{ path: Table }` format. */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _tables: MutableObject<Table<any>> = {};
 
 	// Get a named collection (or create a new one).
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _table<X extends Data>({ collection }: Document<X> | Documents<X>): Table<X> {
 		return (this._tables[collection] ||= new Table());
 	}
@@ -151,6 +150,7 @@ export class MemoryProvider implements Provider {
 		for (const [id] of entries) table.set(id, undefined);
 	}
 
+	/** Reset this provider and clear all data. */
 	reset(): void {
 		this._tables = {};
 	}
