@@ -21,7 +21,6 @@ import {
 import { Query, Queryable } from "../query/index.js";
 import type { Database } from "./Database.js";
 import { Document } from "./Document.js";
-import { DocumentsState } from "./DocumentsState.js";
 import { Reference } from "./Reference.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -185,16 +184,6 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 		const results = this.limit(1).get();
 		if (isAsync(results)) return results.then(getLastProp);
 		return getLastProp(results);
-	}
-
-	/**
-	 * Get the global document state for this document.
-	 * - This won't (necessarily) be updated automatically as documents are refetched. To update it insert a `StateProvider` into your provider stack.
-	 *
-	 * @return Unique global `State` instance specifying the current global state for this document.
-	 */
-	get state(): DocumentsState<T> {
-		return DocumentsState.get(this);
 	}
 
 	/**

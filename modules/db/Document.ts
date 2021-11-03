@@ -13,7 +13,6 @@ import {
 	createObserver,
 } from "../util/index.js";
 import type { Database } from "./Database.js";
-import { DocumentState } from "./DocumentState.js";
 import { ReferenceRequiredError } from "./errors.js";
 import { Reference } from "./Reference.js";
 
@@ -104,17 +103,6 @@ export class Document<T extends Data = Data> extends Reference<T> implements Obs
 			});
 		if (!result) throw new ReferenceRequiredError(this);
 		return result;
-	}
-
-	/**
-	 * Get the global document state for this document.
-	 * - This state can be updated manually by calling `state.refresh()` on the returned `DocumentState`
-	 * - Add a `StateProvider` to your database provider stack and `DocumentState` instances will be updated on all reads and writes.
-	 *
-	 * @return Unique global `State` instance specifying the current global state for this document.
-	 */
-	get state(): DocumentState<T> {
-		return DocumentState.get(this);
 	}
 
 	/**
