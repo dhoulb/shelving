@@ -19,7 +19,7 @@ import {
 	Subscribable,
 	startSubscription,
 } from "../util/index.js";
-import { StreamClosedError } from "./errors.js";
+import { StreamClosedError, StreamStartedError } from "./errors.js";
 
 /**
  * Streams combine `Observer` and `Observable`.
@@ -87,9 +87,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 */
 	error(reason: Error | unknown): void {
 		if (this.closed) throw new StreamClosedError(this);
-		(this as Mutable<this>).closed = true;
-		(this as Mutable<this>).pending = false;
-		this.stop();
+		this._close();
 		for (const subscriber of this._subscribers.slice()) dispatchError(subscriber, reason);
 	}
 
@@ -101,10 +99,28 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 */
 	complete(): void {
 		if (this.closed) throw new StreamClosedError(this);
+		this._close();
+		for (const subscriber of this._subscribers.slice()) dispatchComplete(subscriber);
+	}
+
+	/**
+	 * Close this stream.
+	 * - Called after `stream.complete()` and `stream.error()`
+	 */
+	protected _close(): void {
 		(this as Mutable<this>).closed = true;
 		(this as Mutable<this>).pending = false;
-		this.stop();
-		for (const subscriber of this._subscribers.slice()) dispatchComplete(subscriber);
+		if (this._cleanup) this._cleanup = void this._cleanup();
+	}
+
+	/**
+	 * Start streaming from a source to this.
+	 * - If there'ss an existing source subscription, it will be closed before the new source is opened.
+	 */
+	start(source: Subscribable<T>): void {
+		if (this.closed) throw new StreamClosedError(this);
+		if (this._cleanup) throw new StreamStartedError(this);
+		this._cleanup = startSubscription(source, this);
 	}
 
 	/**
@@ -126,30 +142,5 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	/** Remove an observer from this stream. */
 	off(observer: Observer<T>): void {
 		removeItem(this._subscribers, observer);
-	}
-
-	/**
-	 * Subscribe this stream to a source subscribable.
-	 * - If there'ss an existing source subscription, it will be closed before the new source is opened.
-	 */
-	start(source: Subscribable<T>): void {
-		if (this.closed) throw new StreamClosedError(this);
-		this.stop(); // Close any existing source subscription.
-		this._cleanup = startSubscription(source, this);
-	}
-
-	/** Stop any open subscription to a source. */
-	stop(): void {
-		if (this._cleanup) this._cleanup = void this._cleanup();
-	}
-
-	/**
-	 * Stream from this stream to a new or existing stream.
-	 *
-	 * @param target Target stream that subscribes to the subscribable.
-	 * @returns The target stream.
-	 */
-	to<S extends Observer<T>>(target: S): S {
-		return Stream.from(this, target);
 	}
 }

@@ -19,10 +19,6 @@ export class DeriveStream<I, O> extends Stream<any> implements Observer<I>, Obse
 	override next(value: I): void {
 		return super.next(value);
 	}
-	// Override to only allow input type.
-	override start(source: Subscribable<I>): void {
-		return super.start(source);
-	}
 	// Override to only allow output type.
 	override subscribe(next: Observer<O> | AsyncDispatcher<O>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
 		return super.subscribe(next, error, complete);
@@ -35,9 +31,9 @@ export class DeriveStream<I, O> extends Stream<any> implements Observer<I>, Obse
 	override off(observer: Observer<O>): void {
 		return super.off(observer);
 	}
-	// Override to only allow output type.
-	override to<S extends Observer<O>>(target: S): S {
-		return Stream.from(this, target);
+	// Override to only allow input type.
+	override start(source: Subscribable<I>): void {
+		return super.start(source);
 	}
 	// Override to derive any received values using the `Deriver` function and send them to the `DISPATCH_DERIVED()` method.
 	protected override _dispatch(value: I) {
