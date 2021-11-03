@@ -21,9 +21,9 @@ const sources: { [key: string]: State<any> } = {};
  */
 export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge = 86400000): State<T> {
 	const key = `${serialise(fetcher)}:${serialise(deps)}`;
-	const state: State<T> = (sources[key] ||= State.create<T>(LOADING));
+	const state: State<T> = (sources[key] ||= new State<T>(LOADING));
 
-	// Clean up source in a few seconds if it's closed.
+	// Clean up source in a few seconds if it's closed (the few seconds allow time for the component to rerender *with* the error so it can be shown to the user).
 	if (state.closed) setTimeout(() => removeEntry(sources, key, state), 3000);
 	// Fetch if no value is pending and source's ages is less than `maxAge`
 	else if (!state.pending || state.age < maxAge) state.next(fetcher(...deps));
