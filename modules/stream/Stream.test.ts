@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
+
 import { jest } from "@jest/globals";
-import { getNextValue, Stream, SKIP } from "../index.js";
+import { getNextValue, Stream, SKIP, BLACKHOLE } from "../index.js";
 
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
@@ -7,7 +9,7 @@ test("Stream: works correctly", () => {
 	const stream = new Stream<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	expect(stream.closed).toBe(false);
-	expect((stream as any)._subscribers).toBe(0);
+	expect((stream as any)._subscribers.length).toBe(0);
 	// Ons and onces.
 	const next1 = jest.fn<any, any>();
 	const error1 = jest.fn<any, any>();
@@ -27,30 +29,30 @@ test("Stream: works correctly", () => {
 	const complete4 = jest.fn<any, any>();
 	const stream4 = new Stream(stream);
 	stream4.subscribe({ next: next4, error: error4, complete: complete4 });
-	expect((stream as any)._subscribers).toEqual(4);
+	expect((stream as any)._subscribers.length).toEqual(4);
 	// Fire.
 	expect(stream.next(111)).toBe(undefined);
 	// Unsubscribe 1.
 	expect(unsub1()).toBe(undefined);
-	expect((stream as any)._subscribers).toEqual(3);
+	expect((stream as any)._subscribers.length).toEqual(3);
 	// Fire.
 	expect(stream.next(222)).toBe(undefined);
 	// Unsubscribe 2.
 	expect(unsub2()).toBe(undefined);
-	expect((stream as any)._subscribers).toEqual(2);
+	expect((stream as any)._subscribers.length).toEqual(2);
 	// Fire.
 	expect(stream.next(333)).toBe(undefined);
 	expect(stream.closed).toBe(false);
 	// Unsubscribe 3 (by completing the stream).
 	expect(stream3.complete()).toBe(undefined);
 	expect(stream3.closed).toBe(true);
-	expect((stream as any)._subscribers).toEqual(1);
+	expect((stream as any)._subscribers.length).toEqual(1);
 	expect(stream.closed).toBe(false);
 	// Error.
 	expect(stream4.closed).toBe(false);
 	expect(stream.error("nah")).toBe(undefined);
 	expect(stream.closed).toBe(true);
-	expect((stream as any)._subscribers).toEqual(0);
+	expect((stream as any)._subscribers.length).toEqual(0);
 	expect(stream4.closed).toBe(true);
 	// Checks.
 	expect(next1.mock.calls).toEqual([[111]]);
@@ -67,6 +69,12 @@ test("Stream: works correctly", () => {
 	expect(complete4.mock.calls).toEqual([]);
 });
 test("Stream: all listeners are fired even if one errors", () => {
+	// Replace console.error() temporarily.
+	// When we throw the error it's automatically logged to `console.error()` and its annoying to see this in the output.
+	const error = console.error;
+	console.error = BLACKHOLE;
+
+	// Create a stream.
 	const stream = new Stream<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	// Ons and onces.
@@ -87,6 +95,9 @@ test("Stream: all listeners are fired even if one errors", () => {
 	expect(fnError.mock.results).toEqual([{ type: "throw", value: new Error("ERROR") }]);
 	expect(fnAfter.mock.calls).toEqual([[111]]);
 	expect(fnAfter.mock.results).toEqual([{ type: "return", value: undefined }]);
+
+	// Put console.log back.
+	console.error = error;
 });
 test("Stream: promised value as next value", async () => {
 	const stream = new Stream<number>();

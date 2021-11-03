@@ -4,7 +4,7 @@ import { ArrayState } from "./ArrayState.js";
 const microtasks = async () => [await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve(), await Promise.resolve()];
 
 test("ArrayState: array with initial value", async () => {
-	const state = ArrayState.create<number>([1, 2, 3]);
+	const state = new ArrayState<number>([1, 2, 3]);
 	expect(state).toBeInstanceOf(ArrayState);
 	expect(state.value).toEqual([1, 2, 3]);
 	// Ons and onces.
@@ -29,5 +29,5 @@ test("ArrayState: array with initial value", async () => {
 	expect(state.value.includes(3)).toBe(true);
 	expect(state.value.includes(4)).toBe(true);
 	// Checks.
-	expect(fn1.mock.calls).toEqual([[[1, 2, 3, 4]], [[1, 3, 4]]]);
+	expect(fn1.mock.calls).toEqual([[[1, 2, 3]], [[1, 2, 3, 4]], [[1, 3, 4]]]);
 });

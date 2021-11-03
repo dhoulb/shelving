@@ -6,40 +6,41 @@ import {
 	assertObject,
 	Resolvable,
 	Observer,
-	isObservable,
 	Observable,
-	isAsync,
 	getRequired,
 	Transforms,
 	transformProps,
+	dispatchNext,
+	dispatchError,
+	dispatchComplete,
 } from "../util/index.js";
 import { DeriveStream } from "./DeriveStream.js";
 import { Stream } from "./Stream.js";
 import { getNextValue } from "./util.js";
 
 /**
- * State: a stream the retains its msot recent value and makes it available at `state.value` and `state.data`
+ * State: a stream that retains its msot recent value and makes it available at `state.value` and `state.data`
+ * - States also send their most-recent value to any new subscribers immediately when a new subscriber is added.
+ * - States can also be in a loading state where they do not have a current value.
+ *
+ * @param initial The initial value for the state, a `Promise` that resolves to the initial value, a source `Subscribable` to subscribe to, or another `State` instance to take the initial value from and subscribe to.
+ * - To set the state to be loading, use the `LOADING` constant or a `Promise` value.
+ * - To set the state to an explicit value, use that value or another `State` instance with a value.
  */
-export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<T>, Observable<T> {
-	/**
-	 * Create a new `State` instance.
-	 *
-	 * @param initial The initial value for the state, a `Promise` that resolves to the initial value, a source `Observable` to subscribe to, or another `State` instance to take the initial value from and subscribe to.
-	 * - Not setting `initial` sets the initial value to `undefined`
-	 * - To set the `initial` value to `LOADING` explicitly set it to `LOADING`
-	 */
-	static create<X>(): State<X | undefined>;
-	static create<X>(initial: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X>;
-	static create<X>(initial?: State<X> | Observable<X> | Resolvable<X> | typeof LOADING): State<X | undefined> {
-		return new State<X | undefined>(initial);
+export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
+	/** Current internal value. */
+	private _value: T | typeof LOADING = LOADING;
+
+	/** Time the value was last updated. */
+	readonly updated: number | undefined = undefined;
+
+	/** The error that caused this state to close. */
+	readonly reason: Error | unknown = undefined;
+
+	/** Is this state is currently loading? */
+	get loading(): boolean {
+		return this._value === LOADING;
 	}
-
-	private _value: T | typeof LOADING = LOADING; // Current value (may not have been fired yet).
-
-	readonly updated: number | undefined = undefined; // Time the value was last updated.
-	readonly loading: boolean = true; // Whether we're currently loading or we have a value (if false, reading `state.value` will not throw).
-	readonly pending: boolean = true; // Whether a new value is pending (i.e. has been
-	readonly reason: Error | unknown = undefined; // The error that caused this state to close.
 
 	/**
 	 * Get current value (synchronously).
@@ -52,29 +53,6 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 		if (this.reason) throw this.reason;
 		if (this._value === LOADING) throw getNextValue(this);
 		return this._value;
-	}
-
-	/**
-	 * Get current or next value (asynchronously).
-	 * - Gets current value synchronously (if value is not loading).
-	 * - Gets next value asynchronously (if value is still loading).
-	 *
-	 * @returns Current value of this state (possibly promised).
-	 * @throws `Error | unknown` if this state has errored.
-	 */
-	get asyncValue(): T | Promise<T> {
-		if (this.reason) throw this.reason;
-		return this._value === LOADING ? getNextValue(this) : this._value;
-	}
-
-	/**
-	 * Get next value (asynchronously).
-	 *
-	 * @returns Next value of this state.
-	 * @throws `Error | unknown` if this state has errored.
-	 */
-	get nextValue(): Promise<T> {
-		return getNextValue(this);
 	}
 
 	/**
@@ -91,60 +69,30 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 		return getRequired(this._value);
 	}
 
-	/**
-	 * Get current or next data value (synchronously).
-	 * - Gets current data value synchronously (if value is not loading).
-	 * - Gets next data value asynchronously (if value is still loading).
-	 *
-	 * @returns Current data value of this state (possibly promised).
-	 * @throws Promise if the value is currently loading.
-	 * @throws RequiredError if the value is currently `undefined`
-	 * @throws `Error | unknown` if this state has errored.
-	 */
-	get asyncData(): Exclude<T, undefined> | Promise<Exclude<T, undefined>> {
-		if (this.reason) throw this.reason;
-		return this._value === LOADING ? getNextValue(this).then(getRequired) : getRequired(this._value);
-	}
-
-	/**
-	 * Get next data value (asynchronously).
-	 *
-	 * @returns Next data value of this state.
-	 * @throws RequiredError if the value is currently `undefined`
-	 * @throws `Error | unknown` if this state has errored.
-	 */
-	get nextData(): Promise<Exclude<T, undefined>> {
-		return getNextValue(this).then(getRequired);
-	}
-
 	/** Age of the current data (in milliseconds). */
 	get age(): number {
 		return typeof this.updated === "number" ? Date.now() - this.updated : Infinity;
 	}
 
-	// Protected (use `State.create()` to create new `State` instances).
-	protected constructor(initial: State<T> | Observable<T> | Resolvable<T> | typeof LOADING) {
-		super(isObservable(initial) ? initial : undefined);
-		if (initial instanceof State) {
-			if (!initial.loading) this.next(initial.value);
-		} else if (!isObservable(initial)) {
-			this.next(initial);
+	constructor(initial: Resolvable<T> | typeof LOADING) {
+		super();
+		this.next(initial);
+	}
+
+	// Override to allow `LOADING` symbol.
+	override next(value: Resolvable<T> | typeof LOADING) {
+		super.next(value as Resolvable<T>);
+	}
+
+	// Override to save the current value and exclude `LOADING` symbol from dispatch to observers.
+	protected override _dispatch(value: T | typeof LOADING): void {
+		if (value !== this._value) {
+			this._value = value;
+			if (value !== LOADING) {
+				(this as Mutable<this>).updated = Date.now();
+				super._dispatch(value);
+			}
 		}
-	}
-
-	override next(value: Resolvable<T | typeof LOADING>): void {
-		if (isAsync(value)) (this as Mutable<this>).pending = true;
-		super.next(value);
-	}
-
-	// Override `dispatchNext()` to save the current value and only dispatch non-loading values.
-	protected override _dispatchNext(value: T | typeof LOADING): void {
-		if (value === this._value) return;
-		(this as Mutable<this>).pending = false;
-		this._value = value;
-		(this as Mutable<this>).loading = value === LOADING;
-		(this as Mutable<this>).updated = Date.now();
-		if (value !== LOADING) super._dispatchNext(value);
 	}
 
 	/**
@@ -167,37 +115,37 @@ export class State<T> extends Stream<T | typeof LOADING, T> implements Observer<
 		this.next(transformProps<T & ImmutableObject>(this._value, transforms));
 	}
 
-	// Override `dispatchError()` to save the reason at `this.reason` and clean up.
-	protected override _dispatchError(reason: Error | unknown): void {
-		(this as Mutable<this>).pending = false;
-		(this as Mutable<this>).reason = reason;
-		super._dispatchError(reason);
+	// Override `error()` to save the reason at `this.reason` and clean up.
+	override error(reason: Error | unknown): void {
+		if (!this.closed) (this as Mutable<this>).reason = reason;
+		super.error(reason);
 	}
 
-	// Override `dispatchComplete()` to clean up.
-	protected override _dispatchComplete(): void {
-		(this as Mutable<this>).pending = false;
-		super._dispatchComplete();
+	// Override to send the current error or value to any new subscribers.
+	override on(observer: Observer<T>) {
+		super.on(observer);
+		if (this.reason) dispatchError(observer, this.reason);
+		else if (this.closed) dispatchComplete(observer);
+		else if (this._value !== LOADING) dispatchNext(observer, this._value);
 	}
 
 	/**
-	 * Derive a new state from this state.
+	 * Derive from this state to a new or existing target state.
 	 * - The `deriver()` function takes this state value and returns the new state value.
 	 * - When this state updates, the `deriver()` function is rerun and the new state is updated.
+	 * - Uses a `DeriveStream` as middleware to run the `deriver()` function when next values are received.
 	 *
 	 * @param deriver Deriver function that does the deriving. Accepts the state value from this state and returns the new derived state value.
-	 * @returns New `State` instance with a state derived from this one.
+	 * @param target The target state to stream to (if empty a new `State` will be created).
+	 *
+	 * @returns The new or existing target state.
 	 */
-	derive(): State<T>;
 	derive<TT>(deriver: AsyncDeriver<T, TT>): State<TT>;
-	derive<TT>(deriver?: AsyncDeriver<T, TT>): State<T> | State<TT> {
-		if (deriver) {
-			const deriving = new DeriveStream<T, TT>(deriver, this); // New deriving stream subscribed to this.
-			const derived = new State<TT>(deriving); // New derived state subscribed to the deriving stream.
-			if (this._value !== LOADING) deriving.next(this._value); // Send the next value to the deriving stream, which derives the new value and sends it to the derived state.
-			return derived;
-		} else {
-			return new State<T>(this);
-		}
+	derive<TT, S extends Stream<TT>>(deriver: AsyncDeriver<T, TT>, target: S): S; // eslint-disable-line @typescript-eslint/no-explicit-any
+	derive<TT>(deriver: AsyncDeriver<T, TT>, target: Observer<TT> = new State<TT>(LOADING)): Observer<TT> {
+		const middleware = new DeriveStream(deriver);
+		middleware.to(target);
+		this.to(middleware);
+		return target;
 	}
 }
