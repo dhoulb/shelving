@@ -1,5 +1,5 @@
 import { getFirstItem, getLastItem, ImmutableEntries, bindMethod, assertLength, Data, Results, assertNumber } from "../util/index.js";
-import { Sorts } from "../query/index.js";
+import type { Sorts } from "../query/index.js";
 import { State } from "../stream/index.js";
 import { Documents } from "./Documents.js";
 
