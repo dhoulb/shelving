@@ -7,7 +7,7 @@ import { usePureMemo } from "./usePureMemo.js";
  * - Doesn't persist the state, so if the component or anything beneath it throws the currently paginated results will be lost.
  */
 export const usePagination = <T extends Data>(ref: Documents<T>, initial?: Results<T>): PaginationState<T> => {
-	const pagination = usePureMemo<PaginationState<T>, [Documents<T>, Results<T> | undefined]>(createPagination, [usePureMemo(ref, [ref.toString()]), initial]);
+	const pagination = usePureMemo<PaginationState<T>, [Documents<T>, Results<T> | undefined]>(createPagination, usePureMemo(ref, [ref.toString()]), initial);
 	useObserve(pagination);
 	return pagination;
 };

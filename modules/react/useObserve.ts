@@ -10,7 +10,7 @@ import { usePureEffect } from "./usePureEffect.js";
  */
 export function useObserve<T>(observer?: Observable<T>): void {
 	// Effect that subscribes the component to changes in the `State` instance for the lifetime of the component.
-	usePureEffect(subscribeEffect, [useReactState<unknown>(LOADING)[1], observer]);
+	usePureEffect(subscribeEffect, useReactState<unknown>(LOADING)[1], observer);
 }
 
 /** Effect that subscribes the component to changes in the `State` instance for the lifetime of the component. */
