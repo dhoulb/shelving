@@ -1,21 +1,18 @@
 import { Data, Result, Results, Unsubscriber, MutableObject, Observer, isAsync, isObject, Transforms, isTransform, Transform } from "../util/index.js";
 import { Feedback, InvalidFeedback, isFeedback } from "../feedback/index.js";
-import { Stream } from "../stream/index.js";
-import type { Provider } from "./Provider.js";
+import { DeriveStream } from "../stream/index.js";
 import type { Document } from "./Document.js";
 import type { Documents } from "./Documents.js";
+import type { Provider } from "./Provider.js";
+import { ThroughProvider } from "./ThroughProvider.js";
 import { ReferenceValidationError } from "./errors.js";
 
 /**
- * Validation provider: validates any values that are read from or written a the source provider.
+ * Validates any values that are read from or written to a source provider.
  */
-export class ValidationProvider implements Provider {
-	private readonly _source: Provider;
-	constructor(source: Provider) {
-		this._source = source;
-	}
-	getDocument<X extends Data>(ref: Document<X>): Result<X> | Promise<Result<X>> {
-		const result = this._source.getDocument(ref);
+export class ValidationProvider extends ThroughProvider implements Provider {
+	override getDocument<X extends Data>(ref: Document<X>): Result<X> | Promise<Result<X>> {
+		const result = super.getDocument(ref);
 		if (isAsync(result)) return this._awaitGetDocument(ref, result);
 		return validateResult(ref, result);
 	}
@@ -23,44 +20,38 @@ export class ValidationProvider implements Provider {
 		const result = await asyncResult;
 		return validateResult(ref, result);
 	}
-	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result>): Unsubscriber {
-		const stream = Stream.derive<Result<X>, Result<X>>(v => validateResult(ref, v));
+	override onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result>): Unsubscriber {
+		const stream = new DeriveStream<Result<X>, Result<X>>(v => validateResult(ref, v));
 		stream.subscribe(observer);
-		return this._source.onDocument(ref, stream);
+		return super.onDocument(ref, stream);
 	}
-	addDocument<X extends Data>(ref: Documents<X>, data: X): string | Promise<string> {
-		return this._source.addDocument(ref, validateData(ref, data));
+	override addDocument<X extends Data>(ref: Documents<X>, data: X): string | Promise<string> {
+		return super.addDocument(ref, validateData(ref, data));
 	}
-	setDocument<X extends Data>(ref: Document<X>, data: X): void | Promise<void> {
-		return this._source.setDocument(ref, validateData(ref, data));
+	override setDocument<X extends Data>(ref: Document<X>, data: X): void | Promise<void> {
+		return super.setDocument(ref, validateData(ref, data));
 	}
-	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void | Promise<void> {
-		return this._source.updateDocument(ref, validateTransforms(ref, transforms));
+	override updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void | Promise<void> {
+		return super.updateDocument(ref, validateTransforms(ref, transforms));
 	}
-	deleteDocument<X extends Data>(ref: Document<X>): void | Promise<void> {
-		return this._source.deleteDocument(ref);
-	}
-	getDocuments<X extends Data>(ref: Documents<X>): Results<X> | Promise<Results<X>> {
-		const results = this._source.getDocuments(ref);
+	override getDocuments<X extends Data>(ref: Documents<X>): Results<X> | Promise<Results<X>> {
+		const results = super.getDocuments(ref);
 		if (isAsync(results)) return this._awaitGetDocuments(ref, results);
 		return validateResults<X>(ref, results);
 	}
 	private async _awaitGetDocuments<X extends Data>(ref: Documents<X>, asyncResult: Promise<Results<X>>): Promise<Results<X>> {
 		return validateResults<X>(ref, await asyncResult);
 	}
-	onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber {
-		const stream = Stream.derive<Results<X>, Results<X>>(v => validateResults(ref, v));
+	override onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber {
+		const stream = new DeriveStream<Results<X>, Results<X>>(v => validateResults(ref, v));
 		stream.subscribe(observer);
-		return this._source.onDocuments(ref, stream);
+		return super.onDocuments(ref, stream);
 	}
-	setDocuments<X extends Data>(ref: Documents<X>, data: X): void | Promise<void> {
-		return this._source.setDocuments(ref, ref.validate(data));
+	override setDocuments<X extends Data>(ref: Documents<X>, data: X): void | Promise<void> {
+		return super.setDocuments(ref, ref.validate(data));
 	}
-	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void | Promise<void> {
-		return this._source.updateDocuments(ref, validateTransforms(ref, transforms));
-	}
-	deleteDocuments<X extends Data>(ref: Documents<X>): void | Promise<void> {
-		return this._source.deleteDocuments(ref);
+	override updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void | Promise<void> {
+		return super.updateDocuments(ref, validateTransforms(ref, transforms));
 	}
 }
 
