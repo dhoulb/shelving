@@ -1,5 +1,5 @@
-import { MutableObject, Data, Result, Results, Observer, Unsubscriber, isAsync, Observable } from "../util/index.js";
-import { getNextValue, TidyState } from "../stream/index.js";
+import { MutableObject, Data, Result, Results, Observer, Unsubscriber, isAsync, Observable, LOADING } from "../util/index.js";
+import { getNextValue, LazyState } from "../stream/index.js";
 import type { Document } from "./Document.js";
 import type { Documents } from "./Documents.js";
 import type { Provider } from "./Provider.js";
@@ -46,14 +46,14 @@ export class BatchProvider extends ThroughProvider implements Provider {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
-		const sub = (this._subs[key] ||= new TidyState<Result<X>>(s => {
+		const sub = (this._subs[key] ||= LazyState.start(s => {
 			const stop = super.onDocument(ref, s);
 			this._gets[key] ||= this._awaitDocument(ref, getNextValue(sub)); // The first value from the new subscription can be reused for any concurrent get requests.
 			return () => {
 				delete this._subs[key];
 				stop();
 			};
-		}, STOP_DELAY));
+		}, new LazyState<Result<X>>(LOADING, STOP_DELAY)));
 		return sub.subscribe(observer);
 	}
 
@@ -79,14 +79,14 @@ export class BatchProvider extends ThroughProvider implements Provider {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
-		const sub = (this._subs[key] ||= new TidyState<Results<X>>(s => {
+		const sub = (this._subs[key] ||= LazyState.start(s => {
 			const stop = super.onDocuments(ref, s);
 			this._gets[key] ||= this._awaitDocuments(ref, getNextValue(sub)); // The first value from the subscription can be reused for any concurrent get requests.
 			return () => {
 				delete this._subs[key];
 				stop();
 			};
-		}, STOP_DELAY));
+		}, new LazyState<Results<X>>(LOADING, STOP_DELAY)));
 		return sub.subscribe(observer);
 	}
 }
