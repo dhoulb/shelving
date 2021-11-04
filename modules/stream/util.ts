@@ -6,4 +6,8 @@ import { LimitStream } from "./LimitStream.js";
  * - Internally uses a `LimitedStream` instance that unsubscribes itself after receiving one value.
  */
 export const getNextValue = <T>(observable: Observable<T>): Promise<T> =>
-	new Promise<T>((next, error) => LimitStream.from(observable, new LimitStream<T>(1)).on({ next, error }));
+	new Promise<T>((next, error) => {
+		const stream = new LimitStream<T>(1);
+		stream.on({ next, error });
+		stream.start(observable);
+	});

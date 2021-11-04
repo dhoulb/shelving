@@ -144,8 +144,8 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	derive<TT, S extends Stream<TT>>(deriver: AsyncDeriver<T, TT>, target: S): S; // eslint-disable-line @typescript-eslint/no-explicit-any
 	derive<TT>(deriver: AsyncDeriver<T, TT>, target: Observer<TT> = new State<TT>(LOADING)): Observer<TT> {
 		const middleware = new DeriveStream(deriver);
-		Stream.from(middleware, target);
-		Stream.from(this, middleware);
+		middleware.on(target);
+		middleware.start(this);
 		return target;
 	}
 }

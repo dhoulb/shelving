@@ -18,36 +18,47 @@ import {
 	removeItem,
 	Subscribable,
 	startSubscription,
+	ObserverType,
+	AnyObserver,
+	dispatch,
 } from "../util/index.js";
-import { StreamClosedError, StreamStartedError } from "./errors.js";
+import { ObserverClosedError, StreamClosedError } from "./errors.js";
+
+/** Extract the internal type from a `Stream` */
+export type StreamType<T extends Stream<unknown>> = T extends Stream<infer X> ? X : never;
 
 /**
  * Streams combine `Observer` and `Observable`.
- * - Any received values and errors are passed along to to all of its subscribers.
- * - Provide a normalised `.closed` property that is `true` initially and `false` after `error()` or `complete()` have been called.
- * - Ensure that `next()`, `error()`, `complete()` aren't called again after `.closed` is true.
+ * - Subscribers are added using `stream.subscribe(observer)` or `stream.subscribe(next, error, complete)`
+ * - Stream receives next values via `stream.next(value)` and forwards the values to its subscribers.
+ * - Provide a normalised `stream.closed` property that is `true` initially and `false` after `stream.error()` or `stream.complete()` have been called (`stream.next()` can't be called again after `stream.closed` is true).
+ * - Streams can connect to a source subscribable via `stream.start()`. The source subscription is ended when this stream is closed with `stream.error()` or `stream.complete()`
  */
 export class Stream<T> implements Observer<T>, Observable<T> {
 	/**
-	 * Stream from a source to a new or existing stream.
+	 * Start streaming from a source subscribable to a target observer.
 	 * - Convenience allows you to one-line the following: `const target = new Stream(); target.start(source);`
+	 * - Primarily intended for working with `Stream` instances but works perfectly well with any `Subscribable` and `Observer`.
 	 *
 	 * @param source Source subscribable.
 	 * @param target Target stream that subscribes to the subscribable.
 	 * @returns The target stream.
 	 */
-	static from<X>(source: Subscribable<X>): Stream<X>;
-	static from<X, S extends Observer<X>>(source: Subscribable<X>, target: S): S;
-	static from<X>(source: Subscribable<X>, target: Observer<X> = new Stream<X>()): Observer<X> {
-		target instanceof Stream ? target.start(source) : startSubscription(source, target);
+	static start<S extends AnyObserver>(source: Subscribable<ObserverType<S>>, target: S): S;
+	static start<X>(source: Subscribable<X>): Stream<X>;
+	static start<X>(source: Subscribable<X>, target: Observer<X> = new Stream<X>()): Observer<X> {
+		// `source.on()` is more efficient because it doesn't create a an `Unsubscribe` function that is never used.
+		if (source instanceof Stream) source.on(target);
+		// `startSubscription()` works with any `Subscribable` and `Observer`
+		else startSubscription(source, target);
 		return target;
 	}
 
-	/** List of subscribed observers. */
-	protected readonly _subscribers: MutableArray<Observer<T>> = [];
+	/** List of sources this stream is subscribed to. */
+	protected readonly _sources: MutableArray<Stream<T> | Unsubscriber> = [];
 
-	/** Cleanup function that ends the current source subscription. */
-	protected _cleanup?: Unsubscriber | void;
+	/** List of subscribed observers that values are forwarded to. */
+	protected readonly _subscribers: MutableArray<Observer<T>> = [];
 
 	/**
 	 * Is this stream currently receiving an asynchronous next value?
@@ -88,7 +99,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	error(reason: Error | unknown): void {
 		if (this.closed) throw new StreamClosedError(this);
 		this._close();
-		for (const subscriber of this._subscribers.slice()) dispatchError(subscriber, reason);
+		for (const subscriber of this._subscribers.splice(0)) dispatchError(subscriber, reason);
 	}
 
 	/**
@@ -100,7 +111,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	complete(): void {
 		if (this.closed) throw new StreamClosedError(this);
 		this._close();
-		for (const subscriber of this._subscribers.slice()) dispatchComplete(subscriber);
+		for (const subscriber of this._subscribers.splice(0)) dispatchComplete(subscriber);
 	}
 
 	/**
@@ -110,7 +121,10 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	protected _close(): void {
 		(this as Mutable<this>).closed = true;
 		(this as Mutable<this>).pending = false;
-		if (this._cleanup) this._cleanup = void this._cleanup();
+		for (const source of this._sources.splice(0)) {
+			if (source instanceof Stream) this.stop(source);
+			else dispatch(source);
+		}
 	}
 
 	/**
@@ -119,8 +133,16 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 */
 	start(source: Subscribable<T>): void {
 		if (this.closed) throw new StreamClosedError(this);
-		if (this._cleanup) throw new StreamStartedError(this);
-		this._cleanup = startSubscription(source, this);
+		if (source instanceof Stream) source.on(this);
+		else this._sources.push(startSubscription(source, this));
+	}
+
+	/**
+	 * Stop streaming from a source to this.
+	 * - Only other instances of `Stream` can be stopped.
+	 */
+	stop(source: Stream<T>): void {
+		source.off(this);
 	}
 
 	/**
@@ -136,11 +158,14 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 
 	/** Add an observer to this stream. */
 	on(observer: Observer<T>): void {
+		if (observer.closed) throw new ObserverClosedError(this, observer);
+		if (observer instanceof Stream) addItem(observer._sources, this); // Observer is a stream, add this to the observer's sources so it stops observing this stream when it closes.
 		addItem(this._subscribers, observer);
 	}
 
 	/** Remove an observer from this stream. */
 	off(observer: Observer<T>): void {
+		if (observer instanceof Stream) removeItem(observer._sources, this);
 		removeItem(this._subscribers, observer);
 	}
 }

@@ -22,12 +22,12 @@ test("Stream: works correctly", () => {
 	const next3 = jest.fn<any, any>();
 	const error3 = jest.fn<any, any>();
 	const complete3 = jest.fn<any, any>();
-	const stream3 = new Stream(stream);
+	const stream3 = Stream.start(stream);
 	stream3.subscribe(next3, error3, complete3);
 	const next4 = jest.fn<any, any>();
 	const error4 = jest.fn<any, any>();
 	const complete4 = jest.fn<any, any>();
-	const stream4 = new Stream(stream);
+	const stream4 = Stream.start(stream);
 	stream4.subscribe({ next: next4, error: error4, complete: complete4 });
 	expect((stream as any)._subscribers.length).toEqual(4);
 	// Fire.

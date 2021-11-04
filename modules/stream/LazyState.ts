@@ -1,15 +1,15 @@
-import type { Observer } from "../util/index.js";
-import { Stream } from "./Stream.js";
+import type { LOADING, Observer, Resolvable } from "../util/index.js";
+import { State } from "./State.js";
 
 /**
- * Stream that tidies up after itself by completing itself after all its subscribers unsubscribe.
+ * State that tidies up after itself by completing itself after all its subscribers unsubscribe.
  * @param delay How long to wait (in ms) before the source subscription is stopped.
  */
-export class TidyStream<T> extends Stream<T> {
+export class LazyState<T> extends State<T> {
 	private _delay: number;
 	private _timeout?: NodeJS.Timeout;
-	constructor(delay = 0) {
-		super();
+	constructor(initial: Resolvable<T> | typeof LOADING, delay = 0) {
+		super(initial);
 		this._delay = delay;
 	}
 	// Override to stop the source subscription when the last subscriber unsubscribes.

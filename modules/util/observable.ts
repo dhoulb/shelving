@@ -9,7 +9,14 @@ export interface Observable<T> {
 }
 
 /** Is an unknown object an object implementing `Observable` */
-export const isObservable = <T extends Observable<unknown>>(v: T | unknown): v is T => isObject(v) && typeof v.subscribe === "function";
+export const isObservable = <T extends AnyObservable>(v: T | unknown): v is T => isObject(v) && typeof v.subscribe === "function";
+
+/** Extract the internal type from an `Observable` */
+export type ObservableType<T extends AnyObservable> = T extends Observable<infer X> ? X : never;
+
+/** Any observer (useful for `extends AnyObserver` clauses). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyObservable = Observable<any>;
 
 /** Subscribable is either an observable object or a function that initiates a subscription to an observer. */
 export type Subscribable<X> = Observable<X> | ((observer: Observer<X>) => Unsubscriber);
@@ -38,6 +45,13 @@ export interface Observer<T> {
 	/** Whether the subscription has ended (either with success or failure). */
 	readonly closed?: boolean;
 }
+
+/** Extract the internal type from an `Observer` */
+export type ObserverType<T extends AnyObserver> = T extends Observer<infer X> ? X : never;
+
+/** Any observer (useful for `extends AnyObserver` clauses). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyObserver = Observer<any>;
 
 /** Dispatch the next value to an observer (and if the next value errors, calls the observer's error function). */
 export const dispatchNext = <T>(observer: Observer<T>, value: T): void => thispatch(observer, "next", value, observer, "error");
