@@ -1,30 +1,34 @@
 import { useState } from "react";
-import { Data, Document, CacheProvider, Result, Dispatcher, throwAsync, Catcher, NOERROR, isAsync, findSourceProvider, NOVALUE } from "../index.js";
+import {
+	Data,
+	Document,
+	CacheProvider,
+	Result,
+	Dispatcher,
+	throwAsync,
+	Catcher,
+	NOERROR,
+	isAsync,
+	findSourceProvider,
+	NOVALUE,
+	getRequired,
+} from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
 
 /**
- * Use the cached result of a document in a React component.
+ * Use the cached result of a document in a React component (or a `Promise` to indicate the result is still loading).
  * - Requires database to use `CacheProvider` and will error if this does not exist.
  *
  * @param ref Document reference.
  * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
  * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
  *
- * @returns The data of the document or `undefined` if the document doesn't exist.
+ * @returns The result of the document (i.e. its data or `undefined` if it doesn't exist), or `Promise` that resolves when the result has loaded.
  *
- * @throws `Promise` if document result has not been cached yet (handle this with a React `<Suspense>` element).
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
- */
-export function useDocument<T extends Data>(ref: Document<T>, maxAge?: number | true): Result<T> {
-	return throwAsync(useAsyncDocument(ref, maxAge));
-}
-
-/**
- * Use the cached result of a document in a React component.
- * - Like `useDocument()` but return `Promise` (rather than throwing `Promise`) if the document result has not been cached yet.
  */
 export function useAsyncDocument<T extends Data>(ref: Document<T>, maxAge: number | true = 1000): Result<T> | Promise<Result<T>> {
 	// Find the cache provider.
@@ -54,6 +58,62 @@ export function useAsyncDocument<T extends Data>(ref: Document<T>, maxAge: numbe
 	if (isAsync(result)) result.then(setNext, setError);
 	else setNext(result);
 	return result;
+}
+
+/**
+ * Use the cached data of a document in a React component.
+ * - Requires database to use `CacheProvider` and will error if this does not exist.
+ *
+ * @param ref Document reference.
+ * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
+ * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
+ *
+ * @returns The result of the document (i.e. its data or `undefined` if it doesn't exist).
+ *
+ * @throws `Promise` that resolves when the result has loaded.
+ * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
+ * @throws `Error` if there was a problem retrieving the result.
+ */
+export function useDocument<T extends Data>(ref: Document<T>, maxAge?: number | true): Result<T> {
+	return throwAsync(useAsyncDocument(ref, maxAge));
+}
+
+/**
+ * Use the cached data of a document in a React component (or a `Promise` to indicate the data is still loading).
+ * - Requires database to use `CacheProvider` and will error if this does not exist.
+ *
+ * @param ref Document reference.
+ * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
+ * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
+ *
+ * @returns The data of the document, or `Promise` that resolves when the data has loaded.
+ *
+ * @throws `RequiredError` if the document does not exist.
+ * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
+ * @throws `Error` if there was a problem retrieving the data.
+ */
+export function useAsyncDocumentData<T extends Data>(ref: Document<T>, maxAge?: number | true): T | Promise<T> {
+	const result = useAsyncDocument(ref, maxAge);
+	return isAsync(result) ? result.then(getRequired) : getRequired(result);
+}
+
+/**
+ * Use the cached data of a document in a React component.
+ * - Requires database to use `CacheProvider` and will error if this does not exist.
+ *
+ * @param ref Document reference.
+ * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
+ * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
+ *
+ * @returns The data of the document.
+ *
+ * @throws `Promise` that resolves when the data has loaded.
+ * @throws `RequiredError` if the document does not exist.
+ * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
+ * @throws `Error` if there was a problem retrieving the data.
+ */
+export function useDocumentData<T extends Data>(ref: Document<T>, maxAge?: number | true): T {
+	return getRequired(useDocument(ref, maxAge));
 }
 
 /** Get the initial result for a reference from the cache. */
