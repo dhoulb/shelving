@@ -17,6 +17,8 @@
 	"license": "0BSD",
 	"type": "module",
 	"module": "./index.js",
+	"main": "./index.js",
+	"types": "./index.d.ts",
 	"exports": {
 		".": "./index.js",
 		"./api": "./api/index.js",
@@ -34,8 +36,6 @@
 		"./test": "./test/index.js",
 		"./util": "./util/index.js"
 	},
-	"main": "./index.js",
-	"types": "./index.d.ts",
 	"sideEffects": false,
 	"engineStrict": true,
 	"engines": {
@@ -51,10 +51,9 @@
 		"test:typescript": "tsc --noEmit",
 		"test:jest": "npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js",
 		"test:jest:watch": "jest --watchAll",
-		"build": "npm run build:typescript && npm run build:copy && npm run build:check",
+		"build": "npm run build:typescript && npm run build:copy",
 		"build:typescript": "tsc -p ./tsconfig.build.json",
-		"build:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md",
-		"build:check": "node -c dist/index.js"
+		"build:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md"
 	},
 	"devDependencies": {
 		"@google-cloud/firestore": "^4.15.1",
