@@ -9,14 +9,14 @@ import { ThroughProvider } from "./ThroughProvider.js";
 /**
  * Cache provider: keep a copy of received data in a local cache.
  */
-export class CacheProvider extends ThroughProvider implements Provider {
+export class CacheProvider extends ThroughProvider implements Provider, AsynchronousProvider {
 	/** The local cache provider. */
 	readonly cache: MemoryProvider;
 
 	/** Last-known-correct time for data, indexed by key. */
 	private _times: MutableObject<number> = {};
 
-	constructor(source: AsynchronousProvider, cache: MemoryProvider = new MemoryProvider()) {
+	constructor(source: Provider, cache: MemoryProvider = new MemoryProvider()) {
 		super(source);
 		this.cache = cache;
 	}
