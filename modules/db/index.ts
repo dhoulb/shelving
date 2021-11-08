@@ -14,4 +14,5 @@ export * from "./CacheProvider.js";
 
 // Other.
 export * from "./PaginationState.js";
+export * from "./Change.js";
 export * from "./errors.js";
