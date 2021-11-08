@@ -41,65 +41,6 @@ Shelving is created from small individual modules which can be imported individu
 
 @todo Write these docs!
 
-### Internal
-
-- `shelving/constants`
-
-### Data storage
-
-- [`shelving/schema`](https://github.com/dhoulb/shelving/blob/main/modules/schema/README.md) ✅ — Validate unknown user input against schemas
-- `shelving/db` ✅
-- `shelving/query` ✅
-
-### Data providers
-
-- `shelving/memory` ✅ — Fast in-memory database provider
-- `shelving/firestore-client` — Provider for Firestore in client apps (using `firebase`)
-- `shelving/firestore-server` — Provider for Firestore on servers (using `firebase-admin`)
-
-### Data types
-
-- `shelving/array` ✅
-- `shelving/boolean` ✅
-- `shelving/class` ✅
-- `shelving/data` ✅
-- `shelving/date` ✅
-- `shelving/entry` ✅
-- `shelving/function` ✅
-- `shelving/null` ✅
-- `shelving/number` ✅
-- `shelving/object` ✅
-- `shelving/string` ✅
-- `shelving/undefined` ✅
-- `shelving/units` ✅
-- `shelving/url` ✅
-
-### Data manipulation
-
-- `shelving/clone` ✅
-- `shelving/diff` ✅
-- `shelving/equal` ✅
-- `shelving/filter` ✅
-- `shelving/markup` ✅
-- `shelving/merge` ✅
-- `shelving/random` ✅
-- `shelving/serialise` ✅
-- `shelving/sort` ✅
-- [`shelving/template`](https://github.com/dhoulb/shelving/blob/main/modules/template/README.md) ✅ — Simple string template rendering and matching
-- `shelving/stream` ✅
-
-### Errors
-
-- `shelving/assert` ✅
-- `shelving/console` ✅
-- `shelving/debug` ✅
-- `shelving/errors` ✅
-- `shelving/feedback` ✅
-
-### Testing
-
-- `shelving/test` — Internal reusable testing tools
-
 ## Changelog
 
 See [Releases](https://github.com/dhoulb/shelving/releases)
