@@ -1,4 +1,4 @@
-import { MutableObject, isObject, ImmutableObject, Validator, Validators, Feedback, InvalidFeedback, isFeedback } from "../util/index.js";
+import { MutableObject, isObject, ImmutableObject, Validator, Validators, Feedback, InvalidFeedback } from "../util/index.js";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
 
 type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
@@ -68,11 +68,11 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 				// Set the prop.
 				if (safeProp !== unsafeProp) changed = true;
 				safeObj[key] = safeProp;
-			} catch (feedback: unknown) {
-				if (isFeedback(feedback)) {
+			} catch (thrown: unknown) {
+				if (thrown instanceof Feedback) {
 					invalid = true;
-					details[key] = feedback;
-				}
+					details[key] = thrown;
+				} else throw thrown;
 			}
 		}
 

@@ -61,7 +61,7 @@ export class Feedback {
 	 */
 	toString(): string {
 		let output = this.feedback;
-		for (const [k, v] of Object.entries(this.details)) output += `\n- ${k}: ${isFeedback(v) ? v.toString().replace(/\n/g, "\n  ") : debug(v)}`;
+		for (const [k, v] of Object.entries(this.details)) output += `\n- ${k}: ${v instanceof Feedback ? v.toString().replace(/\n/g, "\n  ") : debug(v)}`;
 		return output;
 	}
 }
@@ -85,12 +85,6 @@ export class ErrorFeedback extends Feedback {
 export class InvalidFeedback extends ErrorFeedback {
 	static override STATUS: FeedbackStatus = "invalid";
 }
-
-/**
- * Is an unknown value a `Feedback` instance?
- * - This is a TypeScript assertion function, so if this function returns `true` the type is also asserted to be a `Schema`.
- */
-export const isFeedback = <T extends Feedback>(v: T | unknown): v is T => v instanceof Feedback;
 
 /** Set of hydrations for all feedback classes. */
 export const FEEDBACK_HYDRATIONS = {

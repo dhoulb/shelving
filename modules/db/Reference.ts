@@ -1,4 +1,4 @@
-import { isFeedback, assertInstance, Data, Validator } from "../util/index.js";
+import { Feedback, assertInstance, Data, Validator } from "../util/index.js";
 import { ObjectSchema } from "../schema/index.js";
 import { ReferenceValidationError } from "./errors.js";
 import type { Database } from "./Database.js";
@@ -31,7 +31,7 @@ export class Reference<T extends Data = Data> implements Validator<T> {
 		try {
 			return schema.validate(data);
 		} catch (thrown: unknown) {
-			throw isFeedback(thrown) ? new ReferenceValidationError(this, thrown) : thrown;
+			throw thrown instanceof Feedback ? new ReferenceValidationError(this, thrown) : thrown;
 		}
 	}
 

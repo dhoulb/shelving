@@ -8,11 +8,9 @@ import {
 	isAsync,
 	isObject,
 	Transforms,
-	isTransform,
 	Transform,
 	Feedback,
 	InvalidFeedback,
-	isFeedback,
 } from "../util/index.js";
 import { DeriveStream } from "../stream/index.js";
 import type { Document } from "./Document.js";
@@ -87,7 +85,7 @@ function validateTransforms<X extends Data>(ref: Document<X> | Documents<X>, uns
 		const unsafeTransform = unsafeTransforms[key];
 		if (unsafeTransform === undefined) {
 			continue; // Skip undefined.
-		} else if (isTransform(unsafeTransform)) {
+		} else if (unsafeTransform instanceof Transform) {
 			safeTransforms[key] = unsafeTransform;
 		} else {
 			try {
@@ -111,8 +109,8 @@ function validateResult<X extends Data>(ref: Document<X>, result: Result<X>): Re
 	const schema = ref.schema;
 	try {
 		return schema.validate(result);
-	} catch (err: unknown) {
-		throw isFeedback(err) ? new ReferenceValidationError(ref, err) : err;
+	} catch (thrown: unknown) {
+		throw thrown instanceof Feedback ? new ReferenceValidationError(ref, thrown) : thrown;
 	}
 }
 
@@ -126,7 +124,7 @@ function validateResults<X extends Data>(ref: Documents<X>, results: Results<X>)
 		try {
 			validated[id] = schema.validate(data);
 		} catch (thrown) {
-			if (isFeedback(thrown)) {
+			if (thrown instanceof Feedback) {
 				invalids[id] = thrown;
 				invalid = true;
 			} else throw thrown;

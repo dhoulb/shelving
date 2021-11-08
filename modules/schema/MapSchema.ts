@@ -1,4 +1,4 @@
-import { MutableObject, ImmutableObject, isObject, Validator, Feedback, InvalidFeedback, isFeedback } from "../util/index.js";
+import { MutableObject, ImmutableObject, isObject, Validator, Feedback, InvalidFeedback } from "../util/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type MapSchemaOptions<T> = SchemaOptions<ImmutableObject<T>> & {
@@ -77,11 +77,11 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 				const safeItem = this.items.validate(unsafeItem);
 				if (safeItem !== unsafeItem) changed = true;
 				output[key] = safeItem;
-			} catch (feedback: unknown) {
-				if (isFeedback(feedback)) {
+			} catch (thrown: unknown) {
+				if (thrown instanceof Feedback) {
 					invalid = true;
-					details[key] = feedback;
-				}
+					details[key] = thrown;
+				} else throw thrown;
 			}
 		}
 

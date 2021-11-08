@@ -23,7 +23,6 @@ import {
 	dispatchError,
 	MutableObject,
 	Transforms,
-	isTransform,
 	IncrementTransform,
 	AddItemsTransform,
 	RemoveItemsTransform,
@@ -31,6 +30,7 @@ import {
 	RemoveEntriesTransform,
 	ImmutableObject,
 	AsynchronousProvider,
+	Transform,
 } from "../index.js";
 
 // Constants.
@@ -86,7 +86,7 @@ function getResults<X extends Data>(snapshot: FirestoreQuerySnapshot<X>): Result
 function convertTransforms<X extends Data>(transforms: Transforms<X>): ImmutableObject {
 	const output: MutableObject = {};
 	for (const [key, transform] of Object.entries(transforms)) {
-		if (isTransform(transform)) {
+		if (transform instanceof Transform) {
 			if (transform instanceof IncrementTransform) {
 				output[key] = FieldValue.increment(transform.amount);
 			} else if (transform instanceof AddItemsTransform) {

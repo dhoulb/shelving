@@ -67,9 +67,3 @@ export abstract class Schema<T = unknown> implements Validator<T> {
  * @param X A `Schema` instance to extract the type from.
  */
 export type SchemaType<X extends Schema> = X["TYPE"];
-
-/**
- * Is an unknown value a `Schema` instance?
- * - This is a TypeScript assertion function, so if this function returns `true` the type is also asserted to be a `Schema`.
- */
-export const isSchema = <T extends Schema>(schema: T | unknown): schema is T => schema instanceof Schema;

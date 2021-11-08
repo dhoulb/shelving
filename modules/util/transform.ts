@@ -2,11 +2,9 @@ import type { Hydrations } from "./hydration.js";
 import { withItems, ImmutableArray, isArray, withoutItems } from "./array.js";
 import { ImmutableObject, isObject, withoutEntries, withProps } from "./object.js";
 
-/** Is an unknown value a Transform instance? */
-export const isTransform = <T extends Transform>(v: T | unknown): v is T => v instanceof Transform;
-
 /** Transform: an object, possibly with a configuration, that transforms an existing value value into a new value. */
 export abstract class Transform<T = unknown> {
+	/** Apply this transform to a value. */
 	abstract transform(existing?: unknown): T;
 }
 
@@ -88,7 +86,7 @@ export class RemoveEntriesTransform<T> extends Transform<ImmutableObject<T>> {
  * @returns The transformed value.
  */
 export function transform<T>(existing: T, next: T | Transform<T>): T {
-	return isTransform(next) ? next.transform(existing) : next;
+	return next instanceof Transform ? next.transform(existing) : next;
 }
 
 /**
@@ -110,7 +108,7 @@ export function transformProps<O extends ImmutableObject>(existing: O, transform
 	const next: O = { ...existing };
 	for (const [k, v] of Object.entries(transforms) as [keyof O, O[keyof O] | Transform<O[keyof O]> | undefined][])
 		if (v !== undefined) {
-			const n = (next[k] = isTransform(v) ? v.transform(existing[k]) : v);
+			const n = (next[k] = v instanceof Transform ? v.transform(existing[k]) : v);
 			if (existing[k] !== n) changed = true;
 		}
 	return changed ? next : existing;

@@ -1,5 +1,5 @@
 import type { Arguments, AsyncFetcher, Validator } from "../util/index.js";
-import { isFeedback, ValidationError } from "../util/index.js";
+import { Feedback, ValidationError } from "../util/index.js";
 
 const UNDEFINED_SCHEMA: Validator<undefined> = { validate: () => undefined };
 
@@ -55,7 +55,7 @@ export class Resource<P, R> {
 		try {
 			return this.result.validate(result);
 		} catch (thrown) {
-			if (isFeedback(thrown)) throw new ValidationError("Resource returned invalid result", thrown);
+			if (thrown instanceof Feedback) throw new ValidationError("Resource returned invalid result", thrown);
 			throw thrown;
 		}
 	}
