@@ -1,5 +1,4 @@
-import { MutableObject, isObject, ImmutableObject, Validator, Validators } from "../util/index.js";
-import { Feedback, InvalidFeedback, isFeedback } from "../feedback/index.js";
+import { MutableObject, isObject, ImmutableObject, Validator, Validators, Feedback, InvalidFeedback, isFeedback } from "../util/index.js";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
 
 type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {

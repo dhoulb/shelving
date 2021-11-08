@@ -1,26 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 
-import type { Arguments, AnyFunction } from "./function.js";
-import type { EmptyObject, ImmutableObject } from "./object.js";
+import type { Arguments, AnyFunction, AnyArguments } from "./function.js";
+import type { ImmutableObject } from "./object.js";
 import { assertFunction } from "./assert.js";
 
-/**
- * Constructor: a class constructor that can be used with `new X` to generate an object of type `T`
- */
-// The `Function & prototype` form matches classes which have `protected constructor()` (which are not matched by the `new` form).
-export type Class<T extends EmptyObject | ImmutableObject> = (new (...args: any[]) => T) | (Function & { prototype: T });
+/** Class that has a public `constructor()` function. */
+export type Constructor<T extends ImmutableObject> = new (...args: AnyArguments) => T;
 
-/**
- * Any class constructor.
- * - Consistency with `AnyFunction`
- * - Designed to be used with `extends AnyConstructor` guards.
- * - Exists because it's hard to remember the `...args: any[]` syntax, and annoying to allow the `any` every time.
- */
-export type AnyClass = new (...args: any) => any;
+/** Any class that has a public `constructor()` function (designed for use with `extends AnyArguments` guards). */
+export type AnyConstructor = new (...args: AnyArguments) => Object;
+
+/** Class prototype that can be used with `instanceof` */
+export type Class<T> = Function & { prototype: T };
+
+/** Any class prototype that can be used with `instanceof` (designed for use with `extends AnyClass` guards). */
+export type AnyClass = Function & { prototype: Object };
 
 /** Is a given value a class constructor? */
-export const isClass = <T extends AnyClass>(v: T | unknown): v is T => typeof v === "function" && v.toString().startsWith("class");
+export const isConstructor = <T extends AnyConstructor>(v: T | unknown): v is T => typeof v === "function" && v.toString().startsWith("class");
 
 /** Bind a class method (lazily on first access). */
 export function bindMethod<T extends AnyFunction>(target: Object, key: string, { value: method }: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> {

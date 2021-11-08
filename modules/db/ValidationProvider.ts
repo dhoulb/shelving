@@ -1,5 +1,19 @@
-import { Data, Result, Results, Unsubscriber, MutableObject, Observer, isAsync, isObject, Transforms, isTransform, Transform } from "../util/index.js";
-import { Feedback, InvalidFeedback, isFeedback } from "../feedback/index.js";
+import {
+	Data,
+	Result,
+	Results,
+	Unsubscriber,
+	MutableObject,
+	Observer,
+	isAsync,
+	isObject,
+	Transforms,
+	isTransform,
+	Transform,
+	Feedback,
+	InvalidFeedback,
+	isFeedback,
+} from "../util/index.js";
 import { DeriveStream } from "../stream/index.js";
 import type { Document } from "./Document.js";
 import type { Documents } from "./Documents.js";

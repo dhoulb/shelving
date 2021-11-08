@@ -1,25 +1,8 @@
-import { debug, toString, ImmutableObject, isObject, MutableObject } from "../util/index.js";
-import { AssertionError } from "../errors/index.js";
+import { Hydrations } from "./hydration.js";
+import { debug, toString, ImmutableObject, MutableObject } from "./index.js";
 
 /** Possible status strings for feedback. */
 export type FeedbackStatus = "" | "success" | "warning" | "error" | "invalid";
-
-/** Format we convert messages to in JSON. */
-type Feedbackish = {
-	readonly status?: string;
-	readonly feedback: string;
-	readonly details?: ImmutableObject;
-};
-
-const isFeedbackStatus = (s: unknown): s is FeedbackStatus => typeof s === "string" && !!STATUSES[s as FeedbackStatus];
-const rehydrate = (raw: unknown, STATUS: FeedbackStatus): Feedback | undefined => {
-	if (raw instanceof Feedback) return raw;
-	if (isObject(raw)) {
-		const { status = STATUS, feedback, details } = raw;
-		if (typeof feedback === "string" && isFeedbackStatus(status) && (details === undefined || isObject(details)))
-			return new STATUSES[status](feedback, details);
-	}
-};
 
 /**
  * The `Feedback` class represents a feedback message that should be shown to the user.
@@ -32,21 +15,8 @@ const rehydrate = (raw: unknown, STATUS: FeedbackStatus): Feedback | undefined =
  * @param feedback String feedback message that is safe to show to users.
  * @param details Set of other `Feedback` instances describing the issue in further detail.
  */
-export class Feedback implements Feedbackish {
+export class Feedback {
 	static STATUS: FeedbackStatus = "";
-
-	/**
-	 * Create a new Feedback instance from anything that can be converted to it.
-	 * - String: use the string as the feedback message in a new `Feedback` instance.
-	 * - `Feedback` instance: passes through unmodified.
-	 * - Feedbackish object with `.feedback` string property: rehydrated into a `Feedback` instance.
-	 */
-	static create(raw: unknown): Feedback {
-		if (typeof raw === "string") return new STATUSES[this.STATUS](raw);
-		const feedback = rehydrate(raw, this.STATUS);
-		if (feedback) return feedback;
-		throw new AssertionError("Invalid feedback", raw);
-	}
 
 	/** Optional status string for this feedback. */
 	readonly status: FeedbackStatus = (this.constructor as typeof Feedback).STATUS;
@@ -57,17 +27,9 @@ export class Feedback implements Feedbackish {
 	/** Nested details providing deeper feedback. */
 	readonly details: ImmutableObject;
 
-	constructor(feedback: string, details?: ImmutableObject) {
+	constructor(feedback: string, details: ImmutableObject = {}) {
 		this.feedback = feedback;
-
-		// Rehydrate details in `{ feedback: "etc" }` format into `Feedback` instances with the current instance's status (e.g. sub-feedbacks inherit the parent status).
-		// This allows Feedbacks to pass through JSON stringifying/parsing and be rehydrated again.
-		const rehydrated: MutableObject<unknown> = {};
-		if (details)
-			for (const [k, v] of Object.entries(details)) {
-				rehydrated[k] = rehydrate(v, this.status) || v;
-			}
-		this.details = rehydrated;
+		this.details = details;
 	}
 
 	/**
@@ -86,7 +48,7 @@ export class Feedback implements Feedbackish {
 
 	/**
 	 * Convert to string (equivalent to `message.details`).
-	 * Returns a string including the main message string and a deeply nested array of child message strings.
+	 * Returns a string including the main message string and a deeply nested list of child message strings.
 	 *
 	 * > Invalid format
 	 * > - name: Invalid format
@@ -130,10 +92,12 @@ export class InvalidFeedback extends ErrorFeedback {
  */
 export const isFeedback = <T extends Feedback>(v: T | unknown): v is T => v instanceof Feedback;
 
-const STATUSES: { [K in FeedbackStatus]: typeof Feedback } = {
-	"success": SuccessFeedback,
-	"warning": WarningFeedback,
-	"error": ErrorFeedback,
-	"invalid": InvalidFeedback,
-	"": Feedback,
+/** Set of hydrations for all feedback classes. */
+export const FEEDBACK_HYDRATIONS = {
+	success: SuccessFeedback,
+	warning: WarningFeedback,
+	invalid: InvalidFeedback,
+	error: ErrorFeedback,
+	feedback: Feedback,
 };
+FEEDBACK_HYDRATIONS as Hydrations;

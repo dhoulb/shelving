@@ -1,5 +1,4 @@
-import { isObject, sanitizeLines, sanitizeString, toString, isArray } from "../util/index.js";
-import { InvalidFeedback } from "../feedback/index.js";
+import { isObject, sanitizeLines, sanitizeString, toString, isArray, InvalidFeedback } from "../util/index.js";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
 
 type StringSchemaOptions<T extends string> = SchemaOptions<T> & {

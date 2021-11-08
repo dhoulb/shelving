@@ -1,6 +1,5 @@
-import { isFeedback } from "../feedback/index.js";
+import { isFeedback, assertInstance, Data, Validator } from "../util/index.js";
 import { ObjectSchema } from "../schema/index.js";
-import { assertInstance, Data, Validator } from "../util/index.js";
 import { ReferenceValidationError } from "./errors.js";
 import type { Database } from "./Database.js";
 

@@ -18,8 +18,6 @@ export * from "./api/index.js";
 export * from "./util/index.js";
 export * from "./stream/index.js";
 export * from "./markup/index.js";
-export * from "./errors/index.js";
-export * from "./feedback/index.js";
 
 // Integrations.
 // export * from "./react/index.js"; // Not exported.

@@ -1,4 +1,4 @@
-import { AssertionError } from "../errors/index.js";
+import { AssertionError } from "./error.js";
 import { formatNumber } from "./number.js";
 
 /** One minute in millseconds. */

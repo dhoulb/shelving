@@ -47,11 +47,11 @@ export class ThroughProvider implements Provider {
 }
 
 /** Find a specific source provider in a database's provider stack. */
-export function findSourceProvider<X extends Provider>(provider: Provider, constructor: Class<X>): X {
+export function findSourceProvider<X extends Provider>(provider: Provider, type: Class<X>): X {
 	while (provider) {
-		if (provider instanceof constructor) return provider as X;
+		if (provider instanceof type) return provider as X;
 		if (provider instanceof ThroughProvider) provider = provider.source; // eslint-disable-line no-param-reassign
 		break;
 	}
-	throw new Error(`${constructor.name} not found`);
+	throw new Error(`${type.name} not found`);
 }

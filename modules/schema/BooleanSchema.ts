@@ -1,4 +1,4 @@
-import { InvalidFeedback } from "../feedback/index.js";
+import { InvalidFeedback } from "../util/index.js";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
 
 type BooleanSchemaOptions<T extends boolean> = SchemaOptions<T> & {

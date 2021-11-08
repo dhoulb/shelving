@@ -1,3 +1,4 @@
+import type { Hydrations } from "./hydration.js";
 import { withItems, ImmutableArray, isArray, withoutItems } from "./array.js";
 import { ImmutableObject, isObject, withoutEntries, withProps } from "./object.js";
 
@@ -16,11 +17,8 @@ export abstract class Transform<T = unknown> {
 export class IncrementTransform extends Transform<number> {
 	static INCREMENT_ONE = new IncrementTransform(1);
 	static DECREMENT_ONE = new IncrementTransform(-1);
-	static create(amount: number): IncrementTransform {
-		return new IncrementTransform(amount);
-	}
 	readonly amount: number;
-	protected constructor(amount: number) {
+	constructor(amount: number) {
 		super();
 		this.amount = amount;
 	}
@@ -31,11 +29,8 @@ export class IncrementTransform extends Transform<number> {
 
 /** Add array item transform: an object that adds a specific item to an array. */
 export class AddItemsTransform<T> extends Transform<ImmutableArray<T>> {
-	static create<X>(...items: ImmutableArray<X>): AddItemsTransform<X> {
-		return new AddItemsTransform(items);
-	}
 	readonly items: ImmutableArray<T>;
-	protected constructor(items: ImmutableArray<T>) {
+	constructor(...items: ImmutableArray<T>) {
 		super();
 		this.items = items;
 	}
@@ -46,11 +41,8 @@ export class AddItemsTransform<T> extends Transform<ImmutableArray<T>> {
 
 /** Remove array item transform: an object that removes a specific item from an array. */
 export class RemoveItemsTransform<T> extends Transform<ImmutableArray<T>> {
-	static create<X>(...items: ImmutableArray<X>): RemoveItemsTransform<X> {
-		return new RemoveItemsTransform(items);
-	}
 	readonly items: ImmutableArray<T>;
-	protected constructor(items: ImmutableArray<T>) {
+	constructor(...items: ImmutableArray<T>) {
 		super();
 		this.items = items;
 	}
@@ -61,11 +53,8 @@ export class RemoveItemsTransform<T> extends Transform<ImmutableArray<T>> {
 
 /** Add entries transform: an object that adds a set of naemd props to a map-like object. */
 export class AddEntriesTransform<T> extends Transform<ImmutableObject<T>> {
-	static create<X>(props: ImmutableObject<X>): AddEntriesTransform<X> {
-		return new AddEntriesTransform(props);
-	}
 	readonly props: ImmutableObject<T>;
-	protected constructor(props: ImmutableObject<T>) {
+	constructor(props: ImmutableObject<T>) {
 		super();
 		this.props = props;
 	}
@@ -76,11 +65,8 @@ export class AddEntriesTransform<T> extends Transform<ImmutableObject<T>> {
 
 /** Remove props transform: an object that removes a specific set of named props from a map-like object. */
 export class RemoveEntriesTransform<T> extends Transform<ImmutableObject<T>> {
-	static create<X>(...props: ImmutableArray<string>): RemoveEntriesTransform<X> {
-		return new RemoveEntriesTransform(props);
-	}
 	readonly props: ImmutableArray<string>;
-	protected constructor(props: ImmutableArray<string>) {
+	constructor(...props: ImmutableArray<string>) {
 		super();
 		this.props = props;
 	}
@@ -137,3 +123,13 @@ export function transformProps<O extends ImmutableObject>(existing: O, transform
  * - If a prop contains literal `undefined` it is ignored.
  */
 export type Transforms<O extends ImmutableObject> = { readonly [K in keyof O]?: O[K] | Transform<O[K]> | undefined };
+
+/** Set of hydrations for all transform classes. */
+export const TRANSFORM_HYDRATIONS = {
+	increment: IncrementTransform,
+	addItems: AddItemsTransform,
+	removeItems: RemoveItemsTransform,
+	addEntries: AddEntriesTransform,
+	removeEntries: RemoveEntriesTransform,
+};
+TRANSFORM_HYDRATIONS as Hydrations;

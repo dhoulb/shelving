@@ -1,4 +1,4 @@
-import { AssertionError } from "../errors/index.js";
+import { AssertionError } from "./error.js";
 import type { AnyFunction } from "./function.js";
 import type { Class } from "./class.js";
 import { debug } from "./debug.js";
@@ -52,8 +52,8 @@ export function assertLength<T extends { length: number }>(value: T | unknown, m
 }
 
 /** Assert that a value is an instance of something. */
-export function assertInstance<O>(value: O | unknown, constructor: Class<O>): asserts value is O {
-	if (!(value instanceof constructor)) throw new AssertionError(`Must be instance of ${debug(constructor)}`, value);
+export function assertInstance<O>(value: O | unknown, type: Class<O>): asserts value is O {
+	if (!(value instanceof type)) throw new AssertionError(`Must be instance of ${debug(type)}`, value);
 }
 
 /** Assert that a value is a function. */

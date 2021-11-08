@@ -13,6 +13,8 @@ export * from "./diff.js";
 export * from "./dispatch.js";
 export * from "./entry.js";
 export * from "./equal.js";
+export * from "./error.js";
+export * from "./feedback.js";
 export * from "./filter.js";
 export * from "./function.js";
 export * from "./merge.js";

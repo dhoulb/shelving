@@ -1,5 +1,4 @@
-import { MutableObject, ImmutableArray, uniqueItems, Validator } from "../util/index.js";
-import { Feedback, InvalidFeedback, isFeedback } from "../feedback/index.js";
+import { MutableObject, ImmutableArray, uniqueItems, Validator, Feedback, InvalidFeedback, isFeedback } from "../util/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type ArraySchemaOptions<T> = SchemaOptions<ImmutableArray<T>> & {

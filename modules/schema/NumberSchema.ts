@@ -1,5 +1,4 @@
-import { InvalidFeedback } from "../feedback/index.js";
-import { toNumber, roundNumber, isArray, isObject, Unit, detectUnit, convertUnits } from "../util/index.js";
+import { InvalidFeedback, toNumber, roundNumber, isArray, isObject, Unit, detectUnit, convertUnits } from "../util/index.js";
 import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
 
 type NumberSchemaOptions<T extends number | null> = SchemaOptions<T> & {

@@ -79,6 +79,9 @@ export type DeepReadonly<T extends ImmutableObject> = { +readonly [K in keyof T]
  */
 export const isObject = <T extends ImmutableObject>(value: T | unknown): value is T => typeof value === "object" && value !== null;
 
+/** Is a value a plain object? */
+export const isPlainObject = <T extends ImmutableObject>(value: T | unknown): value is T => isObject(value) && value.constructor === Object;
+
 /**
  * Turn an array of entries into an object.
  * - Eventually when browser support is good enough this can be changed to ES2019's `Object.fromEntries()`

@@ -1,4 +1,4 @@
-import { InvalidFeedback } from "../feedback/index.js";
+import { InvalidFeedback } from "../util/index.js";
 import { StringSchema } from "./StringSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 
