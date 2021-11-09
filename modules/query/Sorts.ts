@@ -7,10 +7,10 @@ import { Rules } from "./Rules.js";
 export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable<T> {
 	// Add sorts.
 	asc(key: "id" | (keyof T & string)): this {
-		return { __proto__: Sorts.prototype, ...this, rules: [...this.rules, new Sort<T>(key, "ASC")] };
+		return { __proto__: Object.getPrototypeOf(this), ...this, rules: [...this.rules, new Sort<T>(key, "ASC")] };
 	}
 	desc(key: "id" | (keyof T & string)): this {
-		return { __proto__: Sorts.prototype, ...this, rules: [...this.rules, new Sort<T>(key, "DESC")] };
+		return { __proto__: Object.getPrototypeOf(this), ...this, rules: [...this.rules, new Sort<T>(key, "DESC")] };
 	}
 
 	/** Compare two entries of this type for sorting. */

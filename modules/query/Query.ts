@@ -28,28 +28,28 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 
 	// Add filters.
 	is<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Query.prototype, ...this, filters: this.filters.is(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.is(key, value) };
 	}
 	not<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Query.prototype, ...this, filters: this.filters.not(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.not(key, value) };
 	}
 	in<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? readonly string[] : readonly T[K][]): this {
-		return { __proto__: Query.prototype, ...this, filters: this.filters.in(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.in(key, value) };
 	}
 	lt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Query.prototype, ...this, filters: this.filters.lt(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.lt(key, value) };
 	}
 	lte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Query.prototype, ...this, filters: this.filters.lte(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.lte(key, value) };
 	}
 	gt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Query.prototype, ...this, filters: this.filters.gt(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.gt(key, value) };
 	}
 	gte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Query.prototype, ...this, filters: this.filters.gte(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.gte(key, value) };
 	}
 	contains<K extends keyof T>(key: K & string, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
-		return { __proto__: Query.prototype, ...this, filters: this.filters.contains(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.contains(key, value) };
 	}
 
 	/**
@@ -72,7 +72,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 			const value = getQueryProp(id, data, key);
 			filters = filters[compare](key, value);
 		}
-		return { __proto__: Query.prototype, ...this, filters };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters };
 	}
 
 	/**
@@ -95,7 +95,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 			const value = getQueryProp(id, data, key);
 			filters = filters[compare](key, value);
 		}
-		return { __proto__: Query.prototype, ...this, filters };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters };
 	}
 
 	/**
@@ -104,7 +104,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	 * @returns New instance with new query rules.
 	 */
 	asc(key: "id" | (keyof T & string)): this {
-		return { __proto__: Query.prototype, ...this, sorts: this.sorts.asc(key) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.asc(key) };
 	}
 
 	/**
@@ -113,7 +113,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	 * @returns New instance with new query rules.
 	 */
 	desc(key: "id" | (keyof T & string)): this {
-		return { __proto__: Query.prototype, ...this, sorts: this.sorts.desc(key) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.desc(key) };
 	}
 
 	/**
@@ -123,7 +123,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	 */
 	limit(limit: number | null): this {
 		if (limit === this.slice.limit) return this;
-		return { __proto__: Query.prototype, ...this, slice: new Slice(limit) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, slice: new Slice(limit) };
 	}
 
 	/**

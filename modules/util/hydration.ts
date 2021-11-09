@@ -23,8 +23,8 @@ export function dehydrate(value: unknown, hydrations: Hydrations): unknown {
 	if (isArray(value)) return mapItems(value, v => dehydrate(v, hydrations));
 	if (isPlainObject(value)) return mapProps(value, v => dehydrate(v, hydrations));
 	if (isObject(value)) {
-		for (const [_type, constructor] of Object.entries(hydrations))
-			if (value instanceof constructor) return { _type, ...mapProps(value, v => dehydrate(v, hydrations)) };
+		for (const [_type, Class] of Object.entries(hydrations))
+			if (value instanceof Class) return { _type, ...mapProps(value, v => dehydrate(v, hydrations)) };
 		throw Error(`dehydrate(): Cannot dehydrate ${debug(value)}`);
 	}
 	return value;
@@ -41,8 +41,8 @@ export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 	if (isArray(value)) return mapItems(value, v => hydrate(v, hydrations));
 	if (isDehydratedObject(value)) {
 		const { _type, ...props } = value;
-		const constructor = hydrations[_type];
-		if (constructor) return { __proto__: constructor.prototype, ...mapProps(props, v => hydrate(v, hydrations)) };
+		const Class = hydrations[_type];
+		if (Class) return { __proto__: Class.prototype, ...mapProps(props, v => hydrate(v, hydrations)) };
 		throw Error(`hydrate(): No hydrator for object with type "${_type}"`);
 	}
 	if (isPlainObject(value)) return mapProps(value, v => hydrate(v, hydrations));

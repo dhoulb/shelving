@@ -60,25 +60,25 @@ export class DeleteChange<T extends Datas, K extends keyof T & string> extends C
  * - Sets of changes are predictable and repeatable, so unpredictable operations like `create()` and query operations are not supported.
  * - Every change must be applied to a specific database document in a specific collection.
  */
-export class Changes<T extends Datas> extends Change<T> {
-	readonly changes: ImmutableArray<Change<T>>;
-	constructor(...changes: ImmutableArray<Change<T>>) {
+export class Changes<D extends Datas> extends Change<D> {
+	readonly changes: ImmutableArray<Change<D>>;
+	constructor(...changes: ImmutableArray<Change<D>>) {
 		super();
 		this.changes = changes;
 	}
 	/** Return a new `Changes` instance with an additional `SetChange` instance in its changes list. */
-	set<K extends keyof T & string>(collection: K, id: string, data: T[K]): this {
-		return { __proto__: Changes.prototype, ...this, changes: [...this.changes, new SetChange(collection, id, data)] };
+	set<K extends keyof D & string>(collection: K, id: string, data: D[K]): this {
+		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new SetChange(collection, id, data)] };
 	}
 	/** Return a new `Changes` instance with an additional `UpdateChange` instance in its changes list. */
-	update<K extends keyof T & string>(collection: K, id: string, transforms: Transforms<T[K]>): this {
-		return { __proto__: Changes.prototype, ...this, changes: [...this.changes, new UpdateChange(collection, id, transforms)] };
+	update<K extends keyof D & string>(collection: K, id: string, transforms: Transforms<D[K]>): this {
+		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new UpdateChange(collection, id, transforms)] };
 	}
 	/** Return a new `Changes` instance with an additional `DeleteChange` instance in its changes list. */
-	delete<K extends keyof T & string>(collection: K, id: string): this {
-		return { __proto__: Changes.prototype, ...this, changes: [...this.changes, new DeleteChange(collection, id)] };
+	delete<K extends keyof D & string>(collection: K, id: string): this {
+		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new DeleteChange(collection, id)] };
 	}
-	async apply(db: Database<T>) {
+	async apply(db: Database<D>) {
 		const changes: MutableArray<unknown | Promise<unknown>> = [];
 		for (const change of this.changes) changes.push(change.apply(db));
 		await Promise.all(changes);

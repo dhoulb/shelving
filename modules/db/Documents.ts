@@ -218,44 +218,44 @@ export class Documents<T extends Data = Data> extends Reference<T> implements Qu
 
 	// Implement Queryable
 	is<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.is<K>(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.is<K>(key, value) };
 	}
 	not<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.not<K>(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.not<K>(key, value) };
 	}
 	in<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? readonly string[] : readonly T[K][]): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.in<K>(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.in<K>(key, value) };
 	}
 	lt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.lt<K>(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.lt<K>(key, value) };
 	}
 	lte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.lte<K>(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.lte<K>(key, value) };
 	}
 	gt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.gt<K>(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.gt<K>(key, value) };
 	}
 	gte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.gte<K>(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.gte<K>(key, value) };
 	}
 	contains<K extends keyof T>(key: K & string, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.contains<K>(key, value) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.contains<K>(key, value) };
 	}
 	after(id: string, data: T): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.after(id, data) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.after(id, data) };
 	}
 	before(id: string, data: T): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.before(id, data) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.before(id, data) };
 	}
 	asc(key: "id" | (keyof T & string) = "id"): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.asc(key) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.asc(key) };
 	}
 	desc(key: "id" | (keyof T & string) = "id"): this {
-		return { __proto__: Documents.prototype, ...this, query: this.query.desc(key) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.desc(key) };
 	}
 	limit(limit: number | null): this {
 		if (limit === this.query.slice.limit) return this;
-		return { __proto__: Documents.prototype, ...this, query: this.query.limit(limit) };
+		return { __proto__: Object.getPrototypeOf(this), ...this, query: this.query.limit(limit) };
 	}
 
 	// Implement toString()
