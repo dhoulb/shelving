@@ -1,8 +1,6 @@
 import { isObject, ImmutableObject } from "./object.js";
 
-/**
- * Validator: an object that can validate something via its `validate()` method.
- */
+/** Object that can validate an unknown value with its `validate()` method. */
 export interface Validator<T = unknown> {
 	/**
 	 * `validate()` method accepts an unsafe value and returns a valid value.
@@ -18,12 +16,13 @@ export interface Validator<T = unknown> {
 }
 
 /** Extract the type from a Validator. */
-export type ValidatorType<T extends Validator> = ReturnType<T["validate"]>;
+export type ValidatorType<X extends Validator> = X extends Validator<infer Y> ? Y : never;
 
 /** Is a given value a validator? */
 export const isValidator = <T extends Validator>(validator: T | unknown): validator is T => isObject(validator) && typeof validator.validate === "function";
 
-/** A set of named validators in `{ key: Validator }` format. */
-export type Validators<T extends ImmutableObject> = {
-	readonly [K in keyof T]: Validator<T[K]>;
-};
+/** A set of named validators in `{ name: Validator }` format. */
+export type Validators<T extends ImmutableObject = ImmutableObject> = { readonly [K in keyof T]: Validator<T[K]> };
+
+/** Extract the type from a `Validators`. */
+export type ValidatorsType<X extends Validators> = X extends Validators<infer Y> ? Y : never;

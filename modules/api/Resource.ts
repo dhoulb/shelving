@@ -1,7 +1,8 @@
-import type { Arguments, AsyncFetcher, Validator } from "../util/index.js";
-import { Feedback, ValidationError } from "../util/index.js";
+import { Validator, Feedback } from "../util/index.js";
+import { ResourceValidationError } from "./errors.js";
 
-const UNDEFINED_SCHEMA: Validator<undefined> = { validate: () => undefined };
+/** Validator that always returns undefined. */
+const UNDEFINED_VALIDATOR: Validator<undefined> = { validate: () => undefined };
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions..
@@ -9,20 +10,14 @@ const UNDEFINED_SCHEMA: Validator<undefined> = { validate: () => undefined };
  * @param payload The `Validator` the payload must conform to (defaults to `undefined` if not specified).
  * @param returns The `Validator` the function's returned value must conform to (defaults to `undefined` if not specified).
  */
-export class Resource<P, R> {
+export class Resource<P = unknown, R = unknown> implements Validator<R> {
 	static create<X, Y>(payload: Validator<X>, result: Validator<Y>): Resource<X, Y>;
 	static create<Y>(payload: undefined, result: Y): Resource<undefined, Y>;
 	static create<X>(payload: Validator<X>, result?: undefined): Resource<X, undefined>;
 	static create(payload?: undefined, result?: undefined): Resource<undefined, undefined>;
-	static create(payload: Validator<unknown> = UNDEFINED_SCHEMA, result: Validator<unknown> = UNDEFINED_SCHEMA): Resource<unknown, unknown> {
+	static create(payload: Validator<unknown> = UNDEFINED_VALIDATOR, result: Validator<unknown> = UNDEFINED_VALIDATOR): Resource<unknown, unknown> {
 		return new Resource(payload, result);
 	}
-
-	/** Expose the `P` internal payload type of this resource. */
-	readonly PAYLOAD: P = undefined as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-
-	/** Expose the `R` internal result type of this resource. */
-	readonly RESULT: R = undefined as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	/** Payload validator. */
 	readonly payload: Validator<P>;
@@ -30,33 +25,29 @@ export class Resource<P, R> {
 	/** Result validator. */
 	readonly result: Validator<R>;
 
+	// Protected to require use of `Resource.create()`
 	protected constructor(payload: Validator<P>, result: Validator<R>) {
 		this.payload = payload;
 		this.result = result;
 	}
 
 	/**
-	 * Call a resource of this type, with a payload, and return the (async) result.
-	 * - Validates the payload (before dispatching).
-	 * - Validates the result (after dispatching).
+	 * Validate a result for this resource.
 	 *
-	 * @param resource A resource function corresponding to the type of this resource.
-	 * @param payload The payload to send to the resource (validated against the payload validator).
-	 * @param ...args Any additional arguments to send to the resource.
-	 *
-	 * @returns The result returned from the resource (validated against the result validator).
-	 *
-	 * @throws InvalidFeedback If the payload could not be validated.
-	 * @throws unknown Anything the function itself throws is thrown.
-	 * @throws ValidationError If the result could not be validated.
+	 * @returns The validated payload for this resource.
+	 * @throws ValidationError if the result could not be validated.
 	 */
-	async call<A extends Arguments>(resource: AsyncFetcher<R, [P, ...A]>, payload: P, ...args: A): Promise<R> {
-		const result = await resource(this.payload.validate(payload), ...args);
+	validate(result: unknown): R {
 		try {
 			return this.result.validate(result);
 		} catch (thrown) {
-			if (thrown instanceof Feedback) throw new ValidationError("Resource returned invalid result", thrown);
-			throw thrown;
+			throw thrown instanceof Feedback ? new ResourceValidationError(this, thrown) : thrown;
 		}
 	}
 }
+
+/** Extract the payload type from a `Resource`. */
+export type ResourcePayloadType<X extends Resource> = X extends Resource<infer Y, unknown> ? Y : never;
+
+/** Extract the result type from a `Resource`. */
+export type ResourceType<X extends Resource> = X extends Resource<unknown, infer Y> ? Y : never;

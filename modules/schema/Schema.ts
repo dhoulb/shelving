@@ -30,9 +30,6 @@ export interface RequiredSchemaOptions {
  * - `validate()` returns `Invalid` if value was not valid.
  */
 export abstract class Schema<T = unknown> implements Validator<T> {
-	/** Expose the `T` internal type of this schema. */
-	readonly TYPE: T = undefined as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-
 	/** Title, e.g. for showing in fields. */
 	readonly title: string = "";
 	/** Description, e.g. for showing in fields. */
@@ -61,9 +58,3 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 		return this._validator ? this._validator(unsafeValue) : (unsafeValue as T);
 	}
 }
-
-/**
- * Convert a `Schema` into its resulting type (i.e. what will be returned from `validate()`)
- * @param X A `Schema` instance to extract the type from.
- */
-export type SchemaType<X extends Schema> = X["TYPE"];

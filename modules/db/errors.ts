@@ -10,6 +10,7 @@ export class ReferenceRequiredError<T extends Data = Data> extends RequiredError
 		this.ref = ref;
 	}
 }
+ReferenceRequiredError.prototype.name = "ReferenceRequiredError";
 
 /** Thrown if a `Document` or `Documents` can't validate. */
 export class ReferenceValidationError<T extends Data = Data> extends ValidationError {
@@ -19,3 +20,4 @@ export class ReferenceValidationError<T extends Data = Data> extends ValidationE
 		this.ref = ref;
 	}
 }
+ReferenceValidationError.prototype.name = "ReferenceValidationError";
