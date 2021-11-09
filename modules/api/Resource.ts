@@ -47,7 +47,7 @@ export class Resource<P = unknown, R = unknown> implements Validator<R> {
 }
 
 /** Extract the payload type from a `Resource`. */
-export type ResourcePayloadType<X extends Resource> = X extends Resource<infer Y, unknown> ? Y : never;
+export type PayloadType<X extends Resource> = X extends Resource<infer Y, unknown> ? Y : never;
 
 /** Extract the result type from a `Resource`. */
 export type ResourceType<X extends Resource> = X extends Resource<unknown, infer Y> ? Y : never;
