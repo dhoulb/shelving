@@ -11,8 +11,9 @@ import {
 	WarningFeedback,
 	ErrorFeedback,
 	InvalidFeedback,
+	dehydrate,
+	hydrate,
 } from "../index.js";
-import { dehydrate, hydrate } from "./hydration.js";
 
 const HYDRATIONS = {
 	...TRANSFORM_HYDRATIONS,

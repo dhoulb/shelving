@@ -17,6 +17,7 @@ export * from "./error.js";
 export * from "./feedback.js";
 export * from "./filter.js";
 export * from "./function.js";
+export * from "./hydration.js";
 export * from "./merge.js";
 export * from "./null.js";
 export * from "./number.js";
