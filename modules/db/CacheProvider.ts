@@ -1,7 +1,6 @@
 import { Data, Result, Results, Transforms, MutableObject, Unsubscriber, Observer } from "../util/index.js";
-import { Stream } from "../index.js";
-import type { Document } from "./Document.js";
-import type { Documents } from "./Documents.js";
+import { Stream } from "../stream/index.js";
+import type { Document, Documents } from "./Reference.js";
 import type { Provider, AsynchronousProvider } from "./Provider.js";
 import { MemoryProvider } from "./MemoryProvider.js";
 import { ThroughProvider } from "./ThroughProvider.js";
@@ -75,7 +74,7 @@ export class CacheProvider extends ThroughProvider implements Provider, Asynchro
 
 		// Update the document in the cache if it exists using `updateDocuments()` and an `id` query.
 		// Using `updateDocument()` would throw `RequiredError` if the document didn't exist.
-		this.cache.updateDocuments(ref.db.docs(ref.collection).is("id", ref.id), transforms);
+		this.cache.updateDocuments(ref.docs().is("id", ref.id), transforms);
 	}
 
 	override async deleteDocument<X extends Data>(ref: Document<X>): Promise<void> {

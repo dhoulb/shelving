@@ -19,8 +19,7 @@ import {
 	Transforms,
 } from "../util/index.js";
 import type { Provider, SynchronousProvider } from "./Provider.js";
-import type { Documents } from "./Documents.js";
-import type { Document } from "./Document.js";
+import type { Documents, Document } from "./Reference.js";
 import { ReferenceRequiredError } from "./errors.js";
 
 /**

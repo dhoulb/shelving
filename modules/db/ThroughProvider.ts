@@ -1,6 +1,5 @@
 import type { Data, Result, Results, Unsubscriber, Observer, Transforms, Class } from "../util/index.js";
-import type { Document } from "./Document.js";
-import type { Documents } from "./Documents.js";
+import type { Document, Documents } from "./Reference.js";
 import type { Provider } from "./Provider.js";
 
 /**

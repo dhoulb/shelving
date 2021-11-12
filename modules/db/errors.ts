@@ -1,12 +1,11 @@
 import { Data, Feedback, RequiredError, ValidationError } from "../util/index.js";
-import type { Document } from "./Document.js";
 import type { Reference } from "./Reference.js";
 
-/** Thrown if a `Document` doesn't exist. */
+/** Thrown if a `Document` or `Documents` doesn't exist. */
 export class ReferenceRequiredError<T extends Data = Data> extends RequiredError {
-	ref: Document<T>;
-	constructor(ref: Document<T>) {
-		super(`Document "${ref.path}" is required`);
+	ref: Reference<T>;
+	constructor(ref: Reference<T>) {
+		super(`Reference "${ref.path}" does not exist`);
 		this.ref = ref;
 	}
 }

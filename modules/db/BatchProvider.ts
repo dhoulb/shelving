@@ -1,7 +1,6 @@
 import { MutableObject, Data, Result, Results, Observer, Unsubscriber, isAsync, Observable, LOADING } from "../util/index.js";
 import { getNextValue, LazyState } from "../stream/index.js";
-import type { Document } from "./Document.js";
-import type { Documents } from "./Documents.js";
+import type { Document, Documents } from "./Reference.js";
 import type { Provider } from "./Provider.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 

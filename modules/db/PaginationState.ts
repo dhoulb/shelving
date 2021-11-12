@@ -1,7 +1,7 @@
 import { getFirstItem, getLastItem, ImmutableEntries, bindMethod, assertLength, Data, Results, assertNumber } from "../util/index.js";
 import type { Sorts } from "../query/index.js";
 import { State } from "../stream/index.js";
-import { Documents } from "./Documents.js";
+import { Documents } from "./Reference.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EMPTY_RESULTS: Results<any> = {};

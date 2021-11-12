@@ -1,8 +1,6 @@
 // Core.
-export * from "./Database.js";
 export * from "./Reference.js";
-export * from "./Document.js";
-export * from "./Documents.js";
+export * from "./Database.js";
 
 // Providers.
 export * from "./Provider.js";

@@ -131,7 +131,7 @@ export function useDocumentData<T extends Data>(ref: Document<T> | undefined, ma
 /** Get the initial result for a reference from the cache. */
 const getCachedResult = <T extends Data>(ref: Document<T> | undefined): Result<T> | typeof NOVALUE | undefined => {
 	if (!ref) return undefined;
-	const provider = findSourceProvider(ref.db.provider, CacheProvider);
+	const provider = findSourceProvider(ref.provider, CacheProvider);
 	return provider.isCached(ref) ? provider.cache.getDocument(ref) : NOVALUE;
 };
 
@@ -143,7 +143,7 @@ const subscribeEffect = <T extends Data>(
 	error: Catcher,
 ): Unsubscriber | void => {
 	if (ref) {
-		const provider = findSourceProvider(ref.db.provider, CacheProvider);
+		const provider = findSourceProvider(ref.provider, CacheProvider);
 		const stopCache = provider.cache.onDocument(ref, { next, error });
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.

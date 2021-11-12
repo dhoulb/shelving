@@ -11,10 +11,13 @@ import {
 	Transform,
 	Feedback,
 	InvalidFeedback,
+	assertInstance,
+	MutableTransforms,
+	Validator,
 } from "../util/index.js";
 import { DeriveStream } from "../stream/index.js";
-import type { Document } from "./Document.js";
-import type { Documents } from "./Documents.js";
+import { ObjectSchema } from "../index.js";
+import type { Document, Documents } from "./Reference.js";
 import type { Provider } from "./Provider.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 import { ReferenceValidationError } from "./errors.js";
@@ -76,11 +79,12 @@ function validateData<X extends Data>(ref: Document<X> | Documents<X>, data: X):
 function validateTransforms<X extends Data>(ref: Document<X> | Documents<X>, unsafeTransforms: Transforms<X>): Transforms<X> {
 	if (!isObject(unsafeTransforms)) throw new InvalidFeedback("Must be object", { value: unsafeTransforms });
 	const schema = ref.schema;
+	assertInstance<ObjectSchema<X>>(schema, ObjectSchema);
 	let changed = false;
 	let invalid = false;
-	const safeTransforms: MutableObject<Transform | X[keyof X]> = {};
+	const safeTransforms: MutableTransforms<X> = {};
 	const details: MutableObject = {};
-	const validators = Object.entries(schema.props);
+	const validators: [keyof X & string, Validator<X[string]>][] = Object.entries(schema.props);
 	for (const [key, validator] of validators) {
 		const unsafeTransform = unsafeTransforms[key];
 		if (unsafeTransform === undefined) {
@@ -100,15 +104,14 @@ function validateTransforms<X extends Data>(ref: Document<X> | Documents<X>, uns
 	}
 	if (Object.keys(unsafeTransforms).length > validators.length) changed = true;
 	if (invalid) throw new InvalidFeedback("Invalid transforms", details);
-	return changed ? (safeTransforms as Transforms<X>) : unsafeTransforms;
+	return changed ? safeTransforms : unsafeTransforms;
 }
 
 /** Validate a result for a path. */
 function validateResult<X extends Data>(ref: Document<X>, result: Result<X>): Result<X> {
 	if (!result) return undefined;
-	const schema = ref.schema;
 	try {
-		return schema.validate(result);
+		return ref.schema.validate(result);
 	} catch (thrown: unknown) {
 		throw thrown instanceof Feedback ? new ReferenceValidationError(ref, thrown) : thrown;
 	}
@@ -116,13 +119,12 @@ function validateResult<X extends Data>(ref: Document<X>, result: Result<X>): Re
 
 /** Validate a set of results for a path. */
 function validateResults<X extends Data>(ref: Documents<X>, results: Results<X>): Results<X> {
-	const schema = ref.schema;
 	const validated: MutableObject<X> = {};
 	const invalids: MutableObject<Feedback> = {};
 	let invalid = false;
 	for (const [id, data] of Object.entries(results)) {
 		try {
-			validated[id] = schema.validate(data);
+			validated[id] = ref.schema.validate(data);
 		} catch (thrown) {
 			if (thrown instanceof Feedback) {
 				invalids[id] = thrown;
