@@ -126,16 +126,6 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 		return { __proto__: Object.getPrototypeOf(this), ...this, slice: new Slice(limit) };
 	}
 
-	/**
-	 * Filter and limit the number of results and return the count.
-	 * - Slightly more efficient than `.apply().length` because counting doesn't require the results to be sorted.
-	 * - Don't count if you're then going to use the result, because you'll be filtering twice.
-	 */
-	count(entries: ImmutableEntries<T>): number {
-		if (!entries.length) return 0;
-		return this.slice.apply(this.filters.apply(entries)).length;
-	}
-
 	// Override `apply()` to apply filters, sorts, and limit (in that order).
 	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		return this.slice.apply(this.sorts.apply(this.filters.apply(entries)));
