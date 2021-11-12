@@ -1,4 +1,4 @@
-import type { ImmutableEntries, Data } from "../util/index.js";
+import type { ImmutableEntries, Data, Results } from "../util/index.js";
 import { Rule } from "./Rule.js";
 
 export class Slice<D extends Data> extends Rule<D> {
@@ -7,6 +7,10 @@ export class Slice<D extends Data> extends Rule<D> {
 	constructor(limit: number | null) {
 		super();
 		this.limit = limit;
+	}
+
+	override results(results: Results<D>): Results<D> {
+		return this.limit === null ? results : super.results(results);
 	}
 
 	override apply(entries: ImmutableEntries<D>): ImmutableEntries<D> {
