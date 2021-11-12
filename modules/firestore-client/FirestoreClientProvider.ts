@@ -75,13 +75,13 @@ const DIRECTIONS: { readonly [K in Direction]: FirestoreOrderByDirection } = {
 };
 
 /** Get a Firestore DocumentReference for a given Shelving `Document` instance. */
-function getDocumentReference<X extends Data>(firestore: Firestore, { path }: Document<X>): FirestoreDocumentReference<X> {
-	return getFirestoreDoc(firestore, path) as FirestoreDocumentReference<X>;
+function getDocumentReference<X extends Data>(firestore: Firestore, { collection, id }: Document<X>): FirestoreDocumentReference<X> {
+	return getFirestoreDoc(firestore, collection, id) as FirestoreDocumentReference<X>;
 }
 
 /** Get a Firestore CollectionReference for a given Shelving `Document` instance. */
-function getCollectionReference<X extends Data>(firestore: Firestore, { path }: Documents<X>): FirestoreCollectionReference<X> {
-	return getFirestoreCollection(firestore, path) as FirestoreCollectionReference<X>;
+function getCollectionReference<X extends Data>(firestore: Firestore, { collection }: Documents<X>): FirestoreCollectionReference<X> {
+	return getFirestoreCollection(firestore, collection) as FirestoreCollectionReference<X>;
 }
 
 /** Create a corresponding `QueryReference` from a Query. */
