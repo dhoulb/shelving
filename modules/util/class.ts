@@ -26,7 +26,7 @@ export function bindMethod<T extends AnyFunction>(target: Object, key: string, {
 		configurable: true,
 		get(): T {
 			const bound: T = method.bind(this) as T;
-			Object.defineProperty(this, key, { value: bound, configurable: false, writable: false });
+			Object.defineProperty(this, key, { value: bound, configurable: false, writable: false, enumerable: false });
 			return bound;
 		},
 	};
@@ -42,7 +42,7 @@ export function cacheGetter<T>(target: Object, key: string, { get }: TypedProper
 		configurable: true,
 		get() {
 			const value = get.call(this);
-			Object.defineProperty(this, key, { value, configurable: false, writable: false });
+			Object.defineProperty(this, key, { value, configurable: false, writable: false, enumerable: false });
 			return value;
 		},
 	};
@@ -64,7 +64,7 @@ export function cacheMethod<T, A extends Arguments>(
 		get(): (...args: A) => T {
 			return (...args: A): T => {
 				const value: T = method.call(this, ...args);
-				Object.defineProperty(this, key, { value: () => value, configurable: false, writable: false });
+				Object.defineProperty(this, key, { value: () => value, configurable: false, writable: false, enumerable: false });
 				return value;
 			};
 		},
