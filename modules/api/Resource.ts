@@ -1,8 +1,8 @@
-import { Validator, Feedback } from "../util/index.js";
+import { Validator, Feedback, getUndefined } from "../util/index.js";
 import { ResourceValidationError } from "./errors.js";
 
-/** Validator that always returns undefined. */
-const UNDEFINED_VALIDATOR: Validator<undefined> = { validate: () => undefined };
+/** Validator that always returns void/undefined. */
+const UNDEFINED_VALIDATOR: Validator<undefined> = { validate: getUndefined };
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions..
@@ -10,11 +10,11 @@ const UNDEFINED_VALIDATOR: Validator<undefined> = { validate: () => undefined };
  * @param payload The `Validator` the payload must conform to (defaults to `undefined` if not specified).
  * @param returns The `Validator` the function's returned value must conform to (defaults to `undefined` if not specified).
  */
-export class Resource<P = unknown, R = unknown> implements Validator<R> {
+export class Resource<P = unknown, R = void> implements Validator<R> {
 	static create<X, Y>(payload: Validator<X>, result: Validator<Y>): Resource<X, Y>;
 	static create<Y>(payload: undefined, result: Y): Resource<undefined, Y>;
-	static create<X>(payload: Validator<X>, result?: undefined): Resource<X, undefined>;
-	static create(payload?: undefined, result?: undefined): Resource<undefined, undefined>;
+	static create<X>(payload: Validator<X>, result?: undefined): Resource<X, void>;
+	static create(payload?: undefined, result?: undefined): Resource<undefined, void>;
 	static create(payload: Validator<unknown> = UNDEFINED_VALIDATOR, result: Validator<unknown> = UNDEFINED_VALIDATOR): Resource<unknown, unknown> {
 		return new Resource(payload, result);
 	}
