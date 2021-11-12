@@ -17,7 +17,7 @@ export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
 		return this.rules.length;
 	}
 
-	constructor(rules: C[] = []) {
+	constructor(...rules: C[]) {
 		super();
 		this.rules = rules;
 	}

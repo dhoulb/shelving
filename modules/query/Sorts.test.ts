@@ -13,18 +13,18 @@ test("Sorts: types", () => {
 });
 test("Sorts: sorting", () => {
 	// One sort order.
-	expect(Object.keys(new Sorts([new Sort("id")]).results(all))).toEqual(["a", "b", "c", "d"]);
-	expect(Object.keys(new Sorts([new Sort("id", "DESC")]).results(all))).toEqual(["d", "c", "b", "a"]);
-	expect(Object.keys(new Sorts([new Sort("second", "ASC")]).results(all))).toEqual(["a", "b", "d", "c"]);
-	expect(Object.keys(new Sorts([new Sort("second", "DESC")]).results(all))).toEqual(["c", "d", "b", "a"]);
+	expect(Object.keys(new Sorts(new Sort("id")).results(all))).toEqual(["a", "b", "c", "d"]);
+	expect(Object.keys(new Sorts(new Sort("id", "DESC")).results(all))).toEqual(["d", "c", "b", "a"]);
+	expect(Object.keys(new Sorts(new Sort("second", "ASC")).results(all))).toEqual(["a", "b", "d", "c"]);
+	expect(Object.keys(new Sorts(new Sort("second", "DESC")).results(all))).toEqual(["c", "d", "b", "a"]);
 	// Two sort orders (where second is relevant).
-	expect(Object.keys(new Sorts([new Sort("first", "ASC"), new Sort("id")]).results(all))).toEqual(["c", "d", "a", "b"]);
-	expect(Object.keys(new Sorts([new Sort("first", "DESC"), new Sort("id")]).results(all))).toEqual(["a", "b", "c", "d"]);
-	expect(Object.keys(new Sorts([new Sort("first", "ASC"), new Sort("second", "ASC")]).results(all))).toEqual(["d", "c", "a", "b"]);
-	expect(Object.keys(new Sorts([new Sort("first", "DESC"), new Sort("second", "ASC")]).results(all))).toEqual(["a", "b", "d", "c"]);
-	expect(Object.keys(new Sorts([new Sort("first", "ASC"), new Sort("second", "DESC")]).results(all))).toEqual(["c", "d", "b", "a"]);
-	expect(Object.keys(new Sorts([new Sort("first", "DESC"), new Sort("second", "DESC")]).results(all))).toEqual(["b", "a", "c", "d"]);
+	expect(Object.keys(new Sorts(new Sort("first", "ASC"), new Sort("id")).results(all))).toEqual(["c", "d", "a", "b"]);
+	expect(Object.keys(new Sorts(new Sort("first", "DESC"), new Sort("id")).results(all))).toEqual(["a", "b", "c", "d"]);
+	expect(Object.keys(new Sorts(new Sort("first", "ASC"), new Sort("second", "ASC")).results(all))).toEqual(["d", "c", "a", "b"]);
+	expect(Object.keys(new Sorts(new Sort("first", "DESC"), new Sort("second", "ASC")).results(all))).toEqual(["a", "b", "d", "c"]);
+	expect(Object.keys(new Sorts(new Sort("first", "ASC"), new Sort("second", "DESC")).results(all))).toEqual(["c", "d", "b", "a"]);
+	expect(Object.keys(new Sorts(new Sort("first", "DESC"), new Sort("second", "DESC")).results(all))).toEqual(["b", "a", "c", "d"]);
 	// Two sort orders (but second isn't relevant).
-	expect(Object.keys(new Sorts([new Sort("second", "ASC"), new Sort("first", "ASC")]).results(all))).toEqual(["a", "b", "d", "c"]);
-	expect(Object.keys(new Sorts([new Sort("second", "DESC"), new Sort("first", "ASC")]).results(all))).toEqual(["c", "d", "b", "a"]);
+	expect(Object.keys(new Sorts(new Sort("second", "ASC"), new Sort("first", "ASC")).results(all))).toEqual(["a", "b", "d", "c"]);
+	expect(Object.keys(new Sorts(new Sort("second", "DESC"), new Sort("first", "ASC")).results(all))).toEqual(["c", "d", "b", "a"]);
 });
