@@ -122,6 +122,9 @@ export function transformProps<O extends ImmutableObject>(existing: O, transform
  */
 export type Transforms<O extends ImmutableObject> = { readonly [K in keyof O]?: O[K] | Transform<O[K]> | undefined };
 
+/** Set of transforms that can be modified and added to. */
+export type MutableTransforms<O extends ImmutableObject> = { [K in keyof O]?: O[K] | Transform<O[K]> | undefined };
+
 /** Set of hydrations for all transform classes. */
 export const TRANSFORM_HYDRATIONS = {
 	increment: IncrementTransform,
