@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { ArrayState, ImmutableArray, ImmutableObject, LOADING, MapState, State } from "../index.js";
-import { useObserve } from "./useObserve.js";
+import { useSubscribable } from "./useSubscribe.js";
 
 /**
  * Subscribe or create a new Shelving `State` instance.
@@ -18,7 +18,7 @@ export const useState = <T>(initial: State<T> | T | Promise<T> | typeof LOADING)
 	// Select either the `State` instance from the input parameters (if there is one) or use the memoized `State` instance from the initial value.
 	const whichState = initial instanceof State ? initial : memoizedState;
 
-	useObserve(whichState);
+	useSubscribable(whichState);
 	return whichState;
 };
 
@@ -33,7 +33,7 @@ export const useMapState = <T>(initial?: MapState<T> | ImmutableObject<T> | Prom
 	// Select either the `MapState` instance from the input parameters (if there is one) or use the memoized `MapState` instance from the initial value.
 	const whichState = initial instanceof MapState ? initial : memoizedState;
 
-	useObserve(whichState);
+	useSubscribable(whichState);
 	return whichState;
 };
 
@@ -48,6 +48,6 @@ export const useArrayState = <T>(initial?: ArrayState<T> | ImmutableArray<T> | P
 	// Select either the `ArrayState` instance from the input parameters (if there is one) or use the memoized `ArrayState` instance from the initial value.
 	const whichState = initial instanceof ArrayState ? initial : memoizedState;
 
-	useObserve(whichState);
+	useSubscribable(whichState);
 	return whichState;
 };

@@ -1,9 +1,7 @@
 import type { Observer, Unsubscriber, Data, Result, Results, Transforms } from "../util/index.js";
-import type { Document, Documents } from "./Reference.js";
+import type { ModelDocument, ModelQuery } from "../db/Model.js";
 
-/**
- * Provider interface: Implemented by classes that provide access to data (e.g. IndexedDB, Firebase, or in-memory cache providers).
- */
+/** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
 export interface Provider {
 	/**
 	 * Get the result of a document.
@@ -11,7 +9,7 @@ export interface Provider {
 	 * @param ref Document reference specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	getDocument<X extends Data>(ref: Document<X>): Result<X> | Promise<Result<X>>;
+	get<X extends Data>(ref: ModelDocument<X>): Result<X> | Promise<Result<X>>;
 
 	/**
 	 * Subscribe to the result of a document.
@@ -22,7 +20,7 @@ export interface Provider {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result<X>>): Unsubscriber;
+	subscribe<X extends Data>(ref: ModelDocument<X>, observer: Observer<Result<X>>): Unsubscriber;
 
 	/**
 	 * Create a new document with a random ID.
@@ -33,7 +31,7 @@ export interface Provider {
 	 *
 	 * @return String ID for the created document (possibly promised).
 	 */
-	addDocument<X extends Data>(ref: Documents<X>, data: X): string | Promise<string>;
+	add<X extends Data>(ref: ModelQuery<X>, data: X): string | Promise<string>;
 
 	/**
 	 * Set the complete data of a document.
@@ -45,7 +43,7 @@ export interface Provider {
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	setDocument<X extends Data>(ref: Document<X>, data: X): void | Promise<void>;
+	set<X extends Data>(ref: ModelDocument<X>, data: X): void | Promise<void>;
 
 	/**
 	 * Update an existing document with partial data.
@@ -58,18 +56,17 @@ export interface Provider {
 	 * @return Nothing (possibly promised).
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void | Promise<void>;
+	update<X extends Data>(ref: ModelDocument<X>, transforms: Transforms<X>): void | Promise<void>;
 
 	/**
 	 * Delete an existing document.
-	 * - If the document doesn't exist, throw an error.
+	 * - Should not throw an error if the document doesn't exist.
 	 *
 	 * @param ref Document reference specifying which document to merge into.
 	 *
 	 * @return Nothing (possibly promised).
-	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	deleteDocument<X extends Data>(ref: Document<X>): void | Promise<void>;
+	delete<X extends Data>(ref: ModelDocument<X>): void | Promise<void>;
 
 	/**
 	 * Get all matching documents.
@@ -77,7 +74,7 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Set of results in `id: data` format.
 	 */
-	getDocuments<X extends Data>(ref: Documents<X>): Results<X> | Promise<Results<X>>;
+	getQuery<X extends Data>(ref: ModelQuery<X>): Results<X> | Promise<Results<X>>;
 
 	/**
 	 * Subscribe to all matching documents.
@@ -88,7 +85,7 @@ export interface Provider {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber;
+	subscribeQuery<X extends Data>(ref: ModelQuery<X>, observer: Observer<Results<X>>): Unsubscriber;
 
 	/**
 	 * Set all matching documents to the same exact value.
@@ -98,7 +95,7 @@ export interface Provider {
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	setDocuments<X extends Data>(ref: Documents<X>, data: X): void | Promise<void>;
+	setQuery<X extends Data>(ref: ModelQuery<X>, data: X): void | Promise<void>;
 
 	/**
 	 * Update all matching documents with the same partial value.
@@ -108,7 +105,7 @@ export interface Provider {
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void | Promise<void>;
+	updateQuery<X extends Data>(ref: ModelQuery<X>, transforms: Transforms<X>): void | Promise<void>;
 
 	/**
 	 * Delete all matching documents.
@@ -116,31 +113,31 @@ export interface Provider {
 	 * @param ref Documents reference specifying which collection to delete.
 	 * @return Nothing (possibly promised).
 	 */
-	deleteDocuments<X extends Data>(ref: Documents<X>): void | Promise<void>;
+	deleteQuery<X extends Data>(ref: ModelQuery<X>): void | Promise<void>;
 }
 
 /** Provider with a fully synchronous interface */
 export interface SynchronousProvider extends Provider {
-	getDocument<X extends Data>(ref: Document<X>): Result<X>;
-	addDocument<X extends Data>(ref: Documents<X>, data: X): string;
-	setDocument<X extends Data>(ref: Document<X>, data: X): void;
-	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void;
-	deleteDocument<X extends Data>(ref: Document<X>): void;
-	getDocuments<X extends Data>(ref: Documents<X>): Results<X>;
-	setDocuments<X extends Data>(ref: Documents<X>, data: X): void;
-	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void;
-	deleteDocuments<X extends Data>(ref: Documents<X>): void;
+	get<X extends Data>(ref: ModelDocument<X>): Result<X>;
+	add<X extends Data>(ref: ModelQuery<X>, data: X): string;
+	set<X extends Data>(ref: ModelDocument<X>, data: X): void;
+	update<X extends Data>(ref: ModelDocument<X>, transforms: Transforms<X>): void;
+	delete<X extends Data>(ref: ModelDocument<X>): void;
+	getQuery<X extends Data>(ref: ModelQuery<X>): Results<X>;
+	setQuery<X extends Data>(ref: ModelQuery<X>, data: X): void;
+	updateQuery<X extends Data>(ref: ModelQuery<X>, transforms: Transforms<X>): void;
+	deleteQuery<X extends Data>(ref: ModelQuery<X>): void;
 }
 
 /** Provider with a fully asynchronous interface */
 export interface AsynchronousProvider extends Provider {
-	getDocument<X extends Data>(ref: Document<X>): Promise<Result<X>>;
-	addDocument<X extends Data>(ref: Documents<X>, data: X): Promise<string>;
-	setDocument<X extends Data>(ref: Document<X>, data: X): Promise<void>;
-	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): Promise<void>;
-	deleteDocument<X extends Data>(ref: Document<X>): Promise<void>;
-	getDocuments<X extends Data>(ref: Documents<X>): Promise<Results<X>>;
-	setDocuments<X extends Data>(ref: Documents<X>, data: X): Promise<void>;
-	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): Promise<void>;
-	deleteDocuments<X extends Data>(ref: Documents<X>): Promise<void>;
+	get<X extends Data>(ref: ModelDocument<X>): Promise<Result<X>>;
+	add<X extends Data>(ref: ModelQuery<X>, data: X): Promise<string>;
+	set<X extends Data>(ref: ModelDocument<X>, data: X): Promise<void>;
+	update<X extends Data>(ref: ModelDocument<X>, transforms: Transforms<X>): Promise<void>;
+	delete<X extends Data>(ref: ModelDocument<X>): Promise<void>;
+	getQuery<X extends Data>(ref: ModelQuery<X>): Promise<Results<X>>;
+	setQuery<X extends Data>(ref: ModelQuery<X>, data: X): Promise<void>;
+	updateQuery<X extends Data>(ref: ModelQuery<X>, transforms: Transforms<X>): Promise<void>;
+	deleteQuery<X extends Data>(ref: ModelQuery<X>): Promise<void>;
 }

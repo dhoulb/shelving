@@ -1,6 +1,6 @@
 import { MutableObject, Data, Result, Results, Observer, Unsubscriber, isAsync, Observable, LOADING } from "../util/index.js";
 import { getNextValue, LazyState } from "../stream/index.js";
-import type { Document, Documents } from "./Reference.js";
+import type { ModelDocument, ModelQuery } from "../db/index.js";
 import type { Provider } from "./Provider.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
@@ -24,16 +24,16 @@ export class BatchProvider extends ThroughProvider implements Provider {
 	protected readonly _subs: MutableObject<Observable<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	// Override `getDocument()` to combine multiple requests into one.
-	override getDocument<X extends Data>(ref: Document<X>): Result<X> | Promise<Result<X>> {
+	override get<X extends Data>(ref: ModelDocument<X>): Result<X> | Promise<Result<X>> {
 		const key = ref.toString();
 		const get = this._gets[key];
 		if (get) return get;
-		const result = super.getDocument<X>(ref);
+		const result = super.get<X>(ref);
 		return isAsync(result) ? (this._gets[key] = this._awaitDocument(ref, result)) : result;
 	}
 
 	/** Await a result and delete it from get requests when done. */
-	private async _awaitDocument<X extends Data>(ref: Document<X>, asyncResult: Promise<Result<X>>): Promise<Result<X>> {
+	private async _awaitDocument<X extends Data>(ref: ModelDocument<X>, asyncResult: Promise<Result<X>>): Promise<Result<X>> {
 		const result = await asyncResult;
 		const key = ref.toString();
 		delete this._gets[key];
@@ -41,12 +41,12 @@ export class BatchProvider extends ThroughProvider implements Provider {
 	}
 
 	// Override `onDocument()` to combine multiple subscriptions into one.
-	override onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result<X>>): Unsubscriber {
+	override subscribe<X extends Data>(ref: ModelDocument<X>, observer: Observer<Result<X>>): Unsubscriber {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
 		const sub = (this._subs[key] ||= LazyState.start(s => {
-			const stop = super.onDocument(ref, s);
+			const stop = super.subscribe(ref, s);
 			this._gets[key] ||= this._awaitDocument(ref, getNextValue(sub)); // The first value from the new subscription can be reused for any concurrent get requests.
 			return () => {
 				delete this._subs[key];
@@ -57,16 +57,16 @@ export class BatchProvider extends ThroughProvider implements Provider {
 	}
 
 	// Override `getDocuments()` to combine multiple requests into one.
-	override getDocuments<X extends Data>(ref: Documents<X>): Results<X> | Promise<Results<X>> {
+	override getQuery<X extends Data>(ref: ModelQuery<X>): Results<X> | Promise<Results<X>> {
 		const key = ref.toString();
 		const get = this._gets[key];
 		if (get) return get;
-		const result = super.getDocuments<X>(ref);
+		const result = super.getQuery<X>(ref);
 		return isAsync(result) ? (this._gets[key] = this._awaitDocuments(ref, result)) : result;
 	}
 
 	/** Await a set of results and delete from get requests when done. */
-	private async _awaitDocuments<X extends Data>(ref: Documents<X>, asyncResult: Promise<Results<X>>): Promise<Results<X>> {
+	private async _awaitDocuments<X extends Data>(ref: ModelQuery<X>, asyncResult: Promise<Results<X>>): Promise<Results<X>> {
 		const result = await asyncResult;
 		const key = ref.toString();
 		delete this._gets[key];
@@ -74,12 +74,12 @@ export class BatchProvider extends ThroughProvider implements Provider {
 	}
 
 	// Override `onDocuments()` to combine multiple subscriptions into one.
-	override onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber {
+	override subscribeQuery<X extends Data>(ref: ModelQuery<X>, observer: Observer<Results<X>>): Unsubscriber {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
 		const sub = (this._subs[key] ||= LazyState.start(s => {
-			const stop = super.onDocuments(ref, s);
+			const stop = super.subscribeQuery(ref, s);
 			this._gets[key] ||= this._awaitDocuments(ref, getNextValue(sub)); // The first value from the subscription can be reused for any concurrent get requests.
 			return () => {
 				delete this._subs[key];

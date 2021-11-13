@@ -9,9 +9,9 @@ const empty = {};
 
 test("Slice", () => {
 	// Empty.
-	expect(new Slice(2).results(empty)).toBe(empty);
+	expect(new Slice(2).queryResults(empty)).toBe(empty);
 	// Slices.
-	expect(new Slice(2).results(all)).toEqual({ a, b });
-	expect(new Slice(3).results(all)).toEqual({ a, b, c });
-	expect(new Slice(0).results(all)).toEqual({});
+	expect(new Slice(2).queryResults(all)).toEqual({ a, b });
+	expect(new Slice(3).queryResults(all)).toEqual({ a, b, c });
+	expect(new Slice(0).queryResults(all)).toEqual({});
 });

@@ -103,7 +103,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	 * @param `key` Either `id`, or the name of a prop in the document containing scalars.
 	 * @returns New instance with new query rules.
 	 */
-	asc(key: "id" | (keyof T & string)): this {
+	asc(key: "id" | (keyof T & string) = "id"): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.asc(key) };
 	}
 
@@ -112,7 +112,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	 * @param `key` Either `id`, or the name of a prop in the document containing scalars.
 	 * @returns New instance with new query rules.
 	 */
-	desc(key: "id" | (keyof T & string)): this {
+	desc(key: "id" | (keyof T & string) = "id"): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.desc(key) };
 	}
 
@@ -127,8 +127,8 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	}
 
 	// Override `apply()` to apply filters, sorts, and limit (in that order).
-	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
-		return this.slice.apply(this.sorts.apply(this.filters.apply(entries)));
+	override queryEntries(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+		return this.slice.queryEntries(this.sorts.queryEntries(this.filters.queryEntries(entries)));
 	}
 
 	// Implement toString()

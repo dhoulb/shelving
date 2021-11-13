@@ -30,8 +30,8 @@ import {
 	Data,
 	Results,
 	Provider,
-	Document,
-	Documents,
+	ModelDocument,
+	ModelQuery,
 	Operator,
 	Direction,
 	Mutable,
@@ -46,7 +46,7 @@ import {
 	ImmutableObject,
 	AsynchronousProvider,
 	Transform,
-} from "../index.js";
+} from "../../index.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -71,18 +71,18 @@ const DIRECTIONS: { readonly [K in Direction]: FirestoreOrderByDirection } = {
 };
 
 /** Get a Firestore DocumentReference for a given Shelving `Document` instance. */
-function getDocumentReference<X extends Data>(firestore: Firestore, { collection, id }: Document<X>): FirestoreDocumentReference<X> {
+function getDocumentReference<X extends Data>(firestore: Firestore, { collection, id }: ModelDocument<X>): FirestoreDocumentReference<X> {
 	return getFirestoreDoc(firestore, collection, id) as FirestoreDocumentReference<X>;
 }
 
 /** Get a Firestore CollectionReference for a given Shelving `Document` instance. */
-function getCollectionReference<X extends Data>(firestore: Firestore, { collection }: Documents<X>): FirestoreCollectionReference<X> {
+function getCollectionReference<X extends Data>(firestore: Firestore, { collection }: ModelQuery<X>): FirestoreCollectionReference<X> {
 	return getFirestoreCollection(firestore, collection) as FirestoreCollectionReference<X>;
 }
 
 /** Create a corresponding `QueryReference` from a Query. */
-function getQueryReference<X extends Data>(firestore: Firestore, ref: Documents<X>): FirestoreQueryReference<X> {
-	const { sorts, filters, slice } = ref.query;
+function getQueryReference<X extends Data>(firestore: Firestore, ref: ModelQuery<X>): FirestoreQueryReference<X> {
+	const { sorts, filters, slice } = ref;
 	const constraints: FirestoreQueryConstraint[] = [];
 	for (const { key, direction } of sorts) constraints.push(orderBy(key === "id" ? ID : key, DIRECTIONS[direction]));
 	for (const { operator, key, value } of filters) constraints.push(where(key === "id" ? ID : key, OPERATORS[operator], value));
@@ -133,52 +133,52 @@ export class FirestoreClientProvider implements Provider, AsynchronousProvider {
 		this.firestore = firestore;
 	}
 
-	async getDocument<X extends Data>(ref: Document<X>): Promise<Result<X>> {
+	async get<X extends Data>(ref: ModelDocument<X>): Promise<Result<X>> {
 		const snapshot = await getDoc(getDocumentReference(this.firestore, ref));
 		return snapshot.data();
 	}
 
-	onDocument(): () => void {
+	subscribe(): () => void {
 		throw new Error("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 
-	async addDocument<X extends Data>(ref: Documents<X>, data: X): Promise<string> {
+	async add<X extends Data>(ref: ModelQuery<X>, data: X): Promise<string> {
 		const reference = await addDoc<any>(getCollectionReference(this.firestore, ref), data); // eslint-disable-line @typescript-eslint/no-explicit-any
 		return reference.id;
 	}
 
-	async setDocument<X extends Data>(ref: Document<X>, data: X): Promise<void> {
+	async set<X extends Data>(ref: ModelDocument<X>, data: X): Promise<void> {
 		await setDoc<any>(getDocumentReference(this.firestore, ref), data); // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
-	async updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): Promise<void> {
+	async update<X extends Data>(ref: ModelDocument<X>, transforms: Transforms<X>): Promise<void> {
 		await updateDoc<any>(getDocumentReference(this.firestore, ref), convertTransforms(transforms)); // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
-	async deleteDocument<X extends Data>(ref: Document<X>): Promise<void> {
+	async delete<X extends Data>(ref: ModelDocument<X>): Promise<void> {
 		await deleteDoc(getDocumentReference(this.firestore, ref));
 	}
 
-	async getDocuments<X extends Data>(ref: Documents<X>): Promise<Results<X>> {
+	async getQuery<X extends Data>(ref: ModelQuery<X>): Promise<Results<X>> {
 		return getResults(await getDocs(getQueryReference(this.firestore, ref)));
 	}
 
-	onDocuments(): () => void {
+	subscribeQuery(): () => void {
 		throw new Error("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 
-	async setDocuments<X extends Data>(ref: Documents<X>, data: X): Promise<void> {
+	async setQuery<X extends Data>(ref: ModelQuery<X>, data: X): Promise<void> {
 		const snapshot = await getDocs(getQueryReference(this.firestore, ref));
 		await Promise.all(snapshot.docs.map(s => setDoc<any>(s.ref, data))); // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
-	async updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): Promise<void> {
+	async updateQuery<X extends Data>(ref: ModelQuery<X>, transforms: Transforms<X>): Promise<void> {
 		const snapshot = await getDocs(getQueryReference(this.firestore, ref));
 		const updates = convertTransforms(transforms);
 		await Promise.all(snapshot.docs.map(s => updateDoc<any>(s.ref, updates))); // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
-	async deleteDocuments<X extends Data>(ref: Documents<X>): Promise<void> {
+	async deleteQuery<X extends Data>(ref: ModelQuery<X>): Promise<void> {
 		const snapshot = await getDocs(getQueryReference(this.firestore, ref));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 	}

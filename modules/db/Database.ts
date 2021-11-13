@@ -1,70 +1,304 @@
-import type { Datas, Validators } from "../util/index.js";
-import type { Query } from "../query/index.js";
-import type { Provider } from "./Provider.js";
-import { Document, Documents } from "./Reference.js";
+import {
+	AsyncCatcher,
+	AsyncDispatcher,
+	AsyncEmptyDispatcher,
+	countEntries,
+	createObserver,
+	Data,
+	Datas,
+	Entry,
+	getFirstProp,
+	getLastProp,
+	ImmutableArray,
+	isAsync,
+	Observable,
+	Observer,
+	Result,
+	Results,
+	throwAsync,
+	Transforms,
+	Unsubscriber,
+	Validator,
+	Validators,
+} from "../util/index.js";
+import type { Filters, Slice, Sorts } from "../query/index.js";
+import type { Provider } from "../provider/Provider.js";
+import { Model, ModelQuery, ModelDocument } from "./Model.js";
+import { DocumentRequiredError } from "./errors.js";
 
 /**
- * Database: combines a set of document and collection loci for the root level of the database, and links them to a Provider.
+ * Combines a database model and a provider.
  *
  * @param documents Set of loci describing named documents at the root level of the database.
  * @param collections Set of loci describing collections at the root level of the database.
  * @param provider Provider that allows data to be read/written.
  */
-export class Database<D extends Datas = Datas> {
-	readonly schemas: Validators<D>;
+export class Database<D extends Datas = Datas> extends Model<D> {
 	readonly provider: Provider;
 	constructor(schemas: Validators<D>, provider: Provider) {
-		this.schemas = schemas;
+		super(schemas);
 		this.provider = provider;
 	}
 
-	/**
-	 * Get a `Documents` ref for a set of documents in a collection in this database.
-	 * @param collection Collection name, e.g. `puppies`
-	 * @param query Optional query to create the `Documents` reference with.
-	 * @example `db.docs("dogs").doc("fido").get()`
-	 */
-	docs<C extends keyof D & string>(collection: C, query?: Query<D[C]>): DatabaseDocuments<D, C> {
-		return new DatabaseDocuments<D, C>(this, collection, query);
+	// Override to return `DatabaseQuery` instead of `ModelQuery`
+	override query<C extends keyof D & string>(collection: C, filters?: Filters<D[C]>, sorts?: Sorts<D[C]>, slice?: Slice<D[C]>): DatabaseQuery<D[C]> {
+		return new DatabaseQuery(this.provider, this.schemas[collection], collection, filters, sorts, slice);
 	}
 
-	/**
-	 * Get a `Document` ref for a document in a collection in this database.
-	 * @param collection Document name, e.g. `fido`
-	 * @param id Unique ID of the document in the collection.
-	 * @example `db.doc("dogs", "fido").get()`
-	 */
-	doc<C extends keyof D & string>(collection: C, id: string): DatabaseDocument<D, C> {
-		return new DatabaseDocument<D, C>(this, collection, id);
+	// Override to return `DatabaseDocument` instead of `ModelDocument
+	override doc<C extends keyof D & string>(collection: C, id: string): DatabaseDocument<D[C]> {
+		return new DatabaseDocument(this.provider, this.schemas[collection], collection, id);
 	}
 }
 
 /** A documents reference within a specific database. */
-export class DatabaseDocuments<D extends Datas, C extends keyof D & string> extends Documents<D[C]> {
-	readonly db: Database<D>;
-	override readonly collection: C;
-	constructor(db: Database<D>, collection: C, query?: Query<D[C]>) {
-		super(db.provider, db.schemas[collection], collection, query);
-		this.db = db;
-		this.collection = collection;
+export class DatabaseQuery<T extends Data = Data> extends ModelQuery<T> implements Observable<Results<T>> {
+	readonly provider: Provider;
+	constructor(provider: Provider, schema: Validator<T>, collection: string, filters?: Filters<T>, sorts?: Sorts<T>, slice?: Slice<T>) {
+		super(schema, collection, filters, sorts, slice);
+		this.provider = provider;
 	}
-	// Override to return a `DatabaseDocument` reference instead of a plain `Document` reference.
-	override doc(id: string): DatabaseDocument<D, C> {
-		return new DatabaseDocument(this.db, this.collection, id);
+
+	// Override to return `DatabaseDocument` instead of `ModelDocument
+	override doc(id: string): DatabaseDocument<T> {
+		return new DatabaseDocument(this.provider, this.schema, this.collection, id);
+	}
+
+	/**
+	 * Create a new document with a random ID.
+	 * - Created document is guaranteed to have a unique ID.
+	 *
+	 * @param data Complete data to set the document to.
+	 * @return String ID for the created document (possibly promised).
+	 */
+	add(data: T): string | Promise<string> {
+		return this.provider.add(this, data);
+	}
+
+	/**
+	 * Get the set of results matching the current query.
+	 *
+	 * @return Set of results in `id: data` format (possibly promised).
+	 */
+	get(): Results<T> | Promise<Results<T>> {
+		return this.provider.getQuery(this);
+	}
+
+	/**
+	 * Get the value of this document.
+	 *
+	 * @return Set of results in `id: data` format (possibly promised).
+	 */
+	get value(): Results<T> | Promise<Results<T>> {
+		return this.get();
+	}
+
+	/**
+	 * Count the number of results of this set of documents.
+	 *
+	 * @return Number of documents in the collection (possibly promised).
+	 */
+	get count(): number | Promise<number> {
+		const results = this.provider.getQuery(this);
+		return isAsync(results) ? results.then(countEntries) : countEntries(results);
+	}
+
+	/**
+	 * Get an array of string IDs for this set of documents.
+	 *
+	 * @return Array of strings representing the documents in the current collection (possibly promised).
+	 */
+	get ids(): ImmutableArray<string> | Promise<ImmutableArray<string>> {
+		const results = this.provider.getQuery(this);
+		return isAsync(results) ? results.then(Object.keys) : Object.keys(results);
+	}
+
+	/**
+	 * Subscribe to all matching documents.
+	 * - `next()` is called once with the initial results, and again any time the results change.
+	 *
+	 * @param observer Observer with `next`, `error`, or `complete` methods that the document results are reported back to.
+	 * @param next Callback that is called once initially and again whenever the results change.
+	 * @param error Callback that is called if an error occurs.
+	 * @param complete Callback that is called when the subscription is done.
+	 *
+	 * @return Function that ends the subscription.
+	 */
+	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
+		return this.provider.subscribeQuery(this, createObserver(next, error, complete));
+	}
+
+	/**
+	 * Get an entry for the first result in this set of documents.
+	 *
+	 * @return Entry in `[id, data]` format for the last document, or `undefined` if there are no matching documents (possibly promised).
+	 */
+	get first(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
+		const results = this.limit(1).get();
+		if (isAsync(results)) return results.then(getFirstProp);
+		return getFirstProp(results);
+	}
+
+	/**
+	 * Get an entry for the last result in this set of documents.
+	 *
+	 * @return Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents (possibly promised).
+	 */
+	get last(): Entry<T> | undefined | Promise<Entry<T> | undefined> {
+		const results = this.limit(1).get();
+		if (isAsync(results)) return results.then(getLastProp);
+		return getLastProp(results);
+	}
+
+	/**
+	 * Set all matching documents to the same exact value.
+	 *
+	 * @param data Complete data to set the document to.
+	 * @return Nothing (possibly promised).
+	 */
+	set(data: T): void | Promise<void> {
+		return this.provider.setQuery(this, data);
+	}
+
+	/**
+	 * Update all matching documents with the same partial value.
+	 *
+	 * @param transforms Set of transforms to apply to every matching document.
+	 *
+	 * @return Nothing (possibly promised).
+	 */
+	update(transforms: Transforms<T>): void | Promise<void> {
+		return this.provider.updateQuery(this, transforms);
+	}
+
+	/**
+	 * Delete all matching documents.
+	 *
+	 * @return Nothing (possibly promised).
+	 */
+	delete(): void | Promise<void> {
+		return this.provider.deleteQuery(this);
+	}
+
+	// Implement iterator protocol (only works if get is synchronous, otherwise `Promise` is thrown).
+	*[Symbol.iterator](): Generator<[string, T], void, undefined> {
+		yield* Object.entries(throwAsync(this.get()));
+	}
+
+	// Implement async iterator protocol.
+	async *[Symbol.asyncIterator](): AsyncGenerator<[string, T], void, undefined> {
+		yield* Object.entries(await this.get());
 	}
 }
 
 /** A document reference within a specific database. */
-export class DatabaseDocument<D extends Datas, C extends keyof D & string> extends Document<D[C]> {
-	readonly db: Database<D>;
-	override readonly collection: C;
-	constructor(db: Database<D>, collection: C, id: string) {
-		super(db.provider, db.schemas[collection], collection, id);
-		this.db = db;
-		this.collection = collection;
+export class DatabaseDocument<T extends Data = Data> extends ModelDocument<T> implements Observable<Result<T>> {
+	readonly provider: Provider;
+	constructor(provider: Provider, schema: Validator<T>, collection: string, id: string) {
+		super(schema, collection, id);
+		this.provider = provider;
 	}
-	// Override to return a `DatabaseDocuments` reference instead of a plain `Documents` reference.
-	override docs(query?: Query<D[C]>): DatabaseDocuments<D, C> {
-		return new DatabaseDocuments(this.db, this.collection, query);
+
+	// Override to return `DatabaseQuery` instead of `ModelQuery`
+	override query(filters?: Filters<T>, sorts?: Sorts<T>, slice?: Slice<T>): DatabaseQuery<T> {
+		return new DatabaseQuery(this.provider, this.schema, this.collection, filters, sorts, slice);
+	}
+
+	/**
+	 * Get the result of this document.
+	 * - Alternate syntax for `this.result`
+	 * - If `options.required = true` then throws `DocumentRequiredError` if the document doesn't exist.
+	 *
+	 * @return Document's data, or `undefined` if it doesn't exist.
+	 */
+	get(): Result<T> | Promise<Result<T>> {
+		return this.provider.get(this);
+	}
+
+	/**
+	 * Does this document exist?
+	 *
+	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
+	 */
+	get exists(): boolean | Promise<boolean> {
+		const result = this.get();
+		return isAsync(result) ? result.then(Boolean) : !!result;
+	}
+
+	/**
+	 * Get the result of this document.
+	 *
+	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
+	 */
+	get result(): Result<T> | Promise<Result<T>> {
+		return this.get();
+	}
+
+	/**
+	 * Get the data of this document.
+	 * - Useful for destructuring, e.g. `{ name, title } = await documentThatMustExist.asyncData`
+	 *
+	 * @return Document's data (possibly promised).
+	 * @throws RequiredError if the document's result was undefined.
+	 */
+	get data(): T | Promise<T> {
+		const result = this.get();
+		if (isAsync(result))
+			return result.then(r => {
+				if (!r) throw new DocumentRequiredError(this);
+				return r;
+			});
+		if (!result) throw new DocumentRequiredError(this);
+		return result;
+	}
+
+	/**
+	 * Subscribe to the result of this document (indefinitely).
+	 * - `next()` is called once with the initial result, and again any time the result changes.
+	 *
+	 * @param observer Observer with `next`, `error`, or `complete` methods.
+	 * @param next Callback that is called once initially and again whenever the result changes.
+	 * @param error Callback that is called if an error occurs.
+	 * @param complete Callback that is called when the subscription is done.
+	 *
+	 * @return Function that ends the subscription.
+	 */
+	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
+		return this.provider.subscribe<T>(this, createObserver(next, error, complete));
+	}
+
+	/**
+	 * Set the complete data of this document.
+	 *
+	 * @param data Complete data to set the document to.
+	 *
+	 * @return Nothing (possibly promised).
+	 */
+	set(data: T): void | Promise<void> {
+		return this.provider.set(this, data);
+	}
+
+	/**
+	 * Update this document with partial data.
+	 * - If the document exists, merge the partial data into it.
+	 * - If the document doesn't exist, throw an error.
+	 *
+	 * @param transforms Set of transforms to apply to the existing document.
+	 *
+	 * @return Nothing (possibly promised).
+	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
+	 */
+	update(transforms: Transforms<T>): void | Promise<void> {
+		return this.provider.update(this, transforms);
+	}
+
+	/**
+	 * Delete this document.
+	 * - Will not throw an error if the document doesn't exist.
+	 *
+	 * @return Nothing (possibly promised).
+	 */
+	delete(): void | Promise<void> {
+		return this.provider.delete(this);
 	}
 }

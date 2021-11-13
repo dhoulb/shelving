@@ -22,24 +22,18 @@ export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
 		this.rules = rules;
 	}
 
-	/**
-	 * Apply this queryable to a set of results and return the (potentially) modified results.
-	 * @returns Either a new Results object (if `results` was modified), or the exact same instance (if no changes were made).
-	 */
-	override results(results: Results<T>): Results<T> {
+	// Override to ignore if there are no rules.
+	override queryResults(results: Results<T>): Results<T> {
 		if (!this.rules.length) return results;
-		return super.results(results);
+		return super.queryResults(results);
 	}
 
-	/**
-	 * Modify an array of entries (in place, modifying the original object).
-	 * @returns The new array, or the exact old array instance if no changes were made.
-	 */
-	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+	// Override to apply every rule in order.
+	override queryEntries(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!this.rules.length || !entries.length) return entries;
 		// Push the list of entries through each of the rules (in order) and return the resulting entries.
 		let applied = entries;
-		for (const rule of this.rules) applied = rule.apply(applied);
+		for (const rule of this.rules) applied = rule.queryEntries(applied);
 		return applied;
 	}
 

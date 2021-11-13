@@ -7,12 +7,9 @@
 // Data storage.
 export * from "./schema/index.js";
 export * from "./db/index.js";
+export * from "./provider/index.js";
 export * from "./query/index.js";
 export * from "./api/index.js";
-
-// Data providers.
-// export * from "./firestore-client/index.js"; // Not exported.
-// export * from "./firestore-server/index.js"; // Not exported.
 
 // Utilities.
 export * from "./util/index.js";

@@ -1,7 +1,7 @@
 import type { ImmutableEntries, Data, Results } from "../util/index.js";
 import { Rule } from "./Rule.js";
 
-export class Slice<D extends Data> extends Rule<D> {
+export class Slice<T extends Data> extends Rule<T> {
 	readonly limit: number | null;
 
 	constructor(limit: number | null) {
@@ -9,11 +9,11 @@ export class Slice<D extends Data> extends Rule<D> {
 		this.limit = limit;
 	}
 
-	override results(results: Results<D>): Results<D> {
-		return this.limit === null ? results : super.results(results);
+	override queryResults(results: Results<T>): Results<T> {
+		return this.limit === null ? results : super.queryResults(results);
 	}
 
-	override apply(entries: ImmutableEntries<D>): ImmutableEntries<D> {
+	override queryEntries(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!entries.length) return entries;
 		if (this.limit !== null && entries.length > this.limit) return entries.slice(0, this.limit);
 		return entries;

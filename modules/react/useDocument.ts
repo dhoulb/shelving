@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
 	Data,
-	Document,
+	DatabaseDocument,
 	CacheProvider,
 	Result,
 	Dispatcher,
@@ -33,9 +33,12 @@ import { usePureState } from "./usePureState.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
  */
-export function useAsyncDocument<T extends Data>(ref: Document<T>, maxAge?: number | true): Result<T> | Promise<Result<T>>;
-export function useAsyncDocument<T extends Data>(ref: Document<T> | undefined, maxAge?: number | true): Result<T> | Promise<Result<T>> | undefined;
-export function useAsyncDocument<T extends Data>(ref: Document<T> | undefined, maxAge: number | true = 1000): Result<T> | Promise<Result<T>> | undefined {
+export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): Result<T> | Promise<Result<T>>;
+export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): Result<T> | Promise<Result<T>> | undefined;
+export function useAsyncDocument<T extends Data>(
+	ref: DatabaseDocument<T> | undefined,
+	maxAge: number | true = 1000,
+): Result<T> | Promise<Result<T>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = usePureMemo(ref, ref?.toString());
 
@@ -78,9 +81,9 @@ export function useAsyncDocument<T extends Data>(ref: Document<T> | undefined, m
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
  */
-export function useDocument<T extends Data>(ref: Document<T>, maxAge?: number | true): Result<T>;
-export function useDocument<T extends Data>(ref: Document<T> | undefined, maxAge?: number | true): Result<T> | undefined;
-export function useDocument<T extends Data>(ref: Document<T> | undefined, maxAge?: number | true): Result<T> | undefined {
+export function useDocument<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): Result<T>;
+export function useDocument<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined;
+export function useDocument<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined {
 	return throwAsync(useAsyncDocument(ref, maxAge));
 }
 
@@ -99,9 +102,9 @@ export function useDocument<T extends Data>(ref: Document<T> | undefined, maxAge
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the data.
  */
-export function useAsyncDocumentData<T extends Data>(ref: Document<T>, maxAge?: number | true): T | Promise<T>;
-export function useAsyncDocumentData<T extends Data>(ref: Document<T> | undefined, maxAge?: number | true): T | Promise<T> | undefined;
-export function useAsyncDocumentData<T extends Data>(ref: Document<T> | undefined, maxAge?: number | true): T | Promise<T> | undefined {
+export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): T | Promise<T>;
+export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | Promise<T> | undefined;
+export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | Promise<T> | undefined {
 	const result = useAsyncDocument(ref, maxAge);
 	return isAsync(result) ? result.then(getRequired) : getRequired(result);
 }
@@ -122,29 +125,29 @@ export function useAsyncDocumentData<T extends Data>(ref: Document<T> | undefine
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the data.
  */
-export function useDocumentData<T extends Data>(ref: Document<T>, maxAge?: number | true): T;
-export function useDocumentData<T extends Data>(ref: Document<T> | undefined, maxAge?: number | true): T | undefined;
-export function useDocumentData<T extends Data>(ref: Document<T> | undefined, maxAge?: number | true): T | undefined {
+export function useDocumentData<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): T;
+export function useDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | undefined;
+export function useDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | undefined {
 	return getRequired(useDocument(ref, maxAge));
 }
 
 /** Get the initial result for a reference from the cache. */
-const getCachedResult = <T extends Data>(ref: Document<T> | undefined): Result<T> | typeof NOVALUE | undefined => {
+const getCachedResult = <T extends Data>(ref: DatabaseDocument<T> | undefined): Result<T> | typeof NOVALUE | undefined => {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.provider, CacheProvider);
-	return provider.isCached(ref) ? provider.cache.getDocument(ref) : NOVALUE;
+	return provider.isCached(ref) ? provider.cache.get(ref) : NOVALUE;
 };
 
 /** Effect that subscribes a component to the cache for a reference. */
 const subscribeEffect = <T extends Data>(
-	ref: Document<T> | undefined,
+	ref: DatabaseDocument<T> | undefined,
 	maxAge: number | true,
 	next: Dispatcher<Result<T>>,
 	error: Catcher,
 ): Unsubscriber | void => {
 	if (ref) {
 		const provider = findSourceProvider(ref.provider, CacheProvider);
-		const stopCache = provider.cache.onDocument(ref, { next, error });
+		const stopCache = provider.cache.subscribe(ref, { next, error });
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.
 			const stopSource = ref.subscribe({ next, error });

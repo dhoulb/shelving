@@ -18,9 +18,8 @@ import {
 	transformProps,
 	Transforms,
 } from "../util/index.js";
+import { ModelQuery, ModelDocument, DocumentRequiredError } from "../db/index.js";
 import type { Provider, SynchronousProvider } from "./Provider.js";
-import type { Documents, Document } from "./Reference.js";
-import { ReferenceRequiredError } from "./errors.js";
 
 /**
  * Memory provider: fast in-memory store for data.
@@ -36,15 +35,15 @@ export class MemoryProvider implements Provider, SynchronousProvider {
 	private _tables: MutableObject<Table<any>> = {};
 
 	// Get a named collection (or create a new one).
-	private _table<X extends Data>({ collection }: Document<X> | Documents<X>): Table<X> {
+	private _table<X extends Data>({ collection }: ModelDocument<X> | ModelQuery<X>): Table<X> {
 		return (this._tables[collection] ||= new Table());
 	}
 
-	getDocument<X extends Data>(ref: Document<X>): Result<X> {
+	get<X extends Data>(ref: ModelDocument<X>): Result<X> {
 		return this._table<X>(ref).result(ref.id);
 	}
 
-	onDocument<X extends Data>(ref: Document<X>, observer: Observer<Result<X>>): Unsubscriber {
+	subscribe<X extends Data>(ref: ModelDocument<X>, observer: Observer<Result<X>>): Unsubscriber {
 		const table = this._table(ref);
 		const id = ref.id;
 
@@ -57,39 +56,39 @@ export class MemoryProvider implements Provider, SynchronousProvider {
 		});
 	}
 
-	addDocument<X extends Data>(ref: Documents<X>, data: X): string {
+	add<X extends Data>(ref: ModelQuery<X>, data: X): string {
 		const table = this._table(ref);
 		let id = randomId();
 		while (table.result(id)) id = randomId(); // Regenerate ID until unique.
-		table.set(id, data);
+		table.write(id, data);
 		return id;
 	}
 
-	setDocument<X extends Data>(ref: Document<X>, data: X): void {
-		this._table(ref).set(ref.id, data);
+	set<X extends Data>(ref: ModelDocument<X>, data: X): void {
+		this._table(ref).write(ref.id, data);
 	}
 
-	updateDocument<X extends Data>(ref: Document<X>, transforms: Transforms<X>): void {
+	update<X extends Data>(ref: ModelDocument<X>, transforms: Transforms<X>): void {
 		const table = this._table(ref);
 		const id = ref.id;
 		const existing = table.result(id);
-		if (!existing) throw new ReferenceRequiredError(ref);
-		table.set(id, transformProps(existing, transforms));
+		if (!existing) throw new DocumentRequiredError(ref);
+		table.write(id, transformProps(existing, transforms));
 	}
 
-	deleteDocument<X extends Data>(ref: Document<X>): void {
-		this._table(ref).set(ref.id, undefined);
+	delete<X extends Data>(ref: ModelDocument<X>): void {
+		this._table(ref).write(ref.id, undefined);
 	}
 
-	getDocuments<X extends Data>(ref: Documents<X>): Results<X> {
-		return ref.query.results(this._table(ref).results());
+	getQuery<X extends Data>(ref: ModelQuery<X>): Results<X> {
+		return ref.queryResults(this._table(ref).results());
 	}
 
-	onDocuments<X extends Data>(ref: Documents<X>, observer: Observer<Results<X>>): Unsubscriber {
+	subscribeQuery<X extends Data>(ref: ModelQuery<X>, observer: Observer<Results<X>>): Unsubscriber {
 		const table = this._table(ref);
-		const { filters, sorts, slice } = ref.query;
-		let filtered = objectFromEntries(sorts.apply(filters.apply(Object.entries(table.results()))));
-		let sliced = slice.results(filtered);
+		const { filters, sorts, slice } = ref;
+		let filtered = objectFromEntries(sorts.queryEntries(filters.queryEntries(Object.entries(table.results()))));
+		let sliced = slice.queryResults(filtered);
 
 		// Call next() with initial results (on next tick).
 		dispatchNext(observer, sliced);
@@ -114,10 +113,10 @@ export class MemoryProvider implements Provider, SynchronousProvider {
 			if (!updated && !removed) return;
 
 			// Updates they need to be sorted again.
-			if (updated) filtered = sorts.results(filtered);
+			if (updated) filtered = sorts.queryResults(filtered);
 
 			// Apply the slice.
-			const newSliced = slice.results(filtered);
+			const newSliced = slice.queryResults(filtered);
 
 			// If a slice was applied all the changes might have happened _after_ the end of the limit slice.
 			// So if every changed ID are not in `next` or `last`, there's no need to call `next()`
@@ -131,22 +130,22 @@ export class MemoryProvider implements Provider, SynchronousProvider {
 		});
 	}
 
-	setDocuments<X extends Data>(ref: Documents<X>, data: X): void {
+	setQuery<X extends Data>(ref: ModelQuery<X>, data: X): void {
 		const table = this._table(ref);
-		const entries = ref.query.apply(Object.entries(table.results()));
-		for (const [id] of entries) table.set(id, data);
+		const entries = ref.queryEntries(Object.entries(table.results()));
+		for (const [id] of entries) table.write(id, data);
 	}
 
-	updateDocuments<X extends Data>(ref: Documents<X>, transforms: Transforms<X>): void {
+	updateQuery<X extends Data>(ref: ModelQuery<X>, transforms: Transforms<X>): void {
 		const table = this._table(ref);
-		const entries = ref.query.apply(Object.entries(table.results()));
-		for (const [id, existing] of entries) table.set(id, transformProps(existing, transforms));
+		const entries = ref.queryEntries(Object.entries(table.results()));
+		for (const [id, existing] of entries) table.write(id, transformProps(existing, transforms));
 	}
 
-	deleteDocuments<X extends Data>(ref: Documents<X>): void {
+	deleteQuery<X extends Data>(ref: ModelQuery<X>): void {
 		const table = this._table(ref);
-		const entries = ref.query.apply(Object.entries(table.results()));
-		for (const [id] of entries) table.set(id, undefined);
+		const entries = ref.queryEntries(Object.entries(table.results()));
+		for (const [id] of entries) table.write(id, undefined);
 	}
 
 	/** Reset this provider and clear all data. */
@@ -174,7 +173,7 @@ class Table<X extends Data> {
 		return this._results[id];
 	}
 
-	set(id: string, value: X | undefined): void {
+	write(id: string, value: X | undefined): void {
 		if (value !== this._results[id]) {
 			if (value) this._results[id] = value as X;
 			else delete this._results[id];

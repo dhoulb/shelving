@@ -25,16 +25,14 @@ export class Filter<T extends Data> extends Rule<T> {
 		return MATCH[this.operator](getQueryProp(id, data, this.key), this.value);
 	}
 
-	/**
-	 * Return a `Matcher` function that can filter an array of entries
-	 */
+	/** Return a bound `Matcher` function that can filter an array of entries. */
 	@bindMethod // Bind this so we can use it directly in `filter()`
 	matcher([id, data]: Entry<T>): boolean {
 		return this.match(id, data);
 	}
 
-	// Implement apply()
-	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+	// Override to apply the filter.
+	override queryEntries(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!entries.length) return entries;
 		return filter(entries, this.matcher);
 	}

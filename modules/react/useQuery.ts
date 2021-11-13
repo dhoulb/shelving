@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
 	Data,
-	Documents,
+	DatabaseQuery,
 	CacheProvider,
 	Results,
 	Dispatcher,
@@ -32,10 +32,10 @@ import { usePureState } from "./usePureState.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useDocuments<T extends Data>(ref: Documents<T>, maxAge?: number | true): Results<T>;
-export function useDocuments<T extends Data>(ref: Documents<T> | undefined, maxAge?: number | true): Results<T> | undefined;
-export function useDocuments<T extends Data>(ref: Documents<T> | undefined, maxAge?: number | true): Results<T> | undefined {
-	return throwAsync(useAsyncDocuments(ref, maxAge));
+export function useQuery<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): Results<T>;
+export function useQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | undefined;
+export function useQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | undefined {
+	return throwAsync(useAsyncQuery(ref, maxAge));
 }
 
 /**
@@ -52,9 +52,9 @@ export function useDocuments<T extends Data>(ref: Documents<T> | undefined, maxA
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useAsyncDocuments<T extends Data>(ref: Documents<T>, maxAge?: number | true): Results<T> | Promise<Results<T>>;
-export function useAsyncDocuments<T extends Data>(ref: Documents<T> | undefined, maxAge?: number | true): Results<T> | Promise<Results<T>> | undefined;
-export function useAsyncDocuments<T extends Data>(ref: Documents<T> | undefined, maxAge: number | true = 1000): Results<T> | Promise<Results<T>> | undefined {
+export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): Results<T> | Promise<Results<T>>;
+export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | Promise<Results<T>> | undefined;
+export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true = 1000): Results<T> | Promise<Results<T>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = usePureMemo(ref, ref?.toString());
 
@@ -83,22 +83,22 @@ export function useAsyncDocuments<T extends Data>(ref: Documents<T> | undefined,
 }
 
 /** Get the initial results for a reference from the cache. */
-const getCachedResults = <T extends Data>(ref: Documents<T> | undefined): Results<T> | typeof NOVALUE | undefined => {
+const getCachedResults = <T extends Data>(ref: DatabaseQuery<T> | undefined): Results<T> | typeof NOVALUE | undefined => {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.provider, CacheProvider);
-	provider.isCached(ref) ? provider.cache.getDocuments(ref) : NOVALUE;
+	provider.isCached(ref) ? provider.cache.getQuery(ref) : NOVALUE;
 };
 
 /** Effect that subscribes a component to the cache for a reference. */
 const subscribeEffect = <T extends Data>(
-	ref: Documents<T> | undefined,
+	ref: DatabaseQuery<T> | undefined,
 	maxAge: number | true,
 	next: Dispatcher<Results<T>>,
 	error: Catcher,
 ): Unsubscriber | void => {
 	if (ref) {
 		const provider = findSourceProvider(ref.provider, CacheProvider);
-		const stopCache = provider.cache.onDocuments(ref, { next, error });
+		const stopCache = provider.cache.subscribeQuery(ref, { next, error });
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.
 			const stopSource = ref.subscribe({ next, error });

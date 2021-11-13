@@ -30,7 +30,7 @@ export class Sort<T extends Data> extends Rule<T> {
 	}
 
 	// Override to call `sort()` on the entries with a custom compare function.
-	override apply(entries: ImmutableEntries<T>): ImmutableEntries<T> {
+	override queryEntries(entries: ImmutableEntries<T>): ImmutableEntries<T> {
 		if (!entries.length) return entries;
 		return sort(entries, this.comparer);
 	}

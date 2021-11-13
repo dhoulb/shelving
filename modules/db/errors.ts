@@ -1,22 +1,32 @@
 import { Data, Feedback, RequiredError, ValidationError } from "../util/index.js";
-import type { Reference } from "./Reference.js";
+import type { ModelDocument, ModelQuery } from "./Model.js";
 
-/** Thrown if a `Document` or `Documents` doesn't exist. */
-export class ReferenceRequiredError<T extends Data = Data> extends RequiredError {
-	ref: Reference<T>;
-	constructor(ref: Reference<T>) {
-		super(`Reference "${ref.path}" does not exist`);
+/** Thrown if a document doesn't exist. */
+export class DocumentRequiredError<T extends Data = Data> extends RequiredError {
+	ref: ModelDocument<T>;
+	constructor(ref: ModelDocument<T>) {
+		super(`Document "${ref.toString()}" does not exist`);
 		this.ref = ref;
 	}
 }
-ReferenceRequiredError.prototype.name = "ReferenceRequiredError";
+DocumentRequiredError.prototype.name = "DocumentRequiredError";
 
-/** Thrown if a `Document` or `Documents` can't validate. */
-export class ReferenceValidationError<T extends Data = Data> extends ValidationError {
-	ref: Reference<T>;
-	constructor(ref: Reference<T>, feedback: Feedback) {
-		super(`Invalid data for "${ref.path}"`, feedback);
+/** Thrown if a document can't validate. */
+export class DocumentValidationError<T extends Data = Data> extends ValidationError {
+	ref: ModelDocument<T>;
+	constructor(ref: ModelDocument<T>, feedback: Feedback) {
+		super(`Invalid data for "${ref.toString()}"`, feedback);
 		this.ref = ref;
 	}
 }
-ReferenceValidationError.prototype.name = "ReferenceValidationError";
+DocumentValidationError.prototype.name = "DocumentValidationError";
+
+/** Thrown if a query can't validate a set of results. */
+export class QueryValidationError<T extends Data = Data> extends ValidationError {
+	ref: ModelQuery<T>;
+	constructor(ref: ModelQuery<T>, feedback: Feedback) {
+		super(`Invalid documents for "${ref.collection}"`, feedback);
+		this.ref = ref;
+	}
+}
+QueryValidationError.prototype.name = "QueryValidationError";
