@@ -1,4 +1,4 @@
-import { AsyncCatcher, AsyncDeriver, AsyncDispatcher, AsyncEmptyDispatcher, Observable, Observer, Subscribable, therive, Unsubscriber } from "../util/index.js";
+import { AsyncDeriver, Dispatcher, EmptyDispatcher, Observable, Observer, Subscribable, therive, Unsubscriber } from "../util/index.js";
 import { Stream } from "./Stream.js";
 
 /** Used to key a secret but public method. */
@@ -20,7 +20,7 @@ export class DeriveStream<I, O> extends Stream<any> implements Observer<I>, Obse
 		return super.next(value);
 	}
 	// Override to only allow output type.
-	override subscribe(next: Observer<O> | AsyncDispatcher<O>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
+	override subscribe(next: Observer<O> | Dispatcher<O>, error?: Dispatcher<unknown>, complete?: EmptyDispatcher): Unsubscriber {
 		return super.subscribe(next, error, complete);
 	}
 	// Override to only allow output type.
@@ -37,7 +37,7 @@ export class DeriveStream<I, O> extends Stream<any> implements Observer<I>, Obse
 	}
 	// Override to derive any received values using the `Deriver` function and send them to the `DISPATCH_DERIVED()` method.
 	protected override _dispatch(value: I) {
-		therive<I, O, typeof DISPATCH_DERIVED, "error">(value, this._deriver, this, DISPATCH_DERIVED, this, "error");
+		therive<I, O, typeof DISPATCH_DERIVED>(value, this._deriver, this, DISPATCH_DERIVED, this);
 	}
 	// Secret method that receives any derived values and dispatches them to any observers.
 	[DISPATCH_DERIVED](value: O) {

@@ -1,6 +1,7 @@
 import {
 	AsyncDeriver,
 	LOADING,
+	NOERROR,
 	ImmutableObject,
 	Mutable,
 	assertObject,
@@ -35,7 +36,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	readonly updated: number | undefined = undefined;
 
 	/** The error that caused this state to close. */
-	readonly reason: Error | unknown = undefined;
+	readonly reason: Error | unknown = NOERROR;
 
 	/** Is this state is currently loading? */
 	get loading(): boolean {
@@ -50,7 +51,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	 * @throws `Error | unknown` if this state has errored.
 	 */
 	get value(): T {
-		if (this.reason) throw this.reason;
+		if (this.reason !== NOERROR) throw this.reason;
 		if (this._value === LOADING) throw getNextValue(this);
 		return this._value;
 	}
@@ -64,7 +65,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	 * @throws `Error | unknown` if this state has errored.
 	 */
 	get data(): Exclude<T, undefined> {
-		if (this.reason) throw this.reason;
+		if (this.reason !== NOERROR) throw this.reason;
 		if (this._value === LOADING) throw getNextValue(this).then(getRequired);
 		return getRequired(this._value);
 	}
@@ -124,7 +125,7 @@ export class State<T> extends Stream<T> implements Observer<T>, Observable<T> {
 	// Override to send the current error or value to any new subscribers.
 	override on(observer: Observer<T>) {
 		super.on(observer);
-		if (this.reason) dispatchError(observer, this.reason);
+		if (this.reason !== NOERROR) dispatchError(observer, this.reason);
 		else if (this.closed) dispatchComplete(observer);
 		else if (this._value !== LOADING) dispatchNext(observer, this._value);
 	}

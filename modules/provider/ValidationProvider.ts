@@ -13,6 +13,7 @@ import {
 	assertInstance,
 	MutableTransforms,
 	Validator,
+	validate,
 } from "../util/index.js";
 import { DeriveStream } from "../stream/index.js";
 import { ObjectSchema } from "../index.js";
@@ -39,10 +40,10 @@ export class ValidationProvider extends ThroughProvider implements Provider {
 		return super.subscribe(ref, stream);
 	}
 	override add<X extends Data>(ref: ModelQuery<X>, data: X): string | Promise<string> {
-		return super.add(ref, ref.schema.validate(data));
+		return super.add(ref, validate(ref.validator, data));
 	}
 	override set<X extends Data>(ref: ModelDocument<X>, data: X): void | Promise<void> {
-		return super.set(ref, ref.schema.validate(data));
+		return super.set(ref, validate(ref.validator, data));
 	}
 	override update<X extends Data>(ref: ModelDocument<X>, transforms: Transforms<X>): void | Promise<void> {
 		return super.update(ref, validateTransforms(ref, transforms));
@@ -61,7 +62,7 @@ export class ValidationProvider extends ThroughProvider implements Provider {
 		return super.subscribeQuery(ref, stream);
 	}
 	override setQuery<X extends Data>(ref: ModelQuery<X>, data: X): void | Promise<void> {
-		return super.setQuery(ref, ref.schema.validate(data));
+		return super.setQuery(ref, validate(ref.validator, data));
 	}
 	override updateQuery<X extends Data>(ref: ModelQuery<X>, transforms: Transforms<X>): void | Promise<void> {
 		return super.updateQuery(ref, validateTransforms(ref, transforms));
@@ -71,7 +72,7 @@ export class ValidationProvider extends ThroughProvider implements Provider {
 /** Validate a set of transforms for a path. */
 function validateTransforms<X extends Data>(ref: ModelDocument<X> | ModelQuery<X>, unsafeTransforms: Transforms<X>): Transforms<X> {
 	if (!isObject(unsafeTransforms)) throw new InvalidFeedback("Must be object", { value: unsafeTransforms });
-	const schema = ref.schema;
+	const schema = ref.validator;
 	assertInstance<ObjectSchema<X>>(schema, ObjectSchema);
 	let changed = false;
 	let invalid = false;
@@ -86,7 +87,7 @@ function validateTransforms<X extends Data>(ref: ModelDocument<X> | ModelQuery<X
 			safeTransforms[key] = unsafeTransform;
 		} else {
 			try {
-				const safeTransform = validator.validate(unsafeTransform);
+				const safeTransform = validate(validator, unsafeTransform);
 				if (safeTransform !== unsafeTransform) changed = true;
 				safeTransforms[key] = safeTransform;
 			} catch (feedback: unknown) {

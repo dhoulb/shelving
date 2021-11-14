@@ -14,7 +14,6 @@ describe("ArraySchema", () => {
 		const requiredType: ArraySchema<number> = requiredSchema;
 		const requiredValue: ReadonlyArray<number> = requiredSchema.validate([123]);
 		const requiredItemsSchema: Validator<number> = requiredSchema.items;
-		const requiredItemsValue: number = requiredItemsSchema.validate(123);
 
 		const arrayRequiredSchema = ArraySchema.create({ items: StringSchema.REQUIRED, required: true });
 		const arrayRequiredType: ArraySchema<string> = arrayRequiredSchema;

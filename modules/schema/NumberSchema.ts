@@ -1,5 +1,5 @@
 import { InvalidFeedback, toNumber, roundNumber, isArray, isObject, Unit, detectUnit, convertUnits } from "../util/index.js";
-import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 type NumberSchemaOptions<T extends number | null> = SchemaOptions<T> & {
 	readonly value?: number | null;
@@ -22,9 +22,9 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 	static REQUIRED: NumberSchema<number> = new NumberSchema({ required: true });
 	static OPTIONAL: NumberSchema<number | null> = new NumberSchema({ required: false });
 
-	static create<X extends number>(options: NumberSchemaOptions<X> & NumberSchemaOptionOptions<X> & RequiredSchemaOptions): NumberSchema<X>;
+	static create<X extends number>(options: NumberSchemaOptions<X> & NumberSchemaOptionOptions<X> & { required: true }): NumberSchema<X>;
 	static create<X extends number>(options: NumberSchemaOptions<X> & NumberSchemaOptionOptions<X>): NumberSchema<X | null>;
-	static create(options: NumberSchemaOptions<number | null> & RequiredSchemaOptions): NumberSchema<number>;
+	static create(options: NumberSchemaOptions<number | null> & { required: true }): NumberSchema<number>;
 	static create(options: NumberSchemaOptions<number | null>): NumberSchema<number | null>;
 	static create(options: NumberSchemaOptions<number | null>): NumberSchema<number | null> {
 		return new NumberSchema(options);

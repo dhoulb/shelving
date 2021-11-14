@@ -16,10 +16,8 @@ export type FeedbackStatus = "" | "success" | "warning" | "error" | "invalid";
  * @param details Set of other `Feedback` instances describing the issue in further detail.
  */
 export class Feedback {
-	static STATUS: FeedbackStatus = "";
-
-	/** Optional status string for this feedback. */
-	readonly status: FeedbackStatus = (this.constructor as typeof Feedback).STATUS;
+	/** Status string for this feedback. */
+	readonly status: FeedbackStatus = "";
 
 	/** String feedback message that is safe to show to a user. */
 	readonly feedback: string;
@@ -68,22 +66,22 @@ export class Feedback {
 
 /** Specific type of `Feedback` to indicate success (something went right!). */
 export class SuccessFeedback extends Feedback {
-	static override STATUS: FeedbackStatus = "success";
+	override status: FeedbackStatus = "success";
 }
 
 /** Specific type of `Feedback` to indicate warning (something might go wrong soon). */
 export class WarningFeedback extends Feedback {
-	static override STATUS: FeedbackStatus = "warning";
+	override status: FeedbackStatus = "warning";
 }
 
 /** Specific type of `Feedback` to indicate an error (something went wrong). */
 export class ErrorFeedback extends Feedback {
-	static override STATUS: FeedbackStatus = "error";
+	override status: FeedbackStatus = "error";
 }
 
 /** Specific type of `ErrorFeedback` returned from `validate()` when a value is invalid. */
 export class InvalidFeedback extends ErrorFeedback {
-	static override STATUS: FeedbackStatus = "invalid";
+	override status: FeedbackStatus = "invalid";
 }
 
 /** Set of hydrations for all feedback classes. */

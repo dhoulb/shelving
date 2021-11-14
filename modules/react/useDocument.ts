@@ -6,7 +6,6 @@ import {
 	Result,
 	Dispatcher,
 	throwAsync,
-	Catcher,
 	NOERROR,
 	isAsync,
 	findSourceProvider,
@@ -44,7 +43,7 @@ export function useAsyncDocument<T extends Data>(
 
 	// Create two states to hold the value and error.
 	const [value, setNext] = usePureState(getCachedResult, memoRef);
-	const [error, setError] = useState<unknown | typeof NOERROR>(NOERROR);
+	const [error, setError] = useState<unknown>(NOERROR);
 	if (error !== NOERROR) throw error; // If there's an error throw it.
 
 	// Register effect.
@@ -143,7 +142,7 @@ const subscribeEffect = <T extends Data>(
 	ref: DatabaseDocument<T> | undefined,
 	maxAge: number | true,
 	next: Dispatcher<Result<T>>,
-	error: Catcher,
+	error: Dispatcher<unknown>,
 ): Unsubscriber | void => {
 	if (ref) {
 		const provider = findSourceProvider(ref.provider, CacheProvider);

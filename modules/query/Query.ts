@@ -36,6 +36,9 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	in<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? readonly string[] : readonly T[K][]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.in(key, value) };
 	}
+	contains<K extends keyof T>(key: K & string, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.contains(key, value) };
+	}
 	lt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.lt(key, value) };
 	}
@@ -47,9 +50,6 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	}
 	gte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.gte(key, value) };
-	}
-	contains<K extends keyof T>(key: K & string, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.contains(key, value) };
 	}
 
 	/**

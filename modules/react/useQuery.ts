@@ -1,18 +1,5 @@
 import { useState } from "react";
-import {
-	Data,
-	DatabaseQuery,
-	CacheProvider,
-	Results,
-	Dispatcher,
-	throwAsync,
-	Catcher,
-	NOERROR,
-	findSourceProvider,
-	NOVALUE,
-	dispatch,
-	Unsubscriber,
-} from "../index.js";
+import { Data, DatabaseQuery, CacheProvider, Results, Dispatcher, throwAsync, NOERROR, findSourceProvider, NOVALUE, dispatch, Unsubscriber } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -60,7 +47,7 @@ export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined,
 
 	// Create two states to hold the value and error.
 	const [value, setNext] = usePureState(getCachedResults, memoRef);
-	const [error, setError] = useState<unknown | typeof NOERROR>(NOERROR);
+	const [error, setError] = useState<unknown>(NOERROR);
 	if (error !== NOERROR) throw error; // If there's an error throw it.
 
 	// Register effects.
@@ -94,7 +81,7 @@ const subscribeEffect = <T extends Data>(
 	ref: DatabaseQuery<T> | undefined,
 	maxAge: number | true,
 	next: Dispatcher<Results<T>>,
-	error: Catcher,
+	error: Dispatcher<unknown>,
 ): Unsubscriber | void => {
 	if (ref) {
 		const provider = findSourceProvider(ref.provider, CacheProvider);

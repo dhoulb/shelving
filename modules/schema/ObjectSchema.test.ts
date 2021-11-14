@@ -9,7 +9,6 @@ describe("ObjectSchema", () => {
 		const requiredValue2: { readonly num: number } = requiredSchema.validate({ num: 123 });
 		const requiredPropSchema = requiredSchema.props.num;
 		const requiredPropType: Validator<number> = requiredPropSchema;
-		const requiredPropValue: number = requiredPropSchema.validate(123);
 
 		const objectRequiredSchema = ObjectSchema.create({ props: { num: NumberSchema.REQUIRED }, required: true });
 		const objectRequiredType: ObjectSchema<{ num: number }> = objectRequiredSchema;

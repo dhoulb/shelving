@@ -1,4 +1,4 @@
-import { RequiredSchemaOptions, SchemaOptions } from "../index.js";
+import { SchemaOptions } from "../index.js";
 import { StringSchema } from "./StringSchema.js";
 
 const R_MATCH = /^#[0-9A-F]{6}$/;
@@ -21,8 +21,6 @@ export class ColorSchema extends StringSchema<string> {
 	static override REQUIRED = new ColorSchema({ required: true });
 	static override OPTIONAL = new ColorSchema({ required: false });
 
-	static override create(options: ColorSchemaOptions & RequiredSchemaOptions): ColorSchema;
-	static override create(options: ColorSchemaOptions): ColorSchema;
 	static override create(options: ColorSchemaOptions): ColorSchema {
 		return new ColorSchema(options);
 	}

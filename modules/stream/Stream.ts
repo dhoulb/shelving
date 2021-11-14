@@ -1,7 +1,6 @@
 import {
-	AsyncCatcher,
-	AsyncDispatcher,
-	AsyncEmptyDispatcher,
+	Dispatcher,
+	EmptyDispatcher,
 	Mutable,
 	Unsubscriber,
 	Resolvable,
@@ -17,10 +16,11 @@ import {
 	createObserver,
 	removeItem,
 	Subscribable,
-	startSubscription,
+	subscribe,
 	ObserverType,
 	AnyObserver,
 	dispatch,
+	Handlable,
 } from "../util/index.js";
 import { ObserverClosedError, StreamClosedError } from "./errors.js";
 
@@ -34,7 +34,7 @@ export type StreamType<T extends Stream<unknown>> = T extends Stream<infer X> ? 
  * - Provide a normalised `stream.closed` property that is `true` initially and `false` after `stream.error()` or `stream.complete()` have been called (`stream.next()` can't be called again after `stream.closed` is true).
  * - Streams can connect to a source subscribable via `stream.start()`. The source subscription is ended when this stream is closed with `stream.error()` or `stream.complete()`
  */
-export class Stream<T> implements Observer<T>, Observable<T> {
+export class Stream<T> implements Observer<T>, Observable<T>, Handlable {
 	/**
 	 * Start streaming from a source subscribable to a target observer.
 	 * - Convenience allows you to one-line the following: `const target = new Stream(); target.start(source);`
@@ -50,7 +50,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 		// `source.on()` is more efficient because it doesn't create a an `Unsubscribe` function that is never used.
 		if (source instanceof Stream) source.on(target);
 		// `startSubscription()` works with any `Subscribable` and `Observer`
-		else startSubscription(source, target);
+		else subscribe(source, target);
 		return target;
 	}
 
@@ -134,7 +134,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	start(source: Subscribable<T>): void {
 		if (this.closed) throw new StreamClosedError(this);
 		if (source instanceof Stream) source.on(this);
-		else this._sources.push(startSubscription(source, this));
+		else this._sources.push(subscribe(source, this));
 	}
 
 	/**
@@ -150,7 +150,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * - Allows either an `Observer` object or  separate `next()`, `error()` and `complete()` functions.
 	 * - Implements `Observable`
 	 */
-	subscribe(next: Observer<T> | AsyncDispatcher<T>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
+	subscribe(next: Observer<T> | Dispatcher<T>, error?: Dispatcher<unknown>, complete?: EmptyDispatcher): Unsubscriber {
 		const observer = createObserver(next, error, complete);
 		this.on(observer);
 		return this.off.bind(this, observer);

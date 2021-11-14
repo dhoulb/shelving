@@ -1,5 +1,5 @@
-import { MutableObject, isObject, ImmutableObject, Validator, Validators, Feedback, InvalidFeedback } from "../util/index.js";
-import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
+import { MutableObject, isObject, ImmutableObject, Validators, Feedback, InvalidFeedback, AnyValidator, ImmutableEntries, validate } from "../util/index.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & {
 	/**
@@ -16,10 +16,10 @@ type ObjectSchemaOptions<T extends ImmutableObject | null> = SchemaOptions<T> & 
  * Checks that value is an object, and optionally matches the format or items specific contents in the object.
  * Only returns a new instance of the object if it changes (for immutability).
  */
-export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Readonly<T>> implements Validator<T> {
-	static create<X extends ImmutableObject>(options: ObjectSchemaOptions<X> & RequiredSchemaOptions): ObjectSchema<X>;
-	static create<X extends ImmutableObject | null>(options: ObjectSchemaOptions<X>): ObjectSchema<X | null>;
-	static create(options: ObjectSchemaOptions<ImmutableObject | null>): ObjectSchema<ImmutableObject | null> {
+export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Readonly<T>> {
+	static create<X extends ImmutableObject>(options: ObjectSchemaOptions<X> & { readonly required: true }): ObjectSchema<X>;
+	static create<X extends ImmutableObject | null>(options: ObjectSchemaOptions<X>): ObjectSchema<X>;
+	static create<X extends ImmutableObject | null>(options: ObjectSchemaOptions<X>): ObjectSchema<X> {
 		return new ObjectSchema(options);
 	}
 
@@ -59,11 +59,11 @@ export class ObjectSchema<T extends ImmutableObject | null> extends Schema<Reado
 		let invalid = false;
 		const safeObj: MutableObject = {};
 		const details: MutableObject<Feedback> = {};
-		const propSchemas = Object.entries(this.props);
+		const propSchemas: ImmutableEntries<AnyValidator> = Object.entries(this.props);
 		for (const [key, validator] of propSchemas) {
 			const unsafeProp = unsafeObj[key];
 			try {
-				const safeProp = validator.validate(unsafeProp);
+				const safeProp = validate(validator, unsafeProp);
 
 				// Set the prop.
 				if (safeProp !== unsafeProp) changed = true;

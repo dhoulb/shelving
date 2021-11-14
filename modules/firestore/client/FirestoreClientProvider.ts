@@ -33,8 +33,8 @@ import {
 	Provider,
 	ModelDocument,
 	ModelQuery,
-	Operator,
-	Direction,
+	FilterOperator,
+	SortDirection,
 	Mutable,
 	Result,
 	Observer,
@@ -57,7 +57,7 @@ import {
 const ID = "__id__"; // Internal way Firestore Queries can reference the ID of the current document.
 
 // Map `Filter.types` to `WhereFilterOp`
-const OPERATORS: { readonly [K in Operator]: FirestoreWhereFilterOp } = {
+const OPERATORS: { readonly [K in FilterOperator]: FirestoreWhereFilterOp } = {
 	IS: "==",
 	NOT: "!=",
 	IN: "in",
@@ -69,7 +69,7 @@ const OPERATORS: { readonly [K in Operator]: FirestoreWhereFilterOp } = {
 };
 
 // Map `Filter.types` to `OrderByDirection`
-const DIRECTIONS: { readonly [K in Direction]: FirestoreOrderByDirection } = {
+const DIRECTIONS: { readonly [K in SortDirection]: FirestoreOrderByDirection } = {
 	ASC: "asc",
 	DESC: "desc",
 };

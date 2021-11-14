@@ -1,5 +1,5 @@
 import { isObject, sanitizeLines, sanitizeString, toString, isArray, InvalidFeedback } from "../util/index.js";
-import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 type StringSchemaOptions<T extends string> = SchemaOptions<T> & {
 	readonly value?: string;
@@ -41,9 +41,9 @@ export class StringSchema<T extends string> extends Schema<T> {
 	static REQUIRED: StringSchema<string> = new StringSchema({ required: true });
 	static OPTIONAL: StringSchema<string> = new StringSchema({ required: false });
 
-	static create<X extends string>(options: StringSchemaOptions<X> & StringOptionOptions<X> & RequiredSchemaOptions): StringSchema<X>;
+	static create<X extends string>(options: StringSchemaOptions<X> & StringOptionOptions<X> & { required: true }): StringSchema<X>;
 	static create<X extends string>(options: StringSchemaOptions<X> & StringOptionOptions<X>): StringSchema<X | "">;
-	static create(options: StringSchemaOptions<string> & RequiredSchemaOptions): StringSchema<string>;
+	static create(options: StringSchemaOptions<string> & { required: true }): StringSchema<string>;
 	static create(options: StringSchemaOptions<string>): StringSchema<string | "">;
 	static create(options: StringSchemaOptions<string>): StringSchema<string> {
 		return new StringSchema(options);

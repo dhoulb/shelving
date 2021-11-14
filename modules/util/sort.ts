@@ -1,6 +1,79 @@
-import type { Deriver } from "./dispatch.js";
+import type { Deriver } from "./derive.js";
 import type { ImmutableArray } from "./array.js";
-import { Comparer, COMPARE } from "./compare.js";
+
+/** Object that can compare two values using its `compare()` function. */
+export interface Comparable<T> {
+	compare(left: T, right: T): number;
+}
+
+/** Object that can compare two values using its `compare()` function, or a function that can do the same. */
+export type Comparer<T> = Comparable<T> | ((left: T, right: T) => number);
+
+/** Compare two values with a `Comparer`. */
+export function compare<T>(left: T, comparer: Comparer<T>, right: T) {
+	return typeof comparer === "function" ? comparer(left, right) : comparer.compare(left, right);
+}
+
+/**
+ * Compare two values in ascending order.
+ * - Allows values of different types to be compared for sorting.
+ *
+ * 1. Numbers and dates (ascending order: -Infinity, negative, zero, positive, Infinity, NaN)
+ * 2. Strings (locale-aware order)
+ * 3. `true`
+ * 4. `false`
+ * 5. `null`
+ * 6. Unsorted values (objects that can't be converted to number or string, symbols, NaN, etc)
+ * 7. `undefined`
+ *
+ * @param x The first value to compare.
+ * @param y The second value to compare.
+ *
+ * @returns Number below zero if `a` is higher, number above zero if `b` is higher, or `0` if they're equally sorted.
+ */
+export function compareAscending(left: unknown, right: unknown): number {
+	// Exactly equal is easy.
+	if (left === right) return 0;
+
+	// Switch for type.
+	if (typeof left === "number" && !Number.isNaN(left)) {
+		// Number compare.
+		if (typeof right === "number" && !Number.isNaN(right) && right < left) return 1;
+	} else if (typeof left === "string") {
+		// String compare (uses locale-aware comparison).
+		if (typeof right === "string") return left.localeCompare(right);
+		// right is higher if number.
+		else if (typeof right === "number") return 1;
+	} else if (left === true) {
+		// right is higher if number, string.
+		if ((typeof right === "number" && !Number.isNaN(right)) || typeof right === "string") return 1;
+	} else if (left === false) {
+		// right is higher if number, string.
+		if ((typeof right === "number" && !Number.isNaN(right)) || typeof right === "string" || right === true) return 1;
+	} else if (left === null) {
+		// right is higher if number, string, boolean.
+		if ((typeof right === "number" && !Number.isNaN(right)) || typeof right === "string" || typeof right === "boolean") return 1;
+	} else if (typeof left !== "undefined") {
+		// Anything else, e.g. object, array, symbol, NaN.
+		// right is higher if number, string, boolean, null.
+		if ((typeof right === "number" && !Number.isNaN(right)) || typeof right === "string" || typeof right === "boolean" || right === null) return 1;
+		// Undefined is lower, anything else is equal.
+		else if (typeof right !== "undefined") return 0;
+	} else {
+		// Both undefined.
+		if (typeof right === "undefined") return 0;
+		// right is higher if not undefined
+		return 1;
+	}
+
+	// Otherwise a is higher.
+	return -1;
+}
+
+/** Compare two values in descending order. */
+export function compareDescending(left: unknown, right: unknown): number {
+	return 0 - compareAscending(left, right);
+}
 
 /**
  * Quick sort algorithm.
@@ -34,8 +107,8 @@ const quickSort = (
 	let l = leftPointer;
 	let r = rightPointer;
 	while (l <= r) {
-		while (comparer(deriver ? deriver(items[l]) : items[l], middleExtractedItem) < 0) l++;
-		while (comparer(deriver ? deriver(items[r]) : items[r], middleExtractedItem) > 0) r--;
+		while (compare(deriver ? deriver(items[l]) : items[l], comparer, middleExtractedItem) < 0) l++;
+		while (compare(deriver ? deriver(items[r]) : items[r], comparer, middleExtractedItem) > 0) r--;
 		if (l <= r) {
 			if (l < r) {
 				changed = true;
@@ -67,7 +140,7 @@ const quickSort = (
 export function sort<T>(items: ImmutableArray<T>): ImmutableArray<T>;
 export function sort<T>(items: ImmutableArray<T>, comparer: Comparer<T>): ImmutableArray<T>;
 export function sort<T, TT>(items: ImmutableArray<T>, comparer: Comparer<TT>, deriver?: Deriver<T, TT>): ImmutableArray<T>;
-export function sort(items: ImmutableArray, comparer: Comparer = COMPARE.ASC, deriver?: Deriver): ImmutableArray {
+export function sort(items: ImmutableArray, comparer: Comparer<unknown> = compareAscending, deriver?: Deriver): ImmutableArray {
 	if (items.length <= 1) return items;
 	const sorted = items.slice();
 	return quickSort(sorted, comparer, deriver) ? sorted : items;
@@ -78,11 +151,11 @@ export function sort(items: ImmutableArray, comparer: Comparer = COMPARE.ASC, de
  * @param deriver An extract function that takes a value and extracts the value the sorting is actually done on (e.g. to sort on an object property or deep property).
  * @returns New array that is sorted (or the old array if no changes were made).
  */
-export const sortAscending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, COMPARE.ASC, deriver);
+export const sortAscending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, compareAscending, deriver);
 
 /**
  * Sort an array in descending order (optionally specifying an extractor function).
  * @param deriver An extract function that takes a value and extracts the value the sorting is actually done on (e.g. to sort on an object property or deep property).
  * @returns New array that is sorted (or the old array if no changes were made).
  */
-export const sortDescending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, COMPARE.DESC, deriver);
+export const sortDescending = <T>(items: ImmutableArray<T>, deriver?: Deriver<T>): ImmutableArray<T> => sort(items, compareDescending, deriver);

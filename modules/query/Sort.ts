@@ -1,42 +1,44 @@
-import { bindMethod, Data, Entry, ImmutableEntries, COMPARE, Direction, sort } from "../util/index.js";
+import { Data, Entry, ImmutableEntries, sort, Comparable, compareAscending, compareDescending } from "../util/index.js";
 import { getQueryProp } from "./helpers.js";
 import { Rule } from "./Rule.js";
+import { SortDirection } from "./types.js";
 
-/**
- * Sorts a list of values.
- *
- * @param prop The name of a property of objects in this collection, or `id` to sort by primary key.
- * @param direction A direction string, either "asc" or "desc"
- */
-export class Sort<T extends Data> extends Rule<T> {
+/** Sort a list of values. */
+export abstract class Sort<T extends Data> extends Rule<T> implements Comparable<Entry<T>> {
 	readonly key: "id" | string;
-	readonly direction: Direction;
+	abstract readonly direction: SortDirection;
 
-	constructor(key: "id" | string, direction: Direction = "ASC") {
+	constructor(key: "id" | string) {
 		super();
 		this.key = key;
-		this.direction = direction;
 	}
 
-	/** Compare two entries of this type for sorting. */
-	compare([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
-		return COMPARE[this.direction](getQueryProp(leftId, leftData, this.key), getQueryProp(rightId, rightData, this.key));
-	}
-
-	/** Return a bound `Comparer` function for using in `sort()` */
-	@bindMethod
-	comparer(left: Entry<T>, right: Entry<T>): number {
-		return this.compare(left, right);
-	}
+	// Implement `Comparable`
+	abstract compare([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number;
 
 	// Override to call `sort()` on the entries with a custom compare function.
 	override queryEntries(entries: ImmutableEntries<T>): ImmutableEntries<T> {
-		if (!entries.length) return entries;
-		return sort(entries, this.comparer);
+		return sort(entries, this);
 	}
 
 	// Implement toString()
 	override toString(): string {
 		return `${this.key}:sort=${this.direction}`;
+	}
+}
+
+/** Sort a list of values in ascending order. */
+export class AscendingSort<T extends Data> extends Sort<T> {
+	readonly direction = "ASC";
+	compare([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
+		return compareAscending(getQueryProp(leftId, leftData, this.key), getQueryProp(rightId, rightData, this.key));
+	}
+}
+
+/** Sort a list of values in descending order. */
+export class DescendingSort<T extends Data> extends Sort<T> {
+	readonly direction = "DESC";
+	compare([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
+		return compareDescending(getQueryProp(leftId, leftData, this.key), getQueryProp(rightId, rightData, this.key));
 	}
 }

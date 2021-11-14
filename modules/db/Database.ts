@@ -1,11 +1,10 @@
 import {
-	AsyncCatcher,
-	AsyncDispatcher,
-	AsyncEmptyDispatcher,
+	EmptyDispatcher,
 	countEntries,
 	createObserver,
 	Data,
 	Datas,
+	Dispatcher,
 	Entry,
 	getFirstProp,
 	getLastProp,
@@ -42,12 +41,12 @@ export class Database<D extends Datas = Datas> extends Model<D> {
 
 	// Override to return `DatabaseQuery` instead of `ModelQuery`
 	override query<C extends keyof D & string>(collection: C, filters?: Filters<D[C]>, sorts?: Sorts<D[C]>, slice?: Slice<D[C]>): DatabaseQuery<D[C]> {
-		return new DatabaseQuery(this.provider, this.schemas[collection], collection, filters, sorts, slice);
+		return new DatabaseQuery(this.provider, this.validators[collection], collection, filters, sorts, slice);
 	}
 
 	// Override to return `DatabaseDocument` instead of `ModelDocument
 	override doc<C extends keyof D & string>(collection: C, id: string): DatabaseDocument<D[C]> {
-		return new DatabaseDocument(this.provider, this.schemas[collection], collection, id);
+		return new DatabaseDocument(this.provider, this.validators[collection], collection, id);
 	}
 }
 
@@ -61,7 +60,7 @@ export class DatabaseQuery<T extends Data = Data> extends ModelQuery<T> implemen
 
 	// Override to return `DatabaseDocument` instead of `ModelDocument
 	override doc(id: string): DatabaseDocument<T> {
-		return new DatabaseDocument(this.provider, this.schema, this.collection, id);
+		return new DatabaseDocument(this.provider, this.validator, this.collection, id);
 	}
 
 	/**
@@ -124,7 +123,7 @@ export class DatabaseQuery<T extends Data = Data> extends ModelQuery<T> implemen
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<Results<T>> | AsyncDispatcher<Results<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
+	subscribe(next: Observer<Results<T>> | Dispatcher<Results<T>>, error?: Dispatcher<Error | unknown>, complete?: EmptyDispatcher): Unsubscriber {
 		return this.provider.subscribeQuery(this, createObserver(next, error, complete));
 	}
 
@@ -201,7 +200,7 @@ export class DatabaseDocument<T extends Data = Data> extends ModelDocument<T> im
 
 	// Override to return `DatabaseQuery` instead of `ModelQuery`
 	override query(filters?: Filters<T>, sorts?: Sorts<T>, slice?: Slice<T>): DatabaseQuery<T> {
-		return new DatabaseQuery(this.provider, this.schema, this.collection, filters, sorts, slice);
+		return new DatabaseQuery(this.provider, this.validator, this.collection, filters, sorts, slice);
 	}
 
 	/**
@@ -263,7 +262,7 @@ export class DatabaseDocument<T extends Data = Data> extends ModelDocument<T> im
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<Result<T>> | AsyncDispatcher<Result<T>>, error?: AsyncCatcher, complete?: AsyncEmptyDispatcher): Unsubscriber {
+	subscribe(next: Observer<Result<T>> | Dispatcher<Result<T>>, error?: Dispatcher<Error | unknown>, complete?: EmptyDispatcher): Unsubscriber {
 		return this.provider.subscribe<T>(this, createObserver(next, error, complete));
 	}
 

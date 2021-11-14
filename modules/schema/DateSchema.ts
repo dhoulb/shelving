@@ -1,5 +1,5 @@
 import { InvalidFeedback, toDate, getYmd, PossibleOptionalDate } from "../util/index.js";
-import { RequiredSchemaOptions, Schema, SchemaOptions } from "./Schema.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 type DateOptions<T extends string | null> = SchemaOptions<T> & {
 	readonly value?: PossibleOptionalDate;
@@ -16,7 +16,7 @@ export class DateSchema<T extends string | null> extends Schema<T> {
 	static REQUIRED: DateSchema<string> = new DateSchema({ required: true });
 	static OPTIONAL: DateSchema<string | null> = new DateSchema({ required: false });
 
-	static create<X extends string>(options: DateOptions<X> & RequiredSchemaOptions): DateSchema<X>;
+	static create<X extends string>(options: DateOptions<X> & { required: true }): DateSchema<X>;
 	static create<X extends string | null>(options: DateOptions<X>): DateSchema<X | null>;
 	static create(options: DateOptions<string | null>): DateSchema<string | null> {
 		return new DateSchema(options);

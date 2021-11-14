@@ -1,12 +1,12 @@
-import type { Dispatcher, Catcher } from "./dispatch.js";
+import type { Dispatcher } from "./dispatch.js";
 
 /** Extension of `Promise` that exposes its `resolve()` and `reject()` function as public parameters. */
 export class ResolvablePromise<T> extends Promise<T> {
 	readonly resolve: Dispatcher<T>;
-	readonly reject: Catcher;
-	constructor(initiator?: (resolve: Dispatcher<T>, reject: Catcher) => void) {
+	readonly reject: Dispatcher<Error | unknown>;
+	constructor(initiator?: (resolve: Dispatcher<T>, reject: Dispatcher<Error | unknown>) => void) {
 		let thisResolve: Dispatcher<T>;
-		let thisReject: Catcher;
+		let thisReject: Dispatcher<Error | unknown>;
 		super((resolve, reject) => {
 			thisResolve = resolve;
 			thisReject = reject;

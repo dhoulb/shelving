@@ -1,16 +1,16 @@
 import { Entry, ImmutableEntries, Data, sort, bindMethod } from "../util/index.js";
 import type { Sortable } from "./types.js";
-import { Sort } from "./Sort.js";
+import { AscendingSort, DescendingSort, Sort } from "./Sort.js";
 import { Rules } from "./Rules.js";
 
 /** A set of sorts. */
 export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable<T> {
 	// Add sorts.
 	asc(key: "id" | (keyof T & string)): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, rules: [...this.rules, new Sort<T>(key, "ASC")] };
+		return { __proto__: Object.getPrototypeOf(this), ...this, rules: [...this.rules, new AscendingSort<T>(key)] };
 	}
 	desc(key: "id" | (keyof T & string)): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, rules: [...this.rules, new Sort<T>(key, "DESC")] };
+		return { __proto__: Object.getPrototypeOf(this), ...this, rules: [...this.rules, new DescendingSort<T>(key)] };
 	}
 
 	/** Compare two entries of this type for sorting. */

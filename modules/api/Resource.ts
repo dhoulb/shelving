@@ -1,8 +1,8 @@
-import { Validator, Feedback, getUndefined } from "../util/index.js";
+import { Validator, Validatable, Feedback, getUndefined, validate } from "../util/index.js";
 import { ResourceValidationError } from "./errors.js";
 
 /** Validator that always returns void/undefined. */
-const UNDEFINED_VALIDATOR: Validator<undefined> = { validate: getUndefined };
+const UNDEFINED_VALIDATOR: Validator<undefined> = getUndefined;
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions..
@@ -10,7 +10,7 @@ const UNDEFINED_VALIDATOR: Validator<undefined> = { validate: getUndefined };
  * @param payload The `Validator` the payload must conform to (defaults to `undefined` if not specified).
  * @param returns The `Validator` the function's returned value must conform to (defaults to `undefined` if not specified).
  */
-export class Resource<P = unknown, R = void> implements Validator<R> {
+export class Resource<P = unknown, R = void> implements Validatable<R> {
 	static create<X, Y>(payload: Validator<X>, result: Validator<Y>): Resource<X, Y>;
 	static create<Y>(payload: undefined, result: Y): Resource<undefined, Y>;
 	static create<X>(payload: Validator<X>, result?: undefined): Resource<X, void>;
@@ -31,6 +31,11 @@ export class Resource<P = unknown, R = void> implements Validator<R> {
 		this.result = result;
 	}
 
+	/** Validate a payload for this resource. */
+	validatePayload(payload: unknown): P {
+		return validate(this.payload, payload);
+	}
+
 	/**
 	 * Validate a result for this resource.
 	 *
@@ -39,7 +44,7 @@ export class Resource<P = unknown, R = void> implements Validator<R> {
 	 */
 	validate(result: unknown): R {
 		try {
-			return this.result.validate(result);
+			return validate(this.result, result);
 		} catch (thrown) {
 			throw thrown instanceof Feedback ? new ResourceValidationError(this, thrown) : thrown;
 		}

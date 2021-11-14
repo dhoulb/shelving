@@ -1,4 +1,4 @@
-import { MutableObject, ImmutableObject, isObject, Validator, Feedback, InvalidFeedback } from "../util/index.js";
+import { MutableObject, ImmutableObject, isObject, Validator, Feedback, InvalidFeedback, validate } from "../util/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type MapSchemaOptions<T> = SchemaOptions<ImmutableObject<T>> & {
@@ -12,7 +12,7 @@ type MapSchemaOptions<T> = SchemaOptions<ImmutableObject<T>> & {
  * Schema that defines a valid object with typed key: value props (like ES6 Map class but works with plain objects).
  * Different from ObjectSchema because that has fixed props, and this has an unknown number of props that are all the same type.
  */
-export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validator<ImmutableObject<T>> {
+export class MapSchema<T> extends Schema<ImmutableObject<T>> {
 	static create<X>(options: MapSchemaOptions<X>): MapSchema<X> {
 		return new MapSchema(options);
 	}
@@ -74,7 +74,7 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> implements Validato
 		const details: MutableObject<Feedback> = {};
 		for (const [key, unsafeItem] of entries) {
 			try {
-				const safeItem = this.items.validate(unsafeItem);
+				const safeItem = validate(this.items, unsafeItem);
 				if (safeItem !== unsafeItem) changed = true;
 				output[key] = safeItem;
 			} catch (thrown: unknown) {

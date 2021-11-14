@@ -1,5 +1,5 @@
 import { useState as useReactState } from "react";
-import { Dispatcher, LOADING, Subscribable, startSubscription } from "../index.js";
+import { Dispatcher, LOADING, Subscribable, subscribe } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 
 /**
@@ -17,4 +17,4 @@ export function useSubscribable<T>(subscribable?: Subscribable<T>): void {
 
 /** Effect that subscribes the component to changes in the `State` instance for the lifetime of the component. */
 const subscribeEffect = <T>(setChange: Dispatcher<unknown>, subscribable?: Subscribable<T>) =>
-	subscribable ? startSubscription(subscribable, { next: setChange, error: setChange }) : undefined;
+	subscribable ? subscribe(subscribable, { next: setChange, error: setChange }) : undefined;

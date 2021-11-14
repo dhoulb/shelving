@@ -24,7 +24,7 @@ export type Resolvable<T> = typeof SKIP | T | Promise<typeof SKIP | T>;
  * @returns Value if it's not `undefined`
  * @throws RequiredError if value is `undefined`
  */
-export const getRequired = <T>(v: T): Exclude<T, undefined> => {
+export function getRequired<T>(v: T): Exclude<T, undefined> {
 	if (v === undefined) throw new RequiredError("Required value is undefined");
 	return v as Exclude<T, undefined>;
-};
+}

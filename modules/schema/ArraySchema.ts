@@ -1,4 +1,4 @@
-import { MutableObject, ImmutableArray, uniqueItems, Validator, Feedback, InvalidFeedback } from "../util/index.js";
+import { MutableObject, ImmutableArray, uniqueItems, Validator, Feedback, InvalidFeedback, validate } from "../util/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type ArraySchemaOptions<T> = SchemaOptions<ImmutableArray<T>> & {
@@ -91,7 +91,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		for (let i = 0, l = unsafeArray.length; i < l; i++) {
 			try {
 				const unsafeItem = unsafeArray[i];
-				const safeItem = items.validate(unsafeItem);
+				const safeItem = validate(items, unsafeItem);
 				if (safeItem !== unsafeItem) changed = true;
 				safeArray.push(safeItem);
 			} catch (thrown: unknown) {

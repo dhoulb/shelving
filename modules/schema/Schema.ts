@@ -1,4 +1,4 @@
-import type { Validator } from "../util/index.js";
+import { Validatable, validate, Validator } from "../util/index.js";
 
 /**
  * SchemaOptions enforces types on the options bag that is passed into SchemaClass to create Schema.
@@ -14,14 +14,7 @@ export interface SchemaOptions<T> {
 	/** Is the schema required or not? */
 	readonly required?: boolean;
 	/** Additional validation function that is performed after everything else. */
-	readonly validator?: (value: T) => T;
-}
-
-/**
- * Required schema has a `required: true` prop.
- */
-export interface RequiredSchemaOptions {
-	readonly required: true;
+	readonly validator?: Validator<T>;
 }
 
 /**
@@ -29,7 +22,7 @@ export interface RequiredSchemaOptions {
  * - Type `T` represents the type of value `validate()` returns.
  * - `validate()` returns `Invalid` if value was not valid.
  */
-export abstract class Schema<T = unknown> implements Validator<T> {
+export abstract class Schema<T = unknown> implements Validatable<T> {
 	/** Title, e.g. for showing in fields. */
 	readonly title: string = "";
 	/** Description, e.g. for showing in fields. */
@@ -42,19 +35,19 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 	readonly value?: unknown;
 
 	/** Additional validation function that is called after all built in validation. */
-	private readonly _validator: ((value: unknown) => T) | undefined;
+	readonly validator: Validator<T> | undefined;
 
 	constructor({ title = "", description = "", placeholder = "", required = false, validator }: SchemaOptions<T>) {
 		this.title = title;
 		this.description = description;
 		this.placeholder = placeholder;
 		this.required = required;
-		if (validator) this._validator = validator as (value: unknown) => T;
+		if (validator) this.validator = validator as (value: unknown) => T;
 	}
 
 	/** Every schema must implement a `validate()` method. */
 	validate(unsafeValue: unknown = this.value): T {
 		// Call the schema's additional `validator()` function if one exists.
-		return this._validator ? this._validator(unsafeValue) : (unsafeValue as T);
+		return this.validator ? validate(this.validator, unsafeValue) : (unsafeValue as T);
 	}
 }
