@@ -1,5 +1,4 @@
 import { Feedback, SuccessFeedback, InvalidFeedback, WarningFeedback, ErrorFeedback } from "../index.js";
-import { AssertionError } from "./error.js";
 
 describe("Feedback", () => {
 	test("Constructs correctly", () => {
