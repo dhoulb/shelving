@@ -26,10 +26,10 @@ export type AnyValidator = Validator<any>;
 export type ValidatorType<X extends AnyValidator> = X extends Validator<infer Y> ? Y : never;
 
 /** Is a given value a validator? */
-export const isValidator = <T extends AnyValidator>(validator: T | unknown): validator is T => isObject(validator) && typeof validator.validate === "function";
+export const isValidator = <T extends AnyValidator>(v: T | unknown): v is T => typeof v === "function" || (isObject(v) && typeof v.validate === "function");
 
 /** A set of named validators in `{ name: Validator }` format. */
-export type Validators<T extends ImmutableObject> = { readonly [K in keyof T]: Validator<T[K]> };
+export type Validators<T extends ImmutableObject> = { readonly [K in keyof T & string]: Validator<T[K]> };
 
 /** Any observer (useful for `extends AnyValidators` clauses). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,6 +39,6 @@ export type AnyValidators = Validators<any>;
 export type ValidatorsType<X extends AnyValidators> = X extends Validators<infer Y> ? Y : never;
 
 /** Validate an unknown value with a `Validator`. */
-export function validate<T>(validator: Validator<T>, unsafeValue?: unknown): T {
+export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {
 	return typeof validator === "function" ? validator(unsafeValue) : validator.validate(unsafeValue);
 }

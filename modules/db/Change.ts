@@ -1,5 +1,6 @@
+import type { Transforms } from "../transform/index.js";
 import { Hydrations } from "../util/hydration.js";
-import { Datas, getVoid, ImmutableArray, isAsync, MutableArray, Transforms } from "../util/index.js";
+import { Datas, getVoid, ImmutableArray, isAsync, MutableArray } from "../util/index.js";
 import type { Database } from "./Database.js";
 
 /** A single change that can be made to a database. */

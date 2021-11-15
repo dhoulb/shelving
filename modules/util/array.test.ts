@@ -1,6 +1,6 @@
 import {
 	SKIP,
-	arrayChunk,
+	chunkItems,
 	toggleItem,
 	withItem,
 	withoutItem,
@@ -30,15 +30,15 @@ test("isArray()", () => {
 	expect(isArray(false)).toBe(false);
 });
 test("arrayChunk()", () => {
-	expect(arrayChunk([1, 2, 3, 4, 5, 6, 7, 8, 9], 1)).toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9]]);
-	expect(arrayChunk([1, 2, 3, 4, 5, 6, 7, 8, 9], 2)).toEqual([[1, 2], [3, 4], [5, 6], [7, 8], [9]]);
-	expect(arrayChunk([1, 2, 3, 4, 5, 6, 7, 8, 9], 3)).toEqual([
+	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 1)).toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9]]);
+	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 2)).toEqual([[1, 2], [3, 4], [5, 6], [7, 8], [9]]);
+	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 3)).toEqual([
 		[1, 2, 3],
 		[4, 5, 6],
 		[7, 8, 9],
 	]);
-	expect(arrayChunk([1, 2, 3, 4, 5, 6, 7, 8, 9], 4)).toEqual([[1, 2, 3, 4], [5, 6, 7, 8], [9]]);
-	expect(arrayChunk([1, 2, 3, 4, 5, 6, 7, 8, 9], 5)).toEqual([
+	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 4)).toEqual([[1, 2, 3, 4], [5, 6, 7, 8], [9]]);
+	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 5)).toEqual([
 		[1, 2, 3, 4, 5],
 		[6, 7, 8, 9],
 	]);

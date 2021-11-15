@@ -1,7 +1,6 @@
 import { MutableObject, Data, Result, Results, Observer, Unsubscriber, isAsync, Observable, LOADING } from "../util/index.js";
 import { getNextValue, LazyState } from "../stream/index.js";
 import type { ModelDocument, ModelQuery } from "../db/index.js";
-import type { Provider } from "./Provider.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** How long to wait after all subscriptions have ended to close the source subscription. */
@@ -16,7 +15,7 @@ const STOP_DELAY = 2000;
  *
  * Basically makes any provider under it more efficient.
  */
-export class BatchProvider extends ThroughProvider implements Provider {
+export class BatchProvider extends ThroughProvider {
 	/** List of currently ongoing get requests. */
 	protected readonly _gets: MutableObject<Promise<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 

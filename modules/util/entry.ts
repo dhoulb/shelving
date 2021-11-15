@@ -1,4 +1,5 @@
-import type { SKIP } from "./constants.js";
+import type { ImmutableObject } from "./object.js";
+import { isIterable } from "./array.js";
 
 /**
  * Single entry.
@@ -32,13 +33,6 @@ export type MutableEntries<T = unknown> = Entry<T>[];
 export type ImmutableEntries<T = unknown> = readonly Entry<T>[];
 
 /**
- * Resolvable entries: an array of entries whose properties can be resolved with `resolveArray()`
- * - Values can be `SKIP` symbol (and they will be removed).
- * - Values can be `Promise` instances (and they will be awaited).
- */
-export type ResolvableEntries<T> = readonly Entry<typeof SKIP | T | Promise<typeof SKIP | T>>[];
-
-/**
  * Entry type: extract the type for a set of entries.
  * - Consistency with builtin `ReturnType<T>` and `ObjectType<T>` and `SchemaType<T>`
  */
@@ -61,3 +55,14 @@ export const getEntryTitle = <V extends { title?: unknown }>(entry: Entry<V>): V
 
 /** Extract a name property from an object entry. */
 export const getEntryName = <V extends { name?: unknown }>(entry: Entry<V>): V["name"] => entry[1].name;
+
+/**
+ * Get all the entries for the props of an object or array of entries.
+ *
+ * @param input The target object to get the entries of.
+ * @return Iterable set of entries for the object.
+ * - Only entries with string keys are included.
+ */
+export function getEntries<T>(input: ImmutableObject<T> | Iterable<Entry<T>>): Iterable<Entry<T>> {
+	return isIterable(input) ? input : Object.entries(input);
+}

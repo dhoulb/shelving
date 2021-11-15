@@ -1,5 +1,4 @@
 import type {
-	Firestore,
 	WhereFilterOp as FirestoreWhereFilterOp,
 	OrderByDirection as FirestoreOrderByDirection,
 	Query as FirestoreQuery,
@@ -7,7 +6,7 @@ import type {
 	DocumentReference as FirestoreDocumentReference,
 	CollectionReference as FirestoreCollectionReference,
 } from "@google-cloud/firestore";
-import { FieldValue } from "@google-cloud/firestore";
+import { Firestore, FieldValue } from "@google-cloud/firestore";
 import {
 	Data,
 	Results,
@@ -22,7 +21,7 @@ import {
 	dispatchNext,
 	dispatchError,
 	MutableObject,
-	Transforms,
+	Transformer,
 	IncrementTransform,
 	AddItemsTransform,
 	RemoveItemsTransform,
@@ -30,7 +29,9 @@ import {
 	RemoveEntriesTransform,
 	ImmutableObject,
 	AsynchronousProvider,
-	Transform,
+	ObjectTransform,
+	isTransformer,
+	AssertionError,
 } from "../../index.js";
 
 // Constants.
@@ -82,37 +83,41 @@ function getResults<X extends Data>(snapshot: FirestoreQuerySnapshot<X>): Result
 	return results;
 }
 
-/** Convert a set of Shelving `Transform` instances into the corresponding Firestore `FieldValue` instances. */
-function convertTransforms<X extends Data>(transforms: Transforms<X>): ImmutableObject {
-	const output: MutableObject = {};
-	for (const [key, transform] of Object.entries(transforms)) {
-		if (transform instanceof Transform) {
-			if (transform instanceof IncrementTransform) {
-				output[key] = FieldValue.increment(transform.amount);
-			} else if (transform instanceof AddItemsTransform) {
-				output[key] = FieldValue.arrayUnion(...transform.items);
-			} else if (transform instanceof RemoveItemsTransform) {
-				output[key] = FieldValue.arrayRemove(...transform.items);
-			} else if (transform instanceof AddEntriesTransform) {
-				for (const [k, v] of Object.entries(transform.props)) output[`${key}.${k}`] = v;
-			} else if (transform instanceof RemoveEntriesTransform) {
-				for (const k of transform.props) output[`${key}.${k}`] = FieldValue.delete();
-			} else throw Error("Unsupported transform");
-		} else if (transform !== undefined) {
-			output[key] = transform;
+/** Convert a `Transformer` instances into corresponding Firestore `FieldValue` instances. */
+function createFieldValues<X extends Data>(transformer: Transformer<X>): ImmutableObject {
+	if (transformer instanceof ObjectTransform) {
+		const output: MutableObject = {};
+		for (const [k, v] of transformer) {
+			if (isTransformer(v)) addFieldValues(output, k, v);
+			else output[k] = v;
 		}
+		return output;
 	}
-	return output;
+	throw new AssertionError("Unsupported transformer", transformer);
+}
+function addFieldValues<X>(output: MutableObject, key: string, transformer: Transformer<X>): void {
+	if (transformer instanceof IncrementTransform) output[key] = FieldValue.increment(transformer.amount);
+	else if (transformer instanceof AddItemsTransform) output[key] = FieldValue.arrayUnion(...transformer);
+	else if (transformer instanceof RemoveItemsTransform) output[key] = FieldValue.arrayRemove(...transformer);
+	else if (transformer instanceof AddEntriesTransform) for (const [k, v] of transformer) output[`${key}.${k}`] = v;
+	else if (transformer instanceof RemoveEntriesTransform) for (const k of transformer) output[`${key}.${k}`] = FieldValue.delete();
+	else if (transformer instanceof ObjectTransform)
+		for (const [k, v] of transformer) {
+			if (isTransformer(v)) addFieldValues(output, `${key}.${k}`, v);
+			else output[`${key}.${k}`] = v;
+		}
+	throw new AssertionError("Unsupported transformer", transformer);
 }
 
 /**
  * Firestore server database provider.
  * - Works with the Firebase Admin SDK for Node.JS
  */
-export class FirestoreServerProvider implements Provider, AsynchronousProvider {
+export class FirestoreServerProvider extends Provider implements AsynchronousProvider {
 	readonly firestore: Firestore;
 
-	constructor(firestore: Firestore) {
+	constructor(firestore = new Firestore()) {
+		super();
 		this.firestore = firestore;
 	}
 
@@ -132,17 +137,10 @@ export class FirestoreServerProvider implements Provider, AsynchronousProvider {
 		return (await getCollection(this.firestore, ref).add(data)).id;
 	}
 
-	async set<X extends Data>(ref: ModelDocument<X>, data: X): Promise<void> {
-		await getDocument(this.firestore, ref).set(data);
-	}
-
-	async update<X extends Data>(ref: ModelDocument<X>, transforms: Transforms<X>): Promise<void> {
-		await getDocument(this.firestore, ref).update(convertTransforms(transforms));
-	}
-
-	async delete<X extends Data>(ref: ModelDocument<X>): Promise<void> {
-		await getDocument(this.firestore, ref).delete();
-		return undefined;
+	async write<X extends Data>(ref: ModelDocument<X>, value: X | Transformer<X> | undefined): Promise<void> {
+		if (isTransformer(value)) await getDocument(this.firestore, ref).update(createFieldValues(value));
+		else if (value) await getDocument(this.firestore, ref).set(value);
+		else await getDocument(this.firestore, ref).delete();
 	}
 
 	async getQuery<X extends Data>(ref: ModelQuery<X>): Promise<Results<X>> {
@@ -157,40 +155,16 @@ export class FirestoreServerProvider implements Provider, AsynchronousProvider {
 		);
 	}
 
-	async setQuery<X extends Data>(ref: ModelQuery<X>, data: X): Promise<void> {
+	async writeQuery<X extends Data>(ref: ModelQuery<X>, value: X | Transformer<X> | undefined): Promise<void> {
 		const writer = this.firestore.bulkWriter();
 		const query = getQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
-		let current: typeof query | false = query;
+		const updates = isTransformer(value) ? createFieldValues(value) : undefined;
+		let current: FirestoreQuery | false = query;
 		while (current) {
-			const snapshot = await query.get();
-			for (const s of snapshot.docs) void writer.set(s.ref, data);
-			current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
-			void writer.flush();
-		}
-		await writer.close();
-	}
-
-	async updateQuery<X extends Data>(ref: ModelQuery<X>, transforms: Transforms<X>): Promise<void> {
-		const updates = convertTransforms(transforms);
-		const writer = this.firestore.bulkWriter();
-		const query = getQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
-		let current: typeof query | false = query;
-		while (current) {
-			const snapshot = await query.get();
-			for (const s of snapshot.docs) void writer.update(s.ref, updates);
-			current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
-			void writer.flush();
-		}
-		await writer.close();
-	}
-
-	async deleteQuery<X extends Data>(ref: ModelQuery<X>): Promise<void> {
-		const writer = this.firestore.bulkWriter();
-		const query = getQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
-		let current: typeof query | false = query;
-		while (current) {
-			const snapshot = await query.get();
-			for (const s of snapshot.docs) void writer.delete(s.ref);
+			const snapshot: FirestoreQuerySnapshot = await current.get();
+			if (updates) for (const s of snapshot.docs) void writer.update(s.ref, updates);
+			else if (value) for (const s of snapshot.docs) void writer.set(s.ref, value);
+			else for (const s of snapshot.docs) void writer.delete(s.ref);
 			current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
 			void writer.flush();
 		}

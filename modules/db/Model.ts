@@ -1,4 +1,5 @@
-import { Data, Datas, Feedback, InvalidFeedback, isObject, MutableObject, Results, Validatable, validate, Validator, Validators } from "../util/index.js";
+import { Data, Datas, isObject, MutableObject, Results, Validatable, validate, Validator, Validators } from "../util/index.js";
+import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Slice, Query, EqualFilter } from "../query/index.js";
 import { DocumentValidationError, QueryValidationError } from "./errors.js";
 
@@ -43,7 +44,7 @@ export class ModelQuery<T extends Data = Data> extends Query<T> implements Valid
 		let invalid = false;
 		for (const [id, data] of Object.entries(unsafeValue)) {
 			try {
-				validated[id] = validate(this.validator, data);
+				validated[id] = validate(data, this.validator);
 			} catch (thrown) {
 				if (!(thrown instanceof Feedback)) throw thrown;
 				invalids[id] = thrown;
@@ -84,7 +85,7 @@ export class ModelDocument<T extends Data = Data> implements Validatable<T> {
 	// Implement `Validator`
 	validate(unsafeValue?: unknown): T {
 		try {
-			return validate(this.validator, unsafeValue);
+			return validate(unsafeValue, this.validator);
 		} catch (thrown) {
 			throw thrown instanceof Feedback ? new DocumentValidationError(this, thrown) : thrown;
 		}

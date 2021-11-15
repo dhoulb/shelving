@@ -1,47 +1,36 @@
-import type { Data, Result, Results, Unsubscriber, Observer, Transforms, Class } from "../util/index.js";
+import type { Data, Result, Results, Unsubscriber, Observer, Class, Transformer } from "../util/index.js";
 import type { ModelDocument, ModelQuery } from "../db/index.js";
-import type { Provider } from "./Provider.js";
+import { Provider } from "./Provider.js";
 
 /**
  * Pass all reads and writes through to a source provider.
  */
-export class ThroughProvider implements Provider {
+export class ThroughProvider extends Provider {
 	readonly source: Provider;
 	constructor(source: Provider) {
+		super();
 		this.source = source;
 	}
-	get<X extends Data>(ref: ModelDocument<X>): Result<X> | Promise<Result<X>> {
+	get<T extends Data>(ref: ModelDocument<T>): Result<T> | Promise<Result<T>> {
 		return this.source.get(ref);
 	}
-	subscribe<X extends Data>(ref: ModelDocument<X>, observer: Observer<Result<X>>): Unsubscriber {
+	subscribe<T extends Data>(ref: ModelDocument<T>, observer: Observer<Result<T>>): Unsubscriber {
 		return this.source.subscribe(ref, observer);
 	}
-	add<X extends Data>(ref: ModelQuery<X>, data: X): string | Promise<string> {
+	add<T extends Data>(ref: ModelQuery<T>, data: T): string | Promise<string> {
 		return this.source.add(ref, data);
 	}
-	set<X extends Data>(ref: ModelDocument<X>, data: X): void | Promise<void> {
-		return this.source.set(ref, data);
+	write<T extends Data>(ref: ModelDocument<T>, value: T | Transformer<T> | undefined): void | Promise<void> {
+		return this.source.write(ref, value);
 	}
-	update<X extends Data>(ref: ModelDocument<X>, transforms: Transforms<X>): void | Promise<void> {
-		return this.source.update(ref, transforms);
-	}
-	delete<X extends Data>(ref: ModelDocument<X>): void | Promise<void> {
-		return this.source.delete(ref);
-	}
-	getQuery<X extends Data>(ref: ModelQuery<X>): Results<X> | Promise<Results<X>> {
+	getQuery<T extends Data>(ref: ModelQuery<T>): Results<T> | Promise<Results<T>> {
 		return this.source.getQuery(ref);
 	}
-	subscribeQuery<X extends Data>(ref: ModelQuery<X>, observer: Observer<Results<X>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: ModelQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
 		return this.source.subscribeQuery(ref, observer);
 	}
-	setQuery<X extends Data>(ref: ModelQuery<X>, data: X): void | Promise<void> {
-		return this.source.setQuery(ref, data);
-	}
-	updateQuery<X extends Data>(ref: ModelQuery<X>, transforms: Transforms<X>): void | Promise<void> {
-		return this.source.updateQuery(ref, transforms);
-	}
-	deleteQuery<X extends Data>(ref: ModelQuery<X>): void | Promise<void> {
-		return this.source.deleteQuery(ref);
+	writeQuery<T extends Data>(ref: ModelQuery<T>, value: T | Transformer<T> | undefined): void | Promise<void> {
+		return this.source.writeQuery(ref, value);
 	}
 }
 

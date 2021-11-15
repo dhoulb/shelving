@@ -1,4 +1,5 @@
-import { Feedback, ValidationError } from "../util/index.js";
+import { Feedback } from "../feedback/index.js";
+import { ValidationError } from "../error/index.js";
 import type { Resource } from "./Resource.js";
 
 /** Thrown if an API `Resource` can't validate. */

@@ -5,6 +5,7 @@ const R_MATCH = /^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a
 
 type EmailSchemaOptions = SchemaOptions<string> & {
 	readonly value?: string;
+	readonly required?: boolean;
 };
 
 /**

@@ -1,4 +1,6 @@
-import { Data, Feedback, RequiredError, ValidationError } from "../util/index.js";
+import type { Data } from "../util/index.js";
+import { RequiredError, ValidationError } from "../error/index.js";
+import { Feedback } from "../feedback/index.js";
 import type { ModelDocument, ModelQuery } from "./Model.js";
 
 /** Thrown if a document doesn't exist. */

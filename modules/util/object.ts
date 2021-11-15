@@ -1,7 +1,7 @@
-import type { Entry, ImmutableEntries, ResolvableEntries } from "./entry.js";
+import type { Entry, ImmutableEntries } from "./entry.js";
 import type { Resolvable } from "./data.js";
 import type { ImmutableArray } from "./array.js";
-import { isArray, isIterable } from "./array.js";
+import { isIterable } from "./array.js";
 import { SKIP } from "./constants.js";
 import { isAsync } from "./promise.js";
 
@@ -39,7 +39,7 @@ export type ResolvableObject<T = unknown> = { readonly [key: string]: Resolvable
  * Object type: extract the type for the props of an object.
  * - Consistency with builtin `ReturnType<T>`
  */
-export type ObjectType<T extends ImmutableObject> = T[keyof T];
+export type ObjectType<T extends ImmutableObject> = T[keyof T & string];
 
 /**
  * Mutable type is the opposite of `Readonly<T>` helper type.
@@ -71,6 +71,12 @@ export type DeepMutable<T extends ImmutableObject> = { -readonly [K in keyof T]:
  * - Only works for plain objects (i.e. objects that extend `UnknownObject`), not arrays and functions.
  */
 export type DeepReadonly<T extends ImmutableObject> = { +readonly [K in keyof T]: T[K] extends ImmutableObject ? DeepReadonly<T[K]> : T[K] };
+
+/**
+ * Entry for a prop in an object.
+ * - Only string props are included.
+ */
+export type PropEntry<T extends ImmutableObject> = readonly [keyof T & string, T[keyof T & string]];
 
 /**
  * Is a value an unknown object?
@@ -127,22 +133,21 @@ export const getLastProp = <T>(obj: ImmutableObject<T>): Entry<T> | undefined =>
  * - Immutable so if the values don't change then the same instance will be returned.
  */
 export function mapKeys<V extends unknown>(
-	input: ImmutableObject<V> | ImmutableEntries<V>, //
+	input: ImmutableObject<V> | Iterable<Entry<V>>, //
 	mapper: (key: string, value: V) => typeof SKIP | string,
 ): ImmutableObject<V>;
 export function mapKeys(
-	input: ImmutableObject | ImmutableEntries, //
+	input: ImmutableObject | Iterable<Entry>, //
 	mapper: (key: string, value: unknown) => typeof SKIP | string,
 ): ImmutableObject {
 	let changed = false;
 	const output: MutableObject = {};
-	const entries = input instanceof Array ? input : Object.entries(input);
-	for (const [current, value] of entries) {
+	for (const [current, value] of getProps(input)) {
 		const next = mapper(current, value);
 		if (next !== SKIP) output[next] = value;
 		if (next !== current) changed = true;
 	}
-	return changed || input instanceof Array ? output : input;
+	return changed || isIterable(input) ? output : input;
 }
 
 /**
@@ -174,15 +179,14 @@ export function mapProps(
 ): ImmutableObject | Promise<ImmutableObject> {
 	let promises = false;
 	let changed = false;
-	const output: Mutable<ResolvableObject> = {};
-	const iterable = isIterable(input) ? input : Object.entries(input);
-	for (const [key, current] of iterable) {
+	const output: MutableObject<Resolvable<unknown>> = {};
+	for (const [key, current] of getProps(input)) {
 		const next = typeof mapper === "function" ? mapper(current, key) : mapper;
 		if (isAsync(next)) promises = true;
 		if (next !== SKIP) output[key] = next;
 		if (next !== current) changed = true;
 	}
-	return promises ? resolveObject(output) : !changed && input !== iterable ? (input as ImmutableObject) : output;
+	return promises ? resolveObject(output) : changed || isIterable(input) ? output : input;
 }
 
 /**
@@ -226,7 +230,7 @@ export function objectFromKeys(
 	mapper: ((key: string) => Resolvable<unknown>) | Resolvable<unknown>,
 ): ImmutableObject | Promise<ImmutableObject> {
 	let promises = false;
-	const output: Mutable<ResolvableObject> = {};
+	const output: MutableObject<Resolvable<unknown>> = {};
 	for (const key of keys) {
 		const next = typeof mapper === "function" ? mapper(key) : mapper;
 		if (isAsync(next)) promises = true;
@@ -244,8 +248,8 @@ export function objectFromKeys(
  *
  * @returns Object containing resolved property values.
  */
-export const resolveObject = async <V>(input: ResolvableObject<V> | ResolvableEntries<V>): Promise<MutableObject<V>> => {
-	const output: MutableObject<V> = {};
+export async function resolveObject<T>(input: ImmutableObject<Resolvable<T>> | ImmutableEntries<Resolvable<T>>): Promise<MutableObject<T>> {
+	const output: MutableObject<T> = {};
 	const entries = input instanceof Array ? input : Object.entries(input);
 	await Promise.all(
 		entries.map(async ([k, a]) => {
@@ -254,37 +258,53 @@ export const resolveObject = async <V>(input: ResolvableObject<V> | ResolvableEn
 		}),
 	);
 	return output;
-};
+}
 
 /**
  * Extract a named prop from an object.
  * - Extraction is possibly deep if deeper keys are specified.
  *
  * @param obj The target object to get from.
- * @param key The key of the prop in the object to get.
- * @param deeperKeys An array of deeper keys to recurse into the object.
+ * @param k1 The key of the prop in the object to get.
+ * @param k2 The sub-key of the prop in the object to get.
+ * @param k3 The sub-sub-key of the prop in the object to get.
+ * @param k4 The sub-sub-sub-key of the prop in the object to get.
  */
-export function getProp<O extends ImmutableObject, K extends keyof O | string | number>(obj: O, key: K): K extends keyof O ? O[K] : undefined;
-export function getProp<O extends ImmutableObject>(obj: O, key: string | number, ...deeperKeys: (string | number)[]): unknown;
-export function getProp<O extends ImmutableObject>(obj: O, key: string | number, ...deeperKeys: (string | number)[]): unknown {
-	if (!(key in obj)) return undefined;
-	let current: unknown = obj[key];
-	if (deeperKeys.length)
-		for (const k of deeperKeys) {
-			if (!isObject(current) || !(k in current)) return undefined;
-			current = current[k];
-		}
-	return current;
+export function getProp<T extends ImmutableObject, K1 extends keyof T & string, K2 extends keyof T[K1] & string, K3 extends keyof T[K1][K2] & string, K4 extends keyof T[K1][K2][K3] & string>(obj: T, k1: K1, k2: K2, k3: K3, k4: K4): T[K1][K2][K3][K4]; // prettier-ignore
+export function getProp<T extends ImmutableObject, K1 extends keyof T & string, K2 extends keyof T[K1] & string, K3 extends keyof T[K1][K2] & string>(obj: T, k1: K1, k2: K2, k3: K3): T[K1][K2][K3]; // prettier-ignore
+export function getProp<T extends ImmutableObject, K1 extends keyof T & string, K2 extends keyof T[K1]>(obj: T, k1: K1, k2: K2): T[K1][K2]; // prettier-ignore
+export function getProp<T extends ImmutableObject, K1 extends keyof T & string>(obj: T, k1: K1): T[K1];
+export function getProp<
+	T extends ImmutableObject,
+	K1 extends keyof T & string,
+	K2 extends keyof T[K1] & string,
+	K3 extends keyof T[K1][K2] & string,
+	K4 extends keyof T[K1][K2][K3] & string,
+>(obj: T, k1: K1, k2?: K2, k3?: K3, k4?: K4): T[K1] | T[K1][K2] | T[K1][K2][K3] | T[K1][K2][K3][K4] {
+	return !k2 ? obj[k1] : !k3 ? obj[k1][k2] : !k4 ? obj[k1][k2][k3] : obj[k1][k2][k3][k4];
 }
 
 /**
- * Extract a key/value entry from a map-like object.
+ * Extract the value for an entry in a map-like object.
  *
  * @param obj The target object to get from.
  * @param key The key of the entry in the object to get.
  */
 export function getEntry<T>(obj: ImmutableObject<T>, key: string): T | undefined {
 	return obj[key];
+}
+
+/**
+ * Get all the entries for the props of an object.
+ *
+ * @param obj The target object to get the props of.
+ * @return Iterable set of entries for the object.
+ * - Only entries with string keys are included.
+ */
+export function getProps<T extends ImmutableObject>(obj: T): ImmutableArray<PropEntry<T>>;
+export function getProps<T extends ImmutableObject>(obj: T | Partial<T> | Iterable<PropEntry<T>>): Iterable<PropEntry<T>>;
+export function getProps<T extends ImmutableObject>(obj: T | Partial<T> | Iterable<PropEntry<T>>): Iterable<PropEntry<T>> {
+	return isIterable(obj) ? obj : (Object.entries(obj) as ImmutableArray<PropEntry<T>>);
 }
 
 /**
@@ -297,10 +317,10 @@ export function getEntry<T>(obj: ImmutableObject<T>, key: string): T | undefined
  * @return New object with the specified prop set.
  * - If `key` already exists in `obj` and is exactly the same (using `===`) then the exact same input object will be returned.
  */
-export function withProp<O extends ImmutableObject>(input: O, key: string & keyof O, value: O[string & keyof O]): O;
-export function withProp<O extends ImmutableObject, K extends string, V>(input: O, key: string, value: V): O & { [KK in K]: V };
-export function withProp<O extends ImmutableObject, K extends string, V>(input: O, key: string, value: V): O & { [KK in K]: V } {
-	if (key in input && input[key] === value) return input as O & { [KK in K]: V };
+export function withProp<T extends ImmutableObject>(input: T, key: string & keyof T, value: T[string & keyof T]): T;
+export function withProp<T extends ImmutableObject, K extends string, V>(input: T, key: string, value: V): T & { [KK in K]: V };
+export function withProp<T extends ImmutableObject, K extends string, V>(input: T, key: string, value: V): T & { [KK in K]: V } {
+	if (key in input && input[key] === value) return input as T & { [KK in K]: V };
 	return { ...input, [key]: value };
 }
 
@@ -312,13 +332,12 @@ export function withProp<O extends ImmutableObject, K extends string, V>(input: 
  * @return New object with the specified prop added.
  * - If every prop already exists and has the same value the exact same input object will be returned.
  */
-export function withProps<O extends ImmutableObject>(input: O, props: Partial<O>): O;
-export function withProps<O extends ImmutableObject, P extends ImmutableObject>(input: O, props: P): O & P;
-export function withProps<O extends ImmutableObject>(input: O, props: Partial<O> | Iterable<Entry<O[keyof O]>>): O {
+export function withProps<T extends ImmutableObject>(input: T, props: Partial<T>): T;
+export function withProps<T extends ImmutableObject, P extends ImmutableObject>(input: T, props: P): T & P;
+export function withProps<T extends ImmutableObject>(input: T, props: Partial<T> | Iterable<PropEntry<T>>): T {
 	let changed = false;
 	const output = { ...input };
-	const entries = (isIterable(props) ? props : Object.entries(props)) as [keyof O, O[keyof O]][];
-	for (const [key, value] of entries)
+	for (const [key, value] of getProps(props))
 		if (input[key] !== value) {
 			output[key] = value;
 			changed = true;
@@ -345,7 +364,7 @@ export const withEntry: <T>(input: ImmutableObject<T>, key: string, value: T) =>
  *
  * @return New object with the specified entry.
  */
-export const withEntries: <T>(input: ImmutableObject<T>, entries: Iterable<Entry<T>> | ImmutableObject<T>) => ImmutableObject<T> = withProps;
+export const withEntries: <T>(input: ImmutableObject<T>, entries: ImmutableObject<T> | Iterable<Entry<T>>) => ImmutableObject<T> = withProps;
 
 /**
  * Remove a key/value entry from a map-like object (immutably).
@@ -391,7 +410,7 @@ export function withoutEntries<T>(input: ImmutableObject<T>, keys: Iterable<stri
  * @param key The key of the prop in the object to set.
  * @param value The value to set the prop to.
  */
-export function setProp<O extends MutableObject, K extends keyof O>(obj: O, key: K, value: O[K]): void {
+export function setProp<T extends MutableObject, K extends keyof T>(obj: T, key: K, value: T[K]): void {
 	obj[key] = value;
 }
 
@@ -401,9 +420,8 @@ export function setProp<O extends MutableObject, K extends keyof O>(obj: O, key:
  * @param obj The target object to modify.
  * @param props An object containing new props to set on the object.
  */
-export function setProps<O extends MutableObject>(obj: O, props: Partial<O> | Iterable<Entry<O[keyof O]>>): void {
-	const entries = (isIterable(props) ? props : Object.entries(props)) as [keyof O, O[keyof O]][];
-	for (const [k, v] of entries) obj[k] = v;
+export function setProps<T extends MutableObject>(obj: T, props: Partial<T> | Iterable<PropEntry<T>>): void {
+	for (const [k, v] of getProps(props)) obj[k] = v;
 }
 
 /**
@@ -444,33 +462,4 @@ export function removeEntry<T>(obj: MutableObject<T>, key: string | number, valu
  */
 export function removeEntries<T>(obj: MutableObject<T>, keys: Iterable<string>): void {
 	for (const key of keys) delete obj[key];
-}
-
-/**
- * Count the entries of a map-like object.
- * - Only counts the object's own enumerable properties.
- * @param obj The target object to count the props of.
- */
-export const countEntries = (obj: ImmutableObject | ImmutableArray): number => (isArray(obj) ? obj.length : Object.keys(obj).length);
-
-/** Object that's able to iterate over its props as entries. */
-export class EntryIterator<T extends ImmutableObject> implements Iterable<Entry<T>> {
-	/** Make a new object that's able to iterate over its own enumerable own property entries. */
-	static create<X extends ImmutableObject>(obj: X): X & EntryIterator<X> {
-		return Object.assign(Object.create(EntryIterator.prototype), obj);
-	}
-	*[Symbol.iterator](): Generator<Entry<T>, void, undefined> {
-		yield* Object.entries(this);
-	}
-}
-
-/** Object that's able to iterate over its props. */
-export class PropIterator<T extends ImmutableObject> implements Iterable<ObjectType<T>> {
-	/** Make a new object that's able to iterate over its own enumerable own property values. */
-	static create<X extends ImmutableObject>(obj: X): X & PropIterator<X> {
-		return Object.assign(Object.create(PropIterator.prototype), obj);
-	}
-	*[Symbol.iterator](): Generator<ObjectType<T>, void, undefined> {
-		yield* Object.values(this);
-	}
 }

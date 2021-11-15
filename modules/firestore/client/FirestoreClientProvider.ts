@@ -40,7 +40,8 @@ import {
 	Observer,
 	dispatchNext,
 	dispatchError,
-	Transforms,
+	Transformer,
+	isTransformer,
 	AddItemsTransform,
 	AddEntriesTransform,
 	IncrementTransform,
@@ -49,7 +50,8 @@ import {
 	RemoveEntriesTransform,
 	ImmutableObject,
 	AsynchronousProvider,
-	Transform,
+	ObjectTransform,
+	AssertionError,
 } from "../../index.js";
 
 // Constants.
@@ -101,27 +103,30 @@ function getResults<X extends Data>(snapshot: FirestoreQuerySnapshot<X>): Result
 	return results;
 }
 
-/** Convert a set of Shelving `Transform` instances into the corresponding Firestore `FieldValue` instances. */
-function convertTransforms<X extends Data>(transforms: Transforms<X>): ImmutableObject {
-	const output: MutableObject = {};
-	for (const [key, transform] of Object.entries(transforms)) {
-		if (transform instanceof Transform) {
-			if (transform instanceof IncrementTransform) {
-				output[key] = increment(transform.amount);
-			} else if (transform instanceof AddItemsTransform) {
-				output[key] = arrayUnion(...transform.items);
-			} else if (transform instanceof RemoveItemsTransform) {
-				output[key] = arrayRemove(...transform.items);
-			} else if (transform instanceof AddEntriesTransform) {
-				for (const [k, v] of Object.entries(transform.props)) output[`${key}.${k}`] = v;
-			} else if (transform instanceof RemoveEntriesTransform) {
-				for (const k of transform.props) output[`${key}.${k}`] = deleteField();
-			} else throw Error("Unsupported transform");
-		} else if (transform !== undefined) {
-			output[key] = transform;
+/** Convert a `Transformer` instances into corresponding Firestore `FieldValue` instances. */
+function createFieldValues<X extends Data>(transformer: Transformer<X>): ImmutableObject {
+	if (transformer instanceof ObjectTransform) {
+		const output: MutableObject = {};
+		for (const [k, v] of transformer) {
+			if (isTransformer(v)) addFieldValues(output, k, v);
+			else output[k] = v;
 		}
+		return output;
 	}
-	return output;
+	throw new AssertionError("Unsupported transformer", transformer);
+}
+function addFieldValues<X>(output: MutableObject, key: string, transformer: Transformer<X>): void {
+	if (transformer instanceof ObjectTransform)
+		for (const [k, v] of transformer) {
+			if (isTransformer(v)) addFieldValues(output, `${key}.${k}`, v);
+			else output[`${key}.${k}`] = v;
+		}
+	else if (transformer instanceof IncrementTransform) output[key] = increment(transformer.amount);
+	else if (transformer instanceof AddItemsTransform) output[key] = arrayUnion(...transformer);
+	else if (transformer instanceof RemoveItemsTransform) output[key] = arrayRemove(...transformer);
+	else if (transformer instanceof AddEntriesTransform) for (const [k, v] of transformer) output[`${key}.${k}`] = v;
+	else if (transformer instanceof RemoveEntriesTransform) for (const k of transformer) output[`${key}.${k}`] = deleteField();
+	throw new AssertionError("Unsupported transformer", transformer);
 }
 
 /**
@@ -130,10 +135,11 @@ function convertTransforms<X extends Data>(transforms: Transforms<X>): Immutable
  * - Supports offline mode.
  * - Supports realtime subscriptions.
  */
-export class FirestoreClientProvider implements Provider, AsynchronousProvider {
+export class FirestoreClientProvider extends Provider implements AsynchronousProvider {
 	readonly firestore: Firestore;
 
 	constructor(firestore: Firestore) {
+		super();
 		this.firestore = firestore;
 	}
 
@@ -155,16 +161,10 @@ export class FirestoreClientProvider implements Provider, AsynchronousProvider {
 		return reference.id;
 	}
 
-	async set<X extends Data>(ref: ModelDocument<X>, data: X): Promise<void> {
-		await setDoc<any>(getDocumentReference(this.firestore, ref), data); // eslint-disable-line @typescript-eslint/no-explicit-any
-	}
-
-	async update<X extends Data>(ref: ModelDocument<X>, transforms: Transforms<X>): Promise<void> {
-		await updateDoc<any>(getDocumentReference(this.firestore, ref), convertTransforms(transforms)); // eslint-disable-line @typescript-eslint/no-explicit-any
-	}
-
-	async delete<X extends Data>(ref: ModelDocument<X>): Promise<void> {
-		await deleteDoc(getDocumentReference(this.firestore, ref));
+	async write<X extends Data>(ref: ModelDocument<X>, value: X | Transformer<X> | undefined): Promise<void> {
+		if (isTransformer(value)) await updateDoc<unknown>(getDocumentReference(this.firestore, ref), createFieldValues(value));
+		else if (value) await setDoc<unknown>(getDocumentReference(this.firestore, ref), value);
+		else await deleteDoc(getDocumentReference(this.firestore, ref));
 	}
 
 	async getQuery<X extends Data>(ref: ModelQuery<X>): Promise<Results<X>> {
@@ -179,19 +179,11 @@ export class FirestoreClientProvider implements Provider, AsynchronousProvider {
 		);
 	}
 
-	async setQuery<X extends Data>(ref: ModelQuery<X>, data: X): Promise<void> {
+	async writeQuery<X extends Data>(ref: ModelQuery<X>, value: X | Transformer<X> | undefined): Promise<void> {
 		const snapshot = await getDocs(getQueryReference(this.firestore, ref));
-		await Promise.all(snapshot.docs.map(s => setDoc<any>(s.ref, data))); // eslint-disable-line @typescript-eslint/no-explicit-any
-	}
-
-	async updateQuery<X extends Data>(ref: ModelQuery<X>, transforms: Transforms<X>): Promise<void> {
-		const snapshot = await getDocs(getQueryReference(this.firestore, ref));
-		const updates = convertTransforms(transforms);
-		await Promise.all(snapshot.docs.map(s => updateDoc<any>(s.ref, updates))); // eslint-disable-line @typescript-eslint/no-explicit-any
-	}
-
-	async deleteQuery<X extends Data>(ref: ModelQuery<X>): Promise<void> {
-		const snapshot = await getDocs(getQueryReference(this.firestore, ref));
-		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
+		const updates = isTransformer(value) && createFieldValues(value);
+		if (updates) await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, updates)));
+		else if (value) await Promise.all(snapshot.docs.map(s => setDoc<unknown>(s.ref, value)));
+		else await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 	}
 }

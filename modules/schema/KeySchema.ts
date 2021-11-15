@@ -2,9 +2,10 @@ import { StringSchema } from "./StringSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 
 type KeySchemaOptions = SchemaOptions<string> & {
+	readonly value?: string;
+	readonly required?: boolean;
 	readonly min?: number;
 	readonly max?: number | null;
-	readonly value?: string;
 };
 
 /**

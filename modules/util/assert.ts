@@ -1,4 +1,4 @@
-import { AssertionError } from "./error.js";
+import { AssertionError } from "../error/index.js";
 import type { AnyFunction } from "./function.js";
 import type { Class } from "./class.js";
 import { debug } from "./debug.js";

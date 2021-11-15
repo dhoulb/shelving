@@ -1,8 +1,10 @@
-import { InvalidFeedback, toNumber, roundNumber, isArray, isObject, Unit, detectUnit, convertUnits } from "../util/index.js";
+import { toNumber, roundNumber, isArray, isObject, Unit, detectUnit, convertUnits } from "../util/index.js";
+import { InvalidFeedback } from "../feedback/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type NumberSchemaOptions<T extends number | null> = SchemaOptions<T> & {
 	readonly value?: number | null;
+	readonly required?: boolean;
 	readonly unit?: Unit | null;
 	readonly min?: number | null;
 	readonly max?: number | null;
@@ -32,15 +34,26 @@ export class NumberSchema<T extends number | null> extends Schema<T> {
 
 	override readonly value: number | null;
 
+	readonly required: boolean;
 	readonly unit?: Unit | null;
 	readonly min: number | null;
 	readonly max: number | null;
 	readonly step: number | null;
 	readonly options: (T extends number ? ReadonlyArray<T> | { readonly [K in T]: string } : never) | null;
 
-	protected constructor({ value = null, unit = null, min = null, max = null, step = null, options = null, ...rest }: NumberSchemaOptions<T>) {
+	protected constructor({
+		value = null,
+		required = false,
+		unit = null,
+		min = null,
+		max = null,
+		step = null,
+		options = null,
+		...rest
+	}: NumberSchemaOptions<T>) {
 		super(rest);
 		this.value = value;
+		this.required = required;
 		this.unit = unit;
 		this.min = min;
 		this.max = max;

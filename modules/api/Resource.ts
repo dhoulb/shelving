@@ -1,4 +1,5 @@
-import { Validator, Validatable, Feedback, getUndefined, validate } from "../util/index.js";
+import { Validator, Validatable, getUndefined, validate } from "../util/index.js";
+import { Feedback } from "../feedback/index.js";
 import { ResourceValidationError } from "./errors.js";
 
 /** Validator that always returns void/undefined. */
@@ -33,7 +34,7 @@ export class Resource<P = unknown, R = void> implements Validatable<R> {
 
 	/** Validate a payload for this resource. */
 	validatePayload(payload: unknown): P {
-		return validate(this.payload, payload);
+		return validate(payload, this.payload);
 	}
 
 	/**
@@ -44,7 +45,7 @@ export class Resource<P = unknown, R = void> implements Validatable<R> {
 	 */
 	validate(result: unknown): R {
 		try {
-			return validate(this.result, result);
+			return validate(result, this.result);
 		} catch (thrown) {
 			throw thrown instanceof Feedback ? new ResourceValidationError(this, thrown) : thrown;
 		}

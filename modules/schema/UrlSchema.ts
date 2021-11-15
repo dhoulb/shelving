@@ -1,4 +1,4 @@
-import { InvalidFeedback } from "../util/index.js";
+import { InvalidFeedback } from "../feedback/index.js";
 import { StringSchema } from "./StringSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 
@@ -6,6 +6,7 @@ type UrlSchemaOptions = SchemaOptions<string> & {
 	readonly schemes?: string[];
 	readonly hosts?: string[] | null;
 	readonly value?: string;
+	readonly required?: boolean;
 };
 
 /**
@@ -24,7 +25,6 @@ export class UrlSchema extends StringSchema<string> {
 
 	override readonly type = "url";
 	override readonly max = 512;
-
 	readonly schemes: string[] = ["http:", "https:"];
 	readonly hosts: string[] | null = null;
 

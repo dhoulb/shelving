@@ -42,23 +42,63 @@ export const isItem = <T extends unknown>(arr: ImmutableArray<T>, item: T | unkn
 export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.iterator in value;
 
 /**
- * Break an array into equal sized chunks (last chunk might be smaller).
+ * Break an iterable set into equal sized chunks (last chunk might be smaller).
  *
- * @param arr The target array to split into chunks.
+ * @param input input array or map-like object or iterable to split into chunks.
  * @param size The number of items in each chunk.
  *
  * @return New array with one or more sub-arrays for each chunk.
  * - The last chunk might not contain a full set of items.
  */
-export function arrayChunk<T>(arr: ImmutableArray<T>, size: number): ImmutableArray<ImmutableArray<T>> {
+export function chunkItems<T>(input: ImmutableArray<T>, size: number): ImmutableArray<ImmutableArray<T>> {
 	const chunks: T[][] = [];
-	for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
+	let chunk: T[] = [];
+	for (const item of getItems(input)) {
+		chunk.push(item);
+		if (chunk.length > size) {
+			chunks.push(chunk);
+			chunk = [];
+		}
+	}
+	if (chunk.length) chunks.push(chunk);
 	return chunks;
 }
 
-/** Sum an array of numbers and return the total. */
-export const arraySum = (arr: ImmutableArray<number>): number => arr.reduce(arraySumReducer, 0);
-const arraySumReducer = (a: number, b: number) => a + b;
+/**
+ * Sum an iterable set of numbers and return the total.
+ *
+ * @param input input array or map-like object or iterable to sum the numbers of.
+ * @return Total count after adding up all the numbers
+ */
+export function sumItems(input: ImmutableObject<number> | Iterable<number>): number {
+	let sum = 0;
+	for (const num of getItems(input)) sum += num;
+	return sum;
+}
+
+/**
+ * Get an iterable set of items from an array or object.
+ *
+ * @param input input array or map-like object or iterable to count.
+ * @return Array of items for the input.
+ */
+export function getItems<T>(input: Iterable<T> | ImmutableObject<T>): Iterable<T> {
+	return isIterable(input) ? input : Object.values(input);
+}
+
+/**
+ * Count the number of items in an array or iterable.
+ *
+ * @param input input array or map-like object or iterable to count.
+ * @return Number of items.
+ */
+export function countItems<T>(input: Iterable<T> | ImmutableObject<T>): number {
+	if (isArray(input)) return input.length;
+	if (!isIterable(input)) return Object.keys(input).length;
+	let count = 0;
+	for (const unused of input) count++; // eslint-disable-line @typescript-eslint/no-unused-vars
+	return count;
+}
 
 /**
  * Add an item to an array (immutably).
@@ -247,7 +287,7 @@ export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
 /**
  * Map the items in an array.
  *
- * @param input The input array or map-like object to iterate over.
+ * @param input The input array or map-like object or iterable to iterate over.
  * @param mapper Mapping function that receives the value and key and returns the corresponding value.
  * - Mapper can return a promise. If it does will return a Promise that resolves once every value has resolved.
  * - Return the `SKIP` symbol from the mapper to skip that property and not include it in the output object.
@@ -266,7 +306,7 @@ export function mapItems<I extends unknown, O extends unknown>(
 	mapper: ((value: I) => typeof SKIP | O) | O,
 ): ImmutableArray<O>;
 export function mapItems(
-	input: ImmutableObject | Iterable<unknown>,
+	input: Iterable<unknown> | ImmutableObject<unknown>,
 	mapper: ((value: unknown) => Resolvable<unknown>) | Resolvable<unknown>,
 ): ImmutableArray | Promise<ImmutableArray> {
 	let promises = false;
@@ -373,18 +413,4 @@ export function uniqueItems<T>(input: ImmutableArray<T> | Iterable<T>): Immutabl
 	const output: MutableArray<T> = [];
 	for (const item of input) if (output.indexOf(item) < 0) output.push(item);
 	return isArray(input) && input.length === output.length ? input : output;
-}
-
-/**
- * Count the number of items in an array or iterable.
- *
- * @param items The input array or iterable to count.
- *
- * @return Number of items.
- */
-export function countItems<T>(items: Iterable<T>): number {
-	if (isArray(items)) return items.length;
-	let count = 0;
-	for (const unused of items) count++; // eslint-disable-line @typescript-eslint/no-unused-vars
-	return count;
 }

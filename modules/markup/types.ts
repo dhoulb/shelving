@@ -1,3 +1,5 @@
+import type { ImmutableArray, ImmutableObject } from "../util/index.js";
+
 /**
  * JSX element.
  * - Compatible with but _slightly_ more flexible than `React.ReactElement`
@@ -47,15 +49,15 @@ export type MarkupRule = {
 export type MarkupRuleMatcher = (content: string, options: MarkupOptions) => RegExpMatchArray | null | undefined | void;
 export type MarkupRuleRenderer = (matches: RegExpMatchArray, options: MarkupOptions) => MarkupElement;
 
-/** A set of parse rules. */
-export type MarkupRules = MarkupRule[];
+/** A set of parse rules (as an object or array). */
+export type MarkupRules = ImmutableArray<MarkupRule> | ImmutableObject<MarkupRule>;
 
 /** The current parsing options (represents the current state of the parsing). */
 export type MarkupOptions = {
 	/** The current parsing context, e.g. "block" or "inline" */
 	readonly context: string | undefined;
 	/** The current list of parsing rules. */
-	readonly rules: Iterable<MarkupRule>;
+	readonly rules: MarkupRules;
 	/** Set the base URL that any relative links will be relative to (defaults to `window.location.href`, if undefined then relative links won't work). */
 	readonly url: string | undefined;
 	/** Set the `rel=""` property used for any links (e.g. `rel="nofollow ugc"`). */

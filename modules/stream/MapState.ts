@@ -1,4 +1,4 @@
-import { countEntries, Entry, ImmutableObject, LOADING, Resolvable, withEntry, withoutEntry } from "../util/index.js";
+import { countItems, Entry, ImmutableObject, LOADING, Resolvable, withEntry, withoutEntry } from "../util/index.js";
 import { State } from "./State.js";
 
 /** State that stores a map-like object and has additional methods to help with that. */
@@ -10,7 +10,7 @@ export class MapState<T> extends State<ImmutableObject<T>> implements Iterable<E
 
 	/** Count the number of entries in this map-like object. */
 	get count(): number {
-		return countEntries(this.value);
+		return countItems(this.value);
 	}
 
 	/** Add an item to this map-like object. */

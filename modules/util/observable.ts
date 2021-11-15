@@ -1,5 +1,5 @@
-import { Dispatcher, EmptyDispatcher } from "./dispatch.js";
 import { logError } from "./error.js";
+import { Dispatcher, EmptyDispatcher } from "./dispatch.js";
 import { isObject } from "./object.js";
 
 /** `Dispatcher` that unsubscribes a subscription. */

@@ -1,8 +1,9 @@
-import { InvalidFeedback } from "../util/index.js";
+import { InvalidFeedback } from "../feedback/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type BooleanSchemaOptions<T extends boolean> = SchemaOptions<T> & {
 	readonly value?: boolean;
+	readonly required?: boolean;
 };
 
 /**
@@ -19,10 +20,12 @@ export class BooleanSchema<T extends boolean> extends Schema<T> {
 	}
 
 	override readonly value: boolean;
+	readonly required: boolean;
 
-	protected constructor({ value = false, ...rest }: BooleanSchemaOptions<T>) {
+	protected constructor({ value = false, required = false, ...rest }: BooleanSchemaOptions<T>) {
 		super(rest);
 		this.value = value;
+		this.required = required;
 	}
 
 	override validate(unsafeValue: unknown = this.value): T {

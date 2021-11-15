@@ -11,8 +11,6 @@ export interface SchemaOptions<T> {
 	readonly description?: string;
 	/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
 	readonly placeholder?: string;
-	/** Is the schema required or not? */
-	readonly required?: boolean;
 	/** Additional validation function that is performed after everything else. */
 	readonly validator?: Validator<T>;
 }
@@ -29,25 +27,21 @@ export abstract class Schema<T = unknown> implements Validatable<T> {
 	readonly description: string = "";
 	/** Placeholder, e.g. for showing in fields. */
 	readonly placeholder: string = "";
-	/** Whether schema is required, or not. */
-	readonly required: boolean = false;
 	/** The default value for the schema. */
 	readonly value?: unknown;
-
 	/** Additional validation function that is called after all built in validation. */
 	readonly validator: Validator<T> | undefined;
 
-	constructor({ title = "", description = "", placeholder = "", required = false, validator }: SchemaOptions<T>) {
+	constructor({ title = "", description = "", placeholder = "", validator }: SchemaOptions<T>) {
 		this.title = title;
 		this.description = description;
 		this.placeholder = placeholder;
-		this.required = required;
 		if (validator) this.validator = validator as (value: unknown) => T;
 	}
 
 	/** Every schema must implement a `validate()` method. */
 	validate(unsafeValue: unknown = this.value): T {
 		// Call the schema's additional `validator()` function if one exists.
-		return this.validator ? validate(this.validator, unsafeValue) : (unsafeValue as T);
+		return this.validator ? validate(unsafeValue, this.validator) : (unsafeValue as T);
 	}
 }

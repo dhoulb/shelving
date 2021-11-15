@@ -6,6 +6,7 @@ const R_STRIP = /[^0-9A-F]/g;
 
 type ColorSchemaOptions = SchemaOptions<string> & {
 	readonly value?: string;
+	readonly required?: boolean;
 };
 
 /**

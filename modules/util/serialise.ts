@@ -1,4 +1,4 @@
-import { AssertionError } from "./error.js";
+import { AssertionError } from "../error/index.js";
 import { isArray } from "./array.js";
 import { isObject } from "./object.js";
 

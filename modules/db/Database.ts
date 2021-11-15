@@ -1,6 +1,6 @@
 import {
 	EmptyDispatcher,
-	countEntries,
+	countItems,
 	createObserver,
 	Data,
 	Datas,
@@ -15,11 +15,14 @@ import {
 	Result,
 	Results,
 	throwAsync,
-	Transforms,
 	Unsubscriber,
 	Validator,
 	Validators,
+	isTransformer,
+	Transformer,
+	Transformers,
 } from "../util/index.js";
+import { ObjectTransform } from "../transform/index.js";
 import type { Filters, Slice, Sorts } from "../query/index.js";
 import type { Provider } from "../provider/Provider.js";
 import { Model, ModelQuery, ModelDocument } from "./Model.js";
@@ -99,7 +102,7 @@ export class DatabaseQuery<T extends Data = Data> extends ModelQuery<T> implemen
 	 */
 	get count(): number | Promise<number> {
 		const results = this.provider.getQuery(this);
-		return isAsync(results) ? results.then(countEntries) : countEntries(results);
+		return isAsync(results) ? results.then(countItems) : countItems(results);
 	}
 
 	/**
@@ -156,18 +159,19 @@ export class DatabaseQuery<T extends Data = Data> extends ModelQuery<T> implemen
 	 * @return Nothing (possibly promised).
 	 */
 	set(data: T): void | Promise<void> {
-		return this.provider.setQuery(this, data);
+		return this.provider.writeQuery(this, data);
 	}
 
 	/**
 	 * Update all matching documents with the same partial value.
 	 *
-	 * @param transforms Set of transforms to apply to every matching document.
+	 * @param transformers `Transformer` instance or set of transforms to apply to every matching document.
+	 * - Not all transforms may be supported by all providers.
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	update(transforms: Transforms<T>): void | Promise<void> {
-		return this.provider.updateQuery(this, transforms);
+	update(transformers: Transformer<T> | Transformers<T>): void | Promise<void> {
+		return this.provider.writeQuery<T>(this, isTransformer(transformers) ? transformers : new ObjectTransform(transformers));
 	}
 
 	/**
@@ -176,16 +180,16 @@ export class DatabaseQuery<T extends Data = Data> extends ModelQuery<T> implemen
 	 * @return Nothing (possibly promised).
 	 */
 	delete(): void | Promise<void> {
-		return this.provider.deleteQuery(this);
+		return this.provider.writeQuery(this, undefined);
 	}
 
 	// Implement iterator protocol (only works if get is synchronous, otherwise `Promise` is thrown).
-	*[Symbol.iterator](): Generator<[string, T], void, undefined> {
+	*[Symbol.iterator](): Generator<Entry<T>, void, undefined> {
 		yield* Object.entries(throwAsync(this.get()));
 	}
 
 	// Implement async iterator protocol.
-	async *[Symbol.asyncIterator](): AsyncGenerator<[string, T], void, undefined> {
+	async *[Symbol.asyncIterator](): AsyncGenerator<Entry<T>, void, undefined> {
 		yield* Object.entries(await this.get());
 	}
 }
@@ -274,7 +278,7 @@ export class DatabaseDocument<T extends Data = Data> extends ModelDocument<T> im
 	 * @return Nothing (possibly promised).
 	 */
 	set(data: T): void | Promise<void> {
-		return this.provider.set(this, data);
+		return this.provider.write(this, data);
 	}
 
 	/**
@@ -282,13 +286,14 @@ export class DatabaseDocument<T extends Data = Data> extends ModelDocument<T> im
 	 * - If the document exists, merge the partial data into it.
 	 * - If the document doesn't exist, throw an error.
 	 *
-	 * @param transforms Set of transforms to apply to the existing document.
+	 * @param transformers `Transform` instance or set of transforms to apply to the existing document.
+	 * - Not all transforms may be supported by all providers.
 	 *
 	 * @return Nothing (possibly promised).
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	update(transforms: Transforms<T>): void | Promise<void> {
-		return this.provider.update(this, transforms);
+	update(transformers: Transformer<T> | Transformers<T>): void | Promise<void> {
+		return this.provider.write(this, isTransformer(transformers) ? transformers : new ObjectTransform(transformers));
 	}
 
 	/**
@@ -298,6 +303,6 @@ export class DatabaseDocument<T extends Data = Data> extends ModelDocument<T> im
 	 * @return Nothing (possibly promised).
 	 */
 	delete(): void | Promise<void> {
-		return this.provider.delete(this);
+		return this.provider.write(this, undefined);
 	}
 }

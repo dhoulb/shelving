@@ -1,8 +1,10 @@
-import { isObject, sanitizeLines, sanitizeString, toString, isArray, InvalidFeedback } from "../util/index.js";
+import { isObject, sanitizeLines, sanitizeString, toString, isArray } from "../util/index.js";
+import { InvalidFeedback } from "../feedback/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type StringSchemaOptions<T extends string> = SchemaOptions<T> & {
 	readonly value?: string;
+	readonly required?: boolean;
 	readonly type?: string;
 	readonly min?: number;
 	readonly max?: number | null;
@@ -50,7 +52,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 	}
 
 	override readonly value;
-
+	readonly required: boolean;
 	readonly type: string;
 	readonly min: number;
 	readonly max: number | null;
@@ -62,6 +64,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 
 	protected constructor({
 		value = "",
+		required = false,
 		type = "text",
 		min = 0,
 		max = null,
@@ -73,6 +76,7 @@ export class StringSchema<T extends string> extends Schema<T> {
 		...rest
 	}: StringSchemaOptions<T>) {
 		super(rest);
+		this.required = required;
 		this.type = type;
 		this.value = value;
 		this.min = min;

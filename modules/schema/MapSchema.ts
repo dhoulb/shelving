@@ -1,9 +1,11 @@
-import { MutableObject, ImmutableObject, isObject, Validator, Feedback, InvalidFeedback, validate } from "../util/index.js";
+import { MutableObject, ImmutableObject, isObject, Validator, validate } from "../util/index.js";
+import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type MapSchemaOptions<T> = SchemaOptions<ImmutableObject<T>> & {
 	readonly items: Validator<T>;
 	readonly value?: ImmutableObject;
+	readonly required?: boolean;
 	readonly min?: number | null;
 	readonly max?: number | null;
 };
@@ -23,26 +25,18 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> {
 	}
 
 	override readonly value: ImmutableObject;
-
-	/**
-	 * Define a validator for _all_ props in the object.
-	 * JSON Schema calls this `additionalProperties`, we call it `items` to match ArraySchema.
-	 */
 	readonly items: Validator<T>;
-
-	/**
-	 * Describe the minimum and maximum numbers of items.
-	 * Note that this _includes_
-	 */
+	readonly required: boolean;
 	readonly min: number | null = null;
 	readonly max: number | null = null;
 
-	protected constructor({ items, min = null, max = null, value = {}, ...rest }: MapSchemaOptions<T>) {
+	protected constructor({ value = {}, items, required = false, min = null, max = null, ...rest }: MapSchemaOptions<T>) {
 		super(rest);
+		this.value = value;
 		this.items = items;
+		this.required = required;
 		this.min = min;
 		this.max = max;
-		this.value = value;
 	}
 
 	override validate(unsafeValue: unknown = this.value): ImmutableObject<T> {
@@ -68,16 +62,16 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> {
 		if (typeof this.max === "number" && length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`, { value: unsafeObject });
 
 		// Check value against against `this.items`
+		const safeObject: MutableObject<T> = {};
+		const details: MutableObject<Feedback> = {};
 		let changed = false;
 		let invalid = false;
-		const output: MutableObject<T> = {};
-		const details: MutableObject<Feedback> = {};
 		for (const [key, unsafeItem] of entries) {
 			try {
-				const safeItem = validate(this.items, unsafeItem);
+				const safeItem = validate(unsafeItem, this.items);
 				if (safeItem !== unsafeItem) changed = true;
-				output[key] = safeItem;
-			} catch (thrown: unknown) {
+				safeObject[key] = safeItem;
+			} catch (thrown) {
 				if (thrown instanceof Feedback) {
 					invalid = true;
 					details[key] = thrown;
@@ -85,10 +79,10 @@ export class MapSchema<T> extends Schema<ImmutableObject<T>> {
 			}
 		}
 
-		// If any Schema threw Invalid, return an Invalids.
+		// If any validator threw a Feedback, throw a Feedback.
 		if (invalid) throw new InvalidFeedback("Invalid items", details);
 
 		// Return object (same instance if no changes were made).
-		return super.validate(changed ? output : unsafeObject);
+		return super.validate(changed ? safeObject : unsafeObject);
 	}
 }

@@ -8,6 +8,7 @@ const R_MATCH = /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/;
 
 type PhoneSchemaOptions = SchemaOptions<string> & {
 	readonly value?: string;
+	readonly required?: boolean;
 };
 
 /**

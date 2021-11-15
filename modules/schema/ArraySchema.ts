@@ -1,9 +1,11 @@
-import { MutableObject, ImmutableArray, uniqueItems, Validator, Feedback, InvalidFeedback, validate } from "../util/index.js";
+import { MutableObject, ImmutableArray, uniqueItems, Validator, validate } from "../util/index.js";
+import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type ArraySchemaOptions<T> = SchemaOptions<ImmutableArray<T>> & {
-	readonly items: Validator<T>;
 	readonly value?: ImmutableArray;
+	readonly items: Validator<T>;
+	readonly required?: boolean;
 	readonly min?: number;
 	readonly max?: number | null;
 	readonly unique?: boolean;
@@ -47,25 +49,20 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	}
 
 	override readonly value: ImmutableArray;
-
-	/** Whether to de-duplicate items in the array (i.e. items in the array are unique). */
+	readonly required: boolean;
+	readonly items: Validator<T>;
 	readonly unique: boolean;
-
-	/** Describe the minimum numbers of items. */
 	readonly min: number;
-	/** Describe the maximum numbers of items. */
 	readonly max: number | null;
 
-	/** Describe the format for _all_ items in the array. */
-	readonly items: Validator<T>;
-
-	protected constructor({ items, unique = false, min = 0, max = null, value = [], ...rest }: ArraySchemaOptions<T>) {
+	protected constructor({ value = [], items, required = false, unique = false, min = 0, max = null, ...rest }: ArraySchemaOptions<T>) {
 		super(rest);
+		this.value = value;
 		this.items = items;
+		this.required = required;
 		this.unique = unique;
 		this.min = min;
 		this.max = max;
-		this.value = value;
 	}
 
 	override validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
@@ -91,10 +88,10 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		for (let i = 0, l = unsafeArray.length; i < l; i++) {
 			try {
 				const unsafeItem = unsafeArray[i];
-				const safeItem = validate(items, unsafeItem);
+				const safeItem = validate(unsafeItem, items);
 				if (safeItem !== unsafeItem) changed = true;
 				safeArray.push(safeItem);
-			} catch (thrown: unknown) {
+			} catch (thrown) {
 				if (thrown instanceof Feedback) {
 					invalid = true;
 					details[i.toString()] = thrown;
@@ -102,7 +99,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 			}
 		}
 
-		// If any Schema was invalid then throw.
+		// If any validator threw a Feedback, throw a Feedback.
 		if (invalid) throw new InvalidFeedback("Invalid items", details);
 
 		// Possibly de-duplicate the array.

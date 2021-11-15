@@ -1,8 +1,4 @@
-import { Hydrations } from "./hydration.js";
-import { debug, toString, ImmutableObject, MutableObject } from "./index.js";
-
-/** Possible status strings for feedback. */
-export type FeedbackStatus = "" | "success" | "warning" | "error" | "invalid";
+import { debug, toString, ImmutableObject, MutableObject } from "../util/index.js";
 
 /**
  * The `Feedback` class represents a feedback message that should be shown to the user.
@@ -16,9 +12,6 @@ export type FeedbackStatus = "" | "success" | "warning" | "error" | "invalid";
  * @param details Set of other `Feedback` instances describing the issue in further detail.
  */
 export class Feedback {
-	/** Status string for this feedback. */
-	readonly status: FeedbackStatus = "";
-
 	/** String feedback message that is safe to show to a user. */
 	readonly feedback: string;
 
@@ -63,33 +56,3 @@ export class Feedback {
 		return output;
 	}
 }
-
-/** Specific type of `Feedback` to indicate success (something went right!). */
-export class SuccessFeedback extends Feedback {
-	override status: FeedbackStatus = "success";
-}
-
-/** Specific type of `Feedback` to indicate warning (something might go wrong soon). */
-export class WarningFeedback extends Feedback {
-	override status: FeedbackStatus = "warning";
-}
-
-/** Specific type of `Feedback` to indicate an error (something went wrong). */
-export class ErrorFeedback extends Feedback {
-	override status: FeedbackStatus = "error";
-}
-
-/** Specific type of `ErrorFeedback` returned from `validate()` when a value is invalid. */
-export class InvalidFeedback extends ErrorFeedback {
-	override status: FeedbackStatus = "invalid";
-}
-
-/** Set of hydrations for all feedback classes. */
-export const FEEDBACK_HYDRATIONS = {
-	success: SuccessFeedback,
-	warning: WarningFeedback,
-	invalid: InvalidFeedback,
-	error: ErrorFeedback,
-	feedback: Feedback,
-};
-FEEDBACK_HYDRATIONS as Hydrations;

@@ -1,8 +1,10 @@
-import { InvalidFeedback, toDate, getYmd, PossibleOptionalDate } from "../util/index.js";
+import { toDate, getYmd, PossibleOptionalDate } from "../util/index.js";
+import { InvalidFeedback } from "../feedback/index.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 type DateOptions<T extends string | null> = SchemaOptions<T> & {
 	readonly value?: PossibleOptionalDate;
+	readonly required?: boolean;
 	readonly min?: PossibleOptionalDate;
 	readonly max?: PossibleOptionalDate;
 };
@@ -24,12 +26,14 @@ export class DateSchema<T extends string | null> extends Schema<T> {
 
 	override readonly value: PossibleOptionalDate;
 
+	readonly required: boolean;
 	readonly min: PossibleOptionalDate;
 	readonly max: PossibleOptionalDate;
 
-	protected constructor({ value = null, min = null, max = null, ...rest }: DateOptions<T>) {
+	protected constructor({ value = null, required = false, min = null, max = null, ...rest }: DateOptions<T>) {
 		super(rest);
 		this.value = value;
+		this.required = required;
 		this.min = min;
 		this.max = max;
 	}
