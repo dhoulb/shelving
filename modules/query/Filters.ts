@@ -41,7 +41,7 @@ export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filt
 		return { __proto__: Object.getPrototypeOf(this), ...this, rules: [...this.rules, new GreaterThanEqualFilter<T>(key, value)] };
 	}
 
-	/** Match an individual document against this rule. */
+	// Implement `Matchable`
 	match(entry: Entry<T>): boolean {
 		// If any rule returns false, return false.
 		for (const rule of this.rules) if (!rule.match(entry)) return false;
