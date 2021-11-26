@@ -1,13 +1,11 @@
 /** @type import("@jest/types").Config.InitialOptions */
 const config = {
-	roots: ["./dist"],
+	roots: ["./modules"],
 	collectCoverage: false,
-	// transform: {
-	// 	"^.+\\.(ts|tsx)$": "ts-jest",
-	// },
-	transform: {}, // Disable Babel transformations.
-	testRegex: "\\.test\\.js$",
-	moduleDirectories: ["node_modules", "dist"],
-	moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
+	transform: {
+		"^.+\\.(js|ts)$": "ts-jest",
+	},
+	resolver: "jest-ts-webcompat-resolver",
+	extensionsToTreatAsEsm: [".ts"],
 };
 module.exports = config;
