@@ -1,0 +1,5 @@
+# Always ignored files.
+.DS_Store
+*.test.js
+*.test.d.ts
+*.tsbuildinfo

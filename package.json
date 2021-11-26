@@ -51,10 +51,9 @@
 		"test:typescript": "tsc --noEmit",
 		"test:jest": "jest",
 		"test:jest:watch": "jest --watchAll",
-		"test:jest:build": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.build.cjs",
 		"build": "npm run build:typescript && npm run build:copy && npm run build:jest",
 		"build:typescript": "tsc -p ./tsconfig.build.json",
-		"build:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md",
+		"build:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore",
 		"build:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.build.cjs"
 	},
 	"devDependencies": {
