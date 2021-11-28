@@ -3,10 +3,10 @@ import { InvalidFeedback } from "../feedback/index.js";
 import { Schema } from "./Schema.js";
 
 /** Specify a specific list of allowed values. */
-export type Allowed<T extends string> = ReadonlyArray<T> | { readonly [K in T]: string };
+export type AllowedOptions<T extends string> = ReadonlyArray<T> | { readonly [K in T]: string };
 
 /** Validate a value against a specific set of allowed values. */
-export function validateAllowed<T extends string>(unsafeString: string, allowed: Allowed<T>): T {
+export function validateAllowed<T extends string>(unsafeString: string, allowed: AllowedOptions<T>): T {
 	if (allowed instanceof Array) {
 		if (isItem(allowed, unsafeString)) return unsafeString;
 	} else {
@@ -16,22 +16,25 @@ export function validateAllowed<T extends string>(unsafeString: string, allowed:
 }
 
 /** Define a valid string from an allowed set of strings. */
-export class AllowedSchema<T extends string> extends Schema<T> {
-	readonly allow: Allowed<T>;
+export class AllowSchema<T extends string> extends Schema<T> {
+	readonly allow: AllowedOptions<T>;
+	readonly value: T | null;
 	constructor({
 		allow,
+		value = null,
 		...options
 	}: ConstructorParameters<typeof Schema>[0] & {
-		allow: Allowed<T>;
+		allow: AllowedOptions<T>;
+		value?: T | null;
 	}) {
 		super(options);
 		this.allow = allow;
+		this.value = value;
 	}
-	validate(unsafeValue: unknown): T {
-		const unsafeString = toString(unsafeValue);
-		return validateAllowed(unsafeString, this.allow);
+	validate(unsafeValue: unknown = this.value): T {
+		return validateAllowed(toString(unsafeValue), this.allow);
 	}
 }
 
 /** Valid string from an allowed set of strings. */
-export const ALLOW = <T extends string>(allow: Allowed<T>): AllowedSchema<T> => new AllowedSchema({ allow });
+export const ALLOW = <T extends string>(allow: AllowedOptions<T>): AllowSchema<T> => new AllowSchema({ allow: allow });

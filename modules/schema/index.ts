@@ -1,6 +1,6 @@
 export * from "./Schema.js";
 
-export * from "./AllowedSchema.js";
+export * from "./AllowSchema.js";
 export * from "./ArraySchema.js";
 export * from "./BooleanSchema.js";
 export * from "./ColorSchema.js";
