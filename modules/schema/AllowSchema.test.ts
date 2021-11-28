@@ -18,9 +18,9 @@ test("TypeScript", () => {
 	const lll: 1 | 2 = new AllowNumberSchema({ allow: [1, 2] }).validate(2);
 	// Number object options.
 	const mmm: Schema<1 | 2> = ALLOW_NUMBER({ 1: "A", 2: "B" });
-	const nnn: 1 | 2 = ALLOW_NUMBER({ 1: "A", 2: "B" }).validate("a");
+	const nnn: 1 | 2 = ALLOW_NUMBER({ 1: "A", 2: "B" }).validate(1);
 	const ooo: Schema<1 | 2> = new AllowNumberSchema({ allow: { 1: "A", 2: "B" } });
-	const ppp: 1 | 2 = new AllowNumberSchema({ allow: { 1: "A", 2: "B" } }).validate("a");
+	const ppp: 1 | 2 = new AllowNumberSchema({ allow: { 1: "A", 2: "B" } }).validate(1);
 });
 test("Value is allowed if it exists in array options", () => {
 	const schema1 = new AllowStringSchema({ allow: ["a", "b", "c"] });
