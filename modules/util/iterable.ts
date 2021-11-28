@@ -110,7 +110,7 @@ export function* yieldMerged<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterabl
  * 	for (const next of capture) console.log("YIELDED", next);
  * 	console.log("RETURNED", returned.value);
  */
-export class IterationWatcher<T, R> implements Iterator<T, R>, TypedIterable<T, R>, IterationWatcherInterface<T, R> {
+export class IterationWatcher<T, R> implements Iterator<T, R>, TypedIterable<T, R> {
 	protected _source: Iterator<T, R>;
 
 	/** Get the number of results received by this iterator so far. */
