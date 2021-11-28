@@ -5,8 +5,8 @@ import { NULLABLE, NullableSchema } from "./NullableSchema.js";
 
 /** Validate a data object. */
 export class DataSchema<T extends Data> extends Schema<T> {
-	readonly value: Partial<T>;
 	readonly props: Validators<T>;
+	readonly value: Partial<T>;
 	constructor({
 		value = {},
 		props,
@@ -16,8 +16,8 @@ export class DataSchema<T extends Data> extends Schema<T> {
 		readonly value?: Partial<T>;
 	}) {
 		super(options);
-		this.value = value;
 		this.props = props;
+		this.value = value;
 	}
 	override validate(unsafeValue: unknown = this.value): T {
 		if (!isObject(unsafeValue)) throw new InvalidFeedback("Must be object", { value: unsafeValue });

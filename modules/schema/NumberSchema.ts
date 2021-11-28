@@ -1,4 +1,4 @@
-import { toNumber, roundNumber, Unit } from "../util/index.js";
+import { toNumber, roundNumber } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/index.js";
 import { Schema } from "./Schema.js";
 import { NULLABLE } from "./NullableSchema.js";
@@ -17,7 +17,6 @@ export class NumberSchema extends Schema<number> {
 		...rest
 	}: ConstructorParameters<typeof Schema>[0] & {
 		readonly value?: number | null;
-		readonly unit?: Unit | null;
 		readonly min?: number | null;
 		readonly max?: number | null;
 		readonly step?: number | null;
