@@ -3,13 +3,13 @@ import { Feedback, InvalidFeedback, KeySchema, Schema, OPTIONAL_KEY, REQUIRED_KE
 // Tests.
 test("TypeScript", () => {
 	const s1: Schema<string | null> = OPTIONAL_KEY;
-	const r1: string | null | Feedback = s1.validate("ABC");
+	const r1: string | null = s1.validate("ABC");
 
 	const s2: Schema<string> = REQUIRED_KEY;
-	const r2: string | Feedback = s2.validate("ABC");
+	const r2: string = s2.validate("ABC");
 
 	const s3: Schema<string> = new KeySchema({});
-	const r3: string | Feedback = s3.validate("ABC");
+	const r3: string = s3.validate("ABC");
 });
 test("constructor()", () => {
 	const schema1 = new KeySchema({});

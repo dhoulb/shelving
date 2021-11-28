@@ -3,7 +3,7 @@ import { InvalidFeedback, BooleanSchema, Feedback, BOOLEAN, Schema } from "../in
 // Tests.
 test("TypeScript", () => {
 	const s1: Schema<boolean> = BOOLEAN;
-	const r1: boolean | Feedback = s1.validate(true);
+	const r1: boolean = s1.validate(true);
 });
 test("constructor()", () => {
 	const schema1 = new BooleanSchema({});

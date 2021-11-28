@@ -24,7 +24,6 @@ import { Schema } from "./Schema.js";
  */
 export class StringSchema extends Schema<string> {
 	readonly value: string;
-	readonly required: boolean;
 	readonly type: string;
 	readonly min: number;
 	readonly max: number | null;
@@ -33,7 +32,6 @@ export class StringSchema extends Schema<string> {
 	readonly trim: boolean;
 	constructor({
 		value = "",
-		required = false,
 		type = "text",
 		min = 0,
 		max = null,
@@ -43,7 +41,6 @@ export class StringSchema extends Schema<string> {
 		...rest
 	}: ConstructorParameters<typeof Schema>[0] & {
 		readonly value?: string;
-		readonly required?: boolean;
 		readonly type?: string;
 		readonly min?: number;
 		readonly max?: number | null;
@@ -52,7 +49,6 @@ export class StringSchema extends Schema<string> {
 		readonly trim?: boolean;
 	}) {
 		super(rest);
-		this.required = required;
 		this.type = type;
 		this.value = value;
 		this.min = min;

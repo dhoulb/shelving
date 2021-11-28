@@ -17,17 +17,17 @@ import {
 test("TypeScript", () => {
 	const requiredSchema = DATA({ num: NUMBER });
 	const requiredType: DataSchema<{ num: number }> = requiredSchema;
-	const requiredValue1: { num: number } | Feedback = requiredSchema.validate({ num: 123 });
-	const requiredValue2: { readonly num: number } | Feedback = requiredSchema.validate({ num: 123 });
+	const requiredValue1: { num: number } = requiredSchema.validate({ num: 123 });
+	const requiredValue2: { readonly num: number } = requiredSchema.validate({ num: 123 });
 	const requiredPropSchema = requiredSchema.props.num;
 	const requiredPropType: Validator<number> = requiredPropSchema;
 
 	const objectRequiredSchema = new DataSchema({ props: { num: NUMBER } });
 	const objectRequiredType: DataSchema<{ num: number }> = objectRequiredSchema;
-	const objectRequiredValue: { num: number } | Feedback = objectRequiredSchema.validate({ num: 123 });
+	const objectRequiredValue: { num: number } = objectRequiredSchema.validate({ num: 123 });
 	const objectAutoSchema = new DataSchema({ props: { num: NUMBER } });
 	const objectAutoType: DataSchema<{ num: number }> = objectAutoSchema;
-	const objectAutoValue: { num: number } | Feedback = objectAutoSchema.validate({ num: 123 });
+	const objectAutoValue: { num: number } = objectAutoSchema.validate({ num: 123 });
 });
 describe("validate()", () => {
 	test("constructor()", () => {

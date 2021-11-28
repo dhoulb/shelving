@@ -8,21 +8,15 @@ const longString =
 test("TypeScript", () => {
 	// Test string.optional
 	const schema1: Schema<string | null> = STRING;
-	const schemaResult1: string | null | Feedback = schema1.validate("ABC");
+	const schemaResult1: string | null = schema1.validate("ABC");
 
 	// Test string.required
 	const schema2: Schema<string> = REQUIRED_STRING;
-	const schemaResult2: string | Feedback = schema2.validate("ABC");
+	const schemaResult2: string = schema2.validate("ABC");
 
 	// Test string({})
-	const schema3: StringSchema = new StringSchema({ required: false });
-	const schemaResult3: string | Feedback = schema3.validate("ABC");
 	const schema4: StringSchema = new StringSchema({});
-	const schemaResult4: string | Feedback = schema4.validate("ABC");
-	const schema5: StringSchema = new StringSchema({});
-	const schemaResult5: string | Feedback = schema5.validate("ABC");
-	const schema6: StringSchema = new StringSchema({ required: true });
-	const schemaResult6: string | Feedback = schema6.validate("ABC");
+	const schemaResult4: string = schema4.validate("ABC");
 });
 test("constructor()", () => {
 	const schema1 = new StringSchema({});

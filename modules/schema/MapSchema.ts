@@ -20,7 +20,6 @@ export class MapSchema<T> extends Schema<ImmutableMap<T>> {
 	}: ConstructorParameters<typeof Schema>[0] & {
 		readonly items: Validator<T>;
 		readonly value?: ImmutableMap;
-		readonly required?: boolean;
 		readonly min?: number | null;
 		readonly max?: number | null;
 	}) {

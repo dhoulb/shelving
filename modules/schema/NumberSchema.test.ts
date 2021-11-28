@@ -4,15 +4,15 @@ import { Feedback, InvalidFeedback, NumberSchema, Schema, NUMBER, OPTIONAL_NUMBE
 test("TypeScript", () => {
 	// Test number.optional
 	const s1: Schema<number> = NUMBER;
-	const r1: number | Feedback = s1.validate(123);
+	const r1: number = s1.validate(123);
 
 	// Test number.required
 	const s2: Schema<number | null> = OPTIONAL_NUMBER;
-	const r2: number | null | Feedback = s2.validate(123);
+	const r2: number | null = s2.validate(123);
 
 	// Test new({})
 	const s3: NumberSchema = new NumberSchema({});
-	const r3: number | Feedback = s3.validate(123);
+	const r3: number = s3.validate(123);
 });
 test("constructor()", () => {
 	const schema1 = new NumberSchema({});

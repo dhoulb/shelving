@@ -3,19 +3,13 @@ import { InvalidFeedback, EmailSchema, Schema, Feedback, REQUIRED_EMAIL, OPTIONA
 // Tests.
 test("TypeScript", () => {
 	const s1: Schema<string | null> = OPTIONAL_EMAIL;
-	const r1: string | null | Feedback = s1.validate("dave@test.com");
+	const r1: string | null = s1.validate("dave@test.com");
 
 	const s2: Schema<string> = REQUIRED_EMAIL;
-	const r2: string | Feedback = s2.validate("dave@test.com");
+	const r2: string = s2.validate("dave@test.com");
 
 	const s3: Schema<string> = new EmailSchema({});
-	const r3: string | Feedback = s3.validate("dave@test.com");
-	const s4: Schema<string> = new EmailSchema({ required: true });
-	const r4: string | Feedback = s4.validate("dave@test.com");
-	const s5: Schema<string> = new EmailSchema({ required: false });
-	const r5: string | Feedback = s5.validate("dave@test.com");
-	const s6: Schema<string> = new EmailSchema({});
-	const r6: string | Feedback = s6.validate("dave@test.com");
+	const r3: string = s3.validate("dave@test.com");
 });
 test("constructor()", () => {
 	const schema1 = new EmailSchema({});

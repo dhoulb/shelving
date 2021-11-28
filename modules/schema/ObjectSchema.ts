@@ -17,7 +17,6 @@ export class ObjectSchema<T> extends Schema<ImmutableObject<T>> {
 	}: ConstructorParameters<typeof Schema>[0] & {
 		readonly items: Validator<T>;
 		readonly value?: ImmutableObject;
-		readonly required?: boolean;
 		readonly min?: number | null;
 		readonly max?: number | null;
 	}) {

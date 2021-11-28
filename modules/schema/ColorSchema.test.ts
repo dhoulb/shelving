@@ -3,19 +3,13 @@ import { InvalidFeedback, ColorSchema, Schema, Feedback, OPTIONAL_COLOR, REQUIRE
 // Tests.
 test("TypeScript", () => {
 	const s1: Schema<string | null> = OPTIONAL_COLOR;
-	const r1: string | null | Feedback = s1.validate("#FFCC00");
+	const r1: string | null = s1.validate("#FFCC00");
 
 	const s2: Schema<string> = REQUIRED_COLOR;
-	const r2: string | Feedback = s2.validate("#FFCC00");
+	const r2: string = s2.validate("#FFCC00");
 
 	const s3: Schema<string> = new ColorSchema({});
-	const r3: string | Feedback = s3.validate("#FFCC00");
-	const s4: Schema<string> = new ColorSchema({ required: true });
-	const r4: string | Feedback = s4.validate("#FFCC00");
-	const s5: Schema<string> = new ColorSchema({ required: false });
-	const r5: string | Feedback = s5.validate("#FFCC00");
-	const s6: Schema<string> = new ColorSchema({});
-	const r6: string | Feedback = s6.validate("#FFCC00");
+	const r3: string = s3.validate("#FFCC00");
 });
 test("constructor()", () => {
 	const schema1 = new ColorSchema({});

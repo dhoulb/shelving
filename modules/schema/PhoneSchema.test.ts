@@ -4,15 +4,15 @@ import { Feedback, InvalidFeedback, PhoneSchema, Schema, OPTIONAL_PHONE, REQUIRE
 test("TypeScript", () => {
 	// Test phone.optional
 	const s1: Schema<string | null> = OPTIONAL_PHONE;
-	const r1: string | null | Feedback = s1.validate("+331234567890");
+	const r1: string | null = s1.validate("+331234567890");
 
 	// Test phone.required
 	const s2: Schema<string> = REQUIRED_PHONE;
-	const r2: string | Feedback = s2.validate("+331234567890");
+	const r2: string = s2.validate("+331234567890");
 
 	// Test phone({})
 	const s3: Schema<string> = new PhoneSchema({});
-	const r3: string | Feedback = s3.validate("+331234567890");
+	const r3: string = s3.validate("+331234567890");
 });
 test("constructor()", () => {
 	const schema1 = new PhoneSchema({});

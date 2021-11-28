@@ -4,15 +4,15 @@ import { Feedback, InvalidFeedback, Schema, UrlSchema, OPTIONAL_URL, REQUIRED_UR
 test("TypeScript", () => {
 	// Test url.optional
 	const s1: Schema<string | null> = OPTIONAL_URL;
-	const r1: string | null | Feedback = s1.validate("https://test.com");
+	const r1: string | null = s1.validate("https://test.com");
 
 	// Test url.required
 	const s2: Schema<string> = REQUIRED_URL;
-	const r2: string | Feedback = s2.validate("https://test.com");
+	const r2: string = s2.validate("https://test.com");
 
 	// Test schema.url({})
 	const s3: Schema<string> = new UrlSchema({});
-	const r3: string | Feedback = s3.validate("https://test.com");
+	const r3: string = s3.validate("https://test.com");
 });
 test("constructor()", () => {
 	const schema1 = new UrlSchema({});

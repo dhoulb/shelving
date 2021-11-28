@@ -3,14 +3,14 @@ import { ALLOW, AllowSchema, InvalidFeedback, Feedback, Schema } from "../index.
 test("TypeScript", () => {
 	// Array options.
 	const aaa: Schema<"a" | "b"> = ALLOW(["a", "b"]);
-	const bbb: "a" | "b" | Feedback = ALLOW(["a", "b"]).validate("a");
+	const bbb: "a" | "b" = ALLOW(["a", "b"]).validate("a");
 	const ccc: Schema<"a" | "b"> = new AllowSchema({ allow: ["a", "b"] });
-	const ddd: "a" | "b" | Feedback = new AllowSchema({ allow: ["a", "b"] }).validate("a");
+	const ddd: "a" | "b" = new AllowSchema({ allow: ["a", "b"] }).validate("a");
 	// Object options.
 	const eee: Schema<"a" | "b"> = ALLOW({ a: "A", b: "B" });
-	const fff: "a" | "b" | Feedback = ALLOW({ a: "A", b: "B" }).validate("a");
+	const fff: "a" | "b" = ALLOW({ a: "A", b: "B" }).validate("a");
 	const ggg: Schema<"a" | "b"> = new AllowSchema({ allow: { a: "A", b: "B" } });
-	const hhh: "a" | "b" | Feedback = new AllowSchema({ allow: { a: "A", b: "B" } }).validate("a");
+	const hhh: "a" | "b" = new AllowSchema({ allow: { a: "A", b: "B" } }).validate("a");
 });
 test("Value is allowed if it exists in array options", () => {
 	const schema = new AllowSchema({ allow: ["a", "b", "c"] });

@@ -3,19 +3,19 @@ import { InvalidFeedback, getYmd, DateSchema, Feedback, OPTIONAL_DATE, REQUIRED_
 // Tests.
 test("TypeScript", () => {
 	const s1: Schema<string | null> = OPTIONAL_DATE;
-	const r1: string | null | Feedback = s1.validate("2015-09-12");
+	const r1: string | null = s1.validate("2015-09-12");
 
 	const s2: Schema<string> = REQUIRED_DATE;
-	const r2: string | Feedback = s2.validate("2015-09-12");
+	const r2: string = s2.validate("2015-09-12");
 
 	const s3: Schema<string | null> = new DateSchema({});
-	const r3: string | null | Feedback = s3.validate("2015-09-12");
+	const r3: string | null = s3.validate("2015-09-12");
 	const s4: Schema<string> = new DateSchema({});
-	const r4: string | Feedback = s4.validate("2015-09-12");
+	const r4: string = s4.validate("2015-09-12");
 	const s5: Schema<string | null> = new DateSchema({});
-	const r5: string | null | Feedback = s5.validate("2015-09-12");
+	const r5: string | null = s5.validate("2015-09-12");
 	const s6: Schema<string | null> = new DateSchema({});
-	const r6: string | null | Feedback = s6.validate("2015-09-12");
+	const r6: string | null = s6.validate("2015-09-12");
 });
 test("constructor()", () => {
 	const schema1 = new DateSchema({});

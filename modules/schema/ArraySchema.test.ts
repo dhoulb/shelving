@@ -11,12 +11,12 @@ const randomArray = [{ a: 1 }, 2, { iii: { three: 3 } }, false];
 test("TypeScript", () => {
 	const requiredSchema = ARRAY(NUMBER);
 	const requiredType: ArraySchema<number> = requiredSchema;
-	const requiredValue: ReadonlyArray<number> | Feedback = requiredSchema.validate([123]);
+	const requiredValue: ReadonlyArray<number> = requiredSchema.validate([123]);
 	const requiredItemsSchema: Validator<number> = requiredSchema.items;
 
 	const arrayRequiredSchema = new ArraySchema({ items: STRING });
 	const arrayRequiredType: ArraySchema<string> = arrayRequiredSchema;
-	const arrayRequiredv4: ReadonlyArray<string> | Feedback = arrayRequiredSchema.validate([123]);
+	const arrayRequiredv4: ReadonlyArray<string> = arrayRequiredSchema.validate([123]);
 	const arrayRequiredItemsSchema: Validator<string> = arrayRequiredSchema.items;
 });
 test("constructor()", () => {
