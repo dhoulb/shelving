@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import { initialState, State, DataState } from "../index.js";
 
 test("DataState.prototype.update()", () => {
