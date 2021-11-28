@@ -1,7 +1,7 @@
 import { logError } from "./error.js";
 import { Dispatcher } from "./dispatch.js";
-import { isObject } from "./object.js";
 import { isAsync } from "./promise.js";
+import { isData } from "./data.js";
 
 /** `Dispatcher` that unsubscribes a subscription. */
 export type Unsubscriber = () => void;
@@ -19,7 +19,7 @@ export interface Observable<T> {
 export type AnyObservable = Observable<any>;
 
 /** Is an unknown object an object implementing `Observable` */
-export const isObservable = <T extends AnyObservable>(v: T | unknown): v is T => isObject(v) && typeof v.subscribe === "function";
+export const isObservable = <T extends AnyObservable>(v: T | unknown): v is T => isData(v) && typeof v.subscribe === "function";
 
 /** Extract the internal type from an `Observable` */
 export type ObservableType<T extends AnyObservable> = T extends Observable<infer X> ? X : never;

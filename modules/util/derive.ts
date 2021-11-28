@@ -1,10 +1,10 @@
 import type { Entry } from "./entry.js";
 import type { ArrayType, ImmutableArray } from "./array.js";
 import type { ImmutableMap } from "./map.js";
-import { ImmutableObject, isObject } from "./object.js";
+import { ImmutableObject } from "./object.js";
 import { isAsync } from "./promise.js";
 import { isFunction } from "./function.js";
-import { Data, Value, Prop, toProps } from "./data.js";
+import { Data, Value, Prop, toProps, isData } from "./data.js";
 import { IterationWatcher } from "./iterable.js";
 
 /** Object that can derive a value with its `derive()` method. */
@@ -30,7 +30,7 @@ export type DerivedType<T extends AnyDeriver> = T extends Deriver<unknown, infer
 export const isDeriver = <T extends AnyDeriver>(v: T | unknown): v is T => typeof v === "function" || isDerivable(v);
 
 /** Is an unknown value a derivable. */
-export const isDerivable = <T extends AnyDerivable>(v: T | unknown): v is T => isObject(v) && typeof v.derive === "function";
+export const isDerivable = <T extends AnyDerivable>(v: T | unknown): v is T => isData(v) && typeof v.derive === "function";
 
 /** Derive a value using a deriver. */
 export function derive<I, O>(input: I, deriver: (v: I) => O): O; // Helps `O` carry through functions that use generics.

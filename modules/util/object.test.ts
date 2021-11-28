@@ -1,12 +1,11 @@
 import {
-	getProp,
 	ImmutableObject,
 	isObject,
 	MutableObject,
 	removeEntry,
 	removeEntries,
-	setProp,
-	setProps,
+	setEntry,
+	setEntries,
 	withoutEntries,
 	withEntry,
 	withEntries,
@@ -26,21 +25,6 @@ test("isObject()", () => {
 	expect(isObject(false)).toEqual(false);
 	expect(isObject(123)).toEqual(false);
 });
-test("getProp()", () => {
-	const testObj = { a: "A", 1: 1 };
-	const deepObj = { ...testObj, deep: { ...testObj, deeper: { ...testObj } } };
-	// Works correctly.
-	expect(getProp(deepObj, "a")).toBe("A");
-	expect(getProp(deepObj, 1)).toBe(1);
-	expect(getProp(deepObj, "deep", "a")).toBe("A");
-	expect(getProp(deepObj, "deep", 1)).toBe(1);
-	expect(getProp(deepObj, "deep", "deeper", "a")).toBe("A");
-	expect(getProp(deepObj, "deep", "deeper", 1)).toBe(1);
-	// Works correctly for not found values.
-	expect(getProp(deepObj, "b" as any)).toBe(undefined);
-	expect(getProp(deepObj, "deep", "b" as any)).toBe(undefined);
-	expect(getProp(deepObj, "deep", "deeper", "b" as any)).toBe(undefined);
-});
 test("withEntry()", () => {
 	// Prop is set (existing prop).
 	expect(withEntry(maplikeObj, "d", 4444)).toEqual({ a: 1, b: 2, c: 3, d: 4444 });
@@ -51,14 +35,14 @@ test("withEntry()", () => {
 	// If prop isn't changed same instance is returned.
 	expect(withEntry(maplikeObj, "d", 4)).toBe(maplikeObj);
 });
-test("setProp()", () => {
+test("setEntry()", () => {
 	const obj1 = { a: 1, b: 2 };
-	setProp(obj1, "b", 2222);
+	setEntry(obj1, "b", 2222);
 	expect(obj1).toEqual({ a: 1, b: 2222 });
 });
-test("setProps()", () => {
+test("setEntries()", () => {
 	const obj1 = { a: 1, b: 2, c: 3 };
-	setProps(obj1, { b: 2222, c: 3333 });
+	setEntries(obj1, { b: 2222, c: 3333 });
 	expect(obj1).toEqual({ a: 1, b: 2222, c: 3333 });
 });
 test("withEntry()", () => {
@@ -79,14 +63,14 @@ test("withoutEntries()", () => {
 	expect(withoutEntries(obj, "b")).not.toBe(obj);
 	expect(withoutEntries(obj, "c")).toBe(obj);
 });
-test("setProp()", () => {
+test("setEntry()", () => {
 	const obj: MutableObject<number> = { a: 1 };
-	setProp(obj, "b", 2);
+	setEntry(obj, "b", 2);
 	expect(obj).toEqual({ a: 1, b: 2 });
 });
-test("setProps()", () => {
+test("setEntries()", () => {
 	const obj: MutableObject<number> = { a: 1 };
-	setProps(obj, { b: 2, c: 3 });
+	setEntries(obj, { b: 2, c: 3 });
 	expect(obj).toEqual({ a: 1, b: 2, c: 3 });
 });
 test("removeEntry()", () => {

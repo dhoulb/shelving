@@ -1,8 +1,8 @@
 import { AssertionError } from "../error/index.js";
 import type { Class } from "./class.js";
-import { Data } from "./data.js";
+import { Data, isData } from "./data.js";
 import { Derivable, deriveArray, deriveObject } from "./derive.js";
-import { ImmutableObject, isObject, isPlainObject } from "./object.js";
+import { ImmutableObject, isPlainObject } from "./object.js";
 
 /**
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.
@@ -69,7 +69,7 @@ export class Dehydrator implements Derivable<unknown, unknown> {
 	derive(value: unknown): unknown {
 		if (value instanceof Array) return deriveArray(value, this);
 		if (isPlainObject(value)) return deriveObject(value, this);
-		if (isObject(value)) {
+		if (isData(value)) {
 			for (const [_type, hydration] of Object.entries(this._hydrations)) if (value instanceof hydration) return { _type, ...deriveObject(value, this) };
 			throw new AssertionError(`Cannot dehydrate object`, value);
 		}

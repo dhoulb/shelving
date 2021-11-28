@@ -1,4 +1,4 @@
-import { shallowMerge, deepMerge, mergeArray, mergeObject, ImmutableArray } from "../index.js";
+import { shallowMerge, deepMerge, mergeArray, mergeData, ImmutableArray } from "../index.js";
 
 const arrFlat = [1, "b", true, false, null];
 const arrFlatSame = [1, "b", true, false, null];
@@ -32,10 +32,10 @@ describe("shallowMerge()", () => {
 		expect(shallowMerge(objFlat, objFlatExtra)).toEqual(objFlatExtra);
 		expect(shallowMerge(objFlatMissing, objFlat)).toEqual(objFlat);
 		expect(shallowMerge(objFlatEmpty, objFlat)).toEqual(objFlat);
-		expect(mergeObject({ a: 1, b: 1 }, { b: 2 })).toEqual({ a: 1, b: 2 });
-		expect(mergeObject({ a: 1 }, { a: 2, b: 2 })).toEqual({ a: 2, b: 2 });
-		expect(mergeObject({ a: 1, b: 1 }, { b: 2, c: 2 })).toEqual({ a: 1, b: 2, c: 2 });
-		expect(mergeObject({}, { a: 2, b: 2 })).toEqual({ a: 2, b: 2 });
+		expect(mergeData({ a: 1, b: 1 }, { b: 2 })).toEqual({ a: 1, b: 2 });
+		expect(mergeData({ a: 1 }, { a: 2, b: 2 })).toEqual({ a: 2, b: 2 });
+		expect(mergeData({ a: 1, b: 1 }, { b: 2, c: 2 })).toEqual({ a: 1, b: 2, c: 2 });
+		expect(mergeData({}, { a: 2, b: 2 })).toEqual({ a: 2, b: 2 });
 	});
 	test("shallowMerge(): Arrays/objects are not compared (if contents are equal)", () => {
 		expect(shallowMerge(objFlat, arrFlat)).toBe(arrFlat);
@@ -153,36 +153,36 @@ describe("mergeArray()", () => {
 		expect(mergeArray([1, 2, 3], [2, 3, 4])).toEqual([1, 2, 3, 4]);
 	});
 });
-describe("mergeObject()", () => {
-	test("mergeObject(): Types", () => {
-		const aaa: { a: number; b: number } = mergeObject({ a: 1 }, { b: 2 });
-		const bbb: { a: number } = mergeObject({ a: 1 }, { a: 1 });
-		const ccc: { a: string; b: number } = mergeObject({ a: 1, b: 2 }, { a: "a" });
+describe("mergeData()", () => {
+	test("mergeData(): Types", () => {
+		const aaa: { a: number; b: number } = mergeData({ a: 1 }, { b: 2 });
+		const bbb: { a: number } = mergeData({ a: 1 }, { a: 1 });
+		const ccc: { a: string; b: number } = mergeData({ a: 1, b: 2 }, { a: "a" });
 	});
-	test("mergeObject(): Exact objects", () => {
+	test("mergeData(): Exact objects", () => {
 		// Shallow.
-		expect(mergeObject(objFlat, objFlat)).toBe(objFlat);
-		expect(mergeObject(objFlat, objFlatSame)).toBe(objFlat);
-		expect(mergeObject(objFlatSame, objFlat)).toBe(objFlatSame);
-		expect(mergeObject(objFlatExtra, objFlat)).toBe(objFlatExtra);
-		expect(mergeObject(objFlat, objFlatMissing)).toBe(objFlat);
-		expect(mergeObject(objFlat, objFlatEmpty)).toBe(objFlat);
+		expect(mergeData(objFlat, objFlat)).toBe(objFlat);
+		expect(mergeData(objFlat, objFlatSame)).toBe(objFlat);
+		expect(mergeData(objFlatSame, objFlat)).toBe(objFlatSame);
+		expect(mergeData(objFlatExtra, objFlat)).toBe(objFlatExtra);
+		expect(mergeData(objFlat, objFlatMissing)).toBe(objFlat);
+		expect(mergeData(objFlat, objFlatEmpty)).toBe(objFlat);
 		// Deep.
-		expect(mergeObject(objDeepExtra, objDeep, deepMerge)).toBe(objDeepExtra);
-		expect(mergeObject(objDeep, objDeepMissing, deepMerge)).toBe(objDeep);
+		expect(mergeData(objDeepExtra, objDeep, deepMerge)).toBe(objDeepExtra);
+		expect(mergeData(objDeep, objDeepMissing, deepMerge)).toBe(objDeep);
 	});
-	test("mergeObject(): Merge unequal object values", () => {
+	test("mergeData(): Merge unequal object values", () => {
 		// Shallow.
-		expect(mergeObject(objFlat, objFlatExtra)).toEqual(objFlatExtra);
-		expect(mergeObject(objFlatMissing, objFlat)).toEqual(objFlat);
-		expect(mergeObject(objFlatEmpty, objFlat)).toEqual(objFlat);
-		expect(mergeObject({ a: 1, b: 1 }, { b: 2 })).toEqual({ a: 1, b: 2 });
-		expect(mergeObject({ a: 1 }, { a: 2, b: 2 })).toEqual({ a: 2, b: 2 });
-		expect(mergeObject({ a: 1, b: 1 }, { b: 2, c: 2 })).toEqual({ a: 1, b: 2, c: 2 });
-		expect(mergeObject({}, { a: 2, b: 2 })).toEqual({ a: 2, b: 2 });
+		expect(mergeData(objFlat, objFlatExtra)).toEqual(objFlatExtra);
+		expect(mergeData(objFlatMissing, objFlat)).toEqual(objFlat);
+		expect(mergeData(objFlatEmpty, objFlat)).toEqual(objFlat);
+		expect(mergeData({ a: 1, b: 1 }, { b: 2 })).toEqual({ a: 1, b: 2 });
+		expect(mergeData({ a: 1 }, { a: 2, b: 2 })).toEqual({ a: 2, b: 2 });
+		expect(mergeData({ a: 1, b: 1 }, { b: 2, c: 2 })).toEqual({ a: 1, b: 2, c: 2 });
+		expect(mergeData({}, { a: 2, b: 2 })).toEqual({ a: 2, b: 2 });
 		// Deep.
-		expect(mergeObject(objDeep, objDeepExtra, deepMerge)).toEqual(objDeepExtra);
-		expect(mergeObject(objDeepMissing, objDeep, deepMerge)).toEqual(objDeep);
-		expect(mergeObject({ deep: { a: 1 } }, { deep: { b: 2 } }, deepMerge)).toEqual({ deep: { a: 1, b: 2 } });
+		expect(mergeData(objDeep, objDeepExtra, deepMerge)).toEqual(objDeepExtra);
+		expect(mergeData(objDeepMissing, objDeep, deepMerge)).toEqual(objDeep);
+		expect(mergeData({ deep: { a: 1 } }, { deep: { b: 2 } }, deepMerge)).toEqual({ deep: { a: 1, b: 2 } });
 	});
 });

@@ -1,7 +1,7 @@
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import type { Entry } from "./entry.js";
-import { Data, Prop, toProps } from "./data.js";
-import { isObject, MutableObject } from "./object.js";
+import type { MutableObject } from "./object.js";
+import { Data, isData, Prop, toProps } from "./data.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validatable<T> {
@@ -29,7 +29,7 @@ export type AnyValidator = Validator<any>;
 export type ValidatorType<X extends AnyValidator> = X extends Validator<infer Y> ? Y : never;
 
 /** Is a given value a validator? */
-export const isValidator = <T extends AnyValidator>(v: T | unknown): v is T => typeof v === "function" || (isObject(v) && typeof v.validate === "function");
+export const isValidator = <T extends AnyValidator>(v: T | unknown): v is T => typeof v === "function" || (isData(v) && typeof v.validate === "function");
 
 /** A set of named validators in `{ name: Validator }` format. */
 export type Validators<T extends Data> = { readonly [K in keyof T]: Validator<T[K]> };

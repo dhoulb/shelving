@@ -1,6 +1,6 @@
-import { isObject, ImmutableObject } from "./object.js";
+import { isData, Data } from "./data.js";
 import { ImmutableArray, isArray, MutableArray } from "./array.js";
-import { Data } from "./data.js";
+import { ImmutableObject } from "./object.js";
 
 type MergeRecursor = (left: unknown, right: unknown) => unknown;
 
@@ -8,7 +8,7 @@ type MergeRecursor = (left: unknown, right: unknown) => unknown;
 function _merge(left: unknown, right: unknown, recursor: MergeRecursor) {
 	if (left === right) return right;
 	if (isArray(right)) return isArray(left) ? mergeArray(left, right) : right;
-	if (isObject(right)) return isObject(left) && !isArray(left) ? mergeObject(left, right, recursor) : right;
+	if (isData(right)) return isData(left) && !isArray(left) ? mergeData(left, right, recursor) : right;
 	return right;
 }
 
@@ -55,7 +55,7 @@ export function deepMerge(left: unknown, right: unknown): unknown {
 }
 
 /**
- * Merge two arrays together.
+ * Merge two arrays.
  * - Values are considered unique so values will not appear twice.
  * - Arrays have no concept of `deep merge` because array keys are not stable.
  * - Use an map/object data structure instead for values that need to be deeply mergeable (only use arrays for primitive values).
@@ -75,7 +75,7 @@ export function mergeArray<L extends unknown, R extends unknown>(left: Immutable
 }
 
 /**
- * Deeply merge two objects.
+ * Merge two data objects.
  *
  * Properties that exist in `right` will replace or be deeply merged with properties in `left`.
  * - Only works on enumerable own keys (as returned by `Object.keys()`).
@@ -91,8 +91,8 @@ export function mergeArray<L extends unknown, R extends unknown>(left: Immutable
  * - Will be `left` instance if no properties changed.
  * - Will be a new merged object otherwise.
  */
-export function mergeObject<L extends Data, R extends Data>(left: L, right: R, recursor?: MergeRecursor): L & R;
-export function mergeObject(left: ImmutableObject, right: ImmutableObject, recursor: MergeRecursor = exactMerge): ImmutableObject {
+export function mergeData<L extends Data, R extends Data>(left: L, right: R, recursor?: MergeRecursor): L & R;
+export function mergeData(left: Data, right: Data, recursor: MergeRecursor = exactMerge): Data {
 	if (left === right) return right;
 
 	// If `right` has no keys then merge result will always be `left` (because there's nothing to merge).
@@ -123,3 +123,6 @@ export function mergeObject(left: ImmutableObject, right: ImmutableObject, recur
 
 	return changed ? merged : left;
 }
+
+/** Merge two map-like objects. */
+export const mergeObject: <T>(left: ImmutableObject<T>, right: ImmutableObject<T>, recursor?: MergeRecursor) => ImmutableObject<T> = mergeData;

@@ -1,8 +1,8 @@
-import { isArray } from "./array.js";
+import { ImmutableArray, isArray } from "./array.js";
 import { SAME } from "./constants.js";
-import { Data } from "./data.js";
 import { isArrayEqual, isDeepEqual } from "./equal.js";
-import { DeepPartial, isObject, MutableObject } from "./object.js";
+import { isObject, MutableObject } from "./object.js";
+import { Data, DeepPartial } from "./data.js";
 
 /**
  * Deeply diff two unknown values to produce the transformation needed to transform `left` into `right`, or the `SAME` constant if they are deeply equal.
@@ -32,7 +32,7 @@ export function deepDiff(left: unknown, right: DeepPartial<Data> | unknown): Dee
  * @returns The `right` array if it is different to `left`, or the exact `SAME` constant otherwise.
  * - If the two values are deeply equal the `SAME` constant is returned.
  */
-export function deepDiffArray<R extends readonly unknown[]>(left: readonly unknown[], right: R): R | typeof SAME {
+export function deepDiffArray<R extends ImmutableArray>(left: ImmutableArray, right: R): R | typeof SAME {
 	if (left === right) return SAME;
 	if (isArrayEqual(left, right, isDeepEqual)) return SAME; // Left is exactly equal to right so return `SAME`
 	return right; // Right must be different to left so return right.

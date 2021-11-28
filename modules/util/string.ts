@@ -1,7 +1,7 @@
 /* eslint-disable no-control-regex */
 
 import { formatDate } from "./date.js";
-import { isObject } from "./object.js";
+import { isData } from "./data.js";
 import { ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
 import { IS_DEFINED } from "./undefined.js";
@@ -46,7 +46,7 @@ export function toTitle(value: unknown): string {
 	if (typeof value === "number") return formatNumber(value);
 	if (value instanceof Date) return formatDate(value);
 	if (isArray(value)) return value.map(toTitle).join(", ");
-	if (isObject(value)) {
+	if (isData(value)) {
 		if ("name" in value) return toTitle(value.name);
 		if ("title" in value) return toTitle(value.title);
 	}
