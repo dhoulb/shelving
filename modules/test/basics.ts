@@ -1,10 +1,10 @@
 import type { ValidatorType } from "../util/index.js";
-import { ARRAY, NUMBER, DATA, STRING, ALLOW } from "../schema/index.js";
+import { ARRAY, NUMBER, DATA, STRING, ALLOW_STRING } from "../schema/index.js";
 
 export const BASIC_SCHEMA = DATA({
 	str: STRING,
 	num: NUMBER,
-	group: ALLOW(["a", "b", "c"]),
+	group: ALLOW_STRING(["a", "b", "c"]),
 	tags: ARRAY(STRING),
 });
 export type BasicData = ValidatorType<typeof BASIC_SCHEMA>;
