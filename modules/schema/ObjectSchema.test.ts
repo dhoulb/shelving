@@ -8,15 +8,9 @@ test("TypeScript", () => {
 	const requiredItemsSchema = requiredSchema.items;
 	const requiredItemsType: Validator<number> = requiredItemsSchema;
 
-	const mapRequiredSchema = new ObjectSchema({ items: NUMBER, required: true });
-	const mapRequiredType: ObjectSchema<number> = mapRequiredSchema;
-	const mapRequiredValue: ImmutableObject<number> = mapRequiredSchema.validate({ a: 1 });
-	const mapOptionalSchema = new ObjectSchema({ items: NUMBER, required: false });
-	const mapOptionalType: ObjectSchema<number> = mapOptionalSchema;
-	const mapOptionalValue: ImmutableObject<number> = mapOptionalSchema.validate({ a: 1 });
-	const mapAutoSchema = new ObjectSchema({ items: NUMBER });
-	const mapAutoType: ObjectSchema<number> = mapAutoSchema;
-	const mapAutoValue: ImmutableObject<number> = mapAutoSchema.validate({ a: 1 });
+	const objSchema = new ObjectSchema({ items: NUMBER });
+	const objType: ObjectSchema<number> = objSchema;
+	const objValue: ImmutableObject<number> = objSchema.validate({ a: 1 });
 });
 test("constructor()", () => {
 	const items = STRING;
