@@ -1,30 +1,47 @@
 import { RequiredError } from "../error/index.js";
-import type { SKIP } from "./constants.js";
+import type { ImmutableArray } from "./array.js";
 
-/** Data: an object with string keys containing only plain values. */
-export type Data = { readonly [key: string]: Plain };
+/** Data object. */
+export type Data = { readonly [key: string]: unknown };
 
-/** Datas: an object containing named `Data` objects. */
+/** Key for a prop in a data object. */
+export type Key<T extends Data> = keyof T & string;
+
+/** Value for a prop in a data object. */
+export type Value<T extends Data> = T[Key<T>];
+
+/** Prop of a data object in entry format. */
+export type Prop<T extends Data> = readonly [Key<T>, Value<T>];
+
+/** Set of named data objects. */
 export type Datas = { readonly [key: string]: Data };
 
-/** Plain: any plain value likely to be supported by most database engines. */
-export type Plain = number | string | boolean | null | readonly Plain[] | Data;
-
-/** Result: the data for a document (if it exists) or `undefined` (if it doesn't). */
+/** Data or `undefined` */
 export type Result<T extends Data = Data> = T | undefined;
 
-/** Results: a set of results for documents indexed by their ID. */
-export type Results<T extends Data = Data> = { readonly [id: string]: T };
+/** Iterable set of results in entry format. */
+export type Results<T extends Data = Data> = Iterable<readonly [string, T]>;
 
-/** Resolvable value. */
-export type Resolvable<T> = typeof SKIP | T | Promise<typeof SKIP | T>;
+/** Is an unknown string an own prop of an object. */
+export const isKey = <T extends Data, K extends keyof T>(obj: T, key: K | string): key is K => Object.prototype.hasOwnProperty.call(obj, key);
 
-/**
- * Get a required value.
- * @returns Value if it's not `undefined`
- * @throws RequiredError if value is `undefined`
- */
-export function getRequired<T>(v: T): Exclude<T, undefined> {
-	if (v === undefined) throw new RequiredError("Required value is undefined");
-	return v as Exclude<T, undefined>;
+/** Turn a data object into an array of entries (if it isn't one already). */
+export function toProps<T extends Data>(input: T): ImmutableArray<Prop<T>>;
+export function toProps<T extends Data>(input: Partial<T>): ImmutableArray<Prop<T>>;
+export function toProps<T extends Data>(input: T | Partial<T>): ImmutableArray<Prop<T>> {
+	return Object.entries(input) as ImmutableArray<Prop<T>>;
+}
+
+/** Get a required value (returns value or throws `RequiredError` if value is `null` or `undefined`). */
+export function getRequired<T>(v: T): Exclude<T, null | undefined>;
+export function getRequired<T>(v: T | null | undefined): T;
+export function getRequired<T>(v: T | null | undefined): T {
+	if (v === undefined || v === null) throw new RequiredError(v === null ? "Required value is null" : "Required value is undefined");
+	return v;
+}
+
+/** Get a required value (returns value or throws `RequiredError` if value is `null` or `undefined`). */
+export function getData<T extends Data>(result: Result<T>): T {
+	if (!result) throw new RequiredError("Data is required");
+	return result;
 }

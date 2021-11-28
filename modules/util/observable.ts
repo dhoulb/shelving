@@ -1,16 +1,17 @@
 import { logError } from "./error.js";
-import { Dispatcher, EmptyDispatcher } from "./dispatch.js";
+import { Dispatcher } from "./dispatch.js";
 import { isObject } from "./object.js";
+import { isAsync } from "./promise.js";
 
 /** `Dispatcher` that unsubscribes a subscription. */
-export type Unsubscriber = EmptyDispatcher;
+export type Unsubscriber = () => void;
 
 /** An object that can initiate a subscription with its `subscribe()`. */
 export interface Observable<T> {
 	/** Subscribe allows either an `Observer` or separate `next()`, `error()` and `complete()` functions. */
 	subscribe(observer: Observer<T>): Unsubscriber;
-	subscribe(next: Dispatcher<T>, error?: Dispatcher<unknown>, complete?: EmptyDispatcher): Unsubscriber;
-	subscribe(either: Observer<T> | Dispatcher<T>, error?: Dispatcher<unknown>, complete?: EmptyDispatcher): Unsubscriber;
+	subscribe(next: Dispatcher<T>, error?: Dispatcher<unknown>, complete?: Dispatcher<void>): Unsubscriber;
+	subscribe(either: Observer<T> | Dispatcher<T>, error?: Dispatcher<unknown>, complete?: Dispatcher<void>): Unsubscriber;
 }
 
 /** Any observable (useful for `extends AnyObservable` clauses). */
@@ -53,7 +54,7 @@ export interface Observer<T> {
 	/** End the subscription with an error. */
 	readonly error?: Dispatcher<unknown> | undefined;
 	/** End the subscription with success. */
-	readonly complete?: EmptyDispatcher | undefined;
+	readonly complete?: Dispatcher<void> | undefined;
 	/** Whether the subscription has ended (either with success or failure). */
 	readonly closed?: boolean;
 }
@@ -66,42 +67,51 @@ export type ObserverType<T extends AnyObserver> = T extends Observer<infer X> ? 
 export type AnyObserver = Observer<any>;
 
 /** Dispatch the next value to an observer (and if the next value errors, calls the observer's error function). */
-export const dispatchNext = <T>(observer: Observer<T>, value: T): void => {
+export function dispatchNext<T>(value: T, observer: Observer<T>, handler = logError): void {
 	if (observer.next) {
 		try {
-			observer.next(value);
+			const returned = observer.next(value);
+			if (isAsync(returned)) returned.then(undefined, handler);
 		} catch (thrown) {
-			dispatchError(observer, thrown);
+			if (observer.error) dispatchError(thrown, observer, handler);
+			else handler(thrown);
 		}
 	}
-};
+}
 
-/** Dispatch a complete call an observer (and if the next value errors, calls the observer's error function). */
-export const dispatchComplete = <T>(observer: Observer<T>): void => {
+/** Dispatch the next value to an observer (and if the next value errors, calls the observer's error function). */
+export function dispatchAsyncNext<T>(value: T | Promise<T>, observer: Observer<T>, handler = logError): void {
+	if (observer.next) {
+		if (isAsync(value)) value.then(v => dispatchNext(v, observer)).catch(observer.error ? thrown => dispatchError(thrown, observer, handler) : handler);
+		else dispatchNext(value, observer);
+	}
+}
+
+/** Dispatch a complete call an observer (and if the next value errors, calls a handler). */
+export function dispatchComplete<T>(observer: Observer<T>, handler = logError): void {
 	if (observer.complete) {
 		try {
-			observer.complete();
+			const returned = observer.complete();
+			if (isAsync(returned)) returned.then(undefined, handler);
 		} catch (thrown) {
-			dispatchError(observer, thrown);
+			handler(thrown);
 		}
 	}
-};
+}
 
 /** Dispatch an error value to an observer. */
-export const dispatchError = <T>(observer: Observer<T>, reason?: Error | unknown): void => {
+export function dispatchError<T>(reason: Error | unknown, observer: Observer<T>, handler = logError): void {
 	if (observer.error) {
 		try {
-			observer.error(reason);
+			const returned = observer.error(reason);
+			if (isAsync(returned)) returned.then(undefined, handler);
 		} catch (thrown) {
-			logError(thrown);
+			handler(thrown);
 		}
 	}
-};
+}
 
 /** Create an `Observer` from a set `next()`, `error()` and `complete()` functions. */
-export function createObserver<T>(observer: Observer<T>): Observer<T>;
-export function createObserver<T>(next: Dispatcher<T>, error?: Dispatcher<unknown>, complete?: EmptyDispatcher): Observer<T>;
-export function createObserver<T>(either: Observer<T> | Dispatcher<T>, error?: Dispatcher<unknown>, complete?: EmptyDispatcher): Observer<T>;
-export function createObserver<T>(next: Observer<T> | Dispatcher<T>, error?: Dispatcher<unknown>, complete?: EmptyDispatcher): Observer<T> {
+export function createObserver<T>(next: Observer<T> | Dispatcher<T>, error?: Dispatcher<unknown>, complete?: Dispatcher<void>): Observer<T> {
 	return typeof next === "object" ? next : { next, error, complete };
 }

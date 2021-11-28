@@ -1,9 +1,8 @@
-import { Arguments, AsyncFetcher, serialise, State, LOADING, removeEntry } from "../index.js";
-import { useState } from "./useState.js";
+import { Arguments, serialise, State, dispatchAsyncNext, LOADING, AnyState } from "../index.js";
+import { useSubscribe } from "./useSubscribe.js";
 
 /** Store a list of named cached `State` instances. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const sources: { [key: string]: State<any> } = {};
+const sources = new Map<string, AnyState>();
 
 /**
  * Fetch a value in a React component.
@@ -19,15 +18,25 @@ const sources: { [key: string]: State<any> } = {};
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export function useFetch<T, D extends Arguments>(fetcher: AsyncFetcher<T, D>, deps: D, maxAge = 86400000): State<T> {
+export function useFetch<T, A extends Arguments>(fetcher: (...args: A) => T | Promise<T>, deps: A, maxAge = 86400000): State<T> {
 	const key = `${serialise(fetcher)}:${serialise(deps)}`;
-	const state: State<T> = (sources[key] ||= new State<T>(LOADING));
+	let state: State<T> | undefined = sources.get(key);
 
-	// Clean up source in a few seconds if it's closed (the few seconds allow time for the component to rerender *with* the error so it can be shown to the user).
-	if (state.closed) setTimeout(() => removeEntry(sources, key, state), 3000);
-	// Fetch if no value is pending and source's ages is less than `maxAge`
-	else if (!state.pending || state.age < maxAge) state.next(fetcher(...deps));
+	if (!state) {
+		// Create a new state and start a fetch.
+		state = new State();
+		sources.set(key, state);
+		dispatchAsyncNext(fetcher(...deps), state);
+	} else if (state.closed) {
+		// Clean up source in a few seconds if it's closed.
+		// The few seconds allow time for the component to render with the errored state so the error can be shown to the user.
+		setTimeout(() => sources.get(key)?.closed && sources.delete(key), 3000);
+	} else if (!state.loading && state.age > maxAge) {
+		// Refetch if state has value and it's older than `maxAge`
+		state.next(LOADING);
+		dispatchAsyncNext(fetcher(...deps), state);
+	}
 
-	useState(state);
+	useSubscribe(state);
 	return state;
 }

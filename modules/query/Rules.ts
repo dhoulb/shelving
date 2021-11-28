@@ -1,49 +1,35 @@
-import type { ImmutableEntries, Data, Results } from "../util/index.js";
+import { Data, MutableArray, toString } from "../util/index.js";
 import { Rule } from "./Rule.js";
 
-const getRuleString = (rule: Rule<Data>) => rule.toString();
-
 /** Type of Rule that is powered by several sub-rules (e.g. `Filters` and `Sorts` and `Query` itself extend this). */
-export abstract class Rules<T extends Data, C extends Rule<T>> extends Rule<T> {
-	protected readonly rules: C[];
+export abstract class Rules<T extends Data, R extends Rule<T>> extends Rule<T> implements Iterable<R> {
+	protected readonly _rules: MutableArray<R>;
 
-	get first(): C | undefined {
-		return this.rules[0];
+	/** Get the first rule. */
+	get first(): R | undefined {
+		return this._rules[0];
 	}
-	get last(): C | undefined {
-		return this.rules[this.rules.length - 1];
+
+	/** Get the last rule. */
+	get last(): R | undefined {
+		return this._rules[this._rules.length - 1];
 	}
+
+	/** Get the number of rules. */
 	get length(): number {
-		return this.rules.length;
+		return this._rules.length;
 	}
 
-	constructor(...rules: C[]) {
+	constructor(...rules: R[]) {
 		super();
-		this.rules = rules;
+		this._rules = rules;
+	}
+	toString(): string {
+		return this._rules.map(toString).join("&");
 	}
 
-	// Override to ignore if there are no rules.
-	override queryResults(results: Results<T>): Results<T> {
-		if (!this.rules.length) return results;
-		return super.queryResults(results);
-	}
-
-	// Override to apply every rule in order.
-	override queryEntries(entries: ImmutableEntries<T>): ImmutableEntries<T> {
-		if (!this.rules.length || !entries.length) return entries;
-		// Push the list of entries through each of the rules (in order) and return the resulting entries.
-		let applied = entries;
-		for (const rule of this.rules) applied = rule.queryEntries(applied);
-		return applied;
-	}
-
-	// Implement iterator protocol.
-	*[Symbol.iterator](): Generator<C, void, undefined> {
-		yield* this.rules;
-	}
-
-	// Implement toString()
-	override toString(): string {
-		return this.rules.map(getRuleString).join("&");
+	/** Iterate over the rules. */
+	[Symbol.iterator](): Iterator<R, void> {
+		return this._rules.values();
 	}
 }

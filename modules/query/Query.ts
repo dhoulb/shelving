@@ -1,138 +1,102 @@
-import { Data, ImmutableEntries, ArrayType, ImmutableArray, assertLength, assertProp } from "../util/index.js";
-import { Slice } from "./Slice.js";
+import { Data, ArrayType, ImmutableArray, assert, Entry, Key, limitItems, Results } from "../util/index.js";
+import type { Queryable, QueryKey } from "./types.js";
 import { Filters } from "./Filters.js";
 import { Sorts } from "./Sorts.js";
 import { Rule } from "./Rule.js";
 import { getQueryProp } from "./helpers.js";
-import type { Queryable } from "./types.js";
+import { GreaterThanEqualFilter as GTE, GreaterThanFilter as GT, LessThanEqualFilter as LTE, LessThanFilter as LT } from "./Filter.js";
 
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 const EMPTY_SORTS = new Sorts<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
-const EMPTY_SLICE = new Slice<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-/**
- * Query: allows filtering, sorting, and slicing (offset and limit) on a list of document values.
- */
+/** Allows filtering, sorting, and limiting on a set of results. */
 export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	readonly filters: Filters<T>;
 	readonly sorts: Sorts<T>;
-	readonly slice: Slice<T>;
-
-	constructor(filters: Filters<T> = EMPTY_FILTERS, sorts: Sorts<T> = EMPTY_SORTS, slice: Slice<T> = EMPTY_SLICE) {
+	readonly limit: number | null;
+	constructor(filters: Filters<T> = EMPTY_FILTERS, sorts: Sorts<T> = EMPTY_SORTS, limit: number | null = null) {
 		super();
 		this.filters = filters;
 		this.sorts = sorts;
-		this.slice = slice;
+		this.limit = limit;
 	}
 
-	// Add filters.
-	is<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
+	// Implement `Filterable`
+	is<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.is(key, value) };
 	}
-	not<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
+	not<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.not(key, value) };
 	}
-	in<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? readonly string[] : readonly T[K][]): this {
+	in<K extends QueryKey<T>>(key: K, value: K extends "id" ? readonly string[] : readonly T[K][]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.in(key, value) };
 	}
-	contains<K extends keyof T>(key: K & string, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
+	contains<K extends Key<T>>(key: K, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.contains(key, value) };
 	}
-	lt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
+	lt<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.lt(key, value) };
 	}
-	lte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
+	lte<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.lte(key, value) };
 	}
-	gt<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
+	gt<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.gt(key, value) };
 	}
-	gte<K extends "id" | keyof T>(key: K & string, value: K extends "id" ? string : T[K]): this {
+	gte<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.gte(key, value) };
 	}
-
-	/**
-	 * Get query that begins after a given record.
-	 * - Offset are based on the sort orders the collection's query uses.
-	 * - Every key used for sorting (e.g. `date, title` must be defined in `data`
-	 *
-	 * @throws AssertionError if this query currently has no sort orders.
-	 * @throws AssertionError if the input `data` did not contain a sorted value.
-	 */
-	after(id: string, data: T): this {
-		const sorts = this.sorts;
-		assertLength(sorts, 1);
-		let filters = this.filters;
-		const lastSort = sorts.last;
-		for (const sort of sorts) {
-			const { key, direction } = sort;
-			const compare = sort === lastSort ? (direction === "ASC" ? "gt" : "lt") : direction === "ASC" ? "gte" : "lte";
-			if (key !== "id") assertProp(data, key);
-			const value = getQueryProp(id, data, key);
-			filters = filters[compare](key, value);
-		}
-		return { __proto__: Object.getPrototypeOf(this), ...this, filters };
+	match(entry: Entry<T>): boolean {
+		return this.filters.match(entry);
 	}
 
-	/**
-	 * Get query that begins before a given record.
-	 * - Offset are based on the sort orders the collection's query uses.
-	 * - Every key used for sorting (e.g. `date, title` must be defined in `data`
-	 *
-	 * @throws AssertionError if this query currently has no sort orders.
-	 * @throws AssertionError if the input `data` did not contain a sorted value.
-	 */
-	before(id: string, data: T): this {
-		const sorts = this.sorts;
-		assertLength(sorts, 1);
-		let filters = this.filters;
-		const lastSort = sorts.last;
-		for (const sort of sorts) {
-			const { key, direction } = sort;
-			const compare = sort === lastSort ? (direction === "ASC" ? "lt" : "gt") : direction === "ASC" ? "lte" : "gte";
-			if (key !== "id") assertProp(data, key);
-			const value = getQueryProp(id, data, key);
-			filters = filters[compare](key, value);
-		}
-		return { __proto__: Object.getPrototypeOf(this), ...this, filters };
-	}
-
-	/**
-	 * Sort results by a field in ascending order.
-	 * @param `key` Either `id`, or the name of a prop in the document containing scalars.
-	 * @returns New instance with new query rules.
-	 */
-	asc(key: "id" | (keyof T & string) = "id"): this {
+	// Implement `Sortable`
+	asc(key: QueryKey<T> = "id"): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.asc(key) };
 	}
-
-	/**
-	 * Sort results by a field in descending order.
-	 * @param `key` Either `id`, or the name of a prop in the document containing scalars.
-	 * @returns New instance with new query rules.
-	 */
-	desc(key: "id" | (keyof T & string) = "id"): this {
+	desc(key: QueryKey<T> = "id"): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.desc(key) };
 	}
-
-	/**
-	 * Limit result to the first X documents.
-	 * @param limit How many documents to limit the result to.
-	 * @returns New instance with new query rules.
-	 */
-	limit(limit: number | null): this {
-		if (limit === this.slice.limit) return this;
-		return { __proto__: Object.getPrototypeOf(this), ...this, slice: new Slice(limit) };
+	rank(left: Entry<T>, right: Entry<T>): number {
+		return this.sorts.rank(left, right);
 	}
 
-	// Override `apply()` to apply filters, sorts, and limit (in that order).
-	override queryEntries(entries: ImmutableEntries<T>): ImmutableEntries<T> {
-		return this.slice.queryEntries(this.sorts.queryEntries(this.filters.queryEntries(entries)));
+	/** Return a new instance of this class with a limit defined. */
+	max(limit: number | null): this {
+		return limit === this.limit ? this : { __proto__: Object.getPrototypeOf(this), ...this, limit };
+	}
+
+	// Implement `Queryable`
+	after(id: string, data: T): this {
+		const filters = [...this.filters];
+		const lastSort = this.sorts.last;
+		assert(lastSort);
+		for (const sort of this.sorts) {
+			const AppliedFilter = sort.direction === "ASC" ? (sort === lastSort ? GT : GTE) : sort === lastSort ? LT : LTE;
+			filters.push(new AppliedFilter(sort.key, getQueryProp(id, data, sort.key)));
+		}
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: new Filters(...filters) };
+	}
+	before(id: string, data: T): this {
+		const filters = [...this.filters];
+		const lastSort = this.sorts.last;
+		assert(lastSort);
+		for (const sort of this.sorts) {
+			const AppliedFilter = sort.direction === "ASC" ? (sort === lastSort ? LT : LTE) : sort === lastSort ? GT : GTE;
+			filters.push(new AppliedFilter(sort.key, getQueryProp(id, data, sort.key)));
+		}
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: new Filters(...filters) };
+	}
+
+	// Implement `Rule`
+	derive(iterable: Results<T>): Results<T> {
+		const sorted = this.sorts.derive(this.filters.derive(iterable));
+		return typeof this.limit === "number" ? limitItems(sorted, this.limit) : sorted;
 	}
 
 	// Implement toString()
 	override toString(): string {
-		return `${this.filters},${this.sorts},${this.slice}`;
+		return `${this.filters}&${this.sorts}${this.limit ? `&LIMIT=${this.limit}` : ""}`;
 	}
 }

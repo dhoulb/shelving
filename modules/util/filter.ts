@@ -1,14 +1,16 @@
 import type { ImmutableArray } from "./array.js";
-import type { Deriver } from "./derive.js";
-import { compareAscending } from "./sort.js";
-import { isObject } from "./object.js";
+import type { ImmutableMap } from "./map.js";
+import { Entry } from "./entry.js";
+import { ImmutableObject } from "./object.js";
+import { ASC } from "./sort.js";
+import { derive, Deriver } from "./derive.js";
 
-/** Object that can match a value against another with its `match()` function. */
+/** Object that can match an item against a target with its `match()` function. */
 export interface Matchable<L, R> {
 	match(item: L, target: R): boolean;
 }
 
-/** Object that can match a value against another with its `match()` function, or a function that can do the same. */
+/** Object that can match an item against a target with its `match()` function, or a function that can do the same. */
 export type Matcher<L, R> = Matchable<L, R> | ((item: L, target: R) => boolean);
 
 /** Match two values using a `Matcher`. */
@@ -18,71 +20,90 @@ export function match<L, R>(item: L, matcher: Matcher<L, R | undefined>, target?
 	return typeof matcher === "function" ? matcher(item, target) : matcher.match(item, target);
 }
 
-/** Match two values for equality. */
-export const is = (item: unknown, target: unknown) => item === target;
+/** Match whether an item is equal to a target. */
+export const IS = (item: unknown, target: unknown) => item === target;
 
-/** Match two values for inequality. */
-export const isNot = (item: unknown, target: unknown) => item !== target;
+/** Match whether an item is not equal to match a target. */
+export const NOT = (item: unknown, target: unknown) => item !== target;
 
-/** Match whether `item` exists in `target` array. */
-export const isIn = (item: unknown, target: unknown) => (target instanceof Array ? target.includes(item) : false);
+/** Match whether an item exists in an array of targets. */
+export const IN = (item: unknown, targets: ImmutableArray) => targets.includes(item);
 
-/** Match whether `item` array contains `target`. */
-export const contains = (item: unknown, target: unknown) => (item instanceof Array ? item.includes(target) : false);
+/** Match whether an array of items contains a target. */
+export const CONTAINS = (items: ImmutableArray, target: unknown) => items.includes(target);
 
-/** Match whether `item` is less than `target`. */
-export const isLessThan = (item: unknown, target: unknown) => compareAscending(item, target) < 0;
+/** Match whether an item is less than a target. */
+export const LT = (item: unknown, target: unknown) => ASC(item, target) < 0;
 
-/** Match whether `item` is less than or equal to `target`. */
-export const isLessThanOrEqual = (item: unknown, target: unknown) => compareAscending(item, target) <= 0;
+/** Match whether an item is less than or equal to a target. */
+export const LTE = (item: unknown, target: unknown) => ASC(item, target) <= 0;
 
-/** Match whether `item` is greater than `target`. */
-export const isGreaterThan = (item: unknown, target: unknown) => compareAscending(item, target) > 0;
+/** Match whether an item is greater than a target. */
+export const GT = (item: unknown, target: unknown) => ASC(item, target) > 0;
 
-/** Match whether `item` is greater than or equal to `target`. */
-export const isGreaterThanOrEqual = (item: unknown, target: unknown) => compareAscending(item, target) >= 0;
+/** Match whether an item is greater than or equal to a target. */
+export const GTE = (item: unknown, target: unknown) => ASC(item, target) >= 0;
 
-/**
- * Match a string against a regular expression.
- *
- * @param item The item to search for the regexp in.
- * - Item is an array: recurse into each item of the array to look for strings that match.
- * - Item is an object: recurse into each property of the object to look for strings that match.
- * - Item is string: match the string against the regular expression.
- * - Item is anything else: return false (can't be matched).
- *
- * @param regexp The `RegExp` instance to match the
- */
-export function matchRegExp(item: unknown, regexp: RegExp): boolean {
-	// Item is array or object: recurse into it and return +1 if any item matches the regexp.
-	// e.g. `rank({ title: "Big Dog", description: "etc" }, "dog")`  will return `1`
-	if (isObject(item)) {
-		for (const i of Object.values(item)) if (matchRegExp(i, regexp)) return true;
-		return false;
-	}
-	// See if item is a string and matches the regexp.
-	return typeof item === "string" && !!item.match(regexp);
+/** Match whether the key of an entry is equal to a target. */
+export const KEY_IS = ([item]: Entry, target: string) => item === target;
+
+/** Match whether the key of an entry is in an array of targets. */
+export const KEY_IN = ([item]: Entry, targets: ImmutableArray<string>) => targets.includes(item);
+
+/** Match whether the value of an entry is equal to a target. */
+export const VALUE_IS = ([, item]: Entry, target: unknown) => item === target;
+
+/** Match whether the value of an entry is in an array of targets. */
+export const VALUE_IN = ([, item]: Entry, targets: ImmutableArray) => targets.includes(item);
+
+/** Filter an iterable set of items using a matcher (and optionally a target value). */
+export function filterItems<L>(input: Iterable<L>, matcher: Matcher<L, void>): Iterable<L>;
+export function filterItems<L, R>(input: Iterable<L>, matcher: Matcher<L, R>, target: R): Iterable<L>;
+export function* filterItems<L, R>(input: Iterable<L>, matcher: Matcher<L, R | undefined>, target?: R): Iterable<L> {
+	for (const item of input) if (match(item, matcher, target)) yield item;
 }
 
-/**
- * Filter an array of items against a target value and return an array that only keeps the ones that match.
- * - Consistent with `sort()`, `search()`
- *
- * @param items The input array of items, e.g. `[1, 2, 3]`
- * @param matcher Object that can match a value against another with its `match()` function, or a function that can do the same.
- * @param target The target value to match each item in the array against, e.g. `2`
- * @param deriver A deriver function that extracts a specific value from an item (e.g. to compare the `.date` property in two objects).
- *
- * @returns Array with items for which the matcher function returned true.
- * - If the filtering did not remove any items the exact same input instance is returned.
- */
-export function filter<L>(items: ImmutableArray<L>, matcher: Matcher<L, void>): ImmutableArray<L>;
-export function filter<L, R>(items: ImmutableArray<L>, matcher: Matcher<L, R>, target: R): ImmutableArray<L>;
-export function filter<L, R>(items: ImmutableArray<L>, matcher: Matcher<L, R>, target: R): ImmutableArray<L>;
-export function filter<L, LL, R>(items: ImmutableArray<L>, matcher: Matcher<LL, R>, target: R, deriver?: Deriver<L, LL>): ImmutableArray<LL>;
-export function filter<L, LL, R>(items: ImmutableArray<L>, matcher: Matcher<L | LL, R | undefined>, target?: R, deriver?: Deriver<L, LL>): ImmutableArray {
-	if (!items.length) return items;
-	const filtered = [];
-	for (const item of items) if (match(deriver ? deriver(item) : item, matcher, target)) filtered.push(item);
-	return items.length === filtered.length ? items : filtered;
+/** Filter an array using a matcher (and optionally a target value). */
+export function filterArray<L>(input: ImmutableArray<L>, matcher: Matcher<L, void>): ImmutableArray<L>;
+export function filterArray<L, R>(input: ImmutableArray<L>, matcher: Matcher<L, R>, target: R): ImmutableArray<L>;
+export function filterArray<L, R>(input: ImmutableArray<L>, matcher: Matcher<L, R | undefined>, target?: R): ImmutableArray<L> {
+	if (!input.length) return input;
+	const output = Array.from(filterItems(input, matcher, target));
+	return output.length === input.length ? input : output;
+}
+
+/** Filter an iterable set of entries using an entry matcher (and optionally a target value). */
+export function filterEntries<L>(entries: Iterable<Entry<L>>, matcher: Matcher<Entry<L>, void>): Iterable<Entry<L>>;
+export function filterEntries<L, R>(entries: Iterable<Entry<L>>, matcher: Matcher<Entry<L>, R>, target: R): Iterable<Entry<L>>;
+export function filterEntries<L, R>(entries: Iterable<Entry<L>>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): Iterable<Entry<L>> {
+	return filterItems(entries, matcher, target);
+}
+
+/** Filter an object _by its values_ using a matcher (and optionally a target value). */
+export function filterObject<L>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, void>): ImmutableObject<L>;
+export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R>, target: R): ImmutableObject<L>;
+export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): ImmutableObject<L> {
+	return Object.fromEntries(filterEntries(Object.entries(object), matcher, target));
+}
+
+/** Filter a map _by its values_ using a matcher (and optionally a target value). */
+export function filterMap<L>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, void>): ImmutableMap<L>;
+export function filterMap<L, R>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, R>, target: R): ImmutableMap<L>;
+export function filterMap<L, R>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): ImmutableMap<L> {
+	if (!input.size) return input;
+	const output = new Map(filterEntries(input, matcher, target));
+	return output.size === input.size ? input : output;
+}
+
+/** Derive a value and match it against a target value. */
+export class MatchDerived<L, LL, R> implements Matchable<L, R> {
+	private _deriver: Deriver<L, LL>;
+	private _matcher: Matcher<LL, R>;
+	constructor(deriver: Deriver<L, LL>, matcher: Matcher<LL, R> = IS) {
+		this._deriver = deriver;
+		this._matcher = matcher;
+	}
+	match(item: L, target: R): boolean {
+		return match(derive(item, this._deriver), this._matcher, target);
+	}
 }

@@ -1,10 +1,10 @@
-/** The EQUAL symbol indicates equality. */
-export const EQUAL: unique symbol = Symbol("shelving/EQUAL");
+/** The SAME symbol indicates sameness. */
+export const SAME: unique symbol = Symbol("shelving/SAME");
 
 /** The SKIP symbol indicates something that should be skipped. */
 export const SKIP: unique symbol = Symbol("shelving/SKIP");
 
-/** The EQUAL symbol indicates equality. */
+/** The LOADING symbol indicates equality. */
 export const LOADING: unique symbol = Symbol("shelving/LOADING");
 
 /** The COMPLETE symbol indicates completion. */

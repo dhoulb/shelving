@@ -1,5 +1,3 @@
-import type { ImmutableArray, ImmutableObject } from "../util/index.js";
-
 /**
  * JSX element.
  * - Compatible with but _slightly_ more flexible than `React.ReactElement`
@@ -50,7 +48,7 @@ export type MarkupRuleMatcher = (content: string, options: MarkupOptions) => Reg
 export type MarkupRuleRenderer = (matches: RegExpMatchArray, options: MarkupOptions) => MarkupElement;
 
 /** A set of parse rules (as an object or array). */
-export type MarkupRules = ImmutableArray<MarkupRule> | ImmutableObject<MarkupRule>;
+export type MarkupRules = Iterable<MarkupRule>;
 
 /** The current parsing options (represents the current state of the parsing). */
 export type MarkupOptions = {

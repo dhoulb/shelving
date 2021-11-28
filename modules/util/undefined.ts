@@ -1,11 +1,12 @@
 /** Is a value undefined? */
-export const isUndefined = (v: unknown): v is undefined => v === undefined;
+export const IS_UNDEFINED = (v: unknown): v is undefined => v === undefined;
 
 /** Is a value defined? */
-export const isDefined = <T>(v: T | undefined): v is T => v !== undefined;
+export const IS_DEFINED = <T>(v: T | undefined): v is T => v !== undefined;
+export const NOT_UNDEFINED = IS_DEFINED;
 
 /** Function that always returns undefined. */
-export const getUndefined = (): undefined => undefined;
+export const UNDEFINED = (): undefined => undefined;
 
 /** Function that always returns void. */
-export const getVoid: () => void = getUndefined;
+export const VOID: () => void = UNDEFINED;

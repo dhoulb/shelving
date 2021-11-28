@@ -1,5 +1,5 @@
 import type { ImmutableArray } from "./array.js";
-import { getLazy, Lazy } from "./function.js";
+import { getLazy, Lazy } from "./lazy.js";
 import { MutableObject, isObject, ImmutableObject } from "./object.js";
 
 type Chunk = { pre: string; name: string; placeholder: string; post: string };

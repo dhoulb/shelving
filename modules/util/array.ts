@@ -1,8 +1,3 @@
-import type { Resolvable } from "./data.js";
-import type { ImmutableObject, Mutable } from "./object.js";
-import { SKIP } from "./constants.js";
-import { isAsync } from "./promise.js";
-
 /**
  * Mutable array: an array that can be changed.
  * - Consistency with `MutableObject<T>` and `ImmutableArray<T>`
@@ -16,13 +11,6 @@ export type MutableArray<T = unknown> = T[];
 export type ImmutableArray<T = unknown> = readonly T[];
 
 /**
- * Resolvable array: an object whose properties can be resolved with `resolveArray()`
- * - Items can be `SKIP` symbol (and they will be removed).
- * - Items can be `Promise` instances (and they will be awaited).
- */
-export type ResolvableArray<T = unknown> = readonly Resolvable<T>[];
-
-/**
  * Array type: extract the type for the items of an array or readonly array.
  * - Consistency with builtin `ReturnType<T>` and `ObjectType<T>`
  */
@@ -32,72 +20,13 @@ export type ArrayType<T extends ImmutableArray> = T[number];
 export const isArray = <T extends ImmutableArray>(v: T | unknown): v is T => v instanceof Array;
 
 /** Is an unknown value an item in a specified array? */
-export const isItem = <T extends unknown>(arr: ImmutableArray<T>, item: T | unknown): item is T => arr.includes(item as T);
+export const isItem = <T>(arr: ImmutableArray<T>, item: T | unknown): item is T => arr.includes(item as T);
 
-/**
- * Is a value an iterable object?
- * - Any object with a `Symbol.iterator` property is iterable.
- * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
- */
-export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.iterator in value;
-
-/**
- * Break an iterable set into equal sized chunks (last chunk might be smaller).
- *
- * @param input input array or map-like object or iterable to split into chunks.
- * @param size The number of items in each chunk.
- *
- * @return New array with one or more sub-arrays for each chunk.
- * - The last chunk might not contain a full set of items.
- */
-export function chunkItems<T>(input: ImmutableArray<T>, size: number): ImmutableArray<ImmutableArray<T>> {
-	const chunks: T[][] = [];
-	let chunk: T[] = [];
-	for (const item of getItems(input)) {
-		chunk.push(item);
-		if (chunk.length > size) {
-			chunks.push(chunk);
-			chunk = [];
-		}
-	}
-	if (chunk.length) chunks.push(chunk);
-	return chunks;
-}
-
-/**
- * Sum an iterable set of numbers and return the total.
- *
- * @param input input array or map-like object or iterable to sum the numbers of.
- * @return Total count after adding up all the numbers
- */
-export function sumItems(input: ImmutableObject<number> | Iterable<number>): number {
-	let sum = 0;
-	for (const num of getItems(input)) sum += num;
-	return sum;
-}
-
-/**
- * Get an iterable set of items from an array or object.
- *
- * @param input input array or map-like object or iterable to count.
- * @return Array of items for the input.
- */
-export function getItems<T>(input: Iterable<T> | ImmutableObject<T>): Iterable<T> {
-	return isIterable(input) ? input : Object.values(input);
-}
-
-/**
- * Count the number of items in an array or iterable.
- *
- * @param input input array or map-like object or iterable to count.
- * @return Number of items.
- */
-export function countItems<T>(input: Iterable<T> | ImmutableObject<T>): number {
-	if (isArray(input)) return input.length;
-	if (!isIterable(input)) return Object.keys(input).length;
-	let count = 0;
-	for (const unused of input) count++; // eslint-disable-line @typescript-eslint/no-unused-vars
-	return count;
+/** Convert an iterable to an array (if its not already an array). */
+export function toArray<T>(items: MutableArray<T> | Iterable<T>): MutableArray<T>;
+export function toArray<T>(items: ImmutableArray<T> | Iterable<T>): ImmutableArray<T>;
+export function toArray<T>(items: ImmutableArray<T> | Iterable<T>): ImmutableArray<T> {
+	return isArray(items) ? items : Array.from(items);
 }
 
 /**
@@ -219,25 +148,28 @@ export function swapItem<T>(input: ImmutableArray<T>, oldItem: T, newItem: T): I
 	return output;
 }
 
-/** Get the first item from an array. */
-export function getFirstItem<T>(arr: [T, ...unknown[]]): T;
-export function getFirstItem<T>(arr: ImmutableArray<T>): T | undefined;
-export function getFirstItem<T>(arr: ImmutableArray<T>): T | undefined {
-	return arr[0];
+/** Get the first item from an array or iterable. */
+export function getFirstItem<T>(items: ImmutableArray<T> | Iterable<T>): T | undefined {
+	if (items instanceof Array) return items[0];
+	const [item] = items;
+	return item;
 }
 
-/** Get the second item from an array. */
-export function getSecondItem<T>(arr: [unknown, T, ...unknown[]]): T;
-export function getSecondItem<T>(arr: ImmutableArray<T>): T | undefined;
-export function getSecondItem<T>(arr: ImmutableArray<T>): T | undefined {
-	return arr[1];
+/** Get the second item from an array or iterable. */
+export function getSecondItem<T>(items: ImmutableArray<T> | Iterable<T>): T | undefined {
+	if (items instanceof Array) return items[1];
+	const [, item] = items;
+	return item;
 }
 
-/** Get the last item from an array. */
-export function getLastItem<T>(arr: [...unknown[], T]): T;
-export function getLastItem<T>(arr: ImmutableArray<T>): T | undefined;
-export function getLastItem<T>(arr: ImmutableArray<T>): T | undefined {
-	return arr[arr.length - 1];
+/** Get the last item from an array or iterable. */
+export function getLastItem<T>(items: ImmutableArray<T> | Iterable<T>): T | undefined {
+	if (items instanceof Array) return items[items.length];
+	let value: T | undefined = undefined;
+	for (value of items) {
+		// unused
+	}
+	return value;
 }
 
 /**
@@ -247,11 +179,11 @@ export function getLastItem<T>(arr: ImmutableArray<T>): T | undefined {
  * @param value The value of the target item.
  * @return The item after the target item, or `undefined` if that item does not exist in the array.
  */
-export const getNextItem = <T>(arr: ImmutableArray<T>, value: T): T | undefined => {
+export function getNextItem<T>(arr: ImmutableArray<T>, value: T): T | undefined {
 	const i = arr.indexOf(value);
 	if (i >= 0) return arr[i + 1];
 	return undefined;
-};
+}
 
 /**
  * Get the previous item in an array.
@@ -261,96 +193,27 @@ export const getNextItem = <T>(arr: ImmutableArray<T>, value: T): T | undefined 
  *
  * @return The item before the target item, or `undefined` if that item does not exist in the array.
  */
-export const getPrevItem = <T>(arr: ImmutableArray<T>, value: T): T | undefined => {
+export function getPrevItem<T>(arr: ImmutableArray<T>, value: T): T | undefined {
 	const i = arr.indexOf(value);
 	if (i >= 1) return arr[i - 1];
 	return undefined;
-};
+}
 
 /**
  * Return a shuffled version of an array or iterable.
  * - Uses Fisher Yates algorithm.
  *
- * @param arr The target array to shuffle.
- * @return Copy of the input array in a random order.
+ * @param input The input array or iterable to shuffle.
+ * @return Copy of in a random order.
  */
-export const shuffle = <T>(arr: ImmutableArray<T>): ImmutableArray<T> => {
-	const shuffled = arr.slice();
-	for (let i = shuffled.length - 1; i > 0; i--) {
+export function shuffleArray<T>(input: Iterable<T>): ImmutableArray<T> {
+	const output = Array.from(input);
+	for (let i = output.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		[shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+		[output[i], output[j]] = [output[j]!, output[i]!]; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 	}
-	return shuffled;
-};
-
-/**
- * Map the items in an array.
- *
- * @param input The input array or map-like object or iterable to iterate over.
- * @param mapper Mapping function that receives the value and key and returns the corresponding value.
- * - Mapper can return a promise. If it does will return a Promise that resolves once every value has resolved.
- * - Return the `SKIP` symbol from the mapper to skip that property and not include it in the output object.
- * - `SKIP` is useful because using `filter(Boolean)` doesn't currently filter in TypeScript (and requires another loop anyway).
- * - Mapper can be a non-function static value and all the values will be set to that value.
- *
- * @return The mapped array.
- * - Immutable so if the values don't change then the same instance will be returned.
- */
-export function mapItems<I extends unknown, O extends unknown>(
-	input: Iterable<I> | ImmutableObject<I>, //
-	mapper: (value: I) => Promise<typeof SKIP | O>,
-): Promise<ImmutableArray<O>>;
-export function mapItems<I extends unknown, O extends unknown>(
-	input: Iterable<I> | ImmutableObject<I>, //
-	mapper: ((value: I) => typeof SKIP | O) | O,
-): ImmutableArray<O>;
-export function mapItems(
-	input: Iterable<unknown> | ImmutableObject<unknown>,
-	mapper: ((value: unknown) => Resolvable<unknown>) | Resolvable<unknown>,
-): ImmutableArray | Promise<ImmutableArray> {
-	let promises = false;
-	let changed = false;
-	const output: Mutable<ResolvableArray<unknown>> = [];
-	const iterable = isIterable(input) ? input : Object.values(input);
-	for (const current of iterable) {
-		const next = typeof mapper === "function" ? mapper(current) : mapper;
-		if (isAsync(next)) promises = true;
-		if (next !== SKIP) output.push(next);
-		if (next !== current) changed = true;
-	}
-	return promises ? resolveArray<unknown>(output) : !changed && isArray(input) ? input : output;
+	return output;
 }
-
-/**
- * Map an entire array.
- * - This is a copy of `mapItems()` but with different generics that allow you to specify the exact input and output types.
- * - It can't be an overload of `mapArray()` because the overloads are too similar and there's no way for TypeScript to distinguish between them.
- */
-export const mapArray: <I extends ImmutableArray, O extends ImmutableArray>(
-	input: I, //
-	mapper: (value: I[keyof I], key: string) => O[keyof O],
-) => O = mapItems;
-
-/**
- * Resolve the items in an array.
- *
- * @param arr The input array to resolve.
- * - Any values that are `Promise` instances will be awaited.
- * - Any values that are the `SKIP` symbol will not be included in the output array.
- *
- * @return Array containing resolved items.
- */
-export const resolveArray = async <V>(arr: ResolvableArray<V>): Promise<ImmutableArray<V>> => {
-	const resolved: V[] = [];
-	await Promise.all(
-		arr.map(async current => {
-			const next = await current;
-			if (next !== SKIP) resolved.push(next);
-		}),
-	);
-	return resolved;
-};
 
 /**
  * Add an item to an array (by reference).
@@ -381,13 +244,8 @@ export function addItems<T>(arr: MutableArray<T>, items: Iterable<T>): void {
  * @param arr The target array to remove items from.
  * @param item The item to remove.
  */
-export function removeItem<T>(arr: MutableArray<T>, value: T): void {
-	let i = arr.indexOf(value);
-	if (i < 0) return;
-	while (i >= 0) {
-		arr.splice(i, 1);
-		i = arr.indexOf(value, i);
-	}
+export function removeItem<T>(arr: MutableArray<T>, item: T): void {
+	for (let i = arr.indexOf(item); i >= 0; i = arr.indexOf(item, i)) arr.splice(i, 1);
 }
 
 /**
@@ -401,16 +259,14 @@ export function removeItems<T>(arr: MutableArray<T>, items: Iterable<T>): void {
 	for (const item of items) removeItem(arr, item);
 }
 
-/**
- * Return an array of the unique items in an array or iterable.
- *
- * @param input The array or iterable to make unique.
- *
- * @return New array where any duplicate items have been removed.
- * - Returns the same instance if no changes were made.
- */
-export function uniqueItems<T>(input: ImmutableArray<T> | Iterable<T>): ImmutableArray<T> {
+/** Return an array of the unique items in an array. */
+export function uniqueArray<T>(input: Iterable<T>): ImmutableArray<T> {
 	const output: MutableArray<T> = [];
-	for (const item of input) if (output.indexOf(item) < 0) output.push(item);
-	return isArray(input) && input.length === output.length ? input : output;
+	for (const item of input) if (!output.includes(item)) output.push(item);
+	return output;
+}
+
+/** Apply a limit to an array. */
+export function limitArray<T>(arr: ImmutableArray<T>, limit: number): ImmutableArray<T> {
+	return limit > arr.length ? arr : arr.slice(0, limit);
 }

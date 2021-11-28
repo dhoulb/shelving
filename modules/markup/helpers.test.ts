@@ -1,5 +1,5 @@
 import { cleanMarkup, nodeToText, nodeToHtml, renderMarkup } from "../index.js";
-import { iterateElements } from "./helpers.js";
+import { yieldElements } from "./helpers.js";
 
 describe("nodeToText()", () => {
 	test("Nodes can be converted to plain text", () => {
@@ -34,10 +34,10 @@ test("cleanMarkup()", () => {
 	// Tabs and other weird whitespaces are converted to spaces.
 	expect(cleanMarkup("aaa\taaa\faaa")).toEqual("aaa aaa aaa");
 });
-test("iterateElements()", () => {
-	expect(Array.from(iterateElements(renderMarkup("PARAGRAPH")))).toHaveLength(1);
-	expect(Array.from(iterateElements(renderMarkup("PARAGRAPH")))).toMatchObject([{ type: "p" }]);
-	expect(Array.from(iterateElements(renderMarkup("- ITEM1\n- ITEM2")))).toMatchObject([
+test("yieldElements()", () => {
+	expect(Array.from(yieldElements(renderMarkup("PARAGRAPH")))).toHaveLength(1);
+	expect(Array.from(yieldElements(renderMarkup("PARAGRAPH")))).toMatchObject([{ type: "p" }]);
+	expect(Array.from(yieldElements(renderMarkup("- ITEM1\n- ITEM2")))).toMatchObject([
 		{ type: "ul" },
 		{ type: "li", props: { children: "ITEM1" } },
 		{ type: "li", props: { children: "ITEM2" } },

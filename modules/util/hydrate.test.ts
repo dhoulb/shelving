@@ -76,7 +76,7 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 	const original3 = ["a", "b"] as const;
 	const dehydrated3 = dehydrate(original3, HYDRATIONS);
 	const hydrated3 = hydrate(dehydrated3, HYDRATIONS);
-	expect(original3).toBe(hydrated3);
+	expect(original3).toEqual(hydrated3);
 });
 test("hydrate(): Works correctly with plain objects of objects", () => {
 	// Flat.
@@ -111,5 +111,5 @@ test("hydrate(): Works correctly with plain objects of objects", () => {
 	const original3 = { str: "abc", num: 123 };
 	const dehydrated3 = dehydrate(original3, HYDRATIONS);
 	const hydrated3 = hydrate(dehydrated3, HYDRATIONS);
-	expect(original3).toBe(hydrated3);
+	expect(original3).toEqual(hydrated3);
 });

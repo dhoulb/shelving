@@ -1,4 +1,4 @@
-import { debug, toString, ImmutableObject, MutableObject } from "../util/index.js";
+import { debug, ImmutableObject, MutableObject, toTitle } from "../util/index.js";
 
 /**
  * The `Feedback` class represents a feedback message that should be shown to the user.
@@ -32,7 +32,7 @@ export class Feedback {
 		const messages: MutableObject<string> = {};
 		for (const [k, v] of Object.entries(this.details)) {
 			if (v instanceof Feedback) messages[k] = v.feedback;
-			else messages[k] = toString(v);
+			else messages[k] = toTitle(v);
 		}
 		return messages;
 	}

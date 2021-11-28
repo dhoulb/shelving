@@ -1,50 +1,51 @@
-import type { ModelDocument, ModelQuery } from "../db/index.js";
-import { Data, Result, Results, Unsubscriber, Observer, isAsync, Validator, validate, Transformer } from "../util/index.js";
-import { Transform, validateTransformer } from "../transform/index.js";
-import { DeriveStream } from "../stream/index.js";
+import type { DatabaseDocument, DatabaseQuery } from "../db/index.js";
+import { Data, Result, Results, Unsubscriber, Observer, isAsync, Validator, validate, Datas, Key } from "../util/index.js";
+import { Transform, validateTransform } from "../transform/index.js";
+import { throwFeedback } from "../feedback/index.js";
+import { ValidateStream } from "../stream/index.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Validates any values that are read from or written to a source provider. */
-export class ValidationProvider extends ThroughProvider {
-	override get<T extends Data>(ref: ModelDocument<T>): Result<T> | Promise<Result<T>> {
+export class ValidationProvider<D extends Datas> extends ThroughProvider<D> {
+	override get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Result<D[C]> | Promise<Result<D[C]>> {
 		const result = super.get(ref);
-		if (isAsync(result)) return this._awaitGetDocument(ref, result);
-		return ref.validate(result);
+		return isAsync(result) ? _awaitResult(ref, result) : result && ref.validate(result);
 	}
-	private async _awaitGetDocument<T extends Data>(ref: ModelDocument<T>, asyncResult: Promise<Result<T>>): Promise<Result<T>> {
-		const result = await asyncResult;
-		return ref.validate(result);
-	}
-	override subscribe<T extends Data>(ref: ModelDocument<T>, observer: Observer<Result>): Unsubscriber {
-		const stream = new DeriveStream<Result<T>, Result<T>>(v => ref.validate(v));
-		stream.subscribe(observer);
+	override subscribe<C extends Key<D>>(ref: DatabaseDocument<D, C>, observer: Observer<Result>): Unsubscriber {
+		const stream = new ValidateStream(ref);
+		stream.on(observer);
 		return super.subscribe(ref, stream);
 	}
-	override add<T extends Data>(ref: ModelQuery<T>, data: T): string | Promise<string> {
-		return super.add(ref, validate(data, ref.validator));
+	override add<C extends Key<D>>(ref: DatabaseQuery<D, C>, data: D[C]): string | Promise<string> {
+		return super.add(ref, throwFeedback(validate(data, ref.validator)));
 	}
-	override write<T extends Data>(ref: ModelDocument<T>, value: T | Transformer<T> | undefined): void | Promise<void> {
-		return super.write(ref, value ? validateWrite(value, ref.validator) : value);
+	override write<C extends Key<D>>(ref: DatabaseDocument<D, C>, value: D[C] | Transform<D[C]> | undefined): void | Promise<void> {
+		return super.write(ref, value ? _validateWrite(value, ref.validator) : value);
 	}
-	override getQuery<T extends Data>(ref: ModelQuery<T>): Results<T> | Promise<Results<T>> {
+	override getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Results<D[C]> | Promise<Results<D[C]>> {
 		const results = super.getQuery(ref);
-		if (isAsync(results)) return this._awaitGetDocuments(ref, results);
-		return ref.validate(results);
+		return isAsync(results) ? _awaitResults(ref, results) : ref.validate(results);
 	}
-	private async _awaitGetDocuments<X extends Data>(ref: ModelQuery<X>, asyncResult: Promise<Results<X>>): Promise<Results<X>> {
-		return ref.validate(await asyncResult);
-	}
-	override subscribeQuery<X extends Data>(ref: ModelQuery<X>, observer: Observer<Results<X>>): Unsubscriber {
-		const stream = new DeriveStream<Results<X>, Results<X>>(v => ref.validate(v));
+	override subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<Results<D[C]>>): Unsubscriber {
+		const stream = new ValidateStream(ref);
 		stream.subscribe(observer);
 		return super.subscribeQuery(ref, stream);
 	}
-	override writeQuery<T extends Data>(ref: ModelQuery<T>, value: T | Transformer<T> | undefined): void | Promise<void> {
-		return super.writeQuery(ref, value ? validateWrite(value, ref.validator) : value);
+	override writeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, value: D[C] | Transform<D[C]> | undefined): void | Promise<void> {
+		return super.writeQuery(ref, value ? _validateWrite(value, ref.validator) : value);
 	}
 }
 
+async function _awaitResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C>, asyncResult: Promise<Result<D[C]>>): Promise<Result<D[C]>> {
+	const result = await asyncResult;
+	return result && ref.validate(result);
+}
+
+async function _awaitResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C>, asyncResult: Promise<Results<D[C]>>): Promise<Results<D[C]>> {
+	return ref.validate(await asyncResult);
+}
+
 /** Validate data or a transform for a path. */
-function validateWrite<T extends Data>(value: T | Transformer<T>, validator: Validator<T>): T | Transformer<T> {
-	return value instanceof Transform ? validateTransformer(value, validator) : validate(value, validator);
+function _validateWrite<T extends Data>(value: T | Transform<T>, validator: Validator<T>): T | Transform<T> {
+	return throwFeedback(value instanceof Transform ? validateTransform(value, validator) : validate(value, validator));
 }

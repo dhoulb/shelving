@@ -8,30 +8,29 @@ import type {
 } from "@google-cloud/firestore";
 import { Firestore, FieldValue } from "@google-cloud/firestore";
 import {
-	Data,
 	Results,
 	Provider,
-	ModelDocument,
-	ModelQuery,
+	DatabaseDocument,
+	DatabaseQuery,
 	FilterOperator,
 	Observer,
 	SortDirection,
-	Mutable,
 	Result,
 	dispatchNext,
 	dispatchError,
-	MutableObject,
-	Transformer,
+	Transform,
 	IncrementTransform,
 	AddItemsTransform,
 	RemoveItemsTransform,
 	AddEntriesTransform,
 	RemoveEntriesTransform,
-	ImmutableObject,
+	Data,
 	AsynchronousProvider,
-	ObjectTransform,
-	isTransformer,
+	DataTransform,
 	AssertionError,
+	Datas,
+	Key,
+	Entry,
 } from "../../index.js";
 
 // Constants.
@@ -56,64 +55,54 @@ const DIRECTIONS: { readonly [K in SortDirection]: FirestoreOrderByDirection } =
 	DESC: "desc",
 };
 
-/** Get a Firestore DocumentReference for a given Shelving `Document` instance. */
-function getDocument<X extends Data>(firestore: Firestore, { collection, id }: ModelDocument<X>): FirestoreDocumentReference<X> {
-	return firestore.doc(`${collection}/${id}`) as FirestoreDocumentReference<X>;
+/** Get a Firestore DocumentReference for a given documente. */
+function getDocument<D extends Datas, C extends Key<D>>(firestore: Firestore, { collection, id }: DatabaseDocument<D, C>): FirestoreDocumentReference<D[C]> {
+	return firestore.doc(`${collection}/${id}`) as FirestoreDocumentReference<D[C]>;
 }
 
-/** Get a Firestore CollectionReference for a given Shelving `Document` instance. */
-function getCollection<X extends Data>(firestore: Firestore, { collection }: ModelQuery<X>): FirestoreCollectionReference<X> {
-	return firestore.collection(collection) as FirestoreCollectionReference<X>;
+/** Get a Firestore CollectionReference for a given document. */
+function getCollection<D extends Datas, C extends Key<D>>(firestore: Firestore, { collection }: DatabaseQuery<D, C>): FirestoreCollectionReference<D[C]> {
+	return firestore.collection(collection) as FirestoreCollectionReference<D[C]>;
 }
 
 /** Create a corresponding `QueryReference` from a Query. */
-function getQuery<X extends Data>(firestore: Firestore, ref: ModelQuery<X>): FirestoreQuery<X> {
-	const { sorts, filters, slice } = ref;
-	let query: FirestoreQuery<X> = getCollection(firestore, ref);
+function getQuery<D extends Datas, C extends Key<D>>(firestore: Firestore, ref: DatabaseQuery<D, C>): FirestoreQuery<D[C]> {
+	const { sorts, filters, limit } = ref;
+	let query: FirestoreQuery<D[C]> = getCollection(firestore, ref);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
-	if (slice.limit !== null) query = query.limit(slice.limit);
+	if (typeof limit === "number") query = query.limit(limit);
 	return query;
 }
 
 /** Create a set of results from a collection snapshot. */
-function getResults<X extends Data>(snapshot: FirestoreQuerySnapshot<X>): Results<X> {
-	const results: Mutable<Results<X>> = {};
-	for (const s of snapshot.docs) results[s.id] = s.data();
-	return results;
+function* getResults<D extends Datas, C extends Key<D>>(snapshot: FirestoreQuerySnapshot<D[C]>): Iterable<Entry<D[C]>> {
+	for (const s of snapshot.docs) yield [s.id, s.data()];
 }
 
-/** Convert a `Transformer` instances into corresponding Firestore `FieldValue` instances. */
-function createFieldValues<X extends Data>(transformer: Transformer<X>): ImmutableObject {
-	if (transformer instanceof ObjectTransform) {
-		const output: MutableObject = {};
-		for (const [k, v] of transformer) {
-			if (isTransformer(v)) addFieldValues(output, k, v);
-			else output[k] = v;
-		}
-		return output;
-	}
-	throw new AssertionError("Unsupported transformer", transformer);
+/** Convert a `Transform` instances into corresponding Firestore `FieldValue` instances. */
+function getFieldValues<D extends Datas, C extends Key<D>>(transform: Transform<D[C]>): Data {
+	if (transform instanceof DataTransform) return Object.fromEntries(yieldFieldValues(transform));
+	throw new AssertionError("Unsupported transform", transform);
 }
-function addFieldValues<X>(output: MutableObject, key: string, transformer: Transformer<X>): void {
-	if (transformer instanceof IncrementTransform) output[key] = FieldValue.increment(transformer.amount);
-	else if (transformer instanceof AddItemsTransform) output[key] = FieldValue.arrayUnion(...transformer);
-	else if (transformer instanceof RemoveItemsTransform) output[key] = FieldValue.arrayRemove(...transformer);
-	else if (transformer instanceof AddEntriesTransform) for (const [k, v] of transformer) output[`${key}.${k}`] = v;
-	else if (transformer instanceof RemoveEntriesTransform) for (const k of transformer) output[`${key}.${k}`] = FieldValue.delete();
-	else if (transformer instanceof ObjectTransform)
-		for (const [k, v] of transformer) {
-			if (isTransformer(v)) addFieldValues(output, `${key}.${k}`, v);
-			else output[`${key}.${k}`] = v;
-		}
-	throw new AssertionError("Unsupported transformer", transformer);
+function* yieldFieldValues(transforms: DataTransform<Data>, prefix = ""): Iterable<Entry> {
+	for (const [key, transform] of transforms) {
+		if (!(transform instanceof Transform)) yield [`${prefix}${key}`, transform];
+		if (transform instanceof IncrementTransform) yield [`${prefix}${key}`, FieldValue.increment(transform.amount)];
+		else if (transform instanceof AddItemsTransform) yield [`${prefix}${key}`, FieldValue.arrayUnion(...transform)];
+		else if (transform instanceof RemoveItemsTransform) yield [`${prefix}${key}`, FieldValue.arrayRemove(...transform)];
+		else if (transform instanceof AddEntriesTransform) for (const [k, v] of transform) yield [`${prefix}${key}.${k}`, v];
+		else if (transform instanceof RemoveEntriesTransform) for (const k of transform) yield [`${prefix}${key}.${k}`, FieldValue.delete()];
+		else if (transform instanceof DataTransform) yield* yieldFieldValues(transform, `${prefix}${key}.`);
+		else throw new AssertionError("Unsupported transform", transform);
+	}
 }
 
 /**
  * Firestore server database provider.
  * - Works with the Firebase Admin SDK for Node.JS
  */
-export class FirestoreServerProvider extends Provider implements AsynchronousProvider {
+export class FirestoreServerProvider<D extends Datas> extends Provider<D> implements AsynchronousProvider<D> {
 	readonly firestore: Firestore;
 
 	constructor(firestore = new Firestore()) {
@@ -121,44 +110,42 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		this.firestore = firestore;
 	}
 
-	async get<X extends Data>(ref: ModelDocument<X>): Promise<Result<X>> {
-		const snapshot = await getDocument(this.firestore, ref).get();
-		return snapshot.data();
+	async get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Promise<Result<D[C]>> {
+		return (await getDocument(this.firestore, ref).get()).data();
 	}
 
-	subscribe<X extends Data>(ref: ModelDocument<X>, observer: Observer<Result<X>>): () => void {
+	subscribe<C extends Key<D>>(ref: DatabaseDocument<D, C>, observer: Observer<Result<D[C]>>): () => void {
 		return getDocument(this.firestore, ref).onSnapshot(
-			snapshot => dispatchNext(observer, snapshot.data()),
-			error => dispatchError(observer, error),
+			snapshot => dispatchNext(snapshot.data(), observer),
+			thrown => dispatchError(thrown, observer),
 		);
 	}
 
-	async add<X extends Data>(ref: ModelQuery<X>, data: X): Promise<string> {
+	async add<C extends Key<D>>(ref: DatabaseQuery<D, C>, data: D[C]): Promise<string> {
 		return (await getCollection(this.firestore, ref).add(data)).id;
 	}
 
-	async write<X extends Data>(ref: ModelDocument<X>, value: X | Transformer<X> | undefined): Promise<void> {
-		if (isTransformer(value)) await getDocument(this.firestore, ref).update(createFieldValues(value));
+	async write<C extends Key<D>>(ref: DatabaseDocument<D, C>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
+		if (value instanceof Transform) await getDocument(this.firestore, ref).update(getFieldValues(value));
 		else if (value) await getDocument(this.firestore, ref).set(value);
 		else await getDocument(this.firestore, ref).delete();
 	}
 
-	async getQuery<X extends Data>(ref: ModelQuery<X>): Promise<Results<X>> {
-		const snapshot = await getQuery(this.firestore, ref).get();
-		return getResults(snapshot);
+	async getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Promise<Iterable<Entry<D[C]>>> {
+		return getResults(await getQuery(this.firestore, ref).get());
 	}
 
-	subscribeQuery<X extends Data>(ref: ModelQuery<X>, observer: Observer<Results<X>>): () => void {
+	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<Results<D[C]>>): () => void {
 		return getQuery(this.firestore, ref).onSnapshot(
-			snapshot => dispatchNext(observer, getResults(snapshot)),
-			error => dispatchError(observer, error),
+			snapshot => dispatchNext(getResults(snapshot), observer),
+			thrown => dispatchError(thrown, observer),
 		);
 	}
 
-	async writeQuery<X extends Data>(ref: ModelQuery<X>, value: X | Transformer<X> | undefined): Promise<void> {
+	async writeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
 		const writer = this.firestore.bulkWriter();
 		const query = getQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
-		const updates = isTransformer(value) ? createFieldValues(value) : undefined;
+		const updates = value instanceof Transform ? getFieldValues(value) : undefined;
 		let current: FirestoreQuery | false = query;
 		while (current) {
 			const snapshot: FirestoreQuerySnapshot = await current.get();

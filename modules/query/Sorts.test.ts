@@ -1,30 +1,32 @@
-import { Sorts, Sort, Data } from "../index.js";
+import { expectOrderedKeys } from "../test/util.js";
+import { Sorts, AscendingSort, DescendingSort } from "../index.js";
 
 const a = { first: "B", second: 1 };
 const b = { first: "B", second: 2 };
 const c = { first: "A", second: 4 };
 const d = { first: "A", second: 3 };
-const all = { b, c, a, d };
 
-test("Sorts: types", () => {
+const allRand = Object.entries({ b, d, c, a });
+
+test("Sorts", () => {
+	// Typescript.
 	const sort1: Sorts<{ a: number }> = new Sorts<{ a: number }>();
-	// Should allow a wider type.
-	const sort2: Sorts<Data> = new Sorts<{ a: number }>();
-});
-test("Sorts: sorting", () => {
+	// No sort orders.
+	expectOrderedKeys(new Sorts().derive(allRand), ["b", "d", "c", "a"]);
+	expect(new Sorts().derive(allRand)).toBe(allRand); // Passes through unchanged for efficiency.
 	// One sort order.
-	expect(Object.keys(new Sorts(new Sort("id")).queryResults(all))).toEqual(["a", "b", "c", "d"]);
-	expect(Object.keys(new Sorts(new Sort("id", "DESC")).queryResults(all))).toEqual(["d", "c", "b", "a"]);
-	expect(Object.keys(new Sorts(new Sort("second", "ASC")).queryResults(all))).toEqual(["a", "b", "d", "c"]);
-	expect(Object.keys(new Sorts(new Sort("second", "DESC")).queryResults(all))).toEqual(["c", "d", "b", "a"]);
+	expectOrderedKeys(new Sorts(new AscendingSort("id")).derive(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Sorts(new DescendingSort("id")).derive(allRand), ["d", "c", "b", "a"]);
+	expectOrderedKeys(new Sorts(new AscendingSort("second")).derive(allRand), ["a", "b", "d", "c"]);
+	expectOrderedKeys(new Sorts(new DescendingSort("second")).derive(allRand), ["c", "d", "b", "a"]);
 	// Two sort orders (where second is relevant).
-	expect(Object.keys(new Sorts(new Sort("first", "ASC"), new Sort("id")).queryResults(all))).toEqual(["c", "d", "a", "b"]);
-	expect(Object.keys(new Sorts(new Sort("first", "DESC"), new Sort("id")).queryResults(all))).toEqual(["a", "b", "c", "d"]);
-	expect(Object.keys(new Sorts(new Sort("first", "ASC"), new Sort("second", "ASC")).queryResults(all))).toEqual(["d", "c", "a", "b"]);
-	expect(Object.keys(new Sorts(new Sort("first", "DESC"), new Sort("second", "ASC")).queryResults(all))).toEqual(["a", "b", "d", "c"]);
-	expect(Object.keys(new Sorts(new Sort("first", "ASC"), new Sort("second", "DESC")).queryResults(all))).toEqual(["c", "d", "b", "a"]);
-	expect(Object.keys(new Sorts(new Sort("first", "DESC"), new Sort("second", "DESC")).queryResults(all))).toEqual(["b", "a", "c", "d"]);
+	expectOrderedKeys(new Sorts(new AscendingSort("first"), new AscendingSort("id")).derive(allRand), ["c", "d", "a", "b"]);
+	expectOrderedKeys(new Sorts(new DescendingSort("first"), new AscendingSort("id")).derive(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Sorts(new AscendingSort("first"), new AscendingSort("second")).derive(allRand), ["d", "c", "a", "b"]);
+	expectOrderedKeys(new Sorts(new DescendingSort("first"), new AscendingSort("second")).derive(allRand), ["a", "b", "d", "c"]);
+	expectOrderedKeys(new Sorts(new AscendingSort("first"), new DescendingSort("second")).derive(allRand), ["c", "d", "b", "a"]);
+	expectOrderedKeys(new Sorts(new DescendingSort("first"), new DescendingSort("second")).derive(allRand), ["b", "a", "c", "d"]);
 	// Two sort orders (but second isn't relevant).
-	expect(Object.keys(new Sorts(new Sort("second", "ASC"), new Sort("first", "ASC")).queryResults(all))).toEqual(["a", "b", "d", "c"]);
-	expect(Object.keys(new Sorts(new Sort("second", "DESC"), new Sort("first", "ASC")).queryResults(all))).toEqual(["c", "d", "b", "a"]);
+	expectOrderedKeys(new Sorts(new AscendingSort("second"), new AscendingSort("first")).derive(allRand), ["a", "b", "d", "c"]);
+	expectOrderedKeys(new Sorts(new DescendingSort("second"), new AscendingSort("first")).derive(allRand), ["c", "d", "b", "a"]);
 });

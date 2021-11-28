@@ -1,69 +1,40 @@
-import type { Transforms } from "../transform/index.js";
-import { Hydrations } from "../util/hydration.js";
-import { Datas, getVoid, ImmutableArray, isAsync, MutableArray } from "../util/index.js";
-import type { Database } from "./Database.js";
+import { DataTransform, Transforms, Transform } from "../transform/index.js";
+import { Hydrations, Datas, VOID, ImmutableArray, isAsync, MutableArray, Key } from "../util/index.js";
+import type { Database, DatabaseDocument } from "./Database.js";
 
 /** A single change that can be made to a database. */
-export abstract class Change<D extends Datas> {
+export abstract class Change<T extends Datas> {
 	/** Apply this change to a database. */
-	abstract apply(db: Database<D>): void | Promise<void>;
+	abstract apply(db: Database<T>): void | Promise<void>;
 }
 
-/** A change that sets a document in a database. */
-export class SetChange<D extends Datas, C extends keyof D & string> extends Change<D> {
+/** A change that writes a document in a database. */
+export class Write<D extends Datas, C extends Key<D>> extends Change<D> {
+	static on<X extends Datas, Y extends Key<X>>({ collection, id }: DatabaseDocument<X, Y>, value: X[Y] | Transform<X[Y]> | undefined): Write<X, Y> {
+		return new Write(collection, id, value);
+	}
 	readonly collection: C;
 	readonly id: string;
-	readonly result: D[C];
-	constructor(collection: C, id: string, result: D[C]) {
+	readonly value: D[C] | Transform<D[C]> | undefined;
+	constructor(collection: C, id: string, value: D[C] | Transform<D[C]> | undefined) {
 		super();
 		this.collection = collection;
 		this.id = id;
-		this.result = result;
+		this.value = value;
 	}
 	apply(db: Database<D>) {
-		return db.doc(this.collection, this.id).set(this.result);
-	}
-}
-
-/** A change that updates the data of a document in a database, if it exists. */
-export class UpdateChange<D extends Datas, C extends keyof D & string> extends Change<D> {
-	readonly collection: C;
-	readonly id: string;
-	readonly transforms: Transforms<D[C]>;
-	constructor(collection: C, id: string, transforms: Transforms<D[C]>) {
-		super();
-		this.collection = collection;
-		this.id = id;
-		this.transforms = transforms;
-	}
-	apply(db: Database<D>) {
-		// Update is applied using a query so if the document doesn't exist it won't error.
-		return db.query(this.collection).is("id", this.id).update(this.transforms);
-	}
-}
-
-/** A change that deletes a document in a database, if it exists. */
-export class DeleteChange<D extends Datas, C extends keyof D & string> extends Change<D> {
-	readonly collection: C;
-	readonly id: string;
-	constructor(collection: C, id: string) {
-		super();
-		this.collection = collection;
-		this.id = id;
-	}
-	apply(db: Database<D>) {
-		return db.doc(this.collection, this.id).delete();
+		return db.doc(this.collection, this.id).write(this.value);
 	}
 }
 
 /**
- * Set of changes that can be applied to documents in a database.
+ * Set of writes that can be applied to documents in a database.
  * - Sets of changes are predictable and repeatable, so unpredictable operations like `create()` and query operations are not supported.
  * - Every change must be applied to a specific database document in a specific collection.
  */
-export class Changes<D extends Datas> extends Change<D> {
-	static on<X extends Datas>(db: Database<X>, ...changes: ImmutableArray<Change<X>>): Changes<X> {
-		return new Changes(...changes);
+export class Writes<D extends Datas> extends Change<D> {
+	static on<X extends Datas>(db: Database<X>, ...changes: ImmutableArray<Change<X>>): Writes<X> {
+		return new Writes(...changes);
 	}
 	readonly changes: ImmutableArray<Change<D>>;
 	constructor(...changes: ImmutableArray<Change<D>>) {
@@ -71,16 +42,20 @@ export class Changes<D extends Datas> extends Change<D> {
 		this.changes = changes;
 	}
 	/** Return a new `Changes` instance with an additional `Write` instance in its changes list. */
-	set<K extends keyof D & string>(collection: K, id: string, result: D[K]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new SetChange(collection, id, result)] };
+	set<C extends Key<D>>({ collection, id }: DatabaseDocument<D, C>, data: D[C]): this {
+		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new Write(collection, id, data)] };
 	}
 	/** Return a new `Changes` instance with an additional `Write` instance in its changes list. */
-	delete<K extends keyof D & string>(collection: K, id: string): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new DeleteChange(collection, id)] };
+	delete<C extends Key<D>>({ collection, id }: DatabaseDocument<D, C>): this {
+		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new Write(collection, id, undefined)] };
 	}
-	/** Return a new `Changes` instance with an additional `Update` instance in its changes list. */
-	update<K extends keyof D & string>(collection: K, id: string, transforms: Transforms<D[K]>): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new UpdateChange(collection, id, transforms)] };
+	/** Return a new `Changes` instance with an additional `Write` instance in its changes list. */
+	update<C extends Key<D>>({ collection, id }: DatabaseDocument<D, C>, transforms: Transforms<D[C]> | Transform<D[C]>): this {
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			changes: [...this.changes, new Write(collection, id, transforms instanceof Transform ? transforms : new DataTransform(transforms))],
+		};
 	}
 	apply(db: Database<D>) {
 		const promises: MutableArray<Promise<void>> = [];
@@ -88,15 +63,13 @@ export class Changes<D extends Datas> extends Change<D> {
 			const applied = change.apply(db);
 			if (isAsync(applied)) promises.push(applied);
 		}
-		if (promises.length) return Promise.all(promises).then(getVoid);
+		if (promises.length) return Promise.all(promises).then(VOID);
 	}
 }
 
 /** Set of hydrations for all change classes. */
 export const CHANGE_HYDRATIONS = {
-	changes: Changes,
-	set: SetChange,
-	update: UpdateChange,
-	delete: DeleteChange,
+	writes: Writes,
+	write: Write,
 };
 CHANGE_HYDRATIONS as Hydrations;

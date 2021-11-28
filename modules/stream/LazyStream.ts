@@ -17,13 +17,13 @@ export class LazyStream<T> extends Stream<T> {
 		super.off(observer);
 		if (this._delay) {
 			// Maybe stop in a bit (if there are still no subscribers).
-			if (this._timeout) clearTimeout(this._timeout);
-			this._timeout = setTimeout(() => {
-				if (!this._subscribers.length && !this.closed) this.complete();
-			}, this._delay);
+			if (!this._subscribers.size && !this.closed) {
+				if (this._timeout) clearTimeout(this._timeout);
+				this._timeout = setTimeout(() => !this._subscribers.size && !this.closed && this.complete(), this._delay);
+			}
 		} else {
 			// Stop now.
-			if (!this._subscribers.length && !this.closed) this.complete();
+			if (!this._subscribers.size && !this.closed) this.complete();
 		}
 	}
 }

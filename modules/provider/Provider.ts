@@ -1,15 +1,16 @@
-import type { Observer, Unsubscriber, Data, Result, Results, Transformer } from "../util/index.js";
-import type { ModelDocument, ModelQuery } from "../db/Model.js";
+import type { Observer, Unsubscriber, Result, Results, Datas, Key, Entry } from "../util/index.js";
+import type { DatabaseDocument, DatabaseQuery } from "../db/Database.js";
+import type { Transform } from "../transform/index.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
-export abstract class Provider {
+export abstract class Provider<D extends Datas = Datas> {
 	/**
 	 * Get the result of a document.
 	 *
 	 * @param ref Document reference specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	abstract get<T extends Data>(ref: ModelDocument<T>): Result<T> | Promise<Result<T>>;
+	abstract get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Result<D[C]> | Promise<Result<D[C]>>;
 
 	/**
 	 * Subscribe to the result of a document.
@@ -20,7 +21,7 @@ export abstract class Provider {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribe<T extends Data>(ref: ModelDocument<T>, observer: Observer<Result<T>>): Unsubscriber;
+	abstract subscribe<C extends Key<D>>(ref: DatabaseDocument<D, C>, observer: Observer<Result<D[C]>>): Unsubscriber;
 
 	/**
 	 * Create a new document with a random ID.
@@ -31,7 +32,7 @@ export abstract class Provider {
 	 *
 	 * @return String ID for the created document (possibly promised).
 	 */
-	abstract add<T extends Data>(ref: ModelQuery<T>, data: T): string | Promise<string>;
+	abstract add<C extends Key<D>>(ref: DatabaseQuery<D, C>, data: D[C]): string | Promise<string>;
 
 	/**
 	 * Write to a document.
@@ -47,7 +48,7 @@ export abstract class Provider {
 	 * @return Nothing (possibly promised).
 	 * @throws Error If a `Transform` was provided but the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract write<T extends Data>(ref: ModelDocument<T>, value: T | Transformer<T> | undefined): void | Promise<void>;
+	abstract write<C extends Key<D>>(ref: DatabaseDocument<D, C>, value: D[C] | Transform<D[C]> | undefined): void | Promise<void>;
 
 	/**
 	 * Get all matching documents.
@@ -55,7 +56,7 @@ export abstract class Provider {
 	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Set of results in `id: data` format.
 	 */
-	abstract getQuery<T extends Data>(ref: ModelQuery<T>): Results<T> | Promise<Results<T>>;
+	abstract getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Iterable<Entry<D[C]>> | Promise<Iterable<Entry<D[C]>>>;
 
 	/**
 	 * Subscribe to all matching documents.
@@ -66,7 +67,7 @@ export abstract class Provider {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribeQuery<T extends Data>(ref: ModelQuery<T>, observer: Observer<Results<T>>): Unsubscriber;
+	abstract subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<Results<D[C]>>): Unsubscriber;
 
 	/**
 	 * Write to all matching documents.
@@ -79,23 +80,23 @@ export abstract class Provider {
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	abstract writeQuery<T extends Data>(ref: ModelQuery<T>, value: T | Transformer<T> | undefined): void | Promise<void>;
+	abstract writeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, value: D[C] | Transform<D[C]> | undefined): void | Promise<void>;
 }
 
 /** Provider with a fully synchronous interface */
-export interface SynchronousProvider extends Provider {
-	get<T extends Data>(ref: ModelDocument<T>): Result<T>;
-	add<T extends Data>(ref: ModelQuery<T>, data: T): string;
-	write<T extends Data>(ref: ModelDocument<T>, value: T | Transformer<T> | undefined): void;
-	getQuery<T extends Data>(ref: ModelQuery<T>): Results<T>;
-	writeQuery<T extends Data>(ref: ModelQuery<T>, value: T | Transformer<T> | undefined): void;
+export interface SynchronousProvider<D extends Datas> extends Provider<D> {
+	get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Result<D[C]>;
+	add<C extends Key<D>>(ref: DatabaseQuery<D, C>, data: D[C]): string;
+	write<C extends Key<D>>(ref: DatabaseDocument<D, C>, value: D[C] | Transform<D[C]> | undefined): void;
+	getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Results<D[C]>;
+	writeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, value: D[C] | Transform<D[C]> | undefined): void;
 }
 
 /** Provider with a fully asynchronous interface */
-export interface AsynchronousProvider extends Provider {
-	get<T extends Data>(ref: ModelDocument<T>): Promise<Result<T>>;
-	add<T extends Data>(ref: ModelQuery<T>, data: T): Promise<string>;
-	write<T extends Data>(ref: ModelDocument<T>, value: T | Transformer<T> | undefined): Promise<void>;
-	getQuery<T extends Data>(ref: ModelQuery<T>): Promise<Results<T>>;
-	writeQuery<T extends Data>(ref: ModelQuery<T>, value: T | Transformer<T> | undefined): Promise<void>;
+export interface AsynchronousProvider<D extends Datas> extends Provider<D> {
+	get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Promise<Result<D[C]>>;
+	add<C extends Key<D>>(ref: DatabaseQuery<D, C>, data: D[C]): Promise<string>;
+	write<C extends Key<D>>(ref: DatabaseDocument<D, C>, value: D[C] | Transform<D[C]> | undefined): Promise<void>;
+	getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Promise<Results<D[C]>>;
+	writeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, value: D[C] | Transform<D[C]> | undefined): Promise<void>;
 }

@@ -1,31 +1,39 @@
-import { isArray, ImmutableArray, mapArray } from "./array.js";
-import { EmptyObject, isObject, ImmutableObject, mapObject } from "./object.js";
+import type { Data } from "./data.js";
+import { ImmutableArray, isArray } from "./array.js";
+import { isObject } from "./object.js";
+import { deriveArray, deriveObject } from "./derive.js";
 
 /** Cloneable object implement a `clone()` function that returns a cloned copy. */
 export interface Cloneable {
 	clone(): this;
 }
 
+/** Does an object implement `Cloneable` */
+export const isCloneable = <T extends Cloneable>(v: T | unknown): v is T => isObject(v) && typeof v.cloneable === "function";
+
 /** Shallow clone a value. */
-export const clone = <T>(value: T): T => value;
+export const shallowClone = <T>(value: T): T => value;
 
 /** Deep clone a value. */
 export function deepClone<T>(value: T, recursor = deepClone): T {
+	if (isCloneable(value)) return value.clone();
 	if (isArray(value)) return cloneArray(value, recursor);
 	if (isObject(value)) return cloneObject(value, recursor);
 	return value;
 }
 
 /** Clone an array. */
-export const cloneArray = <T extends ImmutableArray>(arr: T, recursor = clone): T => {
-	const output = mapArray(arr, recursor);
-	Object.setPrototypeOf(arr, Object.getPrototypeOf(arr));
+export function cloneArray<T extends ImmutableArray>(input: T, recursor = shallowClone): T {
+	if (isCloneable(input)) return input.clone();
+	const output = deriveArray<T>(input, recursor);
+	Object.setPrototypeOf(output, Object.getPrototypeOf(input));
 	return output;
-};
+}
 
 /** Clone an object. */
-export const cloneObject = <T extends EmptyObject | ImmutableObject>(obj: T, recursor = clone): T => {
-	const output = mapObject<T, T>(obj, recursor);
-	Object.setPrototypeOf(obj, Object.getPrototypeOf(obj));
+export function cloneObject<T extends Data>(input: T, recursor = shallowClone): T {
+	if (isCloneable(input)) return input.clone();
+	const output = deriveObject<T>(input, recursor);
+	Object.setPrototypeOf(input, Object.getPrototypeOf(input));
 	return output;
-};
+}

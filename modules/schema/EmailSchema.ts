@@ -1,15 +1,11 @@
+import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema } from "./StringSchema.js";
-import type { SchemaOptions } from "./Schema.js";
 
 const R_MATCH = /^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.){1,3}(?:[a-z]{2,63}|xn--[a-z0-9-]{0,58}[a-z0-9])$/;
 
-type EmailSchemaOptions = SchemaOptions<string> & {
-	readonly value?: string;
-	readonly required?: boolean;
-};
-
 /**
- * Type of `StringSchema` that defines a valid email address.
+ * Define a valid email address.
+ *
  * - Falsy values are converted to `""` empty string.
  * - Total length must be 254 characters or fewer (in SMTP email is encoded with `<` and `>` to make 256 characters).
  * - No minimum length is enforced because the email's format is enforced instead.
@@ -24,21 +20,19 @@ type EmailSchemaOptions = SchemaOptions<string> & {
  *     - Up to 10 segments of up to 63 characters each, separated by `.`
  *     - TLD is a segment of 2-63 characters, possibly in `xn--` international format.
  */
-export class EmailSchema extends StringSchema<string> {
-	static override REQUIRED = new EmailSchema({ required: true });
-	static override OPTIONAL = new EmailSchema({ required: false });
-
-	static override create(options: EmailSchemaOptions): EmailSchema {
-		return new EmailSchema(options);
-	}
-
+export class EmailSchema extends StringSchema {
 	override readonly type = "email";
 	override readonly max = 254;
 	override readonly match = R_MATCH;
 	override readonly multiline = false;
-
-	override sanitize(str: string): string {
-		const clean = super.sanitize(str);
-		return typeof clean === "string" ? clean.toLowerCase() : clean;
+	override sanitize(uncleanString: string): string {
+		const cleanString = super.sanitize(uncleanString);
+		return typeof cleanString === "string" ? cleanString.toLowerCase() : cleanString;
 	}
 }
+
+/** Valid email, e.g. `test@test.com` (required because empty string is invalid). */
+export const REQUIRED_EMAIL = new EmailSchema({});
+
+/** Valid email, e.g. `test@test.com`, or `null` */
+export const OPTIONAL_EMAIL = NULLABLE(REQUIRED_EMAIL);

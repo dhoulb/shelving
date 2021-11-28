@@ -4,6 +4,7 @@ export * from "./usePureState.js";
 export * from "./useSubscribe.js";
 export * from "./useState.js";
 export * from "./useFetch.js";
-export * from "./useDocument.js";
+export * from "./useResult.js";
+export * from "./useData.js";
 export * from "./useQuery.js";
 export * from "./usePagination.js";

@@ -12,7 +12,7 @@ export class IncrementTransform extends Transform<number> {
 		super();
 		this.amount = amount;
 	}
-	transform(existing?: unknown): number {
+	derive(existing?: unknown): number {
 		return typeof existing === "number" ? existing + this.amount : this.amount;
 	}
 }

@@ -1,23 +1,6 @@
-import { isObject, sanitizeLines, sanitizeString, toString, isArray } from "../util/index.js";
+import { sanitizeLines, sanitizeString } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/index.js";
-import { Schema, SchemaOptions } from "./Schema.js";
-
-type StringSchemaOptions<T extends string> = SchemaOptions<T> & {
-	readonly value?: string;
-	readonly required?: boolean;
-	readonly type?: string;
-	readonly min?: number;
-	readonly max?: number | null;
-	readonly match?: RegExp | null;
-	readonly multiline?: boolean;
-	readonly trim?: boolean;
-	readonly options?: ReadonlyArray<T> | { readonly [K in T]: string } | null;
-	readonly sanitizer?: (value: string) => string;
-};
-
-type StringOptionOptions<T extends string> = {
-	readonly options: ReadonlyArray<T> | { readonly [K in T]: string };
-};
+import { Schema } from "./Schema.js";
 
 /**
  * Schema that defines a valid string.
@@ -39,88 +22,53 @@ type StringOptionOptions<T extends string> = {
  *  schema.validate(''); // Throws Required
  *  schema.validate('j'); // Throws 'Minimum 3 chaacters'
  */
-export class StringSchema<T extends string> extends Schema<T> {
-	static REQUIRED: StringSchema<string> = new StringSchema({ required: true });
-	static OPTIONAL: StringSchema<string> = new StringSchema({ required: false });
-
-	static create<X extends string>(options: StringSchemaOptions<X> & StringOptionOptions<X> & { required: true }): StringSchema<X>;
-	static create<X extends string>(options: StringSchemaOptions<X> & StringOptionOptions<X>): StringSchema<X | "">;
-	static create(options: StringSchemaOptions<string> & { required: true }): StringSchema<string>;
-	static create(options: StringSchemaOptions<string>): StringSchema<string | "">;
-	static create(options: StringSchemaOptions<string>): StringSchema<string> {
-		return new StringSchema(options);
-	}
-
-	override readonly value;
+export class StringSchema extends Schema<string> {
+	readonly value: string;
 	readonly required: boolean;
 	readonly type: string;
 	readonly min: number;
 	readonly max: number | null;
-	readonly options: ReadonlyArray<T> | { readonly [K in T]?: string } | null;
 	readonly match: RegExp | null;
 	readonly multiline: boolean;
 	readonly trim: boolean;
-	readonly sanitizer: ((value: string) => string) | undefined;
-
-	protected constructor({
+	constructor({
 		value = "",
 		required = false,
 		type = "text",
 		min = 0,
 		max = null,
-		options = null,
 		match = null,
 		multiline = false,
 		trim = true,
-		sanitizer,
 		...rest
-	}: StringSchemaOptions<T>) {
+	}: ConstructorParameters<typeof Schema>[0] & {
+		readonly value?: string;
+		readonly required?: boolean;
+		readonly type?: string;
+		readonly min?: number;
+		readonly max?: number | null;
+		readonly match?: RegExp | null;
+		readonly multiline?: boolean;
+		readonly trim?: boolean;
+	}) {
 		super(rest);
 		this.required = required;
 		this.type = type;
 		this.value = value;
 		this.min = min;
 		this.max = max;
-		this.options = options;
 		this.match = match;
 		this.multiline = multiline;
 		this.trim = trim;
-		this.sanitizer = sanitizer;
 	}
-
-	override validate(unsafeValue: unknown = this.value): T {
-		// Coorce.
-		const uncleanValue = toString(unsafeValue);
-		if (!uncleanValue && unsafeValue) throw new InvalidFeedback("Must be string", { value: unsafeValue }); // If original input was truthy, we know its format must have been wrong.
-
-		// Clean.
-		const value = this.sanitize(uncleanValue);
-
-		// Empty?
-		if (!value.length) {
-			// Check requiredness.
-			if (this.required) throw new InvalidFeedback("Required", { value: uncleanValue });
-
-			// Return empty string.
-			return super.validate(value);
-		}
-
-		// Check max/min.
-		if (typeof this.max === "number" && value.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} characters`, { value });
-		if (typeof this.min === "number" && value.length < this.min) throw new InvalidFeedback(`Minimum ${this.min} characters`, { value });
-
-		// Check enum format.
-		if (isArray(this.options)) {
-			if (!this.options.includes(value as T)) throw new InvalidFeedback("Unknown value", { value });
-		} else if (isObject(this.options)) {
-			if (!Object.keys(this.options).includes(value.toString())) throw new InvalidFeedback("Unknown value", { value });
-		}
-
-		// Check RegExp match format.
-		if (this.match && !this.match.test(value)) throw new InvalidFeedback("Invalid format", { value });
-
-		// Return string.
-		return super.validate(value);
+	override validate(unsafeValue: unknown = this.value): string {
+		const unsafeString = typeof unsafeValue === "number" ? unsafeValue.toString() : unsafeValue;
+		if (typeof unsafeString !== "string") throw new InvalidFeedback("Must be string", { value: unsafeValue });
+		const safeString = this.sanitize(unsafeString);
+		if (safeString.length < this.min) throw new InvalidFeedback(safeString ? `Minimum ${this.min} characters` : "Required", { value: safeString });
+		if (this.max && safeString.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} characters`, { value: safeString });
+		if (this.match && !this.match.test(safeString)) throw new InvalidFeedback(safeString ? "Invalid format" : "Required", { value: safeString });
+		return safeString;
 	}
 
 	/**
@@ -128,15 +76,13 @@ export class StringSchema<T extends string> extends Schema<T> {
 	 * - Might be empty string if the string contained only invalid characters.
 	 * - Applies `options.sanitizer` too (if it's set).
 	 */
-	sanitize(str: string): string {
-		let output = str;
-		if (this.multiline) {
-			output = sanitizeLines(str);
-			if (this.trim) output = output.replace(/\s+$/gm, "");
-		} else {
-			output = sanitizeString(str);
-			if (this.trim) output = output.trim();
-		}
-		return this.sanitizer ? this.sanitizer(output) : output;
+	sanitize(uncleanString: string): string {
+		return this.multiline ? sanitizeLines(uncleanString, this.trim) : sanitizeString(uncleanString, this.trim);
 	}
 }
+
+/** Valid string, e.g. `Hello there!` */
+export const STRING = new StringSchema({});
+
+/** Valid string, `Hello there!`, with more than one character. */
+export const REQUIRED_STRING = new StringSchema({ min: 1 });

@@ -1,13 +1,16 @@
-import { ImmutableObject, isObject } from "./object.js";
-import { isArray } from "./array.js";
+import { isObject } from "./object.js";
+import { ImmutableArray } from "./array.js";
+import { ImmutableMap } from "./map.js";
+import { Data } from "./data.js";
 
 type EqualRecursor = (left: unknown, right: unknown) => boolean;
 
 // Internal shared by shallow/deep equal.
 function _equal(left: unknown, right: unknown, recursor: EqualRecursor): boolean {
 	if (left === right) return true;
-	if (isArray(left)) return isArray(right) ? isArrayEqual(left, right, recursor) : false;
-	if (isObject(left)) return isObject(right) && !isArray(right) ? isObjectEqual(left, right, recursor) : false;
+	if (left instanceof Array) return right instanceof Array ? isArrayEqual(left, right, recursor) : false;
+	if (left instanceof Map) return right instanceof Map ? isMapEqual(left, right, recursor) : false;
+	if (isObject(left)) return isObject(right) && !(right instanceof Array) ? isObjectEqual(left, right, recursor) : false;
 	return false;
 }
 
@@ -27,16 +30,26 @@ export const isShallowEqual = <L extends unknown>(left: L, right: unknown): righ
 export const isDeepEqual = <L extends unknown>(left: L, right: unknown): right is L => _equal(left, right, isDeepEqual);
 
 /**
+ * Are two maps equal (based on their items).
+ */
+export function isMapEqual<L extends ImmutableMap>(left: L, right: ImmutableMap, recursor: EqualRecursor = isExactlyEqual): right is L {
+	if (left === right) return true; // Referentially equal.
+	if (left.size !== right.size) return false; // Different lengths aren't equal.
+	for (const [k, l] of left) if (!right.has(k) || !recursor(l, right.get(k))) return false;
+	return true;
+}
+
+/**
  * Are two arrays equal (based on their items)?
  *
  * @param recursor Function that checks each property of the object.
  * - Defaults to `isExactlyEqual()` to check strict equality of the items.
  * - Use `isDeepEqual()` as the recursor to check to check deep equality of the items.
  */
-export function isArrayEqual<L extends readonly unknown[]>(left: L, right: readonly unknown[], recursor: EqualRecursor = isExactlyEqual): right is L {
+export function isArrayEqual<L extends ImmutableArray>(left: L, right: ImmutableArray, recursor: EqualRecursor = isExactlyEqual): right is L {
 	if (left === right) return true; // Referentially equal.
 	if (left.length !== right.length) return false; // Different lengths aren't equal.
-	for (let i = 0; i < left.length; i++) if (!recursor(left[i], right[i])) return false;
+	for (const [k, l] of left.entries()) if (!recursor(l, right[k])) return false;
 	return true;
 }
 
@@ -48,7 +61,7 @@ export function isArrayEqual<L extends readonly unknown[]>(left: L, right: reado
  * - Defaults to `isExactlyEqual()` to check strict equality of the properties.
  * - Use `isDeepEqual()` as the recursor to check to check deep equality of the properties.
  */
-export function isObjectEqual<L extends ImmutableObject>(left: L, right: ImmutableObject, recursor: EqualRecursor = isExactlyEqual): right is L {
+export function isObjectEqual<L extends Data>(left: L, right: Data, recursor: EqualRecursor = isExactlyEqual): right is L {
 	if (left === right) return true; // Referentially equal.
 
 	const leftEntries = Object.entries(left);

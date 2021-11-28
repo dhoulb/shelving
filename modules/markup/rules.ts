@@ -1,4 +1,4 @@
-import { formatUrl, getWindowUrl, PropIterator } from "../util/index.js";
+import { formatUrl, toURL } from "../util/index.js";
 import type { MarkupElement, MarkupRule, MarkupRuleMatcher } from "./types.js";
 
 // Regular expression partials (`\` slashes must be escaped as `\\`).
@@ -165,19 +165,15 @@ const PARAGRAPH: MarkupRule = {
  */
 const LINK: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
-	match: (content, { schemes, url: baseUrl = getWindowUrl() }) => {
+	match: (content, { schemes, url: base }) => {
 		const matches = content.match(MATCH_LINK);
 		if (matches && typeof matches.index === "number") {
-			try {
-				const [, title = "", href = ""] = matches;
-				const url = new URL(href, baseUrl);
-				if (url.protocol && schemes.includes(url.protocol)) {
-					matches[1] = title.trim();
-					matches[2] = url.href; // Use fixed URL from `new URL`
-					return matches;
-				}
-			} catch {
-				// `new URL()` threw — no match.
+			const [, title = "", href = ""] = matches;
+			const url = toURL(href, base);
+			if (url && url.protocol && schemes.includes(url.protocol)) {
+				matches[1] = title.trim();
+				matches[2] = url.href; // Use fixed URL from `new URL`
+				return matches;
 			}
 		}
 	},
@@ -200,19 +196,15 @@ const MATCH_LINK = /\[([^\]]*?)\]\(([^)]*?)\)/;
  */
 const AUTOLINK: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
-	match: (content, { schemes, url: baseUrl = getWindowUrl() }) => {
+	match: (content, { schemes, url: base }) => {
 		const matches = content.match(MATCH_AUTOLINK);
 		if (matches && typeof matches.index === "number") {
-			try {
-				const [, href = "", title1 = "", title2 = ""] = matches;
-				const url = new URL(href, baseUrl);
-				if (url.protocol && schemes.includes(url.protocol)) {
-					matches[1] = (title1 || title2).trim();
-					matches[2] = url.href;
-					return matches;
-				}
-			} catch {
-				// `new URL()` threw — no match.
+			const [, href = "", title1 = "", title2 = ""] = matches;
+			const url = toURL(href, base);
+			if (url && url.protocol && schemes.includes(url.protocol)) {
+				matches[1] = (title1 || title2).trim();
+				matches[2] = url.href;
+				return matches;
 			}
 		}
 	},
@@ -320,7 +312,7 @@ const BR: MarkupRule = {
  *   3. more aligned with smaller textboxes and editors that have line wrapping
  * - HTML tags and character entities are never allowed (our use cases generally require a locked-down subset of syntax).
  */
-export const MARKUP_RULES = PropIterator.create({ HEADING, HR, UL, OL, BLOCKQUOTE, FENCED, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR });
+export const MARKUP_RULES = [HEADING, HR, UL, OL, BLOCKQUOTE, FENCED, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR];
 
 /** Default markup rules for user-generated-content rendering. */
-export const MARKUP_RULES_UGC = PropIterator.create({ UL, OL, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR });
+export const MARKUP_RULES_UGC = [UL, OL, PARAGRAPH, LINK, AUTOLINK, CODE, STRONG, EM, INS, DEL, BR];

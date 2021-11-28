@@ -2,8 +2,11 @@ import { AssertionError } from "../error/index.js";
 import type { AnyFunction } from "./function.js";
 import type { Class } from "./class.js";
 import { debug } from "./debug.js";
-import { ImmutableObject, isObject } from "./object.js";
-import { isArray } from "./array.js";
+import { isObject } from "./object.js";
+import { ImmutableArray } from "./array.js";
+import { NOVALUE } from "./constants.js";
+import { isAsync } from "./promise.js";
+import { Data } from "./data.js";
 
 /** Assert a boolean condition is true. */
 export function assert(condition: unknown, ...received: unknown[]): asserts condition {
@@ -11,8 +14,13 @@ export function assert(condition: unknown, ...received: unknown[]): asserts cond
 }
 
 /** Assert two values are equal. */
-export function assertEqual<T>(a: T, b: T | unknown): asserts b is T {
-	if (a !== b) throw new AssertionError(`Must be exactly equal`, a, b);
+export function assertEqual<T>(value: T | unknown, target: T): asserts value is T {
+	if (value !== target) throw new AssertionError(`Must be equal`, value, target);
+}
+
+/** Assert two values are equal. */
+export function assertNot<T, N>(value: T | N, target: N): asserts value is T {
+	if (value === target) throw new AssertionError(`Must not be equal`, value, target);
 }
 
 /** Assert that a value is a string. */
@@ -30,8 +38,13 @@ export function assertBoolean(value: unknown): asserts value is boolean {
 	if (typeof value !== "boolean") throw new AssertionError(`Must be boolean`, value);
 }
 
+/** Assert that a value is a `Date` instance. */
+export function assertDate(value: unknown): asserts value is Date {
+	if (value instanceof Date) throw new AssertionError(`Must be date`, value);
+}
+
 /** Assert that a value is a plain object (but not an array or function). */
-export function assertObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
+export function assertObject<T extends Data>(value: T | unknown): asserts value is T {
 	if (!isObject(value)) throw new AssertionError(`Must be object`, value);
 }
 
@@ -41,8 +54,8 @@ export function assertProp<K extends string | number | symbol, T extends { [L in
 }
 
 /** Assert that a value is an array. */
-export function assertArray<T extends unknown[] | readonly unknown[]>(value: T | unknown): asserts value is T {
-	if (!isArray(value)) throw new AssertionError(`Must be array`, value);
+export function assertArray<T extends ImmutableArray>(value: T | unknown): asserts value is T {
+	if (!(value instanceof Array)) throw new AssertionError(`Must be array`, value);
 }
 
 /** Assert that a value has a specific length (or length is in a specific range). */
@@ -52,11 +65,31 @@ export function assertLength<T extends { length: number }>(value: T | unknown, m
 }
 
 /** Assert that a value is an instance of something. */
-export function assertInstance<O>(value: O | unknown, type: Class<O>): asserts value is O {
+export function assertInstance<T>(value: T | unknown, type: Class<T>): asserts value is T {
 	if (!(value instanceof type)) throw new AssertionError(`Must be instance of ${debug(type)}`, value);
 }
 
 /** Assert that a value is a function. */
 export function assertFunction<T extends AnyFunction>(value: T | unknown): asserts value is T {
-	if (typeof value !== "function") throw new AssertionError(`Must be function`, value);
+	if (typeof value !== "function") throw new AssertionError("Must be function", value);
+}
+
+/** Assert that a value is not the `NOVALUE` constant. */
+export function assertValue<T>(value: T | typeof NOVALUE): asserts value is T {
+	if (value === NOVALUE) throw new AssertionError("Must have value", value);
+}
+
+/** Assert that a value is not the `NOVALUE` constant. */
+export function assertDefined<T>(value: T | undefined): asserts value is T {
+	if (value === undefined) throw new AssertionError("Must be defined", value);
+}
+
+/** Expect a synchronous value. */
+export function assertSync<T>(value: Promise<T> | T): asserts value is T {
+	if (isAsync(value)) throw new AssertionError("Must be synchronous", value);
+}
+
+/** Expect a synchronous value. */
+export function assertAsync<T>(value: Promise<T> | T): asserts value is Promise<T> {
+	if (!isAsync(value)) throw new AssertionError("Must be asynchronous", value);
 }

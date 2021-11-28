@@ -1,9 +1,9 @@
-import { Validator, Validatable, getUndefined, validate } from "../util/index.js";
-import { Feedback } from "../feedback/index.js";
+import { Validator, Validatable, UNDEFINED, validate } from "../util/index.js";
+import { Feedback, throwFeedback } from "../feedback/index.js";
 import { ResourceValidationError } from "./errors.js";
 
 /** Validator that always returns void/undefined. */
-const UNDEFINED_VALIDATOR: Validator<undefined> = getUndefined;
+const UNDEFINED_VALIDATOR: Validator<undefined> = UNDEFINED;
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions..
@@ -32,9 +32,12 @@ export class Resource<P = unknown, R = void> implements Validatable<R> {
 		this.result = result;
 	}
 
-	/** Validate a payload for this resource. */
-	validatePayload(payload: unknown): P {
-		return validate(payload, this.payload);
+	/**
+	 * Validate a payload for this resource.
+	 *
+	 */
+	validatePayload(unsafePayload: unknown): P {
+		return throwFeedback(validate(unsafePayload, this.payload));
 	}
 
 	/**
@@ -43,9 +46,9 @@ export class Resource<P = unknown, R = void> implements Validatable<R> {
 	 * @returns The validated payload for this resource.
 	 * @throws ValidationError if the result could not be validated.
 	 */
-	validate(result: unknown): R {
+	validate(unsafeResult: unknown): R {
 		try {
-			return validate(result, this.result);
+			return validate(unsafeResult, this.result);
 		} catch (thrown) {
 			throw thrown instanceof Feedback ? new ResourceValidationError(this, thrown) : thrown;
 		}

@@ -1,13 +1,7 @@
 import { InvalidFeedback } from "../feedback/index.js";
+import { toURL } from "../util/index.js";
+import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema } from "./StringSchema.js";
-import type { SchemaOptions } from "./Schema.js";
-
-type UrlSchemaOptions = SchemaOptions<string> & {
-	readonly schemes?: string[];
-	readonly hosts?: string[] | null;
-	readonly value?: string;
-	readonly required?: boolean;
-};
 
 /**
  * Type of `StringSchema` that defines a valid URL.
@@ -15,53 +9,36 @@ type UrlSchemaOptions = SchemaOptions<string> & {
  * - URLs are limited to 512 characters, but generally these won't be data: URIs so this is a reasonable limit.
  * - Falsy values are converted to `""` empty string.
  */
-export class UrlSchema extends StringSchema<string> {
-	static override REQUIRED = new UrlSchema({ required: true });
-	static override OPTIONAL = new UrlSchema({ required: false });
-
-	static override create(options: UrlSchemaOptions): UrlSchema {
-		return new UrlSchema(options);
-	}
-
+export class UrlSchema extends StringSchema {
 	override readonly type = "url";
 	override readonly max = 512;
 	readonly schemes: string[] = ["http:", "https:"];
 	readonly hosts: string[] | null = null;
-
-	protected constructor({ schemes = ["http:", "https:"], hosts = null, ...rest }: UrlSchemaOptions = {}) {
+	constructor({
+		schemes = ["http:", "https:"],
+		hosts = null,
+		...rest
+	}: ConstructorParameters<typeof StringSchema>[0] & {
+		readonly schemes?: string[];
+		readonly hosts?: string[] | null;
+	}) {
 		super(rest);
 		this.schemes = schemes;
 		this.hosts = hosts;
 	}
-
-	override sanitize(uncleanString: string): string {
-		const cleanString = super.sanitize(uncleanString);
-		if (!cleanString) return cleanString;
-
-		// Parse the URL using URL class (available in Node 10 and modern browsers).
-		let url: URL;
-		try {
-			// Try to parse. Automatically prepend `http://` if there's no `:` anywhere.
-			url = new URL(cleanString.includes(":") ? cleanString : `http://${cleanString}`);
-		} catch (e) {
-			// Definitely not valid.
-			throw new InvalidFeedback("Invalid format", { value: uncleanString });
-		}
-
-		// Check scheme and domain exist in whitelists.
-		if (!this.schemes.includes(url.protocol)) throw new InvalidFeedback(`Scheme "${url.protocol}" is not allowed`, { value: cleanString });
-		if (this.hosts && !this.hosts.includes(url.host)) throw new InvalidFeedback(`Domain "${url.host}" is not allowed`, { value: cleanString });
-
-		// Check host.
-		if (url.host.length) {
-			// No more than 253 total characters for a host.
-			if (url.host.length > 253) throw new InvalidFeedback("Invalid host", { value: cleanString });
-			// Each host segment is no more than 63 characters.
-			const bits = url.host.split(".");
-			for (const bit of bits) if (bit.length > 63) throw new InvalidFeedback("Invalid host", { value: cleanString });
-		}
-
-		// Return the clean URL.
+	// Override to clean the URL using the builtin `URL` class and check the schemes and hosts against the whitelists.
+	override validate(unsafeValue: unknown): string {
+		const string = super.validate(unsafeValue);
+		const url = toURL(super.sanitize(string));
+		if (!url) throw new InvalidFeedback(string ? "Invalid format" : "Required", { value: string });
+		if (!this.schemes.includes(url.protocol)) throw new InvalidFeedback(`Scheme "${url.protocol}" is not allowed`, { value: string });
+		if (this.hosts && !this.hosts.includes(url.host)) throw new InvalidFeedback(`Domain "${url.host}" is not allowed`, { value: string });
 		return url.href;
 	}
 }
+
+/** Valid URL, e.g. `#00CCFF` (required because empty string won't validate). */
+export const REQUIRED_URL = new UrlSchema({});
+
+/** Valid URL, e.g. `#00CCFF`, or `null` */
+export const OPTIONAL_URL = NULLABLE(REQUIRED_URL);

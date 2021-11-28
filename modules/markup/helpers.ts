@@ -73,10 +73,10 @@ export const cleanMarkup = (content: string): string =>
  * Iterate through all elements in a node.
  * - This is useful if you, e.g. want to apply a `className` to all `<h1>` elements, or make a list of all URLs found in a Node.
  */
-export function* iterateElements(node: MarkupNode): Generator<MarkupElement> {
-	if (node instanceof Array) for (const n of node) yield* iterateElements(n);
+export function* yieldElements(node: MarkupNode): Generator<MarkupElement, void> {
+	if (node instanceof Array) for (const n of node) yield* yieldElements(n);
 	else if (typeof node === "object" && node) {
 		yield node;
-		if (node.props.children) yield* iterateElements(node.props.children);
+		if (node.props.children) yield* yieldElements(node.props.children);
 	}
 }

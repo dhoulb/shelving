@@ -1,45 +1,44 @@
-import type { Data, Result, Results, Unsubscriber, Observer, Class, Transformer } from "../util/index.js";
-import type { ModelDocument, ModelQuery } from "../db/index.js";
+import type { Result, Results, Unsubscriber, Observer, Class, Datas, Key } from "../util/index.js";
+import type { DatabaseDocument, DatabaseQuery } from "../db/index.js";
+import type { Transform } from "../transform/index.js";
+import { AssertionError } from "../error/index.js";
 import { Provider } from "./Provider.js";
 
 /**
  * Pass all reads and writes through to a source provider.
  */
-export class ThroughProvider extends Provider {
-	readonly source: Provider;
-	constructor(source: Provider) {
+export class ThroughProvider<D extends Datas> extends Provider<D> {
+	readonly source: Provider<D>;
+	constructor(source: Provider<D>) {
 		super();
 		this.source = source;
 	}
-	get<T extends Data>(ref: ModelDocument<T>): Result<T> | Promise<Result<T>> {
+	get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Result<D[C]> | Promise<Result<D[C]>> {
 		return this.source.get(ref);
 	}
-	subscribe<T extends Data>(ref: ModelDocument<T>, observer: Observer<Result<T>>): Unsubscriber {
+	subscribe<C extends Key<D>>(ref: DatabaseDocument<D, C>, observer: Observer<Result<D[C]>>): Unsubscriber {
 		return this.source.subscribe(ref, observer);
 	}
-	add<T extends Data>(ref: ModelQuery<T>, data: T): string | Promise<string> {
+	add<C extends Key<D>>(ref: DatabaseQuery<D, C>, data: D[C]): string | Promise<string> {
 		return this.source.add(ref, data);
 	}
-	write<T extends Data>(ref: ModelDocument<T>, value: T | Transformer<T> | undefined): void | Promise<void> {
+	write<C extends Key<D>>(ref: DatabaseDocument<D, C>, value: D[C] | Transform<D[C]> | undefined): void | Promise<void> {
 		return this.source.write(ref, value);
 	}
-	getQuery<T extends Data>(ref: ModelQuery<T>): Results<T> | Promise<Results<T>> {
+	getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Results<D[C]> | Promise<Results<D[C]>> {
 		return this.source.getQuery(ref);
 	}
-	subscribeQuery<T extends Data>(ref: ModelQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
+	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<Results<D[C]>>): Unsubscriber {
 		return this.source.subscribeQuery(ref, observer);
 	}
-	writeQuery<T extends Data>(ref: ModelQuery<T>, value: T | Transformer<T> | undefined): void | Promise<void> {
+	writeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, value: D[C] | Transform<D[C]> | undefined): void | Promise<void> {
 		return this.source.writeQuery(ref, value);
 	}
 }
 
 /** Find a specific source provider in a database's provider stack. */
-export function findSourceProvider<X extends Provider>(provider: Provider, type: Class<X>): X {
-	while (provider) {
-		if (provider instanceof type) return provider as X;
-		if (provider instanceof ThroughProvider) provider = provider.source; // eslint-disable-line no-param-reassign
-		break;
-	}
-	throw new Error(`${type.name} not found`);
+export function findSourceProvider<D extends Datas, P extends Provider<D>>(provider: Provider<D>, type: Class<P>): P {
+	if (provider instanceof type) return provider as P;
+	if (provider instanceof ThroughProvider) return findSourceProvider(provider.source, type);
+	throw new AssertionError(`Source provider ${type.name} not found`, provider);
 }

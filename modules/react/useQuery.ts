@@ -1,29 +1,8 @@
 import { useState } from "react";
-import { Data, DatabaseQuery, CacheProvider, Results, Dispatcher, throwAsync, NOERROR, findSourceProvider, NOVALUE, dispatch, Unsubscriber } from "../index.js";
+import { DatabaseQuery, CacheProvider, Results, throwAsync, NOERROR, findSourceProvider, NOVALUE, Unsubscriber, Key, Datas, dispatchAsync } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
-
-/**
- * Use the cached results of a set of documents in a React component.
- * - Requires database to use `CacheProvider` and will error if this does not exist.
- *
- * @param ref Documents reference or `undefined`.
- * - If `undefined` is set this function will always return `undefined` (this simplifies scenarios where no document is needed, as hooks must always be called in the same order).
- * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
- * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
- *
- * @returns The results for the set of documents, or `undefined` if ref was set to `undefined`
- *
- * @throws `Promise` if document results have not been cached yet (handle this with a React `<Suspense>` element).
- * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
- * @throws `Error` if there was a problem retrieving the results.
- */
-export function useQuery<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): Results<T>;
-export function useQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | undefined;
-export function useQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | undefined {
-	return throwAsync(useAsyncQuery(ref, maxAge));
-}
 
 /**
  * Use the cached result of a document in a React component (or a `Promise` to indicate the result is still loading).
@@ -39,9 +18,15 @@ export function useQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxA
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): Results<T> | Promise<Results<T>>;
-export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | Promise<Results<T>> | undefined;
-export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true = 1000): Results<T> | Promise<Results<T>> | undefined {
+export function useAsyncResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C>, maxAge?: number | true): Results<D[C]> | Promise<Results<D[C]>>;
+export function useAsyncResults<D extends Datas, C extends Key<D>>(
+	ref: DatabaseQuery<D, C> | undefined,
+	maxAge?: number | true,
+): Results<D[C]> | Promise<Results<D[C]>> | undefined;
+export function useAsyncResults<D extends Datas, C extends Key<D>>(
+	ref: DatabaseQuery<D, C> | undefined,
+	maxAge: number | true = 1000,
+): Results<D[C]> | Promise<Results<D[C]>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = usePureMemo(ref, ref?.toString());
 
@@ -64,27 +49,27 @@ export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined,
 	if (maxAge === true) setTimeout(ref.subscribe(setNext, setError), 10000);
 
 	// Return a promise for the result.
-	const result = ref.get();
-	dispatch(setNext, result, setError);
-	return result;
+	const results = ref.results;
+	dispatchAsync(results, setNext, setError);
+	return results;
 }
 
 /** Get the initial results for a reference from the cache. */
-const getCachedResults = <T extends Data>(ref: DatabaseQuery<T> | undefined): Results<T> | typeof NOVALUE | undefined => {
+function getCachedResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined): Results<D[C]> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
-	const provider = findSourceProvider(ref.provider, CacheProvider);
+	const provider = findSourceProvider(ref.db.provider, CacheProvider);
 	provider.isCached(ref) ? provider.cache.getQuery(ref) : NOVALUE;
-};
+}
 
 /** Effect that subscribes a component to the cache for a reference. */
-const subscribeEffect = <T extends Data>(
-	ref: DatabaseQuery<T> | undefined,
+function subscribeEffect<D extends Datas, C extends Key<D>>(
+	ref: DatabaseQuery<D, C> | undefined,
 	maxAge: number | true,
-	next: Dispatcher<Results<T>>,
-	error: Dispatcher<unknown>,
-): Unsubscriber | void => {
+	next: (results: Results<D[C]>) => void,
+	error: (reason: unknown) => void,
+): Unsubscriber | void {
 	if (ref) {
-		const provider = findSourceProvider(ref.provider, CacheProvider);
+		const provider = findSourceProvider(ref.db.provider, CacheProvider);
 		const stopCache = provider.cache.subscribeQuery(ref, { next, error });
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.
@@ -95,8 +80,29 @@ const subscribeEffect = <T extends Data>(
 			};
 		} else {
 			// If cache provider's cached document is older than maxAge then force refresh the data.
-			if (provider.getCachedAge(ref) > maxAge) dispatch(next, ref.get(), error);
+			if (provider.getCachedAge(ref) > maxAge) dispatchAsync(ref.results, next, error);
 		}
 		return stopCache;
 	}
-};
+}
+
+/**
+ * Use the cached results of a set of documents in a React component.
+ * - Requires database to use `CacheProvider` and will error if this does not exist.
+ *
+ * @param ref Documents reference or `undefined`.
+ * - If `undefined` is set this function will always return `undefined` (this simplifies scenarios where no document is needed, as hooks must always be called in the same order).
+ * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
+ * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
+ *
+ * @returns The results for the set of documents, or `undefined` if ref was set to `undefined`
+ *
+ * @throws `Promise` if document results have not been cached yet (handle this with a React `<Suspense>` element).
+ * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
+ * @throws `Error` if there was a problem retrieving the results.
+ */
+export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C>, maxAge?: number | true): Results<D[C]>;
+export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined, maxAge?: number | true): Results<D[C]> | undefined;
+export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined, maxAge?: number | true): Results<D[C]> | undefined {
+	return throwAsync(useAsyncResults(ref, maxAge));
+}

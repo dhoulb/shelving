@@ -1,7 +1,7 @@
 import { AssertionError } from "../error/index.js";
 
 /** Is a value a number? */
-export const isNumber = (v: unknown): v is number => typeof v === "number";
+export const IS_NUMBER = (v: unknown): v is number => typeof v === "number";
 
 /**
  * Convert an unknown value to a number or `null`

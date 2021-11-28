@@ -1,104 +1,45 @@
-import { toNumber, roundNumber, isArray, isObject, Unit, detectUnit, convertUnits } from "../util/index.js";
+import { toNumber, roundNumber, Unit } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/index.js";
-import { Schema, SchemaOptions } from "./Schema.js";
+import { Schema } from "./Schema.js";
+import { NULLABLE } from "./NullableSchema.js";
 
-type NumberSchemaOptions<T extends number | null> = SchemaOptions<T> & {
-	readonly value?: number | null;
-	readonly required?: boolean;
-	readonly unit?: Unit | null;
-	readonly min?: number | null;
-	readonly max?: number | null;
-	readonly step?: number | null;
-	readonly options?: (T extends number ? ReadonlyArray<T> | { readonly [K in T]: string } : never) | null;
-};
-
-type NumberSchemaOptionOptions<T extends number> = {
-	readonly options: ReadonlyArray<T> | { readonly [K in T]: string };
-};
-
-/**
- * Schema that defines a valid number.
- * Ensures/converts value to number, enforces min/max number, and precision.
- */
-export class NumberSchema<T extends number | null> extends Schema<T> {
-	static REQUIRED: NumberSchema<number> = new NumberSchema({ required: true });
-	static OPTIONAL: NumberSchema<number | null> = new NumberSchema({ required: false });
-
-	static create<X extends number>(options: NumberSchemaOptions<X> & NumberSchemaOptionOptions<X> & { required: true }): NumberSchema<X>;
-	static create<X extends number>(options: NumberSchemaOptions<X> & NumberSchemaOptionOptions<X>): NumberSchema<X | null>;
-	static create(options: NumberSchemaOptions<number | null> & { required: true }): NumberSchema<number>;
-	static create(options: NumberSchemaOptions<number | null>): NumberSchema<number | null>;
-	static create(options: NumberSchemaOptions<number | null>): NumberSchema<number | null> {
-		return new NumberSchema(options);
-	}
-
-	override readonly value: number | null;
-
-	readonly required: boolean;
-	readonly unit?: Unit | null;
+/** Schema that defines a valid number. */
+export class NumberSchema extends Schema<number> {
+	readonly value: number | null;
 	readonly min: number | null;
 	readonly max: number | null;
 	readonly step: number | null;
-	readonly options: (T extends number ? ReadonlyArray<T> | { readonly [K in T]: string } : never) | null;
-
-	protected constructor({
-		value = null,
-		required = false,
-		unit = null,
+	constructor({
+		value = 0,
 		min = null,
 		max = null,
 		step = null,
-		options = null,
 		...rest
-	}: NumberSchemaOptions<T>) {
+	}: ConstructorParameters<typeof Schema>[0] & {
+		readonly value?: number | null;
+		readonly unit?: Unit | null;
+		readonly min?: number | null;
+		readonly max?: number | null;
+		readonly step?: number | null;
+	}) {
 		super(rest);
 		this.value = value;
-		this.required = required;
-		this.unit = unit;
 		this.min = min;
 		this.max = max;
 		this.step = step;
-		this.options = options;
 	}
-
-	override validate(unsafeValue: unknown = this.value): T {
-		// Coorce.
-		let value = toNumber(unsafeValue);
-
-		// Null means 'no number'
-		if (value === null) {
-			// If original input was truthy, we know its format must have been wrong.
-			if (unsafeValue) throw new InvalidFeedback("Must be number", { value: unsafeValue });
-
-			// Check requiredness.
-			if (this.required) throw new InvalidFeedback("Required", { value: unsafeValue });
-
-			// Return null.
-			return super.validate(null);
-		}
-
-		// Convert units, e.g. `10km` into the target dimension.
-		if (this.unit && typeof value === "number" && typeof unsafeValue === "string") {
-			const detectedUnit = detectUnit(unsafeValue, this.unit);
-			if (!detectedUnit) throw new InvalidFeedback("Invalid unit", { value: unsafeValue });
-			if (detectedUnit !== this.unit) value = convertUnits(value, detectedUnit, this.unit);
-		}
-
-		// Check min and max.
-		if (typeof this.max === "number" && value > this.max) throw new InvalidFeedback(`Maximum ${this.max}`, { value });
-		if (typeof this.min === "number" && value < this.min) throw new InvalidFeedback(`Minimum ${this.min}`, { value });
-
-		// Round to step.
-		if (typeof this.step === "number") value = roundNumber(value, this.step);
-
-		// Check options format.
-		if (isArray(this.options)) {
-			if (!this.options.includes(value)) throw new InvalidFeedback("Unknown value", { value });
-		} else if (isObject(this.options)) {
-			if (!Object.keys(this.options).includes(value.toString())) throw new InvalidFeedback("Unknown value", { value });
-		}
-
-		// Return number.
-		return super.validate(value);
+	override validate(unsafeValue: unknown = this.value): number {
+		const unsafeNumber = toNumber(unsafeValue);
+		if (typeof unsafeNumber !== "number") throw new InvalidFeedback("Must be number", { value: unsafeValue });
+		const safeNumber = typeof this.step === "number" ? roundNumber(unsafeNumber, this.step) : unsafeNumber;
+		if (typeof this.max === "number" && safeNumber > this.max) throw new InvalidFeedback(`Maximum ${this.max}`, { value: safeNumber });
+		if (typeof this.min === "number" && safeNumber < this.min) throw new InvalidFeedback(`Minimum ${this.min}`, { value: safeNumber });
+		return safeNumber;
 	}
 }
+
+/** Valid number, e.g. `2048` or `0` zero. */
+export const NUMBER = new NumberSchema({});
+
+/** Valid number, e.g. `#2048` or `0` zero, or `null` */
+export const OPTIONAL_NUMBER = NULLABLE(NUMBER);

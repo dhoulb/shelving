@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { ArrayState, ImmutableArray, ImmutableObject, LOADING, MapState, State } from "../index.js";
-import { useSubscribable } from "./useSubscribe.js";
+import { ArrayState, Data, DataState, ImmutableArray, initialState } from "../index.js";
+import { useSubscribe } from "./useSubscribe.js";
 
 /**
  * Subscribe or create a new Shelving `State` instance.
@@ -11,43 +11,19 @@ import { useSubscribable } from "./useSubscribe.js";
  *
  * @returns The state instance that was subscribed to.
  */
-export const useState = <T>(initial: State<T> | T | Promise<T> | typeof LOADING): State<T> => {
+export function useDataState<T extends Data>(initial: T): DataState<T> {
 	// Create a memoized `State` instance from the initial value (if it's not a state itself).
-	const memoizedState = (useRef<State<T>>().current ||= initial instanceof State ? initial : new State<T>(initial));
-
-	// Select either the `State` instance from the input parameters (if there is one) or use the memoized `State` instance from the initial value.
-	const whichState = initial instanceof State ? initial : memoizedState;
-
-	useSubscribable(whichState);
-	return whichState;
-};
-
-/**
- * Subscribe to or create a new Shelving `MapState` instance.
- * - Defaults to a new `MapState` instance with no entries.
- */
-export const useMapState = <T>(initial?: MapState<T> | ImmutableObject<T> | Promise<ImmutableObject<T>> | typeof LOADING): MapState<T> => {
-	// Create a memoized `MapState` instance from the initial value (if it's not a state itself).
-	const memoizedState = (useRef<MapState<T>>().current ||= initial instanceof MapState ? initial : new MapState<T>(initial));
-
-	// Select either the `MapState` instance from the input parameters (if there is one) or use the memoized `MapState` instance from the initial value.
-	const whichState = initial instanceof MapState ? initial : memoizedState;
-
-	useSubscribable(whichState);
-	return whichState;
-};
+	const state = (useRef<DataState<T>>().current ||= initialState(initial, new DataState<T>()));
+	useSubscribe(state);
+	return state;
+}
 
 /**
  * Subscribe to or create a new Shelving `ArrayState` instance.
  * - Defaults to a new `ArrayState` instance with no items.
  */
-export const useArrayState = <T>(initial?: ArrayState<T> | ImmutableArray<T> | Promise<ImmutableArray<T>> | typeof LOADING): ArrayState<T> => {
-	// Create a memoized `ArrayState` instance from the initial value (if it's not a state itself).
-	const memoizedState = (useRef<ArrayState<T>>().current ||= initial instanceof ArrayState ? initial : new ArrayState<T>(initial));
-
-	// Select either the `ArrayState` instance from the input parameters (if there is one) or use the memoized `ArrayState` instance from the initial value.
-	const whichState = initial instanceof ArrayState ? initial : memoizedState;
-
-	useSubscribable(whichState);
-	return whichState;
-};
+export function useArrayState<T>(initial: ImmutableArray<T> = []): ArrayState<T> {
+	const state = (useRef<ArrayState<T>>().current ||= initialState(initial, new ArrayState<T>()));
+	useSubscribe(state);
+	return state;
+}

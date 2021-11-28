@@ -4,6 +4,6 @@ export * from "./AddItemsTransform.js";
 export * from "./RemoveItemsTransform.js";
 export * from "./AddEntriesTransform.js";
 export * from "./RemoveEntriesTransform.js";
-export * from "./ObjectTransform.js";
+export * from "./DataTransform.js";
 export * from "./hydrations.js";
 export * from "./util.js";

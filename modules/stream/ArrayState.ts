@@ -1,13 +1,8 @@
-import { ImmutableArray, Resolvable, swapItem, toggleItem, withItem, withoutItem, countItems, LOADING } from "../util/index.js";
+import { ImmutableArray, swapItem, toggleItem, withItem, withoutItem, countItems } from "../util/index.js";
 import { State } from "./State.js";
 
 /** State that stores an array and has additional methods to help with that. */
 export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<T> {
-	// Set initial value to `[]`
-	constructor(initial: Resolvable<ImmutableArray<T>> | typeof LOADING = []) {
-		super(initial);
-	}
-
 	/** Count the number of entries in this map-like object. */
 	get count(): number {
 		return countItems(this.value);
@@ -33,8 +28,8 @@ export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<
 		this.next(toggleItem(this.value, item));
 	}
 
-	// Implement Iterable.
-	*[Symbol.iterator](): Generator<T, void, undefined> {
-		yield* this.value;
+	/** Iterate over the items. */
+	[Symbol.iterator](): Iterator<T, void> {
+		return this.value.values();
 	}
 }

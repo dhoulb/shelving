@@ -1,16 +1,12 @@
 import {
-	SKIP,
-	chunkItems,
 	toggleItem,
 	withItem,
 	withoutItem,
 	swapItem,
 	getNextItem,
 	getPrevItem,
-	shuffle,
-	isArray,
-	mapItems,
-	uniqueItems,
+	shuffleArray,
+	uniqueArray,
 	addItem,
 	addItems,
 	toggleItems,
@@ -20,29 +16,6 @@ import {
 	removeItems,
 } from "../index.js";
 
-test("isArray()", () => {
-	expect(isArray([])).toBe(true);
-	expect(isArray({})).toBe(false);
-	expect(isArray(Symbol())).toBe(false);
-	expect(isArray(null)).toBe(false);
-	expect(isArray("abc")).toBe(false);
-	expect(isArray(true)).toBe(false);
-	expect(isArray(false)).toBe(false);
-});
-test("arrayChunk()", () => {
-	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 1)).toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9]]);
-	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 2)).toEqual([[1, 2], [3, 4], [5, 6], [7, 8], [9]]);
-	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 3)).toEqual([
-		[1, 2, 3],
-		[4, 5, 6],
-		[7, 8, 9],
-	]);
-	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 4)).toEqual([[1, 2, 3, 4], [5, 6, 7, 8], [9]]);
-	expect(chunkItems([1, 2, 3, 4, 5, 6, 7, 8, 9], 5)).toEqual([
-		[1, 2, 3, 4, 5],
-		[6, 7, 8, 9],
-	]);
-});
 test("toggleItem()", () => {
 	const arr = [1, 2, 3];
 	expect(toggleItem(arr, 2)).toEqual([1, 3]);
@@ -125,37 +98,12 @@ test("getPrevItem()", () => {
 });
 test("shuffle()", () => {
 	const arr = [1, 2, 3];
-	expect(shuffle(arr)).toContain(1);
-	expect(shuffle(arr)).toContain(2);
-	expect(shuffle(arr)).toContain(3);
-	expect(shuffle(arr)).not.toBe(arr);
-});
-test("mapArray()", async () => {
-	const arr = [1, 2, 3, 4];
-	const obj = { a: 1, b: 2, c: 3, d: 4 };
-
-	// Square each number.
-	expect(mapItems(arr, n => n * n)).toEqual([1, 4, 9, 16]);
-	expect(mapItems(arr, n => n * n)).not.toBe(arr);
-	// Works with promises.
-	expect(mapItems(arr, n => Promise.resolve(n * n))).toBeInstanceOf(Promise);
-	expect(await mapItems(arr, n => Promise.resolve(n * n))).toEqual([1, 4, 9, 16]);
-	// Use SKIP to skip odd numbers.
-	expect(mapItems(arr, n => (n % 2 ? n : SKIP))).toEqual([1, 3]);
-	expect(mapItems(arr, n => (n % 2 ? n : SKIP))).not.toBe(arr);
-	// Use a flat value instead of a mapper function.
-	expect(mapItems(arr, null)).toEqual([null, null, null, null]);
-	expect(mapItems(arr, null)).not.toBe(arr);
-	// Return same instance if no numbers changed.
-	expect(mapItems(arr, n => n)).toBe(arr);
-	// Works on objects too.
-	expect(mapItems(obj, n => n * n)).toEqual([1, 4, 9, 16]);
-	expect(mapItems(obj, n => n * n)).not.toBe(obj);
-	expect(mapItems(obj, n => n)).toEqual(arr);
-	expect(mapItems(obj, n => n)).not.toBe(obj);
+	expect(shuffleArray(arr)).toContain(1);
+	expect(shuffleArray(arr)).toContain(2);
+	expect(shuffleArray(arr)).toContain(3);
+	expect(shuffleArray(arr)).not.toBe(arr);
 });
 test("uniqueItems()", () => {
 	const arr = [1, 2, 3];
-	expect(uniqueItems(arr)).toBe(arr);
-	expect(uniqueItems([1, 1, 1])).toEqual([1]);
+	expect(uniqueArray([1, 1, 1])).toEqual([1]);
 });

@@ -1,5 +1,6 @@
 import { isObject, ImmutableObject } from "./object.js";
 import { ImmutableArray, isArray, MutableArray } from "./array.js";
+import { Data } from "./data.js";
 
 type MergeRecursor = (left: unknown, right: unknown) => unknown;
 
@@ -28,7 +29,7 @@ export const exactMerge: MergeRecursor = (left: unknown, right: unknown): unknow
  * - Will be `left` instance if no properties/items changed.
  * - Will be merged instance otherwise.
  */
-export function shallowMerge<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R): L & R;
+export function shallowMerge<L extends Data, R extends Data>(left: L, right: R): L & R;
 export function shallowMerge<L extends unknown, R extends unknown>(left: ImmutableArray<L>, right: ImmutableArray<R>): ImmutableArray<L | R>;
 export function shallowMerge<R>(left: unknown, right: R): R;
 export function shallowMerge(left: unknown, right: unknown): unknown {
@@ -46,7 +47,7 @@ export function shallowMerge(left: unknown, right: unknown): unknown {
  * - Will be `left` instance if no properties/items changed.
  * - Will be a new merged instance otherwise.
  */
-export function deepMerge<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R): L & R;
+export function deepMerge<L extends Data, R extends Data>(left: L, right: R): L & R;
 export function deepMerge<L extends unknown, R extends unknown>(left: ImmutableArray<L>, right: ImmutableArray<R>): ImmutableArray<L | R>;
 export function deepMerge<R>(left: unknown, right: R): R;
 export function deepMerge(left: unknown, right: unknown): unknown {
@@ -90,7 +91,7 @@ export function mergeArray<L extends unknown, R extends unknown>(left: Immutable
  * - Will be `left` instance if no properties changed.
  * - Will be a new merged object otherwise.
  */
-export function mergeObject<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R, recursor?: MergeRecursor): L & R;
+export function mergeObject<L extends Data, R extends Data>(left: L, right: R, recursor?: MergeRecursor): L & R;
 export function mergeObject(left: ImmutableObject, right: ImmutableObject, recursor: MergeRecursor = exactMerge): ImmutableObject {
 	if (left === right) return right;
 

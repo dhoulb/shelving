@@ -1,37 +1,20 @@
 import { StringSchema } from "./StringSchema.js";
-import type { SchemaOptions } from "./Schema.js";
+import { NULLABLE } from "./NullableSchema.js";
 
 // Valid phone number is max 16 digits made up of:
 // - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).
 // - Subscriber number (5-12 digits — the Solomon Islands have five-digit phone numbers apparently).
 const R_MATCH = /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/;
 
-type PhoneSchemaOptions = SchemaOptions<string> & {
-	readonly value?: string;
-	readonly required?: boolean;
-};
-
 /**
  * Type of `StringSchema` that defines a valid phone number.
  * - Multiple string formats are automatically converted to E.164 format (starting with `+` plus).
  * - Falsy values are converted to `""` empty string.
  */
-export class PhoneSchema extends StringSchema<string> {
-	static override REQUIRED = new PhoneSchema({ required: true });
-	static override OPTIONAL = new PhoneSchema({ required: false });
-
-	static override create(options: PhoneSchemaOptions): PhoneSchema {
-		return new PhoneSchema(options);
-	}
-
+export class PhoneSchema extends StringSchema {
 	override readonly type = "phone";
 	override readonly match = R_MATCH;
 	override readonly max: number = 16; // Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
-
-	/**
-	 * Clean a phone number string by removing characters that aren't digits.
-	 * - Might be empty string if the string contained only invalid characters.
-	 */
 	override sanitize(str: string): string {
 		// Strip characters that aren't 0-9 or `+` plus (including whitespace).
 		const digits = str.replace(/[^0-9+]/g, "");
@@ -39,3 +22,9 @@ export class PhoneSchema extends StringSchema<string> {
 		return digits.substr(0, 1) + digits.substr(1).replace(/[^0-9]/g, "");
 	}
 }
+
+/** Valid phone number, e.g. `+441234567890` */
+export const REQUIRED_PHONE = new PhoneSchema({});
+
+/** Valid phone number, e.g. `+441234567890`, or `null` */
+export const OPTIONAL_PHONE = NULLABLE(REQUIRED_PHONE);

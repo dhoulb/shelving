@@ -1,4 +1,4 @@
-import { deepDiff, deepDiffArray, deepDiffObject, EQUAL } from "../index.js";
+import { deepDiff, deepDiffArray, deepDiffObject, SAME } from "../index.js";
 
 const arrFlat = [1, "b", true, false, null];
 const arrFlatSame = [1, "b", true, false, null];
@@ -25,12 +25,12 @@ const objDeepMissing = { obj1: objFlat, obj2: { a: 1 } };
 
 describe("deepDiff()", () => {
 	test("deepDiff(): Diff equal simple values", () => {
-		// Equal, so `EQUAL` constant is always returned.
-		expect(deepDiff("abc", "abc")).toBe(EQUAL);
-		expect(deepDiff(123, 123)).toBe(EQUAL);
-		expect(deepDiff(true, true)).toBe(EQUAL);
-		expect(deepDiff(false, false)).toBe(EQUAL);
-		expect(deepDiff(null, null)).toBe(EQUAL);
+		// Equal, so `SAME` constant is always returned.
+		expect(deepDiff("abc", "abc")).toBe(SAME);
+		expect(deepDiff(123, 123)).toBe(SAME);
+		expect(deepDiff(true, true)).toBe(SAME);
+		expect(deepDiff(false, false)).toBe(SAME);
+		expect(deepDiff(null, null)).toBe(SAME);
 	});
 	test("deepDiff(): Diff unequal simple values", () => {
 		// Different, so `right` value is always returned.
@@ -40,15 +40,15 @@ describe("deepDiff()", () => {
 		expect(deepDiff(true, false)).toBe(false);
 	});
 	test("deepDiff(): Diff equal array values", () => {
-		// Equal, so `EQUAL` constant is always returned.
-		expect(deepDiff(arrFlat, arrFlat)).toBe(EQUAL);
-		expect(deepDiff(arrFlat, arrFlatSame)).toBe(EQUAL);
-		expect(deepDiff(arrFlat, arrFlat)).toBe(EQUAL);
-		expect(deepDiff(arrFlat, arrFlatSame)).toBe(EQUAL);
-		expect(deepDiff(arrDeep, arrDeep)).toBe(EQUAL);
-		expect(deepDiff(arrDeep, arrDeepSame)).toBe(EQUAL);
-		expect(deepDiff(arrFlatEmpty, [])).toBe(EQUAL);
-		expect(deepDiff([], arrFlatEmpty)).toBe(EQUAL);
+		// Equal, so `SAME` constant is always returned.
+		expect(deepDiff(arrFlat, arrFlat)).toBe(SAME);
+		expect(deepDiff(arrFlat, arrFlatSame)).toBe(SAME);
+		expect(deepDiff(arrFlat, arrFlat)).toBe(SAME);
+		expect(deepDiff(arrFlat, arrFlatSame)).toBe(SAME);
+		expect(deepDiff(arrDeep, arrDeep)).toBe(SAME);
+		expect(deepDiff(arrDeep, arrDeepSame)).toBe(SAME);
+		expect(deepDiff(arrFlatEmpty, [])).toBe(SAME);
+		expect(deepDiff([], arrFlatEmpty)).toBe(SAME);
 	});
 	test("deepDiff(): Diff unequal array values", () => {
 		// Different, so exact `right` instance is always returned.
@@ -67,15 +67,15 @@ describe("deepDiff()", () => {
 		expect(deepDiff(arrDeepMissing, arrDeep)).toBe(arrDeep);
 	});
 	test("deepDiff(): Diff equal object values", () => {
-		// Equal, so `EQUAL` constant is always returned.
-		expect(deepDiff(objFlat, objFlat)).toBe(EQUAL);
-		expect(deepDiff(objFlat, objFlatSame)).toBe(EQUAL);
-		expect(deepDiff(objFlat, objFlat)).toBe(EQUAL);
-		expect(deepDiff(objFlat, objFlatSame)).toBe(EQUAL);
-		expect(deepDiff(objDeep, objDeep)).toBe(EQUAL);
-		expect(deepDiff(objDeep, objDeepSame)).toBe(EQUAL);
-		expect(deepDiff(objFlatEmpty, {})).toBe(EQUAL);
-		expect(deepDiff({}, objFlatEmpty)).toBe(EQUAL);
+		// Equal, so `SAME` constant is always returned.
+		expect(deepDiff(objFlat, objFlat)).toBe(SAME);
+		expect(deepDiff(objFlat, objFlatSame)).toBe(SAME);
+		expect(deepDiff(objFlat, objFlat)).toBe(SAME);
+		expect(deepDiff(objFlat, objFlatSame)).toBe(SAME);
+		expect(deepDiff(objDeep, objDeep)).toBe(SAME);
+		expect(deepDiff(objDeep, objDeepSame)).toBe(SAME);
+		expect(deepDiff(objFlatEmpty, {})).toBe(SAME);
+		expect(deepDiff({}, objFlatEmpty)).toBe(SAME);
 	});
 	test("deepDiff(): Diff unequal object values", () => {
 		// Different, so exact `right` instance is always returned.
@@ -110,15 +110,15 @@ describe("deepDiff()", () => {
 });
 describe("deepDiffArray()", () => {
 	test("deepDiffArray(): Diff equal array values", () => {
-		// Equal, so `EQUAL` constant is always returned.
-		expect(deepDiffArray(arrFlat, arrFlat)).toBe(EQUAL);
-		expect(deepDiffArray(arrFlat, arrFlatSame)).toBe(EQUAL);
-		expect(deepDiffArray(arrFlat, arrFlat)).toBe(EQUAL);
-		expect(deepDiffArray(arrFlat, arrFlatSame)).toBe(EQUAL);
-		expect(deepDiffArray(arrDeep, arrDeep)).toBe(EQUAL);
-		expect(deepDiffArray(arrDeep, arrDeepSame)).toBe(EQUAL);
-		expect(deepDiffArray(arrFlatEmpty, [])).toBe(EQUAL);
-		expect(deepDiffArray([], arrFlatEmpty)).toBe(EQUAL);
+		// Equal, so `SAME` constant is always returned.
+		expect(deepDiffArray(arrFlat, arrFlat)).toBe(SAME);
+		expect(deepDiffArray(arrFlat, arrFlatSame)).toBe(SAME);
+		expect(deepDiffArray(arrFlat, arrFlat)).toBe(SAME);
+		expect(deepDiffArray(arrFlat, arrFlatSame)).toBe(SAME);
+		expect(deepDiffArray(arrDeep, arrDeep)).toBe(SAME);
+		expect(deepDiffArray(arrDeep, arrDeepSame)).toBe(SAME);
+		expect(deepDiffArray(arrFlatEmpty, [])).toBe(SAME);
+		expect(deepDiffArray([], arrFlatEmpty)).toBe(SAME);
 	});
 	test("deepDiffArray(): Diff unequal array values", () => {
 		// Different, so exact `right` instance is always returned.
@@ -139,15 +139,15 @@ describe("deepDiffArray()", () => {
 });
 describe("deepDiffObject()", () => {
 	test("deepDiffObject(): Diff equal object values", () => {
-		// Equal, so `EQUAL` constant is always returned.
-		expect(deepDiffObject(objFlat, objFlat)).toBe(EQUAL);
-		expect(deepDiffObject(objFlat, objFlatSame)).toBe(EQUAL);
-		expect(deepDiffObject(objFlat, objFlat)).toBe(EQUAL);
-		expect(deepDiffObject(objFlat, objFlatSame)).toBe(EQUAL);
-		expect(deepDiffObject(objDeep, objDeep)).toBe(EQUAL);
-		expect(deepDiffObject(objDeep, objDeepSame)).toBe(EQUAL);
-		expect(deepDiffObject(objFlatEmpty, {})).toBe(EQUAL);
-		expect(deepDiffObject({}, objFlatEmpty)).toBe(EQUAL);
+		// Equal, so `SAME` constant is always returned.
+		expect(deepDiffObject(objFlat, objFlat)).toBe(SAME);
+		expect(deepDiffObject(objFlat, objFlatSame)).toBe(SAME);
+		expect(deepDiffObject(objFlat, objFlat)).toBe(SAME);
+		expect(deepDiffObject(objFlat, objFlatSame)).toBe(SAME);
+		expect(deepDiffObject(objDeep, objDeep)).toBe(SAME);
+		expect(deepDiffObject(objDeep, objDeepSame)).toBe(SAME);
+		expect(deepDiffObject(objFlatEmpty, {})).toBe(SAME);
+		expect(deepDiffObject({}, objFlatEmpty)).toBe(SAME);
 	});
 	test("deepDiffObject(): Diff unequal object values", () => {
 		// Different, so exact `right` instance is always returned.

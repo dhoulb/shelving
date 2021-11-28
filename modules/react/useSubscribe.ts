@@ -10,7 +10,7 @@ import { usePureEffect } from "./usePureEffect.js";
  * - Every time `subscribable` changes the subscription will be recreated.
  * - Memoise this value if you want the subscription to persist for the life of the component.
  */
-export function useSubscribable<T>(subscribable?: Subscribable<T>): void {
+export function useSubscribe<T>(subscribable?: Subscribable<T>): void {
 	// Effect that subscribes the component to changes in the `State` instance for the lifetime of the component.
 	usePureEffect(subscribeEffect, useReactState<unknown>(LOADING)[1], subscribable);
 }

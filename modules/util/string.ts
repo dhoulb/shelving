@@ -1,45 +1,46 @@
 /* eslint-disable no-control-regex */
 
-import { formatDate, toYmd } from "./date.js";
+import { formatDate } from "./date.js";
 import { isObject } from "./object.js";
-import { ImmutableArray, isArray, mapItems } from "./array.js";
+import { ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
-import { SKIP } from "./constants.js";
+import { IS_DEFINED } from "./undefined.js";
 
 /** Is a value a string? */
-export const isString = (v: unknown): v is string => typeof v === "string";
+export const IS_STRING = (v: unknown): v is string => typeof v === "string";
 
 /**
- * Convert an unknown value into a string.
+ * Convert an unknown value into a string for internal use.
+ * - Objects use `obj.toString()` as long as it's not the default `Object.toString()` which is garbage.
+ * - Primitives return `true`, `false`, `null`, `undefined`
+ * - Numbers return the stringified number.
  *
- * Conversion rules:
- * - Strings return the same string.
- * - Numbers return formatted number (e.g. `number.toString()`).
- * - Dates return YMD date (e.g. `getYMD()` e.g. "2015-09-21").
- * - Everything else returns `""` empty string.
+ * -
  */
-export const toString = (value: unknown): string => {
+export function toString(value: unknown): string {
+	if (typeof value === "object")
+		return value === null ? "null" : typeof value.toString === "function" && value.toString !== Object.prototype.toString ? value.toString() : "object";
 	if (typeof value === "string") return value;
+	if (typeof value === "boolean") return value.toString();
 	if (typeof value === "number") return value.toString();
-	if (value instanceof Date) return toYmd(value) || "";
-	return ""; // Convert everything else to empty string.
-};
+	if (typeof value === "function") return value.name || "function";
+	return typeof value; // "symbol" etc.
+}
 
 /**
- * Convert an unknown value into a title string.
- *
- * Conversion rules:
- * - Strings return the same string.
+ * Convert an unknown value into a title string for user-facing use.
+ * - Strings return the string.
  * - Booleans return `"Yes"` or `"No"`
- * - Numbers return formatted number (e.g. `formatNumber()`).
+ * - Numbers return formatted number with commas etc (e.g. `formatNumber()`).
  * - Dates return formatted date (e.g. `formatDate()`).
- * - Arrays return the array items converted to string (with `toString()`), and joined with a comma.
+ * - Arrays return the array items converted to string (with `toTitle()`), and joined with a comma.
  * - Objects return...
  *   1. `object.name` if it exists, or
  *   2. `object.title` if it exists.
+ * - Falsy values like `null` and `undefined` return `"None"`
  * - Everything else returns `"Unknown"`
  */
-export const toTitle = (value: unknown): string => {
+export function toTitle(value: unknown): string {
 	if (typeof value === "string") return value ? value : "None";
 	if (typeof value === "boolean") return value ? "Yes" : "No";
 	if (typeof value === "number") return formatNumber(value);
@@ -51,28 +52,35 @@ export const toTitle = (value: unknown): string => {
 	}
 	if (!value) return "None";
 	return "Unknown";
-};
+}
 
 /**
  * Sanitize unexpected characters from a string by:
  * - Stripping control characters.
  * - Normalising all space characters to " " space.
  *
- * @param value The dirty input string.
+ * @param dirty The dirty input string.
  * @param multiline If `true`, `\t` horizontal tabs and `\r` newlines are allowed (defaults to `false` which strips these characters).
  * @returns The clean output string.
  */
-export const sanitizeString = (value: string): string => value.replace(CONTROLS, "").replace(SPACES, " ");
-const SPACES = /\s/g; // Sanitize zero-width spacers etc.
+export function sanitizeString(dirty: string, trim = true): string {
+	const clean = dirty.replace(CONTROLS, "").replace(SPACES, " ");
+	return trim ? clean.trim() : clean;
+}
 const CONTROLS = /[\x00-\x1F\x7F-\x9F]/g; // All control characters (`\x00`-`\x1F`, `\x7F`-`\x9F`)
+const SPACES = /\s/g; // Sanitize zero-width spacers etc.
 
 /**
  * Sanitize a multiline string.
- * - Like `sanitizeString()` but allos `\t` horizontal tab and `\r` newline.
+ * - Like `sanitizeString()` but allows `\t` horizontal tab and `\r` newline.
  */
-export const sanitizeLines = (value: string): string => value.replace(CONTROLS_MULTILINE, "").replace(SPACES_MULTILINE, " ");
-const SPACES_MULTILINE = /(?![\t\n])\s/g; // All spaces except `\r` horizontal tab and `\n` new line.
+export function sanitizeLines(dirty: string, trim = true): string {
+	const clean = dirty.replace(CONTROLS_MULTILINE, "").replace(SPACES_MULTILINE, " ");
+	return trim ? clean.replace(TRIM_END_MULTILINE, "") : clean;
+}
 const CONTROLS_MULTILINE = /(?![\t\n])[\x00-\x1F\x7F-\x9F]/g; // Control characters except `\t` horizontal tab and `\n` new line.
+const SPACES_MULTILINE = /(?![\t\n])\s/g; // All spaces except `\t` horizontal tab and `\n` new line.
+const TRIM_END_MULTILINE = /\s+$/gm;
 
 /**
  * Normalize a string so it can be compared to another string (free from upper/lower cases, symbols, punctuation).
@@ -110,8 +118,8 @@ const TRIM_HYPHENS = /^-+|-+$/g; // Trim excess hyphens at start and end.
  * @param value The input string, e.g. `yellow dog   "Golden Retriever"`
  * @returns Array of the found words, e.g. `["yellow", "dog", "Golden Retriever"
  */
-export const toWords = (value: string): ImmutableArray<string> => mapItems(value.matchAll(MATCH_WORD), toWord);
-const toWord = (matches: RegExpMatchArray) => matches[1] || matches[0] || SKIP;
+export const toWords = (value: string): ImmutableArray<string> => Array.from(value.matchAll(MATCH_WORD)).map(toWord).filter(IS_DEFINED);
+const toWord = (matches: RegExpMatchArray) => matches[1] || matches[0] || undefined;
 const MATCH_WORD = /[^\s"]+|"([^"]*)"/g;
 
 /**
