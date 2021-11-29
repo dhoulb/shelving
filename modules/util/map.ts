@@ -1,6 +1,5 @@
 import type { Entry } from "./entry.js";
-import { isIterable, limitItems } from "./iterable.js";
-import { ImmutableObject } from "./object.js";
+import { limitItems } from "./iterable.js";
 
 /**
  * `Map` with string keys that cannot be changed.
@@ -25,8 +24,8 @@ export function limitMap<T>(map: ImmutableMap<T>, limit: number): ImmutableMap<T
 }
 
 /** Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged). */
-export function toMap<T>(iterable: MutableMap<T> | ImmutableObject<T> | Iterable<Entry<T>>): MutableMap<T>; // Mutable returns mutable.
-export function toMap<T>(iterable: ImmutableMap<T> | ImmutableObject<T> | Iterable<Entry<T>>): ImmutableMap<T>; // Immutable returns immutable.
-export function toMap<T>(iterable: ImmutableMap<T> | ImmutableObject<T> | Iterable<Entry<T>>): ImmutableMap<T> {
-	return iterable instanceof Map ? iterable : new Map(isIterable(iterable) ? iterable : Object.entries(iterable));
+export function toMap<T>(iterable: MutableMap<T> | Iterable<Entry<T>>): MutableMap<T>; // Mutable returns mutable.
+export function toMap<T>(iterable: ImmutableMap<T> | Iterable<Entry<T>>): ImmutableMap<T>; // Immutable returns immutable.
+export function toMap<T>(iterable: ImmutableMap<T> | Iterable<Entry<T>>): ImmutableMap<T> {
+	return iterable instanceof Map ? iterable : new Map(iterable);
 }
