@@ -1,8 +1,3 @@
-/** Object that handles an error with its `error()` function. */
-export interface Handleable {
-	error(reason: Error | unknown): void;
-}
-
 /** Object that handles an error with its `error()` function, or a function that does the same. */
 export type Handler = (reason: Error | unknown) => void;
 
