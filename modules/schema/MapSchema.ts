@@ -1,4 +1,4 @@
-import { ImmutableMap, Validator, validateValues, toMap, isObject } from "../util/index.js";
+import { ImmutableMap, Validator, validateValues, isObject } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/index.js";
 import { Schema } from "./Schema.js";
 
@@ -30,9 +30,9 @@ export class MapSchema<T> extends Schema<ImmutableMap<T>> {
 		this.max = max;
 	}
 	override validate(unsafeValue: unknown = this.value): ImmutableMap<T> {
-		const unsafeMap = !unsafeValue ? new Map() : isObject(unsafeValue) ? toMap(unsafeValue) : unsafeValue;
-		if (!(unsafeMap instanceof Map)) throw new InvalidFeedback("Must be map", { value: unsafeValue });
-		const safeMap = new Map(validateValues(unsafeMap, this.items));
+		if (!isObject(unsafeValue)) throw new InvalidFeedback("Must be map");
+		const unsafeEntries = unsafeValue instanceof Map ? unsafeValue.entries() : Object.entries(unsafeValue);
+		const safeMap = new Map(validateValues(unsafeEntries, this.items));
 		if (typeof this.min === "number" && safeMap.size < this.min)
 			throw new InvalidFeedback(safeMap.size ? `Minimum ${this.min} items` : "Required", { value: safeMap });
 		if (typeof this.max === "number" && safeMap.size > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`, { value: safeMap });
