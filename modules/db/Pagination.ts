@@ -1,5 +1,5 @@
-import { getFirstItem, getLastItem, assertLength, Results, assertNumber, Datas, Key, ImmutableMap, Entry, yieldMerged } from "../util/index.js";
-import { AbstractState, StreamClosedError } from "../stream/index.js";
+import { getFirstItem, getLastItem, assertLength, assertNumber, Datas, Key, ResultsMap, Entry, yieldMerged, Results, toMap, Mutable } from "../util/index.js";
+import { State, StreamClosedError } from "../stream/index.js";
 import { DatabaseQuery } from "./Database.js";
 
 /**
@@ -7,27 +7,43 @@ import { DatabaseQuery } from "./Database.js";
  * - If you pass in initial values, it will use that as the first page.
  * - If you don't pass in initial values, it will autoload the first page.
  */
-export class Pagination<D extends Datas, C extends Key<D>> extends AbstractState<Results<D[C]>, ImmutableMap<D[C]>> implements Iterable<Entry<D[C]>> {
-	protected _pending = false;
+export class Pagination<D extends Datas, C extends Key<D>> extends State<ResultsMap<D[C]>> implements Iterable<Entry<D[C]>> {
 	readonly ref: DatabaseQuery<D, C>;
+	readonly limit: number;
+	readonly startLoading: boolean = false;
+	readonly startDone: boolean = false;
+	readonly endLoading: boolean = false;
+	readonly endDone: boolean = false;
 
 	constructor(ref: DatabaseQuery<D, C>) {
 		super();
 		this.ref = ref;
 		assertNumber(ref.limit); // Collection must have a numeric limit to paginate (otherwise you'd be retrieving the entire set of documents).
 		assertLength(ref.sorts, 1, Infinity); // Collection must have at least one sort order to paginate.
+		this.limit = ref.limit;
 	}
 
 	/**
 	 * Load more results before the start.
 	 * - Promise that needs to be handled.
 	 */
-	backward = async (): Promise<void> => {
+	loadStart = async (): Promise<void> => {
 		if (this.closed) throw new StreamClosedError();
-		if (!this._pending) {
-			const entry = getFirstItem(this.value);
-			this._pending = true;
-			this.next(await (entry ? this.ref.before(entry[0], entry[1]).results : this.ref.results));
+		if (!this.startLoading) {
+			(this as Mutable<this>).startLoading = true;
+			if (!this.loading) {
+				const firstItem = getFirstItem(this.value);
+				if (firstItem) {
+					const next = await this.ref.after(firstItem[0], firstItem[1]).resultsMap;
+					(this as Mutable<this>).startDone = next.size < this.limit;
+					(this as Mutable<this>).startLoading = false;
+					return this.merge(next);
+				}
+			}
+			const next = await this.ref.resultsMap;
+			(this as Mutable<this>).startDone = next.size < this.limit;
+			(this as Mutable<this>).startLoading = false;
+			return this.next(next);
 		}
 	};
 
@@ -35,30 +51,32 @@ export class Pagination<D extends Datas, C extends Key<D>> extends AbstractState
 	 * Load more results after the end.
 	 * - Promise that needs to be handled.
 	 */
-	forward = async (): Promise<void> => {
+	loadEnd = async (): Promise<void> => {
 		if (this.closed) throw new StreamClosedError();
-		if (!this._pending) {
-			const entry = getLastItem(this.value);
-			this._pending = true;
-			this.next(await (entry ? this.ref.after(entry[0], entry[1]).results : this.ref.results));
+		if (!this.endLoading) {
+			(this as Mutable<this>).endLoading = true;
+			if (!this.loading) {
+				const lastItem = getLastItem(this.value);
+				if (lastItem) {
+					const next = await this.ref.after(lastItem[0], lastItem[1]).resultsMap;
+					(this as Mutable<this>).endDone = next.size < this.limit;
+					(this as Mutable<this>).endLoading = false;
+					return this.merge(next);
+				}
+			}
+			const next = await this.ref.resultsMap;
+			(this as Mutable<this>).endDone = next.size < this.limit;
+			(this as Mutable<this>).endLoading = false;
+			return this.next(next);
 		}
 	};
 
-	// Dispatch doesn't just dispatch the next value, it merges it into the current results and dispatches the combined results.
-	_derive(results: Results<D[C]>): void {
-		this._pending = false;
-		if (this.loading) {
-			// Merge the results into the existing results.
-			const current = this.value;
-			const next = new Map(this.ref.sorts.derive(yieldMerged(this.value, results)));
-			const change = next.size - current.size;
-			super._dispatch(next);
-
-			// Automatically complete the pagination if there are fewer entries than the slice limit.
-			if (typeof this.ref.limit === "number" && change < this.ref.limit) this.complete();
-		} else {
-			super._dispatch(new Map(results));
-		}
+	/**
+	 * Merge more results into this pagination.
+	 * @return The change in the number of results.
+	 */
+	merge(more: Results<D[C]>): void {
+		this.next(toMap(this.ref.sorts.derive(yieldMerged(more, this.value))));
 	}
 
 	/** Iterate over the entries of the values currently in the pagination. */

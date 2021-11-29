@@ -1,7 +1,9 @@
+import type { Dispatcher } from "./dispatch.js";
 import { logError } from "./error.js";
-import { Dispatcher } from "./dispatch.js";
 import { isAsync } from "./promise.js";
 import { isData } from "./data.js";
+import { derive, Deriver } from "./derive.js";
+import { validate, Validator } from "./validate.js";
 
 /** `Dispatcher` that unsubscribes a subscription. */
 export type Unsubscriber = () => void;
@@ -114,4 +116,50 @@ export function dispatchError<T>(reason: Error | unknown, observer: Observer<T>,
 /** Create an `Observer` from a set `next()`, `error()` and `complete()` functions. */
 export function createObserver<T>(next: Observer<T> | Dispatcher<T>, error?: Dispatcher<unknown>, complete?: Dispatcher<void>): Observer<T> {
 	return typeof next === "object" ? next : { next, error, complete };
+}
+
+/** Abstract observer designed to pass values through to an observer. */
+export abstract class ThroughObserver<I, O> implements Observer<I> {
+	protected _target: Observer<O>;
+	constructor(target: Observer<O>) {
+		this._target = target;
+	}
+	abstract next(value: I): void | Promise<void>;
+	error(reason: Error | unknown): void | Promise<void> {
+		if (this._target.error) return this._target.error(reason);
+	}
+	complete(): void | Promise<void> {
+		if (this._target.complete) return this._target.complete();
+	}
+}
+
+/** Oserver that derives its next values with a deriver. */
+export class DeriveObserver<I, O> extends ThroughObserver<I, O> {
+	protected _deriver: Deriver<I, O>;
+	constructor(deriver: Deriver<I, O>, target: Observer<O>) {
+		super(target);
+		this._deriver = deriver;
+	}
+	next(value: I): void | Promise<void> {
+		if (this._target.next) return this._target.next(derive(value, this._deriver));
+	}
+}
+
+/** Observer that validates its next values with a validator. */
+export class ValidateObserver<T> extends ThroughObserver<unknown, T> {
+	protected _validator: Validator<T>;
+	constructor(validator: Validator<T>, target: Observer<T>) {
+		super(target);
+		this._validator = validator;
+	}
+	next(value: unknown): void | Promise<void> {
+		if (this._target.next) return this._target.next(validate(value, this._validator));
+	}
+}
+
+/** Oserver that allows promised values to be passed to `next()`. */
+export class AsyncObserver<T> extends ThroughObserver<T | Promise<T>, T> {
+	async next(value: T | Promise<T>): Promise<void> {
+		if (this._target.next) return this._target.next(await value);
+	}
 }
