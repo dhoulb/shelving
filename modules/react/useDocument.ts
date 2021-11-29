@@ -30,12 +30,12 @@ import { usePureState } from "./usePureState.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
  */
-export function useAsyncResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C>, maxAge?: number | true): Result<D[C]> | Promise<Result<D[C]>>;
-export function useAsyncResult<D extends Datas, C extends Key<D>>(
+export function useAsyncDocument<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C>, maxAge?: number | true): Result<D[C]> | Promise<Result<D[C]>>;
+export function useAsyncDocument<D extends Datas, C extends Key<D>>(
 	ref: DatabaseDocument<D, C> | undefined,
 	maxAge?: number | true,
 ): Result<D[C]> | Promise<Result<D[C]>> | undefined;
-export function useAsyncResult<D extends Datas, C extends Key<D>>(
+export function useAsyncDocument<D extends Datas, C extends Key<D>>(
 	ref: DatabaseDocument<D, C> | undefined,
 	maxAge: number | true = 1000,
 ): Result<D[C]> | Promise<Result<D[C]>> | undefined {
@@ -61,9 +61,7 @@ export function useAsyncResult<D extends Datas, C extends Key<D>>(
 	if (maxAge === true) setTimeout(ref.subscribe(setNext, setError), 10000);
 
 	// Return a promise for the result.
-	const result = ref.result;
-	dispatchAsync(result, setNext, setError);
-	return result;
+	return ref.result;
 }
 
 /** Get the initial result for a reference from the cache. */
@@ -116,5 +114,5 @@ function subscribeEffect<D extends Datas, C extends Key<D>>(
 export function useResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C>, maxAge?: number | true): Result<D[C]>;
 export function useResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C> | undefined, maxAge?: number | true): Result<D[C]> | undefined;
 export function useResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C> | undefined, maxAge?: number | true): Result<D[C]> | undefined {
-	return throwAsync(useAsyncResult(ref, maxAge));
+	return throwAsync(useAsyncDocument(ref, maxAge));
 }

@@ -1,5 +1,19 @@
 import { useState } from "react";
-import { DatabaseQuery, CacheProvider, Results, throwAsync, NOERROR, findSourceProvider, NOVALUE, Unsubscriber, Key, Datas, dispatchAsync } from "../index.js";
+import {
+	DatabaseQuery,
+	Unsubscriber,
+	Datas,
+	CacheProvider,
+	throwAsync,
+	NOERROR,
+	findSourceProvider,
+	NOVALUE,
+	Key,
+	dispatchAsync,
+	ResultsMap,
+	DeriveObserver,
+	toMap,
+} from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -13,20 +27,24 @@ import { usePureState } from "./usePureState.js";
  * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
  * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
  *
- * @returns The results for the set of documents, or `Promise` that resolves when the result has loaded, or `undefined` if ref was set to `undefined`
+ * @returns The results for the set of documents as a map, or promise that resolves when the result has loaded, or `undefined` if ref was set to `undefined`
+ * - Always uses returns results as a map because the same results might be used for several renders.
  *
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useAsyncResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C>, maxAge?: number | true): Results<D[C]> | Promise<Results<D[C]>>;
-export function useAsyncResults<D extends Datas, C extends Key<D>>(
+export function useAsyncQuery<D extends Datas, C extends Key<D>>(
+	ref: DatabaseQuery<D, C>,
+	maxAge?: number | true,
+): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>>;
+export function useAsyncQuery<D extends Datas, C extends Key<D>>(
 	ref: DatabaseQuery<D, C> | undefined,
 	maxAge?: number | true,
-): Results<D[C]> | Promise<Results<D[C]>> | undefined;
-export function useAsyncResults<D extends Datas, C extends Key<D>>(
+): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>> | undefined;
+export function useAsyncQuery<D extends Datas, C extends Key<D>>(
 	ref: DatabaseQuery<D, C> | undefined,
 	maxAge: number | true = 1000,
-): Results<D[C]> | Promise<Results<D[C]>> | undefined {
+): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = usePureMemo(ref, ref?.toString());
 
@@ -46,41 +64,40 @@ export function useAsyncResults<D extends Datas, C extends Key<D>>(
 
 	// If `maxAge` is `true` open a subscription for 10 seconds.
 	// Done before `ref.get()` because efficient providers (i.e. `BatchProvider`) will reuse the subscription's first result as its first get request.
-	if (maxAge === true) setTimeout(ref.subscribe(setNext, setError), 10000);
+	if (maxAge === true) setTimeout(ref.subscribeMap(setNext, setError), 10000);
 
 	// Return a promise for the result.
-	const results = ref.results;
-	dispatchAsync(results, setNext, setError);
-	return results;
+	return ref.resultsMap;
 }
 
 /** Get the initial results for a reference from the cache. */
-function getCachedResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined): Results<D[C]> | typeof NOVALUE | undefined {
+function getCachedResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined): ResultsMap<D[C]> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.db.provider, CacheProvider);
-	provider.isCached(ref) ? provider.cache.getQuery(ref) : NOVALUE;
+	return provider.isCached(ref) ? toMap(provider.cache.getQuery(ref)) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
 function subscribeEffect<D extends Datas, C extends Key<D>>(
 	ref: DatabaseQuery<D, C> | undefined,
 	maxAge: number | true,
-	next: (results: Results<D[C]>) => void,
+	next: (results: ResultsMap<D[C]>) => void,
 	error: (reason: unknown) => void,
 ): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.db.provider, CacheProvider);
-		const stopCache = provider.cache.subscribeQuery(ref, { next, error });
+		const observer = new DeriveObserver(toMap, { next, error });
+		const stopCache = provider.cache.subscribeQuery(ref, observer);
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.
-			const stopSource = ref.subscribe({ next, error });
+			const stopSource = ref.subscribe(observer);
 			return () => {
 				stopCache();
 				stopSource();
 			};
 		} else {
 			// If cache provider's cached document is older than maxAge then force refresh the data.
-			if (provider.getCachedAge(ref) > maxAge) dispatchAsync(ref.results, next, error);
+			if (provider.getCachedAge(ref) > maxAge) dispatchAsync(ref.resultsMap, next, error);
 		}
 		return stopCache;
 	}
@@ -95,14 +112,14 @@ function subscribeEffect<D extends Datas, C extends Key<D>>(
  * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
  * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
  *
- * @returns The results for the set of documents, or `undefined` if ref was set to `undefined`
+ * @returns The results for the set of documents.
  *
  * @throws `Promise` if document results have not been cached yet (handle this with a React `<Suspense>` element).
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C>, maxAge?: number | true): Results<D[C]>;
-export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined, maxAge?: number | true): Results<D[C]> | undefined;
-export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined, maxAge?: number | true): Results<D[C]> | undefined {
-	return throwAsync(useAsyncResults(ref, maxAge));
+export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C>, maxAge?: number | true): ResultsMap<D[C]>;
+export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined, maxAge?: number | true): ResultsMap<D[C]> | undefined;
+export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined, maxAge?: number | true): ResultsMap<D[C]> | undefined {
+	return throwAsync(useAsyncQuery(ref, maxAge));
 }
