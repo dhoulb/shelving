@@ -1,4 +1,4 @@
-import { Arguments, serialise, State, dispatchAsyncNext, LOADING, AnyState } from "../index.js";
+import { Arguments, serialise, State, dispatchAsyncNext, AnyState } from "../index.js";
 import { useSubscribe } from "./useSubscribe.js";
 
 /** Store a list of named cached `State` instances. */
@@ -31,9 +31,8 @@ export function useFetch<T, A extends Arguments>(fetcher: (...args: A) => T | Pr
 		// Clean up source in a few seconds if it's closed.
 		// The few seconds allow time for the component to render with the errored state so the error can be shown to the user.
 		setTimeout(() => sources.get(key)?.closed && sources.delete(key), 3000);
-	} else if (!state.loading && state.age > maxAge) {
+	} else if (state.age > maxAge) {
 		// Refetch if state has value and it's older than `maxAge`
-		state.next(LOADING);
 		dispatchAsyncNext(fetcher(...deps), state);
 	}
 

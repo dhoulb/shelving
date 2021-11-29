@@ -16,13 +16,13 @@ import { useAsyncDocument } from "./useDocument.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the data.
  */
-export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C>, maxAge?: number | true): D[C] | Promise<D[C]>;
+export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D>, maxAge?: number | true): D[C] | Promise<D[C]>;
 export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(
-	ref: DatabaseDocument<D, C> | undefined,
+	ref: DatabaseDocument<C, D> | undefined,
 	maxAge?: number | true,
 ): D[C] | Promise<D[C]> | undefined;
 export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(
-	ref: DatabaseDocument<D, C> | undefined,
+	ref: DatabaseDocument<C, D> | undefined,
 	maxAge?: number | true,
 ): D[C] | Promise<D[C]> | undefined {
 	const result = useAsyncDocument(ref, maxAge);
@@ -45,8 +45,8 @@ export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the data.
  */
-export function useDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C>, maxAge?: number | true): D[C];
-export function useDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C> | undefined, maxAge?: number | true): D[C] | undefined;
-export function useDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C> | undefined, maxAge?: number | true): D[C] | undefined {
+export function useDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D>, maxAge?: number | true): D[C];
+export function useDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D> | undefined, maxAge?: number | true): D[C] | undefined;
+export function useDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D> | undefined, maxAge?: number | true): D[C] | undefined {
 	return throwAsync(useAsyncDocumentData(ref, maxAge));
 }

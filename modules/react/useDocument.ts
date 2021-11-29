@@ -30,13 +30,13 @@ import { usePureState } from "./usePureState.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
  */
-export function useAsyncDocument<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C>, maxAge?: number | true): Result<D[C]> | Promise<Result<D[C]>>;
+export function useAsyncDocument<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D>, maxAge?: number | true): Result<D[C]> | Promise<Result<D[C]>>;
 export function useAsyncDocument<D extends Datas, C extends Key<D>>(
-	ref: DatabaseDocument<D, C> | undefined,
+	ref: DatabaseDocument<C, D> | undefined,
 	maxAge?: number | true,
 ): Result<D[C]> | Promise<Result<D[C]>> | undefined;
 export function useAsyncDocument<D extends Datas, C extends Key<D>>(
-	ref: DatabaseDocument<D, C> | undefined,
+	ref: DatabaseDocument<C, D> | undefined,
 	maxAge: number | true = 1000,
 ): Result<D[C]> | Promise<Result<D[C]>> | undefined {
 	// Create a memoed version of `ref`
@@ -65,7 +65,7 @@ export function useAsyncDocument<D extends Datas, C extends Key<D>>(
 }
 
 /** Get the initial result for a reference from the cache. */
-function getCachedResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C> | undefined): Result<D[C]> | typeof NOVALUE | undefined {
+function getCachedResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D> | undefined): Result<D[C]> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.db.provider, CacheProvider);
 	return provider.isCached(ref) ? provider.cache.get(ref) : NOVALUE;
@@ -73,7 +73,7 @@ function getCachedResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocumen
 
 /** Effect that subscribes a component to the cache for a reference. */
 function subscribeEffect<D extends Datas, C extends Key<D>>(
-	ref: DatabaseDocument<D, C> | undefined,
+	ref: DatabaseDocument<C, D> | undefined,
 	maxAge: number | true,
 	next: (result: Result<D[C]>) => void,
 	error: (reason: Error | unknown) => void,
@@ -111,8 +111,8 @@ function subscribeEffect<D extends Datas, C extends Key<D>>(
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
  */
-export function useResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C>, maxAge?: number | true): Result<D[C]>;
-export function useResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C> | undefined, maxAge?: number | true): Result<D[C]> | undefined;
-export function useResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C> | undefined, maxAge?: number | true): Result<D[C]> | undefined {
+export function useResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D>, maxAge?: number | true): Result<D[C]>;
+export function useResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D> | undefined, maxAge?: number | true): Result<D[C]> | undefined;
+export function useResult<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D> | undefined, maxAge?: number | true): Result<D[C]> | undefined {
 	return throwAsync(useAsyncDocument(ref, maxAge));
 }

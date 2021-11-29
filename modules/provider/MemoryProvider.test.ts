@@ -21,7 +21,7 @@ import {
 	expectUnorderedKeys,
 	BasicData,
 } from "../test/index.js";
-import { Database, MemoryProvider, Result, ResultsMap, toArray } from "../index.js";
+import { Database, MemoryProvider, Result, ResultsMap, toArray, toMap } from "../index.js";
 
 test("MemoryProvider: set/get/delete documents", () => {
 	// Setup.
@@ -169,7 +169,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	const basics = db.query("basics");
 	// Subscribe fn1.
 	const calls1: ResultsMap<BasicData>[] = [];
-	const stop1 = basics.subscribe(results => void calls1.push(toArray(results)));
+	const stop1 = basics.subscribeMap(results => void calls1.push(results));
 	await Promise.resolve();
 	expect(calls1.length).toBe(1);
 	expectOrderedKeys(calls1[0]!, []); // Empty at first (no last argument).
@@ -186,7 +186,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	expectOrderedKeys(calls1[1]!, [id1]); // id1 is added.
 	// Subscribe fn2.
 	const calls2: ResultsMap<BasicData>[] = [];
-	const stop2 = basics.subscribe(results => void calls2.push(results));
+	const stop2 = basics.subscribeMap(results => void calls2.push(results));
 	await Promise.resolve();
 	expectOrderedKeys(calls2[0]!, [id1]); // Called with current results.
 	expect(calls1[2]).toBe(undefined);
@@ -229,7 +229,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	basics.doc("basic7").set(basic7);
 	// Subscribe (should find only basic7).
 	const calls1: ResultsMap<BasicData>[] = [];
-	const stop1 = basics.contains("tags", "odd").subscribe(results => void calls1.push(results)); // Query for odds.
+	const stop1 = basics.contains("tags", "odd").subscribeMap(results => void calls1.push(results)); // Query for odds.
 	await Promise.resolve();
 	expectUnorderedKeys(calls1[0]!, ["basic7"]);
 	// Set basic3 (should be added to result).
@@ -264,7 +264,7 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	const stop1 = basics
 		.asc("num")
 		.max(2)
-		.subscribe(result => void calls1.push(result));
+		.subscribeMap(result => void calls1.push(result));
 	await Promise.resolve();
 	expectOrderedKeys(calls1[0]!, ["basic1", "basic2"]);
 	// Delete basic9 (shouldn't affect result as it's outside the slice).

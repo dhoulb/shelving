@@ -46,18 +46,18 @@ export class Database<D extends Datas> {
 	}
 
 	/** Create a query on a collection in this model. */
-	query<C extends Key<D>>(collection: C, filters?: Filters<D[C]>, sorts?: Sorts<D[C]>, limit?: number | null): DatabaseQuery<D, C> {
+	query<C extends Key<D>>(collection: C, filters?: Filters<D[C]>, sorts?: Sorts<D[C]>, limit?: number | null): DatabaseQuery<C, D> {
 		return new DatabaseQuery(this, collection, filters, sorts, limit);
 	}
 
 	/** Reference a document in a collection in this model. */
-	doc<C extends Key<D>>(collection: C, id: string): DatabaseDocument<D, C> {
+	doc<C extends Key<D>>(collection: C, id: string): DatabaseDocument<C, D> {
 		return new DatabaseDocument(this, collection, id);
 	}
 }
 
 /** A documents reference within a specific database. */
-export class DatabaseQuery<D extends Datas, C extends Key<D>>
+export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	extends Query<D[C]>
 	implements Observable<Results<D[C]>>, Validatable<Results<D[C]>>, Iterable<Entry<D[C]>>
 {
@@ -72,7 +72,7 @@ export class DatabaseQuery<D extends Datas, C extends Key<D>>
 	}
 
 	/** Reference a document in this query's collection. */
-	doc(id: string): DatabaseDocument<D, C> {
+	doc(id: string): DatabaseDocument<C, D> {
 		return new DatabaseDocument(this.db, this.collection, id);
 	}
 
@@ -219,7 +219,7 @@ export class DatabaseQuery<D extends Datas, C extends Key<D>>
 }
 
 /** A document reference within a specific database. */
-export class DatabaseDocument<D extends Datas, C extends Key<D>> implements Observable<Result<D[C]>>, Validatable<D[C]> {
+export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Observable<Result<D[C]>>, Validatable<D[C]> {
 	readonly db: Database<D>;
 	readonly validator: Validator<D[C]>;
 	readonly collection: C;
@@ -232,12 +232,12 @@ export class DatabaseDocument<D extends Datas, C extends Key<D>> implements Obse
 	}
 
 	/** Create a query on this document's collection. */
-	query(filters?: Filters<D[C]>, sorts?: Sorts<D[C]>, limit?: number | null): DatabaseQuery<D, C> {
+	query(filters?: Filters<D[C]>, sorts?: Sorts<D[C]>, limit?: number | null): DatabaseQuery<C, D> {
 		return new DatabaseQuery(this.db, this.collection, filters, sorts, limit);
 	}
 
 	/** Get an 'optional' reference to this document (uses a `ModelQuery` with an `id` filter). */
-	get optional(): DatabaseQuery<D, C> {
+	get optional(): DatabaseQuery<C, D> {
 		return new DatabaseQuery(this.db, this.collection, new Filters(new EqualFilter("id", this.id)));
 	}
 
@@ -348,8 +348,14 @@ export class DatabaseDocument<D extends Datas, C extends Key<D>> implements Obse
 }
 
 /** Wait for a result and throw a `DocumentRequiredError` if the document doesn't exist. */
-async function _awaitRequired<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<D, C>, asyncResult: Promise<Result<D[C]>>): Promise<D[C]> {
+async function _awaitRequired<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D>, asyncResult: Promise<Result<D[C]>>): Promise<D[C]> {
 	const result = await asyncResult;
 	if (!result) throw new DocumentRequiredError(ref);
 	return result;
 }
+
+/** Database query with a collection name. */
+export type CollectionQuery<C extends string, T extends Data> = DatabaseQuery<C, { [K in C]: T }>;
+
+/** Database document with a collection name. */
+export type CollectionDocument<C extends string, T extends Data> = DatabaseDocument<C, { [K in C]: T }>;

@@ -23,7 +23,7 @@ export class BatchProvider<D extends Datas> extends ThroughProvider<D> {
 	protected readonly _subs: MutableObject<Observable<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	// Override to combine multiple requests into one.
-	override get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Result<D[C]> | Promise<Result<D[C]>> {
+	override get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Result<D[C]> | Promise<Result<D[C]>> {
 		const key = ref.toString();
 		const get = this._gets[key];
 		if (get) return get;
@@ -32,7 +32,7 @@ export class BatchProvider<D extends Datas> extends ThroughProvider<D> {
 	}
 
 	/** Await a result and delete it from get requests when done. */
-	private async _awaitDocument<C extends Key<D>>(ref: DatabaseDocument<D, C>, asyncResult: Promise<Result<D[C]>>): Promise<Result<D[C]>> {
+	private async _awaitDocument<C extends Key<D>>(ref: DatabaseDocument<C, D>, asyncResult: Promise<Result<D[C]>>): Promise<Result<D[C]>> {
 		const result = await asyncResult;
 		const key = ref.toString();
 		delete this._gets[key];
@@ -40,7 +40,7 @@ export class BatchProvider<D extends Datas> extends ThroughProvider<D> {
 	}
 
 	// Override to combine multiple subscriptions into one.
-	override subscribe<C extends Key<D>>(ref: DatabaseDocument<D, C>, observer: Observer<Result<D[C]>>): Unsubscriber {
+	override subscribe<C extends Key<D>>(ref: DatabaseDocument<C, D>, observer: Observer<Result<D[C]>>): Unsubscriber {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
@@ -57,7 +57,7 @@ export class BatchProvider<D extends Datas> extends ThroughProvider<D> {
 	}
 
 	// Override to combine multiple requests into one.
-	override getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Results<D[C]> | Promise<Results<D[C]>> {
+	override getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Results<D[C]> | Promise<Results<D[C]>> {
 		const key = ref.toString();
 		const get = this._gets[key];
 		if (get) return get;
@@ -66,7 +66,7 @@ export class BatchProvider<D extends Datas> extends ThroughProvider<D> {
 	}
 
 	/** Await a set of results and delete from get requests when done. */
-	private async _awaitDocuments<C extends Key<D>>(ref: DatabaseQuery<D, C>, asyncResults: Promise<Results<D[C]>>): Promise<ResultsMap<D[C]>> {
+	private async _awaitDocuments<C extends Key<D>>(ref: DatabaseQuery<C, D>, asyncResults: Promise<Results<D[C]>>): Promise<ResultsMap<D[C]>> {
 		// Convert the iterable to a map because it might be read multiple times.
 		const results = toMap(await asyncResults);
 		const key = ref.toString();
@@ -75,7 +75,7 @@ export class BatchProvider<D extends Datas> extends ThroughProvider<D> {
 	}
 
 	// Override to combine multiple subscriptions into one.
-	override subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<ResultsMap<D[C]>>): Unsubscriber {
+	override subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, observer: Observer<ResultsMap<D[C]>>): Unsubscriber {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.

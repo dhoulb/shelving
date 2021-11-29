@@ -28,7 +28,7 @@ import {
 	getDocs,
 } from "firebase/firestore";
 import {
-	ResultsMap,
+	Results,
 	Provider,
 	DatabaseDocument,
 	DatabaseQuery,
@@ -76,17 +76,17 @@ const DIRECTIONS: { readonly [K in SortDirection]: FirestoreOrderByDirection } =
 };
 
 /** Get a Firestore DocumentReference for a given document. */
-function getDocument<D extends Datas, C extends Key<D>>(firestore: Firestore, { collection, id }: DatabaseDocument<D, C>): FirestoreDocumentReference<D[C]> {
+function getDocument<D extends Datas, C extends Key<D>>(firestore: Firestore, { collection, id }: DatabaseDocument<C, D>): FirestoreDocumentReference<D[C]> {
 	return firestoreDocument(firestore, collection, id) as FirestoreDocumentReference<D[C]>;
 }
 
 /** Get a Firestore CollectionReference for a given query. */
-function getCollection<D extends Datas, C extends Key<D>>(firestore: Firestore, { collection }: DatabaseQuery<D, C>): FirestoreCollectionReference<D[C]> {
+function getCollection<D extends Datas, C extends Key<D>>(firestore: Firestore, { collection }: DatabaseQuery<C, D>): FirestoreCollectionReference<D[C]> {
 	return firestoreCollection(firestore, collection) as FirestoreCollectionReference<D[C]>;
 }
 
 /** Create a corresponding `QueryReference` from a Query. */
-function getQuery<D extends Datas, C extends Key<D>>(firestore: Firestore, ref: DatabaseQuery<D, C>): FirestoreQueryReference<D[C]> {
+function getQuery<D extends Datas, C extends Key<D>>(firestore: Firestore, ref: DatabaseQuery<C, D>): FirestoreQueryReference<D[C]> {
 	const { sorts, filters, limit } = ref;
 	const constraints: FirestoreQueryConstraint[] = [];
 	for (const { key, direction } of sorts) constraints.push(firestoreOrderBy(key === "id" ? ID : key, DIRECTIONS[direction]));
@@ -96,7 +96,7 @@ function getQuery<D extends Datas, C extends Key<D>>(firestore: Firestore, ref: 
 }
 
 /** Create a set of results from a collection snapshot. */
-function* getResults<D extends Datas, C extends Key<D>>(snapshot: FirestoreQuerySnapshot<D[C]>): ResultsMap<D[C]> {
+function* getResults<D extends Datas, C extends Key<D>>(snapshot: FirestoreQuerySnapshot<D[C]>): Results<D[C]> {
 	for (const s of snapshot.docs) yield [s.id, s.data()];
 }
 
@@ -132,12 +132,12 @@ export class FirestoreClientProvider<D extends Datas> extends Provider<D> implem
 		this.firestore = firestore;
 	}
 
-	async get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Promise<Result<D[C]>> {
+	async get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Promise<Result<D[C]>> {
 		const snapshot = await getDoc(getDocument(this.firestore, ref));
 		return snapshot.data();
 	}
 
-	subscribe<C extends Key<D>>(ref: DatabaseDocument<D, C>, observer: Observer<Result<D[C]>>): () => void {
+	subscribe<C extends Key<D>>(ref: DatabaseDocument<C, D>, observer: Observer<Result<D[C]>>): () => void {
 		return onSnapshot(
 			getDocument(this.firestore, ref),
 			snapshot => dispatchNext(snapshot.data(), observer),
@@ -145,22 +145,22 @@ export class FirestoreClientProvider<D extends Datas> extends Provider<D> implem
 		);
 	}
 
-	async add<C extends Key<D>>(ref: DatabaseQuery<D, C>, data: D[C]): Promise<string> {
+	async add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): Promise<string> {
 		const reference = await addDoc<any>(getCollection(this.firestore, ref), data); // eslint-disable-line @typescript-eslint/no-explicit-any
 		return reference.id;
 	}
 
-	async write<C extends Key<D>>(ref: DatabaseDocument<D, C>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
+	async write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
 		if (value instanceof Transform) await updateDoc<unknown>(getDocument(this.firestore, ref), getFieldValues(value));
 		else if (value) await setDoc<unknown>(getDocument(this.firestore, ref), value);
 		else await deleteDoc(getDocument(this.firestore, ref));
 	}
 
-	async getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Promise<ResultsMap<D[C]>> {
+	async getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Promise<Results<D[C]>> {
 		return getResults(await getDocs(getQuery(this.firestore, ref)));
 	}
 
-	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<ResultsMap<D[C]>>): () => void {
+	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, observer: Observer<Results<D[C]>>): () => void {
 		return onSnapshot(
 			getQuery(this.firestore, ref),
 			snapshot => dispatchNext(getResults(snapshot), observer),
@@ -168,7 +168,7 @@ export class FirestoreClientProvider<D extends Datas> extends Provider<D> implem
 		);
 	}
 
-	async writeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
+	async writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		const updates = value instanceof Transform && getFieldValues(value);
 		if (updates) await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, updates)));

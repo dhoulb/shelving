@@ -7,15 +7,15 @@ import { DatabaseQuery } from "./Database.js";
  * - If you pass in initial values, it will use that as the first page.
  * - If you don't pass in initial values, it will autoload the first page.
  */
-export class Pagination<D extends Datas, C extends Key<D>> extends State<ResultsMap<D[C]>> implements Iterable<Entry<D[C]>> {
-	readonly ref: DatabaseQuery<D, C>;
+export class Pagination<C extends Key<D>, D extends Datas> extends State<ResultsMap<D[C]>> implements Iterable<Entry<D[C]>> {
+	readonly ref: DatabaseQuery<C, D>;
 	readonly limit: number;
 	readonly startLoading: boolean = false;
 	readonly startDone: boolean = false;
 	readonly endLoading: boolean = false;
 	readonly endDone: boolean = false;
 
-	constructor(ref: DatabaseQuery<D, C>) {
+	constructor(ref: DatabaseQuery<C, D>) {
 		super();
 		this.ref = ref;
 		assertNumber(ref.limit); // Collection must have a numeric limit to paginate (otherwise you'd be retrieving the entire set of documents).

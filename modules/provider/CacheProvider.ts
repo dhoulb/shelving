@@ -19,42 +19,42 @@ export class CacheProvider<D extends Datas> extends ThroughProvider<D> implement
 	}
 
 	/** Is a given document or query in the cache? */
-	isCached<C extends Key<D>>(ref: DatabaseDocument<D, C> | DatabaseQuery<D, C>): boolean {
+	isCached<C extends Key<D>>(ref: DatabaseDocument<C, D> | DatabaseQuery<C, D>): boolean {
 		const key = ref.toString();
 		return typeof this._times[key] === "number";
 	}
 
 	/** Get the cache age for a given document or query reference. */
-	getCachedAge<C extends Key<D>>(ref: DatabaseDocument<D, C> | DatabaseQuery<D, C>): number {
+	getCachedAge<C extends Key<D>>(ref: DatabaseDocument<C, D> | DatabaseQuery<C, D>): number {
 		const key = ref.toString();
 		const time = this._times[key];
 		return typeof time !== "number" ? Infinity : Date.now() - time;
 	}
 
 	/** Cache an individual document result. */
-	private _cacheResult<C extends Key<D>>(ref: DatabaseDocument<D, C>, result: Result<D[C]>): Result<D[C]> {
+	private _cacheResult<C extends Key<D>>(ref: DatabaseDocument<C, D>, result: Result<D[C]>): Result<D[C]> {
 		this.cache.write(ref, result);
 		this._times[ref.toString()] = Date.now();
 		return result;
 	}
 
 	// Override to cache any got result.
-	override async get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Promise<Result<D[C]>> {
+	override async get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Promise<Result<D[C]>> {
 		return this._cacheResult(ref, await super.get(ref));
 	}
 
 	// Override to cache any got results.
-	override subscribe<C extends Key<D>>(ref: DatabaseDocument<D, C>, observer: Observer<Result<D[C]>>): Unsubscriber {
+	override subscribe<C extends Key<D>>(ref: DatabaseDocument<C, D>, observer: Observer<Result<D[C]>>): Unsubscriber {
 		return super.subscribe(ref, new DeriveObserver(result => this._cacheResult(ref, result), observer));
 	}
 
-	override async add<C extends Key<D>>(ref: DatabaseQuery<D, C>, data: D[C]): Promise<string> {
+	override async add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): Promise<string> {
 		const id = await super.add(ref, data);
 		this.cache.write(ref.doc(id), data);
 		return id;
 	}
 
-	override async write<C extends Key<D>>(ref: DatabaseDocument<D, C>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
+	override async write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
 		await super.write(ref, value);
 
 		// Update the document in the cache if it exists using `updateDocuments()` and an `id` query.
@@ -64,7 +64,7 @@ export class CacheProvider<D extends Datas> extends ThroughProvider<D> implement
 	}
 
 	/** Cache a set of document results. */
-	private *_cacheResults<C extends Key<D>>(ref: DatabaseQuery<D, C>, results: Results<D[C]>): Results<D[C]> {
+	private *_cacheResults<C extends Key<D>>(ref: DatabaseQuery<C, D>, results: Results<D[C]>): Results<D[C]> {
 		// We know the received set of results is the 'complete' set of results for this query.
 		// So for correctness any documents matching this query that aren't in the new set of results should be deleted.
 		// None of this applies if there's a query limit, because the document could have been moved to a different page so shouldn't be deleted.
@@ -81,16 +81,16 @@ export class CacheProvider<D extends Datas> extends ThroughProvider<D> implement
 	}
 
 	// Override to cache any got results.
-	override async getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Promise<Results<D[C]>> {
+	override async getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Promise<Results<D[C]>> {
 		return this._cacheResults(ref, await super.getQuery(ref));
 	}
 
 	// Override to cache any got results.
-	override subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<Results<D[C]>>): Unsubscriber {
+	override subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, observer: Observer<Results<D[C]>>): Unsubscriber {
 		return super.subscribeQuery(ref, new DeriveObserver(results => this._cacheResults(ref, results), observer));
 	}
 
-	override async writeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
+	override async writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
 		await super.writeQuery(ref, value);
 		this.cache.writeQuery(ref, value);
 	}

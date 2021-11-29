@@ -9,8 +9,8 @@ export abstract class Change<T extends Datas> {
 }
 
 /** A change that writes a document in a database. */
-export class Write<D extends Datas, C extends Key<D>> extends Change<D> {
-	static on<X extends Datas, Y extends Key<X>>({ collection, id }: DatabaseDocument<X, Y>, value: X[Y] | Transform<X[Y]> | undefined): Write<X, Y> {
+export class Write<C extends Key<D>, D extends Datas> extends Change<D> {
+	static on<Y extends Key<X>, X extends Datas>({ collection, id }: DatabaseDocument<Y, X>, value: X[Y] | Transform<X[Y]> | undefined): Write<Y, X> {
 		return new Write(collection, id, value);
 	}
 	readonly collection: C;
@@ -42,15 +42,15 @@ export class Writes<D extends Datas> extends Change<D> {
 		this.changes = changes;
 	}
 	/** Return a new `Changes` instance with an additional `Write` instance in its changes list. */
-	set<C extends Key<D>>({ collection, id }: DatabaseDocument<D, C>, data: D[C]): this {
+	set<C extends Key<D>>({ collection, id }: DatabaseDocument<C, D>, data: D[C]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new Write(collection, id, data)] };
 	}
 	/** Return a new `Changes` instance with an additional `Write` instance in its changes list. */
-	delete<C extends Key<D>>({ collection, id }: DatabaseDocument<D, C>): this {
+	delete<C extends Key<D>>({ collection, id }: DatabaseDocument<C, D>): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, changes: [...this.changes, new Write(collection, id, undefined)] };
 	}
 	/** Return a new `Changes` instance with an additional `Write` instance in its changes list. */
-	update<C extends Key<D>>({ collection, id }: DatabaseDocument<D, C>, transforms: Transforms<D[C]> | Transform<D[C]>): this {
+	update<C extends Key<D>>({ collection, id }: DatabaseDocument<C, D>, transforms: Transforms<D[C]> | Transform<D[C]>): this {
 		return {
 			__proto__: Object.getPrototypeOf(this),
 			...this,

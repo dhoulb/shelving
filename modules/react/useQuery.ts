@@ -34,15 +34,15 @@ import { usePureState } from "./usePureState.js";
  * @throws `Error` if there was a problem retrieving the results.
  */
 export function useAsyncQuery<D extends Datas, C extends Key<D>>(
-	ref: DatabaseQuery<D, C>,
+	ref: DatabaseQuery<C, D>,
 	maxAge?: number | true,
 ): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>>;
 export function useAsyncQuery<D extends Datas, C extends Key<D>>(
-	ref: DatabaseQuery<D, C> | undefined,
+	ref: DatabaseQuery<C, D> | undefined,
 	maxAge?: number | true,
 ): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>> | undefined;
 export function useAsyncQuery<D extends Datas, C extends Key<D>>(
-	ref: DatabaseQuery<D, C> | undefined,
+	ref: DatabaseQuery<C, D> | undefined,
 	maxAge: number | true = 1000,
 ): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>> | undefined {
 	// Create a memoed version of `ref`
@@ -71,7 +71,7 @@ export function useAsyncQuery<D extends Datas, C extends Key<D>>(
 }
 
 /** Get the initial results for a reference from the cache. */
-function getCachedResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined): ResultsMap<D[C]> | typeof NOVALUE | undefined {
+function getCachedResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<C, D> | undefined): ResultsMap<D[C]> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.db.provider, CacheProvider);
 	return provider.isCached(ref) ? toMap(provider.cache.getQuery(ref)) : NOVALUE;
@@ -79,7 +79,7 @@ function getCachedResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<
 
 /** Effect that subscribes a component to the cache for a reference. */
 function subscribeEffect<D extends Datas, C extends Key<D>>(
-	ref: DatabaseQuery<D, C> | undefined,
+	ref: DatabaseQuery<C, D> | undefined,
 	maxAge: number | true,
 	next: (results: ResultsMap<D[C]>) => void,
 	error: (reason: unknown) => void,
@@ -118,8 +118,8 @@ function subscribeEffect<D extends Datas, C extends Key<D>>(
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C>, maxAge?: number | true): ResultsMap<D[C]>;
-export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined, maxAge?: number | true): ResultsMap<D[C]> | undefined;
-export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<D, C> | undefined, maxAge?: number | true): ResultsMap<D[C]> | undefined {
+export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<C, D>, maxAge?: number | true): ResultsMap<D[C]>;
+export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<C, D> | undefined, maxAge?: number | true): ResultsMap<D[C]> | undefined;
+export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<C, D> | undefined, maxAge?: number | true): ResultsMap<D[C]> | undefined {
 	return throwAsync(useAsyncQuery(ref, maxAge));
 }

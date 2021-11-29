@@ -14,15 +14,15 @@ export class MemoryProvider<D extends Datas> extends Provider<D> implements Sync
 	private _tables: { [C in Key<D>]?: AbstractTable<D[C]> } = {};
 
 	// Get a named collection (or create a new one).
-	private _table<C extends Key<D>>({ collection }: DatabaseDocument<D, C> | DatabaseQuery<D, C>): Table<D[C]> {
+	private _table<C extends Key<D>>({ collection }: DatabaseDocument<C, D> | DatabaseQuery<C, D>): Table<D[C]> {
 		return (this._tables[collection] ||= new Table<D[C]>()) as Table<D[C]>;
 	}
 
-	get<C extends Key<D>>(ref: DatabaseDocument<D, C>): Result<D[C]> {
+	get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Result<D[C]> {
 		return this._table(ref).data.get(ref.id);
 	}
 
-	subscribe<C extends Key<D>>(ref: DatabaseDocument<D, C>, observer: Observer<Result<D[C]>>): Unsubscriber {
+	subscribe<C extends Key<D>>(ref: DatabaseDocument<C, D>, observer: Observer<Result<D[C]>>): Unsubscriber {
 		const table = this._table(ref);
 		const id = ref.id;
 
@@ -35,7 +35,7 @@ export class MemoryProvider<D extends Datas> extends Provider<D> implements Sync
 		});
 	}
 
-	add<C extends Key<D>>(ref: DatabaseQuery<D, C>, data: D[C]): string {
+	add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): string {
 		const table = this._table(ref);
 		let id = randomId();
 		while (table.data.get(id)) id = randomId(); // Regenerate ID until unique.
@@ -43,7 +43,7 @@ export class MemoryProvider<D extends Datas> extends Provider<D> implements Sync
 		return id;
 	}
 
-	write<C extends Key<D>>(ref: DatabaseDocument<D, C>, value: D[C] | Transform<D[C]> | undefined): void {
+	write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): void {
 		const table = this._table(ref);
 		const id = ref.id;
 		if (value instanceof Transform) {
@@ -55,11 +55,11 @@ export class MemoryProvider<D extends Datas> extends Provider<D> implements Sync
 		}
 	}
 
-	getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Results<D[C]> {
+	getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Results<D[C]> {
 		return ref.derive(this._table(ref).data);
 	}
 
-	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<Results<D[C]>>): Unsubscriber {
+	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, observer: Observer<Results<D[C]>>): Unsubscriber {
 		const table = this._table(ref);
 
 		// Call `next()` immediately with the initial results.
@@ -85,7 +85,7 @@ export class MemoryProvider<D extends Datas> extends Provider<D> implements Sync
 		});
 	}
 
-	writeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, value: D[C] | Transform<D[C]> | undefined): void {
+	writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): void {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
