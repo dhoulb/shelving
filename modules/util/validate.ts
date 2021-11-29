@@ -2,6 +2,7 @@ import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import type { Entry } from "./entry.js";
 import type { MutableObject } from "./object.js";
 import { Data, isData, Prop, toProps } from "./data.js";
+import { isAsync } from "./promise.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validatable<T> {
@@ -44,6 +45,14 @@ export type ValidatorsType<O extends AnyValidators> = O extends Validators<infer
 /** Validate an unknown value with a validator. */
 export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {
 	return typeof validator === "function" ? validator(unsafeValue) : validator.validate(unsafeValue);
+}
+
+/** Await an async value then validate it with a validator. */
+export function validateAsync<T>(unsafeValue: unknown, validator: Validator<T>): T | Promise<T> {
+	return isAsync(unsafeValue) ? _awaitValidate(unsafeValue, validator) : validate(unsafeValue, validator);
+}
+async function _awaitValidate<T>(asyncInput: PromiseLike<unknown>, validator: Validator<T>): Promise<T> {
+	return validate(await asyncInput, validator);
 }
 
 /**
