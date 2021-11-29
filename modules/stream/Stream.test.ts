@@ -2,7 +2,7 @@
 
 import { jest } from "@jest/globals";
 import { getNextValue, Stream, BLACKHOLE } from "../index.js";
-import { subscribeStream } from "./Stream.js";
+import { startStream } from "./Stream.js";
 
 test("Stream: works correctly", () => {
 	const stream = new Stream<number>();
@@ -21,12 +21,12 @@ test("Stream: works correctly", () => {
 	const next3 = jest.fn<any, any>();
 	const error3 = jest.fn<any, any>();
 	const complete3 = jest.fn<any, any>();
-	const stream3 = subscribeStream(stream);
+	const stream3 = startStream(stream);
 	stream3.subscribe(next3, error3, complete3);
 	const next4 = jest.fn<any, any>();
 	const error4 = jest.fn<any, any>();
 	const complete4 = jest.fn<any, any>();
-	const stream4 = subscribeStream(stream);
+	const stream4 = startStream(stream);
 	stream4.subscribe({ next: next4, error: error4, complete: complete4 });
 	expect(stream.subscribers).toEqual(4);
 	// Fire.

@@ -28,7 +28,7 @@ import {
 	getDocs,
 } from "firebase/firestore";
 import {
-	Results,
+	ResultsMap,
 	Provider,
 	DatabaseDocument,
 	DatabaseQuery,
@@ -96,7 +96,7 @@ function getQuery<D extends Datas, C extends Key<D>>(firestore: Firestore, ref: 
 }
 
 /** Create a set of results from a collection snapshot. */
-function* getResults<D extends Datas, C extends Key<D>>(snapshot: FirestoreQuerySnapshot<D[C]>): Results<D[C]> {
+function* getResults<D extends Datas, C extends Key<D>>(snapshot: FirestoreQuerySnapshot<D[C]>): ResultsMap<D[C]> {
 	for (const s of snapshot.docs) yield [s.id, s.data()];
 }
 
@@ -156,11 +156,11 @@ export class FirestoreClientProvider<D extends Datas> extends Provider<D> implem
 		else await deleteDoc(getDocument(this.firestore, ref));
 	}
 
-	async getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Promise<Results<D[C]>> {
+	async getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Promise<ResultsMap<D[C]>> {
 		return getResults(await getDocs(getQuery(this.firestore, ref)));
 	}
 
-	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<Results<D[C]>>): () => void {
+	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<ResultsMap<D[C]>>): () => void {
 		return onSnapshot(
 			getQuery(this.firestore, ref),
 			snapshot => dispatchNext(getResults(snapshot), observer),

@@ -20,8 +20,11 @@ export type Datas = { readonly [key: string]: Data };
 /** Data or `undefined` */
 export type Result<T extends Data = Data> = T | undefined;
 
-/** Iterable set of results in entry format. */
+/** Iterable that yields a set of results. */
 export type Results<T extends Data = Data> = Iterable<readonly [string, T]>;
+
+/** Set of results stored in a map. */
+export type ResultsMap<T extends Data = Data> = ReadonlyMap<string, T>;
 
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => typeof value === "object" && value !== null;

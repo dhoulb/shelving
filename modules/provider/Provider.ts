@@ -1,4 +1,4 @@
-import type { Observer, Unsubscriber, Result, Results, Datas, Key, Entry } from "../util/index.js";
+import type { Observer, Unsubscriber, Result, Datas, Key, Results } from "../util/index.js";
 import type { DatabaseDocument, DatabaseQuery } from "../db/Database.js";
 import type { Transform } from "../transform/index.js";
 
@@ -56,7 +56,7 @@ export abstract class Provider<D extends Datas = Datas> {
 	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Set of results in `id: data` format.
 	 */
-	abstract getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Iterable<Entry<D[C]>> | Promise<Iterable<Entry<D[C]>>>;
+	abstract getQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>): Results<D[C]> | Promise<Results<D[C]>>;
 
 	/**
 	 * Subscribe to all matching documents.

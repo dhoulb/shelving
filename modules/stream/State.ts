@@ -12,7 +12,7 @@ import {
 	getRequired,
 	Mutable,
 } from "../util/index.js";
-import { deriveAsyncStream, deriveStream, Stream, subscribeStream } from "./Stream.js";
+import { deriveAsyncStream, deriveStream, Stream, startStream } from "./Stream.js";
 import { getNextValue } from "./LimitStream.js";
 
 /** Any state (useful for `extends AnySubscribable` clauses). */
@@ -94,11 +94,11 @@ export function initialState<T>(initial: T, state: State<T> = new State()): Stat
 	return state;
 }
 
-/** Subscribe from a source to a new or existing state. */
-export function subscribeState<T extends AnyState>(source: Subscribable<ObserverType<T>>, target: T): T;
-export function subscribeState<T>(source: Subscribable<T>): State<T>;
-export function subscribeState<T>(source: Subscribable<T>, target: State<T> = new State()): State<T> {
-	return subscribeStream<State<T>>(source, target);
+/** Create a state that's subscribed to a source subscribable. */
+export function startState<T extends AnyState>(source: Subscribable<ObserverType<T>>, target: T): T;
+export function startState<T>(source: Subscribable<T>): State<T>;
+export function startState<T>(source: Subscribable<T>, target: State<T> = new State()): State<T> {
+	return startStream<State<T>>(source, target);
 }
 
 /** Derive from a source to a new or existing stream using a deriver. */

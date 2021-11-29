@@ -21,7 +21,7 @@ import {
 	expectUnorderedKeys,
 	BasicData,
 } from "../test/index.js";
-import { Database, MemoryProvider, Result, Results, toArray } from "../index.js";
+import { Database, MemoryProvider, Result, ResultsMap, toArray } from "../index.js";
 
 test("MemoryProvider: set/get/delete documents", () => {
 	// Setup.
@@ -168,7 +168,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	const db = new Database(TEST_SCHEMAS, new MemoryProvider());
 	const basics = db.query("basics");
 	// Subscribe fn1.
-	const calls1: Results<BasicData>[] = [];
+	const calls1: ResultsMap<BasicData>[] = [];
 	const stop1 = basics.subscribe(results => void calls1.push(toArray(results)));
 	await Promise.resolve();
 	expect(calls1.length).toBe(1);
@@ -185,7 +185,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	expect(calls1.length).toBe(2);
 	expectOrderedKeys(calls1[1]!, [id1]); // id1 is added.
 	// Subscribe fn2.
-	const calls2: Results<BasicData>[] = [];
+	const calls2: ResultsMap<BasicData>[] = [];
 	const stop2 = basics.subscribe(results => void calls2.push(results));
 	await Promise.resolve();
 	expectOrderedKeys(calls2[0]!, [id1]); // Called with current results.
@@ -228,7 +228,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	basics.doc("basic6").set(basic6);
 	basics.doc("basic7").set(basic7);
 	// Subscribe (should find only basic7).
-	const calls1: Results<BasicData>[] = [];
+	const calls1: ResultsMap<BasicData>[] = [];
 	const stop1 = basics.contains("tags", "odd").subscribe(results => void calls1.push(results)); // Query for odds.
 	await Promise.resolve();
 	expectUnorderedKeys(calls1[0]!, ["basic7"]);
@@ -260,7 +260,7 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	const basics = db.query("basics");
 	for (const [k, v] of basicResults) basics.doc(k).set(v);
 	// Subscribe (should find only basic7).
-	const calls1: Results<BasicData>[] = [];
+	const calls1: ResultsMap<BasicData>[] = [];
 	const stop1 = basics
 		.asc("num")
 		.max(2)

@@ -11,7 +11,7 @@ import {
 	throwAsync,
 	Unsubscriber,
 	Datas,
-	Results,
+	ResultsMap,
 	Validatable,
 	validate,
 	Validator,
@@ -21,7 +21,8 @@ import {
 	countItems,
 	Data,
 	MutableObject,
-	ImmutableMap,
+	Results,
+	DeriveObserver,
 } from "../util/index.js";
 import { DataTransform, Transform, Transforms } from "../transform/index.js";
 import type { Provider } from "../provider/Provider.js";
@@ -95,11 +96,11 @@ export class DatabaseQuery<D extends Datas, C extends Key<D>>
 	}
 
 	/**
-	 * Read the results of this query into a map.
-	 * @return Set of results in `id: data` format (possibly promised).
+	 * Get an iterable that yields the results of this entry.
+	 * @return Map containing the results.
 	 */
-	get map(): ImmutableMap<D[C]> | Promise<ImmutableMap<D[C]>> {
-		return deriveAsync<Results<D[C]>, ImmutableMap<D[C]>>(this.db.provider.getQuery(this), toMap);
+	get resultsMap(): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>> {
+		return deriveAsync<Results<D[C]>, ResultsMap<D[C]>>(this.db.provider.getQuery(this), toMap);
 	}
 
 	/**
@@ -107,7 +108,15 @@ export class DatabaseQuery<D extends Datas, C extends Key<D>>
 	 * @return Number of documents in the collection (possibly promised).
 	 */
 	get count(): number | Promise<number> {
-		return deriveAsync(this.db.provider.getQuery(this), countItems);
+		return deriveAsync(this.results, countItems);
+	}
+
+	/**
+	 * Get an entry for the first document matching this query.
+	 * @return Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents (possibly promised).
+	 */
+	get first(): Entry<D[C]> | undefined | Promise<Entry<D[C]> | undefined> {
+		return deriveAsync(this.max(1).results, getFirstItem);
 	}
 
 	/**
@@ -126,11 +135,22 @@ export class DatabaseQuery<D extends Datas, C extends Key<D>>
 	}
 
 	/**
-	 * Get an entry for the first document matching this query.
-	 * @return Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents (possibly promised).
+	 * Subscribe to all matching documents.
+	 * - `next()` is called once with the initial results, and again any time the results change.
+	 *
+	 * @param observer Observer with `next`, `error`, or `complete` methods that the document results are reported back to.
+	 * @param next Callback that is called once initially and again whenever the results change.
+	 * @param error Callback that is called if an error occurs.
+	 * @param complete Callback that is called when the subscription is done.
+	 *
+	 * @return Function that ends the subscription.
 	 */
-	get first(): Entry<D[C]> | undefined | Promise<Entry<D[C]> | undefined> {
-		return deriveAsync(this.max(1).results, getFirstItem);
+	subscribeMap(
+		next: Observer<ResultsMap<D[C]>> | Dispatcher<ResultsMap<D[C]>>,
+		error?: Dispatcher<Error | unknown>,
+		complete?: Dispatcher<void>,
+	): Unsubscriber {
+		return this.db.provider.subscribeQuery(this, new DeriveObserver(toMap, createObserver(next, error, complete)));
 	}
 
 	/**

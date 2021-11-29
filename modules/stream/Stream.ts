@@ -143,10 +143,10 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	}
 }
 
-/** Subscribe from a source to a new or existing stream. */
-export function subscribeStream<T extends AnyStream>(source: Subscribable<ObserverType<T>>, target: T): T;
-export function subscribeStream<T>(source: Subscribable<T>): Stream<T>;
-export function subscribeStream<T>(source: Subscribable<T>, target: Stream<T> = new Stream()): Stream<T> {
+/** Create a stream that's subscribed to a source subscribable. */
+export function startStream<T extends AnyStream>(source: Subscribable<ObserverType<T>>, target: T): T;
+export function startStream<T>(source: Subscribable<T>): Stream<T>;
+export function startStream<T>(source: Subscribable<T>, target: Stream<T> = new Stream()): Stream<T> {
 	target.start(source);
 	return target;
 }

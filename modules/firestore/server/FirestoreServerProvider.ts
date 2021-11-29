@@ -8,7 +8,7 @@ import type {
 } from "@google-cloud/firestore";
 import { Firestore, FieldValue } from "@google-cloud/firestore";
 import {
-	Results,
+	ResultsMap,
 	Provider,
 	DatabaseDocument,
 	DatabaseQuery,
@@ -135,7 +135,7 @@ export class FirestoreServerProvider<D extends Datas> extends Provider<D> implem
 		return getResults(await getQuery(this.firestore, ref).get());
 	}
 
-	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<Results<D[C]>>): () => void {
+	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<D, C>, observer: Observer<ResultsMap<D[C]>>): () => void {
 		return getQuery(this.firestore, ref).onSnapshot(
 			snapshot => dispatchNext(getResults(snapshot), observer),
 			thrown => dispatchError(thrown, observer),
