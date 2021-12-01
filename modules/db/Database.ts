@@ -1,10 +1,9 @@
 import {
-	deriveAsync,
+	callAsync,
 	createObserver,
 	Dispatcher,
 	Entry,
 	getFirstItem,
-	isAsync,
 	Observable,
 	Observer,
 	Result,
@@ -83,7 +82,7 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * @param data Complete data to set the document to.
 	 * @return String ID for the created document (possibly promised).
 	 */
-	add(data: D[C]): string | Promise<string> {
+	add(data: D[C]): string | PromiseLike<string> {
 		return this.db.provider.add(this, data);
 	}
 
@@ -91,7 +90,7 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * Get an iterable that yields the results of this entry.
 	 * @return Map containing the results.
 	 */
-	get results(): Results<D[C]> | Promise<Results<D[C]>> {
+	get results(): Results<D[C]> | PromiseLike<Results<D[C]>> {
 		return this.db.provider.getQuery(this);
 	}
 
@@ -99,24 +98,24 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * Get an iterable that yields the results of this entry.
 	 * @return Map containing the results.
 	 */
-	get resultsMap(): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>> {
-		return deriveAsync<Results<D[C]>, ResultsMap<D[C]>>(this.db.provider.getQuery(this), toMap);
+	get resultsMap(): ResultsMap<D[C]> | PromiseLike<ResultsMap<D[C]>> {
+		return callAsync<Results<D[C]>, ResultsMap<D[C]>>(toMap, this.db.provider.getQuery(this));
 	}
 
 	/**
 	 * Count the number of results of this set of documents.
 	 * @return Number of documents in the collection (possibly promised).
 	 */
-	get count(): number | Promise<number> {
-		return deriveAsync(this.results, countItems);
+	get count(): number | PromiseLike<number> {
+		return callAsync(countItems, this.results);
 	}
 
 	/**
 	 * Get an entry for the first document matching this query.
 	 * @return Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents (possibly promised).
 	 */
-	get first(): Entry<D[C]> | undefined | Promise<Entry<D[C]> | undefined> {
-		return deriveAsync(this.max(1).results, getFirstItem);
+	get first(): Entry<D[C]> | undefined | PromiseLike<Entry<D[C]> | undefined> {
+		return callAsync(getFirstItem, this.max(1).results);
 	}
 
 	/**
@@ -159,7 +158,7 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * @param data Complete data to set the document to.
 	 * @return Nothing (possibly promised).
 	 */
-	set(data: D[C]): void | Promise<void> {
+	set(data: D[C]): void | PromiseLike<void> {
 		return this.write(data);
 	}
 
@@ -171,7 +170,7 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	update(transform: Transform<D[C]> | Transforms<D[C]>): void | Promise<void> {
+	update(transform: Transform<D[C]> | Transforms<D[C]>): void | PromiseLike<void> {
 		return this.write(transform instanceof Transform ? transform : new DataTransform(transform));
 	}
 
@@ -179,7 +178,7 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * Delete all matching documents.
 	 * @return Nothing (possibly promised).
 	 */
-	delete(): void | Promise<void> {
+	delete(): void | PromiseLike<void> {
 		return this.write(undefined);
 	}
 
@@ -187,7 +186,7 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * Combine `set()`, `update()`, `delete()` into a single method.
 	 * @return Nothing (possibly promised).
 	 */
-	write(value: Result<D[C]> | Transform<D[C]>): void | Promise<void> {
+	write(value: Result<D[C]> | Transform<D[C]>): void | PromiseLike<void> {
 		return this.db.provider.writeQuery(this, value);
 	}
 
@@ -246,9 +245,8 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 *
 	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
 	 */
-	get exists(): boolean | Promise<boolean> {
-		const result = this.db.provider.get(this);
-		return isAsync(result) ? result.then(Boolean) : !!result;
+	get exists(): boolean | PromiseLike<boolean> {
+		return callAsync(Boolean, this.db.provider.get(this));
 	}
 
 	/**
@@ -256,7 +254,7 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 *
 	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
 	 */
-	get result(): Result<D[C]> | Promise<Result<D[C]>> {
+	get result(): Result<D[C]> | PromiseLike<Result<D[C]>> {
 		return this.db.provider.get(this);
 	}
 
@@ -267,11 +265,8 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 * @return Document's data (possibly promised).
 	 * @throws RequiredError if the document's result was undefined.
 	 */
-	get data(): D[C] | Promise<D[C]> {
-		const result = this.db.provider.get(this);
-		if (isAsync(result)) return _awaitRequired(this, result);
-		if (!result) throw new DocumentRequiredError(this);
-		return result;
+	get data(): D[C] | PromiseLike<D[C]> {
+		return callAsync(getDocumentData, this.db.provider.get(this), this);
 	}
 
 	/**
@@ -296,7 +291,7 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	set(data: D[C]): void | Promise<void> {
+	set(data: D[C]): void | PromiseLike<void> {
 		return this.write(data);
 	}
 
@@ -311,7 +306,7 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 * @return Nothing (possibly promised).
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	update(transforms: Transform<D[C]> | Transforms<D[C]>): void | Promise<void> {
+	update(transforms: Transform<D[C]> | Transforms<D[C]>): void | PromiseLike<void> {
 		return this.write(transforms instanceof Transform ? transforms : new DataTransform(transforms));
 	}
 
@@ -321,14 +316,14 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	delete(): void | Promise<void> {
+	delete(): void | PromiseLike<void> {
 		return this.write(undefined);
 	}
 
 	/**
 	 * Combine `set()`, `update()`, `delete()` into a single method.
 	 */
-	write(value: Result<D[C]> | Transform<D[C]>): void | Promise<void> {
+	write(value: Result<D[C]> | Transform<D[C]>): void | PromiseLike<void> {
 		return this.db.provider.write(this, value);
 	}
 
@@ -347,11 +342,10 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	}
 }
 
-/** Wait for a result and throw a `DocumentRequiredError` if the document doesn't exist. */
-async function _awaitRequired<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D>, asyncResult: Promise<Result<D[C]>>): Promise<D[C]> {
-	const result = await asyncResult;
-	if (!result) throw new DocumentRequiredError(ref);
-	return result;
+/** Get the data for a document from a result for that document. */
+export function getDocumentData<C extends Key<D>, D extends Datas>(result: Result<D[C]>, ref: DatabaseDocument<C, D>): D[C] {
+	if (result) return result;
+	throw new DocumentRequiredError(ref);
 }
 
 /** Database query with a collection name. */

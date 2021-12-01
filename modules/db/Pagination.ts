@@ -1,5 +1,6 @@
 import { getFirstItem, getLastItem, assertLength, assertNumber, Datas, Key, ResultsMap, Entry, yieldMerged, Results, toMap, Mutable } from "../util/index.js";
-import { State, StreamClosedError } from "../stream/index.js";
+import { State } from "../stream/index.js";
+import { ConditionError } from "../index.js";
 import { DatabaseQuery } from "./Database.js";
 
 /**
@@ -28,7 +29,7 @@ export class Pagination<C extends Key<D>, D extends Datas> extends State<Results
 	 * - Promise that needs to be handled.
 	 */
 	loadStart = async (): Promise<void> => {
-		if (this.closed) throw new StreamClosedError();
+		if (this.closed) throw new ConditionError();
 		if (!this.startLoading) {
 			(this as Mutable<this>).startLoading = true;
 			if (!this.loading) {
@@ -52,7 +53,7 @@ export class Pagination<C extends Key<D>, D extends Datas> extends State<Results
 	 * - Promise that needs to be handled.
 	 */
 	loadEnd = async (): Promise<void> => {
-		if (this.closed) throw new StreamClosedError();
+		if (this.closed) throw new ConditionError();
 		if (!this.endLoading) {
 			(this as Mutable<this>).endLoading = true;
 			if (!this.loading) {

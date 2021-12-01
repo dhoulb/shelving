@@ -1,4 +1,4 @@
-import { useState as useReactState } from "react";
+import { useState } from "react";
 import { Dispatcher, LOADING, Subscribable, subscribe } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 
@@ -12,7 +12,7 @@ import { usePureEffect } from "./usePureEffect.js";
  */
 export function useSubscribe<T>(subscribable?: Subscribable<T>): void {
 	// Effect that subscribes the component to changes in the `State` instance for the lifetime of the component.
-	usePureEffect(subscribeEffect, useReactState<unknown>(LOADING)[1], subscribable);
+	usePureEffect(subscribeEffect, useState<unknown>(LOADING)[1], subscribable);
 }
 
 /** Effect that subscribes the component to changes in the `State` instance for the lifetime of the component. */

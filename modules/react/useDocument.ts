@@ -1,17 +1,5 @@
 import { useState } from "react";
-import {
-	DatabaseDocument,
-	CacheProvider,
-	Result,
-	throwAsync,
-	NOERROR,
-	findSourceProvider,
-	NOVALUE,
-	Unsubscriber,
-	Datas,
-	Key,
-	dispatchAsync,
-} from "../index.js";
+import { DatabaseDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Datas, Key, dispatchAsync } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -30,15 +18,18 @@ import { usePureState } from "./usePureState.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
  */
-export function useAsyncDocument<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D>, maxAge?: number | true): Result<D[C]> | Promise<Result<D[C]>>;
+export function useAsyncDocument<D extends Datas, C extends Key<D>>(
+	ref: DatabaseDocument<C, D>,
+	maxAge?: number | true,
+): Result<D[C]> | PromiseLike<Result<D[C]>>;
 export function useAsyncDocument<D extends Datas, C extends Key<D>>(
 	ref: DatabaseDocument<C, D> | undefined,
 	maxAge?: number | true,
-): Result<D[C]> | Promise<Result<D[C]>> | undefined;
+): Result<D[C]> | PromiseLike<Result<D[C]>> | undefined;
 export function useAsyncDocument<D extends Datas, C extends Key<D>>(
 	ref: DatabaseDocument<C, D> | undefined,
 	maxAge: number | true = 1000,
-): Result<D[C]> | Promise<Result<D[C]>> | undefined {
+): Result<D[C]> | PromiseLike<Result<D[C]>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = usePureMemo(ref, ref?.toString());
 
@@ -77,7 +68,7 @@ function subscribeEffect<D extends Datas, C extends Key<D>>(
 	maxAge: number | true,
 	next: (result: Result<D[C]>) => void,
 	error: (reason: Error | unknown) => void,
-): Unsubscriber | void {
+): (() => void) | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.db.provider, CacheProvider);
 		const stopCache = provider.cache.subscribe(ref, { next, error });

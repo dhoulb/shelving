@@ -18,7 +18,7 @@ const sources = new Map<string, AnyState>();
  * - If the data results in an error, reading `state.value` will throw that error.
  *   - `state.reason` can tell you if the state has an error before you read `state.value`
  */
-export function useFetch<T, A extends Arguments>(fetcher: (...args: A) => T | Promise<T>, deps: A, maxAge = 86400000): State<T> {
+export function useFetch<T, A extends Arguments>(fetcher: (...args: A) => PromiseLike<T>, deps: A, maxAge = 86400000): State<T> {
 	const key = `${serialise(fetcher)}:${serialise(deps)}`;
 	let state: State<T> | undefined = sources.get(key);
 

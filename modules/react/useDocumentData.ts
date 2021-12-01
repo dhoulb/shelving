@@ -1,4 +1,4 @@
-import { DatabaseDocument, getRequired, Datas, Key, throwAsync, Result, deriveAsync } from "../index.js";
+import { DatabaseDocument, Datas, Key, throwAsync, callAsync, getDocumentData } from "../index.js";
 import { useAsyncDocument } from "./useDocument.js";
 
 /**
@@ -20,13 +20,13 @@ export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(ref: Dat
 export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(
 	ref: DatabaseDocument<C, D> | undefined,
 	maxAge?: number | true,
-): D[C] | Promise<D[C]> | undefined;
+): D[C] | PromiseLike<D[C]> | undefined;
 export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(
 	ref: DatabaseDocument<C, D> | undefined,
 	maxAge?: number | true,
-): D[C] | Promise<D[C]> | undefined {
+): D[C] | PromiseLike<D[C]> | undefined {
 	const result = useAsyncDocument(ref, maxAge);
-	return ref ? deriveAsync<Result<D[C]>, D[C]>(result, getRequired) : undefined;
+	return ref ? callAsync(getDocumentData, result, ref) : undefined;
 }
 
 /**

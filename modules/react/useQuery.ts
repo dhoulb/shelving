@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
 	DatabaseQuery,
-	Unsubscriber,
 	Datas,
 	CacheProvider,
 	throwAsync,
@@ -36,15 +35,15 @@ import { usePureState } from "./usePureState.js";
 export function useAsyncQuery<D extends Datas, C extends Key<D>>(
 	ref: DatabaseQuery<C, D>,
 	maxAge?: number | true,
-): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>>;
+): ResultsMap<D[C]> | PromiseLike<ResultsMap<D[C]>>;
 export function useAsyncQuery<D extends Datas, C extends Key<D>>(
 	ref: DatabaseQuery<C, D> | undefined,
 	maxAge?: number | true,
-): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>> | undefined;
+): ResultsMap<D[C]> | PromiseLike<ResultsMap<D[C]>> | undefined;
 export function useAsyncQuery<D extends Datas, C extends Key<D>>(
 	ref: DatabaseQuery<C, D> | undefined,
 	maxAge: number | true = 1000,
-): ResultsMap<D[C]> | Promise<ResultsMap<D[C]>> | undefined {
+): ResultsMap<D[C]> | PromiseLike<ResultsMap<D[C]>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = usePureMemo(ref, ref?.toString());
 
@@ -83,7 +82,7 @@ function subscribeEffect<D extends Datas, C extends Key<D>>(
 	maxAge: number | true,
 	next: (results: ResultsMap<D[C]>) => void,
 	error: (reason: unknown) => void,
-): Unsubscriber | void {
+): (() => void) | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.db.provider, CacheProvider);
 		const observer = new DeriveObserver(toMap, { next, error });

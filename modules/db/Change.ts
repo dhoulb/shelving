@@ -5,7 +5,7 @@ import type { Database, DatabaseDocument } from "./Database.js";
 /** A single change that can be made to a database. */
 export abstract class Change<T extends Datas> {
 	/** Apply this change to a database. */
-	abstract apply(db: Database<T>): void | Promise<void>;
+	abstract apply(db: Database<T>): void | PromiseLike<void>;
 }
 
 /** A change that writes a document in a database. */
@@ -58,7 +58,7 @@ export class Writes<D extends Datas> extends Change<D> {
 		};
 	}
 	apply(db: Database<D>) {
-		const promises: MutableArray<Promise<void>> = [];
+		const promises: MutableArray<PromiseLike<void>> = [];
 		for (const change of this.changes) {
 			const applied = change.apply(db);
 			if (isAsync(applied)) promises.push(applied);

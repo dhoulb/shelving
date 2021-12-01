@@ -13,25 +13,25 @@ export class ThroughProvider<D extends Datas> extends Provider<D> {
 		super();
 		this.source = source;
 	}
-	get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Result<D[C]> | Promise<Result<D[C]>> {
+	get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Result<D[C]> | PromiseLike<Result<D[C]>> {
 		return this.source.get(ref);
 	}
 	subscribe<C extends Key<D>>(ref: DatabaseDocument<C, D>, observer: Observer<Result<D[C]>>): Unsubscriber {
 		return this.source.subscribe(ref, observer);
 	}
-	add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): string | Promise<string> {
+	add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): string | PromiseLike<string> {
 		return this.source.add(ref, data);
 	}
-	write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): void | Promise<void> {
+	write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): void | PromiseLike<void> {
 		return this.source.write(ref, value);
 	}
-	getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Results<D[C]> | Promise<Results<D[C]>> {
+	getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Results<D[C]> | PromiseLike<Results<D[C]>> {
 		return this.source.getQuery(ref);
 	}
 	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, observer: Observer<Results<D[C]>>): Unsubscriber {
 		return this.source.subscribeQuery(ref, observer);
 	}
-	writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): void | Promise<void> {
+	writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): void | PromiseLike<void> {
 		return this.source.writeQuery(ref, value);
 	}
 }
