@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
 
 import { jest } from "@jest/globals";
-import { getNextValue, Stream, BLACKHOLE } from "../index.js";
-import { startStream } from "./Stream.js";
+import { awaitNext, Stream, BLACKHOLE } from "../index.js";
 
 test("Stream: works correctly", () => {
 	const stream = new Stream<number>();
@@ -21,12 +20,12 @@ test("Stream: works correctly", () => {
 	const next3 = jest.fn<any, any>();
 	const error3 = jest.fn<any, any>();
 	const complete3 = jest.fn<any, any>();
-	const stream3 = startStream(stream);
+	const stream3 = stream.to();
 	stream3.subscribe(next3, error3, complete3);
 	const next4 = jest.fn<any, any>();
 	const error4 = jest.fn<any, any>();
 	const complete4 = jest.fn<any, any>();
-	const stream4 = startStream(stream);
+	const stream4 = stream.to();
 	stream4.subscribe({ next: next4, error: error4, complete: complete4 });
 	expect(stream.subscribers).toEqual(4);
 	// Fire.
@@ -101,5 +100,5 @@ test("Stream: all listeners are fired even if one errors", () => {
 test("toPromise(): works correctly", async () => {
 	const state = new Stream<number>();
 	setTimeout(() => state.next(123), 50);
-	expect(await getNextValue(state)).toBe(123);
+	expect(await awaitNext(state)).toBe(123);
 });

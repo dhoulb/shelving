@@ -1,7 +1,6 @@
 import {
 	Deriver,
 	LOADING,
-	Subscribable,
 	ObserverType,
 	NOERROR,
 	Observer,
@@ -11,9 +10,9 @@ import {
 	derive,
 	getRequired,
 	Mutable,
+	awaitNext,
 } from "../util/index.js";
-import { deriveAsyncStream, deriveStream, Stream, startStream } from "./Stream.js";
-import { getNextValue } from "./LimitStream.js";
+import { Stream } from "./Stream.js";
 
 /** Any state (useful for `extends AnySubscribable` clauses). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,11 +28,20 @@ export type AnyState = State<any>;
  * - To set the state to be loading, use the `LOADING` constant or a `Promise` value.
  * - To set the state to an explicit value, use that value or another `State` instance with a value.
  * */
+export interface State<T> {
+	to(): State<T>;
+	derive<TT>(deriver: Deriver<T, TT>): State<TT>;
+	deriveAsync<TT>(deriver: Deriver<T, Promise<TT>>): State<TT>;
+}
 export class State<T> extends Stream<T> {
-	readonly reason: Error | unknown | typeof NOERROR = NOERROR;
-	readonly updated: number | null = null;
+	// Override species so `to()`, `derive()` and `deriveAsync()` with no target return new `State` instances.
+	static override [Symbol.species] = State;
 
-	protected _value: T | typeof LOADING = LOADING;
+	/** Cached reason this state errored. */
+	readonly reason: Error | unknown | typeof NOERROR = NOERROR;
+
+	/** Time this state was last updated with a new value. */
+	readonly updated: number | null = null;
 
 	/** Age of the current value (in milliseconds). */
 	get age(): number {
@@ -43,14 +51,15 @@ export class State<T> extends Stream<T> {
 	/** Most recently dispatched value (or throw `Promise` that resolves to the next value). */
 	get value(): T {
 		if (this.reason !== NOERROR) throw this.reason;
-		if (this._value === LOADING) throw getNextValue(this);
+		if (this._value === LOADING) throw awaitNext(this);
 		return this._value;
 	}
+	protected _value: T | typeof LOADING = LOADING;
 
 	/** Get current required value (or throw `Promise` that resolves to the next required value). */
 	get data(): Exclude<T, null | undefined> {
 		if (this.reason !== NOERROR) throw this.reason;
-		if (this._value === LOADING) throw getNextValue(this).then(getRequired);
+		if (this._value === LOADING) throw awaitNext(this).then(getRequired);
 		return getRequired(this._value);
 	}
 
@@ -80,9 +89,11 @@ export class State<T> extends Stream<T> {
 
 	// Dispatcher saves any values that are dispatched.
 	protected override _dispatch(value: T) {
-		this._value = value;
 		(this as Mutable<this>).updated = Date.now();
-		if (value !== this._value) super._dispatch(value);
+		if (value !== this._value) {
+			this._value = value;
+			super._dispatch(value);
+		}
 	}
 }
 
@@ -92,25 +103,4 @@ export function initialState<T extends AnyState>(initial: ObserverType<T>, state
 export function initialState<T>(initial: T, state: State<T> = new State()): State<T> {
 	state.next(initial);
 	return state;
-}
-
-/** Create a state that's subscribed to a source subscribable. */
-export function startState<T extends AnyState>(source: Subscribable<ObserverType<T>>, target: T): T;
-export function startState<T>(source: Subscribable<T>): State<T>;
-export function startState<T>(source: Subscribable<T>, target: State<T> = new State()): State<T> {
-	return startStream<State<T>>(source, target);
-}
-
-/** Derive from a source to a new or existing stream using a deriver. */
-export function deriveState<I, O extends AnyState>(source: Subscribable<I>, deriver: Deriver<I, ObserverType<O>>, target: O): O;
-export function deriveState<I, O>(source: Subscribable<I>, deriver: Deriver<I, O>): State<O>;
-export function deriveState<I, O>(source: Subscribable<I>, deriver: Deriver<I, O>, target: State<O> = new State<O>()): State<O> {
-	return deriveStream<I, State<O>>(source, deriver, target);
-}
-
-/** Derive from a source to a new or existing stream using an async deriver. */
-export function deriveAsyncState<I, O extends AnyState>(source: Subscribable<I>, deriver: Deriver<I, ObserverType<O> | Promise<ObserverType<O>>>, target: O): O; // prettier-ignore
-export function deriveAsyncState<I, O>(source: Subscribable<I>, deriver: Deriver<I, O | Promise<O>>): State<O>;
-export function deriveAsyncState<I, O>(source: Subscribable<I>, deriver: Deriver<I, O | Promise<O>>, target: State<O> = new State<O>()): State<O> {
-	return deriveAsyncStream<I, State<O>>(source, deriver, target);
 }
