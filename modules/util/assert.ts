@@ -89,7 +89,12 @@ export function assertSync<T>(value: Promise<T> | T): asserts value is T {
 	if (isAsync(value)) throw new AssertionError("Must be synchronous", value);
 }
 
-/** Expect a synchronous value. */
-export function assertAsync<T>(value: Promise<T> | T): asserts value is Promise<T> {
+/** Expect an asynchronous value. */
+export function assertAsync<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
 	if (!isAsync(value)) throw new AssertionError("Must be asynchronous", value);
+}
+
+/** Expect a promise. */
+export function assertPromise<T>(value: Promise<T> | T): asserts value is Promise<T> {
+	if (!(value instanceof Promise)) throw new AssertionError("Must be promise", value);
 }
