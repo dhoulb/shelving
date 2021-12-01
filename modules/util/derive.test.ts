@@ -1,12 +1,8 @@
 import { derive, deriveArray, deriveData, deriveObject, NULL } from "../index.js";
-import { deriveAsync } from "./derive.js";
 
 test("derive()", () => {
 	expect(derive(10, n => n * n)).toBe(100);
 	expect(derive(10, { derive: n => n * n })).toEqual(100);
-});
-test("deriveAsync()", async () => {
-	expect(await deriveAsync(Promise.resolve(200), n => n * n)).toBe(40000);
 });
 test("deriveArray()", () => {
 	const arr = [1, 2, 3, 4];

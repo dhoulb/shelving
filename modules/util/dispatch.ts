@@ -1,8 +1,8 @@
 import { logError } from "./error.js";
-import { isAsync } from "./promise.js";
+import { callAsync } from "./promise.js";
 
 /** Function that dispatches a value (we never care about the returned value). */
-export type Dispatcher<T> = (value: T) => void | Promise<void>;
+export type Dispatcher<T> = (value: T) => void;
 
 /**
  * Safely dispatch a value to a dispatcher function.
@@ -14,17 +14,15 @@ export type Dispatcher<T> = (value: T) => void | Promise<void>;
  */
 export function dispatch<T>(value: T, dispatcher: Dispatcher<T>, handler = logError): void {
 	try {
-		const returned = dispatcher(value);
-		if (isAsync(returned)) returned.then(undefined, handler);
+		dispatcher(value);
 	} catch (thrown) {
 		handler(thrown);
 	}
 }
 
 /** Safely dispatch an async value to a dispatcher function. */
-export function dispatchAsync<T>(value: T | Promise<T>, dispatcher: Dispatcher<T>, handler = logError): void {
-	if (isAsync(value)) value.then(dispatcher).catch(handler);
-	else dispatch(value, dispatcher, handler);
+export function dispatchAsync<T>(value: T | PromiseLike<T>, dispatcher: Dispatcher<T>, handler = logError): void {
+	void callAsync(dispatch, value, dispatcher, handler);
 }
 
 /**
@@ -38,15 +36,13 @@ export function dispatchAsync<T>(value: T | Promise<T>, dispatcher: Dispatcher<T
  */
 export function thispatch<T, M extends string | symbol>(value: T, obj: { [K in M]: Dispatcher<T> }, key: M, handler = logError): void {
 	try {
-		const returned = obj[key](value);
-		if (isAsync(returned)) returned.then(undefined, handler);
+		obj[key](value);
 	} catch (thrown) {
 		handler(thrown);
 	}
 }
 
 /** Safely dispatch an async value to a dispatcher method on an object. */
-export function thispatchAsync<T, M extends string | symbol>(value: T | Promise<T>, obj: { [K in M]: Dispatcher<T> }, key: M, handler = logError): void {
-	if (isAsync(value)) value.then(v => obj[key](v)).catch(handler);
-	else thispatch(value, obj, key, handler);
+export function thispatchAsync<T, M extends string | symbol>(value: T | PromiseLike<T>, obj: { [K in M]: Dispatcher<T> }, key: M, handler = logError): void {
+	void callAsync(thispatch, value, obj, key, handler);
 }

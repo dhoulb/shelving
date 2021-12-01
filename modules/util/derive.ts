@@ -2,7 +2,6 @@ import type { Entry } from "./entry.js";
 import type { ArrayType, ImmutableArray } from "./array.js";
 import type { ImmutableMap } from "./map.js";
 import { ImmutableObject } from "./object.js";
-import { isAsync } from "./promise.js";
 import { isFunction } from "./function.js";
 import { Data, Value, Prop, toProps, isData } from "./data.js";
 import { IterationWatcher } from "./iterable.js";
@@ -37,16 +36,6 @@ export function derive<I, O>(input: I, deriver: (v: I) => O): O; // Helps `O` ca
 export function derive<I, O>(input: I, deriver: Deriver<I, O>): O; // No promise returned with synchronous deriver.
 export function derive<I, O>(input: I, deriver: Deriver<I, O>): O {
 	return isFunction(deriver) ? deriver(input) : isDerivable(deriver) ? deriver.derive(input) : deriver;
-}
-
-/** Await a promised value then derive it using a deriver. */
-export function deriveAsync<I, O>(input: I | Promise<I>, deriver: (v: I) => O): O | Promise<O>; // Helps `O` carry through functions that use generics.
-export function deriveAsync<I, O>(input: I | Promise<I>, deriver: Deriver<I, O>): O | Promise<O>; // Promise returned with asynchronous input or deriver.
-export function deriveAsync<I, O>(input: I | Promise<I>, deriver: Deriver<I, O>): O | Promise<O> {
-	return isAsync(input) ? _awaitDerived(input, deriver) : derive(input, deriver);
-}
-async function _awaitDerived<I, O>(asyncInput: Promise<I>, deriver: Deriver<I, O>): Promise<O> {
-	return derive(await asyncInput, deriver);
 }
 
 /**
