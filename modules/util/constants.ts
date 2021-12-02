@@ -4,11 +4,11 @@ export const SAME: unique symbol = Symbol("shelving/SAME");
 /** The SKIP symbol indicates something that should be skipped. */
 export const SKIP: unique symbol = Symbol("shelving/SKIP");
 
-/** The LOADING symbol indicates equality. */
+/** The LOADING symbol indicates loading. */
 export const LOADING: unique symbol = Symbol("shelving/LOADING");
 
-/** The COMPLETE symbol indicates completion. */
-export const COMPLETE: unique symbol = Symbol("shelving/COMPLETE");
+/** The DONE symbol indicates doneness. */
+export const DONE: unique symbol = Symbol("shelving/DONE");
 
 /** The ERROR symbol indicates an error state. */
 export const ERROR: unique symbol = Symbol("shelving/ERROR");
