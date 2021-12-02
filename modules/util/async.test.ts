@@ -1,9 +1,9 @@
-import { ResolvablePromise } from "./promise.js";
+import { Deferred } from "./async.js";
 
-test("ResolvablePromise works correctly", async () => {
-	const promise = new ResolvablePromise<string>();
+test("Deferred works correctly", async () => {
+	const promise = new Deferred<string>();
 	expect(promise).toBeInstanceOf(Promise);
-	expect(promise).toBeInstanceOf(ResolvablePromise);
+	expect(promise).toBeInstanceOf(Deferred);
 	expect(promise.resolve).toBeInstanceOf(Function);
 	expect(promise.reject).toBeInstanceOf(Function);
 	expect(promise.then()).toBeInstanceOf(Promise);

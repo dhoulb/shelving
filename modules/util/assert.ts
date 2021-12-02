@@ -5,7 +5,7 @@ import { debug } from "./debug.js";
 import { isObject } from "./object.js";
 import { ImmutableArray } from "./array.js";
 import { NOVALUE } from "./constants.js";
-import { isAsync } from "./promise.js";
+import { isAsync } from "./async.js";
 import { Data } from "./data.js";
 
 /** Assert a boolean condition is true. */

@@ -1,5 +1,5 @@
 import { logError } from "./error.js";
-import { callAsync } from "./promise.js";
+import { callAsync } from "./async.js";
 
 /** Function that dispatches a value (we never care about the returned value). */
 export type Dispatcher<T> = (value: T) => void;
