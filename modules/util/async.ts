@@ -1,3 +1,4 @@
+import { DONE } from "./constants.js";
 import type { Dispatcher } from "./dispatch.js";
 import type { Arguments } from "./function.js";
 
@@ -50,5 +51,16 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 		super(saveResolveReject);
 		this._resolve = resolve;
 		this._reject = reject;
+	}
+}
+
+/**
+ * Represents future doneness of an operation.
+ * - Thenable, so listen for doneness with `done.then(X)` or `await done`
+ * - Issue a done status with `done.done()`
+ */
+export class Signal extends AbstractPromise<typeof DONE> {
+	done() {
+		this._resolve(DONE);
 	}
 }
