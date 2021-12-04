@@ -4,7 +4,7 @@ import type { ImmutableMap } from "./map.js";
 import { ImmutableObject } from "./object.js";
 import { isFunction } from "./function.js";
 import { Data, Value, Prop, toProps, isData } from "./data.js";
-import { IterationWatcher } from "./iterable.js";
+import { WatchIterator } from "./iterable.js";
 
 /** Object that can derive a value with its `derive()` method. */
 export interface Derivable<I, O = I> {
@@ -125,7 +125,7 @@ export function* deriveProps<T extends Data>(existing: T, transforms: Derivers<T
  * @returns New object with changed props (or the same object if no changes were made).
  */
 export function deriveData<T extends Data>(existing: T, transforms: Derivers<T>): T {
-	const watcher = new IterationWatcher(deriveProps(existing, transforms));
+	const watcher = new WatchIterator(deriveProps(existing, transforms));
 	const derived = Object.fromEntries(watcher);
 	return watcher.count ? { ...existing, ...derived } : existing;
 }
