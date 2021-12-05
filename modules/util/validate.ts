@@ -39,7 +39,7 @@ export type Validators<T extends Data> = { readonly [K in keyof T]: Validator<T[
 export type AnyValidators = Validators<any>;
 
 /** Extract the type from a set of validators. */
-export type ValidatorsType<O extends AnyValidators> = O extends Validators<infer T> ? T : never;
+export type ValidatorsType<O extends AnyValidators> = { [K in keyof O]: ValidatorType<O[K]> };
 
 /** Validate an unknown value with a validator. */
 export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {
