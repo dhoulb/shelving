@@ -9,8 +9,8 @@ import type {
 import { Firestore, FieldValue } from "@google-cloud/firestore";
 import {
 	Provider,
-	DatabaseDocument,
-	DatabaseQuery,
+	DataDocument,
+	DataQuery,
 	FilterOperator,
 	Observer,
 	SortDirection,
@@ -27,8 +27,6 @@ import {
 	AsynchronousProvider,
 	DataTransform,
 	AssertionError,
-	Datas,
-	Key,
 	Entry,
 	Results,
 } from "../../index.js";
@@ -56,19 +54,19 @@ const DIRECTIONS: { readonly [K in SortDirection]: FirestoreOrderByDirection } =
 };
 
 /** Get a Firestore DocumentReference for a given documente. */
-function getDocument<D extends Datas, C extends Key<D>>(firestore: Firestore, { collection, id }: DatabaseDocument<C, D>): FirestoreDocumentReference<D[C]> {
-	return firestore.doc(`${collection}/${id}`) as FirestoreDocumentReference<D[C]>;
+function getDocument<T extends Data>(firestore: Firestore, { collection, id }: DataDocument<T>): FirestoreDocumentReference<T> {
+	return firestore.doc(`${collection}/${id}`) as FirestoreDocumentReference<T>;
 }
 
 /** Get a Firestore CollectionReference for a given document. */
-function getCollection<D extends Datas, C extends Key<D>>(firestore: Firestore, { collection }: DatabaseQuery<C, D>): FirestoreCollectionReference<D[C]> {
-	return firestore.collection(collection) as FirestoreCollectionReference<D[C]>;
+function getCollection<T extends Data>(firestore: Firestore, { collection }: DataQuery<T>): FirestoreCollectionReference<T> {
+	return firestore.collection(collection) as FirestoreCollectionReference<T>;
 }
 
 /** Create a corresponding `QueryReference` from a Query. */
-function getQuery<D extends Datas, C extends Key<D>>(firestore: Firestore, ref: DatabaseQuery<C, D>): FirestoreQuery<D[C]> {
+function getQuery<T extends Data>(firestore: Firestore, ref: DataQuery<T>): FirestoreQuery<T> {
 	const { sorts, filters, limit } = ref;
-	let query: FirestoreQuery<D[C]> = getCollection(firestore, ref);
+	let query: FirestoreQuery<T> = getCollection(firestore, ref);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
 	if (typeof limit === "number") query = query.limit(limit);
@@ -76,12 +74,12 @@ function getQuery<D extends Datas, C extends Key<D>>(firestore: Firestore, ref: 
 }
 
 /** Create a set of results from a collection snapshot. */
-function* getResults<D extends Datas, C extends Key<D>>(snapshot: FirestoreQuerySnapshot<D[C]>): Iterable<Entry<D[C]>> {
+function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Iterable<Entry<T>> {
 	for (const s of snapshot.docs) yield [s.id, s.data()];
 }
 
 /** Convert a `Transform` instances into corresponding Firestore `FieldValue` instances. */
-function getFieldValues<D extends Datas, C extends Key<D>>(transform: Transform<D[C]>): Data {
+function getFieldValues<T extends Data>(transform: Transform<T>): Data {
 	if (transform instanceof DataTransform) return Object.fromEntries(yieldFieldValues(transform));
 	throw new AssertionError("Unsupported transform", transform);
 }
@@ -102,7 +100,7 @@ function* yieldFieldValues(transforms: DataTransform<Data>, prefix = ""): Iterab
  * Firestore server database provider.
  * - Works with the Firebase Admin SDK for Node.JS
  */
-export class FirestoreServerProvider<D extends Datas> extends Provider<D> implements AsynchronousProvider<D> {
+export class FirestoreServerProvider extends Provider implements AsynchronousProvider {
 	readonly firestore: Firestore;
 
 	constructor(firestore = new Firestore()) {
@@ -110,39 +108,39 @@ export class FirestoreServerProvider<D extends Datas> extends Provider<D> implem
 		this.firestore = firestore;
 	}
 
-	async get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Promise<Result<D[C]>> {
+	async get<T extends Data>(ref: DataDocument<T>): Promise<Result<T>> {
 		return (await getDocument(this.firestore, ref).get()).data();
 	}
 
-	subscribe<C extends Key<D>>(ref: DatabaseDocument<C, D>, observer: Observer<Result<D[C]>>): () => void {
+	subscribe<T extends Data>(ref: DataDocument<T>, observer: Observer<Result<T>>): () => void {
 		return getDocument(this.firestore, ref).onSnapshot(
 			snapshot => dispatchNext(snapshot.data(), observer),
 			thrown => dispatchError(thrown, observer),
 		);
 	}
 
-	async add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): Promise<string> {
+	async add<T extends Data>(ref: DataQuery<T>, data: T): Promise<string> {
 		return (await getCollection(this.firestore, ref).add(data)).id;
 	}
 
-	async write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
+	async write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): Promise<void> {
 		if (value instanceof Transform) await getDocument(this.firestore, ref).update(getFieldValues(value));
 		else if (value) await getDocument(this.firestore, ref).set(value);
 		else await getDocument(this.firestore, ref).delete();
 	}
 
-	async getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Promise<Iterable<Entry<D[C]>>> {
+	async getQuery<T extends Data>(ref: DataQuery<T>): Promise<Iterable<Entry<T>>> {
 		return getResults(await getQuery(this.firestore, ref).get());
 	}
 
-	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, observer: Observer<Results<D[C]>>): () => void {
+	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): () => void {
 		return getQuery(this.firestore, ref).onSnapshot(
 			snapshot => dispatchNext(getResults(snapshot), observer),
 			thrown => dispatchError(thrown, observer),
 		);
 	}
 
-	async writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): Promise<void> {
+	async writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): Promise<void> {
 		const writer = this.firestore.bulkWriter();
 		const query = getQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
 		const updates = value instanceof Transform ? getFieldValues(value) : undefined;

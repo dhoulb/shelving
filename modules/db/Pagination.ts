@@ -1,22 +1,22 @@
-import { getFirstItem, getLastItem, assertLength, assertNumber, Datas, Key, ResultsMap, Entry, yieldMerged, Results, toMap, Mutable } from "../util/index.js";
+import { getFirstItem, getLastItem, assertLength, assertNumber, ResultsMap, Entry, yieldMerged, Results, toMap, Mutable, Data } from "../util/index.js";
 import { State } from "../stream/index.js";
 import { ConditionError } from "../index.js";
-import { DatabaseQuery } from "./Database.js";
+import { DataQuery } from "./Database.js";
 
 /**
  * State that wraps a `Documents` reference to enable pagination.
  * - If you pass in initial values, it will use that as the first page.
  * - If you don't pass in initial values, it will autoload the first page.
  */
-export class Pagination<C extends Key<D>, D extends Datas> extends State<ResultsMap<D[C]>> implements Iterable<Entry<D[C]>> {
-	readonly ref: DatabaseQuery<C, D>;
+export class Pagination<T extends Data> extends State<ResultsMap<T>> implements Iterable<Entry<T>> {
+	readonly ref: DataQuery<T>;
 	readonly limit: number;
 	readonly startLoading: boolean = false;
 	readonly startDone: boolean = false;
 	readonly endLoading: boolean = false;
 	readonly endDone: boolean = false;
 
-	constructor(ref: DatabaseQuery<C, D>) {
+	constructor(ref: DataQuery<T>) {
 		super();
 		this.ref = ref;
 		assertNumber(ref.limit); // Collection must have a numeric limit to paginate (otherwise you'd be retrieving the entire set of documents).
@@ -76,12 +76,12 @@ export class Pagination<C extends Key<D>, D extends Datas> extends State<Results
 	 * Merge more results into this pagination.
 	 * @return The change in the number of results.
 	 */
-	merge(more: Results<D[C]>): void {
+	merge(more: Results<T>): void {
 		this.next(toMap(this.ref.sorts.derive(yieldMerged(more, this.value))));
 	}
 
 	/** Iterate over the entries of the values currently in the pagination. */
-	[Symbol.iterator](): Iterator<Entry<D[C]>> {
+	[Symbol.iterator](): Iterator<Entry<T>> {
 		return this.value[Symbol.iterator]();
 	}
 }

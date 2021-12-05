@@ -1,16 +1,16 @@
-import type { Observer, Unsubscriber, Result, Datas, Key, Results } from "../util/index.js";
-import type { DatabaseDocument, DatabaseQuery } from "../db/Database.js";
+import type { Observer, Unsubscriber, Result, Results, Data } from "../util/index.js";
+import type { DataDocument, DataQuery } from "../db/Database.js";
 import type { Transform } from "../transform/index.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
-export abstract class Provider<D extends Datas = Datas> {
+export abstract class Provider {
 	/**
 	 * Get the result of a document.
 	 *
 	 * @param ref Document reference specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	abstract get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Result<D[C]> | PromiseLike<Result<D[C]>>;
+	abstract get<T extends Data>(ref: DataDocument<T>): Result<T> | PromiseLike<Result<T>>;
 
 	/**
 	 * Subscribe to the result of a document.
@@ -21,7 +21,7 @@ export abstract class Provider<D extends Datas = Datas> {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribe<C extends Key<D>>(ref: DatabaseDocument<C, D>, observer: Observer<Result<D[C]>>): Unsubscriber;
+	abstract subscribe<T extends Data>(ref: DataDocument<T>, observer: Observer<Result<T>>): Unsubscriber;
 
 	/**
 	 * Create a new document with a random ID.
@@ -32,7 +32,7 @@ export abstract class Provider<D extends Datas = Datas> {
 	 *
 	 * @return String ID for the created document (possibly promised).
 	 */
-	abstract add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): string | PromiseLike<string>;
+	abstract add<T extends Data>(ref: DataQuery<T>, data: T): string | PromiseLike<string>;
 
 	/**
 	 * Write to a document.
@@ -48,7 +48,7 @@ export abstract class Provider<D extends Datas = Datas> {
 	 * @return Nothing (possibly promised).
 	 * @throws Error If a `Transform` was provided but the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): void | PromiseLike<void>;
+	abstract write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): void | PromiseLike<void>;
 
 	/**
 	 * Get all matching documents.
@@ -56,7 +56,7 @@ export abstract class Provider<D extends Datas = Datas> {
 	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Set of results in `id: data` format.
 	 */
-	abstract getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Results<D[C]> | PromiseLike<Results<D[C]>>;
+	abstract getQuery<T extends Data>(ref: DataQuery<T>): Results<T> | PromiseLike<Results<T>>;
 
 	/**
 	 * Subscribe to all matching documents.
@@ -67,7 +67,7 @@ export abstract class Provider<D extends Datas = Datas> {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, observer: Observer<Results<D[C]>>): Unsubscriber;
+	abstract subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber;
 
 	/**
 	 * Write to all matching documents.
@@ -80,23 +80,23 @@ export abstract class Provider<D extends Datas = Datas> {
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	abstract writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): void | PromiseLike<void>;
+	abstract writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): void | PromiseLike<void>;
 }
 
 /** Provider with a fully synchronous interface */
-export interface SynchronousProvider<D extends Datas> extends Provider<D> {
-	get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Result<D[C]>;
-	add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): string;
-	write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): void;
-	getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Results<D[C]>;
-	writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): void;
+export interface SynchronousProvider extends Provider {
+	get<T extends Data>(ref: DataDocument<T>): Result<T>;
+	add<T extends Data>(ref: DataQuery<T>, data: T): string;
+	write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): void;
+	getQuery<T extends Data>(ref: DataQuery<T>): Results<T>;
+	writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): void;
 }
 
 /** Provider with a fully asynchronous interface */
-export interface AsynchronousProvider<D extends Datas> extends Provider<D> {
-	get<C extends Key<D>>(ref: DatabaseDocument<C, D>): PromiseLike<Result<D[C]>>;
-	add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): PromiseLike<string>;
-	write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): PromiseLike<void>;
-	getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): PromiseLike<Results<D[C]>>;
-	writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): PromiseLike<void>;
+export interface AsynchronousProvider extends Provider {
+	get<T extends Data>(ref: DataDocument<T>): PromiseLike<Result<T>>;
+	add<T extends Data>(ref: DataQuery<T>, data: T): PromiseLike<string>;
+	write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): PromiseLike<void>;
+	getQuery<T extends Data>(ref: DataQuery<T>): PromiseLike<Results<T>>;
+	writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): PromiseLike<void>;
 }

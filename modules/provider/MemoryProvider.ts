@@ -1,6 +1,6 @@
-import { Data, Result, Results, randomId, dispatch, Dispatcher, Unsubscriber, dispatchNext, Observer, Datas, Key, isMapEqual } from "../util/index.js";
+import { Data, Result, Results, randomId, dispatch, Dispatcher, Unsubscriber, dispatchNext, Observer, isMapEqual, MutableObject } from "../util/index.js";
 import { Transform } from "../transform/index.js";
-import { DatabaseQuery, DatabaseDocument, DocumentRequiredError } from "../db/index.js";
+import { DataQuery, DataDocument, DocumentRequiredError } from "../db/index.js";
 import { MutableMap } from "../util/map.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
@@ -9,20 +9,20 @@ import { Provider, SynchronousProvider } from "./Provider.js";
  * - Extremely fast (ideal for caching!), but does not persist data after the browser window is closed.
  * - `get()` etc return the exact same instance of an object that's passed into `set()`
  */
-export class MemoryProvider<D extends Datas> extends Provider<D> implements SynchronousProvider<D> {
+export class MemoryProvider extends Provider implements SynchronousProvider {
 	/** List of tables in `{ path: Table }` format. */
-	private _tables: { [C in Key<D>]?: AbstractTable<D[C]> } = {};
+	private _tables: MutableObject<Table<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	// Get a named collection (or create a new one).
-	private _table<C extends Key<D>>({ collection }: DatabaseDocument<C, D> | DatabaseQuery<C, D>): Table<D[C]> {
-		return (this._tables[collection] ||= new Table<D[C]>()) as Table<D[C]>;
+	private _table<T extends Data>({ collection }: DataDocument<T> | DataQuery<T>): Table<T> {
+		return (this._tables[collection] ||= new Table<T>()) as Table<T>;
 	}
 
-	get<C extends Key<D>>(ref: DatabaseDocument<C, D>): Result<D[C]> {
+	get<T extends Data>(ref: DataDocument<T>): Result<T> {
 		return this._table(ref).data.get(ref.id);
 	}
 
-	subscribe<C extends Key<D>>(ref: DatabaseDocument<C, D>, observer: Observer<Result<D[C]>>): Unsubscriber {
+	subscribe<T extends Data>(ref: DataDocument<T>, observer: Observer<Result<T>>): Unsubscriber {
 		const table = this._table(ref);
 		const id = ref.id;
 
@@ -35,7 +35,7 @@ export class MemoryProvider<D extends Datas> extends Provider<D> implements Sync
 		});
 	}
 
-	add<C extends Key<D>>(ref: DatabaseQuery<C, D>, data: D[C]): string {
+	add<T extends Data>(ref: DataQuery<T>, data: T): string {
 		const table = this._table(ref);
 		let id = randomId();
 		while (table.data.get(id)) id = randomId(); // Regenerate ID until unique.
@@ -43,7 +43,7 @@ export class MemoryProvider<D extends Datas> extends Provider<D> implements Sync
 		return id;
 	}
 
-	write<C extends Key<D>>(ref: DatabaseDocument<C, D>, value: D[C] | Transform<D[C]> | undefined): void {
+	write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): void {
 		const table = this._table(ref);
 		const id = ref.id;
 		if (value instanceof Transform) {
@@ -55,11 +55,11 @@ export class MemoryProvider<D extends Datas> extends Provider<D> implements Sync
 		}
 	}
 
-	getQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>): Results<D[C]> {
+	getQuery<T extends Data>(ref: DataQuery<T>): Results<T> {
 		return ref.derive(this._table(ref).data);
 	}
 
-	subscribeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, observer: Observer<Results<D[C]>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
 		const table = this._table(ref);
 
 		// Call `next()` immediately with the initial results.
@@ -85,7 +85,7 @@ export class MemoryProvider<D extends Datas> extends Provider<D> implements Sync
 		});
 	}
 
-	writeQuery<C extends Key<D>>(ref: DatabaseQuery<C, D>, value: D[C] | Transform<D[C]> | undefined): void {
+	writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): void {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).

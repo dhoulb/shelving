@@ -1,4 +1,4 @@
-import { DatabaseDocument, Datas, Key, throwAsync, callAsync, getDocumentData } from "../index.js";
+import { DataDocument, throwAsync, callAsync, getDocumentData, Data } from "../index.js";
 import { useAsyncDocument } from "./useDocument.js";
 
 /**
@@ -16,15 +16,9 @@ import { useAsyncDocument } from "./useDocument.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the data.
  */
-export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D>, maxAge?: number | true): D[C] | Promise<D[C]>;
-export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(
-	ref: DatabaseDocument<C, D> | undefined,
-	maxAge?: number | true,
-): D[C] | PromiseLike<D[C]> | undefined;
-export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(
-	ref: DatabaseDocument<C, D> | undefined,
-	maxAge?: number | true,
-): D[C] | PromiseLike<D[C]> | undefined {
+export function useAsyncDocumentData<T extends Data>(ref: DataDocument<T>, maxAge?: number | true): T | Promise<T>;
+export function useAsyncDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined;
+export function useAsyncDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined {
 	const result = useAsyncDocument(ref, maxAge);
 	return ref ? callAsync(getDocumentData, result, ref) : undefined;
 }
@@ -45,8 +39,8 @@ export function useAsyncDocumentData<D extends Datas, C extends Key<D>>(
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the data.
  */
-export function useDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D>, maxAge?: number | true): D[C];
-export function useDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D> | undefined, maxAge?: number | true): D[C] | undefined;
-export function useDocumentData<D extends Datas, C extends Key<D>>(ref: DatabaseDocument<C, D> | undefined, maxAge?: number | true): D[C] | undefined {
+export function useDocumentData<T extends Data>(ref: DataDocument<T>, maxAge?: number | true): T;
+export function useDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | undefined;
+export function useDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | undefined {
 	return throwAsync(useAsyncDocumentData(ref, maxAge));
 }

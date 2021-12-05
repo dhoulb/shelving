@@ -9,12 +9,10 @@ import {
 	Result,
 	throwAsync,
 	Unsubscriber,
-	Datas,
 	ResultsMap,
 	Validatable,
 	validate,
 	Validator,
-	Validators,
 	Key,
 	toMap,
 	countItems,
@@ -22,6 +20,9 @@ import {
 	MutableObject,
 	Results,
 	DeriveObserver,
+	Datas,
+	Validators,
+	ValidatorType,
 } from "../util/index.js";
 import { DataTransform, Transform, Transforms } from "../transform/index.js";
 import type { Provider } from "../provider/Provider.js";
@@ -36,43 +37,46 @@ import { DocumentRequiredError, DocumentValidationError, QueryValidationError } 
  * @param collections Set of loci describing collections at the root level of the database.
  * @param provider Provider that allows data to be read/written.
  */
-export class Database<D extends Datas> {
-	readonly validators: Validators<D>;
-	readonly provider: Provider<D>;
-	constructor(validators: Validators<D>, provider: Provider<D>) {
+// Note: typing this with `Validators` rather than raw `Datas` works better for inference — type for props in each collection tends to get lost.
+export class Database<V extends Validators<Datas> = Validators<Datas>> {
+	readonly validators: V;
+	readonly provider: Provider;
+	constructor(validators: V, provider: Provider) {
 		this.validators = validators;
 		this.provider = provider;
 	}
 
 	/** Create a query on a collection in this model. */
-	query<C extends Key<D>>(collection: C, filters?: Filters<D[C]>, sorts?: Sorts<D[C]>, limit?: number | null): DatabaseQuery<C, D> {
-		return new DatabaseQuery(this, collection, filters, sorts, limit);
+	query<K extends Key<V>>(
+		collection: K,
+		filters?: Filters<ValidatorType<V[K]>>,
+		sorts?: Sorts<ValidatorType<V[K]>>,
+		limit?: number | null,
+	): DataQuery<ValidatorType<V[K]>> {
+		return new DataQuery(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters, sorts, limit);
 	}
 
 	/** Reference a document in a collection in this model. */
-	doc<C extends Key<D>>(collection: C, id: string): DatabaseDocument<C, D> {
-		return new DatabaseDocument(this, collection, id);
+	doc<K extends Key<V>>(collection: K, id: string): DataDocument<ValidatorType<V[K]>> {
+		return new DataDocument(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
 	}
 }
 
 /** A documents reference within a specific database. */
-export class DatabaseQuery<C extends Key<D>, D extends Datas>
-	extends Query<D[C]>
-	implements Observable<Results<D[C]>>, Validatable<Results<D[C]>>, Iterable<Entry<D[C]>>
-{
-	readonly db: Database<D>;
-	readonly validator: Validator<D[C]>;
-	readonly collection: C;
-	constructor(db: Database<D>, collection: C, filters?: Filters<D[C]>, sorts?: Sorts<D[C]>, limit?: number | null) {
+export class DataQuery<T extends Data = Data> extends Query<T> implements Observable<Results<T>>, Validatable<Results<T>>, Iterable<Entry<T>> {
+	readonly provider: Provider;
+	readonly validator: Validator<T>;
+	readonly collection: string;
+	constructor(provider: Provider, validator: Validator<T>, collection: string, filters?: Filters<T>, sorts?: Sorts<T>, limit?: number | null) {
 		super(filters, sorts, limit);
-		this.db = db;
-		this.validator = db.validators[collection];
+		this.provider = provider;
+		this.validator = validator;
 		this.collection = collection;
 	}
 
 	/** Reference a document in this query's collection. */
-	doc(id: string): DatabaseDocument<C, D> {
-		return new DatabaseDocument(this.db, this.collection, id);
+	doc(id: string): DataDocument<T> {
+		return new DataDocument(this.provider, this.validator, this.collection, id);
 	}
 
 	/**
@@ -82,24 +86,24 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * @param data Complete data to set the document to.
 	 * @return String ID for the created document (possibly promised).
 	 */
-	add(data: D[C]): string | PromiseLike<string> {
-		return this.db.provider.add(this, data);
+	add(data: T): string | PromiseLike<string> {
+		return this.provider.add(this, data);
 	}
 
 	/**
 	 * Get an iterable that yields the results of this entry.
 	 * @return Map containing the results.
 	 */
-	get results(): Results<D[C]> | PromiseLike<Results<D[C]>> {
-		return this.db.provider.getQuery(this);
+	get results(): Results<T> | PromiseLike<Results<T>> {
+		return this.provider.getQuery(this);
 	}
 
 	/**
 	 * Get an iterable that yields the results of this entry.
 	 * @return Map containing the results.
 	 */
-	get resultsMap(): ResultsMap<D[C]> | PromiseLike<ResultsMap<D[C]>> {
-		return callAsync<Results<D[C]>, ResultsMap<D[C]>>(toMap, this.db.provider.getQuery(this));
+	get resultsMap(): ResultsMap<T> | PromiseLike<ResultsMap<T>> {
+		return callAsync<Results<T>, ResultsMap<T>>(toMap, this.provider.getQuery(this));
 	}
 
 	/**
@@ -114,7 +118,7 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * Get an entry for the first document matching this query.
 	 * @return Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents (possibly promised).
 	 */
-	get first(): Entry<D[C]> | undefined | PromiseLike<Entry<D[C]> | undefined> {
+	get first(): Entry<T> | undefined | PromiseLike<Entry<T> | undefined> {
 		return callAsync(getFirstItem, this.max(1).results);
 	}
 
@@ -129,8 +133,8 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<Results<D[C]>> | Dispatcher<Results<D[C]>>, error?: Dispatcher<Error | unknown>, complete?: Dispatcher<void>): Unsubscriber {
-		return this.db.provider.subscribeQuery(this, createObserver(next, error, complete));
+	subscribe(next: Observer<Results<T>> | Dispatcher<Results<T>>, error?: Dispatcher<Error | unknown>, complete?: Dispatcher<void>): Unsubscriber {
+		return this.provider.subscribeQuery(this, createObserver(next, error, complete));
 	}
 
 	/**
@@ -144,12 +148,8 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	subscribeMap(
-		next: Observer<ResultsMap<D[C]>> | Dispatcher<ResultsMap<D[C]>>,
-		error?: Dispatcher<Error | unknown>,
-		complete?: Dispatcher<void>,
-	): Unsubscriber {
-		return this.db.provider.subscribeQuery(this, new DeriveObserver(toMap, createObserver(next, error, complete)));
+	subscribeMap(next: Observer<ResultsMap<T>> | Dispatcher<ResultsMap<T>>, error?: Dispatcher<Error | unknown>, complete?: Dispatcher<void>): Unsubscriber {
+		return this.provider.subscribeQuery(this, new DeriveObserver(toMap, createObserver(next, error, complete)));
 	}
 
 	/**
@@ -158,7 +158,7 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * @param data Complete data to set the document to.
 	 * @return Nothing (possibly promised).
 	 */
-	set(data: D[C]): void | PromiseLike<void> {
+	set(data: T): void | PromiseLike<void> {
 		return this.write(data);
 	}
 
@@ -170,7 +170,7 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	update(transform: Transform<D[C]> | Transforms<D[C]>): void | PromiseLike<void> {
+	update(transform: Transform<T> | Transforms<T>): void | PromiseLike<void> {
 		return this.write(transform instanceof Transform ? transform : new DataTransform(transform));
 	}
 
@@ -186,17 +186,17 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 	 * Combine `set()`, `update()`, `delete()` into a single method.
 	 * @return Nothing (possibly promised).
 	 */
-	write(value: Result<D[C]> | Transform<D[C]>): void | PromiseLike<void> {
-		return this.db.provider.writeQuery(this, value);
+	write(value: Result<T> | Transform<T>): void | PromiseLike<void> {
+		return this.provider.writeQuery(this, value);
 	}
 
 	/** Iterate over the resuls (will throw `Promise` if the results are asynchronous). */
-	[Symbol.iterator](): Iterator<Entry<D[C]>, void> {
+	[Symbol.iterator](): Iterator<Entry<T>, void> {
 		return throwAsync(this.results)[Symbol.iterator]();
 	}
 
 	/** Validate a set of results for this query reference. */
-	*validate(unsafeEntries: Results): Results<D[C]> {
+	*validate(unsafeEntries: Results): Results<T> {
 		let invalid = false;
 		const details: MutableObject<Feedback> = {};
 		for (const [id, unsafeValue] of unsafeEntries) {
@@ -218,26 +218,26 @@ export class DatabaseQuery<C extends Key<D>, D extends Datas>
 }
 
 /** A document reference within a specific database. */
-export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Observable<Result<D[C]>>, Validatable<D[C]> {
-	readonly db: Database<D>;
-	readonly validator: Validator<D[C]>;
-	readonly collection: C;
+export class DataDocument<T extends Data = Data> implements Observable<Result<T>>, Validatable<T> {
+	readonly provider: Provider;
+	readonly validator: Validator<T>;
+	readonly collection: string;
 	readonly id: string;
-	constructor(db: Database<D>, collection: C, id: string) {
-		this.db = db;
-		this.validator = db.validators[collection];
+	constructor(provider: Provider, validator: Validator<T>, collection: string, id: string) {
+		this.provider = provider;
+		this.validator = validator;
 		this.collection = collection;
 		this.id = id;
 	}
 
 	/** Create a query on this document's collection. */
-	query(filters?: Filters<D[C]>, sorts?: Sorts<D[C]>, limit?: number | null): DatabaseQuery<C, D> {
-		return new DatabaseQuery(this.db, this.collection, filters, sorts, limit);
+	query(filters?: Filters<T>, sorts?: Sorts<T>, limit?: number | null): DataQuery<T> {
+		return new DataQuery(this.provider, this.validator, this.collection, filters, sorts, limit);
 	}
 
 	/** Get an 'optional' reference to this document (uses a `ModelQuery` with an `id` filter). */
-	get optional(): DatabaseQuery<C, D> {
-		return new DatabaseQuery(this.db, this.collection, new Filters(new EqualFilter("id", this.id)));
+	get optional(): DataQuery<T> {
+		return new DataQuery(this.provider, this.validator, this.collection, new Filters(new EqualFilter("id", this.id)));
 	}
 
 	/**
@@ -246,7 +246,7 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
 	 */
 	get exists(): boolean | PromiseLike<boolean> {
-		return callAsync(Boolean, this.db.provider.get(this));
+		return callAsync(Boolean, this.provider.get(this));
 	}
 
 	/**
@@ -254,8 +254,8 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 *
 	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
 	 */
-	get result(): Result<D[C]> | PromiseLike<Result<D[C]>> {
-		return this.db.provider.get(this);
+	get result(): Result<T> | PromiseLike<Result<T>> {
+		return this.provider.get(this);
 	}
 
 	/**
@@ -265,8 +265,8 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 * @return Document's data (possibly promised).
 	 * @throws RequiredError if the document's result was undefined.
 	 */
-	get data(): D[C] | PromiseLike<D[C]> {
-		return callAsync(getDocumentData, this.db.provider.get(this), this);
+	get data(): T | PromiseLike<T> {
+		return callAsync(getDocumentData, this.provider.get(this), this);
 	}
 
 	/**
@@ -280,8 +280,8 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<Result<D[C]>> | Dispatcher<Result<D[C]>>, error?: Dispatcher<Error | unknown>, complete?: Dispatcher<void>): Unsubscriber {
-		return this.db.provider.subscribe(this, createObserver(next, error, complete));
+	subscribe(next: Observer<Result<T>> | Dispatcher<Result<T>>, error?: Dispatcher<Error | unknown>, complete?: Dispatcher<void>): Unsubscriber {
+		return this.provider.subscribe(this, createObserver(next, error, complete));
 	}
 
 	/**
@@ -291,7 +291,7 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	set(data: D[C]): void | PromiseLike<void> {
+	set(data: T): void | PromiseLike<void> {
 		return this.write(data);
 	}
 
@@ -306,7 +306,7 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	 * @return Nothing (possibly promised).
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	update(transforms: Transform<D[C]> | Transforms<D[C]>): void | PromiseLike<void> {
+	update(transforms: Transform<T> | Transforms<T>): void | PromiseLike<void> {
 		return this.write(transforms instanceof Transform ? transforms : new DataTransform(transforms));
 	}
 
@@ -323,12 +323,12 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 	/**
 	 * Combine `set()`, `update()`, `delete()` into a single method.
 	 */
-	write(value: Result<D[C]> | Transform<D[C]>): void | PromiseLike<void> {
-		return this.db.provider.write(this, value);
+	write(value: Result<T> | Transform<T>): void | PromiseLike<void> {
+		return this.provider.write(this, value);
 	}
 
 	/** Validate data for this query reference. */
-	validate(unsafeData: Data): D[C] {
+	validate(unsafeData: Data): T {
 		try {
 			return validate(unsafeData, this.validator);
 		} catch (thrown) {
@@ -343,13 +343,7 @@ export class DatabaseDocument<C extends Key<D>, D extends Datas> implements Obse
 }
 
 /** Get the data for a document from a result for that document. */
-export function getDocumentData<C extends Key<D>, D extends Datas>(result: Result<D[C]>, ref: DatabaseDocument<C, D>): D[C] {
+export function getDocumentData<T extends Data>(result: Result<T>, ref: DataDocument<T>): T {
 	if (result) return result;
 	throw new DocumentRequiredError(ref);
 }
-
-/** Database query with a collection name. */
-export type CollectionQuery<C extends string, T extends Data> = DatabaseQuery<C, { [K in C]: T }>;
-
-/** Database document with a collection name. */
-export type CollectionDocument<C extends string, T extends Data> = DatabaseDocument<C, { [K in C]: T }>;

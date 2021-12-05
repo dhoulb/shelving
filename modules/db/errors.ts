@@ -1,12 +1,12 @@
-import type { Datas, Key } from "../util/index.js";
+import type { Data } from "../util/index.js";
 import { RequiredError, ValidationError } from "../error/index.js";
-import { Feedback } from "../feedback/index.js";
-import type { DatabaseDocument, DatabaseQuery } from "./Database.js";
+import type { Feedback } from "../feedback/index.js";
+import type { DataDocument, DataQuery } from "./Database.js";
 
 /** Thrown if a document doesn't exist. */
-export class DocumentRequiredError<D extends Datas, C extends Key<D>> extends RequiredError {
-	ref: DatabaseDocument<C, D>;
-	constructor(ref: DatabaseDocument<C, D>) {
+export class DocumentRequiredError<T extends Data> extends RequiredError {
+	ref: DataDocument<T>;
+	constructor(ref: DataDocument<T>) {
 		super(`Document "${ref.toString()}" does not exist`);
 		this.ref = ref;
 	}
@@ -14,9 +14,9 @@ export class DocumentRequiredError<D extends Datas, C extends Key<D>> extends Re
 DocumentRequiredError.prototype.name = "DocumentRequiredError";
 
 /** Thrown if a document can't validate. */
-export class DocumentValidationError<D extends Datas, C extends Key<D>> extends ValidationError {
-	ref: DatabaseDocument<C, D>;
-	constructor(ref: DatabaseDocument<C, D>, feedback: Feedback) {
+export class DocumentValidationError<T extends Data> extends ValidationError {
+	ref: DataDocument<T>;
+	constructor(ref: DataDocument<T>, feedback: Feedback) {
 		super(`Invalid data for "${ref.toString()}"`, feedback);
 		this.ref = ref;
 	}
@@ -24,9 +24,9 @@ export class DocumentValidationError<D extends Datas, C extends Key<D>> extends 
 DocumentValidationError.prototype.name = "DocumentValidationError";
 
 /** Thrown if a query can't validate a set of results. */
-export class QueryValidationError<D extends Datas, C extends Key<D>> extends ValidationError {
-	ref: DatabaseQuery<C, D>;
-	constructor(ref: DatabaseQuery<C, D>, feedback: Feedback) {
+export class QueryValidationError<T extends Data> extends ValidationError {
+	ref: DataQuery<T>;
+	constructor(ref: DataQuery<T>, feedback: Feedback) {
 		super(`Invalid documents for "${ref.collection}"`, feedback);
 		this.ref = ref;
 	}

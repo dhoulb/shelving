@@ -32,14 +32,14 @@ export type ValidatorType<X extends AnyValidator> = X extends Validator<infer Y>
 export const isValidator = <T extends AnyValidator>(v: T | unknown): v is T => typeof v === "function" || (isData(v) && typeof v.validate === "function");
 
 /** A set of named validators in `{ name: Validator }` format. */
-export type Validators<T extends Data> = { readonly [K in keyof T]: Validator<T[K]> };
+export type Validators<T extends Data> = { [K in keyof T]: Validator<T[K]> };
 
 /** Any observer (useful for `extends AnyValidators` clauses). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyValidators = Validators<any>;
 
 /** Extract the type from a set of validators. */
-export type ValidatorsType<O extends AnyValidators> = { [K in keyof O]: ValidatorType<O[K]> };
+export type ValidatorsType<T extends AnyValidators> = { [K in keyof T]: ValidatorType<T[K]> };
 
 /** Validate an unknown value with a validator. */
 export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {

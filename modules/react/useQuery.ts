@@ -1,17 +1,16 @@
 import { useState } from "react";
 import {
-	DatabaseQuery,
-	Datas,
+	DataQuery,
 	CacheProvider,
 	throwAsync,
 	NOERROR,
 	findSourceProvider,
 	NOVALUE,
-	Key,
 	dispatchAsync,
 	ResultsMap,
 	DeriveObserver,
 	toMap,
+	Data,
 } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
@@ -32,18 +31,12 @@ import { usePureState } from "./usePureState.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useAsyncQuery<D extends Datas, C extends Key<D>>(
-	ref: DatabaseQuery<C, D>,
-	maxAge?: number | true,
-): ResultsMap<D[C]> | PromiseLike<ResultsMap<D[C]>>;
-export function useAsyncQuery<D extends Datas, C extends Key<D>>(
-	ref: DatabaseQuery<C, D> | undefined,
-	maxAge?: number | true,
-): ResultsMap<D[C]> | PromiseLike<ResultsMap<D[C]>> | undefined;
-export function useAsyncQuery<D extends Datas, C extends Key<D>>(
-	ref: DatabaseQuery<C, D> | undefined,
+export function useAsyncQuery<T extends Data>(ref: DataQuery<T>, maxAge?: number | true): ResultsMap<T> | PromiseLike<ResultsMap<T>>;
+export function useAsyncQuery<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): ResultsMap<T> | PromiseLike<ResultsMap<T>> | undefined;
+export function useAsyncQuery<T extends Data>(
+	ref: DataQuery<T> | undefined,
 	maxAge: number | true = 1000,
-): ResultsMap<D[C]> | PromiseLike<ResultsMap<D[C]>> | undefined {
+): ResultsMap<T> | PromiseLike<ResultsMap<T>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = usePureMemo(ref, ref?.toString());
 
@@ -70,21 +63,21 @@ export function useAsyncQuery<D extends Datas, C extends Key<D>>(
 }
 
 /** Get the initial results for a reference from the cache. */
-function getCachedResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<C, D> | undefined): ResultsMap<D[C]> | typeof NOVALUE | undefined {
+function getCachedResults<T extends Data>(ref: DataQuery<T> | undefined): ResultsMap<T> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
-	const provider = findSourceProvider(ref.db.provider, CacheProvider);
+	const provider = findSourceProvider(ref.provider, CacheProvider);
 	return provider.isCached(ref) ? toMap(provider.cache.getQuery(ref)) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
-function subscribeEffect<D extends Datas, C extends Key<D>>(
-	ref: DatabaseQuery<C, D> | undefined,
+function subscribeEffect<T extends Data>(
+	ref: DataQuery<T> | undefined,
 	maxAge: number | true,
-	next: (results: ResultsMap<D[C]>) => void,
+	next: (results: ResultsMap<T>) => void,
 	error: (reason: unknown) => void,
 ): (() => void) | void {
 	if (ref) {
-		const provider = findSourceProvider(ref.db.provider, CacheProvider);
+		const provider = findSourceProvider(ref.provider, CacheProvider);
 		const observer = new DeriveObserver(toMap, { next, error });
 		const stopCache = provider.cache.subscribeQuery(ref, observer);
 		if (maxAge === true) {
@@ -117,8 +110,8 @@ function subscribeEffect<D extends Datas, C extends Key<D>>(
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<C, D>, maxAge?: number | true): ResultsMap<D[C]>;
-export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<C, D> | undefined, maxAge?: number | true): ResultsMap<D[C]> | undefined;
-export function useResults<D extends Datas, C extends Key<D>>(ref: DatabaseQuery<C, D> | undefined, maxAge?: number | true): ResultsMap<D[C]> | undefined {
+export function useResults<T extends Data>(ref: DataQuery<T>, maxAge?: number | true): ResultsMap<T>;
+export function useResults<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): ResultsMap<T> | undefined;
+export function useResults<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): ResultsMap<T> | undefined {
 	return throwAsync(useAsyncQuery(ref, maxAge));
 }
