@@ -1,3 +1,4 @@
+import type { ImmutableArray, MutableArray } from "./array.js";
 import type { PossibleOptionalDate } from "./date.js";
 
 /**
@@ -13,6 +14,12 @@ export type AnyEntry = readonly [string, any];
 
 /** Extract the type for an entry. */
 export type EntryType<X extends AnyEntry> = X extends Entry<infer Y> ? Y : never;
+
+/** Readonly list of entries with string keys. */
+export type ImmutableEntries<T = unknown> = ImmutableArray<Entry<T>>;
+
+/** Writable object with string keys. */
+export type MutableEntries<T = unknown> = MutableArray<Entry<T>>;
 
 /** Extract the key from an object entry. */
 export const ENTRY_KEY = ([k]: Entry): string => k;
