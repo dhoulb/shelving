@@ -16,7 +16,7 @@ export * from "./error.js";
 export * from "./filter.js";
 export * from "./function.js";
 export * from "./hydrate.js";
-export * from "./iterable.js";
+export * from "./iterate.js";
 export * from "./lazy.js";
 export * from "./map.js";
 export * from "./merge.js";

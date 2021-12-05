@@ -24,15 +24,21 @@ export const _awaitCallAsync = async <I, O, A extends Arguments>(callback: (v: I
 // Internal way for us to save `resolve()` and `reject()` from a new Promise used by `Deferred` and `ExtendablePromise`
 let resolve: Dispatcher<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 let reject: Dispatcher<Error | unknown>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function saveResolveReject(x: Dispatcher<any>, y: Dispatcher<Error | unknown>): void {
+function saveResolveReject(
+	x: Dispatcher<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+	y: Dispatcher<Error | unknown>,
+): void {
 	resolve = x;
 	reject = y;
 }
 
 /** Type of `Promise` with its `resolve()` and `reject()` methods exposed publicly. */
 export class Deferred<T> extends Promise<T> {
-	static override [Symbol.species] = Promise; // Make `this.then()` create a `Promise` not a `Deferred`
+	// Make `this.then()` create a `Promise` not a `Deferred`
+	// Done with a getter because some implementations implement this with a getter and we need to override it.
+	static override get [Symbol.species]() {
+		return Promise;
+	}
 	readonly resolve: Dispatcher<T | PromiseLike<T>>;
 	readonly reject: Dispatcher<Error | unknown | PromiseLike<Error | unknown>>;
 	constructor() {
@@ -44,7 +50,11 @@ export class Deferred<T> extends Promise<T> {
 
 /** Type of `Promise` with `._resolve()` and `._reject()` methods available. */
 export abstract class AbstractPromise<T> extends Promise<T> {
-	static override [Symbol.species] = Promise; // Make `this.then()` create a `Promise` not an `ExtendablePromise`
+	// Make `this.then()` create a `Promise` not a `Deferred`
+	// Done with a getter because some implementations implement this with a getter and we need to override it.
+	static override get [Symbol.species]() {
+		return Promise;
+	}
 	protected readonly _resolve: Dispatcher<T | PromiseLike<T>>;
 	protected readonly _reject: Dispatcher<Error | unknown>;
 	constructor() {
@@ -54,13 +64,26 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 	}
 }
 
-/**
- * Represents future doneness of an operation.
- * - Thenable, so listen for doneness with `done.then(X)` or `await done`
- * - Issue a done status with `done.done()`
- */
+/** Promise that resolves after a specified delay in milliseconds. */
+export class Delay extends AbstractPromise<void> {
+	constructor(ms: number) {
+		super();
+		setTimeout(this._resolve, ms);
+	}
+}
+
+/** Resolve to `DONE` on a specific signal. */
 export class Signal extends AbstractPromise<typeof DONE> {
+	/** Send this signal now. */
 	done() {
 		this._resolve(DONE);
+	}
+}
+
+/** Resolve to `DONE` after a specified delay. */
+export class Timeout extends AbstractPromise<typeof DONE> {
+	constructor(ms: number) {
+		super();
+		setTimeout(this._resolve, ms, DONE);
 	}
 }

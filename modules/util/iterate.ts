@@ -2,10 +2,17 @@ import type { Mutable } from "./data.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableArray } from "./array.js";
 import type { Entry } from "./entry.js";
+import { Delay } from "./async.js";
+import { DONE } from "./constants.js";
 
-/** `Iterable` interface that specifies a return type for the iterator. */
+/** `Iterable` interface that specifies return types and next types for the iterator. */
 export interface TypedIterable<T, R, N> {
 	[Symbol.iterator](): Iterator<T, R, N>;
+}
+
+/** `AsyncIterable` interface that specifies return types and next types for the iterator. */
+export interface TypedAsyncIterable<T, R, N> {
+	[Symbol.asyncIterator](): AsyncIterator<T, R, N>;
 }
 
 /**
@@ -14,6 +21,14 @@ export interface TypedIterable<T, R, N> {
  * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
  */
 export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.iterator in value;
+
+/**
+ * Is a value an async iterable object?
+ * - Any object with a `Symbol.iterator` property is iterable.
+ * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
+ */
+export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T =>
+	typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Get the known size or length of an object (e.g. `Array`, `Map`, and `Set` have known size), or return `undefined` if the size cannot be established. */
 export const getSize = (obj: Iterable<unknown> | ImmutableMap | ImmutableArray): number | undefined =>
@@ -101,8 +116,30 @@ export function* yieldMerged<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterabl
 	for (const input of inputs) for (const item of input) yield item;
 }
 
+/** Infinite iterator that yields every X milliseconds (yields a count of the number of iterations). */
+export async function* yieldDelay(ms: number): AsyncGenerator<number, void, void> {
+	let count = 1;
+	while (true) {
+		await new Delay(ms);
+		yield count++;
+	}
+}
+
+/** Iterator that yields until a DONE signal is received. */
+export async function* yieldUntil<T>(
+	source: TypedAsyncIterable<T, void, void>,
+	...signals: [Promise<typeof DONE>, ...Promise<typeof DONE>[]]
+): AsyncGenerator<T, void, void> {
+	const iterator = source[Symbol.asyncIterator]();
+	while (true) {
+		const result = await Promise.race([iterator.next(), ...signals]);
+		if (result === DONE || result.done) break;
+		yield result.value;
+	}
+}
+
 /** Abstract iterator designed to be extended that implements the full iterator/generator protocol. */
-export abstract class AbstractIterator<T, R, N = void> implements Generator<T, R, N> {
+export abstract class AbstractIterator<T, R, N> implements Generator<T, R, N> {
 	// Implement `Iterator`
 	abstract next(value: N): IteratorResult<T, R>;
 	throw(thrown: Error | unknown): IteratorResult<T, R> {
@@ -120,7 +157,7 @@ export abstract class AbstractIterator<T, R, N = void> implements Generator<T, R
 }
 
 /** Iterator that passes values through to a source iterator. */
-export abstract class ThroughIterator<T, R, N = void> extends AbstractIterator<T, R, N> {
+export abstract class ThroughIterator<T, R, N> extends AbstractIterator<T, R, N> {
 	protected _source: Iterator<T, R, N>;
 	constructor(source: TypedIterable<T, R, N>) {
 		super();
@@ -148,7 +185,7 @@ export abstract class ThroughIterator<T, R, N = void> extends AbstractIterator<T
  * 	for (const next of capture) console.log("YIELDED", next);
  * 	console.log("RETURNED", returned.value);
  */
-export class WatchIterator<T, R, N = void> extends ThroughIterator<T, R, N> {
+export class WatchIterator<T, R, N> extends ThroughIterator<T, R, N> {
 	/** Get the number of results received by this iterator so far. */
 	readonly count = 0;
 

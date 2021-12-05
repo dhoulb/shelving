@@ -1,5 +1,5 @@
 import type { Entry } from "./entry.js";
-import { limitItems } from "./iterable.js";
+import { limitItems } from "./iterate.js";
 
 /**
  * `Map` with string keys that cannot be changed.

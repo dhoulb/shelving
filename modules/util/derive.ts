@@ -4,7 +4,7 @@ import type { ImmutableMap } from "./map.js";
 import { ImmutableObject } from "./object.js";
 import { isFunction } from "./function.js";
 import { Data, Value, Prop, toProps, isData } from "./data.js";
-import { WatchIterator } from "./iterable.js";
+import { WatchIterator } from "./iterate.js";
 
 /** Object that can derive a value with its `derive()` method. */
 export interface Derivable<I, O = I> {

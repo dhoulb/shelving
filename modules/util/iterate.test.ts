@@ -1,4 +1,16 @@
-import { countItems, countIterations, sumItems, yieldChunks, toArray, yieldRange, limitItems, limitIterations } from "../index.js";
+import {
+	countItems,
+	countIterations,
+	sumItems,
+	yieldChunks,
+	toArray,
+	yieldRange,
+	limitItems,
+	limitIterations,
+	Signal,
+	yieldDelay,
+	yieldUntil,
+} from "../index.js";
 
 test("countItems()", () => {
 	expect(countItems([])).toBe(0);
@@ -58,4 +70,13 @@ test("chunkItems()", () => {
 	]);
 	expect(toArray(yieldChunks(yieldRange(11, 19), 1))).toEqual([[11], [12], [13], [14], [15], [16], [17], [18], [19]]);
 	expect(toArray(yieldChunks(yieldRange(11, 19), 2))).toEqual([[11, 12], [13, 14], [15, 16], [17, 18], [19]]);
+});
+test("yieldUntil()", async () => {
+	const yielded: number[] = [];
+	const stop = new Signal();
+	for await (const count of yieldUntil(yieldDelay(50), stop)) {
+		yielded.push(count);
+		if (count >= 3) stop.done();
+	}
+	expect(yielded).toEqual([1, 2, 3]);
 });
