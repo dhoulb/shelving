@@ -4,9 +4,6 @@ import { Schema } from "./Schema.js";
 
 /** Validate a `Map` instance. */
 export class MapSchema<T> extends Schema<ImmutableMap<T>> {
-	static from<X>(items: Validator<X>): MapSchema<X> {
-		return new MapSchema({ items });
-	}
 	readonly value: ImmutableMap;
 	readonly items: Validator<T>;
 	readonly min: number | null = null;
