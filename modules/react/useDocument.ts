@@ -96,8 +96,8 @@ function subscribeEffect<T extends Data>(
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
  */
-export function useResult<T extends Data>(ref: DataDocument<T>, maxAge?: number | true): Result<T>;
-export function useResult<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined;
-export function useResult<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined {
+export function useDocument<T extends Data>(ref: DataDocument<T>, maxAge?: number | true): Result<T>;
+export function useDocument<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined;
+export function useDocument<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined {
 	return throwAsync(useAsyncDocument(ref, maxAge));
 }
