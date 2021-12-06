@@ -4,8 +4,13 @@ import { Schema } from "./Schema.js";
 
 export abstract class ThroughSchema<T> extends Schema<T> {
 	readonly source: Schema<T>;
-	constructor({ source, ...options }: ConstructorParameters<typeof Schema>[0] & { source: Schema<T> }) {
-		super(options);
+	constructor({
+		source,
+		title = source.title,
+		description = source.description,
+		placeholder = source.placeholder,
+	}: ConstructorParameters<typeof Schema>[0] & { source: Schema<T> }) {
+		super({ title, description, placeholder });
 		this.source = source;
 	}
 	validate(unsafeValue: unknown): T {
