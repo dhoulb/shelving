@@ -22,6 +22,7 @@ const R_MATCH = /^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a
  */
 export class EmailSchema extends StringSchema {
 	override readonly type = "email";
+	override readonly min = 1;
 	override readonly max = 254;
 	override readonly match = R_MATCH;
 	override readonly multiline = false;

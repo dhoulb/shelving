@@ -11,6 +11,7 @@ import { StringSchema } from "./StringSchema.js";
  */
 export class UrlSchema extends StringSchema {
 	override readonly type = "url";
+	override readonly min = 1;
 	override readonly max = 512;
 	readonly schemes: string[] = ["http:", "https:"];
 	readonly hosts: string[] | null = null;

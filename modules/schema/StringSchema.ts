@@ -2,6 +2,9 @@ import { sanitizeLines, sanitizeString } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/index.js";
 import { Schema } from "./Schema.js";
 
+/** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
+export type HtmlInputType = "text" | "password" | "color" | "date" | "email" | "number" | "tel" | "search" | "url";
+
 /**
  * Schema that defines a valid string.
  *
@@ -24,7 +27,7 @@ import { Schema } from "./Schema.js";
  */
 export class StringSchema extends Schema<string> {
 	readonly value: string;
-	readonly type: string;
+	readonly type: HtmlInputType;
 	readonly min: number;
 	readonly max: number | null;
 	readonly match: RegExp | null;
@@ -41,7 +44,7 @@ export class StringSchema extends Schema<string> {
 		...rest
 	}: ConstructorParameters<typeof Schema>[0] & {
 		readonly value?: string;
-		readonly type?: string;
+		readonly type?: HtmlInputType;
 		readonly min?: number;
 		readonly max?: number | null;
 		readonly match?: RegExp | null;

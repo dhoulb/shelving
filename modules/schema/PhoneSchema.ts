@@ -12,8 +12,9 @@ const R_MATCH = /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/;
  * - Falsy values are converted to `""` empty string.
  */
 export class PhoneSchema extends StringSchema {
-	override readonly type = "phone";
+	override readonly type = "tel";
 	override readonly match = R_MATCH;
+	override readonly min = 1;
 	override readonly max: number = 16; // Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
 	override sanitize(str: string): string {
 		// Strip characters that aren't 0-9 or `+` plus (including whitespace).

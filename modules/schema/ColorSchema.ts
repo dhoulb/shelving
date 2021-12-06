@@ -14,8 +14,9 @@ const R_STRIP = /[^0-9A-F]/g;
  * Colors are limited to 512 characters (this can be changed with `max`), but generally these won't be data: URIs so this is a reasonable limit.
  */
 export class ColorSchema extends StringSchema {
-	override readonly max = 7;
 	override readonly type = "color";
+	override readonly min = 1;
+	override readonly max = 7;
 	override readonly multiline = false;
 	override readonly match = R_MATCH;
 	override sanitize(uncleanString: string): string {
