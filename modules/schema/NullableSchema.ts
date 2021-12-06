@@ -15,7 +15,7 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
 		this.value = value;
 	}
 	override validate(unsafeValue: unknown = this.value): T | null {
-		if (unsafeValue === null) return null;
+		if (unsafeValue === null || unsafeValue === undefined || unsafeValue === "" || Number.isNaN(unsafeValue)) return null;
 		return super.validate(unsafeValue);
 	}
 }
