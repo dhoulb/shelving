@@ -13,17 +13,17 @@ export class LazyState<T> extends State<T> {
 		this._delay = delay;
 	}
 	// Override to stop the source subscription when the last subscriber unsubscribes.
-	override off(observer: Observer<T>): void {
-		super.off(observer);
+	override _off(observer: Observer<T>): void {
+		super._off(observer);
 		if (this._delay) {
 			// Maybe stop in a bit (if there are still no subscribers).
 			if (this._timeout) clearTimeout(this._timeout);
 			this._timeout = setTimeout(() => {
-				if (!this._subscribers.size && !this.closed) this.complete();
+				if (!this._observers.size && !this.closed) this.complete();
 			}, this._delay);
 		} else {
 			// Stop now.
-			if (!this._subscribers.size && !this.closed) this.complete();
+			if (!this._observers.size && !this.closed) this.complete();
 		}
 	}
 }

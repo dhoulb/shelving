@@ -1,7 +1,5 @@
 import {
 	callAsync,
-	createObserver,
-	Dispatcher,
 	Entry,
 	getFirstItem,
 	Observable,
@@ -23,6 +21,7 @@ import {
 	Datas,
 	Validators,
 	ValidatorType,
+	Dispatcher,
 } from "../util/index.js";
 import { DataTransform, Transform, Transforms } from "../transform/index.js";
 import type { Provider } from "../provider/Provider.js";
@@ -126,30 +125,22 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * Subscribe to all matching documents.
 	 * - `next()` is called once with the initial results, and again any time the results change.
 	 *
-	 * @param observer Observer with `next`, `error`, or `complete` methods that the document results are reported back to.
-	 * @param next Callback that is called once initially and again whenever the results change.
-	 * @param error Callback that is called if an error occurs.
-	 * @param complete Callback that is called when the subscription is done.
-	 *
+	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<Results<T>> | Dispatcher<Results<T>>, error?: Dispatcher<Error | unknown>, complete?: Dispatcher<void>): Unsubscriber {
-		return this.provider.subscribeQuery(this, createObserver(next, error, complete));
+	subscribe(next: Observer<Results<T>> | Dispatcher<[Results<T>]>): Unsubscriber {
+		return this.provider.subscribeQuery(this, typeof next === "function" ? { next } : next);
 	}
 
 	/**
 	 * Subscribe to all matching documents.
 	 * - `next()` is called once with the initial results, and again any time the results change.
 	 *
-	 * @param observer Observer with `next`, `error`, or `complete` methods that the document results are reported back to.
-	 * @param next Callback that is called once initially and again whenever the results change.
-	 * @param error Callback that is called if an error occurs.
-	 * @param complete Callback that is called when the subscription is done.
-	 *
+	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribeMap(next: Observer<ResultsMap<T>> | Dispatcher<ResultsMap<T>>, error?: Dispatcher<Error | unknown>, complete?: Dispatcher<void>): Unsubscriber {
-		return this.provider.subscribeQuery(this, new DeriveObserver(toMap, createObserver(next, error, complete)));
+	subscribeMap(next: Observer<ResultsMap<T>> | Dispatcher<[ResultsMap<T>]>): Unsubscriber {
+		return this.provider.subscribeQuery(this, new DeriveObserver(toMap, typeof next === "function" ? { next } : next));
 	}
 
 	/**
@@ -273,15 +264,11 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 	 * Subscribe to the result of this document (indefinitely).
 	 * - `next()` is called once with the initial result, and again any time the result changes.
 	 *
-	 * @param observer Observer with `next`, `error`, or `complete` methods.
-	 * @param next Callback that is called once initially and again whenever the result changes.
-	 * @param error Callback that is called if an error occurs.
-	 * @param complete Callback that is called when the subscription is done.
-	 *
+	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<Result<T>> | Dispatcher<Result<T>>, error?: Dispatcher<Error | unknown>, complete?: Dispatcher<void>): Unsubscriber {
-		return this.provider.subscribe(this, createObserver(next, error, complete));
+	subscribe(next: Observer<Result<T>> | Dispatcher<[Result<T>]>): Unsubscriber {
+		return this.provider.subscribe(this, typeof next === "function" ? { next } : next);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Arguments, Dispatcher, getLazy, isArrayEqual, Lazy } from "../index.js";
+import { Arguments, getLazy, isArrayEqual, Lazy } from "../index.js";
 
 /**
  * Version of React's `useState()` that allows the use of a pure (side-effect free) function.
@@ -15,12 +15,12 @@ import { Arguments, Dispatcher, getLazy, isArrayEqual, Lazy } from "../index.js"
  * - This means you can create the function once (outside the component) rather than creating it on every render.
  * - This improves performance (though probably only noticeable on functions that render 1,000s of times).
  */
-export function usePureState<T, A extends Arguments>(initial: (...args: A) => T, ...args: A): readonly [T, Dispatcher<T>]; // Generics flow through this overload better than using `Lazy`
-export function usePureState<T, A extends Arguments>(initial: new (...args: A) => T, ...args: A): readonly [T, Dispatcher<T>]; // Generics flow through this overload better than using `Lazy`
-export function usePureState<T>(initial: T, ...args: Arguments): readonly [T, Dispatcher<T>];
-export function usePureState<T, A extends Arguments>(initial: Lazy<T, A>, ...args: A): readonly [T, Dispatcher<T>] {
+export function usePureState<T, A extends Arguments>(initial: (...args: A) => T, ...args: A): readonly [T, (next: T) => void]; // Generics flow through this overload better than using `Lazy`
+export function usePureState<T, A extends Arguments>(initial: new (...args: A) => T, ...args: A): readonly [T, (next: T) => void]; // Generics flow through this overload better than using `Lazy`
+export function usePureState<T>(initial: T, ...args: Arguments): readonly [T, (next: T) => void];
+export function usePureState<T, A extends Arguments>(initial: Lazy<T, A>, ...args: A): readonly [T, (next: T) => void] {
 	const setState = useState<T>()[1];
-	const internals = (useRef<{ state: [T, Dispatcher<T>]; args: A }>().current ||= {
+	const internals = (useRef<{ state: [T, (next: T) => void]; args: A }>().current ||= {
 		state: [
 			getLazy(initial, ...args),
 			(v: T) => {

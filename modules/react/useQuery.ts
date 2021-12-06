@@ -1,5 +1,18 @@
 import { useState } from "react";
-import { DataQuery, CacheProvider, throwAsync, NOERROR, findSourceProvider, NOVALUE, ResultsMap, DeriveObserver, toMap, Data } from "../index.js";
+import {
+	DataQuery,
+	CacheProvider,
+	throwAsync,
+	NOERROR,
+	findSourceProvider,
+	NOVALUE,
+	ResultsMap,
+	DeriveObserver,
+	toMap,
+	Data,
+	Unsubscriber,
+	Handler,
+} from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -44,7 +57,7 @@ export function useAsyncQuery<T extends Data>(
 
 	// If `maxAge` is `true` open a subscription for 10 seconds.
 	// Done before `ref.get()` because efficient providers (i.e. `BatchProvider`) will reuse the subscription's first result as its first get request.
-	if (maxAge === true) setTimeout(ref.subscribeMap(setNext, setError), 10000);
+	if (maxAge === true) setTimeout(ref.subscribeMap({ next: setNext, error: setError }), 10000);
 
 	// Return a promise for the result.
 	return ref.resultsMap;
@@ -62,8 +75,8 @@ function subscribeEffect<T extends Data>(
 	ref: DataQuery<T> | undefined,
 	maxAge: number | true,
 	next: (results: ResultsMap<T>) => void,
-	error: (reason: unknown) => void,
-): (() => void) | void {
+	error: Handler,
+): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.provider, CacheProvider);
 		const observer = new DeriveObserver(toMap, { next, error });

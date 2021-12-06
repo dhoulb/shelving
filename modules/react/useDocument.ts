@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DataDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Data } from "../index.js";
+import { DataDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Data, Unsubscriber, Handler } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -43,7 +43,7 @@ export function useAsyncDocument<T extends Data>(
 
 	// If `maxAge` is `true` open a subscription for 10 seconds.
 	// Done before `ref.get()` because efficient providers (i.e. `BatchProvider`) will reuse the subscription's first result as its first get request.
-	if (maxAge === true) setTimeout(ref.subscribe(setNext, setError), 10000);
+	if (maxAge === true) setTimeout(ref.subscribe({ next: setNext, error: setError }), 10000);
 
 	// Return a promise for the result.
 	return ref.result;
@@ -61,8 +61,8 @@ function subscribeEffect<T extends Data>(
 	ref: DataDocument<T> | undefined,
 	maxAge: number | true,
 	next: (result: Result<T>) => void,
-	error: (reason: Error | unknown) => void,
-): (() => void) | void {
+	error: Handler,
+): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.provider, CacheProvider);
 		const stopCache = provider.cache.subscribe(ref, { next, error });

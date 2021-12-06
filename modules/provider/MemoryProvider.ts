@@ -1,7 +1,19 @@
-import { Data, Result, Results, randomId, dispatch, Dispatcher, Unsubscriber, dispatchNext, Observer, isMapEqual, MutableObject } from "../util/index.js";
+import {
+	Data,
+	Result,
+	Results,
+	randomId,
+	Unsubscriber,
+	dispatchNext,
+	Observer,
+	isMapEqual,
+	MutableObject,
+	Dispatcher,
+	ImmutableMap,
+	MutableMap,
+} from "../util/index.js";
 import { Transform } from "../transform/index.js";
 import { DataQuery, DataDocument, DocumentRequiredError } from "../db/index.js";
-import { MutableMap } from "../util/map.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
 /**
@@ -27,11 +39,11 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		const id = ref.id;
 
 		// Call next() immediately with initial results.
-		dispatchNext(table.data.get(id), observer);
+		dispatchNext(observer, table.data.get(id));
 
 		// Call next() every time the collection changes.
 		return table.on(changes => {
-			changes.has(id) && dispatchNext(changes.get(id), observer);
+			changes.has(id) && dispatchNext(observer, changes.get(id));
 		});
 	}
 
@@ -64,7 +76,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 
 		// Call `next()` immediately with the initial results.
 		let lastResults = new Map(ref.derive(table.data));
-		dispatchNext(lastResults, observer);
+		dispatchNext(observer, lastResults);
 
 		// Possibly call `next()` when the collection changes if any changes affect the subscription.
 		return table.on(changes => {
@@ -77,7 +89,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 					const nextResults = new Map(ref.derive(table.data));
 					if (!isMapEqual(lastResults, nextResults)) {
 						lastResults = nextResults;
-						dispatchNext(lastResults, observer);
+						dispatchNext(observer, lastResults);
 					}
 					return;
 				}
@@ -103,9 +115,11 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 interface AbstractTable<T extends Data> {
 	readonly data: MutableMap<T>;
 	write(id: string, value: Result<T>): void;
-	on(dispatcher: Dispatcher<MutableMap<Result<T>>>): Unsubscriber;
+	on(listener: (changes: ImmutableMap<Result<T>>) => void): Unsubscriber;
 	reset(): void;
 }
+
+type TableChanges<T extends Data> = ImmutableMap<Result<T>>;
 
 /**
  * An individual table of data.
@@ -114,7 +128,7 @@ interface AbstractTable<T extends Data> {
 class Table<T extends Data> implements AbstractTable<T> {
 	readonly data: MutableMap<T> = new Map();
 	readonly changes: MutableMap<Result<T>> = new Map();
-	readonly dispatchers: Set<Dispatcher<MutableMap<Result<T>>>> = new Set();
+	readonly listeners = new Set<Dispatcher<[TableChanges<T>]>>();
 	write(id: string, value: Result<T>): void {
 		if (value !== this.data.get(id)) {
 			if (value) this.data.set(id, value);
@@ -127,20 +141,20 @@ class Table<T extends Data> implements AbstractTable<T> {
 	}
 	fire = () => {
 		if (this.changes.size) {
-			for (const dispatcher of this.dispatchers) dispatch(this.changes, dispatcher);
+			for (const dispatcher of this.listeners) dispatcher(this.changes);
 			this.changes.clear();
 		}
 	};
-	on(dispatcher: Dispatcher<MutableMap<Result<T>>>): Unsubscriber {
-		this.dispatchers.add(dispatcher);
-		return this.off.bind(this, dispatcher);
+	on(listener: Dispatcher<[TableChanges<T>]>): Unsubscriber {
+		this.listeners.add(listener);
+		return this.off.bind(this, listener);
 	}
-	off(dispatcher: Dispatcher<MutableMap<Result<T>>>): void {
-		this.dispatchers.delete(dispatcher);
+	off(listener: Dispatcher<[TableChanges<T>]>): void {
+		this.listeners.delete(listener);
 	}
 	reset() {
 		this.data.clear();
 		this.changes.clear();
-		this.dispatchers.clear();
+		this.listeners.clear();
 	}
 }

@@ -45,6 +45,7 @@ import {
 	Entry,
 	Data,
 	Results,
+	Unsubscriber,
 } from "../../index.js";
 
 // Constants.
@@ -131,7 +132,7 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		return snapshot.data();
 	}
 
-	subscribe(): () => void {
+	subscribe(): Unsubscriber {
 		throw new Error("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 
@@ -150,7 +151,7 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		return getResults(await getDocs(getQuery(this.firestore, ref)));
 	}
 
-	subscribeQuery(): () => void {
+	subscribeQuery(): Unsubscriber {
 		throw new Error("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 

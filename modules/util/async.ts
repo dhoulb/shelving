@@ -1,6 +1,6 @@
 import { DONE } from "./constants.js";
-import type { Dispatcher } from "./dispatch.js";
-import type { Arguments } from "./function.js";
+import { Handler } from "./error.js";
+import type { Arguments, Dispatcher } from "./function.js";
 
 /**
  * Throw the value if it's an async (promised) value.
@@ -22,11 +22,11 @@ export const _awaitCallAsync = async <I, O, A extends Arguments>(callback: (v: I
 	callback(await value, ...args);
 
 // Internal way for us to save `resolve()` and `reject()` from a new Promise used by `Deferred` and `ExtendablePromise`
-let resolve: Dispatcher<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-let reject: Dispatcher<Error | unknown>;
+let resolve: Dispatcher<[any]>; // eslint-disable-line @typescript-eslint/no-explicit-any
+let reject: Handler;
 function saveResolveReject(
-	x: Dispatcher<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
-	y: Dispatcher<Error | unknown>,
+	x: Dispatcher<[any]>, // eslint-disable-line @typescript-eslint/no-explicit-any
+	y: Handler,
 ): void {
 	resolve = x;
 	reject = y;
@@ -39,8 +39,8 @@ export class Deferred<T> extends Promise<T> {
 	static override get [Symbol.species]() {
 		return Promise;
 	}
-	readonly resolve: Dispatcher<T | PromiseLike<T>>;
-	readonly reject: Dispatcher<Error | unknown | PromiseLike<Error | unknown>>;
+	readonly resolve: Dispatcher<[T]>;
+	readonly reject: Handler;
 	constructor() {
 		super(saveResolveReject);
 		this.resolve = resolve;
@@ -55,8 +55,8 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 	static override get [Symbol.species]() {
 		return Promise;
 	}
-	protected readonly _resolve: Dispatcher<T | PromiseLike<T>>;
-	protected readonly _reject: Dispatcher<Error | unknown>;
+	protected readonly _resolve: Dispatcher<[T]>;
+	protected readonly _reject: Handler;
 	constructor() {
 		super(saveResolveReject);
 		this._resolve = resolve;

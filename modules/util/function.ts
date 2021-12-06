@@ -1,3 +1,5 @@
+import { logError } from "./error.js";
+
 /** Any function (designed for use with `extends AnyFunction` guards). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyFunction = (...args: any) => any; // Note: `any` works better than `any[]` for `args`
@@ -13,3 +15,24 @@ export const PASSTHROUGH = <T>(value: T): T => value;
 
 /** Function that does nothing with its arguments and always returns void. */
 export const BLACKHOLE: (...args: Arguments) => void | undefined = () => undefined;
+
+/** Function that receives a dispatched value. */
+export type Dispatcher<T extends Arguments = []> = (...value: T) => void;
+
+/** Safely dispatch a value to a dispatcher function. */
+export function dispatch<T extends Arguments>(dispatcher: Dispatcher<T>, ...value: T): void {
+	try {
+		dispatcher(...value);
+	} catch (thrown) {
+		logError(thrown);
+	}
+}
+
+/** Safely dispatch a value to a dispatcher method on an object. */
+export function dispatchMethod<T extends Arguments, M extends string | symbol>(obj: { [K in M]: Dispatcher<T> }, key: M, ...value: T): void {
+	try {
+		obj[key](...value);
+	} catch (thrown) {
+		logError(thrown);
+	}
+}

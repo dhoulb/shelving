@@ -80,11 +80,11 @@ export class State<T> extends Stream<T> {
 	}
 
 	// Override to send the current error or value to any new subscribers.
-	override on(observer: Observer<T>) {
-		super.on(observer);
-		if (this.reason !== NOERROR) dispatchError(this.reason, observer);
+	override _on(observer: Observer<T>): void {
+		super._on(observer);
+		if (this.reason !== NOERROR) dispatchError(observer, this.reason);
 		else if (this.closed) dispatchComplete(observer);
-		else if (this._value !== LOADING) dispatchNext(this.value, observer);
+		else if (this._value !== LOADING) dispatchNext(observer, this._value);
 	}
 
 	// Dispatcher saves any values that are dispatched.

@@ -5,7 +5,7 @@ import { Stream } from "./Stream.js";
 export class LastStream<T> extends Stream<T> {
 	// Override to dispatch only to a slice of the subscribers.
 	protected override _dispatch(value: T): void {
-		const subscriber = getLastItem(this._subscribers);
+		const subscriber = getLastItem(this._observers);
 		if (subscriber) dispatchNext(subscriber, value);
 	}
 }

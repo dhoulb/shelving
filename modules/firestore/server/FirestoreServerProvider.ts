@@ -29,6 +29,7 @@ import {
 	AssertionError,
 	Entry,
 	Results,
+	Unsubscriber,
 } from "../../index.js";
 
 // Constants.
@@ -112,10 +113,10 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		return (await getDocument(this.firestore, ref).get()).data();
 	}
 
-	subscribe<T extends Data>(ref: DataDocument<T>, observer: Observer<Result<T>>): () => void {
+	subscribe<T extends Data>(ref: DataDocument<T>, observer: Observer<Result<T>>): Unsubscriber {
 		return getDocument(this.firestore, ref).onSnapshot(
-			snapshot => dispatchNext(snapshot.data(), observer),
-			thrown => dispatchError(thrown, observer),
+			snapshot => dispatchNext(observer, snapshot.data()),
+			thrown => dispatchError(observer, thrown),
 		);
 	}
 
@@ -133,10 +134,10 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		return getResults(await getQuery(this.firestore, ref).get());
 	}
 
-	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): () => void {
+	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
 		return getQuery(this.firestore, ref).onSnapshot(
-			snapshot => dispatchNext(getResults(snapshot), observer),
-			thrown => dispatchError(thrown, observer),
+			snapshot => dispatchNext(observer, getResults(snapshot)),
+			thrown => dispatchError(observer, thrown),
 		);
 	}
 

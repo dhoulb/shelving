@@ -12,7 +12,7 @@ test("Stream: works correctly", () => {
 	const next1 = jest.fn<any, any>();
 	const error1 = jest.fn<any, any>();
 	const complete1 = jest.fn<any, any>();
-	const unsub1 = stream.subscribe(next1, error1, complete1);
+	const unsub1 = stream.subscribe({ next: next1, error: error1, complete: complete1 });
 	const next2 = jest.fn<any, any>();
 	const error2 = jest.fn<any, any>();
 	const complete2 = jest.fn<any, any>();
@@ -21,7 +21,7 @@ test("Stream: works correctly", () => {
 	const error3 = jest.fn<any, any>();
 	const complete3 = jest.fn<any, any>();
 	const stream3 = stream.to();
-	stream3.subscribe(next3, error3, complete3);
+	stream3.subscribe({ next: next3, error: error3, complete: complete3 });
 	const next4 = jest.fn<any, any>();
 	const error4 = jest.fn<any, any>();
 	const complete4 = jest.fn<any, any>();

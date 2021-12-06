@@ -4,18 +4,17 @@ import {
 	Deriver,
 	ObserverType,
 	Subscribable,
-	Dispatcher,
 	Mutable,
 	Unsubscriber,
 	dispatchNext,
 	Observer,
 	dispatchError,
 	dispatchComplete,
-	createObserver,
 	Observable,
 	subscribe,
-	dispatch,
 	Constructor,
+	dispatch,
+	Dispatcher,
 } from "../util/index.js";
 import { ConditionError } from "../error/index.js";
 
@@ -35,11 +34,11 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	protected readonly _cleanups = new Set<Unsubscriber>();
 
 	/** List of subscribed observers that values are forwarded to. */
-	protected readonly _subscribers = new Set<Observer<T>>();
+	protected readonly _observers = new Set<Observer<T>>();
 
 	/** Get the number of current subscribers. */
 	get subscribers(): number {
-		return this._subscribers.size;
+		return this._observers.size;
 	}
 
 	/** Is this stream open or closed (i.e. `error()` or `complete()` have been called. */
@@ -56,7 +55,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 
 	/** Call `next()` on the subscribers. */
 	protected _dispatch(value: T): void {
-		for (const subscriber of this._subscribers) dispatchNext(value, subscriber);
+		for (const observer of this._observers) dispatchNext(observer, value);
 	}
 
 	/**
@@ -67,9 +66,9 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	error(reason: Error | unknown): void {
 		if (this.closed) throw new ConditionError("Stream is closed");
 		this._close();
-		for (const subscriber of this._subscribers) {
-			dispatchError(reason, subscriber);
-			this.off(subscriber);
+		for (const subscriber of this._observers) {
+			this._observers.delete(subscriber);
+			dispatchError(subscriber, reason);
 		}
 	}
 
@@ -81,9 +80,9 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	complete(): void {
 		if (this.closed) throw new ConditionError("Stream is closed");
 		this._close();
-		for (const subscriber of this._subscribers) {
+		for (const subscriber of this._observers) {
+			this._observers.delete(subscriber);
 			dispatchComplete(subscriber);
-			this.off(subscriber);
 		}
 	}
 
@@ -91,8 +90,8 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	private _close(): void {
 		(this as Mutable<this>).closed = true;
 		for (const cleanup of this._cleanups) {
-			dispatch(undefined, cleanup);
 			this._cleanups.delete(cleanup);
+			dispatch(cleanup);
 		}
 	}
 
@@ -140,19 +139,19 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 * - Allows either an `Observer` object or  separate `next()`, `error()` and `complete()` functions.
 	 * - Implements `Observable`
 	 */
-	subscribe(next: Observer<T> | Dispatcher<T>, error?: Dispatcher<unknown>, complete?: Dispatcher<void>): Unsubscriber {
-		const observer = createObserver(next, error, complete);
-		this.on(observer);
-		return this.off.bind(this, observer);
+	subscribe(next: Observer<T> | Dispatcher<[T]>): Unsubscriber {
+		const observer = typeof next === "function" ? { next } : next;
+		this._on(observer);
+		return this._off.bind(this, observer);
 	}
 
-	/** Add an observer to this stream. */
-	on(observer: Observer<T>): void {
-		this._subscribers.add(observer);
+	/** Add an observer. */
+	_on(observer: Observer<T>): void {
+		this._observers.add(observer);
 	}
 
-	/** Remove an observer from this stream. */
-	off(observer: Observer<T>): void {
-		this._subscribers.delete(observer);
+	/** Remove an observer. */
+	_off(observer: Observer<T>): void {
+		this._observers.delete(observer);
 	}
 }
