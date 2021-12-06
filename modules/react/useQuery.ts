@@ -1,17 +1,5 @@
 import { useState } from "react";
-import {
-	DataQuery,
-	CacheProvider,
-	throwAsync,
-	NOERROR,
-	findSourceProvider,
-	NOVALUE,
-	dispatchAsync,
-	ResultsMap,
-	DeriveObserver,
-	toMap,
-	Data,
-} from "../index.js";
+import { DataQuery, CacheProvider, throwAsync, NOERROR, findSourceProvider, NOVALUE, ResultsMap, DeriveObserver, toMap, Data } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -89,7 +77,7 @@ function subscribeEffect<T extends Data>(
 			};
 		} else {
 			// If cache provider's cached document is older than maxAge then force refresh the data.
-			if (provider.getCachedAge(ref) > maxAge) dispatchAsync(ref.resultsMap, next, error);
+			if (provider.getCachedAge(ref) > maxAge) Promise.resolve(ref.resultsMap).then(next, error);
 		}
 		return stopCache;
 	}
