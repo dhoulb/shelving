@@ -1,11 +1,11 @@
-import { InvalidFeedback, EmailSchema, Schema, Feedback, REQUIRED_EMAIL, OPTIONAL_EMAIL } from "../index.js";
+import { InvalidFeedback, EmailSchema, Schema, Feedback, EMAIL, OPTIONAL_EMAIL } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
 	const s1: Schema<string | null> = OPTIONAL_EMAIL;
 	const r1: string | null = s1.validate("dave@test.com");
 
-	const s2: Schema<string> = REQUIRED_EMAIL;
+	const s2: Schema<string> = EMAIL;
 	const r2: string = s2.validate("dave@test.com");
 
 	const s3: Schema<string> = new EmailSchema({});
@@ -14,9 +14,9 @@ test("TypeScript", () => {
 test("constructor()", () => {
 	const schema1 = new EmailSchema({});
 	expect(schema1).toBeInstanceOf(EmailSchema);
-	const schema2 = REQUIRED_EMAIL;
+	const schema2 = EMAIL;
 	expect(schema2).toBeInstanceOf(EmailSchema);
-	const schema3 = REQUIRED_EMAIL;
+	const schema3 = EMAIL;
 	expect(schema3).toBeInstanceOf(EmailSchema);
 });
 describe("validate()", () => {

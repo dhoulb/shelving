@@ -1,64 +1,64 @@
-import { Feedback, InvalidFeedback, Schema, UrlSchema, OPTIONAL_URL, REQUIRED_URL } from "../index.js";
+import { Feedback, InvalidFeedback, Schema, LinkSchema, OPTIONAL_LINK, LINK } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
 	// Test url.optional
-	const s1: Schema<string | null> = OPTIONAL_URL;
+	const s1: Schema<string | null> = OPTIONAL_LINK;
 	const r1: string | null = s1.validate("https://test.com");
 
 	// Test url.required
-	const s2: Schema<string> = REQUIRED_URL;
+	const s2: Schema<string> = LINK;
 	const r2: string = s2.validate("https://test.com");
 
 	// Test schema.url({})
-	const s3: Schema<string> = new UrlSchema({});
+	const s3: Schema<string> = new LinkSchema({});
 	const r3: string = s3.validate("https://test.com");
 });
 test("constructor()", () => {
-	const schema1 = new UrlSchema({});
-	expect(schema1).toBeInstanceOf(UrlSchema);
-	const schema2 = REQUIRED_URL;
-	expect(schema2).toBeInstanceOf(UrlSchema);
-	const schema3 = REQUIRED_URL;
-	expect(schema3).toBeInstanceOf(UrlSchema);
+	const schema1 = new LinkSchema({});
+	expect(schema1).toBeInstanceOf(LinkSchema);
+	const schema2 = LINK;
+	expect(schema2).toBeInstanceOf(LinkSchema);
+	const schema3 = LINK;
+	expect(schema3).toBeInstanceOf(LinkSchema);
 });
 describe("validate()", () => {
-	const schema = REQUIRED_URL;
+	const schema = LINK;
 	describe("URLs", () => {
 		test("Valid URLs are valid.", () => {
 			const u1 = "data:image/svg+xml;base64,SGVsbG8gd29ybGQ=";
-			expect(new UrlSchema({ schemes: ["data:"] }).validate(u1)).toBe(u1);
+			expect(new LinkSchema({ schemes: ["data:"] }).validate(u1)).toBe(u1);
 			const u2 = "feed:https://example.com/entries.atom"; // Weirdly feed can be either.
-			expect(new UrlSchema({ schemes: ["feed:"] }).validate(u2)).toBe(u2);
+			expect(new LinkSchema({ schemes: ["feed:"] }).validate(u2)).toBe(u2);
 			const u3 = "feed://example.com/entries.atom"; // Weirdly feed can be either.
-			expect(new UrlSchema({ schemes: ["feed:"] }).validate(u3)).toBe(u3);
+			expect(new LinkSchema({ schemes: ["feed:"] }).validate(u3)).toBe(u3);
 			const u4 = "file:///etc/fstab";
-			expect(new UrlSchema({ schemes: ["file:"] }).validate(u4)).toBe(u4);
+			expect(new LinkSchema({ schemes: ["file:"] }).validate(u4)).toBe(u4);
 			const u5 = "ftp://ftp.funet.fi/pub/standards/RFC/rfc959.txt";
-			expect(new UrlSchema({ schemes: ["ftp:"] }).validate(u5)).toBe(u5);
+			expect(new LinkSchema({ schemes: ["ftp:"] }).validate(u5)).toBe(u5);
 			const u6 = "geo:37.786971;-122.399677";
-			expect(new UrlSchema({ schemes: ["geo:"] }).validate(u6)).toBe(u6);
+			expect(new LinkSchema({ schemes: ["geo:"] }).validate(u6)).toBe(u6);
 			const u7 = "https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Technical_overview";
-			expect(new UrlSchema({ schemes: ["https:"] }).validate(u7)).toBe(u7);
+			expect(new LinkSchema({ schemes: ["https:"] }).validate(u7)).toBe(u7);
 			const u8 =
 				"http://www.google.ps/search?hl=en&client=firefox-a&hs=42F&rls=org.mozilla%3Aen-US%3Aofficial&q=The+type+%27Microsoft.Practices.ObjectBuilder.Locator%27+is+defined+in+an+assembly+that+is+not+referenced.+You+must+add+a+reference+to+assembly+&aq=f&aqi=&aql=&oq=";
-			expect(new UrlSchema({ schemes: ["http:"] }).validate(u8)).toBe(u8);
+			expect(new LinkSchema({ schemes: ["http:"] }).validate(u8)).toBe(u8);
 			const u9 = "irc://irc.efnet.org:6667/DiscworldMUD";
-			expect(new UrlSchema({ schemes: ["irc:"] }).validate(u9)).toBe(u9);
+			expect(new LinkSchema({ schemes: ["irc:"] }).validate(u9)).toBe(u9);
 			const u10 = "mailto:dave@shax.com";
-			expect(new UrlSchema({ schemes: ["mailto:"] }).validate(u10)).toBe(u10);
+			expect(new LinkSchema({ schemes: ["mailto:"] }).validate(u10)).toBe(u10);
 			const u11 = "magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a&dn";
-			expect(new UrlSchema({ schemes: ["magnet:"] }).validate(u11)).toBe(u11);
+			expect(new LinkSchema({ schemes: ["magnet:"] }).validate(u11)).toBe(u11);
 			const u12 = "tel:+44123456789";
-			expect(new UrlSchema({ schemes: ["tel:"] }).validate(u12)).toBe(u12);
+			expect(new LinkSchema({ schemes: ["tel:"] }).validate(u12)).toBe(u12);
 			const u13 = "telnet://rainmaker.wunderground.com";
-			expect(new UrlSchema({ schemes: ["telnet:"] }).validate(u13)).toBe(u13);
+			expect(new LinkSchema({ schemes: ["telnet:"] }).validate(u13)).toBe(u13);
 			const u14 = "urn:isbn:0-486-27557-4";
-			expect(new UrlSchema({ schemes: ["urn:"] }).validate(u14)).toBe(u14);
+			expect(new LinkSchema({ schemes: ["urn:"] }).validate(u14)).toBe(u14);
 			const u15 = "webcal://espn.go.com/travel/sports/calendar/export/espnCal?teams=6_23";
-			expect(new UrlSchema({ schemes: ["webcal:"] }).validate(u15)).toBe(u15);
+			expect(new LinkSchema({ schemes: ["webcal:"] }).validate(u15)).toBe(u15);
 			const u16 = "ws://localhost:8080/websocket/wsserver";
-			expect(new UrlSchema({ schemes: ["ws:"] }).validate(u16)).toBe(u16);
+			expect(new LinkSchema({ schemes: ["ws:"] }).validate(u16)).toBe(u16);
 		});
 		test("Invalid URLs are invalid", () => {
 			expect(() => schema.validate("user@")).toThrow(InvalidFeedback);
@@ -171,7 +171,7 @@ describe("validate()", () => {
 			expect(schema.validate("http://x.com/a?a=a#a")).toBe("http://x.com/a?a=a#a");
 		});
 		test("Resource without hostname is valid for URIs (not URLs)", () => {
-			const schema1 = new UrlSchema({ schemes: ["urn:"] });
+			const schema1 = new LinkSchema({ schemes: ["urn:"] });
 			expect(schema1.validate("urn:193847738")).toBe("urn:193847738");
 		});
 	});
@@ -188,41 +188,41 @@ describe("validate()", () => {
 });
 describe("options.value", () => {
 	test("Undefined default value is invalid", () => {
-		const schema = REQUIRED_URL;
+		const schema = LINK;
 		expect(() => schema.validate(undefined)).toThrow(InvalidFeedback);
 	});
 	test("Undefined with default value returns default value", () => {
-		const schema = new UrlSchema({ value: "http://x.com/" });
+		const schema = new LinkSchema({ value: "http://x.com/" });
 		expect(schema.validate(undefined)).toBe("http://x.com/");
 	});
 });
 describe("options.schemes", () => {
 	test("Scheme in default whitelist is allowed", () => {
-		const schema = OPTIONAL_URL;
+		const schema = OPTIONAL_LINK;
 		expect(schema.validate("http://x.com/")).toBe("http://x.com/");
 		expect(schema.validate("https://x.com/")).toBe("https://x.com/");
 	});
 	test("Scheme not in default whitelist is invalid", () => {
-		const schema = OPTIONAL_URL;
+		const schema = OPTIONAL_LINK;
 		expect(() => schema.validate("webcal://x.com")).toThrow(InvalidFeedback);
 	});
 	test("Scheme in specified whitelist is valid", () => {
-		const schema = new UrlSchema({ schemes: ["telnet:"] });
+		const schema = new LinkSchema({ schemes: ["telnet:"] });
 		expect(schema.validate("telnet://x.com")).toBe("telnet://x.com");
 	});
 	test("Scheme not in specified whitelist is invalid", () => {
-		const schema = new UrlSchema({ schemes: ["telnet:"] });
+		const schema = new LinkSchema({ schemes: ["telnet:"] });
 		expect(() => schema.validate("webcal://x.com:")).toThrow(InvalidFeedback);
 	});
 });
 describe("options.hosts", () => {
 	test("Host in default whitelist is allowed", () => {
-		const schema = new UrlSchema({ hosts: ["x.com"] });
+		const schema = new LinkSchema({ hosts: ["x.com"] });
 		expect(schema.validate("http://x.com/")).toBe("http://x.com/");
 		expect(schema.validate("https://x.com/")).toBe("https://x.com/");
 	});
 	test("Host not in specified whitelist is invalid", () => {
-		const schema = new UrlSchema({ hosts: ["x.com"] });
+		const schema = new LinkSchema({ hosts: ["x.com"] });
 		expect(() => schema.validate("http://y.com/")).toThrow(InvalidFeedback);
 		expect(() => schema.validate("https://y.com/")).toThrow(InvalidFeedback);
 	});

@@ -2,7 +2,7 @@ import { Schema } from "./Schema.js";
 import { ThroughSchema } from "./ThroughSchema.js";
 
 /** Validate a value of a specific type or `null`. */
-export class NullableSchema<T> extends ThroughSchema<T | null> {
+export class OptionalSchema<T> extends ThroughSchema<T | null> {
 	readonly value: T | null = null;
 	constructor({
 		value = null,
@@ -20,5 +20,5 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
 	}
 }
 
-/** Create a new nullable schema from a source schema. */
-export const NULLABLE = <T>(source: Schema<T>): NullableSchema<T> => new NullableSchema({ source });
+/** Create a new optional schema from a source schema. */
+export const OPTIONAL = <T>(source: Schema<T>): OptionalSchema<T> => new OptionalSchema({ source });

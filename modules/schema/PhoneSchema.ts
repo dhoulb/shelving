@@ -1,5 +1,5 @@
 import { StringSchema } from "./StringSchema.js";
-import { NULLABLE } from "./NullableSchema.js";
+import { OPTIONAL } from "./OptionalSchema.js";
 
 // Valid phone number is max 16 digits made up of:
 // - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).
@@ -25,7 +25,7 @@ export class PhoneSchema extends StringSchema {
 }
 
 /** Valid phone number, e.g. `+441234567890` */
-export const REQUIRED_PHONE = new PhoneSchema({});
+export const PHONE = new PhoneSchema({});
 
 /** Valid phone number, e.g. `+441234567890`, or `null` */
-export const OPTIONAL_PHONE = NULLABLE(REQUIRED_PHONE);
+export const OPTIONAL_PHONE = OPTIONAL(PHONE);

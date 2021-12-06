@@ -1,4 +1,4 @@
-import { Feedback, InvalidFeedback, PhoneSchema, Schema, OPTIONAL_PHONE, REQUIRED_PHONE } from "../index.js";
+import { Feedback, InvalidFeedback, PhoneSchema, Schema, OPTIONAL_PHONE, PHONE } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -7,7 +7,7 @@ test("TypeScript", () => {
 	const r1: string | null = s1.validate("+331234567890");
 
 	// Test phone.required
-	const s2: Schema<string> = REQUIRED_PHONE;
+	const s2: Schema<string> = PHONE;
 	const r2: string = s2.validate("+331234567890");
 
 	// Test phone({})
@@ -17,9 +17,9 @@ test("TypeScript", () => {
 test("constructor()", () => {
 	const schema1 = new PhoneSchema({});
 	expect(schema1).toBeInstanceOf(PhoneSchema);
-	const schema2 = REQUIRED_PHONE;
+	const schema2 = PHONE;
 	expect(schema2).toBeInstanceOf(PhoneSchema);
-	const schema3 = REQUIRED_PHONE;
+	const schema3 = PHONE;
 	expect(schema3).toBeInstanceOf(PhoneSchema);
 });
 describe("validate()", () => {

@@ -1,7 +1,7 @@
 import { isObject, Validators, validateData, Data } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/index.js";
 import { Schema } from "./Schema.js";
-import { NULLABLE, NullableSchema } from "./NullableSchema.js";
+import { OPTIONAL, OptionalSchema } from "./OptionalSchema.js";
 
 /** Validate a data object. */
 export class DataSchema<T extends Data> extends Schema<T> {
@@ -29,4 +29,4 @@ export class DataSchema<T extends Data> extends Schema<T> {
 export const DATA = <T extends Data>(props: Validators<T>): DataSchema<T> => new DataSchema({ props });
 
 /** Valid data object with specifed properties, or `null` */
-export const OPTIONAL_DATA = <T extends Data>(props: Validators<T>): NullableSchema<T> => NULLABLE(new DataSchema({ props }));
+export const OPTIONAL_DATA = <T extends Data>(props: Validators<T>): OptionalSchema<T> => OPTIONAL(new DataSchema({ props }));

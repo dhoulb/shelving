@@ -1,6 +1,6 @@
 import { InvalidFeedback } from "../feedback/index.js";
 import { toURL } from "../util/index.js";
-import { NULLABLE } from "./NullableSchema.js";
+import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /**
@@ -9,7 +9,7 @@ import { StringSchema } from "./StringSchema.js";
  * - URLs are limited to 512 characters, but generally these won't be data: URIs so this is a reasonable limit.
  * - Falsy values are converted to `""` empty string.
  */
-export class UrlSchema extends StringSchema {
+export class LinkSchema extends StringSchema {
 	override readonly type = "url";
 	override readonly min = 1;
 	override readonly max = 512;
@@ -38,8 +38,8 @@ export class UrlSchema extends StringSchema {
 	}
 }
 
-/** Valid URL, e.g. `#00CCFF` (required because empty string won't validate). */
-export const REQUIRED_URL = new UrlSchema({});
+/** Valid link, e.g. `https://www.google.com` */
+export const LINK = new LinkSchema({});
 
-/** Valid URL, e.g. `#00CCFF`, or `null` */
-export const OPTIONAL_URL = NULLABLE(REQUIRED_URL);
+/** Valid link, e.g. `https://www.google.com`, or `null` */
+export const OPTIONAL_LINK = OPTIONAL(LINK);

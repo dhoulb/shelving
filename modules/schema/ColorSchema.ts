@@ -1,4 +1,4 @@
-import { NULLABLE } from "./NullableSchema.js";
+import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 const R_MATCH = /^#[0-9A-F]{6}$/;
@@ -26,7 +26,7 @@ export class ColorSchema extends StringSchema {
 }
 
 /** Valid color hex string, e.g. `#00CCFF` (required because empty string is invalid). */
-export const REQUIRED_COLOR = new ColorSchema({});
+export const COLOR = new ColorSchema({});
 
 /** Valid color hex string, e.g. `#00CCFF`, or `null` */
-export const OPTIONAL_COLOR = NULLABLE(REQUIRED_COLOR);
+export const OPTIONAL_COLOR = OPTIONAL(COLOR);

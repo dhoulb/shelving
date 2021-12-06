@@ -1,4 +1,4 @@
-import { NULLABLE } from "./NullableSchema.js";
+import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 const R_MATCH = /^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.){1,3}(?:[a-z]{2,63}|xn--[a-z0-9-]{0,58}[a-z0-9])$/;
@@ -32,8 +32,8 @@ export class EmailSchema extends StringSchema {
 	}
 }
 
-/** Valid email, e.g. `test@test.com` (required because empty string is invalid). */
-export const REQUIRED_EMAIL = new EmailSchema({});
+/** Valid email, e.g. `test@test.com` */
+export const EMAIL = new EmailSchema({});
 
 /** Valid email, e.g. `test@test.com`, or `null` */
-export const OPTIONAL_EMAIL = NULLABLE(REQUIRED_EMAIL);
+export const OPTIONAL_EMAIL = OPTIONAL(EMAIL);

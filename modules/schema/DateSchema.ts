@@ -1,7 +1,7 @@
 import { toDate, getYmd, PossibleDate } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/index.js";
 import { Schema } from "./Schema.js";
-import { NULLABLE } from "./NullableSchema.js";
+import { OPTIONAL } from "./OptionalSchema.js";
 
 /** Define a valid date, e.g. `2005-09-12` */
 export class DateSchema extends Schema<string> {
@@ -35,7 +35,7 @@ export class DateSchema extends Schema<string> {
 }
 
 /** Valid date, e.g. `2005-09-12` (required because falsy values are invalid). */
-export const REQUIRED_DATE = new DateSchema({});
+export const DATE = new DateSchema({});
 
 /** Valid date, e.g. `2005-09-12`, or `null` */
-export const OPTIONAL_DATE = NULLABLE(REQUIRED_DATE);
+export const OPTIONAL_DATE = OPTIONAL(DATE);

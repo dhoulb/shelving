@@ -1,11 +1,11 @@
-import { InvalidFeedback, getYmd, DateSchema, Feedback, OPTIONAL_DATE, REQUIRED_DATE, Schema } from "../index.js";
+import { InvalidFeedback, getYmd, DateSchema, Feedback, OPTIONAL_DATE, DATE, Schema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
 	const s1: Schema<string | null> = OPTIONAL_DATE;
 	const r1: string | null = s1.validate("2015-09-12");
 
-	const s2: Schema<string> = REQUIRED_DATE;
+	const s2: Schema<string> = DATE;
 	const r2: string = s2.validate("2015-09-12");
 
 	const s3: Schema<string | null> = new DateSchema({});
@@ -20,9 +20,9 @@ test("TypeScript", () => {
 test("constructor()", () => {
 	const schema1 = new DateSchema({});
 	expect(schema1).toBeInstanceOf(DateSchema);
-	const schema2 = REQUIRED_DATE;
+	const schema2 = DATE;
 	expect(schema2).toBeInstanceOf(DateSchema);
-	const schema3 = REQUIRED_DATE;
+	const schema3 = DATE;
 	expect(schema3).toBeInstanceOf(DateSchema);
 });
 describe("validate()", () => {

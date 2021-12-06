@@ -1,7 +1,7 @@
 import { toNumber, roundNumber } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/index.js";
 import { Schema } from "./Schema.js";
-import { NULLABLE } from "./NullableSchema.js";
+import { OPTIONAL } from "./OptionalSchema.js";
 
 /** Schema that defines a valid number. */
 export class NumberSchema extends Schema<number> {
@@ -41,4 +41,4 @@ export class NumberSchema extends Schema<number> {
 export const NUMBER = new NumberSchema({});
 
 /** Valid number, e.g. `#2048` or `0` zero, or `null` */
-export const OPTIONAL_NUMBER = NULLABLE(NUMBER);
+export const OPTIONAL_NUMBER = OPTIONAL(NUMBER);

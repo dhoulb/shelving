@@ -1,11 +1,11 @@
-import { InvalidFeedback, ColorSchema, Schema, Feedback, OPTIONAL_COLOR, REQUIRED_COLOR } from "../index.js";
+import { InvalidFeedback, ColorSchema, Schema, Feedback, OPTIONAL_COLOR, COLOR } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
 	const s1: Schema<string | null> = OPTIONAL_COLOR;
 	const r1: string | null = s1.validate("#FFCC00");
 
-	const s2: Schema<string> = REQUIRED_COLOR;
+	const s2: Schema<string> = COLOR;
 	const r2: string = s2.validate("#FFCC00");
 
 	const s3: Schema<string> = new ColorSchema({});
@@ -14,9 +14,9 @@ test("TypeScript", () => {
 test("constructor()", () => {
 	const schema1 = new ColorSchema({});
 	expect(schema1).toBeInstanceOf(ColorSchema);
-	const schema2 = REQUIRED_COLOR;
+	const schema2 = COLOR;
 	expect(schema2).toBeInstanceOf(ColorSchema);
-	const schema3 = REQUIRED_COLOR;
+	const schema3 = COLOR;
 	expect(schema3).toBeInstanceOf(ColorSchema);
 });
 describe("validate()", () => {

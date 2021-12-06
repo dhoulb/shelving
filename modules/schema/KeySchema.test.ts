@@ -1,11 +1,11 @@
-import { Feedback, InvalidFeedback, KeySchema, Schema, OPTIONAL_KEY, REQUIRED_KEY } from "../index.js";
+import { Feedback, InvalidFeedback, KeySchema, Schema, OPTIONAL_KEY, KEY } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
 	const s1: Schema<string | null> = OPTIONAL_KEY;
 	const r1: string | null = s1.validate("ABC");
 
-	const s2: Schema<string> = REQUIRED_KEY;
+	const s2: Schema<string> = KEY;
 	const r2: string = s2.validate("ABC");
 
 	const s3: Schema<string> = new KeySchema({});
@@ -14,9 +14,9 @@ test("TypeScript", () => {
 test("constructor()", () => {
 	const schema1 = new KeySchema({});
 	expect(schema1).toBeInstanceOf(KeySchema);
-	const schema2 = REQUIRED_KEY;
+	const schema2 = KEY;
 	expect(schema2).toBeInstanceOf(KeySchema);
-	const schema3 = REQUIRED_KEY;
+	const schema3 = KEY;
 	expect(schema3).toBeInstanceOf(KeySchema);
 });
 describe("validate()", () => {
