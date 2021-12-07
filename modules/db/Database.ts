@@ -28,7 +28,7 @@ import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Query, EqualFilter } from "../query/index.js";
 import { DocumentRequiredError, DocumentValidationError, QueryValidationError } from "./errors.js";
-import { DocumentWrite, Write } from "./Write.js";
+import { DocumentWrite, Write, Writes } from "./Write.js";
 
 /**
  * Combines a database model and a provider.
@@ -61,9 +61,17 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 		return new DataDocument(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
 	}
 
-	/** Perform a write on this database. */
-	write(write: Write): void | PromiseLike<void> {
-		return write.transform(this);
+	/** Perform a write on this database and return the `Write` instance representing the changes. */
+	async write(write: Write): Promise<Write> {
+		await write.transform(this);
+		return write;
+	}
+
+	/** Perform multiple writes on this database by combining them into a single `Writes` instance representing the changes. */
+	async writes(...writes: Writes[]): Promise<Writes> {
+		const write = new Writes(...writes);
+		await write.transform(this);
+		return write;
 	}
 }
 
