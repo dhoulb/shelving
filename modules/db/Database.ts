@@ -68,7 +68,7 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 	}
 
 	/** Perform multiple writes on this database by combining them into a single `Writes` instance representing the changes. */
-	async writes(...writes: Writes[]): Promise<Writes> {
+	async writes(...writes: (Write | undefined)[]): Promise<Writes> {
 		const write = new Writes(...writes);
 		await write.transform(this);
 		return write;

@@ -30,14 +30,15 @@ export class DocumentWrite<T extends Data> extends Write {
  */
 export class Writes extends Write {
 	readonly writes: ImmutableArray<Write>;
-	constructor(...writes: Write[]) {
+	constructor(...writes: (Write | undefined)[]) {
 		super();
-		this.writes = writes;
+		this.writes = writes.filter(isWrite);
 	}
 	async transform(db: Database) {
 		for (const writes of this.writes) await transform(db, writes);
 	}
 }
+const isWrite = (v: Write | undefined): v is Write => !!v;
 
 /** Set of hydrations for all change classes. */
 export const WRITE_HYDRATIONS = {
