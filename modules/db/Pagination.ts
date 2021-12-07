@@ -77,7 +77,7 @@ export class Pagination<T extends Data> extends State<ResultsMap<T>> implements 
 	 * @return The change in the number of results.
 	 */
 	merge(more: Results<T>): void {
-		this.next(toMap(this.ref.sorts.derive(yieldMerged(more, this.value))));
+		this.next(toMap(this.ref.sorts.transform(yieldMerged(more, this.value))));
 	}
 
 	/** Iterate over the entries of the values currently in the pagination. */

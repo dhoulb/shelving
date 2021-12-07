@@ -3,7 +3,7 @@ import type { ImmutableMap } from "./map.js";
 import { Entry } from "./entry.js";
 import { ImmutableObject } from "./object.js";
 import { ASC } from "./sort.js";
-import { derive, Deriver } from "./derive.js";
+import { transform, Transformer } from "./transform.js";
 
 /** Object that can match an item against a target with its `match()` function. */
 export interface Matchable<L, R> {
@@ -96,14 +96,14 @@ export function filterMap<L, R>(input: ImmutableMap<L>, matcher: Matcher<Entry<L
 }
 
 /** Derive a value and match it against a target value. */
-export class MatchDerived<L, LL, R> implements Matchable<L, R> {
-	private _deriver: Deriver<L, LL>;
+export class TransformMatcher<L, LL, R> implements Matchable<L, R> {
+	private _transformer: Transformer<L, LL>;
 	private _matcher: Matcher<LL, R>;
-	constructor(deriver: Deriver<L, LL>, matcher: Matcher<LL, R> = IS) {
-		this._deriver = deriver;
+	constructor(transformer: Transformer<L, LL>, matcher: Matcher<LL, R> = IS) {
+		this._transformer = transformer;
 		this._matcher = matcher;
 	}
 	match(item: L, target: R): boolean {
-		return match(derive(item, this._deriver), this._matcher, target);
+		return match(transform(item, this._transformer), this._matcher, target);
 	}
 }

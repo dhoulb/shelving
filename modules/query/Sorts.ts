@@ -18,7 +18,7 @@ export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable
 		}
 		return 0;
 	}
-	derive(iterable: Results<T>): Results<T> {
+	transform(iterable: Results<T>): Results<T> {
 		return this._rules.length ? sortItems(iterable, this) : iterable;
 	}
 }

@@ -13,6 +13,6 @@ export const TRANSFORM_HYDRATIONS = {
 	removeItems: RemoveItemsTransform,
 	addEntries: AddEntriesTransform,
 	removeEntries: RemoveEntriesTransform,
-	transforms: DataTransform,
+	transformData: DataTransform,
 };
 TRANSFORM_HYDRATIONS as Hydrations;

@@ -8,7 +8,7 @@ export class RemoveEntriesTransform<T> extends Transform<ImmutableObject<T>> imp
 		super();
 		this.props = props;
 	}
-	derive(existing?: unknown): ImmutableObject<T> {
+	transform(existing?: unknown): ImmutableObject<T> {
 		return isObject<ImmutableObject<T>>(existing) ? withoutEntries(existing, this.props) : {};
 	}
 

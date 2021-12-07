@@ -2,7 +2,7 @@ import { Feedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { DataSchema } from "../schema/DataSchema.js";
 import { DataTransform, Transform, Transforms } from "../transform/index.js";
-import { MutableObject, derive, validate, Validator, Validators, toProps, Data } from "../util/index.js";
+import { MutableObject, transform, validate, Validator, Validators, toProps, Data } from "../util/index.js";
 
 /** Validate a transform against a validator. */
 export function validateTransform<T>(unsafeTransform: Transform<T> | DataTransform<T & Data>, validator: Validator<T> | DataSchema<T & Data>): Transform<T> {
@@ -11,7 +11,7 @@ export function validateTransform<T>(unsafeTransform: Transform<T> | DataTransfo
 		const safeTransforms = validateTransforms<T & Data>(unsafeTransforms, validator.props);
 		return safeTransforms === unsafeTransforms ? unsafeTransform : new DataTransform(safeTransforms);
 	} else {
-		validate(derive(undefined, unsafeTransform), validator);
+		validate(transform(undefined, unsafeTransform), validator);
 		return unsafeTransform;
 	}
 }

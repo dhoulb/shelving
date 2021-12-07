@@ -7,7 +7,7 @@ import {
 	Observable,
 	Results,
 	toMap,
-	DeriveObserver,
+	TransformObserver,
 	ResultsMap,
 	awaitNext,
 	Data,
@@ -94,7 +94,7 @@ export class BatchProvider extends ThroughProvider {
 		// States also send their most recently received value to any new observers.
 		const sub = (this._subs[key] ||= new LazyState<ResultsMap<T>>(STOP_DELAY).from(o => {
 			// Convert the iterable to a map because it might be read multiple times.
-			const stop = super.subscribeQuery(ref, new DeriveObserver(toMap, o));
+			const stop = super.subscribeQuery(ref, new TransformObserver(toMap, o));
 			// The first value from the subscription can be reused for any concurrent get requests.
 			this._gets[key] ||= this._awaitDocuments(ref, awaitNext(sub));
 			return () => {

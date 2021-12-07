@@ -7,7 +7,7 @@ import {
 	findSourceProvider,
 	NOVALUE,
 	ResultsMap,
-	DeriveObserver,
+	TransformObserver,
 	toMap,
 	Data,
 	Unsubscriber,
@@ -79,7 +79,7 @@ function subscribeEffect<T extends Data>(
 ): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.provider, CacheProvider);
-		const observer = new DeriveObserver(toMap, { next, error });
+		const observer = new TransformObserver(toMap, { next, error });
 		const stopCache = provider.cache.subscribeQuery(ref, observer);
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.

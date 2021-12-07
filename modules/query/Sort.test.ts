@@ -17,14 +17,14 @@ const numDesc = ["c", "a", "d", "b"];
 
 test("Sort", () => {
 	// Sort empty.
-	expectOrderedKeys(new AscendingSort("str").derive([]), []);
+	expectOrderedKeys(new AscendingSort("str").transform([]), []);
 	// Sort by id (change).
-	expectOrderedKeys(new AscendingSort("id").derive(allRand), idAsc);
-	expectOrderedKeys(new AscendingSort("id").derive(allRand), idAsc);
+	expectOrderedKeys(new AscendingSort("id").transform(allRand), idAsc);
+	expectOrderedKeys(new AscendingSort("id").transform(allRand), idAsc);
 	// Sort by string (change).
-	expectOrderedKeys(new AscendingSort("str").derive(allRand), strAsc);
-	expectOrderedKeys(new DescendingSort("str").derive(allRand), strDesc);
+	expectOrderedKeys(new AscendingSort("str").transform(allRand), strAsc);
+	expectOrderedKeys(new DescendingSort("str").transform(allRand), strDesc);
 	// Sort by number (change).
-	expectOrderedKeys(new AscendingSort("num").derive(allRand), numAsc);
-	expectOrderedKeys(new DescendingSort("num").derive(allRand), numDesc);
+	expectOrderedKeys(new AscendingSort("num").transform(allRand), numAsc);
+	expectOrderedKeys(new DescendingSort("num").transform(allRand), numDesc);
 });

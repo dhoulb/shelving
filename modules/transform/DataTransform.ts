@@ -1,4 +1,4 @@
-import { Data, Prop, Key, deriveData } from "../util/index.js";
+import { Data, Prop, Key, transformData } from "../util/index.js";
 import { Transform } from "./Transform.js";
 
 /**
@@ -17,8 +17,8 @@ export class DataTransform<T extends Data> extends Transform<T> implements Itera
 		super();
 		this.transforms = transforms;
 	}
-	derive(existing: T): T {
-		return deriveData<T>(existing, this.transforms);
+	transform(existing: T): T {
+		return transformData<T>(existing, this.transforms);
 	}
 
 	/** Return a new object with the specified additional transform. */

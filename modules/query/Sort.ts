@@ -18,7 +18,7 @@ export abstract class Sort<T extends Data> extends Rule<T> implements Rankable<E
 	rank([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
 		return rank(getQueryProp(leftId, leftData, this.key), this.ranker, getQueryProp(rightId, rightData, this.key));
 	}
-	derive(iterable: Results<T>): Results<T> {
+	transform(iterable: Results<T>): Results<T> {
 		return sortItems(iterable, this);
 	}
 	toString(): string {

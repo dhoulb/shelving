@@ -8,7 +8,7 @@ export class AddEntriesTransform<T> extends Transform<ImmutableObject<T>> implem
 		super();
 		this.props = props;
 	}
-	derive(existing?: unknown): ImmutableObject<T> {
+	transform(existing?: unknown): ImmutableObject<T> {
 		return isObject<ImmutableObject<T>>(existing) ? withEntries(existing, this.props) : {};
 	}
 

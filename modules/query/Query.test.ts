@@ -26,79 +26,79 @@ const TYPE_DESC = new DescendingSort<T>("type");
 
 test("Basic tests", () => {
 	// Empty.
-	expectUnorderedKeys(new Query().derive([]), []);
-	expectUnorderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_ASC), 20).derive([]), []);
+	expectUnorderedKeys(new Query().transform([]), []);
+	expectUnorderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_ASC), 20).transform([]), []);
 });
 test("Sorting", () => {
 	// Creating.
 	expect(new Query().asc("id")).toEqual(new Query(undefined, new Sorts(ID_ASC)));
 	// Constructing with sorts.
-	expectOrderedKeys(new Query(undefined, new Sorts(ID_ASC)).derive(allRand), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Query(undefined, new Sorts(STR_ASC)).derive(allRand), ["c", "d", "b", "a"]);
-	expectOrderedKeys(new Query(undefined, new Sorts(NUM_DESC)).derive(allRand), ["c", "a", "d", "b"]);
-	expectOrderedKeys(new Query(undefined, new Sorts(TYPE_ASC, ID_ASC)).derive(allRand), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Query(undefined, new Sorts(TYPE_ASC, ID_DESC)).derive(allRand), ["b", "a", "d", "c"]);
-	expectOrderedKeys(new Query(undefined, new Sorts(TYPE_DESC, ID_ASC)).derive(allRand), ["c", "d", "a", "b"]);
-	expectOrderedKeys(new Query(undefined, new Sorts(TYPE_DESC, ID_DESC)).derive(allRand), ["d", "c", "b", "a"]);
+	expectOrderedKeys(new Query(undefined, new Sorts(ID_ASC)).transform(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Query(undefined, new Sorts(STR_ASC)).transform(allRand), ["c", "d", "b", "a"]);
+	expectOrderedKeys(new Query(undefined, new Sorts(NUM_DESC)).transform(allRand), ["c", "a", "d", "b"]);
+	expectOrderedKeys(new Query(undefined, new Sorts(TYPE_ASC, ID_ASC)).transform(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Query(undefined, new Sorts(TYPE_ASC, ID_DESC)).transform(allRand), ["b", "a", "d", "c"]);
+	expectOrderedKeys(new Query(undefined, new Sorts(TYPE_DESC, ID_ASC)).transform(allRand), ["c", "d", "a", "b"]);
+	expectOrderedKeys(new Query(undefined, new Sorts(TYPE_DESC, ID_DESC)).transform(allRand), ["d", "c", "b", "a"]);
 	// Adding sorts.
-	expectOrderedKeys(new Query().asc("id").derive(allRand), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Query().asc("str").derive(allRand), ["c", "d", "b", "a"]);
-	expectOrderedKeys(new Query().desc("num").derive(allRand), ["c", "a", "d", "b"]);
-	expectOrderedKeys(new Query().asc("type").asc("id").derive(allRand), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Query().asc("type").desc("id").derive(allRand), ["b", "a", "d", "c"]);
-	expectOrderedKeys(new Query().desc("type").asc("id").derive(allRand), ["c", "d", "a", "b"]);
-	expectOrderedKeys(new Query().desc("type").desc("id").derive(allRand), ["d", "c", "b", "a"]);
+	expectOrderedKeys(new Query().asc("id").transform(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Query().asc("str").transform(allRand), ["c", "d", "b", "a"]);
+	expectOrderedKeys(new Query().desc("num").transform(allRand), ["c", "a", "d", "b"]);
+	expectOrderedKeys(new Query().asc("type").asc("id").transform(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Query().asc("type").desc("id").transform(allRand), ["b", "a", "d", "c"]);
+	expectOrderedKeys(new Query().desc("type").asc("id").transform(allRand), ["c", "d", "a", "b"]);
+	expectOrderedKeys(new Query().desc("type").desc("id").transform(allRand), ["d", "c", "b", "a"]);
 });
 test("Filtering", () => {
 	// Creating.
 	expect(new Query().is("id", "abc")).toEqual(new Query(new Filters(new EqualFilter("id", "abc"))));
 	// Constructing with filtering.
-	expectUnorderedKeys(new Query(new Filters(NUM_GT_2)).derive(allRand), ["a", "c"]);
-	expectUnorderedKeys(new Query(new Filters(STR_IN_Z_OR_X)).derive(allRand), ["a", "d"]);
-	expectUnorderedKeys(new Query(new Filters(TYPE_ALPHA)).derive(allRand), ["a", "b"]);
+	expectUnorderedKeys(new Query(new Filters(NUM_GT_2)).transform(allRand), ["a", "c"]);
+	expectUnorderedKeys(new Query(new Filters(STR_IN_Z_OR_X)).transform(allRand), ["a", "d"]);
+	expectUnorderedKeys(new Query(new Filters(TYPE_ALPHA)).transform(allRand), ["a", "b"]);
 	// Adding filters.
-	expectUnorderedKeys(new Query().gt("num", 2).derive(allRand), ["a", "c"]);
-	expectUnorderedKeys(new Query().in("str", ["X", "Z"]).derive(allRand), ["a", "d"]);
-	expectUnorderedKeys(new Query().is("type", "beta").derive(allRand), ["c", "d"]);
-	expectUnorderedKeys(new Query().gt("num", 2).is("str", "W").derive(allRand), ["c"]);
-	expectUnorderedKeys(new Query().is("type", "beta").lte("num", 2).derive(allRand), ["d"]);
-	expectUnorderedKeys(new Query().in("str", ["X", "Y", "Z"]).is("type", "alpha").derive(allRand), ["a", "b"]);
+	expectUnorderedKeys(new Query().gt("num", 2).transform(allRand), ["a", "c"]);
+	expectUnorderedKeys(new Query().in("str", ["X", "Z"]).transform(allRand), ["a", "d"]);
+	expectUnorderedKeys(new Query().is("type", "beta").transform(allRand), ["c", "d"]);
+	expectUnorderedKeys(new Query().gt("num", 2).is("str", "W").transform(allRand), ["c"]);
+	expectUnorderedKeys(new Query().is("type", "beta").lte("num", 2).transform(allRand), ["d"]);
+	expectUnorderedKeys(new Query().in("str", ["X", "Y", "Z"]).is("type", "alpha").transform(allRand), ["a", "b"]);
 });
 test("Limiting", () => {
 	// Creating.
 	expect(new Query().max(5)).toEqual(new Query(undefined, undefined, 5));
 	expect(new Query().max(null)).toEqual(new Query(undefined, undefined, null));
 	// Constructing with slicing.
-	expectOrderedKeys(new Query(undefined, undefined, null).derive(allAsc), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Query(undefined, undefined, 4).derive(allAsc), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Query(undefined, undefined, 3).derive(allAsc), ["a", "b", "c"]);
-	expectOrderedKeys(new Query(undefined, undefined, 2).derive(allAsc), ["a", "b"]);
-	expectOrderedKeys(new Query(undefined, undefined, 1).derive(allAsc), ["a"]);
-	expectOrderedKeys(new Query(undefined, undefined, 0).derive(allAsc), []);
+	expectOrderedKeys(new Query(undefined, undefined, null).transform(allAsc), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Query(undefined, undefined, 4).transform(allAsc), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Query(undefined, undefined, 3).transform(allAsc), ["a", "b", "c"]);
+	expectOrderedKeys(new Query(undefined, undefined, 2).transform(allAsc), ["a", "b"]);
+	expectOrderedKeys(new Query(undefined, undefined, 1).transform(allAsc), ["a"]);
+	expectOrderedKeys(new Query(undefined, undefined, 0).transform(allAsc), []);
 	// Adding slicing.
-	expectOrderedKeys(new Query().max(null).derive(allAsc), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Query().max(4).derive(allAsc), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Query().max(3).derive(allAsc), ["a", "b", "c"]);
-	expectOrderedKeys(new Query().max(2).derive(allAsc), ["a", "b"]);
-	expectOrderedKeys(new Query().max(1).derive(allAsc), ["a"]);
-	expectOrderedKeys(new Query().max(0).derive(allAsc), []);
+	expectOrderedKeys(new Query().max(null).transform(allAsc), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Query().max(4).transform(allAsc), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Query().max(3).transform(allAsc), ["a", "b", "c"]);
+	expectOrderedKeys(new Query().max(2).transform(allAsc), ["a", "b"]);
+	expectOrderedKeys(new Query().max(1).transform(allAsc), ["a"]);
+	expectOrderedKeys(new Query().max(0).transform(allAsc), []);
 });
 test("Combined tests", () => {
 	// Full queries.
-	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(NUM_ASC)).derive(allRand), ["a", "c"]);
-	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(NUM_DESC)).derive(allRand), ["c", "a"]);
-	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_ASC)).derive(allRand), ["a", "c"]);
-	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_DESC)).derive(allRand), ["c", "a"]);
-	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(NUM_ASC), 1).derive(allRand), ["a"]);
-	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(NUM_DESC), 1).derive(allRand), ["c"]);
-	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_ASC), 1).derive(allRand), ["a"]);
-	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_DESC), 1).derive(allRand), ["c"]);
-	expectOrderedKeys(new Query(new Filters(STR_IN_Z_OR_X), new Sorts(ID_ASC)).derive(allRand), ["a", "d"]);
-	expectOrderedKeys(new Query(new Filters(STR_IN_Z_OR_X), new Sorts(ID_DESC)).derive(allRand), ["d", "a"]);
-	expectOrderedKeys(new Query(new Filters(TYPE_ALPHA), new Sorts(STR_ASC)).derive(allRand), ["b", "a"]);
-	expectOrderedKeys(new Query(new Filters(TYPE_ALPHA), new Sorts(STR_DESC)).derive(allRand), ["a", "b"]);
-	expectOrderedKeys(new Query(new Filters(STR_IN_Z_OR_X), new Sorts(ID_ASC), 1).derive(allRand), ["a"]);
-	expectOrderedKeys(new Query(new Filters(STR_IN_Z_OR_X), new Sorts(ID_DESC), 1).derive(allRand), ["d"]);
-	expectOrderedKeys(new Query(new Filters(TYPE_ALPHA), new Sorts(STR_ASC), 1).derive(allRand), ["b"]);
-	expectOrderedKeys(new Query(new Filters(TYPE_ALPHA), new Sorts(STR_DESC), 1).derive(allRand), ["a"]);
+	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(NUM_ASC)).transform(allRand), ["a", "c"]);
+	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(NUM_DESC)).transform(allRand), ["c", "a"]);
+	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_ASC)).transform(allRand), ["a", "c"]);
+	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_DESC)).transform(allRand), ["c", "a"]);
+	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(NUM_ASC), 1).transform(allRand), ["a"]);
+	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(NUM_DESC), 1).transform(allRand), ["c"]);
+	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_ASC), 1).transform(allRand), ["a"]);
+	expectOrderedKeys(new Query(new Filters(NUM_GT_2), new Sorts(ID_DESC), 1).transform(allRand), ["c"]);
+	expectOrderedKeys(new Query(new Filters(STR_IN_Z_OR_X), new Sorts(ID_ASC)).transform(allRand), ["a", "d"]);
+	expectOrderedKeys(new Query(new Filters(STR_IN_Z_OR_X), new Sorts(ID_DESC)).transform(allRand), ["d", "a"]);
+	expectOrderedKeys(new Query(new Filters(TYPE_ALPHA), new Sorts(STR_ASC)).transform(allRand), ["b", "a"]);
+	expectOrderedKeys(new Query(new Filters(TYPE_ALPHA), new Sorts(STR_DESC)).transform(allRand), ["a", "b"]);
+	expectOrderedKeys(new Query(new Filters(STR_IN_Z_OR_X), new Sorts(ID_ASC), 1).transform(allRand), ["a"]);
+	expectOrderedKeys(new Query(new Filters(STR_IN_Z_OR_X), new Sorts(ID_DESC), 1).transform(allRand), ["d"]);
+	expectOrderedKeys(new Query(new Filters(TYPE_ALPHA), new Sorts(STR_ASC), 1).transform(allRand), ["b"]);
+	expectOrderedKeys(new Query(new Filters(TYPE_ALPHA), new Sorts(STR_DESC), 1).transform(allRand), ["a"]);
 });

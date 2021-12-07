@@ -43,7 +43,7 @@ export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filt
 		for (const rule of this._rules) if (!rule.match(entry)) return false;
 		return true;
 	}
-	derive(iterable: Results<T>): Results<T> {
+	transform(iterable: Results<T>): Results<T> {
 		return this._rules.length ? filterItems(iterable, this) : iterable;
 	}
 }

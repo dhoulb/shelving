@@ -90,8 +90,8 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	}
 
 	// Implement `Rule`
-	derive(results: Results<T>): Results<T> {
-		const sorted = this.sorts.derive(this.filters.derive(results));
+	transform(results: Results<T>): Results<T> {
+		const sorted = this.sorts.transform(this.filters.transform(results));
 		return typeof this.limit === "number" ? limitItems(sorted, this.limit) : sorted;
 	}
 

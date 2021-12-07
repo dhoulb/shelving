@@ -1,7 +1,7 @@
 import type { Data } from "./data.js";
 import { ImmutableArray, isArray } from "./array.js";
 import { isObject } from "./object.js";
-import { deriveArray, deriveObject } from "./derive.js";
+import { transformArray, transformObject } from "./transform.js";
 
 /** Cloneable object implement a `clone()` function that returns a cloned copy. */
 export interface Cloneable {
@@ -25,7 +25,7 @@ export function deepClone<T>(value: T, recursor = deepClone): T {
 /** Clone an array. */
 export function cloneArray<T extends ImmutableArray>(input: T, recursor = shallowClone): T {
 	if (isCloneable(input)) return input.clone();
-	const output = deriveArray<T>(input, recursor);
+	const output = transformArray<T>(input, recursor);
 	Object.setPrototypeOf(output, Object.getPrototypeOf(input));
 	return output;
 }
@@ -33,7 +33,7 @@ export function cloneArray<T extends ImmutableArray>(input: T, recursor = shallo
 /** Clone an object. */
 export function cloneObject<T extends Data>(input: T, recursor = shallowClone): T {
 	if (isCloneable(input)) return input.clone();
-	const output = deriveObject<T>(input, recursor);
+	const output = transformObject<T>(input, recursor);
 	Object.setPrototypeOf(input, Object.getPrototypeOf(input));
 	return output;
 }

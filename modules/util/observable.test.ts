@@ -1,4 +1,4 @@
-import { ConditionError, OnceObserver, ThroughObserver, DeriveObserver, awaitNext, NOVALUE, awaitComplete } from "../index.js";
+import { ConditionError, OnceObserver, ThroughObserver, TransformObserver, awaitNext, NOVALUE, awaitComplete } from "../index.js";
 
 test("ThroughObserver: complete chain", () => {
 	const nexts: number[] = [];
@@ -69,11 +69,11 @@ test("OnceObserver", () => {
 	expect(errors).toEqual([]);
 	expect(cleanups).toEqual([null]);
 });
-test("DeriveObserver: complete chain", () => {
+test("TransformObserver: complete chain", () => {
 	const nexts: string[] = [];
 	const errors: unknown[] = [];
 	const completes: null[] = [];
-	const observer = new DeriveObserver<number, string>(n => (n * n).toString(), {
+	const observer = new TransformObserver<number, string>(n => (n * n).toString(), {
 		next: v => nexts.push(v),
 		complete: () => completes.push(null),
 		error: r => errors.push(r),

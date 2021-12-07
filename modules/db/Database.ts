@@ -17,7 +17,7 @@ import {
 	Data,
 	MutableObject,
 	Results,
-	DeriveObserver,
+	TransformObserver,
 	Datas,
 	Validators,
 	ValidatorType,
@@ -28,6 +28,7 @@ import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Query, EqualFilter } from "../query/index.js";
 import { DocumentRequiredError, DocumentValidationError, QueryValidationError } from "./errors.js";
+import { Write } from "./Write.js";
 
 /**
  * Combines a database model and a provider.
@@ -140,7 +141,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @return Function that ends the subscription.
 	 */
 	subscribeMap(next: Observer<ResultsMap<T>> | Dispatcher<[ResultsMap<T>]>): Unsubscriber {
-		return this.provider.subscribeQuery(this, new DeriveObserver(toMap, typeof next === "function" ? { next } : next));
+		return this.provider.subscribeQuery(this, new TransformObserver(toMap, typeof next === "function" ? { next } : next));
 	}
 
 	/**
@@ -271,47 +272,44 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 		return this.provider.subscribe(this, typeof next === "function" ? { next } : next);
 	}
 
-	/**
-	 * Set the complete data of this document.
-	 *
-	 * @param data Complete data to set the document to.
-	 *
-	 * @return Nothing (possibly promised).
-	 */
+	/** Set the complete data of this document. */
 	set(data: T): void | PromiseLike<void> {
 		return this.write(data);
 	}
 
-	/**
-	 * Update this document with partial data.
-	 * - If the document exists, merge the partial data into it.
-	 * - If the document doesn't exist, throw an error.
-	 *
-	 * @param transforms `Transform` instance or set of transforms to apply to the existing document.
-	 * - Not all transforms may be supported by all providers.
-	 *
-	 * @return Nothing (possibly promised).
-	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
-	 */
+	/** Update this document. */
 	update(transforms: Transform<T> | Transforms<T>): void | PromiseLike<void> {
 		return this.write(transforms instanceof Transform ? transforms : new DataTransform(transforms));
 	}
 
-	/**
-	 * Delete this document.
-	 * - Will not throw an error if the document doesn't exist.
-	 *
-	 * @return Nothing (possibly promised).
-	 */
+	/** Delete this document. */
 	delete(): void | PromiseLike<void> {
 		return this.write(undefined);
 	}
 
-	/**
-	 * Combine `set()`, `update()`, `delete()` into a single method.
-	 */
+	/** Set, update, or delete this document. */
 	write(value: Result<T> | Transform<T>): void | PromiseLike<void> {
 		return this.provider.write(this, value);
+	}
+
+	/** Represent a write that sets the complete data of this document in a database. */
+	setter(data: T): Write<T> {
+		return this.writer(data);
+	}
+
+	/** Represent a write that updates this document in a database. */
+	updater(transforms: Transform<T> | Transforms<T>): Write<T> {
+		return this.writer(transforms instanceof Transform ? transforms : new DataTransform(transforms));
+	}
+
+	/** Represent a write that deletes this document in a database. */
+	deleter(): Write<T> {
+		return this.writer(undefined);
+	}
+
+	/** Represent a write that sets, updates, or deletes this document in a database. */
+	writer(value: Result<T> | Transform<T>): Write<T> {
+		return new Write(this, value);
 	}
 
 	/** Validate data for this query reference. */

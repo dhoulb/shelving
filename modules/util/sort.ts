@@ -2,7 +2,7 @@ import { ImmutableObject } from "./object.js";
 import { ImmutableMap } from "./map.js";
 import type { Entry } from "./entry.js";
 import { ImmutableArray, MutableArray } from "./array.js";
-import { derive, Deriver } from "./derive.js";
+import { transform, Transformer } from "./transform.js";
 
 /** Object that can rank two values using its `rank()` function. */
 export interface Rankable<T> {
@@ -96,7 +96,6 @@ export const VALUE_DESC = ([, l]: Entry, [, r]: Entry): number => DESC(l, r);
  *
  * @param items The actual list of items that's sorted in place.
  * @param ranker A rank function that takes a left/right value and returns 1/0/-1 (like `Array.prototype.sort()`).
- * @param deriver A deriving function that picks the specific value to sort from out of the full value.
  * @param leftPointer Index in the set of items to start sorting on.
  * @param rightPointer Index in the set of items to stop sorting on.
  *
@@ -173,14 +172,14 @@ export function sortMap<T>(input: ImmutableMap<T>, ranker: Ranker<Entry<T>> = KE
 }
 
 /** Derive a value and match it against a target value. */
-export class RankDerived<T, TT> implements Rankable<T> {
-	private _deriver: Deriver<T, TT>;
+export class TransformRanker<T, TT> implements Rankable<T> {
+	private _transformer: Transformer<T, TT>;
 	private _ranker: Ranker<TT>;
-	constructor(deriver: Deriver<T, TT>, ranker: Ranker<TT> = ASC) {
-		this._deriver = deriver;
+	constructor(transformer: Transformer<T, TT>, ranker: Ranker<TT> = ASC) {
+		this._transformer = transformer;
 		this._ranker = ranker;
 	}
 	rank(left: T, right: T): number {
-		return rank(derive(left, this._deriver), this._ranker, derive(right, this._deriver));
+		return rank(transform(left, this._transformer), this._ranker, transform(right, this._transformer));
 	}
 }

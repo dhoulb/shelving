@@ -1,4 +1,4 @@
-import { sortArray, ASC, DESC, RankDerived } from "../index.js";
+import { sortArray, ASC, DESC, TransformRanker } from "../index.js";
 
 describe("ASC & DESC", () => {
 	test("Different types are sorted correctly", () => {
@@ -73,9 +73,9 @@ describe("sortArray() & ASC", () => {
 		const arr = ["0", "00", "1", "01", "001", "g", "z", "gg", "á", "😂", "a", "ê"];
 		expect(sortArray(arr, ASC)).toEqual(["😂", "0", "00", "001", "01", "1", "a", "á", "ê", "g", "gg", "z"]);
 	});
-	describe("RankDerived", () => {
-		const subpropRankerASC = new RankDerived<{ prop?: { subprop?: number } }, number | undefined>(v => v?.prop?.subprop, ASC);
-		test("RankDerived: Two objects with subprops are sorted correctly", () => {
+	describe("TransformRanker", () => {
+		const subpropRankerASC = new TransformRanker<{ prop?: { subprop?: number } }, number | undefined>(v => v?.prop?.subprop, ASC);
+		test("TransformRanker: Two objects with subprops are sorted correctly", () => {
 			const unsorted = [{ prop: { subprop: 0 } }, { prop: { subprop: 1 } }, { prop: { subprop: -1 } }];
 			const sorted = [{ prop: { subprop: -1 } }, { prop: { subprop: 0 } }, { prop: { subprop: 1 } }];
 			expect(sortArray(unsorted, subpropRankerASC)).toEqual(sorted);
@@ -97,9 +97,9 @@ describe("sortArray() & DESC", () => {
 		const sorted = [undefined, {}, null, false, true, "a", "1", "0", 1, 0, -1];
 		expect(sortArray(unsorted, DESC)).toEqual(sorted);
 	});
-	describe("RankDerived", () => {
-		const subpropRankerDESC = new RankDerived<{ prop?: { subprop?: number } }, number | undefined>(v => v?.prop?.subprop, DESC);
-		test("RankDerived: Two objects with subprops are sorted correctly", () => {
+	describe("TransformRanker", () => {
+		const subpropRankerDESC = new TransformRanker<{ prop?: { subprop?: number } }, number | undefined>(v => v?.prop?.subprop, DESC);
+		test("TransformRanker: Two objects with subprops are sorted correctly", () => {
 			const unsorted = [{ prop: { subprop: 0 } }, { prop: { subprop: 1 } }, { prop: { subprop: -1 } }];
 			const sorted = [{ prop: { subprop: 1 } }, { prop: { subprop: 0 } }, { prop: { subprop: -1 } }];
 			expect(sortArray(unsorted, subpropRankerDESC)).toEqual(sorted);

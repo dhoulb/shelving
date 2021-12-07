@@ -61,21 +61,21 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		if (value instanceof Transform) {
 			const existing = table.data.get(id);
 			if (!existing) throw new DocumentRequiredError(ref);
-			table.write(id, value.derive(existing));
+			table.write(id, value.transform(existing));
 		} else {
 			table.write(id, value);
 		}
 	}
 
 	getQuery<T extends Data>(ref: DataQuery<T>): Results<T> {
-		return ref.derive(this._table(ref).data);
+		return ref.transform(this._table(ref).data);
 	}
 
 	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
 		const table = this._table(ref);
 
 		// Call `next()` immediately with the initial results.
-		let lastResults = new Map(ref.derive(table.data));
+		let lastResults = new Map(ref.transform(table.data));
 		dispatchNext(observer, lastResults);
 
 		// Possibly call `next()` when the collection changes if any changes affect the subscription.
@@ -86,7 +86,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 				// 2) the next document matches the query so might be added to the next results.
 				// Re-running the entire query is not the most efficient way to do this, but itis the most simple!
 				if (lastResults.has(id) || (next && ref.match([id, next]))) {
-					const nextResults = new Map(ref.derive(table.data));
+					const nextResults = new Map(ref.transform(table.data));
 					if (!isMapEqual(lastResults, nextResults)) {
 						lastResults = nextResults;
 						dispatchNext(observer, lastResults);
@@ -101,8 +101,8 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
-		for (const [id, existing] of ref.limit ? ref.derive(table.data) : ref.filters.derive(table.data))
-			table.write(id, value instanceof Transform ? value.derive(existing) : value);
+		for (const [id, existing] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data))
+			table.write(id, value instanceof Transform ? value.transform(existing) : value);
 	}
 
 	/** Reset this provider and clear all data. */

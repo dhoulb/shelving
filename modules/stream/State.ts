@@ -1,5 +1,5 @@
 import {
-	Deriver,
+	Transformer,
 	LOADING,
 	ObserverType,
 	NOERROR,
@@ -7,7 +7,7 @@ import {
 	dispatchNext,
 	dispatchError,
 	dispatchComplete,
-	derive,
+	transform,
 	getRequired,
 	Mutable,
 	awaitNext,
@@ -30,8 +30,8 @@ export type AnyState = State<any>;
  * */
 export interface State<T> {
 	to(): State<T>;
-	derive<TT>(deriver: Deriver<T, TT>): State<TT>;
-	deriveAsync<TT>(deriver: Deriver<T, Promise<TT>>): State<TT>;
+	derive<TT>(deriver: Transformer<T, TT>): State<TT>;
+	deriveAsync<TT>(deriver: Transformer<T, Promise<TT>>): State<TT>;
 }
 export class State<T> extends Stream<T> {
 	// Override species so `to()`, `derive()` and `deriveAsync()` with no target return new `State` instances.
@@ -69,8 +69,8 @@ export class State<T> extends Stream<T> {
 	}
 
 	/** Apply a deriver to this state. */
-	apply(deriver: Deriver<T, T>): void {
-		this.next(derive(this.value, deriver));
+	apply(deriver: Transformer<T, T>): void {
+		this.next(transform(this.value, deriver));
 	}
 
 	// Override to save the reason at `this.reason` and clean up.

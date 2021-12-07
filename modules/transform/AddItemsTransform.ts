@@ -8,7 +8,7 @@ export class AddItemsTransform<T> extends Transform<ImmutableArray<T>> implement
 		super();
 		this.items = items;
 	}
-	derive(existing?: unknown): ImmutableArray<T> {
+	transform(existing?: unknown): ImmutableArray<T> {
 		return isArray<ImmutableArray<T>>(existing) ? withItems(existing, this.items) : this.items;
 	}
 

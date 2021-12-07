@@ -26,7 +26,7 @@ export abstract class Filter<T extends Data> extends Rule<T> implements Matchabl
 	match([id, data]: Entry<T>): boolean {
 		return match(getQueryProp(id, data, this.key), this.matcher, this.value);
 	}
-	derive(results: Results<T>): Results<T> {
+	transform(results: Results<T>): Results<T> {
 		return filterItems(results, this);
 	}
 	override toString(): string {

@@ -1,7 +1,7 @@
 import {
 	AsyncObserver,
-	DeriveObserver,
-	Deriver,
+	TransformObserver,
+	Transformer,
 	ObserverType,
 	Subscribable,
 	Mutable,
@@ -118,19 +118,19 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 		return target;
 	}
 
-	/** Derive a new stream from this stream using a deriver. */
-	derive<O extends AnyStream>(deriver: Deriver<T, ObserverType<O>>, target: O): O;
-	derive<TT>(deriver: Deriver<T, TT>): Stream<T>;
-	derive<TT>(deriver: Deriver<T, TT>, target: Stream<TT> = new (this.constructor as typeof Stream)[Symbol.species]()): Stream<TT> {
-		target.during(this, new DeriveObserver(deriver, target));
+	/** Derive a new stream from this stream using a transformer. */
+	derive<O extends AnyStream>(transformer: Transformer<T, ObserverType<O>>, target: O): O;
+	derive<TT>(transformer: Transformer<T, TT>): Stream<T>;
+	derive<TT>(transformer: Transformer<T, TT>, target: Stream<TT> = new (this.constructor as typeof Stream)[Symbol.species]()): Stream<TT> {
+		target.during(this, new TransformObserver(transformer, target));
 		return target;
 	}
 
-	/** Derive a new stream from this stream using an async deriver. */
-	deriveAsync<O extends AnyStream>(deriver: Deriver<T, Promise<ObserverType<O>>>, target: O): O;
-	deriveAsync<TT>(deriver: Deriver<T, Promise<TT>>): Stream<T>;
-	deriveAsync<TT>(deriver: Deriver<T, Promise<TT>>, target: Stream<TT> = new (this.constructor as typeof Stream)[Symbol.species]()): Stream<TT> {
-		target.during(this, new DeriveObserver(deriver, new AsyncObserver(target)));
+	/** Derive a new stream from this stream using an async transformer. */
+	deriveAsync<O extends AnyStream>(transformer: Transformer<T, Promise<ObserverType<O>>>, target: O): O;
+	deriveAsync<TT>(transformer: Transformer<T, Promise<TT>>): Stream<T>;
+	deriveAsync<TT>(transformer: Transformer<T, Promise<TT>>, target: Stream<TT> = new (this.constructor as typeof Stream)[Symbol.species]()): Stream<TT> {
+		target.during(this, new TransformObserver(transformer, new AsyncObserver(target)));
 		return target;
 	}
 

@@ -2,7 +2,7 @@ import { ConditionError } from "../error/index.js";
 import { BLACKHOLE, dispatch, Dispatcher } from "./function.js";
 import { Handler, logError } from "./error.js";
 import { isData } from "./data.js";
-import { derive, Deriver } from "./derive.js";
+import { transform, Transformer } from "./transform.js";
 import { validate, Validator } from "./validate.js";
 
 /** Function that ends a subscription. */
@@ -157,17 +157,17 @@ export class OnceObserver<T> extends ThroughObserver<T> {
 	}
 }
 
-/** Oserver that derives its next values with a deriver. */
-export class DeriveObserver<I, O> extends AbstractObserver<I, O> {
-	protected _deriver: Deriver<I, O>;
-	constructor(deriver: Deriver<I, O>, target: Observer<O>) {
+/** Oserver that transforms its next values with a transformer. */
+export class TransformObserver<I, O> extends AbstractObserver<I, O> {
+	protected _transformer: Transformer<I, O>;
+	constructor(transformer: Transformer<I, O>, target: Observer<O>) {
 		super(target);
-		this._deriver = deriver;
+		this._transformer = transformer;
 	}
 	next(value: I) {
 		const target = this._target;
 		if (!target) throw new ConditionError("Observer is closed");
-		dispatchNext(target, derive(value, this._deriver));
+		dispatchNext(target, transform(value, this._transformer));
 	}
 }
 

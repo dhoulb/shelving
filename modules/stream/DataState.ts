@@ -1,4 +1,4 @@
-import { Key, withProp, Data, Derivers, deriveData } from "../util/index.js";
+import { Key, withProp, Data, Transformers, transformData } from "../util/index.js";
 import { State } from "./State.js";
 
 /** State that stores an array and has additional methods to help with that. */
@@ -9,7 +9,7 @@ export class DataState<T extends Data> extends State<T> {
 	}
 
 	/** Update several props in this object. */
-	update(updates: Derivers<T>): void {
-		this.next(deriveData(this.value, updates));
+	update(updates: Transformers<T>): void {
+		this.next(transformData(this.value, updates));
 	}
 }

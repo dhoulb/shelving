@@ -1,6 +1,6 @@
 import type { DataDocument, DataQuery } from "../db/index.js";
 import { Transform } from "../transform/index.js";
-import { Result, MutableObject, Unsubscriber, Observer, Results, DeriveObserver, Data } from "../util/index.js";
+import { Result, MutableObject, Unsubscriber, Observer, Results, TransformObserver, Data } from "../util/index.js";
 import type { Provider, AsynchronousProvider } from "./Provider.js";
 import { MemoryProvider } from "./MemoryProvider.js";
 import { ThroughProvider } from "./ThroughProvider.js";
@@ -45,7 +45,7 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 
 	// Override to cache any got results.
 	override subscribe<T extends Data>(ref: DataDocument<T>, observer: Observer<Result<T>>): Unsubscriber {
-		return super.subscribe(ref, new DeriveObserver(result => this._cacheResult(ref, result), observer));
+		return super.subscribe(ref, new TransformObserver(result => this._cacheResult(ref, result), observer));
 	}
 
 	override async add<T extends Data>(ref: DataQuery<T>, data: T): Promise<string> {
@@ -87,7 +87,7 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 
 	// Override to cache any got results.
 	override subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
-		return super.subscribeQuery(ref, new DeriveObserver(results => this._cacheResults(ref, results), observer));
+		return super.subscribeQuery(ref, new TransformObserver(results => this._cacheResults(ref, results), observer));
 	}
 
 	override async writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): Promise<void> {

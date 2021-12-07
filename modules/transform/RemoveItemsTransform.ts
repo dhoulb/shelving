@@ -8,7 +8,7 @@ export class RemoveItemsTransform<T> extends Transform<ImmutableArray<T>> implem
 		super();
 		this.items = items;
 	}
-	derive(existing?: ImmutableArray<T> | unknown): ImmutableArray<T> {
+	transform(existing?: ImmutableArray<T> | unknown): ImmutableArray<T> {
 		return isArray<ImmutableArray<T>>(existing) ? withoutItems(existing, this.items) : this.items;
 	}
 
