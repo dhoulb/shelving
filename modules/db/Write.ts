@@ -2,15 +2,18 @@ import { Transform } from "../transform/index.js";
 import { Hydrations, ImmutableArray, Data, Transformable, transform } from "../util/index.js";
 import type { Database, DataDocument } from "./Database.js";
 
-/** Change transformable. */
-export type DatabaseTransformable = Transformable<Database, void | PromiseLike<void>>;
+/** Write to a database. */
+export abstract class Write implements Transformable<Database, void | PromiseLike<void>> {
+	abstract transform(db: Database): void | PromiseLike<void>;
+}
 
 /** Represent a write made to a single document in a database. */
-export class Write<T extends Data> implements Transformable<Database, void | PromiseLike<void>> {
+export class DocumentWrite<T extends Data> extends Write {
 	readonly collection: string;
 	readonly id: string;
 	readonly value: Data | Transform<Data> | undefined;
 	constructor({ collection, id }: DataDocument<T>, value: T | Transform<T> | undefined) {
+		super();
 		this.collection = collection;
 		this.id = id;
 		this.value = value;
@@ -21,13 +24,14 @@ export class Write<T extends Data> implements Transformable<Database, void | Pro
 }
 
 /**
- * Represent a list of writes made to a set of documents in a database.
+ * Represent a list of writes made to a database.
  * - Sets of writes are predictable and repeatable, so unpredictable operations like `create()` and query operations are not supported.
  * - Every write must be applied to a specific database document in a specific collection and are applied in the specified order.
  */
-export class Writes implements Transformable<Database, void | PromiseLike<void>> {
-	readonly writes: ImmutableArray<Write<Data>>;
-	constructor(...writes: Write<Data>[]) {
+export class Writes extends Write {
+	readonly writes: ImmutableArray<Write>;
+	constructor(...writes: Write[]) {
+		super();
 		this.writes = writes;
 	}
 	async transform(db: Database) {
@@ -37,7 +41,7 @@ export class Writes implements Transformable<Database, void | PromiseLike<void>>
 
 /** Set of hydrations for all change classes. */
 export const DATABASE_HYDRATIONS = {
-	changes: Writes,
-	change: Write,
+	writes: Writes,
+	write: DocumentWrite,
 };
 DATABASE_HYDRATIONS as Hydrations;

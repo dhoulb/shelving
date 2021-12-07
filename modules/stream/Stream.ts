@@ -128,8 +128,8 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 
 	/** Derive a new stream from this stream using an async transformer. */
 	deriveAsync<O extends AnyStream>(transformer: Transformer<T, Promise<ObserverType<O>>>, target: O): O;
-	deriveAsync<TT>(transformer: Transformer<T, Promise<TT>>): Stream<T>;
-	deriveAsync<TT>(transformer: Transformer<T, Promise<TT>>, target: Stream<TT> = new (this.constructor as typeof Stream)[Symbol.species]()): Stream<TT> {
+	deriveAsync<TT>(transformer: Transformer<T, PromiseLike<TT>>): Stream<T>;
+	deriveAsync<TT>(transformer: Transformer<T, PromiseLike<TT>>, target: Stream<TT> = new (this.constructor as typeof Stream)[Symbol.species]()): Stream<TT> {
 		target.during(this, new TransformObserver(transformer, new AsyncObserver(target)));
 		return target;
 	}

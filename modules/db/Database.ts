@@ -28,7 +28,7 @@ import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Query, EqualFilter } from "../query/index.js";
 import { DocumentRequiredError, DocumentValidationError, QueryValidationError } from "./errors.js";
-import { Write } from "./Write.js";
+import { DocumentWrite, Write } from "./Write.js";
 
 /**
  * Combines a database model and a provider.
@@ -59,6 +59,11 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 	/** Reference a document in a collection in this model. */
 	doc<K extends Key<V>>(collection: K, id: string): DataDocument<ValidatorType<V[K]>> {
 		return new DataDocument(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
+	}
+
+	/** Perform a write on this database. */
+	write(write: Write): void | PromiseLike<void> {
+		return write.transform(this);
 	}
 }
 
@@ -293,23 +298,23 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 	}
 
 	/** Represent a write that sets the complete data of this document in a database. */
-	setter(data: T): Write<T> {
+	setter(data: T): DocumentWrite<T> {
 		return this.writer(data);
 	}
 
 	/** Represent a write that updates this document in a database. */
-	updater(transforms: Transform<T> | Transforms<T>): Write<T> {
+	updater(transforms: Transform<T> | Transforms<T>): DocumentWrite<T> {
 		return this.writer(transforms instanceof Transform ? transforms : new DataTransform(transforms));
 	}
 
 	/** Represent a write that deletes this document in a database. */
-	deleter(): Write<T> {
+	deleter(): DocumentWrite<T> {
 		return this.writer(undefined);
 	}
 
 	/** Represent a write that sets, updates, or deletes this document in a database. */
-	writer(value: Result<T> | Transform<T>): Write<T> {
-		return new Write(this, value);
+	writer(value: Result<T> | Transform<T>): DocumentWrite<T> {
+		return new DocumentWrite(this, value);
 	}
 
 	/** Validate data for this query reference. */

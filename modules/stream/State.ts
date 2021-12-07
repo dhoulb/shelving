@@ -30,8 +30,8 @@ export type AnyState = State<any>;
  * */
 export interface State<T> {
 	to(): State<T>;
-	derive<TT>(deriver: Transformer<T, TT>): State<TT>;
-	deriveAsync<TT>(deriver: Transformer<T, Promise<TT>>): State<TT>;
+	derive<TT>(transformer: Transformer<T, TT>): State<TT>;
+	deriveAsync<TT>(transformer: Transformer<T, PromiseLike<TT>>): State<TT>;
 }
 export class State<T> extends Stream<T> {
 	// Override species so `to()`, `derive()` and `deriveAsync()` with no target return new `State` instances.
