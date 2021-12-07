@@ -40,8 +40,8 @@ export class Writes extends Write {
 }
 
 /** Set of hydrations for all change classes. */
-export const DATABASE_HYDRATIONS = {
+export const WRITE_HYDRATIONS = {
 	writes: Writes,
 	write: DocumentWrite,
 };
-DATABASE_HYDRATIONS as Hydrations;
+WRITE_HYDRATIONS as Hydrations;
