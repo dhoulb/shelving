@@ -40,9 +40,7 @@ export function transform<I, O>(input: I, transformer: Transformer<I, O>): O {
 
 /**
  * Apply a transformer to each item in a set of items and yield the transformed item.
- *
  * @yield Transformed items after calling `transformer()` on each.
- * @returns Number of items that changed.
  */
 export function transformItems<I, O>(items: Iterable<I>, transformer: (input: I) => O): Iterable<O>; // Helps `O` carry through functions that use generics.
 export function transformItems<I, O>(items: Iterable<I>, transformer: Transformer<I, O>): Iterable<O>;
@@ -52,16 +50,7 @@ export function* transformItems<I, O>(items: Iterable<I>, transformer: Transform
 
 /**
  * Apply a transformer to each item in an array and return the transformed array.
- *
- * @param arr The input array or map-like object or iterable to iterate over.
- * @param mapper Mapping function that receives the value and key and returns the corresponding value.
- * - Mapper can return a promise. If it does will return a Promise that resolves once every value has resolved.
- * - Return the `SKIP` symbol from the mapper to skip that property and not include it in the output object.
- * - `SKIP` is useful because using `filter(Boolean)` doesn't currently filter in TypeScript (and requires another loop anyway).
- * - Mapper can be a non-function static value and all the values will be set to that value.
- *
- * @return The mapped array.
- * - Immutable so if the values don't change then the same instance will be returned.
+ * @return The transformed array.
  */
 export function transformArray<T extends ImmutableArray>(arr: T, transformer: Transformer<ArrayType<T>, ArrayType<T>>): T; // Passthrough for transformers that return the same type and remove nothing.
 export function transformArray<I, O>(arr: Iterable<I>, transformer: (v: I) => O): ImmutableArray<O>; // Helps `O` carry through functions that use generics.
