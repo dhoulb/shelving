@@ -13,7 +13,7 @@ export type Transforms<T extends Data> = { readonly [K in keyof T]?: T[K] | Tran
 /** Set of transforms that can be appled to an object's properties. */
 export class DataTransform<T extends Data> extends Transform<T> implements Iterable<Prop<Transforms<T>>> {
 	readonly transforms: Transforms<T>;
-	constructor(transforms: Transforms<T>) {
+	constructor(transforms: Transforms<T> = {}) {
 		super();
 		this.transforms = transforms;
 	}
@@ -21,8 +21,12 @@ export class DataTransform<T extends Data> extends Transform<T> implements Itera
 		return transformData<T>(existing, this.transforms);
 	}
 
-	/** Return a new object with the specified additional transform. */
-	prop<K extends Key<T>>(key: K, transform: T[K] | Transform<T[K]>): this {
+	/**
+	 * Return a new object with the specified additional transform.
+	 * - If `key` is `undefined` the prop is skipped to make it easy to make conditional data transforms.
+	 */
+	prop<K extends Key<T>>(key: K | undefined, transform: T[K] | Transform<T[K]>): this {
+		if (key === undefined) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, transforms: { ...this.transforms, [key]: transform } };
 	}
 
