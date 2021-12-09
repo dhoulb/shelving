@@ -2,8 +2,8 @@ import {
 	ImmutableObject,
 	isObject,
 	MutableObject,
-	removeEntry,
-	removeEntries,
+	deleteEntry,
+	deleteEntries,
 	setEntry,
 	setEntries,
 	withoutEntries,
@@ -73,13 +73,13 @@ test("setEntries()", () => {
 	setEntries(obj, { b: 2, c: 3 });
 	expect(obj).toEqual({ a: 1, b: 2, c: 3 });
 });
-test("removeEntry()", () => {
+test("deleteEntry()", () => {
 	const obj: MutableObject<number> = { a: 1, b: 2 };
-	removeEntry(obj, "b", 2);
+	deleteEntry(obj, "b", 2);
 	expect(obj).toEqual({ a: 1 });
 });
-test("removeEntries()", () => {
+test("deleteEntries()", () => {
 	const obj: MutableObject<number> = { a: 1, b: 2, c: 3 };
-	removeEntries(obj, ["b", "c"]);
+	deleteEntries(obj, ["b", "c"]);
 	expect(obj).toEqual({ a: 1 });
 });

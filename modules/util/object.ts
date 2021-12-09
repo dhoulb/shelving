@@ -104,7 +104,7 @@ export const setEntries: <T>(obj: MutableObject<T>, entries: ImmutableObject<T>)
  * @param key The key of the entry to remove.
  * @param value The value of the entry to remove. If set, the entry will only be removed if its current value is exactly `value`
  */
-export function removeEntry<T>(obj: MutableObject<T>, key: string, value?: T): void {
+export function deleteEntry<T>(obj: MutableObject<T>, key: string, value?: T): void {
 	if (value === undefined || obj[key] === value) delete obj[key];
 }
 
@@ -114,6 +114,6 @@ export function removeEntry<T>(obj: MutableObject<T>, key: string, value?: T): v
  * @param obj The target object to modify.
  * @param entries Set of keys or entries to remove.
  */
-export function removeEntries<T>(obj: MutableObject<T>, keys: ImmutableArray<string>): void {
+export function deleteEntries<T>(obj: MutableObject<T>, keys: ImmutableArray<string>): void {
 	for (const key of keys) delete obj[key];
 }

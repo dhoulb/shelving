@@ -19,7 +19,7 @@ test("ArrayState", () => {
 	expect(state.value).toEqual([1, 2, 3, 4]);
 	expect(fn1).nthCalledWith(2, [1, 2, 3, 4]);
 	// Remove.
-	expect(state.remove(2)).toBe(undefined);
+	expect(state.delete(2)).toBe(undefined);
 	expect(state.value).toEqual([1, 3, 4]);
 	expect(fn1).nthCalledWith(3, [1, 3, 4]);
 	// Has.

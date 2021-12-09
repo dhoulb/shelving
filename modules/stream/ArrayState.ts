@@ -17,7 +17,7 @@ export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<
 	}
 
 	/** Remove an item from this array. */
-	remove(item: T): void {
+	delete(item: T): void {
 		this.next(withoutItem(this.value, item));
 	}
 
