@@ -68,9 +68,9 @@ export class State<T> extends Stream<T> {
 		return this._value === LOADING;
 	}
 
-	/** Apply a deriver to this state. */
-	apply(deriver: Transformer<T, T>): void {
-		this.next(transform(this.value, deriver));
+	/** Apply a transformer to this state. */
+	apply(transformer: Transformer<T, T>): void {
+		this.next(transform(this.value, transformer));
 	}
 
 	// Override to save the reason at `this.reason` and clean up.
