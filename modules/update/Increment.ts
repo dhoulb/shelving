@@ -1,10 +1,10 @@
-import { Transform } from "./Transform.js";
+import { Update } from "./Update.js";
 
 /**
  * Increment transform: an object that increments/decrements a value.
  * - Hint: you can use negative numbers to decrement the number too!
  */
-export class IncrementTransform extends Transform<number> {
+export class Increment extends Update<number> {
 	readonly amount: number;
 	constructor(amount: number) {
 		super();
@@ -16,7 +16,7 @@ export class IncrementTransform extends Transform<number> {
 }
 
 /** Transform that increments a value by one. */
-export const INCREMENT = new IncrementTransform(1);
+export const INCREMENT = new Increment(1);
 
 /** Transform that decrements a value by one. */
-export const DECREMENT = new IncrementTransform(-1);
+export const DECREMENT = new Increment(-1);

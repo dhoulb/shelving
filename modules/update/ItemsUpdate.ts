@@ -1,8 +1,8 @@
 import { ImmutableArray, isArray, withItems, withoutItems } from "../util/index.js";
-import { Transform } from "./Transform.js";
+import { Update } from "./Update.js";
 
-/** Transform that can be applied to the entries of an array. */
-export class ArrayTransforms<T> extends Transform<ImmutableArray<T>> {
+/** Update that can be applied to add/delete items in an array. */
+export class ItemsUpdate<T> extends Update<ImmutableArray<T>> {
 	readonly adds: ImmutableArray<T>;
 	readonly deletes: ImmutableArray<T>;
 	constructor(adds: ImmutableArray<T> = [], deletes: ImmutableArray<T> = []) {
@@ -20,7 +20,7 @@ export class ArrayTransforms<T> extends Transform<ImmutableArray<T>> {
 	 * - If `key` is `undefined` or `null` nothing is changed (to make it easy to create conditional transforms).
 	 * - Adds are applied before deletes.
 	 */
-	add(key: string | undefined | null, value: T | Transform<T>): this {
+	with(key: string | undefined | null, value: T | Update<T>): this {
 		if (key === undefined || key === null) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, sets: { ...this.adds, [key]: value } };
 	}
@@ -30,7 +30,7 @@ export class ArrayTransforms<T> extends Transform<ImmutableArray<T>> {
 	 * - If `key` is `undefined` or `null` nothing is changed (to make it easy to create conditional transforms).
 	 * - Deletes are applied after adds.
 	 */
-	delete(key: string | undefined | null): this {
+	without(key: string | undefined | null): this {
 		if (key === undefined || key === null) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, deletes: [...this.deletes, key] };
 	}

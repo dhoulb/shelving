@@ -1,10 +1,6 @@
 import {
 	TRANSFORM_HYDRATIONS,
-	IncrementTransform,
-	AddItemsTransform,
-	RemoveItemsTransform,
-	AddEntriesTransform,
-	RemoveEntriesTransform,
+	Increment,
 	FEEDBACK_HYDRATIONS,
 	Feedback,
 	SuccessFeedback,
@@ -22,10 +18,10 @@ const HYDRATIONS = {
 
 test("hydrate(): Works correctly with class instances", () => {
 	// Flat.
-	const original1 = new IncrementTransform(1);
+	const original1 = new Increment(1);
 	const dehydrated1 = dehydrate(original1, HYDRATIONS);
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS);
-	expect(hydrated1).toBeInstanceOf(IncrementTransform);
+	expect(hydrated1).toBeInstanceOf(Increment);
 	expect(original1).not.toBe(hydrated1);
 	expect(original1).toEqual(hydrated1);
 
@@ -46,10 +42,10 @@ test("hydrate(): Works correctly with class instances", () => {
 });
 test("hydrate(): Works correctly with arrays of objects", () => {
 	// Flat.
-	const original1 = ["abc", new IncrementTransform(1), 123] as const;
+	const original1 = ["abc", new Increment(1), 123] as const;
 	const dehydrated1 = dehydrate(original1, HYDRATIONS);
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS);
-	expect((hydrated1 as typeof original1)[1]).toBeInstanceOf(IncrementTransform);
+	expect((hydrated1 as typeof original1)[1]).toBeInstanceOf(Increment);
 	expect(original1).not.toBe(hydrated1);
 	expect(original1).toEqual(hydrated1);
 
@@ -80,10 +76,10 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 });
 test("hydrate(): Works correctly with plain objects of objects", () => {
 	// Flat.
-	const original1 = { str: "abc", obj: new IncrementTransform(1), num: 123 };
+	const original1 = { str: "abc", obj: new Increment(1), num: 123 };
 	const dehydrated1 = dehydrate(original1, HYDRATIONS);
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS);
-	expect((hydrated1 as typeof original1).obj).toBeInstanceOf(IncrementTransform);
+	expect((hydrated1 as typeof original1).obj).toBeInstanceOf(Increment);
 	expect(original1).not.toBe(hydrated1);
 	expect(original1).toEqual(hydrated1);
 

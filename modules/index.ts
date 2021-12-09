@@ -12,12 +12,12 @@ export * from "./query/index.js";
 export * from "./api/index.js";
 
 // Utilities.
-export * from "./util/index.js";
-export * from "./stream/index.js";
-export * from "./feedback/index.js";
 export * from "./error/index.js";
-export * from "./transform/index.js";
+export * from "./feedback/index.js";
 export * from "./markup/index.js";
+export * from "./stream/index.js";
+export * from "./update/index.js";
+export * from "./util/index.js";
 
 // Integrations.
 // export * from "./react/index.js"; // Not exported.

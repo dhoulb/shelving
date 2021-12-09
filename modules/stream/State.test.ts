@@ -1,5 +1,4 @@
-import { jest } from "@jest/globals";
-import { RequiredError, State, DataTransform, initialState } from "../index.js";
+import { RequiredError, State, DataUpdate, initialState } from "../index.js";
 import { runMicrotasks } from "../test/util.js";
 
 test("State", async () => {
@@ -47,7 +46,7 @@ test("State.prototype.apply()", () => {
 	const calls: V[] = [];
 	state.subscribe(v => calls.push(v));
 	// Apply a data deriver.
-	expect(state.apply(new DataTransform<V>({ a: 111 }))).toBe(undefined);
+	expect(state.apply(new DataUpdate<V>({ a: 111 }))).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: 2 });
 	// Checks.
 	expect(calls).toEqual([

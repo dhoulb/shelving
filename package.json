@@ -23,6 +23,7 @@
 		".": "./index.js",
 		"./api": "./api/index.js",
 		"./db": "./db/index.js",
+		"./error": "./error/index.js",
 		"./feedback": "./feedback/index.js",
 		"./firestore/client": "./firestore-client/index.js",
 		"./firestore/lite": "./firestore-lite/index.js",
@@ -34,6 +35,7 @@
 		"./schema": "./schema/index.js",
 		"./stream": "./stream/index.js",
 		"./test": "./test/index.js",
+		"./update": "./update/index.js",
 		"./util": "./util/index.js"
 	},
 	"sideEffects": false,

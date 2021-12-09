@@ -17,7 +17,7 @@ export interface Transformable<I, O> {
 export type AnyTransformable = Transformable<any, any>;
 
 /** Is an unknown value a derivable. */
-export const isApplier = <T extends AnyTransformable>(v: T | unknown): v is T => isData(v) && typeof v.transform === "function";
+export const isTransformable = <T extends AnyTransformable>(v: T | unknown): v is T => isData(v) && typeof v.transform === "function";
 
 /** Function that takes an input value and returns a value transformed from it, or an applier with matching arguments. */
 export type Transformer<I, O> = Transformable<I, O> | ((input: I) => O) | O;
@@ -27,16 +27,16 @@ export type Transformer<I, O> = Transformable<I, O> | ((input: I) => O) | O;
 export type AnyTransformer = Transformer<any, any>;
 
 /** Extract the transformed type from a transformer. */
-export type TransformedType<T extends AnyTransformer> = T extends Transformer<unknown, infer TT> ? TT : never;
+export type TransformType<T extends AnyTransformer> = T extends Transformer<unknown, infer TT> ? TT : never;
 
 /** Is an unknown value a transformer. */
-export const isTransformer = <T extends AnyTransformer>(v: T | unknown): v is T => typeof v === "function" || isApplier(v);
+export const isTransformer = <T extends AnyTransformer>(v: T | unknown): v is T => typeof v === "function" || isTransformable(v);
 
 /** Transform a value using a transformer. */
 export function transform<I, O>(input: I, transformer: (v: I) => O): O; // Helps `O` carry through functions that use generics.
 export function transform<I, O>(input: I, transformer: Transformer<I, O>): O; // No promise returned with synchronous transformer.
 export function transform<I, O>(input: I, transformer: Transformer<I, O>): O {
-	return isFunction(transformer) ? transformer(input) : isApplier(transformer) ? transformer.transform(input) : transformer;
+	return isFunction(transformer) ? transformer(input) : isTransformable(transformer) ? transformer.transform(input) : transformer;
 }
 
 /**
