@@ -1,13 +1,13 @@
 import { Feedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { DataSchema } from "../schema/DataSchema.js";
-import { DataTransform, Transform, Transforms } from "../transform/index.js";
+import { DataTransform, Transform, DataTransforms } from "../transform/index.js";
 import { MutableObject, transform, validate, Validator, Validators, toProps, Data } from "../util/index.js";
 
 /** Validate a transform against a validator. */
 export function validateTransform<T>(unsafeTransform: Transform<T> | DataTransform<T & Data>, validator: Validator<T> | DataSchema<T & Data>): Transform<T> {
 	if (validator instanceof DataSchema && unsafeTransform instanceof DataTransform) {
-		const unsafeTransforms = unsafeTransform.transforms;
+		const unsafeTransforms = unsafeTransform.props;
 		const safeTransforms = validateTransforms<T & Data>(unsafeTransforms, validator.props);
 		return safeTransforms === unsafeTransforms ? unsafeTransform : new DataTransform(safeTransforms);
 	} else {
@@ -17,7 +17,7 @@ export function validateTransform<T>(unsafeTransform: Transform<T> | DataTransfo
 }
 
 /** Validate a set of transforms against a set of validators. */
-export function validateTransforms<T extends Data>(unsafeTransforms: Transforms<T>, validators: Validators<T>): Transforms<T> {
+export function validateTransforms<T extends Data>(unsafeTransforms: DataTransforms<T>, validators: Validators<T>): DataTransforms<T> {
 	let invalid = false;
 	const safeTransforms: { [K in keyof T]?: T[K] | Transform<T[K]> } = {};
 	const details: MutableObject = {};

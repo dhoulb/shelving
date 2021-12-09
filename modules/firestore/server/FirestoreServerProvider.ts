@@ -19,10 +19,6 @@ import {
 	dispatchError,
 	Transform,
 	IncrementTransform,
-	AddItemsTransform,
-	RemoveItemsTransform,
-	AddEntriesTransform,
-	RemoveEntriesTransform,
 	Data,
 	AsynchronousProvider,
 	DataTransform,
@@ -30,6 +26,9 @@ import {
 	Entry,
 	Results,
 	Unsubscriber,
+	ArrayTransforms,
+	UnsupportedError,
+	ObjectTransforms,
 } from "../../index.js";
 
 // Constants.
@@ -84,16 +83,16 @@ function getFieldValues<T extends Data>(transform: Transform<T>): Data {
 	if (transform instanceof DataTransform) return Object.fromEntries(yieldFieldValues(transform));
 	throw new AssertionError("Unsupported transform", transform);
 }
-function* yieldFieldValues(transforms: DataTransform<Data>, prefix = ""): Iterable<Entry> {
+function* yieldFieldValues(transforms: Iterable<Entry>, prefix = ""): Iterable<Entry> {
 	for (const [key, transform] of transforms) {
-		if (!(transform instanceof Transform)) yield [`${prefix}${key}`, transform];
+		if (!(transform instanceof Transform)) yield [`${prefix}${key}`, transform !== undefined ? transform : FieldValue.delete()];
 		if (transform instanceof IncrementTransform) yield [`${prefix}${key}`, FieldValue.increment(transform.amount)];
-		else if (transform instanceof AddItemsTransform) yield [`${prefix}${key}`, FieldValue.arrayUnion(...transform)];
-		else if (transform instanceof RemoveItemsTransform) yield [`${prefix}${key}`, FieldValue.arrayRemove(...transform)];
-		else if (transform instanceof AddEntriesTransform) for (const [k, v] of transform) yield [`${prefix}${key}.${k}`, v];
-		else if (transform instanceof RemoveEntriesTransform) for (const k of transform) yield [`${prefix}${key}.${k}`, FieldValue.delete()];
-		else if (transform instanceof DataTransform) yield* yieldFieldValues(transform, `${prefix}${key}.`);
-		else throw new AssertionError("Unsupported transform", transform);
+		else if (transform instanceof DataTransform || transform instanceof ObjectTransforms) yield* yieldFieldValues(transform, `${prefix}${key}.`);
+		else if (transform instanceof ArrayTransforms) {
+			if (transform.adds.length && transform.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
+			if (transform.adds.length) yield [`${prefix}${key}`, FieldValue.arrayUnion(...transform.adds)];
+			else if (transform.deletes.length) yield [`${prefix}${key}`, FieldValue.arrayRemove(...transform.deletes)];
+		} else throw new AssertionError("Unsupported transform", transform);
 	}
 }
 

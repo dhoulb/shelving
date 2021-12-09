@@ -1,4 +1,4 @@
-import { Data, Prop, Key, transformData } from "../util/index.js";
+import { Data, Prop, Key, transformData, Transformable } from "../util/index.js";
 import { Transform } from "./Transform.js";
 
 /**
@@ -8,35 +8,30 @@ import { Transform } from "./Transform.js";
  * - If a prop contains a transform, the existing value is transformed.
  * - This is a subset of `Dispatchers`
  */
-export type Transforms<T extends Data> = { readonly [K in keyof T]?: T[K] | Transform<T[K]> };
+export type DataTransforms<T extends Data> = { readonly [K in keyof T]?: T[K] | Transform<T[K]> };
 
 /** Set of transforms that can be appled to an object's properties. */
-export class DataTransform<T extends Data> extends Transform<T> implements Iterable<Prop<Transforms<T>>> {
-	readonly transforms: Transforms<T>;
-	constructor(transforms: Transforms<T> = {}) {
+export class DataTransform<T extends Data> extends Transform<T> implements Iterable<Prop<DataTransforms<T>>>, Transformable<T, T> {
+	readonly props: DataTransforms<T>;
+	constructor(transforms: DataTransforms<T> = {}) {
 		super();
-		this.transforms = transforms;
+		this.props = transforms;
 	}
 	transform(existing: T): T {
-		return transformData<T>(existing, this.transforms);
+		return transformData<T>(existing, this.props);
 	}
 
 	/**
 	 * Return a new object with the specified additional transform.
-	 * - If `key` is `undefined` the prop is skipped to make it easy to make conditional data transforms.
+	 * - If `key` is `undefined` nothing is changed (to make it easy to create conditional transforms).
 	 */
-	prop<K extends Key<T>>(key: K | undefined, transform: T[K] | Transform<T[K]>): this {
-		if (key === undefined) return this;
-		return { __proto__: Object.getPrototypeOf(this), ...this, transforms: { ...this.transforms, [key]: transform } };
-	}
-
-	/** Return a new object with the specified additional transforms. */
-	props(transforms: Transforms<T>): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, transforms: { ...this.transforms, ...transforms } };
+	update<K extends Key<T>>(key: K | undefined | null | false, value: T[K] | Transform<T[K]>): this {
+		if (key === undefined || key === null || key === false) return this;
+		return { __proto__: Object.getPrototypeOf(this), ...this, props: { ...this.props, [key]: value } };
 	}
 
 	/** Iterate over the transforms in this object. */
-	[Symbol.iterator](): Iterator<Prop<Transforms<T>>, void> {
-		return Object.entries(this.transforms).values();
+	[Symbol.iterator](): Iterator<Prop<DataTransforms<T>>, void> {
+		return Object.entries(this.props).values();
 	}
 }

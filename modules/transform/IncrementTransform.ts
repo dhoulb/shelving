@@ -5,8 +5,6 @@ import { Transform } from "./Transform.js";
  * - Hint: you can use negative numbers to decrement the number too!
  */
 export class IncrementTransform extends Transform<number> {
-	static INCREMENT_ONE = new IncrementTransform(1);
-	static DECREMENT_ONE = new IncrementTransform(-1);
 	readonly amount: number;
 	constructor(amount: number) {
 		super();
@@ -16,3 +14,9 @@ export class IncrementTransform extends Transform<number> {
 		return typeof existing === "number" ? existing + this.amount : this.amount;
 	}
 }
+
+/** Transform that increments a value by one. */
+export const INCREMENT = new IncrementTransform(1);
+
+/** Transform that decrements a value by one. */
+export const DECREMENT = new IncrementTransform(-1);

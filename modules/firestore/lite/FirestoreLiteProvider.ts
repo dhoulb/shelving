@@ -34,11 +34,8 @@ import {
 	SortDirection,
 	Result,
 	Transform,
-	AddItemsTransform,
-	AddEntriesTransform,
+	ObjectTransforms,
 	IncrementTransform,
-	RemoveItemsTransform,
-	RemoveEntriesTransform,
 	AsynchronousProvider,
 	AssertionError,
 	DataTransform,
@@ -46,6 +43,8 @@ import {
 	Data,
 	Results,
 	Unsubscriber,
+	ArrayTransforms,
+	UnsupportedError,
 } from "../../index.js";
 
 // Constants.
@@ -100,16 +99,16 @@ function getFieldValues<T extends Data>(transform: Transform<T>): Data {
 	if (transform instanceof DataTransform) return Object.fromEntries(yieldFieldValues(transform));
 	throw new AssertionError("Unsupported transform", transform);
 }
-function* yieldFieldValues(transforms: DataTransform<Data>, prefix = ""): Generator<Entry, void> {
+function* yieldFieldValues(transforms: Iterable<Entry>, prefix = ""): Generator<Entry, void> {
 	for (const [key, transform] of transforms) {
-		if (!(transform instanceof Transform)) yield [`${prefix}${key}`, transform];
-		if (transform instanceof IncrementTransform) yield [`${prefix}${key}`, firestoreIncrement(transform.amount)];
-		else if (transform instanceof AddItemsTransform) yield [`${prefix}${key}`, firestoreArrayUnion(...transform)];
-		else if (transform instanceof RemoveItemsTransform) yield [`${prefix}${key}`, firestoreArrayRemove(...transform)];
-		else if (transform instanceof AddEntriesTransform) for (const [k, v] of transform) yield [`${prefix}${key}.${k}`, v];
-		else if (transform instanceof RemoveEntriesTransform) for (const k of transform) yield [`${prefix}${key}.${k}`, firestoreDeleteField()];
-		else if (transform instanceof DataTransform) yield* yieldFieldValues(transform, `${prefix}${key}.`);
-		else throw new AssertionError("Unsupported transform", transform);
+		if (!(transform instanceof Transform)) yield [`${prefix}${key}`, transform !== undefined ? transform : firestoreDeleteField()];
+		else if (transform instanceof IncrementTransform) yield [`${prefix}${key}`, firestoreIncrement(transform.amount)];
+		else if (transform instanceof DataTransform || transform instanceof ObjectTransforms) yield* yieldFieldValues(transform, `${prefix}${key}.`);
+		else if (transform instanceof ArrayTransforms) {
+			if (transform.adds.length && transform.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
+			if (transform.adds.length) yield [`${prefix}${key}`, firestoreArrayUnion(...transform.adds)];
+			else if (transform.deletes.length) yield [`${prefix}${key}`, firestoreArrayRemove(...transform.deletes)];
+		} else throw new AssertionError("Unsupported transform", transform);
 	}
 }
 

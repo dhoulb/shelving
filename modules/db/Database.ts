@@ -23,7 +23,7 @@ import {
 	ValidatorType,
 	Dispatcher,
 } from "../util/index.js";
-import { DataTransform, Transform, Transforms } from "../transform/index.js";
+import { DataTransform, Transform, DataTransforms } from "../transform/index.js";
 import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Query, EqualFilter } from "../query/index.js";
@@ -175,7 +175,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 *
 	 * @return Nothing (possibly promised).
 	 */
-	update(transform: Transform<T> | Transforms<T>): void | PromiseLike<void> {
+	update(transform: Transform<T> | DataTransforms<T>): void | PromiseLike<void> {
 		return this.write(transform instanceof Transform ? transform : new DataTransform(transform));
 	}
 
@@ -291,7 +291,7 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 	}
 
 	/** Update this document. */
-	update(transforms: Transform<T> | Transforms<T>): void | PromiseLike<void> {
+	update(transforms: Transform<T> | DataTransforms<T>): void | PromiseLike<void> {
 		return this.write(transforms instanceof Transform ? transforms : new DataTransform(transforms));
 	}
 
@@ -311,7 +311,7 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 	}
 
 	/** Represent a write that updates this document in a database. */
-	updater(transforms: Transform<T> | Transforms<T>): DocumentWrite<T> {
+	updater(transforms: Transform<T> | DataTransforms<T>): DocumentWrite<T> {
 		return this.writer(transforms instanceof Transform ? transforms : new DataTransform(transforms));
 	}
 
