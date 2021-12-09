@@ -56,10 +56,13 @@ export const VALUE_IS = ([, item]: Entry, target: unknown) => item === target;
 /** Match whether the value of an entry is in an array of targets. */
 export const VALUE_IN = ([, item]: Entry, targets: ImmutableArray) => targets.includes(item);
 
+/** Match whether the value of an entry is defined. */
+export const VALUE_DEFINED = ([, item]: Entry) => item !== undefined;
+
 /** Filter an iterable set of items using a matcher (and optionally a target value). */
-export function filterItems<L>(input: Iterable<L>, matcher: Matcher<L, void>): Iterable<L>;
-export function filterItems<L, R>(input: Iterable<L>, matcher: Matcher<L, R>, target: R): Iterable<L>;
-export function* filterItems<L, R>(input: Iterable<L>, matcher: Matcher<L, R | undefined>, target?: R): Iterable<L> {
+export function yieldFiltered<L>(input: Iterable<L>, matcher: Matcher<L, void>): Iterable<L>;
+export function yieldFiltered<L, R>(input: Iterable<L>, matcher: Matcher<L, R>, target: R): Iterable<L>;
+export function* yieldFiltered<L, R>(input: Iterable<L>, matcher: Matcher<L, R | undefined>, target?: R): Iterable<L> {
 	for (const item of input) if (match(item, matcher, target)) yield item;
 }
 
@@ -68,22 +71,15 @@ export function filterArray<L>(input: ImmutableArray<L>, matcher: Matcher<L, voi
 export function filterArray<L, R>(input: ImmutableArray<L>, matcher: Matcher<L, R>, target: R): ImmutableArray<L>;
 export function filterArray<L, R>(input: ImmutableArray<L>, matcher: Matcher<L, R | undefined>, target?: R): ImmutableArray<L> {
 	if (!input.length) return input;
-	const output = Array.from(filterItems(input, matcher, target));
+	const output = Array.from(yieldFiltered(input, matcher, target));
 	return output.length === input.length ? input : output;
-}
-
-/** Filter an iterable set of entries using an entry matcher (and optionally a target value). */
-export function filterEntries<L>(entries: Iterable<Entry<L>>, matcher: Matcher<Entry<L>, void>): Iterable<Entry<L>>;
-export function filterEntries<L, R>(entries: Iterable<Entry<L>>, matcher: Matcher<Entry<L>, R>, target: R): Iterable<Entry<L>>;
-export function filterEntries<L, R>(entries: Iterable<Entry<L>>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): Iterable<Entry<L>> {
-	return filterItems(entries, matcher, target);
 }
 
 /** Filter an object _by its values_ using a matcher (and optionally a target value). */
 export function filterObject<L>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, void>): ImmutableObject<L>;
 export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R>, target: R): ImmutableObject<L>;
 export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): ImmutableObject<L> {
-	return Object.fromEntries(filterEntries(Object.entries(object), matcher, target));
+	return Object.fromEntries(yieldFiltered(Object.entries(object), matcher, target));
 }
 
 /** Filter a map _by its values_ using a matcher (and optionally a target value). */
@@ -91,7 +87,7 @@ export function filterMap<L>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, 
 export function filterMap<L, R>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, R>, target: R): ImmutableMap<L>;
 export function filterMap<L, R>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): ImmutableMap<L> {
 	if (!input.size) return input;
-	const output = new Map(filterEntries(input, matcher, target));
+	const output = new Map(yieldFiltered(input, matcher, target));
 	return output.size === input.size ? input : output;
 }
 
