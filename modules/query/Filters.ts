@@ -1,4 +1,4 @@
-import { Entry, ArrayType, ImmutableArray, Data, Key, filterItems, Results } from "../util/index.js";
+import { Entry, ArrayType, ImmutableArray, Data, Key, yieldFiltered, Results } from "../util/index.js";
 import type { Filterable, QueryKey } from "./types.js";
 import {
 	ArrayContainsFilter,
@@ -44,6 +44,6 @@ export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filt
 		return true;
 	}
 	transform(iterable: Results<T>): Results<T> {
-		return this._rules.length ? filterItems(iterable, this) : iterable;
+		return this._rules.length ? yieldFiltered(iterable, this) : iterable;
 	}
 }

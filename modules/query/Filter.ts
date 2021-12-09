@@ -1,4 +1,4 @@
-import { Data, Entry, Matchable, match, CONTAINS, IS, GT, GTE, IN, LT, LTE, NOT, Matcher, filterItems, Results } from "../util/index.js";
+import { Data, Entry, Matchable, match, CONTAINS, IS, GT, GTE, IN, LT, LTE, NOT, Matcher, yieldFiltered, Results } from "../util/index.js";
 import { Rule } from "./Rule.js";
 import { getQueryProp } from "./helpers.js";
 import { FilterOperator, QueryKey } from "./types.js";
@@ -27,7 +27,7 @@ export abstract class Filter<T extends Data> extends Rule<T> implements Matchabl
 		return match(getQueryProp(id, data, this.key), this.matcher, this.value);
 	}
 	transform(results: Results<T>): Results<T> {
-		return filterItems(results, this);
+		return yieldFiltered(results, this);
 	}
 	override toString(): string {
 		return `${this.key}:${this.operator}=${JSON.stringify(this.value)}`;
