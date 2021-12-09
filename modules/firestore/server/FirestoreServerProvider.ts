@@ -3,8 +3,10 @@ import type {
 	OrderByDirection as FirestoreOrderByDirection,
 	Query as FirestoreQuery,
 	QuerySnapshot as FirestoreQuerySnapshot,
+	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
 	DocumentReference as FirestoreDocumentReference,
 	CollectionReference as FirestoreCollectionReference,
+	BulkWriter as FirestoreBulkWriter,
 } from "@google-cloud/firestore";
 import { Firestore, FieldValue } from "@google-cloud/firestore";
 import {
@@ -17,18 +19,18 @@ import {
 	Result,
 	dispatchNext,
 	dispatchError,
-	Transform,
-	IncrementTransform,
+	Update,
+	Increment,
 	Data,
 	AsynchronousProvider,
-	DataTransform,
+	DataUpdate,
 	AssertionError,
 	Entry,
 	Results,
 	Unsubscriber,
-	ArrayTransforms,
+	ItemsUpdate,
 	UnsupportedError,
-	ObjectTransforms,
+	EntriesUpdate,
 } from "../../index.js";
 
 // Constants.
@@ -78,21 +80,21 @@ function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Itera
 	for (const s of snapshot.docs) yield [s.id, s.data()];
 }
 
-/** Convert a `Transform` instances into corresponding Firestore `FieldValue` instances. */
-function getFieldValues<T extends Data>(transform: Transform<T>): Data {
-	if (transform instanceof DataTransform) return Object.fromEntries(yieldFieldValues(transform));
-	throw new AssertionError("Unsupported transform", transform);
+/** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
+function getFieldValues<T extends Data>(update: Update<T>): Data {
+	if (update instanceof DataUpdate) return Object.fromEntries(yieldFieldValues(update));
+	throw new AssertionError("Unsupported transform", update);
 }
-function* yieldFieldValues(transforms: Iterable<Entry>, prefix = ""): Iterable<Entry> {
-	for (const [key, transform] of transforms) {
-		if (!(transform instanceof Transform)) yield [`${prefix}${key}`, transform !== undefined ? transform : FieldValue.delete()];
-		if (transform instanceof IncrementTransform) yield [`${prefix}${key}`, FieldValue.increment(transform.amount)];
-		else if (transform instanceof DataTransform || transform instanceof ObjectTransforms) yield* yieldFieldValues(transform, `${prefix}${key}.`);
-		else if (transform instanceof ArrayTransforms) {
-			if (transform.adds.length && transform.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
-			if (transform.adds.length) yield [`${prefix}${key}`, FieldValue.arrayUnion(...transform.adds)];
-			else if (transform.deletes.length) yield [`${prefix}${key}`, FieldValue.arrayRemove(...transform.deletes)];
-		} else throw new AssertionError("Unsupported transform", transform);
+function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Iterable<Entry> {
+	for (const [key, update] of updates) {
+		if (!(update instanceof Update)) yield [`${prefix}${key}`, update !== undefined ? update : FieldValue.delete()];
+		if (update instanceof Increment) yield [`${prefix}${key}`, FieldValue.increment(update.amount)];
+		else if (update instanceof DataUpdate || update instanceof EntriesUpdate) yield* yieldFieldValues(update, `${prefix}${key}.`);
+		else if (update instanceof ItemsUpdate) {
+			if (update.adds.length && update.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
+			if (update.adds.length) yield [`${prefix}${key}`, FieldValue.arrayUnion(...update.adds)];
+			else if (update.deletes.length) yield [`${prefix}${key}`, FieldValue.arrayRemove(...update.deletes)];
+		} else throw new AssertionError("Unsupported transform", update);
 	}
 }
 
@@ -123,10 +125,16 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		return (await getCollection(this.firestore, ref).add(data)).id;
 	}
 
-	async write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): Promise<void> {
-		if (value instanceof Transform) await getDocument(this.firestore, ref).update(getFieldValues(value));
-		else if (value) await getDocument(this.firestore, ref).set(value);
-		else await getDocument(this.firestore, ref).delete();
+	async set<T extends Data>(ref: DataDocument<T>, data: T): Promise<void> {
+		await getDocument(this.firestore, ref).set(data);
+	}
+
+	async update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): Promise<void> {
+		await getDocument(this.firestore, ref).update(getFieldValues(updates));
+	}
+
+	async delete<T extends Data>(ref: DataDocument<T>): Promise<void> {
+		await getDocument(this.firestore, ref).delete();
 	}
 
 	async getQuery<T extends Data>(ref: DataQuery<T>): Promise<Iterable<Entry<T>>> {
@@ -140,21 +148,36 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		);
 	}
 
-	async writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): Promise<void> {
-		const writer = this.firestore.bulkWriter();
-		const query = getQuery(this.firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
-		const updates = value instanceof Transform ? getFieldValues(value) : undefined;
-		let current: FirestoreQuery | false = query;
-		while (current) {
-			const snapshot: FirestoreQuerySnapshot = await current.get();
-			if (updates) for (const s of snapshot.docs) void writer.update(s.ref, updates);
-			else if (value) for (const s of snapshot.docs) void writer.set(s.ref, value);
-			else for (const s of snapshot.docs) void writer.delete(s.ref);
-			current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
-			void writer.flush();
-		}
-		await writer.close();
+	async setQuery<T extends Data>(ref: DataQuery<T>, data: T | Update<T> | undefined): Promise<void> {
+		await bulkWrite(this.firestore, ref, (w, s) => void w.set(s.ref, data));
 	}
+
+	async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<void> {
+		const fieldValues = getFieldValues(updates);
+		await bulkWrite(this.firestore, ref, (w, s) => void w.update(s.ref, fieldValues));
+	}
+
+	async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<void> {
+		await bulkWrite(this.firestore, ref, (w, s) => void w.delete(s.ref));
+	}
+}
+
+/** Perform a bulk update on a set of documents using a `BulkWriter` */
+async function bulkWrite<T extends Data>(
+	firestore: Firestore,
+	ref: DataQuery<T>,
+	callback: (writer: FirestoreBulkWriter, snapshot: FirestoreQueryDocumentSnapshot) => void,
+) {
+	const writer = firestore.bulkWriter();
+	const query = getQuery(firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
+	let current: FirestoreQuery | false = query;
+	while (current) {
+		const snapshot: FirestoreQuerySnapshot = await current.get();
+		for (const s of snapshot.docs) callback(writer, s);
+		current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
+		void writer.flush();
+	}
+	await writer.close();
 }
 
 const BATCH_SIZE = 1000;

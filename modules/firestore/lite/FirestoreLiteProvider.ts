@@ -33,17 +33,17 @@ import {
 	FilterOperator,
 	SortDirection,
 	Result,
-	Transform,
-	ObjectTransforms,
-	IncrementTransform,
+	Update,
+	EntriesUpdate,
+	Increment,
 	AsynchronousProvider,
 	AssertionError,
-	DataTransform,
 	Entry,
 	Data,
+	DataUpdate,
 	Results,
 	Unsubscriber,
-	ArrayTransforms,
+	ItemsUpdate,
 	UnsupportedError,
 } from "../../index.js";
 
@@ -94,21 +94,21 @@ function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Resul
 	for (const s of snapshot.docs) yield [s.id, s.data()];
 }
 
-/** Convert `Transform` instances into corresponding Firestore `FieldValue` instances. */
-function getFieldValues<T extends Data>(transform: Transform<T>): Data {
-	if (transform instanceof DataTransform) return Object.fromEntries(yieldFieldValues(transform));
-	throw new AssertionError("Unsupported transform", transform);
+/** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
+function getFieldValues<T extends Data>(update: Update<T>): Data {
+	if (update instanceof DataUpdate) return Object.fromEntries(yieldFieldValues(update));
+	throw new AssertionError("Unsupported transform", update);
 }
-function* yieldFieldValues(transforms: Iterable<Entry>, prefix = ""): Generator<Entry, void> {
-	for (const [key, transform] of transforms) {
-		if (!(transform instanceof Transform)) yield [`${prefix}${key}`, transform !== undefined ? transform : firestoreDeleteField()];
-		else if (transform instanceof IncrementTransform) yield [`${prefix}${key}`, firestoreIncrement(transform.amount)];
-		else if (transform instanceof DataTransform || transform instanceof ObjectTransforms) yield* yieldFieldValues(transform, `${prefix}${key}.`);
-		else if (transform instanceof ArrayTransforms) {
-			if (transform.adds.length && transform.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
-			if (transform.adds.length) yield [`${prefix}${key}`, firestoreArrayUnion(...transform.adds)];
-			else if (transform.deletes.length) yield [`${prefix}${key}`, firestoreArrayRemove(...transform.deletes)];
-		} else throw new AssertionError("Unsupported transform", transform);
+function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Generator<Entry, void> {
+	for (const [key, update] of updates) {
+		if (!(update instanceof Update)) yield [`${prefix}${key}`, update !== undefined ? update : firestoreDeleteField()];
+		else if (update instanceof Increment) yield [`${prefix}${key}`, firestoreIncrement(update.amount)];
+		else if (update instanceof DataUpdate || update instanceof EntriesUpdate) yield* yieldFieldValues(update, `${prefix}${key}.`);
+		else if (update instanceof ItemsUpdate) {
+			if (update.adds.length && update.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
+			if (update.adds.length) yield [`${prefix}${key}`, firestoreArrayUnion(...update.adds)];
+			else if (update.deletes.length) yield [`${prefix}${key}`, firestoreArrayRemove(...update.deletes)];
+		} else throw new AssertionError("Unsupported transform", update);
 	}
 }
 
@@ -140,10 +140,16 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		return reference.id;
 	}
 
-	async write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): Promise<void> {
-		if (value instanceof Transform) await updateDoc<unknown>(getDocument(this.firestore, ref), getFieldValues(value));
-		else if (value) await setDoc<unknown>(getDocument(this.firestore, ref), value);
-		else await deleteDoc(getDocument(this.firestore, ref));
+	async set<T extends Data>(ref: DataDocument<T>, data: T): Promise<void> {
+		await setDoc<unknown>(getDocument(this.firestore, ref), data);
+	}
+
+	async update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): Promise<void> {
+		await updateDoc<unknown>(getDocument(this.firestore, ref), getFieldValues(updates));
+	}
+
+	async delete<T extends Data>(ref: DataDocument<T>): Promise<void> {
+		await deleteDoc(getDocument(this.firestore, ref));
 	}
 
 	async getQuery<T extends Data>(ref: DataQuery<T>): Promise<Results<T>> {
@@ -154,11 +160,19 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		throw new Error("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 
-	async writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): Promise<void> {
+	async setQuery<T extends Data>(ref: DataQuery<T>, data: T | Update<T> | undefined): Promise<void> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
-		const updates = value instanceof Transform && getFieldValues(value);
-		if (updates) await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, updates)));
-		else if (value) await Promise.all(snapshot.docs.map(s => setDoc<unknown>(s.ref, value)));
-		else await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
+		await Promise.all(snapshot.docs.map(s => setDoc<unknown>(s.ref, data)));
+	}
+
+	async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<void> {
+		const snapshot = await getDocs(getQuery(this.firestore, ref));
+		const fieldValues = getFieldValues(updates);
+		await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, fieldValues)));
+	}
+
+	async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<void> {
+		const snapshot = await getDocs(getQuery(this.firestore, ref));
+		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 	}
 }

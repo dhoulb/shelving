@@ -1,5 +1,5 @@
 import type { DataDocument, DataQuery } from "../db/index.js";
-import { Transform } from "../transform/index.js";
+import { Update } from "../update/index.js";
 import { Result, MutableObject, Unsubscriber, Observer, Results, TransformObserver, Data } from "../util/index.js";
 import type { Provider, AsynchronousProvider } from "./Provider.js";
 import { MemoryProvider } from "./MemoryProvider.js";
@@ -33,7 +33,7 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 
 	/** Cache an individual document result. */
 	private _cacheResult<T extends Data>(ref: DataDocument<T>, result: Result<T>): Result<T> {
-		this.cache.write(ref, result);
+		result ? this.cache.set(ref, result) : this.cache.delete(ref);
 		this._times[ref.toString()] = Date.now();
 		return result;
 	}
@@ -50,17 +50,25 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 
 	override async add<T extends Data>(ref: DataQuery<T>, data: T): Promise<string> {
 		const id = await super.add(ref, data);
-		this.cache.write(ref.doc(id), data);
+		this.cache.set(ref.doc(id), data);
 		return id;
 	}
 
-	override async write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): Promise<void> {
-		await super.write(ref, value);
+	override async set<T extends Data>(ref: DataDocument<T>, data: T): Promise<void> {
+		await super.set(ref, data);
+		this.cache.set(ref, data);
+	}
 
+	override async update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): Promise<void> {
+		await super.update(ref, updates);
 		// Update the document in the cache if it exists using `updateDocuments()` and an `id` query.
 		// Using `updateDocument()` would throw `RequiredError` if the document didn't exist.
-		if (value instanceof Transform) this.cache.writeQuery(ref.optional, value);
-		else this.cache.write(ref, value);
+		this.cache.updateQuery(ref.optional, updates);
+	}
+
+	override async delete<T extends Data>(ref: DataDocument<T>): Promise<void> {
+		await super.delete(ref);
+		this.cache.delete(ref);
 	}
 
 	/** Cache a set of document results. */
@@ -68,11 +76,11 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 		// We know the received set of results is the 'complete' set of results for this query.
 		// So for correctness any documents matching this query that aren't in the new set of results should be deleted.
 		// None of this applies if there's a query limit, because the document could have been moved to a different page so shouldn't be deleted.
-		if (!ref.limit) for (const id of Object.keys(this.cache.getQuery(ref))) if (!(id in results)) this.cache.write(ref.doc(id), undefined);
+		if (!ref.limit) for (const id of Object.keys(this.cache.getQuery(ref))) if (!(id in results)) this.cache.delete(ref.doc(id));
 
 		// Save new results to the cache.
 		for (const [id, data] of results) {
-			this.cache.write(ref.doc(id), data);
+			this.cache.set(ref.doc(id), data);
 			yield [id, data];
 		}
 
@@ -90,9 +98,19 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 		return super.subscribeQuery(ref, new TransformObserver(results => this._cacheResults(ref, results), observer));
 	}
 
-	override async writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): Promise<void> {
-		await super.writeQuery(ref, value);
-		this.cache.writeQuery(ref, value);
+	override async setQuery<T extends Data>(ref: DataQuery<T>, data: T): Promise<void> {
+		await super.setQuery(ref, data);
+		this.cache.setQuery(ref, data);
+	}
+
+	override async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<void> {
+		await super.updateQuery(ref, updates);
+		this.cache.updateQuery(ref, updates);
+	}
+
+	override async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<void> {
+		await super.deleteQuery(ref);
+		this.cache.deleteQuery(ref);
 	}
 
 	/** Reset this provider and clear all data. */

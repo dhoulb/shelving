@@ -1,6 +1,6 @@
 import type { Observer, Unsubscriber, Result, Results, Data } from "../util/index.js";
 import type { DataDocument, DataQuery } from "../db/Database.js";
-import type { Transform } from "../transform/index.js";
+import type { Update } from "../update/index.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
 export abstract class Provider {
@@ -35,20 +35,32 @@ export abstract class Provider {
 	abstract add<T extends Data>(ref: DataQuery<T>, data: T): string | PromiseLike<string>;
 
 	/**
-	 * Write to a document.
+	 * Set the data a document.
 	 * - If the document exists, set the value of it.
 	 * - If the document doesn't exist, set it at path.
 	 *
 	 * @param ref Document reference specifying which document to set.
-	 * @param value Value to set the document to.
-	 * - If an object is provided, set the document to the value.
-	 * - If a `Transform` instance is provided, ensure the document exists and transform it.
-	 * - If `undefined` is provided, delete the document.
+	 * @param data Data to set the document to.
 	 *
-	 * @return Nothing (possibly promised).
-	 * @throws Error If a `Transform` was provided but the document does not exist (ideally a `RequiredError` but may be provider-specific).
+	 * @throws Error If a `Update` was provided but the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): void | PromiseLike<void>;
+	abstract set<T extends Data>(ref: DataDocument<T>, value: T): void | PromiseLike<void>;
+
+	/**
+	 * Update the data an existing document.
+	 *
+	 * @param ref Document reference specifying which document to update.
+	 * @param updates Update instance to set the document to.
+	 *
+	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
+	 */
+	abstract update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): void | PromiseLike<void>;
+
+	/**
+	 * Delete a specified document.
+	 * @param ref Document reference specifying which document to delete.
+	 */
+	abstract delete<T extends Data>(ref: DataDocument<T>): void | PromiseLike<void>;
 
 	/**
 	 * Get all matching documents.
@@ -70,33 +82,50 @@ export abstract class Provider {
 	abstract subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber;
 
 	/**
-	 * Write to all matching documents.
+	 * Set the data of all matching documents.
 	 *
 	 * @param ref Documents reference specifying which collection to set.
 	 * @param value Value to set the document to.
-	 * - If an object is provided, set the document to the value.
-	 * - If a `Transform` instance is provided, ensure the document exists and transform it.
-	 * - If `undefined` is provided, delete the document.
-	 *
-	 * @return Nothing (possibly promised).
 	 */
-	abstract writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): void | PromiseLike<void>;
+	abstract setQuery<T extends Data>(ref: DataQuery<T>, data: T): void | PromiseLike<void>;
+
+	/**
+	 * Update the data of all matching documents.
+	 *
+	 * @param ref Documents reference specifying which collection to set.
+	 * @param updates Update instance to set the document to.
+	 */
+	abstract updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void | PromiseLike<void>;
+
+	/**
+	 * Delete all matching documents.
+	 * @param ref Document reference specifying which document to delete.
+	 */
+	abstract deleteQuery<T extends Data>(ref: DataQuery<T>): void | PromiseLike<void>;
 }
 
 /** Provider with a fully synchronous interface */
 export interface SynchronousProvider extends Provider {
 	get<T extends Data>(ref: DataDocument<T>): Result<T>;
 	add<T extends Data>(ref: DataQuery<T>, data: T): string;
-	write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): void;
+	set<T extends Data>(ref: DataDocument<T>, value: T): void;
+	update<T extends Data>(ref: DataDocument<T>, value: Update<T>): void;
+	delete<T extends Data>(ref: DataDocument<T>): void;
 	getQuery<T extends Data>(ref: DataQuery<T>): Results<T>;
-	writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): void;
+	setQuery<T extends Data>(ref: DataQuery<T>, value: T): void;
+	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void;
+	deleteQuery<T extends Data>(ref: DataQuery<T>): void;
 }
 
 /** Provider with a fully asynchronous interface */
 export interface AsynchronousProvider extends Provider {
 	get<T extends Data>(ref: DataDocument<T>): PromiseLike<Result<T>>;
 	add<T extends Data>(ref: DataQuery<T>, data: T): PromiseLike<string>;
-	write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): PromiseLike<void>;
+	set<T extends Data>(ref: DataDocument<T>, value: T): PromiseLike<void>;
+	update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): PromiseLike<void>;
+	delete<T extends Data>(ref: DataDocument<T>): PromiseLike<void>;
 	getQuery<T extends Data>(ref: DataQuery<T>): PromiseLike<Results<T>>;
-	writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): PromiseLike<void>;
+	setQuery<T extends Data>(ref: DataQuery<T>, value: T): PromiseLike<void>;
+	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): PromiseLike<void>;
+	deleteQuery<T extends Data>(ref: DataQuery<T>): PromiseLike<void>;
 }

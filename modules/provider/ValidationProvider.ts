@@ -1,6 +1,6 @@
 import type { DataDocument, DataQuery } from "../db/index.js";
-import { Data, Result, Unsubscriber, Observer, Validator, validate, ValidateObserver, Results, callAsync } from "../util/index.js";
-import { Transform, validateTransform } from "../transform/index.js";
+import { Data, Result, Unsubscriber, Observer, validate, ValidateObserver, Results, callAsync } from "../util/index.js";
+import { Update, validateUpdate } from "../update/index.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Validates any values that are read from or written to a source provider. */
@@ -14,8 +14,11 @@ export class ValidationProvider extends ThroughProvider {
 	override add<T extends Data>(ref: DataQuery<T>, data: T): string | PromiseLike<string> {
 		return super.add(ref, validate(data, ref.validator));
 	}
-	override write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): void | PromiseLike<void> {
-		return super.write(ref, value ? _validateWrite(value, ref.validator) : value);
+	override set<T extends Data>(ref: DataDocument<T>, value: T): void | PromiseLike<void> {
+		return super.set(ref, validate(value, ref.validator));
+	}
+	override update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): void | PromiseLike<void> {
+		return super.update<T>(ref, validateUpdate(updates, ref.validator));
 	}
 	override getQuery<T extends Data>(ref: DataQuery<T>): Results<T> | PromiseLike<Results<T>> {
 		return callAsync(validate, super.getQuery(ref), ref);
@@ -23,12 +26,10 @@ export class ValidationProvider extends ThroughProvider {
 	override subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
 		return super.subscribeQuery(ref, new ValidateObserver(ref, observer));
 	}
-	override writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): void | PromiseLike<void> {
-		return super.writeQuery(ref, value ? _validateWrite(value, ref.validator) : value);
+	override setQuery<T extends Data>(ref: DataQuery<T>, value: T): void | PromiseLike<void> {
+		return super.setQuery(ref, validate(value, ref.validator));
 	}
-}
-
-/** Validate data or a transform for a path. */
-function _validateWrite<T extends Data>(value: T | Transform<T>, validator: Validator<T>): T | Transform<T> {
-	return value instanceof Transform ? validateTransform(value, validator) : validate(value, validator);
+	override updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void | PromiseLike<void> {
+		return super.updateQuery(ref, validateUpdate(updates, ref.validator));
+	}
 }

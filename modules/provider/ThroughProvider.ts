@@ -1,6 +1,6 @@
 import type { Result, Results, Unsubscriber, Observer, Class, Data } from "../util/index.js";
 import type { DataDocument, DataQuery } from "../db/index.js";
-import type { Transform } from "../transform/index.js";
+import type { Update } from "../update/index.js";
 import { AssertionError } from "../error/index.js";
 import { Provider } from "./Provider.js";
 
@@ -22,8 +22,14 @@ export class ThroughProvider extends Provider {
 	add<T extends Data>(ref: DataQuery<T>, data: T): string | PromiseLike<string> {
 		return this.source.add(ref, data);
 	}
-	write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): void | PromiseLike<void> {
-		return this.source.write(ref, value);
+	set<T extends Data>(ref: DataDocument<T>, data: T): void | PromiseLike<void> {
+		return this.source.set(ref, data);
+	}
+	update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): void | PromiseLike<void> {
+		return this.source.update(ref, updates);
+	}
+	delete<T extends Data>(ref: DataDocument<T>): void | PromiseLike<void> {
+		return this.source.delete(ref);
 	}
 	getQuery<T extends Data>(ref: DataQuery<T>): Results<T> | PromiseLike<Results<T>> {
 		return this.source.getQuery(ref);
@@ -31,8 +37,14 @@ export class ThroughProvider extends Provider {
 	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
 		return this.source.subscribeQuery(ref, observer);
 	}
-	writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): void | PromiseLike<void> {
-		return this.source.writeQuery(ref, value);
+	setQuery<T extends Data>(ref: DataQuery<T>, data: T): void | PromiseLike<void> {
+		return this.source.setQuery(ref, data);
+	}
+	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void | PromiseLike<void> {
+		return this.source.updateQuery(ref, updates);
+	}
+	deleteQuery<T extends Data>(ref: DataQuery<T>): void | PromiseLike<void> {
+		return this.source.deleteQuery(ref);
 	}
 }
 

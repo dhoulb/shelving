@@ -23,12 +23,12 @@ import {
 	ValidatorType,
 	Dispatcher,
 } from "../util/index.js";
-import { DataTransform, Transform, DataTransforms } from "../transform/index.js";
+import { DataUpdate, PropUpdates, Update } from "../update/index.js";
 import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Query, EqualFilter } from "../query/index.js";
 import { DocumentRequiredError, DocumentValidationError, QueryValidationError } from "./errors.js";
-import { DocumentWrite, Write, Writes } from "./Write.js";
+import { DocumentDelete, DocumentSet, DocumentUpdate, Write, Writes } from "./Write.js";
 
 /**
  * Combines a database model and a provider.
@@ -164,19 +164,17 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @return Nothing (possibly promised).
 	 */
 	set(data: T): void | PromiseLike<void> {
-		return this.write(data);
+		return this.provider.setQuery(this, data);
 	}
 
 	/**
 	 * Update all matching documents with the same partial value.
 	 *
-	 * @param transform `Transform` instance or set of transforms to apply to every matching document.
-	 * - Not all transforms may be supported by all providers.
-	 *
+	 * @param updates `Update` instance or set of updates to apply to every matching document.
 	 * @return Nothing (possibly promised).
 	 */
-	update(transform: Transform<T> | DataTransforms<T>): void | PromiseLike<void> {
-		return this.write(transform instanceof Transform ? transform : new DataTransform(transform));
+	update(updates: Update<T> | PropUpdates<T>): void | PromiseLike<void> {
+		return this.provider.updateQuery(this, updates instanceof Update ? updates : new DataUpdate(updates));
 	}
 
 	/**
@@ -184,15 +182,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @return Nothing (possibly promised).
 	 */
 	delete(): void | PromiseLike<void> {
-		return this.write(undefined);
-	}
-
-	/**
-	 * Combine `set()`, `update()`, `delete()` into a single method.
-	 * @return Nothing (possibly promised).
-	 */
-	write(value: Result<T> | Transform<T>): void | PromiseLike<void> {
-		return this.provider.writeQuery(this, value);
+		return this.provider.deleteQuery(this);
 	}
 
 	/** Iterate over the resuls (will throw `Promise` if the results are asynchronous). */
@@ -287,42 +277,32 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 
 	/** Set the complete data of this document. */
 	set(data: T): void | PromiseLike<void> {
-		return this.write(data);
+		return this.provider.set(this, data);
 	}
 
 	/** Update this document. */
-	update(transforms: Transform<T> | DataTransforms<T>): void | PromiseLike<void> {
-		return this.write(transforms instanceof Transform ? transforms : new DataTransform(transforms));
+	update(updates: Update<T> | PropUpdates<T>): void | PromiseLike<void> {
+		return this.provider.update(this, updates instanceof Update ? updates : new DataUpdate(updates));
 	}
 
 	/** Delete this document. */
 	delete(): void | PromiseLike<void> {
-		return this.write(undefined);
-	}
-
-	/** Set, update, or delete this document. */
-	write(value: Result<T> | Transform<T>): void | PromiseLike<void> {
-		return this.provider.write(this, value);
+		return this.provider.delete(this);
 	}
 
 	/** Represent a write that sets the complete data of this document in a database. */
-	setter(data: T): DocumentWrite<T> {
-		return this.writer(data);
+	setter(data: T): DocumentSet<T> {
+		return new DocumentSet(this, data);
 	}
 
 	/** Represent a write that updates this document in a database. */
-	updater(transforms: Transform<T> | DataTransforms<T>): DocumentWrite<T> {
-		return this.writer(transforms instanceof Transform ? transforms : new DataTransform(transforms));
+	updater(updates: Update<T> | PropUpdates<T>): DocumentUpdate<T> {
+		return new DocumentUpdate(this, updates);
 	}
 
 	/** Represent a write that deletes this document in a database. */
-	deleter(): DocumentWrite<T> {
-		return this.writer(undefined);
-	}
-
-	/** Represent a write that sets, updates, or deletes this document in a database. */
-	writer(value: Result<T> | Transform<T>): DocumentWrite<T> {
-		return new DocumentWrite(this, value);
+	deleter(): DocumentDelete<T> {
+		return new DocumentDelete(this);
 	}
 
 	/** Validate data for this query reference. */

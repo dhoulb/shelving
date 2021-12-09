@@ -12,7 +12,7 @@ import {
 	ImmutableMap,
 	MutableMap,
 } from "../util/index.js";
-import { Transform } from "../transform/index.js";
+import { Update } from "../update/index.js";
 import { DataQuery, DataDocument, DocumentRequiredError } from "../db/index.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
@@ -55,16 +55,24 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		return id;
 	}
 
-	write<T extends Data>(ref: DataDocument<T>, value: T | Transform<T> | undefined): void {
+	set<T extends Data>(ref: DataDocument<T>, data: T): void {
 		const table = this._table(ref);
 		const id = ref.id;
-		if (value instanceof Transform) {
-			const existing = table.data.get(id);
-			if (!existing) throw new DocumentRequiredError(ref);
-			table.write(id, value.transform(existing));
-		} else {
-			table.write(id, value);
-		}
+		table.write(id, data);
+	}
+
+	update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): void {
+		const table = this._table(ref);
+		const id = ref.id;
+		const existing = table.data.get(id);
+		if (!existing) throw new DocumentRequiredError(ref);
+		table.write(id, updates.transform(existing));
+	}
+
+	delete<T extends Data>(ref: DataDocument<T>): void {
+		const table = this._table(ref);
+		const id = ref.id;
+		table.write(id, undefined);
 	}
 
 	getQuery<T extends Data>(ref: DataQuery<T>): Results<T> {
@@ -97,12 +105,25 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		});
 	}
 
-	writeQuery<T extends Data>(ref: DataQuery<T>, value: T | Transform<T> | undefined): void {
+	setQuery<T extends Data>(ref: DataQuery<T>, data: T): void {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
-		for (const [id, existing] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data))
-			table.write(id, value instanceof Transform ? value.transform(existing) : value);
+		for (const [id] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) table.write(id, data);
+	}
+
+	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void {
+		const table = this._table(ref);
+		// If there's a limit set: run the full query.
+		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
+		for (const [id, existing] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) table.write(id, updates.transform(existing));
+	}
+
+	deleteQuery<T extends Data>(ref: DataQuery<T>): void {
+		const table = this._table(ref);
+		// If there's a limit set: run the full query.
+		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
+		for (const [id] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) table.write(id, undefined);
 	}
 
 	/** Reset this provider and clear all data. */
