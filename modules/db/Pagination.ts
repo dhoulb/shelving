@@ -1,4 +1,4 @@
-import { getFirstItem, getLastItem, assertLength, assertNumber, ResultsMap, Entry, yieldMerged, Results, toMap, Mutable, Data } from "../util/index.js";
+import { getLastItem, assertLength, assertNumber, ResultsMap, Entry, yieldMerged, Results, toMap, Data, LOADING } from "../util/index.js";
 import { State } from "../stream/index.js";
 import { ConditionError } from "../index.js";
 import { DataQuery } from "./Database.js";
@@ -9,12 +9,10 @@ import { DataQuery } from "./Database.js";
  * - If you don't pass in initial values, it will autoload the first page.
  */
 export class Pagination<T extends Data> extends State<ResultsMap<T>> implements Iterable<Entry<T>> {
+	protected _pending = false; // Prevents double-loading.
+
 	readonly ref: DataQuery<T>;
 	readonly limit: number;
-	readonly startLoading: boolean = false;
-	readonly startDone: boolean = false;
-	readonly endLoading: boolean = false;
-	readonly endDone: boolean = false;
 
 	constructor(ref: DataQuery<T>) {
 		super();
@@ -25,50 +23,28 @@ export class Pagination<T extends Data> extends State<ResultsMap<T>> implements 
 	}
 
 	/**
-	 * Load more results before the start.
-	 * - Promise that needs to be handled.
-	 */
-	loadStart = async (): Promise<void> => {
-		if (this.closed) throw new ConditionError();
-		if (!this.startLoading) {
-			(this as Mutable<this>).startLoading = true;
-			if (!this.loading) {
-				const firstItem = getFirstItem(this.value);
-				if (firstItem) {
-					const next = await this.ref.after(firstItem[0], firstItem[1]).resultsMap;
-					(this as Mutable<this>).startDone = next.size < this.limit;
-					(this as Mutable<this>).startLoading = false;
-					return this.merge(next);
-				}
-			}
-			const next = await this.ref.resultsMap;
-			(this as Mutable<this>).startDone = next.size < this.limit;
-			(this as Mutable<this>).startLoading = false;
-			return this.next(next);
-		}
-	};
-
-	/**
 	 * Load more results after the end.
 	 * - Promise that needs to be handled.
 	 */
-	loadEnd = async (): Promise<void> => {
-		if (this.closed) throw new ConditionError();
-		if (!this.endLoading) {
-			(this as Mutable<this>).endLoading = true;
+	more = async (): Promise<void> => {
+		if (this.closed) throw new ConditionError("Pagination is closed");
+		if (!this._pending) {
+			this._pending = true;
 			if (!this.loading) {
 				const lastItem = getLastItem(this.value);
 				if (lastItem) {
 					const next = await this.ref.after(lastItem[0], lastItem[1]).resultsMap;
-					(this as Mutable<this>).endDone = next.size < this.limit;
-					(this as Mutable<this>).endLoading = false;
-					return this.merge(next);
+					this.merge(next);
+					if (next.size < this.limit) this.complete();
+					this._pending = false;
+					return;
 				}
 			}
+			this._value === LOADING;
 			const next = await this.ref.resultsMap;
-			(this as Mutable<this>).endDone = next.size < this.limit;
-			(this as Mutable<this>).endLoading = false;
-			return this.next(next);
+			this.next(next);
+			if (next.size < this.limit) this.complete();
+			this._pending = false;
 		}
 	};
 
