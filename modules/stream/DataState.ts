@@ -21,6 +21,11 @@ export class DataState<T extends Data> extends State<T> {
 
 /** State that stores an optional data object and has additional methods to help with that. */
 export class ResultState<T extends Data> extends State<Result<T>> {
+	/** Get the result value of this state. */
+	get result(): Result<T> {
+		return this.value;
+	}
+
 	/** Get current data value of this state (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
 		if (this.reason !== NOERROR) throw this.reason;

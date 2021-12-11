@@ -8,34 +8,13 @@ test("State", async () => {
 	expect(state.subscribers).toBe(1);
 	expect(state.loading).toBe(true);
 	expect(() => state.value).toThrow(Promise);
-	expect(() => state.data).toThrow(Promise);
-	expect(state.subscribers).toBe(3); // The two promises add temporary subscriptions.
+	expect(state.subscribers).toBe(2); // The two promises add temporary subscriptions.
 	expect(state.next(123)).toBe(undefined);
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(123);
-	expect(state.data).toBe(123);
 	await runMicrotasks();
 	expect(calls1).toEqual([123]);
-	expect(state.subscribers).toBe(1); // 2 and 3 unsubscribed after they received a value.
-});
-test("State.prototype.data", () => {
-	const state = initialState<number | undefined>(undefined);
-	expect(state).toBeInstanceOf(State);
-	expect(state.value).toBe(undefined);
-	expect(() => state.data).toThrow(RequiredError);
-	// Ons and onces.
-	const calls: (number | undefined)[] = [];
-	state.subscribe(v => calls.push(v));
-	// Set truthy value.
-	expect(state.next(123)).toBe(undefined);
-	expect(state.value).toBe(123);
-	expect(state.data).toBe(123);
-	// Set undefined value.
-	expect(state.next(undefined)).toBe(undefined);
-	expect(state.value).toBe(undefined);
-	expect(() => state.data).toThrow(RequiredError);
-	// Checks.
-	expect(calls).toEqual([undefined, 123, undefined]);
+	expect(state.subscribers).toBe(1); // 2 unsubscribed after it received a value.
 });
 test("State.prototype.apply()", () => {
 	type V = { a: number; b: number };
@@ -59,7 +38,6 @@ test("initialState(): with initial value", () => {
 	expect(state).toBeInstanceOf(State);
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(111);
-	expect(state.data).toBe(111);
 	// Ons and onces.
 	const calls1: number[] = [];
 	state.subscribe(v => calls1.push(v));
