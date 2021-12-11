@@ -1,5 +1,5 @@
 import { DataUpdate, PropUpdates, Update } from "../update/index.js";
-import { Hydrations, ImmutableArray, Data, Transformable, transform, IS_DEFINED } from "../util/index.js";
+import { Hydrations, ImmutableArray, Data, Transformable, transform } from "../util/index.js";
 import type { Database, DataDocument } from "./Database.js";
 
 /** Represent a write made to a database. */
@@ -14,9 +14,9 @@ export abstract class Write implements Transformable<Database, void | PromiseLik
  */
 export class Writes extends Write {
 	readonly writes: ImmutableArray<Write>;
-	constructor(...writes: (Write | undefined)[]) {
+	constructor(...writes: Write[]) {
 		super();
-		this.writes = writes.filter(IS_DEFINED);
+		this.writes = writes;
 	}
 	async transform(db: Database) {
 		for (const writes of this.writes) await transform(db, writes);

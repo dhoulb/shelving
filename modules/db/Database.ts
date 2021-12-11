@@ -22,6 +22,8 @@ import {
 	Validators,
 	ValidatorType,
 	Dispatcher,
+	Nullish,
+	NOT_NULLISH,
 } from "../util/index.js";
 import { DataUpdate, PropUpdates, Update } from "../update/index.js";
 import type { Provider } from "../provider/Provider.js";
@@ -61,15 +63,14 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 		return new DataDocument(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
 	}
 
-	/** Perform a write on this database and return the `Write` instance representing the changes. */
-	async write(write: Write): Promise<Write> {
-		await write.transform(this);
-		return write;
+	/** Create a writer for this database from a set of separate writes. */
+	writer(...writes: Nullish<Write>[]): Write {
+		return new Writes(...writes.filter(NOT_NULLISH));
 	}
 
-	/** Perform multiple writes on this database by combining them into a single `Writes` instance representing the changes. */
-	async writes(...writes: (Write | undefined)[]): Promise<Writes> {
-		const write = new Writes(...writes);
+	/** Perform one or more writes on this database and return the `Writes` instance representing the combined changes. */
+	async write(...writes: Nullish<Write>[]): Promise<Write> {
+		const write = new Writes(...writes.filter(NOT_NULLISH));
 		await write.transform(this);
 		return write;
 	}

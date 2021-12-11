@@ -36,14 +36,6 @@ export function toProps<T extends Data>(input: T | Partial<T>): ImmutableArray<P
 	return Object.entries(input) as ImmutableArray<Prop<T>>;
 }
 
-/** Get a required value (returns value or throws `RequiredError` if value is `null` or `undefined`). */
-export function getRequired<T>(v: T): Exclude<T, null | undefined>;
-export function getRequired<T>(v: T | null | undefined): T;
-export function getRequired<T>(v: T | null | undefined): T {
-	if (v === undefined || v === null) throw new RequiredError(v === null ? "Required value is null" : "Required value is undefined");
-	return v;
-}
-
 /** Get the data of a result (returns data or throws `RequiredError` if value is `null` or `undefined`). */
 export function getData<T extends Data>(result: Result<T>): T {
 	if (!result) throw new RequiredError("Data is required");
