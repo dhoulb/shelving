@@ -117,3 +117,12 @@ export function deleteEntry<T>(obj: MutableObject<T>, key: string, value?: T): v
 export function deleteEntries<T>(obj: MutableObject<T>, keys: ImmutableArray<string>): void {
 	for (const key of keys) delete obj[key];
 }
+
+/** Type that represents an empty object. */
+export type EmptyObject = { readonly [K in never]: never };
+
+/** An empty object. */
+export const EMPTY_OBJECT: EmptyObject = {};
+
+/** Function that returns an an empty object. */
+export const GET_EMPTY_OBJECT = (): EmptyObject => EMPTY_OBJECT;

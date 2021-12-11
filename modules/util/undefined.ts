@@ -6,7 +6,4 @@ export const IS_DEFINED = <T>(v: T | undefined): v is T => v !== undefined;
 export const NOT_UNDEFINED = IS_DEFINED;
 
 /** Function that always returns undefined. */
-export const UNDEFINED = (): undefined => undefined;
-
-/** Function that always returns void. */
-export const VOID: () => void = UNDEFINED;
+export const GET_UNDEFINED = (): undefined => undefined;
