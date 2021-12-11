@@ -8,7 +8,6 @@ import {
 	dispatchError,
 	dispatchComplete,
 	transform,
-	getRequired,
 	Mutable,
 	awaitNext,
 } from "../util/index.js";
@@ -55,13 +54,6 @@ export class State<T> extends Stream<T> {
 		return this._value;
 	}
 	protected _value: T | typeof LOADING = LOADING;
-
-	/** Get current required value (or throw `Promise` that resolves to the next required value). */
-	get data(): Exclude<T, null | undefined> {
-		if (this.reason !== NOERROR) throw this.reason;
-		if (this._value === LOADING) throw awaitNext(this).then(getRequired);
-		return getRequired(this._value);
-	}
 
 	/** Is there a current value, or is it still loading. */
 	get loading(): boolean {
