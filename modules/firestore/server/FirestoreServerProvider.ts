@@ -148,17 +148,17 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		);
 	}
 
-	async setQuery<T extends Data>(ref: DataQuery<T>, data: T | Update<T> | undefined): Promise<void> {
-		await bulkWrite(this.firestore, ref, (w, s) => void w.set(s.ref, data));
+	async setQuery<T extends Data>(ref: DataQuery<T>, data: T | Update<T> | undefined): Promise<number> {
+		return await bulkWrite(this.firestore, ref, (w, s) => void w.set(s.ref, data));
 	}
 
-	async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<void> {
+	async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<number> {
 		const fieldValues = getFieldValues(updates);
-		await bulkWrite(this.firestore, ref, (w, s) => void w.update(s.ref, fieldValues));
+		return await bulkWrite(this.firestore, ref, (w, s) => void w.update(s.ref, fieldValues));
 	}
 
-	async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<void> {
-		await bulkWrite(this.firestore, ref, (w, s) => void w.delete(s.ref));
+	async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<number> {
+		return await bulkWrite(this.firestore, ref, (w, s) => void w.delete(s.ref));
 	}
 }
 
@@ -167,17 +167,20 @@ async function bulkWrite<T extends Data>(
 	firestore: Firestore,
 	ref: DataQuery<T>,
 	callback: (writer: FirestoreBulkWriter, snapshot: FirestoreQueryDocumentSnapshot) => void,
-) {
+): Promise<number> {
+	let count = 0;
 	const writer = firestore.bulkWriter();
 	const query = getQuery(firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
 	let current: FirestoreQuery | false = query;
 	while (current) {
-		const snapshot: FirestoreQuerySnapshot = await current.get();
-		for (const s of snapshot.docs) callback(writer, s);
-		current = snapshot.size >= BATCH_SIZE && query.startAfter(snapshot.docs.pop()).select();
+		const { docs, size }: FirestoreQuerySnapshot = await current.get();
+		count += size;
+		for (const s of docs) callback(writer, s);
+		current = size >= BATCH_SIZE && query.startAfter(docs.pop()).select();
 		void writer.flush();
 	}
 	await writer.close();
+	return count;
 }
 
 const BATCH_SIZE = 1000;

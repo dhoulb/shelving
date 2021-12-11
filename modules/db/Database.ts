@@ -163,7 +163,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @param data Complete data to set the document to.
 	 * @return Nothing (possibly promised).
 	 */
-	set(data: T): void | PromiseLike<void> {
+	set(data: T): number | PromiseLike<number> {
 		return this.provider.setQuery(this, data);
 	}
 
@@ -173,7 +173,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @param updates `Update` instance or set of updates to apply to every matching document.
 	 * @return Nothing (possibly promised).
 	 */
-	update(updates: Update<T> | PropUpdates<T>): void | PromiseLike<void> {
+	update(updates: Update<T> | PropUpdates<T>): number | PromiseLike<number> {
 		return this.provider.updateQuery(this, updates instanceof Update ? updates : new DataUpdate(updates));
 	}
 
@@ -181,7 +181,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * Delete all matching documents.
 	 * @return Nothing (possibly promised).
 	 */
-	delete(): void | PromiseLike<void> {
+	delete(): number | PromiseLike<number> {
 		return this.provider.deleteQuery(this);
 	}
 

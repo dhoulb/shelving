@@ -26,10 +26,10 @@ export class ValidationProvider extends ThroughProvider {
 	override subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
 		return super.subscribeQuery(ref, new ValidateObserver(ref, observer));
 	}
-	override setQuery<T extends Data>(ref: DataQuery<T>, value: T): void | PromiseLike<void> {
+	override setQuery<T extends Data>(ref: DataQuery<T>, value: T): number | PromiseLike<number> {
 		return super.setQuery(ref, validate(value, ref.validator));
 	}
-	override updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void | PromiseLike<void> {
+	override updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): number | PromiseLike<number> {
 		return super.updateQuery(ref, validateUpdate(updates, ref.validator));
 	}
 }

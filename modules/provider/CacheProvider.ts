@@ -98,19 +98,22 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 		return super.subscribeQuery(ref, new TransformObserver(results => this._cacheResults(ref, results), observer));
 	}
 
-	override async setQuery<T extends Data>(ref: DataQuery<T>, data: T): Promise<void> {
-		await super.setQuery(ref, data);
+	override async setQuery<T extends Data>(ref: DataQuery<T>, data: T): Promise<number> {
+		const count = await super.setQuery(ref, data);
 		this.cache.setQuery(ref, data);
+		return count;
 	}
 
-	override async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<void> {
-		await super.updateQuery(ref, updates);
+	override async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<number> {
+		const count = await super.updateQuery(ref, updates);
 		this.cache.updateQuery(ref, updates);
+		return count;
 	}
 
-	override async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<void> {
-		await super.deleteQuery(ref);
+	override async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<number> {
+		const count = await super.deleteQuery(ref);
 		this.cache.deleteQuery(ref);
+		return count;
 	}
 
 	/** Reset this provider and clear all data. */

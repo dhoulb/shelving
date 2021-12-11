@@ -37,13 +37,13 @@ export class ThroughProvider extends Provider {
 	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
 		return this.source.subscribeQuery(ref, observer);
 	}
-	setQuery<T extends Data>(ref: DataQuery<T>, data: T): void | PromiseLike<void> {
+	setQuery<T extends Data>(ref: DataQuery<T>, data: T): number | PromiseLike<number> {
 		return this.source.setQuery(ref, data);
 	}
-	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void | PromiseLike<void> {
+	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): number | PromiseLike<number> {
 		return this.source.updateQuery(ref, updates);
 	}
-	deleteQuery<T extends Data>(ref: DataQuery<T>): void | PromiseLike<void> {
+	deleteQuery<T extends Data>(ref: DataQuery<T>): number | PromiseLike<number> {
 		return this.source.deleteQuery(ref);
 	}
 }

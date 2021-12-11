@@ -83,8 +83,8 @@ test("MemoryProvider: set/get/delete collections", () => {
 	expect(people.doc("person4").result).toEqual(person4);
 	expect(people.doc("peopleNone").result).toBe(undefined);
 	// Delete collections.
-	expect(basics.delete()).toBe(undefined);
-	expect(people.delete()).toBe(undefined);
+	expect(basics.delete()).toBe(9);
+	expect(people.delete()).toBe(5);
 	// Check collections.
 	expect(people.results).toEqual(new Map());
 	expect(basics.results).toEqual(new Map());

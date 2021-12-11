@@ -86,22 +86,25 @@ export abstract class Provider {
 	 *
 	 * @param ref Documents reference specifying which collection to set.
 	 * @param value Value to set the document to.
+	 * @return Number of documents that were set.
 	 */
-	abstract setQuery<T extends Data>(ref: DataQuery<T>, data: T): void | PromiseLike<void>;
+	abstract setQuery<T extends Data>(ref: DataQuery<T>, data: T): number | PromiseLike<number>;
 
 	/**
 	 * Update the data of all matching documents.
 	 *
 	 * @param ref Documents reference specifying which collection to set.
 	 * @param updates Update instance to set the document to.
+	 * @return Number of documents that were updated.
 	 */
-	abstract updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void | PromiseLike<void>;
+	abstract updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): number | PromiseLike<number>;
 
 	/**
 	 * Delete all matching documents.
 	 * @param ref Document reference specifying which document to delete.
+	 * @return Number of documents that were deleted.
 	 */
-	abstract deleteQuery<T extends Data>(ref: DataQuery<T>): void | PromiseLike<void>;
+	abstract deleteQuery<T extends Data>(ref: DataQuery<T>): number | PromiseLike<number>;
 }
 
 /** Provider with a fully synchronous interface */
@@ -112,9 +115,9 @@ export interface SynchronousProvider extends Provider {
 	update<T extends Data>(ref: DataDocument<T>, value: Update<T>): void;
 	delete<T extends Data>(ref: DataDocument<T>): void;
 	getQuery<T extends Data>(ref: DataQuery<T>): Results<T>;
-	setQuery<T extends Data>(ref: DataQuery<T>, value: T): void;
-	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void;
-	deleteQuery<T extends Data>(ref: DataQuery<T>): void;
+	setQuery<T extends Data>(ref: DataQuery<T>, value: T): number;
+	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): number;
+	deleteQuery<T extends Data>(ref: DataQuery<T>): number;
 }
 
 /** Provider with a fully asynchronous interface */
@@ -125,7 +128,7 @@ export interface AsynchronousProvider extends Provider {
 	update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): PromiseLike<void>;
 	delete<T extends Data>(ref: DataDocument<T>): PromiseLike<void>;
 	getQuery<T extends Data>(ref: DataQuery<T>): PromiseLike<Results<T>>;
-	setQuery<T extends Data>(ref: DataQuery<T>, value: T): PromiseLike<void>;
-	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): PromiseLike<void>;
-	deleteQuery<T extends Data>(ref: DataQuery<T>): PromiseLike<void>;
+	setQuery<T extends Data>(ref: DataQuery<T>, value: T): PromiseLike<number>;
+	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): PromiseLike<number>;
+	deleteQuery<T extends Data>(ref: DataQuery<T>): PromiseLike<number>;
 }

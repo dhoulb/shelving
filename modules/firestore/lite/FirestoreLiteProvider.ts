@@ -160,19 +160,22 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		throw new Error("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 
-	async setQuery<T extends Data>(ref: DataQuery<T>, data: T | Update<T> | undefined): Promise<void> {
+	async setQuery<T extends Data>(ref: DataQuery<T>, data: T | Update<T> | undefined): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		await Promise.all(snapshot.docs.map(s => setDoc<unknown>(s.ref, data)));
+		return snapshot.size;
 	}
 
-	async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<void> {
+	async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		const fieldValues = getFieldValues(updates);
 		await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, fieldValues)));
+		return snapshot.size;
 	}
 
-	async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<void> {
+	async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
+		return snapshot.size;
 	}
 }

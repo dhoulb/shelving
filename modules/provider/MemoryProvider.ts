@@ -105,25 +105,40 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		});
 	}
 
-	setQuery<T extends Data>(ref: DataQuery<T>, data: T): void {
+	setQuery<T extends Data>(ref: DataQuery<T>, data: T): number {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
-		for (const [id] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) table.write(id, data);
+		let count = 0;
+		for (const [id] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) {
+			table.write(id, data);
+			count++;
+		}
+		return count;
 	}
 
-	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): void {
+	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): number {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
-		for (const [id, existing] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) table.write(id, updates.transform(existing));
+		let count = 0;
+		for (const [id, existing] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) {
+			table.write(id, updates.transform(existing));
+			count++;
+		}
+		return count;
 	}
 
-	deleteQuery<T extends Data>(ref: DataQuery<T>): void {
+	deleteQuery<T extends Data>(ref: DataQuery<T>): number {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
-		for (const [id] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) table.write(id, undefined);
+		let count = 0;
+		for (const [id] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) {
+			table.write(id, undefined);
+			count++;
+		}
+		return count;
 	}
 
 	/** Reset this provider and clear all data. */

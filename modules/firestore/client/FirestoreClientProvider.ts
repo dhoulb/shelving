@@ -172,23 +172,22 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		);
 	}
 
-	async setQuery<T extends Data>(ref: DataQuery<T>, data: T): Promise<void> {
+	async setQuery<T extends Data>(ref: DataQuery<T>, data: T): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
-		if (data instanceof Update) {
-			const updates = getFieldValues(data);
-			await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, updates)));
-		} else if (data) await Promise.all(snapshot.docs.map(s => setDoc<unknown>(s.ref, data)));
-		else await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
+		await Promise.all(snapshot.docs.map(s => setDoc<unknown>(s.ref, data)));
+		return snapshot.size;
 	}
 
-	async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<void> {
+	async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		const fieldValues = getFieldValues(updates);
 		await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, fieldValues)));
+		return snapshot.size;
 	}
 
-	async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<void> {
+	async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
+		return snapshot.size;
 	}
 }
