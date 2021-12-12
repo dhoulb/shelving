@@ -159,3 +159,9 @@ export type DeepMutable<T extends Data> = { -readonly [K in keyof T]: T[K] exten
  * - Only works for plain objects (i.e. objects that extend `Data`), not arrays and functions.
  */
 export type DeepReadonly<T extends Data> = { +readonly [K in keyof T]: T[K] extends Data ? DeepReadonly<T[K]> : T[K] };
+
+/** Pick only the properties of an object that match a type. */
+export type PickProps<T, TT> = Pick<T, { [K in keyof T]: T[K] extends TT ? K : never }[keyof T]>;
+
+/** Omit the properties of an object that match a type. */
+export type OmitProps<T, TT> = Omit<T, { [K in keyof T]: T[K] extends TT ? K : never }[keyof T]>;
