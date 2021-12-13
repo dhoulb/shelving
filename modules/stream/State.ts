@@ -11,7 +11,7 @@ import {
 	Mutable,
 	awaitNext,
 } from "../util/index.js";
-import { Stream } from "./Stream.js";
+import { AnyStream, Stream } from "./Stream.js";
 
 /** Any state (useful for `extends AnySubscribable` clauses). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,8 +29,11 @@ export type AnyState = State<any>;
  * */
 export interface State<T> {
 	to(): State<T>;
+	to<O extends AnyStream>(target: O): O;
 	derive<TT>(transformer: Transformer<T, TT>): State<TT>;
+	derive<O extends AnyStream>(transformer: Transformer<T, ObserverType<O>>, target: O): O;
 	deriveAsync<TT>(transformer: Transformer<T, PromiseLike<TT>>): State<TT>;
+	deriveAsync<O extends AnyStream>(transformer: Transformer<T, Promise<ObserverType<O>>>, target: O): O;
 }
 export class State<T> extends Stream<T> {
 	// Override species so `to()`, `derive()` and `deriveAsync()` with no target return new `State` instances.
