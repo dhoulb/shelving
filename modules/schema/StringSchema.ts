@@ -5,6 +5,9 @@ import { Schema } from "./Schema.js";
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
 export type HtmlInputType = "text" | "password" | "color" | "date" | "email" | "number" | "tel" | "search" | "url";
 
+/** Function that sanitizes a string. */
+export type Sanitizer = (str: string) => string;
+
 /**
  * Schema that defines a valid string.
  *
@@ -31,6 +34,7 @@ export class StringSchema extends Schema<string> {
 	readonly min: number;
 	readonly max: number | null;
 	readonly match: RegExp | null;
+	readonly sanitizer: Sanitizer | null;
 	readonly multiline: boolean;
 	readonly trim: boolean;
 	constructor({
@@ -39,6 +43,7 @@ export class StringSchema extends Schema<string> {
 		min = 0,
 		max = null,
 		match = null,
+		sanitizer = null,
 		multiline = false,
 		trim = true,
 		...rest
@@ -48,6 +53,7 @@ export class StringSchema extends Schema<string> {
 		readonly min?: number;
 		readonly max?: number | null;
 		readonly match?: RegExp | null;
+		readonly sanitizer?: Sanitizer | null;
 		readonly multiline?: boolean;
 		readonly trim?: boolean;
 	}) {
@@ -57,6 +63,7 @@ export class StringSchema extends Schema<string> {
 		this.min = min;
 		this.max = max;
 		this.match = match;
+		this.sanitizer = sanitizer;
 		this.multiline = multiline;
 		this.trim = trim;
 	}
@@ -76,7 +83,11 @@ export class StringSchema extends Schema<string> {
 	 * - Applies `options.sanitizer` too (if it's set).
 	 */
 	sanitize(uncleanString: string): string {
-		return this.multiline ? sanitizeLines(uncleanString, this.trim) : sanitizeString(uncleanString, this.trim);
+		return this.sanitizer
+			? this.sanitizer(uncleanString)
+			: this.multiline
+			? sanitizeLines(uncleanString, this.trim)
+			: sanitizeString(uncleanString, this.trim);
 	}
 }
 
