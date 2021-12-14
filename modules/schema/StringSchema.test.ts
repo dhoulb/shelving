@@ -71,22 +71,13 @@ describe("options.match", () => {
 	});
 });
 describe("options.multiline", () => {
-	test("Control characters are stripped", () => {
-		const schema1 = new StringSchema({});
-		const value1 =
-			"abc\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x7F\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9Fdef";
-		expect(schema1.validate(value1)).toBe("abcdef");
-	});
 	test("String without multiline strips tab and line feed newline", () => {
 		const schema1 = new StringSchema({});
-		expect(schema1.validate("abc\t\ndef")).toBe("abcdef");
+		expect(schema1.validate("a\0b\tc\0d\ne\0f")).toBe("ab cd ef");
 	});
 	test("String with multiline keeps tab and line feed newline", () => {
 		const schema1 = new StringSchema({ multiline: true });
-		expect(schema1.validate("ab\t\x0Bcd\n\x0Cef")).toBe("ab\tcd\nef");
-		const value1 =
-			"\tabc\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x7F\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F  def";
-		expect(schema1.validate(value1)).toBe("\tabc\n  def");
+		expect(schema1.validate("a\0b\tc\0d\ne\0f")).toBe("ab\tcd\nef");
 	});
 });
 describe("options.min", () => {

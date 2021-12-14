@@ -9,21 +9,16 @@ const BLOCK = "[\\s\\S]*?"; // Match block of content (including newlines so don
 const BLOCK_START = "^\\n*|\\n+"; // Starts at start of a block (one or more linebreak or start of string).
 const BLOCK_END = "\\n*$|\\n\\n+"; // End of a block (two or more linebreaks or end of string).
 const BULLETS = "-*•+"; // Anything that can be a bullet (used for unordered lists and horizontal rules).
-const UNORDERED = `[${BULLETS}] +`; // Anything that can be a bullet (used for unordered lists and horizontal rules).
-const ORDERED = "[0-9]+[.):] +"; // Number for a numbered list (e.g. `1.` or `2)` or `3:`)
 const WORDS = `\\S(?:[\\s\\S]*?\\S)?`; // Run of text that starts and ends with non-space characters (possibly multi-line).
 
 // Regular expressions.
 const REPLACE_INDENT = /^ {1,2}/gm;
 
 // Regular expression makers.
-const createMatcher =
-	(regexp: RegExp): MarkupRuleMatcher =>
-	content =>
-		content.match(regexp);
-const createBlockMatcher = (middle = BLOCK, end = BLOCK_END, start = BLOCK_START) => createMatcher(new RegExp(`(?:${start})${middle}(?:${end})`));
-const createLineMatcher = (middle = LINE, end = LINE_END, start = LINE_START) => createMatcher(new RegExp(`(?:${start})${middle}(?:${end})`));
-const createWrapMatcher = (chars: string, middle = WORDS): MarkupRuleMatcher => {
+const getMatcher: (regexp: RegExp) => MarkupRuleMatcher = regexp => content => content.match(regexp);
+const getBlockMatcher = (middle = BLOCK, end = BLOCK_END, start = BLOCK_START) => getMatcher(new RegExp(`(?:${start})${middle}(?:${end})`));
+const getLineMatcher = (middle = LINE, end = LINE_END, start = LINE_START) => getMatcher(new RegExp(`(?:${start})${middle}(?:${end})`));
+const getWrapMatcher = (chars: string, middle = WORDS): MarkupRuleMatcher => {
 	const regexp = new RegExp(`(${chars})(${middle})\\1`);
 	return content => content.match(regexp);
 };
@@ -35,7 +30,7 @@ const createWrapMatcher = (chars: string, middle = WORDS): MarkupRuleMatcher => 
  * - Markdown's underline syntax is not supported (for simplification).
  */
 const HEADING: MarkupRule = {
-	match: createLineMatcher(`(#{1,6}) +(${LINE})`),
+	match: getLineMatcher(`(#{1,6}) +(${LINE})`),
 	render: ([, prefix = "", children = ""]) => ({ type: `h${prefix.length}`, key: null, props: { children } }),
 	contexts: ["block"],
 	childContext: "inline",
@@ -49,7 +44,7 @@ const HEADING: MarkupRule = {
  * - Might have infinite number of spaces between the characters.
  */
 const HR: MarkupRule = {
-	match: createLineMatcher(`([${BULLETS}])(?: *\\1){2,}`),
+	match: getLineMatcher(`([${BULLETS}])(?: *\\1){2,}`),
 	render: () => ({ type: "hr", key: null, props: {} }),
 	contexts: ["block"],
 };
@@ -61,8 +56,9 @@ const HR: MarkupRule = {
  * - Lists can be created with `•` bullet characters (in addition to `-` dash, `+` plus, and `*` asterisk).
  * - Second-level list can be indented with 1-2 spaces.
  */
+const UNORDERED = `[${BULLETS}] +`; // Anything that can be a bullet (used for unordered lists and horizontal rules).
 const UL: MarkupRule = {
-	match: createBlockMatcher(`${UNORDERED}(${BLOCK})`),
+	match: getBlockMatcher(`${UNORDERED}(${BLOCK})`),
 	render: ([, list = ""]) => {
 		const children = list.split(SPLIT_UL_ITEMS).map(mapUnorderedItem);
 		return { type: "ul", key: null, props: { children } };
@@ -81,8 +77,9 @@ const mapUnorderedItem = (item: string, key: number): MarkupElement => {
  * - No leading spaces are allowed for the top-level list.
  * - Second-level list can be indented with 1-3 spaces.
  */
+const ORDERED = "[0-9]+[.):] +"; // Number for a numbered list (e.g. `1.` or `2)` or `3:`)
 const OL: MarkupRule = {
-	match: createBlockMatcher(`(${ORDERED}${BLOCK})`),
+	match: getBlockMatcher(`(${ORDERED}${BLOCK})`),
 	render: ([, list = ""]) => {
 		const children = list.split(SPLIT_OL_ITEMS).map(mapOrderedItem);
 		return { type: "ol", key: null, props: { children } };
@@ -108,7 +105,7 @@ const mapOrderedItem = (item: string, key: number): MarkupElement => {
  * - Quote indent symbol can be followed by zero or more spaces.
  */
 const BLOCKQUOTE: MarkupRule = {
-	match: createLineMatcher(`(>${LINE}(?:\\n>${LINE})*)`),
+	match: getLineMatcher(`(>${LINE}(?:\\n>${LINE})*)`),
 	render: ([, quote = ""]) => ({
 		type: "blockquote",
 		key: null,
@@ -128,7 +125,7 @@ const BLOCKQUOTE_LINES = /^>/gm;
  */
 const FENCED: MarkupRule = {
 	// Matcher has its own end that only stops when it reaches a matching closing fence or the end of the string.
-	match: createBlockMatcher(`(\`{3,}|~{3,}) *(${LINE})\\n(${BLOCK})`, `\\n\\1\\n+|\\n\\1$|$`),
+	match: getBlockMatcher(`(\`{3,}|~{3,}) *(${LINE})\\n(${BLOCK})`, `\\n\\1\\n+|\\n\\1$|$`),
 	render: ([, , file, children]) => ({
 		type: "pre",
 		key: null,
@@ -148,7 +145,7 @@ const FENCED: MarkupRule = {
  * - When ordering rules, paragraph should go after other "block" context elements (because it has a very generous capture).
  */
 const PARAGRAPH: MarkupRule = {
-	match: createBlockMatcher(` *(${BLOCK})`),
+	match: getBlockMatcher(` *(${BLOCK})`),
 	render: ([, children]) => ({ type: `p`, key: null, props: { children } }),
 	contexts: ["block"],
 	childContext: "inline",
@@ -222,7 +219,7 @@ const MATCH_AUTOLINK = /([a-z][a-z0-9-]*[a-z0-9]:\S+)(?: +(?:\(([^)]*?)\)|\[([^\
  * - Same as Markdown syntax.
  */
 const CODE: MarkupRule = {
-	match: createWrapMatcher("`+", BLOCK), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
+	match: getWrapMatcher("`+", BLOCK), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
 	render: ([, , children]) => ({ type: "code", key: null, props: { children } }),
 	contexts: ["inline", "list"],
 	priority: 10, // Higher priority than other inlines so it matches first before e.g. `strong` or `em` (from CommonMark spec: "Code span backticks have higher precedence than any other inline constructs except HTML tags and autolinks.")
@@ -237,7 +234,7 @@ const CODE: MarkupRule = {
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
 const STRONG: MarkupRule = {
-	match: createWrapMatcher("\\*+"),
+	match: getWrapMatcher("\\*+"),
 	render: ([, , children]) => ({ type: "strong", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
@@ -252,7 +249,7 @@ const STRONG: MarkupRule = {
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
 const EM: MarkupRule = {
-	match: createWrapMatcher("_+"),
+	match: getWrapMatcher("_+"),
 	render: ([, , children]) => ({ type: "em", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
@@ -267,7 +264,7 @@ const EM: MarkupRule = {
  * - Markdown doesn't have this.
  */
 const INS: MarkupRule = {
-	match: createWrapMatcher("\\++"),
+	match: getWrapMatcher("\\++"),
 	render: ([, , children]) => ({ type: "ins", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
@@ -282,7 +279,7 @@ const INS: MarkupRule = {
  * - Markdown doesn't have this.
  */
 const DEL: MarkupRule = {
-	match: createWrapMatcher("~+"),
+	match: getWrapMatcher("~+"),
 	render: ([, , children]) => ({ type: "del", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
@@ -297,7 +294,7 @@ const DEL: MarkupRule = {
  *   - This works better with textareas that wrap text (since manually breaking up long lines is no longer necessary).
  */
 const BR: MarkupRule = {
-	match: createMatcher(/\n/),
+	match: getMatcher(/\n/),
 	render: () => ({ type: "br", key: null, props: {} }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",

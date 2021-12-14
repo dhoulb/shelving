@@ -1,4 +1,4 @@
-import { cleanMarkup, nodeToText, nodeToHtml, renderMarkup } from "../index.js";
+import { nodeToText, nodeToHtml, renderMarkup } from "../index.js";
 import { yieldElements } from "./helpers.js";
 
 describe("nodeToText()", () => {
@@ -19,20 +19,6 @@ describe("nodeToHtml()", () => {
 		);
 		expect(nodeToHtml(renderMarkup("[GOOG](https://google.com)"))).toBe(`<p><a href="https://google.com/">GOOG</a></p>`);
 	});
-});
-test("cleanMarkup()", () => {
-	// Trailing spaces are cleared correctly.
-	expect(cleanMarkup("aaa    ")).toEqual("aaa");
-	// Trailing spaces are cleared but trailing newlines are not.
-	expect(cleanMarkup("aaa    \n     ")).toEqual("aaa\n");
-	expect(cleanMarkup("aaa    \n\f\f\f\f")).toEqual("aaa\n");
-	// Carriage returns are converted to plain newlines.
-	expect(cleanMarkup("aaa\r\naaa")).toEqual("aaa\naaa");
-	expect(cleanMarkup("aaa\raaa")).toEqual("aaa\naaa");
-	expect(cleanMarkup("aaa\r\raaa")).toEqual("aaa\n\naaa");
-	expect(cleanMarkup("aaa\r")).toEqual("aaa\n");
-	// Tabs and other weird whitespaces are converted to spaces.
-	expect(cleanMarkup("aaa\taaa\faaa")).toEqual("aaa aaa aaa");
 });
 test("yieldElements()", () => {
 	expect(Array.from(yieldElements(renderMarkup("PARAGRAPH")))).toHaveLength(1);

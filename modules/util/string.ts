@@ -58,22 +58,25 @@ export function toTitle(value: unknown): string {
  * - Stripping control characters.
  * - Normalising all space characters to " " space.
  *
- * @param dirty The dirty input string.
+ * @param str The dirty input string.
  * @param multiline If `true`, `\t` horizontal tabs and `\r` newlines are allowed (defaults to `false` which strips these characters).
  * @returns The clean output string.
  */
-export const sanitizeString = (dirty: string): string => dirty.replace(SANE_DISALLOWED, "").replace(SANE_SPACES, " ").trim();
-const SANE_DISALLOWED = /[\x00-\x1F\x7F-\x9F]/g; // All control characters (`\x00`-`\x1F`, `\x7F`-`\x9F`)
-const SANE_SPACES = /\s/g; // Zero-width spacers etc.
+export const sanitizeString = (str: string): string => str.replace(SANE_SPACES, " ").replace(SANE_STRIP, "").trim();
+const SANE_SPACES = /\s+/g; // Runs of spaces.
+const SANE_STRIP = /[\x00-\x1F\x7F-\x9F]+/g; // Control characters.
 
 /**
  * Sanitize a multiline string.
  * - Like `sanitizeString()` but allows `\t` horizontal tab and `\r` newline.
  */
-export const sanitizeLines = (dirty: string): string => dirty.replace(LINES_DISALLOW, "").replace(LINES_SPACES, " ").replace(LINES_TRIM, "");
-const LINES_DISALLOW = /(?![\t\n])[\x00-\x1F\x7F-\x9F]/g; // Control characters except `\t` horizontal tab and `\n` new line.
-const LINES_TRIM = /\s+$/gm; // Spaces at the end of lines.
-const LINES_SPACES = /(?![\t\n])\s/g; // All spaces except `\t` horizontal tab and `\n` new line.
+export const sanitizeLines = (str: string): string =>
+	str.replace("\u2029", "\n\n").replace(LINE_SPACES, " ").replace(LINE_STRIP, "").replace(LINE_ENDS, "").replace(LINE_START, "").replace(LINE_BREAKS, "\n\n");
+const LINE_SPACES = /[^\S \t\n]/g; // Spaces except tab and newline.
+const LINE_STRIP = /[\x00-\x08\x0B-\x1F\x7F-\x9F]+/g; // Control characters (except tab and newline).
+const LINE_ENDS = /[ \t]+$/gm; // Spaces and tabs at ends of lines.
+const LINE_START = /^\n+|\n+$/g; // Newlines at start and end of string.
+const LINE_BREAKS = /\n\n\n+/g; // Three or more linebreaks in a row.
 
 /**
  * Normalize a string so it can be compared to another string (free from upper/lower cases, symbols, punctuation).
@@ -87,28 +90,27 @@ const LINES_SPACES = /(?![\t\n])\s/g; // All spaces except `\t` horizontal tab a
  *
  * @example normalizeString("Däve-is\nREALLY    éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
  */
-export const normalizeString = (str: string) => str.normalize("NFD").replace(NORMAL_DISALLOW, "").replace(NORMAL_SPACES, " ").trim().toLowerCase();
-const NORMAL_DISALLOW = /[^\p{L}\p{N}\s]+/gu; // Keep letters, numbers, separators. Don't need to use `\p{Z}` because `\s` matches those already e.g. hair space and nbsp.
-const NORMAL_SPACES = /\s+/gu; // Convert all possible separators to space.
+export const normalizeString = (str: string) => sanitizeString(str.normalize("NFD").replace(NORMAL_STRIP, "").toLowerCase());
+const NORMAL_STRIP = /[^\p{L}\p{N}\s]+/gu; // Anything except letters, numbers, spaces.
 
 /**
  * Convert a string to a `kebab-case` URL slug.
  * - Remove any characters not in the range `[a-z0-9-]`
  * - Change all spaces/separators/hyphens/dashes/underscores to `-` single hyphen.
  */
-export const toSlug = (value: string): string => value.toLowerCase().normalize("NFD").replace(SLUG_HYPHENS, "-").replace(SLUG_DISALLOWED, "");
-const SLUG_DISALLOWED = /[^a-z0-9-]+|^-+|-+$/gu; // Remove anything outside a-z and hyphen (except at start/end).
-const SLUG_HYPHENS = /[\s\-–—_]+/gu; // Anything that is a space becomes a hyphen.
+export const toSlug = (str: string): string => str.toLowerCase().normalize("NFD").replace(SLUG_HYPHENS, "-").replace(SLUG_STRIP, "");
+const SLUG_HYPHENS = /[\s\-–—_]+/gu; // Runs of spaces and hyphens.
+const SLUG_STRIP = /^[^a-z0-9]+|[^a-z0-9]+$|[^a-z0-9-]+/g; // Non-alphanumeric or hyphen anywhere, or non-alphanumeric at start and end.
 
 /**
  * Split a string into its separate words.
  * - Words enclosed "in quotes" are a single word.
  * - Performs no processing on the words, so control chars, punctuation, symbols, and case are all preserved.
  *
- * @param value The input string, e.g. `yellow dog   "Golden Retriever"`
+ * @param str The input string, e.g. `yellow dog   "Golden Retriever"`
  * @returns Array of the found words, e.g. `["yellow", "dog", "Golden Retriever"
  */
-export const toWords = (value: string): ImmutableArray<string> => Array.from(yieldWords(value));
+export const toWords = (str: string): ImmutableArray<string> => Array.from(yieldWords(str));
 
 /** Find and iterate over the words in a string. */
 export function* yieldWords(value: string): Generator<string, void, void> {
@@ -117,15 +119,15 @@ export function* yieldWords(value: string): Generator<string, void, void> {
 		if (str) yield str;
 	}
 }
-const MATCH_WORD = /[^\s"]+|"([^"]*)"/g;
+const MATCH_WORD = /[^\s"]+|"([^"]*)"/g; // Runs of characters without spaces, or "quoted phrases"
 
 /**
  * Convert a string to a regular expression that matches that string.
  *
- * @param value The input string.
+ * @param str The input string.
  * @param flags RegExp flags that are passed into the created RegExp.
  */
-export const toRegExp = (value: string, flags = ""): RegExp => new RegExp(escapeRegExp(value), flags);
+export const toRegExp = (str: string, flags = ""): RegExp => new RegExp(escapeRegExp(str), flags);
 
 /** Escape special characters in a string regular expression. */
 export const escapeRegExp = (str: string): string => str.replace(REPLACE_ESCAPED, "\\$&");

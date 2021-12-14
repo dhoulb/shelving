@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
 
-import { cleanMarkup } from "./helpers.js";
+import { sanitizeLines } from "../index.js";
 import { MARKUP_RULES, MARKUP_RULES_UGC } from "./rules.js";
 import type { MarkupRule, MarkupOptions, MarkupNode } from "./types.js";
 
 /** Convert a string into an array of React nodes using a set of rules. */
-const renderString = (content: string, options: MarkupOptions): MarkupNode => {
+function renderString(content: string, options: MarkupOptions): MarkupNode {
 	// If there's no context return the unmodified string.
 	if (!options.context) return content;
 
@@ -67,7 +67,7 @@ const renderString = (content: string, options: MarkupOptions): MarkupNode => {
 
 	// If there's only one node return the single node (otherwise return the entire array).
 	return !nodes.length ? null : nodes.length === 1 ? nodes[0] : nodes;
-};
+}
 
 /**
  * Append a JSX node to a list of JSX nodes.
@@ -75,7 +75,7 @@ const renderString = (content: string, options: MarkupOptions): MarkupNode => {
  * - JSX nodes can be arrays of nodes — these will be flattened directly into the nodes list.
  * - Nodes array is modified in place (not returned).
  */
-const appendNode = (nodes: MarkupNode[], node: MarkupNode): void => {
+function appendNode(nodes: MarkupNode[], node: MarkupNode): void {
 	if (!node) {
 		// No need to append null, undefined, or empty string.
 		return;
@@ -93,13 +93,13 @@ const appendNode = (nodes: MarkupNode[], node: MarkupNode): void => {
 		// Append the node.
 		nodes.push(node);
 	}
-};
+}
 
 /**
  * Render a JSX node
  * - Recursively renders the children of the node using the current options.
  */
-const renderNode = (node: MarkupNode, options: MarkupOptions): MarkupNode => {
+function renderNode(node: MarkupNode, options: MarkupOptions): MarkupNode {
 	if (typeof node === "string") return renderString(node, options);
 	if (node instanceof Array) return node.map(n => renderNode(n, options));
 	if (typeof node === "object" && node) {
@@ -108,7 +108,7 @@ const renderNode = (node: MarkupNode, options: MarkupOptions): MarkupNode => {
 		return node;
 	}
 	return node;
-};
+}
 const REACT_SECURITY_SYMBOL = Symbol.for("react.element");
 
 /**
@@ -144,7 +144,9 @@ const REACT_SECURITY_SYMBOL = Symbol.for("react.element");
  *
  * @returns ReactNode, i.e. either a complete `ReactElement`, `null`, `undefined`, `string`, or an array of zero or more of those.
  */
-export const renderMarkup = (content: string, options?: Partial<MarkupOptions>): MarkupNode => renderString(cleanMarkup(content), { ...defaults, ...options });
+export function renderMarkup(content: string, options?: Partial<MarkupOptions>): MarkupNode {
+	return renderString(sanitizeLines(content), { ...defaults, ...options });
+}
 const defaults: MarkupOptions = {
 	rules: MARKUP_RULES,
 	context: "block",
@@ -157,8 +159,9 @@ const defaults: MarkupOptions = {
  * Parse a text string as user-generated markup.
  * - Like `renderMarkup()` but only enables a subset of rules and applies `rel="nofollow ugc"` to all links.
  */
-export const renderUgcMarkup = (content: string, options?: Partial<MarkupOptions>): MarkupNode =>
-	renderString(cleanMarkup(content), { ...defaultsUgc, ...options });
+export function renderUgcMarkup(content: string, options?: Partial<MarkupOptions>): MarkupNode {
+	return renderString(sanitizeLines(content), { ...defaultsUgc, ...options });
+}
 const defaultsUgc: MarkupOptions = {
 	...defaults,
 	rules: MARKUP_RULES_UGC,
