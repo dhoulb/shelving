@@ -4,7 +4,6 @@ import { formatDate } from "./date.js";
 import { isData } from "./data.js";
 import { ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
-import { IS_DEFINED } from "./undefined.js";
 
 /** Is a value a string? */
 export const IS_STRING = (v: unknown): v is string => typeof v === "string";
@@ -63,52 +62,43 @@ export function toTitle(value: unknown): string {
  * @param multiline If `true`, `\t` horizontal tabs and `\r` newlines are allowed (defaults to `false` which strips these characters).
  * @returns The clean output string.
  */
-export function sanitizeString(dirty: string, trim = true): string {
-	const clean = dirty.replace(CONTROLS, "").replace(SPACES, " ");
-	return trim ? clean.trim() : clean;
-}
-const CONTROLS = /[\x00-\x1F\x7F-\x9F]/g; // All control characters (`\x00`-`\x1F`, `\x7F`-`\x9F`)
-const SPACES = /\s/g; // Sanitize zero-width spacers etc.
+export const sanitizeString = (dirty: string): string => dirty.replace(SANE_DISALLOWED, "").replace(SANE_SPACES, " ").trim();
+const SANE_DISALLOWED = /[\x00-\x1F\x7F-\x9F]/g; // All control characters (`\x00`-`\x1F`, `\x7F`-`\x9F`)
+const SANE_SPACES = /\s/g; // Zero-width spacers etc.
 
 /**
  * Sanitize a multiline string.
  * - Like `sanitizeString()` but allows `\t` horizontal tab and `\r` newline.
  */
-export function sanitizeLines(dirty: string, trim = true): string {
-	const clean = dirty.replace(CONTROLS_MULTILINE, "").replace(SPACES_MULTILINE, " ");
-	return trim ? clean.replace(TRIM_END_MULTILINE, "") : clean;
-}
-const CONTROLS_MULTILINE = /(?![\t\n])[\x00-\x1F\x7F-\x9F]/g; // Control characters except `\t` horizontal tab and `\n` new line.
-const SPACES_MULTILINE = /(?![\t\n])\s/g; // All spaces except `\t` horizontal tab and `\n` new line.
-const TRIM_END_MULTILINE = /\s+$/gm;
+export const sanitizeLines = (dirty: string): string => dirty.replace(LINES_DISALLOW, "").replace(LINES_SPACES, " ").replace(LINES_TRIM, "");
+const LINES_DISALLOW = /(?![\t\n])[\x00-\x1F\x7F-\x9F]/g; // Control characters except `\t` horizontal tab and `\n` new line.
+const LINES_TRIM = /\s+$/gm; // Spaces at the end of lines.
+const LINES_SPACES = /(?![\t\n])\s/g; // All spaces except `\t` horizontal tab and `\n` new line.
 
 /**
  * Normalize a string so it can be compared to another string (free from upper/lower cases, symbols, punctuation).
  *
  * Does the following:
- * - Santize the string to remove control characters.
+ * - Removes control characters.
  * - Remove symbols (e.g. `$` dollar) and punctuation (e.g. `"` double quote).
  * - Remove marks (e.g. the umlout dots above `ö`).
  * - Convert spaces/separators to " " single space (e.g. line breaks, non-breaking space).
  * - Convert to lowercase and trim excess whitespace.
  *
- * @example normalizeString("Däve-is REALLY éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
+ * @example normalizeString("Däve-is\nREALLY    éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
  */
-export const normalizeString = (value: string): string =>
-	sanitizeString(value).normalize("NFD").replace(STRIP, "").replace(SEPARATORS, " ").trim().toLowerCase();
-const STRIP = /[\p{Symbol}\p{Mark}\p{Punctuation}]+/gu;
-const SEPARATORS = /\s+/g;
+export const normalizeString = (str: string) => str.normalize("NFD").replace(NORMAL_DISALLOW, "").replace(NORMAL_SPACES, " ").trim().toLowerCase();
+const NORMAL_DISALLOW = /[^\p{L}\p{N}\s]+/gu; // Keep letters, numbers, separators. Don't need to use `\p{Z}` because `\s` matches those already e.g. hair space and nbsp.
+const NORMAL_SPACES = /\s+/gu; // Convert all possible separators to space.
 
 /**
  * Convert a string to a `kebab-case` URL slug.
  * - Remove any characters not in the range `[a-z0-9-]`
  * - Change all spaces/separators/hyphens/dashes/underscores to `-` single hyphen.
  */
-export const toSlug = (value: string): string =>
-	value.toLowerCase().normalize("NFD").replace(TO_HYPHEN, "-").replace(NON_ALPHANUMERIC, "").replace(TRIM_HYPHENS, "");
-const TO_HYPHEN = /[\s-–—_]+/g; // Anything that is a space becomes a hyphen.
-const NON_ALPHANUMERIC = /[^a-z0-9-]+/gu; // Anything that isn't [a-z0-9-] gets removed.
-const TRIM_HYPHENS = /^-+|-+$/g; // Trim excess hyphens at start and end.
+export const toSlug = (value: string): string => value.toLowerCase().normalize("NFD").replace(SLUG_HYPHENS, "-").replace(SLUG_DISALLOWED, "");
+const SLUG_DISALLOWED = /[^a-z0-9-]+|^-+|-+$/gu; // Remove anything outside a-z and hyphen (except at start/end).
+const SLUG_HYPHENS = /[\s\-–—_]+/gu; // Anything that is a space becomes a hyphen.
 
 /**
  * Split a string into its separate words.
@@ -118,8 +108,15 @@ const TRIM_HYPHENS = /^-+|-+$/g; // Trim excess hyphens at start and end.
  * @param value The input string, e.g. `yellow dog   "Golden Retriever"`
  * @returns Array of the found words, e.g. `["yellow", "dog", "Golden Retriever"
  */
-export const toWords = (value: string): ImmutableArray<string> => Array.from(value.matchAll(MATCH_WORD)).map(toWord).filter(IS_DEFINED);
-const toWord = (matches: RegExpMatchArray) => matches[1] || matches[0] || undefined;
+export const toWords = (value: string): ImmutableArray<string> => Array.from(yieldWords(value));
+
+/** Find and iterate over the words in a string. */
+export function* yieldWords(value: string): Generator<string, void, void> {
+	for (const matches of value.matchAll(MATCH_WORD)) {
+		const str = matches[1] || matches[0];
+		if (str) yield str;
+	}
+}
 const MATCH_WORD = /[^\s"]+|"([^"]*)"/g;
 
 /**

@@ -51,11 +51,10 @@ export function MATCHES_ANY(item: unknown, regexps: ImmutableArray<RegExp>): boo
  * - Unquoted words match partially (starting with a word boundary).
  * - Quoted phrases match fully (starting and ending with a word boundary).
  */
-export const toWordRegExps = (query: string): ImmutableArray<RegExp> => toWords(query).map(normalizeString).map(toWordRegExp);
+export const toWordRegExps = (query: string): ImmutableArray<RegExp> => toWords(query).map(toWordRegExp);
 
-/** Convert a string word to the corresponding set of case-insensitive regular expressions. */
-export const toWordRegExp = (word: string) =>
-	word.includes(" ") ? new RegExp(`\\b${escapeRegExp(word)}\\b`, "i") : new RegExp(`\\b${escapeRegExp(word)}`, "i");
+/** Convert a string to a regular expression matching the start of a word boundary. */
+export const toWordRegExp = (word: string) => new RegExp(`\\b${escapeRegExp(normalizeString(word))}`, "i");
 
 /** Matcher that matches any words in a string. */
 export class MatchAnyWord implements Matchable<unknown, void> {
@@ -80,7 +79,7 @@ export class MatchAllWords implements Matchable<unknown, void> {
 }
 
 /** Matcher that matches an exact phrase. */
-export class MatchPhrase implements Matchable<unknown, void> {
+export class MatchWord implements Matchable<unknown, void> {
 	private _regexp: RegExp;
 	constructor(phrase: string) {
 		this._regexp = toWordRegExp(phrase);

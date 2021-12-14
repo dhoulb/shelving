@@ -36,7 +36,6 @@ export class StringSchema extends Schema<string> {
 	readonly match: RegExp | null;
 	readonly sanitizer: Sanitizer | null;
 	readonly multiline: boolean;
-	readonly trim: boolean;
 	constructor({
 		value = "",
 		type = "text",
@@ -45,7 +44,6 @@ export class StringSchema extends Schema<string> {
 		match = null,
 		sanitizer = null,
 		multiline = false,
-		trim = true,
 		...rest
 	}: ConstructorParameters<typeof Schema>[0] & {
 		readonly value?: string;
@@ -55,7 +53,6 @@ export class StringSchema extends Schema<string> {
 		readonly match?: RegExp | null;
 		readonly sanitizer?: Sanitizer | null;
 		readonly multiline?: boolean;
-		readonly trim?: boolean;
 	}) {
 		super(rest);
 		this.type = type;
@@ -65,7 +62,6 @@ export class StringSchema extends Schema<string> {
 		this.match = match;
 		this.sanitizer = sanitizer;
 		this.multiline = multiline;
-		this.trim = trim;
 	}
 	override validate(unsafeValue: unknown = this.value): string {
 		const unsafeString = typeof unsafeValue === "number" ? unsafeValue.toString() : unsafeValue;
@@ -83,11 +79,7 @@ export class StringSchema extends Schema<string> {
 	 * - Applies `options.sanitizer` too (if it's set).
 	 */
 	sanitize(uncleanString: string): string {
-		return this.sanitizer
-			? this.sanitizer(uncleanString)
-			: this.multiline
-			? sanitizeLines(uncleanString, this.trim)
-			: sanitizeString(uncleanString, this.trim);
+		return this.sanitizer ? this.sanitizer(uncleanString) : this.multiline ? sanitizeLines(uncleanString) : sanitizeString(uncleanString);
 	}
 }
 
