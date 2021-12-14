@@ -29,7 +29,7 @@ import { DataUpdate, PropUpdates, Update } from "../update/index.js";
 import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Query, EqualFilter } from "../query/index.js";
-import { DocumentRequiredError, DocumentValidationError, QueryValidationError } from "./errors.js";
+import { DocumentRequiredError, DocumentValidationError, QueryRequiredError, QueryValidationError } from "./errors.js";
 import { DocumentDelete, DocumentSet, DocumentUpdate, Write, Writes } from "./Write.js";
 
 /**
@@ -130,10 +130,12 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 
 	/**
 	 * Get an entry for the first document matching this query.
-	 * @return Entry in `[id, data]` format for the first document, or `undefined` if there are no matching documents (possibly promised).
+	 *
+	 * @return Entry in `[id, data]` format for the first document.
+	 * @throws RequiredError if there were no results for this query.
 	 */
 	get first(): Entry<T> | undefined | PromiseLike<Entry<T> | undefined> {
-		return callAsync(getFirstItem, this.max(1).results);
+		return callAsync(getQueryFirst, this.max(1).results, this);
 	}
 
 	/**
@@ -211,6 +213,13 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	override toString(): string {
 		return `${this.collection}?${super.toString()}`;
 	}
+}
+
+/** Get the data for a document from a result for that document. */
+export function getQueryFirst<T extends Data>(results: Results<T>, ref: DataQuery<T>): Entry<T> {
+	const first = getFirstItem(results);
+	if (first) return first;
+	throw new QueryRequiredError(ref);
 }
 
 /** A document reference within a specific database. */

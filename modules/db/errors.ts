@@ -13,6 +13,16 @@ export class DocumentRequiredError<T extends Data> extends RequiredError {
 }
 DocumentRequiredError.prototype.name = "DocumentRequiredError";
 
+/** Thrown if a query doesn't exist. */
+export class QueryRequiredError<T extends Data> extends RequiredError {
+	ref: DataQuery<T>;
+	constructor(ref: DataQuery<T>) {
+		super(`Query "${ref.toString()}" has no results`);
+		this.ref = ref;
+	}
+}
+QueryRequiredError.prototype.name = "QueryRequiredError";
+
 /** Thrown if a document can't validate. */
 export class DocumentValidationError<T extends Data> extends ValidationError {
 	ref: DataDocument<T>;

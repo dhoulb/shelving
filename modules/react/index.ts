@@ -7,4 +7,5 @@ export * from "./useFetch.js";
 export * from "./useDocument.js";
 export * from "./useDocumentData.js";
 export * from "./useQuery.js";
+export * from "./useQueryFirst.js";
 export * from "./usePagination.js";
