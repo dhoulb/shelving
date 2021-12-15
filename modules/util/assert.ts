@@ -64,6 +64,16 @@ export function assertLength<T extends { length: number }>(value: T | unknown, m
 		throw new AssertionError(`Must have length ${min}–${max}`, value);
 }
 
+/** Assert that a value is a number greater than. */
+export function assertGreater(value: number | unknown, target: number): asserts value is number {
+	if (typeof value !== "number" || value <= target) throw new AssertionError(`Must be greater than ${target}`, value);
+}
+
+/** Assert that a value is a number less than. */
+export function assertLess(value: number | unknown, target: number): asserts value is number {
+	if (typeof value !== "number" || value >= target) throw new AssertionError(`Must be less than ${target}`, value);
+}
+
 /** Assert that a value is an instance of something. */
 export function assertInstance<T>(value: T | unknown, type: Class<T>): asserts value is T {
 	if (!(value instanceof type)) throw new AssertionError(`Must be instance of ${debug(type)}`, value);
