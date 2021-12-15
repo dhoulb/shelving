@@ -134,7 +134,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @return Entry in `[id, data]` format for the first document.
 	 * @throws RequiredError if there were no results for this query.
 	 */
-	get first(): Entry<T> | undefined | PromiseLike<Entry<T> | undefined> {
+	get first(): Entry<T> | PromiseLike<Entry<T>> {
 		return callAsync(getQueryFirst, this.max(1).results, this);
 	}
 
