@@ -19,7 +19,7 @@ import { useAsyncQuery } from "./useQuery.js";
 export function useAsyncQueryFirst<T extends Data>(ref: DataQuery<T>, maxAge?: number | true): Entry<T> | PromiseLike<Entry<T>>;
 export function useAsyncQueryFirst<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): Entry<T> | PromiseLike<Entry<T>> | undefined;
 export function useAsyncQueryFirst<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): Entry<T> | PromiseLike<Entry<T>> | undefined {
-	const results = useAsyncQuery(ref, maxAge);
+	const results = useAsyncQuery(ref ? ref.max(1) : undefined, maxAge);
 	return ref && results ? callAsync(getQueryFirst, results, ref) : undefined;
 }
 
