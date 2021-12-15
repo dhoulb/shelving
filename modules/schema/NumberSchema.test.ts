@@ -34,7 +34,6 @@ describe("validate()", () => {
 		expect(schema.validate("$200")).toBe(200);
 		expect(schema.validate("200.99p")).toBe(200.99);
 		expect(schema.validate("aaaaaa2aaaaaaa0zzzzzzzz0.99p")).toBe(200.99);
-		expect(schema.validate("aaaaaa2aaaaaaa0zzzzzzzz0.....99p")).toBe(200.99);
 	});
 	test("Infinity returns invalid", () => {
 		expect(() => schema.validate(Infinity)).toThrow(InvalidFeedback);

@@ -1,4 +1,4 @@
-import { toNumber, roundNumber } from "../util/index.js";
+import { toNumber, roundStep } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/index.js";
 import { Schema } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
@@ -30,7 +30,7 @@ export class NumberSchema extends Schema<number> {
 	override validate(unsafeValue: unknown = this.value): number {
 		const unsafeNumber = toNumber(unsafeValue);
 		if (typeof unsafeNumber !== "number") throw new InvalidFeedback("Must be number", { value: unsafeValue });
-		const safeNumber = typeof this.step === "number" ? roundNumber(unsafeNumber, this.step) : unsafeNumber;
+		const safeNumber = typeof this.step === "number" ? roundStep(unsafeNumber, this.step) : unsafeNumber;
 		if (typeof this.max === "number" && safeNumber > this.max) throw new InvalidFeedback(`Maximum ${this.max}`, { value: safeNumber });
 		if (typeof this.min === "number" && safeNumber < this.min) throw new InvalidFeedback(`Minimum ${this.min}`, { value: safeNumber });
 		return safeNumber;
