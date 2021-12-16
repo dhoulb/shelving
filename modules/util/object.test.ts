@@ -1,15 +1,4 @@
-import {
-	ImmutableObject,
-	isObject,
-	MutableObject,
-	deleteEntry,
-	deleteEntries,
-	setEntry,
-	setEntries,
-	withoutEntries,
-	withEntry,
-	withEntries,
-} from "../index.js";
+import { ImmutableObject, isObject, MutableObject, deleteEntry, deleteEntries, setEntry, setEntries, withoutEntries, withEntry, withEntries } from "../index.js";
 
 const maplikeObj: ImmutableObject<number> = { a: 1, b: 2, c: 3, d: 4 };
 

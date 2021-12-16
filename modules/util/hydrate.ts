@@ -70,8 +70,7 @@ export class Dehydrator implements Transformable<unknown, unknown> {
 		if (value instanceof Array) return transformArray(value, this);
 		if (isPlainObject(value)) return transformObject(value, this);
 		if (isData(value)) {
-			for (const [_type, hydration] of Object.entries(this._hydrations))
-				if (value instanceof hydration) return { _type, ...transformObject(value, this) };
+			for (const [_type, hydration] of Object.entries(this._hydrations)) if (value instanceof hydration) return { _type, ...transformObject(value, this) };
 			throw new AssertionError(`Cannot dehydrate object`, value);
 		}
 		return value;

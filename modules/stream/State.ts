@@ -1,16 +1,4 @@
-import {
-	Transformer,
-	LOADING,
-	ObserverType,
-	NOERROR,
-	Observer,
-	dispatchNext,
-	dispatchError,
-	dispatchComplete,
-	transform,
-	Mutable,
-	awaitNext,
-} from "../util/index.js";
+import { Transformer, LOADING, ObserverType, NOERROR, Observer, dispatchNext, dispatchError, dispatchComplete, transform, Mutable, awaitNext } from "../util/index.js";
 import { AnyStream, Stream } from "./Stream.js";
 
 /** Any state (useful for `extends AnySubscribable` clauses). */

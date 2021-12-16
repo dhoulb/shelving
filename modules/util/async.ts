@@ -16,10 +16,8 @@ export function throwAsync<T>(asyncValue: T | PromiseLike<T>): T {
 export const isAsync = <T>(v: T | PromiseLike<T>): v is PromiseLike<T> => typeof v === "object" && v !== null && typeof (v as Promise<T>).then === "function";
 
 /** Call a function with a set of values *BUT* if the first value is asynchronous wait for it to resolve first before calling the function. */
-export const callAsync = <I, O, A extends Arguments = []>(callback: (v: I, ...a: A) => O, value: I | PromiseLike<I>, ...args: A): O | PromiseLike<O> =>
-	isAsync(value) ? _awaitCallAsync(callback, value, args) : callback(value, ...args);
-export const _awaitCallAsync = async <I, O, A extends Arguments>(callback: (v: I, ...a: A) => O, value: PromiseLike<I>, args: A): Promise<O> =>
-	callback(await value, ...args);
+export const callAsync = <I, O, A extends Arguments = []>(callback: (v: I, ...a: A) => O, value: I | PromiseLike<I>, ...args: A): O | PromiseLike<O> => (isAsync(value) ? _awaitCallAsync(callback, value, args) : callback(value, ...args));
+export const _awaitCallAsync = async <I, O, A extends Arguments>(callback: (v: I, ...a: A) => O, value: PromiseLike<I>, args: A): Promise<O> => callback(await value, ...args);
 
 // Internal way for us to save `resolve()` and `reject()` from a new Promise used by `Deferred` and `ExtendablePromise`
 let resolve: Dispatcher<[any]>; // eslint-disable-line @typescript-eslint/no-explicit-any

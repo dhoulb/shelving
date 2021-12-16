@@ -17,11 +17,7 @@ export type Class<T = unknown> = Function & { prototype: T };
 export const isConstructor = <T extends AnyConstructor>(v: T | unknown): v is T => typeof v === "function" && v.toString().startsWith("class");
 
 /** Decorator to bind a class method lazily on first access. */
-export function bindMethod<O, T, A>(
-	target: O,
-	key: string,
-	{ value: method }: TypedPropertyDescriptor<(...args: A[]) => T>,
-): TypedPropertyDescriptor<(...args: A[]) => T> {
+export function bindMethod<O, T, A>(target: O, key: string, { value: method }: TypedPropertyDescriptor<(...args: A[]) => T>): TypedPropertyDescriptor<(...args: A[]) => T> {
 	assertFunction(method);
 	return {
 		configurable: true,
@@ -38,11 +34,7 @@ export function bindMethod<O, T, A>(
  * - Use this if a method computes an expensive value and you want to use it multiple times.
  * - Gets the method's result the first time the property is accessed, then saves that returned value in the object forever.
  */
-export function cacheMethod<O, T, A extends Arguments>(
-	target: O,
-	key: string,
-	{ value: method }: TypedPropertyDescriptor<(this: O, ...args: A) => T>,
-): TypedPropertyDescriptor<(this: O, ...args: A) => T> {
+export function cacheMethod<O, T, A extends Arguments>(target: O, key: string, { value: method }: TypedPropertyDescriptor<(this: O, ...args: A) => T>): TypedPropertyDescriptor<(this: O, ...args: A) => T> {
 	assertFunction(method);
 	return {
 		configurable: true,

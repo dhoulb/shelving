@@ -16,5 +16,4 @@ export function useSubscribe<T>(subscribable?: Subscribable<T>): void {
 }
 
 /** Effect that subscribes the component to changes in the `State` instance for the lifetime of the component. */
-const subscribeEffect = <T>(change: (next: unknown) => void, subscribable?: Subscribable<T>) =>
-	subscribable ? subscribe(subscribable, { next: change, error: change }) : undefined;
+const subscribeEffect = <T>(change: (next: unknown) => void, subscribable?: Subscribable<T>) => (subscribable ? subscribe(subscribable, { next: change, error: change }) : undefined);

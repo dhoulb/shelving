@@ -1,17 +1,4 @@
-import {
-	MutableObject,
-	Result,
-	Observer,
-	Unsubscriber,
-	isAsync,
-	Observable,
-	Results,
-	toMap,
-	TransformObserver,
-	ResultsMap,
-	awaitNext,
-	Data,
-} from "../util/index.js";
+import { MutableObject, Result, Observer, Unsubscriber, isAsync, Observable, Results, toMap, TransformObserver, ResultsMap, awaitNext, Data } from "../util/index.js";
 import { LazyState } from "../stream/index.js";
 import type { DataDocument, DataQuery } from "../db/index.js";
 import { ThroughProvider } from "./ThroughProvider.js";

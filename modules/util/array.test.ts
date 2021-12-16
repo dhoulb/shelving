@@ -1,20 +1,4 @@
-import {
-	toggleItem,
-	withItem,
-	withoutItem,
-	swapItem,
-	getNextItem,
-	getPrevItem,
-	shuffleArray,
-	uniqueArray,
-	addItem,
-	addItems,
-	toggleItems,
-	withItems,
-	withoutItems,
-	removeItem,
-	removeItems,
-} from "../index.js";
+import { toggleItem, withItem, withoutItem, swapItem, getNextItem, getPrevItem, shuffleArray, uniqueArray, addItem, addItems, toggleItems, withItems, withoutItems, removeItem, removeItems } from "../index.js";
 
 test("toggleItem()", () => {
 	const arr = [1, 2, 3];

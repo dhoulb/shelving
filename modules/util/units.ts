@@ -108,5 +108,4 @@ export const detectUnit = (str: string, defaultUnit: Unit): Unit | false => {
 };
 
 /** Format a distance. */
-export const formatUnit = (num: number, unit: Unit = "meter", precision = unitsData[unit].precision || 0): string =>
-	`${formatNumber(num, precision)} ${unitsData[unit].short}`;
+export const formatUnit = (num: number, unit: Unit = "meter", precision = unitsData[unit].precision || 0): string => `${formatNumber(num, precision)} ${unitsData[unit].short}`;

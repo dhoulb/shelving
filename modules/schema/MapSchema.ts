@@ -30,8 +30,7 @@ export class MapSchema<T> extends Schema<ImmutableMap<T>> {
 		if (!isObject(unsafeValue)) throw new InvalidFeedback("Must be map");
 		const unsafeEntries = unsafeValue instanceof Map ? unsafeValue.entries() : Object.entries(unsafeValue);
 		const safeMap = new Map(validateValues(unsafeEntries, this.items));
-		if (typeof this.min === "number" && safeMap.size < this.min)
-			throw new InvalidFeedback(safeMap.size ? `Minimum ${this.min} items` : "Required", { value: safeMap });
+		if (typeof this.min === "number" && safeMap.size < this.min) throw new InvalidFeedback(safeMap.size ? `Minimum ${this.min} items` : "Required", { value: safeMap });
 		if (typeof this.max === "number" && safeMap.size > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`, { value: safeMap });
 		return safeMap;
 	}

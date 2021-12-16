@@ -163,11 +163,7 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 }
 
 /** Perform a bulk update on a set of documents using a `BulkWriter` */
-async function bulkWrite<T extends Data>(
-	firestore: Firestore,
-	ref: DataQuery<T>,
-	callback: (writer: FirestoreBulkWriter, snapshot: FirestoreQueryDocumentSnapshot) => void,
-): Promise<number> {
+async function bulkWrite<T extends Data>(firestore: Firestore, ref: DataQuery<T>, callback: (writer: FirestoreBulkWriter, snapshot: FirestoreQueryDocumentSnapshot) => void): Promise<number> {
 	let count = 0;
 	const writer = firestore.bulkWriter();
 	const query = getQuery(firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.

@@ -121,8 +121,7 @@ export const secondsUntil = (target: PossibleDate, current?: PossibleDate): numb
 export const secondsAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - secondsUntil(target, current);
 
 /** Count the number of days until a date. */
-export const daysUntil = (target: PossibleDate, current?: PossibleDate): number =>
-	Math.round((getMidnight(target).getTime() - getMidnight(current).getTime()) / 86400000);
+export const daysUntil = (target: PossibleDate, current?: PossibleDate): number => Math.round((getMidnight(target).getTime() - getMidnight(current).getTime()) / 86400000);
 
 /** Count the number of days ago a date was. */
 export const daysAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - daysUntil(target, current);

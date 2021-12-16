@@ -1,15 +1,4 @@
-import {
-	TRANSFORM_HYDRATIONS,
-	Increment,
-	FEEDBACK_HYDRATIONS,
-	Feedback,
-	SuccessFeedback,
-	WarningFeedback,
-	ErrorFeedback,
-	InvalidFeedback,
-	dehydrate,
-	hydrate,
-} from "../index.js";
+import { TRANSFORM_HYDRATIONS, Increment, FEEDBACK_HYDRATIONS, Feedback, SuccessFeedback, WarningFeedback, ErrorFeedback, InvalidFeedback, dehydrate, hydrate } from "../index.js";
 
 const HYDRATIONS = {
 	...TRANSFORM_HYDRATIONS,

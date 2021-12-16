@@ -226,11 +226,7 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("`AAA` AFTER", { context: "inline" })).toMatchObject([{ type: "code", props: { children: "AAA" } }, " AFTER"]);
 
 		// Matching is non-greedy.
-		expect(renderMarkup("`AAA` `AAA`", { context: "inline" })).toMatchObject([
-			{ type: "code", props: { children: "AAA" } },
-			" ",
-			{ type: "code", props: { children: "AAA" } },
-		]);
+		expect(renderMarkup("`AAA` `AAA`", { context: "inline" })).toMatchObject([{ type: "code", props: { children: "AAA" } }, " ", { type: "code", props: { children: "AAA" } }]);
 
 		// Code can contain leading/trailing whitespace.
 		expect(renderMarkup("`AAA   `", { context: "inline" })).toMatchObject({ type: "code", props: { children: "AAA   " } });
@@ -261,11 +257,7 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("*AAA* AFTER", { context: "inline" })).toMatchObject([{ type: "strong", props: { children: "AAA" } }, " AFTER"]);
 
 		// Matching is non-greedy.
-		expect(renderMarkup("*AAA* *AAA*", { context: "inline" })).toMatchObject([
-			{ type: "strong", props: { children: "AAA" } },
-			" ",
-			{ type: "strong", props: { children: "AAA" } },
-		]);
+		expect(renderMarkup("*AAA* *AAA*", { context: "inline" })).toMatchObject([{ type: "strong", props: { children: "AAA" } }, " ", { type: "strong", props: { children: "AAA" } }]);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("*BEFORE _EM_ AFTER*", { context: "inline" })).toMatchObject({
@@ -298,11 +290,7 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("_AAA_ AFTER", { context: "inline" })).toMatchObject([{ type: "em", props: { children: "AAA" } }, " AFTER"]);
 
 		// Matching is non-greedy.
-		expect(renderMarkup("_AAA_ _AAA_", { context: "inline" })).toMatchObject([
-			{ type: "em", props: { children: "AAA" } },
-			" ",
-			{ type: "em", props: { children: "AAA" } },
-		]);
+		expect(renderMarkup("_AAA_ _AAA_", { context: "inline" })).toMatchObject([{ type: "em", props: { children: "AAA" } }, " ", { type: "em", props: { children: "AAA" } }]);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("_BEFORE *STRONG* AFTER_", { context: "inline" })).toMatchObject({
@@ -335,11 +323,7 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("+AAA+ AFTER", { context: "inline" })).toMatchObject([{ type: "ins", props: { children: "AAA" } }, " AFTER"]);
 
 		// Matching is non-greedy.
-		expect(renderMarkup("+AAA+ +AAA+", { context: "inline" })).toMatchObject([
-			{ type: "ins", props: { children: "AAA" } },
-			" ",
-			{ type: "ins", props: { children: "AAA" } },
-		]);
+		expect(renderMarkup("+AAA+ +AAA+", { context: "inline" })).toMatchObject([{ type: "ins", props: { children: "AAA" } }, " ", { type: "ins", props: { children: "AAA" } }]);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("+BEFORE *STRONG* AFTER+", { context: "inline" })).toMatchObject({
@@ -372,11 +356,7 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("~AAA~ AFTER", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "AAA" } }, " AFTER"]);
 
 		// Matching is non~greedy.
-		expect(renderMarkup("~AAA~ ~AAA~", { context: "inline" })).toMatchObject([
-			{ type: "del", props: { children: "AAA" } },
-			" ",
-			{ type: "del", props: { children: "AAA" } },
-		]);
+		expect(renderMarkup("~AAA~ ~AAA~", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "AAA" } }, " ", { type: "del", props: { children: "AAA" } }]);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("~BEFORE *STRONG* AFTER~", { context: "inline" })).toMatchObject({
@@ -540,15 +520,7 @@ describe("renderMarkup(): Block rules", () => {
 	});
 	test("Block combinations", () => {
 		// Testing for things that are all 'block level'.
-		const lines = [
-			paragraphMarkup,
-			"```\nLINE1\nLINE2\n```",
-			paragraphMarkup,
-			"- ITEM\n  - ITEM1\n  - ITEM2",
-			paragraphMarkup,
-			"1. PARENT1\n  1111. ITEM1\n  2222. ITEM2\n  3333. ITEM3\n2. PARENT2\n3. PARENT3",
-			paragraphMarkup,
-		];
+		const lines = [paragraphMarkup, "```\nLINE1\nLINE2\n```", paragraphMarkup, "- ITEM\n  - ITEM1\n  - ITEM2", paragraphMarkup, "1. PARENT1\n  1111. ITEM1\n  2222. ITEM2\n  3333. ITEM3\n2. PARENT2\n3. PARENT3", paragraphMarkup];
 		const elements = [
 			{ ...paragraphElement, key: 0 },
 			{ ...fencedElement, key: 1 },

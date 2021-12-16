@@ -30,8 +30,7 @@ export class ObjectSchema<T> extends Schema<ImmutableObject<T>> {
 		if (!isObject(unsafeValue)) throw new InvalidFeedback("Must be object", { value: unsafeValue });
 		const unsafeEntries = Object.entries(unsafeValue);
 		const safeObject = Object.fromEntries(validateValues(unsafeEntries, this.items));
-		if (typeof this.min === "number" && unsafeEntries.length < this.min)
-			throw new InvalidFeedback(unsafeEntries.length ? `Minimum ${this.min} items` : "Required", { value: safeObject });
+		if (typeof this.min === "number" && unsafeEntries.length < this.min) throw new InvalidFeedback(unsafeEntries.length ? `Minimum ${this.min} items` : "Required", { value: safeObject });
 		if (typeof this.max === "number" && unsafeEntries.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`, { value: safeObject });
 		return safeObject;
 	}

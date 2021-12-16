@@ -68,10 +68,7 @@ const getTemplateName = (chunk: Chunk) => chunk.name;
  * @param target The string containing values, e.g. `Dave-UK/Manchester`
  * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.
  */
-export const matchTemplate = (
-	lazyTemplates: Lazy<string | string[] | Iterable<string> | Generator<string>, [string]>,
-	target: string,
-): TemplateValues | undefined => {
+export const matchTemplate = (lazyTemplates: Lazy<string | string[] | Iterable<string> | Generator<string>, [string]>, target: string): TemplateValues | undefined => {
 	const templates = getLazy(lazyTemplates, target);
 	if (typeof templates === "string") {
 		const values = matchInternal(templates, target);

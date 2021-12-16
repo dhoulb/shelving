@@ -1,17 +1,4 @@
-import {
-	InvalidFeedback,
-	Validator,
-	StringSchema,
-	NumberSchema,
-	BooleanSchema,
-	DataSchema,
-	Feedback,
-	DATA,
-	BOOLEAN,
-	NUMBER,
-	STRING,
-	NOVALUE,
-} from "../index.js";
+import { InvalidFeedback, Validator, StringSchema, NumberSchema, BooleanSchema, DataSchema, Feedback, DATA, BOOLEAN, NUMBER, STRING, NOVALUE } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

@@ -60,8 +60,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		if (!(unsafeValue instanceof Array)) throw new InvalidFeedback("Must be array", { value: unsafeValue });
 		const safeArray = toArray(validateItems(unsafeValue, this.items));
 		const dedupedArray = this.unique ? uniqueArray(safeArray) : safeArray;
-		if (typeof this.min === "number" && dedupedArray.length < this.min)
-			throw new InvalidFeedback(dedupedArray.length ? `Minimum ${this.min} items` : "Required", { value: dedupedArray });
+		if (typeof this.min === "number" && dedupedArray.length < this.min) throw new InvalidFeedback(dedupedArray.length ? `Minimum ${this.min} items` : "Required", { value: dedupedArray });
 		if (typeof this.max === "number" && dedupedArray.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`, { value: dedupedArray });
 		return dedupedArray;
 	}
