@@ -45,6 +45,6 @@ export class ResultState<T extends Data> extends State<Result<T>> {
 
 	/** Delete this result. */
 	delete(): void {
-		this.next(undefined);
+		this.next(null);
 	}
 }

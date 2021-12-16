@@ -39,13 +39,13 @@ test("DataState.prototype.update()", () => {
 });
 test("ResultState.prototype.data", () => {
 	type T = { a: number };
-	const state = initialState(undefined, new ResultState<T>());
+	const state = initialState(null, new ResultState<T>());
 	expect(state).toBeInstanceOf(ResultState);
-	expect(state.value).toEqual(undefined);
-	expect(state.result).toEqual(undefined);
+	expect(state.value).toEqual(null);
+	expect(state.result).toEqual(null);
 	expect(() => state.data).toThrow(RequiredError);
 	// Ons and onces.
-	const calls: (T | undefined)[] = [];
+	const calls: Result<T>[] = [];
 	state.subscribe(v => calls.push(v));
 	// Set data value.
 	expect(state.next({ a: 1 })).toBe(undefined);
@@ -59,16 +59,16 @@ test("ResultState.prototype.data", () => {
 	expect(state.data).toEqual({ a: 2 });
 	// Delete data value.
 	expect(state.delete()).toBe(undefined);
-	expect(state.value).toBe(undefined);
-	expect(state.result).toBe(undefined);
+	expect(state.value).toBe(null);
+	expect(state.result).toBe(null);
 	expect(() => state.data).toThrow(RequiredError);
-	// Set undefined value.
-	expect(state.next(undefined)).toBe(undefined);
-	expect(state.value).toBe(undefined);
-	expect(state.result).toBe(undefined);
+	// Set null value.
+	expect(state.next(null)).toBe(undefined);
+	expect(state.value).toBe(null);
+	expect(state.result).toBe(null);
 	expect(() => state.data).toThrow(RequiredError);
 	// Checks.
-	expect(calls).toEqual([undefined, { a: 1 }, { a: 2 }, undefined]);
+	expect(calls).toEqual([null, { a: 1 }, { a: 2 }, null]);
 });
 test("ResultState.prototype.update()", () => {
 	type T = { a: number; b: number };

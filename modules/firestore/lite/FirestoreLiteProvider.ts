@@ -128,7 +128,7 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 
 	async get<T extends Data>(ref: DataDocument<T>): Promise<Result<T>> {
 		const snapshot = await getDoc(getDocument(this.firestore, ref));
-		return snapshot.data();
+		return snapshot.data() || null;
 	}
 
 	subscribe(): Unsubscriber {

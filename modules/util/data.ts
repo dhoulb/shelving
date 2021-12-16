@@ -17,8 +17,8 @@ export type Prop<T extends Data> = readonly [Key<T>, Value<T>];
 /** Set of named data objects. */
 export type Datas = { readonly [key: string]: Data };
 
-/** Data or `undefined` */
-export type Result<T extends Data = Data> = T | undefined;
+/** Data or `null` */
+export type Result<T extends Data = Data> = T | null;
 
 /** Iterable that yields a set of results. */
 export type Results<T extends Data = Data> = Iterable<readonly [string, T]>;

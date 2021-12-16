@@ -40,12 +40,12 @@ test("MemoryProvider: set/get/delete documents", () => {
 	expect(basics.doc("basic1").result).toBe(basic1);
 	expect(basics.doc("basic2").result).toBe(basic2);
 	expect(basics.doc("basic3").result).toBe(basic3);
-	expect(basics.doc("basicNone").result).toBe(undefined);
+	expect(basics.doc("basicNone").result).toBe(null);
 	expect(basics.count).toBe(3);
 	expect(people.doc("person1").result).toBe(person1);
 	expect(people.doc("person2").result).toBe(person2);
 	expect(people.doc("person3").result).toBe(person3);
-	expect(people.doc("peopleNone").result).toBe(undefined);
+	expect(people.doc("peopleNone").result).toBe(null);
 	expect(people.count).toBe(3);
 	// Update documents.
 	expect(basics.doc("basic1").update({ str: "NEW" })).toBe(undefined);
@@ -78,10 +78,10 @@ test("MemoryProvider: set/get/delete collections", () => {
 	expect(basics.results).toEqual(basicResults);
 	expect(basics.doc("basic1").result).toEqual(basic1);
 	expect(basics.doc("basic6").result).toEqual(basic6);
-	expect(basics.doc("basicNone").result).toBe(undefined);
+	expect(basics.doc("basicNone").result).toBe(null);
 	expect(people.results).toEqual(peopleResults);
 	expect(people.doc("person4").result).toEqual(person4);
-	expect(people.doc("peopleNone").result).toBe(undefined);
+	expect(people.doc("peopleNone").result).toBe(null);
 	// Delete collections.
 	expect(basics.delete()).toBe(9);
 	expect(people.delete()).toBe(5);
@@ -134,34 +134,33 @@ test("MemoryProvider: subscribing to documents", async () => {
 	const basics = db.query("basics");
 	const doc = basics.doc("basic1");
 	// Subscribe.
-	const fn1 = jest.fn<void, [Result<BasicData>]>();
-	const un1 = doc.subscribe(fn1);
+	const calls1: Result<BasicData>[] = [];
+	const un1 = doc.subscribe(v => calls1.push(v));
 	await Promise.resolve();
-	expect(fn1).nthCalledWith(1, undefined);
+	expect(calls1).toEqual([null]);
 	// Set.
 	doc.set(basic1);
 	await Promise.resolve();
-	expect(fn1).nthCalledWith(2, basic1);
+	expect(calls1).toEqual([null, basic1]);
 	// Update.
 	doc.update({ str: "NEW" });
 	await Promise.resolve();
-	expect(fn1).nthCalledWith(3, expect.objectContaining({ ...basic1, str: "NEW" }));
+	expect(calls1).toEqual([null, basic1, { ...basic1, str: "NEW" }]);
 	// Delete.
 	doc.delete();
 	await Promise.resolve();
-	expect(fn1).nthCalledWith(4, undefined);
+	expect(calls1).toEqual([null, basic1, { ...basic1, str: "NEW" }, null]);
 	// Change unrelated documents.
-	expect(fn1).toBeCalledTimes(4);
 	basics.doc("basic2").set(basic2);
 	basics.doc("basic2").update({ str: "NEW" });
 	basics.doc("basic2").delete();
 	basics.add(basic3);
-	expect(fn1).toBeCalledTimes(4);
+	expect(calls1.length).toBe(4);
 	// Unsubscribe.
 	expect(un1()).toBe(undefined);
 	// Set.
 	doc.set(basic1);
-	expect(fn1).toBeCalledTimes(4);
+	expect(calls1.length).toBe(4);
 });
 test("MemoryProvider: subscribing to collections", async () => {
 	// Setup.

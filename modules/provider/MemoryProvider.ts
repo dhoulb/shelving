@@ -18,7 +18,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 	}
 
 	get<T extends Data>(ref: DataDocument<T>): Result<T> {
-		return this._table(ref).data.get(ref.id);
+		return this._table(ref).data.get(ref.id) || null;
 	}
 
 	subscribe<T extends Data>(ref: DataDocument<T>, observer: Observer<Result<T>>): Unsubscriber {
@@ -26,11 +26,11 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		const id = ref.id;
 
 		// Call next() immediately with initial results.
-		dispatchNext(observer, table.data.get(id));
+		dispatchNext(observer, table.data.get(id) || null);
 
 		// Call next() every time the collection changes.
 		return table.on(changes => {
-			changes.has(id) && dispatchNext(observer, changes.get(id));
+			changes.has(id) && dispatchNext(observer, changes.get(id) || null);
 		});
 	}
 
@@ -59,7 +59,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 	delete<T extends Data>(ref: DataDocument<T>): void {
 		const table = this._table(ref);
 		const id = ref.id;
-		table.write(id, undefined);
+		table.write(id, null);
 	}
 
 	getQuery<T extends Data>(ref: DataQuery<T>): Results<T> {
@@ -122,7 +122,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
 		let count = 0;
 		for (const [id] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) {
-			table.write(id, undefined);
+			table.write(id, null);
 			count++;
 		}
 		return count;

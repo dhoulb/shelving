@@ -1,7 +1,7 @@
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import type { Entry } from "./entry.js";
 import type { MutableObject } from "./object.js";
-import { Data, isData, Prop, toProps } from "./data.js";
+import { Data, isData, Prop, Result, toProps } from "./data.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validatable<T> {
@@ -126,4 +126,12 @@ export function* validateProps<T extends Data>(unsafeData: Data, validators: Val
  */
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
 	return Object.fromEntries(validateProps(unsafeData, validators)) as T;
+}
+
+/**
+ * Validate a data result.
+ * @return Valid object or `null`
+ */
+export function validateResult<T extends Data>(unsafeResult: unknown, validator: Validator<T>): Result<T> {
+	return unsafeResult === null || unsafeResult === undefined ? validate(unsafeResult, validator) : null;
 }

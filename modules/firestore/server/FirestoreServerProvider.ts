@@ -111,12 +111,12 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 	}
 
 	async get<T extends Data>(ref: DataDocument<T>): Promise<Result<T>> {
-		return (await getDocument(this.firestore, ref).get()).data();
+		return (await getDocument(this.firestore, ref).get()).data() || null;
 	}
 
 	subscribe<T extends Data>(ref: DataDocument<T>, observer: Observer<Result<T>>): Unsubscriber {
 		return getDocument(this.firestore, ref).onSnapshot(
-			snapshot => dispatchNext(observer, snapshot.data()),
+			snapshot => dispatchNext(observer, snapshot.data() || null),
 			thrown => dispatchError(observer, thrown),
 		);
 	}

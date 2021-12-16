@@ -99,7 +99,7 @@ export function useAsyncDocumentData<T extends Data>(ref: DataDocument<T>, maxAg
 export function useAsyncDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined;
 export function useAsyncDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined {
 	const result = useAsyncDocument(ref, maxAge);
-	return ref ? callAsync(getDocumentData, result, ref) : undefined;
+	return ref && result !== undefined ? callAsync(getDocumentData, result, ref) : undefined;
 }
 
 /** Use the data of a document or `undefined` if the query has no matching results. */

@@ -1,12 +1,12 @@
 import type { DataDocument, DataQuery } from "../db/index.js";
-import { Data, Result, Unsubscriber, Observer, validate, ValidateObserver, Results, callAsync } from "../util/index.js";
+import { Data, Result, Unsubscriber, Observer, validate, ValidateObserver, Results, callAsync, validateResult } from "../util/index.js";
 import { Update, validateUpdate } from "../update/index.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Validates any values that are read from or written to a source provider. */
 export class ValidationProvider extends ThroughProvider {
 	override get<T extends Data>(ref: DataDocument<T>): Result<T> | PromiseLike<Result<T>> {
-		return callAsync(validate, super.get(ref), ref);
+		return callAsync(validateResult, super.get(ref), ref);
 	}
 	override subscribe<T extends Data>(ref: DataDocument<T>, observer: Observer<Result>): Unsubscriber {
 		return super.subscribe(ref, new ValidateObserver(ref, observer));
