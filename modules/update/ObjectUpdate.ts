@@ -1,11 +1,21 @@
-import { Entry, ImmutableArray, ImmutableObject, isObject, transformEntries } from "../util/index.js";
+import { Entry, ImmutableArray, ImmutableObject, isObject, IS_NULLISH, transformEntries } from "../util/index.js";
 import { Update } from "./Update.js";
 
 /** Set of named transforms for the entries of a map-like object. */
 export type EntryUpdates<T> = ImmutableObject<T | Update<T>>;
 
-/** Update that can be applied to add/delete/update the entries of a map-like object. */
-export class EntriesUpdate<T> extends Update<ImmutableObject<T>> implements Iterable<Entry<T | Update<T> | undefined>> {
+/** Update that can be applied to a map-like object to add/remove/update its entries. */
+export class ObjectUpdate<T> extends Update<ImmutableObject<T>> implements Iterable<Entry<T | Update<T> | undefined>> {
+	/** Return an object update with a specific entry marked for update. */
+	static update<X>(key: string | undefined | null, value: X | Update<X>): ObjectUpdate<X> {
+		return new ObjectUpdate(IS_NULLISH(key) ? {} : { [key]: value });
+	}
+
+	/** Return an object update with a specific entry marked for deletion. */
+	static delete<X>(key: string | undefined | null): ObjectUpdate<X> {
+		return new ObjectUpdate({}, IS_NULLISH(key) ? [] : [key]);
+	}
+
 	readonly updates: EntryUpdates<T>;
 	readonly deletes: ImmutableArray<string>;
 	constructor(updates: EntryUpdates<T> = {}, deletes: ImmutableArray<string> = []) {
@@ -18,22 +28,14 @@ export class EntriesUpdate<T> extends Update<ImmutableObject<T>> implements Iter
 		return transformEntries<T>(existingObject, this.updates, this.deletes);
 	}
 
-	/**
-	 * Return a new object with the specified additional transform on an entry.
-	 * - If `key` is `undefined` or `null` nothing is changed (to make it easy to create conditional transforms).
-	 * - Updates are applied before deletes.
-	 */
-	with(key: string | undefined | null, value: T | Update<T>): this {
+	/** Return an object update with a specific entry marked for update. */
+	update(key: string | undefined | null, value: T | Update<T>): this {
 		if (key === undefined || key === null) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, sets: { ...this.updates, [key]: value } };
 	}
 
-	/**
-	 * Return a new object with the specified additional delete transform on an entry.
-	 * - If `key` is `undefined` or `null` nothing is changed (to make it easy to create conditional transforms).
-	 * - Deletes are applied after updates.
-	 */
-	without(key: string | undefined | null): this {
+	/** Return an object update with a specific entry marked for deletion. */
+	delete(key: string | undefined | null): this {
 		if (key === undefined || key === null) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, deletes: [...this.deletes, key] };
 	}

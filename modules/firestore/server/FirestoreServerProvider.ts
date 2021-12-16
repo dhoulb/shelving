@@ -28,9 +28,9 @@ import {
 	Entry,
 	Results,
 	Unsubscriber,
-	ItemsUpdate,
+	ArrayUpdate,
 	UnsupportedError,
-	EntriesUpdate,
+	ObjectUpdate,
 } from "../../index.js";
 
 // Constants.
@@ -89,8 +89,8 @@ function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Iterable<Entr
 	for (const [key, update] of updates) {
 		if (!(update instanceof Update)) yield [`${prefix}${key}`, update !== undefined ? update : FieldValue.delete()];
 		if (update instanceof Increment) yield [`${prefix}${key}`, FieldValue.increment(update.amount)];
-		else if (update instanceof DataUpdate || update instanceof EntriesUpdate) yield* yieldFieldValues(update, `${prefix}${key}.`);
-		else if (update instanceof ItemsUpdate) {
+		else if (update instanceof DataUpdate || update instanceof ObjectUpdate) yield* yieldFieldValues(update, `${prefix}${key}.`);
+		else if (update instanceof ArrayUpdate) {
 			if (update.adds.length && update.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
 			if (update.adds.length) yield [`${prefix}${key}`, FieldValue.arrayUnion(...update.adds)];
 			else if (update.deletes.length) yield [`${prefix}${key}`, FieldValue.arrayRemove(...update.deletes)];

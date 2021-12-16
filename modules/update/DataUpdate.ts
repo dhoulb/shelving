@@ -1,4 +1,4 @@
-import { Data, Prop, Key, transformData, Transformable } from "../util/index.js";
+import { Data, Prop, Key, transformProps, Transformable } from "../util/index.js";
 import { Update } from "./Update.js";
 
 /**
@@ -10,22 +10,19 @@ import { Update } from "./Update.js";
  */
 export type PropUpdates<T extends Data> = { readonly [K in keyof T]?: T[K] | Update<T[K]> };
 
-/** Set of transforms that can be appled to an object's properties. */
+/** Update that can be applied to a data object to update its props. */
 export class DataUpdate<T extends Data> extends Update<T> implements Iterable<Prop<PropUpdates<T>>>, Transformable<T, T> {
 	readonly props: PropUpdates<T>;
-	constructor(updates: PropUpdates<T> = {}) {
+	constructor(props: PropUpdates<T>) {
 		super();
-		this.props = updates;
+		this.props = props;
 	}
 	transform(existing: T): T {
-		return transformData<T>(existing, this.props);
+		return transformProps<T>(existing, this.props);
 	}
 
-	/**
-	 * Return a new object with the specified additional transform.
-	 * - If `key` is `undefined` nothing is changed (to make it easy to create conditional transforms).
-	 */
-	with<K extends Key<T>>(key: K | undefined | null | false, value: T[K] | Update<T[K]>): this {
+	/** Return a new object with the specified additional transform for a prop. */
+	prop<K extends Key<T>>(key: K | undefined | null | false, value: T[K] | Update<T[K]>): this {
 		if (key === undefined || key === null || key === false) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, props: { ...this.props, [key]: value } };
 	}

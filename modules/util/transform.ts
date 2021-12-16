@@ -101,10 +101,10 @@ function* yieldTransformedProps<T extends Data>(existing: T, transformers: PropT
 }
 
 /**
- * Transform a data object using a set of transformers for its props.
+ * Transform the props of a data object using a set of transformers for its props.
  * @returns New object with changed props (or the same object if no changes were made).
  */
-export function transformData<T extends Data>(existing: T, transformers: PropTransformers<T>): T {
+export function transformProps<T extends Data>(existing: T, transformers: PropTransformers<T>): T {
 	return Object.fromEntries(yieldMerged(toProps(existing), yieldTransformedProps(existing, transformers))) as T;
 }
 
