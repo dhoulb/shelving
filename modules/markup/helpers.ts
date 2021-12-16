@@ -38,14 +38,7 @@ export function nodeToHtml(node: MarkupNode): string {
 	}
 	return "";
 }
-const propToString = ([key, value]: [string, unknown]) =>
-	value === true
-		? key
-		: typeof value === "number" && Number.isFinite(value)
-		? `${key}="${value.toString()}"`
-		: typeof value === "string"
-		? `${key}=${serialise(value)}`
-		: "";
+const propToString = ([key, value]: [string, unknown]) => (value === true ? key : typeof value === "number" && Number.isFinite(value) ? `${key}="${value.toString()}"` : typeof value === "string" ? `${key}=${serialise(value)}` : "");
 
 /**
  * Iterate through all elements in a node.

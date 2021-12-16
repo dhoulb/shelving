@@ -60,8 +60,7 @@ export function assertArray<T extends ImmutableArray>(value: T | unknown): asser
 
 /** Assert that a value has a specific length (or length is in a specific range). */
 export function assertLength<T extends { length: number }>(value: T | unknown, min: number, max = min): asserts value is T {
-	if (!isObject(value) || typeof value.length !== "number" || value.length < min || value.length > max)
-		throw new AssertionError(`Must have length ${min}–${max}`, value);
+	if (!isObject(value) || typeof value.length !== "number" || value.length < min || value.length > max) throw new AssertionError(`Must have length ${min}–${max}`, value);
 }
 
 /** Assert that a value is a number greater than. */

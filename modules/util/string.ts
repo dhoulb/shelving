@@ -17,8 +17,7 @@ export const IS_STRING = (v: unknown): v is string => typeof v === "string";
  * -
  */
 export function toString(value: unknown): string {
-	if (typeof value === "object")
-		return value === null ? "null" : typeof value.toString === "function" && value.toString !== Object.prototype.toString ? value.toString() : "object";
+	if (typeof value === "object") return value === null ? "null" : typeof value.toString === "function" && value.toString !== Object.prototype.toString ? value.toString() : "object";
 	if (typeof value === "string") return value;
 	if (typeof value === "boolean") return value.toString();
 	if (typeof value === "number") return value.toString();
@@ -70,8 +69,7 @@ const SANE_STRIP = /[\x00-\x1F\x7F-\x9F]+/g; // Control characters.
  * Sanitize a multiline string.
  * - Like `sanitizeString()` but allows `\t` horizontal tab and `\r` newline.
  */
-export const sanitizeLines = (str: string): string =>
-	str.replace("\u2029", "\n\n").replace(LINE_SPACES, " ").replace(LINE_STRIP, "").replace(LINE_ENDS, "").replace(LINE_START, "").replace(LINE_BREAKS, "\n\n");
+export const sanitizeLines = (str: string): string => str.replace("\u2029", "\n\n").replace(LINE_SPACES, " ").replace(LINE_STRIP, "").replace(LINE_ENDS, "").replace(LINE_START, "").replace(LINE_BREAKS, "\n\n");
 const LINE_SPACES = /[^\S \t\n]/g; // Spaces except tab and newline.
 const LINE_STRIP = /[\x00-\x08\x0B-\x1F\x7F-\x9F]+/g; // Control characters (except tab and newline).
 const LINE_ENDS = /[ \t]+$/gm; // Spaces and tabs at ends of lines.

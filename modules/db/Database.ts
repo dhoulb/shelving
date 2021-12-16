@@ -49,12 +49,7 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 	}
 
 	/** Create a query on a collection in this model. */
-	query<K extends Key<V>>(
-		collection: K,
-		filters?: Filters<ValidatorType<V[K]>>,
-		sorts?: Sorts<ValidatorType<V[K]>>,
-		limit?: number | null,
-	): DataQuery<ValidatorType<V[K]>> {
+	query<K extends Key<V>>(collection: K, filters?: Filters<ValidatorType<V[K]>>, sorts?: Sorts<ValidatorType<V[K]>>, limit?: number | null): DataQuery<ValidatorType<V[K]>> {
 		return new DataQuery(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters, sorts, limit);
 	}
 
