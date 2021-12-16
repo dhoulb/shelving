@@ -129,13 +129,23 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	}
 
 	/**
-	 * Get an entry for the first document matching this query.
+	 * Get an entry for the first document matched by this query or `undefined` if this query has no results.
 	 *
 	 * @return Entry in `[id, data]` format for the first document.
 	 * @throws RequiredError if there were no results for this query.
 	 */
-	get first(): Entry<T> | PromiseLike<Entry<T>> {
-		return callAsync(getQueryFirst, this.max(1).results, this);
+	get result(): Entry<T> | undefined | PromiseLike<Entry<T> | undefined> {
+		return callAsync(getFirstItem, this.max(1).results);
+	}
+
+	/**
+	 * Get an entry for the first document matched by this query.
+	 *
+	 * @return Entry in `[id, data]` format for the first document.
+	 * @throws RequiredError if there were no results for this query.
+	 */
+	get data(): Entry<T> | PromiseLike<Entry<T>> {
+		return callAsync(getQueryData, this.max(1).results, this);
 	}
 
 	/**
@@ -216,7 +226,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 }
 
 /** Get the data for a document from a result for that document. */
-export function getQueryFirst<T extends Data>(results: Results<T>, ref: DataQuery<T>): Entry<T> {
+export function getQueryData<T extends Data>(results: Results<T>, ref: DataQuery<T>): Entry<T> {
 	const first = getFirstItem(results);
 	if (first) return first;
 	throw new QueryRequiredError(ref);
