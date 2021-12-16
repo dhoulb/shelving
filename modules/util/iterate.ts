@@ -4,6 +4,7 @@ import type { ImmutableArray } from "./array.js";
 import type { Entry } from "./entry.js";
 import { Delay } from "./async.js";
 import { DONE } from "./constants.js";
+import { Arguments } from "./function.js";
 
 /** `Iterable` interface that specifies return types and next types for the iterator. */
 export interface TypedIterable<T, R, N> {
@@ -27,12 +28,10 @@ export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): val
  * - Any object with a `Symbol.iterator` property is iterable.
  * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
  */
-export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T =>
-	typeof value === "object" && !!value && Symbol.asyncIterator in value;
+export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Get the known size or length of an object (e.g. `Array`, `Map`, and `Set` have known size), or return `undefined` if the size cannot be established. */
-export const getSize = (obj: Iterable<unknown> | ImmutableMap | ImmutableArray): number | undefined =>
-	"size" in obj && typeof obj.size === "number" ? obj.size : "length" in obj && typeof obj.length === "number" ? obj.length : undefined;
+export const getSize = (obj: Iterable<unknown> | ImmutableMap | ImmutableArray): number | undefined => ("size" in obj && typeof obj.size === "number" ? obj.size : "length" in obj && typeof obj.length === "number" ? obj.length : undefined);
 
 /**
  * Count the number items of an iterable.
@@ -74,17 +73,28 @@ export function* yieldRange(start: number, end: number): Generator<number, void,
  */
 export function limitItems<T>(items: Iterable<T>, limit: number): TypedIterable<T, void, void> {
 	const size = getSize(items) ?? Infinity;
-	return size <= limit ? items : limitIterations(items, limit);
+	return size <= limit ? items : yieldUntilLimit(items, limit);
 }
 
-/**
- * Limit the number of iterations an iterable does.
- */
-export function* limitIterations<T>(items: Iterable<T>, limit: number): Generator<T, void, void> {
+/** Yield items from a source iterable until we hit a maximum iteration count. */
+export function* yieldUntilLimit<T>(source: Iterable<T>, limit: number): Generator<T, void, void> {
+	const iterator = source[Symbol.iterator]();
 	let count = 0;
-	for (const item of items) {
-		if (++count <= limit) yield item;
-		else break;
+	while (true) {
+		count++;
+		if (count > limit) break;
+		const next = iterator.next();
+		if (next.done) break;
+		yield next.value;
+	}
+}
+
+/** Infinite iterator that yields the result of calling a function with a given set of arguments. */
+export function* yieldCall<T, A extends Arguments>(func: (...a: A) => T | typeof DONE, ...args: A): Generator<T, void, void> {
+	while (true) {
+		const result = func(...args);
+		if (result === DONE) break;
+		yield result;
 	}
 }
 
@@ -125,11 +135,8 @@ export async function* yieldDelay(ms: number): AsyncGenerator<number, void, void
 	}
 }
 
-/** Iterator that yields until a DONE signal is received. */
-export async function* yieldUntil<T>(
-	source: TypedAsyncIterable<T, void, void>,
-	...signals: [Promise<typeof DONE>, ...Promise<typeof DONE>[]]
-): AsyncGenerator<T, void, void> {
+/** Infinite iterator that yields until a DONE signal is received. */
+export async function* yieldUntilSignal<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof DONE>, ...Promise<typeof DONE>[]]): AsyncGenerator<T, void, void> {
 	const iterator = source[Symbol.asyncIterator]();
 	while (true) {
 		const result = await Promise.race([iterator.next(), ...signals]);

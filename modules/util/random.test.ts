@@ -1,21 +1,21 @@
-import { randomItem, randomCharacter, randomId, randomInteger } from "../index.js";
+import { getRandomItem, getRandomCharacter, getRandomKey, getRandom } from "../index.js";
 
-test("randomCharacter()", () => {
-	expect(typeof randomCharacter()).toBe("string");
-	expect(randomCharacter().length).toBe(1);
+test("getRandomCharacter()", () => {
+	expect(typeof getRandomCharacter("abc")).toBe("string");
+	expect(getRandomCharacter("abc").length).toBe(1);
 });
-test("randomId()", () => {
-	expect(typeof randomId()).toBe("string");
-	expect(randomId().length).toBe(16);
-	expect(randomId(24).length).toBe(24);
+test("getRandomKey()", () => {
+	expect(typeof getRandomKey()).toBe("string");
+	expect(getRandomKey().length).toBe(16);
+	expect(getRandomKey(24).length).toBe(24);
 });
-test("randomItem()", () => {
+test("getRandomItem()", () => {
 	const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-	expect(randomItem(arr)).not.toBe(undefined);
-	expect(arr.includes(randomItem(arr))).toBe(true);
+	expect(getRandomItem(arr)).not.toBe(undefined);
+	expect(arr.includes(getRandomItem(arr))).toBe(true);
 });
-test("randomNumber()", () => {
-	expect(typeof randomInteger(1, 2)).toBe("number");
-	expect(randomInteger(1, 99)).toBeGreaterThanOrEqual(1);
-	expect(randomInteger(1, 99)).toBeLessThanOrEqual(99);
+test("getRandom()", () => {
+	expect(typeof getRandom(1, 2)).toBe("number");
+	expect(getRandom(1, 99)).toBeGreaterThanOrEqual(1);
+	expect(getRandom(1, 99)).toBeLessThanOrEqual(99);
 });

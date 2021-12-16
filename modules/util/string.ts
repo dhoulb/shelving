@@ -17,12 +17,19 @@ export const IS_STRING = (v: unknown): v is string => typeof v === "string";
  * -
  */
 export function toString(value: unknown): string {
-	if (typeof value === "object") return value === null ? "null" : typeof value.toString === "function" && value.toString !== Object.prototype.toString ? value.toString() : "object";
 	if (typeof value === "string") return value;
-	if (typeof value === "boolean") return value.toString();
 	if (typeof value === "number") return value.toString();
+	if (typeof value === "object") return value === null ? "null" : typeof value.toString === "function" && value.toString !== Object.prototype.toString ? value.toString() : "object";
+	if (typeof value === "boolean") return value.toString();
 	if (typeof value === "function") return value.name || "function";
 	return typeof value; // "symbol" etc.
+}
+
+/** Concatenate a set of potential strings together. */
+export function concatStrings(values: Iterable<unknown>): string {
+	let output = "";
+	for (const value of values) output += toString(value);
+	return output;
 }
 
 /**

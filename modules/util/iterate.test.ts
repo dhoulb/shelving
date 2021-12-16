@@ -1,16 +1,4 @@
-import {
-	countItems,
-	countIterations,
-	sumItems,
-	yieldChunks,
-	toArray,
-	yieldRange,
-	limitItems,
-	limitIterations,
-	Signal,
-	yieldDelay,
-	yieldUntil,
-} from "../index.js";
+import { countItems, countIterations, sumItems, yieldChunks, toArray, yieldRange, limitItems, yieldUntilLimit, Signal, yieldDelay, yieldUntilSignal, yieldCall } from "../index.js";
 
 test("countItems()", () => {
 	expect(countItems([])).toBe(0);
@@ -50,10 +38,14 @@ test("limitItems", () => {
 	expect(toArray(limitItems(yieldRange(9, 10), 5))).toEqual([9, 10]);
 	expect(toArray(limitItems(yieldRange(15, 200), 5))).toEqual([15, 16, 17, 18, 19]);
 });
-test("limitIterations", () => {
-	expect(toArray(limitIterations([1, 2, 3, 4, 5], 3))).toEqual([1, 2, 3]);
-	expect(toArray(limitIterations(new Set([1, 2, 3, 4, 5]), 3))).toEqual([1, 2, 3]);
-	expect(toArray(limitIterations(yieldRange(15, 200), 5))).toEqual([15, 16, 17, 18, 19]);
+test("yieldUntilLimit", () => {
+	expect(toArray(yieldUntilLimit([1, 2, 3, 4, 5], 3))).toEqual([1, 2, 3]);
+	expect(toArray(yieldUntilLimit(new Set([1, 2, 3, 4, 5]), 3))).toEqual([1, 2, 3]);
+	expect(toArray(yieldUntilLimit(yieldRange(15, 200), 5))).toEqual([15, 16, 17, 18, 19]);
+});
+test("yieldCall", () => {
+	const getStr = () => "abc";
+	expect(toArray(yieldUntilLimit(yieldCall(getStr), 3))).toEqual(["abc", "abc", "abc"]);
 });
 test("chunkItems()", () => {
 	expect(toArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 1))).toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9]]);
@@ -71,10 +63,10 @@ test("chunkItems()", () => {
 	expect(toArray(yieldChunks(yieldRange(11, 19), 1))).toEqual([[11], [12], [13], [14], [15], [16], [17], [18], [19]]);
 	expect(toArray(yieldChunks(yieldRange(11, 19), 2))).toEqual([[11, 12], [13, 14], [15, 16], [17, 18], [19]]);
 });
-test("yieldUntil()", async () => {
+test("yieldUntilSignal()", async () => {
 	const yielded: number[] = [];
 	const stop = new Signal();
-	for await (const count of yieldUntil(yieldDelay(50), stop)) {
+	for await (const count of yieldUntilSignal(yieldDelay(50), stop)) {
 		yielded.push(count);
 		if (count >= 3) stop.done();
 	}

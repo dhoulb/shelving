@@ -1,17 +1,4 @@
-import {
-	Data,
-	Result,
-	Results,
-	randomId,
-	Unsubscriber,
-	dispatchNext,
-	Observer,
-	isMapEqual,
-	MutableObject,
-	Dispatcher,
-	ImmutableMap,
-	MutableMap,
-} from "../util/index.js";
+import { Data, Result, Results, getRandomKey, Unsubscriber, dispatchNext, Observer, isMapEqual, MutableObject, Dispatcher, ImmutableMap, MutableMap } from "../util/index.js";
 import { Update } from "../update/index.js";
 import { DataQuery, DataDocument, DocumentRequiredError } from "../db/index.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
@@ -49,8 +36,8 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 
 	add<T extends Data>(ref: DataQuery<T>, data: T): string {
 		const table = this._table(ref);
-		let id = randomId();
-		while (table.data.get(id)) id = randomId(); // Regenerate ID until unique.
+		let id = getRandomKey();
+		while (table.data.get(id)) id = getRandomKey(); // Regenerate ID until unique.
 		table.write(id, data);
 		return id;
 	}
