@@ -1,4 +1,4 @@
-import type { ArrayType, ImmutableArray, Data, Key, Matchable, Entry, Rankable } from "../util/index.js";
+import type { Data, Key, Matchable, Entry, Rankable, ImmutableArray, ArrayType } from "../util/index.js";
 
 /** Type for a key in a query, either `id` for the unique ID of the document or any other string key that exists in data. */
 export type QueryKey<T extends Data> = "id" | Key<T>;

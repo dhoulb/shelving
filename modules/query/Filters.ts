@@ -1,16 +1,6 @@
-import { Entry, ArrayType, ImmutableArray, Data, Key, yieldFiltered, Results } from "../util/index.js";
+import { Entry, Data, Key, yieldFiltered, Results, ImmutableArray, ArrayType } from "../util/index.js";
 import type { Filterable, QueryKey } from "./types.js";
-import {
-	ArrayContainsFilter,
-	EqualFilter,
-	Filter,
-	GreaterThanEqualFilter,
-	GreaterThanFilter,
-	InArrayFilter,
-	LessThanEqualFilter,
-	LessThanFilter,
-	NotEqualFilter,
-} from "./Filter.js";
+import { ArrayContainsFilter, EqualFilter, Filter, GreaterThanEqualFilter, GreaterThanFilter, InArrayFilter, LessThanEqualFilter, LessThanFilter, NotEqualFilter } from "./Filter.js";
 import { Rules } from "./Rules.js";
 
 /** A set of filters. */

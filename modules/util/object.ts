@@ -21,8 +21,7 @@ export const isObject = <T extends ImmutableObject>(value: T | unknown): value i
 export const isPlainObject = <T extends ImmutableObject>(value: T | unknown): value is T => isObject(value) && value.constructor === Object;
 
 /** Is an unknown string an own prop of an object. */
-export const isKey = <T extends ImmutableObject>(obj: T, key: unknown): key is keyof T =>
-	(typeof key === "string" || typeof key === "number" || typeof key === "symbol") && Object.prototype.hasOwnProperty.call(obj, key);
+export const isKey = <T extends ImmutableObject>(obj: T, key: unknown): key is keyof T => (typeof key === "string" || typeof key === "number" || typeof key === "symbol") && Object.prototype.hasOwnProperty.call(obj, key);
 
 /**
  * Add a key/value entry to a map-like object (immutably).

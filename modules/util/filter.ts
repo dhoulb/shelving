@@ -30,7 +30,7 @@ export const NOT = (item: unknown, target: unknown) => item !== target;
 export const IN = (item: unknown, targets: ImmutableArray) => targets.includes(item);
 
 /** Match whether an array of items contains a target. */
-export const CONTAINS = (items: ImmutableArray, target: unknown) => items.includes(target);
+export const CONTAINS = (items: unknown, target: unknown) => items instanceof Array && items.includes(target);
 
 /** Match whether an item is less than a target. */
 export const LT = (item: unknown, target: unknown) => ASC(item, target) < 0;

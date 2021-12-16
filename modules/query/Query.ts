@@ -1,4 +1,4 @@
-import { Data, ArrayType, ImmutableArray, assert, Entry, Key, limitItems, Results } from "../util/index.js";
+import { Data, assert, Entry, Key, limitItems, Results, ArrayType, ImmutableArray } from "../util/index.js";
 import type { Queryable, QueryKey } from "./types.js";
 import { Filters } from "./Filters.js";
 import { Sorts } from "./Sorts.js";

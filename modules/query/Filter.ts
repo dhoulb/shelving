@@ -1,4 +1,4 @@
-import { Data, Entry, Matchable, match, CONTAINS, IS, GT, GTE, IN, LT, LTE, NOT, Matcher, yieldFiltered, Results } from "../util/index.js";
+import { Data, Entry, Matchable, match, CONTAINS, IS, GT, GTE, IN, LT, LTE, NOT, yieldFiltered, Results, ImmutableArray } from "../util/index.js";
 import { Rule } from "./Rule.js";
 import { getQueryProp } from "./helpers.js";
 import { FilterOperator, QueryKey } from "./types.js";
@@ -10,22 +10,16 @@ import { FilterOperator, QueryKey } from "./types.js";
  * @param type MatchType reference, e.g. `is` or `contains`
  * @param value Value the specified property should be matched against.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export interface Filter<T extends Data> {
-	readonly operator: FilterOperator;
-	readonly matcher: Matcher<unknown, unknown>;
-}
-export abstract class Filter<T extends Data> extends Rule<T> implements Matchable<Entry<T>, void> {
+export abstract class Filter<T extends Data, V extends unknown = unknown> extends Rule<T> implements Matchable<Entry<T>, void> {
+	abstract readonly operator: FilterOperator;
 	readonly key: QueryKey<T>;
-	readonly value: unknown;
-	constructor(key: QueryKey<T>, value: unknown) {
+	readonly value: V;
+	constructor(key: QueryKey<T>, value: V) {
 		super();
 		this.key = key;
 		this.value = value;
 	}
-	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), this.matcher, this.value);
-	}
+	abstract match([id, data]: Entry<T>, target: void): boolean;
 	transform(results: Results<T>): Results<T> {
 		return yieldFiltered(results, this);
 	}
@@ -35,33 +29,66 @@ export abstract class Filter<T extends Data> extends Rule<T> implements Matchabl
 }
 
 /** Filter a set of values with an `IS` clause. */
-export class EqualFilter<T extends Data> extends Filter<T> {}
-Object.assign(EqualFilter.prototype, { direction: "IS", matcher: IS });
+export class EqualFilter<T extends Data> extends Filter<T> {
+	readonly operator = "IS";
+	readonly matcher = IS;
+	match([id, data]: Entry<T>): boolean {
+		return match(getQueryProp(id, data, this.key), IS, this.value);
+	}
+}
 
 /** Filter a set of values with an `NOT` clause. */
-export class NotEqualFilter<T extends Data> extends Filter<T> {}
-Object.assign(NotEqualFilter.prototype, { direction: "NOT", matcher: NOT });
+export class NotEqualFilter<T extends Data> extends Filter<T> {
+	readonly operator = "NOT";
+	match([id, data]: Entry<T>): boolean {
+		return match(getQueryProp(id, data, this.key), NOT, this.value);
+	}
+}
 
 /** Filter a set of values with an `IS` clause. */
-export class InArrayFilter<T extends Data> extends Filter<T> {}
-Object.assign(InArrayFilter.prototype, { direction: "IN", matcher: IN });
+export class InArrayFilter<T extends Data> extends Filter<T, ImmutableArray> {
+	readonly operator = "IN";
+	match([id, data]: Entry<T>): boolean {
+		return match(getQueryProp(id, data, this.key), IN, this.value);
+	}
+}
 
 /** Filter a set of values with an `CONTAINS` clause. */
-export class ArrayContainsFilter<T extends Data> extends Filter<T> {}
-Object.assign(ArrayContainsFilter.prototype, { direction: "CONTAINS", matcher: CONTAINS });
+export class ArrayContainsFilter<T extends Data> extends Filter<T> {
+	readonly operator = "CONTAINS";
+	match([id, data]: Entry<T>): boolean {
+		return match(getQueryProp(id, data, this.key), CONTAINS, this.value);
+	}
+}
 
 /** Filter a set of values with an `LT` clause. */
-export class LessThanFilter<T extends Data> extends Filter<T> {}
-Object.assign(LessThanFilter.prototype, { direction: "LT", matcher: LT });
+export class LessThanFilter<T extends Data> extends Filter<T> {
+	readonly operator = "LT";
+	match([id, data]: Entry<T>): boolean {
+		return match(getQueryProp(id, data, this.key), LT, this.value);
+	}
+}
 
 /** Filter a set of values with an `LTE` clause. */
-export class LessThanEqualFilter<T extends Data> extends Filter<T> {}
-Object.assign(LessThanEqualFilter.prototype, { direction: "LTE", matcher: LTE });
+export class LessThanEqualFilter<T extends Data> extends Filter<T> {
+	readonly operator = "LTE";
+	match([id, data]: Entry<T>): boolean {
+		return match(getQueryProp(id, data, this.key), LTE, this.value);
+	}
+}
 
 /** Filter a set of values with an `GT` clause. */
-export class GreaterThanFilter<T extends Data> extends Filter<T> {}
-Object.assign(GreaterThanFilter.prototype, { direction: "GT", matcher: GT });
+export class GreaterThanFilter<T extends Data> extends Filter<T> {
+	readonly operator = "GT";
+	match([id, data]: Entry<T>): boolean {
+		return match(getQueryProp(id, data, this.key), GT, this.value);
+	}
+}
 
 /** Filter a set of values with an `GTE` clause. */
-export class GreaterThanEqualFilter<T extends Data> extends Filter<T> {}
-Object.assign(GreaterThanEqualFilter.prototype, { direction: "GTE", matcher: GTE });
+export class GreaterThanEqualFilter<T extends Data> extends Filter<T> {
+	readonly operator = "GTE";
+	match([id, data]: Entry<T>): boolean {
+		return match(getQueryProp(id, data, this.key), GTE, this.value);
+	}
+}
