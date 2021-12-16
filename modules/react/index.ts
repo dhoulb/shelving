@@ -5,6 +5,5 @@ export * from "./useSubscribe.js";
 export * from "./useState.js";
 export * from "./useFetch.js";
 export * from "./useDocument.js";
-export * from "./useDocumentData.js";
 export * from "./useQuery.js";
 export * from "./usePagination.js";
