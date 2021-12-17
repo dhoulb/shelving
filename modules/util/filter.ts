@@ -20,44 +20,33 @@ export function match<L, R>(item: L, matcher: Matcher<L, R | undefined>, target?
 	return typeof matcher === "function" ? matcher(item, target) : matcher.match(item, target);
 }
 
-/** Match whether an item is equal to a target. */
+// Regular matchers.
 export const IS = (item: unknown, target: unknown) => item === target;
-
-/** Match whether an item is not equal to match a target. */
 export const NOT = (item: unknown, target: unknown) => item !== target;
-
-/** Match whether an item exists in an array of targets. */
 export const IN = (item: unknown, targets: ImmutableArray) => targets.includes(item);
-
-/** Match whether an array of items contains a target. */
 export const CONTAINS = (items: unknown, target: unknown) => items instanceof Array && items.includes(target);
-
-/** Match whether an item is less than a target. */
 export const LT = (item: unknown, target: unknown) => ASC(item, target) < 0;
-
-/** Match whether an item is less than or equal to a target. */
 export const LTE = (item: unknown, target: unknown) => ASC(item, target) <= 0;
-
-/** Match whether an item is greater than a target. */
 export const GT = (item: unknown, target: unknown) => ASC(item, target) > 0;
-
-/** Match whether an item is greater than or equal to a target. */
 export const GTE = (item: unknown, target: unknown) => ASC(item, target) >= 0;
 
-/** Match whether the key of an entry is equal to a target. */
-export const KEY_IS = ([item]: Entry, target: string) => item === target;
+// Entry key matchers.
+export const KEY_IS = ([key]: Entry, target: string) => IS(key, target);
+export const KEY_NOT = ([key]: Entry, targets: ImmutableArray<string>) => IN(key, targets);
+export const KEY_IN = ([key]: Entry, targets: ImmutableArray<string>) => IN(key, targets);
+export const KEY_LT = ([key]: Entry, target: unknown) => LT(key, target);
+export const KEY_LTE = ([key]: Entry, target: unknown) => LTE(key, target);
+export const KEY_GT = ([key]: Entry, target: unknown) => GT(key, target);
+export const KEY_GTE = ([key]: Entry, target: unknown) => GTE(key, target);
 
-/** Match whether the key of an entry is in an array of targets. */
-export const KEY_IN = ([item]: Entry, targets: ImmutableArray<string>) => targets.includes(item);
-
-/** Match whether the value of an entry is equal to a target. */
-export const VALUE_IS = ([, item]: Entry, target: unknown) => item === target;
-
-/** Match whether the value of an entry is in an array of targets. */
-export const VALUE_IN = ([, item]: Entry, targets: ImmutableArray) => targets.includes(item);
-
-/** Match whether the value of an entry is defined. */
-export const VALUE_DEFINED = ([, item]: Entry) => item !== undefined;
+// Entry value matchers.
+export const VALUE_IS = ([, value]: Entry, target: unknown) => IS(value, target);
+export const VALUE_NOT = ([, value]: Entry, target: unknown) => NOT(value, target);
+export const VALUE_IN = ([, value]: Entry, targets: ImmutableArray) => IN(value, targets);
+export const VALUE_LT = ([, value]: Entry, target: unknown) => LT(value, target);
+export const VALUE_LTE = ([, value]: Entry, target: unknown) => LTE(value, target);
+export const VALUE_GT = ([, value]: Entry, target: unknown) => GT(value, target);
+export const VALUE_GTE = ([, value]: Entry, target: unknown) => GTE(value, target);
 
 /** Filter an iterable set of items using a matcher (and optionally a target value). */
 export function yieldFiltered<L>(input: Iterable<L>, matcher: Matcher<L, void>): Iterable<L>;
