@@ -48,7 +48,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.gte(key, value) };
 	}
 	get unfiltered(): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.unfilter() };
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.unfiltered };
 	}
 	match(entry: Entry<T>): boolean {
 		return this.filters.match(entry);
@@ -62,7 +62,7 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.desc(key) };
 	}
 	get unsorted(): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.unsort() };
+		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.unsorted };
 	}
 	rank(left: Entry<T>, right: Entry<T>): number {
 		return this.sorts.rank(left, right);
