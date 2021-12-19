@@ -5,6 +5,7 @@ import { Rules } from "./Rules.js";
 
 /** A set of filters. */
 export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filterable<T> {
+	// Implement `Filterable`
 	is<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new EqualFilter<T>(key, value)] };
 	}
@@ -33,6 +34,11 @@ export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filt
 		for (const rule of this._rules) if (!rule.match(entry)) return false;
 		return true;
 	}
+	get unfiltered(): this {
+		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [] };
+	}
+
+	// Implement `Rule`
 	transform(iterable: Results<T>): Results<T> {
 		return this._rules.length ? yieldFiltered(iterable, this) : iterable;
 	}

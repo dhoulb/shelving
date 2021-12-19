@@ -47,16 +47,22 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	gte<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.gte(key, value) };
 	}
+	get unfiltered(): this {
+		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.unfilter() };
+	}
 	match(entry: Entry<T>): boolean {
 		return this.filters.match(entry);
 	}
 
 	// Implement `Sortable`
-	asc(key: QueryKey<T> = "id"): this {
+	asc(key: QueryKey<T>): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.asc(key) };
 	}
-	desc(key: QueryKey<T> = "id"): this {
+	desc(key: QueryKey<T>): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.desc(key) };
+	}
+	get unsorted(): this {
+		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.unsort() };
 	}
 	rank(left: Entry<T>, right: Entry<T>): number {
 		return this.sorts.rank(left, right);

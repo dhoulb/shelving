@@ -115,14 +115,12 @@ test("MemoryProvider: get queries", async () => {
 	// Sorting.
 	const keysAsc = toArray(basicResults.keys()).sort();
 	const keysDesc = toArray(basicResults.keys()).sort().reverse();
-	expectOrderedKeys(await basics.asc().results, keysAsc);
-	expectOrderedKeys(await basics.desc().results, keysDesc);
+	expectOrderedKeys(await basics.asc("id").results, keysAsc);
+	expectOrderedKeys(await basics.desc("id").results, keysDesc);
 	expectOrderedKeys(await basics.asc("str").results, keysAsc);
 	expectOrderedKeys(await basics.desc("str").results, keysDesc);
 	expectOrderedKeys(await basics.asc("num").results, keysAsc);
 	expectOrderedKeys(await basics.desc("num").results, keysDesc);
-	// Limiting.
-	expectOrderedKeys(await basics.asc().max(2).results, ["basic1", "basic2"]);
 	// Combinations.
 	expectOrderedKeys(await basics.asc("id").max(2).results, ["basic1", "basic2"]);
 	expectOrderedKeys(await basics.desc("id").max(1).results, ["basic9"]);

@@ -19,6 +19,9 @@ export interface Filterable<T extends Data> extends Matchable<Entry<T>, void> {
 	lte<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this;
 	gt<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this;
 	gte<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this;
+	/** Return a new instance of this class with no sorts specified. */
+	unfiltered: this;
+	/** Match an entry against the filters specified for this object. */
 	match(entry: Entry<T>): boolean;
 }
 
@@ -28,9 +31,11 @@ export interface Filterable<T extends Data> extends Matchable<Entry<T>, void> {
  */
 export interface Sortable<T extends Data> extends Rankable<Entry<T>> {
 	/** Return a new instance of this class with an ascending order sort defined. */
-	asc(key?: QueryKey<T>): this;
+	asc(key: QueryKey<T>): this;
 	/** Return a new instance of this class with a descending order sort defined. */
-	desc(key?: QueryKey<T>): this;
+	desc(key: QueryKey<T>): this;
+	/** Return a new instance of this class with no sorts specified. */
+	unsorted: this;
 }
 
 /** Possible operator references. */
