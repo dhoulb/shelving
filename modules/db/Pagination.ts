@@ -1,4 +1,4 @@
-import { getLastItem, assertLength, assertNumber, ResultsMap, Entry, yieldMerged, Results, toMap, Data, LOADING } from "../util/index.js";
+import { getLastItem, assertNumber, ResultsMap, Entry, yieldMerged, Results, toMap, Data, LOADING, assertMaximum } from "../util/index.js";
 import { State } from "../stream/index.js";
 import { ConditionError } from "../index.js";
 import { DataQuery } from "./Database.js";
@@ -18,7 +18,7 @@ export class Pagination<T extends Data> extends State<ResultsMap<T>> implements 
 		super();
 		this.ref = ref;
 		assertNumber(ref.limit); // Collection must have a numeric limit to paginate (otherwise you'd be retrieving the entire set of documents).
-		assertLength(ref.sorts, 1, Infinity); // Collection must have at least one sort order to paginate.
+		assertMaximum(ref.sorts.size, 1); // Collection must have at least one sort order to paginate.
 		this.limit = ref.limit;
 	}
 

@@ -1,3 +1,5 @@
+import { AssertionError } from "../error/index.js";
+
 /**
  * Mutable array: an array that can be changed.
  * - Consistency with `MutableObject<T>` and `ImmutableArray<T>`
@@ -269,4 +271,25 @@ export function uniqueArray<T>(input: Iterable<T>): ImmutableArray<T> {
 /** Apply a limit to an array. */
 export function limitArray<T>(arr: ImmutableArray<T>, limit: number): ImmutableArray<T> {
 	return limit > arr.length ? arr : arr.slice(0, limit);
+}
+
+/** Does an array have the specified minimum length.  */
+export function isMinimumLength<T>(arr: ImmutableArray<T>, min?: 1): arr is [T, ...T[]];
+export function isMinimumLength<T>(arr: ImmutableArray<T>, min: 2): arr is [T, T, ...T[]];
+export function isMinimumLength<T>(arr: ImmutableArray<T>, min: 3): arr is [T, T, T, ...T[]];
+export function isMinimumLength<T>(arr: ImmutableArray<T>, min: 4): arr is [T, T, T, T, ...T[]];
+export function isMinimumLength<T>(arr: ImmutableArray<T>, min: number): arr is [T, T, T, T, T, ...T[]];
+export function isMinimumLength<T>(arr: ImmutableArray<T>, min = 1): boolean {
+	return arr.length >= min;
+}
+
+/** Get an array if it has the specified minimum length.  */
+export function getMinimumLength<T>(arr: ImmutableArray<T>, min?: 1): [T, ...T[]];
+export function getMinimumLength<T>(arr: ImmutableArray<T>, min: 2): [T, T, ...T[]];
+export function getMinimumLength<T>(arr: ImmutableArray<T>, min: 3): [T, T, T, ...T[]];
+export function getMinimumLength<T>(arr: ImmutableArray<T>, min: 4): [T, T, T, T, ...T[]];
+export function getMinimumLength<T>(arr: ImmutableArray<T>, min: number): [T, T, T, T, T, ...T[]];
+export function getMinimumLength<T>(arr: ImmutableArray<T>, min = 1): ImmutableArray<T> {
+	if (arr.length >= min) return arr;
+	throw new AssertionError(`Must have minimum length ${min}`, arr);
 }

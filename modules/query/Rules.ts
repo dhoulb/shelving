@@ -16,7 +16,7 @@ export abstract class Rules<T extends Data, R extends Rule<T>> extends Rule<T> i
 	}
 
 	/** Get the number of rules. */
-	get length(): number {
+	get size(): number {
 		return this._rules.length;
 	}
 

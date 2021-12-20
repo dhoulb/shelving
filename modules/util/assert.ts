@@ -3,7 +3,7 @@ import type { AnyFunction } from "./function.js";
 import type { Class } from "./class.js";
 import { debug } from "./debug.js";
 import { isObject } from "./object.js";
-import { ImmutableArray } from "./array.js";
+import { ImmutableArray, isArray } from "./array.js";
 import { NOVALUE } from "./constants.js";
 import { isAsync } from "./async.js";
 import { Data } from "./data.js";
@@ -54,23 +54,38 @@ export function assertProp<K extends string | number | symbol, T extends { [L in
 }
 
 /** Assert that a value is an array. */
-export function assertArray<T extends ImmutableArray>(value: T | unknown): asserts value is T {
+export function assertArray<T>(value: ImmutableArray<T> | unknown): asserts value is ImmutableArray<T> {
 	if (!(value instanceof Array)) throw new AssertionError(`Must be array`, value);
 }
 
 /** Assert that a value has a specific length (or length is in a specific range). */
-export function assertLength<T extends { length: number }>(value: T | unknown, min: number, max = min): asserts value is T {
-	if (!isObject(value) || typeof value.length !== "number" || value.length < min || value.length > max) throw new AssertionError(`Must have length ${min}–${max}`, value);
+export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min?: 1): asserts value is [T, ...T[]];
+export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min: 2): asserts value is [T, T, ...T[]];
+export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min: 3): asserts value is [T, T, T, ...T[]];
+export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min: 4): asserts value is [T, T, T, T, ...T[]];
+export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min: number): asserts value is [T, T, T, T, T, ...T[]];
+export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min = 1): asserts value is ImmutableArray<T> {
+	if (!isArray(value) || value.length < min) throw new AssertionError(`Must be array with minimum length ${min}`, value);
+}
+
+/** Assert that a value has a specific length (or length is in a specific range). */
+export function assertLength<T>(value: ImmutableArray<T> | unknown, min: number, max = min): asserts value is ImmutableArray<T> {
+	if (!isArray(value) || value.length < min || value.length > max) throw new AssertionError(`Must be array with length ${min}-${max}`, value);
 }
 
 /** Assert that a value is a number greater than. */
-export function assertGreater(value: number | unknown, target: number): asserts value is number {
-	if (typeof value !== "number" || value <= target) throw new AssertionError(`Must be greater than ${target}`, value);
+export function assertBetween(value: number | unknown, min: number, max: number): asserts value is number {
+	if (typeof value !== "number" || value < min || value > max) throw new AssertionError(`Must be number between ${min}-${max}`, value);
+}
+
+/** Assert that a value is a number greater than. */
+export function assertMaximum(value: number | unknown, max: number): asserts value is number {
+	if (typeof value !== "number" || value > max) throw new AssertionError(`Must be number with maximum ${max}`, value);
 }
 
 /** Assert that a value is a number less than. */
-export function assertLess(value: number | unknown, target: number): asserts value is number {
-	if (typeof value !== "number" || value >= target) throw new AssertionError(`Must be less than ${target}`, value);
+export function assertMinimum(value: number | unknown, min: number): asserts value is number {
+	if (typeof value !== "number" || value < min) throw new AssertionError(`Must be number with minimum ${min}`, value);
 }
 
 /** Assert that a value is an instance of something. */
@@ -94,12 +109,12 @@ export function assertDefined<T>(value: T | undefined): asserts value is T {
 }
 
 /** Expect a synchronous value. */
-export function assertSync<T>(value: Promise<T> | T): asserts value is T {
+export function assertSynchronous<T>(value: Promise<T> | T): asserts value is T {
 	if (isAsync(value)) throw new AssertionError("Must be synchronous", value);
 }
 
 /** Expect an asynchronous value. */
-export function assertAsync<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
+export function assertAsynchronous<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
 	if (!isAsync(value)) throw new AssertionError("Must be asynchronous", value);
 }
 
