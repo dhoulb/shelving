@@ -1,4 +1,4 @@
-import { countItems, countIterations, sumItems, yieldChunks, toArray, yieldRange, limitItems, yieldUntilLimit, Signal, yieldDelay, yieldUntilSignal, yieldCall } from "../index.js";
+import { countItems, countIterations, yieldChunks, toArray, yieldRange, limitItems, yieldUntilLimit, Signal, yieldDelay, yieldUntilSignal, yieldCall } from "../index.js";
 
 test("countItems()", () => {
 	expect(countItems([])).toBe(0);
@@ -21,14 +21,6 @@ test("countIterations()", () => {
 	expect(countIterations([1, 2, 3, 4, 5, 6])).toBe(6);
 	expect(countIterations(yieldRange(19, 19))).toBe(1);
 	expect(countIterations(yieldRange(21, 28))).toBe(8);
-});
-test("sumItems()", () => {
-	expect(sumItems([])).toBe(0);
-	expect(sumItems([1, 2, 3, 4, 5, 6])).toBe(21);
-	expect(sumItems(new Set([1, 2, 3, 4, 5]))).toBe(15);
-	expect(sumItems(yieldRange(0, 0))).toBe(0);
-	expect(sumItems(yieldRange(1, 1))).toBe(1);
-	expect(sumItems(yieldRange(31, 29))).toBe(90);
 });
 test("limitItems", () => {
 	expect(toArray(limitItems([1, 2], 3))).toEqual([1, 2]);

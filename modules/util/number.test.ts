@@ -1,4 +1,4 @@
-import { formatNumber, roundStep, toNumber } from "../index.js";
+import { formatNumber, roundStep, sumNumbers, toNumber, yieldRange } from "../index.js";
 
 test("formatNumber(): Works correctly", () => {
 	expect(formatNumber(123)).toBe("123");
@@ -62,4 +62,12 @@ describe("toNumber()", () => {
 		expect(toNumber("a")).toBe(null);
 		expect(toNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(null);
 	});
+});
+test("sumNumbers()", () => {
+	expect(sumNumbers([])).toBe(0);
+	expect(sumNumbers([1, 2, 3, 4, 5, 6])).toBe(21);
+	expect(sumNumbers(new Set([1, 2, 3, 4, 5]))).toBe(15);
+	expect(sumNumbers(yieldRange(0, 0))).toBe(0);
+	expect(sumNumbers(yieldRange(1, 1))).toBe(1);
+	expect(sumNumbers(yieldRange(31, 29))).toBe(90);
 });
