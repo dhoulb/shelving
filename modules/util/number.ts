@@ -22,6 +22,16 @@ export function toNumber(value: unknown): number | null {
 const NUMERIC = /[^0-9-.]/g;
 
 /**
+ * Assertively convert an unknown value to a finite number.
+ * @throws `AssertionError` if the value cannot be converted.
+ */
+export function getNumber(value: unknown): number {
+	const num = toNumber(value);
+	if (num === null) throw new AssertionError("Must be number", value);
+	return num;
+}
+
+/**
  * Round numbers to a given step.
  *
  * @param num The number to round.
