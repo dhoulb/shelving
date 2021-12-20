@@ -78,3 +78,17 @@ export const isBetween = (num: number, start: number, end: number): boolean => n
  * @param end The end of the range, e.g. `20`
  */
 export const getBetween = (num: number, start: number, end: number) => Math.max(start, Math.min(end, num));
+
+/** Sum an iterable set of numbers and return the total. */
+export function sumNumbers(nums: Iterable<number>): number {
+	let sum = 0;
+	for (const num of nums) sum += num;
+	return sum;
+}
+
+/** Find the number that's closest to a target in an iterable set of numbers. */
+export function getClosestNumber<T extends number>(nums: Iterable<T>, target: number): T | undefined {
+	let closest: T | undefined = undefined;
+	for (const item of nums) if (closest === undefined || Math.abs(item - target) < Math.abs(closest - target)) closest = item;
+	return closest;
+}
