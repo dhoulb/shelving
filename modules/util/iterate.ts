@@ -52,10 +52,17 @@ export function countIterations(items: Iterable<unknown>): number {
 }
 
 /** Sum an iterable set of numbers and return the total. */
-export function sumItems(input: Iterable<number>): number {
+export function sumItems(items: Iterable<number>): number {
 	let sum = 0;
-	for (const num of input) sum += num;
+	for (const num of items) sum += num;
 	return sum;
+}
+
+/** Find the number that's closest to a target in an iterable set of numbers. */
+export function getClosestItem<T extends number>(items: Iterable<T>, target: number): T | undefined {
+	let closest: T | undefined = undefined;
+	for (const item of items) if (closest === undefined || Math.abs(item - target) < Math.abs(closest - target)) closest = item;
+	return closest;
 }
 
 /**
