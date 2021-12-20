@@ -31,14 +31,14 @@ export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): val
 export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Get the known size or length of an object (e.g. `Array`, `Map`, and `Set` have known size), or return `undefined` if the size cannot be established. */
-export const getSize = (obj: Iterable<unknown> | ImmutableMap | ImmutableArray): number | undefined => ("size" in obj && typeof obj.size === "number" ? obj.size : "length" in obj && typeof obj.length === "number" ? obj.length : undefined);
+const getKnownSize = (obj: Iterable<unknown> | ImmutableMap | ImmutableArray): number | undefined => ("size" in obj && typeof obj.size === "number" ? obj.size : "length" in obj && typeof obj.length === "number" ? obj.length : undefined);
 
 /**
  * Count the number items of an iterable.
  * - Checks `items.size` or `items.length` first, or consumes the iterable and counts its iterations.
  */
 export function countItems(items: Iterable<unknown>): number {
-	return getSize(items) ?? countIterations(items);
+	return getKnownSize(items) ?? countIterations(items);
 }
 
 /**
@@ -79,7 +79,7 @@ export function* yieldRange(start: number, end: number): Generator<number, void,
  * - Checks `items.size` or `items.length` first to see if the limit is necessary.
  */
 export function limitItems<T>(items: Iterable<T>, limit: number): TypedIterable<T, void, void> {
-	const size = getSize(items) ?? Infinity;
+	const size = getKnownSize(items) ?? Infinity;
 	return size <= limit ? items : yieldUntilLimit(items, limit);
 }
 

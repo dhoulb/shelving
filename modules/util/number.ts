@@ -71,7 +71,7 @@ export const formatNumber = (num: number, precision = 10): string => new Intl.Nu
 export const isBetween = (num: number, start: number, end: number): boolean => num >= start && num <= end;
 
 /**
- *  Apply a min/max to a number to return a number that's definitely in the specified range.
+ * Apply a min/max to a number to return a number that's definitely in the specified range.
  *
  * @param num The number to apply the min/max to, e.g. `17`
  * @param start The start of the range, e.g. `10`
