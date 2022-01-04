@@ -52,6 +52,23 @@ export function countIterations(items: Iterable<unknown>): number {
 }
 
 /**
+ * Does an iterable have one or more items.
+ * - Checks `items.size` or `items.length` first, or consumes the iterable and counts its iterations.
+ */
+export function hasItems(items: Iterable<unknown>): boolean {
+	return !!(getKnownSize(items) ?? hasIterations(items));
+}
+
+/**
+ * Does an iterable have one or more items.
+ * - Checks `items.size` or `items.length` first, or consumes the iterable and counts its iterations.
+ */
+export function hasIterations(items: Iterable<unknown>): boolean {
+	for (const unused of items) return true; // eslint-disable-line @typescript-eslint/no-unused-vars
+	return false;
+}
+
+/**
  * Yield a range of numbers from `start` to `end`
  * - Yields in descending order if `end` is lower than `start`
  */

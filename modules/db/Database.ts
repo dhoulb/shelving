@@ -24,6 +24,7 @@ import {
 	Dispatcher,
 	Nullish,
 	NOT_NULLISH,
+	hasItems,
 } from "../util/index.js";
 import { DataUpdate, PropUpdates, Update } from "../update/index.js";
 import type { Provider } from "../provider/Provider.js";
@@ -117,10 +118,18 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 
 	/**
 	 * Count the number of results of this set of documents.
-	 * @return Number of documents in the collection (possibly promised).
+	 * @return Number of documents matching the query (possibly promised).
 	 */
 	get count(): number | PromiseLike<number> {
 		return callAsync(countItems, this.results);
+	}
+
+	/**
+	 * Does at least one document exist for this query?
+	 * @return `true` if a document exists or `false` otherwise (possibly promised).
+	 */
+	get exists(): boolean | PromiseLike<boolean> {
+		return callAsync(hasItems, this.max(1).results);
 	}
 
 	/**
@@ -252,8 +261,7 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 
 	/**
 	 * Does this document exist?
-	 *
-	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
+	 * @return `true` if a document exists or `false` otherwise (possibly promised).
 	 */
 	get exists(): boolean | PromiseLike<boolean> {
 		return callAsync(Boolean, this.provider.get(this));
@@ -261,7 +269,6 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 
 	/**
 	 * Get the result of this document.
-	 *
 	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
 	 */
 	get result(): Result<T> | PromiseLike<Result<T>> {
