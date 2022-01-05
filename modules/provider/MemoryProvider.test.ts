@@ -21,7 +21,7 @@ import {
 	expectUnorderedKeys,
 	BasicData,
 } from "../test/index.js";
-import { Database, MemoryProvider, Result, ResultsMap, toArray, toMap } from "../index.js";
+import { Database, MemoryProvider, Result, Results, getArray, getMap } from "../index.js";
 
 test("MemoryProvider: set/get/delete documents", () => {
 	// Setup.
@@ -75,19 +75,19 @@ test("MemoryProvider: set/get/delete collections", () => {
 	for (const [k, v] of basicResults) basics.doc(k).set(v);
 	for (const [k, v] of peopleResults) people.doc(k).set(v);
 	// Check collections.
-	expect(basics.results).toEqual(basicResults);
+	expect(basics.entries).toEqual(basicResults);
 	expect(basics.doc("basic1").result).toEqual(basic1);
 	expect(basics.doc("basic6").result).toEqual(basic6);
 	expect(basics.doc("basicNone").result).toBe(null);
-	expect(people.results).toEqual(peopleResults);
+	expect(people.entries).toEqual(peopleResults);
 	expect(people.doc("person4").result).toEqual(person4);
 	expect(people.doc("peopleNone").result).toBe(null);
 	// Delete collections.
 	expect(basics.delete()).toBe(9);
 	expect(people.delete()).toBe(5);
 	// Check collections.
-	expect(people.results).toEqual(new Map());
-	expect(basics.results).toEqual(new Map());
+	expect(people.entries).toEqual(new Map());
+	expect(basics.entries).toEqual(new Map());
 });
 test("MemoryProvider: get queries", async () => {
 	// Setup.
@@ -95,36 +95,36 @@ test("MemoryProvider: get queries", async () => {
 	const basics = db.query("basics");
 	for (const [k, v] of basicResults) basics.doc(k).set(v);
 	// Equal queries.
-	expectUnorderedKeys(await basics.is("str", "aaa").results, ["basic1"]);
-	expectUnorderedKeys(await basics.is("str", "NOPE").results, []);
-	expectUnorderedKeys(await basics.is("num", 300).results, ["basic3"]);
-	expectUnorderedKeys(await basics.is("num", 999999).results, []);
-	expectUnorderedKeys(await basics.is("group", "a").results, ["basic1", "basic2", "basic3"]);
-	expectUnorderedKeys(await basics.is("group", "b").results, ["basic4", "basic5", "basic6"]);
-	expectUnorderedKeys(await basics.is("group", "c").results, ["basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(await basics.is("str", "aaa").entries, ["basic1"]);
+	expectUnorderedKeys(await basics.is("str", "NOPE").entries, []);
+	expectUnorderedKeys(await basics.is("num", 300).entries, ["basic3"]);
+	expectUnorderedKeys(await basics.is("num", 999999).entries, []);
+	expectUnorderedKeys(await basics.is("group", "a").entries, ["basic1", "basic2", "basic3"]);
+	expectUnorderedKeys(await basics.is("group", "b").entries, ["basic4", "basic5", "basic6"]);
+	expectUnorderedKeys(await basics.is("group", "c").entries, ["basic7", "basic8", "basic9"]);
 	// ArrayContains queries.
-	expectUnorderedKeys(await basics.contains("tags", "odd").results, ["basic1", "basic3", "basic5", "basic7", "basic9"]);
-	expectUnorderedKeys(await basics.contains("tags", "even").results, ["basic2", "basic4", "basic6", "basic8"]);
-	expectUnorderedKeys(await basics.contains("tags", "prime").results, ["basic1", "basic2", "basic3", "basic5", "basic7"]);
-	expectUnorderedKeys(await basics.contains("tags", "NOPE").results, []);
+	expectUnorderedKeys(await basics.contains("tags", "odd").entries, ["basic1", "basic3", "basic5", "basic7", "basic9"]);
+	expectUnorderedKeys(await basics.contains("tags", "even").entries, ["basic2", "basic4", "basic6", "basic8"]);
+	expectUnorderedKeys(await basics.contains("tags", "prime").entries, ["basic1", "basic2", "basic3", "basic5", "basic7"]);
+	expectUnorderedKeys(await basics.contains("tags", "NOPE").entries, []);
 	// In queries.
-	expectUnorderedKeys(await basics.in("num", [200, 600, 900, 999999]).results, ["basic2", "basic6", "basic9"]);
-	expectUnorderedKeys(await basics.in("str", ["aaa", "ddd", "eee", "NOPE"]).results, ["basic1", "basic4", "basic5"]);
-	expectUnorderedKeys(await basics.in("num", []).results, []);
-	expectUnorderedKeys(await basics.in("str", []).results, []);
+	expectUnorderedKeys(await basics.in("num", [200, 600, 900, 999999]).entries, ["basic2", "basic6", "basic9"]);
+	expectUnorderedKeys(await basics.in("str", ["aaa", "ddd", "eee", "NOPE"]).entries, ["basic1", "basic4", "basic5"]);
+	expectUnorderedKeys(await basics.in("num", []).entries, []);
+	expectUnorderedKeys(await basics.in("str", []).entries, []);
 	// Sorting.
-	const keysAsc = toArray(basicResults.keys()).sort();
-	const keysDesc = toArray(basicResults.keys()).sort().reverse();
-	expectOrderedKeys(await basics.asc("id").results, keysAsc);
-	expectOrderedKeys(await basics.desc("id").results, keysDesc);
-	expectOrderedKeys(await basics.asc("str").results, keysAsc);
-	expectOrderedKeys(await basics.desc("str").results, keysDesc);
-	expectOrderedKeys(await basics.asc("num").results, keysAsc);
-	expectOrderedKeys(await basics.desc("num").results, keysDesc);
+	const keysAsc = Array.from(basicResults.keys()).sort();
+	const keysDesc = Array.from(basicResults.keys()).sort().reverse();
+	expectOrderedKeys(await basics.asc("id").entries, keysAsc);
+	expectOrderedKeys(await basics.desc("id").entries, keysDesc);
+	expectOrderedKeys(await basics.asc("str").entries, keysAsc);
+	expectOrderedKeys(await basics.desc("str").entries, keysDesc);
+	expectOrderedKeys(await basics.asc("num").entries, keysAsc);
+	expectOrderedKeys(await basics.desc("num").entries, keysDesc);
 	// Combinations.
-	expectOrderedKeys(await basics.asc("id").max(2).results, ["basic1", "basic2"]);
-	expectOrderedKeys(await basics.desc("id").max(1).results, ["basic9"]);
-	expectOrderedKeys(await basics.contains("tags", "prime").desc("id").max(2).results, ["basic7", "basic5"]);
+	expectOrderedKeys(await basics.asc("id").max(2).entries, ["basic1", "basic2"]);
+	expectOrderedKeys(await basics.desc("id").max(1).entries, ["basic9"]);
+	expectOrderedKeys(await basics.contains("tags", "prime").desc("id").max(2).entries, ["basic7", "basic5"]);
 });
 test("MemoryProvider: subscribing to documents", async () => {
 	// Setup.
@@ -165,8 +165,8 @@ test("MemoryProvider: subscribing to collections", async () => {
 	const db = new Database(TEST_SCHEMAS, new MemoryProvider());
 	const basics = db.query("basics");
 	// Subscribe fn1.
-	const calls1: ResultsMap<BasicData>[] = [];
-	const stop1 = basics.subscribeMap(results => void calls1.push(results));
+	const calls1: Results<BasicData>[] = [];
+	const stop1 = basics.subscribe(results => void calls1.push(results));
 	await Promise.resolve();
 	expect(calls1.length).toBe(1);
 	expectOrderedKeys(calls1[0]!, []); // Empty at first (no last argument).
@@ -182,8 +182,8 @@ test("MemoryProvider: subscribing to collections", async () => {
 	expect(calls1.length).toBe(2);
 	expectOrderedKeys(calls1[1]!, [id1]); // id1 is added.
 	// Subscribe fn2.
-	const calls2: ResultsMap<BasicData>[] = [];
-	const stop2 = basics.subscribeMap(results => void calls2.push(results));
+	const calls2: Results<BasicData>[] = [];
+	const stop2 = basics.subscribe(results => void calls2.push(results));
 	await Promise.resolve();
 	expectOrderedKeys(calls2[0]!, [id1]); // Called with current results.
 	expect(calls1[2]).toBe(undefined);
@@ -225,8 +225,8 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	basics.doc("basic6").set(basic6);
 	basics.doc("basic7").set(basic7);
 	// Subscribe (should find only basic7).
-	const calls1: ResultsMap<BasicData>[] = [];
-	const stop1 = basics.contains("tags", "odd").subscribeMap(results => void calls1.push(results)); // Query for odds.
+	const calls1: Results<BasicData>[] = [];
+	const stop1 = basics.contains("tags", "odd").subscribe(results => void calls1.push(results)); // Query for odds.
 	await Promise.resolve();
 	expectUnorderedKeys(calls1[0]!, ["basic7"]);
 	// Set basic3 (should be added to result).
@@ -249,7 +249,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	// Unsubscribe fn1.
 	expect(stop1()).toBe(undefined);
 	// Check end result.
-	expectUnorderedKeys(await basics.results, ["basic6", "basic7"]);
+	expectUnorderedKeys(await basics.entries, ["basic6", "basic7"]);
 });
 test("MemoryProvider: subscribing to sort and limit query", async () => {
 	// Setup.
@@ -257,11 +257,11 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	const basics = db.query("basics");
 	for (const [k, v] of basicResults) basics.doc(k).set(v);
 	// Subscribe (should find only basic7).
-	const calls1: ResultsMap<BasicData>[] = [];
+	const calls1: Results<BasicData>[] = [];
 	const stop1 = basics
 		.asc("num")
 		.max(2)
-		.subscribeMap(result => void calls1.push(result));
+		.subscribe(result => void calls1.push(result));
 	await Promise.resolve();
 	expectOrderedKeys(calls1[0]!, ["basic1", "basic2"]);
 	// Delete basic9 (shouldn't affect result as it's outside the slice).
@@ -296,5 +296,5 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	await Promise.resolve();
 	expect(calls1[6]).toBe(undefined);
 	// Check end result.
-	expectUnorderedKeys(await basics.results, []);
+	expectUnorderedKeys(await basics.entries, []);
 });

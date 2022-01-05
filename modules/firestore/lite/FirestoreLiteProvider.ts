@@ -41,7 +41,7 @@ import {
 	Entry,
 	Data,
 	DataUpdate,
-	Results,
+	Entries,
 	Unsubscriber,
 	ArrayUpdate,
 	UnsupportedError,
@@ -90,7 +90,7 @@ function getQuery<T extends Data>(firestore: Firestore, ref: DataQuery<T>): Fire
 }
 
 /** Create a set of results from a collection snapshot. */
-function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Results<T> {
+function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Entries<T> {
 	for (const s of snapshot.docs) yield [s.id, s.data()];
 }
 
@@ -152,7 +152,7 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		await deleteDoc(getDocument(this.firestore, ref));
 	}
 
-	async getQuery<T extends Data>(ref: DataQuery<T>): Promise<Results<T>> {
+	async getQuery<T extends Data>(ref: DataQuery<T>): Promise<Entries<T>> {
 		return getResults(await getDocs(getQuery(this.firestore, ref)));
 	}
 

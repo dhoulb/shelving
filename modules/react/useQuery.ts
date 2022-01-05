@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CacheProvider, NOERROR, findSourceProvider, NOVALUE, ResultsMap, TransformObserver, toMap, Unsubscriber, Handler, DataQuery, Data, callAsync, getQueryData, Entry, throwAsync, getFirstItem } from "../index.js";
+import { CacheProvider, NOERROR, findSourceProvider, NOVALUE, Results, getMap, Unsubscriber, Handler, DataQuery, Data, callAsync, getQueryData, Entry, throwAsync, getFirstItem, ResultsObserver } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -19,9 +19,9 @@ import { usePureState } from "./usePureState.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useAsyncQuery<T extends Data>(ref: DataQuery<T>, maxAge?: number | true): ResultsMap<T> | PromiseLike<ResultsMap<T>>;
-export function useAsyncQuery<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): ResultsMap<T> | PromiseLike<ResultsMap<T>> | undefined;
-export function useAsyncQuery<T extends Data>(ref: DataQuery<T> | undefined, maxAge: number | true = 1000): ResultsMap<T> | PromiseLike<ResultsMap<T>> | undefined {
+export function useAsyncQuery<T extends Data>(ref: DataQuery<T>, maxAge?: number | true): Results<T> | PromiseLike<Results<T>>;
+export function useAsyncQuery<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): Results<T> | PromiseLike<Results<T>> | undefined;
+export function useAsyncQuery<T extends Data>(ref: DataQuery<T> | undefined, maxAge: number | true = 1000): Results<T> | PromiseLike<Results<T>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = usePureMemo(ref, ref?.toString());
 
@@ -41,35 +41,35 @@ export function useAsyncQuery<T extends Data>(ref: DataQuery<T> | undefined, max
 
 	// If `maxAge` is `true` open a subscription for 10 seconds.
 	// Done before `ref.get()` because efficient providers (i.e. `BatchProvider`) will reuse the subscription's first result as its first get request.
-	if (maxAge === true) setTimeout(ref.subscribeMap({ next: setNext, error: setError }), 10000);
+	if (maxAge === true) setTimeout(ref.subscribe({ next: setNext, error: setError }), 10000);
 
 	// Return a promise for the result.
-	return ref.resultsMap;
+	return ref.results;
 }
 
 /** Get the initial results for a reference from the cache. */
-function getCachedResults<T extends Data>(ref: DataQuery<T> | undefined): ResultsMap<T> | typeof NOVALUE | undefined {
+function getCachedResults<T extends Data>(ref: DataQuery<T> | undefined): Results<T> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.provider, CacheProvider);
-	return provider.isCached(ref) ? toMap(provider.cache.getQuery(ref)) : NOVALUE;
+	return provider.isCached(ref) ? getMap(provider.cache.getQuery(ref)) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
-function subscribeEffect<T extends Data>(ref: DataQuery<T> | undefined, maxAge: number | true, next: (results: ResultsMap<T>) => void, error: Handler): Unsubscriber | void {
+function subscribeEffect<T extends Data>(ref: DataQuery<T> | undefined, maxAge: number | true, next: (results: Results<T>) => void, error: Handler): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.provider, CacheProvider);
-		const observer = new TransformObserver(toMap, { next, error });
+		const observer = new ResultsObserver({ next, error });
 		const stopCache = provider.cache.subscribeQuery(ref, observer);
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.
-			const stopSource = ref.subscribe(observer);
+			const stopSource = ref.provider.subscribeQuery(ref, observer);
 			return () => {
 				stopCache();
 				stopSource();
 			};
 		} else {
 			// If cache provider's cached document is older than maxAge then force refresh the data.
-			if (provider.getCachedAge(ref) > maxAge) Promise.resolve(ref.resultsMap).then(next, error);
+			if (provider.getCachedAge(ref) > maxAge) Promise.resolve(ref.results).then(next, error);
 		}
 		return stopCache;
 	}
@@ -90,9 +90,9 @@ function subscribeEffect<T extends Data>(ref: DataQuery<T> | undefined, maxAge: 
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useQuery<T extends Data>(ref: DataQuery<T>, maxAge?: number | true): ResultsMap<T>;
-export function useQuery<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): ResultsMap<T> | undefined;
-export function useQuery<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): ResultsMap<T> | undefined {
+export function useQuery<T extends Data>(ref: DataQuery<T>, maxAge?: number | true): Results<T>;
+export function useQuery<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): Results<T> | undefined;
+export function useQuery<T extends Data>(ref: DataQuery<T> | undefined, maxAge?: number | true): Results<T> | undefined {
 	return throwAsync(useAsyncQuery(ref, maxAge));
 }
 

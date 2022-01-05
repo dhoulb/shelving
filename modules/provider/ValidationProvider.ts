@@ -1,5 +1,5 @@
 import type { DataDocument, DataQuery } from "../db/index.js";
-import { Data, Result, Unsubscriber, Observer, validate, ValidateObserver, Results, callAsync, validateResult } from "../util/index.js";
+import { Data, Result, Unsubscriber, Observer, validate, ValidateObserver, Entries, callAsync, validateResult } from "../util/index.js";
 import { Update, validateUpdate } from "../update/index.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
@@ -20,10 +20,10 @@ export class ValidationProvider extends ThroughProvider {
 	override update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): void | PromiseLike<void> {
 		return super.update<T>(ref, validateUpdate(updates, ref.validator));
 	}
-	override getQuery<T extends Data>(ref: DataQuery<T>): Results<T> | PromiseLike<Results<T>> {
+	override getQuery<T extends Data>(ref: DataQuery<T>): Entries<T> | PromiseLike<Entries<T>> {
 		return callAsync(validate, super.getQuery(ref), ref);
 	}
-	override subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
+	override subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Entries<T>>): Unsubscriber {
 		return super.subscribeQuery(ref, new ValidateObserver(ref, observer));
 	}
 	override setQuery<T extends Data>(ref: DataQuery<T>, value: T): number | PromiseLike<number> {

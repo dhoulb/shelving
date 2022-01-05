@@ -1,10 +1,10 @@
-import { Data, assert, Entry, Key, limitItems, Results, ArrayType, ImmutableArray } from "../util/index.js";
+import { Data, assert, Entry, Key, limitItems, Entries, ArrayType, ImmutableArray } from "../util/index.js";
 import type { Queryable, QueryKey } from "./types.js";
 import { Filters } from "./Filters.js";
 import { Sorts } from "./Sorts.js";
 import { Rule } from "./Rule.js";
 import { getQueryProp } from "./helpers.js";
-import { GreaterThanEqualFilter as GTE, GreaterThanFilter as GT, LessThanEqualFilter as LTE, LessThanFilter as LT } from "./Filter.js";
+import { EqualGreaterFilter as GTE, GreaterFilter as GT, EqualLessFilter as LTE, LessFilter as LT } from "./Filter.js";
 
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -96,8 +96,8 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	}
 
 	// Implement `Rule`
-	transform(results: Results<T>): Results<T> {
-		const sorted = this.sorts.transform(this.filters.transform(results));
+	transform(entries: Entries<T>): Entries<T> {
+		const sorted = this.sorts.transform(this.filters.transform(entries));
 		return typeof this.limit === "number" ? limitItems(sorted, this.limit) : sorted;
 	}
 

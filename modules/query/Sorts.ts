@@ -1,4 +1,4 @@
-import { Entry, Data, sortItems, Results } from "../util/index.js";
+import { Entry, Data, sortItems, Entries } from "../util/index.js";
 import type { QueryKey, Sortable } from "./types.js";
 import { AscendingSort, DescendingSort, Sort } from "./Sort.js";
 import { Rules } from "./Rules.js";
@@ -24,7 +24,7 @@ export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable
 	}
 
 	// Implement `Rule`
-	transform(iterable: Results<T>): Results<T> {
+	transform(iterable: Entries<T>): Entries<T> {
 		return this._rules.length ? sortItems(iterable, this) : iterable;
 	}
 }

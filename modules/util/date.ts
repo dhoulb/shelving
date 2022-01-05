@@ -17,7 +17,7 @@ export const WEEK = DAY * 7;
 export const YEAR = DAY * 365;
 
 /** Is a value a date? */
-export const IS_DATE = (v: unknown): v is Date => v instanceof Date;
+export const isDate = (v: unknown): v is Date => v instanceof Date;
 
 /** Value that can possibly be converted to a `Date` instance. */
 export type PossibleDate = Date | number | string | (() => PossibleDate);
@@ -235,7 +235,7 @@ export function formatDate(date: PossibleDate, options?: Intl.DateTimeFormatOpti
 }
 
 /** Is a date in the past? */
-export const IS_PAST = (target: PossibleDate, current?: PossibleDate): boolean => getDate(target) < getDate(current);
+export const isPast = (target: PossibleDate, current?: PossibleDate): boolean => getDate(target) < getDate(current);
 
 /** Is a date in the future? */
-export const IS_FUTURE = (target: PossibleDate, current?: PossibleDate): boolean => getDate(target) > getDate(current);
+export const isFuture = (target: PossibleDate, current?: PossibleDate): boolean => getDate(target) > getDate(current);

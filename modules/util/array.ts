@@ -24,10 +24,13 @@ export const isArray = <T extends ImmutableArray>(v: T | unknown): v is T => v i
 /** Is an unknown value an item in a specified array? */
 export const isItem = <T>(arr: ImmutableArray<T>, item: T | unknown): item is T => arr.includes(item as T);
 
+/** Things that can be converted to arrays. */
+export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
+
 /** Convert an iterable to an array (if its not already an array). */
-export function toArray<T>(items: MutableArray<T> | Iterable<T>): MutableArray<T>;
-export function toArray<T>(items: ImmutableArray<T> | Iterable<T>): ImmutableArray<T>;
-export function toArray<T>(items: ImmutableArray<T> | Iterable<T>): ImmutableArray<T> {
+export function getArray<T>(iterable: ImmutableArray<T> | Iterable<T>): ImmutableArray<T>; // Helps types flow through functions when `getArray` is used as an argument to a function.
+export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T>;
+export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 	return isArray(items) ? items : Array.from(items);
 }
 
@@ -274,22 +277,22 @@ export function limitArray<T>(arr: ImmutableArray<T>, limit: number): ImmutableA
 }
 
 /** Does an array have the specified minimum length.  */
-export function isMinimumLength<T>(arr: ImmutableArray<T>, min?: 1): arr is [T, ...T[]];
-export function isMinimumLength<T>(arr: ImmutableArray<T>, min: 2): arr is [T, T, ...T[]];
-export function isMinimumLength<T>(arr: ImmutableArray<T>, min: 3): arr is [T, T, T, ...T[]];
-export function isMinimumLength<T>(arr: ImmutableArray<T>, min: 4): arr is [T, T, T, T, ...T[]];
-export function isMinimumLength<T>(arr: ImmutableArray<T>, min: number): arr is [T, T, T, T, T, ...T[]];
-export function isMinimumLength<T>(arr: ImmutableArray<T>, min = 1): boolean {
+export function isMinLength<T>(arr: ImmutableArray<T>, min?: 1): arr is [T, ...T[]];
+export function isMinLength<T>(arr: ImmutableArray<T>, min: 2): arr is [T, T, ...T[]];
+export function isMinLength<T>(arr: ImmutableArray<T>, min: 3): arr is [T, T, T, ...T[]];
+export function isMinLength<T>(arr: ImmutableArray<T>, min: 4): arr is [T, T, T, T, ...T[]];
+export function isMinLength<T>(arr: ImmutableArray<T>, min: number): arr is [T, T, T, T, T, ...T[]];
+export function isMinLength<T>(arr: ImmutableArray<T>, min = 1): boolean {
 	return arr.length >= min;
 }
 
 /** Get an array if it has the specified minimum length.  */
-export function getMinimumLength<T>(arr: ImmutableArray<T>, min?: 1): [T, ...T[]];
-export function getMinimumLength<T>(arr: ImmutableArray<T>, min: 2): [T, T, ...T[]];
-export function getMinimumLength<T>(arr: ImmutableArray<T>, min: 3): [T, T, T, ...T[]];
-export function getMinimumLength<T>(arr: ImmutableArray<T>, min: 4): [T, T, T, T, ...T[]];
-export function getMinimumLength<T>(arr: ImmutableArray<T>, min: number): [T, T, T, T, T, ...T[]];
-export function getMinimumLength<T>(arr: ImmutableArray<T>, min = 1): ImmutableArray<T> {
+export function getMinLength<T>(arr: ImmutableArray<T>, min?: 1): [T, ...T[]];
+export function getMinLength<T>(arr: ImmutableArray<T>, min: 2): [T, T, ...T[]];
+export function getMinLength<T>(arr: ImmutableArray<T>, min: 3): [T, T, T, ...T[]];
+export function getMinLength<T>(arr: ImmutableArray<T>, min: 4): [T, T, T, T, ...T[]];
+export function getMinLength<T>(arr: ImmutableArray<T>, min: number): [T, T, T, T, T, ...T[]];
+export function getMinLength<T>(arr: ImmutableArray<T>, min = 1): ImmutableArray<T> {
 	if (arr.length >= min) return arr;
 	throw new AssertionError(`Must have minimum length ${min}`, arr);
 }

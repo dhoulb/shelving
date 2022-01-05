@@ -1,4 +1,4 @@
-import type { Result, Results, Unsubscriber, Observer, Class, Data } from "../util/index.js";
+import type { Result, Entries, Unsubscriber, Observer, Class, Data } from "../util/index.js";
 import type { DataDocument, DataQuery } from "../db/index.js";
 import type { Update } from "../update/index.js";
 import { AssertionError } from "../error/index.js";
@@ -31,10 +31,10 @@ export class ThroughProvider extends Provider {
 	delete<T extends Data>(ref: DataDocument<T>): void | PromiseLike<void> {
 		return this.source.delete(ref);
 	}
-	getQuery<T extends Data>(ref: DataQuery<T>): Results<T> | PromiseLike<Results<T>> {
+	getQuery<T extends Data>(ref: DataQuery<T>): Entries<T> | PromiseLike<Entries<T>> {
 		return this.source.getQuery(ref);
 	}
-	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Entries<T>>): Unsubscriber {
 		return this.source.subscribeQuery(ref, observer);
 	}
 	setQuery<T extends Data>(ref: DataQuery<T>, data: T): number | PromiseLike<number> {

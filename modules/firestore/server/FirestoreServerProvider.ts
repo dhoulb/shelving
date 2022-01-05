@@ -26,7 +26,7 @@ import {
 	DataUpdate,
 	AssertionError,
 	Entry,
-	Results,
+	Entries,
 	Unsubscriber,
 	ArrayUpdate,
 	UnsupportedError,
@@ -141,7 +141,7 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		return getResults(await getQuery(this.firestore, ref).get());
 	}
 
-	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Entries<T>>): Unsubscriber {
 		return getQuery(this.firestore, ref).onSnapshot(
 			snapshot => dispatchNext(observer, getResults(snapshot)),
 			thrown => dispatchError(observer, thrown),

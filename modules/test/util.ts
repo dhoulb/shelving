@@ -1,4 +1,4 @@
-import { Entry, toArray, yieldKeys } from "../util/index.js";
+import { Entry, yieldKeys } from "../util/index.js";
 
 /** Run any queued microtasks now. */
 export async function runMicrotasks(): Promise<void> {
@@ -13,7 +13,7 @@ export async function runMicrotasks(): Promise<void> {
 export function expectUnorderedKeys(iterable: Iterable<Entry>, keys: Iterable<string>): void {
 	try {
 		expect(iterable).toBeInstanceOf(Object);
-		expect(toArray(yieldKeys(iterable)).sort()).toEqual(toArray(keys).sort());
+		expect(Array.from(yieldKeys(iterable)).sort()).toEqual(Array.from(keys).sort());
 	} catch (thrown) {
 		throw thrown instanceof Error ? popErrorStack(thrown) : thrown;
 	}
@@ -23,7 +23,7 @@ export function expectUnorderedKeys(iterable: Iterable<Entry>, keys: Iterable<st
 export function expectOrderedKeys(iterable: Iterable<Entry>, keys: Iterable<string>): void {
 	try {
 		expect(iterable).toBeInstanceOf(Object);
-		expect(toArray(yieldKeys(iterable))).toEqual(toArray(keys));
+		expect(Array.from(yieldKeys(iterable))).toEqual(Array.from(keys));
 	} catch (thrown) {
 		throw thrown instanceof Error ? popErrorStack(thrown) : thrown;
 	}

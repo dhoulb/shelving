@@ -7,24 +7,24 @@ import {
 	Result,
 	throwAsync,
 	Unsubscriber,
-	ResultsMap,
+	Results,
 	Validatable,
 	validate,
 	Validator,
 	Key,
-	toMap,
+	getMap,
 	countItems,
 	Data,
 	MutableObject,
-	Results,
-	TransformObserver,
+	Entries,
 	Datas,
 	Validators,
 	ValidatorType,
 	Dispatcher,
 	Nullish,
-	NOT_NULLISH,
+	isNotNullish,
 	hasItems,
+	ResultsObserver,
 } from "../util/index.js";
 import { DataUpdate, PropUpdates, Update } from "../update/index.js";
 import type { Provider } from "../provider/Provider.js";
@@ -61,19 +61,19 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 
 	/** Create a writer for this database from a set of separate writes. */
 	writer(...writes: Nullish<Write>[]): Write {
-		return new Writes(...writes.filter(NOT_NULLISH));
+		return new Writes(...writes.filter(isNotNullish));
 	}
 
 	/** Perform one or more writes on this database and return the `Writes` instance representing the combined changes. */
 	async write(...writes: Nullish<Write>[]): Promise<Write> {
-		const write = new Writes(...writes.filter(NOT_NULLISH));
+		const write = new Writes(...writes.filter(isNotNullish));
 		await write.transform(this);
 		return write;
 	}
 }
 
 /** A documents reference within a specific database. */
-export class DataQuery<T extends Data = Data> extends Query<T> implements Observable<Results<T>>, Validatable<Results<T>>, Iterable<Entry<T>> {
+export class DataQuery<T extends Data = Data> extends Query<T> implements Observable<Results<T>>, Validatable<Entries<T>>, Iterable<Entry<T>> {
 	readonly provider: Provider;
 	readonly validator: Validator<T>;
 	readonly collection: string;
@@ -104,7 +104,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * Get an iterable that yields the results of this entry.
 	 * @return Map containing the results.
 	 */
-	get results(): Results<T> | PromiseLike<Results<T>> {
+	get entries(): Entries<T> | PromiseLike<Entries<T>> {
 		return this.provider.getQuery(this);
 	}
 
@@ -112,8 +112,8 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * Get an iterable that yields the results of this entry.
 	 * @return Map containing the results.
 	 */
-	get resultsMap(): ResultsMap<T> | PromiseLike<ResultsMap<T>> {
-		return callAsync<Results<T>, ResultsMap<T>>(toMap, this.provider.getQuery(this));
+	get results(): Results<T> | PromiseLike<Results<T>> {
+		return callAsync<Entries<T>, Results<T>>(getMap, this.provider.getQuery(this));
 	}
 
 	/**
@@ -121,7 +121,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @return Number of documents matching the query (possibly promised).
 	 */
 	get count(): number | PromiseLike<number> {
-		return callAsync(countItems, this.results);
+		return callAsync(countItems, this.entries);
 	}
 
 	/**
@@ -129,7 +129,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @return `true` if a document exists or `false` otherwise (possibly promised).
 	 */
 	get exists(): boolean | PromiseLike<boolean> {
-		return callAsync(hasItems, this.max(1).results);
+		return callAsync(hasItems, this.provider.getQuery(this.max(1)));
 	}
 
 	/**
@@ -139,7 +139,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @throws RequiredError if there were no results for this query.
 	 */
 	get result(): Entry<T> | undefined | PromiseLike<Entry<T> | undefined> {
-		return callAsync(getFirstItem, this.max(1).results);
+		return callAsync(getFirstItem, this.provider.getQuery(this.max(1)));
 	}
 
 	/**
@@ -149,7 +149,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @throws RequiredError if there were no results for this query.
 	 */
 	get data(): Entry<T> | PromiseLike<Entry<T>> {
-		return callAsync(getQueryData, this.max(1).results, this);
+		return callAsync(getQueryData, this.provider.getQuery(this.max(1)), this);
 	}
 
 	/**
@@ -160,18 +160,7 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	 * @return Function that ends the subscription.
 	 */
 	subscribe(next: Observer<Results<T>> | Dispatcher<[Results<T>]>): Unsubscriber {
-		return this.provider.subscribeQuery(this, typeof next === "function" ? { next } : next);
-	}
-
-	/**
-	 * Subscribe to all matching documents.
-	 * - `next()` is called once with the initial results, and again any time the results change.
-	 *
-	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
-	 * @return Function that ends the subscription.
-	 */
-	subscribeMap(next: Observer<ResultsMap<T>> | Dispatcher<[ResultsMap<T>]>): Unsubscriber {
-		return this.provider.subscribeQuery(this, new TransformObserver(toMap, typeof next === "function" ? { next } : next));
+		return this.provider.subscribeQuery(this, new ResultsObserver(typeof next === "function" ? { next } : next));
 	}
 
 	/**
@@ -204,11 +193,11 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 
 	/** Iterate over the resuls (will throw `Promise` if the results are asynchronous). */
 	[Symbol.iterator](): Iterator<Entry<T>, void> {
-		return throwAsync(this.results)[Symbol.iterator]();
+		return throwAsync(this.entries)[Symbol.iterator]();
 	}
 
 	/** Validate a set of results for this query reference. */
-	*validate(unsafeEntries: Results): Results<T> {
+	*validate(unsafeEntries: Entries): Entries<T> {
 		let invalid = false;
 		const details: MutableObject<Feedback> = {};
 		for (const [id, unsafeValue] of unsafeEntries) {
@@ -230,8 +219,8 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 }
 
 /** Get the data for a document from a result for that document. */
-export function getQueryData<T extends Data>(results: Results<T>, ref: DataQuery<T>): Entry<T> {
-	const first = getFirstItem(results);
+export function getQueryData<T extends Data>(entries: Entries<T>, ref: DataQuery<T>): Entry<T> {
+	const first = getFirstItem(entries);
 	if (first) return first;
 	throw new QueryRequiredError(ref);
 }

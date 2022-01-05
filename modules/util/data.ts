@@ -1,6 +1,6 @@
 import { RequiredError } from "../error/index.js";
 import type { ImmutableArray } from "./array.js";
-import { PossibleOptionalDate } from "./date.js";
+import type { PossibleOptionalDate } from "./date.js";
 
 /** Data object. */
 export type Data = { readonly [key: string]: unknown };
@@ -17,14 +17,11 @@ export type Prop<T extends Data> = readonly [Key<T>, Value<T>];
 /** Set of named data objects. */
 export type Datas = { readonly [key: string]: Data };
 
-/** Data or `null` */
+/** Data or `null` if the item doesn't exist. */
 export type Result<T extends Data = Data> = T | null;
 
-/** Iterable that yields a set of results. */
-export type Results<T extends Data = Data> = Iterable<readonly [string, T]>;
-
-/** Set of results stored in a map. */
-export type ResultsMap<T extends Data = Data> = ReadonlyMap<string, T>;
+/** Set of results (stored in a map). */
+export type Results<T extends Data = Data> = ReadonlyMap<string, T>;
 
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => typeof value === "object" && value !== null;
@@ -67,22 +64,22 @@ export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K
 }
 
 /** Extract a date property from an object. */
-export const DATE_PROP = <T extends PossibleOptionalDate>({ date }: { date: T }): T => date;
+export const getDateProp = <T extends PossibleOptionalDate>({ date }: { date: T }): T => date;
 
 /** Extract an order property from an object. */
-export const ORDER_PROP = ({ order }: { order: number }): number => order;
+export const getOrderProp = ({ order }: { order: number }): number => order;
 
 /** Extract a string title property from an object. */
-export const TITLE_PROP = ({ title }: { title: string }): string => title;
+export const getTitleProp = ({ title }: { title: string }): string => title;
 
 /** Extract a string name property from an object. */
-export const NAME_PROP = ({ name }: { name: string }): string => name;
+export const getNameProp = ({ name }: { name: string }): string => name;
 
 /** Extract a number size property from an object. */
-export const SIZE_PROP = ({ size }: { size: number }): number => size;
+export const getSizeProp = ({ size }: { size: number }): number => size;
 
 /** Extract a number size property from an object. */
-export const LENGTH_PROP = ({ length }: { length: number }): number => length;
+export const getLengthProp = ({ length }: { length: number }): number => length;
 
 /**
  * Set a prop on an object with known shape (immutably).

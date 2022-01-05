@@ -1,4 +1,4 @@
-import { Entry, ImmutableArray, ImmutableObject, isObject, IS_NULLISH, transformEntries } from "../util/index.js";
+import { Entry, ImmutableArray, ImmutableObject, isObject, isNullish, transformEntries } from "../util/index.js";
 import { Update } from "./Update.js";
 
 /** Set of named transforms for the entries of a map-like object. */
@@ -8,12 +8,12 @@ export type EntryUpdates<T> = ImmutableObject<T | Update<T>>;
 export class ObjectUpdate<T> extends Update<ImmutableObject<T>> implements Iterable<Entry<T | Update<T> | undefined>> {
 	/** Return an object update with a specific entry marked for update. */
 	static update<X>(key: string | undefined | null, value: X | Update<X>): ObjectUpdate<X> {
-		return new ObjectUpdate(IS_NULLISH(key) ? {} : { [key]: value });
+		return new ObjectUpdate(isNullish(key) ? {} : { [key]: value });
 	}
 
 	/** Return an object update with a specific entry marked for deletion. */
 	static delete<X>(key: string | undefined | null): ObjectUpdate<X> {
-		return new ObjectUpdate({}, IS_NULLISH(key) ? [] : [key]);
+		return new ObjectUpdate({}, isNullish(key) ? [] : [key]);
 	}
 
 	readonly updates: EntryUpdates<T>;

@@ -1,4 +1,4 @@
-import { Data, Entry, Rankable, ASC, rank, DESC, sortItems, Results } from "../util/index.js";
+import { Data, Entry, Rankable, rankAscending, rank, rankDesc, sortItems, Entries } from "../util/index.js";
 import { getQueryProp } from "./helpers.js";
 import { Rule } from "./Rule.js";
 import { QueryKey, SortDirection } from "./types.js";
@@ -12,7 +12,7 @@ export abstract class Sort<T extends Data> extends Rule<T> implements Rankable<E
 		this.key = key;
 	}
 	abstract rank(left: Entry<T>, right: Entry<T>): number;
-	transform(iterable: Results<T>): Results<T> {
+	transform(iterable: Entries<T>): Entries<T> {
 		return sortItems(iterable, this);
 	}
 	toString(): string {
@@ -24,7 +24,7 @@ export abstract class Sort<T extends Data> extends Rule<T> implements Rankable<E
 export class AscendingSort<T extends Data> extends Sort<T> {
 	readonly direction = "ASC";
 	rank([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
-		return rank(getQueryProp(leftId, leftData, this.key), ASC, getQueryProp(rightId, rightData, this.key));
+		return rank(getQueryProp(leftId, leftData, this.key), rankAscending, getQueryProp(rightId, rightData, this.key));
 	}
 }
 
@@ -32,6 +32,6 @@ export class AscendingSort<T extends Data> extends Sort<T> {
 export class DescendingSort<T extends Data> extends Sort<T> {
 	readonly direction = "DESC";
 	rank([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
-		return rank(getQueryProp(leftId, leftData, this.key), DESC, getQueryProp(rightId, rightData, this.key));
+		return rank(getQueryProp(leftId, leftData, this.key), rankDesc, getQueryProp(rightId, rightData, this.key));
 	}
 }

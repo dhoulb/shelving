@@ -1,4 +1,4 @@
-import type { Observer, Unsubscriber, Result, Results, Data } from "../util/index.js";
+import type { Observer, Unsubscriber, Result, Entries, Data } from "../util/index.js";
 import type { DataDocument, DataQuery } from "../db/Database.js";
 import type { Update } from "../update/index.js";
 
@@ -68,7 +68,7 @@ export abstract class Provider {
 	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Set of results in `id: data` format.
 	 */
-	abstract getQuery<T extends Data>(ref: DataQuery<T>): Results<T> | PromiseLike<Results<T>>;
+	abstract getQuery<T extends Data>(ref: DataQuery<T>): Entries<T> | PromiseLike<Entries<T>>;
 
 	/**
 	 * Subscribe to all matching documents.
@@ -79,7 +79,7 @@ export abstract class Provider {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber;
+	abstract subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Entries<T>>): Unsubscriber;
 
 	/**
 	 * Set the data of all matching documents.
@@ -114,7 +114,7 @@ export interface SynchronousProvider extends Provider {
 	set<T extends Data>(ref: DataDocument<T>, value: T): void;
 	update<T extends Data>(ref: DataDocument<T>, value: Update<T>): void;
 	delete<T extends Data>(ref: DataDocument<T>): void;
-	getQuery<T extends Data>(ref: DataQuery<T>): Results<T>;
+	getQuery<T extends Data>(ref: DataQuery<T>): Entries<T>;
 	setQuery<T extends Data>(ref: DataQuery<T>, value: T): number;
 	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): number;
 	deleteQuery<T extends Data>(ref: DataQuery<T>): number;
@@ -127,7 +127,7 @@ export interface AsynchronousProvider extends Provider {
 	set<T extends Data>(ref: DataDocument<T>, value: T): PromiseLike<void>;
 	update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): PromiseLike<void>;
 	delete<T extends Data>(ref: DataDocument<T>): PromiseLike<void>;
-	getQuery<T extends Data>(ref: DataQuery<T>): PromiseLike<Results<T>>;
+	getQuery<T extends Data>(ref: DataQuery<T>): PromiseLike<Entries<T>>;
 	setQuery<T extends Data>(ref: DataQuery<T>, value: T): PromiseLike<number>;
 	updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): PromiseLike<number>;
 	deleteQuery<T extends Data>(ref: DataQuery<T>): PromiseLike<number>;

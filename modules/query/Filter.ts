@@ -1,4 +1,4 @@
-import { Data, Entry, Matchable, match, CONTAINS, IS, GT, GTE, IN, LT, LTE, NOT, yieldFiltered, Results, ImmutableArray } from "../util/index.js";
+import { Data, Entry, Matchable, match, isArrayWith, isEqual, isGreater, isEqualGreater, isInArray, isLess, isEqualLess, isNotEqual, yieldFiltered, Entries, ImmutableArray } from "../util/index.js";
 import { Rule } from "./Rule.js";
 import { getQueryProp } from "./helpers.js";
 import { FilterOperator, QueryKey } from "./types.js";
@@ -20,8 +20,8 @@ export abstract class Filter<T extends Data, V extends unknown = unknown> extend
 		this.value = value;
 	}
 	abstract match([id, data]: Entry<T>, target: void): boolean;
-	transform(results: Results<T>): Results<T> {
-		return yieldFiltered(results, this);
+	transform(entries: Entries<T>): Entries<T> {
+		return yieldFiltered(entries, this);
 	}
 	override toString(): string {
 		return `${this.key}:${this.operator}=${JSON.stringify(this.value)}`;
@@ -31,9 +31,8 @@ export abstract class Filter<T extends Data, V extends unknown = unknown> extend
 /** Filter a set of values with an `IS` clause. */
 export class EqualFilter<T extends Data> extends Filter<T> {
 	readonly operator = "IS";
-	readonly matcher = IS;
 	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), IS, this.value);
+		return match(getQueryProp(id, data, this.key), isEqual, this.value);
 	}
 }
 
@@ -41,7 +40,7 @@ export class EqualFilter<T extends Data> extends Filter<T> {
 export class NotEqualFilter<T extends Data> extends Filter<T> {
 	readonly operator = "NOT";
 	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), NOT, this.value);
+		return match(getQueryProp(id, data, this.key), isNotEqual, this.value);
 	}
 }
 
@@ -49,46 +48,46 @@ export class NotEqualFilter<T extends Data> extends Filter<T> {
 export class InArrayFilter<T extends Data> extends Filter<T, ImmutableArray> {
 	readonly operator = "IN";
 	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), IN, this.value);
+		return match(getQueryProp(id, data, this.key), isInArray, this.value);
 	}
 }
 
-/** Filter a set of values with an `CONTAINS` clause. */
-export class ArrayContainsFilter<T extends Data> extends Filter<T> {
+/** Filter a set of values with a `CONTAINS` clause. */
+export class ArrayWithFilter<T extends Data> extends Filter<T> {
 	readonly operator = "CONTAINS";
 	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), CONTAINS, this.value);
+		return match(getQueryProp(id, data, this.key), isArrayWith, this.value);
 	}
 }
 
 /** Filter a set of values with an `LT` clause. */
-export class LessThanFilter<T extends Data> extends Filter<T> {
+export class LessFilter<T extends Data> extends Filter<T> {
 	readonly operator = "LT";
 	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), LT, this.value);
+		return match(getQueryProp(id, data, this.key), isLess, this.value);
 	}
 }
 
 /** Filter a set of values with an `LTE` clause. */
-export class LessThanEqualFilter<T extends Data> extends Filter<T> {
+export class EqualLessFilter<T extends Data> extends Filter<T> {
 	readonly operator = "LTE";
 	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), LTE, this.value);
+		return match(getQueryProp(id, data, this.key), isEqualLess, this.value);
 	}
 }
 
 /** Filter a set of values with an `GT` clause. */
-export class GreaterThanFilter<T extends Data> extends Filter<T> {
+export class GreaterFilter<T extends Data> extends Filter<T> {
 	readonly operator = "GT";
 	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), GT, this.value);
+		return match(getQueryProp(id, data, this.key), isGreater, this.value);
 	}
 }
 
 /** Filter a set of values with an `GTE` clause. */
-export class GreaterThanEqualFilter<T extends Data> extends Filter<T> {
+export class EqualGreaterFilter<T extends Data> extends Filter<T> {
 	readonly operator = "GTE";
 	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), GTE, this.value);
+		return match(getQueryProp(id, data, this.key), isEqualGreater, this.value);
 	}
 }

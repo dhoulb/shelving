@@ -1,4 +1,4 @@
-import { Data, Result, Results, getRandomKey, Unsubscriber, dispatchNext, Observer, isMapEqual, MutableObject, Dispatcher, ImmutableMap, MutableMap } from "../util/index.js";
+import { Data, Result, Entries, getRandomKey, Unsubscriber, dispatchNext, Observer, isMapEqual, MutableObject, Dispatcher, ImmutableMap, MutableMap } from "../util/index.js";
 import { Update } from "../update/index.js";
 import { DataQuery, DataDocument, DocumentRequiredError } from "../db/index.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
@@ -62,11 +62,11 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		table.write(id, null);
 	}
 
-	getQuery<T extends Data>(ref: DataQuery<T>): Results<T> {
+	getQuery<T extends Data>(ref: DataQuery<T>): Entries<T> {
 		return ref.transform(this._table(ref).data);
 	}
 
-	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Entries<T>>): Unsubscriber {
 		const table = this._table(ref);
 
 		// Call `next()` immediately with the initial results.

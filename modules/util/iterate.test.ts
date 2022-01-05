@@ -1,4 +1,4 @@
-import { countItems, countIterations, yieldChunks, toArray, yieldRange, limitItems, yieldUntilLimit, Signal, yieldDelay, yieldUntilSignal, yieldCall } from "../index.js";
+import { countItems, countIterations, yieldChunks, getArray, yieldRange, limitItems, yieldUntilLimit, Signal, yieldDelay, yieldUntilSignal, yieldCall } from "../index.js";
 
 test("countItems()", () => {
 	expect(countItems([])).toBe(0);
@@ -23,37 +23,37 @@ test("countIterations()", () => {
 	expect(countIterations(yieldRange(21, 28))).toBe(8);
 });
 test("limitItems", () => {
-	expect(toArray(limitItems([1, 2], 3))).toEqual([1, 2]);
-	expect(toArray(limitItems([1, 2, 3, 4, 5], 3))).toEqual([1, 2, 3]);
-	expect(toArray(limitItems(new Set([1, 2]), 3))).toEqual([1, 2]);
-	expect(toArray(limitItems(new Set([1, 2, 3, 4, 5]), 3))).toEqual([1, 2, 3]);
-	expect(toArray(limitItems(yieldRange(9, 10), 5))).toEqual([9, 10]);
-	expect(toArray(limitItems(yieldRange(15, 200), 5))).toEqual([15, 16, 17, 18, 19]);
+	expect(getArray(limitItems([1, 2], 3))).toEqual([1, 2]);
+	expect(getArray(limitItems([1, 2, 3, 4, 5], 3))).toEqual([1, 2, 3]);
+	expect(getArray(limitItems(new Set([1, 2]), 3))).toEqual([1, 2]);
+	expect(getArray(limitItems(new Set([1, 2, 3, 4, 5]), 3))).toEqual([1, 2, 3]);
+	expect(getArray(limitItems(yieldRange(9, 10), 5))).toEqual([9, 10]);
+	expect(getArray(limitItems(yieldRange(15, 200), 5))).toEqual([15, 16, 17, 18, 19]);
 });
 test("yieldUntilLimit", () => {
-	expect(toArray(yieldUntilLimit([1, 2, 3, 4, 5], 3))).toEqual([1, 2, 3]);
-	expect(toArray(yieldUntilLimit(new Set([1, 2, 3, 4, 5]), 3))).toEqual([1, 2, 3]);
-	expect(toArray(yieldUntilLimit(yieldRange(15, 200), 5))).toEqual([15, 16, 17, 18, 19]);
+	expect(getArray(yieldUntilLimit([1, 2, 3, 4, 5], 3))).toEqual([1, 2, 3]);
+	expect(getArray(yieldUntilLimit(new Set([1, 2, 3, 4, 5]), 3))).toEqual([1, 2, 3]);
+	expect(getArray(yieldUntilLimit(yieldRange(15, 200), 5))).toEqual([15, 16, 17, 18, 19]);
 });
 test("yieldCall", () => {
 	const getStr = () => "abc";
-	expect(toArray(yieldUntilLimit(yieldCall(getStr), 3))).toEqual(["abc", "abc", "abc"]);
+	expect(getArray(yieldUntilLimit(yieldCall(getStr), 3))).toEqual(["abc", "abc", "abc"]);
 });
 test("chunkItems()", () => {
-	expect(toArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 1))).toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9]]);
-	expect(toArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 2))).toEqual([[1, 2], [3, 4], [5, 6], [7, 8], [9]]);
-	expect(toArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 3))).toEqual([
+	expect(getArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 1))).toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9]]);
+	expect(getArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 2))).toEqual([[1, 2], [3, 4], [5, 6], [7, 8], [9]]);
+	expect(getArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 3))).toEqual([
 		[1, 2, 3],
 		[4, 5, 6],
 		[7, 8, 9],
 	]);
-	expect(toArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 4))).toEqual([[1, 2, 3, 4], [5, 6, 7, 8], [9]]);
-	expect(toArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 5))).toEqual([
+	expect(getArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 4))).toEqual([[1, 2, 3, 4], [5, 6, 7, 8], [9]]);
+	expect(getArray(yieldChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 5))).toEqual([
 		[1, 2, 3, 4, 5],
 		[6, 7, 8, 9],
 	]);
-	expect(toArray(yieldChunks(yieldRange(11, 19), 1))).toEqual([[11], [12], [13], [14], [15], [16], [17], [18], [19]]);
-	expect(toArray(yieldChunks(yieldRange(11, 19), 2))).toEqual([[11, 12], [13, 14], [15, 16], [17, 18], [19]]);
+	expect(getArray(yieldChunks(yieldRange(11, 19), 1))).toEqual([[11], [12], [13], [14], [15], [16], [17], [18], [19]]);
+	expect(getArray(yieldChunks(yieldRange(11, 19), 2))).toEqual([[11, 12], [13, 14], [15, 16], [17, 18], [19]]);
 });
 test("yieldUntilSignal()", async () => {
 	const yielded: number[] = [];

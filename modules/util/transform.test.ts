@@ -1,4 +1,4 @@
-import { transform, transformArray, transformProps, transformObject, GET_NULL } from "../index.js";
+import { transform, transformArray, transformProps, transformObject, NULL } from "../index.js";
 
 test("transform()", () => {
 	expect(transform(10, n => n * n)).toBe(100);
@@ -11,8 +11,8 @@ test("transformArray()", () => {
 	expect(transformArray(arr, n => n * n)).toEqual([1, 4, 9, 16]);
 	expect(transformArray(arr, { transform: n => n * n })).toEqual([1, 4, 9, 16]);
 	// Use a flat value instead of a mapper function.
-	expect(transformArray(arr, GET_NULL)).toEqual([null, null, null, null]);
-	expect(transformArray(arr, GET_NULL)).not.toBe(arr);
+	expect(transformArray(arr, NULL)).toEqual([null, null, null, null]);
+	expect(transformArray(arr, NULL)).not.toBe(arr);
 });
 test("transformObject()", () => {
 	const obj = { a: 1, b: 2, c: 3, d: 4 };

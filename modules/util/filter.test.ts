@@ -1,17 +1,17 @@
-import { filterArray, CONTAINS, IS, GT, GTE, IN, LT, LTE, NOT } from "../index.js";
+import { filterArray, isArrayWith, isEqual, isGreater, isEqualGreater, isInArray, isLess, isEqualLess, isNotEqual } from "../index.js";
 
 test("filterArray()", () => {
 	// Filters correctly.
-	expect(filterArray(["a", "b", "c"], IS, "b")).toEqual(["b"]);
-	expect(filterArray(["a", "b", "c"], NOT, "b")).toEqual(["a", "c"]);
-	expect(filterArray(["a", "b", "c"], IN, ["c", "b"])).toEqual(["b", "c"]);
-	expect(filterArray([1, 2, 3], GT, 2)).toEqual([3]);
-	expect(filterArray([1, 2, 3], GTE, 2)).toEqual([2, 3]);
-	expect(filterArray([1, 2, 3], LTE, 2)).toEqual([1, 2]);
-	expect(filterArray([1, 2, 3], LT, 2)).toEqual([1]);
-	expect(filterArray(["a", "b", "c"], GT, "b")).toEqual(["c"]);
-	expect(filterArray(["a", "b", "c"], GTE, "b")).toEqual(["b", "c"]);
-	expect(filterArray(["a", "b", "c"], LTE, "b")).toEqual(["a", "b"]);
-	expect(filterArray(["a", "b", "c"], LT, "b")).toEqual(["a"]);
-	expect(filterArray([[1, 2, 3],  [4, 5, 6],  [6, 7, 8]], CONTAINS, 5)).toEqual([[4, 5, 6]]); // prettier-ignore
+	expect(filterArray(["a", "b", "c"], isEqual, "b")).toEqual(["b"]);
+	expect(filterArray(["a", "b", "c"], isNotEqual, "b")).toEqual(["a", "c"]);
+	expect(filterArray(["a", "b", "c"], isInArray, ["c", "b"])).toEqual(["b", "c"]);
+	expect(filterArray([1, 2, 3], isGreater, 2)).toEqual([3]);
+	expect(filterArray([1, 2, 3], isEqualGreater, 2)).toEqual([2, 3]);
+	expect(filterArray([1, 2, 3], isEqualLess, 2)).toEqual([1, 2]);
+	expect(filterArray([1, 2, 3], isLess, 2)).toEqual([1]);
+	expect(filterArray(["a", "b", "c"], isGreater, "b")).toEqual(["c"]);
+	expect(filterArray(["a", "b", "c"], isEqualGreater, "b")).toEqual(["b", "c"]);
+	expect(filterArray(["a", "b", "c"], isEqualLess, "b")).toEqual(["a", "b"]);
+	expect(filterArray(["a", "b", "c"], isLess, "b")).toEqual(["a"]);
+	expect(filterArray([[1, 2, 3],  [4, 5, 6],  [6, 7, 8]], isArrayWith, 5)).toEqual([[4, 5, 6]]); // prettier-ignore
 });

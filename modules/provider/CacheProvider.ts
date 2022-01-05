@@ -1,6 +1,6 @@
 import type { DataDocument, DataQuery } from "../db/index.js";
 import { Update } from "../update/index.js";
-import { Result, MutableObject, Unsubscriber, Observer, Results, TransformObserver, Data } from "../util/index.js";
+import { Result, MutableObject, Unsubscriber, Observer, Entries, TransformObserver, Data } from "../util/index.js";
 import type { Provider, AsynchronousProvider } from "./Provider.js";
 import { MemoryProvider } from "./MemoryProvider.js";
 import { ThroughProvider } from "./ThroughProvider.js";
@@ -71,15 +71,15 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 		this.cache.delete(ref);
 	}
 
-	/** Cache a set of document results. */
-	private *_cacheResults<T extends Data>(ref: DataQuery<T>, results: Results<T>): Results<T> {
+	/** Cache a set of document entries. */
+	private *_cacheEntries<T extends Data>(ref: DataQuery<T>, entries: Entries<T>): Entries<T> {
 		// We know the received set of results is the 'complete' set of results for this query.
 		// So for correctness any documents matching this query that aren't in the new set of results should be deleted.
 		// None of this applies if there's a query limit, because the document could have been moved to a different page so shouldn't be deleted.
-		if (!ref.limit) for (const id of Object.keys(this.cache.getQuery(ref))) if (!(id in results)) this.cache.delete(ref.doc(id));
+		if (!ref.limit) for (const id of Object.keys(this.cache.getQuery(ref))) if (!(id in entries)) this.cache.delete(ref.doc(id));
 
 		// Save new results to the cache.
-		for (const [id, data] of results) {
+		for (const [id, data] of entries) {
 			this.cache.set(ref.doc(id), data);
 			yield [id, data];
 		}
@@ -89,13 +89,13 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 	}
 
 	// Override to cache any got results.
-	override async getQuery<T extends Data>(ref: DataQuery<T>): Promise<Results<T>> {
-		return this._cacheResults(ref, await super.getQuery(ref));
+	override async getQuery<T extends Data>(ref: DataQuery<T>): Promise<Entries<T>> {
+		return this._cacheEntries(ref, await super.getQuery(ref));
 	}
 
 	// Override to cache any got results.
-	override subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
-		return super.subscribeQuery(ref, new TransformObserver(results => this._cacheResults(ref, results), observer));
+	override subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Entries<T>>): Unsubscriber {
+		return super.subscribeQuery(ref, new TransformObserver(entries => this._cacheEntries(ref, entries), observer));
 	}
 
 	override async setQuery<T extends Data>(ref: DataQuery<T>, data: T): Promise<number> {

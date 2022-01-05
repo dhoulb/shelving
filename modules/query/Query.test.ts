@@ -1,6 +1,6 @@
 import { Query, Filter, Sort, Filters, Sorts, AscendingSort, DescendingSort } from "../index.js";
 import { expectOrderedKeys, expectUnorderedKeys } from "../test/index.js";
-import { EqualFilter, GreaterThanFilter, InArrayFilter } from "./Filter.js";
+import { EqualFilter, GreaterFilter, InArrayFilter } from "./Filter.js";
 
 type T = { str: string; num: number; type: "alpha" | "beta" };
 const a: T = { str: "Z", num: 3, type: "alpha" };
@@ -11,7 +11,7 @@ const d: T = { str: "X", num: 2, type: "beta" };
 const allRand = Object.entries({ b, d, c, a });
 const allAsc = Object.entries({ a, b, c, d });
 
-const NUM_GT_2 = new GreaterThanFilter<T>("num", 2);
+const NUM_GT_2 = new GreaterFilter<T>("num", 2);
 const STR_IN_Z_OR_X = new InArrayFilter<T>("str", ["Z", "X"]);
 const TYPE_ALPHA = new EqualFilter<T>("type", "alpha");
 

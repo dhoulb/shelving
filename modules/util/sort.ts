@@ -34,7 +34,7 @@ export function rank<T>(left: T, ranker: Ranker<T>, right: T) {
  *
  * @returns Number below zero if `a` is higher, number above zero if `b` is higher, or `0` if they're equally sorted.
  */
-export function ASC(left: unknown, right: unknown): number {
+export function rankAscending(left: unknown, right: unknown): number {
 	// Exactly equal is easy.
 	if (left === right) return 0;
 
@@ -74,19 +74,19 @@ export function ASC(left: unknown, right: unknown): number {
 }
 
 /** Rank two values in descending order. */
-export const DESC = (left: unknown, right: unknown): number => 0 - ASC(left, right);
+export const rankDesc = (left: unknown, right: unknown): number => 0 - rankAscending(left, right);
 
 /** Rank the keys of two entries in ascending order. */
-export const KEY_ASC = ([l]: Entry, [r]: Entry): number => ASC(l, r);
+export const rankEntryKeyAsc = ([l]: Entry, [r]: Entry): number => rankAscending(l, r);
 
 /** Rank the keys of two entries in descending order. */
-export const KEY_DESC = ([l]: Entry, [r]: Entry): number => DESC(l, r);
+export const rankEntryKeyDesc = ([l]: Entry, [r]: Entry): number => rankDesc(l, r);
 
 /** Rank the values of two entries in ascending order. */
-export const VALUE_ASC = ([, l]: Entry, [, r]: Entry): number => ASC(l, r);
+export const rankEntryValueAsc = ([, l]: Entry, [, r]: Entry): number => rankAscending(l, r);
 
 /** Rank the values of two entries in descending order. */
-export const VALUE_DESC = ([, l]: Entry, [, r]: Entry): number => DESC(l, r);
+export const rankEntryValueDesc = ([, l]: Entry, [, r]: Entry): number => rankDesc(l, r);
 
 /**
  * Quick sort algorithm.
@@ -137,14 +137,14 @@ function _quicksort<T>(items: MutableArray<T>, ranker: Ranker<T>, leftPointer = 
 }
 
 /** Sort an iterable set of items using a ranker (defaults to sorting in ascending order). */
-export function sortItems<T>(input: Iterable<T>, ranker: Ranker<T> = ASC): ImmutableArray<T> {
+export function sortItems<T>(input: Iterable<T>, ranker: Ranker<T> = rankAscending): ImmutableArray<T> {
 	const array = Array.from(input);
 	_quicksort(array, ranker);
 	return array;
 }
 
 /** Sort an array using a ranker (defaults to sorting in ascending order) */
-export function sortArray<T>(input: ImmutableArray<T>, ranker: Ranker<T> = ASC): ImmutableArray<T> {
+export function sortArray<T>(input: ImmutableArray<T>, ranker: Ranker<T> = rankAscending): ImmutableArray<T> {
 	const output = Array.from(input);
 	return _quicksort(output, ranker) ? output : input;
 }
@@ -153,20 +153,20 @@ export function sortArray<T>(input: ImmutableArray<T>, ranker: Ranker<T> = ASC):
  * Sort an iterable set of entries (defaults to sorting by key in ascending order).
  * - Always returns an array
  */
-export function sortEntries<T>(input: Iterable<Entry<T>>, ranker: Ranker<Entry<T>> = KEY_ASC): ImmutableArray<Entry<T>> {
+export function sortEntries<T>(input: Iterable<Entry<T>>, ranker: Ranker<Entry<T>> = rankEntryKeyAsc): ImmutableArray<Entry<T>> {
 	const array = Array.from(input);
 	_quicksort(array, ranker);
 	return array;
 }
 
 /** Sort a map-like object using a ranker (defaults to sorting by key in ascending order). */
-export function sortObject<T>(input: ImmutableObject<T>, ranker: Ranker<Entry<T>> = KEY_ASC): ImmutableObject<T> {
+export function sortObject<T>(input: ImmutableObject<T>, ranker: Ranker<Entry<T>> = rankEntryKeyAsc): ImmutableObject<T> {
 	const array = Object.entries(input);
 	return _quicksort(array, ranker) ? Object.fromEntries(array) : input;
 }
 
 /** Sort a map using a ranker (defaults to sorting by key in ascending order). */
-export function sortMap<T>(input: ImmutableMap<T>, ranker: Ranker<Entry<T>> = KEY_ASC): ImmutableMap<T> {
+export function sortMap<T>(input: ImmutableMap<T>, ranker: Ranker<Entry<T>> = rankEntryKeyAsc): ImmutableMap<T> {
 	const array = Array.from(input);
 	return _quicksort(array, ranker) ? new Map(array) : input;
 }
@@ -175,7 +175,7 @@ export function sortMap<T>(input: ImmutableMap<T>, ranker: Ranker<Entry<T>> = KE
 export class TransformRanker<T, TT> implements Rankable<T> {
 	private _transformer: Transformer<T, TT>;
 	private _ranker: Ranker<TT>;
-	constructor(transformer: Transformer<T, TT>, ranker: Ranker<TT> = ASC) {
+	constructor(transformer: Transformer<T, TT>, ranker: Ranker<TT> = rankAscending) {
 		this._transformer = transformer;
 		this._ranker = ranker;
 	}

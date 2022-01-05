@@ -4,7 +4,7 @@ import type { ImmutableMap } from "./map.js";
 import { ImmutableObject } from "./object.js";
 import { isFunction } from "./function.js";
 import { Data, Value, Prop, toProps, isData } from "./data.js";
-import { KEY_IN, yieldFiltered } from "./filter.js";
+import { isKeyInArray, yieldFiltered } from "./filter.js";
 import { yieldMerged } from "./iterate.js";
 
 /** Object that can be applied to an input to generate an output with its `apply()` method. */
@@ -118,5 +118,5 @@ function* yieldTransformedEntries<T>(existing: ImmutableObject<T>, updates: Entr
 
 /** Transform some of the entries of a map-like object using a set of named transformers. */
 export function transformEntries<T>(existing: ImmutableObject<T>, updates: EntryTransformers<T>, deletes: ImmutableArray<string>): ImmutableObject<T> {
-	return Object.fromEntries(yieldFiltered(yieldMerged(Object.entries(existing), yieldTransformedEntries(existing, updates)), KEY_IN, deletes));
+	return Object.fromEntries(yieldFiltered(yieldMerged(Object.entries(existing), yieldTransformedEntries(existing, updates)), isKeyInArray, deletes));
 }

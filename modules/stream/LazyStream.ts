@@ -13,8 +13,8 @@ export class LazyStream<T> extends Stream<T> {
 		this._delay = delay;
 	}
 	// Override to stop the source subscription when the last subscriber unsubscribes.
-	override _off(observer: Observer<T>): void {
-		super._off(observer);
+	override _removeObserver(observer: Observer<T>): void {
+		super._removeObserver(observer);
 		if (this._delay) {
 			// Maybe stop in a bit (if there are still no subscribers).
 			if (!this._observers.size && !this.closed) {

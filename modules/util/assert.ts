@@ -59,18 +59,18 @@ export function assertArray<T>(value: ImmutableArray<T> | unknown): asserts valu
 }
 
 /** Assert that a value has a specific length (or length is in a specific range). */
-export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min?: 1): asserts value is [T, ...T[]];
-export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min: 2): asserts value is [T, T, ...T[]];
-export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min: 3): asserts value is [T, T, T, ...T[]];
-export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min: 4): asserts value is [T, T, T, T, ...T[]];
-export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min: number): asserts value is [T, T, T, T, T, ...T[]];
-export function assertMinimumLength<T>(value: ImmutableArray<T> | unknown, min = 1): asserts value is ImmutableArray<T> {
-	if (!isArray(value) || value.length < min) throw new AssertionError(`Must be array with minimum length ${min}`, value);
+export function assertLength<T>(value: ImmutableArray<T> | unknown, length: number): asserts value is ImmutableArray<T> {
+	if (!isArray(value) || value.length !== length) throw new AssertionError(`Must be array with length ${length}`, value);
 }
 
 /** Assert that a value has a specific length (or length is in a specific range). */
-export function assertLength<T>(value: ImmutableArray<T> | unknown, min: number, max = min): asserts value is ImmutableArray<T> {
-	if (!isArray(value) || value.length < min || value.length > max) throw new AssertionError(`Must be array with length ${min}-${max}`, value);
+export function assertMinLength<T>(value: ImmutableArray<T> | unknown, min?: 1): asserts value is [T, ...T[]];
+export function assertMinLength<T>(value: ImmutableArray<T> | unknown, min: 2): asserts value is [T, T, ...T[]];
+export function assertMinLength<T>(value: ImmutableArray<T> | unknown, min: 3): asserts value is [T, T, T, ...T[]];
+export function assertMinLength<T>(value: ImmutableArray<T> | unknown, min: 4): asserts value is [T, T, T, T, ...T[]];
+export function assertMinLength<T>(value: ImmutableArray<T> | unknown, min: number): asserts value is [T, T, T, T, T, ...T[]];
+export function assertMinLength<T>(value: ImmutableArray<T> | unknown, min = 1): asserts value is ImmutableArray<T> {
+	if (!isArray(value) || value.length < min) throw new AssertionError(`Must be array with minimum length ${min}`, value);
 }
 
 /** Assert that a value is a number greater than. */
@@ -79,12 +79,12 @@ export function assertBetween(value: number | unknown, min: number, max: number)
 }
 
 /** Assert that a value is a number greater than. */
-export function assertMaximum(value: number | unknown, max: number): asserts value is number {
+export function assertMax(value: number | unknown, max: number): asserts value is number {
 	if (typeof value !== "number" || value > max) throw new AssertionError(`Must be number with maximum ${max}`, value);
 }
 
 /** Assert that a value is a number less than. */
-export function assertMinimum(value: number | unknown, min: number): asserts value is number {
+export function assertMin(value: number | unknown, min: number): asserts value is number {
 	if (typeof value !== "number" || value < min) throw new AssertionError(`Must be number with minimum ${min}`, value);
 }
 
@@ -109,12 +109,12 @@ export function assertDefined<T>(value: T | undefined): asserts value is T {
 }
 
 /** Expect a synchronous value. */
-export function assertSynchronous<T>(value: Promise<T> | T): asserts value is T {
+export function assertSync<T>(value: Promise<T> | T): asserts value is T {
 	if (isAsync(value)) throw new AssertionError("Must be synchronous", value);
 }
 
 /** Expect an asynchronous value. */
-export function assertAsynchronous<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
+export function assertAsync<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
 	if (!isAsync(value)) throw new AssertionError("Must be asynchronous", value);
 }
 

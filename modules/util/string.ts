@@ -6,7 +6,7 @@ import { ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
 
 /** Is a value a string? */
-export const IS_STRING = (v: unknown): v is string => typeof v === "string";
+export const isString = (v: unknown): v is string => typeof v === "string";
 
 /**
  * Convert an unknown value into a string for internal use.

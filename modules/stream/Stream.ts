@@ -141,17 +141,17 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	 */
 	subscribe(next: Observer<T> | Dispatcher<[T]>): Unsubscriber {
 		const observer = typeof next === "function" ? { next } : next;
-		this._on(observer);
-		return this._off.bind(this, observer);
+		this._addObserver(observer);
+		return this._removeObserver.bind(this, observer);
 	}
 
 	/** Add an observer. */
-	_on(observer: Observer<T>): void {
+	protected _addObserver(observer: Observer<T>): void {
 		this._observers.add(observer);
 	}
 
 	/** Remove an observer. */
-	_off(observer: Observer<T>): void {
+	protected _removeObserver(observer: Observer<T>): void {
 		this._observers.delete(observer);
 	}
 }

@@ -1,4 +1,4 @@
-import { MutableObject, Result, Observer, Unsubscriber, isAsync, Observable, Results, toMap, TransformObserver, ResultsMap, awaitNext, Data } from "../util/index.js";
+import { MutableObject, Result, Observer, Unsubscriber, isAsync, Observable, Entries, getMap, Results, awaitNext, Data, ResultsObserver } from "../util/index.js";
 import { LazyState } from "../stream/index.js";
 import type { DataDocument, DataQuery } from "../db/index.js";
 import { ThroughProvider } from "./ThroughProvider.js";
@@ -57,7 +57,7 @@ export class BatchProvider extends ThroughProvider {
 	}
 
 	// Override to combine multiple requests into one.
-	override getQuery<T extends Data>(ref: DataQuery<T>): Results<T> | Promise<Results<T>> {
+	override getQuery<T extends Data>(ref: DataQuery<T>): Entries<T> | Promise<Entries<T>> {
 		const key = ref.toString();
 		const get = this._gets[key];
 		if (get) return get;
@@ -66,22 +66,22 @@ export class BatchProvider extends ThroughProvider {
 	}
 
 	/** Await a set of results and delete from get requests when done. */
-	private async _awaitDocuments<T extends Data>(ref: DataQuery<T>, asyncResults: PromiseLike<Results<T>>): Promise<ResultsMap<T>> {
+	private async _awaitDocuments<T extends Data>(ref: DataQuery<T>, asyncResults: PromiseLike<Entries<T>>): Promise<Results<T>> {
 		// Convert the iterable to a map because it might be read multiple times.
-		const results = toMap(await asyncResults);
+		const results = getMap(await asyncResults);
 		const key = ref.toString();
 		delete this._gets[key];
 		return results;
 	}
 
 	// Override to combine multiple subscriptions into one.
-	override subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<ResultsMap<T>>): Unsubscriber {
+	override subscribeQuery<T extends Data>(ref: DataQuery<T>, observer: Observer<Results<T>>): Unsubscriber {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
-		const sub = (this._subs[key] ||= new LazyState<ResultsMap<T>>(STOP_DELAY).from(o => {
+		const sub = (this._subs[key] ||= new LazyState<Results<T>>(STOP_DELAY).from(o => {
 			// Convert the iterable to a map because it might be read multiple times.
-			const stop = super.subscribeQuery(ref, new TransformObserver(toMap, o));
+			const stop = super.subscribeQuery(ref, new ResultsObserver(o));
 			// The first value from the subscription can be reused for any concurrent get requests.
 			this._gets[key] ||= this._awaitDocuments(ref, awaitNext(sub));
 			return () => {

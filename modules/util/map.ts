@@ -23,9 +23,12 @@ export function limitMap<T>(map: ImmutableMap<T>, limit: number): ImmutableMap<T
 	return limit > map.size ? map : new Map(limitItems(map, limit));
 }
 
+/** Things that can be converted to arrays. */
+export type PossibleMap<T> = ImmutableMap<T> | Iterable<Entry<T>>;
+
 /** Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged). */
-export function toMap<T>(iterable: MutableMap<T> | Iterable<Entry<T>>): MutableMap<T>; // Mutable returns mutable.
-export function toMap<T>(iterable: ImmutableMap<T> | Iterable<Entry<T>>): ImmutableMap<T>; // Immutable returns immutable.
-export function toMap<T>(iterable: ImmutableMap<T> | Iterable<Entry<T>>): ImmutableMap<T> {
+export function getMap<T>(iterable: ImmutableMap<T> | Iterable<Entry<T>>): ImmutableMap<T>; // Helps types flow through functions when `getMap` is used as an argument to a function.
+export function getMap<T>(iterable: PossibleMap<T>): ImmutableMap<T>;
+export function getMap<T>(iterable: PossibleMap<T>): ImmutableMap<T> {
 	return iterable instanceof Map ? iterable : new Map(iterable);
 }

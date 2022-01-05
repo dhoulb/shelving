@@ -1,9 +1,11 @@
 import { ConditionError } from "../error/index.js";
 import { BLACKHOLE, dispatch, Dispatcher } from "./function.js";
 import { Handler, logError } from "./error.js";
-import { isData } from "./data.js";
+import { Data, isData, Results } from "./data.js";
 import { transform, Transformer } from "./transform.js";
 import { validate, Validator } from "./validate.js";
+import { getMap } from "./map.js";
+import type { Entries } from "./entry.js";
 
 /** Function that ends a subscription. */
 export type Unsubscriber = () => void;
@@ -168,6 +170,15 @@ export class TransformObserver<I, O> extends AbstractObserver<I, O> {
 		const target = this._target;
 		if (!target) throw new ConditionError("Observer is closed");
 		dispatchNext(target, transform(value, this._transformer));
+	}
+}
+
+/** Oserver that transforms a set of entries into a results map. */
+export class ResultsObserver<T extends Data> extends AbstractObserver<Entries<T>, Results<T>> {
+	next(entries: Entries<T>) {
+		const target = this._target;
+		if (!target) throw new ConditionError("Observer is closed");
+		dispatchNext(target, getMap(entries));
 	}
 }
 
