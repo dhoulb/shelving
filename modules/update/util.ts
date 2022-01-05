@@ -7,8 +7,8 @@ import { DataUpdate, Update, PropUpdates } from "./index.js";
 /** Validate an update against a validator. */
 export function validateUpdate<T>(unsafeUpdate: Update<T> | DataUpdate<T & Data>, validator: Validator<T> | DataSchema<T & Data>): Update<T> {
 	if (validator instanceof DataSchema && unsafeUpdate instanceof DataUpdate) {
-		const unsafeUpdates = unsafeUpdate.props;
-		const safeUpdates = validateUpdates<T & Data>(unsafeUpdates, validator.props);
+		const unsafeUpdates = unsafeUpdate.updates;
+		const safeUpdates = validatePropUpdates<T & Data>(unsafeUpdates, validator.props);
 		return safeUpdates === unsafeUpdates ? unsafeUpdate : new DataUpdate(safeUpdates);
 	} else {
 		validate(transform(undefined, unsafeUpdate), validator);
@@ -17,7 +17,7 @@ export function validateUpdate<T>(unsafeUpdate: Update<T> | DataUpdate<T & Data>
 }
 
 /** Validate a set of transforms against a set of validators. */
-export function validateUpdates<T extends Data>(unsafeUpdates: PropUpdates<T>, validators: Validators<T>): PropUpdates<T> {
+function validatePropUpdates<T extends Data>(unsafeUpdates: PropUpdates<T>, validators: Validators<T>): PropUpdates<T> {
 	let invalid = false;
 	const safeUpdates: { [K in keyof T]?: T[K] | Update<T[K]> } = {};
 	const details: MutableObject = {};

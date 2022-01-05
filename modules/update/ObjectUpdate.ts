@@ -1,4 +1,4 @@
-import { Entry, ImmutableArray, ImmutableObject, isObject, isNullish, transformEntries } from "../util/index.js";
+import { Entry, ImmutableArray, ImmutableObject, isObject, isNullish, transformEntries, Nullish } from "../util/index.js";
 import { Update } from "./Update.js";
 
 /** Set of named transforms for the entries of a map-like object. */
@@ -29,14 +29,14 @@ export class ObjectUpdate<T> extends Update<ImmutableObject<T>> implements Itera
 	}
 
 	/** Return an object update with a specific entry marked for update. */
-	update(key: string | undefined | null, value: T | Update<T>): this {
-		if (key === undefined || key === null) return this;
+	update(key: Nullish<string>, value: T | Update<T>): this {
+		if (isNullish(key)) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, sets: { ...this.updates, [key]: value } };
 	}
 
 	/** Return an object update with a specific entry marked for deletion. */
-	delete(key: string | undefined | null): this {
-		if (key === undefined || key === null) return this;
+	delete(key: Nullish<string>): this {
+		if (isNullish(key)) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, deletes: [...this.deletes, key] };
 	}
 

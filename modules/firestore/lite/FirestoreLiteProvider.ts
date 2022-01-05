@@ -28,8 +28,8 @@ import {
 } from "firebase/firestore/lite";
 import {
 	Provider,
-	DataDocument,
-	DataQuery,
+	DatabaseDocument,
+	DatabaseQuery,
 	FilterOperator,
 	SortDirection,
 	Result,
@@ -70,17 +70,17 @@ const DIRECTIONS: { readonly [K in SortDirection]: FirestoreOrderByDirection } =
 };
 
 /** Get a Firestore DocumentReference for a given document. */
-function getDocument<T extends Data>(firestore: Firestore, { collection, id }: DataDocument<T>): FirestoreDocumentReference<T> {
+function getDocument<T extends Data>(firestore: Firestore, { collection, id }: DatabaseDocument<T>): FirestoreDocumentReference<T> {
 	return firestoreDocument(firestore, collection, id) as FirestoreDocumentReference<T>;
 }
 
 /** Get a Firestore CollectionReference for a given query. */
-function getCollection<T extends Data>(firestore: Firestore, { collection }: DataQuery<T>): FirestoreCollectionReference<T> {
+function getCollection<T extends Data>(firestore: Firestore, { collection }: DatabaseQuery<T>): FirestoreCollectionReference<T> {
 	return firestoreCollection(firestore, collection) as FirestoreCollectionReference<T>;
 }
 
 /** Create a corresponding `QueryReference` from a Query. */
-function getQuery<T extends Data>(firestore: Firestore, ref: DataQuery<T>): FirestoreQueryReference<T> {
+function getQuery<T extends Data>(firestore: Firestore, ref: DatabaseQuery<T>): FirestoreQueryReference<T> {
 	const { sorts, filters, limit } = ref;
 	const constraints: FirestoreQueryConstraint[] = [];
 	for (const { key, direction } of sorts) constraints.push(firestoreOrderBy(key === "id" ? ID : key, DIRECTIONS[direction]));
@@ -126,7 +126,7 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		this.firestore = firestore;
 	}
 
-	async get<T extends Data>(ref: DataDocument<T>): Promise<Result<T>> {
+	async get<T extends Data>(ref: DatabaseDocument<T>): Promise<Result<T>> {
 		const snapshot = await getDoc(getDocument(this.firestore, ref));
 		return snapshot.data() || null;
 	}
@@ -135,24 +135,24 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		throw new Error("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 
-	async add<T extends Data>(ref: DataQuery<T>, data: T): Promise<string> {
+	async add<T extends Data>(ref: DatabaseQuery<T>, data: T): Promise<string> {
 		const reference = await addDoc<any>(getCollection(this.firestore, ref), data); // eslint-disable-line @typescript-eslint/no-explicit-any
 		return reference.id;
 	}
 
-	async set<T extends Data>(ref: DataDocument<T>, data: T): Promise<void> {
+	async set<T extends Data>(ref: DatabaseDocument<T>, data: T): Promise<void> {
 		await setDoc<unknown>(getDocument(this.firestore, ref), data);
 	}
 
-	async update<T extends Data>(ref: DataDocument<T>, updates: Update<T>): Promise<void> {
+	async update<T extends Data>(ref: DatabaseDocument<T>, updates: Update<T>): Promise<void> {
 		await updateDoc<unknown>(getDocument(this.firestore, ref), getFieldValues(updates));
 	}
 
-	async delete<T extends Data>(ref: DataDocument<T>): Promise<void> {
+	async delete<T extends Data>(ref: DatabaseDocument<T>): Promise<void> {
 		await deleteDoc(getDocument(this.firestore, ref));
 	}
 
-	async getQuery<T extends Data>(ref: DataQuery<T>): Promise<Entries<T>> {
+	async getQuery<T extends Data>(ref: DatabaseQuery<T>): Promise<Entries<T>> {
 		return getResults(await getDocs(getQuery(this.firestore, ref)));
 	}
 
@@ -160,20 +160,20 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		throw new Error("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 
-	async setQuery<T extends Data>(ref: DataQuery<T>, data: T | Update<T> | undefined): Promise<number> {
+	async setQuery<T extends Data>(ref: DatabaseQuery<T>, data: T | Update<T> | undefined): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		await Promise.all(snapshot.docs.map(s => setDoc<unknown>(s.ref, data)));
 		return snapshot.size;
 	}
 
-	async updateQuery<T extends Data>(ref: DataQuery<T>, updates: Update<T>): Promise<number> {
+	async updateQuery<T extends Data>(ref: DatabaseQuery<T>, updates: Update<T>): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		const fieldValues = getFieldValues(updates);
 		await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, fieldValues)));
 		return snapshot.size;
 	}
 
-	async deleteQuery<T extends Data>(ref: DataQuery<T>): Promise<number> {
+	async deleteQuery<T extends Data>(ref: DatabaseQuery<T>): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 		return snapshot.size;

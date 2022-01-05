@@ -1,7 +1,7 @@
 import { getLastItem, assertNumber, Results, Entry, yieldMerged, Entries, getMap, Data, LOADING, assertMax } from "../util/index.js";
 import { State } from "../stream/index.js";
 import { ConditionError } from "../index.js";
-import { DataQuery } from "./Database.js";
+import { DatabaseQuery } from "./Database.js";
 
 /**
  * State that wraps a `Documents` reference to enable pagination.
@@ -11,10 +11,10 @@ import { DataQuery } from "./Database.js";
 export class Pagination<T extends Data> extends State<Results<T>> implements Iterable<Entry<T>> {
 	protected _pending = false; // Prevents double-loading.
 
-	readonly ref: DataQuery<T>;
+	readonly ref: DatabaseQuery<T>;
 	readonly limit: number;
 
-	constructor(ref: DataQuery<T>) {
+	constructor(ref: DatabaseQuery<T>) {
 		super();
 		this.ref = ref;
 		assertNumber(ref.limit); // Collection must have a numeric limit to paginate (otherwise you'd be retrieving the entire set of documents).

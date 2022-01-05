@@ -1,4 +1,4 @@
-import { Data, Prop, Key, transformProps, Transformable } from "../util/index.js";
+import { Data, Prop, Key, transformProps, Transformable, Nullish, isNullish } from "../util/index.js";
 import { Update } from "./Update.js";
 
 /**
@@ -12,23 +12,23 @@ export type PropUpdates<T extends Data> = { readonly [K in keyof T]?: T[K] | Upd
 
 /** Update that can be applied to a data object to update its props. */
 export class DataUpdate<T extends Data> extends Update<T> implements Iterable<Prop<PropUpdates<T>>>, Transformable<T, T> {
-	readonly props: PropUpdates<T>;
+	readonly updates: PropUpdates<T>;
 	constructor(props: PropUpdates<T>) {
 		super();
-		this.props = props;
+		this.updates = props;
 	}
 	transform(existing: T): T {
-		return transformProps<T>(existing, this.props);
+		return transformProps<T>(existing, this.updates);
 	}
 
 	/** Return a new object with the specified additional transform for a prop. */
-	prop<K extends Key<T>>(key: K | undefined | null | false, value: T[K] | Update<T[K]>): this {
-		if (key === undefined || key === null || key === false) return this;
-		return { __proto__: Object.getPrototypeOf(this), ...this, props: { ...this.props, [key]: value } };
+	update<K extends Key<T>>(key: Nullish<K>, value: T[K] | Update<T[K]>): this {
+		if (isNullish(key)) return this;
+		return { __proto__: Object.getPrototypeOf(this), ...this, updates: { ...this.updates, [key]: value } };
 	}
 
 	/** Iterate over the transforms in this object. */
 	[Symbol.iterator](): Iterator<Prop<PropUpdates<T>>, void> {
-		return Object.entries(this.props).values();
+		return Object.entries(this.updates).values();
 	}
 }

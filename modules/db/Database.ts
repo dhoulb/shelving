@@ -50,13 +50,13 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 	}
 
 	/** Create a query on a collection in this model. */
-	query<K extends Key<V>>(collection: K, filters?: Filters<ValidatorType<V[K]>>, sorts?: Sorts<ValidatorType<V[K]>>, limit?: number | null): DataQuery<ValidatorType<V[K]>> {
-		return new DataQuery(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters, sorts, limit);
+	query<K extends Key<V>>(collection: K, filters?: Filters<ValidatorType<V[K]>>, sorts?: Sorts<ValidatorType<V[K]>>, limit?: number | null): DatabaseQuery<ValidatorType<V[K]>> {
+		return new DatabaseQuery(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters, sorts, limit);
 	}
 
 	/** Reference a document in a collection in this model. */
-	doc<K extends Key<V>>(collection: K, id: string): DataDocument<ValidatorType<V[K]>> {
-		return new DataDocument(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
+	doc<K extends Key<V>>(collection: K, id: string): DatabaseDocument<ValidatorType<V[K]>> {
+		return new DatabaseDocument(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
 	}
 
 	/** Create a writer for this database from a set of separate writes. */
@@ -73,7 +73,7 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 }
 
 /** A documents reference within a specific database. */
-export class DataQuery<T extends Data = Data> extends Query<T> implements Observable<Results<T>>, Validatable<Entries<T>>, Iterable<Entry<T>> {
+export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Observable<Results<T>>, Validatable<Entries<T>>, Iterable<Entry<T>> {
 	readonly provider: Provider;
 	readonly validator: Validator<T>;
 	readonly collection: string;
@@ -85,8 +85,8 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 	}
 
 	/** Reference a document in this query's collection. */
-	doc(id: string): DataDocument<T> {
-		return new DataDocument(this.provider, this.validator, this.collection, id);
+	doc(id: string): DatabaseDocument<T> {
+		return new DatabaseDocument(this.provider, this.validator, this.collection, id);
 	}
 
 	/**
@@ -219,14 +219,14 @@ export class DataQuery<T extends Data = Data> extends Query<T> implements Observ
 }
 
 /** Get the data for a document from a result for that document. */
-export function getQueryData<T extends Data>(entries: Entries<T>, ref: DataQuery<T>): Entry<T> {
+export function getQueryData<T extends Data>(entries: Entries<T>, ref: DatabaseQuery<T>): Entry<T> {
 	const first = getFirstItem(entries);
 	if (first) return first;
 	throw new QueryRequiredError(ref);
 }
 
 /** A document reference within a specific database. */
-export class DataDocument<T extends Data = Data> implements Observable<Result<T>>, Validatable<T> {
+export class DatabaseDocument<T extends Data = Data> implements Observable<Result<T>>, Validatable<T> {
 	readonly provider: Provider;
 	readonly validator: Validator<T>;
 	readonly collection: string;
@@ -239,13 +239,13 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 	}
 
 	/** Create a query on this document's collection. */
-	query(filters?: Filters<T>, sorts?: Sorts<T>, limit?: number | null): DataQuery<T> {
-		return new DataQuery(this.provider, this.validator, this.collection, filters, sorts, limit);
+	query(filters?: Filters<T>, sorts?: Sorts<T>, limit?: number | null): DatabaseQuery<T> {
+		return new DatabaseQuery(this.provider, this.validator, this.collection, filters, sorts, limit);
 	}
 
 	/** Get an 'optional' reference to this document (uses a `ModelQuery` with an `id` filter). */
-	get optional(): DataQuery<T> {
-		return new DataQuery(this.provider, this.validator, this.collection, new Filters(new EqualFilter("id", this.id)));
+	get optional(): DatabaseQuery<T> {
+		return new DatabaseQuery(this.provider, this.validator, this.collection, new Filters(new EqualFilter("id", this.id)));
 	}
 
 	/**
@@ -307,7 +307,7 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 	}
 
 	/** Represent a write that updates this document in a database. */
-	updater(updates: Update<T> | PropUpdates<T>): DocumentUpdate<T> {
+	updater(updates: PropUpdates<T>): DocumentUpdate<T> {
 		return new DocumentUpdate(this, updates);
 	}
 
@@ -332,7 +332,7 @@ export class DataDocument<T extends Data = Data> implements Observable<Result<T>
 }
 
 /** Get the data for a document from a result for that document. */
-export function getDocumentData<T extends Data>(result: Result<T>, ref: DataDocument<T>): T {
+export function getDocumentData<T extends Data>(result: Result<T>, ref: DatabaseDocument<T>): T {
 	if (result) return result;
 	throw new DocumentRequiredError(ref);
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DataDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Data, Unsubscriber, Handler, callAsync, getDocumentData } from "../index.js";
+import { DatabaseDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Data, Unsubscriber, Handler, callAsync, getDocumentData } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -18,9 +18,9 @@ import { usePureState } from "./usePureState.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
  */
-export function useAsyncDocument<T extends Data>(ref: DataDocument<T>, maxAge?: number | true): Result<T> | PromiseLike<Result<T>>;
-export function useAsyncDocument<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): Result<T> | PromiseLike<Result<T>> | undefined;
-export function useAsyncDocument<T extends Data>(ref: DataDocument<T> | undefined, maxAge: number | true = 1000): Result<T> | PromiseLike<Result<T>> | undefined {
+export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): Result<T> | PromiseLike<Result<T>>;
+export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): Result<T> | PromiseLike<Result<T>> | undefined;
+export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge: number | true = 1000): Result<T> | PromiseLike<Result<T>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = usePureMemo(ref, ref?.toString());
 
@@ -47,14 +47,14 @@ export function useAsyncDocument<T extends Data>(ref: DataDocument<T> | undefine
 }
 
 /** Get the initial result for a reference from the cache. */
-function getCachedResult<T extends Data>(ref: DataDocument<T> | undefined): Result<T> | typeof NOVALUE | undefined {
+function getCachedResult<T extends Data>(ref: DatabaseDocument<T> | undefined): Result<T> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.provider, CacheProvider);
 	return provider.isCached(ref) ? provider.cache.get(ref) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
-function subscribeEffect<T extends Data>(ref: DataDocument<T> | undefined, maxAge: number | true, next: (result: Result<T>) => void, error: Handler): Unsubscriber | void {
+function subscribeEffect<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge: number | true, next: (result: Result<T>) => void, error: Handler): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.provider, CacheProvider);
 		const stopCache = provider.cache.subscribe(ref, { next, error });
@@ -88,23 +88,23 @@ function subscribeEffect<T extends Data>(ref: DataDocument<T> | undefined, maxAg
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the result.
  */
-export function useDocument<T extends Data>(ref: DataDocument<T>, maxAge?: number | true): Result<T>;
-export function useDocument<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined;
-export function useDocument<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined {
+export function useDocument<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): Result<T>;
+export function useDocument<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined;
+export function useDocument<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): Result<T> | undefined {
 	return throwAsync(useAsyncDocument(ref, maxAge));
 }
 
 /** Use the data of a document or `undefined` if the query has no matching results (or a promise indicating the result is loading). */
-export function useAsyncDocumentData<T extends Data>(ref: DataDocument<T>, maxAge?: number | true): T | PromiseLike<T>;
-export function useAsyncDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined;
-export function useAsyncDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined {
+export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): T | PromiseLike<T>;
+export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined;
+export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined {
 	const result = useAsyncDocument(ref, maxAge);
 	return ref && result !== undefined ? callAsync(getDocumentData, result, ref) : undefined;
 }
 
 /** Use the data of a document or `undefined` if the query has no matching results. */
-export function useDocumentData<T extends Data>(ref: DataDocument<T>, maxAge?: number | true): T;
-export function useDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | undefined;
-export function useDocumentData<T extends Data>(ref: DataDocument<T> | undefined, maxAge?: number | true): T | undefined {
+export function useDocumentData<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): T;
+export function useDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | undefined;
+export function useDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | undefined {
 	return throwAsync(useAsyncDocumentData(ref, maxAge));
 }
