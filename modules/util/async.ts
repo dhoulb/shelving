@@ -1,6 +1,7 @@
+import type { ImmutableArray } from "./array.js";
+import type { Arguments, Dispatcher } from "./function.js";
 import { DONE } from "./constants.js";
 import { Handler } from "./error.js";
-import type { Arguments, Dispatcher } from "./function.js";
 
 /**
  * Throw the value if it's an async (promised) value.
@@ -15,9 +16,43 @@ export function throwAsync<T>(asyncValue: T | PromiseLike<T>): T {
 /** Is a value an async (promised) value. */
 export const isAsync = <T>(v: T | PromiseLike<T>): v is PromiseLike<T> => typeof v === "object" && v !== null && typeof (v as Promise<T>).then === "function";
 
-/** Call a function with a set of values *BUT* if the first value is asynchronous wait for it to resolve first before calling the function. */
-export const callAsync = <I, O, A extends Arguments = []>(callback: (v: I, ...a: A) => O, value: I | PromiseLike<I>, ...args: A): O | PromiseLike<O> => (isAsync(value) ? _awaitCallAsync(callback, value, args) : callback(value, ...args));
-export const _awaitCallAsync = async <I, O, A extends Arguments>(callback: (v: I, ...a: A) => O, value: PromiseLike<I>, args: A): Promise<O> => callback(await value, ...args);
+/**
+ * Call a callback with an item.
+ * - If neither `callback` or `item` are async then the value returned will be synchronous.
+ *
+ * @param callback The sync or async function to call.
+ * @param item The first argument for `callback` (if this value is async it will be awaited before `callback` is called).
+ * @param ...args Additional arguments for `callback`
+ */
+export const callAsync = <I, O, A extends Arguments = []>(callback: (v: I, ...a: A) => O | PromiseLike<O>, item: I | PromiseLike<I>, ...args: A): O | PromiseLike<O> =>
+	isAsync(item) ? _awaitCallAsync(callback, item, args) : callback(item, ...args);
+export const _awaitCallAsync = async <I, O, A extends Arguments>(callback: (v: I, ...a: A) => O | PromiseLike<O>, item: PromiseLike<I>, args: A): Promise<O> => callback(await item, ...args);
+
+/**
+ * Call a callback for a set of items in series.
+ *
+ * @param callback The sync or async function to call for each item.
+ * @param items The set of first arguments for `callback` (if this value is async it will be awaited before `callback` is called).
+ * @param ...args Additional arguments for `callback`
+ */
+export async function callAsyncSeries<I, O, A extends Arguments = []>(callback: (item: I, ...a: A) => O | PromiseLike<O>, items: Iterable<I | PromiseLike<I>>, ...args: A): Promise<ImmutableArray<O>> {
+	const outputs: O[] = [];
+	for (const item of items) outputs.push(await callback(await item, ...args));
+	return outputs;
+}
+
+/**
+ * Call a callback for a set of items in parallel.
+ *
+ * @param callback The sync or async function to call for each item.
+ * @param items The set of first arguments for `callback` (if this value is async it will be awaited before `callback` is called).
+ * @param ...args Additional arguments for `callback`
+ */
+export async function callAsyncParallel<I, O, A extends Arguments = []>(callback: (item: I, ...a: A) => O | PromiseLike<O>, items: Iterable<I | PromiseLike<I>>, ...args: A): Promise<ImmutableArray<O>> {
+	const outputs: (O | PromiseLike<O>)[] = [];
+	for (const item of await Promise.all(items)) outputs.push(callback(item, ...args));
+	return Promise.all(outputs);
+}
 
 // Internal way for us to save `resolve()` and `reject()` from a new Promise used by `Deferred` and `ExtendablePromise`
 let resolve: Dispatcher<[any]>; // eslint-disable-line @typescript-eslint/no-explicit-any

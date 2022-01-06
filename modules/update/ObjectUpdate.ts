@@ -7,12 +7,12 @@ export type EntryUpdates<T> = ImmutableObject<T | Update<T>>;
 /** Update that can be applied to a map-like object to add/remove/update its entries. */
 export class ObjectUpdate<T> extends Update<ImmutableObject<T>> implements Iterable<Entry<T | Update<T> | undefined>> {
 	/** Return an object update with a specific entry marked for update. */
-	static update<X>(key: string | undefined | null, value: X | Update<X>): ObjectUpdate<X> {
+	static with<X>(key: string | undefined | null, value: X | Update<X>): ObjectUpdate<X> {
 		return new ObjectUpdate(isNullish(key) ? {} : { [key]: value });
 	}
 
 	/** Return an object update with a specific entry marked for deletion. */
-	static delete<X>(key: string | undefined | null): ObjectUpdate<X> {
+	static without<X>(key: string | undefined | null): ObjectUpdate<X> {
 		return new ObjectUpdate({}, isNullish(key) ? [] : [key]);
 	}
 
@@ -29,13 +29,13 @@ export class ObjectUpdate<T> extends Update<ImmutableObject<T>> implements Itera
 	}
 
 	/** Return an object update with a specific entry marked for update. */
-	update(key: Nullish<string>, value: T | Update<T>): this {
+	with(key: Nullish<string>, value: T | Update<T>): this {
 		if (isNullish(key)) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, sets: { ...this.updates, [key]: value } };
 	}
 
 	/** Return an object update with a specific entry marked for deletion. */
-	delete(key: Nullish<string>): this {
+	without(key: Nullish<string>): this {
 		if (isNullish(key)) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, deletes: [...this.deletes, key] };
 	}

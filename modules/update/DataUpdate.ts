@@ -22,7 +22,7 @@ export class DataUpdate<T extends Data> extends Update<T> implements Iterable<Pr
 	}
 
 	/** Return a new object with the specified additional transform for a prop. */
-	update<K extends Key<T>>(key: Nullish<K>, value: T[K] | Update<T[K]>): this {
+	with<K extends Key<T>>(key: Nullish<K>, value: T[K] | Update<T[K]>): this {
 		if (isNullish(key)) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, updates: { ...this.updates, [key]: value } };
 	}

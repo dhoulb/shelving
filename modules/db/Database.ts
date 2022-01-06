@@ -21,8 +21,6 @@ import {
 	Validators,
 	ValidatorType,
 	Dispatcher,
-	Nullish,
-	isNotNullish,
 	hasItems,
 	ResultsObserver,
 } from "../util/index.js";
@@ -31,7 +29,6 @@ import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Query, EqualFilter } from "../query/index.js";
 import { DocumentRequiredError, DocumentValidationError, QueryRequiredError, QueryValidationError } from "./errors.js";
-import { DocumentDelete, DocumentSet, DocumentUpdate, Write, Writes } from "./Write.js";
 
 /**
  * Combines a database model and a provider.
@@ -59,16 +56,16 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 		return new DatabaseDocument(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
 	}
 
-	/** Create a writer for this database from a set of separate writes. */
-	writer(...writes: Nullish<Write>[]): Write {
-		return new Writes(...writes.filter(isNotNullish));
-	}
-
-	/** Perform one or more writes on this database and return the `Writes` instance representing the combined changes. */
-	async write(...writes: Nullish<Write>[]): Promise<Write> {
-		const write = new Writes(...writes.filter(isNotNullish));
-		await write.transform(this);
-		return write;
+	/**
+	 * Create a new document with a random ID.
+	 * - Created document is guaranteed to have a unique ID.
+	 *
+	 * @param collection Name of the collection to add the document to.
+	 * @param data Complete data to set the document to.
+	 * @return String ID for the created document (possibly promised).
+	 */
+	add<K extends Key<V>>(collection: K, data: ValidatorType<V[K]>): string | PromiseLike<string> {
+		return this.query(collection).add(data);
 	}
 }
 
@@ -299,21 +296,6 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	/** Delete this document. */
 	delete(): void | PromiseLike<void> {
 		return this.provider.delete(this);
-	}
-
-	/** Represent a write that sets the complete data of this document in a database. */
-	setter(data: T): DocumentSet<T> {
-		return new DocumentSet(this, data);
-	}
-
-	/** Represent a write that updates this document in a database. */
-	updater(updates: PropUpdates<T>): DocumentUpdate<T> {
-		return new DocumentUpdate(this, updates);
-	}
-
-	/** Represent a write that deletes this document in a database. */
-	deleter(): DocumentDelete<T> {
-		return new DocumentDelete(this);
 	}
 
 	/** Validate data for this query reference. */

@@ -4,12 +4,12 @@ import { Update } from "./Update.js";
 /** Update that can be applied to an array to add/remove items. */
 export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 	/** Return an array update with an item marked for addition. */
-	static add<X>(...adds: X[]): ArrayUpdate<X> {
+	static with<X>(...adds: X[]): ArrayUpdate<X> {
 		return new ArrayUpdate<X>(adds);
 	}
 
 	/** Return an array update with an item marked for deletion. */
-	static delete<X>(...deletes: X[]): ArrayUpdate<X> {
+	static without<X>(...deletes: X[]): ArrayUpdate<X> {
 		return new ArrayUpdate([], deletes);
 	}
 
@@ -26,12 +26,12 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 	}
 
 	/** Return an array update with an additional item marked for addition. */
-	add(...adds: T[]): this {
+	with(...adds: T[]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, adds: [...this.adds, ...adds] };
 	}
 
 	/** Return an array update with an additional item marked for deletion. */
-	delete(...deletes: T[]): this {
+	without(...deletes: T[]): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, deletes: [...this.deletes, ...deletes] };
 	}
 }
