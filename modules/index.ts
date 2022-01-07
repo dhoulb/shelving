@@ -17,7 +17,6 @@ export * from "./feedback/index.js";
 export * from "./markup/index.js";
 export * from "./stream/index.js";
 export * from "./update/index.js";
-export * from "./operation/index.js";
 export * from "./util/index.js";
 
 // Integrations.
