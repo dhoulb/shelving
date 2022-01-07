@@ -49,14 +49,14 @@ export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T> | unde
 /** Get the initial result for a reference from the cache. */
 function getCachedResult<T extends Data>(ref: DatabaseDocument<T> | undefined): Result<T> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
-	const provider = findSourceProvider(ref.provider, CacheProvider);
+	const provider = findSourceProvider(ref.db.provider, CacheProvider);
 	return provider.isCached(ref) ? provider.cache.get(ref) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
 function subscribeEffect<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge: number | true, next: (result: Result<T>) => void, error: Handler): Unsubscriber | void {
 	if (ref) {
-		const provider = findSourceProvider(ref.provider, CacheProvider);
+		const provider = findSourceProvider(ref.db.provider, CacheProvider);
 		const stopCache = provider.cache.subscribe(ref, { next, error });
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.

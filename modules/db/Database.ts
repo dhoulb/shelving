@@ -48,12 +48,12 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 
 	/** Create a query on a collection in this model. */
 	query<K extends Key<V>>(collection: K, filters?: Filters<ValidatorType<V[K]>>, sorts?: Sorts<ValidatorType<V[K]>>, limit?: number | null): DatabaseQuery<ValidatorType<V[K]>> {
-		return new DatabaseQuery(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters, sorts, limit);
+		return new DatabaseQuery(this, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters, sorts, limit);
 	}
 
 	/** Reference a document in a collection in this model. */
 	doc<K extends Key<V>>(collection: K, id: string): DatabaseDocument<ValidatorType<V[K]>> {
-		return new DatabaseDocument(this.provider, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
+		return new DatabaseDocument(this, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
 	}
 
 	/**
@@ -71,19 +71,19 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 
 /** A documents reference within a specific database. */
 export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Observable<Results<T>>, Validatable<Entries<T>>, Iterable<Entry<T>> {
-	readonly provider: Provider;
+	readonly db: Database;
 	readonly validator: Validator<T>;
 	readonly collection: string;
-	constructor(provider: Provider, validator: Validator<T>, collection: string, filters?: Filters<T>, sorts?: Sorts<T>, limit?: number | null) {
+	constructor(db: Database, validator: Validator<T>, collection: string, filters?: Filters<T>, sorts?: Sorts<T>, limit?: number | null) {
 		super(filters, sorts, limit);
-		this.provider = provider;
+		this.db = db;
 		this.validator = validator;
 		this.collection = collection;
 	}
 
 	/** Reference a document in this query's collection. */
 	doc(id: string): DatabaseDocument<T> {
-		return new DatabaseDocument(this.provider, this.validator, this.collection, id);
+		return new DatabaseDocument(this.db, this.validator, this.collection, id);
 	}
 
 	/**
@@ -94,7 +94,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return String ID for the created document (possibly promised).
 	 */
 	add(data: T): string | PromiseLike<string> {
-		return this.provider.add(this, data);
+		return this.db.provider.add(this, data);
 	}
 
 	/**
@@ -102,7 +102,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return Map containing the results.
 	 */
 	get entries(): Entries<T> | PromiseLike<Entries<T>> {
-		return this.provider.getQuery(this);
+		return this.db.provider.getQuery(this);
 	}
 
 	/**
@@ -110,7 +110,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return Map containing the results.
 	 */
 	get results(): Results<T> | PromiseLike<Results<T>> {
-		return callAsync<Entries<T>, Results<T>>(getMap, this.provider.getQuery(this));
+		return callAsync<Entries<T>, Results<T>>(getMap, this.db.provider.getQuery(this));
 	}
 
 	/**
@@ -126,7 +126,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return `true` if a document exists or `false` otherwise (possibly promised).
 	 */
 	get exists(): boolean | PromiseLike<boolean> {
-		return callAsync(hasItems, this.provider.getQuery(this.max(1)));
+		return callAsync(hasItems, this.db.provider.getQuery(this.max(1)));
 	}
 
 	/**
@@ -136,7 +136,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @throws RequiredError if there were no results for this query.
 	 */
 	get result(): Entry<T> | undefined | PromiseLike<Entry<T> | undefined> {
-		return callAsync(getFirstItem, this.provider.getQuery(this.max(1)));
+		return callAsync(getFirstItem, this.db.provider.getQuery(this.max(1)));
 	}
 
 	/**
@@ -146,7 +146,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @throws RequiredError if there were no results for this query.
 	 */
 	get data(): Entry<T> | PromiseLike<Entry<T>> {
-		return callAsync(getQueryData, this.provider.getQuery(this.max(1)), this);
+		return callAsync(getQueryData, this.db.provider.getQuery(this.max(1)), this);
 	}
 
 	/**
@@ -157,7 +157,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return Function that ends the subscription.
 	 */
 	subscribe(next: Observer<Results<T>> | Dispatcher<[Results<T>]>): Unsubscriber {
-		return this.provider.subscribeQuery(this, new ResultsObserver(typeof next === "function" ? { next } : next));
+		return this.db.provider.subscribeQuery(this, new ResultsObserver(typeof next === "function" ? { next } : next));
 	}
 
 	/**
@@ -167,7 +167,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return Nothing (possibly promised).
 	 */
 	set(data: T): number | PromiseLike<number> {
-		return this.provider.setQuery(this, data);
+		return this.db.provider.setQuery(this, data);
 	}
 
 	/**
@@ -177,7 +177,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return Nothing (possibly promised).
 	 */
 	update(updates: Update<T> | PropUpdates<T>): number | PromiseLike<number> {
-		return this.provider.updateQuery(this, updates instanceof Update ? updates : new DataUpdate(updates));
+		return this.db.provider.updateQuery(this, updates instanceof Update ? updates : new DataUpdate(updates));
 	}
 
 	/**
@@ -185,7 +185,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return Nothing (possibly promised).
 	 */
 	delete(): number | PromiseLike<number> {
-		return this.provider.deleteQuery(this);
+		return this.db.provider.deleteQuery(this);
 	}
 
 	/** Iterate over the resuls (will throw `Promise` if the results are asynchronous). */
@@ -224,12 +224,12 @@ export function getQueryData<T extends Data>(entries: Entries<T>, ref: DatabaseQ
 
 /** A document reference within a specific database. */
 export class DatabaseDocument<T extends Data = Data> implements Observable<Result<T>>, Validatable<T> {
-	readonly provider: Provider;
+	readonly db: Database;
 	readonly validator: Validator<T>;
 	readonly collection: string;
 	readonly id: string;
-	constructor(provider: Provider, validator: Validator<T>, collection: string, id: string) {
-		this.provider = provider;
+	constructor(db: Database, validator: Validator<T>, collection: string, id: string) {
+		this.db = db;
 		this.validator = validator;
 		this.collection = collection;
 		this.id = id;
@@ -237,12 +237,12 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 
 	/** Create a query on this document's collection. */
 	query(filters?: Filters<T>, sorts?: Sorts<T>, limit?: number | null): DatabaseQuery<T> {
-		return new DatabaseQuery(this.provider, this.validator, this.collection, filters, sorts, limit);
+		return new DatabaseQuery(this.db, this.validator, this.collection, filters, sorts, limit);
 	}
 
 	/** Get an 'optional' reference to this document (uses a `ModelQuery` with an `id` filter). */
 	get optional(): DatabaseQuery<T> {
-		return new DatabaseQuery(this.provider, this.validator, this.collection, new Filters(new EqualFilter("id", this.id)));
+		return new DatabaseQuery(this.db, this.validator, this.collection, new Filters(new EqualFilter("id", this.id)));
 	}
 
 	/**
@@ -250,7 +250,7 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	 * @return `true` if a document exists or `false` otherwise (possibly promised).
 	 */
 	get exists(): boolean | PromiseLike<boolean> {
-		return callAsync(Boolean, this.provider.get(this));
+		return callAsync(Boolean, this.db.provider.get(this));
 	}
 
 	/**
@@ -258,7 +258,7 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
 	 */
 	get result(): Result<T> | PromiseLike<Result<T>> {
-		return this.provider.get(this);
+		return this.db.provider.get(this);
 	}
 
 	/**
@@ -269,7 +269,7 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	 * @throws RequiredError if the document's result was undefined.
 	 */
 	get data(): T | PromiseLike<T> {
-		return callAsync(getDocumentData, this.provider.get(this), this);
+		return callAsync(getDocumentData, this.db.provider.get(this), this);
 	}
 
 	/**
@@ -280,22 +280,22 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	 * @return Function that ends the subscription.
 	 */
 	subscribe(next: Observer<Result<T>> | Dispatcher<[Result<T>]>): Unsubscriber {
-		return this.provider.subscribe(this, typeof next === "function" ? { next } : next);
+		return this.db.provider.subscribe(this, typeof next === "function" ? { next } : next);
 	}
 
 	/** Set the complete data of this document. */
 	set(data: T): void | PromiseLike<void> {
-		return this.provider.set(this, data);
+		return this.db.provider.set(this, data);
 	}
 
 	/** Update this document. */
 	update(updates: Update<T> | PropUpdates<T>): void | PromiseLike<void> {
-		return this.provider.update(this, updates instanceof Update ? updates : new DataUpdate(updates));
+		return this.db.provider.update(this, updates instanceof Update ? updates : new DataUpdate(updates));
 	}
 
 	/** Delete this document. */
 	delete(): void | PromiseLike<void> {
-		return this.provider.delete(this);
+		return this.db.provider.delete(this);
 	}
 
 	/** Validate data for this query reference. */

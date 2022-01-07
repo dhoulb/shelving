@@ -50,19 +50,19 @@ export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined,
 /** Get the initial results for a reference from the cache. */
 function getCachedResults<T extends Data>(ref: DatabaseQuery<T> | undefined): Results<T> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
-	const provider = findSourceProvider(ref.provider, CacheProvider);
+	const provider = findSourceProvider(ref.db.provider, CacheProvider);
 	return provider.isCached(ref) ? getMap(provider.cache.getQuery(ref)) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
 function subscribeEffect<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true, next: (results: Results<T>) => void, error: Handler): Unsubscriber | void {
 	if (ref) {
-		const provider = findSourceProvider(ref.provider, CacheProvider);
+		const provider = findSourceProvider(ref.db.provider, CacheProvider);
 		const observer = new ResultsObserver({ next, error });
 		const stopCache = provider.cache.subscribeQuery(ref, observer);
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.
-			const stopSource = ref.provider.subscribeQuery(ref, observer);
+			const stopSource = ref.db.provider.subscribeQuery(ref, observer);
 			return () => {
 				stopCache();
 				stopSource();

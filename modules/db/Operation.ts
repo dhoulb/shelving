@@ -4,6 +4,7 @@ import type { Database, DatabaseDocument, DatabaseQuery } from "./Database.js";
 
 /** Represent a write operation on a database. */
 export abstract class Operation {
+	/** Run this operation and return the result operation. */
 	abstract run(db: Database): Promise<Operation>;
 }
 
@@ -33,8 +34,13 @@ const _write = (operation: Operation, db: Database): PromiseLike<Operation> => o
 /** Represent a add operation made to a collection in a database. */
 export class AddOperation<T extends Data> extends Operation {
 	/** Create a new add operation on a collection. */
-	static on<X extends Data>({ collection }: DatabaseDocument | DatabaseQuery, data: X): AddOperation<X> {
+	static on<X extends Data>({ collection }: DatabaseDocument<X> | DatabaseQuery<X>, data: X): AddOperation<X> {
 		return new AddOperation(collection, data);
+	}
+
+	/** Run a new add operation on a collection and return the result operation. */
+	static run<X extends Data>({ collection, db }: DatabaseDocument<X> | DatabaseQuery<X>, data: X): Promise<SetOperation<X>> {
+		return new AddOperation(collection, data).run(db);
 	}
 
 	readonly collection: string;
@@ -59,8 +65,13 @@ export class AddOperation<T extends Data> extends Operation {
 /** Represent a set operation made to a single document in a database. */
 export class SetOperation<T extends Data> extends Operation {
 	/** Create a new add operation on a collection. */
-	static on<X extends Data>({ collection, id }: DatabaseDocument, data: X): SetOperation<X> {
+	static on<X extends Data>({ collection, id }: DatabaseDocument<X>, data: X): SetOperation<X> {
 		return new SetOperation(collection, id, data);
+	}
+
+	/** Run a new set operation on a collection and return the result operation. */
+	static run<X extends Data>({ collection, id, db }: DatabaseDocument<X>, data: X): Promise<SetOperation<X>> {
+		return new SetOperation(collection, id, data).run(db);
 	}
 
 	readonly collection: string;
@@ -87,8 +98,13 @@ export class SetOperation<T extends Data> extends Operation {
 /** Represent an update operation made to a single document in a database. */
 export class UpdateOperation<T extends Data> extends Operation {
 	/** Create a new update operation on a document. */
-	static on<X extends Data>({ collection, id }: DatabaseDocument<X>, updates: PropUpdates<X> = {}): UpdateOperation<X> {
+	static on<X extends Data>({ collection, id }: DatabaseDocument<X>, updates: PropUpdates<X>): UpdateOperation<X> {
 		return new UpdateOperation(collection, id, updates);
+	}
+
+	/** Run a new set operation on a collection and return the result operation. */
+	static run<X extends Data>({ collection, id, db }: DatabaseDocument<X>, updates: PropUpdates<X>): Promise<UpdateOperation<X>> {
+		return new UpdateOperation(collection, id, updates).run(db);
 	}
 
 	readonly collection: string;
@@ -114,9 +130,14 @@ export class UpdateOperation<T extends Data> extends Operation {
 
 /** Represent a delete operation made to a single document in a database. */
 export class DeleteOperation extends Operation {
-	/** Create a new update operation on a document. */
+	/** Create a new delete operation on a document. */
 	static on({ collection, id }: DatabaseDocument): DeleteOperation {
 		return new DeleteOperation(collection, id);
+	}
+
+	/** Run a new delete operation on a document. */
+	static run({ collection, id, db }: DatabaseDocument): Promise<DeleteOperation> {
+		return new DeleteOperation(collection, id).run(db);
 	}
 
 	readonly collection: string;
