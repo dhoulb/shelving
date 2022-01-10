@@ -1,111 +1,114 @@
-import { formatNumber } from "./number.js";
+import { AssertionError } from "../error/index.js";
+import { DAY, HOUR, MINUTE, MONTH, SECOND, WEEK, YEAR } from "./date.js";
+import { formatFullQuantity, formatQuantity } from "./number.js";
+import { NNBSP } from "./string.js";
+
+/** Valid information about a unit of measure. */
+export type UnitData = {
+	/** Plural name for a unit, e.g. `feet` */
+	readonly plural?: string;
+	/** Type of a unit. */
+	readonly type: UnitType;
+	/** Short suffix for this unit, e.g. `km` */
+	readonly suffix: string;
+	/** All units must specify their 'base' unit, e.g. `meter` for for distance units and `liter` for volume units. */
+	readonly base: number;
+} & {
+	/** All other units are optional. */
+	[K in UnitReference]?: number;
+};
+
+/** Valid system of measurement reference. */
+export type UnitType = "percentage" | "angle" | "temperature" | "length" | "speed" | "pace" | "mass" | "time" | "volume";
+
+/** Valid unit of measurement reference (correspond to units allowed in `Intl.NumberFormat`, but not all). */
+export type UnitReference =
+	| "percent"
+	| "degree"
+	// | "celsius" // Skipped because conversion requires multiple steps.
+	// | "fahrenheit" // Skipped because conversion requires multiple steps.
+	| "millimeter"
+	| "centimeter"
+	| "meter"
+	| "kilometer"
+	| "mile"
+	| "yard"
+	| "foot"
+	| "inch"
+	| "liter"
+	| "milliliter"
+	| "gallon"
+	| "fluid-ounce"
+	| "gram"
+	| "kilogram"
+	| "pound"
+	| "stone"
+	| "ounce"
+	| "millisecond"
+	| "second"
+	| "minute"
+	| "day"
+	| "hour"
+	| "week"
+	| "month" // Skipped because conversion is imprecise.
+	| "year"; // Skipped because conversion is imprecise.
+
+/** List of units. */
+export const UNITS: { [K in UnitReference]: UnitData } = {
+	"percent": { type: "percentage", base: 1, suffix: "%" },
+	"degree": { type: "angle", base: 1, suffix: "deg" },
+	"millimeter": { type: "length", base: 0.001, suffix: "mm" },
+	"centimeter": { type: "length", base: 0.01, suffix: "cm" },
+	"meter": { type: "length", base: 1, centimeter: 100, millimeter: 1000, suffix: "m" }, // Base for length.
+	"kilometer": { type: "length", base: 1000, centimeter: 100000, millimeter: 1000000, suffix: "km" },
+	"inch": { type: "length", base: 0.0254, suffix: "in" },
+	"foot": { type: "length", base: 0.3048, inch: 12, suffix: "ft", plural: "feet" },
+	"yard": { type: "length", base: 0.9144, inch: 36, foot: 3, suffix: "yd" },
+	"mile": { type: "length", base: 1609.344, yard: 1760, foot: 5280, inch: 63360, suffix: "mi" },
+	"milliliter": { type: "volume", base: 1, suffix: "ml" }, // Base for volume.
+	"liter": { type: "volume", base: 1000, suffix: "l" },
+	"fluid-ounce": { type: "volume", base: 29.5735295625, gallon: 128, suffix: `fl${NNBSP}oz` },
+	"gallon": { type: "volume", base: 3785.411784, suffix: "gal" },
+	"gram": { type: "mass", base: 1, suffix: "g" }, // Base for mass.
+	"kilogram": { type: "mass", base: 1000, suffix: "kg" },
+	"ounce": { type: "mass", base: 28.349523125, pound: 0.0625, suffix: "oz" },
+	"pound": { type: "mass", base: 453.59237, ounce: 16, suffix: "lb" },
+	"stone": { type: "mass", base: 6350.29318, pound: 14, ounce: 224, suffix: "st", plural: "stone" },
+	"millisecond": { type: "time", base: 1, suffix: "ms" }, // Base for time.
+	"second": { type: "time", base: SECOND, suffix: "s" },
+	"minute": { type: "time", base: MINUTE, suffix: "m" },
+	"hour": { type: "time", base: HOUR, suffix: "h" },
+	"day": { type: "time", base: DAY, suffix: "d" },
+	"week": { type: "time", base: WEEK, suffix: "w" },
+	"month": { type: "time", base: MONTH, suffix: "m" },
+	"year": { type: "time", base: YEAR, suffix: "y" },
+};
+
+/** Convert between two units of the same type. */
+export function convertUnits(num: number, from: UnitReference, to: UnitReference): number {
+	if (from === to) return num;
+	const fromData = UNITS[from];
+	const exact = fromData[to]; // Get the exact conversion if possible (e.g. 5280 feet in a mile).
+	if (typeof exact === "number") return num * exact;
+	const toData = UNITS[to];
+	if (fromData.type !== toData.type) throw new AssertionError(`Target unit must be ${fromData.type}`, toData.type);
+	return (num * fromData.base) / toData.base;
+}
 
 /**
- * Valid distance unit names.
- * - Correspond to units allowed in `Intl.NumberFormat`
+ * Format a number with a given unit of measure, e.g. `12 kg` or `29.5 l`
+ *
+ * @param num The number to format.
+ * @param unit String reference for a unit of measure e.g. `kilometer`
+ * @param maxPrecision Number of decimal places to round the number to e.g. `2`
  */
-export type Unit = "millimeter" | "centimeter" | "meter" | "kilometer" | "mile" | "yard" | "foot" | "inch";
+export const formatUnits = (num: number, unit: UnitReference, maxPrecision?: number, minPrecision?: number): string => formatQuantity(num, UNITS[unit].suffix, maxPrecision, minPrecision);
 
-/** Conversion table for distance unit. */
-const unitsData: {
-	readonly [K in Unit]: {
-		// Meters are required (all conversions go through meters if a specific number isn't provided).
-		readonly meter: number;
-		// All other units are optional.
-		readonly millimeter?: number;
-		readonly centimeter?: number;
-		readonly kilometer?: number;
-		readonly mile?: number;
-		readonly yard?: number;
-		readonly foot?: number;
-		readonly inch?: number;
-		readonly regex: RegExp;
-		// Short suffix.
-		readonly short: string;
-		// Default number of decimal places.
-		readonly precision?: number;
-		// If e.g. `10m` is specified, does `m` mean `mile` or `meter`.
-		readonly m?: Unit;
-	};
-} = {
-	millimeter: {
-		meter: 0.001,
-		regex: /(\d|\b)(millimeters?|millimetres?|mms?)\b/i,
-		short: "mm",
-	},
-	centimeter: {
-		meter: 0.01,
-		regex: /(\d|\b)(centimeters?|centimetres?|cms?)\b/i,
-		short: "cm",
-	},
-	meter: {
-		meter: 1,
-		centimeter: 100,
-		millimeter: 1000,
-		regex: /(\d|\b)(metres?|meters?|m)\b/i,
-		short: "m",
-	},
-	kilometer: {
-		meter: 1000,
-		centimeter: 100000,
-		millimeter: 1000000,
-		regex: /(\d|\b)(kilometres?|kilometers?|kms?|k)\b/i,
-		short: "km",
-		precision: 2,
-		m: "mile", // e.g. `10m` means miles.
-	},
-	mile: {
-		meter: 1609.344,
-		yard: 1760,
-		foot: 5280,
-		inch: 63360,
-		regex: /(\d|\b)(miles?|mi|m)\b/i,
-		short: "mi",
-		precision: 2,
-		m: "mile", // e.g. `10m` means miles.
-	},
-	yard: {
-		meter: 0.9144,
-		inch: 36,
-		foot: 3,
-		regex: /(\d|\b)(yards?|yds?|y)\b/i,
-		short: "yd",
-	},
-	foot: {
-		meter: 0.3048,
-		inch: 12,
-		regex: /(\d|\b)(feets?|foots?|fts?|f)\b/i,
-		short: "ft",
-	},
-	inch: {
-		meter: 0.0254,
-		regex: /(\d|\b)(inches|inch|in)\b/i,
-		short: "in",
-	},
-};
-
-/** Convert between two distance units. */
-export const convertUnits = (num: number, from: Unit, to: Unit): number => {
-	if (from === to) return num;
-	const d = unitsData[from];
-	const t = d[to];
-	if (t) return num * t;
-	return (num * d.meter) / unitsData[to].meter;
-};
-
-/** Detect which type of distance unit has been typed, e.g. mile or kilometer. */
-export const detectUnit = (str: string, defaultUnit: Unit): Unit | false => {
-	if (str.match(/^[0-9.,\s]+$/)) return defaultUnit; // Purely numeric number uses default unit.
-	if (str.match(unitsData.kilometer.regex)) return "kilometer";
-	if (str.match(unitsData.centimeter.regex)) return "centimeter";
-	if (str.match(/(\d|\b)m\b/i)) return unitsData[defaultUnit].m || "meter"; // e.g. `10m` could mean meter or mile.
-	if (str.match(unitsData.meter.regex)) return "meter";
-	if (str.match(unitsData.mile.regex)) return "mile";
-	if (str.match(unitsData.yard.regex)) return "yard";
-	if (str.match(unitsData.foot.regex)) return "foot";
-	if (str.match(unitsData.inch.regex)) return "inch";
-	return false; // Cannot figure out unit.
-};
-
-/** Format a distance. */
-export const formatUnit = (num: number, unit: Unit = "meter", precision = unitsData[unit].precision || 0): string => `${formatNumber(num, precision)} ${unitsData[unit].short}`;
+/**
+ * Format a number with a given unit of measure, e.g. `12 kilograms` or `29.5 liters` or `1 degree`
+ *
+ * @param num The number to format.
+ * @param unit String reference for a unit of measure e.g. `kilometer`
+ * @param maxPrecision Number of decimal places to round the number to e.g. `2`
+ */
+export const formatFullUnits = (num: number, unit: UnitReference, maxPrecision?: number, minPrecision?: number): string => formatFullQuantity(num, unit, UNITS[unit].plural || `${unit}s`, maxPrecision, minPrecision);

@@ -1,43 +1,6 @@
-import { detectUnit, formatUnit, convertUnits } from "../index.js";
+import { formatUnits, convertUnits, formatFullUnits } from "../index.js";
 
-describe("detectDistanceUnit()", () => {
-	test("Works correctly", () => {
-		expect(detectUnit("1", "meter")).toBe("meter");
-
-		expect(detectUnit("1m", "meter")).toBe("meter");
-		expect(detectUnit("1 metre", "meter")).toBe("meter");
-		expect(detectUnit("999 metres", "meter")).toBe("meter");
-		expect(detectUnit("1 meter", "meter")).toBe("meter");
-		expect(detectUnit("999 meters", "meter")).toBe("meter");
-
-		expect(detectUnit("1cm", "meter")).toBe("centimeter");
-		expect(detectUnit("1 centimeter", "meter")).toBe("centimeter");
-		expect(detectUnit("999 centimeters", "meter")).toBe("centimeter");
-		expect(detectUnit("1 centimetre", "meter")).toBe("centimeter");
-		expect(detectUnit("999 centimetres", "meter")).toBe("centimeter");
-
-		expect(detectUnit("1km", "meter")).toBe("kilometer");
-		expect(detectUnit("1 kilometer", "meter")).toBe("kilometer");
-		expect(detectUnit("999 kilometers", "meter")).toBe("kilometer");
-		expect(detectUnit("1 kilometre", "meter")).toBe("kilometer");
-		expect(detectUnit("999 kilometres", "meter")).toBe("kilometer");
-
-		expect(detectUnit("1y", "meter")).toBe("yard");
-		expect(detectUnit("1yd", "meter")).toBe("yard");
-		expect(detectUnit("1 yard", "meter")).toBe("yard");
-		expect(detectUnit("1 yards", "meter")).toBe("yard");
-
-		expect(detectUnit("1f", "meter")).toBe("foot");
-		expect(detectUnit("1ft", "meter")).toBe("foot");
-		expect(detectUnit("1 foot", "meter")).toBe("foot");
-		expect(detectUnit("1 feet", "meter")).toBe("foot");
-
-		expect(detectUnit("1in", "meter")).toBe("inch");
-		expect(detectUnit("1 inch", "meter")).toBe("inch");
-		expect(detectUnit("999 inches", "meter")).toBe("inch");
-	});
-});
-describe("convertDistance()", () => {
+describe("convertUnits()", () => {
 	test("Works correctly", () => {
 		expect(convertUnits(1, "meter", "meter")).toBe(1);
 		expect(convertUnits(1, "meter", "kilometer")).toBe(0.001);
@@ -54,21 +17,52 @@ describe("convertDistance()", () => {
 		expect(convertUnits(1, "yard", "inch")).toBe(36);
 	});
 });
-describe("formatDistance()", () => {
+describe("formatUnits()", () => {
 	test("Works correctly", () => {
-		expect(formatUnit(123, "meter")).toBe("123 m");
-		expect(formatUnit(1234, "meter")).toBe("1,234 m");
-		expect(formatUnit(1234.0123456789, "meter")).toBe("1,234 m");
-		expect(formatUnit(1234.0123, "meter")).toBe("1,234 m");
-		expect(formatUnit(1234, "meter")).toBe("1,234 m");
-		expect(formatUnit(1234.0001, "meter")).toBe("1,234 m");
-		expect(formatUnit(123, "foot")).toBe("123 ft");
-		expect(formatUnit(1234, "yard")).toBe("1,234 yd");
-		expect(formatUnit(1234.0123456789, "kilometer")).toBe("1,234.01 km");
-		expect(formatUnit(1234.0123, "kilometer")).toBe("1,234.01 km");
-		expect(formatUnit(1234.0123456789, "kilometer", 2)).toBe("1,234.01 km");
-		expect(formatUnit(1234.0123, "kilometer", 2)).toBe("1,234.01 km");
-		expect(formatUnit(1234, "kilometer")).toBe("1,234 km");
-		expect(formatUnit(1234.0001, "foot")).toBe("1,234 ft");
+		expect(formatUnits(123, "meter")).toBe("123 m");
+		expect(formatUnits(1234, "centimeter")).toBe("1,234 cm");
+		expect(formatUnits(123, "foot")).toBe("123 ft");
+		expect(formatUnits(1234, "yard")).toBe("1,234 yd");
+	});
+	test("Max precision", () => {
+		expect(formatUnits(1.1111, "kilometer", 0)).toBe("1 km");
+		expect(formatUnits(1.1111, "kilometer", 2)).toBe("1.11 km");
+		expect(formatUnits(1.1111, "kilometer", 4)).toBe("1.1111 km");
+		expect(formatUnits(1.1111, "kilometer", 6)).toBe("1.1111 km");
+	});
+	test("Min precision", () => {
+		expect(formatUnits(1.1111, "kilometer", 2, 0)).toBe("1.11 km");
+		expect(formatUnits(1.1111, "kilometer", 2, 2)).toBe("1.11 km");
+		expect(formatUnits(1.1111, "kilometer", 4, 4)).toBe("1.1111 km");
+		expect(formatUnits(1.1111, "kilometer", 6, 6)).toBe("1.111100 km");
+		expect(formatUnits(1.1, "kilometer", 2, 0)).toBe("1.1 km");
+		expect(formatUnits(1.1, "kilometer", 2, 2)).toBe("1.10 km");
+	});
+});
+describe("formatFullUnits()", () => {
+	test("Works correctly", () => {
+		expect(formatFullUnits(1, "meter")).toBe("1 meter");
+		expect(formatFullUnits(123, "meter")).toBe("123 meters");
+		expect(formatFullUnits(1234, "meter")).toBe("1,234 meters");
+		expect(formatFullUnits(1, "foot")).toBe("1 foot");
+		expect(formatFullUnits(123, "foot")).toBe("123 feet");
+		expect(formatFullUnits(1234, "foot")).toBe("1,234 feet");
+		expect(formatFullUnits(1, "yard")).toBe("1 yard");
+		expect(formatFullUnits(123, "yard")).toBe("123 yards");
+		expect(formatFullUnits(1234, "yard")).toBe("1,234 yards");
+	});
+	test("Max precision", () => {
+		expect(formatFullUnits(1.1111, "kilometer", 0)).toBe("1 kilometer");
+		expect(formatFullUnits(1.1111, "kilometer", 2)).toBe("1.11 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 4)).toBe("1.1111 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 6)).toBe("1.1111 kilometers");
+	});
+	test("Min precision", () => {
+		expect(formatFullUnits(1.1111, "kilometer", 2, 0)).toBe("1.11 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 2, 2)).toBe("1.11 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 4, 4)).toBe("1.1111 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 6, 6)).toBe("1.111100 kilometers");
+		expect(formatFullUnits(1.1, "kilometer", 2, 0)).toBe("1.1 kilometers");
+		expect(formatFullUnits(1.1, "kilometer", 2, 2)).toBe("1.10 kilometers");
 	});
 });

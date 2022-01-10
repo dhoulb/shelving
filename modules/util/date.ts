@@ -1,20 +1,26 @@
 import { AssertionError } from "../error/index.js";
-import { formatNumber } from "./number.js";
+import { formatFullQuantity, formatQuantity } from "./number.js";
+
+/** One second in millseconds. */
+export const SECOND = 1000;
 
 /** One minute in millseconds. */
-export const MINUTE = 60 * 1000;
+export const MINUTE = 60 * SECOND;
 
 /** One hour in millseconds. */
-export const HOUR = MINUTE * 60;
+export const HOUR = 60 * MINUTE;
 
 /** One day in millseconds. */
-export const DAY = HOUR * 24;
+export const DAY = 24 * HOUR;
 
 /** One week in millseconds. */
-export const WEEK = DAY * 7;
+export const WEEK = 7 * DAY;
+
+/** One month in millseconds. */
+export const MONTH = 30 * DAY;
 
 /** One year in millseconds. */
-export const YEAR = DAY * 365;
+export const YEAR = 365 * DAY;
 
 /** Is a value a date? */
 export const isDate = (v: unknown): v is Date => v instanceof Date;
@@ -114,125 +120,117 @@ export function addHours(change: number, target?: PossibleDate): Date {
 	return date;
 }
 
+/**
+ * Get the duration (in milliseconds) between two dates.
+ *
+ * @param target The date when the thing will happen or did happen.
+ * @param current Today's date (or a different date to measure from).
+ */
+export const getDuration = (target?: PossibleDate, current?: PossibleDate): number => getDate(target).getTime() - getDate(current).getTime();
+
 /** Count the number of seconds until a date. */
-export const secondsUntil = (target: PossibleDate, current?: PossibleDate): number => Math.round(getDate(target).getTime() - getDate(current).getTime()) / 1000;
+export const getSecondsUntil = (target: PossibleDate, current?: PossibleDate): number => getDuration(target, current) / 1000;
 
 /** Count the number of days ago a date was. */
-export const secondsAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - secondsUntil(target, current);
+export const getSecondsAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - getSecondsUntil(target, current);
 
 /** Count the number of days until a date. */
-export const daysUntil = (target: PossibleDate, current?: PossibleDate): number => Math.round((getMidnight(target).getTime() - getMidnight(current).getTime()) / 86400000);
+export const getDaysUntil = (target: PossibleDate, current?: PossibleDate): number => Math.round((getMidnight(target).getTime() - getMidnight(current).getTime()) / 86400000);
 
 /** Count the number of days ago a date was. */
-export const daysAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - daysUntil(target, current);
+export const getDaysAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - getDaysUntil(target, current);
 
 /** Count the number of weeks until a date. */
-export const weeksUntil = (target: PossibleDate, current?: PossibleDate): number => Math.floor(daysUntil(target, current) / 7);
+export const getWeeksUntil = (target: PossibleDate, current?: PossibleDate): number => Math.floor(getDaysUntil(target, current) / 7);
 
 /** Count the number of weeks ago a date was. */
-export const weeksAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - weeksUntil(target, current);
+export const getWeeksAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - getWeeksUntil(target, current);
 
-/**
- * Get information about the difference between two dates.
- * - Used by `formatWhen()` and `formatAgo()` etc
- * @returns Tuple in `[amount, units]` format, e.g. `[3, "days"]` or `[-16, "hours"]` or `[1, "week"]`
- */
-function diffDates(target?: PossibleDate, current?: PossibleDate): [number, string] {
-	const seconds = (getDate(target).getTime() - getDate(current).getTime()) / 1000;
-	const abs = Math.abs(seconds);
-
-	// Up to 99 seconds, e.g. '22 seconds ago'
-	if (abs < 99) {
-		const num = Math.round(seconds);
-		return [num, num === 1 ? "second" : "seconds"];
-	}
-	// Up to one hour  — show minutes, e.g. '18 minutes ago'
-	if (abs < 3600) {
-		const num = Math.round(seconds / 60);
-		return [num, num === 1 ? "minute" : "minutes"];
-	}
-	// Up to 24 hours — show hours, e.g. '23 hours ago'
-	if (abs < 86400) {
-		const num = Math.round(seconds / 3600);
-		return [num, num === 1 ? "hour" : "hours"];
-	}
-	// Up to 2 weeks — show days, e.g. '13 days ago'
-	if (abs < 1209600) {
-		const num = Math.round(seconds / 86400);
-		return [num, num === 1 ? "day" : "days"];
-	}
-	// Up to 2 months — show weeks, e.g. '6 weeks ago'
-	if (abs < 5184000) {
-		const num = Math.round(seconds / 604800);
-		return [num, num === 1 ? "week" : "weeks"];
-	}
-	// Up to 18 months — show months, e.g. '6 months ago'
-	if (abs < 46656000) {
-		const num = Math.round(seconds / 2592000);
-		return [num, num === 1 ? "month" : "months"];
-	}
-	// Above 18 months — show years, e.g. '2 years ago'
-	return [Math.round(seconds / 31536000), "year"];
+/** Format a full description of a duration of time using the most reasonable units e.g. `5 years` or `1 week` or `4 minutes` or `12 milliseconds`. */
+export function formatFullDuration(ms: number): string {
+	const abs = Math.abs(ms);
+	if (abs <= 99 * SECOND) return formatFullQuantity(ms, "second", "seconds", 0); // Up to 99 seconds, e.g. '22 seconds ago'
+	if (abs <= HOUR) return formatFullQuantity(ms / MINUTE, "minute", "minutes", 0); // Up to one hour  — show minutes, e.g. '18 minutes ago'
+	if (abs <= DAY) return formatFullQuantity(ms / HOUR, "hour", "hours", 0); // Up to one day — show hours, e.g. '23 hours ago'
+	if (abs <= 2 * WEEK) return formatFullQuantity(ms / DAY, "day", "days", 0); // Up to 2 weeks — show days, e.g. '13 days ago'
+	if (abs <= 10 * WEEK) return formatFullQuantity(ms / WEEK, "week", "weeks", 0); // Up to 2 months — show weeks, e.g. '6 weeks ago'
+	if (abs <= 18 * MONTH) return formatFullQuantity(ms / MONTH, "month", "months", 0); // Up to 18 months — show months, e.g. '6 months ago'
+	return formatFullQuantity(ms / YEAR, "year", "years", 0); // Above 18 months — show years, e.g. '2 years ago'
 }
 
-/** Return a friendly gap between two dates, e.g. `in 10 days` or `16 hours ago` or `yesterday` */
+/** Format a description of a duration of time using the most reasonable units e.g. `5y` or `4m` or `12ms`. */
+export function formatDuration(ms: number): string {
+	const abs = Math.abs(ms);
+	if (abs <= 99 * SECOND) return formatQuantity(ms, "s", 0); // Up to 99 seconds, e.g. '22 seconds ago'
+	if (abs <= HOUR) return formatQuantity(ms / MINUTE, "m", 0); // Up to one hour  — show minutes, e.g. '18 minutes ago'
+	if (abs <= DAY) return formatQuantity(ms / HOUR, "h", 0); // Up to one day — show hours, e.g. '23 hours ago'
+	if (abs <= 2 * WEEK) return formatQuantity(ms / DAY, "d", 0); // Up to 2 weeks — show days, e.g. '13 days ago'
+	if (abs <= 10 * WEEK) return formatQuantity(ms / WEEK, "w", 0); // Up to 2 months — show weeks, e.g. '6 weeks ago'
+	if (abs <= 18 * MONTH) return formatQuantity(ms / MONTH, "m", 0); // Up to 18 months — show months, e.g. '6 months ago'
+	return formatQuantity(ms / YEAR, "y", 0); // Above 18 months — show years, e.g. '2 years ago'
+}
+
+/**
+ * Return full description of the gap between two dates, e.g. `in 10 days` or `2 hours ago`
+ *
+ * @param target The date when the thing will happen or did happen.
+ * @param current Today's date (or a different date to measure from).
+ */
+export function formatFullWhen(target: PossibleDate, current?: PossibleDate): string {
+	const ms = getDuration(target, current);
+	const abs = Math.abs(ms);
+	const duration = formatFullDuration(abs);
+	return abs < 10 * SECOND ? "just now" : ms > 0 ? `in ${duration}` : `${duration} ago`;
+}
+
+/**
+ * Return full description of when a date happened, e.g. `10 days` or `2 hours` or `-1 week`
+ *
+ * @param target The date when the thing will happen.
+ * @param current Today's date (or a different date to measure from).
+ */
+export const formatFullUntil = (target: PossibleDate, current?: PossibleDate): string => formatFullDuration(getDuration(target, current));
+
+/**
+ * Return full description of when a date will happen, e.g. `10 days` or `2 hours` or `-1 week`
+ *
+ * @param target The date when the thing happened.
+ * @param current Today's date (or a different date to measure from).
+ */
+export const formatFullAgo = (target: PossibleDate, current?: PossibleDate): string => formatFullDuration(getDuration(current, target));
+
+/**
+ * Compact how long until a date happens, e.g. `in 10d` or `2h ago` or `in 1w`
+ *
+ * @param target The date when the thing will happen.
+ * @param current Today's date (or a different date to measure from).
+ */
 export function formatWhen(target: PossibleDate, current?: PossibleDate): string {
-	const [amount, unit] = diffDates(target, current);
-
-	// Special case for rough equality.
-	if (unit === "second" && amount > -30 && amount < 30) return "just now";
-
-	// Return either `in 22 days` or `1 hour ago`
-	const future = amount >= 0;
-	const abs = Math.abs(amount);
-	const str = formatNumber(abs);
-	return future ? `in ${str} ${unit}` : `${str} ${unit} ago`;
+	const ms = getDuration(target, current);
+	const abs = Math.abs(ms);
+	const duration = formatDuration(abs);
+	return abs < 10 * SECOND ? "just now" : ms > 0 ? `in ${duration}` : `${duration} ago`;
 }
 
 /**
- * Return when a date happened, e.g. `10 days` or `2 hours` or `-1 week`
+ * Return short description of when a date happened, e.g. `10d` or `2h` or `-1w`
+ *
  * @param target The date when the thing will happen.
  * @param current Today's date (or a different date to measure from).
  */
-export function formatUntil(target: PossibleDate, current?: PossibleDate): string {
-	const [amount, units] = diffDates(target, current);
-	return `${formatNumber(amount)} ${units}`;
-}
+export const formatUntil = (target: PossibleDate, current?: PossibleDate): string => formatDuration(getDuration(target, current));
 
 /**
- * Return a compact version of when a date happened, e.g. `10d` or `2h` or `-1w`
- * @param target The date when the thing will happen.
- * @param current Today's date (or a different date to measure from).
- */
-export function formatShortUntil(target: PossibleDate, current?: PossibleDate): string {
-	const [amount, units] = diffDates(target, current);
-	return `${formatNumber(amount)}${units.substr(0, 1)}`;
-}
-
-/**
- * Return when a date will happen, e.g. `10 days` or `2 hours` or `-1 week`
+ * Return short description of when a date will happen, e.g. `10d` or `2h` or `-1w`
+ *
  * @param target The date when the thing happened.
  * @param current Today's date (or a different date to measure from).
  */
-export function formatAgo(target: PossibleDate, current?: PossibleDate): string {
-	const [amount, units] = diffDates(current, target);
-	return `${formatNumber(amount)} ${units}`;
-}
-
-/**
- * Return a compact version of when a date will happen, e.g. `10d` or `2h` or `-1w`
- * @param target The date when the thing happened.
- * @param current Today's date (or a different date to measure from).
- */
-export function formatShortAgo(target: PossibleDate, current?: PossibleDate): string {
-	const [amount, units] = diffDates(current, target);
-	return `${formatNumber(amount)}${units.substr(0, 1)}`;
-}
+export const formatAgo = (target: PossibleDate, current?: PossibleDate): string => formatDuration(getDuration(current, target));
 
 /** Format a date in the browser locale. */
-export function formatDate(date: PossibleDate, options?: Intl.DateTimeFormatOptions): string {
-	return new Intl.DateTimeFormat(undefined, options).format(getDate(date));
-}
+export const formatDate = (date: PossibleDate): string => _formatter.format(getDate(date));
+const _formatter = new Intl.DateTimeFormat(undefined, {});
 
 /** Is a date in the past? */
 export const isPast = (target: PossibleDate, current?: PossibleDate): boolean => getDate(target) < getDate(current);

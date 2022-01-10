@@ -5,6 +5,15 @@ import { isData } from "./data.js";
 import { ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
 
+/** Non-breaking space. */
+export const NBSP = "\xA0";
+
+/** Thin space. */
+export const THINSP = "\u2009";
+
+/** Non-breaking narrow space. */
+export const NNBSP = "\u202F";
+
 /** Is a value a string? */
 export const isString = (v: unknown): v is string => typeof v === "string";
 
