@@ -7,6 +7,9 @@ test("Deferred works correctly", async () => {
 	expect(promise.resolve).toBeInstanceOf(Function);
 	expect(promise.reject).toBeInstanceOf(Function);
 	expect(promise.then()).toBeInstanceOf(Promise);
-	setTimeout(() => promise.resolve("ABC"), 50);
+	// promise.resolve("ABC");
+	setTimeout(() => {
+		promise.resolve("ABC");
+	}, 50);
 	expect(await promise.then()).toBe("ABC");
 });
