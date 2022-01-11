@@ -12,6 +12,11 @@ export type PropUpdates<T extends Data> = { readonly [K in keyof T]?: T[K] | Upd
 
 /** Update that can be applied to a data object to update its props. */
 export class DataUpdate<T extends Data> extends Update<T> implements Iterable<Prop<PropUpdates<T>>>, Transformable<T, T> {
+	/** Return a data update with a specific prop marked for update. */
+	static with<X extends Data, K extends Key<X>>(key: Nullish<K>, value: X[K] | Update<X[K]>): DataUpdate<X> {
+		return new DataUpdate<X>(!isNullish(key) ? ({ [key]: value } as PropUpdates<X>) : {});
+	}
+
 	readonly updates: PropUpdates<T>;
 	constructor(props: PropUpdates<T>) {
 		super();
@@ -21,7 +26,7 @@ export class DataUpdate<T extends Data> extends Update<T> implements Iterable<Pr
 		return transformProps<T>(existing, this.updates);
 	}
 
-	/** Return a new object with the specified additional transform for a prop. */
+	/** Return a data update with a specific prop marked for update. */
 	with<K extends Key<T>>(key: Nullish<K>, value: T[K] | Update<T[K]>): this {
 		if (isNullish(key)) return this;
 		return { __proto__: Object.getPrototypeOf(this), ...this, updates: { ...this.updates, [key]: value } };
