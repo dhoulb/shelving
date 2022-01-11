@@ -131,12 +131,12 @@ export class UpdateOperation<T extends Data> extends Operation {
 /** Represent a delete operation made to a single document in a database. */
 export class DeleteOperation extends Operation {
 	/** Create a new delete operation on a document. */
-	static on({ collection, id }: DatabaseDocument): DeleteOperation {
+	static on<X extends Data>({ collection, id }: DatabaseDocument<X>): DeleteOperation {
 		return new DeleteOperation(collection, id);
 	}
 
 	/** Run a new delete operation on a document. */
-	static run({ collection, id, db }: DatabaseDocument): Promise<DeleteOperation> {
+	static run<X extends Data>({ collection, id, db }: DatabaseDocument<X>): Promise<DeleteOperation> {
 		return new DeleteOperation(collection, id).run(db);
 	}
 
