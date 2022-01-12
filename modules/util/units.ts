@@ -39,6 +39,7 @@ export type UnitReference =
 	| "milliliter"
 	| "gallon"
 	| "fluid-ounce"
+	| "milligram"
 	| "gram"
 	| "kilogram"
 	| "pound"
@@ -69,6 +70,7 @@ export const UNITS: { [K in UnitReference]: UnitData } = {
 	"liter": { type: "volume", base: 1000, suffix: "l" },
 	"fluid-ounce": { type: "volume", base: 29.5735295625, gallon: 128, suffix: `fl${NNBSP}oz` },
 	"gallon": { type: "volume", base: 3785.411784, suffix: "gal" },
+	"milligram": { type: "mass", base: 0.001, suffix: "mg" },
 	"gram": { type: "mass", base: 1, suffix: "g" }, // Base for mass.
 	"kilogram": { type: "mass", base: 1000, suffix: "kg" },
 	"ounce": { type: "mass", base: 28.349523125, pound: 0.0625, suffix: "oz" },
