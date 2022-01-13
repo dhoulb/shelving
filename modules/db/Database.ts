@@ -275,7 +275,7 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	 * @return Document's data (possibly promised).
 	 * @throws RequiredError if the document's result was undefined.
 	 */
-	get data(): T | PromiseLike<T> {
+	get data(): DocumentData<T> | PromiseLike<DocumentData<T>> {
 		return callAsync(getDocumentData, this.db.provider.get(this), this);
 	}
 
