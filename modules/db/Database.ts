@@ -135,8 +135,8 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return Entry in `[id, data]` format for the first document.
 	 * @throws RequiredError if there were no results for this query.
 	 */
-	get result(): Entry<T> | undefined | PromiseLike<Entry<T> | undefined> {
-		return callAsync(getFirstItem, this.db.provider.getQuery(this.max(1)));
+	get result(): DocumentResult<T> | PromiseLike<DocumentResult<T>> {
+		return callAsync(getQueryResult, this.db.provider.getQuery(this.max(1)), this);
 	}
 
 	/**
@@ -145,7 +145,7 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @return Entry in `[id, data]` format for the first document.
 	 * @throws RequiredError if there were no results for this query.
 	 */
-	get data(): Entry<T> | PromiseLike<Entry<T>> {
+	get data(): DocumentData<T> | PromiseLike<DocumentData<T>> {
 		return callAsync(getQueryData, this.db.provider.getQuery(this.max(1)), this);
 	}
 
@@ -216,9 +216,16 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 }
 
 /** Get the data for a document from a result for that document. */
-export function getQueryData<T extends Data>(entries: Entries<T>, ref: DatabaseQuery<T>): Entry<T> {
+export function getQueryData<T extends Data>(entries: Entries<T>, ref: DatabaseQuery<T>): DocumentData<T> {
 	const first = getFirstItem(entries);
-	if (first) return first;
+	if (first) return getDocumentData(first[1], ref.doc(first[0]));
+	throw new QueryRequiredError(ref);
+}
+
+/** Get the data for a document from a result for that document. */
+export function getQueryResult<T extends Data>(entries: Entries<T>, ref: DatabaseQuery<T>): DocumentResult<T> {
+	const first = getFirstItem(entries);
+	if (first) return getDocumentData(first[1], ref.doc(first[0]));
 	throw new QueryRequiredError(ref);
 }
 
@@ -257,8 +264,8 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	 * Get the result of this document.
 	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
 	 */
-	get result(): Result<T> | PromiseLike<Result<T>> {
-		return this.db.provider.get(this);
+	get result(): DocumentResult<T> | PromiseLike<DocumentResult<T>> {
+		return callAsync(getDocumentResult, this.db.provider.get(this), this);
 	}
 
 	/**
@@ -313,8 +320,19 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	}
 }
 
+/** Database data embeds the corresponding `Document` instance and string ID into the data. */
+export type DocumentData<T extends Data> = T & { _id: string; _doc: DatabaseDocument<T> };
+
 /** Get the data for a document from a result for that document. */
-export function getDocumentData<T extends Data>(result: Result<T>, ref: DatabaseDocument<T>): T {
-	if (result) return result;
+export function getDocumentData<T extends Data>(result: Result<T>, ref: DatabaseDocument<T>): DocumentData<T> {
+	if (result) return { ...result, _id: ref.id, _doc: ref };
 	throw new DocumentRequiredError(ref);
+}
+
+/** Database result embeds the corresponding `Document` instance and string ID into the result. */
+export type DocumentResult<T extends Data> = DocumentData<T> | null;
+
+/** Get the data for a document from a result for that document. */
+export function getDocumentResult<T extends Data>(result: Result<T>, ref: DatabaseDocument<T>): DocumentResult<T> {
+	return result ? getDocumentData(result, ref) : null;
 }

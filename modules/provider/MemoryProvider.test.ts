@@ -37,14 +37,14 @@ test("MemoryProvider: set/get/delete documents", () => {
 	expect(people.doc("person2").set(person2)).toBe(undefined);
 	expect(people.doc("person3").set(person3)).toBe(undefined);
 	// Check documents.
-	expect(basics.doc("basic1").result).toBe(basic1);
-	expect(basics.doc("basic2").result).toBe(basic2);
-	expect(basics.doc("basic3").result).toBe(basic3);
+	expect(basics.doc("basic1").result).toMatchObject(basic1);
+	expect(basics.doc("basic2").result).toMatchObject(basic2);
+	expect(basics.doc("basic3").result).toMatchObject(basic3);
 	expect(basics.doc("basicNone").result).toBe(null);
 	expect(basics.count).toBe(3);
-	expect(people.doc("person1").result).toBe(person1);
-	expect(people.doc("person2").result).toBe(person2);
-	expect(people.doc("person3").result).toBe(person3);
+	expect(people.doc("person1").result).toMatchObject(person1);
+	expect(people.doc("person2").result).toMatchObject(person2);
+	expect(people.doc("person3").result).toMatchObject(person3);
 	expect(people.doc("peopleNone").result).toBe(null);
 	expect(people.count).toBe(3);
 	// Update documents.
@@ -76,11 +76,11 @@ test("MemoryProvider: set/get/delete collections", () => {
 	for (const [k, v] of peopleResults) people.doc(k).set(v);
 	// Check collections.
 	expect(basics.entries).toEqual(basicResults);
-	expect(basics.doc("basic1").result).toEqual(basic1);
-	expect(basics.doc("basic6").result).toEqual(basic6);
+	expect(basics.doc("basic1").result).toMatchObject(basic1);
+	expect(basics.doc("basic6").result).toMatchObject(basic6);
 	expect(basics.doc("basicNone").result).toBe(null);
 	expect(people.entries).toEqual(peopleResults);
-	expect(people.doc("person4").result).toEqual(person4);
+	expect(people.doc("person4").result).toMatchObject(person4);
 	expect(people.doc("peopleNone").result).toBe(null);
 	// Delete collections.
 	expect(basics.delete()).toBe(9);
