@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DatabaseDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Data, Unsubscriber, Handler, callAsync, getDocumentData } from "../index.js";
+import { DatabaseDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Data, Unsubscriber, Handler, callAsync, getDocumentData, DocumentData } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -95,9 +95,9 @@ export function useDocument<T extends Data>(ref: DatabaseDocument<T> | undefined
 }
 
 /** Use the data of a document or `undefined` if the query has no matching results (or a promise indicating the result is loading). */
-export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): T | PromiseLike<T>;
-export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined;
-export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): T | PromiseLike<T> | undefined {
+export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T>, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>>;
+export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>> | undefined;
+export function useAsyncDocumentData<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>> | undefined {
 	const result = useAsyncDocument(ref, maxAge);
 	return ref && result !== undefined ? callAsync(getDocumentData, result, ref) : undefined;
 }
