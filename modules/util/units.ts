@@ -58,24 +58,24 @@ export type UnitReference =
 export const UNITS: { [K in UnitReference]: UnitData } = {
 	"percent": { type: "percentage", base: 1, suffix: "%" },
 	"degree": { type: "angle", base: 1, suffix: "deg" },
-	"millimeter": { type: "length", base: 0.001, suffix: "mm" },
-	"centimeter": { type: "length", base: 0.01, suffix: "cm" },
-	"meter": { type: "length", base: 1, centimeter: 100, millimeter: 1000, suffix: "m" }, // Base for length.
-	"kilometer": { type: "length", base: 1000, centimeter: 100000, millimeter: 1000000, suffix: "km" },
-	"inch": { type: "length", base: 0.0254, suffix: "in" },
-	"foot": { type: "length", base: 0.3048, inch: 12, suffix: "ft", plural: "feet" },
-	"yard": { type: "length", base: 0.9144, inch: 36, foot: 3, suffix: "yd" },
-	"mile": { type: "length", base: 1609.344, yard: 1760, foot: 5280, inch: 63360, suffix: "mi" },
+	"millimeter": { type: "length", base: 1, suffix: "mm" },
+	"centimeter": { type: "length", base: 10, suffix: "cm" },
+	"meter": { type: "length", base: 1000, centimeter: 100, millimeter: 1000, suffix: "m" }, // Base for length.
+	"kilometer": { type: "length", base: 1000000, centimeter: 100000, millimeter: 1000000, suffix: "km" },
+	"inch": { type: "length", base: 25.4, suffix: "in" },
+	"foot": { type: "length", base: 304.8, inch: 12, suffix: "ft", plural: "feet" },
+	"yard": { type: "length", base: 914.4, inch: 36, foot: 3, suffix: "yd" },
+	"mile": { type: "length", base: 1609344, yard: 1760, foot: 5280, inch: 63360, suffix: "mi" },
 	"milliliter": { type: "volume", base: 1, suffix: "ml" }, // Base for volume.
 	"liter": { type: "volume", base: 1000, suffix: "l" },
 	"fluid-ounce": { type: "volume", base: 29.5735295625, gallon: 128, suffix: `fl${NNBSP}oz` },
 	"gallon": { type: "volume", base: 3785.411784, suffix: "gal" },
-	"milligram": { type: "mass", base: 0.001, suffix: "mg" },
-	"gram": { type: "mass", base: 1, suffix: "g" }, // Base for mass.
-	"kilogram": { type: "mass", base: 1000, suffix: "kg" },
-	"ounce": { type: "mass", base: 28.349523125, pound: 0.0625, suffix: "oz" },
-	"pound": { type: "mass", base: 453.59237, ounce: 16, suffix: "lb" },
-	"stone": { type: "mass", base: 6350.29318, pound: 14, ounce: 224, suffix: "st", plural: "stone" },
+	"milligram": { type: "mass", base: 1, suffix: "mg" }, // Base for mass.
+	"gram": { type: "mass", base: 1000, suffix: "g" },
+	"kilogram": { type: "mass", base: 1000000, suffix: "kg" },
+	"ounce": { type: "mass", base: 28349.523125, pound: 0.0625, suffix: "oz" },
+	"pound": { type: "mass", base: 453592.37, ounce: 16, suffix: "lb" },
+	"stone": { type: "mass", base: 6350293.18, pound: 14, ounce: 224, suffix: "st", plural: "stone" },
 	"millisecond": { type: "time", base: 1, suffix: "ms" }, // Base for time.
 	"second": { type: "time", base: SECOND, suffix: "s" },
 	"minute": { type: "time", base: MINUTE, suffix: "m" },
