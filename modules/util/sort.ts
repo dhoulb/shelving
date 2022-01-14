@@ -77,16 +77,16 @@ export function rankAsc(left: unknown, right: unknown): number {
 export const rankDesc = (left: unknown, right: unknown): number => 0 - rankAsc(left, right);
 
 /** Rank the keys of two entries in ascending order. */
-export const rankEntryKeyAsc = ([l]: Entry, [r]: Entry): number => rankAsc(l, r);
+export const rankKeyAsc = ([l]: Entry, [r]: Entry): number => rankAsc(l, r);
 
 /** Rank the keys of two entries in descending order. */
-export const rankEntryKeyDesc = ([l]: Entry, [r]: Entry): number => rankDesc(l, r);
+export const rankKeyDesc = ([l]: Entry, [r]: Entry): number => rankDesc(l, r);
 
 /** Rank the values of two entries in ascending order. */
-export const rankEntryValueAsc = ([, l]: Entry, [, r]: Entry): number => rankAsc(l, r);
+export const rankValueAsc = ([, l]: Entry, [, r]: Entry): number => rankAsc(l, r);
 
 /** Rank the values of two entries in descending order. */
-export const rankEntryValueDesc = ([, l]: Entry, [, r]: Entry): number => rankDesc(l, r);
+export const rankValueDesc = ([, l]: Entry, [, r]: Entry): number => rankDesc(l, r);
 
 /**
  * Quick sort algorithm.
@@ -153,20 +153,20 @@ export function sortArray<T>(input: ImmutableArray<T>, ranker: Ranker<T> = rankA
  * Sort an iterable set of entries (defaults to sorting by key in ascending order).
  * - Always returns an array
  */
-export function sortEntries<T>(input: Iterable<Entry<T>>, ranker: Ranker<Entry<T>> = rankEntryKeyAsc): ImmutableArray<Entry<T>> {
+export function sortEntries<T>(input: Iterable<Entry<T>>, ranker: Ranker<Entry<T>> = rankKeyAsc): ImmutableArray<Entry<T>> {
 	const array = Array.from(input);
 	_quicksort(array, ranker);
 	return array;
 }
 
 /** Sort a map-like object using a ranker (defaults to sorting by key in ascending order). */
-export function sortObject<T>(input: ImmutableObject<T>, ranker: Ranker<Entry<T>> = rankEntryKeyAsc): ImmutableObject<T> {
+export function sortObject<T>(input: ImmutableObject<T>, ranker: Ranker<Entry<T>> = rankKeyAsc): ImmutableObject<T> {
 	const array = Object.entries(input);
 	return _quicksort(array, ranker) ? Object.fromEntries(array) : input;
 }
 
 /** Sort a map using a ranker (defaults to sorting by key in ascending order). */
-export function sortMap<T>(input: ImmutableMap<T>, ranker: Ranker<Entry<T>> = rankEntryKeyAsc): ImmutableMap<T> {
+export function sortMap<T>(input: ImmutableMap<T>, ranker: Ranker<Entry<T>> = rankKeyAsc): ImmutableMap<T> {
 	const array = Array.from(input);
 	return _quicksort(array, ranker) ? new Map(array) : input;
 }
