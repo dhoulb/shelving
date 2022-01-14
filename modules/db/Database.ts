@@ -321,11 +321,11 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 }
 
 /** Database data embeds the corresponding `Document` instance and string ID into the data. */
-export type DocumentData<T extends Data> = T & { _id: string; _doc: DatabaseDocument<T> };
+export type DocumentData<T extends Data> = T & { id: string; doc: DatabaseDocument<T> };
 
 /** Get the data for a document from a result for that document. */
 export function getDocumentData<T extends Data>(result: Result<T>, ref: DatabaseDocument<T>): DocumentData<T> {
-	if (result) return { ...result, _id: ref.id, _doc: ref };
+	if (result) return { ...result, id: ref.id, doc: ref };
 	throw new DocumentRequiredError(ref);
 }
 
