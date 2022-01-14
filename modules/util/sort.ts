@@ -34,7 +34,7 @@ export function rank<T>(left: T, ranker: Ranker<T>, right: T) {
  *
  * @returns Number below zero if `a` is higher, number above zero if `b` is higher, or `0` if they're equally sorted.
  */
-export function rankAscending(left: unknown, right: unknown): number {
+export function rankAsc(left: unknown, right: unknown): number {
 	// Exactly equal is easy.
 	if (left === right) return 0;
 
@@ -74,16 +74,16 @@ export function rankAscending(left: unknown, right: unknown): number {
 }
 
 /** Rank two values in descending order. */
-export const rankDesc = (left: unknown, right: unknown): number => 0 - rankAscending(left, right);
+export const rankDesc = (left: unknown, right: unknown): number => 0 - rankAsc(left, right);
 
 /** Rank the keys of two entries in ascending order. */
-export const rankEntryKeyAsc = ([l]: Entry, [r]: Entry): number => rankAscending(l, r);
+export const rankEntryKeyAsc = ([l]: Entry, [r]: Entry): number => rankAsc(l, r);
 
 /** Rank the keys of two entries in descending order. */
 export const rankEntryKeyDesc = ([l]: Entry, [r]: Entry): number => rankDesc(l, r);
 
 /** Rank the values of two entries in ascending order. */
-export const rankEntryValueAsc = ([, l]: Entry, [, r]: Entry): number => rankAscending(l, r);
+export const rankEntryValueAsc = ([, l]: Entry, [, r]: Entry): number => rankAsc(l, r);
 
 /** Rank the values of two entries in descending order. */
 export const rankEntryValueDesc = ([, l]: Entry, [, r]: Entry): number => rankDesc(l, r);
@@ -137,14 +137,14 @@ function _quicksort<T>(items: MutableArray<T>, ranker: Ranker<T>, leftPointer = 
 }
 
 /** Sort an iterable set of items using a ranker (defaults to sorting in ascending order). */
-export function sortItems<T>(input: Iterable<T>, ranker: Ranker<T> = rankAscending): ImmutableArray<T> {
+export function sortItems<T>(input: Iterable<T>, ranker: Ranker<T> = rankAsc): ImmutableArray<T> {
 	const array = Array.from(input);
 	_quicksort(array, ranker);
 	return array;
 }
 
 /** Sort an array using a ranker (defaults to sorting in ascending order) */
-export function sortArray<T>(input: ImmutableArray<T>, ranker: Ranker<T> = rankAscending): ImmutableArray<T> {
+export function sortArray<T>(input: ImmutableArray<T>, ranker: Ranker<T> = rankAsc): ImmutableArray<T> {
 	const output = Array.from(input);
 	return _quicksort(output, ranker) ? output : input;
 }
@@ -175,7 +175,7 @@ export function sortMap<T>(input: ImmutableMap<T>, ranker: Ranker<Entry<T>> = ra
 export class TransformRanker<T, TT> implements Rankable<T> {
 	private _transformer: Transformer<T, TT>;
 	private _ranker: Ranker<TT>;
-	constructor(transformer: Transformer<T, TT>, ranker: Ranker<TT> = rankAscending) {
+	constructor(transformer: Transformer<T, TT>, ranker: Ranker<TT> = rankAsc) {
 		this._transformer = transformer;
 		this._ranker = ranker;
 	}

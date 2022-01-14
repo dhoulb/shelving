@@ -1,9 +1,9 @@
-import { filterArray, isArrayWith, isEqual, isGreater, isEqualGreater, isInArray, isLess, isEqualLess, isNotEqual } from "../index.js";
+import { filterArray, isArrayWith, isEqual, isGreater, isEqualGreater, isInArray, isLess, isEqualLess, notEqual } from "../index.js";
 
 test("filterArray()", () => {
 	// Filters correctly.
 	expect(filterArray(["a", "b", "c"], isEqual, "b")).toEqual(["b"]);
-	expect(filterArray(["a", "b", "c"], isNotEqual, "b")).toEqual(["a", "c"]);
+	expect(filterArray(["a", "b", "c"], notEqual, "b")).toEqual(["a", "c"]);
 	expect(filterArray(["a", "b", "c"], isInArray, ["c", "b"])).toEqual(["b", "c"]);
 	expect(filterArray([1, 2, 3], isGreater, 2)).toEqual([3]);
 	expect(filterArray([1, 2, 3], isEqualGreater, 2)).toEqual([2, 3]);
