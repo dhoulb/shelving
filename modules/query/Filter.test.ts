@@ -1,69 +1,100 @@
 import { basicResults, basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9, expectUnorderedKeys } from "../test/index.js";
-import { EqualFilter, InArrayFilter, ArrayWithFilter, LessFilter, EqualLessFilter, GreaterFilter, EqualGreaterFilter } from "../index.js";
+import { Filter } from "../index.js";
 
-test("EqualFilter", () => {
-	expect(new EqualFilter("str", "aaa").match(["basic1", basic1])).toBe(true);
-	expect(new EqualFilter("str", "aaa").match(["basic2", basic2])).toBe(false);
-	expect(new EqualFilter("id", "basic1").match(["basic1", basic1])).toBe(true);
-	expect(new EqualFilter("id", "basic1").match(["basic2", basic2])).toBe(false);
-	expectUnorderedKeys(new EqualFilter("str", "aaa").transform(basicResults), ["basic1"]);
-	expectUnorderedKeys(new EqualFilter("str", "NOPE").transform(basicResults), []);
-	expectUnorderedKeys(new EqualFilter("num", 300).transform(basicResults), ["basic3"]);
-	expectUnorderedKeys(new EqualFilter("num", 999999).transform(basicResults), []);
-	expectUnorderedKeys(new EqualFilter("group", "a").transform(basicResults), ["basic1", "basic2", "basic3"]);
-	expectUnorderedKeys(new EqualFilter("group", "b").transform(basicResults), ["basic4", "basic5", "basic6"]);
-	expectUnorderedKeys(new EqualFilter("group", "c").transform(basicResults), ["basic7", "basic8", "basic9"]);
-	expectUnorderedKeys(new EqualFilter("id", "basic5").transform(basicResults), ["basic5"]);
+test("Filter.on()", () => {
+	expect(Filter.on("a", 1)).toEqual(new Filter("a", "IS", 1));
+	expect(Filter.on("!a", 1)).toEqual(new Filter("a", "NOT", 1));
+	expect(Filter.on("a", [1])).toEqual(new Filter("a", "IN", [1]));
+	expect(Filter.on("!a", [1])).toEqual(new Filter("a", "OUT", [1]));
+	expect(Filter.on("a[]", 1)).toEqual(new Filter("a", "CONTAINS", 1));
+	expect(Filter.on("a>", 1)).toEqual(new Filter("a", "GT", 1));
+	expect(Filter.on("a>=", 1)).toEqual(new Filter("a", "GTE", 1));
+	expect(Filter.on("a<", 1)).toEqual(new Filter("a", "LT", 1));
+	expect(Filter.on("a<=", 1)).toEqual(new Filter("a", "LTE", 1));
 });
-test("InArrayFilter", () => {
-	expectUnorderedKeys(new InArrayFilter("num", [200, 600, 900, 999999]).transform(basicResults), ["basic2", "basic6", "basic9"]);
-	expectUnorderedKeys(new InArrayFilter("str", ["aaa", "ddd", "eee", "NOPE"]).transform(basicResults), ["basic1", "basic4", "basic5"]);
-	expectUnorderedKeys(new InArrayFilter("num", []).transform(basicResults), []);
-	expectUnorderedKeys(new InArrayFilter("str", []).transform(basicResults), []);
+test("IS", () => {
+	// Match plain.
+	expect(new Filter("str", "IS", "aaa").match(["basic1", basic1])).toBe(true);
+	expect(new Filter("str", "IS", "aaa").match(["basic2", basic2])).toBe(false);
+	expect(new Filter("id", "IS", "basic1").match(["basic1", basic1])).toBe(true);
+	expect(new Filter("id", "IS", "basic1").match(["basic2", basic2])).toBe(false);
+	// Filter plain.
+	expectUnorderedKeys(new Filter("str", "IS", "aaa").transform(basicResults), ["basic1"]);
+	expectUnorderedKeys(new Filter("str", "IS", "NOPE").transform(basicResults), []);
+	expectUnorderedKeys(new Filter("num", "IS", 300).transform(basicResults), ["basic3"]);
+	expectUnorderedKeys(new Filter("num", "IS", 999999).transform(basicResults), []);
+	expectUnorderedKeys(new Filter("group", "IS", "a").transform(basicResults), ["basic1", "basic2", "basic3"]);
+	expectUnorderedKeys(new Filter("group", "IS", "b").transform(basicResults), ["basic4", "basic5", "basic6"]);
+	expectUnorderedKeys(new Filter("group", "IS", "c").transform(basicResults), ["basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(new Filter("id", "IS", "basic5").transform(basicResults), ["basic5"]);
 });
-test("ArrayContainsFilter", () => {
-	expectUnorderedKeys(new ArrayWithFilter("tags", "odd").transform(basicResults), ["basic1", "basic3", "basic5", "basic7", "basic9"]);
-	expectUnorderedKeys(new ArrayWithFilter("tags", "even").transform(basicResults), ["basic2", "basic4", "basic6", "basic8"]);
-	expectUnorderedKeys(new ArrayWithFilter("tags", "prime").transform(basicResults), ["basic1", "basic2", "basic3", "basic5", "basic7"]);
-	expectUnorderedKeys(new ArrayWithFilter("tags", "NOPE").transform(basicResults), []);
+test("IN", () => {
+	// Match array.
+	expect(new Filter("str", "IN", ["aaa"]).match(["basic1", basic1])).toBe(true);
+	expect(new Filter("str", "IN", ["aaa"]).match(["basic2", basic2])).toBe(false);
+	expect(new Filter("id", "IN", ["basic1"]).match(["basic1", basic1])).toBe(true);
+	expect(new Filter("id", "IN", ["basic1"]).match(["basic2", basic2])).toBe(false);
 });
-test("LessThanFilter", () => {
-	expectUnorderedKeys(new LessFilter("num", 500).transform(basicResults), ["basic1", "basic2", "basic3", "basic4"]);
-	expectUnorderedKeys(new LessFilter("num", 0).transform(basicResults), []);
-	expectUnorderedKeys(new LessFilter("num", 1000).transform(basicResults), basicResults.keys());
-	expectUnorderedKeys(new LessFilter("str", "ddd").transform(basicResults), ["basic1", "basic2", "basic3"]);
-	expectUnorderedKeys(new LessFilter("str", "a").transform(basicResults), []);
-	expectUnorderedKeys(new LessFilter("str", "zzz").transform(basicResults), basicResults.keys());
-	expectUnorderedKeys(new LessFilter("id", "basic3").transform(basicResults), ["basic1", "basic2"]);
-	expectUnorderedKeys(new LessFilter("id", "zzzzzz").transform(basicResults), basicResults.keys());
+test("NOT", () => {
+	// Match plain.
+	expect(new Filter("str", "NOT", "aaa").match(["basic1", basic1])).toBe(false);
+	expect(new Filter("str", "NOT", "aaa").match(["basic2", basic2])).toBe(true);
+	expect(new Filter("id", "NOT", "basic1").match(["basic1", basic1])).toBe(false);
+	expect(new Filter("id", "NOT", "basic1").match(["basic2", basic2])).toBe(true);
+	// Filter plain.
+	expectUnorderedKeys(new Filter("str", "NOT", "aaa").transform(basicResults), ["basic2", "basic3", "basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(new Filter("group", "NOT", "a").transform(basicResults), ["basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
 });
-test("LessThanEqualFilter", () => {
-	expectUnorderedKeys(new EqualLessFilter("num", 500).transform(basicResults), ["basic1", "basic2", "basic3", "basic4", "basic5"]);
-	expectUnorderedKeys(new EqualLessFilter("num", 0).transform(basicResults), []);
-	expectUnorderedKeys(new EqualLessFilter("num", 1000).transform(basicResults), basicResults.keys());
-	expectUnorderedKeys(new EqualLessFilter("str", "ddd").transform(basicResults), ["basic1", "basic2", "basic3", "basic4"]);
-	expectUnorderedKeys(new EqualLessFilter("str", "a").transform(basicResults), []);
-	expectUnorderedKeys(new EqualLessFilter("str", "zzz").transform(basicResults), basicResults.keys());
-	expectUnorderedKeys(new EqualLessFilter("id", "basic3").transform(basicResults), ["basic1", "basic2", "basic3"]);
-	expectUnorderedKeys(new EqualLessFilter("id", "zzzzzz").transform(basicResults), basicResults.keys());
+test("OUT", () => {
+	// Match array.
+	expect(new Filter("str", "OUT", ["aaa"]).match(["basic1", basic1])).toBe(false);
+	expect(new Filter("str", "OUT", ["aaa"]).match(["basic2", basic2])).toBe(true);
+	expect(new Filter("id", "OUT", ["basic1"]).match(["basic1", basic1])).toBe(false);
+	expect(new Filter("id", "OUT", ["basic1"]).match(["basic2", basic2])).toBe(true);
 });
-test("GreaterThanFilter", () => {
-	expectUnorderedKeys(new GreaterFilter("num", 500).transform(basicResults), ["basic6", "basic7", "basic8", "basic9"]);
-	expectUnorderedKeys(new GreaterFilter("num", 1000).transform(basicResults), []);
-	expectUnorderedKeys(new GreaterFilter("num", 0).transform(basicResults), basicResults.keys());
-	expectUnorderedKeys(new GreaterFilter("str", "eee").transform(basicResults), ["basic6", "basic7", "basic8", "basic9"]);
-	expectUnorderedKeys(new GreaterFilter("str", "kkk").transform(basicResults), []);
-	expectUnorderedKeys(new GreaterFilter("str", "").transform(basicResults), basicResults.keys());
-	expectUnorderedKeys(new GreaterFilter("id", "basic7").transform(basicResults), ["basic8", "basic9"]);
-	expectUnorderedKeys(new GreaterFilter("id", "").transform(basicResults), basicResults.keys());
+test("CONTAINS", () => {
+	expectUnorderedKeys(new Filter("tags", "CONTAINS", "odd").transform(basicResults), ["basic1", "basic3", "basic5", "basic7", "basic9"]);
+	expectUnorderedKeys(new Filter("tags", "CONTAINS", "even").transform(basicResults), ["basic2", "basic4", "basic6", "basic8"]);
+	expectUnorderedKeys(new Filter("tags", "CONTAINS", "prime").transform(basicResults), ["basic1", "basic2", "basic3", "basic5", "basic7"]);
+	expectUnorderedKeys(new Filter("tags", "CONTAINS", "NOPE").transform(basicResults), []);
 });
-test("GreaterThanEqualFilter", () => {
-	expectUnorderedKeys(new EqualGreaterFilter("num", 500).transform(basicResults), ["basic5", "basic6", "basic7", "basic8", "basic9"]);
-	expectUnorderedKeys(new EqualGreaterFilter("num", 1000).transform(basicResults), []);
-	expectUnorderedKeys(new EqualGreaterFilter("num", 0).transform(basicResults), basicResults.keys());
-	expectUnorderedKeys(new EqualGreaterFilter("str", "eee").transform(basicResults), ["basic5", "basic6", "basic7", "basic8", "basic9"]);
-	expectUnorderedKeys(new EqualGreaterFilter("str", "kkk").transform(basicResults), []);
-	expectUnorderedKeys(new EqualGreaterFilter("str", "").transform(basicResults), basicResults.keys());
-	expectUnorderedKeys(new EqualGreaterFilter("id", "basic7").transform(basicResults), ["basic7", "basic8", "basic9"]);
-	expectUnorderedKeys(new EqualGreaterFilter("id", "").transform(basicResults), basicResults.keys());
+test("LT", () => {
+	expectUnorderedKeys(new Filter("num", "LT", 500).transform(basicResults), ["basic1", "basic2", "basic3", "basic4"]);
+	expectUnorderedKeys(new Filter("num", "LT", 0).transform(basicResults), []);
+	expectUnorderedKeys(new Filter("num", "LT", 1000).transform(basicResults), basicResults.keys());
+	expectUnorderedKeys(new Filter("str", "LT", "ddd").transform(basicResults), ["basic1", "basic2", "basic3"]);
+	expectUnorderedKeys(new Filter("str", "LT", "a").transform(basicResults), []);
+	expectUnorderedKeys(new Filter("str", "LT", "zzz").transform(basicResults), basicResults.keys());
+	expectUnorderedKeys(new Filter("id", "LT", "basic3").transform(basicResults), ["basic1", "basic2"]);
+	expectUnorderedKeys(new Filter("id", "LT", "zzzzzz").transform(basicResults), basicResults.keys());
+});
+test("LTE", () => {
+	expectUnorderedKeys(new Filter("num", "LTE", 500).transform(basicResults), ["basic1", "basic2", "basic3", "basic4", "basic5"]);
+	expectUnorderedKeys(new Filter("num", "LTE", 0).transform(basicResults), []);
+	expectUnorderedKeys(new Filter("num", "LTE", 1000).transform(basicResults), basicResults.keys());
+	expectUnorderedKeys(new Filter("str", "LTE", "ddd").transform(basicResults), ["basic1", "basic2", "basic3", "basic4"]);
+	expectUnorderedKeys(new Filter("str", "LTE", "a").transform(basicResults), []);
+	expectUnorderedKeys(new Filter("str", "LTE", "zzz").transform(basicResults), basicResults.keys());
+	expectUnorderedKeys(new Filter("id", "LTE", "basic3").transform(basicResults), ["basic1", "basic2", "basic3"]);
+	expectUnorderedKeys(new Filter("id", "LTE", "zzzzzz").transform(basicResults), basicResults.keys());
+});
+test("GT", () => {
+	expectUnorderedKeys(new Filter("num", "GT", 500).transform(basicResults), ["basic6", "basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(new Filter("num", "GT", 1000).transform(basicResults), []);
+	expectUnorderedKeys(new Filter("num", "GT", 0).transform(basicResults), basicResults.keys());
+	expectUnorderedKeys(new Filter("str", "GT", "eee").transform(basicResults), ["basic6", "basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(new Filter("str", "GT", "kkk").transform(basicResults), []);
+	expectUnorderedKeys(new Filter("str", "GT", "").transform(basicResults), basicResults.keys());
+	expectUnorderedKeys(new Filter("id", "GT", "basic7").transform(basicResults), ["basic8", "basic9"]);
+	expectUnorderedKeys(new Filter("id", "GT", "").transform(basicResults), basicResults.keys());
+});
+test("GTE", () => {
+	expectUnorderedKeys(new Filter("num", "GTE", 500).transform(basicResults), ["basic5", "basic6", "basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(new Filter("num", "GTE", 1000).transform(basicResults), []);
+	expectUnorderedKeys(new Filter("num", "GTE", 0).transform(basicResults), basicResults.keys());
+	expectUnorderedKeys(new Filter("str", "GTE", "eee").transform(basicResults), ["basic5", "basic6", "basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(new Filter("str", "GTE", "kkk").transform(basicResults), []);
+	expectUnorderedKeys(new Filter("str", "GTE", "").transform(basicResults), basicResults.keys());
+	expectUnorderedKeys(new Filter("id", "GTE", "basic7").transform(basicResults), ["basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(new Filter("id", "GTE", "").transform(basicResults), basicResults.keys());
 });

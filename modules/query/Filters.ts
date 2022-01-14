@@ -1,41 +1,32 @@
 import { Entry, Data, Key, yieldFiltered, Entries, ImmutableArray, ArrayType } from "../util/index.js";
-import type { Filterable, QueryKey } from "./types.js";
-import { ArrayWithFilter, EqualFilter, Filter, EqualGreaterFilter, GreaterFilter, InArrayFilter, EqualLessFilter, LessFilter, NotEqualFilter } from "./Filter.js";
+import type { Filterable, FilterKey, FilterProps } from "./types.js";
+import { Filter } from "./Filter.js";
 import { Rules } from "./Rules.js";
+
+function* _yieldFilters<T extends Data>(props: FilterProps<T>): Generator<Filter<T>> {
+	for (const [key, value] of Object.entries(props)) yield Filter.on(key, value);
+}
 
 /** A set of filters. */
 export class Filters<T extends Data> extends Rules<T, Filter<T>> implements Filterable<T> {
+	/** Create a `Filters` instance from a set of `FilterProps` */
+	static on<X extends Data>(filters: FilterProps<X>) {
+		return new Filters(..._yieldFilters(filters));
+	}
+
 	// Implement `Filterable`
-	is<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new EqualFilter<T>(key, value)] };
-	}
-	not<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new NotEqualFilter<T>(key, value)] };
-	}
-	in<K extends QueryKey<T>>(key: K, value: K extends "id" ? readonly string[] : readonly T[K][]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new InArrayFilter<T>(key, value)] };
-	}
-	contains<K extends Key<T>>(key: K, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new ArrayWithFilter<T>(key, value)] };
-	}
-	lt<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new LessFilter<T>(key, value)] };
-	}
-	lte<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new EqualLessFilter<T>(key, value)] };
-	}
-	gt<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new GreaterFilter<T>(key, value)] };
-	}
-	gte<K extends QueryKey<T>>(key: K, value: K extends "id" ? string : T[K]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new EqualGreaterFilter<T>(key, value)] };
+	filter(props: FilterProps<T>): this;
+	filter(key: "id" | "!id" | "id>" | "id>=" | "id<" | "id<=", value: string): this;
+	filter(key: "id" | "!id", value: ImmutableArray<string>): this;
+	filter<K extends Key<T>>(key: K | `!${K}` | `${K}>` | `${K}>=` | `${K}<` | `${K}<=`, value: T[K]): this;
+	filter<K extends Key<T>>(key: K | `!${K}`, value: ImmutableArray<string>): this;
+	filter<K extends Key<T>>(key: `${K}[]`, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this;
+	filter(input: FilterKey<T> | FilterProps<T>, value?: unknown): this {
+		return typeof input === "string" ? this.with(Filter.on(input, value)) : this.with(..._yieldFilters(input));
 	}
 	match(entry: Entry<T>): boolean {
 		for (const rule of this._rules) if (!rule.match(entry)) return false;
 		return true;
-	}
-	get unfiltered(): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [] };
 	}
 
 	// Implement `Rule`

@@ -1,37 +1,29 @@
-import { Data, Entry, Rankable, rankAscending, rank, rankDesc, sortItems, Entries } from "../util/index.js";
+import { Data, Entry, Rankable, rankAsc, rank, sortItems, Entries, rankDesc, Key } from "../util/index.js";
 import { getQueryProp } from "./helpers.js";
 import { Rule } from "./Rule.js";
-import { QueryKey, SortDirection } from "./types.js";
+import { SortDirection, SortKey } from "./types.js";
 
 /** Sort a list of values. */
-export abstract class Sort<T extends Data> extends Rule<T> implements Rankable<Entry<T>> {
-	abstract readonly direction: SortDirection;
-	readonly key: QueryKey<T>;
-	constructor(key: QueryKey<T>) {
+export class Sort<T extends Data> extends Rule<T> implements Rankable<Entry<T>> {
+	/** Create a sort on a specified field. */
+	static on<X extends Data>(sort: SortKey<X> | Sort<X>): Sort<X> {
+		return sort instanceof Sort ? sort : sort.startsWith("!") ? new Sort<X>(sort.slice(1), "DESC") : new Sort<X>(sort, "ASC");
+	}
+
+	readonly key: "id" | Key<T>;
+	readonly direction: SortDirection;
+	constructor(key: "id" | Key<T>, direction: SortDirection) {
 		super();
 		this.key = key;
+		this.direction = direction;
 	}
-	abstract rank(left: Entry<T>, right: Entry<T>): number;
+	rank([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
+		return rank(getQueryProp(leftId, leftData, this.key), this.direction === "ASC" ? rankAsc : rankDesc, getQueryProp(rightId, rightData, this.key));
+	}
 	transform(iterable: Entries<T>): Entries<T> {
 		return sortItems(iterable, this);
 	}
 	toString(): string {
-		return `${this.key}:${this.direction}`;
-	}
-}
-
-/** Sort a list of values in ascending order. */
-export class AscendingSort<T extends Data> extends Sort<T> {
-	readonly direction = "ASC";
-	rank([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
-		return rank(getQueryProp(leftId, leftData, this.key), rankAscending, getQueryProp(rightId, rightData, this.key));
-	}
-}
-
-/** Sort a list of values in descending order. */
-export class DescendingSort<T extends Data> extends Sort<T> {
-	readonly direction = "DESC";
-	rank([leftId, leftData]: Entry<T>, [rightId, rightData]: Entry<T>): number {
-		return rank(getQueryProp(leftId, leftData, this.key), rankDesc, getQueryProp(rightId, rightData, this.key));
+		return `${this.direction === "DESC" ? "!" : ""}${this.key}`;
 	}
 }

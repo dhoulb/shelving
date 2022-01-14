@@ -27,7 +27,7 @@ import {
 import { DataUpdate, PropUpdates, Update } from "../update/index.js";
 import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
-import { Filters, Sorts, Query, EqualFilter } from "../query/index.js";
+import { Filters, Sorts, Query, Filter, FilterProps, SortKeys } from "../query/index.js";
 import { DocumentRequiredError, DocumentValidationError, QueryRequiredError, QueryValidationError } from "./errors.js";
 
 /**
@@ -47,8 +47,8 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 	}
 
 	/** Create a query on a collection in this model. */
-	query<K extends Key<V>>(collection: K, filters?: Filters<ValidatorType<V[K]>>, sorts?: Sorts<ValidatorType<V[K]>>, limit?: number | null): DatabaseQuery<ValidatorType<V[K]>> {
-		return new DatabaseQuery(this, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters, sorts, limit);
+	query<K extends Key<V>>(collection: K, filters?: FilterProps<ValidatorType<V[K]>>, sorts?: SortKeys<ValidatorType<V[K]>>, limit?: number | null): DatabaseQuery<ValidatorType<V[K]>> {
+		return new DatabaseQuery<ValidatorType<V[K]>>(this, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters && Filters.on(filters), sorts && Sorts.on(sorts), limit);
 	}
 
 	/** Reference a document in a collection in this model. */
@@ -243,13 +243,13 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	}
 
 	/** Create a query on this document's collection. */
-	query(filters?: Filters<T>, sorts?: Sorts<T>, limit?: number | null): DatabaseQuery<T> {
-		return new DatabaseQuery(this.db, this.validator, this.collection, filters, sorts, limit);
+	query(filters?: FilterProps<T>, sorts?: SortKeys<T>, limit?: number | null): DatabaseQuery<T> {
+		return new DatabaseQuery(this.db, this.validator, this.collection, filters && Filters.on(filters), sorts && Sorts.on(sorts), limit);
 	}
 
 	/** Get an 'optional' reference to this document (uses a `ModelQuery` with an `id` filter). */
 	get optional(): DatabaseQuery<T> {
-		return new DatabaseQuery(this.db, this.validator, this.collection, new Filters(new EqualFilter("id", this.id)));
+		return new DatabaseQuery(this.db, this.validator, this.collection, new Filters(new Filter("id", "IS", this.id)));
 	}
 
 	/**

@@ -95,36 +95,36 @@ test("MemoryProvider: get queries", async () => {
 	const basics = db.query("basics");
 	for (const [k, v] of basicResults) basics.doc(k).set(v);
 	// Equal queries.
-	expectUnorderedKeys(await basics.is("str", "aaa").entries, ["basic1"]);
-	expectUnorderedKeys(await basics.is("str", "NOPE").entries, []);
-	expectUnorderedKeys(await basics.is("num", 300).entries, ["basic3"]);
-	expectUnorderedKeys(await basics.is("num", 999999).entries, []);
-	expectUnorderedKeys(await basics.is("group", "a").entries, ["basic1", "basic2", "basic3"]);
-	expectUnorderedKeys(await basics.is("group", "b").entries, ["basic4", "basic5", "basic6"]);
-	expectUnorderedKeys(await basics.is("group", "c").entries, ["basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(await basics.filter("str", "aaa").entries, ["basic1"]);
+	expectUnorderedKeys(await basics.filter("str", "NOPE").entries, []);
+	expectUnorderedKeys(await basics.filter("num", 300).entries, ["basic3"]);
+	expectUnorderedKeys(await basics.filter("num", 999999).entries, []);
+	expectUnorderedKeys(await basics.filter("group", "a").entries, ["basic1", "basic2", "basic3"]);
+	expectUnorderedKeys(await basics.filter("group", "b").entries, ["basic4", "basic5", "basic6"]);
+	expectUnorderedKeys(await basics.filter("group", "c").entries, ["basic7", "basic8", "basic9"]);
 	// ArrayContains queries.
-	expectUnorderedKeys(await basics.contains("tags", "odd").entries, ["basic1", "basic3", "basic5", "basic7", "basic9"]);
-	expectUnorderedKeys(await basics.contains("tags", "even").entries, ["basic2", "basic4", "basic6", "basic8"]);
-	expectUnorderedKeys(await basics.contains("tags", "prime").entries, ["basic1", "basic2", "basic3", "basic5", "basic7"]);
-	expectUnorderedKeys(await basics.contains("tags", "NOPE").entries, []);
+	expectUnorderedKeys(await basics.filter("tags[]", "odd").entries, ["basic1", "basic3", "basic5", "basic7", "basic9"]);
+	expectUnorderedKeys(await basics.filter("tags[]", "even").entries, ["basic2", "basic4", "basic6", "basic8"]);
+	expectUnorderedKeys(await basics.filter("tags[]", "prime").entries, ["basic1", "basic2", "basic3", "basic5", "basic7"]);
+	expectUnorderedKeys(await basics.filter("tags[]", "NOPE").entries, []);
 	// In queries.
-	expectUnorderedKeys(await basics.in("num", [200, 600, 900, 999999]).entries, ["basic2", "basic6", "basic9"]);
-	expectUnorderedKeys(await basics.in("str", ["aaa", "ddd", "eee", "NOPE"]).entries, ["basic1", "basic4", "basic5"]);
-	expectUnorderedKeys(await basics.in("num", []).entries, []);
-	expectUnorderedKeys(await basics.in("str", []).entries, []);
+	expectUnorderedKeys(await basics.filter("num", [200, 600, 900, 999999]).entries, ["basic2", "basic6", "basic9"]);
+	expectUnorderedKeys(await basics.filter("str", ["aaa", "ddd", "eee", "NOPE"]).entries, ["basic1", "basic4", "basic5"]);
+	expectUnorderedKeys(await basics.filter("num", []).entries, []);
+	expectUnorderedKeys(await basics.filter("str", []).entries, []);
 	// Sorting.
 	const keysAsc = Array.from(basicResults.keys()).sort();
 	const keysDesc = Array.from(basicResults.keys()).sort().reverse();
-	expectOrderedKeys(await basics.asc("id").entries, keysAsc);
-	expectOrderedKeys(await basics.desc("id").entries, keysDesc);
-	expectOrderedKeys(await basics.asc("str").entries, keysAsc);
-	expectOrderedKeys(await basics.desc("str").entries, keysDesc);
-	expectOrderedKeys(await basics.asc("num").entries, keysAsc);
-	expectOrderedKeys(await basics.desc("num").entries, keysDesc);
+	expectOrderedKeys(await basics.sort("id").entries, keysAsc);
+	expectOrderedKeys(await basics.sort("!id").entries, keysDesc);
+	expectOrderedKeys(await basics.sort("str").entries, keysAsc);
+	expectOrderedKeys(await basics.sort("!str").entries, keysDesc);
+	expectOrderedKeys(await basics.sort("num").entries, keysAsc);
+	expectOrderedKeys(await basics.sort("!num").entries, keysDesc);
 	// Combinations.
-	expectOrderedKeys(await basics.asc("id").max(2).entries, ["basic1", "basic2"]);
-	expectOrderedKeys(await basics.desc("id").max(1).entries, ["basic9"]);
-	expectOrderedKeys(await basics.contains("tags", "prime").desc("id").max(2).entries, ["basic7", "basic5"]);
+	expectOrderedKeys(await basics.sort("id").max(2).entries, ["basic1", "basic2"]);
+	expectOrderedKeys(await basics.sort("!id").max(1).entries, ["basic9"]);
+	expectOrderedKeys(await basics.filter("tags[]", "prime").sort("!id").max(2).entries, ["basic7", "basic5"]);
 });
 test("MemoryProvider: subscribing to documents", async () => {
 	// Setup.
@@ -226,7 +226,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	basics.doc("basic7").set(basic7);
 	// Subscribe (should find only basic7).
 	const calls1: Results<BasicData>[] = [];
-	const stop1 = basics.contains("tags", "odd").subscribe(results => void calls1.push(results)); // Query for odds.
+	const stop1 = basics.filter("tags[]", "odd").subscribe(results => void calls1.push(results)); // Query for odds.
 	await Promise.resolve();
 	expectUnorderedKeys(calls1[0]!, ["basic7"]);
 	// Set basic3 (should be added to result).
@@ -238,7 +238,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	await Promise.resolve();
 	expect(calls1[3]).toBe(undefined);
 	// Change basic2 and basic3 (should have updated basic3 in result).
-	basics.in("id", ["basic2", "basic3"]).update({ str: "NEW" });
+	basics.filter("id", ["basic2", "basic3"]).update({ str: "NEW" });
 	await Promise.resolve();
 	expectUnorderedKeys(calls1[2]!, ["basic3", "basic7"]);
 	// Delete basic3 and basic2.
@@ -259,7 +259,7 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	// Subscribe (should find only basic7).
 	const calls1: Results<BasicData>[] = [];
 	const stop1 = basics
-		.asc("num")
+		.sort("num")
 		.max(2)
 		.subscribe(result => void calls1.push(result));
 	await Promise.resolve();

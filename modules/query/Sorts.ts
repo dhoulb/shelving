@@ -1,19 +1,18 @@
 import { Entry, Data, sortItems, Entries } from "../util/index.js";
-import type { QueryKey, Sortable } from "./types.js";
-import { AscendingSort, DescendingSort, Sort } from "./Sort.js";
+import type { Sortable, SortKeys } from "./types.js";
+import { Sort } from "./Sort.js";
 import { Rules } from "./Rules.js";
 
 /** A set of sorts. */
 export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable<T> {
+	/** Create a new `Sorts` object from an array of `SortKey` strings. */
+	static on<X extends Data>(...keys: SortKeys<X>[]): Sorts<X> {
+		return new Sorts<X>(...keys.flat().map(Sort.on));
+	}
+
 	// Implement `Sortable`
-	asc(key: QueryKey<T>): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new AscendingSort<T>(key)] };
-	}
-	desc(key: QueryKey<T>): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [...this._rules, new DescendingSort<T>(key)] };
-	}
-	get unsorted(): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, _rules: [] };
+	sort(...keys: SortKeys<T>[]): this {
+		return this.with(...keys.flat().map(Sort.on));
 	}
 	rank(left: Entry<T>, right: Entry<T>): number {
 		for (const rule of this._rules) {

@@ -42,6 +42,7 @@ const OPERATORS: { readonly [K in FilterOperator]: FirestoreWhereFilterOp } = {
 	IS: "==",
 	NOT: "!=",
 	IN: "in",
+	OUT: "not-in",
 	GT: ">",
 	GTE: ">=",
 	LT: "<",
