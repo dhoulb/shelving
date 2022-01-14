@@ -70,12 +70,12 @@ export function getDate(target: PossibleDate = "now"): Date {
 /** Convert an unknown value to a YMD date string like "2015-09-12", or `null` if it couldn't be converted. */
 export function toYmd(target: unknown): string | null {
 	const date = toDate(target);
-	return date ? date.toISOString().substr(0, 10) : null;
+	return date ? date.toISOString().slice(0, 10) : null;
 }
 
 /** Convert a `Date` instance to a YMD string like "2015-09-12", or throw `AssertionError` if it couldn't be converted.  */
 export function getYmd(target: PossibleDate = "now"): string {
-	return getDate(target).toISOString().substr(0, 10);
+	return getDate(target).toISOString().slice(0, 10);
 }
 
 /** List of day-of-week strings. */

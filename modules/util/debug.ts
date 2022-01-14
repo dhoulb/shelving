@@ -20,7 +20,7 @@ export const debug = (value: unknown): string =>
 		? debugString(value)
 		: typeof value;
 
-const debugString = (value: string): string => (value.length > DEBUG_STRING_MAX ? `"${value.substr(0, DEBUG_STRING_MAX)}…"` : `"${value}"`);
+const debugString = (value: string): string => (value.length > DEBUG_STRING_MAX ? `"${value.slice(0, DEBUG_STRING_MAX)}…"` : `"${value}"`);
 const DEBUG_STRING_MAX = 23;
 
 const debugObject = (value: ImmutableObject): string => {

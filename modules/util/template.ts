@@ -100,7 +100,7 @@ const matchInternal = (template: string, target: string): TemplateValues | undef
 	for (const { name, post } of chunks) {
 		const stopIndex = !post ? Infinity : target.indexOf(post, startIndex);
 		if (stopIndex < 0) return undefined; // Target doesn't match template because chunk post wasn't found.
-		const value = target.substring(startIndex, stopIndex);
+		const value = target.slice(startIndex, stopIndex);
 		if (!value.length) return undefined; // Target doesn't match template because chunk value was missing.
 		values[name] = value;
 		startIndex = stopIndex + post.length;
