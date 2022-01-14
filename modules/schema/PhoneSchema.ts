@@ -20,7 +20,7 @@ export class PhoneSchema extends StringSchema {
 		// Strip characters that aren't 0-9 or `+` plus (including whitespace).
 		const digits = str.replace(/[^0-9+]/g, "");
 		// Allow `+` plus only if it's first character.
-		return digits.substr(0, 1) + digits.substr(1).replace(/[^0-9]/g, "");
+		return digits.slice(0, 1) + digits.slice(1).replace(/[^0-9]/g, "");
 	}
 }
 

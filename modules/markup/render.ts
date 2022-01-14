@@ -45,7 +45,7 @@ function renderString(content: string, options: MarkupOptions): MarkupNode {
 		if (matchedRule && matchedResult && matchedResult[0]) {
 			// If index is more than zero, then add a string node before this one.
 			if (matchedIndex) {
-				const prefix = content.substr(0, matchedIndex);
+				const prefix = content.slice(0, matchedIndex);
 				appendNode(nodes, renderString(prefix, options));
 			}
 
@@ -56,7 +56,7 @@ function renderString(content: string, options: MarkupOptions): MarkupNode {
 			appendNode(nodes, renderNode(element, childOptions));
 
 			// Decrement the content.
-			content = content.substr(matchedIndex + matchedResult[0].length);
+			content = content.slice(matchedIndex + matchedResult[0].length);
 		} else {
 			// If nothing else matched add the rest of the string as a node (presumably it doesn't have any punctuation).
 			// Don't need to push the string through `renderNode()` because we already know it doesn't match any rules in the current context.

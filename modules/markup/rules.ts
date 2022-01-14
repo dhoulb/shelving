@@ -90,9 +90,9 @@ const OL: MarkupRule = {
 const SPLIT_OL_ITEMS = new RegExp(`\\n+(?=${ORDERED})`, "g");
 const mapOrderedItem = (item: string, key: number): MarkupElement => {
 	const firstSpace = item.indexOf(" ");
-	const value = parseInt(item.substr(0, firstSpace), 10);
+	const value = parseInt(item.slice(0, firstSpace), 10);
 	const children = item
-		.substr(firstSpace + 1)
+		.slice(firstSpace + 1)
 		.trimStart()
 		.replace(REPLACE_INDENT, "");
 	return { type: "li", key, props: { value, children } };
