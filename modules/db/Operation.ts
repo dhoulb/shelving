@@ -1,5 +1,5 @@
 import { PropUpdates, Update } from "../update/index.js";
-import { ImmutableArray, callAsyncSeries, Nullish, isNotNullish, Data, Hydrations, isNullish, Key } from "../util/index.js";
+import { ImmutableArray, callAsyncSeries, Nullish, notNullish, Data, Hydrations, isNullish, Key } from "../util/index.js";
 import type { Database, DatabaseDocument, DatabaseQuery } from "./Database.js";
 
 /** Represent a write operation on a database. */
@@ -18,7 +18,7 @@ export class Operations extends Operation {
 	readonly operations: ImmutableArray<Operation>;
 	constructor(operations: ImmutableArray<Nullish<Operation>>) {
 		super();
-		this.operations = operations.filter(isNotNullish);
+		this.operations = operations.filter(notNullish);
 	}
 	async run(db: Database): Promise<Operations> {
 		return new Operations(await callAsyncSeries(_write, this.operations, db));

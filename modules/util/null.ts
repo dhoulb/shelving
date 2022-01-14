@@ -4,7 +4,7 @@ import { RequiredError } from "../error/index.js";
 export const isNull = (v: unknown): v is null => v === null;
 
 /** Is a value not null? */
-export const isNotNull = <T>(v: T | null): v is T => v !== null;
+export const notNull = <T>(v: T | null): v is T => v !== null;
 
 /** Function that always returns null. */
 export const NULL = (): null => null;
@@ -19,7 +19,7 @@ export type NotNullish<T> = Exclude<T, null | undefined>;
 export const isNullish = <T>(v: Nullish<T>): v is null | undefined => v === null || v === undefined;
 
 /** Is a value not nullish? */
-export const isNotNullish = <T>(v: Nullish<T>): v is T => v !== null && v !== undefined;
+export const notNullish = <T>(v: Nullish<T>): v is T => v !== null && v !== undefined;
 
 /** Get a required value (returns value or throws `RequiredError` if value is `null` or `undefined`). */
 export function getRequired<T>(v: T): NotNullish<T>;
