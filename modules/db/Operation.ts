@@ -10,18 +10,14 @@ export abstract class Operation {
 
 /** Represent a list of write operations on a database run in series. */
 export class Operations extends Operation {
-	/** Return a new write operations list with a set of write operations. */
-	static with(...operations: Nullish<Operation>[]) {
-		return new Operations(operations);
-	}
-
 	readonly operations: ImmutableArray<Operation>;
-	constructor(operations: ImmutableArray<Nullish<Operation>>) {
+	constructor(...operations: Nullish<Operation>[]) {
 		super();
 		this.operations = operations.filter(notNullish);
 	}
 	async run(db: Database): Promise<Operations> {
-		return new Operations(await callAsyncSeries(_write, this.operations, db));
+		const ops = await callAsyncSeries(_run, this.operations, db);
+		return new Operations(...ops);
 	}
 
 	/** Return a new write operations list with an additional write operation added. */
@@ -29,7 +25,7 @@ export class Operations extends Operation {
 		return { __proto__: Object.getPrototypeOf(this), ...this, operations: [...this.operations, operations] };
 	}
 }
-const _write = (operation: Operation, db: Database): PromiseLike<Operation> => operation.run(db);
+const _run = (operation: Operation, db: Database): PromiseLike<Operation> => operation.run(db);
 
 /** Represent a add operation made to a collection in a database. */
 export class AddOperation<T extends Data> extends Operation {
