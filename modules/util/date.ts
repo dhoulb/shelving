@@ -237,3 +237,6 @@ export const isPast = (target: PossibleDate, current?: PossibleDate): boolean =>
 
 /** Is a date in the future? */
 export const isFuture = (target: PossibleDate, current?: PossibleDate): boolean => getDate(target) > getDate(current);
+
+/** Is a date today (taking into account midnight). */
+export const isToday = (target: PossibleDate, current?: PossibleDate): boolean => getMidnight(target) === getMidnight(current);
