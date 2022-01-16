@@ -31,8 +31,8 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	filter(props: FilterProps<T>): this;
 	filter(key: "id" | "!id" | "id>" | "id>=" | "id<" | "id<=", value: string): this;
 	filter(key: "id" | "!id", value: ImmutableArray<string>): this;
-	filter<K extends Key<T>>(key: K | `!${K}` | `${K}>` | `${K}>=` | `${K}<` | `${K}<=`, value: T[K]): this;
-	filter<K extends Key<T>>(key: K | `!${K}`, value: ImmutableArray<T[K]>): this;
+	filter<K extends Key<T>>(key: `${K}` | `!${K}` | `${K}>` | `${K}>=` | `${K}<` | `${K}<=`, value: T[K]): this;
+	filter<K extends Key<T>>(key: `${K}` | `!${K}`, value: ImmutableArray<T[K]>): this;
 	filter<K extends Key<T>>(key: `${K}[]`, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this;
 	filter(input: FilterKey<T> | FilterProps<T>, value?: unknown): this {
 		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.filter(input as "id", value as string) };
