@@ -41,28 +41,28 @@ describe("formatUnits()", () => {
 });
 describe("formatFullUnits()", () => {
 	test("Works correctly", () => {
-		expect(formatFullUnits(1, "meter")).toBe("1 meter");
-		expect(formatFullUnits(123, "meter")).toBe("123 meters");
-		expect(formatFullUnits(1234, "meter")).toBe("1,234 meters");
-		expect(formatFullUnits(1, "foot")).toBe("1 foot");
-		expect(formatFullUnits(123, "foot")).toBe("123 feet");
-		expect(formatFullUnits(1234, "foot")).toBe("1,234 feet");
-		expect(formatFullUnits(1, "yard")).toBe("1 yard");
-		expect(formatFullUnits(123, "yard")).toBe("123 yards");
-		expect(formatFullUnits(1234, "yard")).toBe("1,234 yards");
+		expect(formatFullUnits(1, "meter")).toBe("1 meter");
+		expect(formatFullUnits(123, "meter")).toBe("123 meters");
+		expect(formatFullUnits(1234, "meter")).toBe("1,234 meters");
+		expect(formatFullUnits(1, "foot")).toBe("1 foot");
+		expect(formatFullUnits(123, "foot")).toBe("123 feet");
+		expect(formatFullUnits(1234, "foot")).toBe("1,234 feet");
+		expect(formatFullUnits(1, "yard")).toBe("1 yard");
+		expect(formatFullUnits(123, "yard")).toBe("123 yards");
+		expect(formatFullUnits(1234, "yard")).toBe("1,234 yards");
 	});
 	test("Max precision", () => {
-		expect(formatFullUnits(1.1111, "kilometer", 0)).toBe("1 kilometer");
-		expect(formatFullUnits(1.1111, "kilometer", 2)).toBe("1.11 kilometers");
-		expect(formatFullUnits(1.1111, "kilometer", 4)).toBe("1.1111 kilometers");
-		expect(formatFullUnits(1.1111, "kilometer", 6)).toBe("1.1111 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 0)).toBe("1 kilometer");
+		expect(formatFullUnits(1.1111, "kilometer", 2)).toBe("1.11 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 4)).toBe("1.1111 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 6)).toBe("1.1111 kilometers");
 	});
 	test("Min precision", () => {
-		expect(formatFullUnits(1.1111, "kilometer", 2, 0)).toBe("1.11 kilometers");
-		expect(formatFullUnits(1.1111, "kilometer", 2, 2)).toBe("1.11 kilometers");
-		expect(formatFullUnits(1.1111, "kilometer", 4, 4)).toBe("1.1111 kilometers");
-		expect(formatFullUnits(1.1111, "kilometer", 6, 6)).toBe("1.111100 kilometers");
-		expect(formatFullUnits(1.1, "kilometer", 2, 0)).toBe("1.1 kilometers");
-		expect(formatFullUnits(1.1, "kilometer", 2, 2)).toBe("1.10 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 2, 0)).toBe("1.11 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 2, 2)).toBe("1.11 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 4, 4)).toBe("1.1111 kilometers");
+		expect(formatFullUnits(1.1111, "kilometer", 6, 6)).toBe("1.111100 kilometers");
+		expect(formatFullUnits(1.1, "kilometer", 2, 0)).toBe("1.1 kilometers");
+		expect(formatFullUnits(1.1, "kilometer", 2, 2)).toBe("1.10 kilometers");
 	});
 });

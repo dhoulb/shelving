@@ -1,5 +1,4 @@
 import { AssertionError } from "../error/index.js";
-import { NBSP, NNBSP } from "./string.js";
 
 // Constants.
 export const TRILLION = 1_000_000_000_000;
@@ -81,13 +80,13 @@ export const truncateNumber = (num: number, precision = 0): number => Math.trunc
  */
 export const formatNumber = (num: number, maxPrecision = 4, minPrecision = 0): string => new Intl.NumberFormat(undefined, { maximumFractionDigits: maxPrecision, minimumFractionDigits: minPrecision }).format(num);
 
-/** Format a number with a short suffix (number and suffix are separated by a non-breaking narrow space). */
-export const formatQuantity = (num: number, suffix: string, maxPrecision?: number, minPrecision?: number): string => `${formatNumber(num, maxPrecision, minPrecision)}${NNBSP}${suffix}`;
+/** Format a number with a short suffix. */
+export const formatQuantity = (num: number, suffix: string, maxPrecision?: number, minPrecision?: number): string => `${formatNumber(num, maxPrecision, minPrecision)}${suffix}`;
 
-/** Format a number with a longer full-word suffix (number and suffix are separated by a non-breaking space). */
+/** Format a number with a longer full-word suffix. */
 export function formatFullQuantity(num: number, singular: string, plural: string, maxPrecision?: number, minPrecision?: number): string {
 	const qty = formatNumber(num, maxPrecision, minPrecision);
-	return `${qty}${NBSP}${qty === "1" ? singular : plural}`;
+	return `${qty} ${qty === "1" ? singular : plural}`;
 }
 
 /**
@@ -143,6 +142,14 @@ export const isBetween = (num: number, start: number, end: number): boolean => n
  * @param end The end of the range, e.g. `20`
  */
 export const getBetween = (num: number, start: number, end: number) => Math.max(start, Math.min(end, num));
+
+/**
+ * Get a number as a percentage of another number.
+ *
+ * @param numerator Number representing the amount of progress.
+ * @param denumerator The number representing the whole amount.
+ */
+export const getPercent = (numerator: number, denumerator: number) => Math.max(0, Math.min(100, (100 / denumerator) * numerator));
 
 /** Sum an iterable set of numbers and return the total. */
 export function sumNumbers(nums: Iterable<number>): number {

@@ -1,26 +1,5 @@
 import { AssertionError } from "../error/index.js";
-import { formatFullQuantity, formatQuantity } from "./number.js";
-
-/** One second in millseconds. */
-export const SECOND = 1000;
-
-/** One minute in millseconds. */
-export const MINUTE = 60 * SECOND;
-
-/** One hour in millseconds. */
-export const HOUR = 60 * MINUTE;
-
-/** One day in millseconds. */
-export const DAY = 24 * HOUR;
-
-/** One week in millseconds. */
-export const WEEK = 7 * DAY;
-
-/** One month in millseconds. */
-export const MONTH = 30 * DAY;
-
-/** One year in millseconds. */
-export const YEAR = 365 * DAY;
+import { DAY, HOUR, MINUTE, MONTH, SECOND, WEEK, YEAR, formatUnits, formatFullUnits, UnitReference } from "./units.js";
 
 /** Is a value a date? */
 export const isDate = (v: unknown): v is Date => v instanceof Date;
@@ -146,29 +125,22 @@ export const getWeeksUntil = (target: PossibleDate, current?: PossibleDate): num
 /** Count the number of weeks ago a date was. */
 export const getWeeksAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - getWeeksUntil(target, current);
 
-/** Format a full description of a duration of time using the most reasonable units e.g. `5 years` or `1 week` or `4 minutes` or `12 milliseconds`. */
-export function formatFullDuration(ms: number): string {
+function _formatDuration(formatter: (amount: number, unit: UnitReference, max?: number, min?: number) => string, ms: number, maxPrecision = 0, minPrecision?: number): string {
 	const abs = Math.abs(ms);
-	if (abs <= 99 * SECOND) return formatFullQuantity(ms, "second", "seconds", 0); // Up to 99 seconds, e.g. '22 seconds ago'
-	if (abs <= HOUR) return formatFullQuantity(ms / MINUTE, "minute", "minutes", 0); // Up to one hour  — show minutes, e.g. '18 minutes ago'
-	if (abs <= DAY) return formatFullQuantity(ms / HOUR, "hour", "hours", 0); // Up to one day — show hours, e.g. '23 hours ago'
-	if (abs <= 2 * WEEK) return formatFullQuantity(ms / DAY, "day", "days", 0); // Up to 2 weeks — show days, e.g. '13 days ago'
-	if (abs <= 10 * WEEK) return formatFullQuantity(ms / WEEK, "week", "weeks", 0); // Up to 2 months — show weeks, e.g. '6 weeks ago'
-	if (abs <= 18 * MONTH) return formatFullQuantity(ms / MONTH, "month", "months", 0); // Up to 18 months — show months, e.g. '6 months ago'
-	return formatFullQuantity(ms / YEAR, "year", "years", 0); // Above 18 months — show years, e.g. '2 years ago'
+	if (abs <= 99 * SECOND) return formatter(ms, "second", maxPrecision, minPrecision); // Up to 99 seconds, e.g. '22 seconds ago'
+	if (abs <= HOUR) return formatter(ms / MINUTE, "minute", maxPrecision, minPrecision); // Up to one hour  — show minutes, e.g. '18 minutes ago'
+	if (abs <= DAY) return formatter(ms / HOUR, "hour", maxPrecision, minPrecision); // Up to one day — show hours, e.g. '23 hours ago'
+	if (abs <= 2 * WEEK) return formatter(ms / DAY, "day", maxPrecision, minPrecision); // Up to 2 weeks — show days, e.g. '13 days ago'
+	if (abs <= 10 * WEEK) return formatter(ms / WEEK, "week", maxPrecision, minPrecision); // Up to 2 months — show weeks, e.g. '6 weeks ago'
+	if (abs <= 18 * MONTH) return formatter(ms / MONTH, "month", maxPrecision, minPrecision); // Up to 18 months — show months, e.g. '6 months ago'
+	return formatter(ms / YEAR, "year", maxPrecision, minPrecision); // Above 18 months — show years, e.g. '2 years ago'
 }
 
+/** Format a full description of a duration of time using the most reasonable units e.g. `5 years` or `1 week` or `4 minutes` or `12 milliseconds`. */
+export const formatFullDuration = (ms: number, maxPrecision?: number, minPrecision?: number): string => _formatDuration(formatFullUnits, ms, maxPrecision, minPrecision);
+
 /** Format a description of a duration of time using the most reasonable units e.g. `5y` or `4m` or `12ms`. */
-export function formatDuration(ms: number): string {
-	const abs = Math.abs(ms);
-	if (abs <= 99 * SECOND) return formatQuantity(ms, "s", 0); // Up to 99 seconds, e.g. '22 seconds ago'
-	if (abs <= HOUR) return formatQuantity(ms / MINUTE, "m", 0); // Up to one hour  — show minutes, e.g. '18 minutes ago'
-	if (abs <= DAY) return formatQuantity(ms / HOUR, "h", 0); // Up to one day — show hours, e.g. '23 hours ago'
-	if (abs <= 2 * WEEK) return formatQuantity(ms / DAY, "d", 0); // Up to 2 weeks — show days, e.g. '13 days ago'
-	if (abs <= 10 * WEEK) return formatQuantity(ms / WEEK, "w", 0); // Up to 2 months — show weeks, e.g. '6 weeks ago'
-	if (abs <= 18 * MONTH) return formatQuantity(ms / MONTH, "m", 0); // Up to 18 months — show months, e.g. '6 months ago'
-	return formatQuantity(ms / YEAR, "y", 0); // Above 18 months — show years, e.g. '2 years ago'
-}
+export const formatDuration = (ms: number, maxPrecision?: number, minPrecision?: number): string => _formatDuration(formatUnits, ms, maxPrecision, minPrecision);
 
 /**
  * Return full description of the gap between two dates, e.g. `in 10 days` or `2 hours ago`
@@ -182,14 +154,6 @@ export function formatFullWhen(target: PossibleDate, current?: PossibleDate): st
 	const duration = formatFullDuration(abs);
 	return abs < 10 * SECOND ? "just now" : ms > 0 ? `in ${duration}` : `${duration} ago`;
 }
-
-/**
- * Return full description of when a date happened, e.g. `10 days` or `2 hours` or `-1 week`
- *
- * @param target The date when the thing will happen.
- * @param current Today's date (or a different date to measure from).
- */
-export const formatFullUntil = (target: PossibleDate, current?: PossibleDate): string => formatFullDuration(getDuration(target, current));
 
 /**
  * Return full description of when a date will happen, e.g. `10 days` or `2 hours` or `-1 week`
