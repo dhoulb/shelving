@@ -24,7 +24,7 @@ export type Dispatcher<T extends Arguments = []> = (...value: T) => void;
 export type AsyncDispatcher<T extends Arguments = []> = (...value: T) => void | PromiseLike<void>;
 
 /** Safely dispatch a value to a dispatcher function. */
-export function dispatch<T extends Arguments>(dispatcher: Dispatcher<T> | AsyncDispatcher<T>, ...value: T): void {
+export function dispatch<T extends Arguments>(dispatcher: AsyncDispatcher<T>, ...value: T): void {
 	try {
 		const result = dispatcher(...value);
 		if (isAsync(result)) result.then(BLACKHOLE, logError);
@@ -34,7 +34,7 @@ export function dispatch<T extends Arguments>(dispatcher: Dispatcher<T> | AsyncD
 }
 
 /** Safely dispatch a value to a dispatcher method on an object. */
-export function dispatchMethod<T extends Arguments, M extends string | symbol>(obj: { [K in M]: Dispatcher<T> | AsyncDispatcher<T> }, key: M, ...value: T): void {
+export function dispatchMethod<T extends Arguments, M extends string | symbol>(obj: { [K in M]: AsyncDispatcher<T> }, key: M, ...value: T): void {
 	try {
 		const result = obj[key](...value);
 		if (isAsync(result)) result.then(BLACKHOLE, logError);
