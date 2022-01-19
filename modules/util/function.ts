@@ -21,13 +21,13 @@ export const BLACKHOLE: (...args: Arguments) => void | undefined = () => undefin
 export type Dispatcher<T extends Arguments = []> = (...value: T) => void;
 
 /** Function that receives a dispatched value. */
-export type AsyncDispatcher<T extends Arguments = []> = (...value: T) => void | Promise<void>;
+export type AsyncDispatcher<T extends Arguments = []> = (...value: T) => void | PromiseLike<void>;
 
 /** Safely dispatch a value to a dispatcher function. */
 export function dispatch<T extends Arguments>(dispatcher: Dispatcher<T> | AsyncDispatcher<T>, ...value: T): void {
 	try {
 		const result = dispatcher(...value);
-		if (isAsync(result)) result.catch(logError);
+		if (isAsync(result)) result.then(BLACKHOLE, logError);
 	} catch (thrown) {
 		logError(thrown);
 	}
@@ -37,7 +37,7 @@ export function dispatch<T extends Arguments>(dispatcher: Dispatcher<T> | AsyncD
 export function dispatchMethod<T extends Arguments, M extends string | symbol>(obj: { [K in M]: Dispatcher<T> | AsyncDispatcher<T> }, key: M, ...value: T): void {
 	try {
 		const result = obj[key](...value);
-		if (isAsync(result)) result.catch(logError);
+		if (isAsync(result)) result.then(BLACKHOLE, logError);
 	} catch (thrown) {
 		logError(thrown);
 	}
