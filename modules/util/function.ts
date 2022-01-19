@@ -1,3 +1,4 @@
+import { isAsync } from "./async.js";
 import { logError } from "./error.js";
 
 /** Any function (designed for use with `extends AnyFunction` guards). */
@@ -19,19 +20,24 @@ export const BLACKHOLE: (...args: Arguments) => void | undefined = () => undefin
 /** Function that receives a dispatched value. */
 export type Dispatcher<T extends Arguments = []> = (...value: T) => void;
 
+/** Function that receives a dispatched value. */
+export type AsyncDispatcher<T extends Arguments = []> = (...value: T) => void | Promise<void>;
+
 /** Safely dispatch a value to a dispatcher function. */
-export function dispatch<T extends Arguments>(dispatcher: Dispatcher<T>, ...value: T): void {
+export function dispatch<T extends Arguments>(dispatcher: Dispatcher<T> | AsyncDispatcher<T>, ...value: T): void {
 	try {
-		dispatcher(...value);
+		const result = dispatcher(...value);
+		if (isAsync(result)) result.catch(logError);
 	} catch (thrown) {
 		logError(thrown);
 	}
 }
 
 /** Safely dispatch a value to a dispatcher method on an object. */
-export function dispatchMethod<T extends Arguments, M extends string | symbol>(obj: { [K in M]: Dispatcher<T> }, key: M, ...value: T): void {
+export function dispatchMethod<T extends Arguments, M extends string | symbol>(obj: { [K in M]: Dispatcher<T> | AsyncDispatcher<T> }, key: M, ...value: T): void {
 	try {
-		obj[key](...value);
+		const result = obj[key](...value);
+		if (isAsync(result)) result.catch(logError);
 	} catch (thrown) {
 		logError(thrown);
 	}
