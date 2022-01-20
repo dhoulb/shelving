@@ -1,4 +1,4 @@
-import { RequiredError } from "..";
+import { RequiredError } from "../error/index.js";
 
 /** Is a value undefined? */
 export const isUndefined = (v: unknown): v is undefined => v === undefined;
