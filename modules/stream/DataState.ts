@@ -1,4 +1,4 @@
-import { Key, withProp, Data, PropTransformers, transformProps, NOERROR, LOADING, awaitNext, getData, Result } from "../util/index.js";
+import { Key, withProp, Data, PropTransformers, transformData, NOERROR, LOADING, awaitNext, getData, Result } from "../util/index.js";
 import { State } from "./State.js";
 
 /** State that stores a data object and has additional methods to help with that. */
@@ -15,7 +15,7 @@ export class DataState<T extends Data> extends State<T> {
 
 	/** Update several props in this object. */
 	update(updates: PropTransformers<T>): void {
-		this.next(transformProps(this.data, updates));
+		this.next(transformData(this.data, updates));
 	}
 }
 
@@ -40,7 +40,7 @@ export class ResultState<T extends Data> extends State<Result<T>> {
 
 	/** Update several props in this object. */
 	update(updates: PropTransformers<T>): void {
-		this.next(transformProps(this.data, updates));
+		this.next(transformData(this.data, updates));
 	}
 
 	/** Delete this result. */

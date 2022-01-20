@@ -1,4 +1,4 @@
-import { Data, Prop, Key, transformProps, Transformable, Nullish, isNullish } from "../util/index.js";
+import { Data, Prop, Key, transformData, Transformable, Nullish, isNullish } from "../util/index.js";
 import { Update } from "./Update.js";
 
 /**
@@ -23,7 +23,7 @@ export class DataUpdate<T extends Data> extends Update<T> implements Iterable<Pr
 		this.updates = props;
 	}
 	transform(existing: T): T {
-		return transformProps<T>(existing, this.updates);
+		return transformData<T>(existing, this.updates);
 	}
 
 	/** Return a data update with a specific prop marked for update. */

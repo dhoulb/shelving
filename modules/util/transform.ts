@@ -64,9 +64,9 @@ export function transformArray<I, O>(arr: Iterable<I>, transformer: Transformer<
  * Transform the _values_ of a set of entries using a transformer.
  * @yield Transformed entry after calling transforming the new value for each entry.
  */
-export function yieldTransformedValues<I, O>(entries: Iterable<Entry<I>>, transformer: (v: I) => O): Iterable<Entry<O>>; // Helps `O` carry through functions that use generics.
-export function yieldTransformedValues<I, O>(entries: Iterable<Entry<I>>, transformer: Transformer<I, O>): Iterable<Entry<O>>;
-export function* yieldTransformedValues<I, O>(entries: Iterable<Entry<I>>, transformer: Transformer<I, O>): Iterable<Entry<O>> {
+function _yieldTransformedValues<I, O>(entries: Iterable<Entry<I>>, transformer: (v: I) => O): Iterable<Entry<O>>; // Helps `O` carry through functions that use generics.
+function _yieldTransformedValues<I, O>(entries: Iterable<Entry<I>>, transformer: Transformer<I, O>): Iterable<Entry<O>>;
+function* _yieldTransformedValues<I, O>(entries: Iterable<Entry<I>>, transformer: Transformer<I, O>): Iterable<Entry<O>> {
 	for (const [k, v] of entries) yield [k, transform(v, transformer)];
 }
 
@@ -77,7 +77,7 @@ export function* yieldTransformedValues<I, O>(entries: Iterable<Entry<I>>, trans
 export function transformMap<I, O>(map: ImmutableMap<I>, transformer: (v: I) => O): ImmutableMap<O>; // Helps `O` carry through functions that use generics.
 export function transformMap<I, O>(map: ImmutableMap<I>, transformer: Transformer<I, O>): ImmutableMap<O>;
 export function transformMap<I, O>(map: ImmutableMap<I>, transformer: Transformer<I, O>): ImmutableMap<O> {
-	return new Map(yieldTransformedValues(map, transformer));
+	return new Map(_yieldTransformedValues(map, transformer));
 }
 
 /**
@@ -89,14 +89,14 @@ export function transformObject<I extends Data, O extends { [K in keyof I]: unkn
 export function transformObject<I, O>(obj: ImmutableObject<I>, transformer: (v: I) => O): ImmutableObject<O>; // Helps `O` carry through functions that use generics.
 export function transformObject<I, O>(obj: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O>;
 export function transformObject<I, O>(obj: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O> {
-	return Object.fromEntries(yieldTransformedValues(Object.entries(obj), transformer));
+	return Object.fromEntries(_yieldTransformedValues(Object.entries(obj), transformer));
 }
 
 /** Set of named transformers for a data object. */
 export type PropTransformers<T extends Data> = { readonly [K in keyof T]?: Transformer<T[K], T[K]> };
 
 /** Apply transformers to the props of a data object and yield any props that changed. */
-function* yieldTransformedProps<T extends Data>(existing: T, transformers: PropTransformers<T>): Generator<Prop<T>, void> {
+function* _yieldTransformedProps<T extends Data>(existing: T, transformers: PropTransformers<T>): Generator<Prop<T>, void> {
 	for (const [k, v] of toProps<{ readonly [K in keyof T]: Transformer<T[K], T[K]> }>(transformers)) yield [k, transform<Value<T>, Value<T>>(existing[k], v)];
 }
 
@@ -104,19 +104,19 @@ function* yieldTransformedProps<T extends Data>(existing: T, transformers: PropT
  * Transform the props of a data object using a set of transformers for its props.
  * @returns New object with changed props (or the same object if no changes were made).
  */
-export function transformProps<T extends Data>(existing: T, transformers: PropTransformers<T>): T {
-	return Object.fromEntries(yieldMerged(toProps(existing), yieldTransformedProps(existing, transformers))) as T;
+export function transformData<T extends Data>(existing: T, transformers: PropTransformers<T>): T {
+	return Object.fromEntries(yieldMerged(toProps(existing), _yieldTransformedProps(existing, transformers))) as T;
 }
 
 /** Set of named transformers for a a map-like object. */
 export type EntryTransformers<T> = ImmutableObject<Transformer<T | undefined, T>>;
 
 /** Apply named transformers to the entries of a map-like object and yield any entries that changed. */
-function* yieldTransformedEntries<T>(existing: ImmutableObject<T>, updates: EntryTransformers<T>): Generator<Entry<T>, void> {
+function* _yieldTransformedEntries<T>(existing: ImmutableObject<T>, updates: EntryTransformers<T>): Generator<Entry<T>, void> {
 	for (const [k, t] of Object.entries(updates)) yield [k, transform(existing[k], t)];
 }
 
 /** Transform some of the entries of a map-like object using a set of named transformers. */
 export function transformEntries<T>(existing: ImmutableObject<T>, updates: EntryTransformers<T>, deletes: ImmutableArray<string>): ImmutableObject<T> {
-	return Object.fromEntries(yieldFiltered(yieldMerged(Object.entries(existing), yieldTransformedEntries(existing, updates)), isKeyInArray, deletes));
+	return Object.fromEntries(yieldFiltered(yieldMerged(Object.entries(existing), _yieldTransformedEntries(existing, updates)), isKeyInArray, deletes));
 }
