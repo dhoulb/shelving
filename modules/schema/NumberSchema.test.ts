@@ -35,6 +35,10 @@ describe("validate()", () => {
 		expect(schema.validate("200.99p")).toBe(200.99);
 		expect(schema.validate("aaaaaa2aaaaaaa0zzzzzzzz0.99p")).toBe(200.99);
 	});
+	test("-0 is normalised to 0", () => {
+		expect(Object.is(schema.validate(-0), 0)).toBe(true);
+		expect(Object.is(schema.validate(-0), -0)).toBe(false);
+	});
 	test("Infinity returns invalid", () => {
 		expect(() => schema.validate(Infinity)).toThrow(InvalidFeedback);
 		expect(() => schema.validate(-Infinity)).toThrow(InvalidFeedback);

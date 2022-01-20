@@ -19,7 +19,7 @@ export const isNumber = (v: unknown): v is number => typeof v === "number";
  * - Everything else returns `null`
  */
 export function toNumber(value: unknown): number | null {
-	if (typeof value === "number") return Number.isFinite(value) ? value : null;
+	if (typeof value === "number") return !Number.isFinite(value) ? null : value === 0 ? 0 : value;
 	else if (typeof value === "string") return toNumber(parseFloat(value.replace(NUMERIC, "")));
 	else if (value instanceof Date) return value.getTime();
 	return null;
