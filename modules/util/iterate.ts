@@ -86,6 +86,17 @@ export function limitItems<T>(items: Iterable<T>, limit: number): TypedIterable<
 	return size <= limit ? items : yieldUntilLimit(items, limit);
 }
 
+/**
+ * Reduce an iterable set of items using a reducer function.
+ */
+export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R, item: T) => R, initial: R): R;
+export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R | undefined, item: T) => R, initial?: R): R | undefined;
+export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R | undefined, item: T) => R, initial?: R): R | undefined {
+	let current = initial;
+	for (const item of items) current = reducer(current, item);
+	return current;
+}
+
 /** Yield items from a source iterable until we hit a maximum iteration count. */
 export function* yieldUntilLimit<T>(source: Iterable<T>, limit: number): Generator<T, void, void> {
 	const iterator = source[Symbol.iterator]();
