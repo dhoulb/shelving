@@ -1,6 +1,6 @@
 import type { ImmutableArray } from "./array.js";
 import { yieldUntilLimit, yieldCall } from "./iterate.js";
-import { concatStrings } from "./string.js";
+import { joinStrings } from "./string.js";
 import { getDefined } from "./undefined.js";
 
 /** Generate a random integer between two numbers. */
@@ -11,7 +11,7 @@ export const getRandom = (min: number, max: number): number => Math.round(Math.r
  * - Not designed to be cryptographically random!
  * - Will probably clash — if you're making a random ID, check for existence of the record before saving.
  */
-export const getRandomKey = (length = 16): string => concatStrings(yieldUntilLimit(yieldCall(getRandomCharacter, KEY_CHARS), length));
+export const getRandomKey = (length = 16): string => joinStrings(yieldUntilLimit(yieldCall(getRandomCharacter, KEY_CHARS), length));
 const KEY_CHARS = "0123456789abcdefghjkmnpqrstvwxyz";
 
 /** Get a random character from a string. */
