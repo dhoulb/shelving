@@ -12,6 +12,7 @@ const HEX6 = /^#?([0-F]{2})([0-F]{2})([0-F]{2})([0-F]{2})?$/i;
 
 /** Things that can be converted to a `Color` instance. */
 export type PossibleColor = Color | string;
+export type PossibleOptionalColor = PossibleColor | null;
 
 /** Represent a color. */
 export class Color {
@@ -63,12 +64,14 @@ export function getColorChannel(channel: number | string) {
 }
 
 /** Convert a possible color to a `Color` instance or `null` */
-export function toColor(color: PossibleColor): Color | null {
+export function toColor(color: unknown): Color | null {
 	if (color instanceof Color) return color;
-	const hex3 = color.match(HEX3);
-	if (hex3) return new Color(hex3[1], hex3[2], hex3[3]);
-	const hex6 = color.match(HEX6);
-	if (hex6) return new Color(hex6[1], hex6[2], hex6[3], hex6[4]);
+	if (typeof color === "string") {
+		const hex3 = color.match(HEX3);
+		if (hex3) return new Color(hex3[1], hex3[2], hex3[3]);
+		const hex6 = color.match(HEX6);
+		if (hex6) return new Color(hex6[1], hex6[2], hex6[3], hex6[4]);
+	}
 	return null;
 }
 
