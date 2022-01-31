@@ -34,13 +34,6 @@ export function toString(value: unknown): string {
 	return typeof value; // "symbol" etc.
 }
 
-/** Concatenate a set of potential strings together. */
-export function concatStrings(values: Iterable<unknown>): string {
-	let output = "";
-	for (const value of values) output += toString(value);
-	return output;
-}
-
 /**
  * Convert an unknown value into a title string for user-facing use.
  * - Strings return the string.
@@ -66,6 +59,13 @@ export function toTitle(value: unknown): string {
 	}
 	if (!value) return "None";
 	return "Unknown";
+}
+
+/** Concatenate an iterable set of strings together. */
+export function joinStrings(strs: Iterable<string>, joiner = ""): string {
+	let output = "";
+	for (const str of strs) output += `${output.length ? joiner : ""}${str}`;
+	return output;
 }
 
 /**
