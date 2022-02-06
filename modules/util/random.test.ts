@@ -6,7 +6,6 @@ test("getRandomCharacter()", () => {
 });
 test("getRandomKey()", () => {
 	expect(typeof getRandomKey()).toBe("string");
-	expect(getRandomKey().length).toBe(16);
 	expect(getRandomKey(24).length).toBe(24);
 });
 test("getRandomItem()", () => {
