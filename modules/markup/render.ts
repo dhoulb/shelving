@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import { sanitizeLines } from "../index.js";
-import { MARKUP_RULES, MARKUP_RULES_UGC } from "./rules.js";
+import { MARKUP_RULES } from "./rules.js";
 import type { MarkupRule, MarkupOptions, MarkupNode } from "./types.js";
 
 /** Convert a string into an array of React nodes using a set of rules. */
@@ -153,17 +153,4 @@ const defaults: MarkupOptions = {
 	url: undefined,
 	rel: undefined,
 	schemes: ["http:", "https:"],
-};
-
-/**
- * Parse a text string as user-generated markup.
- * - Like `renderMarkup()` but only enables a subset of rules and applies `rel="nofollow ugc"` to all links.
- */
-export function renderUgcMarkup(content: string, options?: Partial<MarkupOptions>): MarkupNode {
-	return renderString(sanitizeLines(content), { ...defaultsUgc, ...options });
-}
-const defaultsUgc: MarkupOptions = {
-	...defaults,
-	rules: MARKUP_RULES_UGC,
-	rel: "nofollow ugc",
 };
