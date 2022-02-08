@@ -1,14 +1,11 @@
 import { formatUrl, toURL, getLineRegExp, MATCH_LINE, getBlockRegExp, MATCH_BLOCK, getWrapRegExp } from "../util/index.js";
-import type { MarkupElement, MarkupRule, MarkupRuleMatcher } from "./types.js";
+import type { MarkupElement, MarkupRule } from "./types.js";
 
 // Regular expression partials (`\` slashes must be escaped as `\\`).
 const BULLETS = "-*•+"; // Anything that can be a bullet (used for unordered lists and horizontal rules).
 
 // Regular expressions.
 const REPLACE_INDENT = /^ {1,2}/gm;
-
-// Regular expression makers.
-const getMatcher: (regexp: RegExp) => MarkupRuleMatcher = regexp => content => content.match(regexp);
 
 /**
  * Headings are single line only (don't allow multiline).
@@ -17,7 +14,7 @@ const getMatcher: (regexp: RegExp) => MarkupRuleMatcher = regexp => content => c
  * - Markdown's underline syntax is not supported (for simplification).
  */
 export const HEADING_RULE: MarkupRule = {
-	match: getMatcher(getLineRegExp(`(#{1,6}) +(${MATCH_LINE})`)),
+	regexp: getLineRegExp(`(#{1,6}) +(${MATCH_LINE})`),
 	render: ([, prefix = "", children = ""]) => ({ type: `h${prefix.length}`, key: null, props: { children } }),
 	contexts: ["block"],
 	childContext: "inline",
@@ -31,7 +28,7 @@ export const HEADING_RULE: MarkupRule = {
  * - Might have infinite number of spaces between the characters.
  */
 export const HORIZONTAL_RULE: MarkupRule = {
-	match: getMatcher(getLineRegExp(`([${BULLETS}])(?: *\\1){2,}`)),
+	regexp: getLineRegExp(`([${BULLETS}])(?: *\\1){2,}`),
 	render: () => ({ type: "hr", key: null, props: {} }),
 	contexts: ["block"],
 };
@@ -45,7 +42,7 @@ export const HORIZONTAL_RULE: MarkupRule = {
  */
 const UNORDERED = `[${BULLETS}] +`; // Anything that can be a bullet (used for unordered lists and horizontal rules).
 export const UNORDERED_LIST_RULE: MarkupRule = {
-	match: getMatcher(getBlockRegExp(`${UNORDERED}(${MATCH_BLOCK})`)),
+	regexp: getBlockRegExp(`${UNORDERED}(${MATCH_BLOCK})`),
 	render: ([, list = ""]) => {
 		const children = list.split(SPLIT_UL_ITEMS).map(mapUnorderedItem);
 		return { type: "ul", key: null, props: { children } };
@@ -66,7 +63,7 @@ const mapUnorderedItem = (item: string, key: number): MarkupElement => {
  */
 const ORDERED = "[0-9]+[.):] +"; // Number for a numbered list (e.g. `1.` or `2)` or `3:`)
 export const ORDERED_LIST_RULE: MarkupRule = {
-	match: getMatcher(getBlockRegExp(`(${ORDERED}${MATCH_BLOCK})`)),
+	regexp: getBlockRegExp(`(${ORDERED}${MATCH_BLOCK})`),
 	render: ([, list = ""]) => {
 		const children = list.split(SPLIT_OL_ITEMS).map(mapOrderedItem);
 		return { type: "ol", key: null, props: { children } };
@@ -92,7 +89,7 @@ const mapOrderedItem = (item: string, key: number): MarkupElement => {
  * - Quote indent symbol can be followed by zero or more spaces.
  */
 export const BLOCKQUOTE_RULE: MarkupRule = {
-	match: getMatcher(getLineRegExp(`(>${MATCH_LINE}(?:\\n>${MATCH_LINE})*)`)),
+	regexp: getLineRegExp(`(>${MATCH_LINE}(?:\\n>${MATCH_LINE})*)`),
 	render: ([, quote = ""]) => ({
 		type: "blockquote",
 		key: null,
@@ -112,7 +109,7 @@ const BLOCKQUOTE_LINES = /^>/gm;
  */
 export const FENCED_CODE_RULE: MarkupRule = {
 	// Matcher has its own end that only stops when it reaches a matching closing fence or the end of the string.
-	match: getMatcher(getBlockRegExp(`(\`{3,}|~{3,}) *(${MATCH_LINE})\\n(${MATCH_BLOCK})`, `\\n\\1\\n+|\\n\\1$|$`)),
+	regexp: getBlockRegExp(`(\`{3,}|~{3,}) *(${MATCH_LINE})\\n(${MATCH_BLOCK})`, `\\n\\1\\n+|\\n\\1$|$`),
 	render: ([, , file, children]) => ({
 		type: "pre",
 		key: null,
@@ -132,7 +129,7 @@ export const FENCED_CODE_RULE: MarkupRule = {
  * - When ordering rules, paragraph should go after other "block" context elements (because it has a very generous capture).
  */
 export const PARAGRAPH_RULE: MarkupRule = {
-	match: getMatcher(getBlockRegExp(` *(${MATCH_BLOCK})`)),
+	regexp: getBlockRegExp(` *(${MATCH_BLOCK})`),
 	render: ([, children]) => ({ type: `p`, key: null, props: { children } }),
 	contexts: ["block"],
 	childContext: "inline",
@@ -149,8 +146,9 @@ export const PARAGRAPH_RULE: MarkupRule = {
  */
 export const LINK_MARKUP: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
+	regexp: /\[([^\]]*?)\]\(([^)]*?)\)/,
 	match: (content, { schemes, url: base }) => {
-		const matches = content.match(MATCH_LINK);
+		const matches = content.match(LINK_MARKUP.regexp);
 		if (matches && typeof matches.index === "number") {
 			const [, title = "", href = ""] = matches;
 			const url = toURL(href, base);
@@ -169,7 +167,6 @@ export const LINK_MARKUP: MarkupRule = {
 	contexts: ["inline", "list"],
 	childContext: "link",
 };
-const MATCH_LINK = /\[([^\]]*?)\]\(([^)]*?)\)/;
 
 /**
  * Autolinked URL starts with `http:` or `https:` and matches an unlimited number of non-space characters.
@@ -180,8 +177,9 @@ const MATCH_LINK = /\[([^\]]*?)\]\(([^)]*?)\)/;
  */
 export const AUTOLINK_RULE: MarkupRule = {
 	// Custom matcher to check the URL against the allowed schemes.
+	regexp: /([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]:\S+)(?: +(?:\(([^)]*?)\)|\[([^\]]*?)\]))?/,
 	match: (content, { schemes, url: base }) => {
-		const matches = content.match(MATCH_AUTOLINK);
+		const matches = content.match(AUTOLINK_RULE.regexp);
 		if (matches && typeof matches.index === "number") {
 			const [, href = "", title1 = "", title2 = ""] = matches;
 			const url = toURL(href, base);
@@ -196,7 +194,6 @@ export const AUTOLINK_RULE: MarkupRule = {
 	contexts: ["inline", "list"],
 	childContext: "link",
 };
-const MATCH_AUTOLINK = /([a-z][a-z0-9-]*[a-z0-9]:\S+)(?: +(?:\(([^)]*?)\)|\[([^\]]*?)\]))?/i;
 
 /**
  * Inline code.
@@ -206,7 +203,7 @@ const MATCH_AUTOLINK = /([a-z][a-z0-9-]*[a-z0-9]:\S+)(?: +(?:\(([^)]*?)\)|\[([^\
  * - Same as Markdown syntax.
  */
 export const CODE_RULE: MarkupRule = {
-	match: getMatcher(getWrapRegExp("`+", MATCH_BLOCK)), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
+	regexp: getWrapRegExp("`+", MATCH_BLOCK), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
 	render: ([, , children]) => ({ type: "code", key: null, props: { children } }),
 	contexts: ["inline", "list"],
 	priority: 10, // Higher priority than other inlines so it matches first before e.g. `strong` or `em` (from CommonMark spec: "Code span backticks have higher precedence than any other inline constructs except HTML tags and autolinks.")
@@ -221,7 +218,7 @@ export const CODE_RULE: MarkupRule = {
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
 export const STRONG_MARKUP: MarkupRule = {
-	match: getMatcher(getWrapRegExp("\\*+")),
+	regexp: getWrapRegExp("\\*+"),
 	render: ([, , children]) => ({ type: "strong", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
@@ -236,7 +233,7 @@ export const STRONG_MARKUP: MarkupRule = {
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
 export const EMPHASIS_RULE: MarkupRule = {
-	match: getMatcher(getWrapRegExp("_+")),
+	regexp: getWrapRegExp("_+"),
 	render: ([, , children]) => ({ type: "em", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
@@ -251,7 +248,7 @@ export const EMPHASIS_RULE: MarkupRule = {
  * - Markdown doesn't have this.
  */
 export const INSERT_RULE: MarkupRule = {
-	match: getMatcher(getWrapRegExp("\\+\\++")),
+	regexp: getWrapRegExp("\\+\\++"),
 	render: ([, , children]) => ({ type: "ins", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
@@ -266,7 +263,7 @@ export const INSERT_RULE: MarkupRule = {
  * - Markdown doesn't have this.
  */
 export const DELETE_RULE: MarkupRule = {
-	match: getMatcher(getWrapRegExp("--+|~~+")),
+	regexp: getWrapRegExp("--+|~~+"),
 	render: ([, , children]) => ({ type: "del", key: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
@@ -281,7 +278,7 @@ export const DELETE_RULE: MarkupRule = {
  *   - This works better with textareas that wrap text (since manually breaking up long lines is no longer necessary).
  */
 export const LINEBREAK_RULE: MarkupRule = {
-	match: getMatcher(/\n/),
+	regexp: /\n/,
 	render: () => ({ type: "br", key: null, props: {} }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",

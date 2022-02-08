@@ -19,12 +19,12 @@ function renderString(content: string, options: MarkupOptions): MarkupNode {
 		let matchedRule: MarkupRule | undefined = undefined;
 		let matchedResult: RegExpMatchArray | undefined = undefined;
 		for (const rule of options.rules) {
-			const { priority = 0, match, contexts } = rule;
+			const { priority = 0, match, regexp, contexts } = rule;
 			// Only apply this rule if both:
 			// 1. The priority is equal or higher to the current priority.
 			// 2. The rule is allowed in the current context.
 			if (priority >= matchedPriority && contexts.includes(options.context)) {
-				const result = match(content, options);
+				const result = match ? match(content, options) : regexp ? content.match(regexp) : null;
 				// If this matched and has an index (it might not if it's a `/g` global RegExp, which would be a mistake).
 				if (result && typeof result.index === "number") {
 					const index = result.index;

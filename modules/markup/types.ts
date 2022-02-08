@@ -20,8 +20,10 @@ export type MarkupNode = undefined | null | string | MarkupElement | MarkupNode[
 
 /** A single markup parsing rule. */
 export type MarkupRule = {
-	/** RegExp that matches this rule. */
-	readonly match: MarkupRuleMatcher;
+	/** RegExp for matching this rule. */
+	readonly regexp: RegExp;
+	/** Custom matching function for this rule (overrides `regexp` if present. */
+	readonly match?: (content: string, options: MarkupOptions) => RegExpMatchArray | null | undefined | void;
 	/**
 	 * Return a corresponding JSX element for the match.
 	 * @param ...matches The matches from `match` RegExp (without the `0` zeroeth "whole match").
@@ -29,7 +31,7 @@ export type MarkupRule = {
 	 *   - The `key` property is not required (will be set automatically).
 	 *   - e.g. `{ type: "a", props: { href: "/example.html", className: "strong", children: "Children *can* include _syntax_" } }`
 	 */
-	readonly render: MarkupRuleRenderer;
+	readonly render: (matches: RegExpMatchArray, options: MarkupOptions) => MarkupElement;
 	/** Apply the rule only when in certain contexts, e.g. `["block", "inline", "list"]` */
 	readonly contexts: string[];
 	/** Context any string children returned from `render()` should be rendered with. */
@@ -44,8 +46,6 @@ export type MarkupRule = {
 	 */
 	readonly priority?: number;
 };
-export type MarkupRuleMatcher = (content: string, options: MarkupOptions) => RegExpMatchArray | null | undefined | void;
-export type MarkupRuleRenderer = (matches: RegExpMatchArray, options: MarkupOptions) => MarkupElement;
 
 /** A set of parse rules (as an object or array). */
 export type MarkupRules = Iterable<MarkupRule>;
@@ -63,6 +63,3 @@ export type MarkupOptions = {
 	/** Valid URL schemes/protocols for links (including trailing commas), defaults to `[`http:`, `https:`]` */
 	readonly schemes: string[];
 };
-
-/** The create element function. */
-export type MarkupElementCreator = (type: string, props?: MarkupElementProps | null) => MarkupElement;
