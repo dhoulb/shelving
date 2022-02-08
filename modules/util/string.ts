@@ -135,18 +135,6 @@ export function* yieldWords(value: string): Generator<string, void, void> {
 }
 const MATCH_WORD = /[^\s"]+|"([^"]*)"/g; // Runs of characters without spaces, or "quoted phrases"
 
-/**
- * Convert a string to a regular expression that matches that string.
- *
- * @param str The input string.
- * @param flags RegExp flags that are passed into the created RegExp.
- */
-export const toRegExp = (str: string, flags = ""): RegExp => new RegExp(escapeRegExp(str), flags);
-
-/** Escape special characters in a string regular expression. */
-export const escapeRegExp = (str: string): string => str.replace(REPLACE_ESCAPED, "\\$&");
-const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
-
 /** Is the first character of a string an uppercase letter? */
 export const isUppercaseLetter = (str: string): boolean => isBetween(str.charCodeAt(0), 65, 90);
 

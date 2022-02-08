@@ -1,48 +1,36 @@
 import type { ImmutableArray } from "./array.js";
 import { Matchable } from "./filter.js";
-import { toWords, escapeRegExp, normalizeString } from "./string.js";
+import { toWords, normalizeString } from "./string.js";
 
 /**
- * Match a string against a regular expression.
+ * Convert a string to a regular expression that matches that string.
  *
- * @param item The item to search for the regexp in.
- * - Item is an array: recurse into each item of the array to look for strings that match.
- * - Item is an object: recurse into each property of the object to look for strings that match.
- * - Item is string: match the string against the regular expression.
- * - Item is anything else: return false (can't be matched).
- *
- * @param regexp The `RegExp` instance to match the
+ * @param str The input string.
+ * @param flags RegExp flags that are passed into the created RegExp.
  */
-export function MATCHES(item: unknown, regexp: RegExp): boolean {
-	return typeof item === "string" && !!item.match(regexp);
-}
+export const toRegExp = (str: string, flags = ""): RegExp => new RegExp(escapeRegExp(str), flags);
 
-/**
- * Match an item matching all words in a query.
- *
- * @param item The item to search for the query in.
- * @param query The query string to search for.
- * - Supports `"compound queries"` with quotes.
- */
-export function MATCHES_ALL(item: unknown, regexps: ImmutableArray<RegExp>): boolean {
-	if (typeof item === "string" && regexps.length) {
-		for (const regexp of regexps) if (!item.match(regexp)) return false;
-		return true;
-	}
-	return false;
-}
+/** Escape special characters in a string regular expression. */
+export const escapeRegExp = (str: string): string => str.replace(REPLACE_ESCAPED, "\\$&");
+const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
-/**
- * Match an item matching all words in a query.
- *
- * @param item The item to search for the query in.
- * @param query The query string to search for.
- * - Supports `"compound queries"` with quotes.
- */
-export function MATCHES_ANY(item: unknown, regexps: ImmutableArray<RegExp>): boolean {
-	if (typeof item === "string") for (const regexp of regexps) if (MATCHES(item, regexp)) return true;
-	return false;
-}
+// Regular expression partials (`\` slashes must be escaped as `\\`).
+export const MATCH_LINE = "[^\\n]*"; // Match line of content (anything that's not a newline).
+export const MATCH_LINE_START = "^\\n*|\\n+"; // Starts at start of line (one or more linebreak or start of string).
+export const MATCH_LINE_END = "\\n+|$"; // Ends at end of line (one or more linebreak or end of string).
+export const MATCH_BLOCK = "[\\s\\S]*?"; // Match block of content (including newlines so don't be greedy).
+export const MATCH_BLOCK_START = "^\\n*|\\n+"; // Starts at start of a block (one or more linebreak or start of string).
+export const MATCH_BLOCK_END = "\\n*$|\\n\\n+"; // End of a block (two or more linebreaks or end of string).
+export const MATCH_WORDS = `\\S(?:[\\s\\S]*?\\S)?`; // Run of text that starts and ends with non-space characters (possibly multi-line).
+
+/** Create regular expression that matches a block of content. */
+export const getBlockRegExp = (middle = MATCH_BLOCK, end = MATCH_BLOCK_END, start = MATCH_BLOCK_START): RegExp => new RegExp(`(?:${start})${middle}(?:${end})`);
+
+/** Create regular expression that matches a line of content. */
+export const getLineRegExp = (middle = MATCH_LINE, end = MATCH_LINE_END, start = MATCH_LINE_START): RegExp => new RegExp(`(?:${start})${middle}(?:${end})`);
+
+/** Create regular expression that matches piece of text wrapped by a set of characters. */
+export const getWrapRegExp = (chars: string, middle = MATCH_WORDS): RegExp => new RegExp(`(${chars})(${middle})\\1`);
 
 /**
  * Convert a string query to the corresponding set of case-insensitive regular expressions.
@@ -56,25 +44,54 @@ export const toWordRegExps = (query: string): ImmutableArray<RegExp> => toWords(
 /** Convert a string to a regular expression matching the start of a word boundary. */
 export const toWordRegExp = (word: string) => new RegExp(`\\b${escapeRegExp(normalizeString(word))}`, "i");
 
+/**
+ * Match an item matching all words in a query.
+ *
+ * @param item The item to search for the query in.
+ * @param query The query string to search for.
+ * - Supports `"compound queries"` with quotes.
+ */
+export function matchesAll(item: unknown, regexps: Iterable<RegExp>): boolean {
+	let count = 0;
+	if (typeof item === "string") {
+		for (const regexp of regexps) {
+			count++;
+			if (!regexp.test(item)) return false;
+		}
+	}
+	return count ? true : false;
+}
+
+/**
+ * Match an item any of several regular expressions.
+ *
+ * @param item The item to search for the query in.
+ * @param regexps An iterable set of regular expressions.
+ */
+export function matchesAny(item: unknown, regexps: Iterable<RegExp>): boolean {
+	if (typeof item === "string") for (const regexp of regexps) if (regexp.test(item)) return true;
+	return false;
+}
+
 /** Matcher that matches any words in a string. */
 export class MatchAnyWord implements Matchable<unknown, void> {
-	private _regexps: ImmutableArray<RegExp>;
+	private _regexps: Iterable<RegExp>;
 	constructor(words: string) {
 		this._regexps = toWordRegExps(words);
 	}
 	match(value: string): boolean {
-		return MATCHES_ANY(value, this._regexps);
+		return matchesAny(value, this._regexps);
 	}
 }
 
 /** Matcher that matches all words in a string. */
 export class MatchAllWords implements Matchable<unknown, void> {
-	private _regexps: ImmutableArray<RegExp>;
+	private _regexps: Iterable<RegExp>;
 	constructor(words: string) {
 		this._regexps = toWordRegExps(words);
 	}
 	match(value: string): boolean {
-		return MATCHES_ALL(value, this._regexps);
+		return matchesAll(value, this._regexps);
 	}
 }
 
@@ -85,6 +102,6 @@ export class MatchWord implements Matchable<unknown, void> {
 		this._regexp = toWordRegExp(phrase);
 	}
 	match(value: string): boolean {
-		return MATCHES(value, this._regexp);
+		return this._regexp.test(value);
 	}
 }

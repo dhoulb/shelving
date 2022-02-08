@@ -1,70 +1,70 @@
-import { filterArray, MatchAllWords, MatchAnyWord, MATCHES_ALL, MATCHES_ANY, toWordRegExps } from "../index.js";
+import { filterArray, MatchAllWords, MatchAnyWord, matchesAll, matchesAny, toWordRegExps } from "../index.js";
 
-test("MATCHES_ALL", () => {
+test("matchesAll", () => {
 	// Search empty query.
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps(""))).toBe(false);
+	expect(matchesAll("the dog and the cat", toWordRegExps(""))).toBe(false);
 
 	// Single full words.
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("dog"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("the"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("cat"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("tapir"))).toBe(false);
+	expect(matchesAll("the dog and the cat", toWordRegExps("dog"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("the"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("cat"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("tapir"))).toBe(false);
 
 	// Multiple full words.
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("dog cat"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("the the"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("tapir cat"))).toBe(false);
+	expect(matchesAll("the dog and the cat", toWordRegExps("dog cat"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("the the"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("tapir cat"))).toBe(false);
 
 	// Single partial words.
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("do"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("th"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("ca"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("tap"))).toBe(false);
+	expect(matchesAll("the dog and the cat", toWordRegExps("do"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("th"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("ca"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("tap"))).toBe(false);
 
 	// Multiple partial words.
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("do ca"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("th t"))).toBe(true);
-	expect(MATCHES_ALL("the dog and the cat", toWordRegExps("tap ca"))).toBe(false);
+	expect(matchesAll("the dog and the cat", toWordRegExps("do ca"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("th t"))).toBe(true);
+	expect(matchesAll("the dog and the cat", toWordRegExps("tap ca"))).toBe(false);
 
 	// Anything else.
-	expect(MATCHES_ALL(123, toWordRegExps("123"))).toBe(false);
-	expect(MATCHES_ALL(123, toWordRegExps("123"))).toBe(false);
-	expect(MATCHES_ALL(true, toWordRegExps("true"))).toBe(false);
-	expect(MATCHES_ALL(true, toWordRegExps("true"))).toBe(false);
+	expect(matchesAll(123, toWordRegExps("123"))).toBe(false);
+	expect(matchesAll(123, toWordRegExps("123"))).toBe(false);
+	expect(matchesAll(true, toWordRegExps("true"))).toBe(false);
+	expect(matchesAll(true, toWordRegExps("true"))).toBe(false);
 });
-test("MATCHES_ANY", () => {
+test("matchesAny()", () => {
 	// Search empty query.
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps(""))).toBe(false);
+	expect(matchesAny("the dog and the cat", toWordRegExps(""))).toBe(false);
 
 	// Single full words.
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("dog"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("the"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("cat"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("tapir"))).toBe(false);
+	expect(matchesAny("the dog and the cat", toWordRegExps("dog"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("the"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("cat"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("tapir"))).toBe(false);
 
 	// Multiple full words.
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("dog cat"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("the the"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("tapir cat"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("tapir elephant"))).toBe(false);
+	expect(matchesAny("the dog and the cat", toWordRegExps("dog cat"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("the the"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("tapir cat"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("tapir elephant"))).toBe(false);
 
 	// Single partial words.
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("do"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("th"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("ca"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("tap"))).toBe(false);
+	expect(matchesAny("the dog and the cat", toWordRegExps("do"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("th"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("ca"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("tap"))).toBe(false);
 
 	// Multiple partial words.
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("do ca"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("th t"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("tap ca"))).toBe(true);
-	expect(MATCHES_ANY("the dog and the cat", toWordRegExps("tap ele"))).toBe(false);
+	expect(matchesAny("the dog and the cat", toWordRegExps("do ca"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("th t"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("tap ca"))).toBe(true);
+	expect(matchesAny("the dog and the cat", toWordRegExps("tap ele"))).toBe(false);
 
 	// Anything else.
-	expect(MATCHES_ANY(123, toWordRegExps("123"))).toBe(false);
-	expect(MATCHES_ANY(123, toWordRegExps("123"))).toBe(false);
-	expect(MATCHES_ANY(true, toWordRegExps("true"))).toBe(false);
-	expect(MATCHES_ANY(true, toWordRegExps("true"))).toBe(false);
+	expect(matchesAny(123, toWordRegExps("123"))).toBe(false);
+	expect(matchesAny(123, toWordRegExps("123"))).toBe(false);
+	expect(matchesAny(true, toWordRegExps("true"))).toBe(false);
+	expect(matchesAny(true, toWordRegExps("true"))).toBe(false);
 });
 test("filter(): Works correctly with MatchAllWords", () => {
 	const arr = ["the dog", "the man", "the cat"];
