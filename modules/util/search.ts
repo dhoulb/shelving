@@ -2,6 +2,19 @@ import type { ImmutableArray } from "./array.js";
 import { Matchable } from "./filter.js";
 import { toWords, normalizeString } from "./string.js";
 
+// Regular expressions.
+export const MATCH_SPACE = /\s+/; // Match the first run of one or more space characters.
+export const MATCH_SPACES = /\s+/g; // Match all runs of one or more space characters.
+export const MATCH_LINEBREAK = /\n+/; // Match the first run of one or more linebreak characters.
+export const MATCH_LINEBREAKS = /\n+/; // Match all runs of one or more linebreak characters.
+export const MATCH_LINE = /[^\n]*/; // Match line of content (anything that's not a newline).
+export const MATCH_LINE_START = /^\n*|\n+/; // Starts at start of line (one or more linebreak or start of string).
+export const MATCH_LINE_END = /\n+|$/; // Ends at end of line (one or more linebreak or end of string).
+export const MATCH_BLOCK = /[\s\S]*?/; // Match block of content (including newlines so don't be greedy).
+export const MATCH_BLOCK_START = /^\n*|\n+/; // Starts at start of a block (one or more linebreak or start of string).
+export const MATCH_BLOCK_END = /\n*$|\n\n+/; // End of a block (two or more linebreaks or end of string).
+export const MATCH_WORDS = /\S(?:[\s\S]*?\S)?/; // Run of text that starts and ends with non-space characters (possibly multi-line).
+
 /**
  * Convert a string to a regular expression that matches that string.
  *
@@ -14,23 +27,14 @@ export const toRegExp = (str: string, flags = ""): RegExp => new RegExp(escapeRe
 export const escapeRegExp = (str: string): string => str.replace(REPLACE_ESCAPED, "\\$&");
 const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
-// Regular expression partials (`\` slashes must be escaped as `\\`).
-export const MATCH_LINE = "[^\\n]*"; // Match line of content (anything that's not a newline).
-export const MATCH_LINE_START = "^\\n*|\\n+"; // Starts at start of line (one or more linebreak or start of string).
-export const MATCH_LINE_END = "\\n+|$"; // Ends at end of line (one or more linebreak or end of string).
-export const MATCH_BLOCK = "[\\s\\S]*?"; // Match block of content (including newlines so don't be greedy).
-export const MATCH_BLOCK_START = "^\\n*|\\n+"; // Starts at start of a block (one or more linebreak or start of string).
-export const MATCH_BLOCK_END = "\\n*$|\\n\\n+"; // End of a block (two or more linebreaks or end of string).
-export const MATCH_WORDS = `\\S(?:[\\s\\S]*?\\S)?`; // Run of text that starts and ends with non-space characters (possibly multi-line).
-
 /** Create regular expression that matches a block of content. */
-export const getBlockRegExp = (middle = MATCH_BLOCK, end = MATCH_BLOCK_END, start = MATCH_BLOCK_START): RegExp => new RegExp(`(?:${start})${middle}(?:${end})`);
+export const getBlockRegExp = (middle = MATCH_BLOCK.source, end = MATCH_BLOCK_END.source, start = MATCH_BLOCK_START.source): RegExp => new RegExp(`(?:${start})${middle}(?:${end})`);
 
 /** Create regular expression that matches a line of content. */
-export const getLineRegExp = (middle = MATCH_LINE, end = MATCH_LINE_END, start = MATCH_LINE_START): RegExp => new RegExp(`(?:${start})${middle}(?:${end})`);
+export const getLineRegExp = (middle = MATCH_LINE.source, end = MATCH_LINE_END.source, start = MATCH_LINE_START.source): RegExp => new RegExp(`(?:${start})${middle}(?:${end})`);
 
 /** Create regular expression that matches piece of text wrapped by a set of characters. */
-export const getWrapRegExp = (chars: string, middle = MATCH_WORDS): RegExp => new RegExp(`(${chars})(${middle})\\1`);
+export const getWrapRegExp = (chars: string, middle = MATCH_WORDS.source): RegExp => new RegExp(`(${chars})(${middle})\\1`);
 
 /**
  * Convert a string query to the corresponding set of case-insensitive regular expressions.
