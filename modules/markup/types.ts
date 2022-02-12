@@ -1,22 +1,4 @@
-/**
- * JSX element.
- * - Compatible with but _slightly_ more flexible than `React.ReactElement`
- */
-export type MarkupElement = {
-	type: string;
-	key: string | number | null;
-	props: MarkupElementProps;
-	$$typeof?: symbol;
-	/** This specifies the rule that created this element. */
-	rule?: MarkupRule;
-};
-export type MarkupElementProps = {
-	[prop: string]: unknown;
-	children?: MarkupNode;
-};
-
-/** JSX node (compatible with but slightly more flexible than `React.ReactNode`) */
-export type MarkupNode = undefined | null | string | MarkupElement | MarkupNode[];
+import { JSXElement } from "../util/index.js";
 
 /** A single markup parsing rule. */
 export type MarkupRule = {
@@ -31,7 +13,7 @@ export type MarkupRule = {
 	 *   - The `key` property is not required (will be set automatically).
 	 *   - e.g. `{ type: "a", props: { href: "/example.html", className: "strong", children: "Children *can* include _syntax_" } }`
 	 */
-	readonly render: (matches: RegExpMatchArray, options: MarkupOptions) => MarkupElement;
+	readonly render: (matches: RegExpMatchArray, options: MarkupOptions) => JSXElement;
 	/** Apply the rule only when in certain contexts, e.g. `["block", "inline", "list"]` */
 	readonly contexts: string[];
 	/** Context any string children returned from `render()` should be rendered with. */

@@ -1,15 +1,15 @@
 /* eslint-disable no-param-reassign */
 
-import { sanitizeLines } from "../index.js";
+import { sanitizeLines, JSXNode } from "../util/index.js";
 import { MARKUP_RULES } from "./rules.js";
-import type { MarkupRule, MarkupOptions, MarkupNode } from "./types.js";
+import type { MarkupRule, MarkupOptions } from "./types.js";
 
 /** Convert a string into an array of React nodes using a set of rules. */
-function renderString(content: string, options: MarkupOptions): MarkupNode {
+function renderString(content: string, options: MarkupOptions): JSXNode {
 	// If there's no context return the unmodified string.
 	if (!options.context) return content;
 
-	const nodes: MarkupNode[] = [];
+	const nodes: JSXNode[] = [];
 
 	// Loop until we've parsed the entire string.
 	while (content.length) {
@@ -52,13 +52,12 @@ function renderString(content: string, options: MarkupOptions): MarkupNode {
 			// Call the rule's `render()` function to generate the node.
 			const childOptions = { ...options, context: matchedRule.childContext };
 			const element = matchedRule.render(matchedResult, childOptions);
-			element.rule = matchedRule;
 			appendNode(nodes, renderNode(element, childOptions));
 
 			// Decrement the content.
 			content = content.slice(matchedIndex + matchedResult[0].length);
 		} else {
-			// If nothing else matched add the rest of the string as a node (presumably it doesn't have any punctuation).
+			// If nothing else matched add the rest of the string as a node.
 			// Don't need to push the string through `renderNode()` because we already know it doesn't match any rules in the current context.
 			nodes.push(content);
 			content = "";
@@ -75,7 +74,7 @@ function renderString(content: string, options: MarkupOptions): MarkupNode {
  * - JSX nodes can be arrays of nodes — these will be flattened directly into the nodes list.
  * - Nodes array is modified in place (not returned).
  */
-function appendNode(nodes: MarkupNode[], node: MarkupNode): void {
+function appendNode(nodes: JSXNode[], node: JSXNode): void {
 	if (!node) {
 		// No need to append null, undefined, or empty string.
 		return;
@@ -99,13 +98,15 @@ function appendNode(nodes: MarkupNode[], node: MarkupNode): void {
  * Render a JSX node
  * - Recursively renders the children of the node using the current options.
  */
-function renderNode(node: MarkupNode, options: MarkupOptions): MarkupNode {
+function renderNode(node: JSXNode, options: MarkupOptions): JSXNode {
 	if (typeof node === "string") return renderString(node, options);
 	if (node instanceof Array) return node.map(n => renderNode(n, options));
 	if (typeof node === "object" && node) {
-		node.$$typeof = REACT_SECURITY_SYMBOL; // Inject React security type. See https://github.com/facebook/react/pull/4832
-		if (node.props.children) node.props.children = renderNode(node.props.children, options);
-		return node;
+		return {
+			...node,
+			$$typeof: REACT_SECURITY_SYMBOL, // Inject React security type. See https://github.com/facebook/react/pull/4832
+			props: node.props.children ? { ...node.props, children: renderNode(node.props.children, options) } : node.props,
+		};
 	}
 	return node;
 }
@@ -144,7 +145,7 @@ const REACT_SECURITY_SYMBOL = Symbol.for("react.element");
  *
  * @returns ReactNode, i.e. either a complete `ReactElement`, `null`, `undefined`, `string`, or an array of zero or more of those.
  */
-export function renderMarkup(content: string, options?: Partial<MarkupOptions>): MarkupNode {
+export function renderMarkup(content: string, options?: Partial<MarkupOptions>): JSXNode {
 	return renderString(sanitizeLines(content), { ...defaults, ...options });
 }
 const defaults: MarkupOptions = {

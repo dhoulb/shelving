@@ -1,6 +1,6 @@
 import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
-import { renderMarkup, MarkupElement } from "../index.js";
+import { renderMarkup, JSXElement } from "../index.js";
 
 const $$typeof = Symbol.for("react.element");
 
@@ -590,9 +590,9 @@ describe("renderMarkup(): React compatibility", () => {
 		});
 	});
 	test("Generated elements can be rendered without error", () => {
-		expect(() => renderToString(renderMarkup("PARAGRAPH") as MarkupElement)).not.toThrow();
-		expect(() => renderToString(renderMarkup("- ITEM") as MarkupElement)).not.toThrow();
-		expect(() => renderToString(renderMarkup("```\nCODE") as MarkupElement)).not.toThrow();
+		expect(() => renderToString(renderMarkup("PARAGRAPH") as JSXElement)).not.toThrow();
+		expect(() => renderToString(renderMarkup("- ITEM") as JSXElement)).not.toThrow();
+		expect(() => renderToString(renderMarkup("```\nCODE") as JSXElement)).not.toThrow();
 	});
 });
 describe("renderMarkup(): Weird cases", () => {
