@@ -115,9 +115,9 @@ export function useQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxA
 }
 
 /** Use the first result of a query or `undefined` if the query has no matching results (or a promise indicating the result is loading). */
-export function useAsyncQueryResult<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): DocumentResult<T> | undefined | PromiseLike<DocumentResult<T> | undefined>;
-export function useAsyncQueryResult<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentResult<T> | undefined | PromiseLike<DocumentResult<T> | undefined>;
-export function useAsyncQueryResult<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentResult<T> | undefined | PromiseLike<DocumentResult<T> | undefined> {
+export function useAsyncQueryResult<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>>;
+export function useAsyncQueryResult<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>> | undefined;
+export function useAsyncQueryResult<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>> | undefined {
 	const results = useAsyncQuery(ref ? ref.max(1) : undefined, maxAge);
 	return ref && results ? callAsync(getQueryResult, results, ref) : undefined;
 }
