@@ -138,59 +138,63 @@ export const PARAGRAPH_RULE: MarkupRule = {
 
 /**
  * Markdown-style link.
- * - Link in standard Markdown format, e.g. `[http://google.com/maps](Google Maps)`
+ * - Link in standard Markdown format, e.g. `[Google Maps](http://google.com/maps)`
  * - If no title is specified a cleaned up version of the URL will be used, e.g. `google.com/maps`
  * - Does not need space before/after the link.
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only `http://` or `https://` links will work (if invalid the unparsed text will be returned).
  */
 export const LINK_RULE: MarkupRule = {
-	// Custom matcher to check the URL against the allowed schemes.
 	regexp: /\[([^\]]*?)\]\(([^)]*?)\)/,
+	// Custom matcher to check the URL against the allowed schemes.
 	match: (content, { schemes, url: base }) => {
 		const matches = content.match(LINK_RULE.regexp);
-		if (matches && typeof matches.index === "number") {
+		if (matches) {
 			const [, title = "", href = ""] = matches;
 			const url = toURL(href, base);
 			if (url && url.protocol && schemes.includes(url.protocol)) {
 				matches[1] = title.trim();
-				matches[2] = url.href; // Use fixed URL from `new URL`
+				matches[2] = url.href;
 				return matches;
 			}
 		}
 	},
-	render: ([, title = "", href = ""], { rel }) => ({
-		type: href ? "a" : "span",
+	render: ([, title, href = ""], { rel }) => ({
+		type: "a",
 		key: null,
-		props: { children: title || formatUrl(href), href: href || undefined, rel },
+		props: { children: title || formatUrl(href), href, rel },
 	}),
 	contexts: ["inline", "list"],
 	childContext: "link",
 };
 
 /**
- * Autolinked URL starts with `http:` or `https:` and matches an unlimited number of non-space characters.
+ * Autolinked URL starts with `http:` or `https:` or `mailto:` (any scheme in `options.schemes`) and matches an unlimited number of non-space characters.
  * - If followed by space and then text in `()` round or `[]` square brackets that will be used as the title, e.g. `http://google.com/maps (Google Maps)` or `http://google.com/maps [Google Maps]` (this syntax is from Todoist and maybe other things too).
  * - If no title is specified a cleaned up version of the URL will be used, e.g. `google.com/maps`
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
- * - For security only schemes that appear in the `options.schemes` will match (defaults to `http:` and `https:`).
+ * - For security only schemes that appear in `options.schemes` will match (defaults to `http:` and `https:`).
  */
 export const AUTOLINK_RULE: MarkupRule = {
+	regexp: /([a-z]+:\S+)(?: +(?:\(([^)]*?)\)|\[([^\]]*?)\]))?/,
 	// Custom matcher to check the URL against the allowed schemes.
-	regexp: /([a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]:\S+)(?: +(?:\(([^)]*?)\)|\[([^\]]*?)\]))?/,
 	match: (content, { schemes, url: base }) => {
 		const matches = content.match(AUTOLINK_RULE.regexp);
 		if (matches && typeof matches.index === "number") {
-			const [, href = "", title1 = "", title2 = ""] = matches;
+			const [, href = "", roundTitle = "", squareTitle = ""] = matches;
 			const url = toURL(href, base);
 			if (url && url.protocol && schemes.includes(url.protocol)) {
-				matches[1] = (title1 || title2).trim();
-				matches[2] = url.href;
+				matches[1] = url.href;
+				matches[2] = (roundTitle || squareTitle).trim();
 				return matches;
 			}
 		}
 	},
-	render: LINK_RULE.render, // Use the same renderer as `LINK`
+	render: ([, href = "", title], { rel }) => ({
+		type: "a",
+		key: null,
+		props: { children: title || formatUrl(href), href, rel },
+	}),
 	contexts: ["inline", "list"],
 	childContext: "link",
 };
