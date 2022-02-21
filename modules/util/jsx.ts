@@ -7,8 +7,8 @@ export type JSXElementCreator<P extends Data = Data> = (props: P) => JSXElement 
 export type JSXProps = { readonly [key: string]: unknown; readonly children?: JSXNode };
 
 /** JSX element (similar to `React.ReactElement`)  */
-export type JSXElement<P extends JSXProps = JSXProps, T extends string | JSXElementCreator<P> = string | JSXElementCreator<P>> = {
-	type: T; // String like `div` or creator function that takes the props.
+export type JSXElement<P extends JSXProps = JSXProps> = {
+	type: string | JSXElementCreator<P>;
 	props: P;
 	key: string | number | null;
 	$$typeof?: symbol;
