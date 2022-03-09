@@ -217,8 +217,8 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 
 /** Get the data for a document from a result for that document. */
 export function getQueryData<T extends Data>(entries: Entries<T>, ref: DatabaseQuery<T>): DocumentData<T> {
-	const first = getFirstItem(entries);
-	if (first) return getDocumentData(first[1], ref.doc(first[0]));
+	const data = getQueryResult(entries, ref);
+	if (data) return data;
 	throw new QueryRequiredError(ref);
 }
 
@@ -226,7 +226,7 @@ export function getQueryData<T extends Data>(entries: Entries<T>, ref: DatabaseQ
 export function getQueryResult<T extends Data>(entries: Entries<T>, ref: DatabaseQuery<T>): DocumentResult<T> {
 	const first = getFirstItem(entries);
 	if (first) return getDocumentData(first[1], ref.doc(first[0]));
-	throw new QueryRequiredError(ref);
+	return null;
 }
 
 /** A document reference within a specific database. */
