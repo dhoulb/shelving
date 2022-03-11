@@ -25,7 +25,7 @@ export abstract class Rules<T extends Data, R extends Rule<T>> extends Rule<T> i
 		this._rules = rules;
 	}
 	toString(): string {
-		return this._rules.map(toString).join("&");
+		return this._rules.map(toString).join(",");
 	}
 
 	/** Clone this set of rules but add additional rules. */

@@ -90,6 +90,6 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 
 	// Implement toString()
 	override toString(): string {
-		return `${this.filters}&${this.sorts}${this.limit ? `&LIMIT=${this.limit}` : ""}`;
+		return `filters=${this.filters}&sorts=${this.sorts}&limit={this.limit || ""}`;
 	}
 }
