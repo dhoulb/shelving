@@ -4,3 +4,4 @@ export * from "./BatchProvider.js";
 export * from "./MemoryProvider.js";
 export * from "./ValidationProvider.js";
 export * from "./CacheProvider.js";
+export * from "./ErrorProvider.js";
