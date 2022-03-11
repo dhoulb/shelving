@@ -44,7 +44,7 @@ export abstract class Provider {
 	 *
 	 * @throws Error If a `Update` was provided but the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract set<T extends Data>(ref: DatabaseDocument<T>, value: T): void | PromiseLike<void>;
+	abstract set<T extends Data>(ref: DatabaseDocument<T>, data: T): void | PromiseLike<void>;
 
 	/**
 	 * Update the data an existing document.
