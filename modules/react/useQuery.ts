@@ -17,6 +17,7 @@ import {
 	DocumentResult,
 	getQueryResult,
 	DocumentData,
+	isAsync,
 } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
@@ -62,7 +63,9 @@ export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined,
 	if (maxAge === true) setTimeout(ref.subscribe({ next: setNext, error: setError }), 10000);
 
 	// Return a promise for the result.
-	return ref.results;
+	const results = ref.results;
+	if (isAsync(results)) results.then(setNext, setError);
+	return results;
 }
 
 /** Get the initial results for a reference from the cache. */
@@ -73,10 +76,10 @@ function getCachedResults<T extends Data>(ref: DatabaseQuery<T> | undefined): Re
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
-function subscribeEffect<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true, next: (results: Results<T>) => void, error: Handler): Unsubscriber | void {
+function subscribeEffect<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true, setNext: (results: Results<T>) => void, setError: Handler): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.db.provider, CacheProvider);
-		const observer = new ResultsObserver({ next, error });
+		const observer = new ResultsObserver({ next: setNext, error: setError });
 		const stopCache = provider.cache.subscribeQuery(ref, observer);
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.
@@ -85,9 +88,16 @@ function subscribeEffect<T extends Data>(ref: DatabaseQuery<T> | undefined, maxA
 				stopCache();
 				stopSource();
 			};
-		} else {
+		} else if (provider.getCachedAge(ref) > maxAge) {
 			// If cache provider's cached document is older than maxAge then force refresh the data.
-			if (provider.getCachedAge(ref) > maxAge) Promise.resolve(ref.results).then(next, error);
+			Promise.resolve(ref.results).then(setNext, setError);
+			try {
+				const results = ref.results;
+				if (isAsync(results)) results.then(setNext, setError);
+				else setNext(results);
+			} catch (e) {
+				setError(e);
+			}
 		}
 		return stopCache;
 	}

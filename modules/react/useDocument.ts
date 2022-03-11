@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DatabaseDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Data, Unsubscriber, Handler, callAsync, getDocumentData, DocumentData } from "../index.js";
+import { DatabaseDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Data, Unsubscriber, Handler, callAsync, getDocumentData, DocumentData, isAsync } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
 import { usePureMemo } from "./usePureMemo.js";
 import { usePureState } from "./usePureState.js";
@@ -27,13 +27,15 @@ export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T> | unde
 	// Create two states to hold the value and error.
 	const [value, setNext] = usePureState(getCachedResult, memoRef);
 	const [error, setError] = useState<unknown>(NOERROR);
-	if (error !== NOERROR) throw error; // If there's an error throw it.
 
 	// Register effect.
 	usePureEffect(subscribeEffect, memoRef, maxAge, setNext, setError);
 
 	// Always return undefined if there's no ref.
 	if (!ref) return undefined;
+
+	// If there's an error throw it.
+	if (error !== NOERROR) throw error;
 
 	// If document is cached return the cached value.
 	if (value !== NOVALUE) return value;
@@ -43,7 +45,9 @@ export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T> | unde
 	if (maxAge === true) setTimeout(ref.subscribe({ next: setNext, error: setError }), 10000);
 
 	// Return a promise for the result.
-	return ref.result;
+	const result = ref.result;
+	if (isAsync(result)) result.then(setNext, setError);
+	return result;
 }
 
 /** Get the initial result for a reference from the cache. */
@@ -54,20 +58,26 @@ function getCachedResult<T extends Data>(ref: DatabaseDocument<T> | undefined): 
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
-function subscribeEffect<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge: number | true, next: (result: Result<T>) => void, error: Handler): Unsubscriber | void {
+function subscribeEffect<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge: number | true, setNext: (result: Result<T>) => void, setError: Handler): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.db.provider, CacheProvider);
-		const stopCache = provider.cache.subscribe(ref, { next, error });
+		const stopCache = provider.cache.subscribe(ref, { next: setNext, error: setError });
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.
-			const stopSource = ref.subscribe({ next, error });
+			const stopSource = ref.subscribe({ next: setNext, error: setError });
 			return () => {
 				stopCache();
 				stopSource();
 			};
-		} else {
+		} else if (provider.getCachedAge(ref) > maxAge) {
 			// If cache provider's cached document is older than maxAge then force refresh the data.
-			if (provider.getCachedAge(ref) > maxAge) Promise.resolve(ref.result).then(next, error);
+			try {
+				const result = ref.result;
+				if (isAsync(result)) result.then(setNext, setError);
+				else setNext(result);
+			} catch (e) {
+				setError(e);
+			}
 		}
 		return stopCache;
 	}
