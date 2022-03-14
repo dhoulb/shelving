@@ -155,7 +155,7 @@ export class DatabaseWriteError<T extends Data> extends Error {
 		this.ref = ref;
 	}
 }
-DatabaseWriteError.prototype.name = "DocumentWriteError";
+DatabaseWriteError.prototype.name = "DatabaseWriteError";
 
 /** Observer that wraps errors in subscriptions in `DatabaseReadError` */
 class DatabaseErrorObserver<T extends Data, U extends Result<T> | Entries<T>> extends ThroughObserver<U> {
