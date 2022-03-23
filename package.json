@@ -59,7 +59,7 @@
 		"build:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.build.cjs"
 	},
 	"devDependencies": {
-		"@google-cloud/firestore": "^4.15.1",
+		"@google-cloud/firestore": "^5.0.2",
 		"@types/jest": "^27.4.0",
 		"@types/react": "^17.0.39",
 		"@types/react-dom": "^17.0.11",
