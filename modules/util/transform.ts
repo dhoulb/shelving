@@ -7,7 +7,7 @@ import { Data, Value, Prop, toProps, isData } from "./data.js";
 import { isKeyInArray, yieldFiltered } from "./filter.js";
 import { yieldMerged } from "./iterate.js";
 
-/** Object that can be applied to an input to generate an output with its `apply()` method. */
+/** Object that transforms an input value into an output value with its `transform()` method. */
 export interface Transformable<I, O> {
 	transform(input: I): O;
 }
@@ -19,7 +19,7 @@ export type AnyTransformable = Transformable<any, any>;
 /** Is an unknown value a derivable. */
 export const isTransformable = <T extends AnyTransformable>(v: T | unknown): v is T => isData(v) && typeof v.transform === "function";
 
-/** Function that takes an input value and returns a value transformed from it, or an applier with matching arguments. */
+/** Function that transforms an input value into an output value by calling it, object that transforms an input value into an output value with its `transform()` method, or an output value that doesn't need to be transformed. */
 export type Transformer<I, O> = Transformable<I, O> | ((input: I) => O) | O;
 
 /** Any transformer (useful for `extends AnyTransformr` clauses). */
