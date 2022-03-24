@@ -89,7 +89,7 @@ function getFieldValues<T extends Data>(update: Update<T>): Data {
 function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Iterable<Entry> {
 	for (const [key, update] of updates) {
 		if (!(update instanceof Update)) yield [`${prefix}${key}`, update !== undefined ? update : FieldValue.delete()];
-		if (update instanceof Increment) yield [`${prefix}${key}`, FieldValue.increment(update.amount)];
+		else if (update instanceof Increment) yield [`${prefix}${key}`, FieldValue.increment(update.amount)];
 		else if (update instanceof DataUpdate || update instanceof ObjectUpdate) yield* yieldFieldValues(update, `${prefix}${key}.`);
 		else if (update instanceof ArrayUpdate) {
 			if (update.adds.length && update.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
@@ -131,7 +131,7 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 	}
 
 	async update<T extends Data>(ref: DatabaseDocument<T>, updates: Update<T>): Promise<void> {
-		await getDocument(this.firestore, ref).update(getFieldValues(updates));
+		await getDocument(this.firestore, ref).update(getFieldValues(updates) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 	}
 
 	async delete<T extends Data>(ref: DatabaseDocument<T>): Promise<void> {
@@ -154,7 +154,7 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 	}
 
 	async updateQuery<T extends Data>(ref: DatabaseQuery<T>, updates: Update<T>): Promise<number> {
-		const fieldValues = getFieldValues(updates);
+		const fieldValues = getFieldValues(updates) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 		return await bulkWrite(this.firestore, ref, (w, s) => void w.update(s.ref, fieldValues));
 	}
 
