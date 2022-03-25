@@ -1,5 +1,5 @@
 import { Data, Result, Entries, getRandomKey, Unsubscriber, dispatchNext, Observer, isMapEqual, MutableObject, Dispatcher, ImmutableMap, MutableMap } from "../util/index.js";
-import { Update } from "../update/index.js";
+import { DataUpdate } from "../update/index.js";
 import { DatabaseQuery, DatabaseDocument, DocumentRequiredError } from "../db/index.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
@@ -48,7 +48,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		table.write(id, data);
 	}
 
-	update<T extends Data>(ref: DatabaseDocument<T>, updates: Update<T>): void {
+	update<T extends Data>(ref: DatabaseDocument<T>, updates: DataUpdate<T>): void {
 		const table = this._table(ref);
 		const id = ref.id;
 		const existing = table.data.get(id);
@@ -104,13 +104,13 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		return count;
 	}
 
-	updateQuery<T extends Data>(ref: DatabaseQuery<T>, updates: Update<T>): number {
+	updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): number {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
 		let count = 0;
 		for (const [id, existing] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) {
-			table.write(id, updates.transform(existing));
+			table.write(id, update.transform(existing));
 			count++;
 		}
 		return count;

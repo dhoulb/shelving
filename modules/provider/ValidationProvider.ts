@@ -1,6 +1,6 @@
 import type { DatabaseDocument, DatabaseQuery } from "../db/index.js";
 import { Data, Result, Unsubscriber, Observer, validate, ValidateObserver, Entries, callAsync, validateResult } from "../util/index.js";
-import { Update, validateUpdate } from "../update/index.js";
+import { DataUpdate, validateUpdate } from "../update/index.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Validates any values that are read from or written to a source provider. */
@@ -17,8 +17,8 @@ export class ValidationProvider extends ThroughProvider {
 	override set<T extends Data>(ref: DatabaseDocument<T>, value: T): void | PromiseLike<void> {
 		return super.set(ref, validate(value, ref.validator));
 	}
-	override update<T extends Data>(ref: DatabaseDocument<T>, updates: Update<T>): void | PromiseLike<void> {
-		return super.update<T>(ref, validateUpdate(updates, ref.validator));
+	override update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): void | PromiseLike<void> {
+		return super.update<T>(ref, validateUpdate(update, ref.validator));
 	}
 	override getQuery<T extends Data>(ref: DatabaseQuery<T>): Entries<T> | PromiseLike<Entries<T>> {
 		return callAsync(validate, super.getQuery(ref), ref);
@@ -29,7 +29,7 @@ export class ValidationProvider extends ThroughProvider {
 	override setQuery<T extends Data>(ref: DatabaseQuery<T>, value: T): number | PromiseLike<number> {
 		return super.setQuery(ref, validate(value, ref.validator));
 	}
-	override updateQuery<T extends Data>(ref: DatabaseQuery<T>, updates: Update<T>): number | PromiseLike<number> {
-		return super.updateQuery(ref, validateUpdate(updates, ref.validator));
+	override updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): number | PromiseLike<number> {
+		return super.updateQuery(ref, validateUpdate(update, ref.validator));
 	}
 }

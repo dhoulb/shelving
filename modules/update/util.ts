@@ -4,8 +4,13 @@ import { DataSchema } from "../schema/DataSchema.js";
 import { MutableObject, transform, validate, Validator, Validators, toProps, Data } from "../util/index.js";
 import { DataUpdate, Update, PropUpdates } from "./index.js";
 
-/** Validate an update against a validator. */
-export function validateUpdate<T>(unsafeUpdate: Update<T> | DataUpdate<T & Data>, validator: Validator<T> | DataSchema<T & Data>): Update<T> {
+/**
+ * Validate an update against a validator.
+ * -
+ */
+export function validateUpdate<T extends Data>(unsafeUpdate: DataUpdate<T>, validator: Validator<T>): DataUpdate<T>;
+export function validateUpdate<T>(unsafeUpdate: Update<T>, validator: Validator<T>): Update<T>;
+export function validateUpdate<T>(unsafeUpdate: Update<T>, validator: Validator<T>): Update<T> {
 	if (validator instanceof DataSchema && unsafeUpdate instanceof DataUpdate) {
 		const unsafeUpdates = unsafeUpdate.updates;
 		const safeUpdates = validatePropUpdates<T & Data>(unsafeUpdates, validator.props);

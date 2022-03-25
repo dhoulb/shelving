@@ -24,7 +24,7 @@ import {
 	hasItems,
 	ResultsObserver,
 } from "../util/index.js";
-import { DataUpdate, PropUpdates, Update } from "../update/index.js";
+import { DataUpdate, PropUpdates } from "../update/index.js";
 import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Query, Filter, FilterProps, SortKeys } from "../query/index.js";
@@ -176,8 +176,8 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	 * @param updates `Update` instance or set of updates to apply to every matching document.
 	 * @return Nothing (possibly promised).
 	 */
-	update(updates: Update<T> | PropUpdates<T>): number | PromiseLike<number> {
-		return this.db.provider.updateQuery(this, updates instanceof Update ? updates : new DataUpdate(updates));
+	update(updates: DataUpdate<T> | PropUpdates<T>): number | PromiseLike<number> {
+		return this.db.provider.updateQuery<T>(this, updates instanceof DataUpdate ? updates : new DataUpdate<T>(updates));
 	}
 
 	/**
@@ -296,8 +296,8 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	}
 
 	/** Update this document. */
-	update(updates: Update<T> | PropUpdates<T>): void | PromiseLike<void> {
-		return this.db.provider.update(this, updates instanceof Update ? updates : new DataUpdate(updates));
+	update(updates: DataUpdate<T> | PropUpdates<T>): void | PromiseLike<void> {
+		return this.db.provider.update(this, updates instanceof DataUpdate ? updates : new DataUpdate(updates));
 	}
 
 	/** Delete this document. */

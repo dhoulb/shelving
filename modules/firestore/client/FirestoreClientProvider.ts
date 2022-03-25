@@ -38,12 +38,10 @@ import {
 	Observer,
 	dispatchNext,
 	dispatchError,
-	Update,
 	ObjectUpdate,
 	Increment,
 	AsynchronousProvider,
 	DataUpdate,
-	AssertionError,
 	Data,
 	Unsubscriber,
 	ArrayUpdate,
@@ -100,20 +98,16 @@ function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Entri
 }
 
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
-function getFieldValues<T extends Data>(update: Update<T>): Data {
-	if (update instanceof DataUpdate) return Object.fromEntries(yieldFieldValues(update));
-	throw new AssertionError("Unsupported transform", update);
-}
 function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Generator<Entry, void> {
 	for (const [key, update] of updates) {
-		if (!(update instanceof Update)) yield [`${prefix}${key}`, update !== undefined ? update : firestoreDeleteField()];
+		if (update === undefined) yield [`${prefix}${key}`, firestoreDeleteField()];
 		else if (update instanceof Increment) yield [`${prefix}${key}`, firestoreIncrement(update.amount)];
 		else if (update instanceof DataUpdate || update instanceof ObjectUpdate) yield* yieldFieldValues(update, `${prefix}${key}.`);
 		else if (update instanceof ArrayUpdate) {
 			if (update.adds.length && update.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
 			if (update.adds.length) yield [`${prefix}${key}`, firestoreArrayUnion(...update.adds)];
 			else if (update.deletes.length) yield [`${prefix}${key}`, firestoreArrayRemove(...update.deletes)];
-		} else throw new AssertionError("Unsupported transform", update);
+		} else yield [`${prefix}${key}`, update];
 	}
 }
 
@@ -152,8 +146,9 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		await setDoc<unknown>(getDocument(this.firestore, ref), data);
 	}
 
-	async update<T extends Data>(ref: DatabaseDocument<T>, updates: Update<T>): Promise<void> {
-		await updateDoc<unknown>(getDocument(this.firestore, ref), getFieldValues(updates));
+	async update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): Promise<void> {
+		const fieldValues = Object.fromEntries(yieldFieldValues(update));
+		await updateDoc<unknown>(getDocument(this.firestore, ref), fieldValues);
 	}
 
 	async delete<T extends Data>(ref: DatabaseDocument<T>): Promise<void> {
@@ -178,9 +173,9 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		return snapshot.size;
 	}
 
-	async updateQuery<T extends Data>(ref: DatabaseQuery<T>, updates: Update<T>): Promise<number> {
+	async updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
-		const fieldValues = getFieldValues(updates);
+		const fieldValues = Object.fromEntries(yieldFieldValues(update));
 		await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, fieldValues)));
 		return snapshot.size;
 	}

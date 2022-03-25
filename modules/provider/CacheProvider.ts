@@ -1,5 +1,5 @@
 import type { DatabaseDocument, DatabaseQuery } from "../db/index.js";
-import { Update } from "../update/index.js";
+import { DataUpdate } from "../update/index.js";
 import { Result, MutableObject, Unsubscriber, Observer, Entries, TransformObserver, Data } from "../util/index.js";
 import type { Provider, AsynchronousProvider } from "./Provider.js";
 import { MemoryProvider } from "./MemoryProvider.js";
@@ -59,11 +59,11 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 		this.cache.set(ref, data);
 	}
 
-	override async update<T extends Data>(ref: DatabaseDocument<T>, updates: Update<T>): Promise<void> {
-		await super.update(ref, updates);
+	override async update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): Promise<void> {
+		await super.update(ref, update);
 		// Update the document in the cache if it exists using `updateDocuments()` and an `id` query.
 		// Using `updateDocument()` would throw `RequiredError` if the document didn't exist.
-		this.cache.updateQuery(ref.optional, updates);
+		this.cache.updateQuery(ref.optional, update);
 	}
 
 	override async delete<T extends Data>(ref: DatabaseDocument<T>): Promise<void> {
@@ -104,9 +104,9 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 		return count;
 	}
 
-	override async updateQuery<T extends Data>(ref: DatabaseQuery<T>, updates: Update<T>): Promise<number> {
-		const count = await super.updateQuery(ref, updates);
-		this.cache.updateQuery(ref, updates);
+	override async updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): Promise<number> {
+		const count = await super.updateQuery(ref, update);
+		this.cache.updateQuery(ref, update);
 		return count;
 	}
 

@@ -1,9 +1,6 @@
-import { DatabaseDocument, DatabaseQuery } from "../db/Database.js";
-import { isAsync } from "../index.js";
-import { Update } from "../update/Update.js";
-import { Data, Result } from "../util/data.js";
-import { Entries } from "../util/entry.js";
-import { Observer, ThroughObserver, Unsubscriber } from "../util/observable.js";
+import { DatabaseDocument, DatabaseQuery } from "../db/index.js";
+import { isAsync, Data, Result, Entries, Observer, ThroughObserver, Unsubscriber } from "../util/index.js";
+import { DataUpdate } from "../update/index.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Provider that wraps errors thrown from deeper providers in `DatabaseReadError` and `DatabaseWriteError` etc to make it easier to see what read/write caused the error. */
@@ -50,9 +47,9 @@ export class ErrorProvider extends ThroughProvider {
 			throw err;
 		}
 	}
-	override update<T extends Data>(ref: DatabaseDocument<T>, updates: Update<T>): void | PromiseLike<void> {
+	override update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): void | PromiseLike<void> {
 		try {
-			const result = super.update(ref, updates);
+			const result = super.update(ref, update);
 			return isAsync(result)
 				? result.then(undefined, err => {
 						throw err instanceof Error ? new DatabaseWriteError(err, ref) : err;
@@ -105,9 +102,9 @@ export class ErrorProvider extends ThroughProvider {
 			throw err;
 		}
 	}
-	override updateQuery<T extends Data>(ref: DatabaseQuery<T>, updates: Update<T>): number | PromiseLike<number> {
+	override updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): number | PromiseLike<number> {
 		try {
-			const result = super.updateQuery(ref, updates);
+			const result = super.updateQuery(ref, update);
 			return isAsync(result)
 				? result.then(undefined, err => {
 						throw err instanceof Error ? new DatabaseWriteError(err, ref) : err;

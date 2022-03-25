@@ -82,10 +82,6 @@ function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Itera
 }
 
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
-function getFieldValues<T extends Data>(update: Update<T>): Data {
-	if (update instanceof DataUpdate) return Object.fromEntries(yieldFieldValues(update));
-	throw new AssertionError("Unsupported transform", update);
-}
 function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Iterable<Entry> {
 	for (const [key, update] of updates) {
 		if (!(update instanceof Update)) yield [`${prefix}${key}`, update !== undefined ? update : FieldValue.delete()];
@@ -130,8 +126,9 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		await getDocument(this.firestore, ref).set(data);
 	}
 
-	async update<T extends Data>(ref: DatabaseDocument<T>, updates: Update<T>): Promise<void> {
-		await getDocument(this.firestore, ref).update(getFieldValues(updates) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+	async update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): Promise<void> {
+		const fieldValues = Object.fromEntries(yieldFieldValues(update)) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+		await getDocument(this.firestore, ref).update(fieldValues);
 	}
 
 	async delete<T extends Data>(ref: DatabaseDocument<T>): Promise<void> {
@@ -153,8 +150,8 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		return await bulkWrite(this.firestore, ref, (w, s) => void w.set(s.ref, data));
 	}
 
-	async updateQuery<T extends Data>(ref: DatabaseQuery<T>, updates: Update<T>): Promise<number> {
-		const fieldValues = getFieldValues(updates) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+	async updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): Promise<number> {
+		const fieldValues = Object.fromEntries(yieldFieldValues(update)) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 		return await bulkWrite(this.firestore, ref, (w, s) => void w.update(s.ref, fieldValues));
 	}
 

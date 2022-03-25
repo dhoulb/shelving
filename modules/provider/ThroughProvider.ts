@@ -1,6 +1,6 @@
 import type { Result, Entries, Unsubscriber, Observer, Class, Data } from "../util/index.js";
 import type { DatabaseDocument, DatabaseQuery } from "../db/index.js";
-import type { Update } from "../update/index.js";
+import type { DataUpdate } from "../update/index.js";
 import { AssertionError } from "../error/index.js";
 import { Provider } from "./Provider.js";
 
@@ -25,8 +25,8 @@ export class ThroughProvider extends Provider {
 	set<T extends Data>(ref: DatabaseDocument<T>, data: T): void | PromiseLike<void> {
 		return this.source.set(ref, data);
 	}
-	update<T extends Data>(ref: DatabaseDocument<T>, updates: Update<T>): void | PromiseLike<void> {
-		return this.source.update(ref, updates);
+	update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): void | PromiseLike<void> {
+		return this.source.update(ref, update);
 	}
 	delete<T extends Data>(ref: DatabaseDocument<T>): void | PromiseLike<void> {
 		return this.source.delete(ref);
@@ -40,8 +40,8 @@ export class ThroughProvider extends Provider {
 	setQuery<T extends Data>(ref: DatabaseQuery<T>, data: T): number | PromiseLike<number> {
 		return this.source.setQuery(ref, data);
 	}
-	updateQuery<T extends Data>(ref: DatabaseQuery<T>, updates: Update<T>): number | PromiseLike<number> {
-		return this.source.updateQuery(ref, updates);
+	updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): number | PromiseLike<number> {
+		return this.source.updateQuery(ref, update);
 	}
 	deleteQuery<T extends Data>(ref: DatabaseQuery<T>): number | PromiseLike<number> {
 		return this.source.deleteQuery(ref);
