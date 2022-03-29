@@ -20,13 +20,16 @@ export function usePureState<T, A extends Arguments>(initial: new (...args: A) =
 export function usePureState<T>(initial: T, ...args: Arguments): readonly [T, (next: T) => void];
 export function usePureState<T, A extends Arguments>(initial: Lazy<T, A>, ...args: A): readonly [T, (next: T) => void] {
 	const setState = useState<T>()[1];
-	const internals = (useRef<{ state: [T, (next: T) => void]; args: A }>().current ||= {
+	const internals = (useRef<{
+		state: [T, (next: T) => void];
+		args: A;
+	}>().current ||= {
 		state: [
 			getLazy(initial, ...args),
 			(v: T) => {
 				if (internals.state[0] !== v) {
+					internals.state = [v, internals.state[1]];
 					setState(v);
-					internals.state[0] = v;
 				}
 			},
 		],
