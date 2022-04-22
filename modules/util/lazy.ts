@@ -1,11 +1,11 @@
 import { Arguments, isFunction } from "./function.js";
-import { Constructor, isConstructor } from "./class.js";
+import { isConstructor } from "./class.js";
 
 /**
  * Lazy value: a plain value, or an initialiser function that returns that value.
  * @param ...args Any arguments the lazy value needs if it's a function.
  */
-export type Lazy<T, A extends Arguments = []> = ((...args: A) => T) | Constructor<T, A> | T;
+export type Lazy<T, A extends Arguments = []> = ((...args: A) => T) | (new (...args: A) => T) | T;
 
 /**
  * Initialise a lazy value.
