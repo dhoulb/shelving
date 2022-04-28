@@ -8,31 +8,31 @@ export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<
 
 	/** Get the length of the current value of this state. */
 	get length(): number {
-		return this.value.length;
+		return this._value.length;
 	}
 
 	/** Add an item to this array. */
 	add(item: T): void {
-		this.next(withItem(this.value, item));
+		this.next(withItem(this._value, item));
 	}
 
 	/** Remove an item from this array. */
 	delete(item: T): void {
-		this.next(withoutItem(this.value, item));
+		this.next(withoutItem(this._value, item));
 	}
 
 	/** Swap an item in this array with a different item. */
 	swap(oldItem: T, newItem: T): void {
-		this.next(swapItem(this.value, oldItem, newItem));
+		this.next(swapItem(this._value, oldItem, newItem));
 	}
 
 	/** Toggle an item in this array. */
 	toggle(item: T): void {
-		this.next(toggleItem(this.value, item));
+		this.next(toggleItem(this._value, item));
 	}
 
 	/** Iterate over the items. */
 	[Symbol.iterator](): Iterator<T, void> {
-		return this.value.values();
+		return this._value.values();
 	}
 }
