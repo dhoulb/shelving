@@ -1,12 +1,21 @@
 import type { ImmutableArray } from "./array.js";
+import { getNameProp } from "./data.js";
 import { getLazy, Lazy } from "./lazy.js";
 import { MutableObject, isObject, ImmutableObject } from "./object.js";
 
-type Chunk = { pre: string; name: string; placeholder: string; post: string };
-type Chunks = ImmutableArray<Chunk>;
+/** Single template chunk. */
+type TemplateChunk = {
+	readonly pre: string;
+	readonly name: string;
+	readonly placeholder: string;
+	readonly post: string;
+};
+
+/** Set of template chunks. */
+type TemplateChunks = ImmutableArray<TemplateChunk>;
 
 /** Template values in `{ placeholder: value }` format. */
-export type TemplateValues = ImmutableObject<string>;
+type TemplateValues = ImmutableObject<string>;
 
 /** Things that can be converted to the value for a named placeholder. */
 type PlaceholderValues =
@@ -25,7 +34,7 @@ const R_NAME = /[a-z0-9]+/i;
 const EMPTY_TEMPLATE = Object.create(null);
 
 // Cache of templates.
-const cache: MutableObject<Chunks> = Object.create(null);
+const TEMPLATE_CACHE: MutableObject<TemplateChunks> = Object.create(null);
 
 /**
  * Split up a template into an array of separator → placeholder → separator → placeholder → separator
@@ -35,11 +44,11 @@ const cache: MutableObject<Chunks> = Object.create(null);
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of strings alternating separator and placeholder.
  */
-const splitTemplate = (template: string): Chunks => (cache[template] ||= _splitTemplate(template));
-const _splitTemplate = (template: string): Chunks => {
+const splitTemplate = (template: string): TemplateChunks => (TEMPLATE_CACHE[template] ||= _split(template));
+const _split = (template: string): TemplateChunks => {
 	const matches = template.split(R_PLACEHOLDERS);
 	let asterisks = 0;
-	const chunks: Chunk[] = [];
+	const chunks: TemplateChunk[] = [];
 	for (let i = 1; i < matches.length; i += 2) {
 		const pre = matches[i - 1] as string;
 		const placeholder = matches[i] as string;
@@ -57,33 +66,30 @@ const _splitTemplate = (template: string): Chunks => {
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of clean string names of found placeholders, e.g. `["name", "country", "city"]`
  */
-export const getPlaceholders = (template: string): readonly string[] => splitTemplate(template).map(getTemplateName);
-const getTemplateName = (chunk: Chunk) => chunk.name;
+export const getPlaceholders = (template: string): readonly string[] => splitTemplate(template).map(getNameProp);
 
 /**
  * Turn ":year-:month" and "2016-06..." etc into `{ year: "2016"... }`
  *
- * @param lazyTemplates Either a single template string, or an arr../function of template strings.
+ * @param lazyTemplates Either a single template string, or an iterator that returns multiple template template strings.
  * - Template strings can include placeholders (e.g. `:name-${country}/{city}`).
  * @param target The string containing values, e.g. `Dave-UK/Manchester`
  * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.
  */
-export const matchTemplate = (lazyTemplates: Lazy<string | string[] | Iterable<string> | Generator<string>, [string]>, target: string): TemplateValues | undefined => {
+export function matchTemplate(lazyTemplates: Lazy<string | Iterable<string>, [string]>, target: string): TemplateValues | undefined {
 	const templates = getLazy(lazyTemplates, target);
 	if (typeof templates === "string") {
-		const values = matchInternal(templates, target);
+		const values = _match(templates, target);
 		if (values) return values;
 	} else {
 		for (const template of templates) {
-			const values = matchInternal(template, target);
+			const values = _match(template, target);
 			if (values) return values;
 		}
 	}
 	return undefined;
-};
-
-// Internal match function (called several times).
-const matchInternal = (template: string, target: string): TemplateValues | undefined => {
+}
+function _match(template: string, target: string): TemplateValues | undefined {
 	// Get separators and placeholders from template.
 	const chunks = splitTemplate(template);
 	const firstChunk = chunks[0];
@@ -107,7 +113,7 @@ const matchInternal = (template: string, target: string): TemplateValues | undef
 	}
 	if (startIndex < target.length) return undefined; // Target doesn't match template because last chunk post didn't reach the end.
 	return values;
-};
+}
 
 /**
  * Turn ":year-:month" and `{ year: "2016"... }` etc into "2016-06..." etc.
@@ -122,15 +128,15 @@ export const renderTemplate = (template: string, value: PlaceholderValues): stri
 	const chunks = splitTemplate(template);
 	if (!chunks.length) return template;
 	let output = template;
-	for (const { name, placeholder } of chunks) output = output.replace(placeholder, getValue(name, value));
+	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replace(name, value));
 	return output;
 };
-const getValue = (name: string, value: PlaceholderValues): string => {
+const _replace = (name: string, value: PlaceholderValues): string => {
 	if (typeof value === "string") return value;
 	if (typeof value === "function") return value(name);
 	if (isObject(value)) {
 		const v = value[name];
 		if (typeof v === "string") return v;
 	}
-	throw new ReferenceError(`shelving/template: values.${name}: Must be defined`);
+	throw new ReferenceError(`renderTemplate(): values.${name}: Must be defined`);
 };
