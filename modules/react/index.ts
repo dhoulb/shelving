@@ -1,4 +1,5 @@
-export * from "./usePureMemo.js";
+export * from "./useLazy.js";
+export * from "./useInstance.js";
 export * from "./usePureEffect.js";
 export * from "./usePureState.js";
 export * from "./useSubscribe.js";

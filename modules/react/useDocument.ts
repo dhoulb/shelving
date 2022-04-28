@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DatabaseDocument, CacheProvider, Result, throwAsync, NOERROR, findSourceProvider, NOVALUE, Data, Unsubscriber, Handler, callAsync, getDocumentData, DocumentData, isAsync } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
-import { usePureMemo } from "./usePureMemo.js";
+import { useLazy } from "./useLazy.js";
 import { usePureState } from "./usePureState.js";
 
 /**
@@ -22,14 +22,14 @@ export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T>, maxAg
 export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge?: number | true): Result<T> | PromiseLike<Result<T>> | undefined;
 export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge: number | true = 1000): Result<T> | PromiseLike<Result<T>> | undefined {
 	// Create a memoed version of `ref`
-	const memoRef = usePureMemo(ref, ref?.toString());
+	const memoRef = useLazy(ref, ref?.toString());
 
 	// Create two states to hold the value and error.
-	const [value, setNext] = usePureState(getCachedResult, memoRef);
+	const [value, setNext] = usePureState(_getCachedResult, memoRef);
 	const [error, setError] = useState<unknown>(NOERROR);
 
 	// Register effect.
-	usePureEffect(subscribeEffect, memoRef, maxAge, setNext, setError);
+	usePureEffect(_subscribeEffect, memoRef, maxAge, setNext, setError);
 
 	// Always return undefined if there's no ref.
 	if (!ref) return undefined;
@@ -51,14 +51,14 @@ export function useAsyncDocument<T extends Data>(ref: DatabaseDocument<T> | unde
 }
 
 /** Get the initial result for a reference from the cache. */
-function getCachedResult<T extends Data>(ref: DatabaseDocument<T> | undefined): Result<T> | typeof NOVALUE | undefined {
+function _getCachedResult<T extends Data>(ref: DatabaseDocument<T> | undefined): Result<T> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.db.provider, CacheProvider);
 	return provider.isCached(ref) ? provider.cache.get(ref) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
-function subscribeEffect<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge: number | true, setNext: (result: Result<T>) => void, setError: Handler): Unsubscriber | void {
+function _subscribeEffect<T extends Data>(ref: DatabaseDocument<T> | undefined, maxAge: number | true, setNext: (result: Result<T>) => void, setError: Handler): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.db.provider, CacheProvider);
 		const stopCache = provider.cache.subscribe(ref, { next: setNext, error: setError });

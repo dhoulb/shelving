@@ -20,7 +20,7 @@ import {
 	isAsync,
 } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
-import { usePureMemo } from "./usePureMemo.js";
+import { useLazy } from "./useLazy.js";
 import { usePureState } from "./usePureState.js";
 
 /**
@@ -42,15 +42,15 @@ export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T>, maxAge?: nu
 export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | PromiseLike<Results<T>> | undefined;
 export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true = 1000): Results<T> | PromiseLike<Results<T>> | undefined {
 	// Create a memoed version of `ref`
-	const memoRef = usePureMemo(ref, ref?.toString());
+	const memoRef = useLazy(ref, ref?.toString());
 
 	// Create two states to hold the value and error.
-	const [value, setNext] = usePureState(getCachedResults, memoRef);
+	const [value, setNext] = usePureState(_getCachedResults, memoRef);
 	const [error, setError] = useState<unknown>(NOERROR);
 	if (error !== NOERROR) throw error; // If there's an error throw it.
 
 	// Register effects.
-	usePureEffect(subscribeEffect, memoRef, maxAge, setNext, setError);
+	usePureEffect(_subscribeEffect, memoRef, maxAge, setNext, setError);
 
 	// Always return undefined if there's no ref.
 	if (!ref) return undefined;
@@ -69,14 +69,14 @@ export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined,
 }
 
 /** Get the initial results for a reference from the cache. */
-function getCachedResults<T extends Data>(ref: DatabaseQuery<T> | undefined): Results<T> | typeof NOVALUE | undefined {
+function _getCachedResults<T extends Data>(ref: DatabaseQuery<T> | undefined): Results<T> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.db.provider, CacheProvider);
 	return provider.isCached(ref) ? getMap(provider.cache.getQuery(ref)) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
-function subscribeEffect<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true, setNext: (results: Results<T>) => void, setError: Handler): Unsubscriber | void {
+function _subscribeEffect<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true, setNext: (results: Results<T>) => void, setError: Handler): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.db.provider, CacheProvider);
 		const observer = new ResultsObserver({ next: setNext, error: setError });
