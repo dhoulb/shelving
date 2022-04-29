@@ -1,4 +1,4 @@
-import type { Observer } from "../util/index.js";
+import { Observer, Timeout } from "../util/index.js";
 import { State } from "./State.js";
 
 /**
@@ -6,21 +6,19 @@ import { State } from "./State.js";
  * @param delay How long to wait (in ms) before the source subscription is stopped.
  */
 export class LazyState<T> extends State<T> {
-	private _delay: number;
-	private _timeout?: NodeJS.Timeout;
-	constructor(delay = 0) {
+	private _timeout: Timeout | null;
+	constructor(delay: number | null = null) {
 		super();
-		this._delay = delay;
+		this._timeout = delay ? new Timeout(delay) : null;
 	}
 	// Override to stop the source subscription when the last subscriber unsubscribes.
 	override _removeObserver(observer: Observer<T>): void {
 		super._removeObserver(observer);
-		if (this._delay) {
+		if (this._timeout) {
 			// Maybe stop in a bit (if there are still no subscribers).
-			if (this._timeout) clearTimeout(this._timeout);
-			this._timeout = setTimeout(() => {
+			this._timeout.set(() => {
 				if (!this._observers.size && !this.closed) this.complete();
-			}, this._delay);
+			});
 		} else {
 			// Stop now.
 			if (!this._observers.size && !this.closed) this.complete();
