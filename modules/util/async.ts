@@ -112,11 +112,3 @@ export class Signal extends AbstractPromise<typeof DONE> {
 		this._resolve(DONE);
 	}
 }
-
-/** Resolve to `DONE` after a specified delay. */
-export class Timeout extends AbstractPromise<typeof DONE> {
-	constructor(ms: number) {
-		super();
-		setTimeout(this._resolve, ms, DONE);
-	}
-}

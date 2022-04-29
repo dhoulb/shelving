@@ -31,6 +31,7 @@ export * from "./serialise.js";
 export * from "./sort.js";
 export * from "./string.js";
 export * from "./template.js";
+export * from "./timeout.js";
 export * from "./transform.js";
 export * from "./undefined.js";
 export * from "./units.js";
