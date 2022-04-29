@@ -58,7 +58,7 @@ export interface Observer<T> {
 	 */
 	readonly from?: (source: Subscribable<T>) => this;
 	/** Receive the next value. */
-	readonly next: Dispatcher<[T]>;
+	readonly next?: Dispatcher<[T]>;
 	/** End the subscription with an error. */
 	readonly error?: Handler;
 	/** End the subscription with success. */
@@ -77,7 +77,7 @@ export type AnyObserver = Observer<any>;
 /** Dispatch the next value to an observer (and if the next value errors, calls a handler). */
 export function dispatchNext<T>(observer: Observer<T>, value: T): void {
 	try {
-		observer.next(value);
+		observer.next?.(value);
 	} catch (thrown) {
 		logError(thrown);
 	}
