@@ -6,11 +6,11 @@ test("State", async () => {
 	const calls1: number[] = [];
 	state.subscribe(v => calls1.push(v));
 	expect(state.subscribers).toBe(1);
-	expect(state.loading).toBe(true);
+	expect(state.exists).toBe(false);
 	expect(() => state.value).toThrow(Promise);
 	expect(state.subscribers).toBe(2); // The two promises add temporary subscriptions.
 	expect(state.next(123)).toBe(undefined);
-	expect(state.loading).toBe(false);
+	expect(state.exists).toBe(true);
 	expect(state.value).toBe(123);
 	await runMicrotasks();
 	expect(calls1).toEqual([123]);
@@ -36,7 +36,7 @@ test("State.prototype.apply()", () => {
 test("initialState(): with initial value", () => {
 	const state = initialState(111);
 	expect(state).toBeInstanceOf(State);
-	expect(state.loading).toBe(false);
+	expect(state.exists).toBe(true);
 	expect(state.value).toBe(111);
 	// Ons and onces.
 	const calls1: number[] = [];
@@ -76,10 +76,10 @@ test("State.prototype.derive(): synchronous state", () => {
 test("State.prototype.deriveAsync(): asynchronous state", async () => {
 	const state = initialState(10);
 	const derived = state.deriveAsync(async num => num * (await Promise.resolve(num)));
-	expect(derived.loading).toBe(true);
+	expect(derived.exists).toBe(false);
 	expect(() => derived.value).toThrow(Promise);
 	await runMicrotasks();
-	expect(derived.loading).toBe(false);
+	expect(derived.exists).toBe(true);
 	expect(derived.value).toBe(100);
 	const calls1: number[] = [];
 	derived.subscribe(v => calls1.push(v));

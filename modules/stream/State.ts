@@ -47,8 +47,8 @@ export class State<T> extends Stream<T> {
 	protected _value: T | typeof LOADING = LOADING;
 
 	/** Is there a current value, or is it still loading. */
-	get loading(): boolean {
-		return this._value === LOADING;
+	get exists(): boolean {
+		return this._value !== LOADING;
 	}
 
 	/** Apply a transformer to this state. */
