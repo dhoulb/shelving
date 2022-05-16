@@ -3,7 +3,7 @@ import { InvalidFeedback } from "../feedback/index.js";
 import { Schema } from "./Schema.js";
 
 /** Specify a specific list of allowed values. */
-export type Allowed<T extends string | number> = ReadonlyArray<T> | { readonly [K in T]: string };
+export type Allowed<T extends string | number> = ReadonlyArray<T> | { readonly [K in T]: unknown };
 
 /** Validate a value against a specific set of allowed values. */
 export function validateAllowed<T extends string | number>(value: unknown, allowed: Allowed<T>): T {
