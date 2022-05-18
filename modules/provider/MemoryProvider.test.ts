@@ -135,19 +135,22 @@ test("MemoryProvider: subscribing to documents", async () => {
 	const calls1: Result<BasicData>[] = [];
 	const un1 = doc.subscribe(v => calls1.push(v));
 	await Promise.resolve();
-	expect(calls1).toEqual([null]);
+	expect(calls1.length).toBe(1);
+	expect(calls1[0]).toBe(null);
 	// Set.
 	doc.set(basic1);
 	await Promise.resolve();
-	expect(calls1).toEqual([null, basic1]);
+	expect(calls1.length).toBe(2);
+	expect(calls1[1]).toMatchObject(basic1);
 	// Update.
 	doc.update({ str: "NEW" });
 	await Promise.resolve();
-	expect(calls1).toEqual([null, basic1, { ...basic1, str: "NEW" }]);
+	expect(calls1.length).toBe(3);
+	expect(calls1[2]).toMatchObject({ ...basic1, str: "NEW" });
 	// Delete.
 	doc.delete();
 	await Promise.resolve();
-	expect(calls1).toEqual([null, basic1, { ...basic1, str: "NEW" }, null]);
+	expect(calls1[3]).toBe(null);
 	// Change unrelated documents.
 	basics.doc("basic2").set(basic2);
 	basics.doc("basic2").update({ str: "NEW" });

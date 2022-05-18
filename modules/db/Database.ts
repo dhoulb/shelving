@@ -1,7 +1,6 @@
 import {
 	callAsync,
 	Entry,
-	getFirstItem,
 	Observable,
 	Observer,
 	Result,
@@ -28,7 +27,8 @@ import { DataUpdate, PropUpdates } from "../update/index.js";
 import type { Provider } from "../provider/Provider.js";
 import { Feedback, InvalidFeedback } from "../feedback/index.js";
 import { Filters, Sorts, Query, Filter, FilterProps, SortKeys } from "../query/index.js";
-import { DocumentRequiredError, DocumentValidationError, QueryRequiredError, QueryValidationError } from "./errors.js";
+import { DocumentValidationError, QueryValidationError } from "./errors.js";
+import { DocumentData, DocumentResult, DocumentResultObserver, getDocumentData, getDocumentResult, getQueryData, getQueryResult } from "./helpers.js";
 
 /**
  * Combines a database model and a provider.
@@ -215,20 +215,6 @@ export class DatabaseQuery<T extends Data = Data> extends Query<T> implements Ob
 	}
 }
 
-/** Get the data for a document from a result for that document. */
-export function getQueryData<T extends Data>(entries: Entries<T>, ref: DatabaseQuery<T>): DocumentData<T> {
-	const data = getQueryResult(entries, ref);
-	if (data) return data;
-	throw new QueryRequiredError(ref);
-}
-
-/** Get the data for a document from a result for that document. */
-export function getQueryResult<T extends Data>(entries: Entries<T>, ref: DatabaseQuery<T>): DocumentResult<T> {
-	const first = getFirstItem(entries);
-	if (first) return getDocumentData(first[1], ref.doc(first[0]));
-	return null;
-}
-
 /** A document reference within a specific database. */
 export class DatabaseDocument<T extends Data = Data> implements Observable<Result<T>>, Validatable<T> {
 	readonly db: Database;
@@ -286,8 +272,8 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<Result<T>> | Dispatcher<[Result<T>]>): Unsubscriber {
-		return this.db.provider.subscribe(this, typeof next === "function" ? { next } : next);
+	subscribe(next: Observer<DocumentResult<T>> | Dispatcher<[DocumentResult<T>]>): Unsubscriber {
+		return this.db.provider.subscribe(this, new DocumentResultObserver(this, typeof next === "function" ? { next } : next));
 	}
 
 	/** Set the complete data of this document. */
@@ -318,21 +304,4 @@ export class DatabaseDocument<T extends Data = Data> implements Observable<Resul
 	toString(): string {
 		return `${this.collection}/${this.id}`;
 	}
-}
-
-/** Database data embeds the corresponding `Document` instance and string ID into the data. */
-export type DocumentData<T extends Data> = T & { id: string; doc: DatabaseDocument<T> };
-
-/** Get the data for a document from a result for that document. */
-export function getDocumentData<T extends Data>(result: Result<T>, ref: DatabaseDocument<T>): DocumentData<T> {
-	if (result) return { ...result, id: ref.id, doc: ref };
-	throw new DocumentRequiredError(ref);
-}
-
-/** Database result embeds the corresponding `Document` instance and string ID into the result. */
-export type DocumentResult<T extends Data> = DocumentData<T> | null;
-
-/** Get the data for a document from a result for that document. */
-export function getDocumentResult<T extends Data>(result: Result<T>, ref: DatabaseDocument<T>): DocumentResult<T> {
-	return result ? getDocumentData(result, ref) : null;
 }
