@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { ArrayState, Data, DataState, ImmutableArray, initialState } from "../index.js";
+import { ArrayState, BooleanState, Data, DataState, ImmutableArray, ImmutableObject, initialState, ObjectState } from "../index.js";
 import { useSubscribe } from "./useSubscribe.js";
 
 /**
@@ -24,6 +24,26 @@ export function useDataState<T extends Data>(initial: T): DataState<T> {
  */
 export function useArrayState<T>(initial: ImmutableArray<T> = []): ArrayState<T> {
 	const state = (useRef<ArrayState<T>>().current ||= initialState(initial, new ArrayState<T>()));
+	useSubscribe(state);
+	return state;
+}
+
+/**
+ * Subscribe to or create a new Shelving `ObjectState` instance.
+ * - Defaults to a new `ObjectState` instance with no items.
+ */
+export function useObjectState<T>(initial: ImmutableObject<T> = {}): ObjectState<T> {
+	const state = (useRef<ObjectState<T>>().current ||= initialState(initial, new ObjectState<T>()));
+	useSubscribe(state);
+	return state;
+}
+
+/**
+ * Subscribe to or create a new Shelving `BooleanState` instance.
+ * - Defaults to a new `BooleanState` instance set to false.
+ */
+export function useBooleanState(initial = false): BooleanState {
+	const state = (useRef<BooleanState>().current ||= initialState(initial, new BooleanState()));
 	useSubscribe(state);
 	return state;
 }
