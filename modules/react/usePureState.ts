@@ -21,7 +21,7 @@ export function usePureState<T, A extends Arguments>(initial: Lazy<T, A>, ...arg
 			getLazy(initial, ...args),
 			(v: T) => {
 				if (internals.state[0] !== v) {
-					internals.state = [v, internals.state[1]];
+					internals.state[0] = v;
 					setState(v);
 				}
 			},
@@ -29,7 +29,7 @@ export function usePureState<T, A extends Arguments>(initial: Lazy<T, A>, ...arg
 		args,
 	});
 	if (!isArrayEqual<A>(args, internals.args)) {
-		internals.state = [getLazy(initial, ...args), internals.state[1]];
+		internals.state[0] = getLazy(initial, ...args);
 		internals.args = args;
 	}
 	return internals.state;
