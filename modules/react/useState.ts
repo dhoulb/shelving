@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { ArrayState, BooleanState, Data, DataState, ImmutableArray, ImmutableObject, initialState, ObjectState } from "../index.js";
+import { ArrayState, BooleanState, Data, DataState, ImmutableArray, ImmutableObject, initialState, LOADING, ObjectState, State } from "../index.js";
 import { useSubscribe } from "./useSubscribe.js";
 
 /**
@@ -10,6 +10,17 @@ import { useSubscribe } from "./useSubscribe.js";
  * - `initial` is not a `State instance: component will create a new `State` instance, subscribe to it, and return it.
  *
  * @returns The state instance that was subscribed to.
+ */
+export function useState<T>(initial: T | typeof LOADING): State<T> {
+	// Create a memoized `State` instance from the initial value (if it's not a state itself).
+	const state = (useRef<State<T>>().current ||= initial !== LOADING ? initialState(initial, new State<T>()) : new State<T>());
+	useSubscribe(state);
+	return state;
+}
+
+/**
+ * Subscribe or create a new Shelving `DataState` instance.
+ * - Defaults to a new `DataState` instance with this provided initial value.
  */
 export function useDataState<T extends Data>(initial: T): DataState<T> {
 	// Create a memoized `State` instance from the initial value (if it's not a state itself).
