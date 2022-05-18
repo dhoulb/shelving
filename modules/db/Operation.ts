@@ -1,6 +1,7 @@
 import { PropUpdates, Update } from "../update/index.js";
 import { ImmutableArray, callAsyncSeries, Nullish, notNullish, Data, Hydrations, isNullish, Key } from "../util/index.js";
-import type { Database, DatabaseDocument, DatabaseQuery } from "./Database.js";
+import type { Database } from "./Database.js";
+import type { DocumentReference, QueryReference } from "./Reference.js";
 
 /** Represent a write operation on a database. */
 export abstract class Operation {
@@ -30,12 +31,12 @@ const _run = (operation: Operation, db: Database): PromiseLike<Operation> => ope
 /** Represent a add operation made to a collection in a database. */
 export class AddOperation<T extends Data> extends Operation {
 	/** Create a new add operation on a collection. */
-	static on<X extends Data>({ collection }: DatabaseDocument<X> | DatabaseQuery<X>, data: X): AddOperation<X> {
+	static on<X extends Data>({ collection }: DocumentReference<X> | QueryReference<X>, data: X): AddOperation<X> {
 		return new AddOperation(collection, data);
 	}
 
 	/** Run a new add operation on a collection and return the result operation. */
-	static run<X extends Data>({ collection, db }: DatabaseDocument<X> | DatabaseQuery<X>, data: X): Promise<SetOperation<X>> {
+	static run<X extends Data>({ collection, db }: DocumentReference<X> | QueryReference<X>, data: X): Promise<SetOperation<X>> {
 		return new AddOperation(collection, data).run(db);
 	}
 
@@ -61,12 +62,12 @@ export class AddOperation<T extends Data> extends Operation {
 /** Represent a set operation made to a single document in a database. */
 export class SetOperation<T extends Data> extends Operation {
 	/** Create a new add operation on a collection. */
-	static on<X extends Data>({ collection, id }: DatabaseDocument<X>, data: X): SetOperation<X> {
+	static on<X extends Data>({ collection, id }: DocumentReference<X>, data: X): SetOperation<X> {
 		return new SetOperation(collection, id, data);
 	}
 
 	/** Run a new set operation on a collection and return the result operation. */
-	static run<X extends Data>({ collection, id, db }: DatabaseDocument<X>, data: X): Promise<SetOperation<X>> {
+	static run<X extends Data>({ collection, id, db }: DocumentReference<X>, data: X): Promise<SetOperation<X>> {
 		return new SetOperation(collection, id, data).run(db);
 	}
 
@@ -94,12 +95,12 @@ export class SetOperation<T extends Data> extends Operation {
 /** Represent an update operation made to a single document in a database. */
 export class UpdateOperation<T extends Data> extends Operation {
 	/** Create a new update operation on a document. */
-	static on<X extends Data>({ collection, id }: DatabaseDocument<X>, updates: PropUpdates<X>): UpdateOperation<X> {
+	static on<X extends Data>({ collection, id }: DocumentReference<X>, updates: PropUpdates<X>): UpdateOperation<X> {
 		return new UpdateOperation(collection, id, updates);
 	}
 
 	/** Run a new set operation on a collection and return the result operation. */
-	static run<X extends Data>({ collection, id, db }: DatabaseDocument<X>, updates: PropUpdates<X>): Promise<UpdateOperation<X>> {
+	static run<X extends Data>({ collection, id, db }: DocumentReference<X>, updates: PropUpdates<X>): Promise<UpdateOperation<X>> {
 		return new UpdateOperation(collection, id, updates).run(db);
 	}
 
@@ -127,12 +128,12 @@ export class UpdateOperation<T extends Data> extends Operation {
 /** Represent a delete operation made to a single document in a database. */
 export class DeleteOperation extends Operation {
 	/** Create a new delete operation on a document. */
-	static on<X extends Data>({ collection, id }: DatabaseDocument<X>): DeleteOperation {
+	static on<X extends Data>({ collection, id }: DocumentReference<X>): DeleteOperation {
 		return new DeleteOperation(collection, id);
 	}
 
 	/** Run a new delete operation on a document. */
-	static run<X extends Data>({ collection, id, db }: DatabaseDocument<X>): Promise<DeleteOperation> {
+	static run<X extends Data>({ collection, id, db }: DocumentReference<X>): Promise<DeleteOperation> {
 		return new DeleteOperation(collection, id).run(db);
 	}
 

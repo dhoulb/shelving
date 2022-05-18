@@ -1,7 +1,7 @@
 import { getLastItem, assertNumber, Results, Entry, yieldMerged, Entries, getMap, Data, LOADING, assertMax } from "../util/index.js";
 import { BooleanState, State } from "../stream/index.js";
 import { ConditionError } from "../index.js";
-import { DatabaseQuery } from "./Database.js";
+import { QueryReference } from "./Database.js";
 
 /**
  * State that wraps a `Documents` reference to enable pagination.
@@ -13,12 +13,12 @@ export class PaginationState<T extends Data> extends State<Results<T>> implement
 	readonly busy = new BooleanState();
 
 	/** Reference to the query this pagination is paginating. */
-	readonly ref: DatabaseQuery<T>;
+	readonly ref: QueryReference<T>;
 
 	/** Limit set on this pagination's query. */
 	readonly limit: number;
 
-	constructor(ref: DatabaseQuery<T>) {
+	constructor(ref: QueryReference<T>) {
 		super();
 		this.ref = ref;
 		assertNumber(ref.limit); // Collection must have a numeric limit to paginate (otherwise you'd be retrieving the entire set of documents).

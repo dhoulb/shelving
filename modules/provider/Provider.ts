@@ -1,5 +1,5 @@
 import type { Observer, Unsubscriber, Result, Entries, Data } from "../util/index.js";
-import type { DatabaseDocument, DatabaseQuery } from "../db/index.js";
+import type { DocumentReference, QueryReference } from "../db/index.js";
 import type { DataUpdate } from "../update/index.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
@@ -10,7 +10,7 @@ export abstract class Provider {
 	 * @param ref Document reference specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	abstract get<T extends Data>(ref: DatabaseDocument<T>): Result<T> | PromiseLike<Result<T>>;
+	abstract get<T extends Data>(ref: DocumentReference<T>): Result<T> | PromiseLike<Result<T>>;
 
 	/**
 	 * Subscribe to the result of a document.
@@ -21,7 +21,7 @@ export abstract class Provider {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribe<T extends Data>(ref: DatabaseDocument<T>, observer: Observer<Result<T>>): Unsubscriber;
+	abstract subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<T>>): Unsubscriber;
 
 	/**
 	 * Create a new document with a random ID.
@@ -32,7 +32,7 @@ export abstract class Provider {
 	 *
 	 * @return String ID for the created document (possibly promised).
 	 */
-	abstract add<T extends Data>(ref: DatabaseQuery<T>, data: T): string | PromiseLike<string>;
+	abstract add<T extends Data>(ref: QueryReference<T>, data: T): string | PromiseLike<string>;
 
 	/**
 	 * Set the data a document.
@@ -44,7 +44,7 @@ export abstract class Provider {
 	 *
 	 * @throws Error If a `Update` was provided but the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract set<T extends Data>(ref: DatabaseDocument<T>, data: T): void | PromiseLike<void>;
+	abstract set<T extends Data>(ref: DocumentReference<T>, data: T): void | PromiseLike<void>;
 
 	/**
 	 * Update the data an existing document.
@@ -54,13 +54,13 @@ export abstract class Provider {
 	 *
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): void | PromiseLike<void>;
+	abstract update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void | PromiseLike<void>;
 
 	/**
 	 * Delete a specified document.
 	 * @param ref Document reference specifying which document to delete.
 	 */
-	abstract delete<T extends Data>(ref: DatabaseDocument<T>): void | PromiseLike<void>;
+	abstract delete<T extends Data>(ref: DocumentReference<T>): void | PromiseLike<void>;
 
 	/**
 	 * Get all matching documents.
@@ -68,7 +68,7 @@ export abstract class Provider {
 	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Set of results in `id: data` format.
 	 */
-	abstract getQuery<T extends Data>(ref: DatabaseQuery<T>): Entries<T> | PromiseLike<Entries<T>>;
+	abstract getQuery<T extends Data>(ref: QueryReference<T>): Entries<T> | PromiseLike<Entries<T>>;
 
 	/**
 	 * Subscribe to all matching documents.
@@ -79,7 +79,7 @@ export abstract class Provider {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribeQuery<T extends Data>(ref: DatabaseQuery<T>, observer: Observer<Entries<T>>): Unsubscriber;
+	abstract subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Entries<T>>): Unsubscriber;
 
 	/**
 	 * Set the data of all matching documents.
@@ -88,7 +88,7 @@ export abstract class Provider {
 	 * @param value Value to set the document to.
 	 * @return Number of documents that were set.
 	 */
-	abstract setQuery<T extends Data>(ref: DatabaseQuery<T>, data: T): number | PromiseLike<number>;
+	abstract setQuery<T extends Data>(ref: QueryReference<T>, data: T): number | PromiseLike<number>;
 
 	/**
 	 * Update the data of all matching documents.
@@ -97,38 +97,38 @@ export abstract class Provider {
 	 * @param update Update instance to set the document to.
 	 * @return Number of documents that were updated.
 	 */
-	abstract updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): number | PromiseLike<number>;
+	abstract updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number | PromiseLike<number>;
 
 	/**
 	 * Delete all matching documents.
 	 * @param ref Document reference specifying which document to delete.
 	 * @return Number of documents that were deleted.
 	 */
-	abstract deleteQuery<T extends Data>(ref: DatabaseQuery<T>): number | PromiseLike<number>;
+	abstract deleteQuery<T extends Data>(ref: QueryReference<T>): number | PromiseLike<number>;
 }
 
 /** Provider with a fully synchronous interface */
 export interface SynchronousProvider extends Provider {
-	get<T extends Data>(ref: DatabaseDocument<T>): Result<T>;
-	add<T extends Data>(ref: DatabaseQuery<T>, data: T): string;
-	set<T extends Data>(ref: DatabaseDocument<T>, value: T): void;
-	update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): void;
-	delete<T extends Data>(ref: DatabaseDocument<T>): void;
-	getQuery<T extends Data>(ref: DatabaseQuery<T>): Entries<T>;
-	setQuery<T extends Data>(ref: DatabaseQuery<T>, value: T): number;
-	updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): number;
-	deleteQuery<T extends Data>(ref: DatabaseQuery<T>): number;
+	get<T extends Data>(ref: DocumentReference<T>): Result<T>;
+	add<T extends Data>(ref: QueryReference<T>, data: T): string;
+	set<T extends Data>(ref: DocumentReference<T>, value: T): void;
+	update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void;
+	delete<T extends Data>(ref: DocumentReference<T>): void;
+	getQuery<T extends Data>(ref: QueryReference<T>): Entries<T>;
+	setQuery<T extends Data>(ref: QueryReference<T>, value: T): number;
+	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number;
+	deleteQuery<T extends Data>(ref: QueryReference<T>): number;
 }
 
 /** Provider with a fully asynchronous interface */
 export interface AsynchronousProvider extends Provider {
-	get<T extends Data>(ref: DatabaseDocument<T>): PromiseLike<Result<T>>;
-	add<T extends Data>(ref: DatabaseQuery<T>, data: T): PromiseLike<string>;
-	set<T extends Data>(ref: DatabaseDocument<T>, value: T): PromiseLike<void>;
-	update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): PromiseLike<void>;
-	delete<T extends Data>(ref: DatabaseDocument<T>): PromiseLike<void>;
-	getQuery<T extends Data>(ref: DatabaseQuery<T>): PromiseLike<Entries<T>>;
-	setQuery<T extends Data>(ref: DatabaseQuery<T>, value: T): PromiseLike<number>;
-	updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): PromiseLike<number>;
-	deleteQuery<T extends Data>(ref: DatabaseQuery<T>): PromiseLike<number>;
+	get<T extends Data>(ref: DocumentReference<T>): PromiseLike<Result<T>>;
+	add<T extends Data>(ref: QueryReference<T>, data: T): PromiseLike<string>;
+	set<T extends Data>(ref: DocumentReference<T>, value: T): PromiseLike<void>;
+	update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): PromiseLike<void>;
+	delete<T extends Data>(ref: DocumentReference<T>): PromiseLike<void>;
+	getQuery<T extends Data>(ref: QueryReference<T>): PromiseLike<Entries<T>>;
+	setQuery<T extends Data>(ref: QueryReference<T>, value: T): PromiseLike<number>;
+	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): PromiseLike<number>;
+	deleteQuery<T extends Data>(ref: QueryReference<T>): PromiseLike<number>;
 }

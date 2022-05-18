@@ -11,8 +11,8 @@ import type {
 import { Firestore, FieldValue } from "@google-cloud/firestore";
 import {
 	Provider,
-	DatabaseDocument,
-	DatabaseQuery,
+	DocumentReference,
+	QueryReference,
 	FilterOperator,
 	Observer,
 	SortDirection,
@@ -57,17 +57,17 @@ const DIRECTIONS: { readonly [K in SortDirection]: FirestoreOrderByDirection } =
 };
 
 /** Get a Firestore DocumentReference for a given documente. */
-function getDocument<T extends Data>(firestore: Firestore, { collection, id }: DatabaseDocument<T>): FirestoreDocumentReference<T> {
+function getDocument<T extends Data>(firestore: Firestore, { collection, id }: DocumentReference<T>): FirestoreDocumentReference<T> {
 	return firestore.doc(`${collection}/${id}`) as FirestoreDocumentReference<T>;
 }
 
 /** Get a Firestore CollectionReference for a given document. */
-function getCollection<T extends Data>(firestore: Firestore, { collection }: DatabaseQuery<T>): FirestoreCollectionReference<T> {
+function getCollection<T extends Data>(firestore: Firestore, { collection }: QueryReference<T>): FirestoreCollectionReference<T> {
 	return firestore.collection(collection) as FirestoreCollectionReference<T>;
 }
 
 /** Create a corresponding `QueryReference` from a Query. */
-function getQuery<T extends Data>(firestore: Firestore, ref: DatabaseQuery<T>): FirestoreQuery<T> {
+function getQuery<T extends Data>(firestore: Firestore, ref: QueryReference<T>): FirestoreQuery<T> {
 	const { sorts, filters, limit } = ref;
 	let query: FirestoreQuery<T> = getCollection(firestore, ref);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
@@ -107,61 +107,61 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		this.firestore = firestore;
 	}
 
-	async get<T extends Data>(ref: DatabaseDocument<T>): Promise<Result<T>> {
+	async get<T extends Data>(ref: DocumentReference<T>): Promise<Result<T>> {
 		return (await getDocument(this.firestore, ref).get()).data() || null;
 	}
 
-	subscribe<T extends Data>(ref: DatabaseDocument<T>, observer: Observer<Result<T>>): Unsubscriber {
+	subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<T>>): Unsubscriber {
 		return getDocument(this.firestore, ref).onSnapshot(
 			snapshot => dispatchNext(observer, snapshot.data() || null),
 			thrown => dispatchError(observer, thrown),
 		);
 	}
 
-	async add<T extends Data>(ref: DatabaseQuery<T>, data: T): Promise<string> {
+	async add<T extends Data>(ref: QueryReference<T>, data: T): Promise<string> {
 		return (await getCollection(this.firestore, ref).add(data)).id;
 	}
 
-	async set<T extends Data>(ref: DatabaseDocument<T>, data: T): Promise<void> {
+	async set<T extends Data>(ref: DocumentReference<T>, data: T): Promise<void> {
 		await getDocument(this.firestore, ref).set(data);
 	}
 
-	async update<T extends Data>(ref: DatabaseDocument<T>, update: DataUpdate<T>): Promise<void> {
+	async update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): Promise<void> {
 		const fieldValues = Object.fromEntries(yieldFieldValues(update)) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 		await getDocument(this.firestore, ref).update(fieldValues);
 	}
 
-	async delete<T extends Data>(ref: DatabaseDocument<T>): Promise<void> {
+	async delete<T extends Data>(ref: DocumentReference<T>): Promise<void> {
 		await getDocument(this.firestore, ref).delete();
 	}
 
-	async getQuery<T extends Data>(ref: DatabaseQuery<T>): Promise<Iterable<Entry<T>>> {
+	async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Iterable<Entry<T>>> {
 		return getResults(await getQuery(this.firestore, ref).get());
 	}
 
-	subscribeQuery<T extends Data>(ref: DatabaseQuery<T>, observer: Observer<Entries<T>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Entries<T>>): Unsubscriber {
 		return getQuery(this.firestore, ref).onSnapshot(
 			snapshot => dispatchNext(observer, getResults(snapshot)),
 			thrown => dispatchError(observer, thrown),
 		);
 	}
 
-	async setQuery<T extends Data>(ref: DatabaseQuery<T>, data: T | Update<T> | undefined): Promise<number> {
+	async setQuery<T extends Data>(ref: QueryReference<T>, data: T | Update<T> | undefined): Promise<number> {
 		return await bulkWrite(this.firestore, ref, (w, s) => void w.set(s.ref, data));
 	}
 
-	async updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): Promise<number> {
+	async updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): Promise<number> {
 		const fieldValues = Object.fromEntries(yieldFieldValues(update)) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 		return await bulkWrite(this.firestore, ref, (w, s) => void w.update(s.ref, fieldValues));
 	}
 
-	async deleteQuery<T extends Data>(ref: DatabaseQuery<T>): Promise<number> {
+	async deleteQuery<T extends Data>(ref: QueryReference<T>): Promise<number> {
 		return await bulkWrite(this.firestore, ref, (w, s) => void w.delete(s.ref));
 	}
 }
 
 /** Perform a bulk update on a set of documents using a `BulkWriter` */
-async function bulkWrite<T extends Data>(firestore: Firestore, ref: DatabaseQuery<T>, callback: (writer: FirestoreBulkWriter, snapshot: FirestoreQueryDocumentSnapshot) => void): Promise<number> {
+async function bulkWrite<T extends Data>(firestore: Firestore, ref: QueryReference<T>, callback: (writer: FirestoreBulkWriter, snapshot: FirestoreQueryDocumentSnapshot) => void): Promise<number> {
 	let count = 0;
 	const writer = firestore.bulkWriter();
 	const query = getQuery(firestore, ref).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.

@@ -1,6 +1,6 @@
 import { Data, Result, Entries, getRandomKey, Unsubscriber, dispatchNext, Observer, isMapEqual, MutableObject, Dispatcher, ImmutableMap, MutableMap } from "../util/index.js";
 import { DataUpdate } from "../update/index.js";
-import { DatabaseQuery, DatabaseDocument, DocumentRequiredError } from "../db/index.js";
+import { QueryReference, DocumentReference, DocumentRequiredError } from "../db/index.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
 /**
@@ -13,15 +13,15 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 	private _tables: MutableObject<Table<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	// Get a named collection (or create a new one).
-	private _table<T extends Data>({ collection }: DatabaseDocument<T> | DatabaseQuery<T>): Table<T> {
+	private _table<T extends Data>({ collection }: DocumentReference<T> | QueryReference<T>): Table<T> {
 		return (this._tables[collection] ||= new Table<T>()) as Table<T>;
 	}
 
-	get<T extends Data>(ref: DatabaseDocument<T>): Result<T> {
+	get<T extends Data>(ref: DocumentReference<T>): Result<T> {
 		return this._table(ref).data.get(ref.id) || null;
 	}
 
-	subscribe<T extends Data>(ref: DatabaseDocument<T>, observer: Observer<Result<T>>): Unsubscriber {
+	subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<T>>): Unsubscriber {
 		const table = this._table(ref);
 		const id = ref.id;
 
@@ -34,7 +34,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		});
 	}
 
-	add<T extends Data>(ref: DatabaseQuery<T>, data: T): string {
+	add<T extends Data>(ref: QueryReference<T>, data: T): string {
 		const table = this._table(ref);
 		let id = getRandomKey();
 		while (table.data.get(id)) id = getRandomKey(); // Regenerate ID until unique.
@@ -42,13 +42,13 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		return id;
 	}
 
-	set<T extends Data>(ref: DatabaseDocument<T>, data: T): void {
+	set<T extends Data>(ref: DocumentReference<T>, data: T): void {
 		const table = this._table(ref);
 		const id = ref.id;
 		table.write(id, data);
 	}
 
-	update<T extends Data>(ref: DatabaseDocument<T>, updates: DataUpdate<T>): void {
+	update<T extends Data>(ref: DocumentReference<T>, updates: DataUpdate<T>): void {
 		const table = this._table(ref);
 		const id = ref.id;
 		const existing = table.data.get(id);
@@ -56,17 +56,17 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		table.write(id, updates.transform(existing));
 	}
 
-	delete<T extends Data>(ref: DatabaseDocument<T>): void {
+	delete<T extends Data>(ref: DocumentReference<T>): void {
 		const table = this._table(ref);
 		const id = ref.id;
 		table.write(id, null);
 	}
 
-	getQuery<T extends Data>(ref: DatabaseQuery<T>): Entries<T> {
+	getQuery<T extends Data>(ref: QueryReference<T>): Entries<T> {
 		return ref.transform(this._table(ref).data);
 	}
 
-	subscribeQuery<T extends Data>(ref: DatabaseQuery<T>, observer: Observer<Entries<T>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Entries<T>>): Unsubscriber {
 		const table = this._table(ref);
 
 		// Call `next()` immediately with the initial results.
@@ -92,7 +92,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		});
 	}
 
-	setQuery<T extends Data>(ref: DatabaseQuery<T>, data: T): number {
+	setQuery<T extends Data>(ref: QueryReference<T>, data: T): number {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
@@ -104,7 +104,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		return count;
 	}
 
-	updateQuery<T extends Data>(ref: DatabaseQuery<T>, update: DataUpdate<T>): number {
+	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
@@ -116,7 +116,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		return count;
 	}
 
-	deleteQuery<T extends Data>(ref: DatabaseQuery<T>): number {
+	deleteQuery<T extends Data>(ref: QueryReference<T>): number {
 		const table = this._table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
