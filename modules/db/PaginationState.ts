@@ -1,7 +1,7 @@
 import { getLastItem, assertNumber, Results, Entry, yieldMerged, Entries, getMap, Data, LOADING, assertMax } from "../util/index.js";
 import { BooleanState, State } from "../stream/index.js";
 import { ConditionError } from "../index.js";
-import { QueryReference } from "./Database.js";
+import { QueryReference } from "./Reference.js";
 
 /**
  * State that wraps a `Documents` reference to enable pagination.
