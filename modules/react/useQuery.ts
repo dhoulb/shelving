@@ -8,7 +8,7 @@ import {
 	getMap,
 	Unsubscriber,
 	Handler,
-	DatabaseQuery,
+	QueryReference,
 	Data,
 	callAsync,
 	getQueryData,
@@ -20,8 +20,8 @@ import {
 	isAsync,
 } from "../index.js";
 import { usePureEffect } from "./usePureEffect.js";
-import { useLazy } from "./useLazy.js";
 import { usePureState } from "./usePureState.js";
+import { useCompare } from "./useCompare.js";
 
 /**
  * Use the cached result of a document in a React component (or a `Promise` to indicate the result is still loading).
@@ -38,11 +38,11 @@ import { usePureState } from "./usePureState.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): Results<T> | PromiseLike<Results<T>>;
-export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | PromiseLike<Results<T>> | undefined;
-export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true = 1000): Results<T> | PromiseLike<Results<T>> | undefined {
+export function useAsyncQuery<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Results<T> | PromiseLike<Results<T>>;
+export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Results<T> | PromiseLike<Results<T>> | undefined;
+export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge: number | true = 1000): Results<T> | PromiseLike<Results<T>> | undefined {
 	// Create a memoed version of `ref`
-	const memoRef = useLazy(ref, ref?.toString());
+	const memoRef = useCompare(_isSameReference, ref);
 
 	// Create two states to hold the value and error.
 	const [value, setNext] = usePureState(_getCachedResults, memoRef);
@@ -68,15 +68,18 @@ export function useAsyncQuery<T extends Data>(ref: DatabaseQuery<T> | undefined,
 	return results;
 }
 
+/** Do two database query references point to the same query? */
+const _isSameReference = <T extends Data>(left: QueryReference<T> | undefined, right: QueryReference<T> | undefined) => left === right || left?.toString() === right?.toString();
+
 /** Get the initial results for a reference from the cache. */
-function _getCachedResults<T extends Data>(ref: DatabaseQuery<T> | undefined): Results<T> | typeof NOVALUE | undefined {
+function _getCachedResults<T extends Data>(ref: QueryReference<T> | undefined): Results<T> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.db.provider, CacheProvider);
 	return provider.isCached(ref) ? getMap(provider.cache.getQuery(ref)) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
-function _subscribeEffect<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge: number | true, setNext: (results: Results<T>) => void, setError: Handler): Unsubscriber | void {
+function _subscribeEffect<T extends Data>(ref: QueryReference<T> | undefined, maxAge: number | true, setNext: (results: Results<T>) => void, setError: Handler): Unsubscriber | void {
 	if (ref) {
 		const provider = findSourceProvider(ref.db.provider, CacheProvider);
 		const observer = new ResultsObserver({ next: setNext, error: setError });
@@ -118,38 +121,38 @@ function _subscribeEffect<T extends Data>(ref: DatabaseQuery<T> | undefined, max
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useQuery<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): Results<T>;
-export function useQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | undefined;
-export function useQuery<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): Results<T> | undefined {
+export function useQuery<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Results<T>;
+export function useQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Results<T> | undefined;
+export function useQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Results<T> | undefined {
 	return throwAsync(useAsyncQuery(ref, maxAge));
 }
 
 /** Use the first result of a query or `undefined` if the query has no matching results (or a promise indicating the result is loading). */
-export function useAsyncQueryResult<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>>;
-export function useAsyncQueryResult<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>> | undefined;
-export function useAsyncQueryResult<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>> | undefined {
+export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>>;
+export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>> | undefined;
+export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>> | undefined {
 	const results = useAsyncQuery(ref ? ref.max(1) : undefined, maxAge);
 	return ref && results ? callAsync(getQueryResult, results, ref) : undefined;
 }
 
 /** Use the first result of a query or `undefined` if the query has no matching results */
-export function useQueryResult<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): DocumentResult<T>;
-export function useQueryResult<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentResult<T> | undefined;
-export function useQueryResult<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentResult<T> | undefined {
+export function useQueryResult<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): DocumentResult<T>;
+export function useQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentResult<T> | undefined;
+export function useQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentResult<T> | undefined {
 	return throwAsync(useAsyncQueryResult(ref, maxAge));
 }
 
 /** Use the first result of a query (or a promise indicating the result is loading). */
-export function useAsyncQueryData<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>>;
-export function useAsyncQueryData<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>> | undefined;
-export function useAsyncQueryData<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>> | undefined {
+export function useAsyncQueryData<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>>;
+export function useAsyncQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>> | undefined;
+export function useAsyncQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>> | undefined {
 	const results = useAsyncQuery(ref ? ref.max(1) : undefined, maxAge);
 	return ref && results ? callAsync(getQueryData, results, ref) : undefined;
 }
 
 /** Use the first result of a query. */
-export function useQueryData<T extends Data>(ref: DatabaseQuery<T>, maxAge?: number | true): DocumentData<T>;
-export function useQueryData<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentData<T> | undefined;
-export function useQueryData<T extends Data>(ref: DatabaseQuery<T> | undefined, maxAge?: number | true): DocumentData<T> | undefined {
+export function useQueryData<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): DocumentData<T>;
+export function useQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentData<T> | undefined;
+export function useQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentData<T> | undefined {
 	return throwAsync(useAsyncQueryData(ref, maxAge));
 }
