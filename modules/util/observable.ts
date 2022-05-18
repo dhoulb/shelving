@@ -2,7 +2,7 @@ import { ConditionError } from "../error/index.js";
 import { BLACKHOLE, dispatch, Dispatcher } from "./function.js";
 import { Handler, logError } from "./error.js";
 import { Data, isData, Results } from "./data.js";
-import { transform, Transformer } from "./transform.js";
+import { transform, Transformable, Transformer } from "./transform.js";
 import { validate, Validator } from "./validate.js";
 import { getMap } from "./map.js";
 import type { Entries } from "./entry.js";
@@ -85,7 +85,10 @@ export function dispatchNext<T>(observer: Observer<T>, value: T): void {
 
 /** Dispatch the next value to an observer (and if the next value errors, calls a handler). */
 export function dispatchAsyncNext<T>(observer: Observer<T>, value: PromiseLike<T>): void {
-	value.then(v => dispatchNext(observer, v), logError);
+	value.then(
+		v => dispatchNext(observer, v),
+		e => dispatchError(observer, e),
+	);
 }
 
 /** Dispatch a complete call an observer (and if the next value errors, calls a handler). */
@@ -159,7 +162,7 @@ export class OnceObserver<T> extends ThroughObserver<T> {
 	}
 }
 
-/** Oserver that transforms its next values with a transformer. */
+/** Observer that transforms its next values with a transformer. */
 export class TransformObserver<I, O> extends AbstractObserver<I, O> {
 	protected _transformer: Transformer<I, O>;
 	constructor(transformer: Transformer<I, O>, target: Observer<O>) {
@@ -173,7 +176,17 @@ export class TransformObserver<I, O> extends AbstractObserver<I, O> {
 	}
 }
 
-/** Oserver that transforms a set of entries into a results map. */
+/** Observer that is itself a transformer. */
+export abstract class TransformerObserver<I, O> extends AbstractObserver<I, O> implements Transformable<I, O> {
+	next(value: I) {
+		const target = this._target;
+		if (!target) throw new ConditionError("Observer is closed");
+		dispatchNext(target, this.transform(value));
+	}
+	abstract transform(input: I): O;
+}
+
+/** Observer that transforms a set of entries into a results map. */
 export class ResultsObserver<T extends Data> extends AbstractObserver<Entries<T>, Results<T>> {
 	next(entries: Entries<T>) {
 		const target = this._target;
@@ -196,7 +209,7 @@ export class ValidateObserver<T> extends AbstractObserver<unknown, T> {
 	}
 }
 
-/** Oserver that allows promised values to be passed to `next()`. */
+/** Observer that allows promised values to be passed to `next()`. */
 export class AsyncObserver<T> extends AbstractObserver<PromiseLike<T>, T> {
 	next(value: PromiseLike<T>) {
 		const target = this._target;
