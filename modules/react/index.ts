@@ -1,4 +1,6 @@
 export * from "./useLazy.js";
+export * from "./useCompare.js";
+export * from "./useReduce.js";
 export * from "./useInstance.js";
 export * from "./usePureEffect.js";
 export * from "./usePureState.js";
