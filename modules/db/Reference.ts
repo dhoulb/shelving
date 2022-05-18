@@ -216,7 +216,7 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	 * @return Function that ends the subscription.
 	 */
 	subscribe(next: Observer<DocumentResult<T>> | Dispatcher<[DocumentResult<T>]>): Unsubscriber {
-		return this.db.provider.subscribe(this, new DocumentResultObserver(this, typeof next === "function" ? { next } : next));
+		return this.db.provider.subscribe(this, new DocumentResultObserver(typeof next === "function" ? { next } : next, this));
 	}
 
 	/** Set the complete data of this document. */
