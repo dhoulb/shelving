@@ -11,9 +11,8 @@ import { usePureEffect } from "./usePureEffect.js";
  * - Memoise this value if you want the subscription to persist for the life of the component.
  */
 export function useSubscribe<T>(subscribable?: Subscribable<T>): void {
-	// Effect that subscribes the component to changes in the `State` instance for the lifetime of the component.
-	usePureEffect(subscribeEffect, useState<unknown>(LOADING)[1], subscribable);
+	usePureEffect(_subscribeEffect, useState<unknown>(LOADING)[1], subscribable);
 }
 
-/** Effect that subscribes the component to changes in the `State` instance for the lifetime of the component. */
-const subscribeEffect = <T>(change: (next: unknown) => void, subscribable?: Subscribable<T>) => (subscribable ? subscribe(subscribable, { next: change, error: change }) : undefined);
+/** Effect that subscribes the component to changes in the subscribable for the lifetime of the component. */
+const _subscribeEffect = <T>(onNext: (next: unknown) => void, subscribable?: Subscribable<T>) => (subscribable ? subscribe(subscribable, { next: onNext, error: onNext }) : undefined);
