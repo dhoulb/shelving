@@ -10,19 +10,15 @@ import { Arguments, Unsubscriber } from "../index.js";
  */
 export function usePureEffect<A extends Arguments>(effect: (...a: A) => Unsubscriber | void, ...args: A): void {
 	const internals: {
-		memoed: () => Unsubscriber | void;
-		effect: (...a: A) => Unsubscriber | void;
+		effect(): Unsubscriber | void;
 		args: A;
 	} = (useRef<{
-		memoed: () => Unsubscriber | void;
-		effect: (...a: A) => Unsubscriber | void;
+		effect(): Unsubscriber | void;
 		args: A;
 	}>().current ||= {
-		memoed: () => internals.effect(...internals.args),
-		effect,
+		effect: () => effect(...internals.args),
 		args,
 	});
 	internals.args = args;
-	internals.effect = effect;
-	useEffect(internals.memoed, args);
+	useEffect(internals.effect, args);
 }
