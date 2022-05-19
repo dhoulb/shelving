@@ -133,8 +133,8 @@ export function useAsyncDocumentData<T extends Data>(ref: DocumentReference<T> |
 }
 
 /** Use the data of a document or `undefined` if the query has no matching results. */
-export function useDocumentData<T extends Data>(ref: DocumentReference<T>, maxAge?: number | true): T;
-export function useDocumentData<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): T | undefined;
-export function useDocumentData<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): T | undefined {
+export function useDocumentData<T extends Data>(ref: DocumentReference<T>, maxAge?: number | true): DocumentData<T>;
+export function useDocumentData<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): DocumentData<T> | undefined;
+export function useDocumentData<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): DocumentData<T> | undefined {
 	return throwAsync(useAsyncDocumentData(ref, maxAge));
 }
