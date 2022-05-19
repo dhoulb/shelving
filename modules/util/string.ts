@@ -140,3 +140,14 @@ export const isUppercaseLetter = (str: string): boolean => isBetween(str.charCod
 
 /** Is the first character of a string a lowercase letter? */
 export const isLowercaseLetter = (str: string): boolean => isBetween(str.charCodeAt(0), 97, 122);
+
+/**
+ * Limit a string to a given length.
+ * - Stops at the last space inside `maxLength`
+ * - Appends an `…` ellipses after the string (but only if a limit is applied).
+ */
+export function limitString(str: string, maxLength: number, append = "…") {
+	if (str.length < maxLength) return str;
+	const lastSpace = str.lastIndexOf(" ", maxLength);
+	return `${str.slice(0, lastSpace > 0 ? lastSpace : maxLength).trimEnd()}${append}`;
+}
