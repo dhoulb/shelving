@@ -1,5 +1,5 @@
 import { AssertionError } from "../error/index.js";
-import { formatFullQuantity, formatQuantity, MILLION } from "./number.js";
+import { formatFullQuantity, formatQuantity, getPercent, MILLION } from "./number.js";
 import { NNBSP } from "./string.js";
 
 /** One second in millseconds. */
@@ -146,3 +146,9 @@ export const formatUnits = (num: number, unit: UnitReference, maxPrecision?: num
  * @param maxPrecision Number of decimal places to round the number to e.g. `2`
  */
 export const formatFullUnits = (num: number, unit: UnitReference, maxPrecision?: number, minPrecision?: number): string => formatFullQuantity(num, UNITS[unit].singular || unit, UNITS[unit].plural || `${unit}s`, maxPrecision, minPrecision);
+
+/**
+ * Format a percentage.
+ * - Combines `getPercent()` and `formatUnits()` for convenience.
+ */
+export const formatPercent = (numerator: number, denumerator: number, maxPrecision?: number, minPrecision?: number): string => formatQuantity(getPercent(numerator, denumerator), UNITS.percent.suffix, maxPrecision, minPrecision);
