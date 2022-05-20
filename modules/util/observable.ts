@@ -225,5 +225,5 @@ export function awaitNext<T>(source: Subscribable<T>): Promise<T> {
 
 /** Get a promise that resolves when a source subscribable is complete. */
 export function awaitComplete<T>(source: Subscribable<T>): Promise<void> {
-	return new Promise((complete, error) => new ThroughObserver<T>({ next: BLACKHOLE, complete, error }).from(source));
+	return new Promise((complete, error) => new ThroughObserver<T>({ complete, error }).from(source));
 }
