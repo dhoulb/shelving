@@ -47,7 +47,7 @@ export function countItems(items: Iterable<unknown>): number {
  */
 export function countIterations(items: Iterable<unknown>): number {
 	let count = 0;
-	for (const unused of items) count++; // eslint-disable-line @typescript-eslint/no-unused-vars
+	for (const unused of items) count++;
 	return count;
 }
 
@@ -64,7 +64,7 @@ export function hasItems(items: Iterable<unknown>): boolean {
  * - Checks `items.size` or `items.length` first, or consumes the iterable and counts its iterations.
  */
 export function hasIterations(items: Iterable<unknown>): boolean {
-	for (const unused of items) return true; // eslint-disable-line @typescript-eslint/no-unused-vars
+	for (const unused of items) return true;
 	return false;
 }
 

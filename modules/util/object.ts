@@ -54,7 +54,7 @@ export const withEntries: <T>(input: ImmutableObject<T>, entries: ImmutableObjec
  */
 export function withoutEntry<T>(input: ImmutableObject<T>, key: string, value?: T): ImmutableObject<T> {
 	if (isKey(input, key) && (value === undefined || input[key] === value)) {
-		const { [key]: unused, ...output } = input; // eslint-disable-line @typescript-eslint/no-unused-vars
+		const { [key]: unused, ...output } = input;
 		return output;
 	}
 	return input;
