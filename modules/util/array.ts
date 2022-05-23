@@ -281,7 +281,7 @@ export function isMinLength<T>(arr: ImmutableArray<T>, min?: 1): arr is [T, ...T
 export function isMinLength<T>(arr: ImmutableArray<T>, min: 2): arr is [T, T, ...T[]];
 export function isMinLength<T>(arr: ImmutableArray<T>, min: 3): arr is [T, T, T, ...T[]];
 export function isMinLength<T>(arr: ImmutableArray<T>, min: 4): arr is [T, T, T, T, ...T[]];
-export function isMinLength<T>(arr: ImmutableArray<T>, min: number): arr is [T, T, T, T, T, ...T[]];
+export function isMinLength<T>(arr: ImmutableArray<T>, min: number): boolean;
 export function isMinLength<T>(arr: ImmutableArray<T>, min = 1): boolean {
 	return arr.length >= min;
 }
@@ -291,7 +291,7 @@ export function getMinLength<T>(arr: ImmutableArray<T>, min?: 1): [T, ...T[]];
 export function getMinLength<T>(arr: ImmutableArray<T>, min: 2): [T, T, ...T[]];
 export function getMinLength<T>(arr: ImmutableArray<T>, min: 3): [T, T, T, ...T[]];
 export function getMinLength<T>(arr: ImmutableArray<T>, min: 4): [T, T, T, T, ...T[]];
-export function getMinLength<T>(arr: ImmutableArray<T>, min: number): [T, T, T, T, T, ...T[]];
+export function getMinLength<T>(arr: ImmutableArray<T>, min: number): ImmutableArray<T>;
 export function getMinLength<T>(arr: ImmutableArray<T>, min = 1): ImmutableArray<T> {
 	if (arr.length >= min) return arr;
 	throw new AssertionError(`Must have minimum length ${min}`, arr);
