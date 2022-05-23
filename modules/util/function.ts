@@ -1,3 +1,4 @@
+import { AssertionError } from "../index.js";
 import { isAsync } from "./async.js";
 import { logError } from "./error.js";
 
@@ -7,6 +8,11 @@ export type AnyFunction = (...args: any) => any; // Note: `any` works better tha
 
 /** Is a value a function? */
 export const isFunction = <T extends AnyFunction>(v: T | unknown): v is T => typeof v === "function";
+
+/** Assert that a value is a function. */
+export function assertFunction<T extends AnyFunction>(v: T | unknown): asserts v is T {
+	if (typeof v !== "function") throw new AssertionError("Must be function", v);
+}
 
 /** Readonly unknown array that is being used as a set of arguments to a function. */
 export type Arguments = readonly unknown[];

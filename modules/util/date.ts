@@ -4,6 +4,11 @@ import { DAY, HOUR, MINUTE, MONTH, SECOND, WEEK, YEAR, formatUnits, formatFullUn
 /** Is a value a date? */
 export const isDate = (v: unknown): v is Date => v instanceof Date;
 
+/** Assert that a value is a `Date` instance. */
+export function assertDate(v: unknown): asserts v is Date {
+	if (v instanceof Date) throw new AssertionError(`Must be date`, v);
+}
+
 /** Value that can possibly be converted to a `Date` instance. */
 export type PossibleDate = Date | number | string | (() => PossibleDate);
 export type PossibleOptionalDate = Date | number | string | null | (() => PossibleDate | null);
@@ -42,7 +47,7 @@ export function toDate(target: unknown): Date | null {
 /** Convert a possible date to a `Date` instance, or throw `AssertionError` if it couldn't be converted. */
 export function getDate(target: PossibleDate = "now"): Date {
 	const date = toDate(target);
-	if (!date) throw new AssertionError("Invalid date", target); // Error if date could not be converted to date.
+	assertDate(date);
 	return date;
 }
 

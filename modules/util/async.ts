@@ -1,7 +1,14 @@
+import { AssertionError } from "../index.js";
 import type { ImmutableArray } from "./array.js";
 import type { Arguments, Dispatcher } from "./function.js";
 import { DONE } from "./constants.js";
 import { Handler } from "./error.js";
+
+/** Is a value a synchronous value. */
+export const isSync = <T>(v: T | PromiseLike<T>): v is T => !isAsync(v);
+
+/** Is a value an asynchronous value implementing a `then()` function. */
+export const isAsync = <T>(v: T | PromiseLike<T>): v is PromiseLike<T> => typeof v === "object" && v !== null && typeof (v as Promise<T>).then === "function";
 
 /**
  * Throw the value if it's an async (promised) value.
@@ -13,8 +20,20 @@ export function throwAsync<T>(asyncValue: T | PromiseLike<T>): T {
 	return asyncValue;
 }
 
-/** Is a value an async (promised) value. */
-export const isAsync = <T>(v: T | PromiseLike<T>): v is PromiseLike<T> => typeof v === "object" && v !== null && typeof (v as Promise<T>).then === "function";
+/** Assert a synchronous value. */
+export function assertSync<T>(value: Promise<T> | T): asserts value is T {
+	if (isAsync(value)) throw new AssertionError("Must be synchronous", value);
+}
+
+/** Assert an asynchronous value. */
+export function assertAsync<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
+	if (!isAsync(value)) throw new AssertionError("Must be asynchronous", value);
+}
+
+/** Assert a promise. */
+export function assertPromise<T>(value: Promise<T> | T): asserts value is Promise<T> {
+	if (!(value instanceof Promise)) throw new AssertionError("Must be promise", value);
+}
 
 /**
  * Call a callback with an item.

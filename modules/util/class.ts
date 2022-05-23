@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import type { Arguments } from "./function.js";
-import { assertFunction } from "./assert.js";
+import { AssertionError } from "../error/index.js";
+import { Arguments, assertFunction } from "./function.js";
+import { debug } from "./debug.js";
 
 /** Class that has a public `constructor()` function. */
 export type Constructor<T, A extends Arguments> = new (...args: A) => T;
@@ -15,6 +16,14 @@ export type Class<T = unknown> = Function & { prototype: T };
 
 /** Is a given value a class constructor? */
 export const isConstructor = <T extends AnyConstructor>(v: T | unknown): v is T => typeof v === "function" && v.toString().startsWith("class");
+
+/** Is a value an instance of a class? */
+export const isInstance = <T>(v: unknown, type: Class<T>): v is T => v instanceof type;
+
+/** Assert that a value is an instance of something. */
+export function assertInstance<T>(v: T | unknown, type: Class<T>): asserts v is T {
+	if (!(v instanceof type)) throw new AssertionError(`Must be instance of ${debug(type)}`, v);
+}
 
 /** Decorator to bind a class method lazily on first access. */
 export function bindMethod<O, T, A>(target: O, key: string, { value: method }: TypedPropertyDescriptor<(...args: A[]) => T>): TypedPropertyDescriptor<(...args: A[]) => T> {

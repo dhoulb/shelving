@@ -1,5 +1,6 @@
 /* eslint-disable no-control-regex */
 
+import { AssertionError } from "../error/index.js";
 import { formatDate } from "./date.js";
 import { isData } from "./data.js";
 import { ImmutableArray, isArray } from "./array.js";
@@ -17,13 +18,16 @@ export const NNBSP = "\u202F";
 /** Is a value a string? */
 export const isString = (v: unknown): v is string => typeof v === "string";
 
+/** Assert that a value is a string. */
+export function assertString(value: unknown): asserts value is string {
+	if (typeof value !== "string") throw new AssertionError(`Must be string`, value);
+}
+
 /**
  * Convert an unknown value into a string for internal use.
  * - Objects use `obj.toString()` as long as it's not the default `Object.toString()` which is garbage.
  * - Primitives return `true`, `false`, `null`, `undefined`
  * - Numbers return the stringified number.
- *
- * -
  */
 export function toString(value: unknown): string {
 	if (typeof value === "string") return value;

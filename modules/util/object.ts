@@ -1,3 +1,4 @@
+import { AssertionError } from "../error/index.js";
 import { setProp, setProps, withProp, withProps } from "./data.js";
 import type { ImmutableArray } from "./array.js";
 
@@ -17,11 +18,26 @@ export type ObjectType<T extends ImmutableObject> = T[keyof T];
  */
 export const isObject = <T extends ImmutableObject>(value: T | unknown): value is T => typeof value === "object" && value !== null;
 
+/** Assert that a value is an object */
+export function assertObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
+	if (!isObject(value)) throw new AssertionError(`Must be object`, value);
+}
+
 /** Is a value a plain object? */
 export const isPlainObject = <T extends ImmutableObject>(value: T | unknown): value is T => isObject(value) && value.constructor === Object;
 
+/** Assert that a value is a plain object */
+export function assertPlainObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
+	if (!isPlainObject(value)) throw new AssertionError(`Must be plain object`, value);
+}
+
 /** Is an unknown string an own prop of an object. */
 export const isKey = <T extends ImmutableObject>(obj: T, key: unknown): key is keyof T => (typeof key === "string" || typeof key === "number" || typeof key === "symbol") && Object.prototype.hasOwnProperty.call(obj, key);
+
+/** Assert that a value is an object with a specific property. */
+export function assertKey<K extends string | number | symbol, T extends { [L in K]: unknown }>(value: T | unknown, key: K): asserts value is T {
+	if (!isObject(value) || !(key in value)) throw new AssertionError(`Must be object with prop "${key}"`, value);
+}
 
 /**
  * Add a key/value entry to a map-like object (immutably).

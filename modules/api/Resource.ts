@@ -1,4 +1,4 @@
-import { Validator, Validatable, UNDEFINED, validate } from "../util/index.js";
+import { Validator, Validatable, getUndefined, validate } from "../util/index.js";
 import { Feedback } from "../feedback/index.js";
 import { ResourceValidationError } from "./errors.js";
 
@@ -60,6 +60,6 @@ export function RESOURCE<X, Y>(payload: Validator<X>, result: Validator<Y>): Res
 export function RESOURCE<Y>(payload: undefined, result: Y): Resource<undefined, Y>;
 export function RESOURCE<X>(payload: Validator<X>, result?: undefined): Resource<X, void>;
 export function RESOURCE(payload?: undefined, result?: undefined): Resource<undefined, void>;
-export function RESOURCE(payload: Validator<unknown> = UNDEFINED, result: Validator<unknown> = UNDEFINED): Resource<unknown, unknown> {
+export function RESOURCE(payload: Validator<unknown> = getUndefined, result: Validator<unknown> = getUndefined): Resource<unknown, unknown> {
 	return new Resource(payload, result);
 }

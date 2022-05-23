@@ -8,6 +8,26 @@ export const MILLION = 1_000_000;
 /** Is a value a number? */
 export const isNumber = (v: unknown): v is number => typeof v === "number";
 
+/** Assert that a value is a number. */
+export function assertNumber(v: number | unknown): asserts v is number {
+	if (typeof v !== "number") throw new AssertionError(`Must be number`, v);
+}
+
+/** Assert that a value is a number greater than. */
+export function assertBetween(v: number | unknown, min: number, max: number): asserts v is number {
+	if (typeof v !== "number" || v < min || v > max) throw new AssertionError(`Must be number between ${min}-${max}`, v);
+}
+
+/** Assert that a value is a number greater than. */
+export function assertMax(v: number | unknown, max: number): asserts v is number {
+	if (typeof v !== "number" || v > max) throw new AssertionError(`Must be number with maximum ${max}`, v);
+}
+
+/** Assert that a value is a number less than. */
+export function assertMin(v: number | unknown, min: number): asserts v is number {
+	if (typeof v !== "number" || v < min) throw new AssertionError(`Must be number with minimum ${min}`, v);
+}
+
 /**
  * Convert an unknown value to a number or `null`
  * - Note: numbers can be non-finite numbers like `NaN` or `Infinity`. These are detected and will always return `null`
@@ -32,7 +52,7 @@ const NUMERIC = /[^0-9-.]/g;
  */
 export function getNumber(value: unknown): number {
 	const num = toNumber(value);
-	if (num === null) throw new AssertionError("Must be number", value);
+	assertNumber(num);
 	return num;
 }
 
