@@ -6,7 +6,7 @@ test("ArrayState", () => {
 	expect(state).toBeInstanceOf(ArrayState);
 	expect(state.value).toEqual([1, 2, 3]);
 	// Ons and onces.
-	const fn1 = jest.fn<any, any>();
+	const fn1 = jest.fn();
 	state.subscribe(fn1);
 	expect(fn1).nthCalledWith(1, [1, 2, 3]);
 	// Has.

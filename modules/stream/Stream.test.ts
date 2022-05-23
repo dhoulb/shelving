@@ -9,22 +9,22 @@ test("Stream: works correctly", () => {
 	expect(stream.closed).toBe(false);
 	expect(stream.subscribers).toBe(0);
 	// Ons and onces.
-	const next1 = jest.fn<any, any>();
-	const error1 = jest.fn<any, any>();
-	const complete1 = jest.fn<any, any>();
+	const next1 = jest.fn();
+	const error1 = jest.fn();
+	const complete1 = jest.fn();
 	const unsub1 = stream.subscribe({ next: next1, error: error1, complete: complete1 });
-	const next2 = jest.fn<any, any>();
-	const error2 = jest.fn<any, any>();
-	const complete2 = jest.fn<any, any>();
+	const next2 = jest.fn();
+	const error2 = jest.fn();
+	const complete2 = jest.fn();
 	const unsub2 = stream.subscribe({ next: next2, error: error2, complete: complete2 });
-	const next3 = jest.fn<any, any>();
-	const error3 = jest.fn<any, any>();
-	const complete3 = jest.fn<any, any>();
+	const next3 = jest.fn();
+	const error3 = jest.fn();
+	const complete3 = jest.fn();
 	const stream3 = stream.to();
 	stream3.subscribe({ next: next3, error: error3, complete: complete3 });
-	const next4 = jest.fn<any, any>();
-	const error4 = jest.fn<any, any>();
-	const complete4 = jest.fn<any, any>();
+	const next4 = jest.fn();
+	const error4 = jest.fn();
+	const complete4 = jest.fn();
 	const stream4 = stream.to();
 	stream4.subscribe({ next: next4, error: error4, complete: complete4 });
 	expect(stream.subscribers).toEqual(4);
@@ -76,11 +76,11 @@ test("Stream: all listeners are fired even if one errors", () => {
 	const stream = new Stream<number>();
 	expect(stream).toBeInstanceOf(Stream);
 	// Ons and onces.
-	const fnBefore = jest.fn<any, any>();
+	const fnBefore = jest.fn();
 	const fnError = jest.fn(() => {
 		throw new Error("ERROR");
 	});
-	const fnAfter = jest.fn<any, any>();
+	const fnAfter = jest.fn();
 	stream.subscribe(fnBefore);
 	stream.subscribe(fnError);
 	stream.subscribe(fnAfter);
