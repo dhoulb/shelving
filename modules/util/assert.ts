@@ -4,7 +4,6 @@ import type { Class } from "./class.js";
 import { debug } from "./debug.js";
 import { isObject } from "./object.js";
 import { ImmutableArray, isArray } from "./array.js";
-import { NOVALUE } from "./constants.js";
 import { isAsync } from "./async.js";
 import { Data } from "./data.js";
 
@@ -98,12 +97,7 @@ export function assertFunction<T extends AnyFunction>(value: T | unknown): asser
 	if (typeof value !== "function") throw new AssertionError("Must be function", value);
 }
 
-/** Assert that a value is not the `NOVALUE` constant. */
-export function assertValue<T>(value: T | typeof NOVALUE): asserts value is T {
-	if (value === NOVALUE) throw new AssertionError("Must have value", value);
-}
-
-/** Assert that a value is not the `NOVALUE` constant. */
+/** Assert that a value is not `undefined` */
 export function assertDefined<T>(value: T | undefined): asserts value is T {
 	if (value === undefined) throw new AssertionError("Must be defined", value);
 }
