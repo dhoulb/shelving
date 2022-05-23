@@ -1,5 +1,5 @@
 import { ConditionError } from "../error/index.js";
-import { BLACKHOLE, dispatch, Dispatcher } from "./function.js";
+import { dispatch, Dispatcher } from "./function.js";
 import { Handler, logError } from "./error.js";
 import { Data, isData, Results } from "./data.js";
 import { transform, Transformable, Transformer } from "./transform.js";
