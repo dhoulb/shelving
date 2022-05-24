@@ -1,4 +1,5 @@
-import { dispatchNext, getLastItem } from "../util/index.js";
+import { getLastItem } from "../util/array.js";
+import { dispatchNext } from "../util/observe.js";
 import { Stream } from "./Stream.js";
 
 /** Stream that only calls its most recently added subscriber. */

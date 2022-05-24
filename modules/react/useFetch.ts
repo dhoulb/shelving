@@ -1,4 +1,7 @@
-import { Arguments, serialise, State, dispatchAsyncNext, AnyState } from "../index.js";
+import { AnyState, State } from "../stream/State.js";
+import type { Arguments } from "../util/function.js";
+import { dispatchAsyncNext } from "../util/observe.js";
+import { serialise } from "../util/serialise.js";
 import { useSubscribe } from "./useSubscribe.js";
 
 /** Store a list of named cached `State` instances. */

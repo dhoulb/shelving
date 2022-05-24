@@ -26,25 +26,18 @@ import {
 	getDoc,
 	getDocs,
 } from "firebase/firestore/lite";
-import {
-	Provider,
-	DocumentReference,
-	QueryReference,
-	FilterOperator,
-	SortDirection,
-	Result,
-	Update,
-	ObjectUpdate,
-	Increment,
-	AsynchronousProvider,
-	Entry,
-	Data,
-	DataUpdate,
-	Entries,
-	Unsubscriber,
-	ArrayUpdate,
-	UnsupportedError,
-} from "../../index.js";
+import type { DocumentReference, QueryReference } from "../../db/Reference.js";
+import type { Data, Result } from "../../util/data.js";
+import type { Entries, Entry } from "../../util/entry.js";
+import type { FilterOperator } from "../../query/Filter.js";
+import type { SortDirection } from "../../query/Sort.js";
+import type { Unsubscriber } from "../../util/observe.js";
+import { UnsupportedError } from "../../error/UnsupportedError.js";
+import { AsynchronousProvider, Provider } from "../../provider/Provider.js";
+import { ArrayUpdate } from "../../update/ArrayUpdate.js";
+import { DataUpdate } from "../../update/DataUpdate.js";
+import { Increment } from "../../update/Increment.js";
+import { ObjectUpdate } from "../../update/ObjectUpdate.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -157,7 +150,7 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		throw new Error("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 
-	async setQuery<T extends Data>(ref: QueryReference<T>, data: T | Update<T> | undefined): Promise<number> {
+	async setQuery<T extends Data>(ref: QueryReference<T>, data: T): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
 		await Promise.all(snapshot.docs.map(s => setDoc<unknown>(s.ref, data)));
 		return snapshot.size;

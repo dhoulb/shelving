@@ -1,4 +1,4 @@
-import { sanitizeLines, sanitizeString } from "../util/index.js";
+import { sanitizeLines, sanitizeString } from "../util/string.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema } from "./Schema.js";
 

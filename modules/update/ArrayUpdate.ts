@@ -1,4 +1,4 @@
-import { ImmutableArray, isArray, withItems, withoutItems } from "../util/index.js";
+import { ImmutableArray, isArray, withItems, withoutItems } from "../util/array.js";
 import { Update } from "./Update.js";
 
 /** Update that can be applied to an array to add/remove items. */

@@ -1,5 +1,7 @@
-import { ImmutableMap, Validator, validateValues, isObject } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { ImmutableMap } from "../util/map.js";
+import { isObject } from "../util/object.js";
+import { validateValues, Validator } from "../util/validate.js";
 import { Schema } from "./Schema.js";
 
 /** Validate a `Map` instance. */

@@ -15,10 +15,15 @@ export function toURL(url: PossibleURL, base: PossibleOptionalURL = typeof windo
 	}
 }
 
+/** Assert that an unknown value is a URL. */
+export function assertURL(v: unknown): asserts v is URL {
+	if (!(v instanceof URL)) throw new AssertionError("Invalid URL", v);
+}
+
 /** Convert a possible URL to a URL but throw `AssertionError` if conversion fails. */
 export function getURL(input: PossibleURL, base?: PossibleOptionalURL): URL {
 	const url = toURL(input, base);
-	if (!url) throw new AssertionError("Invalid URL", input);
+	assertURL(url);
 	return url;
 }
 

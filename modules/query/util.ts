@@ -1,4 +1,4 @@
-import { Data, getProp, Key } from "../util/index.js";
+import { Data, getProp, Key } from "../util/data.js";
 
 /**
  * Get a named property value from some data.

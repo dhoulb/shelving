@@ -1,7 +1,31 @@
-import { Data, Entry, Matchable, match, isArrayWith, isEqual, isGreater, isEqualGreater, isLess, isEqualLess, notEqual, yieldFiltered, Entries, notInArray, isInArray, Matcher, Key } from "../util/index.js";
+import type { Entry, Entries } from "../util/entry.js";
+import type { Data, Key } from "../util/data.js";
+import type { ArrayType, ImmutableArray } from "../util/array.js";
+import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, match, Matchable, Matcher, notEqual, notInArray, yieldFiltered } from "../util/filter.js";
+import { getQueryProp } from "./util.js";
 import { Rule } from "./Rule.js";
-import { getQueryProp } from "./helpers.js";
-import { FilterKey, FilterOperator } from "./types.js";
+
+/** Possible operator references. */
+export type FilterOperator = "IS" | "NOT" | "IN" | "OUT" | "CONTAINS" | "LT" | "LTE" | "GT" | "GTE";
+
+/** Format that allows filters to be specified as a string, e.g. `!name` means `name is not` and `age>` means `age is more than` and `tags[]` means `tags array contains` */
+export type FilterKey<T extends Data> = "id" | "!id" | "id>" | "id>=" | "id<" | "id<=" | Key<T> | `${Key<T>}` | `!${Key<T>}` | `${Key<T>}[]` | `${Key<T>}<` | `${Key<T>}<=` | `${Key<T>}>` | `${Key<T>}>=`;
+
+/** Format that allows multiple filters to be specified as a plain object. */
+export type FilterProps<T extends Data> = {
+	"id"?: string | ImmutableArray<string>;
+	"!id"?: string | ImmutableArray<string>;
+	"id>"?: string;
+	"id>="?: string;
+	"id<"?: string;
+	"id<="?: string;
+} & {
+	[K in Key<T> as `${K}` | `!${K}`]?: T[K] | ImmutableArray<T[K]>; // IS/NOT/IN/OUT
+} & {
+	[K in Key<T> as `${K}[]`]?: T[K] extends ImmutableArray ? ArrayType<T[K]> : never; // CONTAINS
+} & {
+	[K in Key<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: T[K]; // GT/GTE/LT/LTE
+};
 
 /** Map `FilterOperator` to its corresponding `Matcher` function. */
 const MATCHERS: { [K in FilterOperator]: Matcher<unknown, unknown> } = {

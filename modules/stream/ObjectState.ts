@@ -1,4 +1,5 @@
-import { Entry, ImmutableObject, withEntry, withoutEntry } from "../util/index.js";
+import type { Entry } from "../util/entry.js";
+import { ImmutableObject, withEntry, withoutEntry } from "../util/object.js";
 import { State } from "./State.js";
 
 /** State that stores a map-like object and has additional methods to help with that. */

@@ -1,7 +1,17 @@
-import { Entry, Data, sortItems, Entries } from "../util/index.js";
-import type { Sortable, SortKeys } from "./types.js";
-import { Sort } from "./Sort.js";
+import type { Entries, Entry } from "../util/entry.js";
+import type { Data } from "../util/data.js";
+import { Rankable, sortItems } from "../util/sort.js";
 import { Rules } from "./Rules.js";
+import { Sort, SortKeys } from "./Sort.js";
+
+/**
+ * Interface to make sure an object implements all directions.
+ * - Extends `Matchable` so this object itself can be directly be used in `filterItems()` and `filterEntries()`
+ */
+export interface Sortable<T extends Data> extends Rankable<Entry<T>> {
+	/** Add one or more sorts to this sortable. */
+	sort(...keys: SortKeys<T>[]): this;
+}
 
 /** A set of sorts. */
 export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable<T> {

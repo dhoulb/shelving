@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { LOADING, Subscribable, subscribe } from "../index.js";
+import { Subscribable, subscribe } from "../util/observe.js";
+import { NOVALUE } from "../util/constants.js";
 import { usePureEffect } from "./usePureEffect.js";
 
 /**
@@ -11,7 +12,7 @@ import { usePureEffect } from "./usePureEffect.js";
  * - Memoise this value if you want the subscription to persist for the life of the component.
  */
 export function useSubscribe<T>(subscribable?: Subscribable<T>): void {
-	usePureEffect(_subscribeEffect, useState<unknown>(LOADING)[1], subscribable);
+	usePureEffect(_subscribeEffect, useState<unknown>(NOVALUE)[1], subscribable);
 }
 
 /** Effect that subscribes the component to changes in the subscribable for the lifetime of the component. */

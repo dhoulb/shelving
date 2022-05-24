@@ -1,6 +1,9 @@
-import type { Result, Entries, Unsubscriber, Observer, Class, Data } from "../util/index.js";
-import type { DocumentReference, QueryReference } from "../db/index.js";
-import type { DataUpdate } from "../update/index.js";
+import type { Result, Data } from "../util/data.js";
+import type { DocumentReference, QueryReference } from "../db/Reference.js";
+import type { DataUpdate } from "../update/DataUpdate.js";
+import type { Observer, Unsubscriber } from "../util/observe.js";
+import type { Entries } from "../util/entry.js";
+import type { Class } from "../util/class.js";
 import { AssertionError } from "../error/AssertionError.js";
 import { Provider } from "./Provider.js";
 

@@ -1,4 +1,6 @@
-import { formatUrl, toURL, getLineRegExp, getBlockRegExp, MATCH_LINE, MATCH_BLOCK, getWrapRegExp, JSXElement } from "../util/index.js";
+import type { JSXElement } from "../util/jsx.js";
+import { getBlockRegExp, getLineRegExp, getWrapRegExp, MATCH_BLOCK, MATCH_LINE } from "../util/search.js";
+import { formatUrl, toURL } from "../util/url.js";
 import type { MarkupRule } from "./types.js";
 
 // Regular expression partials (`\` slashes must be escaped as `\\`).

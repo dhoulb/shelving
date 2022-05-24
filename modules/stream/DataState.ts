@@ -1,4 +1,7 @@
-import { Key, withProp, Data, PropTransformers, transformData, NOERROR, LOADING, awaitNext, getData, Result } from "../util/index.js";
+import { NOVALUE, NOERROR } from "../util/constants.js";
+import { Key, withProp, Data, getData, Result } from "../util/data.js";
+import { awaitNext } from "../util/observe.js";
+import { PropTransformers, transformData } from "../util/transform.js";
 import { State } from "./State.js";
 
 /** State that stores a data object and has additional methods to help with that. */
@@ -29,7 +32,7 @@ export class ResultState<T extends Data> extends State<Result<T>> {
 	/** Get current data value of this state (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
 		if (this.reason !== NOERROR) throw this.reason;
-		if (this._value === LOADING) throw awaitNext(this).then(getData);
+		if (this._value === NOVALUE) throw awaitNext(this).then(getData);
 		return getData(this._value);
 	}
 

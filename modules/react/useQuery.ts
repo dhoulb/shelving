@@ -1,27 +1,17 @@
 import { useState } from "react";
-import {
-	CacheProvider,
-	NOERROR,
-	findSourceProvider,
-	NOVALUE,
-	Results,
-	getMap,
-	Unsubscriber,
-	Handler,
-	QueryReference,
-	Data,
-	callAsync,
-	getQueryData,
-	throwAsync,
-	ResultsObserver,
-	DocumentResult,
-	getQueryResult,
-	DocumentData,
-	isAsync,
-} from "../index.js";
-import { usePureEffect } from "./usePureEffect.js";
-import { usePureState } from "./usePureState.js";
+import type { QueryReference } from "../db/Reference.js";
+import type { Data, Results } from "../util/data.js";
+import { NOERROR, NOVALUE } from "../util/constants.js";
+import { CacheProvider } from "../provider/CacheProvider.js";
+import { findSourceProvider } from "../provider/ThroughProvider.js";
+import { callAsync, isAsync, throwAsync } from "../util/async.js";
+import { getMap } from "../util/map.js";
+import { ResultsObserver, Unsubscriber } from "../util/observe.js";
+import type { Handler } from "../util/error.js";
+import { DocumentData, DocumentResult, getQueryData, getQueryResult } from "../db/util.js";
 import { useCompare } from "./useCompare.js";
+import { usePureState } from "./usePureState.js";
+import { usePureEffect } from "./usePureEffect.js";
 
 /**
  * Use the cached result of a document in a React component (or a `Promise` to indicate the result is still loading).

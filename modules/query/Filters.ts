@@ -1,7 +1,26 @@
-import { Entry, Data, Key, yieldFiltered, Entries, ImmutableArray, ArrayType } from "../util/index.js";
-import type { Filterable, FilterKey, FilterProps } from "./types.js";
-import { Filter } from "./Filter.js";
+import type { Entries, Entry } from "../util/entry.js";
+import type { ArrayType, ImmutableArray } from "../util/array.js";
+import type { Data, Key } from "../util/data.js";
+import { Matchable, yieldFiltered } from "../util/filter.js";
+import { FilterKey, FilterProps, Filter } from "./Filter.js";
 import { Rules } from "./Rules.js";
+
+/**
+ * Interface to make sure an object implements all matchers.
+ * - Extends `Matchable` so this object itself can be directly be used in `filterItems()` and `filterEntries()`
+ */
+export interface Filterable<T extends Data> extends Matchable<Entry<T>, void> {
+	/** Add a filter to this filterable. */
+	filter(props: FilterProps<T>): this;
+	filter(key: "id" | "!id" | "id>" | "id>=" | "id<" | "id<=", value: string): this;
+	filter(key: "id" | "!id", value: ImmutableArray<string>): this;
+	filter<K extends Key<T>>(key: `${K}` | `!${K}` | `${K}>` | `${K}>=` | `${K}<` | `${K}<=`, value: T[K]): this;
+	filter<K extends Key<T>>(key: `${K}` | `!${K}`, value: ImmutableArray<string>): this;
+	filter<K extends Key<T>>(key: `${K}[]`, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this;
+
+	/** Match an entry against the filters specified for this object. */
+	match(entry: Entry<T>): boolean;
+}
 
 function* _yieldFilters<T extends Data>(props: FilterProps<T>): Generator<Filter<T>> {
 	for (const [key, value] of Object.entries(props)) yield Filter.on<T>(key, value);

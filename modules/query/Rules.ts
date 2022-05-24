@@ -1,4 +1,5 @@
-import { Data, ImmutableArray, toString, withItems, withoutItems } from "../util/index.js";
+import type { Data } from "../util/data.js";
+import { ImmutableArray, withItems, withoutItems } from "../util/array.js";
 import { Rule } from "./Rule.js";
 
 /** Type of Rule that is powered by several sub-rules (e.g. `Filters` and `Sorts` and `Query` itself extend this). */

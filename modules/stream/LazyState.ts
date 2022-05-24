@@ -1,4 +1,5 @@
-import { Observer, Timeout } from "../util/index.js";
+import { Observer } from "../util/observe.js";
+import { Timeout } from "../util/timeout.js";
 import { State } from "./State.js";
 
 /**

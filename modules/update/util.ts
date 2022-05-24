@@ -1,9 +1,12 @@
 import { Feedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { DataSchema } from "../schema/DataSchema.js";
-import { MutableObject, transform, validate, Validator, Validators, toProps, Data } from "../util/index.js";
-import { Update } from "./Update.js";
+import { Data, toProps } from "../util/data.js";
+import { validate, Validator, Validators } from "../util/validate.js";
+import { transform } from "../util/transform.js";
+import { MutableObject } from "../util/object.js";
 import { DataUpdate, PropUpdates } from "./DataUpdate.js";
+import { Update } from "./Update.js";
 
 /**
  * Validate an update against a validator.

@@ -1,5 +1,13 @@
 import { useRef } from "react";
-import { ArrayState, BooleanState, Data, DataState, ImmutableArray, ImmutableObject, initialState, LOADING, ObjectState, State } from "../index.js";
+import type { Data } from "../util/data.js";
+import type { ImmutableObject } from "../util/object.js";
+import type { ImmutableArray } from "../util/array.js";
+import { ArrayState } from "../stream/ArrayState.js";
+import { BooleanState } from "../stream/BooleanState.js";
+import { DataState } from "../stream/DataState.js";
+import { ObjectState } from "../stream/ObjectState.js";
+import { initialState, State } from "../stream/State.js";
+import { NOVALUE } from "../util/constants.js";
 import { useSubscribe } from "./useSubscribe.js";
 
 /**
@@ -11,9 +19,9 @@ import { useSubscribe } from "./useSubscribe.js";
  *
  * @returns The state instance that was subscribed to.
  */
-export function useState<T>(initial: T | typeof LOADING): State<T> {
+export function useState<T>(initial: T | typeof NOVALUE): State<T> {
 	// Create a memoized `State` instance from the initial value (if it's not a state itself).
-	const state = (useRef<State<T>>().current ||= initial !== LOADING ? initialState(initial, new State<T>()) : new State<T>());
+	const state = (useRef<State<T>>().current ||= initial !== NOVALUE ? initialState(initial) : new State<T>());
 	useSubscribe(state);
 	return state;
 }

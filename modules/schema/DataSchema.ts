@@ -1,7 +1,9 @@
-import { isObject, Validators, validateData, Data } from "../util/index.js";
+import type { Data } from "../util/data.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
-import { Schema } from "./Schema.js";
+import { validateData, Validators } from "../util/validate.js";
+import { isObject } from "../util/object.js";
 import { OPTIONAL, OptionalSchema } from "./OptionalSchema.js";
+import { Schema } from "./Schema.js";
 
 /** Validate a data object. */
 export class DataSchema<T extends Data> extends Schema<T> {

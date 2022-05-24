@@ -5,7 +5,7 @@ export const isDate = (v: unknown): v is Date => v instanceof Date;
 
 /** Assert that a value is a `Date` instance. */
 export function assertDate(v: unknown): asserts v is Date {
-	if (v instanceof Date) throw new AssertionError(`Must be date`, v);
+	if (!(v instanceof Date)) throw new AssertionError(`Must be date`, v);
 }
 
 /** Value that can possibly be converted to a `Date` instance. */

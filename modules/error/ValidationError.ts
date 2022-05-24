@@ -1,4 +1,4 @@
-import type { Feedback } from "../feedback/index.js";
+import type { Feedback } from "../feedback/Feedback.js";
 
 /** Thrown if a value isn't valid. */
 export class ValidationError extends Error {

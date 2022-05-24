@@ -1,4 +1,5 @@
-import { Entry, yieldKeys } from "../util/index.js";
+import type { Entry } from "../util/entry.js";
+import { yieldKeys } from "../util/iterate.js";
 
 /** Run any queued microtasks now. */
 export async function runMicrotasks(): Promise<void> {

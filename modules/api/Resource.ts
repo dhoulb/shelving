@@ -1,5 +1,6 @@
-import { Validator, Validatable, getUndefined, validate } from "../util/index.js";
-import { Feedback } from "../feedback/index.js";
+import { Validator, Validatable, validate } from "../util/validate.js";
+import { getUndefined } from "../util/undefined.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { ResourceValidationError } from "./errors.js";
 
 /**

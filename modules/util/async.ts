@@ -1,8 +1,8 @@
-import { AssertionError } from "../index.js";
+import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
 import type { Arguments, Dispatcher } from "./function.js";
+import type { Handler } from "./error.js";
 import { DONE } from "./constants.js";
-import { Handler } from "./error.js";
 
 /** Is a value a synchronous value. */
 export const isSync = <T>(v: T | PromiseLike<T>): v is T => !isAsync(v);

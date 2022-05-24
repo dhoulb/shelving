@@ -1,4 +1,4 @@
-import { ImmutableArray, swapItem, toggleItem, withItem, withoutItem } from "../util/index.js";
+import { ImmutableArray, swapItem, toggleItem, withItem, withoutItem } from "../util/array.js";
 import { State } from "./State.js";
 
 /** State that stores an array and has additional methods to help with that. */

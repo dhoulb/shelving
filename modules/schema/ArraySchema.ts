@@ -1,5 +1,6 @@
-import { ImmutableArray, uniqueArray, Validator, validateItems, getArray } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { getArray, ImmutableArray, uniqueArray } from "../util/array.js";
+import { validateItems, Validator } from "../util/validate.js";
 import { Schema } from "./Schema.js";
 
 /**

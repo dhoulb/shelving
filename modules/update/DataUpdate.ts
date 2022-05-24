@@ -1,4 +1,6 @@
-import { Data, Prop, Key, transformData, Transformable, Nullish, isNullish } from "../util/index.js";
+import type { Data, Key, Prop } from "../util/data.js";
+import { isNullish, Nullish } from "../util/null.js";
+import { Transformable, transformData } from "../util/transform.js";
 import { Update } from "./Update.js";
 
 /**

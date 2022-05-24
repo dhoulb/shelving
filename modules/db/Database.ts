@@ -1,6 +1,10 @@
-import { Validator, Key, Datas, Validators, ValidatorType } from "../util/index.js";
+import type { Validator, Validators, ValidatorType } from "../util/validate.js";
+import type { Key, Datas } from "../util/data.js";
 import type { Provider } from "../provider/Provider.js";
-import { Filters, Sorts, FilterProps, SortKeys } from "../query/index.js";
+import type { SortKeys } from "../query/Sort.js";
+import type { FilterProps } from "../query/Filter.js";
+import { Filters } from "../query/Filters.js";
+import { Sorts } from "../query/Sorts.js";
 import { DocumentReference, QueryReference } from "./Reference.js";
 
 /**

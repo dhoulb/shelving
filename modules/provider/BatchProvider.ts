@@ -1,6 +1,11 @@
-import { MutableObject, Result, Observer, Unsubscriber, isAsync, Observable, Entries, getMap, Results, awaitNext, Data, ResultsObserver } from "../util/index.js";
-import { LazyState } from "../stream/index.js";
-import type { DocumentReference, QueryReference } from "../db/index.js";
+import type { MutableObject } from "../util/object.js";
+import type { Entries } from "../util/entry.js";
+import type { DocumentReference, QueryReference } from "../db/Reference.js";
+import { awaitNext, Observable, Observer, ResultsObserver, Unsubscriber } from "../util/observe.js";
+import { Data, Result, Results } from "../util/data.js";
+import { getMap } from "../util/map.js";
+import { isAsync } from "../util/async.js";
+import { LazyState } from "../stream/LazyState.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** How long to wait after all subscriptions have ended to close the source subscription. */

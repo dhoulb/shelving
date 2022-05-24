@@ -1,4 +1,4 @@
-import { toDate, getYmd, PossibleDate } from "../util/index.js";
+import { toDate, getYmd, PossibleDate } from "../util/date.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";

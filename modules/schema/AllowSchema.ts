@@ -1,5 +1,8 @@
-import { isItem, isKey, toNumber, toString } from "../util/index.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { toString } from "../util/string.js";
+import { isItem } from "../util/array.js";
+import { toNumber } from "../util/number.js";
+import { isKey } from "../util/object.js";
 import { Schema } from "./Schema.js";
 
 /** Specify a specific list of allowed values. */

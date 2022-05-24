@@ -1,11 +1,11 @@
-import { ConditionError } from "../error/index.js";
+import { ConditionError } from "../error/ConditionError.js";
+import type { Entries } from "./entry.js";
 import { dispatch, Dispatcher } from "./function.js";
 import { Handler, logError } from "./error.js";
 import { Data, isData, Results } from "./data.js";
 import { transform, Transformable, Transformer } from "./transform.js";
 import { validate, Validator } from "./validate.js";
 import { getMap } from "./map.js";
-import type { Entries } from "./entry.js";
 
 /** Function that ends a subscription. */
 export type Unsubscriber = () => void;
@@ -162,22 +162,8 @@ export class OnceObserver<T> extends ThroughObserver<T> {
 	}
 }
 
-/** Observer that transforms its next values with a transformer. */
-export class TransformObserver<I, O> extends AbstractObserver<I, O> {
-	protected _transformer: Transformer<I, O>;
-	constructor(transformer: Transformer<I, O>, target: Observer<O>) {
-		super(target);
-		this._transformer = transformer;
-	}
-	next(value: I) {
-		const target = this._target;
-		if (!target) throw new ConditionError("Observer is closed");
-		dispatchNext(target, transform(value, this._transformer));
-	}
-}
-
-/** Observer that is itself a transformer. */
-export abstract class TransformerObserver<I, O> extends AbstractObserver<I, O> implements Transformable<I, O> {
+/** Observer implementing `Transformable` that implements a `transform()` property that is called to transform the next value before dispatching it. */
+export abstract class TransformableObserver<I, O> extends AbstractObserver<I, O> implements Transformable<I, O> {
 	next(value: I) {
 		const target = this._target;
 		if (!target) throw new ConditionError("Observer is closed");
@@ -186,26 +172,34 @@ export abstract class TransformerObserver<I, O> extends AbstractObserver<I, O> i
 	abstract transform(input: I): O;
 }
 
+/** Observer that transforms its next values with a transformer. */
+export class TransformObserver<I, O> extends TransformableObserver<I, O> {
+	protected _transformer: Transformer<I, O>;
+	constructor(transformer: Transformer<I, O>, target: Observer<O>) {
+		super(target);
+		this._transformer = transformer;
+	}
+	transform(value: I) {
+		return transform(value, this._transformer);
+	}
+}
+
 /** Observer that transforms a set of entries into a results map. */
-export class ResultsObserver<T extends Data> extends AbstractObserver<Entries<T>, Results<T>> {
-	next(entries: Entries<T>) {
-		const target = this._target;
-		if (!target) throw new ConditionError("Observer is closed");
-		dispatchNext(target, getMap(entries));
+export class ResultsObserver<T extends Data> extends TransformableObserver<Entries<T>, Results<T>> {
+	transform(entries: Entries<T>): Results<T> {
+		return getMap(entries);
 	}
 }
 
 /** Observer that validates its next values with a validator. */
-export class ValidateObserver<T> extends AbstractObserver<unknown, T> {
+export class ValidateObserver<T> extends TransformableObserver<unknown, T> {
 	protected _validator: Validator<T>;
 	constructor(validator: Validator<T>, target: Observer<T>) {
 		super(target);
 		this._validator = validator;
 	}
-	next(value: unknown) {
-		const target = this._target;
-		if (!target) throw new ConditionError("Observer is closed");
-		dispatchNext(target, validate(value, this._validator));
+	transform(value: unknown) {
+		return validate(value, this._validator);
 	}
 }
 

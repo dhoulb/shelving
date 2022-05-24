@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import { Arguments, isArrayEqual } from "../index.js";
+import type { Arguments } from "../util/function.js";
+import { isArrayEqual } from "../util/equal.js";
 
 /**
  * Use a (memoized) class instance.

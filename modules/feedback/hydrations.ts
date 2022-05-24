@@ -6,11 +6,10 @@ import { ErrorFeedback } from "./ErrorFeedback.js";
 import { InvalidFeedback } from "./InvalidFeedback.js";
 
 /** Set of hydrations for all feedback classes. */
-export const FEEDBACK_HYDRATIONS = {
+export const FEEDBACK_HYDRATIONS: Hydrations = {
 	SuccessFeedback,
 	WarningFeedback,
 	InvalidFeedback,
 	ErrorFeedback,
 	Feedback,
 };
-FEEDBACK_HYDRATIONS as Hydrations;

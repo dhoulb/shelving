@@ -1,6 +1,7 @@
-import type { Data } from "../util/index.js";
-import { RequiredError, ValidationError } from "../error/index.js";
-import type { Feedback } from "../feedback/index.js";
+import type { Data } from "../util/data.js";
+import type { Feedback } from "../feedback/Feedback.js";
+import { ValidationError } from "../error/ValidationError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import type { DocumentReference, QueryReference } from "./Reference.js";
 
 /** Thrown if a document doesn't exist. */

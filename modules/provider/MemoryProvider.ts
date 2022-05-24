@@ -1,6 +1,14 @@
-import { Data, Result, Entries, getRandomKey, Unsubscriber, dispatchNext, Observer, isMapEqual, MutableObject, Dispatcher, ImmutableMap, MutableMap } from "../util/index.js";
-import { DataUpdate } from "../update/index.js";
-import { QueryReference, DocumentReference, DocumentRequiredError } from "../db/index.js";
+import type { DocumentReference, QueryReference } from "../db/Reference.js";
+import type { MutableObject } from "../util/object.js";
+import type { Data, Result } from "../util/data.js";
+import type { DataUpdate } from "../update/DataUpdate.js";
+import type { Entries } from "../util/entry.js";
+import type { ImmutableMap, MutableMap } from "../util/map.js";
+import type { Dispatcher } from "../util/function.js";
+import { dispatchNext, Observer, Unsubscriber } from "../util/observe.js";
+import { getRandomKey } from "../util/random.js";
+import { isMapEqual } from "../util/equal.js";
+import { DocumentRequiredError } from "../db/errors.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
 /**

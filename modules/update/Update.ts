@@ -1,4 +1,4 @@
-import { Transformable } from "../util/index.js";
+import type { Transformable } from "../util/transform.js";
 
 /**
  * An object that represents an update of an existing value.

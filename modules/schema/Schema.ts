@@ -1,4 +1,4 @@
-import { Validatable } from "../util/index.js";
+import type { Validatable } from "../util/validate.js";
 
 /**
  * Schema is an object instance with a `validate()` method.

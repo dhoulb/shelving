@@ -27,27 +27,18 @@ import {
 	getDoc,
 	getDocs,
 } from "firebase/firestore";
-import {
-	Entries,
-	Provider,
-	DocumentReference,
-	QueryReference,
-	FilterOperator,
-	SortDirection,
-	Result,
-	Observer,
-	dispatchNext,
-	dispatchError,
-	ObjectUpdate,
-	Increment,
-	AsynchronousProvider,
-	DataUpdate,
-	Data,
-	Unsubscriber,
-	ArrayUpdate,
-	UnsupportedError,
-	Entry,
-} from "../../index.js";
+import type { DocumentReference, QueryReference } from "../../db/Reference.js";
+import type { Data, Result } from "../../util/data.js";
+import type { Entries, Entry } from "../../util/entry.js";
+import type { FilterOperator } from "../../query/Filter.js";
+import type { SortDirection } from "../../query/Sort.js";
+import { UnsupportedError } from "../../error/UnsupportedError.js";
+import { AsynchronousProvider, Provider } from "../../provider/Provider.js";
+import { ArrayUpdate } from "../../update/ArrayUpdate.js";
+import { DataUpdate } from "../../update/DataUpdate.js";
+import { Increment } from "../../update/Increment.js";
+import { ObjectUpdate } from "../../update/ObjectUpdate.js";
+import { dispatchError, dispatchNext, Observer, Unsubscriber } from "../../util/observe.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.

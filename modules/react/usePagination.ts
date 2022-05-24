@@ -1,6 +1,10 @@
-import { QueryReference, Results, PaginationState, Data, initialState, isSameReference } from "../index.js";
-import { useSubscribe } from "./useSubscribe.js";
+import type { QueryReference } from "../db/Reference.js";
+import type { Data, Results } from "../util/data.js";
+import { PaginationState } from "../db/PaginationState.js";
+import { isSameReference } from "../db/util.js";
+import { initialState } from "../stream/State.js";
 import { useReduce } from "./useReduce.js";
+import { useSubscribe } from "./useSubscribe.js";
 
 /**
  * Use a `Pagination` for a collection.

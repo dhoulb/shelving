@@ -1,5 +1,10 @@
-import { PropUpdates, Update } from "../update/index.js";
-import { ImmutableArray, callAsyncSeries, Nullish, notNullish, Data, Hydrations, isNullish, Key } from "../util/index.js";
+import type { PropUpdates } from "../update/DataUpdate.js";
+import { Update } from "../update/Update.js";
+import { ImmutableArray } from "../util/array.js";
+import { callAsyncSeries } from "../util/async.js";
+import { Data, Key } from "../util/data.js";
+import { Hydrations } from "../util/hydrate.js";
+import { isNullish, notNullish, Nullish } from "../util/null.js";
 import type { Database } from "./Database.js";
 import type { DocumentReference, QueryReference } from "./Reference.js";
 
@@ -151,11 +156,10 @@ export class DeleteOperation extends Operation {
 }
 
 /** Set of hydrations for all change classes. */
-export const OPERATION_HYDRATIONS = {
-	Operations: Operations,
+export const OPERATION_HYDRATIONS: Hydrations = {
+	Operations,
 	AddOperation,
 	SetOperation,
 	UpdateOperation,
 	DeleteOperation,
 };
-OPERATION_HYDRATIONS as Hydrations;

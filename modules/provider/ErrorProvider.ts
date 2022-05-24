@@ -1,6 +1,9 @@
-import { DocumentReference, QueryReference } from "../db/index.js";
-import { isAsync, Data, Result, Entries, Observer, ThroughObserver, Unsubscriber } from "../util/index.js";
-import { DataUpdate } from "../update/index.js";
+import type { Data, Result } from "../util/data.js";
+import type { Entries } from "../util/entry.js";
+import type { DocumentReference, QueryReference } from "../db/Reference.js";
+import type { DataUpdate } from "../update/DataUpdate.js";
+import { Observer, ThroughObserver, Unsubscriber } from "../util/observe.js";
+import { isAsync } from "../util/async.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Provider that wraps errors thrown from deeper providers in `DatabaseReadError` and `DatabaseWriteError` etc to make it easier to see what read/write caused the error. */

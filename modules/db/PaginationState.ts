@@ -1,6 +1,13 @@
-import { getLastItem, assertNumber, Results, Entry, yieldMerged, Entries, getMap, Data, LOADING, assertMax } from "../util/index.js";
-import { BooleanState, State } from "../stream/index.js";
-import { ConditionError } from "../error/index.js";
+import type { Entries, Entry } from "../util/entry.js";
+import type { Data, Results } from "../util/data.js";
+import { ConditionError } from "../error/ConditionError.js";
+import { BooleanState } from "../stream/BooleanState.js";
+import { State } from "../stream/State.js";
+import { getLastItem } from "../util/array.js";
+import { NOVALUE } from "../util/constants.js";
+import { yieldMerged } from "../util/iterate.js";
+import { getMap } from "../util/map.js";
+import { assertMax, assertNumber } from "../util/number.js";
 import { QueryReference } from "./Reference.js";
 
 /**
@@ -36,7 +43,7 @@ export class PaginationState<T extends Data> extends State<Results<T>> implement
 			this.busy.next(true);
 			if (!this.exists) {
 				// First set of results.
-				this._value === LOADING;
+				this._value === NOVALUE;
 				const next = await this.ref.results;
 				this.next(next);
 				if (next.size < this.limit) this.complete();

@@ -1,4 +1,8 @@
-import { Transformer, LOADING, ObserverType, NOERROR, Observer, dispatchNext, dispatchError, dispatchComplete, transform, Mutable, awaitNext } from "../util/index.js";
+import type { Mutable } from "../util/data.js";
+import type { Transformer } from "../util/transform.js";
+import { NOVALUE, NOERROR } from "../util/constants.js";
+import { awaitNext, dispatchComplete, dispatchError, dispatchNext, Observer, ObserverType } from "../util/observe.js";
+import { transform } from "../util/transform.js";
 import { AnyStream, Stream } from "./Stream.js";
 
 /** Any state (useful for `extends AnySubscribable` clauses). */
@@ -12,7 +16,7 @@ export type AnyState = State<any>;
  * - States can also be in a loading state where they do not have a current value.
  *
  * @param initial The initial value for the state, a `Promise` that resolves to the initial value, a source `Subscribable` to subscribe to, or another `State` instance to take the initial value from and subscribe to.
- * - To set the state to be loading, use the `LOADING` constant or a `Promise` value.
+ * - To set the state to be loading, use the `NOVALUE` constant or a `Promise` value.
  * - To set the state to an explicit value, use that value or another `State` instance with a value.
  * */
 export interface State<T> {
@@ -41,14 +45,14 @@ export class State<T> extends Stream<T> {
 	/** Most recently dispatched value (or throw `Promise` that resolves to the next value). */
 	get value(): T {
 		if (this.reason !== NOERROR) throw this.reason;
-		if (this._value === LOADING) throw awaitNext(this);
+		if (this._value === NOVALUE) throw awaitNext(this);
 		return this._value;
 	}
-	protected _value: T | typeof LOADING = LOADING;
+	protected _value: T | typeof NOVALUE = NOVALUE;
 
 	/** Is there a current value, or is it still loading. */
 	get exists(): boolean {
-		return this._value !== LOADING;
+		return this._value !== NOVALUE;
 	}
 
 	/** Apply a transformer to this state. */
@@ -67,7 +71,7 @@ export class State<T> extends Stream<T> {
 		super._addObserver(observer);
 		if (this.reason !== NOERROR) dispatchError(observer, this.reason);
 		else if (this.closed) dispatchComplete(observer);
-		else if (this._value !== LOADING) dispatchNext(observer, this._value);
+		else if (this._value !== NOVALUE) dispatchNext(observer, this._value);
 	}
 
 	// Dispatcher saves any values that are dispatched.

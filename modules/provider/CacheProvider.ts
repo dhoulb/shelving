@@ -1,6 +1,9 @@
-import type { DocumentReference, QueryReference } from "../db/index.js";
-import { DataUpdate } from "../update/index.js";
-import { Result, MutableObject, Unsubscriber, Observer, Entries, TransformObserver, Data } from "../util/index.js";
+import type { MutableObject } from "../util/object.js";
+import type { DocumentReference, QueryReference } from "../db/Reference.js";
+import type { Data, Result } from "../util/data.js";
+import { Observer, TransformObserver, Unsubscriber } from "../util/observe.js";
+import { DataUpdate } from "../update/DataUpdate.js";
+import { Entries } from "../util/entry.js";
 import type { Provider, AsynchronousProvider } from "./Provider.js";
 import { MemoryProvider } from "./MemoryProvider.js";
 import { ThroughProvider } from "./ThroughProvider.js";

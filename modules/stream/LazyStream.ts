@@ -1,4 +1,4 @@
-import type { Observer } from "../util/index.js";
+import type { Observer } from "../util/observe.js";
 import { Stream } from "./Stream.js";
 
 /**

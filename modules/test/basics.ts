@@ -1,5 +1,9 @@
-import type { ValidatorType } from "../util/index.js";
-import { ARRAY, NUMBER, DATA, STRING, ALLOW_STRING } from "../schema/index.js";
+import type { ValidatorType } from "../util/validate.js";
+import { ALLOW_STRING } from "../schema/AllowSchema.js";
+import { ARRAY } from "../schema/ArraySchema.js";
+import { DATA } from "../schema/DataSchema.js";
+import { NUMBER } from "../schema/NumberSchema.js";
+import { STRING } from "../schema/StringSchema.js";
 
 export const BASIC_SCHEMA = DATA({
 	str: STRING,

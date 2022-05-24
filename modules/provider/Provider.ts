@@ -1,6 +1,8 @@
-import type { Observer, Unsubscriber, Result, Entries, Data } from "../util/index.js";
-import type { DocumentReference, QueryReference } from "../db/index.js";
-import type { DataUpdate } from "../update/index.js";
+import type { DocumentReference, QueryReference } from "../db/Reference.js";
+import type { DataUpdate } from "../update/DataUpdate.js";
+import type { Data, Result } from "../util/data.js";
+import type { Entries } from "../util/entry.js";
+import type { Observer, Unsubscriber } from "../util/observe.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
 export abstract class Provider {

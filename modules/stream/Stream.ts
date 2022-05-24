@@ -1,22 +1,9 @@
-import {
-	AsyncObserver,
-	TransformObserver,
-	Transformer,
-	ObserverType,
-	Subscribable,
-	Mutable,
-	Unsubscriber,
-	dispatchNext,
-	Observer,
-	dispatchError,
-	dispatchComplete,
-	Observable,
-	subscribe,
-	Constructor,
-	dispatch,
-	Dispatcher,
-} from "../util/index.js";
-import { ConditionError } from "../error/index.js";
+import type { Constructor } from "../util/class.js";
+import type { Mutable } from "../util/data.js";
+import type { Transformer } from "../util/transform.js";
+import { ConditionError } from "../error/ConditionError.js";
+import { dispatch, Dispatcher } from "../util/function.js";
+import { AsyncObserver, dispatchComplete, dispatchError, dispatchNext, Observable, Observer, ObserverType, Subscribable, subscribe, TransformObserver, Unsubscriber } from "../util/observe.js";
 
 /** Any stream (useful for `extends AnyStream` clauses). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,7 +109,7 @@ export class Stream<T> implements Observer<T>, Observable<T> {
 	derive<O extends AnyStream>(transformer: Transformer<T, ObserverType<O>>, target: O): O;
 	derive<TT>(transformer: Transformer<T, TT>): Stream<T>;
 	derive<TT>(transformer: Transformer<T, TT>, target: Stream<TT> = new (this.constructor as typeof Stream)[Symbol.species]()): Stream<TT> {
-		target.during(this, new TransformObserver(transformer, target));
+		target.during(this, new TransformObserver<T, TT>(transformer, target));
 		return target;
 	}
 

@@ -9,29 +9,19 @@ import type {
 	BulkWriter as FirestoreBulkWriter,
 } from "@google-cloud/firestore";
 import { Firestore, FieldValue } from "@google-cloud/firestore";
-import {
-	Provider,
-	DocumentReference,
-	QueryReference,
-	FilterOperator,
-	Observer,
-	SortDirection,
-	Result,
-	dispatchNext,
-	dispatchError,
-	Update,
-	Increment,
-	Data,
-	AsynchronousProvider,
-	DataUpdate,
-	AssertionError,
-	Entry,
-	Entries,
-	Unsubscriber,
-	ArrayUpdate,
-	UnsupportedError,
-	ObjectUpdate,
-} from "../../index.js";
+
+import type { DocumentReference, QueryReference } from "../../db/Reference.js";
+import type { Data, Result } from "../../util/data.js";
+import type { Entries, Entry } from "../../util/entry.js";
+import type { FilterOperator } from "../../query/Filter.js";
+import type { SortDirection } from "../../query/Sort.js";
+import { UnsupportedError } from "../../error/UnsupportedError.js";
+import { AsynchronousProvider, Provider } from "../../provider/Provider.js";
+import { ArrayUpdate } from "../../update/ArrayUpdate.js";
+import { DataUpdate } from "../../update/DataUpdate.js";
+import { Increment } from "../../update/Increment.js";
+import { ObjectUpdate } from "../../update/ObjectUpdate.js";
+import { dispatchError, dispatchNext, Observer, Unsubscriber } from "../../util/observe.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -84,14 +74,14 @@ function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Itera
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
 function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Iterable<Entry> {
 	for (const [key, update] of updates) {
-		if (!(update instanceof Update)) yield [`${prefix}${key}`, update !== undefined ? update : FieldValue.delete()];
+		if (update === undefined) yield [`${prefix}${key}`, FieldValue.delete()];
 		else if (update instanceof Increment) yield [`${prefix}${key}`, FieldValue.increment(update.amount)];
 		else if (update instanceof DataUpdate || update instanceof ObjectUpdate) yield* yieldFieldValues(update, `${prefix}${key}.`);
 		else if (update instanceof ArrayUpdate) {
 			if (update.adds.length && update.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
 			if (update.adds.length) yield [`${prefix}${key}`, FieldValue.arrayUnion(...update.adds)];
 			else if (update.deletes.length) yield [`${prefix}${key}`, FieldValue.arrayRemove(...update.deletes)];
-		} else throw new AssertionError("Unsupported transform", update);
+		} else yield [`${prefix}${key}`, update];
 	}
 }
 
@@ -146,7 +136,7 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		);
 	}
 
-	async setQuery<T extends Data>(ref: QueryReference<T>, data: T | Update<T> | undefined): Promise<number> {
+	async setQuery<T extends Data>(ref: QueryReference<T>, data: T): Promise<number> {
 		return await bulkWrite(this.firestore, ref, (w, s) => void w.set(s.ref, data));
 	}
 

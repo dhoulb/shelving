@@ -1,4 +1,4 @@
-import { toNumber, roundStep } from "../util/index.js";
+import { toNumber, roundStep } from "../util/number.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";

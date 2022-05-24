@@ -1,7 +1,18 @@
-import { Data, Entry, Rankable, rankAsc, rank, sortItems, Entries, rankDesc, Key } from "../util/index.js";
-import { getQueryProp } from "./helpers.js";
+import type { ImmutableArray } from "../util/array.js";
+import type { Data, Key } from "../util/data.js";
+import type { Entries, Entry } from "../util/entry.js";
+import { rank, Rankable, rankAsc, rankDesc, sortItems } from "../util/sort.js";
+import { getQueryProp } from "./util.js";
 import { Rule } from "./Rule.js";
-import { SortDirection, SortKey } from "./types.js";
+
+/** Format that allows sorts to be set as a plain string, e.g. `name` sorts by name in ascending order and `!date` sorts by date in descending order. */
+export type SortKey<T extends Data> = "id" | "!id" | Key<T> | `${Key<T>}` | `!${Key<T>}`;
+
+/** One or more sort keys. */
+export type SortKeys<T extends Data> = SortKey<T> | ImmutableArray<SortKey<T>>;
+
+/** Possible operator references. */
+export type SortDirection = "ASC" | "DESC";
 
 /** Sort a list of values. */
 export class Sort<T extends Data> extends Rule<T> implements Rankable<Entry<T>> {

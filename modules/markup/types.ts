@@ -1,4 +1,4 @@
-import { JSXElement } from "../util/index.js";
+import type { JSXElement } from "../util/jsx.js";
 
 /** A single markup parsing rule. */
 export type MarkupRule = {

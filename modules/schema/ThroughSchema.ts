@@ -1,4 +1,4 @@
-import type { Class } from "../util/index.js";
+import type { Class } from "../util/class.js";
 import { AssertionError } from "../error/AssertionError.js";
 import { Schema } from "./Schema.js";
 

@@ -1,6 +1,11 @@
-import type { DocumentReference, QueryReference } from "../db/index.js";
-import { Data, Result, Unsubscriber, Observer, validate, ValidateObserver, Entries, callAsync, validateResult } from "../util/index.js";
-import { DataUpdate, validateUpdate } from "../update/index.js";
+import type { DocumentReference, QueryReference } from "../db/Reference.js";
+import type { Data, Result } from "../util/data.js";
+import type { DataUpdate } from "../update/DataUpdate.js";
+import type { Entries } from "../util/entry.js";
+import { callAsync } from "../util/async.js";
+import { validate, validateResult } from "../util/validate.js";
+import { Observer, Unsubscriber, ValidateObserver } from "../util/observe.js";
+import { validateUpdate } from "../update/util.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Validates any values that are read from or written to a source provider. */

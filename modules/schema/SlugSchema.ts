@@ -1,4 +1,4 @@
-import { toSlug } from "../util/index.js";
+import { toSlug } from "../util/string.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 

@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
-import { Arguments, getLazy, isArrayEqual, Lazy } from "../index.js";
+import type { Arguments } from "../util/function.js";
+import { isArrayEqual } from "../util/equal.js";
+import { getLazy, Lazy } from "../util/lazy.js";
 
 /**
  * Version of React's `useState()` that allows the use of a pure (side-effect free) function.

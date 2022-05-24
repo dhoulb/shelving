@@ -1,4 +1,5 @@
-import { ImmutableObject, Validator, isObject, validateValues } from "../util/index.js";
+import { ImmutableObject, isObject } from "../util/object.js";
+import { Validator, validateValues } from "../util/validate.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema } from "./Schema.js";
 

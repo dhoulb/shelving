@@ -1,4 +1,5 @@
-import { Feedback, InvalidFeedback } from "../feedback/index.js";
+import { Feedback } from "../feedback/Feedback.js";
+import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
 import type { MutableObject } from "./object.js";
 import { Data, isData, Prop, Result, toProps } from "./data.js";

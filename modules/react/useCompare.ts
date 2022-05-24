@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Arguments } from "../util/index.js";
+import type { Arguments } from "../util/function.js";
 
 /** Use a memoised value with custom comparison logic. */
 export function useCompare<T, A extends Arguments = []>(compare: (left: T, right: T, ...a: A) => boolean, value: T, ...args: A): T {

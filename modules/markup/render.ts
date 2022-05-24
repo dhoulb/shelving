@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
-import { sanitizeLines, JSXNode } from "../util/index.js";
+import type { JSXNode } from "../util/jsx.js";
+import { sanitizeLines } from "../util/string.js";
 import { MARKUP_RULES } from "./rules.js";
 import type { MarkupRule, MarkupOptions } from "./types.js";
 

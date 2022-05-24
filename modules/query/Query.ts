@@ -1,14 +1,46 @@
-import { Data, assert, Entry, Key, limitItems, Entries, ArrayType, ImmutableArray } from "../util/index.js";
-import type { FilterKey, Queryable, SortKey, FilterProps, SortKeys } from "./types.js";
-import { Filters } from "./Filters.js";
-import { Sorts } from "./Sorts.js";
+import type { Data, Key } from "../util/data.js";
+import type { ArrayType, ImmutableArray } from "../util/array.js";
+import type { Entries, Entry } from "../util/entry.js";
+import { assert } from "../util/assert.js";
+import { limitItems } from "../util/iterate.js";
+import { Filterable, Filters } from "./Filters.js";
+import { Sortable, Sorts } from "./Sorts.js";
 import { Rule } from "./Rule.js";
-import { getQueryProp } from "./helpers.js";
-import { Filter } from "./Filter.js";
+import { getQueryProp } from "./util.js";
+import { Filter, FilterKey, FilterProps } from "./Filter.js";
+import { SortKey, SortKeys } from "./Sort.js";
 
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 const EMPTY_SORTS = new Sorts<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+/** Interface that combines Filterable, Sortable, Sliceable. */
+export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T> {
+	/**
+	 * Return a new instance of this class with an after offset defined.
+	 * - Offset are based on the sort orders the collection's query uses.
+	 * - Every key used for sorting (e.g. `date, title` must be defined in `data`
+	 *
+	 * @throws AssertionError if this query currently has no sort orders.
+	 * @throws AssertionError if the input `data` did not contain a sorted value.
+	 */
+	after(id: string, data: T): this;
+
+	/** Return a new instance of this class with a before offset defined. */
+	before(id: string, data: T): this;
+
+	/** Return a new instance of this class with no filters specified. */
+	unfilter: this;
+
+	/** Return a new instance of this class with no sorts specified. */
+	unsort: this;
+
+	/** The maximum number of items allowed by the limit. */
+	readonly limit: number | null;
+
+	/** Return a new instance of this class with a limit set. */
+	max(max: number | null): this;
+}
 
 /** Allows filtering, sorting, and limiting on a set of results. */
 export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
