@@ -1,4 +1,4 @@
-import { InvalidFeedback, BooleanSchema, Feedback, BOOLEAN, Schema } from "../index.js";
+import { BooleanSchema, BOOLEAN, Schema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

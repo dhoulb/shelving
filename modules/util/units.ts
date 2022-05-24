@@ -1,4 +1,5 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
+import { getDuration, PossibleDate } from "./date.js";
 import { formatFullQuantity, formatQuantity, getPercent, MILLION } from "./number.js";
 import { NNBSP } from "./string.js";
 
@@ -152,3 +153,70 @@ export const formatFullUnits = (num: number, unit: UnitReference, maxPrecision?:
  * - Combines `getPercent()` and `formatUnits()` for convenience.
  */
 export const formatPercent = (numerator: number, denumerator: number, maxPrecision?: number, minPrecision?: number): string => formatQuantity(getPercent(numerator, denumerator), UNITS.percent.suffix, maxPrecision, minPrecision);
+
+function _formatDuration(formatter: (amount: number, unit: UnitReference, max?: number, min?: number) => string, ms: number, maxPrecision = 0, minPrecision?: number): string {
+	const abs = Math.abs(ms);
+	if (abs <= 99 * SECOND) return formatter(ms, "second", maxPrecision, minPrecision); // Up to 99 seconds, e.g. '22 seconds ago'
+	if (abs <= HOUR) return formatter(ms / MINUTE, "minute", maxPrecision, minPrecision); // Up to one hour  — show minutes, e.g. '18 minutes ago'
+	if (abs <= DAY) return formatter(ms / HOUR, "hour", maxPrecision, minPrecision); // Up to one day — show hours, e.g. '23 hours ago'
+	if (abs <= 2 * WEEK) return formatter(ms / DAY, "day", maxPrecision, minPrecision); // Up to 2 weeks — show days, e.g. '13 days ago'
+	if (abs <= 10 * WEEK) return formatter(ms / WEEK, "week", maxPrecision, minPrecision); // Up to 2 months — show weeks, e.g. '6 weeks ago'
+	if (abs <= 18 * MONTH) return formatter(ms / MONTH, "month", maxPrecision, minPrecision); // Up to 18 months — show months, e.g. '6 months ago'
+	return formatter(ms / YEAR, "year", maxPrecision, minPrecision); // Above 18 months — show years, e.g. '2 years ago'
+}
+
+/** Format a full description of a duration of time using the most reasonable units e.g. `5 years` or `1 week` or `4 minutes` or `12 milliseconds`. */
+export const formatFullDuration = (ms: number, maxPrecision?: number, minPrecision?: number): string => _formatDuration(formatFullUnits, ms, maxPrecision, minPrecision);
+
+/** Format a description of a duration of time using the most reasonable units e.g. `5y` or `4m` or `12ms`. */
+export const formatDuration = (ms: number, maxPrecision?: number, minPrecision?: number): string => _formatDuration(formatUnits, ms, maxPrecision, minPrecision);
+
+/**
+ * Return full description of the gap between two dates, e.g. `in 10 days` or `2 hours ago`
+ *
+ * @param target The date when the thing will happen or did happen.
+ * @param current Today's date (or a different date to measure from).
+ */
+export function formatFullWhen(target: PossibleDate, current?: PossibleDate): string {
+	const ms = getDuration(target, current);
+	const abs = Math.abs(ms);
+	const duration = formatFullDuration(abs);
+	return abs < 10 * SECOND ? "just now" : ms > 0 ? `in ${duration}` : `${duration} ago`;
+}
+
+/**
+ * Return full description of when a date will happen, e.g. `10 days` or `2 hours` or `-1 week`
+ *
+ * @param target The date when the thing happened.
+ * @param current Today's date (or a different date to measure from).
+ */
+export const formatFullAgo = (target: PossibleDate, current?: PossibleDate): string => formatFullDuration(getDuration(current, target));
+
+/**
+ * Compact how long until a date happens, e.g. `in 10d` or `2h ago` or `in 1w`
+ *
+ * @param target The date when the thing will happen.
+ * @param current Today's date (or a different date to measure from).
+ */
+export function formatWhen(target: PossibleDate, current?: PossibleDate): string {
+	const ms = getDuration(target, current);
+	const abs = Math.abs(ms);
+	const duration = formatDuration(abs);
+	return abs < 10 * SECOND ? "just now" : ms > 0 ? `in ${duration}` : `${duration} ago`;
+}
+
+/**
+ * Return short description of when a date happened, e.g. `10d` or `2h` or `-1w`
+ *
+ * @param target The date when the thing will happen.
+ * @param current Today's date (or a different date to measure from).
+ */
+export const formatUntil = (target: PossibleDate, current?: PossibleDate): string => formatDuration(getDuration(target, current));
+
+/**
+ * Return short description of when a date will happen, e.g. `10d` or `2h` or `-1w`
+ *
+ * @param target The date when the thing happened.
+ * @param current Today's date (or a different date to measure from).
+ */
+export const formatAgo = (target: PossibleDate, current?: PossibleDate): string => formatDuration(getDuration(current, target));

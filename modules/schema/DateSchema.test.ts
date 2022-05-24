@@ -1,4 +1,4 @@
-import { InvalidFeedback, getYmd, DateSchema, Feedback, OPTIONAL_DATE, DATE, Schema } from "../index.js";
+import { InvalidFeedback, getYmd, DateSchema, OPTIONAL_DATE, DATE, Schema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

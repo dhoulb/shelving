@@ -1,5 +1,5 @@
 import { ImmutableObject, Validator, isObject, validateValues } from "../util/index.js";
-import { InvalidFeedback } from "../feedback/index.js";
+import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema } from "./Schema.js";
 
 /** Validate a map-like object (whose props are all the same). */

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { Arguments, assertFunction } from "./function.js";
 import { debug } from "./debug.js";
 

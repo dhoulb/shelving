@@ -1,4 +1,4 @@
-import { Feedback, InvalidFeedback, StringSchema, Schema, STRING, REQUIRED_STRING } from "../index.js";
+import { InvalidFeedback, StringSchema, Schema, STRING, REQUIRED_STRING } from "../index.js";
 
 // Vars.
 const longString =

@@ -1,4 +1,4 @@
-import { InvalidFeedback, EmailSchema, Schema, Feedback, EMAIL, OPTIONAL_EMAIL } from "../index.js";
+import { InvalidFeedback, EmailSchema, Schema, EMAIL, OPTIONAL_EMAIL } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

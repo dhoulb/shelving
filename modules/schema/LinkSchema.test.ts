@@ -1,4 +1,4 @@
-import { Feedback, InvalidFeedback, Schema, LinkSchema, OPTIONAL_LINK, LINK } from "../index.js";
+import { InvalidFeedback, Schema, LinkSchema, OPTIONAL_LINK, LINK } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

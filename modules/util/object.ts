@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { setProp, setProps, withProp, withProps } from "./data.js";
 import type { ImmutableArray } from "./array.js";
 

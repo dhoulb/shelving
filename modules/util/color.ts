@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { getBetween, roundNumber } from "./number.js";
 
 // Constants.

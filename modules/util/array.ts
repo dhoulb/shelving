@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 
 /**
  * Mutable array: an array that can be changed.

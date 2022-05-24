@@ -1,4 +1,4 @@
-import { InvalidFeedback, ImmutableObject, ObjectSchema, Validator, Feedback, STRING, BOOLEAN, OBJECT, NUMBER, NOVALUE } from "../index.js";
+import { InvalidFeedback, ImmutableObject, ObjectSchema, Validator, STRING, BOOLEAN, OBJECT, NUMBER, NOVALUE } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

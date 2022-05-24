@@ -1,4 +1,4 @@
-import { InvalidFeedback, Schema, ArraySchema, NumberSchema, DataSchema, StringSchema, Validator, Feedback, ARRAY, NUMBER, DATA, STRING } from "../index.js";
+import { InvalidFeedback, ArraySchema, Validator, ARRAY, NUMBER, DATA, STRING } from "../index.js";
 
 // Vars.
 const stringArray = ["a", "b", "c"];

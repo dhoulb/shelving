@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 
 // Constants.
 export const TRILLION = 1_000_000_000_000;

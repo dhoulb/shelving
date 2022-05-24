@@ -1,4 +1,4 @@
-import { InvalidFeedback } from "../feedback/index.js";
+import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema } from "./Schema.js";
 import { ThroughSchema } from "./ThroughSchema.js";
 

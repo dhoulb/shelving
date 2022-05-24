@@ -1,4 +1,6 @@
-import { debug, ImmutableObject, MutableObject, toTitle } from "../util/index.js";
+import type { ImmutableObject, MutableObject } from "../util/object.js";
+import { debug } from "../util/debug.js";
+import { toTitle } from "../util/string.js";
 
 /**
  * The `Feedback` class represents a feedback message that should be shown to the user.

@@ -1,5 +1,5 @@
 import { sanitizeLines, sanitizeString } from "../util/index.js";
-import { InvalidFeedback } from "../feedback/index.js";
+import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema } from "./Schema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */

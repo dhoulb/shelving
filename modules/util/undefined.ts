@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 
 /** Function that always returns undefined. */
 export const getUndefined = (): undefined => undefined;

@@ -1,4 +1,4 @@
-import { AssertionError } from "../index.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { isAsync } from "./async.js";
 import { logError } from "./error.js";
 

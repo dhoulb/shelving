@@ -1,6 +1,6 @@
 /* eslint-disable no-control-regex */
 
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { formatDate } from "./date.js";
 import { isData } from "./data.js";
 import { ImmutableArray, isArray } from "./array.js";

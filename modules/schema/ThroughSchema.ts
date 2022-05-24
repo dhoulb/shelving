@@ -1,5 +1,5 @@
 import type { Class } from "../util/index.js";
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { Schema } from "./Schema.js";
 
 export abstract class ThroughSchema<T> extends Schema<T> {

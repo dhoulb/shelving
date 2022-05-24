@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 
 /** Things that can be converted to a URL instance. */
 export type PossibleURL = string | URL;

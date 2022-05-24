@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 import type { Class } from "./class.js";
 import { Data, isData } from "./data.js";
 import { Transformable, transformArray, transformObject } from "./transform.js";

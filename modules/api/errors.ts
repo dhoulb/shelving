@@ -1,4 +1,4 @@
-import { Feedback } from "../feedback/index.js";
+import type { Feedback } from "../feedback/index.js";
 import { ValidationError } from "../error/index.js";
 import type { Resource } from "./Resource.js";
 

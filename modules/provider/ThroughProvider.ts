@@ -1,7 +1,7 @@
 import type { Result, Entries, Unsubscriber, Observer, Class, Data } from "../util/index.js";
 import type { DocumentReference, QueryReference } from "../db/index.js";
 import type { DataUpdate } from "../update/index.js";
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { Provider } from "./Provider.js";
 
 /**

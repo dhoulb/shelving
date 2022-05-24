@@ -1,4 +1,4 @@
-import { ALLOW_STRING, AllowStringSchema, InvalidFeedback, Feedback, Schema, ALLOW_NUMBER, AllowNumberSchema } from "../index.js";
+import { ALLOW_STRING, AllowStringSchema, InvalidFeedback, Schema, ALLOW_NUMBER, AllowNumberSchema } from "../index.js";
 
 test("TypeScript", () => {
 	// String array options.

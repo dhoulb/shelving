@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 
 /** Is a value a boolean? */
 export const isBoolean = (v: unknown): v is boolean => typeof v === "boolean";

@@ -1,4 +1,4 @@
-import { debug } from "../util/index.js";
+import { debug } from "../util/debug.js";
 
 /**
  * Thrown if the program receives a value it didn't expect.

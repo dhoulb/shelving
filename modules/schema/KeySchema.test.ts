@@ -1,4 +1,4 @@
-import { Feedback, InvalidFeedback, KeySchema, Schema, OPTIONAL_KEY, KEY } from "../index.js";
+import { InvalidFeedback, KeySchema, Schema, OPTIONAL_KEY, KEY } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

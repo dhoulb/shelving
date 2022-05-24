@@ -1,4 +1,4 @@
-import type { Hydrations } from "../util/index.js";
+import type { Hydrations } from "../util/hydrate.js";
 import { Feedback } from "./Feedback.js";
 import { SuccessFeedback } from "./SuccessFeedback.js";
 import { WarningFeedback } from "./WarningFeedback.js";

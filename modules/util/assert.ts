@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/index.js";
+import { AssertionError } from "../error/AssertionError.js";
 
 /** Assert a boolean condition is true. */
 export function assert(condition: unknown, ...received: unknown[]): asserts condition {
