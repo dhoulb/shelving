@@ -51,7 +51,7 @@
 		"test:prettier": "prettier --check './**/*.{md,json}'",
 		"test:eslint": "eslint --cache './**/*.{ts,tsx}'",
 		"test:typescript": "tsc --noEmit",
-		"test:dpdm": "dpdm ./modules/index.ts --transform",
+		"test:dpdm": "dpdm ./modules/index.ts --transform --tree=false --warning=false",
 		"test:jest": "jest",
 		"test:jest:watch": "jest --watchAll",
 		"build": "npm run build:typescript && npm run build:copy && npm run build:jest",
