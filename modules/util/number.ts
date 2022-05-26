@@ -145,6 +145,15 @@ function _significance(num: number): string {
 	return truncateNumber(num, digits).toFixed(digits);
 }
 
+/** Cram a number with a short suffix. */
+export const cramQuantity = (num: number, suffix: string): string => `${cramNumber(num)}${suffix}`;
+
+/** Cram a number with a longer full-word suffix. */
+export function cramFullQuantity(num: number, singular: string, plural: string): string {
+	const qty = cramNumber(num);
+	return `${qty} ${qty === "1" ? singular : plural}`;
+}
+
 /**
  * Is a number within a specified range?
  *
