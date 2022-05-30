@@ -19,7 +19,7 @@ export function validateAllowed<T extends string | number>(value: unknown, allow
 }
 
 /** Define a valid value from an allowed set of values. */
-abstract class AllowSchema<T extends string | number> extends Schema<T> {
+export abstract class AllowSchema<T extends string | number> extends Schema<T> {
 	readonly allow: Allowed<T>;
 	readonly value: T | null;
 	constructor({
@@ -51,7 +51,7 @@ export class AllowNumberSchema<T extends number> extends AllowSchema<T> {
 }
 
 /** Valid string from an allowed set of strings. */
-export const ALLOW_STRING = <T extends string>(allow: Allowed<T>): AllowSchema<T> => new AllowStringSchema({ allow });
+export const ALLOW_STRING = <T extends string>(allow: Allowed<T>): AllowStringSchema<T> => new AllowStringSchema({ allow });
 
 /** Valid string from an allowed set of numbers. */
-export const ALLOW_NUMBER = <T extends number>(allow: Allowed<T>): AllowSchema<T> => new AllowNumberSchema({ allow });
+export const ALLOW_NUMBER = <T extends number>(allow: Allowed<T>): AllowNumberSchema<T> => new AllowNumberSchema({ allow });
