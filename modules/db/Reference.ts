@@ -1,22 +1,17 @@
-import type { Data, Result, Results } from "../util/data.js";
+import type { Data, Result, Entity } from "../util/data.js";
 import type { Dispatcher } from "../util/function.js";
-import type { MutableObject } from "../util/object.js";
 import type { SortKeys } from "../query/Sort.js";
-import { Observable, Observer, ResultsObserver, Unsubscriber } from "../util/observe.js";
-import { Validatable, validate, Validator } from "../util/validate.js";
+import { getArray, ImmutableArray } from "../util/array.js";
+import { ArrayObserver, Observable, Observer, Unsubscriber } from "../util/observe.js";
+import { Validator } from "../util/validate.js";
 import { Query } from "../query/Query.js";
-import { Entries, Entry } from "../util/entry.js";
 import { Filters } from "../query/Filters.js";
 import { Sorts } from "../query/Sorts.js";
-import { callAsync, throwAsync } from "../util/async.js";
-import { getMap } from "../util/map.js";
+import { callAsync } from "../util/async.js";
 import { countItems, hasItems } from "../util/iterate.js";
 import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
-import { Feedback } from "../feedback/Feedback.js";
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Filter, FilterProps } from "../query/Filter.js";
-import { DocumentValidationError, QueryValidationError } from "./errors.js";
-import { DocumentData, DocumentResult, DocumentResultObserver, getDocumentData, getDocumentResult, getQueryData, getQueryResult } from "./util.js";
+import { getDocumentData, getQueryData, getQueryResult } from "./util.js";
 import type { Database } from "./Database.js";
 
 /** A refence to a location in a database. */
@@ -26,11 +21,11 @@ export interface Reference {
 }
 
 /** A query reference within a specific database. */
-export class QueryReference<T extends Data = Data> extends Query<T> implements Observable<Results<T>>, Validatable<Entries<T>>, Iterable<Entry<T>>, Reference {
+export class QueryReference<T extends Data = Data> extends Query<Entity<T>> implements Observable<ImmutableArray<Entity<T>>>, Reference {
 	readonly db: Database;
 	readonly validator: Validator<T>;
 	readonly collection: string;
-	constructor(db: Database, validator: Validator<T>, collection: string, filters?: Filters<T>, sorts?: Sorts<T>, limit?: number | null) {
+	constructor(db: Database, validator: Validator<T>, collection: string, filters?: Filters<Entity<T>>, sorts?: Sorts<Entity<T>>, limit?: number | null) {
 		super(filters, sorts, limit);
 		this.db = db;
 		this.validator = validator;
@@ -54,19 +49,19 @@ export class QueryReference<T extends Data = Data> extends Query<T> implements O
 	}
 
 	/**
-	 * Get an iterable that yields the results of this entry.
+	 * Get an iterable that yields the entities of this query.
 	 * @return Map containing the results.
 	 */
-	get entries(): Entries<T> | PromiseLike<Entries<T>> {
+	get items(): Iterable<Entity<T>> | PromiseLike<Iterable<Entity<T>>> {
 		return this.db.provider.getQuery(this);
 	}
 
 	/**
-	 * Get an iterable that yields the results of this entry.
-	 * @return Map containing the results.
+	 * Get an array of the results of this .
+	 * @return Array containing the entities.
 	 */
-	get results(): Results<T> | PromiseLike<Results<T>> {
-		return callAsync<Entries<T>, Results<T>>(getMap, this.db.provider.getQuery(this));
+	get array(): ImmutableArray<Entity<T>> | PromiseLike<ImmutableArray<Entity<T>>> {
+		return callAsync<Iterable<Entity<T>>, ImmutableArray<Entity<T>>>(getArray, this.db.provider.getQuery(this));
 	}
 
 	/**
@@ -74,7 +69,7 @@ export class QueryReference<T extends Data = Data> extends Query<T> implements O
 	 * @return Number of documents matching the query (possibly promised).
 	 */
 	get count(): number | PromiseLike<number> {
-		return callAsync(countItems, this.entries);
+		return callAsync(countItems, this.items);
 	}
 
 	/**
@@ -86,22 +81,22 @@ export class QueryReference<T extends Data = Data> extends Query<T> implements O
 	}
 
 	/**
-	 * Get an entry for the first document matched by this query or `undefined` if this query has no results.
+	 * Get the first document matched by this query or `null` if this query has no results.
 	 *
 	 * @return Entry in `[id, data]` format for the first document.
 	 * @throws RequiredError if there were no results for this query.
 	 */
-	get result(): DocumentResult<T> | PromiseLike<DocumentResult<T>> {
-		return callAsync(getQueryResult, this.db.provider.getQuery(this.max(1)), this);
+	get result(): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
+		return callAsync(getQueryResult, this.db.provider.getQuery(this.max(1)));
 	}
 
 	/**
-	 * Get an entry for the first document matched by this query.
+	 * Get the first document matched by this query.
 	 *
 	 * @return Entry in `[id, data]` format for the first document.
 	 * @throws RequiredError if there were no results for this query.
 	 */
-	get data(): DocumentData<T> | PromiseLike<DocumentData<T>> {
+	get data(): Entity<T> | PromiseLike<Entity<T>> {
 		return callAsync(getQueryData, this.db.provider.getQuery(this.max(1)), this);
 	}
 
@@ -112,8 +107,8 @@ export class QueryReference<T extends Data = Data> extends Query<T> implements O
 	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<Results<T>> | Dispatcher<[Results<T>]>): Unsubscriber {
-		return this.db.provider.subscribeQuery(this, new ResultsObserver(typeof next === "function" ? { next } : next));
+	subscribe(next: Observer<ImmutableArray<Entity<T>>> | Dispatcher<[ImmutableArray<Entity<T>>]>): Unsubscriber {
+		return this.db.provider.subscribeQuery(this, new ArrayObserver(typeof next === "function" ? { next } : next));
 	}
 
 	/**
@@ -144,27 +139,6 @@ export class QueryReference<T extends Data = Data> extends Query<T> implements O
 		return this.db.provider.deleteQuery(this);
 	}
 
-	/** Iterate over the resuls (will throw `Promise` if the results are asynchronous). */
-	[Symbol.iterator](): Iterator<Entry<T>, void> {
-		return throwAsync(this.entries)[Symbol.iterator]();
-	}
-
-	/** Validate a set of results for this query reference. */
-	*validate(unsafeEntries: Entries): Entries<T> {
-		let invalid = false;
-		const details: MutableObject<Feedback> = {};
-		for (const [id, unsafeValue] of unsafeEntries) {
-			try {
-				yield [id, validate(unsafeValue, this.validator)];
-			} catch (thrown) {
-				if (!(thrown instanceof Feedback)) throw thrown;
-				invalid = true;
-				details[id] = thrown;
-			}
-		}
-		if (invalid) throw new QueryValidationError(this, new InvalidFeedback("Invalid results", details));
-	}
-
 	// Override to include the collection name.
 	override toString(): string {
 		return `${this.collection}?${super.toString()}`;
@@ -172,7 +146,7 @@ export class QueryReference<T extends Data = Data> extends Query<T> implements O
 }
 
 /** A document reference within a specific database. */
-export class DocumentReference<T extends Data = Data> implements Observable<Result<T>>, Validatable<T>, Reference {
+export class DocumentReference<T extends Data = Data> implements Observable<Result<T>>, Reference {
 	readonly db: Database;
 	readonly validator: Validator<T>;
 	readonly collection: string;
@@ -185,7 +159,7 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	}
 
 	/** Create a query on this document's collection. */
-	query(filters?: FilterProps<T>, sorts?: SortKeys<T>, limit?: number | null): QueryReference<T> {
+	query(filters?: FilterProps<Entity<T>>, sorts?: SortKeys<Entity<T>>, limit?: number | null): QueryReference<T> {
 		return new QueryReference(this.db, this.validator, this.collection, filters && Filters.on(filters), sorts && Sorts.on(sorts), limit);
 	}
 
@@ -204,10 +178,10 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 
 	/**
 	 * Get the result of this document.
-	 * @return Document's data, or `undefined` if the document doesn't exist (possibly promised).
+	 * @return Document's data, or `null` if the document doesn't exist (possibly promised).
 	 */
-	get result(): DocumentResult<T> | PromiseLike<DocumentResult<T>> {
-		return callAsync(getDocumentResult, this.db.provider.get(this), this);
+	get result(): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
+		return this.db.provider.get(this);
 	}
 
 	/**
@@ -215,9 +189,9 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	 * - Useful for destructuring, e.g. `{ name, title } = await documentThatMustExist.asyncData`
 	 *
 	 * @return Document's data (possibly promised).
-	 * @throws RequiredError if the document's result was undefined.
+	 * @throws RequiredError if the document does not exist.
 	 */
-	get data(): DocumentData<T> | PromiseLike<DocumentData<T>> {
+	get data(): Entity<T> | PromiseLike<Entity<T>> {
 		return callAsync(getDocumentData, this.db.provider.get(this), this);
 	}
 
@@ -228,8 +202,8 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<DocumentResult<T>> | Dispatcher<[DocumentResult<T>]>): Unsubscriber {
-		return this.db.provider.subscribe(this, new DocumentResultObserver(typeof next === "function" ? { next } : next, this));
+	subscribe(next: Observer<Result<Entity<T>>> | Dispatcher<[Result<Entity<T>>]>): Unsubscriber {
+		return this.db.provider.subscribe(this, typeof next === "function" ? { next } : next);
 	}
 
 	/** Set the complete data of this document. */
@@ -245,15 +219,6 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	/** Delete this document. */
 	delete(): void | PromiseLike<void> {
 		return this.db.provider.delete(this);
-	}
-
-	/** Validate data for this query reference. */
-	validate(unsafeData: Data): T {
-		try {
-			return validate(unsafeData, this.validator);
-		} catch (thrown) {
-			throw thrown instanceof Feedback ? new DocumentValidationError(this, thrown) : thrown;
-		}
 	}
 
 	// Implement toString()

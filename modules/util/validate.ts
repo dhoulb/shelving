@@ -1,9 +1,8 @@
 import { Feedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
-import type { MutableObject } from "./object.js";
-import { Data, isData, Prop, Result, toProps } from "./data.js";
-import { isNullish } from "./null.js";
+import type { ImmutableObject, MutableObject } from "./object.js";
+import { Data, isData, Prop, toProps } from "./data.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validatable<T> {
@@ -55,7 +54,7 @@ export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {
  * @throw InvalidFeedback if one or more items did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function* validateItems<T>(unsafeItems: Iterable<unknown>, validator: Validator<T>): Generator<T, void> {
+export function* validateItems<T>(unsafeItems: Iterable<unknown>, validator: Validator<T>): Iterable<T> {
 	let invalid = false;
 	let index = 0;
 	const details: MutableObject<Feedback> = {};
@@ -79,7 +78,7 @@ export function* validateItems<T>(unsafeItems: Iterable<unknown>, validator: Val
  * @throw InvalidFeedback if one or more entry values did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function* validateValues<T>(unsafeValues: Iterable<Entry>, validator: Validator<T>): Generator<Entry<T>, void> {
+export function* validateEntries<T>(unsafeValues: Iterable<Entry>, validator: Validator<T>): Iterable<Entry<T>> {
 	let invalid = false;
 	const details: MutableObject<Feedback> = {};
 	for (const [k, v] of unsafeValues) {
@@ -91,30 +90,26 @@ export function* validateValues<T>(unsafeValues: Iterable<Entry>, validator: Val
 			details[k] = thrown;
 		}
 	}
-	if (invalid) throw new InvalidFeedback("Invalid items", details);
+	if (invalid) throw new InvalidFeedback("Invalid entries", details);
 }
 
 /**
- * Validate an entire object with a set of validators.
- * - Defined props in the object will be validated against the corresponding validator.
- * - `undefined` props in the object will be set to the default value of that prop.
+ * Validate a map-like object.
  *
- * @return Valid object.
- * @throw InvalidFeedback if one or more entries did not validate.
+ * @throw InvalidFeedback if one or more entry values did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
-	return Object.fromEntries(_yieldValidatedProps(unsafeData, validators)) as T;
+export function validateObject<T>(obj: ImmutableObject<T>, validator: Validator<T>): ImmutableObject<T> {
+	return Object.fromEntries(validateEntries(Object.entries(obj), validator));
 }
 
 /**
- * Validate a set of object props with a set of validators.
- *
- * @yield Valid entries for each specified validator.
- * @throw InvalidFeedback if one or more entries did not validate.
+ * Validate the props of a data object with a set of validators.
+ * @yield Valid props for the data object.
+ * @throw InvalidFeedback if one or more props did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-function* _yieldValidatedProps<T extends Data>(unsafeData: Data, validators: Validators<T>): Generator<Prop<T>, void> {
+export function* validateProps<T extends Data>(unsafeData: Data, validators: Validators<T>): Iterable<Prop<T>> {
 	let invalid = false;
 	const details: MutableObject<Feedback> = {};
 	for (const [k, validator] of toProps(validators)) {
@@ -131,9 +126,14 @@ function* _yieldValidatedProps<T extends Data>(unsafeData: Data, validators: Val
 }
 
 /**
- * Validate a data result against a validator for that data.
- * @return Valid object or `null`
+ * Validate a data object with a set of validators.
+ * - Defined props in the object will be validated against the corresponding validator.
+ * - `undefined` props in the object will be set to the default value of that prop.
+ *
+ * @return Valid object.
+ * @throw InvalidFeedback if one or more props did not validate.
+ * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function validateResult<T extends Data>(unsafeResult: unknown, validator: Validator<T>): Result<T> {
-	return !isNullish(unsafeResult) ? validate(unsafeResult, validator) : null;
+export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
+	return Object.fromEntries(validateProps(unsafeData, validators)) as T;
 }

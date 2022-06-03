@@ -1,5 +1,4 @@
 import type { ImmutableArray } from "./array.js";
-import { getNameProp } from "./data.js";
 import { getLazy, Lazy } from "./lazy.js";
 import { MutableObject, isObject, ImmutableObject } from "./object.js";
 
@@ -66,7 +65,8 @@ const _split = (template: string): TemplateChunks => {
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of clean string names of found placeholders, e.g. `["name", "country", "city"]`
  */
-export const getPlaceholders = (template: string): readonly string[] => splitTemplate(template).map(getNameProp);
+export const getPlaceholders = (template: string): readonly string[] => splitTemplate(template).map(_getPlaceholder);
+const _getPlaceholder = ({ name }: TemplateChunk): string => name;
 
 /**
  * Turn ":year-:month" and "2016-06..." etc into `{ year: "2016"... }`

@@ -1,8 +1,8 @@
 import type { Entry } from "../util/entry.js";
 import type { ImmutableArray } from "../util/array.js";
 import { isNullish, Nullish } from "../util/null.js";
-import { ImmutableObject, isObject } from "../util/object.js";
-import { transformEntries } from "../util/transform.js";
+import { ImmutableObject } from "../util/object.js";
+import { transform } from "../util/transform.js";
 import { Update } from "./Update.js";
 
 /** Set of named transforms for the entries of a map-like object. */
@@ -27,9 +27,10 @@ export class ObjectUpdate<T> extends Update<ImmutableObject<T>> implements Itera
 		this.updates = updates;
 		this.deletes = deletes;
 	}
-	transform(existing: unknown): ImmutableObject<T> {
-		const existingObject = isObject<ImmutableObject<T>>(existing) ? existing : {};
-		return transformEntries<T>(existingObject, this.updates, this.deletes);
+
+	/** Transform an object with this object transform. */
+	transform(obj: ImmutableObject<T> = {}): ImmutableObject<T> {
+		return Object.fromEntries(_getUpdatedEntries(obj, this.updates, this.deletes));
 	}
 
 	/** Return an object update with a specific entry marked for update. */
@@ -53,4 +54,11 @@ export class ObjectUpdate<T> extends Update<ImmutableObject<T>> implements Itera
 		for (const entry of Object.entries(this.updates)) yield entry;
 		for (const key of this.deletes) yield [key, undefined];
 	}
+}
+
+function* _getUpdatedEntries<T>(obj: ImmutableObject<T>, updates: EntryUpdates<T>, deletes: ImmutableArray<string>): Iterable<Entry<T>> {
+	// Yield the entries from the original object (if they're not in deletes).
+	for (const [k, v] of Object.entries(obj)) if (!deletes.includes(k)) yield [k, v];
+	// Yield the transformed entries from the updates object (if they're not in deletes).
+	for (const [k, v] of Object.entries(updates)) if (!deletes.includes(k)) yield [k, transform(obj[k], v)];
 }

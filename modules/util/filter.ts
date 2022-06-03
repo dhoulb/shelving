@@ -1,7 +1,7 @@
 import type { ImmutableArray } from "./array.js";
 import type { ImmutableMap } from "./map.js";
-import { Entry } from "./entry.js";
-import { ImmutableObject } from "./object.js";
+import type { Entry } from "./entry.js";
+import type { ImmutableObject } from "./object.js";
 import { rankAsc } from "./sort.js";
 import { transform, Transformer } from "./transform.js";
 
@@ -31,30 +31,10 @@ export const isEqualLess = (item: unknown, target: unknown) => rankAsc(item, tar
 export const isGreater = (item: unknown, target: unknown) => rankAsc(item, target) > 0;
 export const isEqualGreater = (item: unknown, target: unknown) => rankAsc(item, target) >= 0;
 
-// Entry key matchers.
-export const isKeyEqual = ([key]: Entry, target: string) => isEqual(key, target);
-export const notKeyEqual = ([key]: Entry, targets: string) => notEqual(key, targets);
-export const isKeyInArray = ([key]: Entry, targets: ImmutableArray<string>) => isInArray(key, targets);
-export const notKeyInArray = ([key]: Entry, targets: ImmutableArray<string>) => notInArray(key, targets);
-export const isKeyLess = ([key]: Entry, target: unknown) => isLess(key, target);
-export const isKeyEqualLess = ([key]: Entry, target: unknown) => isEqualLess(key, target);
-export const isKeyGreater = ([key]: Entry, target: unknown) => isGreater(key, target);
-export const isKeyEqualGreater = ([key]: Entry, target: unknown) => isEqualGreater(key, target);
-
-// Entry value matchers.
-export const isValueEqual = ([, value]: Entry, target: unknown) => isEqual(value, target);
-export const notValueEqual = ([, value]: Entry, target: unknown) => notEqual(value, target);
-export const isValueInArray = ([, value]: Entry, targets: ImmutableArray) => isInArray(value, targets);
-export const notValueInArray = ([, value]: Entry, targets: ImmutableArray) => notInArray(value, targets);
-export const isValueLess = ([, value]: Entry, target: unknown) => isLess(value, target);
-export const isValueEqualLess = ([, value]: Entry, target: unknown) => isEqualLess(value, target);
-export const isValueGreater = ([, value]: Entry, target: unknown) => isGreater(value, target);
-export const isValueEqualGreater = ([, value]: Entry, target: unknown) => isEqualGreater(value, target);
-
 /** Filter an iterable set of items using a matcher (and optionally a target value). */
-export function yieldFiltered<L>(input: Iterable<L>, matcher: Matcher<L, void>): Iterable<L>;
-export function yieldFiltered<L, R>(input: Iterable<L>, matcher: Matcher<L, R>, target: R): Iterable<L>;
-export function* yieldFiltered<L, R>(input: Iterable<L>, matcher: Matcher<L, R | undefined>, target?: R): Iterable<L> {
+export function filterItems<L>(input: Iterable<L>, matcher: Matcher<L, void>): Iterable<L>;
+export function filterItems<L, R>(input: Iterable<L>, matcher: Matcher<L, R>, target: R): Iterable<L>;
+export function* filterItems<L, R>(input: Iterable<L>, matcher: Matcher<L, R | undefined>, target?: R): Iterable<L> {
 	for (const item of input) if (match(item, matcher, target)) yield item;
 }
 
@@ -63,7 +43,7 @@ export function filterArray<L>(input: ImmutableArray<L>, matcher: Matcher<L, voi
 export function filterArray<L, R>(input: ImmutableArray<L>, matcher: Matcher<L, R>, target: R): ImmutableArray<L>;
 export function filterArray<L, R>(input: ImmutableArray<L>, matcher: Matcher<L, R | undefined>, target?: R): ImmutableArray<L> {
 	if (!input.length) return input;
-	const output = Array.from(yieldFiltered(input, matcher, target));
+	const output = Array.from(filterItems(input, matcher, target));
 	return output.length === input.length ? input : output;
 }
 
@@ -71,7 +51,7 @@ export function filterArray<L, R>(input: ImmutableArray<L>, matcher: Matcher<L, 
 export function filterObject<L>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, void>): ImmutableObject<L>;
 export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R>, target: R): ImmutableObject<L>;
 export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): ImmutableObject<L> {
-	return Object.fromEntries(yieldFiltered(Object.entries(object), matcher, target));
+	return Object.fromEntries(filterItems(Object.entries(object), matcher, target));
 }
 
 /** Filter a map _by its values_ using a matcher (and optionally a target value). */
@@ -79,11 +59,11 @@ export function filterMap<L>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, 
 export function filterMap<L, R>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, R>, target: R): ImmutableMap<L>;
 export function filterMap<L, R>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): ImmutableMap<L> {
 	if (!input.size) return input;
-	const output = new Map(yieldFiltered(input, matcher, target));
+	const output = new Map(filterItems(input, matcher, target));
 	return output.size === input.size ? input : output;
 }
 
-/** Derive a value and match it against a target value. */
+/** Transform a value and match it against a target value. */
 export class TransformMatcher<L, LL, R> implements Matchable<L, R> {
 	private _transformer: Transformer<L, LL>;
 	private _matcher: Matcher<LL, R>;

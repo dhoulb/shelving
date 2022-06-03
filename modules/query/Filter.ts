@@ -1,25 +1,16 @@
-import type { Entry, Entries } from "../util/entry.js";
-import type { Data, Key } from "../util/data.js";
 import type { ArrayType, ImmutableArray } from "../util/array.js";
-import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, match, Matchable, Matcher, notEqual, notInArray, yieldFiltered } from "../util/filter.js";
-import { getQueryProp } from "./util.js";
+import { Data, Key, getProp } from "../util/data.js";
+import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, match, Matchable, Matcher, notEqual, notInArray, filterItems } from "../util/filter.js";
 import { Rule } from "./Rule.js";
 
 /** Possible operator references. */
 export type FilterOperator = "IS" | "NOT" | "IN" | "OUT" | "CONTAINS" | "LT" | "LTE" | "GT" | "GTE";
 
 /** Format that allows filters to be specified as a string, e.g. `!name` means `name is not` and `age>` means `age is more than` and `tags[]` means `tags array contains` */
-export type FilterKey<T extends Data> = "id" | "!id" | "id>" | "id>=" | "id<" | "id<=" | Key<T> | `${Key<T>}` | `!${Key<T>}` | `${Key<T>}[]` | `${Key<T>}<` | `${Key<T>}<=` | `${Key<T>}>` | `${Key<T>}>=`;
+export type FilterKey<T extends Data> = Key<T> | `${Key<T>}` | `!${Key<T>}` | `${Key<T>}[]` | `${Key<T>}<` | `${Key<T>}<=` | `${Key<T>}>` | `${Key<T>}>=`;
 
 /** Format that allows multiple filters to be specified as a plain object. */
 export type FilterProps<T extends Data> = {
-	"id"?: string | ImmutableArray<string>;
-	"!id"?: string | ImmutableArray<string>;
-	"id>"?: string;
-	"id>="?: string;
-	"id<"?: string;
-	"id<="?: string;
-} & {
 	[K in Key<T> as `${K}` | `!${K}`]?: T[K] | ImmutableArray<T[K]>; // IS/NOT/IN/OUT
 } & {
 	[K in Key<T> as `${K}[]`]?: T[K] extends ImmutableArray ? ArrayType<T[K]> : never; // CONTAINS
@@ -47,7 +38,7 @@ const MATCHERS: { [K in FilterOperator]: Matcher<unknown, unknown> } = {
  * @param operator FilterOperator, e.g. `IS` or `CONTAINS`
  * @param value Value the specified property should be matched against.
  */
-export class Filter<T extends Data> extends Rule<T> implements Matchable<Entry<T>, void> {
+export class Filter<T extends Data> extends Rule<T> implements Matchable<T, void> {
 	/** Parse a set of FilterProps and return the corresponding array of `Filter` instances. */
 	static on<X extends Data>(key: FilterKey<X>, value: unknown): Filter<X> {
 		return key.startsWith("!")
@@ -65,22 +56,22 @@ export class Filter<T extends Data> extends Rule<T> implements Matchable<Entry<T
 			: new Filter(key, value instanceof Array ? "IN" : "IS", value);
 	}
 
-	readonly key: "id" | Key<T>;
+	readonly key: Key<T>;
 	readonly operator: FilterOperator;
 	readonly value: unknown;
 
-	constructor(key: "id" | Key<T>, operator: FilterOperator, value: unknown) {
+	constructor(key: Key<T>, operator: FilterOperator, value: unknown) {
 		super();
 		this.key = key;
 		this.operator = operator;
 		this.value = value;
 	}
 
-	match([id, data]: Entry<T>): boolean {
-		return match(getQueryProp(id, data, this.key), MATCHERS[this.operator], this.value);
+	match(item: T): boolean {
+		return match(getProp(item, this.key), MATCHERS[this.operator], this.value);
 	}
-	transform(entries: Entries<T>): Entries<T> {
-		return yieldFiltered(entries, this);
+	transform(items: Iterable<T>): Iterable<T> {
+		return filterItems(items, this);
 	}
 	override toString(): string {
 		return `${this.key}:${this.operator}:${JSON.stringify(this.value)}`;

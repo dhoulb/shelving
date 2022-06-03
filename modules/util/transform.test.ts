@@ -1,4 +1,4 @@
-import { transform, transformArray, transformData, transformObject } from "../index.js";
+import { transform, mapArray, transformData, mapObject } from "../index.js";
 
 test("transform()", () => {
 	expect(transform(10, n => n * n)).toBe(100);
@@ -8,18 +8,18 @@ test("transformArray()", () => {
 	const arr = [1, 2, 3, 4];
 
 	// Square each number.
-	expect(transformArray(arr, n => n * n)).toEqual([1, 4, 9, 16]);
-	expect(transformArray(arr, { transform: n => n * n })).toEqual([1, 4, 9, 16]);
+	expect(mapArray(arr, n => n * n)).toEqual([1, 4, 9, 16]);
+	expect(mapArray(arr, { transform: n => n * n })).toEqual([1, 4, 9, 16]);
 	// Use a flat value instead of a mapper function.
-	expect(transformArray(arr, null)).toEqual([null, null, null, null]);
-	expect(transformArray(arr, null)).not.toBe(arr);
+	expect(mapArray(arr, null)).toEqual([null, null, null, null]);
+	expect(mapArray(arr, null)).not.toBe(arr);
 });
 test("transformObject()", () => {
 	const obj = { a: 1, b: 2, c: 3, d: 4 };
 
 	// Square each number (input is object).
-	expect(transformObject(obj, n => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
-	expect(transformObject(obj, { transform: n => n * n })).toEqual({ a: 1, b: 4, c: 9, d: 16 });
+	expect(mapObject(obj, n => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
+	expect(mapObject(obj, { transform: n => n * n })).toEqual({ a: 1, b: 4, c: 9, d: 16 });
 });
 test("transformData()", () => {
 	const obj = { a: 10, b: 20 };

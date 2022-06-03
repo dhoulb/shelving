@@ -3,7 +3,7 @@
 import { AssertionError } from "../error/AssertionError.js";
 import { formatDate } from "./date.js";
 import { isData } from "./data.js";
-import { ImmutableArray, isArray } from "./array.js";
+import { getArray, ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
 
 /** Non-breaking space. */
@@ -66,11 +66,7 @@ export function toTitle(value: unknown): string {
 }
 
 /** Concatenate an iterable set of strings together. */
-export function joinStrings(strs: Iterable<string>, joiner = ""): string {
-	let output = "";
-	for (const str of strs) output += `${output.length ? joiner : ""}${str}`;
-	return output;
-}
+export const joinStrings = (strs: Iterable<string>, joiner = ""): string => getArray(strs).join(joiner);
 
 /**
  * Sanitize unexpected characters from a string by:

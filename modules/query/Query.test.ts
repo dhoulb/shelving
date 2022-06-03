@@ -1,14 +1,14 @@
 import { Query, Filter, Sort, Filters, Sorts, ImmutableArray } from "../index.js";
 import { expectOrderedKeys, expectUnorderedKeys } from "../test/index.js";
 
-type T = { str: string; num: number; type: "alpha" | "beta"; arr: ImmutableArray<string> };
-const a: T = { str: "Z", num: 3, type: "alpha", arr: ["a", "b"] };
-const b: T = { str: "Y", num: 1, type: "alpha", arr: ["b", "c"] };
-const c: T = { str: "W", num: 4, type: "beta", arr: ["c", "d"] };
-const d: T = { str: "X", num: 2, type: "beta", arr: ["d", "e"] };
+type T = { id: string; str: string; num: number; type: "alpha" | "beta"; arr: ImmutableArray<string> };
+const a: T = { id: "a", str: "Z", num: 3, type: "alpha", arr: ["a", "b"] };
+const b: T = { id: "b", str: "Y", num: 1, type: "alpha", arr: ["b", "c"] };
+const c: T = { id: "c", str: "W", num: 4, type: "beta", arr: ["c", "d"] };
+const d: T = { id: "d", str: "X", num: 2, type: "beta", arr: ["d", "e"] };
 
-const allRand = Object.entries({ b, d, c, a });
-const allAsc = Object.entries({ a, b, c, d });
+const allRand = [b, d, c, a];
+const allAsc = [a, b, c, d];
 
 const NUM_GT_2 = new Filter<T>("num", "GT", 2);
 const STR_IN_Z_OR_X = new Filter<T>("str", "IN", ["Z", "X"]);

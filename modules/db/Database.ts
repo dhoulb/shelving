@@ -5,6 +5,7 @@ import type { SortKeys } from "../query/Sort.js";
 import type { FilterProps } from "../query/Filter.js";
 import { Filters } from "../query/Filters.js";
 import { Sorts } from "../query/Sorts.js";
+import { Entity } from "../util/data.js";
 import { DocumentReference, QueryReference } from "./Reference.js";
 
 /**
@@ -24,7 +25,7 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 	}
 
 	/** Create a query on a collection in this model. */
-	query<K extends Key<V>>(collection: K, filters?: FilterProps<ValidatorType<V[K]>>, sorts?: SortKeys<ValidatorType<V[K]>>, limit?: number | null): QueryReference<ValidatorType<V[K]>> {
+	query<K extends Key<V>>(collection: K, filters?: FilterProps<Entity<ValidatorType<V[K]>>>, sorts?: SortKeys<Entity<ValidatorType<V[K]>>>, limit?: number | null): QueryReference<ValidatorType<V[K]>> {
 		return new QueryReference<ValidatorType<V[K]>>(this, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters && Filters.on(filters), sorts && Sorts.on(sorts), limit);
 	}
 

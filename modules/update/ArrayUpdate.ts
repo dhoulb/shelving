@@ -1,4 +1,4 @@
-import { ImmutableArray, isArray, withItems, withoutItems } from "../util/array.js";
+import { ImmutableArray, withItems, withoutItems } from "../util/array.js";
 import { Update } from "./Update.js";
 
 /** Update that can be applied to an array to add/remove items. */
@@ -20,9 +20,10 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 		this.adds = adds;
 		this.deletes = deletes;
 	}
-	transform(existing: unknown): ImmutableArray<T> {
-		const existingArray = isArray<ImmutableArray<T>>(existing) ? existing : [];
-		return withoutItems(withItems(existingArray, this.adds), this.deletes);
+
+	/** Transform an array using this array update. */
+	transform(arr: ImmutableArray<T> = []): ImmutableArray<T> {
+		return withoutItems(withItems(arr, this.adds), this.deletes);
 	}
 
 	/** Return an array update with an additional item marked for addition. */

@@ -1,6 +1,5 @@
-import { RequiredError } from "../error/RequiredError.js";
+import { RequiredError } from "../error/index.js";
 import type { ImmutableArray } from "./array.js";
-import type { PossibleOptionalDate } from "./date.js";
 
 /** Data object. */
 export type Data = { readonly [key: string]: unknown };
@@ -17,20 +16,20 @@ export type Prop<T extends Data> = readonly [Key<T>, Value<T>];
 /** Set of named data objects. */
 export type Datas = { readonly [key: string]: Data };
 
+/** An entity is data with a string ID that uniquely identifies it. */
+export type Entity<T extends Data = Data> = T & { id: string };
+
 /** Data or `null` if the item doesn't exist. */
 export type Result<T extends Data = Data> = T | null;
-
-/** Set of results (stored in a map). */
-export type Results<T extends Data = Data> = ReadonlyMap<string, T>;
 
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => typeof value === "object" && value !== null;
 
 /** Turn a data object into an array of entries (if it isn't one already). */
-export function toProps<T extends Data>(input: T): ImmutableArray<Prop<T>>;
-export function toProps<T extends Data>(input: Partial<T>): ImmutableArray<Prop<T>>;
-export function toProps<T extends Data>(input: T | Partial<T>): ImmutableArray<Prop<T>> {
-	return Object.entries(input) as ImmutableArray<Prop<T>>;
+export function toProps<T extends Data>(data: T): ImmutableArray<Prop<T>>;
+export function toProps<T extends Data>(data: Partial<T>): ImmutableArray<Prop<T>>;
+export function toProps<T extends Data>(data: T | Partial<T>): ImmutableArray<Prop<T>> {
+	return Object.entries(data) as ImmutableArray<Prop<T>>;
 }
 
 /** Get the data of a result (returns data or throws `RequiredError` if value is `null` or `undefined`). */
@@ -40,7 +39,7 @@ export function getData<T extends Data>(result: Result<T>): T {
 }
 
 /**
- * Extract the value of a named prop from an object.
+ * Extract the value of a named prop from a data object.
  * - Extraction is possibly deep if deeper keys are specified.
  *
  * @param obj The target object to get from.
@@ -54,76 +53,89 @@ export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K
 export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K1]>(obj: T, k1: K1, k2: K2): T[K1][K2];
 export function getProp<T extends Data, K1 extends keyof T>(obj: T, k1: K1): T[K1];
 export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(
-	obj: T,
+	data: T,
 	k1: K1,
 	k2?: K2,
 	k3?: K3,
 	k4?: K4,
 ): T[K1] | T[K1][K2] | T[K1][K2][K3] | T[K1][K2][K3][K4] {
-	return !k2 ? obj[k1] : !k3 ? obj[k1][k2] : !k4 ? obj[k1][k2][k3] : obj[k1][k2][k3][k4];
+	return !k2 ? data[k1] : !k3 ? data[k1][k2] : !k4 ? data[k1][k2][k3] : data[k1][k2][k3][k4];
 }
 
-/** Extract a date property from an object. */
-export const getDateProp = <T extends PossibleOptionalDate>({ date }: { date: T }): T => date;
+/**
+ * Yield a named prop from an iterable set of data objects.
+ *
+ * @param obj The target object to get from.
+ * @param k1 The key of the prop in the object to get.
+ * @param k2 The sub-key of the prop in the object to get.
+ * @param k3 The sub-sub-key of the prop in the object to get.
+ * @param k4 The sub-sub-sub-key of the prop in the object to get.
+ */
+export function getProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(items: Iterable<T>, k1: K1, k2: K2, k3: K3, k4: K4): Iterable<T[K1][K2][K3][K4]>;
+export function getProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(items: Iterable<T>, k1: K1, k2: K2, k3: K3): Iterable<T[K1][K2][K3]>;
+export function getProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1]>(items: Iterable<T>, k1: K1, k2: K2): Iterable<T[K1][K2]>;
+export function getProps<T extends Data, K1 extends keyof T>(items: Iterable<T>, k1: K1): Iterable<T[K1]>;
+export function* getProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(
+	items: Iterable<T>,
+	k1: K1,
+	k2?: K2,
+	k3?: K3,
+	k4?: K4,
+): Iterable<T[K1] | T[K1][K2] | T[K1][K2][K3] | T[K1][K2][K3][K4]> {
+	for (const data of items) yield !k2 ? data[k1] : !k3 ? data[k1][k2] : !k4 ? data[k1][k2][k3] : data[k1][k2][k3][k4];
+}
 
-/** Extract an order property from an object. */
-export const getOrderProp = ({ order }: { order: number }): number => order;
+/** Get the ID of an entity. */
+export const getID = <T extends Data>({ id }: Entity<T>): string => id;
 
-/** Extract a string title property from an object. */
-export const getTitleProp = ({ title }: { title: string }): string => title;
-
-/** Extract a string name property from an object. */
-export const getNameProp = ({ name }: { name: string }): string => name;
-
-/** Extract a number size property from an object. */
-export const getSizeProp = ({ size }: { size: number }): number => size;
-
-/** Extract a number size property from an object. */
-export const getLengthProp = ({ length }: { length: number }): number => length;
+/** Yield the IDs of an iterable set of entities. */
+export function* getIDs<T extends Data>(entities: Iterable<Entity<T>>): Iterable<string> {
+	for (const { id } of entities) yield id;
+}
 
 /**
- * Set a prop on an object with known shape (immutably).
+ * Set a prop on a data object with known shape (immutably).
  *
- * @param input The input object.
+ * @param data The input data object.
  * @param key The key of the entry to add.
  * @param value The value of the entry to add. If set, the entry will only be added if its current value is not `value`
  *
  * @return New object without the specified prop (or same object if prop value didn't change).
  */
-export function withProp<T extends Data, K extends Key<T>>(input: T, key: K, value: T[K]): T {
-	return input[key] === value ? input : { ...input, [key]: value };
+export function withProp<T extends Data, K extends Key<T>>(data: T, key: K, value: T[K]): T {
+	return data[key] === value ? data : { ...data, [key]: value };
 }
 
 /**
- * Set several props on an object with known shape (immutably).
+ * Set several props on a data object with known shape (immutably).
  *
- * @param input The input object.
+ * @param data The input data object.
  * @return New object with the specified prop added (or same object if no props changed).
  */
-export function withProps<T extends Data>(input: T, props: T | Partial<T>): T {
-	for (const [k, v] of Object.entries(props)) if (input[k] !== v) return { ...input, ...props };
-	return input;
+export function withProps<T extends Data>(data: T, props: T | Partial<T>): T {
+	for (const [k, v] of Object.entries(props)) if (data[k] !== v) return { ...data, ...props };
+	return data;
 }
 
 /**
  * Set a single named prop on an object with a known shape (by reference).
  *
- * @param obj The target object to modify.
+ * @param data The target data object to modify.
  * @param key The key of the prop in the object to set.
  * @param value The value to set the prop to.
  */
-export function setProp<T extends Data, K extends keyof T>(obj: T, key: K, value: T[K]): void {
-	obj[key] = value;
+export function setProp<T extends Data, K extends keyof T>(data: T, key: K, value: T[K]): void {
+	data[key] = value;
 }
 
 /**
- * Set several named props on an object with a known shape (by reference).
+ * Set several named props on a data object with a known shape (by reference).
  *
- * @param obj The target object to modify.
+ * @param data The target data object to modify.
  * @param props An object containing new props to set on the object.
  */
-export function setProps<T extends Data>(obj: T, props: { [K in keyof T]?: T[K] }): void {
-	for (const [k, v] of toProps<T>(props)) obj[k] = v;
+export function setProps<T extends Data>(data: T, props: { [K in keyof T]?: T[K] }): void {
+	for (const [k, v] of toProps<T>(props)) data[k] = v;
 }
 
 /**

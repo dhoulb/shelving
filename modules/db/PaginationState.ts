@@ -1,13 +1,9 @@
-import type { Entries, Entry } from "../util/entry.js";
-import type { Data, Results } from "../util/data.js";
+import type { Data, Entity } from "../util/data.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { BooleanState } from "../stream/BooleanState.js";
-import { State } from "../stream/State.js";
 import { getLastItem } from "../util/array.js";
-import { NOVALUE } from "../util/constants.js";
-import { yieldMerged } from "../util/iterate.js";
-import { getMap } from "../util/map.js";
 import { assertMax, assertNumber } from "../util/number.js";
+import { ArrayState } from "../stream/ArrayState.js";
 import { QueryReference } from "./Reference.js";
 
 /**
@@ -15,7 +11,7 @@ import { QueryReference } from "./Reference.js";
  * - If you pass in initial values, it will use that as the first page.
  * - If you don't pass in initial values, it will autoload the first page.
  */
-export class PaginationState<T extends Data> extends State<Results<T>> implements Iterable<Entry<T>> {
+export class PaginationState<T extends Data> extends ArrayState<Entity<T>> {
 	/** Whether this pagination is currently loading results. */
 	readonly busy = new BooleanState();
 
@@ -43,18 +39,17 @@ export class PaginationState<T extends Data> extends State<Results<T>> implement
 			this.busy.next(true);
 			if (!this.exists) {
 				// First set of results.
-				this._value === NOVALUE;
-				const next = await this.ref.results;
+				const next = await this.ref.array;
 				this.next(next);
-				if (next.size < this.limit) this.complete();
+				if (next.length < this.limit) this.complete();
 				this.busy.next(false);
 			} else {
 				// Additional set of results.
 				const lastItem = getLastItem(this.value);
 				if (lastItem) {
-					const next = await this.ref.after(lastItem[0], lastItem[1]).results;
+					const next = await this.ref.after(lastItem).array;
 					this.merge(next);
-					if (next.size < this.limit) this.complete();
+					if (next.length < this.limit) this.complete();
 					this.busy.next(false);
 					return;
 				}
@@ -66,12 +61,7 @@ export class PaginationState<T extends Data> extends State<Results<T>> implement
 	 * Merge more results into this pagination.
 	 * @return The change in the number of results.
 	 */
-	merge(more: Entries<T>): void {
-		this.next(this.exists ? getMap(this.ref.sorts.transform(yieldMerged(more, this.value))) : getMap(more));
-	}
-
-	/** Iterate over the entries of the values currently in the pagination. */
-	[Symbol.iterator](): Iterator<Entry<T>> {
-		return this.value[Symbol.iterator]();
+	merge(more: Iterable<Entity<T>>): void {
+		this.next(this.exists ? [...this.value, ...more] : [...more]);
 	}
 }

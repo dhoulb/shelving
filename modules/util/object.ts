@@ -1,6 +1,8 @@
 import { AssertionError } from "../error/AssertionError.js";
-import { setProp, setProps, withProp, withProps } from "./data.js";
 import type { ImmutableArray } from "./array.js";
+import type { Entry } from "./entry.js";
+import { Data, Value, setProp, setProps, withProp, withProps } from "./data.js";
+import { transform, Transformer } from "./transform.js";
 
 /** Readonly object with string keys. */
 export type ImmutableObject<T = unknown> = { readonly [key: string | number]: T };
@@ -37,6 +39,28 @@ export const isKey = <T extends ImmutableObject>(obj: T, key: unknown): key is k
 /** Assert that a value is an object with a specific property. */
 export function assertKey<K extends string | number | symbol, T extends { [L in K]: unknown }>(value: T | unknown, key: K): asserts value is T {
 	if (!isObject(value) || !(key in value)) throw new AssertionError(`Must be object with prop "${key}"`, value);
+}
+
+/**
+ * Transform the _values_ of an iterable set of entries using a transformer.
+ * @yield Transformed entry after calling transforming the new value for each entry.
+ */
+export function mapEntries<I, O>(entries: Iterable<Entry<I>>, transformer: (v: I) => O): Iterable<Entry<O>>; // Helps `O` carry through functions that use generics.
+export function mapEntries<I, O>(entries: Iterable<Entry<I>>, transformer: Transformer<I, O>): Iterable<Entry<O>>;
+export function* mapEntries<I, O>(entries: Iterable<Entry<I>>, transformer: Transformer<I, O>): Iterable<Entry<O>> {
+	for (const [k, v] of entries) yield [k, transform(v, transformer)];
+}
+
+/**
+ * Transform the _values_ of an object using a transformer.
+ * @return New object after transforming its entries.
+ */
+export function mapObject<T extends Data>(obj: T, transformer: Transformer<Value<T>, Value<T>>): T; // Passthrough for transformers that return the same type and remove nothing.
+export function mapObject<I extends Data, O extends { [K in keyof I]: unknown }>(obj: I, transformer: Transformer<Value<I>, Value<O>>): O; // Transform an entire object with the same props with different types.
+export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: (v: I) => O): ImmutableObject<O>; // Helps `O` carry through functions that use generics.
+export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O>;
+export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O> {
+	return Object.fromEntries(mapEntries(Object.entries(obj), transformer));
 }
 
 /**

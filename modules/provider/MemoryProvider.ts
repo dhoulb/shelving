@@ -1,14 +1,13 @@
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { MutableObject } from "../util/object.js";
-import type { Data, Result } from "../util/data.js";
+import type { Data, Result, Entity } from "../util/data.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
-import type { Entries } from "../util/entry.js";
-import type { ImmutableMap, MutableMap } from "../util/map.js";
 import type { Dispatcher } from "../util/function.js";
 import { dispatchNext, Observer, Unsubscriber } from "../util/observe.js";
 import { getRandomKey } from "../util/random.js";
-import { isMapEqual } from "../util/equal.js";
+import { isArrayEqual } from "../util/equal.js";
 import { DocumentRequiredError } from "../db/errors.js";
+import { transformProps } from "../util/transform.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
 /**
@@ -21,153 +20,143 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 	private _tables: MutableObject<Table<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	// Get a named collection (or create a new one).
-	private _table<T extends Data>({ collection }: DocumentReference<T> | QueryReference<T>): Table<T> {
+	table<T extends Data>({ collection }: DocumentReference<T> | QueryReference<T>): Table<T> {
 		return (this._tables[collection] ||= new Table<T>()) as Table<T>;
 	}
 
-	get<T extends Data>(ref: DocumentReference<T>): Result<T> {
-		return this._table(ref).data.get(ref.id) || null;
+	get<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> {
+		return this.table(ref).get(ref.id);
 	}
 
-	subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<T>>): Unsubscriber {
-		const table = this._table(ref);
+	subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber {
+		const table = this.table(ref);
 		const id = ref.id;
 
 		// Call next() immediately with initial results.
-		dispatchNext(observer, table.data.get(id) || null);
+		dispatchNext(observer, table.get(id));
 
 		// Call next() every time the collection changes.
 		return table.on(changes => {
-			changes.has(id) && dispatchNext(observer, changes.get(id) || null);
+			changes.has(id) && dispatchNext(observer, table.get(id));
 		});
 	}
 
 	add<T extends Data>(ref: QueryReference<T>, data: T): string {
-		const table = this._table(ref);
+		const table = this.table(ref);
 		let id = getRandomKey();
-		while (table.data.get(id)) id = getRandomKey(); // Regenerate ID until unique.
-		table.write(id, data);
+		while (table.get(id)) id = getRandomKey(); // Regenerate ID until unique.
+		table.set({ ...data, id });
 		return id;
 	}
 
 	set<T extends Data>(ref: DocumentReference<T>, data: T): void {
-		const table = this._table(ref);
+		const table = this.table(ref);
 		const id = ref.id;
-		table.write(id, data);
+		table.set({ ...data, id });
 	}
 
-	update<T extends Data>(ref: DocumentReference<T>, updates: DataUpdate<T>): void {
-		const table = this._table(ref);
+	update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void {
+		const table = this.table(ref);
 		const id = ref.id;
-		const existing = table.data.get(id);
-		if (!existing) throw new DocumentRequiredError(ref);
-		table.write(id, updates.transform(existing));
+		const entity = table.get(id);
+		if (!entity) throw new DocumentRequiredError(ref);
+		table.set({ ...entity, ...Object.fromEntries(transformProps(entity, update.updates)), id: entity.id });
 	}
 
 	delete<T extends Data>(ref: DocumentReference<T>): void {
-		const table = this._table(ref);
+		const table = this.table(ref);
 		const id = ref.id;
-		table.write(id, null);
+		table.delete(id);
 	}
 
-	getQuery<T extends Data>(ref: QueryReference<T>): Entries<T> {
-		return ref.transform(this._table(ref).data);
+	getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> {
+		return ref.transform(this.table(ref).entities);
 	}
 
-	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Entries<T>>): Unsubscriber {
-		const table = this._table(ref);
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscriber {
+		const table = this.table(ref);
 
 		// Call `next()` immediately with the initial results.
-		let lastResults = new Map(ref.transform(table.data));
-		dispatchNext(observer, lastResults);
+		let last = Array.from(ref.transform(table.entities));
+		dispatchNext(observer, last);
 
 		// Possibly call `next()` when the collection changes if any changes affect the subscription.
-		return table.on(changes => {
-			for (const [id, next] of changes) {
-				// Re-run the query if any change *might* affect the query:
-				// 1) the last results included the changed document so it might need to be removed or updated.
-				// 2) the next document matches the query so might be added to the next results.
-				// Re-running the entire query is not the most efficient way to do this, but itis the most simple!
-				if (lastResults.has(id) || (next && ref.match([id, next]))) {
-					const nextResults = new Map(ref.transform(table.data));
-					if (!isMapEqual(lastResults, nextResults)) {
-						lastResults = nextResults;
-						dispatchNext(observer, lastResults);
-					}
-					return;
-				}
+		return table.on(() => {
+			const next = Array.from(ref.transform(table.entities));
+			if (!isArrayEqual(last, next)) {
+				last = next;
+				dispatchNext(observer, last);
 			}
 		});
 	}
 
 	setQuery<T extends Data>(ref: QueryReference<T>, data: T): number {
-		const table = this._table(ref);
+		const table = this.table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
 		let count = 0;
-		for (const [id] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) {
-			table.write(id, data);
+		for (const { id } of ref.limit ? ref.transform(table.entities) : ref.filters.transform(table.entities)) {
+			table.set({ ...data, id });
 			count++;
 		}
 		return count;
 	}
 
 	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number {
-		const table = this._table(ref);
+		const table = this.table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
 		let count = 0;
-		for (const [id, existing] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) {
-			table.write(id, update.transform(existing));
+		for (const entity of ref.limit ? ref.transform(table.entities) : ref.filters.transform(table.entities)) {
+			table.set({ ...entity, ...Object.fromEntries(transformProps(entity, update.updates)), id: entity.id });
 			count++;
 		}
 		return count;
 	}
 
 	deleteQuery<T extends Data>(ref: QueryReference<T>): number {
-		const table = this._table(ref);
+		const table = this.table(ref);
 		// If there's a limit set: run the full query.
 		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
 		let count = 0;
-		for (const [id] of ref.limit ? ref.transform(table.data) : ref.filters.transform(table.data)) {
-			table.write(id, null);
+		for (const { id } of ref.limit ? ref.transform(table.entities) : ref.filters.transform(table.entities)) {
+			table.delete(id);
 			count++;
 		}
 		return count;
 	}
-
-	/** Reset this provider and clear all data. */
-	reset(): void {
-		for (const table of Object.values(this._tables)) table?.reset();
-	}
 }
-
-/** An abstract table of data. */
-interface AbstractTable<T extends Data> {
-	readonly data: MutableMap<T>;
-	write(id: string, value: Result<T>): void;
-	on(listener: (changes: ImmutableMap<Result<T>>) => void): Unsubscriber;
-	reset(): void;
-}
-
-type TableChanges<T extends Data> = ImmutableMap<Result<T>>;
 
 /**
  * An individual table of data.
  * - Fires with an array of string IDs.
  */
-class Table<T extends Data> implements AbstractTable<T> {
-	readonly data: MutableMap<T> = new Map();
-	readonly changes: MutableMap<Result<T>> = new Map();
-	readonly listeners = new Set<Dispatcher<[TableChanges<T>]>>();
-	write(id: string, value: Result<T>): void {
-		if (value !== this.data.get(id)) {
-			if (value) this.data.set(id, value);
-			else this.data.delete(id);
+class Table<T extends Data> {
+	protected data = new Map<string, Entity<T>>();
+	protected changes = new Set<string>();
+	protected listeners = new Set<Dispatcher<[Set<string>]>>();
+	get(id: string): Result<Entity<T>> {
+		return this.data.get(id) || null;
+	}
+	get entities(): Iterable<Entity<T>> {
+		return this.data.values();
+	}
+	set(entity: Entity<T>): void {
+		if (entity !== this.get(entity.id)) {
+			this.data.set(entity.id, entity);
 
 			// Queue `this.fire()` if we've created a change.
 			if (!this.changes.size) queueMicrotask(this.fire);
-			this.changes.set(id, value);
+			this.changes.add(entity.id);
+		}
+	}
+	delete(id: string): void {
+		if (this.data.has(id)) {
+			this.data.delete(id);
+
+			// Queue `this.fire()` if we've created a change.
+			if (!this.changes.size) queueMicrotask(this.fire);
+			this.changes.add(id);
 		}
 	}
 	fire = () => {
@@ -176,16 +165,11 @@ class Table<T extends Data> implements AbstractTable<T> {
 			this.changes.clear();
 		}
 	};
-	on(listener: Dispatcher<[TableChanges<T>]>): Unsubscriber {
+	on(listener: Dispatcher<[Set<string>]>): Unsubscriber {
 		this.listeners.add(listener);
 		return this.off.bind(this, listener);
 	}
-	off(listener: Dispatcher<[TableChanges<T>]>): void {
+	off(listener: Dispatcher<[Set<string>]>): void {
 		this.listeners.delete(listener);
-	}
-	reset() {
-		this.data.clear();
-		this.changes.clear();
-		this.listeners.clear();
 	}
 }

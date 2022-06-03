@@ -1,7 +1,6 @@
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
-import type { Data, Result } from "../util/data.js";
-import type { Entries } from "../util/entry.js";
+import type { Data, Result, Entity } from "../util/data.js";
 import type { Observer, Unsubscriber } from "../util/observe.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
@@ -12,7 +11,7 @@ export abstract class Provider {
 	 * @param ref Document reference specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	abstract get<T extends Data>(ref: DocumentReference<T>): Result<T> | PromiseLike<Result<T>>;
+	abstract get<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | PromiseLike<Result<Entity<T>>>;
 
 	/**
 	 * Subscribe to the result of a document.
@@ -23,7 +22,7 @@ export abstract class Provider {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<T>>): Unsubscriber;
+	abstract subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber;
 
 	/**
 	 * Create a new document with a random ID.
@@ -70,7 +69,7 @@ export abstract class Provider {
 	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Set of results in `id: data` format.
 	 */
-	abstract getQuery<T extends Data>(ref: QueryReference<T>): Entries<T> | PromiseLike<Entries<T>>;
+	abstract getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> | PromiseLike<Iterable<Entity<T>>>;
 
 	/**
 	 * Subscribe to all matching documents.
@@ -81,7 +80,7 @@ export abstract class Provider {
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Entries<T>>): Unsubscriber;
+	abstract subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscriber;
 
 	/**
 	 * Set the data of all matching documents.
@@ -111,12 +110,12 @@ export abstract class Provider {
 
 /** Provider with a fully synchronous interface */
 export interface SynchronousProvider extends Provider {
-	get<T extends Data>(ref: DocumentReference<T>): Result<T>;
+	get<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>>;
 	add<T extends Data>(ref: QueryReference<T>, data: T): string;
 	set<T extends Data>(ref: DocumentReference<T>, value: T): void;
 	update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void;
 	delete<T extends Data>(ref: DocumentReference<T>): void;
-	getQuery<T extends Data>(ref: QueryReference<T>): Entries<T>;
+	getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>>;
 	setQuery<T extends Data>(ref: QueryReference<T>, value: T): number;
 	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number;
 	deleteQuery<T extends Data>(ref: QueryReference<T>): number;
@@ -124,12 +123,12 @@ export interface SynchronousProvider extends Provider {
 
 /** Provider with a fully asynchronous interface */
 export interface AsynchronousProvider extends Provider {
-	get<T extends Data>(ref: DocumentReference<T>): PromiseLike<Result<T>>;
+	get<T extends Data>(ref: DocumentReference<T>): PromiseLike<Result<Entity<T>>>;
 	add<T extends Data>(ref: QueryReference<T>, data: T): PromiseLike<string>;
 	set<T extends Data>(ref: DocumentReference<T>, value: T): PromiseLike<void>;
 	update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): PromiseLike<void>;
 	delete<T extends Data>(ref: DocumentReference<T>): PromiseLike<void>;
-	getQuery<T extends Data>(ref: QueryReference<T>): PromiseLike<Entries<T>>;
+	getQuery<T extends Data>(ref: QueryReference<T>): PromiseLike<Iterable<Entity<T>>>;
 	setQuery<T extends Data>(ref: QueryReference<T>, value: T): PromiseLike<number>;
 	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): PromiseLike<number>;
 	deleteQuery<T extends Data>(ref: QueryReference<T>): PromiseLike<number>;

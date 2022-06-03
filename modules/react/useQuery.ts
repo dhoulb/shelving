@@ -1,14 +1,14 @@
 import { useState } from "react";
 import type { QueryReference } from "../db/Reference.js";
-import type { Data, Results } from "../util/data.js";
+import type { Data, Entity, Result } from "../util/data.js";
+import type { Handler } from "../util/error.js";
+import { getArray, ImmutableArray } from "../util/array.js";
 import { NOERROR, NOVALUE } from "../util/constants.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { findSourceProvider } from "../provider/ThroughProvider.js";
 import { callAsync, isAsync, throwAsync } from "../util/async.js";
-import { getMap } from "../util/map.js";
-import { ResultsObserver, Unsubscriber } from "../util/observe.js";
-import type { Handler } from "../util/error.js";
-import { DocumentData, DocumentResult, getQueryData, getQueryResult } from "../db/util.js";
+import { ArrayObserver, Unsubscriber } from "../util/observe.js";
+import { getQueryData, getQueryResult } from "../db/util.js";
 import { useCompare } from "./useCompare.js";
 import { usePureState } from "./usePureState.js";
 import { usePureEffect } from "./usePureEffect.js";
@@ -28,9 +28,9 @@ import { usePureEffect } from "./usePureEffect.js";
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useAsyncQuery<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Results<T> | PromiseLike<Results<T>>;
-export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Results<T> | PromiseLike<Results<T>> | undefined;
-export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge: number | true = 1000): Results<T> | PromiseLike<Results<T>> | undefined {
+export function useAsyncQuery<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): ImmutableArray<Entity<T>> | PromiseLike<ImmutableArray<Entity<T>>>;
+export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): ImmutableArray<Entity<T>> | PromiseLike<ImmutableArray<Entity<T>>> | undefined;
+export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge: number | true = 1000): ImmutableArray<Entity<T>> | PromiseLike<ImmutableArray<Entity<T>>> | undefined {
 	// Create a memoed version of `ref`
 	const memoRef = useCompare(_isSameReference, ref);
 
@@ -53,7 +53,7 @@ export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined
 	if (maxAge === true) setTimeout(ref.subscribe({ next: setNext, error: setError }), 10000);
 
 	// Return a promise for the result.
-	const results = ref.results;
+	const results = ref.array;
 	if (isAsync(results)) results.then(setNext, setError);
 	return results;
 }
@@ -62,17 +62,17 @@ export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined
 const _isSameReference = <T extends Data>(left: QueryReference<T> | undefined, right: QueryReference<T> | undefined) => left === right || left?.toString() === right?.toString();
 
 /** Get the initial results for a reference from the cache. */
-function _getCachedResults<T extends Data>(ref: QueryReference<T> | undefined): Results<T> | typeof NOVALUE | undefined {
+function _getCachedResults<T extends Data>(ref: QueryReference<T> | undefined): ImmutableArray<Entity<T>> | typeof NOVALUE | undefined {
 	if (!ref) return undefined;
 	const provider = findSourceProvider(ref.db.provider, CacheProvider);
-	return provider.isCached(ref) ? getMap(provider.cache.getQuery(ref)) : NOVALUE;
+	return provider.isCached(ref) ? getArray(provider.cache.getQuery(ref)) : NOVALUE;
 }
 
 /** Effect that subscribes a component to the cache for a reference. */
-function _subscribeEffect<T extends Data>(ref: QueryReference<T> | undefined, maxAge: number | true, setNext: (results: Results<T>) => void, setError: Handler): Unsubscriber | void {
+function _subscribeEffect<T extends Data>(ref: QueryReference<T> | undefined, maxAge: number | true, setNext: (results: ImmutableArray<Entity<T>>) => void, setError: Handler): Unsubscriber | void {
 	if (ref) {
+		const observer = new ArrayObserver({ next: setNext, error: setError });
 		const provider = findSourceProvider(ref.db.provider, CacheProvider);
-		const observer = new ResultsObserver({ next: setNext, error: setError });
 		const stopCache = provider.cache.subscribeQuery(ref, observer);
 		if (maxAge === true) {
 			// If `maxAge` is true subscribe to the source for as long as this component is attached.
@@ -83,9 +83,9 @@ function _subscribeEffect<T extends Data>(ref: QueryReference<T> | undefined, ma
 			};
 		} else if (provider.getCachedAge(ref) > maxAge) {
 			// If cache provider's cached document is older than maxAge then force refresh the data.
-			Promise.resolve(ref.results).then(setNext, setError);
+			Promise.resolve(ref.array).then(setNext, setError);
 			try {
-				const results = ref.results;
+				const results = ref.array;
 				if (isAsync(results)) results.then(setNext, setError);
 				else setNext(results);
 			} catch (e) {
@@ -111,38 +111,38 @@ function _subscribeEffect<T extends Data>(ref: QueryReference<T> | undefined, ma
  * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
  * @throws `Error` if there was a problem retrieving the results.
  */
-export function useQuery<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Results<T>;
-export function useQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Results<T> | undefined;
-export function useQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Results<T> | undefined {
+export function useQuery<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): ImmutableArray<Entity<T>>;
+export function useQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): ImmutableArray<Entity<T>> | undefined;
+export function useQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): ImmutableArray<Entity<T>> | undefined {
 	return throwAsync(useAsyncQuery(ref, maxAge));
 }
 
 /** Use the first result of a query or `undefined` if the query has no matching results (or a promise indicating the result is loading). */
-export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>>;
-export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>> | undefined;
-export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentResult<T> | PromiseLike<DocumentResult<T>> | undefined {
+export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Result<Entity<T>> | PromiseLike<Result<Entity<T>>>;
+export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> | undefined;
+export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> | undefined {
 	const results = useAsyncQuery(ref ? ref.max(1) : undefined, maxAge);
-	return ref && results ? callAsync(getQueryResult, results, ref) : undefined;
+	return ref && results ? callAsync(getQueryResult, results) : undefined;
 }
 
 /** Use the first result of a query or `undefined` if the query has no matching results */
-export function useQueryResult<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): DocumentResult<T>;
-export function useQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentResult<T> | undefined;
-export function useQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentResult<T> | undefined {
+export function useQueryResult<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Result<Entity<T>>;
+export function useQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | undefined;
+export function useQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | undefined {
 	return throwAsync(useAsyncQueryResult(ref, maxAge));
 }
 
 /** Use the first result of a query (or a promise indicating the result is loading). */
-export function useAsyncQueryData<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>>;
-export function useAsyncQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>> | undefined;
-export function useAsyncQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentData<T> | PromiseLike<DocumentData<T>> | undefined {
+export function useAsyncQueryData<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Entity<T> | PromiseLike<Entity<T>>;
+export function useAsyncQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Entity<T> | PromiseLike<Entity<T>> | undefined;
+export function useAsyncQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Entity<T> | PromiseLike<Entity<T>> | undefined {
 	const results = useAsyncQuery(ref ? ref.max(1) : undefined, maxAge);
 	return ref && results ? callAsync(getQueryData, results, ref) : undefined;
 }
 
 /** Use the first result of a query. */
-export function useQueryData<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): DocumentData<T>;
-export function useQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentData<T> | undefined;
-export function useQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): DocumentData<T> | undefined {
+export function useQueryData<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Entity<T>;
+export function useQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Entity<T> | undefined;
+export function useQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Entity<T> | undefined {
 	return throwAsync(useAsyncQueryData(ref, maxAge));
 }

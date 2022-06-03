@@ -1,11 +1,9 @@
 import { ConditionError } from "../error/ConditionError.js";
-import type { Entries } from "./entry.js";
 import { dispatch, Dispatcher } from "./function.js";
 import { Handler, logError } from "./error.js";
-import { Data, isData, Results } from "./data.js";
+import { isData } from "./data.js";
 import { transform, Transformable, Transformer } from "./transform.js";
-import { validate, Validator } from "./validate.js";
-import { getMap } from "./map.js";
+import { ImmutableArray } from "./array.js";
 
 /** Function that ends a subscription. */
 export type Unsubscriber = () => void;
@@ -184,22 +182,10 @@ export class TransformObserver<I, O> extends TransformableObserver<I, O> {
 	}
 }
 
-/** Observer that transforms a set of entries into a results map. */
-export class ResultsObserver<T extends Data> extends TransformableObserver<Entries<T>, Results<T>> {
-	transform(entries: Entries<T>): Results<T> {
-		return getMap(entries);
-	}
-}
-
-/** Observer that validates its next values with a validator. */
-export class ValidateObserver<T> extends TransformableObserver<unknown, T> {
-	protected _validator: Validator<T>;
-	constructor(validator: Validator<T>, target: Observer<T>) {
-		super(target);
-		this._validator = validator;
-	}
-	transform(value: unknown) {
-		return validate(value, this._validator);
+/** Observer that converts its next value from an iterable to an array. */
+export class ArrayObserver<T> extends TransformableObserver<Iterable<T>, ImmutableArray<T>> {
+	transform(value: Iterable<T>): ImmutableArray<T> {
+		return value instanceof Array ? value : Array.from(value);
 	}
 }
 

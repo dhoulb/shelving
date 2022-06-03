@@ -1,7 +1,7 @@
 import type { Mutable } from "./data.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableArray } from "./array.js";
-import type { Entry } from "./entry.js";
+import { transform, Transformer } from "./transform.js";
 import { Delay } from "./async.js";
 import { DONE } from "./constants.js";
 import { Arguments } from "./function.js";
@@ -9,11 +9,6 @@ import { Arguments } from "./function.js";
 /** `Iterable` interface that specifies return types and next types for the iterator. */
 export interface TypedIterable<T, R, N> {
 	[Symbol.iterator](): Iterator<T, R, N>;
-}
-
-/** `AsyncIterable` interface that specifies return types and next types for the iterator. */
-export interface TypedAsyncIterable<T, R, N> {
-	[Symbol.asyncIterator](): AsyncIterator<T, R, N>;
 }
 
 /**
@@ -72,7 +67,7 @@ export function hasIterations(items: Iterable<unknown>): boolean {
  * Yield a range of numbers from `start` to `end`
  * - Yields in descending order if `end` is lower than `start`
  */
-export function* yieldRange(start: number, end: number): Generator<number, void, void> {
+export function* yieldRange(start: number, end: number): Iterable<number> {
 	if (start <= end) for (let num = start; num <= end; num++) yield num;
 	else for (let num = start; num >= end; num--) yield num;
 }
@@ -81,7 +76,7 @@ export function* yieldRange(start: number, end: number): Generator<number, void,
  * Apply a limit to an iterable set of items.
  * - Checks `items.size` or `items.length` first to see if the limit is necessary.
  */
-export function limitItems<T>(items: Iterable<T>, limit: number): TypedIterable<T, void, void> {
+export function limitItems<T>(items: Iterable<T>, limit: number): Iterable<T> {
 	const size = getKnownSize(items) ?? Infinity;
 	return size <= limit ? items : yieldUntilLimit(items, limit);
 }
@@ -97,8 +92,18 @@ export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R | un
 	return current;
 }
 
+/**
+ * Map an iterable set of items using a transformer.
+ * @yield Transformed items after calling `transformer()` on each.
+ */
+export function mapItems<I, O>(items: Iterable<I>, transformer: (input: I) => O): Iterable<O>; // Helps `O` carry through functions that use generics.
+export function mapItems<I, O>(items: Iterable<I>, transformer: Transformer<I, O>): Iterable<O>;
+export function* mapItems<I, O>(items: Iterable<I>, transformer: Transformer<I, O>): Iterable<O> {
+	for (const item of items) yield transform(item, transformer);
+}
+
 /** Yield items from a source iterable until we hit a maximum iteration count. */
-export function* yieldUntilLimit<T>(source: Iterable<T>, limit: number): Generator<T, void, void> {
+export function* yieldUntilLimit<T>(source: Iterable<T>, limit: number): Iterable<T> {
 	const iterator = source[Symbol.iterator]();
 	let count = 0;
 	while (true) {
@@ -111,7 +116,7 @@ export function* yieldUntilLimit<T>(source: Iterable<T>, limit: number): Generat
 }
 
 /** Infinite iterator that yields the result of calling a function with a given set of arguments. */
-export function* yieldCall<T, A extends Arguments>(func: (...a: A) => T | typeof DONE, ...args: A): Generator<T, void, void> {
+export function* yieldCall<T, A extends Arguments>(func: (...a: A) => T | typeof DONE, ...args: A): Iterable<T> {
 	while (true) {
 		const result = func(...args);
 		if (result === DONE) break;
@@ -119,18 +124,13 @@ export function* yieldCall<T, A extends Arguments>(func: (...a: A) => T | typeof
 	}
 }
 
-/** Yield the keys of an iterable set of entries. */
-export function* yieldKeys(input: Iterable<Entry>): Generator<string, void, void> {
-	for (const [k] of input) yield k;
-}
-
-/** Yield the values of an iterable set of entries. */
-export function* yieldValues<T>(input: Iterable<Entry<T>>): Generator<T, void, void> {
-	for (const [, v] of input) yield v;
-}
-
 /** Yield chunks of a given size. */
-export function* yieldChunks<T>(input: Iterable<T>, size: number): Generator<ImmutableArray<T>, void, void> {
+export function yieldChunks<T>(input: Iterable<T>, size: 1): Iterable<readonly [T]>;
+export function yieldChunks<T>(input: Iterable<T>, size: 2): Iterable<readonly [T, T]>;
+export function yieldChunks<T>(input: Iterable<T>, size: 3): Iterable<readonly [T, T, T]>;
+export function yieldChunks<T>(input: Iterable<T>, size: 4): Iterable<readonly [T, T, T, T]>;
+export function yieldChunks<T>(input: Iterable<T>, size: number): Iterable<ImmutableArray<T>>;
+export function* yieldChunks<T>(input: Iterable<T>, size: number): Iterable<ImmutableArray<T>> {
 	let chunk: T[] = [];
 	for (const item of input) {
 		chunk.push(item);
@@ -143,12 +143,12 @@ export function* yieldChunks<T>(input: Iterable<T>, size: number): Generator<Imm
 }
 
 /** Merge two or more iterables into a single set. */
-export function* yieldMerged<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable<T>[]]): Generator<T, void, void> {
+export function* yieldMerged<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable<T>[]]): Iterable<T> {
 	for (const input of inputs) for (const item of input) yield item;
 }
 
 /** Infinite iterator that yields every X milliseconds (yields a count of the number of iterations). */
-export async function* yieldDelay(ms: number): AsyncGenerator<number, void, void> {
+export async function* yieldDelay(ms: number): AsyncIterable<number> {
 	let count = 1;
 	while (true) {
 		await new Delay(ms);
@@ -157,7 +157,7 @@ export async function* yieldDelay(ms: number): AsyncGenerator<number, void, void
 }
 
 /** Infinite iterator that yields until a DONE signal is received. */
-export async function* yieldUntilSignal<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof DONE>, ...Promise<typeof DONE>[]]): AsyncGenerator<T, void, void> {
+export async function* yieldUntilSignal<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof DONE>, ...Promise<typeof DONE>[]]): AsyncIterable<T> {
 	const iterator = source[Symbol.asyncIterator]();
 	while (true) {
 		const result = await Promise.race([iterator.next(), ...signals]);

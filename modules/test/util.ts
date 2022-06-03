@@ -1,5 +1,4 @@
-import type { Entry } from "../util/entry.js";
-import { yieldKeys } from "../util/iterate.js";
+import { Entity, getIDs } from "../util/data.js";
 
 /** Run any queued microtasks now. */
 export async function runMicrotasks(): Promise<void> {
@@ -11,20 +10,20 @@ export async function runMicrotasks(): Promise<void> {
 }
 
 /** Expect keys in any order. */
-export function expectUnorderedKeys(iterable: Iterable<Entry>, keys: Iterable<string>): void {
+export function expectUnorderedKeys(entities: Iterable<Entity>, keys: Iterable<string>): void {
 	try {
-		expect(iterable).toBeInstanceOf(Object);
-		expect(Array.from(yieldKeys(iterable)).sort()).toEqual(Array.from(keys).sort());
+		expect(entities).toBeInstanceOf(Object);
+		expect(Array.from(getIDs(entities)).sort()).toEqual(Array.from(keys).sort());
 	} catch (thrown) {
 		throw thrown instanceof Error ? popErrorStack(thrown) : thrown;
 	}
 }
 
 /** Expect the specified keys in the specified order. */
-export function expectOrderedKeys(iterable: Iterable<Entry>, keys: Iterable<string>): void {
+export function expectOrderedKeys(entities: Iterable<Entity>, keys: Iterable<string>): void {
 	try {
-		expect(iterable).toBeInstanceOf(Object);
-		expect(Array.from(yieldKeys(iterable))).toEqual(Array.from(keys));
+		expect(entities).toBeInstanceOf(Object);
+		expect(Array.from(getIDs(entities))).toEqual(Array.from(keys));
 	} catch (thrown) {
 		throw thrown instanceof Error ? popErrorStack(thrown) : thrown;
 	}

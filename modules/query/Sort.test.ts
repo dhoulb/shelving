@@ -1,12 +1,14 @@
 import { Sort } from "../index.js";
 import { expectOrderedKeys } from "../test/util.js";
 
-const a = { str: "B", num: 3 };
-const b = { str: "C", num: 1 };
-const c = { str: "A", num: 4 };
-const d = { str: "D", num: 2 };
+type SortableEntity = { id: string; str: string; num: number };
 
-const allRand = Object.entries({ b, d, c, a });
+const a: SortableEntity = { id: "a", str: "B", num: 3 };
+const b: SortableEntity = { id: "b", str: "C", num: 1 };
+const c: SortableEntity = { id: "c", str: "A", num: 4 };
+const d: SortableEntity = { id: "d", str: "D", num: 2 };
+
+const allRand: ReadonlyArray<SortableEntity> = [b, d, c, a];
 
 const idAsc = ["a", "b", "c", "d"];
 const idDesc = ["d", "c", "b", "a"];
@@ -17,14 +19,14 @@ const numDesc = ["c", "a", "d", "b"];
 
 test("Sort", () => {
 	// Sort empty.
-	expectOrderedKeys(new Sort("str", "ASC").transform([]), []);
+	expectOrderedKeys(new Sort<SortableEntity>("str", "ASC").transform([]), []);
 	// Sort by id (change).
-	expectOrderedKeys(new Sort("id", "ASC").transform(allRand), idAsc);
-	expectOrderedKeys(new Sort("id", "ASC").transform(allRand), idAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("id", "ASC").transform(allRand), idAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("id", "ASC").transform(allRand), idAsc);
 	// Sort by string (change).
-	expectOrderedKeys(new Sort("str", "ASC").transform(allRand), strAsc);
-	expectOrderedKeys(new Sort("str", "DESC").transform(allRand), strDesc);
+	expectOrderedKeys(new Sort<SortableEntity>("str", "ASC").transform(allRand), strAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("str", "DESC").transform(allRand), strDesc);
 	// Sort by number (change).
-	expectOrderedKeys(new Sort("num", "ASC").transform(allRand), numAsc);
-	expectOrderedKeys(new Sort("num", "DESC").transform(allRand), numDesc);
+	expectOrderedKeys(new Sort<SortableEntity>("num", "ASC").transform(allRand), numAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("num", "DESC").transform(allRand), numDesc);
 });

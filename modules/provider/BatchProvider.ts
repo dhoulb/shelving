@@ -1,9 +1,8 @@
 import type { MutableObject } from "../util/object.js";
-import type { Entries } from "../util/entry.js";
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
-import { awaitNext, Observable, Observer, ResultsObserver, Unsubscriber } from "../util/observe.js";
-import { Data, Result, Results } from "../util/data.js";
-import { getMap } from "../util/map.js";
+import type { Entity, Data, Result } from "../util/data.js";
+import { getArray, ImmutableArray } from "../util/array.js";
+import { ArrayObserver, awaitNext, Observable, Observer, Unsubscriber } from "../util/observe.js";
 import { isAsync } from "../util/async.js";
 import { LazyState } from "../stream/LazyState.js";
 import { ThroughProvider } from "./ThroughProvider.js";
@@ -28,7 +27,7 @@ export class BatchProvider extends ThroughProvider {
 	protected readonly _subs: MutableObject<Observable<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	// Override to combine multiple requests into one.
-	override get<T extends Data>(ref: DocumentReference<T>): Result<T> | Promise<Result<T>> {
+	override get<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | Promise<Result<Entity<T>>> {
 		const key = ref.toString();
 		const get = this._gets[key];
 		if (get) return get;
@@ -37,7 +36,7 @@ export class BatchProvider extends ThroughProvider {
 	}
 
 	/** Await a result and delete it from get requests when done. */
-	private async _awaitDocument<T extends Data>(ref: DocumentReference<T>, asyncResult: PromiseLike<Result<T>>): Promise<Result<T>> {
+	private async _awaitDocument<T extends Data>(ref: DocumentReference<T>, asyncResult: PromiseLike<Result<Entity<T>>>): Promise<Result<Entity<T>>> {
 		const result = await asyncResult;
 		const key = ref.toString();
 		delete this._gets[key];
@@ -45,11 +44,11 @@ export class BatchProvider extends ThroughProvider {
 	}
 
 	// Override to combine multiple subscriptions into one.
-	override subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<T>>): Unsubscriber {
+	override subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
-		const sub = (this._subs[key] ||= new LazyState<Result<T>>(STOP_DELAY).from(s => {
+		const sub = (this._subs[key] ||= new LazyState<Result<Entity<T>>>(STOP_DELAY).from(s => {
 			const stop = super.subscribe(ref, s);
 			// The first value from the new subscription can be reused for any concurrent get requests.
 			this._gets[key] ||= this._awaitDocument(ref, awaitNext(sub));
@@ -62,33 +61,33 @@ export class BatchProvider extends ThroughProvider {
 	}
 
 	// Override to combine multiple requests into one.
-	override getQuery<T extends Data>(ref: QueryReference<T>): Entries<T> | Promise<Entries<T>> {
+	override getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> | Promise<Iterable<Entity<T>>> {
 		const key = ref.toString();
 		const get = this._gets[key];
 		if (get) return get;
 		const result = super.getQuery(ref);
-		return isAsync(result) ? (this._gets[key] = this._awaitDocuments(ref, result)) : result;
+		return isAsync(result) ? (this._gets[key] = this._awaitResults(ref, result)) : result;
 	}
 
 	/** Await a set of results and delete from get requests when done. */
-	private async _awaitDocuments<T extends Data>(ref: QueryReference<T>, asyncResults: PromiseLike<Entries<T>>): Promise<Results<T>> {
+	private async _awaitResults<T extends Data>(ref: QueryReference<T>, asyncResults: PromiseLike<Iterable<Entity<T>>>): Promise<ImmutableArray<Entity<T>>> {
 		// Convert the iterable to a map because it might be read multiple times.
-		const results = getMap(await asyncResults);
+		const results = getArray(await asyncResults);
 		const key = ref.toString();
 		delete this._gets[key];
 		return results;
 	}
 
 	// Override to combine multiple subscriptions into one.
-	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Results<T>>): Unsubscriber {
+	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<ImmutableArray<Entity<T>>>): Unsubscriber {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
-		const sub = (this._subs[key] ||= new LazyState<Results<T>>(STOP_DELAY).from(o => {
-			// Convert the iterable to a map because it might be read multiple times.
-			const stop = super.subscribeQuery(ref, new ResultsObserver(o));
+		const sub = (this._subs[key] ||= new LazyState<ImmutableArray<Entity<T>>>(STOP_DELAY).from(o => {
+			// Convert the iterable to an array because it might be read multiple times.
+			const stop = super.subscribeQuery(ref, new ArrayObserver(o));
 			// The first value from the subscription can be reused for any concurrent get requests.
-			this._gets[key] ||= this._awaitDocuments(ref, awaitNext(sub));
+			this._gets[key] ||= this._awaitResults(ref, awaitNext(sub));
 			return () => {
 				delete this._subs[key];
 				stop();

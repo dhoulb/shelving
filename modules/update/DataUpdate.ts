@@ -24,8 +24,10 @@ export class DataUpdate<T extends Data> extends Update<T> implements Iterable<Pr
 		super();
 		this.updates = props;
 	}
-	transform(existing: T): T {
-		return transformData<T>(existing, this.updates);
+
+	/** Transform a a data object using this update. */
+	transform(data: T): T {
+		return transformData<T>(data, this.updates);
 	}
 
 	/** Return a data update with a specific prop marked for update. */

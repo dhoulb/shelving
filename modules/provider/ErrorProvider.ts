@@ -1,5 +1,4 @@
-import type { Data, Result } from "../util/data.js";
-import type { Entries } from "../util/entry.js";
+import type { Data, Result, Entity } from "../util/data.js";
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import { Observer, ThroughObserver, Unsubscriber } from "../util/observe.js";
@@ -8,7 +7,7 @@ import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Provider that wraps errors thrown from deeper providers in `DatabaseReadError` and `DatabaseWriteError` etc to make it easier to see what read/write caused the error. */
 export class ErrorProvider extends ThroughProvider {
-	override get<T extends Data>(ref: DocumentReference<T>): Result<T> | PromiseLike<Result<T>> {
+	override get<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
 		try {
 			const result = super.get(ref);
 			return isAsync(result)
@@ -21,7 +20,7 @@ export class ErrorProvider extends ThroughProvider {
 			throw err;
 		}
 	}
-	override subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<T>>): Unsubscriber {
+	override subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber {
 		return super.subscribe(ref, new DatabaseErrorObserver(ref, observer));
 	}
 	override add<T extends Data>(ref: QueryReference<T>, data: T): string | PromiseLike<string> {
@@ -76,7 +75,7 @@ export class ErrorProvider extends ThroughProvider {
 			throw err;
 		}
 	}
-	override getQuery<T extends Data>(ref: QueryReference<T>): Entries<T> | PromiseLike<Entries<T>> {
+	override getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> | PromiseLike<Iterable<Entity<T>>> {
 		try {
 			const results = super.getQuery(ref);
 			return isAsync(results)
@@ -89,7 +88,7 @@ export class ErrorProvider extends ThroughProvider {
 			throw err;
 		}
 	}
-	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Entries<T>>): Unsubscriber {
+	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscriber {
 		return super.subscribeQuery(ref, new DatabaseErrorObserver(ref, observer));
 	}
 	override setQuery<T extends Data>(ref: QueryReference<T>, data: T): number | PromiseLike<number> {
@@ -158,7 +157,7 @@ export class DatabaseWriteError<T extends Data> extends Error {
 DatabaseWriteError.prototype.name = "DatabaseWriteError";
 
 /** Observer that wraps errors in subscriptions in `DatabaseReadError` */
-class DatabaseErrorObserver<T extends Data, U extends Result<T> | Entries<T>> extends ThroughObserver<U> {
+class DatabaseErrorObserver<T extends Data, U extends Result<Entity<T>> | Iterable<Entity<T>>> extends ThroughObserver<U> {
 	readonly ref: DocumentReference<T> | QueryReference<T>;
 	constructor(ref: DocumentReference<T> | QueryReference<T>, target: Observer<U>) {
 		super(target);

@@ -1,12 +1,14 @@
 import type {
 	Firestore,
 	DocumentReference as FirestoreDocumentReference,
+	DocumentSnapshot as FirestoreDocumentSnapshot,
 	CollectionReference as FirestoreCollectionReference,
 	Query as FirestoreQueryReference,
 	QuerySnapshot as FirestoreQuerySnapshot,
 	QueryConstraint as FirestoreQueryConstraint,
 	WhereFilterOp as FirestoreWhereFilterOp,
 	OrderByDirection as FirestoreOrderByDirection,
+	UpdateData as FirestoreUpdateData,
 } from "firebase/firestore";
 import {
 	orderBy as firestoreOrderBy,
@@ -28,8 +30,8 @@ import {
 	getDocs,
 } from "firebase/firestore";
 import type { DocumentReference, QueryReference } from "../../db/Reference.js";
-import type { Data, Result } from "../../util/data.js";
-import type { Entries, Entry } from "../../util/entry.js";
+import type { Data, Result, Entity } from "../../util/data.js";
+import type { Entry } from "../../util/entry.js";
 import type { FilterOperator } from "../../query/Filter.js";
 import type { SortDirection } from "../../query/Sort.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
@@ -84,12 +86,18 @@ function getQuery<T extends Data>(firestore: Firestore, ref: QueryReference<T>):
 }
 
 /** Create a set of results from a collection snapshot. */
-function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Entries<T> {
-	for (const s of snapshot.docs) yield [s.id, s.data()];
+function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Iterable<Entity<T>> {
+	for (const s of snapshot.docs) yield { ...s.data(), id: s.id };
+}
+
+/** Get a result from a document snapshot. */
+function getResult<T extends Data>(snapshot: FirestoreDocumentSnapshot<T>): Result<Entity<T>> {
+	const data = snapshot.data();
+	return data ? { ...data, id: snapshot.id } : null;
 }
 
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
-function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Generator<Entry, void> {
+function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Iterable<Entry> {
 	for (const [key, update] of updates) {
 		if (update === undefined) yield [`${prefix}${key}`, firestoreDeleteField()];
 		else if (update instanceof Increment) yield [`${prefix}${key}`, firestoreIncrement(update.amount)];
@@ -116,41 +124,41 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		this.firestore = firestore;
 	}
 
-	async get<T extends Data>(ref: DocumentReference<T>): Promise<Result<T>> {
-		return (await getDoc(getDocument(this.firestore, ref))).data() || null;
+	async get<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
+		return getResult(await getDoc(getDocument(this.firestore, ref)));
 	}
 
-	subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<T>>): Unsubscriber {
+	subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber {
 		return onSnapshot(
 			getDocument(this.firestore, ref),
-			snapshot => dispatchNext(observer, snapshot.data() || null),
+			snapshot => dispatchNext(observer, getResult(snapshot)),
 			thrown => dispatchError(observer, thrown),
 		);
 	}
 
 	async add<T extends Data>(ref: QueryReference<T>, data: T): Promise<string> {
-		const reference = await addDoc<unknown>(getCollection(this.firestore, ref), data);
+		const reference = await addDoc(getCollection(this.firestore, ref), data);
 		return reference.id;
 	}
 
 	async set<T extends Data>(ref: DocumentReference<T>, data: T): Promise<void> {
-		await setDoc<unknown>(getDocument(this.firestore, ref), data);
+		await setDoc(getDocument(this.firestore, ref), data);
 	}
 
 	async update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): Promise<void> {
-		const fieldValues = Object.fromEntries(yieldFieldValues(update));
-		await updateDoc<unknown>(getDocument(this.firestore, ref), fieldValues);
+		const fieldValues = Object.fromEntries(yieldFieldValues(update)) as FirestoreUpdateData<T>;
+		await updateDoc(getDocument(this.firestore, ref), fieldValues);
 	}
 
 	async delete<T extends Data>(ref: DocumentReference<T>): Promise<void> {
 		await deleteDoc(getDocument(this.firestore, ref));
 	}
 
-	async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Entries<T>> {
+	async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Iterable<Entity<T>>> {
 		return getResults(await getDocs(getQuery(this.firestore, ref)));
 	}
 
-	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Entries<T>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscriber {
 		return onSnapshot(
 			getQuery(this.firestore, ref),
 			snapshot => dispatchNext(observer, getResults(snapshot)),
@@ -160,14 +168,14 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 
 	async setQuery<T extends Data>(ref: QueryReference<T>, data: T): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
-		await Promise.all(snapshot.docs.map(s => setDoc<unknown>(s.ref, data)));
+		await Promise.all(snapshot.docs.map(s => setDoc(s.ref, data)));
 		return snapshot.size;
 	}
 
 	async updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): Promise<number> {
 		const snapshot = await getDocs(getQuery(this.firestore, ref));
-		const fieldValues = Object.fromEntries(yieldFieldValues(update));
-		await Promise.all(snapshot.docs.map(s => updateDoc<unknown>(s.ref, fieldValues)));
+		const fieldValues = Object.fromEntries(yieldFieldValues(update)) as FirestoreUpdateData<T>;
+		await Promise.all(snapshot.docs.map(s => updateDoc(s.ref, fieldValues)));
 		return snapshot.size;
 	}
 
