@@ -4,7 +4,7 @@ import type { DataUpdate } from "../update/DataUpdate.js";
 import type { Observer, Unsubscriber } from "../util/observe.js";
 import type { Class } from "../util/class.js";
 import { AssertionError } from "../error/AssertionError.js";
-import { Provider } from "./Provider.js";
+import { AsynchronousProvider, Provider, SynchronousProvider } from "./Provider.js";
 
 /**
  * Pass all reads and writes through to a source provider.
@@ -48,6 +48,16 @@ export class ThroughProvider extends Provider {
 	deleteQuery<T extends Data>(ref: QueryReference<T>): number | PromiseLike<number> {
 		return this.source.deleteQuery(ref);
 	}
+}
+
+/** Synchronous through provider must have synchronous source provider. */
+export interface SynchronousThroughProvider extends SynchronousProvider {
+	new (source: SynchronousProvider): SynchronousProvider;
+}
+
+/** Asynchronous through provider must have asynchronous source provider. */
+export interface AsynchronousThroughProvider extends AsynchronousProvider {
+	new (source: AsynchronousProvider): AsynchronousProvider;
 }
 
 /** Find a specific source provider in a database's provider stack. */
