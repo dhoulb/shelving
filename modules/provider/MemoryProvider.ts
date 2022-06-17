@@ -6,7 +6,7 @@ import type { Dispatcher } from "../util/function.js";
 import { dispatchNext, Observer, Unsubscriber } from "../util/observe.js";
 import { getRandomKey } from "../util/random.js";
 import { isArrayEqual } from "../util/equal.js";
-import { DocumentRequiredError } from "../db/errors.js";
+import { ReferenceRequiredError } from "../db/errors.js";
 import { transformProps } from "../util/transform.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
@@ -59,7 +59,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		const table = this.table(ref);
 		const id = ref.id;
 		const entity = table.get(id);
-		if (!entity) throw new DocumentRequiredError(ref);
+		if (!entity) throw new ReferenceRequiredError(ref);
 		table.set({ ...entity, ...Object.fromEntries(transformProps(entity, update.updates)), id: entity.id });
 	}
 
