@@ -2,12 +2,15 @@ import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { MutableObject } from "../util/object.js";
 import type { Data, Result, Entity } from "../util/data.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
-import type { Dispatcher } from "../util/function.js";
-import { dispatchNext, Observer, Unsubscriber } from "../util/observe.js";
+import type { Dispatch } from "../util/function.js";
 import { getRandomKey } from "../util/random.js";
 import { isArrayEqual } from "../util/equal.js";
-import { ReferenceRequiredError } from "../db/errors.js";
 import { transformProps } from "../util/transform.js";
+import { Query } from "../query/Query.js";
+import { RequiredError } from "../error/RequiredError.js";
+import { Subject } from "../observe/Subject.js";
+import type { Unsubscribe } from "../observe/Observable.js";
+import { Observer, dispatchNext } from "../observe/Observer.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
 /**
@@ -17,113 +20,63 @@ import { Provider, SynchronousProvider } from "./Provider.js";
  */
 export class MemoryProvider extends Provider implements SynchronousProvider {
 	/** List of tables in `{ path: Table }` format. */
-	private _tables: MutableObject<Table<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+	private _tables: MutableObject<MemoryTable<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	// Get a named collection (or create a new one).
-	table<T extends Data>({ collection }: DocumentReference<T> | QueryReference<T>): Table<T> {
-		return (this._tables[collection] ||= new Table<T>()) as Table<T>;
+	getTable<T extends Data>({ collection }: DocumentReference<T> | QueryReference<T>): MemoryTable<T> {
+		return (this._tables[collection] ||= new MemoryTable<T>()) as MemoryTable<T>;
 	}
 
-	get<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> {
-		return this.table(ref).get(ref.id);
+	getDocumentTime<T extends Data>(ref: DocumentReference<T>): number | undefined {
+		return this.getTable(ref).getDocumentTime(ref.id);
 	}
 
-	subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber {
-		const table = this.table(ref);
-		const id = ref.id;
-
-		// Call next() immediately with initial results.
-		dispatchNext(observer, table.get(id));
-
-		// Call next() every time the collection changes.
-		return table.on(changes => {
-			changes.has(id) && dispatchNext(observer, table.get(id));
-		});
+	getDocument<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> {
+		return this.getTable(ref).getDocument(ref.id);
 	}
 
-	add<T extends Data>(ref: QueryReference<T>, data: T): string {
-		const table = this.table(ref);
-		let id = getRandomKey();
-		while (table.get(id)) id = getRandomKey(); // Regenerate ID until unique.
-		table.set({ ...data, id });
-		return id;
+	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+		return this.getTable(ref).subscribeDocument(ref.id, observer);
 	}
 
-	set<T extends Data>(ref: DocumentReference<T>, data: T): void {
-		const table = this.table(ref);
-		const id = ref.id;
-		table.set({ ...data, id });
+	addDocument<T extends Data>(ref: QueryReference<T>, data: T): string {
+		return this.getTable(ref).addDocument(data);
 	}
 
-	update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void {
-		const table = this.table(ref);
-		const id = ref.id;
-		const entity = table.get(id);
-		if (!entity) throw new ReferenceRequiredError(ref);
-		table.set({ ...entity, ...Object.fromEntries(transformProps(entity, update.updates)), id: entity.id });
+	setDocument<T extends Data>(ref: DocumentReference<T>, data: T): void {
+		return this.getTable(ref).setDocument(ref.id, data);
 	}
 
-	delete<T extends Data>(ref: DocumentReference<T>): void {
-		const table = this.table(ref);
-		const id = ref.id;
-		table.delete(id);
+	updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void {
+		return this.getTable(ref).updateDocument(ref.id, update);
+	}
+
+	deleteDocument<T extends Data>(ref: DocumentReference<T>): void {
+		return this.getTable(ref).deleteDocument(ref.id);
+	}
+
+	getQueryTime<T extends Data>(ref: QueryReference<T>): number | undefined {
+		return this.getTable(ref).getQueryTime(ref);
 	}
 
 	getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> {
-		return ref.transform(this.table(ref).entities);
+		return this.getTable(ref).getQuery(ref);
 	}
 
-	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscriber {
-		const table = this.table(ref);
-
-		// Call `next()` immediately with the initial results.
-		let last = Array.from(ref.transform(table.entities));
-		dispatchNext(observer, last);
-
-		// Possibly call `next()` when the collection changes if any changes affect the subscription.
-		return table.on(() => {
-			const next = Array.from(ref.transform(table.entities));
-			if (!isArrayEqual(last, next)) {
-				last = next;
-				dispatchNext(observer, last);
-			}
-		});
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
+		return this.getTable(ref).subscribeQuery(ref, observer);
 	}
 
 	setQuery<T extends Data>(ref: QueryReference<T>, data: T): number {
-		const table = this.table(ref);
-		// If there's a limit set: run the full query.
-		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
-		let count = 0;
-		for (const { id } of ref.limit ? ref.transform(table.entities) : ref.filters.transform(table.entities)) {
-			table.set({ ...data, id });
-			count++;
-		}
-		return count;
+		return this.getTable(ref).setQuery(ref, data);
 	}
 
 	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number {
-		const table = this.table(ref);
-		// If there's a limit set: run the full query.
-		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
-		let count = 0;
-		for (const entity of ref.limit ? ref.transform(table.entities) : ref.filters.transform(table.entities)) {
-			table.set({ ...entity, ...Object.fromEntries(transformProps(entity, update.updates)), id: entity.id });
-			count++;
-		}
-		return count;
+		return this.getTable(ref).updateQuery(ref, update);
 	}
 
 	deleteQuery<T extends Data>(ref: QueryReference<T>): number {
-		const table = this.table(ref);
-		// If there's a limit set: run the full query.
-		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
-		let count = 0;
-		for (const { id } of ref.limit ? ref.transform(table.entities) : ref.filters.transform(table.entities)) {
-			table.delete(id);
-			count++;
-		}
-		return count;
+		return this.getTable(ref).deleteQuery(ref);
 	}
 }
 
@@ -131,45 +84,148 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
  * An individual table of data.
  * - Fires with an array of string IDs.
  */
-class Table<T extends Data> {
-	protected data = new Map<string, Entity<T>>();
-	protected changes = new Set<string>();
-	protected listeners = new Set<Dispatcher<[Set<string>]>>();
-	get(id: string): Result<Entity<T>> {
-		return this.data.get(id) || null;
-	}
-	get entities(): Iterable<Entity<T>> {
-		return this.data.values();
-	}
-	set(entity: Entity<T>): void {
-		if (entity !== this.get(entity.id)) {
-			this.data.set(entity.id, entity);
+export class MemoryTable<T extends Data> extends Subject<void> {
+	protected _data = new Map<string, Entity<T>>();
+	protected _times = new Map<string, number>();
+	protected _listeners = new Set<Dispatch>();
+	protected _firing = false;
 
-			// Queue `this.fire()` if we've created a change.
-			if (!this.changes.size) queueMicrotask(this.fire);
-			this.changes.add(entity.id);
-		}
+	getDocumentTime(id: string): number | undefined {
+		return this._times.get(id);
 	}
-	delete(id: string): void {
-		if (this.data.has(id)) {
-			this.data.delete(id);
 
-			// Queue `this.fire()` if we've created a change.
-			if (!this.changes.size) queueMicrotask(this.fire);
-			this.changes.add(id);
+	getDocument(id: string): Result<Entity<T>> {
+		return this._data.get(id) || null;
+	}
+
+	subscribeDocument(id: string, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+		// Call next() immediately with initial results.
+		let last = this.getDocument(id);
+		dispatchNext(observer, last);
+
+		// Call next() every time the collection changes.
+		return this.subscribe(() => {
+			const next = this.getDocument(id);
+			if (next !== last) {
+				last = next;
+				dispatchNext(observer, last);
+			}
+		});
+	}
+
+	addDocument(data: T): string {
+		let id = getRandomKey();
+		while (this._data.has(id)) id = getRandomKey(); // Regenerate ID until unique.
+		this.setEntity({ ...data, id });
+		return id;
+	}
+
+	setEntity(entity: Entity<T>): void {
+		const id = entity.id;
+		this._data.set(id, entity);
+		this._times.set(id, Date.now());
+		this.next();
+	}
+
+	setDocument(id: string, data: T): void {
+		this.setEntity({ ...data, id });
+	}
+
+	updateDocument(id: string, update: DataUpdate<T>): void {
+		const entity = this._data.get(id);
+		if (!entity) throw new RequiredError(`Document "${id}" does not exist`);
+		this.setEntity({ ...entity, ...Object.fromEntries(transformProps(entity, update.updates)), id });
+	}
+
+	deleteDocument(id: string): void {
+		this._data.delete(id);
+		this._times.set(id, Date.now());
+		this.next();
+	}
+
+	getQueryTime(query: Query<Entity<T>>): number | undefined {
+		return this._times.get(_getQueryReference(query));
+	}
+
+	getQuery(query: Query<Entity<T>>): Iterable<Entity<T>> {
+		return query.transform(this._data.values());
+	}
+
+	subscribeQuery(query: Query<Entity<T>>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
+		// Call `next()` immediately with the initial results.
+		let last = Array.from(this.getQuery(query));
+		dispatchNext(observer, last);
+
+		// Possibly call `next()` when the collection changes if any changes affect the subscription.
+		return this.subscribe(() => {
+			const next = Array.from(this.getQuery(query));
+			if (!isArrayEqual(last, next)) {
+				last = next;
+				dispatchNext(observer, last);
+			}
+		});
+	}
+
+	protected _getWrites(query: Query<Entity<T>>): Iterable<Entity<T>> {
+		// If there's a limit set: run the full query.
+		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
+		return query.limit ? query.transform(this._data.values()) : query.filters.transform(this._data.values());
+	}
+
+	setEntities(query: Query<Entity<T>>, entities: Iterable<Entity<T>>): number {
+		const now = Date.now();
+		let count = 0;
+		for (const entity of entities) {
+			const id = entity.id;
+			this._data.set(id, entity);
+			this._times.set(id, now);
+			count++;
 		}
+		this._times.set(_getQueryReference(query), now);
+		return count;
 	}
-	fire = () => {
-		if (this.changes.size) {
-			for (const dispatcher of this.listeners) dispatcher(this.changes);
-			this.changes.clear();
+
+	setQuery(query: Query<Entity<T>>, data: T): number {
+		const now = Date.now();
+		let count = 0;
+		for (const { id } of this._getWrites(query)) {
+			this._data.set(id, { ...data, id });
+			this._times.set(id, now);
+			count++;
 		}
-	};
-	on(listener: Dispatcher<[Set<string>]>): Unsubscriber {
-		this.listeners.add(listener);
-		return this.off.bind(this, listener);
+		this._times.set(_getQueryReference(query), now);
+		this.next();
+		return count;
 	}
-	off(listener: Dispatcher<[Set<string>]>): void {
-		this.listeners.delete(listener);
+
+	updateQuery(query: Query<Entity<T>>, update: DataUpdate<T>): number {
+		const now = Date.now();
+		let count = 0;
+		for (const entity of this._getWrites(query)) {
+			const id = entity.id;
+			this._data.set(id, { ...entity, ...Object.fromEntries(transformProps(entity, update.updates)), id });
+			this._times.set(id, now);
+			count++;
+		}
+		this._times.set(_getQueryReference(query), now);
+		this.next();
+		return count;
 	}
+
+	deleteQuery(query: Query<Entity<T>>): number {
+		let count = 0;
+		for (const { id } of this._getWrites(query)) {
+			this._data.delete(id);
+			this._times.set(id, Date.now());
+			count++;
+		}
+		this._times.set(_getQueryReference(query), Date.now());
+		this.next();
+		return count;
+	}
+}
+
+function _getQueryReference<T extends Data>(query: Query<Entity<T>>): string {
+	// Queries that have no limit don't care about sorting either.
+	return query.limit ? `filters=${query.filters.toString()}` : Query.prototype.toString.call(query);
 }

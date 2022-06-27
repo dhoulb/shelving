@@ -1,8 +1,9 @@
 import type { Data, Result, Entity } from "../util/data.js";
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
-import type { Observer, Unsubscriber } from "../util/observe.js";
 import type { Class } from "../util/class.js";
+import type { Observer } from "../observe/Observer.js";
+import type { Unsubscribe } from "../observe/Observable.js";
 import { AssertionError } from "../error/AssertionError.js";
 import { AsynchronousProvider, Provider, SynchronousProvider } from "./Provider.js";
 
@@ -15,28 +16,28 @@ export class ThroughProvider extends Provider {
 		super();
 		this.source = source;
 	}
-	get<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
-		return this.source.get(ref);
+	getDocument<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
+		return this.source.getDocument(ref);
 	}
-	subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber {
-		return this.source.subscribe(ref, observer);
+	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+		return this.source.subscribeDocument(ref, observer);
 	}
-	add<T extends Data>(ref: QueryReference<T>, data: T): string | PromiseLike<string> {
-		return this.source.add(ref, data);
+	addDocument<T extends Data>(ref: QueryReference<T>, data: T): string | PromiseLike<string> {
+		return this.source.addDocument(ref, data);
 	}
-	set<T extends Data>(ref: DocumentReference<T>, data: T): void | PromiseLike<void> {
-		return this.source.set(ref, data);
+	setDocument<T extends Data>(ref: DocumentReference<T>, data: T): void | PromiseLike<void> {
+		return this.source.setDocument(ref, data);
 	}
-	update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void | PromiseLike<void> {
-		return this.source.update(ref, update);
+	updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void | PromiseLike<void> {
+		return this.source.updateDocument(ref, update);
 	}
-	delete<T extends Data>(ref: DocumentReference<T>): void | PromiseLike<void> {
-		return this.source.delete(ref);
+	deleteDocument<T extends Data>(ref: DocumentReference<T>): void | PromiseLike<void> {
+		return this.source.deleteDocument(ref);
 	}
 	getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> | PromiseLike<Iterable<Entity<T>>> {
 		return this.source.getQuery(ref);
 	}
-	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
 		return this.source.subscribeQuery(ref, observer);
 	}
 	setQuery<T extends Data>(ref: QueryReference<T>, data: T): number | PromiseLike<number> {

@@ -2,9 +2,12 @@ import type { MutableObject } from "../util/object.js";
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { Entity, Data, Result } from "../util/data.js";
 import { getArray, ImmutableArray } from "../util/array.js";
-import { ArrayObserver, awaitNext, Observable, Observer, Unsubscriber } from "../util/observe.js";
 import { isAsync } from "../util/async.js";
-import { LazyState } from "../stream/LazyState.js";
+import { DelayedSelfClosingState } from "../state/SelfClosingState.js";
+import { TransformObserver } from "../observe/TransformObserver.js";
+import { Observable, Unsubscribe } from "../observe/Observable.js";
+import { Observer } from "../observe/Observer.js";
+import { awaitNext } from "../observe/util.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** How long to wait after all subscriptions have ended to close the source subscription. */
@@ -27,11 +30,11 @@ export class BatchProvider extends ThroughProvider {
 	protected readonly _subs: MutableObject<Observable<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	// Override to combine multiple requests into one.
-	override get<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | Promise<Result<Entity<T>>> {
+	override getDocument<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | Promise<Result<Entity<T>>> {
 		const key = ref.toString();
 		const get = this._gets[key];
 		if (get) return get;
-		const result = super.get(ref);
+		const result = super.getDocument(ref);
 		return isAsync(result) ? (this._gets[key] = this._awaitDocument(ref, result)) : result;
 	}
 
@@ -44,12 +47,12 @@ export class BatchProvider extends ThroughProvider {
 	}
 
 	// Override to combine multiple subscriptions into one.
-	override subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber {
+	override subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
-		const sub = (this._subs[key] ||= new LazyState<Result<Entity<T>>>(STOP_DELAY).from(s => {
-			const stop = super.subscribe(ref, s);
+		const sub = (this._subs[key] ||= new DelayedSelfClosingState<Result<Entity<T>>>(STOP_DELAY).connect(s => {
+			const stop = super.subscribeDocument(ref, s);
 			// The first value from the new subscription can be reused for any concurrent get requests.
 			this._gets[key] ||= this._awaitDocument(ref, awaitNext(sub));
 			return () => {
@@ -79,13 +82,13 @@ export class BatchProvider extends ThroughProvider {
 	}
 
 	// Override to combine multiple subscriptions into one.
-	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<ImmutableArray<Entity<T>>>): Unsubscriber {
+	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<ImmutableArray<Entity<T>>>): Unsubscribe {
 		const key = ref.toString();
 		// TidyState completes itself `STOP_DELAY` milliseconds after its last observer unsubscribes.
 		// States also send their most recently received value to any new observers.
-		const sub = (this._subs[key] ||= new LazyState<ImmutableArray<Entity<T>>>(STOP_DELAY).from(o => {
+		const sub = (this._subs[key] ||= new DelayedSelfClosingState<ImmutableArray<Entity<T>>>(STOP_DELAY).connect(o => {
 			// Convert the iterable to an array because it might be read multiple times.
-			const stop = super.subscribeQuery(ref, new ArrayObserver(o));
+			const stop = super.subscribeQuery(ref, new TransformObserver(getArray, o));
 			// The first value from the subscription can be reused for any concurrent get requests.
 			this._gets[key] ||= this._awaitResults(ref, awaitNext(sub));
 			return () => {

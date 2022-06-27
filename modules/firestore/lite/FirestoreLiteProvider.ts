@@ -33,7 +33,7 @@ import type { Data, Result, Entity } from "../../util/data.js";
 import type { Entry } from "../../util/entry.js";
 import type { FilterOperator } from "../../query/Filter.js";
 import type { SortDirection } from "../../query/Sort.js";
-import type { Unsubscriber } from "../../util/observe.js";
+import type { Unsubscribe } from "../../observe/Observable.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { AsynchronousProvider, Provider } from "../../provider/Provider.js";
 import { ArrayUpdate } from "../../update/ArrayUpdate.js";
@@ -123,29 +123,29 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		this.firestore = firestore;
 	}
 
-	async get<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
+	async getDocument<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
 		return getResult(await getDoc(getDocument(this.firestore, ref)));
 	}
 
-	subscribe(): Unsubscriber {
+	subscribeDocument(): Unsubscribe {
 		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 
-	async add<T extends Data>(ref: QueryReference<T>, data: T): Promise<string> {
+	async addDocument<T extends Data>(ref: QueryReference<T>, data: T): Promise<string> {
 		const reference = await addDoc(getCollection(this.firestore, ref), data);
 		return reference.id;
 	}
 
-	async set<T extends Data>(ref: DocumentReference<T>, data: T): Promise<void> {
+	async setDocument<T extends Data>(ref: DocumentReference<T>, data: T): Promise<void> {
 		await setDoc(getDocument(this.firestore, ref), data);
 	}
 
-	async update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): Promise<void> {
+	async updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): Promise<void> {
 		const fieldValues = Object.fromEntries(yieldFieldValues(update)) as FirestoreUpdateData<T>;
 		await updateDoc(getDocument(this.firestore, ref), fieldValues);
 	}
 
-	async delete<T extends Data>(ref: DocumentReference<T>): Promise<void> {
+	async deleteDocument<T extends Data>(ref: DocumentReference<T>): Promise<void> {
 		await deleteDoc(getDocument(this.firestore, ref));
 	}
 
@@ -153,7 +153,7 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		return getResults(await getDocs(getQuery(this.firestore, ref)));
 	}
 
-	subscribeQuery(): Unsubscriber {
+	subscribeQuery(): Unsubscribe {
 		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 

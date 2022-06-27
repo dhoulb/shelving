@@ -1,8 +1,7 @@
 import type { Data, Result, Entity } from "../util/data.js";
-import type { Dispatcher } from "../util/function.js";
+import type { Dispatch } from "../util/function.js";
 import type { SortKeys } from "../query/Sort.js";
 import { getArray, ImmutableArray } from "../util/array.js";
-import { ArrayObserver, Observable, Observer, Unsubscriber } from "../util/observe.js";
 import { Validator } from "../util/validate.js";
 import { Query } from "../query/Query.js";
 import { Filters } from "../query/Filters.js";
@@ -11,6 +10,9 @@ import { callAsync } from "../util/async.js";
 import { countItems, hasItems } from "../util/iterate.js";
 import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
 import { Filter, FilterProps } from "../query/Filter.js";
+import { TransformObserver } from "../observe/TransformObserver.js";
+import { Observable, Unsubscribe } from "../observe/Observable.js";
+import { Observer, PartialObserver } from "../observe/Observer.js";
 import { getDocumentData, getQueryData, getQueryResult } from "./util.js";
 import type { Database } from "./Database.js";
 
@@ -45,7 +47,7 @@ export class QueryReference<T extends Data = Data> extends Query<Entity<T>> impl
 	 * @return String ID for the created document (possibly promised).
 	 */
 	add(data: T): string | PromiseLike<string> {
-		return this.db.provider.add(this, data);
+		return this.db.provider.addDocument(this, data);
 	}
 
 	/**
@@ -107,8 +109,8 @@ export class QueryReference<T extends Data = Data> extends Query<Entity<T>> impl
 	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<ImmutableArray<Entity<T>>> | Dispatcher<[ImmutableArray<Entity<T>>]>): Unsubscriber {
-		return this.db.provider.subscribeQuery(this, new ArrayObserver(typeof next === "function" ? { next } : next));
+	subscribe(next: Observer<ImmutableArray<Entity<T>>> | Dispatch<[ImmutableArray<Entity<T>>]>): Unsubscribe {
+		return this.db.provider.subscribeQuery(this, new TransformObserver(getArray, typeof next === "function" ? { next } : next));
 	}
 
 	/**
@@ -173,7 +175,7 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	 * @return `true` if a document exists or `false` otherwise (possibly promised).
 	 */
 	get exists(): boolean | PromiseLike<boolean> {
-		return callAsync(Boolean, this.db.provider.get(this));
+		return callAsync(Boolean, this.db.provider.getDocument(this));
 	}
 
 	/**
@@ -181,7 +183,7 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	 * @return Document's data, or `null` if the document doesn't exist (possibly promised).
 	 */
 	get result(): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
-		return this.db.provider.get(this);
+		return this.db.provider.getDocument(this);
 	}
 
 	/**
@@ -192,7 +194,7 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	 * @throws RequiredError if the document does not exist.
 	 */
 	get data(): Entity<T> | PromiseLike<Entity<T>> {
-		return callAsync(getDocumentData, this.db.provider.get(this), this);
+		return callAsync(getDocumentData, this.db.provider.getDocument(this), this);
 	}
 
 	/**
@@ -202,23 +204,23 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<Result<Entity<T>>> | Dispatcher<[Result<Entity<T>>]>): Unsubscriber {
-		return this.db.provider.subscribe(this, typeof next === "function" ? { next } : next);
+	subscribe(next: PartialObserver<Result<Entity<T>>> | Dispatch<[Result<Entity<T>>]>): Unsubscribe {
+		return this.db.provider.subscribeDocument(this, typeof next === "function" ? { next } : next);
 	}
 
 	/** Set the complete data of this document. */
 	set(data: T): void | PromiseLike<void> {
-		return this.db.provider.set(this, data);
+		return this.db.provider.setDocument(this, data);
 	}
 
 	/** Update this document. */
 	update(updates: DataUpdate<T> | PropUpdates<T>): void | PromiseLike<void> {
-		return this.db.provider.update(this, updates instanceof DataUpdate ? updates : new DataUpdate(updates));
+		return this.db.provider.updateDocument(this, updates instanceof DataUpdate ? updates : new DataUpdate(updates));
 	}
 
 	/** Delete this document. */
 	delete(): void | PromiseLike<void> {
-		return this.db.provider.delete(this);
+		return this.db.provider.deleteDocument(this);
 	}
 
 	// Implement toString()

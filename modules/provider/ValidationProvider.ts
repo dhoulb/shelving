@@ -2,36 +2,38 @@ import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { Data, Result, Entity } from "../util/data.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import type { MutableObject } from "../util/object.js";
+import type { Observer } from "../observe/Observer.js";
+import type { Unsubscribe } from "../observe/Observable.js";
 import { callAsync } from "../util/async.js";
 import { validate } from "../util/validate.js";
-import { Observer, TransformableObserver, Unsubscriber } from "../util/observe.js";
 import { validateUpdate } from "../update/util.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { TransformableObserver } from "../observe/TransformableObserver.js";
 import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Validates any values that are read from or written to a source provider. */
 export class ValidationProvider extends ThroughProvider {
-	override get<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
-		return callAsync(_validateResult, super.get(ref), ref);
+	override getDocument<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
+		return callAsync(_validateResult, super.getDocument(ref), ref);
 	}
-	override subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result>): Unsubscriber {
-		return super.subscribe(ref, new ValidateResultObserver(ref, observer));
+	override subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result>): Unsubscribe {
+		return super.subscribeDocument(ref, new ValidateResultObserver(ref, observer));
 	}
-	override add<T extends Data>(ref: QueryReference<T>, data: T): string | PromiseLike<string> {
-		return super.add(ref, validate(data, ref.validator));
+	override addDocument<T extends Data>(ref: QueryReference<T>, data: T): string | PromiseLike<string> {
+		return super.addDocument(ref, validate(data, ref.validator));
 	}
-	override set<T extends Data>(ref: DocumentReference<T>, value: T): void | PromiseLike<void> {
-		return super.set(ref, validate(value, ref.validator));
+	override setDocument<T extends Data>(ref: DocumentReference<T>, value: T): void | PromiseLike<void> {
+		return super.setDocument(ref, validate(value, ref.validator));
 	}
-	override update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void | PromiseLike<void> {
-		return super.update<T>(ref, validateUpdate(update, ref.validator));
+	override updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void | PromiseLike<void> {
+		return super.updateDocument<T>(ref, validateUpdate(update, ref.validator));
 	}
 	override getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> | PromiseLike<Iterable<Entity<T>>> {
 		return callAsync(_validateResults, super.getQuery(ref), ref);
 	}
-	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscriber {
+	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
 		return super.subscribeQuery(ref, new ValidateResultsObserver(ref, observer));
 	}
 	override setQuery<T extends Data>(ref: QueryReference<T>, value: T): number | PromiseLike<number> {

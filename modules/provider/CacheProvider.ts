@@ -1,8 +1,10 @@
-import type { MutableObject } from "../util/object.js";
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { Data, Result, Entity } from "../util/data.js";
-import { Observer, TransformObserver, Unsubscriber } from "../util/observe.js";
 import { DataUpdate } from "../update/DataUpdate.js";
+import { getArray } from "../util/array.js";
+import type { Observer } from "../observe/Observer.js";
+import type { Unsubscribe } from "../observe/Observable.js";
+import { TransformObserver } from "../observe/TransformObserver.js";
 import type { Provider, AsynchronousProvider } from "./Provider.js";
 import { MemoryProvider } from "./MemoryProvider.js";
 import { ThroughProvider } from "./ThroughProvider.js";
@@ -10,123 +12,90 @@ import { ThroughProvider } from "./ThroughProvider.js";
 /** Keep a copy of received data in a local cache. */
 export class CacheProvider extends ThroughProvider implements AsynchronousProvider {
 	/** The local cache provider. */
-	readonly cache: MemoryProvider;
-
-	/** Last-known-correct time for data, indexed by key to power `getCachedAge()` etc. */
-	private _times: MutableObject<number> = {};
+	readonly memory: MemoryProvider;
 
 	constructor(source: Provider, cache: MemoryProvider = new MemoryProvider()) {
 		super(source);
-		this.cache = cache;
-	}
-
-	/** Is a given document or query in the cache? */
-	isCached<T extends Data>(ref: DocumentReference<T> | QueryReference<T>): boolean {
-		const key = ref.toString();
-		return typeof this._times[key] === "number";
-	}
-
-	/** Get the cache age for a given document or query reference. */
-	getCachedAge<T extends Data>(ref: DocumentReference<T> | QueryReference<T>): number {
-		const key = ref.toString();
-		const time = this._times[key];
-		return typeof time !== "number" ? Infinity : Date.now() - time;
-	}
-
-	/** Cache an individual document result. */
-	private _cacheResult<T extends Data>(ref: DocumentReference<T>, result: Result<Entity<T>>): Result<Entity<T>> {
-		result ? this.cache.table(ref).set(result) : this.cache.table(ref).delete(ref.id);
-		this._times[`${ref.collection}.${ref.id}`] = Date.now();
-		return result;
+		this.memory = cache;
 	}
 
 	// Override to cache any got result.
-	override async get<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
-		return this._cacheResult(ref, await super.get(ref));
+	override async getDocument<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
+		const table = this.memory.getTable(ref);
+		const result = await super.getDocument(ref);
+		result ? table.setEntity(result) : table.deleteDocument(ref.id);
+		return result;
 	}
 
 	// Override to cache any got results.
-	override subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber {
-		return super.subscribe(ref, new TransformObserver(result => this._cacheResult(ref, result), observer));
+	override subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+		const table = this.memory.getTable(ref);
+		return super.subscribeDocument(
+			ref,
+			new TransformObserver((result: Result<Entity<T>>) => {
+				result ? table.setEntity(result) : table.deleteDocument(ref.id);
+				return result;
+			}, observer),
+		);
 	}
 
-	override async add<T extends Data>(ref: QueryReference<T>, data: T): Promise<string> {
-		const id = await super.add(ref, data);
-		const { collection } = ref;
-		this.cache.table(ref).set({ id, ...data });
-		this._times[`${collection}.${id}`] = Date.now();
+	override async addDocument<T extends Data>(ref: QueryReference<T>, data: T): Promise<string> {
+		const id = await super.addDocument(ref, data);
+		this.memory.getTable(ref).setDocument(id, data);
 		return id;
 	}
 
-	override async set<T extends Data>(ref: DocumentReference<T>, data: T): Promise<void> {
-		await super.set(ref, data);
-		const { collection, id } = ref;
-		this.cache.table(ref).set({ id, ...data });
-		this._times[`${collection}.${id}`] = Date.now();
+	override async setDocument<T extends Data>(ref: DocumentReference<T>, data: T): Promise<void> {
+		await super.setDocument(ref, data);
+		this.memory.getTable(ref).setDocument(ref.id, data);
 	}
 
-	override async update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): Promise<void> {
-		await super.update(ref, update);
-		// Update the document in the cache if it exists using `updateDocuments()` and an `id` query.
-		// Using `updateDocument()` would throw `RequiredError` if the document didn't exist.
-		this.cache.updateQuery(ref.optional, update);
-		// Don't update `_times` because we're not refreshing all the data.
+	override async updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): Promise<void> {
+		await super.updateDocument(ref, update);
+		// Update the cache but only if the document exists.
+		const table = this.memory.getTable(ref);
+		if (table.getDocument(ref.id)) table.updateDocument(ref.id, update);
 	}
 
-	override async delete<T extends Data>(ref: DocumentReference<T>): Promise<void> {
-		await super.delete(ref);
-		const { collection, id } = ref;
-		this.cache.delete(ref);
-		this._times[`${collection}.${id}`] = Date.now();
-	}
-
-	/** Cache a set of document entries. */
-	private *_cacheEntities<T extends Data>(ref: QueryReference<T>, entities: Iterable<Entity<T>>): Iterable<Entity<T>> {
-		// We know the received set of results is the 'complete' set of results for this query.
-		// So for correctness any documents matching this query that aren't in the new set of results should be deleted.
-		// None of this applies if there's a query limit, because the document could have been moved to a different page so shouldn't be deleted.
-		if (!ref.limit) for (const id of Object.keys(this.cache.getQuery(ref))) if (!(id in entities)) this.cache.delete(ref.doc(id));
-
-		// Save new results to the cache.
-		const { collection } = ref;
-		const now = Date.now();
-		const table = this.cache.table(ref);
-		for (const entity of entities) {
-			const { id } = entity;
-			table.set(entity);
-			this._times[`${collection}.${id}`] = now;
-			yield entity;
-		}
-
-		// Save the last-cached time.
-		this._times[ref.toString()] = now;
+	override async deleteDocument<T extends Data>(ref: DocumentReference<T>): Promise<void> {
+		await super.deleteDocument(ref);
+		this.memory.deleteDocument(ref);
 	}
 
 	// Override to cache any got results.
 	override async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Iterable<Entity<T>>> {
-		return this._cacheEntities(ref, await super.getQuery(ref));
+		const entities = getArray(await super.getQuery(ref));
+		this.memory.getTable(ref).setEntities(ref, entities);
+		return entities;
 	}
 
 	// Override to cache any got results.
-	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscriber {
-		return super.subscribeQuery(ref, new TransformObserver(entries => this._cacheEntities(ref, entries), observer));
+	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
+		const table = this.memory.getTable(ref);
+		return super.subscribeQuery(
+			ref,
+			new TransformObserver((entities: Iterable<Entity<T>>) => {
+				table.setEntities(ref, entities);
+				return entities;
+			}, observer),
+		);
 	}
 
 	override async setQuery<T extends Data>(ref: QueryReference<T>, data: T): Promise<number> {
 		const count = await super.setQuery(ref, data);
-		this.cache.setQuery(ref, data);
+		this.memory.setQuery(ref, data);
 		return count;
 	}
 
 	override async updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): Promise<number> {
 		const count = await super.updateQuery(ref, update);
-		this.cache.updateQuery(ref, update);
+		this.memory.updateQuery(ref, update);
 		return count;
 	}
 
 	override async deleteQuery<T extends Data>(ref: QueryReference<T>): Promise<number> {
 		const count = await super.deleteQuery(ref);
-		this.cache.deleteQuery(ref);
+		this.memory.deleteQuery(ref);
 		return count;
 	}
 }

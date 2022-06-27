@@ -1,9 +1,9 @@
 import type { Data, Entity } from "../util/data.js";
-import { ConditionError } from "../error/ConditionError.js";
-import { BooleanState } from "../stream/BooleanState.js";
 import { getLastItem } from "../util/array.js";
 import { assertMax, assertNumber } from "../util/number.js";
-import { ArrayState } from "../stream/ArrayState.js";
+import { ConditionError } from "../error/ConditionError.js";
+import { BooleanState } from "../state/BooleanState.js";
+import { ArrayState } from "../state/ArrayState.js";
 import { QueryReference } from "./Reference.js";
 
 /**

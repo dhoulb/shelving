@@ -40,7 +40,8 @@ import { ArrayUpdate } from "../../update/ArrayUpdate.js";
 import { DataUpdate } from "../../update/DataUpdate.js";
 import { Increment } from "../../update/Increment.js";
 import { ObjectUpdate } from "../../update/ObjectUpdate.js";
-import { dispatchError, dispatchNext, Observer, Unsubscriber } from "../../util/observe.js";
+import { dispatchError, dispatchNext, Observer } from "../../observe/Observer.js";
+import { Unsubscribe } from "../../observe/Observable.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -124,11 +125,11 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		this.firestore = firestore;
 	}
 
-	async get<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
+	async getDocument<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
 		return getResult(await getDoc(getDocument(this.firestore, ref)));
 	}
 
-	subscribe<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscriber {
+	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
 		return onSnapshot(
 			getDocument(this.firestore, ref),
 			snapshot => dispatchNext(observer, getResult(snapshot)),
@@ -136,21 +137,21 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		);
 	}
 
-	async add<T extends Data>(ref: QueryReference<T>, data: T): Promise<string> {
+	async addDocument<T extends Data>(ref: QueryReference<T>, data: T): Promise<string> {
 		const reference = await addDoc(getCollection(this.firestore, ref), data);
 		return reference.id;
 	}
 
-	async set<T extends Data>(ref: DocumentReference<T>, data: T): Promise<void> {
+	async setDocument<T extends Data>(ref: DocumentReference<T>, data: T): Promise<void> {
 		await setDoc(getDocument(this.firestore, ref), data);
 	}
 
-	async update<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): Promise<void> {
+	async updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): Promise<void> {
 		const fieldValues = Object.fromEntries(yieldFieldValues(update)) as FirestoreUpdateData<T>;
 		await updateDoc(getDocument(this.firestore, ref), fieldValues);
 	}
 
-	async delete<T extends Data>(ref: DocumentReference<T>): Promise<void> {
+	async deleteDocument<T extends Data>(ref: DocumentReference<T>): Promise<void> {
 		await deleteDoc(getDocument(this.firestore, ref));
 	}
 
@@ -158,7 +159,7 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		return getResults(await getDocs(getQuery(this.firestore, ref)));
 	}
 
-	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscriber {
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
 		return onSnapshot(
 			getQuery(this.firestore, ref),
 			snapshot => dispatchNext(observer, getResults(snapshot)),
