@@ -1,8 +1,8 @@
-import { initialState, State, DataState, ResultState, RequiredError, INCREMENT, Result } from "../index.js";
+import { DataState, ResultState, RequiredError, INCREMENT, Result } from "../index.js";
 
 test("DataState.prototype.data", () => {
 	type T = { a: number };
-	const state = initialState({ a: 1 }, new DataState<T>());
+	const state = new DataState<T>({ a: 1 });
 	expect(state).toBeInstanceOf(DataState);
 	expect(state.value).toEqual({ a: 1 });
 	expect(state.data).toEqual({ a: 1 });
@@ -18,7 +18,7 @@ test("DataState.prototype.data", () => {
 });
 test("DataState.prototype.update()", () => {
 	type T = { a: number; b: number };
-	const state = initialState({ a: 1, b: 2 }, new DataState<T>());
+	const state = new DataState<T>({ a: 1, b: 2 });
 	expect(state).toBeInstanceOf(DataState);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
@@ -39,7 +39,7 @@ test("DataState.prototype.update()", () => {
 });
 test("ResultState.prototype.data", () => {
 	type T = { a: number };
-	const state = initialState(null, new ResultState<T>());
+	const state = new ResultState<T>(null);
 	expect(state).toBeInstanceOf(ResultState);
 	expect(state.value).toEqual(null);
 	expect(state.result).toEqual(null);
@@ -72,7 +72,7 @@ test("ResultState.prototype.data", () => {
 });
 test("ResultState.prototype.update()", () => {
 	type T = { a: number; b: number };
-	const state = initialState({ a: 1, b: 2 }, new ResultState<T>());
+	const state = new ResultState<T>({ a: 1, b: 2 });
 	expect(state).toBeInstanceOf(ResultState);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.

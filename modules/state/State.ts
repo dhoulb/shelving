@@ -1,13 +1,10 @@
 import type { Mutable } from "../util/data.js";
-import type { Transformer } from "../util/transform.js";
 import { NOVALUE, NOERROR } from "../util/constants.js";
-import { awaitNext, dispatchComplete, dispatchError, dispatchNext, Observer, ObserverType } from "../util/observe.js";
-import { transform } from "../util/transform.js";
-import { AnyStream, Stream } from "./Stream.js";
-
-/** Any state (useful for `extends AnySubscribable` clauses). */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyState = State<any>;
+import { Matchable } from "../util/match.js";
+import { ConditionError } from "../error/ConditionError.js";
+import { Subject } from "../observe/Subject.js";
+import { awaitNext } from "../observe/util.js";
+import { dispatchComplete, dispatchError, dispatchNext, Observer } from "../observe/Observer.js";
 
 /**
  * Stream that retains its most recent value
@@ -19,18 +16,7 @@ export type AnyState = State<any>;
  * - To set the state to be loading, use the `NOVALUE` constant or a `Promise` value.
  * - To set the state to an explicit value, use that value or another `State` instance with a value.
  * */
-export interface State<T> {
-	to(): State<T>;
-	to<O extends AnyStream>(target: O): O;
-	derive<TT>(transformer: Transformer<T, TT>): State<TT>;
-	derive<O extends AnyStream>(transformer: Transformer<T, ObserverType<O>>, target: O): O;
-	deriveAsync<TT>(transformer: Transformer<T, PromiseLike<TT>>): State<TT>;
-	deriveAsync<O extends AnyStream>(transformer: Transformer<T, Promise<ObserverType<O>>>, target: O): O;
-}
-export class State<T> extends Stream<T> {
-	// Override species so `to()`, `derive()` and `deriveAsync()` with no target return new `State` instances.
-	static override [Symbol.species] = State;
-
+export class State<T> extends Subject<T> implements Matchable<T, void> {
 	/** Cached reason this state errored. */
 	readonly reason: Error | unknown | typeof NOERROR = NOERROR;
 
@@ -48,16 +34,23 @@ export class State<T> extends Stream<T> {
 		if (this._value === NOVALUE) throw awaitNext(this);
 		return this._value;
 	}
-	protected _value: T | typeof NOVALUE = NOVALUE;
+	private _value: T | typeof NOVALUE;
+
+	/** State is initiated with an initial state. */
+	constructor(...args: [] | [T]) {
+		super();
+		this._value = args.length ? args[0] : NOVALUE;
+	}
 
 	/** Is there a current value, or is it still loading. */
 	get exists(): boolean {
 		return this._value !== NOVALUE;
 	}
 
-	/** Apply a transformer to this state. */
-	apply(transformer: Transformer<T, T>): void {
-		this.next(transform(this.value, transformer));
+	// Override to only dispatch if the value changes.
+	override next(value: T): void {
+		if (this.closed) throw new ConditionError("Stream is closed");
+		if (!this.match(value)) this._dispatch(value);
 	}
 
 	// Override to save the reason at `this.reason` and clean up.
@@ -67,27 +60,23 @@ export class State<T> extends Stream<T> {
 	}
 
 	// Override to send the current error or value to any new subscribers.
-	override _addObserver(observer: Observer<T>): void {
+	protected override _addObserver(observer: Observer<T>): void {
 		super._addObserver(observer);
 		if (this.reason !== NOERROR) dispatchError(observer, this.reason);
 		else if (this.closed) dispatchComplete(observer);
 		else if (this._value !== NOVALUE) dispatchNext(observer, this._value);
 	}
 
-	// Dispatcher saves any values that are dispatched.
+	// Override to save value that is dispatched.
 	protected override _dispatch(value: T) {
 		(this as Mutable<this>).updated = Date.now();
-		if (value !== this._value) {
-			this._value = value;
-			super._dispatch(value);
-		}
+		this._value = value;
+		super._dispatch(value);
 	}
-}
 
-/** Create a state with an initial value. */
-export function initialState<T>(initial: T): State<T>;
-export function initialState<T extends AnyState>(initial: ObserverType<T>, state: T): T;
-export function initialState<T>(initial: T, state: State<T> = new State()): State<T> {
-	state.next(initial);
-	return state;
+	// Implement Matchable to see if a value matches the current value of this state.
+	// This is used to test if a new value sent to `next()` should be dispatched to any subscribers.
+	match(left: T): boolean {
+		return left === this._value;
+	}
 }

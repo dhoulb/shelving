@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
-import { ArrayState, initialState } from "../index.js";
+import { ArrayState } from "../index.js";
 
 test("ArrayState", () => {
-	const state = initialState([1, 2, 3], new ArrayState<number>());
+	const state = new ArrayState<number>([1, 2, 3]);
 	expect(state).toBeInstanceOf(ArrayState);
 	expect(state.value).toEqual([1, 2, 3]);
 	// Ons and onces.

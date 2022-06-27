@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 
 import { jest } from "@jest/globals";
-import { awaitNext, Stream, BLACKHOLE } from "../index.js";
+import { awaitNext, Subject, BLACKHOLE } from "../index.js";
 
 test("Stream: works correctly", () => {
-	const stream = new Stream<number>();
-	expect(stream).toBeInstanceOf(Stream);
+	const stream = new Subject<number>();
+	expect(stream).toBeInstanceOf(Subject);
 	expect(stream.closed).toBe(false);
 	expect(stream.subscribers).toBe(0);
 	// Ons and onces.
@@ -20,12 +20,14 @@ test("Stream: works correctly", () => {
 	const next3 = jest.fn();
 	const error3 = jest.fn();
 	const complete3 = jest.fn();
-	const stream3 = stream.to();
+	const stream3 = new Subject();
+	stream3.connect(stream);
 	stream3.subscribe({ next: next3, error: error3, complete: complete3 });
 	const next4 = jest.fn();
 	const error4 = jest.fn();
 	const complete4 = jest.fn();
-	const stream4 = stream.to();
+	const stream4 = new Subject();
+	stream4.connect(stream);
 	stream4.subscribe({ next: next4, error: error4, complete: complete4 });
 	expect(stream.subscribers).toEqual(4);
 	// Fire.
@@ -73,8 +75,8 @@ test("Stream: all listeners are fired even if one errors", () => {
 	console.error = BLACKHOLE;
 
 	// Create a stream.
-	const stream = new Stream<number>();
-	expect(stream).toBeInstanceOf(Stream);
+	const stream = new Subject<number>();
+	expect(stream).toBeInstanceOf(Subject);
 	// Ons and onces.
 	const fnBefore = jest.fn();
 	const fnError = jest.fn(() => {
@@ -98,7 +100,7 @@ test("Stream: all listeners are fired even if one errors", () => {
 	console.error = error;
 });
 test("toPromise(): works correctly", async () => {
-	const state = new Stream<number>();
+	const state = new Subject<number>();
 	setTimeout(() => state.next(123), 50);
 	expect(await awaitNext(state)).toBe(123);
 });
