@@ -2,7 +2,7 @@ import { Feedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
 import type { ImmutableObject, MutableObject } from "./object.js";
-import { Data, isData, Prop, toProps } from "./data.js";
+import { Data, Prop, toProps } from "./data.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validatable<T> {
@@ -19,28 +19,20 @@ export interface Validatable<T> {
 	validate(unsafeValue: unknown): T;
 }
 
-/** Object that can validate an unknown value with its `validate()` method, or a function that can do the same. */
-export type Validator<T = unknown> = Validatable<T> | ((unsafeValue: unknown) => T);
+/** Function that can validate a value. */
+export type Validate<T> = (unsafeValue: unknown) => T;
 
-/** Any validator (useful for `extends AnyValidator` clauses). */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyValidator = Validator<any>;
+/** Something that can validate a value. */
+export type Validator<T = unknown> = Validatable<T> | Validate<T>;
 
 /** Extract the type from a validator. */
-export type ValidatorType<X extends AnyValidator> = X extends Validator<infer Y> ? Y : never;
-
-/** Is a given value a validator? */
-export const isValidator = <T extends AnyValidator>(v: T | unknown): v is T => typeof v === "function" || (isData(v) && typeof v.validate === "function");
+export type ValidatorType<X> = X extends Validator<infer Y> ? Y : never;
 
 /** A set of named validators in `{ name: Validator }` format. */
 export type Validators<T extends Data> = { [K in keyof T]: Validator<T[K]> };
 
-/** Any observer (useful for `extends AnyValidators` clauses). */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyValidators = Validators<any>;
-
 /** Extract the type from a set of validators. */
-export type ValidatorsType<T extends AnyValidators> = { [K in keyof T]: ValidatorType<T[K]> };
+export type ValidatorsType<T> = { [K in keyof T]: ValidatorType<T[K]> };
 
 /** Validate an unknown value with a validator. */
 export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {

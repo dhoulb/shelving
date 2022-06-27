@@ -1,7 +1,6 @@
 import type { Mutable } from "./data.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableArray } from "./array.js";
-import { transform, Transformer } from "./transform.js";
 import { Delay } from "./async.js";
 import { DONE } from "./constants.js";
 import { Arguments } from "./function.js";
@@ -26,14 +25,14 @@ export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): val
 export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Get the known size or length of an object (e.g. `Array`, `Map`, and `Set` have known size), or return `undefined` if the size cannot be established. */
-const getKnownSize = (obj: Iterable<unknown> | ImmutableMap | ImmutableArray): number | undefined => ("size" in obj && typeof obj.size === "number" ? obj.size : "length" in obj && typeof obj.length === "number" ? obj.length : undefined);
+const _getKnownSize = (obj: Iterable<unknown> | ImmutableMap | ImmutableArray): number | undefined => ("size" in obj && typeof obj.size === "number" ? obj.size : "length" in obj && typeof obj.length === "number" ? obj.length : undefined);
 
 /**
  * Count the number items of an iterable.
  * - Checks `items.size` or `items.length` first, or consumes the iterable and counts its iterations.
  */
 export function countItems(items: Iterable<unknown>): number {
-	return getKnownSize(items) ?? countIterations(items);
+	return _getKnownSize(items) ?? countIterations(items);
 }
 
 /**
@@ -51,7 +50,7 @@ export function countIterations(items: Iterable<unknown>): number {
  * - Checks `items.size` or `items.length` first, or consumes the iterable and counts its iterations.
  */
 export function hasItems(items: Iterable<unknown>): boolean {
-	return !!(getKnownSize(items) ?? hasIterations(items));
+	return !!(_getKnownSize(items) ?? hasIterations(items));
 }
 
 /**
@@ -77,7 +76,7 @@ export function* yieldRange(start: number, end: number): Iterable<number> {
  * - Checks `items.size` or `items.length` first to see if the limit is necessary.
  */
 export function limitItems<T>(items: Iterable<T>, limit: number): Iterable<T> {
-	const size = getKnownSize(items) ?? Infinity;
+	const size = _getKnownSize(items) ?? Infinity;
 	return size <= limit ? items : yieldUntilLimit(items, limit);
 }
 
@@ -90,16 +89,6 @@ export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R | un
 	let current = initial;
 	for (const item of items) current = reducer(current, item);
 	return current;
-}
-
-/**
- * Map an iterable set of items using a transformer.
- * @yield Transformed items after calling `transformer()` on each.
- */
-export function mapItems<I, O>(items: Iterable<I>, transformer: (input: I) => O): Iterable<O>; // Helps `O` carry through functions that use generics.
-export function mapItems<I, O>(items: Iterable<I>, transformer: Transformer<I, O>): Iterable<O>;
-export function* mapItems<I, O>(items: Iterable<I>, transformer: Transformer<I, O>): Iterable<O> {
-	for (const item of items) yield transform(item, transformer);
 }
 
 /** Yield items from a source iterable until we hit a maximum iteration count. */
@@ -209,9 +198,10 @@ export abstract class ThroughIterator<T, R, N> extends AbstractIterator<T, R, N>
  * - Stores: first/last yielded value, returned value, whether iteration is done, the number of items in the sequence.
  *
  * @example
- * 	const returned = new ReturnIterator(iterable);
+ * 	const watch = new WatchIterator(iterable);
  * 	for (const next of capture) console.log("YIELDED", next);
- * 	console.log("RETURNED", returned.value);
+ * 	console.log("FIRST", watch.first);
+ * 	console.log("RETURNED", watch.returned);
  */
 export class WatchIterator<T, R, N> extends ThroughIterator<T, R, N> {
 	/** Get the number of results received by this iterator so far. */

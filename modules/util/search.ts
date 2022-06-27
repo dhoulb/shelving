@@ -1,5 +1,5 @@
 import type { ImmutableArray } from "./array.js";
-import { Matchable } from "./filter.js";
+import { Matchable } from "./match.js";
 import { toWords, normalizeString } from "./string.js";
 
 // Regular expressions.

@@ -1,6 +1,7 @@
 import type { ArrayType, ImmutableArray } from "../util/array.js";
 import { Data, Key, getProp } from "../util/data.js";
-import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, match, Matchable, Matcher, notEqual, notInArray, filterItems } from "../util/filter.js";
+import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, Matchable, Match, notEqual, notInArray } from "../util/match.js";
+import { filterItems } from "../util/filter.js";
 import { Rule } from "./Rule.js";
 
 /** Possible operator references. */
@@ -18,12 +19,12 @@ export type FilterProps<T extends Data> = {
 	[K in Key<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: T[K]; // GT/GTE/LT/LTE
 };
 
-/** Map `FilterOperator` to its corresponding `Matcher` function. */
-const MATCHERS: { [K in FilterOperator]: Matcher<unknown, unknown> } = {
+/** Map `FilterOperator` to its corresponding `Match` function. */
+const MATCHERS: { [K in FilterOperator]: Match } = {
 	IS: isEqual,
 	NOT: notEqual,
-	IN: isInArray as Matcher<unknown, unknown>,
-	OUT: notInArray as Matcher<unknown, unknown>,
+	IN: isInArray,
+	OUT: notInArray,
 	CONTAINS: isArrayWith,
 	LT: isLess,
 	LTE: isEqualLess,
@@ -68,7 +69,7 @@ export class Filter<T extends Data> extends Rule<T> implements Matchable<T, void
 	}
 
 	match(item: T): boolean {
-		return match(getProp(item, this.key), MATCHERS[this.operator], this.value);
+		return MATCHERS[this.operator](getProp(item, this.key), this.value);
 	}
 	transform(items: Iterable<T>): Iterable<T> {
 		return filterItems(items, this);

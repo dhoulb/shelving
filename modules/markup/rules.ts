@@ -46,14 +46,14 @@ const UNORDERED = `[${BULLETS}] +`; // Anything that can be a bullet (used for u
 export const UNORDERED_LIST_RULE: MarkupRule = {
 	regexp: getBlockRegExp(`${UNORDERED}(${MATCH_BLOCK.source})`),
 	render: ([, list = ""]) => {
-		const children = list.split(SPLIT_UL_ITEMS).map(mapUnorderedItem);
+		const children = list.split(SPLIT_UL_ITEMS).map(_mapUnorderedItem);
 		return { type: "ul", key: null, props: { children } };
 	},
 	contexts: ["block", "list"],
 	childContext: "list",
 };
 const SPLIT_UL_ITEMS = new RegExp(`\\n+${UNORDERED}`, "g");
-const mapUnorderedItem = (item: string, key: number): JSXElement => {
+const _mapUnorderedItem = (item: string, key: number): JSXElement => {
 	const children = item.replace(MATCH_INDENT, "");
 	return { type: "li", key, props: { children } };
 };
@@ -67,14 +67,14 @@ const ORDERED = "[0-9]+[.):] +"; // Number for a numbered list (e.g. `1.` or `2)
 export const ORDERED_LIST_RULE: MarkupRule = {
 	regexp: getBlockRegExp(`(${ORDERED}${MATCH_BLOCK.source})`),
 	render: ([, list = ""]) => {
-		const children = list.split(SPLIT_OL_ITEMS).map(mapOrderedItem);
+		const children = list.split(SPLIT_OL_ITEMS).map(_mapOrderedItem);
 		return { type: "ol", key: null, props: { children } };
 	},
 	contexts: ["block", "list"],
 	childContext: "list",
 };
 const SPLIT_OL_ITEMS = new RegExp(`\\n+(?=${ORDERED})`, "g");
-const mapOrderedItem = (item: string, key: number): JSXElement => {
+const _mapOrderedItem = (item: string, key: number): JSXElement => {
 	const firstSpace = item.indexOf(" ");
 	const value = parseInt(item.slice(0, firstSpace), 10);
 	const children = item

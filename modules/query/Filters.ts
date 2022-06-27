@@ -1,6 +1,7 @@
 import type { ArrayType, ImmutableArray } from "../util/array.js";
 import type { Data, Key } from "../util/data.js";
-import { Matchable, filterItems } from "../util/filter.js";
+import type { Matchable } from "../util/match.js";
+import { filterItems } from "../util/filter.js";
 import { FilterKey, FilterProps, Filter } from "./Filter.js";
 import { Rules } from "./Rules.js";
 

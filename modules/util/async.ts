@@ -1,6 +1,6 @@
 import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
-import type { Arguments, Dispatcher } from "./function.js";
+import type { Arguments, Dispatch } from "./function.js";
 import type { Handler } from "./error.js";
 import { DONE } from "./constants.js";
 
@@ -43,9 +43,9 @@ export function assertPromise<T>(value: Promise<T> | T): asserts value is Promis
  * @param item The first argument for `callback` (if this value is async it will be awaited before `callback` is called).
  * @param ...args Additional arguments for `callback`
  */
-export const callAsync = <I, O, A extends Arguments = []>(callback: (v: I, ...a: A) => O | PromiseLike<O>, item: I | PromiseLike<I>, ...args: A): O | PromiseLike<O> =>
-	isAsync(item) ? _awaitCallAsync(callback, item, args) : callback(item, ...args);
-export const _awaitCallAsync = async <I, O, A extends Arguments>(callback: (v: I, ...a: A) => O | PromiseLike<O>, item: PromiseLike<I>, args: A): Promise<O> => callback(await item, ...args);
+export function callAsync<I, O, A extends Arguments = []>(callback: (v: I, ...a: A) => O | PromiseLike<O>, item: I | PromiseLike<I>, ...args: A): O | PromiseLike<O> {
+	return isAsync(item) ? item.then(v => callback(v, ...args)) : callback(item, ...args);
+}
 
 /**
  * Call a callback for a set of items in series.
@@ -74,10 +74,10 @@ export async function callAsyncParallel<I, O, A extends Arguments = []>(callback
 }
 
 // Internal way for us to save `resolve()` and `reject()` from a new Promise used by `Deferred` and `ExtendablePromise`
-let resolve: Dispatcher<[any]>; // eslint-disable-line @typescript-eslint/no-explicit-any
+let resolve: Dispatch<[any]>; // eslint-disable-line @typescript-eslint/no-explicit-any
 let reject: Handler;
 function saveResolveReject(
-	x: Dispatcher<[any]>, // eslint-disable-line @typescript-eslint/no-explicit-any
+	x: Dispatch<[any]>, // eslint-disable-line @typescript-eslint/no-explicit-any
 	y: Handler,
 ): void {
 	resolve = x;
@@ -91,7 +91,7 @@ export class Deferred<T> extends Promise<T> {
 	static override get [Symbol.species]() {
 		return Promise;
 	}
-	readonly resolve: Dispatcher<[T]>;
+	readonly resolve: Dispatch<[T]>;
 	readonly reject: Handler;
 	constructor() {
 		super(saveResolveReject);
@@ -107,7 +107,7 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 	static override get [Symbol.species]() {
 		return Promise;
 	}
-	protected readonly _resolve: Dispatcher<[T]>;
+	protected readonly _resolve: Dispatch<[T]>;
 	protected readonly _reject: Handler;
 	constructor() {
 		super(saveResolveReject);

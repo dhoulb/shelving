@@ -1,13 +1,15 @@
 import { ImmutableArray, MutableArray } from "./array.js";
-import { transform, Transformer } from "./transform.js";
 
 /** Object that can rank two values using its `rank()` function. */
 export interface Rankable<T> {
 	rank(left: T, right: T): number;
 }
 
-/** Object that can rank two values using its `rank()` function, or a function that can do the same. */
-export type Ranker<T> = Rankable<T> | ((left: T, right: T) => number);
+/** Function that can rank two values. */
+export type Rank<T> = (left: T, right: T) => number;
+
+/** Something that can rank two values. */
+export type Ranker<T> = Rankable<T> | Rank<T>;
 
 /** Rank two values with a `Ranker`. */
 export function rank<T>(left: T, ranker: Ranker<T>, right: T) {
@@ -132,17 +134,4 @@ export function sortItems<T>(input: Iterable<T>, ranker: Ranker<T> = rankAsc): I
 export function sortArray<T>(input: ImmutableArray<T>, ranker: Ranker<T> = rankAsc): ImmutableArray<T> {
 	const output = Array.from(input);
 	return _quicksort(output, ranker) ? output : input;
-}
-
-/** Derive a value and match it against a target value. */
-export class TransformRanker<T, TT> implements Rankable<T> {
-	private _transformer: Transformer<T, TT>;
-	private _ranker: Ranker<TT>;
-	constructor(transformer: Transformer<T, TT>, ranker: Ranker<TT> = rankAsc) {
-		this._transformer = transformer;
-		this._ranker = ranker;
-	}
-	rank(left: T, right: T): number {
-		return rank(transform(left, this._transformer), this._ranker, transform(right, this._transformer));
-	}
 }

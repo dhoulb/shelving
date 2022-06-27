@@ -251,28 +251,6 @@ if (!(obj instanceof InvalidFeedback)) {
 }
 ```
 
-Schemaglobin also provides the `SchemaType<Schema>` helper type, which allow you to extract the type of a schema:
-
-```ts
-import { string, SchemaType } from "shelving";
-
-// Make some schemas.
-const requiredStringSchema = string({ required: true });
-const optionalStringSchema = string({ required: false });
-const requiredEnumSchema = string({ required: true, options: ["a", "b"] });
-const optionalEnumSchema = string({ required: false, options: ["a", "b"] });
-
-// Extract the types.
-type RequiredStringType = SchemaType<typeof requiredStringSchema>; // string
-type OptionalStringType = SchemaType<typeof optionalStringSchema>; // string
-type RequiredEnumType = SchemaType<typeof requiredEnumSchema>; // "a" | "b"
-type OptionalEnumType = SchemaType<typeof optionalEnumSchema>; // "a" | "b" | ""
-
-// Object type can be inferred from `options.props`
-const objectSchema = object({ props: { str: string(), num: number() } });
-type ObjectType = Schematype<typeof objectSchema>; // { str: string, num: number | null }
-```
-
 ## Reference
 
 All schema creator functions allow the following options (and may allow others too):

@@ -4,7 +4,7 @@ test("transform()", () => {
 	expect(transform(10, n => n * n)).toBe(100);
 	expect(transform(10, { transform: n => n * n })).toEqual(100);
 });
-test("transformArray()", () => {
+test("mapArray()", () => {
 	const arr = [1, 2, 3, 4];
 
 	// Square each number.
@@ -14,7 +14,7 @@ test("transformArray()", () => {
 	expect(mapArray(arr, null)).toEqual([null, null, null, null]);
 	expect(mapArray(arr, null)).not.toBe(arr);
 });
-test("transformObject()", () => {
+test("mapObject()", () => {
 	const obj = { a: 1, b: 2, c: 3, d: 4 };
 
 	// Square each number (input is object).

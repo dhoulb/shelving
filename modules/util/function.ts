@@ -24,28 +24,28 @@ export const PASSTHROUGH = <T>(value: T): T => value;
 export const BLACKHOLE: (...args: Arguments) => void | undefined = () => undefined;
 
 /** Function that receives a dispatched value. */
-export type Dispatcher<T extends Arguments = []> = (...value: T) => void;
+export type Dispatch<T extends Arguments = []> = (...value: T) => void;
 
 /** Function that receives a dispatched value. */
-export type AsyncDispatcher<T extends Arguments = []> = (...value: T) => void | PromiseLike<void>;
+export type AsyncDispatch<T extends Arguments = []> = (...value: T) => void | PromiseLike<void>;
 
 /** Safely dispatch a value to a dispatcher function. */
-export function dispatch<A extends Arguments>(dispatcher: AsyncDispatcher<A>, ...value: A): void {
+export function dispatch<A extends Arguments>(func: AsyncDispatch<A>, ...value: A): void {
 	try {
-		const result = dispatcher(...value);
-		if (isAsync(result)) result.then(BLACKHOLE, logError);
+		const result = func(...value);
+		if (isAsync(result)) result.then(undefined, logError);
 	} catch (thrown) {
 		logError(thrown);
 	}
 }
 
 /** Return a function that dispatches a value to a dispatcher function. */
-export function dispatched<A extends Arguments>(dispatcher: AsyncDispatcher<A>): Dispatcher<A> {
+export function dispatched<A extends Arguments>(dispatcher: AsyncDispatch<A>): Dispatch<A> {
 	return (...args: A) => dispatch(dispatcher, ...args);
 }
 
 /** Safely dispatch a value to a dispatcher method on an object. */
-export function dispatchMethod<T extends Arguments, M extends string | symbol>(obj: { [K in M]: AsyncDispatcher<T> }, key: M, ...value: T): void {
+export function dispatchMethod<T extends Arguments, M extends string | symbol>(obj: { [K in M]: AsyncDispatch<T> }, key: M, ...value: T): void {
 	try {
 		const result = obj[key](...value);
 		if (isAsync(result)) result.then(BLACKHOLE, logError);

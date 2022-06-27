@@ -1,11 +1,10 @@
+import type { Match } from "./match.js";
 import { ImmutableArray } from "./array.js";
 import { ImmutableObject, isObject } from "./object.js";
 import { ImmutableMap } from "./map.js";
 
-type EqualRecursor = (left: unknown, right: unknown) => boolean;
-
 // Internal shared by shallow/deep equal.
-function _equal(left: unknown, right: unknown, recursor: EqualRecursor): boolean {
+function _equal(left: unknown, right: unknown, recursor: Match): boolean {
 	if (left === right) return true;
 	if (left instanceof Array) return right instanceof Array ? isArrayEqual(left, right, recursor) : false;
 	if (left instanceof Map) return right instanceof Map ? isMapEqual(left, right, recursor) : false;
@@ -31,7 +30,7 @@ export const isDeepEqual = <L extends unknown>(left: L, right: unknown): right i
 /**
  * Are two maps equal (based on their items).
  */
-export function isMapEqual<L extends ImmutableMap>(left: L, right: ImmutableMap, recursor: EqualRecursor = isExactlyEqual): right is L {
+export function isMapEqual<L extends ImmutableMap>(left: L, right: ImmutableMap, recursor: Match = isExactlyEqual): right is L {
 	if (left === right) return true; // Referentially equal.
 	if (left.size !== right.size) return false; // Different lengths aren't equal.
 	const rightIterator = right.entries();
@@ -49,7 +48,7 @@ export function isMapEqual<L extends ImmutableMap>(left: L, right: ImmutableMap,
  * - Defaults to `isExactlyEqual()` to check strict equality of the items.
  * - Use `isDeepEqual()` as the recursor to check to check deep equality of the items.
  */
-export function isArrayEqual<L extends ImmutableArray>(left: L, right: ImmutableArray, recursor: EqualRecursor = isExactlyEqual): right is L {
+export function isArrayEqual<L extends ImmutableArray>(left: L, right: ImmutableArray, recursor: Match = isExactlyEqual): right is L {
 	if (left === right) return true; // Referentially equal.
 	if (left.length !== right.length) return false; // Different lengths aren't equal.
 	for (const [k, l] of left.entries()) if (!recursor(l, right[k])) return false;
@@ -64,7 +63,7 @@ export function isArrayEqual<L extends ImmutableArray>(left: L, right: Immutable
  * - Defaults to `isExactlyEqual()` to check strict equality of the properties.
  * - Use `isDeepEqual()` as the recursor to check to check deep equality of the properties.
  */
-export function isObjectEqual<L extends ImmutableObject>(left: L, right: ImmutableObject, recursor: EqualRecursor = isExactlyEqual): right is L {
+export function isObjectEqual<L extends ImmutableObject>(left: L, right: ImmutableObject, recursor: Match = isExactlyEqual): right is L {
 	if (left === right) return true; // Referentially equal.
 
 	const leftEntries = Object.entries(left);

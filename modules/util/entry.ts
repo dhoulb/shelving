@@ -7,12 +7,8 @@ import type { Data } from "./data.js";
  */
 export type Entry<T = unknown> = readonly [string, T];
 
-/** Any ebtry (useful for `extends AnyEntry` clauses). */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyEntry = readonly [string, any];
-
 /** Extract the type for an entry. */
-export type EntryType<X extends AnyEntry> = X extends Entry<infer Y> ? Y : never;
+export type EntryType<X> = X extends Entry<infer Y> ? Y : never;
 
 /** Extract the key from an object entry. */
 export const getEntryKey = ([k]: Entry): string => k;

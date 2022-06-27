@@ -1,6 +1,4 @@
 import { AssertionError } from "../error/AssertionError.js";
-import type { Transformer } from "./transform.js";
-import { mapItems } from "./iterate.js";
 
 /**
  * Mutable array: an array that can be changed.
@@ -39,17 +37,6 @@ export function getArray<T>(iterable: ImmutableArray<T> | Iterable<T>): Immutabl
 export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T>;
 export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 	return isArray(items) ? items : Array.from(items);
-}
-
-/**
- * Apply a transformer to each item in an array and return the transformed array.
- * @return The transformed array.
- */
-export function mapArray<T extends ImmutableArray>(arr: T, transformer: Transformer<ArrayType<T>, ArrayType<T>>): T; // Passthrough for transformers that return the same type and remove nothing.
-export function mapArray<I, O>(arr: Iterable<I>, transformer: (v: I) => O): ImmutableArray<O>; // Helps `O` carry through functions that use generics.
-export function mapArray<I, O>(arr: Iterable<I>, transformer: Transformer<I, O>): ImmutableArray<O>;
-export function mapArray<I, O>(arr: Iterable<I>, transformer: Transformer<I, O>): ImmutableArray<O> {
-	return Array.from(mapItems(arr, transformer));
 }
 
 /**
