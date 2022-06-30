@@ -23,8 +23,11 @@ export function subscribe<T>(source: Subscribable<T>, target: PartialObserver<T>
 	return typeof source === "function" ? source(target) : source.subscribe(target);
 }
 
+/** Function that disconnects a souce. */
+export type Disconnect = () => void;
+
 /** An object that can be connected to a subscribable. */
 export interface Connectable<T> {
 	/** Subscribe this entity to a subscribable. */
-	connect(subscribable: Subscribable<T>): Unsubscribe;
+	connect(subscribable: Subscribable<T>): Disconnect;
 }

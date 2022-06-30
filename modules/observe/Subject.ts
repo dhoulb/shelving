@@ -2,7 +2,7 @@ import type { Mutable } from "../util/data.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { dispatch, Dispatch } from "../util/function.js";
 import { ConnectableObserver, dispatchComplete, dispatchError, dispatchNext, PartialObserver } from "./Observer.js";
-import { Observable, Subscribable, subscribe, Unsubscribe } from "./Observable.js";
+import { Disconnect, Observable, Subscribable, subscribe, Unsubscribe } from "./Observable.js";
 
 /**
  * Simple subject
@@ -12,10 +12,15 @@ import { Observable, Subscribable, subscribe, Unsubscribe } from "./Observable.j
  */
 export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	/** List of sources this subject is subscribed to. */
-	protected readonly _cleanups = new Set<Unsubscribe>();
+	protected readonly _cleanups = new Set<Disconnect>();
 
 	/** List of subscribed observers that values are forwarded to. */
 	protected readonly _subscribers = new Set<PartialObserver<T>>();
+
+	/** Get the number of current subscribers. */
+	get connections(): number {
+		return this._cleanups.size;
+	}
 
 	/** Get the number of current subscribers. */
 	get subscribers(): number {
@@ -56,13 +61,11 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	/** Close this subject (called by `error()` and `complete()`). */
 	private _close(): void {
 		(this as Mutable<this>).closed = true;
-		for (const cleanup of this._cleanups) {
-			this._cleanups.delete(cleanup);
-			dispatch(cleanup);
-		}
+		this.disconnect();
 	}
 
-	connect(source: Subscribable<T>): Unsubscribe {
+	/** Connect this subjet to a source. */
+	connect(source: Subscribable<T>): Disconnect {
 		if (this.closed) throw new ConditionError("Subject is closed");
 		const unsubscribe = subscribe(source, this);
 		const cleanup = () => {
@@ -71,6 +74,11 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 		};
 		this._cleanups.add(cleanup);
 		return cleanup;
+	}
+
+	/** Disconnect this subject from all sources. */
+	disconnect(): void {
+		for (const cleanup of this._cleanups) dispatch(cleanup); // Cleanups are self-cleaning.
 	}
 
 	/**
