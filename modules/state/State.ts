@@ -6,6 +6,9 @@ import { Subject } from "../observe/Subject.js";
 import { awaitNext } from "../observe/util.js";
 import { dispatchComplete, dispatchError, dispatchNext, Observer } from "../observe/Observer.js";
 
+/** Any `State` instance. */
+export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
 /**
  * Stream that retains its most recent value
  * - Current value can be read at `state.value` and `state.data`
@@ -19,14 +22,6 @@ import { dispatchComplete, dispatchError, dispatchNext, Observer } from "../obse
 export class State<T> extends Subject<T> implements Matchable<T, void> {
 	/** Cached reason this state errored. */
 	readonly reason: Error | unknown | typeof NOERROR = NOERROR;
-
-	/** Time this state was last updated with a new value. */
-	readonly updated: number | null = null;
-
-	/** Age of the current value (in milliseconds). */
-	get age(): number {
-		return typeof this.updated === "number" ? Date.now() - this.updated : Infinity;
-	}
 
 	/** Most recently dispatched value (or throw `Promise` that resolves to the next value). */
 	get value(): T {
@@ -69,7 +64,6 @@ export class State<T> extends Subject<T> implements Matchable<T, void> {
 
 	// Override to save value that is dispatched.
 	protected override _dispatch(value: T) {
-		(this as Mutable<this>).updated = Date.now();
 		this._value = value;
 		super._dispatch(value);
 	}
