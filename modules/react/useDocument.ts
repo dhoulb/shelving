@@ -1,133 +1,104 @@
-import { useState } from "react";
-import type { Handler } from "../util/error.js";
-import { Unsubscriber } from "../util/observe.js";
+import type { Unsubscribe } from "../observe/Observable.js";
 import type { DocumentReference } from "../db/Reference.js";
-import type { Data, Result } from "../util/data.js";
-import { getDocumentData } from "../db/util.js";
-import { NOERROR, NOVALUE } from "../util/constants.js";
+import type { Data, OptionalEntity } from "../util/data.js";
+import { getDocumentData, isSameReference } from "../db/Reference.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { findSourceProvider } from "../provider/ThroughProvider.js";
-import { callAsync, isAsync, throwAsync } from "../util/async.js";
 import { Entity } from "../util/data.js";
-import { useCompare } from "./useCompare.js";
-import { usePureState } from "./usePureState.js";
-import { usePureEffect } from "./usePureEffect.js";
+import { State } from "../state/State.js";
+import { MemoryTable } from "../provider/MemoryProvider.js";
+import { MatchObserver } from "../observe/MatchObserver.js";
+import { BooleanState } from "../state/BooleanState.js";
+import { ConditionError } from "../error/ConditionError.js";
+import { dispatch } from "../util/function.js";
+import { useReduce } from "./useReduce.js";
+import { useSubscribe } from "./useSubscribe.js";
 
-/**
- * Use the cached result of a document in a React component (or a `Promise` to indicate the result is still loading).
- * - Requires database to use `CacheProvider` and will error if this does not exist.
- *
- * @param ref Document reference or `undefined`.
- * - If `undefined` is set this function will always return `undefined` (this simplifies scenarios where no document is needed, as hooks must always be called in the same order).
- * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
- * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
- *
- * @returns The result of the document (i.e. its data or `undefined` if it doesn't exist), or `Promise` that resolves when the result has loaded, or `undefined` if ref was set to `undefined`
- *
- * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
- * @throws `Error` if there was a problem retrieving the result.
- */
-export function useAsyncDocument<T extends Data>(ref: DocumentReference<T>, maxAge?: number | true): Result<Entity<T>> | PromiseLike<Result<Entity<T>>>;
-export function useAsyncDocument<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> | undefined;
-export function useAsyncDocument<T extends Data>(ref: DocumentReference<T> | undefined, maxAge: number | true = 1000): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> | undefined {
-	// Create a memoed version of `ref`
-	const memoRef = useCompare(_isSameReference, ref);
+/** Hold the current state of a document. */
+export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
+	readonly ref: DocumentReference<T>;
+	readonly busy = new BooleanState();
+	protected readonly _table: MemoryTable<T>;
 
-	// Create two states to hold the value and error.
-	const [value, setNext] = usePureState(_getCachedResult, memoRef);
-	const [error, setError] = useState<unknown>(NOERROR);
+	/** Time this state was last updated with a new value. */
+	get time(): number | undefined {
+		return this._table.getDocumentTime(this.ref.id);
+	}
 
-	// Register effect.
-	usePureEffect(_subscribeEffect, memoRef, maxAge, setNext, setError);
+	/** How old this state's value is (in milliseconds). */
+	get age(): number {
+		const time = this.time;
+		return typeof time === "number" ? Date.now() - time : Infinity;
+	}
 
-	// Always return undefined if there's no ref.
-	if (!ref) return undefined;
+	get data(): Entity<T> {
+		return getDocumentData(this.value, this.ref);
+	}
 
-	// If there's an error throw it.
-	if (error !== NOERROR) throw error;
+	constructor(ref: DocumentReference<T>) {
+		super();
+		this._table = findSourceProvider(ref.db.provider, CacheProvider).memory.getTable(ref);
+		this.ref = ref;
 
-	// If document is cached return the cached value.
-	if (value !== NOVALUE) return value;
+		// If the result is cached use it as the initial value.
+		const isCached = this._table.getDocumentTime(ref.id) !== undefined;
+		if (isCached) this.next(this._table.getDocument(ref.id)); // Use the existing cached value.
+		else dispatch(this.refresh); // Queue a request to refresh the value.
+	}
 
-	// If `maxAge` is `true` open a subscription for 10 seconds.
-	// Done before `ref.get()` because efficient providers (i.e. `BatchProvider`) will reuse the subscription's first result as its first get request.
-	if (maxAge === true) setTimeout(ref.subscribe({ next: setNext, error: setError }), 10000);
-
-	// Return a promise for the result.
-	const result = ref.result;
-	if (isAsync(result)) result.then(setNext, setError);
-	return result;
-}
-
-/** Do two database document references point to the same document? */
-const _isSameReference = <T extends Data>(left: DocumentReference<T> | undefined, right: DocumentReference<T> | undefined) => left === right || left?.toString() === right?.toString();
-
-/** Get the initial result for a reference from the cache. */
-function _getCachedResult<T extends Data>(ref: DocumentReference<T> | undefined): Result<Entity<T>> | typeof NOVALUE | undefined {
-	if (!ref) return undefined;
-	const provider = findSourceProvider(ref.db.provider, CacheProvider);
-	return provider.isCached(ref) ? provider.cache.get(ref) : NOVALUE;
-}
-
-/** Effect that subscribes a component to the cache for a reference. */
-function _subscribeEffect<T extends Data>(ref: DocumentReference<T> | undefined, maxAge: number | true, setNext: (result: Result<Entity<T>>) => void, setError: Handler): Unsubscriber | void {
-	if (ref) {
-		const observer = { next: setNext, error: setError };
-		const provider = findSourceProvider(ref.db.provider, CacheProvider);
-		const stopCache = provider.cache.subscribe(ref, observer);
-		if (maxAge === true) {
-			// If `maxAge` is true subscribe to the source for as long as this component is attached.
-			const stopSource = ref.subscribe(observer);
-			return () => {
-				stopCache();
-				stopSource();
-			};
-		} else if (provider.getCachedAge(ref) > maxAge) {
-			// If cache provider's cached document is older than maxAge then force refresh the data.
+	/** Refresh this state from the source provider. */
+	async refresh() {
+		if (this.closed) throw new ConditionError("State is closed");
+		if (!this.busy.value) {
 			try {
-				const result = ref.result;
-				if (isAsync(result)) result.then(setNext, setError);
-				else setNext(result);
-			} catch (e) {
-				setError(e);
+				this.busy.next(true);
+				const result = await this.ref.value;
+				this.busy.next(false);
+				this.next(result);
+			} catch (thrown) {
+				this.error(thrown);
 			}
 		}
-		return stopCache;
+	}
+
+	/** Refresh this state if data in the cache is older than `maxAge` (in milliseconds). */
+	refreshStale(maxAge: number) {
+		if (this.age > maxAge) dispatch(this.refresh);
+	}
+
+	/** Subscribe this state to the source provider. */
+	connectSource(): Unsubscribe {
+		return this.connect(() => this.ref.subscribe({}));
+	}
+
+	// Override to subscribe to the cache when an observer is added.
+	protected override _addFirstObserver(): void {
+		// Connect this state to the source.
+		// Connect through a `MatchObserver` that only dispatches `next()` if the document is actually cached (it might just be `null` because no document has been cached yet).
+		this.connect(() => this._table.subscribeDocument(this.ref.id, new MatchObserver(() => this._table.getDocumentTime(this.ref.id) !== undefined, this)));
+	}
+
+	// Override to unsubscribe from the cache when an observer is removed.
+	protected override _removeLastObserver(): void {
+		// Disconnect all sources.
+		this.disconnect();
 	}
 }
 
+/** Reuse the previous `DocumentState` or create a new one. */
+const _getDocumentState = <T extends Data>(previous: DocumentState<T> | undefined, ref: DocumentReference<T> | undefined): DocumentState<T> | undefined =>
+	!ref ? undefined : previous && isSameReference(previous.ref, ref) ? previous : new DocumentState(ref);
+
 /**
- * Use the cached data of a document in a React component.
- * - Requires database to use `CacheProvider` and will error if this does not exist.
- *
- * @param ref Document reference or `undefined`.
- * - If `undefined` is set this function will always return `undefined` (this simplifies scenarios where no document is needed, as hooks must always be called in the same order).
- * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
- * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
- *
- * @returns The result of the document (i.e. its data or `undefined` if it doesn't exist).
- *
- * @throws `Promise` that resolves when the result has loaded.
- * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
- * @throws `Error` if there was a problem retrieving the result.
+ * Use a document in a React component.
+ * - Use `useDocument(ref).data` to get the data of the document.
+ * - Use `useDocument(ref).value` to get the data of the document or `null` if it doesn't exist.
+ * - Use `useDocument(ref).exists` to check if the document is loaded before accessing `.data` or `.value`
  */
-export function useDocument<T extends Data>(ref: DocumentReference<T>, maxAge?: number | true): Result<Entity<T>>;
-export function useDocument<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | undefined;
-export function useDocument<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | undefined {
-	return throwAsync(useAsyncDocument(ref, maxAge));
-}
-
-/** Use the data of a document or `undefined` if the query has no matching results (or a promise indicating the result is loading). */
-export function useAsyncDocumentData<T extends Data>(ref: DocumentReference<T>, maxAge?: number | true): Entity<T> | PromiseLike<Entity<T>>;
-export function useAsyncDocumentData<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): Entity<T> | PromiseLike<Entity<T>> | undefined;
-export function useAsyncDocumentData<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): Entity<T> | PromiseLike<Entity<T>> | undefined {
-	const result = useAsyncDocument(ref, maxAge);
-	return ref && result !== undefined ? callAsync(getDocumentData, result, ref) : undefined;
-}
-
-/** Use the data of a document or `undefined` if the query has no matching results. */
-export function useDocumentData<T extends Data>(ref: DocumentReference<T>, maxAge?: number | true): Entity<T>;
-export function useDocumentData<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): Entity<T> | undefined;
-export function useDocumentData<T extends Data>(ref: DocumentReference<T> | undefined, maxAge?: number | true): Entity<T> | undefined {
-	return throwAsync(useAsyncDocumentData(ref, maxAge));
+export function useDocument<T extends Data>(ref: DocumentReference<T>): DocumentState<T>;
+export function useDocument<T extends Data>(ref?: DocumentReference<T>): DocumentState<T> | undefined;
+export function useDocument<T extends Data>(ref?: DocumentReference<T>): DocumentState<T> | undefined {
+	const state = useReduce<DocumentState<T> | undefined, [DocumentReference<T> | undefined]>(_getDocumentState, ref);
+	useSubscribe(state);
+	return state;
 }

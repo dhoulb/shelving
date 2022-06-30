@@ -1,148 +1,150 @@
-import { useState } from "react";
+import type { Unsubscribe } from "../observe/Observable.js";
 import type { QueryReference } from "../db/Reference.js";
-import type { Data, Entity, Result } from "../util/data.js";
-import type { Handler } from "../util/error.js";
-import { getArray, ImmutableArray } from "../util/array.js";
-import { NOERROR, NOVALUE } from "../util/constants.js";
+import type { Data, Entities, OptionalEntity } from "../util/data.js";
+import { getQueryFirstData, getQueryFirstValue, isSameReference } from "../db/Reference.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { findSourceProvider } from "../provider/ThroughProvider.js";
-import { callAsync, isAsync, throwAsync } from "../util/async.js";
-import { ArrayObserver, Unsubscriber } from "../util/observe.js";
-import { getQueryData, getQueryResult } from "../db/util.js";
-import { useCompare } from "./useCompare.js";
-import { usePureState } from "./usePureState.js";
-import { usePureEffect } from "./usePureEffect.js";
+import { Entity } from "../util/data.js";
+import { State } from "../state/State.js";
+import { MemoryTable } from "../provider/MemoryProvider.js";
+import { MatchObserver } from "../observe/MatchObserver.js";
+import { ConditionError } from "../error/ConditionError.js";
+import { BooleanState } from "../state/BooleanState.js";
+import { dispatch } from "../util/function.js";
+import { useReduce } from "./useReduce.js";
+import { useSubscribe } from "./useSubscribe.js";
 
-/**
- * Use the cached result of a document in a React component (or a `Promise` to indicate the result is still loading).
- * - Requires database to use `CacheProvider` and will error if this does not exist.
- *
- * @param ref Documents reference or `undefined`.
- * - If `undefined` is set this function will always return `undefined` (this simplifies scenarios where no document is needed, as hooks must always be called in the same order).
- * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
- * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
- *
- * @returns The results for the set of documents as a map, or promise that resolves when the result has loaded, or `undefined` if ref was set to `undefined`
- * - Always uses returns results as a map because the same results might be used for several renders.
- *
- * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
- * @throws `Error` if there was a problem retrieving the results.
- */
-export function useAsyncQuery<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): ImmutableArray<Entity<T>> | PromiseLike<ImmutableArray<Entity<T>>>;
-export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): ImmutableArray<Entity<T>> | PromiseLike<ImmutableArray<Entity<T>>> | undefined;
-export function useAsyncQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge: number | true = 1000): ImmutableArray<Entity<T>> | PromiseLike<ImmutableArray<Entity<T>>> | undefined {
-	// Create a memoed version of `ref`
-	const memoRef = useCompare(_isSameReference, ref);
+/** Hold the current state of a query. */
+export class QueryState<T extends Data> extends State<Entities<T>> {
+	readonly ref: QueryReference<T>;
+	readonly busy = new BooleanState();
+	readonly limit: number;
 
-	// Create two states to hold the value and error.
-	const [value, setNext] = usePureState(_getCachedResults, memoRef);
-	const [error, setError] = useState<unknown>(NOERROR);
-	if (error !== NOERROR) throw error; // If there's an error throw it.
+	protected readonly _table: MemoryTable<T>;
 
-	// Register effects.
-	usePureEffect(_subscribeEffect, memoRef, maxAge, setNext, setError);
+	/** Time this state was last updated with a new value. */
+	get time(): number | undefined {
+		return this._table.getQueryTime(this.ref);
+	}
 
-	// Always return undefined if there's no ref.
-	if (!ref) return undefined;
+	/** How old this state's value is (in milliseconds). */
+	get age(): number {
+		const time = this.time;
+		return typeof time === "number" ? Date.now() - time : Infinity;
+	}
 
-	// If document is cached return the cached value.
-	if (value !== NOVALUE) return value;
+	/** Can more items be loaded after the current result. */
+	get hasMore(): boolean {
+		return this._hasMore;
+	}
+	protected _hasMore = false;
 
-	// If `maxAge` is `true` open a subscription for 10 seconds.
-	// Done before `ref.get()` because efficient providers (i.e. `BatchProvider`) will reuse the subscription's first result as its first get request.
-	if (maxAge === true) setTimeout(ref.subscribe({ next: setNext, error: setError }), 10000);
+	/** Get the first document matched by this query or `null` if this query has no items. */
+	get firstValue(): OptionalEntity<T> {
+		return getQueryFirstValue(this.value);
+	}
 
-	// Return a promise for the result.
-	const results = ref.array;
-	if (isAsync(results)) results.then(setNext, setError);
-	return results;
-}
+	/** Get the first document matched by this query. */
+	get firstData(): Entity<T> {
+		return getQueryFirstData(this.value, this.ref);
+	}
 
-/** Do two database query references point to the same query? */
-const _isSameReference = <T extends Data>(left: QueryReference<T> | undefined, right: QueryReference<T> | undefined) => left === right || left?.toString() === right?.toString();
+	/** Get the last document matched by this query or `null` if this query has no items. */
+	get lastValue(): OptionalEntity<T> {
+		return getQueryFirstValue(this.value);
+	}
 
-/** Get the initial results for a reference from the cache. */
-function _getCachedResults<T extends Data>(ref: QueryReference<T> | undefined): ImmutableArray<Entity<T>> | typeof NOVALUE | undefined {
-	if (!ref) return undefined;
-	const provider = findSourceProvider(ref.db.provider, CacheProvider);
-	return provider.isCached(ref) ? getArray(provider.cache.getQuery(ref)) : NOVALUE;
-}
+	/** Get the last document matched by this query. */
+	get lastData(): Entity<T> {
+		return getQueryFirstData(this.value, this.ref);
+	}
 
-/** Effect that subscribes a component to the cache for a reference. */
-function _subscribeEffect<T extends Data>(ref: QueryReference<T> | undefined, maxAge: number | true, setNext: (results: ImmutableArray<Entity<T>>) => void, setError: Handler): Unsubscriber | void {
-	if (ref) {
-		const observer = new ArrayObserver({ next: setNext, error: setError });
-		const provider = findSourceProvider(ref.db.provider, CacheProvider);
-		const stopCache = provider.cache.subscribeQuery(ref, observer);
-		if (maxAge === true) {
-			// If `maxAge` is true subscribe to the source for as long as this component is attached.
-			const stopSource = ref.db.provider.subscribeQuery(ref, observer);
-			return () => {
-				stopCache();
-				stopSource();
-			};
-		} else if (provider.getCachedAge(ref) > maxAge) {
-			// If cache provider's cached document is older than maxAge then force refresh the data.
-			Promise.resolve(ref.array).then(setNext, setError);
+	constructor(ref: QueryReference<T>) {
+		super();
+		this._table = findSourceProvider(ref.db.provider, CacheProvider).memory.getTable(ref);
+		this.ref = ref;
+		this.limit = ref.limit ?? Infinity;
+
+		// If the result is cached use it as the initial value.
+		const isCached = this._table.getQueryTime(ref) !== undefined;
+		if (isCached) this.next(this._table.getQuery(ref)); // Use the existing cached value.
+		else dispatch(this.refresh); // Queue a request to refresh the value.
+	}
+
+	/** Refresh this state from the source provider. */
+	refresh = async (): Promise<void> => {
+		if (this.closed) throw new ConditionError("State is closed");
+		if (!this.busy.value) {
 			try {
-				const results = ref.array;
-				if (isAsync(results)) results.then(setNext, setError);
-				else setNext(results);
-			} catch (e) {
-				setError(e);
+				this.busy.next(true);
+				const result = await this.ref.value;
+				this._hasMore = result.length < this.limit;
+				this.busy.next(false);
+				this.next(result);
+			} catch (thrown) {
+				this.error(thrown);
 			}
 		}
-		return stopCache;
+	};
+
+	/** Refresh this state if data in the cache is older than `maxAge` (in milliseconds). */
+	refreshStale(maxAge: number) {
+		if (!this.busy.value && this.age > maxAge) dispatch(this.refresh);
 	}
+
+	/** Subscribe this state to the source provider. */
+	connectSource(): Unsubscribe {
+		return this.connect(() => this.ref.subscribe({}));
+	}
+
+	// Override to subscribe to the cache when an observer is added.
+	protected override _addFirstObserver(): void {
+		// Connect this state to the source.
+		// Connect through a `MatchObserver` that only dispatches `next()` if the query is actually cached (it might just be `[]` because no query has been cached yet).
+		this.connect(() => this._table.subscribeQuery(this.ref, new MatchObserver(() => this._table.getQueryTime(this.ref) !== undefined, this)));
+	}
+
+	// Override to unsubscribe from the cache when an observer is removed.
+	protected override _removeLastObserver(): void {
+		// Disconnect all sources.
+		this.disconnect();
+	}
+
+	/**
+	 * Load more items after the last once.
+	 * - Promise that needs to be handled.
+	 */
+	loadMore = async (): Promise<void> => {
+		if (this.closed) throw new ConditionError("State is closed");
+		if (!this.busy.value) {
+			try {
+				this.busy.next(true);
+				const items = await this.ref.after(this.lastData).value;
+				this.next([...this.value, ...items]);
+				this._hasMore = items.length < this.limit;
+				this.busy.next(false);
+			} catch (thrown) {
+				this.error(thrown);
+			}
+		}
+	};
 }
+
+/** Reuse the previous `QueryState` or create a new one. */
+const _getQueryState = <T extends Data>(previous: QueryState<T> | undefined, ref: QueryReference<T> | undefined): QueryState<T> | undefined =>
+	!ref ? undefined : previous && isSameReference(previous.ref, ref) ? previous : new QueryState(ref);
 
 /**
- * Use the cached results of a set of documents in a React component.
- * - Requires database to use `CacheProvider` and will error if this does not exist.
- *
- * @param ref Documents reference or `undefined`.
- * - If `undefined` is set this function will always return `undefined` (this simplifies scenarios where no document is needed, as hooks must always be called in the same order).
- * @param maxAge How 'out of date' data is allowed to be before it'll be refetched.
- * - If `maxAge` is true, a realtime subscription to the data will be created for the lifetime of the component.
- *
- * @returns The results for the set of documents.
- *
- * @throws `Promise` if document results have not been cached yet (handle this with a React `<Suspense>` element).
- * @trhows `Error` if a `CacheProvider` is not part of the database's provider chain.
- * @throws `Error` if there was a problem retrieving the results.
+ * Use a query in a React component.
+ * - Use `useQuery(ref).data` to get the data of the query.
+ * - Use `useQuery(ref).value` to get the data of the query or `null` if it doesn't exist.
+ * - Use `useQuery(ref).exists` to check if the query is loaded before accessing `.data` or `.value`
  */
-export function useQuery<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): ImmutableArray<Entity<T>>;
-export function useQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): ImmutableArray<Entity<T>> | undefined;
-export function useQuery<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): ImmutableArray<Entity<T>> | undefined {
-	return throwAsync(useAsyncQuery(ref, maxAge));
-}
-
-/** Use the first result of a query or `undefined` if the query has no matching results (or a promise indicating the result is loading). */
-export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Result<Entity<T>> | PromiseLike<Result<Entity<T>>>;
-export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> | undefined;
-export function useAsyncQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> | undefined {
-	const results = useAsyncQuery(ref ? ref.max(1) : undefined, maxAge);
-	return ref && results ? callAsync(getQueryResult, results) : undefined;
-}
-
-/** Use the first result of a query or `undefined` if the query has no matching results */
-export function useQueryResult<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Result<Entity<T>>;
-export function useQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | undefined;
-export function useQueryResult<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Result<Entity<T>> | undefined {
-	return throwAsync(useAsyncQueryResult(ref, maxAge));
-}
-
-/** Use the first result of a query (or a promise indicating the result is loading). */
-export function useAsyncQueryData<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Entity<T> | PromiseLike<Entity<T>>;
-export function useAsyncQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Entity<T> | PromiseLike<Entity<T>> | undefined;
-export function useAsyncQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Entity<T> | PromiseLike<Entity<T>> | undefined {
-	const results = useAsyncQuery(ref ? ref.max(1) : undefined, maxAge);
-	return ref && results ? callAsync(getQueryData, results, ref) : undefined;
-}
-
-/** Use the first result of a query. */
-export function useQueryData<T extends Data>(ref: QueryReference<T>, maxAge?: number | true): Entity<T>;
-export function useQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Entity<T> | undefined;
-export function useQueryData<T extends Data>(ref: QueryReference<T> | undefined, maxAge?: number | true): Entity<T> | undefined {
-	return throwAsync(useAsyncQueryData(ref, maxAge));
+export function useQuery<T extends Data>(ref: QueryReference<T>): QueryState<T>;
+export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T> | undefined;
+export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T> | undefined {
+	const state = useReduce(_getQueryState, ref);
+	useSubscribe(state);
+	if (state && !state.exists) dispatch(state.refresh); // Load the query if it isn't cached already.
+	return state;
 }
