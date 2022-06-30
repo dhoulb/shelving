@@ -1,5 +1,5 @@
 import type { Transformer } from "../util/transform.js";
-import { Disconnect, Subscribable, subscribe, Unsubscribe } from "./Observable.js";
+import { Unsubscribe, Subscribable, subscribe } from "./Observable.js";
 import { TransformObserver } from "./TransformObserver.js";
 import { AsyncObserver } from "./AsyncObserver.js";
 import { OnceObserver } from "./OnceObserver.js";
@@ -18,12 +18,12 @@ export function awaitComplete<T>(source: Subscribable<T>): Promise<void> {
 }
 
 /** Connect a connectable to a source subscribable but transform the value using a transform. */
-export function connectDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, TT>, target: ConnectableObserver<TT>): Disconnect {
+export function connectDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, TT>, target: ConnectableObserver<TT>): Unsubscribe {
 	return target.connect(() => subscribe(source, new TransformObserver<T, TT>(transformer, target)));
 }
 
 /** Connect a connectable to a source subscribable but transform the value using an async transform. */
-export function connectAsyncDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, PromiseLike<TT>>, target: ConnectableObserver<TT>): Disconnect {
+export function connectAsyncDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, PromiseLike<TT>>, target: ConnectableObserver<TT>): Unsubscribe {
 	return target.connect(() => subscribe(source, new TransformObserver(transformer, new AsyncObserver(target))));
 }
 

@@ -2,7 +2,7 @@ import type { Mutable } from "../util/data.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { dispatch, Dispatch } from "../util/function.js";
 import { ConnectableObserver, dispatchComplete, dispatchError, dispatchNext, PartialObserver } from "./Observer.js";
-import { Disconnect, Observable, Subscribable, subscribe, Unsubscribe } from "./Observable.js";
+import { Observable, Subscribable, subscribe, Unsubscribe } from "./Observable.js";
 
 /**
  * Simple subject
@@ -12,7 +12,7 @@ import { Disconnect, Observable, Subscribable, subscribe, Unsubscribe } from "./
  */
 export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	/** List of sources this subject is subscribed to. */
-	protected readonly _cleanups = new Set<Disconnect>();
+	protected readonly _cleanups = new Set<Unsubscribe>();
 
 	/** List of subscribed observers that values are forwarded to. */
 	protected readonly _subscribers = new Set<PartialObserver<T>>();
@@ -65,7 +65,7 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	}
 
 	/** Connect this subjet to a source. */
-	connect(source: Subscribable<T>): Disconnect {
+	connect(source: Subscribable<T>): Unsubscribe {
 		if (this.closed) throw new ConditionError("Subject is closed");
 		const unsubscribe = subscribe(source, this);
 		const cleanup = () => {
