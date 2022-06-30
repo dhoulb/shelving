@@ -1,7 +1,13 @@
 import { useRef } from "react";
 import type { Arguments } from "../util/function.js";
 
-/** Use memoised value with reduction logic. */
+/**
+ * Use memoised value with reduction logic.
+ * - Calls `reduce()` on each render.
+ * - First argument (`previous`) is either `undefined` (on first render) or the value returned by `reduce()` on the previous render (on subsequent renders).
+ * - `reduce()` can implement custom logic to decide whether to return the previous value or a new one.
+ * - Returns whatever `reduce()` returns on this render.
+ */
 export function useReduce<T, A extends Arguments = []>(reduce: (previous: T | undefined, ...a: A) => T, ...args: A): T {
 	const r = useRef<T>();
 	return (r.current = reduce(r.current, ...args));

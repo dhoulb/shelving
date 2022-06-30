@@ -1,11 +1,12 @@
+// Utilities.
 export * from "./useLazy.js";
-export * from "./useCompare.js";
 export * from "./useReduce.js";
 export * from "./useInstance.js";
-export * from "./usePureEffect.js";
-export * from "./usePureState.js";
+
+// Observables.
 export * from "./useSubscribe.js";
-export * from "./useState.js";
+
+// DB.
 export * from "./useDocument.js";
 export * from "./useQuery.js";
 export * from "./usePagination.js";
