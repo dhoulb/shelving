@@ -1,8 +1,8 @@
-import type { Data, Result, Entity } from "../util/data.js";
+import type { Data, Entities, OptionalEntity } from "../util/data.js";
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import type { Class } from "../util/class.js";
-import type { Observer } from "../observe/Observer.js";
+import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
 import { AssertionError } from "../error/AssertionError.js";
 import { AsynchronousProvider, Provider, SynchronousProvider } from "./Provider.js";
@@ -16,10 +16,10 @@ export class ThroughProvider extends Provider {
 		super();
 		this.source = source;
 	}
-	getDocument<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
+	getDocument<T extends Data>(ref: DocumentReference<T>): OptionalEntity<T> | PromiseLike<OptionalEntity<T>> {
 		return this.source.getDocument(ref);
 	}
-	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
 		return this.source.subscribeDocument(ref, observer);
 	}
 	addDocument<T extends Data>(ref: QueryReference<T>, data: T): string | PromiseLike<string> {
@@ -34,10 +34,10 @@ export class ThroughProvider extends Provider {
 	deleteDocument<T extends Data>(ref: DocumentReference<T>): void | PromiseLike<void> {
 		return this.source.deleteDocument(ref);
 	}
-	getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> | PromiseLike<Iterable<Entity<T>>> {
+	getQuery<T extends Data>(ref: QueryReference<T>): Entities<T> | PromiseLike<Entities<T>> {
 		return this.source.getQuery(ref);
 	}
-	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: PartialObserver<Entities<T>>): Unsubscribe {
 		return this.source.subscribeQuery(ref, observer);
 	}
 	setQuery<T extends Data>(ref: QueryReference<T>, data: T): number | PromiseLike<number> {

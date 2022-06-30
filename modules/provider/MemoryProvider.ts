@@ -1,16 +1,17 @@
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { MutableObject } from "../util/object.js";
-import type { Data, Result, Entity } from "../util/data.js";
+import type { Data, Entity, Entities, OptionalEntity } from "../util/data.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import type { Dispatch } from "../util/function.js";
+import type { Unsubscribe } from "../observe/Observable.js";
 import { getRandomKey } from "../util/random.js";
 import { isArrayEqual } from "../util/equal.js";
 import { transformProps } from "../util/transform.js";
 import { Query } from "../query/Query.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { Subject } from "../observe/Subject.js";
-import type { Unsubscribe } from "../observe/Observable.js";
-import { Observer, dispatchNext } from "../observe/Observer.js";
+import { dispatchNext, PartialObserver } from "../observe/Observer.js";
+import { getArray } from "../util/array.js";
 import { Provider, SynchronousProvider } from "./Provider.js";
 
 /**
@@ -31,11 +32,11 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		return this.getTable(ref).getDocumentTime(ref.id);
 	}
 
-	getDocument<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> {
+	getDocument<T extends Data>(ref: DocumentReference<T>): OptionalEntity<T> {
 		return this.getTable(ref).getDocument(ref.id);
 	}
 
-	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
 		return this.getTable(ref).subscribeDocument(ref.id, observer);
 	}
 
@@ -59,11 +60,11 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		return this.getTable(ref).getQueryTime(ref);
 	}
 
-	getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> {
+	getQuery<T extends Data>(ref: QueryReference<T>): Entities<T> {
 		return this.getTable(ref).getQuery(ref);
 	}
 
-	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: PartialObserver<Entities<T>>): Unsubscribe {
 		return this.getTable(ref).subscribeQuery(ref, observer);
 	}
 
@@ -94,11 +95,11 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 		return this._times.get(id);
 	}
 
-	getDocument(id: string): Result<Entity<T>> {
+	getDocument(id: string): OptionalEntity<T> {
 		return this._data.get(id) || null;
 	}
 
-	subscribeDocument(id: string, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+	subscribeDocument(id: string, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
 		// Call next() immediately with initial results.
 		let last = this.getDocument(id);
 		dispatchNext(observer, last);
@@ -147,18 +148,18 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 		return this._times.get(_getQueryReference(query));
 	}
 
-	getQuery(query: Query<Entity<T>>): Iterable<Entity<T>> {
-		return query.transform(this._data.values());
+	getQuery(query: Query<Entity<T>>): Entities<T> {
+		return getArray(query.transform(this._data.values()));
 	}
 
-	subscribeQuery(query: Query<Entity<T>>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
+	subscribeQuery(query: Query<Entity<T>>, observer: PartialObserver<Entities<T>>): Unsubscribe {
 		// Call `next()` immediately with the initial results.
-		let last = Array.from(this.getQuery(query));
+		let last = this.getQuery(query);
 		dispatchNext(observer, last);
 
 		// Possibly call `next()` when the collection changes if any changes affect the subscription.
 		return this.subscribe(() => {
-			const next = Array.from(this.getQuery(query));
+			const next = this.getQuery(query);
 			if (!isArrayEqual(last, next)) {
 				last = next;
 				dispatchNext(observer, last);
@@ -167,12 +168,12 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 	}
 
 	protected _getWrites(query: Query<Entity<T>>): Iterable<Entity<T>> {
-		// If there's a limit set: run the full query.
-		// If there's no limit set: only need to run the filtering (more efficient because sort order doesn't matter).
+		// Queries that have no limit don't care about sorting either.
+		// So sorting can be skipped for performance.
 		return query.limit ? query.transform(this._data.values()) : query.filters.transform(this._data.values());
 	}
 
-	setEntities(query: Query<Entity<T>>, entities: Iterable<Entity<T>>): number {
+	setEntities(query: Query<Entity<T>>, entities: Entities<T>): number {
 		const now = Date.now();
 		let count = 0;
 		for (const entity of entities) {

@@ -12,17 +12,17 @@ import type {
 } from "@google-cloud/firestore";
 import { Firestore, FieldValue } from "@google-cloud/firestore";
 import type { DocumentReference, QueryReference } from "../../db/Reference.js";
-import type { Data, Result, Entity } from "../../util/data.js";
+import type { Data, Entity, Entities, OptionalEntity } from "../../util/data.js";
 import type { Entry } from "../../util/entry.js";
 import type { FilterOperator } from "../../query/Filter.js";
 import type { SortDirection } from "../../query/Sort.js";
+import type { Unsubscribe } from "../../observe/Observable.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { AsynchronousProvider, Provider } from "../../provider/Provider.js";
 import { ArrayUpdate } from "../../update/ArrayUpdate.js";
 import { DataUpdate } from "../../update/DataUpdate.js";
 import { Increment } from "../../update/Increment.js";
 import { ObjectUpdate } from "../../update/ObjectUpdate.js";
-import type { Unsubscribe } from "../../observe/Observable.js";
 import { dispatchError, dispatchNext, Observer } from "../../observe/Observer.js";
 
 // Constants.
@@ -68,13 +68,16 @@ function getQuery<T extends Data>(firestore: Firestore, ref: QueryReference<T>):
 	return query;
 }
 
-/** Create a set of results from a collection snapshot. */
-function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Iterable<Entity<T>> {
-	for (const s of snapshot.docs) yield { ...s.data(), id: s.id };
+function getEntities<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Entities<T> {
+	return snapshot.docs.map(getEntity);
 }
 
-/** Get a result from a document snapshot. */
-function getResult<T extends Data>(snapshot: FirestoreDocumentSnapshot<T>): Result<Entity<T>> {
+function getEntity<T extends Data>(snapshot: FirestoreQueryDocumentSnapshot<T>): Entity<T> {
+	const data = snapshot.data();
+	return { ...data, id: snapshot.id };
+}
+
+function getOptionalEntity<T extends Data>(snapshot: FirestoreDocumentSnapshot<T>): OptionalEntity<T> {
 	const data = snapshot.data();
 	return data ? { ...data, id: snapshot.id } : null;
 }
@@ -105,13 +108,13 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		this.firestore = firestore;
 	}
 
-	async getDocument<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
-		return getResult(await getDocument(this.firestore, ref).get());
+	async getDocument<T extends Data>(ref: DocumentReference<T>): Promise<OptionalEntity<T>> {
+		return getOptionalEntity(await getDocument(this.firestore, ref).get());
 	}
 
-	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<OptionalEntity<T>>): Unsubscribe {
 		return getDocument(this.firestore, ref).onSnapshot(
-			snapshot => dispatchNext(observer, getResult(snapshot)),
+			snapshot => dispatchNext(observer, getOptionalEntity(snapshot)),
 			thrown => dispatchError(observer, thrown),
 		);
 	}
@@ -133,13 +136,13 @@ export class FirestoreServerProvider extends Provider implements AsynchronousPro
 		await getDocument(this.firestore, ref).delete();
 	}
 
-	async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Iterable<Entity<T>>> {
-		return getResults(await getQuery(this.firestore, ref).get());
+	async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Entities<T>> {
+		return getEntities(await getQuery(this.firestore, ref).get());
 	}
 
-	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
+	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Entities<T>>): Unsubscribe {
 		return getQuery(this.firestore, ref).onSnapshot(
-			snapshot => dispatchNext(observer, getResults(snapshot)),
+			snapshot => dispatchNext(observer, getEntities(snapshot)),
 			thrown => dispatchError(observer, thrown),
 		);
 	}

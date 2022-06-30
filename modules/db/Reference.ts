@@ -1,8 +1,9 @@
-import type { Data, Result, Entity } from "../util/data.js";
+import type { Data, OptionalData, Entity, OptionalEntity, Entities } from "../util/data.js";
 import type { Dispatch } from "../util/function.js";
 import type { SortKeys } from "../query/Sort.js";
-import { getArray, ImmutableArray } from "../util/array.js";
-import { Validator } from "../util/validate.js";
+import type { ImmutableArray } from "../util/array.js";
+import type { PartialObserver } from "../observe/Observer.js";
+import type { Validator } from "../util/validate.js";
 import { Query } from "../query/Query.js";
 import { Filters } from "../query/Filters.js";
 import { Sorts } from "../query/Sorts.js";
@@ -10,10 +11,8 @@ import { callAsync } from "../util/async.js";
 import { countItems, hasItems } from "../util/iterate.js";
 import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
 import { Filter, FilterProps } from "../query/Filter.js";
-import { TransformObserver } from "../observe/TransformObserver.js";
 import { Observable, Unsubscribe } from "../observe/Observable.js";
-import { Observer, PartialObserver } from "../observe/Observer.js";
-import { getDocumentData, getQueryData, getQueryResult } from "./util.js";
+import { getDocumentData, getQueryFirstData, getQueryFirstValue, getQueryLastData, getQueryLastValue } from "./util.js";
 import type { Database } from "./Database.js";
 
 /** A refence to a location in a database. */
@@ -51,19 +50,11 @@ export class QueryReference<T extends Data = Data> extends Query<Entity<T>> impl
 	}
 
 	/**
-	 * Get an iterable that yields the entities of this query.
-	 * @return Map containing the results.
+	 * Get array of entities for this query.
+	 * @return Array of entities.
 	 */
-	get items(): Iterable<Entity<T>> | PromiseLike<Iterable<Entity<T>>> {
+	get value(): Entities<T> | PromiseLike<Entities<T>> {
 		return this.db.provider.getQuery(this);
-	}
-
-	/**
-	 * Get an array of the results of this .
-	 * @return Array containing the entities.
-	 */
-	get array(): ImmutableArray<Entity<T>> | PromiseLike<ImmutableArray<Entity<T>>> {
-		return callAsync<Iterable<Entity<T>>, ImmutableArray<Entity<T>>>(getArray, this.db.provider.getQuery(this));
 	}
 
 	/**
@@ -71,7 +62,7 @@ export class QueryReference<T extends Data = Data> extends Query<Entity<T>> impl
 	 * @return Number of documents matching the query (possibly promised).
 	 */
 	get count(): number | PromiseLike<number> {
-		return callAsync(countItems, this.items);
+		return callAsync(countItems, this.value);
 	}
 
 	/**
@@ -84,22 +75,34 @@ export class QueryReference<T extends Data = Data> extends Query<Entity<T>> impl
 
 	/**
 	 * Get the first document matched by this query or `null` if this query has no results.
-	 *
-	 * @return Entry in `[id, data]` format for the first document.
 	 * @throws RequiredError if there were no results for this query.
 	 */
-	get result(): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
-		return callAsync(getQueryResult, this.db.provider.getQuery(this.max(1)));
+	get firstValue(): OptionalEntity<T> | PromiseLike<OptionalEntity<T>> {
+		return callAsync(getQueryFirstValue, this.db.provider.getQuery(this.max(1)));
 	}
 
 	/**
 	 * Get the first document matched by this query.
-	 *
-	 * @return Entry in `[id, data]` format for the first document.
 	 * @throws RequiredError if there were no results for this query.
 	 */
-	get data(): Entity<T> | PromiseLike<Entity<T>> {
-		return callAsync(getQueryData, this.db.provider.getQuery(this.max(1)), this);
+	get firstData(): Entity<T> | PromiseLike<Entity<T>> {
+		return callAsync(getQueryFirstData, this.db.provider.getQuery(this.max(1)), this);
+	}
+
+	/**
+	 * Get the last document matched by this query or `null` if this query has no results.
+	 * @throws RequiredError if there were no results for this query.
+	 */
+	get lastValue(): OptionalEntity<T> | PromiseLike<OptionalEntity<T>> {
+		return callAsync(getQueryLastValue, this.db.provider.getQuery(this.max(1)));
+	}
+
+	/**
+	 * Get the last document matched by this query.
+	 * @throws RequiredError if there were no results for this query.
+	 */
+	get lastData(): Entity<T> | PromiseLike<Entity<T>> {
+		return callAsync(getQueryLastData, this.db.provider.getQuery(this.max(1)), this);
 	}
 
 	/**
@@ -109,8 +112,8 @@ export class QueryReference<T extends Data = Data> extends Query<Entity<T>> impl
 	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: Observer<ImmutableArray<Entity<T>>> | Dispatch<[ImmutableArray<Entity<T>>]>): Unsubscribe {
-		return this.db.provider.subscribeQuery(this, new TransformObserver(getArray, typeof next === "function" ? { next } : next));
+	subscribe(next: PartialObserver<ImmutableArray<Entity<T>>> | Dispatch<[ImmutableArray<Entity<T>>]>): Unsubscribe {
+		return this.db.provider.subscribeQuery(this, typeof next === "function" ? { next } : next);
 	}
 
 	/**
@@ -148,7 +151,7 @@ export class QueryReference<T extends Data = Data> extends Query<Entity<T>> impl
 }
 
 /** A document reference within a specific database. */
-export class DocumentReference<T extends Data = Data> implements Observable<Result<T>>, Reference {
+export class DocumentReference<T extends Data = Data> implements Observable<OptionalData<T>>, Reference {
 	readonly db: Database;
 	readonly validator: Validator<T>;
 	readonly collection: string;
@@ -179,10 +182,10 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	}
 
 	/**
-	 * Get the result of this document.
+	 * Get the optional data of this document.
 	 * @return Document's data, or `null` if the document doesn't exist (possibly promised).
 	 */
-	get result(): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
+	get value(): OptionalEntity<T> | PromiseLike<OptionalEntity<T>> {
 		return this.db.provider.getDocument(this);
 	}
 
@@ -204,7 +207,7 @@ export class DocumentReference<T extends Data = Data> implements Observable<Resu
 	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: PartialObserver<Result<Entity<T>>> | Dispatch<[Result<Entity<T>>]>): Unsubscribe {
+	subscribe(next: PartialObserver<OptionalEntity<T>> | Dispatch<[OptionalEntity<T>]>): Unsubscribe {
 		return this.db.provider.subscribeDocument(this, typeof next === "function" ? { next } : next);
 	}
 

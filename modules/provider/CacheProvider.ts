@@ -1,9 +1,8 @@
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
-import type { Data, Result, Entity } from "../util/data.js";
-import { DataUpdate } from "../update/DataUpdate.js";
-import { getArray } from "../util/array.js";
-import type { Observer } from "../observe/Observer.js";
+import type { Data, Entities, OptionalEntity } from "../util/data.js";
+import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
+import { DataUpdate } from "../update/DataUpdate.js";
 import { TransformObserver } from "../observe/TransformObserver.js";
 import type { Provider, AsynchronousProvider } from "./Provider.js";
 import { MemoryProvider } from "./MemoryProvider.js";
@@ -20,7 +19,7 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 	}
 
 	// Override to cache any got result.
-	override async getDocument<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
+	override async getDocument<T extends Data>(ref: DocumentReference<T>): Promise<OptionalEntity<T>> {
 		const table = this.memory.getTable(ref);
 		const result = await super.getDocument(ref);
 		result ? table.setEntity(result) : table.deleteDocument(ref.id);
@@ -28,11 +27,11 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 	}
 
 	// Override to cache any got results.
-	override subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+	override subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
 		const table = this.memory.getTable(ref);
 		return super.subscribeDocument(
 			ref,
-			new TransformObserver((result: Result<Entity<T>>) => {
+			new TransformObserver((result: OptionalEntity<T>) => {
 				result ? table.setEntity(result) : table.deleteDocument(ref.id);
 				return result;
 			}, observer),
@@ -63,18 +62,18 @@ export class CacheProvider extends ThroughProvider implements AsynchronousProvid
 	}
 
 	// Override to cache any got results.
-	override async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Iterable<Entity<T>>> {
-		const entities = getArray(await super.getQuery(ref));
+	override async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Entities<T>> {
+		const entities = await super.getQuery(ref);
 		this.memory.getTable(ref).setEntities(ref, entities);
 		return entities;
 	}
 
 	// Override to cache any got results.
-	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
+	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: PartialObserver<Entities<T>>): Unsubscribe {
 		const table = this.memory.getTable(ref);
 		return super.subscribeQuery(
 			ref,
-			new TransformObserver((entities: Iterable<Entity<T>>) => {
+			new TransformObserver((entities: Entities<T>) => {
 				table.setEntities(ref, entities);
 				return entities;
 			}, observer),

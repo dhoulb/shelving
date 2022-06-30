@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-import type { Data, Result, Entity } from "../util/data.js";
+import type { Data, Entities, OptionalEntity } from "../util/data.js";
 import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
-import type { Observer } from "../observe/Observer.js";
+import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
 import { isAsync } from "../util/async.js";
 import { ThroughObserver } from "../observe/ThroughObserver.js";
@@ -11,7 +11,7 @@ import { ThroughProvider } from "./ThroughProvider.js";
 
 /** Provider that logs its operations to the console for debugging purposes. */
 export class DebugProvider extends ThroughProvider {
-	override getDocument<T extends Data>(ref: DocumentReference<T>): Result<Entity<T>> | PromiseLike<Result<Entity<T>>> {
+	override getDocument<T extends Data>(ref: DocumentReference<T>): OptionalEntity<T> | PromiseLike<OptionalEntity<T>> {
 		console.log(`Get "${ref}"`);
 		try {
 			const result = super.getDocument(ref);
@@ -26,7 +26,7 @@ export class DebugProvider extends ThroughProvider {
 			throw reason;
 		}
 	}
-	override subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: Observer<Result<Entity<T>>>): Unsubscribe {
+	override subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
 		console.log(`Subscribe "${ref}"`);
 		return super.subscribeDocument(ref, new DatabaseDebugObserver(ref, observer));
 	}
@@ -90,7 +90,7 @@ export class DebugProvider extends ThroughProvider {
 			throw reason;
 		}
 	}
-	override getQuery<T extends Data>(ref: QueryReference<T>): Iterable<Entity<T>> | PromiseLike<Iterable<Entity<T>>> {
+	override getQuery<T extends Data>(ref: QueryReference<T>): Entities<T> | PromiseLike<Entities<T>> {
 		console.log(`Get "${ref}"`);
 		try {
 			const results = super.getQuery(ref);
@@ -105,7 +105,7 @@ export class DebugProvider extends ThroughProvider {
 			throw reason;
 		}
 	}
-	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: Observer<Iterable<Entity<T>>>): Unsubscribe {
+	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: PartialObserver<Entities<T>>): Unsubscribe {
 		console.log(`Subscribe "${ref}"`);
 		return super.subscribeQuery(ref, new DatabaseDebugObserver(ref, observer));
 	}
@@ -157,9 +157,9 @@ export class DebugProvider extends ThroughProvider {
 }
 
 /** Observer that wraps errors in subscriptions in `ReferenceReadError` */
-class DatabaseDebugObserver<T extends Data, U extends Result<Entity<T>> | Iterable<Entity<T>>> extends ThroughObserver<U> {
+class DatabaseDebugObserver<T extends Data, U extends OptionalEntity<T> | Entities<T>> extends ThroughObserver<U> {
 	readonly ref: DocumentReference<T> | QueryReference<T>;
-	constructor(ref: DocumentReference<T> | QueryReference<T>, target: Observer<U>) {
+	constructor(ref: DocumentReference<T> | QueryReference<T>, target: PartialObserver<U>) {
 		super(target);
 		this.ref = ref;
 	}

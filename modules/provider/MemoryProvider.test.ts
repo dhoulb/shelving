@@ -1,5 +1,5 @@
 import { TEST_SCHEMAS, basics, people, basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9, person1, person2, person3, person4, person5, expectOrderedKeys, expectUnorderedKeys, BasicEntity } from "../test/index.js";
-import { Database, MemoryProvider, Result, ImmutableArray, getProps } from "../index.js";
+import { Database, MemoryProvider, OptionalData, ImmutableArray, getProps } from "../index.js";
 
 test("MemoryProvider: set/get/delete documents", () => {
 	// Setup.
@@ -15,19 +15,19 @@ test("MemoryProvider: set/get/delete documents", () => {
 	expect(queryPeople.doc("person2").set(person2)).toBe(undefined);
 	expect(queryPeople.doc("person3").set(person3)).toBe(undefined);
 	// Check documents.
-	expect(queryBasics.doc("basic1").result).toMatchObject(basic1);
-	expect(queryBasics.doc("basic2").result).toMatchObject(basic2);
-	expect(queryBasics.doc("basic3").result).toMatchObject(basic3);
-	expect(queryBasics.doc("basicNone").result).toBe(null);
+	expect(queryBasics.doc("basic1").value).toMatchObject(basic1);
+	expect(queryBasics.doc("basic2").value).toMatchObject(basic2);
+	expect(queryBasics.doc("basic3").value).toMatchObject(basic3);
+	expect(queryBasics.doc("basicNone").value).toBe(null);
 	expect(queryBasics.count).toBe(3);
-	expect(queryPeople.doc("person1").result).toMatchObject(person1);
-	expect(queryPeople.doc("person2").result).toMatchObject(person2);
-	expect(queryPeople.doc("person3").result).toMatchObject(person3);
-	expect(queryPeople.doc("peopleNone").result).toBe(null);
+	expect(queryPeople.doc("person1").value).toMatchObject(person1);
+	expect(queryPeople.doc("person2").value).toMatchObject(person2);
+	expect(queryPeople.doc("person3").value).toMatchObject(person3);
+	expect(queryPeople.doc("peopleNone").value).toBe(null);
 	expect(queryPeople.count).toBe(3);
 	// Update documents.
 	expect(queryBasics.doc("basic1").update({ str: "NEW" })).toBe(undefined);
-	expect(queryBasics.doc("basic1").result).toMatchObject({ ...basic1, str: "NEW" });
+	expect(queryBasics.doc("basic1").value).toMatchObject({ ...basic1, str: "NEW" });
 	// expect(people.doc("person3").merge({ name: { first: "NEW" } })).toBe(undefined);
 	// Merge documents.
 	// expect(people.doc("person3").result).toMatchObject({ ...person3, name: { ...person3.name, first: "NEW" } });
@@ -53,19 +53,19 @@ test("MemoryProvider: set/get/delete collections", () => {
 	for (const { id, ...data } of basics) basicsQuery.doc(id).set(data);
 	for (const { id, ...data } of people) peopleQuery.doc(id).set(data);
 	// Check collections.
-	expect(basicsQuery.array).toEqual(basics);
-	expect(basicsQuery.doc("basic1").result).toMatchObject(basic1);
-	expect(basicsQuery.doc("basic6").result).toMatchObject(basic6);
-	expect(basicsQuery.doc("basicNone").result).toBe(null);
-	expect(peopleQuery.array).toEqual(people);
-	expect(peopleQuery.doc("person4").result).toMatchObject(person4);
-	expect(peopleQuery.doc("peopleNone").result).toBe(null);
+	expect(basicsQuery.value).toEqual(basics);
+	expect(basicsQuery.doc("basic1").value).toMatchObject(basic1);
+	expect(basicsQuery.doc("basic6").value).toMatchObject(basic6);
+	expect(basicsQuery.doc("basicNone").value).toBe(null);
+	expect(peopleQuery.value).toEqual(people);
+	expect(peopleQuery.doc("person4").value).toMatchObject(person4);
+	expect(peopleQuery.doc("peopleNone").value).toBe(null);
 	// Delete collections.
 	expect(basicsQuery.delete()).toBe(9);
 	expect(peopleQuery.delete()).toBe(5);
 	// Check collections.
-	expect(peopleQuery.array).toEqual([]);
-	expect(basicsQuery.array).toEqual([]);
+	expect(peopleQuery.value).toEqual([]);
+	expect(basicsQuery.value).toEqual([]);
 });
 test("MemoryProvider: get queries", async () => {
 	// Setup.
@@ -73,36 +73,36 @@ test("MemoryProvider: get queries", async () => {
 	const query = db.query("basics");
 	for (const { id, ...data } of basics) query.doc(id).set(data);
 	// Equal queries.
-	expectUnorderedKeys(await query.filter("str", "aaa").items, ["basic1"]);
-	expectUnorderedKeys(await query.filter("str", "NOPE").items, []);
-	expectUnorderedKeys(await query.filter("num", 300).items, ["basic3"]);
-	expectUnorderedKeys(await query.filter("num", 999999).items, []);
-	expectUnorderedKeys(await query.filter("group", "a").items, ["basic1", "basic2", "basic3"]);
-	expectUnorderedKeys(await query.filter("group", "b").items, ["basic4", "basic5", "basic6"]);
-	expectUnorderedKeys(await query.filter("group", "c").items, ["basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(await query.filter("str", "aaa").value, ["basic1"]);
+	expectUnorderedKeys(await query.filter("str", "NOPE").value, []);
+	expectUnorderedKeys(await query.filter("num", 300).value, ["basic3"]);
+	expectUnorderedKeys(await query.filter("num", 999999).value, []);
+	expectUnorderedKeys(await query.filter("group", "a").value, ["basic1", "basic2", "basic3"]);
+	expectUnorderedKeys(await query.filter("group", "b").value, ["basic4", "basic5", "basic6"]);
+	expectUnorderedKeys(await query.filter("group", "c").value, ["basic7", "basic8", "basic9"]);
 	// ArrayContains queries.
-	expectUnorderedKeys(await query.filter("tags[]", "odd").items, ["basic1", "basic3", "basic5", "basic7", "basic9"]);
-	expectUnorderedKeys(await query.filter("tags[]", "even").items, ["basic2", "basic4", "basic6", "basic8"]);
-	expectUnorderedKeys(await query.filter("tags[]", "prime").items, ["basic1", "basic2", "basic3", "basic5", "basic7"]);
-	expectUnorderedKeys(await query.filter("tags[]", "NOPE").items, []);
+	expectUnorderedKeys(await query.filter("tags[]", "odd").value, ["basic1", "basic3", "basic5", "basic7", "basic9"]);
+	expectUnorderedKeys(await query.filter("tags[]", "even").value, ["basic2", "basic4", "basic6", "basic8"]);
+	expectUnorderedKeys(await query.filter("tags[]", "prime").value, ["basic1", "basic2", "basic3", "basic5", "basic7"]);
+	expectUnorderedKeys(await query.filter("tags[]", "NOPE").value, []);
 	// In queries.
-	expectUnorderedKeys(await query.filter("num", [200, 600, 900, 999999]).items, ["basic2", "basic6", "basic9"]);
-	expectUnorderedKeys(await query.filter("str", ["aaa", "ddd", "eee", "NOPE"]).items, ["basic1", "basic4", "basic5"]);
-	expectUnorderedKeys(await query.filter("num", []).items, []);
-	expectUnorderedKeys(await query.filter("str", []).items, []);
+	expectUnorderedKeys(await query.filter("num", [200, 600, 900, 999999]).value, ["basic2", "basic6", "basic9"]);
+	expectUnorderedKeys(await query.filter("str", ["aaa", "ddd", "eee", "NOPE"]).value, ["basic1", "basic4", "basic5"]);
+	expectUnorderedKeys(await query.filter("num", []).value, []);
+	expectUnorderedKeys(await query.filter("str", []).value, []);
 	// Sorting.
 	const keysAsc = ["basic1", "basic2", "basic3", "basic4", "basic5", "basic6", "basic7", "basic8", "basic9"];
 	const keysDesc = ["basic9", "basic8", "basic7", "basic6", "basic5", "basic4", "basic3", "basic2", "basic1"];
-	expectOrderedKeys(await query.sort("id").items, keysAsc);
-	expectOrderedKeys(await query.sort("!id").items, keysDesc);
-	expectOrderedKeys(await query.sort("str").items, keysAsc);
-	expectOrderedKeys(await query.sort("!str").items, keysDesc);
-	expectOrderedKeys(await query.sort("num").items, keysAsc);
-	expectOrderedKeys(await query.sort("!num").items, keysDesc);
+	expectOrderedKeys(await query.sort("id").value, keysAsc);
+	expectOrderedKeys(await query.sort("!id").value, keysDesc);
+	expectOrderedKeys(await query.sort("str").value, keysAsc);
+	expectOrderedKeys(await query.sort("!str").value, keysDesc);
+	expectOrderedKeys(await query.sort("num").value, keysAsc);
+	expectOrderedKeys(await query.sort("!num").value, keysDesc);
 	// Combinations.
-	expectOrderedKeys(await query.sort("id").max(2).items, ["basic1", "basic2"]);
-	expectOrderedKeys(await query.sort("!id").max(1).items, ["basic9"]);
-	expectOrderedKeys(await query.filter("tags[]", "prime").sort("!id").max(2).items, ["basic7", "basic5"]);
+	expectOrderedKeys(await query.sort("id").max(2).value, ["basic1", "basic2"]);
+	expectOrderedKeys(await query.sort("!id").max(1).value, ["basic9"]);
+	expectOrderedKeys(await query.filter("tags[]", "prime").sort("!id").max(2).value, ["basic7", "basic5"]);
 });
 test("MemoryProvider: subscribing to documents", async () => {
 	// Setup.
@@ -110,7 +110,7 @@ test("MemoryProvider: subscribing to documents", async () => {
 	const query = db.query("basics");
 	const doc = query.doc("basic1");
 	// Subscribe.
-	const calls1: Result<BasicEntity>[] = [];
+	const calls1: OptionalData<BasicEntity>[] = [];
 	const un1 = doc.subscribe(v => calls1.push(v));
 	await Promise.resolve();
 	expect(calls1.length).toBe(1);
@@ -230,7 +230,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	// Unsubscribe fn1.
 	expect(stop1()).toBe(undefined);
 	// Check end result.
-	expectUnorderedKeys(await query.items, ["basic6", "basic7"]);
+	expectUnorderedKeys(await query.value, ["basic6", "basic7"]);
 });
 test("MemoryProvider: subscribing to sort and limit query", async () => {
 	// Setup.
@@ -277,5 +277,5 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	await Promise.resolve();
 	expect(calls1[6]).toBe(undefined);
 	// Check end result.
-	expectUnorderedKeys(await query.items, []);
+	expectUnorderedKeys(await query.value, []);
 });

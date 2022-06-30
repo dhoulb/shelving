@@ -5,6 +5,7 @@ import type {
 	CollectionReference as FirestoreCollectionReference,
 	Query as FirestoreQueryReference,
 	QuerySnapshot as FirestoreQuerySnapshot,
+	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
 	QueryConstraint as FirestoreQueryConstraint,
 	WhereFilterOp as FirestoreWhereFilterOp,
 	OrderByDirection as FirestoreOrderByDirection,
@@ -29,7 +30,7 @@ import {
 	getDocs,
 } from "firebase/firestore/lite";
 import type { DocumentReference, QueryReference } from "../../db/Reference.js";
-import type { Data, Result, Entity } from "../../util/data.js";
+import type { Data, Entity, Entities, OptionalEntity } from "../../util/data.js";
 import type { Entry } from "../../util/entry.js";
 import type { FilterOperator } from "../../query/Filter.js";
 import type { SortDirection } from "../../query/Sort.js";
@@ -84,13 +85,16 @@ function getQuery<T extends Data>(firestore: Firestore, ref: QueryReference<T>):
 	return firestoreQuery(getCollection(firestore, ref), ...constraints);
 }
 
-/** Create a set of results from a collection snapshot. */
-function* getResults<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Iterable<Entity<T>> {
-	for (const s of snapshot.docs) yield { ...s.data(), id: s.id };
+function getEntities<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Entities<T> {
+	return snapshot.docs.map(getEntity);
 }
 
-/** Get a result from a document snapshot. */
-function getResult<T extends Data>(snapshot: FirestoreDocumentSnapshot<T>): Result<Entity<T>> {
+function getEntity<T extends Data>(snapshot: FirestoreQueryDocumentSnapshot<T>): Entity<T> {
+	const data = snapshot.data();
+	return { ...data, id: snapshot.id };
+}
+
+function getOptionalData<T extends Data>(snapshot: FirestoreDocumentSnapshot<T>): OptionalEntity<T> {
 	const data = snapshot.data();
 	return data ? { ...data, id: snapshot.id } : null;
 }
@@ -123,8 +127,8 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		this.firestore = firestore;
 	}
 
-	async getDocument<T extends Data>(ref: DocumentReference<T>): Promise<Result<Entity<T>>> {
-		return getResult(await getDoc(getDocument(this.firestore, ref)));
+	async getDocument<T extends Data>(ref: DocumentReference<T>): Promise<OptionalEntity<T>> {
+		return getOptionalData(await getDoc(getDocument(this.firestore, ref)));
 	}
 
 	subscribeDocument(): Unsubscribe {
@@ -149,8 +153,8 @@ export class FirestoreClientProvider extends Provider implements AsynchronousPro
 		await deleteDoc(getDocument(this.firestore, ref));
 	}
 
-	async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Iterable<Entity<T>>> {
-		return getResults(await getDocs(getQuery(this.firestore, ref)));
+	async getQuery<T extends Data>(ref: QueryReference<T>): Promise<Entities<T>> {
+		return getEntities(await getDocs(getQuery(this.firestore, ref)));
 	}
 
 	subscribeQuery(): Unsubscribe {

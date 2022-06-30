@@ -4,6 +4,9 @@ import type { ImmutableArray } from "./array.js";
 /** Data object. */
 export type Data = { readonly [key: string]: unknown };
 
+/** Data or `null` to indicate the data doesn't exist. */
+export type OptionalData<T extends Data = Data> = T | null;
+
 /** Key for a prop in a data object. */
 export type Key<T extends Data> = keyof T & string;
 
@@ -19,8 +22,11 @@ export type Datas = { readonly [key: string]: Data };
 /** An entity is data with a string ID that uniquely identifies it. */
 export type Entity<T extends Data = Data> = T & { id: string };
 
-/** Data or `null` if the item doesn't exist. */
-export type Result<T extends Data = Data> = T | null;
+/** An array of entities. */
+export type Entities<T extends Data = Data> = ImmutableArray<Entity<T>>;
+
+/** Entity or `null` to indicate the entity doesn't exist. */
+export type OptionalEntity<T extends Data = Data> = Entity<T> | null;
 
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => typeof value === "object" && value !== null;
@@ -33,7 +39,7 @@ export function toProps<T extends Data>(data: T | Partial<T>): ImmutableArray<Pr
 }
 
 /** Get the data of a result (returns data or throws `RequiredError` if value is `null` or `undefined`). */
-export function getData<T extends Data>(result: Result<T>): T {
+export function getData<T extends Data>(result: OptionalData<T>): T {
 	if (!result) throw new RequiredError("Data is required");
 	return result;
 }
