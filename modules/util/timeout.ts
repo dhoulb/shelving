@@ -15,6 +15,11 @@ export class Timeout {
 		this._ms = ms;
 	}
 
+	/** Is a timeout currently set? */
+	get exists(): boolean {
+		return !!this._timeout;
+	}
+
 	/**
 	 * Cancel any existing timeout and set a new one.
 	 * @param callback
@@ -22,7 +27,10 @@ export class Timeout {
 	 */
 	set(callback: () => void, ms: number = this._ms): void {
 		this.clear();
-		this._timeout = setTimeout(callback, ms);
+		this._timeout = setTimeout(() => {
+			this._timeout = undefined;
+			callback();
+		}, ms);
 	}
 
 	/** Cancel any existing timeout.. */
