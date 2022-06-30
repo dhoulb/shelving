@@ -1,4 +1,4 @@
-import { DataState, ResultState, RequiredError, INCREMENT, Result } from "../index.js";
+import { DataState, OptionalDataState, RequiredError, INCREMENT, OptionalData } from "../index.js";
 
 test("DataState.prototype.data", () => {
 	type T = { a: number };
@@ -37,15 +37,15 @@ test("DataState.prototype.update()", () => {
 		{ a: 111, b: 4 },
 	]);
 });
-test("ResultState.prototype.data", () => {
+test("OptionalDataState.prototype.data", () => {
 	type T = { a: number };
-	const state = new ResultState<T>(null);
-	expect(state).toBeInstanceOf(ResultState);
+	const state = new OptionalDataState<T>(null);
+	expect(state).toBeInstanceOf(OptionalDataState);
 	expect(state.value).toEqual(null);
 	expect(state.result).toEqual(null);
 	expect(() => state.data).toThrow(RequiredError);
 	// Ons and onces.
-	const calls: Result<T>[] = [];
+	const calls: OptionalData<T>[] = [];
 	state.subscribe(v => calls.push(v));
 	// Set data value.
 	expect(state.next({ a: 1 })).toBe(undefined);
@@ -70,13 +70,13 @@ test("ResultState.prototype.data", () => {
 	// Checks.
 	expect(calls).toEqual([null, { a: 1 }, { a: 2 }, null]);
 });
-test("ResultState.prototype.update()", () => {
+test("OptionalDataState.prototype.update()", () => {
 	type T = { a: number; b: number };
-	const state = new ResultState<T>({ a: 1, b: 2 });
-	expect(state).toBeInstanceOf(ResultState);
+	const state = new OptionalDataState<T>({ a: 1, b: 2 });
+	expect(state).toBeInstanceOf(OptionalDataState);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
-	const calls1: Result<T>[] = [];
+	const calls1: OptionalData<T>[] = [];
 	state.subscribe(v => calls1.push(v));
 	// Apply a data transform.
 	expect(state.update({ a: 111, b: n => n * n })).toBe(undefined);
