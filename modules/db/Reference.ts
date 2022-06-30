@@ -1,7 +1,7 @@
 import type { Data, OptionalData, Entity, OptionalEntity, Entities } from "../util/data.js";
 import type { Dispatch } from "../util/function.js";
 import type { SortKeys } from "../query/Sort.js";
-import type { ImmutableArray } from "../util/array.js";
+import { getFirstItem, getLastItem, ImmutableArray } from "../util/array.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Validator } from "../util/validate.js";
 import { Query } from "../query/Query.js";
@@ -12,7 +12,7 @@ import { countItems, hasItems } from "../util/iterate.js";
 import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
 import { Filter, FilterProps } from "../query/Filter.js";
 import { Observable, Unsubscribe } from "../observe/Observable.js";
-import { getDocumentData, getQueryFirstData, getQueryFirstValue, getQueryLastData, getQueryLastValue } from "./util.js";
+import { RequiredError } from "../error/RequiredError.js";
 import type { Database } from "./Database.js";
 
 /** A refence to a location in a database. */
@@ -231,3 +231,36 @@ export class DocumentReference<T extends Data = Data> implements Observable<Opti
 		return `${this.collection}/${this.id}`;
 	}
 }
+
+/** Get the data for a document from a result for that document. */
+export function getDocumentData<T extends Data>(entity: OptionalEntity<T>, ref: DocumentReference<T>): Entity<T> {
+	if (entity) return entity;
+	throw new RequiredError(`Document "${ref}" does not exist`);
+}
+
+/** Get the data for a document from a set of queried entities. */
+export function getQueryFirstData<T extends Data>(entities: Entities<T>, ref: QueryReference<T>): Entity<T> {
+	const entity = getQueryFirstValue(entities);
+	if (entity) return entity;
+	throw new RequiredError(`Query "${ref}" has no documents`);
+}
+
+/** Get the data for a document from a set of queried entities. */
+export function getQueryLastData<T extends Data>(entities: Entities<T>, ref: QueryReference<T>): Entity<T> {
+	const entity = getQueryLastValue(entities);
+	if (entity) return entity;
+	throw new RequiredError(`Query "${ref}" has no documents`);
+}
+
+/** Get the optional data for a document from a set of queried entities. */
+export function getQueryFirstValue<T extends Data>(entities: Entities<T>): OptionalEntity<T> {
+	return getFirstItem(entities) || null;
+}
+
+/** Get the optional data for a document from a set of queried entities. */
+export function getQueryLastValue<T extends Data>(entities: Entities<T>): OptionalEntity<T> {
+	return getLastItem(entities) || null;
+}
+
+/** Are two database references equal? */
+export const isSameReference = (left: Reference, right: Reference): boolean => left === right || left.toString() === right.toString();
