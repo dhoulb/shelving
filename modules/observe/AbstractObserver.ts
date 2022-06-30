@@ -19,21 +19,24 @@ export abstract class AbstractObserver<I, O> implements ConnectableObserver<I> {
 	}
 	connect(subscribable: Subscribable<I>): Unsubscribe {
 		if (!this._target) throw new ConditionError("Observer is closed");
-		if (this._cleanup) throw new ConditionError("Observer is already connected");
+		if (this._cleanup) throw new ConditionError("Observer already connected");
 		this._cleanup = subscribe(subscribable, this);
-		return () => {
-			if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
-		};
+		return this.disconnect.bind(this);
+	}
+	disconnect(): void {
+		if (this._cleanup) this._cleanup = void dispatch(this._cleanup);
 	}
 	abstract next(value: I): void;
 	error(reason: Error | unknown): void {
 		const target = this.target;
 		this._target = undefined; // Close this observer.
+		this.disconnect();
 		dispatchError(target, reason);
 	}
 	complete(): void {
 		const target = this.target;
 		this._target = undefined; // Close this observer.
+		this.disconnect();
 		dispatchComplete(target);
 	}
 }

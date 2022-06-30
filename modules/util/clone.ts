@@ -1,6 +1,7 @@
 import type { Data } from "./data.js";
-import { ImmutableArray, isArray, mapArray } from "./array.js";
-import { isObject, mapObject } from "./object.js";
+import { ImmutableArray, isArray } from "./array.js";
+import { isObject } from "./object.js";
+import { mapArray, mapObject } from "./transform.js";
 
 /** Cloneable object implement a `clone()` function that returns a cloned copy. */
 export interface Cloneable {

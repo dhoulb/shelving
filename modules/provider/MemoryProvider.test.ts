@@ -182,20 +182,20 @@ test("MemoryProvider: subscribing to collections", async () => {
 	query.doc("basic3").set(basic3);
 	query.doc("basic4").set(basic4);
 	await Promise.resolve();
-	expectOrderedKeys(calls1[4]!, [id1, "basic2", "basic3", "basic4"]);
-	expectOrderedKeys(calls2[3]!, [id1, "basic2", "basic3", "basic4"]);
+	expectOrderedKeys(calls1[5]!, [id1, "basic2", "basic3", "basic4"]);
+	expectOrderedKeys(calls2[4]!, [id1, "basic2", "basic3", "basic4"]);
 	// Delete basic4.
 	query.doc("basic4").delete();
 	await Promise.resolve();
-	expectOrderedKeys(calls1[5]!, [id1, "basic2", "basic3"]);
-	expectOrderedKeys(calls2[4]!, [id1, "basic2", "basic3"]);
+	expectOrderedKeys(calls1[6]!, [id1, "basic2", "basic3"]);
+	expectOrderedKeys(calls2[5]!, [id1, "basic2", "basic3"]);
 	// Unsubscribe fn2.
 	expect(stop2()).toBe(undefined);
 	// Change basic3.
 	query.doc("basic3").update({ str: "NEW" });
 	await Promise.resolve();
-	expectOrderedKeys(calls1[6]!, [id1, "basic2", "basic3"]);
-	expect(calls2[5]).toBe(undefined);
+	expectOrderedKeys(calls1[7]!, [id1, "basic2", "basic3"]);
+	expect(calls2[6]).toBe(undefined);
 	// Unsubscribe fn1.
 	expect(stop1()).toBe(undefined);
 });

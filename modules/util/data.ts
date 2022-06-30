@@ -1,4 +1,4 @@
-import { RequiredError } from "../error/index.js";
+import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 
 /** Data object. */

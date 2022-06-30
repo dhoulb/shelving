@@ -1,4 +1,4 @@
-import { sortArray, rankAsc, rankDesc, TransformRanker } from "../index.js";
+import { sortArray, rankAsc, rankDesc } from "../index.js";
 
 describe("ASC & DESC", () => {
 	test("Different types are sorted correctly", () => {
@@ -73,14 +73,6 @@ describe("sortArray() & ASC", () => {
 		const arr = ["0", "00", "1", "01", "001", "g", "z", "gg", "á", "😂", "a", "ê"];
 		expect(sortArray(arr, rankAsc)).toEqual(["😂", "0", "00", "001", "01", "1", "a", "á", "ê", "g", "gg", "z"]);
 	});
-	describe("TransformRanker", () => {
-		const subpropRankerASC = new TransformRanker<{ prop?: { subprop?: number } }, number | undefined>(v => v?.prop?.subprop, rankAsc);
-		test("TransformRanker: Two objects with subprops are sorted correctly", () => {
-			const unsorted = [{ prop: { subprop: 0 } }, { prop: { subprop: 1 } }, { prop: { subprop: -1 } }];
-			const sorted = [{ prop: { subprop: -1 } }, { prop: { subprop: 0 } }, { prop: { subprop: 1 } }];
-			expect(sortArray(unsorted, subpropRankerASC)).toEqual(sorted);
-		});
-	});
 	test("sortArray(): Different types are sorted correctly", () => {
 		const arr = ["1", 1, true, 0, "0", "a", undefined, -1, false, null, {}];
 		expect(sortArray(arr, rankAsc)).toEqual([-1, 0, 1, "0", "1", "a", true, false, null, {}, undefined]);
@@ -96,13 +88,5 @@ describe("sortArray() & DESC", () => {
 		const unsorted = ["1", 1, true, 0, "0", "a", undefined, -1, false, null, {}];
 		const sorted = [undefined, {}, null, false, true, "a", "1", "0", 1, 0, -1];
 		expect(sortArray(unsorted, rankDesc)).toEqual(sorted);
-	});
-	describe("TransformRanker", () => {
-		const subpropRankerDESC = new TransformRanker<{ prop?: { subprop?: number } }, number | undefined>(v => v?.prop?.subprop, rankDesc);
-		test("TransformRanker: Two objects with subprops are sorted correctly", () => {
-			const unsorted = [{ prop: { subprop: 0 } }, { prop: { subprop: 1 } }, { prop: { subprop: -1 } }];
-			const sorted = [{ prop: { subprop: 1 } }, { prop: { subprop: 0 } }, { prop: { subprop: -1 } }];
-			expect(sortArray(unsorted, subpropRankerDESC)).toEqual(sorted);
-		});
 	});
 });

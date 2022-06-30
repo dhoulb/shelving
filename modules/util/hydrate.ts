@@ -1,9 +1,8 @@
 import { AssertionError } from "../error/AssertionError.js";
 import type { Class } from "./class.js";
 import { Data, isData } from "./data.js";
-import { mapArray } from "./array.js";
-import { mapObject, ImmutableObject, isPlainObject } from "./object.js";
-import { Transformable } from "./transform.js";
+import { ImmutableObject, isPlainObject } from "./object.js";
+import { mapArray, mapObject, Transformable } from "./transform.js";
 
 /**
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.

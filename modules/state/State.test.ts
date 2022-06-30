@@ -5,16 +5,16 @@ test("State", async () => {
 	const state = new State<number>();
 	const calls1: number[] = [];
 	state.subscribe(v => calls1.push(v));
-	expect(state.subscribers).toBe(1);
+	expect(state.subscribers).toBe(1); // Subscription.
 	expect(state.exists).toBe(false);
 	expect(() => state.value).toThrow(Promise);
-	expect(state.subscribers).toBe(2); // The two promises add temporary subscriptions.
+	expect(state.subscribers).toBe(2); // Subscription + Promise created on `state.value`
 	expect(state.next(123)).toBe(undefined);
 	expect(state.exists).toBe(true);
 	expect(state.value).toBe(123);
 	await runMicrotasks();
 	expect(calls1).toEqual([123]);
-	expect(state.subscribers).toBe(1); // 2 unsubscribed after it received a value.
+	expect(state.subscribers).toBe(1); // Subscription (Promise created on `state.value` cleaned itself up).
 });
 test("State with initial value", () => {
 	const state = new State(111);

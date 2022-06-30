@@ -69,8 +69,8 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 		if (this.closed) throw new ConditionError("Subject is closed");
 		const unsubscribe = subscribe(source, this);
 		const cleanup = () => {
-			dispatch(unsubscribe);
 			this._cleanups.delete(cleanup);
+			dispatch(unsubscribe);
 		};
 		this._cleanups.add(cleanup);
 		return cleanup;
@@ -106,8 +106,9 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 
 	/** Remove an observer. */
 	protected _removeObserver(observer: PartialObserver<T>): void {
+		const size = this._subscribers.size;
 		this._subscribers.delete(observer);
-		if (!this._subscribers.size) this._removeLastObserver();
+		if (size && !this._subscribers.size) this._removeLastObserver();
 	}
 
 	/** Called after adding the first observer. */
