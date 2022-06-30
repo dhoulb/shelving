@@ -32,7 +32,7 @@ export class OptionalDataState<T extends Data> extends State<OptionalData<T>> {
 	/** Get current data value of this state (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
 		if (this.reason !== NOERROR) throw this.reason;
-		if (!this.exists) throw awaitNext(this).then(getData);
+		if (this.loading) throw awaitNext(this).then(getData);
 		return getData(this.value);
 	}
 

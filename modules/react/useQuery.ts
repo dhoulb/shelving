@@ -66,7 +66,7 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 		this.limit = ref.limit ?? Infinity;
 
 		// If the result is cached use it as the initial value.
-		const isCached = this._table.getQueryTime(ref) !== undefined;
+		const isCached = typeof this._table.getQueryTime(ref) === "number";
 		if (isCached) this.next(this._table.getQuery(ref)); // Use the existing cached value.
 		else dispatch(this.refresh); // Queue a request to refresh the value.
 	}
@@ -145,6 +145,5 @@ export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T>
 export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T> | undefined {
 	const state = useReduce(_getQueryState, ref);
 	useSubscribe(state);
-	if (state && !state.exists) dispatch(state.refresh); // Load the query if it isn't cached already.
 	return state;
 }

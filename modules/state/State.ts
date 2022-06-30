@@ -38,8 +38,8 @@ export class State<T> extends Subject<T> implements Matchable<T, void> {
 	}
 
 	/** Is there a current value, or is it still loading. */
-	get exists(): boolean {
-		return this._value !== NOVALUE;
+	get loading(): boolean {
+		return this._value === NOVALUE;
 	}
 
 	// Override to only dispatch if the value changes.

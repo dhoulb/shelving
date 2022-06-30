@@ -6,11 +6,11 @@ test("State", async () => {
 	const calls1: number[] = [];
 	state.subscribe(v => calls1.push(v));
 	expect(state.subscribers).toBe(1); // Subscription.
-	expect(state.exists).toBe(false);
+	expect(state.loading).toBe(true);
 	expect(() => state.value).toThrow(Promise);
 	expect(state.subscribers).toBe(2); // Subscription + Promise created on `state.value`
 	expect(state.next(123)).toBe(undefined);
-	expect(state.exists).toBe(true);
+	expect(state.loading).toBe(false);
 	expect(state.value).toBe(123);
 	await runMicrotasks();
 	expect(calls1).toEqual([123]);
@@ -19,7 +19,7 @@ test("State", async () => {
 test("State with initial value", () => {
 	const state = new State(111);
 	expect(state).toBeInstanceOf(State);
-	expect(state.exists).toBe(true);
+	expect(state.loading).toBe(false);
 	expect(state.value).toBe(111);
 	// Ons and onces.
 	const calls1: number[] = [];

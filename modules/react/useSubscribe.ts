@@ -12,6 +12,6 @@ import { BLACKHOLE } from "../util/function.js";
  * - Memoise this value to persist the subscription for the lifetime of the component.
  */
 export function useSubscribe<T>(subscribable?: Subscribable<T>): void {
-	const setState = useState<unknown>(subscribable instanceof State && subscribable.exists ? subscribable.value : NOVALUE)[1];
+	const setState = useState<unknown>(subscribable instanceof State && !subscribable.loading ? subscribable.value : NOVALUE)[1];
 	useEffect(subscribable ? () => subscribe(subscribable, { next: setState, error: setState }) : BLACKHOLE, [subscribable]);
 }

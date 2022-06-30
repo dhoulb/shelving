@@ -41,7 +41,7 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 		this.ref = ref;
 
 		// If the result is cached use it as the initial value.
-		const isCached = this._table.getDocumentTime(ref.id) !== undefined;
+		const isCached = typeof this._table.getDocumentTime(ref.id) === "number";
 		if (isCached) this.next(this._table.getDocument(ref.id)); // Use the existing cached value.
 		else dispatch(this.refresh); // Queue a request to refresh the value.
 	}
