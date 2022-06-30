@@ -1,7 +1,7 @@
 import { Validator, Validatable, validate } from "../util/validate.js";
 import { getUndefined } from "../util/undefined.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { ResourceValidationError } from "./errors.js";
+import { ValidationError } from "../error/ValidationError.js";
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions..
@@ -42,7 +42,7 @@ export class Resource<P = unknown, R = void> implements Validatable<R> {
 		try {
 			return validate(unsafeResult, this.result);
 		} catch (thrown) {
-			throw thrown instanceof Feedback ? new ResourceValidationError(this, thrown) : thrown;
+			throw thrown instanceof Feedback ? new ValidationError(`Invalid result for resource`, thrown) : thrown;
 		}
 	}
 }
