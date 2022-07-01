@@ -31,8 +31,14 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 		return typeof time === "number" ? Date.now() - time : Infinity;
 	}
 
+	/** Get the data of the document (throws `RequiredError` if document doesn't exist). */
 	get data(): Entity<T> {
 		return getDocumentData(this.value, this.ref);
+	}
+
+	/** Does the document exist (i.e. its value isn't `null`)? */
+	get exists(): boolean {
+		return !!this.value;
 	}
 
 	constructor(ref: DocumentReference<T>) {

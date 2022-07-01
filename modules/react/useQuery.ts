@@ -59,6 +59,16 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 		return getQueryFirstData(this.value, this.ref);
 	}
 
+	/** Does the document have at least one result. */
+	get exists(): boolean {
+		return !!this.value.length;
+	}
+
+	/** Get the number of items matching this query. */
+	get count(): number {
+		return this.value.length;
+	}
+
 	constructor(ref: QueryReference<T>) {
 		super();
 		this._table = findSourceProvider(ref.db.provider, CacheProvider).memory.getTable(ref);
