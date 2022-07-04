@@ -9,7 +9,7 @@ export class ObjectState<T> extends State<ImmutableObject<T>> implements Iterabl
 	}
 
 	/** Get the length of the current value of this state. */
-	get length(): number {
+	get count(): number {
 		return Object.keys(this.value).length;
 	}
 

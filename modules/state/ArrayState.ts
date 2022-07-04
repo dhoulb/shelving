@@ -8,7 +8,7 @@ export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<
 	}
 
 	/** Get the length of the current value of this state. */
-	get length(): number {
+	get count(): number {
 		return this.value.length;
 	}
 
