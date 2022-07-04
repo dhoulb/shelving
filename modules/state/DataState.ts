@@ -22,11 +22,6 @@ export class DataState<T extends Data> extends State<T> {
 
 /** State that stores an optional data object and has additional methods to help with that. */
 export class OptionalDataState<T extends Data> extends State<OptionalData<T>> {
-	/** Get the result value of this state. */
-	get result(): OptionalData<T> {
-		return this.value;
-	}
-
 	/** Get current data value of this state (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
 		return getData(this.value);
