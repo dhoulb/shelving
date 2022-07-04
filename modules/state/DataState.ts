@@ -1,7 +1,5 @@
 import { Data, getData, Key, OptionalData, withProp } from "../util/data.js";
 import { PropTransformers, transformData } from "../util/transform.js";
-import { awaitNext } from "../observe/util.js";
-import { NOERROR } from "../util/constants.js";
 import { State } from "./State.js";
 
 /** State that stores a data object and has additional methods to help with that. */
@@ -31,9 +29,12 @@ export class OptionalDataState<T extends Data> extends State<OptionalData<T>> {
 
 	/** Get current data value of this state (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
-		if (this.reason !== NOERROR) throw this.reason;
-		if (this.loading) throw awaitNext(this).then(getData);
 		return getData(this.value);
+	}
+
+	/** Does the data exist or not? */
+	get exists(): boolean {
+		return !!this.value;
 	}
 
 	/** Set a prop in this object to a new value. */
