@@ -37,8 +37,8 @@ export function connected<T>(source: Subscribable<T>, target: ConnectableObserve
 }
 
 /** Connect a connectable to a source subscribable but transform the value using a transform, and return the connected connectable. */
-export function connectedDerived<T, TT, C extends ConnectableObserver<T>>(source: Subscribable<T>, transformer: Transformer<T, TT>, target: C): C;
-export function connectedDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, TT>, target: ConnectableObserver<T>): ConnectableObserver<TT>;
+export function connectedDerived<T, TT, C extends ConnectableObserver<TT>>(source: Subscribable<T>, transformer: Transformer<T, TT>, target: C): C;
+export function connectedDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, TT>, target: ConnectableObserver<TT>): ConnectableObserver<TT>;
 export function connectedDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, TT>): Subject<TT>;
 export function connectedDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, TT>, target: ConnectableObserver<TT> = new Subject<TT>()): ConnectableObserver<TT> {
 	connectDerived(source, transformer, target);
@@ -47,7 +47,7 @@ export function connectedDerived<T, TT>(source: Subscribable<T>, transformer: Tr
 
 /** Connect a connectable to a source subscribable but transform the value using an async transform, and return the connected connectable. */
 export function connectedAsyncDerived<T, TT, C extends ConnectableObserver<TT>>(source: Subscribable<T>, transformer: Transformer<T, PromiseLike<TT>>, target: C): C;
-export function connectedAsyncDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, PromiseLike<TT>>, target: ConnectableObserver<T>): ConnectableObserver<TT>;
+export function connectedAsyncDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, PromiseLike<TT>>, target: ConnectableObserver<TT>): ConnectableObserver<TT>;
 export function connectedAsyncDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, PromiseLike<TT>>): Subject<TT>;
 export function connectedAsyncDerived<T, TT>(source: Subscribable<T>, transformer: Transformer<T, PromiseLike<TT>>, target: ConnectableObserver<TT> = new Subject<TT>()): ConnectableObserver<TT> {
 	connectAsyncDerived(source, transformer, target);
