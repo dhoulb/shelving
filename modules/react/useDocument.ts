@@ -55,13 +55,14 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 	readonly refresh = async () => {
 		if (this.closed) throw new ConditionError("State is closed");
 		if (!this.busy.value) {
+			this.busy.next(true);
 			try {
-				this.busy.next(true);
 				const result = await this.ref.value;
-				this.busy.next(false);
 				this.next(result);
 			} catch (thrown) {
 				this.error(thrown);
+			} finally {
+				this.busy.next(false);
 			}
 		}
 	};

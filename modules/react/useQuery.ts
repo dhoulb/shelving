@@ -84,21 +84,22 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 	readonly refresh = async (): Promise<void> => {
 		if (this.closed) throw new ConditionError("State is closed");
 		if (!this.busy.value) {
+			this.busy.next(true);
 			try {
-				this.busy.next(true);
 				const result = await this.ref.value;
 				this._hasMore = result.length < this.limit;
-				this.busy.next(false);
 				this.next(result);
 			} catch (thrown) {
 				this.error(thrown);
+			} finally {
+				this.busy.next(false);
 			}
 		}
 	};
 
 	/** Refresh this state if data in the cache is older than `maxAge` (in milliseconds). */
 	refreshStale(maxAge: number) {
-		if (!this.busy.value && this.age > maxAge) void this.refresh();
+		if (this.age > maxAge) void this.refresh();
 	}
 
 	/** Subscribe this state to the source provider. */
@@ -126,14 +127,15 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 	readonly loadMore = async (): Promise<void> => {
 		if (this.closed) throw new ConditionError("State is closed");
 		if (!this.busy.value) {
+			this.busy.next(true);
 			try {
-				this.busy.next(true);
 				const items = await this.ref.after(this.lastData).value;
 				this.next([...this.value, ...items]);
 				this._hasMore = items.length < this.limit;
-				this.busy.next(false);
 			} catch (thrown) {
 				this.error(thrown);
+			} finally {
+				this.busy.next(false);
 			}
 		}
 	};
