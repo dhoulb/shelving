@@ -10,7 +10,6 @@ import { MemoryTable } from "../provider/MemoryProvider.js";
 import { MatchObserver } from "../observe/MatchObserver.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { BooleanState } from "../state/BooleanState.js";
-import { dispatch } from "../util/function.js";
 import { useReduce } from "./useReduce.js";
 import { useSubscribe } from "./useSubscribe.js";
 
@@ -78,11 +77,11 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 		// If the result is cached use it as the initial value.
 		const isCached = typeof this._table.getQueryTime(ref) === "number";
 		if (isCached) this.next(this._table.getQuery(ref)); // Use the existing cached value.
-		else dispatch(this.refresh); // Queue a request to refresh the value.
+		else void this.refresh(); // Queue a request to refresh the value.
 	}
 
 	/** Refresh this state from the source provider. */
-	refresh = async (): Promise<void> => {
+	readonly refresh = async (): Promise<void> => {
 		if (this.closed) throw new ConditionError("State is closed");
 		if (!this.busy.value) {
 			try {
@@ -99,7 +98,7 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 
 	/** Refresh this state if data in the cache is older than `maxAge` (in milliseconds). */
 	refreshStale(maxAge: number) {
-		if (!this.busy.value && this.age > maxAge) dispatch(this.refresh);
+		if (!this.busy.value && this.age > maxAge) void this.refresh();
 	}
 
 	/** Subscribe this state to the source provider. */
@@ -124,7 +123,7 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 	 * Load more items after the last once.
 	 * - Promise that needs to be handled.
 	 */
-	loadMore = async (): Promise<void> => {
+	readonly loadMore = async (): Promise<void> => {
 		if (this.closed) throw new ConditionError("State is closed");
 		if (!this.busy.value) {
 			try {

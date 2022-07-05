@@ -10,7 +10,6 @@ import { MemoryTable } from "../provider/MemoryProvider.js";
 import { MatchObserver } from "../observe/MatchObserver.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { ConditionError } from "../error/ConditionError.js";
-import { dispatch } from "../util/function.js";
 import { useReduce } from "./useReduce.js";
 import { useSubscribe } from "./useSubscribe.js";
 
@@ -49,11 +48,11 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 		// If the result is cached use it as the initial value.
 		const isCached = typeof this._table.getDocumentTime(ref.id) === "number";
 		if (isCached) this.next(this._table.getDocument(ref.id)); // Use the existing cached value.
-		else dispatch(this.refresh); // Queue a request to refresh the value.
+		else void this.refresh(); // Queue a request to refresh the value.
 	}
 
 	/** Refresh this state from the source provider. */
-	async refresh() {
+	readonly refresh = async () => {
 		if (this.closed) throw new ConditionError("State is closed");
 		if (!this.busy.value) {
 			try {
@@ -65,11 +64,11 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 				this.error(thrown);
 			}
 		}
-	}
+	};
 
 	/** Refresh this state if data in the cache is older than `maxAge` (in milliseconds). */
 	refreshStale(maxAge: number) {
-		if (this.age > maxAge) dispatch(this.refresh);
+		if (this.age > maxAge) void this.refresh();
 	}
 
 	/** Subscribe this state to the source provider. */
