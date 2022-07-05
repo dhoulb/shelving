@@ -33,6 +33,6 @@ export class Sort<T extends Data> extends Rule<T> implements Rankable<T> {
 		return sortItems(items, this);
 	}
 	toString(): string {
-		return `${this.direction === "DESC" ? "!" : ""}${this.key}`;
+		return `"${this.direction === "DESC" ? "!" : ""}${this.key}"`;
 	}
 }

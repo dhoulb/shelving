@@ -1,11 +1,7 @@
 import type { Validator, Validators, ValidatorType } from "../util/validate.js";
-import type { Key, Datas } from "../util/data.js";
+import type { Key, Datas, Entity } from "../util/data.js";
 import type { Provider } from "../provider/Provider.js";
-import type { SortKeys } from "../query/Sort.js";
-import type { FilterProps } from "../query/Filter.js";
-import { Filters } from "../query/Filters.js";
-import { Sorts } from "../query/Sorts.js";
-import { Entity } from "../util/data.js";
+import type { QueryProps } from "../query/Query.js";
 import { DocumentReference, QueryReference } from "./Reference.js";
 
 /**
@@ -25,8 +21,9 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 	}
 
 	/** Create a query on a collection in this model. */
-	query<K extends Key<V>>(collection: K, filters?: FilterProps<Entity<ValidatorType<V[K]>>>, sorts?: SortKeys<Entity<ValidatorType<V[K]>>>, limit?: number | null): QueryReference<ValidatorType<V[K]>> {
-		return new QueryReference<ValidatorType<V[K]>>(this, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, filters && Filters.on(filters), sorts && Sorts.on(sorts), limit);
+	query<K extends Key<V>>(collection: K, query?: QueryProps<Entity<ValidatorType<V[K]>>>): QueryReference<ValidatorType<V[K]>> {
+		const validator = this.validators[collection] as Validator<ValidatorType<V[K]>>;
+		return new QueryReference<ValidatorType<V[K]>>(this, validator, collection, query);
 	}
 
 	/** Reference a document in a collection in this model. */

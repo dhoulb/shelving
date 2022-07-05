@@ -75,6 +75,27 @@ export class Filter<T extends Data> extends Rule<T> implements Matchable<T, void
 		return filterItems(items, this);
 	}
 	override toString(): string {
-		return `${this.key}:${this.operator}:${JSON.stringify(this.value)}`;
+		return `"${_formatKey(this)}":${JSON.stringify(this.value)}`;
+	}
+}
+
+/** Convert a `Filter` */
+function _formatKey<T extends Data>({ key, operator }: Filter<T>): string {
+	switch (operator) {
+		case "NOT":
+		case "OUT":
+			return `!${key}`;
+		case "CONTAINS":
+			return `${key}[]`;
+		case "LT":
+			return `${key}<`;
+		case "LTE":
+			return `${key}<=`;
+		case "GT":
+			return `${key}>`;
+		case "GTE":
+			return `${key}>=`;
+		default:
+			return key;
 	}
 }

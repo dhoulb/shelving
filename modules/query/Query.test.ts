@@ -108,3 +108,9 @@ test("Combined tests", () => {
 	expectOrderedKeys(new Query<T>(new Filters(TYPE_ALPHA), new Sorts(STR_ASC), 1).transform(allRand), ["b"]);
 	expectOrderedKeys(new Query<T>(new Filters(TYPE_ALPHA), new Sorts(STR_DESC), 1).transform(allRand), ["a"]);
 });
+test("toString()", () => {
+	const q1 = new Query<T>(new Filters(NUM_GT_2, STR_IN_Z_OR_X), new Sorts(NUM_ASC, TYPE_DESC), 12);
+	expect(q1.toString()).toBe(`{"num>":2,"str":["Z","X"],"sort":["num","!type"],"limit":12}`);
+	const q2 = new Query<T>();
+	expect(q2.toString()).toBe(`{}`);
+});

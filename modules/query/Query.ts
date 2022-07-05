@@ -12,6 +12,12 @@ import { SortKey, SortKeys } from "./Sort.js";
 const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 const EMPTY_SORTS = new Sorts<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
+/** Set of props for a query defined as an object. */
+export type QueryProps<T extends Data> = FilterProps<T> & {
+	readonly sort?: SortKey<T> | ImmutableArray<SortKey<T>>;
+	readonly limit?: number | null;
+};
+
 /** Interface that combines Filterable, Sortable, Sliceable. */
 export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T> {
 	/**
@@ -38,13 +44,16 @@ export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T> {
 
 	/** Return a new instance of this class with a limit set. */
 	max(max: number | null): this;
+
+	/** Return a new instance of this class with new filters, sorts, limits set. */
+	query(query: QueryProps<T>): this;
 }
 
 /** Allows filtering, sorting, and limiting on a set of results. */
 export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	/** Create a new `Query` object from a set of `QueryProps` */
-	static on<X extends Data>(filters?: FilterProps<X>, sorts?: SortKey<X> | ImmutableArray<SortKey<X>>, limit?: number | null): Query<X> {
-		return new Query<X>(filters && Filters.on<X>(filters), sorts && Sorts.on<X>(sorts), limit);
+	static on<X extends Data>({ sort, limit, ...filters }: QueryProps<X>): Query<X> {
+		return new Query<X>(filters && Filters.on<X>(filters as FilterProps<X>), sort && Sorts.on<X>(sort), limit);
 	}
 
 	readonly filters: Filters<T>;
@@ -63,10 +72,18 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 	filter<K extends Key<T>>(key: `${K}` | `!${K}`, value: ImmutableArray<T[K]>): this;
 	filter<K extends Key<T>>(key: `${K}[]`, value: T[K] extends ImmutableArray ? ArrayType<T[K]> : never): this;
 	filter(input: FilterKey<T> | FilterProps<T>, value?: unknown): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, filters: this.filters.filter(input as any, value as any) }; // eslint-disable-line @typescript-eslint/no-explicit-any
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			filters: this.filters.filter(input as any, value as any), // eslint-disable-line @typescript-eslint/no-explicit-any
+		};
 	}
 	get unfilter(): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, filters: EMPTY_FILTERS };
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			filters: EMPTY_FILTERS,
+		};
 	}
 	match(item: T): boolean {
 		return this.filters.match(item);
@@ -74,18 +91,21 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 
 	// Implement `Sortable`
 	sort(...keys: SortKeys<T>[]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: this.sorts.sort(...keys) };
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			sorts: this.sorts.sort(...keys),
+		};
 	}
 	get unsort(): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, sorts: EMPTY_SORTS };
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			sorts: EMPTY_SORTS,
+		};
 	}
 	rank(left: T, right: T): number {
 		return this.sorts.rank(left, right);
-	}
-
-	/** Return a new instance of this class with a limit defined. */
-	max(limit: number | null): this {
-		return limit === this.limit ? this : { __proto__: Object.getPrototypeOf(this), ...this, limit };
 	}
 
 	// Implement `Queryable`
@@ -97,7 +117,11 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 			const { key, direction } = sort;
 			filters.push(new Filter(key, direction === "ASC" ? (sort === lastSort ? "GT" : "GTE") : sort === lastSort ? "LT" : "LTE", getProp(item, key)));
 		}
-		return { __proto__: Object.getPrototypeOf(this), ...this, filters: new Filters(...filters) };
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			filters: new Filters(...filters),
+		};
 	}
 	before(item: T): this {
 		const filters = [...this.filters];
@@ -107,7 +131,27 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 			const { key, direction } = sort;
 			filters.push(new Filter(key, direction === "ASC" ? (sort === lastSort ? "LT" : "LTE") : sort === lastSort ? "GT" : "GTE", getProp(item, key)));
 		}
-		return { __proto__: Object.getPrototypeOf(this), ...this, filters: new Filters(...filters) };
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			filters: new Filters(...filters),
+		};
+	}
+	max(limit: number | null): this {
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			limit,
+		};
+	}
+	query({ sort, limit, ...filters }: QueryProps<T>): this {
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			filters: this.filters.filter(filters as FilterProps<T>),
+			sorts: sort ? this.sorts.sort(sort) : this.sorts,
+			limit: limit !== undefined ? limit : this.limit,
+		};
 	}
 
 	// Implement `Rule`
@@ -118,6 +162,8 @@ export class Query<T extends Data> extends Rule<T> implements Queryable<T> {
 
 	// Implement toString()
 	override toString(): string {
-		return `filters=${this.filters}&sorts=${this.sorts}${this.limit ? `&limit=${this.limit}` : ""}`;
+		const filters = this.filters.toString();
+		const sorts = this.sorts.toString();
+		return `{${filters}${sorts ? `${filters ? "," : ""}"sort":[${sorts}]` : ""}${typeof this.limit === "number" ? `${filters || sorts ? "," : ""}"limit":${this.limit}` : ""}}`;
 	}
 }

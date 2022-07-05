@@ -1,17 +1,16 @@
 import type { Data, OptionalData, Entity, OptionalEntity, Entities } from "../util/data.js";
 import type { Dispatch } from "../util/function.js";
-import type { SortKeys } from "../query/Sort.js";
 import { getFirstItem, getLastItem, ImmutableArray } from "../util/array.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Validator } from "../util/validate.js";
-import { Query } from "../query/Query.js";
+import { Query, QueryProps } from "../query/Query.js";
 import { Filters } from "../query/Filters.js";
 import { Sorts } from "../query/Sorts.js";
 import { callAsync } from "../util/async.js";
 import { countItems, hasItems } from "../util/iterate.js";
 import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
-import { Filter, FilterProps } from "../query/Filter.js";
-import { Observable, Unsubscribe } from "../observe/Observable.js";
+import type { FilterProps } from "../query/Filter.js";
+import type { Observable, Unsubscribe } from "../observe/Observable.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { Database } from "./Database.js";
 
@@ -26,8 +25,8 @@ export class QueryReference<T extends Data = Data> extends Query<Entity<T>> impl
 	readonly db: Database;
 	readonly validator: Validator<T>;
 	readonly collection: string;
-	constructor(db: Database, validator: Validator<T>, collection: string, filters?: Filters<Entity<T>>, sorts?: Sorts<Entity<T>>, limit?: number | null) {
-		super(filters, sorts, limit);
+	constructor(db: Database, validator: Validator<T>, collection: string, { sort, limit, ...filters }: QueryProps<Entity<T>> = {}) {
+		super(Filters.on(filters as FilterProps<Entity<T>>), sort && Sorts.on(sort), limit);
 		this.db = db;
 		this.validator = validator;
 		this.collection = collection;
@@ -164,13 +163,13 @@ export class DocumentReference<T extends Data = Data> implements Observable<Opti
 	}
 
 	/** Create a query on this document's collection. */
-	query(filters?: FilterProps<Entity<T>>, sorts?: SortKeys<Entity<T>>, limit?: number | null): QueryReference<T> {
-		return new QueryReference(this.db, this.validator, this.collection, filters && Filters.on(filters), sorts && Sorts.on(sorts), limit);
+	query(query?: QueryProps<Entity<T>>): QueryReference<T> {
+		return new QueryReference(this.db, this.validator, this.collection, query);
 	}
 
 	/** Get an 'optional' reference to this document (uses a `ModelQuery` with an `id` filter). */
 	get optional(): QueryReference<T> {
-		return new QueryReference(this.db, this.validator, this.collection, new Filters(new Filter("id", "IS", this.id)));
+		return new QueryReference(this.db, this.validator, this.collection, { id: this.id, limit: 1 } as QueryProps<Entity<T>>);
 	}
 
 	/**
