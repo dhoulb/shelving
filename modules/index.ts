@@ -22,6 +22,9 @@ export * from "./util/index.js";
 
 // Integrations.
 // export * from "./react/index.js"; // Not exported.
+// export * from "./firestore/client/index.js"; // Not exported.
+// export * from "./firestore/lite/index.js"; // Not exported.
+// export * from "./firestore/server/index.js"; // Not exported.
 
 // Testing.
 // export * from "./test/index.js"; // Not exported.
