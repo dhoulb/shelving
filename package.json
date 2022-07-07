@@ -29,11 +29,12 @@
 		"./firestore/lite": "./firestore/lite/index.js",
 		"./firestore/server": "./firestore/server/index.js",
 		"./markup": "./markup/index.js",
+		"./observe": "./observe/index.js",
 		"./provider": "./provider/index.js",
 		"./query": "./query/index.js",
 		"./react": "./react/index.js",
 		"./schema": "./schema/index.js",
-		"./stream": "./stream/index.js",
+		"./state": "./state/index.js",
 		"./test": "./test/index.js",
 		"./update": "./update/index.js",
 		"./util": "./util/index.js"
