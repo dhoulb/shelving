@@ -1,4 +1,5 @@
 import type { Entry } from "./entry.js";
+import type { Arguments } from "./function.js";
 import { limitItems } from "./iterate.js";
 
 /**
@@ -31,4 +32,12 @@ export function getMap<T>(iterable: ImmutableMap<T> | Iterable<Entry<T>>): Immut
 export function getMap<T>(iterable: PossibleMap<T>): ImmutableMap<T>;
 export function getMap<T>(iterable: PossibleMap<T>): ImmutableMap<T> {
 	return iterable instanceof Map ? iterable : new Map(iterable);
+}
+
+/** Function that lets new items in a map be created and updated by calling a `reduce()` callback that receives the existing value. */
+export function reduceMapItem<K, T, A extends Arguments = []>(map: Map<K, T>, key: K, reduce: (existing: T | undefined, ...a: A) => T, ...args: A): T {
+	const existing = map.get(key);
+	const next = reduce(existing, ...args);
+	if (existing !== next) map.set(key, next);
+	return next;
 }
