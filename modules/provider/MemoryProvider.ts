@@ -28,7 +28,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		return (this._tables[collection] ||= new MemoryTable<T>()) as MemoryTable<T>;
 	}
 
-	getDocumentTime<T extends Data>(ref: DocumentReference<T>): number | undefined {
+	getDocumentTime<T extends Data>(ref: DocumentReference<T>): number | null {
 		return this.getTable(ref).getDocumentTime(ref.id);
 	}
 
@@ -56,7 +56,7 @@ export class MemoryProvider extends Provider implements SynchronousProvider {
 		return this.getTable(ref).deleteDocument(ref.id);
 	}
 
-	getQueryTime<T extends Data>(ref: QueryReference<T>): number | undefined {
+	getQueryTime<T extends Data>(ref: QueryReference<T>): number | null {
 		return this.getTable(ref).getQueryTime(ref);
 	}
 
@@ -91,8 +91,8 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 	protected _listeners = new Set<Dispatch>();
 	protected _firing = false;
 
-	getDocumentTime(id: string): number | undefined {
-		return this._times.get(id);
+	getDocumentTime(id: string): number | null {
+		return this._times.get(id) || null;
 	}
 
 	getDocument(id: string): OptionalEntity<T> {
@@ -110,6 +110,24 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 			if (next !== last) {
 				last = next;
 				dispatchNext(observer, last);
+			}
+		});
+	}
+
+	/** Subscribe to a query in this table, but only if the query has been explicitly set (and has a time). */
+	subscribeCachedDocument(id: string, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
+		// Call next() immediately with initial results.
+		let last = this.getDocument(id);
+		if (this._times.has(id)) dispatchNext(observer, last);
+
+		// Call next() every time the collection changes.
+		return this.subscribe(() => {
+			if (this._times.has(id)) {
+				const next = this.getDocument(id);
+				if (next !== last) {
+					last = next;
+					dispatchNext(observer, last);
+				}
 			}
 		});
 	}
@@ -144,8 +162,8 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 		this.next();
 	}
 
-	getQueryTime(query: Query<Entity<T>>): number | undefined {
-		return this._times.get(_getQueryReference(query));
+	getQueryTime(query: Query<Entity<T>>): number | null {
+		return this._times.get(_getQueryReference(query)) || null;
 	}
 
 	getQuery(query: Query<Entity<T>>): Entities<T> {
@@ -163,6 +181,25 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 			if (!isArrayEqual(last, next)) {
 				last = next;
 				dispatchNext(observer, last);
+			}
+		});
+	}
+
+	/** Subscribe to a query in this table, but only if the query has been explicitly set (and has a time). */
+	subscribeCachedQuery(query: Query<Entity<T>>, observer: PartialObserver<Entities<T>>): Unsubscribe {
+		// Call next() immediately with initial results.
+		const ref = _getQueryReference(query);
+		let last = this.getQuery(query);
+		if (this._times.has(ref)) dispatchNext(observer, last);
+
+		// Call next() every time the collection changes.
+		return this.subscribe(() => {
+			if (this._times.has(ref)) {
+				const next = this.getQuery(query);
+				if (next !== last) {
+					last = next;
+					dispatchNext(observer, last);
+				}
 			}
 		});
 	}
@@ -228,5 +265,5 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 
 function _getQueryReference<T extends Data>(query: Query<Entity<T>>): string {
 	// Queries that have no limit don't care about sorting either.
-	return query.limit ? `filters=${query.filters.toString()}` : Query.prototype.toString.call(query);
+	return query.limit ? `{${query.filters.toString()}}` : Query.prototype.toString.call(query);
 }

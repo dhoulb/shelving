@@ -1,36 +1,22 @@
 import type { Unsubscribe } from "../observe/Observable.js";
 import type { QueryReference } from "../db/Reference.js";
-import type { Data, Entities, OptionalEntity } from "../util/data.js";
+import type { Data, Entities, OptionalEntity, Entity } from "../util/data.js";
+import { reduceMapItem } from "../util/map.js";
 import { getQueryFirstData, getQueryFirstValue, isSameReference } from "../db/Reference.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { findSourceProvider } from "../provider/ThroughProvider.js";
-import { Entity } from "../util/data.js";
 import { State } from "../state/State.js";
-import { MemoryTable } from "../provider/MemoryProvider.js";
-import { MatchObserver } from "../observe/MatchObserver.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { BooleanState } from "../state/BooleanState.js";
-import { useReduce } from "./useReduce.js";
+import { NOVALUE } from "../util/constants.js";
 import { useSubscribe } from "./useSubscribe.js";
+import { useCache } from "./useCache.js";
 
 /** Hold the current state of a query. */
 export class QueryState<T extends Data> extends State<Entities<T>> {
 	readonly ref: QueryReference<T>;
 	readonly busy = new BooleanState();
 	readonly limit: number;
-
-	protected readonly _table: MemoryTable<T>;
-
-	/** Time this state was last updated with a new value. */
-	get time(): number | undefined {
-		return this._table.getQueryTime(this.ref);
-	}
-
-	/** How old this state's value is (in milliseconds). */
-	get age(): number {
-		const time = this.time;
-		return typeof time === "number" ? Date.now() - time : Infinity;
-	}
 
 	/** Can more items be loaded after the current result. */
 	get hasMore(): boolean {
@@ -69,15 +55,16 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 	}
 
 	constructor(ref: QueryReference<T>) {
-		super();
-		this._table = findSourceProvider(ref.db.provider, CacheProvider).memory.getTable(ref);
+		const table = findSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref);
+		const time = table ? table.getQueryTime(ref) : null;
+		const isCached = typeof time === "number";
+		super(table && isCached ? table.getQuery(ref) : NOVALUE);
+		this._time = time;
 		this.ref = ref;
 		this.limit = ref.limit ?? Infinity;
 
-		// If the result is cached use it as the initial value.
-		const isCached = typeof this._table.getQueryTime(ref) === "number";
-		if (isCached) this.next(this._table.getQuery(ref)); // Use the existing cached value.
-		else void this.refresh(); // Queue a request to refresh the value.
+		// Queue a request to refresh the value if it doesn't exist.
+		if (this.loading) void this.refresh();
 	}
 
 	/** Refresh this state from the source provider. */
@@ -107,11 +94,15 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 		return this.connect(() => this.ref.subscribe({}));
 	}
 
+	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
+	connectCache(): Unsubscribe | void {
+		const table = findSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref);
+		return table && this.connect(() => table.subscribeCachedQuery(this.ref, this));
+	}
+
 	// Override to subscribe to the cache when an observer is added.
 	protected override _addFirstObserver(): void {
-		// Connect this state to the source.
-		// Connect through a `MatchObserver` that only dispatches `next()` if the query is actually cached (it might just be `[]` because no query has been cached yet).
-		this.connect(() => this._table.subscribeQuery(this.ref, new MatchObserver(() => this._table.getQueryTime(this.ref) !== undefined, this)));
+		this.connectCache();
 	}
 
 	// Override to unsubscribe from the cache when an observer is removed.
@@ -142,19 +133,14 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 }
 
 /** Reuse the previous `QueryState` or create a new one. */
-const _getQueryState = <T extends Data>(previous: QueryState<T> | undefined, ref: QueryReference<T> | undefined): QueryState<T> | undefined =>
-	!ref ? undefined : previous && isSameReference(previous.ref, ref) ? previous : new QueryState(ref);
+const _reduceQueryState = <T extends Data>(existing: QueryState<T> | undefined, ref: QueryReference<T>): QueryState<T> => (existing && isSameReference(existing.ref, ref) ? existing : new QueryState(ref));
 
-/**
- * Use a query in a React component.
- * - Use `useQuery(ref).data` to get the data of the query.
- * - Use `useQuery(ref).value` to get the data of the query or `null` if it doesn't exist.
- * - Use `useQuery(ref).exists` to check if the query is loaded before accessing `.data` or `.value`
- */
+/** Use a query in a React component. */
 export function useQuery<T extends Data>(ref: QueryReference<T>): QueryState<T>;
 export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T> | undefined;
 export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T> | undefined {
-	const state = useReduce(_getQueryState, ref);
+	const cache = useCache();
+	const state = ref ? reduceMapItem(cache, ref.toString(), _reduceQueryState, ref) : undefined;
 	useSubscribe(state);
 	return state;
 }

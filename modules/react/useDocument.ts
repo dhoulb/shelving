@@ -1,34 +1,21 @@
 import type { Unsubscribe } from "../observe/Observable.js";
 import type { DocumentReference } from "../db/Reference.js";
-import type { Data, OptionalEntity } from "../util/data.js";
+import type { Data, OptionalEntity, Entity } from "../util/data.js";
+import { reduceMapItem } from "../util/map.js";
 import { getDocumentData, isSameReference } from "../db/Reference.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { findSourceProvider } from "../provider/ThroughProvider.js";
-import { Entity } from "../util/data.js";
 import { State } from "../state/State.js";
-import { MemoryTable } from "../provider/MemoryProvider.js";
-import { MatchObserver } from "../observe/MatchObserver.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { ConditionError } from "../error/ConditionError.js";
-import { useReduce } from "./useReduce.js";
+import { NOVALUE } from "../util/constants.js";
 import { useSubscribe } from "./useSubscribe.js";
+import { useCache } from "./useCache.js";
 
 /** Hold the current state of a document. */
 export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 	readonly ref: DocumentReference<T>;
 	readonly busy = new BooleanState();
-	protected readonly _table: MemoryTable<T>;
-
-	/** Time this state was last updated with a new value. */
-	get time(): number | undefined {
-		return this._table.getDocumentTime(this.ref.id);
-	}
-
-	/** How old this state's value is (in milliseconds). */
-	get age(): number {
-		const time = this.time;
-		return typeof time === "number" ? Date.now() - time : Infinity;
-	}
 
 	/** Get the data of the document (throws `RequiredError` if document doesn't exist). */
 	get data(): Entity<T> {
@@ -41,14 +28,15 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 	}
 
 	constructor(ref: DocumentReference<T>) {
-		super();
-		this._table = findSourceProvider(ref.db.provider, CacheProvider).memory.getTable(ref);
+		const table = findSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref);
+		const time = table ? table.getDocumentTime(ref.id) : null;
+		const isCached = typeof time === "number";
+		super(table && isCached ? table.getDocument(ref.id) : NOVALUE);
+		this._time = time;
 		this.ref = ref;
 
-		// If the result is cached use it as the initial value.
-		const isCached = typeof this._table.getDocumentTime(ref.id) === "number";
-		if (isCached) this.next(this._table.getDocument(ref.id)); // Use the existing cached value.
-		else void this.refresh(); // Queue a request to refresh the value.
+		// Queue a request to refresh the value if it doesn't exist.
+		if (this.loading) void this.refresh();
 	}
 
 	/** Refresh this state from the source provider. */
@@ -77,11 +65,15 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 		return this.connect(() => this.ref.subscribe({}));
 	}
 
+	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
+	connectCache(): Unsubscribe | void {
+		const table = findSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref);
+		table && this.connect(() => table.subscribeCachedDocument(this.ref.id, this));
+	}
+
 	// Override to subscribe to the cache when an observer is added.
 	protected override _addFirstObserver(): void {
-		// Connect this state to the source.
-		// Connect through a `MatchObserver` that only dispatches `next()` if the document is actually cached (it might just be `null` because no document has been cached yet).
-		this.connect(() => this._table.subscribeDocument(this.ref.id, new MatchObserver(() => this._table.getDocumentTime(this.ref.id) !== undefined, this)));
+		this.connectCache();
 	}
 
 	// Override to unsubscribe from the cache when an observer is removed.
@@ -92,19 +84,14 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 }
 
 /** Reuse the previous `DocumentState` or create a new one. */
-const _getDocumentState = <T extends Data>(previous: DocumentState<T> | undefined, ref: DocumentReference<T> | undefined): DocumentState<T> | undefined =>
-	!ref ? undefined : previous && isSameReference(previous.ref, ref) ? previous : new DocumentState(ref);
+const _reduceDocumentState = <T extends Data>(existing: DocumentState<T> | undefined, ref: DocumentReference<T>): DocumentState<T> => (existing && isSameReference(existing.ref, ref) ? existing : new DocumentState(ref));
 
-/**
- * Use a document in a React component.
- * - Use `useDocument(ref).data` to get the data of the document.
- * - Use `useDocument(ref).value` to get the data of the document or `null` if it doesn't exist.
- * - Use `useDocument(ref).exists` to check if the document is loaded before accessing `.data` or `.value`
- */
+/** Use a document in a React component. */
 export function useDocument<T extends Data>(ref: DocumentReference<T>): DocumentState<T>;
 export function useDocument<T extends Data>(ref?: DocumentReference<T>): DocumentState<T> | undefined;
 export function useDocument<T extends Data>(ref?: DocumentReference<T>): DocumentState<T> | undefined {
-	const state = useReduce<DocumentState<T> | undefined, [DocumentReference<T> | undefined]>(_getDocumentState, ref);
+	const cache = useCache();
+	const state = ref ? reduceMapItem(cache, ref.toString(), _reduceDocumentState, ref) : undefined;
 	useSubscribe(state);
 	return state;
 }
