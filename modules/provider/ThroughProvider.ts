@@ -4,7 +4,6 @@ import type { DataUpdate } from "../update/DataUpdate.js";
 import type { Class } from "../util/class.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
-import { AssertionError } from "../error/AssertionError.js";
 import { AsynchronousProvider, Provider, SynchronousProvider } from "./Provider.js";
 
 /**
@@ -62,8 +61,7 @@ export interface AsynchronousThroughProvider extends AsynchronousProvider {
 }
 
 /** Find a specific source provider in a database's provider stack. */
-export function findSourceProvider<P extends Provider>(provider: Provider, type: Class<P>): P {
+export function findSourceProvider<P extends Provider>(provider: Provider, type: Class<P>): P | undefined {
 	if (provider instanceof type) return provider as P;
 	if (provider instanceof ThroughProvider) return findSourceProvider(provider.source, type);
-	throw new AssertionError(`Source provider ${type.name} not found`, provider);
 }
