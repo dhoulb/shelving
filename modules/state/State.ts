@@ -31,10 +31,26 @@ export class State<T> extends Subject<T> implements Matchable<T, void> {
 	}
 	private _value: T | typeof NOVALUE;
 
+	/** Time this state was last updated with a new value. */
+	get time(): number | null {
+		return this._time;
+	}
+	protected _time: number | null;
+
+	/** How old this state's value is (in milliseconds). */
+	get age(): number {
+		const time = this.time;
+		return time !== null ? Date.now() - time : Infinity;
+	}
+
 	/** State is initiated with an initial state. */
+	constructor(initial: T | typeof NOVALUE);
+	constructor();
+	constructor(...args: [] | [T]);
 	constructor(...args: [] | [T]) {
 		super();
 		this._value = args.length ? args[0] : NOVALUE;
+		this._time = args.length ? Date.now() : null;
 	}
 
 	/** Is there a current value, or is it still loading. */
@@ -65,6 +81,7 @@ export class State<T> extends Subject<T> implements Matchable<T, void> {
 	// Override to save value that is dispatched.
 	protected override _dispatch(value: T) {
 		this._value = value;
+		this._time = Date.now();
 		super._dispatch(value);
 	}
 
