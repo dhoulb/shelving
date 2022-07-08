@@ -2,7 +2,7 @@ import type { Unsubscribe } from "../observe/Observable.js";
 import type { QueryReference } from "../db/Reference.js";
 import type { Data, Entities, OptionalEntity, Entity } from "../util/data.js";
 import { reduceMapItem } from "../util/map.js";
-import { getQueryFirstData, getQueryFirstValue, isSameReference } from "../db/Reference.js";
+import { getQueryFirstData, getQueryFirstValue } from "../db/Reference.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { findSourceProvider } from "../provider/ThroughProvider.js";
 import { State } from "../state/State.js";
@@ -133,9 +133,12 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 }
 
 /** Reuse the previous `QueryState` or create a new one. */
-const _reduceQueryState = <T extends Data>(existing: QueryState<T> | undefined, ref: QueryReference<T>): QueryState<T> => (existing && isSameReference(existing.ref, ref) ? existing : new QueryState(ref));
+const _reduceQueryState = <T extends Data>(existing: QueryState<T> | undefined, ref: QueryReference<T>): QueryState<T> => existing || new QueryState(ref);
 
-/** Use a query in a React component. */
+/**
+ * Use a query in a React component.
+ * - Uses the default cache, so will error if not used inside `<Cache>`
+ */
 export function useQuery<T extends Data>(ref: QueryReference<T>): QueryState<T>;
 export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T> | undefined;
 export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T> | undefined {
