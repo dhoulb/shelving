@@ -28,37 +28,37 @@ export type PossibleOptionalDate = Date | number | string | null | (() => Possib
  * - Numbers are return the corresponding date (using `new Date(number)`, i.e. milliseconds since 01/01/1970).
  * - Anything else is converted to `null`
  *
- * @param target Any value that we want to parse as a valid date.
+ * @param possibleDate Any value that we want to parse as a valid date.
  * @returns `Date` instance if the value could be converted to a valid date, and `null` if not.
  */
-export function toDate(target: unknown): Date | null {
-	if (target === undefined || target === "now") return new Date();
-	if (target instanceof Date) return !Number.isNaN(target.getTime()) ? target : null;
-	if (target === "today") return getMidnight();
-	if (target === "tomorrow") return addDays(1, getMidnight());
-	if (target === "yesterday") return addDays(-1, getMidnight());
-	if (target === null || target === "") return null; // We know empty string is always an invalid date.
-	if (typeof target === "string" || typeof target === "number") return toDate(new Date(target));
-	if (typeof target === "function") return toDate(target());
+export function getOptionalDate(possibleDate: unknown): Date | null {
+	if (possibleDate === undefined || possibleDate === "now") return new Date();
+	if (possibleDate instanceof Date) return !Number.isNaN(possibleDate.getTime()) ? possibleDate : null;
+	if (possibleDate === "today") return getMidnight();
+	if (possibleDate === "tomorrow") return addDays(1, getMidnight());
+	if (possibleDate === "yesterday") return addDays(-1, getMidnight());
+	if (possibleDate === null || possibleDate === "") return null; // We know empty string is always an invalid date.
+	if (typeof possibleDate === "string" || typeof possibleDate === "number") return getOptionalDate(new Date(possibleDate));
+	if (typeof possibleDate === "function") return getOptionalDate(possibleDate());
 	return null;
 }
 
 /** Convert a possible date to a `Date` instance, or throw `AssertionError` if it couldn't be converted. */
-export function getDate(target: PossibleDate = "now"): Date {
-	const date = toDate(target);
+export function getDate(possibleDate: PossibleDate = "now"): Date {
+	const date = getOptionalDate(possibleDate);
 	assertDate(date);
 	return date;
 }
 
 /** Convert an unknown value to a YMD date string like "2015-09-12", or `null` if it couldn't be converted. */
-export function toYmd(target: unknown): string | null {
-	const date = toDate(target);
+export function getOptionalYmd(possibleDate: unknown): string | null {
+	const date = getOptionalDate(possibleDate);
 	return date ? date.toISOString().slice(0, 10) : null;
 }
 
 /** Convert a `Date` instance to a YMD string like "2015-09-12", or throw `AssertionError` if it couldn't be converted.  */
-export function getYmd(target: PossibleDate = "now"): string {
-	return getDate(target).toISOString().slice(0, 10);
+export function getYmd(possibleDate: PossibleDate = "now"): string {
+	return getDate(possibleDate).toISOString().slice(0, 10);
 }
 
 /** List of day-of-week strings. */

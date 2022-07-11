@@ -2,7 +2,7 @@ import { Feedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
 import type { ImmutableObject, MutableObject } from "./object.js";
-import { Data, Prop, toProps } from "./data.js";
+import { Data, Prop, getProps } from "./data.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validatable<T> {
@@ -104,7 +104,7 @@ export function validateObject<T>(obj: ImmutableObject<T>, validator: Validator<
 export function* validateProps<T extends Data>(unsafeData: Data, validators: Validators<T>): Iterable<Prop<T>> {
 	let invalid = false;
 	const details: MutableObject<Feedback> = {};
-	for (const [k, validator] of toProps(validators)) {
+	for (const [k, validator] of getProps(validators)) {
 		try {
 			yield [k, validate(unsafeData[k], validator)];
 		} catch (thrown) {

@@ -1,21 +1,21 @@
-import { Color, toColor, AssertionError, getColor } from "../index.js";
+import { Color, getOptionalColor, AssertionError, getColor } from "../index.js";
 import { isDark, isLight } from "./color.js";
 
 test("toColor(): colors", () => {
-	expect(toColor("#fff")).toBeInstanceOf(Color);
-	expect(toColor("#ffffff")).toBeInstanceOf(Color);
-	expect(toColor("#ffffffff")).toBeInstanceOf(Color);
-	expect(toColor("fff")).toBeInstanceOf(Color); // Can skip `#` hash.
-	expect(toColor("ffffff")).toBeInstanceOf(Color); // Can skip `#` hash.
-	expect(toColor("ffffffff")).toBeInstanceOf(Color); // Can skip `#` hash.
+	expect(getOptionalColor("#fff")).toBeInstanceOf(Color);
+	expect(getOptionalColor("#ffffff")).toBeInstanceOf(Color);
+	expect(getOptionalColor("#ffffffff")).toBeInstanceOf(Color);
+	expect(getOptionalColor("fff")).toBeInstanceOf(Color); // Can skip `#` hash.
+	expect(getOptionalColor("ffffff")).toBeInstanceOf(Color); // Can skip `#` hash.
+	expect(getOptionalColor("ffffffff")).toBeInstanceOf(Color); // Can skip `#` hash.
 });
 test("toColor(): non-colors", () => {
-	expect(toColor("#f")).toEqual(null);
-	expect(toColor("#ff")).toEqual(null);
-	expect(toColor("#ffff")).toEqual(null);
-	expect(toColor("#fffff")).toEqual(null);
-	expect(toColor("#GGG")).toEqual(null);
-	expect(toColor("#GGGGGG")).toEqual(null);
+	expect(getOptionalColor("#f")).toEqual(null);
+	expect(getOptionalColor("#ff")).toEqual(null);
+	expect(getOptionalColor("#ffff")).toEqual(null);
+	expect(getOptionalColor("#fffff")).toEqual(null);
+	expect(getOptionalColor("#GGG")).toEqual(null);
+	expect(getOptionalColor("#GGGGGG")).toEqual(null);
 });
 test("getColor(): works correctly", () => {
 	expect(getColor("#00ccff")).toBeInstanceOf(Color);

@@ -1,6 +1,6 @@
 import type { ImmutableObject, MutableObject } from "../util/object.js";
 import { debug } from "../util/debug.js";
-import { toTitle } from "../util/string.js";
+import { getTitle } from "../util/string.js";
 
 /**
  * The `Feedback` class represents a feedback message that should be shown to the user.
@@ -34,7 +34,7 @@ export class Feedback {
 		const messages: MutableObject<string> = {};
 		for (const [k, v] of Object.entries(this.details)) {
 			if (v instanceof Feedback) messages[k] = v.feedback;
-			else messages[k] = toTitle(v);
+			else messages[k] = getTitle(v);
 		}
 		return messages;
 	}

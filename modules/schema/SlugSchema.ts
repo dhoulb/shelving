@@ -1,4 +1,4 @@
-import { toSlug } from "../util/string.js";
+import { getSlug } from "../util/string.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
@@ -14,7 +14,7 @@ export class SlugSchema extends StringSchema {
 	override readonly min = 2;
 	override readonly max = 32;
 	override sanitize(unsafeString: string): string {
-		return toSlug(unsafeString);
+		return getSlug(unsafeString);
 	}
 }
 

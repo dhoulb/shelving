@@ -1,39 +1,39 @@
-import { toString, toTitle, toSlug, toWords, normalizeString, sanitizeString, sanitizeLines } from "../index.js";
+import { getString, getTitle, getSlug, getWords, normalizeString, sanitizeString, sanitizeLines } from "../index.js";
 
-describe("toString()", () => {
-	test("toString(): Correct response for supported things", () => {
-		expect(toString("abc")).toBe("abc");
-		expect(toString(123)).toBe("123");
-		expect(toString(123456789)).toBe("123456789");
-		expect(toString(123456.123)).toBe("123456.123");
-		expect(toString(123.10000)).toBe("123.1"); // prettier-ignore
+describe("getString()", () => {
+	test("getString(): Correct response for supported things", () => {
+		expect(getString("abc")).toBe("abc");
+		expect(getString(123)).toBe("123");
+		expect(getString(123456789)).toBe("123456789");
+		expect(getString(123456.123)).toBe("123456.123");
+		expect(getString(123.10000)).toBe("123.1"); // prettier-ignore
 	});
-	test("toString(): Correct response for non-supported things", () => {
-		expect(toString(true)).toBe("true");
-		expect(toString(false)).toBe("false");
-		expect(toString(null)).toBe("null");
-		expect(toString(undefined)).toBe("undefined");
+	test("getString(): Correct response for non-supported things", () => {
+		expect(getString(true)).toBe("true");
+		expect(getString(false)).toBe("false");
+		expect(getString(null)).toBe("null");
+		expect(getString(undefined)).toBe("undefined");
 	});
 });
-describe("toTitle()", () => {
-	test("toTitle(): Correct response for supported things", () => {
-		expect(toTitle("abc")).toBe("abc");
-		expect(toTitle(123)).toBe("123");
-		expect(toTitle(123456789)).toBe("123,456,789");
-		expect(toTitle(123456.123)).toBe("123,456.123");
-		expect(toTitle(123.10000)).toBe("123.1"); // prettier-ignore
-		expect(toTitle(true)).toBe("Yes");
-		expect(toTitle(false)).toBe("No");
-		expect(toTitle(null)).toBe("None");
-		expect(toTitle(undefined)).toBe("None");
-		expect(toTitle({ title: "abc" })).toBe("abc");
-		expect(toTitle({ title: 123 })).toBe("123");
-		expect(toTitle({ name: "abc" })).toBe("abc");
-		expect(toTitle({ name: 123 })).toBe("123");
+describe("getTitle()", () => {
+	test("getTitle(): Correct response for supported things", () => {
+		expect(getTitle("abc")).toBe("abc");
+		expect(getTitle(123)).toBe("123");
+		expect(getTitle(123456789)).toBe("123,456,789");
+		expect(getTitle(123456.123)).toBe("123,456.123");
+		expect(getTitle(123.10000)).toBe("123.1"); // prettier-ignore
+		expect(getTitle(true)).toBe("Yes");
+		expect(getTitle(false)).toBe("No");
+		expect(getTitle(null)).toBe("None");
+		expect(getTitle(undefined)).toBe("None");
+		expect(getTitle({ title: "abc" })).toBe("abc");
+		expect(getTitle({ title: 123 })).toBe("123");
+		expect(getTitle({ name: "abc" })).toBe("abc");
+		expect(getTitle({ name: 123 })).toBe("123");
 	});
-	test("toTitle(): Correct response for unsupported things", () => {
-		expect(toTitle({})).toBe("Unknown");
-		expect(toTitle(Symbol())).toBe("Unknown");
+	test("getTitle(): Correct response for unsupported things", () => {
+		expect(getTitle({})).toBe("Unknown");
+		expect(getTitle(Symbol())).toBe("Unknown");
 	});
 });
 describe("sanitizeString()", () => {
@@ -70,27 +70,27 @@ describe("normalizeString()", () => {
 });
 describe("toSlug()", () => {
 	test("Works correctly", () => {
-		expect(toSlug("A Sentence In Sentence Case")).toBe("a-sentence-in-sentence-case");
-		expect(toSlug("SOMETHING VERY loud")).toBe("something-very-loud");
-		expect(toSlug("This: Something to not-be proud of")).toBe("this-something-to-not-be-proud-of");
-		expect(toSlug("under_score")).toBe("under-score");
+		expect(getSlug("A Sentence In Sentence Case")).toBe("a-sentence-in-sentence-case");
+		expect(getSlug("SOMETHING VERY loud")).toBe("something-very-loud");
+		expect(getSlug("This: Something to not-be proud of")).toBe("this-something-to-not-be-proud-of");
+		expect(getSlug("under_score")).toBe("under-score");
 	});
 	test("Hyphens are cleaned up", () => {
-		expect(toSlug("multiple----hyphens")).toBe("multiple-hyphens");
-		expect(toSlug("----trim-hyphens----")).toBe("trim-hyphens");
-		expect(toSlug("trim-hyphens----")).toBe("trim-hyphens");
-		expect(toSlug("----trim-hyphens")).toBe("trim-hyphens");
+		expect(getSlug("multiple----hyphens")).toBe("multiple-hyphens");
+		expect(getSlug("----trim-hyphens----")).toBe("trim-hyphens");
+		expect(getSlug("trim-hyphens----")).toBe("trim-hyphens");
+		expect(getSlug("----trim-hyphens")).toBe("trim-hyphens");
 	});
 });
-test("toWords()", () => {
+test("getWords()", () => {
 	// Simple words.
-	expect(toWords("aaa bbb")).toEqual(["aaa", "bbb"]);
-	expect(toWords("    aaa    bbb    ")).toEqual(["aaa", "bbb"]);
+	expect(getWords("aaa bbb")).toEqual(["aaa", "bbb"]);
+	expect(getWords("    aaa    bbb    ")).toEqual(["aaa", "bbb"]);
 
 	// Quoted words.
-	expect(toWords(`"aaa bbb"`)).toEqual(["aaa bbb"]);
-	expect(toWords(`    "aaa    bbb"    `)).toEqual(["aaa    bbb"]);
-	expect(toWords(`    "aaa"    "bbb"    `)).toEqual(["aaa", "bbb"]);
-	expect(toWords(`aaa bbb "ccc ddd" eee fff`)).toEqual(["aaa", "bbb", "ccc ddd", "eee", "fff"]);
-	expect(toWords(`aaa "bbb ccc" ddd "eee fff" ggg`)).toEqual(["aaa", "bbb ccc", "ddd", "eee fff", "ggg"]);
+	expect(getWords(`"aaa bbb"`)).toEqual(["aaa bbb"]);
+	expect(getWords(`    "aaa    bbb"    `)).toEqual(["aaa    bbb"]);
+	expect(getWords(`    "aaa"    "bbb"    `)).toEqual(["aaa", "bbb"]);
+	expect(getWords(`aaa bbb "ccc ddd" eee fff`)).toEqual(["aaa", "bbb", "ccc ddd", "eee", "fff"]);
+	expect(getWords(`aaa "bbb ccc" ddd "eee fff" ggg`)).toEqual(["aaa", "bbb ccc", "ddd", "eee fff", "ggg"]);
 });

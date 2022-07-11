@@ -32,9 +32,9 @@ export type OptionalEntity<T extends Data = Data> = Entity<T> | null;
 export const isData = <T extends Data>(value: T | unknown): value is T => typeof value === "object" && value !== null;
 
 /** Turn a data object into an array of entries (if it isn't one already). */
-export function toProps<T extends Data>(data: T): ImmutableArray<Prop<T>>;
-export function toProps<T extends Data>(data: Partial<T>): ImmutableArray<Prop<T>>;
-export function toProps<T extends Data>(data: T | Partial<T>): ImmutableArray<Prop<T>> {
+export function getProps<T extends Data>(data: T): ImmutableArray<Prop<T>>;
+export function getProps<T extends Data>(data: Partial<T>): ImmutableArray<Prop<T>>;
+export function getProps<T extends Data>(data: T | Partial<T>): ImmutableArray<Prop<T>> {
 	return Object.entries(data) as ImmutableArray<Prop<T>>;
 }
 
@@ -77,11 +77,11 @@ export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K
  * @param k3 The sub-sub-key of the prop in the object to get.
  * @param k4 The sub-sub-sub-key of the prop in the object to get.
  */
-export function getProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(items: Iterable<T>, k1: K1, k2: K2, k3: K3, k4: K4): Iterable<T[K1][K2][K3][K4]>;
-export function getProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(items: Iterable<T>, k1: K1, k2: K2, k3: K3): Iterable<T[K1][K2][K3]>;
-export function getProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1]>(items: Iterable<T>, k1: K1, k2: K2): Iterable<T[K1][K2]>;
-export function getProps<T extends Data, K1 extends keyof T>(items: Iterable<T>, k1: K1): Iterable<T[K1]>;
-export function* getProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(
+export function yieldProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(items: Iterable<T>, k1: K1, k2: K2, k3: K3, k4: K4): Iterable<T[K1][K2][K3][K4]>;
+export function yieldProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(items: Iterable<T>, k1: K1, k2: K2, k3: K3): Iterable<T[K1][K2][K3]>;
+export function yieldProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1]>(items: Iterable<T>, k1: K1, k2: K2): Iterable<T[K1][K2]>;
+export function yieldProps<T extends Data, K1 extends keyof T>(items: Iterable<T>, k1: K1): Iterable<T[K1]>;
+export function* yieldProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(
 	items: Iterable<T>,
 	k1: K1,
 	k2?: K2,
@@ -141,7 +141,7 @@ export function setProp<T extends Data, K extends keyof T>(data: T, key: K, valu
  * @param props An object containing new props to set on the object.
  */
 export function setProps<T extends Data>(data: T, props: { [K in keyof T]?: T[K] }): void {
-	for (const [k, v] of toProps<T>(props)) data[k] = v;
+	for (const [k, v] of getProps<T>(props)) data[k] = v;
 }
 
 /**

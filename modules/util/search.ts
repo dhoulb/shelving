@@ -1,6 +1,6 @@
 import type { ImmutableArray } from "./array.js";
 import { Matchable } from "./match.js";
-import { toWords, normalizeString } from "./string.js";
+import { getWords, normalizeString } from "./string.js";
 
 // Regular expressions.
 export const MATCH_SPACE = /\s+/; // Match the first run of one or more space characters.
@@ -43,7 +43,7 @@ export const getWrapRegExp = (chars: string, middle = MATCH_WORDS.source): RegEx
  * - Unquoted words match partially (starting with a word boundary).
  * - Quoted phrases match fully (starting and ending with a word boundary).
  */
-export const toWordRegExps = (query: string): ImmutableArray<RegExp> => toWords(query).map(toWordRegExp);
+export const toWordRegExps = (query: string): ImmutableArray<RegExp> => getWords(query).map(toWordRegExp);
 
 /** Convert a string to a regular expression matching the start of a word boundary. */
 export const toWordRegExp = (word: string) => new RegExp(`\\b${escapeRegExp(normalizeString(word))}`, "i");

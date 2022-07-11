@@ -29,18 +29,18 @@ export function assertMin(v: number | unknown, min: number): asserts v is number
 }
 
 /**
- * Convert an unknown value to a number or `null`
+ * Convert an unknown value to a finite number or `null`
  * - Note: numbers can be non-finite numbers like `NaN` or `Infinity`. These are detected and will always return `null`
  *
  * Conversion rules:
- * - Numbers (except `NaN`) return numbers.
+ * - Numbers (except `NaN` and `+Infinity` and `-Infinity`) return numbers.
  * - Strings are parsed as numbers.
  * - Dates return their milliseconds (e.g. `date.getTime()`)
  * - Everything else returns `null`
  */
-export function toNumber(value: unknown): number | null {
+export function getOptionalNumber(value: unknown): number | null {
 	if (typeof value === "number") return !Number.isFinite(value) ? null : value === 0 ? 0 : value;
-	else if (typeof value === "string") return toNumber(parseFloat(value.replace(NUMERIC, "")));
+	else if (typeof value === "string") return getOptionalNumber(parseFloat(value.replace(NUMERIC, "")));
 	else if (value instanceof Date) return value.getTime();
 	return null;
 }
@@ -51,7 +51,7 @@ const NUMERIC = /[^0-9-.]/g;
  * @throws `AssertionError` if the value cannot be converted.
  */
 export function getNumber(value: unknown): number {
-	const num = toNumber(value);
+	const num = getOptionalNumber(value);
 	assertNumber(num);
 	return num;
 }

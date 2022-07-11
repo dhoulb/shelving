@@ -29,7 +29,7 @@ export function assertString(value: unknown): asserts value is string {
  * - Primitives return `true`, `false`, `null`, `undefined`
  * - Numbers return the stringified number.
  */
-export function toString(value: unknown): string {
+export function getString(value: unknown): string {
 	if (typeof value === "string") return value;
 	if (typeof value === "number") return value.toString();
 	if (typeof value === "object") return value === null ? "null" : typeof value.toString === "function" && value.toString !== Object.prototype.toString ? value.toString() : "object";
@@ -51,15 +51,15 @@ export function toString(value: unknown): string {
  * - Falsy values like `null` and `undefined` return `"None"`
  * - Everything else returns `"Unknown"`
  */
-export function toTitle(value: unknown): string {
+export function getTitle(value: unknown): string {
 	if (typeof value === "string") return value ? value : "None";
 	if (typeof value === "boolean") return value ? "Yes" : "No";
 	if (typeof value === "number") return formatNumber(value);
 	if (value instanceof Date) return formatDate(value);
-	if (isArray(value)) return value.map(toTitle).join(", ");
+	if (isArray(value)) return value.map(getTitle).join(", ");
 	if (isData(value)) {
-		if ("name" in value) return toTitle(value.name);
-		if ("title" in value) return toTitle(value.title);
+		if ("name" in value) return getTitle(value.name);
+		if ("title" in value) return getTitle(value.title);
 	}
 	if (!value) return "None";
 	return "Unknown";
@@ -112,7 +112,7 @@ const NORMAL_STRIP = /[^\p{L}\p{N}\s]+/gu; // Anything except letters, numbers, 
  * - Remove any characters not in the range `[a-z0-9-]`
  * - Change all spaces/separators/hyphens/dashes/underscores to `-` single hyphen.
  */
-export const toSlug = (str: string): string => str.toLowerCase().normalize("NFD").replace(SLUG_HYPHENS, "-").replace(SLUG_STRIP, "");
+export const getSlug = (str: string): string => str.toLowerCase().normalize("NFD").replace(SLUG_HYPHENS, "-").replace(SLUG_STRIP, "");
 const SLUG_HYPHENS = /[\s\-–—_]+/gu; // Runs of spaces and hyphens.
 const SLUG_STRIP = /^[^a-z0-9]+|[^a-z0-9]+$|[^a-z0-9-]+/g; // Non-alphanumeric or hyphen anywhere, or non-alphanumeric at start and end.
 
@@ -124,7 +124,7 @@ const SLUG_STRIP = /^[^a-z0-9]+|[^a-z0-9]+$|[^a-z0-9-]+/g; // Non-alphanumeric o
  * @param str The input string, e.g. `yellow dog   "Golden Retriever"`
  * @returns Array of the found words, e.g. `["yellow", "dog", "Golden Retriever"
  */
-export const toWords = (str: string): ImmutableArray<string> => Array.from(yieldWords(str));
+export const getWords = (str: string): ImmutableArray<string> => Array.from(yieldWords(str));
 
 /** Find and iterate over the words in a string. */
 export function* yieldWords(value: string): Generator<string, void, void> {

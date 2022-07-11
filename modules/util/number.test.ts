@@ -1,4 +1,4 @@
-import { formatNumber, roundStep, sumNumbers, toNumber, yieldRange } from "../index.js";
+import { formatNumber, roundStep, sumNumbers, getOptionalNumber, yieldRange } from "../index.js";
 import { cramNumber, roundNumber, truncateNumber } from "./number.js";
 
 test("roundNumber(): Works correctly", () => {
@@ -84,34 +84,34 @@ describe("roundStep()", () => {
 });
 describe("toNumber()", () => {
 	test("Whole numbers are converted correctly", () => {
-		expect(toNumber("0")).toBe(0);
-		expect(toNumber("1")).toBe(1);
-		expect(toNumber("0.")).toBe(0);
-		expect(toNumber("1.")).toBe(1);
-		expect(toNumber("0000.")).toBe(0);
-		expect(toNumber("1000.")).toBe(1000);
-		expect(toNumber("0001.")).toBe(1);
+		expect(getOptionalNumber("0")).toBe(0);
+		expect(getOptionalNumber("1")).toBe(1);
+		expect(getOptionalNumber("0.")).toBe(0);
+		expect(getOptionalNumber("1.")).toBe(1);
+		expect(getOptionalNumber("0000.")).toBe(0);
+		expect(getOptionalNumber("1000.")).toBe(1000);
+		expect(getOptionalNumber("0001.")).toBe(1);
 	});
 	test("Decimal numbers are converted correctly", () => {
-		expect(toNumber("1.1")).toBe(1.1);
-		expect(toNumber("1.555")).toBe(1.555);
-		expect(toNumber("123.456")).toBe(123.456);
+		expect(getOptionalNumber("1.1")).toBe(1.1);
+		expect(getOptionalNumber("1.555")).toBe(1.555);
+		expect(getOptionalNumber("123.456")).toBe(123.456);
 	});
 	test("Signs are converted correctly", () => {
-		expect(toNumber("-1")).toBe(-1);
-		expect(toNumber("-1.5")).toBe(-1.5);
+		expect(getOptionalNumber("-1")).toBe(-1);
+		expect(getOptionalNumber("-1.5")).toBe(-1.5);
 	});
 	test("Complicated numbers are fixed correctly", () => {
-		expect(toNumber("99999.99999")).toBe(99999.99999);
-		expect(toNumber("-99999.99999")).toBe(-99999.99999);
+		expect(getOptionalNumber("99999.99999")).toBe(99999.99999);
+		expect(getOptionalNumber("-99999.99999")).toBe(-99999.99999);
 	});
 	test("Empty string returns null", () => {
-		expect(toNumber("")).toBe(null);
+		expect(getOptionalNumber("")).toBe(null);
 	});
 	test("Non-numbers return null", () => {
-		expect(toNumber(".")).toBe(null);
-		expect(toNumber("a")).toBe(null);
-		expect(toNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(null);
+		expect(getOptionalNumber(".")).toBe(null);
+		expect(getOptionalNumber("a")).toBe(null);
+		expect(getOptionalNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(null);
 	});
 });
 test("sumNumbers()", () => {

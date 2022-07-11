@@ -13,9 +13,15 @@ export abstract class ThroughSchema<T> extends Schema<T> {
 	}
 }
 
-/** Find a specific source schema in a schema. */
-export function findSourceSchema<X extends Schema>(schema: Schema, type: Class<X>): X {
+/** Find a possible source schema in a schema (if it exists). */
+export function getOptionalSourceSchema<X extends Schema>(schema: Schema, type: Class<X>): X | undefined {
 	if (schema instanceof type) return schema as X;
-	if (schema instanceof ThroughSchema) return findSourceSchema(schema.source, type);
-	throw new AssertionError(`Source schema "${type.name}" not found`, schema);
+	if (schema instanceof ThroughSchema) return getSourceSchema(schema.source, type);
+}
+
+/** Find a source schema in a schema. */
+export function getSourceSchema<X extends Schema>(schema: Schema, type: Class<X>): X {
+	const source = getOptionalSourceSchema(schema, type);
+	if (!source) throw new AssertionError(`Source schema "${type.name}" not found`, schema);
+	return source;
 }

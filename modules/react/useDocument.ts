@@ -4,7 +4,7 @@ import type { Data, OptionalEntity, Entity } from "../util/data.js";
 import { reduceMapItem } from "../util/map.js";
 import { getDocumentData } from "../db/Reference.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { findSourceProvider } from "../provider/ThroughProvider.js";
+import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
 import { State } from "../state/State.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { ConditionError } from "../error/ConditionError.js";
@@ -28,7 +28,7 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 	}
 
 	constructor(ref: DocumentReference<T>) {
-		const table = findSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref);
+		const table = getOptionalSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref);
 		const time = table ? table.getDocumentTime(ref.id) : null;
 		const isCached = typeof time === "number";
 		super(table && isCached ? table.getDocument(ref.id) : NOVALUE);
@@ -68,7 +68,7 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 
 	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
 	connectCache(): Unsubscribe | void {
-		const table = findSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref);
+		const table = getOptionalSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref);
 		table && this.connect(() => table.subscribeCachedDocument(this.ref.id, this));
 	}
 

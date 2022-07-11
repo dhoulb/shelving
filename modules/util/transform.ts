@@ -1,5 +1,5 @@
 import { isFunction } from "./function.js";
-import { Data, Value, Prop, toProps, isData } from "./data.js";
+import { Data, Value, Prop, getProps, isData } from "./data.js";
 import type { Entry } from "./entry.js";
 import type { ImmutableObject } from "./object.js";
 import { ArrayType, ImmutableArray } from "./array.js";
@@ -41,7 +41,7 @@ export function transformData<T extends Data>(data: T, transforms: PropTransform
  * @yield Transformed prop entry after calling the corresponding prop transformer.
  */
 export function* transformProps<T extends Data>(data: T, transforms: PropTransformers<T>): Iterable<Prop<T>> {
-	for (const [k, v] of toProps<{ readonly [K in keyof T]: Transformer<T[K], T[K]> }>(transforms)) yield [k, transform<Value<T>, Value<T>>(data[k], v)];
+	for (const [k, v] of getProps<{ readonly [K in keyof T]: Transformer<T[K], T[K]> }>(transforms)) yield [k, transform<Value<T>, Value<T>>(data[k], v)];
 }
 
 /**

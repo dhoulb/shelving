@@ -56,30 +56,38 @@ export class Color {
 /** Convert number channel to a hex string (results will be unpredictable if number is outside 0-MAX). */
 const _hex = (channel: number) => channel.toString(16).padStart(2, "00");
 
+/** Is an unknown value a `Color` instance. */
+export const isColor = (v: Color | unknown): v is Color => v instanceof Color;
+
+/** Assert that an unknown value is a `Color` instance. */
+export function assertColor(v: Color | unknown): asserts v is Color {
+	if (!isColor(v)) throw new AssertionError("Invalid color", v);
+}
+
 /** Convert a number or string to a color channel number that's within bounds (strings like `0a` or `ff` are parsed as hexadecimal). */
-export function getColorChannel(channel: number | string) {
+export function getColorChannel(channel: number | string): number {
 	const num = typeof channel === "string" ? parseInt(channel.padStart(2, "00"), 16) : Math.round(channel);
 	if (Number.isFinite(num)) return getBetween(num, MIN, MAX);
 	throw new AssertionError("Invalid color channel", channel);
 }
 
 /** Convert a possible color to a `Color` instance or `null` */
-export function toColor(color: unknown): Color | null {
-	if (color instanceof Color) return color;
-	if (typeof color === "string") {
-		const hex3 = color.match(HEX3);
+export function getOptionalColor(possibleColor: unknown): Color | null {
+	if (possibleColor instanceof Color) return possibleColor;
+	if (typeof possibleColor === "string") {
+		const hex3 = possibleColor.match(HEX3);
 		if (hex3) return new Color(hex3[1], hex3[2], hex3[3]);
-		const hex6 = color.match(HEX6);
+		const hex6 = possibleColor.match(HEX6);
 		if (hex6) return new Color(hex6[1], hex6[2], hex6[3], hex6[4]);
 	}
 	return null;
 }
 
 /** Convert a possible color to a `Color` instance */
-export function getColor(input: PossibleColor): Color {
-	const color = toColor(input);
-	if (color) return color;
-	throw new AssertionError("Invalid color", color);
+export function getColor(possibleColor: PossibleColor): Color {
+	const color = getOptionalColor(possibleColor);
+	assertColor(color);
+	return color;
 }
 
 /** Is a color light? */

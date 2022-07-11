@@ -1,7 +1,7 @@
 import { Feedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { DataSchema } from "../schema/DataSchema.js";
-import { Data, toProps } from "../util/data.js";
+import { Data, getProps } from "../util/data.js";
 import { validate, Validator, Validators } from "../util/validate.js";
 import { transform } from "../util/transform.js";
 import { MutableObject } from "../util/object.js";
@@ -27,7 +27,7 @@ function _validatePropUpdates<T extends Data>(unsafeUpdates: PropUpdates<T>, val
 	let invalid = false;
 	const safeUpdates: { [K in keyof T]?: T[K] | Update<T[K]> } = {};
 	const details: MutableObject = {};
-	for (const [k, validator] of toProps(validators)) {
+	for (const [k, validator] of getProps(validators)) {
 		const unsafeUpdate = unsafeUpdates[k];
 		if (unsafeUpdate !== undefined) {
 			try {

@@ -1,7 +1,7 @@
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
-import { toString } from "../util/string.js";
+import { getString } from "../util/string.js";
 import { isItem } from "../util/array.js";
-import { toNumber } from "../util/number.js";
+import { getOptionalNumber } from "../util/number.js";
 import { isKey } from "../util/object.js";
 import { Schema } from "./Schema.js";
 
@@ -39,14 +39,14 @@ export abstract class AllowSchema<T extends string | number> extends Schema<T> {
 /** Define a valid string from an allowed set of strings. */
 export class AllowStringSchema<T extends string> extends AllowSchema<T> {
 	validate(unsafeValue: unknown = this.value): T {
-		return validateAllowed(toString(unsafeValue), this.allow);
+		return validateAllowed(getString(unsafeValue), this.allow);
 	}
 }
 
 /** Define a valid number from an allowed set of numbers. */
 export class AllowNumberSchema<T extends number> extends AllowSchema<T> {
 	validate(unsafeValue: unknown = this.value): T {
-		return validateAllowed(toNumber(unsafeValue), this.allow);
+		return validateAllowed(getOptionalNumber(unsafeValue), this.allow);
 	}
 }
 
