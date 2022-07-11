@@ -1,9 +1,6 @@
 /** The SAME symbol indicates sameness. */
 export const SAME: unique symbol = Symbol("shelving/SAME");
 
-/** The SKIP symbol indicates something that should be skipped. */
-export const SKIP: unique symbol = Symbol("shelving/SKIP");
-
 /** The LOADING symbol indicates loading. */
 export const LOADING: unique symbol = Symbol("shelving/LOADING");
 
