@@ -3,6 +3,7 @@ import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
 import type { ImmutableObject, MutableObject } from "./object.js";
 import { Data, Prop, getProps } from "./data.js";
+import { getArray, ImmutableArray } from "./array.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validatable<T> {
@@ -37,6 +38,17 @@ export type ValidatorsType<T> = { [K in keyof T]: ValidatorType<T[K]> };
 /** Validate an unknown value with a validator. */
 export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {
 	return typeof validator === "function" ? validator(unsafeValue) : validator.validate(unsafeValue);
+}
+
+/**
+ * Validate an array of items.
+ *
+ * @return Array with valid items.
+ * @throw InvalidFeedback if one or more entry values did not validate.
+ * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
+ */
+export function validateArray<T>(unsafeItems: Iterable<unknown>, validator: Validator<T>): ImmutableArray<T> {
+	return getArray(validateItems(unsafeItems, validator));
 }
 
 /**
