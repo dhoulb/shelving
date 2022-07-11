@@ -64,29 +64,30 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 		this.limit = ref.limit ?? Infinity;
 
 		// Queue a request to refresh the value if it doesn't exist.
-		if (this.loading) void this.refresh();
+		if (this.loading) this.refresh();
 	}
 
 	/** Refresh this state from the source provider. */
-	readonly refresh = async (): Promise<void> => {
+	readonly refresh = (): void => {
 		if (this.closed) throw new ConditionError("State is closed");
-		if (!this.busy.value) {
-			this.busy.next(true);
-			try {
-				const result = await this.ref.value;
-				this._hasMore = result.length < this.limit;
-				this.next(result);
-			} catch (thrown) {
-				this.error(thrown);
-			} finally {
-				this.busy.next(false);
-			}
-		}
+		if (!this.busy.value) void this._refresh();
 	};
+	async _refresh(): Promise<void> {
+		this.busy.next(true);
+		try {
+			const result = await this.ref.value;
+			this._hasMore = result.length < this.limit;
+			this.next(result);
+		} catch (thrown) {
+			this.error(thrown);
+		} finally {
+			this.busy.next(false);
+		}
+	}
 
 	/** Refresh this state if data in the cache is older than `maxAge` (in milliseconds). */
 	refreshStale(maxAge: number) {
-		if (this.age > maxAge) void this.refresh();
+		if (this.age > maxAge) this.refresh();
 	}
 
 	/** Subscribe this state to the source provider. */
@@ -115,21 +116,22 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 	 * Load more items after the last once.
 	 * - Promise that needs to be handled.
 	 */
-	readonly loadMore = async (): Promise<void> => {
+	readonly loadMore = (): void => {
 		if (this.closed) throw new ConditionError("State is closed");
-		if (!this.busy.value) {
-			this.busy.next(true);
-			try {
-				const items = await this.ref.after(this.lastData).value;
-				this.next([...this.value, ...items]);
-				this._hasMore = items.length < this.limit;
-			} catch (thrown) {
-				this.error(thrown);
-			} finally {
-				this.busy.next(false);
-			}
-		}
+		if (!this.busy.value) void this._loadMore();
 	};
+	async _loadMore(): Promise<void> {
+		this.busy.next(true);
+		try {
+			const items = await this.ref.after(this.lastData).value;
+			this.next([...this.value, ...items]);
+			this._hasMore = items.length < this.limit;
+		} catch (thrown) {
+			this.error(thrown);
+		} finally {
+			this.busy.next(false);
+		}
+	}
 }
 
 /** Reuse the previous `QueryState` or create a new one. */
