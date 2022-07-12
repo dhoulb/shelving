@@ -79,12 +79,12 @@ function getCollection<T extends Data>(firestore: Firestore, { collection }: Que
 
 /** Create a corresponding `QueryReference` from a Query. */
 function getQuery<T extends Data>(firestore: Firestore, ref: QueryReference<T>): FirestoreQueryReference<T> {
-	const { sorts, filters, limit } = ref;
-	const constraints: FirestoreQueryConstraint[] = [];
-	for (const { key, direction } of sorts) constraints.push(firestoreOrderBy(key === "id" ? ID : key, DIRECTIONS[direction]));
-	for (const { operator, key, value } of filters) constraints.push(firestoreWhere(key === "id" ? ID : key, OPERATORS[operator], value));
-	if (typeof limit === "number") constraints.push(firestoreLimit(limit));
-	return firestoreQuery(getCollection(firestore, ref), ...constraints);
+	return firestoreQuery(getCollection(firestore, ref), ...yieldQueryConstraints(ref));
+}
+function* yieldQueryConstraints<T extends Data>({ sorts, filters, limit }: QueryReference<T>): Iterable<FirestoreQueryConstraint> {
+	for (const { key, direction } of sorts) yield firestoreOrderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
+	for (const { operator, key, value } of filters) yield firestoreWhere(key === "id" ? ID : key, OPERATORS[operator], value);
+	if (typeof limit === "number") yield firestoreLimit(limit);
 }
 
 function getEntities<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Entities<T> {
