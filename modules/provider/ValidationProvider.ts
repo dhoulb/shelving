@@ -6,7 +6,6 @@ import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
 import { callAsync } from "../util/async.js";
 import { validate } from "../util/validate.js";
-import { validateUpdate } from "../update/util.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
@@ -28,7 +27,7 @@ export class ValidationProvider extends ThroughProvider {
 		return super.setDocument(ref, validate(value, ref.validator));
 	}
 	override updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void | PromiseLike<void> {
-		return super.updateDocument<T>(ref, validateUpdate(update, ref.validator));
+		return super.updateDocument<T>(ref, update.validate(ref.validator));
 	}
 	override getQuery<T extends Data>(ref: QueryReference<T>): Entities<T> | PromiseLike<Entities<T>> {
 		return callAsync(_validateEntities, super.getQuery(ref), ref);
@@ -40,7 +39,7 @@ export class ValidationProvider extends ThroughProvider {
 		return super.setQuery(ref, validate(value, ref.validator));
 	}
 	override updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number | PromiseLike<number> {
-		return super.updateQuery(ref, validateUpdate(update, ref.validator));
+		return super.updateQuery(ref, update.validate(ref.validator));
 	}
 }
 

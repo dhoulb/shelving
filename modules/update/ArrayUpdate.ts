@@ -1,4 +1,6 @@
+import { ArraySchema } from "../schema/ArraySchema.js";
 import { ImmutableArray, withItems, withoutItems } from "../util/array.js";
+import { validateArray, Validator } from "../util/validate.js";
 import { Update } from "./Update.js";
 
 /** Update that can be applied to an array to add/remove items. */
@@ -21,18 +23,35 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 		this.deletes = deletes;
 	}
 
-	/** Transform an array using this array update. */
 	transform(arr: ImmutableArray<T> = []): ImmutableArray<T> {
 		return withoutItems(withItems(arr, this.adds), this.deletes);
 	}
 
+	override validate(validator: Validator<ImmutableArray<T>>): this {
+		if (!(validator instanceof ArraySchema)) return super.validate(validator);
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			adds: validateArray(this.adds, validator.items),
+			deletes: validateArray(this.deletes, validator.items),
+		};
+	}
+
 	/** Return an array update with an additional item marked for addition. */
 	with(...adds: T[]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, adds: [...this.adds, ...adds] };
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			adds: [...this.adds, ...adds],
+		};
 	}
 
 	/** Return an array update with an additional item marked for deletion. */
 	without(...deletes: T[]): this {
-		return { __proto__: Object.getPrototypeOf(this), ...this, deletes: [...this.deletes, ...deletes] };
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			deletes: [...this.deletes, ...deletes],
+		};
 	}
 }

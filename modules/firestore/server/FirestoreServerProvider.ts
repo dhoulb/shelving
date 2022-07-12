@@ -17,13 +17,15 @@ import type { Entry } from "../../util/entry.js";
 import type { FilterOperator } from "../../query/Filter.js";
 import type { SortDirection } from "../../query/Sort.js";
 import type { Unsubscribe } from "../../observe/Observable.js";
+import { dispatchError, dispatchNext, Observer } from "../../observe/Observer.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { AsynchronousProvider, Provider } from "../../provider/Provider.js";
 import { ArrayUpdate } from "../../update/ArrayUpdate.js";
 import { DataUpdate } from "../../update/DataUpdate.js";
 import { Increment } from "../../update/Increment.js";
 import { ObjectUpdate } from "../../update/ObjectUpdate.js";
-import { dispatchError, dispatchNext, Observer } from "../../observe/Observer.js";
+import { Delete } from "../../update/Delete.js";
+import { Update } from "../../update/Update.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -85,14 +87,15 @@ function getOptionalEntity<T extends Data>(snapshot: FirestoreDocumentSnapshot<T
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
 function* yieldFieldValues(updates: Iterable<Entry>, prefix = ""): Iterable<Entry> {
 	for (const [key, update] of updates) {
-		if (update === undefined) yield [`${prefix}${key}`, FieldValue.delete()];
+		if (!(update instanceof Update)) yield [`${prefix}${key}`, update];
+		else if (update instanceof Delete) yield [`${prefix}${key}`, FieldValue.delete()];
 		else if (update instanceof Increment) yield [`${prefix}${key}`, FieldValue.increment(update.amount)];
 		else if (update instanceof DataUpdate || update instanceof ObjectUpdate) yield* yieldFieldValues(update, `${prefix}${key}.`);
 		else if (update instanceof ArrayUpdate) {
 			if (update.adds.length && update.deletes.length) throw new UnsupportedError("Cannot add/delete array items in one update");
 			if (update.adds.length) yield [`${prefix}${key}`, FieldValue.arrayUnion(...update.adds)];
 			else if (update.deletes.length) yield [`${prefix}${key}`, FieldValue.arrayRemove(...update.deletes)];
-		} else yield [`${prefix}${key}`, update];
+		} else yield [`${prefix}${key}`, update.transform()];
 	}
 }
 
