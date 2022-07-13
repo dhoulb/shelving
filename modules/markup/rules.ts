@@ -55,7 +55,7 @@ export const UNORDERED_LIST_RULE: MarkupRule = {
 const SPLIT_UL_ITEMS = new RegExp(`\\n+${UNORDERED}`, "g");
 const _mapUnorderedItem = (item: string, key: number): JSXElement => {
 	const children = item.replace(MATCH_INDENT, "");
-	return { type: "li", key, props: { children } };
+	return { type: "li", key, ref: null, props: { children } };
 };
 
 /**
@@ -81,7 +81,7 @@ const _mapOrderedItem = (item: string, key: number): JSXElement => {
 		.slice(firstSpace + 1)
 		.trimStart()
 		.replace(MATCH_INDENT, "");
-	return { type: "li", key, props: { value, children } };
+	return { type: "li", key, ref: null, props: { value, children } };
 };
 
 /**
