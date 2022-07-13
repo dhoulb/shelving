@@ -17,7 +17,7 @@ const MATCH_INDENT = /^ {1,2}/gm;
  */
 export const HEADING_RULE: MarkupRule = {
 	regexp: getLineRegExp(`(#{1,6}) +(${MATCH_LINE.source})`),
-	render: ([, prefix = "", children = ""]) => ({ type: `h${prefix.length}`, key: null, props: { children } }),
+	render: ([, prefix = "", children = ""]) => ({ type: `h${prefix.length}`, key: null, ref: null, props: { children } }),
 	contexts: ["block"],
 	childContext: "inline",
 };
@@ -31,7 +31,7 @@ export const HEADING_RULE: MarkupRule = {
  */
 export const HORIZONTAL_RULE: MarkupRule = {
 	regexp: getLineRegExp(`([${BULLETS}])(?: *\\1){2,}`),
-	render: () => ({ type: "hr", key: null, props: {} }),
+	render: () => ({ type: "hr", key: null, ref: null, props: {} }),
 	contexts: ["block"],
 };
 
@@ -47,7 +47,7 @@ export const UNORDERED_LIST_RULE: MarkupRule = {
 	regexp: getBlockRegExp(`${UNORDERED}(${MATCH_BLOCK.source})`),
 	render: ([, list = ""]) => {
 		const children = list.split(SPLIT_UL_ITEMS).map(_mapUnorderedItem);
-		return { type: "ul", key: null, props: { children } };
+		return { type: "ul", key: null, ref: null, props: { children } };
 	},
 	contexts: ["block", "list"],
 	childContext: "list",
@@ -68,7 +68,7 @@ export const ORDERED_LIST_RULE: MarkupRule = {
 	regexp: getBlockRegExp(`(${ORDERED}${MATCH_BLOCK.source})`),
 	render: ([, list = ""]) => {
 		const children = list.split(SPLIT_OL_ITEMS).map(_mapOrderedItem);
-		return { type: "ol", key: null, props: { children } };
+		return { type: "ol", key: null, ref: null, props: { children } };
 	},
 	contexts: ["block", "list"],
 	childContext: "list",
@@ -95,6 +95,7 @@ export const BLOCKQUOTE_RULE: MarkupRule = {
 	render: ([, quote = ""]) => ({
 		type: "blockquote",
 		key: null,
+		ref: null,
 		props: { children: quote.replace(BLOCKQUOTE_LINES, "") },
 	}),
 	contexts: ["block", "list"],
@@ -115,10 +116,12 @@ export const FENCED_CODE_RULE: MarkupRule = {
 	render: ([, , file, children]) => ({
 		type: "pre",
 		key: null,
+		ref: null,
 		props: {
 			children: {
 				type: "code",
 				key: null,
+				ref: null,
 				props: { "data-file": file || undefined, children },
 			},
 		},
@@ -132,7 +135,7 @@ export const FENCED_CODE_RULE: MarkupRule = {
  */
 export const PARAGRAPH_RULE: MarkupRule = {
 	regexp: getBlockRegExp(` *(${MATCH_BLOCK.source})`),
-	render: ([, children]) => ({ type: `p`, key: null, props: { children } }),
+	render: ([, children]) => ({ type: `p`, key: null, ref: null, props: { children } }),
 	contexts: ["block"],
 	childContext: "inline",
 	priority: -10, // Lower precedence than other blocks so it matches last and paragraphs can be broken by other blocks.
@@ -164,6 +167,7 @@ export const LINK_RULE: MarkupRule = {
 	render: ([, title, href = ""], { rel }) => ({
 		type: "a",
 		key: null,
+		ref: null,
 		props: { children: title || formatUrl(href), href, rel },
 	}),
 	contexts: ["inline", "list"],
@@ -195,6 +199,7 @@ export const AUTOLINK_RULE: MarkupRule = {
 	render: ([, href = "", title], { rel }) => ({
 		type: "a",
 		key: null,
+		ref: null,
 		props: { children: title || formatUrl(href), href, rel },
 	}),
 	contexts: ["inline", "list"],
@@ -210,7 +215,7 @@ export const AUTOLINK_RULE: MarkupRule = {
  */
 export const CODE_RULE: MarkupRule = {
 	regexp: getWrapRegExp("`+", MATCH_BLOCK.source), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
-	render: ([, , children]) => ({ type: "code", key: null, props: { children } }),
+	render: ([, , children]) => ({ type: "code", key: null, ref: null, props: { children } }),
 	contexts: ["inline", "list"],
 	priority: 10, // Higher priority than other inlines so it matches first before e.g. `strong` or `em` (from CommonMark spec: "Code span backticks have higher precedence than any other inline constructs except HTML tags and autolinks.")
 };
@@ -225,7 +230,7 @@ export const CODE_RULE: MarkupRule = {
  */
 export const STRONG_RULE: MarkupRule = {
 	regexp: getWrapRegExp("\\*+"),
-	render: ([, , children]) => ({ type: "strong", key: null, props: { children } }),
+	render: ([, , children]) => ({ type: "strong", key: null, ref: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
 };
@@ -240,7 +245,7 @@ export const STRONG_RULE: MarkupRule = {
  */
 export const EMPHASIS_RULE: MarkupRule = {
 	regexp: getWrapRegExp("_+"),
-	render: ([, , children]) => ({ type: "em", key: null, props: { children } }),
+	render: ([, , children]) => ({ type: "em", key: null, ref: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
 };
@@ -255,7 +260,7 @@ export const EMPHASIS_RULE: MarkupRule = {
  */
 export const INSERT_RULE: MarkupRule = {
 	regexp: getWrapRegExp("\\+\\++"),
-	render: ([, , children]) => ({ type: "ins", key: null, props: { children } }),
+	render: ([, , children]) => ({ type: "ins", key: null, ref: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
 };
@@ -270,7 +275,7 @@ export const INSERT_RULE: MarkupRule = {
  */
 export const DELETE_RULE: MarkupRule = {
 	regexp: getWrapRegExp("--+|~~+"),
-	render: ([, , children]) => ({ type: "del", key: null, props: { children } }),
+	render: ([, , children]) => ({ type: "del", key: null, ref: null, props: { children } }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
 };
@@ -285,7 +290,7 @@ export const DELETE_RULE: MarkupRule = {
  */
 export const LINEBREAK_RULE: MarkupRule = {
 	regexp: /\n/,
-	render: () => ({ type: "br", key: null, props: {} }),
+	render: () => ({ type: "br", key: null, ref: null, props: {} }),
 	contexts: ["inline", "list", "link"],
 	childContext: "inline",
 };

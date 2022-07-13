@@ -11,6 +11,7 @@ export type JSXElement<P extends JSXProps = JSXProps> = {
 	type: string | JSXElementCreator<P>;
 	props: P;
 	key: string | number | null;
+	ref: null;
 	$$typeof?: symbol;
 };
 
