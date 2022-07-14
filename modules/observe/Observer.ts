@@ -9,13 +9,13 @@ import type { Connectable } from "./Observable.js";
  * - Compatible with https://github.com/tc39/proposal-observable/
  */
 export interface Observer<T> {
-	/** Send the next value to this object. */
+	/** Send the next value to this observer. */
 	readonly next: Dispatch<[T]>;
-	/** End this object with an error. */
+	/** End this observer with an error. */
 	readonly error: Handler;
-	/** End this object with success. */
+	/** End this observer with success. */
 	readonly complete: Dispatch;
-	/** Is this object closed? */
+	/** Is this observer closed? */
 	readonly closed?: boolean;
 }
 

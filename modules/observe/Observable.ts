@@ -1,4 +1,3 @@
-import { ConditionError } from "../error/ConditionError.js";
 import type { Dispatch } from "../util/function.js";
 import type { PartialObserver } from "./Observer.js";
 
@@ -9,6 +8,8 @@ export type Unsubscribe = () => void;
 export interface Observable<T> {
 	/** Subscribe an observer to this observable. */
 	subscribe(observer: PartialObserver<T> | Dispatch<[T]>): Unsubscribe;
+	/** Is this observable closed? */
+	readonly closed?: boolean;
 }
 
 /** Subscribe function is a function that initiates a subscription to an observer. */
@@ -19,7 +20,6 @@ export type Subscribable<T> = Observable<T> | Subscribe<T>;
 
 /** Start a subscription to a `Subscribable` and return the `Unsubscriber` function. */
 export function subscribe<T>(source: Subscribable<T>, target: PartialObserver<T>): Unsubscribe {
-	if (target.closed) throw new ConditionError("Target is closed");
 	return typeof source === "function" ? source(target) : source.subscribe(target);
 }
 
@@ -27,4 +27,6 @@ export function subscribe<T>(source: Subscribable<T>, target: PartialObserver<T>
 export interface Connectable<T> {
 	/** Subscribe this entity to a subscribable. */
 	connect(subscribable: Subscribable<T>): Unsubscribe;
+	/** Is this observable closed? */
+	readonly closed?: boolean;
 }

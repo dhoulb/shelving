@@ -12,14 +12,14 @@ import { Observable, Subscribable, subscribe, Unsubscribe } from "./Observable.j
  */
 export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	/** List of sources this subject is subscribed to. */
-	protected readonly _cleanups = new Set<Unsubscribe>();
+	protected readonly _connections = new Set<Unsubscribe>();
 
 	/** List of subscribed observers that values are forwarded to. */
 	protected readonly _subscribers = new Set<PartialObserver<T>>();
 
 	/** Get the number of current subscribers. */
 	get connections(): number {
-		return this._cleanups.size;
+		return this._connections.size;
 	}
 
 	/** Get the number of current subscribers. */
@@ -31,7 +31,7 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	readonly closed: boolean = false;
 
 	next(value: T): void {
-		if (this.closed) throw new ConditionError("Subject is closed");
+		if (this.closed) throw new ConditionError(`Observer is closed`);
 		this._dispatch(value);
 	}
 
@@ -41,7 +41,7 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	}
 
 	error(reason: Error | unknown): void {
-		if (this.closed) throw new ConditionError("Subject is closed");
+		if (this.closed) throw new ConditionError(`Observer is closed`);
 		this._close();
 		for (const subscriber of this._subscribers) {
 			this._subscribers.delete(subscriber);
@@ -50,7 +50,7 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	}
 
 	complete(): void {
-		if (this.closed) throw new ConditionError("Subject is closed");
+		if (this.closed) throw new ConditionError(`Observer is closed`);
 		this._close();
 		for (const subscriber of this._subscribers) {
 			this._subscribers.delete(subscriber);
@@ -64,39 +64,42 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 		this.disconnect();
 	}
 
-	/** Connect this subjet to a source. */
+	/** Connect this subject to a source. */
 	connect(source: Subscribable<T>): Unsubscribe {
-		if (this.closed) throw new ConditionError("Subject is closed");
+		if (this.closed) throw new ConditionError(`Connectable is closed`);
 		const unsubscribe = subscribe(source, this);
 		const cleanup = () => {
-			this._cleanups.delete(cleanup);
+			this._connections.delete(cleanup);
 			dispatch(unsubscribe);
 		};
-		this._cleanups.add(cleanup);
+		this._connections.add(cleanup);
 		return cleanup;
 	}
 
 	/** Disconnect this subject from all sources. */
 	disconnect(): void {
-		for (const cleanup of this._cleanups) dispatch(cleanup); // Cleanups are self-cleaning.
+		for (const cleanup of this._connections) dispatch(cleanup); // Cleanups are self-cleaning.
 	}
 
 	/**
 	 * Subscribe to this subject and return an unsubscriber function.
-	 * - Allows either an `Observer` object or  separate `next()`, `error()` and `complete()` functions.
+	 * - Allows either an `Observer` object or  separate `next()", `error()` and `complete()` functions.
 	 * - Implements `Observable`
 	 */
-	subscribe(next: PartialObserver<T> | Dispatch<[T]>): Unsubscribe {
-		const observer = typeof next === "function" ? { next } : next;
+	subscribe(target: PartialObserver<T> | Dispatch<[T]>): Unsubscribe {
+		if (this.closed) throw new ConditionError(`Observable is closed`);
+		const observer = typeof target === `function` ? { next: target } : target;
+		if (observer.closed) throw new ConditionError("Target is closed");
 		this._addObserver(observer);
 		return this._removeObserver.bind(this, observer);
 	}
 
 	/** Add an observer (called by `subscribe()`). */
 	protected _addObserver(observer: PartialObserver<T>): void {
-		const size = this._subscribers.size;
+		const sizeBefore = this._subscribers.size;
 		this._subscribers.add(observer);
-		if (!size && this._subscribers.size) this._addFirstObserver();
+		const sizeAfter = this._subscribers.size;
+		if (!sizeBefore && sizeAfter) this._addFirstObserver();
 	}
 
 	/** Called after adding the first observer. */
@@ -106,9 +109,10 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 
 	/** Remove an observer. */
 	protected _removeObserver(observer: PartialObserver<T>): void {
-		const size = this._subscribers.size;
+		const sizeBefore = this._subscribers.size;
 		this._subscribers.delete(observer);
-		if (size && !this._subscribers.size) this._removeLastObserver();
+		const sizeAfter = this._subscribers.size;
+		if (sizeBefore && !sizeAfter) this._removeLastObserver();
 	}
 
 	/** Called after adding the first observer. */
