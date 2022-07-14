@@ -13,5 +13,14 @@ import { BLACKHOLE } from "../util/function.js";
  */
 export function useSubscribe<T>(subscribable?: Subscribable<T>): void {
 	const setState = useState<unknown>(subscribable instanceof State && !subscribable.loading ? subscribable.value : NOVALUE)[1];
-	useEffect(subscribable ? () => subscribe(subscribable, { next: setState, error: setState }) : BLACKHOLE, [subscribable]);
+	useEffect(
+		subscribable
+			? () => {
+					// If the subscribable is an observer, only subscribe if the subscribable isn't closed.
+					// Otherwise `subscribe()` is likely to throw a `Observer is closed` error.
+					if (typeof subscribable === "function" || !subscribable.closed) return subscribe(subscribable, { next: setState, error: setState });
+			  }
+			: BLACKHOLE,
+		[subscribable],
+	);
 }
