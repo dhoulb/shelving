@@ -32,7 +32,7 @@ export class Timeout {
 	 */
 	set(callback: Dispatch | null = this._callback, ms: number = this._ms): void {
 		this.clear();
-		this._timeout = setTimeout(_executeTimeout, ms, this, callback);
+		if (callback) this._timeout = setTimeout(_executeTimeout, ms, this, callback);
 	}
 
 	private _run = () => {
@@ -51,7 +51,7 @@ export class Timeout {
 }
 
 /** Actually execute the timeout. */
-function _executeTimeout(timeout: Timeout, callback: Dispatch | null) {
+function _executeTimeout(timeout: Timeout, callback: Dispatch) {
 	timeout.clear();
-	if (callback) callback();
+	callback();
 }
