@@ -59,7 +59,7 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	}
 
 	/** Close this subject (called by `error()` and `complete()`). */
-	private _close(): void {
+	protected _close(): void {
 		(this as Mutable<this>).closed = true;
 		this.disconnect();
 	}
