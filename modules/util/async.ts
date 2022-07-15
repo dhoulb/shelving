@@ -76,7 +76,7 @@ export async function callAsyncParallel<I, O, A extends Arguments = []>(callback
 // Internal way for us to save `resolve()` and `reject()` from a new Promise used by `Deferred` and `ExtendablePromise`
 let resolve: Dispatch<[any]>; // eslint-disable-line @typescript-eslint/no-explicit-any
 let reject: Handler;
-function saveResolveReject(
+function _saveResolveReject(
 	x: Dispatch<[any]>, // eslint-disable-line @typescript-eslint/no-explicit-any
 	y: Handler,
 ): void {
@@ -94,7 +94,7 @@ export class Deferred<T> extends Promise<T> {
 	readonly resolve: Dispatch<[T]>;
 	readonly reject: Handler;
 	constructor() {
-		super(saveResolveReject);
+		super(_saveResolveReject);
 		this.resolve = resolve;
 		this.reject = reject;
 	}
@@ -110,7 +110,7 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 	protected readonly _resolve: Dispatch<[T]>;
 	protected readonly _reject: Handler;
 	constructor() {
-		super(saveResolveReject);
+		super(_saveResolveReject);
 		this._resolve = resolve;
 		this._reject = reject;
 	}
