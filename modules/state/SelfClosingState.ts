@@ -20,7 +20,9 @@ export class DelayedSelfClosingState<T> extends State<T> {
 	private _timeout: Timeout;
 	constructor(delay: number, ...args: [] | [T]) {
 		super(...args);
-		this._timeout = new Timeout(delay);
+		this._timeout = new Timeout(() => {
+			if (!this.closed) this.complete();
+		}, delay);
 	}
 	// Override to clear the timeout when an observer is added.
 	override _addFirstObserver(): void {
@@ -28,8 +30,6 @@ export class DelayedSelfClosingState<T> extends State<T> {
 	}
 	// Override to close this state when the last observer is removed.
 	override _removeLastObserver(): void {
-		this._timeout.set(() => {
-			if (!this.closed) this.complete();
-		});
+		this._timeout.set();
 	}
 }
