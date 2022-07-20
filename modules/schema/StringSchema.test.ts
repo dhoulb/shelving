@@ -71,13 +71,17 @@ describe("options.match", () => {
 	});
 });
 describe("options.multiline", () => {
-	test("String without multiline strips tab and line feed newline", () => {
+	test("String without multiline strips tab and newline", () => {
 		const schema1 = new StringSchema({});
-		expect(schema1.validate("a\0b\tc\0d\ne\0f")).toBe("ab cd ef");
+		expect(schema1.validate("aaa\0aaa")).toBe("aaaaaa"); // Control character is stripped.
+		expect(schema1.validate("aaa\taaa")).toBe("aaa aaa"); // Tab in middle of line is converted to space.
+		expect(schema1.validate("aaa\n\taaa")).toBe("aaa aaa"); // Newline + tab at start of line is converted to space.
 	});
-	test("String with multiline keeps tab and line feed newline", () => {
+	test("String with multiline keeps newline", () => {
 		const schema1 = new StringSchema({ multiline: true });
-		expect(schema1.validate("a\0b\tc\0d\ne\0f")).toBe("ab\tcd\nef");
+		expect(schema1.validate("aaa\0aaa")).toBe("aaaaaa"); // Control character is stripped.
+		expect(schema1.validate("aaa\taaa")).toBe("aaa aaa"); // Tab in middle of line is converted to space.
+		expect(schema1.validate("aaa\n\taaa")).toBe("aaa\n\taaa"); // Newline + tab at start of line is kept.
 	});
 });
 describe("options.min", () => {

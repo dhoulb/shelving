@@ -1,12 +1,8 @@
 import type { ImmutableArray } from "./array.js";
 import { Matchable } from "./match.js";
-import { getWords, normalizeString } from "./string.js";
+import { getWords, simplifyString } from "./string.js";
 
 // Regular expressions.
-export const MATCH_SPACE = /\s+/; // Match the first run of one or more space characters.
-export const MATCH_SPACES = /\s+/g; // Match all runs of one or more space characters.
-export const MATCH_LINEBREAK = /\n+/; // Match the first run of one or more linebreak characters.
-export const MATCH_LINEBREAKS = /\n+/; // Match all runs of one or more linebreak characters.
 export const MATCH_LINE = /[^\n]*/; // Match line of content (anything that's not a newline).
 export const MATCH_LINE_START = /^\n*|\n+/; // Starts at start of line (one or more linebreak or start of string).
 export const MATCH_LINE_END = /\n+|$/; // Ends at end of line (one or more linebreak or end of string).
@@ -46,7 +42,7 @@ export const getWrapRegExp = (chars: string, middle = MATCH_WORDS.source): RegEx
 export const toWordRegExps = (query: string): ImmutableArray<RegExp> => getWords(query).map(toWordRegExp);
 
 /** Convert a string to a regular expression matching the start of a word boundary. */
-export const toWordRegExp = (word: string) => new RegExp(`\\b${escapeRegExp(normalizeString(word))}`, "i");
+export const toWordRegExp = (word: string) => new RegExp(`\\b${escapeRegExp(simplifyString(word))}`, "i");
 
 /**
  * Match an item matching all words in a query.
