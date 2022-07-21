@@ -9,28 +9,49 @@ export const MATCH_LINE_END = /\n+|$/; // Ends at end of line (one or more lineb
 export const MATCH_BLOCK = /[\s\S]*?/; // Match block of content (including newlines so don't be greedy).
 export const MATCH_BLOCK_START = /^\n*|\n+/; // Starts at start of a block (one or more linebreak or start of string).
 export const MATCH_BLOCK_END = /\n*$|\n\n+/; // End of a block (two or more linebreaks or end of string).
-export const MATCH_WORDS = /\S(?:[\s\S]*?\S)?/; // Run of text that starts and ends with non-space characters (possibly multi-line).
+export const MATCH_TEXT = /\S(?:[\s\S]*?\S)?/; // Run of text that starts and ends with non-space characters (possibly multi-line).
+
+/** Regular expression match array that you've asserted contains the specified named groups. */
+export type NamedRegExpGroups<T extends string> = { [K in T]: string };
+
+/** Regular expression match array that you've asserted contains the specified named groups. */
+export interface NamedRegExpArray<T extends string> {
+	readonly [key: number]: string | undefined;
+	readonly index: number;
+	readonly input: string;
+	readonly groups: NamedRegExpGroups<T>;
+}
+
+/** Regular expression that you've asserted contains the specified named capture groups. */
+export interface NamedRegExp<T extends string> {
+	exec(input: string): NamedRegExpArray<T> | null;
+	test(input: string): boolean;
+}
 
 /**
  * Convert a string to a regular expression that matches that string.
  *
- * @param str The input string.
+ * @param pattern The input string.
  * @param flags RegExp flags that are passed into the created RegExp.
  */
-export const toRegExp = (str: string, flags = ""): RegExp => new RegExp(escapeRegExp(str), flags);
+export const toRegExp = (pattern: string, flags = ""): RegExp => new RegExp(escapeRegExp(pattern), flags);
 
 /** Escape special characters in a string regular expression. */
-export const escapeRegExp = (str: string): string => str.replace(REPLACE_ESCAPED, "\\$&");
+export const escapeRegExp = (pattern: string): string => pattern.replace(REPLACE_ESCAPED, "\\$&");
 const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
+/** Create a named regular expression (note: this is unsafe). */
+export const getNamedRegExp = <T extends string>(pattern: string | RegExp, flags?: string): NamedRegExp<T> => (typeof pattern === "string" ? new RegExp(pattern, flags) : pattern) as NamedRegExp<T>;
+
 /** Create regular expression that matches a block of content. */
-export const getBlockRegExp = (middle = MATCH_BLOCK.source, end = MATCH_BLOCK_END.source, start = MATCH_BLOCK_START.source): RegExp => new RegExp(`(?:${start})${middle}(?:${end})`);
+export const getBlockRegExp = <T extends string = "block">(middle = MATCH_BLOCK.source, end = MATCH_BLOCK_END.source, start = MATCH_BLOCK_START.source): NamedRegExp<"block" & T> =>
+	getNamedRegExp<T>(`(?:${start})(?<block>${middle})(?:${end})`);
 
 /** Create regular expression that matches a line of content. */
-export const getLineRegExp = (middle = MATCH_LINE.source, end = MATCH_LINE_END.source, start = MATCH_LINE_START.source): RegExp => new RegExp(`(?:${start})${middle}(?:${end})`);
+export const getLineRegExp = <T extends string = "line">(middle = MATCH_LINE.source, end = MATCH_LINE_END.source, start = MATCH_LINE_START.source): NamedRegExp<"line" & T> => getNamedRegExp(`(?:${start})(?<line>${middle})(?:${end})`);
 
-/** Create regular expression that matches piece of text wrapped by a set of characters. */
-export const getWrapRegExp = (chars: string, middle = MATCH_WORDS.source): RegExp => new RegExp(`(${chars})(${middle})\\1`);
+/** Create regular expression that matches piece of text wrapped by a set of characters (use `text` match group). */
+export const getWrapRegExp = (wrapper: string, middle = MATCH_TEXT.source): NamedRegExp<"text"> => getNamedRegExp(`(?<text>${wrapper})(${middle})\\1`);
 
 /**
  * Convert a string query to the corresponding set of case-insensitive regular expressions.
