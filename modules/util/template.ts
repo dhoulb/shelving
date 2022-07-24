@@ -1,5 +1,4 @@
 import type { ImmutableArray } from "./array.js";
-import { getLazy, Lazy } from "./lazy.js";
 import { MutableObject, isObject, ImmutableObject } from "./object.js";
 
 /** Single template chunk. */
@@ -69,27 +68,15 @@ export const getPlaceholders = (template: string): readonly string[] => splitTem
 const _getPlaceholder = ({ name }: TemplateChunk): string => name;
 
 /**
- * Turn ":year-:month" and "2016-06..." etc into `{ year: "2016"... }`
+ * Match a template against a target string.
+ * - Turn ":year-:month" and "2016-06..." etc into `{ year: "2016"... }`
  *
- * @param lazyTemplates Either a single template string, or an iterator that returns multiple template template strings.
+ * @param templates Either a single template string, or an iterator that returns multiple template template strings.
  * - Template strings can include placeholders (e.g. `:name-${country}/{city}`).
  * @param target The string containing values, e.g. `Dave-UK/Manchester`
  * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.
  */
-export function matchTemplate(lazyTemplates: Lazy<string | Iterable<string>, [string]>, target: string): TemplateValues | undefined {
-	const templates = getLazy(lazyTemplates, target);
-	if (typeof templates === "string") {
-		const values = _match(templates, target);
-		if (values) return values;
-	} else {
-		for (const template of templates) {
-			const values = _match(template, target);
-			if (values) return values;
-		}
-	}
-	return undefined;
-}
-function _match(template: string, target: string): TemplateValues | undefined {
+export function matchTemplate(template: string, target: string): TemplateValues | undefined {
 	// Get separators and placeholders from template.
 	const chunks = splitTemplate(template);
 	const firstChunk = chunks[0];
@@ -113,6 +100,16 @@ function _match(template: string, target: string): TemplateValues | undefined {
 	}
 	if (startIndex < target.length) return undefined; // Target doesn't match template because last chunk post didn't reach the end.
 	return values;
+}
+
+/**
+ * Match multiple templates against a target string and return the first match.
+ */
+export function matchTemplates(templates: Iterable<string>, target: string): TemplateValues | undefined {
+	for (const template of templates) {
+		const values = matchTemplate(template, target);
+		if (values) return values;
+	}
 }
 
 /**

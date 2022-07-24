@@ -33,19 +33,6 @@ describe("matchTemplate()", () => {
 		expect(matchTemplate(new Set(["/:a/{b}/${c}/{{d}}/"]), "/1/2/3/4/")).toEqual({ a: "1", b: "2", c: "3", d: "4" });
 		expect(matchTemplate(new Set(["/:a/", "/:a/:b/"]), "/1/2/")).toEqual({ a: "1", b: "2" }); // Second template matches.
 	});
-	test("Correct matches (function)", () => {
-		function template() {
-			return "/:a/";
-		}
-		expect(matchTemplate(template, "/1/")).toEqual({ a: "1" });
-	});
-	test("Correct matches (generator function)", () => {
-		function* templates() {
-			yield "/:a/";
-			yield "/:a/:b/";
-		}
-		expect(matchTemplate(templates, "/1/2/")).toEqual({ a: "1", b: "2" });
-	});
 	test("Correct non-matches", () => {
 		// No params.
 		expect(matchTemplate("a", "b")).toBe(undefined);
