@@ -9,7 +9,6 @@ export * from "./DateSchema.js";
 export * from "./EmailSchema.js";
 export * from "./KeySchema.js";
 export * from "./LinkSchema.js";
-export * from "./MapSchema.js";
 export * from "./NumberSchema.js";
 export * from "./ObjectSchema.js";
 export * from "./OptionalSchema.js";
