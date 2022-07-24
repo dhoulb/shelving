@@ -4,10 +4,18 @@ import { AssertionError } from "../error/AssertionError.js";
 export type PossibleURL = string | URL;
 export type PossibleOptionalURL = PossibleURL | null;
 
+/** Is an unknown value a URL? */
+export const isURL = (v: URL | unknown): v is URL => v instanceof URL;
+
+/** Assert that an unknown value is a URL. */
+export function assertURL(v: URL | unknown): asserts v is URL {
+	if (!isURL(v)) throw new AssertionError("Invalid URL", v);
+}
+
 /** Convert a possible URL to a URL or return `null` if conversion fails. */
 export function getOptionalURL(url: PossibleOptionalURL, base: PossibleOptionalURL = typeof window === "object" ? window.location.href : null): URL | null {
-	if (url instanceof URL) return url;
 	if (!url) return null;
+	if (isURL(url)) return url;
 	try {
 		return new URL(url, base || undefined);
 	} catch (e) {
@@ -15,20 +23,15 @@ export function getOptionalURL(url: PossibleOptionalURL, base: PossibleOptionalU
 	}
 }
 
-/** Assert that an unknown value is a URL. */
-export function assertURL(v: unknown): asserts v is URL {
-	if (!(v instanceof URL)) throw new AssertionError("Invalid URL", v);
-}
-
 /** Convert a possible URL to a URL but throw `AssertionError` if conversion fails. */
-export function getURL(input: PossibleURL, base?: PossibleOptionalURL): URL {
-	const url = getOptionalURL(input, base);
-	if (!(url instanceof URL)) throw new AssertionError("Invalid URL", input);
+export function getURL(possibleURL: PossibleURL, base?: PossibleOptionalURL): URL {
+	const url = getOptionalURL(possibleURL, base);
+	if (!url) throw new AssertionError("Invalid URL", possibleURL);
 	return url;
 }
 
 /** Just get important part of a URL, e.g. `http://shax.com/test?uid=129483` → `shax.com/test` */
-export const formatUrl = (url: PossibleURL): string => {
-	const { host, pathname } = getURL(url);
+export function formatURL(possibleURL: PossibleURL, base?: PossibleOptionalURL): string {
+	const { host, pathname } = getURL(possibleURL, base);
 	return `${host}${pathname.length > 1 ? pathname : ""}`;
-};
+}

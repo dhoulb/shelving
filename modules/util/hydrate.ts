@@ -1,4 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
+import { isArray } from "./array.js";
 import type { Class } from "./class.js";
 import { Data, isData } from "./data.js";
 import { ImmutableObject, isPlainObject } from "./object.js";
@@ -48,7 +49,7 @@ export class Hydrator implements Transformable<unknown, unknown> {
 		this._hydrations = hydrations;
 	}
 	transform(value: unknown): unknown {
-		if (value instanceof Array) return mapArray(value, this);
+		if (isArray(value)) return mapArray(value, this);
 		if (isPlainObject(value)) {
 			if (!isDehydrated(value)) return mapObject(value, this);
 			const { _type, ...props } = value;
@@ -67,7 +68,7 @@ export class Dehydrator implements Transformable<unknown, unknown> {
 		this._hydrations = hydrations;
 	}
 	transform(value: unknown): unknown {
-		if (value instanceof Array) return mapArray(value, this);
+		if (isArray(value)) return mapArray(value, this);
 		if (isPlainObject(value)) return mapObject(value, this);
 		if (isData(value)) {
 			for (const [_type, hydration] of Object.entries(this._hydrations)) if (value instanceof hydration) return { _type, ...mapObject(value, this) };

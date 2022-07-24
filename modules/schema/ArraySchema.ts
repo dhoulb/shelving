@@ -1,5 +1,5 @@
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
-import { ImmutableArray, uniqueArray } from "../util/array.js";
+import { ImmutableArray, isArray, uniqueArray } from "../util/array.js";
 import { validateArray, Validator } from "../util/validate.js";
 import { Schema } from "./Schema.js";
 
@@ -58,7 +58,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		this.max = max;
 	}
 	override validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
-		if (!(unsafeValue instanceof Array)) throw new InvalidFeedback("Must be array", { value: unsafeValue });
+		if (!isArray(unsafeValue)) throw new InvalidFeedback("Must be array", { value: unsafeValue });
 		const safeArray = validateArray(unsafeValue, this.items);
 		const dedupedArray = this.unique ? uniqueArray(safeArray) : safeArray;
 		if (typeof this.min === "number" && dedupedArray.length < this.min) throw new InvalidFeedback(dedupedArray.length ? `Minimum ${this.min} items` : "Required", { value: dedupedArray });

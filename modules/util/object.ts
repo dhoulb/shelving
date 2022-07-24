@@ -102,7 +102,7 @@ export function withoutEntries<T>(input: ImmutableObject<T>, entries: Iterable<s
  * @param key The key of the prop in the object to set.
  * @param value The value to set the prop to.
  */
-export const setEntry: <T>(obj: MutableObject<T>, key: string, value: T) => void = setProp;
+export const setEntry: <T>(obj: MutableObject<T>, key: string, value: T) => T = setProp;
 
 /**
  * Set several key/value entries on a map-like object (by reference).

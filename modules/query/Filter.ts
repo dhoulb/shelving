@@ -1,4 +1,4 @@
-import type { ArrayType, ImmutableArray } from "../util/array.js";
+import { ArrayType, ImmutableArray, isArray } from "../util/array.js";
 import { Data, Key, getProp } from "../util/data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, Matchable, Match, notEqual, notInArray } from "../util/match.js";
 import { filterItems } from "../util/filter.js";
@@ -43,7 +43,7 @@ export class Filter<T extends Data> extends Rule<T> implements Matchable<T, void
 	/** Parse a set of FilterProps and return the corresponding array of `Filter` instances. */
 	static on<X extends Data>(key: FilterKey<X>, value: unknown): Filter<X> {
 		return key.startsWith("!")
-			? new Filter(key.slice(1), value instanceof Array ? "OUT" : "NOT", value)
+			? new Filter(key.slice(1), isArray(value) ? "OUT" : "NOT", value)
 			: key.endsWith(">")
 			? new Filter(key.slice(0, -1), "GT", value)
 			: key.endsWith(">=")
@@ -54,7 +54,7 @@ export class Filter<T extends Data> extends Rule<T> implements Matchable<T, void
 			? new Filter(key.slice(0, -2), "LTE", value)
 			: key.endsWith("[]")
 			? new Filter(key.slice(0, -2), "CONTAINS", value)
-			: new Filter(key, value instanceof Array ? "IN" : "IS", value);
+			: new Filter(key, isArray(value) ? "IN" : "IS", value);
 	}
 
 	readonly key: Key<T>;

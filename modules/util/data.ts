@@ -133,8 +133,9 @@ export function withProps<T extends Data>(data: T, props: T | Partial<T>): T {
  * @param key The key of the prop in the object to set.
  * @param value The value to set the prop to.
  */
-export function setProp<T extends Data, K extends keyof T>(data: T, key: K, value: T[K]): void {
+export function setProp<T extends Data, K extends keyof T>(data: T, key: K, value: T[K]): T[K] {
 	data[key] = value;
+	return value;
 }
 
 /**

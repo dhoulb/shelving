@@ -1,7 +1,7 @@
 import type { Unsubscribe } from "../observe/Observable.js";
 import type { DocumentReference } from "../db/Reference.js";
 import type { Data, OptionalEntity, Entity } from "../util/data.js";
-import { reduceMapItem } from "../util/map.js";
+import { setMapItem } from "../util/map.js";
 import { getDocumentData } from "../db/Reference.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
@@ -84,9 +84,6 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 	}
 }
 
-/** Reuse the previous `DocumentState` or create a new one. */
-const _reduceDocumentState = <T extends Data>(existing: DocumentState<T> | undefined, ref: DocumentReference<T>): DocumentState<T> => existing || new DocumentState(ref);
-
 /**
  * Use a document in a React component.
  * - Uses the default cache, so will error if not used inside `<Cache>`
@@ -95,7 +92,8 @@ export function useDocument<T extends Data>(ref: DocumentReference<T>): Document
 export function useDocument<T extends Data>(ref?: DocumentReference<T>): DocumentState<T> | undefined;
 export function useDocument<T extends Data>(ref?: DocumentReference<T>): DocumentState<T> | undefined {
 	const cache = useCache();
-	const state = ref ? reduceMapItem(cache, ref.toString(), _reduceDocumentState, ref) : undefined;
+	const key = ref?.toString();
+	const state = ref && key ? cache.get(key) || setMapItem(cache, key, new DocumentState(ref)) : undefined;
 	useSubscribe(state);
 	return state;
 }

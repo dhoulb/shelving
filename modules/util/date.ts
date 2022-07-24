@@ -1,16 +1,18 @@
 import { AssertionError } from "../error/AssertionError.js";
 
+/** Things that converted to dates. */
+export type PossibleDate = Date | number | string | (() => PossibleDate);
+
+/** Things that converted to dates or `null` */
+export type PossibleOptionalDate = Date | number | string | null | (() => PossibleDate | null);
+
 /** Is a value a date? */
-export const isDate = (v: unknown): v is Date => v instanceof Date;
+export const isDate = (v: Date | unknown): v is Date => v instanceof Date;
 
 /** Assert that a value is a `Date` instance. */
-export function assertDate(v: unknown): asserts v is Date {
-	if (!(v instanceof Date)) throw new AssertionError(`Must be date`, v);
+export function assertDate(v: Date | unknown): asserts v is Date {
+	if (!isDate(v)) throw new AssertionError(`Must be date`, v);
 }
-
-/** Value that can possibly be converted to a `Date` instance. */
-export type PossibleDate = Date | number | string | (() => PossibleDate);
-export type PossibleOptionalDate = Date | number | string | null | (() => PossibleDate | null);
 
 /**
  * Convert an unknown value to a `Date` instance, or `null` if it couldn't be converted.
@@ -33,7 +35,7 @@ export type PossibleOptionalDate = Date | number | string | null | (() => Possib
  */
 export function getOptionalDate(possibleDate: unknown): Date | null {
 	if (possibleDate === undefined || possibleDate === "now") return new Date();
-	if (possibleDate instanceof Date) return !Number.isNaN(possibleDate.getTime()) ? possibleDate : null;
+	if (isDate(possibleDate)) return !Number.isNaN(possibleDate.getTime()) ? possibleDate : null;
 	if (possibleDate === "today") return getMidnight();
 	if (possibleDate === "tomorrow") return addDays(1, getMidnight());
 	if (possibleDate === "yesterday") return addDays(-1, getMidnight());
@@ -46,7 +48,7 @@ export function getOptionalDate(possibleDate: unknown): Date | null {
 /** Convert a possible date to a `Date` instance, or throw `AssertionError` if it couldn't be converted. */
 export function getDate(possibleDate: PossibleDate = "now"): Date {
 	const date = getOptionalDate(possibleDate);
-	assertDate(date);
+	if (!date) throw new AssertionError(`Must be date`, possibleDate);
 	return date;
 }
 

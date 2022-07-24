@@ -1,6 +1,6 @@
 import { Validator, Validatable, validate } from "../util/validate.js";
 import { getUndefined } from "../util/undefined.js";
-import { Feedback } from "../feedback/Feedback.js";
+import { isFeedback } from "../feedback/Feedback.js";
 import { ValidationError } from "../error/ValidationError.js";
 
 /**
@@ -42,7 +42,7 @@ export class Resource<P = unknown, R = void> implements Validatable<R> {
 		try {
 			return validate(unsafeResult, this.result);
 		} catch (thrown) {
-			throw thrown instanceof Feedback ? new ValidationError(`Invalid result for resource`, thrown) : thrown;
+			throw isFeedback(thrown) ? new ValidationError(`Invalid result for resource`, thrown) : thrown;
 		}
 	}
 }

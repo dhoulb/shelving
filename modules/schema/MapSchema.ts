@@ -4,8 +4,8 @@ import { isObject } from "../util/object.js";
 import { validateEntries, Validator } from "../util/validate.js";
 import { Schema } from "./Schema.js";
 
-/** Validate a `Map` instance. */
-export class MapSchema<T> extends Schema<ImmutableMap<T>> {
+/** Validate a `Map` instance with string keys. */
+export class MapSchema<T> extends Schema<ImmutableMap<string, T>> {
 	readonly value: ImmutableMap;
 	readonly items: Validator<T>;
 	readonly min: number | null = null;
@@ -28,7 +28,7 @@ export class MapSchema<T> extends Schema<ImmutableMap<T>> {
 		this.min = min;
 		this.max = max;
 	}
-	override validate(unsafeValue: unknown = this.value): ImmutableMap<T> {
+	override validate(unsafeValue: unknown = this.value): ImmutableMap<string, T> {
 		if (!isObject(unsafeValue)) throw new InvalidFeedback("Must be map");
 		const unsafeEntries = unsafeValue instanceof Map ? unsafeValue.entries() : Object.entries(unsafeValue);
 		const safeMap = new Map(validateEntries(unsafeEntries, this.items));

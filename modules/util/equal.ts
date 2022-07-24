@@ -1,14 +1,14 @@
 import type { Match } from "./match.js";
-import { ImmutableArray } from "./array.js";
+import { ImmutableArray, isArray } from "./array.js";
 import { ImmutableObject, isObject } from "./object.js";
-import { ImmutableMap } from "./map.js";
+import { ImmutableMap, isMap } from "./map.js";
 
 // Internal shared by shallow/deep equal.
 function _equal(left: unknown, right: unknown, recursor: Match): boolean {
 	if (left === right) return true;
-	if (left instanceof Array) return right instanceof Array ? isArrayEqual(left, right, recursor) : false;
-	if (left instanceof Map) return right instanceof Map ? isMapEqual(left, right, recursor) : false;
-	if (isObject(left)) return isObject(right) && !(right instanceof Array) ? isObjectEqual(left, right, recursor) : false;
+	if (isArray(left)) return isArray(right) ? isArrayEqual(left, right, recursor) : false;
+	if (isMap(left)) return isMap(right) ? isMapEqual(left, right, recursor) : false;
+	if (isObject(left)) return isObject(right) ? isObjectEqual(left, right, recursor) : false;
 	return false;
 }
 
@@ -56,8 +56,8 @@ export function isArrayEqual<L extends ImmutableArray>(left: L, right: Immutable
 }
 
 /**
- * Are two objects equal (based on their properties)?
- * - Only checks enumerable own keys (as returned by `Object.keys()`).
+ * Are two objects equal?
+ * - Only checks constructor and enumerable own keys (as returned by `Object.keys()`).
  *
  * @param recursor Function that checks each property of the object.
  * - Defaults to `isExactlyEqual()` to check strict equality of the properties.
@@ -65,6 +65,7 @@ export function isArrayEqual<L extends ImmutableArray>(left: L, right: Immutable
  */
 export function isObjectEqual<L extends ImmutableObject>(left: L, right: ImmutableObject, recursor: Match = isExactlyEqual): right is L {
 	if (left === right) return true; // Referentially equal.
+	if (Object.getPrototypeOf(left)?.constructor !== Object.getPrototypeOf(right)?.constructor) return false; // Constructors are not equal.
 
 	const leftEntries = Object.entries(left);
 	const rightKeys = Object.keys(right);

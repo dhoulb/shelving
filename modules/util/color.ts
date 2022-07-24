@@ -73,7 +73,7 @@ export function getColorChannel(channel: number | string): number {
 
 /** Convert a possible color to a `Color` instance or `null` */
 export function getOptionalColor(possibleColor: unknown): Color | null {
-	if (possibleColor instanceof Color) return possibleColor;
+	if (isColor(possibleColor)) return possibleColor;
 	if (typeof possibleColor === "string") {
 		const hex3 = possibleColor.match(HEX3);
 		if (hex3) return new Color(hex3[1], hex3[2], hex3[3]);
@@ -86,7 +86,7 @@ export function getOptionalColor(possibleColor: unknown): Color | null {
 /** Convert a possible color to a `Color` instance */
 export function getColor(possibleColor: PossibleColor): Color {
 	const color = getOptionalColor(possibleColor);
-	assertColor(color);
+	if (!color) throw new AssertionError("Invalid color", possibleColor);
 	return color;
 }
 

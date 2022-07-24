@@ -1,7 +1,7 @@
 /* eslint-disable no-control-regex */
 
 import { AssertionError } from "../error/AssertionError.js";
-import { formatDate } from "./date.js";
+import { formatDate, isDate } from "./date.js";
 import { isData } from "./data.js";
 import { getArray, ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
@@ -55,7 +55,7 @@ export function getTitle(value: unknown): string {
 	if (typeof value === "string") return value ? value : "None";
 	if (typeof value === "boolean") return value ? "Yes" : "No";
 	if (typeof value === "number") return formatNumber(value);
-	if (value instanceof Date) return formatDate(value);
+	if (isDate(value)) return formatDate(value);
 	if (isArray(value)) return value.map(getTitle).join(", ");
 	if (isData(value)) {
 		if ("name" in value) return getTitle(value.name);

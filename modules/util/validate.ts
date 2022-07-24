@@ -1,4 +1,4 @@
-import { Feedback } from "../feedback/Feedback.js";
+import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
 import type { ImmutableObject, MutableObject } from "./object.js";
@@ -66,7 +66,7 @@ export function* validateItems<T>(unsafeItems: Iterable<unknown>, validator: Val
 		try {
 			yield validate(unsafeItem, validator);
 		} catch (thrown) {
-			if (!(thrown instanceof Feedback)) throw thrown;
+			if (!isFeedback(thrown)) throw thrown;
 			invalid = true;
 			details[index] = thrown;
 		}
@@ -89,7 +89,7 @@ export function* validateEntries<T>(unsafeValues: Iterable<Entry>, validator: Va
 		try {
 			yield [k, validate(v, validator)];
 		} catch (thrown) {
-			if (!(thrown instanceof Feedback)) throw thrown;
+			if (!isFeedback(thrown)) throw thrown;
 			invalid = true;
 			details[k] = thrown;
 		}
@@ -120,10 +120,9 @@ export function* validateProps<T extends Data>(unsafeData: Data, validators: Val
 		try {
 			yield [k, validate(unsafeData[k], validator)];
 		} catch (thrown) {
-			if (thrown instanceof Feedback) {
-				invalid = true;
-				details[k] = thrown;
-			} else throw thrown;
+			if (!isFeedback(thrown)) throw thrown;
+			invalid = true;
+			details[k] = thrown;
 		}
 	}
 	if (invalid) throw new InvalidFeedback("Invalid data", details);

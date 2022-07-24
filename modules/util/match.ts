@@ -1,3 +1,4 @@
+import { isArray } from "./array.js";
 import { rankAsc } from "./sort.js";
 
 /** Object that can match an item against a target with its `match()` function. */
@@ -21,9 +22,9 @@ export function match<L, R>(item: L, matcher: Matcher<L, R | undefined>, target?
 // Regular matchers.
 export const isEqual: Match<unknown, unknown> = (item, target) => item === target;
 export const notEqual: Match<unknown, unknown> = (item, target) => item !== target;
-export const isInArray: Match<unknown, unknown> = (item, targets) => targets instanceof Array && targets.includes(item);
-export const notInArray: Match<unknown, unknown> = (item, targets) => targets instanceof Array && !targets.includes(item);
-export const isArrayWith: Match<unknown, unknown> = (items, target) => items instanceof Array && items.includes(target);
+export const isInArray: Match<unknown, unknown> = (item, targets) => isArray(targets) && targets.includes(item);
+export const notInArray: Match<unknown, unknown> = (item, targets) => isArray(targets) && !targets.includes(item);
+export const isArrayWith: Match<unknown, unknown> = (items, target) => isArray(items) && items.includes(target);
 export const isLess: Match<unknown, unknown> = (item, target) => rankAsc(item, target) < 0;
 export const isEqualLess: Match<unknown, unknown> = (item, target) => rankAsc(item, target) <= 0;
 export const isGreater: Match<unknown, unknown> = (item, target) => rankAsc(item, target) > 0;

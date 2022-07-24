@@ -33,7 +33,7 @@ export class Feedback {
 	get messages(): ImmutableObject<string> {
 		const messages: MutableObject<string> = {};
 		for (const [k, v] of Object.entries(this.details)) {
-			if (v instanceof Feedback) messages[k] = v.feedback;
+			if (isFeedback(v)) messages[k] = v.feedback;
 			else messages[k] = getTitle(v);
 		}
 		return messages;
@@ -54,7 +54,10 @@ export class Feedback {
 	 */
 	toString(): string {
 		let output = this.feedback;
-		for (const [k, v] of Object.entries(this.details)) output += `\n- ${k}: ${v instanceof Feedback ? v.toString().replace(/\n/g, "\n  ") : debug(v)}`;
+		for (const [k, v] of Object.entries(this.details)) output += `\n- ${k}: ${isFeedback(v) ? v.toString().replace(/\n/g, "\n  ") : debug(v)}`;
 		return output;
 	}
 }
+
+/** Is an unknown value a `Feedback` instance? */
+export const isFeedback = <T extends Feedback>(v: T | unknown): v is Feedback => v instanceof Feedback;

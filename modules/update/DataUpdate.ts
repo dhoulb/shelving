@@ -1,4 +1,4 @@
-import { Feedback } from "../feedback/Feedback.js";
+import { isFeedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { DataSchema } from "../schema/DataSchema.js";
 import { Data, getProps, Key, Prop } from "../util/data.js";
@@ -69,10 +69,9 @@ function* _validateUpdates<T extends Data>(unsafeUpdates: PropUpdates<T>, valida
 			try {
 				yield [k, unsafeUpdate instanceof Update ? unsafeUpdate.validate(validator) : validate(unsafeUpdate, validator)];
 			} catch (thrown) {
-				if (thrown instanceof Feedback) {
-					invalid = true;
-					details[k] = thrown;
-				} else throw thrown;
+				if (!isFeedback(thrown)) throw thrown;
+				invalid = true;
+				details[k] = thrown;
 			}
 		}
 	}
