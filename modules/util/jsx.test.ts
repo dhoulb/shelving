@@ -1,4 +1,4 @@
-import { nodeToText, renderMarkup, yieldElements } from "../index.js";
+import { getJSXNodeText, renderMarkup, getJSXNodeElements } from "../index.js";
 import type { JSXElement, JSXNode } from "../index.js";
 
 test("JSX: types: check our custom JSX types are compatible with React's types", () => {
@@ -7,16 +7,16 @@ test("JSX: types: check our custom JSX types are compatible with React's types",
 	const b1: JSXNode = { type: "div", key: null, ref: null, props: {} };
 	const b2: React.ReactNode = a1;
 });
-describe("nodeToText()", () => {
+describe("getJSXNodeText()", () => {
 	test("Nodes can be converted to plain text", () => {
-		expect(nodeToText(renderMarkup("PARAGRAPH"))).toBe("PARAGRAPH");
-		expect(nodeToText(renderMarkup("- ITEM1\n- ITEM2"))).toBe("ITEM1 ITEM2");
-		expect(nodeToText(renderMarkup("- ITEM\n  - ITEM1\n  - ITEM2"))).toBe("ITEM ITEM1 ITEM2");
-		expect(nodeToText(renderMarkup("1. ITEM1\n2. ITEM2\n3. ITEM3"))).toBe("ITEM1 ITEM2 ITEM3");
+		expect(getJSXNodeText(renderMarkup("PARAGRAPH"))).toBe("PARAGRAPH");
+		expect(getJSXNodeText(renderMarkup("- ITEM1\n- ITEM2"))).toBe("ITEM1 ITEM2");
+		expect(getJSXNodeText(renderMarkup("- ITEM\n  - ITEM1\n  - ITEM2"))).toBe("ITEM ITEM1 ITEM2");
+		expect(getJSXNodeText(renderMarkup("1. ITEM1\n2. ITEM2\n3. ITEM3"))).toBe("ITEM1 ITEM2 ITEM3");
 	});
 });
-test("yieldElements()", () => {
-	expect(Array.from(yieldElements(renderMarkup("PARAGRAPH")))).toHaveLength(1);
-	expect(Array.from(yieldElements(renderMarkup("PARAGRAPH")))).toMatchObject([{ type: "p" }]);
-	expect(Array.from(yieldElements(renderMarkup("- ITEM1\n- ITEM2")))).toMatchObject([{ type: "ul" }, { type: "li", props: { children: "ITEM1" } }, { type: "li", props: { children: "ITEM2" } }]);
+test("getJSXNodeElements()", () => {
+	expect(Array.from(getJSXNodeElements(renderMarkup("PARAGRAPH")))).toHaveLength(1);
+	expect(Array.from(getJSXNodeElements(renderMarkup("PARAGRAPH")))).toMatchObject([{ type: "p" }]);
+	expect(Array.from(getJSXNodeElements(renderMarkup("- ITEM1\n- ITEM2")))).toMatchObject([{ type: "ul" }, { type: "li", props: { children: "ITEM1" } }, { type: "li", props: { children: "ITEM2" } }]);
 });

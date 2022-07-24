@@ -1,14 +1,14 @@
-import { Data } from "./data.js";
-
-/** Function that creates a JSX element. */
-export type JSXElementCreator<P extends Data = Data> = (props: P) => JSXElement | null;
+import { isArray } from "./array.js";
 
 /** Set of valid props for a JSX element. */
-export type JSXProps = { readonly [key: string]: unknown; readonly children?: JSXNode };
+export type JSXProps = {
+	[key: string]: unknown;
+	children?: JSXNode;
+};
 
 /** JSX element (similar to `React.ReactElement`)  */
 export type JSXElement<P extends JSXProps = JSXProps> = {
-	type: string | JSXElementCreator<P>;
+	type: string | ((props: P) => JSXElement | null);
 	props: P;
 	key: string | number | null;
 	ref: null;
@@ -19,10 +19,10 @@ export type JSXElement<P extends JSXProps = JSXProps> = {
 export type JSXNode = undefined | null | string | JSXElement | JSXNode[];
 
 /** Is an unknown value a JSX element? */
-export const isElement = <T extends JSXNode>(el: T | unknown): el is T => typeof el === "object" && el !== null && "type" in el;
+export const isJSXElement = <T extends JSXElement>(v: T | unknown): v is T => typeof v === "object" && v !== null && "type" in v;
 
 /** Is an unknown value a JSX node? */
-export const isNode = <T extends JSXNode>(node: T | unknown): node is T => node === null || typeof node === "string" || isElement(node) || node instanceof Array;
+export const isJSXNode = <T extends JSXNode>(v: T | unknown): v is T => v === null || typeof v === "string" || isJSXElement(v) || isArray(v);
 
 /**
  * Take a Markup JSX node and strip all tags from it to produce a plain text string.
@@ -32,10 +32,10 @@ export const isNode = <T extends JSXNode>(node: T | unknown): node is T => node 
  *
  * @example `- Item with *strong*\n- Item with _em_` becomes `Item with strong Item with em`
  */
-export function nodeToText(node?: JSXNode): string {
+export function getJSXNodeText(node?: JSXNode): string {
 	if (typeof node === "string") return node;
-	if (node instanceof Array) return node.map(nodeToText).join(" ");
-	if (typeof node === "object" && node) return nodeToText(node.props.children);
+	if (isArray(node)) return node.map(getJSXNodeText).filter(Boolean).join(" ");
+	if (isJSXElement(node)) return getJSXNodeText(node.props.children);
 	return "";
 }
 
@@ -43,10 +43,11 @@ export function nodeToText(node?: JSXNode): string {
  * Iterate through all elements in a node.
  * - This is useful if you, e.g. want to apply a `className` to all `<h1>` elements, or make a list of all URLs found in a Node.
  */
-export function* yieldElements(node: JSXNode): Generator<JSXElement, void> {
-	if (node instanceof Array) for (const n of node) yield* yieldElements(n);
-	else if (typeof node === "object" && node) {
+export function* getJSXNodeElements(node: JSXNode): Iterable<JSXElement> {
+	if (isArray(node)) {
+		for (const n of node) yield* getJSXNodeElements(n);
+	} else if (isJSXElement(node)) {
 		yield node;
-		if (isNode(node.props.children)) yield* yieldElements(node.props.children);
+		if (node.props.children) yield* getJSXNodeElements(node.props.children);
 	}
 }
