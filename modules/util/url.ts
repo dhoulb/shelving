@@ -5,7 +5,7 @@ export type PossibleURL = string | URL;
 export type PossibleOptionalURL = PossibleURL | null;
 
 /** Convert a possible URL to a URL or return `null` if conversion fails. */
-export function toURL(url: PossibleURL, base: PossibleOptionalURL = typeof window === "object" ? window.location.href : null): URL | null {
+export function getOptionalURL(url: PossibleOptionalURL, base: PossibleOptionalURL = typeof window === "object" ? window.location.href : null): URL | null {
 	if (url instanceof URL) return url;
 	if (!url) return null;
 	try {
@@ -22,8 +22,8 @@ export function assertURL(v: unknown): asserts v is URL {
 
 /** Convert a possible URL to a URL but throw `AssertionError` if conversion fails. */
 export function getURL(input: PossibleURL, base?: PossibleOptionalURL): URL {
-	const url = toURL(input, base);
-	assertURL(url);
+	const url = getOptionalURL(input, base);
+	if (!(url instanceof URL)) throw new AssertionError("Invalid URL", input);
 	return url;
 }
 
