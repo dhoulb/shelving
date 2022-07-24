@@ -7,6 +7,9 @@ export type Data = { readonly [key: string]: unknown };
 /** Data or `null` to indicate the data doesn't exist. */
 export type OptionalData<T extends Data = Data> = T | null;
 
+/** Empty data object. */
+export type EmptyData = { readonly [K in never]: never };
+
 /** Key for a prop in a data object. */
 export type Key<T extends Data> = keyof T & string;
 
