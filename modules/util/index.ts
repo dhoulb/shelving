@@ -26,7 +26,7 @@ export * from "./null.js";
 export * from "./number.js";
 export * from "./object.js";
 export * from "./random.js";
-export * from "./search.js";
+export * from "./regexp.js";
 export * from "./serialise.js";
 export * from "./sort.js";
 export * from "./string.js";

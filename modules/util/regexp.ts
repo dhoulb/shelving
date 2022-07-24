@@ -1,5 +1,6 @@
 import type { ImmutableArray } from "./array.js";
-import { Matchable } from "./match.js";
+import { EmptyData } from "./data.js";
+import type { Matchable } from "./match.js";
 import { getWords, simplifyString } from "./string.js";
 
 // Regular expressions.
@@ -11,21 +12,17 @@ export const MATCH_BLOCK_START = /^\n*|\n+/; // Starts at start of a block (one 
 export const MATCH_BLOCK_END = /\n*$|\n\n+/; // End of a block (two or more linebreaks or end of string).
 export const MATCH_TEXT = /\S(?:[\s\S]*?\S)?/; // Run of text that starts and ends with non-space characters (possibly multi-line).
 
-/** Regular expression match array that you've asserted contains the specified named groups. */
-export type NamedRegExpGroups<T extends string> = { [K in T]: string };
+/** Set of named match groups from a regular expression. */
+export type NamedRegExpData = { [named: string]: string | undefined };
 
 /** Regular expression match array that you've asserted contains the specified named groups. */
-export interface NamedRegExpArray<T extends string> {
-	readonly [key: number]: string | undefined;
-	readonly index: number;
-	readonly input: string;
-	readonly groups: NamedRegExpGroups<T>;
+export interface NamedRegExpArray<T extends NamedRegExpData> extends Omit<RegExpExecArray, "groups"> {
+	readonly groups?: T;
 }
 
 /** Regular expression that you've asserted contains the specified named capture groups. */
-export interface NamedRegExp<T extends string> {
+export interface NamedRegExp<T extends NamedRegExpData> extends Omit<RegExp, "exec"> {
 	exec(input: string): NamedRegExpArray<T> | null;
-	test(input: string): boolean;
 }
 
 /**
@@ -41,17 +38,16 @@ export const escapeRegExp = (pattern: string): string => pattern.replace(REPLACE
 const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
 /** Create a named regular expression (note: this is unsafe). */
-export const getNamedRegExp = <T extends string>(pattern: string | RegExp, flags?: string): NamedRegExp<T> => (typeof pattern === "string" ? new RegExp(pattern, flags) : pattern) as NamedRegExp<T>;
+export const getNamedRegExp = <T extends NamedRegExpData>(pattern: string | RegExp, flags?: string): NamedRegExp<T> => (typeof pattern === "string" ? new RegExp(pattern, flags) : pattern) as NamedRegExp<T>;
 
 /** Create regular expression that matches a block of content. */
-export const getBlockRegExp = <T extends string = "block">(middle = MATCH_BLOCK.source, end = MATCH_BLOCK_END.source, start = MATCH_BLOCK_START.source): NamedRegExp<"block" & T> =>
-	getNamedRegExp<T>(`(?:${start})(?<block>${middle})(?:${end})`);
+export const getBlockRegExp = <T extends NamedRegExpData = EmptyData>(middle = MATCH_BLOCK.source, end = MATCH_BLOCK_END.source, start = MATCH_BLOCK_START.source): NamedRegExp<T> => getNamedRegExp(`(?:${start})(?:${middle})(?:${end})`);
 
 /** Create regular expression that matches a line of content. */
-export const getLineRegExp = <T extends string = "line">(middle = MATCH_LINE.source, end = MATCH_LINE_END.source, start = MATCH_LINE_START.source): NamedRegExp<"line" & T> => getNamedRegExp(`(?:${start})(?<line>${middle})(?:${end})`);
+export const getLineRegExp = <T extends NamedRegExpData = EmptyData>(middle = MATCH_LINE.source, end = MATCH_LINE_END.source, start = MATCH_LINE_START.source): NamedRegExp<T> => getNamedRegExp(`(?:${start})(?:${middle})(?:${end})`);
 
 /** Create regular expression that matches piece of text wrapped by a set of characters (use `text` match group). */
-export const getWrapRegExp = (wrapper: string, middle = MATCH_TEXT.source): NamedRegExp<"text"> => getNamedRegExp(`(?<text>${wrapper})(${middle})\\1`);
+export const getWrapRegExp = (wrapper: string, middle = MATCH_TEXT.source): NamedRegExp<{ text: string }> => getNamedRegExp(`(${wrapper})(?<text>${middle})\\1`);
 
 /**
  * Convert a string query to the corresponding set of case-insensitive regular expressions.
