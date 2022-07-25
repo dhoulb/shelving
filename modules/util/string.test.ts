@@ -63,27 +63,32 @@ describe("sanitizeMultilineString()", () => {
 		expect(sanitizeLines("AAA\vBBB")).toBe("AAA\nBBB");
 	});
 	test("Normalise runs of whitespace (except indentation) that isn't `\n` newline to ` ` space", () => {
+		expect(sanitizeLines(`AAA    BBB`)).toBe("AAA BBB");
+		expect(sanitizeLines(`AAA        BBB`)).toBe("AAA BBB");
 		expect(sanitizeLines(`AAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("AAA BBB");
+		// Leading indentation is not stripped.
+		expect(sanitizeLines(`\tAAA    BBB`)).toBe("\tAAA BBB");
+		expect(sanitizeLines(`\tAAA        BBB`)).toBe("\tAAA BBB");
 		expect(sanitizeLines(`\tAAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("\tAAA BBB");
 	});
 	test("Normalise indentation", () => {
 		expect(sanitizeLines("\tAAA")).toBe("\tAAA");
 		expect(sanitizeLines("\t\tAAA")).toBe("\t\tAAA");
-		// Rounded to no tabs.
+		// Three (or fewer) spaces normalised to no tabs.
 		expect(sanitizeLines(" AAA")).toBe("AAA");
 		expect(sanitizeLines("  AAA")).toBe("AAA");
 		expect(sanitizeLines("   AAA")).toBe("AAA");
-		// Rounded to one tab.
+		// Four (or more) spaces normalised to one tab.
 		expect(sanitizeLines("    AAA")).toBe("\tAAA");
 		expect(sanitizeLines("     AAA")).toBe("\tAAA");
 		expect(sanitizeLines("      AAA")).toBe("\tAAA");
 		expect(sanitizeLines("       AAA")).toBe("\tAAA");
-		// Rounded to two tabs.
+		// Eight (or more) spaces normalised to two tabs.
 		expect(sanitizeLines("        AAA")).toBe("\t\tAAA");
 		expect(sanitizeLines("         AAA")).toBe("\t\tAAA");
 		expect(sanitizeLines("          AAA")).toBe("\t\tAAA");
 		expect(sanitizeLines("           AAA")).toBe("\t\tAAA");
-		// Excess
+		// Runs of fewer than 4 spaces in indentation are removed.
 		expect(sanitizeLines(" \t AAA")).toBe("\tAAA");
 		expect(sanitizeLines("  \t  AAA")).toBe("\tAAA");
 		expect(sanitizeLines("   \t   AAA")).toBe("\tAAA");
