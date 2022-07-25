@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 
-import { matchTemplate, renderTemplate, getPlaceholders } from "../index.js";
+import { matchTemplate, renderTemplate, getPlaceholders, matchTemplates } from "../index.js";
 
 // Tests.
 describe("matchTemplate()", () => {
@@ -14,24 +14,6 @@ describe("matchTemplate()", () => {
 		expect(matchTemplate("/:a/{b}/${c}/{{d}}/", "/1/2/3/4/")).toEqual({ a: "1", b: "2", c: "3", d: "4" });
 		expect(matchTemplate("/*", "/1")).toEqual({ "0": "1" });
 		expect(matchTemplate("/*/*", "/1/2")).toEqual({ "0": "1", "1": "2" });
-	});
-	test("Correct matches (iterable objects)", () => {
-		expect(matchTemplate(["a"], "a")).toEqual({});
-		expect(matchTemplate(["/a/"], "/a/")).toEqual({});
-		expect(matchTemplate([":a"], "1")).toEqual({ a: "1" });
-		expect(matchTemplate(["/:a"], "/1")).toEqual({ a: "1" });
-		expect(matchTemplate(["/:a/"], "/1/")).toEqual({ a: "1" });
-		expect(matchTemplate(["/:a/:b"], "/1/2")).toEqual({ a: "1", b: "2" });
-		expect(matchTemplate(["/:a/{b}/${c}/{{d}}/"], "/1/2/3/4/")).toEqual({ a: "1", b: "2", c: "3", d: "4" });
-		expect(matchTemplate(["/:a/", "/:a/:b"], "/1/2")).toEqual({ a: "1", b: "2" }); // Second template matches.
-		expect(matchTemplate(new Set(["a"]), "a")).toEqual({});
-		expect(matchTemplate(new Set(["/a/"]), "/a/")).toEqual({});
-		expect(matchTemplate(new Set([":a"]), "1")).toEqual({ a: "1" });
-		expect(matchTemplate(new Set(["/:a"]), "/1")).toEqual({ a: "1" });
-		expect(matchTemplate(new Set(["/:a/"]), "/1/")).toEqual({ a: "1" });
-		expect(matchTemplate(new Set(["/:a/:b"]), "/1/2")).toEqual({ a: "1", b: "2" });
-		expect(matchTemplate(new Set(["/:a/{b}/${c}/{{d}}/"]), "/1/2/3/4/")).toEqual({ a: "1", b: "2", c: "3", d: "4" });
-		expect(matchTemplate(new Set(["/:a/", "/:a/:b/"]), "/1/2/")).toEqual({ a: "1", b: "2" }); // Second template matches.
 	});
 	test("Correct non-matches", () => {
 		// No params.
@@ -52,9 +34,6 @@ describe("matchTemplate()", () => {
 		expect(matchTemplate("{a}", "")).toEqual(undefined);
 		expect(matchTemplate("a/{b}", "a/")).toEqual(undefined);
 		expect(matchTemplate("a/{b}/{c}", "a/b/")).toEqual(undefined);
-		// No templates match.
-		expect(matchTemplate(["/:a/", "/:a/:b/"], "/a/b/c/")).toBe(undefined);
-		expect(matchTemplate(new Set(["/:a/", "/:a/:b/"]), "/a/b/c/")).toBe(undefined);
 	});
 	test("Cannot match two placeholders that touch", () => {
 		expect(() => matchTemplate(":a:b", "ab")).toThrow(SyntaxError);
@@ -110,5 +89,30 @@ describe("renderTemplate()", () => {
 		expect(() => renderTemplate("/a/:a", {})).toThrow(ReferenceError);
 		expect(() => renderTemplate("/*/", [])).toThrow(ReferenceError);
 		expect(() => renderTemplate("/*/*", ["A"])).toThrow(ReferenceError);
+	});
+});
+describe("matchTemplates()", () => {
+	test("Correct matches (iterable objects)", () => {
+		expect(matchTemplates(["a"], "a")).toEqual({});
+		expect(matchTemplates(["/a/"], "/a/")).toEqual({});
+		expect(matchTemplates([":a"], "1")).toEqual({ a: "1" });
+		expect(matchTemplates(["/:a"], "/1")).toEqual({ a: "1" });
+		expect(matchTemplates(["/:a/"], "/1/")).toEqual({ a: "1" });
+		expect(matchTemplates(["/:a/:b"], "/1/2")).toEqual({ a: "1", b: "2" });
+		expect(matchTemplates(["/:a/{b}/${c}/{{d}}/"], "/1/2/3/4/")).toEqual({ a: "1", b: "2", c: "3", d: "4" });
+		expect(matchTemplates(["/:a/", "/:a/:b"], "/1/2")).toEqual({ a: "1", b: "2" }); // Second template matches.
+		expect(matchTemplates(new Set(["a"]), "a")).toEqual({});
+		expect(matchTemplates(new Set(["/a/"]), "/a/")).toEqual({});
+		expect(matchTemplates(new Set([":a"]), "1")).toEqual({ a: "1" });
+		expect(matchTemplates(new Set(["/:a"]), "/1")).toEqual({ a: "1" });
+		expect(matchTemplates(new Set(["/:a/"]), "/1/")).toEqual({ a: "1" });
+		expect(matchTemplates(new Set(["/:a/:b"]), "/1/2")).toEqual({ a: "1", b: "2" });
+		expect(matchTemplates(new Set(["/:a/{b}/${c}/{{d}}/"]), "/1/2/3/4/")).toEqual({ a: "1", b: "2", c: "3", d: "4" });
+		expect(matchTemplates(new Set(["/:a/", "/:a/:b/"]), "/1/2/")).toEqual({ a: "1", b: "2" }); // Second template matches.
+	});
+	test("Correct non-matches", () => {
+		// No templates match.
+		expect(matchTemplates(["/:a/", "/:a/:b/"], "/a/b/c/")).toBe(undefined);
+		expect(matchTemplates(new Set(["/:a/", "/:a/:b/"]), "/a/b/c/")).toBe(undefined);
 	});
 });
