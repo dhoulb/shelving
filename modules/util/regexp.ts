@@ -1,5 +1,5 @@
 import type { ImmutableArray } from "./array.js";
-import { EmptyData } from "./data.js";
+import type { EmptyData } from "./data.js";
 import type { Matchable } from "./match.js";
 import { getWords, simplifyString } from "./string.js";
 
@@ -13,15 +13,16 @@ export const MATCH_BLOCK_END = /\n*$|\n\n+/; // End of a block (two or more line
 export const MATCH_TEXT = /\S(?:[\s\S]*?\S)?/; // Run of text that starts and ends with non-space characters (possibly multi-line).
 
 /** Set of named match groups from a regular expression. */
-export type NamedRegExpData = { [named: string]: string | undefined };
+export type NamedRegExpData = { [named: string]: string };
 
 /** Regular expression match array that you've asserted contains the specified named groups. */
-export interface NamedRegExpArray<T extends NamedRegExpData> extends Omit<RegExpExecArray, "groups"> {
-	readonly groups?: T;
+export interface NamedRegExpArray<T extends NamedRegExpData = NamedRegExpData> extends RegExpExecArray {
+	readonly 0: string; // We know the first item in the array will always be a string (otherwise it wouldn't have matched).
+	readonly groups: T; // Groups is always set if a single `(?<named> placeholder)` appears in the RegExp.
 }
 
 /** Regular expression that you've asserted contains the specified named capture groups. */
-export interface NamedRegExp<T extends NamedRegExpData> extends Omit<RegExp, "exec"> {
+export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extends RegExp {
 	exec(input: string): NamedRegExpArray<T> | null;
 }
 

@@ -1,117 +1,10 @@
 /* eslint-disable no-param-reassign */
 
-import type { JSXNode } from "../util/jsx.js";
-import { sanitizeLines } from "../util/string.js";
-import { MARKUP_RULES } from "./rules.js";
-import type { MarkupRule, MarkupOptions } from "./types.js";
-
-/** Convert a string into an array of React nodes using a set of rules. */
-function renderString(content: string, options: MarkupOptions): JSXNode {
-	// If there's no context return the unmodified string.
-	if (!options.context) return content;
-
-	const nodes: JSXNode[] = [];
-
-	// Loop until we've parsed the entire string.
-	while (content.length) {
-		// Loop through all rules in the list and see if any match.
-		let matchedPriority = Number.MIN_SAFE_INTEGER;
-		let matchedIndex = Number.MAX_SAFE_INTEGER;
-		let matchedRule: MarkupRule | undefined = undefined;
-		let matchedResult: RegExpMatchArray | undefined = undefined;
-		for (const rule of options.rules) {
-			const { priority = 0, match, regexp, contexts } = rule;
-			// Only apply this rule if both:
-			// 1. The priority is equal or higher to the current priority.
-			// 2. The rule is allowed in the current context.
-			if (priority >= matchedPriority && contexts.includes(options.context)) {
-				const result = match ? match(content, options) : regexp ? content.match(regexp) : null;
-				// If this matched and has an index (it might not if it's a `/g` global RegExp, which would be a mistake).
-				if (result && typeof result.index === "number") {
-					const index = result.index;
-					// Only match the rule if either:
-					// 1. The index is lower than the previous index then this rule takes priority.
-					// 2. The priority is higher than the previous match then this rule takes priority.
-					if (index < matchedIndex || priority > matchedPriority) {
-						matchedRule = rule;
-						matchedResult = result;
-						matchedIndex = index;
-						matchedPriority = priority;
-					}
-				}
-			}
-		}
-
-		// Did at least one rule match?
-		if (matchedRule && matchedResult && matchedResult[0]) {
-			// If index is more than zero, then add a string node before this one.
-			if (matchedIndex) {
-				const prefix = content.slice(0, matchedIndex);
-				appendNode(nodes, renderString(prefix, options));
-			}
-
-			// Call the rule's `render()` function to generate the node.
-			const childOptions = { ...options, context: matchedRule.childContext };
-			const element = matchedRule.render(matchedResult, childOptions);
-			appendNode(nodes, renderNode(element, childOptions));
-
-			// Decrement the content.
-			content = content.slice(matchedIndex + matchedResult[0].length);
-		} else {
-			// If nothing else matched add the rest of the string as a node.
-			// Don't need to push the string through `renderNode()` because we already know it doesn't match any rules in the current context.
-			nodes.push(content);
-			content = "";
-		}
-	}
-
-	// If there's only one node return the single node (otherwise return the entire array).
-	return !nodes.length ? null : nodes.length === 1 ? nodes[0] : nodes;
-}
-
-/**
- * Append a JSX node to a list of JSX nodes.
- * - Sets a generated `element.key` for JSX elements (based on `nodes.length`)
- * - JSX nodes can be arrays of nodes — these will be flattened directly into the nodes list.
- * - Nodes array is modified in place (not returned).
- */
-function appendNode(nodes: JSXNode[], node: JSXNode): void {
-	if (!node) {
-		// No need to append null, undefined, or empty string.
-		return;
-	} else if (typeof node === "string") {
-		// String nodes should be merged into the last node (if there are several in a row).
-		const i = nodes.length - 1;
-		if (typeof nodes[i] === "string") nodes[i] += node;
-		else nodes.push(node);
-	} else if (node instanceof Array) {
-		// Nested arrays of nodes are flattened.
-		for (const n of node) appendNode(nodes, n);
-	} else {
-		// Generate `key` property using a numeric incrementor (if it's a string let it pass — there's probably a reason it's a string).
-		if (typeof node.key !== "string") node.key = nodes.length;
-		// Append the node.
-		nodes.push(node);
-	}
-}
-
-/**
- * Render a JSX node
- * - Recursively renders the children of the node using the current options.
- */
-function renderNode(node: JSXNode, options: MarkupOptions): JSXNode {
-	if (typeof node === "string") return renderString(node, options);
-	if (node instanceof Array) return node.map(n => renderNode(n, options));
-	if (typeof node === "object" && node) {
-		return {
-			...node,
-			$$typeof: REACT_SECURITY_SYMBOL, // Inject React security type. See https://github.com/facebook/react/pull/4832
-			props: node.props.children ? { ...node.props, children: renderNode(node.props.children, options) } : node.props,
-		};
-	}
-	return node;
-}
-const REACT_SECURITY_SYMBOL = Symbol.for("react.element");
+import type { JSXNode, JSXElement } from "../util/jsx.js";
+import type { Data } from "../util/data.js";
+import { isArray } from "../util/array.js";
+import type { MarkupRule } from "./rules.js";
+import { MarkupOptions, MARKUP_OPTIONS } from "./options.js";
 
 /**
  * Parse a text string as Markdownish syntax and render it as a JSX node.
@@ -141,18 +34,100 @@ const REACT_SECURITY_SYMBOL = Symbol.for("react.element");
  *           - If the first thing in the definition is a URL, then it's recognised as a link reference (and produces an `<a href=""></a>`)
  *           - If the first thing in the definition isn't a URL, then it's recognised as a sidenote/footnote and tapping it will scroll you to that point (and popup the definition like Marco Arment's Bigfoot code).
  *
- * @param content The string content possibly containing markup syntax, e.g. "This is a *bold* string.
+ * @param input The string content possibly containing markup syntax, e.g. "This is a *bold* string.
  * @param options An options object for the render.
  *
- * @returns ReactNode, i.e. either a complete `ReactElement`, `null`, `undefined`, `string`, or an array of zero or more of those.
+ * @returns JSXNode, i.e. either a complete `JSXElement`, `null`, `undefined`, `string`, or an array of zero or more of those.
  */
-export function renderMarkup(content: string, options?: Partial<MarkupOptions>): JSXNode {
-	return renderString(sanitizeLines(content), { ...defaults, ...options });
+export function renderMarkup(input: string, options?: Partial<MarkupOptions>): JSXNode {
+	if (!input) return null;
+	const combined = options ? { ...MARKUP_OPTIONS, ...options } : MARKUP_OPTIONS;
+	return _renderString(input, combined, combined.context);
 }
-const defaults: MarkupOptions = {
-	rules: MARKUP_RULES,
-	context: "block",
-	url: undefined,
-	rel: undefined,
-	schemes: ["http:", "https:"],
-};
+
+/**
+ * Render a string to its corresponding JSX node in a given context.
+ */
+function _renderString(input: string, options: MarkupOptions, context: string): JSXNode {
+	const nodes = Array.from(_parseString(input, options, context));
+	return !nodes.length ? null : nodes.length === 1 ? nodes[0] : nodes;
+}
+
+/**
+ * Render a JSX node in a given context.
+ */
+function _renderNode(node: JSXNode, options: MarkupOptions, context: string): JSXNode {
+	if (!node) return node;
+	if (typeof node === "string") return _renderString(node, options, context);
+	if (isArray(node)) {
+		for (let i = 0; i <= node.length - 1; i++) node[i] = _renderNode(node[i], options, context);
+		return node;
+	}
+	return _renderElement(node, options, context);
+}
+
+/**
+ * Render a JSX element in a given context.
+ */
+function _renderElement(element: JSXElement, options: MarkupOptions, context: string): JSXElement {
+	if (element.props.children) element.props.children = _renderNode(element.props.children, options, context);
+	return element;
+}
+
+/**
+ * Parse a string to its corresponding JSX nodes in a given context.
+ *
+ * @param offset Keeps track of where we are within the wider string we're parsing when we're several calls deep.
+ */
+function* _parseString(input: string, options: MarkupOptions, context: string, offset = 0): Iterable<JSXElement | string> {
+	let matchedRule: MarkupRule | undefined = undefined;
+	let matchedPriority = Number.MIN_SAFE_INTEGER;
+	let matchedIndex = Number.MIN_SAFE_INTEGER;
+	let matchedLength = 0;
+	let matchedGroups: Data | undefined = undefined;
+
+	// Loop through all rules in the list and see if any match.
+	for (const rule of options.rules) {
+		// Only apply this rule if both:
+		// 1. The priority is equal or higher to the current priority.
+		// 2. The rule is allowed in the current context.
+		const { priority = 0, match, contexts } = rule;
+		if (priority >= matchedPriority && contexts.includes(context)) {
+			const result = typeof match === "function" ? match(input, options) : match.exec(input);
+			if (result) {
+				// Use the match if it has length and is earlier in the string or is higher priority.
+				const { 0: { length } = "", index, groups } = result;
+				if (length && (index < matchedIndex || priority > matchedPriority)) {
+					matchedRule = rule;
+					matchedPriority = priority;
+					matchedIndex = index;
+					matchedLength = length;
+					matchedGroups = groups;
+				}
+			}
+		}
+	}
+
+	// Did at least one rule match?
+	if (matchedRule && matchedLength) {
+		// If index is more than zero, then the string before the match may match another rule at lower priority.
+		const prefix = input.slice(0, matchedIndex);
+		if (prefix.length) yield* _parseString(prefix, options, context, offset);
+
+		// Call the rule's `render()` function to generate the node.
+		// React gets annoyed if we don't set a `key:` property on lists of elements.
+		// We use the string offset as the `.key` property in the element because it's cheap to calculate and guaranteed to be unique within the string.
+		// Trying to generate an incrementing number would require tracking the number and passing it back and forth through `_parseString()`
+		const { render, subcontext } = matchedRule;
+		const element = render(matchedGroups, options);
+		element.key = offset + matchedIndex;
+		yield subcontext ? _renderElement(element, options, subcontext) : element;
+
+		// Decrement the content.
+		const suffix = input.slice(matchedIndex + matchedLength);
+		if (suffix.length) yield* _parseString(suffix, options, context, offset + matchedIndex + matchedLength);
+	} else {
+		// If nothing matched return the entire string..
+		yield input;
+	}
+}

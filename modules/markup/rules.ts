@@ -1,13 +1,57 @@
+/* eslint-disable import/export */
+
+import type { Data } from "../util/data.js";
 import type { JSXElement } from "../util/jsx.js";
-import { getBlockRegExp, getLineRegExp, getWrapRegExp, MATCH_BLOCK, MATCH_LINE } from "../util/search.js";
-import { formatUrl, toURL } from "../util/url.js";
-import type { MarkupRule } from "./types.js";
+import { NamedRegExp, getBlockRegExp, getLineRegExp, getNamedRegExp, getWrapRegExp, MATCH_BLOCK, MATCH_LINE, NamedRegExpArray, NamedRegExpData } from "../util/regexp.js";
+import { formatURL, getOptionalURL } from "../util/url.js";
+import type { MarkupOptions } from "./options.js";
 
-// Regular expression partials (`\` slashes must be escaped as `\\`).
-const BULLETS = "-*•+"; // Anything that can be a bullet (used for unordered lists and horizontal rules).
+/** Subset of `NamedRegExpArray<T>` that are the only things we're required return from `match()` (because ) */
+export type MarkupMatch<T extends Data | undefined> = { 0: string; index: number; groups: T };
 
-// Regular expressions.
-const MATCH_INDENT = /^ {1,2}/gm;
+/** Rule for parsing string markup into a JSX element. */
+export interface MarkupRule<T extends Data | undefined = Data | undefined> {
+	/**
+	 * Regular expression or custom matching function.
+	 */
+	readonly match: (T extends undefined ? RegExp : T extends NamedRegExpData ? NamedRegExp<T> : never) | ((input: string, options: MarkupOptions) => MarkupMatch<T> | null | void);
+
+	/**
+	 * Render the JSX element for this rule using the props matched by
+	 */
+	readonly render: (orops: T, options: MarkupOptions) => JSXElement;
+
+	/**
+	 * Contexts this rule should be applied in,
+	 *
+	 * @example `["block", "inline", "list"]`
+	 */
+	readonly contexts: string[];
+
+	/**
+	 * Context that children should be rendered with.
+	 *
+	 * @example `"inline"` // Children of the element rendered by this rule will be parsed against markup rules applied in the "inline" context.
+	 */
+	readonly subcontext?: string;
+
+	/**
+	 * Priority for this rule (defaults to zero).
+	 *
+	 * @example e.g. `<p>` rule is lower priority than other blocks so it matches last and paragraphs can be interrupted by e.g. `<ul>` and `<blockquote>`.
+	 * @example e.g. `<code>` rule is higher priority than other inlines so e.g. `<strong>` or `<em>` don't match inside a code block.
+	 */
+	readonly priority?: number;
+}
+
+/** Any markup rule. */
+export type AnyMarkupRule = MarkupRule<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+/** A set of markup rules (as an object or array). */
+export type MarkupRules = AnyMarkupRule[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+/** React security symbol — see https://github.com/facebook/react/pull/4832 */
+const $$typeof = Symbol.for("react.element");
 
 /**
  * Headings are single line only (don't allow multiline).
@@ -15,23 +59,43 @@ const MATCH_INDENT = /^ {1,2}/gm;
  * - Same as Markdown syntax.
  * - Markdown's underline syntax is not supported (for simplification).
  */
-export const HEADING_RULE: MarkupRule = {
-	regexp: getLineRegExp(`(#{1,6}) +(${MATCH_LINE.source})`),
-	render: ([, prefix = "", children = ""]) => ({ type: `h${prefix.length}`, key: null, ref: null, props: { children } }),
+export const MATCH_HEADING: NamedRegExp<{ prefix: string; heading: string }> = getLineRegExp(`(?<prefix>#{1,6}) +(?<heading>${MATCH_LINE.source})`);
+export const HEADING_RULE: MarkupRule<{ level: number; heading: string }> = {
+	match: input => {
+		const match = MATCH_HEADING.exec(input);
+		if (match) {
+			const { index, 0: first, groups } = match;
+			const { prefix, heading } = groups;
+			return { index, 0: first, groups: { level: prefix.length, heading } };
+		}
+	},
+	render: ({ level, heading }) => ({
+		type: `h${level}`,
+		key: null,
+		ref: null,
+		$$typeof,
+		props: { children: heading.trim() },
+	}),
 	contexts: ["block"],
-	childContext: "inline",
+	subcontext: "inline",
 };
 
 /**
  * Horizontal rules
- * - Same as Markdown syntax but also allows `•` bullet character (in addition to `-` dash, `+` plus, `*` asterisk, and `_` underscore).
+ * - Same as Markdown syntax but also allows `•` bullet character (in addition to `-` dash, `+` plus, `*` asterisk, `_` underscore).
  * - Character must be repeated three (or more) times.
  * - Character must be the same every time (can't mix)
  * - Might have infinite number of spaces between the characters.
  */
 export const HORIZONTAL_RULE: MarkupRule = {
-	regexp: getLineRegExp(`([${BULLETS}])(?: *\\1){2,}`),
-	render: () => ({ type: "hr", key: null, ref: null, props: {} }),
+	match: getLineRegExp(`([-*•+_=])(?: *\\1){2,}`),
+	render: () => ({
+		type: "hr",
+		key: null,
+		ref: null,
+		$$typeof,
+		props: {},
+	}),
 	contexts: ["block"],
 };
 
@@ -42,47 +106,62 @@ export const HORIZONTAL_RULE: MarkupRule = {
  * - Lists can be created with `•` bullet characters (in addition to `-` dash, `+` plus, and `*` asterisk).
  * - Second-level list can be indented with 1-2 spaces.
  */
-const UNORDERED = `[${BULLETS}] +`; // Anything that can be a bullet (used for unordered lists and horizontal rules).
-export const UNORDERED_LIST_RULE: MarkupRule = {
-	regexp: getBlockRegExp(`${UNORDERED}(${MATCH_BLOCK.source})`),
-	render: ([, list = ""]) => {
-		const children = list.split(SPLIT_UL_ITEMS).map(_mapUnorderedItem);
-		return { type: "ul", key: null, ref: null, props: { children } };
-	},
+const UNORDERED_PREFIX = `[-*•+] +`;
+const UNORDERED_SPLIT = new RegExp(`\n+${UNORDERED_PREFIX}`, "g");
+const UNORDERED_INDENT = /^\t/gm;
+export const UNORDERED_RULE: MarkupRule<{ list: string }> = {
+	match: getBlockRegExp<{ list: string }>(`${UNORDERED_PREFIX}(?<list>${MATCH_BLOCK.source})`),
+	render: ({ list }) => ({
+		type: "ul",
+		key: null,
+		ref: null,
+		$$typeof,
+		props: { children: list.split(UNORDERED_SPLIT).map(_mapUnordered) },
+	}),
 	contexts: ["block", "list"],
-	childContext: "list",
+	subcontext: "list",
 };
-const SPLIT_UL_ITEMS = new RegExp(`\\n+${UNORDERED}`, "g");
-const _mapUnorderedItem = (item: string, key: number): JSXElement => {
-	const children = item.replace(MATCH_INDENT, "");
-	return { type: "li", key, ref: null, props: { children } };
-};
+const _mapUnordered = (item: string, key: number): JSXElement => ({
+	type: "li",
+	key,
+	ref: null,
+	$$typeof,
+	props: { children: item.replace(UNORDERED_INDENT, "") },
+});
 
 /**
  * Ordered list.
  * - No leading spaces are allowed for the top-level list.
  * - Second-level list can be indented with 1-3 spaces.
  */
-const ORDERED = "[0-9]+[.):] +"; // Number for a numbered list (e.g. `1.` or `2)` or `3:`)
-export const ORDERED_LIST_RULE: MarkupRule = {
-	regexp: getBlockRegExp(`(${ORDERED}${MATCH_BLOCK.source})`),
-	render: ([, list = ""]) => {
-		const children = list.split(SPLIT_OL_ITEMS).map(_mapOrderedItem);
-		return { type: "ol", key: null, ref: null, props: { children } };
-	},
+const ORDERED_PREFIX = "[1-9][0-9]{0,8}[.):] +"; // Number for a numbered list, e.g. `1.` or `2)` or `3:`
+const ORDERED_SPLIT = new RegExp(`\n+(?=${ORDERED_PREFIX})`, "g");
+const ORDERED_INDENT = UNORDERED_INDENT;
+export const ORDERED_RULE: MarkupRule<{ list: string }> = {
+	match: getBlockRegExp(`(?<list>${ORDERED_PREFIX}${MATCH_BLOCK.source})`),
+	render: ({ list }) => ({
+		type: "ol",
+		key: null,
+		ref: null,
+		$$typeof,
+		props: { children: list.split(ORDERED_SPLIT).map(_mapOrdered) },
+	}),
 	contexts: ["block", "list"],
-	childContext: "list",
+	subcontext: "list",
 };
-const SPLIT_OL_ITEMS = new RegExp(`\\n+(?=${ORDERED})`, "g");
-const _mapOrderedItem = (item: string, key: number): JSXElement => {
-	const firstSpace = item.indexOf(" ");
-	const value = parseInt(item.slice(0, firstSpace), 10);
-	const children = item
-		.slice(firstSpace + 1)
-		.trimStart()
-		.replace(MATCH_INDENT, "");
-	return { type: "li", key, ref: null, props: { value, children } };
-};
+const _mapOrdered = (item: string, key: number): JSXElement => ({
+	type: "li",
+	key,
+	ref: null,
+	$$typeof,
+	props: {
+		value: parseInt(item, 10),
+		children: item
+			.slice(item.indexOf(" ") + 1)
+			.trim()
+			.replace(ORDERED_INDENT, ""),
+	},
+});
 
 /**
  * Blockquote block.
@@ -90,18 +169,20 @@ const _mapOrderedItem = (item: string, key: number): JSXElement => {
  * - Block continues until it finds a line that doesn't start with `>`
  * - Quote indent symbol can be followed by zero or more spaces.
  */
-export const BLOCKQUOTE_RULE: MarkupRule = {
-	regexp: getLineRegExp(`(>${MATCH_LINE.source}(?:\\n>${MATCH_LINE.source})*)`),
-	render: ([, quote = ""]) => ({
+const BLOCKQUOTE_PREFIX = "> *";
+const BLOCKQUOTE_INDENT = new RegExp(`^${BLOCKQUOTE_PREFIX}`, "gm");
+export const BLOCKQUOTE_RULE: MarkupRule<{ quote: string }> = {
+	match: getLineRegExp(`(?<quote>${BLOCKQUOTE_PREFIX}${MATCH_LINE.source}(?:\n${BLOCKQUOTE_PREFIX}${MATCH_LINE.source})*)`),
+	render: ({ quote }) => ({
 		type: "blockquote",
 		key: null,
 		ref: null,
-		props: { children: quote.replace(BLOCKQUOTE_LINES, "") },
+		$$typeof,
+		props: { children: quote.replace(BLOCKQUOTE_INDENT, "") },
 	}),
 	contexts: ["block", "list"],
-	childContext: "block",
+	subcontext: "block",
 };
-const BLOCKQUOTE_LINES = /^>/gm;
 
 /**
  * Fenced code blocks
@@ -110,68 +191,44 @@ const BLOCKQUOTE_LINES = /^>/gm;
  * - If there's no closing fence the code block will run to the end of the current string.
  * - Markdown-style four-space indent syntax is not supported (only fenced code, since it's easier to use).
  */
-export const FENCED_CODE_RULE: MarkupRule = {
+export const FENCED_CODE_RULE: MarkupRule<{ title?: string; code: string }> = {
 	// Matcher has its own end that only stops when it reaches a matching closing fence or the end of the string.
-	regexp: getBlockRegExp(`(\`{3,}|~{3,}) *(${MATCH_LINE.source})\\n(${MATCH_BLOCK.source})`, `\\n\\1\\n+|\\n\\1$|$`),
-	render: ([, , file, children]) => ({
+	match: getBlockRegExp(`(\`{3,}|~{3,}) *(?<title>${MATCH_LINE.source})\n(?<code>${MATCH_BLOCK.source})`, `\n\\1\n+|\n\\1$|$`),
+	render: ({ title, code }) => ({
 		type: "pre",
 		key: null,
 		ref: null,
+		$$typeof,
 		props: {
 			children: {
 				type: "code",
 				key: null,
 				ref: null,
-				props: { "data-file": file || undefined, children },
+				$$typeof,
+				props: { title: title?.trim() || undefined, children: code.trim() },
 			},
 		},
 	}),
 	contexts: ["block", "list"],
+	priority: 10, // Higher priority than other blocks so e.g. lists inside fenced code don't become lists.
 };
 
 /**
  * Paragraph.
  * - When ordering rules, paragraph should go after other "block" context elements (because it has a very generous capture).
  */
-export const PARAGRAPH_RULE: MarkupRule = {
-	regexp: getBlockRegExp(` *(${MATCH_BLOCK.source})`),
-	render: ([, children]) => ({ type: `p`, key: null, ref: null, props: { children } }),
-	contexts: ["block"],
-	childContext: "inline",
-	priority: -10, // Lower precedence than other blocks so it matches last and paragraphs can be broken by other blocks.
-};
-
-/**
- * Markdown-style link.
- * - Link in standard Markdown format, e.g. `[Google Maps](http://google.com/maps)`
- * - If no title is specified a cleaned up version of the URL will be used, e.g. `google.com/maps`
- * - Does not need space before/after the link.
- * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
- * - For security only `http://` or `https://` links will work (if invalid the unparsed text will be returned).
- */
-export const LINK_RULE: MarkupRule = {
-	regexp: /\[([^\]]*?)\]\(([^)]*?)\)/,
-	// Custom matcher to check the URL against the allowed schemes.
-	match: (content, { schemes, url: base }) => {
-		const matches = content.match(LINK_RULE.regexp);
-		if (matches) {
-			const [, title = "", href = ""] = matches;
-			const url = toURL(href, base);
-			if (url && url.protocol && schemes.includes(url.protocol)) {
-				matches[1] = title.trim();
-				matches[2] = url.href;
-				return matches;
-			}
-		}
-	},
-	render: ([, title, href = ""], { rel }) => ({
-		type: "a",
+export const PARAGRAPH_RULE: MarkupRule<{ paragraph: string }> = {
+	match: getBlockRegExp(`(?<paragraph>${MATCH_BLOCK.source})`),
+	render: ({ paragraph }) => ({
+		type: `p`,
 		key: null,
 		ref: null,
-		props: { children: title || formatUrl(href), href, rel },
+		$$typeof,
+		props: { children: paragraph.trim() },
 	}),
-	contexts: ["inline", "list"],
-	childContext: "link",
+	contexts: ["block"],
+	subcontext: "inline",
+	priority: -10, // Lower precedence than other blocks so it matches last and paragraphs can be broken by other blocks.
 };
 
 /**
@@ -181,29 +238,43 @@ export const LINK_RULE: MarkupRule = {
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `options.schemes` will match (defaults to `http:` and `https:`).
  */
-export const AUTOLINK_RULE: MarkupRule = {
-	regexp: /([a-z]+:\S+)(?: +(?:\(([^)]*?)\)|\[([^\]]*?)\]))?/,
-	// Custom matcher to check the URL against the allowed schemes.
-	match: (content, { schemes, url: base }) => {
-		const matches = content.match(AUTOLINK_RULE.regexp);
-		if (matches && typeof matches.index === "number") {
-			const [, href = "", roundTitle = "", squareTitle = ""] = matches;
-			const url = toURL(href, base);
-			if (url && url.protocol && schemes.includes(url.protocol)) {
-				matches[1] = url.href;
-				matches[2] = (roundTitle || squareTitle).trim();
-				return matches;
-			}
-		}
-	},
-	render: ([, href = "", title], { rel }) => ({
+export const URL_CHAR = "[-_.~:/?#%+*!a-zA-Z0-9]";
+export const URL_MATCH: NamedRegExp<{ title?: string; href: string }> = getNamedRegExp(/(?<href>[a-z]+:${URL_CHARS}+)(?: +(?:\((?<title>[^)]*?)\)))?/);
+export const URL_RULE: MarkupRule<{ title: string; href: string }> = {
+	match: (input, options) => _urlMatch(URL_MATCH.exec(input), options),
+	render: ({ href, title }, { rel }) => ({
 		type: "a",
 		key: null,
 		ref: null,
-		props: { children: title || formatUrl(href), href, rel },
+		$$typeof,
+		props: { children: title, href, rel },
 	}),
 	contexts: ["inline", "list"],
-	childContext: "link",
+	subcontext: "link",
+};
+function _urlMatch(match: NamedRegExpArray<{ title?: string; href: string }> | null, { schemes, url: base }: MarkupOptions): MarkupMatch<{ title: string; href: string }> | void {
+	if (match) {
+		const { index, 0: first = "", groups } = match;
+		const { href, title } = groups;
+		const url = getOptionalURL(href, base);
+		if (url && schemes.includes(url.protocol)) {
+			return { index, 0: first, groups: { href: url.href, title: title?.trim() || formatURL(url) } };
+		}
+	}
+}
+
+/**
+ * Markdown-style link.
+ * - Link in standard Markdown format, e.g. `[Google Maps](http://google.com/maps)`
+ * - If no title is specified a cleaned up version of the URL will be used, e.g. `google.com/maps`
+ * - Does not need space before/after the link.
+ * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
+ * - For security only `http://` or `https://` links will work (if invalid the unparsed text will be returned).
+ */
+export const LINK_MATCH: NamedRegExp<{ title: string; href: string }> = getNamedRegExp(/\[(?<title>[^\]]*?)\]\((?<href>[^)]*?)\)/);
+export const LINK_RULE: MarkupRule<{ title: string; href: string }> = {
+	...URL_RULE,
+	match: (input, options) => _urlMatch(LINK_MATCH.exec(input), options),
 };
 
 /**
@@ -213,11 +284,17 @@ export const AUTOLINK_RULE: MarkupRule = {
  * - Closing characters must exactly match opening characters.
  * - Same as Markdown syntax.
  */
-export const CODE_RULE: MarkupRule = {
-	regexp: getWrapRegExp("`+", MATCH_BLOCK.source), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
-	render: ([, , children]) => ({ type: "code", key: null, ref: null, props: { children } }),
+export const CODE_RULE: MarkupRule<{ text: string }> = {
+	match: getWrapRegExp("`+", MATCH_BLOCK.source), // Uses BLOCK instead of WORDS because whitespace is allowed (and kept) at start/end.
+	render: ({ text }) => ({
+		type: "code",
+		key: null,
+		ref: null,
+		$$typeof,
+		props: { children: text },
+	}),
 	contexts: ["inline", "list"],
-	priority: 10, // Higher priority than other inlines so it matches first before e.g. `strong` or `em` (from CommonMark spec: "Code span backticks have higher precedence than any other inline constructs except HTML tags and autolinks.")
+	priority: 10, // Higher priority than e.g. `strong` or `em` (from CommonMark spec: "Code span backticks have higher precedence than any other inline constructs except HTML tags and autolinks.")
 };
 
 /**
@@ -228,11 +305,17 @@ export const CODE_RULE: MarkupRule = {
  * - Closing characters must exactly match opening characters.
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
-export const STRONG_RULE: MarkupRule = {
-	regexp: getWrapRegExp("\\*+"),
-	render: ([, , children]) => ({ type: "strong", key: null, ref: null, props: { children } }),
+export const STRONG_RULE: MarkupRule<{ text: string }> = {
+	match: getWrapRegExp("\\*+"),
+	render: ({ text }) => ({
+		type: "strong",
+		key: null,
+		ref: null,
+		$$typeof,
+		props: { children: text },
+	}),
 	contexts: ["inline", "list", "link"],
-	childContext: "inline",
+	subcontext: "inline",
 };
 
 /**
@@ -243,26 +326,38 @@ export const STRONG_RULE: MarkupRule = {
  * - Closing characters must exactly match opening characters.
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
-export const EMPHASIS_RULE: MarkupRule = {
-	regexp: getWrapRegExp("_+"),
-	render: ([, , children]) => ({ type: "em", key: null, ref: null, props: { children } }),
+export const EMPHASIS_RULE: MarkupRule<{ text: string }> = {
+	match: getWrapRegExp("_+"),
+	render: ({ text }) => ({
+		type: "em",
+		key: null,
+		ref: null,
+		$$typeof,
+		props: { children: text },
+	}),
 	contexts: ["inline", "list", "link"],
-	childContext: "inline",
+	subcontext: "inline",
 };
 
 /**
  * Inserted text (`<ins>` tag),
  * - Inline text wrapped in two or more `++` pluses.
- * - Works inside words (e.g. `magi+karp+carp`).
+ * - Works inside words (e.g. `magi++karp++carp`).
  * - Whitespace cannot be the first or last character of the element (e.g. `+ abc +` will not work).
  * - Closing characters must exactly match opening characters.
  * - Markdown doesn't have this.
  */
-export const INSERT_RULE: MarkupRule = {
-	regexp: getWrapRegExp("\\+\\++"),
-	render: ([, , children]) => ({ type: "ins", key: null, ref: null, props: { children } }),
+export const INSERT_RULE: MarkupRule<{ text: string }> = {
+	match: getWrapRegExp("\\+\\++"),
+	render: ({ text }) => ({
+		type: "ins",
+		key: null,
+		ref: null,
+		$$typeof,
+		props: { children: text },
+	}),
 	contexts: ["inline", "list", "link"],
-	childContext: "inline",
+	subcontext: "inline",
 };
 
 /**
@@ -273,11 +368,17 @@ export const INSERT_RULE: MarkupRule = {
  * - Closing characters must exactly match opening characters.
  * - Markdown doesn't have this.
  */
-export const DELETE_RULE: MarkupRule = {
-	regexp: getWrapRegExp("--+|~~+"),
-	render: ([, , children]) => ({ type: "del", key: null, ref: null, props: { children } }),
+export const DELETE_RULE: MarkupRule<{ text: string }> = {
+	match: getWrapRegExp("--+|~~+"),
+	render: ({ text }) => ({
+		type: "del",
+		key: null,
+		ref: null,
+		$$typeof,
+		props: { children: text },
+	}),
 	contexts: ["inline", "list", "link"],
-	childContext: "inline",
+	subcontext: "inline",
 };
 
 /**
@@ -289,10 +390,16 @@ export const DELETE_RULE: MarkupRule = {
  *   - This works better with textareas that wrap text (since manually breaking up long lines is no longer necessary).
  */
 export const LINEBREAK_RULE: MarkupRule = {
-	regexp: /\n/,
-	render: () => ({ type: "br", key: null, ref: null, props: {} }),
+	match: /\n/,
+	render: () => ({
+		type: "br",
+		key: null,
+		ref: null,
+		$$typeof,
+		props: {},
+	}),
 	contexts: ["inline", "list", "link"],
-	childContext: "inline",
+	subcontext: "inline",
 };
 
 /**
@@ -304,16 +411,16 @@ export const LINEBREAK_RULE: MarkupRule = {
  *   3. more aligned with smaller textboxes and editors that have line wrapping
  * - HTML tags and character entities are never allowed (our use cases generally require a locked-down subset of syntax).
  */
-export const MARKUP_RULES = [
+export const MARKUP_RULES: MarkupRules = [
 	HEADING_RULE,
 	HORIZONTAL_RULE,
-	UNORDERED_LIST_RULE,
-	ORDERED_LIST_RULE,
+	UNORDERED_RULE,
+	ORDERED_RULE,
 	BLOCKQUOTE_RULE,
 	FENCED_CODE_RULE,
 	PARAGRAPH_RULE,
 	LINK_RULE,
-	AUTOLINK_RULE,
+	URL_RULE,
 	CODE_RULE,
 	STRONG_RULE,
 	EMPHASIS_RULE,
@@ -323,39 +430,42 @@ export const MARKUP_RULES = [
 ];
 
 /** Subset of markup rules that work in a block context. */
-export const MARKUP_RULES_BLOCK = [
-	HEADING_RULE, //
+export const MARKUP_RULES_BLOCK: MarkupRules = [
+	HEADING_RULE,
 	HORIZONTAL_RULE,
-	UNORDERED_LIST_RULE,
-	ORDERED_LIST_RULE,
+	UNORDERED_RULE,
+	ORDERED_RULE,
 	BLOCKQUOTE_RULE,
 	FENCED_CODE_RULE,
 	PARAGRAPH_RULE,
+	//
 ];
 
 /** Subset of markup rules that work in an inline context. */
-export const MARKUP_RULES_INLINE = [
-	LINK_RULE, //
-	AUTOLINK_RULE,
+export const MARKUP_RULES_INLINE: MarkupRules = [
+	LINK_RULE,
+	URL_RULE,
 	CODE_RULE,
 	STRONG_RULE,
 	EMPHASIS_RULE,
 	INSERT_RULE,
 	DELETE_RULE,
 	LINEBREAK_RULE,
+	//
 ];
 
 /** Subset of markup rules that are relevant for collapsed shortform content. */
-export const MARKUP_RULES_SHORTFORM = [
-	UNORDERED_LIST_RULE, //
-	ORDERED_LIST_RULE,
+export const MARKUP_RULES_SHORTFORM: MarkupRules = [
+	UNORDERED_RULE,
+	ORDERED_RULE,
 	PARAGRAPH_RULE,
 	LINK_RULE,
-	AUTOLINK_RULE,
+	URL_RULE,
 	CODE_RULE,
 	STRONG_RULE,
 	EMPHASIS_RULE,
 	INSERT_RULE,
 	DELETE_RULE,
 	LINEBREAK_RULE,
+	//
 ];
