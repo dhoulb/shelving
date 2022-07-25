@@ -72,7 +72,7 @@ export const joinStrings = (strs: Iterable<string>, joiner = ""): string => getA
 const MATCH_CONTROL_CHARS = /[\x00-\x1F\x7F-\x9F]/g; // Match control characters.
 const MATCH_LINE_CONTROL_CHARS = /[\x00-\x08\x0B-\x1F\x7F-\x9F]/g; // Match control characters except `\n` newline and `\t` tab.
 const MATCH_PARAGRAPH_SEPARATOR = /\n\n+|\f|\u2029/g; // Match all possible indications of paragraph separation (`\n\n` double newline, `\f` form feed, `\u2029` paragraph separator).
-const MATCH_LINE_SEPARATOR = /\r\n?|\n|\v|\u2028/g; // Match all possible indications of line separation (`\n` newline, `\v` vertical tab).
+const MATCH_LINE_SEPARATOR = /\r\n?|\n|\v|\x85|\u2028/g; // Match all possible indications of line separation (`\n` newline with possible leading `\r` carriage feed, `\v` vertical tab, next line, line separator).
 
 /**
  * Sanitize a single-line string.
@@ -103,9 +103,9 @@ export const sanitizeLines = (str: string): string =>
 		.replace(MATCH_LINE_SEPARATOR, "\n") // Normalise all line breaks to `\n` newline
 		.replace(MATCH_PARAGRAPH_SEPARATOR, "\n\n") // Normalise paragraph separator character to `\n\n` double newline.
 		.replace(/[^\S\n]+(?=\n|$)/g, "") // Trim whitespace from the end of each line.
-		.replace(/(\S)[^\S\n]+/g, "$1 ") // Normalise whitespace to single ` ` space, ignoring indentation at the beginning of a line by only matching runs after a non-space character (@todo use lookbehind when Safari supports it so the `$1` isn't needed in the replacement).
-		.replace(/[^\S\n\t]{4}/g, "\t") // Normalise runs of four spaces to a `\t` tab.
-		.replace(/(^|\n|\t)[^\S\t\n]+/g, "$1") // Remove rogue runs of three or fewer spaces in indentation.
+		.replace(/(\S)[^\S\n]+/g, "$1 ") // Normalise runs of whitespace to single ` ` space, except indentation at the beginning of a line (by only matching runs after a non-space character). (@todo use lookbehind when Safari supports it so the `$1` isn't needed in the replacement).
+		.replace(/[^\S\n\t]{4}/g, "\t") // Normalise runs of four spaces to a `\t` tab, (this will only exist in indentation because we already stripped it in other places).
+		.replace(/(^|\n|\t)[^\S\t\n]+/g, "$1") // Remove whitespace indentation that isn't `\t` tab (four spaces have already been normalised to `\t` tab).
 		.replace(MATCH_LINE_CONTROL_CHARS, "") // Strip control characters (except newline).
 		.replace(/^\n+|\n+$/g, "") // Trim excess newlines at the start and end of the string.
 		.replace(/\n\n\n+/g, "\n\n"); // Trim runs of more than two newlines in a row.
