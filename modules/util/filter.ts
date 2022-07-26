@@ -1,5 +1,4 @@
 import type { ImmutableArray } from "./array.js";
-import type { ImmutableMap } from "./map.js";
 import type { Entry } from "./entry.js";
 import type { ImmutableObject } from "./object.js";
 import { match, Matcher } from "./match.js";
@@ -25,13 +24,4 @@ export function filterObject<L>(object: ImmutableObject<L>, matcher: Matcher<Ent
 export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R>, target: R): ImmutableObject<L>;
 export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): ImmutableObject<L> {
 	return Object.fromEntries(filterItems(Object.entries(object), matcher, target));
-}
-
-/** Filter a map _by its values_ using a matcher (and optionally a target value). */
-export function filterMap<L>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, void>): ImmutableMap<L>;
-export function filterMap<L, R>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, R>, target: R): ImmutableMap<L>;
-export function filterMap<L, R>(input: ImmutableMap<L>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): ImmutableMap<L> {
-	if (!input.size) return input;
-	const output = new Map(filterItems(input, matcher, target));
-	return output.size === input.size ? input : output;
 }
