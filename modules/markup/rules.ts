@@ -238,8 +238,8 @@ export const PARAGRAPH_RULE: MarkupRule<{ paragraph: string }> = {
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `options.schemes` will match (defaults to `http:` and `https:`).
  */
-export const URL_CHAR = "[-_.~:/?#%+*!a-zA-Z0-9]";
-export const URL_MATCH: NamedRegExp<{ title?: string; href: string }> = getNamedRegExp(/(?<href>[a-z]+:${URL_CHARS}+)(?: +(?:\((?<title>[^)]*?)\)))?/);
+export const URL_CHAR = "[-$_@.&!*,=;/#?:%a-zA-Z0-9]";
+export const URL_MATCH: NamedRegExp<{ title?: string; href: string }> = getNamedRegExp(`(?<href>[a-z]+:${URL_CHAR}+)(?: +(?:\\((?<title>[^)]*?)\\)))?`);
 export const URL_RULE: MarkupRule<{ title: string; href: string }> = {
 	match: (input, options) => _urlMatch(URL_MATCH.exec(input), options),
 	render: ({ href, title }, { rel }) => ({
@@ -254,11 +254,11 @@ export const URL_RULE: MarkupRule<{ title: string; href: string }> = {
 };
 function _urlMatch(match: NamedRegExpArray<{ title?: string; href: string }> | null, { schemes, url: base }: MarkupOptions): MarkupMatch<{ title: string; href: string }> | void {
 	if (match) {
-		const { index, 0: first = "", groups } = match;
+		const { 0: first, index, groups } = match;
 		const { href, title } = groups;
 		const url = getOptionalURL(href, base);
 		if (url && schemes.includes(url.protocol)) {
-			return { index, 0: first, groups: { href: url.href, title: title?.trim() || formatURL(url) } };
+			return { 0: first, index, groups: { href: url.href, title: title?.trim() || formatURL(url) } };
 		}
 	}
 }
