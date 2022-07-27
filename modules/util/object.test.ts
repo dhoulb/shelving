@@ -48,9 +48,9 @@ test("withEntries()", () => {
 });
 test("withoutEntries()", () => {
 	const obj: ImmutableObject<number> = { a: 1, b: 2 };
-	expect(withoutEntries(obj, "b")).toEqual({ a: 1 });
-	expect(withoutEntries(obj, "b")).not.toBe(obj);
-	expect(withoutEntries(obj, "c")).toBe(obj);
+	expect(withoutEntries(obj, ["b"])).toEqual({ a: 1 });
+	expect(withoutEntries(obj, ["b"])).not.toBe(obj);
+	expect(withoutEntries(obj, ["c"])).toBe(obj);
 });
 test("setEntry()", () => {
 	const obj: MutableObject<number> = { a: 1 };
