@@ -108,8 +108,8 @@ describe("simplifyString()", () => {
 		expect(simplifyString("    aaa    ")).toBe("aaa");
 		expect(simplifyString("aaa    bbb    ccc")).toBe("aaa bbb ccc");
 		expect(simplifyString("$^$%@£$ symbols £$%%£@^&@")).toBe("symbols"); // Symbols are removed.
-		expect(simplifyString("[aaa](bbb):ccc:")).toBe("aaabbbccc"); // Punctuation is removed.
-		expect(simplifyString("Fráncé")).toBe("france"); // Accents are normalised.
+		expect(simplifyString("[aaa](bbb):ccc:")).toBe("aaa bbb ccc"); // Punctuation is removed.
+		expect(simplifyString("Fráncé")).toBe("france"); // Marks are normalised.
 	});
 });
 describe("toSlug()", () => {

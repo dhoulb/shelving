@@ -6,6 +6,14 @@ import { isData } from "./data.js";
 import { getArray, ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
 
+/**
+ * Type that never matches the `string` type.
+ * - `string` itself is iterable (iterating over its individual characters) and implements `Iterable<string>`
+ * - Using `Iterable<string> & NotString` allows an iterable containing strings but not `string` itself.
+ * - This helps catch this category of subtle errors.
+ */
+export type NotString = { toUpperCase?: never; toLowerCase?: never };
+
 /** Non-breaking space. */
 export const NBSP = "\xA0";
 
@@ -66,25 +74,32 @@ export function getTitle(value: unknown): string {
 }
 
 /** Concatenate an iterable set of strings together. */
-export const joinStrings = (strs: Iterable<string>, joiner = ""): string => getArray(strs).join(joiner);
+export const joinStrings = (strs: Iterable<string> & NotString, joiner = ""): string => getArray(strs).join(joiner);
 
 // Regular expressions.
 const MATCH_CONTROL_CHARS = /[\x00-\x1F\x7F-\x9F]/g; // Match control characters.
 const MATCH_LINE_CONTROL_CHARS = /[\x00-\x08\x0B-\x1F\x7F-\x9F]/g; // Match control characters except `\n` newline and `\t` tab.
-const MATCH_PARAGRAPH_SEPARATOR = /\n\n+|\f|\u2029/g; // Match all possible indications of paragraph separation (`\n\n` double newline, `\f` form feed, `\u2029` paragraph separator).
-const MATCH_LINE_SEPARATOR = /\r\n?|\n|\v|\x85|\u2028/g; // Match all possible indications of line separation (`\n` newline with possible leading `\r` carriage feed, `\v` vertical tab, next line, line separator).
+const MATCH_PARAGRAPH_SEPARATOR = /\n\n+|\f|\u2029/g; // Match indications of paragraph separation.
+const MATCH_LINE_SEPARATOR = /\r\n?|\n|\v|\x85|\u2028/g; // Match indications of line separation.
+const MATCH_WORD_SEPARATOR = /[\s\p{P}\p{S}\p{Z}]+/gu; // Match indications of word separation.
+const MATCH_WHITESPACE = /\s+/g; // Match runs of whitespace characters.
+const MATCH_TRAILING_WHITESPACE = /[^\S\n]+(?=\n)|\s+$/g; // Trailing whitespace at the end of a line or the whole string.
+const MATCH_NON_TEXT = /[^\p{L}\p{N} ]+/gu; // Match any characters that isn't a letter, number, or ` ` space.
+const MATCH_LEADING_NEWLINES = /^\n+/g; // `\n` newline characters at the start of the string.
+// const MATCH_TRAILING_NEWLINES = /\n+$/g; // `\n` newline characters at the end of the string.
+const MATCH_FOUR_SPACES = / {4}/g; // Match a run of four whitespace characters.
 
 /**
  * Sanitize a single-line string.
  * - Used when you're sanitising a single-line input, e.g. a title for something.
  * - Remove allow control characters
- * - Normalise runs of whitespace to single ` ` space,
+ * - Normalise runs of whitespace to one ` ` space,
  * - Trim whitespace from the start and end of the string.
  * @example santizeString("\x00Nice!   "); // Returns `"Nice!"`
  */
 export const sanitizeString = (str: string): string =>
 	str
-		.replace(/\s+/g, " ") // Normalise runs of all whitespace to single ` ` space.
+		.replace(MATCH_WHITESPACE, " ") // Normalise runs of all whitespace to one ` ` space.
 		.replace(MATCH_CONTROL_CHARS, "") // Strip control characters.
 		.trim(); // Trim whitespace from the start and end of the string.
 
@@ -93,22 +108,23 @@ export const sanitizeString = (str: string): string =>
  * - Used when you're sanitising a multi-line input, e.g. a description for something.
  * - Remove all control characters except `\n` newline.
  * - Normalise weird characters like paragraph separator, line separator, `\t` tab, `\r` carriage return.
- * - Normalise runs of whitespace to single ` ` space,
+ * - Normalise runs of whitespace to one ` ` space,
  * - Normalise indentation to tabs (four or more spaces are a tab, three or fewer spaces are removed).
  * - Allow spaces at the start of each line (for indentation) but trim the end of each line.
  * - Trim excess newlines at the start and end of the string and runs of more than two newlines in a row.
+ *
+ * @todo Use lookbehind when Safari supports it to fix the replacements
  */
 export const sanitizeLines = (str: string): string =>
 	str
-		.replace(MATCH_LINE_SEPARATOR, "\n") // Normalise all line breaks to `\n` newline
-		.replace(MATCH_PARAGRAPH_SEPARATOR, "\n\n") // Normalise paragraph separator character to `\n\n` double newline.
-		.replace(/[^\S\n]+(?=\n|$)/g, "") // Trim whitespace from the end of each line.
-		.replace(/(\S)[^\S\n]+/g, "$1 ") // Normalise runs of whitespace to single ` ` space, except indentation at the beginning of a line (by only matching runs after a non-space character). (@todo use lookbehind when Safari supports it so the `$1` isn't needed in the replacement).
-		.replace(/[^\S\n\t]{4}/g, "\t") // Normalise runs of four spaces to a `\t` tab, (this will only exist in indentation because we already stripped it in other places).
-		.replace(/(^|\n|\t)[^\S\t\n]+/g, "$1") // Remove whitespace indentation that isn't `\t` tab (four spaces have already been normalised to `\t` tab).
-		.replace(MATCH_LINE_CONTROL_CHARS, "") // Strip control characters (except newline).
-		.replace(/^\n+|\n+$/g, "") // Trim excess newlines at the start and end of the string.
-		.replace(/\n\n\n+/g, "\n\n"); // Trim runs of more than two newlines in a row.
+		.replace(MATCH_TRAILING_WHITESPACE, "") // Trim whitespace from the end of each line and the end of the string.
+		.replace(MATCH_LEADING_NEWLINES, "") // Trim excess newlines at the start of the string (no need to trim trailing newlines because it was matched as trailing whitespace).
+		.replace(MATCH_LINE_SEPARATOR, "\n") // Normalise all line separators to `\n` newline
+		.replace(MATCH_PARAGRAPH_SEPARATOR, "\n\n") // Normalise all paragraph separators to `\n\n` double newline.
+		.replace(/(\S)[^\S\n]+(?=\S)/g, "$1 ") // Normalise runs of whitespace to one ` ` space (except indentation at the beginning of a line, by only matching runs after a non-space character).
+		.replace(MATCH_FOUR_SPACES, "\t") // Normalise runs of `    ` four spaces to a single `\t` tab (this will only exist in indentation because we already stripped it in other places).
+		.replace(/(^|\n|\t) +/g, "$1") // Remove runs  of ` ` space in indentation (will only match three or fewer because four spaces have already been normalised to `\t` tab).
+		.replace(MATCH_LINE_CONTROL_CHARS, ""); // Strip control characters (except newline).
 
 /**
  * Simplify a string by removing anything that isn't a number, letter, or space.
@@ -118,9 +134,9 @@ export const sanitizeLines = (str: string): string =>
  */
 export const simplifyString = (str: string) =>
 	str
-		.replace(/\s+/g, " ") // Normalise whitespace to space.
-		.normalize("NFD") // Convert combined `á` character to separate `a` and accent characters.
-		.replace(/[^\p{L}\p{N}\s]+/gu, "") // Strip characters that aren't pure letters, numbers, spaces.
+		.normalize("NFD") // Convert ligatures (e.g. `ﬀ`) and letters with marks (e.g. `ü`) to separate characters (e.g. `ff` and `u◌̈`)`.
+		.replace(MATCH_WORD_SEPARATOR, " ") // Normalise word separators to ` ` space.
+		.replace(MATCH_NON_TEXT, "") // Strip characters that aren't letters, numbers, spaces.
 		.trim()
 		.toLowerCase();
 
@@ -128,15 +144,10 @@ export const simplifyString = (str: string) =>
  * Convert a string to a `kebab-case` URL slug.
  * - Remove any characters not in the range `[a-z0-9-]`
  * - Change all spaces/separators/hyphens/dashes/underscores to `-` single hyphen.
+ *
+ * Note: this splits words based on spaces, so won't work well with logographic writing systems e.g. kanji.
  */
-export const getSlug = (str: string): string =>
-	str
-		.normalize("NFD") // Convert combined `á` character to separate `a` and accent characters.
-		.toLowerCase()
-		.replace(SLUG_HYPHENS, "-") // Convert runs of space, hyphen, and underscore to single underscore.
-		.replace(SLUG_STRIP, ""); // Remove non-alphanumeric anywhere in string, and non-alphanumeric and hyphen at start and end.
-const SLUG_HYPHENS = /[\s\-_]+/g;
-const SLUG_STRIP = /^[^a-z0-9]+|[^a-z0-9]+$|[^a-z0-9-]+/g;
+export const getSlug = (str: string): string => simplifyString(str).replace(MATCH_WHITESPACE, "-");
 
 /**
  * Return an array of the separate words and "quoted phrases" found in a string.
@@ -149,14 +160,16 @@ export const getWords = (str: string): ImmutableArray<string> => Array.from(yiel
  * Find and iterate over the separate words and "quoted phrases" in a string.
  * - Phrases enclosed "in quotes" are a single word.
  * - Performs no processing on the words, so control chars, punctuation, symbols, and case are all preserved.
+ *
+ * Note: this splits words based on spaces, so won't work well with logographic writing systems e.g. kanji.
  */
-export function* yieldWords(str: string): Generator<string, void, void> {
+export function* yieldWords(str: string): Iterable<string> {
 	for (const [, word, phrase] of str.matchAll(MATCH_WORD)) {
 		if (phrase) yield phrase;
 		else if (word) yield word;
 	}
 }
-const MATCH_WORD = /([^\s"]+)|"([^"]*)"/g; // Runs of characters without spaces, or "quoted phrases"
+const MATCH_WORD = /([^\s"]+)|"([^"]*)"|'([^']*)'/g; // Runs of characters without spaces, or "quoted phrases"
 
 /** Is the first character of a string an uppercase letter? */
 export const isUppercaseLetter = (str: string): boolean => isBetween(str.charCodeAt(0), 65, 90);

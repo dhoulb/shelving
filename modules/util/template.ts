@@ -1,4 +1,5 @@
 import type { ImmutableArray } from "./array.js";
+import type { NotString } from "./string.js";
 import { MutableObject, isObject, ImmutableObject } from "./object.js";
 
 /** Single template chunk. */
@@ -105,7 +106,7 @@ export function matchTemplate(template: string, target: string): TemplateValues 
 /**
  * Match multiple templates against a target string and return the first match.
  */
-export function matchTemplates(templates: Iterable<string>, target: string): TemplateValues | undefined {
+export function matchTemplates(templates: Iterable<string> & NotString, target: string): TemplateValues | undefined {
 	for (const template of templates) {
 		const values = matchTemplate(template, target);
 		if (values) return values;

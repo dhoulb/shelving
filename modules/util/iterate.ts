@@ -5,7 +5,7 @@ import { Delay } from "./async.js";
 import { DONE } from "./constants.js";
 import { Arguments } from "./function.js";
 
-/** `Iterable` interface that specifies return types and next types for the iterator. */
+/**`Iterable that specifies return types and next types for the iterator (normally in Typescript these are `void` */
 export interface TypedIterable<T, R, N> {
 	[Symbol.iterator](): Iterator<T, R, N>;
 }

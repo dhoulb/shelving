@@ -1,5 +1,6 @@
 import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
+import type { NotString } from "./string.js";
 import { setProp, setProps, withProp, withProps } from "./data.js";
 
 /** Readonly object with string keys. */
@@ -79,15 +80,15 @@ export function withoutEntry<T>(input: ImmutableObject<T>, key: string, value?: 
  * Remove several key/value entries from a map-like object (immutably).
  *
  * @param input The input object.
- * @param entries Set of keys or entries to remove.
+ * @param keys Set of keys or entries to remove.
  *
  * @return New object without the specified entries (or same object if none of the entries existed).
  * - If every entry already exists and has the exact same input object will be returned.
  */
-export function withoutEntries<T>(input: ImmutableObject<T>, entries: Iterable<string>): ImmutableObject<T> {
+export function withoutEntries<T>(input: ImmutableObject<T>, keys: Iterable<string> & NotString): ImmutableObject<T> {
 	let changed = false;
 	const output: MutableObject<T> = { ...input };
-	for (const key of entries)
+	for (const key of keys)
 		if (isKey(input, key)) {
 			delete output[key];
 			changed = true;
