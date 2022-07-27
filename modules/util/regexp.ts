@@ -1,7 +1,7 @@
-import type { ImmutableArray } from "./array.js";
-import type { EmptyData } from "./data.js";
-import type { Matchable } from "./match.js";
-import { getWords, simplifyString } from "./string.js";
+import { AssertionError } from "../error/AssertionError.js";
+import { getArray } from "./array.js";
+import { Match } from "./match.js";
+import { NotString } from "./string.js";
 
 // Regular expressions.
 export const MATCH_LINE = /[^\n]*/; // Match line of content (anything that's not a newline).
@@ -11,6 +11,29 @@ export const MATCH_BLOCK = /[\s\S]*?/; // Match block of content (including newl
 export const MATCH_BLOCK_START = /^\n*|\n+/; // Starts at start of a block (one or more linebreak or start of string).
 export const MATCH_BLOCK_END = /\n*$|\n\n+/; // End of a block (two or more linebreaks or end of string).
 export const MATCH_TEXT = /\S(?:[\s\S]*?\S)?/; // Run of text that starts and ends with non-space characters (possibly multi-line).
+export const MATCH_ALWAYS = /^.*$/; // Regular expression that always matches.
+export const MATCH_NEVER = /^(?=a)a/; // Regular expression that never matches.
+
+/** Things that can be convert to a regular expression. */
+export type PossibleRegExp = string | RegExp;
+
+/** Is an unknown value a `RegExp` instance? */
+export const isRegExp = <T extends RegExp>(v: T | unknown): v is T => v instanceof RegExp;
+
+/** Assert that an unknown value is a `RegExp` instance. */
+export function assertRegExp<T extends RegExp>(v: T | unknown): asserts v is T {
+	if (!(v instanceof RegExp)) throw new AssertionError("Must be regular expression", v);
+}
+
+/** Convert a string to a regular expression that matches that string. */
+export const getRegExp = (pattern: PossibleRegExp, flags?: string): RegExp => (typeof pattern === "string" ? new RegExp(pattern, flags) : pattern);
+
+/** Convert a regular expression to its string source. */
+export const getRegExpSource = (regexp: PossibleRegExp): string => (typeof regexp === "string" ? regexp : regexp.source);
+
+/** Escape special characters in a string regular expression. */
+export const escapeRegExp = (pattern: string): string => pattern.replace(REPLACE_ESCAPED, "\\$&");
+const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
 /** Set of named match groups from a regular expression. */
 export type NamedRegExpData = { [named: string]: string };
@@ -26,100 +49,48 @@ export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extend
 	exec(input: string): NamedRegExpArray<T> | null;
 }
 
-/**
- * Convert a string to a regular expression that matches that string.
- *
- * @param pattern The input string.
- * @param flags RegExp flags that are passed into the created RegExp.
- */
-export const toRegExp = (pattern: string, flags = ""): RegExp => new RegExp(escapeRegExp(pattern), flags);
-
-/** Escape special characters in a string regular expression. */
-export const escapeRegExp = (pattern: string): string => pattern.replace(REPLACE_ESCAPED, "\\$&");
-const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
-
 /** Create a named regular expression (note: this is unsafe). */
 export const getNamedRegExp = <T extends NamedRegExpData>(pattern: string | RegExp, flags?: string): NamedRegExp<T> => (typeof pattern === "string" ? new RegExp(pattern, flags) : pattern) as NamedRegExp<T>;
 
-/** Create regular expression that matches a block of content. */
-export const getBlockRegExp = <T extends NamedRegExpData = EmptyData>(middle = MATCH_BLOCK.source, end = MATCH_BLOCK_END.source, start = MATCH_BLOCK_START.source): NamedRegExp<T> => getNamedRegExp(`(?:${start})(?:${middle})(?:${end})`);
-
-/** Create regular expression that matches a line of content. */
-export const getLineRegExp = <T extends NamedRegExpData = EmptyData>(middle = MATCH_LINE.source, end = MATCH_LINE_END.source, start = MATCH_LINE_START.source): NamedRegExp<T> => getNamedRegExp(`(?:${start})(?:${middle})(?:${end})`);
-
-/** Create regular expression that matches piece of text wrapped by a set of characters (use `text` match group). */
-export const getWrapRegExp = (wrapper: string, middle = MATCH_TEXT.source): NamedRegExp<{ text: string }> => getNamedRegExp(`(${wrapper})(?<text>${middle})\\1`);
-
-/**
- * Convert a string query to the corresponding set of case-insensitive regular expressions.
- * - Splies the query into words (respecting "quoted phrases").
- * - Return a regex for each word or quoted phrase.
- * - Unquoted words match partially (starting with a word boundary).
- * - Quoted phrases match fully (starting and ending with a word boundary).
- */
-export const toWordRegExps = (query: string): ImmutableArray<RegExp> => getWords(query).map(toWordRegExp);
-
-/** Convert a string to a regular expression matching the start of a word boundary. */
-export const toWordRegExp = (word: string) => new RegExp(`\\b${escapeRegExp(simplifyString(word))}`, "i");
-
-/**
- * Match an item matching all words in a query.
- *
- * @param item The item to search for the query in.
- * @param query The query string to search for.
- * - Supports `"compound queries"` with quotes.
- */
-export function matchesAll(item: unknown, regexps: Iterable<RegExp>): boolean {
-	let count = 0;
-	if (typeof item === "string") {
-		for (const regexp of regexps) {
-			count++;
-			if (!regexp.test(item)) return false;
-		}
-	}
-	return count ? true : false;
+/** Create regular expression that matches a block of content (possibly asserting that it contains named match groups). */
+export function getBlockRegExp<T extends NamedRegExpData>(middle: PossibleRegExp, end?: PossibleRegExp, start?: PossibleRegExp, flags?: string): NamedRegExp<T>;
+export function getBlockRegExp(middle: PossibleRegExp, end?: PossibleRegExp, start?: PossibleRegExp, flags?: string): RegExp;
+export function getBlockRegExp(middle: PossibleRegExp = MATCH_BLOCK, end: PossibleRegExp = MATCH_BLOCK_END, start: PossibleRegExp = MATCH_BLOCK_START, flags?: string): RegExp {
+	return new RegExp(`(?:${getRegExpSource(start)})(?:${getRegExpSource(middle)})(?:${getRegExpSource(end)})`, flags);
 }
 
-/**
- * Match an item any of several regular expressions.
- *
- * @param item The item to search for the query in.
- * @param regexps An iterable set of regular expressions.
- */
-export function matchesAny(item: unknown, regexps: Iterable<RegExp>): boolean {
-	if (typeof item === "string") for (const regexp of regexps) if (regexp.test(item)) return true;
-	return false;
+/** Create regular expression that matches a line of content (possibly asserting that it contains named match groups). */
+export function getLineRegExp<T extends NamedRegExpData>(middle: PossibleRegExp, end?: PossibleRegExp, start?: PossibleRegExp, flags?: string): NamedRegExp<T>;
+export function getLineRegExp(middle: PossibleRegExp, end?: PossibleRegExp, start?: PossibleRegExp, flags?: string): RegExp;
+export function getLineRegExp(middle: PossibleRegExp = MATCH_LINE, end: PossibleRegExp = MATCH_LINE_END, start: PossibleRegExp = MATCH_LINE_START, flags?: string): RegExp {
+	return new RegExp(`(?:${getRegExpSource(start)})(?:${getRegExpSource(middle)})(?:${getRegExpSource(end)})`, flags);
 }
 
-/** Matcher that matches any words in a string. */
-export class MatchAnyWord implements Matchable<unknown, void> {
-	private _regexps: Iterable<RegExp>;
-	constructor(words: string) {
-		this._regexps = toWordRegExps(words);
-	}
-	match(value: string): boolean {
-		return matchesAny(value, this._regexps);
-	}
+/** Create regular expression that matches piece of text wrapped by another expression (use `text` match group). */
+export function getWrapRegExp(wrapper: PossibleRegExp, middle: PossibleRegExp = MATCH_TEXT, flags?: string): NamedRegExp<{ text: string }> {
+	return getNamedRegExp(`(${getRegExpSource(wrapper)})(?<text>${getRegExpSource(middle)})\\1`, flags);
 }
 
-/** Matcher that matches all words in a string. */
-export class MatchAllWords implements Matchable<unknown, void> {
-	private _regexps: Iterable<RegExp>;
-	constructor(words: string) {
-		this._regexps = toWordRegExps(words);
-	}
-	match(value: string): boolean {
-		return matchesAll(value, this._regexps);
-	}
+/** Create regular expression that matches any of a list of other expressions. */
+export function getAnyRegExp(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
+	const arr = getArray(patterns).filter(Boolean);
+	// If there are no patterns to match against then _no_ string can ever match against any of nothing.
+	if (!arr.length) return MATCH_NEVER;
+	// Create RegExp using multiple joined matches like `(?:AAA)|(?:BBB)`
+	return new RegExp(`(?:${getArray(patterns).map(getRegExpSource).join(")|(?:")})`, flags);
 }
 
-/** Matcher that matches an exact phrase. */
-export class MatchWord implements Matchable<unknown, void> {
-	private _regexp: RegExp;
-	constructor(phrase: string) {
-		this._regexp = toWordRegExp(phrase);
-	}
-	match(value: string): boolean {
-		return this._regexp.test(value);
-	}
+/** Create regular expression that matches all of a list of other expressions. */
+export function getAllRegExp(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
+	const arr = getArray(patterns).filter(Boolean);
+	// If there are no patterns to match against then _every_ string will match against the entire list of nothing.
+	if (!arr.length) return MATCH_ALWAYS;
+	// Create RegExp using multiple lookaheads like `^(?=.*?(?:AAA))(?=.*?(?:BBB))`
+	return new RegExp(`^(?=.*?(?:${getArray(patterns).map(getRegExpSource).join("))(?=.*?(?:")}))`, flags);
 }
+
+/** Match function for finding strings that match against regular expressions (use with `filter()` to positively filter iterable sets of items). */
+export const isRegExpMatch: Match<string, RegExp> = (item, target) => target.test(item);
+
+/** Match function for finding strings that match against regular expressions (use with `filter()` to negatively filter iterable sets of items). */
+export const notRegExpMatch: Match<string, RegExp> = (item, target) => !target.test(item);
