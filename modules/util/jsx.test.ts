@@ -11,7 +11,7 @@ describe("getJSXNodeText()", () => {
 	test("Nodes can be converted to plain text", () => {
 		expect(getJSXNodeText(renderMarkup("PARAGRAPH"))).toBe("PARAGRAPH");
 		expect(getJSXNodeText(renderMarkup("- ITEM1\n- ITEM2"))).toBe("ITEM1 ITEM2");
-		expect(getJSXNodeText(renderMarkup("- ITEM\n  - ITEM1\n  - ITEM2"))).toBe("ITEM ITEM1 ITEM2");
+		expect(getJSXNodeText(renderMarkup("- ITEM\n\t- ITEM1\n\t- ITEM2"))).toBe("ITEM ITEM1 ITEM2");
 		expect(getJSXNodeText(renderMarkup("1. ITEM1\n2. ITEM2\n3. ITEM3"))).toBe("ITEM1 ITEM2 ITEM3");
 	});
 });
