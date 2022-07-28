@@ -1,39 +1,22 @@
-import { getString, getTitle, getSlug, getWords, simplifyString, sanitizeString, sanitizeLines, THINSP, NBSP, NNBSP } from "../index.js";
+import { getString, getSlug, getWords, simplifyString, sanitizeString, sanitizeLines, THINSP, NBSP, NNBSP } from "../index.js";
 
 describe("getString()", () => {
 	test("getString(): Correct response for supported things", () => {
 		expect(getString("aaa")).toBe("aaa");
 		expect(getString(123)).toBe("123");
-		expect(getString(123456789)).toBe("123456789");
-		expect(getString(123456.123)).toBe("123456.123");
+		expect(getString(123456789)).toBe("123,456,789");
+		expect(getString(123456.123)).toBe("123,456.123");
 		expect(getString(123.10000)).toBe("123.1"); // prettier-ignore
+		expect(getString(true)).toBe("Yes");
+		expect(getString(false)).toBe("No");
+		expect(getString(null)).toBe("None");
+		expect(getString(undefined)).toBe("None");
+		expect(getString({ title: "aaa" })).toBe("aaa");
+		expect(getString({ name: "aaa" })).toBe("aaa");
 	});
-	test("getString(): Correct response for non-supported things", () => {
-		expect(getString(true)).toBe("true");
-		expect(getString(false)).toBe("false");
-		expect(getString(null)).toBe("null");
-		expect(getString(undefined)).toBe("undefined");
-	});
-});
-describe("getTitle()", () => {
-	test("getTitle(): Correct response for supported things", () => {
-		expect(getTitle("aaa")).toBe("aaa");
-		expect(getTitle(123)).toBe("123");
-		expect(getTitle(123456789)).toBe("123,456,789");
-		expect(getTitle(123456.123)).toBe("123,456.123");
-		expect(getTitle(123.10000)).toBe("123.1"); // prettier-ignore
-		expect(getTitle(true)).toBe("Yes");
-		expect(getTitle(false)).toBe("No");
-		expect(getTitle(null)).toBe("None");
-		expect(getTitle(undefined)).toBe("None");
-		expect(getTitle({ title: "aaa" })).toBe("aaa");
-		expect(getTitle({ title: 123 })).toBe("123");
-		expect(getTitle({ name: "aaa" })).toBe("aaa");
-		expect(getTitle({ name: 123 })).toBe("123");
-	});
-	test("getTitle(): Correct response for unsupported things", () => {
-		expect(getTitle({})).toBe("Unknown");
-		expect(getTitle(Symbol())).toBe("Unknown");
+	test("getString(): Correct response for unsupported things", () => {
+		expect(getString({})).toBe("Object");
+		expect(getString(Symbol())).toBe("Unknown");
 	});
 });
 describe("sanitizeString()", () => {

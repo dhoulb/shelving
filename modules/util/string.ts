@@ -2,7 +2,7 @@
 
 import { AssertionError } from "../error/AssertionError.js";
 import { formatDate, isDate } from "./date.js";
-import { isData } from "./data.js";
+import { formatData, isData } from "./data.js";
 import { getArray, ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
 
@@ -32,21 +32,6 @@ export function assertString(value: unknown): asserts value is string {
 }
 
 /**
- * Convert an unknown value into a string for internal use.
- * - Objects use `obj.toString()` as long as it's not the default `Object.toString()` which is garbage.
- * - Primitives return `true`, `false`, `null`, `undefined`
- * - Numbers return the stringified number.
- */
-export function getString(value: unknown): string {
-	if (typeof value === "string") return value;
-	if (typeof value === "number") return value.toString();
-	if (typeof value === "object") return value === null ? "null" : typeof value.toString === "function" && value.toString !== Object.prototype.toString ? value.toString() : "object";
-	if (typeof value === "boolean") return value.toString();
-	if (typeof value === "function") return value.name || "function";
-	return typeof value; // "symbol" etc.
-}
-
-/**
  * Convert an unknown value into a title string for user-facing use.
  * - Strings return the string.
  * - Booleans return `"Yes"` or `"No"`
@@ -59,17 +44,16 @@ export function getString(value: unknown): string {
  * - Falsy values like `null` and `undefined` return `"None"`
  * - Everything else returns `"Unknown"`
  */
-export function getTitle(value: unknown): string {
-	if (typeof value === "string") return value ? value : "None";
+export function getString(value: unknown): string {
+	if (value === null || value === undefined) return "None";
 	if (typeof value === "boolean") return value ? "Yes" : "No";
+	if (typeof value === "string") return value || "None";
 	if (typeof value === "number") return formatNumber(value);
+	if (typeof value === "symbol") return value.description || "Symbol";
+	if (typeof value === "function") return "Function";
 	if (isDate(value)) return formatDate(value);
-	if (isArray(value)) return value.map(getTitle).join(", ");
-	if (isData(value)) {
-		if ("name" in value) return getTitle(value.name);
-		if ("title" in value) return getTitle(value.title);
-	}
-	if (!value) return "None";
+	if (isArray(value)) return value.map(getString).join(", ");
+	if (isData(value)) return formatData(value);
 	return "Unknown";
 }
 
