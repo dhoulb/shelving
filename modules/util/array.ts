@@ -33,8 +33,6 @@ export const isItem = <T>(arr: ImmutableArray<T>, item: T | unknown): item is T 
 export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
 
 /** Convert an iterable to an array (if its not already an array). */
-export function getArray<T>(iterable: ImmutableArray<T> | Iterable<T>): ImmutableArray<T>; // Helps types flow through functions when `getArray` is used as an argument to a function.
-export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T>;
 export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 	return isArray(items) ? items : Array.from(items);
 }
