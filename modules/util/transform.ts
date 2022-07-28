@@ -55,15 +55,23 @@ export function* mapEntries<I, O>(entries: Iterable<Entry<I>>, transformer: Tran
 }
 
 /**
- * Transform the _values_ of an object using a transformer.
+ * Transform the _values_ of a map-like object using a transformer.
  * @return New object after transforming its entries.
  */
-export function mapObject<T extends Data>(obj: T, transformer: Transformer<Value<T>, Value<T>>): T; // Passthrough for transformers that return the same type and remove nothing.
-export function mapObject<I extends Data, O extends { [K in keyof I]: unknown }>(obj: I, transformer: Transformer<Value<I>, Value<O>>): O; // Transform an entire object with the same props with different types.
 export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: (v: I) => O): ImmutableObject<O>; // Helps `O` carry through functions that use generics.
 export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O>;
 export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O> {
 	return Object.fromEntries(mapEntries(getEntries(obj), transformer));
+}
+
+/**
+ * Transform the _values_ of an data object using a transformer.
+ * @return New object after transforming its entries.
+ */
+export function mapData<T extends Data>(data: T, transformer: Transformer<Value<T>, Value<T>>): T; // Passthrough for transformers that return the same type and remove nothing.
+export function mapData<I extends Data, O extends { [K in keyof I]: unknown }>(data: I, transformer: Transformer<Value<I>, Value<O>>): O; // Transform an entire object with the same props with different types.
+export function mapData<I, O>(data: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O> {
+	return mapObject(data, transformer);
 }
 
 /**

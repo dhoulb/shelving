@@ -1,7 +1,7 @@
 import type { Data } from "./data.js";
 import { ImmutableArray, isArray } from "./array.js";
 import { isObject } from "./object.js";
-import { mapArray, mapObject } from "./transform.js";
+import { mapArray, mapData } from "./transform.js";
 
 /** Cloneable object implement a `clone()` function that returns a cloned copy. */
 export interface Cloneable {
@@ -33,7 +33,7 @@ export function cloneArray<T extends ImmutableArray>(input: T, recursor = shallo
 /** Clone an object. */
 export function cloneObject<T extends Data>(input: T, recursor = shallowClone): T {
 	if (isCloneable(input)) return input.clone();
-	const output = mapObject<T>(input, recursor);
+	const output = mapData<T>(input, recursor);
 	Object.setPrototypeOf(input, Object.getPrototypeOf(input));
 	return output;
 }

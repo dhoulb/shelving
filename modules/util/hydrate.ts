@@ -3,7 +3,7 @@ import { isArray } from "./array.js";
 import type { Class } from "./class.js";
 import { Data, isData } from "./data.js";
 import { ImmutableObject, isPlainObject } from "./object.js";
-import { mapArray, mapObject, Transformable } from "./transform.js";
+import { mapArray, mapData, Transformable } from "./transform.js";
 
 /**
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.
@@ -51,10 +51,10 @@ export class Hydrator implements Transformable<unknown, unknown> {
 	transform(value: unknown): unknown {
 		if (isArray(value)) return mapArray(value, this);
 		if (isPlainObject(value)) {
-			if (!isDehydrated(value)) return mapObject(value, this);
+			if (!isDehydrated(value)) return mapData(value, this);
 			const { _type, ...props } = value;
 			const hydration = this._hydrations[_type];
-			if (hydration) return { __proto__: hydration.prototype, ...mapObject(props, this) };
+			if (hydration) return { __proto__: hydration.prototype, ...mapData(props, this) };
 			throw new AssertionError(`Cannot hydrate "${_type}" object`, value);
 		}
 		return value;
@@ -69,9 +69,9 @@ export class Dehydrator implements Transformable<unknown, unknown> {
 	}
 	transform(value: unknown): unknown {
 		if (isArray(value)) return mapArray(value, this);
-		if (isPlainObject(value)) return mapObject(value, this);
+		if (isPlainObject(value)) return mapData(value, this);
 		if (isData(value)) {
-			for (const [_type, hydration] of Object.entries(this._hydrations)) if (value instanceof hydration) return { _type, ...mapObject(value, this) };
+			for (const [_type, hydration] of Object.entries(this._hydrations)) if (value instanceof hydration) return { _type, ...mapData(value, this) };
 			throw new AssertionError(`Cannot dehydrate object`, value);
 		}
 		return value;
