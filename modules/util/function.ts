@@ -2,6 +2,9 @@ import { AssertionError } from "../error/AssertionError.js";
 import { isAsync } from "./async.js";
 import { logError } from "./error.js";
 
+/** Unknown function. */
+export type UnknownFunction = (...args: unknown[]) => unknown;
+
 /** Any function (designed for use with `extends AnyFunction` guards). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyFunction = (...args: any) => any; // Note: `any` works better than `any[]` for `args`
