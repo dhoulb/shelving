@@ -98,7 +98,10 @@ export const truncateNumber = (num: number, precision = 0): number => Math.trunc
  *
  * @returns The number formatted as a string in the browser's current locale.
  */
-export const formatNumber = (num: number, maxPrecision = 4, minPrecision = 0): string => new Intl.NumberFormat(undefined, { maximumFractionDigits: maxPrecision, minimumFractionDigits: minPrecision }).format(num);
+export function formatNumber(num: number, maxPrecision = 4, minPrecision = 0): string {
+	if (!Number.isFinite(num)) return Number.isNaN(num) ? "None" : "Infinity";
+	return new Intl.NumberFormat(undefined, { maximumFractionDigits: maxPrecision, minimumFractionDigits: minPrecision }).format(num);
+}
 
 /** Format a number with a short suffix. */
 export const formatQuantity = (num: number, suffix: string, maxPrecision?: number, minPrecision?: number): string => `${formatNumber(num, maxPrecision, minPrecision)}${suffix}`;
