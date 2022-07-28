@@ -1,6 +1,6 @@
-import type { ImmutableObject, MutableObject } from "../util/object.js";
-import { debug } from "../util/debug.js";
-import { getTitle } from "../util/string.js";
+import type { ImmutableObject } from "../util/object.js";
+import { getString } from "../util/string.js";
+import { mapObject } from "../util/transform.js";
 
 /**
  * The `Feedback` class represents a feedback message that should be shown to the user.
@@ -15,49 +15,26 @@ import { getTitle } from "../util/string.js";
  */
 export class Feedback {
 	/** String feedback message that is safe to show to a user. */
-	readonly feedback: string;
+	readonly message: string;
 
 	/** Nested details providing deeper feedback. */
 	readonly details: ImmutableObject;
 
 	constructor(feedback: string, details: ImmutableObject = {}) {
-		this.feedback = feedback;
+		this.message = feedback;
 		this.details = details;
 	}
 
 	/**
 	 * Map details to a set of string messages.
-	 * - If a detail is another `Feedback` instance, return its feedback string.
+	 * - If a detail is another `Feedback` instance, return its `.message` string.
 	 * - If a detail is anything else, convert it to string using `toString()`
 	 */
 	get messages(): ImmutableObject<string> {
-		const messages: MutableObject<string> = {};
-		for (const [k, v] of Object.entries(this.details)) {
-			if (isFeedback(v)) messages[k] = v.feedback;
-			else messages[k] = getTitle(v);
-		}
-		return messages;
-	}
-
-	/**
-	 * Convert to string (equivalent to `message.details`).
-	 * Returns a string including the main message string and a deeply nested list of child message strings.
-	 *
-	 * > Invalid format
-	 * > - name: Invalid format
-	 * >   - first: Must be string
-	 * >     - value: 123
-	 * >   - last: Must be string
-	 * >     - value: true
-	 * > - age: Must be number
-	 * >   - value: "abc"
-	 */
-	toString(): string {
-		let output = this.feedback;
-		for (const [k, v] of Object.entries(this.details)) output += `\n- ${k}: ${isFeedback(v) ? v.toString().replace(/\n/g, "\n  ") : debug(v)}`;
-		return output;
+		return mapObject(this.details, _getMessage);
 	}
 }
+const _getMessage = (v: unknown): string => (isFeedback(v) ? v.message : getString(v));
 
 /** Is an unknown value a `Feedback` instance? */
 export const isFeedback = <T extends Feedback>(v: T | unknown): v is Feedback => v instanceof Feedback;
