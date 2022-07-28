@@ -1,7 +1,7 @@
 import { isFunction } from "./function.js";
 import { Data, Value, Prop, getProps, isData } from "./data.js";
 import type { Entry } from "./entry.js";
-import type { ImmutableObject } from "./object.js";
+import { getEntries, ImmutableObject } from "./object.js";
 import { ArrayType, ImmutableArray } from "./array.js";
 
 /** Object that transforms an input value into an output value with its `transform()` method. */
@@ -63,7 +63,7 @@ export function mapObject<I extends Data, O extends { [K in keyof I]: unknown }>
 export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: (v: I) => O): ImmutableObject<O>; // Helps `O` carry through functions that use generics.
 export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O>;
 export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O> {
-	return Object.fromEntries(mapEntries(Object.entries(obj), transformer));
+	return Object.fromEntries(mapEntries(getEntries(obj), transformer));
 }
 
 /**

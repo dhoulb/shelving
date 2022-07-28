@@ -1,7 +1,8 @@
 import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
 import type { NotString } from "./string.js";
-import { setProp, setProps, withProp, withProps } from "./data.js";
+import type { Entry } from "./entry.js";
+import { getProps, setProp, setProps, withProp, withProps } from "./data.js";
 
 /** Readonly object with string keys. */
 export type ImmutableObject<T = unknown> = { readonly [key: string | number]: T };
@@ -33,7 +34,7 @@ export function assertPlainObject<T extends ImmutableObject>(value: T | unknown)
 }
 
 /** Is an unknown string an own prop of an object. */
-export const isKey = <T extends ImmutableObject>(obj: T, key: unknown): key is keyof T => (typeof key === "string" || typeof key === "number" || typeof key === "symbol") && Object.prototype.hasOwnProperty.call(obj, key);
+export const isEntry = <T extends ImmutableObject>(obj: T, key: unknown): key is keyof T => (typeof key === "string" || typeof key === "number" || typeof key === "symbol") && Object.prototype.hasOwnProperty.call(obj, key);
 
 /**
  * Add a key/value entry to a map-like object (immutably).
@@ -65,7 +66,7 @@ export const withEntries: <T>(input: ImmutableObject<T>, entries: ImmutableObjec
  * - If `key` doesn't already exist in `obj` then the exact same input object will be returned.
  */
 export function withoutEntry<T>(input: ImmutableObject<T>, key: string, value?: T): ImmutableObject<T> {
-	if (isKey(input, key) && (value === undefined || input[key] === value)) {
+	if (isEntry(input, key) && (value === undefined || input[key] === value)) {
 		const { [key]: unused, ...output } = input;
 		return output;
 	}
@@ -84,12 +85,19 @@ export function withoutEntries<T>(input: ImmutableObject<T>, keys: Iterable<stri
 	let changed = false;
 	const output: MutableObject<T> = { ...input };
 	for (const key of keys)
-		if (isKey(input, key)) {
+		if (isEntry(input, key)) {
 			delete output[key];
 			changed = true;
 		}
 	return changed ? output : input;
 }
+
+/**
+ * Get the entries of an object.
+ *
+ * @param obj The target object.
+ */
+export const getEntries: <T>(obj: ImmutableObject<T>) => ImmutableArray<Entry<T>> = getProps;
 
 /**
  * Set a key/value entry on a map-like object (by reference).
