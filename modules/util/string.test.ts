@@ -14,7 +14,7 @@ describe("getString()", () => {
 		expect(getString({ title: "aaa" })).toBe("aaa");
 		expect(getString({ name: "aaa" })).toBe("aaa");
 		expect(getString({})).toBe("Object");
-		expect(getString(Symbol())).toBe("Sumbol");
+		expect(getString(Symbol())).toBe("Symbol");
 	});
 });
 describe("sanitizeString()", () => {
