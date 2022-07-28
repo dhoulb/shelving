@@ -16,6 +16,7 @@ export function debug(value: unknown): string {
 	if (typeof value === "function") return `function ${value.name || ""}()`;
 	if (typeof value === "object") {
 		if (value instanceof Date) return value.toISOString();
+		if (value instanceof Error) return value.toString();
 		if (value instanceof Array) return debugArray(value);
 		if (value instanceof Map) return debugMap(value);
 		if (value instanceof Set) return debugSet(value);
