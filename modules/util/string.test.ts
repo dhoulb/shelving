@@ -1,7 +1,7 @@
 import { getString, getSlug, getWords, simplifyString, sanitizeString, sanitizeLines, THINSP, NBSP, NNBSP } from "../index.js";
 
 describe("getString()", () => {
-	test("getString(): Correct response for supported things", () => {
+	test("Correct returned value", () => {
 		expect(getString("aaa")).toBe("aaa");
 		expect(getString(123)).toBe("123");
 		expect(getString(123456789)).toBe("123,456,789");
@@ -13,10 +13,8 @@ describe("getString()", () => {
 		expect(getString(undefined)).toBe("None");
 		expect(getString({ title: "aaa" })).toBe("aaa");
 		expect(getString({ name: "aaa" })).toBe("aaa");
-	});
-	test("getString(): Correct response for unsupported things", () => {
 		expect(getString({})).toBe("Object");
-		expect(getString(Symbol())).toBe("Unknown");
+		expect(getString(Symbol())).toBe("Sumbol");
 	});
 });
 describe("sanitizeString()", () => {
