@@ -34,7 +34,7 @@ export type OptionalEntity<T extends Data = Data> = Entity<T> | null;
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => typeof value === "object" && value !== null;
 
-/** Turn a data object into an array of entries (if it isn't one already). */
+/** Turn a data object into an array of props. */
 export function getProps<T extends Data>(data: T): ImmutableArray<Prop<T>>;
 export function getProps<T extends Data>(data: Partial<T>): ImmutableArray<Prop<T>>;
 export function getProps<T extends Data>(data: T | Partial<T>): ImmutableArray<Prop<T>> {
@@ -184,3 +184,18 @@ export type PickProps<T, TT> = Pick<T, { [K in keyof T]: T[K] extends TT ? K : n
 
 /** Omit the properties of an object that match a type. */
 export type OmitProps<T, TT> = Omit<T, { [K in keyof T]: T[K] extends TT ? K : never }[keyof T]>;
+
+/**
+ * Format a data object as a string.
+ * - Use the custom `.toString()` function if it exists (don't use built in `Object.prototype.toString` because it's useless.
+ * - Use `.title` or `.name` or `.id` if they exist and are strings.
+ * - Use `Object` otherwise.
+ */
+export function formatData(data: Data): string {
+	const { toString, name, title, id } = data;
+	if (typeof toString === "function" && toString !== Object.prototype.toString) return data.toString();
+	if (typeof name === "string") return name;
+	if (typeof title === "string") return title;
+	if (typeof id === "string") return id;
+	return "Object";
+}
