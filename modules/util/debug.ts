@@ -26,10 +26,10 @@ export function debug(value: unknown): string {
 }
 
 /** Debug a string. */
-export const debugString = (value: string): string => `"${value.replace(MATCH_ESCAPES, _debugChar)}"`;
-const MATCH_ESCAPES = /[\x00-\x08\x0B-\x1F\x7F-\x9F"\\]/g; // Match control characters, `"` double quote, `\` backslash.
-const ESCAPES: { [key: string]: string } = { '"': '\\"', "\\": "\\\\", "\r": "\\r", "\n": "\\n", "\t": "\\t", "\b": "\\b", "\f": "\\f", "\v": "\\v" };
-const _debugChar = (char: string): string => ESCAPES[char] || `\\x${char.charCodeAt(0).toString(16).padStart(2, "00")}`;
+export const debugString = (value: string): string => `"${value.replace(ESCAPE_REGEXP, _escapeChar)}"`;
+const ESCAPE_REGEXP = /[\x00-\x08\x0B-\x1F\x7F-\x9F"\\]/g; // Match control characters, `"` double quote, `\` backslash.
+const ESCAPE_LIST: { [key: string]: string } = { '"': '\\"', "\\": "\\\\", "\r": "\\r", "\n": "\\n", "\t": "\\t", "\b": "\\b", "\f": "\\f", "\v": "\\v" };
+const _escapeChar = (char: string): string => ESCAPE_LIST[char] || `\\x${char.charCodeAt(0).toString(16).padStart(2, "00")}`;
 
 /** Debug an array. */
 export function debugArray(value: ImmutableArray): string {

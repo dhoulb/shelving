@@ -3,16 +3,11 @@ import { getArray } from "./array.js";
 import { Match } from "./match.js";
 import { NotString } from "./string.js";
 
-// Regular expressions.
-export const MATCH_LINE = /[^\n]*/; // Match line of content (anything that's not a newline).
-export const MATCH_LINE_START = /^\n*|\n+/; // Starts at start of line (one or more linebreak or start of string).
-export const MATCH_LINE_END = /\n+|$/; // Ends at end of line (one or more linebreak or end of string).
-export const MATCH_BLOCK = /[\s\S]*?/; // Match block of content (including newlines so don't be greedy).
-export const MATCH_BLOCK_START = /^\n*|\n+/; // Starts at start of a block (one or more linebreak or start of string).
-export const MATCH_BLOCK_END = /\n*$|\n\n+/; // End of a block (two or more linebreaks or end of string).
-export const MATCH_TEXT = /\S(?:[\s\S]*?\S)?/; // Run of text that starts and ends with non-space characters (possibly multi-line).
-export const MATCH_ALWAYS = /^.*$/; // Regular expression that always matches.
-export const MATCH_NEVER = /^(?=a)a/; // Regular expression that never matches.
+/** Regular expression that always matches everything. */
+export const ALWAYS_REGEXP = /^.*$/;
+
+/** Regular expression that never matches anything. */
+export const NEVER_REGEXP = /^(?=a)a/;
 
 /** Things that can be convert to a regular expression. */
 export type PossibleRegExp = string | RegExp;
@@ -40,8 +35,8 @@ export type NamedRegExpData = { [named: string]: string };
 
 /** Regular expression match array that you've asserted contains the specified named groups. */
 export interface NamedRegExpArray<T extends NamedRegExpData = NamedRegExpData> extends RegExpExecArray {
-	readonly 0: string; // We know the first item in the array will always be a string (otherwise it wouldn't have matched).
-	readonly groups: T; // Groups is always set if a single `(?<named> placeholder)` appears in the RegExp.
+	0: string; // We know the first item in the array will always be a string (otherwise it wouldn't have matched).
+	groups: T; // Groups is always set if a single `(?<named> placeholder)` appears in the RegExp.
 }
 
 /** Regular expression that you've asserted contains the specified named capture groups. */
@@ -49,33 +44,11 @@ export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extend
 	exec(input: string): NamedRegExpArray<T> | null;
 }
 
-/** Create a named regular expression (note: this is unsafe). */
-export const getNamedRegExp = <T extends NamedRegExpData>(pattern: string | RegExp, flags?: string): NamedRegExp<T> => (typeof pattern === "string" ? new RegExp(pattern, flags) : pattern) as NamedRegExp<T>;
-
-/** Create regular expression that matches a block of content (possibly asserting that it contains named match groups). */
-export function getBlockRegExp<T extends NamedRegExpData>(middle: PossibleRegExp, end?: PossibleRegExp, start?: PossibleRegExp, flags?: string): NamedRegExp<T>;
-export function getBlockRegExp(middle: PossibleRegExp, end?: PossibleRegExp, start?: PossibleRegExp, flags?: string): RegExp;
-export function getBlockRegExp(middle: PossibleRegExp = MATCH_BLOCK, end: PossibleRegExp = MATCH_BLOCK_END, start: PossibleRegExp = MATCH_BLOCK_START, flags?: string): RegExp {
-	return new RegExp(`(?:${getRegExpSource(start)})(?:${getRegExpSource(middle)})(?:${getRegExpSource(end)})`, flags);
-}
-
-/** Create regular expression that matches a line of content (possibly asserting that it contains named match groups). */
-export function getLineRegExp<T extends NamedRegExpData>(middle: PossibleRegExp, end?: PossibleRegExp, start?: PossibleRegExp, flags?: string): NamedRegExp<T>;
-export function getLineRegExp(middle: PossibleRegExp, end?: PossibleRegExp, start?: PossibleRegExp, flags?: string): RegExp;
-export function getLineRegExp(middle: PossibleRegExp = MATCH_LINE, end: PossibleRegExp = MATCH_LINE_END, start: PossibleRegExp = MATCH_LINE_START, flags?: string): RegExp {
-	return new RegExp(`(?:${getRegExpSource(start)})(?:${getRegExpSource(middle)})(?:${getRegExpSource(end)})`, flags);
-}
-
-/** Create regular expression that matches piece of text wrapped by another expression (use `text` match group). */
-export function getWrapRegExp(wrapper: PossibleRegExp, middle: PossibleRegExp = MATCH_TEXT, flags?: string): NamedRegExp<{ text: string }> {
-	return getNamedRegExp(`(${getRegExpSource(wrapper)})(?<text>${getRegExpSource(middle)})\\1`, flags);
-}
-
 /** Create regular expression that matches any of a list of other expressions. */
 export function getAnyRegExp(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
 	const arr = getArray(patterns).filter(Boolean);
 	// If there are no patterns to match against then _no_ string can ever match against any of nothing.
-	if (!arr.length) return MATCH_NEVER;
+	if (!arr.length) return NEVER_REGEXP;
 	// Create RegExp using multiple joined matches like `(?:AAA)|(?:BBB)`
 	return new RegExp(`(?:${getArray(patterns).map(getRegExpSource).join(")|(?:")})`, flags);
 }
@@ -84,7 +57,7 @@ export function getAnyRegExp(patterns: Iterable<PossibleRegExp> & NotString, fla
 export function getAllRegExp(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
 	const arr = getArray(patterns).filter(Boolean);
 	// If there are no patterns to match against then _every_ string will match against the entire list of nothing.
-	if (!arr.length) return MATCH_ALWAYS;
+	if (!arr.length) return ALWAYS_REGEXP;
 	// Create RegExp using multiple lookaheads like `^(?=.*?(?:AAA))(?=.*?(?:BBB))`
 	return new RegExp(`^(?=.*?(?:${getArray(patterns).map(getRegExpSource).join("))(?=.*?(?:")}))`, flags);
 }
