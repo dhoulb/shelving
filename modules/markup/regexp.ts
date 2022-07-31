@@ -1,5 +1,5 @@
 import type { Data } from "../util/data.js";
-import { getRegExpSource, NamedRegExp, PossibleRegExp } from "../util/regexp.js";
+import { getRegExpSource, PossibleRegExp } from "../util/regexp.js";
 import type { MarkupOptions } from "./options.js";
 
 /** Subset of `NamedRegExpArray<T>` that are the only things we're required return from a `MarkupMatcher` function. */
@@ -15,23 +15,15 @@ export const LINE_END_REGEXP = /\n+|$/; // Ends at end of line (one or more line
 export const BLOCK_REGEXP = /[\s\S]*?/; // Match block of content (including newlines so don't be greedy).
 export const BLOCK_START_REGEXP = /^\n*|\n+/; // Starts at start of a block (one or more linebreak or start of string).
 export const BLOCK_END_REGEXP = /\n*$|\n\n+/; // End of a block (two or more linebreaks or end of string).
-export const WORDS_REGEXP = /\S(?:[\s\S]*?\S)?/; // Set of words (one or more characters not starting or ending with whitespace).
 
-/** Create regular expression that matches a block of content (possibly asserting that it contains named match groups). */
+/** Create regular expression that matches a block of content. */
 export function getBlockRegExp(content: PossibleRegExp = BLOCK_REGEXP, end: PossibleRegExp = BLOCK_END_REGEXP, start: PossibleRegExp = BLOCK_START_REGEXP): RegExp {
 	return new RegExp(`(?:${getRegExpSource(start)})(?:${getRegExpSource(content)})(?:${getRegExpSource(end)})`);
 }
 
-/** Create regular expression that matches a line of content (possibly asserting that it contains named match groups). */
+/** Create regular expression that matches a line of content. */
 export function getLineRegExp(content: PossibleRegExp = LINE_REGEXP, end: PossibleRegExp = LINE_END_REGEXP, start: PossibleRegExp = LINE_START_REGEXP): RegExp {
 	return new RegExp(`(?:${getRegExpSource(start)})(?:${getRegExpSource(content)})(?:${getRegExpSource(end)})`);
-}
-
-/**
- * Create matcher function that matches a piece of text wrapped by another expression (use `text` match group).
- */
-export function getWrappedRegExp(wrap: PossibleRegExp, content: PossibleRegExp = WORDS_REGEXP): NamedRegExp<{ wrap: string; text: string }> {
-	return new WordRegExp(`(?<wrap>${getRegExpSource(wrap)})(?<text>${getRegExpSource(content)})\\k<wrap>`) as NamedRegExp<{ wrap: string; text: string }>;
 }
 
 /**

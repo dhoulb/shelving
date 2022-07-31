@@ -191,10 +191,9 @@ describe("renderMarkup(): Inline rules", () => {
 	test("CODE", () => {
 		expect(renderMarkup("`A`", { context: "inline" })).toMatchObject({ type: "code", props: { children: "A" } });
 		expect(renderMarkup("`AAA`", { context: "inline" })).toMatchObject({ type: "code", props: { children: "AAA" } });
-		expect(renderMarkup("``````AAA``````", { context: "inline" })).toMatchObject({
-			type: "code",
-			props: { children: "AAA" },
-		});
+		expect(renderMarkup("``A``", { context: "inline" })).toMatchObject({ type: "code", props: { children: "A" } });
+		expect(renderMarkup("``AAA``", { context: "inline" })).toMatchObject({ type: "code", props: { children: "AAA" } });
+		expect(renderMarkup("``````AAA``````", { context: "inline" })).toMatchObject({ type: "code", props: { children: "AAA" } });
 		expect(renderMarkup("BEFORE `AAA`", { context: "inline" })).toMatchObject(["BEFORE ", { type: "code", props: { children: "AAA" } }]);
 		expect(renderMarkup("`AAA` AFTER", { context: "inline" })).toMatchObject([{ type: "code", props: { children: "AAA" } }, " AFTER"]);
 
@@ -202,10 +201,7 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("`AAA` `AAA`", { context: "inline" })).toMatchObject([{ type: "code", props: { children: "AAA" } }, " ", { type: "code", props: { children: "AAA" } }]);
 
 		// Code cannot contain other inline elements.
-		expect(renderMarkup("`WORD *STRONG* WORD`", { context: "inline" })).toMatchObject({
-			type: "code",
-			props: { children: "WORD *STRONG* WORD" },
-		});
+		expect(renderMarkup("`WORD *STRONG* WORD`", { context: "inline" })).toMatchObject({ type: "code", props: { children: "WORD *STRONG* WORD" } });
 		expect(renderMarkup("`WORD _EM_ WORD`", { context: "inline" })).toMatchObject({ type: "code", props: { children: "WORD _EM_ WORD" } });
 		expect(renderMarkup("`*STRONG*`", { context: "inline" })).toMatchObject({ type: "code", props: { children: "*STRONG*" } });
 
@@ -216,11 +212,11 @@ describe("renderMarkup(): Inline rules", () => {
 	});
 	test("STRONG", () => {
 		expect(renderMarkup("*A*", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "A" } });
-		expect(renderMarkup("*AAA*", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "AAA" } });
-		expect(renderMarkup("******AAA******", { context: "inline" })).toMatchObject({
-			type: "strong",
-			props: { children: "AAA" },
-		});
+		expect(renderMarkup("**A**", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "A" } });
+		expect(renderMarkup("******A******", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "A" } });
+		expect(renderMarkup("*AAA BBB*", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "AAA BBB" } });
+		expect(renderMarkup("**AAA BBB**", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "AAA BBB" } });
+		expect(renderMarkup("******AAA BBB******", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "AAA BBB" } });
 		expect(renderMarkup("BEFORE *AAA*", { context: "inline" })).toMatchObject(["BEFORE ", { type: "strong", props: { children: "AAA" } }]);
 		expect(renderMarkup("*AAA* AFTER", { context: "inline" })).toMatchObject([{ type: "strong", props: { children: "AAA" } }, " AFTER"]);
 
@@ -246,14 +242,17 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("*AAA *", { context: "inline" })).toEqual("*AAA *");
 		expect(renderMarkup("* AAA*", { context: "inline" })).toEqual("* AAA*");
 		expect(renderMarkup("* AAA *", { context: "inline" })).toEqual("* AAA *");
+		expect(renderMarkup("**AAA **", { context: "inline" })).toEqual("**AAA **");
+		expect(renderMarkup("** AAA**", { context: "inline" })).toEqual("** AAA**");
+		expect(renderMarkup("** AAA **", { context: "inline" })).toEqual("** AAA **");
 	});
 	test("EM", () => {
 		expect(renderMarkup("_A_", { context: "inline" })).toMatchObject({ type: "em", props: { children: "A" } });
-		expect(renderMarkup("_AAA_", { context: "inline" })).toMatchObject({ type: "em", props: { children: "AAA" } });
-		expect(renderMarkup("______AAA______", { context: "inline" })).toMatchObject({
-			type: "em",
-			props: { children: "AAA" },
-		});
+		expect(renderMarkup("__A__", { context: "inline" })).toMatchObject({ type: "em", props: { children: "A" } });
+		expect(renderMarkup("______A______", { context: "inline" })).toMatchObject({ type: "em", props: { children: "A" } });
+		expect(renderMarkup("_AAA BBB_", { context: "inline" })).toMatchObject({ type: "em", props: { children: "AAA BBB" } });
+		expect(renderMarkup("__AAA BBB__", { context: "inline" })).toMatchObject({ type: "em", props: { children: "AAA BBB" } });
+		expect(renderMarkup("______AAA BBB______", { context: "inline" })).toMatchObject({ type: "em", props: { children: "AAA BBB" } });
 		expect(renderMarkup("BEFORE _AAA_", { context: "inline" })).toMatchObject(["BEFORE ", { type: "em", props: { children: "AAA" } }]);
 		expect(renderMarkup("_AAA_ AFTER", { context: "inline" })).toMatchObject([{ type: "em", props: { children: "AAA" } }, " AFTER"]);
 
@@ -279,14 +278,17 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("_AAA _", { context: "inline" })).toEqual("_AAA _");
 		expect(renderMarkup("_ AAA_", { context: "inline" })).toEqual("_ AAA_");
 		expect(renderMarkup("_ AAA _", { context: "inline" })).toEqual("_ AAA _");
+		expect(renderMarkup("__AAA __", { context: "inline" })).toEqual("__AAA __");
+		expect(renderMarkup("__ AAA__", { context: "inline" })).toEqual("__ AAA__");
+		expect(renderMarkup("__ AAA __", { context: "inline" })).toEqual("__ AAA __");
 	});
 	test("INS", () => {
+		expect(renderMarkup("+A+", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "A" } });
 		expect(renderMarkup("++A++", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "A" } });
-		expect(renderMarkup("++AAA++", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "AAA" } });
-		expect(renderMarkup("++++++AAA++++++", { context: "inline" })).toMatchObject({
-			type: "ins",
-			props: { children: "AAA" },
-		});
+		expect(renderMarkup("++++++A++++++", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "A" } });
+		expect(renderMarkup("+AAA BBB+", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "AAA BBB" } });
+		expect(renderMarkup("++AAA BBB++", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "AAA BBB" } });
+		expect(renderMarkup("++++++AAA BBB++++++", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "AAA BBB" } });
 		expect(renderMarkup("BEFORE ++AAA++", { context: "inline" })).toMatchObject(["BEFORE ", { type: "ins", props: { children: "AAA" } }]);
 		expect(renderMarkup("++AAA++ AFTER", { context: "inline" })).toMatchObject([{ type: "ins", props: { children: "AAA" } }, " AFTER"]);
 
@@ -314,12 +316,12 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("++ AAA ++", { context: "inline" })).toEqual("++ AAA ++");
 	});
 	test("DEL (with tilde)", () => {
+		expect(renderMarkup("~A~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "A" } });
 		expect(renderMarkup("~~A~~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "A" } });
-		expect(renderMarkup("~~AAA~~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA" } });
-		expect(renderMarkup("~~~~~~AAA~~~~~~", { context: "inline" })).toMatchObject({
-			type: "del",
-			props: { children: "AAA" },
-		});
+		expect(renderMarkup("~~~~~~A~~~~~~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "A" } });
+		expect(renderMarkup("~AAA BBB~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+		expect(renderMarkup("~~AAA BBB~~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+		expect(renderMarkup("~~~~~~AAA BBB~~~~~~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
 		expect(renderMarkup("BEFORE ~~AAA~~", { context: "inline" })).toMatchObject(["BEFORE ", { type: "del", props: { children: "AAA" } }]);
 		expect(renderMarkup("~~AAA~~ AFTER", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "AAA" } }, " AFTER"]);
 
@@ -342,17 +344,20 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("TEXT~~DEL~~TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "del", props: { children: "DEL" } }, "TEXT"]);
 
 		// Only match if it doesn't contain whitespace at the start/end of the element.
+		expect(renderMarkup("~AAA ~", { context: "inline" })).toEqual("~AAA ~");
+		expect(renderMarkup("~ AAA~", { context: "inline" })).toEqual("~ AAA~");
+		expect(renderMarkup("~ AAA ~", { context: "inline" })).toEqual("~ AAA ~");
 		expect(renderMarkup("~~AAA ~~", { context: "inline" })).toEqual("~~AAA ~~");
 		expect(renderMarkup("~~ AAA~~", { context: "inline" })).toEqual("~~ AAA~~");
 		expect(renderMarkup("~~ AAA ~~", { context: "inline" })).toEqual("~~ AAA ~~");
 	});
 	test("DEL (with hyphen)", () => {
+		expect(renderMarkup("-A-", { context: "inline" })).toMatchObject({ type: "del", props: { children: "A" } });
 		expect(renderMarkup("--A--", { context: "inline" })).toMatchObject({ type: "del", props: { children: "A" } });
-		expect(renderMarkup("--AAA--", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA" } });
-		expect(renderMarkup("------AAA------", { context: "inline" })).toMatchObject({
-			type: "del",
-			props: { children: "AAA" },
-		});
+		expect(renderMarkup("------A------", { context: "inline" })).toMatchObject({ type: "del", props: { children: "A" } });
+		expect(renderMarkup("-AAA BBB-", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+		expect(renderMarkup("--AAA BBB--", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+		expect(renderMarkup("------AAA BBB------", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
 		expect(renderMarkup("BEFORE --AAA--", { context: "inline" })).toMatchObject(["BEFORE ", { type: "del", props: { children: "AAA" } }]);
 		expect(renderMarkup("--AAA-- AFTER", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "AAA" } }, " AFTER"]);
 
@@ -375,9 +380,48 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("TEXT--DEL--TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "del", props: { children: "DEL" } }, "TEXT"]);
 
 		// Only match if it doesn't contain whitespace at the start/end of the element.
+		expect(renderMarkup("-AAA -", { context: "inline" })).toEqual("-AAA -");
+		expect(renderMarkup("- AAA-", { context: "inline" })).toEqual("- AAA-");
+		expect(renderMarkup("- AAA -", { context: "inline" })).toEqual("- AAA -");
 		expect(renderMarkup("--AAA --", { context: "inline" })).toEqual("--AAA --");
 		expect(renderMarkup("-- AAA--", { context: "inline" })).toEqual("-- AAA--");
 		expect(renderMarkup("-- AAA --", { context: "inline" })).toEqual("-- AAA --");
+	});
+	test("MARK", () => {
+		expect(renderMarkup("=A=", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "A" } });
+		expect(renderMarkup("==A==", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "A" } });
+		expect(renderMarkup("======A======", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "A" } });
+		expect(renderMarkup("=AAA BBB=", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "AAA BBB" } });
+		expect(renderMarkup("==AAA BBB==", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "AAA BBB" } });
+		expect(renderMarkup("======AAA BBB======", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "AAA BBB" } });
+		expect(renderMarkup("BEFORE ==AAA==", { context: "inline" })).toMatchObject(["BEFORE ", { type: "mark", props: { children: "AAA" } }]);
+		expect(renderMarkup("==AAA== AFTER", { context: "inline" })).toMatchObject([{ type: "mark", props: { children: "AAA" } }, " AFTER"]);
+
+		// Matching is non==greedy.
+		expect(renderMarkup("==AAA== ==AAA==", { context: "inline" })).toMatchObject([{ type: "mark", props: { children: "AAA" } }, " ", { type: "mark", props: { children: "AAA" } }]);
+
+		// Can contain other inline elements.
+		expect(renderMarkup("==BEFORE *STRONG* AFTER==", { context: "inline" })).toMatchObject({
+			type: "mark",
+			props: { children: ["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"] },
+		});
+		expect(renderMarkup("==*STRONG*==", { context: "inline" })).toMatchObject({
+			type: "mark",
+			props: { children: { type: "strong", props: { children: "STRONG" } } },
+		});
+
+		// Match even if the opening and closing punctuation is in the middle of the word.
+		expect(renderMarkup("TEXT==DEL==", { context: "inline" })).toMatchObject(["TEXT", { type: "mark", props: { children: "DEL" } }]);
+		expect(renderMarkup("==DEL==TEXT", { context: "inline" })).toMatchObject([{ type: "mark", props: { children: "DEL" } }, "TEXT"]);
+		expect(renderMarkup("TEXT==DEL==TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "mark", props: { children: "DEL" } }, "TEXT"]);
+
+		// Only match if it doesn't contain whitespace at the start/end of the element.
+		expect(renderMarkup("=AAA =", { context: "inline" })).toEqual("=AAA =");
+		expect(renderMarkup("= AAA=", { context: "inline" })).toEqual("= AAA=");
+		expect(renderMarkup("= AAA =", { context: "inline" })).toEqual("= AAA =");
+		expect(renderMarkup("==AAA ==", { context: "inline" })).toEqual("==AAA ==");
+		expect(renderMarkup("== AAA==", { context: "inline" })).toEqual("== AAA==");
+		expect(renderMarkup("== AAA ==", { context: "inline" })).toEqual("== AAA ==");
 	});
 	test("Inline combinations", () => {
 		expect(renderMarkup(inlineMarkup, { context: "inline" })).toMatchObject(inlineElements);
