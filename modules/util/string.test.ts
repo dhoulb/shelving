@@ -32,7 +32,7 @@ describe("sanitizeString()", () => {
 		expect(sanitizeString("      aaa      ")).toBe("aaa");
 	});
 });
-describe("sanitizeMultilineString()", () => {
+describe("sanitizeLines()", () => {
 	test("Strip control characters (except newline)", () => {
 		expect(sanitizeLines("a\0b\nc\0d\ne\0f")).toBe("ab\ncd\nef");
 	});

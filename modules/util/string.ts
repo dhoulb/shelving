@@ -90,7 +90,7 @@ export const sanitizeString = (str: string): string =>
 export const sanitizeLines = (str: string): string =>
 	str
 		.replace(/[^\P{C}\s]/gu, "") // Strip control characters (except whitespace).
-		.replace(/\v|\x85|\u2028/g, "\n") // Normalise line separators to `\n` newline
+		.replace(/\r\n?|\v|\x85|\u2028/g, "\n") // Normalise line separators to `\n` newline
 		.replace(/[^\S\n]+(?=\n|$)/g, "") // Trim trailing whitespace on each line.
 		.replace(/\f|\u2029/g, "\n\n") // Normalise paragraph separators to `\n\n` double newline.
 		.replace(/^\n+|\n+$/g, "") // Trim leading and trailing newlines.
