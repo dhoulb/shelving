@@ -2,9 +2,9 @@
 
 import type { Data } from "../util/data.js";
 import type { JSXElement } from "../util/jsx.js";
-import { NamedRegExp, NamedRegExpArray, NamedRegExpData, getRegExp } from "../util/regexp.js";
+import { NamedRegExp, NamedRegExpData, getRegExp } from "../util/regexp.js";
 import { formatURL, getOptionalURL } from "../util/url.js";
-import { getBlockRegExp, getLineRegExp, BLOCK_REGEXP, LINE_REGEXP, MarkupMatch, MarkupMatcher, WordRegExp } from "./regexp.js";
+import { getBlockRegExp, getLineRegExp, BLOCK_REGEXP, LINE_REGEXP, MarkupMatcher, WordRegExp } from "./regexp.js";
 import type { MarkupOptions } from "./options.js";
 
 /** Rule for parsing string markup into a JSX element. */
@@ -78,7 +78,7 @@ export const HEADING_RULE: MarkupRule<{ prefix: string; heading: string }> = {
  * - Might have infinite number of spaces between the characters.
  */
 export const SEPARATOR_RULE: MarkupRule = {
-	match: getLineRegExp(`([-*•+_=])(?: *\\1){2,}`),
+	match: getLineRegExp("([-*•+_=])(?: *\\1){2,}"),
 	render: () => ({
 		type: "hr",
 		key: null,
@@ -96,17 +96,17 @@ export const SEPARATOR_RULE: MarkupRule = {
  * - Lists can be created with `•` bullet characters (in addition to `-` dash, `+` plus, and `*` asterisk).
  * - Second-level list can be indented with 1-2 spaces.
  */
-const UNORDERED_PREFIX = `[-*•+] +`;
-const UNORDERED_SPLIT = new RegExp(`\n+${UNORDERED_PREFIX}`, "g");
+const UNORDERED_PREFIX = "[-*•+] +";
+const UNORDERED_SPLIT = new RegExp(`(?:^|\n)+${UNORDERED_PREFIX}`, "g");
 const UNORDERED_INDENT = /^\t/gm;
 export const UNORDERED_RULE: MarkupRule<{ list: string }> = {
-	match: getBlockRegExp(`${UNORDERED_PREFIX}(?<list>${BLOCK_REGEXP.source})`) as NamedRegExp<{ list: string }>,
+	match: getBlockRegExp(`(?<list>${UNORDERED_PREFIX}${BLOCK_REGEXP.source})`),
 	render: ({ list }) => ({
 		type: "ul",
 		key: null,
 		ref: null,
 		$$typeof,
-		props: { children: list.split(UNORDERED_SPLIT).map(_mapUnordered) },
+		props: { children: list.split(UNORDERED_SPLIT).filter(Boolean).map(_mapUnordered) },
 	}),
 	contexts: ["block", "list"],
 	subcontext: "list",
@@ -128,7 +128,7 @@ const ORDERED_PREFIX = "[1-9][0-9]{0,8}[.):] +"; // Number for a numbered list, 
 const ORDERED_SPLIT = new RegExp(`\n+(?=${ORDERED_PREFIX})`, "g");
 const ORDERED_INDENT = UNORDERED_INDENT;
 export const ORDERED_RULE: MarkupRule<{ list: string }> = {
-	match: getBlockRegExp(`(?<list>${ORDERED_PREFIX}${BLOCK_REGEXP.source})`) as NamedRegExp<{ list: string }>,
+	match: getBlockRegExp(`(?<list>${ORDERED_PREFIX}${BLOCK_REGEXP.source})`),
 	render: ({ list }) => ({
 		type: "ol",
 		key: null,
@@ -162,7 +162,7 @@ const _mapOrdered = (item: string, key: number): JSXElement => ({
 const BLOCKQUOTE_PREFIX = "> *";
 const BLOCKQUOTE_INDENT = new RegExp(`^${BLOCKQUOTE_PREFIX}`, "gm");
 export const BLOCKQUOTE_RULE: MarkupRule<{ quote: string }> = {
-	match: getLineRegExp(`(?<quote>${BLOCKQUOTE_PREFIX}${LINE_REGEXP.source}(?:\n${BLOCKQUOTE_PREFIX}${LINE_REGEXP.source})*)`) as NamedRegExp<{ quote: string }>,
+	match: getLineRegExp(`(?<quote>${BLOCKQUOTE_PREFIX}${LINE_REGEXP.source}(?:\n${BLOCKQUOTE_PREFIX}${LINE_REGEXP.source})*)`),
 	render: ({ quote }) => ({
 		type: "blockquote",
 		key: null,
@@ -208,7 +208,7 @@ export const FENCED_CODE_RULE: MarkupRule<{ wrap: string; title?: string; code: 
  * - When ordering rules, paragraph should go after other "block" context elements (because it has a very generous capture).
  */
 export const PARAGRAPH_RULE: MarkupRule<{ paragraph: string }> = {
-	match: getBlockRegExp(`(?<paragraph>${BLOCK_REGEXP.source})`) as NamedRegExp<{ paragraph: string }>,
+	match: getBlockRegExp(`(?<paragraph>${BLOCK_REGEXP.source})`),
 	render: ({ paragraph }) => ({
 		type: `p`,
 		key: null,
@@ -222,16 +222,36 @@ export const PARAGRAPH_RULE: MarkupRule<{ paragraph: string }> = {
 };
 
 /**
+ * Function that checks a link against the schemas allowed by rendering.
+ * - Used by `URL_RULE~ and `LINK_RULE`
+ * - Validates that the link is a valid URL (using `getOptionalURL()` to resolve relative links relative to `options.url`).
+ * - Validates that the link's URL scheme is in the `options.schemes` whitelist (defaults to `http` and `https`).
+ * - Generates a default title for the link using `formatURL()` (e.g. `shax.com/my/dir`).
+ */
+export function getLinkMatcher(regexp: NamedRegExp<{ title?: string; href: string }>): MarkupMatcher<{ title: string; href: string }> {
+	return (input: string, { schemes, url: base }: MarkupOptions) => {
+		const match = regexp.exec(input);
+		if (match) {
+			const { 0: first, index, groups } = match;
+			const { href, title } = groups;
+			const url = getOptionalURL(href, base);
+			if (url && schemes.includes(url.protocol)) {
+				return { 0: first, index, groups: { href: url.href, title: title?.trim() || formatURL(url) } };
+			}
+		}
+	};
+}
+
+/**
  * Autolinked URL starts with `http:` or `https:` or `mailto:` (any scheme in `options.schemes`) and matches an unlimited number of non-space characters.
  * - If followed by space and then text in `()` round or `[]` square brackets that will be used as the title, e.g. `http://google.com/maps (Google Maps)` or `http://google.com/maps [Google Maps]` (this syntax is from Todoist and maybe other things too).
  * - If no title is specified a cleaned up version of the URL will be used, e.g. `google.com/maps`
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `options.schemes` will match (defaults to `http:` and `https:`).
  */
-export const URL_CHAR = "[-$_@.&!*,=;/#?:%a-zA-Z0-9]";
-export const URL_REGEXP = new RegExp(`(?<href>[a-z]+:${URL_CHAR}+)(?: +(?:\\((?<title>[^)]*?)\\)))?`) as NamedRegExp<{ title?: string; href: string }>;
+export const URL_REGEXP = getRegExp(/(?<href>[a-z]+:[-$_@.&!*,=;/#?:%a-zA-Z0-9]+)(?: +(?:\((?<title>[^)]*?)\)))?/) as NamedRegExp<{ title?: string; href: string }>;
 export const URL_RULE: MarkupRule<{ title: string; href: string }> = {
-	match: (input, options) => _urlMatch(URL_REGEXP.exec(input), options),
+	match: getLinkMatcher(URL_REGEXP),
 	render: ({ href, title }, { rel }) => ({
 		type: "a",
 		key: null,
@@ -242,16 +262,6 @@ export const URL_RULE: MarkupRule<{ title: string; href: string }> = {
 	contexts: ["inline", "list"],
 	subcontext: "link",
 };
-function _urlMatch(match: NamedRegExpArray<{ title?: string; href: string }> | null, { schemes, url: base }: MarkupOptions): MarkupMatch<{ title: string; href: string }> | void {
-	if (match) {
-		const { 0: first, index, groups } = match;
-		const { href, title } = groups;
-		const url = getOptionalURL(href, base);
-		if (url && schemes.includes(url.protocol)) {
-			return { 0: first, index, groups: { href: url.href, title: title?.trim() || formatURL(url) } };
-		}
-	}
-}
 
 /**
  * Markdown-style link.
@@ -264,7 +274,7 @@ function _urlMatch(match: NamedRegExpArray<{ title?: string; href: string }> | n
 export const LINK_REGEXP = getRegExp(/\[(?<title>[^\]]*?)\]\((?<href>[^)]*?)\)/) as NamedRegExp<{ title: string; href: string }>;
 export const LINK_RULE: MarkupRule<{ title: string; href: string }> = {
 	...URL_RULE,
-	match: (input, options) => _urlMatch(LINK_REGEXP.exec(input), options),
+	match: getLinkMatcher(LINK_REGEXP),
 };
 
 /**
