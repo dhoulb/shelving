@@ -19,14 +19,14 @@ const numDesc = ["c", "a", "d", "b"];
 
 test("Sort", () => {
 	// Sort empty.
-	expectOrderedKeys(new Sort<SortableEntity>("str", "ASC").transform([]), []);
+	expectOrderedKeys(new Sort<SortableEntity>("str").transform([]), []);
 	// Sort by id (change).
-	expectOrderedKeys(new Sort<SortableEntity>("id", "ASC").transform(allRand), idAsc);
-	expectOrderedKeys(new Sort<SortableEntity>("id", "ASC").transform(allRand), idAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("id").transform(allRand), idAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("id").transform(allRand), idAsc);
 	// Sort by string (change).
-	expectOrderedKeys(new Sort<SortableEntity>("str", "ASC").transform(allRand), strAsc);
-	expectOrderedKeys(new Sort<SortableEntity>("str", "DESC").transform(allRand), strDesc);
+	expectOrderedKeys(new Sort<SortableEntity>("str").transform(allRand), strAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("!str").transform(allRand), strDesc);
 	// Sort by number (change).
-	expectOrderedKeys(new Sort<SortableEntity>("num", "ASC").transform(allRand), numAsc);
-	expectOrderedKeys(new Sort<SortableEntity>("num", "DESC").transform(allRand), numDesc);
+	expectOrderedKeys(new Sort<SortableEntity>("num").transform(allRand), numAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("!num").transform(allRand), numDesc);
 });

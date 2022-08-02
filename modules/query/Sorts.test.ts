@@ -17,18 +17,18 @@ test("Sorts", () => {
 	expectOrderedKeys(new Sorts<SortableEntity>().transform(allRand), ["b", "d", "c", "a"]);
 	expect(new Sorts<SortableEntity>().transform(allRand)).toBe(allRand); // Passes through unchanged for efficiency.
 	// One sort order.
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("id", "ASC")).transform(allRand), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("id", "DESC")).transform(allRand), ["d", "c", "b", "a"]);
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("second", "ASC")).transform(allRand), ["a", "b", "d", "c"]);
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("second", "DESC")).transform(allRand), ["c", "d", "b", "a"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("id")).transform(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("!id")).transform(allRand), ["d", "c", "b", "a"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("second")).transform(allRand), ["a", "b", "d", "c"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("!second")).transform(allRand), ["c", "d", "b", "a"]);
 	// Two sort orders (where second is relevant).
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("first", "ASC"), new Sort("id", "ASC")).transform(allRand), ["c", "d", "a", "b"]);
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("first", "DESC"), new Sort("id", "ASC")).transform(allRand), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("first", "ASC"), new Sort("second", "ASC")).transform(allRand), ["d", "c", "a", "b"]);
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("first", "DESC"), new Sort("second", "ASC")).transform(allRand), ["a", "b", "d", "c"]);
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("first", "ASC"), new Sort("second", "DESC")).transform(allRand), ["c", "d", "b", "a"]);
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("first", "DESC"), new Sort("second", "DESC")).transform(allRand), ["b", "a", "c", "d"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("first"), new Sort("id")).transform(allRand), ["c", "d", "a", "b"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("!first"), new Sort("id")).transform(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("first"), new Sort("second")).transform(allRand), ["d", "c", "a", "b"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("!first"), new Sort("second")).transform(allRand), ["a", "b", "d", "c"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("first"), new Sort("!second")).transform(allRand), ["c", "d", "b", "a"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("!first"), new Sort("!second")).transform(allRand), ["b", "a", "c", "d"]);
 	// Two sort orders (but second isn't relevant).
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("second", "ASC"), new Sort("first", "ASC")).transform(allRand), ["a", "b", "d", "c"]);
-	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("second", "DESC"), new Sort("first", "ASC")).transform(allRand), ["c", "d", "b", "a"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("second"), new Sort("first")).transform(allRand), ["a", "b", "d", "c"]);
+	expectOrderedKeys(new Sorts<SortableEntity>(new Sort("!second"), new Sort("first")).transform(allRand), ["c", "d", "b", "a"]);
 });

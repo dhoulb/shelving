@@ -26,11 +26,6 @@ export abstract class Rules<T extends Data, R extends Rule<T>> extends Rule<T> i
 		this._rules = rules;
 	}
 
-	// Override to join the strings from the rules together with `,` commas.
-	toString(): string {
-		return this._rules.map(String).join(",");
-	}
-
 	/** Clone this set of rules but add additional rules. */
 	with(...rules: R[]): this {
 		const _rules = withItems(this._rules, rules);

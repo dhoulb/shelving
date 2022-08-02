@@ -2,6 +2,8 @@ import { ArrayType, ImmutableArray, isArray } from "../util/array.js";
 import { Data, Key, getProp } from "../util/data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, Matchable, Match, notEqual, notInArray } from "../util/match.js";
 import { filterItems } from "../util/filter.js";
+import { isIterable } from "../util/iterate.js";
+import { NotString } from "../util/string.js";
 import { Rule } from "./Rule.js";
 
 /** Possible operator references. */
@@ -18,6 +20,9 @@ export type FilterProps<T extends Data> = {
 } & {
 	[K in Key<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: T[K]; // GT/GTE/LT/LTE
 };
+
+/** List of filters in a flexible format. */
+export type FilterList<T extends Data> = FilterProps<T> | Filter<T> | Iterable<FilterList<T> & NotString>;
 
 /** Map `FilterOperator` to its corresponding `Match` function. */
 const MATCHERS: { [K in FilterOperator]: Match } = {
@@ -40,34 +45,45 @@ const MATCHERS: { [K in FilterOperator]: Match } = {
  * @param value Value the specified property should be matched against.
  */
 export class Filter<T extends Data> extends Rule<T> implements Matchable<T, void> {
-	/** Parse a set of FilterProps and return the corresponding array of `Filter` instances. */
-	static on<X extends Data>(key: FilterKey<X>, value: unknown): Filter<X> {
-		return key.startsWith("!")
-			? new Filter(key.slice(1), isArray(value) ? "OUT" : "NOT", value)
-			: key.endsWith(">")
-			? new Filter(key.slice(0, -1), "GT", value)
-			: key.endsWith(">=")
-			? new Filter(key.slice(0, -2), "GTE", value)
-			: key.endsWith("<")
-			? new Filter(key.slice(0, -1), "LT", value)
-			: key.endsWith("<=")
-			? new Filter(key.slice(0, -2), "LTE", value)
-			: key.endsWith("[]")
-			? new Filter(key.slice(0, -2), "CONTAINS", value)
-			: new Filter(key, isArray(value) ? "IN" : "IS", value);
-	}
-
 	readonly key: Key<T>;
 	readonly operator: FilterOperator;
 	readonly value: unknown;
-
-	constructor(key: Key<T>, operator: FilterOperator, value: unknown) {
+	get filterKey(): string {
+		const { operator, key } = this;
+		if (operator === "NOT" || operator === "OUT") return `!${key}`;
+		else if (operator === "CONTAINS") return `${key}[]`;
+		else if (operator === "LT") return `${key}<`;
+		else if (operator === "LTE") return `${key}<=`;
+		else if (operator === "GT") return `${key}>`;
+		else if (operator === "GTE") return `${key}>=`;
+		else return key;
+	}
+	constructor(filterKey: FilterKey<T>, value: unknown) {
 		super();
-		this.key = key;
-		this.operator = operator;
+		if (filterKey.startsWith("!")) {
+			this.key = filterKey.slice(1);
+			this.operator = isArray(value) ? "OUT" : "NOT";
+		} else if (filterKey.endsWith(">")) {
+			this.key = filterKey.slice(0, -1);
+			this.operator = "GT";
+		} else if (filterKey.endsWith(">=")) {
+			this.key = filterKey.slice(0, -2);
+			this.operator = "GTE";
+		} else if (filterKey.endsWith("<")) {
+			this.key = filterKey.slice(0, -1);
+			this.operator = "LT";
+		} else if (filterKey.endsWith("<=")) {
+			this.key = filterKey.slice(0, -2);
+			this.operator = "LTE";
+		} else if (filterKey.endsWith("[]")) {
+			this.key = filterKey.slice(0, -2);
+			this.operator = "CONTAINS";
+		} else {
+			this.key = filterKey;
+			this.operator = isArray(value) ? "IN" : "IS";
+		}
 		this.value = value;
 	}
-
 	match(item: T): boolean {
 		return MATCHERS[this.operator](getProp(item, this.key), this.value);
 	}
@@ -75,27 +91,17 @@ export class Filter<T extends Data> extends Rule<T> implements Matchable<T, void
 		return filterItems(items, this);
 	}
 	override toString(): string {
-		return `"${_formatKey(this)}":${JSON.stringify(this.value)}`;
+		return `"${this.filterKey}":${JSON.stringify(this.value)}`;
 	}
 }
 
-/** Convert a `Filter` */
-function _formatKey<T extends Data>({ key, operator }: Filter<T>): string {
-	switch (operator) {
-		case "NOT":
-		case "OUT":
-			return `!${key}`;
-		case "CONTAINS":
-			return `${key}[]`;
-		case "LT":
-			return `${key}<`;
-		case "LTE":
-			return `${key}<=`;
-		case "GT":
-			return `${key}>`;
-		case "GTE":
-			return `${key}>=`;
-		default:
-			return key;
+/** Get the separate filters generated from a list of filters. */
+export function* getFilters<T extends Data>(filters: FilterList<T>): Iterable<Filter<T>> {
+	if (filters instanceof Filter) {
+		yield filters;
+	} else if (isIterable(filters)) {
+		for (const filter of filters) yield* getFilters(filter);
+	} else {
+		for (const [key, value] of Object.entries(filters)) yield new Filter<T>(key, value);
 	}
 }

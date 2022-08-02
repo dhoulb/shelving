@@ -73,23 +73,23 @@ test("MemoryProvider: get queries", async () => {
 	const query = db.query("basics");
 	for (const { id, ...data } of basics) query.doc(id).set(data);
 	// Equal queries.
-	expectUnorderedKeys(await query.filter("str", "aaa").value, ["basic1"]);
-	expectUnorderedKeys(await query.filter("str", "NOPE").value, []);
-	expectUnorderedKeys(await query.filter("num", 300).value, ["basic3"]);
-	expectUnorderedKeys(await query.filter("num", 999999).value, []);
-	expectUnorderedKeys(await query.filter("group", "a").value, ["basic1", "basic2", "basic3"]);
-	expectUnorderedKeys(await query.filter("group", "b").value, ["basic4", "basic5", "basic6"]);
-	expectUnorderedKeys(await query.filter("group", "c").value, ["basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(await query.filter({ str: "aaa" }).value, ["basic1"]);
+	expectUnorderedKeys(await query.filter({ str: "NOPE" }).value, []);
+	expectUnorderedKeys(await query.filter({ num: 300 }).value, ["basic3"]);
+	expectUnorderedKeys(await query.filter({ num: 999999 }).value, []);
+	expectUnorderedKeys(await query.filter({ group: "a" }).value, ["basic1", "basic2", "basic3"]);
+	expectUnorderedKeys(await query.filter({ group: "b" }).value, ["basic4", "basic5", "basic6"]);
+	expectUnorderedKeys(await query.filter({ group: "c" }).value, ["basic7", "basic8", "basic9"]);
 	// ArrayContains queries.
-	expectUnorderedKeys(await query.filter("tags[]", "odd").value, ["basic1", "basic3", "basic5", "basic7", "basic9"]);
-	expectUnorderedKeys(await query.filter("tags[]", "even").value, ["basic2", "basic4", "basic6", "basic8"]);
-	expectUnorderedKeys(await query.filter("tags[]", "prime").value, ["basic1", "basic2", "basic3", "basic5", "basic7"]);
-	expectUnorderedKeys(await query.filter("tags[]", "NOPE").value, []);
+	expectUnorderedKeys(await query.filter({ "tags[]": "odd" }).value, ["basic1", "basic3", "basic5", "basic7", "basic9"]);
+	expectUnorderedKeys(await query.filter({ "tags[]": "even" }).value, ["basic2", "basic4", "basic6", "basic8"]);
+	expectUnorderedKeys(await query.filter({ "tags[]": "prime" }).value, ["basic1", "basic2", "basic3", "basic5", "basic7"]);
+	expectUnorderedKeys(await query.filter({ "tags[]": "NOPE" }).value, []);
 	// In queries.
-	expectUnorderedKeys(await query.filter("num", [200, 600, 900, 999999]).value, ["basic2", "basic6", "basic9"]);
-	expectUnorderedKeys(await query.filter("str", ["aaa", "ddd", "eee", "NOPE"]).value, ["basic1", "basic4", "basic5"]);
-	expectUnorderedKeys(await query.filter("num", []).value, []);
-	expectUnorderedKeys(await query.filter("str", []).value, []);
+	expectUnorderedKeys(await query.filter({ num: [200, 600, 900, 999999] }).value, ["basic2", "basic6", "basic9"]);
+	expectUnorderedKeys(await query.filter({ str: ["aaa", "ddd", "eee", "NOPE"] }).value, ["basic1", "basic4", "basic5"]);
+	expectUnorderedKeys(await query.filter({ num: [] }).value, []);
+	expectUnorderedKeys(await query.filter({ str: [] }).value, []);
 	// Sorting.
 	const keysAsc = ["basic1", "basic2", "basic3", "basic4", "basic5", "basic6", "basic7", "basic8", "basic9"];
 	const keysDesc = ["basic9", "basic8", "basic7", "basic6", "basic5", "basic4", "basic3", "basic2", "basic1"];
@@ -102,7 +102,7 @@ test("MemoryProvider: get queries", async () => {
 	// Combinations.
 	expectOrderedKeys(await query.sort("id").max(2).value, ["basic1", "basic2"]);
 	expectOrderedKeys(await query.sort("!id").max(1).value, ["basic9"]);
-	expectOrderedKeys(await query.filter("tags[]", "prime").sort("!id").max(2).value, ["basic7", "basic5"]);
+	expectOrderedKeys(await query.filter({ "tags[]": "prime" }).sort("!id").max(2).value, ["basic7", "basic5"]);
 });
 test("MemoryProvider: subscribing to documents", async () => {
 	// Setup.
@@ -207,7 +207,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	query.doc("basic7").set(basic7);
 	// Subscribe (should find only basic7).
 	const calls1: ImmutableArray<BasicEntity>[] = [];
-	const stop1 = query.filter("tags[]", "odd").subscribe(results => void calls1.push(results)); // Query for odds.
+	const stop1 = query.filter({ "tags[]": "odd" }).subscribe(results => void calls1.push(results)); // Query for odds.
 	await Promise.resolve();
 	expectUnorderedKeys(calls1[0]!, ["basic7"]);
 	// Set basic3 (should be added to result).
@@ -219,7 +219,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	await Promise.resolve();
 	expect(calls1[3]).toBe(undefined);
 	// Change basic2 and basic3 (should have updated basic3 in result).
-	query.filter("id", ["basic2", "basic3"]).update({ str: "NEW" });
+	query.filter({ id: ["basic2", "basic3"] }).update({ str: "NEW" });
 	await Promise.resolve();
 	expectUnorderedKeys(calls1[2]!, ["basic3", "basic7"]);
 	// Delete basic3 and basic2.

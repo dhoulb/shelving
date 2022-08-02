@@ -1,7 +1,7 @@
 import type { Data } from "../util/data.js";
 import { Rankable, sortItems } from "../util/sort.js";
 import { Rules } from "./Rules.js";
-import { Sort, SortKeys } from "./Sort.js";
+import { getSorts, Sort, SortKeys, SortList } from "./Sort.js";
 
 /**
  * Interface to make sure an object implements all directions.
@@ -14,14 +14,13 @@ export interface Sortable<T extends Data> extends Rankable<T> {
 
 /** A set of sorts. */
 export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable<T> {
-	/** Create a new `Sorts` object from an array of `SortKey` strings. */
-	static on<X extends Data>(...keys: SortKeys<X>[]): Sorts<X> {
-		return new Sorts<X>(...keys.flat().map(Sort.on));
+	constructor(...sorts: SortList<T>[]) {
+		super(...getSorts(sorts));
 	}
 
 	// Implement `Sortable`
-	sort(...keys: SortKeys<T>[]): this {
-		return this.with(...keys.flat().map(Sort.on));
+	sort(...sorts: SortList<T>[]): this {
+		return this.with(...getSorts(sorts));
 	}
 	rank(left: T, right: T): number {
 		for (const rule of this._rules) {
@@ -34,5 +33,10 @@ export class Sorts<T extends Data> extends Rules<T, Sort<T>> implements Sortable
 	// Implement `Rule`
 	transform(items: Iterable<T>): Iterable<T> {
 		return this._rules.length ? sortItems(items, this) : items;
+	}
+
+	// Stringify as array syntax.
+	toString(): string {
+		return `[${this._rules.map(String).join(",")}]`;
 	}
 }
