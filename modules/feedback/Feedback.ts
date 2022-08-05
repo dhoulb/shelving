@@ -1,4 +1,4 @@
-import type { ImmutableObject } from "../util/object.js";
+import { ImmutableObject, isObject } from "../util/object.js";
 import { getString } from "../util/string.js";
 import { mapObject } from "../util/transform.js";
 
@@ -13,28 +13,27 @@ import { mapObject } from "../util/transform.js";
  * @param feedback String feedback message that is safe to show to users.
  * @param details Set of other `Feedback` instances describing the issue in further detail.
  */
+export interface Feedback {
+	/** Name of the class (same as `Error`). */
+	name: string;
+}
 export class Feedback {
 	/** String feedback message that is safe to show to a user. */
 	readonly message: string;
 
 	/** Nested details providing deeper feedback. */
-	readonly details: ImmutableObject;
+	readonly details: unknown;
 
-	constructor(feedback: string, details: ImmutableObject = {}) {
+	constructor(feedback: string, details?: unknown) {
 		this.message = feedback;
 		this.details = details;
 	}
-
-	/**
-	 * Map details to a set of string messages.
-	 * - If a detail is another `Feedback` instance, return its `.message` string.
-	 * - If a detail is anything else, convert it to string using `toString()`
-	 */
-	get messages(): ImmutableObject<string> {
-		return mapObject(this.details, _getMessage);
-	}
 }
-const _getMessage = (v: unknown): string => (isFeedback(v) ? v.message : getString(v));
+Feedback.prototype.name = "Feedback";
 
-/** Is an unknown value a `Feedback` instance? */
-export const isFeedback = <T extends Feedback>(v: T | unknown): v is Feedback => v instanceof Feedback;
+/** Is an unknown value a `Feedback` object. */
+export const isFeedback = <T extends Feedback>(v: T | unknown): v is Feedback => isObject(v) && typeof v.name === "string" && v.name.endsWith("Feedback") && typeof v.message === "string";
+
+/** Get an object of messages in `{ key: message }` format from a feedback's details property. */
+export const getFeedbackMessages = ({ details }: Feedback): ImmutableObject<string> => (isObject(details) ? mapObject(details, _getMessage) : {});
+const _getMessage = (v: unknown): string => (isFeedback(v) ? v.message : getString(v));
