@@ -66,7 +66,7 @@ describe("options.items", () => {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
 			const messages = getFeedbackMessages(invalid);
 			expect(messages.str).toEqual("Must be number");
-			expect(Object.keys(invalid.messages).length).toBe(1); // No additional errors.
+			expect(Object.keys(messages).length).toBe(1); // No additional errors.
 		}
 	});
 });

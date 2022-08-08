@@ -127,7 +127,7 @@ describe("options.items", () => {
 			const messages = getFeedbackMessages(invalid);
 			expect(messages[0]).toBe("Must be number"); // arr[0] failed.
 			expect(messages[2]).toBe("Must be number"); // arr[2] failed.
-			expect(Object.keys(invalid.messages).length).toBe(2); // No additional errors (arr[1] paItemsSchema).
+			expect(Object.keys(messages).length).toBe(2); // No additional errors (arr[1] paItemsSchema).
 		}
 	});
 });
