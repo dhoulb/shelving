@@ -1,4 +1,4 @@
-import { InvalidFeedback, Validator, StringSchema, DataSchema, DATA, BOOLEAN, NUMBER, STRING, NOVALUE } from "../index.js";
+import { InvalidFeedback, Validator, StringSchema, DataSchema, DATA, BOOLEAN, NUMBER, STRING, NOVALUE, getFeedbackMessages } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -111,9 +111,10 @@ describe("options.props", () => {
 			expect(schema.validate({ dogs: "abc", turtles: 10, cats: null })).toBe(NOVALUE);
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			expect(invalid.messages.dogs).toEqual("Must be number");
-			expect(invalid.messages.cats).toEqual("Must be number");
-			expect(Object.keys(invalid.messages).length).toBe(2); // No additional errors.
+			const messages = getFeedbackMessages(invalid);
+			expect(messages.dogs).toEqual("Must be number");
+			expect(messages.cats).toEqual("Must be number");
+			expect(Object.keys(messages).length).toBe(2); // No additional errors.
 		}
 	});
 });

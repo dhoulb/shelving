@@ -1,4 +1,4 @@
-import { InvalidFeedback, ImmutableObject, ObjectSchema, Validator, STRING, BOOLEAN, OBJECT, NUMBER, NOVALUE } from "../index.js";
+import { InvalidFeedback, ImmutableObject, ObjectSchema, Validator, STRING, BOOLEAN, OBJECT, NUMBER, NOVALUE, getFeedbackMessages } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -64,7 +64,8 @@ describe("options.items", () => {
 			expect(schema.validate({ num1: 123, num2: 456, str: "abc" })).toBe(NOVALUE);
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			expect(invalid.messages.str).toEqual("Must be number");
+			const messages = getFeedbackMessages(invalid);
+			expect(messages.str).toEqual("Must be number");
 			expect(Object.keys(invalid.messages).length).toBe(1); // No additional errors.
 		}
 	});

@@ -1,4 +1,4 @@
-import { InvalidFeedback, ArraySchema, Validator, ARRAY, NUMBER, DATA, STRING } from "../index.js";
+import { InvalidFeedback, ArraySchema, Validator, ARRAY, NUMBER, DATA, STRING, getFeedbackMessages } from "../index.js";
 
 // Vars.
 const stringArray = ["a", "b", "c"];
@@ -124,8 +124,9 @@ describe("options.items", () => {
 			expect(false).toBe(true); // Not reached.
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			expect(invalid.messages[0]).toBe("Must be number"); // arr[0] failed.
-			expect(invalid.messages[2]).toBe("Must be number"); // arr[2] failed.
+			const messages = getFeedbackMessages(invalid);
+			expect(messages[0]).toBe("Must be number"); // arr[0] failed.
+			expect(messages[2]).toBe("Must be number"); // arr[2] failed.
 			expect(Object.keys(invalid.messages).length).toBe(2); // No additional errors (arr[1] paItemsSchema).
 		}
 	});
