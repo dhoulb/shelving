@@ -5,7 +5,7 @@ import { getSorts, Sort, SortKeys, SortList } from "./Sort.js";
 
 /**
  * Interface to make sure an object implements all directions.
- * - Extends `Matchable` so this object itself can be directly be used in `filterItems()` and `filterEntries()`
+ * - Extends `Rankable` so this object itself can be directly be used with `filterItems()` and `filterEntries()`
  */
 export interface Sortable<T extends Data> extends Rankable<T> {
 	/** Add one or more sorts to this sortable. */
