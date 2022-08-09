@@ -1,4 +1,4 @@
-import type { ImmutableArray, MutableArray } from "./array.js";
+import { ImmutableArray, isArray, MutableArray } from "./array.js";
 
 /** Object that can rank two values using its `rank()` function. */
 export interface Rankable<T> {
@@ -89,9 +89,6 @@ export const rankDesc = (left: unknown, right: unknown): number => 0 - rankAsc(l
  * @return `true` if the array order changed, and `false` otherwise.
  */
 function _quicksort<T>(items: MutableArray<T>, ranker: Ranker<T>, leftPointer = 0, rightPointer: number = items.length - 1): boolean {
-	// Nothing to sort.
-	if (items.length <= 1) return false;
-
 	// Have any swaps been made?
 	let changed = false;
 
@@ -124,14 +121,13 @@ function _quicksort<T>(items: MutableArray<T>, ranker: Ranker<T>, leftPointer = 
 }
 
 /** Sort an iterable set of items using a ranker (defaults to sorting in ascending order). */
-export function sortItems<T>(input: Iterable<T>, ranker: Ranker<T> = rankAsc): ImmutableArray<T> {
+export function sortItems<T>(input: ImmutableArray<T> | Iterable<T>, ranker: Ranker<T> = rankAsc): ImmutableArray<T> {
+	if (isArray(input)) {
+		if (input.length < 2) return input;
+		const output = Array.from(input);
+		return _quicksort(output, ranker) ? output : input;
+	}
 	const array = Array.from(input);
 	_quicksort(array, ranker);
 	return array;
-}
-
-/** Sort an array using a ranker (defaults to sorting in ascending order) */
-export function sortArray<T>(input: ImmutableArray<T>, ranker: Ranker<T> = rankAsc): ImmutableArray<T> {
-	const output = Array.from(input);
-	return _quicksort(output, ranker) ? output : input;
 }

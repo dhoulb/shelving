@@ -1,4 +1,4 @@
-import { sortArray, rankAsc, rankDesc } from "../index.js";
+import { sortItems, rankAsc, rankDesc } from "../index.js";
 
 describe("ASC & DESC", () => {
 	test("Different types are sorted correctly", () => {
@@ -58,35 +58,35 @@ describe("ASC & DESC", () => {
 		expect(rankDesc(123, "abc")).toBe(1);
 	});
 });
-describe("sortArray() & ASC", () => {
-	test("sortArray(): Sorts correctly", () => {
-		expect(sortArray([], rankAsc)).toEqual([]);
-		expect(sortArray([1], rankAsc)).toEqual([1]);
-		expect(sortArray([1, 2, 3], rankAsc)).toEqual([1, 2, 3]);
-		expect(sortArray([2, 3, 1], rankAsc)).toEqual([1, 2, 3]);
-		expect(sortArray([undefined, 1], rankAsc)).toEqual([1, undefined]);
+describe("sortItems() & ASC", () => {
+	test("sortItems(): Sorts correctly", () => {
+		expect(sortItems([], rankAsc)).toEqual([]);
+		expect(sortItems([1], rankAsc)).toEqual([1]);
+		expect(sortItems([1, 2, 3], rankAsc)).toEqual([1, 2, 3]);
+		expect(sortItems([2, 3, 1], rankAsc)).toEqual([1, 2, 3]);
+		expect(sortItems([undefined, 1], rankAsc)).toEqual([1, undefined]);
 		const unsorted = [1, -1, -Infinity, 0.5, -0.5, Infinity, 100, 0, -100, NaN];
 		const sorted = [-Infinity, -100, -1, -0.5, 0, 0.5, 1, 100, Infinity, NaN];
-		expect(sortArray(unsorted, rankAsc)).toEqual(sorted);
+		expect(sortItems(unsorted, rankAsc)).toEqual(sorted);
 	});
-	test("sortArray(): Strings are sorted correctly", () => {
+	test("sortItems(): Strings are sorted correctly", () => {
 		const arr = ["0", "00", "1", "01", "001", "g", "z", "gg", "á", "😂", "a", "ê"];
-		expect(sortArray(arr, rankAsc)).toEqual(["😂", "0", "00", "001", "01", "1", "a", "á", "ê", "g", "gg", "z"]);
+		expect(sortItems(arr, rankAsc)).toEqual(["😂", "0", "00", "001", "01", "1", "a", "á", "ê", "g", "gg", "z"]);
 	});
-	test("sortArray(): Different types are sorted correctly", () => {
+	test("sortItems(): Different types are sorted correctly", () => {
 		const arr = ["1", 1, true, 0, "0", "a", undefined, -1, false, null, {}];
-		expect(sortArray(arr, rankAsc)).toEqual([-1, 0, 1, "0", "1", "a", true, false, null, {}, undefined]);
+		expect(sortItems(arr, rankAsc)).toEqual([-1, 0, 1, "0", "1", "a", true, false, null, {}, undefined]);
 	});
 });
-describe("sortArray() & DESC", () => {
-	test("sortArray(): Sorts correctly", () => {
-		expect(sortArray([], rankDesc)).toEqual([]);
-		expect(sortArray([1], rankDesc)).toEqual([1]);
-		expect(sortArray([3, 2, 1], rankDesc)).toEqual([3, 2, 1]);
-		expect(sortArray([2, 1, 3], rankDesc)).toEqual([3, 2, 1]);
-		expect(sortArray([1, undefined], rankDesc)).toEqual([undefined, 1]);
+describe("sortItems() & DESC", () => {
+	test("sortItems(): Sorts correctly", () => {
+		expect(sortItems([], rankDesc)).toEqual([]);
+		expect(sortItems([1], rankDesc)).toEqual([1]);
+		expect(sortItems([3, 2, 1], rankDesc)).toEqual([3, 2, 1]);
+		expect(sortItems([2, 1, 3], rankDesc)).toEqual([3, 2, 1]);
+		expect(sortItems([1, undefined], rankDesc)).toEqual([undefined, 1]);
 		const unsorted = ["1", 1, true, 0, "0", "a", undefined, -1, false, null, {}];
 		const sorted = [undefined, {}, null, false, true, "a", "1", "0", 1, 0, -1];
-		expect(sortArray(unsorted, rankDesc)).toEqual(sorted);
+		expect(sortItems(unsorted, rankDesc)).toEqual(sorted);
 	});
 });
