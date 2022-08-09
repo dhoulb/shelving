@@ -1,13 +1,13 @@
 import { AssertionError } from "../error/AssertionError.js";
-import { isArray } from "./array.js";
 import type { Class } from "./class.js";
+import { isArray } from "./array.js";
 import { Data, isData } from "./data.js";
 import { isDate } from "./date.js";
 import { isMap } from "./map.js";
 import { ImmutableObject, isPlainObject } from "./object.js";
 import { isSet } from "./set.js";
 import { isString } from "./string.js";
-import { mapArray, mapData, mapEntries, mapObject, Transformable } from "./transform.js";
+import { mapArray, mapData, mapEntries, mapItems, mapObject, Transformable } from "./transform.js";
 
 /**
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.
@@ -76,8 +76,8 @@ export class Dehydrator implements Transformable<unknown, unknown> {
 	}
 	transform(value: unknown): unknown {
 		if (isArray(value)) return mapArray(value, this);
-		if (isMap(value)) return { $type: "Map", $value: mapEntries(value.entries(), this) };
-		if (isSet(value)) return { $type: "Set", $value: mapEntries(value.entries(), this) };
+		if (isMap(value)) return { $type: "Map", $value: Array.from(mapEntries(value.entries(), this)) };
+		if (isSet(value)) return { $type: "Set", $value: Array.from(mapItems(value.values(), this)) };
 		if (isDate(value)) return { $type: "Date", $value: value.toString() };
 		if (isData(value)) {
 			const proto = Object.getPrototypeOf(value);
