@@ -1,4 +1,4 @@
-import { InvalidFeedback, ImmutableObject, ObjectSchema, Validator, STRING, BOOLEAN, OBJECT, NUMBER, NOVALUE, getFeedbackMessages } from "../index.js";
+import { InvalidFeedback, ImmutableObject, ObjectSchema, Validator, STRING, BOOLEAN, OBJECT, NUMBER, getFeedbackMessages } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -61,7 +61,7 @@ describe("options.items", () => {
 	test("Object with items rejects invalid props", () => {
 		try {
 			const schema = new ObjectSchema({ items: NUMBER });
-			expect(schema.validate({ num1: 123, num2: 456, str: "abc" })).toBe(NOVALUE);
+			expect(schema.validate({ num1: 123, num2: 456, str: "abc" })).toBe("Never");
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
 			const messages = getFeedbackMessages(invalid);

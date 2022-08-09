@@ -1,4 +1,4 @@
-import { awaitNext, NOVALUE, awaitComplete, Subject, connectDerived, connectAsyncDerived } from "../index.js";
+import { awaitNext, awaitComplete, Subject, connectDerived, connectAsyncDerived } from "../index.js";
 import { runMicrotasks } from "../test/util.js";
 
 test("awaitNext(): complete chain", async () => {
@@ -19,7 +19,7 @@ test("awaitNext(): error chain", async () => {
 	});
 	expect(promise).toBeInstanceOf(Promise);
 	try {
-		expect(await promise).toBe(NOVALUE);
+		expect(await promise).toBe("Never");
 	} catch (thrown) {
 		expect(thrown).toBe("Argh");
 	}
@@ -43,7 +43,7 @@ test("awaitComplete(): error chain", async () => {
 	});
 	expect(promise).toBeInstanceOf(Promise);
 	try {
-		expect(await promise).toBe(NOVALUE);
+		expect(await promise).toBe("Never");
 	} catch (thrown) {
 		expect(thrown).toBe("Argh");
 	}

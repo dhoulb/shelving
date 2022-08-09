@@ -1,4 +1,4 @@
-import { ConditionError, OnceObserver, ThroughObserver, TransformObserver, awaitNext, NOVALUE, awaitComplete } from "../index.js";
+import { ConditionError, ThroughObserver } from "../index.js";
 
 test("ThroughObserver: complete chain", () => {
 	const nexts: number[] = [];
