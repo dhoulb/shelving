@@ -5,7 +5,7 @@ import { debug } from "../util/debug.js";
 export class ValidationError extends Error {
 	readonly feedback: Feedback;
 	constructor(message: string, feedback: Feedback) {
-		super(`${message}:\n${feedback.message} (received ${debug(feedback.details)})`);
+		super(`${message}:\n${feedback.message} (received ${debug(feedback.value)})`);
 		this.feedback = feedback;
 	}
 }
