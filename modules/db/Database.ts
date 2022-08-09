@@ -1,35 +1,21 @@
-import type { Validator, Validators, ValidatorType } from "../util/validate.js";
 import type { Key, Datas, Entity } from "../util/data.js";
-import type { Provider } from "../provider/Provider.js";
+import type { AsyncProvider, AbstractProvider, Provider } from "../provider/Provider.js";
 import type { QueryProps } from "../query/Query.js";
-import { DocumentReference, QueryReference } from "./Reference.js";
+import { DatabaseDocument, SynchronousDatabaseDocument, AsynchronousDatabaseDocument } from "./DatabaseDocument.js";
+import { DatabaseQuery, SynchronousDatabaseQuery, AsynchronousDatabaseQuery } from "./DatabaseQuery.js";
 
-/**
- * Combines a database model and a provider.
- *
- * @param documents Set of loci describing named documents at the root level of the database.
- * @param collections Set of loci describing collections at the root level of the database.
- * @param provider Provider that allows data to be read/written.
- */
-// Note: typing this with `Validators` rather than raw `Datas` works better for inference — type for props in each collection tends to get lost.
-export class Database<V extends Validators<Datas> = Validators<Datas>> {
-	readonly validators: V;
-	readonly provider: Provider;
-	constructor(validators: V, provider: Provider) {
-		this.validators = validators;
-		this.provider = provider;
-	}
+/** Database with a provider. */
+export type Database<T extends Datas = Datas> = _AbstractDatabase<T>;
 
-	/** Create a query on a collection in this model. */
-	query<K extends Key<V>>(collection: K, query?: QueryProps<Entity<ValidatorType<V[K]>>>): QueryReference<ValidatorType<V[K]>> {
-		const validator = this.validators[collection] as Validator<ValidatorType<V[K]>>;
-		return new QueryReference<ValidatorType<V[K]>>(this, validator, collection, query);
-	}
+/** Database with a synchronous or asynchronous provider. */
+abstract class _AbstractDatabase<T extends Datas> {
+	abstract readonly provider: AbstractProvider<T>;
 
-	/** Reference a document in a collection in this model. */
-	doc<K extends Key<V>>(collection: K, id: string): DocumentReference<ValidatorType<V[K]>> {
-		return new DocumentReference(this, this.validators[collection] as Validator<ValidatorType<V[K]>>, collection, id);
-	}
+	/** Create a query on a collection in this database. */
+	abstract query<K extends Key<T>>(collection: K, query?: QueryProps<Entity<T[K]>>): DatabaseQuery<T, K>;
+
+	/** Reference a document in a collection in this database. */
+	abstract doc<K extends Key<T>>(collection: K, id: string): DatabaseDocument<T, K>;
 
 	/**
 	 * Create a new document with a random ID.
@@ -39,7 +25,39 @@ export class Database<V extends Validators<Datas> = Validators<Datas>> {
 	 * @param data Complete data to set the document to.
 	 * @return String ID for the created document (possibly promised).
 	 */
-	add<K extends Key<V>>(collection: K, data: ValidatorType<V[K]>): string | PromiseLike<string> {
-		return this.query(collection).add(data);
+	abstract add<K extends Key<T>>(collection: K, data: T[K]): string | PromiseLike<string>;
+}
+
+/** Database with a synchronous provider. */
+export class SynchronousDatabase<T extends Datas> implements _AbstractDatabase<T> {
+	readonly provider: Provider<T>;
+	constructor(provider: Provider<T>) {
+		this.provider = provider;
+	}
+	query<K extends Key<T>>(collection: K, query?: QueryProps<Entity<T[K]>>): SynchronousDatabaseQuery<T, K> {
+		return new SynchronousDatabaseQuery(this, collection, query);
+	}
+	doc<K extends Key<T>>(collection: K, id: string): SynchronousDatabaseDocument<T, K> {
+		return new SynchronousDatabaseDocument(this, collection, id);
+	}
+	add<K extends Key<T>>(collection: K, data: T[K]): string {
+		return this.provider.addDocument({ collection }, data);
+	}
+}
+
+/** Database with a synchronous provider. */
+export class AsynchronousDatabase<T extends Datas> implements _AbstractDatabase<T> {
+	readonly provider: AsyncProvider<T>;
+	constructor(provider: AsyncProvider<T>) {
+		this.provider = provider;
+	}
+	query<K extends Key<T>>(collection: K, query?: QueryProps<Entity<T[K]>>): AsynchronousDatabaseQuery<T, K> {
+		return new AsynchronousDatabaseQuery(this, collection, query);
+	}
+	doc<K extends Key<T>>(collection: K, id: string): AsynchronousDatabaseDocument<T, K> {
+		return new AsynchronousDatabaseDocument(this, collection, id);
+	}
+	add<K extends Key<T>>(collection: K, data: T[K]): Promise<string> {
+		return this.provider.addDocument({ collection }, data);
 	}
 }

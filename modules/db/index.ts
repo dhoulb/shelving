@@ -1,3 +1,4 @@
 export * from "./Database.js";
-export * from "./Reference.js";
-export * from "./Operation.js";
+export * from "./DatabaseDocument.js";
+export * from "./DatabaseQuery.js";
+export * from "./Changes.js";
