@@ -1,8 +1,8 @@
 import { isFunction } from "./function.js";
 import { Data, Value, Prop, getProps, isData } from "./data.js";
-import type { Entry } from "./entry.js";
-import { getEntries, ImmutableObject } from "./object.js";
-import { ArrayType, ImmutableArray } from "./array.js";
+import { Entry, getEntries } from "./entry.js";
+import type { ImmutableObject } from "./object.js";
+import type { ArrayType, ImmutableArray } from "./array.js";
 
 /** Object that transforms an input value into an output value with its `transform()` method. */
 export interface Transformable<I, O> {
@@ -48,9 +48,9 @@ export function* transformProps<T extends Data>(data: T, transforms: PropTransfo
  * Transform the _values_ of an iterable set of entries using a transformer.
  * @yield Transformed entry after calling transforming the new value for each entry.
  */
-export function mapEntries<I, O>(entries: Iterable<Entry<I>>, transformer: (v: I) => O): Iterable<Entry<O>>; // Helps `O` carry through functions that use generics.
-export function mapEntries<I, O>(entries: Iterable<Entry<I>>, transformer: Transformer<I, O>): Iterable<Entry<O>>;
-export function* mapEntries<I, O>(entries: Iterable<Entry<I>>, transformer: Transformer<I, O>): Iterable<Entry<O>> {
+export function mapEntries<K, I, O>(entries: Iterable<Entry<K, I>>, transformer: (v: I) => O): Iterable<Entry<K, O>>; // Helps `O` carry through functions that use generics.
+export function mapEntries<K, I, O>(entries: Iterable<Entry<K, I>>, transformer: Transformer<I, O>): Iterable<Entry<K, O>>;
+export function* mapEntries<K, I, O>(entries: Iterable<Entry<K, I>>, transformer: Transformer<I, O>): Iterable<Entry<K, O>> {
 	for (const [k, v] of entries) yield [k, transform(v, transformer)];
 }
 

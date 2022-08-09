@@ -23,13 +23,13 @@ export type Prop<T extends Data> = readonly [Key<T>, Value<T>];
 export type Datas = { readonly [key: string]: Data };
 
 /** An entity is data with a string ID that uniquely identifies it. */
-export type Entity<T extends Data = Data> = T & { id: string };
+export type Entity<T extends Data> = T & { id: string };
 
 /** An array of entities. */
-export type Entities<T extends Data = Data> = ImmutableArray<Entity<T>>;
+export type Entities<T extends Data> = ImmutableArray<Entity<T>>;
 
 /** Entity or `null` to indicate the entity doesn't exist. */
-export type OptionalEntity<T extends Data = Data> = Entity<T> | null;
+export type OptionalEntity<T extends Data> = Entity<T> | null;
 
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => typeof value === "object" && value !== null;

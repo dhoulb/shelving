@@ -1,8 +1,7 @@
 import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
 import type { NotString } from "./string.js";
-import type { Entry } from "./entry.js";
-import { getProps, setProp, setProps, withProp, withProps } from "./data.js";
+import { setProp, setProps, withProp, withProps } from "./data.js";
 
 /** Readonly object with string keys. */
 export type ImmutableObject<T = unknown> = { readonly [key: string | number]: T };
@@ -91,13 +90,6 @@ export function withoutEntries<T>(input: ImmutableObject<T>, keys: Iterable<stri
 		}
 	return changed ? output : input;
 }
-
-/**
- * Get the entries of an object.
- *
- * @param obj The target object.
- */
-export const getEntries: <T>(obj: ImmutableObject<T>) => ImmutableArray<Entry<T>> = getProps;
 
 /**
  * Set a key/value entry on a map-like object (by reference).

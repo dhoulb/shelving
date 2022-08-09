@@ -20,8 +20,8 @@ export function filterArray<L, R>(input: ImmutableArray<L>, matcher: Matcher<L, 
 }
 
 /** Filter an object _by its values_ using a matcher (and optionally a target value). */
-export function filterObject<L>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, void>): ImmutableObject<L>;
-export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R>, target: R): ImmutableObject<L>;
-export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<L>, R | undefined>, target?: R): ImmutableObject<L> {
+export function filterObject<L>(object: ImmutableObject<L>, matcher: Matcher<Entry<string, L>, void>): ImmutableObject<L>;
+export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<string, L>, R>, target: R): ImmutableObject<L>;
+export function filterObject<L, R>(object: ImmutableObject<L>, matcher: Matcher<Entry<string, L>, R | undefined>, target?: R): ImmutableObject<L> {
 	return Object.fromEntries(filterItems(Object.entries(object), matcher, target));
 }
