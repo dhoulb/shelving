@@ -1,7 +1,7 @@
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
-import type { ImmutableObject, MutableObject } from "./object.js";
+import type { ImmutableObject } from "./object.js";
 import { Data, Prop, getProps } from "./data.js";
 import { getArray, ImmutableArray } from "./array.js";
 
@@ -30,7 +30,7 @@ export type Validator<T = unknown> = Validatable<T> | Validate<T>;
 export type ValidatorType<X> = X extends Validator<infer Y> ? Y : never;
 
 /** A set of named validators in `{ name: Validator }` format. */
-export type Validators<T extends Data> = { [K in keyof T]: Validator<T[K]> };
+export type Validators<T extends Data = Data> = { [K in keyof T]: Validator<T[K]> };
 
 /** Extract the type from a set of validators. */
 export type ValidatorsType<T> = { [K in keyof T]: ValidatorType<T[K]> };
@@ -59,20 +59,18 @@ export function validateArray<T>(unsafeItems: Iterable<unknown>, validator: Vali
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function* validateItems<T>(unsafeItems: Iterable<unknown>, validator: Validator<T>): Iterable<T> {
-	let invalid = false;
 	let index = 0;
-	const details: MutableObject<Feedback> = {};
+	const feedbacks = new Map<number, Feedback>();
 	for (const unsafeItem of unsafeItems) {
 		try {
 			yield validate(unsafeItem, validator);
 		} catch (thrown) {
 			if (!isFeedback(thrown)) throw thrown;
-			invalid = true;
-			details[index] = thrown;
+			feedbacks.set(index, thrown);
 		}
 		index++;
 	}
-	if (invalid) throw new InvalidFeedback("Invalid items", details);
+	if (feedbacks.size) throw new InvalidFeedback("Invalid items", feedbacks);
 }
 
 /**
@@ -82,19 +80,17 @@ export function* validateItems<T>(unsafeItems: Iterable<unknown>, validator: Val
  * @throw InvalidFeedback if one or more entry values did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function* validateEntries<T>(unsafeValues: Iterable<Entry>, validator: Validator<T>): Iterable<Entry<T>> {
-	let invalid = false;
-	const details: MutableObject<Feedback> = {};
-	for (const [k, v] of unsafeValues) {
+export function* validateEntries<T>(unsafeValues: Iterable<Entry<string, unknown>>, validator: Validator<T>): Iterable<Entry<string, T>> {
+	const feedbacks = new Map<string, Feedback>();
+	for (const [key, value] of unsafeValues) {
 		try {
-			yield [k, validate(v, validator)];
+			yield [key, validate(value, validator)];
 		} catch (thrown) {
 			if (!isFeedback(thrown)) throw thrown;
-			invalid = true;
-			details[k] = thrown;
+			feedbacks.set(key, thrown);
 		}
 	}
-	if (invalid) throw new InvalidFeedback("Invalid entries", details);
+	if (feedbacks.size) throw new InvalidFeedback("Invalid entries", feedbacks);
 }
 
 /**
@@ -114,18 +110,16 @@ export function validateObject<T>(obj: ImmutableObject<T>, validator: Validator<
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function* validateProps<T extends Data>(unsafeData: Data, validators: Validators<T>): Iterable<Prop<T>> {
-	let invalid = false;
-	const details: MutableObject<Feedback> = {};
-	for (const [k, validator] of getProps(validators)) {
+	const feedbacks = new Map<string, Feedback>();
+	for (const [key, validator] of getProps(validators)) {
 		try {
-			yield [k, validate(unsafeData[k], validator)];
+			yield [key, validate(unsafeData[key], validator)];
 		} catch (thrown) {
 			if (!isFeedback(thrown)) throw thrown;
-			invalid = true;
-			details[k] = thrown;
+			feedbacks.set(key, thrown);
 		}
 	}
-	if (invalid) throw new InvalidFeedback("Invalid data", details);
+	if (feedbacks.size) throw new InvalidFeedback("Invalid data", feedbacks);
 }
 
 /**

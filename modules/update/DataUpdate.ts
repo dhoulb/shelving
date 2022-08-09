@@ -1,9 +1,8 @@
-import { isFeedback } from "../feedback/Feedback.js";
+import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { DataSchema } from "../schema/DataSchema.js";
 import { Data, getProps, Key, Prop } from "../util/data.js";
 import { isNullish, Nullish } from "../util/null.js";
-import { MutableObject } from "../util/object.js";
 import { Transformable, transformData } from "../util/transform.js";
 import { validate, Validator, Validators } from "../util/validate.js";
 import { Update } from "./Update.js";
@@ -18,7 +17,7 @@ import { Update } from "./Update.js";
 export type PropUpdates<T extends Data> = { readonly [K in keyof T]?: T[K] | Update<T[K]> };
 
 /** Update that can be applied to a data object to update its props. */
-export class DataUpdate<T extends Data> extends Update<T> implements Iterable<Prop<PropUpdates<T>>>, Transformable<T, T> {
+export class DataUpdate<T extends Data = Data> extends Update<T> implements Iterable<Prop<PropUpdates<T>>>, Transformable<T, T> {
 	/** Return a data update with a specific prop marked for update. */
 	static with<X extends Data, K extends Key<X>>(key: Nullish<K>, value: X[K] | Update<X[K]>): DataUpdate<X> {
 		return new DataUpdate<X>(!isNullish(key) ? ({ [key]: value } as PropUpdates<X>) : {});
@@ -61,19 +60,17 @@ export class DataUpdate<T extends Data> extends Update<T> implements Iterable<Pr
 
 /** Validate a set of transforms against a set of validators. */
 function* _validateUpdates<T extends Data>(unsafeUpdates: PropUpdates<T>, validators: Validators<T>): Iterable<Prop<PropUpdates<T>>> {
-	let invalid = false;
-	const details: MutableObject = {};
-	for (const [k, validator] of getProps(validators)) {
-		const unsafeUpdate = unsafeUpdates[k];
+	const feedbacks = new Map<string, Feedback>();
+	for (const [key, validator] of getProps(validators)) {
+		const unsafeUpdate = unsafeUpdates[key];
 		if (unsafeUpdate !== undefined) {
 			try {
-				yield [k, unsafeUpdate instanceof Update ? unsafeUpdate.validate(validator) : validate(unsafeUpdate, validator)];
+				yield [key, unsafeUpdate instanceof Update ? unsafeUpdate.validate(validator) : validate(unsafeUpdate, validator)];
 			} catch (thrown) {
 				if (!isFeedback(thrown)) throw thrown;
-				invalid = true;
-				details[k] = thrown;
+				feedbacks.set(key, thrown);
 			}
 		}
 	}
-	if (invalid) throw new InvalidFeedback("Invalid updates", details);
+	if (feedbacks.size) throw new InvalidFeedback("Invalid updates", feedbacks);
 }
