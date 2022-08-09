@@ -1,8 +1,10 @@
 import { ImmutableArray, isArray } from "./array.js";
-import { SAME } from "./constants.js";
 import { isArrayEqual, isDeepEqual } from "./equal.js";
 import { isObject, MutableObject } from "./object.js";
 import { Data, DeepPartial } from "./data.js";
+
+/** The `SAME` symbol indicates sameness. */
+export const SAME: unique symbol = Symbol("shelving/SAME");
 
 /**
  * Deeply diff two unknown values to produce the transformation needed to transform `left` into `right`, or the `SAME` constant if they are deeply equal.

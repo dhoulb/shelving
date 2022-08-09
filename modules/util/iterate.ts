@@ -2,7 +2,6 @@ import type { Mutable } from "./data.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableArray } from "./array.js";
 import { Delay } from "./async.js";
-import { DONE } from "./constants.js";
 import { Arguments } from "./function.js";
 
 /**`Iterable that specifies return types and next types for the iterator (normally in Typescript these are `void` */
@@ -105,12 +104,8 @@ export function* yieldUntilLimit<T>(source: Iterable<T>, limit: number): Iterabl
 }
 
 /** Infinite iterator that yields the result of calling a function with a given set of arguments. */
-export function* yieldCall<T, A extends Arguments>(func: (...a: A) => T | typeof DONE, ...args: A): Iterable<T> {
-	while (true) {
-		const result = func(...args);
-		if (result === DONE) break;
-		yield result;
-	}
+export function* yieldCall<T, A extends Arguments>(func: (...a: A) => T, ...args: A): Iterable<T> {
+	while (true) yield func(...args);
 }
 
 /** Yield chunks of a given size. */
@@ -142,16 +137,6 @@ export async function* yieldDelay(ms: number): AsyncIterable<number> {
 	while (true) {
 		await new Delay(ms);
 		yield count++;
-	}
-}
-
-/** Infinite iterator that yields until a DONE signal is received. */
-export async function* yieldUntilSignal<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof DONE>, ...Promise<typeof DONE>[]]): AsyncIterable<T> {
-	const iterator = source[Symbol.asyncIterator]();
-	while (true) {
-		const result = await Promise.race([iterator.next(), ...signals]);
-		if (result === DONE || result.done) break;
-		yield result.value;
 	}
 }
 

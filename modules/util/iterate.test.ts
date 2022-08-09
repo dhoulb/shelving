@@ -60,7 +60,7 @@ test("yieldUntilSignal()", async () => {
 	const stop = new Signal();
 	for await (const count of yieldUntilSignal(yieldDelay(50), stop)) {
 		yielded.push(count);
-		if (count >= 3) stop.done();
+		if (count >= 3) stop.send();
 	}
 	expect(yielded).toEqual([1, 2, 3]);
 });
