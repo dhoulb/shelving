@@ -1,24 +1,22 @@
 import type { Unsubscribe } from "../observe/Observable.js";
-import type { DocumentReference } from "../db/Reference.js";
-import type { Data, OptionalEntity, Entity } from "../util/data.js";
+import type { OptionalEntity, Entity, Key, Datas } from "../util/data.js";
 import { setMapItem } from "../util/map.js";
-import { getDocumentData } from "../db/Reference.js";
+import { DatabaseDocument, getDocumentData } from "../db/DatabaseDocument.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
 import { State } from "../state/State.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { ConditionError } from "../error/ConditionError.js";
-import { NOVALUE } from "../util/constants.js";
 import { useSubscribe } from "./useSubscribe.js";
 import { useCache } from "./useCache.js";
 
 /** Hold the current state of a document. */
-export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
-	readonly ref: DocumentReference<T>;
+export class DocumentState<T extends Datas, K extends Key<T>> extends State<OptionalEntity<T[K]>> {
+	readonly ref: DatabaseDocument<T, K>;
 	readonly busy = new BooleanState();
 
 	/** Get the data of the document (throws `RequiredError` if document doesn't exist). */
-	get data(): Entity<T> {
+	get data(): Entity<T[K]> {
 		return getDocumentData(this.value, this.ref);
 	}
 
@@ -27,11 +25,11 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
 		return !!this.value;
 	}
 
-	constructor(ref: DocumentReference<T>) {
+	constructor(ref: DatabaseDocument<T, K>) {
 		const table = getOptionalSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref);
 		const time = table ? table.getDocumentTime(ref.id) : null;
 		const isCached = typeof time === "number";
-		super(table && isCached ? table.getDocument(ref.id) : NOVALUE);
+		super(table && isCached ? table.getDocument(ref.id) : State.NOVALUE);
 		this._time = time;
 		this.ref = ref;
 
@@ -88,9 +86,9 @@ export class DocumentState<T extends Data> extends State<OptionalEntity<T>> {
  * Use a document in a React component.
  * - Uses the default cache, so will error if not used inside `<Cache>`
  */
-export function useDocument<T extends Data>(ref: DocumentReference<T>): DocumentState<T>;
-export function useDocument<T extends Data>(ref?: DocumentReference<T>): DocumentState<T> | undefined;
-export function useDocument<T extends Data>(ref?: DocumentReference<T>): DocumentState<T> | undefined {
+export function useDocument<T extends Datas, K extends Key<T>>(ref: DatabaseDocument<T, K>): DocumentState<T, K>;
+export function useDocument<T extends Datas, K extends Key<T>>(ref?: DatabaseDocument<T, K>): DocumentState<T, K> | undefined;
+export function useDocument<T extends Datas, K extends Key<T>>(ref?: DatabaseDocument<T, K>): DocumentState<T, K> | undefined {
 	const cache = useCache();
 	const key = ref?.toString();
 	const state = ref && key ? cache.get(key) || setMapItem(cache, key, new DocumentState(ref)) : undefined;

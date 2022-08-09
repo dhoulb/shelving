@@ -1,20 +1,18 @@
 import type { Unsubscribe } from "../observe/Observable.js";
-import type { QueryReference } from "../db/Reference.js";
-import type { Data, Entities, OptionalEntity, Entity } from "../util/data.js";
+import type { Entities, OptionalEntity, Entity, Key, Datas } from "../util/data.js";
 import { setMapItem } from "../util/map.js";
-import { getQueryFirstData, getQueryFirstValue } from "../db/Reference.js";
+import { DatabaseQuery, getQueryFirstData, getQueryFirstItem } from "../db/DatabaseQuery.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
 import { State } from "../state/State.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { BooleanState } from "../state/BooleanState.js";
-import { NOVALUE } from "../util/constants.js";
 import { useSubscribe } from "./useSubscribe.js";
 import { useCache } from "./useCache.js";
 
 /** Hold the current state of a query. */
-export class QueryState<T extends Data> extends State<Entities<T>> {
-	readonly ref: QueryReference<T>;
+export class QueryState<T extends Datas, K extends Key<T>> extends State<Entities<T[K]>> {
+	readonly ref: DatabaseQuery<T, K>;
 	readonly busy = new BooleanState();
 	readonly limit: number;
 
@@ -25,22 +23,12 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 	protected _hasMore = false;
 
 	/** Get the first document matched by this query or `null` if this query has no items. */
-	get firstValue(): OptionalEntity<T> {
-		return getQueryFirstValue(this.value);
+	get first(): OptionalEntity<T[K]> {
+		return getQueryFirstItem(this.value);
 	}
 
 	/** Get the first document matched by this query. */
-	get firstData(): Entity<T> {
-		return getQueryFirstData(this.value, this.ref);
-	}
-
-	/** Get the last document matched by this query or `null` if this query has no items. */
-	get lastValue(): OptionalEntity<T> {
-		return getQueryFirstValue(this.value);
-	}
-
-	/** Get the last document matched by this query. */
-	get lastData(): Entity<T> {
+	get data(): Entity<T[K]> {
 		return getQueryFirstData(this.value, this.ref);
 	}
 
@@ -54,11 +42,11 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 		return this.value.length;
 	}
 
-	constructor(ref: QueryReference<T>) {
+	constructor(ref: DatabaseQuery<T, K>) {
 		const table = getOptionalSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref);
 		const time = table ? table.getQueryTime(ref) : null;
 		const isCached = typeof time === "number";
-		super(table && isCached ? table.getQuery(ref) : NOVALUE);
+		super(table && isCached ? table.getQuery(ref) : State.NOVALUE);
 		this._time = time;
 		this.ref = ref;
 		this.limit = ref.limit ?? Infinity;
@@ -123,7 +111,7 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
 	async _loadMore(): Promise<void> {
 		this.busy.next(true);
 		try {
-			const items = await this.ref.after(this.lastData).value;
+			const items = await this.ref.after(getQueryFirstData(this.value, this.ref)).value;
 			this.next([...this.value, ...items]);
 			this._hasMore = items.length < this.limit;
 		} catch (thrown) {
@@ -138,9 +126,9 @@ export class QueryState<T extends Data> extends State<Entities<T>> {
  * Use a query in a React component.
  * - Uses the default cache, so will error if not used inside `<Cache>`
  */
-export function useQuery<T extends Data>(ref: QueryReference<T>): QueryState<T>;
-export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T> | undefined;
-export function useQuery<T extends Data>(ref?: QueryReference<T>): QueryState<T> | undefined {
+export function useQuery<T extends Datas, K extends Key<T>>(ref: DatabaseQuery<T, K>): QueryState<T, K>;
+export function useQuery<T extends Datas, K extends Key<T>>(ref?: DatabaseQuery<T, K>): QueryState<T, K> | undefined;
+export function useQuery<T extends Datas, K extends Key<T>>(ref?: DatabaseQuery<T, K>): QueryState<T, K> | undefined {
 	const cache = useCache();
 	const key = ref?.toString();
 	const state = ref && key ? cache.get(key) || setMapItem(cache, key, new QueryState(ref)) : undefined;
