@@ -3,7 +3,7 @@ import { ImmutableObject, withEntry, withoutEntry } from "../util/object.js";
 import { State } from "./State.js";
 
 /** State that stores a map-like object and has additional methods to help with that. */
-export class ObjectState<T> extends State<ImmutableObject<T>> implements Iterable<Entry<T>> {
+export class ObjectState<T> extends State<ImmutableObject<T>> implements Iterable<Entry<string, T>> {
 	constructor(initial: ImmutableObject<T> = {}) {
 		super(initial);
 	}
@@ -24,7 +24,7 @@ export class ObjectState<T> extends State<ImmutableObject<T>> implements Iterabl
 	}
 
 	/** Iterate over the items. */
-	[Symbol.iterator](): Iterator<Entry<T>, void> {
+	[Symbol.iterator](): Iterator<Entry<string, T>, void> {
 		return Object.entries<T>(this.value)[Symbol.iterator]();
 	}
 }
