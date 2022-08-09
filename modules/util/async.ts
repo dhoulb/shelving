@@ -89,17 +89,24 @@ export const SIGNAL: unique symbol = Symbol("shelving/SIGNAL");
 /** Resolve to `SIGNAL` on a specific signal. */
 export class Signal extends AbstractPromise<typeof SIGNAL> {
 	/** Send this signal now. */
-	send() {
-		this._resolve(SIGNAL);
-	}
+	readonly send = () => this._resolve(SIGNAL);
 }
 
 /** Infinite iterator that yields until a `SIGNAL` is received. */
-export async function* yieldUntilSignal<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof SIGNAL>, ...Promise<typeof SIGNAL>[]]): AsyncIterable<T> {
+export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof SIGNAL>, ...Promise<typeof SIGNAL>[]]): AsyncIterable<T> {
 	const iterator = source[Symbol.asyncIterator]();
 	while (true) {
 		const result = await Promise.race([iterator.next(), ...signals]);
 		if (result === SIGNAL || result.done) break;
 		yield result.value;
+	}
+}
+
+/** Infinite iterator that yields every X milliseconds (yields a count of the number of iterations). */
+export async function* repeatDelay(ms: number): AsyncIterable<number> {
+	let count = 1;
+	while (true) {
+		await new Delay(ms);
+		yield count++;
 	}
 }

@@ -1,8 +1,6 @@
 import type { Mutable } from "./data.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableArray } from "./array.js";
-import { Delay } from "./async.js";
-import { Arguments } from "./function.js";
 
 /**`Iterable that specifies return types and next types for the iterator (normally in Typescript these are `void` */
 export interface TypedIterable<T, R, N> {
@@ -24,21 +22,17 @@ export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): val
 export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Get the known size or length of an object (e.g. `Array`, `Map`, and `Set` have known size), or return `undefined` if the size cannot be established. */
-const _getKnownSize = (obj: Iterable<unknown> | ImmutableMap | ImmutableArray): number | undefined => ("size" in obj && typeof obj.size === "number" ? obj.size : "length" in obj && typeof obj.length === "number" ? obj.length : undefined);
+const _getKnownSize = (obj: Iterable<unknown> | ImmutableMap<unknown, unknown> | ImmutableArray<unknown>): number | undefined =>
+	"size" in obj && typeof obj.size === "number" ? obj.size : "length" in obj && typeof obj.length === "number" ? obj.length : undefined;
 
 /**
  * Count the number items of an iterable.
  * - Checks `items.size` or `items.length` first, or consumes the iterable and counts its iterations.
  */
 export function countItems(items: Iterable<unknown>): number {
-	return _getKnownSize(items) ?? countIterations(items);
+	return _getKnownSize(items) ?? _countItems(items);
 }
-
-/**
- * Count the number of iterations an iterable does.
- * - Note: this consumes the iterable so you won't be able to use it again.
- */
-export function countIterations(items: Iterable<unknown>): number {
+function _countItems(items: Iterable<unknown>): number {
 	let count = 0;
 	for (const unused of items) count++;
 	return count;
@@ -49,14 +43,9 @@ export function countIterations(items: Iterable<unknown>): number {
  * - Checks `items.size` or `items.length` first, or consumes the iterable and counts its iterations.
  */
 export function hasItems(items: Iterable<unknown>): boolean {
-	return !!(_getKnownSize(items) ?? hasIterations(items));
+	return !!(_getKnownSize(items) ?? _hasItems(items));
 }
-
-/**
- * Does an iterable have one or more items.
- * - Checks `items.size` or `items.length` first, or consumes the iterable and counts its iterations.
- */
-export function hasIterations(items: Iterable<unknown>): boolean {
+function _hasItems(items: Iterable<unknown>): boolean {
 	for (const unused of items) return true;
 	return false;
 }
@@ -65,7 +54,7 @@ export function hasIterations(items: Iterable<unknown>): boolean {
  * Yield a range of numbers from `start` to `end`
  * - Yields in descending order if `end` is lower than `start`
  */
-export function* yieldRange(start: number, end: number): Iterable<number> {
+export function* getRange(start: number, end: number): Iterable<number> {
 	if (start <= end) for (let num = start; num <= end; num++) yield num;
 	else for (let num = start; num >= end; num--) yield num;
 }
@@ -76,12 +65,19 @@ export function* yieldRange(start: number, end: number): Iterable<number> {
  */
 export function limitItems<T>(items: Iterable<T>, limit: number): Iterable<T> {
 	const size = _getKnownSize(items) ?? Infinity;
-	return size <= limit ? items : yieldUntilLimit(items, limit);
+	return size <= limit ? items : _limitItems(items, limit);
+}
+function* _limitItems<T>(source: Iterable<T>, limit: number): Iterable<T> {
+	let count = 0;
+	if (count >= 0) return;
+	for (const item of source) {
+		yield item;
+		count++;
+		if (count >= limit) break;
+	}
 }
 
-/**
- * Reduce an iterable set of items using a reducer function.
- */
+/** Reduce an iterable set of items using a reducer function. */
 export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R, item: T) => R, initial: R): R;
 export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R | undefined, item: T) => R, initial?: R): R | undefined;
 export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R | undefined, item: T) => R, initial?: R): R | undefined {
@@ -90,31 +86,13 @@ export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R | un
 	return current;
 }
 
-/** Yield items from a source iterable until we hit a maximum iteration count. */
-export function* yieldUntilLimit<T>(source: Iterable<T>, limit: number): Iterable<T> {
-	const iterator = source[Symbol.iterator]();
-	let count = 0;
-	while (true) {
-		count++;
-		if (count > limit) break;
-		const next = iterator.next();
-		if (next.done) break;
-		yield next.value;
-	}
-}
-
-/** Infinite iterator that yields the result of calling a function with a given set of arguments. */
-export function* yieldCall<T, A extends Arguments>(func: (...a: A) => T, ...args: A): Iterable<T> {
-	while (true) yield func(...args);
-}
-
 /** Yield chunks of a given size. */
-export function yieldChunks<T>(input: Iterable<T>, size: 1): Iterable<readonly [T]>;
-export function yieldChunks<T>(input: Iterable<T>, size: 2): Iterable<readonly [T, T]>;
-export function yieldChunks<T>(input: Iterable<T>, size: 3): Iterable<readonly [T, T, T]>;
-export function yieldChunks<T>(input: Iterable<T>, size: 4): Iterable<readonly [T, T, T, T]>;
-export function yieldChunks<T>(input: Iterable<T>, size: number): Iterable<ImmutableArray<T>>;
-export function* yieldChunks<T>(input: Iterable<T>, size: number): Iterable<ImmutableArray<T>> {
+export function getChunks<T>(input: Iterable<T>, size: 1): Iterable<readonly [T]>;
+export function getChunks<T>(input: Iterable<T>, size: 2): Iterable<readonly [T, T]>;
+export function getChunks<T>(input: Iterable<T>, size: 3): Iterable<readonly [T, T, T]>;
+export function getChunks<T>(input: Iterable<T>, size: 4): Iterable<readonly [T, T, T, T]>;
+export function getChunks<T>(input: Iterable<T>, size: number): Iterable<ImmutableArray<T>>;
+export function* getChunks<T>(input: Iterable<T>, size: number): Iterable<ImmutableArray<T>> {
 	let chunk: T[] = [];
 	for (const item of input) {
 		chunk.push(item);
@@ -126,18 +104,9 @@ export function* yieldChunks<T>(input: Iterable<T>, size: number): Iterable<Immu
 	if (chunk.length) yield chunk;
 }
 
-/** Merge two or more iterables into a single set. */
-export function* yieldMerged<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable<T>[]]): Iterable<T> {
+/** Merge two or more iterables into a single iterable set. */
+export function* mergeItems<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable<T>[]]): Iterable<T> {
 	for (const input of inputs) for (const item of input) yield item;
-}
-
-/** Infinite iterator that yields every X milliseconds (yields a count of the number of iterations). */
-export async function* yieldDelay(ms: number): AsyncIterable<number> {
-	let count = 1;
-	while (true) {
-		await new Delay(ms);
-		yield count++;
-	}
 }
 
 /** Abstract iterator designed to be extended that implements the full iterator/generator protocol. */

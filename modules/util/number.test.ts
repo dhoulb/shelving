@@ -1,4 +1,4 @@
-import { formatNumber, roundStep, sumNumbers, getOptionalNumber, yieldRange } from "../index.js";
+import { formatNumber, roundStep, sumNumbers, getOptionalNumber, getRange } from "../index.js";
 import { cramNumber, roundNumber, truncateNumber } from "./number.js";
 
 test("roundNumber(): Works correctly", () => {
@@ -118,7 +118,7 @@ test("sumNumbers()", () => {
 	expect(sumNumbers([])).toBe(0);
 	expect(sumNumbers([1, 2, 3, 4, 5, 6])).toBe(21);
 	expect(sumNumbers(new Set([1, 2, 3, 4, 5]))).toBe(15);
-	expect(sumNumbers(yieldRange(0, 0))).toBe(0);
-	expect(sumNumbers(yieldRange(1, 1))).toBe(1);
-	expect(sumNumbers(yieldRange(31, 29))).toBe(90);
+	expect(sumNumbers(getRange(0, 0))).toBe(0);
+	expect(sumNumbers(getRange(1, 1))).toBe(1);
+	expect(sumNumbers(getRange(31, 29))).toBe(90);
 });

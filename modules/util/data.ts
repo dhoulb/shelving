@@ -71,29 +71,6 @@ export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K
 	return !k2 ? data[k1] : !k3 ? data[k1][k2] : !k4 ? data[k1][k2][k3] : data[k1][k2][k3][k4];
 }
 
-/**
- * Yield a named prop from an iterable set of data objects.
- *
- * @param obj The target object to get from.
- * @param k1 The key of the prop in the object to get.
- * @param k2 The sub-key of the prop in the object to get.
- * @param k3 The sub-sub-key of the prop in the object to get.
- * @param k4 The sub-sub-sub-key of the prop in the object to get.
- */
-export function yieldProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(items: Iterable<T>, k1: K1, k2: K2, k3: K3, k4: K4): Iterable<T[K1][K2][K3][K4]>;
-export function yieldProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(items: Iterable<T>, k1: K1, k2: K2, k3: K3): Iterable<T[K1][K2][K3]>;
-export function yieldProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1]>(items: Iterable<T>, k1: K1, k2: K2): Iterable<T[K1][K2]>;
-export function yieldProps<T extends Data, K1 extends keyof T>(items: Iterable<T>, k1: K1): Iterable<T[K1]>;
-export function* yieldProps<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(
-	items: Iterable<T>,
-	k1: K1,
-	k2?: K2,
-	k3?: K3,
-	k4?: K4,
-): Iterable<T[K1] | T[K1][K2] | T[K1][K2][K3] | T[K1][K2][K3][K4]> {
-	for (const data of items) yield !k2 ? data[k1] : !k3 ? data[k1][k2] : !k4 ? data[k1][k2][k3] : data[k1][k2][k3][k4];
-}
-
 /** Get the ID of an entity. */
 export const getID = <T extends Data>({ id }: Entity<T>): string => id;
 
