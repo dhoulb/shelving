@@ -22,8 +22,10 @@ export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): val
 export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Get the known size or length of an object (e.g. `Array`, `Map`, and `Set` have known size), or return `undefined` if the size cannot be established. */
-const _getKnownSize = (obj: Iterable<unknown> | ImmutableMap<unknown, unknown> | ImmutableArray<unknown>): number | undefined =>
-	"size" in obj && typeof obj.size === "number" ? obj.size : "length" in obj && typeof obj.length === "number" ? obj.length : undefined;
+function _getKnownSize(obj: Iterable<unknown> | ImmutableMap<unknown, unknown> | ImmutableArray<unknown>): number | undefined {
+	if ("size" in obj && typeof obj.size === "number") return obj.size;
+	if ("length" in obj && typeof obj.length === "number") return obj.length;
+}
 
 /**
  * Count the number items of an iterable.
@@ -69,7 +71,7 @@ export function limitItems<T>(items: Iterable<T>, limit: number): Iterable<T> {
 }
 function* _limitItems<T>(source: Iterable<T>, limit: number): Iterable<T> {
 	let count = 0;
-	if (count >= 0) return;
+	if (count >= limit) return;
 	for (const item of source) {
 		yield item;
 		count++;
@@ -78,9 +80,9 @@ function* _limitItems<T>(source: Iterable<T>, limit: number): Iterable<T> {
 }
 
 /** Reduce an iterable set of items using a reducer function. */
-export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R, item: T) => R, initial: R): R;
-export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R | undefined, item: T) => R, initial?: R): R | undefined;
-export function reduceItems<T, R>(items: Iterable<T>, reducer: (previous: R | undefined, item: T) => R, initial?: R): R | undefined {
+export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T, item: T) => T, initial: T): T;
+export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T | undefined, item: T) => T, initial?: T): T | undefined;
+export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T | undefined, item: T) => T, initial?: T): T | undefined {
 	let current = initial;
 	for (const item of items) current = reducer(current, item);
 	return current;
