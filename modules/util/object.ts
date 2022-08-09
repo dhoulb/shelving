@@ -25,7 +25,13 @@ export function assertObject<T extends ImmutableObject>(value: T | unknown): ass
 }
 
 /** Is a value a plain object? */
-export const isPlainObject = <T extends ImmutableObject>(value: T | unknown): value is T => isObject(value) && value.constructor === Object;
+export function isPlainObject<T extends ImmutableObject>(value: T | unknown): value is T {
+	if (isObject(value)) {
+		const proto = Object.getPrototypeOf(value);
+		return proto === null || proto === Object.prototype;
+	}
+	return false;
+}
 
 /** Assert that a value is a plain object */
 export function assertPlainObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
