@@ -1,4 +1,4 @@
-import { getString, getSlug, getWords, simplifyString, sanitizeString, sanitizeLines, THINSP, NBSP, NNBSP } from "../index.js";
+import { getString, getSlug, getWords, simplifyString, sanitizeString, sanitizeLines, THINSP, NBSP, NNBSP, splitString, AssertionError } from "../index.js";
 
 describe("getString()", () => {
 	test("Correct returned value", () => {
@@ -125,4 +125,30 @@ test("getWords()", () => {
 	expect(getWords("    ")).toEqual([]);
 
 	expect(getWords("a-a b-b")).toEqual(["a-a", "b-b"]);
+});
+test("splitString()", () => {
+	// Min and max are the same.
+	expect(splitString("a/b", "/", 2)).toEqual(["a", "b"]);
+	expect(splitString("a/b/c", "/", 3)).toEqual(["a", "b", "c"]);
+
+	// Max is higher.
+	expect(splitString("a/b", "/", 2, 3)).toEqual(["a", "b"]);
+	expect(splitString("a/b", "/", 2, null)).toEqual(["a", "b"]);
+	expect(splitString("a/b/c/d/e/f", "/", 2, null)).toEqual(["a", "b", "c", "d", "e", "f"]);
+
+	// Excess segments are joined into last segment..
+	expect(splitString("a/b/c", "/", 2)).toEqual(["a", "b/c"]);
+	expect(splitString("a/b/c", "/", 2, 2)).toEqual(["a", "b/c"]);
+	expect(splitString("a/b/c/d/e/f", "/", 4)).toEqual(["a", "b", "c", "d/e/f"]);
+	expect(splitString("a/b/c/d/e/f", "/", 4, 4)).toEqual(["a", "b", "c", "d/e/f"]);
+
+	// Excess segments can have empty segments.
+	expect(splitString("a/b/c/d//e", "/", 4)).toEqual(["a", "b", "c", "d//e"]);
+
+	// Segments cannot be empty.
+	expect(() => splitString("a//c", "/", 10)).toThrow(AssertionError);
+
+	// Min segments is not met.
+	expect(() => splitString("a/b/c", "/", 4)).toThrow(AssertionError);
+	expect(() => splitString("a/b/c/d/e/f", "/", 4, 3)).toThrow(AssertionError);
 });

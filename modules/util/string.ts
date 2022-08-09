@@ -126,20 +126,14 @@ export const getSlug = (str: string): string => simplifyString(str).replace(/ /g
  * Return an array of the separate words and "quoted phrases" found in a string.
  * - Phrases enclosed "in quotes" are a single word.
  * - Performs no processing on the words, so control chars, punctuation, symbols, and case are all preserved.
- */
-export const getWords = (str: string): ImmutableArray<string> => Array.from(yieldWords(str));
-
-/**
- * Find and iterate over the separate words and "quoted phrases" in a string.
- * - Phrases enclosed "in quotes" are a single word.
- * - Performs no processing on the words, so control chars, punctuation, symbols, and case are all preserved.
  *
  * Note: this splits words based on spaces, so won't work well with logographic writing systems e.g. kanji.
  */
-export function* yieldWords(str: string): Iterable<string> {
-	for (const [, word, phrase] of str.matchAll(WORD)) {
-		if (phrase) yield phrase;
-		else if (word) yield word;
+export const getWords = (str: string): ImmutableArray<string> => Array.from(_getWords(str));
+function* _getWords(str: string): Iterable<string> {
+	for (const [, a, b, c] of str.matchAll(WORD)) {
+		const word = a || b || c;
+		if (word) yield word;
 	}
 }
 const WORD = /([^\s"]+)|"([^"]*)"|'([^']*)'/g; // Runs of characters without spaces, or "quoted phrases"
@@ -159,4 +153,25 @@ export function limitString(str: string, maxLength: number, append = "…") {
 	if (str.length < maxLength) return str;
 	const lastSpace = str.lastIndexOf(" ", maxLength);
 	return `${str.slice(0, lastSpace > 0 ? lastSpace : maxLength).trimEnd()}${append}`;
+}
+
+/**
+ * Divide a string into parts based on a separator.
+ * - Like `String.prototype.split()` but with more useful arguments.
+ * - Excess segments in `String.prototype.split()` is counterintuitive because further parts are thrown away.
+ * - Excess segments in `splitString()` are concatenated onto the last segment (set `maxSegments` to `null` if you want infinite segments).
+ *
+ * @throws AssertionError if `minSegments` isn't met.
+ * @throws AssertionError if any of the segments are empty.
+ */
+export function splitString(str: string, separator: string, minSegments: 1, maxSegments?: number): readonly [string, ...string[]];
+export function splitString(str: string, separator: string, minSegments: 2, maxSegments?: number): readonly [string, string, ...string[]];
+export function splitString(str: string, separator: string, minSegments: 3, maxSegments?: number): readonly [string, string, string, ...string[]];
+export function splitString(str: string, separator: string, minSegments: 4, maxSegments?: number): readonly [string, string, string, string, ...string[]];
+export function splitString(str: string, separator: string, minSegments?: number, maxSegments?: number | null): ImmutableArray<string>;
+export function splitString(str: string, separator: string, minSegments = 0, maxSegments: number | null = minSegments): ImmutableArray<string> {
+	const segments = str.split(separator);
+	if (typeof maxSegments === "number" && segments.length > maxSegments) segments.splice(maxSegments - 1, segments.length, segments.slice(maxSegments - 1).join(separator));
+	if (segments.length < minSegments || !segments.every(Boolean)) throw new AssertionError(`Must be string with ${minSegments} non-empty segments separated by "${separator}"`, str);
+	return segments;
 }
