@@ -1,136 +1,135 @@
-import type { DocumentReference, QueryReference } from "../db/Reference.js";
 import type { Unsubscribe } from "../observe/Observable.js";
 import type { PartialObserver } from "../observe/Observer.js";
+import { Query } from "../query/Query.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
-import type { Data, Entities, OptionalEntity } from "../util/data.js";
+import type { Datas, Entities, Entity, Key, OptionalEntity } from "../util/data.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
-export abstract class Provider {
+export abstract class AbstractProvider<T extends Datas> {
 	/**
 	 * Get the result of a document.
 	 *
-	 * @param ref Document reference specifying which document to get.
 	 * @return The document object, or `undefined` if it doesn't exist.
 	 */
-	abstract getDocument<T extends Data>(ref: DocumentReference<T>): OptionalEntity<T> | PromiseLike<OptionalEntity<T>>;
+	abstract getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): OptionalEntity<T[K]> | PromiseLike<OptionalEntity<T[K]>>;
 
 	/**
 	 * Subscribe to the result of a document.
 	 * - `next()` is called once with the initial result, and again any time the result changes.
 	 *
-	 * @param ref Document reference specifying which document to subscribe to.
 	 * @param observer Observer with `next`, `error`, or `complete` methods that the document result is reported back to.
 	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe;
+	abstract subscribeDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, observer: PartialObserver<OptionalEntity<T[K]>>): Unsubscribe;
 
 	/**
 	 * Create a new document with a random ID.
 	 * - Created document is guaranteed to have a unique ID.
 	 *
-	 * @param ref Documents reference specifying which collection to add the document to.
 	 * @param data Complete data to set the document to.
-	 *
 	 * @return String ID for the created document (possibly promised).
 	 */
-	abstract addDocument<T extends Data>(ref: QueryReference<T>, data: T): string | PromiseLike<string>;
+	abstract addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): string | PromiseLike<string>;
 
 	/**
 	 * Set the data a document.
 	 * - If the document exists, set the value of it.
 	 * - If the document doesn't exist, set it at path.
 	 *
-	 * @param ref Document reference specifying which document to set.
 	 * @param data Data to set the document to.
-	 *
 	 * @throws Error If a `Update` was provided but the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract setDocument<T extends Data>(ref: DocumentReference<T>, data: T): void | PromiseLike<void>;
+	abstract setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): void | PromiseLike<void>;
 
 	/**
 	 * Update the data an existing document.
 	 *
-	 * @param ref Document reference specifying which document to update.
 	 * @param update Update instance to set the document to.
-	 *
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void | PromiseLike<void>;
+	abstract updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): void | PromiseLike<void>;
 
 	/**
 	 * Delete a specified document.
-	 * @param ref Document reference specifying which document to delete.
 	 */
-	abstract deleteDocument<T extends Data>(ref: DocumentReference<T>): void | PromiseLike<void>;
+	abstract deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): void | PromiseLike<void>;
 
 	/**
 	 * Get all matching documents.
 	 *
-	 * @param ref Documents reference specifying which collection to get documents from.
 	 * @return Set of results in `id: data` format.
 	 */
-	abstract getQuery<T extends Data>(ref: QueryReference<T>): Entities<T> | PromiseLike<Entities<T>>;
+	abstract getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Entities<T[K]> | PromiseLike<Entities<T[K]>>;
 
 	/**
 	 * Subscribe to all matching documents.
 	 * - `next()` is called once with the initial results, and again any time the results change.
 	 *
-	 * @param ref Documents reference specifying which collection to subscribe to.
 	 * @param observer Observer with `next`, `error`, or `complete` methods that the document results are reported back to.
-	 *
 	 * @return Function that ends the subscription.
 	 */
-	abstract subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: PartialObserver<Entities<T>>): Unsubscribe;
+	abstract subscribeQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, observer: PartialObserver<Entities<T[K]>>): Unsubscribe;
 
 	/**
 	 * Set the data of all matching documents.
 	 *
-	 * @param ref Documents reference specifying which collection to set.
-	 * @param value Value to set the document to.
+	 * @param data Value to set the document to.
 	 * @return Number of documents that were set.
 	 */
-	abstract setQuery<T extends Data>(ref: QueryReference<T>, data: T): number | PromiseLike<number>;
+	abstract setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): number | PromiseLike<number>;
 
 	/**
 	 * Update the data of all matching documents.
 	 *
-	 * @param ref Documents reference specifying which collection to set.
 	 * @param update Update instance to set the document to.
 	 * @return Number of documents that were updated.
 	 */
-	abstract updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number | PromiseLike<number>;
+	abstract updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): number | PromiseLike<number>;
 
 	/**
 	 * Delete all matching documents.
-	 * @param ref Document reference specifying which document to delete.
 	 * @return Number of documents that were deleted.
 	 */
-	abstract deleteQuery<T extends Data>(ref: QueryReference<T>): number | PromiseLike<number>;
+	abstract deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): number | PromiseLike<number>;
 }
 
 /** Provider with a fully synchronous interface */
-export interface SynchronousProvider extends Provider {
-	getDocument<T extends Data>(ref: DocumentReference<T>): OptionalEntity<T>;
-	addDocument<T extends Data>(ref: QueryReference<T>, data: T): string;
-	setDocument<T extends Data>(ref: DocumentReference<T>, value: T): void;
-	updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void;
-	deleteDocument<T extends Data>(ref: DocumentReference<T>): void;
-	getQuery<T extends Data>(ref: QueryReference<T>): Entities<T>;
-	setQuery<T extends Data>(ref: QueryReference<T>, value: T): number;
-	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number;
-	deleteQuery<T extends Data>(ref: QueryReference<T>): number;
+export abstract class Provider<T extends Datas> extends AbstractProvider<T> {
+	abstract override getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): OptionalEntity<T[K]>;
+	abstract override addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): string;
+	abstract override setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): void;
+	abstract override updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): void;
+	abstract override deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): void;
+	abstract override getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Entities<T[K]>;
+	abstract override setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): number;
+	abstract override updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): number;
+	abstract override deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): number;
 }
 
 /** Provider with a fully asynchronous interface */
-export interface AsynchronousProvider extends Provider {
-	getDocument<T extends Data>(ref: DocumentReference<T>): PromiseLike<OptionalEntity<T>>;
-	addDocument<T extends Data>(ref: QueryReference<T>, data: T): PromiseLike<string>;
-	setDocument<T extends Data>(ref: DocumentReference<T>, value: T): PromiseLike<void>;
-	updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): PromiseLike<void>;
-	deleteDocument<T extends Data>(ref: DocumentReference<T>): PromiseLike<void>;
-	getQuery<T extends Data>(ref: QueryReference<T>): PromiseLike<Entities<T>>;
-	setQuery<T extends Data>(ref: QueryReference<T>, value: T): PromiseLike<number>;
-	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): PromiseLike<number>;
-	deleteQuery<T extends Data>(ref: QueryReference<T>): PromiseLike<number>;
+export abstract class AsyncProvider<T extends Datas> extends AbstractProvider<T> {
+	abstract override getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<OptionalEntity<T[K]>>;
+	abstract override addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): Promise<string>;
+	abstract override setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): Promise<void>;
+	abstract override updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): Promise<void>;
+	abstract override deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<void>;
+	abstract override getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<Entities<T[K]>>;
+	abstract override setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): Promise<number>;
+	abstract override updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): Promise<number>;
+	abstract override deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<number>;
+}
+
+/** Object specifying a collection for a provider. */
+export interface ProviderCollection<T extends Datas, K extends Key<T>> {
+	readonly collection: K;
+	toString(): string;
+}
+
+/** Object specifying a query on a collection for a provider. */
+export interface ProviderQuery<T extends Datas, K extends Key<T>> extends Query<Entity<T[K]>>, ProviderCollection<T, K> {}
+
+/** Object specifying a document in a collection for a provider. */
+export interface ProviderDocument<T extends Datas, K extends Key<T>> extends ProviderCollection<T, K> {
+	readonly id: string;
 }

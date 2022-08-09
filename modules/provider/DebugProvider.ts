@@ -1,170 +1,215 @@
 /* eslint-disable no-console */
 
-import type { Data, Entities, OptionalEntity } from "../util/data.js";
-import type { DocumentReference, QueryReference } from "../db/Reference.js";
+import type { Datas, Entities, Key, OptionalEntity } from "../util/data.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
-import { isAsync } from "../util/async.js";
 import { ThroughObserver } from "../observe/ThroughObserver.js";
-import { ThroughProvider } from "./ThroughProvider.js";
+import { AbstractProvider, Provider, AsyncProvider, ProviderDocument, ProviderCollection, ProviderQuery } from "./Provider.js";
+import type { ThroughProvider, AsyncThroughProvider } from "./ThroughProvider.js";
 
-/** Provider that logs its operations to the console for debugging purposes. */
-export class DebugProvider extends ThroughProvider {
-	override getDocument<T extends Data>(ref: DocumentReference<T>): OptionalEntity<T> | PromiseLike<OptionalEntity<T>> {
-		console.log(`Get ${ref}:`);
+/** Provider that logs operations to a source provider to the console. */
+export abstract class AbstractDebugProvider<T extends Datas> extends AbstractProvider<T> {
+	abstract readonly source: AbstractProvider<T>;
+	subscribeDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, observer: PartialObserver<OptionalEntity<T[K]>>): Unsubscribe {
+		console.log(`Subscribe: ${ref}:`);
+		return this.source.subscribeDocument(ref, new _DebugObserver(ref, observer));
+	}
+	subscribeQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, observer: PartialObserver<Entities<T[K]>>): Unsubscribe {
+		console.log(`Subscribe: ${ref}:`);
+		return this.source.subscribeQuery(ref, new _DebugObserver(ref, observer));
+	}
+}
+
+/** Observer that wraps errors in subscriptions in `ReferenceReadError` */
+class _DebugObserver<T> extends ThroughObserver<T> {
+	private _ref: ProviderCollection<Datas, string>;
+	constructor(ref: ProviderCollection<Datas, string>, target: PartialObserver<T>) {
+		super(target);
+		this._ref = ref;
+	}
+	override error(reason: Error | unknown): void {
+		console.log(`Error: Subscribe: ${this._ref}`, reason);
+		super.error(reason);
+	}
+}
+
+/** Provider that logs operations to a synchronous source provider to the console. */
+export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> implements ThroughProvider<T> {
+	readonly source: Provider<T>;
+	constructor(source: Provider<T>) {
+		super();
+		this.source = source;
+	}
+	getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): OptionalEntity<T[K]> {
+		console.log(`Get: ${ref}:`);
 		try {
-			const result = super.getDocument(ref);
-			return isAsync(result)
-				? result.then(undefined, reason => {
-						console.error(`Error: Get ${ref}:`, reason);
-						throw reason;
-				  })
-				: result;
+			return this.source.getDocument(ref);
 		} catch (reason) {
-			console.error(`Error: Get ${ref}:`, reason);
+			console.error(`Error: Get: ${ref}:`, reason);
 			throw reason;
 		}
 	}
-	override subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
-		console.log(`Subscribe ${ref}:`);
-		return super.subscribeDocument(ref, new DatabaseDebugObserver(ref, observer));
-	}
-	override addDocument<T extends Data>(ref: QueryReference<T>, data: T): string | PromiseLike<string> {
-		console.log(`Add ${ref}:`, data);
+	addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): string {
+		console.log(`Add: ${ref}:`, data);
 		try {
-			const result = super.addDocument(ref, data);
-			return isAsync(result)
-				? result.then(undefined, reason => {
-						console.error(`Error: Add ${ref}:`, reason);
-						throw reason;
-				  })
-				: result;
+			return this.source.addDocument(ref, data);
 		} catch (reason) {
-			console.error(`Error: Add ${ref}:`, reason);
+			console.error(`Error: Add: ${ref}:`, reason);
 			throw reason;
 		}
 	}
-	override setDocument<T extends Data>(ref: DocumentReference<T>, data: T): void | PromiseLike<void> {
-		console.log(`Set ${ref}:`, data);
+	setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): void {
+		console.log(`Set: ${ref}:`, data);
 		try {
-			const result = super.setDocument(ref, data);
-			return isAsync(result)
-				? result.then(undefined, reason => {
-						console.error(`Error: Set ${ref}:`, reason);
-						throw reason;
-				  })
-				: result;
+			return this.source.setDocument(ref, data);
 		} catch (reason) {
-			console.error(`Error: Set ${ref}:`, reason);
+			console.error(`Error: Set: ${ref}:`, reason);
 			throw reason;
 		}
 	}
-	override updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void | PromiseLike<void> {
-		console.log(`Update ${ref}:`, update.updates);
+	updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): void {
+		console.log(`Update: ${ref}:`, update.updates);
 		try {
-			const result = super.updateDocument(ref, update);
-			return isAsync(result)
-				? result.then(undefined, reason => {
-						console.error(`Error: Update ${ref}:`, reason);
-						throw reason;
-				  })
-				: result;
+			return this.source.updateDocument(ref, update);
 		} catch (reason) {
-			console.error(`Error: Update ${ref}:`, reason);
+			console.error(`Error: Update: ${ref}:`, reason);
 			throw reason;
 		}
 	}
-	override deleteDocument<T extends Data>(ref: DocumentReference<T>): void | PromiseLike<void> {
-		console.log(`Delete ${ref}:`);
+	deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): void {
+		console.log(`Delete: ${ref}:`);
 		try {
-			const result = super.deleteDocument(ref);
-			return isAsync(result)
-				? result.then(undefined, reason => {
-						console.error(`Error: Delete ${ref}:`, reason);
-						throw reason;
-				  })
-				: result;
+			return this.source.deleteDocument(ref);
 		} catch (reason) {
-			console.error(`Error: Delete ${ref}:`, reason);
+			console.error(`Error: Delete: ${ref}:`, reason);
 			throw reason;
 		}
 	}
-	override getQuery<T extends Data>(ref: QueryReference<T>): Entities<T> | PromiseLike<Entities<T>> {
-		console.log(`Get ${ref}:`);
+	getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Entities<T[K]> {
+		console.log(`Get: ${ref}:`);
 		try {
-			const results = super.getQuery(ref);
-			return isAsync(results)
-				? results.then(undefined, reason => {
-						console.error(`Error: Get ${ref}:`, reason);
-						throw reason;
-				  })
-				: results;
+			return this.source.getQuery(ref);
 		} catch (reason) {
-			console.error(`Error: Get ${ref}:`, reason);
+			console.error(`Error: Get: ${ref}:`, reason);
 			throw reason;
 		}
 	}
-	override subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: PartialObserver<Entities<T>>): Unsubscribe {
-		console.log(`Subscribe ${ref}:`);
-		return super.subscribeQuery(ref, new DatabaseDebugObserver(ref, observer));
-	}
-	override setQuery<T extends Data>(ref: QueryReference<T>, data: T): number | PromiseLike<number> {
-		console.log(`Set ${ref}:`, data);
+	setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): number {
+		console.log(`Set: ${ref}:`, data);
 		try {
-			const result = super.setQuery(ref, data);
-			return isAsync(result)
-				? result.then(undefined, reason => {
-						console.error(`Error: Set ${ref}:`, reason);
-						throw reason;
-				  })
-				: result;
+			return this.source.setQuery(ref, data);
 		} catch (reason) {
-			console.error(`Error: Set ${ref}:`, reason);
+			console.error(`Error: Set: ${ref}:`, reason);
 			throw reason;
 		}
 	}
-	override updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number | PromiseLike<number> {
-		console.log(`Update ${ref}:`, update.updates);
+	updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): number {
+		console.log(`Update: ${ref}:`, update.updates);
 		try {
-			const result = super.updateQuery(ref, update);
-			return isAsync(result)
-				? result.then(undefined, reason => {
-						console.error(`Error: Update ${ref}:`, reason);
-						throw reason;
-				  })
-				: result;
+			return this.source.updateQuery(ref, update);
 		} catch (reason) {
-			console.error(`Error: Update ${ref}:`, reason);
+			console.error(`Error: Update: ${ref}:`, reason);
 			throw reason;
 		}
 	}
-	override deleteQuery<T extends Data>(ref: QueryReference<T>): number | PromiseLike<number> {
-		console.log(`Delete ${ref}:`);
+	deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): number {
+		console.log(`Delete: ${ref}:`);
 		try {
-			const result = super.deleteQuery(ref);
-			return isAsync(result)
-				? result.then(undefined, reason => {
-						console.error(`Error: Delete ${ref}:`, reason);
-						throw reason;
-				  })
-				: result;
+			return this.source.deleteQuery(ref);
 		} catch (reason) {
-			console.error(`Error: Delete ${ref}:`, reason);
+			console.error(`Error: Delete: ${ref}:`, reason);
 			throw reason;
 		}
 	}
 }
 
-/** Observer that wraps errors in subscriptions in `ReferenceReadError` */
-class DatabaseDebugObserver<T extends Data, U extends OptionalEntity<T> | Entities<T>> extends ThroughObserver<U> {
-	readonly ref: DocumentReference<T> | QueryReference<T>;
-	constructor(ref: DocumentReference<T> | QueryReference<T>, target: PartialObserver<U>) {
-		super(target);
-		this.ref = ref;
+/** Provider that logs operations to a synchronous source provider to the console. */
+export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T> implements AsyncThroughProvider<T> {
+	readonly source: AsyncProvider<T>;
+	constructor(source: AsyncProvider<T>) {
+		super();
+		this.source = source;
 	}
-	override error(reason: Error | unknown): void {
-		console.log(`Error in subscription to ${this.ref}`, reason);
-		super.error(reason);
+	async getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<OptionalEntity<T[K]>> {
+		console.log(`Get: ${ref}:`);
+		try {
+			return await this.source.getDocument(ref);
+		} catch (reason) {
+			console.error(`Error: Get: ${ref}:`, reason);
+			throw reason;
+		}
+	}
+	async addDocument<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): Promise<string> {
+		console.log(`Add: ${ref}:`, data);
+		try {
+			return await this.source.addDocument(ref, data);
+		} catch (reason) {
+			console.error(`Error: Add: ${ref}:`, reason);
+			throw reason;
+		}
+	}
+	async setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): Promise<void> {
+		console.log(`Set: ${ref}:`, data);
+		try {
+			return await this.source.setDocument(ref, data);
+		} catch (reason) {
+			console.error(`Error: Set: ${ref}:`, reason);
+			throw reason;
+		}
+	}
+	async updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): Promise<void> {
+		console.log(`Update: ${ref}:`, update.updates);
+		try {
+			return await this.source.updateDocument(ref, update);
+		} catch (reason) {
+			console.error(`Error: Update: ${ref}:`, reason);
+			throw reason;
+		}
+	}
+	async deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<void> {
+		console.log(`Delete: ${ref}:`);
+		try {
+			return await this.source.deleteDocument(ref);
+		} catch (reason) {
+			console.error(`Error: Delete: ${ref}:`, reason);
+			throw reason;
+		}
+	}
+	async getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<Entities<T[K]>> {
+		console.log(`Get: ${ref}:`);
+		try {
+			return await this.source.getQuery(ref);
+		} catch (reason) {
+			console.error(`Error: Get: ${ref}:`, reason);
+			throw reason;
+		}
+	}
+	async setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): Promise<number> {
+		console.log(`Set: ${ref}:`, data);
+		try {
+			return await this.source.setQuery(ref, data);
+		} catch (reason) {
+			console.error(`Error: Set: ${ref}:`, reason);
+			throw reason;
+		}
+	}
+	async updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): Promise<number> {
+		console.log(`Update: ${ref}:`, update.updates);
+		try {
+			return await this.source.updateQuery(ref, update);
+		} catch (reason) {
+			console.error(`Error: Update: ${ref}:`, reason);
+			throw reason;
+		}
+	}
+	async deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<number> {
+		console.log(`Delete: ${ref}:`);
+		try {
+			return await this.source.deleteQuery(ref);
+		} catch (reason) {
+			console.error(`Error: Delete: ${ref}:`, reason);
+			throw reason;
+		}
 	}
 }

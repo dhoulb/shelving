@@ -1,82 +1,80 @@
-import type { DocumentReference, QueryReference } from "../db/Reference.js";
-import type { MutableObject } from "../util/object.js";
-import type { Data, Entity, Entities, OptionalEntity } from "../util/data.js";
+import type { Data, Entity, Entities, OptionalEntity, Datas, Key } from "../util/data.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import type { Dispatch } from "../util/function.js";
 import type { Unsubscribe } from "../observe/Observable.js";
+import { Query } from "../query/Query.js";
 import { getRandomKey } from "../util/random.js";
 import { isArrayEqual } from "../util/equal.js";
 import { transformProps } from "../util/transform.js";
-import { Query } from "../query/Query.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { Subject } from "../observe/Subject.js";
 import { dispatchNext, PartialObserver } from "../observe/Observer.js";
 import { getArray } from "../util/array.js";
-import { Provider, SynchronousProvider } from "./Provider.js";
+import { ProviderCollection, ProviderDocument, ProviderQuery, Provider } from "./Provider.js";
 
 /**
  * Fast in-memory store for data.
  * - Extremely fast (ideal for caching!), but does not persist data after the browser window is closed.
  * - `get()` etc return the exact same instance of an object that's passed into `set()`
  */
-export class MemoryProvider extends Provider implements SynchronousProvider {
-	/** List of tables in `{ path: Table }` format. */
-	private _tables: MutableObject<MemoryTable<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+export class MemoryProvider<T extends Datas> implements Provider<T> {
+	/** List of tables in `{ collection: Table }` format. */
+	private _tables: { [K in keyof T]?: MemoryTable<T[K]> } = {};
 
-	// Get a named collection (or create a new one).
-	getTable<T extends Data>({ collection }: DocumentReference<T> | QueryReference<T>): MemoryTable<T> {
-		return (this._tables[collection] ||= new MemoryTable<T>()) as MemoryTable<T>;
+	/** Get a table for a collection. */
+	getTable<K extends Key<T>>({ collection }: ProviderCollection<T, K>): MemoryTable<T[K]> {
+		return this._tables[collection] || (this._tables[collection] = new MemoryTable());
 	}
 
-	getDocumentTime<T extends Data>(ref: DocumentReference<T>): number | null {
+	getDocumentTime<K extends Key<T>>(ref: ProviderDocument<T, K>): number | null {
 		return this.getTable(ref).getDocumentTime(ref.id);
 	}
 
-	getDocument<T extends Data>(ref: DocumentReference<T>): OptionalEntity<T> {
+	getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): OptionalEntity<T[K]> {
 		return this.getTable(ref).getDocument(ref.id);
 	}
 
-	subscribeDocument<T extends Data>(ref: DocumentReference<T>, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
+	subscribeDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, observer: PartialObserver<OptionalEntity<T[K]>>): Unsubscribe {
 		return this.getTable(ref).subscribeDocument(ref.id, observer);
 	}
 
-	addDocument<T extends Data>(ref: QueryReference<T>, data: T): string {
+	addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): string {
 		return this.getTable(ref).addDocument(data);
 	}
 
-	setDocument<T extends Data>(ref: DocumentReference<T>, data: T): void {
+	setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): void {
 		return this.getTable(ref).setDocument(ref.id, data);
 	}
 
-	updateDocument<T extends Data>(ref: DocumentReference<T>, update: DataUpdate<T>): void {
+	updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): void {
 		return this.getTable(ref).updateDocument(ref.id, update);
 	}
 
-	deleteDocument<T extends Data>(ref: DocumentReference<T>): void {
+	deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): void {
 		return this.getTable(ref).deleteDocument(ref.id);
 	}
 
-	getQueryTime<T extends Data>(ref: QueryReference<T>): number | null {
+	getQueryTime<K extends Key<T>>(ref: ProviderQuery<T, K>): number | null {
 		return this.getTable(ref).getQueryTime(ref);
 	}
 
-	getQuery<T extends Data>(ref: QueryReference<T>): Entities<T> {
+	getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Entities<T[K]> {
 		return this.getTable(ref).getQuery(ref);
 	}
 
-	subscribeQuery<T extends Data>(ref: QueryReference<T>, observer: PartialObserver<Entities<T>>): Unsubscribe {
+	subscribeQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, observer: PartialObserver<Entities<T[K]>>): Unsubscribe {
 		return this.getTable(ref).subscribeQuery(ref, observer);
 	}
 
-	setQuery<T extends Data>(ref: QueryReference<T>, data: T): number {
+	setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): number {
 		return this.getTable(ref).setQuery(ref, data);
 	}
 
-	updateQuery<T extends Data>(ref: QueryReference<T>, update: DataUpdate<T>): number {
+	updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): number {
 		return this.getTable(ref).updateQuery(ref, update);
 	}
 
-	deleteQuery<T extends Data>(ref: QueryReference<T>): number {
+	deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): number {
 		return this.getTable(ref).deleteQuery(ref);
 	}
 }
