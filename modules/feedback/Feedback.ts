@@ -1,6 +1,5 @@
+import { Entry, getEntries } from "../util/entry.js";
 import { ImmutableObject, isObject } from "../util/object.js";
-import { getString } from "../util/string.js";
-import { mapObject } from "../util/transform.js";
 
 /**
  * The `Feedback` class represents a feedback message that should be shown to the user.
@@ -17,16 +16,17 @@ export interface Feedback {
 	/** Name of the class (same as `Error`). */
 	name: string;
 }
-export class Feedback {
+export class Feedback<T = unknown> {
 	/** String feedback message that is safe to show to a user. */
 	readonly message: string;
 
 	/** Nested details providing deeper feedback. */
-	readonly details: unknown;
+	readonly value: T;
 
-	constructor(feedback: string, details?: unknown) {
+	constructor(feedback: string, value?: T);
+	constructor(feedback: string, value: T) {
 		this.message = feedback;
-		this.details = details;
+		this.value = value;
 	}
 }
 Feedback.prototype.name = "Feedback";
@@ -34,6 +34,11 @@ Feedback.prototype.name = "Feedback";
 /** Is an unknown value a `Feedback` object. */
 export const isFeedback = <T extends Feedback>(v: T | unknown): v is Feedback => isObject(v) && typeof v.name === "string" && v.name.endsWith("Feedback") && typeof v.message === "string";
 
-/** Get an object of messages in `{ key: message }` format from a feedback's details property. */
-export const getFeedbackMessages = ({ details }: Feedback): ImmutableObject<string> => (isObject(details) ? mapObject(details, _getMessage) : {});
-const _getMessage = (v: unknown): string => (isFeedback(v) ? v.message : getString(v));
+/**
+ * Get an object of sub-messages in `{ key: message }` format from a feedback's value.
+ * - Takes the `.value` property from a `Feedback` instance and looks for keyed `Feedback` instances in either `{ key: Feedback }`. `Feedback[]`, or `Map<key, Feedback>` formats.
+ */
+export const getFeedbackMessages = ({ value }: Feedback): ImmutableObject<string> => Object.fromEntries(_yieldFeedbackMessages(value));
+function* _yieldFeedbackMessages(value: unknown): Iterable<Entry<string | number, string>> {
+	if (isObject(value)) for (const [k, v] of getEntries(value)) if (isFeedback(v)) yield [k, v.message];
+}
