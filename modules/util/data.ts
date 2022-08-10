@@ -5,7 +5,7 @@ import type { ImmutableArray } from "./array.js";
 export type Data = { readonly [key: string]: unknown };
 
 /** Data or `null` to indicate the data doesn't exist. */
-export type OptionalData<T extends Data = Data> = T | null;
+export type OptionalData<T extends Data> = T | null;
 
 /** Empty data object. */
 export type EmptyData = { readonly [K in never]: never };
@@ -21,15 +21,6 @@ export type Prop<T extends Data> = readonly [Key<T>, Value<T>];
 
 /** Set of named data objects. */
 export type Datas = { readonly [key: string]: Data };
-
-/** An entity is data with a string ID that uniquely identifies it. */
-export type Entity<T extends Data> = T & { id: string };
-
-/** An array of entities. */
-export type Entities<T extends Data> = ImmutableArray<Entity<T>>;
-
-/** Entity or `null` to indicate the entity doesn't exist. */
-export type OptionalEntity<T extends Data> = Entity<T> | null;
 
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => typeof value === "object" && value !== null;
@@ -69,14 +60,6 @@ export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K
 	k4?: K4,
 ): T[K1] | T[K1][K2] | T[K1][K2][K3] | T[K1][K2][K3][K4] {
 	return !k2 ? data[k1] : !k3 ? data[k1][k2] : !k4 ? data[k1][k2][k3] : data[k1][k2][k3][k4];
-}
-
-/** Get the ID of an entity. */
-export const getID = <T extends Data>({ id }: Entity<T>): string => id;
-
-/** Yield the IDs of an iterable set of entities. */
-export function* getIDs<T extends Data>(entities: Iterable<Entity<T>>): Iterable<string> {
-	for (const { id } of entities) yield id;
 }
 
 /**
