@@ -22,6 +22,7 @@
 	"exports": {
 		".": "./index.js",
 		"./api": "./api/index.js",
+		"./constraint": "./constraint/index.js",
 		"./db": "./db/index.js",
 		"./error": "./error/index.js",
 		"./feedback": "./feedback/index.js",
@@ -31,7 +32,6 @@
 		"./markup": "./markup/index.js",
 		"./observe": "./observe/index.js",
 		"./provider": "./provider/index.js",
-		"./query": "./query/index.js",
 		"./react": "./react/index.js",
 		"./schema": "./schema/index.js",
 		"./state": "./state/index.js",
