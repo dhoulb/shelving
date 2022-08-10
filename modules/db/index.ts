@@ -1,4 +1,5 @@
 export * from "./Database.js";
-export * from "./DatabaseDocument.js";
-export * from "./DatabaseQuery.js";
+export * from "./Collection.js";
+export * from "./Item.js";
+export * from "./Query.js";
 export * from "./Changes.js";
