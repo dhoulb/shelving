@@ -8,5 +8,5 @@ export * from "./useCache.js";
 export * from "./useSubscribe.js";
 
 // DB.
-export * from "./useDocument.js";
+export * from "./useItem.js";
 export * from "./useQuery.js";

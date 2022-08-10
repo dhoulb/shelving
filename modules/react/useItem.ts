@@ -1,7 +1,7 @@
 import type { Unsubscribe } from "../observe/Observable.js";
-import type { OptionalEntity, Entity, Key, Datas } from "../util/data.js";
+import type { Key, Datas } from "../util/data.js";
+import { ItemValue, ItemData, getItemData, AsyncItem, Item } from "../db/Item.js";
 import { setMapItem } from "../util/map.js";
-import { DatabaseDocument, getDocumentData } from "../db/DatabaseDocument.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
 import { State } from "../state/State.js";
@@ -10,26 +10,26 @@ import { ConditionError } from "../error/ConditionError.js";
 import { useSubscribe } from "./useSubscribe.js";
 import { useCache } from "./useCache.js";
 
-/** Hold the current state of a document. */
-export class DocumentState<T extends Datas, K extends Key<T>> extends State<OptionalEntity<T[K]>> {
-	readonly ref: DatabaseDocument<T, K>;
+/** Hold the current state of a item. */
+export class ItemState<T extends Datas, K extends Key<T>> extends State<ItemValue<T[K]>> {
+	readonly ref: Item<T, K> | AsyncItem<T, K>;
 	readonly busy = new BooleanState();
 
-	/** Get the data of the document (throws `RequiredError` if document doesn't exist). */
-	get data(): Entity<T[K]> {
-		return getDocumentData(this.value, this.ref);
+	/** Get the data of the item (throws `RequiredError` if item doesn't exist). */
+	get data(): ItemData<T[K]> {
+		return getItemData(this.ref, this.value);
 	}
 
-	/** Does the document exist (i.e. its value isn't `null`)? */
+	/** Does the item exist (i.e. its value isn't `null`)? */
 	get exists(): boolean {
 		return !!this.value;
 	}
 
-	constructor(ref: DatabaseDocument<T, K>) {
-		const table = getOptionalSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref);
-		const time = table ? table.getDocumentTime(ref.id) : null;
+	constructor(ref: Item<T, K> | AsyncItem<T, K>) {
+		const table = getOptionalSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref.collection);
+		const time = table ? table.getItemTime(ref.id) : null;
 		const isCached = typeof time === "number";
-		super(table && isCached ? table.getDocument(ref.id) : State.NOVALUE);
+		super(table && isCached ? table.getItem(ref.id) : State.NOVALUE);
 		this._time = time;
 		this.ref = ref;
 
@@ -66,8 +66,8 @@ export class DocumentState<T extends Datas, K extends Key<T>> extends State<Opti
 
 	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
 	connectCache(): Unsubscribe | void {
-		const table = getOptionalSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref);
-		table && this.connect(() => table.subscribeCachedDocument(this.ref.id, this));
+		const table = getOptionalSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref.collection);
+		table && this.connect(() => table.subscribeCachedItem(this.ref.id, this));
 	}
 
 	// Override to subscribe to the cache when an observer is added.
@@ -83,15 +83,15 @@ export class DocumentState<T extends Datas, K extends Key<T>> extends State<Opti
 }
 
 /**
- * Use a document in a React component.
+ * Use an item in a React component.
  * - Uses the default cache, so will error if not used inside `<Cache>`
  */
-export function useDocument<T extends Datas, K extends Key<T>>(ref: DatabaseDocument<T, K>): DocumentState<T, K>;
-export function useDocument<T extends Datas, K extends Key<T>>(ref?: DatabaseDocument<T, K>): DocumentState<T, K> | undefined;
-export function useDocument<T extends Datas, K extends Key<T>>(ref?: DatabaseDocument<T, K>): DocumentState<T, K> | undefined {
+export function useItem<T extends Datas, K extends Key<T>>(ref: Item<T, K> | AsyncItem<T, K>): ItemState<T, K>;
+export function useItem<T extends Datas, K extends Key<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined;
+export function useItem<T extends Datas, K extends Key<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined {
 	const cache = useCache();
 	const key = ref?.toString();
-	const state = ref && key ? cache.get(key) || setMapItem(cache, key, new DocumentState(ref)) : undefined;
+	const state = ref && key ? cache.get(key) || setMapItem(cache, key, new ItemState(ref)) : undefined;
 	useSubscribe(state);
 	return state;
 }

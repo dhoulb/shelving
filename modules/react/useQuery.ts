@@ -1,7 +1,8 @@
 import type { Unsubscribe } from "../observe/Observable.js";
-import type { Entities, OptionalEntity, Entity, Key, Datas } from "../util/data.js";
+import type { Key, Datas } from "../util/data.js";
+import { ItemArray, ItemValue, ItemData } from "../db/Item.js";
 import { setMapItem } from "../util/map.js";
-import { DatabaseQuery, getQueryFirstData, getQueryFirstItem } from "../db/DatabaseQuery.js";
+import { getQueryFirstData, getQueryFirstItem, getQueryLastItem, getQueryLastData, AsyncQuery, Query } from "../db/Query.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
 import { State } from "../state/State.js";
@@ -11,8 +12,8 @@ import { useSubscribe } from "./useSubscribe.js";
 import { useCache } from "./useCache.js";
 
 /** Hold the current state of a query. */
-export class QueryState<T extends Datas, K extends Key<T>> extends State<Entities<T[K]>> {
-	readonly ref: DatabaseQuery<T, K>;
+export class QueryState<T extends Datas, K extends Key<T>> extends State<ItemArray<T[K]>> {
+	readonly ref: Query<T, K> | AsyncQuery<T, K>;
 	readonly busy = new BooleanState();
 	readonly limit: number;
 
@@ -20,16 +21,26 @@ export class QueryState<T extends Datas, K extends Key<T>> extends State<Entitie
 	get hasMore(): boolean {
 		return this._hasMore;
 	}
-	protected _hasMore = false;
+	private _hasMore = false;
 
 	/** Get the first document matched by this query or `null` if this query has no items. */
-	get first(): OptionalEntity<T[K]> {
+	get firstValue(): ItemValue<T[K]> {
 		return getQueryFirstItem(this.value);
 	}
 
 	/** Get the first document matched by this query. */
-	get data(): Entity<T[K]> {
+	get firstData(): ItemData<T[K]> {
 		return getQueryFirstData(this.value, this.ref);
+	}
+
+	/** Get the last document matched by this query or `null` if this query has no items. */
+	get lastValue(): ItemValue<T[K]> {
+		return getQueryLastItem(this.value);
+	}
+
+	/** Get the last document matched by this query. */
+	get lastData(): ItemData<T[K]> {
+		return getQueryLastData(this.value, this.ref);
 	}
 
 	/** Does the document have at least one result. */
@@ -42,8 +53,8 @@ export class QueryState<T extends Datas, K extends Key<T>> extends State<Entitie
 		return this.value.length;
 	}
 
-	constructor(ref: DatabaseQuery<T, K>) {
-		const table = getOptionalSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref);
+	constructor(ref: Query<T, K> | AsyncQuery<T, K>) {
+		const table = getOptionalSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref.collection);
 		const time = table ? table.getQueryTime(ref) : null;
 		const isCached = typeof time === "number";
 		super(table && isCached ? table.getQuery(ref) : State.NOVALUE);
@@ -85,7 +96,7 @@ export class QueryState<T extends Datas, K extends Key<T>> extends State<Entitie
 
 	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
 	connectCache(): Unsubscribe | void {
-		const table = getOptionalSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref);
+		const table = getOptionalSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref.collection);
 		return table && this.connect(() => table.subscribeCachedQuery(this.ref, this));
 	}
 
@@ -111,7 +122,7 @@ export class QueryState<T extends Datas, K extends Key<T>> extends State<Entitie
 	async _loadMore(): Promise<void> {
 		this.busy.next(true);
 		try {
-			const items = await this.ref.after(getQueryFirstData(this.value, this.ref)).value;
+			const items = await this.ref.after(this.lastData).value;
 			this.next([...this.value, ...items]);
 			this._hasMore = items.length < this.limit;
 		} catch (thrown) {
@@ -126,9 +137,9 @@ export class QueryState<T extends Datas, K extends Key<T>> extends State<Entitie
  * Use a query in a React component.
  * - Uses the default cache, so will error if not used inside `<Cache>`
  */
-export function useQuery<T extends Datas, K extends Key<T>>(ref: DatabaseQuery<T, K>): QueryState<T, K>;
-export function useQuery<T extends Datas, K extends Key<T>>(ref?: DatabaseQuery<T, K>): QueryState<T, K> | undefined;
-export function useQuery<T extends Datas, K extends Key<T>>(ref?: DatabaseQuery<T, K>): QueryState<T, K> | undefined {
+export function useQuery<T extends Datas, K extends Key<T>>(ref: Query<T, K> | AsyncQuery<T, K>): QueryState<T, K>;
+export function useQuery<T extends Datas, K extends Key<T>>(ref?: Query<T, K> | AsyncQuery<T, K>): QueryState<T, K> | undefined;
+export function useQuery<T extends Datas, K extends Key<T>>(ref?: Query<T, K> | AsyncQuery<T, K>): QueryState<T, K> | undefined {
 	const cache = useCache();
 	const key = ref?.toString();
 	const state = ref && key ? cache.get(key) || setMapItem(cache, key, new QueryState(ref)) : undefined;
