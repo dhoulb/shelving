@@ -13,8 +13,7 @@
 		"jsx": "react-jsx",
 		"lib": ["DOM", "DOM.Iterable", "ES2020"],
 		"module": "es2020",
-		"moduleResolution": "node",
-		// "moduleResolution": "node12", // @todo DH: Enable this from Typescript 4.5
+		"moduleResolution": "nodenext",
 		"noEmitOnError": true,
 		"noErrorTruncation": true,
 		"noImplicitOverride": true,
