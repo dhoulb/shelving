@@ -16,7 +16,7 @@ export type SortDirection = "ASC" | "DESC";
 export type SortList<T extends Data> = SortKeys<T> | SortConstraint<T> | Iterable<SortList<T>>;
 
 /** Sort a list of values. */
-export class SortConstraint<T extends Data> implements Constraint<T>, Rankable<T> {
+export class SortConstraint<T extends Data = Data> implements Constraint<T>, Rankable<T> {
 	readonly key: string;
 	readonly direction: SortDirection;
 	get sortKey(): string {

@@ -44,7 +44,7 @@ const MATCHERS: { [K in FilterOperator]: Match } = {
  * @param operator FilterOperator, e.g. `IS` or `CONTAINS`
  * @param value Value the specified property should be matched against.
  */
-export class FilterConstraint<T extends Data> implements Constraint<T>, Matchable<T, void> {
+export class FilterConstraint<T extends Data = Data> implements Constraint<T>, Matchable<T, void> {
 	readonly key: string;
 	readonly operator: FilterOperator;
 	readonly value: unknown;

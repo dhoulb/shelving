@@ -51,7 +51,7 @@ export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T> {
 }
 
 /** Allows filtering, sorting, and limiting on a set of results. */
-export class QueryConstraints<T extends Data> extends Constraint<T> implements Queryable<T> {
+export class QueryConstraints<T extends Data = Data> extends Constraint<T> implements Queryable<T> {
 	readonly filters: FilterConstraints<T>;
 	readonly sorts: SortConstraints<T>;
 	readonly limit: number | null;
@@ -72,6 +72,7 @@ export class QueryConstraints<T extends Data> extends Constraint<T> implements Q
 		};
 	}
 	get unfilter(): this {
+		if (!this.filters.size) return this;
 		return {
 			__proto__: Object.getPrototypeOf(this),
 			...this,
@@ -91,6 +92,7 @@ export class QueryConstraints<T extends Data> extends Constraint<T> implements Q
 		};
 	}
 	get unsort(): this {
+		if (!this.sorts.size) return this;
 		return {
 			__proto__: Object.getPrototypeOf(this),
 			...this,
@@ -117,6 +119,7 @@ export class QueryConstraints<T extends Data> extends Constraint<T> implements Q
 		};
 	}
 	max(limit: number | null): this {
+		if (this.limit === limit) return this;
 		return {
 			__proto__: Object.getPrototypeOf(this),
 			...this,

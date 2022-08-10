@@ -8,7 +8,7 @@
 export * from "./schema/index.js";
 export * from "./db/index.js";
 export * from "./provider/index.js";
-export * from "./query/index.js";
+export * from "./constraint/index.js";
 export * from "./api/index.js";
 
 // Utilities.

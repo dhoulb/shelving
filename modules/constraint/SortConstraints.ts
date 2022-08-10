@@ -13,7 +13,7 @@ export interface Sortable<T extends Data> extends Rankable<T> {
 }
 
 /** A set of sorts. */
-export class SortConstraints<T extends Data> extends Constraints<T, SortConstraint<T>> implements Sortable<T> {
+export class SortConstraints<T extends Data = Data> extends Constraints<T, SortConstraint<T>> implements Sortable<T> {
 	constructor(...sorts: SortList<T>[]) {
 		super(...getSorts(sorts));
 	}

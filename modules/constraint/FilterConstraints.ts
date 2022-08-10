@@ -17,7 +17,7 @@ export interface Filterable<T extends Data> extends Matchable<T, void> {
 }
 
 /** A set of filters. */
-export class FilterConstraints<T extends Data> extends Constraints<T, FilterConstraint<T>> implements Filterable<T> {
+export class FilterConstraints<T extends Data = Data> extends Constraints<T, FilterConstraint<T>> implements Filterable<T> {
 	constructor(...filters: FilterList<T>[]) {
 		super(...getFilters(filters));
 	}
