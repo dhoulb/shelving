@@ -1,4 +1,4 @@
-import { AbstractCollection, AsyncCollection, Collection } from "../index.js";
+import { AsyncCollection, Collection } from "../index.js";
 
 test("Typescript", () => {
 	const syncTyped: Collection<{ a: { b: number } }, "a"> = undefined as any;
@@ -6,7 +6,4 @@ test("Typescript", () => {
 
 	const asyncTyped: AsyncCollection<{ a: { b: number } }, "a"> = undefined as any;
 	const asyncUntyped: AsyncCollection = asyncTyped;
-
-	const abstractTyped: AbstractCollection<{ a: { b: number } }, "a"> = undefined as any;
-	const abstractUntyped: AbstractCollection = abstractTyped;
 });

@@ -7,8 +7,12 @@ import type { Unsubscribe } from "../observe/Observable.js";
 import { AssertionError } from "../error/AssertionError.js";
 import type { Provider, AsyncProvider } from "./Provider.js";
 
+interface ThroughProviderInterface<T extends Datas> {
+	readonly source: Provider<T> | AsyncProvider<T>;
+}
+
 /** A provider that passes through to a synchronous source. */
-export class ThroughProvider<T extends Datas> implements Provider<T> {
+export class ThroughProvider<T extends Datas = Datas> implements Provider<T>, ThroughProviderInterface<T> {
 	readonly source: Provider<T>;
 	constructor(source: Provider<T>) {
 		this.source = source;
@@ -49,7 +53,7 @@ export class ThroughProvider<T extends Datas> implements Provider<T> {
 }
 
 /** A provider that passes through to an asynchronous source. */
-export class AsyncThroughProvider<T extends Datas> implements AsyncProvider<T> {
+export class AsyncThroughProvider<T extends Datas = Datas> implements AsyncProvider<T>, ThroughProviderInterface<T> {
 	readonly source: AsyncProvider<T>;
 	constructor(source: AsyncProvider<T>) {
 		this.source = source;

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { Key, Datas, Data } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
@@ -15,8 +13,8 @@ import { Provider, AsyncProvider } from "./Provider.js";
 import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 
 /** Validate a source provider (source can have any type because validation guarantees the type). */
-abstract class AbstractValidationProvider<T extends Datas> {
-	abstract source: Provider<any> | AsyncProvider<any>;
+abstract class BaseValidationProvider<T extends Datas> {
+	abstract source: Provider | AsyncProvider;
 	readonly validators: Validators<T>;
 	constructor(validators: Validators<T>) {
 		this.validators = validators;
@@ -33,9 +31,9 @@ abstract class AbstractValidationProvider<T extends Datas> {
 }
 
 /** Validate a synchronous source provider (source can have any type because validation guarantees the type). */
-export class ValidationProvider<T extends Datas> extends AbstractValidationProvider<T> implements ThroughProvider<any>, Provider<T> {
-	readonly source: Provider<any>;
-	constructor(source: Provider<any>, validators: Validators<T>) {
+export class ValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements ThroughProvider, Provider<T> {
+	readonly source: Provider;
+	constructor(source: Provider, validators: Validators<T>) {
 		super(validators);
 		this.source = source;
 	}
@@ -69,9 +67,9 @@ export class ValidationProvider<T extends Datas> extends AbstractValidationProvi
 }
 
 /** Validate an asynchronous source provider (source can have any type because validation guarantees the type). */
-export class AsyncValidationProvider<T extends Datas> extends AbstractValidationProvider<T> implements AsyncThroughProvider<any>, AsyncProvider<T> {
-	readonly source: AsyncProvider<any>;
-	constructor(source: AsyncProvider<any>, validators: Validators<T>) {
+export class AsyncValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements AsyncThroughProvider, AsyncProvider<T> {
+	readonly source: AsyncProvider;
+	constructor(source: AsyncProvider, validators: Validators<T>) {
 		super(validators);
 		this.source = source;
 	}

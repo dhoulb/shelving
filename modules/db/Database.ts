@@ -7,17 +7,17 @@ import { Query, AsyncQuery } from "./Query.js";
 import { AsyncCollection, Collection } from "./Collection.js";
 
 /** Database with a synchronous or asynchronous provider. */
-abstract class AbstractDatabase<T extends Datas = Datas> {
-	abstract readonly provider: Provider<T> | AsyncProvider<T>;
+interface AbstractDatabase<T extends Datas> {
+	readonly provider: Provider<T> | AsyncProvider<T>;
 
 	/** Create a query on a collection in this database. */
-	abstract collection<K extends Key<T>>(collection: K): Collection<T, K> | AsyncCollection<T, K>;
+	collection<K extends Key<T>>(collection: K): Collection<T, K> | AsyncCollection<T, K>;
 
 	/** Create a query on a collection in this database. */
-	abstract query<K extends Key<T>>(collection: K, query?: QueryProps<ItemData<T[K]>>): Query<T, K> | AsyncQuery<T, K>;
+	query<K extends Key<T>>(collection: K, query?: QueryProps<ItemData<T[K]>>): Query<T, K> | AsyncQuery<T, K>;
 
 	/** Reference an item in a collection in this database. */
-	abstract item<K extends Key<T>>(collection: K, id: string): Item<T, K> | AsyncItem<T, K>;
+	item<K extends Key<T>>(collection: K, id: string): Item<T, K> | AsyncItem<T, K>;
 }
 
 /** Database with a synchronous provider. */

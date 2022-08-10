@@ -1,6 +1,6 @@
 import type { Unsubscribe } from "../observe/Observable.js";
-import type { Key, Datas } from "../util/data.js";
-import { ItemValue, ItemData, getItemData, AsyncItem, Item } from "../db/Item.js";
+import { Key, Datas, getData } from "../util/data.js";
+import { ItemValue, ItemData, AsyncItem, Item } from "../db/Item.js";
 import { setMapItem } from "../util/map.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
@@ -17,7 +17,7 @@ export class ItemState<T extends Datas, K extends Key<T>> extends State<ItemValu
 
 	/** Get the data of the item (throws `RequiredError` if item doesn't exist). */
 	get data(): ItemData<T[K]> {
-		return getItemData(this.ref, this.value);
+		return getData(this.value);
 	}
 
 	/** Does the item exist (i.e. its value isn't `null`)? */

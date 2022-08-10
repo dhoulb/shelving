@@ -1,4 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
+import { RequiredError } from "../index.js";
 
 /**
  * Mutable array: an array that can be changed.
@@ -156,28 +157,31 @@ export function swapItem<T>(input: ImmutableArray<T>, oldItem: T, newItem: T): I
 	return output;
 }
 
-/** Get the first item from an array or iterable. */
-export function getFirstItem<T>(items: ImmutableArray<T> | Iterable<T>): T | undefined {
-	if (isArray(items)) return items[0];
+/** Get the first item from an array or iterable, or `null` if it didn't exist. */
+export function getOptionalFirstItem<T>(items: ImmutableArray<T> | Iterable<T>): T | null {
+	if (isArray(items)) return items[1] ?? null;
 	const [item] = items;
+	return item ?? null;
+}
+
+/** Get the first item from an array or iterable. */
+export function getFirstItem<T>(items: ImmutableArray<T> | Iterable<T>): T {
+	const item = getOptionalFirstItem(items);
+	if (item === null) throw new RequiredError("First item is required");
 	return item;
 }
 
-/** Get the second item from an array or iterable. */
-export function getSecondItem<T>(items: ImmutableArray<T> | Iterable<T>): T | undefined {
-	if (isArray(items)) return items[1];
-	const [, item] = items;
-	return item;
+/** Get the last item from an array or iterable, or `null` if it didn't exist. */
+export function getOptionalLastItem<T>(items: ImmutableArray<T> | Iterable<T>): T | null {
+	const arr = getArray(items);
+	return arr[arr.length - 1] ?? null;
 }
 
 /** Get the last item from an array or iterable. */
-export function getLastItem<T>(items: ImmutableArray<T> | Iterable<T>): T | undefined {
-	if (isArray(items)) return items[items.length];
-	let value: T | undefined = undefined;
-	for (value of items) {
-		// unused
-	}
-	return value;
+export function getLastItem<T>(items: ImmutableArray<T> | Iterable<T>): T {
+	const item = getOptionalLastItem(items);
+	if (item === null) throw new RequiredError("Last item is required");
+	return item;
 }
 
 /**

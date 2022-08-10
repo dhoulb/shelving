@@ -1,8 +1,9 @@
 import type { Unsubscribe } from "../observe/Observable.js";
 import type { Key, Datas } from "../util/data.js";
-import { ItemArray, ItemValue, ItemData } from "../db/Item.js";
+import type { ItemArray, ItemValue, ItemData } from "../db/Item.js";
 import { setMapItem } from "../util/map.js";
-import { getQueryFirstData, getQueryFirstItem, getQueryLastItem, getQueryLastData, AsyncQuery, Query } from "../db/Query.js";
+import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
+import { AsyncQuery, Query } from "../db/Query.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
 import { State } from "../state/State.js";
@@ -25,22 +26,22 @@ export class QueryState<T extends Datas, K extends Key<T>> extends State<ItemArr
 
 	/** Get the first document matched by this query or `null` if this query has no items. */
 	get firstValue(): ItemValue<T[K]> {
-		return getQueryFirstItem(this.value);
+		return getOptionalFirstItem(this.value);
 	}
 
 	/** Get the first document matched by this query. */
 	get firstData(): ItemData<T[K]> {
-		return getQueryFirstData(this.value, this.ref);
+		return getFirstItem(this.value);
 	}
 
 	/** Get the last document matched by this query or `null` if this query has no items. */
 	get lastValue(): ItemValue<T[K]> {
-		return getQueryLastItem(this.value);
+		return getOptionalLastItem(this.value);
 	}
 
 	/** Get the last document matched by this query. */
 	get lastData(): ItemData<T[K]> {
-		return getQueryLastData(this.value, this.ref);
+		return getLastItem(this.value);
 	}
 
 	/** Does the document have at least one result. */
