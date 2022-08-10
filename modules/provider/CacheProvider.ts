@@ -1,10 +1,11 @@
-import type { Data, Datas, Entities, Entity, Key, OptionalEntity } from "../util/data.js";
+import type { Data, Datas, Key } from "../util/data.js";
+import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import { ThroughObserver } from "../observe/ThroughObserver.js";
-import { Query } from "../query/Query.js";
-import type { AsyncProvider, ProviderCollection, ProviderDocument, ProviderQuery } from "./Provider.js";
+import { QueryConstraints } from "../constraint/QueryConstraints.js";
+import type { AsyncProvider } from "./Provider.js";
 import type { AsyncThroughProvider } from "./ThroughProvider.js";
 import { MemoryProvider, MemoryTable } from "./MemoryProvider.js";
 
@@ -16,83 +17,86 @@ export class CacheProvider<T extends Datas> implements AsyncThroughProvider<T> {
 		this.source = source;
 		this.memory = cache;
 	}
-	async getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<OptionalEntity<T[K]>> {
-		const table = this.memory.getTable(ref);
-		const result = await this.source.getDocument(ref);
-		result ? table.setEntity(result) : table.deleteDocument(ref.id);
-		return result;
+	async getItem<K extends Key<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
+		const table = this.memory.getTable(collection);
+		const data = await this.source.getItem(collection, id);
+		data ? table.setItemData(data) : table.deleteItem(id);
+		return data;
 	}
-	subscribeDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, observer: PartialObserver<OptionalEntity<T[K]>>): Unsubscribe {
-		return this.source.subscribeDocument(ref, new _CacheEntityObserver(ref.id, this.memory.getTable(ref), observer));
+	subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
+		return this.source.subscribeItem(collection, id, new _CacheEntityObserver(this.memory.getTable(collection), id, observer));
 	}
-	async addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): Promise<string> {
-		const id = await this.source.addDocument(ref, data);
-		this.memory.getTable(ref).setDocument(id, data);
+	async addItem<K extends Key<T>>(collection: K, data: T[K]): Promise<string> {
+		const id = await this.source.addItem(collection, data);
+		this.memory.getTable(collection).setItem(id, data);
 		return id;
 	}
-	async setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): Promise<void> {
-		await this.source.setDocument(ref, data);
-		this.memory.getTable(ref).setDocument(ref.id, data);
+	async setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): Promise<void> {
+		await this.source.setItem(collection, id, data);
+		this.memory.getTable(collection).setItem(id, data);
 	}
-	async updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): Promise<void> {
-		await this.source.updateDocument(ref, update);
-		const table = this.memory.getTable(ref);
-		if (table.getDocument(ref.id)) table.updateDocument(ref.id, update);
+	async updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): Promise<void> {
+		await this.source.updateItem(collection, id, update);
+		const table = this.memory.getTable(collection);
+		if (table.getItem(id)) table.updateItem(id, update);
 	}
-	async deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<void> {
-		await this.source.deleteDocument(ref);
-		this.memory.deleteDocument(ref);
+	async deleteItem<K extends Key<T>>(collection: K, id: string): Promise<void> {
+		await this.source.deleteItem(collection, id);
+		this.memory.getTable(collection).deleteItem(id);
 	}
-	async getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<Entities<T[K]>> {
-		const entities = await this.source.getQuery(ref);
-		this.memory.getTable(ref).setEntities(ref, entities);
+	async getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
+		const entities = await this.source.getQuery(collection, constraints);
+		const table = this.memory.getTable(collection);
+		table.setItems(entities);
+		table.setQueryTime(constraints);
 		return entities;
 	}
-	subscribeQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, observer: PartialObserver<Entities<T[K]>>): Unsubscribe {
-		return this.source.subscribeQuery(ref, new _CacheEntitiesObserver(ref, this.memory.getTable(ref), observer));
+	subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
+		return this.source.subscribeQuery(collection, constraints, new _CacheEntitiesObserver(this.memory.getTable(collection), constraints, observer));
 	}
-	async setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): Promise<number> {
-		const count = await this.source.setQuery(ref, data);
-		this.memory.setQuery(ref, data);
+	async setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): Promise<number> {
+		const count = await this.source.setQuery(collection, constraints, data);
+		this.memory.getTable(collection).setQuery(constraints, data);
 		return count;
 	}
-	async updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): Promise<number> {
-		const count = await this.source.updateQuery(ref, update);
-		this.memory.updateQuery(ref, update);
+	async updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): Promise<number> {
+		const count = await this.source.updateQuery(collection, constraints, update);
+		this.memory.getTable(collection).updateQuery(constraints, update);
 		return count;
 	}
-	async deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<number> {
-		const count = await this.source.deleteQuery(ref);
-		this.memory.deleteQuery(ref);
+	async deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
+		const count = await this.source.deleteQuery(collection, constraints);
+		this.memory.getTable(collection).deleteQuery(constraints);
 		return count;
 	}
 }
 
-class _CacheEntityObserver<T extends Data> extends ThroughObserver<OptionalEntity<T>> {
+class _CacheEntityObserver<T extends Data> extends ThroughObserver<ItemValue<T>> {
 	private readonly _id: string;
 	private readonly _table: MemoryTable<T>;
-	constructor(id: string, table: MemoryTable<T>, source: PartialObserver<OptionalEntity<T>>) {
+	constructor(table: MemoryTable<T>, id: string, source: PartialObserver<ItemValue<T>>) {
 		super(source);
 		this._id = id;
 		this._table = table;
 	}
-	override next(entity: OptionalEntity<T>): void {
-		if (entity) this._table.setDocument(this._id, entity);
-		else this._table.deleteDocument(this._id);
+	override next(entity: ItemValue<T>): void {
+		if (entity) this._table.setItem(this._id, entity);
+		else this._table.deleteItem(this._id);
 		super.next(entity);
 	}
 }
 
-class _CacheEntitiesObserver<T extends Data> extends ThroughObserver<Entities<T>> {
-	private readonly _query: Query<Entity<T>>;
+class _CacheEntitiesObserver<T extends Data> extends ThroughObserver<ItemArray<T>> {
 	private readonly _table: MemoryTable<T>;
-	constructor(query: Query<Entity<T>>, table: MemoryTable<T>, source: PartialObserver<Entities<T>>) {
+	private readonly _constraints: QueryConstraints<ItemData<T>>;
+	constructor(table: MemoryTable<T>, constraints: QueryConstraints<ItemData<T>>, source: PartialObserver<ItemArray<T>>) {
 		super(source);
-		this._query = query;
 		this._table = table;
+		this._constraints = constraints;
 	}
-	override next(entities: Entities<T>): void {
-		this._table.setEntities(this._query, entities);
+	override next(entities: ItemArray<T>): void {
+		this._table.setItems(entities);
+		this._table.setQueryTime(this._constraints);
 		super.next(entities);
 	}
 }

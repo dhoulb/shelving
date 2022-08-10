@@ -1,4 +1,7 @@
-import type { OptionalData, Entity, OptionalEntity, Entities, Key, Datas, Data } from "../util/data.js";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import type { Key, Datas, Data } from "../util/data.js";
+import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import type { MutableObject } from "../util/object.js";
 import type { PartialObserver } from "../observe/Observer.js";
@@ -8,129 +11,128 @@ import { Feedback } from "../feedback/Feedback.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { TransformableObserver } from "../observe/TransformableObserver.js";
-import { AbstractProvider, Provider, AsyncProvider, ProviderCollection, ProviderDocument, ProviderQuery } from "./Provider.js";
-import type { ThroughProvider, AsyncThroughProvider } from "./ThroughProvider.js";
+import { Provider, AsyncProvider } from "./Provider.js";
+import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 
-/** Validate a source provider. */
-export abstract class AbstractValidationProvider<T extends Datas> extends AbstractProvider<T> {
-	abstract readonly source: AbstractProvider<T>;
+/** Validate a source provider (source can have any type because validation guarantees the type). */
+abstract class AbstractValidationProvider<T extends Datas> {
+	abstract source: Provider<any> | AsyncProvider<any>;
 	readonly validators: Validators<T>;
 	constructor(validators: Validators<T>) {
-		super();
 		this.validators = validators;
 	}
-	getValidator<K extends Key<T>>({ collection }: ProviderCollection<T, K>): Validator<T[K]> {
+	getValidator<K extends Key<T>>(collection: K): Validator<T[K]> {
 		return this.validators[collection];
 	}
-	subscribeDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, observer: PartialObserver<OptionalData>): Unsubscribe {
-		return this.source.subscribeDocument(ref, new _ValidateEntityObserver(ref, this.getValidator(ref), observer));
+	subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
+		return this.source.subscribeItem(collection, id, new _ValidateEntityObserver(collection, this.getValidator(collection), observer));
 	}
-	subscribeQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, observer: PartialObserver<Entities<T[K]>>): Unsubscribe {
-		return this.source.subscribeQuery(ref, new _ValidateEntitiesObserver(ref, this.getValidator(ref), observer));
-	}
-}
-
-/** Validate a synchronous source provider. */
-export class ValidationProvider<T extends Datas> extends AbstractValidationProvider<T> implements ThroughProvider<T> {
-	readonly source: Provider<T>;
-	constructor(source: Provider<T>, validators: Validators<T>) {
-		super(validators);
-		this.source = source;
-	}
-	getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): OptionalEntity<T[K]> {
-		return _validateEntity(this.source.getDocument(ref), ref, this.getValidator(ref));
-	}
-	addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): string {
-		return this.source.addDocument(ref, validate(data, this.getValidator(ref)));
-	}
-	setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, value: T[K]): void {
-		return this.source.setDocument(ref, validate(value, this.getValidator(ref)));
-	}
-	updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): void {
-		return this.source.updateDocument(ref, update.validate(this.getValidator(ref)));
-	}
-	deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): void {
-		return this.source.deleteDocument(ref);
-	}
-	getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Entities<T[K]> {
-		return _validateEntities(this.source.getQuery(ref), ref, this.getValidator(ref));
-	}
-	setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, value: T[K]): number {
-		return this.source.setQuery(ref, validate(value, this.getValidator(ref)));
-	}
-	updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): number {
-		return this.source.updateQuery(ref, update.validate(this.getValidator(ref)));
-	}
-	deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): number {
-		return this.source.deleteQuery(ref);
+	subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
+		return this.source.subscribeQuery(collection, constraints, new _ValidateEntitiesObserver(collection, this.getValidator(collection), observer));
 	}
 }
 
-/** Validate an asynchronous source provider. */
-export class AsyncValidationProvider<T extends Datas> extends AbstractValidationProvider<T> implements AsyncThroughProvider<T> {
-	readonly source: AsyncProvider<T>;
-	constructor(source: AsyncProvider<T>, validators: Validators<T>) {
+/** Validate a synchronous source provider (source can have any type because validation guarantees the type). */
+export class ValidationProvider<T extends Datas> extends AbstractValidationProvider<T> implements ThroughProvider<any>, Provider<T> {
+	readonly source: Provider<any>;
+	constructor(source: Provider<any>, validators: Validators<T>) {
 		super(validators);
 		this.source = source;
 	}
-	async getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<OptionalEntity<T[K]>> {
-		return _validateEntity(await this.source.getDocument(ref), ref, this.getValidator(ref));
+	getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> {
+		return _validateEntity(collection, this.source.getItem(collection, id), this.getValidator(collection));
 	}
-	addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): Promise<string> {
-		return this.source.addDocument(ref, validate(data, this.getValidator(ref)));
+	addItem<K extends Key<T>>(collection: K, data: T[K]): string {
+		return this.source.addItem(collection, validate(data, this.getValidator(collection)));
 	}
-	setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, value: T[K]): Promise<void> {
-		return this.source.setDocument(ref, validate(value, this.getValidator(ref)));
+	setItem<K extends Key<T>>(collection: K, id: string, value: T[K]): void {
+		return this.source.setItem(collection, id, validate(value, this.getValidator(collection)));
 	}
-	updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): Promise<void> {
-		return this.source.updateDocument(ref, update.validate(this.getValidator(ref)));
+	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): void {
+		return this.source.updateItem(collection, id, update.validate(this.getValidator(collection)));
 	}
-	deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<void> {
-		return this.source.deleteDocument(ref);
+	deleteItem<K extends Key<T>>(collection: K, id: string): void {
+		return this.source.deleteItem(collection, id);
 	}
-	async getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<Entities<T[K]>> {
-		return _validateEntities(await this.source.getQuery(ref), ref, this.getValidator(ref));
+	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
+		return _validateEntities(collection, this.source.getQuery(collection, constraints), this.getValidator(collection));
 	}
-	setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, value: T[K]): Promise<number> {
-		return this.source.setQuery(ref, validate(value, this.getValidator(ref)));
+	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): number {
+		return this.source.setQuery(collection, constraints, validate(value, this.getValidator(collection)));
 	}
-	updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): Promise<number> {
-		return this.source.updateQuery(ref, update.validate(this.getValidator(ref)));
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): number {
+		return this.source.updateQuery(collection, constraints, update.validate(this.getValidator(collection)));
 	}
-	deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<number> {
-		return this.source.deleteQuery(ref);
+	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
+		return this.source.deleteQuery(collection, constraints);
+	}
+}
+
+/** Validate an asynchronous source provider (source can have any type because validation guarantees the type). */
+export class AsyncValidationProvider<T extends Datas> extends AbstractValidationProvider<T> implements AsyncThroughProvider<any>, AsyncProvider<T> {
+	readonly source: AsyncProvider<any>;
+	constructor(source: AsyncProvider<any>, validators: Validators<T>) {
+		super(validators);
+		this.source = source;
+	}
+	async getItem<K extends Key<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
+		return _validateEntity(collection, await this.source.getItem(collection, id), this.getValidator(collection));
+	}
+	addItem<K extends Key<T>>(collection: K, data: T[K]): Promise<string> {
+		return this.source.addItem(collection, validate(data, this.getValidator(collection)));
+	}
+	setItem<K extends Key<T>>(collection: K, id: string, value: T[K]): Promise<void> {
+		return this.source.setItem(collection, id, validate(value, this.getValidator(collection)));
+	}
+	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): Promise<void> {
+		return this.source.updateItem(collection, id, update.validate(this.getValidator(collection)));
+	}
+	deleteItem<K extends Key<T>>(collection: K, id: string): Promise<void> {
+		return this.source.deleteItem(collection, id);
+	}
+	async getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
+		return _validateEntities(collection, await this.source.getQuery(collection, constraints), this.getValidator(collection));
+	}
+	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): Promise<number> {
+		return this.source.setQuery(collection, constraints, validate(value, this.getValidator(collection)));
+	}
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): Promise<number> {
+		return this.source.updateQuery(collection, constraints, update.validate(this.getValidator(collection)));
+	}
+	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
+		return this.source.deleteQuery(collection, constraints);
 	}
 }
 
 /** Validate an entity for a document reference. */
-function _validateEntity<T extends Datas, K extends Key<T>>(unsafeEntity: OptionalEntity<Data>, ref: ProviderCollection<T, K>, validator: Validator<T[K]>): OptionalEntity<T[K]> {
+function _validateEntity<T extends Data>(collection: string, unsafeEntity: ItemValue<Data>, validator: Validator<T>): ItemValue<T> {
 	if (!unsafeEntity) return null;
 	try {
 		return { ...validate(unsafeEntity, validator), id: unsafeEntity.id };
 	} catch (thrown) {
-		throw thrown instanceof Feedback ? new ValidationError(`Invalid data for "${ref}"`, thrown) : thrown;
+		throw thrown instanceof Feedback ? new ValidationError(`Invalid data for "${collection}"`, thrown) : thrown;
 	}
 }
 
 /** Observer that validates received entities. */
-class _ValidateEntityObserver<T extends Datas, K extends Key<T>> extends TransformableObserver<OptionalEntity<Data>, OptionalEntity<T[K]>> {
-	protected _ref: ProviderCollection<T, K>;
-	protected _validator: Validator<T[K]>;
-	constructor(ref: ProviderCollection<T, K>, validator: Validator<T[K]>, observer: PartialObserver<OptionalEntity<T[K]>>) {
+class _ValidateEntityObserver<T extends Data> extends TransformableObserver<ItemValue<Data>, ItemValue<T>> {
+	protected _collection: string;
+	protected _validator: Validator<T>;
+	constructor(collection: string, validator: Validator<T>, observer: PartialObserver<ItemValue<T>>) {
 		super(observer);
-		this._ref = ref;
+		this._collection = collection;
 		this._validator = validator;
 	}
-	transform(unsafeEntity: OptionalEntity<Data>): OptionalEntity<T[K]> {
-		return _validateEntity(unsafeEntity, this._ref, this._validator);
+	transform(unsafeEntity: ItemValue<Data>): ItemValue<T> {
+		return _validateEntity(this._collection, unsafeEntity, this._validator);
 	}
 }
 
 /** Validate a set of entities for this query reference. */
-function _validateEntities<T extends Datas, K extends Key<T>>(unsafeEntities: Entities<Data>, ref: ProviderCollection<T, K>, validator: Validator<T[K]>): Entities<T[K]> {
-	return Array.from(_yieldEntities(unsafeEntities, ref, validator));
+function _validateEntities<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, validator: Validator<T>): ItemArray<T> {
+	return Array.from(_yieldEntities(collection, unsafeEntities, validator));
 }
-function* _yieldEntities<T extends Datas, K extends Key<T>>(unsafeEntities: Entities<Data>, ref: ProviderCollection<T, K>, validator: Validator<T[K]>): Iterable<Entity<T[K]>> {
+function* _yieldEntities<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, validator: Validator<T>): Iterable<ItemData<T>> {
 	let invalid = false;
 	const details: MutableObject<Feedback> = {};
 	for (const unsafeEntity of unsafeEntities) {
@@ -142,19 +144,19 @@ function* _yieldEntities<T extends Datas, K extends Key<T>>(unsafeEntities: Enti
 			details[unsafeEntity.id] = thrown;
 		}
 	}
-	if (invalid) throw new ValidationError(`Invalid data for "${ref.collection}"`, new InvalidFeedback("Invalid documents", details));
+	if (invalid) throw new ValidationError(`Invalid data for "${collection}"`, new InvalidFeedback("Invalid items", details));
 }
 
 /** Observer that validates received entities. */
-class _ValidateEntitiesObserver<T extends Datas, K extends Key<T>> extends TransformableObserver<Entities<Data>, Entities<T[K]>> {
-	protected _ref: ProviderCollection<T, K>;
-	protected _validator: Validator<T[K]>;
-	constructor(ref: ProviderCollection<T, K>, validator: Validator<T[K]>, observer: PartialObserver<Entities<T[K]>>) {
+class _ValidateEntitiesObserver<T extends Data> extends TransformableObserver<ItemArray<Data>, ItemArray<T>> {
+	protected _collection: string;
+	protected _validator: Validator<T>;
+	constructor(collection: string, validator: Validator<T>, observer: PartialObserver<ItemArray<T>>) {
 		super(observer);
-		this._ref = ref;
+		this._collection = collection;
 		this._validator = validator;
 	}
-	transform(unsafeEntities: Entities<Data>): Entities<T[K]> {
-		return _validateEntities(unsafeEntities, this._ref, this._validator);
+	transform(unsafeEntities: ItemArray<Data>): ItemArray<T> {
+		return _validateEntities(this._collection, unsafeEntities, this._validator);
 	}
 }

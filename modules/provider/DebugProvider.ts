@@ -1,35 +1,39 @@
 /* eslint-disable no-console */
 
-import type { Datas, Entities, Key, OptionalEntity } from "../util/data.js";
+import type { Datas, Key } from "../util/data.js";
+import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
 import { ThroughObserver } from "../observe/ThroughObserver.js";
-import { AbstractProvider, Provider, AsyncProvider, ProviderDocument, ProviderCollection, ProviderQuery } from "./Provider.js";
+import { QueryConstraints } from "../constraint/QueryConstraints.js";
+import { Provider, AsyncProvider } from "./Provider.js";
 import type { ThroughProvider, AsyncThroughProvider } from "./ThroughProvider.js";
 
 /** Provider that logs operations to a source provider to the console. */
-export abstract class AbstractDebugProvider<T extends Datas> extends AbstractProvider<T> {
-	abstract readonly source: AbstractProvider<T>;
-	subscribeDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, observer: PartialObserver<OptionalEntity<T[K]>>): Unsubscribe {
-		console.log(`Subscribe: ${ref}:`);
-		return this.source.subscribeDocument(ref, new _DebugObserver(ref, observer));
+abstract class AbstractDebugProvider<T extends Datas> {
+	abstract readonly source: Provider<T> | AsyncProvider<T>;
+	subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
+		const key = _getItemKey(collection, id);
+		console.log(`Subscribe: ${key}:`);
+		return this.source.subscribeItem(collection, id, new _DebugObserver(key, observer));
 	}
-	subscribeQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, observer: PartialObserver<Entities<T[K]>>): Unsubscribe {
-		console.log(`Subscribe: ${ref}:`);
-		return this.source.subscribeQuery(ref, new _DebugObserver(ref, observer));
+	subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
+		const key = _getQueryKey(collection, constraints);
+		console.log(`Subscribe: ${key}:`);
+		return this.source.subscribeQuery(collection, constraints, new _DebugObserver(key, observer));
 	}
 }
 
 /** Observer that wraps errors in subscriptions in `ReferenceReadError` */
 class _DebugObserver<T> extends ThroughObserver<T> {
-	private _ref: ProviderCollection<Datas, string>;
-	constructor(ref: ProviderCollection<Datas, string>, target: PartialObserver<T>) {
+	private _key: string;
+	constructor(ref: string, target: PartialObserver<T>) {
 		super(target);
-		this._ref = ref;
+		this._key = ref;
 	}
 	override error(reason: Error | unknown): void {
-		console.log(`Error: Subscribe: ${this._ref}`, reason);
+		console.log(`Error: Subscribe: ${this._key}`, reason);
 		super.error(reason);
 	}
 }
@@ -41,84 +45,93 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 		super();
 		this.source = source;
 	}
-	getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): OptionalEntity<T[K]> {
-		console.log(`Get: ${ref}:`);
+	getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> {
+		const key = _getItemKey(collection, id);
+		console.log(`Get: ${key}:`);
 		try {
-			return this.source.getDocument(ref);
+			return this.source.getItem(collection, id);
 		} catch (reason) {
-			console.error(`Error: Get: ${ref}:`, reason);
+			console.error(`Error: Get: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): string {
-		console.log(`Add: ${ref}:`, data);
+	addItem<K extends Key<T>>(collection: K, data: T[K]): string {
+		const key = collection;
+		console.log(`Add: ${key}:`, data);
 		try {
-			return this.source.addDocument(ref, data);
+			return this.source.addItem(collection, data);
 		} catch (reason) {
-			console.error(`Error: Add: ${ref}:`, reason);
+			console.error(`Error: Add: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): void {
-		console.log(`Set: ${ref}:`, data);
+	setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): void {
+		const key = _getItemKey(collection, id);
+		console.log(`Set: ${key}:`, data);
 		try {
-			return this.source.setDocument(ref, data);
+			return this.source.setItem(collection, id, data);
 		} catch (reason) {
-			console.error(`Error: Set: ${ref}:`, reason);
+			console.error(`Error: Set: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): void {
-		console.log(`Update: ${ref}:`, update.updates);
+	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): void {
+		const key = _getItemKey(collection, id);
+		console.log(`Update: ${key}:`, update.updates);
 		try {
-			return this.source.updateDocument(ref, update);
+			return this.source.updateItem(collection, id, update);
 		} catch (reason) {
-			console.error(`Error: Update: ${ref}:`, reason);
+			console.error(`Error: Update: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): void {
-		console.log(`Delete: ${ref}:`);
+	deleteItem<K extends Key<T>>(collection: K, id: string): void {
+		const key = _getItemKey(collection, id);
+		console.log(`Delete: ${key}:`);
 		try {
-			return this.source.deleteDocument(ref);
+			return this.source.deleteItem(collection, id);
 		} catch (reason) {
-			console.error(`Error: Delete: ${ref}:`, reason);
+			console.error(`Error: Delete: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Entities<T[K]> {
-		console.log(`Get: ${ref}:`);
+	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
+		const key = _getQueryKey(collection, constraints);
+		console.log(`Get: ${key}:`);
 		try {
-			return this.source.getQuery(ref);
+			return this.source.getQuery(collection, constraints);
 		} catch (reason) {
-			console.error(`Error: Get: ${ref}:`, reason);
+			console.error(`Error: Get: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): number {
-		console.log(`Set: ${ref}:`, data);
+	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
+		const key = _getQueryKey(collection, constraints);
+		console.log(`Set: ${key}:`, data);
 		try {
-			return this.source.setQuery(ref, data);
+			return this.source.setQuery(collection, constraints, data);
 		} catch (reason) {
-			console.error(`Error: Set: ${ref}:`, reason);
+			console.error(`Error: Set: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): number {
-		console.log(`Update: ${ref}:`, update.updates);
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): number {
+		const key = _getQueryKey(collection, constraints);
+		console.log(`Update: ${key}:`, update.updates);
 		try {
-			return this.source.updateQuery(ref, update);
+			return this.source.updateQuery(collection, constraints, update);
 		} catch (reason) {
-			console.error(`Error: Update: ${ref}:`, reason);
+			console.error(`Error: Update: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): number {
-		console.log(`Delete: ${ref}:`);
+	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
+		const key = _getQueryKey(collection, constraints);
+		console.log(`Delete: ${key}:`);
 		try {
-			return this.source.deleteQuery(ref);
+			return this.source.deleteQuery(collection, constraints);
 		} catch (reason) {
-			console.error(`Error: Delete: ${ref}:`, reason);
+			console.error(`Error: Delete: ${key}:`, reason);
 			throw reason;
 		}
 	}
@@ -131,85 +144,97 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 		super();
 		this.source = source;
 	}
-	async getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<OptionalEntity<T[K]>> {
-		console.log(`Get: ${ref}:`);
+	async getItem<K extends Key<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
+		const key = _getItemKey(collection, id);
+		console.log(`Get: ${key}:`);
 		try {
-			return await this.source.getDocument(ref);
+			return await this.source.getItem(collection, id);
 		} catch (reason) {
-			console.error(`Error: Get: ${ref}:`, reason);
+			console.error(`Error: Get: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	async addDocument<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): Promise<string> {
-		console.log(`Add: ${ref}:`, data);
+	async addItem<K extends Key<T>>(collection: K, data: T[K]): Promise<string> {
+		const key = collection;
+		console.log(`Add: ${key}:`, data);
 		try {
-			return await this.source.addDocument(ref, data);
+			return await this.source.addItem(collection, data);
 		} catch (reason) {
-			console.error(`Error: Add: ${ref}:`, reason);
+			console.error(`Error: Add: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	async setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): Promise<void> {
-		console.log(`Set: ${ref}:`, data);
+	async setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): Promise<void> {
+		const key = _getItemKey(collection, id);
+		console.log(`Set: ${key}:`, data);
 		try {
-			return await this.source.setDocument(ref, data);
+			return await this.source.setItem(collection, id, data);
 		} catch (reason) {
-			console.error(`Error: Set: ${ref}:`, reason);
+			console.error(`Error: Set: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	async updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): Promise<void> {
-		console.log(`Update: ${ref}:`, update.updates);
+	async updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): Promise<void> {
+		const key = _getItemKey(collection, id);
+		console.log(`Update: ${key}:`, update.updates);
 		try {
-			return await this.source.updateDocument(ref, update);
+			return await this.source.updateItem(collection, id, update);
 		} catch (reason) {
-			console.error(`Error: Update: ${ref}:`, reason);
+			console.error(`Error: Update: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	async deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<void> {
-		console.log(`Delete: ${ref}:`);
+	async deleteItem<K extends Key<T>>(collection: K, id: string): Promise<void> {
+		const key = _getItemKey(collection, id);
+		console.log(`Delete: ${key}:`);
 		try {
-			return await this.source.deleteDocument(ref);
+			return await this.source.deleteItem(collection, id);
 		} catch (reason) {
-			console.error(`Error: Delete: ${ref}:`, reason);
+			console.error(`Error: Delete: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	async getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<Entities<T[K]>> {
-		console.log(`Get: ${ref}:`);
+	async getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
+		const key = _getQueryKey(collection, constraints);
+		console.log(`Get: ${key}:`);
 		try {
-			return await this.source.getQuery(ref);
+			return await this.source.getQuery(collection, constraints);
 		} catch (reason) {
-			console.error(`Error: Get: ${ref}:`, reason);
+			console.error(`Error: Get: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	async setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): Promise<number> {
-		console.log(`Set: ${ref}:`, data);
+	async setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): Promise<number> {
+		const key = _getQueryKey(collection, constraints);
+		console.log(`Set: ${key}:`, data);
 		try {
-			return await this.source.setQuery(ref, data);
+			return await this.source.setQuery(collection, constraints, data);
 		} catch (reason) {
-			console.error(`Error: Set: ${ref}:`, reason);
+			console.error(`Error: Set: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	async updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): Promise<number> {
-		console.log(`Update: ${ref}:`, update.updates);
+	async updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): Promise<number> {
+		const key = _getQueryKey(collection, constraints);
+		console.log(`Update: ${key}:`, update.updates);
 		try {
-			return await this.source.updateQuery(ref, update);
+			return await this.source.updateQuery(collection, constraints, update);
 		} catch (reason) {
-			console.error(`Error: Update: ${ref}:`, reason);
+			console.error(`Error: Update: ${key}:`, reason);
 			throw reason;
 		}
 	}
-	async deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<number> {
-		console.log(`Delete: ${ref}:`);
+	async deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
+		const key = _getQueryKey(collection, constraints);
+		console.log(`Delete: ${key}:`);
 		try {
-			return await this.source.deleteQuery(ref);
+			return await this.source.deleteQuery(collection, constraints);
 		} catch (reason) {
-			console.error(`Error: Delete: ${ref}:`, reason);
+			console.error(`Error: Delete: ${key}:`, reason);
 			throw reason;
 		}
 	}
 }
+
+const _getItemKey = (collection: string, id: string): string => `${collection}/${id}`;
+const _getQueryKey = (collection: string, constraints: QueryConstraints): string => `${collection}:${QueryConstraints.prototype.toString.call(constraints)}`;

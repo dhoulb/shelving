@@ -1,8 +1,6 @@
 import type {
 	Firestore,
-	DocumentReference as FirestoreDocumentReference,
 	DocumentSnapshot as FirestoreDocumentSnapshot,
-	CollectionReference as FirestoreCollectionReference,
 	Query as FirestoreQueryReference,
 	QuerySnapshot as FirestoreQuerySnapshot,
 	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
@@ -30,13 +28,14 @@ import {
 	getDoc,
 	getDocs,
 } from "firebase/firestore";
-import type { Data, Entity, Entities, OptionalEntity, Datas, Key } from "../../util/data.js";
+import type { Data } from "../../util/data.js";
 import type { Entry } from "../../util/entry.js";
-import type { FilterOperator } from "../../query/Filter.js";
-import type { SortDirection } from "../../query/Sort.js";
+import type { FilterOperator } from "../../constraint/FilterConstraint.js";
+import type { SortDirection } from "../../constraint/SortConstraint.js";
 import type { Unsubscribe } from "../../observe/Observable.js";
-import type { AsyncProvider, ProviderCollection, ProviderDocument, ProviderQuery } from "../../provider/Provider.js";
-import { dispatchError, dispatchNext, Observer } from "../../observe/Observer.js";
+import type { AsyncProvider } from "../../provider/Provider.js";
+import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
+import { dispatchError, dispatchNext, Observer, PartialObserver } from "../../observe/Observer.js";
 import { ArrayUpdate } from "../../update/ArrayUpdate.js";
 import { DataUpdate } from "../../update/DataUpdate.js";
 import { Increment } from "../../update/Increment.js";
@@ -67,36 +66,26 @@ const DIRECTIONS: { readonly [K in SortDirection]: FirestoreOrderByDirection } =
 	DESC: "desc",
 };
 
-/** Get a Firestore DatabaseDocument for a given document. */
-function _getDocument<T extends Datas, K extends Key<T>>(firestore: Firestore, { collection, id }: ProviderDocument<T, K>): FirestoreDocumentReference<T[K]> {
-	return firestoreDocument(firestore, collection, id) as FirestoreDocumentReference<T[K]>;
-}
-
-/** Get a Firestore CollectionReference for a given query. */
-function _getCollection<T extends Datas, K extends Key<T>>(firestore: Firestore, { collection }: ProviderCollection<T, K>): FirestoreCollectionReference<T[K]> {
-	return firestoreCollection(firestore, collection) as FirestoreCollectionReference<T[K]>;
-}
-
 /** Get a Firestore QueryReference for a given query. */
-function _getQuery<T extends Datas, K extends Key<T>>(firestore: Firestore, ref: ProviderQuery<T, K>): FirestoreQueryReference<T[K]> {
-	return firestoreQuery(_getCollection(firestore, ref), ..._yieldQueryConstraints(ref));
+function _getQuery(firestore: Firestore, collection: string, constraints: ItemConstraints): FirestoreQueryReference {
+	return firestoreQuery(firestoreCollection(firestore, collection), ..._yieldQueryConstraints(constraints));
 }
-function* _yieldQueryConstraints<T extends Datas, K extends Key<T>>({ sorts, filters, limit }: ProviderQuery<T, K>): Iterable<FirestoreQueryConstraint> {
+function* _yieldQueryConstraints({ sorts, filters, limit }: ItemConstraints): Iterable<FirestoreQueryConstraint> {
 	for (const { key, direction } of sorts) yield firestoreOrderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) yield firestoreWhere(key === "id" ? ID : key, OPERATORS[operator], value);
 	if (typeof limit === "number") yield firestoreLimit(limit);
 }
 
-function _getEntities<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): Entities<T> {
-	return snapshot.docs.map(_getEntity);
+function _getItems<T extends Data>(snapshot: FirestoreQuerySnapshot<T>): ItemArray<T> {
+	return snapshot.docs.map(_getItemData);
 }
 
-function _getEntity<T extends Data>(snapshot: FirestoreQueryDocumentSnapshot<T>): Entity<T> {
+function _getItemData<T extends Data>(snapshot: FirestoreQueryDocumentSnapshot<T>): ItemData<T> {
 	const data = snapshot.data();
 	return { ...data, id: snapshot.id };
 }
 
-function _getOptionalEntity<T extends Data>(snapshot: FirestoreDocumentSnapshot<T>): OptionalEntity<T> {
+function _getItemValue<T extends Data>(snapshot: FirestoreDocumentSnapshot<T>): ItemValue<T> {
 	const data = snapshot.data();
 	return data ? { ...data, id: snapshot.id } : null;
 }
@@ -131,57 +120,57 @@ function* _getFieldValues<T>(updates: Iterable<Entry<string, T | Update<T>>>, pr
  * - Supports offline mode.
  * - Supports realtime subscriptions.
  */
-export class FirestoreClientProvider<T extends Datas> implements AsyncProvider<T> {
-	readonly firestore: Firestore;
+export class FirestoreClientProvider implements AsyncProvider {
+	private readonly _firestore: Firestore;
 	constructor(firestore: Firestore) {
-		this.firestore = firestore;
+		this._firestore = firestore;
 	}
-	async getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<OptionalEntity<T[K]>> {
-		return _getOptionalEntity(await getDoc(_getDocument(this.firestore, ref)));
+	async getItem(collection: string, id: string): Promise<ItemValue> {
+		return _getItemValue(await getDoc(firestoreDocument(this._firestore, collection, id)));
 	}
-	subscribeDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, observer: Observer<OptionalEntity<T[K]>>): Unsubscribe {
+	subscribeItem(collection: string, id: string, observer: PartialObserver<ItemValue>): Unsubscribe {
 		return onSnapshot(
-			_getDocument(this.firestore, ref),
-			snapshot => dispatchNext(observer, _getOptionalEntity(snapshot)),
+			firestoreDocument(this._firestore, collection, id),
+			snapshot => dispatchNext(observer, _getItemValue(snapshot)),
 			thrown => dispatchError(observer, thrown),
 		);
 	}
-	async addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): Promise<string> {
-		const reference = await addDoc(_getCollection(this.firestore, ref), data);
+	async addItem(collection: string, data: Data): Promise<string> {
+		const reference = await addDoc(firestoreCollection(this._firestore, collection), data);
 		return reference.id;
 	}
-	async setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): Promise<void> {
-		await setDoc(_getDocument(this.firestore, ref), data);
+	async setItem(collection: string, id: string, data: Data): Promise<void> {
+		await setDoc(firestoreDocument(this._firestore, collection, id), data);
 	}
-	async updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): Promise<void> {
-		await updateDoc(_getDocument(this.firestore, ref), ...(_getFieldValues(update) as [string, unknown, ...unknown[]]));
+	async updateItem(collection: string, id: string, update: DataUpdate): Promise<void> {
+		await updateDoc(firestoreDocument(this._firestore, collection, id), ...(_getFieldValues(update) as [string, unknown]));
 	}
-	async deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<void> {
-		await deleteDoc(_getDocument(this.firestore, ref));
+	async deleteItem(collection: string, id: string): Promise<void> {
+		await deleteDoc(firestoreDocument(this._firestore, collection, id));
 	}
-	async getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<Entities<T[K]>> {
-		return _getEntities(await getDocs(_getQuery(this.firestore, ref)));
+	async getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
+		return _getItems(await getDocs(_getQuery(this._firestore, collection, constraints)));
 	}
-	subscribeQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, observer: Observer<Entities<T[K]>>): Unsubscribe {
+	subscribeQuery(collection: string, constraints: ItemConstraints, observer: Observer<ItemArray>): Unsubscribe {
 		return onSnapshot(
-			_getQuery(this.firestore, ref),
-			snapshot => dispatchNext(observer, _getEntities(snapshot)),
+			_getQuery(this._firestore, collection, constraints),
+			snapshot => dispatchNext(observer, _getItems(snapshot)),
 			thrown => dispatchError(observer, thrown),
 		);
 	}
-	async setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): Promise<number> {
-		const snapshot = await getDocs(_getQuery(this.firestore, ref));
+	async setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number> {
+		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
 		await Promise.all(snapshot.docs.map(s => setDoc(s.ref, data)));
 		return snapshot.size;
 	}
-	async updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): Promise<number> {
-		const snapshot = await getDocs(_getQuery(this.firestore, ref));
-		const fieldValues = Array.from(_getFieldValues(update)) as [string, unknown, ...unknown[]];
+	async updateQuery(collection: string, constraints: ItemConstraints, update: DataUpdate): Promise<number> {
+		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
+		const fieldValues = Array.from(_getFieldValues(update)) as [string, unknown];
 		await Promise.all(snapshot.docs.map(s => updateDoc(s.ref, ...fieldValues)));
 		return snapshot.size;
 	}
-	async deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<number> {
-		const snapshot = await getDocs(_getQuery(this.firestore, ref));
+	async deleteQuery(collection: string, constraints: ItemConstraints): Promise<number> {
+		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 		return snapshot.size;
 	}

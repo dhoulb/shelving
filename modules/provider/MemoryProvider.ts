@@ -1,16 +1,17 @@
-import type { Data, Entity, Entities, OptionalEntity, Datas, Key } from "../util/data.js";
+import type { Data, Datas, Key } from "../util/data.js";
+import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
 import type { Dispatch } from "../util/function.js";
 import type { Unsubscribe } from "../observe/Observable.js";
-import { Query } from "../query/Query.js";
+import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { getRandomKey } from "../util/random.js";
 import { isArrayEqual } from "../util/equal.js";
-import { transformProps } from "../util/transform.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { Subject } from "../observe/Subject.js";
 import { dispatchNext, PartialObserver } from "../observe/Observer.js";
 import { getArray } from "../util/array.js";
-import { ProviderCollection, ProviderDocument, ProviderQuery, Provider } from "./Provider.js";
+import { Constraint } from "../constraint/Constraint.js";
+import type { Provider } from "./Provider.js";
 
 /**
  * Fast in-memory store for data.
@@ -22,60 +23,60 @@ export class MemoryProvider<T extends Datas> implements Provider<T> {
 	private _tables: { [K in keyof T]?: MemoryTable<T[K]> } = {};
 
 	/** Get a table for a collection. */
-	getTable<K extends Key<T>>({ collection }: ProviderCollection<T, K>): MemoryTable<T[K]> {
+	getTable<K extends Key<T>>(collection: K): MemoryTable<T[K]> {
 		return this._tables[collection] || (this._tables[collection] = new MemoryTable());
 	}
 
-	getDocumentTime<K extends Key<T>>(ref: ProviderDocument<T, K>): number | null {
-		return this.getTable(ref).getDocumentTime(ref.id);
+	getDocumentTime<K extends Key<T>>(collection: K, id: string): number | null {
+		return this.getTable(collection).getItemTime(id);
 	}
 
-	getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): OptionalEntity<T[K]> {
-		return this.getTable(ref).getDocument(ref.id);
+	getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> {
+		return this.getTable(collection).getItem(id);
 	}
 
-	subscribeDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, observer: PartialObserver<OptionalEntity<T[K]>>): Unsubscribe {
-		return this.getTable(ref).subscribeDocument(ref.id, observer);
+	subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
+		return this.getTable(collection).subscribeItem(id, observer);
 	}
 
-	addDocument<K extends Key<T>>(ref: ProviderCollection<T, K>, data: T[K]): string {
-		return this.getTable(ref).addDocument(data);
+	addItem<K extends Key<T>>(collection: K, data: T[K]): string {
+		return this.getTable(collection).addItem(data);
 	}
 
-	setDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, data: T[K]): void {
-		return this.getTable(ref).setDocument(ref.id, data);
+	setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): void {
+		return this.getTable(collection).setItem(id, data);
 	}
 
-	updateDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, update: DataUpdate<T[K]>): void {
-		return this.getTable(ref).updateDocument(ref.id, update);
+	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): void {
+		return this.getTable(collection).updateItem(id, update);
 	}
 
-	deleteDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): void {
-		return this.getTable(ref).deleteDocument(ref.id);
+	deleteItem<K extends Key<T>>(collection: K, id: string): void {
+		return this.getTable(collection).deleteItem(id);
 	}
 
-	getQueryTime<K extends Key<T>>(ref: ProviderQuery<T, K>): number | null {
-		return this.getTable(ref).getQueryTime(ref);
+	getQueryTime<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number | null {
+		return this.getTable(collection).getQueryTime(constraints);
 	}
 
-	getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Entities<T[K]> {
-		return this.getTable(ref).getQuery(ref);
+	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
+		return this.getTable(collection).getQuery(constraints);
 	}
 
-	subscribeQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, observer: PartialObserver<Entities<T[K]>>): Unsubscribe {
-		return this.getTable(ref).subscribeQuery(ref, observer);
+	subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
+		return this.getTable(collection).subscribeQuery(constraints, observer);
 	}
 
-	setQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, data: T[K]): number {
-		return this.getTable(ref).setQuery(ref, data);
+	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
+		return this.getTable(collection).setQuery(constraints, data);
 	}
 
-	updateQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, update: DataUpdate<T[K]>): number {
-		return this.getTable(ref).updateQuery(ref, update);
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): number {
+		return this.getTable(collection).updateQuery(constraints, update);
 	}
 
-	deleteQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): number {
-		return this.getTable(ref).deleteQuery(ref);
+	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
+		return this.getTable(collection).deleteQuery(constraints);
 	}
 }
 
@@ -84,27 +85,31 @@ export class MemoryProvider<T extends Datas> implements Provider<T> {
  * - Fires with an array of string IDs.
  */
 export class MemoryTable<T extends Data> extends Subject<void> {
-	protected _data = new Map<string, Entity<T>>();
+	protected _data = new Map<string, ItemData<T>>();
 	protected _times = new Map<string, number>();
 	protected _listeners = new Set<Dispatch>();
 	protected _firing = false;
 
-	getDocumentTime(id: string): number | null {
+	getItemTime(id: string): number | null {
 		return this._times.get(id) || null;
 	}
 
-	getDocument(id: string): OptionalEntity<T> {
+	setItemTime(id: string): void {
+		this._times.set(id, Date.now());
+	}
+
+	getItem(id: string): ItemValue<T> {
 		return this._data.get(id) || null;
 	}
 
-	subscribeDocument(id: string, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
+	subscribeItem(id: string, observer: PartialObserver<ItemValue<T>>): Unsubscribe {
 		// Call next() immediately with initial results.
-		let last = this.getDocument(id);
+		let last = this.getItem(id);
 		dispatchNext(observer, last);
 
 		// Call next() every time the collection changes.
 		return this.subscribe(() => {
-			const next = this.getDocument(id);
+			const next = this.getItem(id);
 			if (next !== last) {
 				last = next;
 				dispatchNext(observer, last);
@@ -113,15 +118,15 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 	}
 
 	/** Subscribe to a query in this table, but only if the query has been explicitly set (and has a time). */
-	subscribeCachedDocument(id: string, observer: PartialObserver<OptionalEntity<T>>): Unsubscribe {
+	subscribeCachedItem(id: string, observer: PartialObserver<ItemValue<T>>): Unsubscribe {
 		// Call next() immediately with initial results.
-		let last = this.getDocument(id);
+		let last = this.getItem(id);
 		if (this._times.has(id)) dispatchNext(observer, last);
 
 		// Call next() every time the collection changes.
 		return this.subscribe(() => {
 			if (this._times.has(id)) {
-				const next = this.getDocument(id);
+				const next = this.getItem(id);
 				if (next !== last) {
 					last = next;
 					dispatchNext(observer, last);
@@ -130,45 +135,49 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 		});
 	}
 
-	addDocument(data: T): string {
+	addItem(data: T): string {
 		let id = getRandomKey();
 		while (this._data.has(id)) id = getRandomKey(); // Regenerate ID until unique.
-		this.setEntity({ ...data, id });
+		this.setItemData({ ...data, id });
 		return id;
 	}
 
-	setEntity(entity: Entity<T>): void {
-		const id = entity.id;
-		this._data.set(id, entity);
-		this._times.set(id, Date.now());
+	setItemData(data: ItemData<T>): void {
+		const id = data.id;
+		this._data.set(id, data);
+		this.setItemTime(id);
 		this.next();
 	}
 
-	setDocument(id: string, data: T): void {
-		this.setEntity({ ...data, id });
+	setItem(id: string, data: T): void {
+		this.setItemData({ ...data, id });
 	}
 
-	updateDocument(id: string, update: DataUpdate<T>): void {
-		const entity = this._data.get(id);
-		if (!entity) throw new RequiredError(`Document "${id}" does not exist`);
-		this.setEntity({ ...entity, ...Object.fromEntries(transformProps(entity, update.updates)), id });
+	updateItem(id: string, update: DataUpdate<T>): void {
+		const item = this._data.get(id);
+		if (!item) throw new RequiredError(`Document "${id}" does not exist`);
+		this.setItemData({ ...update.transform(item), id });
 	}
 
-	deleteDocument(id: string): void {
+	deleteItem(id: string): void {
 		this._data.delete(id);
 		this._times.set(id, Date.now());
 		this.next();
 	}
 
-	getQueryTime(query: Query<Entity<T>>): number | null {
-		return this._times.get(_getQueryReference(query)) || null;
+	getQueryTime(query: ItemConstraints<T>): number | null {
+		return this._times.get(_getQueryKey(query)) || null;
 	}
 
-	getQuery(query: Query<Entity<T>>): Entities<T> {
+	setQueryTime(query: ItemConstraints<T>): void {
+		this._times.set(_getQueryKey(query), Date.now());
+	}
+
+	getQuery(query: ItemConstraints<T>): ItemArray<T> {
 		return getArray(query.transform(this._data.values()));
 	}
 
-	subscribeQuery(query: Query<Entity<T>>, observer: PartialObserver<Entities<T>>): Unsubscribe {
+	subscribeQuery(query: ItemConstraints<T>, observer: PartialObserver<ItemArray<T>>): Unsubscribe {
 		// Call `next()` immediately with the initial results.
 		let last = this.getQuery(query);
 		dispatchNext(observer, last);
@@ -184,9 +193,9 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 	}
 
 	/** Subscribe to a query in this table, but only if the query has been explicitly set (and has a time). */
-	subscribeCachedQuery(query: Query<Entity<T>>, observer: PartialObserver<Entities<T>>): Unsubscribe {
+	subscribeCachedQuery(query: ItemConstraints<T>, observer: PartialObserver<ItemArray<T>>): Unsubscribe {
 		// Call next() immediately with initial results.
-		const ref = _getQueryReference(query);
+		const ref = _getQueryKey(query);
 		let last = this.getQuery(query);
 		if (this._times.has(ref)) dispatchNext(observer, last);
 
@@ -202,66 +211,55 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 		});
 	}
 
-	protected _getWrites(query: Query<Entity<T>>): Iterable<Entity<T>> {
-		// Queries that have no limit don't care about sorting either.
-		// So sorting can be skipped for performance.
-		return query.limit ? query.transform(this._data.values()) : query.filters.transform(this._data.values());
-	}
-
-	setEntities(query: Query<Entity<T>>, entities: Entities<T>): number {
-		const now = Date.now();
+	setItems(items: ItemArray<T>): number {
 		let count = 0;
-		for (const entity of entities) {
-			const id = entity.id;
-			this._data.set(id, entity);
-			this._times.set(id, now);
+		for (const item of items) {
+			this.setItemData(item);
 			count++;
 		}
-		this._times.set(_getQueryReference(query), now);
 		return count;
 	}
 
-	setQuery(query: Query<Entity<T>>, data: T): number {
+	setQuery(constraints: ItemConstraints<T>, data: T): number {
 		const now = Date.now();
 		let count = 0;
-		for (const { id } of this._getWrites(query)) {
+		for (const { id } of _getWriteConstraints(constraints).transform(this._data.values())) {
 			this._data.set(id, { ...data, id });
 			this._times.set(id, now);
 			count++;
 		}
-		this._times.set(_getQueryReference(query), now);
+		this.setQueryTime(constraints);
 		this.next();
 		return count;
 	}
 
-	updateQuery(query: Query<Entity<T>>, update: DataUpdate<T>): number {
+	updateQuery(constraints: ItemConstraints<T>, update: DataUpdate<T>): number {
 		const now = Date.now();
 		let count = 0;
-		for (const entity of this._getWrites(query)) {
-			const id = entity.id;
-			this._data.set(id, { ...entity, ...Object.fromEntries(transformProps(entity, update.updates)), id });
-			this._times.set(id, now);
+		for (const item of _getWriteConstraints(constraints).transform(this._data.values())) {
+			this.setItemData({ ...update.transform(item), id: item.id });
 			count++;
 		}
-		this._times.set(_getQueryReference(query), now);
+		this._times.set(_getQueryKey(constraints), now);
 		this.next();
 		return count;
 	}
 
-	deleteQuery(query: Query<Entity<T>>): number {
+	deleteQuery(constraints: ItemConstraints<T>): number {
 		let count = 0;
-		for (const { id } of this._getWrites(query)) {
+		for (const { id } of _getWriteConstraints(constraints).transform(this._data.values())) {
 			this._data.delete(id);
 			this._times.set(id, Date.now());
 			count++;
 		}
-		this._times.set(_getQueryReference(query), Date.now());
+		this._times.set(_getQueryKey(constraints), Date.now());
 		this.next();
 		return count;
 	}
 }
 
-function _getQueryReference<T extends Data>(query: Query<Entity<T>>): string {
-	// Queries that have no limit don't care about sorting either.
-	return query.limit ? `{${query.filters.toString()}}` : Query.prototype.toString.call(query);
-}
+// When we're writing data, if there's no limit set the results don't need to be sorted (for performance).
+const _getWriteConstraints = <T extends Data>(constraints: QueryConstraints<T>): Constraint<T> => (constraints.limit ? constraints : constraints.filters);
+
+// Queries that have no limit don't care about sorting either.
+const _getQueryKey = <T extends Data>(query: ItemConstraints<T>): string => (query.limit ? `{filters:${query.filters.toString()}}` : QueryConstraints.prototype.toString.call(query));

@@ -1,11 +1,12 @@
-import type { Datas, Entities, Key, OptionalEntity } from "../util/data.js";
+import type { Datas, Key } from "../util/data.js";
+import type { ItemArray, ItemValue, ItemConstraints } from "../db/Item.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Observable, Unsubscribe } from "../observe/Observable.js";
 import { DelayedSelfClosingState } from "../state/SelfClosingState.js";
 import { awaitNext, connected } from "../observe/util.js";
 import { setMapItem } from "../util/map.js";
+import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { AsyncThroughProvider } from "./ThroughProvider.js";
-import type { ProviderDocument, ProviderQuery } from "./Provider.js";
 
 /** How long to wait after all subscriptions have ended to close the source subscription. */
 const STOP_DELAY = 2000;
@@ -24,74 +25,71 @@ export class BatchProvider<T extends Datas> extends AsyncThroughProvider<T> {
 	private readonly _subs: Map<string, Observable<any>> = new Map(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
 	// Override to combine multiple requests into one.
-	override getDocument<K extends Key<T>>(ref: ProviderDocument<T, K>): Promise<OptionalEntity<T[K]>> {
-		const key = ref.toString();
-		return this._gets.get(key) || setMapItem(this._gets, key, this._awaitDocument(ref, super.getDocument(ref)));
+	override getItem<K extends Key<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
+		const key = _getItemKey(collection, id);
+		return this._gets.get(key) || setMapItem(this._gets, key, this._awaitDocument(key, super.getItem(collection, id)));
 	}
 
 	/** Await a result and delete it from get requests when done. */
-	private async _awaitDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, asyncEntity: PromiseLike<OptionalEntity<T[K]>>): Promise<OptionalEntity<T[K]>> {
+	private async _awaitDocument<K extends Key<T>>(key: string, asyncEntity: PromiseLike<ItemValue<T[K]>>): Promise<ItemValue<T[K]>> {
 		const result = await asyncEntity;
-		const key = ref.toString();
 		this._gets.delete(key);
 		return result;
 	}
 
 	// Override to combine multiple subscriptions into one.
-	override subscribeDocument<K extends Key<T>>(ref: ProviderDocument<T, K>, observer: PartialObserver<OptionalEntity<T[K]>>): Unsubscribe {
-		const key = ref.toString();
-		// Subscribe a new `DelayedSelfClosingState` to the source.
-		// Self-closing state closes itself when it's not being used for `STOP_DELAY` milliseconds, which ends the source subscription too.
+	override subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
+		const key = _getItemKey(collection, id);
 		return (
 			this._subs.get(key) ||
 			setMapItem(
 				this._subs,
 				key,
-				connected<OptionalEntity<T[K]>>(s => {
-					const stop = super.subscribeDocument(ref, s);
-					if (s instanceof DelayedSelfClosingState && !this._gets.has(key)) this._gets.set(key, this._awaitDocument(ref, awaitNext(s))); // The first value from the new subscription can also power any concurrent get requests (which saves that separate request).
+				connected<ItemValue<T[K]>>(s => {
+					const stop = super.subscribeItem(collection, id, s);
+					if (s instanceof DelayedSelfClosingState && !this._gets.has(key)) this._gets.set(key, this._awaitDocument(key, awaitNext(s))); // The first value from the new subscription can also power any concurrent get requests (which saves that separate request).
 					return () => {
 						this._subs.delete(key); // Delete this subscription from subs to allow a new subscription to be made in future.
 						stop();
 					};
-				}, new DelayedSelfClosingState(STOP_DELAY)),
+				}, new DelayedSelfClosingState(STOP_DELAY)), // Self-closing state closes itself when it's not being used for `STOP_DELAY` milliseconds, which ends the source subscription too.
 			)
 		).subscribe(observer);
 	}
 
 	// Override to combine multiple requests into one.
-	override getQuery<K extends Key<T>>(ref: ProviderQuery<T, K>): Promise<Entities<T[K]>> {
-		const key = ref.toString();
-		return this._gets.get(key) || setMapItem(this._gets, key, this._awaitEntities<K>(ref, super.getQuery(ref)));
+	override getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
+		const key = _getQueryKey(collection, constraints);
+		return this._gets.get(key) || setMapItem(this._gets, key, this._awaitEntities<K>(key, super.getQuery(collection, constraints)));
 	}
 
 	/** Await a set of results and delete from get requests when done. */
-	private async _awaitEntities<K extends Key<T>>(ref: ProviderQuery<T, K>, asyncEntities: PromiseLike<Entities<T[K]>>): Promise<Entities<T[K]>> {
+	private async _awaitEntities<K extends Key<T>>(key: string, asyncEntities: PromiseLike<ItemArray<T[K]>>): Promise<ItemArray<T[K]>> {
 		const results = await asyncEntities;
-		const key = ref.toString();
 		this._gets.delete(key);
 		return results;
 	}
 
 	// Override to combine multiple subscriptions into one.
-	override subscribeQuery<K extends Key<T>>(ref: ProviderQuery<T, K>, observer: PartialObserver<Entities<T[K]>>): Unsubscribe {
-		const key = ref.toString();
-		// Subscribe a new `DelayedSelfClosingState` to the source.
-		// Self-closing state closes itself when it's not being used for `STOP_DELAY` milliseconds, which ends the source subscription too.
+	override subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
+		const key = _getQueryKey(collection, constraints);
 		return (
 			this._subs.get(key) ||
 			setMapItem(
 				this._subs,
 				key,
-				connected<Entities<T[K]>>(s => {
-					const stop = super.subscribeQuery(ref, s);
-					if (s instanceof DelayedSelfClosingState && !this._gets.has(key)) this._gets.set(key, this._awaitEntities(ref, awaitNext(s))); // The first value from the subscription can also power any concurrent get requests (which saves that separate request).
+				connected<ItemArray<T[K]>>(s => {
+					const stop = super.subscribeQuery(collection, constraints, s);
+					if (s instanceof DelayedSelfClosingState && !this._gets.has(key)) this._gets.set(key, this._awaitEntities(key, awaitNext(s))); // The first value from the subscription can also power any concurrent get requests (which saves that separate request).
 					return () => {
 						this._subs.delete(key); // Delete this subscription from subs to allow a new subscription to be made in future.
 						stop();
 					};
-				}, new DelayedSelfClosingState(STOP_DELAY)),
+				}, new DelayedSelfClosingState(STOP_DELAY)), // Self-closing state closes itself when it's not being used for `STOP_DELAY` milliseconds, which ends the source subscription too.
 			)
 		).subscribe(observer);
 	}
 }
+
+const _getItemKey = (collection: string, id: string): string => `${collection}/${id}`;
+const _getQueryKey = (collection: string, constraints: QueryConstraints): string => `${collection}:${QueryConstraints.prototype.toString.call(constraints)}`;

@@ -1,65 +1,69 @@
-import { basics, people, basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9, person1, person2, person3, person4, person5, expectOrderedKeys, expectUnorderedKeys, BasicEntity, TestSchema } from "../test/index.js";
-import { MemoryProvider, OptionalData, ImmutableArray, SynchronousDatabase } from "../index.js";
+import { basics, people, basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9, person1, person2, person3, person4, person5, expectOrderedKeys, expectUnorderedKeys, BasicItemData, TestCollections } from "../test/index.js";
+import { MemoryProvider, OptionalData, ImmutableArray, Database } from "../index.js";
 
 test("MemoryProvider: set/get/delete documents", () => {
 	// Setup.
-	const db = new SynchronousDatabase<TestSchema>(new MemoryProvider());
-	const queryBasics = db.query("basics");
-	const queryPeople = db.query("people");
+	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const collectionBasics = db.collection("basics");
+	const queryBasics = collectionBasics.query();
+	const collectionPeople = db.collection("people");
+	const queryPeople = collectionPeople.query();
 
 	// Add documents.
-	expect(queryBasics.doc("basic1").set(basic1)).toBe(undefined);
-	expect(queryBasics.doc("basic2").set(basic2)).toBe(undefined);
-	expect(queryBasics.doc("basic3").set(basic3)).toBe(undefined);
-	expect(queryPeople.doc("person1").set(person1)).toBe(undefined);
-	expect(queryPeople.doc("person2").set(person2)).toBe(undefined);
-	expect(queryPeople.doc("person3").set(person3)).toBe(undefined);
+	expect(collectionBasics.item("basic1").set(basic1)).toBe(undefined);
+	expect(collectionBasics.item("basic2").set(basic2)).toBe(undefined);
+	expect(collectionBasics.item("basic3").set(basic3)).toBe(undefined);
+	expect(collectionPeople.item("person1").set(person1)).toBe(undefined);
+	expect(collectionPeople.item("person2").set(person2)).toBe(undefined);
+	expect(collectionPeople.item("person3").set(person3)).toBe(undefined);
 	// Check documents.
-	expect(queryBasics.doc("basic1").value).toMatchObject(basic1);
-	expect(queryBasics.doc("basic2").value).toMatchObject(basic2);
-	expect(queryBasics.doc("basic3").value).toMatchObject(basic3);
-	expect(queryBasics.doc("basicNone").value).toBe(null);
+	expect(collectionBasics.item("basic1").value).toMatchObject(basic1);
+	expect(collectionBasics.item("basic2").value).toMatchObject(basic2);
+	expect(collectionBasics.item("basic3").value).toMatchObject(basic3);
+	expect(collectionBasics.item("basicNone").value).toBe(null);
 	expect(queryBasics.count).toBe(3);
-	expect(queryPeople.doc("person1").value).toMatchObject(person1);
-	expect(queryPeople.doc("person2").value).toMatchObject(person2);
-	expect(queryPeople.doc("person3").value).toMatchObject(person3);
-	expect(queryPeople.doc("peopleNone").value).toBe(null);
+	expect(collectionPeople.item("person1").value).toMatchObject(person1);
+	expect(collectionPeople.item("person2").value).toMatchObject(person2);
+	expect(collectionPeople.item("person3").value).toMatchObject(person3);
+	expect(collectionPeople.item("peopleNone").value).toBe(null);
 	expect(queryPeople.count).toBe(3);
 	// Update documents.
-	expect(queryBasics.doc("basic1").update({ str: "NEW" })).toBe(undefined);
-	expect(queryBasics.doc("basic1").value).toMatchObject({ ...basic1, str: "NEW" });
-	// expect(people.doc("person3").merge({ name: { first: "NEW" } })).toBe(undefined);
+	expect(collectionBasics.item("basic1").update({ str: "NEW" })).toBe(undefined);
+	expect(collectionBasics.item("basic1").value).toMatchObject({ ...basic1, str: "NEW" });
+	// collectionpeople.item("person3").merge({ name: { first: "NEW" } })).toBe(undefined);
 	// Merge documents.
-	// expect(people.doc("person3").result).toMatchObject({ ...person3, name: { ...person3.name, first: "NEW" } });
+	// collectionpeople.item("person3").result).toMatchObject({ ...person3, name: { ...person3.name, first: "NEW" } });
 	// Add new documents (with random IDs).
-	const addedBasicId = queryBasics.add(basic9);
+	const addedBasicId = collectionBasics.add(basic9);
 	expect(typeof addedBasicId).toBe("string");
-	const addedPersonId = queryPeople.add(person5);
+	const addedPersonId = collectionPeople.add(person5);
 	expect(typeof addedPersonId).toBe("string");
 	// Delete documents.
-	expect(queryBasics.doc("basic2").delete()).toBe(undefined);
+	expect(collectionBasics.item("basic2").delete()).toBe(undefined);
 	expect(queryBasics.count).toBe(3);
-	expect(queryPeople.doc("personNone").delete()).toBe(undefined);
-	expect(queryPeople.doc("person3").delete()).toBe(undefined);
-	expect(queryPeople.doc("personNone").delete()).toBe(undefined);
+	expect(collectionPeople.item("personNone").delete()).toBe(undefined);
+	expect(collectionPeople.item("person3").delete()).toBe(undefined);
+	expect(collectionPeople.item("personNone").delete()).toBe(undefined);
 	expect(queryPeople.count).toBe(3);
 });
 test("MemoryProvider: set/get/delete collections", () => {
 	// Setup.
-	const db = new SynchronousDatabase<TestSchema>(new MemoryProvider());
-	const basicsQuery = db.query("basics");
-	const peopleQuery = db.query("people");
+	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const basicsCollection = db.collection("basics");
+	const basicsQuery = basicsCollection.query();
+	const peopleCollection = db.collection("people");
+	const peopleQuery = peopleCollection.query();
 	// Change collections.
-	for (const { id, ...data } of basics) basicsQuery.doc(id).set(data);
-	for (const { id, ...data } of people) peopleQuery.doc(id).set(data);
+	for (const { id, ...data } of basics) basicsCollection.item(id).set(data);
+	for (const { id, ...data } of people) peopleCollection.item(id).set(data);
 	// Check collections.
 	expect(basicsQuery.value).toEqual(basics);
-	expect(basicsQuery.doc("basic1").value).toMatchObject(basic1);
-	expect(basicsQuery.doc("basic6").value).toMatchObject(basic6);
-	expect(basicsQuery.doc("basicNone").value).toBe(null);
+	expect(basicsCollection.item("basic1").value).toMatchObject(basic1);
+	expect(basicsCollection.item("basic6").value).toMatchObject(basic6);
+	expect(basicsCollection.item("basicNone").value).toBe(null);
 	expect(peopleQuery.value).toEqual(people);
-	expect(peopleQuery.doc("person4").value).toMatchObject(person4);
-	expect(peopleQuery.doc("peopleNone").value).toBe(null);
+	expect(peopleCollection.item("person4").value).toMatchObject(person4);
+	expect(peopleCollection.item("peopleNone").value).toBe(null);
 	// Delete collections.
 	expect(basicsQuery.delete()).toBe(9);
 	expect(peopleQuery.delete()).toBe(5);
@@ -69,9 +73,10 @@ test("MemoryProvider: set/get/delete collections", () => {
 });
 test("MemoryProvider: get queries", () => {
 	// Setup.
-	const db = new SynchronousDatabase<TestSchema>(new MemoryProvider());
-	const query = db.query("basics");
-	for (const { id, ...data } of basics) query.doc(id).set(data);
+	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const collection = db.collection("basics");
+	const query = collection.query();
+	for (const { id, ...data } of basics) collection.item(id).set(data);
 	// Equal queries.
 	expectUnorderedKeys(query.filter({ str: "aaa" }).value, ["basic1"]);
 	expectUnorderedKeys(query.filter({ str: "NOPE" }).value, []);
@@ -106,11 +111,12 @@ test("MemoryProvider: get queries", () => {
 });
 test("MemoryProvider: subscribing to documents", () => {
 	// Setup.
-	const db = new SynchronousDatabase<TestSchema>(new MemoryProvider());
-	const query = db.query("basics");
-	const doc = query.doc("basic1");
+	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const collection = db.collection("basics");
+	const query = collection.query();
+	const doc = collection.item("basic1");
 	// Subscribe.
-	const calls1: OptionalData<BasicEntity>[] = [];
+	const calls1: OptionalData<BasicItemData>[] = [];
 	const un1 = doc.subscribe(v => calls1.push(v));
 	expect(calls1.length).toBe(1);
 	expect(calls1[0]).toBe(null);
@@ -126,10 +132,10 @@ test("MemoryProvider: subscribing to documents", () => {
 	doc.delete();
 	expect(calls1[3]).toBe(null);
 	// Change unrelated documents.
-	query.doc("basic2").set(basic2);
-	query.doc("basic2").update({ str: "NEW" });
-	query.doc("basic2").delete();
-	query.add(basic3);
+	collection.item("basic2").set(basic2);
+	collection.item("basic2").update({ str: "NEW" });
+	collection.item("basic2").delete();
+	collection.add(basic3);
 	expect(calls1.length).toBe(4);
 	// Unsubscribe.
 	expect(un1()).toBe(undefined);
@@ -139,43 +145,44 @@ test("MemoryProvider: subscribing to documents", () => {
 });
 test("MemoryProvider: subscribing to collections", () => {
 	// Setup.
-	const db = new SynchronousDatabase<TestSchema>(new MemoryProvider());
-	const query = db.query("basics");
+	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const collection = db.collection("basics");
+	const query = collection.query();
 	// Subscribe fn1.
-	const calls1: ImmutableArray<BasicEntity>[] = [];
+	const calls1: ImmutableArray<BasicItemData>[] = [];
 	const stop1 = query.subscribe(results => void calls1.push(results));
 	expect(calls1.length).toBe(1);
 	expectOrderedKeys(calls1[0]!, []); // Empty at first (no last argument).
 	// Add id1.
-	const id1 = query.add(basic1);
+	const id1 = collection.add(basic1);
 	expect(calls1.length).toBe(2);
 	expectOrderedKeys(calls1[1]!, [id1]); // id1 is added.
 	// Subscribe fn2.
-	const calls2: ImmutableArray<BasicEntity>[] = [];
+	const calls2: ImmutableArray<BasicItemData>[] = [];
 	const stop2 = query.subscribe(results => void calls2.push(results));
 	expectOrderedKeys(calls2[0]!, [id1]); // Called with current results.
 	expect(calls1[2]).toBe(undefined);
 	// Set basic2.
-	query.doc("basic2").set(basic2);
+	collection.item("basic2").set(basic2);
 	expectOrderedKeys(calls1[2]!, [id1, "basic2"]);
 	expectOrderedKeys(calls2[1]!, [id1, "basic2"]);
 	// Change id1.
-	query.doc(id1).set(basic9);
+	collection.item(id1).set(basic9);
 	expectOrderedKeys(calls1[3]!, [id1, "basic2"]);
 	expectOrderedKeys(calls2[2]!, [id1, "basic2"]);
 	// Add basic3 and basic4
-	query.doc("basic3").set(basic3);
-	query.doc("basic4").set(basic4);
+	collection.item("basic3").set(basic3);
+	collection.item("basic4").set(basic4);
 	expectOrderedKeys(calls1[5]!, [id1, "basic2", "basic3", "basic4"]);
 	expectOrderedKeys(calls2[4]!, [id1, "basic2", "basic3", "basic4"]);
 	// Delete basic4.
-	query.doc("basic4").delete();
+	collection.item("basic4").delete();
 	expectOrderedKeys(calls1[6]!, [id1, "basic2", "basic3"]);
 	expectOrderedKeys(calls2[5]!, [id1, "basic2", "basic3"]);
 	// Unsubscribe fn2.
 	expect(stop2()).toBe(undefined);
 	// Change basic3.
-	query.doc("basic3").update({ str: "NEW" });
+	collection.item("basic3").update({ str: "NEW" });
 	expectOrderedKeys(calls1[7]!, [id1, "basic2", "basic3"]);
 	expect(calls2[6]).toBe(undefined);
 	// Unsubscribe fn1.
@@ -183,26 +190,27 @@ test("MemoryProvider: subscribing to collections", () => {
 });
 test("MemoryProvider: subscribing to filter query", () => {
 	// Setup.
-	const db = new SynchronousDatabase<TestSchema>(new MemoryProvider());
-	const query = db.query("basics");
-	query.doc("basic6").set(basic6);
-	query.doc("basic7").set(basic7);
+	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const collection = db.collection("basics");
+	const query = collection.query();
+	collection.item("basic6").set(basic6);
+	collection.item("basic7").set(basic7);
 	// Subscribe (should find only basic7).
-	const calls1: ImmutableArray<BasicEntity>[] = [];
+	const calls1: ImmutableArray<BasicItemData>[] = [];
 	const stop1 = query.filter({ "tags[]": "odd" }).subscribe(results => void calls1.push(results)); // Query for odds.
 	expectUnorderedKeys(calls1[0]!, ["basic7"]);
 	// Set basic3 (should be added to result).
-	query.doc("basic3").set(basic3);
+	collection.item("basic3").set(basic3);
 	expectUnorderedKeys(calls1[1]!, ["basic3", "basic7"]);
 	// Set basic2 (shouldn't call fn1).
-	query.doc("basic2").set(basic2);
+	collection.item("basic2").set(basic2);
 	expect(calls1[3]).toBe(undefined);
 	// Change basic2 and basic3 (should have updated basic3 in result).
 	query.filter({ id: ["basic2", "basic3"] }).update({ str: "NEW" });
 	expectUnorderedKeys(calls1[2]!, ["basic3", "basic7"]);
 	// Delete basic3 and basic2.
-	query.doc("basic2").delete();
-	query.doc("basic3").delete();
+	collection.item("basic2").delete();
+	collection.item("basic3").delete();
 	expectUnorderedKeys(calls1[3]!, ["basic7"]);
 	// Unsubscribe fn1.
 	expect(stop1()).toBe(undefined);
@@ -211,39 +219,40 @@ test("MemoryProvider: subscribing to filter query", () => {
 });
 test("MemoryProvider: subscribing to sort and limit query", () => {
 	// Setup.
-	const db = new SynchronousDatabase<TestSchema>(new MemoryProvider());
-	const query = db.query("basics");
-	for (const { id, ...data } of basics) query.doc(id).set(data);
+	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const collection = db.collection("basics");
+	const query = collection.query();
+	for (const { id, ...data } of basics) collection.item(id).set(data);
 	// Subscribe (should find only basic7).
-	const calls1: ImmutableArray<BasicEntity>[] = [];
+	const calls1: ImmutableArray<BasicItemData>[] = [];
 	const stop1 = query
 		.sort("num")
 		.max(2)
 		.subscribe(result => void calls1.push(result));
 	expectOrderedKeys(calls1[0]!, ["basic1", "basic2"]);
 	// Delete basic9 (shouldn't affect result as it's outside the slice).
-	query.doc("basic9").delete();
+	collection.item("basic9").delete();
 	expect(calls1[1]).toBe(undefined);
 	// Delete basic1 (should be removed from result, which brings in basic3).
-	query.doc("basic1").delete();
+	collection.item("basic1").delete();
 	expectOrderedKeys(calls1[1]!, ["basic2", "basic3"]);
 	// Change basic2 and basic3 (should have updated basic3 in result).
-	query.doc("basic2").update({ str: "NEW" });
-	query.doc("basic8").update({ str: "NEW" });
+	collection.item("basic2").update({ str: "NEW" });
+	collection.item("basic8").update({ str: "NEW" });
 	expectOrderedKeys(calls1[2]!, ["basic2", "basic3"]);
 	// Add a new one at the start.
-	const id1 = query.add({ str: "NEW", num: 0, group: "a", tags: [] });
+	const id1 = collection.add({ str: "NEW", num: 0, group: "a", tags: [] });
 	expectOrderedKeys(calls1[3]!, [id1, "basic2"]);
 	// Delete everything.
 	query.delete();
 	expectOrderedKeys(calls1[4]!, []);
 	// Set basic8.
-	query.doc("basic8").set(basic8);
+	collection.item("basic8").set(basic8);
 	expectOrderedKeys(calls1[5]!, ["basic8"]);
 	// Unsubscribe fn1.
 	expect(stop1()).toBe(undefined);
 	// Delete basic8 (shouldn't call fn1).
-	query.doc("basic8").delete();
+	collection.item("basic8").delete();
 	expect(calls1[6]).toBe(undefined);
 	// Check end result.
 	expectUnorderedKeys(query.value, []);
