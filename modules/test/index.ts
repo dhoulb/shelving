@@ -6,8 +6,8 @@ export * from "./basics.js";
 export * from "./people.js";
 export * from "./util.js";
 
-export const TEST_SCHEMAS = {
+export const TEST_COLLECTIONS = {
 	basics: BASIC_SCHEMA,
 	people: PERSON_SCHEMA,
 };
-export type TestSchema = ValidatorsType<typeof TEST_SCHEMAS>;
+export type TestCollections = ValidatorsType<typeof TEST_COLLECTIONS>;

@@ -1,4 +1,5 @@
-import { Data, Entity, getIDs } from "../util/data.js";
+import { Data } from "../util/data.js";
+import { getIDs, ItemData } from "../db/Item.js";
 import { NotString } from "../util/string.js";
 
 /** Run any queued microtasks now. */
@@ -11,7 +12,7 @@ export async function runMicrotasks(): Promise<void> {
 }
 
 /** Expect keys in any order. */
-export function expectUnorderedKeys<T extends Data>(entities: Iterable<Entity<T>>, keys: Iterable<string> & NotString): void {
+export function expectUnorderedKeys<T extends Data>(entities: Iterable<ItemData<T>>, keys: Iterable<string> & NotString): void {
 	try {
 		expect(entities).toBeInstanceOf(Object);
 		expect(Array.from(getIDs(entities)).sort()).toEqual(Array.from(keys).sort());
@@ -21,7 +22,7 @@ export function expectUnorderedKeys<T extends Data>(entities: Iterable<Entity<T>
 }
 
 /** Expect the specified keys in the specified order. */
-export function expectOrderedKeys<T extends Data>(entities: Iterable<Entity<T>>, keys: Iterable<string> & NotString): void {
+export function expectOrderedKeys<T extends Data>(entities: Iterable<ItemData<T>>, keys: Iterable<string> & NotString): void {
 	try {
 		expect(entities).toBeInstanceOf(Object);
 		expect(Array.from(getIDs(entities))).toEqual(Array.from(keys));
