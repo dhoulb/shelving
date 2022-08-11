@@ -3,7 +3,9 @@ import type { Key, Datas } from "../util/data.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Observable, Unsubscribe } from "../observe/Observable.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
-import { QueryConstraints, QueryProps } from "../constraint/QueryConstraints.js";
+import type { FilterList } from "../constraint/FilterConstraint.js";
+import type { SortList } from "../constraint/SortConstraint.js";
+import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { countItems, hasItems } from "../util/iterate.js";
 import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
 import type { ItemArray, ItemValue, ItemData } from "./Item.js";
@@ -91,8 +93,8 @@ interface QueryInterface<T extends Datas = Datas, K extends Key<T> = Key<T>> ext
 export class Query<T extends Datas = Datas, K extends Key<T> = Key<T>> extends QueryConstraints<ItemData<T[K]>> implements QueryInterface<T, K> {
 	readonly db: Database<T>;
 	readonly collection: K;
-	constructor(db: Database<T>, collection: K, props?: QueryProps<ItemData<T[K]>>) {
-		super(props);
+	constructor(db: Database<T>, collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null) {
+		super(filters, sorts, limit);
 		this.db = db;
 		this.collection = collection;
 	}
@@ -138,8 +140,8 @@ export class Query<T extends Datas = Datas, K extends Key<T> = Key<T>> extends Q
 export class AsyncQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> extends QueryConstraints<ItemData<T[K]>> implements QueryInterface<T, K> {
 	readonly db: AsyncDatabase<T>;
 	readonly collection: K;
-	constructor(db: AsyncDatabase<T>, collection: K, props?: QueryProps<ItemData<T[K]>>) {
-		super(props);
+	constructor(db: AsyncDatabase<T>, collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null) {
+		super(filters, sorts, limit);
 		this.db = db;
 		this.collection = collection;
 	}

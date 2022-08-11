@@ -92,4 +92,4 @@ export class BatchProvider<T extends Datas> extends AsyncThroughProvider<T> {
 }
 
 const _getItemKey = (collection: string, id: string): string => `${collection}/${id}`;
-const _getQueryKey = (collection: string, constraints: QueryConstraints): string => `${collection}:${QueryConstraints.prototype.toString.call(constraints)}`;
+const _getQueryKey = (collection: string, constraints: QueryConstraints): string => `${collection}?${QueryConstraints.prototype.toString.call(constraints)}`;

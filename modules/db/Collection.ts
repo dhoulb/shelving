@@ -1,5 +1,6 @@
-import type { QueryProps } from "../constraint/QueryConstraints.js";
 import type { Datas, Key } from "../util/data.js";
+import type { FilterList } from "../constraint/FilterConstraint.js";
+import type { SortList } from "../constraint/SortConstraint.js";
 import type { ItemData, AsyncItem, Item } from "./Item.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 import type { AsyncQuery, Query } from "./Query.js";
@@ -10,7 +11,7 @@ interface CollectionInterface<T extends Datas = Datas, K extends Key<T> = Key<T>
 	readonly collection: K;
 
 	/** Create a query on this item's collection. */
-	query(query?: QueryProps<ItemData<T[K]>>): Query<T, K> | AsyncQuery<T, K>;
+	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> | AsyncQuery<T, K>;
 
 	/** Create a query on this item's collection. */
 	item(id: string): Item<T, K> | AsyncItem<T, K>;
@@ -30,8 +31,8 @@ export class Collection<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 		this.db = db;
 		this.collection = collection;
 	}
-	query(query?: QueryProps<ItemData<T[K]>>): Query<T, K> {
-		return this.db.query(this.collection, query);
+	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> {
+		return this.db.query(this.collection, filters, sorts, limit);
 	}
 	item(id: string): Item<T, K> {
 		return this.db.item(this.collection, id);
@@ -52,8 +53,8 @@ export class AsyncCollection<T extends Datas = Datas, K extends Key<T> = Key<T>>
 		this.db = db;
 		this.collection = collection;
 	}
-	query(query?: QueryProps<ItemData<T[K]>>): AsyncQuery<T, K> {
-		return this.db.query(this.collection, query);
+	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): AsyncQuery<T, K> {
+		return this.db.query(this.collection, filters, sorts, limit);
 	}
 	item(id: string): AsyncItem<T, K> {
 		return this.db.item(this.collection, id);

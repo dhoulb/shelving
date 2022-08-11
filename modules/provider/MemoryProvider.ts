@@ -262,4 +262,4 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 const _getWriteConstraints = <T extends Data>(constraints: QueryConstraints<T>): Constraint<T> => (constraints.limit ? constraints : constraints.filters);
 
 // Queries that have no limit don't care about sorting either.
-const _getQueryKey = <T extends Data>(query: ItemConstraints<T>): string => (query.limit ? `{filters:${query.filters.toString()}}` : QueryConstraints.prototype.toString.call(query));
+const _getQueryKey = <T extends Data>(query: ItemConstraints<T>): string => (query.limit ? `"filters":${query.filters.toString()}}` : QueryConstraints.prototype.toString.call(query));

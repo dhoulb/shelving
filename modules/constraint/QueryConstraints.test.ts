@@ -26,20 +26,20 @@ const TYPE_DESC = new SortConstraint<T>("!type");
 test("Basic tests", () => {
 	// Empty.
 	expectUnorderedKeys(new QueryConstraints<T>().transform([]), []);
-	expectUnorderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2), sort: new SortConstraints(ID_ASC), limit: 20 }).transform([]), []);
+	expectUnorderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2), new SortConstraints(ID_ASC), 20).transform([]), []);
 });
 test("Sorting", () => {
 	// Creating with `sort()`
-	expect(new QueryConstraints<T>().sort("id")).toEqual(new QueryConstraints<T>({ sort: new SortConstraints(ID_ASC) }));
-	expect(new QueryConstraints<T>().sort("id", "!type")).toEqual(new QueryConstraints<T>({ sort: new SortConstraints(ID_ASC, TYPE_DESC) }));
+	expect(new QueryConstraints<T>().sort("id")).toEqual(new QueryConstraints<T>(undefined, new SortConstraints(ID_ASC)));
+	expect(new QueryConstraints<T>().sort("id", "!type")).toEqual(new QueryConstraints<T>(undefined, new SortConstraints(ID_ASC, TYPE_DESC)));
 	// Constructing with sorts.
-	expectOrderedKeys(new QueryConstraints<T>({ sort: new SortConstraints(ID_ASC) }).transform(allRand), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new QueryConstraints<T>({ sort: new SortConstraints(STR_ASC) }).transform(allRand), ["c", "d", "b", "a"]);
-	expectOrderedKeys(new QueryConstraints<T>({ sort: new SortConstraints(NUM_DESC) }).transform(allRand), ["c", "a", "d", "b"]);
-	expectOrderedKeys(new QueryConstraints<T>({ sort: new SortConstraints(TYPE_ASC, ID_ASC) }).transform(allRand), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new QueryConstraints<T>({ sort: new SortConstraints(TYPE_ASC, ID_DESC) }).transform(allRand), ["b", "a", "d", "c"]);
-	expectOrderedKeys(new QueryConstraints<T>({ sort: new SortConstraints(TYPE_DESC, ID_ASC) }).transform(allRand), ["c", "d", "a", "b"]);
-	expectOrderedKeys(new QueryConstraints<T>({ sort: new SortConstraints(TYPE_DESC, ID_DESC) }).transform(allRand), ["d", "c", "b", "a"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, new SortConstraints(ID_ASC)).transform(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, new SortConstraints(STR_ASC)).transform(allRand), ["c", "d", "b", "a"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, new SortConstraints(NUM_DESC)).transform(allRand), ["c", "a", "d", "b"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, new SortConstraints(TYPE_ASC, ID_ASC)).transform(allRand), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, new SortConstraints(TYPE_ASC, ID_DESC)).transform(allRand), ["b", "a", "d", "c"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, new SortConstraints(TYPE_DESC, ID_ASC)).transform(allRand), ["c", "d", "a", "b"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, new SortConstraints(TYPE_DESC, ID_DESC)).transform(allRand), ["d", "c", "b", "a"]);
 	// Adding sorts.
 	expectOrderedKeys(new QueryConstraints<T>().sort("id").transform(allRand), ["a", "b", "c", "d"]);
 	expectOrderedKeys(new QueryConstraints<T>().sort("str").transform(allRand), ["c", "d", "b", "a"]);
@@ -51,9 +51,9 @@ test("Sorting", () => {
 });
 test("Filtering", () => {
 	// Constructing with filtering.
-	expectUnorderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2) }).transform(allRand), ["a", "c"]);
-	expectUnorderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(STR_IN_Z_OR_X) }).transform(allRand), ["a", "d"]);
-	expectUnorderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(TYPE_ALPHA) }).transform(allRand), ["a", "b"]);
+	expectUnorderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2)).transform(allRand), ["a", "c"]);
+	expectUnorderedKeys(new QueryConstraints<T>(new FilterConstraints(STR_IN_Z_OR_X)).transform(allRand), ["a", "d"]);
+	expectUnorderedKeys(new QueryConstraints<T>(new FilterConstraints(TYPE_ALPHA)).transform(allRand), ["a", "b"]);
 	// Adding filters.
 	expectUnorderedKeys(new QueryConstraints<T>().filter({ "num>": 2 }).transform(allRand), ["a", "c"]);
 	expectUnorderedKeys(new QueryConstraints<T>().filter({ str: ["X", "Z"] }).transform(allRand), ["a", "d"]);
@@ -64,15 +64,15 @@ test("Filtering", () => {
 });
 test("Limiting", () => {
 	// Creating.
-	expect(new QueryConstraints<T>().max(5)).toEqual(new QueryConstraints<T>({ limit: 5 }));
-	expect(new QueryConstraints<T>().max(null)).toEqual(new QueryConstraints<T>({ limit: null }));
+	expect(new QueryConstraints<T>().max(5)).toEqual(new QueryConstraints<T>(undefined, undefined, 5));
+	expect(new QueryConstraints<T>().max(null)).toEqual(new QueryConstraints<T>(undefined, undefined, null));
 	// Constructing with slicing.
-	expectOrderedKeys(new QueryConstraints<T>({ limit: null }).transform(allAsc), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new QueryConstraints<T>({ limit: 4 }).transform(allAsc), ["a", "b", "c", "d"]);
-	expectOrderedKeys(new QueryConstraints<T>({ limit: 3 }).transform(allAsc), ["a", "b", "c"]);
-	expectOrderedKeys(new QueryConstraints<T>({ limit: 2 }).transform(allAsc), ["a", "b"]);
-	expectOrderedKeys(new QueryConstraints<T>({ limit: 1 }).transform(allAsc), ["a"]);
-	expectOrderedKeys(new QueryConstraints<T>({ limit: 0 }).transform(allAsc), []);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, undefined, null).transform(allAsc), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, undefined, 4).transform(allAsc), ["a", "b", "c", "d"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, undefined, 3).transform(allAsc), ["a", "b", "c"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, undefined, 2).transform(allAsc), ["a", "b"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, undefined, 1).transform(allAsc), ["a"]);
+	expectOrderedKeys(new QueryConstraints<T>(undefined, undefined, 0).transform(allAsc), []);
 	// Adding slicing.
 	expectOrderedKeys(new QueryConstraints<T>().max(null).transform(allAsc), ["a", "b", "c", "d"]);
 	expectOrderedKeys(new QueryConstraints<T>().max(4).transform(allAsc), ["a", "b", "c", "d"]);
@@ -83,26 +83,26 @@ test("Limiting", () => {
 });
 test("Combined tests", () => {
 	// Full queries.
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2), sort: new SortConstraints(NUM_ASC) }).transform(allRand), ["a", "c"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2), sort: new SortConstraints(NUM_DESC) }).transform(allRand), ["c", "a"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2), sort: new SortConstraints(ID_ASC) }).transform(allRand), ["a", "c"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2), sort: new SortConstraints(ID_DESC) }).transform(allRand), ["c", "a"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2), sort: new SortConstraints(NUM_ASC), limit: 1 }).transform(allRand), ["a"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2), sort: new SortConstraints(NUM_DESC), limit: 1 }).transform(allRand), ["c"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2), sort: new SortConstraints(ID_ASC), limit: 1 }).transform(allRand), ["a"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2), sort: new SortConstraints(ID_DESC), limit: 1 }).transform(allRand), ["c"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(STR_IN_Z_OR_X), sort: new SortConstraints(ID_ASC) }).transform(allRand), ["a", "d"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(STR_IN_Z_OR_X), sort: new SortConstraints(ID_DESC) }).transform(allRand), ["d", "a"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(TYPE_ALPHA), sort: new SortConstraints(STR_ASC) }).transform(allRand), ["b", "a"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(TYPE_ALPHA), sort: new SortConstraints(STR_DESC) }).transform(allRand), ["a", "b"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(STR_IN_Z_OR_X), sort: new SortConstraints(ID_ASC), limit: 1 }).transform(allRand), ["a"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(STR_IN_Z_OR_X), sort: new SortConstraints(ID_DESC), limit: 1 }).transform(allRand), ["d"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(TYPE_ALPHA), sort: new SortConstraints(STR_ASC), limit: 1 }).transform(allRand), ["b"]);
-	expectOrderedKeys(new QueryConstraints<T>({ filter: new FilterConstraints(TYPE_ALPHA), sort: new SortConstraints(STR_DESC), limit: 1 }).transform(allRand), ["a"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2), new SortConstraints(NUM_ASC)).transform(allRand), ["a", "c"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2), new SortConstraints(NUM_DESC)).transform(allRand), ["c", "a"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2), new SortConstraints(ID_ASC)).transform(allRand), ["a", "c"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2), new SortConstraints(ID_DESC)).transform(allRand), ["c", "a"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2), new SortConstraints(NUM_ASC), 1).transform(allRand), ["a"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2), new SortConstraints(NUM_DESC), 1).transform(allRand), ["c"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2), new SortConstraints(ID_ASC), 1).transform(allRand), ["a"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(NUM_GT_2), new SortConstraints(ID_DESC), 1).transform(allRand), ["c"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(STR_IN_Z_OR_X), new SortConstraints(ID_ASC)).transform(allRand), ["a", "d"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(STR_IN_Z_OR_X), new SortConstraints(ID_DESC)).transform(allRand), ["d", "a"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(TYPE_ALPHA), new SortConstraints(STR_ASC)).transform(allRand), ["b", "a"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(TYPE_ALPHA), new SortConstraints(STR_DESC)).transform(allRand), ["a", "b"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(STR_IN_Z_OR_X), new SortConstraints(ID_ASC), 1).transform(allRand), ["a"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(STR_IN_Z_OR_X), new SortConstraints(ID_DESC), 1).transform(allRand), ["d"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(TYPE_ALPHA), new SortConstraints(STR_ASC), 1).transform(allRand), ["b"]);
+	expectOrderedKeys(new QueryConstraints<T>(new FilterConstraints(TYPE_ALPHA), new SortConstraints(STR_DESC), 1).transform(allRand), ["a"]);
 });
 test("toString()", () => {
-	const q1 = new QueryConstraints<T>({ filter: new FilterConstraints(NUM_GT_2, STR_IN_Z_OR_X), sort: new SortConstraints(NUM_ASC, TYPE_DESC), limit: 12 });
-	expect(q1.toString()).toBe(`{"filter":{"num>":2,"str":["Z","X"]},"sort":["num","!type"],"limit":12}`);
+	const q1 = new QueryConstraints<T>(new FilterConstraints(NUM_GT_2, STR_IN_Z_OR_X), new SortConstraints(NUM_ASC, TYPE_DESC), 12);
+	expect(q1.toString()).toBe(`{"filters":{"num>":2,"str":["Z","X"]},"sorts":["num","!type"],"limit":12}`);
 	const q2 = new QueryConstraints<T>();
-	expect(q2.toString()).toBe(`{"filter":{},"sort":[],"limit":null}`);
+	expect(q2.toString()).toBe(`{"filters":{},"sorts":[],"limit":null}`);
 });

@@ -7,17 +7,9 @@ import { Constraint } from "./Constraint.js";
 import { FilterConstraint, FilterList } from "./FilterConstraint.js";
 import { SortKeys, SortList } from "./SortConstraint.js";
 
-/** Set of props for a query defined as an object. */
-export type QueryProps<T extends Data> = {
-	readonly filter?: FilterList<T>;
-	readonly sort?: SortList<T>;
-	readonly limit?: number | null;
-};
-
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new FilterConstraints<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 const EMPTY_SORTS = new SortConstraints<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
-const EMPTY_PROPS: QueryProps<any> = { filter: EMPTY_FILTERS, sort: EMPTY_SORTS, limit: null }; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** Interface that combines Filterable, Sortable, Sliceable. */
 export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T> {
@@ -45,9 +37,6 @@ export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T> {
 
 	/** Return a new instance of this class with a limit set. */
 	max(max: number | null): this;
-
-	/** Return a new instance of this class with new filters, sorts, limits set. */
-	query(query: QueryProps<T>): this;
 }
 
 /** Allows filtering, sorting, and limiting on a set of results. */
@@ -56,10 +45,10 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	readonly sorts: SortConstraints<T>;
 	readonly limit: number | null;
 
-	constructor({ filter = EMPTY_FILTERS, sort = EMPTY_SORTS, limit = null }: QueryProps<T> = EMPTY_PROPS) {
+	constructor(filters: FilterList<T> = EMPTY_FILTERS, sorts: SortList<T> = EMPTY_SORTS, limit: number | null = null) {
 		super();
-		this.filters = filter instanceof FilterConstraints ? filter : new FilterConstraints(filter);
-		this.sorts = sort instanceof SortConstraints ? sort : new SortConstraints(sort);
+		this.filters = filters instanceof FilterConstraints ? filters : new FilterConstraints(filters);
+		this.sorts = sorts instanceof SortConstraints ? sorts : new SortConstraints(sorts);
 		this.limit = limit;
 	}
 
@@ -126,15 +115,6 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 			limit,
 		};
 	}
-	query({ sort, limit, filter }: QueryProps<T>): this {
-		return {
-			__proto__: Object.getPrototypeOf(this),
-			...this,
-			filters: filter ? this.filters.filter(filter) : this.filters,
-			sorts: sort ? this.sorts.sort(sort) : this.sorts,
-			limit: limit !== undefined ? limit : this.limit,
-		};
-	}
 
 	// Implement `Rule`
 	transform(items: Iterable<T>): Iterable<T> {
@@ -144,7 +124,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 
 	// Implement toString()
 	override toString(): string {
-		return `{"filter":${this.filters.toString()}},"sort":${this.sorts.toString()},"limit":${this.limit}}`;
+		return `{"filters":${this.filters.toString()}},"sorts":${this.sorts.toString()},"limit":${this.limit}}`;
 	}
 }
 

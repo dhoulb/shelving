@@ -3,7 +3,7 @@ import type { Dispatch } from "../util/function.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Observable, Unsubscribe } from "../observe/Observable.js";
-import type { FilterProps } from "../constraint/FilterConstraint.js";
+import { FilterConstraint } from "../constraint/FilterConstraint.js";
 import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
 import type { QueryConstraints } from "../constraint/QueryConstraints.js";
 import type { AsyncDatabase, Database } from "./Database.js";
@@ -83,7 +83,7 @@ export class Item<T extends Datas = Datas, K extends Key<T> = Key<T>> implements
 		this.id = id;
 	}
 	get optional(): Query<T, K> {
-		return this.db.query(this.collection, { filter: { id: this.id } as FilterProps<ItemData<T[K]>>, limit: 1 });
+		return this.db.query(this.collection, new FilterConstraint("id", this.id), undefined, 1);
 	}
 	get exists(): boolean {
 		return !!this.db.provider.getItem(this.collection, this.id);
@@ -122,7 +122,7 @@ export class AsyncItem<T extends Datas = Datas, K extends Key<T> = Key<T>> imple
 		this.id = id;
 	}
 	get optional(): AsyncQuery<T, K> {
-		return this.db.query(this.collection, { filter: { id: this.id } as FilterProps<ItemData<T[K]>>, limit: 1 });
+		return this.db.query(this.collection, new FilterConstraint("id", this.id), undefined, 1);
 	}
 	get exists(): Promise<boolean> {
 		return this.db.provider.getItem(this.collection, this.id).then(Boolean);
