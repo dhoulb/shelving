@@ -1,9 +1,9 @@
 import type { Unsubscribe } from "../observe/Observable.js";
 import { Key, Datas, getData } from "../util/data.js";
-import { ItemValue, ItemData, AsyncItem, Item } from "../db/Item.js";
+import { getOptionalSource } from "../util/source.js";
 import { setMapItem } from "../util/map.js";
+import { ItemValue, ItemData, AsyncItem, Item } from "../db/Item.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
 import { State } from "../state/State.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { ConditionError } from "../error/ConditionError.js";
@@ -26,7 +26,7 @@ export class ItemState<T extends Datas, K extends Key<T>> extends State<ItemValu
 	}
 
 	constructor(ref: Item<T, K> | AsyncItem<T, K>) {
-		const table = getOptionalSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref.collection);
+		const table = getOptionalSource<CacheProvider<T>>(CacheProvider, ref.db.provider)?.memory.getTable(ref.collection);
 		const time = table ? table.getItemTime(ref.id) : null;
 		const isCached = typeof time === "number";
 		super(table && isCached ? table.getItem(ref.id) : State.NOVALUE);
@@ -66,7 +66,7 @@ export class ItemState<T extends Datas, K extends Key<T>> extends State<ItemValu
 
 	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
 	connectCache(): Unsubscribe | void {
-		const table = getOptionalSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref.collection);
+		const table = getOptionalSource(CacheProvider, this.ref.db.provider)?.memory.getTable(this.ref.collection);
 		table && this.connect(() => table.subscribeCachedItem(this.ref.id, this));
 	}
 

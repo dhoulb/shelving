@@ -3,9 +3,9 @@ import type { Key, Datas } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData } from "../db/Item.js";
 import { setMapItem } from "../util/map.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
+import { getOptionalSource } from "../util/source.js";
 import { AsyncQuery, Query } from "../db/Query.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { getOptionalSourceProvider } from "../provider/ThroughProvider.js";
 import { State } from "../state/State.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { BooleanState } from "../state/BooleanState.js";
@@ -55,7 +55,7 @@ export class QueryState<T extends Datas, K extends Key<T>> extends State<ItemArr
 	}
 
 	constructor(ref: Query<T, K> | AsyncQuery<T, K>) {
-		const table = getOptionalSourceProvider(ref.db.provider, CacheProvider)?.memory.getTable(ref.collection);
+		const table = getOptionalSource(CacheProvider, ref.db.provider)?.memory.getTable(ref.collection);
 		const time = table ? table.getQueryTime(ref) : null;
 		const isCached = typeof time === "number";
 		super(table && isCached ? table.getQuery(ref) : State.NOVALUE);
@@ -97,7 +97,7 @@ export class QueryState<T extends Datas, K extends Key<T>> extends State<ItemArr
 
 	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
 	connectCache(): Unsubscribe | void {
-		const table = getOptionalSourceProvider(this.ref.db.provider, CacheProvider)?.memory.getTable(this.ref.collection);
+		const table = getOptionalSource(CacheProvider, this.ref.db.provider)?.memory.getTable(this.ref.collection);
 		return table && this.connect(() => table.subscribeCachedQuery(this.ref, this));
 	}
 

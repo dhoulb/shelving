@@ -1,18 +1,13 @@
 import type { Datas, Key } from "../util/data.js";
+import type { Sourceable } from "../util/source.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 import type { DataUpdate } from "../update/DataUpdate.js";
-import type { Class } from "../util/class.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
-import { AssertionError } from "../error/AssertionError.js";
 import type { Provider, AsyncProvider } from "./Provider.js";
 
-interface ThroughProviderInterface<T extends Datas> {
-	readonly source: Provider<T> | AsyncProvider<T>;
-}
-
 /** A provider that passes through to a synchronous source. */
-export class ThroughProvider<T extends Datas = Datas> implements Provider<T>, ThroughProviderInterface<T> {
+export class ThroughProvider<T extends Datas = Datas> implements Provider<T>, Sourceable<Provider<T>> {
 	readonly source: Provider<T>;
 	constructor(source: Provider<T>) {
 		this.source = source;
@@ -53,7 +48,7 @@ export class ThroughProvider<T extends Datas = Datas> implements Provider<T>, Th
 }
 
 /** A provider that passes through to an asynchronous source. */
-export class AsyncThroughProvider<T extends Datas = Datas> implements AsyncProvider<T>, ThroughProviderInterface<T> {
+export class AsyncThroughProvider<T extends Datas = Datas> implements AsyncProvider<T>, Sourceable<AsyncProvider<T>> {
 	readonly source: AsyncProvider<T>;
 	constructor(source: AsyncProvider<T>) {
 		this.source = source;
@@ -91,17 +86,4 @@ export class AsyncThroughProvider<T extends Datas = Datas> implements AsyncProvi
 	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
 		return this.source.deleteQuery(collection, constraints);
 	}
-}
-
-/** Find a possible source provider in a database's provider stack (if it exists). */
-export function getOptionalSourceProvider<T extends Datas, P extends Provider<T> | AsyncProvider<T>>(provider: ThroughProvider<T> | AsyncThroughProvider<T> | Provider<T> | AsyncProvider<T>, type: Class<P>): P | undefined {
-	if (provider instanceof type) return provider as P;
-	if ("source" in provider) return getSourceProvider(provider.source, type);
-}
-
-/** Find a source provider in a database's provider stack. */
-export function getSourceProvider<T extends Datas, P extends Provider<T> | AsyncProvider<T>>(provider: ThroughProvider<T> | AsyncThroughProvider<T> | Provider<T> | AsyncProvider<T>, type: Class<P>): P {
-	const source = getOptionalSourceProvider(provider, type);
-	if (!source) throw new AssertionError(`Source provider ${type.name} not found`, provider);
-	return source;
 }

@@ -9,8 +9,8 @@ import { Feedback } from "../feedback/Feedback.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { TransformableObserver } from "../observe/TransformableObserver.js";
+import { Sourceable } from "../util/source.js";
 import { Provider, AsyncProvider } from "./Provider.js";
-import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 
 /** Validate a source provider (source can have any type because validation guarantees the type). */
 abstract class BaseValidationProvider<T extends Datas> {
@@ -31,7 +31,7 @@ abstract class BaseValidationProvider<T extends Datas> {
 }
 
 /** Validate a synchronous source provider (source can have any type because validation guarantees the type). */
-export class ValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements ThroughProvider, Provider<T> {
+export class ValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements Provider<T>, Sourceable<Provider> {
 	readonly source: Provider;
 	constructor(source: Provider, validators: Validators<T>) {
 		super(validators);
@@ -67,7 +67,7 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 }
 
 /** Validate an asynchronous source provider (source can have any type because validation guarantees the type). */
-export class AsyncValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements AsyncThroughProvider, AsyncProvider<T> {
+export class AsyncValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements AsyncProvider<T>, Sourceable<AsyncProvider> {
 	readonly source: AsyncProvider;
 	constructor(source: AsyncProvider, validators: Validators<T>) {
 		super(validators);
