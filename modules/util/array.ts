@@ -1,5 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
-import { RequiredError } from "../index.js";
+import { RequiredError } from "../error/RequiredError.js";
 
 /**
  * Mutable array: an array that can be changed.
