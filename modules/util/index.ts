@@ -28,6 +28,7 @@ export * from "./random.js";
 export * from "./regexp.js";
 export * from "./serialise.js";
 export * from "./sort.js";
+export * from "./source.js";
 export * from "./string.js";
 export * from "./template.js";
 export * from "./timeout.js";
