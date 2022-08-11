@@ -1,4 +1,4 @@
-import { basics, basic1, basic2, basic3, basic4, basic5, basic6, basic7, basic8, basic9, expectUnorderedKeys, BasicItemData } from "../test/index.js";
+import { basics, basic1, basic2, expectUnorderedKeys, BasicItemData } from "../test/index.js";
 import { Data, FilterConstraint, getIDs } from "../index.js";
 
 test("Typescript", () => {
