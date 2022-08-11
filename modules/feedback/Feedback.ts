@@ -1,5 +1,6 @@
 import { ImmutableObject, isObject } from "../util/object.js";
 import { Entry, getEntries } from "../util/entry.js";
+import { setPrototype } from "../util/class.js";
 
 /**
  * The `Feedback` class represents a feedback message that should be shown to the user.
@@ -14,7 +15,7 @@ import { Entry, getEntries } from "../util/entry.js";
  */
 export class Feedback<T = unknown> {
 	/* Name of the type of feedback. */
-	readonly name!: string;
+	@setPrototype("name", "Feedback") readonly name!: string;
 
 	/** String feedback message that is safe to show to a user. */
 	readonly message: string;
@@ -28,7 +29,6 @@ export class Feedback<T = unknown> {
 		this.value = value;
 	}
 }
-(Feedback.prototype as { name: string }).name = "Feedback";
 
 /** Is an unknown value a `Feedback` object. */
 export const isFeedback = <T extends Feedback>(v: T | unknown): v is Feedback => isObject(v) && typeof v.name === "string" && v.name.endsWith("Feedback") && typeof v.message === "string";

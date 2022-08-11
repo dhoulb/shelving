@@ -72,3 +72,17 @@ export function cacheGetter<T>(target: Object, key: string, { get }: TypedProper
 		},
 	};
 }
+
+/**
+ * Decorator to set a property on an class's prototype not the class itself.
+ *
+ * @example
+ * 		class MyClass {
+ * 			\@setPrototype("myProp", "myValue!") readonly myProp!: string;
+ * 		}
+ */
+export function setPrototype<K extends string, T>(key: K, value: T): (prototype: { [J in K]: T }, k: K) => void {
+	return (prototype: { [J in K]: T }) => {
+		prototype[key] = value;
+	};
+}
