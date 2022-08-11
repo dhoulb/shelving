@@ -9,9 +9,10 @@ import type { Database, AsyncDatabase } from "./Database.js";
  * - If data is an object, sets the item.
  * - If data is a `DataUpdate` instance, updates the item.
  * - If data is null, deletes the item.
+ * - If data is undefined, skip the item.
  */
 export type Changes<DB extends Datas> = {
-	[K in Key<DB> as `${K}/${string}`]: DB[K] | DataUpdate<DB[K]> | null;
+	[K in Key<DB> as `${K}/${string}`]: DB[K] | DataUpdate<DB[K]> | null | undefined;
 };
 
 /** Apply a set of changes to a synchronous database. */
@@ -28,7 +29,8 @@ export function changeAsyncDatabase<T extends Datas>({ provider }: AsyncDatabase
 export function changeProvider<T extends Datas>(provider: Provider<T>, changes: Changes<T>): Changes<T> {
 	for (const [key, change] of Object.entries(changes)) {
 		const [collection, id] = splitString(key, "/", 2);
-		if (!change) provider.deleteItem(collection, id);
+		if (change === undefined) continue;
+		else if (change === null) provider.deleteItem(collection, id);
 		else if (change instanceof DataUpdate) provider.updateItem(collection, id, change);
 		else provider.setItem(collection, id, change);
 	}
@@ -39,7 +41,8 @@ export function changeProvider<T extends Datas>(provider: Provider<T>, changes: 
 export async function changeAsyncProvider<T extends Datas>(provider: AsyncProvider<T>, changes: Changes<T>): Promise<Changes<T>> {
 	for (const [key, change] of Object.entries(changes)) {
 		const [collection, id] = splitString(key, "/", 2);
-		if (!change) await provider.deleteItem(collection, id);
+		if (change === undefined) continue;
+		else if (change === null) await provider.deleteItem(collection, id);
 		else if (change instanceof DataUpdate) await provider.updateItem(collection, id, change);
 		else await provider.setItem(collection, id, change);
 	}
