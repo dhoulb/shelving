@@ -1,8 +1,11 @@
-import type { Datas, Key } from "../util/data.js";
+import type { Data, Datas, Key } from "../util/data.js";
 import { splitString } from "../util/string.js";
 import { DataUpdate } from "../update/DataUpdate.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
+import { QueryConstraints } from "../constraint/QueryConstraints.js";
+import { FilterConstraint } from "../constraint/FilterConstraint.js";
 import type { Database, AsyncDatabase } from "./Database.js";
+import { ItemConstraints, ItemData } from "./Item.js";
 
 /**
  * Change set of operations to run against a database in `{ "collection/id": data | DataUpdate | null }`  format.
@@ -31,7 +34,7 @@ export function changeProvider<T extends Datas>(provider: Provider<T>, changes: 
 		const [collection, id] = splitString(key, "/", 2);
 		if (change === undefined) continue;
 		else if (change === null) provider.deleteItem(collection, id);
-		else if (change instanceof DataUpdate) provider.updateItem(collection, id, change);
+		else if (change instanceof DataUpdate) provider.updateQuery(collection, _getItemConstraint(id), change);
 		else provider.setItem(collection, id, change);
 	}
 	return changes;
@@ -43,8 +46,12 @@ export async function changeAsyncProvider<T extends Datas>(provider: AsyncProvid
 		const [collection, id] = splitString(key, "/", 2);
 		if (change === undefined) continue;
 		else if (change === null) await provider.deleteItem(collection, id);
-		else if (change instanceof DataUpdate) await provider.updateItem(collection, id, change);
+		else if (change instanceof DataUpdate) await provider.updateQuery(collection, _getItemConstraint(id), change);
 		else await provider.setItem(collection, id, change);
 	}
 	return changes;
+}
+
+export function _getItemConstraint<T extends Data>(id: string): ItemConstraints<ItemData<T>> {
+	return new QueryConstraints(new FilterConstraint("id", id), undefined, 1);
 }
