@@ -1,6 +1,6 @@
-import { Data } from "../util/data.js";
+import type { Data } from "../util/data.js";
+import type { NotString } from "../util/string.js";
 import { getIDs, ItemData } from "../db/Item.js";
-import { NotString } from "../util/string.js";
 
 /** Run any queued microtasks now. */
 export async function runMicrotasks(): Promise<void> {
