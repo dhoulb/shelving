@@ -6,8 +6,10 @@ import type { Observable, Unsubscribe } from "../observe/Observable.js";
 import { FilterConstraint } from "../constraint/FilterConstraint.js";
 import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
 import type { QueryConstraints } from "../constraint/QueryConstraints.js";
+import { isTransformable } from "../util/transform.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 import type { AsyncQuery, Query } from "./Query.js";
+import type { Changes } from "./Changes.js";
 
 /** Item data with a string ID that uniquely identifies it. */
 export type ItemData<T extends Data = Data> = T & { id: string };
@@ -22,24 +24,25 @@ export type ItemArray<T extends Data = Data> = ImmutableArray<ItemData<T>>;
 export type ItemConstraints<T extends Data = Data> = QueryConstraints<ItemData<T>>;
 
 /** Reference to an item in a synchronous or asynchronous provider. */
-interface ItemInterface<T extends Datas = Datas, K extends Key<T> = Key<T>> extends Observable<ItemValue<T[K]>> {
-	readonly collection: K;
-	readonly id: string;
+abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> implements Observable<ItemValue<T[K]>> {
+	abstract readonly db: Database<T> | AsyncDatabase<T>;
+	abstract readonly collection: K;
+	abstract readonly id: string;
 
 	/** Get an 'optional' reference to this item (uses a `ModelQuery` with an `id` filter). */
-	optional: Query<T, K> | AsyncQuery<T, K>;
+	abstract optional: Query<T, K> | AsyncQuery<T, K>;
 
 	/**
 	 * Does this item exist?
 	 * @return `true` if an item exists or `false` otherwise (possibly promised).
 	 */
-	exists: boolean | PromiseLike<boolean>;
+	abstract exists: boolean | PromiseLike<boolean>;
 
 	/**
 	 * Get the optional data of this item.
 	 * @return Document's data, or `null` if the item doesn't exist (possibly promised).
 	 */
-	value: ItemValue<T[K]> | PromiseLike<ItemValue<T[K]>>;
+	abstract value: ItemValue<T[K]> | PromiseLike<ItemValue<T[K]>>;
 
 	/**
 	 * Get the data of this item.
@@ -48,7 +51,7 @@ interface ItemInterface<T extends Datas = Datas, K extends Key<T> = Key<T>> exte
 	 * @return Document's data (possibly promised).
 	 * @throws RequiredError if the item does not exist.
 	 */
-	data: ItemData<T[K]> | PromiseLike<ItemData<T[K]>>;
+	abstract data: ItemData<T[K]> | PromiseLike<ItemData<T[K]>>;
 
 	/**
 	 * Subscribe to the result of this item (indefinitely).
@@ -57,27 +60,47 @@ interface ItemInterface<T extends Datas = Datas, K extends Key<T> = Key<T>> exte
 	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
 	 * @return Function that ends the subscription.
 	 */
-	subscribe(next: PartialObserver<ItemValue<T[K]>> | Dispatch<[ItemValue<T[K]>]>): Unsubscribe;
+	subscribe(next: PartialObserver<ItemValue<T[K]>> | Dispatch<[ItemValue<T[K]>]>): Unsubscribe {
+		return this.db.provider.subscribeItem(this.collection, this.id, typeof next === "function" ? { next } : next);
+	}
 
 	/** Set the complete data of this item. */
-	set(data: T[K]): void | PromiseLike<void>;
+	abstract set(data: T[K]): void | PromiseLike<void>;
+
+	/** Get a set change for this item. */
+	getSet(data: T[K]): Changes<T> {
+		return { [this.toString()]: data } as unknown as Changes<T>;
+	}
 
 	/** Update this item. */
-	update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): void | PromiseLike<void>;
+	abstract update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): void | PromiseLike<void>;
+
+	/** Get an update change for this item. */
+	getUpdate(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): Changes<T> {
+		return { [this.toString()]: updates instanceof DataUpdate ? updates : new DataUpdate<T[K]>(updates) } as unknown as Changes<T>;
+	}
 
 	/** Delete this item. */
-	delete(): void | PromiseLike<void>;
+	abstract delete(): void | PromiseLike<void>;
+
+	/** Get a delete change for this item. */
+	getDelete(): Changes<T> {
+		return { [this.toString()]: null } as Changes<T>;
+	}
 
 	// Implement toString()
-	toString(): `${K}/${string}`;
+	toString(): `${K}/${string}` {
+		return `${this.collection}/${this.id}`;
+	}
 }
 
 /** Reference to an item in a synchronous provider. */
-export class Item<T extends Datas = Datas, K extends Key<T> = Key<T>> implements ItemInterface<T, K> {
+export class Item<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseItem<T, K> {
 	readonly db: Database<T>;
 	readonly collection: K;
 	readonly id: string;
 	constructor(db: Database<T>, collection: K, id: string) {
+		super();
 		this.db = db;
 		this.collection = collection;
 		this.id = id;
@@ -94,29 +117,24 @@ export class Item<T extends Datas = Datas, K extends Key<T> = Key<T>> implements
 	get data(): ItemData<T[K]> {
 		return getData(this.value);
 	}
-	subscribe(next: PartialObserver<ItemValue<T[K]>> | Dispatch<[ItemValue<T[K]>]>): Unsubscribe {
-		return this.db.provider.subscribeItem(this.collection, this.id, typeof next === "function" ? { next } : next);
-	}
 	set(data: T[K]): void {
 		return this.db.provider.setItem(this.collection, this.id, data);
 	}
 	update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): void {
-		return this.db.provider.updateItem(this.collection, this.id, updates instanceof DataUpdate ? updates : new DataUpdate(updates));
+		return this.db.provider.updateItem(this.collection, this.id, isTransformable(updates) ? updates : new DataUpdate(updates as PropUpdates<T[K]>));
 	}
 	delete(): void {
 		return this.db.provider.deleteItem(this.collection, this.id);
 	}
-	toString(): `${K}/${string}` {
-		return `${this.collection}/${this.id}`;
-	}
 }
 
 /** Reference to an item in an asynchronous provider. */
-export class AsyncItem<T extends Datas = Datas, K extends Key<T> = Key<T>> implements ItemInterface<T, K> {
+export class AsyncItem<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseItem<T, K> {
 	readonly db: AsyncDatabase<T>;
 	readonly collection: K;
 	readonly id: string;
 	constructor(provider: AsyncDatabase<T>, collection: K, id: string) {
+		super();
 		this.db = provider;
 		this.collection = collection;
 		this.id = id;
@@ -133,20 +151,14 @@ export class AsyncItem<T extends Datas = Datas, K extends Key<T> = Key<T>> imple
 	get data(): Promise<ItemData<T[K]>> {
 		return this.value.then(getData);
 	}
-	subscribe(next: PartialObserver<ItemValue<T[K]>> | Dispatch<[ItemValue<T[K]>]>): Unsubscribe {
-		return this.db.provider.subscribeItem(this.collection, this.id, typeof next === "function" ? { next } : next);
-	}
 	set(data: T[K]): Promise<void> {
 		return this.db.provider.setItem(this.collection, this.id, data);
 	}
 	update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): Promise<void> {
-		return this.db.provider.updateItem(this.collection, this.id, updates instanceof DataUpdate ? updates : new DataUpdate(updates));
+		return this.db.provider.updateItem(this.collection, this.id, isTransformable(updates) ? updates : new DataUpdate(updates));
 	}
 	delete(): Promise<void> {
 		return this.db.provider.deleteItem(this.collection, this.id);
-	}
-	toString(): `${K}/${string}` {
-		return `${this.collection}/${this.id}`;
 	}
 }
 

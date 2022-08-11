@@ -9,7 +9,7 @@ export interface Transformable<I, O> {
 	transform(input: I): O;
 }
 
-/** Is an unknown value a derivable. */
+/** Is an unknown value a transformable. */
 export const isTransformable = <T extends Transformable<unknown, unknown>>(v: T | unknown): v is T => isData(v) && typeof v.transform === "function";
 
 /** Function that can transform an input value into an output value. */

@@ -11,8 +11,8 @@ import type { Database, AsyncDatabase } from "./Database.js";
  * - If data is null, deletes the item.
  * - If data is undefined, skip the item.
  */
-export type Changes<DB extends Datas> = {
-	[K in Key<DB> as `${K}/${string}`]: DB[K] | DataUpdate<DB[K]> | null | undefined;
+export type Changes<T extends Datas> = {
+	[K in Key<T> as `${K}/${string}`]: T[K] | DataUpdate<T[K]> | null | undefined;
 };
 
 /** Apply a set of changes to a synchronous database. */
