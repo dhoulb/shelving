@@ -3,26 +3,31 @@ import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
 import type { ItemData } from "../db/Item.js";
+import type { Nullish } from "../util/null.js";
 import { Item, AsyncItem } from "./Item.js";
 import { Query, AsyncQuery } from "./Query.js";
 import { Collection, AsyncCollection } from "./Collection.js";
+import { changeAsyncProvider, changeProvider, ItemChanges, WriteChange } from "./Change.js";
 
 /** Database with a synchronous or asynchronous provider. */
-interface AbstractDatabase<T extends Datas> {
-	readonly provider: Provider<T> | AsyncProvider<T>;
+abstract class BaseDatabase<T extends Datas> {
+	abstract readonly provider: Provider<T> | AsyncProvider<T>;
 
 	/** Create a query on a collection in this database. */
-	collection<K extends Key<T>>(collection: K): Collection<T, K> | AsyncCollection<T, K>;
+	abstract collection<K extends Key<T>>(collection: K): Collection<T, K> | AsyncCollection<T, K>;
 
 	/** Create a query on a collection in this database. */
-	query<K extends Key<T>>(collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> | AsyncQuery<T, K>;
+	abstract query<K extends Key<T>>(collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> | AsyncQuery<T, K>;
 
 	/** Reference an item in a collection in this database. */
-	item<K extends Key<T>>(collection: K, id: string): Item<T, K> | AsyncItem<T, K>;
+	abstract item<K extends Key<T>>(collection: K, id: string): Item<T, K> | AsyncItem<T, K>;
+
+	/** Run a set of changes on this database. */
+	abstract change<K extends Key<T>>(...changes: Nullish<WriteChange<T, K>>[]): ItemChanges<T, K> | Promise<ItemChanges<T, K>>;
 }
 
 /** Database with a synchronous provider. */
-export class Database<T extends Datas = Datas> implements AbstractDatabase<T> {
+export class Database<T extends Datas = Datas> implements BaseDatabase<T> {
 	readonly provider: Provider<T>;
 	constructor(provider: Provider<T>) {
 		this.provider = provider;
@@ -36,10 +41,13 @@ export class Database<T extends Datas = Datas> implements AbstractDatabase<T> {
 	item<K extends Key<T>>(collection: K, id: string): Item<T, K> {
 		return new Item(this, collection, id);
 	}
+	change<K extends Key<T>>(...changes: Nullish<WriteChange<T, K>>[]): ItemChanges<T, K> {
+		return changeProvider(this.provider, changes);
+	}
 }
 
 /** Database with a synchronous provider. */
-export class AsyncDatabase<T extends Datas = Datas> implements AbstractDatabase<T> {
+export class AsyncDatabase<T extends Datas = Datas> implements BaseDatabase<T> {
 	readonly provider: AsyncProvider<T>;
 	constructor(provider: AsyncProvider<T>) {
 		this.provider = provider;
@@ -52,5 +60,8 @@ export class AsyncDatabase<T extends Datas = Datas> implements AbstractDatabase<
 	}
 	item<K extends Key<T>>(collection: K, id: string): AsyncItem<T, K> {
 		return new AsyncItem(this, collection, id);
+	}
+	change<K extends Key<T>>(...changes: Nullish<WriteChange<T, K>>[]): Promise<ItemChanges<T, K>> {
+		return changeAsyncProvider(this.provider, changes);
 	}
 }

@@ -1,9 +1,11 @@
 import type { Datas, Key } from "../util/data.js";
+import type { Nullish } from "../util/null.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
 import type { ItemData, AsyncItem, Item } from "./Item.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 import type { AsyncQuery, Query } from "./Query.js";
+import type { ItemChanges, WriteChange } from "./Change.js";
 
 /** Reference to a collection in a synchronous or asynchronous provider. */
 abstract class BaseCollection<T extends Datas = Datas, K extends Key<T> = Key<T>> {
@@ -18,6 +20,9 @@ abstract class BaseCollection<T extends Datas = Datas, K extends Key<T> = Key<T>
 
 	/** Add an item to this collection. */
 	abstract add(data: T[K]): string | Promise<string>;
+
+	/** Run a set of changes on this database. */
+	abstract change(...changes: Nullish<WriteChange<T, K>>[]): ItemChanges<T, K> | Promise<ItemChanges<T, K>>;
 
 	// Implement toString()
 	toString(): K {
@@ -43,6 +48,9 @@ export class Collection<T extends Datas = Datas, K extends Key<T> = Key<T>> exte
 	add(data: T[K]): string {
 		return this.db.provider.addItem(this.collection, data);
 	}
+	change(...changes: Nullish<WriteChange<T, K>>[]): ItemChanges<T, K> {
+		return this.db.change(...changes);
+	}
 }
 
 /** Reference to a collection in an asynchronous provider. */
@@ -62,5 +70,8 @@ export class AsyncCollection<T extends Datas = Datas, K extends Key<T> = Key<T>>
 	}
 	add(data: T[K]): Promise<string> {
 		return this.db.provider.addItem(this.collection, data);
+	}
+	change(...changes: Nullish<WriteChange<T, K>>[]): Promise<ItemChanges<T, K>> {
+		return this.db.change(...changes);
 	}
 }

@@ -9,7 +9,7 @@ import type { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { isTransformable } from "../util/transform.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 import type { AsyncQuery, Query } from "./Query.js";
-import type { Changes } from "./Changes.js";
+import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
 
 /** Item data with a string ID that uniquely identifies it. */
 export type ItemData<T extends Data = Data> = T & { id: string };
@@ -67,25 +67,25 @@ abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 	/** Set the complete data of this item. */
 	abstract set(data: T[K]): void | PromiseLike<void>;
 
-	/** Get a set change for this item. */
-	getSet(data: T[K]): Changes<T> {
-		return { [this.toString()]: data } as unknown as Changes<T>;
-	}
-
 	/** Update this item. */
 	abstract update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): void | PromiseLike<void>;
-
-	/** Get an update change for this item. */
-	getUpdate(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): Changes<T> {
-		return { [this.toString()]: updates instanceof DataUpdate ? updates : new DataUpdate<T[K]>(updates) } as unknown as Changes<T>;
-	}
 
 	/** Delete this item. */
 	abstract delete(): void | PromiseLike<void>;
 
+	/** Get a set change for this item. */
+	getSet(data: T[K]): SetChange<T, K> {
+		return { action: "SET", collection: this.collection, id: this.id, data };
+	}
+
+	/** Get an update change for this item. */
+	getUpdate(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): UpdateChange<T, K> {
+		return { action: "UPDATE", collection: this.collection, id: this.id, update: updates instanceof DataUpdate ? updates : new DataUpdate<T[K]>(updates) };
+	}
+
 	/** Get a delete change for this item. */
-	getDelete(): Changes<T> {
-		return { [this.toString()]: null } as Changes<T>;
+	getDelete(): DeleteChange<T, K> {
+		return { action: "DELETE", collection: this.collection, id: this.id };
 	}
 
 	// Implement toString()
