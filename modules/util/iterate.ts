@@ -1,7 +1,6 @@
 import type { Mutable } from "./data.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableArray } from "./array.js";
-import { isNullish } from "./null.js";
 
 /**`Iterable that specifies return types and next types for the iterator (normally in Typescript these are `void` */
 export interface TypedIterable<T, R, N> {
