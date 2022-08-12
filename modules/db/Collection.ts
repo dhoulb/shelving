@@ -5,7 +5,7 @@ import type { SortList } from "../constraint/SortConstraint.js";
 import type { ItemData, AsyncItem, Item } from "./Item.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 import type { AsyncQuery, Query } from "./Query.js";
-import type { ItemChanges, WriteChange } from "./Change.js";
+import type { AddChange, ItemChanges, WriteChange } from "./Change.js";
 
 /** Reference to a collection in a synchronous or asynchronous provider. */
 abstract class BaseCollection<T extends Datas = Datas, K extends Key<T> = Key<T>> {
@@ -23,6 +23,11 @@ abstract class BaseCollection<T extends Datas = Datas, K extends Key<T> = Key<T>
 
 	/** Run a set of changes on this database. */
 	abstract change(...changes: Nullish<WriteChange<T, K>>[]): ItemChanges<T, K> | Promise<ItemChanges<T, K>>;
+
+	/** Get an add change for this collection. */
+	getAdd(data: T[K]): AddChange<T, K> {
+		return { action: "ADD", collection: this.collection, data };
+	}
 
 	// Implement toString()
 	toString(): K {
