@@ -5,6 +5,7 @@ import { DataUpdate } from "../update/DataUpdate.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { FilterConstraint } from "../constraint/FilterConstraint.js";
 import { notNullish, Nullish } from "../util/null.js";
+import { DeepIterable, flattenDeepIterable } from "../util/iterate.js";
 import type { ItemConstraints, ItemData } from "./Item.js";
 
 export interface Change<T extends Datas, K extends Key<T>> {
@@ -55,10 +56,9 @@ export type WriteChange<T extends Datas, K extends Key<T> = Key<T>> = ItemChange
 export type WriteChanges<T extends Datas, K extends Key<T> = Key<T>> = ImmutableArray<WriteChange<T, K>>;
 
 /** Apply a set of changes to a synchronous provider. */
-export function changeProvider<T extends Datas, K extends Key<T> = Key<T>>(provider: Provider<T>, changes: ImmutableArray<Nullish<WriteChange<T, K>>>): ItemChanges<T, K> {
-	return changes.filter(notNullish).map(_changeItem, provider);
+export function changeProvider<T extends Datas, K extends Key<T> = Key<T>>(provider: Provider<T>, ...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> {
+	return Array.from(flattenDeepIterable(changes)).filter(notNullish).map(_changeItem, provider);
 }
-
 function _changeItem<T extends Datas, K extends Key<T>>(this: Provider<T>, change: WriteChange<T, K>): ItemChange<T, K> {
 	const { action, collection } = change;
 	if (action === "ADD") return { action: "SET", collection, id: this.addItem(collection, change.data), data: change.data };
@@ -69,10 +69,9 @@ function _changeItem<T extends Datas, K extends Key<T>>(this: Provider<T>, chang
 }
 
 /** Apply a set of changes to an asynchronous provider. */
-export function changeAsyncProvider<T extends Datas, K extends Key<T>>(provider: AsyncProvider<T>, changes: ImmutableArray<Nullish<WriteChange<T, K>>>): Promise<ItemChanges<T, K>> {
-	return Promise.all(changes.filter(notNullish).map(_changeAsyncItem, provider));
+export function changeAsyncProvider<T extends Datas, K extends Key<T>>(provider: AsyncProvider<T>, ...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): Promise<ItemChanges<T, K>> {
+	return Promise.all(Array.from(flattenDeepIterable(changes)).filter(notNullish).map(_changeAsyncItem, provider));
 }
-
 async function _changeAsyncItem<T extends Datas, K extends Key<T>>(this: AsyncProvider<T>, change: WriteChange<T, K>): Promise<ItemChange<T, K>> {
 	const { collection, action } = change;
 	if (action === "ADD") return { action: "SET", collection, id: await this.addItem(collection, change.data), data: change.data };

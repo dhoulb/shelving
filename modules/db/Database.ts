@@ -4,6 +4,7 @@ import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
 import type { ItemData } from "../db/Item.js";
 import type { Nullish } from "../util/null.js";
+import { DeepIterable } from "../util/iterate.js";
 import { Item, AsyncItem } from "./Item.js";
 import { Query, AsyncQuery } from "./Query.js";
 import { Collection, AsyncCollection } from "./Collection.js";
@@ -23,7 +24,7 @@ abstract class BaseDatabase<T extends Datas> {
 	abstract item<K extends Key<T>>(collection: K, id: string): Item<T, K> | AsyncItem<T, K>;
 
 	/** Run a set of changes on this database. */
-	abstract change<K extends Key<T>>(...changes: Nullish<WriteChange<T, K>>[]): ItemChanges<T, K> | Promise<ItemChanges<T, K>>;
+	abstract change<K extends Key<T>>(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> | Promise<ItemChanges<T, K>>;
 }
 
 /** Database with a synchronous provider. */
@@ -41,7 +42,7 @@ export class Database<T extends Datas = Datas> implements BaseDatabase<T> {
 	item<K extends Key<T>>(collection: K, id: string): Item<T, K> {
 		return new Item(this, collection, id);
 	}
-	change<K extends Key<T>>(...changes: Nullish<WriteChange<T, K>>[]): ItemChanges<T, K> {
+	change<K extends Key<T>>(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> {
 		return changeProvider(this.provider, changes);
 	}
 }
@@ -61,7 +62,7 @@ export class AsyncDatabase<T extends Datas = Datas> implements BaseDatabase<T> {
 	item<K extends Key<T>>(collection: K, id: string): AsyncItem<T, K> {
 		return new AsyncItem(this, collection, id);
 	}
-	change<K extends Key<T>>(...changes: Nullish<WriteChange<T, K>>[]): Promise<ItemChanges<T, K>> {
+	change<K extends Key<T>>(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): Promise<ItemChanges<T, K>> {
 		return changeAsyncProvider(this.provider, changes);
 	}
 }

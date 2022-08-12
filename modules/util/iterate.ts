@@ -1,6 +1,7 @@
 import type { Mutable } from "./data.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableArray } from "./array.js";
+import { isNullish } from "./null.js";
 
 /**`Iterable that specifies return types and next types for the iterator (normally in Typescript these are `void` */
 export interface TypedIterable<T, R, N> {
@@ -38,6 +39,15 @@ function _countItems(items: Iterable<unknown>): number {
 	let count = 0;
 	for (const unused of items) count++;
 	return count;
+}
+
+/** An iterable possibly containing multiple other iterables. */
+export type DeepIterable<T> = T | Iterable<DeepIterable<T>>;
+
+/** Flatten one or more iterables. */
+export function* flattenDeepIterable<T>(items: DeepIterable<T>): Iterable<T> {
+	if (isIterable(items)) for (const item of items) yield* flattenDeepIterable(item);
+	else yield items;
 }
 
 /**
