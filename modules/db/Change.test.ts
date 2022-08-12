@@ -1,4 +1,4 @@
-import { Data, Datas, Key, Value } from "../index.js";
+import { Datas } from "../index.js";
 import { SetChange } from "./Change.js";
 
 test("Typescript", () => {

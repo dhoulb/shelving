@@ -1,4 +1,4 @@
-import type { Data, Datas, Key, Value } from "../util/data.js";
+import type { Data, Datas, Key } from "../util/data.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
 import { DataUpdate } from "../update/DataUpdate.js";
@@ -33,7 +33,7 @@ export interface UpdateChange<T extends Datas, K extends Key<T> = Key<T>> extend
 	readonly action: "UPDATE";
 	readonly collection: K;
 	readonly id: string;
-	readonly update: DataUpdate<Value<T>>;
+	readonly update: DataUpdate<T[K]>;
 }
 
 /** Delete change on an item. */
