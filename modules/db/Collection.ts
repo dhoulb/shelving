@@ -3,10 +3,10 @@ import type { Nullish } from "../util/null.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
 import type { DeepIterable } from "../util/iterate.js";
-import type { ItemData, AsyncItem, Item } from "./Item.js";
 import type { AsyncDatabase, Database } from "./Database.js";
-import type { AsyncQuery, Query } from "./Query.js";
-import type { AddChange, ItemChanges, WriteChange } from "./Change.js";
+import { ItemData, AsyncItem, Item } from "./Item.js";
+import { AsyncQuery, Query } from "./Query.js";
+import { AddChange, ItemChanges, WriteChange, changeAsyncProvider, changeProvider } from "./Change.js";
 
 /** Reference to a collection in a synchronous or asynchronous provider. */
 abstract class BaseCollection<T extends Datas = Datas, K extends Key<T> = Key<T>> {
@@ -46,16 +46,16 @@ export class Collection<T extends Datas = Datas, K extends Key<T> = Key<T>> exte
 		this.collection = collection;
 	}
 	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> {
-		return this.db.query(this.collection, filters, sorts, limit);
+		return new Query<T, K>(this.db, this.collection, filters, sorts, limit);
 	}
 	item(id: string): Item<T, K> {
-		return this.db.item(this.collection, id);
+		return new Item<T, K>(this.db, this.collection, id);
 	}
 	add(data: T[K]): string {
 		return this.db.provider.addItem(this.collection, data);
 	}
 	change(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> {
-		return this.db.change(...changes);
+		return changeProvider(this.db.provider, changes);
 	}
 }
 
@@ -69,15 +69,15 @@ export class AsyncCollection<T extends Datas = Datas, K extends Key<T> = Key<T>>
 		this.collection = collection;
 	}
 	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): AsyncQuery<T, K> {
-		return this.db.query(this.collection, filters, sorts, limit);
+		return new AsyncQuery<T, K>(this.db, this.collection, filters, sorts, limit);
 	}
 	item(id: string): AsyncItem<T, K> {
-		return this.db.item(this.collection, id);
+		return new AsyncItem<T, K>(this.db, this.collection, id);
 	}
 	add(data: T[K]): Promise<string> {
 		return this.db.provider.addItem(this.collection, data);
 	}
 	change(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): Promise<ItemChanges<T, K>> {
-		return this.db.change(...changes);
+		return changeAsyncProvider(this.db.provider, changes);
 	}
 }

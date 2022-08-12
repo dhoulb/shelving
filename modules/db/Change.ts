@@ -1,4 +1,4 @@
-import type { Data, Datas, Key } from "../util/data.js";
+import type { Data, Datas, Key, Value } from "../util/data.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
 import { DataUpdate } from "../update/DataUpdate.js";
@@ -8,20 +8,20 @@ import { notNullish, Nullish } from "../util/null.js";
 import { DeepIterable, flattenDeepIterable } from "../util/iterate.js";
 import type { ItemConstraints, ItemData } from "./Item.js";
 
-export interface Change<T extends Datas, K extends Key<T>> {
+export interface Change<T extends Datas> {
 	readonly action: string;
-	readonly collection: K;
+	readonly collection: Key<T>;
 }
 
 /** Add on an item. */
-export interface AddChange<T extends Datas, K extends Key<T>> extends Change<T, K> {
+export interface AddChange<T extends Datas, K extends Key<T> = Key<T>> extends Change<T> {
 	readonly action: "ADD";
 	readonly collection: K;
 	readonly data: T[K];
 }
 
 /** Set on an item. */
-export interface SetChange<T extends Datas, K extends Key<T>> extends Change<T, K> {
+export interface SetChange<T extends Datas, K extends Key<T> = Key<T>> extends Change<T> {
 	readonly action: "SET";
 	readonly collection: K;
 	readonly id: string;
@@ -29,15 +29,15 @@ export interface SetChange<T extends Datas, K extends Key<T>> extends Change<T, 
 }
 
 /** Update change on an item. */
-export interface UpdateChange<T extends Datas, K extends Key<T>> extends Change<T, K> {
+export interface UpdateChange<T extends Datas, K extends Key<T> = Key<T>> extends Change<T> {
 	readonly action: "UPDATE";
 	readonly collection: K;
 	readonly id: string;
-	readonly update: DataUpdate<T[K]>;
+	readonly update: DataUpdate<Value<T>>;
 }
 
 /** Delete change on an item. */
-export interface DeleteChange<T extends Datas, K extends Key<T>> extends Change<T, K> {
+export interface DeleteChange<T extends Datas, K extends Key<T> = Key<T>> extends Change<T> {
 	readonly action: "DELETE";
 	readonly collection: K;
 	readonly id: string;
@@ -56,7 +56,7 @@ export type WriteChange<T extends Datas, K extends Key<T> = Key<T>> = ItemChange
 export type WriteChanges<T extends Datas, K extends Key<T> = Key<T>> = ImmutableArray<WriteChange<T, K>>;
 
 /** Apply a set of changes to a synchronous provider. */
-export function changeProvider<T extends Datas, K extends Key<T> = Key<T>>(provider: Provider<T>, ...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> {
+export function changeProvider<T extends Datas, K extends Key<T>>(provider: Provider<T>, ...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> {
 	return Array.from(flattenDeepIterable(changes)).filter(notNullish).map(_changeItem, provider);
 }
 function _changeItem<T extends Datas, K extends Key<T>>(this: Provider<T>, change: WriteChange<T, K>): ItemChange<T, K> {
