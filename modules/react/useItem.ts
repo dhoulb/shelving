@@ -1,5 +1,5 @@
 import type { Unsubscribe } from "../observe/Observable.js";
-import { Datas, getData, Value } from "../util/data.js";
+import { Datas, getData, Key } from "../util/data.js";
 import { getOptionalSource } from "../util/source.js";
 import { setMapItem } from "../util/map.js";
 import { ItemValue, ItemData, AsyncItem, Item } from "../db/Item.js";
@@ -11,12 +11,12 @@ import { useSubscribe } from "./useSubscribe.js";
 import { useCache } from "./useCache.js";
 
 /** Hold the current state of a item. */
-export class ItemState<T extends Datas> extends State<ItemValue<Value<T>>> {
-	readonly ref: Item<T> | AsyncItem<T>;
+export class ItemState<T extends Datas, K extends Key<T> = Key<T>> extends State<ItemValue<T[K]>> {
+	readonly ref: Item<T, K> | AsyncItem<T, K>;
 	readonly busy = new BooleanState();
 
 	/** Get the data of the item (throws `RequiredError` if item doesn't exist). */
-	get data(): ItemData<Value<T>> {
+	get data(): ItemData<T[K]> {
 		return getData(this.value);
 	}
 
@@ -25,7 +25,7 @@ export class ItemState<T extends Datas> extends State<ItemValue<Value<T>>> {
 		return !!this.value;
 	}
 
-	constructor(ref: Item<T> | AsyncItem<T>) {
+	constructor(ref: Item<T, K> | AsyncItem<T, K>) {
 		const table = getOptionalSource<CacheProvider<T>>(CacheProvider, ref.db.provider)?.memory.getTable(ref.collection);
 		const time = table ? table.getItemTime(ref.id) : null;
 		const isCached = typeof time === "number";
@@ -86,9 +86,9 @@ export class ItemState<T extends Datas> extends State<ItemValue<Value<T>>> {
  * Use an item in a React component.
  * - Uses the default cache, so will error if not used inside `<Cache>`
  */
-export function useItem<T extends Datas>(ref: Item<T> | AsyncItem<T>): ItemState<T>;
-export function useItem<T extends Datas>(ref?: Item<T> | AsyncItem<T>): ItemState<T> | undefined;
-export function useItem<T extends Datas>(ref?: Item<T> | AsyncItem<T>): ItemState<T> | undefined {
+export function useItem<T extends Datas, K extends Key<T>>(ref: Item<T, K> | AsyncItem<T, K>): ItemState<T, K>;
+export function useItem<T extends Datas, K extends Key<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined;
+export function useItem<T extends Datas, K extends Key<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined {
 	const cache = useCache();
 	const key = ref?.toString();
 	const state = ref && key ? cache.get(key) || setMapItem(cache, key, new ItemState(ref)) : undefined;
