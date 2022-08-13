@@ -1,7 +1,8 @@
 import type { ImmutableArray } from "../util/array.js";
-import { Data, Key, getProp } from "../util/data.js";
+import type { Data, Key } from "../util/data.js";
+import type { Nullish } from "../util/null.js";
 import { rank, Rankable, rankAsc, rankDesc, sortItems } from "../util/sort.js";
-import { Constraint } from "./Constraint.js";
+import type { Constraint } from "./Constraint.js";
 
 /** Format that allows sorts to be set as a plain string, e.g. `name` sorts by name in ascending order and `!date` sorts by date in descending order. */
 export type SortKey<T extends Data> = Key<T> | `${Key<T>}` | `!${Key<T>}`;
@@ -13,7 +14,7 @@ export type SortKeys<T extends Data> = SortKey<T> | ImmutableArray<SortKey<T>>;
 export type SortDirection = "ASC" | "DESC";
 
 /** List of sorts in a flexible format. */
-export type SortList<T extends Data> = SortKeys<T> | SortConstraint<T> | Iterable<SortList<T>>;
+export type SortList<T extends Data> = Nullish<SortKeys<T> | SortConstraint<T> | Iterable<SortList<T>>>;
 
 /** Sort a list of values. */
 export class SortConstraint<T extends Data = Data> implements Constraint<T>, Rankable<T> {
@@ -32,7 +33,7 @@ export class SortConstraint<T extends Data = Data> implements Constraint<T>, Ran
 		}
 	}
 	rank(left: T, right: T): number {
-		return rank(getProp(left, this.key), this.direction === "ASC" ? rankAsc : rankDesc, getProp(right, this.key));
+		return rank(left[this.key], this.direction === "ASC" ? rankAsc : rankDesc, right[this.key]);
 	}
 	transform(items: Iterable<T>): Iterable<T> {
 		return sortItems(items, this);
@@ -48,7 +49,7 @@ export function* getSorts<T extends Data>(sorts: SortList<T>): Iterable<SortCons
 		yield new SortConstraint(sorts);
 	} else if (sorts instanceof SortConstraint) {
 		yield sorts;
-	} else {
+	} else if (sorts) {
 		for (const sort of sorts) yield* getSorts(sort);
 	}
 }

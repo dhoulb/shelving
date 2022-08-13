@@ -1,10 +1,10 @@
-import { ArrayType, ImmutableArray, isArray } from "../util/array.js";
-import { Data, Key } from "../util/data.js";
+import type { Data, Key } from "../util/data.js";
+import type { Nullish } from "../util/null.js";
+import { ImmutableArray, isArray } from "../util/array.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, Matchable, Match, notEqual, notInArray } from "../util/match.js";
 import { filterItems } from "../util/filter.js";
 import { isIterable } from "../util/iterate.js";
-import { NotString } from "../util/string.js";
-import { Constraint } from "./Constraint.js";
+import type { Constraint } from "./Constraint.js";
 
 /** Possible operator references. */
 export type FilterOperator = "IS" | "NOT" | "IN" | "OUT" | "CONTAINS" | "LT" | "LTE" | "GT" | "GTE";
@@ -16,13 +16,13 @@ export type FilterKey<T extends Data> = Key<T> | `${Key<T>}` | `!${Key<T>}` | `$
 export type FilterProps<T extends Data> = {
 	[K in Key<T> as `${K}` | `!${K}`]?: T[K] | ImmutableArray<T[K]>; // IS/NOT/IN/OUT
 } & {
-	[K in Key<T> as `${K}[]`]?: T[K] extends ImmutableArray ? ArrayType<T[K]> : never; // CONTAINS
+	[K in Key<T> as `${K}[]`]?: Required<T>[K] extends ReadonlyArray<infer X> ? X : never; // CONTAINS
 } & {
 	[K in Key<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: T[K]; // GT/GTE/LT/LTE
 };
 
 /** List of filters in a flexible format. */
-export type FilterList<T extends Data> = FilterProps<T> | FilterConstraint<T> | Iterable<FilterList<T> & NotString>;
+export type FilterList<T extends Data> = Nullish<FilterProps<T> | FilterConstraint<T>> | Iterable<FilterList<T>>;
 
 /** Map `FilterOperator` to its corresponding `Match` function. */
 const MATCHERS: { [K in FilterOperator]: Match } = {
@@ -100,7 +100,7 @@ export function* getFilters<T extends Data>(filters: FilterList<T>): Iterable<Fi
 		yield filters;
 	} else if (isIterable(filters)) {
 		for (const filter of filters) yield* getFilters(filter);
-	} else {
+	} else if (filters) {
 		for (const [key, value] of Object.entries(filters)) yield new FilterConstraint<T>(key, value);
 	}
 }

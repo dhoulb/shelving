@@ -1,7 +1,7 @@
 import type { Data } from "../util/data.js";
 import { Rankable, sortItems } from "../util/sort.js";
 import { Constraints } from "./Constraints.js";
-import { getSorts, SortConstraint, SortKeys, SortList } from "./SortConstraint.js";
+import { getSorts, SortConstraint, SortList } from "./SortConstraint.js";
 
 /**
  * Interface to make sure an object implements all directions.
@@ -9,17 +9,17 @@ import { getSorts, SortConstraint, SortKeys, SortList } from "./SortConstraint.j
  */
 export interface Sortable<T extends Data> extends Rankable<T> {
 	/** Add one or more sorts to this sortable. */
-	sort(...keys: SortKeys<T>[]): this;
+	sort(...keys: SortList<Partial<T>>[]): this;
 }
 
 /** A set of sorts. */
-export class SortConstraints<T extends Data = Data> extends Constraints<T, SortConstraint<T>> implements Sortable<T> {
-	constructor(...sorts: SortList<T>[]) {
+export class SortConstraints<T extends Data = Data> extends Constraints<T, SortConstraint<Partial<T>>> implements Sortable<T> {
+	constructor(...sorts: SortList<Partial<T>>[]) {
 		super(...getSorts(sorts));
 	}
 
 	// Implement `Sortable`
-	sort(...sorts: SortList<T>[]): this {
+	sort(...sorts: SortList<Partial<T>>[]): this {
 		return this.with(...getSorts(sorts));
 	}
 	rank(left: T, right: T): number {

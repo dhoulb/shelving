@@ -18,7 +18,7 @@ abstract class BaseDatabase<T extends Datas> {
 	abstract collection<K extends Key<T>>(collection: K): Collection<T, K> | AsyncCollection<T, K>;
 
 	/** Create a query on a collection in this database. */
-	abstract query<K extends Key<T>>(collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> | AsyncQuery<T, K>;
+	abstract query<K extends Key<T>>(collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): Query<T, K> | AsyncQuery<T, K>;
 
 	/** Reference an item in a collection in this database. */
 	abstract item<K extends Key<T>>(collection: K, id: string): Item<T, K> | AsyncItem<T, K>;
@@ -36,7 +36,7 @@ export class Database<T extends Datas = Datas> implements BaseDatabase<T> {
 	collection<K extends Key<T>>(collection: K): Collection<T, K> {
 		return new Collection<T, K>(this, collection);
 	}
-	query<K extends Key<T>>(collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> {
+	query<K extends Key<T>>(collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): Query<T, K> {
 		return new Query<T, K>(this, collection, filters, sorts, limit);
 	}
 	item<K extends Key<T>>(collection: K, id: string): Item<T, K> {
@@ -56,7 +56,7 @@ export class AsyncDatabase<T extends Datas = Datas> implements BaseDatabase<T> {
 	collection<K extends Key<T>>(collection: K): AsyncCollection<T, K> {
 		return new AsyncCollection<T, K>(this, collection);
 	}
-	query<K extends Key<T>>(collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): AsyncQuery<T, K> {
+	query<K extends Key<T>>(collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): AsyncQuery<T, K> {
 		return new AsyncQuery<T, K>(this, collection, filters, sorts, limit);
 	}
 	item<K extends Key<T>>(collection: K, id: string): AsyncItem<T, K> {

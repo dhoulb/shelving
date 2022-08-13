@@ -5,7 +5,7 @@ import { Filterable, FilterConstraints } from "./FilterConstraints.js";
 import { Sortable, SortConstraints } from "./SortConstraints.js";
 import { Constraint } from "./Constraint.js";
 import { FilterConstraint, FilterList } from "./FilterConstraint.js";
-import { SortKeys, SortList } from "./SortConstraint.js";
+import { SortList } from "./SortConstraint.js";
 
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new FilterConstraints<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -45,7 +45,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	readonly sorts: SortConstraints<T>;
 	readonly limit: number | null;
 
-	constructor(filters: FilterList<T> = EMPTY_FILTERS, sorts: SortList<T> = EMPTY_SORTS, limit: number | null = null) {
+	constructor(filters: FilterList<Partial<T>> = EMPTY_FILTERS, sorts: SortList<Partial<T>> = EMPTY_SORTS, limit: number | null = null) {
 		super();
 		this.filters = filters instanceof FilterConstraints ? filters : new FilterConstraints(filters);
 		this.sorts = sorts instanceof SortConstraints ? sorts : new SortConstraints(sorts);
@@ -53,7 +53,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	}
 
 	// Implement `Filterable`
-	filter(...filters: FilterList<T>[]): this {
+	filter(...filters: FilterList<Partial<T>>[]): this {
 		return {
 			__proto__: Object.getPrototypeOf(this),
 			...this,
@@ -73,11 +73,11 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	}
 
 	// Implement `Sortable`
-	sort(...keys: SortKeys<T>[]): this {
+	sort(...sorts: SortList<Partial<T>>[]): this {
 		return {
 			__proto__: Object.getPrototypeOf(this),
 			...this,
-			sorts: this.sorts.sort(...keys),
+			sorts: this.sorts.sort(...sorts),
 		};
 	}
 	get unsort(): this {

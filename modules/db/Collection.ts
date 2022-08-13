@@ -14,7 +14,7 @@ abstract class BaseCollection<T extends Datas = Datas, K extends Key<T> = Key<T>
 	abstract readonly collection: K;
 
 	/** Create a query on this item's collection. */
-	abstract query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> | AsyncQuery<T, K>;
+	abstract query(filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): Query<T, K> | AsyncQuery<T, K>;
 
 	/** Create a query on this item's collection. */
 	abstract item(id: string): Item<T, K> | AsyncItem<T, K>;
@@ -45,7 +45,7 @@ export class Collection<T extends Datas = Datas, K extends Key<T> = Key<T>> exte
 		this.db = db;
 		this.collection = collection;
 	}
-	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> {
+	query(filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): Query<T, K> {
 		return new Query<T, K>(this.db, this.collection, filters, sorts, limit);
 	}
 	item(id: string): Item<T, K> {
@@ -68,7 +68,7 @@ export class AsyncCollection<T extends Datas = Datas, K extends Key<T> = Key<T>>
 		this.db = db;
 		this.collection = collection;
 	}
-	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): AsyncQuery<T, K> {
+	query(filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): AsyncQuery<T, K> {
 		return new AsyncQuery<T, K>(this.db, this.collection, filters, sorts, limit);
 	}
 	item(id: string): AsyncItem<T, K> {

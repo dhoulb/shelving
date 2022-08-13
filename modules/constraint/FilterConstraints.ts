@@ -1,7 +1,7 @@
 import type { Data } from "../util/data.js";
 import type { Matchable } from "../util/match.js";
 import { filterItems } from "../util/filter.js";
-import { FilterList, FilterProps, FilterConstraint, getFilters } from "./FilterConstraint.js";
+import { FilterList, FilterConstraint, getFilters } from "./FilterConstraint.js";
 import { Constraints } from "./Constraints.js";
 
 /**
@@ -10,20 +10,20 @@ import { Constraints } from "./Constraints.js";
  */
 export interface Filterable<T extends Data> extends Matchable<T, void> {
 	/** Add a filter to this filterable. */
-	filter(props: FilterProps<T>): this;
+	filter(...filters: FilterList<Partial<T>>[]): this;
 
 	/** Match an item against the filters specified for this object. */
 	match(item: T): boolean;
 }
 
 /** A set of filters. */
-export class FilterConstraints<T extends Data = Data> extends Constraints<T, FilterConstraint<T>> implements Filterable<T> {
-	constructor(...filters: FilterList<T>[]) {
+export class FilterConstraints<T extends Data = Data> extends Constraints<T, FilterConstraint<Partial<T>>> implements Filterable<T> {
+	constructor(...filters: FilterList<Partial<T>>[]) {
 		super(...getFilters(filters));
 	}
 
 	// Implement `Filterable`
-	filter(...filters: FilterList<T>[]): this {
+	filter(...filters: FilterList<Partial<T>>[]): this {
 		return this.with(...getFilters(filters));
 	}
 	match(item: T): boolean {

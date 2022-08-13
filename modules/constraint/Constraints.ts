@@ -3,7 +3,7 @@ import { ImmutableArray, withItems, withoutItems } from "../util/array.js";
 import { Constraint } from "./Constraint.js";
 
 /** Type of Rule that is powered by several sub-constraints (e.g. `Filters` and `Sorts` and `Query` itself extend this). */
-export abstract class Constraints<T extends Data, C extends Constraint<T>> extends Constraint<T> implements Iterable<C> {
+export abstract class Constraints<T extends Data, C extends Constraint<Partial<T>>> extends Constraint<T> implements Iterable<C> {
 	protected readonly _constraints: ImmutableArray<C>;
 
 	/** Get the first constraint. */
