@@ -16,7 +16,7 @@ export type FilterKey<T extends Data> = Key<T> | `${Key<T>}` | `!${Key<T>}` | `$
 export type FilterProps<T extends Data> = {
 	[K in Key<T> as `${K}` | `!${K}`]?: T[K] | ImmutableArray<T[K]>; // IS/NOT/IN/OUT
 } & {
-	[K in Key<T> as `${K}[]`]?: Required<T>[K] extends ReadonlyArray<infer X> ? X : never; // CONTAINS
+	[K in Key<T> as `${K}[]`]?: Required<T>[K] extends ImmutableArray<infer X> ? X : never; // CONTAINS
 } & {
 	[K in Key<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: T[K]; // GT/GTE/LT/LTE
 };
