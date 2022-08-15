@@ -1,6 +1,6 @@
 import type { Data, Datas, Key } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
-import type { DataUpdate } from "../update/DataUpdate.js";
+import type { Updates } from "../update/DataUpdate.js";
 import type { Dispatch } from "../util/function.js";
 import type { Unsubscribe } from "../observe/Observable.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
@@ -11,6 +11,7 @@ import { Subject } from "../observe/Subject.js";
 import { dispatchNext, PartialObserver } from "../observe/Observer.js";
 import { getArray } from "../util/array.js";
 import { Constraint } from "../constraint/Constraint.js";
+import { transformData } from "../util/transform.js";
 import type { Provider } from "./Provider.js";
 
 /**
@@ -47,8 +48,8 @@ export class MemoryProvider<T extends Datas> implements Provider<T> {
 		return this.getTable(collection).setItem(id, data);
 	}
 
-	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): void {
-		return this.getTable(collection).updateItem(id, update);
+	updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
+		return this.getTable(collection).updateItem(id, updates);
 	}
 
 	deleteItem<K extends Key<T>>(collection: K, id: string): void {
@@ -71,8 +72,8 @@ export class MemoryProvider<T extends Datas> implements Provider<T> {
 		return this.getTable(collection).setQuery(constraints, data);
 	}
 
-	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): number {
-		return this.getTable(collection).updateQuery(constraints, update);
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
+		return this.getTable(collection).updateQuery(constraints, updates);
 	}
 
 	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
@@ -153,10 +154,10 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 		this.setItemData({ ...data, id });
 	}
 
-	updateItem(id: string, update: DataUpdate<T>): void {
+	updateItem(id: string, updates: Updates<T>): void {
 		const item = this._data.get(id);
 		if (!item) throw new RequiredError(`Document "${id}" does not exist`);
-		this.setItemData({ ...update.transform(item), id });
+		this.setItemData({ ...transformData(item, updates), id });
 	}
 
 	deleteItem(id: string): void {
@@ -233,11 +234,11 @@ export class MemoryTable<T extends Data> extends Subject<void> {
 		return count;
 	}
 
-	updateQuery(constraints: ItemConstraints<T>, update: DataUpdate<T>): number {
+	updateQuery(constraints: ItemConstraints<T>, updates: Updates<T>): number {
 		const now = Date.now();
 		let count = 0;
 		for (const item of _getWriteConstraints(constraints).transform(this._data.values())) {
-			this.setItemData({ ...update.transform(item), id: item.id });
+			this.setItemData({ ...transformData(item, updates), id: item.id });
 			count++;
 		}
 		this._times.set(_getQueryKey(constraints), now);

@@ -37,7 +37,7 @@ import type { AsyncProvider } from "../../provider/Provider.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
 import { dispatchError, dispatchNext, Observer, PartialObserver } from "../../observe/Observer.js";
 import { ArrayUpdate } from "../../update/ArrayUpdate.js";
-import { DataUpdate } from "../../update/DataUpdate.js";
+import { DataUpdate, Updates } from "../../update/DataUpdate.js";
 import { Increment } from "../../update/Increment.js";
 import { ObjectUpdate } from "../../update/ObjectUpdate.js";
 import { Delete } from "../../update/Delete.js";
@@ -142,8 +142,8 @@ export class FirestoreClientProvider implements AsyncProvider {
 	async setItem(collection: string, id: string, data: Data): Promise<void> {
 		await setDoc(firestoreDocument(this._firestore, collection, id), data);
 	}
-	async updateItem(collection: string, id: string, update: DataUpdate): Promise<void> {
-		await updateDoc(firestoreDocument(this._firestore, collection, id), ...(_getFieldValues(update) as [string, unknown]));
+	async updateItem(collection: string, id: string, updates: Updates): Promise<void> {
+		await updateDoc(firestoreDocument(this._firestore, collection, id), ...(_getFieldValues(Object.entries(updates)) as [string, unknown]));
 	}
 	async deleteItem(collection: string, id: string): Promise<void> {
 		await deleteDoc(firestoreDocument(this._firestore, collection, id));
@@ -163,9 +163,9 @@ export class FirestoreClientProvider implements AsyncProvider {
 		await Promise.all(snapshot.docs.map(s => setDoc(s.ref, data)));
 		return snapshot.size;
 	}
-	async updateQuery(collection: string, constraints: ItemConstraints, update: DataUpdate): Promise<number> {
+	async updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number> {
 		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
-		const fieldValues = Array.from(_getFieldValues(update)) as [string, unknown];
+		const fieldValues = Array.from(_getFieldValues(Object.entries(updates))) as [string, unknown];
 		await Promise.all(snapshot.docs.map(s => updateDoc(s.ref, ...fieldValues)));
 		return snapshot.size;
 	}

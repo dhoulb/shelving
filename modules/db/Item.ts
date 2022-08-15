@@ -4,9 +4,8 @@ import type { PartialObserver } from "../observe/Observer.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Observable, Unsubscribe } from "../observe/Observable.js";
 import { FilterConstraint } from "../constraint/FilterConstraint.js";
-import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
+import { DataUpdate, Updates } from "../update/DataUpdate.js";
 import type { QueryConstraints } from "../constraint/QueryConstraints.js";
-import { isTransformable } from "../util/transform.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 import type { AsyncQuery, Query } from "./Query.js";
 import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
@@ -68,7 +67,7 @@ abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 	abstract set(data: T[K]): void | PromiseLike<void>;
 
 	/** Update this item. */
-	abstract update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): void | PromiseLike<void>;
+	abstract update(updates: DataUpdate<T[K]> | Updates<T[K]>): void | PromiseLike<void>;
 
 	/** Delete this item. */
 	abstract delete(): void | PromiseLike<void>;
@@ -79,8 +78,8 @@ abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 	}
 
 	/** Get an update change for this item. */
-	getUpdate(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): UpdateChange<T, K> {
-		return { action: "UPDATE", collection: this.collection, id: this.id, update: updates instanceof DataUpdate ? updates : new DataUpdate<T[K]>(updates) };
+	getUpdate(updates: Updates<T[K]>): UpdateChange<T, K> {
+		return { action: "UPDATE", collection: this.collection, id: this.id, updates };
 	}
 
 	/** Get a delete change for this item. */
@@ -120,8 +119,8 @@ export class Item<T extends Datas = Datas, K extends Key<T> = Key<T>> extends Ba
 	set(data: T[K]): void {
 		return this.db.provider.setItem(this.collection, this.id, data);
 	}
-	update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): void {
-		return this.db.provider.updateItem(this.collection, this.id, isTransformable(updates) ? updates : new DataUpdate(updates as PropUpdates<T[K]>));
+	update(updates: Updates<T[K]>): void {
+		return this.db.provider.updateItem(this.collection, this.id, updates);
 	}
 	delete(): void {
 		return this.db.provider.deleteItem(this.collection, this.id);
@@ -154,8 +153,8 @@ export class AsyncItem<T extends Datas = Datas, K extends Key<T> = Key<T>> exten
 	set(data: T[K]): Promise<void> {
 		return this.db.provider.setItem(this.collection, this.id, data);
 	}
-	update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): Promise<void> {
-		return this.db.provider.updateItem(this.collection, this.id, isTransformable(updates) ? updates : new DataUpdate(updates));
+	update(updates: Updates<T[K]>): Promise<void> {
+		return this.db.provider.updateItem(this.collection, this.id, updates);
 	}
 	delete(): Promise<void> {
 		return this.db.provider.deleteItem(this.collection, this.id);

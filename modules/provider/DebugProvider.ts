@@ -2,7 +2,7 @@
 
 import type { Datas, Key } from "../util/data.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
-import type { DataUpdate } from "../update/DataUpdate.js";
+import type { Updates } from "../update/DataUpdate.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
 import { ThroughObserver } from "../observe/ThroughObserver.js";
@@ -75,11 +75,11 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): void {
+	updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
 		const key = _getItemKey(collection, id);
-		console.log(`Update: ${key}:`, update.updates);
+		console.log(`Update: ${key}:`, updates.updates);
 		try {
-			return this.source.updateItem(collection, id, update);
+			return this.source.updateItem(collection, id, updates);
 		} catch (reason) {
 			console.error(`Error: Update: ${key}:`, reason);
 			throw reason;
@@ -115,11 +115,11 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): number {
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Update: ${key}:`, update.updates);
+		console.log(`Update: ${key}:`, updates.updates);
 		try {
-			return this.source.updateQuery(collection, constraints, update);
+			return this.source.updateQuery(collection, constraints, updates);
 		} catch (reason) {
 			console.error(`Error: Update: ${key}:`, reason);
 			throw reason;
@@ -174,11 +174,11 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): Promise<void> {
+	async updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
 		const key = _getItemKey(collection, id);
-		console.log(`Update: ${key}:`, update.updates);
+		console.log(`Update: ${key}:`, updates.updates);
 		try {
-			return await this.source.updateItem(collection, id, update);
+			return await this.source.updateItem(collection, id, updates);
 		} catch (reason) {
 			console.error(`Error: Update: ${key}:`, reason);
 			throw reason;
@@ -214,11 +214,11 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): Promise<number> {
+	async updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Update: ${key}:`, update.updates);
+		console.log(`Update: ${key}:`, updates.updates);
 		try {
-			return await this.source.updateQuery(collection, constraints, update);
+			return await this.source.updateQuery(collection, constraints, updates);
 		} catch (reason) {
 			console.error(`Error: Update: ${key}:`, reason);
 			throw reason;

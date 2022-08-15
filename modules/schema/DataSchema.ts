@@ -1,4 +1,4 @@
-import type { Data } from "../util/data.js";
+import type { Data, Datas } from "../util/data.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { validateData, Validators } from "../util/validate.js";
 import { isObject } from "../util/object.js";
@@ -26,6 +26,9 @@ export class DataSchema<T extends Data> extends Schema<T> {
 		return validateData(unsafeValue, this.props);
 	}
 }
+
+/** Set of named data schemas. */
+export type DataSchemas<T extends Datas> = { [K in keyof T]: DataSchema<T[K]> };
 
 /** Valid data object with specifed properties. */
 export const DATA = <T extends Data>(props: Validators<T>): DataSchema<T> => new DataSchema({ props });

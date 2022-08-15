@@ -1,6 +1,6 @@
 import type { Unsubscribe } from "../observe/Observable.js";
 import type { PartialObserver } from "../observe/Observer.js";
-import type { DataUpdate } from "../update/DataUpdate.js";
+import type { Updates } from "../update/DataUpdate.js";
 import type { Datas, Key } from "../util/data.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 
@@ -48,7 +48,7 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	 * @param update Update instance to set the document to.
 	 * @throws Error If the document does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): void | PromiseLike<void>;
+	abstract updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): void | PromiseLike<void>;
 
 	/**
 	 * Delete a specified document.
@@ -85,7 +85,7 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	 * @param update Update instance to set the document to.
 	 * @return Number of documents that were updated.
 	 */
-	abstract updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): number | PromiseLike<number>;
+	abstract updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number | PromiseLike<number>;
 
 	/**
 	 * Delete all matching documents.
@@ -100,12 +100,12 @@ export abstract class Provider<T extends Datas = Datas> extends AbstractProvider
 	abstract override subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe;
 	abstract override addItem<K extends Key<T>>(collection: K, data: T[K]): string;
 	abstract override setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): void;
-	abstract override updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): void;
+	abstract override updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): void;
 	abstract override deleteItem<K extends Key<T>>(collection: K, id: string): void;
 	abstract override getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]>;
 	abstract override subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe;
 	abstract override setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number;
-	abstract override updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): number;
+	abstract override updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number;
 	abstract override deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number;
 }
 
@@ -115,11 +115,11 @@ export abstract class AsyncProvider<T extends Datas = Datas> extends AbstractPro
 	abstract override subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe;
 	abstract override addItem<K extends Key<T>>(collection: K, data: T[K]): Promise<string>;
 	abstract override setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): Promise<void>;
-	abstract override updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): Promise<void>;
+	abstract override updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void>;
 	abstract override deleteItem<K extends Key<T>>(collection: K, id: string): Promise<void>;
 	abstract override getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>>;
 	abstract override subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe;
 	abstract override setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): Promise<number>;
-	abstract override updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): Promise<number>;
+	abstract override updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number>;
 	abstract override deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number>;
 }

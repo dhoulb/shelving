@@ -1,13 +1,13 @@
 import type { Dispatch } from "../util/function.js";
 import type { Key, Datas } from "../util/data.js";
+import type { Updates } from "../update/DataUpdate.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Observable, Unsubscribe } from "../observe/Observable.js";
-import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
+import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { countItems, hasItems } from "../util/iterate.js";
-import { DataUpdate, PropUpdates } from "../update/DataUpdate.js";
 import type { ItemArray, ItemValue, ItemData } from "./Item.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 
@@ -83,7 +83,7 @@ abstract class BaseQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> ext
 	 * @param updates `Update` instance or set of updates to apply to every matching item.
 	 * @return Nothing (possibly promised).
 	 */
-	abstract update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): number | PromiseLike<number>;
+	abstract update(updates: Updates<T[K]>): number | PromiseLike<number>;
 
 	/**
 	 * Delete all matching items.
@@ -130,8 +130,8 @@ export class Query<T extends Datas = Datas, K extends Key<T> = Key<T>> extends B
 	set(data: T[K]): number {
 		return this.db.provider.setQuery(this.collection, this, data);
 	}
-	update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): number {
-		return this.db.provider.updateQuery(this.collection, this, updates instanceof DataUpdate ? updates : new DataUpdate(updates));
+	update(updates: Updates<T[K]>): number {
+		return this.db.provider.updateQuery(this.collection, this, updates);
 	}
 	delete(): number {
 		return this.db.provider.deleteQuery(this.collection, this);
@@ -171,8 +171,8 @@ export class AsyncQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> exte
 	set(data: T[K]): Promise<number> {
 		return this.db.provider.setQuery(this.collection, this, data);
 	}
-	update(updates: DataUpdate<T[K]> | PropUpdates<T[K]>): PromiseLike<number> {
-		return this.db.provider.updateQuery(this.collection, this, updates instanceof DataUpdate ? updates : new DataUpdate(updates));
+	update(updates: Updates<T[K]>): PromiseLike<number> {
+		return this.db.provider.updateQuery(this.collection, this, updates);
 	}
 	delete(): PromiseLike<number> {
 		return this.db.provider.deleteQuery(this.collection, this);

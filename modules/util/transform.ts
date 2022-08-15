@@ -26,13 +26,13 @@ export function transform<I, O>(input: I, transformer: Transformer<I, O>): O {
 }
 
 /** Set of named transformers for a data object. */
-export type PropTransformers<T extends Data> = { readonly [K in keyof T]?: Transformer<T[K], T[K]> };
+export type Transformers<T extends Data> = { readonly [K in keyof T]?: Transformer<T[K], T[K]> };
 
 /**
  * Transform the props of a data object using a set of transformers for its props.
  * @returns New object with changed props (or the same object if no changes were made).
  */
-export function transformData<T extends Data>(data: T, transforms: PropTransformers<T>): T {
+export function transformData<T extends Data>(data: T, transforms: Transformers<T>): T {
 	return { ...data, ...Object.fromEntries(transformProps(data, transforms)) };
 }
 
@@ -40,7 +40,7 @@ export function transformData<T extends Data>(data: T, transforms: PropTransform
  * Transform the props of a data object using a set of prop transformers.
  * @yield Transformed prop entry after calling the corresponding prop transformer.
  */
-export function* transformProps<T extends Data>(data: T, transforms: PropTransformers<T>): Iterable<Prop<T>> {
+export function* transformProps<T extends Data>(data: T, transforms: Transformers<T>): Iterable<Prop<T>> {
 	for (const [k, v] of getProps<{ readonly [K in keyof T]: Transformer<T[K], T[K]> }>(transforms)) yield [k, transform<Value<T>, Value<T>>(data[k], v)];
 }
 

@@ -24,7 +24,7 @@ abstract class BaseDatabase<T extends Datas> {
 	abstract item<K extends Key<T>>(collection: K, id: string): Item<T, K> | AsyncItem<T, K>;
 
 	/** Run a set of changes on this database. */
-	abstract change<K extends Key<T>>(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> | Promise<ItemChanges<T, K>>;
+	abstract change(...changes: DeepIterable<Nullish<WriteChange<T>>>[]): ItemChanges<T> | Promise<ItemChanges<T>>;
 }
 
 /** Database with a synchronous provider. */
@@ -42,7 +42,7 @@ export class Database<T extends Datas = Datas> implements BaseDatabase<T> {
 	item<K extends Key<T>>(collection: K, id: string): Item<T, K> {
 		return new Item<T, K>(this, collection, id);
 	}
-	change<K extends Key<T>>(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> {
+	change(...changes: DeepIterable<Nullish<WriteChange<T>>>[]): ItemChanges<T> {
 		return changeProvider(this.provider, changes);
 	}
 }
@@ -62,7 +62,7 @@ export class AsyncDatabase<T extends Datas = Datas> implements BaseDatabase<T> {
 	item<K extends Key<T>>(collection: K, id: string): AsyncItem<T, K> {
 		return new AsyncItem<T, K>(this, collection, id);
 	}
-	change<K extends Key<T>>(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): Promise<ItemChanges<T, K>> {
+	change(...changes: DeepIterable<Nullish<WriteChange<T>>>[]): Promise<ItemChanges<T>> {
 		return changeAsyncProvider(this.provider, changes);
 	}
 }

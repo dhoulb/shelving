@@ -2,7 +2,7 @@ import type { Data, Datas, Key } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
-import type { DataUpdate } from "../update/DataUpdate.js";
+import type { Updates } from "../update/DataUpdate.js";
 import { ThroughObserver } from "../observe/ThroughObserver.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import type { AsyncProvider } from "./Provider.js";
@@ -35,10 +35,10 @@ export class CacheProvider<T extends Datas> implements AsyncThroughProvider<T> {
 		await this.source.setItem(collection, id, data);
 		this.memory.getTable(collection).setItem(id, data);
 	}
-	async updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): Promise<void> {
-		await this.source.updateItem(collection, id, update);
+	async updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
+		await this.source.updateItem(collection, id, updates);
 		const table = this.memory.getTable(collection);
-		if (table.getItem(id)) table.updateItem(id, update);
+		if (table.getItem(id)) table.updateItem(id, updates);
 	}
 	async deleteItem<K extends Key<T>>(collection: K, id: string): Promise<void> {
 		await this.source.deleteItem(collection, id);
@@ -59,9 +59,9 @@ export class CacheProvider<T extends Datas> implements AsyncThroughProvider<T> {
 		this.memory.getTable(collection).setQuery(constraints, data);
 		return count;
 	}
-	async updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): Promise<number> {
-		const count = await this.source.updateQuery(collection, constraints, update);
-		this.memory.getTable(collection).updateQuery(constraints, update);
+	async updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
+		const count = await this.source.updateQuery(collection, constraints, updates);
+		this.memory.getTable(collection).updateQuery(constraints, updates);
 		return count;
 	}
 	async deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {

@@ -14,17 +14,41 @@ import { Update } from "./Update.js";
  * - If a prop contains a transform, the existing value is transformed.
  * - This is a subset of `Dispatchers`
  */
-export type PropUpdates<T extends Data> = { readonly [K in keyof T]?: T[K] | Update<T[K]> };
+export type Updates<T extends Data = Data> = { readonly [K in keyof T]?: T[K] | Update<T[K]> };
 
-/** Update that can be applied to a data object to update its props. */
-export class DataUpdate<T extends Data = Data> extends Update<T> implements Iterable<Prop<PropUpdates<T>>>, Transformable<T, T> {
+/**
+ * Validate a set of updates against a set of validators.
+ */
+export function validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>) {
+	return Object.fromEntries(_validateUpdates(unsafeUpdates, validators));
+}
+function* _validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>): Iterable<Prop<Updates<T>>> {
+	const feedbacks = new Map<string, Feedback>();
+	for (const [key, validator] of getProps(validators)) {
+		const unsafeUpdate = unsafeUpdates[key];
+		if (unsafeUpdate !== undefined) {
+			try {
+				yield [key, unsafeUpdate instanceof Update ? unsafeUpdate.validate(validator) : validate(unsafeUpdate, validator)];
+			} catch (thrown) {
+				if (!isFeedback(thrown)) throw thrown;
+				feedbacks.set(key, thrown);
+			}
+		}
+	}
+	if (feedbacks.size) throw new InvalidFeedback("Invalid updates", feedbacks);
+}
+
+/**
+ * Update that can be applied to a data object to update its props.
+ */
+export class DataUpdate<T extends Data = Data> extends Update<T> implements Iterable<Prop<Updates<T>>>, Transformable<T, T> {
 	/** Return a data update with a specific prop marked for update. */
 	static with<X extends Data, K extends Key<X>>(key: Nullish<K>, value: X[K] | Update<X[K]>): DataUpdate<X> {
-		return new DataUpdate<X>(!isNullish(key) ? ({ [key]: value } as PropUpdates<X>) : {});
+		return new DataUpdate<X>(!isNullish(key) ? ({ [key]: value } as Updates<X>) : {});
 	}
 
-	readonly updates: PropUpdates<T>;
-	constructor(props: PropUpdates<T>) {
+	readonly updates: Updates<T>;
+	constructor(props: Updates<T>) {
 		super();
 		this.updates = props;
 	}
@@ -38,7 +62,7 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 		return {
 			__proto__: Object.getPrototypeOf(this),
 			...this,
-			updates: Object.fromEntries(_validateUpdates(this.updates, validator.props)),
+			updates: validateUpdates(this.updates, validator.props),
 		};
 	}
 
@@ -53,24 +77,7 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 	}
 
 	/** Iterate over the transforms in this object. */
-	[Symbol.iterator](): Iterator<Prop<PropUpdates<T>>, void> {
+	[Symbol.iterator](): Iterator<Prop<Updates<T>>, void> {
 		return Object.entries(this.updates).values();
 	}
-}
-
-/** Validate a set of transforms against a set of validators. */
-function* _validateUpdates<T extends Data>(unsafeUpdates: PropUpdates<T>, validators: Validators<T>): Iterable<Prop<PropUpdates<T>>> {
-	const feedbacks = new Map<string, Feedback>();
-	for (const [key, validator] of getProps(validators)) {
-		const unsafeUpdate = unsafeUpdates[key];
-		if (unsafeUpdate !== undefined) {
-			try {
-				yield [key, unsafeUpdate instanceof Update ? unsafeUpdate.validate(validator) : validate(unsafeUpdate, validator)];
-			} catch (thrown) {
-				if (!isFeedback(thrown)) throw thrown;
-				feedbacks.set(key, thrown);
-			}
-		}
-	}
-	if (feedbacks.size) throw new InvalidFeedback("Invalid updates", feedbacks);
 }

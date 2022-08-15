@@ -1,7 +1,7 @@
 import type { Datas, Key } from "../util/data.js";
 import type { Sourceable } from "../util/source.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
-import type { DataUpdate } from "../update/DataUpdate.js";
+import type { Updates } from "../update/DataUpdate.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
 import type { Provider, AsyncProvider } from "./Provider.js";
@@ -24,7 +24,7 @@ export class ThroughProvider<T extends Datas = Datas> implements Provider<T>, So
 	setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): void {
 		return this.source.setItem(collection, id, data);
 	}
-	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): void {
+	updateItem<K extends Key<T>>(collection: K, id: string, update: Updates<T[K]>): void {
 		return this.source.updateItem(collection, id, update);
 	}
 	deleteItem<K extends Key<T>>(collection: K, id: string): void {
@@ -39,7 +39,7 @@ export class ThroughProvider<T extends Datas = Datas> implements Provider<T>, So
 	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
 		return this.source.setQuery(collection, constraints, data);
 	}
-	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): number {
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: Updates<T[K]>): number {
 		return this.source.updateQuery(collection, constraints, update);
 	}
 	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
@@ -65,8 +65,8 @@ export class AsyncThroughProvider<T extends Datas = Datas> implements AsyncProvi
 	setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): Promise<void> {
 		return this.source.setItem(collection, id, data);
 	}
-	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): Promise<void> {
-		return this.source.updateItem(collection, id, update);
+	updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
+		return this.source.updateItem(collection, id, updates);
 	}
 	deleteItem<K extends Key<T>>(collection: K, id: string): Promise<void> {
 		return this.source.deleteItem(collection, id);
@@ -80,8 +80,8 @@ export class AsyncThroughProvider<T extends Datas = Datas> implements AsyncProvi
 	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): Promise<number> {
 		return this.source.setQuery(collection, constraints, data);
 	}
-	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): Promise<number> {
-		return this.source.updateQuery(collection, constraints, update);
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
+		return this.source.updateQuery(collection, constraints, updates);
 	}
 	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
 		return this.source.deleteQuery(collection, constraints);

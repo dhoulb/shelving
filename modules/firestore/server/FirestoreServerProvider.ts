@@ -16,7 +16,7 @@ import type { AsyncProvider } from "../../provider/Provider.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
 import { dispatchError, dispatchNext, Observer } from "../../observe/Observer.js";
 import { ArrayUpdate } from "../../update/ArrayUpdate.js";
-import { DataUpdate } from "../../update/DataUpdate.js";
+import { DataUpdate, Updates } from "../../update/DataUpdate.js";
 import { Increment } from "../../update/Increment.js";
 import { ObjectUpdate } from "../../update/ObjectUpdate.js";
 import { Delete } from "../../update/Delete.js";
@@ -127,11 +127,11 @@ export class FirestoreServerProvider implements AsyncProvider {
 		await this._firestore.collection(collection).doc(id).set(data);
 	}
 
-	async updateItem(collection: string, id: string, update: DataUpdate): Promise<void> {
+	async updateItem(collection: string, id: string, updates: Updates): Promise<void> {
 		await this._firestore
 			.collection(collection)
 			.doc(id)
-			.update(...(_getFieldValues(update) as [string, unknown]));
+			.update(...(_getFieldValues(Object.entries(updates)) as [string, unknown]));
 	}
 
 	async deleteItem(collection: string, id: string): Promise<void> {
@@ -153,8 +153,8 @@ export class FirestoreServerProvider implements AsyncProvider {
 		return await bulkWrite(this._firestore, collection, constraints, (w, s) => void w.set(s.ref, data));
 	}
 
-	async updateQuery(collection: string, constraints: ItemConstraints, update: DataUpdate): Promise<number> {
-		const fieldValues = _getFieldValues(update) as [string, unknown];
+	async updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number> {
+		const fieldValues = _getFieldValues(Object.entries(updates)) as [string, unknown];
 		return await bulkWrite(this._firestore, collection, constraints, (w, s) => void w.update(s.ref, ...fieldValues));
 	}
 

@@ -1,10 +1,11 @@
 import type { Key, Datas, Data } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
-import type { DataUpdate } from "../update/DataUpdate.js";
+import type { DataSchemas, DataSchema } from "../schema/DataSchema.js";
 import type { MutableObject } from "../util/object.js";
 import type { PartialObserver } from "../observe/Observer.js";
 import type { Unsubscribe } from "../observe/Observable.js";
-import { validate, Validator, Validators } from "../util/validate.js";
+import { Updates, validateUpdates } from "../update/DataUpdate.js";
+import { validate, Validator } from "../util/validate.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
@@ -15,51 +16,51 @@ import { Provider, AsyncProvider } from "./Provider.js";
 /** Validate a source provider (source can have any type because validation guarantees the type). */
 abstract class BaseValidationProvider<T extends Datas> {
 	abstract source: Provider | AsyncProvider;
-	readonly validators: Validators<T>;
-	constructor(validators: Validators<T>) {
-		this.validators = validators;
+	readonly schemas: DataSchemas<T>;
+	constructor(schemas: DataSchemas<T>) {
+		this.schemas = schemas;
 	}
-	getValidator<K extends Key<T>>(collection: K): Validator<T[K]> {
-		return this.validators[collection];
+	getSchema<K extends Key<T>>(collection: K): DataSchema<T[K]> {
+		return this.schemas[collection];
 	}
 	subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
-		return this.source.subscribeItem(collection, id, new _ValidateEntityObserver(collection, this.getValidator(collection), observer));
+		return this.source.subscribeItem(collection, id, new _ValidateEntityObserver(collection, this.getSchema(collection), observer));
 	}
 	subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
-		return this.source.subscribeQuery(collection, constraints, new _ValidateEntitiesObserver(collection, this.getValidator(collection), observer));
+		return this.source.subscribeQuery(collection, constraints, new _ValidateEntitiesObserver(collection, this.getSchema(collection), observer));
 	}
 }
 
 /** Validate a synchronous source provider (source can have any type because validation guarantees the type). */
 export class ValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements Provider<T>, Sourceable<Provider> {
 	readonly source: Provider;
-	constructor(source: Provider, validators: Validators<T>) {
-		super(validators);
+	constructor(source: Provider, schemas: DataSchemas<T>) {
+		super(schemas);
 		this.source = source;
 	}
 	getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> {
-		return _validateEntity(collection, this.source.getItem(collection, id), this.getValidator(collection));
+		return _validateEntity(collection, this.source.getItem(collection, id), this.getSchema(collection));
 	}
 	addItem<K extends Key<T>>(collection: K, data: T[K]): string {
-		return this.source.addItem(collection, validate(data, this.getValidator(collection)));
+		return this.source.addItem(collection, validate(data, this.getSchema(collection)));
 	}
 	setItem<K extends Key<T>>(collection: K, id: string, value: T[K]): void {
-		return this.source.setItem(collection, id, validate(value, this.getValidator(collection)));
+		return this.source.setItem(collection, id, validate(value, this.getSchema(collection)));
 	}
-	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): void {
-		return this.source.updateItem(collection, id, update.validate(this.getValidator(collection)));
+	updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
+		return this.source.updateItem(collection, id, validateUpdates(updates, this.getSchema(collection).props));
 	}
 	deleteItem<K extends Key<T>>(collection: K, id: string): void {
 		return this.source.deleteItem(collection, id);
 	}
 	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
-		return _validateEntities(collection, this.source.getQuery(collection, constraints), this.getValidator(collection));
+		return _validateEntities(collection, this.source.getQuery(collection, constraints), this.getSchema(collection));
 	}
 	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): number {
-		return this.source.setQuery(collection, constraints, validate(value, this.getValidator(collection)));
+		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
 	}
-	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): number {
-		return this.source.updateQuery(collection, constraints, update.validate(this.getValidator(collection)));
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
+		return this.source.updateQuery(collection, constraints, validateUpdates(updates, this.getSchema(collection).props));
 	}
 	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
 		return this.source.deleteQuery(collection, constraints);
@@ -69,33 +70,33 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 /** Validate an asynchronous source provider (source can have any type because validation guarantees the type). */
 export class AsyncValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements AsyncProvider<T>, Sourceable<AsyncProvider> {
 	readonly source: AsyncProvider;
-	constructor(source: AsyncProvider, validators: Validators<T>) {
-		super(validators);
+	constructor(source: AsyncProvider, schemas: DataSchemas<T>) {
+		super(schemas);
 		this.source = source;
 	}
 	async getItem<K extends Key<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
-		return _validateEntity(collection, await this.source.getItem(collection, id), this.getValidator(collection));
+		return _validateEntity(collection, await this.source.getItem(collection, id), this.getSchema(collection));
 	}
 	addItem<K extends Key<T>>(collection: K, data: T[K]): Promise<string> {
-		return this.source.addItem(collection, validate(data, this.getValidator(collection)));
+		return this.source.addItem(collection, validate(data, this.getSchema(collection)));
 	}
 	setItem<K extends Key<T>>(collection: K, id: string, value: T[K]): Promise<void> {
-		return this.source.setItem(collection, id, validate(value, this.getValidator(collection)));
+		return this.source.setItem(collection, id, validate(value, this.getSchema(collection)));
 	}
-	updateItem<K extends Key<T>>(collection: K, id: string, update: DataUpdate<T[K]>): Promise<void> {
-		return this.source.updateItem(collection, id, update.validate(this.getValidator(collection)));
+	updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
+		return this.source.updateItem(collection, id, validateUpdates(updates, this.getSchema(collection).props));
 	}
 	deleteItem<K extends Key<T>>(collection: K, id: string): Promise<void> {
 		return this.source.deleteItem(collection, id);
 	}
 	async getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
-		return _validateEntities(collection, await this.source.getQuery(collection, constraints), this.getValidator(collection));
+		return _validateEntities(collection, await this.source.getQuery(collection, constraints), this.getSchema(collection));
 	}
 	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): Promise<number> {
-		return this.source.setQuery(collection, constraints, validate(value, this.getValidator(collection)));
+		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
 	}
-	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: DataUpdate<T[K]>): Promise<number> {
-		return this.source.updateQuery(collection, constraints, update.validate(this.getValidator(collection)));
+	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
+		return this.source.updateQuery(collection, constraints, validateUpdates(updates, this.getSchema(collection).props));
 	}
 	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
 		return this.source.deleteQuery(collection, constraints);
