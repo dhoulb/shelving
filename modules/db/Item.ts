@@ -22,7 +22,7 @@ export type ItemArray<T extends Data = Data> = ImmutableArray<ItemData<T>>;
 /** A set of query constraints for item data. */
 export type ItemConstraints<T extends Data = Data> = QueryConstraints<ItemData<T>>;
 
-/** Reference to an item in a synchronous or asynchronous provider. */
+/** Reference to an item in a synchronous or asynchronous database. */
 abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> implements Observable<ItemValue<T[K]>> {
 	abstract readonly db: Database<T> | AsyncDatabase<T>;
 	abstract readonly collection: K;
@@ -60,7 +60,7 @@ abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 	 * @return Function that ends the subscription.
 	 */
 	subscribe(next: PartialObserver<ItemValue<T[K]>> | Dispatch<[ItemValue<T[K]>]>): Unsubscribe {
-		return this.db.provider.subscribeItem(this.collection, this.id, typeof next === "function" ? { next } : next);
+		return this.db.subscribe(this.collection, this.id, next);
 	}
 
 	/** Set the complete data of this item. */
@@ -74,17 +74,17 @@ abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 
 	/** Get a set change for this item. */
 	getSet(data: T[K]): SetChange<T, K> {
-		return { action: "SET", collection: this.collection, id: this.id, data };
+		return this.db.getSet(this.collection, this.id, data);
 	}
 
 	/** Get an update change for this item. */
 	getUpdate(updates: Updates<T[K]>): UpdateChange<T, K> {
-		return { action: "UPDATE", collection: this.collection, id: this.id, updates };
+		return this.db.getUpdate(this.collection, this.id, updates);
 	}
 
 	/** Get a delete change for this item. */
 	getDelete(): DeleteChange<T, K> {
-		return { action: "DELETE", collection: this.collection, id: this.id };
+		return this.db.getDelete(this.collection, this.id);
 	}
 
 	// Implement toString()
@@ -93,7 +93,7 @@ abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 	}
 }
 
-/** Reference to an item in a synchronous provider. */
+/** Reference to an item in a synchronous database. */
 export class Item<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseItem<T, K> {
 	readonly db: Database<T>;
 	readonly collection: K;
@@ -108,33 +108,33 @@ export class Item<T extends Datas = Datas, K extends Key<T> = Key<T>> extends Ba
 		return this.db.query(this.collection, new FilterConstraint("id", this.id), undefined, 1);
 	}
 	get exists(): boolean {
-		return !!this.db.provider.getItem(this.collection, this.id);
+		return !!this.db.get(this.collection, this.id);
 	}
 	get value(): ItemValue<T[K]> {
-		return this.db.provider.getItem(this.collection, this.id);
+		return this.db.get(this.collection, this.id);
 	}
 	get data(): ItemData<T[K]> {
 		return getData(this.value);
 	}
 	set(data: T[K]): void {
-		return this.db.provider.setItem(this.collection, this.id, data);
+		return this.db.set(this.collection, this.id, data);
 	}
 	update(updates: Updates<T[K]>): void {
-		return this.db.provider.updateItem(this.collection, this.id, updates);
+		return this.db.update(this.collection, this.id, updates);
 	}
 	delete(): void {
-		return this.db.provider.deleteItem(this.collection, this.id);
+		return this.db.delete(this.collection, this.id);
 	}
 }
 
-/** Reference to an item in an asynchronous provider. */
+/** Reference to an item in an asynchronous database. */
 export class AsyncItem<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseItem<T, K> {
 	readonly db: AsyncDatabase<T>;
 	readonly collection: K;
 	readonly id: string;
-	constructor(provider: AsyncDatabase<T>, collection: K, id: string) {
+	constructor(db: AsyncDatabase<T>, collection: K, id: string) {
 		super();
-		this.db = provider;
+		this.db = db;
 		this.collection = collection;
 		this.id = id;
 	}
@@ -142,22 +142,22 @@ export class AsyncItem<T extends Datas = Datas, K extends Key<T> = Key<T>> exten
 		return this.db.query(this.collection, new FilterConstraint("id", this.id), undefined, 1);
 	}
 	get exists(): Promise<boolean> {
-		return this.db.provider.getItem(this.collection, this.id).then(Boolean);
+		return this.db.get(this.collection, this.id).then(Boolean);
 	}
 	get value(): Promise<ItemValue<T[K]>> {
-		return this.db.provider.getItem(this.collection, this.id);
+		return this.db.get(this.collection, this.id);
 	}
 	get data(): Promise<ItemData<T[K]>> {
 		return this.value.then(getData);
 	}
 	set(data: T[K]): Promise<void> {
-		return this.db.provider.setItem(this.collection, this.id, data);
+		return this.db.set(this.collection, this.id, data);
 	}
 	update(updates: Updates<T[K]>): Promise<void> {
-		return this.db.provider.updateItem(this.collection, this.id, updates);
+		return this.db.update(this.collection, this.id, updates);
 	}
 	delete(): Promise<void> {
-		return this.db.provider.deleteItem(this.collection, this.id);
+		return this.db.delete(this.collection, this.id);
 	}
 }
 
