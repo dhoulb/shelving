@@ -5,8 +5,8 @@ import { ArrayUpdate } from "./ArrayUpdate.js";
 import { ObjectUpdate } from "./ObjectUpdate.js";
 import { DataUpdate } from "./DataUpdate.js";
 
-/** Set of hydrations for all transform classes. */
-export const TRANSFORM_HYDRATIONS: Hydrations = {
+/** Set of hydrations for all update classes. */
+export const UPDATE_HYDRATIONS: Hydrations = {
 	Increment,
 	Delete,
 	ArrayUpdate,
