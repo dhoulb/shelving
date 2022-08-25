@@ -16,7 +16,6 @@ export class Resource<P = unknown, R = void> implements Validatable<R> {
 	/** Result validator. */
 	readonly result: Validator<R>;
 
-	// Protected to require use of `Resource.create()`
 	constructor(payload: Validator<P>, result: Validator<R>) {
 		this.payload = payload;
 		this.result = result;

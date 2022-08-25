@@ -2,7 +2,6 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"checkJs": true,
-		"composite": true,
 		"declaration": true,
 		"exactOptionalPropertyTypes": true,
 		"experimentalDecorators": true,
@@ -16,11 +15,10 @@
 		"noErrorTruncation": true,
 		"noImplicitOverride": true,
 		"noUncheckedIndexedAccess": true,
-		"outDir": "dist",
 		"skipLibCheck": true,
 		"strict": true,
 		"target": "es2019",
-		"rootDir": "./modules"
+		"noEmit": true
 	},
-	"include": ["./**/*.ts", "./**/*.cjs"]
+	"include": ["./**/*.ts", "./**/*.cjs", "./**/*.json"]
 }
