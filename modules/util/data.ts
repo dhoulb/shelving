@@ -1,8 +1,16 @@
 import { RequiredError } from "../error/RequiredError.js";
-import type { ImmutableArray } from "./array.js";
 
 /** Data object. */
-export type Data = { readonly [key: string]: unknown };
+export type Data = { readonly [K in string]: unknown };
+
+/** Key from a data object. */
+export type Key<T extends Data> = keyof T & string;
+
+/** Value from a data object. */
+export type Value<T extends Data> = T[keyof T & string];
+
+/** Prop from a data object in entry format. */
+export type Prop<T extends Data> = readonly [Key<T>, Value<T>];
 
 /** Data or `null` to indicate the data doesn't exist. */
 export type OptionalData<T extends Data> = T | null;
@@ -10,102 +18,16 @@ export type OptionalData<T extends Data> = T | null;
 /** Empty data object. */
 export type EmptyData = { readonly [K in never]: never };
 
-/** Key for a prop in a data object. */
-export type Key<T extends Data> = keyof T & string;
-
-/** Value for a prop in a data object. */
-export type Value<T extends Data> = T[Key<T>];
-
-/** Prop of a data object in entry format. */
-export type Prop<T extends Data> = readonly [Key<T>, Value<T>];
-
 /** Set of named data objects. */
-export type Datas = { readonly [key: string]: Data };
+export type Datas = { readonly [K in string]: Data };
 
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => typeof value === "object" && value !== null;
-
-/** Turn a data object into an array of props. */
-export function getProps<T extends Data>(data: T): ImmutableArray<Prop<T>>;
-export function getProps<T extends Data>(data: Partial<T>): ImmutableArray<Prop<T>>;
-export function getProps<T extends Data>(data: T | Partial<T>): ImmutableArray<Prop<T>> {
-	return Object.entries(data) as ImmutableArray<Prop<T>>;
-}
 
 /** Get the data of a result (returns data or throws `RequiredError` if value is `null` or `undefined`). */
 export function getData<T extends Data>(result: OptionalData<T>): T {
 	if (!result) throw new RequiredError("Data is required");
 	return result;
-}
-
-/**
- * Extract the value of a named prop from a data object.
- * - Extraction is possibly deep if deeper keys are specified.
- *
- * @param obj The target object to get from.
- * @param k1 The key of the prop in the object to get.
- * @param k2 The sub-key of the prop in the object to get.
- * @param k3 The sub-sub-key of the prop in the object to get.
- * @param k4 The sub-sub-sub-key of the prop in the object to get.
- */
-export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(obj: T, k1: K1, k2: K2, k3: K3, k4: K4): T[K1][K2][K3][K4];
-export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(obj: T, k1: K1, k2: K2, k3: K3): T[K1][K2][K3];
-export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K1]>(obj: T, k1: K1, k2: K2): T[K1][K2];
-export function getProp<T extends Data, K1 extends keyof T>(obj: T, k1: K1): T[K1];
-export function getProp<T extends Data, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(
-	data: T,
-	k1: K1,
-	k2?: K2,
-	k3?: K3,
-	k4?: K4,
-): T[K1] | T[K1][K2] | T[K1][K2][K3] | T[K1][K2][K3][K4] {
-	return !k2 ? data[k1] : !k3 ? data[k1][k2] : !k4 ? data[k1][k2][k3] : data[k1][k2][k3][k4];
-}
-
-/**
- * Set a prop on a data object with known shape (immutably).
- *
- * @param data The input data object.
- * @param key The key of the entry to add.
- * @param value The value of the entry to add. If set, the entry will only be added if its current value is not `value`
- *
- * @return New object without the specified prop (or same object if prop value didn't change).
- */
-export function withProp<T extends Data, K extends Key<T>>(data: T, key: K, value: T[K]): T {
-	return data[key] === value ? data : { ...data, [key]: value };
-}
-
-/**
- * Set several props on a data object with known shape (immutably).
- *
- * @param data The input data object.
- * @return New object with the specified prop added (or same object if no props changed).
- */
-export function withProps<T extends Data>(data: T, props: T | Partial<T>): T {
-	for (const [k, v] of Object.entries(props)) if (data[k] !== v) return { ...data, ...props };
-	return data;
-}
-
-/**
- * Set a single named prop on an object with a known shape (by reference).
- *
- * @param data The target data object to modify.
- * @param key The key of the prop in the object to set.
- * @param value The value to set the prop to.
- */
-export function setProp<T extends Data, K extends keyof T>(data: T, key: K, value: T[K]): T[K] {
-	data[key] = value;
-	return value;
-}
-
-/**
- * Set several named props on a data object with a known shape (by reference).
- *
- * @param data The target data object to modify.
- * @param props An object containing new props to set on the object.
- */
-export function setProps<T extends Data>(data: T, props: { [K in keyof T]?: T[K] }): void {
-	for (const [k, v] of getProps<T>(props)) data[k] = v;
 }
 
 /**
@@ -158,24 +80,4 @@ export function formatData(data: Data): string {
 	if (typeof title === "string") return title;
 	if (typeof id === "string") return id;
 	return "Object";
-}
-
-/** Return a data object with picked properties from an original data object. */
-export function pickProps<T extends Data, K extends Key<T>>(data: T, ...keys: K[]): Pick<T, K>;
-export function pickProps<T extends Data>(data: T, ...keys: Key<T>[]): Partial<T>;
-export function pickProps<T extends Data>(data: T, ...keys: Key<T>[]) {
-	return Object.fromEntries(_yieldPickProps(data, keys));
-}
-function* _yieldPickProps<T extends Data>(data: T, keys: ImmutableArray<Key<T>>): Iterable<Prop<T>> {
-	for (const [key, value] of getProps(data)) if (keys.includes(key)) yield [key, value];
-}
-
-/** Return a data object with omitted properties from an original data object. */
-export function omitProps<T extends Data, K extends Key<T>>(data: T, ...keys: K[]): Omit<T, K>;
-export function omitProps<T extends Data>(data: T, ...keys: Key<T>[]): Partial<T>;
-export function omitProps<T extends Data>(data: T, ...keys: Key<T>[]) {
-	return Object.fromEntries(_yieldOmitProps(data, keys));
-}
-function* _yieldOmitProps<T extends Data>(data: T, keys: ImmutableArray<Key<T>>): Iterable<Prop<T>> {
-	for (const [key, value] of getProps(data)) if (!keys.includes(key)) yield [key, value];
 }

@@ -24,7 +24,7 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 	}
 
 	transform(arr: ImmutableArray<T> = []): ImmutableArray<T> {
-		return withoutItems(withItems(arr, this.adds), this.deletes);
+		return withoutItems(withItems(arr, ...this.adds), ...this.deletes);
 	}
 
 	override validate(validator: Validator<ImmutableArray<T>>): this {

@@ -28,13 +28,13 @@ export abstract class Constraints<T extends Data, C extends Constraint<Partial<T
 
 	/** Clone this set of constraints but add additional constraints. */
 	with(...constraints: C[]): this {
-		const _constraints = withItems(this._constraints, constraints);
+		const _constraints = withItems(this._constraints, ...constraints);
 		return _constraints !== this._constraints ? { __proto__: Object.getPrototypeOf(this), ...this, _constraints: _constraints } : this;
 	}
 
 	/** Clone this set of constraints but remove specific constraints. */
 	without(...constraints: C[]): this {
-		const _constraints = withoutItems(this._constraints, constraints);
+		const _constraints = withoutItems(this._constraints, ...constraints);
 		return _constraints !== this._constraints ? { __proto__: Object.getPrototypeOf(this), ...this, _constraints: _constraints } : this;
 	}
 

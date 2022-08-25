@@ -1,8 +1,8 @@
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
-import type { ImmutableObject } from "./object.js";
-import { Data, Prop, getProps } from "./data.js";
+import type { Data, Prop } from "./data.js";
+import { ImmutableObject, getProps } from "./object.js";
 import { getArray, ImmutableArray } from "./array.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */

@@ -1,4 +1,5 @@
-import { Data, getData, Key, OptionalData, withProp } from "../util/data.js";
+import { Data, getData, Key, OptionalData } from "../util/data.js";
+import { withProp } from "../util/object.js";
 import { Transformers, transformData } from "../util/transform.js";
 import { State } from "./State.js";
 

@@ -1,4 +1,5 @@
-import { Data, getProp } from "../util/data.js";
+import type { Data } from "../util/data.js";
+import { getProp } from "../util/object.js";
 import { assert } from "../util/assert.js";
 import { limitItems } from "../util/iterate.js";
 import { Filterable, FilterConstraints } from "./FilterConstraints.js";

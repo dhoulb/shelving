@@ -10,10 +10,10 @@ import { ImmutableMap, isMap } from "./map.js";
 export type Entry<K, T> = readonly [K, T];
 
 /** Extract the type for the value of an entry. */
-export type EntryKeyType<X> = X extends Entry<infer Y, unknown> ? Y : never;
+export type EntryKey<X> = X extends Entry<infer Y, unknown> ? Y : never;
 
 /** Extract the type for the value of an entry. */
-export type EntryValueType<X> = X extends Entry<unknown, infer Y> ? Y : never;
+export type EntryValue<X> = X extends Entry<unknown, infer Y> ? Y : never;
 
 /** Extract the key from an object entry. */
 export const getEntryKey = <K, T>([k]: Entry<K, T>): K => k;

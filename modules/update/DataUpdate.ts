@@ -1,7 +1,8 @@
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { DataSchema } from "../schema/DataSchema.js";
-import { Data, getProps, Key, Prop } from "../util/data.js";
+import { Data, Key, Prop } from "../util/data.js";
+import { getProps } from "../util/object.js";
 import { isNullish, Nullish } from "../util/null.js";
 import { Transformable, transformData } from "../util/transform.js";
 import { validate, Validator, Validators } from "../util/validate.js";
@@ -19,8 +20,8 @@ export type Updates<T extends Data = Data> = { readonly [K in keyof T]?: T[K] | 
 /**
  * Validate a set of updates against a set of validators.
  */
-export function validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>) {
-	return Object.fromEntries(_validateUpdates(unsafeUpdates, validators));
+export function validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>): Updates<T> {
+	return Object.fromEntries(_validateUpdates(unsafeUpdates, validators)) as Updates<T>;
 }
 function* _validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>): Iterable<Prop<Updates<T>>> {
 	const feedbacks = new Map<string, Feedback>();

@@ -1,4 +1,4 @@
-import { ImmutableArray, swapItem, toggleItem, withItem, withoutItem } from "../util/array.js";
+import { ImmutableArray, toggleItems, withItems, withoutItems } from "../util/array.js";
 import { State } from "./State.js";
 
 /** State that stores an array and has additional methods to help with that. */
@@ -12,24 +12,19 @@ export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<
 		return this.value.length;
 	}
 
-	/** Add an item to this array. */
-	add(item: T): void {
-		this.next(withItem(this.value, item));
+	/** Add items to this array. */
+	add(...items: T[]): void {
+		this.next(withItems(this.value, ...items));
 	}
 
-	/** Remove an item from this array. */
-	delete(item: T): void {
-		this.next(withoutItem(this.value, item));
+	/** Remove items from this array. */
+	delete(...items: T[]): void {
+		this.next(withoutItems(this.value, ...items));
 	}
 
-	/** Swap an item in this array with a different item. */
-	swap(oldItem: T, newItem: T): void {
-		this.next(swapItem(this.value, oldItem, newItem));
-	}
-
-	/** Toggle an item in this array. */
-	toggle(item: T): void {
-		this.next(toggleItem(this.value, item));
+	/** Toggle items in this array. */
+	toggle(...items: T[]): void {
+		this.next(toggleItems(this.value, ...items));
 	}
 
 	/** Iterate over the items. */

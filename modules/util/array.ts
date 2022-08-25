@@ -39,55 +39,17 @@ export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 }
 
 /**
- * Add an item to an array (immutably).
- * - Returns an array that definitely contains the specified item.
- *
- * @param input The input array to add items to.
- * @param item The item to add.
- *
- * @return New array with the specified item.
- * - If the item already exists in the array (using `indexOf()`) then the item won't be added again and the exact same input array will be returned.
- */
-export function withItem<T>(input: ImmutableArray<T>, item: T): ImmutableArray<T> {
-	const i = input.indexOf(item);
-	return i >= 0 ? input : [...input, item];
-}
-
-/**
  * Add multiple items to an array (immutably).
  * - Returns an array that definitely contains the specified item.
  *
  * @param input The input array to add items to.
  * @param items The array of items to add.
  *
- * @return New array with the specified item.
- * - If all items already exist in the array (using `indexOf()`) then the items won't be added again and the exact same input array will be returned.
+ * @return New array with the specified item (or same array if no items were added).
  */
-export function withItems<T>(input: ImmutableArray<T>, items: Iterable<T>): ImmutableArray<T> {
-	let output = input;
-	for (const item of items) output = withItem(output, item);
-	return output;
-}
-
-/**
- * Remove an item from an array (immutably).
- * - Finds all instances of the item from the array and returns an array that definitely does not contain it.
- *
- * @param input The input array to remove items from.
- * @param item The item to remove.
- *
- * @return New array without the specified item.
- * - If the item does not already exist in the array (using `indexOf()`) then the exact same input array will be returned.
- */
-export function withoutItem<T>(input: ImmutableArray<T>, item: T): ImmutableArray<T> {
-	let i = input.indexOf(item);
-	if (i < 0) return input;
-	const output = input.slice();
-	while (i >= 0) {
-		output.splice(i, 1);
-		i = output.indexOf(item, i);
-	}
-	return output;
+export function withItems<T>(input: ImmutableArray<T>, ...items: T[]): ImmutableArray<T> {
+	const extras = items.filter(_doesNotInclude, input);
+	return extras.length ? [...input, ...extras] : input;
 }
 
 /**
@@ -97,27 +59,14 @@ export function withoutItem<T>(input: ImmutableArray<T>, item: T): ImmutableArra
  * @param input The input array to remove items from.
  * @param items The array of items to add.
  *
- * @return New array without the specified item.
- * - If the items do not already exist in the array (using `indexOf()`) then the exact same input array will be returned.
+ * @return New array without the specified items (or same array if no items were removed).
  */
-export function withoutItems<T>(input: ImmutableArray<T>, items: Iterable<T>): ImmutableArray<T> {
-	let output = input;
-	for (const item of items) output = withoutItem(output, item);
-	return output;
+export function withoutItems<T>(input: ImmutableArray<T>, ...items: T[]): ImmutableArray<T> {
+	const output = input.filter(_doesNotInclude, items);
+	return output.length === input.length ? input : output;
 }
-
-/**
- * Toggle an item in and out of an array (immutably).
- * - If the item is being removed from the array ALL instances of that item in the array will be removed.
- *
- * @param input The input array to toggle items from.
- * @param item The items to toggle.
- *
- * @return New array with or without the specified item.
- */
-export function toggleItem<T>(input: ImmutableArray<T>, item: T): ImmutableArray<T> {
-	const i = input.indexOf(item);
-	return i >= 0 ? withoutItem(input, item) : [...input, item];
+function _doesNotInclude<T>(this: T[], value: T) {
+	return !this.includes(value);
 }
 
 /**
@@ -127,34 +76,12 @@ export function toggleItem<T>(input: ImmutableArray<T>, item: T): ImmutableArray
  * @param input The input array to toggle items from.
  * @param items The array of items to toggle.
  *
- * @return New array with or without the specified item.
+ * @return New array with or without the specified items (or same array if no items were toggled).
  */
-export function toggleItems<T>(input: ImmutableArray<T>, items: Iterable<T>): ImmutableArray<T> {
-	let output = input;
-	for (const item of items) output = toggleItem(output, item);
-	return output;
-}
-
-/**
- * Swap an item in an array for a new item (immutably).
- * - All instances of the item in the array will be swapped for the new item.
- *
- * @param input The input array to swap items in.
- * @param oldItem The item to replace with `newItem`
- * @param newItem The item to replace `oldItem` with.
- *
- * @return New array with or without the specified item.
- * - If the item does not already exist in the array (using `indexOf()`) then the exact same input array will be returned.
- */
-export function swapItem<T>(input: ImmutableArray<T>, oldItem: T, newItem: T): ImmutableArray<T> {
-	let i = input.indexOf(oldItem);
-	if (i < 0) return input;
-	const output = input.slice();
-	while (i >= 0) {
-		output[i] = newItem;
-		i = output.indexOf(newItem, i + 1);
-	}
-	return output;
+export function toggleItems<T>(input: ImmutableArray<T>, ...items: T[]): ImmutableArray<T> {
+	const extras = items.filter(_doesNotInclude, input);
+	const output = input.filter(_doesNotInclude, items);
+	return extras.length ? [...output, ...extras] : output.length !== input.length ? output : input;
 }
 
 /** Get the first item from an array or iterable, or `null` if it didn't exist. */

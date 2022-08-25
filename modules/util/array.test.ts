@@ -1,50 +1,32 @@
-import { toggleItem, withItem, withoutItem, swapItem, getNextItem, getPrevItem, shuffleArray, uniqueArray, addItem, addItems, toggleItems, withItems, withoutItems, removeItem, removeItems } from "../index.js";
+import { getNextItem, getPrevItem, shuffleArray, uniqueArray, addItem, addItems, toggleItems, withItems, withoutItems, removeItem, removeItems } from "../index.js";
 
-test("toggleItem()", () => {
-	const arr = [1, 2, 3];
-	expect(toggleItem(arr, 2)).toEqual([1, 3]);
-	expect(toggleItem(arr, 2)).not.toBe(arr);
-	expect(toggleItem(arr, 4)).toEqual([1, 2, 3, 4]);
-	expect(toggleItem(arr, 2)).not.toBe(arr);
-});
 test("toggleItems()", () => {
 	const arr = [1, 2, 3];
-	expect(toggleItems(arr, [2, 3])).toEqual([1]);
-	expect(toggleItems(arr, [2, 3])).not.toBe(arr);
-	expect(toggleItems(arr, [4, 5])).toEqual([1, 2, 3, 4, 5]);
-	expect(toggleItems(arr, [4, 5])).not.toBe(arr);
-	expect(toggleItems(arr, [1, 4])).toEqual([2, 3, 4]);
-	expect(toggleItems(arr, [1, 4])).not.toBe(arr);
-});
-test("withItem()", () => {
-	const arr = [1, 2, 3];
-	expect(withItem(arr, 4)).toEqual([1, 2, 3, 4]);
-	expect(withItem(arr, 4)).not.toBe(arr);
-	expect(withItem(arr, 2)).toBe(arr);
+	expect(toggleItems(arr, 2)).toEqual([1, 3]);
+	expect(toggleItems(arr, 2)).not.toBe(arr);
+	expect(toggleItems(arr, 4)).toEqual([1, 2, 3, 4]);
+	expect(toggleItems(arr, 2)).not.toBe(arr);
+	expect(toggleItems(arr, 2, 3)).toEqual([1]);
+	expect(toggleItems(arr, 2, 3)).not.toBe(arr);
+	expect(toggleItems(arr, 4, 5)).toEqual([1, 2, 3, 4, 5]);
+	expect(toggleItems(arr, 4, 5)).not.toBe(arr);
+	expect(toggleItems(arr, 1, 4)).toEqual([2, 3, 4]);
+	expect(toggleItems(arr, 1, 4)).not.toBe(arr);
 });
 test("withItems()", () => {
 	const arr = [1, 2, 3];
-	expect(withItems(arr, [4, 5])).toEqual([1, 2, 3, 4, 5]);
-	expect(withItems(arr, [4, 5])).not.toBe(arr);
-	expect(withItems(arr, [1, 2])).toBe(arr);
-});
-test("withoutItem()", () => {
-	const arr = [1, 2, 3];
-	expect(withoutItem(arr, 2)).toEqual([1, 3]);
-	expect(withoutItem(arr, 2)).not.toBe(arr);
-	expect(withoutItem(arr, 4)).toBe(arr);
+	expect(withItems(arr, 4)).toEqual([1, 2, 3, 4]);
+	expect(withItems(arr, 4)).not.toBe(arr);
+	expect(withItems(arr, 2)).toBe(arr);
+	expect(withItems(arr, 4, 5)).toEqual([1, 2, 3, 4, 5]);
+	expect(withItems(arr, 4, 5)).not.toBe(arr);
+	expect(withItems(arr, 1, 2)).toBe(arr);
 });
 test("withoutItems()", () => {
 	const arr = [1, 2, 3];
-	expect(withoutItems(arr, [2, 3])).toEqual([1]);
-	expect(withoutItems(arr, [2, 3])).not.toBe(arr);
-	expect(withoutItems(arr, [4, 5])).toBe(arr);
-});
-test("replaceItem()", () => {
-	const arr = [1, 2, 3];
-	expect(swapItem(arr, 2, 222)).toEqual([1, 222, 3]);
-	expect(swapItem(arr, 2, 222)).not.toBe(arr);
-	expect(swapItem(arr, 4, 444)).toBe(arr);
+	expect(withoutItems(arr, 2, 3)).toEqual([1]);
+	expect(withoutItems(arr, 2, 3)).not.toBe(arr);
+	expect(withoutItems(arr, 4, 5)).toBe(arr);
 });
 test("addItem()", () => {
 	const arr = [1, 2, 3];
