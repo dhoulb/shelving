@@ -159,3 +159,23 @@ export function formatData(data: Data): string {
 	if (typeof id === "string") return id;
 	return "Object";
 }
+
+/** Return a data object with picked properties from an original data object. */
+export function pickProps<T extends Data, K extends Key<T>>(data: T, ...keys: K[]): Pick<T, K>;
+export function pickProps<T extends Data>(data: T, ...keys: Key<T>[]): Partial<T>;
+export function pickProps<T extends Data>(data: T, ...keys: Key<T>[]) {
+	return Object.fromEntries(_yieldPickProps(data, keys));
+}
+function* _yieldPickProps<T extends Data>(data: T, keys: ImmutableArray<Key<T>>): Iterable<Prop<T>> {
+	for (const [key, value] of getProps(data)) if (keys.includes(key)) yield [key, value];
+}
+
+/** Return a data object with omitted properties from an original data object. */
+export function omitProps<T extends Data, K extends Key<T>>(data: T, ...keys: K[]): Omit<T, K>;
+export function omitProps<T extends Data>(data: T, ...keys: Key<T>[]): Partial<T>;
+export function omitProps<T extends Data>(data: T, ...keys: Key<T>[]) {
+	return Object.fromEntries(_yieldOmitProps(data, keys));
+}
+function* _yieldOmitProps<T extends Data>(data: T, keys: ImmutableArray<Key<T>>): Iterable<Prop<T>> {
+	for (const [key, value] of getProps(data)) if (!keys.includes(key)) yield [key, value];
+}
