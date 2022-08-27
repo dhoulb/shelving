@@ -13,7 +13,7 @@ import { useSubscribe } from "./useSubscribe.js";
 import { useCache } from "./useCache.js";
 
 /** Hold the current state of a query. */
-export class QueryState<T extends Datas, K extends Key<T> = Key<T>> extends State<ItemArray<T[K]>> {
+export class QueryState<T extends Datas, K extends Key<T> = Key<T>> extends State<ItemArray<T[K]>> implements Iterable<ItemData<T[K]>> {
 	readonly ref: Query<T, K> | AsyncQuery<T, K>;
 	readonly busy = new BooleanState();
 	readonly limit: number;
@@ -131,6 +131,11 @@ export class QueryState<T extends Datas, K extends Key<T> = Key<T>> extends Stat
 		} finally {
 			this.busy.next(false);
 		}
+	}
+
+	/** Iterate over the items. */
+	[Symbol.iterator](): Iterator<ItemData<T[K]>> {
+		return this.value.values();
 	}
 }
 
