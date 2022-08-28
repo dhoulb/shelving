@@ -1,8 +1,9 @@
 import type { Unsubscribe } from "../observe/Observable.js";
+import type { ItemValue, ItemData, AsyncItem, Item } from "../db/Item.js";
+import type { PartialObserver } from "../observe/Observer.js";
 import { Datas, getData, Key } from "../util/data.js";
 import { getOptionalSource } from "../util/source.js";
 import { setMapItem } from "../util/map.js";
-import { ItemValue, ItemData, AsyncItem, Item } from "../db/Item.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { State } from "../state/State.js";
 import { BooleanState } from "../state/BooleanState.js";
@@ -65,20 +66,29 @@ export class ItemState<T extends Datas, K extends Key<T> = Key<T>> extends State
 	}
 
 	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
-	connectCache(): Unsubscribe | void {
-		const table = getOptionalSource(CacheProvider, this.ref.db.provider)?.memory.getTable(this.ref.collection);
-		table && this.connect(() => table.subscribeCachedItem(this.ref.id, this));
+	private _connectCache(): void {
+		if (!this._cacheConnection) {
+			const table = getOptionalSource(CacheProvider, this.ref.db.provider)?.memory.getTable(this.ref.collection);
+			if (table) this._cacheConnection = table.subscribeCachedItem(this.ref.id, this);
+		}
+	}
+	private _cacheConnection: Unsubscribe | undefined = undefined;
+
+	/** Unsubscribe this state from the `CacheProvider` it is connected to. */
+	private _disconnectCache(): void {
+		if (this._cacheConnection) this._cacheConnection = void this._cacheConnection();
 	}
 
 	// Override to subscribe to the cache when an observer is added.
-	protected override _addFirstObserver(): void {
-		this.connectCache();
+	protected override _addObserver(observer: PartialObserver<ItemValue<T[K]>>): void {
+		super._addObserver(observer);
+		this._connectCache();
 	}
 
 	// Override to unsubscribe from the cache when an observer is removed.
-	protected override _removeLastObserver(): void {
-		// Disconnect all sources.
-		this.disconnect();
+	protected override _removeObserver(observer: PartialObserver<ItemValue<T[K]>>): void {
+		super._removeObserver(observer);
+		if (!this.subscribers) this._disconnectCache();
 	}
 }
 

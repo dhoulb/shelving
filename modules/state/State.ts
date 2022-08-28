@@ -3,7 +3,7 @@ import { Matchable } from "../util/match.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { Subject } from "../observe/Subject.js";
 import { awaitNext } from "../observe/util.js";
-import { dispatchComplete, dispatchError, dispatchNext, Observer } from "../observe/Observer.js";
+import { dispatchComplete, dispatchError, dispatchNext, PartialObserver } from "../observe/Observer.js";
 
 /** Any `State` instance. */
 export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -76,7 +76,7 @@ export class State<T> extends Subject<T> implements Matchable<T, void> {
 	}
 
 	// Override to send the current error or value to any new subscribers.
-	protected override _addObserver(observer: Observer<T>): void {
+	protected override _addObserver(observer: PartialObserver<T>): void {
 		super._addObserver(observer);
 		if (this.reason !== State.NOERROR) dispatchError(observer, this.reason);
 		else if (this.closed) dispatchComplete(observer);

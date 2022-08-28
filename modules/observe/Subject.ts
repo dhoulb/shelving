@@ -12,19 +12,25 @@ import { Observable, Subscribable, subscribe, Unsubscribe } from "./Observable.j
  */
 export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 	/** List of sources this subject is subscribed to. */
-	protected readonly _connections = new Set<Unsubscribe>();
+	private readonly _sources = new Set<Unsubscribe>();
+	get sources(): Iterable<Unsubscribe> {
+		return this._sources.values();
+	}
 
 	/** List of subscribed observers that values are forwarded to. */
-	protected readonly _subscribers = new Set<PartialObserver<T>>();
+	private readonly _observers = new Set<PartialObserver<T>>();
+	get observers(): Iterable<PartialObserver<T>> {
+		return this._observers.values();
+	}
 
 	/** Get the number of current subscribers. */
 	get connections(): number {
-		return this._connections.size;
+		return this._sources.size;
 	}
 
 	/** Get the number of current subscribers. */
 	get subscribers(): number {
-		return this._subscribers.size;
+		return this._observers.size;
 	}
 
 	/** Is this subject open or closed (i.e. `error()` or `complete()` have been called. */
@@ -37,31 +43,31 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 
 	/** Call `next()` on the subscribers. */
 	protected _dispatch(value: T): void {
-		for (const observer of this._subscribers) dispatchNext(observer, value);
+		for (const observer of this._observers) dispatchNext(observer, value);
 	}
 
 	error(reason: Error | unknown): void {
 		if (this.closed) throw new ConditionError(`Observer is closed`);
 		this._close();
-		for (const subscriber of this._subscribers) {
-			this._subscribers.delete(subscriber);
-			dispatchError(subscriber, reason);
+		for (const observer of this._observers) {
+			this._removeObserver(observer);
+			dispatchError(observer, reason);
 		}
 	}
 
 	complete(): void {
 		if (this.closed) throw new ConditionError(`Observer is closed`);
 		this._close();
-		for (const subscriber of this._subscribers) {
-			this._subscribers.delete(subscriber);
-			dispatchComplete(subscriber);
+		for (const observer of this._observers) {
+			this._removeObserver(observer);
+			dispatchComplete(observer);
 		}
 	}
 
 	/** Close this subject (called by `error()` and `complete()`). */
 	protected _close(): void {
 		(this as Mutable<this>).closed = true;
-		this.disconnect();
+		for (const cleanup of this._sources) dispatch(cleanup); // Cleanups are self-cleaning.
 	}
 
 	/** Connect this subject to a source. */
@@ -69,16 +75,11 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 		if (this.closed) throw new ConditionError(`Connectable is closed`);
 		const unsubscribe = subscribe(source, this);
 		const cleanup = () => {
-			this._connections.delete(cleanup);
+			this._sources.delete(cleanup);
 			dispatch(unsubscribe);
 		};
-		this._connections.add(cleanup);
+		this._sources.add(cleanup);
 		return cleanup;
-	}
-
-	/** Disconnect this subject from all sources. */
-	disconnect(): void {
-		for (const cleanup of this._connections) dispatch(cleanup); // Cleanups are self-cleaning.
 	}
 
 	/**
@@ -96,27 +97,11 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 
 	/** Add an observer (called by `subscribe()`). */
 	protected _addObserver(observer: PartialObserver<T>): void {
-		const sizeBefore = this._subscribers.size;
-		this._subscribers.add(observer);
-		const sizeAfter = this._subscribers.size;
-		if (!sizeBefore && sizeAfter) this._addFirstObserver();
-	}
-
-	/** Called after adding the first observer. */
-	protected _addFirstObserver(): void {
-		//
+		this._observers.add(observer);
 	}
 
 	/** Remove an observer. */
 	protected _removeObserver(observer: PartialObserver<T>): void {
-		const sizeBefore = this._subscribers.size;
-		this._subscribers.delete(observer);
-		const sizeAfter = this._subscribers.size;
-		if (sizeBefore && !sizeAfter) this._removeLastObserver();
-	}
-
-	/** Called after adding the first observer. */
-	protected _removeLastObserver(): void {
-		// Nothing.
+		this._observers.delete(observer);
 	}
 }

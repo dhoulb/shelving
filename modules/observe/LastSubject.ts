@@ -1,4 +1,4 @@
-import { getLastItem } from "../util/array.js";
+import { getOptionalLastItem } from "../util/array.js";
 import { dispatchNext } from "./Observer.js";
 import { Subject } from "./Subject.js";
 
@@ -6,7 +6,7 @@ import { Subject } from "./Subject.js";
 export class LastSubject<T> extends Subject<T> {
 	// Override to dispatch only to a slice of the subscribers.
 	protected override _dispatch(value: T): void {
-		const observer = getLastItem(this._subscribers);
+		const observer = getOptionalLastItem(this.observers);
 		if (observer) dispatchNext(observer, value);
 	}
 }

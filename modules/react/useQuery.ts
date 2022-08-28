@@ -1,14 +1,15 @@
 import type { Unsubscribe } from "../observe/Observable.js";
 import type { Datas, Key } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData } from "../db/Item.js";
+import type { PartialObserver } from "../observe/Observer.js";
+import type { AsyncQuery, Query } from "../db/Query.js";
 import { setMapItem } from "../util/map.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
 import { getOptionalSource } from "../util/source.js";
-import { AsyncQuery, Query } from "../db/Query.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { State } from "../state/State.js";
-import { ConditionError } from "../error/ConditionError.js";
 import { BooleanState } from "../state/BooleanState.js";
+import { ConditionError } from "../error/ConditionError.js";
 import { useSubscribe } from "./useSubscribe.js";
 import { useCache } from "./useCache.js";
 
@@ -96,20 +97,29 @@ export class QueryState<T extends Datas, K extends Key<T> = Key<T>> extends Stat
 	}
 
 	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
-	connectCache(): Unsubscribe | void {
-		const table = getOptionalSource(CacheProvider, this.ref.db.provider)?.memory.getTable(this.ref.collection);
-		return table && this.connect(() => table.subscribeCachedQuery(this.ref, this));
+	private _connectCache(): void {
+		if (!this._cacheConnection) {
+			const table = getOptionalSource(CacheProvider, this.ref.db.provider)?.memory.getTable(this.ref.collection);
+			if (table) this._cacheConnection = table.subscribeCachedQuery(this.ref, this);
+		}
+	}
+	private _cacheConnection: Unsubscribe | undefined = undefined;
+
+	/** Unsubscribe this state from the `CacheProvider` it is connected to. */
+	private _disconnectCache(): void {
+		if (this._cacheConnection) this._cacheConnection = void this._cacheConnection();
 	}
 
 	// Override to subscribe to the cache when an observer is added.
-	protected override _addFirstObserver(): void {
-		this.connectCache();
+	protected override _addObserver(observer: PartialObserver<ItemArray<T[K]>>): void {
+		super._addObserver(observer);
+		this._connectCache();
 	}
 
 	// Override to unsubscribe from the cache when an observer is removed.
-	protected override _removeLastObserver(): void {
-		// Disconnect all sources.
-		this.disconnect();
+	protected override _removeObserver(observer: PartialObserver<ItemArray<T[K]>>): void {
+		super._removeObserver(observer);
+		if (!this.subscribers) this._disconnectCache();
 	}
 
 	/**

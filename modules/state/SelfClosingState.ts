@@ -1,3 +1,4 @@
+import { PartialObserver } from "../../dist/index.js";
 import { Timeout } from "../util/timeout.js";
 import { State } from "./State.js";
 
@@ -7,8 +8,8 @@ import { State } from "./State.js";
  */
 export class SelfClosingState<T> extends State<T> {
 	// Override to close this state when the last observer is removed.
-	override _removeLastObserver(): void {
-		if (!this.closed) this.complete();
+	override _removeObserver(): void {
+		if (!this.subscribers && !this.closed) this.complete();
 	}
 }
 
@@ -25,11 +26,13 @@ export class DelayedSelfClosingState<T> extends State<T> {
 		}, delay);
 	}
 	// Override to clear the timeout when an observer is added.
-	override _addFirstObserver(): void {
+	override _addObserver(observer: PartialObserver<T>): void {
+		super._addObserver(observer);
 		this._timeout.clear();
 	}
 	// Override to close this state when the last observer is removed.
-	override _removeLastObserver(): void {
-		this._timeout.set();
+	override _removeObserver(observer: PartialObserver<T>): void {
+		super._removeObserver(observer);
+		if (!this.subscribers) this._timeout.set();
 	}
 }
