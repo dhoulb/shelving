@@ -7,18 +7,17 @@ import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
 abstract class AbstractProvider<T extends Datas = Datas> {
 	/**
-	 * Get the result of a item.
+	 * Get the value of a item.
 	 *
-	 * @return The item object, or `undefined` if it doesn't exist.
+	 * @return The item value, or `null` if it doesn't exist.
 	 */
 	abstract getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> | PromiseLike<ItemValue<T[K]>>;
 
 	/**
-	 * Subscribe to the result of a item.
-	 * - `next()` is called once with the initial result, and again any time the result changes.
+	 * Subscribe to the value of a item.
+	 * - `next()` is called once with the initial value, and again any time the value changes.
 	 *
-	 * @param observer Observer with `next`, `error`, or `complete` methods that the item result is reported back to.
-	 *
+	 * @param observer Observer with `next`, `error`, or `complete` methods that the item value is reported back to.
 	 * @return Function that ends the subscription.
 	 */
 	abstract subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe;
@@ -33,12 +32,8 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	abstract addItem<K extends Key<T>>(collection: K, data: T[K]): string | PromiseLike<string>;
 
 	/**
-	 * Set the data a item.
-	 * - If the item exists, set the value of it.
-	 * - If the item doesn't exist, set it at path.
-	 *
+	 * Set the data a item (whether it exists or not).
 	 * @param data Data to set the item to.
-	 * @throws Error If a `Update` was provided but the item does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
 	abstract setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): void | PromiseLike<void>;
 
@@ -58,15 +53,15 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	/**
 	 * Get all matching items.
 	 *
-	 * @return Set of results in `id: data` format.
+	 * @return Set of values in `id: data` format.
 	 */
 	abstract getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> | PromiseLike<ItemArray<T[K]>>;
 
 	/**
 	 * Subscribe to all matching items.
-	 * - `next()` is called once with the initial results, and again any time the results change.
+	 * - `next()` is called once with the initial values, and again any time the values change.
 	 *
-	 * @param observer Observer with `next`, `error`, or `complete` methods that the item results are reported back to.
+	 * @param observer Observer with `next`, `error`, or `complete` methods that the item values are reported back to.
 	 * @return Function that ends the subscription.
 	 */
 	abstract subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe;
