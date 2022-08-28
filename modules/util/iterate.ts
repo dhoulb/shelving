@@ -1,3 +1,4 @@
+import { ConditionError } from "../error/ConditionError.js";
 import type { Mutable } from "./data.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableArray } from "./array.js";
@@ -40,12 +41,12 @@ function _countItems(items: Iterable<unknown>): number {
 	return count;
 }
 
-/** An iterable possibly containing multiple other iterables. */
+/** An iterable containing items or nested iterables of items. */
 export type DeepIterable<T> = T | Iterable<DeepIterable<T>>;
 
 /** Flatten one or more iterables. */
-export function* flattenDeepIterable<T>(items: DeepIterable<T>): Iterable<T> {
-	if (isIterable(items)) for (const item of items) yield* flattenDeepIterable(item);
+export function* flattenItems<T>(items: DeepIterable<T>): Iterable<T> {
+	if (isIterable(items)) for (const item of items) yield* flattenItems(item);
 	else yield items;
 }
 
@@ -169,6 +170,8 @@ export abstract class ThroughIterator<T, R, N> extends AbstractIterator<T, R, N>
  * 	console.log("RETURNED", watch.returned);
  */
 export class WatchIterator<T, R, N> extends ThroughIterator<T, R, N> {
+	private static readonly NOVALUE: unique symbol = Symbol();
+
 	/** Get the number of results received by this iterator so far. */
 	readonly count = 0;
 
@@ -176,13 +179,25 @@ export class WatchIterator<T, R, N> extends ThroughIterator<T, R, N> {
 	readonly done: boolean = false;
 
 	/** The first yielded value. */
-	readonly first: T | undefined = undefined;
+	get first(): T {
+		if (this._first === WatchIterator.NOVALUE) throw new ConditionError("Iteration not started");
+		return this._first;
+	}
+	private _first: T | typeof WatchIterator.NOVALUE = WatchIterator.NOVALUE;
 
 	/** The last yielded value. */
-	readonly last: T | undefined = undefined;
+	get last(): T {
+		if (this._last === WatchIterator.NOVALUE) throw new ConditionError("Iteration not started");
+		return this._last;
+	}
+	private _last: T | typeof WatchIterator.NOVALUE = WatchIterator.NOVALUE;
 
 	/** The returned value. */
-	readonly returned: R | undefined = undefined;
+	get returned(): R {
+		if (this._returned === WatchIterator.NOVALUE) throw new ConditionError("Iteration not completed");
+		return this._returned;
+	}
+	private _returned: R | typeof WatchIterator.NOVALUE = WatchIterator.NOVALUE;
 
 	// Override to watch returned values.
 	override next(value: N): IteratorResult<T, R> {
@@ -194,13 +209,15 @@ export class WatchIterator<T, R, N> extends ThroughIterator<T, R, N> {
 	override return(value: R): IteratorResult<T, R> {
 		return this._watch(super.return(value));
 	}
-	protected _watch(result: IteratorResult<T, R>): IteratorResult<T, R> {
+
+	/** Capture a result. */
+	private _watch(result: IteratorResult<T, R>): IteratorResult<T, R> {
 		if (!result.done) {
-			if (this.first === undefined) (this as Mutable<this>).first = result.value;
-			(this as Mutable<this>).last = result.value;
+			if (this.first === undefined) this._first = result.value;
+			this._last = result.value;
 			(this as Mutable<this>).count++;
 		} else {
-			(this as Mutable<this>).returned = result.value;
+			this._returned = result.value;
 			(this as Mutable<this>).done = true;
 		}
 		return result;
