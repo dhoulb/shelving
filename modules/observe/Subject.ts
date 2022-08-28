@@ -23,7 +23,7 @@ export class Subject<T> implements Observable<T>, ConnectableObserver<T> {
 		return this._observers.values();
 	}
 
-	/** Get the number of current subscribers. */
+	/** Get the number of current connections. */
 	get connections(): number {
 		return this._sources.size;
 	}
