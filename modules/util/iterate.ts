@@ -194,7 +194,7 @@ export class WatchIterator<T, R, N> extends ThroughIterator<T, R, N> {
 
 	/** The returned value. */
 	get returned(): R {
-		if (this._returned === WatchIterator.NOVALUE) throw new ConditionError("Iteration not completed");
+		if (this._returned === WatchIterator.NOVALUE) throw new ConditionError("Iteration not done");
 		return this._returned;
 	}
 	private _returned: R | typeof WatchIterator.NOVALUE = WatchIterator.NOVALUE;
