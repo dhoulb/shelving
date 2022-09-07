@@ -1,6 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
-import type { Dispatch } from "./function.js";
-import type { Handler } from "./error.js";
+import type { Handler, Dispatch } from "./function.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
 export const isAsync = <T>(v: PromiseLike<T> | T): v is PromiseLike<T> => typeof v === "object" && v !== null && typeof (v as Promise<T>).then === "function";
@@ -33,25 +32,10 @@ export function assertPromise<T>(value: Promise<T> | T): asserts value is Promis
 	if (!(value instanceof Promise)) throw new AssertionError("Must be promise", value);
 }
 
-/** Type of `Promise` with its `resolve()` and `reject()` methods exposed publicly. */
-export class Deferred<T> extends Promise<T> {
-	// Make `this.then()` create a `Promise` not a `Deferred`
-	// Done with a getter because some implementations implement this with a getter and we need to override it.
-	static override get [Symbol.species]() {
-		return Promise;
-	}
-	readonly resolve: Dispatch<[T]>;
-	readonly reject: Handler;
-	constructor() {
-		let _resolve: Dispatch<[T]>;
-		let _reject: Handler;
-		super((x, y) => {
-			_resolve = x;
-			_reject = y;
-		});
-		this.resolve = _resolve!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-		this.reject = _reject!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-	}
+/** Run any queued microtasks now. */
+export function runMicrotasks(): Promise<void> {
+	// Timeouts are part of the main event queue, and events in the main queue are run _after_ all microtasks complete.
+	return new Promise(resolve => setTimeout(resolve));
 }
 
 /** Type of `Promise` with `._resolve()` and `._reject()` methods available. */
@@ -61,7 +45,9 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 	static override get [Symbol.species]() {
 		return Promise;
 	}
+	/** Resolve this promise with a value. */
 	protected readonly _resolve: Dispatch<[T]>;
+	/** Reject this promise with a reason. */
 	protected readonly _reject: Handler;
 	constructor() {
 		let _resolve: Dispatch<[T]>;
@@ -72,6 +58,29 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 		});
 		this._resolve = _resolve!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 		this._reject = _reject!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+	}
+}
+
+/** Type of `Promise` with its `resolve()` and `reject()` methods exposed publicly. */
+export class Deferred<T = void> extends Promise<T> {
+	// Make `this.then()` create a `Promise` not a `Deferred`
+	// Done with a getter because some implementations implement this with a getter and we need to override it.
+	static override get [Symbol.species]() {
+		return Promise;
+	}
+	/** Resolve this deferred with a value. */
+	readonly resolve: Dispatch<[T]>;
+	/** Reject this deferred with a reason. */
+	readonly reject: Handler;
+	constructor() {
+		let resolve: Dispatch<[T]>;
+		let reject: Handler;
+		super((x, y) => {
+			resolve = x;
+			reject = y;
+		});
+		this.resolve = resolve!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		this.reject = reject!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 	}
 }
 
@@ -87,26 +96,9 @@ export class Delay extends AbstractPromise<void> {
 export const SIGNAL: unique symbol = Symbol("shelving/SIGNAL");
 
 /** Resolve to `SIGNAL` on a specific signal. */
-export class Signal extends AbstractPromise<typeof SIGNAL> {
+export class Signal extends AbstractPromise<typeof Signal.SIGNAL> {
+	/** The `SIGNAL` symbol indicates a signal. */
+	static SIGNAL: typeof SIGNAL = SIGNAL;
 	/** Send this signal now. */
-	readonly send = () => this._resolve(SIGNAL);
-}
-
-/** Infinite iterator that yields until a `SIGNAL` is received. */
-export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof SIGNAL>, ...Promise<typeof SIGNAL>[]]): AsyncIterable<T> {
-	const iterator = source[Symbol.asyncIterator]();
-	while (true) {
-		const result = await Promise.race([iterator.next(), ...signals]);
-		if (result === SIGNAL || result.done) break;
-		yield result.value;
-	}
-}
-
-/** Infinite iterator that yields every X milliseconds (yields a count of the number of iterations). */
-export async function* repeatDelay(ms: number): AsyncIterable<number> {
-	let count = 1;
-	while (true) {
-		await new Delay(ms);
-		yield count++;
-	}
+	readonly send = () => this._resolve(Signal.SIGNAL);
 }

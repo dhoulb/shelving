@@ -1,5 +1,4 @@
-import { Data, getData, Key, OptionalData } from "../util/data.js";
-import { withProp } from "../util/object.js";
+import { Data, getData, OptionalData } from "../util/data.js";
 import { Transformers, transformData } from "../util/transform.js";
 import { State } from "./State.js";
 
@@ -10,14 +9,9 @@ export class DataState<T extends Data> extends State<T> {
 		return this.value;
 	}
 
-	/** Set a prop in this object to a new value. */
-	set<K extends Key<T>>(key: K, value: T[K]): void {
-		this.next(withProp(this.data, key, value));
-	}
-
-	/** Update several props in this object. */
+	/** Update several props in this data. */
 	update(updates: Transformers<T>): void {
-		this.next(transformData(this.data, updates));
+		this.set(transformData(this.data, updates));
 	}
 }
 
@@ -33,18 +27,13 @@ export class OptionalDataState<T extends Data> extends State<OptionalData<T>> {
 		return !!this.value;
 	}
 
-	/** Set a prop in this object to a new value. */
-	set<K extends Key<T>>(key: K, value: T[K]): void {
-		this.next(withProp(this.data, key, value));
-	}
-
-	/** Update several props in this object. */
+	/** Update several props in this data. */
 	update(updates: Transformers<T>): void {
-		this.next(transformData(this.data, updates));
+		this.set(transformData(this.data, updates));
 	}
 
-	/** Delete this result. */
-	delete(): void {
-		this.next(null);
+	/** Set the data to `null`. */
+	unset(): void {
+		this.set(null);
 	}
 }

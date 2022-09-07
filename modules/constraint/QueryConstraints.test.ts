@@ -102,7 +102,9 @@ test("Combined tests", () => {
 });
 test("toString()", () => {
 	const q1 = new QueryConstraints<T>(new FilterConstraints(NUM_GT_2, STR_IN_Z_OR_X), new SortConstraints(NUM_ASC, TYPE_DESC), 12);
-	expect(q1.toString()).toBe(`{"filters":{"num>":2,"str":["Z","X"]},"sorts":["num","!type"],"limit":12}`);
-	const q2 = new QueryConstraints<T>();
-	expect(q2.toString()).toBe(`{"filters":{},"sorts":[],"limit":null}`);
+	expect(q1.toString()).toBe(`"filters":{"num>":2,"str":["Z","X"]},"sorts":["num","!type"],"limit":12`);
+	const q2 = new QueryConstraints<T>(undefined, undefined, 12);
+	expect(q2.toString()).toBe('"limit":12');
+	const q3 = new QueryConstraints<T>();
+	expect(q3.toString()).toBe("");
 });

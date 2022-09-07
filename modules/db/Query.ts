@@ -1,18 +1,17 @@
-import type { Dispatch } from "../util/function.js";
 import type { Key, Datas } from "../util/data.js";
+import type { Dispatch, Handler, Stop } from "../util/function.js";
 import type { Updates } from "../update/DataUpdate.js";
-import type { PartialObserver } from "../observe/Observer.js";
-import type { Observable, Unsubscribe } from "../observe/Observable.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
-import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { countItems, hasItems } from "../util/iterate.js";
+import { runSequence } from "../util/sequence.js";
+import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import type { ItemArray, ItemValue, ItemData } from "./Item.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 
 /** Reference to a set of items in a sync or async provider. */
-abstract class BaseQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> extends QueryConstraints<ItemData<T[K]>> implements Observable<ItemArray<T[K]>> {
+abstract class BaseQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> extends QueryConstraints<ItemData<T[K]>> implements AsyncIterable<ItemArray<T[K]>> {
 	abstract readonly db: Database<T> | AsyncDatabase<T>;
 	abstract readonly collection: K;
 
@@ -59,17 +58,6 @@ abstract class BaseQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> ext
 	abstract lastData: ItemData<T[K]> | PromiseLike<ItemData<T[K]>>;
 
 	/**
-	 * Subscribe to all matching items.
-	 * - `next()` is called once with the initial results, and again any time the results change.
-	 *
-	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
-	 * @return Function that ends the subscription.
-	 */
-	subscribe(next: PartialObserver<ItemArray<T[K]>> | Dispatch<[ItemArray<T[K]>]>): Unsubscribe {
-		return this.db.provider.subscribeQuery(this.collection, this, typeof next === "function" ? { next } : next);
-	}
-
-	/**
 	 * Set all matching items to the same exact value.
 	 *
 	 * @param data Complete data to set the item to.
@@ -93,12 +81,22 @@ abstract class BaseQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> ext
 
 	// Override to include the collection name.
 	override toString(): string {
-		return `${this.collection}?${super.toString()}`;
+		return `${this.collection}?{${super.toString()}`;
+	}
+
+	/** Subscribe to this item. */
+	subscribe(onNext?: Dispatch<[ItemArray<T[K]>]>, onError?: Handler): Stop {
+		return runSequence(this, onNext, onError);
+	}
+
+	// Implement AsyncIterable
+	[Symbol.asyncIterator](): AsyncIterator<ItemArray<T[K]>> {
+		return this.db.provider.getQuerySequence(this.collection, this)[Symbol.asyncIterator]();
 	}
 }
 
 /** Reference to a set of items in a provider. */
-export class Query<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseQuery<T, K> implements BaseQuery<T, K> {
+export class Query<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseQuery<T, K> {
 	readonly db: Database<T>;
 	readonly collection: K;
 	constructor(db: Database<T>, collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null) {
@@ -139,7 +137,7 @@ export class Query<T extends Datas = Datas, K extends Key<T> = Key<T>> extends B
 }
 
 /** Reference to a set of items in a provider. */
-export class AsyncQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseQuery<T, K> implements BaseQuery<T, K> {
+export class AsyncQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseQuery<T, K> {
 	readonly db: AsyncDatabase<T>;
 	readonly collection: K;
 	constructor(db: AsyncDatabase<T>, collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null) {

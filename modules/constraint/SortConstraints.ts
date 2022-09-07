@@ -37,6 +37,6 @@ export class SortConstraints<T extends Data = Data> extends Constraints<T, SortC
 
 	// Stringify as array syntax.
 	toString(): string {
-		return `[${this._constraints.map(String).join(",")}]`;
+		return this._constraints.length ? `"sorts":[${this._constraints.map(String).join(",")}]` : "";
 	}
 }

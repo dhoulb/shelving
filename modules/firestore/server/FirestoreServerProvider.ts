@@ -9,19 +9,13 @@ import type {
 } from "@google-cloud/firestore";
 import { Firestore, FieldValue as FirestoreFieldValue } from "@google-cloud/firestore";
 import type { Entry } from "../../util/entry.js";
+import type { Data } from "../../util/data.js";
 import type { FilterOperator } from "../../constraint/FilterConstraint.js";
 import type { SortDirection } from "../../constraint/SortConstraint.js";
-import type { Unsubscribe } from "../../observe/Observable.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
-import { dispatchError, dispatchNext, Observer } from "../../observe/Observer.js";
-import { ArrayUpdate } from "../../update/ArrayUpdate.js";
-import { DataUpdate, Updates } from "../../update/DataUpdate.js";
-import { Increment } from "../../update/Increment.js";
-import { ObjectUpdate } from "../../update/ObjectUpdate.js";
-import { Delete } from "../../update/Delete.js";
-import { Update } from "../../update/Update.js";
-import { Data } from "../../util/data.js";
+import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
+import { ArrayUpdate, DataUpdate, Updates, Increment, ObjectUpdate, Delete, Update } from "../../update/index.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -56,7 +50,7 @@ function _getQuery(firestore: Firestore, collection: string, constraints: ItemCo
 	return query;
 }
 
-function _getItems(snapshot: FirestoreQuerySnapshot): ItemArray {
+function _getItemArray(snapshot: FirestoreQuerySnapshot): ItemArray {
 	return snapshot.docs.map(_getItemData);
 }
 
@@ -109,14 +103,14 @@ export class FirestoreServerProvider implements AsyncProvider {
 		return _getItemValue(await this._firestore.collection(collection).doc(id).get());
 	}
 
-	subscribeItem(collection: string, id: string, observer: Observer<ItemValue>): Unsubscribe {
-		return this._firestore
-			.collection(collection)
-			.doc(id)
-			.onSnapshot(
-				snapshot => dispatchNext(observer, _getItemValue(snapshot)),
-				thrown => dispatchError(observer, thrown),
-			);
+	getItemSequence(collection: string, id: string): AsyncIterable<ItemValue> {
+		const ref = this._firestore.collection(collection).doc(id);
+		return new LazyDeferredSequence(({ resolve, reject }) =>
+			ref.onSnapshot(
+				snapshot => resolve(_getItemValue(snapshot)), //
+				reject,
+			),
+		);
 	}
 
 	async addItem(collection: string, data: Data): Promise<string> {
@@ -139,13 +133,16 @@ export class FirestoreServerProvider implements AsyncProvider {
 	}
 
 	async getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
-		return _getItems(await _getQuery(this._firestore, collection, constraints).get());
+		return _getItemArray(await _getQuery(this._firestore, collection, constraints).get());
 	}
 
-	subscribeQuery(collection: string, constraints: ItemConstraints, observer: Observer<ItemArray>): Unsubscribe {
-		return _getQuery(this._firestore, collection, constraints).onSnapshot(
-			snapshot => dispatchNext(observer, _getItems(snapshot)),
-			thrown => dispatchError(observer, thrown),
+	getQuerySequence<K extends string>(collection: K, constraints: ItemConstraints): AsyncIterable<ItemArray> {
+		const ref = _getQuery(this._firestore, collection, constraints);
+		return new LazyDeferredSequence(({ resolve, reject }) =>
+			ref.onSnapshot(
+				snapshot => resolve(_getItemArray(snapshot)), //
+				reject,
+			),
 		);
 	}
 

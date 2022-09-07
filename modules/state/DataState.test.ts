@@ -1,6 +1,6 @@
-import { DataState, OptionalDataState, RequiredError, INCREMENT, OptionalData } from "../index.js";
+import { DataState, OptionalDataState, RequiredError, INCREMENT, OptionalData, runMicrotasks } from "../index.js";
 
-test("DataState.prototype.data", () => {
+test("DataState.prototype.data", async () => {
 	type T = { a: number };
 	const state = new DataState<T>({ a: 1 });
 	expect(state).toBeInstanceOf(DataState);
@@ -8,36 +8,35 @@ test("DataState.prototype.data", () => {
 	expect(state.data).toEqual({ a: 1 });
 	// Ons and onces.
 	const calls: T[] = [];
-	state.subscribe(v => calls.push(v));
+	const stop = state.next.subscribe(v => calls.push(v));
 	// Set truthy value.
-	expect(state.next({ a: 2 })).toBe(undefined);
+	expect(state.set({ a: 2 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 2 });
 	expect(state.data).toEqual({ a: 2 });
 	// Checks.
-	expect(calls).toEqual([{ a: 1 }, { a: 2 }]);
+	await runMicrotasks();
+	expect(calls).toEqual([{ a: 2 }]);
+	// Cleanup.
+	stop();
 });
-test("DataState.prototype.update()", () => {
+test("DataState.prototype.update()", async () => {
 	type T = { a: number; b: number };
 	const state = new DataState<T>({ a: 1, b: 2 });
 	expect(state).toBeInstanceOf(DataState);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
 	const calls1: T[] = [];
-	state.subscribe(v => calls1.push(v));
+	const stop = state.next.subscribe(v => calls1.push(v));
 	// Apply a data transform.
 	expect(state.update({ a: 111, b: n => n * n })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: 4 });
-	// Apply a data transform that changes nothing.
-	// expect(state.update({})).toBe(undefined);
-	// expect(state.update({ a: 111 })).toBe(undefined);
-	// expect(state.value).toEqual({ a: 111, b: 4 });
 	// Checks.
-	expect(calls1).toEqual([
-		{ a: 1, b: 2 },
-		{ a: 111, b: 4 },
-	]);
+	await runMicrotasks();
+	expect(calls1).toEqual([{ a: 111, b: 4 }]);
+	// Cleanup.
+	stop();
 });
-test("OptionalDataState.prototype.data", () => {
+test("OptionalDataState.prototype.data", async () => {
 	type T = { a: number };
 	const state = new OptionalDataState<T>(null);
 	expect(state).toBeInstanceOf(OptionalDataState);
@@ -45,9 +44,9 @@ test("OptionalDataState.prototype.data", () => {
 	expect(() => state.data).toThrow(RequiredError);
 	// Ons and onces.
 	const calls: OptionalData<T>[] = [];
-	state.subscribe(v => calls.push(v));
+	const stop = state.next.subscribe(v => calls.push(v));
 	// Set data value.
-	expect(state.next({ a: 1 })).toBe(undefined);
+	expect(state.set({ a: 1 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 1 });
 	expect(state.data).toEqual({ a: 1 });
 	// Update data value.
@@ -55,34 +54,33 @@ test("OptionalDataState.prototype.data", () => {
 	expect(state.value).toEqual({ a: 2 });
 	expect(state.data).toEqual({ a: 2 });
 	// Delete data value.
-	expect(state.delete()).toBe(undefined);
+	expect(state.unset()).toBe(undefined);
 	expect(state.value).toBe(null);
 	expect(() => state.data).toThrow(RequiredError);
 	// Set null value.
-	expect(state.next(null)).toBe(undefined);
+	expect(state.set(null)).toBe(undefined);
 	expect(state.value).toBe(null);
 	expect(() => state.data).toThrow(RequiredError);
 	// Checks.
-	expect(calls).toEqual([null, { a: 1 }, { a: 2 }, null]);
+	await runMicrotasks();
+	expect(calls).toEqual([null]);
+	// Cleanup.
+	stop();
 });
-test("OptionalDataState.prototype.update()", () => {
+test("OptionalDataState.prototype.update()", async () => {
 	type T = { a: number; b: number };
 	const state = new OptionalDataState<T>({ a: 1, b: 2 });
 	expect(state).toBeInstanceOf(OptionalDataState);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
 	const calls1: OptionalData<T>[] = [];
-	state.subscribe(v => calls1.push(v));
+	const stop = state.next.subscribe(v => calls1.push(v));
 	// Apply a data transform.
 	expect(state.update({ a: 111, b: n => n * n })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: 4 });
-	// Apply a data transform that changes nothing.
-	// expect(state.update({})).toBe(undefined);
-	// expect(state.update({ a: 111 })).toBe(undefined);
-	// expect(state.value).toEqual({ a: 111, b: 4 });
 	// Checks.
-	expect(calls1).toEqual([
-		{ a: 1, b: 2 },
-		{ a: 111, b: 4 },
-	]);
+	await runMicrotasks();
+	expect(calls1).toEqual([{ a: 111, b: 4 }]);
+	// Cleanup.
+	stop();
 });

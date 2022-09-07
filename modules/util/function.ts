@@ -56,3 +56,12 @@ export function dispatchMethod<T extends Arguments, M extends string | symbol>(o
 		logError(thrown);
 	}
 }
+
+/** Function that starts something. */
+export type Start<A extends Arguments = []> = (...args: A) => Stop | void;
+
+/** Function that stops something. */
+export type Stop = Dispatch;
+
+/** Function that handles an error. */
+export type Handler = (reason: Error | unknown) => void;

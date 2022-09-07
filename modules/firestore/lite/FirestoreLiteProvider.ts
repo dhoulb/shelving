@@ -31,16 +31,10 @@ import type { Data } from "../../util/data.js";
 import type { Entry } from "../../util/entry.js";
 import type { FilterOperator } from "../../constraint/FilterConstraint.js";
 import type { SortDirection } from "../../constraint/SortConstraint.js";
-import type { Unsubscribe } from "../../observe/Observable.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
-import { ArrayUpdate } from "../../update/ArrayUpdate.js";
-import { DataUpdate, Updates } from "../../update/DataUpdate.js";
-import { Increment } from "../../update/Increment.js";
-import { ObjectUpdate } from "../../update/ObjectUpdate.js";
-import { Update } from "../../update/Update.js";
-import { Delete } from "../../update/Delete.js";
+import { ArrayUpdate, DataUpdate, Updates, Increment, ObjectUpdate, Delete, Update } from "../../update/index.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -127,7 +121,7 @@ export class FirestoreLiteProvider implements AsyncProvider {
 	async getItem(collection: string, id: string): Promise<ItemValue> {
 		return _getItemValue(await getDoc(firestoreDocument(this._firestore, collection, id)));
 	}
-	subscribeItem(): Unsubscribe {
+	getItemSequence(): AsyncIterableIterator<ItemValue> {
 		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 	async addItem(collection: string, data: Data): Promise<string> {
@@ -146,7 +140,7 @@ export class FirestoreLiteProvider implements AsyncProvider {
 	async getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
 		return _getItems(await getDocs(_getQuery(this._firestore, collection, constraints)));
 	}
-	subscribeQuery(): Unsubscribe {
+	getQuerySequence(): AsyncIterableIterator<ItemArray> {
 		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 	async setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number> {

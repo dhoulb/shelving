@@ -1,9 +1,6 @@
-import type { Mutable } from "../util/data.js";
-import { Matchable } from "../util/match.js";
-import { ConditionError } from "../error/ConditionError.js";
-import { Subject } from "../observe/Subject.js";
-import { awaitNext } from "../observe/util.js";
-import { dispatchComplete, dispatchError, dispatchNext, PartialObserver } from "../observe/Observer.js";
+import type { Dispatch } from "../util/function.js";
+import { runSequence } from "../util/sequence.js";
+import { DeferredSequence } from "../sequence/DeferredSequence.js";
 
 /** Any `State` instance. */
 export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -18,20 +15,16 @@ export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-
  * - To set the state to be loading, use the `State.NOVALUE` constant or a `Promise` value.
  * - To set the state to an explicit value, use that value or another `State` instance with a value.
  * */
-export class State<T> extends Subject<T> implements Matchable<T, void> {
+export class State<T> {
 	/** The `NOVALUE` symbol indicates no value has been received by a `State` instance. */
 	static readonly NOVALUE: unique symbol = Symbol("shelving/State.NOVALUE");
 
-	/** The `NOERROR` symbol indicates no error has been received by a `State` instance. */
-	static readonly NOERROR: unique symbol = Symbol("shelving/State.NOERROR");
-
-	/** Cached reason this state errored. */
-	readonly reason: Error | unknown | typeof State.NOERROR = State.NOERROR;
+	/** Deferred sequence this state uses to issue values as they change. */
+	public readonly next: DeferredSequence<T>;
 
 	/** Most recently dispatched value (or throw `Promise` that resolves to the next value). */
 	get value(): T {
-		if (this.reason !== State.NOERROR) throw this.reason;
-		if (this._value === State.NOVALUE) throw awaitNext(this);
+		if (this._value === State.NOVALUE) throw this.next;
 		return this._value;
 	}
 	private _value: T | typeof State.NOVALUE;
@@ -49,13 +42,10 @@ export class State<T> extends Subject<T> implements Matchable<T, void> {
 	}
 
 	/** State is initiated with an initial state. */
-	constructor(initial: T | typeof State.NOVALUE);
-	constructor();
-	constructor(...args: [] | [T]);
-	constructor(...args: [] | [T]) {
-		super();
-		this._value = args.length ? args[0] : State.NOVALUE;
-		this._time = args.length ? Date.now() : null;
+	constructor(initial: T | typeof State.NOVALUE = State.NOVALUE, next: DeferredSequence<T> = new DeferredSequence<T>()) {
+		this._value = initial;
+		this._time = initial !== State.NOVALUE ? Date.now() : null;
+		this.next = next;
 	}
 
 	/** Is there a current value, or is it still loading. */
@@ -63,36 +53,25 @@ export class State<T> extends Subject<T> implements Matchable<T, void> {
 		return this._value === State.NOVALUE;
 	}
 
-	// Override to only dispatch if the value changes.
-	override next(value: T): void {
-		if (this.closed) throw new ConditionError("Stream is closed");
-		if (!this.match(value)) this._dispatch(value);
+	/** Set the value of the state. */
+	set(value: T): void {
+		if (value !== this._value) {
+			this._value = value;
+			this._time = Date.now();
+			this.next.resolve(value);
+		}
 	}
 
-	// Override to save the reason at `this.reason` and clean up.
-	override error(reason: Error | unknown): void {
-		if (!this.closed) (this as Mutable<this>).reason = reason;
-		super.error(reason);
+	/** Set the value of the state as values are pulled from a sequence. */
+	async *setSequence(sequence: AsyncIterable<T>): AsyncIterable<T> {
+		for await (const value of sequence) {
+			this.set(value);
+			yield value;
+		}
 	}
 
-	// Override to send the current error or value to any new subscribers.
-	protected override _addObserver(observer: PartialObserver<T>): void {
-		super._addObserver(observer);
-		if (this.reason !== State.NOERROR) dispatchError(observer, this.reason);
-		else if (this.closed) dispatchComplete(observer);
-		else if (this._value !== State.NOVALUE) dispatchNext(observer, this._value);
-	}
-
-	// Override to save value that is dispatched.
-	protected override _dispatch(value: T) {
-		this._value = value;
-		this._time = Date.now();
-		super._dispatch(value);
-	}
-
-	// Implement Matchable to see if a value matches the current value of this state.
-	// This is used to test if a new value sent to `next()` should be dispatched to any subscribers.
-	match(left: T): boolean {
-		return left === this._value;
+	/** Connect this state to a source until the returned stop function is called. */
+	connect(sequence: AsyncIterable<T>): Dispatch {
+		return runSequence(this.setSequence(sequence));
 	}
 }

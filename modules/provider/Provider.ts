@@ -1,5 +1,3 @@
-import type { Unsubscribe } from "../observe/Observable.js";
-import type { PartialObserver } from "../observe/Observer.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { Datas, Key } from "../util/data.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
@@ -14,13 +12,9 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	abstract getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> | PromiseLike<ItemValue<T[K]>>;
 
 	/**
-	 * Subscribe to the value of a item.
-	 * - `next()` is called once with the initial value, and again any time the value changes.
-	 *
-	 * @param observer Observer with `next`, `error`, or `complete` methods that the item value is reported back to.
-	 * @return Function that ends the subscription.
+	 * Subscribe to the value of this item with an async iterator.
 	 */
-	abstract subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe;
+	abstract getItemSequence<K extends Key<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>>;
 
 	/**
 	 * Create a new item with a random ID.
@@ -58,13 +52,9 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	abstract getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> | PromiseLike<ItemArray<T[K]>>;
 
 	/**
-	 * Subscribe to all matching items.
-	 * - `next()` is called once with the initial values, and again any time the values change.
-	 *
-	 * @param observer Observer with `next`, `error`, or `complete` methods that the item values are reported back to.
-	 * @return Function that ends the subscription.
+	 * Subscribe to all matching items with an async iterator.
 	 */
-	abstract subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe;
+	abstract getQuerySequence<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>>;
 
 	/**
 	 * Set the data of all matching items.

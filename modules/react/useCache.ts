@@ -37,7 +37,7 @@ export const CACHE = new CacheController<any>(); // eslint-disable-line @typescr
  * Use a global cache in a component.
  * - Throws an error if used outside of `<Cache>`
  */
-export const useCache = CACHE.useCache;
+export const useCache: <T>() => Map<string, T> = CACHE.useCache;
 
 /**
  * Component that provides a global cache to its children.

@@ -3,9 +3,6 @@
 import type { Datas, Key } from "../util/data.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
-import type { PartialObserver } from "../observe/Observer.js";
-import type { Unsubscribe } from "../observe/Observable.js";
-import { ThroughObserver } from "../observe/ThroughObserver.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { Provider, AsyncProvider } from "./Provider.js";
 import type { ThroughProvider, AsyncThroughProvider } from "./ThroughProvider.js";
@@ -13,28 +10,31 @@ import type { ThroughProvider, AsyncThroughProvider } from "./ThroughProvider.js
 /** Provider that logs operations to a source provider to the console. */
 abstract class AbstractDebugProvider<T extends Datas> {
 	abstract readonly source: Provider<T> | AsyncProvider<T>;
-	subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
+	async *getItemSequence<K extends Key<T>>(collection: K, id: string): AsyncIterableIterator<ItemValue<T[K]>> {
 		const key = _getItemKey(collection, id);
-		console.log(`Subscribe: ${key}:`);
-		return this.source.subscribeItem(collection, id, new _DebugObserver(key, observer));
+		try {
+			console.log("ITERATE", key, "DATA:");
+			for await (const item of this.source.getItemSequence(collection, id)) {
+				console.log("ITERATE", key, "GOT:", item);
+				yield item;
+			}
+			console.log("ITERATE", key, "DONE");
+		} catch (thrown) {
+			console.error("ITERATE", key, thrown);
+		}
 	}
-	subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
+	async *getQuerySequence<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterableIterator<ItemArray<T[K]>> {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Subscribe: ${key}:`);
-		return this.source.subscribeQuery(collection, constraints, new _DebugObserver(key, observer));
-	}
-}
-
-/** Observer that wraps errors in subscriptions in `ReferenceReadError` */
-class _DebugObserver<T> extends ThroughObserver<T> {
-	private _key: string;
-	constructor(ref: string, target: PartialObserver<T>) {
-		super(target);
-		this._key = ref;
-	}
-	override error(reason: Error | unknown): void {
-		console.log(`Error: Subscribe: ${this._key}`, reason);
-		super.error(reason);
+		try {
+			console.log("ITERATE", key, "DATA:");
+			for await (const items of this.source.getQuerySequence(collection, constraints)) {
+				console.log("ITERATE", key, "ITEMS:", items);
+				yield items;
+			}
+			console.log("ITERATE", key, "DONE");
+		} catch (thrown) {
+			console.error("ITERATE", key, thrown);
+		}
 	}
 }
 
@@ -47,91 +47,97 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 	}
 	getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> {
 		const key = _getItemKey(collection, id);
-		console.log(`Get: ${key}:`);
 		try {
-			return this.source.getItem(collection, id);
+			const item = this.source.getItem(collection, id);
+			console.log("GET:", key, "ITEM:", item);
+			return item;
 		} catch (reason) {
-			console.error(`Error: Get: ${key}:`, reason);
+			console.error("GET:", key, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	addItem<K extends Key<T>>(collection: K, data: T[K]): string {
 		const key = collection;
-		console.log(`Add: ${key}:`, data);
 		try {
-			return this.source.addItem(collection, data);
+			const id = this.source.addItem(collection, data);
+			console.log("ADD", key, "DATA:", data, "ID", id);
+			return id;
 		} catch (reason) {
-			console.error(`Error: Add: ${key}:`, reason);
+			console.error("ADD", key, "DATA:", data, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): void {
 		const key = _getItemKey(collection, id);
-		console.log(`Set: ${key}:`, data);
 		try {
-			return this.source.setItem(collection, id, data);
+			this.source.setItem(collection, id, data);
+			console.log("SET:", key, "DATA:", data);
 		} catch (reason) {
-			console.error(`Error: Set: ${key}:`, reason);
+			console.error("SET:", key, "DATA:", data, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
 		const key = _getItemKey(collection, id);
-		console.log(`Update: ${key}:`, updates.updates);
 		try {
+			console.log("UPDATE:", key, "UPDATES:", updates);
 			return this.source.updateItem(collection, id, updates);
 		} catch (reason) {
-			console.error(`Error: Update: ${key}:`, reason);
+			console.error("UPDATE:", key, "UPDATES:", updates, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	deleteItem<K extends Key<T>>(collection: K, id: string): void {
 		const key = _getItemKey(collection, id);
-		console.log(`Delete: ${key}:`);
 		try {
-			return this.source.deleteItem(collection, id);
+			this.source.deleteItem(collection, id);
+			console.log("DELETE:", key);
 		} catch (reason) {
-			console.error(`Error: Delete: ${key}:`, reason);
+			console.error("DELETE:", key, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Get: ${key}:`);
 		try {
-			return this.source.getQuery(collection, constraints);
+			const items = this.source.getQuery(collection, constraints);
+			console.log("GET:", key, "ITEMS:", items);
+			return items;
 		} catch (reason) {
-			console.error(`Error: Get: ${key}:`, reason);
+			console.error("GET:", key, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Set: ${key}:`, data);
 		try {
-			return this.source.setQuery(collection, constraints, data);
+			const num = this.source.setQuery(collection, constraints, data);
+			console.log("SET:", key, "DATA:", data, "DONE:", num);
+			return num;
 		} catch (reason) {
-			console.error(`Error: Set: ${key}:`, reason);
+			console.error("SET:", key, "DATA:", data, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Update: ${key}:`, updates.updates);
 		try {
-			return this.source.updateQuery(collection, constraints, updates);
+			const num = this.source.updateQuery(collection, constraints, updates);
+			console.log("UPDATE:", key, "UPDATES:", updates, "DONE:", num);
+			return num;
 		} catch (reason) {
-			console.error(`Error: Update: ${key}:`, reason);
+			console.error("UPDATE:", key, "UPDATES:", updates, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Delete: ${key}:`);
 		try {
-			return this.source.deleteQuery(collection, constraints);
+			const num = this.source.deleteQuery(collection, constraints);
+			console.log("DELETE:", key, "DONE:", num);
+			return num;
 		} catch (reason) {
-			console.error(`Error: Delete: ${key}:`, reason);
+			console.error("DELETE:", key, "ERROR:", reason);
 			throw reason;
 		}
 	}
@@ -146,91 +152,106 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 	}
 	async getItem<K extends Key<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
 		const key = _getItemKey(collection, id);
-		console.log(`Get: ${key}:`);
 		try {
-			return await this.source.getItem(collection, id);
+			console.log("GET:", key);
+			const item = await this.source.getItem(collection, id);
+			console.log("GET:", key, "ITEM:", item);
+			return item;
 		} catch (reason) {
-			console.error(`Error: Get: ${key}:`, reason);
+			console.error("GET:", key, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	async addItem<K extends Key<T>>(collection: K, data: T[K]): Promise<string> {
 		const key = collection;
-		console.log(`Add: ${key}:`, data);
 		try {
-			return await this.source.addItem(collection, data);
+			console.log("ADD", key, "DATA:", data);
+			const id = await this.source.addItem(collection, data);
+			console.log("ADD", key, "DATA:", data, "ID:", id);
+			return id;
 		} catch (reason) {
-			console.error(`Error: Add: ${key}:`, reason);
+			console.error("ADD", key, "DATA:", data, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	async setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): Promise<void> {
 		const key = _getItemKey(collection, id);
-		console.log(`Set: ${key}:`, data);
 		try {
-			return await this.source.setItem(collection, id, data);
+			console.log("SET:", key, "DATA:", data);
+			await this.source.setItem(collection, id, data);
+			console.log("SET:", key, "DATA:", data, "DONE:", 1);
 		} catch (reason) {
-			console.error(`Error: Set: ${key}:`, reason);
+			console.error("SET:", key, "DATA:", data, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	async updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
 		const key = _getItemKey(collection, id);
-		console.log(`Update: ${key}:`, updates.updates);
 		try {
-			return await this.source.updateItem(collection, id, updates);
+			console.log("UPDATE:", key, "UPDATES:", updates);
+			await this.source.updateItem(collection, id, updates);
+			console.log("UPDATE:", key, "UPDATES:", updates, "DONE:", 1);
 		} catch (reason) {
-			console.error(`Error: Update: ${key}:`, reason);
+			console.error("UPDATE:", key, "UPDATES:", updates, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	async deleteItem<K extends Key<T>>(collection: K, id: string): Promise<void> {
 		const key = _getItemKey(collection, id);
-		console.log(`Delete: ${key}:`);
 		try {
-			return await this.source.deleteItem(collection, id);
+			console.log("DELETE:", key);
+			await this.source.deleteItem(collection, id);
+			console.log("DELETE:", key, "DONE:", 1);
 		} catch (reason) {
-			console.error(`Error: Delete: ${key}:`, reason);
+			console.error("DELETE:", key, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	async getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Get: ${key}:`);
 		try {
-			return await this.source.getQuery(collection, constraints);
+			console.log("GET:", key);
+			const items = await this.source.getQuery(collection, constraints);
+			console.log("GET:", key, "ITEMS:", items);
+			return items;
 		} catch (reason) {
-			console.error(`Error: Get: ${key}:`, reason);
+			console.error("GET:", key, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	async setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Set: ${key}:`, data);
 		try {
-			return await this.source.setQuery(collection, constraints, data);
+			console.log("SET:", key, "DATA:", data);
+			const num = await this.source.setQuery(collection, constraints, data);
+			console.log("SET:", key, "DATA:", data, "DONE:", num);
+			return num;
 		} catch (reason) {
-			console.error(`Error: Set: ${key}:`, reason);
+			console.error("SET:", key, "DATA:", data, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	async updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Update: ${key}:`, updates.updates);
 		try {
-			return await this.source.updateQuery(collection, constraints, updates);
+			console.log("UPDATE:", key, "UPDATES:", updates);
+			const num = await this.source.updateQuery(collection, constraints, updates);
+			console.log("UPDATE:", key, "UPDATES:", updates, "DONE:", num);
+			return num;
 		} catch (reason) {
-			console.error(`Error: Update: ${key}:`, reason);
+			console.error("UPDATE:", key, "UPDATES:", updates, "ERROR:", reason);
 			throw reason;
 		}
 	}
 	async deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
-		console.log(`Delete: ${key}:`);
 		try {
-			return await this.source.deleteQuery(collection, constraints);
+			console.log("DELETE:", key);
+			const num = await this.source.deleteQuery(collection, constraints);
+			console.log("DELETE:", key, "DONE:", num);
+			return num;
 		} catch (reason) {
-			console.error(`Error: Delete: ${key}:`, reason);
+			console.error("DELETE:", key, "ERROR:", reason);
 			throw reason;
 		}
 	}

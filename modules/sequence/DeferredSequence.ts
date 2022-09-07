@@ -1,0 +1,74 @@
+import type { Dispatch, Handler } from "../util/function.js";
+import { Deferred } from "../util/async.js";
+import { runSequence } from "../util/sequence.js";
+import { AbstractSequence } from "./AbstractSequence.js";
+
+/** Used when the deferred sequence has no value or reason queued. */
+const NOVALUE: unique symbol = Symbol("shelving/DeferredSequence.NOVALUE");
+
+/**
+ * Deferred sequence of values.
+ * - Implements `AsyncIterable` so values can be iterated over using `for await...of`
+ * - Implements `Promise` so the next value can be awaited.
+ */
+export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R> implements Promise<T> {
+	/**
+	 * Next deferred to be rejected/resolved, or `undefined` if we haven't requested one yet..
+	 * - Only create the deferred on demand, because we don't want to reject a deferred that isn't used to or it would throw an unhandled promise error.
+	 */
+	private _deferred: Deferred<T> | undefined;
+
+	/** Get the next promise to be deferred/rejected. */
+	get value(): Promise<T> {
+		return (this._deferred ||= new Deferred<T>());
+	}
+
+	/** Resolve the current deferred in the sequence. */
+	readonly resolve = (value: T): void => {
+		this._nextValue = value;
+		this._nextReason = NOVALUE;
+		queueMicrotask(this._fulfill);
+	};
+	private _nextValue: T | typeof NOVALUE = NOVALUE;
+
+	/** Reject the current deferred in the sequence. */
+	readonly reject = (reason: Error | unknown): void => {
+		this._nextValue = NOVALUE;
+		this._nextReason = reason;
+		queueMicrotask(this._fulfill);
+	};
+	private _nextReason: Error | unknown | typeof NOVALUE = NOVALUE;
+
+	/** Fulfill the current deferred by resolving or rejecting it. */
+	private readonly _fulfill = () => {
+		const { _deferred, _nextReason, _nextValue } = this;
+		if (_deferred) {
+			this._deferred = undefined;
+			this._nextReason = NOVALUE;
+			this._nextValue = NOVALUE;
+			if (_nextReason !== NOVALUE) _deferred.reject(_nextReason);
+			else if (_nextValue !== NOVALUE) _deferred.resolve(_nextValue);
+		}
+	};
+
+	// Implement `AsyncIterator`
+	async next(): Promise<IteratorResult<T, R>> {
+		return { value: await this.value };
+	}
+
+	// Implement `Promise`
+	then<X = T, Y = never>(onNext?: (v: T) => X | PromiseLike<X>, onError?: (r: unknown) => Y | PromiseLike<Y>): Promise<X | Y> {
+		return this.value.then(onNext, onError);
+	}
+	catch<Y>(onError: (r: unknown) => Y | PromiseLike<Y>): Promise<T | Y> {
+		return this.value.catch(onError);
+	}
+	finally(onFinally: () => void): Promise<T> {
+		return this.value.finally(onFinally);
+	}
+
+	/** Subscrbe to the value of the sequence with a callback until the returned stop function is called. */
+	subscribe(onNext: Dispatch<[T]>, onError?: Handler): Dispatch {
+		return runSequence(this, onNext, onError);
+	}
+}

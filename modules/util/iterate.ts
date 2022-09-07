@@ -1,12 +1,5 @@
-import { ConditionError } from "../error/ConditionError.js";
-import type { Mutable } from "./data.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableArray } from "./array.js";
-
-/**`Iterable that specifies return types and next types for the iterator (normally in Typescript these are `void` */
-export interface TypedIterable<T, R, N> {
-	[Symbol.iterator](): Iterator<T, R, N>;
-}
 
 /**
  * Is a value an iterable object?
@@ -14,13 +7,6 @@ export interface TypedIterable<T, R, N> {
  * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
  */
 export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.iterator in value;
-
-/**
- * Is a value an async iterable object?
- * - Any object with a `Symbol.iterator` property is iterable.
- * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
- */
-export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Get the known size or length of an object (e.g. `Array`, `Map`, and `Set` have known size), or return `undefined` if the size cannot be established. */
 function _getKnownSize(obj: Iterable<unknown> | ImmutableMap<unknown, unknown> | ImmutableArray<unknown>): number | undefined {
@@ -119,107 +105,4 @@ export function* getChunks<T>(input: Iterable<T>, size: number): Iterable<Immuta
 /** Merge two or more iterables into a single iterable set. */
 export function* mergeItems<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable<T>[]]): Iterable<T> {
 	for (const input of inputs) for (const item of input) yield item;
-}
-
-/** Abstract iterator designed to be extended that implements the full iterator/generator protocol. */
-export abstract class AbstractIterator<T, R, N> implements Generator<T, R, N> {
-	// Implement `Iterator`
-	abstract next(value: N): IteratorResult<T, R>;
-	throw(thrown: Error | unknown): IteratorResult<T, R> {
-		// Default behaviour for a generator is to throw the error back out of the iterator and not continue.
-		throw thrown;
-	}
-	return(value: R): IteratorResult<T, R> {
-		// Default behaviour for a generator is to return `done: true` and the input value.
-		return { done: true, value };
-	}
-	// Implement `Iterable`
-	[Symbol.iterator](): Generator<T, R, N> {
-		return this;
-	}
-}
-
-/** Iterator that passes values through to a source iterator. */
-export abstract class ThroughIterator<T, R, N> extends AbstractIterator<T, R, N> {
-	protected _source: Iterator<T, R, N>;
-	constructor(source: TypedIterable<T, R, N>) {
-		super();
-		this._source = source[Symbol.iterator]();
-	}
-
-	// Implement `Iterator`
-	next(value: N): IteratorResult<T, R> {
-		return this._source.next(value);
-	}
-	override throw(thrown: Error | unknown): IteratorResult<T, R> {
-		return this._source.throw ? this._source.throw(thrown) : super.throw(thrown);
-	}
-	override return(value: R): IteratorResult<T, R> {
-		return this._source.return ? this._source.return(value) : super.return(value);
-	}
-}
-
-/**
- * Keep information about the items yielded by an iterator.
- * - Stores: first/last yielded value, returned value, whether iteration is done, the number of items in the sequence.
- *
- * @example
- * 	const watch = new WatchIterator(iterable);
- * 	for (const next of capture) console.log("YIELDED", next);
- * 	console.log("FIRST", watch.first);
- * 	console.log("RETURNED", watch.returned);
- */
-export class WatchIterator<T, R, N> extends ThroughIterator<T, R, N> {
-	private static readonly NOVALUE: unique symbol = Symbol();
-
-	/** Get the number of results received by this iterator so far. */
-	readonly count = 0;
-
-	/** Is the iteration done? */
-	readonly done: boolean = false;
-
-	/** The first yielded value. */
-	get first(): T {
-		if (this._first === WatchIterator.NOVALUE) throw new ConditionError("Iteration not started");
-		return this._first;
-	}
-	private _first: T | typeof WatchIterator.NOVALUE = WatchIterator.NOVALUE;
-
-	/** The last yielded value. */
-	get last(): T {
-		if (this._last === WatchIterator.NOVALUE) throw new ConditionError("Iteration not started");
-		return this._last;
-	}
-	private _last: T | typeof WatchIterator.NOVALUE = WatchIterator.NOVALUE;
-
-	/** The returned value. */
-	get returned(): R {
-		if (this._returned === WatchIterator.NOVALUE) throw new ConditionError("Iteration not done");
-		return this._returned;
-	}
-	private _returned: R | typeof WatchIterator.NOVALUE = WatchIterator.NOVALUE;
-
-	// Override to watch returned values.
-	override next(value: N): IteratorResult<T, R> {
-		return this._watch(super.next(value));
-	}
-	override throw(thrown: Error | unknown): IteratorResult<T, R> {
-		return this._watch(super.throw(thrown));
-	}
-	override return(value: R): IteratorResult<T, R> {
-		return this._watch(super.return(value));
-	}
-
-	/** Capture a result. */
-	private _watch(result: IteratorResult<T, R>): IteratorResult<T, R> {
-		if (!result.done) {
-			if (this.first === undefined) this._first = result.value;
-			this._last = result.value;
-			(this as Mutable<this>).count++;
-		} else {
-			this._returned = result.value;
-			(this as Mutable<this>).done = true;
-		}
-		return result;
-	}
 }

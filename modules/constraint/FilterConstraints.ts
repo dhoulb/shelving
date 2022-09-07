@@ -38,6 +38,6 @@ export class FilterConstraints<T extends Data = Data> extends Constraints<T, Fil
 
 	// Stringify as object syntax.
 	toString(): string {
-		return `{${this._constraints.map(String).join(",")}`;
+		return this._constraints.length ? `"filters":{${this._constraints.map(String).join(",")}}` : "";
 	}
 }

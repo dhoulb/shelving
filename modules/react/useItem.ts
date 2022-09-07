@@ -1,14 +1,13 @@
-import type { Unsubscribe } from "../observe/Observable.js";
 import type { ItemValue, ItemData, AsyncItem, Item } from "../db/Item.js";
-import type { PartialObserver } from "../observe/Observer.js";
+import type { Dispatch } from "../util/function.js";
 import { Datas, getData, Key } from "../util/data.js";
 import { getOptionalSource } from "../util/source.js";
 import { setMapItem } from "../util/map.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { State } from "../state/State.js";
 import { BooleanState } from "../state/BooleanState.js";
-import { ConditionError } from "../error/ConditionError.js";
-import { useSubscribe } from "./useSubscribe.js";
+import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
+import { useState } from "./useState.js";
 import { useCache } from "./useCache.js";
 
 /** Hold the current state of a item. */
@@ -27,10 +26,11 @@ export class ItemState<T extends Datas, K extends Key<T> = Key<T>> extends State
 	}
 
 	constructor(ref: Item<T, K> | AsyncItem<T, K>) {
-		const table = getOptionalSource<CacheProvider<T>>(CacheProvider, ref.db.provider)?.memory.getTable(ref.collection);
-		const time = table ? table.getItemTime(ref.id) : null;
+		const { db, collection, id } = ref;
+		const table = getOptionalSource<CacheProvider<T>>(CacheProvider, db.provider)?.memory.getTable(collection);
+		const time = table ? table.getItemTime(id) : null;
 		const isCached = typeof time === "number";
-		super(table && isCached ? table.getItem(ref.id) : State.NOVALUE);
+		super(table && isCached ? table.getItem(id) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.connect(table.getCachedItemSequence(id))) : undefined);
 		this._time = time;
 		this.ref = ref;
 
@@ -40,18 +40,16 @@ export class ItemState<T extends Datas, K extends Key<T> = Key<T>> extends State
 
 	/** Refresh this state from the source provider. */
 	readonly refresh = (): void => {
-		if (this.closed) throw new ConditionError("State is closed");
 		if (!this.busy.value) void this._refresh();
 	};
 	async _refresh(): Promise<void> {
-		this.busy.next(true);
+		this.busy.set(true);
 		try {
-			const result = await this.ref.value;
-			this.next(result);
+			this.set(await this.ref.value);
 		} catch (thrown) {
-			this.error(thrown);
+			this.next.reject(thrown);
 		} finally {
-			this.busy.next(false);
+			this.busy.set(false);
 		}
 	}
 
@@ -61,34 +59,8 @@ export class ItemState<T extends Datas, K extends Key<T> = Key<T>> extends State
 	}
 
 	/** Subscribe this state to the source provider. */
-	connectSource(): Unsubscribe {
-		return this.connect(() => this.ref.subscribe({}));
-	}
-
-	/** Subscribe this state to any `CacheProvider` that exists in the provider chain. */
-	private _connectCache(): void {
-		if (!this._cacheConnection) {
-			const table = getOptionalSource(CacheProvider, this.ref.db.provider)?.memory.getTable(this.ref.collection);
-			if (table) this._cacheConnection = table.subscribeCachedItem(this.ref.id, this);
-		}
-	}
-	private _cacheConnection: Unsubscribe | undefined = undefined;
-
-	/** Unsubscribe this state from the `CacheProvider` it is connected to. */
-	private _disconnectCache(): void {
-		if (this._cacheConnection) this._cacheConnection = void this._cacheConnection();
-	}
-
-	// Override to subscribe to the cache when an observer is added.
-	protected override _addObserver(observer: PartialObserver<ItemValue<T[K]>>): void {
-		super._addObserver(observer);
-		this._connectCache();
-	}
-
-	// Override to unsubscribe from the cache when an observer is removed.
-	protected override _removeObserver(observer: PartialObserver<ItemValue<T[K]>>): void {
-		super._removeObserver(observer);
-		if (!this.subscribers) this._disconnectCache();
+	connectSource(): Dispatch {
+		return this.connect(this.ref);
 	}
 }
 
@@ -99,9 +71,8 @@ export class ItemState<T extends Datas, K extends Key<T> = Key<T>> extends State
 export function useItem<T extends Datas, K extends Key<T>>(ref: Item<T, K> | AsyncItem<T, K>): ItemState<T, K>;
 export function useItem<T extends Datas, K extends Key<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined;
 export function useItem<T extends Datas, K extends Key<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined {
-	const cache = useCache();
+	const cache = useCache<ItemState<T, K>>();
 	const key = ref?.toString();
 	const state = ref && key ? cache.get(key) || setMapItem(cache, key, new ItemState(ref)) : undefined;
-	useSubscribe(state);
-	return state;
+	return useState(state);
 }

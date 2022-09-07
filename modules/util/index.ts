@@ -1,3 +1,4 @@
+export * from "./activity.js";
 export * from "./array.js";
 export * from "./assert.js";
 export * from "./async.js";
@@ -26,6 +27,7 @@ export * from "./number.js";
 export * from "./object.js";
 export * from "./random.js";
 export * from "./regexp.js";
+export * from "./sequence.js";
 export * from "./serialise.js";
 export * from "./sort.js";
 export * from "./source.js";

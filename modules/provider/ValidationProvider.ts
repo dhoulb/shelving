@@ -2,14 +2,11 @@ import type { Key, Datas, Data } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import type { DataSchemas, DataSchema } from "../schema/DataSchema.js";
 import type { MutableObject } from "../util/object.js";
-import type { PartialObserver } from "../observe/Observer.js";
-import type { Unsubscribe } from "../observe/Observable.js";
 import { Updates, validateUpdates } from "../update/DataUpdate.js";
-import { validate, Validator } from "../util/validate.js";
+import { validate } from "../util/validate.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
-import { TransformableObserver } from "../observe/TransformableObserver.js";
 import { Sourceable } from "../util/source.js";
 import { Provider, AsyncProvider } from "./Provider.js";
 
@@ -23,11 +20,13 @@ abstract class BaseValidationProvider<T extends Datas> {
 	getSchema<K extends Key<T>>(collection: K): DataSchema<T[K]> {
 		return this.schemas[collection];
 	}
-	subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
-		return this.source.subscribeItem(collection, id, new _ValidateEntityObserver(collection, this.getSchema(collection), observer));
+	async *getItemSequence<K extends Key<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
+		const schema = this.getSchema(collection);
+		for await (const unsafeItem of this.source.getItemSequence(collection, id)) yield _validateItem(collection, unsafeItem, schema);
 	}
-	subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
-		return this.source.subscribeQuery(collection, constraints, new _ValidateEntitiesObserver(collection, this.getSchema(collection), observer));
+	async *getQuerySequence<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
+		const schema = this.getSchema(collection);
+		for await (const unsafeItems of this.source.getQuerySequence(collection, constraints)) yield _validateItems(collection, unsafeItems, schema);
 	}
 }
 
@@ -39,7 +38,7 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 		this.source = source;
 	}
 	getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> {
-		return _validateEntity(collection, this.source.getItem(collection, id), this.getSchema(collection));
+		return _validateItem(collection, this.source.getItem(collection, id), this.getSchema(collection));
 	}
 	addItem<K extends Key<T>>(collection: K, data: T[K]): string {
 		return this.source.addItem(collection, validate(data, this.getSchema(collection)));
@@ -54,7 +53,7 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 		return this.source.deleteItem(collection, id);
 	}
 	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
-		return _validateEntities(collection, this.source.getQuery(collection, constraints), this.getSchema(collection));
+		return _validateItems(collection, this.source.getQuery(collection, constraints), this.getSchema(collection));
 	}
 	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): number {
 		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
@@ -75,7 +74,7 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 		this.source = source;
 	}
 	async getItem<K extends Key<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
-		return _validateEntity(collection, await this.source.getItem(collection, id), this.getSchema(collection));
+		return _validateItem(collection, await this.source.getItem(collection, id), this.getSchema(collection));
 	}
 	addItem<K extends Key<T>>(collection: K, data: T[K]): Promise<string> {
 		return this.source.addItem(collection, validate(data, this.getSchema(collection)));
@@ -90,7 +89,7 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 		return this.source.deleteItem(collection, id);
 	}
 	async getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
-		return _validateEntities(collection, await this.source.getQuery(collection, constraints), this.getSchema(collection));
+		return _validateItems(collection, await this.source.getQuery(collection, constraints), this.getSchema(collection));
 	}
 	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): Promise<number> {
 		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
@@ -104,39 +103,25 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 }
 
 /** Validate an entity for a document reference. */
-function _validateEntity<T extends Data>(collection: string, unsafeEntity: ItemValue<Data>, validator: Validator<T>): ItemValue<T> {
+function _validateItem<T extends Data>(collection: string, unsafeEntity: ItemValue<Data>, schema: DataSchema<T>): ItemValue<T> {
 	if (!unsafeEntity) return null;
 	try {
-		return { ...validate(unsafeEntity, validator), id: unsafeEntity.id };
+		return { ...validate(unsafeEntity, schema), id: unsafeEntity.id };
 	} catch (thrown) {
 		throw thrown instanceof Feedback ? new ValidationError(`Invalid data for "${collection}"`, thrown) : thrown;
 	}
 }
 
-/** Observer that validates received entities. */
-class _ValidateEntityObserver<T extends Data> extends TransformableObserver<ItemValue<Data>, ItemValue<T>> {
-	protected _collection: string;
-	protected _validator: Validator<T>;
-	constructor(collection: string, validator: Validator<T>, observer: PartialObserver<ItemValue<T>>) {
-		super(observer);
-		this._collection = collection;
-		this._validator = validator;
-	}
-	transform(unsafeEntity: ItemValue<Data>): ItemValue<T> {
-		return _validateEntity(this._collection, unsafeEntity, this._validator);
-	}
-}
-
 /** Validate a set of entities for this query reference. */
-function _validateEntities<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, validator: Validator<T>): ItemArray<T> {
-	return Array.from(_yieldEntities(collection, unsafeEntities, validator));
+function _validateItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): ItemArray<T> {
+	return Array.from(_yieldItems(collection, unsafeEntities, schema));
 }
-function* _yieldEntities<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, validator: Validator<T>): Iterable<ItemData<T>> {
+function* _yieldItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): Iterable<ItemData<T>> {
 	let invalid = false;
 	const details: MutableObject<Feedback> = {};
 	for (const unsafeEntity of unsafeEntities) {
 		try {
-			yield { ...validate(unsafeEntity, validator), id: unsafeEntity.id };
+			yield { ...validate(unsafeEntity, schema), id: unsafeEntity.id };
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
 			invalid = true;
@@ -144,18 +129,4 @@ function* _yieldEntities<T extends Data>(collection: string, unsafeEntities: Ite
 		}
 	}
 	if (invalid) throw new ValidationError(`Invalid data for "${collection}"`, new InvalidFeedback("Invalid items", details));
-}
-
-/** Observer that validates received entities. */
-class _ValidateEntitiesObserver<T extends Data> extends TransformableObserver<ItemArray<Data>, ItemArray<T>> {
-	protected _collection: string;
-	protected _validator: Validator<T>;
-	constructor(collection: string, validator: Validator<T>, observer: PartialObserver<ItemArray<T>>) {
-		super(observer);
-		this._collection = collection;
-		this._validator = validator;
-	}
-	transform(unsafeEntities: ItemArray<Data>): ItemArray<T> {
-		return _validateEntities(this._collection, unsafeEntities, this._validator);
-	}
 }

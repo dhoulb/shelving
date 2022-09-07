@@ -1,5 +1,6 @@
 import type { Entry } from "../util/entry.js";
-import { ImmutableObject, withProp, withoutProps } from "../util/object.js";
+import { ImmutableObject, withoutProps } from "../util/object.js";
+import { transformData, Transformers } from "../util/transform.js";
 import { State } from "./State.js";
 
 /** State that stores a map-like object and has additional methods to help with that. */
@@ -13,18 +14,18 @@ export class ObjectState<T> extends State<ImmutableObject<T>> implements Iterabl
 		return Object.keys(this.value).length;
 	}
 
+	/** Set a named entry in this object with a different value. */
+	update(updates: Transformers<ImmutableObject<T>>): void {
+		this.set(transformData(this.value, updates));
+	}
+
 	/** Remove a named entry from this object. */
 	delete(...keys: string[]): void {
-		this.next(withoutProps(this.value, ...keys));
+		this.set(withoutProps(this.value, ...keys));
 	}
 
-	/** Set a named entry in this object with a different value. */
-	set(key: string, value: T): void {
-		this.next(withProp(this.value, key, value));
-	}
-
-	/** Iterate over the items. */
-	[Symbol.iterator](): Iterator<Entry<string, T>, void> {
+	/** Iterate over the entries of the object. */
+	[Symbol.iterator](): Iterator<Entry<string, T>> {
 		return Object.entries<T>(this.value)[Symbol.iterator]();
 	}
 }

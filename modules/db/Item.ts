@@ -1,14 +1,13 @@
-import { Data, Datas, getData, Key } from "../util/data.js";
-import type { Dispatch } from "../util/function.js";
-import type { PartialObserver } from "../observe/Observer.js";
 import type { ImmutableArray } from "../util/array.js";
-import type { Observable, Unsubscribe } from "../observe/Observable.js";
+import type { Stop, Handler, Dispatch } from "../util/function.js";
+import type { QueryConstraints } from "../constraint/QueryConstraints.js";
+import { Data, Datas, getData, Key } from "../util/data.js";
 import { FilterConstraint } from "../constraint/FilterConstraint.js";
 import { DataUpdate, Updates } from "../update/DataUpdate.js";
-import type { QueryConstraints } from "../constraint/QueryConstraints.js";
-import type { AsyncDatabase, Database } from "./Database.js";
-import type { AsyncQuery, Query } from "./Query.js";
+import { runSequence } from "../util/sequence.js";
 import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
+import type { AsyncQuery, Query } from "./Query.js";
+import type { AsyncDatabase, Database } from "./Database.js";
 
 /** Item data with a string ID that uniquely identifies it. */
 export type ItemData<T extends Data = Data> = T & { id: string };
@@ -23,7 +22,7 @@ export type ItemArray<T extends Data = Data> = ImmutableArray<ItemData<T>>;
 export type ItemConstraints<T extends Data = Data> = QueryConstraints<ItemData<T>>;
 
 /** Reference to an item in a synchronous or asynchronous database. */
-abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> implements Observable<ItemValue<T[K]>> {
+abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> implements AsyncIterable<ItemValue<T[K]>> {
 	abstract readonly db: Database<T> | AsyncDatabase<T>;
 	abstract readonly collection: K;
 	abstract readonly id: string;
@@ -52,17 +51,6 @@ abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 	 */
 	abstract data: ItemData<T[K]> | PromiseLike<ItemData<T[K]>>;
 
-	/**
-	 * Subscribe to the result of this item (indefinitely).
-	 * - `next()` is called once with the initial result, and again any time the result changes.
-	 *
-	 * @param next Observer with `next`, `error`, or `complete` methods or a `next()` dispatcher.
-	 * @return Function that ends the subscription.
-	 */
-	subscribe(next: PartialObserver<ItemValue<T[K]>> | Dispatch<[ItemValue<T[K]>]>): Unsubscribe {
-		return this.db.subscribe(this.collection, this.id, next);
-	}
-
 	/** Set the complete data of this item. */
 	abstract set(data: T[K]): void | PromiseLike<void>;
 
@@ -90,6 +78,16 @@ abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 	// Implement toString()
 	toString(): `${K}/${string}` {
 		return `${this.collection}/${this.id}`;
+	}
+
+	/** Subscribe to this item. */
+	subscribe(onNext?: Dispatch<[ItemValue<T[K]>]>, onError?: Handler): Stop {
+		return runSequence(this, onNext, onError);
+	}
+
+	// Implement AsyncIterable
+	[Symbol.asyncIterator](): AsyncIterator<ItemValue<T[K]>> {
+		return this.db.provider.getItemSequence(this.collection, this.id)[Symbol.asyncIterator]();
 	}
 }
 

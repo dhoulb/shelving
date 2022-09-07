@@ -125,7 +125,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 
 	// Implement toString()
 	override toString(): string {
-		return `{"filters":${this.filters.toString()}},"sorts":${this.sorts.toString()},"limit":${this.limit}}`;
+		return [this.filters.toString(), this.sorts.toString(), typeof this.limit === "number" ? `"limit":${this.limit}` : null].filter(Boolean).join(",");
 	}
 }
 

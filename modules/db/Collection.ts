@@ -4,9 +4,6 @@ import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
 import type { DeepIterable } from "../util/iterate.js";
 import type { Updates } from "../update/DataUpdate.js";
-import type { PartialObserver } from "../observe/Observer.js";
-import type { Dispatch } from "../util/function.js";
-import type { Unsubscribe } from "../observe/Observable.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 import { ItemData, AsyncItem, Item, ItemValue } from "./Item.js";
 import { AsyncQuery, Query } from "./Query.js";
@@ -28,11 +25,6 @@ abstract class BaseCollection<T extends Datas = Datas, K extends Key<T> = Key<T>
 
 	/** Get an item from this collection. */
 	abstract get(id: string): ItemValue<T[K]> | Promise<ItemValue<T[K]>>;
-
-	/** Subscribe a document from a collection in this database. */
-	subscribe(id: string, next: PartialObserver<ItemValue<T[K]>> | Dispatch<[ItemValue<T[K]>]>): Unsubscribe {
-		return this.db.subscribe(this.collection, id, typeof next === "function" ? { next } : next);
-	}
 
 	/** Add an item to this collection. */
 	abstract add(data: T[K]): string | Promise<string>;

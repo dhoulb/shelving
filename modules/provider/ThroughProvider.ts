@@ -2,8 +2,6 @@ import type { Datas, Key } from "../util/data.js";
 import type { Sourceable } from "../util/source.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
-import type { PartialObserver } from "../observe/Observer.js";
-import type { Unsubscribe } from "../observe/Observable.js";
 import type { Provider, AsyncProvider } from "./Provider.js";
 
 /** A provider that passes through to a synchronous source. */
@@ -15,8 +13,8 @@ export class ThroughProvider<T extends Datas = Datas> implements Provider<T>, So
 	getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> {
 		return this.source.getItem(collection, id);
 	}
-	subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
-		return this.source.subscribeItem(collection, id, observer);
+	getItemSequence<K extends Key<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
+		return this.source.getItemSequence(collection, id);
 	}
 	addItem<K extends Key<T>>(collection: K, data: T[K]): string {
 		return this.source.addItem(collection, data);
@@ -33,8 +31,8 @@ export class ThroughProvider<T extends Datas = Datas> implements Provider<T>, So
 	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
 		return this.source.getQuery(collection, constraints);
 	}
-	subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
-		return this.source.subscribeQuery(collection, constraints, observer);
+	getQuerySequence<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
+		return this.source.getQuerySequence(collection, constraints);
 	}
 	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
 		return this.source.setQuery(collection, constraints, data);
@@ -56,8 +54,8 @@ export class AsyncThroughProvider<T extends Datas = Datas> implements AsyncProvi
 	getItem<K extends Key<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
 		return this.source.getItem(collection, id);
 	}
-	subscribeItem<K extends Key<T>>(collection: K, id: string, observer: PartialObserver<ItemValue<T[K]>>): Unsubscribe {
-		return this.source.subscribeItem(collection, id, observer);
+	getItemSequence<K extends Key<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
+		return this.source.getItemSequence(collection, id);
 	}
 	addItem<K extends Key<T>>(collection: K, data: T[K]): Promise<string> {
 		return this.source.addItem(collection, data);
@@ -74,8 +72,8 @@ export class AsyncThroughProvider<T extends Datas = Datas> implements AsyncProvi
 	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
 		return this.source.getQuery(collection, constraints);
 	}
-	subscribeQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, observer: PartialObserver<ItemArray<T[K]>>): Unsubscribe {
-		return this.source.subscribeQuery(collection, constraints, observer);
+	getQuerySequence<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
+		return this.source.getQuerySequence(collection, constraints);
 	}
 	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): Promise<number> {
 		return this.source.setQuery(collection, constraints, data);

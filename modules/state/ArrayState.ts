@@ -14,17 +14,17 @@ export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<
 
 	/** Add items to this array. */
 	add(...items: T[]): void {
-		this.next(withItems(this.value, ...items));
+		this.set(withItems(this.value, ...items));
 	}
 
 	/** Remove items from this array. */
 	delete(...items: T[]): void {
-		this.next(withoutItems(this.value, ...items));
+		this.set(withoutItems(this.value, ...items));
 	}
 
 	/** Toggle items in this array. */
 	toggle(...items: T[]): void {
-		this.next(toggleItems(this.value, ...items));
+		this.set(toggleItems(this.value, ...items));
 	}
 
 	/** Iterate over the items. */

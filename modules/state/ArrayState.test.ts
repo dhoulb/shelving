@@ -1,30 +1,25 @@
-import { jest } from "@jest/globals";
-import { ArrayState } from "../index.js";
+import { ArrayState, ImmutableArray, runMicrotasks } from "../index.js";
 
-test("ArrayState", () => {
+test("ArrayState with initial value", async () => {
 	const state = new ArrayState<number>([1, 2, 3]);
 	expect(state).toBeInstanceOf(ArrayState);
 	expect(state.value).toEqual([1, 2, 3]);
 	// Ons and onces.
-	const fn1 = jest.fn();
-	state.subscribe(fn1);
-	expect(fn1).nthCalledWith(1, [1, 2, 3]);
-	// Has.
-	expect(state.value.includes(1)).toBe(true);
-	expect(state.value.includes(2)).toBe(true);
-	expect(state.value.includes(3)).toBe(true);
-	expect(state.value.includes(4)).toBe(false);
+	const calls: ImmutableArray<number>[] = [];
+	const stop = state.next.subscribe(v => void calls.push(v));
 	// Add.
 	expect(state.add(4)).toBe(undefined);
 	expect(state.value).toEqual([1, 2, 3, 4]);
-	expect(fn1).nthCalledWith(2, [1, 2, 3, 4]);
+	await runMicrotasks();
+	expect(calls).toEqual([[1, 2, 3, 4]]);
 	// Remove.
 	expect(state.delete(2)).toBe(undefined);
 	expect(state.value).toEqual([1, 3, 4]);
-	expect(fn1).nthCalledWith(3, [1, 3, 4]);
-	// Has.
-	expect(state.value.includes(1)).toBe(true);
-	expect(state.value.includes(2)).toBe(false);
-	expect(state.value.includes(3)).toBe(true);
-	expect(state.value.includes(4)).toBe(true);
+	await runMicrotasks();
+	expect(calls).toEqual([
+		[1, 2, 3, 4],
+		[1, 3, 4],
+	]);
+	// Cleanup.
+	stop();
 });

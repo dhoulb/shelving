@@ -1,14 +1,34 @@
+import { expect } from "@jest/globals";
 import type { Data } from "../util/data.js";
 import type { NotString } from "../util/string.js";
 import { getIDs, ItemData } from "../db/Item.js";
+import { AnyFunction } from "../util/function.js";
 
-/** Run any queued microtasks now. */
-export async function runMicrotasks(): Promise<void> {
-	await Promise.resolve();
-	await Promise.resolve();
-	await Promise.resolve();
-	await Promise.resolve();
-	await Promise.resolve();
+/** Match any `Promiselike` object. */
+export const PromiseLike = expect.objectContaining({
+	then: expect.any(Function),
+});
+
+/** Expect the thing to throw a `PromiseLike` object. */
+export function expectToThrowPromiseLike(func: AnyFunction) {
+	try {
+		func();
+	} catch (thrown) {
+		expect(thrown).toMatchObject(PromiseLike);
+		return;
+	}
+	throw popErrorStack(new Error("Expected to throw but did not"));
+}
+
+/** Expect the thing to throw an object matching the specified one. */
+export function expectToThrowMatchObject(func: AnyFunction, obj: Record<string, unknown> | Array<Record<string, unknown>>): void {
+	try {
+		func();
+	} catch (thrown) {
+		expect(thrown).toMatchObject(obj);
+		return;
+	}
+	throw popErrorStack(new Error("Expected to throw but did not"));
 }
 
 /** Expect keys in any order. */

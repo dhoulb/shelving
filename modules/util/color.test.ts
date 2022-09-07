@@ -1,5 +1,4 @@
-import { Color, getOptionalColor, AssertionError, getColor } from "../index.js";
-import { isDark, isLight } from "./color.js";
+import { Color, getOptionalColor, AssertionError, getColor, isDark, isLight } from "../index.js";
 
 test("toColor(): colors", () => {
 	expect(getOptionalColor("#fff")).toBeInstanceOf(Color);
