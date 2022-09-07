@@ -1,5 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
-import { Delay, Signal, SIGNAL } from "./async.js";
+import { Delay, Signal } from "./async.js";
+import { SIGNAL } from "./constants.js";
 import { logError } from "./error.js";
 import { Handler, Stop, AsyncDispatch, Dispatch, dispatch } from "./function.js";
 
