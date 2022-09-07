@@ -5,7 +5,7 @@ import { OPTIONAL } from "./OptionalSchema.js";
 
 /** Schema that defines a valid number. */
 export class NumberSchema extends Schema<number> {
-	readonly value: number | null;
+	override readonly value: number | null;
 	readonly min: number | null;
 	readonly max: number | null;
 	readonly step: number | null;

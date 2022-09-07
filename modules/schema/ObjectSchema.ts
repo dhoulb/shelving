@@ -5,8 +5,8 @@ import { Schema } from "./Schema.js";
 
 /** Validate a map-like object (whose props are all the same). */
 export class ObjectSchema<T> extends Schema<ImmutableObject<T>> {
+	override readonly value: ImmutableObject;
 	readonly items: Validator<T>;
-	readonly value: ImmutableObject;
 	readonly min: number | null = null;
 	readonly max: number | null = null;
 	constructor({

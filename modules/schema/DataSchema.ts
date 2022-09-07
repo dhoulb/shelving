@@ -7,8 +7,8 @@ import { Schema } from "./Schema.js";
 
 /** Validate a data object. */
 export class DataSchema<T extends Data> extends Schema<T> {
+	override readonly value: Partial<T>;
 	readonly props: Validators<T>;
-	readonly value: Partial<T>;
 	constructor({
 		value = {},
 		props,

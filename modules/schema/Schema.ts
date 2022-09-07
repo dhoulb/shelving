@@ -12,6 +12,8 @@ export abstract class Schema<T extends unknown = unknown> implements Validatable
 	readonly description: string;
 	/** Placeholder, e.g. for showing in fields. */
 	readonly placeholder: string;
+	/** Default value. */
+	readonly value: unknown;
 
 	constructor({
 		title = "",

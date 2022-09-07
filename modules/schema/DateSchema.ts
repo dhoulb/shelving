@@ -5,7 +5,7 @@ import { OPTIONAL } from "./OptionalSchema.js";
 
 /** Define a valid date, e.g. `2005-09-12` */
 export class DateSchema extends Schema<string> {
-	readonly value: PossibleDate;
+	override readonly value: PossibleDate;
 	readonly min: PossibleDate | null;
 	readonly max: PossibleDate | null;
 	constructor({

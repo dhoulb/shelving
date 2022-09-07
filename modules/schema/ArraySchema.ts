@@ -31,7 +31,7 @@ import { Schema } from "./Schema.js";
  *  schema.validate(["a", null], schema); // Throws Invalids({ "1": Invalid('Must be a string') });
  */
 export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
-	readonly value: ImmutableArray;
+	override readonly value: ImmutableArray;
 	readonly items: Validator<T>;
 	readonly unique: boolean;
 	readonly min: number;

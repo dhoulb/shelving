@@ -29,7 +29,7 @@ export type Sanitizer = (str: string) => string;
  *  schema.validate('j'); // Throws 'Minimum 3 chaacters'
  */
 export class StringSchema extends Schema<string> {
-	readonly value: string;
+	override readonly value: string;
 	readonly type: HtmlInputType;
 	readonly min: number;
 	readonly max: number | null;

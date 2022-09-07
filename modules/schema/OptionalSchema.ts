@@ -3,7 +3,7 @@ import { ThroughSchema } from "./ThroughSchema.js";
 
 /** Validate a value of a specific type or `null`. */
 export class OptionalSchema<T> extends ThroughSchema<T | null> {
-	readonly value: T | null = null;
+	override readonly value: T | null = null;
 	constructor({
 		value = null,
 		...rest

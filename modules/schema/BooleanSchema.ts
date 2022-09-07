@@ -2,7 +2,7 @@ import { Schema } from "./Schema.js";
 
 /** Define a valid boolean. */
 export class BooleanSchema extends Schema<boolean> {
-	readonly value: boolean;
+	override readonly value: boolean;
 	constructor({
 		value = false,
 		...options
