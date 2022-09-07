@@ -20,5 +20,6 @@
 		"target": "es2019",
 		"noEmit": true
 	},
-	"include": ["./**/*.ts", "./**/*.cjs", "./**/*.json"]
+	"include": ["./**/*.ts", "./**/*.cjs", "./**/*.json"],
+	"exclude": ["node_modules", "dist"]
 }
