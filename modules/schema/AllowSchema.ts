@@ -20,8 +20,8 @@ export function validateAllowed<T extends string | number>(value: unknown, allow
 
 /** Define a valid value from an allowed set of values. */
 export abstract class AllowSchema<T extends string | number> extends Schema<T> {
-	readonly allow: Allowed<T>;
 	override readonly value: T | null;
+	readonly allow: Allowed<T>;
 	constructor({
 		allow,
 		value = null,

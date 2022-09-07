@@ -2,9 +2,9 @@ import { ALLOW_STRING, AllowStringSchema, InvalidFeedback, Schema, ALLOW_NUMBER,
 
 test("TypeScript", () => {
 	// String array options.
-	const aaa: Schema<"a" | "b"> = ALLOW_STRING(["a", "b"]);
+	const aaa: Schema<"a" | "b"> = ALLOW_STRING(["a", "b"] as const);
 	const bbb: "a" | "b" = ALLOW_STRING(["a", "b"]).validate("a");
-	const ccc: Schema<"a" | "b"> = new AllowStringSchema({ allow: ["a", "b"] });
+	const ccc: Schema<"a" | "b"> = new AllowStringSchema({ allow: ["a", "b"] as const });
 	const ddd: "a" | "b" = new AllowStringSchema({ allow: ["a", "b"] }).validate("a");
 	// String object options.
 	const eee: Schema<"a" | "b"> = ALLOW_STRING({ a: "A", b: "B" });
@@ -12,9 +12,9 @@ test("TypeScript", () => {
 	const ggg: Schema<"a" | "b"> = new AllowStringSchema({ allow: { a: "A", b: "B" } });
 	const hhh: "a" | "b" = new AllowStringSchema({ allow: { a: "A", b: "B" } }).validate("a");
 	// Number array options.
-	const iii: Schema<1 | 2> = ALLOW_NUMBER([1, 2]);
+	const iii: Schema<1 | 2> = ALLOW_NUMBER([1, 2] as const);
 	const jjj: 1 | 2 = ALLOW_NUMBER([1, 2]).validate(2);
-	const kkk: Schema<1 | 2> = new AllowNumberSchema({ allow: [1, 2] });
+	const kkk: Schema<1 | 2> = new AllowNumberSchema({ allow: [1, 2] as const });
 	const lll: 1 | 2 = new AllowNumberSchema({ allow: [1, 2] }).validate(2);
 	// Number object options.
 	const mmm: Schema<1 | 2> = ALLOW_NUMBER({ 1: "A", 2: "B" });
