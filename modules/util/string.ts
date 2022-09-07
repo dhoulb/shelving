@@ -14,15 +14,6 @@ import { formatNumber, isBetween } from "./number.js";
  */
 export type NotString = { toUpperCase?: never; toLowerCase?: never };
 
-/** Non-breaking space. */
-export const NBSP = "\xA0";
-
-/** Thin space. */
-export const THINSP = "\u2009";
-
-/** Non-breaking narrow space (goes between numbers and their corresponding units). */
-export const NNBSP = "\u202F";
-
 /** Is a value a string? */
 export const isString = (v: unknown): v is string => typeof v === "string";
 

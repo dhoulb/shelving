@@ -1,4 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
+import { SIGNAL } from "./constants.js";
 import type { Handler, Dispatch } from "./function.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
@@ -91,9 +92,6 @@ export class Delay extends AbstractPromise<void> {
 		setTimeout(this._resolve, ms);
 	}
 }
-
-/** The `SIGNAL` symbol indicates a signal. */
-export const SIGNAL: unique symbol = Symbol("shelving/SIGNAL");
 
 /** Resolve to `SIGNAL` on a specific signal. */
 export class Signal extends AbstractPromise<typeof Signal.SIGNAL> {

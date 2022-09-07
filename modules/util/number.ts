@@ -1,9 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
-
-// Constants.
-export const TRILLION = 1_000_000_000_000;
-export const BILLION = 1_000_000_000;
-export const MILLION = 1_000_000;
+import { BILLION, MILLION, NNBSP, TRILLION } from "./constants.js";
 
 /** Is a value a number? */
 export const isNumber = (v: unknown): v is number => typeof v === "number";
@@ -103,8 +99,8 @@ export function formatNumber(num: number, maxPrecision = 4, minPrecision = 0): s
 	return new Intl.NumberFormat(undefined, { maximumFractionDigits: maxPrecision, minimumFractionDigits: minPrecision }).format(num);
 }
 
-/** Format a number with a short suffix. */
-export const formatQuantity = (num: number, suffix: string, maxPrecision?: number, minPrecision?: number): string => `${formatNumber(num, maxPrecision, minPrecision)}${suffix}`;
+/** Format a number with a short abbreviated suffix. */
+export const formatQuantity = (num: number, abbr: string, maxPrecision?: number, minPrecision?: number): string => `${formatNumber(num, maxPrecision, minPrecision)}${NNBSP}${abbr}`;
 
 /** Format a number with a longer full-word suffix. */
 export function formatFullQuantity(num: number, singular: string, plural: string, maxPrecision?: number, minPrecision?: number): string {
@@ -140,7 +136,7 @@ export function cramNumber(num: number): string {
 	if (abs >= TRILLION) return `${_significance(num / TRILLION)}T`;
 	if (abs >= BILLION) return `${_significance(num / BILLION)}B`;
 	if (abs >= MILLION) return `${_significance(num / MILLION)}M`;
-	if (abs >= 10_000) return `${_significance(num / 1_000)}K`;
+	if (abs >= 10000) return `${_significance(num / 1000)}K`;
 	return truncateNumber(num, 2).toString();
 }
 function _significance(num: number): string {

@@ -4,7 +4,7 @@ import { runSequence } from "../util/sequence.js";
 import { AbstractSequence } from "./AbstractSequence.js";
 
 /** Used when the deferred sequence has no value or reason queued. */
-const NOVALUE: unique symbol = Symbol("shelving/DeferredSequence.NOVALUE");
+const _NOVALUE: unique symbol = Symbol("shelving/DeferredSequence.NOVALUE");
 
 /**
  * Deferred sequence of values.
@@ -26,28 +26,28 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 	/** Resolve the current deferred in the sequence. */
 	readonly resolve = (value: T): void => {
 		this._nextValue = value;
-		this._nextReason = NOVALUE;
+		this._nextReason = _NOVALUE;
 		queueMicrotask(this._fulfill);
 	};
-	private _nextValue: T | typeof NOVALUE = NOVALUE;
+	private _nextValue: T | typeof _NOVALUE = _NOVALUE;
 
 	/** Reject the current deferred in the sequence. */
 	readonly reject = (reason: Error | unknown): void => {
-		this._nextValue = NOVALUE;
+		this._nextValue = _NOVALUE;
 		this._nextReason = reason;
 		queueMicrotask(this._fulfill);
 	};
-	private _nextReason: Error | unknown | typeof NOVALUE = NOVALUE;
+	private _nextReason: Error | unknown | typeof _NOVALUE = _NOVALUE;
 
 	/** Fulfill the current deferred by resolving or rejecting it. */
 	private readonly _fulfill = () => {
 		const { _deferred, _nextReason, _nextValue } = this;
 		if (_deferred) {
 			this._deferred = undefined;
-			this._nextReason = NOVALUE;
-			this._nextValue = NOVALUE;
-			if (_nextReason !== NOVALUE) _deferred.reject(_nextReason);
-			else if (_nextValue !== NOVALUE) _deferred.resolve(_nextValue);
+			this._nextReason = _NOVALUE;
+			this._nextValue = _NOVALUE;
+			if (_nextReason !== _NOVALUE) _deferred.reject(_nextReason);
+			else if (_nextValue !== _NOVALUE) _deferred.resolve(_nextValue);
 		}
 	};
 
