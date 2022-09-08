@@ -8,11 +8,11 @@ export type UnitData = {
 	/** Type of a unit. */
 	readonly type: UnitType;
 	/** Singular name for a unit, e.g. `foot` (only needed if different from reference). */
-	readonly singular?: string;
+	readonly singular: string;
 	/** Plural name for a unit, e.g. `feet` */
-	readonly plural?: string;
+	readonly plural: string;
 	/** Abbreviation for this unit, e.g. `km` */
-	readonly abbr?: string;
+	readonly abbr: string;
 	/** All units must specify their 'base' unit, e.g. `meter` for for distance units and `liter` for volume units. */
 	readonly base: number;
 } & {
@@ -66,40 +66,40 @@ export type UnitReference =
 	| "kilometer-per-hour";
 
 /** List of units. */
-const UNITS: { readonly [K in UnitReference]: UnitData } = {
-	"percent": { type: "percentage", base: 1, abbr: "%" }, // Base for percentage.
-	"permille": { type: "percentage", base: 10, abbr: "‰" },
-	"permyriad": { type: "percentage", base: 100, abbr: "‱" },
+export const UNITS: { readonly [K in UnitReference]: UnitData } = {
+	"percent": { type: "percentage", singular: "percent", plural: "percent", abbr: "%", base: 1 }, // Base for percentage.
+	"permille": { type: "percentage", singular: "permille", plural: "permille", abbr: "‰", base: 10 },
+	"permyriad": { type: "percentage", singular: "permyriad", plural: "permyriad", abbr: "‱", base: 100 },
 	"part-per-million": { type: "percentage", base: MILLION, abbr: "ppm", singular: "part per million", plural: "parts per million" },
 	"percentage-point": { type: "percentage", base: 1, abbr: "pp", singular: "percentage point", plural: "percentage points" },
 	"basis-point": { type: "percentage", base: 100, abbr: "bp", singular: "basis point", plural: "basis points" },
-	"degree": { type: "angle", base: 1, abbr: "deg" },
-	"millimeter": { type: "length", base: 1, abbr: "mm" },
-	"centimeter": { type: "length", base: 10, abbr: "cm" },
-	"meter": { type: "length", base: 1000, centimeter: 100, millimeter: 1000 }, // Base for length.
-	"kilometer": { type: "length", base: MILLION, centimeter: HUNDRED_THOUSAND, millimeter: MILLION, abbr: "km" },
-	"inch": { type: "length", base: 25.4, abbr: "in" },
-	"foot": { type: "length", base: 304.8, inch: 12, abbr: "ft", plural: "feet" },
-	"yard": { type: "length", base: 914.4, inch: 36, foot: 3, abbr: "yd" },
-	"mile": { type: "length", base: 1609344, yard: 1760, foot: 5280, inch: 63360, abbr: "mi" },
-	"milliliter": { type: "volume", base: 1, abbr: "ml" }, // Base for volume.
-	"liter": { type: "volume", base: 1000 },
+	"degree": { type: "angle", singular: "degree", plural: "degrees", base: 1, abbr: "deg" },
+	"millimeter": { type: "length", singular: "millimeter", plural: "millimeters", base: 1, abbr: "mm" }, // Base for length.
+	"centimeter": { type: "length", singular: "centimeter", plural: "centimeters", base: 10, abbr: "cm" },
+	"meter": { type: "length", singular: "meter", plural: "meters", abbr: "m", base: 1000, centimeter: 100, millimeter: 1000 },
+	"kilometer": { type: "length", singular: "kilometer", plural: "kilometers", abbr: "km", base: MILLION, centimeter: HUNDRED_THOUSAND, millimeter: MILLION },
+	"inch": { type: "length", singular: "inch", plural: "inchs", abbr: "in", base: 25.4 },
+	"foot": { type: "length", singular: "foot", plural: "feed", abbr: "ft", base: 304.8, inch: 12 },
+	"yard": { type: "length", singular: "yard", plural: "yards", abbr: "yd", base: 914.4, inch: 36, foot: 3 },
+	"mile": { type: "length", singular: "mile", plural: "miles", base: 1609344, yard: 1760, foot: 5280, inch: 63360, abbr: "mi" },
+	"milliliter": { type: "volume", singular: "milliliter", plural: "milliliters", base: 1, abbr: "ml" }, // Base for volume.
+	"liter": { type: "volume", singular: "liter", plural: "liters", abbr: "l", base: 1000 },
 	"fluid-ounce": { type: "volume", base: 29.5735295625, gallon: 128, abbr: `fl{NNBSP}oz`, singular: "fluid ounce", plural: "fluid ounces" },
-	"gallon": { type: "volume", base: 3785.411784, abbr: "gal" },
-	"milligram": { type: "mass", base: 1, abbr: "mg" }, // Base for mass.
-	"gram": { type: "mass", base: 1000 },
-	"kilogram": { type: "mass", base: 1000000, abbr: "kg" },
-	"ounce": { type: "mass", base: 28349.523125, pound: 0.0625, abbr: "oz" },
-	"pound": { type: "mass", base: 453592.37, ounce: 16, abbr: "lb" },
-	"stone": { type: "mass", base: 6350293.18, pound: 14, ounce: 224, abbr: "st", plural: "stone" },
-	"millisecond": { type: "time", base: 1, abbr: "ms" }, // Base for time.
-	"second": { type: "time", base: SECOND },
-	"minute": { type: "time", base: MINUTE },
-	"hour": { type: "time", base: HOUR },
-	"day": { type: "time", base: DAY },
-	"week": { type: "time", base: WEEK },
-	"month": { type: "time", base: MONTH },
-	"year": { type: "time", base: YEAR },
+	"gallon": { type: "volume", singular: "gallon", plural: "gallons", abbr: "gal", base: 3785.411784 },
+	"milligram": { type: "mass", singular: "milligram", plural: "milligrams", abbr: "mg", base: 1 }, // Base for mass.
+	"gram": { type: "mass", singular: "gram", plural: "grams", abbr: "g", base: 1000 },
+	"kilogram": { type: "mass", singular: "kilogram", plural: "kilograms", abbr: "kg", base: 1000000 },
+	"ounce": { type: "mass", singular: "ounce", plural: "ounces", abbr: "oz", base: 28349.523125, pound: 0.0625 },
+	"pound": { type: "mass", singular: "pound", plural: "pounds", abbr: "lb", base: 453592.37, ounce: 16 },
+	"stone": { type: "mass", singular: "stone", plural: "stone", abbr: "st", base: 6350293.18, pound: 14, ounce: 224 },
+	"millisecond": { type: "time", singular: "millisecond", plural: "milliseconds", abbr: "ms", base: 1 }, // Base for time.
+	"second": { type: "time", singular: "second", plural: "seconds", abbr: "s", base: SECOND },
+	"minute": { type: "time", singular: "minute", plural: "minutes", abbr: "m", base: MINUTE },
+	"hour": { type: "time", singular: "hour", plural: "hours", abbr: "h", base: HOUR },
+	"day": { type: "time", singular: "day", plural: "days", abbr: "d", base: DAY },
+	"week": { type: "time", singular: "week", plural: "weeks", abbr: "w", base: WEEK },
+	"month": { type: "time", singular: "month", plural: "months", abbr: "m", base: MONTH },
+	"year": { type: "time", singular: "year", plural: "years", abbr: "y", base: YEAR },
 	"meter-per-second": { type: "speed", base: 1, singular: "meter per second", plural: "meters per second", abbr: "m/s" }, // Base for speed.
 	"mile-per-hour": { type: "speed", base: 0.44702727, singular: "mile per hour", plural: "miles per hour", abbr: "mph" },
 	"kilometer-per-hour": { type: "speed", base: 0.27777778, singular: "kilometer per hour", plural: "kilometers per hour", abbr: "kph" },
@@ -116,20 +116,11 @@ export function convertUnits(num: number, from: UnitReference, to: UnitReference
 	return (num * fromData.base) / toData.base;
 }
 
-/** Get the abbreviation for a unit. */
-export const getUnitAbbr = (unit: UnitReference): string => UNITS[unit].abbr || (unit[0] as string);
-
-/** Get the singular quantity for a unit. */
-export const getUnitSingular = (unit: UnitReference): string => UNITS[unit].singular || unit;
-
-/** Get the plural quantity for a unit. */
-export const getUnitPlural = (unit: UnitReference): string => UNITS[unit].plural || `${unit}s`;
-
 /** Format a number with a given unit of measure, e.g. `12 kg` or `29.5 l` */
-export const formatUnits = (num: number, unit: UnitReference, maxPrecision?: number, minPrecision?: number): string => formatQuantity(num, getUnitAbbr(unit), maxPrecision, minPrecision);
+export const formatUnits = (num: number, unit: UnitReference, maxPrecision?: number, minPrecision?: number): string => formatQuantity(num, UNITS[unit].abbr, maxPrecision, minPrecision);
 
 /** Format a number with a given unit of measure, e.g. `12 kilograms` or `29.5 liters` or `1 degree` */
-export const formatFullUnits = (num: number, unit: UnitReference, maxPrecision?: number, minPrecision?: number): string => formatFullQuantity(num, getUnitSingular(unit), getUnitPlural(unit), maxPrecision, minPrecision);
+export const formatFullUnits = (num: number, unit: UnitReference, maxPrecision?: number, minPrecision?: number): string => formatFullQuantity(num, UNITS[unit].singular, UNITS[unit].plural, maxPrecision, minPrecision);
 
 /** Format a percentage (combines `getPercent()` and `formatUnits()` for convenience). */
 export const formatPercent = (numerator: number, denumerator: number, maxPrecision?: number, minPrecision?: number): string => formatQuantity(getPercent(numerator, denumerator), "%", maxPrecision, minPrecision);
