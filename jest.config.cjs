@@ -3,7 +3,7 @@ const config = {
 	roots: ["./modules"],
 	collectCoverage: false,
 	transform: {
-		"^.+\\.(js|ts)$": "ts-jest",
+		"^.+\\.(js|ts)$": "esbuild-jest",
 	},
 	resolver: "jest-ts-webcompat-resolver",
 	extensionsToTreatAsEsm: [".ts"],
