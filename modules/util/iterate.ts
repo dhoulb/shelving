@@ -104,5 +104,5 @@ export function* getChunks<T>(input: Iterable<T>, size: number): Iterable<Immuta
 
 /** Merge two or more iterables into a single iterable set. */
 export function* mergeItems<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable<T>[]]): Iterable<T> {
-	for (const input of inputs) for (const item of input) yield item;
+	for (const input of inputs) yield* input;
 }
