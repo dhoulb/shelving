@@ -1,4 +1,4 @@
-import type { Key, Datas, Data } from "../util/data.js";
+import type { DataKey, Datas, Data } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import type { DataSchemas, DataSchema } from "../schema/DataSchema.js";
 import type { MutableObject } from "../util/object.js";
@@ -17,14 +17,14 @@ abstract class BaseValidationProvider<T extends Datas> {
 	constructor(schemas: DataSchemas<T>) {
 		this.schemas = schemas;
 	}
-	getSchema<K extends Key<T>>(collection: K): DataSchema<T[K]> {
+	getSchema<K extends DataKey<T>>(collection: K): DataSchema<T[K]> {
 		return this.schemas[collection];
 	}
-	async *getItemSequence<K extends Key<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
+	async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
 		const schema = this.getSchema(collection);
 		for await (const unsafeItem of this.source.getItemSequence(collection, id)) yield _validateItem(collection, unsafeItem, schema);
 	}
-	async *getQuerySequence<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
+	async *getQuerySequence<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
 		const schema = this.getSchema(collection);
 		for await (const unsafeItems of this.source.getQuerySequence(collection, constraints)) yield _validateItems(collection, unsafeItems, schema);
 	}
@@ -37,31 +37,31 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 		super(schemas);
 		this.source = source;
 	}
-	getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> {
+	getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
 		return _validateItem(collection, this.source.getItem(collection, id), this.getSchema(collection));
 	}
-	addItem<K extends Key<T>>(collection: K, data: T[K]): string {
+	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
 		return this.source.addItem(collection, validate(data, this.getSchema(collection)));
 	}
-	setItem<K extends Key<T>>(collection: K, id: string, value: T[K]): void {
+	setItem<K extends DataKey<T>>(collection: K, id: string, value: T[K]): void {
 		return this.source.setItem(collection, id, validate(value, this.getSchema(collection)));
 	}
-	updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
+	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
 		return this.source.updateItem(collection, id, validateUpdates(updates, this.getSchema(collection).props));
 	}
-	deleteItem<K extends Key<T>>(collection: K, id: string): void {
+	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
 		return this.source.deleteItem(collection, id);
 	}
-	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
+	getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
 		return _validateItems(collection, this.source.getQuery(collection, constraints), this.getSchema(collection));
 	}
-	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): number {
+	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): number {
 		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
 	}
-	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
+	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
 		return this.source.updateQuery(collection, constraints, validateUpdates(updates, this.getSchema(collection).props));
 	}
-	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
+	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
 		return this.source.deleteQuery(collection, constraints);
 	}
 }
@@ -73,31 +73,31 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 		super(schemas);
 		this.source = source;
 	}
-	async getItem<K extends Key<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
+	async getItem<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
 		return _validateItem(collection, await this.source.getItem(collection, id), this.getSchema(collection));
 	}
-	addItem<K extends Key<T>>(collection: K, data: T[K]): Promise<string> {
+	addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
 		return this.source.addItem(collection, validate(data, this.getSchema(collection)));
 	}
-	setItem<K extends Key<T>>(collection: K, id: string, value: T[K]): Promise<void> {
+	setItem<K extends DataKey<T>>(collection: K, id: string, value: T[K]): Promise<void> {
 		return this.source.setItem(collection, id, validate(value, this.getSchema(collection)));
 	}
-	updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
+	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
 		return this.source.updateItem(collection, id, validateUpdates(updates, this.getSchema(collection).props));
 	}
-	deleteItem<K extends Key<T>>(collection: K, id: string): Promise<void> {
+	deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
 		return this.source.deleteItem(collection, id);
 	}
-	async getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
+	async getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
 		return _validateItems(collection, await this.source.getQuery(collection, constraints), this.getSchema(collection));
 	}
-	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): Promise<number> {
+	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): Promise<number> {
 		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
 	}
-	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
+	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
 		return this.source.updateQuery(collection, constraints, validateUpdates(updates, this.getSchema(collection).props));
 	}
-	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
+	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
 		return this.source.deleteQuery(collection, constraints);
 	}
 }

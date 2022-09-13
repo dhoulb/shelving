@@ -1,11 +1,11 @@
 import type { ImmutableArray } from "../util/array.js";
-import type { Data, Key } from "../util/data.js";
+import type { Data, DataKey } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
 import { rank, Rankable, rankAsc, rankDesc, sortItems } from "../util/sort.js";
 import type { Constraint } from "./Constraint.js";
 
 /** Format that allows sorts to be set as a plain string, e.g. `name` sorts by name in ascending order and `!date` sorts by date in descending order. */
-export type SortKey<T extends Data> = Key<T> | `${Key<T>}` | `!${Key<T>}`;
+export type SortKey<T extends Data> = DataKey<T> | `${DataKey<T>}` | `!${DataKey<T>}`;
 
 /** One or more sort keys. */
 export type SortKeys<T extends Data> = SortKey<T> | ImmutableArray<SortKey<T>>;

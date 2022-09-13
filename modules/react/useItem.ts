@@ -1,6 +1,6 @@
 import type { ItemValue, ItemData, AsyncItem, Item } from "../db/Item.js";
 import type { Dispatch } from "../util/function.js";
-import { Datas, getData, Key } from "../util/data.js";
+import { Datas, getData, DataKey } from "../util/data.js";
 import { getOptionalSource } from "../util/source.js";
 import { setMapItem } from "../util/map.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
@@ -11,7 +11,7 @@ import { useState } from "./useState.js";
 import { useCache } from "./useCache.js";
 
 /** Hold the current state of a item. */
-export class ItemState<T extends Datas, K extends Key<T> = Key<T>> extends State<ItemValue<T[K]>> {
+export class ItemState<T extends Datas, K extends DataKey<T> = DataKey<T>> extends State<ItemValue<T[K]>> {
 	readonly ref: Item<T, K> | AsyncItem<T, K>;
 	readonly busy = new BooleanState();
 
@@ -68,9 +68,9 @@ export class ItemState<T extends Datas, K extends Key<T> = Key<T>> extends State
  * Use an item in a React component.
  * - Uses the default cache, so will error if not used inside `<Cache>`
  */
-export function useItem<T extends Datas, K extends Key<T>>(ref: Item<T, K> | AsyncItem<T, K>): ItemState<T, K>;
-export function useItem<T extends Datas, K extends Key<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined;
-export function useItem<T extends Datas, K extends Key<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined {
+export function useItem<T extends Datas, K extends DataKey<T>>(ref: Item<T, K> | AsyncItem<T, K>): ItemState<T, K>;
+export function useItem<T extends Datas, K extends DataKey<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined;
+export function useItem<T extends Datas, K extends DataKey<T>>(ref?: Item<T, K> | AsyncItem<T, K>): ItemState<T, K> | undefined {
 	const cache = useCache<ItemState<T, K>>();
 	const key = ref?.toString();
 	const state = ref && key ? cache.get(key) || setMapItem(cache, key, new ItemState(ref)) : undefined;

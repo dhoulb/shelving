@@ -1,5 +1,5 @@
 import { ArraySchema } from "../schema/ArraySchema.js";
-import { ImmutableArray, withItems, withoutItems } from "../util/array.js";
+import { ImmutableArray, withArrayItems, withoutArrayItems } from "../util/array.js";
 import { validateArray, Validator } from "../util/validate.js";
 import { Update } from "./Update.js";
 
@@ -24,7 +24,7 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 	}
 
 	transform(arr: ImmutableArray<T> = []): ImmutableArray<T> {
-		return withoutItems(withItems(arr, ...this.adds), ...this.deletes);
+		return withoutArrayItems(withArrayItems(arr, ...this.adds), ...this.deletes);
 	}
 
 	override validate(validator: Validator<ImmutableArray<T>>): this {

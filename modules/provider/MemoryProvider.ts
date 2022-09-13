@@ -1,4 +1,4 @@
-import type { Data, Datas, Key } from "../util/data.js";
+import type { Data, Datas, DataKey } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { Constraint } from "../constraint/Constraint.js";
@@ -21,59 +21,59 @@ export class MemoryProvider<T extends Datas> implements Provider<T> {
 	private _tables: { [K in keyof T]?: MemoryTable<T[K]> } = {};
 
 	/** Get a table for a collection. */
-	getTable<K extends Key<T>>(collection: K): MemoryTable<T[K]> {
+	getTable<K extends DataKey<T>>(collection: K): MemoryTable<T[K]> {
 		return this._tables[collection] || (this._tables[collection] = new MemoryTable());
 	}
 
-	getDocumentTime<K extends Key<T>>(collection: K, id: string): number | null {
+	getDocumentTime<K extends DataKey<T>>(collection: K, id: string): number | null {
 		return this.getTable(collection).getItemTime(id);
 	}
 
-	getItem<K extends Key<T>>(collection: K, id: string): ItemValue<T[K]> {
+	getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
 		return this.getTable(collection).getItem(id);
 	}
 
-	getItemSequence<K extends Key<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
+	getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
 		return this.getTable(collection).getItemSequence(id);
 	}
 
-	addItem<K extends Key<T>>(collection: K, data: T[K]): string {
+	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
 		return this.getTable(collection).addItem(data);
 	}
 
-	setItem<K extends Key<T>>(collection: K, id: string, data: T[K]): void {
+	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
 		return this.getTable(collection).setItem(id, data);
 	}
 
-	updateItem<K extends Key<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
+	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
 		return this.getTable(collection).updateItem(id, updates);
 	}
 
-	deleteItem<K extends Key<T>>(collection: K, id: string): void {
+	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
 		return this.getTable(collection).deleteItem(id);
 	}
 
-	getQueryTime<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number | null {
+	getQueryTime<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number | null {
 		return this.getTable(collection).getQueryTime(constraints);
 	}
 
-	getQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
+	getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
 		return this.getTable(collection).getQuery(constraints);
 	}
 
-	getQuerySequence<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
+	getQuerySequence<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
 		return this.getTable(collection).getQuerySequence(constraints);
 	}
 
-	setQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
+	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
 		return this.getTable(collection).setQuery(constraints, data);
 	}
 
-	updateQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
+	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
 		return this.getTable(collection).updateQuery(constraints, updates);
 	}
 
-	deleteQuery<K extends Key<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
+	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
 		return this.getTable(collection).deleteQuery(constraints);
 	}
 }

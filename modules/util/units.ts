@@ -3,7 +3,7 @@ import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./
 import { getDuration, PossibleDate } from "./date.js";
 import { MapKey, RequiredMap } from "./map.js";
 import { formatFullQuantity, formatQuantity, getPercent } from "./number.js";
-import { getProps } from "./object.js";
+import { getObjectProps } from "./object.js";
 
 /** Conversion from one unit to another (either a number to multiple by, or a function to convert). */
 type Conversion = number | ((num: number) => number);
@@ -103,7 +103,7 @@ export class UnitList<T extends string> extends RequiredMap<T, Unit<T>> {
 	public readonly base!: Unit<T>;
 	constructor(units: { [K in T]: UnitProps<T> }) {
 		super();
-		for (const [ref, props] of getProps(units)) {
+		for (const [ref, props] of getObjectProps(units)) {
 			const unit = new Unit<T>(this, ref, props);
 			if (!this.base) this.base = unit;
 			super.set(ref, unit);

@@ -1,4 +1,4 @@
-import type { Key, Datas } from "../util/data.js";
+import type { DataKey, Datas } from "../util/data.js";
 import type { Dispatch, Handler, Stop } from "../util/function.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
@@ -11,7 +11,7 @@ import type { ItemArray, ItemValue, ItemData } from "./Item.js";
 import type { AsyncDatabase, Database } from "./Database.js";
 
 /** Reference to a set of items in a sync or async provider. */
-abstract class BaseQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> extends QueryConstraints<ItemData<T[K]>> implements AsyncIterable<ItemArray<T[K]>> {
+abstract class BaseQuery<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends QueryConstraints<ItemData<T[K]>> implements AsyncIterable<ItemArray<T[K]>> {
 	abstract readonly db: Database<T> | AsyncDatabase<T>;
 	abstract readonly collection: K;
 
@@ -96,7 +96,7 @@ abstract class BaseQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> ext
 }
 
 /** Reference to a set of items in a provider. */
-export class Query<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseQuery<T, K> {
+export class Query<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseQuery<T, K> {
 	readonly db: Database<T>;
 	readonly collection: K;
 	constructor(db: Database<T>, collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null) {
@@ -137,7 +137,7 @@ export class Query<T extends Datas = Datas, K extends Key<T> = Key<T>> extends B
 }
 
 /** Reference to a set of items in a provider. */
-export class AsyncQuery<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseQuery<T, K> {
+export class AsyncQuery<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseQuery<T, K> {
 	readonly db: AsyncDatabase<T>;
 	readonly collection: K;
 	constructor(db: AsyncDatabase<T>, collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null) {

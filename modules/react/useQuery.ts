@@ -1,4 +1,4 @@
-import type { Datas, Key } from "../util/data.js";
+import type { Datas, DataKey } from "../util/data.js";
 import type { Stop } from "../util/function.js";
 import type { ItemArray, ItemValue, ItemData } from "../db/Item.js";
 import type { AsyncQuery, Query } from "../db/Query.js";
@@ -13,7 +13,7 @@ import { useState } from "./useState.js";
 import { useCache } from "./useCache.js";
 
 /** Hold the current state of a query. */
-export class QueryState<T extends Datas, K extends Key<T> = Key<T>> extends State<ItemArray<T[K]>> implements Iterable<ItemData<T[K]>> {
+export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> extends State<ItemArray<T[K]>> implements Iterable<ItemData<T[K]>> {
 	readonly ref: Query<T, K> | AsyncQuery<T, K>;
 	readonly busy = new BooleanState();
 	readonly limit: number;
@@ -125,9 +125,9 @@ export class QueryState<T extends Datas, K extends Key<T> = Key<T>> extends Stat
  * Use a query in a React component.
  * - Uses the default cache, so will error if not used inside `<Cache>`
  */
-export function useQuery<T extends Datas, K extends Key<T>>(ref: Query<T, K> | AsyncQuery<T, K>): QueryState<T, K>;
-export function useQuery<T extends Datas, K extends Key<T>>(ref?: Query<T, K> | AsyncQuery<T, K>): QueryState<T, K> | undefined;
-export function useQuery<T extends Datas, K extends Key<T>>(ref?: Query<T, K> | AsyncQuery<T, K>): QueryState<T, K> | undefined {
+export function useQuery<T extends Datas, K extends DataKey<T>>(ref: Query<T, K> | AsyncQuery<T, K>): QueryState<T, K>;
+export function useQuery<T extends Datas, K extends DataKey<T>>(ref?: Query<T, K> | AsyncQuery<T, K>): QueryState<T, K> | undefined;
+export function useQuery<T extends Datas, K extends DataKey<T>>(ref?: Query<T, K> | AsyncQuery<T, K>): QueryState<T, K> | undefined {
 	const cache = useCache<QueryState<T, K>>();
 	const key = ref?.toString();
 	return useState(ref && key ? cache.get(key) || setMapItem(cache, key, new QueryState(ref)) : undefined);

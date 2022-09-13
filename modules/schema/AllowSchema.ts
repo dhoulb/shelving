@@ -1,8 +1,8 @@
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { getString } from "../util/string.js";
-import { isArray, isItem } from "../util/array.js";
+import { isArray, isArrayItem } from "../util/array.js";
 import { getOptionalNumber } from "../util/number.js";
-import { isProp } from "../util/object.js";
+import { isObjectKey } from "../util/object.js";
 import { Schema } from "./Schema.js";
 
 /** Specify a specific list of allowed values. */
@@ -11,9 +11,9 @@ export type Allowed<T extends string | number> = ReadonlyArray<T> | { readonly [
 /** Validate a value against a specific set of allowed values. */
 export function validateAllowed<T extends string | number>(value: unknown, allowed: Allowed<T>): T {
 	if (isArray(allowed)) {
-		if (isItem(allowed, value)) return value;
+		if (isArrayItem(allowed, value)) return value;
 	} else {
-		if (isProp(allowed, value)) return value;
+		if (isObjectKey(allowed, value)) return value;
 	}
 	throw new InvalidFeedback("Unknown value", { value });
 }

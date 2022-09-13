@@ -1,4 +1,4 @@
-import type { Data, Key } from "../util/data.js";
+import type { Data, DataKey } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
 import { ImmutableArray, isArray } from "../util/array.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, Matchable, Match, notEqual, notInArray } from "../util/match.js";
@@ -10,15 +10,15 @@ import type { Constraint } from "./Constraint.js";
 export type FilterOperator = "IS" | "NOT" | "IN" | "OUT" | "CONTAINS" | "LT" | "LTE" | "GT" | "GTE";
 
 /** Format that allows filters to be specified as a string, e.g. `!name` means `name is not` and `age>` means `age is more than` and `tags[]` means `tags array contains` */
-export type FilterKey<T extends Data> = Key<T> | `${Key<T>}` | `!${Key<T>}` | `${Key<T>}[]` | `${Key<T>}<` | `${Key<T>}<=` | `${Key<T>}>` | `${Key<T>}>=`;
+export type FilterKey<T extends Data> = DataKey<T> | `${DataKey<T>}` | `!${DataKey<T>}` | `${DataKey<T>}[]` | `${DataKey<T>}<` | `${DataKey<T>}<=` | `${DataKey<T>}>` | `${DataKey<T>}>=`;
 
 /** Format that allows multiple filters to be specified as a plain object. */
 export type FilterProps<T extends Data> = {
-	[K in Key<T> as `${K}` | `!${K}`]?: T[K] | ImmutableArray<T[K]>; // IS/NOT/IN/OUT
+	[K in DataKey<T> as `${K}` | `!${K}`]?: T[K] | ImmutableArray<T[K]>; // IS/NOT/IN/OUT
 } & {
-	[K in Key<T> as `${K}[]`]?: Required<T>[K] extends ImmutableArray<infer X> ? X : never; // CONTAINS
+	[K in DataKey<T> as `${K}[]`]?: Required<T>[K] extends ImmutableArray<infer X> ? X : never; // CONTAINS
 } & {
-	[K in Key<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: T[K]; // GT/GTE/LT/LTE
+	[K in DataKey<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: T[K]; // GT/GTE/LT/LTE
 };
 
 /** List of filters in a flexible format. */

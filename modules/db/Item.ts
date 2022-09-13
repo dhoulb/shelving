@@ -1,7 +1,7 @@
 import type { ImmutableArray } from "../util/array.js";
 import type { Stop, Handler, Dispatch } from "../util/function.js";
 import type { QueryConstraints } from "../constraint/QueryConstraints.js";
-import { Data, Datas, getData, Key } from "../util/data.js";
+import { Data, Datas, getData, DataKey } from "../util/data.js";
 import { FilterConstraint } from "../constraint/FilterConstraint.js";
 import { DataUpdate, Updates } from "../update/DataUpdate.js";
 import { runSequence } from "../util/sequence.js";
@@ -22,7 +22,7 @@ export type ItemArray<T extends Data = Data> = ImmutableArray<ItemData<T>>;
 export type ItemConstraints<T extends Data = Data> = QueryConstraints<ItemData<T>>;
 
 /** Reference to an item in a synchronous or asynchronous database. */
-abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> implements AsyncIterable<ItemValue<T[K]>> {
+abstract class BaseItem<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> implements AsyncIterable<ItemValue<T[K]>> {
 	abstract readonly db: Database<T> | AsyncDatabase<T>;
 	abstract readonly collection: K;
 	abstract readonly id: string;
@@ -92,7 +92,7 @@ abstract class BaseItem<T extends Datas = Datas, K extends Key<T> = Key<T>> impl
 }
 
 /** Reference to an item in a synchronous database. */
-export class Item<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseItem<T, K> {
+export class Item<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseItem<T, K> {
 	readonly db: Database<T>;
 	readonly collection: K;
 	readonly id: string;
@@ -126,7 +126,7 @@ export class Item<T extends Datas = Datas, K extends Key<T> = Key<T>> extends Ba
 }
 
 /** Reference to an item in an asynchronous database. */
-export class AsyncItem<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseItem<T, K> {
+export class AsyncItem<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseItem<T, K> {
 	readonly db: AsyncDatabase<T>;
 	readonly collection: K;
 	readonly id: string;

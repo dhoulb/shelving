@@ -1,5 +1,5 @@
 import type { Entry } from "../util/entry.js";
-import { ImmutableObject, withoutProps } from "../util/object.js";
+import { ImmutableObject, withoutObjectProps } from "../util/object.js";
 import { transformData, Transformers } from "../util/transform.js";
 import { State } from "./State.js";
 
@@ -21,7 +21,7 @@ export class ObjectState<T> extends State<ImmutableObject<T>> implements Iterabl
 
 	/** Remove a named entry from this object. */
 	delete(...keys: string[]): void {
-		this.set(withoutProps(this.value, ...keys));
+		this.set(withoutObjectProps(this.value, ...keys));
 	}
 
 	/** Iterate over the entries of the object. */

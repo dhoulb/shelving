@@ -1,4 +1,4 @@
-import type { Datas, Key } from "../util/data.js";
+import type { Datas, DataKey } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
@@ -10,7 +10,7 @@ import { AsyncQuery, Query } from "./Query.js";
 import { AddChange, ItemChanges, WriteChange, changeAsyncProvider, changeProvider, UpdateChange, DeleteChange, SetChange } from "./Change.js";
 
 /** Reference to a collection in a synchronous or asynchronous provider. */
-abstract class BaseCollection<T extends Datas = Datas, K extends Key<T> = Key<T>> {
+abstract class BaseCollection<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> {
 	abstract readonly db: Database<T> | AsyncDatabase<T>;
 	abstract readonly collection: K;
 
@@ -65,7 +65,7 @@ abstract class BaseCollection<T extends Datas = Datas, K extends Key<T> = Key<T>
 }
 
 /** Reference to a collection in a synchronous provider. */
-export class Collection<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseCollection<T, K> {
+export class Collection<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseCollection<T, K> {
 	readonly db: Database<T>;
 	readonly collection: K;
 	constructor(db: Database<T>, collection: K) {
@@ -100,7 +100,7 @@ export class Collection<T extends Datas = Datas, K extends Key<T> = Key<T>> exte
 }
 
 /** Reference to a collection in an asynchronous provider. */
-export class AsyncCollection<T extends Datas = Datas, K extends Key<T> = Key<T>> extends BaseCollection<T, K> {
+export class AsyncCollection<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseCollection<T, K> {
 	readonly db: AsyncDatabase<T>;
 	readonly collection: K;
 	constructor(db: AsyncDatabase<T>, collection: K) {

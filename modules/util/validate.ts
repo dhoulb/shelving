@@ -1,8 +1,8 @@
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
-import type { Data, Prop } from "./data.js";
-import { ImmutableObject, getProps } from "./object.js";
+import type { ImmutableObject } from "./object.js";
+import { Data, DataProp, getDataProps } from "./data.js";
 import { getArray, ImmutableArray } from "./array.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
@@ -109,9 +109,9 @@ export function validateObject<T>(obj: ImmutableObject<T>, validator: Validator<
  * @throw InvalidFeedback if one or more props did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function* validateProps<T extends Data>(unsafeData: Data, validators: Validators<T>): Iterable<Prop<T>> {
+export function* validateProps<T extends Data>(unsafeData: Data, validators: Validators<T>): Iterable<DataProp<T>> {
 	const feedbacks = new Map<string, Feedback>();
-	for (const [key, validator] of getProps(validators)) {
+	for (const [key, validator] of getDataProps(validators)) {
 		try {
 			yield [key, validate(unsafeData[key], validator)];
 		} catch (thrown) {
