@@ -1,5 +1,6 @@
 import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
+import { isIterable } from "./iterate.js";
 
 /** Readonly map-like object. */
 export type ImmutableObject<T = unknown> = { readonly [key: PropertyKey]: T };
@@ -15,6 +16,9 @@ export type ObjectValue<T extends ImmutableObject> = T[ObjectKey<T>];
 
 /** Get the type for a prop of a map-like object in entry format. */
 export type ObjectProp<T extends ImmutableObject> = readonly [ObjectKey<T>, ObjectValue<T>];
+
+/** Something that can be converted to an object. */
+export type PossibleObject<T> = (ImmutableObject<T> & { [Symbol.iterator]?: never }) | Iterable<ObjectProp<ImmutableObject<T>>>;
 
 /**
  * Is a value an unknown object?
@@ -45,12 +49,16 @@ export function assertPlainObject<T extends ImmutableObject>(value: T | unknown)
 /** Is an unknown value the key for an own prop of an object. */
 export const isObjectKey = <T extends ImmutableObject>(obj: T, key: unknown): key is ObjectKey<T> => (typeof key === "string" || typeof key === "number" || typeof key === "symbol") && Object.prototype.hasOwnProperty.call(obj, key);
 
-/** Turn a data object into an array of props. */
-export function getObjectProps<T extends ImmutableObject>(data: T): ImmutableArray<ObjectProp<T>>;
-export function getObjectProps<T extends ImmutableObject>(data: T | Partial<T>): ImmutableArray<ObjectProp<T>>;
-export function getObjectProps<T>(data: ImmutableObject<T>): ImmutableArray<ObjectProp<ImmutableObject<T>>>;
-export function getObjectProps<T>(data: ImmutableObject<T>): ImmutableArray<ObjectProp<ImmutableObject<T>>> {
-	return Object.entries<T>(data);
+/** turn a possible object into an object. */
+export function getObject<T>(obj: PossibleObject<T>): ImmutableObject<T> {
+	return isIterable(obj) ? Object.fromEntries(obj) : obj;
+}
+
+/** Turn a data object into a set of props. */
+export function getObjectProps<T extends ImmutableObject>(obj: T | Partial<T>): ImmutableArray<ObjectProp<T>>;
+export function getObjectProps<T>(obj: PossibleObject<T>): Iterable<ObjectProp<ImmutableObject<T>>>;
+export function getObjectProps<T>(obj: PossibleObject<T>): Iterable<ObjectProp<ImmutableObject<T>>> {
+	return isIterable(obj) ? obj : Object.entries(obj);
 }
 
 /**
@@ -113,7 +121,7 @@ export function setObjectProp<T extends MutableObject, K extends ObjectKey<T>>(d
 
 /** Set several named props on an object (by reference). */
 export function setObjectProps<T extends MutableObject>(obj: T, props: Partial<T>): void {
-	for (const [k, v] of getObjectProps<T>(props)) obj[k] = v;
+	for (const [k, v] of getObjectProps(props)) obj[k] = v;
 }
 
 /** Remove several key/value entries from an object (by reference). */

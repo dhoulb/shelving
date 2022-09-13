@@ -1,8 +1,8 @@
 import type { ArrayItem, ImmutableArray } from "./array.js";
+import type { Entry } from "./entry.js";
 import { Data, DataProp, DataValue, getDataProps } from "./data.js";
 import { isFunction } from "./function.js";
-import { Entry, getEntries } from "./entry.js";
-import { ImmutableObject, isObject } from "./object.js";
+import { getObjectProps, ImmutableObject, isObject, ObjectProp, PossibleObject } from "./object.js";
 
 /** Object that transforms an input value into an output value with its `transform()` method. */
 export interface Transformable<I, O> {
@@ -25,51 +25,6 @@ export function transform<I, O>(input: I, transformer: Transformer<I, O>): O {
 	return isFunction(transformer) ? transformer(input) : isTransformable(transformer) ? transformer.transform(input) : transformer;
 }
 
-/** Set of named transformers for a data object. */
-export type Transformers<T extends Data> = { readonly [K in keyof T]?: Transformer<T[K], T[K]> };
-
-/**
- * Transform the props of a data object using a set of named transformers.
- * @returns New object with changed props.
- */
-export function transformData<T extends Data>(data: T, transforms: Transformers<T>): T {
-	return { ...data, ...Object.fromEntries(transformProps(data, transforms)) };
-}
-
-/**
- * Transform the props of a data object using a set of named transformers.
- * @yield Transformed prop entries after calling the corresponding transformer.
- */
-export function* transformProps<T extends Data>(obj: T, transforms: Transformers<T>): Iterable<DataProp<T>> {
-	for (const [k, v] of getDataProps<{ readonly [K in keyof T]: Transformer<T[K], T[K]> }>(transforms)) yield [k, transform<DataValue<T>, DataValue<T>>(obj[k], v)];
-}
-
-/**
- * Transform the _values_ of an iterable set of entries using a transformer.
- * @yield Transformed entry after calling transforming the new value for each entry.
- */
-export function* mapEntries<K, I, O>(entries: Iterable<Entry<K, I>>, transformer: Transformer<I, O>): Iterable<Entry<K, O>> {
-	for (const [k, v] of entries) yield [k, transform(v, transformer)];
-}
-
-/**
- * Transform the _values_ of a map-like object using a transformer.
- * @return New object after transforming its entries.
- */
-export function mapObject<I, O>(obj: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O> {
-	return Object.fromEntries(mapEntries(getEntries(obj), transformer));
-}
-
-/**
- * Transform the _values_ of an data object using a transformer.
- * @return New object after transforming its entries.
- */
-export function mapData<T extends Data>(data: T, transformer: Transformer<DataValue<T>, DataValue<T>>): T; // Passthrough for transformers that return the same type and remove nothing.
-export function mapData<I extends Data, O extends { [K in keyof I]: unknown }>(data: I, transformer: Transformer<DataValue<I>, DataValue<O>>): O; // Transform an entire object with the same props with different types.
-export function mapData<I, O>(data: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O> {
-	return mapObject(data, transformer);
-}
-
 /**
  * Map an iterable set of items using a transformer.
  * @yield Transformed items after calling `transformer()` on each.
@@ -86,4 +41,39 @@ export function mapArray<T extends ImmutableArray>(arr: T, transformer: Transfor
 export function mapArray<I, O>(arr: Iterable<I>, transformer: Transformer<I, O>): ImmutableArray<O>;
 export function mapArray<I, O>(arr: Iterable<I>, transformer: Transformer<I, O>): ImmutableArray<O> {
 	return Array.from(mapItems(arr, transformer));
+}
+
+/** Transform the values of the props a map-like object using a transformer. */
+export function mapObject<I, O>(obj: PossibleObject<I>, transformer: Transformer<I, O>): ImmutableObject<O> {
+	return Object.fromEntries(mapObjectProps(obj, transformer));
+}
+
+/** Modify the values of the props of a map-like object using a single transformer. */
+export function* mapObjectProps<I, O>(obj: PossibleObject<I>, transformer: Transformer<I, O>): Iterable<ObjectProp<ImmutableObject<O>>> {
+	for (const [k, v] of getObjectProps(obj)) yield [k, transform(v, transformer)];
+}
+
+/** Modify the values of the props an iterable set of entries using a transformer. */
+export function* mapEntries<K, I, O>(entries: Iterable<Entry<K, I>>, transformer: Transformer<I, O>): Iterable<Entry<K, O>> {
+	for (const [k, v] of entries) yield [k, transform(v, transformer)];
+}
+
+/** Set of named transformers for a data object. */
+export type Transformers<T extends Data> = { readonly [K in keyof T]?: Transformer<T[K], T[K]> };
+
+/** Transform a data object using a set of named transformers. */
+export function transformData<T extends Data>(data: T, transforms: Transformers<T>): T {
+	return { ...data, ...Object.fromEntries(mapDataProps(data, transforms)) };
+}
+
+/** Modify the props of a data object using a set of named transformers. */
+export function* mapDataProps<T extends Data>(obj: T, transforms: Transformers<T>): Iterable<DataProp<T>> {
+	for (const [k, v] of getDataProps<{ readonly [K in keyof T]: Transformer<T[K], T[K]> }>(transforms)) yield [k, transform<DataValue<T>, DataValue<T>>(obj[k], v)];
+}
+
+/** Modify the values of the props of an data object using a single transformer. */
+export function mapData<T extends Data>(data: T, transformer: Transformer<DataValue<T>, DataValue<T>>): T; // Passthrough for transformers that return the same type and remove nothing.
+export function mapData<I extends Data, O extends { [K in keyof I]: unknown }>(data: I, transformer: Transformer<DataValue<I>, DataValue<O>>): O; // Transform an entire object with the same props with different types.
+export function mapData<I, O>(data: ImmutableObject<I>, transformer: Transformer<I, O>): ImmutableObject<O> {
+	return mapObject(data, transformer);
 }
