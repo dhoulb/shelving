@@ -1,9 +1,9 @@
 import type { Data, Datas } from "../util/data.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { validateData, Validators } from "../util/validate.js";
-import { isObject } from "../util/object.js";
+import { isData } from "../util/data.js";
 import { OPTIONAL, OptionalSchema } from "./OptionalSchema.js";
-import { Schema } from "./Schema.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 /** Validate a data object. */
 export class DataSchema<T extends Data> extends Schema<T> {
@@ -13,7 +13,7 @@ export class DataSchema<T extends Data> extends Schema<T> {
 		value = {},
 		props,
 		...options
-	}: ConstructorParameters<typeof Schema>[0] & {
+	}: SchemaOptions & {
 		readonly props: Validators<T>;
 		readonly value?: Partial<T>;
 	}) {
@@ -22,7 +22,7 @@ export class DataSchema<T extends Data> extends Schema<T> {
 		this.value = value;
 	}
 	override validate(unsafeValue: unknown = this.value): T {
-		if (!isObject(unsafeValue)) throw new InvalidFeedback("Must be object", { value: unsafeValue });
+		if (!isData(unsafeValue)) throw new InvalidFeedback("Must be object", { value: unsafeValue });
 		return validateData(unsafeValue, this.props);
 	}
 }

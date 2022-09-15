@@ -1,5 +1,15 @@
 import type { Validatable } from "../util/validate.js";
 
+/** Options allowed by a `Schema` instance. */
+export type SchemaOptions = {
+	/** Title of the schema, e.g. for using as the title of a corresponding field. */
+	readonly title?: string;
+	/** Description of the schema, e.g. for using as a description in a corresponding field. */
+	readonly description?: string;
+	/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
+	readonly placeholder?: string;
+};
+
 /**
  * Schema is an object instance with a `validate()` method.
  * - Type `T` represents the type of value `validate()` returns.
@@ -15,18 +25,7 @@ export abstract class Schema<T extends unknown = unknown> implements Validatable
 	/** Default value. */
 	readonly value: unknown;
 
-	constructor({
-		title = "",
-		description = "",
-		placeholder = "",
-	}: {
-		/** Title of the schema, e.g. for using as the title of a corresponding field. */
-		readonly title?: string;
-		/** Description of the schema, e.g. for using as a description in a corresponding field. */
-		readonly description?: string;
-		/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
-		readonly placeholder?: string;
-	}) {
+	constructor({ title = "", description = "", placeholder = "" }: SchemaOptions) {
 		this.title = title;
 		this.description = description;
 		this.placeholder = placeholder;

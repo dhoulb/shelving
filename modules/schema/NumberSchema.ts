@@ -1,6 +1,6 @@
 import { getOptionalNumber, roundStep } from "../util/number.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
-import { Schema } from "./Schema.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 
 /** Schema that defines a valid number. */
@@ -15,7 +15,7 @@ export class NumberSchema extends Schema<number> {
 		max = null,
 		step = null,
 		...rest
-	}: ConstructorParameters<typeof Schema>[0] & {
+	}: SchemaOptions & {
 		readonly value?: number | null;
 		readonly min?: number | null;
 		readonly max?: number | null;

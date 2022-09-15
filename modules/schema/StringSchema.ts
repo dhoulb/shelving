@@ -1,12 +1,23 @@
 import { sanitizeLines, sanitizeString } from "../util/string.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
-import { Schema } from "./Schema.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
 export type HtmlInputType = "text" | "password" | "color" | "date" | "email" | "number" | "tel" | "search" | "url";
 
 /** Function that sanitizes a string. */
 export type Sanitizer = (str: string) => string;
+
+/** Options for `StringSchema` */
+export type StringSchemaOptions = SchemaOptions & {
+	readonly value?: string;
+	readonly type?: HtmlInputType;
+	readonly min?: number;
+	readonly max?: number | null;
+	readonly match?: RegExp | null;
+	readonly sanitizer?: Sanitizer | null;
+	readonly multiline?: boolean;
+};
 
 /**
  * Schema that defines a valid string.
@@ -36,24 +47,7 @@ export class StringSchema extends Schema<string> {
 	readonly match: RegExp | null;
 	readonly sanitizer: Sanitizer | null;
 	readonly multiline: boolean;
-	constructor({
-		value = "",
-		type = "text",
-		min = 0,
-		max = null,
-		match = null,
-		sanitizer = null,
-		multiline = false,
-		...rest
-	}: ConstructorParameters<typeof Schema>[0] & {
-		readonly value?: string;
-		readonly type?: HtmlInputType;
-		readonly min?: number;
-		readonly max?: number | null;
-		readonly match?: RegExp | null;
-		readonly sanitizer?: Sanitizer | null;
-		readonly multiline?: boolean;
-	}) {
+	constructor({ value = "", type = "text", min = 0, max = null, match = null, sanitizer = null, multiline = false, ...rest }: StringSchemaOptions) {
 		super(rest);
 		this.type = type;
 		this.value = value;

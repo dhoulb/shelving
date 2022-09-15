@@ -1,4 +1,4 @@
-import { Schema } from "./Schema.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 /** Define a valid boolean. */
 export class BooleanSchema extends Schema<boolean> {
@@ -6,7 +6,7 @@ export class BooleanSchema extends Schema<boolean> {
 	constructor({
 		value = false,
 		...options
-	}: ConstructorParameters<typeof Schema>[0] & {
+	}: SchemaOptions & {
 		readonly value?: boolean;
 	}) {
 		super(options);

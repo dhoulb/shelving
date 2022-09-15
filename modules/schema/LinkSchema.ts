@@ -1,7 +1,7 @@
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { getOptionalURL } from "../util/url.js";
 import { OPTIONAL } from "./OptionalSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import { StringSchema, StringSchemaOptions } from "./StringSchema.js";
 
 /**
  * Type of `StringSchema` that defines a valid URL.
@@ -19,7 +19,7 @@ export class LinkSchema extends StringSchema {
 		schemes = ["http:", "https:"],
 		hosts = null,
 		...rest
-	}: ConstructorParameters<typeof StringSchema>[0] & {
+	}: StringSchemaOptions & {
 		readonly schemes?: string[];
 		readonly hosts?: string[] | null;
 	}) {

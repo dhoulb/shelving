@@ -1,6 +1,6 @@
 import { getOptionalDate, getYmd, PossibleDate } from "../util/date.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
-import { Schema } from "./Schema.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 
 /** Define a valid date, e.g. `2005-09-12` */
@@ -13,7 +13,7 @@ export class DateSchema extends Schema<string> {
 		min = null,
 		max = null,
 		...options
-	}: ConstructorParameters<typeof Schema>[0] & {
+	}: SchemaOptions & {
 		readonly value?: PossibleDate;
 		readonly min?: PossibleDate | null;
 		readonly max?: PossibleDate | null;

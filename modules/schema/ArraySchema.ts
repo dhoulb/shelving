@@ -1,7 +1,7 @@
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { ImmutableArray, isArray, uniqueArray } from "../util/array.js";
 import { validateArray, Validator } from "../util/validate.js";
-import { Schema } from "./Schema.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
 /**
  * Define a valid array.
@@ -43,7 +43,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		min = 0,
 		max = null,
 		...options
-	}: ConstructorParameters<typeof Schema>[0] & {
+	}: SchemaOptions & {
 		readonly value?: ImmutableArray;
 		readonly items: Validator<T>;
 		readonly min?: number;
