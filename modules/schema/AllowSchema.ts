@@ -1,7 +1,7 @@
 import type { Entry } from "../util/entry.js";
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { getString } from "../util/string.js";
 import { getRequiredMap, ImmutableRequiredMap, isMapKey, PossibleMap, PossibleStringMap } from "../util/map.js";
-import { getString } from "../index.js";
+import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 /** Options for an `AllowSchema` instance. */
