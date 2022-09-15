@@ -1,57 +1,48 @@
+import type { Entry } from "../util/entry.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
-import { getString } from "../util/string.js";
-import { isArray, isArrayItem } from "../util/array.js";
-import { getOptionalNumber } from "../util/number.js";
-import { isObjectKey } from "../util/object.js";
-import { Schema } from "./Schema.js";
+import { getRequiredMap, ImmutableRequiredMap, isMapKey, PossibleMap, PossibleStringMap } from "../util/map.js";
+import { getString } from "../index.js";
+import { Schema, SchemaOptions } from "./Schema.js";
 
-/** Specify a specific list of allowed values. */
-export type Allowed<T extends string | number> = ReadonlyArray<T> | { readonly [K in T]: unknown };
-
-/** Validate a value against a specific set of allowed values. */
-export function validateAllowed<T extends string | number>(value: unknown, allowed: Allowed<T>): T {
-	if (isArray(allowed)) {
-		if (isArrayItem(allowed, value)) return value;
-	} else {
-		if (isObjectKey(allowed, value)) return value;
-	}
-	throw new InvalidFeedback("Unknown value", { value });
-}
+/** Options for an `AllowSchema` instance. */
+type AllowSchemaOptions<K, T> = SchemaOptions & { allow: PossibleMap<K, T>; value?: K | null };
 
 /** Define a valid value from an allowed set of values. */
-export abstract class AllowSchema<T extends string | number> extends Schema<T> {
-	override readonly value: T | null;
-	readonly allow: Allowed<T>;
-	constructor({
-		allow,
-		value = null,
-		...options
-	}: ConstructorParameters<typeof Schema>[0] & {
-		allow: Allowed<T>;
-		value?: T | null;
-	}) {
+export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>> {
+	override readonly value: K | null;
+	readonly allow: ImmutableRequiredMap<K, T>;
+	constructor({ allow, value = null, ...options }: AllowSchemaOptions<K, T>) {
 		super(options);
-		this.allow = allow;
+		this.allow = getRequiredMap(allow);
 		this.value = value;
 	}
-}
+	validate(value: unknown = this.value): K {
+		if (isMapKey(this.allow, value)) return value;
+		throw new InvalidFeedback("Unknown value", { value });
+	}
 
-/** Define a valid string from an allowed set of strings. */
-export class AllowStringSchema<T extends string> extends AllowSchema<T> {
-	validate(unsafeValue: unknown = this.value): T {
-		return validateAllowed(getString(unsafeValue), this.allow);
+	/** Iterate over the the allowed options in `[key, value]` format. */
+	[Symbol.iterator](): Iterator<Entry<K, T>> {
+		return this.allow[Symbol.iterator]();
 	}
 }
 
-/** Define a valid number from an allowed set of numbers. */
-export class AllowNumberSchema<T extends number> extends AllowSchema<T> {
-	validate(unsafeValue: unknown = this.value): T {
-		return validateAllowed(getOptionalNumber(unsafeValue), this.allow);
+/** Define a valid string value from an allowed set of values. */
+export class AllowStringSchema<K extends string, T> extends AllowSchema<K, T> {
+	constructor({ allow, ...options }: SchemaOptions & { allow: PossibleStringMap<K, T> }) {
+		super({ allow: getRequiredMap(allow), ...options });
+	}
+	validator(value: unknown = this.value): K {
+		return super.validate(getString(value));
 	}
 }
 
-/** Valid string from an allowed set of strings. */
-export const ALLOW_STRING = <T extends string>(allow: Allowed<T>): AllowStringSchema<T> => new AllowStringSchema({ allow });
+/** Valid value from an allowed set of values. */
+export function ALLOW<K, T>(allow: PossibleMap<K, T>): AllowSchema<K, T> {
+	return new AllowSchema({ allow });
+}
 
-/** Valid string from an allowed set of numbers. */
-export const ALLOW_NUMBER = <T extends number>(allow: Allowed<T>): AllowNumberSchema<T> => new AllowNumberSchema({ allow });
+/** Valid string from an allowed set of values. */
+export function ALLOW_STRING<K extends string, T>(allow: PossibleStringMap<K, T>): AllowSchema<K, T> {
+	return new AllowStringSchema({ allow });
+}
