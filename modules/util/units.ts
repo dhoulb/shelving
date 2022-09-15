@@ -1,9 +1,9 @@
 import { ConditionError } from "../error/ConditionError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
+import { getProps, ImmutableObject } from "./object.js";
 import { getDuration, PossibleDate } from "./date.js";
-import { MapKey, RequiredMap } from "./map.js";
+import { MapKey, ImmutableRequiredMap } from "./map.js";
 import { formatFullQuantity, formatQuantity, getPercent } from "./number.js";
-import { getObjectProps } from "./object.js";
 
 /** Conversion from one unit to another (either a number to multiple by, or a function to convert). */
 type Conversion = number | ((num: number) => number);
@@ -38,6 +38,11 @@ export class Unit<T extends string> {
 	readonly singular: string;
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `singular` + "s"). */
 	readonly plural: string;
+
+	/** Title for this unit (uses format `abbr (plural)`, e.g. `fl oz (US fluid ounces)`) */
+	get title(): string {
+		return `${this.abbr} (${this.plural})`;
+	}
 
 	constructor(
 		/** `UnitList` this unit belongs to. */
@@ -99,21 +104,16 @@ export class Unit<T extends string> {
 }
 
 /** Represent a list of units. */
-export class UnitList<T extends string> extends RequiredMap<T, Unit<T>> {
+export class UnitList<T extends string> extends ImmutableRequiredMap<T, Unit<T>> {
 	public readonly base!: Unit<T>;
-	constructor(units: { [K in T]: UnitProps<T> }) {
+	constructor(units: ImmutableObject<T, UnitProps<T>>) {
 		super();
-		for (const [ref, props] of getObjectProps(units)) {
+		for (const [ref, props] of getProps(units)) {
 			const unit = new Unit<T>(this, ref, props);
 			if (!this.base) this.base = unit;
-			super.set(ref, unit);
+			Map.prototype.set.call(this, ref, unit);
 		}
 	}
-}
-export interface UnitList<T extends string> {
-	(units: { [K in T]: UnitProps<T> }): UnitList<T>;
-	set: never; // Disallow `map.set()`
-	delete: never; // Disallow `map.delete()`
 }
 
 // Distance constants.
