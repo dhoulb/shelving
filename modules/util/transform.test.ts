@@ -1,4 +1,4 @@
-import { transform, mapArray, transformData, mapObject } from "../index.js";
+import { transform, mapArray, transformObject, mapObject } from "../index.js";
 
 test("transform()", () => {
 	expect(transform(10, n => n * n)).toBe(100);
@@ -24,9 +24,9 @@ test("mapObject()", () => {
 test("transformData()", () => {
 	const obj = { a: 10, b: 20 };
 	// Normal.
-	expect(transformData(obj, { a: 100 })).toEqual({ a: 100, b: 20 });
-	expect(transformData(obj, { a: 10 })).toEqual({ a: 10, b: 20 });
+	expect(transformObject(obj, { a: 100 })).toEqual({ a: 100, b: 20 });
+	expect(transformObject(obj, { a: 10 })).toEqual({ a: 10, b: 20 });
 	// expect(transformData(obj, { a: 10 })).toBe(obj); // Returns same instance.
 	// Function transforms.
-	expect(transformData(obj, { b: n => n * n })).toEqual({ a: 10, b: 400 });
+	expect(transformObject(obj, { b: n => n * n })).toEqual({ a: 10, b: 400 });
 });

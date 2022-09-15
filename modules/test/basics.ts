@@ -9,7 +9,7 @@ import { STRING } from "../schema/StringSchema.js";
 export const BASIC_SCHEMA = DATA({
 	str: STRING,
 	num: NUMBER,
-	group: ALLOW_STRING(["a", "b", "c"]),
+	group: ALLOW_STRING({ a: "A", b: "B", c: "C" }),
 	tags: ARRAY(STRING),
 });
 export type BasicData = ValidatorType<typeof BASIC_SCHEMA>;

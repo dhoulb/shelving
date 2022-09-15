@@ -10,6 +10,7 @@ export * from "./constants.js";
 export * from "./data.js";
 export * from "./date.js";
 export * from "./debug.js";
+export * from "./dictionary.js";
 export * from "./diff.js";
 export * from "./entry.js";
 export * from "./equal.js";

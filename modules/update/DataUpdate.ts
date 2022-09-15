@@ -3,7 +3,7 @@ import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { DataSchema } from "../schema/DataSchema.js";
 import { Data, DataKey, DataProp, getDataProps } from "../util/data.js";
 import { isNullish, Nullish } from "../util/null.js";
-import { Transformable, transformData } from "../util/transform.js";
+import { Transformable, transformObject } from "../util/transform.js";
 import { validate, Validator, Validators } from "../util/validate.js";
 import { Update } from "./Update.js";
 
@@ -37,6 +37,9 @@ function* _validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators
 	if (feedbacks.size) throw new InvalidFeedback("Invalid updates", feedbacks);
 }
 
+/** Update data using a set of updates. */
+export const updateData: <T extends Data>(data: T, updates: Updates<T>) => T = transformObject;
+
 /**
  * Update that can be applied to a data object to update its props.
  */
@@ -53,7 +56,7 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 	}
 
 	transform(data: T): T {
-		return transformData<T>(data, this.updates);
+		return updateData<T>(data, this.updates);
 	}
 
 	override validate(validator: Validator<T>): this {

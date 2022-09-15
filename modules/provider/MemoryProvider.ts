@@ -1,13 +1,12 @@
 import type { Data, Datas, DataKey } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
-import type { Updates } from "../update/DataUpdate.js";
+import { Updates, updateData } from "../update/DataUpdate.js";
 import type { Constraint } from "../constraint/Constraint.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { getRandomKey } from "../util/random.js";
 import { isArrayEqual } from "../util/equal.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { getArray } from "../util/array.js";
-import { transformData } from "../util/transform.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import type { Provider } from "./Provider.js";
 
@@ -160,7 +159,7 @@ export class MemoryTable<T extends Data> {
 	updateItem(id: string, updates: Updates<T>): void {
 		const item = this._data.get(id);
 		if (!item) throw new RequiredError(`Document "${id}" does not exist`);
-		this._data.set(id, { ...transformData(item, updates), id });
+		this._data.set(id, { ...updateData(item, updates), id });
 		this._times.set(id, Date.now());
 		this._changed.resolve();
 	}
@@ -264,7 +263,7 @@ export class MemoryTable<T extends Data> {
 		let count = 0;
 		for (const item of _getWriteConstraints(constraints).transform(this._data.values())) {
 			const id = item.id;
-			this._data.set(id, { ...transformData(item, updates), id });
+			this._data.set(id, { ...updateData(item, updates), id });
 			this._times.set(id, now);
 			count++;
 		}

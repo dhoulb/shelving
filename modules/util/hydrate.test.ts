@@ -9,6 +9,7 @@ test("hydrate(): Works correctly with class instances", () => {
 	// Flat.
 	const original1 = new Increment(1);
 	const dehydrated1 = dehydrate(original1, HYDRATIONS);
+	expect(dehydrated1).not.toBe(original1);
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS);
 	expect(hydrated1).toBeInstanceOf(Increment);
 	expect(original1).not.toBe(hydrated1);

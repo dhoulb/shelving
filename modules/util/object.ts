@@ -2,38 +2,31 @@ import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
 import { isIterable } from "./iterate.js";
 
-/** Readonly map-like object. */
-export type ImmutableObject<T = unknown> = { readonly [key: PropertyKey]: T };
+/** Any readonly objet. */
+export type ImmutableObject<K extends PropertyKey = PropertyKey, T = unknown> = { readonly [KK in K]: T };
 
-/** Writable map-like object. */
-export type MutableObject<T = unknown> = { [key: PropertyKey]: T };
+/** Any writable object. */
+export type MutableObject<K extends PropertyKey = PropertyKey, T = unknown> = { [KK in K]: T };
 
-/** Get the type of the _keys_ of a map-like object.. */
-export type ObjectKey<T extends ImmutableObject> = keyof T;
+/** Prop for an object. */
+export type ObjectProp<T extends ImmutableObject = ImmutableObject> = readonly [keyof T, T[keyof T]];
 
-/** Get the type of the _values_ of a map-like object. */
-export type ObjectValue<T extends ImmutableObject> = T[ObjectKey<T>];
+/** Key for an object prop. */
+export type ObjectKey<T extends ImmutableObject = ImmutableObject> = keyof T;
 
-/** Get the type for a prop of a map-like object in entry format. */
-export type ObjectProp<T extends ImmutableObject> = readonly [ObjectKey<T>, ObjectValue<T>];
+/** Value for an object prop. */
+export type ObjectValue<T extends ImmutableObject = ImmutableObject> = T[keyof T];
 
-/** Something that can be converted to an object. */
-export type PossibleObject<T> = (ImmutableObject<T> & { [Symbol.iterator]?: never }) | Iterable<ObjectProp<ImmutableObject<T>>>;
-
-/**
- * Is a value an unknown object?
- * - This is a TypeScript assertion object that asserts the value extends `ImmutableObject`
- * - Note: Arrays and other complex objects will return true.
- */
+/** Is an unknown value an unknown object? */
 export const isObject = <T extends ImmutableObject>(value: T | unknown): value is T => typeof value === "object" && value !== null;
 
 /** Assert that a value is an object */
-export function assertObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
+export function assertObject(value: ImmutableObject | unknown): asserts value is ImmutableObject {
 	if (!isObject(value)) throw new AssertionError(`Must be object`, value);
 }
 
-/** Is a value a plain object? */
-export function isPlainObject<T extends ImmutableObject>(value: T | unknown): value is T {
+/** is an unknown value an unknown plain object? */
+export function isPlainObject(value: ImmutableObject | unknown): value is ImmutableObject {
 	if (isObject(value)) {
 		const proto = Object.getPrototypeOf(value);
 		return proto === null || proto === Object.prototype;
@@ -41,28 +34,58 @@ export function isPlainObject<T extends ImmutableObject>(value: T | unknown): va
 	return false;
 }
 
-/** Assert that a value is a plain object */
-export function assertPlainObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
+/** Assert that a value is an object */
+export function assertPlainObject(value: ImmutableObject | unknown): asserts value is ImmutableObject {
 	if (!isPlainObject(value)) throw new AssertionError(`Must be plain object`, value);
 }
 
 /** Is an unknown value the key for an own prop of an object. */
-export const isObjectKey = <T extends ImmutableObject>(obj: T, key: unknown): key is ObjectKey<T> => (typeof key === "string" || typeof key === "number" || typeof key === "symbol") && Object.prototype.hasOwnProperty.call(obj, key);
+export const isProp = <T extends ImmutableObject>(obj: T, key: keyof T | unknown): key is keyof T => Object.prototype.hasOwnProperty.call(obj, key as PropertyKey);
 
-/** turn a possible object into an object. */
-export function getObject<T>(obj: PossibleObject<T>): ImmutableObject<T> {
-	return isIterable(obj) ? Object.fromEntries(obj) : obj;
-}
+/**
+ * Mutable type is the opposite of `Readonly<T>` helper type.
+ * - See https://github.com/microsoft/TypeScript/issues/24509
+ * - Consistency with `Readonly<T>`
+ */
+export type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
-/** Turn a data object into a set of props. */
-export function getObjectProps<T extends ImmutableObject>(obj: T | Partial<T>): ImmutableArray<ObjectProp<T>>;
-export function getObjectProps<T>(obj: PossibleObject<T>): Iterable<ObjectProp<ImmutableObject<T>>>;
-export function getObjectProps<T>(obj: PossibleObject<T>): Iterable<ObjectProp<ImmutableObject<T>>> {
+/**
+ * Deep partial object: deeply convert an object to its partial version.
+ * - Any value that extends `UnknownObject` has its props made partial.
+ * - Works deeply on nested objects too.
+ */
+export type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };
+
+/**
+ * Deep mutable object: deeply convert an object to its mutable version.
+ * - Any value that extends `UnknownObject` has its props made mutable.
+ * - Works deeply on nested objects too.
+ */
+export type DeepMutable<T> = { -readonly [K in keyof T]: DeepMutable<T[K]> };
+
+/**
+ * Deep readonly object: deeply convert an object to its readonly version.
+ * - Any value that extends `UnknownObject` has its props made readonly.
+ * - Works deeply on nested objects too.
+ */
+export type DeepReadonly<T> = { +readonly [K in keyof T]: DeepReadonly<T[K]> };
+
+/** Pick only the properties of an object that match a type. */
+export type PickProps<T, TT> = Pick<T, { [K in keyof T]: T[K] extends TT ? K : never }[keyof T]>;
+
+/** Omit the properties of an object that match a type. */
+export type OmitProps<T, TT> = Omit<T, { [K in keyof T]: T[K] extends TT ? K : never }[keyof T]>;
+
+/** Get the props of an object as a set of entries. */
+export function getProps<T extends ImmutableObject>(obj: T): ImmutableArray<ObjectProp<T>>;
+export function getProps<T extends ImmutableObject>(obj: T | Partial<T>): ImmutableArray<ObjectProp<T>>;
+export function getProps<T extends ImmutableObject>(obj: T | Partial<T> | Iterable<ObjectProp<T>>): Iterable<ObjectProp<T>>;
+export function getProps(obj: ImmutableObject | Partial<ImmutableObject> | Iterable<ObjectProp<ImmutableObject>>): Iterable<ObjectProp<ImmutableObject>> {
 	return isIterable(obj) ? obj : Object.entries(obj);
 }
 
 /**
- * Extract the value of a named prop from a data object.
+ * Extract the value of a named prop from an object.
  * - Extraction is possibly deep if deeper keys are specified.
  *
  * @param obj The target object to get from.
@@ -71,11 +94,11 @@ export function getObjectProps<T>(obj: PossibleObject<T>): Iterable<ObjectProp<I
  * @param k3 The sub-sub-key of the prop in the object to get.
  * @param k4 The sub-sub-sub-key of the prop in the object to get.
  */
-export function getObjectProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(obj: T, k1: K1, k2: K2, k3: K3, k4: K4): T[K1][K2][K3][K4];
-export function getObjectProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(obj: T, k1: K1, k2: K2, k3: K3): T[K1][K2][K3];
-export function getObjectProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1]>(obj: T, k1: K1, k2: K2): T[K1][K2];
-export function getObjectProp<T extends ImmutableObject, K1 extends keyof T>(obj: T, k1: K1): T[K1];
-export function getObjectProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(
+export function getProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(obj: T, k1: K1, k2: K2, k3: K3, k4: K4): T[K1][K2][K3][K4];
+export function getProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(obj: T, k1: K1, k2: K2, k3: K3): T[K1][K2][K3];
+export function getProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1]>(obj: T, k1: K1, k2: K2): T[K1][K2];
+export function getProp<T extends ImmutableObject, K1 extends keyof T>(obj: T, k1: K1): T[K1];
+export function getProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(
 	data: T,
 	k1: K1,
 	k2?: K2,
@@ -86,54 +109,47 @@ export function getObjectProp<T extends ImmutableObject, K1 extends keyof T, K2 
 }
 
 /** Set a prop on an object (immutably) and return a new object including that prop. */
-export function withObjectProp<T extends ImmutableObject, K extends ObjectKey<T>>(input: T, key: K, value: T[K]): T {
+export function withProp<T extends ImmutableObject, K extends keyof T>(input: T, key: K, value: T[K]): T {
 	return input[key] === value ? input : { ...input, [key]: value };
 }
 
 /** Set several props on an object (immutably) and return a new object including those props. */
-export function withObjectProps<T extends ImmutableObject>(input: T, props: T | Partial<T>): T {
-	for (const [k, v] of Object.entries(props)) if (input[k] !== v) return { ...input, ...props };
+export function withProps<T extends ImmutableObject>(input: T, props: T | Partial<T> | Iterable<ObjectProp<T>>): T {
+	for (const [k, v] of getProps(props)) if (input[k] !== v) return { ...input, ...props };
 	return input;
 }
 
-/** Remove several key/value entries from an object (immutably) and return a new object without those props. */
-export function withoutObjectProps<T extends ImmutableObject, K extends ObjectKey<T>>(input: T, ...keys: K[]): Omit<T, K> {
-	for (const key of keys) if (key in input) return Object.fromEntries(Object.entries(input).filter(_doesntHaveKey, keys)) as Omit<T, K>;
+/** Remove several props from an object (immutably) and return a new object without those props. */
+export function omitProps<T extends ImmutableObject, K extends keyof T>(input: T, ...keys: K[]): Omit<T, K>;
+export function omitProps(input: ImmutableObject, ...keys: (keyof ImmutableObject)[]): ImmutableObject {
+	for (const key of keys) if (key in input) return Object.fromEntries(Object.entries(input).filter(_hasntKey, keys));
 	return input;
 }
-function _doesntHaveKey(this: (string | number)[], [key]: [string | number, unknown]) {
+function _hasntKey<T extends ImmutableObject>(this: (keyof T)[], [key]: readonly [keyof T, T[keyof T]]): boolean {
 	return !this.includes(key);
 }
 
 /** Pick several props from an object and return a new object with only thos props. */
-export function pickObjectProps<T extends ImmutableObject, K extends ObjectKey<T>>(input: T, ...keys: ObjectKey<T>[]): Pick<T, K> {
-	return Object.fromEntries(Object.entries(input).filter(_doesHaveKey, keys)) as Pick<T, K>;
+export function pickProps<T extends ImmutableObject, K extends keyof T>(input: T, ...keys: K[]): Pick<T, K>;
+export function pickProps(input: ImmutableObject, ...keys: (keyof ImmutableObject)[]): ImmutableObject {
+	return Object.fromEntries(Object.entries(input).filter(_hasKey, keys));
 }
-function _doesHaveKey(this: (string | number)[], [key]: [string | number, unknown]) {
+function _hasKey<T extends ImmutableObject>(this: (keyof T)[], [key]: readonly [keyof T, T[keyof T]]): boolean {
 	return this.includes(key);
 }
 
 /** Set a single named prop on an object (by reference) and return its value. */
-export function setObjectProp<T extends MutableObject, K extends ObjectKey<T>>(data: T, key: K, value: T[K]): T[K] {
-	data[key] = value;
+export function setProp<T extends MutableObject, K extends keyof T>(obj: T, key: K, value: T[K]): T[K] {
+	obj[key] = value;
 	return value;
 }
 
 /** Set several named props on an object (by reference). */
-export function setObjectProps<T extends MutableObject>(obj: T, props: Partial<T>): void {
-	for (const [k, v] of getObjectProps(props)) obj[k] = v;
+export function setProps<T extends MutableObject>(obj: T, entries: T | Partial<T> | Iterable<ObjectProp<T>>): void {
+	for (const [k, v] of getProps<T>(entries)) obj[k] = v;
 }
 
 /** Remove several key/value entries from an object (by reference). */
-export function deleteObjectProps<T extends MutableObject>(obj: T, ...keys: ObjectKey<T>[]): void {
+export function deleteProps<T extends MutableObject>(obj: T, ...keys: (keyof T)[]): void {
 	for (const key of keys) delete obj[key];
 }
-
-/** Type that represents an empty object. */
-export type EmptyObject = { readonly [K in never]: never };
-
-/** An empty object. */
-export const EMPTY_OBJECT: EmptyObject = {};
-
-/** Function that returns an an empty object. */
-export const getEmptyObject = (): EmptyObject => EMPTY_OBJECT;

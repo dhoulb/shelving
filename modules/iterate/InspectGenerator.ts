@@ -1,4 +1,4 @@
-import type { Mutable } from "../util/data.js";
+import type { Mutable } from "../util/object.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { ThroughGenerator } from "./ThroughGenerator.js";
 

@@ -1,6 +1,8 @@
-import { ImmutableObject, isObject } from "../util/object.js";
+import type { ImmutableDictionary } from "../util/dictionary.js";
 import { Entry, getEntries } from "../util/entry.js";
 import { setPrototype } from "../util/class.js";
+import { isObject } from "../util/object.js";
+import { getString } from "../util/string.js";
 
 /**
  * The `Feedback` class represents a feedback message that should be shown to the user.
@@ -37,7 +39,7 @@ export const isFeedback = <T extends Feedback>(v: T | unknown): v is Feedback =>
  * Get an object of sub-messages in `{ key: message }` format from a feedback's value.
  * - Takes the `.value` property from a `Feedback` instance and looks for keyed `Feedback` instances in either `{ key: Feedback }`. `Feedback[]`, or `Map<key, Feedback>` formats.
  */
-export const getFeedbackMessages = ({ value }: Feedback): ImmutableObject<string> => Object.fromEntries(_yieldFeedbackMessages(value));
-function* _yieldFeedbackMessages(value: unknown): Iterable<Entry<string | number, string>> {
-	if (isObject(value)) for (const [k, v] of getEntries(value)) if (isFeedback(v)) yield [k, v.message];
+export const getFeedbackMessages = ({ value }: Feedback): ImmutableDictionary<string> => Object.fromEntries(_yieldFeedbackMessages(value));
+function* _yieldFeedbackMessages(value: unknown): Iterable<Entry<string, string>> {
+	if (isObject(value)) for (const [k, v] of getEntries(value)) if (isFeedback(v)) yield [getString(k), v.message];
 }

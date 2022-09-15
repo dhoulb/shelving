@@ -1,5 +1,5 @@
 import type { Data } from "../util/data.js";
-import { getObjectProp } from "../util/object.js";
+import { getProp } from "../util/object.js";
 import { assert } from "../util/assert.js";
 import { limitItems } from "../util/iterate.js";
 import { Filterable, FilterConstraints } from "./FilterConstraints.js";
@@ -135,7 +135,7 @@ function* _getAfterFilters<T extends Data>(sorts: SortConstraints<T>, item: T): 
 	for (const sort of sorts) {
 		const { key, direction } = sort;
 		const filterKey = direction === "ASC" ? (sort === lastSort ? `${key}>` : `${key}>=`) : sort === lastSort ? `${key}<` : `${key}<=`;
-		yield new FilterConstraint(filterKey, getObjectProp(item, key));
+		yield new FilterConstraint(filterKey, getProp(item, key));
 	}
 }
 
@@ -145,6 +145,6 @@ function* _getBeforeFilters<T extends Data>(sorts: SortConstraints<T>, item: T):
 	for (const sort of sorts) {
 		const { key, direction } = sort;
 		const filterKey = direction === "ASC" ? (sort === lastSort ? `${key}<` : `${key}<=`) : sort === lastSort ? `${key}>` : `${key}>=`;
-		yield new FilterConstraint(filterKey, getObjectProp(item, key));
+		yield new FilterConstraint(filterKey, getProp(item, key));
 	}
 }

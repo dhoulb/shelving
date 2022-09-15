@@ -1,5 +1,5 @@
 import { Data, getData, OptionalData } from "../util/data.js";
-import { Transformers, transformData } from "../util/transform.js";
+import { Transformers, transformObject } from "../util/transform.js";
 import { State } from "./State.js";
 
 /** State that stores a data object and has additional methods to help with that. */
@@ -11,7 +11,7 @@ export class DataState<T extends Data> extends State<T> {
 
 	/** Update several props in this data. */
 	update(updates: Transformers<T>): void {
-		this.set(transformData(this.data, updates));
+		this.set(transformObject(this.data, updates));
 	}
 }
 
@@ -29,7 +29,7 @@ export class OptionalDataState<T extends Data> extends State<OptionalData<T>> {
 
 	/** Update several props in this data. */
 	update(updates: Transformers<T>): void {
-		this.set(transformData(this.data, updates));
+		this.set(transformObject(this.data, updates));
 	}
 
 	/** Set the data to `null`. */

@@ -1,7 +1,7 @@
 import type { DataKey, Datas, Data } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import type { DataSchemas, DataSchema } from "../schema/DataSchema.js";
-import type { MutableObject } from "../util/object.js";
+import type { MutableDictionary } from "../util/dictionary.js";
 import { Updates, validateUpdates } from "../update/DataUpdate.js";
 import { validate } from "../util/validate.js";
 import { Feedback } from "../feedback/Feedback.js";
@@ -114,11 +114,11 @@ function _validateItem<T extends Data>(collection: string, unsafeEntity: ItemVal
 
 /** Validate a set of entities for this query reference. */
 function _validateItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): ItemArray<T> {
-	return Array.from(_yieldItems(collection, unsafeEntities, schema));
+	return Array.from(_yieldValidItems(collection, unsafeEntities, schema));
 }
-function* _yieldItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): Iterable<ItemData<T>> {
+function* _yieldValidItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): Iterable<ItemData<T>> {
 	let invalid = false;
-	const details: MutableObject<Feedback> = {};
+	const details: MutableDictionary<Feedback> = {};
 	for (const unsafeEntity of unsafeEntities) {
 		try {
 			yield { ...validate(unsafeEntity, schema), id: unsafeEntity.id };

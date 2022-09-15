@@ -1,13 +1,15 @@
-import type { ImmutableObject } from "./object.js";
 import { ImmutableArray, isArray } from "./array.js";
-import { ImmutableMap, isMap } from "./map.js";
+import { isIterable } from "./iterate.js";
+import { ImmutableMap } from "./map.js";
+import { ImmutableObject } from "./object.js";
+import { ImmutableSet, isSet } from "./set.js";
 
 /**
  * Single entry from a map-like object.
  * - Consistency with `UnknownObject`
  * - Always readonly.
  */
-export type Entry<K, T> = readonly [K, T];
+export type Entry<K = unknown, T = unknown> = readonly [K, T];
 
 /** Extract the type for the value of an entry. */
 export type EntryKey<X> = X extends Entry<infer Y, unknown> ? Y : never;
@@ -31,8 +33,12 @@ export function* getEntryValues<K, T>(input: Iterable<Entry<K, T>>): Iterable<T>
 	for (const [, v] of input) yield v;
 }
 
-/** Yield the entries in an object, array, or map. */
-export function getEntries<T>(input: ImmutableObject<T> | ImmutableArray<T> | ImmutableMap<string | number, T>): Iterable<Entry<string | number, T>> {
-	if (isArray(input) || isMap(input)) return input.entries();
-	return Object.entries(input);
+/** Yield the entries in something that can yield entries. */
+export function getEntries<K extends number, T = K>(entries: ImmutableArray<T> | ImmutableSet<K & T> | ImmutableObject<K, T> | Iterable<Entry<K, T>>): Iterable<Entry<K, T>>;
+export function getEntries<K extends string, T = K>(entries: ImmutableSet<K & T> | ImmutableObject<K, T> | Iterable<Entry<K, T>>): Iterable<Entry<K, T>>;
+export function getEntries<K, T = K>(entries: ImmutableArray<K & T> | ImmutableSet<K & T> | ImmutableObject<K & PropertyKey, T> | Iterable<Entry<K, T>>): Iterable<Entry<K, T>>;
+export function getEntries(entries: ImmutableArray | ImmutableSet | ImmutableObject | ImmutableMap | Iterable<Entry>): Iterable<Entry> {
+	if (isArray(entries) || isSet(entries)) return entries.entries();
+	if (isIterable(entries)) return entries;
+	return Object.entries(entries);
 }

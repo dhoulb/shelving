@@ -34,7 +34,7 @@ import type { SortDirection } from "../../constraint/SortConstraint.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
-import { ArrayUpdate, DataUpdate, Updates, Increment, ObjectUpdate, Delete, Update } from "../../update/index.js";
+import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, Update } from "../../update/index.js";
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
@@ -86,7 +86,7 @@ function _getItemValue(snapshot: FirestoreDocumentSnapshot): ItemValue {
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
 function* _getFieldValues<T>(updates: Iterable<Entry<string, T | Update<T>>>, prefix = ""): Iterable<string | T | FirestoreFieldValue> {
 	for (const [key, update] of updates) {
-		if (update instanceof DataUpdate || update instanceof ObjectUpdate) {
+		if (update instanceof DataUpdate || update instanceof DictionaryUpdate) {
 			yield* _getFieldValues(update, `${prefix}${key}.`);
 		} else if (update instanceof ArrayUpdate) {
 			if (update.adds.length) {

@@ -1,6 +1,7 @@
 import type { ImmutableArray } from "./array.js";
 import type { NotString } from "./string.js";
-import { MutableObject, isObject, ImmutableObject } from "./object.js";
+import type { MutableDictionary, ImmutableDictionary } from "./dictionary.js";
+import { isObject } from "./object.js";
 
 /** Single template chunk. */
 type TemplateChunk = {
@@ -14,7 +15,7 @@ type TemplateChunk = {
 type TemplateChunks = ImmutableArray<TemplateChunk>;
 
 /** Template values in `{ placeholder: value }` format. */
-type TemplateValues = ImmutableObject<string>;
+type TemplateValues = ImmutableDictionary<string>;
 
 /** Things that can be converted to the value for a named placeholder. */
 type PlaceholderValues =
@@ -33,7 +34,7 @@ const R_NAME = /[a-z0-9]+/i;
 const EMPTY_TEMPLATE = Object.create(null);
 
 // Cache of templates.
-const TEMPLATE_CACHE: MutableObject<TemplateChunks> = Object.create(null);
+const TEMPLATE_CACHE: MutableDictionary<TemplateChunks> = Object.create(null);
 
 /**
  * Split up a template into an array of separator → placeholder → separator → placeholder → separator
@@ -52,7 +53,7 @@ const _split = (template: string): TemplateChunks => {
 		const pre = matches[i - 1] as string;
 		const placeholder = matches[i] as string;
 		const post = matches[i + 1] as string;
-		if (i > 1 && !pre.length) throw new SyntaxError("shelving/template: Placeholders must be separated by at least one character");
+		if (i > 1 && !pre.length) throw new SyntaxError("Placeholders must be separated by at least one character");
 		const name = placeholder === "*" ? String(asterisks++) : R_NAME.exec(placeholder)?.[0] || "";
 		chunks.push({ pre, placeholder, name, post });
 	}
@@ -117,7 +118,7 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  * Turn ":year-:month" and `{ year: "2016"... }` etc into "2016-06..." etc.
  *
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
- * @param values An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }` (functions are called, everything else converted to string), or a function or string to use for all placeholders.
+ * @param value An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }` (functions are called, everything else converted to string), or a function or string to use for all placeholders.
  * @return The rendered string, e.g. `Dave-UK/Manchester`
  *
  * @throws {ReferenceError} If a placeholder in the template string is not specified in values.
@@ -136,5 +137,5 @@ const _replace = (name: string, value: PlaceholderValues): string => {
 		const v = value[name];
 		if (typeof v === "string") return v;
 	}
-	throw new ReferenceError(`renderTemplate(): values.${name}: Must be defined`);
+	throw new ReferenceError(`Template "value.${name}" must be defined`);
 };

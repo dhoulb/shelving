@@ -1,7 +1,6 @@
 import { ImmutableArray, isArray } from "./array.js";
 import { isArrayEqual, isDeepEqual } from "./equal.js";
-import { isObject, MutableObject } from "./object.js";
-import { Data, DeepPartial } from "./data.js";
+import { isObject, MutableObject, ImmutableObject, DeepPartial } from "./object.js";
 
 /** The `SAME` symbol indicates sameness. */
 export const SAME: unique symbol = Symbol("shelving/SAME");
@@ -18,9 +17,9 @@ export const SAME: unique symbol = Symbol("shelving/SAME");
  * - If `right` is an array, returns whatever `deepDiffArray()` returns.
  * - If `right` is an object, returns whatever `deepDiffObject()` returns.
  */
-export function deepDiff<R extends Data>(left: unknown, right: R): R | DeepPartial<R> | typeof SAME;
+export function deepDiff<R extends ImmutableObject>(left: unknown, right: R): R | DeepPartial<R> | typeof SAME;
 export function deepDiff<R extends unknown>(left: unknown, right: R): R | typeof SAME;
-export function deepDiff(left: unknown, right: DeepPartial<Data> | unknown): DeepPartial<Data> | unknown | typeof SAME {
+export function deepDiff(left: unknown, right: DeepPartial<ImmutableObject> | unknown): DeepPartial<ImmutableObject> | unknown | typeof SAME {
 	if (left === right) return SAME;
 	if (isArray(right)) return isArray(left) ? deepDiffArray(left, right) : right;
 	if (isObject(right)) return isObject(left) && !isArray(left) ? deepDiffObject(left, right) : right;
@@ -50,8 +49,8 @@ export function deepDiffArray<R extends ImmutableArray>(left: ImmutableArray, ri
  * - If the two values are deeply equal the `SAME` constant is returned.
  * - If `left` isn't an object then the result can't be diffed so entire `right` is returned.
  */
-export function deepDiffObject<R extends Data>(left: Data, right: R): R | DeepPartial<R> | typeof SAME;
-export function deepDiffObject(left: Data, right: Data): Data | typeof SAME {
+export function deepDiffObject<R extends ImmutableObject>(left: ImmutableObject, right: R): R | DeepPartial<R> | typeof SAME;
+export function deepDiffObject(left: ImmutableObject, right: ImmutableObject): ImmutableObject | typeof SAME {
 	if (left === right) return SAME;
 
 	const rightKeys = Object.keys(right);

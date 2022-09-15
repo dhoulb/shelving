@@ -1,19 +1,19 @@
 import { AssertionError } from "../error/AssertionError.js";
+import type { ImmutableDictionary } from "./dictionary.js";
 import type { Class } from "./class.js";
 import { isArray } from "./array.js";
-import { Data, isData } from "./data.js";
 import { isDate } from "./date.js";
 import { isMap } from "./map.js";
-import { ImmutableObject, isPlainObject } from "./object.js";
+import { ImmutableObject, isObject, isPlainObject } from "./object.js";
 import { isSet } from "./set.js";
 import { isString } from "./string.js";
-import { mapArray, mapData, mapEntries, mapItems, mapObject, Transformable } from "./transform.js";
+import { mapArray, mapObject, mapEntries, mapItems, Transformable } from "./transform.js";
 
 /**
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.
  * - We can't use `class.name` because we don't know that the name of the class will survive minification.
  */
-export type Hydrations = ImmutableObject<Class>;
+export type Hydrations = ImmutableDictionary<Class>;
 
 /**
  * Deeply dehydrate a class instance based on a set of `Hydrations`
@@ -44,7 +44,7 @@ export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 export type DehydratedObject = { readonly $type: string; readonly $value: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** Is an unknown value a dehydrated object with a `$type` key. */
-const isDehydrated = (v: DehydratedObject | Data): v is DehydratedObject => isString(v.$type);
+const isDehydrated = (v: DehydratedObject | ImmutableObject): v is DehydratedObject => isString(v.$type);
 
 /** Hydrates a value with a set of hydrations. */
 export class Hydrator implements Transformable<unknown, unknown> {
@@ -55,13 +55,13 @@ export class Hydrator implements Transformable<unknown, unknown> {
 	transform(value: unknown): unknown {
 		if (isArray(value)) return mapArray(value, this);
 		if (isPlainObject(value)) {
-			if (!isDehydrated(value)) return mapData(value, this);
+			if (!isDehydrated(value)) return mapObject(value, this);
 			const { $type, $value } = value;
 			if ($type === "Map") return new Map($value);
 			if ($type === "Set") return new Set($value);
 			if ($type === "Date") return new Date($value);
 			const hydration = this._hydrations[$type];
-			if (hydration) return { __proto__: hydration.prototype, ...mapData($value, this) };
+			if (hydration) return { __proto__: hydration.prototype, ...mapObject($value, this) };
 			throw new AssertionError(`Cannot hydrate "${$type}" object`, value);
 		}
 		return value;
@@ -78,11 +78,11 @@ export class Dehydrator implements Transformable<unknown, unknown> {
 		if (isArray(value)) return mapArray(value, this);
 		if (isMap(value)) return { $type: "Map", $value: Array.from(mapEntries(value.entries(), this)) };
 		if (isSet(value)) return { $type: "Set", $value: Array.from(mapItems(value.values(), this)) };
-		if (isDate(value)) return { $type: "Date", $value: value.toString() };
-		if (isData(value)) {
+		if (isDate(value)) return { $type: "Date", $value: value.getTime() };
+		if (isObject(value)) {
 			const proto = Object.getPrototypeOf(value);
 			if (proto === Object.prototype || proto === null) return mapObject(value, this);
-			for (const [$type, hydration] of Object.entries(this._hydrations)) if (proto === hydration.prototype) return { $type, $value: mapData(value, this) };
+			for (const [$type, hydration] of Object.entries(this._hydrations)) if (proto === hydration.prototype) return { $type, $value: mapObject(value, this) };
 			throw new AssertionError(`Cannot dehydrate object`, value);
 		}
 		return value;

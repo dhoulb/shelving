@@ -1,7 +1,7 @@
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
-import type { ImmutableObject } from "./object.js";
+import type { ImmutableDictionary } from "./dictionary.js";
 import { Data, DataProp, getDataProps } from "./data.js";
 import { getArray, ImmutableArray } from "./array.js";
 
@@ -94,17 +94,18 @@ export function* validateEntries<T>(unsafeValues: Iterable<Entry<string, unknown
 }
 
 /**
- * Validate a map-like object.
+ * Validate the values of the entries in a dictionary object.
  *
  * @throw InvalidFeedback if one or more entry values did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function validateObject<T>(obj: ImmutableObject<T>, validator: Validator<T>): ImmutableObject<T> {
+export function validateDictionary<T>(obj: ImmutableDictionary<T>, validator: Validator<T>): ImmutableDictionary<T> {
 	return Object.fromEntries(validateEntries(Object.entries(obj), validator));
 }
 
 /**
  * Validate the props of a data object with a set of validators.
+ *
  * @yield Valid props for the data object.
  * @throw InvalidFeedback if one or more props did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
