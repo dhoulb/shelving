@@ -41,7 +41,7 @@ export function addSetItems<T>(set: MutableSet<T>, ...items: T[]): void {
 }
 
 /** Remove multiple items from a set (by reference). */
-export function removeSetItems<T>(set: MutableSet<T>, ...items: T[]): void {
+export function deleteSetItems<T>(set: MutableSet<T>, ...items: T[]): void {
 	for (const item of items) set.delete(item);
 }
 

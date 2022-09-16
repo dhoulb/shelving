@@ -1,4 +1,4 @@
-import { ImmutableArray, toggleArrayItems, withArrayItems, withoutArrayItems } from "../util/array.js";
+import { ImmutableArray, toggleArrayItems, withArrayItems, omitArrayItems } from "../util/array.js";
 import { State } from "./State.js";
 
 /** State that stores an array and has additional methods to help with that. */
@@ -19,7 +19,7 @@ export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<
 
 	/** Remove items from this array. */
 	delete(...items: T[]): void {
-		this.set(withoutArrayItems(this.value, ...items));
+		this.set(omitArrayItems(this.value, ...items));
 	}
 
 	/** Toggle items in this array. */

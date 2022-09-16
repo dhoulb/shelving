@@ -1,5 +1,6 @@
 import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import { omitItems, pickItems } from "./iterate.js";
 
 /**
  * Mutable array: an array that can be changed.
@@ -16,6 +17,9 @@ export type ImmutableArray<T = unknown> = readonly T[];
 /** Get the type of the _items_ in an array. */
 export type ArrayItem<T extends ImmutableArray> = T[number];
 
+/** Things that can be converted to arrays. */
+export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
+
 /** Is an unknown value an array? */
 export const isArray = <T extends ImmutableArray>(v: T | unknown): v is T => Array.isArray(v);
 
@@ -28,9 +32,6 @@ export function assertArray<T>(arr: ImmutableArray<T> | unknown): asserts arr is
 export const isArrayItem = <T>(arr: ImmutableArray<T>, item: T | unknown): item is T => arr.includes(item as T);
 export const isItem = isArrayItem;
 
-/** Things that can be converted to arrays. */
-export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
-
 /** Convert an iterable to an array (if its not already an array). */
 export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 	return isArray(items) ? items : Array.from(items);
@@ -41,14 +42,20 @@ export function withArrayItems<T>(input: ImmutableArray<T>, ...items: T[]): Immu
 	const extras = items.filter(_doesNotInclude, input);
 	return extras.length ? [...input, ...extras] : input;
 }
-
-/** Remove multiple items from an array (immutably) and return a new array without those items (or the same array if no changes were made). */
-export function withoutArrayItems<T>(input: ImmutableArray<T>, ...items: T[]): ImmutableArray<T> {
-	const output = input.filter(_doesNotInclude, items);
-	return output.length === input.length ? input : output;
-}
 function _doesNotInclude<T>(this: T[], value: T) {
 	return !this.includes(value);
+}
+
+/** Pick multiple items from an array (immutably) and return a new array without those items (or the same array if no changes were made). */
+export function pickArrayItems<T>(input: ImmutableArray<T> | Iterable<T>, ...pick: T[]): ImmutableArray<T> {
+	const output = Array.from(pickItems(input, ...pick));
+	return isArray(input) && output.length === input.length ? input : output;
+}
+
+/** Remove multiple items from an array (immutably) and return a new array without those items (or the same array if no changes were made). */
+export function omitArrayItems<T>(input: ImmutableArray<T> | Iterable<T>, ...omit: T[]): ImmutableArray<T> {
+	const output = Array.from(omitItems(input, ...omit));
+	return isArray(input) && output.length === input.length ? input : output;
 }
 
 /** Toggle an item in and out of an array (immutably) and return a new array with or without the specified items (or the same array if no changes were made). */
@@ -129,7 +136,7 @@ export function addArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
 }
 
 /** Remove multiple items from an array (by reference). */
-export function removeArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
+export function deleteArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
 	for (let i = arr.length - 1; i >= 0; i--) if (i in arr && items.includes(arr[i] as T)) arr.splice(i, 1);
 }
 
@@ -141,8 +148,14 @@ export function uniqueArray<T>(input: Iterable<T>): ImmutableArray<T> {
 }
 
 /** Apply a limit to an array. */
-export function limitArray<T>(arr: ImmutableArray<T>, limit: number): ImmutableArray<T> {
+export function limitArray<T>(items: Iterable<T>, limit: number): ImmutableArray<T> {
+	const arr = getArray(items);
 	return limit > arr.length ? arr : arr.slice(0, limit);
+}
+
+/** Count the items in an array. */
+export function countArray<T>(arr: ImmutableArray<T>): number {
+	return arr.length;
 }
 
 /** Does an array have the specified minimum length.  */

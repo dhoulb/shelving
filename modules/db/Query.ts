@@ -3,8 +3,7 @@ import type { Dispatch, Handler, Stop } from "../util/function.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
-import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
-import { countItems, hasItems } from "../util/iterate.js";
+import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem, isArrayMin, countArray } from "../util/array.js";
 import { runSequence } from "../util/sequence.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import type { ItemArray, ItemValue, ItemData } from "./Item.js";
@@ -111,7 +110,7 @@ export class Query<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> e
 		return this.value.length;
 	}
 	get exists(): boolean {
-		return hasItems(this.max(1).value);
+		return !!this.max(1).value.length;
 	}
 	get firstValue(): ItemValue<T[K]> {
 		return getOptionalFirstItem(this.max(1).value);
@@ -149,10 +148,10 @@ export class AsyncQuery<T extends Datas = Datas, K extends DataKey<T> = DataKey<
 		return this.db.provider.getQuery(this.collection, this);
 	}
 	get count(): Promise<number> {
-		return this.value.then(countItems);
+		return this.value.then(countArray);
 	}
 	get exists(): Promise<boolean> {
-		return this.max(1).value.then(hasItems);
+		return this.max(1).value.then(isArrayMin);
 	}
 	get firstValue(): Promise<ItemValue<T[K]>> {
 		return this.max(1).value.then(getOptionalFirstItem);

@@ -45,7 +45,7 @@ export const updateData: <T extends Data>(data: T, updates: Updates<T>) => T = t
  */
 export class DataUpdate<T extends Data = Data> extends Update<T> implements Iterable<DataProp<Updates<T>>>, Transformable<T, T> {
 	/** Return a data update with a specific prop marked for update. */
-	static with<X extends Data, K extends DataKey<X>>(key: Nullish<K>, value: X[K] | Update<X[K]>): DataUpdate<X> {
+	static update<X extends Data, K extends DataKey<X>>(key: Nullish<K>, value: X[K] | Update<X[K]>): DataUpdate<X> {
 		return new DataUpdate<X>(!isNullish(key) ? ({ [key]: value } as Updates<X>) : {});
 	}
 
@@ -55,10 +55,22 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 		this.updates = props;
 	}
 
+	/** Return a data update with a specific prop marked for update. */
+	update<K extends DataKey<T>>(key: Nullish<K>, value: T[K] | Update<T[K]>): this {
+		if (isNullish(key)) return this;
+		return {
+			__proto__: Object.getPrototypeOf(this),
+			...this,
+			updates: { ...this.updates, [key]: value },
+		};
+	}
+
+	// Implement `Transformable`
 	transform(data: T): T {
 		return updateData<T>(data, this.updates);
 	}
 
+	// Implement `Validatable`
 	override validate(validator: Validator<T>): this {
 		if (!(validator instanceof DataSchema)) return super.validate(validator);
 		return {
@@ -68,17 +80,7 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 		};
 	}
 
-	/** Return a data update with a specific prop marked for update. */
-	with<K extends DataKey<T>>(key: Nullish<K>, value: T[K] | Update<T[K]>): this {
-		if (isNullish(key)) return this;
-		return {
-			__proto__: Object.getPrototypeOf(this),
-			...this,
-			updates: { ...this.updates, [key]: value },
-		};
-	}
-
-	/** Iterate over the transforms in this object. */
+	// Implement `Iterable`
 	[Symbol.iterator](): Iterator<DataProp<Updates<T>>, void> {
 		return Object.entries(this.updates).values();
 	}

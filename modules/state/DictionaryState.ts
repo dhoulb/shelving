@@ -1,4 +1,4 @@
-import { DictionaryItem, ImmutableDictionary, withoutDictionaryItems } from "../util/dictionary.js";
+import { DictionaryItem, ImmutableDictionary, omitDictionaryItems } from "../util/dictionary.js";
 import { Transformers, transformDictionary } from "../util/transform.js";
 import { State } from "./State.js";
 
@@ -20,7 +20,7 @@ export class DictionaryState<T> extends State<ImmutableDictionary<T>> implements
 
 	/** Remove a named entry from this object. */
 	delete(...keys: string[]): void {
-		this.set(withoutDictionaryItems(this.value, ...keys));
+		this.set(omitDictionaryItems(this.value, ...keys));
 	}
 
 	/** Iterate over the entries of the object. */

@@ -6,10 +6,10 @@ import { Validator, Validatable, validate } from "../util/validate.js";
  * - Implements `Transformable` for applying that update with its `transform()` method.
  */
 export abstract class Update<T> implements Transformable<T, T>, Validatable<Update<T>> {
-	/** Apply this update to a value. */
+	//  Must implement `Transformable`
 	abstract transform(value?: unknown): T;
 
-	/** Validate this update's values against a validator. */
+	// Implement `Validatable`
 	validate(validator: Validator<T>): this {
 		validate(this.transform(), validator);
 		return this;

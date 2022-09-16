@@ -1,4 +1,4 @@
-import { ImmutableDictionary, isObject, MutableDictionary, deleteDictionaryEntries, setDictionaryEntry, setDictionaryEntries, omitProps, withDictionaryItem, withProps, pickProps, getProp } from "../index.js";
+import { ImmutableDictionary, isObject, MutableDictionary, deleteDictionaryItems, setDictionaryItem, setDictionaryItems, omitProps, withDictionaryItem, withProps, pickProps, getProp } from "../index.js";
 
 const maplikeObj: ImmutableDictionary<number> = { a: 1, b: 2, c: 3, d: 4 };
 
@@ -42,12 +42,12 @@ test("withProp()", () => {
 });
 test("setProp()", () => {
 	const obj1 = { a: 1, b: 2 };
-	setDictionaryEntry(obj1, "b", 2222);
+	setDictionaryItem(obj1, "b", 2222);
 	expect(obj1).toEqual({ a: 1, b: 2222 });
 });
 test("setProps()", () => {
 	const obj1 = { a: 1, b: 2, c: 3 };
-	setDictionaryEntries(obj1, { b: 2222, c: 3333 });
+	setDictionaryItems(obj1, { b: 2222, c: 3333 });
 	expect(obj1).toEqual({ a: 1, b: 2222, c: 3333 });
 });
 test("withProp()", () => {
@@ -87,19 +87,19 @@ test("pickProps()", () => {
 });
 test("setProp()", () => {
 	const obj: MutableDictionary<number> = { a: 1 };
-	setDictionaryEntry(obj, "b", 2);
+	setDictionaryItem(obj, "b", 2);
 	expect(obj).toEqual({ a: 1, b: 2 });
 });
 test("setProps()", () => {
 	const obj: MutableDictionary<number> = { a: 1 };
-	setDictionaryEntries(obj, { b: 2, c: 3 });
+	setDictionaryItems(obj, { b: 2, c: 3 });
 	expect(obj).toEqual({ a: 1, b: 2, c: 3 });
 });
 test("deleteProps()", () => {
 	const obj1: MutableDictionary<number> = { a: 1, b: 2, c: 3 };
-	deleteDictionaryEntries(obj1, "b");
+	deleteDictionaryItems(obj1, "b");
 	expect(obj1).toEqual({ a: 1, c: 3 });
 	const obj2: MutableDictionary<number> = { a: 1, b: 2, c: 3 };
-	deleteDictionaryEntries(obj2, "b", "c");
+	deleteDictionaryItems(obj2, "b", "c");
 	expect(obj2).toEqual({ a: 1 });
 });

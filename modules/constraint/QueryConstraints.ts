@@ -1,7 +1,7 @@
 import type { Data } from "../util/data.js";
 import { getProp } from "../util/object.js";
 import { assert } from "../util/assert.js";
-import { limitItems } from "../util/iterate.js";
+import { limitArray } from "../util/array.js";
 import { Filterable, FilterConstraints } from "./FilterConstraints.js";
 import { Sortable, SortConstraints } from "./SortConstraints.js";
 import { Constraint } from "./Constraint.js";
@@ -120,7 +120,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	// Implement `Rule`
 	transform(items: Iterable<T>): Iterable<T> {
 		const sorted = this.sorts.transform(this.filters.transform(items));
-		return typeof this.limit === "number" ? limitItems(sorted, this.limit) : sorted;
+		return typeof this.limit === "number" ? limitArray(sorted, this.limit) : sorted;
 	}
 
 	// Implement toString()

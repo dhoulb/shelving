@@ -47,16 +47,16 @@ export const withDictionaryItem: <T>(input: ImmutableDictionary<T>, key: string,
 export const withDictionaryItems: <T>(input: ImmutableDictionary<T>, props: PossibleDictionary<T>) => ImmutableDictionary<T> = withProps;
 
 /** Remove several key/value entries from a dictionary object (immutably) and return a new object without those props. */
-export const withoutDictionaryItems: <T>(input: ImmutableDictionary<T>, ...keys: string[]) => ImmutableDictionary<T> = omitProps;
+export const omitDictionaryItems: <T>(input: ImmutableDictionary<T>, ...keys: string[]) => ImmutableDictionary<T> = omitProps;
 
 /** Pick several props from a dictionary object and return a new object with only thos props. */
 export const pickDictionaryItems: <T>(input: ImmutableDictionary<T>, ...keys: string[]) => ImmutableDictionary<T> = pickProps;
 
 /** Set a single named prop on a dictionary object (by reference) and return its value. */
-export const setDictionaryEntry: <T>(dict: MutableDictionary<T>, key: string, value: T) => T = setProp;
+export const setDictionaryItem: <T>(dict: MutableDictionary<T>, key: string, value: T) => T = setProp;
 
 /** Set several named props on a dictionary object (by reference). */
-export const setDictionaryEntries: <T>(dict: MutableDictionary<T>, entries: PossibleDictionary<T>) => void = setProps;
+export const setDictionaryItems: <T>(dict: MutableDictionary<T>, entries: PossibleDictionary<T>) => void = setProps;
 
 /** Remove several key/value entries from a dictionary object (by reference). */
-export const deleteDictionaryEntries: <T extends MutableDictionary>(dict: T, ...keys: string[]) => void = deleteProps;
+export const deleteDictionaryItems: <T extends MutableDictionary>(dict: T, ...keys: string[]) => void = deleteProps;

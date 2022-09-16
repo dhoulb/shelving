@@ -130,7 +130,7 @@ function _hasntKey<T extends ImmutableObject>(this: (keyof T)[], [key]: readonly
 }
 
 /** Pick several props from an object and return a new object with only thos props. */
-export function pickProps<T extends ImmutableObject, K extends keyof T>(input: T, ...keys: K[]): Pick<T, K>;
+export function pickProps<T extends ImmutableObject, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K>;
 export function pickProps(input: ImmutableObject, ...keys: (keyof ImmutableObject)[]): ImmutableObject {
 	return Object.fromEntries(Object.entries(input).filter(_hasKey, keys));
 }

@@ -1,4 +1,4 @@
-import { getNextItem, getPrevItem, shuffleArray, uniqueArray, addArrayItem, addArrayItems, toggleArrayItems, withArrayItems, withoutArrayItems, removeArrayItems } from "../index.js";
+import { getNextItem, getPrevItem, shuffleArray, uniqueArray, addArrayItem, addArrayItems, toggleArrayItems, withArrayItems, omitArrayItems, deleteArrayItems } from "../index.js";
 
 test("toggleItems()", () => {
 	const arr = [1, 2, 3];
@@ -22,11 +22,11 @@ test("withItems()", () => {
 	expect(withArrayItems(arr, 4, 5)).not.toBe(arr);
 	expect(withArrayItems(arr, 1, 2)).toBe(arr);
 });
-test("withoutItems()", () => {
+test("omitArrayItems()", () => {
 	const arr = [1, 2, 3];
-	expect(withoutArrayItems(arr, 2, 3)).toEqual([1]);
-	expect(withoutArrayItems(arr, 2, 3)).not.toBe(arr);
-	expect(withoutArrayItems(arr, 4, 5)).toBe(arr);
+	expect(omitArrayItems(arr, 2, 3)).toEqual([1]);
+	expect(omitArrayItems(arr, 2, 3)).not.toBe(arr);
+	expect(omitArrayItems(arr, 4, 5)).toBe(arr);
 });
 test("addArrayItem()", () => {
 	const arr = [1, 2, 3];
@@ -38,9 +38,9 @@ test("addArrayItems()", () => {
 	addArrayItems(arr, 4, 5);
 	expect(arr).toEqual([1, 2, 3, 4, 5]);
 });
-test("removeArrayItems()", () => {
+test("deleteArrayItems()", () => {
 	const arr = [1, 2, 3];
-	removeArrayItems(arr, 2, 3);
+	deleteArrayItems(arr, 2, 3);
 	expect(arr).toEqual([1]);
 });
 test("getNextItem()", () => {

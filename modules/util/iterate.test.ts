@@ -21,17 +21,9 @@ test("countItems()", () => {
 	expect(countItems(getRange(21, 28))).toBe(8);
 });
 test("limitItems()", () => {
-	// Limit applied.
 	expect(getArray(limitItems([1, 2, 3, 4, 5], 3))).toEqual([1, 2, 3]);
 	expect(getArray(limitItems(new Set([1, 2, 3, 4, 5]), 3))).toEqual([1, 2, 3]);
 	expect(getArray(limitItems(getRange(15, 200), 5))).toEqual([15, 16, 17, 18, 19]);
-
-	// No limit needed.
-	const arr = [1, 2];
-	expect(limitItems(arr, 3)).toBe(arr);
-	const set = new Set([1, 2]);
-	expect(limitItems(set, 3)).toBe(set);
-	expect(getArray(limitItems(getRange(9, 10), 5))).toEqual([9, 10]);
 });
 test("getChunks()", () => {
 	expect(getArray(getChunks([1, 2, 3, 4, 5, 6, 7, 8, 9], 1))).toEqual([[1], [2], [3], [4], [5], [6], [7], [8], [9]]);
