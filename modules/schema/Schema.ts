@@ -17,13 +17,13 @@ export type SchemaOptions = {
  */
 export abstract class Schema<T extends unknown = unknown> implements Validatable<T> {
 	/** Title, e.g. for showing in fields. */
-	readonly title: string;
+	readonly title?: string;
 	/** Description, e.g. for showing in fields. */
-	readonly description: string;
+	readonly description?: string;
 	/** Placeholder, e.g. for showing in fields. */
-	readonly placeholder: string;
+	readonly placeholder?: string;
 	/** Default value. */
-	readonly value: unknown;
+	readonly value?: unknown;
 
 	constructor({ title = "", description = "", placeholder = "" }: SchemaOptions) {
 		this.title = title;
