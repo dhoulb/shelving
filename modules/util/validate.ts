@@ -30,10 +30,10 @@ export type Validator<T = unknown> = Validatable<T> | Validate<T>;
 export type ValidatorType<X> = X extends Validator<infer Y> ? Y : never;
 
 /** A set of named validators in `{ name: Validator }` format. */
-export type Validators<T extends Data = Data> = { [K in keyof T]: Validator<T[K]> };
+export type Validators<T extends Data = Data> = { readonly [K in keyof T]: Validator<T[K]> };
 
 /** Extract the type from a set of validators. */
-export type ValidatorsType<T> = { [K in keyof T]: ValidatorType<T[K]> };
+export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> };
 
 /** Validate an unknown value with a validator. */
 export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {

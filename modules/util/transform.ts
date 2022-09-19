@@ -60,7 +60,7 @@ export function transformObject<T extends ImmutableObject>(obj: T, transforms: T
 	return { ...obj, ...Object.fromEntries(_transformObjectProps(obj, transforms)) };
 }
 function* _transformObjectProps<T extends ImmutableObject>(obj: T, transforms: Transformers<T>): Iterable<ObjectProp<T>> {
-	for (const [k, v] of getProps<{ [K in keyof T]: Transformer<T[K], T[K]> }>(transforms)) yield [k, transform<ObjectValue<T>, ObjectValue<T>>(obj[k], v)];
+	for (const [k, v] of getProps<{ readonly [K in keyof T]: Transformer<T[K], T[K]> }>(transforms)) yield [k, transform<ObjectValue<T>, ObjectValue<T>>(obj[k], v)];
 }
 
 /** Transform a dictionary object using a set of named transformers. */
