@@ -1,4 +1,4 @@
-import { InvalidFeedback, ImmutableDictionary, DictionarySchema, Validator, STRING, BOOLEAN, DICTIONARY, NUMBER, getFeedbackMessages } from "../index.js";
+import { InvalidFeedback, ImmutableDictionary, DictionarySchema, Validator, STRING, BOOLEAN, DICTIONARY, NUMBER, getFeedbackMessages, Feedback } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -64,9 +64,11 @@ describe("options.items", () => {
 			expect(schema.validate({ num1: 123, num2: 456, str: "abc" })).toBe("Never");
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			const messages = getFeedbackMessages(invalid);
-			expect(messages.str).toEqual("Must be number");
-			expect(Object.keys(messages).length).toBe(1); // No additional errors.
+			expect(invalid.value).toEqual(
+				new Map([
+					["str", new Feedback("Must be number", { value: "abc" })], //
+				]),
+			);
 		}
 	});
 });

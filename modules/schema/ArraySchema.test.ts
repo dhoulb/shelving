@@ -1,4 +1,4 @@
-import { InvalidFeedback, ArraySchema, Validator, ARRAY, NUMBER, DATA, STRING, getFeedbackMessages } from "../index.js";
+import { InvalidFeedback, ArraySchema, Validator, ARRAY, NUMBER, DATA, STRING, getFeedbackMessages, Feedback } from "../index.js";
 
 // Vars.
 const stringArray = ["a", "b", "c"];
@@ -115,19 +115,21 @@ describe("options.items", () => {
 		const schema2 = new ArraySchema({ items: ARRAY(STRING) });
 		expect(() => schema2.validate(randomArray)).toThrow(InvalidFeedback);
 	});
-	test("Arrays with errors in format subschemas provide acceItemsSchema those errors via Invalid", () => {
+	test("Arrays with errors in format subschemas provide access to those errors via Invalid", () => {
 		// Validate and catch Invalids.
-		const arr = ["abc", 123, "abc"];
+		const arr = ["abc", 123, "def"];
 		const schema = new ArraySchema({ items: NUMBER });
 		try {
 			schema.validate(arr);
 			expect(false).toBe(true); // Not reached.
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			const messages = getFeedbackMessages(invalid);
-			expect(messages[0]).toBe("Must be number"); // arr[0] failed.
-			expect(messages[2]).toBe("Must be number"); // arr[2] failed.
-			expect(Object.keys(messages).length).toBe(2); // No additional errors (arr[1] paItemsSchema).
+			expect(invalid.value).toEqual(
+				new Map([
+					[0, new Feedback("Must be number", { value: "abc" })], //
+					[2, new Feedback("Must be number", { value: "def" })],
+				]),
+			);
 		}
 	});
 });

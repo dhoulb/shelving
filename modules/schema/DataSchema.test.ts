@@ -1,4 +1,4 @@
-import { InvalidFeedback, Validator, StringSchema, DataSchema, DATA, BOOLEAN, NUMBER, STRING, getFeedbackMessages } from "../index.js";
+import { InvalidFeedback, Validator, StringSchema, DataSchema, DATA, BOOLEAN, NUMBER, STRING, getFeedbackMessages, Feedback } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -111,10 +111,12 @@ describe("options.props", () => {
 			expect(schema.validate({ dogs: "abc", turtles: 10, cats: null })).toBe("Never");
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			const messages = getFeedbackMessages(invalid);
-			expect(messages.dogs).toEqual("Must be number");
-			expect(messages.cats).toEqual("Must be number");
-			expect(Object.keys(messages).length).toBe(2); // No additional errors.
+			expect(invalid.value).toEqual(
+				new Map<string, unknown>([
+					["dogs", new Feedback("Must be number", { value: "abc" })], //
+					["cats", new Feedback("Must be number", { value: null })],
+				]),
+			);
 		}
 	});
 });
