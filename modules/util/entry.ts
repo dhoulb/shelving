@@ -34,11 +34,13 @@ export function* getEntryValues<K, T>(input: Iterable<Entry<K, T>>): Iterable<T>
 }
 
 /** Yield the entries in something that can yield entries. */
-export function getEntries<K extends number, T = K>(entries: ImmutableArray<T> | ImmutableSet<K & T> | ImmutableObject<K, T> | Iterable<Entry<K, T>>): Iterable<Entry<K, T>>;
-export function getEntries<K extends string, T = K>(entries: ImmutableSet<K & T> | ImmutableObject<K, T> | Iterable<Entry<K, T>>): Iterable<Entry<K, T>>;
-export function getEntries<K, T = K>(entries: ImmutableArray<K & T> | ImmutableSet<K & T> | ImmutableObject<K & PropertyKey, T> | Iterable<Entry<K, T>>): Iterable<Entry<K, T>>;
-export function getEntries(entries: ImmutableArray | ImmutableSet | ImmutableObject | ImmutableMap | Iterable<Entry>): Iterable<Entry> {
-	if (isArray(entries) || isSet(entries)) return entries.entries();
-	if (isIterable(entries)) return entries;
-	return Object.entries(entries);
+export function getEntries<K extends string, T = K>(...input: (ImmutableSet<K & T> | Partial<ImmutableObject<K, T>> | Iterable<Entry<K, T>>)[]): Iterable<Entry<K, T>>;
+export function getEntries<K extends number, T = K>(...input: (ImmutableArray<T> | ImmutableSet<K & T> | Iterable<Entry<K, T>>)[]): Iterable<Entry<K, T>>;
+export function getEntries<K, T = K>(...input: (ImmutableSet<K & T> | Iterable<Entry<K, T>>)[]): Iterable<Entry<K, T>>;
+export function* getEntries(...input: (ImmutableArray | ImmutableSet | ImmutableObject | ImmutableMap | Iterable<Entry>)[]): Iterable<Entry> {
+	for (const entries of input) {
+		if (isArray(entries) || isSet(entries)) yield* entries.entries();
+		else if (isIterable(entries)) yield* entries;
+		else yield* Object.entries(entries);
+	}
 }
