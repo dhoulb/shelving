@@ -1,4 +1,4 @@
-import { InvalidFeedback, getYmd, DateSchema, OPTIONAL_DATE, DATE, Schema } from "../index.js";
+import { InvalidFeedback, getYMD, DateSchema, OPTIONAL_DATE, DATE, Schema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -63,7 +63,7 @@ describe("validate()", () => {
 describe("options.value", () => {
 	test("Default value is now", () => {
 		const schema = new DateSchema({});
-		expect(schema.validate(undefined)).toBe(getYmd(new Date()));
+		expect(schema.validate(undefined)).toBe(getYMD(new Date()));
 	});
 	test("Undefined with default value returns default value", () => {
 		const schema1 = new DateSchema({ value: "1995" });
@@ -72,10 +72,6 @@ describe("options.value", () => {
 		expect(schema2.validate(undefined)).toEqual("2018-07-03");
 		const schema3 = new DateSchema({ value: new Date("1995") });
 		expect(schema3.validate(undefined)).toEqual("1995-01-01");
-	});
-	test("Using `Date.now` as a default value returns now() as value", () => {
-		const schema = new DateSchema({ value: Date.now });
-		expect(schema.validate(undefined)).toBe(getYmd(new Date()));
 	});
 });
 describe("options.min", () => {

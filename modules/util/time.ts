@@ -97,10 +97,10 @@ const _pad = (num: number, size: 2 | 3 | 4): string => num.toString(10).padStart
 export const TIME_REGEXP = /([0-9]+):([0-9]+)(?::([0-9]+)(?:.([0-9]+))?)?/;
 
 /** Things that converted to times. */
-export type PossibleTime = Time | Date | number | string | (() => number | string);
+export type PossibleTime = Time | Date | number | string;
 
 /** Things that converted to times or `null` */
-export type PossibleOptionalTime = Time | Date | number | string | null | (() => number | string | null);
+export type PossibleOptionalTime = Time | Date | number | string | null;
 
 /** Is an unknown value a `Time` instance. */
 export const isTime = (v: Time | unknown): v is Time => v instanceof Time;
@@ -112,7 +112,6 @@ export const isTime = (v: Time | unknown): v is Time => v instanceof Time;
  */
 export function getOptionalTime(possible: unknown): Time | null {
 	if (isTime(possible)) return possible;
-	if (typeof possible === "function") return getOptionalTime(possible());
 	return (typeof possible === "string" && Time.fromString(possible)) || Time.fromDate(possible) || null;
 }
 

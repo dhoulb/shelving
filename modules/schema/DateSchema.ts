@@ -1,4 +1,4 @@
-import { getOptionalDate, getYmd, PossibleDate } from "../util/date.js";
+import { formatDate, getDate, getOptionalDate, getYMD, PossibleDate } from "../util/date.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
@@ -6,8 +6,8 @@ import { OPTIONAL } from "./OptionalSchema.js";
 /** Define a valid date in YMD format, e.g. `2005-09-12` */
 export class DateSchema extends Schema<string> {
 	override readonly value: PossibleDate;
-	readonly min: PossibleDate | null;
-	readonly max: PossibleDate | null;
+	readonly min: Date | null;
+	readonly max: Date | null;
 	constructor({
 		value = "now",
 		min = null,
@@ -20,17 +20,15 @@ export class DateSchema extends Schema<string> {
 	}) {
 		super(options);
 		this.value = value;
-		this.min = min;
-		this.max = max;
+		this.min = min !== null ? getDate(min) : null;
+		this.max = max !== null ? getDate(max) : null;
 	}
 	override validate(unsafeValue: unknown = this.value): string {
 		const date = getOptionalDate(unsafeValue);
 		if (!date) throw new InvalidFeedback(unsafeValue ? "Invalid date" : "Required", { value: unsafeValue });
-		const minDate = getOptionalDate(this.min);
-		if (minDate && date.getTime() < minDate.getTime()) throw new InvalidFeedback(`Minimum ${minDate.toLocaleDateString()}`, { value: date });
-		const maxDate = getOptionalDate(this.max);
-		if (maxDate && date.getTime() > maxDate.getTime()) throw new InvalidFeedback(`Maximum ${maxDate.toLocaleDateString()}`, { value: date });
-		return getYmd(date);
+		if (this.min && date < this.min) throw new InvalidFeedback(`Minimum ${formatDate(this.min)}`, { value: date });
+		if (this.max && date > this.max) throw new InvalidFeedback(`Maximum ${formatDate(this.max)}`, { value: date });
+		return getYMD(date);
 	}
 }
 
