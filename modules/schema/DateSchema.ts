@@ -3,7 +3,7 @@ import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 
-/** Define a valid date, e.g. `2005-09-12` */
+/** Define a valid date in YMD format, e.g. `2005-09-12` */
 export class DateSchema extends Schema<string> {
 	override readonly value: PossibleDate;
 	readonly min: PossibleDate | null;
