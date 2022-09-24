@@ -2,8 +2,7 @@ import type { Data, DataKey } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
 import { ImmutableArray, isArray } from "../util/array.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, Matchable, Match, notEqual, notInArray } from "../util/match.js";
-import { filterItems } from "../util/filter.js";
-import { isIterable } from "../util/iterate.js";
+import { filterItems, isIterable } from "../util/iterate.js";
 import type { Constraint } from "./Constraint.js";
 
 /** Possible operator references. */
@@ -44,7 +43,7 @@ const MATCHERS: { [K in FilterOperator]: Match } = {
  * @param operator FilterOperator, e.g. `IS` or `CONTAINS`
  * @param value Value the specified property should be matched against.
  */
-export class FilterConstraint<T extends Data = Data> implements Constraint<T>, Matchable<T, void> {
+export class FilterConstraint<T extends Data = Data> implements Constraint<T>, Matchable<[T]> {
 	readonly key: string;
 	readonly operator: FilterOperator;
 	readonly value: unknown;

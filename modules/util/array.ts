@@ -1,6 +1,8 @@
 import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
-import { omitItems, pickItems } from "./iterate.js";
+import { Arguments } from "./function.js";
+import { filterItems, omitItems, pickItems } from "./iterate.js";
+import { Matcher } from "./match.js";
 
 /**
  * Mutable array: an array that can be changed.
@@ -56,6 +58,13 @@ export function pickArrayItems<T>(input: ImmutableArray<T> | Iterable<T>, ...pic
 export function omitArrayItems<T>(input: ImmutableArray<T> | Iterable<T>, ...omit: T[]): ImmutableArray<T> {
 	const output = Array.from(omitItems(input, ...omit));
 	return isArray(input) && output.length === input.length ? input : output;
+}
+
+/** Filter an array using a matcher (and optionally a target value). */
+export function filterArray<T, A extends Arguments = []>(input: ImmutableArray<T>, matcher: Matcher<[T, ...A]>, ...args: A): ImmutableArray<T> {
+	if (!input.length) return input;
+	const output = Array.from(filterItems(input, matcher, ...args));
+	return output.length === input.length ? input : output;
 }
 
 /** Toggle an item in and out of an array (immutably) and return a new array with or without the specified items (or the same array if no changes were made). */

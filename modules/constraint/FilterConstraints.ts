@@ -1,6 +1,6 @@
 import type { Data } from "../util/data.js";
 import type { Matchable } from "../util/match.js";
-import { filterItems } from "../util/filter.js";
+import { filterItems } from "../util/iterate.js";
 import { FilterList, FilterConstraint, getFilters } from "./FilterConstraint.js";
 import { Constraints } from "./Constraints.js";
 
@@ -8,7 +8,7 @@ import { Constraints } from "./Constraints.js";
  * Interface to make sure an object implements all matchers.
  * - Extends `Matchable` so this object itself can be directly be used in `filterItems()` and `filterEntries()`
  */
-export interface Filterable<T extends Data> extends Matchable<T, void> {
+export interface Filterable<T extends Data> extends Matchable<[T]> {
 	/** Add a filter to this filterable. */
 	filter(...filters: FilterList<Partial<T>>[]): this;
 

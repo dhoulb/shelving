@@ -63,7 +63,7 @@ export function getAllRegExp(patterns: Iterable<PossibleRegExp> & NotString, fla
 }
 
 /** Match function for finding strings that match against regular expressions (use with `filter()` to positively filter iterable sets of items). */
-export const isRegExpMatch: Match<string, RegExp> = (item, target) => target.test(item);
+export const isRegExpMatch: Match<[item: string, target: RegExp]> = (item, target) => target.test(item);
 
 /** Match function for finding strings that match against regular expressions (use with `filter()` to negatively filter iterable sets of items). */
-export const notRegExpMatch: Match<string, RegExp> = (item, target) => !target.test(item);
+export const notRegExpMatch: Match<[item: string, target: RegExp]> = (item, target) => !target.test(item);
