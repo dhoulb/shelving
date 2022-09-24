@@ -13,14 +13,6 @@ describe("toDate()", () => {
 		expect(getOptionalDate(new Date("9999-12-31").getTime())).toBeInstanceOf(Date);
 		expect(getOptionalDate(0)).toBeInstanceOf(Date);
 		expect(getOptionalDate(new Date("0000-01-01").getTime())).toBeInstanceOf(Date);
-		expect(getOptionalDate(() => "2019-11-27")).toBeInstanceOf(Date);
-		expect(getOptionalDate(() => "now")).toBeInstanceOf(Date);
-		expect(getOptionalDate(() => "yesterday")).toBeInstanceOf(Date);
-		expect(getOptionalDate(() => "today")).toBeInstanceOf(Date);
-		expect(getOptionalDate(() => "tomorrow")).toBeInstanceOf(Date);
-		expect(getOptionalDate(() => new Date("9999-12-31").getTime())).toBeInstanceOf(Date);
-		expect(getOptionalDate(() => 0)).toBeInstanceOf(Date);
-		expect(getOptionalDate(() => new Date("0000-01-01").getTime())).toBeInstanceOf(Date);
 	});
 	test("toDate(): Parses invalid values to null", () => {
 		expect(getOptionalDate(null)).toBe(null);
