@@ -96,19 +96,15 @@ test("format() works correctly", () => {
 	expect(LENGTH_UNITS.get("foot").format(123)).toBe("123 ft");
 	expect(LENGTH_UNITS.get("yard").format(1234)).toBe("1,234 yd");
 });
-test("format() max precision", () => {
+test("format() precision", () => {
+	// Precision.
 	expect(LENGTH_UNITS.get("kilometer").format(1.1111, 0)).toBe("1 km");
 	expect(LENGTH_UNITS.get("kilometer").format(1.1111, 2)).toBe("1.11 km");
 	expect(LENGTH_UNITS.get("kilometer").format(1.1111, 4)).toBe("1.1111 km");
-	expect(LENGTH_UNITS.get("kilometer").format(1.1111, 6)).toBe("1.1111 km");
-});
-test("format() min precision", () => {
-	expect(LENGTH_UNITS.get("kilometer").format(1.1111, 2, 0)).toBe("1.11 km");
-	expect(LENGTH_UNITS.get("kilometer").format(1.1111, 2, 2)).toBe("1.11 km");
-	expect(LENGTH_UNITS.get("kilometer").format(1.1111, 4, 4)).toBe("1.1111 km");
-	expect(LENGTH_UNITS.get("kilometer").format(1.1111, 6, 6)).toBe("1.111100 km");
-	expect(LENGTH_UNITS.get("kilometer").format(1.1, 2, 0)).toBe("1.1 km");
-	expect(LENGTH_UNITS.get("kilometer").format(1.1, 2, 2)).toBe("1.10 km");
+	expect(LENGTH_UNITS.get("kilometer").format(1.1111, 6)).toBe("1.111100 km");
+
+	// No precision.
+	expect(LENGTH_UNITS.get("kilometer").format(1.1111)).toBe("1.1111 km");
 });
 test("formatFull() works correctly", () => {
 	expect(LENGTH_UNITS.get("meter").formatFull(1)).toBe("1 meter");
@@ -121,17 +117,9 @@ test("formatFull() works correctly", () => {
 	expect(LENGTH_UNITS.get("yard").formatFull(123)).toBe("123 yards");
 	expect(LENGTH_UNITS.get("yard").formatFull(1234)).toBe("1,234 yards");
 });
-test("formatFull() max precision", () => {
+test("formatFull() precision", () => {
 	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1111, 0)).toBe("1 kilometer");
 	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1111, 2)).toBe("1.11 kilometers");
 	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1111, 4)).toBe("1.1111 kilometers");
-	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1111, 6)).toBe("1.1111 kilometers");
-});
-test("formatFull() min precision", () => {
-	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1111, 2, 0)).toBe("1.11 kilometers");
-	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1111, 2, 2)).toBe("1.11 kilometers");
-	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1111, 4, 4)).toBe("1.1111 kilometers");
-	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1111, 6, 6)).toBe("1.111100 kilometers");
-	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1, 2, 0)).toBe("1.1 kilometers");
-	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1, 2, 2)).toBe("1.10 kilometers");
+	expect(LENGTH_UNITS.get("kilometer").formatFull(1.1111, 6)).toBe("1.111100 kilometers");
 });

@@ -35,6 +35,7 @@ export * from "./sort.js";
 export * from "./source.js";
 export * from "./string.js";
 export * from "./template.js";
+export * from "./time.js";
 export * from "./timeout.js";
 export * from "./transform.js";
 export * from "./undefined.js";

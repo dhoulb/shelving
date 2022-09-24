@@ -22,6 +22,8 @@ type UnitProps<T extends string> = {
 	readonly singular?: string;
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `id`). */
 	readonly plural?: string;
+	/** Default precision for this unit (defaults to `null`). */
+	readonly precision?: number | null;
 	/** Conversions to other units (typically needs at least the base conversion, unless it's already the base unit). */
 	readonly to?: Conversions<T>;
 };
@@ -38,6 +40,8 @@ export class Unit<T extends string> {
 	readonly singular: string;
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `singular` + "s"). */
 	readonly plural: string;
+	/** Default precision for this unit (defaults to `null`). */
+	readonly precision: number | null;
 
 	/** Title for this unit (uses format `abbr (plural)`, e.g. `fl oz (US fluid ounces)`) */
 	get title(): string {
@@ -50,12 +54,13 @@ export class Unit<T extends string> {
 		/** Key for this unit, e.g. `kilometer` */
 		id: T,
 		/** Props to configure this unit. */
-		{ abbr = id.slice(0, 1), singular = id.replace(/-/, " "), plural = `${singular}s`, to }: UnitProps<T>,
+		{ abbr = id.slice(0, 1), singular = id.replace(/-/, " "), plural = `${singular}s`, precision = null, to }: UnitProps<T>,
 	) {
 		this.id = id;
 		this.abbr = abbr;
 		this.singular = singular;
 		this.plural = plural;
+		this.precision = precision;
 		this._to = to;
 	}
 
@@ -88,13 +93,13 @@ export class Unit<T extends string> {
 	}
 
 	/** Format a number with a given unit of measure, e.g. `12 kg` or `29.5 l` */
-	format(amount: number, maxPrecision?: number, minPrecision?: number): string {
-		return formatQuantity(amount, this.abbr, maxPrecision, minPrecision);
+	format(amount: number, precision: number | null = this.precision): string {
+		return formatQuantity(amount, this.abbr, precision);
 	}
 
 	/** Format a number with a given unit of measure, e.g. `12 kilograms` or `29.5 liters` or `1 degree` */
-	formatFull(amount: number, maxPrecision?: number, minPrecision?: number): string {
-		return formatFullQuantity(amount, this.singular, this.plural, maxPrecision, minPrecision);
+	formatFull(amount: number, precision: number | null = this.precision): string {
+		return formatFullQuantity(amount, this.singular, this.plural, precision);
 	}
 }
 const _getUnit = <T extends string>(list: UnitList<T>, id: T | Unit<T>): Unit<T> => (typeof id === "string" ? list.get(id) : id);
@@ -264,7 +269,7 @@ export const TEMPERATURE_UNITS = new UnitList({
 export type TemperatureUnitIdentifier = MapKey<typeof TEMPERATURE_UNITS>;
 
 /** Format a percentage (combines `getPercent()` and `formatUnits()` for convenience). */
-export const formatPercent = (numerator: number, denumerator: number, maxPrecision?: number, minPrecision?: number): string => formatQuantity(getPercent(numerator, denumerator), "%", maxPrecision, minPrecision);
+export const formatPercent = (numerator: number, denumerator: number, precision?: number): string => formatQuantity(getPercent(numerator, denumerator), "%", precision);
 
 /** Get the ID for a time unit based on the amount in milliseconds. */
 function _getTimeUnitIdentifier(ms: number): TimeUnitIdentifier {
@@ -280,15 +285,15 @@ function _getTimeUnitIdentifier(ms: number): TimeUnitIdentifier {
 }
 
 /** Format a full format of a duration of time using the most reasonable units e.g. `5 years` or `1 week` or `4 minutes` or `12 milliseconds`. */
-export function formatFullDuration(ms: number, maxPrecision?: number, minPrecision?: number): string {
+export function formatFullDuration(ms: number, precision?: number): string {
 	const unit = TIME_UNITS.get(_getTimeUnitIdentifier(ms));
-	return unit.formatFull(unit.from(ms), maxPrecision, minPrecision);
+	return unit.formatFull(unit.from(ms), precision);
 }
 
 /** Format a description of a duration of time using the most reasonable units e.g. `5y` or `4m` or `12ms`. */
-export function formatDuration(ms: number, maxPrecision?: number, minPrecision?: number): string {
+export function formatDuration(ms: number, precision?: number): string {
 	const unit = TIME_UNITS.get(_getTimeUnitIdentifier(ms));
-	return unit.format(unit.from(ms), maxPrecision, minPrecision);
+	return unit.format(unit.from(ms), precision);
 }
 
 /** format when a data happens/happened. */

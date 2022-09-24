@@ -61,6 +61,7 @@ describe("toYmd()", () => {
 describe("getYmd()", () => {
 	test("getYmd(): Correctly converts date to string", () => {
 		expect(getYmd(new Date("2019-11-27"))).toBe("2019-11-27");
+		expect(getYmd(new Date("2019-07-27"))).toBe("2019-07-27");
 		expect(getYmd(new Date("0001-01-01"))).toBe("0001-01-01");
 		expect(getYmd(new Date("9999-12-31"))).toBe("9999-12-31");
 	});

@@ -1,10 +1,10 @@
 import { AssertionError } from "../error/AssertionError.js";
 
 /** Things that converted to dates. */
-export type PossibleDate = Date | number | string | (() => PossibleDate);
+export type PossibleDate = Date | number | string | (() => Date | number | string);
 
 /** Things that converted to dates or `null` */
-export type PossibleOptionalDate = Date | number | string | null | (() => PossibleDate | null);
+export type PossibleOptionalDate = Date | number | string | null | (() => Date | number | string | null | null);
 
 /** Is a value a date? */
 export const isDate = (v: Date | unknown): v is Date => v instanceof Date;
@@ -60,8 +60,13 @@ export function getOptionalYmd(possibleDate: unknown): string | null {
 
 /** Convert a `Date` instance to a YMD string like "2015-09-12", or throw `AssertionError` if it couldn't be converted.  */
 export function getYmd(possibleDate: PossibleDate = "now"): string {
-	return getDate(possibleDate).toISOString().slice(0, 10);
+	const date = getDate(possibleDate);
+	const y = _pad(date.getUTCFullYear(), 4);
+	const m = _pad(date.getUTCMonth() + 1, 2);
+	const d = _pad(date.getUTCDate(), 2);
+	return `${y}-${m}-${d}`;
 }
+const _pad = (num: number, size: 2 | 3 | 4): string => num.toString(10).padStart(size, "0000");
 
 /** List of day-of-week strings. */
 export const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
@@ -75,10 +80,7 @@ export const getDay = (target?: PossibleDate): Day => days[getDate(target).getDa
 /** Get a Date representing exactly midnight of the specified date. */
 export function getMidnight(target?: PossibleDate): Date {
 	const date = new Date(getDate(target)); // New instance, because we modify it.
-	date.setHours(0);
-	date.setMinutes(0);
-	date.setSeconds(0);
-	date.setMilliseconds(0);
+	date.setHours(0, 0, 0, 0);
 	return date;
 }
 
@@ -131,10 +133,6 @@ export const getWeeksUntil = (target: PossibleDate, current?: PossibleDate): num
 /** Count the number of weeks ago a date was. */
 export const getWeeksAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - getWeeksUntil(target, current);
 
-/** Format a date in the browser locale. */
-export const formatDate = (date: PossibleDate): string => _formatter.format(getDate(date));
-const _formatter = new Intl.DateTimeFormat(undefined, {});
-
 /** Is a date in the past? */
 export const isPast = (target: PossibleDate, current?: PossibleDate): boolean => getDate(target) < getDate(current);
 
@@ -143,3 +141,9 @@ export const isFuture = (target: PossibleDate, current?: PossibleDate): boolean 
 
 /** Is a date today (taking into account midnight). */
 export const isToday = (target: PossibleDate, current?: PossibleDate): boolean => getMidnight(target) === getMidnight(current);
+
+/** Format a date in the browser locale. */
+export const formatDate = (date: PossibleDate): string => getDate(date).toLocaleDateString();
+
+/** Format an optional time as a string. */
+export const formatOptionalDate = (date?: unknown): string | null => getOptionalDate(date)?.toLocaleDateString() || null;

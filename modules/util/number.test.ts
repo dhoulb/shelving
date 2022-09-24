@@ -1,10 +1,38 @@
-import { formatNumber, roundStep, sumNumbers, getOptionalNumber, getRange, cramNumber, roundNumber, truncateNumber } from "../index.js";
+import { formatNumber, roundStep, sumNumbers, getOptionalNumber, getRange, cramNumber, roundNumber, truncateNumber, boundNumber, wrapNumber, AssertionError } from "../index.js";
 
 test("roundNumber(): Works correctly", () => {
 	expect(roundNumber(123.456, 0)).toBe(123);
 	expect(roundNumber(123.456, 1)).toBe(123.5);
 	expect(roundNumber(123.456, 2)).toBe(123.46);
 	expect(roundNumber(123.456, 3)).toBe(123.456);
+});
+test("boundNumber()", () => {
+	expect(boundNumber(250, -100, 100)).toBe(100);
+	expect(boundNumber(-250, -100, 100)).toBe(-100);
+
+	// Min must be higher than max.
+	expect(() => boundNumber(1, 100, 99)).toThrow(AssertionError);
+});
+test("wrapNumber()", () => {
+	// Wrapping needed.
+	expect(wrapNumber(-180, 0, 360)).toBe(180);
+	expect(wrapNumber(-40, 0, 60)).toBe(20);
+	expect(wrapNumber(100, 0, 60)).toBe(40);
+	expect(wrapNumber(-40, 0, 60)).toBe(20);
+	expect(wrapNumber(250, -100, 100)).toBe(50);
+	expect(wrapNumber(-250, -100, 100)).toBe(-50);
+	expect(wrapNumber(17, 3, 7)).toBe(5);
+	expect(wrapNumber(-17, -7, -3)).toBe(-5);
+	expect(wrapNumber(1, 3, 7)).toBe(5);
+
+	// Max is the same as min.
+	expect(wrapNumber(360, 0, 360)).toBe(0);
+
+	// No wrapping needed.
+	expect(wrapNumber(19, 0, 59)).toBe(19);
+
+	// Min must be higher than max.
+	expect(() => wrapNumber(1, 100, 99)).toThrow(AssertionError);
 });
 test("truncateNumber(): Works correctly", () => {
 	expect(truncateNumber(123, 0)).toBe(123);
@@ -15,11 +43,12 @@ test("truncateNumber(): Works correctly", () => {
 test("formatNumber(): Works correctly", () => {
 	expect(formatNumber(123)).toBe("123");
 	expect(formatNumber(1234)).toBe("1,234");
-	expect(formatNumber(1234.0123456789)).toBe("1,234.0123");
+	expect(formatNumber(1234.0123456789)).toBe("1,234.0123456789");
 	expect(formatNumber(1234.0123)).toBe("1,234.0123");
 	expect(formatNumber(1234.000)).toBe("1,234"); // prettier-ignore
 	expect(formatNumber(1234.0001, 4)).toBe("1,234.0001");
 	expect(formatNumber(1234.0123456789, 3)).toBe("1,234.012");
+	expect(formatNumber(1234.0123456789, 5)).toBe("1,234.01235");
 	expect(formatNumber(1234.01234, 5)).toBe("1,234.01234");
 });
 test("cramNumber(): Works correctly", () => {
@@ -81,7 +110,7 @@ describe("roundStep()", () => {
 		expect(roundStep(100.00001, 0.0001)).toBe(100);
 	});
 });
-describe("toNumber()", () => {
+describe("getOptionalNumber()", () => {
 	test("Whole numbers are converted correctly", () => {
 		expect(getOptionalNumber("0")).toBe(0);
 		expect(getOptionalNumber("1")).toBe(1);

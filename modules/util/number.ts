@@ -10,8 +10,22 @@ export function assertNumber(v: number | unknown): asserts v is number {
 }
 
 /** Assert that a value is a number greater than. */
+export function assertFinite(v: number | unknown): asserts v is number {
+	if (typeof v !== "number" || !Number.isFinite(v)) throw new AssertionError(`Must be finite number`, v);
+}
+
+/**
+ * Is a finite number within a specified range?
+ *
+ * @param num The number to test, e.g. `17`
+ * @param min The start of the range, e.g. `10`
+ * @param max The end of the range, e.g. `20`
+ */
+export const isBetween = (num: number, min: number, max: number): boolean => num >= min && num <= max;
+
+/** Assert that a value is a number greater than. */
 export function assertBetween(v: number | unknown, min: number, max: number): asserts v is number {
-	if (typeof v !== "number" || v < min || v > max) throw new AssertionError(`Must be number between ${min}-${max}`, v);
+	if (typeof v !== "number" || isBetween(v, min, max)) throw new AssertionError(`Must be number between ${min} and ${max}`, v);
 }
 
 /** Assert that a value is a number greater than. */
@@ -36,11 +50,11 @@ export function assertMin(v: number | unknown, min: number): asserts v is number
  */
 export function getOptionalNumber(value: unknown): number | null {
 	if (typeof value === "number") return !Number.isFinite(value) ? null : value === 0 ? 0 : value;
-	else if (typeof value === "string") return getOptionalNumber(parseFloat(value.replace(NUMERIC, "")));
-	else if (value instanceof Date) return value.getTime();
+	else if (typeof value === "string") return getOptionalNumber(parseFloat(value.replace(NOT_NUMERIC_REGEXP, "")));
+	else if (value instanceof Date) return getOptionalNumber(value.getTime());
 	return null;
 }
-const NUMERIC = /[^0-9-.]/g;
+const NOT_NUMERIC_REGEXP = /[^0-9-.]/g;
 
 /**
  * Assertively convert an unknown value to a finite number.
@@ -48,7 +62,7 @@ const NUMERIC = /[^0-9-.]/g;
  */
 export function getNumber(value: unknown): number {
 	const num = getOptionalNumber(value);
-	assertNumber(num);
+	assertFinite(num);
 	return num;
 }
 
@@ -85,26 +99,32 @@ export const roundNumber = (num: number, precision = 0): number => Math.round(nu
  */
 export const truncateNumber = (num: number, precision = 0): number => Math.trunc(num * 10 ** precision) / 10 ** precision;
 
-/**
- * Format a number (based on the user's browser settings).
- *
- * @param num The number to format.
- * @param maxPrecision Maximum number of digits shown after the decimal point (defaults to 2).
- * @param minPrecision Minimum number of digits shown after the decimal point (defaults to 0).
- *
- * @returns The number formatted as a string in the browser's current locale.
- */
-export function formatNumber(num: number, maxPrecision = 4, minPrecision = 0): string {
+/** Bound a number so it fits between two values. */
+export function boundNumber(num: number, min: number, max: number): number {
+	assertMin(max, min); // Assert that max is more than min.
+	return Math.max(min, Math.min(max, num));
+}
+
+/** Wrap a number so it fits between two values. */
+export function wrapNumber(num: number, min: number, max: number): number {
+	assertMin(max, min); // Assert that max is more than min.
+	if (num >= max) return ((num - max) % (max - min)) + min;
+	if (num < min) return ((num - min) % (min - max)) + max;
+	return num;
+}
+
+/** Format a number (based on the user's browser language settings). */
+export function formatNumber(num: number, precision: number | null = null): string {
 	if (!Number.isFinite(num)) return Number.isNaN(num) ? "None" : "Infinity";
-	return new Intl.NumberFormat(undefined, { maximumFractionDigits: maxPrecision, minimumFractionDigits: minPrecision }).format(num);
+	return new Intl.NumberFormat(undefined, { minimumFractionDigits: precision ?? undefined, maximumFractionDigits: precision ?? 20 }).format(num);
 }
 
 /** Format a number with a short abbreviated suffix. */
-export const formatQuantity = (num: number, abbr: string, maxPrecision?: number, minPrecision?: number): string => `${formatNumber(num, maxPrecision, minPrecision)}${NNBSP}${abbr}`;
+export const formatQuantity = (num: number, abbr: string, precision?: number | null): string => `${formatNumber(num, precision)}${NNBSP}${abbr}`;
 
 /** Format a number with a longer full-word suffix. */
-export function formatFullQuantity(num: number, singular: string, plural: string, maxPrecision?: number, minPrecision?: number): string {
-	const qty = formatNumber(num, maxPrecision, minPrecision);
+export function formatFullQuantity(num: number, singular: string, plural: string, precision?: number | null): string {
+	const qty = formatNumber(num, precision);
 	return `${qty} ${qty === "1" ? singular : plural}`;
 }
 
@@ -152,24 +172,6 @@ export function cramFullQuantity(num: number, singular: string, plural: string):
 	const qty = cramNumber(num);
 	return `${qty} ${qty === "1" ? singular : plural}`;
 }
-
-/**
- * Is a number within a specified range?
- *
- * @param num The number to test, e.g. `17`
- * @param start The start of the range, e.g. `10`
- * @param end The end of the range, e.g. `20`
- */
-export const isBetween = (num: number, start: number, end: number): boolean => num >= start && num <= end;
-
-/**
- * Apply a min/max to a number to return a number that's definitely in the specified range.
- *
- * @param num The number to apply the min/max to, e.g. `17`
- * @param start The start of the range, e.g. `10`
- * @param end The end of the range, e.g. `20`
- */
-export const getBetween = (num: number, start: number, end: number) => Math.max(start, Math.min(end, num));
 
 /**
  * Get a number as a percentage of another number.

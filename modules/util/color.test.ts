@@ -1,4 +1,4 @@
-import { Color, getOptionalColor, AssertionError, getColor, isDark, isLight } from "../index.js";
+import { Color, getOptionalColor, AssertionError, getColor } from "../index.js";
 
 test("toColor(): colors", () => {
 	expect(getOptionalColor("#fff")).toBeInstanceOf(Color);
@@ -26,11 +26,11 @@ test("Color: conversion", () => {
 	expect(getColor("#00ccff80").rgba).toEqual("rgba(0, 204, 255, 0.5)");
 	expect(getColor("#00ccff").luminance).toEqual(164);
 });
-test("isLight() and isDark()", () => {
-	expect(isLight("#000000")).toBe(false);
-	expect(isDark("#000000")).toBe(true);
-	expect(isLight("#FFFFFF")).toBe(true);
-	expect(isDark("#FFFFFF")).toBe(false);
-	expect(isLight("#00ccff")).toBe(true);
-	expect(isDark("#00ccff")).toBe(false);
+test(".isLight and .isDark", () => {
+	expect(getColor("#000000").isLight).toBe(false);
+	expect(getColor("#000000").isDark).toBe(true);
+	expect(getColor("#FFFFFF").isLight).toBe(true);
+	expect(getColor("#FFFFFF").isDark).toBe(false);
+	expect(getColor("#00ccff").isLight).toBe(true);
+	expect(getColor("#00ccff").isDark).toBe(false);
 });
