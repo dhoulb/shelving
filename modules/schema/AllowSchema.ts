@@ -4,14 +4,18 @@ import { getRequiredMap, ImmutableRequiredMap, isMapKey, PossibleMap, PossibleSt
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
-/** Options for an `AllowSchema` instance. */
-type AllowSchemaOptions<K, T> = SchemaOptions & { allow: PossibleMap<K, T>; value?: K | null };
-
 /** Define a valid value from an allowed set of values. */
 export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>> {
 	override readonly value: K | null;
 	readonly allow: ImmutableRequiredMap<K, T>;
-	constructor({ allow, value = null, ...options }: AllowSchemaOptions<K, T>) {
+	constructor({
+		allow,
+		value = null,
+		...options
+	}: SchemaOptions & {
+		allow: PossibleMap<K, T>;
+		value?: K | null;
+	}) {
 		super(options);
 		this.allow = getRequiredMap(allow);
 		this.value = value;
@@ -29,7 +33,13 @@ export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>
 
 /** Define a valid string value from an allowed set of values. */
 export class AllowStringSchema<K extends string, T> extends AllowSchema<K, T> {
-	constructor({ allow, ...options }: SchemaOptions & { allow: PossibleStringMap<K, T> }) {
+	constructor({
+		allow,
+		...options
+	}: SchemaOptions & {
+		allow: PossibleStringMap<K, T>;
+		value?: K | null;
+	}) {
 		super({ allow: getRequiredMap(allow), ...options });
 	}
 	validator(value: unknown = this.value): K {
