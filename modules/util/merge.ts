@@ -1,4 +1,4 @@
-import { ImmutableArray, MutableArray, isArray } from "./array.js";
+import { ImmutableArray, isArray, withArrayItems } from "./array.js";
 import { ImmutableObject, MutableObject, isObject } from "./object.js";
 
 type MergeRecursor = (left: unknown, right: unknown) => unknown;
@@ -29,7 +29,7 @@ export const exactMerge: MergeRecursor = (left: unknown, right: unknown): unknow
  * - Will be merged instance otherwise.
  */
 export function shallowMerge<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R): L & R;
-export function shallowMerge<L extends unknown, R extends unknown>(left: ImmutableArray<L>, right: ImmutableArray<R>): ImmutableArray<L | R>;
+export function shallowMerge<L, R>(left: ImmutableArray<L>, right: ImmutableArray<R>): ImmutableArray<L | R>;
 export function shallowMerge<R>(left: unknown, right: R): R;
 export function shallowMerge(left: unknown, right: unknown): unknown {
 	return _merge(left, right, exactMerge);
@@ -47,7 +47,7 @@ export function shallowMerge(left: unknown, right: unknown): unknown {
  * - Will be a new merged instance otherwise.
  */
 export function deepMerge<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R): L & R;
-export function deepMerge<L extends unknown, R extends unknown>(left: ImmutableArray<L>, right: ImmutableArray<R>): ImmutableArray<L | R>;
+export function deepMerge<L, R>(left: ImmutableArray<L>, right: ImmutableArray<R>): ImmutableArray<L | R>;
 export function deepMerge<R>(left: unknown, right: R): R;
 export function deepMerge(left: unknown, right: unknown): unknown {
 	return _merge(left, right, deepMerge);
@@ -64,13 +64,12 @@ export function deepMerge(left: unknown, right: unknown): unknown {
  * - Will be `left` instance if no items were added.
  * - Will be a new merged array otherwise.
  */
-export function mergeArray<L extends unknown, R extends unknown>(left: ImmutableArray<L>, right: ImmutableArray<R>): ImmutableArray<L | R> {
+export function mergeArray<L, R>(left: ImmutableArray<L>, right: ImmutableArray<R> | ImmutableArray<L>): ImmutableArray<L | R>;
+export function mergeArray(left: ImmutableArray, right: ImmutableArray): ImmutableArray {
 	if (left === right) return right;
 	if (!right.length) return left;
 	if (!left.length) return right;
-	const merged: MutableArray<L | R> = left.slice();
-	for (const v of right) if (!merged.includes(v)) merged.push(v);
-	return merged.length === left.length ? left : merged;
+	return withArrayItems(left, ...right);
 }
 
 /**
