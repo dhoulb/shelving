@@ -52,15 +52,15 @@ export function* mapEntries<K, I, O>(entries: Iterable<Entry<K, I>>, transformer
 	for (const [k, v] of entries) yield [k, transform(v, transformer)];
 }
 
-/** Set of named transformers for a data object. */
-export type Transformers<T extends ImmutableObject> = { readonly [K in keyof T]?: Transformer<T[K], T[K]> };
+/** Set of named transformers for a data object (or `undefined` to skip the transform). */
+export type Transformers<T extends ImmutableObject> = { readonly [K in keyof T]?: Transformer<T[K], T[K]> | undefined };
 
 /** Transform an object using a set of named transformers. */
 export function transformObject<T extends ImmutableObject>(obj: T, transforms: Transformers<T>): T {
 	return { ...obj, ...Object.fromEntries(_transformObjectProps(obj, transforms)) };
 }
 function* _transformObjectProps<T extends ImmutableObject>(obj: T, transforms: Transformers<T>): Iterable<ObjectProp<T>> {
-	for (const [k, v] of getProps<{ readonly [K in keyof T]: Transformer<T[K], T[K]> }>(transforms)) yield [k, transform<ObjectValue<T>, ObjectValue<T>>(obj[k], v)];
+	for (const [k, v] of getProps(transforms)) if (v !== undefined) yield [k, transform<ObjectValue<T>, ObjectValue<T>>(obj[k], v as ObjectValue<T>)];
 }
 
 /** Transform a dictionary object using a set of named transformers. */

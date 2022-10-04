@@ -13,7 +13,7 @@ import { Update } from "./Update.js";
  * - If a prop contains a new value, the prop is set to that new value.
  * - If a prop contains an `Update` instance, the existing value is updated.
  */
-export type Updates<T extends Data = Data> = { readonly [K in keyof T]?: T[K] | Update<T[K]> };
+export type Updates<T extends Data = Data> = { readonly [K in keyof T]?: T[K] | Update<T[K]> | undefined };
 
 /**
  * Validate a set of updates against a set of validators.
@@ -81,7 +81,7 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 	}
 
 	// Implement `Iterable`
-	[Symbol.iterator](): Iterator<DataProp<Updates<T>>, void> {
+	[Symbol.iterator](): Iterator<DataProp<{ readonly [K in keyof T]: T[K] | Update<T[K]> }>, void> {
 		return Object.entries(this.updates).values();
 	}
 }
