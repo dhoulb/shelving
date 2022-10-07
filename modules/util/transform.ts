@@ -9,19 +9,32 @@ export interface Transformable<I, O> {
 	transform(input: I): O;
 }
 
+/** Object that transforms an input value into an output value with its `transform()` method. */
+export interface AsyncTransformable<I, O> {
+	transform(input: I): O | PromiseLike<O>;
+}
+
 /** Is an unknown value a transformable. */
 export const isTransformable = <T extends Transformable<unknown, unknown>>(v: T | unknown): v is T => isObject(v) && typeof v.transform === "function";
 
 /** Function that can transform an input value into an output value. */
 export type Transform<I, O> = (input: I) => O;
 
+/** Function that can transform an input value into an output value. */
+export type AsyncTransform<I, O> = (input: I) => O | PromiseLike<O>;
+
 /** Something that can transform an input value into an output value (or a plain value). */
 export type Transformer<I, O> = Transformable<I, O> | Transform<I, O> | O;
 
+/** Something that can transform an input value into an output value (or a plain value). */
+export type AsyncTransformer<I, O> = AsyncTransformable<I, O> | AsyncTransform<I, O> | O;
+
 /** Transform a value using a transformer. */
 export function transform<I, O>(input: I, transformer: (v: I) => O): O; // Helps `O` carry through functions that use generics.
+export function transform<I, O>(input: I, transformer: (v: I) => O | PromiseLike<O>): O | PromiseLike<O>; // Helps `O` carry through functions that use generics.
 export function transform<I, O>(input: I, transformer: Transformer<I, O>): O; // No promise returned with synchronous transformer.
-export function transform<I, O>(input: I, transformer: Transformer<I, O>): O {
+export function transform<I, O>(input: I, transformer: AsyncTransformer<I, O>): O; // No promise returned with asynchronous transformer.
+export function transform<I, O>(input: I, transformer: AsyncTransformer<I, O>): O | PromiseLike<O> {
 	return isFunction(transformer) ? transformer(input) : isTransformable(transformer) ? transformer.transform(input) : transformer;
 }
 
@@ -65,3 +78,8 @@ function* _transformObjectProps<T extends ImmutableObject>(obj: T, transforms: T
 
 /** Transform a dictionary object using a set of named transformers. */
 export const transformDictionary: <T>(dict: ImmutableDictionary<T>, transforms: Transformers<ImmutableDictionary<T>>) => ImmutableDictionary<T> = transformObject;
+
+/** Transform items in a sequence as they are yielded using a (potentially async) transformer. */
+export async function* mapSequence<L, R>(sequence: AsyncIterable<L>, transformer: AsyncTransformer<L, R>): AsyncIterable<R> {
+	for await (const item of sequence) yield transform(item, transformer);
+}
