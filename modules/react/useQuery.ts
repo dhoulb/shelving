@@ -59,7 +59,7 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 		const table = getOptionalSource(CacheProvider, db.provider)?.memory.getTable(collection);
 		const time = table ? table.getQueryTime(ref) : null;
 		const isCached = typeof time === "number";
-		super(table && isCached ? table.getQuery(ref) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.connect(table.getCachedQuerySequence(ref))) : undefined);
+		super(table && isCached ? table.getQuery(ref) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.from(table.getCachedQuerySequence(ref))) : undefined);
 		this._time = time;
 		this.ref = ref;
 		this.limit = limit ?? Infinity;
@@ -92,7 +92,7 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 
 	/** Subscribe this state to the source provider. */
 	connectSource(): Stop {
-		return this.connect(this.ref);
+		return this.from(this.ref);
 	}
 
 	/**

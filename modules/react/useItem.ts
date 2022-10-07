@@ -30,7 +30,7 @@ export class ItemState<T extends Datas, K extends DataKey<T> = DataKey<T>> exten
 		const table = getOptionalSource<CacheProvider<T>>(CacheProvider, db.provider)?.memory.getTable(collection);
 		const time = table ? table.getItemTime(id) : null;
 		const isCached = typeof time === "number";
-		super(table && isCached ? table.getItem(id) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.connect(table.getCachedItemSequence(id))) : undefined);
+		super(table && isCached ? table.getItem(id) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.from(table.getCachedItemSequence(id))) : undefined);
 		this._time = time;
 		this.ref = ref;
 
@@ -60,7 +60,7 @@ export class ItemState<T extends Datas, K extends DataKey<T> = DataKey<T>> exten
 
 	/** Subscribe this state to the source provider. */
 	connectSource(): Dispatch {
-		return this.connect(this.ref);
+		return this.from(this.ref);
 	}
 }
 

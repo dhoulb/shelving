@@ -1,4 +1,4 @@
-import type { Dispatch } from "../util/function.js";
+import { Dispatch, Handler, Stop } from "../util/function.js";
 import { runSequence } from "../util/sequence.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 
@@ -15,7 +15,7 @@ export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-
  * - To set the state to be loading, use the `State.NOVALUE` constant or a `Promise` value.
  * - To set the state to an explicit value, use that value or another `State` instance with a value.
  * */
-export class State<T> {
+export class State<T> implements AsyncIterable<T> {
 	/** The `NOVALUE` symbol indicates no value has been received by a `State` instance. */
 	static readonly NOVALUE: unique symbol = Symbol("shelving/State.NOVALUE");
 
@@ -70,8 +70,32 @@ export class State<T> {
 		}
 	}
 
-	/** Connect this state to a source until the returned stop function is called. */
-	connect(sequence: AsyncIterable<T>): Dispatch {
-		return runSequence(this.setSequence(sequence));
+	/** Pull values from a source sequence until the returned stop function is called. */
+	from(source: AsyncIterable<T>, onError?: Handler): Stop {
+		return runSequence(this.setSequence(source), onError);
+	}
+
+	/** Push values to another state or callback to this state until the returned stop function is called. */
+	to(target: State<T> | Dispatch<[T]>, onError?: Handler): Stop {
+		if (isState<State<T>>(target)) {
+			return runSequence(target.setSequence(this), onError);
+		} else {
+			return runSequence(this, target, onError);
+		}
+	}
+
+	// Implement `AsyncIterable`
+	// Issues the current value of the state first, then any subsequent values that are issued.
+	[Symbol.asyncIterator]() {
+		// If this is still loading yield the next value as soon as we get one.
+		if (this.loading) return this.next[Symbol.asyncIterator]();
+		// If this has a current value then yield the current value immediately, then the rest of the sequence.
+		// But! If additional values are set synchronously, only the yield the final one. Use a new `DeferredSequence` to make sure this happens cleanly.
+		const deferred = new DeferredSequence<T>();
+		deferred.resolve(this.value);
+		return deferred.resolveSequence(this.next)[Symbol.asyncIterator]();
 	}
 }
+
+/** Is an unknown value a `State` instance. */
+export const isState = <T extends AnyState>(v: T | unknown): v is T => v instanceof State;

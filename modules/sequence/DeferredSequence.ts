@@ -51,6 +51,14 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 		}
 	};
 
+	/** Resolve the current deferred from a sequence of values. */
+	async *resolveSequence(sequence: AsyncIterable<T>): AsyncIterable<T> {
+		for await (const item of sequence) {
+			this.resolve(item);
+			yield item;
+		}
+	}
+
 	// Implement `AsyncIterator`
 	async next(): Promise<IteratorResult<T, R>> {
 		return { value: await this.value };
