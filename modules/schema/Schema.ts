@@ -3,11 +3,13 @@ import type { Validatable } from "../util/validate.js";
 /** Options allowed by a `Schema` instance. */
 export type SchemaOptions = {
 	/** Title of the schema, e.g. for using as the title of a corresponding field. */
-	readonly title?: string;
+	readonly title?: string | null;
 	/** Description of the schema, e.g. for using as a description in a corresponding field. */
-	readonly description?: string;
+	readonly description?: string | null;
 	/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
-	readonly placeholder?: string;
+	readonly placeholder?: string | null;
+	/** Default value for the schema if `validate()` is called with an `undefined` value. */
+	readonly value?: unknown;
 };
 
 /**
@@ -16,19 +18,20 @@ export type SchemaOptions = {
  * - `validate()` returns `Invalid` if value was not valid.
  */
 export abstract class Schema<T extends unknown = unknown> implements Validatable<T> {
-	/** Title, e.g. for showing in fields. */
-	readonly title?: string;
-	/** Description, e.g. for showing in fields. */
-	readonly description?: string;
-	/** Placeholder, e.g. for showing in fields. */
-	readonly placeholder?: string;
-	/** Default value. */
-	readonly value?: unknown;
+	/** Title of the schema, e.g. for using as the title of a corresponding field. */
+	readonly title: string | null;
+	/** Description of the schema, e.g. for using as a description in a corresponding field. */
+	readonly description: string | null;
+	/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
+	readonly placeholder: string | null;
+	/** Default value for the schema if `validate()` is called with an `undefined` value. */
+	readonly value: unknown;
 
-	constructor({ title = "", description = "", placeholder = "" }: SchemaOptions) {
+	constructor({ title = null, description = null, placeholder = null, value }: SchemaOptions) {
 		this.title = title;
 		this.description = description;
 		this.placeholder = placeholder;
+		this.value = value;
 	}
 
 	/** Every schema must implement a `validate()` method. */
