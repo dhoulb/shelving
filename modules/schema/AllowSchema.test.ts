@@ -6,6 +6,8 @@ test("TypeScript", () => {
 	const fff: "a" | "b" = ALLOW_STRING({ a: "A", b: "B" }).validate("a");
 	const ggg: Schema<"a" | "b"> = new AllowStringSchema({ allow: { a: "A", b: "B" } });
 	const hhh: "a" | "b" = new AllowStringSchema({ allow: { a: "A", b: "B" } }).validate("a");
+	const aaa = new AllowStringSchema({ allow: { a: "A", b: "B" } }).validate("a");
+	const bbb: "a" | "b" = aaa;
 	// Map options.
 	type T = 1 | "a" | null;
 	const map = new Map<T, string>([
