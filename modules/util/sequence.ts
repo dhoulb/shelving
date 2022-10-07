@@ -4,11 +4,6 @@ import { SIGNAL } from "./constants.js";
 import { logError } from "./error.js";
 import { Handler, Stop, AsyncDispatch, Dispatch, dispatch } from "./function.js";
 
-/** Slightly modify the definition of `AsyncIterable` to default `R` and `N` to `void` */
-export declare interface AsyncIterable<T, R = void, N = void> {
-	[Symbol.asyncIterator](): AsyncIterator<T, R, N>;
-}
-
 /**
  * Is a value an async iterable object?
  * - Any object with a `Symbol.iterator` property is iterable.
@@ -17,7 +12,7 @@ export declare interface AsyncIterable<T, R = void, N = void> {
 export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Infinite sequence that yields until a `SIGNAL` is received. */
-export async function* repeatUntil<T, R>(source: AsyncIterable<T, R>, ...signals: [Promise<typeof SIGNAL>, ...Promise<typeof SIGNAL>[]]): AsyncIterable<T, R | typeof SIGNAL> {
+export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof SIGNAL>, ...Promise<typeof SIGNAL>[]]): AsyncIterable<T> {
 	const iterator = source[Symbol.asyncIterator]();
 	while (true) {
 		const result = await Promise.race([iterator.next(), ...signals]);
@@ -42,7 +37,7 @@ export async function* repeatDelay(ms: number): AsyncIterable<number> {
 }
 
 /** Dispatch items in a sequence to a (possibly async) callback. */
-export async function* dispatchSequence<T, R>(sequence: AsyncIterable<T, R>, onNext: AsyncDispatch<[T]>): AsyncIterable<T> {
+export async function* dispatchSequence<T>(sequence: AsyncIterable<T>, onNext: AsyncDispatch<[T]>): AsyncIterable<T> {
 	for await (const item of sequence) {
 		dispatch(onNext, item);
 		yield item;
@@ -50,18 +45,18 @@ export async function* dispatchSequence<T, R>(sequence: AsyncIterable<T, R>, onN
 }
 
 /** Get the first value from an async iterator. **/
-export async function getNextValue<T, R>(sequence: AsyncIterable<T, R>): Promise<T> {
+export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
 	for await (const value of sequence) return value;
 	throw new RequiredError("First value is required");
 }
 
 /** Pull values from a sequence until the returned function is called. */
-export function runSequence<T, R>(sequence: AsyncIterable<T, R>, onNext?: Dispatch<[T]>, onError: Handler = logError): Stop {
+export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: Dispatch<[T]>, onError: Handler = logError): Stop {
 	const stop = new Signal();
 	_runSequence(sequence[Symbol.asyncIterator](), stop, onNext, onError).catch(onError).catch(logError);
 	return stop.send;
 }
-async function _runSequence<T, R>(iterator: AsyncIterator<T, R>, stop: Signal, onNext: Dispatch<[T]> | undefined, onError: Handler): Promise<unknown> {
+async function _runSequence<T>(iterator: AsyncIterator<T>, stop: Signal, onNext: Dispatch<[T]> | undefined, onError: Handler): Promise<unknown> {
 	try {
 		const result = await Promise.race([stop, iterator.next()]);
 		if (result === Signal.SIGNAL || result.done) {
