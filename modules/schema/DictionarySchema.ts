@@ -3,24 +3,21 @@ import { Validator, validateEntries } from "../util/validate.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
+/** Allowed options for `DictionarySchema` */
+export type DictionarySchemaOptions<T> = SchemaOptions & {
+	readonly items: Validator<T>;
+	readonly value?: ImmutableDictionary;
+	readonly min?: number | null;
+	readonly max?: number | null;
+};
+
 /** Validate a dictionary object (whose props are all the same with string keys). */
 export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	override readonly value: ImmutableDictionary;
 	readonly items: Validator<T>;
 	readonly min: number | null = null;
 	readonly max: number | null = null;
-	constructor({
-		value = {},
-		items,
-		min = null,
-		max = null,
-		...rest
-	}: SchemaOptions & {
-		readonly items: Validator<T>;
-		readonly value?: ImmutableDictionary;
-		readonly min?: number | null;
-		readonly max?: number | null;
-	}) {
+	constructor({ value = {}, items, min = null, max = null, ...rest }: DictionarySchemaOptions<T>) {
 		super(rest);
 		this.items = items;
 		this.value = value;

@@ -1,14 +1,14 @@
 import { Schema, SchemaOptions } from "./Schema.js";
 
+/** Allowed options for `BooleanSchema` */
+export type BooleanSchemaOptions = SchemaOptions & {
+	readonly value?: boolean;
+};
+
 /** Define a valid boolean. */
 export class BooleanSchema extends Schema<boolean> {
 	override readonly value: boolean;
-	constructor({
-		value = false,
-		...options
-	}: SchemaOptions & {
-		readonly value?: boolean;
-	}) {
+	constructor({ value = false, ...options }: BooleanSchemaOptions) {
 		super(options);
 		this.value = value;
 	}

@@ -4,6 +4,14 @@ import { PossibleTime, getOptionalTime, Time, getTime } from "../util/time.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
+/** Allowed options for `TimeSchama` */
+export type TimeSchemaOptions = SchemaOptions & {
+	readonly value?: PossibleTime;
+	readonly min?: PossibleTime | null;
+	readonly max?: PossibleTime | null;
+	readonly step?: number | null;
+};
+
 /** Define a valid time in 24h hh:mm:ss.fff format, e.g. `23:59` or `24:00 */
 export class TimeSchema extends Schema<string> {
 	override readonly value: PossibleTime;
@@ -14,18 +22,7 @@ export class TimeSchema extends Schema<string> {
 	 * - Note: `<input type="time">` elements expect `step=""` to be  in _seconds_ so you need to multiply this by `1000`
 	 */
 	readonly step: number | null;
-	constructor({
-		value = "now",
-		min = null,
-		max = null,
-		step = 60,
-		...options
-	}: SchemaOptions & {
-		readonly value?: PossibleTime;
-		readonly min?: PossibleTime | null;
-		readonly max?: PossibleTime | null;
-		readonly step?: number | null;
-	}) {
+	constructor({ value = "now", min = null, max = null, step = 60, ...options }: TimeSchemaOptions) {
 		super(options);
 		this.value = value;
 		this.min = min !== null ? getTime(min) : null;

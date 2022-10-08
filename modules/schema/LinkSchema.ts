@@ -3,6 +3,12 @@ import { getOptionalURL } from "../util/url.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema, StringSchemaOptions } from "./StringSchema.js";
 
+/** Allowed options for `LinkSchema` */
+export type LinkSchemaOptions = StringSchemaOptions & {
+	readonly schemes?: string[];
+	readonly hosts?: string[] | null;
+};
+
 /**
  * Type of `StringSchema` that defines a valid URL.
  * - Checks URL scheme against a whitelist (always), and checks URL domain against a whitelist (optional).
@@ -15,14 +21,7 @@ export class LinkSchema extends StringSchema {
 	override readonly max = 512;
 	readonly schemes: string[] = ["http:", "https:"];
 	readonly hosts: string[] | null = null;
-	constructor({
-		schemes = ["http:", "https:"],
-		hosts = null,
-		...rest
-	}: StringSchemaOptions & {
-		readonly schemes?: string[];
-		readonly hosts?: string[] | null;
-	}) {
+	constructor({ schemes = ["http:", "https:"], hosts = null, ...rest }: LinkSchemaOptions) {
 		super(rest);
 		this.schemes = schemes;
 		this.hosts = hosts;

@@ -3,6 +3,15 @@ import { ImmutableArray, isArray, uniqueArray } from "../util/array.js";
 import { validateArray, Validator } from "../util/validate.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
+/** Allowed options for `ArraySchema` */
+export type ArraySchemaOptions<T> = SchemaOptions & {
+	readonly value?: ImmutableArray;
+	readonly items: Validator<T>;
+	readonly min?: number;
+	readonly max?: number | null;
+	readonly unique?: boolean;
+};
+
 /**
  * Define a valid array.
  *
@@ -36,20 +45,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	readonly unique: boolean;
 	readonly min: number;
 	readonly max: number | null;
-	constructor({
-		value = [],
-		items,
-		unique = false,
-		min = 0,
-		max = null,
-		...options
-	}: SchemaOptions & {
-		readonly value?: ImmutableArray;
-		readonly items: Validator<T>;
-		readonly min?: number;
-		readonly max?: number | null;
-		readonly unique?: boolean;
-	}) {
+	constructor({ value = [], items, unique = false, min = 0, max = null, ...options }: ArraySchemaOptions<T>) {
 		super(options);
 		this.value = value;
 		this.items = items;

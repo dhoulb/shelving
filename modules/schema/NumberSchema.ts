@@ -3,24 +3,21 @@ import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 
+/** Allowed options for `NumberSchema` */
+export type NumberSchemaOptions = SchemaOptions & {
+	readonly value?: number | null;
+	readonly min?: number | null;
+	readonly max?: number | null;
+	readonly step?: number | null;
+};
+
 /** Schema that defines a valid number. */
 export class NumberSchema extends Schema<number> {
 	override readonly value: number | null;
 	readonly min: number | null;
 	readonly max: number | null;
 	readonly step: number | null;
-	constructor({
-		value = 0,
-		min = null,
-		max = null,
-		step = null,
-		...rest
-	}: SchemaOptions & {
-		readonly value?: number | null;
-		readonly min?: number | null;
-		readonly max?: number | null;
-		readonly step?: number | null;
-	}) {
+	constructor({ value = 0, min = null, max = null, step = null, ...rest }: NumberSchemaOptions) {
 		super(rest);
 		this.value = value;
 		this.min = min;
