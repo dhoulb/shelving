@@ -11,6 +11,5 @@ const config = {
 		],
 	},
 	resolver: "jest-ts-webcompat-resolver",
-	extensionsToTreatAsEsm: [".ts"],
 };
 module.exports = config;
