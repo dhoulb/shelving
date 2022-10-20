@@ -78,7 +78,7 @@ export function cacheGetter<T>(target: Object, key: string, { get }: TypedProper
  *
  * @example
  * 		class MyClass {
- * 			\@setPrototype("myProp", "myValue!") readonly myProp!: string;
+ * 			@setPrototype("myProp", "myValue!") readonly myProp!: string;
  * 		}
  */
 export function setPrototype<K extends PropertyKey, T>(key: K, value: T): (prototype: { [J in K]: T }, k: K) => void {
