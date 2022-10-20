@@ -8,7 +8,7 @@ test("DataState.prototype.data", async () => {
 	expect(state.data).toEqual({ a: 1 });
 	// Ons and onces.
 	const calls: T[] = [];
-	const stop = state.next.subscribe(v => calls.push(v));
+	const stop = state.next.to(v => calls.push(v));
 	// Set truthy value.
 	expect(state.set({ a: 2 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 2 });
@@ -26,7 +26,7 @@ test("DataState.prototype.update()", async () => {
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
 	const calls1: T[] = [];
-	const stop = state.next.subscribe(v => calls1.push(v));
+	const stop = state.next.to(v => calls1.push(v));
 	// Apply a data transform.
 	expect(state.update({ a: 111, b: n => n * n })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: 4 });
@@ -44,7 +44,7 @@ test("OptionalDataState.prototype.data", async () => {
 	expect(() => state.data).toThrow(RequiredError);
 	// Ons and onces.
 	const calls: OptionalData<T>[] = [];
-	const stop = state.next.subscribe(v => calls.push(v));
+	const stop = state.next.to(v => calls.push(v));
 	// Set data value.
 	expect(state.set({ a: 1 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 1 });
@@ -74,7 +74,7 @@ test("OptionalDataState.prototype.update()", async () => {
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
 	const calls1: OptionalData<T>[] = [];
-	const stop = state.next.subscribe(v => calls1.push(v));
+	const stop = state.next.to(v => calls1.push(v));
 	// Apply a data transform.
 	expect(state.update({ a: 111, b: n => n * n })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: 4 });

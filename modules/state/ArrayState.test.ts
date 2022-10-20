@@ -6,7 +6,7 @@ test("ArrayState with initial value", async () => {
 	expect(state.value).toEqual([1, 2, 3]);
 	// Ons and onces.
 	const calls: ImmutableArray<number>[] = [];
-	const stop = state.next.subscribe(v => void calls.push(v));
+	const stop = state.next.to(v => void calls.push(v));
 	// Add.
 	expect(state.add(4)).toBe(undefined);
 	expect(state.value).toEqual([1, 2, 3, 4]);

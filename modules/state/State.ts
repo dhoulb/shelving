@@ -63,7 +63,7 @@ export class State<T> implements AsyncIterable<T> {
 	}
 
 	/** Set the value of the state as values are pulled from a sequence. */
-	async *setSequence(sequence: AsyncIterable<T>): AsyncIterable<T> {
+	async *through(sequence: AsyncIterable<T>): AsyncIterable<T> {
 		for await (const value of sequence) {
 			this.set(value);
 			yield value;
@@ -72,28 +72,20 @@ export class State<T> implements AsyncIterable<T> {
 
 	/** Pull values from a source sequence until the returned stop function is called. */
 	from(source: AsyncIterable<T>, onError?: Handler): Stop {
-		return runSequence(this.setSequence(source), onError);
+		return runSequence(this.through(source), onError);
 	}
 
 	/** Push values to another state or callback to this state until the returned stop function is called. */
-	to(target: State<T> | Dispatch<[T]>, onError?: Handler): Stop {
-		if (isState<State<T>>(target)) {
-			return runSequence(target.setSequence(this), onError);
-		} else {
-			return runSequence(this, target, onError);
-		}
+	to(target: Dispatch<[T]>, onError?: Handler): Stop {
+		return runSequence(this, target, onError);
 	}
 
 	// Implement `AsyncIterable`
 	// Issues the current value of the state first, then any subsequent values that are issued.
-	[Symbol.asyncIterator]() {
-		// If this is still loading yield the next value as soon as we get one.
-		if (this.loading) return this.next[Symbol.asyncIterator]();
-		// If this has a current value then yield the current value immediately, then the rest of the sequence.
-		// But! If additional values are set synchronously, only the yield the final one. Use a new `DeferredSequence` to make sure this happens cleanly.
-		const deferred = new DeferredSequence<T>();
-		deferred.resolve(this.value);
-		return deferred.resolveSequence(this.next)[Symbol.asyncIterator]();
+	async *[Symbol.asyncIterator](): AsyncIterator<T> {
+		await Promise.resolve(); // Introduce a slight delay, i.e. don't immediately yield `this.value` in case it is changed synchronously.
+		if (!this.loading) yield this.value;
+		yield* this.next;
 	}
 }
 

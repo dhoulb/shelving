@@ -42,22 +42,14 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 	/** Fulfill the current deferred by resolving or rejecting it. */
 	private readonly _fulfill = () => {
 		const { _deferred, _nextReason, _nextValue } = this;
+		this._deferred = undefined;
+		this._nextReason = _NOVALUE;
+		this._nextValue = _NOVALUE;
 		if (_deferred) {
-			this._deferred = undefined;
-			this._nextReason = _NOVALUE;
-			this._nextValue = _NOVALUE;
 			if (_nextReason !== _NOVALUE) _deferred.reject(_nextReason);
 			else if (_nextValue !== _NOVALUE) _deferred.resolve(_nextValue);
 		}
 	};
-
-	/** Resolve the current deferred from a sequence of values. */
-	async *resolveSequence(sequence: AsyncIterable<T>): AsyncIterable<T> {
-		for await (const item of sequence) {
-			this.resolve(item);
-			yield item;
-		}
-	}
 
 	// Implement `AsyncIterator`
 	async next(): Promise<IteratorResult<T, R>> {
@@ -75,8 +67,21 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 		return this.value.finally(onFinally);
 	}
 
+	/** Resolve the current deferred from a sequence of values. */
+	async *through(sequence: AsyncIterable<T>): AsyncIterable<T> {
+		for await (const item of sequence) {
+			this.resolve(item);
+			yield item;
+		}
+	}
+
+	/** Pull values from a source sequence until the returned stop function is called. */
+	from(source: AsyncIterable<T>, onError?: Handler): Stop {
+		return runSequence(this.through(source), undefined, onError);
+	}
+
 	/** Subscrbe to the value of the sequence with a callback until the returned stop function is called. */
-	subscribe(onNext: Dispatch<[T]>, onError?: Handler): Stop {
+	to(onNext: Dispatch<[T]>, onError?: Handler): Stop {
 		return runSequence(this, onNext, onError);
 	}
 }
