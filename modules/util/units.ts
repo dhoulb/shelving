@@ -1,9 +1,8 @@
 import { ConditionError } from "../error/ConditionError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
 import { getProps, ImmutableObject } from "./object.js";
-import { getDuration, PossibleDate } from "./date.js";
 import { MapKey, ImmutableRequiredMap } from "./map.js";
-import { formatFullQuantity, formatQuantity, getPercent } from "./number.js";
+import { formatFullQuantity, formatQuantity } from "./number.js";
 
 /** Conversion from one unit to another (either a number to multiple by, or a function to convert). */
 type Conversion = number | ((num: number) => number);
@@ -29,19 +28,19 @@ type UnitProps<T extends string> = {
 };
 
 /** Represent a unit. */
-export class Unit<T extends string> {
-	private readonly _to: Conversions<T> | undefined;
+export class Unit<K extends string> {
+	private readonly _to: Conversions<K> | undefined;
 
-	/** Identifier for this unit, e.g. `kilometer` */
-	readonly id: T;
+	/** String key for this unit, e.g. `kilometer` */
+	public readonly key: K;
 	/** Short abbreviation for this unit, e.g. `km` (defaults to first letter of `id`). */
-	readonly abbr: string;
+	public readonly abbr: string;
 	/** Singular name for this unit, e.g. `kilometer` (defaults to `id`). */
-	readonly singular: string;
+	public readonly singular: string;
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `singular` + "s"). */
-	readonly plural: string;
+	public readonly plural: string;
 	/** Default precision for this unit (defaults to `null`). */
-	readonly precision: number | null;
+	public readonly precision: number | null;
 
 	/** Title for this unit (uses format `abbr (plural)`, e.g. `fl oz (US fluid ounces)`) */
 	get title(): string {
@@ -50,13 +49,13 @@ export class Unit<T extends string> {
 
 	constructor(
 		/** `UnitList` this unit belongs to. */
-		public readonly list: UnitList<T>,
-		/** Key for this unit, e.g. `kilometer` */
-		id: T,
+		public readonly list: UnitList<K>,
+		/** String key for this unit, e.g. `kilometer` */
+		key: K,
 		/** Props to configure this unit. */
-		{ abbr = id.slice(0, 1), singular = id.replace(/-/, " "), plural = `${singular}s`, precision = null, to }: UnitProps<T>,
+		{ abbr = key.slice(0, 1), singular = key.replace(/-/, " "), plural = `${singular}s`, precision = null, to }: UnitProps<K>,
 	) {
-		this.id = id;
+		this.key = key;
 		this.abbr = abbr;
 		this.singular = singular;
 		this.plural = plural;
@@ -65,31 +64,31 @@ export class Unit<T extends string> {
 	}
 
 	/** Convert an amount from this unit to another unit. */
-	to(amount: number, id: T | Unit<T> = this.list.base): number {
-		return this._toUnit(amount, _getUnit(this.list, id));
+	to(amount: number, unit: K | Unit<K> = this.list.base): number {
+		return this._toUnit(amount, _getUnit(this.list, unit));
 	}
 
 	/** Convert an amount from another unit to this unit. */
-	from(amount: number, id: T | Unit<T> = this.list.base): number {
-		return _getUnit(this.list, id)._toUnit(amount, this);
+	from(amount: number, unit: K | Unit<K> = this.list.base): number {
+		return _getUnit(this.list, unit)._toUnit(amount, this);
 	}
 
 	/** Convert an amount from this unit to another unit (must specify another `Unit` instance). */
-	private _toUnit(amount: number, unit: Unit<T>): number {
+	private _toUnit(amount: number, unit: Unit<K>): number {
 		// Convert to self.
 		if (unit === this) return amount;
 		// Exact conversion.
-		const thisToUnit = this._to?.[unit.id];
+		const thisToUnit = this._to?.[unit.key];
 		if (thisToUnit) return _convert(amount, thisToUnit);
 		// Invert number conversion (can't do this for function conversions).
-		const unitToThis = unit._to?.[this.id];
+		const unitToThis = unit._to?.[this.key];
 		if (typeof unitToThis === "number") return amount / unitToThis;
 		// Two step conversion via base.
 		const base = this.list.base;
-		const thisToBase = this._to?.[base.id];
+		const thisToBase = this._to?.[base.key];
 		if (thisToBase) return base._toUnit(_convert(amount, thisToBase), unit);
 		// Cannot convert.
-		throw new ConditionError(`Cannot convert "${this.id}" to "${unit.id}"`);
+		throw new ConditionError(`Cannot convert "${this.key}" to "${unit.key}"`);
 	}
 
 	/** Format a number with a given unit of measure, e.g. `12 kg` or `29.5 l` */
@@ -102,7 +101,7 @@ export class Unit<T extends string> {
 		return formatFullQuantity(amount, this.singular, this.plural, precision);
 	}
 }
-const _getUnit = <T extends string>(list: UnitList<T>, id: T | Unit<T>): Unit<T> => (typeof id === "string" ? list.get(id) : id);
+const _getUnit = <K extends string>(list: UnitList<K>, unit: K | Unit<K>): Unit<K> => (typeof unit === "string" ? list.get(unit) : unit);
 
 /** Represent a list of units. */
 export class UnitList<T extends string> extends ImmutableRequiredMap<T, Unit<T>> {
@@ -151,14 +150,14 @@ const IMP_ML_PER_GAL = 4546090 / 1000;
 export const PERCENTAGE_UNITS = new UnitList({
 	percent: { abbr: "%", plural: "percent" },
 });
-export type PercentageUnitIdentifier = MapKey<typeof PERCENTAGE_UNITS>;
+export type PercentageUnitKey = MapKey<typeof PERCENTAGE_UNITS>;
 
 /** Point units. */
 export const POINT_UNITS = new UnitList({
 	"basis-point": { abbr: "bp" },
 	"percentage-point": { abbr: "pp", to: { "basis-point": 100 } },
 });
-export type PointUnitIdentifier = MapKey<typeof POINT_UNITS>;
+export type PointUnitKey = MapKey<typeof POINT_UNITS>;
 
 /** Angle units. */
 export const ANGLE_UNITS = new UnitList({
@@ -166,7 +165,7 @@ export const ANGLE_UNITS = new UnitList({
 	radian: { abbr: "rad", to: { degree: 180 / Math.PI } },
 	gradian: { abbr: "grad", to: { degree: 180 / 200 } },
 });
-export type AngleUnitIdentifier = MapKey<typeof ANGLE_UNITS>;
+export type AngleUnitKey = MapKey<typeof ANGLE_UNITS>;
 
 /** Mass units. */
 export const MASS_UNITS = new UnitList({
@@ -179,7 +178,7 @@ export const MASS_UNITS = new UnitList({
 	pound: { abbr: "lb", to: { milligram: MG_PER_LB, ounce: OZ_PER_LB } },
 	stone: { abbr: "st", plural: "stone", to: { milligram: MG_PER_LB * LB_PER_ST, pound: LB_PER_ST, ounce: OZ_PER_LB * LB_PER_ST } },
 });
-export type MassUnitIdentifier = MapKey<typeof MASS_UNITS>;
+export type MassUnitKey = MapKey<typeof MASS_UNITS>;
 
 /** Time units. */
 export const TIME_UNITS = new UnitList({
@@ -193,7 +192,7 @@ export const TIME_UNITS = new UnitList({
 	month: { to: { millisecond: MONTH } },
 	year: { to: { millisecond: YEAR } },
 });
-export type TimeUnitIdentifier = MapKey<typeof TIME_UNITS>;
+export type TimeUnitKey = MapKey<typeof TIME_UNITS>;
 
 /** Length units. */
 export const LENGTH_UNITS = new UnitList({
@@ -209,7 +208,7 @@ export const LENGTH_UNITS = new UnitList({
 	furlong: { abbr: "fur", to: { millimeter: IN_PER_YD * MM_PER_IN * YD_PER_FUR, foot: YD_PER_FUR * FT_PER_YD, yard: YD_PER_FUR } },
 	mile: { abbr: "mi", to: { millimeter: MM_PER_MI, yard: YD_PER_MI, foot: FT_PER_MI, inch: IN_PER_MI } },
 });
-export type LengthUnitIdentifier = MapKey<typeof LENGTH_UNITS>;
+export type LengthUnitKey = MapKey<typeof LENGTH_UNITS>;
 
 /** Speed units. */
 export const SPEED_UNITS = new UnitList({
@@ -219,7 +218,7 @@ export const SPEED_UNITS = new UnitList({
 	// Imperial.
 	"mile-per-hour": { abbr: "mph", singular: "mile per hour", plural: "miles per hour", to: { "meter-per-second": MM_PER_MI / HOUR } },
 });
-export type SpeedUnitIdentifier = MapKey<typeof SPEED_UNITS>;
+export type SpeedUnitKey = MapKey<typeof SPEED_UNITS>;
 
 /** Area units. */
 export const AREA_UNITS = new UnitList({
@@ -235,7 +234,7 @@ export const AREA_UNITS = new UnitList({
 	"square-yard": { abbr: `yd²`, to: { "square-millimeter": IN_PER_YD ** 2 * MM2_PER_IN2, "square-foot": FT_PER_YD ** 2, "square-inch": IN_PER_YD ** 2 } },
 	"acre": { abbr: "acre", to: { "square-millimeter": IN_PER_YD ** 2 * YD2_PER_ACRE * MM2_PER_IN2, "square-foot": FT2_PER_ACRE, "square-yard": YD2_PER_ACRE } },
 });
-export type AreaUnitIdentifier = MapKey<typeof AREA_UNITS>;
+export type AreaUnitKey = MapKey<typeof AREA_UNITS>;
 
 /** Volume units. */
 export const VOLUME_UNITS = new UnitList({
@@ -258,7 +257,7 @@ export const VOLUME_UNITS = new UnitList({
 	"cubic-foot": { abbr: "ft³", plural: "cubic feet", to: { "milliliter": IN_PER_FT ** 3 * ML_PER_IN3, "cubic-inch": IN_PER_FT ** 3 } },
 	"cubic-yard": { abbr: "yd³", to: { "milliliter": IN_PER_YD ** 3 * ML_PER_IN3, "cubic-foot": FT_PER_YD ** 3, "cubic-inch": IN_PER_YD ** 3 } },
 });
-export type VolumeUnitIdentifier = MapKey<typeof VOLUME_UNITS>;
+export type VolumeUnitKey = MapKey<typeof VOLUME_UNITS>;
 
 /** Temperature units. */
 export const TEMPERATURE_UNITS = new UnitList({
@@ -266,58 +265,4 @@ export const TEMPERATURE_UNITS = new UnitList({
 	fahrenheit: { abbr: "°F", singular: "degree Fahrenheit", plural: "degrees Fahrenheit", to: { celsius: n => (n - 32) * (5 / 9) } },
 	kelvin: { abbr: "°K", singular: "degree Kelvin", plural: "degrees Kelvin", to: { celsius: n => n - 273.15 } },
 });
-export type TemperatureUnitIdentifier = MapKey<typeof TEMPERATURE_UNITS>;
-
-/** Format a percentage (combines `getPercent()` and `formatUnits()` for convenience). */
-export const formatPercent = (numerator: number, denumerator: number, precision?: number): string => formatQuantity(getPercent(numerator, denumerator), "%", precision);
-
-/** Get the ID for a time unit based on the amount in milliseconds. */
-function _getTimeUnitIdentifier(ms: number): TimeUnitIdentifier {
-	const abs = Math.abs(ms);
-	if (abs > 18 * MONTH) return "year";
-	if (abs > 10 * WEEK) return "month";
-	if (abs > 2 * WEEK) return "week";
-	if (abs > DAY) return "day";
-	if (abs > HOUR) return "hour";
-	if (abs > 9949) return "minute";
-	if (abs > SECOND) return "second";
-	return "millisecond";
-}
-
-/** Format a full format of a duration of time using the most reasonable units e.g. `5 years` or `1 week` or `4 minutes` or `12 milliseconds`. */
-export function formatFullDuration(ms: number, precision?: number): string {
-	const unit = TIME_UNITS.get(_getTimeUnitIdentifier(ms));
-	return unit.formatFull(unit.from(ms), precision);
-}
-
-/** Format a description of a duration of time using the most reasonable units e.g. `5y` or `4m` or `12ms`. */
-export function formatDuration(ms: number, precision?: number): string {
-	const unit = TIME_UNITS.get(_getTimeUnitIdentifier(ms));
-	return unit.format(unit.from(ms), precision);
-}
-
-/** format when a data happens/happened. */
-function _formatWhen(formatter: typeof formatFullDuration | typeof formatDuration, target: PossibleDate, current?: PossibleDate) {
-	const ms = getDuration(target, current);
-	const abs = Math.abs(ms);
-	const duration = formatter(ms);
-	return abs < 10 * SECOND ? "just now" : ms > 0 ? `in ${duration}` : `${duration} ago`;
-}
-
-/** Full when a date happens/happened, e.g. `in 10 days` or `2 hours ago` */
-export const formatFullWhen = (target: PossibleDate, current?: PossibleDate): string => _formatWhen(formatFullDuration, target, current);
-
-/** Compact when a date happens/happened, e.g. `in 10d` or `2h ago` or `in 1w` */
-export const formatWhen = (target: PossibleDate, current?: PossibleDate): string => _formatWhen(formatDuration, target, current);
-
-/** Full when a date happens, e.g. `10 days` or `2 hours` or `-1 week` */
-export const formatFullUntil = (target: PossibleDate, current?: PossibleDate): string => formatFullDuration(getDuration(target, current));
-
-/** Compact when a date happens, e.g. `10d` or `2h` or `-1w` */
-export const formatUntil = (target: PossibleDate, current?: PossibleDate): string => formatDuration(getDuration(target, current));
-
-/** Full when a date happened, e.g. `10 days` or `2 hours` or `-1 week` */
-export const formatFullAgo = (target: PossibleDate, current?: PossibleDate): string => formatFullDuration(getDuration(current, target));
-
-/** Compact when a date will happen, e.g. `10d` or `2h` or `-1w` */
-export const formatAgo = (target: PossibleDate, current?: PossibleDate): string => formatDuration(getDuration(current, target));
+export type TemperatureUnitKey = MapKey<typeof TEMPERATURE_UNITS>;

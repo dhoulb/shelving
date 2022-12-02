@@ -181,6 +181,9 @@ export function cramFullQuantity(num: number, singular: string, plural: string):
  */
 export const getPercent = (numerator: number, denumerator: number) => Math.max(0, Math.min(100, (100 / denumerator) * numerator));
 
+/** Format a percentage (combines `getPercent()` and `formatQuantity()` for convenience). */
+export const formatPercent = (numerator: number, denumerator: number, precision?: number): string => formatQuantity(getPercent(numerator, denumerator), "%", precision);
+
 /** Sum an iterable set of numbers and return the total. */
 export function sumNumbers(nums: Iterable<number>): number {
 	let sum = 0;
