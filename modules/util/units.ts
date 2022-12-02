@@ -1,7 +1,7 @@
 import { ConditionError } from "../error/ConditionError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
 import { getProps, ImmutableObject } from "./object.js";
-import { MapKey, ImmutableRequiredMap } from "./map.js";
+import { MapKey, ImmutableMap, getMapItem } from "./map.js";
 import { formatFullQuantity, formatQuantity } from "./number.js";
 
 /** Conversion from one unit to another (either a number to multiple by, or a function to convert). */
@@ -101,10 +101,14 @@ export class Unit<K extends string> {
 		return formatFullQuantity(amount, this.singular, this.plural, precision);
 	}
 }
-const _getUnit = <K extends string>(list: UnitList<K>, unit: K | Unit<K>): Unit<K> => (typeof unit === "string" ? list.get(unit) : unit);
+const _getUnit = <K extends string>(list: UnitList<K>, unit: K | Unit<K>): Unit<K> => (typeof unit === "string" ? getMapItem(list, unit) : unit);
 
-/** Represent a list of units. */
-export class UnitList<T extends string> extends ImmutableRequiredMap<T, Unit<T>> {
+/**
+ * Represent a list of units.
+ * - Has a known base unit at `.base`
+ * - Cannot have additional units added after it is created.
+ */
+export class UnitList<T extends string> extends ImmutableMap<T, Unit<T>> {
 	public readonly base!: Unit<T>;
 	constructor(units: ImmutableObject<T, UnitProps<T>>) {
 		super();

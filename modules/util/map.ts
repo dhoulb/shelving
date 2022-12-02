@@ -2,10 +2,12 @@ import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { Entry } from "./entry.js";
 import { isIterable, limitItems } from "./iterate.js";
-import { getString } from "./string.js";
 
 /** `Map` that cannot be changed. */
 export type ImmutableMap<K = unknown, T = unknown> = ReadonlyMap<K, T>;
+
+/** Class for a `Map` that cannot be changed (so you can extend `Map` while implementing `ImmutableMap`). */
+export const ImmutableMap: { new <K, T>(...params: ConstructorParameters<typeof Map<K, T>>): ImmutableMap<K, T> } = Map;
 
 /** `Map` that can be changed. */
 export type MutableMap<K = unknown, T = unknown> = Map<K, T>;
@@ -43,13 +45,6 @@ export function getMap(input: PossibleMap<unknown, unknown> | { readonly [key: s
 	return isMap(input) ? input : new Map(isIterable(input) ? input : Object.entries(input));
 }
 
-/** Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged). */
-export function getRequiredMap<K extends string, T>(input: PossibleStringMap<K, T>): ImmutableRequiredMap<K, T>; // If keys are strings also allow an object.
-export function getRequiredMap<K, T>(input: PossibleMap<K, T>): ImmutableRequiredMap<K, T>; // If keys are not strings don't allow a objects.
-export function getRequiredMap(input: PossibleMap<unknown, unknown> | { readonly [key: string]: unknown }): ImmutableRequiredMap<unknown, unknown> {
-	return input instanceof ImmutableRequiredMap ? input : new ImmutableRequiredMap(isIterable(input) ? input : Object.entries(input));
-}
-
 /** Apply a limit to a map. */
 export function limitMap<T>(map: ImmutableMap<T>, limit: number): ImmutableMap<T> {
 	return limit > map.size ? map : new Map(limitItems(map, limit));
@@ -71,14 +66,13 @@ export function removeMapItems<K, T>(map: MutableMap<K, T>, ...keys: K[]): void 
 	for (const key of keys) map.delete(key);
 }
 
-/** Mutable map that changes `get()` to throw an error if the requested value doesn't exist. */
-export class MutableRequiredMap<K, T> extends Map<K, T> {
-	override get(key: K): T {
-		if (!this.has(key)) throw new RequiredError(`Item "${getString(key)}" is required`);
-		return super.get(key) as T;
-	}
+/** Get an item in a map or throw an error if it doesn't exist. */
+export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T {
+	if (!map.has(key)) throw new RequiredError(`Map item is required`);
+	return map.get(key) as T;
 }
 
-/** Immutable map that changes `get()` to throw an error if the requested value doesn't exist. */
-export const ImmutableRequiredMap: { new <K, T>(...params: ConstructorParameters<typeof MutableRequiredMap<K, T>>): ImmutableRequiredMap<K, T> } = MutableRequiredMap;
-export type ImmutableRequiredMap<K, T> = Omit<MutableRequiredMap<K, T>, "set" | "delete">;
+/** Get an item in a map or `null` if it doesn't exist. */
+export function getOptionalMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | null {
+	return map.has(key) ? (map.get(key) as T) : null;
+}
