@@ -4,7 +4,7 @@ import { getProps, ImmutableObject } from "./object.js";
 import { MapKey, ImmutableMap, getMapItem } from "./map.js";
 import { cramQuantity, formatFullQuantity, formatQuantity } from "./number.js";
 
-/** Conversion from one unit to another (either a number to multiple by, or a function to convert). */
+/** Conversion from one unit to another (either an amount to multiple by, or a function to convert). */
 type Conversion = number | ((num: number) => number);
 
 /** Set of possible conversions for a set of items. */
@@ -94,17 +94,17 @@ export class Unit<K extends string> {
 		throw new ConditionError(`Cannot convert "${this.key}" to "${unit.key}"`);
 	}
 
-	/** Format a number with a given unit of measure, e.g. `12 kg` or `29.5 l` */
+	/** Format an amount with a given unit of measure, e.g. `12 kg` or `29.5 l` */
 	format(amount: number, precision: number | null = this.precision): string {
 		return formatQuantity(amount, this.abbr, precision);
 	}
 
-	/** Format a number with a given unit of measure, e.g. `12 kilograms` or `29.5 liters` or `1 degree` */
+	/** Format an amount with a given unit of measure, e.g. `12 kilograms` or `29.5 liters` or `1 degree` */
 	formatFull(amount: number, precision: number | null = this.precision): string {
 		return formatFullQuantity(amount, this.singular, this.plural, precision);
 	}
 
-	/** Cram a number with a given unit of measure, e.g. `1.25M mi` */
+	/** Cram an amount with a given unit of measure, e.g. `1.25M mi` */
 	cram(amount: number): string {
 		return cramQuantity(amount, this.abbr);
 	}
