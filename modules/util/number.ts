@@ -1,5 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
-import { BILLION, MILLION, NNBSP, TRILLION } from "./constants.js";
+import { BILLION, MILLION, NNBSP, TEN_THOUSAND, THOUSAND, TRILLION } from "./constants.js";
 
 /** Is a value a number? */
 export const isNumber = (v: unknown): v is number => typeof v === "number";
@@ -119,7 +119,7 @@ export function formatNumber(num: number, precision: number | null = null): stri
 	return new Intl.NumberFormat(undefined, { minimumFractionDigits: precision ?? undefined, maximumFractionDigits: precision ?? 20 }).format(num);
 }
 
-/** Format a number with a short abbreviated suffix. */
+/** Format a number with a short suffix, e.g. `1,000 kg` */
 export const formatQuantity = (num: number, abbr: string, precision?: number | null): string => `${formatNumber(num, precision)}${NNBSP}${abbr}`;
 
 /** Format a number with a longer full-word suffix. */
@@ -156,7 +156,7 @@ export function cramNumber(num: number): string {
 	if (abs >= TRILLION) return `${_significance(num / TRILLION)}T`;
 	if (abs >= BILLION) return `${_significance(num / BILLION)}B`;
 	if (abs >= MILLION) return `${_significance(num / MILLION)}M`;
-	if (abs >= 10000) return `${_significance(num / 1000)}K`;
+	if (abs >= TEN_THOUSAND) return `${_significance(num / THOUSAND)}K`;
 	return truncateNumber(num, 2).toString();
 }
 function _significance(num: number): string {
@@ -164,8 +164,8 @@ function _significance(num: number): string {
 	return truncateNumber(num, digits).toFixed(digits);
 }
 
-/** Cram a number with a short suffix. */
-export const cramQuantity = (num: number, suffix: string): string => `${cramNumber(num)}${suffix}`;
+/** Cram a number with a short suffix, e.g. `1.02M kg` */
+export const cramQuantity = (num: number, suffix: string): string => `${cramNumber(num)}${NNBSP}${suffix}`;
 
 /** Cram a number with a longer full-word suffix. */
 export function cramFullQuantity(num: number, singular: string, plural: string): string {
