@@ -1,5 +1,6 @@
 import { MONTH, WEEK, DAY, HOUR, SECOND } from "./constants.js";
 import { getDuration, PossibleDate } from "./date.js";
+import { getMapItem } from "./map.js";
 import { TimeUnitKey, TIME_UNITS } from "./units.js";
 
 /** Get the ID for a time unit based on the amount in milliseconds. */
@@ -17,13 +18,13 @@ function _getTimeUnitKey(ms: number): TimeUnitKey {
 
 /** Format a full format of a duration of time using the most reasonable units e.g. `5 years` or `1 week` or `4 minutes` or `12 milliseconds`. */
 export function formatFullDuration(ms: number, precision?: number): string {
-	const unit = TIME_UNITS.get(_getTimeUnitKey(ms));
+	const unit = getMapItem(TIME_UNITS, _getTimeUnitKey(ms));
 	return unit.formatFull(unit.from(ms), precision);
 }
 
 /** Format a description of a duration of time using the most reasonable units e.g. `5y` or `4m` or `12ms`. */
 export function formatDuration(ms: number, precision?: number): string {
-	const unit = TIME_UNITS.get(_getTimeUnitKey(ms));
+	const unit = getMapItem(TIME_UNITS, _getTimeUnitKey(ms));
 	return unit.format(unit.from(ms), precision);
 }
 
