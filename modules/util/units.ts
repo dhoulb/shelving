@@ -13,6 +13,9 @@ type Conversions<T extends string> = { readonly [K in T]?: Conversion };
 /** Convert an amount using a `Conversion. */
 const _convert = (amount: number, conversion: Conversion): number => (typeof conversion === "function" ? conversion(amount) : conversion === 1 ? amount : amount * conversion);
 
+/** Get a `Unit` instance from a `UnitList` instance */
+const _getUnit = <K extends string>(list: UnitList<K>, unit: K | Unit<K>): Unit<K> => (typeof unit === "string" ? getMapItem(list, unit) : unit);
+
 // Params for a unit.
 type UnitProps<T extends string> = {
 	/** Short abbreviation for this unit, e.g. `km` (defaults to first letter of `id`). */
@@ -101,22 +104,26 @@ export class Unit<K extends string> {
 		return formatFullQuantity(amount, this.singular, this.plural, precision);
 	}
 }
-const _getUnit = <K extends string>(list: UnitList<K>, unit: K | Unit<K>): Unit<K> => (typeof unit === "string" ? getMapItem(list, unit) : unit);
 
 /**
  * Represent a list of units.
  * - Has a known base unit at `.base`
  * - Cannot have additional units added after it is created.
  */
-export class UnitList<T extends string> extends ImmutableMap<T, Unit<T>> {
-	public readonly base!: Unit<T>;
-	constructor(units: ImmutableObject<T, UnitProps<T>>) {
+export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
+	public readonly base!: Unit<K>;
+	constructor(units: ImmutableObject<K, UnitProps<K>>) {
 		super();
 		for (const [id, props] of getProps(units)) {
-			const unit = new Unit<T>(this, id, props);
+			const unit = new Unit<K>(this, id, props);
 			if (!this.base) this.base = unit;
 			Map.prototype.set.call(this, id, unit);
 		}
+	}
+
+	/** Convert an amount from a unit to another unit. */
+	convert(amount: number, sourceUnit: K | Unit<K>, targetUnit: K | Unit<K>): number {
+		return _getUnit(this, sourceUnit).to(amount, targetUnit);
 	}
 }
 
