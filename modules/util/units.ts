@@ -2,7 +2,7 @@ import { ConditionError } from "../error/ConditionError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
 import { getProps, ImmutableObject } from "./object.js";
 import { MapKey, ImmutableMap, getMapItem } from "./map.js";
-import { formatFullQuantity, formatQuantity } from "./number.js";
+import { cramQuantity, formatFullQuantity, formatQuantity } from "./number.js";
 
 /** Conversion from one unit to another (either a number to multiple by, or a function to convert). */
 type Conversion = number | ((num: number) => number);
@@ -102,6 +102,11 @@ export class Unit<K extends string> {
 	/** Format a number with a given unit of measure, e.g. `12 kilograms` or `29.5 liters` or `1 degree` */
 	formatFull(amount: number, precision: number | null = this.precision): string {
 		return formatFullQuantity(amount, this.singular, this.plural, precision);
+	}
+
+	/** Cram a number with a given unit of measure, e.g. `1.25M mi` */
+	cram(amount: number): string {
+		return cramQuantity(amount, this.abbr);
 	}
 }
 
