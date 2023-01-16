@@ -2,7 +2,7 @@
 
 import { AssertionError } from "../error/AssertionError.js";
 import { formatDate, isDate } from "./date.js";
-import { formatData, isData } from "./data.js";
+import { formatObject, isObject } from "./object.js";
 import { getArray, ImmutableArray, isArray } from "./array.js";
 import { formatNumber, isBetween } from "./number.js";
 
@@ -44,7 +44,7 @@ export function getString(value: unknown): string {
 	if (typeof value === "function") return "Function";
 	if (isDate(value)) return formatDate(value);
 	if (isArray(value)) return value.map(getString).join(", ");
-	if (isData(value)) return formatData(value);
+	if (isObject(value)) return formatObject(value);
 	return "Unknown";
 }
 

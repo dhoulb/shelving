@@ -39,21 +39,6 @@ export function getDataProps(data: Data | Partial<Data>): ImmutableArray<DataPro
 	return Object.entries(data);
 }
 
-/**
- * Format a data object as a string.
- * - Use the custom `.toString()` function if it exists (don't use built in `Object.prototype.toString` because it's useless.
- * - Use `.title` or `.name` or `.id` if they exist and are strings.
- * - Use `Object` otherwise.
- */
-export function formatData(data: Data): string {
-	const { toString, name, title, id } = data;
-	if (typeof toString === "function" && toString !== Object.prototype.toString) return data.toString();
-	if (typeof name === "string") return name;
-	if (typeof title === "string") return title;
-	if (typeof id === "string") return id;
-	return "Object";
-}
-
 /** Type that represents an empty data object. */
 export type EmptyData = { readonly [K in never]: never };
 

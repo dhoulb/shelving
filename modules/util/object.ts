@@ -153,3 +153,21 @@ export function setProps<T extends MutableObject>(obj: T, entries: T | Partial<T
 export function deleteProps<T extends MutableObject>(obj: T, ...keys: (keyof T)[]): void {
 	for (const key of keys) delete obj[key];
 }
+
+/**
+ * Format an unknown object as a string.
+ * - Use the custom `.toString()` function if it exists (don't use built in `Object.prototype.toString` because it's useless.
+ * - Use `.title` or `.name` or `.id` if they exist and are strings.
+ * - Use `Object` otherwise.
+ */
+export function formatObject(obj: ImmutableObject): string {
+	const toString = obj.toString;
+	if (typeof toString === "function" && toString !== Object.prototype.toString) return obj.toString();
+	const name = obj.name;
+	if (typeof name === "string") return name;
+	const title = obj.title;
+	if (typeof title === "string") return title;
+	const id = obj.id;
+	if (typeof id === "string") return id;
+	return "Object";
+}
