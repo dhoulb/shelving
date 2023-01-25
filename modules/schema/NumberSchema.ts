@@ -41,7 +41,7 @@ export const NUMBER = new NumberSchema({});
 export const OPTIONAL_NUMBER = OPTIONAL(NUMBER);
 
 /** Valid integer number, e.g. `2048` or `0` zero. */
-export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MIN_SAFE_INTEGER });
+export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER });
 
 /** Valid integer number, e.g. `2048` or `0` zero, or `null` */
 export const OPTIONAL_INTEGER = OPTIONAL(INTEGER);
