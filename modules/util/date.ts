@@ -72,7 +72,7 @@ const _pad = (num: number, size: 2 | 3 | 4): string => num.toString(10).padStart
 export const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 
 /** Type listing day-of-week strings. */
-export type Day = typeof days[number];
+export type Day = (typeof days)[number];
 
 /** Convert a `Date` instance to a day-of-week string like "monday" */
 export const getDay = (target?: PossibleDate): Day => days[getDate(target).getDay()] as Day;
