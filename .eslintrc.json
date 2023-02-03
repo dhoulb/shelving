@@ -7,7 +7,16 @@
 		"cache": true,
 		"extraFileExtensions": [".cjs"]
 	},
-	"extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "plugin:import/typescript", "plugin:import/recommended"],
+	"extends": [
+		//
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/recommended-requiring-type-checking",
+		"plugin:prettier/recommended",
+		"plugin:import/typescript",
+		"plugin:import/recommended"
+	],
 	"env": {
 		"node": true
 		// "es6": true,
@@ -52,9 +61,6 @@
 		"wrap-iife": 2,
 		"yoda": 2,
 		"@typescript-eslint/no-unused-vars": [2, { "argsIgnorePattern": "^unused", "varsIgnorePattern": "^unused" }], // DH: Allow unused args if they start with `unused`
-		"@typescript-eslint/no-floating-promises": 2, // DH: Catch places where promises aren't awaited.
-		"@typescript-eslint/no-misused-promises": 2, // DH: Catch places where promises aren't awaited.
-		"@typescript-eslint/no-namespace": 2, // DH: Should be importing types as modules not using namespaces.
 		"@typescript-eslint/explicit-function-return-type": 0, // DH: This is annoying, mainly for for little arrow functions where type is trivially inferred.
 		"@typescript-eslint/no-use-before-define": 0, // DH: End up turning this off a lot when you have functions that cross-reference each other (and TS already protects against using block-scoped variables before they are defined).
 		"@typescript-eslint/no-unnecessary-type-constraint": 0, // DH: Incorrectly flags `extends unknown` as doing nothing when it in fact makes the type `unknown` instead of `any`
