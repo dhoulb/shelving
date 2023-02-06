@@ -35,7 +35,6 @@ export type NamedRegExpData = { [named: string]: string };
 
 /** Regular expression match array that you've asserted contains the specified named groups. */
 export interface NamedRegExpArray<T extends NamedRegExpData = NamedRegExpData> extends RegExpExecArray {
-	0: string; // We know the first item in the array will always be a string (otherwise it wouldn't have matched).
 	groups: T; // Groups is always set if a single `(?<named> placeholder)` appears in the RegExp.
 }
 

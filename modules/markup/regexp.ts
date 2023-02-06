@@ -3,10 +3,10 @@ import { getRegExpSource, NamedRegExp, NamedRegExpData, PossibleRegExp } from ".
 import type { MarkupOptions } from "./options.js";
 
 /** Subset of `NamedRegExpArray<T>` that are the only things we're required return from a `MarkupMatcher` function. */
-export type MarkupMatch<T extends Data | undefined = Data | undefined> = { 0: string; index: number; groups: T };
+export type MarkupMatch<T extends Data | undefined> = { 0: string; index: number; groups: T };
 
 /** Function that matches a string and returns a `MarkupMatch` or `null` or `void` */
-export type MarkupMatcher<T extends Data | undefined = Data | undefined> = (input: string, options: MarkupOptions) => MarkupMatch<T> | null | void;
+export type MarkupMatcher<T extends Data> = (input: string, options: MarkupOptions) => MarkupMatch<T> | null | void;
 
 // Regular expressions.
 export const LINE_REGEXP = /[^\n]*/; // Match line of content (anything that's not a newline).

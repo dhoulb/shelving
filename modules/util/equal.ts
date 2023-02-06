@@ -1,6 +1,6 @@
 import type { Match } from "./match.js";
 import { ImmutableArray, isArray } from "./array.js";
-import { ImmutableObject, isObject } from "./object.js";
+import { getPrototype, ImmutableObject, isObject } from "./object.js";
 import { ImmutableMap, isMap } from "./map.js";
 
 // Internal shared by shallow/deep equal.
@@ -33,9 +33,11 @@ export const isDeepEqual = <L extends unknown>(left: L, right: unknown): right i
 export function isMapEqual<L extends ImmutableMap>(left: L, right: ImmutableMap, recursor: Match = isExactlyEqual): right is L {
 	if (left === right) return true; // Referentially equal.
 	if (left.size !== right.size) return false; // Different lengths aren't equal.
-	const rightIterator = right.entries();
+	const rightIterator: Iterator<[unknown, unknown], unknown, undefined> = right.entries();
 	for (const [leftKey, leftValue] of left) {
-		const [rightKey, rightValue] = rightIterator.next().value;
+		const { done, value } = rightIterator.next();
+		if (done) return false;
+		const [rightKey, rightValue] = value;
 		if (leftKey !== rightKey || !recursor(leftValue, rightValue)) return false;
 	}
 	return true;
@@ -65,7 +67,7 @@ export function isArrayEqual<L extends ImmutableArray>(left: L, right: Immutable
  */
 export function isObjectEqual<L extends ImmutableObject>(left: L, right: ImmutableObject, recursor: Match = isExactlyEqual): right is L {
 	if (left === right) return true; // Referentially equal.
-	if (Object.getPrototypeOf(left)?.constructor !== Object.getPrototypeOf(right)?.constructor) return false; // Constructors are not equal.
+	if (getPrototype(left)?.constructor !== getPrototype(right)?.constructor) return false; // Constructors are not equal.
 
 	const leftEntries = Object.entries(left);
 	const rightKeys = Object.keys(right);

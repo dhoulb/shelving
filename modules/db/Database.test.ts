@@ -1,9 +1,9 @@
 import { AsyncDatabase, Database } from "../index.js";
 
 test("Typescript", () => {
-	const syncTyped: Database<{ a: { b: number } }> = undefined as any;
+	const syncTyped = undefined as unknown as Database<{ a: { b: number } }>;
 	const syncUntyped: Database = syncTyped;
 
-	const asyncTyped: AsyncDatabase<{ a: { b: number } }> = undefined as any;
+	const asyncTyped = undefined as unknown as AsyncDatabase<{ a: { b: number } }>;
 	const asyncUntyped: AsyncDatabase = asyncTyped;
 });

@@ -85,7 +85,7 @@ function _getItemValue<T extends Data>(snapshot: FirestoreDocumentSnapshot<T>): 
 }
 
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
-function* _getFieldValues<T>(updates: Iterable<Entry<string, T | Update<T>>>, prefix = ""): Iterable<string | T | FirestoreFieldValue> {
+function* _getFieldValues<T>(updates: Iterable<Entry<string, T | Update<T> | ArrayUpdate<T>>>, prefix = ""): Iterable<string | T | FirestoreFieldValue> {
 	for (const [key, update] of updates) {
 		if (update instanceof DataUpdate || update instanceof DictionaryUpdate) {
 			yield* _getFieldValues(update, `${prefix}${key}.`);

@@ -3,6 +3,7 @@ import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { DataSchema } from "../schema/DataSchema.js";
 import { Data, DataKey, DataProp, getDataProps } from "../util/data.js";
 import { isNullish, Nullish } from "../util/null.js";
+import { getPrototype } from "../util/object.js";
 import { Transformable, transformObject } from "../util/transform.js";
 import { validate, Validator, Validators } from "../util/validate.js";
 import { Update } from "./Update.js";
@@ -59,7 +60,7 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 	update<K extends DataKey<T>>(key: Nullish<K>, value: T[K] | Update<T[K]>): this {
 		if (isNullish(key)) return this;
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			updates: { ...this.updates, [key]: value },
 		};
@@ -74,7 +75,7 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 	override validate(validator: Validator<T>): this {
 		if (!(validator instanceof DataSchema)) return super.validate(validator);
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			updates: validateUpdates(this.updates, validator.props),
 		};

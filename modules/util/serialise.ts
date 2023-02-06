@@ -1,6 +1,6 @@
 import { AssertionError } from "../error/AssertionError.js";
 import { isArray } from "./array.js";
-import { isObject } from "./object.js";
+import { getPrototype, isObject } from "./object.js";
 
 const R_QUOTE = /"/g;
 
@@ -23,7 +23,7 @@ export function serialise(value: unknown): string {
 	if (typeof value === "function") return value.name ? `{"$type":"function","name":${escapeString(value.name)}}` : `{"$type":"function"}`;
 	if (isArray(value)) return `[${value.map(serialise).join(",")}]`;
 	if (isObject(value)) {
-		const prototype = Object.getPrototypeOf(value);
+		const prototype = getPrototype(value);
 		const type = prototype !== Object.prototype && prototype !== null ? prototype?.constructor?.name : undefined;
 
 		// Use custom `toString()` function if it's defined.

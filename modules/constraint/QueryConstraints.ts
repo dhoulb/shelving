@@ -1,5 +1,5 @@
 import type { Data } from "../util/data.js";
-import { getProp } from "../util/object.js";
+import { getProp, getPrototype } from "../util/object.js";
 import { assert } from "../util/assert.js";
 import { limitArray } from "../util/array.js";
 import { Filterable, FilterConstraints } from "./FilterConstraints.js";
@@ -46,7 +46,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	readonly sorts: SortConstraints<T>;
 	readonly limit: number | null;
 
-	constructor(filters: FilterList<Partial<T>> = EMPTY_FILTERS, sorts: SortList<Partial<T>> = EMPTY_SORTS, limit: number | null = null) {
+	constructor(filters: FilterList<Partial<T>> | FilterConstraints<T> = EMPTY_FILTERS, sorts: SortList<Partial<T>> | SortConstraints<T> = EMPTY_SORTS, limit: number | null = null) {
 		super();
 		this.filters = filters instanceof FilterConstraints ? filters : new FilterConstraints(filters);
 		this.sorts = sorts instanceof SortConstraints ? sorts : new SortConstraints(sorts);
@@ -56,7 +56,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	// Implement `Filterable`
 	filter(...filters: FilterList<Partial<T>>[]): this {
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			filters: this.filters.filter(...filters),
 		};
@@ -64,9 +64,9 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	get unfilter(): this {
 		if (!this.filters.size) return this;
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
-			filters: EMPTY_FILTERS,
+			filters: EMPTY_FILTERS as FilterConstraints<T>,
 		};
 	}
 	match(item: T): boolean {
@@ -76,7 +76,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	// Implement `Sortable`
 	sort(...sorts: SortList<Partial<T>>[]): this {
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			sorts: this.sorts.sort(...sorts),
 		};
@@ -84,9 +84,9 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	get unsort(): this {
 		if (!this.sorts.size) return this;
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
-			sorts: EMPTY_SORTS,
+			sorts: EMPTY_SORTS as SortConstraints<T>,
 		};
 	}
 	rank(left: T, right: T): number {
@@ -96,14 +96,14 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	// Implement `Queryable`
 	after(item: T): this {
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			filters: this.filters.with(..._getAfterFilters(this.sorts, item)),
 		};
 	}
 	before(item: T): this {
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			filters: this.filters.with(..._getBeforeFilters(this.sorts, item)),
 		};
@@ -111,7 +111,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	max(limit: number | null): this {
 		if (this.limit === limit) return this;
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			limit,
 		};

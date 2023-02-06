@@ -1,4 +1,4 @@
-import { getOptionalDate, getYMD, getOptionalYMD } from "../index.js";
+import { getOptionalDate, getYMD, getOptionalYMD, PossibleDate } from "../index.js";
 
 describe("toDate()", () => {
 	test("toDate(): Parses valid possible dates to Date instances", () => {
@@ -64,7 +64,7 @@ describe("getYmd()", () => {
 		expect(getYMD(new Date("9999-12-31").getTime())).toBe("9999-12-31");
 	});
 	test("getYmd(): Correctly throws on invalid dates", () => {
-		expect(() => getYMD(null as any)).toThrow(Error);
+		expect(() => getYMD(null as unknown as PossibleDate)).toThrow(Error);
 		expect(() => getYMD("nope")).toThrow(Error);
 		expect(() => getYMD(new Date(Infinity))).toThrow(Error);
 		expect(() => getYMD(new Date("nope"))).toThrow(Error);

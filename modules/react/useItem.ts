@@ -27,7 +27,8 @@ export class ItemState<T extends Datas, K extends DataKey<T> = DataKey<T>> exten
 
 	constructor(ref: Item<T, K> | AsyncItem<T, K>) {
 		const { db, collection, id } = ref;
-		const table = getOptionalSource<CacheProvider<T>>(CacheProvider, db.provider)?.memory.getTable(collection);
+		const cache = getOptionalSource<CacheProvider<T>>(CacheProvider, db.provider);
+		const table = cache?.memory.getTable(collection);
 		const time = table ? table.getItemTime(id) : null;
 		const isCached = typeof time === "number";
 		super(table && isCached ? table.getItem(id) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.from(table.getCachedItemSequence(id))) : undefined);

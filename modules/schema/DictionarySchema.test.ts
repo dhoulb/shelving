@@ -64,7 +64,7 @@ describe("options.items", () => {
 			expect(schema.validate({ num1: 123, num2: 456, str: "abc" })).toBe("Never");
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			expect(invalid.value).toEqual(
+			expect((invalid as InvalidFeedback).value).toEqual(
 				new Map([
 					["str", new Feedback("Must be number", { value: "abc" })], //
 				]),

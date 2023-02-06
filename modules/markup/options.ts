@@ -1,4 +1,5 @@
-import { MarkupRules, MARKUP_RULES } from "./rules.js";
+import type { MarkupRules } from "./rule.js";
+import { MARKUP_RULES } from "./rules.js";
 
 /** The current parsing options (represents the current state of the parsing). */
 export type MarkupOptions = {

@@ -1,9 +1,9 @@
 import { AsyncQuery, Query } from "../index.js";
 
 test("Typescript", () => {
-	const syncTyped: Query<{ a: { b: number } }> = undefined as any;
+	const syncTyped = undefined as unknown as Query<{ a: { b: number } }>;
 	const syncUntyped: Query = syncTyped;
 
-	const asyncTyped: AsyncQuery<{ a: { b: number } }> = undefined as any;
+	const asyncTyped = undefined as unknown as AsyncQuery<{ a: { b: number } }>;
 	const asyncUntyped: AsyncQuery = asyncTyped;
 });

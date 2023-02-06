@@ -109,9 +109,9 @@ describe("options.props", () => {
 				},
 			});
 			expect(schema.validate({ dogs: "abc", turtles: 10, cats: null })).toBe("Never");
-		} catch (invalid: any) {
+		} catch (invalid: unknown) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			expect(invalid.value).toEqual(
+			expect((invalid as InvalidFeedback).value).toEqual(
 				new Map<string, unknown>([
 					["dogs", new Feedback("Must be number", { value: "abc" })], //
 					["cats", new Feedback("Must be number", { value: null })],

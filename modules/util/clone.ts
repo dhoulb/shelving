@@ -1,7 +1,7 @@
 import { ImmutableArray, isArray } from "./array.js";
 import { isData } from "./data.js";
 import { mapArray, mapObject } from "./transform.js";
-import { ImmutableObject } from "./object.js";
+import { getPrototype, ImmutableObject } from "./object.js";
 
 /** Cloneable object implement a `clone()` function that returns a cloned copy. */
 export interface Cloneable {
@@ -9,7 +9,7 @@ export interface Cloneable {
 }
 
 /** Does an object implement `Cloneable` */
-export const isCloneable = <T extends Cloneable>(v: T | unknown): v is T => isData(v) && typeof v.cloneable === "function";
+export const isCloneable = <T extends Cloneable>(v: T | unknown): v is T => isData(v) && typeof v.clone === "function";
 
 /** Shallow clone a value. */
 export const shallowClone = <T>(value: T): T => value;
@@ -26,7 +26,7 @@ export function deepClone<T>(value: T, recursor = deepClone): T {
 export function cloneArray<T extends ImmutableArray>(input: T, recursor = shallowClone): T {
 	if (isCloneable(input)) return input.clone();
 	const output = mapArray(input, recursor);
-	Object.setPrototypeOf(output, Object.getPrototypeOf(input));
+	Object.setPrototypeOf(output, getPrototype(input));
 	return output;
 }
 
@@ -34,6 +34,6 @@ export function cloneArray<T extends ImmutableArray>(input: T, recursor = shallo
 export function cloneObject<T extends ImmutableObject>(input: T, recursor = shallowClone): T {
 	if (isCloneable(input)) return input.clone();
 	const output = mapObject(input, recursor);
-	Object.setPrototypeOf(input, Object.getPrototypeOf(input));
+	Object.setPrototypeOf(input, getPrototype(input));
 	return output;
 }

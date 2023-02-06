@@ -3,7 +3,7 @@
 import type { JSXNode, JSXElement } from "../util/jsx.js";
 import type { Data } from "../util/data.js";
 import { isArray } from "../util/array.js";
-import type { MarkupRule } from "./rules.js";
+import type { MarkupRule, MarkupRuleMatch } from "./rule.js";
 import { MarkupOptions, MARKUP_OPTIONS } from "./options.js";
 
 /**
@@ -81,51 +81,50 @@ function _renderElement(element: JSXElement, options: MarkupOptions, context: st
  */
 function* _parseString(input: string, options: MarkupOptions, context: string, offset = 0): Iterable<JSXElement | string> {
 	let matchedRule: MarkupRule | undefined = undefined;
-	let matchedPriority = Number.MIN_SAFE_INTEGER;
-	let matchedIndex = Number.MIN_SAFE_INTEGER;
-	let matchedLength = 0;
-	let matchedGroups: Data | undefined = undefined;
+	let matchedResult: MarkupRuleMatch<Data> | undefined = undefined;
+	let highPriority = Number.MIN_SAFE_INTEGER;
+	let lowIndex = Number.MIN_SAFE_INTEGER;
 
 	// Loop through all rules in the list and see if any match.
 	for (const rule of options.rules) {
 		// Only apply this rule if both:
 		// 1. The priority is equal or higher to the current priority.
 		// 2. The rule is allowed in the current context.
-		const { priority = 0, match, contexts } = rule;
-		if (priority >= matchedPriority && contexts.includes(context)) {
-			const result = typeof match === "function" ? match(input, options) : match.exec(input);
+		const { priority } = rule;
+		if (rule.priority >= highPriority && rule.contexts.includes(context)) {
+			const result = rule.match(input, options);
 			if (result) {
 				// Use the match if it has length and is earlier in the string or is higher priority.
-				const { 0: { length } = "", index, groups } = result;
-				if (length && (index < matchedIndex || priority > matchedPriority)) {
+				const { 0: { length } = "", index } = result;
+				if (length && (index < lowIndex || rule.priority > highPriority)) {
 					matchedRule = rule;
-					matchedPriority = priority;
-					matchedIndex = index;
-					matchedLength = length;
-					matchedGroups = groups;
+					matchedResult = result;
+					highPriority = priority;
+					lowIndex = index;
 				}
 			}
 		}
 	}
 
 	// Did at least one rule match?
-	if (matchedRule && matchedLength) {
+	if (matchedRule && matchedResult) {
 		// If index is more than zero, then the string before the match may match another rule at lower priority.
-		const prefix = input.slice(0, matchedIndex);
+		const prefix = input.slice(0, lowIndex);
 		if (prefix.length) yield* _parseString(prefix, options, context, offset);
 
 		// Call the rule's `render()` function to generate the node.
 		// React gets annoyed if we don't set a `key:` property on lists of elements.
 		// We use the string offset as the `.key` property in the element because it's cheap to calculate and guaranteed to be unique within the string.
 		// Trying to generate an incrementing number would require tracking the number and passing it back and forth through `_parseString()`
-		const { render, subcontext } = matchedRule;
-		const element = render(matchedGroups, options);
-		element.key = offset + matchedIndex;
+		const { 0: { length } = "", groups, index } = matchedResult;
+		const element = matchedRule.render(groups, options);
+		element.key = offset + index;
+		const { subcontext } = matchedRule;
 		yield subcontext ? _renderElement(element, options, subcontext) : element;
 
 		// Decrement the content.
-		const suffix = input.slice(matchedIndex + matchedLength);
-		if (suffix.length) yield* _parseString(suffix, options, context, offset + matchedIndex + matchedLength);
+		const suffix = input.slice(index + length);
+		if (suffix.length) yield* _parseString(suffix, options, context, offset + index + length);
 	} else {
 		// If nothing matched return the entire string..
 		yield input;

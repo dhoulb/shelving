@@ -9,7 +9,7 @@ export class ThroughError extends Error {
 	constructor(message: string, cause: Error | unknown) {
 		super(message);
 		this.cause = cause;
-		this.stack = `${this.stack}\nCause: ${cause instanceof Error ? cause.stack : debug(cause)}`;
+		this.stack = `${this.stack || ""}\nCause: ${cause instanceof Error ? cause.stack || "" : debug(cause)}`;
 	}
 }
 ThroughError.prototype.name = "ThroughError";

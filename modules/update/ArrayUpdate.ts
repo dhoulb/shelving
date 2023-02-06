@@ -1,5 +1,6 @@
 import { ArraySchema } from "../schema/ArraySchema.js";
 import { ImmutableArray, withArrayItems, omitArrayItems } from "../util/array.js";
+import { getPrototype } from "../util/object.js";
 import { validateArray, Validator } from "../util/validate.js";
 import { Update } from "./Update.js";
 
@@ -26,7 +27,7 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 	/** Return an array update with an additional item marked for addition. */
 	add(...adds: T[]): this {
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			adds: [...this.adds, ...adds],
 		};
@@ -35,7 +36,7 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 	/** Return an array update with an additional item marked for deletion. */
 	delete(...deletes: T[]): this {
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			deletes: [...this.deletes, ...deletes],
 		};
@@ -47,10 +48,10 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 	}
 
 	// Implement `Validatable`
-	override validate(validator: Validator<ImmutableArray<T>>): this {
+	override validate(validator: ArraySchema<T> | Validator<ImmutableArray<T>>): this {
 		if (!(validator instanceof ArraySchema)) return super.validate(validator);
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			adds: validateArray(this.adds, validator.items),
 			deletes: validateArray(this.deletes, validator.items),

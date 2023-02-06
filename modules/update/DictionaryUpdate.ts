@@ -6,6 +6,7 @@ import { DictionarySchema } from "../schema/DictionarySchema.js";
 import { validate, Validator } from "../util/validate.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
+import { getPrototype } from "../util/object.js";
 import { Update } from "./Update.js";
 import { Delete, DELETE } from "./Delete.js";
 
@@ -34,7 +35,7 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 	update(key: Nullish<string>, value: T | Update<T>): this {
 		if (isNullish(key)) return this;
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			updates: { ...this.updates, [key]: value },
 		};
@@ -44,7 +45,7 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 	delete(key: Nullish<string>): this {
 		if (isNullish(key)) return this;
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			updates: { ...this.updates, [key]: DELETE },
 		};
@@ -59,7 +60,7 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 	override validate(validator: Validator<ImmutableDictionary<T>>): this {
 		if (!(validator instanceof DictionarySchema)) return super.validate(validator);
 		return {
-			__proto__: Object.getPrototypeOf(this),
+			__proto__: getPrototype(this),
 			...this,
 			updates: Object.fromEntries(_validateDictionaryUpdates(this.updates, validator.items)),
 		};

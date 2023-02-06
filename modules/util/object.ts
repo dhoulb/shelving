@@ -28,7 +28,7 @@ export function assertObject(value: ImmutableObject | unknown): asserts value is
 /** is an unknown value an unknown plain object? */
 export function isPlainObject(value: ImmutableObject | unknown): value is ImmutableObject {
 	if (isObject(value)) {
-		const proto = Object.getPrototypeOf(value);
+		const proto = getPrototype(value);
 		return proto === null || proto === Object.prototype;
 	}
 	return false;
@@ -110,12 +110,14 @@ export function getProp<T extends ImmutableObject, K1 extends keyof T, K2 extend
 
 /** Set a prop on an object (immutably) and return a new object including that prop. */
 export function withProp<T extends ImmutableObject, K extends keyof T>(input: T, key: K, value: T[K]): T {
-	return input[key] === value ? input : { ...input, [key]: value };
+	return input[key] === value ? input : { __proto__: getPrototype(input), ...input, [key]: value };
 }
 
 /** Set several props on an object (immutably) and return a new object including those props. */
+export function withProps<T>(input: T, props: Partial<T>): T;
+export function withProps<T extends ImmutableObject>(input: T, props: T | Partial<T> | Iterable<ObjectProp<T>>): T;
 export function withProps<T extends ImmutableObject>(input: T, props: T | Partial<T> | Iterable<ObjectProp<T>>): T {
-	for (const [k, v] of getProps(props)) if (input[k] !== v) return { ...input, ...props };
+	for (const [k, v] of getProps(props)) if (input[k] !== v) return { __proto__: getPrototype(input), ...input, ...props };
 	return input;
 }
 
@@ -161,8 +163,7 @@ export function deleteProps<T extends MutableObject>(obj: T, ...keys: (keyof T)[
  * - Use `Object` otherwise.
  */
 export function formatObject(obj: ImmutableObject): string {
-	const toString = obj.toString;
-	if (typeof toString === "function" && toString !== Object.prototype.toString) return obj.toString();
+	if (typeof obj.toString === "function" && obj.toString !== Object.prototype.toString) return obj.toString();
 	const name = obj.name;
 	if (typeof name === "string") return name;
 	const title = obj.title;
@@ -170,4 +171,12 @@ export function formatObject(obj: ImmutableObject): string {
 	const id = obj.id;
 	if (typeof id === "string") return id;
 	return "Object";
+}
+
+/**
+ * Get the prototype of an object instance.
+ * - Recommend to use this because Typescript's default lib specifies `Object.getPrototypeOf()` returning `any`.
+ */
+export function getPrototype<T>(obj: T): Partial<T> | null {
+	return Object.getPrototypeOf(obj) as Partial<T> | null;
 }

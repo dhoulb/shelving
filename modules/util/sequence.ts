@@ -13,7 +13,7 @@ export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unk
 
 /** Infinite sequence that yields until a `SIGNAL` is received. */
 export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof SIGNAL>, ...Promise<typeof SIGNAL>[]]): AsyncIterable<T> {
-	const iterator = source[Symbol.asyncIterator]();
+	const iterator: AsyncIterator<T, unknown, undefined> = source[Symbol.asyncIterator]();
 	while (true) {
 		const result = await Promise.race([iterator.next(), ...signals]);
 		if (result === SIGNAL) {

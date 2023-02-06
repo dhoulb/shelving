@@ -124,7 +124,7 @@ describe("options.items", () => {
 			expect(false).toBe(true); // Not reached.
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			expect(invalid.value).toEqual(
+			expect((invalid as InvalidFeedback).value).toEqual(
 				new Map([
 					[0, new Feedback("Must be number", { value: "abc" })], //
 					[2, new Feedback("Must be number", { value: "def" })],

@@ -56,7 +56,8 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 
 	constructor(ref: Query<T, K> | AsyncQuery<T, K>) {
 		const { db, collection, limit } = ref;
-		const table = getOptionalSource(CacheProvider, db.provider)?.memory.getTable(collection);
+		const cache = getOptionalSource<CacheProvider<T>>(CacheProvider, db.provider);
+		const table = cache?.memory.getTable(collection);
 		const time = table ? table.getQueryTime(ref) : null;
 		const isCached = typeof time === "number";
 		super(table && isCached ? table.getQuery(ref) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.from(table.getCachedQuerySequence(ref))) : undefined);

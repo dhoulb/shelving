@@ -43,7 +43,7 @@ export function getDataProps(data: Data | Partial<Data>): ImmutableArray<DataPro
 export type EmptyData = { readonly [K in never]: never };
 
 /** An empty object. */
-export const EMPTY_DATA: EmptyData = {};
+export const EMPTY_DATA: EmptyData = { __proto__: null };
 
 /** Function that returns an an empty object. */
 export const getEmptyData = (): EmptyData => EMPTY_DATA;

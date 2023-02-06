@@ -2,7 +2,7 @@ import { basics, basic1, basic2, expectUnorderedKeys, BasicItemData } from "../t
 import { Data, FilterConstraint, getIDs } from "../index.js";
 
 test("Typescript", () => {
-	const syncTyped: FilterConstraint<{ b: number }> = undefined as any;
+	const syncTyped: FilterConstraint<{ b: number }> = undefined as unknown as FilterConstraint<{ b: number }>;
 	const syncUntyped: FilterConstraint<Data> = syncTyped;
 });
 test("construct", () => {

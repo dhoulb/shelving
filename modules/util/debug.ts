@@ -1,5 +1,6 @@
 /* eslint-disable no-control-regex */
 
+/** Note: try to avoid non-type imports in this file, it can easily cause circular imports. */
 import type { ImmutableArray } from "./array.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableSet } from "./set.js";
@@ -33,29 +34,29 @@ const _escapeChar = (char: string): string => ESCAPE_LIST[char] || `\\x${char.ch
 
 /** Debug an array. */
 export function debugArray(value: ImmutableArray): string {
-	const prototype = Object.getPrototypeOf(value);
-	const name = prototype === Array ? "" : prototype.name || "";
+	const prototype = Object.getPrototypeOf(value) as typeof value;
+	const name = prototype === Array.prototype ? "" : prototype.constructor.name || "";
 	return `${name ? `${name} ` : ""}${value.length ? `[\n\t${value.map(debug).join(",\n\t")}\n]` : "[]"}`;
 }
 
 /** Debug a set. */
 export function debugSet(value: ImmutableSet): string {
-	const prototype = Object.getPrototypeOf(value);
-	const name = prototype === Array ? "" : prototype.name || "Set";
+	const prototype = Object.getPrototypeOf(value) as typeof value;
+	const name = prototype === Set.prototype ? "" : prototype.constructor.name || "Set";
 	return `${name}(value.size) ${value.size ? `{\n\t${Array.from(value).map(debug).join(",\n\t")}\n}` : "{}"}`;
 }
 
 /** Debug a map. */
 export function debugMap(value: ImmutableMap): string {
-	const prototype = Object.getPrototypeOf(value);
-	const name = prototype === Array ? "" : prototype.name || "Map";
+	const prototype = Object.getPrototypeOf(value) as typeof value;
+	const name = prototype === Map.prototype ? "" : prototype.constructor.name || "Map";
 	return `${name}(value.size) ${value.size ? `{\n\t${Array.from(value).map(_debugProp).join(",\n\t")}\n}` : "{}"}`;
 }
 
 /** Debug an object. */
 export function debugObject(value: ImmutableObject): string {
-	const prototype = Object.getPrototypeOf(value) || Object;
-	const name = prototype === Object ? "" : prototype.name || "";
+	const prototype = Object.getPrototypeOf(value) as typeof value;
+	const name = prototype === Object.prototype ? "" : prototype.constructor.name || "";
 	const props = Object.entries(value).map(_debugProp);
 	return `${name ? `${name} ` : ""}${props.length ? `{\n\t${props.join(",\n\t")}\n}` : "{}"}`;
 }
