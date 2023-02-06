@@ -43,7 +43,7 @@
 	"sideEffects": false,
 	"engineStrict": true,
 	"engines": {
-		"node": ">=14.0.0"
+		"node": ">=16.0.0"
 	},
 	"scripts": {
 		"fix": "npm run fix:prettier && npm run fix:eslint",

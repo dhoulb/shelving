@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 18
       - run: npm ci
       - run: npm outdated && echo 'Nothing to upgrade' || npm upgrade
       - run: npm run fix # Run fix after upgrade so updates to Prettier and ESLint upgrade the codebase too.
