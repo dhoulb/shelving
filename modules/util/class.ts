@@ -12,7 +12,7 @@ export type Constructor<T, A extends Arguments> = new (...args: A) => T;
 export type AnyConstructor = new (...args: any) => any; // Note: `any` works better than `any[]` for `args`
 
 /** Class prototype that can be used with `instanceof` (string name, as per `Function`, and a prototype field matching the object). */
-export type Class<T = unknown> = Omit<Function, "prototype"> & { prototype: T };
+export type Class<T> = Omit<Function, "prototype"> & { prototype: T };
 
 /** Is a given value a class constructor? */
 export const isConstructor = <T extends AnyConstructor>(v: T | unknown): v is T => typeof v === "function" && v.toString().startsWith("class");

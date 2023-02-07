@@ -13,7 +13,7 @@ import { mapArray, mapObject, mapEntries, mapItems, Transformable } from "./tran
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.
  * - We can't use `class.name` because we don't know that the name of the class will survive minification.
  */
-export type Hydrations = ImmutableDictionary<Class>;
+export type Hydrations = ImmutableDictionary<Class<unknown>>;
 
 /**
  * Deeply dehydrate a class instance based on a set of `Hydrations`
