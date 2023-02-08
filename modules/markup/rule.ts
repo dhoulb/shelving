@@ -49,8 +49,8 @@ export abstract class MarkupRule {
 
 export class RegExpMarkupRule extends MarkupRule {
 	constructor(
-		private readonly _regexp: RegExp, //
-		private readonly _render: (props: Data, options: MarkupOptions) => JSXElement,
+		public readonly regexp: RegExp, //
+		public readonly render: (props: Data, options: MarkupOptions) => JSXElement,
 		contexts: ImmutableArray<string>,
 		subcontext?: string | null,
 		priority?: number,
@@ -58,17 +58,14 @@ export class RegExpMarkupRule extends MarkupRule {
 		super(contexts, subcontext, priority);
 	}
 	match(input: string): MarkupRuleMatch | null {
-		return this._regexp.exec(input);
-	}
-	render(props: Data, options: MarkupOptions): JSXElement {
-		return this._render(props, options);
+		return this.regexp.exec(input);
 	}
 }
 
 export class NamedRegExpMarkupRule<T extends NamedRegExpData> extends MarkupRule {
 	constructor(
-		private readonly _regexp: NamedRegExp<T>, //
-		private readonly _render: (props: T, options: MarkupOptions) => JSXElement,
+		public readonly regexp: NamedRegExp<T>, //
+		public readonly render: (props: T, options: MarkupOptions) => JSXElement,
 		contexts: ImmutableArray<string>,
 		subcontext?: string | null,
 		priority?: number,
@@ -76,17 +73,14 @@ export class NamedRegExpMarkupRule<T extends NamedRegExpData> extends MarkupRule
 		super(contexts, subcontext, priority);
 	}
 	match(input: string): NamedRegExpArray<T> | null {
-		return this._regexp.exec(input);
-	}
-	render(props: T, options: MarkupOptions): JSXElement {
-		return this._render(props, options);
+		return this.regexp.exec(input);
 	}
 }
 
 export class LinkRegExpMarkupRule extends MarkupRule {
 	constructor(
-		readonly _regexp: NamedRegExp<{ title?: string; href: string }>, //
-		readonly _render: (props: { title: string; href: string }, options: MarkupOptions) => JSXElement,
+		public readonly regexp: NamedRegExp<{ title?: string; href: string }>, //
+		public readonly render: (props: { title: string; href: string }, options: MarkupOptions) => JSXElement,
 		contexts: ImmutableArray<string>,
 		subcontext?: string | null,
 		priority?: number,
@@ -97,7 +91,7 @@ export class LinkRegExpMarkupRule extends MarkupRule {
 	// Validates that the link's URL scheme is in the `options.schemes` whitelist (defaults to `http` and `https`).
 	// Generates a default title for the link using `formatURL()` (e.g. `shax.com/my/dir`).
 	match(input: string, { schemes, url: base }: MarkupOptions): MarkupRuleMatch<{ title: string; href: string }> | null {
-		const match = this._regexp.exec(input);
+		const match = this.regexp.exec(input);
 		if (match) {
 			const { 0: first, index, groups } = match;
 			const { href, title } = groups;
@@ -107,9 +101,6 @@ export class LinkRegExpMarkupRule extends MarkupRule {
 			}
 		}
 		return null;
-	}
-	render(props: { title: string; href: string }, options: MarkupOptions) {
-		return this._render(props, options);
 	}
 }
 

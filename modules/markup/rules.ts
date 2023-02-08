@@ -199,8 +199,12 @@ export function renderLinkRule({ href, title }: { title: string; href: string },
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `options.schemes` will match (defaults to `http:` and `https:`).
  */
-export const URL_REGEXP = getRegExp(/(?<href>[a-z]+:[-$_@.&!*,=;/#?:%a-zA-Z0-9]+)(?: +(?:\((?<title>[^)]*?)\)))?/) as NamedRegExp<{ title?: string; href: string }>;
-export const URL_RULE = new LinkRegExpMarkupRule(URL_REGEXP, renderLinkRule, ["inline", "list"], "link");
+export const URL_RULE = new LinkRegExpMarkupRule(
+	getRegExp(/(?<href>[a-z]+:[-$_@.&!*,=;/#?:%a-zA-Z0-9]+)(?: +(?:\((?<title>[^)]*?)\)))?/) as NamedRegExp<{ title?: string; href: string }>, //
+	renderLinkRule,
+	["inline", "list"],
+	"link",
+);
 
 /**
  * Markdown-style link.
@@ -210,8 +214,12 @@ export const URL_RULE = new LinkRegExpMarkupRule(URL_REGEXP, renderLinkRule, ["i
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only `http://` or `https://` links will work (if invalid the unparsed text will be returned).
  */
-export const LINK_REGEXP = getRegExp(/\[(?<title>[^\]]*?)\]\((?<href>[^)]*?)\)/) as NamedRegExp<{ title: string; href: string }>;
-export const LINK_RULE = new LinkRegExpMarkupRule(LINK_REGEXP, renderLinkRule, ["inline", "list"], "link");
+export const LINK_RULE = new LinkRegExpMarkupRule(
+	getRegExp(/\[(?<title>[^\]]*?)\]\((?<href>[^)]*?)\)/) as NamedRegExp<{ title: string; href: string }>, //
+	renderLinkRule,
+	["inline", "list"],
+	"link",
+);
 
 /**
  * Inline code.
