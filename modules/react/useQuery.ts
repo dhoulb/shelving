@@ -106,7 +106,9 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 	async _loadMore(): Promise<void> {
 		this.busy.set(true);
 		try {
-			const items = await this.ref.after(this.lastData).value;
+			const last = this.lastValue;
+			const ref = last ? this.ref.after(last) : this.ref;
+			const items = await ref.value;
 			this.set([...this.value, ...items]);
 			this._hasMore = items.length < this.limit;
 		} catch (thrown) {
