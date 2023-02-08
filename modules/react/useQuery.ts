@@ -77,7 +77,7 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 		this.busy.set(true);
 		try {
 			const items = await this.ref.value;
-			this._hasMore = items.length < this.limit;
+			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
 			this.set(items);
 		} catch (thrown) {
 			this.next.reject(thrown);
@@ -107,10 +107,10 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 		this.busy.set(true);
 		try {
 			const last = this.lastValue;
-			const ref = last ? this.ref.after(last) : this.ref;
-			const items = await ref.value;
+			const query = last ? this.ref.after(last) : this.ref;
+			const items = await query.value;
 			this.set([...this.value, ...items]);
-			this._hasMore = items.length < this.limit;
+			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
 		} catch (thrown) {
 			this.next.reject(thrown);
 		} finally {
