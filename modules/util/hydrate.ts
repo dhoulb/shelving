@@ -61,7 +61,7 @@ export class Hydrator implements Transformable<unknown, unknown> {
 			if ($type === "Set") return new Set($value as ConstructorParameters<typeof Set>[0]);
 			if ($type === "Date") return new Date($value as ConstructorParameters<typeof Date>[0]);
 			const hydration = this._hydrations[$type];
-			if (hydration) return { __proto__: hydration.prototype, ...mapObject($value as ImmutableObject, this) };
+			if (hydration) return { __proto__: hydration.prototype as unknown, ...mapObject($value as ImmutableObject, this) };
 			throw new AssertionError(`Cannot hydrate "${$type}" object`, value);
 		}
 		return value;
