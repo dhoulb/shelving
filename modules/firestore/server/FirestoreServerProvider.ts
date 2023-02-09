@@ -7,7 +7,7 @@ import type {
 	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
 	BulkWriter as FirestoreBulkWriter,
 } from "@google-cloud/firestore";
-import { Firestore, FieldValue as FirestoreFieldValue } from "@google-cloud/firestore";
+import { Firestore, FieldValue, FieldPath } from "@google-cloud/firestore";
 import type { Entry } from "../../util/entry.js";
 import type { Data } from "../../util/data.js";
 import type { FilterOperator } from "../../constraint/FilterConstraint.js";
@@ -18,8 +18,7 @@ import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
 import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, Update } from "../../update/index.js";
 
 // Constants.
-// const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
-const ID = "__id__"; // Internal way Firestore Queries can reference the ID of the current document.
+const ID = FieldPath.documentId();
 
 // Map `Filter.types` to `WhereFilterOp`
 const OPERATORS: { readonly [K in FilterOperator]: FirestoreWhereFilterOp } = {
@@ -65,24 +64,24 @@ function _getItemValue(snapshot: FirestoreDocumentSnapshot): ItemValue {
 }
 
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
-function* _getFieldValues<T>(updates: Iterable<Entry<string, T | Update<T> | ArrayUpdate<T>>>, prefix = ""): Iterable<string | T | FirestoreFieldValue> {
+function* _getFieldValues<T>(updates: Iterable<Entry<string, T | Update<T> | ArrayUpdate<T>>>, prefix = ""): Iterable<string | T | FieldValue> {
 	for (const [key, update] of updates) {
 		if (update instanceof DataUpdate || update instanceof DictionaryUpdate) {
 			yield* _getFieldValues(update, `${prefix}${key}.`);
 		} else if (update instanceof ArrayUpdate) {
 			if (update.adds.length) {
 				yield `${prefix}${key}`;
-				yield FirestoreFieldValue.arrayUnion(...update.adds);
+				yield FieldValue.arrayUnion(...update.adds);
 			}
 			if (update.deletes.length) {
 				yield `${prefix}${key}`;
-				yield FirestoreFieldValue.arrayRemove(...update.deletes);
+				yield FieldValue.arrayRemove(...update.deletes);
 			}
 		} else {
 			yield `${prefix}${key}`;
 			if (!(update instanceof Update)) yield update;
-			else if (update instanceof Delete) yield FirestoreFieldValue.delete();
-			else if (update instanceof Increment) yield FirestoreFieldValue.increment(update.amount);
+			else if (update instanceof Delete) yield FieldValue.delete();
+			else if (update instanceof Increment) yield FieldValue.increment(update.amount);
 			else yield update.transform();
 		}
 	}

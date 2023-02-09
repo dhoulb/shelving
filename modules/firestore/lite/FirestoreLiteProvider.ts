@@ -10,6 +10,7 @@ import type {
 	FieldValue as FirestoreFieldValue,
 } from "firebase/firestore/lite";
 import {
+	documentId as firestoreDocumentId,
 	orderBy as firestoreOrderBy,
 	where as firestoreWhere,
 	limit as firestoreLimit,
@@ -38,7 +39,8 @@ import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, 
 
 // Constants.
 // const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
-const ID = "__id__"; // Internal way Firestore Queries can reference the ID of the current document.
+// const ID = "__id__"; // Internal way Firestore Queries can reference the ID of the current document.
+const ID = firestoreDocumentId();
 
 // Map `Filter.types` to `WhereFilterOp`
 const OPERATORS: { readonly [K in FilterOperator]: FirestoreWhereFilterOp } = {
