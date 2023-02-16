@@ -46,8 +46,8 @@ export function getLineRegExp(content: PossibleRegExp = LINE_REGEXP, end: Possib
  * - If we could use a negative lookbehind for the start of the word we wouldn't need to create a function that offsets the start.
  */
 export class WordRegExp extends RegExp {
-	constructor(pattern: string) {
-		super(`(?<lookbehind>^|[^\\p{L}\\p{N}])${pattern}(?![\\p{L}\\p{N}])`);
+	constructor(pattern: string, flags?: string) {
+		super(`(?<lookbehind>^|[^\\p{L}\\p{N}])${pattern}(?![\\p{L}\\p{N}])`, flags);
 	}
 	override exec(input: string): RegExpExecArray | null {
 		const match = super.exec(input);
