@@ -12,24 +12,6 @@ export const NEVER_REGEXP = /^(?=a)a/;
 /** Things that can be convert to a regular expression. */
 export type PossibleRegExp = string | RegExp;
 
-/** Is an unknown value a `RegExp` instance? */
-export const isRegExp = <T extends RegExp>(v: T | unknown): v is T => v instanceof RegExp;
-
-/** Assert that an unknown value is a `RegExp` instance. */
-export function assertRegExp<T extends RegExp>(v: T | unknown): asserts v is T {
-	if (!(v instanceof RegExp)) throw new AssertionError("Must be regular expression", v);
-}
-
-/** Convert a string to a regular expression that matches that string. */
-export const getRegExp = (pattern: PossibleRegExp, flags?: string): RegExp => (typeof pattern === "string" ? new RegExp(pattern, flags) : pattern);
-
-/** Convert a regular expression to its string source. */
-export const getRegExpSource = (regexp: PossibleRegExp): string => (typeof regexp === "string" ? regexp : regexp.source);
-
-/** Escape special characters in a string regular expression. */
-export const escapeRegExp = (pattern: string): string => pattern.replace(REPLACE_ESCAPED, "\\$&");
-const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
-
 /** Set of named match groups from a regular expression. */
 export type NamedRegExpData = { [named: string]: string };
 
@@ -42,6 +24,28 @@ export interface NamedRegExpArray<T extends NamedRegExpData = NamedRegExpData> e
 export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extends RegExp {
 	exec(input: string): NamedRegExpArray<T> | null;
 }
+
+/** Is an unknown value a `RegExp` instance? */
+export const isRegExp = <T extends RegExp>(v: T | unknown): v is T => v instanceof RegExp;
+
+/** Assert that an unknown value is a `RegExp` instance. */
+export function assertRegExp<T extends RegExp>(v: T | unknown): asserts v is T {
+	if (!(v instanceof RegExp)) throw new AssertionError("Must be regular expression", v);
+}
+
+/** Convert a string to a regular expression that matches that string. */
+export function getRegExp<T extends string>(pattern: `(?<${T}>${string})`, flags?: string): NamedRegExp<{ [K in T]: string }>; // Detect named capturing groups.
+export function getRegExp(pattern: PossibleRegExp, flags?: string): RegExp;
+export function getRegExp(pattern: PossibleRegExp, flags?: string): RegExp {
+	return typeof pattern === "string" ? new RegExp(pattern, flags) : pattern;
+}
+
+/** Convert a regular expression to its string source. */
+export const getRegExpSource = (regexp: PossibleRegExp): string => (typeof regexp === "string" ? regexp : regexp.source);
+
+/** Escape special characters in a string regular expression. */
+export const escapeRegExp = (pattern: string): string => pattern.replace(REPLACE_ESCAPED, "\\$&");
+const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
 /** Create regular expression that matches any of a list of other expressions. */
 export function getAnyRegExp(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
