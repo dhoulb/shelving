@@ -1,3 +1,4 @@
+import type { Validatable } from "../util/validate.js";
 import { Dispatch, Handler, Stop } from "../util/function.js";
 import { runSequence } from "../util/sequence.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
@@ -15,7 +16,7 @@ export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-
  * - To set the state to be loading, use the `State.NOVALUE` constant or a `Promise` value.
  * - To set the state to an explicit value, use that value or another `State` instance with a value.
  * */
-export class State<T> implements AsyncIterable<T> {
+export class State<T> implements AsyncIterable<T>, Validatable<T> {
 	/** The `NOVALUE` symbol indicates no value has been received by a `State` instance. */
 	static readonly NOVALUE: unique symbol = Symbol("shelving/State.NOVALUE");
 
@@ -27,13 +28,13 @@ export class State<T> implements AsyncIterable<T> {
 		if (this._value === State.NOVALUE) throw this.next;
 		return this._value;
 	}
-	private _value: T | typeof State.NOVALUE;
+	private _value: T | typeof State.NOVALUE = State.NOVALUE;
 
 	/** Time this state was last updated with a new value. */
 	get time(): number | null {
 		return this._time;
 	}
-	protected _time: number | null;
+	protected _time: number | null = null;
 
 	/** How old this state's value is (in milliseconds). */
 	get age(): number {
@@ -43,8 +44,10 @@ export class State<T> implements AsyncIterable<T> {
 
 	/** State is initiated with an initial state. */
 	constructor(initial: T | typeof State.NOVALUE = State.NOVALUE, next: DeferredSequence<T> = new DeferredSequence<T>()) {
-		this._value = initial;
-		this._time = initial !== State.NOVALUE ? Date.now() : null;
+		if (initial !== State.NOVALUE) {
+			this._value = this.validate(initial);
+			this._time = Date.now();
+		}
 		this.next = next;
 	}
 
@@ -54,7 +57,8 @@ export class State<T> implements AsyncIterable<T> {
 	}
 
 	/** Set the value of the state. */
-	set(value: T): void {
+	set(next: T): void {
+		const value = this.validate(next);
 		if (value !== this._value) {
 			this._value = value;
 			this._time = Date.now();
@@ -86,6 +90,11 @@ export class State<T> implements AsyncIterable<T> {
 		await Promise.resolve(); // Introduce a slight delay, i.e. don't immediately yield `this.value` in case it is changed synchronously.
 		if (!this.loading) yield this.value;
 		yield* this.next;
+	}
+
+	/** Validate data set on this state. */
+	validate(value: T): T {
+		return value;
 	}
 }
 
