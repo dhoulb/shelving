@@ -10,20 +10,20 @@ import { Constraints } from "./Constraints.js";
  */
 export interface Filterable<T extends Data> extends Matchable<[T]> {
 	/** Add a filter to this filterable. */
-	filter(...filters: FilterList<Partial<T>>[]): this;
+	filter(...filters: FilterList<T>[]): this;
 
 	/** Match an item against the filters specified for this object. */
 	match(item: T): boolean;
 }
 
 /** A set of filters. */
-export class FilterConstraints<T extends Data = Data> extends Constraints<T, FilterConstraint<Partial<T>>> implements Filterable<T> {
-	constructor(...filters: FilterList<Partial<T>>[]) {
+export class FilterConstraints<T extends Data = Data> extends Constraints<T, FilterConstraint<T>> implements Filterable<T> {
+	constructor(...filters: FilterList<T>[]) {
 		super(...getFilters(filters));
 	}
 
 	// Implement `Filterable`
-	filter(...filters: FilterList<Partial<T>>[]): this {
+	filter(...filters: FilterList<T>[]): this {
 		return this.with(...getFilters(filters));
 	}
 	match(item: T): boolean {

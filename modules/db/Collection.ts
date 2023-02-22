@@ -73,7 +73,7 @@ export class Collection<T extends Datas = Datas, K extends DataKey<T> = DataKey<
 		this.db = db;
 		this.collection = collection;
 	}
-	query(filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): Query<T, K> {
+	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> {
 		return new Query<T, K>(this.db, this.collection, filters, sorts, limit);
 	}
 	item(id: string): Item<T, K> {
@@ -108,7 +108,7 @@ export class AsyncCollection<T extends Datas = Datas, K extends DataKey<T> = Dat
 		this.db = db;
 		this.collection = collection;
 	}
-	query(filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): AsyncQuery<T, K> {
+	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): AsyncQuery<T, K> {
 		return new AsyncQuery<T, K>(this.db, this.collection, filters, sorts, limit);
 	}
 	item(id: string): AsyncItem<T, K> {

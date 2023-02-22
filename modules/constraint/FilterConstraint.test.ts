@@ -1,9 +1,28 @@
 import { basics, basic1, basic2, expectUnorderedKeys, BasicItemData } from "../test/index.js";
-import { Data, FilterConstraint, getIDs } from "../index.js";
+import { Data, FilterConstraint, FilterList, FilterProps, getIDs, Increment } from "../index.js";
 
-test("Typescript", () => {
+test("FilterConstraint type", () => {
 	const syncTyped: FilterConstraint<{ b: number }> = undefined as unknown as FilterConstraint<{ b: number }>;
 	const syncUntyped: FilterConstraint<Data> = syncTyped;
+});
+test("FilterProps type", () => {
+	const props1: FilterProps<{ a: number }> = {};
+	const props2: FilterProps<{ a: number }> = { a: 123 };
+
+	// @ts-expect-error
+	const props3: FilterProps<{ a: number }> = { b: 123 };
+	// @ts-expect-error
+	const props4: FilterProps<{ a: number }> = "a";
+	// @ts-expect-error
+	const props5: FilterProps<{ a: number }> = ["a"];
+});
+test("FilterList type", () => {
+	// @ts-expect-error
+	const list1: FilterList<{ a: number }> = "abc";
+	// @ts-expect-error
+	const list2: FilterList<{ a: string }> = ["abc"];
+	// @ts-expect-error
+	const list3: FilterList<{ a: string }> = [["a", "b"]];
 });
 test("construct", () => {
 	expect(new FilterConstraint("a", 1)).toMatchObject({ key: "a", operator: "IS", value: 1 });

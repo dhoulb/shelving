@@ -9,17 +9,17 @@ import { getSorts, SortConstraint, SortList } from "./SortConstraint.js";
  */
 export interface Sortable<T extends Data> extends Rankable<T> {
 	/** Add one or more sorts to this sortable. */
-	sort(...keys: SortList<Partial<T>>[]): this;
+	sort(...keys: SortList<T>[]): this;
 }
 
 /** A set of sorts. */
-export class SortConstraints<T extends Data = Data> extends Constraints<T, SortConstraint<Partial<T>>> implements Sortable<T> {
-	constructor(...sorts: SortList<Partial<T>>[]) {
+export class SortConstraints<T extends Data = Data> extends Constraints<T, SortConstraint<T>> implements Sortable<T> {
+	constructor(...sorts: SortList<T>[]) {
 		super(...getSorts(sorts));
 	}
 
 	// Implement `Sortable`
-	sort(...sorts: SortList<Partial<T>>[]): this {
+	sort(...sorts: SortList<T>[]): this {
 		return this.with(...getSorts(sorts));
 	}
 	rank(left: T, right: T): number {

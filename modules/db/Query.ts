@@ -98,7 +98,7 @@ abstract class BaseQuery<T extends Datas = Datas, K extends DataKey<T> = DataKey
 export class Query<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseQuery<T, K> {
 	readonly db: Database<T>;
 	readonly collection: K;
-	constructor(db: Database<T>, collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null) {
+	constructor(db: Database<T>, collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null) {
 		super(filters, sorts, limit);
 		this.db = db;
 		this.collection = collection;
@@ -139,7 +139,7 @@ export class Query<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> e
 export class AsyncQuery<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseQuery<T, K> {
 	readonly db: AsyncDatabase<T>;
 	readonly collection: K;
-	constructor(db: AsyncDatabase<T>, collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null) {
+	constructor(db: AsyncDatabase<T>, collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null) {
 		super(filters, sorts, limit);
 		this.db = db;
 		this.collection = collection;

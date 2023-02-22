@@ -26,7 +26,7 @@ abstract class BaseValidationProvider<T extends Datas> {
 	}
 	async *getQuerySequence<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
 		const schema = this.getSchema(collection);
-		for await (const unsafeItems of this.source.getQuerySequence(collection, constraints)) yield _validateItems(collection, unsafeItems, schema);
+		for await (const unsafeItems of this.source.getQuerySequence(collection, constraints as unknown as ItemConstraints)) yield _validateItems(collection, unsafeItems, schema);
 	}
 }
 
@@ -53,16 +53,16 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 		return this.source.deleteItem(collection, id);
 	}
 	getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
-		return _validateItems(collection, this.source.getQuery(collection, constraints), this.getSchema(collection));
+		return _validateItems(collection, this.source.getQuery(collection, constraints as unknown as ItemConstraints), this.getSchema(collection));
 	}
 	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): number {
-		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
+		return this.source.setQuery(collection, constraints as unknown as ItemConstraints, validate(value, this.getSchema(collection)));
 	}
 	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
-		return this.source.updateQuery(collection, constraints, validateUpdates(updates, this.getSchema(collection).props));
+		return this.source.updateQuery(collection, constraints as unknown as ItemConstraints, validateUpdates(updates, this.getSchema(collection).props));
 	}
 	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
-		return this.source.deleteQuery(collection, constraints);
+		return this.source.deleteQuery(collection, constraints as unknown as ItemConstraints);
 	}
 }
 
@@ -89,16 +89,16 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 		return this.source.deleteItem(collection, id);
 	}
 	async getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
-		return _validateItems(collection, await this.source.getQuery(collection, constraints), this.getSchema(collection));
+		return _validateItems(collection, await this.source.getQuery(collection, constraints as unknown as ItemConstraints), this.getSchema(collection));
 	}
 	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, value: T[K]): Promise<number> {
-		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
+		return this.source.setQuery(collection, constraints as unknown as ItemConstraints, validate(value, this.getSchema(collection)));
 	}
 	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
-		return this.source.updateQuery(collection, constraints, validateUpdates(updates, this.getSchema(collection).props));
+		return this.source.updateQuery(collection, constraints as unknown as ItemConstraints, validateUpdates(updates, this.getSchema(collection).props));
 	}
 	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
-		return this.source.deleteQuery(collection, constraints);
+		return this.source.deleteQuery(collection, constraints as unknown as ItemConstraints);
 	}
 }
 

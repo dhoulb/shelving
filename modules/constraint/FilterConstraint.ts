@@ -21,7 +21,7 @@ export type FilterProps<T extends Data> = {
 };
 
 /** List of filters in a flexible format. */
-export type FilterList<T extends Data> = Nullish<FilterProps<T> | FilterConstraint<T>> | Iterable<FilterList<T>>;
+export type FilterList<T extends Data> = FilterProps<T> | FilterConstraint<T> | Iterable<Nullish<FilterProps<T> | FilterConstraint<T>>>;
 
 /** Map `FilterOperator` to its corresponding `Match` function. */
 const MATCHERS: { [K in FilterOperator]: Match } = {
@@ -93,13 +93,13 @@ export class FilterConstraint<T extends Data = Data> implements Constraint<T>, M
 	}
 }
 
-/** Get the separate filters generated from a list of filters. */
-export function* getFilters<T extends Data>(filters: FilterList<T>): Iterable<FilterConstraint<T>> {
-	if (filters instanceof FilterConstraint) {
-		yield filters;
-	} else if (isIterable(filters)) {
-		for (const filter of filters) yield* getFilters(filter);
-	} else if (filters) {
-		for (const [key, value] of Object.entries(filters)) yield new FilterConstraint<T>(key, value);
+/** Turn `FilterList` into a list of `FilterConstraint` instances. */
+export function* getFilters<T extends Data>(list: FilterList<T> | FilterList<T>[]): Iterable<FilterConstraint<T>> {
+	if (list instanceof FilterConstraint) {
+		yield list;
+	} else if (isIterable(list)) {
+		for (const filter of list) if (filter) yield* getFilters(filter);
+	} else {
+		for (const [key, value] of Object.entries(list)) yield new FilterConstraint<T>(key, value);
 	}
 }

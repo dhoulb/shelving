@@ -14,7 +14,7 @@ export type SortKeys<T extends Data> = SortKey<T> | ImmutableArray<SortKey<T>>;
 export type SortDirection = "ASC" | "DESC";
 
 /** List of sorts in a flexible format. */
-export type SortList<T extends Data> = Nullish<SortKeys<T> | SortConstraint<T> | Iterable<SortList<T>>>;
+export type SortList<T extends Data> = SortKey<T> | SortConstraint<T> | Iterable<Nullish<SortKey<T> | SortConstraint<T>>>;
 
 /** Sort a list of values. */
 export class SortConstraint<T extends Data = Data> implements Constraint<T>, Rankable<T> {
@@ -43,13 +43,13 @@ export class SortConstraint<T extends Data = Data> implements Constraint<T>, Ran
 	}
 }
 
-/** Get the separate sorts generated from a list of sorts. */
-export function* getSorts<T extends Data>(sorts: SortList<T>): Iterable<SortConstraint<T>> {
-	if (typeof sorts === "string") {
-		yield new SortConstraint(sorts);
-	} else if (sorts instanceof SortConstraint) {
-		yield sorts;
-	} else if (sorts) {
-		for (const sort of sorts) yield* getSorts(sort);
+/** Turn `SortList` into array of list of `SortConstraint` instances. */
+export function* getSorts<T extends Data>(list: SortList<T> | SortList<T>[]): Iterable<SortConstraint<T>> {
+	if (typeof list === "string") {
+		yield new SortConstraint(list);
+	} else if (list instanceof SortConstraint) {
+		yield list;
+	} else {
+		for (const sort of list) if (sort) yield* getSorts(sort);
 	}
 }

@@ -46,15 +46,15 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	readonly sorts: SortConstraints<T>;
 	readonly limit: number | null;
 
-	constructor(filters: FilterList<Partial<T>> | FilterConstraints<T> = EMPTY_FILTERS, sorts: SortList<Partial<T>> | SortConstraints<T> = EMPTY_SORTS, limit: number | null = null) {
+	constructor(filters: FilterList<T> | FilterConstraints<T> = EMPTY_FILTERS, sorts: SortList<T> | SortConstraints<T> = EMPTY_SORTS, limit: number | null = null) {
 		super();
-		this.filters = filters instanceof FilterConstraints ? filters : new FilterConstraints(filters);
-		this.sorts = sorts instanceof SortConstraints ? sorts : new SortConstraints(sorts);
+		this.filters = filters instanceof FilterConstraints ? filters : new FilterConstraints<T>(filters);
+		this.sorts = sorts instanceof SortConstraints ? sorts : new SortConstraints<T>(sorts);
 		this.limit = limit;
 	}
 
 	// Implement `Filterable`
-	filter(...filters: FilterList<Partial<T>>[]): this {
+	filter(...filters: FilterList<T>[]): this {
 		return {
 			__proto__: getPrototype(this),
 			...this,
@@ -74,7 +74,7 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	}
 
 	// Implement `Sortable`
-	sort(...sorts: SortList<Partial<T>>[]): this {
+	sort(...sorts: SortList<T>[]): this {
 		return {
 			__proto__: getPrototype(this),
 			...this,

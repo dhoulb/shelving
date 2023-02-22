@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import type { Datas, DataKey } from "../util/data.js";
+import type { Datas, DataKey, Data } from "../util/data.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
@@ -258,4 +258,4 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 }
 
 const _getItemKey = (collection: string, id: string): string => `${collection}/${id}`;
-const _getQueryKey = (collection: string, constraints: QueryConstraints): string => `${collection}?${QueryConstraints.prototype.toString.call(constraints)}`;
+const _getQueryKey = <T extends Data>(collection: string, constraints: QueryConstraints<T>): string => `${collection}?${QueryConstraints.prototype.toString.call(constraints)}`;
