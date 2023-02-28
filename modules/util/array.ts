@@ -3,6 +3,7 @@ import { RequiredError } from "../error/RequiredError.js";
 import { Arguments } from "./function.js";
 import { filterItems, omitItems, pickItems } from "./iterate.js";
 import { Matcher } from "./match.js";
+import { formatRange } from "./number.js";
 
 /**
  * Mutable array: an array that can be changed.
@@ -168,32 +169,44 @@ export function countArray<T>(arr: ImmutableArray<T>): number {
 }
 
 /** Does an array have the specified minimum length.  */
-export function isArrayMin<T>(arr: ImmutableArray<T>, min?: 1): arr is [T, ...T[]];
-export function isArrayMin<T>(arr: ImmutableArray<T>, min: 2): arr is [T, T, ...T[]];
-export function isArrayMin<T>(arr: ImmutableArray<T>, min: 3): arr is [T, T, T, ...T[]];
-export function isArrayMin<T>(arr: ImmutableArray<T>, min: 4): arr is [T, T, T, T, ...T[]];
-export function isArrayMin<T>(arr: ImmutableArray<T>, min: number): boolean;
-export function isArrayMin<T>(arr: ImmutableArray<T>, min = 1): boolean {
-	return arr.length >= min;
+export function isArrayLength<T>(arr: ImmutableArray<T>, min: 1, max: 1): arr is readonly [T];
+export function isArrayLength<T>(arr: ImmutableArray<T>, min: 2, max: 2): arr is readonly [T, T];
+export function isArrayLength<T>(arr: ImmutableArray<T>, min: 3, max: 3): arr is readonly [T, T, T];
+export function isArrayLength<T>(arr: ImmutableArray<T>, min: 4, max: 4): arr is readonly [T, T, T, T];
+export function isArrayLength<T>(arr: ImmutableArray<T>, min?: 1, max?: number): arr is readonly [T, ...T[]];
+export function isArrayLength<T>(arr: ImmutableArray<T>, min: 2, max?: number): arr is readonly [T, T, ...T[]];
+export function isArrayLength<T>(arr: ImmutableArray<T>, min: 3, max?: number): arr is readonly [T, T, T, ...T[]];
+export function isArrayLength<T>(arr: ImmutableArray<T>, min: 4, max?: number): arr is readonly [T, T, T, T, ...T[]];
+export function isArrayLength<T>(arr: ImmutableArray<T>, min?: number, max?: number): boolean;
+export function isArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Infinity): boolean {
+	return arr.length >= min && arr.length <= max;
 }
 
 /** Assert that a value has a specific length (or length is in a specific range). */
-export function assertArrayMin<T>(arr: ImmutableArray<T> | unknown, min?: 1): asserts arr is [T, ...T[]];
-export function assertArrayMin<T>(arr: ImmutableArray<T> | unknown, min: 2): asserts arr is [T, T, ...T[]];
-export function assertArrayMin<T>(arr: ImmutableArray<T> | unknown, min: 3): asserts arr is [T, T, T, ...T[]];
-export function assertArrayMin<T>(arr: ImmutableArray<T> | unknown, min: 4): asserts arr is [T, T, T, T, ...T[]];
-export function assertArrayMin<T>(arr: ImmutableArray<T> | unknown, min: number): asserts arr is ImmutableArray<T>;
-export function assertArrayMin<T>(arr: ImmutableArray<T> | unknown, min = 1): asserts arr is ImmutableArray<T> {
-	if (!isArray<ImmutableArray<T>>(arr) || !isArrayMin<T>(arr, min)) throw new AssertionError(`Must be array with minimum length ${min}`, arr);
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 1, max: 1): asserts arr is readonly [T];
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 2, max: 2): asserts arr is readonly [T, T];
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 3, max: 3): asserts arr is readonly [T, T, T];
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 4, max: 4): asserts arr is readonly [T, T, T, T];
+export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min?: 1, max?: number): asserts arr is readonly [T, ...T[]];
+export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min: 2, max?: number): asserts arr is readonly [T, T, ...T[]];
+export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min: 3, max?: number): asserts arr is readonly [T, T, T, ...T[]];
+export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min: 4, max?: number): asserts arr is readonly [T, T, T, T, ...T[]];
+export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min: number, max?: number): asserts arr is ImmutableArray<T>;
+export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min = 1, max = Infinity): asserts arr is ImmutableArray<T> {
+	if (!isArray<ImmutableArray<T>>(arr) || !isArrayLength<T>(arr, min, max)) throw new AssertionError(`Must be array with length ${formatRange(min, max)}`, arr);
 }
 
 /** Get an array if it has the specified minimum length.  */
-export function getArrayMin<T>(arr: ImmutableArray<T>, min?: 1): [T, ...T[]];
-export function getArrayMin<T>(arr: ImmutableArray<T>, min: 2): [T, T, ...T[]];
-export function getArrayMin<T>(arr: ImmutableArray<T>, min: 3): [T, T, T, ...T[]];
-export function getArrayMin<T>(arr: ImmutableArray<T>, min: 4): [T, T, T, T, ...T[]];
-export function getArrayMin<T>(arr: ImmutableArray<T>, min: number): ImmutableArray<T>;
-export function getArrayMin<T>(arr: ImmutableArray<T>, min = 1): ImmutableArray<T> {
-	assertArrayMin(arr, min);
+export function getArrayLength<T>(arr: ImmutableArray<T>, min: 1, max: 1): readonly [T];
+export function getArrayLength<T>(arr: ImmutableArray<T>, min: 2, max: 2): readonly [T, T];
+export function getArrayLength<T>(arr: ImmutableArray<T>, min: 3, max: 3): readonly [T, T, T];
+export function getArrayLength<T>(arr: ImmutableArray<T>, min: 4, max: 4): readonly [T, T, T, T];
+export function getArrayLength<T>(arr: ImmutableArray<T>, min?: 1, max?: number): readonly [T, ...T[]];
+export function getArrayLength<T>(arr: ImmutableArray<T>, min: 2, max?: number): readonly [T, T, ...T[]];
+export function getArrayLength<T>(arr: ImmutableArray<T>, min: 3, max?: number): readonly [T, T, T, ...T[]];
+export function getArrayLength<T>(arr: ImmutableArray<T>, min: 4, max?: number): readonly [T, T, T, T, ...T[]];
+export function getArrayLength<T>(arr: ImmutableArray<T>, min?: number, max?: number): ImmutableArray<T>;
+export function getArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Infinity): ImmutableArray<T> {
+	assertArrayLength(arr, min, max);
 	return arr;
 }

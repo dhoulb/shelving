@@ -4,7 +4,7 @@ import { AssertionError } from "../error/AssertionError.js";
 import { formatDate, isDate } from "./date.js";
 import { formatObject, isObject } from "./object.js";
 import { getArray, ImmutableArray, isArray } from "./array.js";
-import { formatNumber, isBetween } from "./number.js";
+import { formatNumber, formatRange, isBetween } from "./number.js";
 
 /**
  * Type that never matches the `string` type.
@@ -46,6 +46,20 @@ export function getString(value: unknown): string {
 	if (isArray(value)) return value.map(getString).join(", ");
 	if (isObject(value)) return formatObject(value);
 	return "Unknown";
+}
+
+/** Does a string have the specified minimum length.  */
+export const isStringLength = (str: string, min = 1, max = Infinity): boolean => str.length >= min && str.length <= max;
+
+/** Assert that a value has a specific length (or length is in a specific range). */
+export function assertStringLength(str: string | unknown, min = 1, max = Infinity): asserts str is string {
+	if (!isString(str) || !isStringLength(str, min, max)) throw new AssertionError(`Must be string with length ${formatRange(min, max)}`, str);
+}
+
+/** Get a string if it has the specified minimum length.  */
+export function getStringLength(arr: string, min = 1, max = Infinity): string {
+	assertStringLength(arr, min, max);
+	return arr;
 }
 
 /** Concatenate an iterable set of strings together. */
@@ -150,19 +164,23 @@ export function limitString(str: string, maxLength: number, append = "…") {
  * Divide a string into parts based on a separator.
  * - Like `String.prototype.split()` but with more useful arguments.
  * - Excess segments in `String.prototype.split()` is counterintuitive because further parts are thrown away.
- * - Excess segments in `splitString()` are concatenated onto the last segment (set `maxSegments` to `null` if you want infinite segments).
+ * - Excess segments in `splitString()` are concatenated onto the last segment (set `max` to `null` if you want infinite segments).
  *
- * @throws AssertionError if `minSegments` isn't met.
+ * @throws AssertionError if `min` isn't met.
  * @throws AssertionError if any of the segments are empty.
  */
-export function splitString(str: string, separator: string, minSegments: 1, maxSegments?: number): readonly [string, ...string[]];
-export function splitString(str: string, separator: string, minSegments: 2, maxSegments?: number): readonly [string, string, ...string[]];
-export function splitString(str: string, separator: string, minSegments: 3, maxSegments?: number): readonly [string, string, string, ...string[]];
-export function splitString(str: string, separator: string, minSegments: 4, maxSegments?: number): readonly [string, string, string, string, ...string[]];
-export function splitString(str: string, separator: string, minSegments?: number, maxSegments?: number | null): ImmutableArray<string>;
-export function splitString(str: string, separator: string, minSegments = 0, maxSegments: number | null = minSegments): ImmutableArray<string> {
+export function splitString(str: string, separator: string, min: 1, max: 1): readonly [string];
+export function splitString(str: string, separator: string, min: 2, max: 2): readonly [string, string];
+export function splitString(str: string, separator: string, min: 3, max: 3): readonly [string, string, string];
+export function splitString(str: string, separator: string, min: 4, max: 4): readonly [string, string, string, string];
+export function splitString(str: string, separator: string, min: 1, max?: number): readonly [string, ...string[]];
+export function splitString(str: string, separator: string, min: 2, max?: number): readonly [string, string, ...string[]];
+export function splitString(str: string, separator: string, min: 3, max?: number): readonly [string, string, string, ...string[]];
+export function splitString(str: string, separator: string, min: 4, max?: number): readonly [string, string, string, string, ...string[]];
+export function splitString(str: string, separator: string, min?: number, max?: number): ImmutableArray<string>;
+export function splitString(str: string, separator: string, min = 1, max = Infinity): ImmutableArray<string> {
 	const segments = str.split(separator);
-	if (typeof maxSegments === "number" && segments.length > maxSegments) segments.splice(maxSegments - 1, segments.length, segments.slice(maxSegments - 1).join(separator));
-	if (segments.length < minSegments || !segments.every(Boolean)) throw new AssertionError(`Must be string with ${minSegments} non-empty segments separated by "${separator}"`, str);
+	if (segments.length > max) segments.splice(max - 1, segments.length, segments.slice(max - 1).join(separator));
+	if (segments.length < min || !segments.every(Boolean)) throw new AssertionError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, str);
 	return segments;
 }

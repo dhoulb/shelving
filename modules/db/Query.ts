@@ -3,7 +3,7 @@ import type { Dispatch, Handler, Stop } from "../util/function.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
-import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem, isArrayMin, countArray } from "../util/array.js";
+import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem, isArrayLength, countArray } from "../util/array.js";
 import { runSequence } from "../util/sequence.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import type { ItemArray, ItemValue, ItemData } from "./Item.js";
@@ -151,7 +151,7 @@ export class AsyncQuery<T extends Datas = Datas, K extends DataKey<T> = DataKey<
 		return this.value.then(countArray);
 	}
 	get exists(): Promise<boolean> {
-		return this.max(1).value.then(isArrayMin);
+		return this.max(1).value.then(isArrayLength);
 	}
 	get firstValue(): Promise<ItemValue<T[K]>> {
 		return this.max(1).value.then(getOptionalFirstItem);

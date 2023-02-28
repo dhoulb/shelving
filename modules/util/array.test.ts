@@ -18,6 +18,10 @@ import {
 	isLess,
 	isEqualLess,
 	notEqual,
+	assertArrayLength,
+	AssertionError,
+	getArrayLength,
+	isArrayLength,
 } from "../index.js";
 
 test("toggleItems()", () => {
@@ -102,4 +106,31 @@ test("shuffleArray()", () => {
 });
 test("uniqueArray()", () => {
 	expect(uniqueArray([1, 1, 1])).toEqual([1]);
+});
+test("isArrayLength()", () => {
+	// Check maximum.
+	expect(isArrayLength([1, 2, 3], 3)).toEqual(true);
+	expect(isArrayLength([1, 2, 3], 5)).toEqual(false);
+
+	// Check minimum.
+	expect(isArrayLength([1, 2, 3], 0, 3)).toEqual(true);
+	expect(isArrayLength([1, 2, 3, 4, 5], 0, 3)).toEqual(false);
+});
+test("assertArrayLength()", () => {
+	// Assert maximum.
+	expect(() => assertArrayLength([1, 2, 3], 3)).not.toThrow();
+	expect(() => assertArrayLength([1, 2, 3], 5)).toThrow(AssertionError);
+
+	// Assert minimum.
+	expect(() => assertArrayLength([1, 2, 3], 0, 3)).not.toThrow();
+	expect(() => assertArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(AssertionError);
+});
+test("getArrayLength()", () => {
+	// Check maximum.
+	expect(getArrayLength([1, 2, 3], 3)).toEqual([1, 2, 3]);
+	expect(() => getArrayLength([1, 2, 3], 5)).toThrow(AssertionError);
+
+	// Check minimum.
+	expect(getArrayLength([1, 2, 3], 0, 3)).toEqual([1, 2, 3]);
+	expect(() => getArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(AssertionError);
 });

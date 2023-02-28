@@ -1,4 +1,4 @@
-import { getString, getSlug, getWords, simplifyString, sanitizeString, sanitizeLines, THINSP, NBSP, NNBSP, splitString, AssertionError } from "../index.js";
+import { getString, getSlug, getWords, simplifyString, sanitizeString, sanitizeLines, THINSP, NBSP, NNBSP, splitString, AssertionError, assertStringLength, isStringLength, getStringLength } from "../index.js";
 
 describe("getString()", () => {
 	test("Correct returned value", () => {
@@ -128,22 +128,20 @@ test("getWords()", () => {
 });
 test("splitString()", () => {
 	// Min and max are the same.
-	expect(splitString("a/b", "/", 2)).toEqual(["a", "b"]);
-	expect(splitString("a/b/c", "/", 3)).toEqual(["a", "b", "c"]);
+	expect(splitString("a/b", "/", 2, 2)).toEqual(["a", "b"]);
+	expect(splitString("a/b/c", "/", 3, 3)).toEqual(["a", "b", "c"]);
 
 	// Max is higher.
 	expect(splitString("a/b", "/", 2, 3)).toEqual(["a", "b"]);
-	expect(splitString("a/b", "/", 2, null)).toEqual(["a", "b"]);
-	expect(splitString("a/b/c/d/e/f", "/", 2, null)).toEqual(["a", "b", "c", "d", "e", "f"]);
+	expect(splitString("a/b", "/", 2, Infinity)).toEqual(["a", "b"]);
+	expect(splitString("a/b/c/d/e/f", "/", 2, Infinity)).toEqual(["a", "b", "c", "d", "e", "f"]);
 
 	// Excess segments are joined into last segment..
-	expect(splitString("a/b/c", "/", 2)).toEqual(["a", "b/c"]);
 	expect(splitString("a/b/c", "/", 2, 2)).toEqual(["a", "b/c"]);
-	expect(splitString("a/b/c/d/e/f", "/", 4)).toEqual(["a", "b", "c", "d/e/f"]);
 	expect(splitString("a/b/c/d/e/f", "/", 4, 4)).toEqual(["a", "b", "c", "d/e/f"]);
 
 	// Excess segments can have empty segments.
-	expect(splitString("a/b/c/d//e", "/", 4)).toEqual(["a", "b", "c", "d//e"]);
+	expect(splitString("a/b/c/d//e", "/", 4, 4)).toEqual(["a", "b", "c", "d//e"]);
 
 	// Segments cannot be empty.
 	expect(() => splitString("a//c", "/", 10)).toThrow(AssertionError);
@@ -151,4 +149,31 @@ test("splitString()", () => {
 	// Min segments is not met.
 	expect(() => splitString("a/b/c", "/", 4)).toThrow(AssertionError);
 	expect(() => splitString("a/b/c/d/e/f", "/", 4, 3)).toThrow(AssertionError);
+});
+test("isStringLength()", () => {
+	// Check maximum.
+	expect(isStringLength("abc", 3)).toBe(true);
+	expect(isStringLength("abc", 5)).toBe(false);
+
+	// Check minimum.
+	expect(isStringLength("abc", 0, 3)).toBe(true);
+	expect(isStringLength("abcde", 0, 3)).toBe(false);
+});
+test("assertStringLength()", () => {
+	// Assert maximum.
+	expect(() => assertStringLength("abc", 3)).not.toThrow();
+	expect(() => assertStringLength("abc", 5)).toThrow(AssertionError);
+
+	// Assert minimum.
+	expect(() => assertStringLength("abc", 0, 3)).not.toThrow();
+	expect(() => assertStringLength("abcde", 0, 3)).toThrow(AssertionError);
+});
+test("getStringLength()", () => {
+	// Check maximum.
+	expect(getStringLength("abc", 3)).toBe("abc");
+	expect(() => getStringLength("abc", 5)).toThrow(AssertionError);
+
+	// Check minimum.
+	expect(getStringLength("abc", 0, 3)).toBe("abc");
+	expect(() => getStringLength("abcde", 0, 3)).toThrow(AssertionError);
 });
