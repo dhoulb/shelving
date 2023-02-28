@@ -115,13 +115,14 @@ export function wrapNumber(num: number, min: number, max: number): number {
 
 /** Format a number (based on the user's browser language settings). */
 export function formatNumber(num: number, precision: number | null = null): string {
-	if (!Number.isFinite(num)) return Number.isNaN(num) ? "None" : "∞";
+	if (Number.isNaN(num)) return "None";
+	if (!Number.isFinite(num)) return "∞";
 	return new Intl.NumberFormat(undefined, { minimumFractionDigits: precision ?? undefined, maximumFractionDigits: precision ?? 20 }).format(num);
 }
 
 /** Format a number range (based on the user's browser language settings). */
 export function formatRange(min: number, max: number, precision: number | null = null): string {
-	return new Intl.NumberFormat(undefined, { minimumFractionDigits: precision ?? undefined, maximumFractionDigits: precision ?? 20 }).formatRange(min, max);
+	return `${formatNumber(min, precision)}–${formatNumber(max, precision)}`;
 }
 
 /** Format a number with a short suffix, e.g. `1,000 kg` */
