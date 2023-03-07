@@ -37,3 +37,6 @@ export abstract class Schema<T extends unknown = unknown> implements Validatable
 	/** Every schema must implement a `validate()` method. */
 	abstract validate(unsafeValue: unknown): T;
 }
+
+/** Is an unknown value a `Schema` instance? */
+export const isSchema = <T extends Schema>(v: T | unknown): v is T => v instanceof Schema;
