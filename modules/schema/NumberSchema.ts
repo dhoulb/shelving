@@ -5,19 +5,19 @@ import { OPTIONAL } from "./OptionalSchema.js";
 
 /** Allowed options for `NumberSchema` */
 export type NumberSchemaOptions = SchemaOptions & {
-	readonly value?: number | null;
-	readonly min?: number | null;
-	readonly max?: number | null;
-	readonly step?: number | null;
+	readonly value?: number | undefined;
+	readonly min?: number | undefined;
+	readonly max?: number | undefined;
+	readonly step?: number | null | undefined;
 };
 
 /** Schema that defines a valid number. */
 export class NumberSchema extends Schema<number> {
-	override readonly value: number | null;
-	readonly min: number | null;
-	readonly max: number | null;
+	override readonly value: number;
+	readonly min: number;
+	readonly max: number;
 	readonly step: number | null;
-	constructor({ value = 0, min = null, max = null, step = null, ...rest }: NumberSchemaOptions) {
+	constructor({ value = 0, min = -Infinity, max = Infinity, step = null, ...rest }: NumberSchemaOptions) {
 		super(rest);
 		this.value = value;
 		this.min = min;
@@ -28,8 +28,8 @@ export class NumberSchema extends Schema<number> {
 		const unsafeNumber = getOptionalNumber(unsafeValue);
 		if (typeof unsafeNumber !== "number") throw new InvalidFeedback("Must be number", { value: unsafeValue });
 		const safeNumber = typeof this.step === "number" ? roundStep(unsafeNumber, this.step) : unsafeNumber;
-		if (typeof this.max === "number" && safeNumber > this.max) throw new InvalidFeedback(`Maximum ${formatNumber(this.max)}`, { value: safeNumber });
-		if (typeof this.min === "number" && safeNumber < this.min) throw new InvalidFeedback(`Minimum ${formatNumber(this.min)}`, { value: safeNumber });
+		if (safeNumber > this.max) throw new InvalidFeedback(`Maximum ${formatNumber(this.max)}`, { value: safeNumber });
+		if (safeNumber < this.min) throw new InvalidFeedback(`Minimum ${formatNumber(this.min)}`, { value: safeNumber });
 		return safeNumber;
 	}
 }

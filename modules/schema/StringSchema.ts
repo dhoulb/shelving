@@ -10,13 +10,13 @@ export type Sanitizer = (str: string) => string;
 
 /** Options for `StringSchema` */
 export type StringSchemaOptions = SchemaOptions & {
-	readonly value?: string;
-	readonly type?: HtmlInputType;
-	readonly min?: number;
-	readonly max?: number | null;
-	readonly match?: RegExp | null;
-	readonly sanitizer?: Sanitizer | null;
-	readonly multiline?: boolean;
+	readonly value?: string | undefined;
+	readonly type?: HtmlInputType | undefined;
+	readonly min?: number | undefined;
+	readonly max?: number | undefined;
+	readonly match?: RegExp | undefined;
+	readonly sanitizer?: Sanitizer | undefined;
+	readonly multiline?: boolean | undefined;
 };
 
 /**
@@ -43,11 +43,11 @@ export class StringSchema extends Schema<string> {
 	override readonly value: string;
 	readonly type: HtmlInputType;
 	readonly min: number;
-	readonly max: number | null;
-	readonly match: RegExp | null;
-	readonly sanitizer: Sanitizer | null;
+	readonly max: number;
+	readonly match: RegExp | undefined;
+	readonly sanitizer: Sanitizer | undefined;
 	readonly multiline: boolean;
-	constructor({ value = "", type = "text", min = 0, max = null, match = null, sanitizer = null, multiline = false, ...rest }: StringSchemaOptions) {
+	constructor({ value = "", type = "text", min = 0, max = Infinity, match, sanitizer, multiline = false, ...rest }: StringSchemaOptions) {
 		super(rest);
 		this.type = type;
 		this.value = value;
@@ -62,7 +62,7 @@ export class StringSchema extends Schema<string> {
 		if (typeof unsafeString !== "string") throw new InvalidFeedback("Must be string", { value: unsafeValue });
 		const safeString = this.sanitize(unsafeString);
 		if (safeString.length < this.min) throw new InvalidFeedback(safeString ? `Minimum ${this.min} characters` : "Required", { value: safeString });
-		if (this.max && safeString.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} characters`, { value: safeString });
+		if (safeString.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} characters`, { value: safeString });
 		if (this.match && !this.match.test(safeString)) throw new InvalidFeedback(safeString ? "Invalid format" : "Required", { value: safeString });
 		return safeString;
 	}

@@ -8,7 +8,7 @@ export type ArraySchemaOptions<T> = SchemaOptions & {
 	readonly value?: ImmutableArray;
 	readonly items: Validator<T>;
 	readonly min?: number;
-	readonly max?: number | null;
+	readonly max?: number;
 	readonly unique?: boolean;
 };
 
@@ -44,8 +44,8 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	readonly items: Validator<T>;
 	readonly unique: boolean;
 	readonly min: number;
-	readonly max: number | null;
-	constructor({ value = [], items, unique = false, min = 0, max = null, ...options }: ArraySchemaOptions<T>) {
+	readonly max: number;
+	constructor({ value = [], items, unique = false, min = 0, max = Infinity, ...options }: ArraySchemaOptions<T>) {
 		super(options);
 		this.value = value;
 		this.items = items;
@@ -57,8 +57,8 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		if (!isArray(unsafeValue)) throw new InvalidFeedback("Must be array", { value: unsafeValue });
 		const safeArray = validateArray(unsafeValue, this.items);
 		const dedupedArray = this.unique ? uniqueArray(safeArray) : safeArray;
-		if (typeof this.min === "number" && dedupedArray.length < this.min) throw new InvalidFeedback(dedupedArray.length ? `Minimum ${this.min} items` : "Required", { value: dedupedArray });
-		if (typeof this.max === "number" && dedupedArray.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`, { value: dedupedArray });
+		if (dedupedArray.length < this.min) throw new InvalidFeedback(dedupedArray.length ? `Minimum ${this.min} items` : "Required", { value: dedupedArray });
+		if (dedupedArray.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} items`, { value: dedupedArray });
 		return dedupedArray;
 	}
 }

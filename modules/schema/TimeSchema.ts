@@ -1,15 +1,15 @@
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { roundStep } from "../util/number.js";
-import { PossibleTime, getOptionalTime, Time, getTime } from "../util/time.js";
+import { PossibleTime, getOptionalTime, Time, PossibleOptionalTime } from "../util/time.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 /** Allowed options for `TimeSchama` */
 export type TimeSchemaOptions = SchemaOptions & {
-	readonly value?: PossibleTime;
-	readonly min?: PossibleTime | null;
-	readonly max?: PossibleTime | null;
-	readonly step?: number | null;
+	readonly value?: PossibleTime | undefined;
+	readonly min?: PossibleOptionalTime | undefined;
+	readonly max?: PossibleOptionalTime | undefined;
+	readonly step?: number | null | undefined;
 };
 
 /** Define a valid time in 24h hh:mm:ss.fff format, e.g. `23:59` or `24:00 */
@@ -25,8 +25,8 @@ export class TimeSchema extends Schema<string> {
 	constructor({ value = "now", min = null, max = null, step = 60, ...options }: TimeSchemaOptions) {
 		super(options);
 		this.value = value;
-		this.min = min !== null ? getTime(min) : null;
-		this.max = max !== null ? getTime(max) : null;
+		this.min = getOptionalTime(min);
+		this.max = getOptionalTime(max);
 		this.step = step;
 	}
 	override validate(unsafeValue: unknown = this.value): string {

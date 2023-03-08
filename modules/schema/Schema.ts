@@ -3,11 +3,11 @@ import type { Validatable } from "../util/validate.js";
 /** Options allowed by a `Schema` instance. */
 export type SchemaOptions = {
 	/** Title of the schema, e.g. for using as the title of a corresponding field. */
-	readonly title?: string | null;
+	readonly title?: string | undefined;
 	/** Description of the schema, e.g. for using as a description in a corresponding field. */
-	readonly description?: string | null;
+	readonly description?: string | undefined;
 	/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
-	readonly placeholder?: string | null;
+	readonly placeholder?: string | undefined;
 	/** Default value for the schema if `validate()` is called with an `undefined` value. */
 	readonly value?: unknown;
 };
@@ -19,15 +19,15 @@ export type SchemaOptions = {
  */
 export abstract class Schema<T extends unknown = unknown> implements Validatable<T> {
 	/** Title of the schema, e.g. for using as the title of a corresponding field. */
-	readonly title: string | null;
+	readonly title: string | undefined;
 	/** Description of the schema, e.g. for using as a description in a corresponding field. */
-	readonly description: string | null;
+	readonly description: string | undefined;
 	/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
-	readonly placeholder: string | null;
+	readonly placeholder: string | undefined;
 	/** Default value for the schema if `validate()` is called with an `undefined` value. */
 	readonly value: unknown;
 
-	constructor({ title = null, description = null, placeholder = null, value }: SchemaOptions) {
+	constructor({ title, description, placeholder, value }: SchemaOptions) {
 		this.title = title;
 		this.description = description;
 		this.placeholder = placeholder;

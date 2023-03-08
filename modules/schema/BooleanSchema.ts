@@ -2,7 +2,7 @@ import { Schema, SchemaOptions } from "./Schema.js";
 
 /** Allowed options for `BooleanSchema` */
 export type BooleanSchemaOptions = SchemaOptions & {
-	readonly value?: boolean;
+	readonly value?: boolean | undefined;
 };
 
 /** Define a valid boolean. */

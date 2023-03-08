@@ -8,7 +8,7 @@ import { Schema, SchemaOptions } from "./Schema.js";
 /** Allowed options for `DataSchema` */
 export type DataSchemaOptions<T extends Data> = SchemaOptions & {
 	readonly props: Validators<T>;
-	readonly value?: Partial<T>;
+	readonly value?: Partial<T> | undefined;
 };
 
 /** Validate a data object. */

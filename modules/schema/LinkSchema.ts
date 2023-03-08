@@ -5,8 +5,8 @@ import { StringSchema, StringSchemaOptions } from "./StringSchema.js";
 
 /** Allowed options for `LinkSchema` */
 export type LinkSchemaOptions = StringSchemaOptions & {
-	readonly schemes?: string[];
-	readonly hosts?: string[] | null;
+	readonly schemes?: string[] | undefined;
+	readonly hosts?: string[] | undefined;
 };
 
 /**
@@ -19,9 +19,9 @@ export class LinkSchema extends StringSchema {
 	override readonly type = "url";
 	override readonly min = 1;
 	override readonly max = 512;
-	readonly schemes: string[] = ["http:", "https:"];
-	readonly hosts: string[] | null = null;
-	constructor({ schemes = ["http:", "https:"], hosts = null, ...rest }: LinkSchemaOptions) {
+	readonly schemes: string[];
+	readonly hosts: string[] | undefined;
+	constructor({ schemes = ["http:", "https:"], hosts, ...rest }: LinkSchemaOptions) {
 		super(rest);
 		this.schemes = schemes;
 		this.hosts = hosts;

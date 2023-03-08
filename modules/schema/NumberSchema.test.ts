@@ -67,9 +67,9 @@ describe("options.value", () => {
 	});
 });
 describe("options.min", () => {
-	test("Defaults to null", () => {
+	test("Defaults to -Infinity", () => {
 		const schema = new NumberSchema({});
-		expect(schema.min).toBe(null);
+		expect(schema.min).toBe(-Infinity);
 	});
 	test("Min is checked correctly", () => {
 		const schema = new NumberSchema({ min: 100 });
@@ -79,9 +79,9 @@ describe("options.min", () => {
 	});
 });
 describe("options.max", () => {
-	test("Defaults to null", () => {
+	test("Defaults to Infinity", () => {
 		const schema = new NumberSchema({});
-		expect(schema.max).toBe(null);
+		expect(schema.max).toBe(Infinity);
 	});
 	test("Max is checked correctly", () => {
 		const schema = new NumberSchema({ max: 100 });

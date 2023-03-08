@@ -1,13 +1,13 @@
-import { formatDate, getDate, getOptionalDate, getYMD, PossibleDate } from "../util/date.js";
+import { formatDate, getOptionalDate, getYMD, PossibleDate, PossibleOptionalDate } from "../util/date.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 
 /** Allowed options for `DateSchema` */
 export type DateSchemaOptions = SchemaOptions & {
-	readonly value?: PossibleDate;
-	readonly min?: PossibleDate | null;
-	readonly max?: PossibleDate | null;
+	readonly value?: PossibleDate | undefined;
+	readonly min?: PossibleOptionalDate | undefined;
+	readonly max?: PossibleOptionalDate | undefined;
 };
 
 /** Define a valid date in YMD format, e.g. `2005-09-12` */
@@ -18,8 +18,8 @@ export class DateSchema extends Schema<string> {
 	constructor({ value = "now", min = null, max = null, ...options }: DateSchemaOptions) {
 		super(options);
 		this.value = value;
-		this.min = min !== null ? getDate(min) : null;
-		this.max = max !== null ? getDate(max) : null;
+		this.min = getOptionalDate(min);
+		this.max = getOptionalDate(max);
 	}
 	override validate(unsafeValue: unknown = this.value): string {
 		const date = getOptionalDate(unsafeValue);
