@@ -1,3 +1,4 @@
+import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import { isPlainObject } from "./object.js";
@@ -22,6 +23,11 @@ export type Datas = { readonly [K in string]: Data };
 
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => isPlainObject(value);
+
+/** Assert that an unknown value is a data object. */
+export function assertData<T extends Data>(value: T | unknown): asserts value is T {
+	if (!isPlainObject(value)) throw new AssertionError("Must be data", value);
+}
 
 /** Is an unknown value the key for an own prop of a data object. */
 export const isDataKey = <T extends Data>(obj: T, key: unknown): key is DataKey<T> => typeof key === "string" && Object.prototype.hasOwnProperty.call(obj, key);

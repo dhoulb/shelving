@@ -21,7 +21,7 @@ export type ObjectValue<T extends ImmutableObject = ImmutableObject> = T[keyof T
 export const isObject = <T extends ImmutableObject>(value: T | unknown): value is T => typeof value === "object" && value !== null;
 
 /** Assert that a value is an object */
-export function assertObject(value: ImmutableObject | unknown): asserts value is ImmutableObject {
+export function assertObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
 	if (!isObject(value)) throw new AssertionError(`Must be object`, value);
 }
 
