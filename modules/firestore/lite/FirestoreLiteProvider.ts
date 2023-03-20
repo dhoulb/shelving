@@ -38,8 +38,6 @@ import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, Update } from "../../update/index.js";
 
 // Constants.
-// const ID = "__name__"; // DH: `__name__` is the entire path of the document. `__id__` is just ID.
-// const ID = "__id__"; // Internal way Firestore Queries can reference the ID of the current document.
 const ID = firestoreDocumentId();
 
 // Map `Filter.types` to `WhereFilterOp`
