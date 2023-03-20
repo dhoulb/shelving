@@ -78,7 +78,7 @@ export function toggleArrayItems<T>(input: ImmutableArray<T>, ...items: T[]): Im
 /** Get the first item from an array or iterable, or `null` if it didn't exist. */
 export function getOptionalFirstItem<T>(items: PossibleArray<T>): T | null {
 	const arr = getArray(items);
-	return 0 in arr ? (arr[0] as T) : null;
+	return 0 in arr ? arr[0] : null;
 }
 
 /** Get the first item from an array or iterable. */
