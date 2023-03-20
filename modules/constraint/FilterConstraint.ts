@@ -27,8 +27,8 @@ export type FilterList<T extends Data> = FilterProps<T> | FilterConstraint<T> | 
 const MATCHERS: { [K in FilterOperator]: Match } = {
 	IS: isEqual,
 	NOT: notEqual,
-	IN: isInArray,
-	OUT: notInArray,
+	IN: isInArray as Match,
+	OUT: notInArray as Match,
 	CONTAINS: isArrayWith,
 	LT: isLess,
 	LTE: isEqualLess,
@@ -86,7 +86,7 @@ export class FilterConstraint<T extends Data = Data> implements Constraint<T>, M
 		return MATCHERS[this.operator](item[this.key], this.value);
 	}
 	transform(items: Iterable<T>): Iterable<T> {
-		return filterItems(items, this);
+		return filterItems(items, MATCHERS[this.operator], this.value);
 	}
 	toString(): string {
 		return `"${this.filterKey}":${JSON.stringify(this.value)}`;
