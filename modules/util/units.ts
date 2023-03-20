@@ -1,7 +1,8 @@
 import { ConditionError } from "../error/ConditionError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
 import { getProps, ImmutableObject } from "./object.js";
-import { MapKey, ImmutableMap, getMapItem } from "./map.js";
+import { MapKey, ImmutableMap } from "./map.js";
 import { cramQuantity, formatFullQuantity, formatQuantity } from "./number.js";
 
 /** Conversion from one unit to another (either an amount to multiple by, or a function to convert). */
@@ -14,7 +15,7 @@ type Conversions<T extends string> = { readonly [K in T]?: Conversion };
 const _convert = (amount: number, conversion: Conversion): number => (typeof conversion === "function" ? conversion(amount) : conversion === 1 ? amount : amount * conversion);
 
 /** Get a `Unit` instance from a `UnitList` instance */
-const _getUnit = <K extends string>(list: UnitList<K>, unit: K | Unit<K>): Unit<K> => (typeof unit === "string" ? getMapItem(list, unit) : unit);
+// const _getUnit = <K extends string>(list: UnitList<K>, unit: K | Unit<K>): Unit<K> => (typeof unit === "string" ? getMapItem(list, unit) : unit);
 
 // Params for a unit.
 type UnitProps<T extends string> = {
@@ -68,12 +69,12 @@ export class Unit<K extends string> {
 
 	/** Convert an amount from this unit to another unit. */
 	to(amount: number, unit: K | Unit<K> = this.list.base): number {
-		return this._toUnit(amount, _getUnit(this.list, unit));
+		return this._toUnit(amount, this.list.unit(unit));
 	}
 
 	/** Convert an amount from another unit to this unit. */
 	from(amount: number, unit: K | Unit<K> = this.list.base): number {
-		return _getUnit(this.list, unit)._toUnit(amount, this);
+		return this.list.unit(unit)._toUnit(amount, this);
 	}
 
 	/** Convert an amount from this unit to another unit (must specify another `Unit` instance). */
@@ -113,6 +114,7 @@ export class Unit<K extends string> {
 /**
  * Represent a list of units.
  * - Has a known base unit at `.base`
+ * - Can get required units from `.unit()`
  * - Cannot have additional units added after it is created.
  */
 export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
@@ -128,7 +130,17 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 
 	/** Convert an amount from a unit to another unit. */
 	convert(amount: number, sourceUnit: K | Unit<K>, targetUnit: K | Unit<K>): number {
-		return _getUnit(this, sourceUnit).to(amount, targetUnit);
+		return this.unit(sourceUnit).to(amount, targetUnit);
+	}
+
+	/**
+	 * Get a unit from this list.
+	 * @throws RequiredError if the unit is not found.
+	 */
+	unit(unit: K | Unit<K>): Unit<K> {
+		if (typeof unit !== "string") return unit;
+		if (!this.has(unit)) throw new RequiredError(`Unit "${unit}" not found`);
+		return this.get(unit) as Unit<K>;
 	}
 }
 

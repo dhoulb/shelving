@@ -1,31 +1,30 @@
 import { MONTH, WEEK, DAY, HOUR, SECOND } from "./constants.js";
 import { getDuration, PossibleDate } from "./date.js";
-import { getMapItem } from "./map.js";
-import { TimeUnitKey, TIME_UNITS } from "./units.js";
+import { Unit, TimeUnitKey, TIME_UNITS } from "./units.js";
 
-/** Get the ID for a time unit based on the amount in milliseconds. */
-function _getTimeUnitKey(ms: number): TimeUnitKey {
+/** Get an appropriate time unit based on an amount in milliseconds. */
+function _getTimeUnit(ms: number): Unit<TimeUnitKey> {
 	const abs = Math.abs(ms);
-	if (abs > 18 * MONTH) return "year";
-	if (abs > 10 * WEEK) return "month";
-	if (abs > 2 * WEEK) return "week";
-	if (abs > DAY) return "day";
-	if (abs > HOUR) return "hour";
-	if (abs > 9949) return "minute";
-	if (abs > SECOND) return "second";
-	return "millisecond";
+	if (abs > 18 * MONTH) return TIME_UNITS.unit("year");
+	if (abs > 10 * WEEK) return TIME_UNITS.unit("month");
+	if (abs > 2 * WEEK) return TIME_UNITS.unit("week");
+	if (abs > DAY) return TIME_UNITS.unit("day");
+	if (abs > HOUR) return TIME_UNITS.unit("hour");
+	if (abs > 9949) return TIME_UNITS.unit("minute");
+	if (abs > SECOND) return TIME_UNITS.unit("second");
+	return TIME_UNITS.unit("millisecond");
 }
 
 /** Format a full format of a duration of time using the most reasonable units e.g. `5 years` or `1 week` or `4 minutes` or `12 milliseconds`. */
-export function formatFullDuration(ms: number, precision?: number): string {
-	const unit = getMapItem(TIME_UNITS, _getTimeUnitKey(ms));
-	return unit.formatFull(unit.from(ms), precision);
+export function formatFullDuration(ms: number): string {
+	const unit = _getTimeUnit(ms);
+	return unit.formatFull(unit.from(ms), 0);
 }
 
 /** Format a description of a duration of time using the most reasonable units e.g. `5y` or `4m` or `12ms`. */
-export function formatDuration(ms: number, precision?: number): string {
-	const unit = getMapItem(TIME_UNITS, _getTimeUnitKey(ms));
-	return unit.format(unit.from(ms), precision);
+export function formatDuration(ms: number): string {
+	const unit = _getTimeUnit(ms);
+	return unit.format(unit.from(ms), 0);
 }
 
 /** format when a data happens/happened. */
