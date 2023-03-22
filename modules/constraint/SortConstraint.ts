@@ -1,7 +1,7 @@
-import { getProp } from "../index.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Data, FlatDataKey } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
+import { getProp } from "../util/object.js";
 import { rank, Rankable, rankAsc, rankDesc, sortItems } from "../util/sort.js";
 import { splitString } from "../util/string.js";
 import type { Constraint } from "./Constraint.js";

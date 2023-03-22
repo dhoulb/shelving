@@ -5,7 +5,7 @@ import { limitArray } from "../util/array.js";
 import { Filterable, FilterConstraints } from "./FilterConstraints.js";
 import { Sortable, SortConstraints } from "./SortConstraints.js";
 import { Constraint } from "./Constraint.js";
-import { FilterConstraint, FilterList } from "./FilterConstraint.js";
+import { FilterConstraint, FilterKey, FilterList } from "./FilterConstraint.js";
 import { SortList } from "./SortConstraint.js";
 
 // Instances to save resources for the default case (empty query).
@@ -133,9 +133,9 @@ function* _getAfterFilters<T extends Data>(sorts: SortConstraints<T>, item: T): 
 	const lastSort = sorts.last;
 	assert(lastSort);
 	for (const sort of sorts) {
-		const { keys: key, direction } = sort;
+		const { key, direction } = sort;
 		const filterKey = direction === "ASC" ? (sort === lastSort ? `${key}>` : `${key}>=`) : sort === lastSort ? `${key}<` : `${key}<=`;
-		yield new FilterConstraint(filterKey, getProp(item, key));
+		yield new FilterConstraint(filterKey as FilterKey<T>, getProp(item, key));
 	}
 }
 
@@ -143,8 +143,8 @@ function* _getBeforeFilters<T extends Data>(sorts: SortConstraints<T>, item: T):
 	const lastSort = sorts.last;
 	assert(lastSort);
 	for (const sort of sorts) {
-		const { keys: key, direction } = sort;
+		const { key, direction } = sort;
 		const filterKey = direction === "ASC" ? (sort === lastSort ? `${key}<` : `${key}<=`) : sort === lastSort ? `${key}>` : `${key}>=`;
-		yield new FilterConstraint(filterKey, getProp(item, key));
+		yield new FilterConstraint(filterKey as FilterKey<T>, getProp(item, key));
 	}
 }
