@@ -32,7 +32,7 @@ export class Feedback<T = unknown> {
 }
 
 /** Is an unknown value a `Feedback` object. */
-export const isFeedback = <T extends Feedback>(v: T | unknown): v is Feedback => isObject(v) && typeof v.name === "string" && v.name.endsWith("Feedback") && typeof v.message === "string";
+export const isFeedback = <T extends Feedback>(value: T | unknown): value is Feedback => isObject(value) && typeof value.name === "string" && value.name.endsWith("Feedback") && typeof value.message === "string";
 
 /**
  * Yield the sub-messages in `[key: string, message: string]` format from a feedback's value.

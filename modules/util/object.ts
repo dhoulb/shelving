@@ -40,7 +40,7 @@ export function assertPlainObject(value: ImmutableObject | unknown): asserts val
 }
 
 /** Is an unknown value the key for an own prop of an object. */
-export const isProp = <T extends ImmutableObject>(obj: T, key: keyof T | unknown): key is keyof T => Object.prototype.hasOwnProperty.call(obj, key as PropertyKey);
+export const isProp = <T extends ImmutableObject>(obj: T, key: unknown): key is keyof T => Object.prototype.hasOwnProperty.call(obj, key as PropertyKey);
 
 /**
  * Mutable type is the opposite of `Readonly<T>` helper type.

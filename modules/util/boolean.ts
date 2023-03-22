@@ -1,41 +1,41 @@
 import { AssertionError } from "../error/AssertionError.js";
 
 /** Is a value a boolean? */
-export const isBoolean = (v: unknown): v is boolean => typeof v === "boolean";
+export const isBoolean = (value: unknown): value is boolean => typeof value === "boolean";
 
 /** Is a value true? */
-export const isTrue = (v: unknown): v is true => v === true;
+export const isTrue = (value: unknown): value is true => value === true;
 
 /** Is a value false? */
-export const isFalse = (v: unknown): v is false => v === false;
+export const isFalse = (value: unknown): value is false => value === false;
 
 /** Is a value truthy? */
-export const isTruthy = (v: unknown): boolean => !!v;
+export const isTruthy = (value: unknown): boolean => !!value;
 
 /** Is a value falsey? */
-export const isFalsey = (v: unknown): boolean => !v;
+export const isFalsey = (value: unknown): boolean => !value;
 
 /** Assert that a value is a boolean. */
-export function assertBoolean(v: unknown): asserts v is boolean {
-	if (typeof v !== "boolean") throw new AssertionError(`Must be boolean`, v);
+export function assertBoolean(value: unknown): asserts value is boolean {
+	if (typeof value !== "boolean") throw new AssertionError(`Must be boolean`, value);
 }
 
 /** Assert that a value is true. */
-export function assertTrue(v: unknown): asserts v is true {
-	if (v !== true) throw new AssertionError(`Must be true`, v);
+export function assertTrue(value: unknown): asserts value is true {
+	if (value !== true) throw new AssertionError(`Must be true`, value);
 }
 
 /** Assert that a value is false. */
-export function assertFalse(v: unknown): asserts v is false {
-	if (v !== false) throw new AssertionError(`Must be false`, v);
+export function assertFalse(value: unknown): asserts value is false {
+	if (value !== false) throw new AssertionError(`Must be false`, value);
 }
 
 /** Assert that a value is truthy. */
-export function assertTruthy(v: unknown): asserts v is true {
-	if (!v) throw new AssertionError(`Must be truthy`, v);
+export function assertTruthy(value: unknown): asserts value is true {
+	if (!value) throw new AssertionError(`Must be truthy`, value);
 }
 
 /** Assert that a value is falsy. */
-export function assertFalsy(v: unknown): asserts v is false {
-	if (v) throw new AssertionError(`Must be falsy`, v);
+export function assertFalsy(value: unknown): asserts value is false {
+	if (value) throw new AssertionError(`Must be falsy`, value);
 }

@@ -15,7 +15,7 @@ import { formatNumber, formatRange, isBetween } from "./number.js";
 export type NotString = { toUpperCase?: never; toLowerCase?: never };
 
 /** Is a value a string? */
-export const isString = (v: unknown): v is string => typeof v === "string";
+export const isString = (value: unknown): value is string => typeof value === "string";
 
 /** Assert that a value is a string. */
 export function assertString(value: unknown): asserts value is string {

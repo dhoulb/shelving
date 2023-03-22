@@ -6,11 +6,11 @@ export function assert(condition: unknown, ...received: unknown[]): asserts cond
 }
 
 /** Assert two values are equal. */
-export function assertEqual<T>(v: T | unknown, target: T): asserts v is T {
-	if (v !== target) throw new AssertionError(`Must be equal`, v, target);
+export function assertEqual<T>(left: T | unknown, right: T): asserts left is T {
+	if (left !== right) throw new AssertionError(`Must be equal`, left, right);
 }
 
 /** Assert two values are equal. */
-export function assertNot<T, N>(v: T | N, target: N): asserts v is T {
-	if (v === target) throw new AssertionError(`Must not be equal`, v, target);
+export function assertNot<T, N>(left: T | N, right: N): asserts left is T {
+	if (left === right) throw new AssertionError(`Must not be equal`, left, right);
 }

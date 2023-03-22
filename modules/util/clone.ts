@@ -9,7 +9,7 @@ export interface Cloneable {
 }
 
 /** Does an object implement `Cloneable` */
-export const isCloneable = <T extends Cloneable>(v: T | unknown): v is T => isData(v) && typeof v.clone === "function";
+export const isCloneable = <T extends Cloneable>(value: T | unknown): value is T => isData(value) && typeof value.clone === "function";
 
 /** Shallow clone a value. */
 export const shallowClone = <T>(value: T): T => value;

@@ -99,4 +99,4 @@ export class State<T> implements AsyncIterable<T>, Validatable<T> {
 }
 
 /** Is an unknown value a `State` instance. */
-export const isState = <T extends AnyState>(v: T | unknown): v is T => v instanceof State;
+export const isState = <T extends AnyState>(value: T | unknown): value is T => value instanceof State;

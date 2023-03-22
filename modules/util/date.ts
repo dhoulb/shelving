@@ -7,11 +7,11 @@ export type PossibleDate = Date | number | string;
 export type PossibleOptionalDate = Date | number | string | null;
 
 /** Is a value a date? */
-export const isDate = (v: Date | unknown): v is Date => v instanceof Date;
+export const isDate = (value: Date | unknown): value is Date => value instanceof Date;
 
 /** Assert that a value is a `Date` instance. */
-export function assertDate(v: Date | unknown): asserts v is Date {
-	if (!isDate(v)) throw new AssertionError(`Must be date`, v);
+export function assertDate(value: Date | unknown): asserts value is Date {
+	if (!isDate(value)) throw new AssertionError(`Must be date`, value);
 }
 
 /**

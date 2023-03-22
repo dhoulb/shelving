@@ -103,7 +103,7 @@ export type PossibleTime = Time | Date | number | string;
 export type PossibleOptionalTime = Time | Date | number | string | null;
 
 /** Is an unknown value a `Time` instance. */
-export const isTime = (v: Time | unknown): v is Time => v instanceof Time;
+export const isTime = (value: Time | unknown): value is Time => value instanceof Time;
 
 /**
  * Convert a value to a `Time` instance or `null`

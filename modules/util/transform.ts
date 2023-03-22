@@ -15,7 +15,7 @@ export interface AsyncTransformable<I, O> {
 }
 
 /** Is an unknown value a transformable. */
-export const isTransformable = <T extends Transformable<unknown, unknown>>(v: T | unknown): v is T => isObject(v) && typeof v.transform === "function";
+export const isTransformable = <T extends Transformable<unknown, unknown>>(value: T | unknown): value is T => isObject(value) && typeof value.transform === "function";
 
 /** Function that can transform an input value into an output value. */
 export type Transform<I, O> = (input: I) => O;

@@ -44,7 +44,7 @@ export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 export type DehydratedObject = { readonly $type: string; readonly $value: unknown };
 
 /** Is an unknown value a dehydrated object with a `$type` key. */
-const isDehydrated = (v: DehydratedObject | ImmutableObject): v is DehydratedObject => isString(v.$type);
+const isDehydrated = (value: DehydratedObject | ImmutableObject): value is DehydratedObject => isString(value.$type);
 
 /** Hydrates a value with a set of hydrations. */
 export class Hydrator implements Transformable<unknown, unknown> {

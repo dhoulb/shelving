@@ -4,38 +4,38 @@ import { AssertionError } from "../error/AssertionError.js";
 export const getNull = (): null => null;
 
 /** Is a value null? */
-export const isNull = (v: unknown): v is null => v === null;
+export const isNull = (value: unknown): value is null => value === null;
 
 /** Is a value not null? */
-export const notNull = <T>(v: T | null): v is T => v !== null;
+export const notNull = <T>(value: T | null): value is T => value !== null;
 
 /** Assert that a value is not null. */
-export function assertNotNull<T>(v: T | null): asserts v is T {
-	if (v === null) throw new AssertionError("Must not be null", v);
+export function assertNotNull<T>(value: T | null): asserts value is T {
+	if (value === null) throw new AssertionError("Must not be null", value);
 }
 
 /** Get the not-nullish version of value. */
-export function getNotNull<T>(v: T | null): T {
-	assertNotNull(v);
-	return v;
+export function getNotNull<T>(value: T | null): T {
+	assertNotNull(value);
+	return value;
 }
 
 /** Nullish is `null` or `undefined` */
 export type Nullish<T> = T | null | undefined;
 
 /** Is a value nullish? */
-export const isNullish = <T>(v: Nullish<T>): v is null | undefined => v === null || v === undefined;
+export const isNullish = <T>(value: Nullish<T>): value is null | undefined => value === null || value === undefined;
 
 /** Is a value not nullish? */
-export const notNullish = <T>(v: Nullish<T>): v is T => v !== null && v !== undefined;
+export const notNullish = <T>(value: Nullish<T>): value is T => value !== null && value !== undefined;
 
 /** Assert that a value is not nullish. */
-export function assertNotNullish<T>(v: Nullish<T>): asserts v is T {
-	if (v === null || v === undefined) throw new AssertionError("Must not be null or undefined", v);
+export function assertNotNullish<T>(value: Nullish<T>): asserts value is T {
+	if (value === null || value === undefined) throw new AssertionError("Must not be null or undefined", value);
 }
 
 /** Get the not-nullish version of value. */
-export function getNotNullish<T>(v: Nullish<T>): T {
-	assertNotNullish(v);
-	return v;
+export function getNotNullish<T>(value: Nullish<T>): T {
+	assertNotNullish(value);
+	return value;
 }

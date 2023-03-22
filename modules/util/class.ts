@@ -18,14 +18,14 @@ export type Class<T> = new (...args: any) => T;
 export const abc: Class<String> = String;
 
 /** Is a given value a class constructor? */
-export const isConstructor = <T extends AnyConstructor>(v: T | unknown): v is T => typeof v === "function" && v.toString().startsWith("class");
+export const isConstructor = <T extends AnyConstructor>(value: T | unknown): value is T => typeof value === "function" && value.toString().startsWith("class");
 
 /** Is a value an instance of a class? */
-export const isInstance = <T>(v: unknown, type: Class<T>): v is T => v instanceof type;
+export const isInstance = <T>(value: unknown, type: Class<T>): value is T => value instanceof type;
 
 /** Assert that a value is an instance of something. */
-export function assertInstance<T>(v: T | unknown, type: Class<T>): asserts v is T {
-	if (!(v instanceof type)) throw new AssertionError(`Must be instance of ${debug(type)}`, v);
+export function assertInstance<T>(value: T | unknown, type: Class<T>): asserts value is T {
+	if (!(value instanceof type)) throw new AssertionError(`Must be instance of ${debug(type)}`, value);
 }
 
 /** Decorator to bind a class method lazily on first access. */

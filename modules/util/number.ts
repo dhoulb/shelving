@@ -2,16 +2,16 @@ import { AssertionError } from "../error/AssertionError.js";
 import { BILLION, MILLION, NNBSP, TEN_THOUSAND, THOUSAND, TRILLION } from "./constants.js";
 
 /** Is a value a number? */
-export const isNumber = (v: unknown): v is number => typeof v === "number";
+export const isNumber = (value: unknown): value is number => typeof value === "number";
 
 /** Assert that a value is a number. */
-export function assertNumber(v: number | unknown): asserts v is number {
-	if (typeof v !== "number") throw new AssertionError(`Must be number`, v);
+export function assertNumber(value: number | unknown): asserts value is number {
+	if (typeof value !== "number") throw new AssertionError(`Must be number`, value);
 }
 
 /** Assert that a value is a number greater than. */
-export function assertFinite(v: number | unknown): asserts v is number {
-	if (typeof v !== "number" || !Number.isFinite(v)) throw new AssertionError(`Must be finite number`, v);
+export function assertFinite(value: number | unknown): asserts value is number {
+	if (typeof value !== "number" || !Number.isFinite(value)) throw new AssertionError(`Must be finite number`, value);
 }
 
 /**
@@ -24,18 +24,18 @@ export function assertFinite(v: number | unknown): asserts v is number {
 export const isBetween = (num: number, min: number, max: number): boolean => num >= min && num <= max;
 
 /** Assert that a value is a number greater than. */
-export function assertBetween(v: number | unknown, min: number, max: number): asserts v is number {
-	if (typeof v !== "number" || isBetween(v, min, max)) throw new AssertionError(`Must be number between ${min} and ${max}`, v);
+export function assertBetween(value: number | unknown, min: number, max: number): asserts value is number {
+	if (typeof value !== "number" || isBetween(value, min, max)) throw new AssertionError(`Must be number between ${min} and ${max}`, value);
 }
 
 /** Assert that a value is a number greater than. */
-export function assertMax(v: number | unknown, max: number): asserts v is number {
-	if (typeof v !== "number" || v > max) throw new AssertionError(`Must be number with maximum ${max}`, v);
+export function assertMax(value: number | unknown, max: number): asserts value is number {
+	if (typeof value !== "number" || value > max) throw new AssertionError(`Must be number with maximum ${max}`, value);
 }
 
 /** Assert that a value is a number less than. */
-export function assertMin(v: number | unknown, min: number): asserts v is number {
-	if (typeof v !== "number" || v < min) throw new AssertionError(`Must be number with minimum ${min}`, v);
+export function assertMin(value: number | unknown, min: number): asserts value is number {
+	if (typeof value !== "number" || value < min) throw new AssertionError(`Must be number with minimum ${min}`, value);
 }
 
 /**

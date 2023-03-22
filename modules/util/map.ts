@@ -28,14 +28,14 @@ export type PossibleMap<K, T> = ImmutableMap<K, T> | Iterable<Entry<K, T>>;
 export type PossibleStringMap<K extends string, T> = PossibleMap<K, T> | { readonly [KK in K]: T };
 
 /** Is an unknown value a map? */
-export const isMap = <T extends ImmutableMap>(v: T | unknown): v is T => v instanceof Map;
+export const isMap = <T extends ImmutableMap>(value: T | unknown): value is T => value instanceof Map;
 
 /** Is an unknown value a key for an item in a map? */
 export const isMapKey = <K, V>(map: ImmutableMap<K, V>, key: K | unknown): key is K => map.has(key as K);
 
 /** Assert that a value is a `Map` instance. */
-export function assertMap<T extends ImmutableMap>(v: T | unknown): asserts v is T {
-	if (!isMap(v)) throw new AssertionError(`Must be map`, v);
+export function assertMap<T extends ImmutableMap>(value: T | unknown): asserts value is T {
+	if (!isMap(value)) throw new AssertionError(`Must be map`, value);
 }
 
 /** Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged). */

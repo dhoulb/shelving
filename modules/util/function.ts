@@ -10,11 +10,11 @@ export type UnknownFunction = (...args: unknown[]) => unknown;
 export type AnyFunction = (...args: any) => any; // Note: `any` works better than `any[]` for `args`
 
 /** Is a value a function? */
-export const isFunction = <T extends AnyFunction>(v: T | unknown): v is T => typeof v === "function";
+export const isFunction = <T extends AnyFunction>(value: T | unknown): value is T => typeof value === "function";
 
 /** Assert that a value is a function. */
-export function assertFunction<T extends AnyFunction>(v: T | unknown): asserts v is T {
-	if (typeof v !== "function") throw new AssertionError("Must be function", v);
+export function assertFunction<T extends AnyFunction>(value: T | unknown): asserts value is T {
+	if (typeof value !== "function") throw new AssertionError("Must be function", value);
 }
 
 /** Readonly unknown array that is being used as a set of arguments to a function. */

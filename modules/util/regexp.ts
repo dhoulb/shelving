@@ -26,11 +26,11 @@ export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extend
 }
 
 /** Is an unknown value a `RegExp` instance? */
-export const isRegExp = <T extends RegExp>(v: T | unknown): v is T => v instanceof RegExp;
+export const isRegExp = <T extends RegExp>(value: T | unknown): value is T => value instanceof RegExp;
 
 /** Assert that an unknown value is a `RegExp` instance. */
-export function assertRegExp<T extends RegExp>(v: T | unknown): asserts v is T {
-	if (!(v instanceof RegExp)) throw new AssertionError("Must be regular expression", v);
+export function assertRegExp<T extends RegExp>(value: T | unknown): asserts value is T {
+	if (!(value instanceof RegExp)) throw new AssertionError("Must be regular expression", value);
 }
 
 /** Convert a string to a regular expression that matches that string. */

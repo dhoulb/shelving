@@ -6,6 +6,7 @@
 import { Arguments } from "./function.js";
 import { match, Matcher } from "./match.js";
 
+/** Is an unknown value an iterable? */
 export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.iterator in value;
 
 /** An iterable containing items or nested iterables of items. */
@@ -23,6 +24,12 @@ export function* flattenItems<T>(items: DeepIterable<T>): Iterable<T> {
  */
 export function hasItems(items: Iterable<unknown>): boolean {
 	for (const unused of items) return true;
+	return false;
+}
+
+/** Is an unknown value one of the values of an iterable? */
+export function isItem<T>(items: Iterable<T>, value: T | unknown): value is T {
+	for (const item of items) if (value === item) return true;
 	return false;
 }
 
@@ -76,19 +83,19 @@ export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T | undef
 }
 
 /** Filter an iterable set of items using a matcher (and optionally a target value). */
-export function* filterItems<T, A extends Arguments = []>(input: Iterable<T>, matcher: Matcher<[T, ...A]>, ...args: A): Iterable<T> {
-	for (const item of input) if (match(matcher, item, ...args)) yield item;
+export function* filterItems<T, A extends Arguments = []>(items: Iterable<T>, matcher: Matcher<[T, ...A]>, ...args: A): Iterable<T> {
+	for (const item of items) if (match(matcher, item, ...args)) yield item;
 }
 
 /** Yield chunks of a given size. */
-export function getChunks<T>(input: Iterable<T>, size: 1): Iterable<readonly [T]>;
-export function getChunks<T>(input: Iterable<T>, size: 2): Iterable<readonly [T, T]>;
-export function getChunks<T>(input: Iterable<T>, size: 3): Iterable<readonly [T, T, T]>;
-export function getChunks<T>(input: Iterable<T>, size: 4): Iterable<readonly [T, T, T, T]>;
-export function getChunks<T>(input: Iterable<T>, size: number): Iterable<readonly T[]>;
-export function* getChunks<T>(input: Iterable<T>, size: number): Iterable<readonly T[]> {
+export function getChunks<T>(items: Iterable<T>, size: 1): Iterable<readonly [T]>;
+export function getChunks<T>(items: Iterable<T>, size: 2): Iterable<readonly [T, T]>;
+export function getChunks<T>(items: Iterable<T>, size: 3): Iterable<readonly [T, T, T]>;
+export function getChunks<T>(items: Iterable<T>, size: 4): Iterable<readonly [T, T, T, T]>;
+export function getChunks<T>(items: Iterable<T>, size: number): Iterable<readonly T[]>;
+export function* getChunks<T>(items: Iterable<T>, size: number): Iterable<readonly T[]> {
 	let chunk: T[] = [];
-	for (const item of input) {
+	for (const item of items) {
 		chunk.push(item);
 		if (chunk.length >= size) {
 			yield chunk;

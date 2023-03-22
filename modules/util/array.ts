@@ -24,7 +24,7 @@ export type ArrayItem<T extends ImmutableArray> = T[number];
 export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
 
 /** Is an unknown value an array? */
-export const isArray = <T extends ImmutableArray>(v: T | unknown): v is T => Array.isArray(v);
+export const isArray = <T extends ImmutableArray>(value: T | unknown): value is T => Array.isArray(value);
 
 /** Assert that a value is an array. */
 export function assertArray<T>(arr: ImmutableArray<T> | unknown): asserts arr is ImmutableArray<T> {
@@ -32,8 +32,7 @@ export function assertArray<T>(arr: ImmutableArray<T> | unknown): asserts arr is
 }
 
 /** Is an unknown value an item in a specified array? */
-export const isArrayItem = <T>(arr: ImmutableArray<T>, item: T | unknown): item is T => arr.includes(item as T);
-export const isItem = isArrayItem;
+export const isArrayItem = <T>(arr: ImmutableArray<T>, value: T | unknown): value is T => arr.includes(value as T);
 
 /** Convert an iterable to an array (if its not already an array). */
 export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T> {

@@ -3,10 +3,10 @@ import { SIGNAL } from "./constants.js";
 import type { Handler, Dispatch } from "./function.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
-export const isAsync = <T>(v: PromiseLike<T> | T): v is PromiseLike<T> => typeof v === "object" && v !== null && typeof (v as Promise<T>).then === "function";
+export const isAsync = <T>(value: PromiseLike<T> | T): value is PromiseLike<T> => typeof value === "object" && value !== null && typeof (value as Promise<T>).then === "function";
 
 /** Is a value a synchronous value. */
-export const notAsync = <T>(v: PromiseLike<T> | T): v is T => !isAsync(v);
+export const notAsync = <T>(value: PromiseLike<T> | T): value is T => !isAsync(value);
 
 /**
  * Throw the value if it's an async (promised) value.

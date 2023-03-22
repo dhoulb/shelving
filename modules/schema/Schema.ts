@@ -39,4 +39,4 @@ export abstract class Schema<T extends unknown = unknown> implements Validatable
 }
 
 /** Is an unknown value a `Schema` instance? */
-export const isSchema = <T extends Schema>(v: T | unknown): v is T => v instanceof Schema;
+export const isSchema = <T extends Schema>(value: T | unknown): value is T => value instanceof Schema;
