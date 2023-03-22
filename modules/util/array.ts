@@ -1,8 +1,8 @@
 import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
-import { Arguments } from "./function.js";
+import type { Arguments } from "./function.js";
+import type { Matcher } from "./match.js";
 import { filterItems, omitItems, pickItems } from "./iterate.js";
-import { Matcher } from "./match.js";
 import { formatRange } from "./number.js";
 
 /**
@@ -40,9 +40,9 @@ export function getArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 }
 
 /** Add multiple items to an array (immutably) and return a new array with those items (or the same array if no changes were made). */
-export function withArrayItems<T>(input: ImmutableArray<T>, ...items: T[]): ImmutableArray<T> {
-	const extras = items.filter(_doesNotInclude, input);
-	return extras.length ? [...input, ...extras] : input;
+export function withArrayItems<T>(arr: ImmutableArray<T>, ...items: T[]): ImmutableArray<T> {
+	const extras = items.filter(_doesNotInclude, arr);
+	return extras.length ? [...arr, ...extras] : arr;
 }
 function _doesNotInclude<T>(this: T[], value: T) {
 	return !this.includes(value);

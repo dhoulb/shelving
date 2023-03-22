@@ -3,7 +3,7 @@
  * - Any object with a `Symbol.iterator` property is iterable.
  * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
  */
-import { Arguments } from "./function.js";
+import type { Arguments } from "./function.js";
 import { match, Matcher } from "./match.js";
 
 /** Is an unknown value an iterable? */
