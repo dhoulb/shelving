@@ -1,12 +1,12 @@
 import { SortConstraint } from "../index.js";
 import { expectOrderedKeys } from "../test/util.js";
 
-type SortableEntity = { id: string; str: string; num: number };
+type SortableEntity = { id: string; str: string; num: number; sub: { str: string; num: number } };
 
-const a: SortableEntity = { id: "a", str: "B", num: 3 };
-const b: SortableEntity = { id: "b", str: "C", num: 1 };
-const c: SortableEntity = { id: "c", str: "A", num: 4 };
-const d: SortableEntity = { id: "d", str: "D", num: 2 };
+const a: SortableEntity = { id: "a", str: "B", num: 3, sub: { str: "B", num: 3 } };
+const b: SortableEntity = { id: "b", str: "C", num: 1, sub: { str: "C", num: 1 } };
+const c: SortableEntity = { id: "c", str: "A", num: 4, sub: { str: "A", num: 4 } };
+const d: SortableEntity = { id: "d", str: "D", num: 2, sub: { str: "D", num: 2 } };
 
 const allRand: ReadonlyArray<SortableEntity> = [b, d, c, a];
 
@@ -29,4 +29,7 @@ test("construct", () => {
 	// Sort by number (change).
 	expectOrderedKeys(new SortConstraint<SortableEntity>("num").transform(allRand), numAsc);
 	expectOrderedKeys(new SortConstraint<SortableEntity>("!num").transform(allRand), numDesc);
+	// Sort by deep number (change).
+	expectOrderedKeys(new SortConstraint<SortableEntity>("sub.num").transform(allRand), numAsc);
+	expectOrderedKeys(new SortConstraint<SortableEntity>("!sub.num").transform(allRand), numDesc);
 });

@@ -1,4 +1,25 @@
-import { basics, people, basic1, basic2, basic3, basic4, basic6, basic7, basic8, basic9, person1, person2, person3, person4, person5, expectOrderedKeys, expectUnorderedKeys, BasicItemData, TestCollections } from "../test/index.js";
+import {
+	basics,
+	people,
+	basic1,
+	basic2,
+	basic3,
+	basic4,
+	basic6,
+	basic7,
+	basic8,
+	basic9,
+	person1,
+	person2,
+	person3,
+	person4,
+	person5,
+	expectOrderedKeys,
+	expectUnorderedKeys,
+	BasicItemData,
+	TestCollections,
+	basic999,
+} from "../test/index.js";
 import { MemoryProvider, OptionalData, ImmutableArray, Database, runMicrotasks } from "../index.js";
 
 test("MemoryProvider: set/get/delete documents", () => {
@@ -266,7 +287,7 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	await runMicrotasks();
 	expectOrderedKeys(calls1[2]!, ["basic2", "basic3"]);
 	// Add a new one at the start.
-	const id1 = collection.add({ str: "NEW", num: 0, group: "a", tags: [] });
+	const id1 = collection.add({ ...basic999, num: 0 });
 	await runMicrotasks();
 	expectOrderedKeys(calls1[3]!, [id1, "basic2"]);
 	// Delete everything.

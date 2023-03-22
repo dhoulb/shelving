@@ -5,8 +5,6 @@ import type {
 	QuerySnapshot as FirestoreQuerySnapshot,
 	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
 	QueryConstraint as FirestoreQueryConstraint,
-	WhereFilterOp as FirestoreWhereFilterOp,
-	OrderByDirection as FirestoreOrderByDirection,
 	FieldValue as FirestoreFieldValue,
 } from "firebase/firestore/lite";
 import {
@@ -30,8 +28,6 @@ import {
 } from "firebase/firestore/lite";
 import type { Data } from "../../util/data.js";
 import type { Entry } from "../../util/entry.js";
-import type { FilterOperator } from "../../constraint/FilterConstraint.js";
-import type { SortDirection } from "../../constraint/SortConstraint.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
@@ -41,23 +37,23 @@ import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, 
 const ID = firestoreDocumentId();
 
 // Map `Filter.types` to `WhereFilterOp`
-const OPERATORS: { readonly [K in FilterOperator]: FirestoreWhereFilterOp } = {
+const OPERATORS = {
 	IS: "==",
 	NOT: "!=",
 	IN: "in",
 	OUT: "not-in",
+	CONTAINS: "array-contains",
 	GT: ">",
 	GTE: ">=",
 	LT: "<",
 	LTE: "<=",
-	CONTAINS: "array-contains",
-};
+} as const;
 
 // Map `Filter.types` to `OrderByDirection`
-const DIRECTIONS: { readonly [K in SortDirection]: FirestoreOrderByDirection } = {
+const DIRECTIONS = {
 	ASC: "asc",
 	DESC: "desc",
-};
+} as const;
 
 /** Create a corresponding `QueryReference` from a Query. */
 function _getQuery(firestore: Firestore, collection: string, constraints: ItemConstraints): FirestoreQueryReference {

@@ -1,23 +1,35 @@
-import type { Data, DataKey } from "../util/data.js";
+import { Data, DataKey, FlatDataKey, getDataProps } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
 import { ImmutableArray, isArray } from "../util/array.js";
-import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, Matchable, Match, notEqual, notInArray } from "../util/match.js";
+import type { Matchable, Match } from "../util/match.js";
+import { isArrayWith, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notInArray, isEqual, notEqual } from "../util/equal.js";
 import { filterItems, isIterable } from "../util/iterate.js";
+import { getProp } from "../util/object.js";
+import { splitString } from "../util/string.js";
 import type { Constraint } from "./Constraint.js";
 
 /** Possible operator references. */
-export type FilterOperator = "IS" | "NOT" | "IN" | "OUT" | "CONTAINS" | "LT" | "LTE" | "GT" | "GTE";
+export type FilterOperator =
+	| "IS" //
+	| "NOT"
+	| "IN"
+	| "OUT"
+	| "CONTAINS"
+	| "LT"
+	| "LTE"
+	| "GT"
+	| "GTE";
 
 /** Format that allows filters to be specified as a string, e.g. `!name` means `name is not` and `age>` means `age is more than` and `tags[]` means `tags array contains` */
-export type FilterKey<T extends Data> = DataKey<T> | `${DataKey<T>}` | `!${DataKey<T>}` | `${DataKey<T>}[]` | `${DataKey<T>}<` | `${DataKey<T>}<=` | `${DataKey<T>}>` | `${DataKey<T>}>=`;
+export type FilterKey<T extends Data> = DataKey<FilterProps<T>>;
 
 /** Format that allows multiple filters to be specified as a plain object. */
 export type FilterProps<T extends Data> = {
-	[K in DataKey<T> as `${K}` | `!${K}`]?: T[K] | ImmutableArray<T[K]>; // IS/NOT/IN/OUT
+	[K in FlatDataKey<T> as `${K}` | `!${K}`]?: T[K] | ImmutableArray<T[K]>; // IS/NOT/IN/OUT
 } & {
-	[K in DataKey<T> as `${K}[]`]?: Required<T>[K] extends ImmutableArray<infer X> ? X : never; // CONTAINS
+	[K in FlatDataKey<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: T[K]; // GT/GTE/LT/LTE
 } & {
-	[K in DataKey<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: T[K]; // GT/GTE/LT/LTE
+	[K in FlatDataKey<T> as `${K}[]`]?: Required<T>[K] extends ImmutableArray<infer X> ? X : never; // CONTAINS
 };
 
 /** List of filters in a flexible format. */
@@ -29,7 +41,7 @@ const MATCHERS: { [K in FilterOperator]: Match } = {
 	NOT: notEqual,
 	IN: isInArray as Match,
 	OUT: notInArray as Match,
-	CONTAINS: isArrayWith,
+	CONTAINS: isArrayWith as Match,
 	LT: isLess,
 	LTE: isEqualLess,
 	GT: isGreater,
@@ -44,49 +56,61 @@ const MATCHERS: { [K in FilterOperator]: Match } = {
  * @param value Value the specified property should be matched against.
  */
 export class FilterConstraint<T extends Data = Data> implements Constraint<T>, Matchable<[T]> {
-	readonly key: string;
+	readonly keys: readonly [string, ...string[]];
 	readonly operator: FilterOperator;
 	readonly value: unknown;
+	get key(): string {
+		return this.keys.join(".");
+	}
 	get filterKey(): string {
 		const { operator, key } = this;
-		if (operator === "NOT" || operator === "OUT") return `!${key}`;
-		else if (operator === "CONTAINS") return `${key}[]`;
-		else if (operator === "LT") return `${key}<`;
-		else if (operator === "LTE") return `${key}<=`;
-		else if (operator === "GT") return `${key}>`;
-		else if (operator === "GTE") return `${key}>=`;
-		else return key;
+		return operator === "IS" || operator === "IN"
+			? key
+			: operator === "NOT" || operator === "OUT"
+			? `!${key}`
+			: operator === "CONTAINS"
+			? `${key}[]`
+			: operator === "LT"
+			? `${key}<`
+			: operator === "LTE"
+			? `${key}<=`
+			: operator === "GT"
+			? `${key}>`
+			: operator === "GTE"
+			? `${key}>=`
+			: operator; // Never.
 	}
-	constructor(filterKey: FilterKey<T>, value: unknown) {
+	constructor(filterKey: FilterKey<T>, value: unknown);
+	constructor(filterKey: string, value: unknown) {
 		if (filterKey.startsWith("!")) {
-			this.key = filterKey.slice(1);
+			this.keys = splitString(filterKey.slice(1), ".");
 			this.operator = isArray(value) ? "OUT" : "NOT";
+		} else if (filterKey.endsWith("[]")) {
+			this.keys = splitString(filterKey.slice(0, -2), ".");
+			this.operator = "CONTAINS";
 		} else if (filterKey.endsWith(">")) {
-			this.key = filterKey.slice(0, -1);
+			this.keys = splitString(filterKey.slice(0, -1), ".");
 			this.operator = "GT";
 		} else if (filterKey.endsWith(">=")) {
-			this.key = filterKey.slice(0, -2);
+			this.keys = splitString(filterKey.slice(0, -2), ".");
 			this.operator = "GTE";
 		} else if (filterKey.endsWith("<")) {
-			this.key = filterKey.slice(0, -1);
+			this.keys = splitString(filterKey.slice(0, -1), ".");
 			this.operator = "LT";
 		} else if (filterKey.endsWith("<=")) {
-			this.key = filterKey.slice(0, -2);
+			this.keys = splitString(filterKey.slice(0, -2), ".");
 			this.operator = "LTE";
-		} else if (filterKey.endsWith("[]")) {
-			this.key = filterKey.slice(0, -2);
-			this.operator = "CONTAINS";
 		} else {
-			this.key = filterKey;
+			this.keys = splitString(filterKey, ".");
 			this.operator = isArray(value) ? "IN" : "IS";
 		}
 		this.value = value;
 	}
 	match(item: T): boolean {
-		return MATCHERS[this.operator](item[this.key], this.value);
+		return MATCHERS[this.operator](getProp(item, ...this.keys), this.value);
 	}
 	transform(items: Iterable<T>): Iterable<T> {
-		return filterItems(items, MATCHERS[this.operator], this.value);
+		return filterItems(items, this);
 	}
 	toString(): string {
 		return `"${this.filterKey}":${JSON.stringify(this.value)}`;
@@ -100,6 +124,6 @@ export function* getFilters<T extends Data>(list: FilterList<T> | FilterList<T>[
 	} else if (isIterable(list)) {
 		for (const filter of list) if (filter) yield* getFilters(filter);
 	} else {
-		for (const [key, value] of Object.entries(list)) yield new FilterConstraint<T>(key, value);
+		for (const [key, value] of getDataProps(list)) yield new FilterConstraint<T>(key, value);
 	}
 }

@@ -1,15 +1,11 @@
-import type {
+import {
 	Firestore,
 	DocumentSnapshot as FirestoreDocumentSnapshot,
 	Query as FirestoreQueryReference,
 	QuerySnapshot as FirestoreQuerySnapshot,
 	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
 	QueryConstraint as FirestoreQueryConstraint,
-	WhereFilterOp as FirestoreWhereFilterOp,
-	OrderByDirection as FirestoreOrderByDirection,
 	FieldValue as FirestoreFieldValue,
-} from "firebase/firestore";
-import {
 	documentId as firestoreDocumentId,
 	orderBy as firestoreOrderBy,
 	where as firestoreWhere,
@@ -31,8 +27,6 @@ import {
 } from "firebase/firestore";
 import type { Data } from "../../util/data.js";
 import type { Entry } from "../../util/entry.js";
-import type { FilterOperator } from "../../constraint/FilterConstraint.js";
-import type { SortDirection } from "../../constraint/SortConstraint.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
@@ -42,23 +36,23 @@ import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, 
 const ID = firestoreDocumentId();
 
 // Map `Filter.types` to `WhereFilterOp`
-const OPERATORS: { readonly [K in FilterOperator]: FirestoreWhereFilterOp } = {
+const OPERATORS = {
 	IS: "==",
 	NOT: "!=",
 	IN: "in",
 	OUT: "not-in",
+	CONTAINS: "array-contains",
 	GT: ">",
 	GTE: ">=",
 	LT: "<",
 	LTE: "<=",
-	CONTAINS: "array-contains",
-};
+} as const;
 
 // Map `Filter.types` to `OrderByDirection`
-const DIRECTIONS: { readonly [K in SortDirection]: FirestoreOrderByDirection } = {
+const DIRECTIONS = {
 	ASC: "asc",
 	DESC: "desc",
-};
+} as const;
 
 /** Get a Firestore QueryReference for a given query. */
 function _getQuery(firestore: Firestore, collection: string, constraints: ItemConstraints): FirestoreQueryReference {
@@ -66,7 +60,7 @@ function _getQuery(firestore: Firestore, collection: string, constraints: ItemCo
 }
 function* _yieldQueryConstraints({ sorts, filters, limit }: ItemConstraints): Iterable<FirestoreQueryConstraint> {
 	for (const { key, direction } of sorts) yield firestoreOrderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
-	for (const { operator, key, value } of filters) yield firestoreWhere(key === "id" ? ID : key, OPERATORS[operator], value);
+	for (const { operator, key, value } of filters) yield firestoreWhere(key, OPERATORS[operator], value);
 	if (typeof limit === "number") yield firestoreLimit(limit);
 }
 

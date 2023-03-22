@@ -133,7 +133,7 @@ function* _getAfterFilters<T extends Data>(sorts: SortConstraints<T>, item: T): 
 	const lastSort = sorts.last;
 	assert(lastSort);
 	for (const sort of sorts) {
-		const { key, direction } = sort;
+		const { keys: key, direction } = sort;
 		const filterKey = direction === "ASC" ? (sort === lastSort ? `${key}>` : `${key}>=`) : sort === lastSort ? `${key}<` : `${key}<=`;
 		yield new FilterConstraint(filterKey, getProp(item, key));
 	}
@@ -143,7 +143,7 @@ function* _getBeforeFilters<T extends Data>(sorts: SortConstraints<T>, item: T):
 	const lastSort = sorts.last;
 	assert(lastSort);
 	for (const sort of sorts) {
-		const { key, direction } = sort;
+		const { keys: key, direction } = sort;
 		const filterKey = direction === "ASC" ? (sort === lastSort ? `${key}<` : `${key}<=`) : sort === lastSort ? `${key}>` : `${key}>=`;
 		yield new FilterConstraint(filterKey, getProp(item, key));
 	}

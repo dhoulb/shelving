@@ -1,11 +1,13 @@
+import { getProp } from "../index.js";
 import type { ImmutableArray } from "../util/array.js";
-import type { Data, DataKey } from "../util/data.js";
+import type { Data, FlatDataKey } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
 import { rank, Rankable, rankAsc, rankDesc, sortItems } from "../util/sort.js";
+import { splitString } from "../util/string.js";
 import type { Constraint } from "./Constraint.js";
 
 /** Format that allows sorts to be set as a plain string, e.g. `name` sorts by name in ascending order and `!date` sorts by date in descending order. */
-export type SortKey<T extends Data> = DataKey<T> | `${DataKey<T>}` | `!${DataKey<T>}`;
+export type SortKey<T extends Data> = FlatDataKey<T> | `${FlatDataKey<T>}` | `!${FlatDataKey<T>}`;
 
 /** One or more sort keys. */
 export type SortKeys<T extends Data> = SortKey<T> | ImmutableArray<SortKey<T>>;
@@ -18,22 +20,26 @@ export type SortList<T extends Data> = SortKey<T> | SortConstraint<T> | Iterable
 
 /** Sort a list of values. */
 export class SortConstraint<T extends Data = Data> implements Constraint<T>, Rankable<T> {
-	readonly key: string;
+	readonly keys: readonly [string, ...string[]];
 	readonly direction: SortDirection;
+	get key(): string {
+		return this.keys.join(".");
+	}
 	get sortKey(): string {
 		return `"${this.direction === "DESC" ? "!" : ""}${this.key}"`;
 	}
-	constructor(sortKey: SortKey<T>) {
+	constructor(sortKey: SortKey<T>);
+	constructor(sortKey: string) {
 		if (sortKey.startsWith("!")) {
-			this.key = sortKey.slice(1);
+			this.keys = splitString(sortKey.slice(1), ".");
 			this.direction = "DESC";
 		} else {
-			this.key = sortKey;
+			this.keys = splitString(sortKey, ".");
 			this.direction = "ASC";
 		}
 	}
 	rank(left: T, right: T): number {
-		return rank(left[this.key], this.direction === "ASC" ? rankAsc : rankDesc, right[this.key]);
+		return rank(getProp(left, ...this.keys), this.direction === "ASC" ? rankAsc : rankDesc, getProp(right, ...this.keys));
 	}
 	transform(items: Iterable<T>): Iterable<T> {
 		return sortItems(items, this);

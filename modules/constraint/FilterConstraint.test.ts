@@ -50,6 +50,12 @@ test("IS", () => {
 	expectUnorderedKeys(new FilterConstraint<BasicItemData>("group", "b").transform(basics), ["basic4", "basic5", "basic6"]);
 	expectUnorderedKeys(new FilterConstraint<BasicItemData>("group", "c").transform(basics), ["basic7", "basic8", "basic9"]);
 	expectUnorderedKeys(new FilterConstraint<BasicItemData>("id", "basic5").transform(basics), ["basic5"]);
+	// Match deep.
+	expect(new FilterConstraint<BasicItemData>("sub.str", "aaa").match(basic1)).toBe(true);
+	expect(new FilterConstraint<BasicItemData>("sub.str", "aaa").match(basic2)).toBe(false);
+	// Filter deep.
+	expectUnorderedKeys(new FilterConstraint<BasicItemData>("sub.str", "aaa").transform(basics), ["basic1"]);
+	expectUnorderedKeys(new FilterConstraint<BasicItemData>("sub.str", "NOPE").transform(basics), []);
 });
 test("IN", () => {
 	// Match array.
@@ -67,6 +73,12 @@ test("NOT", () => {
 	// Filter plain.
 	expectUnorderedKeys(new FilterConstraint<BasicItemData>("!str", "aaa").transform(basics), ["basic2", "basic3", "basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
 	expectUnorderedKeys(new FilterConstraint<BasicItemData>("!group", "a").transform(basics), ["basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
+	// Match deep.
+	expect(new FilterConstraint<BasicItemData>("!sub.str", "aaa").match(basic1)).toBe(false);
+	expect(new FilterConstraint<BasicItemData>("!sub.str", "aaa").match(basic2)).toBe(true);
+	// Filter deep.
+	expectUnorderedKeys(new FilterConstraint<BasicItemData>("!sub.str", "aaa").transform(basics), ["basic2", "basic3", "basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
+	expectUnorderedKeys(new FilterConstraint<BasicItemData>("!sub.str", "NOPE").transform(basics), ["basic1", "basic2", "basic3", "basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
 });
 test("OUT", () => {
 	// Match array.

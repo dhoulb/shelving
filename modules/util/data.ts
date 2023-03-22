@@ -27,6 +27,12 @@ export type Datas = { readonly [K in string]: Data };
 /** Flattened data object with deep keys flattened into `a.c.b` format. */
 export type FlatData<T extends Data> = EntryObject<FlatDataProp<T>>;
 
+/** Key for a flattened data object with deep keys flattened into `a.c.b` format. */
+export type FlatDataKey<T extends Data> = FlatDataProp<T>[0];
+
+/** Value for a flattened data object with deep keys flattened into `a.c.b` format. */
+export type FlatDataValue<T extends Data> = FlatDataProp<T>[1];
+
 /** Prop for a flattened data object with deep keys flattened into `a.c.b` format. */
 export type FlatDataProp<T extends Data> = {
 	readonly [K in DataKey<T>]: (
