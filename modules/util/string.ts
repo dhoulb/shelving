@@ -173,7 +173,7 @@ export function splitString(str: string, separator: string, min: 1, max: 1): rea
 export function splitString(str: string, separator: string, min: 2, max: 2): readonly [string, string];
 export function splitString(str: string, separator: string, min: 3, max: 3): readonly [string, string, string];
 export function splitString(str: string, separator: string, min: 4, max: 4): readonly [string, string, string, string];
-export function splitString(str: string, separator: string, min: 1, max?: number): readonly [string, ...string[]];
+export function splitString(str: string, separator: string, min?: 1, max?: number): readonly [string, ...string[]];
 export function splitString(str: string, separator: string, min: 2, max?: number): readonly [string, string, ...string[]];
 export function splitString(str: string, separator: string, min: 3, max?: number): readonly [string, string, string, ...string[]];
 export function splitString(str: string, separator: string, min: 4, max?: number): readonly [string, string, string, string, ...string[]];

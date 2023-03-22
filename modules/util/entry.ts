@@ -17,6 +17,9 @@ export type EntryKey<X> = X extends Entry<infer Y, unknown> ? Y : never;
 /** Extract the type for the value of an entry. */
 export type EntryValue<X> = X extends Entry<unknown, infer Y> ? Y : never;
 
+/** Convert an entry back into an object. */
+export type EntryObject<T extends Entry<PropertyKey, unknown>> = { readonly [E in T as E[0]]: E[1] };
+
 /** Extract the key from an object entry. */
 export const getEntryKey = <K, T>([k]: Entry<K, T>): K => k;
 

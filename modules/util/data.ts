@@ -1,13 +1,11 @@
 import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
+import type { EntryObject } from "./entry.js";
 import { isPlainObject } from "./object.js";
 
 /** Data object. */
 export type Data = { readonly [K in string]: unknown };
-
-/** Prop for a data object. */
-export type DataProp<T extends Data> = readonly [keyof T & string, T[keyof T & string]];
 
 /** Key for a data object prop. */
 export type DataKey<T extends Data> = keyof T & string;
@@ -15,11 +13,32 @@ export type DataKey<T extends Data> = keyof T & string;
 /** Value for a data object prop. */
 export type DataValue<T extends Data> = T[keyof T & string];
 
+/** Prop for a data object. */
+export type DataProp<T extends Data> = {
+	readonly [K in DataKey<T>]: [K, T[K]];
+}[DataKey<T>];
+
 /** Data or `null` to indicate the data doesn't exist. */
 export type OptionalData<T extends Data> = T | null;
 
 /** Set of named data objects. */
 export type Datas = { readonly [K in string]: Data };
+
+/** Flattened data object with deep keys flattened into `a.c.b` format. */
+export type FlatData<T extends Data> = EntryObject<FlatDataProp<T>>;
+
+/** Prop for a flattened data object with deep keys flattened into `a.c.b` format. */
+export type FlatDataProp<T extends Data> = {
+	readonly [K in DataKey<T>]: (
+		T[K] extends Data
+			? FlatDataProp<T[K]> //
+			: [null, T[K]]
+	) extends infer E
+		? E extends [infer KK, infer VV]
+			? [KK extends string ? `${K}.${KK}` : K, VV]
+			: never
+		: never;
+}[DataKey<T>];
 
 /** Is an unknown value a data object? */
 export const isData = <T extends Data>(value: T | unknown): value is T => isPlainObject(value);
@@ -30,7 +49,7 @@ export function assertData<T extends Data>(value: T | unknown): asserts value is
 }
 
 /** Is an unknown value the key for an own prop of a data object. */
-export const isDataKey = <T extends Data>(obj: T, key: unknown): key is DataKey<T> => typeof key === "string" && Object.prototype.hasOwnProperty.call(obj, key);
+export const isDataProp = <T extends Data>(obj: T, key: unknown): key is DataKey<T> => typeof key === "string" && Object.prototype.hasOwnProperty.call(obj, key);
 
 /** Get the data of a result (returns data or throws `RequiredError` if value is `null` or `undefined`). */
 export function getData<T extends Data>(result: OptionalData<T>): T {

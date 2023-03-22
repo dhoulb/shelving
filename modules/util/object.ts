@@ -1,5 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
-import type { ImmutableArray } from "./array.js";
+import { ImmutableArray, isArrayLength } from "./array.js";
 import { isIterable } from "./iterate.js";
 
 /** Any readonly objet. */
@@ -98,14 +98,10 @@ export function getProp<T extends ImmutableObject, K1 extends keyof T, K2 extend
 export function getProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2]>(obj: T, k1: K1, k2: K2, k3: K3): T[K1][K2][K3];
 export function getProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1]>(obj: T, k1: K1, k2: K2): T[K1][K2];
 export function getProp<T extends ImmutableObject, K1 extends keyof T>(obj: T, k1: K1): T[K1];
-export function getProp<T extends ImmutableObject, K1 extends keyof T, K2 extends keyof T[K1], K3 extends keyof T[K1][K2], K4 extends keyof T[K1][K2][K3]>(
-	data: T,
-	k1: K1,
-	k2?: K2,
-	k3?: K3,
-	k4?: K4,
-): T[K1] | T[K1][K2] | T[K1][K2][K3] | T[K1][K2][K3][K4] {
-	return k2 === undefined ? data[k1] : k3 === undefined ? data[k1][k2] : k4 === undefined ? data[k1][k2][k3] : data[k1][k2][k3][k4];
+export function getProp(obj: ImmutableObject, key: string, ...keys: readonly string[]): unknown;
+export function getProp(obj: ImmutableObject, key: string, ...keys: readonly string[]): unknown {
+	const value = obj[key];
+	return !isArrayLength(keys) ? value : isObject(value) ? getProp(value, ...keys) : undefined;
 }
 
 /** Set a prop on an object (immutably) and return a new object including that prop. */
