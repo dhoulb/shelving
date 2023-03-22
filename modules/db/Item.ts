@@ -2,9 +2,10 @@ import type { ImmutableArray } from "../util/array.js";
 import type { Stop, Handler, Dispatch } from "../util/function.js";
 import type { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { Data, Datas, getData, DataKey } from "../util/data.js";
-import { FilterConstraint } from "../constraint/FilterConstraint.js";
 import { DataUpdate, Updates } from "../update/DataUpdate.js";
 import { runSequence } from "../util/sequence.js";
+import { FilterConstraint, FilterKey, FilterProps } from "../constraint/FilterConstraint.js";
+import { FilterConstraints } from "../constraint/FilterConstraints.js";
 import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
 import type { AsyncQuery, Query } from "./Query.js";
 import type { AsyncDatabase, Database } from "./Database.js";
@@ -103,7 +104,7 @@ export class Item<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> ex
 		this.id = id;
 	}
 	get optional(): Query<T, K> {
-		return this.db.query(this.collection, new FilterConstraint("id", this.id), undefined, 1);
+		return this.db.query(this.collection, getItemFilterConstraints(this.id), undefined, 1);
 	}
 	get exists(): boolean {
 		return !!this.db.get(this.collection, this.id);
@@ -137,7 +138,7 @@ export class AsyncItem<T extends Datas = Datas, K extends DataKey<T> = DataKey<T
 		this.id = id;
 	}
 	get optional(): AsyncQuery<T, K> {
-		return this.db.query(this.collection, new FilterConstraint("id", this.id), undefined, 1);
+		return this.db.query(this.collection, { id: this.id } as FilterProps<ItemData<T[K]>>, undefined, 1);
 	}
 	get exists(): Promise<boolean> {
 		return this.db.get(this.collection, this.id).then(Boolean);
@@ -165,4 +166,9 @@ export const getID = <T extends Data>({ id }: ItemData<T>): string => id;
 /** Get the IDs of an iterable set item data. */
 export function* getIDs<T extends Data>(entities: Iterable<ItemData<T>>): Iterable<string> {
 	for (const { id } of entities) yield id;
+}
+
+/** Get a `FilterConstraints` instance that targets a single item by its ID. */
+export function getItemFilterConstraints<T extends Data>(id: string): FilterConstraints<ItemData<T>> {
+	return new FilterConstraints<ItemData<T>>(new FilterConstraint<ItemData<T>>("id" as FilterKey<ItemData<T>>, id));
 }

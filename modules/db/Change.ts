@@ -1,12 +1,11 @@
-import type { Data, Datas, DataKey } from "../util/data.js";
+import type { Datas, DataKey } from "../util/data.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
 import { Updates } from "../update/DataUpdate.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
-import { FilterConstraint } from "../constraint/FilterConstraint.js";
 import { notNullish, Nullish } from "../util/null.js";
 import { DeepIterable, flattenItems } from "../util/iterate.js";
-import type { ItemConstraints, ItemData } from "./Item.js";
+import { getItemFilterConstraints } from "./Item.js";
 
 /** Change on a collection. */
 export interface Change<T extends Datas, K extends DataKey<T> = DataKey<T>> {
@@ -60,7 +59,7 @@ function _changeItem<T extends Datas, K extends DataKey<T>>(this: Provider<T>, c
 	const { action, collection } = change;
 	if (action === "ADD") return { action: "SET", collection, id: this.addItem(collection, change.data), data: change.data };
 	else if (action === "SET") this.setItem(collection, change.id, change.data);
-	else if (action === "UPDATE") this.updateQuery(collection, _getItemConstraint(change.id), change.updates);
+	else if (action === "UPDATE") this.updateQuery(collection, new QueryConstraints(getItemFilterConstraints(change.id), undefined, 1), change.updates);
 	else if (action === "DELETE") this.deleteItem(collection, change.id);
 	return change;
 }
@@ -73,11 +72,7 @@ async function _changeAsyncItem<T extends Datas, K extends DataKey<T>>(this: Asy
 	const { collection, action } = change;
 	if (action === "ADD") return { action: "SET", collection, id: await this.addItem(collection, change.data), data: change.data };
 	else if (action === "SET") await this.setItem(collection, change.id, change.data);
-	else if (action === "UPDATE") await this.updateQuery(collection, _getItemConstraint(change.id), change.updates);
+	else if (action === "UPDATE") await this.updateQuery(collection, new QueryConstraints(getItemFilterConstraints(change.id), undefined, 1), change.updates);
 	else if (action === "DELETE") await this.deleteItem(collection, change.id);
 	return change;
-}
-
-export function _getItemConstraint<T extends Data>(id: string): ItemConstraints<ItemData<T>> {
-	return new QueryConstraints(new FilterConstraint("id", id), undefined, 1);
 }
