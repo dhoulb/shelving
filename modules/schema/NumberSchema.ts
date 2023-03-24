@@ -57,3 +57,9 @@ export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_
 
 /** Valid optional integer number, e.g. `2048` or `0` zero, or `null` */
 export const OPTIONAL_INTEGER = OPTIONAL(INTEGER);
+
+/** Valid Unix timestamp (including milliseconds). */
+export const TIMESTAMP = INTEGER;
+
+/** Valid Unix timestamp (including milliseconds). */
+export const OPTIONAL_TIMESTAMP = OPTIONAL_INTEGER;
