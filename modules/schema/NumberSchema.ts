@@ -37,11 +37,23 @@ export class NumberSchema extends Schema<number> {
 /** Valid number, e.g. `2048.12345` or `0` zero. */
 export const NUMBER = new NumberSchema({});
 
-/** Valid number, e.g. `2048.12345` or `0` zero, or `null` */
+/** Valid optional number, e.g. `2048.12345` or `0` zero, or `null` */
 export const OPTIONAL_NUMBER = OPTIONAL(NUMBER);
 
 /** Valid integer number, e.g. `2048` or `0` zero. */
-export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER });
+export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER, value: 0 });
 
-/** Valid integer number, e.g. `2048` or `0` zero, or `null` */
+/** Valid positive integer number, e.g. `1,2,3` (not including zero). */
+export const POSITIVE_INTEGER = new NumberSchema({ step: 1, min: 1, max: Number.MAX_SAFE_INTEGER, value: 1 });
+
+/** Valid non-negative integer number, e.g. `0,1,2,3` (including zero). */
+export const NON_NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: 0, max: Number.MAX_SAFE_INTEGER, value: 0 });
+
+/** Valid negative integer number, e.g. `-1,-2,-3` (not including zero). */
+export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: -1, value: -1 });
+
+/** Valid non-positive integer number, e.g. `0,-1,-2,-3` (including zero). */
+export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0, value: 0 });
+
+/** Valid optional integer number, e.g. `2048` or `0` zero, or `null` */
 export const OPTIONAL_INTEGER = OPTIONAL(INTEGER);
