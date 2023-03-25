@@ -7,5 +7,4 @@ export * from "./useCache.js";
 // Integration.
 export * from "./useSequence.js";
 export * from "./useState.js";
-export * from "./useItem.js";
-export * from "./useQuery.js";
+export * from "./useData.js";
