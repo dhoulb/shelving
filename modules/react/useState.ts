@@ -6,10 +6,10 @@ import { mapArray } from "../util/transform.js";
 import { isDefined } from "../util/undefined.js";
 
 /**
- * Subscribe to one or more Shelving `State` instances.
+ * Subscribe to one or more `State` instances.
  *
- * @param state Shelving `State` instance.
- * - Subscription is recreated every time this value changes.
+ * @param state `State` instance.
+ * - Subscription is recreated every time the state instance changes.
  * - Memoise this value to persist the subscription for the lifetime of the component.
  * - If the value is a `State` instance
  */
