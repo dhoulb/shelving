@@ -20,7 +20,8 @@ export function useState(...states: (AnyState | undefined)[]): ImmutableArray<An
 	const setValue = useReactState<unknown>(undefined)[1];
 	const [error, setError] = useReactState<Error | unknown>(undefined);
 	useEffect(() => {
-		const stops = mapArray(states, _startState, setValue, setError);
+		const forceRerender = () => setValue({});
+		const stops = mapArray(states, _startState, forceRerender, setError);
 		return () => stops.filter(isDefined).forEach(dispatch);
 	}, states);
 	if (error) throw error;
