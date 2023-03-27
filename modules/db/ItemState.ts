@@ -40,7 +40,7 @@ export class ItemState<T extends Datas, K extends DataKey<T> = DataKey<T>> exten
 	readonly refresh = (): void => {
 		if (!this.busy.value) void this._refresh();
 	};
-	async _refresh(): Promise<void> {
+	private async _refresh(): Promise<void> {
 		this.busy.set(true);
 		try {
 			this.set(await this.ref.value);

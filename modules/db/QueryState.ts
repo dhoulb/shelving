@@ -70,7 +70,7 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 	readonly refresh = (): void => {
 		if (!this.busy.value) void this._refresh();
 	};
-	async _refresh(): Promise<void> {
+	private async _refresh(): Promise<void> {
 		this.busy.set(true);
 		try {
 			const items = await this.ref.value;
@@ -100,7 +100,7 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 	readonly loadMore = (): void => {
 		if (!this.busy.value) void this._loadMore();
 	};
-	async _loadMore(): Promise<void> {
+	private async _loadMore(): Promise<void> {
 		this.busy.set(true);
 		try {
 			const last = this.lastValue;
