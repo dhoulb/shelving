@@ -84,6 +84,14 @@ export function getProps(obj: ImmutableObject | Partial<ImmutableObject> | Itera
 	return isIterable(obj) ? obj : Object.entries(obj);
 }
 
+/** Get the keys of an object as an array. */
+export function getKeys<T extends ImmutableObject>(obj: T): ImmutableArray<ObjectKey<T>>;
+export function getKeys<T extends ImmutableObject>(obj: T | Partial<T>): ImmutableArray<ObjectKey<T>>;
+export function getKeys<T extends ImmutableObject>(obj: T | Partial<T> | Iterable<ObjectKey<T>>): Iterable<ObjectKey<T>>;
+export function getKeys(obj: ImmutableObject | Partial<ImmutableObject> | Iterable<ObjectKey<ImmutableObject>>): Iterable<ObjectKey<ImmutableObject>> {
+	return isIterable(obj) ? obj : Object.keys(obj);
+}
+
 /**
  * Extract the value of a named prop from an object.
  * - Extraction is possibly deep if deeper keys are specified.

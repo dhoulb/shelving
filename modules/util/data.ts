@@ -63,11 +63,18 @@ export function getData<T extends Data>(result: OptionalData<T>): T {
 	return result;
 }
 
-/** Get the props of a data object. */
+/** Get the props of a data object as a set of entries. */
 export function getDataProps<T extends Data>(data: T): ImmutableArray<DataProp<T>>;
 export function getDataProps<T extends Data>(data: T | Partial<T>): ImmutableArray<DataProp<T>>;
 export function getDataProps(data: Data | Partial<Data>): ImmutableArray<DataProp<Data>> {
 	return Object.entries(data);
+}
+
+/** Get the props of a data object as a set of entries. */
+export function getDataKeys<T extends Data>(data: T): ImmutableArray<DataKey<T>>;
+export function getDataKeys<T extends Data>(data: T | Partial<T>): ImmutableArray<DataKey<T>>;
+export function getDataKeys(data: Data | Partial<Data>): ImmutableArray<DataKey<Data>> {
+	return Object.keys(data);
 }
 
 /** Type that represents an empty data object. */
