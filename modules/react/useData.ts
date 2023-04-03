@@ -15,8 +15,8 @@ type ReferenceState<T extends Datas, K extends DataKey<T>> = ItemState<T, K> | Q
 type ReferenceReferenceState<T> = T extends undefined ? undefined : T extends AsyncItem<infer D, infer K> ? ItemState<D, K> : T extends AsyncQuery<infer D, infer K> ? QueryState<D, K> : never;
 
 /** Use one or more data items or queries. */
-export function useData<T extends AnyReference>(ref: T): ReferenceReferenceState<T>;
-export function useData<T extends ImmutableArray<AnyReference>>(...refs: T): { [K in keyof T]: ReferenceReferenceState<T[K]> };
+export function useData<T extends AnyReference | undefined>(ref: T): ReferenceReferenceState<T>;
+export function useData<T extends ImmutableArray<AnyReference | undefined>>(...refs: T): { [K in keyof T]: ReferenceReferenceState<T[K]> };
 export function useData<T extends Datas, K extends DataKey<T>>(...refs: ImmutableArray<Reference<T, K> | undefined>): ImmutableArray<ReferenceState<T, K> | undefined> | ReferenceState<T, K> | undefined {
 	const cache = useCache<ReferenceState<T, K>>();
 	const states = mapArray(refs, _getReferenceState, cache);
