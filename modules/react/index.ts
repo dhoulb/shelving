@@ -2,7 +2,7 @@
 export * from "./useLazy.js";
 export * from "./useReduce.js";
 export * from "./useInstance.js";
-export * from "./useCache.js";
+export * from "./createCache.js";
 
 // Integration.
 export * from "./useSequence.js";
