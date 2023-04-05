@@ -109,6 +109,8 @@ export const sanitizeLines = (str: string): string =>
  * - Used when you're running a query against a string entered by a user.
  *
  * @example normalizeString("Däve-is\nREALLY    éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
+ *
+ * @todo Convert letter-like characters (e.g. `ℝ`) to their ASCII equivalent (e.g. `R`).
  */
 export const simplifyString = (str: string) =>
 	str
@@ -118,14 +120,25 @@ export const simplifyString = (str: string) =>
 		.trim()
 		.toLowerCase();
 
-/**
- * Convert a string to a `kebab-case` URL slug.
- * - Remove any characters not in the range `[a-z0-9-]`
- * - Change all spaces/separators/hyphens/dashes/underscores to `-` single hyphen.
- *
- * Note: this splits words based on spaces, so won't work well with logographic writing systems e.g. kanji.
- */
-export const getSlug = (str: string): string => simplifyString(str).replace(/ /g, "-");
+/** Convert a string to a `kebab-case` URL slug, or throw `AssertionError` */
+export const getOptionalSlug = (str: string): string | null => simplifyString(str).replace(/ /g, "-") || null;
+
+/* Convert a string to a `kebab-case` URL slug, or throw `AssertionError` */
+export function getSlug(str: string): string {
+	const slug = getOptionalSlug(str);
+	if (slug) return slug;
+	throw new AssertionError(`String slug cannot be empty (received "${str}")`);
+}
+
+/** Convert a string to a unique ref e.g. `abc123`, or `null` */
+export const getOptionalRef = (str: string): string | null => simplifyString(str).replace(/ /g, "") || null;
+
+/** Convert a string to a unique ref e.g. `abc123`, or throw `AssertionError` */
+export function getRef(str: string): string {
+	const ref = getOptionalRef(str);
+	if (ref) return ref;
+	throw new AssertionError(`String ref cannot be empty (received "${str}")`);
+}
 
 /**
  * Return an array of the separate words and "quoted phrases" found in a string.
