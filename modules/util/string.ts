@@ -57,9 +57,9 @@ export function assertStringLength(str: string | unknown, min = 1, max = Infinit
 }
 
 /** Get a string if it has the specified minimum length.  */
-export function getStringLength(arr: string, min = 1, max = Infinity): string {
-	assertStringLength(arr, min, max);
-	return arr;
+export function getStringLength(str: string, min = 1, max = Infinity): string {
+	assertStringLength(str, min, max);
+	return str;
 }
 
 /** Concatenate an iterable set of strings together. */
