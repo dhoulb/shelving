@@ -2,7 +2,7 @@ import type { ArrayItem, ImmutableArray } from "./array.js";
 import type { Entry } from "./entry.js";
 import { Arguments, isFunction } from "./function.js";
 import { getProps, ImmutableObject, isObject, ObjectProp, ObjectValue } from "./object.js";
-import { ImmutableDictionary } from "./dictionary.js";
+import { ImmutableDictionary, PossibleDictionary } from "./dictionary.js";
 
 /** Object that transforms an input value into an output value with its `transform()` method. */
 export interface Transformable<I, O, A extends Arguments = []> {
@@ -62,7 +62,7 @@ export function mapObject<I extends ImmutableObject, O extends ImmutableObject, 
 }
 
 /** Modify the values of a dictionary using a transformer. */
-export const mapDictionary: <I, O, A extends Arguments = []>(dictionary: ImmutableDictionary<I>, transformer: Transformer<I, O, A>, ...args: A) => ImmutableDictionary<O> = mapObject;
+export const mapDictionary: <I, O, A extends Arguments = []>(dictionary: PossibleDictionary<I>, transformer: Transformer<I, O, A>, ...args: A) => ImmutableDictionary<O> = mapObject;
 
 /** Modify the values of a set of entries using a transformer. */
 export function* mapEntries<K, I, O, A extends Arguments = []>(entries: Iterable<Entry<K, I>>, transformer: Transformer<I, O, A>, ...args: A): Iterable<Entry<K, O>> {

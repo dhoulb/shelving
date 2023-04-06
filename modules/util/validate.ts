@@ -1,7 +1,7 @@
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import type { Entry } from "./entry.js";
-import type { ImmutableDictionary } from "./dictionary.js";
+import { ImmutableDictionary, PossibleDictionary, getDictionaryItems } from "./dictionary.js";
 import { Data, DataProp, getDataProps } from "./data.js";
 import { getArray, ImmutableArray } from "./array.js";
 
@@ -99,8 +99,8 @@ export function* validateEntries<T>(unsafeValues: Iterable<Entry<string, unknown
  * @throw InvalidFeedback if one or more entry values did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function validateDictionary<T>(obj: ImmutableDictionary<T>, validator: Validator<T>): ImmutableDictionary<T> {
-	return Object.fromEntries(validateEntries(Object.entries(obj), validator));
+export function validateDictionary<T>(obj: PossibleDictionary<T>, validator: Validator<T>): ImmutableDictionary<T> {
+	return Object.fromEntries(validateEntries(getDictionaryItems(obj), validator));
 }
 
 /**
