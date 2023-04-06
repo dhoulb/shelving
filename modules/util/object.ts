@@ -2,7 +2,7 @@ import { AssertionError } from "../error/AssertionError.js";
 import { ImmutableArray, isArrayLength } from "./array.js";
 import { isIterable } from "./iterate.js";
 
-/** Any readonly objet. */
+/** Any readonly object. */
 export type ImmutableObject<K extends PropertyKey = PropertyKey, T = unknown> = { readonly [KK in K]: T };
 
 /** Any writable object. */
@@ -16,6 +16,9 @@ export type ObjectKey<T extends ImmutableObject = ImmutableObject> = keyof T;
 
 /** Value for an object prop. */
 export type ObjectValue<T extends ImmutableObject = ImmutableObject> = T[keyof T];
+
+/** Something that can be converted to an object. */
+export type PossibleObject<T extends ImmutableObject> = T | Iterable<ObjectProp<T>>;
 
 /** Is an unknown value an unknown object? */
 export const isObject = <T extends ImmutableObject>(value: T | unknown): value is T => typeof value === "object" && value !== null;
@@ -41,6 +44,11 @@ export function assertPlainObject(value: ImmutableObject | unknown): asserts val
 
 /** Is an unknown value the key for an own prop of an object. */
 export const isProp = <T extends ImmutableObject>(obj: T, key: unknown): key is keyof T => Object.prototype.hasOwnProperty.call(obj, key as PropertyKey);
+
+/** turn a possible object into an object. */
+export function getObject<T extends ImmutableObject>(obj: PossibleObject<T>): T {
+	return isIterable(obj) ? (Object.fromEntries(obj) as T) : obj;
+}
 
 /**
  * Mutable type is the opposite of `Readonly<T>` helper type.
