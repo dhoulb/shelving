@@ -1,19 +1,20 @@
-import { DataKey, Datas, getData } from "../util/data.js";
+import { Data, getData } from "../util/data.js";
 import { Dispatch } from "../util/function.js";
 import { State } from "../state/State.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { getOptionalSource } from "../util/source.js";
 import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
+import { MemoryTable } from "../index.js";
 import { ItemValue, Item, AsyncItem, ItemData } from "./Item.js";
 
 /** Hold the current state of a item. */
-export class ItemState<T extends Datas, K extends DataKey<T> = DataKey<T>> extends State<ItemValue<T[K]>> {
-	readonly ref: Item<T, K> | AsyncItem<T, K>;
+export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
+	readonly ref: Item<T> | AsyncItem<T>;
 	readonly busy = new BooleanState();
 
 	/** Get the data of the item (throws `RequiredError` if item doesn't exist). */
-	get data(): ItemData<T[K]> {
+	get data(): ItemData<T> {
 		return getData(this.value);
 	}
 
@@ -22,10 +23,9 @@ export class ItemState<T extends Datas, K extends DataKey<T> = DataKey<T>> exten
 		return !!this.value;
 	}
 
-	constructor(ref: Item<T, K> | AsyncItem<T, K>) {
-		const { db, collection, id } = ref;
-		const cache = getOptionalSource<CacheProvider<T>>(CacheProvider, db.provider);
-		const table = cache?.memory.getTable(collection);
+	constructor(ref: Item<T> | AsyncItem<T>) {
+		const { provider, collection, id } = ref;
+		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T>;
 		const time = table ? table.getItemTime(id) : null;
 		const isCached = typeof time === "number";
 		super(table && isCached ? table.getItem(id) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.from(table.getCachedItemSequence(id))) : undefined);

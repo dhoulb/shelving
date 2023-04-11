@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import type { Datas, DataKey, Data } from "../util/data.js";
+import type { Data } from "../util/data.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
@@ -8,9 +8,9 @@ import { Provider, AsyncProvider } from "./Provider.js";
 import type { ThroughProvider, AsyncThroughProvider } from "./ThroughProvider.js";
 
 /** Provider that logs operations to a source provider to the console. */
-abstract class AbstractDebugProvider<T extends Datas> {
-	abstract readonly source: Provider<T> | AsyncProvider<T>;
-	async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterableIterator<ItemValue<T[K]>> {
+abstract class AbstractDebugProvider {
+	abstract readonly source: Provider | AsyncProvider;
+	async *getItemSequence(collection: string, id: string): AsyncIterableIterator<ItemValue> {
 		const key = _getItemKey(collection, id);
 		try {
 			console.log("ITERATE", key, "DATA:");
@@ -23,7 +23,7 @@ abstract class AbstractDebugProvider<T extends Datas> {
 			console.error("ITERATE", key, thrown);
 		}
 	}
-	async *getQuerySequence<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterableIterator<ItemArray<T[K]>> {
+	async *getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterableIterator<ItemArray> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("ITERATE", key, "DATA:");
@@ -39,13 +39,13 @@ abstract class AbstractDebugProvider<T extends Datas> {
 }
 
 /** Provider that logs operations to a synchronous source provider to the console. */
-export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> implements ThroughProvider<T> {
-	readonly source: Provider<T>;
-	constructor(source: Provider<T>) {
+export class DebugProvider extends AbstractDebugProvider implements ThroughProvider {
+	readonly source: Provider;
+	constructor(source: Provider) {
 		super();
 		this.source = source;
 	}
-	getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
+	getItem(collection: string, id: string): ItemValue {
 		const key = _getItemKey(collection, id);
 		try {
 			const item = this.source.getItem(collection, id);
@@ -56,7 +56,7 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
+	addItem(collection: string, data: Data): string {
 		const key = collection;
 		try {
 			const id = this.source.addItem(collection, data);
@@ -67,7 +67,7 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
+	setItem(collection: string, id: string, data: Data): void {
 		const key = _getItemKey(collection, id);
 		try {
 			this.source.setItem(collection, id, data);
@@ -77,7 +77,7 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
+	updateItem(collection: string, id: string, updates: Updates): void {
 		const key = _getItemKey(collection, id);
 		try {
 			console.log("UPDATE:", key, "UPDATES:", updates);
@@ -87,7 +87,7 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
+	deleteItem(collection: string, id: string): void {
 		const key = _getItemKey(collection, id);
 		try {
 			this.source.deleteItem(collection, id);
@@ -97,7 +97,7 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
+	getQuery(collection: string, constraints: ItemConstraints): ItemArray {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			const items = this.source.getQuery(collection, constraints);
@@ -108,7 +108,7 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
+	setQuery(collection: string, constraints: ItemConstraints, data: Data): number {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			const num = this.source.setQuery(collection, constraints, data);
@@ -119,7 +119,7 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
+	updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): number {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			const num = this.source.updateQuery(collection, constraints, updates);
@@ -130,7 +130,7 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 			throw reason;
 		}
 	}
-	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
+	deleteQuery(collection: string, constraints: ItemConstraints): number {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			const num = this.source.deleteQuery(collection, constraints);
@@ -144,13 +144,13 @@ export class DebugProvider<T extends Datas> extends AbstractDebugProvider<T> imp
 }
 
 /** Provider that logs operations to a synchronous source provider to the console. */
-export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T> implements AsyncThroughProvider<T> {
-	readonly source: AsyncProvider<T>;
-	constructor(source: AsyncProvider<T>) {
+export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncThroughProvider {
+	readonly source: AsyncProvider;
+	constructor(source: AsyncProvider) {
 		super();
 		this.source = source;
 	}
-	async getItem<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
+	async getItem(collection: string, id: string): Promise<ItemValue> {
 		const key = _getItemKey(collection, id);
 		try {
 			console.log("GET:", key);
@@ -162,7 +162,7 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
+	async addItem(collection: string, data: Data): Promise<string> {
 		const key = collection;
 		try {
 			console.log("ADD", key, "DATA:", data);
@@ -174,7 +174,7 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
+	async setItem(collection: string, id: string, data: Data): Promise<void> {
 		const key = _getItemKey(collection, id);
 		try {
 			console.log("SET:", key, "DATA:", data);
@@ -185,7 +185,7 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
+	async updateItem(collection: string, id: string, updates: Updates): Promise<void> {
 		const key = _getItemKey(collection, id);
 		try {
 			console.log("UPDATE:", key, "UPDATES:", updates);
@@ -196,7 +196,7 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
+	async deleteItem(collection: string, id: string): Promise<void> {
 		const key = _getItemKey(collection, id);
 		try {
 			console.log("DELETE:", key);
@@ -207,7 +207,7 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
+	async getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("GET:", key);
@@ -219,7 +219,7 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): Promise<number> {
+	async setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("SET:", key, "DATA:", data);
@@ -231,7 +231,7 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
+	async updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("UPDATE:", key, "UPDATES:", updates);
@@ -243,7 +243,7 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 			throw reason;
 		}
 	}
-	async deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
+	async deleteQuery(collection: string, constraints: ItemConstraints): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("DELETE:", key);
@@ -258,4 +258,4 @@ export class AsyncDebugProvider<T extends Datas> extends AbstractDebugProvider<T
 }
 
 const _getItemKey = (collection: string, id: string): string => `${collection}/${id}`;
-const _getQueryKey = <T extends Data>(collection: string, constraints: QueryConstraints<T>): string => `${collection}?${QueryConstraints.prototype.toString.call(constraints)}`;
+const _getQueryKey = (collection: string, constraints: QueryConstraints): string => `${collection}?${QueryConstraints.prototype.toString.call(constraints)}`;

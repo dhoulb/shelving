@@ -1,135 +1,124 @@
-import type { Datas, DataKey } from "../util/data.js";
-import type { Nullish } from "../util/null.js";
+import type { Data } from "../util/data.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
-import type { DeepIterable } from "../util/iterate.js";
 import type { Updates } from "../update/DataUpdate.js";
-import type { AsyncDatabase, Database } from "./Database.js";
+import type { Provider, AsyncProvider } from "../provider/Provider.js";
 import { ItemData, AsyncItem, Item, ItemValue } from "./Item.js";
 import { AsyncQuery, Query } from "./Query.js";
-import { AddChange, ItemChanges, WriteChange, changeAsyncProvider, changeProvider, UpdateChange, DeleteChange, SetChange } from "./Change.js";
+import { AddChange, UpdateChange, DeleteChange, SetChange } from "./Change.js";
 
 /** Reference to a collection in a synchronous or asynchronous provider. */
-abstract class BaseCollection<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> {
-	abstract readonly db: Database<T> | AsyncDatabase<T>;
-	abstract readonly collection: K;
+abstract class BaseCollection<T extends Data = Data> {
+	abstract readonly provider: Provider | AsyncProvider;
+	abstract readonly collection: string;
 
 	/** Create a query on this item's collection. */
-	abstract query(filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): Query<T, K> | AsyncQuery<T, K>;
+	abstract query(filters?: FilterList<Partial<ItemData<T>>>, sorts?: SortList<Partial<ItemData<T>>>, limit?: number | null): Query<T> | AsyncQuery<T>;
 
 	/** Create a query on this item's collection. */
-	abstract item(id: string): Item<T, K> | AsyncItem<T, K>;
-
-	/** Run a set of changes on this database. */
-	abstract change(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> | Promise<ItemChanges<T, K>>;
+	abstract item(id: string): Item<T> | AsyncItem<T>;
 
 	/** Get an item from this collection. */
-	abstract get(id: string): ItemValue<T[K]> | Promise<ItemValue<T[K]>>;
+	abstract get(id: string): ItemValue<T> | Promise<ItemValue<T>>;
 
 	/** Add an item to this collection. */
-	abstract add(data: T[K]): string | Promise<string>;
+	abstract add(data: T): string | Promise<string>;
 
 	/** Set a document in this collection. */
-	abstract set(id: string, data: T[K]): void | Promise<void>;
+	abstract set(id: string, data: T): void | Promise<void>;
 
 	/** Update a document in this collection. */
-	abstract update(id: string, updates: Updates<T[K]>): void | Promise<void>;
+	abstract update(id: string, updates: Updates<T>): void | Promise<void>;
 
 	/** Delete a document in this collection. */
 	abstract delete(id: string): void | Promise<void>;
 
 	/** Get an add change for this collection. */
-	getAdd(data: T[K]): AddChange<T, K> {
-		return this.db.getAdd(this.collection, data);
+	getAdd(data: T): AddChange {
+		return { action: "ADD", collection: this.collection, data };
 	}
 
 	/** Get a set change for this collection. */
-	getSet(id: string, data: T[K]): SetChange<T, K> {
-		return this.db.getSet(this.collection, id, data);
+	getSet(id: string, data: T): SetChange {
+		return { action: "SET", collection: this.collection, id, data };
 	}
 
 	/** Get an update change for this collection. */
-	getUpdate(id: string, updates: Updates<T[K]>): UpdateChange<T, K> {
-		return this.db.getUpdate(this.collection, id, updates);
+	getUpdate(id: string, updates: Updates<T>): UpdateChange {
+		return { action: "UPDATE", collection: this.collection, id, updates };
 	}
 
 	/** Get a delete change for this collection. */
-	getDelete(id: string): DeleteChange<T, K> {
-		return this.db.getDelete(this.collection, id);
+	getDelete(id: string): DeleteChange {
+		return { action: "DELETE", collection: this.collection, id };
 	}
 
 	// Implement toString()
-	toString(): K {
+	toString(): string {
 		return this.collection;
 	}
 }
 
 /** Reference to a collection in a synchronous provider. */
-export class Collection<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseCollection<T, K> {
-	readonly db: Database<T>;
-	readonly collection: K;
-	constructor(db: Database<T>, collection: K) {
+export class Collection<T extends Data = Data> extends BaseCollection<T> {
+	readonly provider: Provider;
+	readonly collection: string;
+	constructor(provider: Provider, collection: string) {
 		super();
-		this.db = db;
+		this.provider = provider;
 		this.collection = collection;
 	}
-	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T, K> {
-		return new Query<T, K>(this.db, this.collection, filters, sorts, limit);
+	query(filters?: FilterList<ItemData<T>>, sorts?: SortList<ItemData<T>>, limit?: number | null): Query<T> {
+		return new Query<T>(this.provider, this.collection, filters, sorts, limit);
 	}
-	item(id: string): Item<T, K> {
-		return new Item<T, K>(this.db, this.collection, id);
+	item(id: string): Item<T> {
+		return new Item<T>(this.provider, this.collection, id);
 	}
-	change(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): ItemChanges<T, K> {
-		return changeProvider(this.db.provider, changes);
+	get(id: string): ItemValue<T> {
+		return this.provider.getItem(this.collection, id) as ItemValue<T>;
 	}
-	get(id: string): ItemValue<T[K]> {
-		return this.db.get(this.collection, id);
+	add(data: T): string {
+		return this.provider.addItem(this.collection, data);
 	}
-	add(data: T[K]): string {
-		return this.db.add(this.collection, data);
+	set(id: string, data: T): void {
+		return this.provider.setItem(this.collection, id, data);
 	}
-	set(id: string, data: T[K]): void {
-		return this.db.set(this.collection, id, data);
-	}
-	update(id: string, updates: Updates<T[K]>): void {
-		return this.db.update(this.collection, id, updates);
+	update(id: string, updates: Updates<T>): void {
+		return this.provider.updateItem(this.collection, id, updates);
 	}
 	delete(id: string): void {
-		return this.db.delete(this.collection, id);
+		return this.provider.deleteItem(this.collection, id);
 	}
 }
 
 /** Reference to a collection in an asynchronous provider. */
-export class AsyncCollection<T extends Datas = Datas, K extends DataKey<T> = DataKey<T>> extends BaseCollection<T, K> {
-	readonly db: AsyncDatabase<T>;
-	readonly collection: K;
-	constructor(db: AsyncDatabase<T>, collection: K) {
+export class AsyncCollection<T extends Data = Data> extends BaseCollection<T> {
+	readonly provider: AsyncProvider;
+	readonly collection: string;
+	constructor(provider: AsyncProvider, collection: string) {
 		super();
-		this.db = db;
+		this.provider = provider;
 		this.collection = collection;
 	}
-	query(filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): AsyncQuery<T, K> {
-		return new AsyncQuery<T, K>(this.db, this.collection, filters, sorts, limit);
+	query(filters?: FilterList<ItemData<T>>, sorts?: SortList<ItemData<T>>, limit?: number | null): AsyncQuery<T> {
+		return new AsyncQuery<T>(this.provider, this.collection, filters, sorts, limit);
 	}
-	item(id: string): AsyncItem<T, K> {
-		return new AsyncItem<T, K>(this.db, this.collection, id);
+	item(id: string): AsyncItem<T> {
+		return new AsyncItem<T>(this.provider, this.collection, id);
 	}
-	change(...changes: DeepIterable<Nullish<WriteChange<T, K>>>[]): Promise<ItemChanges<T, K>> {
-		return changeAsyncProvider(this.db.provider, changes);
+	get(id: string): Promise<ItemValue<T>> {
+		return this.provider.getItem(this.collection, id) as Promise<ItemValue<T>>;
 	}
-	get(id: string): Promise<ItemValue<T[K]>> {
-		return this.db.get(this.collection, id);
+	add(data: T): Promise<string> {
+		return this.provider.addItem(this.collection, data);
 	}
-	add(data: T[K]): Promise<string> {
-		return this.db.add(this.collection, data);
+	set(id: string, data: T): Promise<void> {
+		return this.provider.setItem(this.collection, id, data);
 	}
-	set(id: string, data: T[K]): Promise<void> {
-		return this.db.set(this.collection, id, data);
-	}
-	update(id: string, updates: Updates<T[K]>): Promise<void> {
-		return this.db.update(this.collection, id, updates);
+	update(id: string, updates: Updates<T>): Promise<void> {
+		return this.provider.updateItem(this.collection, id, updates);
 	}
 	delete(id: string): Promise<void> {
-		return this.db.delete(this.collection, id);
+		return this.provider.deleteItem(this.collection, id);
 	}
 }

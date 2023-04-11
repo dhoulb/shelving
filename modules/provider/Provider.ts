@@ -1,20 +1,20 @@
 import type { Updates } from "../update/DataUpdate.js";
-import type { Datas, DataKey } from "../util/data.js";
+import type { Data } from "../util/data.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
-abstract class AbstractProvider<T extends Datas = Datas> {
+abstract class AbstractProvider {
 	/**
 	 * Get the value of a item.
 	 *
 	 * @return The item value, or `null` if it doesn't exist.
 	 */
-	abstract getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> | PromiseLike<ItemValue<T[K]>>;
+	abstract getItem(collection: string, id: string): ItemValue | PromiseLike<ItemValue>;
 
 	/**
 	 * Subscribe to the value of this item with an async iterator.
 	 */
-	abstract getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>>;
+	abstract getItemSequence(collection: string, id: string): AsyncIterable<ItemValue>;
 
 	/**
 	 * Create a new item with a random ID.
@@ -23,13 +23,13 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	 * @param data Complete data to set the item to.
 	 * @return String ID for the created item (possibly promised).
 	 */
-	abstract addItem<K extends DataKey<T>>(collection: K, data: T[K]): string | PromiseLike<string>;
+	abstract addItem(collection: string, data: Data): string | PromiseLike<string>;
 
 	/**
 	 * Set the data a item (whether it exists or not).
 	 * @param data Data to set the item to.
 	 */
-	abstract setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void | PromiseLike<void>;
+	abstract setItem(collection: string, id: string, data: Data): void | PromiseLike<void>;
 
 	/**
 	 * Update the data an existing item.
@@ -37,24 +37,24 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	 * @param updates Set of property updates to apply to the item.
 	 * @throws Error If the item does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
-	abstract updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void | PromiseLike<void>;
+	abstract updateItem(collection: string, id: string, updates: Updates): void | PromiseLike<void>;
 
 	/**
 	 * Delete a specified item.
 	 */
-	abstract deleteItem<K extends DataKey<T>>(collection: K, id: string): void | PromiseLike<void>;
+	abstract deleteItem(collection: string, id: string): void | PromiseLike<void>;
 
 	/**
 	 * Get all matching items.
 	 *
 	 * @return Set of values in `id: data` format.
 	 */
-	abstract getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> | PromiseLike<ItemArray<T[K]>>;
+	abstract getQuery(collection: string, constraints: ItemConstraints): ItemArray | PromiseLike<ItemArray>;
 
 	/**
 	 * Subscribe to all matching items with an async iterator.
 	 */
-	abstract getQuerySequence<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>>;
+	abstract getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterable<ItemArray>;
 
 	/**
 	 * Set the data of all matching items.
@@ -62,7 +62,7 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	 * @param data Data to set matching items to.
 	 * @return Number of items that were set.
 	 */
-	abstract setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number | PromiseLike<number>;
+	abstract setQuery(collection: string, constraints: ItemConstraints, data: Data): number | PromiseLike<number>;
 
 	/**
 	 * Update the data of all matching items.
@@ -70,37 +70,37 @@ abstract class AbstractProvider<T extends Datas = Datas> {
 	 * @param updates Set of property updates to apply to matching items.
 	 * @return Number of items that were updated.
 	 */
-	abstract updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number | PromiseLike<number>;
+	abstract updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): number | PromiseLike<number>;
 
 	/**
 	 * Delete all matching items.
 	 * @return Number of items that were deleted.
 	 */
-	abstract deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number | PromiseLike<number>;
+	abstract deleteQuery(collection: string, constraints: ItemConstraints): number | PromiseLike<number>;
 }
 
 /** Provider with a fully synchronous interface */
-export abstract class Provider<T extends Datas = Datas> extends AbstractProvider<T> {
-	abstract override getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]>;
-	abstract override addItem<K extends DataKey<T>>(collection: K, data: T[K]): string;
-	abstract override setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void;
-	abstract override updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void;
-	abstract override deleteItem<K extends DataKey<T>>(collection: K, id: string): void;
-	abstract override getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]>;
-	abstract override setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number;
-	abstract override updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number;
-	abstract override deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number;
+export abstract class Provider extends AbstractProvider {
+	abstract override getItem(collection: string, id: string): ItemValue;
+	abstract override addItem(collection: string, data: Data): string;
+	abstract override setItem(collection: string, id: string, data: Data): void;
+	abstract override updateItem(collection: string, id: string, updates: Updates): void;
+	abstract override deleteItem(collection: string, id: string): void;
+	abstract override getQuery(collection: string, constraints: ItemConstraints): ItemArray;
+	abstract override setQuery(collection: string, constraints: ItemConstraints, data: Data): number;
+	abstract override updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): number;
+	abstract override deleteQuery(collection: string, constraints: ItemConstraints): number;
 }
 
 /** Provider with a fully asynchronous interface */
-export abstract class AsyncProvider<T extends Datas = Datas> extends AbstractProvider<T> {
-	abstract override getItem<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>>;
-	abstract override addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string>;
-	abstract override setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void>;
-	abstract override updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void>;
-	abstract override deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void>;
-	abstract override getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>>;
-	abstract override setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): Promise<number>;
-	abstract override updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number>;
-	abstract override deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number>;
+export abstract class AsyncProvider extends AbstractProvider {
+	abstract override getItem(collection: string, id: string): Promise<ItemValue>;
+	abstract override addItem(collection: string, data: Data): Promise<string>;
+	abstract override setItem(collection: string, id: string, data: Data): Promise<void>;
+	abstract override updateItem(collection: string, id: string, updates: Updates): Promise<void>;
+	abstract override deleteItem(collection: string, id: string): Promise<void>;
+	abstract override getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray>;
+	abstract override setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number>;
+	abstract override updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number>;
+	abstract override deleteQuery(collection: string, constraints: ItemConstraints): Promise<number>;
 }

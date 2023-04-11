@@ -1,4 +1,4 @@
-import { Data, DataKey, FlatDataKey, getDataProps } from "../util/data.js";
+import { Data, FlatDataKey, getDataProps } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
 import { ImmutableArray, isArray } from "../util/array.js";
 import type { Matchable, Match } from "../util/match.js";
@@ -20,9 +20,6 @@ export type FilterOperator =
 	| "GT"
 	| "GTE";
 
-/** Format that allows filters to be specified as a string, e.g. `!name` means `name is not` and `age>` means `age is more than` and `tags[]` means `tags array contains` */
-export type FilterKey<T extends Data> = DataKey<FilterProps<T>>;
-
 /** Format that allows multiple filters to be specified as a plain object. */
 export type FilterProps<T extends Data> = {
 	[K in FlatDataKey<T> as `${K}` | `!${K}`]?: T[K] | ImmutableArray<T[K]>; // IS/NOT/IN/OUT
@@ -31,6 +28,9 @@ export type FilterProps<T extends Data> = {
 } & {
 	[K in FlatDataKey<T> as `${K}[]`]?: Required<T>[K] extends ImmutableArray<infer X> ? X : never; // CONTAINS
 };
+
+/** Format that allows filters to be specified as a string, e.g. `!name` means `name is not` and `age>` means `age is more than` and `tags[]` means `tags array contains` */
+export type FilterKey<T extends Data> = keyof FilterProps<T>;
 
 /** List of filters in a flexible format. */
 export type FilterList<T extends Data> = FilterProps<T> | FilterConstraint<T> | Iterable<Nullish<FilterProps<T> | FilterConstraint<T>>>;

@@ -1,87 +1,87 @@
-import type { Datas, DataKey } from "../util/data.js";
+import type { Data } from "../util/data.js";
 import type { Sourceable } from "../util/source.js";
 import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { Provider, AsyncProvider } from "./Provider.js";
 
 /** A provider that passes through to a synchronous source. */
-export class ThroughProvider<T extends Datas = Datas> implements Provider<T>, Sourceable<Provider<T>> {
-	readonly source: Provider<T>;
-	constructor(source: Provider<T>) {
+export class ThroughProvider implements Provider, Sourceable<Provider> {
+	readonly source: Provider;
+	constructor(source: Provider) {
 		this.source = source;
 	}
-	getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
+	getItem(collection: string, id: string): ItemValue {
 		return this.source.getItem(collection, id);
 	}
-	getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
+	getItemSequence(collection: string, id: string): AsyncIterable<ItemValue> {
 		return this.source.getItemSequence(collection, id);
 	}
-	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
+	addItem(collection: string, data: Data): string {
 		return this.source.addItem(collection, data);
 	}
-	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
+	setItem(collection: string, id: string, data: Data): void {
 		return this.source.setItem(collection, id, data);
 	}
-	updateItem<K extends DataKey<T>>(collection: K, id: string, update: Updates<T[K]>): void {
+	updateItem(collection: string, id: string, update: Updates): void {
 		return this.source.updateItem(collection, id, update);
 	}
-	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
+	deleteItem(collection: string, id: string): void {
 		return this.source.deleteItem(collection, id);
 	}
-	getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
+	getQuery(collection: string, constraints: ItemConstraints): ItemArray {
 		return this.source.getQuery(collection, constraints);
 	}
-	getQuerySequence<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
+	getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterable<ItemArray> {
 		return this.source.getQuerySequence(collection, constraints);
 	}
-	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
+	setQuery(collection: string, constraints: ItemConstraints, data: Data): number {
 		return this.source.setQuery(collection, constraints, data);
 	}
-	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, update: Updates<T[K]>): number {
+	updateQuery(collection: string, constraints: ItemConstraints, update: Updates): number {
 		return this.source.updateQuery(collection, constraints, update);
 	}
-	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
+	deleteQuery(collection: string, constraints: ItemConstraints): number {
 		return this.source.deleteQuery(collection, constraints);
 	}
 }
 
 /** A provider that passes through to an asynchronous source. */
-export class AsyncThroughProvider<T extends Datas = Datas> implements AsyncProvider<T>, Sourceable<AsyncProvider<T>> {
-	readonly source: AsyncProvider<T>;
-	constructor(source: AsyncProvider<T>) {
+export class AsyncThroughProvider implements AsyncProvider, Sourceable<AsyncProvider> {
+	readonly source: AsyncProvider;
+	constructor(source: AsyncProvider) {
 		this.source = source;
 	}
-	getItem<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
+	getItem(collection: string, id: string): Promise<ItemValue> {
 		return this.source.getItem(collection, id);
 	}
-	getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
+	getItemSequence(collection: string, id: string): AsyncIterable<ItemValue> {
 		return this.source.getItemSequence(collection, id);
 	}
-	addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
+	addItem(collection: string, data: Data): Promise<string> {
 		return this.source.addItem(collection, data);
 	}
-	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
+	setItem(collection: string, id: string, data: Data): Promise<void> {
 		return this.source.setItem(collection, id, data);
 	}
-	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
+	updateItem(collection: string, id: string, updates: Updates): Promise<void> {
 		return this.source.updateItem(collection, id, updates);
 	}
-	deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
+	deleteItem(collection: string, id: string): Promise<void> {
 		return this.source.deleteItem(collection, id);
 	}
-	getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<ItemArray<T[K]>> {
+	getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
 		return this.source.getQuery(collection, constraints);
 	}
-	getQuerySequence<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
+	getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterable<ItemArray> {
 		return this.source.getQuerySequence(collection, constraints);
 	}
-	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): Promise<number> {
+	setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number> {
 		return this.source.setQuery(collection, constraints, data);
 	}
-	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): Promise<number> {
+	updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number> {
 		return this.source.updateQuery(collection, constraints, updates);
 	}
-	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): Promise<number> {
+	deleteQuery(collection: string, constraints: ItemConstraints): Promise<number> {
 		return this.source.deleteQuery(collection, constraints);
 	}
 }

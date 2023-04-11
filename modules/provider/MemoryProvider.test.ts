@@ -24,7 +24,7 @@ import { MemoryProvider, OptionalData, ImmutableArray, Database, runMicrotasks }
 
 test("MemoryProvider: set/get/delete documents", () => {
 	// Setup.
-	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const db = new Database<TestCollections>(new MemoryProvider());
 	const collectionBasics = db.collection("basics");
 	const queryBasics = collectionBasics.query();
 	const collectionPeople = db.collection("people");
@@ -69,7 +69,7 @@ test("MemoryProvider: set/get/delete documents", () => {
 });
 test("MemoryProvider: set/get/delete collections", () => {
 	// Setup.
-	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const db = new Database<TestCollections>(new MemoryProvider());
 	const basicsCollection = db.collection("basics");
 	const basicsQuery = basicsCollection.query();
 	const peopleCollection = db.collection("people");
@@ -94,7 +94,7 @@ test("MemoryProvider: set/get/delete collections", () => {
 });
 test("MemoryProvider: get queries", () => {
 	// Setup.
-	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const db = new Database<TestCollections>(new MemoryProvider());
 	const collection = db.collection("basics");
 	const query = collection.query();
 	for (const { id, ...data } of basics) collection.item(id).set(data);
@@ -132,7 +132,7 @@ test("MemoryProvider: get queries", () => {
 });
 test("MemoryProvider: subscribing to documents", async () => {
 	// Setup.
-	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const db = new Database<TestCollections>(new MemoryProvider());
 	const collection = db.collection("basics");
 	const query = collection.query();
 	const doc = collection.item("basic1");
@@ -172,7 +172,7 @@ test("MemoryProvider: subscribing to documents", async () => {
 });
 test("MemoryProvider: subscribing to collections", async () => {
 	// Setup.
-	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const db = new Database<TestCollections>(new MemoryProvider());
 	const collection = db.collection("basics");
 	const query = collection.query();
 	// Subscribe fn1.
@@ -225,7 +225,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 });
 test("MemoryProvider: subscribing to filter query", async () => {
 	// Setup.
-	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const db = new Database<TestCollections>(new MemoryProvider());
 	const collection = db.collection("basics");
 	const query = collection.query();
 	collection.item("basic6").set(basic6);
@@ -261,7 +261,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 });
 test("MemoryProvider: subscribing to sort and limit query", async () => {
 	// Setup.
-	const db = new Database<TestCollections>(new MemoryProvider<TestCollections>());
+	const db = new Database<TestCollections>(new MemoryProvider());
 	const collection = db.collection("basics");
 	const query = collection.query();
 	for (const { id, ...data } of basics) collection.item(id).set(data);

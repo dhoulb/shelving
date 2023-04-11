@@ -1,4 +1,4 @@
-import type { Datas, DataKey } from "../util/data.js";
+import type { Data } from "../util/data.js";
 import type { Stop } from "../util/function.js";
 import type { ItemArray, ItemValue, ItemData } from "../db/Item.js";
 import type { AsyncQuery, Query } from "../db/Query.js";
@@ -8,10 +8,11 @@ import { CacheProvider } from "../provider/CacheProvider.js";
 import { State } from "../state/State.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
+import { MemoryTable } from "../index.js";
 
 /** Hold the current state of a query. */
-export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> extends State<ItemArray<T[K]>> implements Iterable<ItemData<T[K]>> {
-	readonly ref: Query<T, K> | AsyncQuery<T, K>;
+export class QueryState<T extends Data = Data> extends State<ItemArray<T>> implements Iterable<ItemData<T>> {
+	readonly ref: Query<T> | AsyncQuery<T>;
 	readonly busy = new BooleanState();
 	readonly limit: number;
 
@@ -22,22 +23,22 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 	private _hasMore = false;
 
 	/** Get the first document matched by this query or `null` if this query has no items. */
-	get firstValue(): ItemValue<T[K]> {
+	get firstValue(): ItemValue<T> {
 		return getOptionalFirstItem(this.value);
 	}
 
 	/** Get the first document matched by this query. */
-	get firstData(): ItemData<T[K]> {
+	get firstData(): ItemData<T> {
 		return getFirstItem(this.value);
 	}
 
 	/** Get the last document matched by this query or `null` if this query has no items. */
-	get lastValue(): ItemValue<T[K]> {
+	get lastValue(): ItemValue<T> {
 		return getOptionalLastItem(this.value);
 	}
 
 	/** Get the last document matched by this query. */
-	get lastData(): ItemData<T[K]> {
+	get lastData(): ItemData<T> {
 		return getLastItem(this.value);
 	}
 
@@ -51,10 +52,9 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 		return this.value.length;
 	}
 
-	constructor(ref: Query<T, K> | AsyncQuery<T, K>) {
-		const { db, collection, limit } = ref;
-		const cache = getOptionalSource<CacheProvider<T>>(CacheProvider, db.provider);
-		const table = cache?.memory.getTable(collection);
+	constructor(ref: Query<T> | AsyncQuery<T>) {
+		const { provider, collection, limit } = ref;
+		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T>;
 		const time = table ? table.getQueryTime(ref) : null;
 		const isCached = typeof time === "number";
 		super(table && isCached ? table.getQuery(ref) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.from(table.getCachedQuerySequence(ref))) : undefined);
@@ -116,7 +116,7 @@ export class QueryState<T extends Datas, K extends DataKey<T> = DataKey<T>> exte
 	}
 
 	/** Iterate over the items. */
-	[Symbol.iterator](): Iterator<ItemData<T[K]>> {
+	[Symbol.iterator](): Iterator<ItemData<T>> {
 		return this.value.values();
 	}
 }

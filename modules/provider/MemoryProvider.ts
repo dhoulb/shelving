@@ -1,4 +1,4 @@
-import type { Data, Datas, DataKey } from "../util/data.js";
+import type { Data } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
 import { Updates, updateData } from "../update/DataUpdate.js";
 import type { Constraint } from "../constraint/Constraint.js";
@@ -15,73 +15,70 @@ import type { Provider } from "./Provider.js";
  * - Extremely fast (ideal for caching!), but does not persist data after the browser window is closed.
  * - `get()` etc return the exact same instance of an object that's passed into `set()`
  */
-export class MemoryProvider<T extends Datas> implements Provider<T> {
+export class MemoryProvider implements Provider {
 	/** List of tables in `{ collection: Table }` format. */
-	private _tables: { [K in keyof T]?: MemoryTable<T[K]> } = {};
+	private _tables: { [collection: string]: MemoryTable<Data> } = {};
 
 	/** Get a table for a collection. */
-	getTable<K extends DataKey<T>>(collection: K): MemoryTable<T[K]> {
+	getTable(collection: string): MemoryTable {
 		return this._tables[collection] || (this._tables[collection] = new MemoryTable());
 	}
 
-	getDocumentTime<K extends DataKey<T>>(collection: K, id: string): number | null {
+	getDocumentTime(collection: string, id: string): number | null {
 		return this.getTable(collection).getItemTime(id);
 	}
 
-	getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
+	getItem(collection: string, id: string): ItemValue {
 		return this.getTable(collection).getItem(id);
 	}
 
-	getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
+	getItemSequence(collection: string, id: string): AsyncIterable<ItemValue> {
 		return this.getTable(collection).getItemSequence(id);
 	}
 
-	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
+	addItem(collection: string, data: Data): string {
 		return this.getTable(collection).addItem(data);
 	}
 
-	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
+	setItem(collection: string, id: string, data: Data): void {
 		return this.getTable(collection).setItem(id, data);
 	}
 
-	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
+	updateItem(collection: string, id: string, updates: Updates): void {
 		return this.getTable(collection).updateItem(id, updates);
 	}
 
-	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
+	deleteItem(collection: string, id: string): void {
 		return this.getTable(collection).deleteItem(id);
 	}
 
-	getQueryTime<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number | null {
+	getQueryTime(collection: string, constraints: ItemConstraints): number | null {
 		return this.getTable(collection).getQueryTime(constraints);
 	}
 
-	getQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): ItemArray<T[K]> {
+	getQuery(collection: string, constraints: ItemConstraints): ItemArray {
 		return this.getTable(collection).getQuery(constraints);
 	}
 
-	getQuerySequence<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): AsyncIterable<ItemArray<T[K]>> {
+	getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterable<ItemArray> {
 		return this.getTable(collection).getQuerySequence(constraints);
 	}
 
-	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, data: T[K]): number {
+	setQuery(collection: string, constraints: ItemConstraints, data: Data): number {
 		return this.getTable(collection).setQuery(constraints, data);
 	}
 
-	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>, updates: Updates<T[K]>): number {
+	updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): number {
 		return this.getTable(collection).updateQuery(constraints, updates);
 	}
 
-	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemConstraints<T[K]>): number {
+	deleteQuery(collection: string, constraints: ItemConstraints): number {
 		return this.getTable(collection).deleteQuery(constraints);
 	}
 }
 
-/**
- * An individual table of data.
- * - Fires with an array of string IDs.
- */
-export class MemoryTable<T extends Data> {
+/** An individual table of data. */
+export class MemoryTable<T extends Data = Data> {
 	/** Actual data in this table. */
 	protected readonly _data = new Map<string, ItemData<T>>();
 
@@ -149,7 +146,7 @@ export class MemoryTable<T extends Data> {
 		return value === null ? this.deleteItem(id) : this.setItem(id, value);
 	}
 
-	async *setItemValueSequence(id: string, sequence: AsyncIterable<ItemValue<T>>): AsyncIterable<ItemValue<T>> {
+	async *setItemValueSequence(id: string, sequence: AsyncIterable<ItemValue<T>>): AsyncIterable<ItemValue> {
 		for await (const value of sequence) {
 			this.setItemValue(id, value);
 			yield value;
