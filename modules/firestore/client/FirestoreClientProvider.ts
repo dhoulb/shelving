@@ -116,7 +116,7 @@ export class FirestoreClientProvider implements AsyncProvider {
 	async getItem(collection: string, id: string): Promise<ItemValue> {
 		return _getItemValue(await getDoc(firestoreDocument(this._firestore, collection, id)));
 	}
-	getItemSequence<K extends string>(collection: K, id: string): AsyncIterable<ItemValue> {
+	getItemSequence(collection: string, id: string): AsyncIterable<ItemValue> {
 		return new LazyDeferredSequence(({ resolve, reject }) =>
 			onSnapshot(
 				firestoreDocument(this._firestore, collection, id), //
@@ -141,7 +141,7 @@ export class FirestoreClientProvider implements AsyncProvider {
 	async getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
 		return _getItems(await getDocs(_getQuery(this._firestore, collection, constraints)));
 	}
-	getQuerySequence<K extends string>(collection: K, constraints: ItemConstraints): AsyncIterable<ItemArray> {
+	getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterable<ItemArray> {
 		return new LazyDeferredSequence(({ resolve, reject }) =>
 			onSnapshot(
 				_getQuery(this._firestore, collection, constraints), //
