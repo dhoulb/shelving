@@ -4,10 +4,9 @@
 import type { ImmutableArray } from "./array.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableSet } from "./set.js";
-import type { ImmutableObject } from "./object.js";
 
 /** Debug a random value as a string. */
-export function debug(value: unknown): string {
+export function debug(value: unknown, depth = 1): string {
 	if (value === null) return "null";
 	if (value === undefined) return "undefined";
 	if (typeof value === "boolean") return value ? "true" : "false";
@@ -18,10 +17,10 @@ export function debug(value: unknown): string {
 	if (typeof value === "object") {
 		if (value instanceof Date) return value.toISOString();
 		if (value instanceof Error) return value.toString();
-		if (value instanceof Array) return debugArray(value);
-		if (value instanceof Map) return debugMap(value);
-		if (value instanceof Set) return debugSet(value);
-		return debugObject(value as ImmutableObject);
+		if (value instanceof Array) return debugArray(value, depth);
+		if (value instanceof Map) return debugMap(value, depth);
+		if (value instanceof Set) return debugSet(value, depth);
+		return debugObject(value, depth);
 	}
 	return typeof value;
 }
@@ -33,33 +32,48 @@ const ESCAPE_LIST: { [key: string]: string } = { '"': '\\"', "\\": "\\\\", "\r":
 const _escapeChar = (char: string): string => ESCAPE_LIST[char] || `\\x${char.charCodeAt(0).toString(16).padStart(2, "00")}`;
 
 /** Debug an array. */
-export function debugArray(value: ImmutableArray): string {
+export function debugArray(value: ImmutableArray, depth = 1): string {
 	const prototype = Object.getPrototypeOf(value) as typeof value;
 	const name = prototype === Array.prototype ? "" : prototype.constructor.name || "";
-	return `${name ? `${name} ` : ""}${value.length ? `[\n\t${value.map(debug).join(",\n\t")}\n]` : "[]"}`;
+	const items = depth > 0 && value.length ? value.map(v => debug(v, depth - 1)).join(",\n\t") : "";
+	return `${name ? `${name} ` : ""}${value.length ? `[\n\t${items}\n]` : "[]"}`;
 }
 
 /** Debug a set. */
-export function debugSet(value: ImmutableSet): string {
+export function debugSet(value: ImmutableSet, depth = 1): string {
 	const prototype = Object.getPrototypeOf(value) as typeof value;
 	const name = prototype === Set.prototype ? "" : prototype.constructor.name || "Set";
-	return `${name}(value.size) ${value.size ? `{\n\t${Array.from(value).map(debug).join(",\n\t")}\n}` : "{}"}`;
+	const items =
+		depth > 0 && value.size
+			? Array.from(value)
+					.map(v => debug(v, depth - 1))
+					.join(",\n\t")
+			: "";
+	return `${name}(value.size) ${items ? `{\n\t${items}\n}` : "{}"}`;
 }
 
 /** Debug a map. */
-export function debugMap(value: ImmutableMap): string {
+export function debugMap(value: ImmutableMap, depth = 1): string {
 	const prototype = Object.getPrototypeOf(value) as typeof value;
 	const name = prototype === Map.prototype ? "" : prototype.constructor.name || "Map";
-	return `${name}(value.size) ${value.size ? `{\n\t${Array.from(value).map(_debugProp).join(",\n\t")}\n}` : "{}"}`;
+	const entries =
+		depth > 0 && value.size
+			? Array.from(value)
+					.map(([k, v]) => `${debug(k)}: ${debug(v, depth - 1)}`)
+					.join(",\n\t")
+			: "";
+	return `${name}(value.size) ${entries ? `{\n\t${entries}\n}` : "{}"}`;
 }
 
 /** Debug an object. */
-export function debugObject(value: ImmutableObject): string {
+export function debugObject(value: object, depth = 1): string {
 	const prototype = Object.getPrototypeOf(value) as typeof value;
 	const name = prototype === Object.prototype ? "" : prototype.constructor.name || "";
-	const props = Object.entries(value).map(_debugProp);
-	return `${name ? `${name} ` : ""}${props.length ? `{\n\t${props.join(",\n\t")}\n}` : "{}"}`;
+	const entries =
+		depth > 0
+			? Object.entries(value)
+					.map(([k, v]) => `${debug(k)}: ${debug(v, depth - 1)}`)
+					.join(",\n\t")
+			: "";
+	return `${name ? `${name} ` : ""}${entries ? `{\n\t${entries}\n}` : "{}"}`;
 }
-
-/** Debug a prop. */
-const _debugProp = ([key, value]: readonly [unknown, unknown]) => `${debug(key)}: ${debug(value)}`;
