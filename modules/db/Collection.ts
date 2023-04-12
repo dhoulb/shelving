@@ -34,17 +34,17 @@ abstract class BaseCollection<T extends Data = Data> {
 	abstract delete(id: string): void | Promise<void>;
 
 	/** Get an add change for this collection. */
-	getAdd(data: T): AddChange {
+	getAdd(data: T): AddChange<T> {
 		return { action: "ADD", collection: this.collection, data };
 	}
 
 	/** Get a set change for this collection. */
-	getSet(id: string, data: T): SetChange {
+	getSet(id: string, data: T): SetChange<T> {
 		return { action: "SET", collection: this.collection, id, data };
 	}
 
 	/** Get an update change for this collection. */
-	getUpdate(id: string, updates: Updates<T>): UpdateChange {
+	getUpdate(id: string, updates: Updates<T>): UpdateChange<T> {
 		return { action: "UPDATE", collection: this.collection, id, updates };
 	}
 

@@ -68,12 +68,12 @@ abstract class BaseItem<T extends Data = Data> implements AsyncIterable<ItemValu
 	/** Delete this item. */
 	abstract delete(): void | PromiseLike<void>;
 	/** Get a set change for this item. */
-	getSet(data: T): SetChange {
+	getSet(data: T): SetChange<T> {
 		return { action: "SET", collection: this.collection, id: this.id, data };
 	}
 
 	/** Get an update change for this item. */
-	getUpdate(updates: Updates<T>): UpdateChange {
+	getUpdate(updates: Updates<T>): UpdateChange<T> {
 		return { action: "UPDATE", collection: this.collection, id: this.id, updates };
 	}
 

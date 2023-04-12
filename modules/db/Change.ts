@@ -3,7 +3,6 @@ import type { ImmutableArray } from "../util/array.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
 import { Updates } from "../update/DataUpdate.js";
 import { notNullish, Nullish } from "../util/null.js";
-import { DeepIterable, flattenItems } from "../util/iterate.js";
 import { getItemConstraints } from "./Item.js";
 
 /** Change on a collection. */
@@ -13,23 +12,23 @@ export interface Change {
 }
 
 /** Add on an item. */
-export interface AddChange extends Change {
+export interface AddChange<T extends Data> extends Change {
 	readonly action: "ADD";
-	readonly data: Data;
+	readonly data: T;
 }
 
 /** Set on an item. */
-export interface SetChange extends Change {
+export interface SetChange<T extends Data = Data> extends Change {
 	readonly action: "SET";
 	readonly id: string;
-	readonly data: Data;
+	readonly data: T;
 }
 
 /** Update change on an item. */
-export interface UpdateChange extends Change {
+export interface UpdateChange<T extends Data = Data> extends Change {
 	readonly action: "UPDATE";
 	readonly id: string;
-	readonly updates: Updates;
+	readonly updates: Updates<T>;
 }
 
 /** Delete change on an item. */
@@ -39,20 +38,20 @@ export interface DeleteChange extends Change {
 }
 
 /** Set, update, or delete change on an item. */
-export type ItemChange = SetChange | UpdateChange | DeleteChange;
+export type ItemChange<T extends Data = Data> = SetChange<T> | UpdateChange<T> | DeleteChange;
 
 /** Array of item changes. */
 export type ItemChanges = ImmutableArray<ItemChange>;
 
 /** Write change on an item. */
-export type WriteChange = ItemChange | AddChange;
+export type WriteChange<T extends Data = Data> = ItemChange<T> | AddChange<T>;
 
 /** Array of write changes. */
 export type WriteChanges = ImmutableArray<WriteChange>;
 
 /** Apply a set of changes to a synchronous provider. */
-export function changeProvider(provider: Provider, ...changes: DeepIterable<Nullish<WriteChange>>[]): ItemChanges {
-	return Array.from(flattenItems(changes)).filter(notNullish).map(_changeItem, provider);
+export function changeProvider(provider: Provider, ...changes: Nullish<WriteChange>[]): ItemChanges {
+	return changes.filter(notNullish).map(_changeItem, provider);
 }
 function _changeItem(this: Provider, change: WriteChange): ItemChange {
 	const { action, collection } = change;
@@ -64,8 +63,8 @@ function _changeItem(this: Provider, change: WriteChange): ItemChange {
 }
 
 /** Apply a set of changes to an asynchronous provider. */
-export function changeAsyncProvider(provider: AsyncProvider, ...changes: DeepIterable<Nullish<WriteChange>>[]): Promise<ItemChanges> {
-	return Promise.all(Array.from(flattenItems(changes)).filter(notNullish).map(_changeAsyncItem, provider));
+export function changeAsyncProvider(provider: AsyncProvider, ...changes: Nullish<WriteChange>[]): Promise<ItemChanges> {
+	return Promise.all(changes.filter(notNullish).map(_changeAsyncItem, provider));
 }
 async function _changeAsyncItem(this: AsyncProvider, change: WriteChange): Promise<ItemChange> {
 	const { collection, action } = change;

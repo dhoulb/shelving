@@ -1,6 +1,5 @@
 import type { DataKey, Datas } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
-import type { DeepIterable } from "../util/iterate.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { FilterList } from "../constraint/FilterConstraint.js";
 import type { SortList } from "../constraint/SortConstraint.js";
@@ -25,7 +24,7 @@ abstract class BaseDatabase<T extends Datas> {
 	abstract item<K extends DataKey<T>>(collection: K, id: string): Item<T[K]> | AsyncItem<T[K]>;
 
 	/** Run a set of changes in this database. */
-	abstract change(...changes: DeepIterable<Nullish<WriteChange>>[]): ItemChanges | Promise<ItemChanges>;
+	abstract change(...changes: Nullish<WriteChange>[]): ItemChanges | Promise<ItemChanges>;
 
 	/** Get a document from a collection in this database. */
 	abstract get<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> | Promise<ItemValue<T[K]>>;
@@ -43,17 +42,17 @@ abstract class BaseDatabase<T extends Datas> {
 	abstract delete<K extends DataKey<T>>(collection: K, id: string): void | Promise<void>;
 
 	/** Get an add change for a collection in this database. */
-	getAdd<K extends DataKey<T>>(collection: K, data: T[K]): AddChange {
+	getAdd<K extends DataKey<T>>(collection: K, data: T[K]): AddChange<T[K]> {
 		return { action: "ADD", collection, data };
 	}
 
 	/** Get a set change for a collection in this database. */
-	getSet<K extends DataKey<T>>(collection: K, id: string, data: T[K]): SetChange {
+	getSet<K extends DataKey<T>>(collection: K, id: string, data: T[K]): SetChange<T[K]> {
 		return { action: "SET", collection, id, data };
 	}
 
 	/** Get an update change for a collection in this database. */
-	getUpdate<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): UpdateChange {
+	getUpdate<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): UpdateChange<T[K]> {
 		return { action: "UPDATE", collection, id, updates };
 	}
 
@@ -79,8 +78,8 @@ export class Database<T extends Datas = Datas> extends BaseDatabase<T> {
 	item<K extends DataKey<T>>(collection: K, id: string): Item<T[K]> {
 		return new Item<T[K]>(this.provider, collection, id);
 	}
-	change(...changes: DeepIterable<Nullish<WriteChange>>[]): ItemChanges {
-		return changeProvider(this.provider, changes);
+	change(...changes: Nullish<WriteChange>[]): ItemChanges {
+		return changeProvider(this.provider, ...changes);
 	}
 	get<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
 		return this.provider.getItem(collection, id) as ItemValue<T[K]>;
@@ -115,8 +114,8 @@ export class AsyncDatabase<T extends Datas = Datas> extends BaseDatabase<T> {
 	item<K extends DataKey<T>>(collection: K, id: string): AsyncItem<T[K]> {
 		return new AsyncItem<T[K]>(this.provider, collection, id);
 	}
-	change(...changes: DeepIterable<Nullish<WriteChange>>[]): Promise<ItemChanges> {
-		return changeAsyncProvider(this.provider, changes);
+	change(...changes: Nullish<WriteChange>[]): Promise<ItemChanges> {
+		return changeAsyncProvider(this.provider, ...changes);
 	}
 	get<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
 		return this.provider.getItem(collection, id) as Promise<ItemValue<T[K]>>;
