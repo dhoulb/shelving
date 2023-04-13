@@ -1,5 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
-import { BILLION, MILLION, NNBSP, TEN_THOUSAND, THOUSAND, TRILLION } from "./constants.js";
+import { NNBSP } from "./constants.js";
 
 /** Is a value a number? */
 export const isNumber = (value: unknown): value is number => typeof value === "number";
@@ -93,8 +93,7 @@ export const roundNumber = (num: number, precision = 0): number => Math.round(nu
  * - Better than `Math.trunc()` because it allows a `precision` argument.
  *
  * @param num The number to truncate.
- * @param precision Maximum number of digits shown after the decimal point (defaults to 10).
- *
+ * @param precision Maximum number of digits shown after the decimal point (defaults to 0).
  * @returns The number truncated to the specified precision.
  */
 export const truncateNumber = (num: number, precision = 0): number => Math.trunc(num * 10 ** precision) / 10 ** precision;
@@ -113,69 +112,30 @@ export function wrapNumber(num: number, min: number, max: number): number {
 	return num;
 }
 
+/** Options for `formatNumber()` and `formatRange()`. */
+export interface NumberOptions extends Intl.NumberFormatOptions {
+	roundingMode?: "ceil" | "floor" | "expand" | "trunc" | "halfCeil" | "halfFloor" | "halfExpand" | "halfTrunc" | "halfEven" | undefined;
+	roundingPriority?: "morePrecision" | "lessPrecision" | undefined;
+}
+
 /** Format a number (based on the user's browser language settings). */
-export function formatNumber(num: number, precision: number | null = null): string {
+export function formatNumber(num: number, options: NumberOptions = { maximumFractionDigits: 2 }): string {
 	if (Number.isNaN(num)) return "None";
 	if (!Number.isFinite(num)) return "∞";
-	return new Intl.NumberFormat(undefined, { minimumFractionDigits: precision ?? undefined, maximumFractionDigits: precision ?? 20 }).format(num);
+	return new Intl.NumberFormat(undefined, options as Intl.NumberFormatOptions | undefined).format(num);
 }
 
 /** Format a number range (based on the user's browser language settings). */
-export function formatRange(min: number, max: number, precision: number | null = null): string {
-	return `${formatNumber(min, precision)}–${formatNumber(max, precision)}`;
+export function formatRange(min: number, max: number, options?: NumberOptions): string {
+	return `${formatNumber(min, options)}–${formatNumber(max, options)}`;
 }
 
 /** Format a number with a short suffix, e.g. `1,000 kg` */
-export const formatQuantity = (num: number, abbr: string, precision?: number | null): string => `${formatNumber(num, precision)}${NNBSP}${abbr}`;
+export const formatQuantity = (num: number, abbr: string, options?: NumberOptions): string => `${formatNumber(num, options)}${NNBSP}${abbr}`;
 
 /** Format a number with a longer full-word suffix. */
-export function formatFullQuantity(num: number, singular: string, plural: string, precision?: number | null): string {
-	const qty = formatNumber(num, precision);
-	return `${qty} ${qty === "1" ? singular : plural}`;
-}
-
-/**
- * Cram a large whole numbers into a space efficient format, e.g. `14.7M`
- * - Improves glanceability.
- * - Keeps number of characters under five if possible.
- *
- * - Numbers over 100 trillion: `157T`
- * - Numbers over 10 trillion: `15.7T` (includes zero e.g. `40.0T` for consistency).
- * - Numbers over 1 trillion: `1.57T` (includes zeros e.g. `4.00T` for consistency).
- * - Numbers over 100 billion: `157B`
- * - Numbers over 10 billion: `15.7B` (includes zero e.g. `40.0B` for consistency).
- * - Numbers over 1 billion: `1.57B` (includes zeros e.g. `4.00B` for consistency).
- * - Numbers over 100 million: `157M`
- * - Numbers over 10 million: `15.7M` (includes zero e.g. `40.0M` for consistency).
- * - Numbers over 1 million: `1.57M` (includes zeros e.g. `4.00M` for consistency).
- * - Numbers over 100,000: `157K`
- * - Numbers over 10,000: `15.7K` (includes zero e.g. `14.0K` for consistency).
- * - Smaller numbers: `1570` and `157` and `15.7` and `1.6`
- *
- * @param num The number to format.
- * @param precision Maximum number of digits shown after the decimal point (defaults to 10, only used for numbers under 10,000).
- *
- * @returns The number formatted as a crammed string.
- */
-export function cramNumber(num: number): string {
-	const abs = Math.abs(num);
-	if (abs >= TRILLION) return `${_significance(num / TRILLION)}T`;
-	if (abs >= BILLION) return `${_significance(num / BILLION)}B`;
-	if (abs >= MILLION) return `${_significance(num / MILLION)}M`;
-	if (abs >= TEN_THOUSAND) return `${_significance(num / THOUSAND)}K`;
-	return truncateNumber(num, 2).toString();
-}
-function _significance(num: number): string {
-	const digits = num >= 100 ? 0 : num >= 10 ? 1 : 2;
-	return truncateNumber(num, digits).toFixed(digits);
-}
-
-/** Cram a number with a short suffix, e.g. `1.02M kg` */
-export const cramQuantity = (num: number, suffix: string): string => `${cramNumber(num)}${NNBSP}${suffix}`;
-
-/** Cram a number with a longer full-word suffix. */
-export function cramFullQuantity(num: number, singular: string, plural: string): string {
-	const qty = cramNumber(num);
+export function pluralizeQuantity(num: number, singular: string, plural: string, options?: NumberOptions): string {
+	const qty = formatNumber(num, options);
 	return `${qty} ${qty === "1" ? singular : plural}`;
 }
 
@@ -187,8 +147,15 @@ export function cramFullQuantity(num: number, singular: string, plural: string):
  */
 export const getPercent = (numerator: number, denumerator: number) => Math.max(0, Math.min(100, (100 / denumerator) * numerator));
 
-/** Format a percentage (combines `getPercent()` and `formatQuantity()` for convenience). */
-export const formatPercent = (numerator: number, denumerator: number, precision?: number): string => formatQuantity(getPercent(numerator, denumerator), "%", precision);
+/**
+ * Format a percentage (combines `getPercent()` and `formatQuantity()` for convenience).
+ * - Defaults to showing no decimal places.
+ * - Defaults to rounding closer to zero (so that 99.99% is shown as 99%).
+ *
+ * @param numerator Number representing the amount of progress.
+ * @param denumerator The number representing the whole amount.
+ */
+export const formatPercent = (numerator: number, denumerator: number, options?: NumberOptions): string => formatQuantity(getPercent(numerator, denumerator), "%", { maximumFractionDigits: 0, roundingMode: "trunc", ...options });
 
 /** Sum an iterable set of numbers and return the total. */
 export function sumNumbers(nums: Iterable<number>): number {

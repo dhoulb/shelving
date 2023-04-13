@@ -1,4 +1,4 @@
-import { formatNumber, roundStep, sumNumbers, getOptionalNumber, getRange, cramNumber, roundNumber, truncateNumber, boundNumber, wrapNumber, AssertionError } from "../index.js";
+import { formatNumber, roundStep, sumNumbers, getOptionalNumber, getRange, roundNumber, truncateNumber, boundNumber, wrapNumber, AssertionError } from "../index.js";
 
 test("roundNumber(): Works correctly", () => {
 	expect(roundNumber(123.456, 0)).toBe(123);
@@ -43,51 +43,7 @@ test("truncateNumber(): Works correctly", () => {
 test("formatNumber(): Works correctly", () => {
 	expect(formatNumber(123)).toBe("123");
 	expect(formatNumber(1234)).toBe("1,234");
-	expect(formatNumber(1234.0123456789)).toBe("1,234.0123456789");
-	expect(formatNumber(1234.0123)).toBe("1,234.0123");
-	expect(formatNumber(1234.000)).toBe("1,234"); // prettier-ignore
-	expect(formatNumber(1234.0001, 4)).toBe("1,234.0001");
-	expect(formatNumber(1234.0123456789, 3)).toBe("1,234.012");
-	expect(formatNumber(1234.0123456789, 5)).toBe("1,234.01235");
-	expect(formatNumber(1234.01234, 5)).toBe("1,234.01234");
-});
-test("cramNumber(): Works correctly", () => {
-	// General.
-	expect(cramNumber(0.01)).toBe("0.01");
-	expect(cramNumber(0.1)).toBe("0.1");
-	expect(cramNumber(1)).toBe("1");
-	expect(cramNumber(10)).toBe("10");
-	expect(cramNumber(100)).toBe("100");
-	expect(cramNumber(1_000)).toBe("1000");
-	expect(cramNumber(10_000)).toBe("10.0K");
-	expect(cramNumber(100_000)).toBe("100K");
-	expect(cramNumber(1_000_000)).toBe("1.00M");
-	expect(cramNumber(10_000_000)).toBe("10.0M");
-	expect(cramNumber(100_000_000)).toBe("100M");
-	expect(cramNumber(1_000_000_000)).toBe("1.00B");
-	expect(cramNumber(10_000_000_000)).toBe("10.0B");
-	expect(cramNumber(100_000_000_000)).toBe("100B");
-	expect(cramNumber(1_000_000_000_000)).toBe("1.00T");
-	expect(cramNumber(10_000_000_000_000)).toBe("10.0T");
-	expect(cramNumber(100_000_000_000_000)).toBe("100T");
-	// Edge cases.
-	expect(cramNumber(0.99)).toBe("0.99");
-	expect(cramNumber(0.9)).toBe("0.9");
-	expect(cramNumber(9)).toBe("9");
-	expect(cramNumber(99)).toBe("99");
-	expect(cramNumber(999)).toBe("999");
-	expect(cramNumber(9_999)).toBe("9999");
-	expect(cramNumber(99_999)).toBe("99.9K"); // Rounds down.
-	expect(cramNumber(999_999)).toBe("999K"); // Rounds down.
-	expect(cramNumber(9_999_999)).toBe("9.99M"); // Rounds down.
-	expect(cramNumber(99_999_999)).toBe("99.9M"); // Rounds down.
-	expect(cramNumber(999_999_999)).toBe("999M"); // Rounds down.
-	expect(cramNumber(9_999_999_999)).toBe("9.99B"); // Rounds down.
-	expect(cramNumber(99_999_999_999)).toBe("99.9B"); // Rounds down.
-	expect(cramNumber(999_999_999_999)).toBe("999B"); // Rounds down.
-	expect(cramNumber(9_999_999_999_999)).toBe("9.99T"); // Rounds down.
-	expect(cramNumber(99_999_999_999_999)).toBe("99.9T"); // Rounds down.
-	expect(cramNumber(999_999_999_999_999)).toBe("999T"); // Rounds down.
+	expect(formatNumber(1234.0)).toBe("1,234");
 });
 describe("roundStep()", () => {
 	test("Numbers are rounded correctly without step", () => {

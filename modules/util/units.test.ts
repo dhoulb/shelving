@@ -98,28 +98,28 @@ test("format() works correctly", () => {
 });
 test("format() precision", () => {
 	// Precision.
-	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111, 0)).toBe("1 km");
-	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111, 2)).toBe("1.11 km");
-	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111, 4)).toBe("1.1111 km");
-	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111, 6)).toBe("1.111100 km");
+	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0 })).toBe("1 km");
+	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe("1.11 km");
+	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111, { maximumFractionDigits: 4, minimumFractionDigits: 4 })).toBe("1.1111 km");
+	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111, { maximumFractionDigits: 6, minimumFractionDigits: 6 })).toBe("1.111100 km");
 
 	// No precision.
-	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111)).toBe("1.1111 km");
+	expect(getMapItem(LENGTH_UNITS, "kilometer").format(1.1111)).toBe("1.11 km");
 });
-test("formatFull() works correctly", () => {
-	expect(getMapItem(LENGTH_UNITS, "meter").formatFull(1)).toBe("1 meter");
-	expect(getMapItem(LENGTH_UNITS, "meter").formatFull(123)).toBe("123 meters");
-	expect(getMapItem(LENGTH_UNITS, "meter").formatFull(1234)).toBe("1,234 meters");
-	expect(getMapItem(LENGTH_UNITS, "foot").formatFull(1)).toBe("1 foot");
-	expect(getMapItem(LENGTH_UNITS, "foot").formatFull(123)).toBe("123 feet");
-	expect(getMapItem(LENGTH_UNITS, "foot").formatFull(1234)).toBe("1,234 feet");
-	expect(getMapItem(LENGTH_UNITS, "yard").formatFull(1)).toBe("1 yard");
-	expect(getMapItem(LENGTH_UNITS, "yard").formatFull(123)).toBe("123 yards");
-	expect(getMapItem(LENGTH_UNITS, "yard").formatFull(1234)).toBe("1,234 yards");
+test("pluralize() works correctly", () => {
+	expect(getMapItem(LENGTH_UNITS, "meter").pluralize(1)).toBe("1 meter");
+	expect(getMapItem(LENGTH_UNITS, "meter").pluralize(123)).toBe("123 meters");
+	expect(getMapItem(LENGTH_UNITS, "meter").pluralize(1234)).toBe("1,234 meters");
+	expect(getMapItem(LENGTH_UNITS, "foot").pluralize(1)).toBe("1 foot");
+	expect(getMapItem(LENGTH_UNITS, "foot").pluralize(123)).toBe("123 feet");
+	expect(getMapItem(LENGTH_UNITS, "foot").pluralize(1234)).toBe("1,234 feet");
+	expect(getMapItem(LENGTH_UNITS, "yard").pluralize(1)).toBe("1 yard");
+	expect(getMapItem(LENGTH_UNITS, "yard").pluralize(123)).toBe("123 yards");
+	expect(getMapItem(LENGTH_UNITS, "yard").pluralize(1234)).toBe("1,234 yards");
 });
-test("formatFull() precision", () => {
-	expect(getMapItem(LENGTH_UNITS, "kilometer").formatFull(1.1111, 0)).toBe("1 kilometer");
-	expect(getMapItem(LENGTH_UNITS, "kilometer").formatFull(1.1111, 2)).toBe("1.11 kilometers");
-	expect(getMapItem(LENGTH_UNITS, "kilometer").formatFull(1.1111, 4)).toBe("1.1111 kilometers");
-	expect(getMapItem(LENGTH_UNITS, "kilometer").formatFull(1.1111, 6)).toBe("1.111100 kilometers");
+test("pluralize() precision", () => {
+	expect(getMapItem(LENGTH_UNITS, "kilometer").pluralize(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0 })).toBe("1 kilometer");
+	expect(getMapItem(LENGTH_UNITS, "kilometer").pluralize(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe("1.11 kilometers");
+	expect(getMapItem(LENGTH_UNITS, "kilometer").pluralize(1.1111, { maximumFractionDigits: 4, minimumFractionDigits: 4 })).toBe("1.1111 kilometers");
+	expect(getMapItem(LENGTH_UNITS, "kilometer").pluralize(1.1111, { maximumFractionDigits: 6, minimumFractionDigits: 6 })).toBe("1.111100 kilometers");
 });

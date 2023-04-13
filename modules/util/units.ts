@@ -3,7 +3,7 @@ import { RequiredError } from "../error/RequiredError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
 import { getProps, ImmutableObject } from "./object.js";
 import { MapKey, ImmutableMap } from "./map.js";
-import { cramQuantity, formatFullQuantity, formatQuantity } from "./number.js";
+import { NumberOptions, pluralizeQuantity, formatQuantity } from "./number.js";
 
 /** Conversion from one unit to another (either an amount to multiple by, or a function to convert). */
 type Conversion = number | ((num: number) => number);
@@ -88,18 +88,13 @@ export class Unit<K extends string> {
 	}
 
 	/** Format an amount with a given unit of measure, e.g. `12 kg` or `29.5 l` */
-	format(amount: number, precision?: number | null): string {
-		return formatQuantity(amount, this.abbr, precision);
+	format(amount: number, options?: NumberOptions): string {
+		return formatQuantity(amount, this.abbr, options);
 	}
 
 	/** Format an amount with a given unit of measure, e.g. `12 kilograms` or `29.5 liters` or `1 degree` */
-	formatFull(amount: number, precision?: number | null): string {
-		return formatFullQuantity(amount, this.singular, this.plural, precision);
-	}
-
-	/** Cram an amount with a given unit of measure, e.g. `1.25M mi` */
-	cram(amount: number): string {
-		return cramQuantity(amount, this.abbr);
+	pluralize(amount: number, options?: NumberOptions): string {
+		return pluralizeQuantity(amount, this.singular, this.plural, options);
 	}
 }
 
