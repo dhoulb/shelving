@@ -14,9 +14,6 @@ type Conversions<T extends string> = { readonly [K in T]?: Conversion };
 /** Convert an amount using a `Conversion. */
 const _convert = (amount: number, conversion: Conversion): number => (typeof conversion === "function" ? conversion(amount) : conversion === 1 ? amount : amount * conversion);
 
-/** Get a `Unit` instance from a `UnitList` instance */
-// const _getUnit = <K extends string>(list: UnitList<K>, unit: K | Unit<K>): Unit<K> => (typeof unit === "string" ? getMapItem(list, unit) : unit);
-
 // Params for a unit.
 type UnitProps<T extends string> = {
 	/** Short abbreviation for this unit, e.g. `km` (defaults to first letter of `id`). */
@@ -25,8 +22,6 @@ type UnitProps<T extends string> = {
 	readonly singular?: string;
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `id`). */
 	readonly plural?: string;
-	/** Default precision for this unit (defaults to `null`). */
-	readonly precision?: number | null;
 	/** Conversions to other units (typically needs at least the base conversion, unless it's already the base unit). */
 	readonly to?: Conversions<T>;
 };
@@ -43,8 +38,6 @@ export class Unit<K extends string> {
 	public readonly singular: string;
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `singular` + "s"). */
 	public readonly plural: string;
-	/** Default precision for this unit (defaults to `null`). */
-	public readonly precision: number | null;
 
 	/** Title for this unit (uses format `abbr (plural)`, e.g. `fl oz (US fluid ounces)`) */
 	get title(): string {
@@ -57,13 +50,12 @@ export class Unit<K extends string> {
 		/** String key for this unit, e.g. `kilometer` */
 		key: K,
 		/** Props to configure this unit. */
-		{ abbr = key.slice(0, 1), singular = key.replace(/-/, " "), plural = `${singular}s`, precision = null, to }: UnitProps<K>,
+		{ abbr = key.slice(0, 1), singular = key.replace(/-/, " "), plural = `${singular}s`, to }: UnitProps<K>,
 	) {
 		this.key = key;
 		this.abbr = abbr;
 		this.singular = singular;
 		this.plural = plural;
-		this.precision = precision;
 		this._to = to;
 	}
 
@@ -96,12 +88,12 @@ export class Unit<K extends string> {
 	}
 
 	/** Format an amount with a given unit of measure, e.g. `12 kg` or `29.5 l` */
-	format(amount: number, precision: number | null = this.precision): string {
+	format(amount: number, precision?: number | null): string {
 		return formatQuantity(amount, this.abbr, precision);
 	}
 
 	/** Format an amount with a given unit of measure, e.g. `12 kilograms` or `29.5 liters` or `1 degree` */
-	formatFull(amount: number, precision: number | null = this.precision): string {
+	formatFull(amount: number, precision?: number | null): string {
 		return formatFullQuantity(amount, this.singular, this.plural, precision);
 	}
 
