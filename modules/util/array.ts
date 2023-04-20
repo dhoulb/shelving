@@ -150,7 +150,7 @@ export function deleteArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
 }
 
 /** Return an array of the unique items in an array. */
-export function uniqueArray<T>(input: Iterable<T>): ImmutableArray<T> {
+export function getUniqueArray<T>(input: Iterable<T>): ImmutableArray<T> {
 	const output: MutableArray<T> = [];
 	for (const item of input) if (!output.includes(item)) output.push(item);
 	return output;

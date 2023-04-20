@@ -2,7 +2,7 @@ import {
 	getNextItem,
 	getPrevItem,
 	shuffleArray,
-	uniqueArray,
+	getUniqueArray,
 	addArrayItem,
 	addArrayItems,
 	toggleArrayItems,
@@ -104,8 +104,8 @@ test("shuffleArray()", () => {
 	expect(shuffleArray(arr)).toContain(3);
 	expect(shuffleArray(arr)).not.toBe(arr);
 });
-test("uniqueArray()", () => {
-	expect(uniqueArray([1, 1, 1])).toEqual([1]);
+test("getUniqueArray()", () => {
+	expect(getUniqueArray([1, 1, 1])).toEqual([1]);
 });
 test("isArrayLength()", () => {
 	// Check maximum.
