@@ -4,9 +4,8 @@ import type { DataSchemas, DataSchema } from "../schema/DataSchema.js";
 import type { MutableDictionary } from "../util/dictionary.js";
 import { Updates, validateUpdates } from "../update/DataUpdate.js";
 import { validate } from "../util/validate.js";
-import { Feedback } from "../feedback/Feedback.js";
+import { isFeedback } from "../feedback/Feedback.js";
 import { ValidationError } from "../error/ValidationError.js";
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
 import { Sourceable } from "../util/source.js";
 import { Provider, AsyncProvider } from "./Provider.js";
 
@@ -108,7 +107,8 @@ function _validateItem<T extends Data>(collection: string, unsafeEntity: ItemVal
 	try {
 		return { ...validate(unsafeEntity, schema), id: unsafeEntity.id };
 	} catch (thrown) {
-		throw thrown instanceof Feedback ? new ValidationError(`Invalid data for "${collection}"`, thrown) : thrown;
+		if (!isFeedback(thrown)) throw thrown;
+		throw new ValidationError(`Invalid data for "${collection}"`, unsafeEntity);
 	}
 }
 
@@ -118,15 +118,15 @@ function _validateItems<T extends Data>(collection: string, unsafeEntities: Item
 }
 function* _yieldValidItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): Iterable<ItemData<T>> {
 	let invalid = false;
-	const details: MutableDictionary<Feedback> = {};
+	const details: MutableDictionary<string> = {};
 	for (const unsafeEntity of unsafeEntities) {
 		try {
 			yield { ...validate(unsafeEntity, schema), id: unsafeEntity.id };
 		} catch (thrown) {
-			if (!(thrown instanceof Feedback)) throw thrown;
+			if (!isFeedback(thrown)) throw thrown;
 			invalid = true;
-			details[unsafeEntity.id] = thrown;
+			details[unsafeEntity.id] = thrown.message;
 		}
 	}
-	if (invalid) throw new ValidationError(`Invalid data for "${collection}"`, new InvalidFeedback("Invalid items", details));
+	if (invalid) throw new ValidationError(`Invalid data for "${collection}"`, details);
 }
