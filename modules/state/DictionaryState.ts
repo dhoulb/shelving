@@ -1,5 +1,6 @@
+import { withProp } from "../util/object.js";
 import { DictionaryItem, ImmutableDictionary, omitDictionaryItems } from "../util/dictionary.js";
-import { Transformers, transformDictionary } from "../util/transform.js";
+import { Transformer, Transformers, transform, transformDictionary } from "../util/transform.js";
 import { State } from "./State.js";
 
 /** State that stores a dictionary object and has additional methods to help with that. */
@@ -21,6 +22,22 @@ export class DictionaryState<T> extends State<ImmutableDictionary<T>> implements
 	/** Remove a named entry from this object. */
 	delete(...keys: string[]): void {
 		this.set(omitDictionaryItems(this.value, ...keys));
+	}
+
+	/** Update a single named prop in this data. */
+	getItem(name: string): T | undefined {
+		return this.value[name];
+	}
+
+	/** Update a single named prop in this data. */
+	setItem(name: string, value: T): void {
+		this.set(withProp(this.value, name, value));
+	}
+
+	/** Update a single named prop in this data. */
+	updateItem(name: string, update: Transformer<T | undefined, T>): void {
+		const value = this.value;
+		this.set(withProp(value, name, transform(value[name], update)));
 	}
 
 	/** Iterate over the entries of the object. */
