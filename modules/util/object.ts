@@ -126,7 +126,7 @@ export function withProp<T extends ImmutableObject, K extends keyof T>(input: T,
 }
 
 /** Set several props on an object (immutably) and return a new object including those props. */
-export function withProps<T>(input: T, props: Partial<T>): T;
+export function withProps<T extends ImmutableObject>(input: T, props: Partial<T>): T;
 export function withProps<T extends ImmutableObject>(input: T, props: T | Partial<T> | Iterable<ObjectProp<T>>): T;
 export function withProps<T extends ImmutableObject>(input: T, props: T | Partial<T> | Iterable<ObjectProp<T>>): T {
 	for (const [k, v] of getProps(props)) if (input[k] !== v) return { __proto__: getPrototype(input), ...input, ...props };
