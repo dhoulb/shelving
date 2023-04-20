@@ -1,4 +1,4 @@
-import { InvalidFeedback, Validator, StringSchema, DataSchema, DATA, BOOLEAN, NUMBER, STRING, getFeedbackMessages, Feedback } from "../index.js";
+import { Feedback, Validator, StringSchema, DataSchema, DATA, BOOLEAN, NUMBER, STRING, Feedbacks } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -31,15 +31,15 @@ describe("validate()", () => {
 	});
 	test("Non-objects throw error", () => {
 		const schema = new DataSchema({ props: {} });
-		expect(() => schema.validate("abc")).toThrow(InvalidFeedback);
-		expect(() => schema.validate(123)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(true)).toThrow(InvalidFeedback);
+		expect(() => schema.validate("abc")).toThrow(Feedback);
+		expect(() => schema.validate(123)).toThrow(Feedback);
+		expect(() => schema.validate(true)).toThrow(Feedback);
 	});
 	test("Falsy values are invalid", () => {
 		const schema = new DataSchema({ props: {} });
-		expect(() => schema.validate(0)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(null)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(false)).toThrow(InvalidFeedback);
+		expect(() => schema.validate(0)).toThrow(Feedback);
+		expect(() => schema.validate(null)).toThrow(Feedback);
+		expect(() => schema.validate(false)).toThrow(Feedback);
 	});
 });
 describe("options.value", () => {
@@ -100,22 +100,24 @@ describe("options.props", () => {
 		).toEqual({ num: 123, str: "abcdef" });
 	});
 	test("Objects with errors in subschemas returns Invalids", () => {
+		const data = { dogs: "abc", turtles: 10, cats: null };
+		const schema = DATA({
+			dogs: NUMBER,
+			turtles: NUMBER,
+			cats: NUMBER,
+		});
 		try {
-			const schema = new DataSchema({
-				props: {
-					dogs: NUMBER,
-					turtles: NUMBER,
-					cats: NUMBER,
-				},
-			});
-			expect(schema.validate({ dogs: "abc", turtles: 10, cats: null })).toBe("Never");
+			expect(schema.validate(data)).toBe("Never");
 		} catch (invalid: unknown) {
-			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			expect((invalid as InvalidFeedback).value).toEqual(
-				new Map<string, unknown>([
-					["dogs", new Feedback("Must be number", { value: "abc" })], //
-					["cats", new Feedback("Must be number", { value: null })],
-				]),
+			expect(invalid).toBeInstanceOf(Feedbacks);
+			expect(invalid).toEqual(
+				new Feedbacks(
+					{
+						dogs: new Feedback("Must be number", "abc"),
+						cats: new Feedback("Must be number", null),
+					},
+					data,
+				),
 			);
 		}
 	});

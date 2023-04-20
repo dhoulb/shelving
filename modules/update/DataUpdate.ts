@@ -1,5 +1,6 @@
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { Feedbacks } from "../feedback/Feedbacks.js";
+import { MutableDictionary } from "../index.js";
 import { DataSchema } from "../schema/DataSchema.js";
 import { Data, DataKey, DataProp, getDataProps } from "../util/data.js";
 import { isNullish, Nullish } from "../util/null.js";
@@ -20,10 +21,11 @@ export type Updates<T extends Data = Data> = { readonly [K in keyof T]?: T[K] | 
  * Validate a set of updates against a set of validators.
  */
 export function validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>): Updates<T> {
-	return Object.fromEntries(_validateUpdates(unsafeUpdates, validators)) as Updates<T>;
+	return Object.fromEntries(validateUpdateProps(unsafeUpdates, validators)) as Updates<T>;
 }
-function* _validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>): Iterable<DataProp<Updates<T>>> {
-	const feedbacks = new Map<string, Feedback>();
+function* validateUpdateProps<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>): Iterable<DataProp<Updates<T>>> {
+	let valid = true;
+	const feedbacks: MutableDictionary<Feedback> = {};
 	for (const [key, validator] of getDataProps(validators)) {
 		const unsafeUpdate = unsafeUpdates[key];
 		if (unsafeUpdate !== undefined) {
@@ -31,11 +33,12 @@ function* _validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators
 				yield [key, unsafeUpdate instanceof Update ? unsafeUpdate.validate(validator) : validate(unsafeUpdate, validator)];
 			} catch (thrown) {
 				if (!isFeedback(thrown)) throw thrown;
-				feedbacks.set(key, thrown);
+				feedbacks[key] = thrown;
+				valid = false;
 			}
 		}
 	}
-	if (feedbacks.size) throw new InvalidFeedback("Invalid updates", feedbacks);
+	if (!valid) throw new Feedbacks(feedbacks, unsafeUpdates);
 }
 
 /** Update data using a set of updates. */

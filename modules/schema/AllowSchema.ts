@@ -1,7 +1,7 @@
 import type { Entry } from "../util/entry.js";
 import { getString } from "../util/string.js";
 import { getMap, ImmutableMap, isMapKey, PossibleMap, PossibleStringMap } from "../util/map.js";
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { getFirstItem } from "../util/array.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
@@ -19,9 +19,9 @@ export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>
 		this.allow = getMap(allow);
 		this.value = getFirstItem(this.allow.keys());
 	}
-	validate(value: unknown = this.value): K {
-		if (isMapKey(this.allow, value)) return value;
-		throw new InvalidFeedback("Unknown value", { value });
+	validate(unsafeValue: unknown = this.value): K {
+		if (isMapKey(this.allow, unsafeValue)) return unsafeValue;
+		throw new Feedback("Unknown value", unsafeValue);
 	}
 
 	/** Iterate over the the allowed options in `[key, value]` format. */
@@ -40,8 +40,8 @@ export class AllowStringSchema<K extends string, T> extends AllowSchema<K, T> {
 	constructor({ allow, ...options }: AllowStringSchemaOptions<K, T>) {
 		super({ allow: getMap(allow), ...options });
 	}
-	validator(value: unknown = this.value): K {
-		return super.validate(getString(value));
+	validator(unsafeValue: unknown = this.value): K {
+		return super.validate(getString(unsafeValue));
 	}
 }
 

@@ -19,9 +19,9 @@ export class ColorSchema extends StringSchema {
 	override readonly max = 7;
 	override readonly multiline = false;
 	override readonly match = R_MATCH;
-	override sanitize(uncleanString: string): string {
-		const cleanDigits = uncleanString.toUpperCase().replace(R_STRIP, "");
-		return cleanDigits ? `#${cleanDigits.slice(0, 6)}` : "";
+	override sanitize(insaneString: string): string {
+		const saneString = insaneString.toUpperCase().replace(R_STRIP, "");
+		return saneString ? `#${saneString.slice(0, 6)}` : "";
 	}
 }
 

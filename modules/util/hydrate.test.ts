@@ -1,4 +1,4 @@
-import { UPDATE_HYDRATIONS, Increment, FEEDBACK_HYDRATIONS, SuccessFeedback, InvalidFeedback, dehydrate, hydrate, ImmutableObject, Feedback } from "../index.js";
+import { UPDATE_HYDRATIONS, Increment, FEEDBACK_HYDRATIONS, Feedback, dehydrate, hydrate } from "../index.js";
 
 const HYDRATIONS = {
 	...UPDATE_HYDRATIONS,
@@ -16,9 +16,9 @@ test("hydrate(): Works correctly with class instances", () => {
 	expect(original1).toEqual(hydrated1);
 
 	// Deep.
-	const original2 = new SuccessFeedback("abc", {
-		invalid: new InvalidFeedback("def"),
-		success: new SuccessFeedback("def"),
+	const original2 = new Feedback("abc", {
+		invalid: new Feedback("def"),
+		success: new Feedback("def"),
 		map: new Map([
 			["a", 1],
 			["b", 2],
@@ -28,7 +28,7 @@ test("hydrate(): Works correctly with class instances", () => {
 	});
 	const dehydrated2 = dehydrate(original2, HYDRATIONS) as typeof original2;
 	const hydrated2 = hydrate(dehydrated2, HYDRATIONS) as typeof original2;
-	expect(hydrated2).toBeInstanceOf(SuccessFeedback);
+	expect(hydrated2).toBeInstanceOf(Feedback);
 	expect(original2).not.toBe(hydrated2);
 	expect(original2).toEqual(hydrated2);
 	expect(original2.value.invalid).not.toBe(hydrated2.value.invalid);
@@ -50,9 +50,9 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 	const original2 = [
 		"abc",
 		123,
-		new SuccessFeedback("abc", {
-			invalid: new InvalidFeedback("def"),
-			success: new SuccessFeedback("def"),
+		new Feedback("abc", {
+			invalid: new Feedback("def"),
+			success: new Feedback("def"),
 		}),
 		new Map([
 			["a", 1],
@@ -63,7 +63,7 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 	] as const;
 	const dehydrated2 = dehydrate(original2, HYDRATIONS) as typeof original2;
 	const hydrated2 = hydrate(dehydrated2, HYDRATIONS) as typeof original2;
-	expect(hydrated2[2]).toBeInstanceOf(SuccessFeedback);
+	expect(hydrated2[2]).toBeInstanceOf(Feedback);
 	expect(hydrated2[3]).toBeInstanceOf(Map);
 	expect(hydrated2[4]).toBeInstanceOf(Set);
 	expect(hydrated2[5]).toBeInstanceOf(Date);
@@ -93,9 +93,9 @@ test("hydrate(): Works correctly with plain objects of objects", () => {
 	// Deep.
 	const original2 = {
 		str: "abc",
-		feedback: new SuccessFeedback("abc", {
-			invalid: new InvalidFeedback("def"),
-			success: new SuccessFeedback("def"),
+		feedback: new Feedback("abc", {
+			invalid: new Feedback("def"),
+			success: new Feedback("def"),
 		}),
 		num: 123,
 		map: new Map([
@@ -108,7 +108,7 @@ test("hydrate(): Works correctly with plain objects of objects", () => {
 	const dehydrated2 = dehydrate(original2, HYDRATIONS) as typeof original2;
 	expect(dehydrated2).not.toBe(original2);
 	const hydrated2 = hydrate(dehydrated2, HYDRATIONS) as typeof original2;
-	expect(hydrated2.feedback).toBeInstanceOf(SuccessFeedback);
+	expect(hydrated2.feedback).toBeInstanceOf(Feedback);
 	expect(original2).toEqual(hydrated2);
 	expect(original2).not.toBe(hydrated2);
 	expect(original2.map).not.toBe(hydrated2.map);

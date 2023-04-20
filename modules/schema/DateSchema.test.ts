@@ -1,4 +1,4 @@
-import { InvalidFeedback, getYMD, DateSchema, OPTIONAL_DATE, DATE, Schema } from "../index.js";
+import { Feedback, getYMD, DateSchema, OPTIONAL_DATE, DATE, Schema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -42,22 +42,22 @@ describe("validate()", () => {
 		expect(schema.validate("1995-11-18")).toBe("1995-11-18");
 	});
 	test("Invalid strings are invalid", () => {
-		expect(() => schema.validate("abc")).toThrow(InvalidFeedback);
-		expect(() => schema.validate("7 1995")).toThrow(InvalidFeedback);
+		expect(() => schema.validate("abc")).toThrow(Feedback);
+		expect(() => schema.validate("7 1995")).toThrow(Feedback);
 	});
 	test("Numbers are converted to YMD date strings", () => {
 		expect(schema.validate(0)).toEqual("1970-01-01");
 		expect(schema.validate(1530586357000)).toEqual("2018-07-03");
 	});
 	test("Infinite numbers are invalid", () => {
-		expect(() => schema.validate(Infinity)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(-Infinity)).toThrow(InvalidFeedback);
+		expect(() => schema.validate(Infinity)).toThrow(Feedback);
+		expect(() => schema.validate(-Infinity)).toThrow(Feedback);
 	});
 	test("Invalid values are invalid", () => {
-		expect(() => schema.validate(true)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(false)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(null)).toThrow(InvalidFeedback);
-		expect(() => schema.validate("")).toThrow(InvalidFeedback);
+		expect(() => schema.validate(true)).toThrow(Feedback);
+		expect(() => schema.validate(false)).toThrow(Feedback);
+		expect(() => schema.validate(null)).toThrow(Feedback);
+		expect(() => schema.validate("")).toThrow(Feedback);
 	});
 });
 describe("options.value", () => {
@@ -78,22 +78,22 @@ describe("options.min", () => {
 	test("Date outside minimum is invalid", () => {
 		const schema1 = new DateSchema({ min: new Date("2016") });
 		expect(schema1.validate("2016")).toBe("2016-01-01");
-		expect(() => schema1.validate("2015")).toThrow(InvalidFeedback);
+		expect(() => schema1.validate("2015")).toThrow(Feedback);
 		const schema2 = new DateSchema({ min: "2016-01-01" });
 		expect(schema2.validate("2016")).toBe("2016-01-01");
-		expect(() => schema2.validate("2015")).toThrow(InvalidFeedback);
+		expect(() => schema2.validate("2015")).toThrow(Feedback);
 		const schema3 = new DateSchema({ min: new Date(1530586357001) });
 		expect(schema3.validate(1530586357001)).toBe("2018-07-03");
-		expect(() => schema3.validate(1530586357000)).toThrow(InvalidFeedback);
+		expect(() => schema3.validate(1530586357000)).toThrow(Feedback);
 	});
 });
 describe("options.max", () => {
 	test("Date outside maximum is invalid", () => {
 		const schema1 = new DateSchema({ max: new Date("2016") });
 		expect(schema1.validate("2016")).toBe("2016-01-01");
-		expect(() => schema1.validate("2017")).toThrow(InvalidFeedback);
+		expect(() => schema1.validate("2017")).toThrow(Feedback);
 		const schema2 = new DateSchema({ max: new Date(1530586357000) });
 		expect(schema2.validate(1530586357000)).toBe("2018-07-03");
-		expect(() => schema2.validate(1530586357001)).toThrow(InvalidFeedback);
+		expect(() => schema2.validate(1530586357001)).toThrow(Feedback);
 	});
 });

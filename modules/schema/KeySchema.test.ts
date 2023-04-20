@@ -1,4 +1,4 @@
-import { InvalidFeedback, KeySchema, Schema, OPTIONAL_KEY, KEY } from "../index.js";
+import { Feedback, KeySchema, Schema, OPTIONAL_KEY, KEY } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -32,14 +32,14 @@ describe("validate()", () => {
 		expect(schema.validate(1234)).toBe("1234");
 	});
 	test("Non-strings are invalid", () => {
-		expect(() => schema.validate([])).toThrow(InvalidFeedback);
-		expect(() => schema.validate({})).toThrow(InvalidFeedback);
-		expect(() => schema.validate(true)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(null)).toThrow(InvalidFeedback);
+		expect(() => schema.validate([])).toThrow(Feedback);
+		expect(() => schema.validate({})).toThrow(Feedback);
+		expect(() => schema.validate(true)).toThrow(Feedback);
+		expect(() => schema.validate(null)).toThrow(Feedback);
 	});
 	test("Empty strings are required", () => {
-		expect(() => schema.validate(undefined)).toThrow(InvalidFeedback);
-		expect(() => schema.validate("")).toThrow(InvalidFeedback);
+		expect(() => schema.validate(undefined)).toThrow(Feedback);
+		expect(() => schema.validate("")).toThrow(Feedback);
 	});
 });
 describe("options.value", () => {

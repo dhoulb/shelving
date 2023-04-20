@@ -1,4 +1,4 @@
-import { InvalidFeedback, NumberSchema, Schema, NUMBER, OPTIONAL_NUMBER } from "../index.js";
+import { Feedback, NumberSchema, Schema, NUMBER, OPTIONAL_NUMBER } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -40,18 +40,18 @@ describe("validate()", () => {
 		expect(Object.is(schema.validate(-0), -0)).toBe(false);
 	});
 	test("Infinity returns invalid", () => {
-		expect(() => schema.validate(Infinity)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(-Infinity)).toThrow(InvalidFeedback);
+		expect(() => schema.validate(Infinity)).toThrow(Feedback);
+		expect(() => schema.validate(-Infinity)).toThrow(Feedback);
 	});
 	test("Non-number strings are invalid", () => {
-		expect(() => schema.validate("abc")).toThrow(InvalidFeedback);
+		expect(() => schema.validate("abc")).toThrow(Feedback);
 	});
 	test("Non-numbers are invalid", () => {
-		expect(() => schema.validate(null)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(true)).toThrow(InvalidFeedback);
-		expect(() => schema.validate([])).toThrow(InvalidFeedback);
-		expect(() => schema.validate({})).toThrow(InvalidFeedback);
-		expect(() => schema.validate(() => {})).toThrow(InvalidFeedback);
+		expect(() => schema.validate(null)).toThrow(Feedback);
+		expect(() => schema.validate(true)).toThrow(Feedback);
+		expect(() => schema.validate([])).toThrow(Feedback);
+		expect(() => schema.validate({})).toThrow(Feedback);
+		expect(() => schema.validate(() => {})).toThrow(Feedback);
 	});
 });
 describe("options.value", () => {
@@ -74,7 +74,7 @@ describe("options.min", () => {
 	test("Min is checked correctly", () => {
 		const schema = new NumberSchema({ min: 100 });
 		expect(schema.min).toBe(100);
-		expect(() => schema.validate(99)).toThrow(InvalidFeedback);
+		expect(() => schema.validate(99)).toThrow(Feedback);
 		expect(schema.validate(100)).toBe(100);
 	});
 });
@@ -86,7 +86,7 @@ describe("options.max", () => {
 	test("Max is checked correctly", () => {
 		const schema = new NumberSchema({ max: 100 });
 		expect(schema.max).toBe(100);
-		expect(() => schema.validate(101)).toThrow(InvalidFeedback);
+		expect(() => schema.validate(101)).toThrow(Feedback);
 		expect(schema.validate(100)).toBe(100);
 	});
 });

@@ -1,4 +1,4 @@
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { getOptionalURL } from "../util/url.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema, StringSchemaOptions } from "./StringSchema.js";
@@ -28,12 +28,12 @@ export class LinkSchema extends StringSchema {
 	}
 	// Override to clean the URL using the builtin `URL` class and check the schemes and hosts against the whitelists.
 	override validate(unsafeValue: unknown): string {
-		const string = super.validate(unsafeValue);
-		const url = getOptionalURL(super.sanitize(string));
-		if (!url) throw new InvalidFeedback(string ? "Invalid format" : "Required", { value: string });
-		if (!this.schemes.includes(url.protocol)) throw new InvalidFeedback(`Scheme "${url.protocol}" is not allowed`, { value: string });
-		if (this.hosts && !this.hosts.includes(url.host)) throw new InvalidFeedback(`Domain "${url.host}" is not allowed`, { value: string });
-		return url.href;
+		const unsafeString = super.validate(unsafeValue);
+		const optionalURL = getOptionalURL(super.sanitize(unsafeString));
+		if (!optionalURL) throw new Feedback(unsafeString ? "Invalid format" : "Required", unsafeString);
+		if (!this.schemes.includes(optionalURL.protocol)) throw new Feedback(`Scheme "${optionalURL.protocol}" is not allowed`, unsafeString);
+		if (this.hosts && !this.hosts.includes(optionalURL.host)) throw new Feedback(`Domain "${optionalURL.host}" is not allowed`, unsafeString);
+		return optionalURL.href;
 	}
 }
 

@@ -1,5 +1,5 @@
 import { sanitizeLines, sanitizeString } from "../util/string.js";
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
@@ -58,13 +58,13 @@ export class StringSchema extends Schema<string> {
 		this.multiline = multiline;
 	}
 	override validate(unsafeValue: unknown = this.value): string {
-		const unsafeString = typeof unsafeValue === "number" ? unsafeValue.toString() : unsafeValue;
-		if (typeof unsafeString !== "string") throw new InvalidFeedback("Must be string", { value: unsafeValue });
-		const safeString = this.sanitize(unsafeString);
-		if (safeString.length < this.min) throw new InvalidFeedback(safeString ? `Minimum ${this.min} characters` : "Required", { value: safeString });
-		if (safeString.length > this.max) throw new InvalidFeedback(`Maximum ${this.max} characters`, { value: safeString });
-		if (this.match && !this.match.test(safeString)) throw new InvalidFeedback(safeString ? "Invalid format" : "Required", { value: safeString });
-		return safeString;
+		const possibleString = typeof unsafeValue === "number" ? unsafeValue.toString() : unsafeValue;
+		if (typeof possibleString !== "string") throw new Feedback("Must be string", unsafeValue);
+		const saneString = this.sanitize(possibleString);
+		if (saneString.length < this.min) throw new Feedback(saneString ? `Minimum ${this.min} characters` : "Required", saneString);
+		if (saneString.length > this.max) throw new Feedback(`Maximum ${this.max} characters`, saneString);
+		if (this.match && !this.match.test(saneString)) throw new Feedback(saneString ? "Invalid format" : "Required", saneString);
+		return saneString;
 	}
 
 	/**
@@ -72,8 +72,8 @@ export class StringSchema extends Schema<string> {
 	 * - Might be empty string if the string contained only invalid characters.
 	 * - Applies `options.sanitizer` too (if it's set).
 	 */
-	sanitize(uncleanString: string): string {
-		return this.sanitizer ? this.sanitizer(uncleanString) : this.multiline ? sanitizeLines(uncleanString) : sanitizeString(uncleanString);
+	sanitize(insaneString: string): string {
+		return this.sanitizer ? this.sanitizer(insaneString) : this.multiline ? sanitizeLines(insaneString) : sanitizeString(insaneString);
 	}
 }
 

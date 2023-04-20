@@ -13,8 +13,8 @@ export class SlugSchema extends StringSchema {
 	override readonly multiline = false;
 	override readonly min = 2;
 	override readonly max = 32;
-	override sanitize(unsafeString: string): string {
-		return getSlug(unsafeString);
+	override sanitize(insaneString: string): string {
+		return getSlug(insaneString);
 	}
 }
 

@@ -1,4 +1,4 @@
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { roundStep } from "../util/number.js";
 import { PossibleTime, getOptionalTime, Time, PossibleOptionalTime } from "../util/time.js";
 import { OPTIONAL } from "./OptionalSchema.js";
@@ -30,12 +30,12 @@ export class TimeSchema extends Schema<string> {
 		this.step = step;
 	}
 	override validate(unsafeValue: unknown = this.value): string {
-		const unsafeTime = getOptionalTime(unsafeValue);
-		if (!unsafeTime) throw new InvalidFeedback(unsafeValue ? "Invalid time" : "Required", { value: unsafeValue });
-		const safeTime = typeof this.step === "number" ? new Time(roundStep(unsafeTime.time, this.step)) : unsafeTime;
-		if (this.max && safeTime > this.max) throw new InvalidFeedback(`Maximum ${this.max.format()}`, { value: safeTime });
-		if (this.min && safeTime < this.min) throw new InvalidFeedback(`Minimum ${this.min.format()}`, { value: safeTime });
-		return safeTime.long;
+		const optionalTime = getOptionalTime(unsafeValue);
+		if (!optionalTime) throw new Feedback(unsafeValue ? "Invalid time" : "Required", unsafeValue);
+		const roundedTime = typeof this.step === "number" ? new Time(roundStep(optionalTime.time, this.step)) : optionalTime;
+		if (this.max && roundedTime > this.max) throw new Feedback(`Maximum ${this.max.format()}`, roundedTime);
+		if (this.min && roundedTime < this.min) throw new Feedback(`Minimum ${this.min.format()}`, roundedTime);
+		return roundedTime.long;
 	}
 }
 

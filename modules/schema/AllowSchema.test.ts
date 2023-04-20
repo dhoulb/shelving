@@ -1,4 +1,4 @@
-import { ALLOW, AllowSchema, AllowStringSchema, ALLOW_STRING, InvalidFeedback, Schema } from "../index.js";
+import { ALLOW, AllowSchema, AllowStringSchema, ALLOW_STRING, Feedback, Schema } from "../index.js";
 
 test("TypeScript", () => {
 	// String object options.
@@ -28,9 +28,9 @@ test("Value is allowed if it exists in object options", () => {
 });
 test("Invalid if value doesn't exist in object options", () => {
 	const schema1 = new AllowStringSchema({ allow: { a: "A", b: "B", c: "C" } });
-	expect(() => schema1.validate("d")).toThrow(InvalidFeedback);
+	expect(() => schema1.validate("d")).toThrow(Feedback);
 	const schema2 = new AllowStringSchema({ allow: { 1: "A", 2: "B", 3: "C" } });
-	expect(() => schema2.validate(2)).toThrow(InvalidFeedback); // Must be string.
+	expect(() => schema2.validate(2)).toThrow(Feedback); // Must be string.
 });
 test("Value is allowed if it exists in map options", () => {
 	const schema1 = new AllowSchema({
@@ -58,7 +58,7 @@ test("Invalid if value doesn't exist in map options", () => {
 			["c", "C"],
 		]),
 	});
-	expect(() => schema1.validate("d")).toThrow(InvalidFeedback);
+	expect(() => schema1.validate("d")).toThrow(Feedback);
 	const schema2 = new AllowSchema({
 		allow: new Map([
 			[1, "A"],
@@ -66,5 +66,5 @@ test("Invalid if value doesn't exist in map options", () => {
 			[3, "C"],
 		]),
 	});
-	expect(() => schema2.validate(4)).toThrow(InvalidFeedback);
+	expect(() => schema2.validate(4)).toThrow(Feedback);
 });

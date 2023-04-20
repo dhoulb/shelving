@@ -16,11 +16,11 @@ export class PhoneSchema extends StringSchema {
 	override readonly match = R_MATCH;
 	override readonly min = 1;
 	override readonly max: number = 16; // Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
-	override sanitize(str: string): string {
+	override sanitize(insaneString: string): string {
 		// Strip characters that aren't 0-9 or `+` plus (including whitespace).
-		const digits = str.replace(/[^0-9+]/g, "");
+		const saneString = insaneString.replace(/[^0-9+]/g, "");
 		// Allow `+` plus only if it's first character.
-		return digits.slice(0, 1) + digits.slice(1).replace(/[^0-9]/g, "");
+		return saneString.slice(0, 1) + saneString.slice(1).replace(/[^0-9]/g, "");
 	}
 }
 

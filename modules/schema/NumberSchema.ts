@@ -1,5 +1,5 @@
 import { formatNumber, getOptionalNumber, roundStep } from "../util/number.js";
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { Schema, SchemaOptions } from "./Schema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 
@@ -25,12 +25,12 @@ export class NumberSchema extends Schema<number> {
 		this.step = step;
 	}
 	override validate(unsafeValue: unknown = this.value): number {
-		const unsafeNumber = getOptionalNumber(unsafeValue);
-		if (typeof unsafeNumber !== "number") throw new InvalidFeedback("Must be number", { value: unsafeValue });
-		const safeNumber = typeof this.step === "number" ? roundStep(unsafeNumber, this.step) : unsafeNumber;
-		if (safeNumber > this.max) throw new InvalidFeedback(`Maximum ${formatNumber(this.max)}`, { value: safeNumber });
-		if (safeNumber < this.min) throw new InvalidFeedback(`Minimum ${formatNumber(this.min)}`, { value: safeNumber });
-		return safeNumber;
+		const optionalNumber = getOptionalNumber(unsafeValue);
+		if (typeof optionalNumber !== "number") throw new Feedback("Must be number", unsafeValue);
+		const roundedNumber = typeof this.step === "number" ? roundStep(optionalNumber, this.step) : optionalNumber;
+		if (roundedNumber > this.max) throw new Feedback(`Maximum ${formatNumber(this.max)}`, roundedNumber);
+		if (roundedNumber < this.min) throw new Feedback(`Minimum ${formatNumber(this.min)}`, roundedNumber);
+		return roundedNumber;
 	}
 }
 

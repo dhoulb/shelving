@@ -1,4 +1,4 @@
-import { InvalidFeedback, ImmutableDictionary, DictionarySchema, Validator, STRING, BOOLEAN, DICTIONARY, NUMBER, getFeedbackMessages, Feedback } from "../index.js";
+import { Feedback, ImmutableDictionary, DictionarySchema, Validator, STRING, BOOLEAN, DICTIONARY, NUMBER, Feedbacks } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -24,12 +24,12 @@ test("constructor()", () => {
 describe("validate()", () => {
 	const schema = new DictionarySchema({ items: STRING });
 	test("Non-objects throw error", () => {
-		expect(() => DICTIONARY(STRING).validate("abc")).toThrow(InvalidFeedback);
-		expect(() => DICTIONARY(NUMBER).validate(123)).toThrow(InvalidFeedback);
-		expect(() => DICTIONARY(BOOLEAN).validate(true)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(0)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(null)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(false)).toThrow(InvalidFeedback);
+		expect(() => DICTIONARY(STRING).validate("abc")).toThrow(Feedback);
+		expect(() => DICTIONARY(NUMBER).validate(123)).toThrow(Feedback);
+		expect(() => DICTIONARY(BOOLEAN).validate(true)).toThrow(Feedback);
+		expect(() => schema.validate(0)).toThrow(Feedback);
+		expect(() => schema.validate(null)).toThrow(Feedback);
+		expect(() => schema.validate(false)).toThrow(Feedback);
 	});
 });
 describe("options.value", () => {
@@ -59,15 +59,19 @@ describe("options.items", () => {
 		expect(schema.validate({ num1: 123, num2: "456" })).toEqual({ num1: 123, num2: 456 });
 	});
 	test("Object with items rejects invalid props", () => {
+		const dict = { num1: 123, num2: 456, str: "abc" };
+		const schema = new DictionarySchema({ items: NUMBER });
 		try {
-			const schema = new DictionarySchema({ items: NUMBER });
-			expect(schema.validate({ num1: 123, num2: 456, str: "abc" })).toBe("Never");
+			expect(schema.validate(dict)).toBe("Never");
 		} catch (invalid: any) {
-			expect(invalid).toBeInstanceOf(InvalidFeedback);
-			expect((invalid as InvalidFeedback).value).toEqual(
-				new Map([
-					["str", new Feedback("Must be number", { value: "abc" })], //
-				]),
+			expect(invalid).toBeInstanceOf(Feedbacks);
+			expect(invalid).toEqual(
+				new Feedbacks(
+					{
+						str: new Feedback("Must be number", "abc"),
+					},
+					dict,
+				),
 			);
 		}
 	});

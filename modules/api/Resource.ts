@@ -25,7 +25,7 @@ export class Resource<P = unknown, R = void> implements Validatable<R> {
 	 * Validate a payload for this resource.
 	 *
 	 * @returns The validated payload for this resource.
-	 * @throws InvalidFeedback if the payload could not be validated.
+	 * @throws Feedback if the payload could not be validated.
 	 */
 	prepare(unsafePayload: unknown): P {
 		return validate(unsafePayload, this.payload);

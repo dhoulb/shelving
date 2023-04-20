@@ -1,4 +1,4 @@
-import { InvalidFeedback, StringSchema, Schema, STRING, REQUIRED_STRING } from "../index.js";
+import { Feedback, StringSchema, Schema, STRING, REQUIRED_STRING } from "../index.js";
 
 // Vars.
 const longString =
@@ -38,12 +38,12 @@ describe("validate()", () => {
 		expect(schema.validate(100039384)).toBe("100039384");
 	});
 	test("Non-strings (except numbers) throw Invalid", () => {
-		expect(() => schema.validate(null)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(false)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(true)).toThrow(InvalidFeedback);
-		expect(() => schema.validate([])).toThrow(InvalidFeedback);
-		expect(() => schema.validate({})).toThrow(InvalidFeedback);
-		expect(() => schema.validate(() => {})).toThrow(InvalidFeedback);
+		expect(() => schema.validate(null)).toThrow(Feedback);
+		expect(() => schema.validate(false)).toThrow(Feedback);
+		expect(() => schema.validate(true)).toThrow(Feedback);
+		expect(() => schema.validate([])).toThrow(Feedback);
+		expect(() => schema.validate({})).toThrow(Feedback);
+		expect(() => schema.validate(() => {})).toThrow(Feedback);
 	});
 });
 describe("options.default", () => {
@@ -65,9 +65,9 @@ describe("options.match", () => {
 	});
 	test("String not matching format returns Invalid", () => {
 		const schema1 = new StringSchema({ match: /[0-9]+/ });
-		expect(() => schema1.validate("abc")).toThrow(InvalidFeedback);
+		expect(() => schema1.validate("abc")).toThrow(Feedback);
 		const schema2 = new StringSchema({ match: /[a-z]/ });
-		expect(() => schema2.validate("ABC")).toThrow(InvalidFeedback);
+		expect(() => schema2.validate("ABC")).toThrow(Feedback);
 	});
 });
 describe("options.multiline", () => {
@@ -87,12 +87,12 @@ describe("options.multiline", () => {
 describe("options.min", () => {
 	test("Strings shorter than the minimum are invalid", () => {
 		const schema = new StringSchema({ min: 10 });
-		expect(() => schema.validate("a")).toThrow(InvalidFeedback);
+		expect(() => schema.validate("a")).toThrow(Feedback);
 	});
 });
 describe("options.max", () => {
 	test("Strings longer than the maximum are trimmed", () => {
 		const schema = new StringSchema({ max: 3 });
-		expect(() => schema.validate("abcdef")).toThrow(InvalidFeedback);
+		expect(() => schema.validate("abcdef")).toThrow(Feedback);
 	});
 });

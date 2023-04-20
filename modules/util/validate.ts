@@ -1,9 +1,9 @@
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { Feedbacks } from "../feedback/Feedbacks.js";
 import type { Entry } from "./entry.js";
-import { ImmutableDictionary, PossibleDictionary, getDictionaryItems } from "./dictionary.js";
+import { ImmutableDictionary, MutableDictionary, PossibleDictionary, getDictionaryItems } from "./dictionary.js";
 import { Data, DataProp, getDataProps } from "./data.js";
-import { getArray, ImmutableArray } from "./array.js";
+import { ImmutableArray, PossibleArray } from "./array.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validatable<T> {
@@ -15,7 +15,7 @@ export interface Validatable<T> {
 	 * @return Valid value.
 	 *
 	 * @throws `Error` If the value is invalid and cannot be fixed.
-	 * @throws `InvalidFeedback` If the value is invalid and cannot be fixed and we want to explain why to an end user.
+	 * @throws `Feedback` If the value is invalid and cannot be fixed and we want to explain why to an end user.
 	 */
 	validate(unsafeValue: unknown): T;
 }
@@ -44,83 +44,67 @@ export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {
  * Validate an array of items.
  *
  * @return Array with valid items.
- * @throw InvalidFeedback if one or more entry values did not validate.
+ * @throw Feedback if one or more entry values did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function validateArray<T>(unsafeItems: Iterable<unknown>, validator: Validator<T>): ImmutableArray<T> {
-	return getArray(validateItems(unsafeItems, validator));
+export function validateArray<T>(unsafeItems: PossibleArray<unknown>, validator: Validator<T>): ImmutableArray<T> {
+	return Array.from(validateItems(unsafeItems, validator));
 }
 
 /**
  * Validate an iterable set of items with a validator.
  *
  * @yield Valid items.
- * @throw InvalidFeedback if one or more items did not validate.
+ * @throw Feedback if one or more items did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function* validateItems<T>(unsafeItems: Iterable<unknown>, validator: Validator<T>): Iterable<T> {
+export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator: Validator<T>): Iterable<T> {
 	let index = 0;
-	const feedbacks = new Map<number, Feedback>();
+	let valid = true;
+	const feedbacks: MutableDictionary<Feedback> = {};
 	for (const unsafeItem of unsafeItems) {
 		try {
 			yield validate(unsafeItem, validator);
 		} catch (thrown) {
 			if (!isFeedback(thrown)) throw thrown;
-			feedbacks.set(index, thrown);
+			feedbacks[index] = thrown;
+			valid = false;
 		}
 		index++;
 	}
-	if (feedbacks.size) throw new InvalidFeedback("Invalid items", feedbacks);
+	if (!valid) throw new Feedbacks(feedbacks, unsafeItems);
+}
+
+/**
+ * Validate the values of the entries in a dictionary object.
+ *
+ * @throw Feedback if one or more entry values did not validate.
+ * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
+ */
+export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
+	return Object.fromEntries(validateDictionaryItems(unsafeDictionary, validator));
 }
 
 /**
  * Validate the _values_ of an iterable set of entries with a validator.
  *
  * @yield Entries with valid values.
- * @throw InvalidFeedback if one or more entry values did not validate.
+ * @throw Feedback if one or more entry values did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function* validateEntries<T>(unsafeValues: Iterable<Entry<string, unknown>>, validator: Validator<T>): Iterable<Entry<string, T>> {
-	const feedbacks = new Map<string, Feedback>();
-	for (const [key, value] of unsafeValues) {
+export function* validateDictionaryItems<T>(unsafeItems: PossibleDictionary<unknown>, validator: Validator<T>): Iterable<Entry<string, T>> {
+	let valid = true;
+	const feedbacks: MutableDictionary<Feedback> = {};
+	for (const [key, value] of getDictionaryItems(unsafeItems)) {
 		try {
 			yield [key, validate(value, validator)];
 		} catch (thrown) {
 			if (!isFeedback(thrown)) throw thrown;
-			feedbacks.set(key, thrown);
+			feedbacks[key] = thrown;
+			valid = false;
 		}
 	}
-	if (feedbacks.size) throw new InvalidFeedback("Invalid entries", feedbacks);
-}
-
-/**
- * Validate the values of the entries in a dictionary object.
- *
- * @throw InvalidFeedback if one or more entry values did not validate.
- * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
- */
-export function validateDictionary<T>(obj: PossibleDictionary<T>, validator: Validator<T>): ImmutableDictionary<T> {
-	return Object.fromEntries(validateEntries(getDictionaryItems(obj), validator));
-}
-
-/**
- * Validate the props of a data object with a set of validators.
- *
- * @yield Valid props for the data object.
- * @throw InvalidFeedback if one or more props did not validate.
- * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
- */
-export function* validateProps<T extends Data>(unsafeData: Data, validators: Validators<T>): Iterable<DataProp<T>> {
-	const feedbacks = new Map<string, Feedback>();
-	for (const [key, validator] of getDataProps(validators)) {
-		try {
-			yield [key, validate(unsafeData[key], validator)];
-		} catch (thrown) {
-			if (!isFeedback(thrown)) throw thrown;
-			feedbacks.set(key, thrown);
-		}
-	}
-	if (feedbacks.size) throw new InvalidFeedback("Invalid data", feedbacks);
+	if (!valid) throw new Feedbacks(feedbacks, unsafeItems);
 }
 
 /**
@@ -129,9 +113,31 @@ export function* validateProps<T extends Data>(unsafeData: Data, validators: Val
  * - `undefined` props in the object will be set to the default value of that prop.
  *
  * @return Valid object.
- * @throw InvalidFeedback if one or more props did not validate.
+ * @throw Feedback if one or more props did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
-	return Object.fromEntries(validateProps(unsafeData, validators)) as T;
+	return Object.fromEntries(validateDataProps(unsafeData, validators)) as T;
+}
+
+/**
+ * Validate the props of a data object with a set of validators.
+ *
+ * @yield Valid props for the data object.
+ * @throw Feedback if one or more props did not validate.
+ * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
+ */
+export function* validateDataProps<T extends Data>(unsafeData: Data, validators: Validators<T>): Iterable<DataProp<T>> {
+	let valid = true;
+	const feedbacks: MutableDictionary<Feedback> = {};
+	for (const [key, validator] of getDataProps(validators)) {
+		try {
+			yield [key, validate(unsafeData[key], validator)];
+		} catch (thrown) {
+			if (!isFeedback(thrown)) throw thrown;
+			feedbacks[key] = thrown;
+			valid = false;
+		}
+	}
+	if (!valid) throw new Feedbacks(feedbacks, unsafeData);
 }

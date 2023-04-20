@@ -1,4 +1,4 @@
-import { TimeSchema, TIME, OPTIONAL_TIME, InvalidFeedback } from "../index.js";
+import { TimeSchema, TIME, OPTIONAL_TIME, Feedback } from "../index.js";
 import { TIME_REGEXP } from "../util/time.js";
 
 test("constructor()", () => {
@@ -21,10 +21,10 @@ describe("validate()", () => {
 		expect(schema.validate(100039384)).toMatch(TIME_REGEXP);
 	});
 	test("Non-strings (except numbers) throw Invalid", () => {
-		expect(() => schema.validate(null)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(false)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(true)).toThrow(InvalidFeedback);
-		expect(() => schema.validate([])).toThrow(InvalidFeedback);
-		expect(() => schema.validate({})).toThrow(InvalidFeedback);
+		expect(() => schema.validate(null)).toThrow(Feedback);
+		expect(() => schema.validate(false)).toThrow(Feedback);
+		expect(() => schema.validate(true)).toThrow(Feedback);
+		expect(() => schema.validate([])).toThrow(Feedback);
+		expect(() => schema.validate({})).toThrow(Feedback);
 	});
 });

@@ -1,10 +1,10 @@
 import type { Entry } from "../util/entry.js";
 import { isNullish, Nullish } from "../util/null.js";
-import { ImmutableDictionary } from "../util/dictionary.js";
+import { ImmutableDictionary, MutableDictionary } from "../util/dictionary.js";
 import { transform } from "../util/transform.js";
 import { DictionarySchema } from "../schema/DictionarySchema.js";
 import { validate, Validator } from "../util/validate.js";
-import { InvalidFeedback } from "../feedback/InvalidFeedback.js";
+import { Feedbacks } from "../feedback/Feedbacks.js";
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { getPrototype } from "../util/object.js";
 import { Update } from "./Update.js";
@@ -80,14 +80,16 @@ function* _transformDictionaryEntries<T>(obj: ImmutableDictionary<T>, updates: D
 }
 
 function* _validateDictionaryUpdates<T>(updates: DictionaryUpdates<T>, validator: Validator<T>): Iterable<Entry<string, T | Update<T> | Delete>> {
-	const feedbacks = new Map<string, Feedback>();
+	let valid = true;
+	const feedbacks: MutableDictionary<Feedback> = {};
 	for (const [key, value] of Object.entries(updates)) {
 		try {
 			yield [key, value instanceof Update ? value.validate(validator) : validate(value, validator)];
 		} catch (thrown) {
 			if (!isFeedback(thrown)) throw thrown;
-			feedbacks.set(key, thrown);
+			feedbacks[key] = thrown;
+			valid = false;
 		}
 	}
-	if (feedbacks.size) throw new InvalidFeedback("Invalid updates", feedbacks);
+	if (!valid) throw new Feedbacks(feedbacks, updates);
 }

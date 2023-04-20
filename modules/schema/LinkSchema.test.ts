@@ -1,4 +1,4 @@
-import { InvalidFeedback, Schema, LinkSchema, OPTIONAL_LINK, LINK } from "../index.js";
+import { Feedback, Schema, LinkSchema, OPTIONAL_LINK, LINK } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -61,16 +61,16 @@ describe("validate()", () => {
 			expect(new LinkSchema({ schemes: ["ws:"] }).validate(u16)).toBe(u16);
 		});
 		test("Invalid URLs are invalid", () => {
-			expect(() => schema.validate("user@")).toThrow(InvalidFeedback);
-			expect(() => schema.validate(":port")).toThrow(InvalidFeedback);
+			expect(() => schema.validate("user@")).toThrow(Feedback);
+			expect(() => schema.validate(":port")).toThrow(Feedback);
 		});
 		test("Non-strings are invalid", () => {
-			expect(() => schema.validate([])).toThrow(InvalidFeedback);
-			expect(() => schema.validate({})).toThrow(InvalidFeedback);
-			expect(() => schema.validate(true)).toThrow(InvalidFeedback);
-			expect(() => schema.validate(null)).toThrow(InvalidFeedback);
-			expect(() => schema.validate("")).toThrow(InvalidFeedback);
-			expect(() => schema.validate(false)).toThrow(InvalidFeedback);
+			expect(() => schema.validate([])).toThrow(Feedback);
+			expect(() => schema.validate({})).toThrow(Feedback);
+			expect(() => schema.validate(true)).toThrow(Feedback);
+			expect(() => schema.validate(null)).toThrow(Feedback);
+			expect(() => schema.validate("")).toThrow(Feedback);
+			expect(() => schema.validate(false)).toThrow(Feedback);
 		});
 	});
 	describe("scheme", () => {
@@ -79,8 +79,8 @@ describe("validate()", () => {
 			expect(schema.validate("https://x.com/")).toBe("https://x.com/");
 		});
 		test("Invalid scheme is invalid", () => {
-			expect(() => schema.validate("data:x.com")).toThrow(InvalidFeedback);
-			expect(() => schema.validate("$$$://x.com")).toThrow(InvalidFeedback);
+			expect(() => schema.validate("data:x.com")).toThrow(Feedback);
+			expect(() => schema.validate("$$$://x.com")).toThrow(Feedback);
 		});
 		test("Scheme is lowercased", () => {
 			expect(schema.validate("HTTP://x.com/")).toBe("http://x.com/");
@@ -119,7 +119,7 @@ describe("validate()", () => {
 		// 	);
 		// });
 		// test("Domain labels longer than 63 characters are invalid", () => {
-		// 	expect(() => schema.validate("http://www.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax.com")).toThrow(InvalidFeedback);
+		// 	expect(() => schema.validate("http://www.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax.com")).toThrow(Feedback);
 		// });
 		// test("Hostnames with 253 total characters are valid", () => {
 		// 	const v =
@@ -129,7 +129,7 @@ describe("validate()", () => {
 		// test("Hostnames with more than 253 total characters are invalid", () => {
 		// 	const v =
 		// 		"http://a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.x.com/";
-		// 	expect(() => schema.validate(v)).toThrow(InvalidFeedback);
+		// 	expect(() => schema.validate(v)).toThrow(Feedback);
 		// });
 		test("Hostnames with one label are valid (different to domains)", () => {
 			expect(schema.validate("http://localhost/")).toBe("http://localhost/");
@@ -155,14 +155,14 @@ describe("validate()", () => {
 			expect(schema.validate("http://x.com:000065535/")).toBe("http://x.com:65535/");
 		});
 		test("Ports lower than 1 are invalid", () => {
-			expect(() => schema.validate("http://x.com:-20000/")).toThrow(InvalidFeedback);
+			expect(() => schema.validate("http://x.com:-20000/")).toThrow(Feedback);
 		});
 		test("Ports higher than 65,535 are invalid", () => {
-			expect(() => schema.validate("http://x.com:65536")).toThrow(InvalidFeedback);
-			expect(() => schema.validate("http://x.com:283999482")).toThrow(InvalidFeedback);
+			expect(() => schema.validate("http://x.com:65536")).toThrow(Feedback);
+			expect(() => schema.validate("http://x.com:283999482")).toThrow(Feedback);
 		});
 		test("Ports that are non-numeric are invalid", () => {
-			expect(() => schema.validate("http://x.com:abc")).toThrow(InvalidFeedback);
+			expect(() => schema.validate("http://x.com:abc")).toThrow(Feedback);
 		});
 	});
 	describe("resource", () => {
@@ -182,14 +182,14 @@ describe("validate()", () => {
 		test("URLs that are more than 1024 chars are invalid", () => {
 			const chars1025 = "1".repeat(1025);
 			const longUrl = `http://x.com/?long=${chars1025}`;
-			expect(() => schema.validate(longUrl)).toThrow(InvalidFeedback);
+			expect(() => schema.validate(longUrl)).toThrow(Feedback);
 		});
 	});
 });
 describe("options.value", () => {
 	test("Undefined default value is invalid", () => {
 		const schema = LINK;
-		expect(() => schema.validate(undefined)).toThrow(InvalidFeedback);
+		expect(() => schema.validate(undefined)).toThrow(Feedback);
 	});
 	test("Undefined with default value returns default value", () => {
 		const schema = new LinkSchema({ value: "http://x.com/" });
@@ -204,7 +204,7 @@ describe("options.schemes", () => {
 	});
 	test("Scheme not in default whitelist is invalid", () => {
 		const schema = OPTIONAL_LINK;
-		expect(() => schema.validate("webcal://x.com")).toThrow(InvalidFeedback);
+		expect(() => schema.validate("webcal://x.com")).toThrow(Feedback);
 	});
 	test("Scheme in specified whitelist is valid", () => {
 		const schema = new LinkSchema({ schemes: ["telnet:"] });
@@ -212,7 +212,7 @@ describe("options.schemes", () => {
 	});
 	test("Scheme not in specified whitelist is invalid", () => {
 		const schema = new LinkSchema({ schemes: ["telnet:"] });
-		expect(() => schema.validate("webcal://x.com:")).toThrow(InvalidFeedback);
+		expect(() => schema.validate("webcal://x.com:")).toThrow(Feedback);
 	});
 });
 describe("options.hosts", () => {
@@ -223,7 +223,7 @@ describe("options.hosts", () => {
 	});
 	test("Host not in specified whitelist is invalid", () => {
 		const schema = new LinkSchema({ hosts: ["x.com"] });
-		expect(() => schema.validate("http://y.com/")).toThrow(InvalidFeedback);
-		expect(() => schema.validate("https://y.com/")).toThrow(InvalidFeedback);
+		expect(() => schema.validate("http://y.com/")).toThrow(Feedback);
+		expect(() => schema.validate("https://y.com/")).toThrow(Feedback);
 	});
 });

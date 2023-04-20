@@ -1,4 +1,4 @@
-import { InvalidFeedback, ColorSchema, Schema, OPTIONAL_COLOR, COLOR } from "../index.js";
+import { Feedback, ColorSchema, Schema, OPTIONAL_COLOR, COLOR } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -36,18 +36,18 @@ describe("validate()", () => {
 		expect(schema.validate("[[[[skdjf----bwe2923we9djsdinmns dao  sd")).toBe("#DFBE29"); // Invalid characters are stripped.
 	});
 	test("Invalid colors are invalid", () => {
-		expect(() => schema.validate("zzz")).toThrow(InvalidFeedback);
-		expect(() => schema.validate("")).toThrow(InvalidFeedback);
-		expect(() => schema.validate("zzzzzzz000")).toThrow(InvalidFeedback);
-		expect(() => schema.validate("123")).toThrow(InvalidFeedback);
+		expect(() => schema.validate("zzz")).toThrow(Feedback);
+		expect(() => schema.validate("")).toThrow(Feedback);
+		expect(() => schema.validate("zzzzzzz000")).toThrow(Feedback);
+		expect(() => schema.validate("123")).toThrow(Feedback);
 	});
 	test("Non-strings are invalid", () => {
-		expect(() => schema.validate([])).toThrow(InvalidFeedback);
-		expect(() => schema.validate({})).toThrow(InvalidFeedback);
-		expect(() => schema.validate(true)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(null)).toThrow(InvalidFeedback);
-		expect(() => schema.validate("")).toThrow(InvalidFeedback);
-		expect(() => schema.validate(false)).toThrow(InvalidFeedback);
+		expect(() => schema.validate([])).toThrow(Feedback);
+		expect(() => schema.validate({})).toThrow(Feedback);
+		expect(() => schema.validate(true)).toThrow(Feedback);
+		expect(() => schema.validate(null)).toThrow(Feedback);
+		expect(() => schema.validate("")).toThrow(Feedback);
+		expect(() => schema.validate(false)).toThrow(Feedback);
 	});
 });
 describe("options.value", () => {

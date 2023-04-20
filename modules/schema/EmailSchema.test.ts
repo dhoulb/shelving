@@ -1,4 +1,4 @@
-import { InvalidFeedback, EmailSchema, Schema, EMAIL, OPTIONAL_EMAIL } from "../index.js";
+import { Feedback, EmailSchema, Schema, EMAIL, OPTIONAL_EMAIL } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -29,11 +29,11 @@ describe("validate()", () => {
 			expect(schema.validate("j.i.l.l@google.com")).toBe("j.i.l.l@google.com");
 		});
 		test("Invalid usernames are invalid", () => {
-			expect(() => schema.validate(".jo@google.com")).toThrow(InvalidFeedback);
-			expect(() => schema.validate("jo.@google.com")).toThrow(InvalidFeedback);
-			expect(() => schema.validate("jo<@google.com")).toThrow(InvalidFeedback);
-			expect(() => schema.validate("<jo@google.com")).toThrow(InvalidFeedback);
-			expect(() => schema.validate("^*%&@google.com")).toThrow(InvalidFeedback);
+			expect(() => schema.validate(".jo@google.com")).toThrow(Feedback);
+			expect(() => schema.validate("jo.@google.com")).toThrow(Feedback);
+			expect(() => schema.validate("jo<@google.com")).toThrow(Feedback);
+			expect(() => schema.validate("<jo@google.com")).toThrow(Feedback);
+			expect(() => schema.validate("^*%&@google.com")).toThrow(Feedback);
 		});
 	});
 	describe("server", () => {
@@ -62,14 +62,14 @@ describe("validate()", () => {
 			expect(schema.validate("jo@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com")).toBe("jo@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com");
 		});
 		test("Domain labels longer than 63 characters are invalid", () => {
-			expect(() => schema.validate("jo@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax.com")).toThrow(InvalidFeedback);
+			expect(() => schema.validate("jo@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax.com")).toThrow(Feedback);
 		});
 		test("Domains with less than 2 labels are invalid", () => {
-			expect(() => schema.validate("jo@aaa")).toThrow(InvalidFeedback);
-			expect(() => schema.validate("jo@a")).toThrow(InvalidFeedback);
+			expect(() => schema.validate("jo@aaa")).toThrow(Feedback);
+			expect(() => schema.validate("jo@a")).toThrow(Feedback);
 		});
 		test("TLD with less than two characters is invalid", () => {
-			expect(() => schema.validate("jo@aaa.a")).toThrow(InvalidFeedback);
+			expect(() => schema.validate("jo@aaa.a")).toThrow(Feedback);
 		});
 		test("Domains have whitespace trimmed from start/end", () => {
 			expect(schema.validate("    jo@google.com   ")).toBe("jo@google.com");
@@ -81,25 +81,25 @@ describe("validate()", () => {
 	test("Email addresses with more than 254 total characters are invalid", () => {
 		const v1 =
 			"jo@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com";
-		expect(() => schema.validate(v1)).toThrow(InvalidFeedback);
+		expect(() => schema.validate(v1)).toThrow(Feedback);
 		const v2 =
 			"jo@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com";
-		expect(() => schema.validate(v2)).toThrow(InvalidFeedback);
+		expect(() => schema.validate(v2)).toThrow(Feedback);
 	});
 	test("Email addresses with domain segments longer than 63 characters are invalid", () => {
 		const v1 = "jo@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com";
-		expect(() => schema.validate(v1)).toThrow(InvalidFeedback);
+		expect(() => schema.validate(v1)).toThrow(Feedback);
 	});
 	test("Email addresses with missing username or server are invalid", () => {
-		expect(() => schema.validate("username@")).toThrow(InvalidFeedback);
-		expect(() => schema.validate("@server.com")).toThrow(InvalidFeedback);
+		expect(() => schema.validate("username@")).toThrow(Feedback);
+		expect(() => schema.validate("@server.com")).toThrow(Feedback);
 	});
 	test("Non-strings are invalid", () => {
-		expect(() => schema.validate([])).toThrow(InvalidFeedback);
-		expect(() => schema.validate({})).toThrow(InvalidFeedback);
-		expect(() => schema.validate(true)).toThrow(InvalidFeedback);
-		expect(() => schema.validate(null)).toThrow(InvalidFeedback);
-		expect(() => schema.validate("")).toThrow(InvalidFeedback);
+		expect(() => schema.validate([])).toThrow(Feedback);
+		expect(() => schema.validate({})).toThrow(Feedback);
+		expect(() => schema.validate(true)).toThrow(Feedback);
+		expect(() => schema.validate(null)).toThrow(Feedback);
+		expect(() => schema.validate("")).toThrow(Feedback);
 	});
 });
 describe("options.value", () => {
