@@ -27,14 +27,11 @@ export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T> {
 	/** Return a new instance of this class with a before offset defined. */
 	before(item: T): this;
 
-	/** Return a new instance of this class with no filters specified. */
-	readonly unfilter: this;
-
-	/** Return a new instance of this class with no sorts specified. */
-	readonly unsort: this;
-
 	/** The maximum number of items allowed by the limit. */
 	readonly limit: number | null;
+
+	/** Return a new instance of this class with no limit specified. */
+	readonly unlimited: this;
 
 	/** Return a new instance of this class with a limit set. */
 	max(max: number | null): this;
@@ -57,8 +54,8 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	filter(...filters: FilterList<T>[]): this {
 		return cloneObjectWith(this, "filters", this.filters.filter(...filters));
 	}
-	get unfilter(): this {
-		return !this.filters.size ? this : cloneObjectWith(this, "filters", EMPTY_FILTERS);
+	get unfiltered(): this {
+		return cloneObjectWith(this, "filters", this.filters.unfiltered);
 	}
 	match(item: T): boolean {
 		return this.filters.match(item);
@@ -68,8 +65,8 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	sort(...sorts: SortList<T>[]): this {
 		return cloneObjectWith(this, "sorts", this.sorts.sort(...sorts));
 	}
-	get unsort(): this {
-		return !this.sorts.size ? this : cloneObjectWith(this, "sorts", EMPTY_SORTS);
+	get unsorted(): this {
+		return cloneObjectWith(this, "filters", this.sorts.unsorted);
 	}
 	rank(left: T, right: T): number {
 		return this.sorts.rank(left, right);
@@ -81,6 +78,9 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	}
 	before(item: T): this {
 		return cloneObjectWith(this, "filters", this.filters.with(..._getBeforeFilters(this.sorts, item)));
+	}
+	get unlimited(): this {
+		return this.max(null);
 	}
 	max(limit: number | null): this {
 		return cloneObjectWith(this, "limit", limit);

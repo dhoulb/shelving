@@ -1,4 +1,5 @@
 import type { Data } from "../util/data.js";
+import { cloneObjectWith } from "../util/object.js";
 import { Rankable, sortItems } from "../util/sort.js";
 import { Constraints } from "./Constraints.js";
 import { getSorts, SortConstraint, SortList } from "./SortConstraint.js";
@@ -10,6 +11,8 @@ import { getSorts, SortConstraint, SortList } from "./SortConstraint.js";
 export interface Sortable<T extends Data> extends Rankable<T> {
 	/** Add one or more sorts to this sortable. */
 	sort(...keys: SortList<T>[]): this;
+	/** Return a new instance of this class with no sorts specified. */
+	unsorted: this;
 }
 
 /** A set of sorts. */
@@ -21,6 +24,9 @@ export class SortConstraints<T extends Data = Data> extends Constraints<T, SortC
 	// Implement `Sortable`
 	sort(...sorts: SortList<T>[]): this {
 		return this.with(...getSorts(sorts));
+	}
+	get unsorted(): this {
+		return this._constraints.length ? this : cloneObjectWith(this, "_constraints", []);
 	}
 	rank(left: T, right: T): number {
 		for (const rule of this._constraints) {
