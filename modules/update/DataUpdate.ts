@@ -16,8 +16,18 @@ export type Updates<T extends Data = Data> = { readonly [K in keyof T]?: T[K] | 
  * Update that can be applied to a data object to update its props.
  */
 export class DataUpdate<T extends Data = Data> extends Update<T> implements Iterable<DataProp<Updates<T>>>, Transformable<T, T> {
-	/** Return a data update with a specific prop marked for update. */
-	static update<X extends Data, K extends DataKey<X>>(key: Nullish<K>, value: X[K] | Update<X[K]>): DataUpdate<X> {
+	/** Return a data update with multiple props updated. */
+	static update<X extends Data>(updates: Updates<X>): DataUpdate<X> {
+		return new DataUpdate<X>(updates);
+	}
+
+	/** Return a data update with a specific prop set. */
+	static setProp<X extends Data, K extends DataKey<X>>(key: Nullish<K>, value: X[K]): DataUpdate<X> {
+		return DataUpdate.updateProp(key, value);
+	}
+
+	/** Return a data update with a specific prop updated. */
+	static updateProp<X extends Data, K extends DataKey<X>>(key: Nullish<K>, value: X[K] | Update<X[K]>): DataUpdate<X> {
 		return new DataUpdate<X>(!isNullish(key) ? ({ [key]: value } as Updates<X>) : {});
 	}
 
@@ -27,8 +37,22 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 		this.updates = props;
 	}
 
-	/** Return a data update with a specific prop marked for update. */
-	update<K extends DataKey<T>>(key: Nullish<K>, value: T[K] | Update<T[K]>): this {
+	/** Return a data update with multiple props updated. */
+	update(updates: Updates<T>): this {
+		return {
+			__proto__: getPrototype(this),
+			...this,
+			updates: { ...this.updates, ...updates },
+		};
+	}
+
+	/** Return a data update with a specific prop set. */
+	setProp<K extends DataKey<T>>(key: Nullish<K>, value: T[K]): this {
+		return this.updateProp(key, value);
+	}
+
+	/** Return a data update with a specific prop updated. */
+	updateProp<K extends DataKey<T>>(key: Nullish<K>, value: T[K] | Update<T[K]>): this {
 		if (isNullish(key)) return this;
 		return {
 			__proto__: getPrototype(this),
