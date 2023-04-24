@@ -67,6 +67,9 @@ export function filterArray<T, A extends Arguments = []>(input: ImmutableArray<T
 	return output.length === input.length ? input : output;
 }
 
+/** Clear an array (immutably) and return a new empty array (or the same array if no changes were made). */
+export const clearArray = <T>(input: ImmutableArray<T>): ImmutableArray<T> => (input.length ? [] : input);
+
 /** Toggle an item in and out of an array (immutably) and return a new array with or without the specified items (or the same array if no changes were made). */
 export function toggleArrayItems<T>(input: ImmutableArray<T>, ...items: T[]): ImmutableArray<T> {
 	const extras = items.filter(_doesNotInclude, input);
