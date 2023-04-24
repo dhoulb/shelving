@@ -1,6 +1,6 @@
 import { withProp } from "../util/object.js";
 import { DictionaryItem, ImmutableDictionary, omitDictionaryItems } from "../util/dictionary.js";
-import { Transformer, Transformers, transform, transformDictionary } from "../util/transform.js";
+import { Transformer, Transformers, transform, transformObject } from "../util/transform.js";
 import { State } from "./State.js";
 
 /** State that stores a dictionary object and has additional methods to help with that. */
@@ -16,7 +16,7 @@ export class DictionaryState<T> extends State<ImmutableDictionary<T>> implements
 
 	/** Set a named entry in this object with a different value. */
 	update(updates: Transformers<ImmutableDictionary<T>>): void {
-		this.set(transformDictionary(this.value, updates));
+		this.set(transformObject(this.value, updates));
 	}
 
 	/** Remove a named entry from this object. */
