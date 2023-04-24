@@ -1,6 +1,6 @@
 import { isNullish, Nullish } from "../util/null.js";
-import { DictionaryItem, getDictionaryItems, ImmutableDictionary, isDictionaryKey, MutableDictionary } from "../util/dictionary.js";
-import { transform } from "../util/transform.js";
+import { DictionaryItem, getDictionaryItems, ImmutableDictionary } from "../util/dictionary.js";
+import { transformObject } from "../util/transform.js";
 import { cloneObjectWith } from "../util/object.js";
 import { Update } from "./Update.js";
 import { Delete, DELETE } from "./Delete.js";
@@ -65,22 +65,7 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 
 	// Implement `Transformable`
 	transform(input: ImmutableDictionary<T> = {}): ImmutableDictionary<T> {
-		let changed = false;
-		const output: MutableDictionary<T> = { ...input };
-		for (const [k, t] of getDictionaryItems(this.updates)) {
-			if (isDictionaryKey(input, k)) {
-				if (t instanceof Delete) {
-					delete output[k];
-					if (!changed) changed = true;
-				} else {
-					const i = input[k];
-					const o = transform(i, t);
-					output[k] = o;
-					if (!changed && i !== o) changed = true;
-				}
-			}
-		}
-		return changed ? output : input;
+		return transformObject(input, this.updates);
 	}
 
 	// Implement `Iterable`

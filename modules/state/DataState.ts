@@ -27,7 +27,7 @@ export class DataState<T extends Data> extends State<T> {
 	}
 
 	/** Update several props in this data. */
-	update(updates: Transformers<T>): void {
+	update(updates: Transformers<T, T>): void {
 		this.set(transformObject(this.data, updates));
 	}
 }
@@ -45,7 +45,7 @@ export class OptionalDataState<T extends Data> extends State<T | null> {
 	}
 
 	/** Update several props in this data. */
-	update(updates: Transformers<T>): void {
+	update(updates: Transformers<T, T>): void {
 		this.set(transformObject(this.data, updates));
 	}
 

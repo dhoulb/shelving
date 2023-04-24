@@ -30,7 +30,7 @@ export type Transformer<I, O, A extends Arguments = []> = Transformable<I, O, A>
 export type AsyncTransformer<I, O, A extends Arguments = []> = AsyncTransformable<I, O, A> | AsyncTransform<I, O, A> | O;
 
 /** Set of named transformers for a data object (or `undefined` to skip the transform). */
-export type Transformers<T extends ImmutableObject, A extends Arguments = []> = { readonly [K in keyof T]?: Transformer<T[K], T[K], A> | undefined };
+export type Transformers<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []> = { readonly [K in keyof I]?: Transformer<I[K], O[K], A> };
 
 /** Transform a value using a transformer. */
 export function transform<I, O, A extends Arguments = []>(input: I, transformer: (v: I) => O, ...args: A): O; // Helps `O` carry through functions that use generics.
@@ -77,9 +77,11 @@ export function* mapEntries<K, I, O, A extends Arguments = []>(entries: Iterable
  *
  * @returns Transformed object (or same object if no changes were made).
  */
-export function transformObject<T extends ImmutableObject, A extends Arguments = []>(obj: T, transforms: Transformers<T, A>, ...args: A): T;
-export function transformObject<T extends ImmutableObject, A extends Arguments = []>(obj: T | Partial<T>, transforms: Transformers<T, A>, ...args: A): T | Partial<T>;
-export function transformObject<A extends Arguments = []>(input: ImmutableObject, transforms: Transformers<ImmutableObject, A>, ...args: A): ImmutableObject {
+export function transformObject<T extends ImmutableObject, A extends Arguments = []>(obj: T, transforms: Transformers<T, T | Partial<T>, A>, ...args: A): T;
+export function transformObject<T extends ImmutableObject, A extends Arguments = []>(obj: T | Partial<T>, transforms: Transformers<T, T | Partial<T>, A>, ...args: A): Partial<T>;
+export function transformObject<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(obj: I, transforms: Transformers<I, O | Partial<O>, A>, ...args: A): O;
+export function transformObject<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(obj: I | Partial<I>, transforms: Transformers<I, O | Partial<O>, A>, ...args: A): Partial<O>;
+export function transformObject<A extends Arguments = []>(input: ImmutableObject, transforms: Transformers<ImmutableObject, ImmutableObject, A>, ...args: A): ImmutableObject {
 	let changed = false;
 	const output: MutableObject = { ...input };
 	for (const [k, t] of getProps(transforms)) {

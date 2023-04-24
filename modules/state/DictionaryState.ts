@@ -15,7 +15,7 @@ export class DictionaryState<T> extends State<ImmutableDictionary<T>> implements
 	}
 
 	/** Set a named entry in this object with a different value. */
-	update(updates: Transformers<ImmutableDictionary<T>>): void {
+	update(updates: Transformers<ImmutableDictionary<T>, Partial<ImmutableDictionary<T>>>): void {
 		this.set(transformObject(this.value, updates));
 	}
 
