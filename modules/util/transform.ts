@@ -83,10 +83,15 @@ export function transformObject<A extends Arguments = []>(input: ImmutableObject
 	let changed = false;
 	const output: MutableObject = { ...input };
 	for (const [k, t] of getProps(transforms)) {
+		// if (t !== undefined) {
 		const i = input[k];
 		const o = transform(i, t, ...args);
-		output[k] = o;
-		if (!changed && i !== o) changed = true;
+		if (t === undefined) {
+			delete output[k];
+		} else {
+			output[k] = o;
+			if (!changed && i !== o) changed = true;
+		}
 	}
 	return changed ? output : input;
 }

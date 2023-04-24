@@ -21,7 +21,7 @@ test("mapObject()", () => {
 	expect(mapObject(obj, n => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
 	expect(mapObject(obj, { transform: n => n * n })).toEqual({ a: 1, b: 4, c: 9, d: 16 });
 });
-test("transformData()", () => {
+test("transformObject()", () => {
 	const obj = { a: 10, b: 20 };
 	// Plain transforms.
 	expect(transformObject(obj, { a: 100 })).toEqual({ a: 100, b: 20 });
@@ -29,6 +29,6 @@ test("transformData()", () => {
 	// expect(transformData(obj, { a: 10 })).toBe(obj); // Returns same instance.
 	// Function transforms.
 	expect(transformObject(obj, { b: n => n * n })).toEqual({ a: 10, b: 400 });
-	// Optional transforms.
-	expect(transformObject(obj, { a: undefined, b: 600 })).toEqual({ a: 10, b: 600 });
+	// `undefined` deletes the element.
+	expect(transformObject(obj, { a: undefined, b: 600 })).toEqual({ b: 600 });
 });
