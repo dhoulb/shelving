@@ -1,13 +1,12 @@
-import type { Entry } from "../util/entry.js";
 import { isNullish, Nullish } from "../util/null.js";
-import { getDictionaryItems, ImmutableDictionary, isDictionaryKey, MutableDictionary } from "../util/dictionary.js";
+import { DictionaryItem, getDictionaryItems, ImmutableDictionary, isDictionaryKey, MutableDictionary } from "../util/dictionary.js";
 import { transform } from "../util/transform.js";
 import { getPrototype } from "../util/object.js";
 import { Update } from "./Update.js";
 import { Delete, DELETE } from "./Delete.js";
 
 /** Update that can be applied to a dictionary object to add/remove/update its entries. */
-export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implements Iterable<Entry<string, T | Update<T> | Delete>> {
+export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implements Iterable<DictionaryItem<T | Update<T> | Delete>> {
 	/** Return a dictionary update with a specific entry marked for update. */
 	static update<X>(key: Nullish<string>, value: X | Update<X> | Delete): DictionaryUpdate<X> {
 		return new DictionaryUpdate<X>(isNullish(key) ? {} : { [key]: value });
@@ -65,7 +64,7 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 	}
 
 	// Implement `Iterable`
-	*[Symbol.iterator](): Iterator<Entry<string, T | Update<T> | Delete>, void> {
+	*[Symbol.iterator](): Iterator<DictionaryItem<T | Update<T> | Delete>, void> {
 		for (const entry of getDictionaryItems(this.updates)) yield entry;
 	}
 }
