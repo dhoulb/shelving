@@ -1,7 +1,7 @@
 import type { ArrayItem, ImmutableArray } from "./array.js";
 import type { Entry } from "./entry.js";
 import { Arguments, isFunction } from "./function.js";
-import { getProps, ImmutableObject, isObject, ObjectProp, ObjectValue } from "./object.js";
+import { getProps, ImmutableObject, isObject, MutableObject, ObjectValue } from "./object.js";
 import { ImmutableDictionary, PossibleDictionary } from "./dictionary.js";
 
 /** Object that transforms an input value into an output value with its `transform()` method. */
@@ -28,6 +28,9 @@ export type Transformer<I, O, A extends Arguments = []> = Transformable<I, O, A>
 
 /** Something that can transform an input value into an output value (or a plain value). */
 export type AsyncTransformer<I, O, A extends Arguments = []> = AsyncTransformable<I, O, A> | AsyncTransform<I, O, A> | O;
+
+/** Set of named transformers for a data object (or `undefined` to skip the transform). */
+export type Transformers<T extends ImmutableObject, A extends Arguments = []> = { readonly [K in keyof T]?: Transformer<T[K], T[K], A> | undefined };
 
 /** Transform a value using a transformer. */
 export function transform<I, O, A extends Arguments = []>(input: I, transformer: (v: I) => O, ...args: A): O; // Helps `O` carry through functions that use generics.
@@ -69,19 +72,24 @@ export function* mapEntries<K, I, O, A extends Arguments = []>(entries: Iterable
 	for (const [k, v] of entries) yield [k, transform(v, transformer, ...args)];
 }
 
-/** Set of named transformers for a data object (or `undefined` to skip the transform). */
-export type Transformers<T extends ImmutableObject, A extends Arguments = []> = { readonly [K in keyof T]?: Transformer<T[K], T[K], A> | undefined };
-
-/** Transform an object using a set of named transformers. */
-export function transformObject<T extends ImmutableObject, A extends Arguments = []>(obj: T, transforms: Transformers<T, A>, ...args: A): T {
-	return { ...obj, ...Object.fromEntries(_transformObjectProps(obj, transforms, ...args)) };
+/**
+ * Transform an object using a set of named transformers.
+ *
+ * @returns Transformed object (or same object if no changes were made).
+ */
+export function transformObject<T extends ImmutableObject, A extends Arguments = []>(obj: T, transforms: Transformers<T, A>, ...args: A): T;
+export function transformObject<T extends ImmutableObject, A extends Arguments = []>(obj: T | Partial<T>, transforms: Transformers<T, A>, ...args: A): T | Partial<T>;
+export function transformObject<A extends Arguments = []>(input: ImmutableObject, transforms: Transformers<ImmutableObject, A>, ...args: A): ImmutableObject {
+	let changed = false;
+	const output: MutableObject = { ...input };
+	for (const [k, t] of getProps(transforms)) {
+		const i = input[k];
+		const o = transform(i, t, ...args);
+		output[k] = o;
+		if (!changed && i !== 0) changed = true;
+	}
+	return changed ? output : input;
 }
-function* _transformObjectProps<T extends ImmutableObject, A extends Arguments>(obj: T, transforms: Transformers<T, A>, ...args: A): Iterable<ObjectProp<T>> {
-	for (const [k, v] of getProps(transforms)) if (v !== undefined) yield [k, transform(obj[k], v as ObjectValue<T>, ...args)];
-}
-
-/** Transform a dictionary object using a set of named transformers. */
-export const transformDictionary: <T, A extends Arguments = []>(dict: ImmutableDictionary<T>, transforms: Transformers<ImmutableDictionary<T>, A>, ...args: A) => ImmutableDictionary<T> = transformObject;
 
 /** Transform items in a sequence as they are yielded using a (potentially async) transformer. */
 export function mapSequence<I, O, A extends Arguments = []>(sequence: AsyncIterable<I>, transformer: (input: I, ...args: A) => O | PromiseLike<O>, ...args: A): AsyncIterable<O>;
