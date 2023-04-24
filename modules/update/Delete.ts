@@ -8,9 +8,6 @@ export class Delete extends Update<undefined> {
 	transform(): undefined {
 		return undefined;
 	}
-	override validate(): this {
-		return this;
-	}
 }
 
 /** Update that deletes any value. */

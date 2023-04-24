@@ -1,17 +1,10 @@
 import type { Entry } from "../util/entry.js";
 import { isNullish, Nullish } from "../util/null.js";
-import { ImmutableDictionary, MutableDictionary } from "../util/dictionary.js";
+import { getDictionaryItems, ImmutableDictionary, isDictionaryKey, MutableDictionary } from "../util/dictionary.js";
 import { transform } from "../util/transform.js";
-import { DictionarySchema } from "../schema/DictionarySchema.js";
-import { validate, Validator } from "../util/validate.js";
-import { Feedbacks } from "../feedback/Feedbacks.js";
-import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { getPrototype } from "../util/object.js";
 import { Update } from "./Update.js";
 import { Delete, DELETE } from "./Delete.js";
-
-/** Set of named transforms for the entries of a dictionary object. */
-export type DictionaryUpdates<T> = ImmutableDictionary<T | Update<T> | Delete>;
 
 /** Update that can be applied to a dictionary object to add/remove/update its entries. */
 export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implements Iterable<Entry<string, T | Update<T> | Delete>> {
@@ -25,8 +18,8 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 		return new DictionaryUpdate<X>(isNullish(key) ? {} : { [key]: DELETE });
 	}
 
-	readonly updates: DictionaryUpdates<T>;
-	constructor(updates: DictionaryUpdates<T> = {}) {
+	readonly updates: ImmutableDictionary<T | Update<T> | Delete>;
+	constructor(updates: ImmutableDictionary<T | Update<T> | Delete> = {}) {
 		super();
 		this.updates = updates;
 	}
@@ -52,44 +45,27 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 	}
 
 	// Implement `Transformable`
-	transform(obj: ImmutableDictionary<T> = {}): ImmutableDictionary<T> {
-		return Object.fromEntries(_transformDictionaryEntries(obj, this.updates));
-	}
-
-	// Implement `Validatable`
-	override validate(validator: Validator<ImmutableDictionary<T>>): this {
-		if (!(validator instanceof DictionarySchema)) return super.validate(validator);
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			updates: Object.fromEntries(_validateDictionaryUpdates(this.updates, validator.items)),
-		};
+	transform(input: ImmutableDictionary<T> = {}): ImmutableDictionary<T> {
+		let changed = false;
+		const output: MutableDictionary<T> = { ...input };
+		for (const [k, t] of getDictionaryItems(this.updates)) {
+			if (isDictionaryKey(input, k)) {
+				if (t instanceof Delete) {
+					delete output[k];
+					if (!changed) changed = true;
+				} else {
+					const i = input[k];
+					const o = transform(i, t);
+					output[k] = o;
+					if (!changed && i !== o) changed = true;
+				}
+			}
+		}
+		return changed ? output : input;
 	}
 
 	// Implement `Iterable`
 	*[Symbol.iterator](): Iterator<Entry<string, T | Update<T> | Delete>, void> {
-		for (const entry of Object.entries(this.updates)) yield entry;
+		for (const entry of getDictionaryItems(this.updates)) yield entry;
 	}
-}
-
-function* _transformDictionaryEntries<T>(obj: ImmutableDictionary<T>, updates: DictionaryUpdates<T>): Iterable<Entry<string, T>> {
-	for (const [k, v] of Object.entries({ ...obj, ...updates })) {
-		if (v instanceof Delete) continue;
-		yield [k, transform(obj[k], v)];
-	}
-}
-
-function* _validateDictionaryUpdates<T>(updates: DictionaryUpdates<T>, validator: Validator<T>): Iterable<Entry<string, T | Update<T> | Delete>> {
-	let valid = true;
-	const feedbacks: MutableDictionary<Feedback> = {};
-	for (const [key, value] of Object.entries(updates)) {
-		try {
-			yield [key, value instanceof Update ? value.validate(validator) : validate(value, validator)];
-		} catch (thrown) {
-			if (!isFeedback(thrown)) throw thrown;
-			feedbacks[key] = thrown;
-			valid = false;
-		}
-	}
-	if (!valid) throw new Feedbacks(feedbacks, updates);
 }

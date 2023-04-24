@@ -1,7 +1,5 @@
-import { ArraySchema } from "../schema/ArraySchema.js";
 import { ImmutableArray, withArrayItems, omitArrayItems } from "../util/array.js";
 import { getPrototype } from "../util/object.js";
-import { validateArray, Validator } from "../util/validate.js";
 import { Update } from "./Update.js";
 
 /** Update that can be applied to an array to add/remove items. */
@@ -45,16 +43,5 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 	// Implement `Transformable`
 	transform(arr: ImmutableArray<T> = []): ImmutableArray<T> {
 		return omitArrayItems(withArrayItems(arr, ...this.adds), ...this.deletes);
-	}
-
-	// Implement `Validatable`
-	override validate(validator: ArraySchema<T> | Validator<ImmutableArray<T>>): this {
-		if (!(validator instanceof ArraySchema)) return super.validate(validator);
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			adds: validateArray(this.adds, validator.items),
-			deletes: validateArray(this.deletes, validator.items),
-		};
 	}
 }

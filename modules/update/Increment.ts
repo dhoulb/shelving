@@ -10,8 +10,6 @@ export class Increment extends Update<number> {
 		super();
 		this.amount = amount;
 	}
-
-	// Implement `Transformable`
 	transform(existing?: unknown): number {
 		return typeof existing === "number" ? existing + this.amount : this.amount;
 	}

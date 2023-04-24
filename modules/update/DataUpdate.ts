@@ -1,12 +1,7 @@
-import { Feedback, isFeedback } from "../feedback/Feedback.js";
-import { Feedbacks } from "../feedback/Feedbacks.js";
-import { MutableDictionary } from "../index.js";
-import { DataSchema } from "../schema/DataSchema.js";
-import { Data, DataKey, DataProp, getDataProps } from "../util/data.js";
+import { Data, DataKey, DataProp } from "../util/data.js";
 import { isNullish, Nullish } from "../util/null.js";
 import { getPrototype } from "../util/object.js";
 import { Transformable, transformObject } from "../util/transform.js";
-import { validate, Validator, Validators } from "../util/validate.js";
 import { Update } from "./Update.js";
 
 /**
@@ -16,33 +11,6 @@ import { Update } from "./Update.js";
  * - If a prop contains an `Update` instance, the existing value is updated.
  */
 export type Updates<T extends Data = Data> = { readonly [K in keyof T]?: T[K] | Update<T[K]> | undefined };
-
-/**
- * Validate a set of updates against a set of validators.
- */
-export function validateUpdates<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>): Updates<T> {
-	return Object.fromEntries(validateUpdateProps(unsafeUpdates, validators)) as Updates<T>;
-}
-function* validateUpdateProps<T extends Data>(unsafeUpdates: Updates<T>, validators: Validators<T>): Iterable<DataProp<Updates<T>>> {
-	let valid = true;
-	const feedbacks: MutableDictionary<Feedback> = {};
-	for (const [key, validator] of getDataProps(validators)) {
-		const unsafeUpdate = unsafeUpdates[key];
-		if (unsafeUpdate !== undefined) {
-			try {
-				yield [key, unsafeUpdate instanceof Update ? unsafeUpdate.validate(validator) : validate(unsafeUpdate, validator)];
-			} catch (thrown) {
-				if (!isFeedback(thrown)) throw thrown;
-				feedbacks[key] = thrown;
-				valid = false;
-			}
-		}
-	}
-	if (!valid) throw new Feedbacks(feedbacks, unsafeUpdates);
-}
-
-/** Update data using a set of updates. */
-export const updateData: <T extends Data>(data: T, updates: Updates<T>) => T = transformObject;
 
 /**
  * Update that can be applied to a data object to update its props.
@@ -70,18 +38,10 @@ export class DataUpdate<T extends Data = Data> extends Update<T> implements Iter
 	}
 
 	// Implement `Transformable`
-	transform(data: T): T {
-		return updateData<T>(data, this.updates);
-	}
-
-	// Implement `Validatable`
-	override validate(validator: Validator<T>): this {
-		if (!(validator instanceof DataSchema)) return super.validate(validator);
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			updates: validateUpdates(this.updates, validator.props),
-		};
+	transform(data: T): T;
+	transform(data?: T | Partial<T>): Partial<T>;
+	transform(data: T | Partial<T> = {}): Partial<T> {
+		return transformObject(data, this.updates);
 	}
 
 	// Implement `Iterable`
