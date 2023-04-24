@@ -86,7 +86,7 @@ export function transformObject<A extends Arguments = []>(input: ImmutableObject
 		const i = input[k];
 		const o = transform(i, t, ...args);
 		output[k] = o;
-		if (!changed && i !== 0) changed = true;
+		if (!changed && i !== o) changed = true;
 	}
 	return changed ? output : input;
 }
