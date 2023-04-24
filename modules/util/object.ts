@@ -192,3 +192,15 @@ export function formatObject(obj: ImmutableObject): string {
 export function getPrototype<T>(obj: T): Partial<T> | null {
 	return Object.getPrototypeOf(obj) as Partial<T> | null;
 }
+
+/** Shallow clone an object with the same prototype. */
+export function cloneObject<T>(input: T): T {
+	return { __proto__: getPrototype(input), ...input };
+}
+
+/** Shallow clone an object with a single changed value. */
+export function cloneObjectWith<T, K extends keyof T>(input: T, key: K, value: T[K]): T;
+export function cloneObjectWith<T, K extends string, V>(input: T, key: K, value: V): T & { [KK in K]: V };
+export function cloneObjectWith<T, K extends keyof T>(input: T, key: K, value: T[K]): T {
+	return input[key] === value ? input : { __proto__: getPrototype(input), ...input, [key]: value };
+}

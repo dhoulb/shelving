@@ -1,5 +1,5 @@
 import type { Data } from "../util/data.js";
-import { getPrototype } from "../util/object.js";
+import { cloneObjectWith } from "../util/object.js";
 import { ImmutableArray, withArrayItems, omitArrayItems } from "../util/array.js";
 import { Constraint } from "./Constraint.js";
 
@@ -29,14 +29,12 @@ export abstract class Constraints<T extends Data, C extends Constraint<Partial<T
 
 	/** Clone this set of constraints but add additional constraints. */
 	with(...constraints: C[]): this {
-		const _constraints = withArrayItems(this._constraints, ...constraints);
-		return _constraints !== this._constraints ? { __proto__: getPrototype(this), ...this, _constraints: _constraints } : this;
+		return cloneObjectWith(this, "_constraints", withArrayItems(this._constraints, ...constraints));
 	}
 
 	/** Clone this set of constraints but remove specific constraints. */
 	omit(...constraints: C[]): this {
-		const _constraints = omitArrayItems(this._constraints, ...constraints);
-		return _constraints !== this._constraints ? { __proto__: getPrototype(this), ...this, _constraints: _constraints } : this;
+		return cloneObjectWith(this, "_constraints", omitArrayItems(this._constraints, ...constraints));
 	}
 
 	/** Iterate over the constraints. */

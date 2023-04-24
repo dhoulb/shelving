@@ -1,7 +1,7 @@
 import { isNullish, Nullish } from "../util/null.js";
 import { DictionaryItem, getDictionaryItems, ImmutableDictionary, isDictionaryKey, MutableDictionary } from "../util/dictionary.js";
 import { transform } from "../util/transform.js";
-import { getPrototype } from "../util/object.js";
+import { cloneObjectWith } from "../util/object.js";
 import { Update } from "./Update.js";
 import { Delete, DELETE } from "./Delete.js";
 
@@ -13,8 +13,8 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 	}
 
 	/** Return a dictionary update with multiple items updated. */
-	static update<X>(items: ImmutableDictionary<X | Update<X> | Delete>): DictionaryUpdate<X> {
-		return new DictionaryUpdate<X>(items);
+	static update<X>(updates: ImmutableDictionary<X | Update<X> | Delete>): DictionaryUpdate<X> {
+		return new DictionaryUpdate<X>(updates);
 	}
 
 	/** Return a dictionary update with a specific item set. */
@@ -38,6 +38,16 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 		this.updates = updates;
 	}
 
+	/** Return a dictionary update with multiple items updated. */
+	set(items: ImmutableDictionary<T>): DictionaryUpdate<T> {
+		return cloneObjectWith(this, "updates", { ...this.updates, ...items });
+	}
+
+	/** Return a dictionary update with multiple items updated. */
+	update(updates: ImmutableDictionary<T | Update<T> | Delete>): DictionaryUpdate<T> {
+		return cloneObjectWith(this, "updates", { ...this.updates, ...updates });
+	}
+
 	/** Return a dictionary update with a specific item set. */
 	setItem(key: Nullish<string>, value: T): this {
 		return this.updateItem(key, value);
@@ -45,12 +55,7 @@ export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implemen
 
 	/** Return a dictionary update with a specific item updated. */
 	updateItem(key: Nullish<string>, value: T | Update<T> | Delete): this {
-		if (isNullish(key)) return this;
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			updates: { ...this.updates, [key]: value },
-		};
+		return isNullish(key) ? this : cloneObjectWith(this, "updates", { ...this.updates, [key]: value });
 	}
 
 	/** Return a dictionary update with a specific item deleted. */

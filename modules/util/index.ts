@@ -4,7 +4,6 @@ export * from "./assert.js";
 export * from "./async.js";
 export * from "./boolean.js";
 export * from "./class.js";
-export * from "./clone.js";
 export * from "./color.js";
 export * from "./constants.js";
 export * from "./data.js";

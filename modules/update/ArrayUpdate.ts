@@ -1,5 +1,5 @@
 import { ImmutableArray, withArrayItems, omitArrayItems } from "../util/array.js";
-import { getPrototype } from "../util/object.js";
+import { cloneObjectWith } from "../util/object.js";
 import { Update } from "./Update.js";
 
 /** Update that can be applied to an array to add/remove items. */
@@ -24,20 +24,12 @@ export class ArrayUpdate<T> extends Update<ImmutableArray<T>> {
 
 	/** Return an array update with an additional item marked for addition. */
 	add(...adds: T[]): this {
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			adds: [...this.adds, ...adds],
-		};
+		return cloneObjectWith(this, "deletes", withArrayItems(this.adds, ...adds));
 	}
 
 	/** Return an array update with an additional item marked for deletion. */
 	delete(...deletes: T[]): this {
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			deletes: [...this.deletes, ...deletes],
-		};
+		return cloneObjectWith(this, "deletes", withArrayItems(this.deletes, ...deletes));
 	}
 
 	// Implement `Transformable`

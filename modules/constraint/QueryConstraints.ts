@@ -1,5 +1,5 @@
 import type { Data } from "../util/data.js";
-import { getProp, getPrototype } from "../util/object.js";
+import { cloneObjectWith, getProp } from "../util/object.js";
 import { assert } from "../util/assert.js";
 import { limitArray } from "../util/array.js";
 import { Filterable, FilterConstraints } from "./FilterConstraints.js";
@@ -55,19 +55,10 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 
 	// Implement `Filterable`
 	filter(...filters: FilterList<T>[]): this {
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			filters: this.filters.filter(...filters),
-		};
+		return cloneObjectWith(this, "filters", this.filters.filter(...filters));
 	}
 	get unfilter(): this {
-		if (!this.filters.size) return this;
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			filters: EMPTY_FILTERS as FilterConstraints<T>,
-		};
+		return !this.filters.size ? this : cloneObjectWith(this, "filters", EMPTY_FILTERS);
 	}
 	match(item: T): boolean {
 		return this.filters.match(item);
@@ -75,19 +66,10 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 
 	// Implement `Sortable`
 	sort(...sorts: SortList<T>[]): this {
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			sorts: this.sorts.sort(...sorts),
-		};
+		return cloneObjectWith(this, "sorts", this.sorts.sort(...sorts));
 	}
 	get unsort(): this {
-		if (!this.sorts.size) return this;
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			sorts: EMPTY_SORTS as SortConstraints<T>,
-		};
+		return !this.sorts.size ? this : cloneObjectWith(this, "sorts", EMPTY_SORTS);
 	}
 	rank(left: T, right: T): number {
 		return this.sorts.rank(left, right);
@@ -95,26 +77,13 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 
 	// Implement `Queryable`
 	after(item: T): this {
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			filters: this.filters.with(..._getAfterFilters(this.sorts, item)),
-		};
+		return cloneObjectWith(this, "filters", this.filters.with(..._getAfterFilters(this.sorts, item)));
 	}
 	before(item: T): this {
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			filters: this.filters.with(..._getBeforeFilters(this.sorts, item)),
-		};
+		return cloneObjectWith(this, "filters", this.filters.with(..._getBeforeFilters(this.sorts, item)));
 	}
 	max(limit: number | null): this {
-		if (this.limit === limit) return this;
-		return {
-			__proto__: getPrototype(this),
-			...this,
-			limit,
-		};
+		return cloneObjectWith(this, "limit", limit);
 	}
 
 	// Implement `Rule`
