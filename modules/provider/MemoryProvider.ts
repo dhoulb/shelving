@@ -1,8 +1,8 @@
 import type { Data } from "../util/data.js";
-import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../db/Item.js";
+import type { ItemArray, ItemValue, ItemData, ItemStatement } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { Constraint } from "../constraint/Constraint.js";
-import { QueryConstraints } from "../constraint/QueryConstraints.js";
+import { Statement } from "../constraint/Statement.js";
 import { getRandomKey } from "../util/random.js";
 import { isArrayEqual } from "../util/equal.js";
 import { RequiredError } from "../error/RequiredError.js";
@@ -53,27 +53,27 @@ export class MemoryProvider implements Provider {
 		return this.getTable(collection).deleteItem(id);
 	}
 
-	getQueryTime(collection: string, constraints: ItemConstraints): number | null {
+	getQueryTime(collection: string, constraints: ItemStatement): number | null {
 		return this.getTable(collection).getQueryTime(constraints);
 	}
 
-	getQuery(collection: string, constraints: ItemConstraints): ItemArray {
+	getQuery(collection: string, constraints: ItemStatement): ItemArray {
 		return this.getTable(collection).getQuery(constraints);
 	}
 
-	getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterable<ItemArray> {
+	getQuerySequence(collection: string, constraints: ItemStatement): AsyncIterable<ItemArray> {
 		return this.getTable(collection).getQuerySequence(constraints);
 	}
 
-	setQuery(collection: string, constraints: ItemConstraints, data: Data): number {
+	setQuery(collection: string, constraints: ItemStatement, data: Data): number {
 		return this.getTable(collection).setQuery(constraints, data);
 	}
 
-	updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): number {
+	updateQuery(collection: string, constraints: ItemStatement, updates: Updates): number {
 		return this.getTable(collection).updateQuery(constraints, updates);
 	}
 
-	deleteQuery(collection: string, constraints: ItemConstraints): number {
+	deleteQuery(collection: string, constraints: ItemStatement): number {
 		return this.getTable(collection).deleteQuery(constraints);
 	}
 }
@@ -173,15 +173,15 @@ export class MemoryTable<T extends Data = Data> {
 		}
 	}
 
-	getQueryTime(constraints: ItemConstraints<T>): number | null {
+	getQueryTime(constraints: ItemStatement<T>): number | null {
 		return this._times.get(_getQueryKey(constraints)) || null;
 	}
 
-	getQuery(constraints: ItemConstraints<T>): ItemArray<T> {
+	getQuery(constraints: ItemStatement<T>): ItemArray<T> {
 		return getArray(constraints.transform(this._data.values()));
 	}
 
-	async *getQuerySequence(constraints: ItemConstraints<T>): AsyncIterable<ItemArray<T>> {
+	async *getQuerySequence(constraints: ItemStatement<T>): AsyncIterable<ItemArray<T>> {
 		let last = this.getQuery(constraints);
 		yield last;
 		while (true) {
@@ -192,7 +192,7 @@ export class MemoryTable<T extends Data = Data> {
 	}
 
 	/** Subscribe to a query in this table, but only if the query has been explicitly set (i.e. has a time). */
-	async *getCachedQuerySequence(constraints: ItemConstraints<T>): AsyncIterable<ItemArray<T>> {
+	async *getCachedQuerySequence(constraints: ItemStatement<T>): AsyncIterable<ItemArray<T>> {
 		const key = _getQueryKey(constraints);
 		let last: ItemArray<T> | undefined = undefined;
 		if (this._times.has(key)) {
@@ -224,7 +224,7 @@ export class MemoryTable<T extends Data = Data> {
 		}
 	}
 
-	setQueryItems(constraints: ItemConstraints<T>, items: ItemArray<T>): void {
+	setQueryItems(constraints: ItemStatement<T>, items: ItemArray<T>): void {
 		const key = _getQueryKey(constraints);
 		const now = Date.now();
 		this._times.set(key, now);
@@ -232,7 +232,7 @@ export class MemoryTable<T extends Data = Data> {
 		this._changed.resolve();
 	}
 
-	async *setQueryItemsSequence(constraints: ItemConstraints<T>, sequence: AsyncIterable<ItemArray<T>>): AsyncIterable<ItemArray<T>> {
+	async *setQueryItemsSequence(constraints: ItemStatement<T>, sequence: AsyncIterable<ItemArray<T>>): AsyncIterable<ItemArray<T>> {
 		const key = _getQueryKey(constraints);
 		for await (const items of sequence) {
 			const now = Date.now();
@@ -243,7 +243,7 @@ export class MemoryTable<T extends Data = Data> {
 		}
 	}
 
-	setQuery(constraints: ItemConstraints<T>, data: T): number {
+	setQuery(constraints: ItemStatement<T>, data: T): number {
 		const now = Date.now();
 		let count = 0;
 		for (const { id } of _getWriteConstraints(constraints).transform(this._data.values())) {
@@ -259,7 +259,7 @@ export class MemoryTable<T extends Data = Data> {
 		return count;
 	}
 
-	updateQuery(constraints: ItemConstraints<T>, updates: Updates<T>): number {
+	updateQuery(constraints: ItemStatement<T>, updates: Updates<T>): number {
 		const now = Date.now();
 		let count = 0;
 		for (const oldItem of _getWriteConstraints(constraints).transform(this._data.values())) {
@@ -279,7 +279,7 @@ export class MemoryTable<T extends Data = Data> {
 		return count;
 	}
 
-	deleteQuery(constraints: ItemConstraints<T>): number {
+	deleteQuery(constraints: ItemStatement<T>): number {
 		const now = Date.now();
 		let count = 0;
 		for (const { id } of _getWriteConstraints(constraints).transform(this._data.values())) {
@@ -297,7 +297,7 @@ export class MemoryTable<T extends Data = Data> {
 }
 
 // When we're writing data, if there's no limit set the results don't need to be sorted (for performance).
-const _getWriteConstraints = <T extends Data>(constraints: QueryConstraints<T>): Constraint<T> => (constraints.limit ? constraints : constraints.filters);
+const _getWriteConstraints = <T extends Data>(statement: Statement<T>): Constraint<T> => (statement.limit ? statement : statement.filters);
 
 // Queries that have no limit don't care about sorting either.
-const _getQueryKey = <T extends Data>(constraints: ItemConstraints<T>): string => (constraints.limit ? `"filters":${constraints.filters.toString()}}` : QueryConstraints.prototype.toString.call(constraints));
+const _getQueryKey = <T extends Data>(statement: ItemStatement<T>): string => (statement.limit ? `"filters":${statement.filters.toString()}}` : Statement.prototype.toString.call(statement));

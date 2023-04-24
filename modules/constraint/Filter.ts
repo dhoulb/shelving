@@ -1,9 +1,8 @@
-import { Data, FlatDataKey, getDataProps } from "../util/data.js";
-import type { Nullish } from "../util/null.js";
+import { Data, FlatDataKey } from "../util/data.js";
 import { ImmutableArray, isArray } from "../util/array.js";
 import type { Matchable, Match } from "../util/match.js";
 import { isArrayWith, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notInArray, isEqual, notEqual } from "../util/equal.js";
-import { filterItems, isIterable } from "../util/iterate.js";
+import { filterItems } from "../util/iterate.js";
 import { getProp } from "../util/object.js";
 import { splitString } from "../util/string.js";
 import type { Constraint } from "./Constraint.js";
@@ -32,9 +31,6 @@ export type FilterProps<T extends Data> = {
 /** Format that allows filters to be specified as a string, e.g. `!name` means `name is not` and `age>` means `age is more than` and `tags[]` means `tags array contains` */
 export type FilterKey<T extends Data> = keyof FilterProps<T>;
 
-/** List of filters in a flexible format. */
-export type FilterList<T extends Data> = FilterProps<T> | FilterConstraint<T> | Iterable<Nullish<FilterProps<T> | FilterConstraint<T>>>;
-
 /** Map `FilterOperator` to its corresponding `Match` function. */
 const MATCHERS: { [K in FilterOperator]: Match } = {
 	IS: isEqual,
@@ -55,7 +51,7 @@ const MATCHERS: { [K in FilterOperator]: Match } = {
  * @param operator FilterOperator, e.g. `IS` or `CONTAINS`
  * @param value Value the specified property should be matched against.
  */
-export class FilterConstraint<T extends Data = Data> implements Constraint<T>, Matchable<[T]> {
+export class Filter<T extends Data = Data> implements Constraint<T>, Matchable<[T]> {
 	readonly keys: readonly [string, ...string[]];
 	readonly operator: FilterOperator;
 	readonly value: unknown;
@@ -114,16 +110,5 @@ export class FilterConstraint<T extends Data = Data> implements Constraint<T>, M
 	}
 	toString(): string {
 		return `"${this.filterKey}":${JSON.stringify(this.value)}`;
-	}
-}
-
-/** Turn `FilterList` into a list of `FilterConstraint` instances. */
-export function* getFilters<T extends Data>(list: FilterList<T> | FilterList<T>[]): Iterable<FilterConstraint<T>> {
-	if (list instanceof FilterConstraint) {
-		yield list;
-	} else if (isIterable(list)) {
-		for (const filter of list) if (filter) yield* getFilters(filter);
-	} else {
-		for (const [key, value] of getDataProps(list)) yield new FilterConstraint<T>(key, value);
 	}
 }

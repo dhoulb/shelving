@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
 import type { Data } from "../util/data.js";
-import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
+import type { ItemArray, ItemStatement, ItemValue } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
-import { QueryConstraints } from "../constraint/QueryConstraints.js";
+import { Statement } from "../constraint/Statement.js";
 import { Provider, AsyncProvider } from "./Provider.js";
 import type { ThroughProvider, AsyncThroughProvider } from "./ThroughProvider.js";
 
@@ -23,7 +23,7 @@ abstract class AbstractDebugProvider {
 			console.error("ITERATE", key, thrown);
 		}
 	}
-	async *getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterableIterator<ItemArray> {
+	async *getQuerySequence(collection: string, constraints: ItemStatement): AsyncIterableIterator<ItemArray> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("ITERATE", key, "DATA:");
@@ -97,7 +97,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	getQuery(collection: string, constraints: ItemConstraints): ItemArray {
+	getQuery(collection: string, constraints: ItemStatement): ItemArray {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			const items = this.source.getQuery(collection, constraints);
@@ -108,7 +108,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	setQuery(collection: string, constraints: ItemConstraints, data: Data): number {
+	setQuery(collection: string, constraints: ItemStatement, data: Data): number {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			const num = this.source.setQuery(collection, constraints, data);
@@ -119,7 +119,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): number {
+	updateQuery(collection: string, constraints: ItemStatement, updates: Updates): number {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			const num = this.source.updateQuery(collection, constraints, updates);
@@ -130,7 +130,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	deleteQuery(collection: string, constraints: ItemConstraints): number {
+	deleteQuery(collection: string, constraints: ItemStatement): number {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			const num = this.source.deleteQuery(collection, constraints);
@@ -207,7 +207,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
+	async getQuery(collection: string, constraints: ItemStatement): Promise<ItemArray> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("GET:", key);
@@ -219,7 +219,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number> {
+	async setQuery(collection: string, constraints: ItemStatement, data: Data): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("SET:", key, "DATA:", data);
@@ -231,7 +231,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number> {
+	async updateQuery(collection: string, constraints: ItemStatement, updates: Updates): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("UPDATE:", key, "UPDATES:", updates);
@@ -243,7 +243,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async deleteQuery(collection: string, constraints: ItemConstraints): Promise<number> {
+	async deleteQuery(collection: string, constraints: ItemStatement): Promise<number> {
 		const key = _getQueryKey(collection, constraints);
 		try {
 			console.log("DELETE:", key);
@@ -258,4 +258,4 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 }
 
 const _getItemKey = (collection: string, id: string): string => `${collection}/${id}`;
-const _getQueryKey = (collection: string, constraints: QueryConstraints): string => `${collection}?${QueryConstraints.prototype.toString.call(constraints)}`;
+const _getQueryKey = (collection: string, statement: Statement): string => `${collection}?${Statement.prototype.toString.call(statement)}`;

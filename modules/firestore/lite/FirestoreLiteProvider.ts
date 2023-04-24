@@ -29,7 +29,7 @@ import {
 import type { Data } from "../../util/data.js";
 import type { Entry } from "../../util/entry.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
-import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
+import type { ItemArray, ItemValue, ItemData, ItemStatement } from "../../db/Item.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, Update } from "../../update/index.js";
 
@@ -56,10 +56,10 @@ const DIRECTIONS = {
 } as const;
 
 /** Create a corresponding `QueryReference` from a Query. */
-function _getQuery(firestore: Firestore, collection: string, constraints: ItemConstraints): FirestoreQueryReference {
+function _getQuery(firestore: Firestore, collection: string, constraints: ItemStatement): FirestoreQueryReference {
 	return firestoreQuery(firestoreCollection(firestore, collection), ..._yieldConstraints(constraints));
 }
-function* _yieldConstraints({ sorts, filters, limit }: ItemConstraints): Iterable<FirestoreQueryConstraint> {
+function* _yieldConstraints({ sorts, filters, limit }: ItemStatement): Iterable<FirestoreQueryConstraint> {
 	for (const { key, direction } of sorts) yield firestoreOrderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) yield firestoreWhere(key === "id" ? ID : key, OPERATORS[operator], value);
 	if (typeof limit === "number") yield firestoreLimit(limit);
@@ -133,24 +133,24 @@ export class FirestoreLiteProvider implements AsyncProvider {
 	async deleteItem(collection: string, id: string): Promise<void> {
 		await deleteDoc(firestoreDocument(this._firestore, collection, id));
 	}
-	async getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
+	async getQuery(collection: string, constraints: ItemStatement): Promise<ItemArray> {
 		return _getItems(await getDocs(_getQuery(this._firestore, collection, constraints)));
 	}
 	getQuerySequence(): AsyncIterableIterator<ItemArray> {
 		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
-	async setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number> {
+	async setQuery(collection: string, constraints: ItemStatement, data: Data): Promise<number> {
 		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
 		await Promise.all(snapshot.docs.map(s => setDoc(s.ref, data)));
 		return snapshot.size;
 	}
-	async updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number> {
+	async updateQuery(collection: string, constraints: ItemStatement, updates: Updates): Promise<number> {
 		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
 		const fieldValues = Array.from(_getFieldValues(Object.entries(updates))) as [string, unknown];
 		await Promise.all(snapshot.docs.map(s => updateDoc(s.ref, ...fieldValues)));
 		return snapshot.size;
 	}
-	async deleteQuery(collection: string, constraints: ItemConstraints): Promise<number> {
+	async deleteQuery(collection: string, constraints: ItemStatement): Promise<number> {
 		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 		return snapshot.size;

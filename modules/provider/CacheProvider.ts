@@ -1,5 +1,5 @@
 import type { Data } from "../util/data.js";
-import type { ItemArray, ItemValue, ItemConstraints } from "../db/Item.js";
+import type { ItemArray, ItemValue, ItemStatement } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { AsyncProvider } from "./Provider.js";
 import type { AsyncThroughProvider } from "./ThroughProvider.js";
@@ -41,27 +41,27 @@ export class CacheProvider implements AsyncThroughProvider {
 		await this.source.deleteItem(collection, id);
 		this.memory.getTable(collection).deleteItem(id);
 	}
-	async getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
+	async getQuery(collection: string, constraints: ItemStatement): Promise<ItemArray> {
 		const items = await this.source.getQuery(collection, constraints);
 		const table = this.memory.getTable(collection);
 		table.setQueryItems(constraints, items);
 		return items;
 	}
-	async *getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterableIterator<ItemArray> {
+	async *getQuerySequence(collection: string, constraints: ItemStatement): AsyncIterableIterator<ItemArray> {
 		const table = this.memory.getTable(collection);
 		yield* table.setQueryItemsSequence(constraints, this.source.getQuerySequence(collection, constraints));
 	}
-	async setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number> {
+	async setQuery(collection: string, constraints: ItemStatement, data: Data): Promise<number> {
 		const count = await this.source.setQuery(collection, constraints, data);
 		this.memory.getTable(collection).setQuery(constraints, data);
 		return count;
 	}
-	async updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number> {
+	async updateQuery(collection: string, constraints: ItemStatement, updates: Updates): Promise<number> {
 		const count = await this.source.updateQuery(collection, constraints, updates);
 		this.memory.getTable(collection).updateQuery(constraints, updates);
 		return count;
 	}
-	async deleteQuery(collection: string, constraints: ItemConstraints): Promise<number> {
+	async deleteQuery(collection: string, constraints: ItemStatement): Promise<number> {
 		const count = await this.source.deleteQuery(collection, constraints);
 		this.memory.getTable(collection).deleteQuery(constraints);
 		return count;

@@ -1,6 +1,6 @@
 import type { Data } from "../util/data.js";
-import type { FilterList } from "../constraint/FilterConstraint.js";
-import type { SortList } from "../constraint/SortConstraint.js";
+import type { PossibleFilters } from "../constraint/Filters.js";
+import type { PossibleSorts } from "../constraint/Sorts.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
 import { ItemData, AsyncItem, Item, ItemValue } from "./Item.js";
@@ -13,7 +13,7 @@ abstract class BaseCollection<T extends Data = Data> {
 	abstract readonly collection: string;
 
 	/** Create a query on this item's collection. */
-	abstract query(filters?: FilterList<Partial<ItemData<T>>>, sorts?: SortList<Partial<ItemData<T>>>, limit?: number | null): Query<T> | AsyncQuery<T>;
+	abstract query(filters?: PossibleFilters<ItemData<T>>, sorts?: PossibleSorts<ItemData<T>>, limit?: number | null): Query<T> | AsyncQuery<T>;
 
 	/** Create a query on this item's collection. */
 	abstract item(id: string): Item<T> | AsyncItem<T>;
@@ -68,7 +68,7 @@ export class Collection<T extends Data = Data> extends BaseCollection<T> {
 		this.provider = provider;
 		this.collection = collection;
 	}
-	query(filters?: FilterList<ItemData<T>>, sorts?: SortList<ItemData<T>>, limit?: number | null): Query<T> {
+	query(filters?: PossibleFilters<ItemData<T>>, sorts?: PossibleSorts<ItemData<T>>, limit?: number | null): Query<T> {
 		return new Query<T>(this.provider, this.collection, filters, sorts, limit);
 	}
 	item(id: string): Item<T> {
@@ -100,7 +100,7 @@ export class AsyncCollection<T extends Data = Data> extends BaseCollection<T> {
 		this.provider = provider;
 		this.collection = collection;
 	}
-	query(filters?: FilterList<ItemData<T>>, sorts?: SortList<ItemData<T>>, limit?: number | null): AsyncQuery<T> {
+	query(filters?: PossibleFilters<ItemData<T>>, sorts?: PossibleSorts<ItemData<T>>, limit?: number | null): AsyncQuery<T> {
 		return new AsyncQuery<T>(this.provider, this.collection, filters, sorts, limit);
 	}
 	item(id: string): AsyncItem<T> {

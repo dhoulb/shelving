@@ -2,9 +2,9 @@ import type { ImmutableArray } from "../util/array.js";
 import type { Stop, Handler, Dispatch } from "../util/function.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
 import type { Updates } from "../update/DataUpdate.js";
-import { QueryConstraints } from "../constraint/QueryConstraints.js";
-import { FilterConstraint, FilterKey } from "../constraint/FilterConstraint.js";
-import { FilterConstraints } from "../constraint/FilterConstraints.js";
+import { Statement } from "../constraint/Statement.js";
+import { Filter, FilterKey } from "../constraint/Filter.js";
+import { Filters } from "../constraint/Filters.js";
 import { Data, getData } from "../util/data.js";
 import { runSequence } from "../util/sequence.js";
 import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
@@ -27,10 +27,10 @@ export function* getIDs<T extends Data>(entities: Iterable<ItemData<T>>): Iterab
 export type ItemArray<T extends Data = Data> = ImmutableArray<ItemData<T>>;
 
 /** A set of query constraints for item data. */
-export type ItemConstraints<T extends Data = Data> = QueryConstraints<ItemData<T>>;
+export type ItemStatement<T extends Data = Data> = Statement<ItemData<T>>;
 
-/** Get a `FilterConstraints` instance that targets a single item by its ID. */
-export const getItemConstraints = <T extends Data>(id: string) => new QueryConstraints<ItemData<T>>(new FilterConstraints<ItemData<T>>(new FilterConstraint<ItemData<T>>("id" as FilterKey<ItemData<T>>, id)), undefined, 1);
+/** Get a `Filter` instance that targets a single item by its ID. */
+export const getItemStatement = <T extends Data>(id: string) => new Statement<ItemData<T>>(new Filters<ItemData<T>>(new Filter<ItemData<T>>("id" as FilterKey<ItemData<T>>, id)), undefined, 1);
 
 /** Reference to an item in a synchronous or asynchronous database. */
 abstract class BaseItem<T extends Data = Data> implements AsyncIterable<ItemValue<T>> {

@@ -1,8 +1,8 @@
 import type { DataKey, Datas } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
-import type { FilterList } from "../constraint/FilterConstraint.js";
-import type { SortList } from "../constraint/SortConstraint.js";
+import type { PossibleFilters } from "../constraint/Filters.js";
+import type { PossibleSorts } from "../constraint/Sorts.js";
 import type { ItemData, ItemValue } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
 import { Item, AsyncItem } from "./Item.js";
@@ -18,7 +18,7 @@ abstract class BaseDatabase<T extends Datas> {
 	abstract collection<K extends DataKey<T>>(collection: K): Collection<T[K]> | AsyncCollection<T[K]>;
 
 	/** Create a query on a collection in this database. */
-	abstract query<K extends DataKey<T>>(collection: K, filters?: FilterList<Partial<ItemData<T[K]>>>, sorts?: SortList<Partial<ItemData<T[K]>>>, limit?: number | null): Query<T[K]> | AsyncQuery<T[K]>;
+	abstract query<K extends DataKey<T>>(collection: K, filters?: PossibleFilters<Partial<ItemData<T[K]>>>, sorts?: PossibleSorts<Partial<ItemData<T[K]>>>, limit?: number | null): Query<T[K]> | AsyncQuery<T[K]>;
 
 	/** Reference an item in a collection in this database. */
 	abstract item<K extends DataKey<T>>(collection: K, id: string): Item<T[K]> | AsyncItem<T[K]>;
@@ -72,7 +72,7 @@ export class Database<T extends Datas = Datas> extends BaseDatabase<T> {
 	collection<K extends DataKey<T>>(collection: K): Collection<T[K]> {
 		return new Collection<T[K]>(this.provider, collection);
 	}
-	query<K extends DataKey<T>>(collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): Query<T[K]> {
+	query<K extends DataKey<T>>(collection: K, filters?: PossibleFilters<ItemData<T[K]>>, sorts?: PossibleSorts<ItemData<T[K]>>, limit?: number | null): Query<T[K]> {
 		return new Query<T[K]>(this.provider, collection, filters, sorts, limit);
 	}
 	item<K extends DataKey<T>>(collection: K, id: string): Item<T[K]> {
@@ -108,7 +108,7 @@ export class AsyncDatabase<T extends Datas = Datas> extends BaseDatabase<T> {
 	collection<K extends DataKey<T>>(collection: K): AsyncCollection<T[K]> {
 		return new AsyncCollection<T[K]>(this.provider, collection);
 	}
-	query<K extends DataKey<T>>(collection: K, filters?: FilterList<ItemData<T[K]>>, sorts?: SortList<ItemData<T[K]>>, limit?: number | null): AsyncQuery<T[K]> {
+	query<K extends DataKey<T>>(collection: K, filters?: PossibleFilters<ItemData<T[K]>>, sorts?: PossibleSorts<ItemData<T[K]>>, limit?: number | null): AsyncQuery<T[K]> {
 		return new AsyncQuery<T[K]>(this.provider, collection, filters, sorts, limit);
 	}
 	item<K extends DataKey<T>>(collection: K, id: string): AsyncItem<T[K]> {

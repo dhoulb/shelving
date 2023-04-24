@@ -1,6 +1,6 @@
 import type { Updates } from "../update/DataUpdate.js";
 import type { Data } from "../util/data.js";
-import type { ItemArray, ItemConstraints, ItemValue } from "../db/Item.js";
+import type { ItemArray, ItemStatement, ItemValue } from "../db/Item.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
 abstract class AbstractProvider {
@@ -49,12 +49,12 @@ abstract class AbstractProvider {
 	 *
 	 * @return Set of values in `id: data` format.
 	 */
-	abstract getQuery(collection: string, constraints: ItemConstraints): ItemArray | PromiseLike<ItemArray>;
+	abstract getQuery(collection: string, constraints: ItemStatement): ItemArray | PromiseLike<ItemArray>;
 
 	/**
 	 * Subscribe to all matching items with an async iterator.
 	 */
-	abstract getQuerySequence(collection: string, constraints: ItemConstraints): AsyncIterable<ItemArray>;
+	abstract getQuerySequence(collection: string, constraints: ItemStatement): AsyncIterable<ItemArray>;
 
 	/**
 	 * Set the data of all matching items.
@@ -62,7 +62,7 @@ abstract class AbstractProvider {
 	 * @param data Data to set matching items to.
 	 * @return Number of items that were set.
 	 */
-	abstract setQuery(collection: string, constraints: ItemConstraints, data: Data): number | PromiseLike<number>;
+	abstract setQuery(collection: string, constraints: ItemStatement, data: Data): number | PromiseLike<number>;
 
 	/**
 	 * Update the data of all matching items.
@@ -70,13 +70,13 @@ abstract class AbstractProvider {
 	 * @param updates Set of property updates to apply to matching items.
 	 * @return Number of items that were updated.
 	 */
-	abstract updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): number | PromiseLike<number>;
+	abstract updateQuery(collection: string, constraints: ItemStatement, updates: Updates): number | PromiseLike<number>;
 
 	/**
 	 * Delete all matching items.
 	 * @return Number of items that were deleted.
 	 */
-	abstract deleteQuery(collection: string, constraints: ItemConstraints): number | PromiseLike<number>;
+	abstract deleteQuery(collection: string, constraints: ItemStatement): number | PromiseLike<number>;
 }
 
 /** Provider with a fully synchronous interface */
@@ -86,10 +86,10 @@ export abstract class Provider extends AbstractProvider {
 	abstract override setItem(collection: string, id: string, data: Data): void;
 	abstract override updateItem(collection: string, id: string, updates: Updates): void;
 	abstract override deleteItem(collection: string, id: string): void;
-	abstract override getQuery(collection: string, constraints: ItemConstraints): ItemArray;
-	abstract override setQuery(collection: string, constraints: ItemConstraints, data: Data): number;
-	abstract override updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): number;
-	abstract override deleteQuery(collection: string, constraints: ItemConstraints): number;
+	abstract override getQuery(collection: string, constraints: ItemStatement): ItemArray;
+	abstract override setQuery(collection: string, constraints: ItemStatement, data: Data): number;
+	abstract override updateQuery(collection: string, constraints: ItemStatement, updates: Updates): number;
+	abstract override deleteQuery(collection: string, constraints: ItemStatement): number;
 }
 
 /** Provider with a fully asynchronous interface */
@@ -99,8 +99,8 @@ export abstract class AsyncProvider extends AbstractProvider {
 	abstract override setItem(collection: string, id: string, data: Data): Promise<void>;
 	abstract override updateItem(collection: string, id: string, updates: Updates): Promise<void>;
 	abstract override deleteItem(collection: string, id: string): Promise<void>;
-	abstract override getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray>;
-	abstract override setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number>;
-	abstract override updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number>;
-	abstract override deleteQuery(collection: string, constraints: ItemConstraints): Promise<number>;
+	abstract override getQuery(collection: string, constraints: ItemStatement): Promise<ItemArray>;
+	abstract override setQuery(collection: string, constraints: ItemStatement, data: Data): Promise<number>;
+	abstract override updateQuery(collection: string, constraints: ItemStatement, updates: Updates): Promise<number>;
+	abstract override deleteQuery(collection: string, constraints: ItemStatement): Promise<number>;
 }

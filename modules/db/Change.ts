@@ -3,7 +3,7 @@ import type { ImmutableArray } from "../util/array.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
 import { Updates } from "../update/DataUpdate.js";
 import { notNullish, Nullish } from "../util/null.js";
-import { getItemConstraints } from "./Item.js";
+import { getItemStatement } from "./Item.js";
 
 /** Change on a collection. */
 export interface Change {
@@ -57,7 +57,7 @@ function _changeItem(this: Provider, change: WriteChange): ItemChange {
 	const { action, collection } = change;
 	if (action === "ADD") return { action: "SET", collection, id: this.addItem(collection, change.data), data: change.data };
 	else if (action === "SET") this.setItem(collection, change.id, change.data);
-	else if (action === "UPDATE") this.updateQuery(collection, getItemConstraints(change.id), change.updates);
+	else if (action === "UPDATE") this.updateQuery(collection, getItemStatement(change.id), change.updates);
 	else if (action === "DELETE") this.deleteItem(collection, change.id);
 	return change;
 }
@@ -70,7 +70,7 @@ async function _changeAsyncItem(this: AsyncProvider, change: WriteChange): Promi
 	const { collection, action } = change;
 	if (action === "ADD") return { action: "SET", collection, id: await this.addItem(collection, change.data), data: change.data };
 	else if (action === "SET") await this.setItem(collection, change.id, change.data);
-	else if (action === "UPDATE") await this.updateQuery(collection, getItemConstraints(change.id), change.updates);
+	else if (action === "UPDATE") await this.updateQuery(collection, getItemStatement(change.id), change.updates);
 	else if (action === "DELETE") await this.deleteItem(collection, change.id);
 	return change;
 }

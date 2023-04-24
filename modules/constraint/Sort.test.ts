@@ -1,4 +1,4 @@
-import { SortConstraint } from "../index.js";
+import { Sort } from "../index.js";
 import { expectOrderedKeys } from "../test/util.js";
 
 type SortableEntity = { id: string; str: string; num: number; sub: { str: string; num: number } };
@@ -19,17 +19,17 @@ const numDesc = ["c", "a", "d", "b"];
 
 test("construct", () => {
 	// Sort empty.
-	expectOrderedKeys(new SortConstraint<SortableEntity>("str").transform([]), []);
+	expectOrderedKeys(new Sort<SortableEntity>("str").transform([]), []);
 	// Sort by id (change).
-	expectOrderedKeys(new SortConstraint<SortableEntity>("id").transform(allRand), idAsc);
-	expectOrderedKeys(new SortConstraint<SortableEntity>("id").transform(allRand), idAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("id").transform(allRand), idAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("id").transform(allRand), idAsc);
 	// Sort by string (change).
-	expectOrderedKeys(new SortConstraint<SortableEntity>("str").transform(allRand), strAsc);
-	expectOrderedKeys(new SortConstraint<SortableEntity>("!str").transform(allRand), strDesc);
+	expectOrderedKeys(new Sort<SortableEntity>("str").transform(allRand), strAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("!str").transform(allRand), strDesc);
 	// Sort by number (change).
-	expectOrderedKeys(new SortConstraint<SortableEntity>("num").transform(allRand), numAsc);
-	expectOrderedKeys(new SortConstraint<SortableEntity>("!num").transform(allRand), numDesc);
+	expectOrderedKeys(new Sort<SortableEntity>("num").transform(allRand), numAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("!num").transform(allRand), numDesc);
 	// Sort by deep number (change).
-	expectOrderedKeys(new SortConstraint<SortableEntity>("sub.num").transform(allRand), numAsc);
-	expectOrderedKeys(new SortConstraint<SortableEntity>("!sub.num").transform(allRand), numDesc);
+	expectOrderedKeys(new Sort<SortableEntity>("sub.num").transform(allRand), numAsc);
+	expectOrderedKeys(new Sort<SortableEntity>("!sub.num").transform(allRand), numDesc);
 });

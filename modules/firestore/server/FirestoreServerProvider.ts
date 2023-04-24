@@ -9,7 +9,7 @@ import { Firestore, FieldValue, FieldPath } from "@google-cloud/firestore";
 import type { Entry } from "../../util/entry.js";
 import type { Data } from "../../util/data.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
-import type { ItemArray, ItemValue, ItemData, ItemConstraints } from "../../db/Item.js";
+import type { ItemArray, ItemValue, ItemData, ItemStatement } from "../../db/Item.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
 import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, Update } from "../../update/index.js";
 
@@ -36,7 +36,7 @@ const DIRECTIONS = {
 } as const;
 
 /** Create a corresponding `QueryReference` from a Query. */
-function _getQuery(firestore: Firestore, collection: string, constraints: ItemConstraints): FirestoreQuery {
+function _getQuery(firestore: Firestore, collection: string, constraints: ItemStatement): FirestoreQuery {
 	const { sorts, filters, limit } = constraints;
 	let query: FirestoreQuery = firestore.collection(collection);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
@@ -127,11 +127,11 @@ export class FirestoreServerProvider implements AsyncProvider {
 		await this._firestore.collection(collection).doc(id).delete();
 	}
 
-	async getQuery(collection: string, constraints: ItemConstraints): Promise<ItemArray> {
+	async getQuery(collection: string, constraints: ItemStatement): Promise<ItemArray> {
 		return _getItemArray(await _getQuery(this._firestore, collection, constraints).get());
 	}
 
-	getQuerySequence<K extends string>(collection: K, constraints: ItemConstraints): AsyncIterable<ItemArray> {
+	getQuerySequence<K extends string>(collection: K, constraints: ItemStatement): AsyncIterable<ItemArray> {
 		const ref = _getQuery(this._firestore, collection, constraints);
 		return new LazyDeferredSequence(({ resolve, reject }) =>
 			ref.onSnapshot(
@@ -141,22 +141,22 @@ export class FirestoreServerProvider implements AsyncProvider {
 		);
 	}
 
-	async setQuery(collection: string, constraints: ItemConstraints, data: Data): Promise<number> {
+	async setQuery(collection: string, constraints: ItemStatement, data: Data): Promise<number> {
 		return await bulkWrite(this._firestore, collection, constraints, (w, s) => void w.set(s.ref, data));
 	}
 
-	async updateQuery(collection: string, constraints: ItemConstraints, updates: Updates): Promise<number> {
+	async updateQuery(collection: string, constraints: ItemStatement, updates: Updates): Promise<number> {
 		const fieldValues = _getFieldValues(Object.entries(updates)) as [string, unknown];
 		return await bulkWrite(this._firestore, collection, constraints, (w, s) => void w.update(s.ref, ...fieldValues));
 	}
 
-	async deleteQuery(collection: string, constraints: ItemConstraints): Promise<number> {
+	async deleteQuery(collection: string, constraints: ItemStatement): Promise<number> {
 		return await bulkWrite(this._firestore, collection, constraints, (w, s) => void w.delete(s.ref));
 	}
 }
 
 /** Perform a bulk update on a set of documents using a `BulkWriter` */
-async function bulkWrite(firestore: Firestore, collection: string, constraints: ItemConstraints, callback: (writer: FirestoreBulkWriter, snapshot: FirestoreQueryDocumentSnapshot) => void): Promise<number> {
+async function bulkWrite(firestore: Firestore, collection: string, constraints: ItemStatement, callback: (writer: FirestoreBulkWriter, snapshot: FirestoreQueryDocumentSnapshot) => void): Promise<number> {
 	let count = 0;
 	const writer = firestore.bulkWriter();
 	const query = _getQuery(firestore, collection, constraints).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.

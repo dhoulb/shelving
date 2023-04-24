@@ -2,15 +2,14 @@ import type { Data } from "../util/data.js";
 import { cloneObjectWith, getProp } from "../util/object.js";
 import { assert } from "../util/assert.js";
 import { limitArray } from "../util/array.js";
-import { Filterable, FilterConstraints } from "./FilterConstraints.js";
-import { Sortable, SortConstraints } from "./SortConstraints.js";
+import { Filterable, Filters, PossibleFilters } from "./Filters.js";
+import { PossibleSorts, Sortable, Sorts } from "./Sorts.js";
 import { Constraint } from "./Constraint.js";
-import { FilterConstraint, FilterKey, FilterList } from "./FilterConstraint.js";
-import { SortList } from "./SortConstraint.js";
+import { Filter, FilterKey } from "./Filter.js";
 
 // Instances to save resources for the default case (empty query).
-const EMPTY_FILTERS = new FilterConstraints<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
-const EMPTY_SORTS = new SortConstraints<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+const EMPTY_SORTS = new Sorts<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** Interface that combines Filterable, Sortable, Sliceable. */
 export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T> {
@@ -38,21 +37,21 @@ export interface Queryable<T extends Data> extends Filterable<T>, Sortable<T> {
 }
 
 /** Allows filtering, sorting, and limiting on a set of results. */
-export class QueryConstraints<T extends Data = Data> extends Constraint<T> implements Queryable<T> {
-	readonly filters: FilterConstraints<T>;
-	readonly sorts: SortConstraints<T>;
+export class Statement<T extends Data = Data> extends Constraint<T> implements Queryable<T> {
+	readonly filters: Filters<T>;
+	readonly sorts: Sorts<T>;
 	readonly limit: number | null;
 
-	constructor(filters: FilterList<T> | FilterConstraints<T> = EMPTY_FILTERS, sorts: SortList<T> | SortConstraints<T> = EMPTY_SORTS, limit: number | null = null) {
+	constructor(filters: PossibleFilters<T> = EMPTY_FILTERS as Filters<T>, sorts: PossibleSorts<T> = EMPTY_SORTS as Sorts<T>, limit: number | null = null) {
 		super();
-		this.filters = filters instanceof FilterConstraints ? filters : new FilterConstraints<T>(filters);
-		this.sorts = sorts instanceof SortConstraints ? sorts : new SortConstraints<T>(sorts);
+		this.filters = Filters.from<T>(filters);
+		this.sorts = Sorts.from<T>(sorts);
 		this.limit = limit;
 	}
 
 	// Implement `Filterable`
-	filter(...filters: FilterList<T>[]): this {
-		return cloneObjectWith(this, "filters", this.filters.filter(...filters));
+	filter(filters: PossibleFilters<T>): this {
+		return cloneObjectWith(this, "filters", this.filters.filter(filters));
 	}
 	get unfiltered(): this {
 		return cloneObjectWith(this, "filters", this.filters.unfiltered);
@@ -62,11 +61,11 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	}
 
 	// Implement `Sortable`
-	sort(...sorts: SortList<T>[]): this {
-		return cloneObjectWith(this, "sorts", this.sorts.sort(...sorts));
+	sort(sorts: PossibleSorts<T>): this {
+		return cloneObjectWith(this, "sorts", this.sorts.sort(sorts));
 	}
 	get unsorted(): this {
-		return cloneObjectWith(this, "filters", this.sorts.unsorted);
+		return cloneObjectWith(this, "sorts", this.sorts.unsorted);
 	}
 	rank(left: T, right: T): number {
 		return this.sorts.rank(left, right);
@@ -98,22 +97,22 @@ export class QueryConstraints<T extends Data = Data> extends Constraint<T> imple
 	}
 }
 
-function* _getAfterFilters<T extends Data>(sorts: SortConstraints<T>, item: T): Iterable<FilterConstraint<T>> {
+function* _getAfterFilters<T extends Data>(sorts: Sorts<T>, item: T): Iterable<Filter<T>> {
 	const lastSort = sorts.last;
 	assert(lastSort);
 	for (const sort of sorts) {
 		const { key, keys, direction } = sort;
 		const filterKey = (direction === "ASC" ? (sort === lastSort ? `${key}>` : `${key}>=`) : sort === lastSort ? `${key}<` : `${key}<=`) as FilterKey<T>;
-		yield new FilterConstraint(filterKey, getProp(item, ...keys));
+		yield new Filter(filterKey, getProp(item, ...keys));
 	}
 }
 
-function* _getBeforeFilters<T extends Data>(sorts: SortConstraints<T>, item: T): Iterable<FilterConstraint<T>> {
+function* _getBeforeFilters<T extends Data>(sorts: Sorts<T>, item: T): Iterable<Filter<T>> {
 	const lastSort = sorts.last;
 	assert(lastSort);
 	for (const sort of sorts) {
 		const { key, keys, direction } = sort;
 		const filterKey = (direction === "ASC" ? (sort === lastSort ? `${key}<` : `${key}<=`) : sort === lastSort ? `${key}>` : `${key}>=`) as FilterKey<T>;
-		yield new FilterConstraint(filterKey, getProp(item, ...keys));
+		yield new Filter(filterKey, getProp(item, ...keys));
 	}
 }

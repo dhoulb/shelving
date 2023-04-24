@@ -1,17 +1,24 @@
-import type { Data } from "../util/data.js";
 import type { Matchable } from "../util/match.js";
+import { Data, getDataProps } from "../util/data.js";
 import { filterItems } from "../util/iterate.js";
 import { cloneObjectWith } from "../util/object.js";
-import { FilterList, FilterConstraint, getFilters } from "./FilterConstraint.js";
+import { clearArray } from "../util/array.js";
+import { Filter, FilterProps } from "./Filter.js";
 import { Constraints } from "./Constraints.js";
 
-/**
- * Interface to make sure an object implements all matchers.
- * - Extends `Matchable` so this object itself can be directly be used in `filterItems()` and `filterEntries()`
- */
+/** A possible set of filters. */
+export type PossibleFilters<T extends Data> = Filters<T> | FilterProps<T>;
+
+/** Turn `FilterProps` into a list of `Filter` instances. */
+export function* getFilters<T extends Data>(filters: PossibleFilters<T>): Iterable<Filter<T>> {
+	if (filters instanceof Filters) yield* filters;
+	else for (const [key, value] of getDataProps(filters)) yield new Filter<T>(key, value);
+}
+
+/** An object that is filterable. */
 export interface Filterable<T extends Data> extends Matchable<[T]> {
 	/** Add a filter to this filterable. */
-	filter(...filters: FilterList<T>[]): this;
+	filter(filters: PossibleFilters<T>): this;
 	/** Return a new instance of this class with no filters specified. */
 	unfiltered: this;
 	/** Match an item against the filters specified for this object. */
@@ -19,17 +26,17 @@ export interface Filterable<T extends Data> extends Matchable<[T]> {
 }
 
 /** A set of filters. */
-export class FilterConstraints<T extends Data = Data> extends Constraints<T, FilterConstraint<T>> implements Filterable<T> {
-	constructor(...filters: FilterList<T>[]) {
-		super(...getFilters(filters));
+export class Filters<T extends Data = Data> extends Constraints<T, Filter<T>> implements Filterable<T> {
+	static from<X extends Data = Data>(filters: PossibleFilters<X>): Filters<X> {
+		return filters instanceof Filters ? filters : new Filters<X>(...getFilters(filters));
 	}
 
 	// Implement `Filterable`
-	filter(...filters: FilterList<T>[]): this {
+	filter(filters: PossibleFilters<T>): this {
 		return this.with(...getFilters(filters));
 	}
 	get unfiltered(): this {
-		return this._constraints.length ? this : cloneObjectWith(this, "_constraints", []);
+		return cloneObjectWith(this, "_constraints", clearArray(this._constraints));
 	}
 	match(item: T): boolean {
 		for (const rule of this._constraints) if (!rule.match(item)) return false;

@@ -1,16 +1,16 @@
 import type { Data } from "../util/data.js";
 import type { Dispatch, Handler, Stop } from "../util/function.js";
 import type { Updates } from "../update/DataUpdate.js";
-import type { FilterList } from "../constraint/FilterConstraint.js";
-import type { SortList } from "../constraint/SortConstraint.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem, isArrayLength, countArray } from "../util/array.js";
 import { runSequence } from "../util/sequence.js";
-import { QueryConstraints } from "../constraint/QueryConstraints.js";
+import { Statement } from "../constraint/Statement.js";
+import type { PossibleFilters } from "../constraint/Filters.js";
+import type { PossibleSorts } from "../constraint/Sorts.js";
 import type { ItemArray, ItemValue, ItemData } from "./Item.js";
 
 /** Reference to a set of items in a sync or async provider. */
-abstract class BaseQuery<T extends Data = Data> extends QueryConstraints<ItemData<T>> implements AsyncIterable<ItemArray<T>> {
+abstract class BaseQuery<T extends Data = Data> extends Statement<ItemData<T>> implements AsyncIterable<ItemArray<T>> {
 	abstract readonly provider: Provider | AsyncProvider;
 	abstract readonly collection: string;
 
@@ -98,7 +98,7 @@ abstract class BaseQuery<T extends Data = Data> extends QueryConstraints<ItemDat
 export class Query<T extends Data = Data> extends BaseQuery<T> {
 	readonly provider: Provider;
 	readonly collection: string;
-	constructor(provider: Provider, collection: string, filters?: FilterList<ItemData<T>>, sorts?: SortList<ItemData<T>>, limit?: number | null) {
+	constructor(provider: Provider, collection: string, filters?: PossibleFilters<ItemData<T>>, sorts?: PossibleSorts<ItemData<T>>, limit?: number | null) {
 		super(filters, sorts, limit);
 		this.provider = provider;
 		this.collection = collection;
@@ -139,7 +139,7 @@ export class Query<T extends Data = Data> extends BaseQuery<T> {
 export class AsyncQuery<T extends Data = Data> extends BaseQuery<T> {
 	readonly provider: AsyncProvider;
 	readonly collection: string;
-	constructor(provider: AsyncProvider, collection: string, filters?: FilterList<ItemData<T>>, sorts?: SortList<ItemData<T>>, limit?: number | null) {
+	constructor(provider: AsyncProvider, collection: string, filters?: PossibleFilters<ItemData<T>>, sorts?: PossibleSorts<ItemData<T>>, limit?: number | null) {
 		super(filters, sorts, limit);
 		this.provider = provider;
 		this.collection = collection;
