@@ -1,3 +1,3 @@
 /** Thrown if an operation failed due to permissions. */
-export class AssertionError extends Error {}
-AssertionError.prototype.name = "PermissionError";
+export class PermissionError extends Error {}
+PermissionError.prototype.name = "PermissionError";
