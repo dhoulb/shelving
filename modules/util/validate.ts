@@ -1,9 +1,9 @@
 import { Feedback, isFeedback } from "../feedback/Feedback.js";
 import { Feedbacks } from "../feedback/Feedbacks.js";
-import type { Entry } from "./entry.js";
 import { ImmutableDictionary, MutableDictionary, PossibleDictionary, getDictionaryItems } from "./dictionary.js";
-import { Data, DataProp, getDataProps } from "./data.js";
-import { ImmutableArray, PossibleArray } from "./array.js";
+import { Data, getDataProps } from "./data.js";
+import { ImmutableArray, MutableArray, PossibleArray, getLastItem, isArray } from "./array.js";
+import { isIterable } from "./iterate.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validatable<T> {
@@ -41,17 +41,6 @@ export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {
 }
 
 /**
- * Validate an array of items.
- *
- * @return Array with valid items.
- * @throw Feedback if one or more entry values did not validate.
- * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
- */
-export function validateArray<T>(unsafeItems: PossibleArray<unknown>, validator: Validator<T>): ImmutableArray<T> {
-	return Array.from(validateItems(unsafeItems, validator));
-}
-
-/**
  * Validate an iterable set of items with a validator.
  *
  * @yield Valid items.
@@ -76,35 +65,58 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
 }
 
 /**
+ * Validate an array of items.
+ *
+ * @return Array with valid items.
+ * @throw Feedback if one or more entry values did not validate.
+ * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
+ */
+export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator: Validator<T>): ImmutableArray<T> {
+	let index = 0;
+	let valid = true;
+	let changed = true;
+	const safeArray: MutableArray<T> = [];
+	const feedbacks: MutableDictionary<Feedback> = {};
+	for (const unsafeItem of unsafeArray) {
+		try {
+			const safeItem = validate(unsafeItem, validator);
+			safeArray.push(safeItem);
+			if (!changed && safeItem !== unsafeItem) changed = true;
+		} catch (thrown) {
+			if (!isFeedback(thrown)) throw thrown;
+			feedbacks[index] = thrown;
+			valid = false;
+		}
+		index++;
+	}
+	if (!valid) throw new Feedbacks(feedbacks, unsafeArray);
+	return changed || !isArray(unsafeArray) ? safeArray : (unsafeArray as ImmutableArray<T>);
+}
+
+/**
  * Validate the values of the entries in a dictionary object.
  *
  * @throw Feedback if one or more entry values did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
-	return Object.fromEntries(validateDictionaryItems(unsafeDictionary, validator));
-}
-
-/**
- * Validate the _values_ of an iterable set of entries with a validator.
- *
- * @yield Entries with valid values.
- * @throw Feedback if one or more entry values did not validate.
- * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
- */
-export function* validateDictionaryItems<T>(unsafeItems: PossibleDictionary<unknown>, validator: Validator<T>): Iterable<Entry<string, T>> {
 	let valid = true;
+	let changed = false;
+	const safeDictionary: MutableDictionary<T> = {};
 	const feedbacks: MutableDictionary<Feedback> = {};
-	for (const [key, value] of getDictionaryItems(unsafeItems)) {
+	for (const [key, unsafeValue] of getDictionaryItems(unsafeDictionary)) {
 		try {
-			yield [key, validate(value, validator)];
+			const safeValue = validate(unsafeValue, validator);
+			safeDictionary[key] = safeValue;
+			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
 			if (!isFeedback(thrown)) throw thrown;
 			feedbacks[key] = thrown;
 			valid = false;
 		}
 	}
-	if (!valid) throw new Feedbacks(feedbacks, unsafeItems);
+	if (!valid) throw new Feedbacks(feedbacks, unsafeDictionary);
+	return changed || isIterable(unsafeDictionary) ? safeDictionary : (unsafeDictionary as ImmutableDictionary<T>);
 }
 
 /**
@@ -117,22 +129,18 @@ export function* validateDictionaryItems<T>(unsafeItems: PossibleDictionary<unkn
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
-	return Object.fromEntries(validateDataProps(unsafeData, validators)) as T;
-}
-
-/**
- * Validate the props of a data object with a set of validators.
- *
- * @yield Valid props for the data object.
- * @throw Feedback if one or more props did not validate.
- * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
- */
-export function* validateDataProps<T extends Data>(unsafeData: Data, validators: Validators<T>): Iterable<DataProp<T>> {
+	const { partial = false } = getValidationContext();
 	let valid = true;
+	let changed = true;
+	const safeData: Partial<T> = {};
 	const feedbacks: MutableDictionary<Feedback> = {};
 	for (const [key, validator] of getDataProps(validators)) {
+		const unsafeValue = unsafeData[key];
+		if (unsafeValue === undefined && partial) continue; // Silently skip `undefined` props if in partial mode.
 		try {
-			yield [key, validate(unsafeData[key], validator)];
+			const safeValue = validate(unsafeValue, validator);
+			safeData[key] = safeValue;
+			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
 			if (!isFeedback(thrown)) throw thrown;
 			feedbacks[key] = thrown;
@@ -140,4 +148,19 @@ export function* validateDataProps<T extends Data>(unsafeData: Data, validators:
 		}
 	}
 	if (!valid) throw new Feedbacks(feedbacks, unsafeData);
+	return changed ? (safeData as T) : (unsafeData as T);
+}
+
+/** Store a list of current contexts. */
+const CONTEXTS: MutableArray<Data> = [{}];
+
+/** Get the current validation context. */
+export const getValidationContext = (): Data => getLastItem(CONTEXTS);
+
+/** Validate a unknown value with a validator, and supply a context that can be read during the validation process. */
+export function validateWithContext<T>(unsafeValue: unknown, validator: Validator<T>, context: Data): T {
+	CONTEXTS.push(context);
+	const validValue = validate(unsafeValue, validator);
+	CONTEXTS.pop();
+	return validValue;
 }
