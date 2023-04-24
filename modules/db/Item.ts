@@ -1,11 +1,11 @@
 import type { ImmutableArray } from "../util/array.js";
 import type { Stop, Handler, Dispatch } from "../util/function.js";
 import type { Provider, AsyncProvider } from "../provider/Provider.js";
+import type { Updates } from "../update/DataUpdate.js";
 import { QueryConstraints } from "../constraint/QueryConstraints.js";
 import { FilterConstraint, FilterKey } from "../constraint/FilterConstraint.js";
 import { FilterConstraints } from "../constraint/FilterConstraints.js";
 import { Data, getData } from "../util/data.js";
-import { DataUpdate, Updates } from "../update/DataUpdate.js";
 import { runSequence } from "../util/sequence.js";
 import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
 
@@ -63,7 +63,7 @@ abstract class BaseItem<T extends Data = Data> implements AsyncIterable<ItemValu
 	abstract set(data: T): void | PromiseLike<void>;
 
 	/** Update this item. */
-	abstract update(updates: DataUpdate<T> | Updates<T>): void | PromiseLike<void>;
+	abstract update(updates: Updates<T>): void | PromiseLike<void>;
 
 	/** Delete this item. */
 	abstract delete(): void | PromiseLike<void>;
