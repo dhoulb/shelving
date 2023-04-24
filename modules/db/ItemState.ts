@@ -1,11 +1,11 @@
+import type { MemoryTable } from "../provider/MemoryProvider.js";
+import type { Dispatch } from "../util/function.js";
 import { Data, getData } from "../util/data.js";
-import { Dispatch } from "../util/function.js";
 import { State } from "../state/State.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { getOptionalSource } from "../util/source.js";
 import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { MemoryTable } from "../index.js";
 import { ItemValue, Item, AsyncItem, ItemData } from "./Item.js";
 
 /** Hold the current state of a item. */
