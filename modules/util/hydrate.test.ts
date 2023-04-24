@@ -1,4 +1,4 @@
-import { UPDATE_HYDRATIONS, Increment, FEEDBACK_HYDRATIONS, Feedback, dehydrate, hydrate } from "../index.js";
+import { UPDATE_HYDRATIONS, Increment, FEEDBACK_HYDRATIONS, Feedback, dehydrate, hydrate, Data } from "../index.js";
 
 const HYDRATIONS = {
 	...UPDATE_HYDRATIONS,
@@ -31,11 +31,11 @@ test("hydrate(): Works correctly with class instances", () => {
 	expect(hydrated2).toBeInstanceOf(Feedback);
 	expect(original2).not.toBe(hydrated2);
 	expect(original2).toEqual(hydrated2);
-	expect(original2.value.invalid).not.toBe(hydrated2.value.invalid);
-	expect(original2.value.success).not.toBe(hydrated2.value.success);
-	expect(original2.value.map).not.toBe(hydrated2.value.map);
-	expect(original2.value.set).not.toBe(hydrated2.value.set);
-	expect(original2.value.date).not.toBe(hydrated2.value.date);
+	expect((original2.value as Data).invalid).not.toBe((hydrated2.value as Data).invalid);
+	expect((original2.value as Data).success).not.toBe((hydrated2.value as Data).success);
+	expect((original2.value as Data).map).not.toBe((hydrated2.value as Data).map);
+	expect((original2.value as Data).set).not.toBe((hydrated2.value as Data).set);
+	expect((original2.value as Data).date).not.toBe((hydrated2.value as Data).date);
 });
 test("hydrate(): Works correctly with arrays of objects", () => {
 	// Flat.
@@ -69,8 +69,8 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 	expect(hydrated2[5]).toBeInstanceOf(Date);
 	expect(original2).not.toBe(hydrated2);
 	expect(original2).toEqual(hydrated2);
-	expect(original2[2].value.invalid).not.toBe(hydrated2[2].value.invalid);
-	expect(original2[2].value.success).not.toBe(hydrated2[2].value.success);
+	expect((original2[2].value as Data).invalid).not.toBe((hydrated2[2].value as Data).invalid);
+	expect((original2[2].value as Data).success).not.toBe((hydrated2[2].value as Data).success);
 	expect(original2[3]).not.toBe(hydrated2[3]);
 	expect(original2[4]).not.toBe(hydrated2[4]);
 	expect(original2[5]).not.toBe(hydrated2[5]);
@@ -115,8 +115,8 @@ test("hydrate(): Works correctly with plain objects of objects", () => {
 	expect(original2.set).not.toBe(hydrated2.set);
 	expect(original2.date).not.toBe(hydrated2.date);
 	expect(original2.feedback).not.toBe(hydrated2.feedback);
-	expect(original2.feedback.value.invalid).not.toBe(hydrated2.feedback.value.invalid);
-	expect(original2.feedback.value.success).not.toBe(hydrated2.feedback.value.success);
+	expect((original2.feedback.value as Data).invalid).not.toBe((hydrated2.feedback.value as Data).invalid);
+	expect((original2.feedback.value as Data).success).not.toBe((hydrated2.feedback.value as Data).success);
 
 	// Same.
 	const original3 = { str: "abc", num: 123 };
