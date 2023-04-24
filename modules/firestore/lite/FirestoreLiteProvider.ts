@@ -57,9 +57,9 @@ const DIRECTIONS = {
 
 /** Create a corresponding `QueryReference` from a Query. */
 function _getQuery(firestore: Firestore, collection: string, constraints: ItemConstraints): FirestoreQueryReference {
-	return firestoreQuery(firestoreCollection(firestore, collection), ..._yieldQueryConstraints(constraints));
+	return firestoreQuery(firestoreCollection(firestore, collection), ..._yieldConstraints(constraints));
 }
-function* _yieldQueryConstraints({ sorts, filters, limit }: ItemConstraints): Iterable<FirestoreQueryConstraint> {
+function* _yieldConstraints({ sorts, filters, limit }: ItemConstraints): Iterable<FirestoreQueryConstraint> {
 	for (const { key, direction } of sorts) yield firestoreOrderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) yield firestoreWhere(key === "id" ? ID : key, OPERATORS[operator], value);
 	if (typeof limit === "number") yield firestoreLimit(limit);
