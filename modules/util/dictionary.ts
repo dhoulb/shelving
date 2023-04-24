@@ -30,7 +30,7 @@ export const isDictionaryKey = <T>(obj: ImmutableDictionary<T>, key: unknown): k
 
 /** turn a possible dictionary into an dictionary. */
 export function getDictionary<T>(obj: PossibleDictionary<T>): ImmutableDictionary<T> {
-	return isIterable(obj) ? (Object.fromEntries(obj) as ImmutableDictionary<T>) : obj;
+	return isIterable(obj) ? Object.fromEntries(obj) : obj;
 }
 
 /** Turn a dictionary object into a set of props. */
