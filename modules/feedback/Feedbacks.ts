@@ -1,5 +1,5 @@
-import { getProp } from "../index.js";
 import type { ImmutableDictionary } from "../util/dictionary.js";
+import { getProp } from "../util/object.js";
 import { mapDictionary } from "../util/transform.js";
 import { Feedback } from "./Feedback.js";
 
