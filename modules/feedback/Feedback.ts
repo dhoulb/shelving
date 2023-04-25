@@ -22,6 +22,3 @@ export class Feedback {
 		return this.message;
 	}
 }
-
-/** Get the message from a feedback. */
-export const getFeedbackMessage = ({ message }: Feedback): string => message;
