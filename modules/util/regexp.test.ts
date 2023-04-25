@@ -1,4 +1,4 @@
-import { filterArray, getAnyRegExp, getAllRegExp, isRegExpMatch, notRegExpMatch } from "../index.js";
+import { filterArray, getAllRegExp, getAnyRegExp, isRegExpMatch, notRegExpMatch } from "../index.js";
 
 test("getAllRegExp()", () => {
 	// No pattern (always true).

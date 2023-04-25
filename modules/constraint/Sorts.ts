@@ -1,9 +1,12 @@
+import type { SortKey } from "./Sort.js";
+import type { ImmutableArray } from "../util/array.js";
 import type { Data } from "../util/data.js";
-import { ImmutableArray, clearArray } from "../util/array.js";
+import type { Rankable } from "../util/sort.js";
+import { clearArray } from "../util/array.js";
 import { cloneObjectWith } from "../util/object.js";
-import { Rankable, sortItems } from "../util/sort.js";
+import { sortItems } from "../util/sort.js";
 import { Constraints } from "./Constraints.js";
-import { Sort, SortKey } from "./Sort.js";
+import { Sort } from "./Sort.js";
 
 /** A possible set of sorts. */
 export type PossibleSorts<T extends Data> = Sorts<T> | SortKey<T> | Iterable<SortKey<T>> | ImmutableArray<SortKey<T>>;

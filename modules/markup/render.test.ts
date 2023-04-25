@@ -1,6 +1,7 @@
+import type { JSXElement } from "../index.js";
 import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
-import { renderMarkup, JSXElement } from "../index.js";
+import { renderMarkup } from "../index.js";
 
 const $$typeof = Symbol.for("react.element");
 

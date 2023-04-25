@@ -1,7 +1,7 @@
+import type { Dispatch, Handler, Stop } from "../util/function.js";
 import type { Validatable } from "../util/validate.js";
-import { Dispatch, Handler, Stop } from "../util/function.js";
-import { runSequence } from "../util/sequence.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
+import { runSequence } from "../util/sequence.js";
 
 /** Any `State` instance. */
 export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-explicit-any

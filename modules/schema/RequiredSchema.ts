@@ -1,5 +1,5 @@
+import type { Schema } from "./Schema.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { Schema } from "./Schema.js";
 import { ThroughSchema } from "./ThroughSchema.js";
 
 /** Validate a value of a specifed type, but return `Feedback` if the validated value is falsy. */

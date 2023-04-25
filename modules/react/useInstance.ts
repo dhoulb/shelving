@@ -1,5 +1,5 @@
-import { useRef } from "react";
 import type { Arguments } from "../util/function.js";
+import { useRef } from "react";
 import { isArrayEqual } from "../util/equal.js";
 
 /**

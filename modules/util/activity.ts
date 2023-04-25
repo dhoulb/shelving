@@ -1,4 +1,5 @@
-import { Handler, Arguments, BLACKHOLE, Dispatch, Start, Stop } from "./function.js";
+import type { Arguments, Dispatch, Handler, Start, Stop } from "./function.js";
+import { BLACKHOLE } from "./function.js";
 import { runSequence } from "./sequence.js";
 
 /** Something that can be started and stopped. */

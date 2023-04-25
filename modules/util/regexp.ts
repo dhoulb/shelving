@@ -1,7 +1,7 @@
+import type { Match } from "./match.js";
+import type { NotString } from "./string.js";
 import { AssertionError } from "../error/AssertionError.js";
 import { getArray } from "./array.js";
-import { Match } from "./match.js";
-import { NotString } from "./string.js";
 
 /** Regular expression that always matches everything. */
 export const ALWAYS_REGEXP = /^.*$/;

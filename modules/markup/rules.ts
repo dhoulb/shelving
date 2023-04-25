@@ -1,11 +1,13 @@
 /* eslint-disable import/export */
 
+import type { MarkupOptions } from "./options.js";
+import type { MarkupRules } from "./rule.js";
 import type { EmptyData } from "../util/data.js";
 import type { JSXElement } from "../util/jsx.js";
-import { NamedRegExp, getRegExp } from "../util/regexp.js";
-import type { MarkupOptions } from "./options.js";
-import { getBlockRegExp, getLineRegExp, BLOCK_REGEXP, LINE_REGEXP, WordRegExp } from "./regexp.js";
-import { LinkRegExpMarkupRule, MarkupRules, NamedRegExpMarkupRule, RegExpMarkupRule } from "./rule.js";
+import type { NamedRegExp } from "../util/regexp.js";
+import { getRegExp } from "../util/regexp.js";
+import { BLOCK_REGEXP, LINE_REGEXP, WordRegExp, getBlockRegExp, getLineRegExp } from "./regexp.js";
+import { LinkRegExpMarkupRule, NamedRegExpMarkupRule, RegExpMarkupRule } from "./rule.js";
 
 /** React security symbol — see https://github.com/facebook/react/pull/4832 */
 const $$typeof = Symbol.for("react.element");

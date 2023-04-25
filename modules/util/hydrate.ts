@@ -1,13 +1,15 @@
-import { AssertionError } from "../error/AssertionError.js";
-import type { ImmutableDictionary } from "./dictionary.js";
 import type { Class } from "./class.js";
+import type { ImmutableDictionary } from "./dictionary.js";
+import type { ImmutableObject } from "./object.js";
+import type { Transformable } from "./transform.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { isArray } from "./array.js";
 import { isDate } from "./date.js";
 import { isMap } from "./map.js";
-import { getPrototype, ImmutableObject, isObject, isPlainObject } from "./object.js";
+import { getPrototype, isObject, isPlainObject } from "./object.js";
 import { isSet } from "./set.js";
 import { isString } from "./string.js";
-import { mapArray, mapObject, mapEntries, mapItems, Transformable } from "./transform.js";
+import { mapArray, mapEntries, mapItems, mapObject } from "./transform.js";
 
 /**
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.

@@ -1,5 +1,7 @@
-import { basics, basic1, basic2, expectUnorderedKeys, BasicItemData } from "../test/index.js";
-import { Data, Filter, FilterProps, getIDs } from "../index.js";
+import type { Data, FilterProps } from "../index.js";
+import type { BasicItemData } from "../test/index.js";
+import { Filter, getIDs } from "../index.js";
+import { basic1, basic2, basics, expectUnorderedKeys } from "../test/index.js";
 
 test("Filter type", () => {
 	const syncTyped: Filter<{ b: number }> = undefined as unknown as Filter<{ b: number }>;

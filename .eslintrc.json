@@ -8,7 +8,6 @@
 		"extraFileExtensions": [".cjs"]
 	},
 	"extends": [
-		//
 		"eslint:recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
 		"plugin:@typescript-eslint/recommended",
@@ -19,8 +18,9 @@
 	],
 	"env": {
 		"node": true
-		// "es6": true,
-		// "jest": true
+	},
+	"settings": {
+		"import/resolver": "typescript"
 	},
 	"rules": {
 		"class-methods-use-this": 0, // DH: Sometimes you want to make a potential static method a class method for consistency.
@@ -44,6 +44,7 @@
 		"no-new": 2,
 		"no-param-reassign": 2,
 		"no-path-concat": 2,
+		"no-restricted-imports": [2, { "patterns": ["../**/index.js", "./index.js"] }], // DH: Importing from `index.js` files is a common source of circular reference bugs.
 		"no-self-compare": 2,
 		"no-sequences": 2,
 		"no-shadow": 2,
@@ -57,19 +58,21 @@
 		"prefer-regex-literals": 2,
 		"prefer-spread": 2,
 		"require-await": 2,
+		"sort-imports": [2, { "ignoreMemberSort": false, "ignoreDeclarationSort": true }], // DH: Sort imported values only (we use `import/order` to actually sort the imported files).
 		"strict": 2,
 		"wrap-iife": 2,
 		"yoda": 2,
-		"@typescript-eslint/no-unused-vars": [2, { "argsIgnorePattern": "^unused", "varsIgnorePattern": "^unused" }], // DH: Allow unused args if they start with `unused`
+		"@typescript-eslint/consistent-type-imports": 2, // DH: Separate type and value imports so that type imports don't accidentally cause side effects or circular references.
 		"@typescript-eslint/explicit-function-return-type": 0, // DH: This is annoying, mainly for for little arrow functions where type is trivially inferred.
-		"@typescript-eslint/no-use-before-define": 0, // DH: End up turning this off a lot when you have functions that cross-reference each other (and TS already protects against using block-scoped variables before they are defined).
 		"@typescript-eslint/no-unnecessary-type-constraint": 0, // DH: Incorrectly flags `extends unknown` as doing nothing when it in fact makes the type `unknown` instead of `any`
+		"@typescript-eslint/no-unused-vars": [2, { "argsIgnorePattern": "^unused", "varsIgnorePattern": "^unused" }], // DH: Allow unused args if they start with `unused`
+		"@typescript-eslint/no-use-before-define": 0, // DH: End up turning this off a lot when you have functions that cross-reference each other (and TS already protects against using block-scoped variables before they are defined).
 		"import/first": 2, // DH: Imports should be first.
 		"import/newline-after-import": 2, // DH: Newline after import.
+		"import/no-cycle": [2, { "ignoreExternal": true }],
 		"import/no-default-export": 2, // DH: Force use of  named exports.
-		"import/order": 2, // DH: Enforce sensible sort order of imports (builtin → npm → shared → parent dirs → this dir)
-		"import/named": 0, // DH: Enforced by Typescript (and at one point was false-positive on when types were imported without `import type`).
-		"import/no-unresolved": 0 // DH: Enforced by Typescript.
+		"import/no-self-import": 2,
+		"import/order": [2, { "newlines-between": "never", "alphabetize": { "order": "asc" }, "groups": ["type", "builtin", "external", "internal", "parent", "sibling", "index"] }] // DH: Enforce sensible sort order of imports (builtin → npm → shared → parent dirs → this dir)
 	},
 	"overrides": [
 		{
@@ -77,6 +80,7 @@
 			"files": ["*.test.js", "*.test.jsx", "*.test.ts", "*.test.tsx"],
 			"rules": {
 				"prefer-template": 0,
+				"no-restricted-imports": [2, { "patterns": ["!index.js"] }], // DH: Only allow importing from index files in tests (to check that tested functionality is exported).
 				"@typescript-eslint/no-non-null-assertion": 0,
 				"@typescript-eslint/no-floating-promises": 0,
 				"@typescript-eslint/no-explicit-any": 0,

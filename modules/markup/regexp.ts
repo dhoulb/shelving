@@ -1,6 +1,7 @@
-import type { Data } from "../util/data.js";
-import { getRegExpSource, NamedRegExp, NamedRegExpData, PossibleRegExp } from "../util/regexp.js";
 import type { MarkupOptions } from "./options.js";
+import type { Data } from "../util/data.js";
+import type { NamedRegExp, NamedRegExpData, PossibleRegExp } from "../util/regexp.js";
+import { getRegExpSource } from "../util/regexp.js";
 
 /** Subset of `NamedRegExpArray<T>` that are the only things we're required return from a `MarkupMatcher` function. */
 export type MarkupMatch<T extends Data | undefined> = { 0: string; index: number; groups: T };

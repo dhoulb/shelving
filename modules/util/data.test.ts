@@ -1,4 +1,5 @@
-import { Data, DataProp, FlatData, FlatDataProp } from "../index.js";
+import type { DataProp, FlatData, FlatDataProp } from "../index.js";
+import { Data } from "../index.js";
 
 test("Typescript", () => {
 	type T = {

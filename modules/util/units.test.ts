@@ -1,4 +1,4 @@
-import { ANGLE_UNITS, AREA_UNITS, getMapItem, LENGTH_UNITS, MASS_UNITS, SPEED_UNITS, TEMPERATURE_UNITS, TIME_UNITS, VOLUME_UNITS } from "../index.js";
+import { ANGLE_UNITS, AREA_UNITS, LENGTH_UNITS, MASS_UNITS, SPEED_UNITS, TEMPERATURE_UNITS, TIME_UNITS, VOLUME_UNITS, getMapItem } from "../index.js";
 
 test("to() works correctly with base", () => {
 	expect(getMapItem(LENGTH_UNITS, "millimeter").to(1)).toBe(1);

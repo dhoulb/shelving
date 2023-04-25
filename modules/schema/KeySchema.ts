@@ -1,5 +1,5 @@
-import { StringSchema } from "./StringSchema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import { StringSchema } from "./StringSchema.js";
 
 /**
  * Define a valid database key.

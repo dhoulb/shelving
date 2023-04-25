@@ -1,4 +1,4 @@
-import { TimeSchema, TIME, OPTIONAL_TIME, Feedback } from "../index.js";
+import { Feedback, OPTIONAL_TIME, TIME, TimeSchema } from "../index.js";
 import { TIME_REGEXP } from "../util/time.js";
 
 test("constructor()", () => {

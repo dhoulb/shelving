@@ -1,4 +1,5 @@
-import { Data, DataUpdate } from "../index.js";
+import type { Data } from "../index.js";
+import { DataUpdate } from "../index.js";
 
 test("DataUpdate", () => {
 	const update = new DataUpdate<Data>({ a: 1, b: 2 });

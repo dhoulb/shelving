@@ -1,7 +1,9 @@
-import { Data, DataKey, DataProp } from "../util/data.js";
-import { isNullish, Nullish } from "../util/null.js";
+import type { Data, DataKey, DataProp } from "../util/data.js";
+import type { Nullish } from "../util/null.js";
+import type { Transformable } from "../util/transform.js";
+import { isNullish } from "../util/null.js";
 import { cloneObjectWith } from "../util/object.js";
-import { Transformable, transformObject } from "../util/transform.js";
+import { transformObject } from "../util/transform.js";
 import { Update } from "./Update.js";
 
 /**

@@ -1,7 +1,8 @@
-import { Validator, Validatable, validate } from "../util/validate.js";
-import { getUndefined } from "../util/undefined.js";
-import { Feedback } from "../feedback/Feedback.js";
+import type { Validatable, Validator } from "../util/validate.js";
 import { ValidationError } from "../error/ValidationError.js";
+import { Feedback } from "../feedback/Feedback.js";
+import { getUndefined } from "../util/undefined.js";
+import { validate } from "../util/validate.js";
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions..

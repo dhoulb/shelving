@@ -1,4 +1,5 @@
-import { Feedback, getYMD, DateSchema, OPTIONAL_DATE, DATE, Schema } from "../index.js";
+import type { Schema } from "../index.js";
+import { DATE, DateSchema, Feedback, OPTIONAL_DATE, getYMD } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

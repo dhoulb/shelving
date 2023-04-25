@@ -1,12 +1,13 @@
+import type { AsyncItem, Item, ItemData, ItemValue } from "./Item.js";
 import type { MemoryTable } from "../provider/MemoryProvider.js";
+import type { Data } from "../util/data.js";
 import type { Dispatch } from "../util/function.js";
-import { Data, getData } from "../util/data.js";
-import { State } from "../state/State.js";
-import { BooleanState } from "../state/BooleanState.js";
-import { getOptionalSource } from "../util/source.js";
-import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { ItemValue, Item, AsyncItem, ItemData } from "./Item.js";
+import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
+import { BooleanState } from "../state/BooleanState.js";
+import { State } from "../state/State.js";
+import { getData } from "../util/data.js";
+import { getOptionalSource } from "../util/source.js";
 
 /** Hold the current state of a item. */
 export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {

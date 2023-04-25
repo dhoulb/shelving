@@ -1,6 +1,8 @@
-import { ImmutableArray, isArray } from "./array.js";
+import type { ImmutableArray } from "./array.js";
+import type { DeepPartial, ImmutableObject, MutableObject } from "./object.js";
+import { isArray } from "./array.js";
 import { isArrayEqual, isDeepEqual } from "./equal.js";
-import { isObject, MutableObject, ImmutableObject, DeepPartial } from "./object.js";
+import { isObject } from "./object.js";
 
 /** The `SAME` symbol indicates sameness. */
 export const SAME: unique symbol = Symbol("shelving/SAME");

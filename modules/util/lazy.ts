@@ -1,4 +1,5 @@
-import { Arguments, isFunction } from "./function.js";
+import type { Arguments } from "./function.js";
+import { isFunction } from "./function.js";
 
 /**
  * Lazy value: a plain value, or an initialiser function that returns that value.

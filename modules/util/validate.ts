@@ -1,8 +1,11 @@
+import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
+import type { Data } from "./data.js";
+import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { Feedbacks } from "../feedback/Feedbacks.js";
-import { ImmutableDictionary, MutableDictionary, PossibleDictionary, getDictionaryItems } from "./dictionary.js";
-import { Data, getDataProps } from "./data.js";
-import { ImmutableArray, MutableArray, PossibleArray, getLastItem, isArray } from "./array.js";
+import { getLastItem, isArray } from "./array.js";
+import { getDataProps } from "./data.js";
+import { getDictionaryItems } from "./dictionary.js";
 import { isIterable } from "./iterate.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */

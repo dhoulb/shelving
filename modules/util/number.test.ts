@@ -1,4 +1,4 @@
-import { formatNumber, roundStep, sumNumbers, getOptionalNumber, getRange, roundNumber, truncateNumber, boundNumber, wrapNumber, AssertionError } from "../index.js";
+import { AssertionError, boundNumber, formatNumber, getOptionalNumber, getRange, roundNumber, roundStep, sumNumbers, truncateNumber, wrapNumber } from "../index.js";
 
 test("roundNumber(): Works correctly", () => {
 	expect(roundNumber(123.456, 0)).toBe(123);

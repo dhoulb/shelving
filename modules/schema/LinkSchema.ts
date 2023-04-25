@@ -1,7 +1,8 @@
+import type { StringSchemaOptions } from "./StringSchema.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { getOptionalURL } from "../util/url.js";
 import { OPTIONAL } from "./OptionalSchema.js";
-import { StringSchema, StringSchemaOptions } from "./StringSchema.js";
+import { StringSchema } from "./StringSchema.js";
 
 /** Allowed options for `LinkSchema` */
 export type LinkSchemaOptions = StringSchemaOptions & {

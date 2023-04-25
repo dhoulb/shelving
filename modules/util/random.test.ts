@@ -1,4 +1,4 @@
-import { getRandomItem, getRandomCharacter, getRandomKey, getRandom } from "../index.js";
+import { getRandom, getRandomCharacter, getRandomItem, getRandomKey } from "../index.js";
 
 test("getRandomCharacter()", () => {
 	expect(typeof getRandomCharacter("abc")).toBe("string");

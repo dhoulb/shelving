@@ -1,8 +1,10 @@
-import { ImmutableArray, isArray } from "./array.js";
+import type { ImmutableArray } from "./array.js";
+import type { ImmutableMap } from "./map.js";
+import type { ImmutableObject } from "./object.js";
+import type { ImmutableSet } from "./set.js";
+import { isArray } from "./array.js";
 import { isIterable } from "./iterate.js";
-import { ImmutableMap } from "./map.js";
-import { ImmutableObject } from "./object.js";
-import { ImmutableSet, isSet } from "./set.js";
+import { isSet } from "./set.js";
 
 /**
  * Single entry from a map-like object.

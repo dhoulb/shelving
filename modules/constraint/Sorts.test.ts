@@ -1,5 +1,5 @@
+import { Sort, Sorts } from "../index.js";
 import { expectOrderedKeys } from "../test/util.js";
-import { Sorts, Sort } from "../index.js";
 
 type SortableEntity = { id: string; first: string; second: number };
 

@@ -1,14 +1,14 @@
-import type { Data } from "../util/data.js";
-import type { Stop } from "../util/function.js";
-import type { ItemArray, ItemValue, ItemData } from "../db/Item.js";
+import type { ItemArray, ItemData, ItemValue } from "../db/Item.js";
 import type { AsyncQuery, Query } from "../db/Query.js";
 import type { MemoryTable } from "../provider/MemoryProvider.js";
+import type { Data } from "../util/data.js";
+import type { Stop } from "../util/function.js";
+import { CacheProvider } from "../provider/CacheProvider.js";
+import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
+import { BooleanState } from "../state/BooleanState.js";
+import { State } from "../state/State.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
 import { getOptionalSource } from "../util/source.js";
-import { CacheProvider } from "../provider/CacheProvider.js";
-import { State } from "../state/State.js";
-import { BooleanState } from "../state/BooleanState.js";
-import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
 
 /** Hold the current state of a query. */
 export class QueryState<T extends Data = Data> extends State<ItemArray<T>> implements Iterable<ItemData<T>> {

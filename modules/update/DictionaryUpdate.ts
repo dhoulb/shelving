@@ -1,9 +1,12 @@
-import { isNullish, Nullish } from "../util/null.js";
-import { DictionaryItem, getDictionaryItems, ImmutableDictionary } from "../util/dictionary.js";
-import { transformObject } from "../util/transform.js";
+import type { Delete } from "./Delete.js";
+import type { DictionaryItem, ImmutableDictionary } from "../util/dictionary.js";
+import type { Nullish } from "../util/null.js";
+import { getDictionaryItems } from "../util/dictionary.js";
+import { isNullish } from "../util/null.js";
 import { cloneObjectWith } from "../util/object.js";
+import { transformObject } from "../util/transform.js";
+import { DELETE } from "./Delete.js";
 import { Update } from "./Update.js";
-import { Delete, DELETE } from "./Delete.js";
 
 /** Update that can be applied to a dictionary object to add/remove/update its entries. */
 export class DictionaryUpdate<T> extends Update<ImmutableDictionary<T>> implements Iterable<DictionaryItem<T | Update<T> | Delete>> {

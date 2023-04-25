@@ -1,4 +1,4 @@
-import { runSequence, runMicrotasks } from "../index.js";
+import { runMicrotasks, runSequence } from "../index.js";
 import { DeferredSequence } from "./DeferredSequence.js";
 
 test("Multiple `resolve()` and `reject()` calls", async () => {

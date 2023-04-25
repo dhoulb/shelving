@@ -1,8 +1,9 @@
-import { expect } from "@jest/globals";
+import type { ItemData } from "../db/Item.js";
 import type { Data } from "../util/data.js";
+import type { AnyFunction } from "../util/function.js";
 import type { NotString } from "../util/string.js";
-import { getIDs, ItemData } from "../db/Item.js";
-import { AnyFunction } from "../util/function.js";
+import { expect } from "@jest/globals";
+import { getIDs } from "../db/Item.js";
 
 /** Match any `Promiselike` object. */
 export const PromiseLike = expect.objectContaining({

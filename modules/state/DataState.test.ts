@@ -1,4 +1,5 @@
-import { DataState, OptionalDataState, RequiredError, INCREMENT, OptionalData, runMicrotasks } from "../index.js";
+import type { OptionalData } from "../index.js";
+import { DataState, INCREMENT, OptionalDataState, RequiredError, runMicrotasks } from "../index.js";
 
 test("DataState.prototype.data", async () => {
 	type T = { a: number };

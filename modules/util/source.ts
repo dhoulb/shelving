@@ -1,5 +1,5 @@
-import { AssertionError } from "../error/AssertionError.js";
 import type { Class } from "./class.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { isObject } from "./object.js";
 
 /** Something that has a source of a specified type. */

@@ -1,10 +1,11 @@
 /* eslint-disable no-param-reassign */
 
-import type { JSXNode, JSXElement } from "../util/jsx.js";
-import type { Data } from "../util/data.js";
-import { isArray } from "../util/array.js";
+import type { MarkupOptions } from "./options.js";
 import type { MarkupRule, MarkupRuleMatch } from "./rule.js";
-import { MarkupOptions, MARKUP_OPTIONS } from "./options.js";
+import type { Data } from "../util/data.js";
+import type { JSXElement, JSXNode } from "../util/jsx.js";
+import { isArray } from "../util/array.js";
+import { MARKUP_OPTIONS } from "./options.js";
 
 /**
  * Parse a text string as Markdownish syntax and render it as a JSX node.

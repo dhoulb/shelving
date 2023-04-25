@@ -1,8 +1,8 @@
-import type { Data } from "../util/data.js";
-import type { ItemArray, ItemValue, ItemStatement } from "../db/Item.js";
-import type { Updates } from "../update/DataUpdate.js";
 import type { AsyncProvider } from "./Provider.js";
 import type { AsyncThroughProvider } from "./ThroughProvider.js";
+import type { ItemArray, ItemStatement, ItemValue } from "../db/Item.js";
+import type { Updates } from "../update/DataUpdate.js";
+import type { Data } from "../util/data.js";
 import { MemoryProvider } from "./MemoryProvider.js";
 
 /** Keep a copy of asynchronous remote data in a local synchronous cache. */

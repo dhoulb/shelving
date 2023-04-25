@@ -1,9 +1,9 @@
-import { NamedRegExp, NamedRegExpArray, NamedRegExpData } from "../util/regexp.js";
-import { Data } from "../util/data.js";
-import { JSXElement } from "../util/jsx.js";
-import { ImmutableArray } from "../util/array.js";
+import type { MarkupOptions } from "./options.js";
+import type { ImmutableArray } from "../util/array.js";
+import type { Data } from "../util/data.js";
+import type { JSXElement } from "../util/jsx.js";
+import type { NamedRegExp, NamedRegExpArray, NamedRegExpData } from "../util/regexp.js";
 import { formatURL, getOptionalURL } from "../util/url.js";
-import { MarkupOptions } from "./options.js";
 
 export type MarkupRuleMatch<T extends Data = Data> = { 0: string; index: number; groups?: T };
 

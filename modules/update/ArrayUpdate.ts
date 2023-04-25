@@ -1,4 +1,5 @@
-import { ImmutableArray, withArrayItems, omitArrayItems } from "../util/array.js";
+import type { ImmutableArray } from "../util/array.js";
+import { omitArrayItems, withArrayItems } from "../util/array.js";
 import { cloneObjectWith } from "../util/object.js";
 import { Update } from "./Update.js";
 

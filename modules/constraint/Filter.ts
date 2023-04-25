@@ -1,7 +1,9 @@
-import { Data, FlatDataKey } from "../util/data.js";
-import { ImmutableArray, isArray } from "../util/array.js";
-import { Matchable, Match, filterItems } from "../util/match.js";
-import { isArrayWith, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notInArray, isEqual, notEqual } from "../util/equal.js";
+import type { ImmutableArray } from "../util/array.js";
+import type { Data, FlatDataKey } from "../util/data.js";
+import type { Match, Matchable } from "../util/match.js";
+import { isArray } from "../util/array.js";
+import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "../util/equal.js";
+import { filterItems } from "../util/match.js";
 import { getProp } from "../util/object.js";
 import { splitString } from "../util/string.js";
 import { Constraint } from "./Constraint.js";

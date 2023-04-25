@@ -1,7 +1,9 @@
-import { MONTH, WEEK, DAY, HOUR, SECOND } from "./constants.js";
-import { getDuration, PossibleDate } from "./date.js";
-import { NumberOptions } from "./number.js";
-import { Unit, TimeUnitKey, TIME_UNITS } from "./units.js";
+import type { PossibleDate } from "./date.js";
+import type { NumberOptions } from "./number.js";
+import type { TimeUnitKey, Unit } from "./units.js";
+import { DAY, HOUR, MONTH, SECOND, WEEK } from "./constants.js";
+import { getDuration } from "./date.js";
+import { TIME_UNITS } from "./units.js";
 
 /** Get an appropriate time unit based on an amount in milliseconds. */
 function _getTimeUnit(ms: number): Unit<TimeUnitKey> {

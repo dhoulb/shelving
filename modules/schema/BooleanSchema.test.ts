@@ -1,4 +1,5 @@
-import { BooleanSchema, BOOLEAN, Schema } from "../index.js";
+import type { Schema } from "../index.js";
+import { BOOLEAN, BooleanSchema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

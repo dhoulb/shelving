@@ -1,4 +1,4 @@
-import { deepDiff, deepDiffArray, deepDiffObject, SAME } from "../index.js";
+import { SAME, deepDiff, deepDiffArray, deepDiffObject } from "../index.js";
 
 const arrFlat = [1, "b", true, false, null];
 const arrFlatSame = [1, "b", true, false, null];

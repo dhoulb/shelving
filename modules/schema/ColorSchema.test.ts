@@ -1,4 +1,5 @@
-import { Feedback, ColorSchema, Schema, OPTIONAL_COLOR, COLOR } from "../index.js";
+import type { Schema } from "../index.js";
+import { COLOR, ColorSchema, Feedback, OPTIONAL_COLOR } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

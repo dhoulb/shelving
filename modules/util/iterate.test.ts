@@ -1,4 +1,4 @@
-import { countItems, getChunks, getArray, getRange, limitItems, reduceItems, mergeItems } from "../index.js";
+import { countItems, getArray, getChunks, getRange, limitItems, mergeItems, reduceItems } from "../index.js";
 
 test("getRange()", () => {
 	expect(getArray(getRange(1, 4))).toEqual([1, 2, 3, 4]);

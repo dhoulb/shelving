@@ -1,15 +1,15 @@
-import type { Data } from "../util/data.js";
-import type { ItemArray, ItemValue, ItemData, ItemStatement } from "../db/Item.js";
-import type { Updates } from "../update/DataUpdate.js";
-import type { Constraint } from "../constraint/Constraint.js";
-import { Statement } from "../constraint/Statement.js";
-import { getRandomKey } from "../util/random.js";
-import { isArrayEqual } from "../util/equal.js";
-import { RequiredError } from "../error/RequiredError.js";
-import { getArray } from "../util/array.js";
-import { transformObject } from "../util/transform.js";
-import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import type { Provider } from "./Provider.js";
+import type { Constraint } from "../constraint/Constraint.js";
+import type { ItemArray, ItemData, ItemStatement, ItemValue } from "../db/Item.js";
+import type { Updates } from "../update/DataUpdate.js";
+import type { Data } from "../util/data.js";
+import { Statement } from "../constraint/Statement.js";
+import { RequiredError } from "../error/RequiredError.js";
+import { DeferredSequence } from "../sequence/DeferredSequence.js";
+import { getArray } from "../util/array.js";
+import { isArrayEqual } from "../util/equal.js";
+import { getRandomKey } from "../util/random.js";
+import { transformObject } from "../util/transform.js";
 
 /**
  * Fast in-memory store for data.

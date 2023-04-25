@@ -1,4 +1,5 @@
-import { Feedback, ImmutableDictionary, DictionarySchema, Validator, STRING, BOOLEAN, DICTIONARY, NUMBER, Feedbacks } from "../index.js";
+import type { ImmutableDictionary, Validator } from "../index.js";
+import { BOOLEAN, DICTIONARY, DictionarySchema, Feedback, Feedbacks, NUMBER, STRING } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

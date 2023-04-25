@@ -1,7 +1,8 @@
-import { formatNumber, getOptionalNumber, roundStep } from "../util/number.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { Schema, SchemaOptions } from "./Schema.js";
+import { formatNumber, getOptionalNumber, roundStep } from "../util/number.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import { Schema } from "./Schema.js";
 
 /** Allowed options for `NumberSchema` */
 export type NumberSchemaOptions = SchemaOptions & {

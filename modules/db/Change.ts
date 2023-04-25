@@ -1,8 +1,9 @@
-import type { Data } from "../util/data.js";
+import type { AsyncProvider, Provider } from "../provider/Provider.js";
+import type { Updates } from "../update/DataUpdate.js";
 import type { ImmutableArray } from "../util/array.js";
-import type { Provider, AsyncProvider } from "../provider/Provider.js";
-import { Updates } from "../update/DataUpdate.js";
-import { notNullish, Nullish } from "../util/null.js";
+import type { Data } from "../util/data.js";
+import type { Nullish } from "../util/null.js";
+import { notNullish } from "../util/null.js";
 import { getItemStatement } from "./Item.js";
 
 /** Change on a collection. */

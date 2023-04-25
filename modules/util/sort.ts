@@ -1,4 +1,5 @@
-import { ImmutableArray, isArray, MutableArray } from "./array.js";
+import type { ImmutableArray, MutableArray } from "./array.js";
+import { isArray } from "./array.js";
 
 /** Object that can rank two values using its `rank()` function. */
 export interface Rankable<T> {

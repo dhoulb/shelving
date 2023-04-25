@@ -1,13 +1,13 @@
-import type { Data } from "../util/data.js";
-import type { Dispatch, Handler, Stop } from "../util/function.js";
-import type { Updates } from "../update/DataUpdate.js";
-import type { Provider, AsyncProvider } from "../provider/Provider.js";
-import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem, isArrayLength, countArray } from "../util/array.js";
-import { runSequence } from "../util/sequence.js";
-import { Statement } from "../constraint/Statement.js";
+import type { ItemArray, ItemData, ItemValue } from "./Item.js";
 import type { PossibleFilters } from "../constraint/Filters.js";
 import type { PossibleSorts } from "../constraint/Sorts.js";
-import type { ItemArray, ItemValue, ItemData } from "./Item.js";
+import type { AsyncProvider, Provider } from "../provider/Provider.js";
+import type { Updates } from "../update/DataUpdate.js";
+import type { Data } from "../util/data.js";
+import type { Dispatch, Handler, Stop } from "../util/function.js";
+import { Statement } from "../constraint/Statement.js";
+import { countArray, getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem, isArrayLength } from "../util/array.js";
+import { runSequence } from "../util/sequence.js";
 
 /** Reference to a set of items in a sync or async provider. */
 abstract class BaseQuery<T extends Data = Data> extends Statement<ItemData<T>> implements AsyncIterable<ItemArray<T>> {

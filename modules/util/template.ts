@@ -1,9 +1,10 @@
 import type { ImmutableArray } from "./array.js";
-import type { NotString } from "./string.js";
 import type { ImmutableDictionary } from "./dictionary.js";
-import { isObject, Mutable } from "./object.js";
-import { setMapItem } from "./map.js";
+import type { Mutable } from "./object.js";
+import type { NotString } from "./string.js";
 import { EMPTY_DATA } from "./data.js";
+import { setMapItem } from "./map.js";
+import { isObject } from "./object.js";
 
 /** Single template chunk. */
 type TemplateChunk = {

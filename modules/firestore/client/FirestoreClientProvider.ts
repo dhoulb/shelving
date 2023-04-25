@@ -1,36 +1,44 @@
-import {
-	Firestore,
-	DocumentSnapshot as FirestoreDocumentSnapshot,
-	Query as FirestoreQueryReference,
-	QuerySnapshot as FirestoreQuerySnapshot,
-	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
-	QueryConstraint as FirestoreQueryConstraint,
-	FieldValue as FirestoreFieldValue,
-	documentId as firestoreDocumentId,
-	orderBy as firestoreOrderBy,
-	where as firestoreWhere,
-	limit as firestoreLimit,
-	increment as firestoreIncrement,
-	arrayUnion as firestoreArrayUnion,
-	arrayRemove as firestoreArrayRemove,
-	deleteField as firestoreDeleteField,
-	collection as firestoreCollection,
-	doc as firestoreDocument,
-	query as firestoreQuery,
-	onSnapshot,
-	addDoc,
-	setDoc,
-	updateDoc,
-	deleteDoc,
-	getDoc,
-	getDocs,
-} from "firebase/firestore";
+import type { ItemArray, ItemData, ItemStatement, ItemValue } from "../../db/Item.js";
+import type { AsyncProvider } from "../../provider/Provider.js";
+import type { Updates } from "../../update/DataUpdate.js";
 import type { Data } from "../../util/data.js";
 import type { Entry } from "../../util/entry.js";
-import type { AsyncProvider } from "../../provider/Provider.js";
-import type { ItemArray, ItemValue, ItemData, ItemStatement } from "../../db/Item.js";
+import type {
+	Firestore,
+	DocumentSnapshot as FirestoreDocumentSnapshot,
+	FieldValue as FirestoreFieldValue,
+	QueryConstraint as FirestoreQueryConstraint,
+	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
+	Query as FirestoreQueryReference,
+	QuerySnapshot as FirestoreQuerySnapshot,
+} from "firebase/firestore";
+import {
+	addDoc,
+	deleteDoc,
+	arrayRemove as firestoreArrayRemove,
+	arrayUnion as firestoreArrayUnion,
+	collection as firestoreCollection,
+	deleteField as firestoreDeleteField,
+	doc as firestoreDocument,
+	documentId as firestoreDocumentId,
+	increment as firestoreIncrement,
+	limit as firestoreLimit,
+	orderBy as firestoreOrderBy,
+	query as firestoreQuery,
+	where as firestoreWhere,
+	getDoc,
+	getDocs,
+	onSnapshot,
+	setDoc,
+	updateDoc,
+} from "firebase/firestore";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
-import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, Update } from "../../update/index.js";
+import { ArrayUpdate } from "../../update/ArrayUpdate.js";
+import { DataUpdate } from "../../update/DataUpdate.js";
+import { Delete } from "../../update/Delete.js";
+import { DictionaryUpdate } from "../../update/DictionaryUpdate.js";
+import { Increment } from "../../update/Increment.js";
+import { Update } from "../../update/Update.js";
 
 // Constants.
 const ID = firestoreDocumentId();

@@ -1,6 +1,6 @@
+import type { Dispatch, Handler } from "./function.js";
 import { AssertionError } from "../error/AssertionError.js";
 import { SIGNAL } from "./constants.js";
-import type { Handler, Dispatch } from "./function.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
 export const isAsync = <T>(value: PromiseLike<T> | T): value is PromiseLike<T> => typeof value === "object" && value !== null && typeof (value as Promise<T>).then === "function";

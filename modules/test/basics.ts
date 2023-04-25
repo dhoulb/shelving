@@ -1,11 +1,11 @@
-import { ItemData } from "../db/Item.js";
+import type { ItemData } from "../db/Item.js";
 import type { ValidatorType } from "../util/validate.js";
 import { ALLOW_STRING } from "../schema/AllowSchema.js";
 import { ARRAY } from "../schema/ArraySchema.js";
+import { BOOLEAN } from "../schema/BooleanSchema.js";
 import { DATA } from "../schema/DataSchema.js";
 import { NUMBER } from "../schema/NumberSchema.js";
 import { STRING } from "../schema/StringSchema.js";
-import { BOOLEAN } from "../schema/BooleanSchema.js";
 
 export const BASIC_SCHEMA = DATA({
 	str: STRING,

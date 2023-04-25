@@ -1,10 +1,11 @@
 /* eslint-disable no-control-regex */
 
+import type { ImmutableArray } from "./array.js";
 import { AssertionError } from "../error/AssertionError.js";
+import { getArray, isArray } from "./array.js";
 import { formatDate, isDate } from "./date.js";
-import { formatObject, isObject } from "./object.js";
-import { getArray, ImmutableArray, isArray } from "./array.js";
 import { formatNumber, formatRange, isBetween } from "./number.js";
+import { formatObject, isObject } from "./object.js";
 
 /**
  * Type that never matches the `string` type.

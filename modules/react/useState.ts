@@ -1,7 +1,9 @@
-import { Dispatch, useEffect, useState as useReactState } from "react";
 import type { AnyState } from "../state/State.js";
-import { Handler, Stop, dispatch } from "../util/function.js";
-import { ImmutableArray } from "../util/array.js";
+import type { ImmutableArray } from "../util/array.js";
+import type { Handler, Stop } from "../util/function.js";
+import type { Dispatch } from "react";
+import { useEffect, useState as useReactState } from "react";
+import { dispatch } from "../util/function.js";
 import { mapArray } from "../util/transform.js";
 import { isDefined } from "../util/undefined.js";
 

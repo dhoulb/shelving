@@ -1,7 +1,10 @@
+import type { ImmutableArray } from "./array.js";
+import type { ImmutableMap } from "./map.js";
 import type { Match } from "./match.js";
-import { ImmutableArray, isArray } from "./array.js";
-import { ImmutableObject, isObject, isProp } from "./object.js";
-import { ImmutableMap, isMap } from "./map.js";
+import type { ImmutableObject } from "./object.js";
+import { isArray } from "./array.js";
+import { isMap } from "./map.js";
+import { isObject, isProp } from "./object.js";
 import { rankAsc } from "./sort.js";
 
 /** Is unknown value `left` exactly equal to `right`? */

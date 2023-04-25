@@ -1,4 +1,5 @@
-import { ArrayState, ImmutableArray, runMicrotasks } from "../index.js";
+import type { ImmutableArray } from "../index.js";
+import { ArrayState, runMicrotasks } from "../index.js";
 
 test("ArrayState with initial value", async () => {
 	const state = new ArrayState<number>([1, 2, 3]);

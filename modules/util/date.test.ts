@@ -1,4 +1,5 @@
-import { getOptionalDate, getYMD, getOptionalYMD, PossibleDate } from "../index.js";
+import type { PossibleDate } from "../index.js";
+import { getOptionalDate, getOptionalYMD, getYMD } from "../index.js";
 
 describe("toDate()", () => {
 	test("toDate(): Parses valid possible dates to Date instances", () => {

@@ -1,8 +1,9 @@
+import type { AsyncDispatch, Dispatch, Handler, Stop } from "./function.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { Delay, Signal } from "./async.js";
 import { SIGNAL } from "./constants.js";
 import { logError } from "./error.js";
-import { Handler, Stop, AsyncDispatch, Dispatch, dispatch } from "./function.js";
+import { dispatch } from "./function.js";
 
 /**
  * Is a value an async iterable object?

@@ -1,4 +1,4 @@
-import { AsyncItem, ItemState } from "../index.js";
+import type { AsyncItem, ItemState } from "../index.js";
 import { useData } from "./index.js";
 
 test.skip("Typescript", () => {

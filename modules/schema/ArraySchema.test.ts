@@ -1,4 +1,5 @@
-import { Feedback, ArraySchema, Validator, ARRAY, NUMBER, DATA, STRING, Feedbacks } from "../index.js";
+import type { Validator } from "../index.js";
+import { ARRAY, ArraySchema, DATA, Feedback, Feedbacks, NUMBER, STRING } from "../index.js";
 
 // Vars.
 const stringArray = ["a", "b", "c"];

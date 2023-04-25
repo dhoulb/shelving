@@ -1,4 +1,4 @@
-import { getString, getSlug, getWords, simplifyString, sanitizeString, sanitizeLines, THINSP, NBSP, NNBSP, splitString, AssertionError, assertStringLength, isStringLength, getStringLength } from "../index.js";
+import { AssertionError, NBSP, NNBSP, THINSP, assertStringLength, getSlug, getString, getStringLength, getWords, isStringLength, sanitizeLines, sanitizeString, simplifyString, splitString } from "../index.js";
 
 describe("getString()", () => {
 	test("Correct returned value", () => {

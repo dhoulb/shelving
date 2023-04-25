@@ -1,6 +1,7 @@
 import type { Data, FlatDataKey } from "../util/data.js";
+import type { Rankable } from "../util/sort.js";
 import { getProp } from "../util/object.js";
-import { rank, Rankable, rankAsc, rankDesc, sortItems } from "../util/sort.js";
+import { rank, rankAsc, rankDesc, sortItems } from "../util/sort.js";
 import { splitString } from "../util/string.js";
 import { Constraint } from "./Constraint.js";
 

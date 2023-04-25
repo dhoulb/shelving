@@ -1,6 +1,8 @@
+import type { Data, DataKey } from "../util/data.js";
+import type { Transformer, Transformers } from "../util/transform.js";
+import { getData } from "../util/data.js";
 import { withProp } from "../util/object.js";
-import { Data, DataKey, getData } from "../util/data.js";
-import { transform, Transformers, Transformer, transformObject } from "../util/transform.js";
+import { transform, transformObject } from "../util/transform.js";
 import { State } from "./State.js";
 
 /** State that stores a data object and has additional methods to help with that. */

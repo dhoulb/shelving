@@ -1,6 +1,6 @@
+import type { ItemArray, ItemStatement, ItemValue } from "../db/Item.js";
 import type { Updates } from "../update/DataUpdate.js";
 import type { Data } from "../util/data.js";
-import type { ItemArray, ItemStatement, ItemValue } from "../db/Item.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
 abstract class AbstractProvider {

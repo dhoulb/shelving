@@ -1,4 +1,5 @@
-import { ImmutableDictionary, isObject, MutableDictionary, deleteDictionaryItems, setDictionaryItem, setDictionaryItems, omitProps, withDictionaryItem, withProps, pickProps, getProp } from "../index.js";
+import type { ImmutableDictionary, MutableDictionary } from "../index.js";
+import { deleteDictionaryItems, getProp, isObject, omitProps, pickProps, setDictionaryItem, setDictionaryItems, withDictionaryItem, withProps } from "../index.js";
 
 const maplikeObj: ImmutableDictionary<number> = { a: 1, b: 2, c: 3, d: 4 };
 

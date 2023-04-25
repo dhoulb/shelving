@@ -1,4 +1,4 @@
-import { Feedback, NumberSchema, Schema, NUMBER, OPTIONAL_NUMBER } from "../index.js";
+import { Feedback, NUMBER, NumberSchema, OPTIONAL_NUMBER, Schema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

@@ -1,5 +1,5 @@
+import type { ItemData } from "../db/Item.js";
 import type { ValidatorType } from "../util/validate.js";
-import { ItemData } from "../db/Item.js";
 import { DATA } from "../schema/DataSchema.js";
 import { OPTIONAL_DATE } from "../schema/DateSchema.js";
 import { REQUIRED_STRING } from "../schema/StringSchema.js";

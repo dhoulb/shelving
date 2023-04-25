@@ -1,6 +1,8 @@
+import type { DictionaryItem, ImmutableDictionary } from "../util/dictionary.js";
+import type { Transformer, Transformers } from "../util/transform.js";
+import { omitDictionaryItems } from "../util/dictionary.js";
 import { withProp } from "../util/object.js";
-import { DictionaryItem, ImmutableDictionary, omitDictionaryItems } from "../util/dictionary.js";
-import { Transformer, Transformers, transform, transformObject } from "../util/transform.js";
+import { transform, transformObject } from "../util/transform.js";
 import { State } from "./State.js";
 
 /** State that stores a dictionary object and has additional methods to help with that. */

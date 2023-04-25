@@ -1,4 +1,5 @@
-import { ALLOW, AllowSchema, AllowStringSchema, ALLOW_STRING, Feedback, Schema } from "../index.js";
+import type { Schema } from "../index.js";
+import { ALLOW, ALLOW_STRING, AllowSchema, AllowStringSchema, Feedback } from "../index.js";
 
 test("TypeScript", () => {
 	// String object options.

@@ -1,6 +1,7 @@
+import type { ImmutableArray } from "../util/array.js";
 import type { Data } from "../util/data.js";
+import { omitArrayItems, withArrayItems } from "../util/array.js";
 import { cloneObjectWith } from "../util/object.js";
-import { ImmutableArray, withArrayItems, omitArrayItems } from "../util/array.js";
 import { Constraint } from "./Constraint.js";
 
 /** Type of Rule that is powered by several sub-constraints (e.g. `Filters` and `Sorts` and `Query` itself extend this). */

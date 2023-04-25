@@ -1,13 +1,15 @@
-import type { ImmutableArray } from "../util/array.js";
-import type { Stop, Handler, Dispatch } from "../util/function.js";
-import type { Provider, AsyncProvider } from "../provider/Provider.js";
-import type { Updates } from "../update/DataUpdate.js";
-import { Statement } from "../constraint/Statement.js";
-import { Filter, FilterKey } from "../constraint/Filter.js";
-import { Filters } from "../constraint/Filters.js";
-import { Data, getData } from "../util/data.js";
-import { runSequence } from "../util/sequence.js";
 import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
+import type { FilterKey } from "../constraint/Filter.js";
+import type { AsyncProvider, Provider } from "../provider/Provider.js";
+import type { Updates } from "../update/DataUpdate.js";
+import type { ImmutableArray } from "../util/array.js";
+import type { Data } from "../util/data.js";
+import type { Dispatch, Handler, Stop } from "../util/function.js";
+import { Filter } from "../constraint/Filter.js";
+import { Filters } from "../constraint/Filters.js";
+import { Statement } from "../constraint/Statement.js";
+import { getData } from "../util/data.js";
+import { runSequence } from "../util/sequence.js";
 
 /** Item data with a string ID that uniquely identifies it. */
 export type ItemData<T extends Data = Data> = T & { id: string };

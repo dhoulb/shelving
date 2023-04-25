@@ -1,4 +1,5 @@
-import { Statement, Filter, Sort, Filters, Sorts, ImmutableArray } from "../index.js";
+import type { ImmutableArray } from "../index.js";
+import { Filter, Filters, Sort, Sorts, Statement } from "../index.js";
 import { expectOrderedKeys, expectUnorderedKeys } from "../test/index.js";
 
 type T = { id: string; str: string; num: number; type: "alpha" | "beta"; arr: ImmutableArray<string> };

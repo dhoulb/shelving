@@ -1,7 +1,10 @@
+import type { SchemaOptions } from "./Schema.js";
+import type { ImmutableArray } from "../util/array.js";
+import type { Validator } from "../util/validate.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { ImmutableArray, isArray, getUniqueArray } from "../util/array.js";
-import { validateArray, Validator } from "../util/validate.js";
-import { Schema, SchemaOptions } from "./Schema.js";
+import { getUniqueArray, isArray } from "../util/array.js";
+import { validateArray } from "../util/validate.js";
+import { Schema } from "./Schema.js";
 
 /** Allowed options for `ArraySchema` */
 export type ArraySchemaOptions<T> = SchemaOptions & {

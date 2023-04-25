@@ -1,4 +1,4 @@
-import { getTime, getOptionalTime, Time, AssertionError } from "../index.js";
+import { AssertionError, Time, getOptionalTime, getTime } from "../index.js";
 
 test("getOptionalTime()", () => {
 	// Parsed as dates.

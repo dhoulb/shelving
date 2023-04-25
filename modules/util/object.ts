@@ -1,5 +1,6 @@
+import type { ImmutableArray } from "./array.js";
 import { AssertionError } from "../error/AssertionError.js";
-import { ImmutableArray, isArrayLength } from "./array.js";
+import { isArrayLength } from "./array.js";
 import { isIterable } from "./iterate.js";
 
 /** Any readonly object. */

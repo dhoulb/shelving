@@ -1,6 +1,6 @@
+import type { Entry } from "./entry.js";
 import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
-import { Entry } from "./entry.js";
 import { isIterable, limitItems } from "./iterate.js";
 
 /** `Map` that cannot be changed. */

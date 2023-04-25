@@ -1,4 +1,5 @@
-import { getJSXNodeText, renderMarkup, getJSXNodeElements, JSXElement, JSXNode } from "../index.js";
+import type { JSXElement, JSXNode } from "../index.js";
+import { getJSXNodeElements, getJSXNodeText, renderMarkup } from "../index.js";
 
 test("JSX: types: check our custom JSX types are compatible with React's types", () => {
 	const a1: JSXElement = { type: "div", key: null, ref: null, props: {} };

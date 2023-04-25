@@ -1,4 +1,5 @@
-import { Schema, SchemaOptions } from "./Schema.js";
+import type { SchemaOptions } from "./Schema.js";
+import { Schema } from "./Schema.js";
 
 /** Allowed options for `BooleanSchema` */
 export type BooleanSchemaOptions = SchemaOptions & {

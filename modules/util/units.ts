@@ -1,9 +1,12 @@
+import type { MapKey } from "./map.js";
+import type { NumberOptions } from "./number.js";
+import type { ImmutableObject } from "./object.js";
 import { ConditionError } from "../error/ConditionError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
-import { getProps, ImmutableObject } from "./object.js";
-import { MapKey, ImmutableMap } from "./map.js";
-import { NumberOptions, pluralizeQuantity, formatQuantity } from "./number.js";
+import { ImmutableMap } from "./map.js";
+import { formatQuantity, pluralizeQuantity } from "./number.js";
+import { getProps } from "./object.js";
 
 /** Conversion from one unit to another (either an amount to multiple by, or a function to convert). */
 type Conversion = number | ((num: number) => number);

@@ -1,6 +1,7 @@
-import { sanitizeLines, sanitizeString } from "../util/string.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { Schema, SchemaOptions } from "./Schema.js";
+import { sanitizeLines, sanitizeString } from "../util/string.js";
+import { Schema } from "./Schema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
 export type HtmlInputType = "text" | "password" | "color" | "date" | "email" | "number" | "tel" | "search" | "url";

@@ -1,7 +1,8 @@
-import { useRef } from "react";
 import type { Arguments } from "../util/function.js";
+import type { Lazy } from "../util/lazy.js";
+import { useRef } from "react";
 import { isArrayEqual } from "../util/equal.js";
-import { getLazy, Lazy } from "../util/lazy.js";
+import { getLazy } from "../util/lazy.js";
 
 /**
  * Use a memoised value with lazy initialisation.

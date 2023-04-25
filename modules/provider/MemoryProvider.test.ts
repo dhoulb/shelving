@@ -1,26 +1,7 @@
-import {
-	basics,
-	people,
-	basic1,
-	basic2,
-	basic3,
-	basic4,
-	basic6,
-	basic7,
-	basic8,
-	basic9,
-	person1,
-	person2,
-	person3,
-	person4,
-	person5,
-	expectOrderedKeys,
-	expectUnorderedKeys,
-	BasicItemData,
-	TestCollections,
-	basic999,
-} from "../test/index.js";
-import { MemoryProvider, OptionalData, ImmutableArray, Database, runMicrotasks } from "../index.js";
+import type { ImmutableArray, OptionalData } from "../index.js";
+import type { BasicItemData, TestCollections } from "../test/index.js";
+import { Database, MemoryProvider, runMicrotasks } from "../index.js";
+import { basic1, basic2, basic3, basic4, basic6, basic7, basic8, basic9, basic999, basics, expectOrderedKeys, expectUnorderedKeys, people, person1, person2, person3, person4, person5 } from "../test/index.js";
 
 test("MemoryProvider: set/get/delete documents", () => {
 	// Setup.

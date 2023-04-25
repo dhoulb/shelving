@@ -1,9 +1,11 @@
+import type { SchemaOptions } from "./Schema.js";
 import type { Entry } from "../util/entry.js";
-import { getString } from "../util/string.js";
-import { getMap, ImmutableMap, isMapKey, PossibleMap, PossibleStringMap } from "../util/map.js";
+import type { ImmutableMap, PossibleMap, PossibleStringMap } from "../util/map.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { getFirstItem } from "../util/array.js";
-import { Schema, SchemaOptions } from "./Schema.js";
+import { getMap, isMapKey } from "../util/map.js";
+import { getString } from "../util/string.js";
+import { Schema } from "./Schema.js";
 
 /** Allowed options for `AllowSchama` */
 export type AllowSchemaOptions<K, T> = Omit<SchemaOptions, "value"> & {

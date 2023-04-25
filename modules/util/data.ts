@@ -1,7 +1,7 @@
-import { AssertionError } from "../error/AssertionError.js";
-import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import type { EntryObject } from "./entry.js";
+import { AssertionError } from "../error/AssertionError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { isPlainObject } from "./object.js";
 
 /** Data object. */

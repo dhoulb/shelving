@@ -1,4 +1,4 @@
-import { Schema } from "./Schema.js";
+import type { Schema } from "./Schema.js";
 import { ThroughSchema } from "./ThroughSchema.js";
 
 /** Validate a value of a specific type or `null`. */

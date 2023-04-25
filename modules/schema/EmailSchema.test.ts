@@ -1,4 +1,5 @@
-import { Feedback, EmailSchema, Schema, EMAIL, OPTIONAL_EMAIL } from "../index.js";
+import type { Schema } from "../index.js";
+import { EMAIL, EmailSchema, Feedback, OPTIONAL_EMAIL } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

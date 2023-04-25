@@ -1,4 +1,5 @@
-import { UPDATE_HYDRATIONS, Increment, FEEDBACK_HYDRATIONS, Feedback, dehydrate, hydrate, Data } from "../index.js";
+import type { Data } from "../index.js";
+import { FEEDBACK_HYDRATIONS, Feedback, Increment, UPDATE_HYDRATIONS, dehydrate, hydrate } from "../index.js";
 
 const HYDRATIONS = {
 	...UPDATE_HYDRATIONS,

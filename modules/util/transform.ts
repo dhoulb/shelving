@@ -1,8 +1,10 @@
 import type { ArrayItem, ImmutableArray } from "./array.js";
+import type { ImmutableDictionary, PossibleDictionary } from "./dictionary.js";
 import type { Entry } from "./entry.js";
-import { Arguments, isFunction } from "./function.js";
-import { getProps, ImmutableObject, isObject, MutableObject, ObjectValue } from "./object.js";
-import { ImmutableDictionary, PossibleDictionary } from "./dictionary.js";
+import type { Arguments } from "./function.js";
+import type { ImmutableObject, MutableObject, ObjectValue } from "./object.js";
+import { isFunction } from "./function.js";
+import { getProps, isObject } from "./object.js";
 
 /** Object that transforms an input value into an output value with its `transform()` method. */
 export interface Transformable<I, O, A extends Arguments = []> {

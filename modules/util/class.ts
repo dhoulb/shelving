@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import type { Arguments } from "./function.js";
 import { AssertionError } from "../error/AssertionError.js";
-import { Arguments, assertFunction } from "./function.js";
 import { debug } from "./debug.js";
+import { assertFunction } from "./function.js";
 
 /** Class that has a public `constructor()` function. */
 export type Constructor<T, A extends Arguments> = new (...args: A) => T;

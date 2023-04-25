@@ -1,12 +1,12 @@
+import type { AsyncQuery } from "../db/Query.js";
 import type { ImmutableArray } from "../util/array.js";
-import { setMapItem } from "../util/map.js";
-import { mapArray } from "../util/transform.js";
 import { AsyncItem } from "../db/Item.js";
 import { ItemState } from "../db/ItemState.js";
-import { AsyncQuery } from "../db/Query.js";
 import { QueryState } from "../db/QueryState.js";
-import { useState } from "./useState.js";
+import { setMapItem } from "../util/map.js";
+import { mapArray } from "../util/transform.js";
 import { createCache } from "./createCache.js";
+import { useState } from "./useState.js";
 
 // Types.
 type RefToState<T> = T extends undefined ? undefined : T extends AsyncItem<infer X> ? ItemState<X> : T extends AsyncQuery<infer X> ? QueryState<X> : never;

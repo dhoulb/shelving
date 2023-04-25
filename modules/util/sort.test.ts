@@ -1,4 +1,4 @@
-import { sortItems, rankAsc, rankDesc } from "../index.js";
+import { rankAsc, rankDesc, sortItems } from "../index.js";
 
 describe("ASC & DESC", () => {
 	test("Different types are sorted correctly", () => {

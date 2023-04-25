@@ -1,4 +1,4 @@
-import { transform, mapArray, transformObject, mapObject } from "../index.js";
+import { mapArray, mapObject, transform, transformObject } from "../index.js";
 
 test("transform()", () => {
 	expect(transform(10, n => n * n)).toBe(100);

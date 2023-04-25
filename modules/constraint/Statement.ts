@@ -1,11 +1,14 @@
+import type { FilterKey } from "./Filter.js";
+import type { Filterable, PossibleFilters } from "./Filters.js";
+import type { PossibleSorts, Sortable } from "./Sorts.js";
 import type { Data } from "../util/data.js";
-import { cloneObjectWith, getProp } from "../util/object.js";
-import { assert } from "../util/assert.js";
 import { limitArray } from "../util/array.js";
-import { Filterable, Filters, PossibleFilters } from "./Filters.js";
-import { PossibleSorts, Sortable, Sorts } from "./Sorts.js";
+import { assert } from "../util/assert.js";
+import { cloneObjectWith, getProp } from "../util/object.js";
 import { Constraint } from "./Constraint.js";
-import { Filter, FilterKey } from "./Filter.js";
+import { Filter } from "./Filter.js";
+import { Filters } from "./Filters.js";
+import { Sorts } from "./Sorts.js";
 
 // Instances to save resources for the default case (empty query).
 const EMPTY_FILTERS = new Filters<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any

@@ -1,17 +1,23 @@
+import type { ItemArray, ItemData, ItemStatement, ItemValue } from "../../db/Item.js";
+import type { AsyncProvider } from "../../provider/Provider.js";
+import type { Updates } from "../../update/DataUpdate.js";
+import type { Data } from "../../util/data.js";
+import type { Entry } from "../../util/entry.js";
 import type {
+	BulkWriter as FirestoreBulkWriter,
 	DocumentSnapshot as FirestoreDocumentSnapshot,
 	Query as FirestoreQuery,
-	QuerySnapshot as FirestoreQuerySnapshot,
 	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
-	BulkWriter as FirestoreBulkWriter,
+	QuerySnapshot as FirestoreQuerySnapshot,
 } from "@google-cloud/firestore";
-import { Firestore, FieldValue, FieldPath } from "@google-cloud/firestore";
-import type { Entry } from "../../util/entry.js";
-import type { Data } from "../../util/data.js";
-import type { AsyncProvider } from "../../provider/Provider.js";
-import type { ItemArray, ItemValue, ItemData, ItemStatement } from "../../db/Item.js";
+import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
-import { ArrayUpdate, DataUpdate, Updates, Increment, DictionaryUpdate, Delete, Update } from "../../update/index.js";
+import { ArrayUpdate } from "../../update/ArrayUpdate.js";
+import { DataUpdate } from "../../update/DataUpdate.js";
+import { Delete } from "../../update/Delete.js";
+import { DictionaryUpdate } from "../../update/DictionaryUpdate.js";
+import { Increment } from "../../update/Increment.js";
+import { Update } from "../../update/Update.js";
 
 // Constants.
 const ID = FieldPath.documentId();

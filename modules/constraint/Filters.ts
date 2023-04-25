@@ -1,9 +1,12 @@
-import { Matchable, filterItems } from "../util/match.js";
-import { Data, getDataProps } from "../util/data.js";
-import { cloneObjectWith } from "../util/object.js";
+import type { FilterProps } from "./Filter.js";
+import type { Data } from "../util/data.js";
+import type { Matchable } from "../util/match.js";
 import { clearArray } from "../util/array.js";
-import { Filter, FilterProps } from "./Filter.js";
+import { getDataProps } from "../util/data.js";
+import { filterItems } from "../util/match.js";
+import { cloneObjectWith } from "../util/object.js";
 import { Constraints } from "./Constraints.js";
+import { Filter } from "./Filter.js";
 
 /** A possible set of filters. */
 export type PossibleFilters<T extends Data> = Filters<T> | FilterProps<T>;

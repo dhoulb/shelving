@@ -1,7 +1,10 @@
-import { ImmutableDictionary, isDictionary } from "../util/dictionary.js";
-import { Validator, validateDictionary } from "../util/validate.js";
+import type { SchemaOptions } from "./Schema.js";
+import type { ImmutableDictionary } from "../util/dictionary.js";
+import type { Validator } from "../util/validate.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { Schema, SchemaOptions } from "./Schema.js";
+import { isDictionary } from "../util/dictionary.js";
+import { validateDictionary } from "../util/validate.js";
+import { Schema } from "./Schema.js";
 
 /** Allowed options for `DictionarySchema` */
 export type DictionarySchemaOptions<T> = SchemaOptions & {

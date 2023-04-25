@@ -1,4 +1,4 @@
-import { repeatUntil, repeatDelay, Signal } from "../index.js";
+import { Signal, repeatDelay, repeatUntil } from "../index.js";
 
 test("repeatUntil() and repeatDelay()", async () => {
 	const yielded: number[] = [];

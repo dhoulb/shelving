@@ -1,4 +1,5 @@
-import { Feedback, Validator, StringSchema, DataSchema, DATA, BOOLEAN, NUMBER, STRING, Feedbacks } from "../index.js";
+import type { Validator } from "../index.js";
+import { BOOLEAN, DATA, DataSchema, Feedback, Feedbacks, NUMBER, STRING, StringSchema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

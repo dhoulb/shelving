@@ -1,11 +1,12 @@
-import type { Data } from "../util/data.js";
+import type { AddChange, DeleteChange, SetChange, UpdateChange } from "./Change.js";
+import type { ItemData, ItemValue } from "./Item.js";
 import type { PossibleFilters } from "../constraint/Filters.js";
 import type { PossibleSorts } from "../constraint/Sorts.js";
+import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { Updates } from "../update/DataUpdate.js";
-import type { Provider, AsyncProvider } from "../provider/Provider.js";
-import { ItemData, AsyncItem, Item, ItemValue } from "./Item.js";
+import type { Data } from "../util/data.js";
+import { AsyncItem, Item } from "./Item.js";
 import { AsyncQuery, Query } from "./Query.js";
-import { AddChange, UpdateChange, DeleteChange, SetChange } from "./Change.js";
 
 /** Reference to a collection in a synchronous or asynchronous provider. */
 abstract class BaseCollection<T extends Data = Data> {
