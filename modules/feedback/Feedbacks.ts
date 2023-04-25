@@ -13,8 +13,5 @@ export class Feedbacks extends Feedback {
 	}
 }
 
-/** Is an unknown value a `Feedbacks` object. */
-export const isFeedbacks = <T extends Feedbacks>(value: T | unknown): value is T => value instanceof Feedbacks;
-
 /** Get the messages from a feedbacks' sub-feedbacks. */
 export const getFeedbackMessages = ({ feedbacks }: Feedbacks): ImmutableDictionary<string> => mapDictionary(feedbacks, getFeedbackMessage);

@@ -23,8 +23,5 @@ export class Feedback {
 	}
 }
 
-/** Is an unknown value a `Feedback` object. */
-export const isFeedback = <T extends Feedback>(value: T | unknown): value is T => value instanceof Feedback;
-
 /** Get the message from a feedback. */
 export const getFeedbackMessage = ({ message }: Feedback): string => message;

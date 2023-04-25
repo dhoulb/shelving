@@ -1,4 +1,4 @@
-import { Feedback, isFeedback } from "../feedback/Feedback.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { Feedbacks } from "../feedback/Feedbacks.js";
 import { ImmutableDictionary, MutableDictionary, PossibleDictionary, getDictionaryItems } from "./dictionary.js";
 import { Data, getDataProps } from "./data.js";
@@ -55,7 +55,7 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
 		try {
 			yield validate(unsafeItem, validator);
 		} catch (thrown) {
-			if (!isFeedback(thrown)) throw thrown;
+			if (!(thrown instanceof Feedback)) throw thrown;
 			feedbacks[index] = thrown;
 			valid = false;
 		}
@@ -83,7 +83,7 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
 			safeArray.push(safeItem);
 			if (!changed && safeItem !== unsafeItem) changed = true;
 		} catch (thrown) {
-			if (!isFeedback(thrown)) throw thrown;
+			if (!(thrown instanceof Feedback)) throw thrown;
 			feedbacks[index] = thrown;
 			valid = false;
 		}
@@ -110,7 +110,7 @@ export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unkno
 			safeDictionary[key] = safeValue;
 			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
-			if (!isFeedback(thrown)) throw thrown;
+			if (!(thrown instanceof Feedback)) throw thrown;
 			feedbacks[key] = thrown;
 			valid = false;
 		}
@@ -142,7 +142,7 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 			safeData[key] = safeValue;
 			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
-			if (!isFeedback(thrown)) throw thrown;
+			if (!(thrown instanceof Feedback)) throw thrown;
 			feedbacks[key] = thrown;
 			valid = false;
 		}

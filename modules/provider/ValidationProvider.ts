@@ -2,9 +2,9 @@ import type { DataKey, Datas, Data } from "../util/data.js";
 import type { ItemArray, ItemValue, ItemData, ItemStatement } from "../db/Item.js";
 import type { DataSchemas, DataSchema } from "../schema/DataSchema.js";
 import type { MutableDictionary } from "../util/dictionary.js";
-import { Updates } from "../update/DataUpdate.js";
+import type { Updates } from "../update/DataUpdate.js";
 import { validate, validateWithContext } from "../util/validate.js";
-import { isFeedback } from "../feedback/Feedback.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { Sourceable } from "../util/source.js";
 import { transformObject } from "../util/transform.js";
@@ -114,7 +114,7 @@ function _validateItem<T extends Data>(collection: string, unsafeEntity: ItemVal
 	try {
 		return { ...validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET), id: unsafeEntity.id };
 	} catch (thrown) {
-		if (!isFeedback(thrown)) throw thrown;
+		if (!(thrown instanceof Feedback)) throw thrown;
 		throw new ValidationError(`Invalid data for "${collection}"`, unsafeEntity);
 	}
 }
@@ -130,7 +130,7 @@ function* _yieldValidItems<T extends Data>(collection: string, unsafeEntities: I
 		try {
 			yield { ...validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET), id: unsafeEntity.id };
 		} catch (thrown) {
-			if (!isFeedback(thrown)) throw thrown;
+			if (!(thrown instanceof Feedback)) throw thrown;
 			invalid = true;
 			details[unsafeEntity.id] = thrown.message;
 		}
