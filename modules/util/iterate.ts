@@ -3,8 +3,6 @@
  * - Any object with a `Symbol.iterator` property is iterable.
  * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
  */
-import type { Arguments } from "./function.js";
-import { match, Matcher } from "./match.js";
 
 /** Is an unknown value an iterable? */
 export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.iterator in value;
@@ -80,11 +78,6 @@ export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T | undef
 	let current = initial;
 	for (const item of items) current = reducer(current, item);
 	return current;
-}
-
-/** Filter an iterable set of items using a matcher (and optionally a target value). */
-export function* filterItems<T, A extends Arguments = []>(items: Iterable<T>, matcher: Matcher<[T, ...A]>, ...args: A): Iterable<T> {
-	for (const item of items) if (match(matcher, item, ...args)) yield item;
 }
 
 /** Yield chunks of a given size. */

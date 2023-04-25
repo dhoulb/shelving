@@ -1,8 +1,6 @@
 import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
-import type { Arguments } from "./function.js";
-import type { Matcher } from "./match.js";
-import { filterItems, omitItems, pickItems } from "./iterate.js";
+import { omitItems, pickItems } from "./iterate.js";
 import { formatRange } from "./number.js";
 
 /**
@@ -58,13 +56,6 @@ export function pickArrayItems<T>(input: ImmutableArray<T> | Iterable<T>, ...pic
 export function omitArrayItems<T>(input: ImmutableArray<T> | Iterable<T>, ...omit: T[]): ImmutableArray<T> {
 	const output = Array.from(omitItems(input, ...omit));
 	return isArray(input) && output.length === input.length ? input : output;
-}
-
-/** Filter an array using a matcher (and optionally a target value). */
-export function filterArray<T, A extends Arguments = []>(input: ImmutableArray<T>, matcher: Matcher<[T, ...A]>, ...args: A): ImmutableArray<T> {
-	if (!input.length) return input;
-	const output = Array.from(filterItems(input, matcher, ...args));
-	return output.length === input.length ? input : output;
 }
 
 /** Clear an array (immutably) and return a new empty array (or the same array if no changes were made). */

@@ -1,6 +1,5 @@
-import type { Matchable } from "../util/match.js";
+import { Matchable, filterItems } from "../util/match.js";
 import { Data, getDataProps } from "../util/data.js";
-import { filterItems } from "../util/iterate.js";
 import { cloneObjectWith } from "../util/object.js";
 import { clearArray } from "../util/array.js";
 import { Filter, FilterProps } from "./Filter.js";
