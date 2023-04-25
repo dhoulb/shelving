@@ -1,11 +1,10 @@
 import { Data, FlatDataKey } from "../util/data.js";
 import { ImmutableArray, isArray } from "../util/array.js";
-import type { Matchable, Match } from "../util/match.js";
+import { Matchable, Match, filterItems } from "../util/match.js";
 import { isArrayWith, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notInArray, isEqual, notEqual } from "../util/equal.js";
-import { filterItems } from "../util/iterate.js";
 import { getProp } from "../util/object.js";
 import { splitString } from "../util/string.js";
-import type { Constraint } from "./Constraint.js";
+import { Constraint } from "./Constraint.js";
 
 /** Possible operator references. */
 export type FilterOperator =
@@ -51,7 +50,7 @@ const MATCHERS: { [K in FilterOperator]: Match } = {
  * @param operator FilterOperator, e.g. `IS` or `CONTAINS`
  * @param value Value the specified property should be matched against.
  */
-export class Filter<T extends Data = Data> implements Constraint<T>, Matchable<[T]> {
+export class Filter<T extends Data = Data> extends Constraint<T> implements Matchable<[T]> {
 	readonly keys: readonly [string, ...string[]];
 	readonly operator: FilterOperator;
 	readonly value: unknown;
@@ -78,6 +77,7 @@ export class Filter<T extends Data = Data> implements Constraint<T>, Matchable<[
 	}
 	constructor(filterKey: FilterKey<T>, value: unknown);
 	constructor(filterKey: string, value: unknown) {
+		super();
 		if (filterKey.startsWith("!")) {
 			this.keys = splitString(filterKey.slice(1), ".");
 			this.operator = isArray(value) ? "OUT" : "NOT";

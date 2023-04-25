@@ -2,7 +2,7 @@ import type { Data, FlatDataKey } from "../util/data.js";
 import { getProp } from "../util/object.js";
 import { rank, Rankable, rankAsc, rankDesc, sortItems } from "../util/sort.js";
 import { splitString } from "../util/string.js";
-import type { Constraint } from "./Constraint.js";
+import { Constraint } from "./Constraint.js";
 
 /** Format that allows sorts to be set as a plain string, e.g. `name` sorts by name in ascending order and `!date` sorts by date in descending order. */
 export type SortKey<T extends Data> = FlatDataKey<T> | `${FlatDataKey<T>}` | `!${FlatDataKey<T>}`;
@@ -11,7 +11,7 @@ export type SortKey<T extends Data> = FlatDataKey<T> | `${FlatDataKey<T>}` | `!$
 export type SortDirection = "ASC" | "DESC";
 
 /** Sort a list of values. */
-export class Sort<T extends Data = Data> implements Constraint<T>, Rankable<T> {
+export class Sort<T extends Data = Data> extends Constraint<T> implements Rankable<T> {
 	readonly keys: readonly [string, ...string[]];
 	readonly direction: SortDirection;
 	get key(): string {
@@ -22,6 +22,7 @@ export class Sort<T extends Data = Data> implements Constraint<T>, Rankable<T> {
 	}
 	constructor(sortKey: SortKey<T>);
 	constructor(sortKey: string) {
+		super();
 		if (sortKey.startsWith("!")) {
 			this.keys = splitString(sortKey.slice(1), ".");
 			this.direction = "DESC";
