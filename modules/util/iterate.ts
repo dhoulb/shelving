@@ -74,6 +74,8 @@ export function* omitItems<T>(items: Iterable<T>, ...omit: T[]): Iterable<T> {
 /** Reduce an iterable set of items using a reducer function. */
 export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T, item: T) => T, initial: T): T;
 export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T | undefined, item: T) => T, initial?: T): T | undefined;
+export function reduceItems<I, O>(items: Iterable<I>, reducer: (previous: O, item: I) => O, initial: O): O;
+export function reduceItems<I, O>(items: Iterable<I>, reducer: (previous: O | undefined, item: I) => O, initial?: O): O | undefined;
 export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T | undefined, item: T) => T, initial?: T): T | undefined {
 	let current = initial;
 	for (const item of items) current = reducer(current, item);
