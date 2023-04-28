@@ -20,5 +20,4 @@ export * from "./schema/index.js";
 export * from "./sequence/index.js";
 export * from "./state/index.js";
 // export * from "./test/index.js"; // Not exported.
-export * from "./update/index.js";
 export * from "./util/index.js";

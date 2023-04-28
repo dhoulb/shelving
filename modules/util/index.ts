@@ -37,6 +37,7 @@ export * from "./template.js";
 export * from "./time.js";
 export * from "./timeout.js";
 export * from "./transform.js";
+export * from "./update.js";
 export * from "./undefined.js";
 export * from "./units.js";
 export * from "./url.js";
