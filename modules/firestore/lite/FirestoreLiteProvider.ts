@@ -2,7 +2,7 @@ import type { ItemArray, ItemData, ItemStatement, ItemValue } from "../../db/Ite
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { Data } from "../../util/data.js";
 import type { ImmutableObject, ObjectProp } from "../../util/object.js";
-import type { PropUpdate, Updates } from "../../util/update.js";
+import type { Update, Updates } from "../../util/update.js";
 import type { DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocumentSnapshot } from "firebase/firestore/lite";
 import { addDoc, deleteDoc, doc, documentId, collection as getCollection, getDoc, getDocs, limit as getLimit, increment, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore/lite";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
@@ -54,7 +54,7 @@ function _getItemValue(snapshot: DocumentSnapshot): ItemValue {
 
 /** Convert `Updates` object into corresponding Firestore `FieldValue` instances. */
 const _getFieldValues = <T extends Data>(updates: Updates<T>): ImmutableObject => getObject(mapItems(getUpdates(updates), _getFieldValue));
-const _getFieldValue = ({ keys, type, value }: PropUpdate): ObjectProp => [keys.join("."), type === "sum" ? increment(value) : type === "set" ? value : type];
+const _getFieldValue = ({ keys, type, value }: Update): ObjectProp => [keys.join("."), type === "sum" ? increment(value) : type === "set" ? value : type];
 
 /**
  * Firestore Lite client database provider.

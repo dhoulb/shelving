@@ -13,35 +13,27 @@ export type Updates<T extends Data = Data> = {
 };
 
 /** A single update to a keyed property in an object. */
-export interface Update {
-	keys: ImmutableArray<string>;
-	type: string;
-	value: unknown;
-}
-
-/** Update that sets a prop. */
-export interface SetUpdate extends Update {
-	type: "set";
-}
-
-/** Update that updates a number prop. */
-export interface SumUpdate extends Update {
-	type: "sum";
-	value: number;
-}
-
-/** Any update on a prop. */
-export type PropUpdate = SetUpdate | SumUpdate;
+export type Update =
+	| {
+			type: "set";
+			keys: ImmutableArray<string>;
+			value: unknown;
+	  }
+	| {
+			type: "sum";
+			keys: ImmutableArray<string>;
+			value: number;
+	  };
 
 /** Yield the prop updates in an `Updates` object as a set of `PropUpdate` objects. */
-export function* getUpdates<T extends Data>(data: Updates<T>): Iterable<PropUpdate> {
+export function* getUpdates<T extends Data>(data: Updates<T>): Iterable<Update> {
 	for (const [keys, value] of getProps<Data>(data)) {
 		if (keys.endsWith("+=")) {
-			yield { keys: keys.slice(0, -2).split("."), type: "sum", value: getNumber(value) };
+			yield { type: "sum", keys: keys.slice(0, -2).split("."), value: getNumber(value) };
 		} else if (keys.endsWith("-=")) {
-			yield { keys: keys.slice(0, -2).split("."), type: "sum", value: 0 - getNumber(value) };
+			yield { type: "sum", keys: keys.slice(0, -2).split("."), value: 0 - getNumber(value) };
 		} else {
-			yield { keys: keys.split("."), type: "set", value };
+			yield { type: "set", keys: keys.split("."), value };
 		}
 	}
 }
@@ -52,7 +44,7 @@ export function updateData<T extends Data>(data: T, updates: Updates<T>): T {
 }
 
 /** Update a prop with an `PropUpdate` object. */
-export function updateProp<T extends Data>(obj: T, update: PropUpdate, i = 0): T {
+export function updateProp<T extends Data>(obj: T, update: Update, i = 0): T {
 	const { keys, type, value } = update;
 	const key = keys[i] as string;
 	const oldValue = obj[key];
