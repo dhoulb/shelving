@@ -25,7 +25,7 @@ export type Update =
 			value: number;
 	  };
 
-/** Yield the prop updates in an `Updates` object as a set of `PropUpdate` objects. */
+/** Yield the prop updates in an `Updates` object as a set of `Update` objects. */
 export function* getUpdates<T extends Data>(data: Updates<T>): Iterable<Update> {
 	for (const [keys, value] of getProps<Data>(data)) {
 		if (keys.endsWith("+=")) {
@@ -43,10 +43,11 @@ export function updateData<T extends Data>(data: T, updates: Updates<T>): T {
 	return reduceItems(getUpdates(updates), updateProp, data);
 }
 
-/** Update a prop with an `PropUpdate` object. */
+/** Update a prop with an `Update` object. */
 export function updateProp<T extends Data>(obj: T, update: Update, i = 0): T {
 	const { keys, type, value } = update;
-	const key = keys[i] as string;
+	const key = keys[i];
+	if (!key) return obj; // Shouldn't happen.
 	const oldValue = obj[key];
 	let newValue: unknown = oldValue;
 	if (i === keys.length - 1) {
@@ -54,7 +55,7 @@ export function updateProp<T extends Data>(obj: T, update: Update, i = 0): T {
 		else if (type === "set") newValue = value;
 		else return type; // Never happens.
 	} else {
-		if (!isObject(oldValue)) throw new AssertionError(`Prop "${keys.slice(0, i + 1).join(".")}"`);
+		if (!isObject(oldValue)) throw new AssertionError(`Prop "${keys.slice(0, i + 1).join(".")}" is not an object`);
 		newValue = updateProp(oldValue, update, i + 1);
 	}
 	return oldValue === newValue ? obj : { ...obj, [key]: newValue };
