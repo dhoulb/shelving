@@ -1,23 +1,14 @@
 import type { ItemArray, ItemData, ItemStatement, ItemValue } from "../../db/Item.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
-import type { Updates } from "../../update/DataUpdate.js";
 import type { Data } from "../../util/data.js";
-import type { Entry } from "../../util/entry.js";
-import type {
-	BulkWriter as FirestoreBulkWriter,
-	DocumentSnapshot as FirestoreDocumentSnapshot,
-	Query as FirestoreQuery,
-	QueryDocumentSnapshot as FirestoreQueryDocumentSnapshot,
-	QuerySnapshot as FirestoreQuerySnapshot,
-} from "@google-cloud/firestore";
+import type { ImmutableObject, ObjectProp } from "../../util/object.js";
+import type { PropUpdate, Updates } from "../../util/update.js";
+import type { BulkWriter, DocumentData, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot } from "@google-cloud/firestore";
 import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
-import { ArrayUpdate } from "../../update/ArrayUpdate.js";
-import { DataUpdate } from "../../update/DataUpdate.js";
-import { Delete } from "../../update/Delete.js";
-import { DictionaryUpdate } from "../../update/DictionaryUpdate.js";
-import { Increment } from "../../update/Increment.js";
-import { Update } from "../../update/Update.js";
+import { getObject } from "../../util/object.js";
+import { mapItems } from "../../util/transform.js";
+import { getUpdates } from "../../util/update.js";
 
 // Constants.
 const ID = FieldPath.documentId();
@@ -42,52 +33,32 @@ const DIRECTIONS = {
 } as const;
 
 /** Create a corresponding `QueryReference` from a Query. */
-function _getQuery(firestore: Firestore, collection: string, constraints: ItemStatement): FirestoreQuery {
+function _getQuery(firestore: Firestore, collection: string, constraints: ItemStatement): Query {
 	const { sorts, filters, limit } = constraints;
-	let query: FirestoreQuery = firestore.collection(collection);
+	let query: Query = firestore.collection(collection);
 	for (const { key, direction } of sorts) query = query.orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
 	for (const { operator, key, value } of filters) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
 	if (typeof limit === "number") query = query.limit(limit);
 	return query;
 }
 
-function _getItemArray(snapshot: FirestoreQuerySnapshot): ItemArray {
+function _getItemArray(snapshot: QuerySnapshot): ItemArray {
 	return snapshot.docs.map(_getItemData);
 }
 
-function _getItemData(snapshot: FirestoreQueryDocumentSnapshot): ItemData {
+function _getItemData(snapshot: QueryDocumentSnapshot): ItemData {
 	const data = snapshot.data();
 	return { ...data, id: snapshot.id };
 }
 
-function _getItemValue(snapshot: FirestoreDocumentSnapshot): ItemValue {
+function _getItemValue(snapshot: DocumentSnapshot): ItemValue {
 	const data = snapshot.data();
 	return data ? { ...data, id: snapshot.id } : null;
 }
 
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
-function* _getFieldValues<T>(updates: Iterable<Entry<string, T | Update<T> | ArrayUpdate<T>>>, prefix = ""): Iterable<string | T | FieldValue> {
-	for (const [key, update] of updates) {
-		if (update instanceof DataUpdate || update instanceof DictionaryUpdate) {
-			yield* _getFieldValues(update, `${prefix}${key}.`);
-		} else if (update instanceof ArrayUpdate) {
-			if (update.adds.length) {
-				yield `${prefix}${key}`;
-				yield FieldValue.arrayUnion(...update.adds);
-			}
-			if (update.deletes.length) {
-				yield `${prefix}${key}`;
-				yield FieldValue.arrayRemove(...update.deletes);
-			}
-		} else {
-			yield `${prefix}${key}`;
-			if (!(update instanceof Update)) yield update;
-			else if (update instanceof Delete) yield FieldValue.delete();
-			else if (update instanceof Increment) yield FieldValue.increment(update.amount);
-			else yield update.transform();
-		}
-	}
-}
+const _getFieldValues = <T extends Data>(updates: Updates<T>): ImmutableObject => getObject(mapItems(getUpdates(updates), _getFieldValue));
+const _getFieldValue = ({ keys, type, value }: PropUpdate): ObjectProp => [keys.join("."), type === "sum" ? FieldValue.increment(value) : type === "set" ? value : type];
 
 /**
  * Firestore server database provider.
@@ -123,10 +94,7 @@ export class FirestoreServerProvider implements AsyncProvider {
 	}
 
 	async updateItem(collection: string, id: string, updates: Updates): Promise<void> {
-		await this._firestore
-			.collection(collection)
-			.doc(id)
-			.update(...(_getFieldValues(Object.entries(updates)) as [string, unknown]));
+		await this._firestore.collection(collection).doc(id).update(_getFieldValues(updates));
 	}
 
 	async deleteItem(collection: string, id: string): Promise<void> {
@@ -152,8 +120,8 @@ export class FirestoreServerProvider implements AsyncProvider {
 	}
 
 	async updateQuery(collection: string, constraints: ItemStatement, updates: Updates): Promise<number> {
-		const fieldValues = _getFieldValues(Object.entries(updates)) as [string, unknown];
-		return await bulkWrite(this._firestore, collection, constraints, (w, s) => void w.update(s.ref, ...fieldValues));
+		const fieldValues = _getFieldValues(updates);
+		return await bulkWrite(this._firestore, collection, constraints, (w, s) => void w.update<DocumentData>(s.ref, fieldValues));
 	}
 
 	async deleteQuery(collection: string, constraints: ItemStatement): Promise<number> {
@@ -162,13 +130,13 @@ export class FirestoreServerProvider implements AsyncProvider {
 }
 
 /** Perform a bulk update on a set of documents using a `BulkWriter` */
-async function bulkWrite(firestore: Firestore, collection: string, constraints: ItemStatement, callback: (writer: FirestoreBulkWriter, snapshot: FirestoreQueryDocumentSnapshot) => void): Promise<number> {
+async function bulkWrite(firestore: Firestore, collection: string, constraints: ItemStatement, callback: (writer: BulkWriter, snapshot: QueryDocumentSnapshot) => void): Promise<number> {
 	let count = 0;
 	const writer = firestore.bulkWriter();
 	const query = _getQuery(firestore, collection, constraints).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
-	let current: FirestoreQuery | false = query;
+	let current: Query | false = query;
 	while (current) {
-		const { docs, size }: FirestoreQuerySnapshot = await current.get();
+		const { docs, size }: QuerySnapshot = await current.get();
 		count += size;
 		for (const s of docs) callback(writer, s);
 		current = size >= BATCH_SIZE && query.startAfter(docs.pop()).select();

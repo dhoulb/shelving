@@ -1,10 +1,10 @@
 import type { AsyncProvider, Provider } from "./Provider.js";
 import type { ItemArray, ItemData, ItemStatement, ItemValue } from "../db/Item.js";
 import type { DataSchema, DataSchemas } from "../schema/DataSchema.js";
-import type { Updates } from "../update/DataUpdate.js";
 import type { Data, DataKey, Datas } from "../util/data.js";
 import type { MutableDictionary } from "../util/dictionary.js";
 import type { Sourceable } from "../util/source.js";
+import type { Updates } from "../util/update.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { transformObject } from "../util/transform.js";

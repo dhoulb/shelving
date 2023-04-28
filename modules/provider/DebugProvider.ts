@@ -3,8 +3,8 @@
 import type { AsyncProvider, Provider } from "./Provider.js";
 import type { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 import type { ItemArray, ItemStatement, ItemValue } from "../db/Item.js";
-import type { Updates } from "../update/DataUpdate.js";
 import type { Data } from "../util/data.js";
+import type { Updates } from "../util/update.js";
 import { Statement } from "../constraint/Statement.js";
 
 /** Provider that logs operations to a source provider to the console. */
