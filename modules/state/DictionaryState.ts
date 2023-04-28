@@ -2,7 +2,7 @@ import type { DictionaryItem, ImmutableDictionary } from "../util/dictionary.js"
 import type { Updates } from "../util/update.js";
 import { omitDictionaryItems } from "../util/dictionary.js";
 import { withProp } from "../util/object.js";
-import { updateObject } from "../util/update.js";
+import { updateData } from "../util/update.js";
 import { State } from "./State.js";
 
 /** State that stores a dictionary object and has additional methods to help with that. */
@@ -18,7 +18,7 @@ export class DictionaryState<T> extends State<ImmutableDictionary<T>> implements
 
 	/** Set a named entry in this object with a different value. */
 	update(updates: Updates<ImmutableDictionary<T>>): void {
-		this.set(updateObject(this.value, updates));
+		this.set(updateData(this.value, updates));
 	}
 
 	/** Remove a named entry from this object. */

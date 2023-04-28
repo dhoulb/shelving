@@ -1,13 +1,9 @@
 import type { ImmutableArray } from "./array.js";
 import type { Data, FlatData, FlatDataKey } from "./data.js";
-import type { ImmutableObject } from "./object.js";
 import { AssertionError } from "../error/AssertionError.js";
 import { reduceItems } from "./iterate.js";
 import { getNumber } from "./number.js";
 import { getProps, isObject } from "./object.js";
-
-/** Type of an update. */
-export type UpdateType = "set" | "increment";
 
 /** Set of named updates for a data object. */
 export type Updates<T extends Data = Data> = {
@@ -50,13 +46,13 @@ export function* getUpdates<T extends Data>(data: Updates<T>): Iterable<PropUpda
 	}
 }
 
-/** Update the named props in an object with a set of updates. */
-export function updateObject<T extends ImmutableObject>(data: T, updates: Updates<T>): T {
+/** Update a data object with a set of updates. */
+export function updateData<T extends Data>(data: T, updates: Updates<T>): T {
 	return reduceItems(getUpdates(updates), updateProp, data);
 }
 
 /** Update a prop with an `PropUpdate` object. */
-export function updateProp<T extends ImmutableObject>(obj: T, update: PropUpdate, i = 0): T {
+export function updateProp<T extends Data>(obj: T, update: PropUpdate, i = 0): T {
 	const { keys, type, value } = update;
 	const key = keys[i] as string;
 	const oldValue = obj[key];

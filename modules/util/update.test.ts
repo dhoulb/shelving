@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { Updates } from "./index.js";
-import { getUpdates, updateObject } from "./index.js";
+import { getUpdates, updateData } from "./index.js";
 
 const data = Object.freeze({
 	a: Object.freeze({
@@ -105,11 +105,11 @@ test("getUpdates()", () => {
 });
 test("updateObject()", () => {
 	// Changes.
-	expect(updateObject(data, updates)).toEqual(updatedData);
+	expect(updateData(data, updates)).toEqual(updatedData);
 	// Check cloning happend.
-	expect(updateObject(data, updates)).not.toBe(updatedData);
-	expect(updateObject(data, updates).a).not.toBe(updatedData.a);
-	expect(updateObject(data, updates).a.data).not.toBe(updatedData.a.data);
+	expect(updateData(data, updates)).not.toBe(updatedData);
+	expect(updateData(data, updates).a).not.toBe(updatedData.a);
+	expect(updateData(data, updates).a.data).not.toBe(updatedData.a.data);
 	// No changes.
-	expect(updateObject(data, {})).toBe(data);
+	expect(updateData(data, {})).toBe(data);
 });

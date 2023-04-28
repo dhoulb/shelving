@@ -2,7 +2,7 @@ import type { Data, DataKey } from "../util/data.js";
 import type { Updates } from "../util/update.js";
 import { getData } from "../util/data.js";
 import { withProp } from "../util/object.js";
-import { updateObject } from "../util/update.js";
+import { updateData } from "../util/update.js";
 import { State } from "./State.js";
 
 /** State that stores a data object and has additional methods to help with that. */
@@ -14,7 +14,7 @@ export class DataState<T extends Data> extends State<T> {
 
 	/** Update several props in this data. */
 	update(updates: Updates<T>): void {
-		this.set(updateObject(this.data, updates));
+		this.set(updateData(this.data, updates));
 	}
 
 	/** Update a single named prop in this data. */
@@ -42,7 +42,7 @@ export class OptionalDataState<T extends Data> extends State<T | null> {
 
 	/** Update several props in this data. */
 	update(updates: Updates<T>): void {
-		this.set(updateObject(this.data, updates));
+		this.set(updateData(this.data, updates));
 	}
 
 	/** Update a single named prop in this data. */

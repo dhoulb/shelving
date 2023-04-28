@@ -9,7 +9,7 @@ import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { getArray } from "../util/array.js";
 import { isArrayEqual } from "../util/equal.js";
 import { getRandomKey } from "../util/random.js";
-import { updateObject } from "../util/update.js";
+import { updateData } from "../util/update.js";
 
 /**
  * Fast in-memory store for data.
@@ -157,7 +157,7 @@ export class MemoryTable<T extends Data = Data> {
 	updateItem(id: string, updates: Updates<T>): void {
 		const oldItem = this._data.get(id);
 		if (!oldItem) throw new RequiredError(`Document "${id}" does not exist`);
-		const newItem = updateObject<ItemData<T>>(oldItem, updates);
+		const newItem = updateData<ItemData<T>>(oldItem, updates);
 		if (oldItem !== newItem) {
 			this._data.set(id, newItem);
 			this._times.set(id, Date.now());
@@ -263,7 +263,7 @@ export class MemoryTable<T extends Data = Data> {
 		const now = Date.now();
 		let count = 0;
 		for (const oldItem of _getWriteConstraints(constraints).transform(this._data.values())) {
-			const newItem = updateObject<ItemData<T>>(oldItem, updates);
+			const newItem = updateData<ItemData<T>>(oldItem, updates);
 			if (oldItem !== newItem) {
 				const id = oldItem.id;
 				this._data.set(id, newItem);
