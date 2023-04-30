@@ -7,9 +7,9 @@ import { getProps, isObject } from "./object.js";
 
 /** Set of named updates for a data object. */
 export type Updates<T extends Data = Data> = {
-	[K in FlatDataKey<T> as K | `${K}`]?: FlatData<T>[K]; // Set update.
+	readonly [K in FlatDataKey<T> as K | `${K}`]?: FlatData<T>[K]; // Set update.
 } & {
-	[K in FlatDataKey<T> as `${K}+=` | `${K}-=`]?: FlatData<T>[K] extends number ? FlatData<T>[K] : never; // Increment update.
+	readonly [K in FlatDataKey<T> as `${K}+=` | `${K}-=`]?: FlatData<T>[K] extends number ? FlatData<T>[K] : never; // Increment update.
 };
 
 /** A single update to a keyed property in an object. */
