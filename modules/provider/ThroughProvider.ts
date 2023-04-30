@@ -1,5 +1,5 @@
 import type { AsyncProvider, Provider } from "./Provider.js";
-import type { ItemArray, ItemStatement, ItemValue } from "../db/Item.js";
+import type { ItemArray, ItemQuery, ItemValue } from "../db/ItemReference.js";
 import type { Data } from "../util/data.js";
 import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
@@ -28,20 +28,20 @@ export class ThroughProvider implements Provider, Sourceable<Provider> {
 	deleteItem(collection: string, id: string): void {
 		return this.source.deleteItem(collection, id);
 	}
-	getQuery(collection: string, constraints: ItemStatement): ItemArray {
-		return this.source.getQuery(collection, constraints);
+	getQuery(collection: string, query: ItemQuery): ItemArray {
+		return this.source.getQuery(collection, query);
 	}
-	getQuerySequence(collection: string, constraints: ItemStatement): AsyncIterable<ItemArray> {
-		return this.source.getQuerySequence(collection, constraints);
+	getQuerySequence(collection: string, query: ItemQuery): AsyncIterable<ItemArray> {
+		return this.source.getQuerySequence(collection, query);
 	}
-	setQuery(collection: string, constraints: ItemStatement, data: Data): number {
-		return this.source.setQuery(collection, constraints, data);
+	setQuery(collection: string, query: ItemQuery, data: Data): number {
+		return this.source.setQuery(collection, query, data);
 	}
-	updateQuery(collection: string, constraints: ItemStatement, update: Updates): number {
-		return this.source.updateQuery(collection, constraints, update);
+	updateQuery(collection: string, query: ItemQuery, update: Updates): number {
+		return this.source.updateQuery(collection, query, update);
 	}
-	deleteQuery(collection: string, constraints: ItemStatement): number {
-		return this.source.deleteQuery(collection, constraints);
+	deleteQuery(collection: string, query: ItemQuery): number {
+		return this.source.deleteQuery(collection, query);
 	}
 }
 
@@ -69,19 +69,19 @@ export class AsyncThroughProvider implements AsyncProvider, Sourceable<AsyncProv
 	deleteItem(collection: string, id: string): Promise<void> {
 		return this.source.deleteItem(collection, id);
 	}
-	getQuery(collection: string, constraints: ItemStatement): Promise<ItemArray> {
-		return this.source.getQuery(collection, constraints);
+	getQuery(collection: string, query: ItemQuery): Promise<ItemArray> {
+		return this.source.getQuery(collection, query);
 	}
-	getQuerySequence(collection: string, constraints: ItemStatement): AsyncIterable<ItemArray> {
-		return this.source.getQuerySequence(collection, constraints);
+	getQuerySequence(collection: string, query: ItemQuery): AsyncIterable<ItemArray> {
+		return this.source.getQuerySequence(collection, query);
 	}
-	setQuery(collection: string, constraints: ItemStatement, data: Data): Promise<number> {
-		return this.source.setQuery(collection, constraints, data);
+	setQuery(collection: string, query: ItemQuery, data: Data): Promise<number> {
+		return this.source.setQuery(collection, query, data);
 	}
-	updateQuery(collection: string, constraints: ItemStatement, updates: Updates): Promise<number> {
-		return this.source.updateQuery(collection, constraints, updates);
+	updateQuery(collection: string, query: ItemQuery, updates: Updates): Promise<number> {
+		return this.source.updateQuery(collection, query, updates);
 	}
-	deleteQuery(collection: string, constraints: ItemStatement): Promise<number> {
-		return this.source.deleteQuery(collection, constraints);
+	deleteQuery(collection: string, query: ItemQuery): Promise<number> {
+		return this.source.deleteQuery(collection, query);
 	}
 }

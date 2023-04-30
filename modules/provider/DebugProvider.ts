@@ -2,10 +2,9 @@
 
 import type { AsyncProvider, Provider } from "./Provider.js";
 import type { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
-import type { ItemArray, ItemStatement, ItemValue } from "../db/Item.js";
+import type { ItemArray, ItemQuery, ItemValue } from "../db/ItemReference.js";
 import type { Data } from "../util/data.js";
 import type { Updates } from "../util/update.js";
-import { Statement } from "../constraint/Statement.js";
 
 /** Provider that logs operations to a source provider to the console. */
 abstract class AbstractDebugProvider {
@@ -23,11 +22,11 @@ abstract class AbstractDebugProvider {
 			console.error("ITERATE", key, thrown);
 		}
 	}
-	async *getQuerySequence(collection: string, constraints: ItemStatement): AsyncIterableIterator<ItemArray> {
-		const key = _getQueryKey(collection, constraints);
+	async *getQuerySequence(collection: string, query: ItemQuery): AsyncIterableIterator<ItemArray> {
+		const key = _getQueryKey(collection, query);
 		try {
 			console.log("ITERATE", key, "DATA:");
-			for await (const items of this.source.getQuerySequence(collection, constraints)) {
+			for await (const items of this.source.getQuerySequence(collection, query)) {
 				console.log("ITERATE", key, "ITEMS:", items);
 				yield items;
 			}
@@ -97,10 +96,10 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	getQuery(collection: string, constraints: ItemStatement): ItemArray {
-		const key = _getQueryKey(collection, constraints);
+	getQuery(collection: string, query: ItemQuery): ItemArray {
+		const key = _getQueryKey(collection, query);
 		try {
-			const items = this.source.getQuery(collection, constraints);
+			const items = this.source.getQuery(collection, query);
 			console.log("GET:", key, "ITEMS:", items);
 			return items;
 		} catch (reason) {
@@ -108,10 +107,10 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	setQuery(collection: string, constraints: ItemStatement, data: Data): number {
-		const key = _getQueryKey(collection, constraints);
+	setQuery(collection: string, query: ItemQuery, data: Data): number {
+		const key = _getQueryKey(collection, query);
 		try {
-			const num = this.source.setQuery(collection, constraints, data);
+			const num = this.source.setQuery(collection, query, data);
 			console.log("SET:", key, "DATA:", data, "DONE:", num);
 			return num;
 		} catch (reason) {
@@ -119,10 +118,10 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	updateQuery(collection: string, constraints: ItemStatement, updates: Updates): number {
-		const key = _getQueryKey(collection, constraints);
+	updateQuery(collection: string, query: ItemQuery, updates: Updates): number {
+		const key = _getQueryKey(collection, query);
 		try {
-			const num = this.source.updateQuery(collection, constraints, updates);
+			const num = this.source.updateQuery(collection, query, updates);
 			console.log("UPDATE:", key, "UPDATES:", updates, "DONE:", num);
 			return num;
 		} catch (reason) {
@@ -130,10 +129,10 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	deleteQuery(collection: string, constraints: ItemStatement): number {
-		const key = _getQueryKey(collection, constraints);
+	deleteQuery(collection: string, query: ItemQuery): number {
+		const key = _getQueryKey(collection, query);
 		try {
-			const num = this.source.deleteQuery(collection, constraints);
+			const num = this.source.deleteQuery(collection, query);
 			console.log("DELETE:", key, "DONE:", num);
 			return num;
 		} catch (reason) {
@@ -207,11 +206,11 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async getQuery(collection: string, constraints: ItemStatement): Promise<ItemArray> {
-		const key = _getQueryKey(collection, constraints);
+	async getQuery(collection: string, query: ItemQuery): Promise<ItemArray> {
+		const key = _getQueryKey(collection, query);
 		try {
 			console.log("GET:", key);
-			const items = await this.source.getQuery(collection, constraints);
+			const items = await this.source.getQuery(collection, query);
 			console.log("GET:", key, "ITEMS:", items);
 			return items;
 		} catch (reason) {
@@ -219,11 +218,11 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async setQuery(collection: string, constraints: ItemStatement, data: Data): Promise<number> {
-		const key = _getQueryKey(collection, constraints);
+	async setQuery(collection: string, query: ItemQuery, data: Data): Promise<number> {
+		const key = _getQueryKey(collection, query);
 		try {
 			console.log("SET:", key, "DATA:", data);
-			const num = await this.source.setQuery(collection, constraints, data);
+			const num = await this.source.setQuery(collection, query, data);
 			console.log("SET:", key, "DATA:", data, "DONE:", num);
 			return num;
 		} catch (reason) {
@@ -231,11 +230,11 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async updateQuery(collection: string, constraints: ItemStatement, updates: Updates): Promise<number> {
-		const key = _getQueryKey(collection, constraints);
+	async updateQuery(collection: string, query: ItemQuery, updates: Updates): Promise<number> {
+		const key = _getQueryKey(collection, query);
 		try {
 			console.log("UPDATE:", key, "UPDATES:", updates);
-			const num = await this.source.updateQuery(collection, constraints, updates);
+			const num = await this.source.updateQuery(collection, query, updates);
 			console.log("UPDATE:", key, "UPDATES:", updates, "DONE:", num);
 			return num;
 		} catch (reason) {
@@ -243,11 +242,11 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async deleteQuery(collection: string, constraints: ItemStatement): Promise<number> {
-		const key = _getQueryKey(collection, constraints);
+	async deleteQuery(collection: string, query: ItemQuery): Promise<number> {
+		const key = _getQueryKey(collection, query);
 		try {
 			console.log("DELETE:", key);
-			const num = await this.source.deleteQuery(collection, constraints);
+			const num = await this.source.deleteQuery(collection, query);
 			console.log("DELETE:", key, "DONE:", num);
 			return num;
 		} catch (reason) {
@@ -258,4 +257,4 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 }
 
 const _getItemKey = (collection: string, id: string): string => `${collection}/${id}`;
-const _getQueryKey = (collection: string, statement: Statement): string => `${collection}?${Statement.prototype.toString.call(statement)}`;
+const _getQueryKey = (collection: string, query: ItemQuery): string => `${collection}?${JSON.stringify(query)}`;

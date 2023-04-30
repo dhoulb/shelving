@@ -1,13 +1,12 @@
 import type { Provider } from "./Provider.js";
-import type { Constraint } from "../constraint/Constraint.js";
-import type { ItemArray, ItemData, ItemStatement, ItemValue } from "../db/Item.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../db/ItemReference.js";
 import type { Data } from "../util/data.js";
 import type { Updates } from "../util/update.js";
-import { Statement } from "../constraint/Statement.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { getArray } from "../util/array.js";
 import { isArrayEqual } from "../util/equal.js";
+import { queryItems, queryWritableItems } from "../util/query.js";
 import { getRandomKey } from "../util/random.js";
 import { updateData } from "../util/update.js";
 
@@ -53,28 +52,28 @@ export class MemoryProvider implements Provider {
 		return this.getTable(collection).deleteItem(id);
 	}
 
-	getQueryTime(collection: string, constraints: ItemStatement): number | null {
-		return this.getTable(collection).getQueryTime(constraints);
+	getQueryTime(collection: string, query: ItemQuery): number | null {
+		return this.getTable(collection).getQueryTime(query);
 	}
 
-	getQuery(collection: string, constraints: ItemStatement): ItemArray {
-		return this.getTable(collection).getQuery(constraints);
+	getQuery(collection: string, query: ItemQuery): ItemArray {
+		return this.getTable(collection).getQuery(query);
 	}
 
-	getQuerySequence(collection: string, constraints: ItemStatement): AsyncIterable<ItemArray> {
-		return this.getTable(collection).getQuerySequence(constraints);
+	getQuerySequence(collection: string, query: ItemQuery): AsyncIterable<ItemArray> {
+		return this.getTable(collection).getQuerySequence(query);
 	}
 
-	setQuery(collection: string, constraints: ItemStatement, data: Data): number {
-		return this.getTable(collection).setQuery(constraints, data);
+	setQuery(collection: string, query: ItemQuery, data: Data): number {
+		return this.getTable(collection).setQuery(query, data);
 	}
 
-	updateQuery(collection: string, constraints: ItemStatement, updates: Updates): number {
-		return this.getTable(collection).updateQuery(constraints, updates);
+	updateQuery(collection: string, query: ItemQuery, updates: Updates): number {
+		return this.getTable(collection).updateQuery(query, updates);
 	}
 
-	deleteQuery(collection: string, constraints: ItemStatement): number {
-		return this.getTable(collection).deleteQuery(constraints);
+	deleteQuery(collection: string, query: ItemQuery): number {
+		return this.getTable(collection).deleteQuery(query);
 	}
 }
 
@@ -173,36 +172,36 @@ export class MemoryTable<T extends Data = Data> {
 		}
 	}
 
-	getQueryTime(constraints: ItemStatement<T>): number | null {
-		return this._times.get(_getQueryKey(constraints)) || null;
+	getQueryTime(query: ItemQuery<T>): number | null {
+		return this._times.get(_getQueryKey(query)) || null;
 	}
 
-	getQuery(constraints: ItemStatement<T>): ItemArray<T> {
-		return getArray(constraints.transform(this._data.values()));
+	getQuery(query: ItemQuery<T>): ItemArray<T> {
+		return getArray(queryItems(this._data.values(), query));
 	}
 
-	async *getQuerySequence(constraints: ItemStatement<T>): AsyncIterable<ItemArray<T>> {
-		let last = this.getQuery(constraints);
+	async *getQuerySequence(query: ItemQuery<T>): AsyncIterable<ItemArray<T>> {
+		let last = this.getQuery(query);
 		yield last;
 		while (true) {
 			await this._changed;
-			const next = this.getQuery(constraints);
+			const next = this.getQuery(query);
 			if (!isArrayEqual(last, next)) yield (last = next);
 		}
 	}
 
 	/** Subscribe to a query in this table, but only if the query has been explicitly set (i.e. has a time). */
-	async *getCachedQuerySequence(constraints: ItemStatement<T>): AsyncIterable<ItemArray<T>> {
-		const key = _getQueryKey(constraints);
+	async *getCachedQuerySequence(query: ItemQuery<T>): AsyncIterable<ItemArray<T>> {
+		const key = _getQueryKey(query);
 		let last: ItemArray<T> | undefined = undefined;
 		if (this._times.has(key)) {
-			last = this.getQuery(constraints);
+			last = this.getQuery(query);
 			yield last;
 		}
 		while (true) {
 			await this._changed;
 			if (this._times.has(key)) {
-				const next = this.getQuery(constraints);
+				const next = this.getQuery(query);
 				if (!last || !isArrayEqual(last, next)) yield (last = next);
 			}
 		}
@@ -224,16 +223,16 @@ export class MemoryTable<T extends Data = Data> {
 		}
 	}
 
-	setQueryItems(constraints: ItemStatement<T>, items: ItemArray<T>): void {
-		const key = _getQueryKey(constraints);
+	setQueryItems(query: ItemQuery<T>, items: ItemArray<T>): void {
+		const key = _getQueryKey(query);
 		const now = Date.now();
 		this._times.set(key, now);
 		this._setItems(items, now);
 		this._changed.resolve();
 	}
 
-	async *setQueryItemsSequence(constraints: ItemStatement<T>, sequence: AsyncIterable<ItemArray<T>>): AsyncIterable<ItemArray<T>> {
-		const key = _getQueryKey(constraints);
+	async *setQueryItemsSequence(query: ItemQuery<T>, sequence: AsyncIterable<ItemArray<T>>): AsyncIterable<ItemArray<T>> {
+		const key = _getQueryKey(query);
 		for await (const items of sequence) {
 			const now = Date.now();
 			this._times.set(key, now);
@@ -243,26 +242,26 @@ export class MemoryTable<T extends Data = Data> {
 		}
 	}
 
-	setQuery(constraints: ItemStatement<T>, data: T): number {
+	setQuery(query: ItemQuery<T>, data: T): number {
 		const now = Date.now();
 		let count = 0;
-		for (const { id } of _getWriteConstraints(constraints).transform(this._data.values())) {
+		for (const { id } of queryWritableItems<ItemData<T>>(this._data.values(), query)) {
 			this._data.set(id, { ...data, id });
 			this._times.set(id, now);
 			count++;
 		}
 		if (count) {
-			const key = _getQueryKey(constraints);
+			const key = _getQueryKey(query);
 			this._times.set(key, now);
 			this._changed.resolve();
 		}
 		return count;
 	}
 
-	updateQuery(constraints: ItemStatement<T>, updates: Updates<T>): number {
+	updateQuery(query: ItemQuery<T>, updates: Updates<T>): number {
 		const now = Date.now();
 		let count = 0;
-		for (const oldItem of _getWriteConstraints(constraints).transform(this._data.values())) {
+		for (const oldItem of queryWritableItems<ItemData<T>>(this._data.values(), query)) {
 			const newItem = updateData<ItemData<T>>(oldItem, updates);
 			if (oldItem !== newItem) {
 				const id = oldItem.id;
@@ -272,23 +271,23 @@ export class MemoryTable<T extends Data = Data> {
 			}
 		}
 		if (count) {
-			const key = _getQueryKey(constraints);
+			const key = _getQueryKey(query);
 			this._times.set(key, now);
 			this._changed.resolve();
 		}
 		return count;
 	}
 
-	deleteQuery(constraints: ItemStatement<T>): number {
+	deleteQuery(query: ItemQuery<T>): number {
 		const now = Date.now();
 		let count = 0;
-		for (const { id } of _getWriteConstraints(constraints).transform(this._data.values())) {
+		for (const { id } of queryWritableItems<ItemData<T>>(this._data.values(), query)) {
 			this._data.delete(id);
 			this._times.set(id, now);
 			count++;
 		}
 		if (count) {
-			const key = _getQueryKey(constraints);
+			const key = _getQueryKey(query);
 			this._times.set(key, now);
 			this._changed.resolve();
 		}
@@ -296,8 +295,5 @@ export class MemoryTable<T extends Data = Data> {
 	}
 }
 
-// When we're writing data, if there's no limit set the results don't need to be sorted (for performance).
-const _getWriteConstraints = <T extends Data>(statement: Statement<T>): Constraint<T> => (statement.limit ? statement : statement.filters);
-
 // Queries that have no limit don't care about sorting either.
-const _getQueryKey = <T extends Data>(statement: ItemStatement<T>): string => (statement.limit ? `"filters":${statement.filters.toString()}}` : Statement.prototype.toString.call(statement));
+const _getQueryKey = <T extends Data>(query: ItemQuery<T>): string => JSON.stringify(query);

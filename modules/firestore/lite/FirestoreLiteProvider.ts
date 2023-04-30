@@ -1,12 +1,13 @@
-import type { ItemArray, ItemData, ItemStatement, ItemValue } from "../../db/Item.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../../db/ItemReference.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { Data } from "../../util/data.js";
 import type { ImmutableObject, ObjectProp } from "../../util/object.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocumentSnapshot } from "firebase/firestore/lite";
-import { addDoc, deleteDoc, doc, documentId, collection as getCollection, getDoc, getDocs, limit as getLimit, increment, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore/lite";
+import { addDoc, collection, deleteDoc, doc, documentId, getDoc, getDocs, increment, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore/lite";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { getObject } from "../../util/object.js";
+import { getFilters, getSorts } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";
 import { getUpdates } from "../../util/update.js";
 
@@ -15,31 +16,31 @@ const ID = documentId();
 
 // Map `Filter.types` to `WhereFilterOp`
 const OPERATORS = {
-	IS: "==",
-	NOT: "!=",
-	IN: "in",
-	OUT: "not-in",
-	CONTAINS: "array-contains",
-	GT: ">",
-	GTE: ">=",
-	LT: "<",
-	LTE: "<=",
-} as const;
-
-// Map `Filter.types` to `OrderByDirection`
-const DIRECTIONS = {
-	ASC: "asc",
-	DESC: "desc",
+	is: "==",
+	not: "!=",
+	in: "in",
+	out: "not-in",
+	contains: "array-contains",
+	gt: ">",
+	gte: ">=",
+	lt: "<",
+	lte: "<=",
 } as const;
 
 /** Create a corresponding `QueryReference` from a Query. */
-function _getQuery(firestore: Firestore, collection: string, constraints: ItemStatement): Query {
-	return query(getCollection(firestore, collection), ..._getConstraints(constraints));
+function _getQuery(firestore: Firestore, c: string, q: ItemQuery): Query {
+	return query(collection(firestore, c), ..._getConstraints(q));
 }
-function* _getConstraints({ sorts, filters, limit }: ItemStatement): Iterable<QueryConstraint> {
-	for (const { key, direction } of sorts) yield orderBy(key === "id" ? ID : key, DIRECTIONS[direction]);
-	for (const { operator, key, value } of filters) yield where(key === "id" ? ID : key, OPERATORS[operator], value);
-	if (typeof limit === "number") yield getLimit(limit);
+function* _getConstraints(q: ItemQuery): Iterable<QueryConstraint> {
+	for (const { keys, direction } of getSorts(q)) {
+		const key = keys.join(".");
+		yield orderBy(key === "id" ? ID : key, direction);
+	}
+	for (const { keys, operator, value } of getFilters(q)) {
+		const key = keys.join(".");
+		yield where(key === "id" ? ID : key, OPERATORS[operator], value);
+	}
+	if (typeof q.$limit === "number") yield limit(q.$limit);
 }
 
 function _getItemData(snapshot: QueryDocumentSnapshot): ItemData {
@@ -54,7 +55,7 @@ function _getItemValue(snapshot: DocumentSnapshot): ItemValue {
 
 /** Convert `Updates` object into corresponding Firestore `FieldValue` instances. */
 const _getFieldValues = <T extends Data>(updates: Updates<T>): ImmutableObject => getObject(mapItems(getUpdates(updates), _getFieldValue));
-const _getFieldValue = ({ keys, type, value }: Update): ObjectProp => [keys.join("."), type === "sum" ? increment(value) : type === "set" ? value : type];
+const _getFieldValue = ({ keys, action, value }: Update): ObjectProp => [keys.join("."), action === "sum" ? increment(value) : action === "set" ? value : action];
 
 /**
  * Firestore Lite client database provider.
@@ -67,45 +68,45 @@ export class FirestoreLiteProvider implements AsyncProvider {
 	constructor(firestore: Firestore) {
 		this._firestore = firestore;
 	}
-	async getItem(collection: string, id: string): Promise<ItemValue> {
-		return _getItemValue(await getDoc(doc(this._firestore, collection, id)));
+	async getItem(c: string, id: string): Promise<ItemValue> {
+		return _getItemValue(await getDoc(doc(this._firestore, c, id)));
 	}
 	getItemSequence(): AsyncIterableIterator<ItemValue> {
 		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
-	async addItem(collection: string, data: Data): Promise<string> {
-		const reference = await addDoc(getCollection(this._firestore, collection), data);
+	async addItem(c: string, data: Data): Promise<string> {
+		const reference = await addDoc(collection(this._firestore, c), data);
 		return reference.id;
 	}
-	async setItem(collection: string, id: string, data: Data): Promise<void> {
-		await setDoc(doc(this._firestore, collection, id), data);
+	async setItem(c: string, id: string, data: Data): Promise<void> {
+		await setDoc(doc(this._firestore, c, id), data);
 	}
-	async updateItem(collection: string, id: string, updates: Updates): Promise<void> {
-		await updateDoc(doc(this._firestore, collection, id), _getFieldValues(updates));
+	async updateItem(c: string, id: string, updates: Updates): Promise<void> {
+		await updateDoc(doc(this._firestore, c, id), _getFieldValues(updates));
 	}
-	async deleteItem(collection: string, id: string): Promise<void> {
-		await deleteDoc(doc(this._firestore, collection, id));
+	async deleteItem(c: string, id: string): Promise<void> {
+		await deleteDoc(doc(this._firestore, c, id));
 	}
-	async getQuery(collection: string, constraints: ItemStatement): Promise<ItemArray> {
-		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
+	async getQuery(c: string, q: ItemQuery): Promise<ItemArray> {
+		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
 		return snapshot.docs.map(_getItemData);
 	}
 	getQuerySequence(): AsyncIterableIterator<ItemArray> {
 		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
-	async setQuery(collection: string, constraints: ItemStatement, data: Data): Promise<number> {
-		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
+	async setQuery(c: string, q: ItemQuery, data: Data): Promise<number> {
+		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
 		await Promise.all(snapshot.docs.map(s => setDoc(s.ref, data)));
 		return snapshot.size;
 	}
-	async updateQuery(collection: string, constraints: ItemStatement, updates: Updates): Promise<number> {
-		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
+	async updateQuery(c: string, q: ItemQuery, updates: Updates): Promise<number> {
+		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
 		const fieldValues = _getFieldValues(updates);
 		await Promise.all(snapshot.docs.map(s => updateDoc(s.ref, fieldValues)));
 		return snapshot.size;
 	}
-	async deleteQuery(collection: string, constraints: ItemStatement): Promise<number> {
-		const snapshot = await getDocs(_getQuery(this._firestore, collection, constraints));
+	async deleteQuery(c: string, q: ItemQuery): Promise<number> {
+		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 		return snapshot.size;
 	}
