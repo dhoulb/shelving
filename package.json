@@ -22,7 +22,6 @@
 	"exports": {
 		".": "./index.js",
 		"./api": "./api/index.js",
-		"./constraint": "./constraint/index.js",
 		"./db": "./db/index.js",
 		"./error": "./error/index.js",
 		"./feedback": "./feedback/index.js",
@@ -37,7 +36,6 @@
 		"./sequence": "./sequence/index.js",
 		"./state": "./state/index.js",
 		"./test": "./test/index.js",
-		"./update": "./update/index.js",
 		"./util": "./util/index.js"
 	},
 	"sideEffects": false,
