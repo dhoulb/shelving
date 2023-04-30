@@ -1,6 +1,7 @@
 import type { ImmutableArray } from "./array.js";
 import type { Data, DataProp, FlatData, FlatDataKey } from "./data.js";
 import type { Match } from "./match.js";
+import type { Mutable } from "./object.js";
 import { getLastItem, isArray, limitArray } from "./array.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";
 import { limitItems } from "./iterate.js";
@@ -11,14 +12,14 @@ import { isDefined } from "./undefined.js";
 
 /** Query that can be applied to a list of data objects. */
 export type Query<T extends Data> = {
-	[K in FlatDataKey<T> as K | `${K}` | `!${K}`]?: FlatData<T>[K] | ImmutableArray<FlatData<T>[K]> | undefined; // is/not/in/out
+	readonly [K in FlatDataKey<T> as K | `${K}` | `!${K}`]?: FlatData<T>[K] | ImmutableArray<FlatData<T>[K]> | undefined; // is/not/in/out
 } & {
-	[K in FlatDataKey<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: FlatData<T>[K] | undefined; // gt/gte/lt/lte
+	readonly [K in FlatDataKey<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: FlatData<T>[K] | undefined; // gt/gte/lt/lte
 } & {
-	[K in FlatDataKey<T> as `${K}[]`]?: FlatData<T>[K] extends ImmutableArray<infer X> ? X | undefined : never; // contains
+	readonly [K in FlatDataKey<T> as `${K}[]`]?: FlatData<T>[K] extends ImmutableArray<infer X> ? X | undefined : never; // contains
 } & {
-	$order?: FlatDataKey<T> | `${FlatDataKey<T>}` | `!${FlatDataKey<T>}` | ImmutableArray<`${FlatDataKey<T>}` | `!${FlatDataKey<T>}`>;
-	$limit?: number | undefined;
+	readonly $order?: FlatDataKey<T> | `${FlatDataKey<T>}` | `!${FlatDataKey<T>}` | ImmutableArray<`${FlatDataKey<T>}` | `!${FlatDataKey<T>}`>;
+	readonly $limit?: number | undefined;
 };
 
 /** A single filter that can be applied to a list of data objects. */
@@ -137,7 +138,7 @@ export function limitQueryItems<T extends Data>(items: ImmutableArray<T> | Itera
 export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
 	const sorts = getSorts(query);
 	const lastSort = getLastItem(sorts);
-	const newQuery: Query<Data> = { ...query };
+	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {
 		const { keys, direction } = sort;
 		const key = keys.join(".");
@@ -151,7 +152,7 @@ export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<
 export function getAfterQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
 	const sorts = getSorts(query);
 	const lastSort = getLastItem(sorts);
-	const newQuery: Query<Data> = { ...query };
+	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {
 		const { keys, direction } = sort;
 		const key = keys.join(".");
