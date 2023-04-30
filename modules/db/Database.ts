@@ -1,31 +1,29 @@
 import type { AddChange, DeleteChange, ItemChanges, SetChange, UpdateChange, WriteChange } from "./Change.js";
-import type { PossibleFilters } from "../constraint/Filters.js";
-import type { PossibleSorts } from "../constraint/Sorts.js";
-import type { ItemData, ItemValue } from "../db/Item.js";
+import type { ItemQuery, ItemValue } from "./ItemReference.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
-import type { Updates } from "../update/DataUpdate.js";
-import type { DataKey, Datas } from "../util/data.js";
+import type { Data, DataKey, Datas } from "../util/data.js";
 import type { Nullish } from "../util/null.js";
+import type { Updates } from "../util/update.js";
 import { changeAsyncProvider, changeProvider } from "./Change.js";
-import { AsyncCollection, Collection } from "./Collection.js";
-import { AsyncItem, Item } from "./Item.js";
-import { AsyncQuery, Query } from "./Query.js";
+import { AsyncCollectionReference, CollectionReference } from "./CollectionReference.js";
+import { AsyncItemReference, ItemReference } from "./ItemReference.js";
+import { AsyncQueryReference, QueryReference } from "./QueryReference.js";
 
 /** Database with a synchronous or asynchronous provider. */
-abstract class BaseDatabase<T extends Datas> {
+abstract class AbstractDatabase<T extends Datas> {
 	abstract readonly provider: Provider | AsyncProvider;
 
 	/** Create a query on a collection in this database. */
-	abstract collection<K extends DataKey<T>>(collection: K): Collection<T[K]> | AsyncCollection<T[K]>;
+	abstract collection<K extends DataKey<T>>(collection: K): CollectionReference<T[K]> | AsyncCollectionReference<T[K]>;
 
 	/** Create a query on a collection in this database. */
-	abstract query<K extends DataKey<T>>(collection: K, filters?: PossibleFilters<Partial<ItemData<T[K]>>>, sorts?: PossibleSorts<Partial<ItemData<T[K]>>>, limit?: number | null): Query<T[K]> | AsyncQuery<T[K]>;
+	abstract query<K extends DataKey<T>>(collection: K, query?: ItemQuery<T>): QueryReference<T[K]> | AsyncQueryReference<T[K]>;
 
 	/** Reference an item in a collection in this database. */
-	abstract item<K extends DataKey<T>>(collection: K, id: string): Item<T[K]> | AsyncItem<T[K]>;
+	abstract item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> | AsyncItemReference<T[K]>;
 
 	/** Run a set of changes in this database. */
-	abstract change(...changes: Nullish<WriteChange>[]): ItemChanges | Promise<ItemChanges>;
+	abstract change(...changes: Nullish<WriteChange<Data>>[]): ItemChanges | Promise<ItemChanges>;
 
 	/** Get a document from a collection in this database. */
 	abstract get<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> | Promise<ItemValue<T[K]>>;
@@ -44,42 +42,42 @@ abstract class BaseDatabase<T extends Datas> {
 
 	/** Get an add change for a collection in this database. */
 	getAdd<K extends DataKey<T>>(collection: K, data: T[K]): AddChange<T[K]> {
-		return { action: "ADD", collection, data };
+		return { action: "add", collection, data };
 	}
 
 	/** Get a set change for a collection in this database. */
 	getSet<K extends DataKey<T>>(collection: K, id: string, data: T[K]): SetChange<T[K]> {
-		return { action: "SET", collection, id, data };
+		return { action: "set", collection, id, data };
 	}
 
 	/** Get an update change for a collection in this database. */
 	getUpdate<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): UpdateChange<T[K]> {
-		return { action: "UPDATE", collection, id, updates };
+		return { action: "update", collection, id, updates };
 	}
 
 	/** Get a delete change for a collection in this database. */
 	getDelete<K extends DataKey<T>>(collection: K, id: string): DeleteChange {
-		return { action: "DELETE", collection, id };
+		return { action: "delete", collection, id };
 	}
 }
 
 /** Database with a synchronous provider. */
-export class Database<T extends Datas = Datas> extends BaseDatabase<T> {
+export class Database<T extends Datas = Datas> extends AbstractDatabase<T> {
 	readonly provider: Provider;
 	constructor(provider: Provider) {
 		super();
 		this.provider = provider;
 	}
-	collection<K extends DataKey<T>>(collection: K): Collection<T[K]> {
-		return new Collection<T[K]>(this.provider, collection);
+	collection<K extends DataKey<T>>(collection: K): CollectionReference<T[K]> {
+		return new CollectionReference<T[K]>(this.provider, collection);
 	}
-	query<K extends DataKey<T>>(collection: K, filters?: PossibleFilters<ItemData<T[K]>>, sorts?: PossibleSorts<ItemData<T[K]>>, limit?: number | null): Query<T[K]> {
-		return new Query<T[K]>(this.provider, collection, filters, sorts, limit);
+	query<K extends DataKey<T>>(collection: K, query?: ItemQuery<T>): QueryReference<T[K]> {
+		return new QueryReference<T[K]>(this.provider, collection, query);
 	}
-	item<K extends DataKey<T>>(collection: K, id: string): Item<T[K]> {
-		return new Item<T[K]>(this.provider, collection, id);
+	item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> {
+		return new ItemReference<T[K]>(this.provider, collection, id);
 	}
-	change(...changes: Nullish<WriteChange>[]): ItemChanges {
+	change(...changes: Nullish<WriteChange<Data>>[]): ItemChanges {
 		return changeProvider(this.provider, ...changes);
 	}
 	get<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
@@ -100,22 +98,22 @@ export class Database<T extends Datas = Datas> extends BaseDatabase<T> {
 }
 
 /** Database with a synchronous provider. */
-export class AsyncDatabase<T extends Datas = Datas> extends BaseDatabase<T> {
+export class AsyncDatabase<T extends Datas = Datas> extends AbstractDatabase<T> {
 	readonly provider: AsyncProvider;
 	constructor(provider: AsyncProvider) {
 		super();
 		this.provider = provider;
 	}
-	collection<K extends DataKey<T>>(collection: K): AsyncCollection<T[K]> {
-		return new AsyncCollection<T[K]>(this.provider, collection);
+	collection<K extends DataKey<T>>(collection: K): AsyncCollectionReference<T[K]> {
+		return new AsyncCollectionReference<T[K]>(this.provider, collection);
 	}
-	query<K extends DataKey<T>>(collection: K, filters?: PossibleFilters<ItemData<T[K]>>, sorts?: PossibleSorts<ItemData<T[K]>>, limit?: number | null): AsyncQuery<T[K]> {
-		return new AsyncQuery<T[K]>(this.provider, collection, filters, sorts, limit);
+	query<K extends DataKey<T>>(collection: K, query?: ItemQuery<T>): AsyncQueryReference<T[K]> {
+		return new AsyncQueryReference<T[K]>(this.provider, collection, query);
 	}
-	item<K extends DataKey<T>>(collection: K, id: string): AsyncItem<T[K]> {
-		return new AsyncItem<T[K]>(this.provider, collection, id);
+	item<K extends DataKey<T>>(collection: K, id: string): AsyncItemReference<T[K]> {
+		return new AsyncItemReference<T[K]>(this.provider, collection, id);
 	}
-	change(...changes: Nullish<WriteChange>[]): Promise<ItemChanges> {
+	change(...changes: Nullish<WriteChange<Data>>[]): Promise<ItemChanges> {
 		return changeAsyncProvider(this.provider, ...changes);
 	}
 	get<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {

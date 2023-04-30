@@ -1,13 +1,10 @@
 import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
-import type { FilterKey } from "../constraint/Filter.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
-import type { Updates } from "../update/DataUpdate.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Data } from "../util/data.js";
 import type { Dispatch, Handler, Stop } from "../util/function.js";
-import { Filter } from "../constraint/Filter.js";
-import { Filters } from "../constraint/Filters.js";
-import { Statement } from "../constraint/Statement.js";
+import type { Query } from "../util/query.js";
+import type { Updates } from "../util/update.js";
 import { getData } from "../util/data.js";
 import { runSequence } from "../util/sequence.js";
 
@@ -29,16 +26,20 @@ export function* getIDs<T extends Data>(entities: Iterable<ItemData<T>>): Iterab
 export type ItemArray<T extends Data = Data> = ImmutableArray<ItemData<T>>;
 
 /** A set of query constraints for item data. */
-export type ItemStatement<T extends Data = Data> = Statement<ItemData<T>>;
+export type ItemQuery<T extends Data = Data> = Query<ItemData<T>>;
 
-/** Get a `Filter` instance that targets a single item by its ID. */
-export const getItemStatement = <T extends Data>(id: string) => new Statement<ItemData<T>>(new Filters<ItemData<T>>(new Filter<ItemData<T>>("id" as FilterKey<ItemData<T>>, id)), undefined, 1);
+/** Get query that targets a single database item by its ID. */
+export const getItemQuery = (id: string): Query<{ id: string }> => ({ id, $limit: 1 });
 
 /** Reference to an item in a synchronous or asynchronous database. */
-abstract class BaseItem<T extends Data = Data> implements AsyncIterable<ItemValue<T>> {
+abstract class AbstractItemReference<T extends Data = Data> implements AsyncIterable<ItemValue<T>> {
 	abstract readonly provider: Provider | AsyncProvider;
-	abstract readonly collection: string;
-	abstract readonly id: string;
+	readonly collection: string;
+	readonly id: string;
+	constructor(collection: string, id: string) {
+		this.collection = collection;
+		this.id = id;
+	}
 
 	/**
 	 * Does this item exist?
@@ -71,17 +72,17 @@ abstract class BaseItem<T extends Data = Data> implements AsyncIterable<ItemValu
 	abstract delete(): void | PromiseLike<void>;
 	/** Get a set change for this item. */
 	getSet(data: T): SetChange<T> {
-		return { action: "SET", collection: this.collection, id: this.id, data };
+		return { action: "set", collection: this.collection, id: this.id, data };
 	}
 
 	/** Get an update change for this item. */
 	getUpdate(updates: Updates<T>): UpdateChange<T> {
-		return { action: "UPDATE", collection: this.collection, id: this.id, updates };
+		return { action: "update", collection: this.collection, id: this.id, updates };
 	}
 
 	/** Get a delete change for this item. */
 	getDelete(): DeleteChange {
-		return { action: "DELETE", collection: this.collection, id: this.id };
+		return { action: "delete", collection: this.collection, id: this.id };
 	}
 
 	// Implement toString()
@@ -101,15 +102,11 @@ abstract class BaseItem<T extends Data = Data> implements AsyncIterable<ItemValu
 }
 
 /** Reference to an item in a synchronous database. */
-export class Item<T extends Data = Data> extends BaseItem<T> {
+export class ItemReference<T extends Data = Data> extends AbstractItemReference<T> {
 	readonly provider: Provider;
-	readonly collection: string;
-	readonly id: string;
 	constructor(provider: Provider, collection: string, id: string) {
-		super();
+		super(collection, id);
 		this.provider = provider;
-		this.collection = collection;
-		this.id = id;
 	}
 	get exists(): boolean {
 		return !!this.provider.getItem(this.collection, this.id);
@@ -132,15 +129,11 @@ export class Item<T extends Data = Data> extends BaseItem<T> {
 }
 
 /** Reference to an item in an asynchronous database. */
-export class AsyncItem<T extends Data = Data> extends BaseItem<T> {
+export class AsyncItemReference<T extends Data = Data> extends AbstractItemReference<T> {
 	readonly provider: AsyncProvider;
-	readonly collection: string;
-	readonly id: string;
 	constructor(provider: AsyncProvider, collection: string, id: string) {
-		super();
+		super(collection, id);
 		this.provider = provider;
-		this.collection = collection;
-		this.id = id;
 	}
 	get exists(): Promise<boolean> {
 		return this.provider.getItem(this.collection, this.id).then(Boolean);

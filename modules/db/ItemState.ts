@@ -1,4 +1,4 @@
-import type { AsyncItem, Item, ItemData, ItemValue } from "./Item.js";
+import type { AsyncItemReference, ItemData, ItemReference, ItemValue } from "./ItemReference.js";
 import type { MemoryTable } from "../provider/MemoryProvider.js";
 import type { Data } from "../util/data.js";
 import type { Dispatch } from "../util/function.js";
@@ -11,7 +11,7 @@ import { getOptionalSource } from "../util/source.js";
 
 /** Hold the current state of a item. */
 export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
-	readonly ref: Item<T> | AsyncItem<T>;
+	readonly ref: ItemReference<T> | AsyncItemReference<T>;
 	readonly busy = new BooleanState();
 
 	/** Get the data of the item (throws `RequiredError` if item doesn't exist). */
@@ -24,7 +24,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 		return !!this.value;
 	}
 
-	constructor(ref: Item<T> | AsyncItem<T>) {
+	constructor(ref: ItemReference<T> | AsyncItemReference<T>) {
 		const { provider, collection, id } = ref;
 		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T>;
 		const time = table ? table.getItemTime(id) : null;
