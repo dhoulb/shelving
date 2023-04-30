@@ -15,7 +15,7 @@ export type DataValue<T extends Data> = T[keyof T & string];
 
 /** Prop for a data object. */
 export type DataProp<T extends Data> = {
-	readonly [K in DataKey<T>]: [K, T[K]];
+	readonly [K in DataKey<T>]: readonly [K, T[K]];
 }[DataKey<T>];
 
 /** Data or `null` to indicate the data doesn't exist. */
