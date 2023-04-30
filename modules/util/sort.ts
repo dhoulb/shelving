@@ -1,24 +1,12 @@
 import type { ImmutableArray, MutableArray } from "./array.js";
+import type { Arguments } from "./function.js";
 import { isArray } from "./array.js";
 
-/** Object that can rank two values using its `rank()` function. */
-export interface Rankable<T> {
-	rank(left: T, right: T): number;
-}
-
-/** Function that can rank two values. */
-export type Rank<T> = (left: T, right: T) => number;
-
-/** Something that can rank two values. */
-export type Ranker<T> = Rankable<T> | Rank<T>;
-
-/** Rank two values with a `Ranker`. */
-export function rank<T>(left: T, ranker: Ranker<T>, right: T) {
-	return typeof ranker === "function" ? ranker(left, right) : ranker.rank(left, right);
-}
+/** Function that can compare two values for sorting. */
+export type Compare<T, A extends Arguments = []> = (left: T, right: T, ...args: A) => number;
 
 /**
- * Rank two values in ascending order.
+ * Compare two unknown values in ascending order.
  * - Allows values of different types to be ranked for sorting.
  *
  * 1. Numbers and dates (ascending order: -Infinity, negative, zero, positive, Infinity, NaN)
@@ -34,7 +22,7 @@ export function rank<T>(left: T, ranker: Ranker<T>, right: T) {
  *
  * @returns Number below zero if `a` is higher, number above zero if `b` is higher, or `0` if they're equally sorted.
  */
-export function rankAsc(left: unknown, right: unknown): number {
+export function compareAscending(left: unknown, right: unknown): number {
 	// Exactly equal is easy.
 	if (left === right) return 0;
 
@@ -73,8 +61,8 @@ export function rankAsc(left: unknown, right: unknown): number {
 	return -1;
 }
 
-/** Rank two values in descending order. */
-export const rankDesc = (left: unknown, right: unknown): number => 0 - rankAsc(left, right);
+/** Compare two unknown values in descending order. */
+export const compareDescending = (left: unknown, right: unknown): number => 0 - compareAscending(left, right);
 
 /**
  * Quick sort algorithm.
@@ -83,13 +71,13 @@ export const rankDesc = (left: unknown, right: unknown): number => 0 - rankAsc(l
  *     2. We can use our own comparison function by default.
  *
  * @param items The actual list of items that's sorted in place.
- * @param ranker A rank function that takes a left/right value and returns 1/0/-1 (like `Array.prototype.sort()`).
+ * @param compare A rank function that takes a left/right value and returns 1/0/-1 (like `Array.prototype.sort()`).
  * @param leftPointer Index in the set of items to start sorting on.
  * @param rightPointer Index in the set of items to stop sorting on.
  *
  * @return `true` if the array order changed, and `false` otherwise.
  */
-function _quicksort<T>(items: MutableArray<T>, ranker: Ranker<T>, leftPointer = 0, rightPointer: number = items.length - 1): boolean {
+function _quicksort<T, A extends Arguments>(items: MutableArray<T>, compare: Compare<T, A>, args: A, leftPointer = 0, rightPointer: number = items.length - 1): boolean {
 	// Have any swaps been made?
 	let changed = false;
 
@@ -101,8 +89,8 @@ function _quicksort<T>(items: MutableArray<T>, ranker: Ranker<T>, leftPointer = 
 	let l = leftPointer;
 	let r = rightPointer;
 	while (l <= r) {
-		while (rank(items[l]!, ranker, middle) < 0) l++; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-		while (rank(items[r]!, ranker, middle) > 0) r--; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		while (compare(items[l]!, middle, ...args) < 0) l++; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		while (compare(items[r]!, middle, ...args) > 0) r--; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 		if (l <= r) {
 			if (l < r) {
 				changed = true;
@@ -114,21 +102,21 @@ function _quicksort<T>(items: MutableArray<T>, ranker: Ranker<T>, leftPointer = 
 	}
 
 	// Sort the lower and upper segments.
-	if (leftPointer < l - 1 && _quicksort(items, ranker, leftPointer, l - 1)) changed = true;
-	if (l < rightPointer && _quicksort(items, ranker, l, rightPointer)) changed = true;
+	if (leftPointer < l - 1 && _quicksort(items, compare, args, leftPointer, l - 1)) changed = true;
+	if (l < rightPointer && _quicksort(items, compare, args, l, rightPointer)) changed = true;
 
 	// Changes were made.
 	return changed;
 }
 
 /** Sort an iterable set of items using a ranker (defaults to sorting in ascending order). */
-export function sortItems<T>(input: ImmutableArray<T> | Iterable<T>, ranker: Ranker<T> = rankAsc): ImmutableArray<T> {
+export function sortArray<T, A extends Arguments = []>(input: ImmutableArray<T> | Iterable<T>, compare: Compare<T, A> = compareAscending as unknown as Compare<T, A>, ...args: A): ImmutableArray<T> {
 	if (isArray(input)) {
 		if (input.length < 2) return input;
 		const output = Array.from(input);
-		return _quicksort(output, ranker) ? output : input;
+		return _quicksort<T, A>(output, compare, args) ? output : input;
 	}
-	const array = Array.from(input);
-	_quicksort(array, ranker);
-	return array;
+	const output = Array.from(input);
+	_quicksort<T, A>(output, compare, args);
+	return output;
 }

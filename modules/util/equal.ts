@@ -5,7 +5,7 @@ import type { ImmutableObject } from "./object.js";
 import { isArray } from "./array.js";
 import { isMap } from "./map.js";
 import { isObject, isProp } from "./object.js";
-import { rankAsc } from "./sort.js";
+import { compareAscending } from "./sort.js";
 
 /** Is unknown value `left` exactly equal to `right`? */
 export const isEqual = <T>(left: unknown, right: T): left is T => left === right;
@@ -14,16 +14,16 @@ export const isEqual = <T>(left: unknown, right: T): left is T => left === right
 export const notEqual = <T, N>(left: T | N, right: N): left is T => !isEqual(left, right);
 
 /** Is unknown value `left` less than `right`? */
-export const isLess = (left: unknown, right: unknown) => rankAsc(left, right) < 0;
+export const isLess = (left: unknown, right: unknown) => compareAscending(left, right) < 0;
 
 /** Is unknown value `left` less than or equal to `right`? */
-export const isEqualLess = (left: unknown, right: unknown) => rankAsc(left, right) <= 0;
+export const isEqualLess = (left: unknown, right: unknown) => compareAscending(left, right) <= 0;
 
 /** Is unknown value `left` greater than `right`? */
-export const isGreater = (left: unknown, right: unknown) => rankAsc(left, right) > 0;
+export const isGreater = (left: unknown, right: unknown) => compareAscending(left, right) > 0;
 
 /** Is unknown value `left` greater than or equal to `right`? */
-export const isEqualGreater = (left: unknown, right: unknown) => rankAsc(left, right) >= 0;
+export const isEqualGreater = (left: unknown, right: unknown) => compareAscending(left, right) >= 0;
 
 // Internal shared by shallow/deep equal.
 function _isEqualRecursively(left: unknown, right: unknown, recursor: Match): boolean {
