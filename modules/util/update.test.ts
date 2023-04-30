@@ -95,12 +95,12 @@ const invalidUpdates10: Updates<typeof data> = {
 };
 
 test("getUpdates()", () => {
-	expect(Array.from(getUpdates(updates))).toEqual([
-		{ keys: ["a", "str"], type: "set", value: "A" },
-		{ keys: ["a", "data", "str"], type: "set", value: "A" },
-		{ keys: ["num"], type: "sum", value: 100 },
-		{ keys: ["a", "num"], type: "sum", value: 10 },
-		{ keys: ["a", "data", "num"], type: "sum", value: -10 },
+	expect(getUpdates(updates)).toEqual([
+		{ keys: ["a", "str"], action: "set", value: "A" },
+		{ keys: ["a", "data", "str"], action: "set", value: "A" },
+		{ keys: ["num"], action: "sum", value: 100 },
+		{ keys: ["a", "num"], action: "sum", value: 10 },
+		{ keys: ["a", "data", "num"], action: "sum", value: -10 },
 	]);
 });
 test("updateObject()", () => {
