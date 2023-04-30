@@ -7,11 +7,11 @@ import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { transformObject } from "../util/transform.js";
+import { updateData } from "../util/update.js";
 import { validate, validateWithContext } from "../util/validate.js";
 
 // Constants.
-const VALIDATION_CONTEXT_GET: Data = { action: "get" };
+const VALIDATION_CONTEXT_GET: Data = { action: "get", id: true };
 const VALIDATION_CONTEXT_ADD: Data = { action: "add" };
 const VALIDATION_CONTEXT_SET: Data = { action: "set" };
 const VALIDATION_CONTEXT_UPDATE: Data = { action: "update", partial: true };
@@ -53,7 +53,8 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 		return this.source.setItem(collection, id, validateWithContext(value, this.getSchema(collection), VALIDATION_CONTEXT_SET));
 	}
 	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
-		return this.source.updateItem(collection, id, validateWithContext(transformObject({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE));
+		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
+		return this.source.updateItem(collection, id, updates);
 	}
 	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
 		return this.source.deleteItem(collection, id);
@@ -65,7 +66,8 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
 	}
 	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>, updates: Updates<T[K]>): number {
-		return this.source.updateQuery(collection, constraints, validateWithContext(transformObject({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE));
+		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
+		return this.source.updateQuery(collection, constraints, updates);
 	}
 	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>): number {
 		return this.source.deleteQuery(collection, constraints);
@@ -89,7 +91,8 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 		return this.source.setItem(collection, id, validateWithContext(value, this.getSchema(collection), VALIDATION_CONTEXT_SET));
 	}
 	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
-		return this.source.updateItem(collection, id, validateWithContext(updates, this.getSchema(collection), VALIDATION_CONTEXT_UPDATE));
+		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
+		return this.source.updateItem(collection, id, updates);
 	}
 	deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
 		return this.source.deleteItem(collection, id);
@@ -101,7 +104,8 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 		return this.source.setQuery(collection, constraints, validateWithContext(value, this.getSchema(collection), VALIDATION_CONTEXT_SET));
 	}
 	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>, updates: Updates<T[K]>): Promise<number> {
-		return this.source.updateQuery(collection, constraints, validateWithContext(updates, this.getSchema(collection), VALIDATION_CONTEXT_UPDATE));
+		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
+		return this.source.updateQuery(collection, constraints, updates);
 	}
 	deleteQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>): Promise<number> {
 		return this.source.deleteQuery(collection, constraints);
@@ -112,10 +116,10 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 function _validateItem<T extends Data>(collection: string, unsafeEntity: ItemValue<Data>, schema: DataSchema<T>): ItemValue<T> {
 	if (!unsafeEntity) return null;
 	try {
-		return { ...validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET), id: unsafeEntity.id };
+		return validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET) as ItemData<T>;
 	} catch (thrown) {
 		if (!(thrown instanceof Feedback)) throw thrown;
-		throw new ValidationError(`Invalid data for "${collection}"`, unsafeEntity);
+		throw new ValidationError(`Invalid data for "${collection}"`, thrown.message);
 	}
 }
 
@@ -125,15 +129,15 @@ function _validateItems<T extends Data>(collection: string, unsafeEntities: Item
 }
 function* _yieldValidItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): Iterable<ItemData<T>> {
 	let invalid = false;
-	const details: MutableDictionary<string> = {};
+	const messages: MutableDictionary<string> = {};
 	for (const unsafeEntity of unsafeEntities) {
 		try {
-			yield { ...validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET), id: unsafeEntity.id };
+			yield validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET) as ItemData<T>;
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
 			invalid = true;
-			details[unsafeEntity.id] = thrown.message;
+			messages[unsafeEntity.id] = thrown.message;
 		}
 	}
-	if (invalid) throw new ValidationError(`Invalid data for "${collection}"`, details);
+	if (invalid) throw new ValidationError(`Invalid data for "${collection}"`, messages);
 }

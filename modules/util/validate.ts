@@ -1,6 +1,7 @@
 import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import type { Data } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
+import type { MutableObject } from "./object.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { Feedbacks } from "../feedback/Feedbacks.js";
 import { getLastItem, isArray } from "./array.js";
@@ -132,10 +133,10 @@ export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unkno
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
-	const { partial = false } = getValidationContext();
+	const { partial = false, id = false } = getValidationContext();
 	let valid = true;
 	let changed = true;
-	const safeData: Partial<T> = {};
+	const safeData: MutableObject = id && typeof unsafeData.id === "string" ? { id: unsafeData.id } : {};
 	const feedbacks: MutableDictionary<Feedback> = {};
 	for (const [key, validator] of getDataProps(validators)) {
 		const unsafeValue = unsafeData[key];
