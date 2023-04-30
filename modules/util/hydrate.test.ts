@@ -1,18 +1,17 @@
 import type { Data } from "../index.js";
-import { FEEDBACK_HYDRATIONS, Feedback, Increment, UPDATE_HYDRATIONS, dehydrate, hydrate } from "../index.js";
+import { FEEDBACK_HYDRATIONS, Feedback, dehydrate, hydrate } from "../index.js";
 
 const HYDRATIONS = {
-	...UPDATE_HYDRATIONS,
 	...FEEDBACK_HYDRATIONS,
 };
 
 test("hydrate(): Works correctly with class instances", () => {
 	// Flat.
-	const original1 = new Increment(1);
+	const original1 = new Feedback("aaa");
 	const dehydrated1 = dehydrate(original1, HYDRATIONS);
 	expect(dehydrated1).not.toBe(original1);
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS);
-	expect(hydrated1).toBeInstanceOf(Increment);
+	expect(hydrated1).toBeInstanceOf(Feedback);
 	expect(original1).not.toBe(hydrated1);
 	expect(original1).toEqual(hydrated1);
 
@@ -40,10 +39,10 @@ test("hydrate(): Works correctly with class instances", () => {
 });
 test("hydrate(): Works correctly with arrays of objects", () => {
 	// Flat.
-	const original1 = ["abc", new Increment(1), 123] as const;
+	const original1 = ["abc", new Feedback("aaa"), 123] as const;
 	const dehydrated1 = dehydrate(original1, HYDRATIONS) as typeof original1;
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS) as typeof original1;
-	expect(hydrated1[1]).toBeInstanceOf(Increment);
+	expect(hydrated1[1]).toBeInstanceOf(Feedback);
 	expect(original1).not.toBe(hydrated1);
 	expect(original1).toEqual(hydrated1);
 
@@ -84,10 +83,10 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 });
 test("hydrate(): Works correctly with plain objects of objects", () => {
 	// Flat.
-	const original1 = { str: "abc", obj: new Increment(1), num: 123 };
+	const original1 = { str: "abc", obj: new Feedback("aaa"), num: 123 };
 	const dehydrated1 = dehydrate(original1, HYDRATIONS) as typeof original1;
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS) as typeof original1;
-	expect(hydrated1.obj).toBeInstanceOf(Increment);
+	expect(hydrated1.obj).toBeInstanceOf(Feedback);
 	expect(original1).toEqual(hydrated1);
 	expect(original1).not.toBe(hydrated1);
 
