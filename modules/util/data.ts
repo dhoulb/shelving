@@ -38,10 +38,10 @@ export type FlatDataProp<T extends Data> = {
 	readonly [K in DataKey<T>]: (
 		T[K] extends Data
 			? FlatDataProp<T[K]> //
-			: [null, T[K]]
+			: readonly [null, T[K]]
 	) extends infer E
-		? E extends [infer KK, infer VV]
-			? [KK extends string ? `${K}.${KK}` : K, VV]
+		? E extends readonly [infer KK, infer VV]
+			? readonly [KK extends string ? `${K}.${KK}` : K, VV]
 			: never
 		: never;
 }[DataKey<T>];

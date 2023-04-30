@@ -11,9 +11,9 @@ type T = {
 };
 
 test("FlatDataProp", () => {
-	const validFlatDataProp1: ["a.a1", number] | ["a.a2.a2a", boolean] | ["g", string] = undefined as unknown as FlatDataProp<T>;
+	const validFlatDataProp1: readonly ["a.a1", number] | readonly ["a.a2.a2a", boolean] | readonly ["g", string] = undefined as unknown as FlatDataProp<T>;
 
-	const validFlatDataProp2: ["a", { readonly a1: number; readonly a2: { readonly a2a: boolean } }] | ["g", string] = undefined as unknown as DataProp<T>;
+	const validFlatDataProp2: readonly ["a", { readonly a1: number; readonly a2: { readonly a2a: boolean } }] | readonly ["g", string] = undefined as unknown as DataProp<T>;
 });
 test("FlatData", () => {
 	const validFlatData: FlatData<T> = {
