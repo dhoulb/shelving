@@ -7,7 +7,7 @@ import type { DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocument
 import { addDoc, collection, deleteDoc, doc, documentId, getDoc, getDocs, increment, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
 import { getObject } from "../../util/object.js";
-import { getFilters, getSorts } from "../../util/query.js";
+import { getFilters, getLimit, getOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";
 import { getUpdates } from "../../util/update.js";
 
@@ -32,15 +32,10 @@ function _getQuery(firestore: Firestore, c: string, q: ItemQuery): Query {
 	return query(collection(firestore, c), ..._getConstraints(q));
 }
 function* _getConstraints(q: ItemQuery): Iterable<QueryConstraint> {
-	for (const { keys, direction } of getSorts(q)) {
-		const key = keys.join(".");
-		yield orderBy(key === "id" ? ID : key, direction);
-	}
-	for (const { keys, operator, value } of getFilters(q)) {
-		const key = keys.join(".");
-		yield where(key === "id" ? ID : key, OPERATORS[operator], value);
-	}
-	if (typeof q.$limit === "number") yield limit(q.$limit);
+	for (const { key, direction } of getOrders(q)) yield orderBy(key === "id" ? ID : key, direction);
+	for (const { key, operator, value } of getFilters(q)) yield where(key === "id" ? ID : key, OPERATORS[operator], value);
+	const l = getLimit(q);
+	if (typeof l === "number") yield limit(l);
 }
 
 function _getItems<T extends Data>(snapshot: QuerySnapshot<T>): ItemArray<T> {
@@ -59,7 +54,7 @@ function _getItemValue<T extends Data>(snapshot: DocumentSnapshot<T>): ItemValue
 
 /** Convert `Updates` object into corresponding Firestore `FieldValue` instances. */
 const _getFieldValues = <T extends Data>(updates: Updates<T>): ImmutableObject => getObject(mapItems(getUpdates(updates), _getFieldValue));
-const _getFieldValue = ({ keys, action, value }: Update): ObjectProp => [keys.join("."), action === "sum" ? increment(value) : action === "set" ? value : action];
+const _getFieldValue = ({ key, action, value }: Update): ObjectProp => [key, action === "sum" ? increment(value) : action === "set" ? value : action];
 
 /**
  * Firestore client database provider.

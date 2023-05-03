@@ -1,6 +1,6 @@
 import type { ImmutableArray } from "../index.js";
 import type { BasicData } from "../test/index.js";
-import { filterQueryItems, getFilters, getIDs, getSorts, matchQueryItem, queryItems, sortQueryItems } from "../index.js";
+import { filterQueryItems, getFilters, getIDs, getOrders, matchQueryItem, queryItems, sortQueryItems } from "../index.js";
 import { basic1, basic2, basics, expectUnorderedKeys } from "../test/index.js";
 import { expectOrderedKeys } from "../test/util.js";
 
@@ -12,23 +12,23 @@ test("sortQueryItems()", () => {
 	const d: SortableData = { id: "d", str: "A", num: 3, sub: { str: "D", num: 2 } };
 	const unsorted: ImmutableArray<SortableData> = [b, d, c, a];
 	// One sort order.
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: "id" })), ["a", "b", "c", "d"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: "!id" })), ["d", "c", "b", "a"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: "num" })), ["a", "b", "d", "c"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: "!num" })), ["c", "d", "b", "a"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: "id" })), ["a", "b", "c", "d"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: "!id" })), ["d", "c", "b", "a"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: "num" })), ["a", "b", "d", "c"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: "!num" })), ["c", "d", "b", "a"]);
 	// Two sort orders (where num is relevant).
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: ["str", "id"] })), ["c", "d", "a", "b"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: ["!str", "id"] })), ["a", "b", "c", "d"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: ["str", "num"] })), ["d", "c", "a", "b"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: ["!str", "num"] })), ["a", "b", "d", "c"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: ["str", "!num"] })), ["c", "d", "b", "a"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: ["!str", "!num"] })), ["b", "a", "c", "d"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: ["str", "id"] })), ["c", "d", "a", "b"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: ["!str", "id"] })), ["a", "b", "c", "d"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: ["str", "num"] })), ["d", "c", "a", "b"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: ["!str", "num"] })), ["a", "b", "d", "c"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: ["str", "!num"] })), ["c", "d", "b", "a"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: ["!str", "!num"] })), ["b", "a", "c", "d"]);
 	// Two sort orders (but num isn't relevant).
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: ["num", "str"] })), ["a", "b", "d", "c"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: ["!num", "str"] })), ["c", "d", "b", "a"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: ["num", "str"] })), ["a", "b", "d", "c"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: ["!num", "str"] })), ["c", "d", "b", "a"]);
 	// Sort by deep number (change).
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: "sub.num" })), ["b", "d", "a", "c"]);
-	expectOrderedKeys(sortQueryItems(unsorted, getSorts({ $order: "!sub.num" })), ["c", "a", "d", "b"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: "sub.num" })), ["b", "d", "a", "c"]);
+	expectOrderedKeys(sortQueryItems(unsorted, getOrders({ $order: "!sub.num" })), ["c", "a", "d", "b"]);
 });
 describe("filterQueryItems()", () => {
 	test("is", () => {

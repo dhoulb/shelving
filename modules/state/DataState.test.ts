@@ -29,7 +29,7 @@ test("DataState.prototype.update()", async () => {
 	const calls1: T[] = [];
 	const stop = state.next.to(v => calls1.push(v));
 	// Apply a data transform.
-	expect(state.update({ "a": 111, "b+=": 100 })).toBe(undefined);
+	expect(state.update({ "a": 111, "+=b": 100 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: 102 });
 	// Checks.
 	await runMicrotasks();
@@ -51,7 +51,7 @@ test("OptionalDataState.prototype.data", async () => {
 	expect(state.value).toEqual({ a: 1 });
 	expect(state.data).toEqual({ a: 1 });
 	// Update data value.
-	expect(state.update({ "a+=": 1 })).toBe(undefined);
+	expect(state.update({ "+=a": 1 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 2 });
 	expect(state.data).toEqual({ a: 2 });
 	// Delete data value.
@@ -77,7 +77,7 @@ test("OptionalDataState.prototype.update()", async () => {
 	const calls1: OptionalData<T>[] = [];
 	const stop = state.next.to(v => calls1.push(v));
 	// Apply a data transform.
-	expect(state.update({ "a": 111, "b-=": 100 })).toBe(undefined);
+	expect(state.update({ "a": 111, "-=b": 100 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: -98 });
 	// Checks.
 	await runMicrotasks();

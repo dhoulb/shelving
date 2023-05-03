@@ -1,109 +1,166 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { Updates } from "./index.js";
+import type { ImmutableDictionary, Updates } from "./index.js";
 import { getUpdates, updateData } from "./index.js";
 
-const data = Object.freeze({
+type T = {
+	a: {
+		readonly data: {
+			readonly str: string;
+			readonly num: number;
+		};
+		readonly str: string;
+		readonly num: number;
+	};
+	readonly b: {
+		readonly str: string;
+		readonly num: number;
+	};
+	readonly str: "a";
+	readonly num: number;
+	readonly dict1: ImmutableDictionary<number>;
+	readonly dict2: ImmutableDictionary<{
+		readonly str: string;
+		readonly num: number;
+	}>;
+};
+
+const data: T = Object.freeze({
 	a: Object.freeze({
 		data: Object.freeze({
-			str: "a" as string,
-			num: 1 as number,
+			str: "a",
+			num: 1,
 		}),
-		str: "a" as string,
-		num: 1 as number,
+		str: "a",
+		num: 1,
 	}),
 	b: Object.freeze({
-		str: "b" as string,
-		num: 1 as number,
-	}),
-	str: "a",
-	num: 1 as number,
-});
-
-const updates: Updates<typeof data> = {
-	"a.str": "A",
-	"a.data.str": "A",
-	"num+=": 100,
-	"a.num+=": 10,
-	"a.data.num-=": 10,
-};
-
-const updatedData: typeof data = {
-	a: {
-		data: {
-			str: "A",
-			num: -9,
-		},
-		str: "A",
-		num: 11,
-	},
-	b: {
 		str: "b",
 		num: 1,
-	},
+	}),
 	str: "a",
-	num: 101,
+	num: 1,
+	dict1: Object.freeze({ a: 1, b: 2 }),
+	dict2: Object.freeze({
+		a: {
+			str: "a",
+			num: 1,
+		},
+	}),
+});
+
+const updates: Updates<T> = {
+	"a.str": "A",
+	"a.data.str": "A",
+	"+=num": 100,
+	"+=a.num": 10,
+	"-=a.data.num": 10,
+	"=dict2.a.str": "A",
+	"+=dict2.a.num": 100,
 };
 
-const invalidUpdates1: Updates<typeof data> = {
+const validUpdates1: Updates<T> = {
+	"a.str": "A",
+};
+
+const validUpdates2: Updates<T> = {
+	"dict1.a": 123,
+};
+
+const validUpdates3: Updates<T> = {
+	"dict2.a": { str: "a", num: 1 },
+	"=dict2.a.num": 1,
+};
+
+type ISSTRING<J> = J extends string ? true : false;
+
+type BBB = ISSTRING<"a">;
+
+const invalidUpdates1: Updates<T> = {
 	// @ts-expect-error "unknown" is not a known prop.
 	unknown: "str",
 };
 
-const invalidUpdates2: Updates<typeof data> = {
+const invalidUpdates2: Updates<T> = {
 	// @ts-expect-error "a.unknown" is not a known prop.
 	"a.unknown": "str",
 };
 
-const invalidUpdates3: Updates<typeof data> = {
+const invalidUpdates3: Updates<T> = {
 	// @ts-expect-error "str" is not number.
 	str: 123,
 };
 
-const invalidUpdates4: Updates<typeof data> = {
+const invalidUpdates4: Updates<T> = {
 	// @ts-expect-error "a.unknown" is not a known prop.
 	"a.num": "str",
 };
 
-const invalidUpdates5: Updates<typeof data> = {
+const invalidUpdates5: Updates<T> = {
 	// @ts-expect-error "str" is not string.
-	"num+=": "str",
+	"+=num": "str",
 };
 
-const invalidUpdates6: Updates<typeof data> = {
+const invalidUpdates6: Updates<T> = {
 	// @ts-expect-error "str" is not a number.
-	"a.num+=": "str",
+	"+=a.num": "str",
 };
 
-const invalidUpdates7: Updates<typeof data> = {
+const invalidUpdates7: Updates<T> = {
 	// @ts-expect-error "str" is not a number.
-	"a-=": "str",
+	"-=a": "str",
 };
 
-const invalidUpdates8: Updates<typeof data> = {
+const invalidUpdates8: Updates<T> = {
 	// @ts-expect-error "str" is not a number.
-	"a.num-=": "str",
+	"-=a.num": "str",
 };
 
-const invalidUpdates9: Updates<typeof data> = {
+const invalidUpdates9: Updates<T> = {
 	// @ts-expect-error "str" is not a number.
-	"str+=": 123,
+	"+=str": 123,
 };
 
-const invalidUpdates10: Updates<typeof data> = {
+const invalidUpdates10: Updates<T> = {
 	// @ts-expect-error "a.str" is not a number.
-	"a.str+=": 123,
+	"+=a.str": 123,
 };
 
 test("getUpdates()", () => {
 	expect(getUpdates(updates)).toEqual([
-		{ keys: ["a", "str"], action: "set", value: "A" },
-		{ keys: ["a", "data", "str"], action: "set", value: "A" },
-		{ keys: ["num"], action: "sum", value: 100 },
-		{ keys: ["a", "num"], action: "sum", value: 10 },
-		{ keys: ["a", "data", "num"], action: "sum", value: -10 },
+		{ key: "a.str", action: "set", value: "A" },
+		{ key: "a.data.str", action: "set", value: "A" },
+		{ key: "num", action: "sum", value: 100 },
+		{ key: "a.num", action: "sum", value: 10 },
+		{ key: "a.data.num", action: "sum", value: -10 },
+		{ key: "dict2.a.str", action: "set", value: "A" },
+		{ key: "dict2.a.num", action: "sum", value: 100 },
 	]);
 });
 test("updateObject()", () => {
+	const updatedData: T = {
+		a: {
+			data: {
+				str: "A",
+				num: -9,
+			},
+			str: "A",
+			num: 11,
+		},
+		b: {
+			str: "b",
+			num: 1,
+		},
+		str: "a",
+		num: 101,
+		dict1: { a: 1, b: 2 },
+		dict2: {
+			a: {
+				str: "A",
+				num: 101,
+			},
+		},
+	};
+
 	// Changes.
 	expect(updateData(data, updates)).toEqual(updatedData);
 	// Check cloning happend.

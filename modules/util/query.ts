@@ -1,42 +1,42 @@
 import type { ImmutableArray } from "./array.js";
-import type { Data, DataProp, FlatData, FlatDataKey } from "./data.js";
+import type { Data, DataProp, LeafData, LeafKey } from "./data.js";
 import type { Match } from "./match.js";
 import type { Mutable } from "./object.js";
 import { getLastItem, isArray, limitArray } from "./array.js";
+import { getDataProp } from "./data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";
 import { limitItems } from "./iterate.js";
-import { getProp, getProps } from "./object.js";
+import { getProps } from "./object.js";
 import { compareAscending, compareDescending, sortArray } from "./sort.js";
-import { splitString } from "./string.js";
 import { isDefined } from "./undefined.js";
 
 /** Query that can be applied to a list of data objects. */
 export type Query<T extends Data> = {
-	readonly [K in FlatDataKey<T> as K | `${K}` | `!${K}`]?: FlatData<T>[K] | ImmutableArray<FlatData<T>[K]> | undefined; // is/not/in/out
+	readonly [K in LeafKey<T> as K | `${K}` | `!${K}`]?: LeafData<T>[K] | ImmutableArray<LeafData<T>[K]> | undefined; // is/not/in/out
 } & {
-	readonly [K in FlatDataKey<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: FlatData<T>[K] | undefined; // gt/gte/lt/lte
+	readonly [K in LeafKey<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: LeafData<T>[K] | undefined; // gt/gte/lt/lte
 } & {
-	readonly [K in FlatDataKey<T> as `${K}[]`]?: FlatData<T>[K] extends ImmutableArray<infer X> ? X | undefined : never; // contains
+	readonly [K in LeafKey<T> as `${K}[]`]?: LeafData<T>[K] extends ImmutableArray<infer X> ? X | undefined : never; // contains
 } & {
-	readonly $order?: FlatDataKey<T> | `${FlatDataKey<T>}` | `!${FlatDataKey<T>}` | ImmutableArray<`${FlatDataKey<T>}` | `!${FlatDataKey<T>}`>;
+	readonly $order?: LeafKey<T> | `${LeafKey<T>}` | `!${LeafKey<T>}` | ImmutableArray<`${LeafKey<T>}` | `!${LeafKey<T>}`>;
 	readonly $limit?: number | undefined;
 };
 
 /** A single filter that can be applied to a list of data objects. */
 export type Filter =
-	| { keys: readonly [string, ...string[]]; operator: "is"; value: unknown }
-	| { keys: readonly [string, ...string[]]; operator: "not"; value: unknown }
-	| { keys: readonly [string, ...string[]]; operator: "in"; value: ImmutableArray }
-	| { keys: readonly [string, ...string[]]; operator: "out"; value: ImmutableArray }
-	| { keys: readonly [string, ...string[]]; operator: "contains"; value: unknown }
-	| { keys: readonly [string, ...string[]]; operator: "lt"; value: unknown }
-	| { keys: readonly [string, ...string[]]; operator: "lte"; value: unknown }
-	| { keys: readonly [string, ...string[]]; operator: "gt"; value: unknown }
-	| { keys: readonly [string, ...string[]]; operator: "gte"; value: unknown };
+	| { key: string; operator: "is"; value: unknown }
+	| { key: string; operator: "not"; value: unknown }
+	| { key: string; operator: "in"; value: ImmutableArray }
+	| { key: string; operator: "out"; value: ImmutableArray }
+	| { key: string; operator: "contains"; value: unknown }
+	| { key: string; operator: "lt"; value: unknown }
+	| { key: string; operator: "lte"; value: unknown }
+	| { key: string; operator: "gt"; value: unknown }
+	| { key: string; operator: "gte"; value: unknown };
 
-/** A single sort that can be applied to a list of data objects. */
-export type Sort = {
-	keys: readonly [string, ...string[]];
+/** A single sort order that can be applied to a list of data objects. */
+export type Order = {
+	key: string;
 	direction: "asc" | "desc";
 };
 
@@ -61,22 +61,22 @@ export function getFilters<T extends Data>(query: Query<T>): ImmutableArray<Filt
 }
 function _getFilters([key, value]: DataProp<Data>): Filter | undefined {
 	if (key === "$order" || key === "$limit") return;
-	else if (key.startsWith("!")) return isArray(value) ? { keys: splitString(key.slice(1), "."), operator: "out", value } : { keys: splitString(key.slice(1), "."), operator: "not", value };
-	else if (key.endsWith("[]")) return { keys: splitString(key.slice(0, -2), "."), operator: "contains", value };
-	else if (key.endsWith(">")) return { keys: splitString(key.slice(0, -1), "."), operator: "gt", value };
-	else if (key.endsWith(">=")) return { keys: splitString(key.slice(0, -2), "."), operator: "gte", value };
-	else if (key.endsWith("<")) return { keys: splitString(key.slice(0, -1), "."), operator: "lt", value };
-	else if (key.endsWith("<=")) return { keys: splitString(key.slice(0, -2), "."), operator: "lte", value };
-	else return isArray(value) ? { keys: splitString(key, "."), operator: "in", value } : { keys: splitString(key, "."), operator: "is", value };
+	else if (key.startsWith("!")) return isArray(value) ? { key: key.slice(1), operator: "out", value } : { key: key.slice(1), operator: "not", value };
+	else if (key.endsWith("[]")) return { key: key.slice(0, -2), operator: "contains", value };
+	else if (key.endsWith(">")) return { key: key.slice(0, -1), operator: "gt", value };
+	else if (key.endsWith(">=")) return { key: key.slice(0, -2), operator: "gte", value };
+	else if (key.endsWith("<")) return { key: key.slice(0, -1), operator: "lt", value };
+	else if (key.endsWith("<=")) return { key: key.slice(0, -2), operator: "lte", value };
+	else return isArray(value) ? { key, operator: "in", value } : { key: key, operator: "is", value };
 }
 
-/** Get the `Sort` objects for a query. */
-export function getSorts<T extends Data>({ $order }: Query<T>): ImmutableArray<Sort> {
-	return !$order ? [] : isArray($order) ? $order.map(_getSort) : [_getSort($order)];
+/** Get the `Order` objects for a query. */
+export function getOrders<T extends Data>({ $order }: Query<T>): ImmutableArray<Order> {
+	return !$order ? [] : isArray($order) ? $order.map(_getOrder) : [_getOrder($order)];
 }
-function _getSort(key: string): Sort {
-	if (key.startsWith("!")) return { keys: splitString(key.slice(1), "."), direction: "desc" };
-	else return { keys: splitString(key, "."), direction: "asc" };
+function _getOrder(key: string): Order {
+	if (key.startsWith("!")) return { key: key.slice(1), direction: "desc" };
+	else return { key, direction: "asc" };
 }
 
 /** Get the limit for a query. */
@@ -84,7 +84,7 @@ export const getLimit = <T extends Data>({ $limit }: Query<T>): number | undefin
 
 /** Query a set of data items using a query. */
 export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
-	return limitQueryItems(sortQueryItems(filterQueryItems(items, getFilters(query)), getSorts(query)), getLimit(query));
+	return limitQueryItems(sortQueryItems(filterQueryItems(items, getFilters(query)), getOrders(query)), getLimit(query));
 }
 
 /**
@@ -97,9 +97,9 @@ export function queryWritableItems<T extends Data>(items: Iterable<T>, query: Qu
 
 /** Match a single data item againt a set of filters. */
 export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<Filter>): boolean {
-	for (const { keys, operator, value } of filters) {
+	for (const { key, operator, value } of filters) {
 		const matcher = MATCHERS[operator] as Match<[unknown, unknown]>;
-		if (!matcher(getProp(item, ...keys), value)) return false;
+		if (!matcher(getDataProp(item, key), value)) return false;
 	}
 	return true;
 }
@@ -114,10 +114,10 @@ export function* filterQueryItems<T extends Data>(items: Iterable<T>, filters: I
 }
 
 /** Compare two data items using a set of sorts. */
-export function compareQueryItems<T extends Data>(left: T, right: T, sorts: ImmutableArray<Sort>): number {
-	for (const { keys, direction } of sorts) {
-		const l = getProp(left, ...keys);
-		const r = getProp(right, ...keys);
+export function compareQueryItems<T extends Data>(left: T, right: T, sorts: ImmutableArray<Order>): number {
+	for (const { key, direction } of sorts) {
+		const l = getDataProp(left, key);
+		const r = getDataProp(right, key);
 		const c = direction === "asc" ? compareAscending(l, r) : compareDescending(l, r);
 		if (c !== 0) return c;
 	}
@@ -125,7 +125,7 @@ export function compareQueryItems<T extends Data>(left: T, right: T, sorts: Immu
 }
 
 /**  Sort a set of data items using a set of sorts. */
-export function sortQueryItems<T extends Data>(items: Iterable<T>, sorts: ImmutableArray<Sort>): Iterable<T> {
+export function sortQueryItems<T extends Data>(items: Iterable<T>, sorts: ImmutableArray<Order>): Iterable<T> {
 	return sorts.length ? sortArray(items, compareQueryItems, sorts) : items;
 }
 
@@ -136,13 +136,12 @@ export function limitQueryItems<T extends Data>(items: ImmutableArray<T> | Itera
 
 /** Get a query for items that appear before a specified item. */
 export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
-	const sorts = getSorts(query);
+	const sorts = getOrders(query);
 	const lastSort = getLastItem(sorts);
 	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {
-		const { keys, direction } = sort;
-		const key = keys.join(".");
-		const value = getProp(item, ...keys);
+		const { key, direction } = sort;
+		const value = getDataProp(item, key);
 		newQuery[direction === "asc" ? (sort === lastSort ? `${key}>` : `${key}>=`) : sort === lastSort ? `${key}<` : `${key}<=`] = value;
 	}
 	return newQuery as Query<T>;
@@ -150,13 +149,12 @@ export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<
 
 /** Get a query for items that appear after a specified item. */
 export function getAfterQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
-	const sorts = getSorts(query);
+	const sorts = getOrders(query);
 	const lastSort = getLastItem(sorts);
 	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {
-		const { keys, direction } = sort;
-		const key = keys.join(".");
-		const value = getProp(item, ...keys);
+		const { key, direction } = sort;
+		const value = getDataProp(item, key);
 		newQuery[direction === "asc" ? (sort === lastSort ? `${key}<` : `${key}<=`) : sort === lastSort ? `${key}>` : `${key}>=`] = value;
 	}
 	return newQuery as Query<T>;
