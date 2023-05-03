@@ -2,7 +2,8 @@ import type { ArrayItem, ImmutableArray } from "./array.js";
 import type { ImmutableDictionary, PossibleDictionary } from "./dictionary.js";
 import type { Entry } from "./entry.js";
 import type { Arguments } from "./function.js";
-import type { ImmutableObject, MutableObject, ObjectValue } from "./object.js";
+import type { ImmutableObject, MutableObject, Value } from "./object.js";
+import { getDictionaryItems } from "./dictionary.js";
 import { getProps } from "./object.js";
 
 /** Function that can transform an input value into an output value. */
@@ -32,15 +33,19 @@ export function mapArray<I, O, A extends Arguments = []>(arr: Iterable<I>, trans
 }
 
 /** Modify the values of the props of an object using a transform. */
-export function mapObject<T extends ImmutableObject>(obj: T, transform: Transform<ObjectValue<T>, ObjectValue<T>>): T; // Passthrough for transforms that return the same type and remove nothing.
-export function mapObject<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(obj: I, transform: (v: ObjectValue<I>, ...args: A) => ObjectValue<O>, ...args: A): O; // Helps `I` and `O` carry through functions that use generics.
-export function mapObject<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(obj: I, transform: Transform<ObjectValue<I>, ObjectValue<O>, A>, ...args: A): O;
-export function mapObject<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(obj: I, transform: Transform<ObjectValue<I>, ObjectValue<I>, A>, ...args: A): O {
+export function mapObject<T extends ImmutableObject>(obj: T, transform: Transform<Value<T>, Value<T>>): T; // Passthrough for transforms that return the same type and remove nothing.
+export function mapObject<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(obj: I, transform: (v: Value<I>, ...args: A) => Value<O>, ...args: A): O; // Helps `I` and `O` carry through functions that use generics.
+export function mapObject<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(obj: I, transform: Transform<Value<I>, Value<O>, A>, ...args: A): O;
+export function mapObject<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(obj: I, transform: Transform<Value<I>, Value<I>, A>, ...args: A): O {
 	return Object.fromEntries(mapEntries(getProps(obj), transform, ...args)) as O;
 }
 
 /** Modify the values of a dictionary using a transform. */
-export const mapDictionary: <I, O, A extends Arguments = []>(dictionary: PossibleDictionary<I>, transform: Transform<I, O, A>, ...args: A) => ImmutableDictionary<O> = mapObject;
+export function mapDictionary<I, O, A extends Arguments = []>(dictionary: PossibleDictionary<I>, transform: (v: I, ...args: A) => O, ...args: A): ImmutableDictionary<O>; // Helps `I` and `O` carry through functions that use generics.
+// export function mapDictionary<I, O, A extends Arguments = []>(dictionary: PossibleDictionary<I>, transform: Transform<I, O, A>, ...args: A): ImmutableDictionary<O>;
+export function mapDictionary<I, O, A extends Arguments = []>(dictionary: PossibleDictionary<I>, transform: Transform<I, O, A>, ...args: A): ImmutableDictionary<O> {
+	return Object.fromEntries(mapEntries(getDictionaryItems(dictionary), transform, ...args));
+}
 
 /** Modify the values of a set of entries using a transform. */
 export function* mapEntries<K, I, O, A extends Arguments = []>(entries: Iterable<Entry<K, I>>, transform: Transform<I, O, A>, ...args: A): Iterable<Entry<K, O>> {
