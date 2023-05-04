@@ -4,14 +4,15 @@ import { AssertionError } from "../error/AssertionError.js";
 import { reduceItems } from "./iterate.js";
 import { getNumber } from "./number.js";
 import { getProps, isObject } from "./object.js";
+import { isDefined } from "./undefined.js";
 
 /** Set of named updates for a data object. */
 export type Updates<T extends Data = Data> = {
-	readonly [K in BranchKey<T> as `${K}`]?: BranchData<T>[K]; // Set update.
+	readonly [K in BranchKey<T> as `${K}`]?: BranchData<T>[K] | undefined; // Set update.
 } & {
-	readonly [K in LeafKey<T> as `=${K}`]?: LeafData<T>[K]; // Set update.
+	readonly [K in LeafKey<T> as `=${K}`]?: LeafData<T>[K] | undefined; // Set update.
 } & {
-	readonly [K in LeafKey<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] : never; // Sum update.
+	readonly [K in LeafKey<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] | undefined : never; // Sum update.
 };
 
 /** A single update to a keyed property in an object. */
@@ -21,13 +22,15 @@ export type Update =
 
 /** Yield the prop updates in an `Updates` object as a set of `Update` objects. */
 export function getUpdates<T extends Data>(data: Updates<T>): ImmutableArray<Update> {
-	return getProps(data).map(_getUpdate);
+	return getProps(data).map(_getUpdate).filter(isDefined);
 }
-function _getUpdate([key, value]: DataProp<Data>): Update {
-	if (key.startsWith("+=")) return { action: "sum", key: key.slice(2), value: getNumber(value) };
-	else if (key.startsWith("-=")) return { action: "sum", key: key.slice(2), value: 0 - getNumber(value) };
-	else if (key.startsWith("=")) return { action: "set", key: key.slice(1), value };
-	else return { action: "set", key, value };
+function _getUpdate([key, value]: DataProp<Data>): Update | undefined {
+	if (value !== undefined) {
+		if (key.startsWith("+=")) return { action: "sum", key: key.slice(2), value: getNumber(value) };
+		else if (key.startsWith("-=")) return { action: "sum", key: key.slice(2), value: 0 - getNumber(value) };
+		else if (key.startsWith("=")) return { action: "set", key: key.slice(1), value };
+		else return { action: "set", key, value };
+	}
 }
 
 /** Update a data object with a set of updates. */

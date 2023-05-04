@@ -12,13 +12,13 @@ import { isDefined } from "./undefined.js";
 
 /** Query that can be applied to a list of data objects. */
 export type Query<T extends Data> = {
-	readonly [K in LeafKey<T> as K | `${K}` | `!${K}`]?: LeafData<T>[K] | ImmutableArray<LeafData<T>[K]> | undefined; // is/not/in/out
+	readonly [K in LeafKey<T> as `${K}` | `!${K}`]?: LeafData<T>[K] | ImmutableArray<LeafData<T>[K]> | undefined; // is/not/in/out
 } & {
 	readonly [K in LeafKey<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: LeafData<T>[K] | undefined; // gt/gte/lt/lte
 } & {
 	readonly [K in LeafKey<T> as `${K}[]`]?: LeafData<T>[K] extends ImmutableArray<infer X> ? X | undefined : never; // contains
 } & {
-	readonly $order?: LeafKey<T> | `${LeafKey<T>}` | `!${LeafKey<T>}` | ImmutableArray<`${LeafKey<T>}` | `!${LeafKey<T>}`>;
+	readonly $order?: `${LeafKey<T>}` | `!${LeafKey<T>}` | undefined | ImmutableArray<`${LeafKey<T>}` | `!${LeafKey<T>}` | undefined>;
 	readonly $limit?: number | undefined;
 };
 
@@ -60,19 +60,20 @@ export function getFilters<T extends Data>(query: Query<T>): ImmutableArray<Filt
 	return getProps(query).map(_getFilters).filter(isDefined);
 }
 function _getFilters([key, value]: DataProp<Data>): Filter | undefined {
-	if (key === "$order" || key === "$limit") return;
-	else if (key.startsWith("!")) return isArray(value) ? { key: key.slice(1), operator: "out", value } : { key: key.slice(1), operator: "not", value };
-	else if (key.endsWith("[]")) return { key: key.slice(0, -2), operator: "contains", value };
-	else if (key.endsWith(">")) return { key: key.slice(0, -1), operator: "gt", value };
-	else if (key.endsWith(">=")) return { key: key.slice(0, -2), operator: "gte", value };
-	else if (key.endsWith("<")) return { key: key.slice(0, -1), operator: "lt", value };
-	else if (key.endsWith("<=")) return { key: key.slice(0, -2), operator: "lte", value };
-	else return isArray(value) ? { key, operator: "in", value } : { key: key, operator: "is", value };
+	if (key !== "$order" && key !== "$limit" && value !== undefined) {
+		if (key.startsWith("!")) return isArray(value) ? { key: key.slice(1), operator: "out", value } : { key: key.slice(1), operator: "not", value };
+		else if (key.endsWith("[]")) return { key: key.slice(0, -2), operator: "contains", value };
+		else if (key.endsWith(">")) return { key: key.slice(0, -1), operator: "gt", value };
+		else if (key.endsWith(">=")) return { key: key.slice(0, -2), operator: "gte", value };
+		else if (key.endsWith("<")) return { key: key.slice(0, -1), operator: "lt", value };
+		else if (key.endsWith("<=")) return { key: key.slice(0, -2), operator: "lte", value };
+		else return isArray(value) ? { key, operator: "in", value } : { key: key, operator: "is", value };
+	}
 }
 
 /** Get the `Order` objects for a query. */
 export function getOrders<T extends Data>({ $order }: Query<T>): ImmutableArray<Order> {
-	return !$order ? [] : isArray($order) ? $order.map(_getOrder) : [_getOrder($order)];
+	return (isArray($order) ? $order : [$order]).filter(isDefined).map(_getOrder);
 }
 function _getOrder(key: string): Order {
 	if (key.startsWith("!")) return { key: key.slice(1), direction: "desc" };
