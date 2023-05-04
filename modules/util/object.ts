@@ -105,6 +105,11 @@ export function getProp<T, K extends Key<T>>(obj: T, key: K): T[K] {
 	return obj[key];
 }
 
+/** Create an object from a single prop. */
+export function fromProp<K extends PropertyKey, V>(key: K, value: V): { readonly [KK in K]: V } {
+	return { [key]: value } as { readonly [KK in K]: V };
+}
+
 /** Set a prop on an object (immutably) and return a new object including that prop. */
 export function withProp<T extends ImmutableObject, K extends Key<T>>(input: T, key: K, value: T[K]): T {
 	return input[key] === value ? input : { __proto__: getPrototype(input), ...input, [key]: value };
