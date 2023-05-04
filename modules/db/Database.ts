@@ -17,7 +17,7 @@ abstract class AbstractDatabase<T extends Datas> {
 	abstract collection<K extends DataKey<T>>(collection: K): CollectionReference<T[K]> | AsyncCollectionReference<T[K]>;
 
 	/** Create a query on a collection in this database. */
-	abstract query<K extends DataKey<T>>(collection: K, query?: ItemQuery<T>): QueryReference<T[K]> | AsyncQueryReference<T[K]>;
+	abstract query<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): QueryReference<T[K]> | AsyncQueryReference<T[K]>;
 
 	/** Reference an item in a collection in this database. */
 	abstract item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> | AsyncItemReference<T[K]>;
@@ -71,7 +71,7 @@ export class Database<T extends Datas = Datas> extends AbstractDatabase<T> {
 	collection<K extends DataKey<T>>(collection: K): CollectionReference<T[K]> {
 		return new CollectionReference<T[K]>(this.provider, collection);
 	}
-	query<K extends DataKey<T>>(collection: K, query?: ItemQuery<T>): QueryReference<T[K]> {
+	query<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): QueryReference<T[K]> {
 		return new QueryReference<T[K]>(this.provider, collection, query);
 	}
 	item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> {
@@ -107,7 +107,7 @@ export class AsyncDatabase<T extends Datas = Datas> extends AbstractDatabase<T> 
 	collection<K extends DataKey<T>>(collection: K): AsyncCollectionReference<T[K]> {
 		return new AsyncCollectionReference<T[K]>(this.provider, collection);
 	}
-	query<K extends DataKey<T>>(collection: K, query?: ItemQuery<T>): AsyncQueryReference<T[K]> {
+	query<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncQueryReference<T[K]> {
 		return new AsyncQueryReference<T[K]>(this.provider, collection, query);
 	}
 	item<K extends DataKey<T>>(collection: K, id: string): AsyncItemReference<T[K]> {
