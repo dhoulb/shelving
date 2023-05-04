@@ -2,7 +2,7 @@ import type { ImmutableArray } from "./array.js";
 import type { EntryObject } from "./entry.js";
 import type { DeepPartial } from "./object.js";
 import { AssertionError } from "../error/AssertionError.js";
-import { RequiredError } from "../error/RequiredError.js";
+import { isIterable } from "./iterate.js";
 import { isObject, isPlainObject } from "./object.js";
 
 /** Data object. */
@@ -84,12 +84,13 @@ export function assertData<T extends Data>(value: T | unknown): asserts value is
 }
 
 /** Is an unknown value the key for an own prop of a data object. */
-export const isDataProp = <T extends Data>(obj: T, key: unknown): key is DataKey<T> => typeof key === "string" && Object.prototype.hasOwnProperty.call(obj, key);
+export const isDataProp = <T extends Data>(data: T, key: unknown): key is DataKey<T> => typeof key === "string" && Object.prototype.hasOwnProperty.call(data, key);
 
-/** Get the data of a result (returns data or throws `RequiredError` if value is `null` or `undefined`). */
-export function getData<T extends Data>(result: OptionalData<T>): T {
-	if (!result) throw new RequiredError("Data is required");
-	return result;
+/** Convert a data object or set of `DataProp` props for that object back into the full object. */
+export function getData<T extends Data>(input: T): T;
+export function getData<T extends Data>(input: T | Iterable<DataProp<T>>): Partial<T>;
+export function getData<T extends Data>(input: T | Iterable<DataProp<T>>): Partial<T> {
+	return isIterable(input) ? (Object.fromEntries(input) as Partial<T>) : input;
 }
 
 /** Get the props of a data object as a set of entries. */
