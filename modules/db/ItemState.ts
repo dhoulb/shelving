@@ -6,7 +6,7 @@ import { CacheProvider } from "../provider/CacheProvider.js";
 import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { State } from "../state/State.js";
-import { getData } from "../util/data.js";
+import { getRequired } from "../util/null.js";
 import { getOptionalSource } from "../util/source.js";
 
 /** Hold the current state of a item. */
@@ -16,7 +16,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 
 	/** Get the data of the item (throws `RequiredError` if item doesn't exist). */
 	get data(): ItemData<T> {
-		return getData(this.value);
+		return getRequired(this.value);
 	}
 
 	/** Does the item exist (i.e. its value isn't `null`)? */

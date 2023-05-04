@@ -1,4 +1,5 @@
 import { AssertionError } from "../error/AssertionError.js";
+import { RequiredError } from "../error/RequiredError.js";
 
 /** Function that always returns null. */
 export const getNull = (): null => null;
@@ -37,5 +38,11 @@ export function assertNotNullish<T>(value: Nullish<T>): asserts value is T {
 /** Get the not-nullish version of value. */
 export function getNotNullish<T>(value: Nullish<T>): T {
 	assertNotNullish(value);
+	return value;
+}
+
+/** Get a required value. */
+export function getRequired<T>(value: Nullish<T>): T {
+	if (isNullish(value)) throw new RequiredError("Value is required");
 	return value;
 }

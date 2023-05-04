@@ -1,6 +1,6 @@
 import type { Data, DataKey } from "../util/data.js";
 import type { Updates } from "../util/update.js";
-import { getData } from "../util/data.js";
+import { getRequired } from "../util/null.js";
 import { withProp } from "../util/object.js";
 import { updateData } from "../util/update.js";
 import { State } from "./State.js";
@@ -32,7 +32,7 @@ export class DataState<T extends Data> extends State<T> {
 export class OptionalDataState<T extends Data> extends State<T | null> {
 	/** Get current data value of this state (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
-		return getData(this.value);
+		return getRequired(this.value);
 	}
 
 	/** Does the data exist or not? */

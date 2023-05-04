@@ -4,7 +4,7 @@ import type { Data } from "../util/data.js";
 import type { Dispatch, Handler, Stop } from "../util/function.js";
 import type { Updates } from "../util/update.js";
 import { countArray, getOptionalFirstItem, getOptionalLastItem, isArrayLength } from "../util/array.js";
-import { getData } from "../util/data.js";
+import { getRequired } from "../util/null.js";
 import { cloneObjectWith } from "../util/object.js";
 import { runSequence } from "../util/sequence.js";
 
@@ -120,7 +120,7 @@ export class QueryReference<T extends Data = Data> extends AbstractQueryReferenc
 		return getOptionalLastItem(this.items);
 	}
 	get data(): ItemData<T> {
-		return getData(this.first);
+		return getRequired(this.first);
 	}
 	set(data: T): number {
 		return this.provider.setQuery(this.collection, this.query, data);
@@ -156,7 +156,7 @@ export class AsyncQueryReference<T extends Data = Data> extends AbstractQueryRef
 		return this.items.then(getOptionalLastItem);
 	}
 	get data(): Promise<ItemData<T>> {
-		return this.first.then(getData);
+		return this.first.then(getRequired);
 	}
 	set(data: T): Promise<number> {
 		return this.provider.setQuery(this.collection, this.query, data);

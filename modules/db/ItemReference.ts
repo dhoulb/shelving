@@ -5,7 +5,7 @@ import type { Data } from "../util/data.js";
 import type { Dispatch, Handler, Stop } from "../util/function.js";
 import type { Query } from "../util/query.js";
 import type { Updates } from "../util/update.js";
-import { getData } from "../util/data.js";
+import { getRequired } from "../util/null.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Item data with a string ID that uniquely identifies it. */
@@ -115,7 +115,7 @@ export class ItemReference<T extends Data = Data> extends AbstractItemReference<
 		return this.provider.getItem(this.collection, this.id) as ItemValue<T>;
 	}
 	get data(): ItemData<T> {
-		return getData(this.value);
+		return getRequired(this.value);
 	}
 	set(data: T): void {
 		return this.provider.setItem(this.collection, this.id, data);
@@ -142,7 +142,7 @@ export class AsyncItemReference<T extends Data = Data> extends AbstractItemRefer
 		return this.provider.getItem(this.collection, this.id) as Promise<ItemValue<T>>;
 	}
 	get data(): Promise<ItemData<T>> {
-		return this.value.then(getData);
+		return this.value.then(getRequired);
 	}
 	set(data: T): Promise<void> {
 		return this.provider.setItem(this.collection, this.id, data);

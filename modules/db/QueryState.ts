@@ -8,7 +8,7 @@ import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { State } from "../state/State.js";
 import { getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
-import { getData } from "../util/data.js";
+import { getRequired } from "../util/null.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { getOptionalSource } from "../util/source.js";
 
@@ -41,7 +41,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 
 	/** Get the first document matched by this query. */
 	get data(): ItemData<T> {
-		return getData(this.first);
+		return getRequired(this.first);
 	}
 
 	/** Does the document have at least one result. */
