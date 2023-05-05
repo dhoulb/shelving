@@ -77,3 +77,9 @@ export function debugObject(value: object, depth = 1): string {
 			: "";
 	return `${name ? `${name} ` : ""}${entries ? `{\n\t${entries}\n}` : "{}"}`;
 }
+
+/** If a string is multiline, push it onto the next line and prepend a tab to each line.. */
+export function indent(str: string): string {
+	const lines = str.split("\n");
+	return lines.length > 1 ? `\n${lines.join("\n\t")}` : ` ${str}`;
+}

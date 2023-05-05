@@ -7,5 +7,6 @@ test("Feedbacks", () => {
 	const feedbacks = new Feedbacks({ one, two });
 	expect(feedbacks.feedbacks.one).toBe(one);
 	expect(feedbacks.feedbacks.two).toBe(two);
+	expect(feedbacks.message).toEqual("one: 1\ntwo: 2");
 	expect(feedbacks.messages).toEqual({ one: "1", two: "2" });
 });
