@@ -2,6 +2,7 @@ import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import type { Data } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
 import type { MutableObject } from "./object.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { Feedbacks } from "../feedback/Feedbacks.js";
 import { getLastItem, isArray } from "./array.js";
@@ -42,6 +43,21 @@ export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> }
 /** Validate an unknown value with a validator. */
 export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {
 	return typeof validator === "function" ? validator(unsafeValue) : validator.validate(unsafeValue);
+}
+
+/** Get value that validates against a given `Validator`, or throw `ValidationError` */
+export function getValid<T>(unsafeValue: unknown, validator: Validator<T>): T {
+	try {
+		return validate(unsafeValue, validator);
+	} catch (thrown) {
+		if (thrown instanceof Feedback) throw new ValidationError("Must validate", thrown);
+		throw thrown;
+	}
+}
+
+/** Assert that a value validates against a given `Validator`, or throw `ValidationError` */
+export function assertValid<T>(unsafeValue: unknown, validator: Validator<T>): asserts unsafeValue is T {
+	getValid(unsafeValue, validator);
 }
 
 /**
