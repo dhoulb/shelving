@@ -4,15 +4,13 @@ import { ThroughSchema } from "./ThroughSchema.js";
 /** Validate a value of a specific type or `null`. */
 export class OptionalSchema<T> extends ThroughSchema<T | null> {
 	override readonly value: T | null = null;
-	constructor({
-		value = null,
-		...rest
-	}: ConstructorParameters<typeof Schema>[0] & {
-		source: Schema<T>;
-		value?: T | null;
-	}) {
-		super(rest);
-		this.value = value;
+	constructor(
+		options: ConstructorParameters<typeof Schema>[0] & {
+			source: Schema<T>;
+			value?: T | null;
+		},
+	) {
+		super({ value: null, ...options });
 	}
 	override validate(unsafeValue: unknown = this.value): T | null {
 		if (unsafeValue === null || unsafeValue === undefined || unsafeValue === "" || Number.isNaN(unsafeValue)) return null;

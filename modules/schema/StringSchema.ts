@@ -1,6 +1,7 @@
 import type { SchemaOptions } from "./Schema.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { sanitizeLines, sanitizeString } from "../util/string.js";
+import { OPTIONAL } from "./OptionalSchema.js";
 import { Schema } from "./Schema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
@@ -41,17 +42,17 @@ export type StringSchemaOptions = SchemaOptions & {
  *  schema.validate('j'); // Throws 'Minimum 3 chaacters'
  */
 export class StringSchema extends Schema<string> {
-	override readonly value: string;
+	override readonly value!: string;
 	readonly type: HtmlInputType;
 	readonly min: number;
 	readonly max: number;
 	readonly match: RegExp | undefined;
 	readonly sanitizer: Sanitizer | undefined;
 	readonly multiline: boolean;
-	constructor({ value = "", type = "text", min = 0, max = Infinity, match, sanitizer, multiline = false, ...rest }: StringSchemaOptions) {
-		super(rest);
+	constructor(options: StringSchemaOptions) {
+		super({ value: "", ...options });
+		const { type = "text", min = 0, max = Infinity, match, sanitizer, multiline = false } = options;
 		this.type = type;
-		this.value = value;
 		this.min = min;
 		this.max = max;
 		this.match = match;
@@ -83,3 +84,18 @@ export const STRING = new StringSchema({});
 
 /** Valid string, `Hello there!`, with more than one character. */
 export const REQUIRED_STRING = new StringSchema({ min: 1 });
+
+/** Title string, e.g. `Title of something` */
+export const TITLE = new StringSchema({});
+
+/** Optional name string, e.g. `Title of something` or `null` */
+export const OPTIONAL_TITLE = OPTIONAL(TITLE);
+
+/** Name string, e.g. `Name of Something` */
+export const NAME = new StringSchema({ title: "Name" });
+
+/** Optional name string, e.g. `Name of Something` or `null` */
+export const OPTIONAL_NAME = OPTIONAL(NAME);
+
+/** Password string. */
+export const PASSWORD = new StringSchema({ title: "Password", min: 6, type: "password" });

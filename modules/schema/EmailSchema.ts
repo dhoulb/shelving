@@ -1,3 +1,4 @@
+import type { StringSchemaOptions } from "./StringSchema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
@@ -26,6 +27,9 @@ export class EmailSchema extends StringSchema {
 	override readonly max = 254;
 	override readonly match = R_MATCH;
 	override readonly multiline = false;
+	constructor(options: StringSchemaOptions) {
+		super({ title: "Email", ...options });
+	}
 	override sanitize(uncleanString: string): string {
 		const sanitizedString = super.sanitize(uncleanString);
 		return typeof sanitizedString === "string" ? sanitizedString.toLowerCase() : sanitizedString;

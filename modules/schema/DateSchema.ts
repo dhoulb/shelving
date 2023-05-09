@@ -14,12 +14,12 @@ export type DateSchemaOptions = SchemaOptions & {
 
 /** Define a valid date in YMD format, e.g. `2005-09-12` */
 export class DateSchema extends Schema<string> {
-	override readonly value: PossibleDate;
+	override readonly value!: PossibleDate;
 	readonly min: Date | null;
 	readonly max: Date | null;
-	constructor({ value = "now", min = null, max = null, ...options }: DateSchemaOptions) {
-		super(options);
-		this.value = value;
+	constructor(options: DateSchemaOptions) {
+		super({ title: "Date", value: "now", ...options });
+		const { min = null, max = null } = options;
 		this.min = getOptionalDate(min);
 		this.max = getOptionalDate(max);
 	}

@@ -16,14 +16,14 @@ export type DictionarySchemaOptions<T> = SchemaOptions & {
 
 /** Validate a dictionary object (whose props are all the same with string keys). */
 export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
-	override readonly value: ImmutableDictionary;
+	override readonly value!: ImmutableDictionary;
 	readonly items: Validator<T>;
 	readonly min: number;
 	readonly max: number;
-	constructor({ value = {}, items, min = 0, max = Infinity, ...rest }: DictionarySchemaOptions<T>) {
-		super(rest);
+	constructor(options: DictionarySchemaOptions<T>) {
+		super({ value: {}, ...options });
+		const { items, min = 0, max = Infinity } = options;
 		this.items = items;
-		this.value = value;
 		this.min = min;
 		this.max = max;
 	}

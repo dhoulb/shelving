@@ -22,10 +22,10 @@ export class LinkSchema extends StringSchema {
 	override readonly max = 512;
 	readonly schemes: string[];
 	readonly hosts: string[] | undefined;
-	constructor({ schemes = ["http:", "https:"], hosts, ...rest }: LinkSchemaOptions) {
-		super(rest);
-		this.schemes = schemes;
-		this.hosts = hosts;
+	constructor(options: LinkSchemaOptions) {
+		super({ title: "Link", ...options });
+		this.schemes = options.schemes || ["http:", "https:"];
+		this.hosts = options.hosts;
 	}
 	// Override to clean the URL using the builtin `URL` class and check the schemes and hosts against the whitelists.
 	override validate(unsafeValue: unknown): string {

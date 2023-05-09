@@ -1,3 +1,4 @@
+import type { StringSchemaOptions } from "./StringSchema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
@@ -16,6 +17,9 @@ export class PhoneSchema extends StringSchema {
 	override readonly match = R_MATCH;
 	override readonly min = 1;
 	override readonly max: number = 16; // Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
+	constructor(options: StringSchemaOptions) {
+		super({ title: "Phone", ...options });
+	}
 	override sanitize(insaneString: string): string {
 		// Strip characters that aren't 0-9 or `+` plus (including whitespace).
 		const saneString = insaneString.replace(/[^0-9+]/g, "");

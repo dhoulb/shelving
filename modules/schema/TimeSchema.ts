@@ -16,7 +16,7 @@ export type TimeSchemaOptions = SchemaOptions & {
 
 /** Define a valid time in 24h hh:mm:ss.fff format, e.g. `23:59` or `24:00 */
 export class TimeSchema extends Schema<string> {
-	override readonly value: PossibleTime;
+	override readonly value!: PossibleTime;
 	readonly min: Time | null;
 	readonly max: Time | null;
 	/**
@@ -24,9 +24,9 @@ export class TimeSchema extends Schema<string> {
 	 * - Note: `<input type="time">` elements expect `step=""` to be  in _seconds_ so you need to multiply this by `1000`
 	 */
 	readonly step: number | null;
-	constructor({ value = "now", min = null, max = null, step = 60, ...options }: TimeSchemaOptions) {
-		super(options);
-		this.value = value;
+	constructor(options: TimeSchemaOptions) {
+		super({ title: "Time", value: "now", ...options });
+		const { min = null, max = null, step = 60 } = options;
 		this.min = getOptionalTime(min);
 		this.max = getOptionalTime(max);
 		this.step = step;

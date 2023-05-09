@@ -14,13 +14,13 @@ export type NumberSchemaOptions = SchemaOptions & {
 
 /** Schema that defines a valid number. */
 export class NumberSchema extends Schema<number> {
-	override readonly value: number;
+	override readonly value!: number;
 	readonly min: number;
 	readonly max: number;
 	readonly step: number | null;
-	constructor({ value = 0, min = -Infinity, max = Infinity, step = null, ...rest }: NumberSchemaOptions) {
-		super(rest);
-		this.value = value;
+	constructor(options: NumberSchemaOptions) {
+		super({ title: "Number", value: 0, ...options });
+		const { min = -Infinity, max = Infinity, step = null } = options;
 		this.min = min;
 		this.max = max;
 		this.step = step;
@@ -60,7 +60,7 @@ export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_
 export const OPTIONAL_INTEGER = OPTIONAL(INTEGER);
 
 /** Valid Unix timestamp (including milliseconds). */
-export const TIMESTAMP = INTEGER;
+export const TIMESTAMP = new NumberSchema({ title: "Timestamp", step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER, value: 0 });
 
 /** Valid Unix timestamp (including milliseconds). */
 export const OPTIONAL_TIMESTAMP = OPTIONAL_INTEGER;
