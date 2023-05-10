@@ -1,15 +1,16 @@
-import type { Schema } from "./Schema.js";
+import type { Schema, SchemaOptions } from "./Schema.js";
 import { ThroughSchema } from "./ThroughSchema.js";
+
+/** Allowed options for `OptionalSchema` */
+export type OptionalSchemaOptions<T> = SchemaOptions & {
+	readonly source: Schema<T>;
+	readonly value?: T | null;
+};
 
 /** Validate a value of a specific type or `null`. */
 export class OptionalSchema<T> extends ThroughSchema<T | null> {
 	override readonly value: T | null = null;
-	constructor(
-		options: ConstructorParameters<typeof Schema>[0] & {
-			source: Schema<T>;
-			value?: T | null;
-		},
-	) {
+	constructor(options: OptionalSchemaOptions<T>) {
 		super({ value: null, ...options });
 	}
 	override validate(unsafeValue: unknown = this.value): T | null {
