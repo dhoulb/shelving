@@ -9,8 +9,9 @@ export type ThroughSchemaOptions<T> = SchemaOptions & { source: Schema<T> };
 export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<Schema<T>> {
 	readonly source: Schema<T>;
 	constructor(options: ThroughSchemaOptions<T>) {
-		super(options);
-		this.source = options.source;
+		const source = options.source;
+		super({ ...source, ...options });
+		this.source = source;
 	}
 	validate(unsafeValue: unknown): T {
 		return this.source.validate(unsafeValue);
