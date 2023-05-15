@@ -1,4 +1,5 @@
 // Utilities.
+export * from "./useFocus.js";
 export * from "./useLazy.js";
 export * from "./useReduce.js";
 export * from "./useInstance.js";
