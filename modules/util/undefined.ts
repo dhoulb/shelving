@@ -9,6 +9,9 @@ export const isUndefined = (value: unknown): value is undefined => value === und
 /** Is a value defined? */
 export const isDefined = <T>(value: T | undefined): value is T => value !== undefined;
 
+/** Is a value defined? */
+export const notUndefined = isDefined;
+
 /** Assert that a value is not `undefined` */
 export function assertDefined<T>(value: T | undefined): asserts value is T {
 	if (value === undefined) throw new AssertionError("Must be defined", value);
