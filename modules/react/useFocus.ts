@@ -1,22 +1,10 @@
 import type { MutableArray } from "../util/array.js";
 import { useEffect, useRef } from "react";
 import { addArrayItem, deleteArrayItems, getLastItem } from "../util/array.js";
+import { getFirstFocusable } from "../util/focus.js";
 
 /** Stack of elements that should be keeping focus. */
-let FOCUSED: MutableArray<HTMLElement>;
-
-/** Selector for elements that can take focus */
-const FOCUSABLE = `[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])`;
-
-/**
- * Focus on the first focusable element inside a container.
- * - Checks items with an `autofocus` attribute first, then other elements.
- */
-function _applyFocus(container: HTMLElement, selector = FOCUSABLE) {
-	if (container.matches(selector)) return container.focus();
-	const child = container.querySelector(selector);
-	if (child instanceof HTMLElement) return child.focus();
-}
+let FOCUS_STACK: MutableArray<HTMLElement>;
 
 /**
  * Hook that puts the user's focus on an element (or the first focusable element inside that element) when it is attached to the DOM.
@@ -34,13 +22,13 @@ export function useFocus<T extends HTMLElement>(active = true): React.RefObject<
 	// Effect that runs when element is first attached to the DOM.
 	useEffect(() => {
 		// Set up a global listener the first time `useFocus()` is actually used.
-		if (!FOCUSED) {
-			FOCUSED = [];
+		if (!FOCUS_STACK) {
+			FOCUS_STACK = [];
 
 			// Add a focus listener on the body that listens for changes in focus.
 			document.body.addEventListener("focusin", () => {
-				const el = getLastItem(FOCUSED);
-				if (el && !el.contains(document.activeElement)) _applyFocus(el);
+				const el = getLastItem(FOCUS_STACK);
+				if (el && !el.contains(document.activeElement)) getFirstFocusable(el)?.focus();
 			});
 		}
 
@@ -51,14 +39,14 @@ export function useFocus<T extends HTMLElement>(active = true): React.RefObject<
 			const lastEl = document.activeElement;
 
 			// Focus immediately on the first auto-focusable element now (e.g. this might just be the close button).
-			_applyFocus(el, FOCUSABLE);
+			getFirstFocusable(el)?.focus();
 
 			// Add this element to the stack of elements to keep focused.
-			addArrayItem(FOCUSED, el);
+			addArrayItem(FOCUS_STACK, el);
 
 			return () => {
 				// Remove this element from the stack of elements to keep focused.
-				deleteArrayItems(FOCUSED, el);
+				deleteArrayItems(FOCUS_STACK, el);
 
 				// Attempt to restore the previous focus.
 				if (lastEl instanceof HTMLElement) lastEl.focus();
