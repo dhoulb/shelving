@@ -1,6 +1,7 @@
 import type { AnyState } from "../state/State.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Handler, Stop } from "../util/function.js";
+import type { Nullish } from "../util/null.js";
 import type { Dispatch } from "react";
 import { useEffect, useState as useReactState } from "react";
 import { dispatch } from "../util/function.js";
@@ -16,9 +17,9 @@ import { isDefined } from "../util/undefined.js";
  * - If the value is a `State` instance
  */
 export function useState<T extends AnyState>(state: T): T;
-export function useState<T extends AnyState>(state?: T | undefined): T | undefined;
-export function useState<T extends ImmutableArray<AnyState | undefined>>(...states: T): T;
-export function useState(...states: (AnyState | undefined)[]): ImmutableArray<AnyState | undefined> | AnyState | undefined {
+export function useState<T extends AnyState>(state?: Nullish<T>): Nullish<T>;
+export function useState<T extends ImmutableArray<Nullish<AnyState>>>(...states: T): T;
+export function useState(...states: Nullish<AnyState>[]): ImmutableArray<Nullish<AnyState>> | Nullish<AnyState> {
 	const setValue = useReactState<unknown>(undefined)[1];
 	const [error, setError] = useReactState<Error | unknown>(undefined);
 	useEffect(() => {
@@ -31,6 +32,6 @@ export function useState(...states: (AnyState | undefined)[]): ImmutableArray<An
 }
 
 /** Start a subscription to a `ReferenceState` instance. */
-function _startState(state: AnyState | undefined, setValue: Dispatch<[unknown]>, setError: Handler): Stop | undefined {
+function _startState(state: Nullish<AnyState>, setValue: Dispatch<[unknown]>, setError: Handler): Stop | undefined {
 	return state?.next.to(setValue, setError);
 }
