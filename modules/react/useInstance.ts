@@ -7,7 +7,7 @@ import { isArrayEqual } from "../util/equal.js";
  * - Creates a new instance of `Constructor` using `args`
  * - Returns same instance for as long as `args` is equal to previous `args`.
  */
-export function useInstance<T, A extends Arguments>(Constructor: new (...a: A) => T, ...args: A): T {
+export function useInstance<T, A extends Arguments = []>(Constructor: new (...a: A) => T, ...args: A): T {
 	const internals = (useRef<{
 		value: T;
 		args: A;

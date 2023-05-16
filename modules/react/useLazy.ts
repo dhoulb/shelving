@@ -9,10 +9,10 @@ import { getLazy } from "../util/lazy.js";
  * - Returns `value` (if not a function) or the result of calling `value(...args)` (if a function).
  * - Returns same `value` for as long as `args` is equal to previous `args`.
  */
-export function useLazy<T, A extends Arguments>(value: (...args: A) => T, ...args: A): T; // Generics flow through this overload better than using `Lazy`
+export function useLazy<T, A extends Arguments = []>(value: (...args: A) => T, ...args: A): T; // Generics flow through this overload better than using `Lazy`
 export function useLazy<T>(value: T, ...args: Arguments): T;
-export function useLazy<T, A extends Arguments>(value: Lazy<T, A>, ...args: A): T;
-export function useLazy<T, A extends Arguments>(value: Lazy<T, A>, ...args: A): T {
+export function useLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T;
+export function useLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T {
 	const internals = (useRef<{
 		value: T;
 		args: A;
