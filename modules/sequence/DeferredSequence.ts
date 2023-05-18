@@ -1,5 +1,6 @@
+import type { Deferred } from "../util/async.js";
 import type { Dispatch, Handler, Stop } from "../util/function.js";
-import { Deferred } from "../util/async.js";
+import { getDeferred } from "../util/async.js";
 import { runSequence } from "../util/sequence.js";
 import { AbstractSequence } from "./AbstractSequence.js";
 
@@ -20,7 +21,7 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 
 	/** Get the next promise to be deferred/rejected. */
 	get value(): Promise<T> {
-		return (this._deferred ||= new Deferred<T>());
+		return (this._deferred ||= getDeferred<T>()).promise;
 	}
 
 	/** Resolve the current deferred in the sequence. */

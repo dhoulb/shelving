@@ -1,7 +1,7 @@
 import type { AsyncDispatch, Dispatch, Handler, Stop } from "./function.js";
 import { RequiredError } from "../error/RequiredError.js";
-import { Delay, Signal } from "./async.js";
-import { SIGNAL } from "./constants.js";
+import { getDeferred, getDelay } from "./async.js";
+import { STOP } from "./constants.js";
 import { logError } from "./error.js";
 import { dispatch } from "./function.js";
 
@@ -13,13 +13,13 @@ import { dispatch } from "./function.js";
 export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Infinite sequence that yields until a `SIGNAL` is received. */
-export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof SIGNAL>, ...Promise<typeof SIGNAL>[]]): AsyncIterable<T> {
+export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof STOP>, ...Promise<typeof STOP>[]]): AsyncIterable<T> {
 	const iterator: AsyncIterator<T, unknown, undefined> = source[Symbol.asyncIterator]();
 	while (true) {
 		const result = await Promise.race([iterator.next(), ...signals]);
-		if (result === SIGNAL) {
+		if (result === STOP) {
 			await iterator.return?.(); // Make sure we call `return()` on the iterator because it might do cleanup.
-			return SIGNAL;
+			return STOP;
 		} else if (result.done) {
 			return result.value;
 		} else {
@@ -32,7 +32,7 @@ export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Pro
 export async function* repeatDelay(ms: number): AsyncIterable<number> {
 	let count = 1;
 	while (true) {
-		await new Delay(ms);
+		await getDelay(ms);
 		yield count++;
 	}
 }
@@ -53,14 +53,14 @@ export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
 
 /** Pull values from a sequence until the returned function is called. */
 export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: Dispatch<[T]>, onError: Handler = logError): Stop {
-	const stop = new Signal();
-	_runSequence(sequence[Symbol.asyncIterator](), stop, onNext, onError).catch(onError).catch(logError);
-	return stop.send;
+	const { promise, resolve } = getDeferred<typeof STOP>();
+	_runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError).catch(onError).catch(logError);
+	return () => resolve(STOP);
 }
-async function _runSequence<T>(iterator: AsyncIterator<T>, stop: Signal, onNext: Dispatch<[T]> | undefined, onError: Handler): Promise<unknown> {
+async function _runSequence<T>(iterator: AsyncIterator<T>, stopped: Promise<typeof STOP>, onNext: Dispatch<[T]> | undefined, onError: Handler): Promise<unknown> {
 	try {
-		const result = await Promise.race([stop, iterator.next()]);
-		if (result === Signal.SIGNAL || result.done) {
+		const result = await Promise.race([stopped, iterator.next()]);
+		if (result === STOP || result.done) {
 			// Stop iteration because the stop signal was sent or the iterator is done.
 			return iterator.return?.(); // Make sure we call `return()` on the iterator because it might do cleanup.
 		} else {
@@ -72,5 +72,5 @@ async function _runSequence<T>(iterator: AsyncIterator<T>, stop: Signal, onNext:
 	}
 
 	// Continue iteration.
-	return _runSequence(iterator, stop, onNext, onError);
+	return _runSequence(iterator, stopped, onNext, onError);
 }

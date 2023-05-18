@@ -1,12 +1,12 @@
 import type { MutableArray } from "../index.js";
-import { Signal, repeatDelay, repeatUntil, runSequence } from "../index.js";
+import { STOP, getDeferred, repeatDelay, repeatUntil, runSequence } from "../index.js";
 
 test("repeatUntil() and repeatDelay()", async () => {
 	const yielded: number[] = [];
-	const stop = new Signal();
-	for await (const count of repeatUntil(repeatDelay(50), stop)) {
+	const { promise, resolve } = getDeferred<typeof STOP>();
+	for await (const count of repeatUntil(repeatDelay(50), promise)) {
 		yielded.push(count);
-		if (count >= 3) stop.send();
+		if (count >= 3) resolve(STOP);
 	}
 	expect(yielded).toEqual([1, 2, 3]);
 });

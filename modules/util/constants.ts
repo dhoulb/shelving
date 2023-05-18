@@ -46,5 +46,5 @@ export const THINSP = "\u2009";
 /** Non-breaking narrow space (goes between numbers and their corresponding units). */
 export const NNBSP = "\u202F";
 
-/** The `SIGNAL` symbol indicates a signal. */
-export const SIGNAL: unique symbol = Symbol("shelving/SIGNAL");
+/** The `STOP` symbol indicates something should stop. */
+export const STOP: unique symbol = Symbol("shelving/STOP");

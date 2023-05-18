@@ -1,6 +1,5 @@
 import type { Dispatch, Handler } from "./function.js";
 import { AssertionError } from "../error/AssertionError.js";
-import { SIGNAL } from "./constants.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
 export const isAsync = <T>(value: PromiseLike<T> | T): value is PromiseLike<T> => typeof value === "object" && value !== null && typeof (value as Promise<T>).then === "function";
@@ -63,40 +62,53 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 }
 
 /** Type of `Promise` with its `resolve()` and `reject()` methods exposed publicly. */
-export class Deferred<T = void> extends Promise<T> {
-	// Make `this.then()` create a `Promise` not a `Deferred`
-	// Done with a getter because some implementations implement this with a getter and we need to override it.
-	static override get [Symbol.species]() {
-		return Promise;
-	}
-	/** Resolve this deferred with a value. */
-	readonly resolve: Dispatch<[T]>;
-	/** Reject this deferred with a reason. */
-	readonly reject: Handler;
-	constructor() {
-		let resolve: Dispatch<[T]>;
-		let reject: Handler;
-		super((x, y) => {
+// export class Deferred<T = void> extends Promise<T> {
+// 	// Make `this.then()` create a `Promise` not a `Deferred`
+// 	// Done with a getter because some implementations implement this with a getter and we need to override it.
+// 	static override get [Symbol.species]() {
+// 		return Promise;
+// 	}
+// 	/** Resolve this deferred with a value. */
+// 	readonly resolve: Dispatch<[T]>;
+// 	/** Reject this deferred with a reason. */
+// 	readonly reject: Handler;
+// 	constructor() {
+// 		let resolve: Dispatch<[T]>;
+// 		let reject: Handler;
+// 		super((x, y) => {
+// 			resolve = x;
+// 			reject = y;
+// 		});
+// 		this.resolve = resolve!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+// 		this.reject = reject!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+// 	}
+// }
+
+/** Deferred allows you to access the internal resolve/reject callbacks of a `Promise` */
+export type Deferred<T> = {
+	promise: Promise<T>;
+	resolve: Dispatch<[T]>;
+	reject: Handler;
+};
+
+/**
+ * Get a deferred to access the `resolve()` and `reject()` functions of a promise.
+ * - See https://github.com/tc39/proposal-promise-with-resolvers/
+ */
+export function getDeferred<T = unknown>(): Deferred<T> {
+	let resolve: Dispatch<[T]>;
+	let reject: Handler;
+	return {
+		promise: new Promise<T>((x, y) => {
 			resolve = x;
 			reject = y;
-		});
-		this.resolve = resolve!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-		this.reject = reject!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-	}
+		}),
+		resolve: resolve!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		reject: reject!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+	};
 }
 
-/** Promise that resolves after a specified delay in milliseconds. */
-export class Delay extends AbstractPromise<void> {
-	constructor(ms: number) {
-		super();
-		setTimeout(this._resolve, ms);
-	}
-}
-
-/** Resolve to `SIGNAL` on a specific signal. */
-export class Signal extends AbstractPromise<typeof Signal.SIGNAL> {
-	/** The `SIGNAL` symbol indicates a signal. */
-	static SIGNAL: typeof SIGNAL = SIGNAL;
-	/** Send this signal now. */
-	readonly send = () => this._resolve(Signal.SIGNAL);
+/** Get a promise that automatically resolves after a delay. */
+export function getDelay(ms: number): Promise<void> {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
