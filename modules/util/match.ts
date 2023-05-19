@@ -15,3 +15,8 @@ export function filterArray<T, A extends Arguments = []>(input: ImmutableArray<T
 	const output = Array.from(filterItems(input, match, ...args));
 	return output.length === input.length ? input : output;
 }
+
+/** Filter a sequence of values using a matcher. */
+export async function* filterSequence<T, A extends Arguments = []>(sequence: AsyncIterable<T>, match: Match, ...args: A): AsyncIterable<T> {
+	for await (const item of sequence) if (match(item, ...args)) yield item;
+}
