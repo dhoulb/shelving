@@ -72,7 +72,7 @@ export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T {
 	return map.get(key) as T;
 }
 
-/** Get an item in a map or `null` if it doesn't exist. */
-export function getOptionalMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | null {
-	return map.has(key) ? (map.get(key) as T) : null;
+/** Get an item in a map or `undefined` if it doesn't exist. */
+export function getOptionalMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | undefined {
+	return map.get(key);
 }
