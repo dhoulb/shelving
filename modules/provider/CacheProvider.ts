@@ -44,12 +44,12 @@ export class CacheProvider implements AsyncThroughProvider {
 	async getQuery(collection: string, query: ItemQuery): Promise<ItemArray> {
 		const items = await this.source.getQuery(collection, query);
 		const table = this.memory.getTable(collection);
-		table.setQueryItems(query, items);
+		table.setQueryArray(query, items);
 		return items;
 	}
 	async *getQuerySequence(collection: string, query: ItemQuery): AsyncIterableIterator<ItemArray> {
 		const table = this.memory.getTable(collection);
-		yield* table.setQueryItemsSequence(query, this.source.getQuerySequence(collection, query));
+		yield* table.setQueryArraySequence(query, this.source.getQuerySequence(collection, query));
 	}
 	async setQuery(collection: string, query: ItemQuery, data: Data): Promise<number> {
 		const count = await this.source.setQuery(collection, query, data);

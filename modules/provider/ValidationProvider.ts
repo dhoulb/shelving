@@ -28,11 +28,11 @@ abstract class BaseValidationProvider<T extends Datas> {
 	}
 	async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<ItemValue<T[K]>> {
 		const schema = this.getSchema(collection);
-		for await (const unsafeItem of this.source.getItemSequence(collection, id)) yield _validateItem(collection, unsafeItem, schema);
+		for await (const unsafeItem of this.source.getItemSequence(collection, id)) yield _validateItemValue(collection, unsafeItem, schema);
 	}
 	async *getQuerySequence<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>): AsyncIterable<ItemArray<T[K]>> {
 		const schema = this.getSchema(collection);
-		for await (const unsafeItems of this.source.getQuerySequence(collection, constraints)) yield _validateItems(collection, unsafeItems, schema);
+		for await (const unsafeItems of this.source.getQuerySequence(collection, constraints)) yield _validateItemArray(collection, unsafeItems, schema);
 	}
 }
 
@@ -44,7 +44,7 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 		this.source = source;
 	}
 	getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
-		return _validateItem(collection, this.source.getItem(collection, id), this.getSchema(collection));
+		return _validateItemValue(collection, this.source.getItem(collection, id), this.getSchema(collection));
 	}
 	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
 		return this.source.addItem(collection, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_ADD));
@@ -60,7 +60,7 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 		return this.source.deleteItem(collection, id);
 	}
 	getQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>): ItemArray<T[K]> {
-		return _validateItems(collection, this.source.getQuery(collection, constraints), this.getSchema(collection));
+		return _validateItemArray(collection, this.source.getQuery(collection, constraints), this.getSchema(collection));
 	}
 	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>, value: T[K]): number {
 		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
@@ -82,7 +82,7 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 		this.source = source;
 	}
 	async getItem<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
-		return _validateItem(collection, await this.source.getItem(collection, id), this.getSchema(collection));
+		return _validateItemValue(collection, await this.source.getItem(collection, id), this.getSchema(collection));
 	}
 	addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
 		return this.source.addItem(collection, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_ADD));
@@ -98,7 +98,7 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 		return this.source.deleteItem(collection, id);
 	}
 	async getQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>): Promise<ItemArray<T[K]>> {
-		return _validateItems(collection, await this.source.getQuery(collection, constraints), this.getSchema(collection));
+		return _validateItemArray(collection, await this.source.getQuery(collection, constraints), this.getSchema(collection));
 	}
 	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>, value: T[K]): Promise<number> {
 		return this.source.setQuery(collection, constraints, validateWithContext(value, this.getSchema(collection), VALIDATION_CONTEXT_SET));
@@ -113,8 +113,8 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 }
 
 /** Validate an entity for a document reference. */
-function _validateItem<T extends Data>(collection: string, unsafeEntity: ItemValue<Data>, schema: DataSchema<T>): ItemValue<T> {
-	if (!unsafeEntity) return null;
+function _validateItemValue<T extends Data>(collection: string, unsafeEntity: ItemValue<Data>, schema: DataSchema<T>): ItemValue<T> {
+	if (!unsafeEntity) return undefined;
 	try {
 		return validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET) as ItemData<T>;
 	} catch (thrown) {
@@ -124,10 +124,10 @@ function _validateItem<T extends Data>(collection: string, unsafeEntity: ItemVal
 }
 
 /** Validate a set of entities for this query reference. */
-function _validateItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): ItemArray<T> {
-	return Array.from(_yieldValidItems(collection, unsafeEntities, schema));
+function _validateItemArray<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): ItemArray<T> {
+	return Array.from(_validateItems(collection, unsafeEntities, schema));
 }
-function* _yieldValidItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): Iterable<ItemData<T>> {
+function* _validateItems<T extends Data>(collection: string, unsafeEntities: ItemArray<Data>, schema: DataSchema<T>): Iterable<ItemData<T>> {
 	let invalid = false;
 	const messages: MutableDictionary<string> = {};
 	for (const unsafeEntity of unsafeEntities) {

@@ -26,11 +26,10 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 
 	constructor(ref: ItemReference<T> | AsyncItemReference<T>) {
 		const { provider, collection, id } = ref;
-		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T>;
-		const time = table ? table.getItemTime(id) : null;
-		const isCached = typeof time === "number";
-		super(table && isCached ? table.getItem(id) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.from(table.getCachedItemSequence(id))) : undefined);
-		this._time = time;
+		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T> | undefined;
+		const time = table ? table.getQueryTime(ref) : null;
+		const next = table ? new LazyDeferredSequence<ItemValue<T>>(() => this.from(table.getCachedItemSequence(id), () => typeof table.getItemTime(id) === "number")) : undefined;
+		super(table && typeof time === "number" ? { value: table.getItem(id), time, next } : { next });
 		this.ref = ref;
 
 		// Queue a request to refresh the value if it doesn't exist.
@@ -43,10 +42,11 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 	};
 	private async _refresh(): Promise<void> {
 		this.busy.set(true);
+		this.error(undefined); // Optimistically clear the error.
 		try {
 			this.set(await this.ref.value);
 		} catch (thrown) {
-			this.next.reject(thrown);
+			this.error(thrown);
 		} finally {
 			this.busy.set(false);
 		}

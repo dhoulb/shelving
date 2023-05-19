@@ -12,7 +12,7 @@ import { runSequence } from "../util/sequence.js";
 export type ItemData<T extends Data = Data> = T & { id: string };
 
 /** Entity or `null` to indicate the item doesn't exist. */
-export type ItemValue<T extends Data = Data> = ItemData<T> | null;
+export type ItemValue<T extends Data = Data> = ItemData<T> | undefined;
 
 /** Get the ID from item data. */
 export const getID = <T extends Data>({ id }: ItemData<T>): string => id;

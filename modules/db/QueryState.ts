@@ -56,11 +56,10 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 
 	constructor(ref: QueryReference<T> | AsyncQueryReference<T>) {
 		const { provider, collection, query } = ref;
-		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T>;
+		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T> | undefined;
 		const time = table ? table.getQueryTime(ref) : null;
-		const isCached = typeof time === "number";
-		super(table && isCached ? table.getQuery(ref) : State.NOVALUE, table ? new LazyDeferredSequence(() => this.from(table.getCachedQuerySequence(ref))) : undefined);
-		this._time = time;
+		const next = table ? new LazyDeferredSequence<ItemArray<T>>(() => this.from(table.getCachedQuerySequence(ref))) : undefined;
+		super(table && typeof time === "number" ? { value: table.getQuery(ref), time, next } : { next });
 		this.ref = ref;
 		this.limit = getLimit(query) ?? Infinity;
 
@@ -74,6 +73,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 	};
 	private async _refresh(): Promise<void> {
 		this.busy.set(true);
+		this.error(undefined); // Optimistically clear the error.
 		try {
 			const items = await this.ref.items;
 			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
@@ -104,6 +104,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 	};
 	private async _loadMore(): Promise<void> {
 		this.busy.set(true);
+		this.error(undefined); // Optimistically clear the error.
 		try {
 			const last = this.last;
 			const ref = last ? this.ref.with(getAfterQuery(this.ref.query, last)) : this.ref;
@@ -111,7 +112,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 			this.set([...this.items, ...items]);
 			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
 		} catch (thrown) {
-			this.next.reject(thrown);
+			this.error(thrown);
 		} finally {
 			this.busy.set(false);
 		}

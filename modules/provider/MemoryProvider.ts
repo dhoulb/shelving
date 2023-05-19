@@ -6,6 +6,7 @@ import { RequiredError } from "../error/RequiredError.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { getArray } from "../util/array.js";
 import { isArrayEqual } from "../util/equal.js";
+import { filterSequence } from "../util/match.js";
 import { queryItems, queryWritableItems } from "../util/query.js";
 import { getRandomKey } from "../util/random.js";
 import { updateData } from "../util/update.js";
@@ -24,7 +25,7 @@ export class MemoryProvider implements Provider {
 		return this._tables[collection] || (this._tables[collection] = new MemoryTable());
 	}
 
-	getDocumentTime(collection: string, id: string): number | null {
+	getItemTime(collection: string, id: string): number | undefined {
 		return this.getTable(collection).getItemTime(id);
 	}
 
@@ -40,19 +41,19 @@ export class MemoryProvider implements Provider {
 		return this.getTable(collection).addItem(data);
 	}
 
-	setItem(collection: string, id: string, data: Data): void {
+	setItem(collection: string, id: string, data: Data): boolean {
 		return this.getTable(collection).setItem(id, data);
 	}
 
-	updateItem(collection: string, id: string, updates: Updates): void {
+	updateItem(collection: string, id: string, updates: Updates): boolean {
 		return this.getTable(collection).updateItem(id, updates);
 	}
 
-	deleteItem(collection: string, id: string): void {
+	deleteItem(collection: string, id: string): boolean {
 		return this.getTable(collection).deleteItem(id);
 	}
 
-	getQueryTime(collection: string, query: ItemQuery): number | null {
+	getQueryTime(collection: string, query: ItemQuery): number | undefined {
 		return this.getTable(collection).getQueryTime(query);
 	}
 
@@ -88,62 +89,56 @@ export class MemoryTable<T extends Data = Data> {
 	/** Deferred sequence of next values. */
 	readonly _changed = new DeferredSequence();
 
-	getItemTime(id: string): number | null {
-		return this._times.get(id) || null;
+	getItemTime(id: string): number | undefined {
+		return this._times.get(id);
 	}
 
 	getItem(id: string): ItemValue<T> {
-		return this._data.get(id) || null;
+		return this._data.get(id);
 	}
 
 	async *getItemSequence(id: string): AsyncIterable<ItemValue<T>> {
-		let last = this.getItem(id);
-		yield last;
+		let last = this._times.get(id);
+		yield this.getItem(id);
 		while (true) {
 			await this._changed;
-			const next = this.getItem(id);
-			if (next !== last) yield (last = next);
+			const next = this._times.get(id);
+			if (next !== last) {
+				last = next;
+				yield this.getItem(id);
+			}
 		}
 	}
 
 	/** Subscribe to a query in this table, but only if the query has been explicitly set (i.e. has a time). */
-	async *getCachedItemSequence(id: string): AsyncIterable<ItemValue<T>> {
-		let last: ItemValue<T> | undefined = undefined;
-		if (this._times.has(id)) {
-			last = this.getItem(id);
-			yield last;
-		}
-		while (true) {
-			await this._changed;
-			if (this._times.has(id)) {
-				const next = this.getItem(id);
-				if (next !== last) yield (last = next);
-			}
-		}
+	getCachedItemSequence(id: string): AsyncIterable<ItemValue<T>> {
+		return filterSequence(this.getItemSequence(id), () => this._times.has(id));
 	}
 
 	addItem(data: T): string {
 		let id = getRandomKey();
 		while (this._data.has(id)) id = getRandomKey(); // Regenerate ID until unique.
-		this._data.set(id, { ...data, id });
-		this._times.set(id, Date.now());
-		this._changed.resolve();
+		this.setItemData({ ...data, id });
 		return id;
 	}
 
-	private _setItemData(item: ItemData<T>, now: number = Date.now()): void {
+	setItemData(item: ItemData<T>): boolean {
 		const id = item.id;
-		this._data.set(id, item);
-		this._times.set(id, now);
+		if (this._data.get(id) !== item) {
+			this._data.set(id, item);
+			this._times.set(id, Date.now());
+			this._changed.resolve();
+			return true;
+		}
+		return false;
 	}
 
-	setItem(id: string, item: ItemData<T> | T): void {
-		this._setItemData(item.id === id ? (item as ItemData<T>) : { ...item, id });
-		this._changed.resolve();
+	setItem(id: string, item: ItemData<T> | T): boolean {
+		return this.setItemData(item.id === id ? (item as ItemData<T>) : { ...item, id });
 	}
 
-	setItemValue(id: string, value: ItemData<T> | T | null): void {
-		return value === null ? this.deleteItem(id) : this.setItem(id, value);
+	setItemValue(id: string, value: ItemData<T> | T | undefined): boolean {
+		return value ? this.setItem(id, value) : this.deleteItem(id);
 	}
 
 	async *setItemValueSequence(id: string, sequence: AsyncIterable<ItemValue<T>>): AsyncIterable<ItemValue> {
@@ -153,27 +148,24 @@ export class MemoryTable<T extends Data = Data> {
 		}
 	}
 
-	updateItem(id: string, updates: Updates<T>): void {
+	updateItem(id: string, updates: Updates<T>): boolean {
 		const oldItem = this._data.get(id);
 		if (!oldItem) throw new RequiredError(`Document "${id}" does not exist`);
-		const newItem = updateData<ItemData<T>>(oldItem, updates);
-		if (oldItem !== newItem) {
-			this._data.set(id, newItem);
-			this._times.set(id, Date.now());
-			this._changed.resolve();
-		}
+		return this.setItemData(updateData<ItemData<T>>(oldItem, updates));
 	}
 
-	deleteItem(id: string): void {
+	deleteItem(id: string): boolean {
 		if (this._data.has(id)) {
 			this._data.delete(id);
 			this._times.set(id, Date.now());
 			this._changed.resolve();
+			return true;
 		}
+		return false;
 	}
 
-	getQueryTime(query: ItemQuery<T>): number | null {
-		return this._times.get(_getQueryKey(query)) || null;
+	getQueryTime(query: ItemQuery<T>): number | undefined {
+		return this._times.get(_getQueryKey(query)) || undefined;
 	}
 
 	getQuery(query: ItemQuery<T>): ItemArray<T> {
@@ -191,104 +183,69 @@ export class MemoryTable<T extends Data = Data> {
 	}
 
 	/** Subscribe to a query in this table, but only if the query has been explicitly set (i.e. has a time). */
-	async *getCachedQuerySequence(query: ItemQuery<T>): AsyncIterable<ItemArray<T>> {
+	getCachedQuerySequence(query: ItemQuery<T>): AsyncIterable<ItemArray<T>> {
 		const key = _getQueryKey(query);
-		let last: ItemArray<T> | undefined = undefined;
-		if (this._times.has(key)) {
-			last = this.getQuery(query);
-			yield last;
-		}
-		while (true) {
-			await this._changed;
-			if (this._times.has(key)) {
-				const next = this.getQuery(query);
-				if (!last || !isArrayEqual(last, next)) yield (last = next);
-			}
-		}
+		return filterSequence(this.getQuerySequence(query), () => this._times.has(key));
 	}
 
-	private _setItems(items: ItemArray<T>, now: number = Date.now()): void {
-		for (const item of items) this._setItemData(item, now);
+	setItemArray(items: ItemArray<T>): number {
+		let count = 0;
+		for (const item of items) if (this.setItemData(item)) count++;
+		return count;
 	}
 
-	setItems(items: ItemArray<T>): void {
-		this._setItems(items);
-		if (items.length) this._changed.resolve();
-	}
-
-	async *setItemsSequence(sequence: AsyncIterable<ItemArray<T>>): AsyncIterable<ItemArray<T>> {
+	async *setItemArraySequence(sequence: AsyncIterable<ItemArray<T>>): AsyncIterable<ItemArray<T>> {
 		for await (const items of sequence) {
-			this.setItems(items);
+			this.setItemArray(items);
 			yield items;
 		}
 	}
 
-	setQueryItems(query: ItemQuery<T>, items: ItemArray<T>): void {
+	setQueryArray(query: ItemQuery<T>, items: ItemArray<T>): void {
 		const key = _getQueryKey(query);
-		const now = Date.now();
-		this._times.set(key, now);
-		this._setItems(items, now);
+		this._times.set(key, Date.now());
+		this.setItemArray(items);
 		this._changed.resolve();
 	}
 
-	async *setQueryItemsSequence(query: ItemQuery<T>, sequence: AsyncIterable<ItemArray<T>>): AsyncIterable<ItemArray<T>> {
+	async *setQueryArraySequence(query: ItemQuery<T>, sequence: AsyncIterable<ItemArray<T>>): AsyncIterable<ItemArray<T>> {
 		const key = _getQueryKey(query);
 		for await (const items of sequence) {
-			const now = Date.now();
-			this._times.set(key, now);
-			this._setItems(items, now);
+			this._times.set(key, Date.now());
+			this.setItemArray(items);
 			this._changed.resolve();
 			yield items;
 		}
 	}
 
 	setQuery(query: ItemQuery<T>, data: T): number {
-		const now = Date.now();
 		let count = 0;
-		for (const { id } of queryWritableItems<ItemData<T>>(this._data.values(), query)) {
-			this._data.set(id, { ...data, id });
-			this._times.set(id, now);
-			count++;
-		}
+		for (const { id } of queryWritableItems<ItemData<T>>(this._data.values(), query)) if (this.setItem(id, data)) count++;
 		if (count) {
 			const key = _getQueryKey(query);
-			this._times.set(key, now);
+			this._times.set(key, Date.now());
 			this._changed.resolve();
 		}
 		return count;
 	}
 
 	updateQuery(query: ItemQuery<T>, updates: Updates<T>): number {
-		const now = Date.now();
 		let count = 0;
-		for (const oldItem of queryWritableItems<ItemData<T>>(this._data.values(), query)) {
-			const newItem = updateData<ItemData<T>>(oldItem, updates);
-			if (oldItem !== newItem) {
-				const id = oldItem.id;
-				this._data.set(id, newItem);
-				this._times.set(id, now);
-				count++;
-			}
-		}
+		for (const { id } of queryWritableItems<ItemData<T>>(this._data.values(), query)) if (this.updateItem(id, updates)) count++;
 		if (count) {
 			const key = _getQueryKey(query);
-			this._times.set(key, now);
+			this._times.set(key, Date.now());
 			this._changed.resolve();
 		}
 		return count;
 	}
 
 	deleteQuery(query: ItemQuery<T>): number {
-		const now = Date.now();
 		let count = 0;
-		for (const { id } of queryWritableItems<ItemData<T>>(this._data.values(), query)) {
-			this._data.delete(id);
-			this._times.set(id, now);
-			count++;
-		}
+		for (const { id } of queryWritableItems<ItemData<T>>(this._data.values(), query)) if (this.deleteItem(id)) count++;
 		if (count) {
 			const key = _getQueryKey(query);
-			this._times.set(key, now);
+			this._times.set(key, Date.now());
 			this._changed.resolve();
 		}
 		return count;

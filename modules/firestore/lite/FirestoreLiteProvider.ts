@@ -45,7 +45,7 @@ function _getItemData(snapshot: QueryDocumentSnapshot): ItemData {
 
 function _getItemValue(snapshot: DocumentSnapshot): ItemValue {
 	const data = snapshot.data();
-	return data ? { ...data, id: snapshot.id } : null;
+	if (data) return { ...data, id: snapshot.id };
 }
 
 /** Convert `Updates` object into corresponding Firestore `FieldValue` instances. */

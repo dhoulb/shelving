@@ -1,5 +1,5 @@
-import type { ImmutableArray, OptionalData } from "../index.js";
-import type { BasicItemData, TestCollections } from "../test/index.js";
+import type { ImmutableArray, ItemValue } from "../index.js";
+import type { BasicData, BasicItemData, TestCollections } from "../test/index.js";
 import { Database, MemoryProvider, runMicrotasks } from "../index.js";
 import { basic1, basic2, basic3, basic4, basic6, basic7, basic8, basic9, basic999, basics, expectOrderedKeys, expectUnorderedKeys, people, person1, person2, person3, person4, person5 } from "../test/index.js";
 
@@ -10,25 +10,25 @@ test("MemoryProvider: set/get/delete documents", () => {
 	const peopleCollection = db.collection("people");
 
 	// Add documents.
-	expect(basicsCollection.item("basic1").set(basic1)).toBe(undefined);
-	expect(basicsCollection.item("basic2").set(basic2)).toBe(undefined);
-	expect(basicsCollection.item("basic3").set(basic3)).toBe(undefined);
-	expect(peopleCollection.item("person1").set(person1)).toBe(undefined);
-	expect(peopleCollection.item("person2").set(person2)).toBe(undefined);
-	expect(peopleCollection.item("person3").set(person3)).toBe(undefined);
+	basicsCollection.item("basic1").set(basic1);
+	basicsCollection.item("basic2").set(basic2);
+	basicsCollection.item("basic3").set(basic3);
+	peopleCollection.item("person1").set(person1);
+	peopleCollection.item("person2").set(person2);
+	peopleCollection.item("person3").set(person3);
 	// Check documents.
 	expect(basicsCollection.item("basic1").value).toMatchObject(basic1);
 	expect(basicsCollection.item("basic2").value).toMatchObject(basic2);
 	expect(basicsCollection.item("basic3").value).toMatchObject(basic3);
-	expect(basicsCollection.item("basicNone").value).toBe(null);
+	expect(basicsCollection.item("basicNone").value).toBe(undefined);
 	expect(basicsCollection.count).toBe(3);
 	expect(peopleCollection.item("person1").value).toMatchObject(person1);
 	expect(peopleCollection.item("person2").value).toMatchObject(person2);
 	expect(peopleCollection.item("person3").value).toMatchObject(person3);
-	expect(peopleCollection.item("peopleNone").value).toBe(null);
+	expect(peopleCollection.item("peopleNone").value).toBe(undefined);
 	expect(peopleCollection.count).toBe(3);
 	// Update documents.
-	expect(basicsCollection.item("basic1").update({ str: "NEW" })).toBe(undefined);
+	basicsCollection.item("basic1").update({ str: "NEW" });
 	expect(basicsCollection.item("basic1").value).toMatchObject({ ...basic1, str: "NEW" });
 	// collectionpeople.item("person3").merge({ name: { first: "NEW" } })).toBe(undefined);
 	// Merge documents.
@@ -39,11 +39,11 @@ test("MemoryProvider: set/get/delete documents", () => {
 	const addedPersonId = peopleCollection.add(person5);
 	expect(typeof addedPersonId).toBe("string");
 	// Delete documents.
-	expect(basicsCollection.item("basic2").delete()).toBe(undefined);
+	basicsCollection.item("basic2").delete();
 	expect(basicsCollection.count).toBe(3);
-	expect(peopleCollection.item("personNone").delete()).toBe(undefined);
-	expect(peopleCollection.item("person3").delete()).toBe(undefined);
-	expect(peopleCollection.item("personNone").delete()).toBe(undefined);
+	peopleCollection.item("personNone").delete();
+	peopleCollection.item("person3").delete();
+	peopleCollection.item("personNone").delete();
 	expect(peopleCollection.count).toBe(3);
 });
 test("MemoryProvider: set/get/delete collections", () => {
@@ -58,13 +58,13 @@ test("MemoryProvider: set/get/delete collections", () => {
 	expect(basicsCollection.items).toEqual(basics);
 	expect(basicsCollection.item("basic1").value).toMatchObject(basic1);
 	expect(basicsCollection.item("basic6").value).toMatchObject(basic6);
-	expect(basicsCollection.item("basicNone").value).toBe(null);
+	expect(basicsCollection.item("basicNone").value).toBe(undefined);
 	expect(peopleCollection.items).toEqual(people);
 	expect(peopleCollection.item("person4").value).toMatchObject(person4);
-	expect(peopleCollection.item("peopleNone").value).toBe(null);
+	expect(peopleCollection.item("peopleNone").value).toBe(undefined);
 	// Delete collections.
-	expect(basicsCollection.query().delete()).toBe(9);
-	expect(peopleCollection.query().delete()).toBe(5);
+	basicsCollection.query().delete();
+	peopleCollection.query().delete();
 	// Check collections.
 	expect(peopleCollection.items).toEqual([]);
 	expect(basicsCollection.items).toEqual([]);
@@ -113,11 +113,11 @@ test("MemoryProvider: subscribing to documents", async () => {
 	const query = collection.query();
 	const doc = collection.item("basic1");
 	// Subscribe.
-	const calls1: OptionalData<BasicItemData>[] = [];
+	const calls1: ItemValue<BasicData>[] = [];
 	const un1 = doc.subscribe(v => calls1.push(v));
 	await runMicrotasks();
 	expect(calls1.length).toBe(1);
-	expect(calls1[0]).toBe(null);
+	expect(calls1[0]).toBe(undefined);
 	// Set.
 	doc.set(basic1);
 	await runMicrotasks();
@@ -131,7 +131,7 @@ test("MemoryProvider: subscribing to documents", async () => {
 	// Delete.
 	doc.delete();
 	await runMicrotasks();
-	expect(calls1[3]).toBe(null);
+	expect(calls1[3]).toBe(undefined);
 	// Change unrelated documents.
 	collection.item("basic2").set(basic2);
 	collection.item("basic2").update({ str: "NEW" });
