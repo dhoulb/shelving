@@ -19,9 +19,6 @@ export type DataProp<T extends Data> = {
 	readonly [K in DataKey<T>]: readonly [K, T[K]];
 }[DataKey<T>];
 
-/** Data or `null` to indicate the data doesn't exist. */
-export type OptionalData<T extends Data> = T | null;
-
 /** Set of named data objects. */
 export type Datas = { readonly [K in string]: Data };
 
