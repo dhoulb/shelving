@@ -6,8 +6,8 @@ import {
 	deleteArrayItems,
 	filterArray,
 	getArrayLength,
-	getNextItem,
-	getPrevItem,
+	getOptionalNextItem,
+	getOptionalPrevItem,
 	getUniqueArray,
 	isArrayLength,
 	isArrayWith,
@@ -52,7 +52,6 @@ test("omitArrayItems()", () => {
 	expect(omitArrayItems(arr, 2, 3)).not.toBe(arr);
 	expect(omitArrayItems(arr, 4, 5)).toBe(arr);
 });
-
 test("filterArray()", () => {
 	// Filters correctly.
 	expect(filterArray(["a", "b", "c"], isEqual, "b")).toEqual(["b"]);
@@ -85,17 +84,17 @@ test("deleteArrayItems()", () => {
 });
 test("getNextItem()", () => {
 	const arr = [1, 2, 3];
-	expect(getNextItem(arr, 1)).toBe(2);
-	expect(getNextItem(arr, 2)).toBe(3);
-	expect(getNextItem(arr, 3)).toBe(null);
-	expect(getNextItem(arr, 4)).toBe(null);
+	expect(getOptionalNextItem(arr, 1)).toBe(2);
+	expect(getOptionalNextItem(arr, 2)).toBe(3);
+	expect(getOptionalNextItem(arr, 3)).toBe(undefined);
+	expect(getOptionalNextItem(arr, 4)).toBe(undefined);
 });
 test("getPrevItem()", () => {
 	const arr = [1, 2, 3];
-	expect(getPrevItem(arr, 1)).toBe(null);
-	expect(getPrevItem(arr, 2)).toBe(1);
-	expect(getPrevItem(arr, 3)).toBe(2);
-	expect(getPrevItem(arr, 4)).toBe(null);
+	expect(getOptionalPrevItem(arr, 1)).toBe(undefined);
+	expect(getOptionalPrevItem(arr, 2)).toBe(1);
+	expect(getOptionalPrevItem(arr, 3)).toBe(2);
+	expect(getOptionalPrevItem(arr, 4)).toBe(undefined);
 });
 test("shuffleArray()", () => {
 	const arr = [1, 2, 3];

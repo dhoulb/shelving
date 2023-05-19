@@ -68,53 +68,51 @@ export function toggleArrayItems<T>(input: ImmutableArray<T>, ...items: T[]): Im
 	return extras.length ? [...output, ...extras] : output.length !== input.length ? output : input;
 }
 
-/** Get the first item from an array or iterable, or `null` if it didn't exist. */
-export function getOptionalFirstItem<T>(items: PossibleArray<T>): T | null {
+/** Get the first item from an array or iterable, or `undefined` if it didn't exist. */
+export function getOptionalFirstItem<T>(items: PossibleArray<T>): T | undefined {
 	const arr = getArray(items);
-	return 0 in arr ? arr[0] : null;
+	return 0 in arr ? arr[0] : undefined;
 }
 
 /** Get the first item from an array or iterable. */
 export function getFirstItem<T>(items: PossibleArray<T>): T {
 	const item = getOptionalFirstItem(items);
-	if (item === null) throw new RequiredError("First item is required");
+	if (item === undefined) throw new RequiredError("First item is required");
 	return item;
 }
 
-/** Get the last item from an array or iterable, or `null` if it didn't exist. */
-export function getOptionalLastItem<T>(items: PossibleArray<T>): T | null {
+/** Get the last item from an array or iterable, or `undefined` if it didn't exist. */
+export function getOptionalLastItem<T>(items: PossibleArray<T>): T | undefined {
 	const arr = getArray(items);
 	const j = arr.length - 1;
-	return j in arr ? (arr[j] as T) : null;
+	if (j in arr) return arr[j] as T;
 }
 
 /** Get the last item from an array or iterable. */
 export function getLastItem<T>(items: PossibleArray<T>): T {
 	const item = getOptionalLastItem(items);
-	if (item === null) throw new RequiredError("Last item is required");
+	if (item === undefined) throw new RequiredError("Last item is required");
 	return item;
 }
 
 /** Get the next item in an array or iterable. */
-export function getNextItem<T>(items: PossibleArray<T>, value: T): T | null {
+export function getOptionalNextItem<T>(items: PossibleArray<T>, value: T): T | undefined {
 	const arr = getArray(items);
 	const i = arr.indexOf(value);
 	if (i >= 0) {
 		const j = i + 1;
 		if (j in arr) return arr[j] as T;
 	}
-	return null;
 }
 
 /** Get the previous item in an array or iterable. */
-export function getPrevItem<T>(items: PossibleArray<T>, value: T): T | null {
+export function getOptionalPrevItem<T>(items: PossibleArray<T>, value: T): T | undefined {
 	const arr = getArray(items);
 	const i = arr.indexOf(value);
 	if (i >= 1) {
 		const j = i - 1;
 		if (j in arr) return arr[j] as T;
 	}
-	return null;
 }
 
 /** Return a shuffled version of an array or iterable. */

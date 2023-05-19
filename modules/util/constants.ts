@@ -48,3 +48,6 @@ export const NNBSP = "\u202F";
 
 /** The `STOP` symbol indicates something should stop. */
 export const STOP: unique symbol = Symbol("shelving/STOP");
+
+/** The `NONE` symbol indicates something is nothing. */
+export const NONE: unique symbol = Symbol("shelving/NONE");
