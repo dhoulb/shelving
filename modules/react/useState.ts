@@ -1,8 +1,7 @@
 import type { AnyState } from "../state/State.js";
 import type { ImmutableArray } from "../util/array.js";
-import type { Handler, Stop } from "../util/function.js";
+import type { Dispatch, Stop } from "../util/function.js";
 import type { Nullish } from "../util/null.js";
-import type { Dispatch } from "react";
 import { useEffect, useState as useReactState } from "react";
 import { dispatch } from "../util/function.js";
 import { mapArray } from "../util/transform.js";
@@ -21,17 +20,13 @@ export function useState<T extends AnyState>(state?: Nullish<T>): Nullish<T>;
 export function useState<T extends ImmutableArray<Nullish<AnyState>>>(...states: T): T;
 export function useState(...states: Nullish<AnyState>[]): ImmutableArray<Nullish<AnyState>> | Nullish<AnyState> {
 	const setValue = useReactState<unknown>(undefined)[1];
-	const [error, setError] = useReactState<Error | unknown>(undefined);
 	useEffect(() => {
-		const forceRerender = () => setValue({});
-		const stops = mapArray(states, _startState, forceRerender, setError);
+		const rerender = () => setValue({});
+		const stops = mapArray(states, _startState, rerender);
 		return () => stops.filter(isDefined).forEach(dispatch);
 	}, states);
-	if (error) throw error;
 	return states.length <= 1 ? states[0] : states;
 }
 
-/** Start a subscription to a `ReferenceState` instance. */
-function _startState(state: Nullish<AnyState>, setValue: Dispatch<[unknown]>, setError: Handler): Stop | undefined {
-	return state?.next.to(setValue, setError);
-}
+/** Start a subscription to a `ReferenceState` instance and rerender a new value or error is issued. */
+const _startState = (state: Nullish<AnyState>, rerender: Dispatch<[unknown]>): Stop | undefined => state?.next.to(rerender, rerender);

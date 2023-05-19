@@ -29,7 +29,7 @@ export class DataState<T extends Data> extends State<T> {
 }
 
 /** State that stores an optional data object and has additional methods to help with that. */
-export class OptionalDataState<T extends Data> extends State<T | null> {
+export class OptionalDataState<T extends Data> extends State<T | undefined> {
 	/** Get current data value of this state (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
 		return getRequired(this.value);
@@ -55,8 +55,8 @@ export class OptionalDataState<T extends Data> extends State<T | null> {
 		this.set(withProp(this.data, name, value));
 	}
 
-	/** Set the data to `null`. */
+	/** Set the data to `undefined`. */
 	unset(): void {
-		this.set(null);
+		this.set(undefined);
 	}
 }

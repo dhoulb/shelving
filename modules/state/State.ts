@@ -1,10 +1,18 @@
 import type { Dispatch, Handler, Stop } from "../util/function.js";
 import type { Validatable } from "../util/validate.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
+import { NONE } from "../util/constants.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Any `State` instance. */
 export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+/** Options for a `State` instance. */
+export type StateOptions<T> = {
+	value?: T;
+	time?: number | undefined;
+	next?: DeferredSequence<T> | undefined;
+};
 
 /**
  * Stream that retains its most recent value
@@ -13,56 +21,69 @@ export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-
  * - States can also be in a loading state where they do not have a current value.
  *
  * @param initial The initial value for the state, a `Promise` that resolves to the initial value, a source `Subscribable` to subscribe to, or another `State` instance to take the initial value from and subscribe to.
- * - To set the state to be loading, use the `State.NOVALUE` constant or a `Promise` value.
+ * - To set the state to be loading, use the `NONE` constant or a `Promise` value.
  * - To set the state to an explicit value, use that value or another `State` instance with a value.
  * */
 export class State<T> implements AsyncIterable<T>, Validatable<T> {
-	/** The `NOVALUE` symbol indicates no value has been received by a `State` instance. */
-	static readonly NOVALUE: unique symbol = Symbol("shelving/State.NOVALUE");
-
 	/** Deferred sequence this state uses to issue values as they change. */
 	public readonly next: DeferredSequence<T>;
 
-	/** Most recently dispatched value (or throw `Promise` that resolves to the next value). */
+	/** Current value of the state (or throw a promise that resolves when this state receives its next value or error). */
 	get value(): T {
-		if (this._value === State.NOVALUE) throw this.next;
+		if (this._reason !== undefined) throw this._reason;
+		if (this._value === NONE) throw this.next;
 		return this._value;
 	}
-	private _value: T | typeof State.NOVALUE = State.NOVALUE;
+	private _value: T | typeof NONE = NONE;
 
 	/** Time this state was last updated with a new value. */
-	get time(): number | null {
+	get time(): number | undefined {
 		return this._time;
 	}
-	protected _time: number | null = null;
+	private _time: number | undefined = undefined;
+
+	/** Is there a current value, or is it still loading. */
+	get loading(): boolean {
+		return this._value === NONE;
+	}
 
 	/** How old this state's value is (in milliseconds). */
 	get age(): number {
 		const time = this.time;
-		return time !== null ? Date.now() - time : Infinity;
+		return typeof time === "number" ? Date.now() - time : Infinity;
 	}
+
+	/** Current error of this state (or `undefined` if there is no reason). */
+	get reason(): unknown {
+		return this._reason;
+	}
+	private _reason: unknown = undefined;
 
 	/** State is initiated with an initial state. */
-	constructor(initial: T | typeof State.NOVALUE = State.NOVALUE, next: DeferredSequence<T> = new DeferredSequence<T>()) {
-		if (initial !== State.NOVALUE) {
-			this._value = this.validate(initial);
-			this._time = Date.now();
+	constructor(options: StateOptions<T> = {}) {
+		if ("value" in options) {
+			this._value = this.validate(options.value);
+			this._time = options.time || Date.now();
 		}
-		this.next = next;
-	}
-
-	/** Is there a current value, or is it still loading. */
-	get loading(): boolean {
-		return this._value === State.NOVALUE;
+		this.next = options.next || new DeferredSequence<T>();
 	}
 
 	/** Set the value of the state. */
 	set(next: T): void {
 		const value = this.validate(next);
-		if (value !== this._value) {
+		if (value !== this._value || this._reason !== undefined) {
+			this._reason = undefined;
 			this._value = value;
 			this._time = Date.now();
 			this.next.resolve(value);
+		}
+	}
+
+	/** Set the error reason of the state (will be  */
+	error(reason: unknown) {
+		this._reason = reason;
+		if (reason !== undefined) {
+			this.next.reject(reason);
 		}
 	}
 

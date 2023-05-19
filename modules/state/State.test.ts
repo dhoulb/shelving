@@ -43,7 +43,7 @@ test("State with no initial value", async () => {
 	expect(calls2).toEqual([111, 222, 333]);
 });
 test("State with initial value", async () => {
-	const state = new State(111);
+	const state = new State({ value: 111 });
 	expect(state).toBeInstanceOf(State);
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(111);
@@ -80,7 +80,7 @@ test("State with initial value", async () => {
 	expect(calls2).toEqual([222, 333]);
 });
 test("State with initial value and multiple synchronous `set()` calls", async () => {
-	const state = new State<number>(111);
+	const state = new State<number>({ value: 111 });
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];

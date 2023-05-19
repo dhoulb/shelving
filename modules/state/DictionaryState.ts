@@ -1,3 +1,4 @@
+import type { StateOptions } from "./State.js";
 import type { DictionaryItem, ImmutableDictionary } from "../util/dictionary.js";
 import type { Updates } from "../util/update.js";
 import { omitDictionaryItems } from "../util/dictionary.js";
@@ -7,8 +8,8 @@ import { State } from "./State.js";
 
 /** State that stores a dictionary object and has additional methods to help with that. */
 export class DictionaryState<T> extends State<ImmutableDictionary<T>> implements Iterable<DictionaryItem<T>> {
-	constructor(initial: ImmutableDictionary<T> = {}) {
-		super(initial);
+	constructor(options: StateOptions<ImmutableDictionary<T>> = {}) {
+		super("value" in options ? options : { ...options, value: {} });
 	}
 
 	/** Get the length of the current value of this state. */

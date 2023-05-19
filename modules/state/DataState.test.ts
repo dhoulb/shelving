@@ -1,9 +1,8 @@
-import type { OptionalData } from "../index.js";
 import { DataState, OptionalDataState, RequiredError, runMicrotasks } from "../index.js";
 
 test("DataState.prototype.data", async () => {
 	type T = { a: number };
-	const state = new DataState<T>({ a: 1 });
+	const state = new DataState<T>({ value: { a: 1 } });
 	expect(state).toBeInstanceOf(DataState);
 	expect(state.value).toEqual({ a: 1 });
 	expect(state.data).toEqual({ a: 1 });
@@ -22,7 +21,7 @@ test("DataState.prototype.data", async () => {
 });
 test("DataState.prototype.update()", async () => {
 	type T = { a: number; b: number };
-	const state = new DataState<T>({ a: 1, b: 2 });
+	const state = new DataState<T>({ value: { a: 1, b: 2 } });
 	expect(state).toBeInstanceOf(DataState);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
@@ -39,12 +38,12 @@ test("DataState.prototype.update()", async () => {
 });
 test("OptionalDataState.prototype.data", async () => {
 	type T = { a: number };
-	const state = new OptionalDataState<T>(null);
+	const state = new OptionalDataState<T>({ value: undefined });
 	expect(state).toBeInstanceOf(OptionalDataState);
-	expect(state.value).toEqual(null);
+	expect(state.value).toEqual(undefined);
 	expect(() => state.data).toThrow(RequiredError);
 	// Ons and onces.
-	const calls: OptionalData<T>[] = [];
+	const calls: (T | undefined)[] = [];
 	const stop = state.next.to(v => calls.push(v));
 	// Set data value.
 	expect(state.set({ a: 1 })).toBe(undefined);
@@ -56,25 +55,25 @@ test("OptionalDataState.prototype.data", async () => {
 	expect(state.data).toEqual({ a: 2 });
 	// Delete data value.
 	expect(state.unset()).toBe(undefined);
-	expect(state.value).toBe(null);
+	expect(state.value).toBe(undefined);
 	expect(() => state.data).toThrow(RequiredError);
-	// Set null value.
-	expect(state.set(null)).toBe(undefined);
-	expect(state.value).toBe(null);
+	// Set undefined value.
+	expect(state.set(undefined)).toBe(undefined);
+	expect(state.value).toBe(undefined);
 	expect(() => state.data).toThrow(RequiredError);
 	// Checks.
 	await runMicrotasks();
-	expect(calls).toEqual([null]);
+	expect(calls).toEqual([undefined]);
 	// Cleanup.
 	stop();
 });
 test("OptionalDataState.prototype.update()", async () => {
 	type T = { a: number; b: number };
-	const state = new OptionalDataState<T>({ a: 1, b: 2 });
+	const state = new OptionalDataState<T>({ value: { a: 1, b: 2 } });
 	expect(state).toBeInstanceOf(OptionalDataState);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
-	const calls1: OptionalData<T>[] = [];
+	const calls1: (T | undefined)[] = [];
 	const stop = state.next.to(v => calls1.push(v));
 	// Apply a data transform.
 	expect(state.update({ "a": 111, "-=b": 100 })).toBe(undefined);
