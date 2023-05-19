@@ -14,3 +14,6 @@ test.skip("Typescript", () => {
 	const c1 = useData(undefined as unknown as AsyncItemReference<ProfileData>, undefined as unknown as AsyncItemReference<DogData>);
 	const c2: [ItemState<ProfileData>, ItemState<DogData>] = c1;
 });
+test("Empty", () => {
+	expect(true).toBe(true);
+});
