@@ -47,7 +47,7 @@ export async function* dispatchSequence<T>(sequence: AsyncIterable<T>, onNext: A
 
 /** Get the first value from an async iterator. **/
 export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
-	for await (const value of sequence) return value;
+	for await (const item of sequence) return item;
 	throw new RequiredError("First value is required");
 }
 
