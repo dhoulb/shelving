@@ -11,6 +11,6 @@ import { useRef } from "react";
 export function useReduce<T, A extends Arguments = []>(reduce: (previous: T | undefined, ...a: A) => T, ...args: A): T;
 export function useReduce<T, A extends Arguments = []>(reduce: (previous: T | undefined, ...a: A) => T | undefined, ...args: A): T | undefined; // Allows inference if `undefined` is a value that `reduce()` can return.
 export function useReduce<T, A extends Arguments = []>(reduce: (previous: T | undefined, ...a: A) => T, ...args: A): T {
-	const r = useRef<T>();
-	return (r.current = reduce(r.current, ...args));
+	const ref = useRef<T>();
+	return (ref.current = reduce(ref.current, ...args));
 }
