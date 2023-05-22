@@ -2,7 +2,15 @@ import type { ImmutableArray } from "./array.js";
 import { getDefined } from "./undefined.js";
 
 /** Generate a random integer between two numbers. */
-export const getRandom = (min: number, max: number): number => Math.round(Math.random() * (max - min) + min);
+export const getRandom = (min: number = Number.MIN_SAFE_INTEGER, max: number = Number.MAX_SAFE_INTEGER): number => Math.round(Math.random() * (max - min) + min);
+
+/** Get a random number that is anything except an existing number. */
+export function getRandomExcept(existing: number, min?: number, max?: number) {
+	let num: number;
+	do num = getRandom(min, max);
+	while (num === existing);
+	return num;
+}
 
 /**
  * Make a random key, e.g. `xs23r34hhsdx` or `e4m29klrugef`
