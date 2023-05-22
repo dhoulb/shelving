@@ -1,39 +1,29 @@
-import type { Arguments, Dispatch, Handler, Start, Stop } from "./function.js";
+import type { Dispatch } from "./function.js";
 import { BLACKHOLE } from "./function.js";
-import { runSequence } from "./sequence.js";
+
+/** Function that starts something. */
+export type Start<T = void> = (value: T) => Stop | void;
+
+/** Function that stops something. */
+export type Stop = Dispatch;
 
 /** Something that can be started and stopped. */
-export interface Activity<A extends Arguments = []> {
+export interface Activity<T = void> {
 	/** Start this activity. */
-	start(...args: A): void;
+	start(value: T): void;
 	/** Stop this activity. */
 	stop(): void;
 }
 
-/** Wrap a `Start` to create an `Activity` */
-export class StartActivity<A extends Arguments = []> implements Activity<A> {
-	private readonly _start: Start<A>;
+/** Wrap a `Start` function to create an `Activity` object. */
+export class StartActivity<T = void> implements Activity<T> {
+	private readonly _start: Start<T>;
 	private _stop: Stop | undefined;
-	constructor(start: Start<A>) {
+	constructor(start: Start<T>) {
 		this._start = start;
 	}
-	start(...args: A) {
-		this._stop ||= this._start(...args) || BLACKHOLE;
-	}
-	stop() {
-		if (this._stop) this._stop = void this._stop();
-	}
-}
-
-/** Wrap an `AsyncIterable` to create an `Activity` */
-export class SequenceActivity<T> implements Activity<[Dispatch<[T]>, Handler]> {
-	private readonly _sequence: AsyncIterable<T>;
-	private _stop: Stop | undefined;
-	constructor(sequence: AsyncIterable<T>) {
-		this._sequence = sequence;
-	}
-	start(onNext?: Dispatch<[T]>, onError?: Handler) {
-		this._stop ||= runSequence(this._sequence, onNext, onError);
+	start(value: T) {
+		this._stop ||= this._start(value) || BLACKHOLE;
 	}
 	stop() {
 		if (this._stop) this._stop = void this._stop();
@@ -42,8 +32,8 @@ export class SequenceActivity<T> implements Activity<[Dispatch<[T]>, Handler]> {
 
 /** Set of items that starts/stops an `Activity` when it has items. */
 export class LazySet<T> extends Set<T> {
-	private readonly _activity: Activity<[Set<T>]>;
-	constructor(start: Start<[Set<T>]>) {
+	private readonly _activity: Activity<Set<T>>;
+	constructor(start: Start<Set<T>>) {
 		super();
 		this._activity = new StartActivity(start);
 	}
@@ -61,8 +51,8 @@ export class LazySet<T> extends Set<T> {
 
 /** Map of items that starts/stops an `Activity` when it has items. */
 export class LazyMap<K, T> extends Map<K, T> {
-	private readonly _activity: Activity<[Map<K, T>]>;
-	constructor(start: Start<[Map<K, T>]>) {
+	private readonly _activity: Activity<Map<K, T>>;
+	constructor(start: Start<Map<K, T>>) {
 		super();
 		this._activity = new StartActivity(start);
 	}

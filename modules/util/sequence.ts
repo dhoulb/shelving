@@ -1,4 +1,5 @@
-import type { AsyncDispatch, Dispatch, Handler, Stop } from "./function.js";
+import type { Stop } from "./activity.js";
+import type { AsyncDispatch, Dispatch, Handler } from "./function.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { getDeferred, getDelay } from "./async.js";
 import { STOP } from "./constants.js";
@@ -38,7 +39,7 @@ export async function* repeatDelay(ms: number): AsyncIterable<number> {
 }
 
 /** Dispatch items in a sequence to a (possibly async) callback. */
-export async function* dispatchSequence<T>(sequence: AsyncIterable<T>, onNext: AsyncDispatch<[T]>): AsyncIterable<T> {
+export async function* dispatchSequence<T>(sequence: AsyncIterable<T>, onNext: AsyncDispatch<T>): AsyncIterable<T> {
 	for await (const item of sequence) {
 		dispatch(onNext, item);
 		yield item;
@@ -52,12 +53,12 @@ export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
 }
 
 /** Pull values from a sequence until the returned function is called. */
-export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: Dispatch<[T]>, onError: Handler = logError): Stop {
+export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: Dispatch<T>, onError: Handler = logError): Stop {
 	const { promise, resolve } = getDeferred<typeof STOP>();
 	_runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError).catch(onError).catch(logError);
 	return () => resolve(STOP);
 }
-async function _runSequence<T>(iterator: AsyncIterator<T>, stopped: Promise<typeof STOP>, onNext: Dispatch<[T]> | undefined, onError: Handler): Promise<unknown> {
+async function _runSequence<T>(iterator: AsyncIterator<T>, stopped: Promise<typeof STOP>, onNext: Dispatch<T> | undefined, onError: Handler): Promise<unknown> {
 	try {
 		const result = await Promise.race([stopped, iterator.next()]);
 		if (result === STOP || result.done) {

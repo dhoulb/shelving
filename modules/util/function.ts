@@ -27,15 +27,18 @@ export const PASSTHROUGH = <T>(value: T): T => value;
 export const BLACKHOLE: (...args: Arguments) => void | undefined = () => undefined;
 
 /** Function that receives a dispatched value. */
-export type Dispatch<T extends Arguments = []> = (...value: T) => void;
+export type Dispatch<T = void> = (value: T) => void;
 
 /** Function that receives a dispatched value. */
-export type AsyncDispatch<T extends Arguments = []> = (...value: T) => void | PromiseLike<void>;
+export type AsyncDispatch<T = void> = (value: T) => void | PromiseLike<void>;
 
 /** Safely dispatch a value to a dispatcher function. */
-export function dispatch<A extends Arguments>(func: AsyncDispatch<A>, ...value: A): void {
+export function dispatch(func: () => void | PromiseLike<void>): void;
+export function dispatch<T>(func: (value: T) => void | PromiseLike<void>, value: T): void;
+export function dispatch<T>(func: AsyncDispatch<T>, value: T): void;
+export function dispatch(func: AsyncDispatch<unknown>, value?: unknown): void {
 	try {
-		const result = func(...value);
+		const result = func(value);
 		if (isAsync(result)) result.then(undefined, logError);
 	} catch (thrown) {
 		logError(thrown);
@@ -43,25 +46,19 @@ export function dispatch<A extends Arguments>(func: AsyncDispatch<A>, ...value: 
 }
 
 /** Return a function that dispatches a value to a dispatcher function. */
-export function dispatched<A extends Arguments>(dispatcher: AsyncDispatch<A>): Dispatch<A> {
-	return (...args: A) => dispatch(dispatcher, ...args);
+export function dispatched<T>(dispatcher: Dispatch<T>): Dispatch<T> {
+	return (value: T) => dispatch(dispatcher, value);
 }
 
 /** Safely dispatch a value to a dispatcher method on an object. */
-export function dispatchMethod<T extends Arguments, M extends string | symbol>(obj: { [K in M]: AsyncDispatch<T> }, key: M, ...value: T): void {
+export function dispatchMethod<T, M extends string | symbol>(obj: { [K in M]: AsyncDispatch<T> }, key: M, value: T): void {
 	try {
-		const result = obj[key](...value);
+		const result = obj[key](value);
 		if (isAsync(result)) result.then(BLACKHOLE, logError);
 	} catch (thrown) {
 		logError(thrown);
 	}
 }
-
-/** Function that starts something. */
-export type Start<A extends Arguments = []> = (...args: A) => Stop | void;
-
-/** Function that stops something. */
-export type Stop = Dispatch;
 
 /** Function that handles an error. */
 export type Handler = (reason: Error | unknown) => void;

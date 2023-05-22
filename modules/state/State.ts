@@ -1,4 +1,5 @@
-import type { Dispatch, Handler, Stop } from "../util/function.js";
+import type { Stop } from "../util/activity.js";
+import type { Dispatch, Handler } from "../util/function.js";
 import type { Validatable } from "../util/validate.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { NONE } from "../util/constants.js";
@@ -101,7 +102,7 @@ export class State<T> implements AsyncIterable<T>, Validatable<T> {
 	}
 
 	/** Push values to another state or callback to this state until the returned stop function is called. */
-	to(target: Dispatch<[T]>, onError?: Handler): Stop {
+	to(target: Dispatch<T>, onError?: Handler): Stop {
 		return runSequence(this, target, onError);
 	}
 

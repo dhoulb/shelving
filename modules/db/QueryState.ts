@@ -1,8 +1,8 @@
 import type { ItemArray, ItemData, ItemValue } from "./ItemReference.js";
 import type { AsyncQueryReference, QueryReference } from "./QueryReference.js";
 import type { MemoryTable } from "../provider/MemoryProvider.js";
+import type { Stop } from "../util/activity.js";
 import type { Data } from "../util/data.js";
-import type { Stop } from "../util/function.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
 import { BooleanState } from "../state/BooleanState.js";

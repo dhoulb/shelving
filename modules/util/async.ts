@@ -46,11 +46,11 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 		return Promise;
 	}
 	/** Resolve this promise with a value. */
-	protected readonly _resolve: Dispatch<[T]>;
+	protected readonly _resolve: Dispatch<T>;
 	/** Reject this promise with a reason. */
 	protected readonly _reject: Handler;
 	constructor() {
-		let _resolve: Dispatch<[T]>;
+		let _resolve: Dispatch<T>;
 		let _reject: Handler;
 		super((x, y) => {
 			_resolve = x;
@@ -61,33 +61,10 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 	}
 }
 
-/** Type of `Promise` with its `resolve()` and `reject()` methods exposed publicly. */
-// export class Deferred<T = void> extends Promise<T> {
-// 	// Make `this.then()` create a `Promise` not a `Deferred`
-// 	// Done with a getter because some implementations implement this with a getter and we need to override it.
-// 	static override get [Symbol.species]() {
-// 		return Promise;
-// 	}
-// 	/** Resolve this deferred with a value. */
-// 	readonly resolve: Dispatch<[T]>;
-// 	/** Reject this deferred with a reason. */
-// 	readonly reject: Handler;
-// 	constructor() {
-// 		let resolve: Dispatch<[T]>;
-// 		let reject: Handler;
-// 		super((x, y) => {
-// 			resolve = x;
-// 			reject = y;
-// 		});
-// 		this.resolve = resolve!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-// 		this.reject = reject!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-// 	}
-// }
-
 /** Deferred allows you to access the internal resolve/reject callbacks of a `Promise` */
 export type Deferred<T> = {
 	promise: Promise<T>;
-	resolve: Dispatch<[T]>;
+	resolve: Dispatch<T>;
 	reject: Handler;
 };
 
@@ -96,7 +73,7 @@ export type Deferred<T> = {
  * - See https://github.com/tc39/proposal-promise-with-resolvers/
  */
 export function getDeferred<T = unknown>(): Deferred<T> {
-	let resolve: Dispatch<[T]>;
+	let resolve: Dispatch<T>;
 	let reject: Handler;
 	return {
 		promise: new Promise<T>((x, y) => {

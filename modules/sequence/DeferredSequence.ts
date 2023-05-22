@@ -1,5 +1,6 @@
+import type { Stop } from "../util/activity.js";
 import type { Deferred } from "../util/async.js";
-import type { Dispatch, Handler, Stop } from "../util/function.js";
+import type { Dispatch, Handler } from "../util/function.js";
 import { getDeferred } from "../util/async.js";
 import { runSequence } from "../util/sequence.js";
 import { AbstractSequence } from "./AbstractSequence.js";
@@ -82,7 +83,7 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 	}
 
 	/** Subscrbe to the value of the sequence with a callback until the returned stop function is called. */
-	to(onNext: Dispatch<[T]>, onError?: Handler): Stop {
+	to(onNext: Dispatch<T>, onError?: Handler): Stop {
 		return runSequence(this, onNext, onError);
 	}
 }

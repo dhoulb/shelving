@@ -1,6 +1,7 @@
 import type { AnyState } from "../state/State.js";
+import type { Stop } from "../util/activity.js";
 import type { ImmutableArray } from "../util/array.js";
-import type { Dispatch, Stop } from "../util/function.js";
+import type { Dispatch } from "../util/function.js";
 import type { Nullish } from "../util/null.js";
 import { useEffect, useState as useReactState } from "react";
 import { dispatch } from "../util/function.js";
@@ -29,4 +30,4 @@ export function useState(...states: Nullish<AnyState>[]): ImmutableArray<Nullish
 }
 
 /** Start a subscription to a `ReferenceState` instance and rerender a new value or error is issued. */
-const _startState = (state: Nullish<AnyState>, rerender: Dispatch<[unknown]>): Stop | undefined => state?.next.to(rerender, rerender);
+const _startState = (state: Nullish<AnyState>, rerender: Dispatch<unknown>): Stop | undefined => state?.next.to(rerender, rerender);
