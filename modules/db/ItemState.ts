@@ -28,7 +28,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 		const { provider, collection, id } = ref;
 		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T> | undefined;
 		const time = table ? table.getQueryTime(ref) : null;
-		const next = table ? new SwitchingDeferredSequence<ItemValue<T>>(() => this.from(table.getCachedItemSequence(id), () => typeof table.getItemTime(id) === "number")) : undefined;
+		const next = table ? new SwitchingDeferredSequence<ItemValue<T>>(x => x.from(table.getCachedItemSequence(id))) : undefined;
 		super(table && typeof time === "number" ? { value: table.getItem(id), time, next } : { next });
 		this.ref = ref;
 

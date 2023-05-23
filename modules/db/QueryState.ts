@@ -58,7 +58,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 		const { provider, collection, query } = ref;
 		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T> | undefined;
 		const time = table ? table.getQueryTime(ref) : null;
-		const next = table ? new SwitchingDeferredSequence<ItemArray<T>>(() => this.from(table.getCachedQuerySequence(ref))) : undefined;
+		const next = table ? new SwitchingDeferredSequence<ItemArray<T>>(x => x.from(table.getCachedQuerySequence(ref))) : undefined;
 		super(table && typeof time === "number" ? { value: table.getQuery(ref), time, next } : { next });
 		this.ref = ref;
 		this.limit = getLimit(query) ?? Infinity;
