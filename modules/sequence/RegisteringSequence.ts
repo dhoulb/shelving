@@ -1,7 +1,7 @@
 import { ThroughSequence } from "./ThroughSequence.js";
 
 /** Async generator that registers itself with a `Set` when it's iterating, and deregisters itself again when it stops. */
-export class RegisteringSequence<T, R> extends ThroughSequence<T, R> {
+export class RegisteringSequence<T, R> extends ThroughSequence<T, R> implements ThroughSequence<T, R> {
 	private _set: Set<AsyncIterator<T, R>>;
 	constructor(source: AsyncIterator<T, R>, set: Set<AsyncIterator<T, R>>) {
 		super(source);

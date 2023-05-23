@@ -1,10 +1,9 @@
 import type { AnyState } from "../state/State.js";
-import type { Stop } from "../util/activity.js";
 import type { ImmutableArray } from "../util/array.js";
-import type { Dispatch } from "../util/function.js";
+import type { Callback, StopCallback } from "../util/callback.js";
 import type { Nullish } from "../util/null.js";
 import { useEffect, useState as useReactState } from "react";
-import { dispatch } from "../util/function.js";
+import { call } from "../util/callback.js";
 import { mapArray } from "../util/transform.js";
 import { isDefined } from "../util/undefined.js";
 
@@ -24,10 +23,10 @@ export function useState(...states: Nullish<AnyState>[]): ImmutableArray<Nullish
 	useEffect(() => {
 		const rerender = () => setValue({});
 		const stops = mapArray(states, _startState, rerender);
-		return () => stops.filter(isDefined).forEach(dispatch);
+		return () => stops.filter(isDefined).forEach(call);
 	}, states);
 	return states.length <= 1 ? states[0] : states;
 }
 
 /** Start a subscription to a `ReferenceState` instance and rerender a new value or error is issued. */
-const _startState = (state: Nullish<AnyState>, rerender: Dispatch<unknown>): Stop | undefined => state?.next.to(rerender, rerender);
+const _startState = (state: Nullish<AnyState>, rerender: Callback<unknown>): StopCallback | undefined => state?.next.to(rerender, rerender);

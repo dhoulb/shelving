@@ -1,6 +1,5 @@
-import type { Stop } from "../util/activity.js";
 import type { Deferred } from "../util/async.js";
-import type { Dispatch, Handler } from "../util/function.js";
+import type { Callback, ErrorCallback, StopCallback } from "../util/callback.js";
 import { getDeferred } from "../util/async.js";
 import { runSequence } from "../util/sequence.js";
 import { AbstractSequence } from "./AbstractSequence.js";
@@ -9,11 +8,12 @@ import { AbstractSequence } from "./AbstractSequence.js";
 const _NOVALUE: unique symbol = Symbol("shelving/DeferredSequence.NOVALUE");
 
 /**
- * Deferred sequence of values.
+ * Deferred sequence of values that can be async iterated and new values can be published to
  * - Implements `AsyncIterable` so values can be iterated over using `for await...of`
  * - Implements `Promise` so the next value can be awaited.
+ * - Implements `Deferred` so next values can be resolved or rejected.
  */
-export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R> implements Promise<T> {
+export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R> implements Deferred<T>, Promise<T> {
 	/**
 	 * Next deferred to be rejected/resolved, or `undefined` if we haven't requested one yet..
 	 * - Only create the deferred on demand, because we don't want to reject a deferred that isn't used to or it would throw an unhandled promise error.
@@ -21,12 +21,12 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 	private _deferred: Deferred<T> | undefined;
 
 	/** Get the next promise to be deferred/rejected. */
-	get value(): Promise<T> {
+	get promise(): Promise<T> {
 		return (this._deferred ||= getDeferred<T>()).promise;
 	}
 
 	/** Resolve the current deferred in the sequence. */
-	readonly resolve = (value: T): void => {
+	readonly resolve: Callback<T> = value => {
 		this._nextValue = value;
 		this._nextReason = _NOVALUE;
 		queueMicrotask(this._fulfill);
@@ -34,7 +34,7 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 	private _nextValue: T | typeof _NOVALUE = _NOVALUE;
 
 	/** Reject the current deferred in the sequence. */
-	readonly reject = (reason: Error | unknown): void => {
+	readonly reject: ErrorCallback = reason => {
 		this._nextValue = _NOVALUE;
 		this._nextReason = reason;
 		queueMicrotask(this._fulfill);
@@ -55,18 +55,18 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 
 	// Implement `AsyncIterator`
 	async next(): Promise<IteratorResult<T, R>> {
-		return { value: await this.value };
+		return { value: await this.promise };
 	}
 
 	// Implement `Promise`
 	then<X = T, Y = never>(onNext?: (v: T) => X | PromiseLike<X>, onError?: (r: unknown) => Y | PromiseLike<Y>): Promise<X | Y> {
-		return this.value.then(onNext, onError);
+		return this.promise.then(onNext, onError);
 	}
 	catch<Y>(onError: (r: unknown) => Y | PromiseLike<Y>): Promise<T | Y> {
-		return this.value.catch(onError);
+		return this.promise.catch(onError);
 	}
 	finally(onFinally: () => void): Promise<T> {
-		return this.value.finally(onFinally);
+		return this.promise.finally(onFinally);
 	}
 
 	/** Resolve the current deferred from a sequence of values. */
@@ -78,12 +78,12 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 	}
 
 	/** Pull values from a source sequence until the returned stop function is called. */
-	from(source: AsyncIterable<T>, onError?: Handler): Stop {
+	from(source: AsyncIterable<T>, onError?: ErrorCallback): StopCallback {
 		return runSequence(this.through(source), undefined, onError);
 	}
 
 	/** Subscrbe to the value of the sequence with a callback until the returned stop function is called. */
-	to(onNext: Dispatch<T>, onError?: Handler): Stop {
+	to(onNext: Callback<T>, onError?: ErrorCallback): StopCallback {
 		return runSequence(this, onNext, onError);
 	}
 }

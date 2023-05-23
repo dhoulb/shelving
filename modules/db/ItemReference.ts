@@ -1,9 +1,8 @@
 import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
-import type { Stop } from "../util/activity.js";
 import type { ImmutableArray } from "../util/array.js";
+import type { Callback, ErrorCallback, StopCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
-import type { Dispatch, Handler } from "../util/function.js";
 import type { Query } from "../util/query.js";
 import type { Updates } from "../util/update.js";
 import { getRequired } from "../util/null.js";
@@ -92,7 +91,7 @@ abstract class AbstractItemReference<T extends Data = Data> implements AsyncIter
 	}
 
 	/** Subscribe to this item. */
-	subscribe(onNext?: Dispatch<ItemValue<T>>, onError?: Handler): Stop {
+	subscribe(onNext?: Callback<ItemValue<T>>, onError?: ErrorCallback): StopCallback {
 		return runSequence(this, onNext, onError);
 	}
 

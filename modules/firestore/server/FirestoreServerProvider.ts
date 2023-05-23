@@ -5,7 +5,7 @@ import type { ImmutableObject } from "../../util/object.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { BulkWriter, DocumentData, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot } from "@google-cloud/firestore";
 import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
-import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
+import { SwitchingDeferredSequence } from "../../sequence/SwitchingDeferredSequence.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";
@@ -72,7 +72,7 @@ export class FirestoreServerProvider implements AsyncProvider {
 
 	getItemSequence(c: string, id: string): AsyncIterable<ItemValue> {
 		const ref = this._firestore.collection(c).doc(id);
-		return new LazyDeferredSequence(({ resolve, reject }) =>
+		return new SwitchingDeferredSequence(({ resolve, reject }) =>
 			ref.onSnapshot(
 				snapshot => resolve(_getItemValue(snapshot)), //
 				reject,
@@ -102,7 +102,7 @@ export class FirestoreServerProvider implements AsyncProvider {
 
 	getQuerySequence<K extends string>(c: K, q: ItemQuery): AsyncIterable<ItemArray> {
 		const ref = _getQuery(this._firestore, c, q);
-		return new LazyDeferredSequence(({ resolve, reject }) =>
+		return new SwitchingDeferredSequence(({ resolve, reject }) =>
 			ref.onSnapshot(
 				snapshot => resolve(_getItemArray(snapshot)), //
 				reject,

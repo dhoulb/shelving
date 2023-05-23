@@ -1,10 +1,10 @@
 import type { ItemArray, ItemData, ItemValue } from "./ItemReference.js";
 import type { AsyncQueryReference, QueryReference } from "./QueryReference.js";
 import type { MemoryTable } from "../provider/MemoryProvider.js";
-import type { Stop } from "../util/activity.js";
+import type { StopCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
+import { SwitchingDeferredSequence } from "../sequence/SwitchingDeferredSequence.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { State } from "../state/State.js";
 import { getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
@@ -58,7 +58,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 		const { provider, collection, query } = ref;
 		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T> | undefined;
 		const time = table ? table.getQueryTime(ref) : null;
-		const next = table ? new LazyDeferredSequence<ItemArray<T>>(() => this.from(table.getCachedQuerySequence(ref))) : undefined;
+		const next = table ? new SwitchingDeferredSequence<ItemArray<T>>(() => this.from(table.getCachedQuerySequence(ref))) : undefined;
 		super(table && typeof time === "number" ? { value: table.getQuery(ref), time, next } : { next });
 		this.ref = ref;
 		this.limit = getLimit(query) ?? Infinity;
@@ -91,7 +91,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 	}
 
 	/** Subscribe this state to the source provider. */
-	connectSource(): Stop {
+	connectSource(): StopCallback {
 		return this.from(this.ref);
 	}
 

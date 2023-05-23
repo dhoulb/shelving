@@ -1,4 +1,4 @@
-import type { Dispatch } from "./function.js";
+import type { VoidCallback } from "./callback.js";
 
 /**
  * Create a new Timeout.
@@ -11,11 +11,11 @@ import type { Dispatch } from "./function.js";
  * @param ms The default delay for any created timeouts (in ms).
  */
 export class Timeout {
-	private _callback: Dispatch | null;
+	private _callback: VoidCallback | undefined;
 	private _ms: number;
-	private _timeout: NodeJS.Timeout | null = null;
+	private _timeout: NodeJS.Timeout | undefined = undefined;
 
-	constructor(callback: Dispatch | null = null, ms = 0) {
+	constructor(callback: VoidCallback | undefined = undefined, ms = 0) {
 		this._callback = callback;
 		this._ms = ms;
 	}
@@ -30,28 +30,23 @@ export class Timeout {
 	 * @param callback
 	 * @param ms The delay for this timeout (in ms).
 	 */
-	set(callback: Dispatch | null = this._callback, ms: number = this._ms): void {
+	set(callback: VoidCallback | undefined = this._callback, ms: number = this._ms): void {
 		this.clear();
 		if (callback) this._timeout = setTimeout(_executeTimeout, ms, this, callback);
 	}
-
-	private _run = () => {
-		this._timeout = null;
-		if (this._callback) this._callback();
-	};
 
 	/** Cancel any existing timeout.. */
 	clear(): void {
 		const timeout = this._timeout;
 		if (timeout) {
-			this._timeout = null;
+			this._timeout = undefined;
 			clearTimeout(timeout);
 		}
 	}
 }
 
 /** Actually execute the timeout. */
-function _executeTimeout(timeout: Timeout, callback: Dispatch) {
+function _executeTimeout(timeout: Timeout, callback: VoidCallback) {
 	timeout.clear();
 	callback();
 }

@@ -1,9 +1,9 @@
 import type { AsyncItemReference, ItemData, ItemReference, ItemValue } from "./ItemReference.js";
 import type { MemoryTable } from "../provider/MemoryProvider.js";
+import type { StopCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
-import type { Dispatch } from "../util/function.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { LazyDeferredSequence } from "../sequence/LazyDeferredSequence.js";
+import { SwitchingDeferredSequence } from "../sequence/SwitchingDeferredSequence.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { State } from "../state/State.js";
 import { getRequired } from "../util/null.js";
@@ -28,7 +28,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 		const { provider, collection, id } = ref;
 		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T> | undefined;
 		const time = table ? table.getQueryTime(ref) : null;
-		const next = table ? new LazyDeferredSequence<ItemValue<T>>(() => this.from(table.getCachedItemSequence(id), () => typeof table.getItemTime(id) === "number")) : undefined;
+		const next = table ? new SwitchingDeferredSequence<ItemValue<T>>(() => this.from(table.getCachedItemSequence(id), () => typeof table.getItemTime(id) === "number")) : undefined;
 		super(table && typeof time === "number" ? { value: table.getItem(id), time, next } : { next });
 		this.ref = ref;
 
@@ -58,7 +58,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 	}
 
 	/** Subscribe this state to the source provider. */
-	connectSource(): Dispatch {
+	connectSource(): StopCallback {
 		return this.from(this.ref);
 	}
 }
