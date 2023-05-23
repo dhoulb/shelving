@@ -1,4 +1,4 @@
-export * from "./activity.js";
+export * from "./switch.js";
 export * from "./array.js";
 export * from "./assert.js";
 export * from "./async.js";

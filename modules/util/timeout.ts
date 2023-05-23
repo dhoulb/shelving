@@ -1,4 +1,4 @@
-import type { VoidCallback } from "./callback.js";
+import type { Callback } from "./callback.js";
 
 /**
  * Create a new Timeout.
@@ -11,11 +11,11 @@ import type { VoidCallback } from "./callback.js";
  * @param ms The default delay for any created timeouts (in ms).
  */
 export class Timeout {
-	private _callback: VoidCallback | undefined;
+	private _callback: Callback | undefined;
 	private _ms: number;
 	private _timeout: NodeJS.Timeout | undefined = undefined;
 
-	constructor(callback: VoidCallback | undefined = undefined, ms = 0) {
+	constructor(callback: Callback | undefined = undefined, ms = 0) {
 		this._callback = callback;
 		this._ms = ms;
 	}
@@ -30,7 +30,7 @@ export class Timeout {
 	 * @param callback
 	 * @param ms The delay for this timeout (in ms).
 	 */
-	set(callback: VoidCallback | undefined = this._callback, ms: number = this._ms): void {
+	set(callback: Callback | undefined = this._callback, ms: number = this._ms): void {
 		this.clear();
 		if (callback) this._timeout = setTimeout(_executeTimeout, ms, this, callback);
 	}
@@ -46,7 +46,7 @@ export class Timeout {
 }
 
 /** Actually execute the timeout. */
-function _executeTimeout(timeout: Timeout, callback: VoidCallback) {
+function _executeTimeout(timeout: Timeout, callback: Callback) {
 	timeout.clear();
 	callback();
 }
