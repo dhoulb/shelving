@@ -11,7 +11,7 @@ export type AsyncCallback<T = void> = (value: T) => void | PromiseLike<void>;
 export type ErrorCallback = (reason: Error | unknown) => void;
 
 /** Callback function that starts something (and returns an optional stop callback). */
-export type StartCallback<T> = (value: T) => StopCallback | void;
+export type StartCallback<T> = (value: T) => StopCallback;
 
 /** Callback function that stops something. */
 export type StopCallback = () => void;
