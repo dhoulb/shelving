@@ -8,7 +8,7 @@ export interface Switchable<T> {
 	off(): void;
 }
 
-/** Wrap a `Start` function to create a `Switchable` */
+/** Wrap a `Start` function to create a `Switchable and ensure the start function is only started and stopped once. */
 export class Switch<T = void> implements Switchable<T> {
 	private readonly _start: StartCallback<T>;
 	private _stop: StopCallback | void = undefined;
