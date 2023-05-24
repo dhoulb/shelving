@@ -8,7 +8,7 @@ import { AbstractSequence } from "./AbstractSequence.js";
 const _NOVALUE: unique symbol = Symbol("shelving/DeferredSequence.NOVALUE");
 
 /**
- * Deferred sequence of values that can be async iterated and new values can be published to
+ * Deferred sequence of values that can be async iterated and new values can be published.
  * - Implements `AsyncIterable` so values can be iterated over using `for await...of`
  * - Implements `Promise` so the next value can be awaited.
  * - Implements `Deferred` so next values can be resolved or rejected.

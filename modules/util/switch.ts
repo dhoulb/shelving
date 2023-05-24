@@ -1,62 +1,64 @@
 import type { StartCallback, StopCallback } from "./callback.js";
+import { isFunction } from "./function.js";
 
-/** Interface for something that can be switched on and off. */
-export interface Switchable<T> {
-	/** Start this thing. */
-	on(value: T): void;
-	/** Stop this thing. */
-	off(): void;
+/** Something that can be started or stopped. */
+export interface Switch<T> {
+	/** Start the thing. */
+	start(value: T): void;
+	/** Stop the thing. */
+	stop(value: T): void;
 }
 
-/** Wrap a `Start` function to create a `Switchable and ensure the start function is only started and stopped once. */
-export class Switch<T = void> implements Switchable<T> {
+/** Something that can become an `Switch` */
+export type PossibleSwitch<T> = StartCallback<T> | Switch<T>;
+
+/**
+ * Wrap a `StartCallback` and create a `Switch`
+ * - Ensures that the start and stop callbacks are only called once.
+ */
+export class StartSwitch<T> implements Switch<T> {
 	private readonly _start: StartCallback<T>;
-	private _stop: StopCallback | void = undefined;
+	private _stop: StopCallback | undefined = undefined;
 	constructor(start: StartCallback<T>) {
 		this._start = start;
 	}
-	on(value: T) {
-		this._stop ||= this._start(value);
+	start(v: T) {
+		this._stop ||= this._start(v);
 	}
-	off() {
+	stop() {
 		if (this._stop) this._stop = void this._stop();
 	}
 }
 
-/** Set of items that switches on when it has items and off when it doesn't. */
-export class SwitchingSet<T> extends Set<T> {
-	private readonly _switch: Switchable<Set<T>>;
-	constructor(start: StartCallback<Set<T>>) {
+/** Turn a possible switch into a switch. */
+export const getSwitch = <T>(v: PossibleSwitch<T>): Switch<T> => (isFunction(v) ? new StartSwitch<T>(v) : v);
+
+/** Set of items that starts a switch when it has items and stops it when it has no items. */
+export class SwitchingSet<T> extends Set<T> implements Switch<T> {
+	private readonly _switch: Switch<Set<T>>;
+	constructor(input: PossibleSwitch<Set<T>>) {
 		super();
-		this._switch = new Switch(start);
+		this._switch = getSwitch(input);
 	}
 	override add(value: T): this {
 		super.add(value);
-		this._switch.on(this);
+		this._switch.start(this);
 		return this;
 	}
 	override delete(value: T): boolean {
 		const deleted = super.delete(value);
-		if (!this.size) this._switch.off();
+		if (!this.size) this._switch.stop(this);
 		return deleted;
 	}
-}
-
-/** Map of items that switches on when it has items and off when it doesn't. */
-export class SwitchingMap<K, T> extends Map<K, T> {
-	private readonly _switch: Switchable<Map<K, T>>;
-	constructor(start: StartCallback<Map<K, T>>) {
-		super();
-		this._switch = new Switch(start);
+	override clear(): void {
+		this.clear();
+		this._switch.stop(this);
 	}
-	override set(key: K, value: T): this {
-		super.set(key, value);
-		this._switch.on(this);
-		return this;
+	// Implement `Switch`
+	start(value: T): void {
+		this.add(value);
 	}
-	override delete(key: K): boolean {
-		const deleted = super.delete(key);
-		if (!this.size) this._switch.off();
-		return deleted;
+	stop(value: T): void {
+		this.delete(value);
 	}
 }

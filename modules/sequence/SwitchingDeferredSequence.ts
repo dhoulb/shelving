@@ -1,20 +1,17 @@
 import type { StartCallback } from "../util/callback.js";
+import type { Switch } from "../util/switch.js";
 import { SwitchingSet } from "../util/switch.js";
 import { DeferredSequence } from "./DeferredSequence.js";
-import { RegisteringSequence } from "./RegisteringSequence.js";
+import { SwitchingSequence } from "./SwitchingSequence.js";
 
 /** Deferred sequence of values that switches on when it has iterators that are iterating, and off when all iterators are done. */
 export class SwitchingDeferredSequence<T = void, R = void> extends DeferredSequence<T, R> {
-	/** Store a list of iterators currently iterating over this sequence. */
-	private readonly _iterators: Set<AsyncIterator<T>>;
-
+	private readonly _switch: Switch<AsyncIterator<T, R>>;
 	constructor(start: StartCallback<DeferredSequence<T, R>>) {
 		super();
-		this._iterators = new SwitchingSet(() => start(this));
+		this._switch = new SwitchingSet<AsyncIterator<T, R>>(() => start(this));
 	}
-
-	// Implement `AsyncIterable`
-	[Symbol.asyncIterator](): AsyncGenerator<T, R, void> {
-		return new RegisteringSequence(this, this._iterators);
+	override [Symbol.asyncIterator](): AsyncGenerator<T, R, void> {
+		return new SwitchingSequence(this, this._switch);
 	}
 }

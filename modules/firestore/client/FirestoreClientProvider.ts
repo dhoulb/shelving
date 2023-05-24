@@ -71,11 +71,11 @@ export class FirestoreClientProvider implements AsyncProvider {
 		return _getItemValue(await getDoc(doc(this._firestore, c, id)));
 	}
 	getItemSequence(c: string, id: string): AsyncIterable<ItemValue> {
-		return new SwitchingDeferredSequence(({ resolve, reject }) =>
+		return new SwitchingDeferredSequence(sequence =>
 			onSnapshot(
 				doc(this._firestore, c, id), //
-				snapshot => resolve(_getItemValue(snapshot)),
-				reject,
+				snapshot => sequence.resolve(_getItemValue(snapshot)),
+				reason => sequence.reject(reason),
 			),
 		);
 	}
@@ -96,11 +96,11 @@ export class FirestoreClientProvider implements AsyncProvider {
 		return _getItems(await getDocs(_getQuery(this._firestore, c, q)));
 	}
 	getQuerySequence(c: string, q: ItemQuery): AsyncIterable<ItemArray> {
-		return new SwitchingDeferredSequence(({ resolve, reject }) =>
+		return new SwitchingDeferredSequence(sequence =>
 			onSnapshot(
 				_getQuery(this._firestore, c, q), //
-				snapshot => resolve(_getItems(snapshot)),
-				reject,
+				snapshot => sequence.resolve(_getItems(snapshot)),
+				reason => sequence.reject(reason),
 			),
 		);
 	}
