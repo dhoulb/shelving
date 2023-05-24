@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
 import type { Arguments } from "./function.js";
 import { AssertionError } from "../error/AssertionError.js";
 import { debug } from "./debug.js";
-import { assertFunction } from "./function.js";
 
 /** Class that has a public `constructor()` function. */
 export type Constructor<T, A extends Arguments> = new (...args: A) => T;
@@ -16,8 +13,6 @@ export type AnyConstructor = new (...args: any) => any; // Note: `any` works bet
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Class<T> = new (...args: any) => T;
 
-export const abc: Class<String> = String;
-
 /** Is a given value a class constructor? */
 export const isConstructor = <T extends AnyConstructor>(value: T | unknown): value is T => typeof value === "function" && value.toString().startsWith("class");
 
@@ -27,66 +22,4 @@ export const isInstance = <T>(value: unknown, type: Class<T>): value is T => val
 /** Assert that a value is an instance of something. */
 export function assertInstance<T>(value: T | unknown, type: Class<T>): asserts value is T {
 	if (!(value instanceof type)) throw new AssertionError(`Must be instance of ${debug(type)}`, value);
-}
-
-/** Decorator to bind a class method lazily on first access. */
-export function bindMethod<O, T, A>(target: O, key: string, { value: method }: TypedPropertyDescriptor<(...args: A[]) => T>): TypedPropertyDescriptor<(...args: A[]) => T> {
-	assertFunction(method);
-	return {
-		configurable: true,
-		get(): (...args: A[]) => T {
-			const bound = method.bind<O, A, T>(target);
-			Object.defineProperty(target, key, { value: bound, configurable: false, writable: false, enumerable: false });
-			return bound;
-		},
-	};
-}
-
-/**
- * Decorator to cache the result of a class method.
- * - Use this if a method computes an expensive value and you want to use it multiple times.
- * - Gets the method's result the first time the property is accessed, then saves that returned value in the object forever.
- */
-export function cacheMethod<O, T, A extends Arguments>(target: O, key: string, { value: method }: TypedPropertyDescriptor<(this: O, ...args: A) => T>): TypedPropertyDescriptor<(this: O, ...args: A) => T> {
-	assertFunction(method);
-	return {
-		configurable: true,
-		get(): (...args: A) => T {
-			return (...args: A): T => {
-				const value = method.call(target, ...args);
-				Object.defineProperty(target, key, { value: () => value, configurable: false, writable: false, enumerable: false });
-				return value;
-			};
-		},
-	};
-}
-
-/**
- * Decorator to cache the result of a class property getter.
- * - Gets the result the first time the property is accessed, then saves that returned value in the object forever.
- */
-export function cacheGetter<T>(target: Object, key: string, { get }: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> {
-	assertFunction(get);
-	return {
-		configurable: true,
-		get() {
-			const value = get.call(this);
-			Object.defineProperty(this, key, { value, configurable: false, writable: false, enumerable: false });
-			return value;
-		},
-	};
-}
-
-/**
- * Decorator to set a property on an class's prototype not the class itself.
- *
- * @example
- * 		class MyClass {
- * 			@setPrototype("myProp", "myValue!") readonly myProp!: string;
- * 		}
- */
-export function setPrototype<K extends PropertyKey, T>(key: K, value: T): (prototype: { [J in K]: T }, k: K) => void {
-	return (prototype: { [J in K]: T }) => {
-		prototype[key] = value;
-	};
 }

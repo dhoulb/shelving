@@ -1,8 +1,6 @@
-import { setPrototype } from "../util/class.js";
-
 /** Sequence of values designed to be extended that implements the full async generator protocol. */
 export abstract class AbstractSequence<T, R> implements AsyncGenerator<T, R, void> {
-	@setPrototype(Symbol.toStringTag, "Sequence") readonly [Symbol.toStringTag]!: string;
+	readonly [Symbol.toStringTag] = "Sequence";
 
 	// Implement `AsyncIterator`
 	abstract next(): Promise<IteratorResult<T, R>>;

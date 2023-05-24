@@ -1,8 +1,6 @@
-import { setPrototype } from "../util/class.js";
-
 /** Abstract generator designed to be extended that implements the full generator protocol. */
 export abstract class AbstractGenerator<T, R, N> implements Generator<T, R, N> {
-	@setPrototype(Symbol.toStringTag, "Generator") readonly [Symbol.toStringTag]!: string;
+	readonly [Symbol.toStringTag] = "Generator";
 
 	// Implement `Iterator`
 	abstract next(value: N): IteratorResult<T, R>;
