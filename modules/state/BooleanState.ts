@@ -9,6 +9,6 @@ export class BooleanState extends State<boolean> {
 
 	/** Toggle the current boolean value. */
 	toggle(): void {
-		this.set(this.value ? false : true);
+		this.value = !this.value;
 	}
 }

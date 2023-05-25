@@ -14,7 +14,7 @@ export class DataState<T extends Data> extends State<T> {
 
 	/** Update several props in this data. */
 	update(updates: Updates<T>): void {
-		this.set(updateData(this.data, updates));
+		this.value = updateData(this.data, updates);
 	}
 
 	/** Update a single named prop in this data. */
@@ -24,7 +24,7 @@ export class DataState<T extends Data> extends State<T> {
 
 	/** Update a single named prop in this data. */
 	setProp<K extends DataKey<T>>(name: K, value: T[K]): void {
-		this.set(withProp(this.data, name, value));
+		this.value = withProp(this.data, name, value);
 	}
 }
 
@@ -42,7 +42,7 @@ export class OptionalDataState<T extends Data> extends State<T | undefined> {
 
 	/** Update several props in this data. */
 	update(updates: Updates<T>): void {
-		this.set(updateData(this.data, updates));
+		this.value = updateData(this.data, updates);
 	}
 
 	/** Update a single named prop in this data. */
@@ -52,11 +52,11 @@ export class OptionalDataState<T extends Data> extends State<T | undefined> {
 
 	/** Update a single named prop in this data. */
 	setProp<K extends DataKey<T>>(name: K, value: T[K]): void {
-		this.set(withProp(this.data, name, value));
+		this.value = withProp(this.data, name, value);
 	}
 
 	/** Set the data to `undefined`. */
 	unset(): void {
-		this.set(undefined);
+		this.value = undefined;
 	}
 }

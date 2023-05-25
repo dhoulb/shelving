@@ -34,6 +34,15 @@ export class State<T> implements AsyncIterable<T>, Validatable<T> {
 		if (this._value === NONE) throw this.next;
 		return this._value;
 	}
+	set value(next: T) {
+		const value = this.validate(next);
+		if (value !== this._value || this._reason !== undefined) {
+			this._reason = undefined;
+			this._value = value;
+			this._time = Date.now();
+			this.next.resolve(value);
+		}
+	}
 	private _value: T | typeof NONE = NONE;
 
 	/** Time this state was last updated with a new value. */
@@ -57,6 +66,12 @@ export class State<T> implements AsyncIterable<T>, Validatable<T> {
 	get reason(): unknown {
 		return this._reason;
 	}
+	set reason(reason: Error | unknown) {
+		this._reason = reason;
+		if (reason !== undefined) {
+			this.next.reject(reason);
+		}
+	}
 	private _reason: unknown = undefined;
 
 	/** State is initiated with an initial state. */
@@ -70,27 +85,13 @@ export class State<T> implements AsyncIterable<T>, Validatable<T> {
 
 	/** Set the value of the state. */
 	set(next: T): void {
-		const value = this.validate(next);
-		if (value !== this._value || this._reason !== undefined) {
-			this._reason = undefined;
-			this._value = value;
-			this._time = Date.now();
-			this.next.resolve(value);
-		}
-	}
-
-	/** Set the error reason of the state (will be  */
-	error(reason: unknown) {
-		this._reason = reason;
-		if (reason !== undefined) {
-			this.next.reject(reason);
-		}
+		this.value = next;
 	}
 
 	/** Set the value of the state as values are pulled from a sequence. */
 	async *through(sequence: AsyncIterable<T>): AsyncIterable<T> {
 		for await (const value of sequence) {
-			this.set(value);
+			this.value = value;
 			yield value;
 		}
 	}

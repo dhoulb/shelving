@@ -73,7 +73,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 	};
 	private async _refresh(): Promise<void> {
 		this.busy.set(true);
-		this.error(undefined); // Optimistically clear the error.
+		this.reason = undefined; // Optimistically clear the error.
 		try {
 			const items = await this.ref.items;
 			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
@@ -104,7 +104,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 	};
 	private async _loadMore(): Promise<void> {
 		this.busy.set(true);
-		this.error(undefined); // Optimistically clear the error.
+		this.reason = undefined; // Optimistically clear the error.
 		try {
 			const last = this.last;
 			const ref = last ? this.ref.with(getAfterQuery(this.ref.query, last)) : this.ref;
@@ -112,7 +112,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 			this.set([...this.items, ...items]);
 			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
 		} catch (thrown) {
-			this.error(thrown);
+			this.reason = thrown;
 		} finally {
 			this.busy.set(false);
 		}

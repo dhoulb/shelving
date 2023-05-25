@@ -42,11 +42,11 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 	};
 	private async _refresh(): Promise<void> {
 		this.busy.set(true);
-		this.error(undefined); // Optimistically clear the error.
+		this.reason = undefined; // Optimistically clear the error.
 		try {
 			this.set(await this.ref.value);
 		} catch (thrown) {
-			this.error(thrown);
+			this.reason = thrown;
 		} finally {
 			this.busy.set(false);
 		}
