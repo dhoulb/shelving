@@ -1,6 +1,6 @@
 import type { ItemArray, ItemData, ItemQuery, ItemValue } from "./ItemReference.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
-import type { Callback, ErrorCallback, StopCallback } from "../util/callback.js";
+import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
 import type { Updates } from "../util/update.js";
 import { countArray, getOptionalFirstItem, getOptionalLastItem, isArrayLength } from "../util/array.js";
@@ -87,7 +87,7 @@ abstract class AbstractQueryReference<T extends Data = Data> implements AsyncIte
 	}
 
 	/** Subscribe to this item. */
-	subscribe(onNext?: Callback<ItemArray<T>>, onError?: ErrorCallback): StopCallback {
+	subscribe(onNext?: ValueCallback<ItemArray<T>>, onError?: ErrorCallback): StopCallback {
 		return runSequence(this, onNext, onError);
 	}
 

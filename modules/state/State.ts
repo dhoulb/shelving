@@ -1,4 +1,4 @@
-import type { Callback, ErrorCallback, StopCallback } from "../util/callback.js";
+import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
 import type { Validator } from "../util/validate.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { NONE } from "../util/constants.js";
@@ -102,7 +102,7 @@ export class State<T> implements AsyncIterable<T>, Validator<T> {
 	}
 
 	/** Push values to another state or callback to this state until the returned stop function is called. */
-	to(target: Callback<T>, onError?: ErrorCallback): StopCallback {
+	to(target: ValueCallback<T>, onError?: ErrorCallback): StopCallback {
 		return runSequence(this, target, onError);
 	}
 

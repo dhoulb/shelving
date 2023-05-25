@@ -1,6 +1,6 @@
 import type { AnyState } from "../state/State.js";
 import type { ImmutableArray } from "../util/array.js";
-import type { Callback, StopCallback } from "../util/callback.js";
+import type { StopCallback, ValueCallback } from "../util/callback.js";
 import type { Nullish } from "../util/null.js";
 import { useEffect, useState as useReactState } from "react";
 import { call } from "../util/callback.js";
@@ -29,4 +29,4 @@ export function useState(...states: Nullish<AnyState>[]): ImmutableArray<Nullish
 }
 
 /** Start a subscription to a `ReferenceState` instance and rerender a new value or error is issued. */
-const _startState = (state: Nullish<AnyState>, rerender: Callback<unknown>): StopCallback | undefined => state?.next.to(rerender, rerender);
+const _startState = (state: Nullish<AnyState>, rerender: ValueCallback<unknown>): StopCallback | undefined => state?.next.to(rerender, rerender);

@@ -1,5 +1,5 @@
 import type { Deferred } from "../util/async.js";
-import type { Callback, ErrorCallback, StopCallback } from "../util/callback.js";
+import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
 import { getDeferred } from "../util/async.js";
 import { runSequence } from "../util/sequence.js";
 import { AbstractSequence } from "./AbstractSequence.js";
@@ -26,7 +26,7 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 	}
 
 	/** Resolve the current deferred in the sequence. */
-	readonly resolve: Callback<T> = value => {
+	readonly resolve: ValueCallback<T> = value => {
 		this._nextValue = value;
 		this._nextReason = _NOVALUE;
 		queueMicrotask(this._fulfill);
@@ -83,7 +83,7 @@ export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R>
 	}
 
 	/** Subscrbe to the value of the sequence with a callback until the returned stop function is called. */
-	to(onNext: Callback<T>, onError?: ErrorCallback): StopCallback {
+	to(onNext: ValueCallback<T>, onError?: ErrorCallback): StopCallback {
 		return runSequence(this, onNext, onError);
 	}
 }

@@ -1,4 +1,4 @@
-import type { Callback, ErrorCallback } from "./callback.js";
+import type { ErrorCallback, ValueCallback } from "./callback.js";
 import { AssertionError } from "../error/AssertionError.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
@@ -46,11 +46,11 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 		return Promise;
 	}
 	/** Resolve this promise with a value. */
-	protected readonly _resolve: Callback<T>;
+	protected readonly _resolve: ValueCallback<T>;
 	/** Reject this promise with a reason. */
 	protected readonly _reject: ErrorCallback;
 	constructor() {
-		let _resolve: Callback<T>;
+		let _resolve: ValueCallback<T>;
 		let _reject: ErrorCallback;
 		super((x, y) => {
 			_resolve = x;
@@ -64,7 +64,7 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 /** Deferred allows you to access the internal resolve/reject callbacks of a `Promise` */
 export type Deferred<T> = {
 	promise: Promise<T>;
-	resolve: Callback<T>;
+	resolve: ValueCallback<T>;
 	reject: ErrorCallback;
 };
 
@@ -73,7 +73,7 @@ export type Deferred<T> = {
  * - See https://github.com/tc39/proposal-promise-with-resolvers/
  */
 export function getDeferred<T = unknown>(): Deferred<T> {
-	let resolve: Callback<T>;
+	let resolve: ValueCallback<T>;
 	let reject: ErrorCallback;
 	return {
 		promise: new Promise<T>((x, y) => {

@@ -1,4 +1,4 @@
-import type { AsyncCallback, Callback, ErrorCallback, StopCallback } from "./callback.js";
+import type { AsyncValueCallback, ErrorCallback, StopCallback, ValueCallback } from "./callback.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { getDeferred, getDelay } from "./async.js";
 import { call } from "./callback.js";
@@ -38,7 +38,7 @@ export async function* repeatDelay(ms: number): AsyncIterable<number> {
 }
 
 /** Dispatch items in a sequence to a (possibly async) callback. */
-export async function* dispatchSequence<T>(sequence: AsyncIterable<T>, onNext: AsyncCallback<T>): AsyncIterable<T> {
+export async function* dispatchSequence<T>(sequence: AsyncIterable<T>, onNext: AsyncValueCallback<T>): AsyncIterable<T> {
 	for await (const item of sequence) {
 		call(onNext, item);
 		yield item;
@@ -52,12 +52,12 @@ export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
 }
 
 /** Pull values from a sequence until the returned function is called. */
-export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: Callback<T>, onError: ErrorCallback = logError): StopCallback {
+export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError: ErrorCallback = logError): StopCallback {
 	const { promise, resolve } = getDeferred<typeof STOP>();
 	_runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError).catch(onError).catch(logError);
 	return () => resolve(STOP);
 }
-async function _runSequence<T>(iterator: AsyncIterator<T>, stopped: Promise<typeof STOP>, onNext: Callback<T> | undefined, onError: ErrorCallback): Promise<unknown> {
+async function _runSequence<T>(iterator: AsyncIterator<T>, stopped: Promise<typeof STOP>, onNext: ValueCallback<T> | undefined, onError: ErrorCallback): Promise<unknown> {
 	try {
 		const result = await Promise.race([stopped, iterator.next()]);
 		if (result === STOP || result.done) {
