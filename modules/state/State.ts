@@ -1,5 +1,5 @@
 import type { Callback, ErrorCallback, StopCallback } from "../util/callback.js";
-import type { Validatable } from "../util/validate.js";
+import type { Validator } from "../util/validate.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { NONE } from "../util/constants.js";
 import { runSequence } from "../util/sequence.js";
@@ -24,7 +24,7 @@ export type StateOptions<T> = {
  * - To set the state to be loading, use the `NONE` constant or a `Promise` value.
  * - To set the state to an explicit value, use that value or another `State` instance with a value.
  * */
-export class State<T> implements AsyncIterable<T>, Validatable<T> {
+export class State<T> implements AsyncIterable<T>, Validator<T> {
 	/** Deferred sequence this state uses to issue values as they change. */
 	public readonly next: DeferredSequence<T>;
 

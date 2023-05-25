@@ -11,7 +11,7 @@ import { getDictionaryItems } from "./dictionary.js";
 import { isIterable } from "./iterate.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
-export interface Validatable<T> {
+export interface Validator<T> {
 	/**
 	 * `validate()` method accepts an unsafe value and returns a valid value.
 	 *
@@ -25,12 +25,6 @@ export interface Validatable<T> {
 	validate(unsafeValue: unknown): T;
 }
 
-/** Function that can validate a value. */
-export type Validate<T> = (unsafeValue: unknown) => T;
-
-/** Something that can validate a value. */
-export type Validator<T = unknown> = Validatable<T> | Validate<T>;
-
 /** Extract the type from a validator. */
 export type ValidatorType<X> = X extends Validator<infer Y> ? Y : never;
 
@@ -40,15 +34,10 @@ export type Validators<T extends Data = Data> = { readonly [K in keyof T]: Valid
 /** Extract the type from a set of validators. */
 export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> };
 
-/** Validate an unknown value with a validator. */
-export function validate<T>(unsafeValue: unknown, validator: Validator<T>): T {
-	return typeof validator === "function" ? validator(unsafeValue) : validator.validate(unsafeValue);
-}
-
 /** Get value that validates against a given `Validator`, or throw `ValidationError` */
 export function getValid<T>(unsafeValue: unknown, validator: Validator<T>): T {
 	try {
-		return validate(unsafeValue, validator);
+		return validator.validate(unsafeValue);
 	} catch (thrown) {
 		if (thrown instanceof Feedback) throw new ValidationError("Must validate", thrown);
 		throw thrown;
@@ -73,7 +62,7 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
 	const feedbacks: MutableDictionary<Feedback> = {};
 	for (const unsafeItem of unsafeItems) {
 		try {
-			yield validate(unsafeItem, validator);
+			yield validator.validate(unsafeItem);
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
 			feedbacks[index] = thrown;
@@ -99,7 +88,7 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
 	const feedbacks: MutableDictionary<Feedback> = {};
 	for (const unsafeItem of unsafeArray) {
 		try {
-			const safeItem = validate(unsafeItem, validator);
+			const safeItem = validator.validate(unsafeItem);
 			safeArray.push(safeItem);
 			if (!changed && safeItem !== unsafeItem) changed = true;
 		} catch (thrown) {
@@ -126,7 +115,7 @@ export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unkno
 	const feedbacks: MutableDictionary<Feedback> = {};
 	for (const [key, unsafeValue] of getDictionaryItems(unsafeDictionary)) {
 		try {
-			const safeValue = validate(unsafeValue, validator);
+			const safeValue = validator.validate(unsafeValue);
 			safeDictionary[key] = safeValue;
 			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
@@ -158,7 +147,7 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 		const unsafeValue = unsafeData[key];
 		if (unsafeValue === undefined && partial) continue; // Silently skip `undefined` props if in partial mode.
 		try {
-			const safeValue = validate(unsafeValue, validator);
+			const safeValue = validator.validate(unsafeValue);
 			safeData[key] = safeValue;
 			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
@@ -180,7 +169,7 @@ export const getValidationContext = (): Data => getLastItem(CONTEXTS);
 /** Validate a unknown value with a validator, and supply a context that can be read during the validation process. */
 export function validateWithContext<T>(unsafeValue: unknown, validator: Validator<T>, context: Data): T {
 	CONTEXTS.push(context);
-	const validValue = validate(unsafeValue, validator);
+	const validValue = validator.validate(unsafeValue);
 	CONTEXTS.pop();
 	return validValue;
 }

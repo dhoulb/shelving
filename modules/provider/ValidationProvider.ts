@@ -8,7 +8,7 @@ import type { Updates } from "../util/update.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { updateData } from "../util/update.js";
-import { validate, validateWithContext } from "../util/validate.js";
+import { validateWithContext } from "../util/validate.js";
 
 // Constants.
 const VALIDATION_CONTEXT_GET: Data = { action: "get", id: true };
@@ -63,7 +63,7 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 		return _validateItemArray(collection, this.source.getQuery(collection, constraints), this.getSchema(collection));
 	}
 	setQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>, value: T[K]): number {
-		return this.source.setQuery(collection, constraints, validate(value, this.getSchema(collection)));
+		return this.source.setQuery(collection, constraints, this.getSchema(collection).validate(value));
 	}
 	updateQuery<K extends DataKey<T>>(collection: K, constraints: ItemQuery<T[K]>, updates: Updates<T[K]>): number {
 		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
