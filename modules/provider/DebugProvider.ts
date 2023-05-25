@@ -92,7 +92,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 	getQuery(collection: string, query: ItemQuery): ItemArray {
 		try {
 			const items = this.source.getQuery(collection, query);
-			console.debug("✔ ✅ GET", collection, query, "ITEMS", items);
+			console.debug("✔ GET", collection, query, "ITEMS", items);
 			return items;
 		} catch (reason) {
 			console.error("✘ GET", collection, query, reason);
