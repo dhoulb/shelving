@@ -5,6 +5,7 @@ import type { ImmutableObject } from "../../util/object.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { BulkWriter, DocumentData, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot } from "@google-cloud/firestore";
 import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
+import { getItemData } from "../../db/ItemReference.js";
 import { SwitchingDeferredSequence } from "../../sequence/SwitchingDeferredSequence.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
@@ -43,12 +44,12 @@ function _getItemArray(snapshot: QuerySnapshot): ItemArray {
 
 function _getItemData(snapshot: QueryDocumentSnapshot): ItemData {
 	const data = snapshot.data();
-	return { ...data, id: snapshot.id };
+	return getItemData(snapshot.id, data);
 }
 
 function _getItemValue(snapshot: DocumentSnapshot): ItemValue {
 	const data = snapshot.data();
-	if (data) return { ...data, id: snapshot.id };
+	if (data) return getItemData(snapshot.id, data);
 }
 
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */

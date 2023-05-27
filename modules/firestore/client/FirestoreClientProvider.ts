@@ -1,4 +1,4 @@
-import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../../db/ItemReference.js";
+import { ItemArray, ItemData, ItemQuery, ItemValue, getItemData } from "../../db/ItemReference.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { Data, DataProp } from "../../util/data.js";
 import type { ImmutableObject } from "../../util/object.js";
@@ -44,12 +44,12 @@ function _getItems<T extends Data>(snapshot: QuerySnapshot<T>): ItemArray<T> {
 
 function _getItemData<T extends Data>(snapshot: QueryDocumentSnapshot<T>): ItemData<T> {
 	const data = snapshot.data();
-	return { ...data, id: snapshot.id };
+	return getItemData(snapshot.id, data);
 }
 
 function _getItemValue<T extends Data>(snapshot: DocumentSnapshot<T>): ItemValue<T> {
 	const data = snapshot.data();
-	if (data) return { ...data, id: snapshot.id };
+	if (data) return getItemData(snapshot.id, data);
 }
 
 /** Convert `Updates` object into corresponding Firestore `FieldValue` instances. */

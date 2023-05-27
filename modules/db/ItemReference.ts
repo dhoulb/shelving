@@ -22,6 +22,9 @@ export function* getIDs<T extends Data>(entities: Iterable<ItemData<T>>): Iterab
 	for (const { id } of entities) yield id;
 }
 
+/** Merge an ID into a set of data to make an `ItemData` */
+export const getItemData = <T extends Data>(id: string, data: T | ItemData<T>): ItemData<T> => (data.id === id ? (data as ItemData<T>) : { ...data, id });
+
 /** An array of item data. */
 export type ItemArray<T extends Data = Data> = ImmutableArray<ItemData<T>>;
 

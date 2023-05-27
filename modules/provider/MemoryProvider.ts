@@ -2,6 +2,7 @@ import type { Provider } from "./Provider.js";
 import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../db/ItemReference.js";
 import type { Data } from "../util/data.js";
 import type { Updates } from "../util/update.js";
+import { getItemData } from "../db/ItemReference.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { getArray } from "../util/array.js";
@@ -118,7 +119,7 @@ export class MemoryTable<T extends Data = Data> {
 	addItem(data: T): string {
 		let id = getRandomKey();
 		while (this._data.has(id)) id = getRandomKey(); // Regenerate ID until unique.
-		this.setItemData({ ...data, id });
+		this.setItemData(getItemData(id, data));
 		return id;
 	}
 
@@ -133,8 +134,8 @@ export class MemoryTable<T extends Data = Data> {
 		return false;
 	}
 
-	setItem(id: string, item: ItemData<T> | T): boolean {
-		return this.setItemData(item.id === id ? (item as ItemData<T>) : { ...item, id });
+	setItem(id: string, data: ItemData<T> | T): boolean {
+		return this.setItemData(getItemData(id, data));
 	}
 
 	setItemValue(id: string, value: ItemData<T> | T | undefined): boolean {

@@ -8,6 +8,7 @@ import { BooleanState } from "../state/BooleanState.js";
 import { State } from "../state/State.js";
 import { getRequired } from "../util/null.js";
 import { getOptionalSource } from "../util/source.js";
+import { getItemData } from "./ItemReference.js";
 
 /** Hold the current state of a item. */
 export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
@@ -17,6 +18,11 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 	/** Get the data of this state (throws `RequiredError` if item doesn't exist). */
 	get data(): ItemData<T> {
 		return getRequired(this.value);
+	}
+
+	/** Set the data of this state. */
+	set data(data: T | ItemData<T>) {
+		this.value = getItemData(this.ref.id, data);
 	}
 
 	/** Does the item exist? */
