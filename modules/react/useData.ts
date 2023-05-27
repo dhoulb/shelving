@@ -30,5 +30,5 @@ function _getRefState(ref: Nullish<AsyncItemReference | AsyncQueryReference>, ca
 	return ref && key ? cache.get(key) || setMapItem(cache, key, ref instanceof AsyncItemReference ? new ItemState(ref) : new QueryState(ref)) : undefined;
 }
 
-/** Wrap components with `<DataCache>` to allow the use of `useData()`. */
-export const DataCache = Cache;
+/** Wrap components with `<DataProvider>` to allow the use of `useData()`. */
+export const DataProvider = Cache;
