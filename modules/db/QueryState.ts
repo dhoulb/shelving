@@ -79,7 +79,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
 			this.set(items);
 		} catch (thrown) {
-			this.next.reject(thrown);
+			this.reason = thrown;
 		} finally {
 			this.busy.set(false);
 		}
