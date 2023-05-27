@@ -7,9 +7,14 @@ import { State } from "./State.js";
 
 /** State that stores a data object and has additional methods to help with that. */
 export class DataState<T extends Data> extends State<T> {
-	/** Get the data value of this state. */
+	/** Get the data of this state. */
 	get data(): T {
 		return this.value;
+	}
+
+	/** Set the data of this state. */
+	set data(data: T) {
+		this.value = data;
 	}
 
 	/** Update several props in this data. */
@@ -33,6 +38,11 @@ export class OptionalDataState<T extends Data> extends State<T | undefined> {
 	/** Get current data value of this state (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
 		return getRequired(this.value);
+	}
+
+	/** Set the data of this state. */
+	set data(data: T) {
+		this.value = data;
 	}
 
 	/** Does the data exist or not? */

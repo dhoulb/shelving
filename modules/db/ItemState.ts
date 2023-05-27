@@ -14,12 +14,12 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 	readonly ref: ItemReference<T> | AsyncItemReference<T>;
 	readonly busy = new BooleanState();
 
-	/** Get the data of the item (throws `RequiredError` if item doesn't exist). */
+	/** Get the data of this state (throws `RequiredError` if item doesn't exist). */
 	get data(): ItemData<T> {
 		return getRequired(this.value);
 	}
 
-	/** Does the item exist (i.e. its value isn't `null`)? */
+	/** Does the item exist? */
 	get exists(): boolean {
 		return !!this.value;
 	}
@@ -41,14 +41,14 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 		if (!this.busy.value) void this._refresh();
 	};
 	private async _refresh(): Promise<void> {
-		this.busy.set(true);
+		this.busy.value = true;
 		this.reason = undefined; // Optimistically clear the error.
 		try {
-			this.set(await this.ref.value);
+			this.value = await this.ref.value;
 		} catch (thrown) {
 			this.reason = thrown;
 		} finally {
-			this.busy.set(false);
+			this.busy.value = false;
 		}
 	}
 

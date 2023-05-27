@@ -10,7 +10,7 @@ test("DataState.prototype.data", async () => {
 	const calls: T[] = [];
 	const stop = state.next.to(v => calls.push(v));
 	// Set truthy value.
-	expect(state.set({ a: 2 })).toBe(undefined);
+	state.value = { a: 2 };
 	expect(state.value).toEqual({ a: 2 });
 	expect(state.data).toEqual({ a: 2 });
 	// Checks.
@@ -46,7 +46,7 @@ test("OptionalDataState.prototype.data", async () => {
 	const calls: (T | undefined)[] = [];
 	const stop = state.next.to(v => calls.push(v));
 	// Set data value.
-	expect(state.set({ a: 1 })).toBe(undefined);
+	state.value = { a: 1 };
 	expect(state.value).toEqual({ a: 1 });
 	expect(state.data).toEqual({ a: 1 });
 	// Update data value.
@@ -58,7 +58,7 @@ test("OptionalDataState.prototype.data", async () => {
 	expect(state.value).toBe(undefined);
 	expect(() => state.data).toThrow(RequiredError);
 	// Set undefined value.
-	expect(state.set(undefined)).toBe(undefined);
+	state.value = undefined;
 	expect(state.value).toBe(undefined);
 	expect(() => state.data).toThrow(RequiredError);
 	// Checks.

@@ -13,20 +13,20 @@ test("State with no initial value", async () => {
 	expect(state.loading).toBe(true);
 	expectToThrowPromiseLike(() => state.value);
 	// Set initial value.
-	expect(state.set(111)).toBe(undefined);
+	state.value = 111;
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(111);
 	await runMicrotasks();
 	// Set new value.
-	expect(state.set(222)).toBe(undefined);
+	state.value = 222;
 	expect(state.value).toBe(222);
 	await runMicrotasks();
 	// Set new value.
-	expect(state.set(333)).toBe(undefined);
+	state.value = 333;
 	expect(state.value).toBe(333);
 	await runMicrotasks();
 	// Set same value again.
-	expect(state.set(333)).toBe(undefined);
+	state.value = 333;
 	expect(state.value).toBe(333);
 	// Checks.
 	expect(calls1).toEqual([111, 222, 333]);
@@ -35,7 +35,7 @@ test("State with no initial value", async () => {
 	stop1();
 	stop2();
 	// Set new value.
-	expect(state.set(555)).toBe(undefined);
+	state.value = 555;
 	expect(state.value).toBe(555);
 	await runMicrotasks();
 	// Checks.
@@ -54,15 +54,15 @@ test("State with initial value", async () => {
 	const stop2 = state.next.to(v => calls2.push(v));
 	await runMicrotasks();
 	// Set new value.
-	expect(state.set(222)).toBe(undefined);
+	state.value = 222;
 	expect(state.value).toBe(222);
 	await runMicrotasks();
 	// Set new value.
-	expect(state.set(333)).toBe(undefined);
+	state.value = 333;
 	expect(state.value).toBe(333);
 	await runMicrotasks();
 	// Set same value again.
-	expect(state.set(333)).toBe(undefined);
+	state.value = 333;
 	expect(state.value).toBe(333);
 	// Checks.
 	await runMicrotasks();
@@ -72,7 +72,7 @@ test("State with initial value", async () => {
 	stop1();
 	stop2();
 	// Set new value.
-	expect(state.set(555)).toBe(undefined);
+	state.value = 555;
 	expect(state.value).toBe(555);
 	await runMicrotasks();
 	// Checks.
@@ -87,9 +87,9 @@ test("State with initial value and multiple synchronous `set()` calls", async ()
 	const stop1 = state.to(v => calls1.push(v));
 	const stop2 = state.next.to(v => calls2.push(v));
 	// Set multiple times.
-	state.set(222);
-	state.set(333);
-	state.set(444);
+	state.value = 222;
+	state.value = 333;
+	state.value = 444;
 	// Checks.
 	await runMicrotasks();
 	expect(calls1).toEqual([444]);
@@ -98,7 +98,7 @@ test("State with initial value and multiple synchronous `set()` calls", async ()
 	stop1();
 	stop2();
 	// Set new value.
-	expect(state.set(555)).toBe(undefined);
+	state.value = 555;
 	expect(state.value).toBe(555);
 	await runMicrotasks();
 	// Checks.
@@ -113,9 +113,9 @@ test("State with no initial value and multiple synchronous `set()` calls", async
 	const stop1 = state.to(v => calls1.push(v));
 	const stop2 = state.next.to(v => calls2.push(v));
 	// Set multiple times.
-	state.set(222);
-	state.set(333);
-	state.set(444);
+	state.value = 222;
+	state.value = 333;
+	state.value = 444;
 	// Checks.
 	await runMicrotasks();
 	expect(calls1).toEqual([444]);
@@ -124,7 +124,7 @@ test("State with no initial value and multiple synchronous `set()` calls", async
 	stop1();
 	stop2();
 	// Set new value.
-	expect(state.set(555)).toBe(undefined);
+	state.value = 555;
 	expect(state.value).toBe(555);
 	await runMicrotasks();
 	// Checks.
