@@ -14,11 +14,28 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npm ci
-      - run: npm outdated && echo 'Nothing to upgrade' || npm upgrade
-      - run: npm run fix # Run fix after upgrade so updates to Prettier and ESLint upgrade the codebase too.
-      - run: npm run test
-      - run: |
-          git config user.name "shelving-upgrade-bot"
-          git config user.email "<>"
-      - run: "git commit -am 'chore: npm upgrade' && git push origin main || echo 'Nothing to commit'"
+      - name: git config
+        shell: bash
+        env:
+          BOT_USER_NAME: ${{ vars.BOT_USER_NAME }}
+          BOT_USER_ID: ${{ vars.BOT_USER_ID }}
+          BOT_PUBLIC_KEY: ${{ vars.BOT_PUBLIC_KEY }}
+          BOT_PRIVATE_KEY: ${{ secrets.BOT_PRIVATE_KEY }}
+        run: |
+          mkdir ~/.ssh
+          install -m 600 <(echo "$BOT_PUBLIC_KEY") ~/.ssh/git.pub
+          install -m 600 <(echo "$BOT_PRIVATE_KEY") ~/.ssh/git
+          eval `ssh-agent -s`
+          ssh-add ~/.ssh/git
+          git config user.name "${BOT_USER_NAME}"
+          git config user.email "${BOT_USER_ID}+${BOT_USER_NAME}@users.noreply.github.com"
+          git config --global gpg.format ssh
+          git config --global user.signingkey ~/.ssh/git.pub
+          git config --global commit.gpgsign true
+      - name: npm upgrade
+        run: |
+          npm ci
+          npm outdated && echo 'Nothing to upgrade' || npm upgrade
+          npm run fix
+          npm run test
+          git commit -am 'chore: npm upgrade' && git push origin main
