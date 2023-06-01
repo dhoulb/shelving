@@ -1,10 +1,11 @@
-import { ItemArray, ItemData, ItemQuery, ItemValue, getItemData } from "../../db/ItemReference.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../../db/ItemReference.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { Data, DataProp } from "../../util/data.js";
 import type { ImmutableObject } from "../../util/object.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
 import { addDoc, collection, deleteDoc, doc, documentId, getDoc, getDocs, increment, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { getItemData } from "../../db/ItemReference.js";
 import { SwitchingDeferredSequence } from "../../sequence/SwitchingDeferredSequence.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
