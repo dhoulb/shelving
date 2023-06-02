@@ -9,6 +9,7 @@ import { getLastItem, isArray } from "./array.js";
 import { getDataProps } from "./data.js";
 import { getDictionaryItems } from "./dictionary.js";
 import { isIterable } from "./iterate.js";
+import { getUndefined } from "./undefined.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validator<T> {
@@ -173,3 +174,6 @@ export function validateWithContext<T>(unsafeValue: unknown, validator: Validato
 	CONTEXTS.pop();
 	return validValue;
 }
+
+// Undefined validator always returns undefined.
+export const UNDEFINED_VALIDATOR: Validator<undefined> = { validate: getUndefined };
