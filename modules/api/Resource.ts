@@ -10,7 +10,7 @@ import { UNDEFINED_VALIDATOR } from "../util/validate.js";
  * @param payload The `Validator` the resource's payload must conform to (defaults to `undefined` if not specified).
  * @param returns The `Validator` the resource's returned value must conform to (defaults to `undefined` if not specified).
  */
-export class Resource<P = unknown, R = void> implements Validator<R> {
+export class Resource<P = undefined, R = void> implements Validator<R> {
 	/** Resource name.. */
 	readonly name: string;
 
@@ -20,7 +20,10 @@ export class Resource<P = unknown, R = void> implements Validator<R> {
 	/** Result validator. */
 	readonly result: Validator<R>;
 
-	constructor(name: string, payload: Validator<P>, result: Validator<R>) {
+	constructor(name: string, payload: Validator<P>, result: Validator<R>);
+	constructor(name: string, payload: Validator<P>);
+	constructor(name: string);
+	constructor(name: string, payload: Validator<P> = UNDEFINED_VALIDATOR as Validator<P>, result: Validator<R> = UNDEFINED_VALIDATOR as Validator<R>) {
 		this.name = name;
 		this.payload = payload;
 		this.result = result;
@@ -57,18 +60,3 @@ export type PayloadType<X extends Resource> = X extends Resource<infer Y, unknow
 
 /** Extract the result type from a `Resource`. */
 export type ResourceType<X extends Resource> = X extends Resource<unknown, infer Y> ? Y : never;
-
-/**
- * Shortcut to create a new `Resource` (consistent with `Schema` shortcuts.
- *
- * @param name The name of the resource.
- * @param payload The `Validator` the resource's payload must conform to (defaults to `undefined` if not specified).
- * @param returns The `Validator` the resource's returned value must conform to (defaults to `undefined` if not specified).
- */
-export function RESOURCE<X, Y>(name: string, payload: Validator<X>, result: Validator<Y>): Resource<X, Y>;
-export function RESOURCE<Y>(name: string, payload: undefined, result: Y): Resource<undefined, Y>;
-export function RESOURCE<X>(name: string, payload: Validator<X>, result?: undefined): Resource<X, void>;
-export function RESOURCE(name: string, payload?: undefined, result?: undefined): Resource<undefined, void>;
-export function RESOURCE(name: string, payload: Validator<unknown> = UNDEFINED_VALIDATOR, result: Validator<unknown> = UNDEFINED_VALIDATOR): Resource<unknown, unknown> {
-	return new Resource(name, payload, result);
-}
