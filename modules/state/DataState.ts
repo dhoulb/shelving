@@ -47,7 +47,7 @@ export class OptionalDataState<T extends Data> extends State<T | undefined> {
 
 	/** Does the data exist or not? */
 	get exists(): boolean {
-		return !!this.value;
+		return !this.loading && !!this.value;
 	}
 
 	/** Update several props in this data. */
