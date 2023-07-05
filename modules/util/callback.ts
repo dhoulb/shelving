@@ -1,17 +1,24 @@
+import type { Arguments } from "./function.js";
 import { isAsync } from "./async.js";
 import { logError } from "./error.js";
 
 /** Callback function with no value. */
 export type Callback = () => void;
 
-/** Callback function with no value. */
+/** Callback function with no value and possibly returns a promise that must be handled. */
 export type AsyncCallback = () => void | PromiseLike<void>;
 
 /** Callback function that receives a value. */
 export type ValueCallback<T> = (value: T) => void;
 
-/** Callback function that receives a value. */
+/** Callback function that receives a value and possibly returns a promise that must be handled. */
 export type AsyncValueCallback<T = void> = (value: T) => void | PromiseLike<void>;
+
+/** Callback function that receives multiple values. */
+export type ValuesCallback<T extends Arguments = []> = (...values: T) => void;
+
+/** Callback function that receives multiple values and possibly returns a promise that must be handled. */
+export type AsyncValuesCallback<T extends Arguments = []> = (...values: T) => void | PromiseLike<void>;
 
 /** Callback function that handles an error. */
 export type ErrorCallback = (reason: Error | unknown) => void;
@@ -23,11 +30,9 @@ export type StartCallback<T> = (value: T) => StopCallback;
 export type StopCallback = () => void;
 
 /** Safely call a callback function (possibly with a value). */
-export function call(callback: () => void | PromiseLike<void>): void;
-export function call<T>(callback: (value: T) => void | PromiseLike<void>, value: T): void;
-export function call(callback: AsyncValueCallback<unknown>, value?: unknown): void {
+export function call<A extends Arguments = []>(callback: (...v: A) => void | PromiseLike<void>, ...values: A): void {
 	try {
-		const result = callback(value);
+		const result = callback(...values);
 		if (isAsync(result)) result.then(undefined, logError);
 	} catch (thrown) {
 		logError(thrown);
@@ -40,11 +45,9 @@ export function called<T>(dispatcher: AsyncValueCallback<T>): ValueCallback<T> {
 }
 
 /** Safely call a callback method (possibly wth a value). */
-export function callMethod<M extends string | symbol>(obj: { [K in M]: () => void | PromiseLike<void> }, key: M): void;
-export function callMethod<T, M extends string | symbol>(obj: { [K in M]: (value: T) => void | PromiseLike<void> }, key: M, value: T): void;
-export function callMethod<M extends string | symbol>(obj: { [K in M]: AsyncValueCallback<unknown> }, key: M, value?: unknown): void {
+export function callMethod<A extends Arguments, M extends string | symbol>(obj: { [K in M]: (...v: A) => void | PromiseLike<void> }, key: M, ...values: A): void {
 	try {
-		const result = obj[key](value);
+		const result = obj[key](...values);
 		if (isAsync(result)) result.then(undefined, logError);
 	} catch (thrown) {
 		logError(thrown);
