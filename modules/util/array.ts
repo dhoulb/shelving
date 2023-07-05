@@ -160,6 +160,15 @@ export function countArray<T>(arr: ImmutableArray<T>): number {
 }
 
 /** Does an array have the specified minimum length.  */
+export function isArrayLength<T>(arr: MutableArray<T>, min: 1, max: 1): arr is [T];
+export function isArrayLength<T>(arr: MutableArray<T>, min: 2, max: 2): arr is [T, T];
+export function isArrayLength<T>(arr: MutableArray<T>, min: 3, max: 3): arr is [T, T, T];
+export function isArrayLength<T>(arr: MutableArray<T>, min: 4, max: 4): arr is [T, T, T, T];
+export function isArrayLength<T>(arr: MutableArray<T>, min?: 1, max?: number): arr is [T, ...T[]];
+export function isArrayLength<T>(arr: MutableArray<T>, min: 2, max?: number): arr is [T, T, ...T[]];
+export function isArrayLength<T>(arr: MutableArray<T>, min: 3, max?: number): arr is [T, T, T, ...T[]];
+export function isArrayLength<T>(arr: MutableArray<T>, min: 4, max?: number): arr is [T, T, T, T, ...T[]];
+export function isArrayLength<T>(arr: MutableArray<T>, min?: number, max?: number): arr is MutableArray<T>;
 export function isArrayLength<T>(arr: ImmutableArray<T>, min: 1, max: 1): arr is readonly [T];
 export function isArrayLength<T>(arr: ImmutableArray<T>, min: 2, max: 2): arr is readonly [T, T];
 export function isArrayLength<T>(arr: ImmutableArray<T>, min: 3, max: 3): arr is readonly [T, T, T];
@@ -174,6 +183,15 @@ export function isArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Infinity
 }
 
 /** Assert that a value has a specific length (or length is in a specific range). */
+export function assertArrayLength<T>(arr: MutableArray<T>, min: 1, max: 1): asserts arr is [T];
+export function assertArrayLength<T>(arr: MutableArray<T>, min: 2, max: 2): asserts arr is [T, T];
+export function assertArrayLength<T>(arr: MutableArray<T>, min: 3, max: 3): asserts arr is [T, T, T];
+export function assertArrayLength<T>(arr: MutableArray<T>, min: 4, max: 4): asserts arr is [T, T, T, T];
+export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min?: 1, max?: number): asserts arr is [T, ...T[]];
+export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min: 2, max?: number): asserts arr is [T, T, ...T[]];
+export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min: 3, max?: number): asserts arr is [T, T, T, ...T[]];
+export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min: 4, max?: number): asserts arr is [T, T, T, T, ...T[]];
+export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min: number, max?: number): asserts arr is MutableArray<T>;
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 1, max: 1): asserts arr is readonly [T];
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 2, max: 2): asserts arr is readonly [T, T];
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 3, max: 3): asserts arr is readonly [T, T, T];
@@ -188,6 +206,15 @@ export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min = 1, 
 }
 
 /** Get an array if it has the specified minimum length.  */
+export function getArrayLength<T>(arr: MutableArray<T>, min: 1, max: 1): [T];
+export function getArrayLength<T>(arr: MutableArray<T>, min: 2, max: 2): [T, T];
+export function getArrayLength<T>(arr: MutableArray<T>, min: 3, max: 3): [T, T, T];
+export function getArrayLength<T>(arr: MutableArray<T>, min: 4, max: 4): [T, T, T, T];
+export function getArrayLength<T>(arr: MutableArray<T>, min?: 1, max?: number): [T, ...T[]];
+export function getArrayLength<T>(arr: MutableArray<T>, min: 2, max?: number): [T, T, ...T[]];
+export function getArrayLength<T>(arr: MutableArray<T>, min: 3, max?: number): [T, T, T, ...T[]];
+export function getArrayLength<T>(arr: MutableArray<T>, min: 4, max?: number): [T, T, T, T, ...T[]];
+export function getArrayLength<T>(arr: MutableArray<T>, min?: number, max?: number): MutableArray<T>;
 export function getArrayLength<T>(arr: ImmutableArray<T>, min: 1, max: 1): readonly [T];
 export function getArrayLength<T>(arr: ImmutableArray<T>, min: 2, max: 2): readonly [T, T];
 export function getArrayLength<T>(arr: ImmutableArray<T>, min: 3, max: 3): readonly [T, T, T];
