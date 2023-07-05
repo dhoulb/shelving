@@ -38,9 +38,9 @@ export async function* repeatDelay(ms: number): AsyncIterable<number> {
 }
 
 /** Dispatch items in a sequence to a (possibly async) callback. */
-export async function* dispatchSequence<T>(sequence: AsyncIterable<T>, onNext: AsyncValueCallback<T>): AsyncIterable<T> {
+export async function* callSequence<T>(sequence: AsyncIterable<T>, callback: AsyncValueCallback<T>): AsyncIterable<T> {
 	for await (const item of sequence) {
-		call(onNext, item);
+		call(callback, item);
 		yield item;
 	}
 }
