@@ -45,7 +45,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 	getItem(collection: string, id: string): ItemValue {
 		try {
 			const item = this.source.getItem(collection, id);
-			console.debug("✔ GET", collection, id, "ITEM", item);
+			console.debug("✔ GET", collection, id, item);
 			return item;
 		} catch (reason) {
 			console.error("✘ GET", collection, id, reason);
@@ -55,7 +55,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 	addItem(collection: string, data: Data): string {
 		try {
 			const id = this.source.addItem(collection, data);
-			console.debug("✔ ADD", collection, data, "ID", id);
+			console.debug("✔ ADD", collection, data, id);
 			return id;
 		} catch (reason) {
 			console.error("✘ ADD", collection, data, reason);
@@ -92,7 +92,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 	getQuery(collection: string, query: ItemQuery): ItemArray {
 		try {
 			const items = this.source.getQuery(collection, query);
-			console.debug("✔ GET", collection, query, "ITEMS", items);
+			console.debug("✔ GET", collection, query, items);
 			return items;
 		} catch (reason) {
 			console.error("✘ GET", collection, query, reason);
@@ -142,7 +142,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 		try {
 			console.debug("⋯ GET", collection, id);
 			const item = await this.source.getItem(collection, id);
-			console.debug("✔ GET", collection, id, "ITEM", item);
+			console.debug("✔ GET", collection, id, item);
 			return item;
 		} catch (reason) {
 			console.error("✘ GET", collection, id, reason);
@@ -194,7 +194,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 		try {
 			console.debug("⋯ GET", collection, query);
 			const items = await this.source.getQuery(collection, query);
-			console.debug("✔ GET", collection, query, "ITEMS", items);
+			console.debug("✔ GET", collection, query, items);
 			return items;
 		} catch (reason) {
 			console.error("✘ GET", collection, query, reason);
