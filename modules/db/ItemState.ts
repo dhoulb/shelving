@@ -33,7 +33,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 	constructor(ref: ItemReference<T> | AsyncItemReference<T>) {
 		const { provider, collection, id } = ref;
 		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T> | undefined;
-		const time = table ? table.getQueryTime(ref) : null;
+		const time = table ? table.getItemTime(id) : null;
 		const next = table ? new SwitchingDeferredSequence<ItemValue<T>>(sequence => sequence.from(table.getCachedItemSequence(id))) : undefined;
 		super(table && typeof time === "number" ? { value: table.getItem(id), time, next } : { next });
 		this.ref = ref;
