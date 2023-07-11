@@ -98,7 +98,7 @@ export class State<T> implements AsyncIterable<T>, Validator<T> {
 
 	/** Pull values from a source sequence until the returned stop function is called. */
 	from(source: AsyncIterable<T>, onError?: ErrorCallback): StopCallback {
-		return runSequence(this.through(source), onError);
+		return runSequence(this.through(source), undefined, onError);
 	}
 
 	/** Push values to another state or callback to this state until the returned stop function is called. */
