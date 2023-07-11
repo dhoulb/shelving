@@ -13,7 +13,7 @@ const _NOVALUE: unique symbol = Symbol("shelving/DeferredSequence.NOVALUE");
  * - Implements `Promise` so the next value can be awaited.
  * - Implements `Deferred` so next values can be resolved or rejected.
  */
-export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R> implements Deferred<T>, Promise<T> {
+export class DeferredSequence<T = void, R = void> extends AbstractSequence<T, R, void> implements Deferred<T>, Promise<T> {
 	/**
 	 * Next deferred to be rejected/resolved, or `undefined` if we haven't requested one yet..
 	 * - Only create the deferred on demand, because we don't want to reject a deferred that isn't used to or it would throw an unhandled promise error.

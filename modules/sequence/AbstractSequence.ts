@@ -1,9 +1,9 @@
 /** Sequence of values designed to be extended that implements the full async generator protocol. */
-export abstract class AbstractSequence<T, R> implements AsyncGenerator<T, R, void> {
+export abstract class AbstractSequence<T, R, N> implements AsyncGenerator<T, R, N> {
 	readonly [Symbol.toStringTag] = "Sequence";
 
 	// Implement `AsyncIterator`
-	abstract next(): Promise<IteratorResult<T, R>>;
+	abstract next(value: N): Promise<IteratorResult<T, R>>;
 	async return(returnValue: R | PromiseLike<R>): Promise<IteratorResult<T, R>> {
 		// Default behaviour for a generator is to return `done: true` and the input value.
 		return { done: true, value: await returnValue };

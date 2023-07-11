@@ -3,16 +3,16 @@ import { getSwitch } from "../util/switch.js";
 import { ThroughSequence } from "./ThroughSequence.js";
 
 /** Async generator that switches on when it has iterators that are iterating, and off when all iterators are done. */
-export class SwitchingSequence<T, R> extends ThroughSequence<T, R> implements ThroughSequence<T, R> {
-	private readonly _switch: Switch<AsyncIterator<T, R>>;
-	constructor(source: AsyncIterator<T, R>, switchable: PossibleSwitch<AsyncIterator<T, R>>) {
+export class SwitchingSequence<T, R, N> extends ThroughSequence<T, R, N> implements ThroughSequence<T, R, N> {
+	private readonly _switch: Switch<AsyncIterator<T, R, N>>;
+	constructor(source: AsyncIterator<T, R, N>, switchable: PossibleSwitch<AsyncIterator<T, R, N>>) {
 		super(source);
 		this._switch = getSwitch(switchable);
 	}
-	override async next(): Promise<IteratorResult<T, R>> {
+	override async next(next: N): Promise<IteratorResult<T, R>> {
 		this._switch.start(this); // Register this in anticipation that it'll continue iterating.
 		try {
-			const result = await super.next();
+			const result = await super.next(next);
 			if (result.done) this._switch.stop(this); // Deregister this.
 			else this._switch.start(this); // Register this.
 			return result;
