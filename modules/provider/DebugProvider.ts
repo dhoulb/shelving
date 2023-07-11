@@ -11,9 +11,9 @@ abstract class AbstractDebugProvider {
 	abstract readonly source: Provider | AsyncProvider;
 	async *getItemSequence(collection: string, id: string): AsyncIterableIterator<ItemValue> {
 		try {
-			console.debug("✔ ITERATE", collection, id);
+			console.debug("⋯ ITERATE", collection, id);
 			for await (const item of this.source.getItemSequence(collection, id)) {
-				console.debug("✔ ITERATE", collection, id, "GOT", item);
+				console.debug("↩ ITERATE", collection, id, item);
 				yield item;
 			}
 			console.debug("✔ ITERATE", collection, id);
@@ -23,9 +23,9 @@ abstract class AbstractDebugProvider {
 	}
 	async *getQuerySequence(collection: string, query: ItemQuery): AsyncIterableIterator<ItemArray> {
 		try {
-			console.debug("✔ ITERATE", collection, query);
+			console.debug("⋯ ITERATE", collection, query);
 			for await (const items of this.source.getQuerySequence(collection, query)) {
-				console.debug("✔ ITERATE", collection, query, items);
+				console.debug("↩ ITERATE", collection, query, items);
 				yield items;
 			}
 			console.debug("✔ ITERATE", collection, query);
@@ -45,7 +45,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 	getItem(collection: string, id: string): ItemValue {
 		try {
 			const item = this.source.getItem(collection, id);
-			console.debug("✔ GET", collection, id, item);
+			console.debug("↩ GET", collection, id, item);
 			return item;
 		} catch (reason) {
 			console.error("✘ GET", collection, id, reason);
@@ -73,8 +73,8 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 	}
 	updateItem(collection: string, id: string, updates: Updates): void {
 		try {
+			this.source.updateItem(collection, id, updates);
 			console.debug("✔ UPDATE", collection, id, updates);
-			return this.source.updateItem(collection, id, updates);
 		} catch (reason) {
 			console.error("✘ UPDATE", collection, id, updates, reason);
 			throw reason;
@@ -142,7 +142,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 		try {
 			console.debug("⋯ GET", collection, id);
 			const item = await this.source.getItem(collection, id);
-			console.debug("✔ GET", collection, id, item);
+			console.debug("↩ GET", collection, id, item);
 			return item;
 		} catch (reason) {
 			console.error("✘ GET", collection, id, reason);
