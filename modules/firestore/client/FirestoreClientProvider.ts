@@ -6,7 +6,7 @@ import type { Update, Updates } from "../../util/update.js";
 import type { DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore";
 import { addDoc, collection, deleteDoc, doc, documentId, getDoc, getDocs, increment, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { getItemData } from "../../db/ItemReference.js";
-import { SwitchingDeferredSequence } from "../../sequence/SwitchingDeferredSequence.js";
+import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";
@@ -72,7 +72,7 @@ export class FirestoreClientProvider implements AsyncProvider {
 		return _getItemValue(await getDoc(doc(this._firestore, c, id)));
 	}
 	getItemSequence(c: string, id: string): AsyncIterable<ItemValue> {
-		return new SwitchingDeferredSequence(sequence =>
+		return new LazyDeferredSequence(sequence =>
 			onSnapshot(
 				doc(this._firestore, c, id), //
 				snapshot => sequence.resolve(_getItemValue(snapshot)),
@@ -97,7 +97,7 @@ export class FirestoreClientProvider implements AsyncProvider {
 		return _getItems(await getDocs(_getQuery(this._firestore, c, q)));
 	}
 	getQuerySequence(c: string, q: ItemQuery): AsyncIterable<ItemArray> {
-		return new SwitchingDeferredSequence(sequence =>
+		return new LazyDeferredSequence(sequence =>
 			onSnapshot(
 				_getQuery(this._firestore, c, q), //
 				snapshot => sequence.resolve(_getItems(snapshot)),
