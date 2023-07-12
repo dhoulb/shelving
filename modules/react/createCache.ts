@@ -1,9 +1,5 @@
-import { createContext, createElement, useContext } from "react";
+import { createContext, createElement, useContext, useRef } from "react";
 import { ConditionError } from "../error/ConditionError.js";
-import { useReduce } from "./useReduce.js";
-
-/** Reducer that gets an existing `Map` instance or creates a new one. */
-const _reduceMap = <T>(previous: Map<string, T> | undefined) => previous || new Map<string, T>();
 
 /**
  * Interface for a cache controller.
@@ -26,7 +22,7 @@ export function createCache<T>(): CacheController<T> {
 			return cache;
 		},
 		Cache: ({ children }: { children: React.ReactNode }): React.ReactElement => {
-			const cache = useReduce<Map<string, T>>(_reduceMap);
+			const cache = (useRef<Map<string, T>>().current ||= new Map());
 			return createElement(context.Provider, { children, value: cache });
 		},
 	};
