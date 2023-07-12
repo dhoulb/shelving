@@ -38,6 +38,10 @@ export class MemoryProvider implements Provider {
 		return this.getTable(collection).getItemSequence(id);
 	}
 
+	getCachedItemSequence(collection: string, id: string): AsyncIterable<ItemValue> {
+		return this.getTable(collection).getCachedItemSequence(id);
+	}
+
 	addItem(collection: string, data: Data): string {
 		return this.getTable(collection).addItem(data);
 	}
@@ -64,6 +68,10 @@ export class MemoryProvider implements Provider {
 
 	getQuerySequence(collection: string, query: ItemQuery): AsyncIterable<ItemArray> {
 		return this.getTable(collection).getQuerySequence(query);
+	}
+
+	getCachedQuerySequence(collection: string, query: ItemQuery): AsyncIterable<ItemArray> {
+		return this.getTable(collection).getCachedQuerySequence(query);
 	}
 
 	setQuery(collection: string, query: ItemQuery, data: Data): number {
