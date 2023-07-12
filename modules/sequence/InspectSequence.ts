@@ -15,7 +15,7 @@ const _NOVALUE: unique symbol = Symbol("shelving/InspectSequence.NOVALUE");
  * 	console.log("FIRST", watch.first);
  * 	console.log("RETURNED", watch.returned);
  */
-export class InspectSequence<T, R> extends ThroughSequence<T, R> {
+export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	/** Get the number of results received by this iterator so far. */
 	readonly count = 0;
 
