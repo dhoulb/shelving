@@ -69,19 +69,33 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 
 	// Override to subscribe to `MemoryProvider` while things are iterating over this state.
 	override async *[Symbol.asyncIterator](): AsyncGenerator<ItemValue<T>, void, void> {
-		if (this._iterating < 1 && !this._stop) {
-			const { collection, id, provider } = this.ref;
-			const memory = getOptionalSource(CacheProvider, provider)?.memory;
-			if (memory) this._stop = this.from(memory.getCachedItemSequence(collection, id) as AsyncIterable<ItemValue<T>>);
-		}
+		this.start();
 		this._iterating++;
 		try {
 			yield* super[Symbol.asyncIterator]();
 		} finally {
 			this._iterating--;
-			if (this._iterating < 1 && this._stop) this._stop = void call(this._stop);
+			if (this._iterating < 1) this.stop();
 		}
 	}
 	private _iterating = 0;
+
+	/** Start subscription to `MemoryProvider` if there is one. */
+	start() {
+		if (!this._stop) {
+			const { collection, id, provider } = this.ref;
+			const memory = getOptionalSource(CacheProvider, provider)?.memory;
+			if (memory) this._stop = this.from(memory.getCachedItemSequence(collection, id) as AsyncIterable<ItemValue<T>>);
+		}
+	}
+	/** Stop subscription to `MemoryProvider` if there is one. */
+	stop() {
+		if (this._stop) this._stop = void call(this._stop);
+	}
 	private _stop: StopCallback | undefined = undefined;
+
+	// Implement `Disposable`
+	[Symbol.dispose](): void {
+		this.stop();
+	}
 }
