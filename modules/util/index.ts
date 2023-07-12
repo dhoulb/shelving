@@ -36,7 +36,6 @@ export * from "./serialise.js";
 export * from "./sort.js";
 export * from "./source.js";
 export * from "./string.js";
-export * from "./switch.js";
 export * from "./template.js";
 export * from "./time.js";
 export * from "./timeout.js";
