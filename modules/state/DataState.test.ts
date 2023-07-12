@@ -2,7 +2,7 @@ import { DataState, OptionalDataState, RequiredError, runMicrotasks } from "../i
 
 test("DataState.prototype.data", async () => {
 	type T = { a: number };
-	const state = new DataState<T>({ value: { a: 1 } });
+	const state = new DataState<T>({ a: 1 });
 	expect(state).toBeInstanceOf(DataState);
 	expect(state.value).toEqual({ a: 1 });
 	expect(state.data).toEqual({ a: 1 });
@@ -21,7 +21,7 @@ test("DataState.prototype.data", async () => {
 });
 test("DataState.prototype.update()", async () => {
 	type T = { a: number; b: number };
-	const state = new DataState<T>({ value: { a: 1, b: 2 } });
+	const state = new DataState<T>({ a: 1, b: 2 });
 	expect(state).toBeInstanceOf(DataState);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
@@ -38,7 +38,7 @@ test("DataState.prototype.update()", async () => {
 });
 test("OptionalDataState.prototype.data", async () => {
 	type T = { a: number };
-	const state = new OptionalDataState<T>({ value: undefined });
+	const state = new OptionalDataState<T>(undefined);
 	expect(state).toBeInstanceOf(OptionalDataState);
 	expect(state.value).toEqual(undefined);
 	expect(() => state.data).toThrow(RequiredError);
@@ -69,7 +69,7 @@ test("OptionalDataState.prototype.data", async () => {
 });
 test("OptionalDataState.prototype.update()", async () => {
 	type T = { a: number; b: number };
-	const state = new OptionalDataState<T>({ value: { a: 1, b: 2 } });
+	const state = new OptionalDataState<T>({ a: 1, b: 2 });
 	expect(state).toBeInstanceOf(OptionalDataState);
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.

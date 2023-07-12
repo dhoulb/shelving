@@ -1,12 +1,11 @@
-import type { StateOptions } from "./State.js";
 import type { ImmutableArray } from "../util/array.js";
 import { omitArrayItems, toggleArrayItems, withArrayItems } from "../util/array.js";
 import { State } from "./State.js";
 
 /** State that stores an array and has additional methods to help with that. */
 export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<T> {
-	constructor(options: StateOptions<ImmutableArray<T>> = {}) {
-		super("value" in options ? options : { value: [], ...options });
+	constructor(value: ImmutableArray<T> = [], time?: number) {
+		super(value, time);
 	}
 
 	/** Get the length of the current value of this state. */

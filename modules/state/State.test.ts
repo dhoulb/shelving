@@ -1,8 +1,8 @@
-import { State, runMicrotasks } from "../index.js";
+import { NONE, State, runMicrotasks } from "../index.js";
 import { expectToThrowPromiseLike } from "../test/util.js";
 
 test("State with no initial value", async () => {
-	const state = new State<number>();
+	const state = new State<number>(NONE);
 	// SUbscribe.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
@@ -43,7 +43,7 @@ test("State with no initial value", async () => {
 	expect(calls2).toEqual([111, 222, 333]);
 });
 test("State with initial value", async () => {
-	const state = new State({ value: 111 });
+	const state = new State(111);
 	expect(state).toBeInstanceOf(State);
 	expect(state.loading).toBe(false);
 	expect(state.value).toBe(111);
@@ -80,7 +80,7 @@ test("State with initial value", async () => {
 	expect(calls2).toEqual([222, 333]);
 });
 test("State with initial value and multiple synchronous `set()` calls", async () => {
-	const state = new State<number>({ value: 111 });
+	const state = new State<number>(111);
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
@@ -106,7 +106,7 @@ test("State with initial value and multiple synchronous `set()` calls", async ()
 	expect(calls2).toEqual([444]);
 });
 test("State with no initial value and multiple synchronous `set()` calls", async () => {
-	const state = new State<number>();
+	const state = new State<number>(NONE);
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];

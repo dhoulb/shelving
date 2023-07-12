@@ -1,11 +1,11 @@
 import type { AsyncItemReference, ItemData, ItemReference, ItemValue } from "./ItemReference.js";
-import type { MemoryTable } from "../provider/MemoryProvider.js";
+import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { StopCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { SwitchingDeferredSequence } from "../sequence/SwitchingDeferredSequence.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { State } from "../state/State.js";
+import { call } from "../util/callback.js";
 import { getRequired } from "../util/null.js";
 import { getOptionalSource } from "../util/source.js";
 import { getItemData } from "./ItemReference.js";
@@ -32,10 +32,9 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 
 	constructor(ref: ItemReference<T> | AsyncItemReference<T>) {
 		const { provider, collection, id } = ref;
-		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T> | undefined;
-		const time = table ? table.getItemTime(id) : null;
-		const next = table ? new SwitchingDeferredSequence<ItemValue<T>>(sequence => sequence.from(table.getCachedItemSequence(id))) : undefined;
-		super(table && typeof time === "number" ? { value: table.getItem(id), time, next } : { next });
+		const memory = getOptionalSource(CacheProvider, provider)?.memory;
+		const time = memory ? memory.getItemTime(collection, id) : undefined;
+		super(memory && typeof time === "number" ? (memory.getItem(collection, id) as ItemValue<T>) : undefined, time);
 		this.ref = ref;
 
 		// Queue a request to refresh the value if it doesn't exist.
@@ -43,14 +42,14 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 	}
 
 	/** Refresh this state from the source provider. */
-	readonly refresh = (): void => {
-		if (!this.busy.value) void this._refresh();
-	};
-	private async _refresh(): Promise<void> {
+	refresh(provider: Provider | AsyncProvider = this.ref.provider): void {
+		if (!this.busy.value) void this._refresh(provider);
+	}
+	private async _refresh(provider: Provider | AsyncProvider): Promise<void> {
 		this.busy.value = true;
 		this.reason = undefined; // Optimistically clear the error.
 		try {
-			this.value = await this.ref.value;
+			this.value = (await provider.getItem(this.ref.collection, this.ref.id)) as ItemValue<T>;
 		} catch (thrown) {
 			this.reason = thrown;
 		} finally {
@@ -59,12 +58,30 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 	}
 
 	/** Refresh this state if data in the cache is older than `maxAge` (in milliseconds). */
-	refreshStale(maxAge: number) {
-		if (this.age > maxAge) this.refresh();
+	refreshStale(maxAge: number, provider?: Provider | AsyncProvider) {
+		if (this.age > maxAge) this.refresh(provider);
 	}
 
-	/** Subscribe this state to the source provider. */
-	connectSource(): StopCallback {
-		return this.from(this.ref);
+	/** Subscribe this state to a provider. */
+	connect(provider: Provider | AsyncProvider = this.ref.provider): StopCallback {
+		return this.from(provider.getItemSequence(this.ref.collection, this.ref.id) as AsyncIterable<ItemValue<T>>);
 	}
+
+	// Override to subscribe to `MemoryProvider` while things are iterating over this state.
+	override async *[Symbol.asyncIterator](): AsyncGenerator<ItemValue<T>, void, void> {
+		if (this._iterating < 1) {
+			const { collection, id, provider } = this.ref;
+			const memory = getOptionalSource(CacheProvider, provider)?.memory;
+			if (memory) this._stop = this.from(memory.getCachedItemSequence(collection, id) as AsyncIterable<ItemValue<T>>);
+		}
+		this._iterating++;
+		try {
+			yield* super[Symbol.asyncIterator]();
+		} finally {
+			this._iterating--;
+			if (this._iterating <= 0 && this._stop) this._stop = void call(this._stop);
+		}
+	}
+	private _iterating = 0;
+	private _stop: StopCallback | undefined = undefined;
 }

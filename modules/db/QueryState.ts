@@ -1,13 +1,14 @@
 import type { ItemArray, ItemData, ItemValue } from "./ItemReference.js";
 import type { AsyncQueryReference, QueryReference } from "./QueryReference.js";
-import type { MemoryTable } from "../provider/MemoryProvider.js";
+import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { StopCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { SwitchingDeferredSequence } from "../sequence/SwitchingDeferredSequence.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { State } from "../state/State.js";
 import { getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
+import { call } from "../util/callback.js";
+import { NONE } from "../util/constants.js";
 import { getRequired } from "../util/null.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { getOptionalSource } from "../util/source.js";
@@ -56,10 +57,9 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 
 	constructor(ref: QueryReference<T> | AsyncQueryReference<T>) {
 		const { provider, collection, query } = ref;
-		const table = getOptionalSource(CacheProvider, provider)?.memory.getTable(collection) as MemoryTable<T> | undefined;
-		const time = table ? table.getQueryTime(ref) : null;
-		const next = table ? new SwitchingDeferredSequence<ItemArray<T>>(sequence => sequence.from(table.getCachedQuerySequence(ref))) : undefined;
-		super(table && typeof time === "number" ? { value: table.getQuery(ref), time, next } : { next });
+		const memory = getOptionalSource(CacheProvider, provider)?.memory;
+		const time = memory ? memory.getQueryTime(collection, query) : undefined;
+		super(memory && typeof time === "number" ? (memory.getQuery(collection, query) as ItemArray<T>) : NONE, time);
 		this.ref = ref;
 		this.limit = getLimit(query) ?? Infinity;
 
@@ -68,14 +68,14 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 	}
 
 	/** Refresh this state from the source provider. */
-	readonly refresh = (): void => {
-		if (!this.busy.value) void this._refresh();
-	};
-	private async _refresh(): Promise<void> {
+	refresh(provider: Provider | AsyncProvider = this.ref.provider): void {
+		if (!this.busy.value) void this._refresh(provider);
+	}
+	private async _refresh(provider: Provider | AsyncProvider): Promise<void> {
 		this.busy.value = true;
 		this.reason = undefined; // Optimistically clear the error.
 		try {
-			const items = await this.ref.items;
+			const items = (await provider.getQuery(this.ref.collection, this.ref.query)) as ItemArray<T>;
 			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
 			this.value = items;
 		} catch (thrown) {
@@ -90,18 +90,18 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 		if (this.age > maxAge) this.refresh();
 	}
 
-	/** Subscribe this state to the source provider. */
-	connectSource(): StopCallback {
-		return this.from(this.ref);
+	/** Subscribe this state to a provider. */
+	connect(provider: Provider | AsyncProvider = this.ref.provider): StopCallback {
+		return this.from(provider.getQuerySequence(this.ref.collection, this.ref.query) as AsyncIterable<ItemArray<T>>);
 	}
 
 	/**
 	 * Load more items after the last once.
 	 * - Promise that needs to be handled.
 	 */
-	readonly loadMore = (): void => {
+	loadMore(): void {
 		if (!this.busy.value) void this._loadMore();
-	};
+	}
 	private async _loadMore(): Promise<void> {
 		this.busy.value = true;
 		this.reason = undefined; // Optimistically clear the error.
@@ -117,6 +117,24 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 			this.busy.value = false;
 		}
 	}
+
+	// Override to subscribe to `MemoryProvider` while things are iterating over this state.
+	override async *[Symbol.asyncIterator](): AsyncGenerator<ItemArray<T>, void, void> {
+		if (this._iterating < 1) {
+			const { collection, query, provider } = this.ref;
+			const memory = getOptionalSource(CacheProvider, provider)?.memory;
+			if (memory) this._stop = this.from(memory.getCachedQuerySequence(collection, query) as AsyncIterable<ItemArray<T>>);
+		}
+		this._iterating++;
+		try {
+			yield* super[Symbol.asyncIterator]();
+		} finally {
+			this._iterating--;
+			if (this._iterating <= 0 && this._stop) this._stop = void call(this._stop);
+		}
+	}
+	private _iterating = 0;
+	private _stop: StopCallback | undefined = undefined;
 
 	/** Iterate over the items. */
 	[Symbol.iterator](): Iterator<ItemData<T>> {
