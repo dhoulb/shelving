@@ -53,14 +53,14 @@ export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
 
 /** Pull values from a sequence until the returned function is called. */
 export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError: ErrorCallback = logError): StopCallback {
-	const { promise, resolve } = getDeferred<typeof STOP>();
+	const { promise, resolve } = getDeferred<void>();
 	_runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError).catch(logError);
-	return () => resolve(STOP);
+	return resolve;
 }
-async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<typeof STOP>, onNext: ValueCallback<T> | undefined, onError: ErrorCallback): Promise<unknown> {
+async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<void>, onNext: ValueCallback<T> | undefined, onError: ErrorCallback): Promise<unknown> {
 	try {
 		const result = await Promise.race([stopped, sequence.next()]);
-		if (result === STOP || result.done) {
+		if (!result || result.done) {
 			// Stop iteration because the stop signal was sent or the iterator is done.
 			return sequence.return?.(); // Make sure we call `return()` on the iterator because it might do cleanup.
 		} else {
