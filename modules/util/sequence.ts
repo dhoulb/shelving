@@ -10,7 +10,7 @@ import { logError } from "./error.js";
  * - Any object with a `Symbol.iterator` property is iterable.
  * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
  */
-export const isAsyncIterable = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
+export const isSequence = <T extends AsyncIterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.asyncIterator in value;
 
 /** Infinite sequence that yields until a `SIGNAL` is received. */
 export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof STOP>, ...Promise<typeof STOP>[]]): AsyncIterable<T> {
@@ -54,15 +54,15 @@ export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
 /** Pull values from a sequence until the returned function is called. */
 export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError: ErrorCallback = logError): StopCallback {
 	const { promise, resolve } = getDeferred<typeof STOP>();
-	_runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError).catch(onError).catch(logError);
+	_runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError).catch(logError);
 	return () => resolve(STOP);
 }
-async function _runSequence<T>(iterator: AsyncIterator<T>, stopped: Promise<typeof STOP>, onNext: ValueCallback<T> | undefined, onError: ErrorCallback): Promise<unknown> {
+async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<typeof STOP>, onNext: ValueCallback<T> | undefined, onError: ErrorCallback): Promise<unknown> {
 	try {
-		const result = await Promise.race([stopped, iterator.next()]);
+		const result = await Promise.race([stopped, sequence.next()]);
 		if (result === STOP || result.done) {
 			// Stop iteration because the stop signal was sent or the iterator is done.
-			return iterator.return?.(); // Make sure we call `return()` on the iterator because it might do cleanup.
+			return sequence.return?.(); // Make sure we call `return()` on the iterator because it might do cleanup.
 		} else {
 			// Dispatch the current value and await the next value in the sequence.
 			if (onNext) onNext(result.value);
@@ -72,5 +72,20 @@ async function _runSequence<T>(iterator: AsyncIterator<T>, stopped: Promise<type
 	}
 
 	// Continue iteration.
-	return _runSequence(iterator, stopped, onNext, onError);
+	return _runSequence(sequence, stopped, onNext, onError);
+}
+
+/** Race several sequences (or promises) against each other and return a sequence that combines the output. */
+export async function* combineSequences<T>(...sequences: AsyncIterable<T>[]): AsyncIterable<T> {
+	const iterators = sequences.map<AsyncIterator<T, unknown, undefined>>(sequence => sequence[Symbol.asyncIterator]());
+	try {
+		while (true) {
+			const { done, value } = await Promise.race(iterators.map(iterator => iterator.next()));
+			if (done) return value;
+			else yield value;
+		}
+	} finally {
+		// Call `return()` on every iterator to ensure any created resources are destroyed.
+		for (const iterator of iterators) iterator.return?.().then(undefined, logError);
+	}
 }
