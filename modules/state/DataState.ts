@@ -1,7 +1,7 @@
 import type { Data, DataKey } from "../util/data.js";
 import type { Updates } from "../util/update.js";
-import { getRequired } from "../util/null.js";
 import { withProp } from "../util/object.js";
+import { getRequired } from "../util/optional.js";
 import { updateData } from "../util/update.js";
 import { State } from "./State.js";
 

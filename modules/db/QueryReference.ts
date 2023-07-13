@@ -4,8 +4,8 @@ import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callbac
 import type { Data } from "../util/data.js";
 import type { Updates } from "../util/update.js";
 import { countArray, getOptionalFirstItem, getOptionalLastItem, isArrayLength } from "../util/array.js";
-import { getRequired } from "../util/null.js";
 import { cloneObjectWith } from "../util/object.js";
+import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Reference to a set of items in a sync or async provider. */
