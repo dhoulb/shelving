@@ -2,7 +2,7 @@ import type { AddChange, DeleteChange, ItemChanges, SetChange, UpdateChange, Wri
 import type { ItemQuery, ItemValue } from "./ItemReference.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { Data, DataKey, Datas } from "../util/data.js";
-import type { Nullish } from "../util/null.js";
+import type { Optional } from "../util/optional.js";
 import type { Updates } from "../util/update.js";
 import { changeAsyncProvider, changeProvider } from "./Change.js";
 import { AsyncCollectionReference, CollectionReference } from "./CollectionReference.js";
@@ -23,7 +23,7 @@ abstract class AbstractDatabase<T extends Datas> {
 	abstract item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> | AsyncItemReference<T[K]>;
 
 	/** Run a set of changes in this database. */
-	abstract change(...changes: Nullish<WriteChange<Data>>[]): ItemChanges | Promise<ItemChanges>;
+	abstract change(...changes: Optional<WriteChange<Data>>[]): ItemChanges | Promise<ItemChanges>;
 
 	/** Get a document from a collection in this database. */
 	abstract get<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> | Promise<ItemValue<T[K]>>;
@@ -77,7 +77,7 @@ export class Database<T extends Datas = Datas> extends AbstractDatabase<T> {
 	item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> {
 		return new ItemReference<T[K]>(this.provider, collection, id);
 	}
-	change(...changes: Nullish<WriteChange<Data>>[]): ItemChanges {
+	change(...changes: Optional<WriteChange<Data>>[]): ItemChanges {
 		return changeProvider(this.provider, ...changes);
 	}
 	get<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
@@ -113,7 +113,7 @@ export class AsyncDatabase<T extends Datas = Datas> extends AbstractDatabase<T> 
 	item<K extends DataKey<T>>(collection: K, id: string): AsyncItemReference<T[K]> {
 		return new AsyncItemReference<T[K]>(this.provider, collection, id);
 	}
-	change(...changes: Nullish<WriteChange<Data>>[]): Promise<ItemChanges> {
+	change(...changes: Optional<WriteChange<Data>>[]): Promise<ItemChanges> {
 		return changeAsyncProvider(this.provider, ...changes);
 	}
 	get<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {

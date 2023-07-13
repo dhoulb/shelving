@@ -9,7 +9,7 @@ import { State } from "../state/State.js";
 import { getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
 import { call } from "../util/callback.js";
 import { NONE } from "../util/constants.js";
-import { getRequired } from "../util/null.js";
+import { getRequired } from "../util/optional.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { getOptionalSource } from "../util/source.js";
 

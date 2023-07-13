@@ -5,7 +5,7 @@ import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callbac
 import type { Data } from "../util/data.js";
 import type { Query } from "../util/query.js";
 import type { Updates } from "../util/update.js";
-import { getRequired } from "../util/null.js";
+import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Item data with a string ID that uniquely identifies it. */
