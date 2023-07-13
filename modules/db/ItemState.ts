@@ -6,7 +6,8 @@ import { CacheProvider } from "../provider/CacheProvider.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { State } from "../state/State.js";
 import { call } from "../util/callback.js";
-import { getRequired } from "../util/null.js";
+import { NONE } from "../util/constants.js";
+import { getRequired } from "../util/optional.js";
 import { getOptionalSource } from "../util/source.js";
 import { getItemData } from "./ItemReference.js";
 
@@ -34,7 +35,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 		const { provider, collection, id } = ref;
 		const memory = getOptionalSource(CacheProvider, provider)?.memory;
 		const time = memory ? memory.getItemTime(collection, id) : undefined;
-		super(memory && typeof time === "number" ? (memory.getItem(collection, id) as ItemValue<T>) : undefined, time);
+		super(memory && typeof time === "number" ? (memory.getItem(collection, id) as ItemValue<T>) : NONE, time);
 		this.ref = ref;
 
 		// Queue a request to refresh the value if it doesn't exist.
