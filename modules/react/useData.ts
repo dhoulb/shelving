@@ -1,5 +1,6 @@
 import type { AsyncQueryReference } from "../db/QueryReference.js";
 import type { Data } from "../util/data.js";
+import type { Nullish } from "../util/null.js";
 import { AsyncItemReference } from "../db/ItemReference.js";
 import { ItemState } from "../db/ItemState.js";
 import { QueryState } from "../db/QueryState.js";
@@ -11,10 +12,10 @@ import { useState } from "./useState.js";
 const { Cache, useCache } = createCache<ItemState | QueryState>();
 
 export function useData<T extends Data>(ref: AsyncItemReference<T>): ItemState<T>;
-export function useData<T extends Data>(ref: AsyncItemReference<T> | undefined): ItemState<T> | undefined;
+export function useData<T extends Data>(ref: Nullish<AsyncItemReference<T>>): ItemState<T> | undefined;
 export function useData<T extends Data>(ref: AsyncQueryReference<T>): QueryState<T>;
-export function useData<T extends Data>(ref: AsyncQueryReference<T> | undefined): QueryState<T> | undefined;
-export function useData(ref: AsyncItemReference | AsyncQueryReference | undefined): ItemState | QueryState | undefined {
+export function useData<T extends Data>(ref: Nullish<AsyncQueryReference<T>>): QueryState<T> | undefined;
+export function useData(ref: Nullish<AsyncItemReference | AsyncQueryReference>): ItemState | QueryState | undefined {
 	const cache = useCache();
 	const key = ref?.toString();
 	const state = ref && key ? cache.get(key) || setMapItem(cache, key, ref instanceof AsyncItemReference ? new ItemState(ref) : new QueryState(ref)) : undefined;
