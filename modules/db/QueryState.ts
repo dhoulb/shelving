@@ -47,7 +47,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 
 	/** Does the document have at least one result. */
 	get exists(): boolean {
-		return !this.loading && !!this.value.length;
+		return !!this.value.length;
 	}
 
 	/** Get the number of items matching this query. */

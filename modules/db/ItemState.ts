@@ -27,7 +27,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 
 	/** Does the item exist? */
 	get exists(): boolean {
-		return !this.loading && !!this.value;
+		return !!this.value;
 	}
 
 	constructor(ref: ItemReference<T> | AsyncItemReference<T>) {
