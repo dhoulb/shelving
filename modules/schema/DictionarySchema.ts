@@ -16,7 +16,7 @@ export type DictionarySchemaOptions<T> = SchemaOptions & {
 
 /** Validate a dictionary object (whose props are all the same with string keys). */
 export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
-	override readonly value!: ImmutableDictionary;
+	declare readonly value: ImmutableDictionary;
 	readonly items: Validator<T>;
 	readonly min: number;
 	readonly max: number;

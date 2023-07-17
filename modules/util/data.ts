@@ -81,7 +81,7 @@ export function assertData<T extends Data>(value: T | unknown): asserts value is
 }
 
 /** Is an unknown value the key for an own prop of a data object. */
-export const isDataProp = <T extends Data>(data: T, key: unknown): key is DataKey<T> => typeof key === "string" && Object.prototype.hasOwnProperty.call(data, key);
+export const isDataProp = <T extends Data>(data: T, key: unknown): key is DataKey<T> => typeof key === "string" && Object.hasOwn(data, key);
 
 /** Convert a data object or set of `DataProp` props for that object back into the full object. */
 export function getData<T extends Data>(input: T): T;

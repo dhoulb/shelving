@@ -43,7 +43,7 @@ export type ArraySchemaOptions<T> = SchemaOptions & {
  *  schema.validate(["a", null], schema); // Throws Invalids({ "1": Invalid('Must be a string') });
  */
 export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
-	override readonly value!: ImmutableArray;
+	declare readonly value: ImmutableArray;
 	readonly items: Validator<T>;
 	readonly unique: boolean;
 	readonly min: number;

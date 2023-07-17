@@ -14,7 +14,7 @@ export type NumberSchemaOptions = SchemaOptions & {
 
 /** Schema that defines a valid number. */
 export class NumberSchema extends Schema<number> {
-	override readonly value!: number;
+	declare readonly value: number;
 	readonly min: number;
 	readonly max: number;
 	readonly step: number | null;

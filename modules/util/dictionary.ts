@@ -26,7 +26,7 @@ export function assertDictionary<T>(value: ImmutableDictionary<T> | unknown): as
 }
 
 /** Is an unknown value the key for an own prop of an dictionary. */
-export const isDictionaryKey = <T>(obj: ImmutableDictionary<T>, key: unknown): key is string => typeof key === "string" && Object.prototype.hasOwnProperty.call(obj, key);
+export const isDictionaryKey = <T>(obj: ImmutableDictionary<T>, key: unknown): key is string => typeof key === "string" && Object.hasOwn(obj, key);
 
 /** turn a possible dictionary into an dictionary. */
 export function getDictionary<T>(obj: PossibleDictionary<T>): ImmutableDictionary<T> {

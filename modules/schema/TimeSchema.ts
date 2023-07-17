@@ -16,7 +16,7 @@ export type TimeSchemaOptions = SchemaOptions & {
 
 /** Define a valid time in 24h hh:mm:ss.fff format, e.g. `23:59` or `24:00 */
 export class TimeSchema extends Schema<string> {
-	override readonly value!: PossibleTime;
+	declare readonly value: PossibleTime;
 	readonly min: Time | null;
 	readonly max: Time | null;
 	/**

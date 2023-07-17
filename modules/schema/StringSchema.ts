@@ -42,7 +42,7 @@ export type StringSchemaOptions = SchemaOptions & {
  *  schema.validate('j'); // Throws 'Minimum 3 chaacters'
  */
 export class StringSchema extends Schema<string> {
-	override readonly value!: string;
+	declare readonly value: string;
 	readonly type: HtmlInputType;
 	readonly min: number;
 	readonly max: number;

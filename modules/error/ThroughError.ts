@@ -5,7 +5,6 @@ import { debug } from "../util/debug.js";
  * - Merges the message and stack of the previous message.
  */
 export class ThroughError extends Error {
-	readonly cause: Error | unknown;
 	constructor(message: string, cause: Error | unknown) {
 		super(message);
 		this.cause = cause;
