@@ -25,10 +25,10 @@ export const isObject = <T extends ImmutableObject>(value: T | unknown): value i
 
 /** Assert that a value is an object */
 export function assertObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
-	if (!isObject(value)) throw new AssertionError(`Must be object`, value);
+	if (!isObject(value)) throw new AssertionError("Must be object", value);
 }
 
-/** is an unknown value an unknown plain object? */
+/** Is an unknown value a plain object? */
 export function isPlainObject<T extends ImmutableObject>(value: T | unknown): value is T {
 	if (isObject(value)) {
 		const proto = getPrototype(value);
@@ -37,13 +37,18 @@ export function isPlainObject<T extends ImmutableObject>(value: T | unknown): va
 	return false;
 }
 
-/** Assert that a value is an object */
+/** Assert that an unknown value is a plain object */
 export function assertPlainObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
 	if (!isPlainObject(value)) throw new AssertionError(`Must be plain object`, value);
 }
 
 /** Is an unknown value the key for an own prop of an object. */
 export const isProp = <T extends ImmutableObject>(obj: T, key: PropertyKey): key is keyof T => Object.hasOwn(obj, key);
+
+/** Assert that an unknown value is the key for an own prop of an object. */
+export function assertProp<T extends ImmutableObject>(obj: T, key: PropertyKey): asserts key is keyof T {
+	if (!isProp(obj, key)) throw new AssertionError("Must be object prop", key);
+}
 
 /** turn a possible object into an object. */
 export function getObject<T extends ImmutableObject>(obj: PossibleObject<T>): T {

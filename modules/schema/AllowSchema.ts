@@ -3,7 +3,7 @@ import type { Entry } from "../util/entry.js";
 import type { ImmutableMap, PossibleMap, PossibleStringMap } from "../util/map.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { getFirstItem } from "../util/array.js";
-import { getMap, isMapKey } from "../util/map.js";
+import { getMap, isMapItem } from "../util/map.js";
 import { getString } from "../util/string.js";
 import { Schema } from "./Schema.js";
 
@@ -22,7 +22,7 @@ export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>
 		this.value = getFirstItem(this.allow.keys());
 	}
 	validate(unsafeValue: unknown = this.value): K {
-		if (isMapKey(this.allow, unsafeValue)) return unsafeValue;
+		if (isMapItem(this.allow, unsafeValue)) return unsafeValue;
 		throw new Feedback("Unknown value", unsafeValue);
 	}
 

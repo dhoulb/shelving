@@ -30,12 +30,17 @@ export type PossibleStringMap<K extends string, T> = PossibleMap<K, T> | { reado
 /** Is an unknown value a map? */
 export const isMap = <T extends ImmutableMap>(value: T | unknown): value is T => value instanceof Map;
 
-/** Is an unknown value a key for an item in a map? */
-export const isMapKey = <K, V>(map: ImmutableMap<K, V>, key: K | unknown): key is K => map.has(key as K);
-
 /** Assert that a value is a `Map` instance. */
 export function assertMap<T extends ImmutableMap>(value: T | unknown): asserts value is T {
-	if (!isMap(value)) throw new AssertionError(`Must be map`, value);
+	if (!isMap(value)) throw new AssertionError("Must be map", value);
+}
+
+/** Is an unknown value a key for an item in a map? */
+export const isMapItem = <K, V>(map: ImmutableMap<K, V>, key: K | unknown): key is K => map.has(key as K);
+
+/** Assert that an unknown value is a key for an item in a map. */
+export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: K | unknown): asserts key is K {
+	if (!isMapItem(map, key)) throw new AssertionError("Must be map item", key);
 }
 
 /** Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged). */

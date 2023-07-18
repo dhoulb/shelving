@@ -16,12 +16,17 @@ export type SetItem<X> = X extends ReadonlySet<infer Y> ? Y : never;
 /** Is an unknown value a set? */
 export const isSet = <T extends ImmutableSet>(value: T | unknown): value is T => value instanceof Set;
 
-/** Is an unknown value an item in a set? */
-export const isSetItem = <T>(set: ImmutableSet<T>, item: T | unknown): item is T => set.has(item as T);
-
 /** Assert that a value is a `Set` instance. */
 export function assertSet<T extends ImmutableSet>(value: T | unknown): asserts value is T {
 	if (!isSet(value)) throw new AssertionError(`Must be set`, value);
+}
+
+/** Is an unknown value an item in a set? */
+export const isSetItem = <T>(set: ImmutableSet<T>, item: T | unknown): item is T => set.has(item as T);
+
+/** Assert that an unknown value is an item in a set. */
+export function assertSetItem<T>(set: ImmutableSet<T>, item: T | unknown): asserts item is T {
+	if (!isSetItem(set, item)) throw new AssertionError("Must be set item", item);
 }
 
 /** Convert an iterable to a `Set` (if it's already a `Set` it passes through unchanged). */

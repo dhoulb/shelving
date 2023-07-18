@@ -22,13 +22,18 @@ export const isDictionary = <T extends ImmutableDictionary<T>>(value: T | unknow
 
 /** Assert that an unknown value is a dictionary object */
 export function assertDictionary<T>(value: ImmutableDictionary<T> | unknown): asserts value is ImmutableDictionary<T> {
-	if (!isDictionary(value)) throw new AssertionError(`Must be dictionary`, value);
+	if (!isDictionary(value)) throw new AssertionError("Must be dictionary", value);
 }
 
-/** Is an unknown value the key for an own prop of an dictionary. */
-export const isDictionaryKey = <T>(obj: ImmutableDictionary<T>, key: unknown): key is string => typeof key === "string" && Object.hasOwn(obj, key);
+/** Is an unknown value the key for an own prop of a dictionary. */
+export const isDictionaryItem = <T>(obj: ImmutableDictionary<T>, key: unknown): key is string => typeof key === "string" && Object.hasOwn(obj, key);
 
-/** turn a possible dictionary into an dictionary. */
+/** Assert that an unknown value is the key for an own prop of a dictionary. */
+export function assertDictionaryItem<T>(obj: ImmutableDictionary<T>, key: unknown): asserts key is string {
+	if (!isDictionaryItem(obj, key)) throw new AssertionError("Must be dictionary item", key);
+}
+
+/** turn a possible dictionary into a dictionary. */
 export function getDictionary<T>(obj: PossibleDictionary<T>): ImmutableDictionary<T> {
 	return isIterable(obj) ? Object.fromEntries(obj) : obj;
 }
