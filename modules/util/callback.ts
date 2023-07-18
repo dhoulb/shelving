@@ -30,7 +30,7 @@ export type StartCallback<T> = (value: T) => StopCallback;
 export type StopCallback = () => void;
 
 /** Safely call a callback function (possibly with a value). */
-export function call<A extends Arguments = []>(callback: (...v: A) => void | PromiseLike<void>, ...values: A): void {
+export function call<A extends Arguments = []>(callback: (...v: A) => unknown, ...values: A): void {
 	try {
 		const result = callback(...values);
 		if (isAsync(result)) result.then(undefined, logError);
@@ -45,9 +45,9 @@ export function called<T>(dispatcher: AsyncValueCallback<T>): ValueCallback<T> {
 }
 
 /** Safely call a callback method (possibly wth a value). */
-export function callMethod<A extends Arguments, M extends string | symbol>(obj: { [K in M]: (...v: A) => void | PromiseLike<void> }, key: M, ...values: A): void {
+export function callMethod<A extends Arguments, M extends string | symbol>(obj: { [K in M]?: ((...v: A) => unknown) | undefined }, key: M, ...values: A): void {
 	try {
-		const result = obj[key](...values);
+		const result = obj[key]?.(...values);
 		if (isAsync(result)) result.then(undefined, logError);
 	} catch (thrown) {
 		logError(thrown);
