@@ -11,6 +11,7 @@ import { call } from "../util/callback.js";
 import { NONE } from "../util/constants.js";
 import { getRequired } from "../util/optional.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
+import { runSequence } from "../util/sequence.js";
 import { getOptionalSource } from "../util/source.js";
 
 /** Hold the current state of a query. */
@@ -92,7 +93,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 
 	/** Subscribe this state to a provider. */
 	connect(provider: Provider | AsyncProvider = this.ref.provider): StopCallback {
-		return this.from(provider.getQuerySequence(this.ref.collection, this.ref.query) as AsyncIterable<ItemArray<T>>);
+		return runSequence(this.through(provider.getQuerySequence(this.ref.collection, this.ref.query) as AsyncIterable<ItemArray<T>>));
 	}
 
 	/**
@@ -136,7 +137,7 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 		if (!this._stop) {
 			const { collection, query, provider } = this.ref;
 			const memory = getOptionalSource(CacheProvider, provider)?.memory;
-			if (memory) this._stop = this.from(memory.getCachedQuerySequence(collection, query) as AsyncIterable<ItemArray<T>>);
+			if (memory) this._stop = runSequence(this.through(memory.getCachedQuerySequence(collection, query) as AsyncIterable<ItemArray<T>>));
 		}
 	}
 	/** Stop subscription to `MemoryProvider` if there is one. */

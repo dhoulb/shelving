@@ -1,4 +1,4 @@
-import { NONE, State, runMicrotasks } from "../index.js";
+import { NONE, State, runMicrotasks, runSequence } from "../index.js";
 import { expectToThrowPromiseLike } from "../test/util.js";
 
 test("State with no initial value", async () => {
@@ -6,8 +6,8 @@ test("State with no initial value", async () => {
 	// SUbscribe.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
-	const stop1 = state.to(v => calls1.push(v));
-	const stop2 = state.next.to(v => calls2.push(v));
+	const stop1 = runSequence(state, v => calls1.push(v));
+	const stop2 = runSequence(state.next, v => calls2.push(v));
 	await runMicrotasks();
 	// Get with no value throws promise.
 	expect(state.loading).toBe(true);
@@ -50,8 +50,8 @@ test("State with initial value", async () => {
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
-	const stop1 = state.to(v => calls1.push(v));
-	const stop2 = state.next.to(v => calls2.push(v));
+	const stop1 = runSequence(state, v => calls1.push(v));
+	const stop2 = runSequence(state.next, v => calls2.push(v));
 	await runMicrotasks();
 	// Set new value.
 	state.value = 222;
@@ -84,8 +84,8 @@ test("State with initial value and multiple synchronous `set()` calls", async ()
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
-	const stop1 = state.to(v => calls1.push(v));
-	const stop2 = state.next.to(v => calls2.push(v));
+	const stop1 = runSequence(state, v => calls1.push(v));
+	const stop2 = runSequence(state.next, v => calls2.push(v));
 	// Set multiple times.
 	state.value = 222;
 	state.value = 333;
@@ -110,8 +110,8 @@ test("State with no initial value and multiple synchronous `set()` calls", async
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
-	const stop1 = state.to(v => calls1.push(v));
-	const stop2 = state.next.to(v => calls2.push(v));
+	const stop1 = runSequence(state, v => calls1.push(v));
+	const stop2 = runSequence(state.next, v => calls2.push(v));
 	// Set multiple times.
 	state.value = 222;
 	state.value = 333;

@@ -1,7 +1,5 @@
-import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { NONE } from "../util/constants.js";
-import { runSequence } from "../util/sequence.js";
 
 /** Any `State` instance. */
 export type AnyState = State<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -82,16 +80,6 @@ export class State<T> implements AsyncIterable<T> {
 			this.value = value;
 			yield value;
 		}
-	}
-
-	/** Pull values from a source sequence until the returned stop function is called. */
-	from(source: AsyncIterable<T>, onError?: ErrorCallback): StopCallback {
-		return runSequence(this.through(source), undefined, onError);
-	}
-
-	/** Push values to another state or callback to this state until the returned stop function is called. */
-	to(target: ValueCallback<T>, onError?: ErrorCallback): StopCallback {
-		return runSequence(this, target, onError);
 	}
 
 	// Implement `AsyncIterable`

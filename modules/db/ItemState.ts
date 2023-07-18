@@ -8,6 +8,7 @@ import { State } from "../state/State.js";
 import { call } from "../util/callback.js";
 import { NONE } from "../util/constants.js";
 import { getRequired } from "../util/optional.js";
+import { runSequence } from "../util/sequence.js";
 import { getOptionalSource } from "../util/source.js";
 import { getItemData } from "./ItemReference.js";
 
@@ -65,7 +66,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 
 	/** Subscribe this state to a provider. */
 	connect(provider: Provider | AsyncProvider = this.ref.provider): StopCallback {
-		return this.from(provider.getItemSequence(this.ref.collection, this.ref.id) as AsyncIterable<ItemValue<T>>);
+		return runSequence(this.through(provider.getItemSequence(this.ref.collection, this.ref.id) as AsyncIterable<ItemValue<T>>));
 	}
 
 	// Override to subscribe to `MemoryProvider` while things are iterating over this state.
@@ -86,7 +87,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 		if (!this._stop) {
 			const { collection, id, provider } = this.ref;
 			const memory = getOptionalSource(CacheProvider, provider)?.memory;
-			if (memory) this._stop = this.from(memory.getCachedItemSequence(collection, id) as AsyncIterable<ItemValue<T>>);
+			if (memory) this._stop = runSequence(this.through(memory.getCachedItemSequence(collection, id) as AsyncIterable<ItemValue<T>>));
 		}
 	}
 	/** Stop subscription to `MemoryProvider` if there is one. */

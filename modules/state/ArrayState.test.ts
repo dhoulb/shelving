@@ -1,5 +1,5 @@
 import type { ImmutableArray } from "../index.js";
-import { ArrayState, runMicrotasks } from "../index.js";
+import { ArrayState, runMicrotasks, runSequence } from "../index.js";
 
 test("ArrayState with initial value", async () => {
 	const state = new ArrayState<number>([1, 2, 3]);
@@ -7,7 +7,7 @@ test("ArrayState with initial value", async () => {
 	expect(state.value).toEqual([1, 2, 3]);
 	// Ons and onces.
 	const calls: ImmutableArray<number>[] = [];
-	const stop = state.next.to(v => void calls.push(v));
+	const stop = runSequence(state.next, v => void calls.push(v));
 	// Add.
 	expect(state.add(4)).toBe(undefined);
 	expect(state.value).toEqual([1, 2, 3, 4]);

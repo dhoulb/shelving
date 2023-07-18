@@ -1,4 +1,4 @@
-import { DataState, OptionalDataState, RequiredError, runMicrotasks } from "../index.js";
+import { DataState, OptionalDataState, RequiredError, runMicrotasks, runSequence } from "../index.js";
 
 test("DataState.prototype.data", async () => {
 	type T = { a: number };
@@ -8,7 +8,7 @@ test("DataState.prototype.data", async () => {
 	expect(state.data).toEqual({ a: 1 });
 	// Ons and onces.
 	const calls: T[] = [];
-	const stop = state.next.to(v => calls.push(v));
+	const stop = runSequence(state.next, v => calls.push(v));
 	// Set truthy value.
 	state.value = { a: 2 };
 	expect(state.value).toEqual({ a: 2 });
@@ -26,7 +26,7 @@ test("DataState.prototype.update()", async () => {
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
 	const calls1: T[] = [];
-	const stop = state.next.to(v => calls1.push(v));
+	const stop = runSequence(state.next, v => calls1.push(v));
 	// Apply a data transform.
 	expect(state.update({ "a": 111, "+=b": 100 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: 102 });
@@ -44,7 +44,7 @@ test("OptionalDataState.prototype.data", async () => {
 	expect(() => state.data).toThrow(RequiredError);
 	// Ons and onces.
 	const calls: (T | undefined)[] = [];
-	const stop = state.next.to(v => calls.push(v));
+	const stop = runSequence(state.next, v => calls.push(v));
 	// Set data value.
 	state.value = { a: 1 };
 	expect(state.value).toEqual({ a: 1 });
@@ -74,7 +74,7 @@ test("OptionalDataState.prototype.update()", async () => {
 	expect(state.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
 	const calls1: (T | undefined)[] = [];
-	const stop = state.next.to(v => calls1.push(v));
+	const stop = runSequence(state.next, v => calls1.push(v));
 	// Apply a data transform.
 	expect(state.update({ "a": 111, "-=b": 100 })).toBe(undefined);
 	expect(state.value).toEqual({ a: 111, b: -98 });

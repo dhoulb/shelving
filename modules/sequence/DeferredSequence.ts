@@ -1,7 +1,6 @@
 import type { Deferred } from "../util/async.js";
-import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
+import type { ErrorCallback, ValueCallback } from "../util/callback.js";
 import { getDeferred } from "../util/async.js";
-import { runSequence } from "../util/sequence.js";
 import { AbstractSequence } from "./AbstractSequence.js";
 
 /** Used when the deferred sequence has no value or reason queued. */
@@ -75,15 +74,5 @@ export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> 
 			this.resolve(item);
 			yield item;
 		}
-	}
-
-	/** Pull values from a source sequence until the returned stop function is called. */
-	from(source: AsyncIterable<T>, onError?: ErrorCallback): StopCallback {
-		return runSequence(this.through(source), undefined, onError);
-	}
-
-	/** Subscrbe to the value of the sequence with a callback until the returned stop function is called. */
-	to(onNext: ValueCallback<T>, onError?: ErrorCallback): StopCallback {
-		return runSequence(this, onNext, onError);
 	}
 }
