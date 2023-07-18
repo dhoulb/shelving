@@ -80,18 +80,3 @@ async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<void
 	// Continue iteration.
 	return _runSequence(sequence, stopped, onNext, onError);
 }
-
-/** Race several sequences (or promises) against each other and return a sequence that combines the output. */
-export async function* combineSequences<T>(...sequences: AsyncIterable<T>[]): AsyncIterable<T> {
-	const iterators = sequences.map<AsyncIterator<T, unknown, undefined>>(sequence => sequence[Symbol.asyncIterator]());
-	try {
-		while (true) {
-			const { done, value } = await Promise.race(iterators.map(iterator => iterator.next()));
-			if (done) return value;
-			else yield value;
-		}
-	} finally {
-		// Call `return()` on every iterator to ensure any created resources are destroyed.
-		for (const iterator of iterators) iterator.return?.().then(undefined, logError);
-	}
-}
