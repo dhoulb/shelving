@@ -2,6 +2,7 @@ import type { StartCallback, StopCallback } from "../util/callback.js";
 import type { Disposable } from "../util/dispose.js";
 import { call } from "../util/callback.js";
 import { DeferredSequence } from "./DeferredSequence.js";
+import { IteratorSequence } from "./IteratorSequence.js";
 
 /** Deferred sequence of values that calls a `StartCallback` when it has iterators that are iterating, and calls the corresponding `StopCallback` when all iterators have finished. */
 export class LazyDeferredSequence<T = void> extends DeferredSequence<T> implements Disposable {
@@ -16,7 +17,10 @@ export class LazyDeferredSequence<T = void> extends DeferredSequence<T> implemen
 		this.start();
 		this._iterating++;
 		try {
-			yield* super[Symbol.asyncIterator]();
+			// Delegate to the superclass's async iterator.
+			// Wrap in an `IteratorSequence` because we know the superclass returns `this`
+			// `yield* this` would call this method again and cause an infinite loop.
+			yield* new IteratorSequence<T>(super[Symbol.asyncIterator]());
 		} finally {
 			this._iterating--;
 			if (this._iterating < 1 && this._stop) this.stop();
