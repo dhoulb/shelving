@@ -5,7 +5,7 @@
 		"ecmaVersion": 2019,
 		"project": "./tsconfig.json",
 		"cache": true,
-		"extraFileExtensions": [".cjs"]
+		"extraFileExtensions": [".mjs", ".cjs"]
 	},
 	"extends": [
 		"eslint:recommended",
