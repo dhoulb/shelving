@@ -1,9 +1,8 @@
 import type { AsyncValueCallback, ErrorCallback, StopCallback, ValueCallback } from "./callback.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { getDeferred, getDelay } from "./async.js";
-import { call } from "./callback.js";
+import { call, callMethod } from "./callback.js";
 import { STOP } from "./constants.js";
-import { logError } from "./error.js";
 
 /**
  * Is a value an async iterable object?
@@ -52,23 +51,30 @@ export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
 }
 
 /** Pull values from a sequence until the returned function is called. */
-export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError: ErrorCallback = logError): StopCallback {
+export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError?: ErrorCallback): StopCallback {
 	const { promise, resolve } = getDeferred<void>();
-	_runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError).catch(logError);
+	void _runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError);
 	return resolve;
 }
-async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<void>, onNext: ValueCallback<T> | undefined, onError: ErrorCallback): Promise<unknown> {
+async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<void>, onNext?: ValueCallback<T>, onError?: ErrorCallback): Promise<unknown> {
 	try {
 		const result = await Promise.race([stopped, sequence.next()]);
-		if (!result || result.done) {
-			// Stop iteration because the stop signal was sent or the iterator is done.
-			return sequence.return?.(); // Make sure we call `return()` on the iterator because it might do cleanup.
+		if (!result) {
+			// Stop iteration because the stop signal was sent.
+			// Call `return()` on the iterator so it can perform any clean up.
+			callMethod(sequence, "return");
+			return;
+		} else if (result.done) {
+			// Stop iteration because iterator is done.
+			// Don't need to call `return()` on the iterator (assume it stopped itself when it sent `done: true`).
+			return;
 		} else {
-			// Dispatch the current value and await the next value in the sequence.
-			if (onNext) onNext(result.value);
+			// Forward the value to the next callback.
+			if (onNext) call(onNext, result.value);
 		}
 	} catch (thrown) {
-		onError(thrown);
+		// Forward the error to the error callback.
+		if (onError) call(onError, thrown);
 	}
 
 	// Continue iteration.
