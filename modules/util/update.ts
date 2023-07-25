@@ -1,6 +1,5 @@
 import type { ImmutableArray } from "./array.js";
 import type { BranchData, BranchKey, Data, DataProp, LeafData, LeafKey } from "./data.js";
-import { AssertionError } from "../error/AssertionError.js";
 import { reduceItems } from "./iterate.js";
 import { getNumber } from "./number.js";
 import { getProps, isObject } from "./object.js";
@@ -47,12 +46,13 @@ function _updatePropDeep<T extends Data>(obj: T, update: Update, keys: Immutable
 	const oldValue = obj[k];
 	let newValue: unknown = oldValue;
 	if (i === keys.length - 1) {
+		// Final key.
 		if (action === "sum") newValue = typeof oldValue === "number" ? oldValue + value : value;
 		else if (action === "set") newValue = value;
 		else return action; // Never happens.
 	} else {
-		if (!isObject(oldValue)) throw new AssertionError(`Prop "${keys.slice(0, i + 1).join(".")}" is not an object`);
-		newValue = _updatePropDeep(oldValue, update, keys, i + 1);
+		// Subkeys.
+		newValue = _updatePropDeep(isObject(oldValue) ? oldValue : {}, update, keys, i + 1);
 	}
 	return oldValue === newValue ? obj : { ...obj, [k]: newValue };
 }
