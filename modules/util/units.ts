@@ -165,10 +165,10 @@ const US_IN3_PER_GAL = 231;
 const IMP_ML_PER_GAL = 4546090 / 1000;
 
 /** Percentage units. */
-export const PERCENTAGE_UNITS = new UnitList({
+export const PERCENT_UNITS = new UnitList({
 	percent: { abbr: "%", plural: "percent" },
 });
-export type PercentageUnitKey = MapKey<typeof PERCENTAGE_UNITS>;
+export type PercentUnitKey = MapKey<typeof PERCENT_UNITS>;
 
 /** Point units. */
 export const POINT_UNITS = new UnitList({
