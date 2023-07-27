@@ -63,13 +63,13 @@ export class Unit<K extends string> {
 	}
 
 	/** Convert an amount from this unit to another unit. */
-	to(amount: number, unit: K | Unit<K> = this.list.base): number {
-		return this._toUnit(amount, this.list.unit(unit));
+	to(amount: number, units?: K): number {
+		return this._toUnit(amount, units ? this.list.getUnit(units) : this.list.base);
 	}
 
 	/** Convert an amount from another unit to this unit. */
-	from(amount: number, unit: K | Unit<K> = this.list.base): number {
-		return this.list.unit(unit)._toUnit(amount, this);
+	from(amount: number, units?: K): number {
+		return (units ? this.list.getUnit(units) : this.list.base)._toUnit(amount, this);
 	}
 
 	/** Convert an amount from this unit to another unit (must specify another `Unit` instance). */
@@ -119,18 +119,17 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	}
 
 	/** Convert an amount from a unit to another unit. */
-	convert(amount: number, sourceUnit: K | Unit<K>, targetUnit: K | Unit<K>): number {
-		return this.unit(sourceUnit).to(amount, targetUnit);
+	convert(amount: number, sourceUnits: K, targetUnits: K): number {
+		return this.getUnit(sourceUnits).to(amount, targetUnits);
 	}
 
 	/**
 	 * Get a unit from this list.
 	 * @throws RequiredError if the unit is not found.
 	 */
-	unit(unit: K | Unit<K>): Unit<K> {
-		if (typeof unit !== "string") return unit;
-		if (!this.has(unit)) throw new RequiredError(`Unit "${unit}" not found`);
-		return this.get(unit) as Unit<K>;
+	getUnit(units: K): Unit<K> {
+		if (this.has(units)) return this.get(units) as Unit<K>;
+		throw new RequiredError(`Unit "${units}" not found`);
 	}
 }
 

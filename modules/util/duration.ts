@@ -8,14 +8,14 @@ import { TIME_UNITS } from "./units.js";
 /** Get an appropriate time unit based on an amount in milliseconds. */
 function _getTimeUnit(ms: number): Unit<TimeUnitKey> {
 	const abs = Math.abs(ms);
-	if (abs > 18 * MONTH) return TIME_UNITS.unit("year");
-	if (abs > 10 * WEEK) return TIME_UNITS.unit("month");
-	if (abs > 2 * WEEK) return TIME_UNITS.unit("week");
-	if (abs > DAY) return TIME_UNITS.unit("day");
-	if (abs > HOUR) return TIME_UNITS.unit("hour");
-	if (abs > 9949) return TIME_UNITS.unit("minute");
-	if (abs > SECOND) return TIME_UNITS.unit("second");
-	return TIME_UNITS.unit("millisecond");
+	if (abs > 18 * MONTH) return TIME_UNITS.getUnit("year");
+	if (abs > 10 * WEEK) return TIME_UNITS.getUnit("month");
+	if (abs > 2 * WEEK) return TIME_UNITS.getUnit("week");
+	if (abs > DAY) return TIME_UNITS.getUnit("day");
+	if (abs > HOUR) return TIME_UNITS.getUnit("hour");
+	if (abs > 9949) return TIME_UNITS.getUnit("minute");
+	if (abs > SECOND) return TIME_UNITS.getUnit("second");
+	return TIME_UNITS.getUnit("millisecond");
 }
 
 /** Default number options for duration (no decimal places and rounding down). */
