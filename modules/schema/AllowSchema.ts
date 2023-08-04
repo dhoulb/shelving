@@ -14,12 +14,12 @@ export type AllowSchemaOptions<K, T> = Omit<SchemaOptions, "value"> & {
 
 /** Define a valid value from an allowed set of values. */
 export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>> {
-	override readonly value: K;
+	declare readonly value: K;
 	readonly allow: ImmutableMap<K, T>;
 	constructor(options: AllowSchemaOptions<K, T>) {
-		super(options);
-		this.allow = getMap(options.allow);
-		this.value = getFirstItem(this.allow.keys());
+		const allow = getMap(options.allow);
+		super({ value: getFirstItem(allow.keys()), ...options });
+		this.allow = allow;
 	}
 	validate(unsafeValue: unknown = this.value): K {
 		if (isMapItem(this.allow, unsafeValue)) return unsafeValue;

@@ -22,13 +22,16 @@ const R_MATCH = /^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a
  *     - TLD is a segment of 2-63 characters, possibly in `xn--` international format.
  */
 export class EmailSchema extends StringSchema {
-	override readonly type = "email";
-	override readonly min = 1;
-	override readonly max = 254;
-	override readonly match = R_MATCH;
-	override readonly multiline = false;
-	constructor(options: StringSchemaOptions) {
-		super({ title: "Email", ...options });
+	constructor(options: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline">) {
+		super({
+			title: "Email",
+			...options,
+			type: "email",
+			min: 1,
+			max: 254,
+			match: R_MATCH,
+			multiline: false,
+		});
 	}
 	override sanitize(uncleanString: string): string {
 		const sanitizedString = super.sanitize(uncleanString);

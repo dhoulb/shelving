@@ -1,16 +1,16 @@
 import { OPTIONAL } from "./OptionalSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
  * Define a valid database key.
  *
- * - Minimum key length is 1 character.
- * - Maximum key length is 64 characters.
+ * - Default minimum key length is 1 character.
+ * - Default maximum key length is 64 characters.
  */
 export class KeySchema extends StringSchema {
-	override readonly multiline = false;
-	override readonly min = 1;
-	override readonly max = 64;
+	constructor(options: StringSchemaOptions) {
+		super({ min: 1, max: 64, ...options });
+	}
 }
 
 /** Valid color hex string, e.g. `#00CCFF` (required because empty string is invalid). */

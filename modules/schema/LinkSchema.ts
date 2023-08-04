@@ -5,7 +5,7 @@ import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /** Allowed options for `LinkSchema` */
-export type LinkSchemaOptions = StringSchemaOptions & {
+export type LinkSchemaOptions = Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline"> & {
 	readonly schemes?: string[] | undefined;
 	readonly hosts?: string[] | undefined;
 };
@@ -17,13 +17,17 @@ export type LinkSchemaOptions = StringSchemaOptions & {
  * - Falsy values are converted to `""` empty string.
  */
 export class LinkSchema extends StringSchema {
-	override readonly type = "url";
-	override readonly min = 1;
-	override readonly max = 512;
 	readonly schemes: string[];
 	readonly hosts: string[] | undefined;
 	constructor(options: LinkSchemaOptions) {
-		super({ title: "Link", ...options });
+		super({
+			title: "Link",
+			...options,
+			type: "url",
+			min: 1,
+			max: 512,
+			multiline: false,
+		});
 		this.schemes = options.schemes || ["http:", "https:"];
 		this.hosts = options.hosts;
 	}

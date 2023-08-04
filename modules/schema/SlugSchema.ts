@@ -1,6 +1,6 @@
 import { getSlug } from "../util/string.js";
 import { OPTIONAL } from "./OptionalSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
  * Define a valid slug, e.g. `this-is-a-slug`
@@ -10,9 +10,14 @@ import { StringSchema } from "./StringSchema.js";
  * - Maximum slug length is 64 characters.
  */
 export class SlugSchema extends StringSchema {
-	override readonly multiline = false;
-	override readonly min = 2;
-	override readonly max = 32;
+	constructor(options: Omit<StringSchemaOptions, "min" | "max" | "multiline">) {
+		super({
+			...options,
+			min: 2,
+			max: 32,
+			multiline: false,
+		});
+	}
 	override sanitize(insaneString: string): string {
 		return getSlug(insaneString);
 	}

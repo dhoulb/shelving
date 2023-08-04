@@ -9,7 +9,7 @@ export type OptionalSchemaOptions<T> = SchemaOptions & {
 
 /** Validate a value of a specific type or `null`. */
 export class OptionalSchema<T> extends ThroughSchema<T | null> {
-	override readonly value: T | null = null;
+	declare readonly value: T | null;
 	constructor(options: OptionalSchemaOptions<T>) {
 		super({ value: null, ...options });
 	}

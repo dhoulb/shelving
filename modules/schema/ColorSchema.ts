@@ -2,8 +2,8 @@ import type { StringSchemaOptions } from "./StringSchema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
-const R_MATCH = /^#[0-9A-F]{6}$/;
-const R_STRIP = /[^0-9A-F]/g;
+const COLOR_REGEXP = /^#[0-9A-F]{6}$/;
+const NOT_HEX_REGEXP = /[^0-9A-F]/g;
 
 /**
  * Define a valid color hex string, e.g `#00CCFF`
@@ -15,16 +15,20 @@ const R_STRIP = /[^0-9A-F]/g;
  * Colors are limited to 512 characters (this can be changed with `max`), but generally these won't be data: URIs so this is a reasonable limit.
  */
 export class ColorSchema extends StringSchema {
-	override readonly type = "color";
-	override readonly min = 1;
-	override readonly max = 7;
-	override readonly multiline = false;
-	override readonly match = R_MATCH;
-	constructor(options: StringSchemaOptions) {
-		super({ title: "Color", ...options });
+	constructor(options: Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline" | "match">) {
+		super({
+			title: "Color",
+			value: "#000000",
+			...options,
+			type: "color",
+			min: 1,
+			max: 7,
+			multiline: false,
+			match: COLOR_REGEXP,
+		});
 	}
 	override sanitize(insaneString: string): string {
-		const saneString = insaneString.toUpperCase().replace(R_STRIP, "");
+		const saneString = insaneString.toUpperCase().replace(NOT_HEX_REGEXP, "");
 		return saneString ? `#${saneString.slice(0, 6)}` : "";
 	}
 }
