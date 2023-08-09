@@ -1,10 +1,8 @@
-import type { AddChange, DeleteChange, ItemChanges, SetChange, UpdateChange, WriteChange } from "./Change.js";
-import type { ItemQuery, ItemValue } from "./ItemReference.js";
+import type { AddChange, DeleteItemChange, DeleteQueryChange, SetItemChange, SetQueryChange, UpdateItemChange, UpdateQueryChange } from "./Change.js";
+import type { ItemArray, ItemQuery, ItemValue } from "./ItemReference.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
-import type { Data, DataKey, Datas } from "../util/data.js";
-import type { Optional } from "../util/optional.js";
+import type { DataKey, Datas } from "../util/data.js";
 import type { Updates } from "../util/update.js";
-import { changeAsyncProvider, changeProvider } from "./Change.js";
 import { AsyncCollectionReference, CollectionReference } from "./CollectionReference.js";
 import { AsyncItemReference, ItemReference } from "./ItemReference.js";
 import { AsyncQueryReference, QueryReference } from "./QueryReference.js";
@@ -22,43 +20,67 @@ abstract class AbstractDatabase<T extends Datas> {
 	/** Reference an item in a collection in this database. */
 	abstract item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> | AsyncItemReference<T[K]>;
 
-	/** Run a set of changes in this database. */
-	abstract change(...changes: Optional<WriteChange<Data>>[]): ItemChanges | Promise<ItemChanges>;
-
-	/** Get a document from a collection in this database. */
-	abstract get<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> | Promise<ItemValue<T[K]>>;
-
-	/** Add a document to a collection in this database. */
-	abstract add<K extends DataKey<T>>(collection: K, data: T[K]): string | Promise<string>;
-
-	/** Set a document in a collection in this database. */
-	abstract set<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void | Promise<void>;
-
-	/** Update a document in a collection in this database. */
-	abstract update<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void | Promise<void>;
-
-	/** Delete a document from a collection in this database. */
-	abstract delete<K extends DataKey<T>>(collection: K, id: string): void | Promise<void>;
-
-	/** Get an add change for a collection in this database. */
+	/** Get an add change for an item in a database collection. */
 	getAdd<K extends DataKey<T>>(collection: K, data: T[K]): AddChange<T[K]> {
 		return { action: "add", collection, data };
 	}
 
-	/** Get a set change for a collection in this database. */
-	getSet<K extends DataKey<T>>(collection: K, id: string, data: T[K]): SetChange<T[K]> {
+	/** Get a set change for an item in a database collection. */
+	getItemSet<K extends DataKey<T>>(collection: K, id: string, data: T[K]): SetItemChange<T[K]> {
 		return { action: "set", collection, id, data };
 	}
 
-	/** Get an update change for a collection in this database. */
-	getUpdate<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): UpdateChange<T[K]> {
+	/** Get an update change for an item in a database collection. */
+	getItemUpdate<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): UpdateItemChange<T[K]> {
 		return { action: "update", collection, id, updates };
 	}
 
-	/** Get a delete change for a collection in this database. */
-	getDelete<K extends DataKey<T>>(collection: K, id: string): DeleteChange {
+	/** Get a delete change for an item in a database collection. */
+	getItemDelete<K extends DataKey<T>>(collection: K, id: string): DeleteItemChange<T[K]> {
 		return { action: "delete", collection, id };
 	}
+
+	/** Get a set change for multiple items in a database collection. */
+	getQuerySet<K extends DataKey<T>>(collection: K, query: ItemQuery<T>, data: T[K]): SetQueryChange<T[K]> {
+		return { action: "set", collection, query, data };
+	}
+
+	/** Get an update change for multiple items in a database collection. */
+	getQueryUpdate<K extends DataKey<T>>(collection: K, query: ItemQuery<T>, updates: Updates<T[K]>): UpdateQueryChange<T[K]> {
+		return { action: "update", collection, query, updates };
+	}
+
+	/** Get a delete change for multiple items in a database collection. */
+	getQueryDelete<K extends DataKey<T>>(collection: K, query: ItemQuery<T>): DeleteQueryChange<T> {
+		return { action: "delete", collection, query };
+	}
+
+	/** Add an item to a database collection. */
+	abstract add<K extends DataKey<T>>(collection: K, data: T[K]): string | Promise<string>;
+
+	/** Get an item from a database collection. */
+	abstract getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> | Promise<ItemValue<T[K]>>;
+
+	/** Set an item to a database collection. */
+	abstract setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void | Promise<void>;
+
+	/** Update an item to a database collection. */
+	abstract updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void | Promise<void>;
+
+	/** Delete an item to a database collection. */
+	abstract deleteItem<K extends DataKey<T>>(collection: K, id: string): void | Promise<void>;
+
+	/** Get multiple items from a database collection. */
+	abstract getQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): ItemArray<T[K]> | Promise<ItemArray<T[K]>>;
+
+	/** Set multiple items in a database collection. */
+	abstract setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): number | Promise<number>;
+
+	/** Update multiple items in a database collection. */
+	abstract updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): number | Promise<number>;
+
+	/** Delete multiple items in a database collection. */
+	abstract deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): number | Promise<number>;
 }
 
 /** Database with a synchronous provider. */
@@ -77,23 +99,32 @@ export class Database<T extends Datas = Datas> extends AbstractDatabase<T> {
 	item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> {
 		return new ItemReference<T[K]>(this.provider, collection, id);
 	}
-	change(...changes: Optional<WriteChange<Data>>[]): ItemChanges {
-		return changeProvider(this.provider, ...changes);
-	}
-	get<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
-		return this.provider.getItem(collection, id) as ItemValue<T[K]>;
-	}
 	add<K extends DataKey<T>>(collection: K, data: T[K]): string {
-		return this.provider.addItem(collection, data);
+		return this.provider.addItem<T[K]>(collection, data);
 	}
-	set<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
-		return this.provider.setItem(collection, id, data);
+	getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
+		return this.provider.getItem<T[K]>(collection, id);
 	}
-	update<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
-		return this.provider.updateItem(collection, id, updates);
+	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
+		return this.provider.setItem<T[K]>(collection, id, data);
 	}
-	delete<K extends DataKey<T>>(collection: K, id: string): void {
-		return this.provider.deleteItem(collection, id);
+	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
+		return this.provider.updateItem<T[K]>(collection, id, updates);
+	}
+	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
+		return this.provider.deleteItem<T[K]>(collection, id);
+	}
+	getQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): ItemArray<T[K]> {
+		return this.provider.getQuery<T[K]>(collection, query) as ItemArray<T[K]>;
+	}
+	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): number {
+		return this.provider.setQuery<T[K]>(collection, query, data);
+	}
+	updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): number {
+		return this.provider.updateQuery<T[K]>(collection, query, updates);
+	}
+	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): number {
+		return this.provider.deleteQuery<T[K]>(collection, query);
 	}
 }
 
@@ -113,22 +144,31 @@ export class AsyncDatabase<T extends Datas = Datas> extends AbstractDatabase<T> 
 	item<K extends DataKey<T>>(collection: K, id: string): AsyncItemReference<T[K]> {
 		return new AsyncItemReference<T[K]>(this.provider, collection, id);
 	}
-	change(...changes: Optional<WriteChange<Data>>[]): Promise<ItemChanges> {
-		return changeAsyncProvider(this.provider, ...changes);
-	}
-	get<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
-		return this.provider.getItem(collection, id) as Promise<ItemValue<T[K]>>;
-	}
 	add<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
-		return this.provider.addItem(collection, data);
+		return this.provider.addItem<T[K]>(collection, data);
 	}
-	set<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
-		return this.provider.setItem(collection, id, data);
+	getItem<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
+		return this.provider.getItem<T[K]>(collection, id);
 	}
-	update<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
-		return this.provider.updateItem(collection, id, updates);
+	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
+		return this.provider.setItem<T[K]>(collection, id, data);
 	}
-	delete<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
-		return this.provider.deleteItem(collection, id);
+	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
+		return this.provider.updateItem<T[K]>(collection, id, updates);
+	}
+	deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
+		return this.provider.deleteItem<T[K]>(collection, id);
+	}
+	getQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<ItemArray<T[K]>> {
+		return this.provider.getQuery<T[K]>(collection, query) as Promise<ItemArray<T[K]>>;
+	}
+	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): Promise<number> {
+		return this.provider.setQuery<T[K]>(collection, query, data);
+	}
+	updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): Promise<number> {
+		return this.provider.updateQuery<T[K]>(collection, query, updates);
+	}
+	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<number> {
+		return this.provider.deleteQuery<T[K]>(collection, query);
 	}
 }

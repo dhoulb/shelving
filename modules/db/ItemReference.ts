@@ -1,4 +1,4 @@
-import type { DeleteChange, SetChange, UpdateChange } from "./Change.js";
+import type { DeleteItemChange, SetItemChange, UpdateItemChange } from "./Change.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
@@ -73,18 +73,19 @@ abstract class AbstractItemReference<T extends Data = Data> implements AsyncIter
 
 	/** Delete this item. */
 	abstract delete(): void | PromiseLike<void>;
+
 	/** Get a set change for this item. */
-	getSet(data: T): SetChange<T> {
+	getSet(data: T): SetItemChange<T> {
 		return { action: "set", collection: this.collection, id: this.id, data };
 	}
 
 	/** Get an update change for this item. */
-	getUpdate(updates: Updates<T>): UpdateChange<T> {
+	getUpdate(updates: Updates<T>): UpdateItemChange<T> {
 		return { action: "update", collection: this.collection, id: this.id, updates };
 	}
 
 	/** Get a delete change for this item. */
-	getDelete(): DeleteChange {
+	getDelete(): DeleteItemChange {
 		return { action: "delete", collection: this.collection, id: this.id };
 	}
 
@@ -115,19 +116,19 @@ export class ItemReference<T extends Data = Data> extends AbstractItemReference<
 		return !!this.provider.getItem(this.collection, this.id);
 	}
 	get value(): ItemValue<T> {
-		return this.provider.getItem(this.collection, this.id) as ItemValue<T>;
+		return this.provider.getItem<T>(this.collection, this.id);
 	}
 	get data(): ItemData<T> {
 		return getRequired(this.value);
 	}
 	set(data: T): void {
-		return this.provider.setItem(this.collection, this.id, data);
+		return this.provider.setItem<T>(this.collection, this.id, data);
 	}
 	update(updates: Updates<T>): void {
-		return this.provider.updateItem(this.collection, this.id, updates);
+		return this.provider.updateItem<T>(this.collection, this.id, updates);
 	}
 	delete(): void {
-		return this.provider.deleteItem(this.collection, this.id);
+		return this.provider.deleteItem<T>(this.collection, this.id);
 	}
 }
 
@@ -142,18 +143,18 @@ export class AsyncItemReference<T extends Data = Data> extends AbstractItemRefer
 		return this.provider.getItem(this.collection, this.id).then(Boolean);
 	}
 	get value(): Promise<ItemValue<T>> {
-		return this.provider.getItem(this.collection, this.id) as Promise<ItemValue<T>>;
+		return this.provider.getItem<T>(this.collection, this.id);
 	}
 	get data(): Promise<ItemData<T>> {
 		return this.value.then(getRequired);
 	}
 	set(data: T): Promise<void> {
-		return this.provider.setItem(this.collection, this.id, data);
+		return this.provider.setItem<T>(this.collection, this.id, data);
 	}
 	update(updates: Updates<T>): Promise<void> {
-		return this.provider.updateItem(this.collection, this.id, updates);
+		return this.provider.updateItem<T>(this.collection, this.id, updates);
 	}
 	delete(): Promise<void> {
-		return this.provider.deleteItem(this.collection, this.id);
+		return this.provider.deleteItem<T>(this.collection, this.id);
 	}
 }

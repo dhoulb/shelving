@@ -3,9 +3,8 @@ import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
 import type { Updates } from "../util/update.js";
-import { countArray, getOptionalFirstItem, getOptionalLastItem, isArrayLength } from "../util/array.js";
+import { countArray, getFirstItem, getOptionalFirstItem, getOptionalLastItem, isArrayLength } from "../util/array.js";
 import { cloneObjectWith } from "../util/object.js";
-import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Reference to a set of items in a sync or async provider. */
@@ -20,7 +19,7 @@ abstract class AbstractQueryReference<T extends Data = Data> implements AsyncIte
 
 	/** Get a copy of this query reference with additional query props. */
 	with(query: ItemQuery<T>): this {
-		return cloneObjectWith(this, "query", { ...this.query, query });
+		return cloneObjectWith(this, "query", { ...this.query, ...query });
 	}
 
 	/**
@@ -120,7 +119,7 @@ export class QueryReference<T extends Data = Data> extends AbstractQueryReferenc
 		return getOptionalLastItem(this.items);
 	}
 	get data(): ItemData<T> {
-		return getRequired(this.first);
+		return getFirstItem(_getSingleItemArray(this));
 	}
 	set(data: T): number {
 		return this.provider.setQuery(this.collection, this.query, data);
@@ -156,7 +155,7 @@ export class AsyncQueryReference<T extends Data = Data> extends AbstractQueryRef
 		return this.items.then(getOptionalLastItem);
 	}
 	get data(): Promise<ItemData<T>> {
-		return this.first.then(getRequired);
+		return _getSingleItemArray(this).then(getFirstItem);
 	}
 	set(data: T): Promise<number> {
 		return this.provider.setQuery(this.collection, this.query, data);

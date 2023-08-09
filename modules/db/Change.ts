@@ -1,76 +1,122 @@
+import type { ItemQuery } from "./ItemReference.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Data } from "../util/data.js";
-import type { Optional } from "../util/optional.js";
 import type { Updates } from "../util/update.js";
-import { notNullish } from "../util/null.js";
+import { type Optional, notOptional } from "../util/optional.js";
 import { mapArray, mapItems } from "../util/transform.js";
-import { getItemQuery } from "./ItemReference.js";
 
-/** Add on an item. */
-export interface AddChange<T extends Data> {
+/** A change to a database. */
+export interface Change {
+	readonly action: string;
+}
+
+/** A change to a database collection. */
+export interface CollectionChange<T extends Data> extends Change {
+	readonly collection: string;
+	readonly id?: string | never;
+	readonly query?: ItemQuery<T> | never;
+}
+
+/** Add an item to a database collection. */
+export interface AddChange<T extends Data> extends CollectionChange<T> {
 	readonly action: "add";
-	readonly collection: string;
+	readonly id?: never;
+	readonly query?: never;
 	readonly data: T;
 }
 
-/** Set on an item. */
-export interface SetChange<T extends Data> {
+/** Change an item in a database collection. */
+export interface ItemChange<T extends Data> extends CollectionChange<T> {
+	readonly id: string;
+	readonly query?: never;
+}
+
+/** Set an item in a database collection. */
+export interface SetItemChange<T extends Data> extends ItemChange<T> {
 	readonly action: "set";
-	readonly collection: string;
-	readonly id: string;
 	readonly data: T;
 }
 
-/** Update change on an item. */
-export interface UpdateChange<T extends Data> {
+/** Update an item in a database collection. */
+export interface UpdateItemChange<T extends Data> extends ItemChange<T> {
 	readonly action: "update";
-	readonly collection: string;
-	readonly id: string;
 	readonly updates: Updates<T>;
 }
 
-/** Delete change on an item. */
-export interface DeleteChange {
+/** Delete an item in a database collection. */
+export interface DeleteItemChange<T extends Data> extends ItemChange<T> {
 	readonly action: "delete";
-	readonly collection: string;
-	readonly id: string;
 }
 
-/** Set, update, or delete change on an item. */
-export type ItemChange<T extends Data> = SetChange<T> | UpdateChange<T> | DeleteChange;
+/** Change multiple items in a database collection. */
+export interface QueryChange<T extends Data> extends CollectionChange<T> {
+	readonly query: ItemQuery<T>;
+	readonly id?: never;
+}
 
-/** Array of item changes. */
-export type ItemChanges = ImmutableArray<ItemChange<Data>>;
+/** Set multiple items in a database collection. */
+export interface SetQueryChange<T extends Data> extends QueryChange<T> {
+	readonly action: "set";
+	readonly data: T;
+}
 
-/** Write change on an item. */
-export type WriteChange<T extends Data> = ItemChange<T> | AddChange<T>;
+/** Update multiple items in a database collection. */
+export interface UpdateQueryChange<T extends Data> extends QueryChange<T> {
+	readonly action: "update";
+	readonly updates: Updates<T>;
+}
 
-/** Array of write changes. */
-export type WriteChanges = ImmutableArray<WriteChange<Data>>;
+/** Delete multiple items in a database collection. */
+export interface DeleteQueryChange<T extends Data> extends QueryChange<T> {
+	readonly action: "delete";
+}
+
+/** Write an item in a database collection. */
+export type WriteItemChange<T extends Data> = SetItemChange<T> | UpdateItemChange<T> | DeleteItemChange<T>;
+
+/** Write multiple item in a database collection. */
+export type WriteQueryChange<T extends Data> = SetQueryChange<T> | UpdateQueryChange<T> | DeleteQueryChange<T>;
+
+/** Write an item or multiple items in a database collection. */
+export type WriteChange<T extends Data> = AddChange<T> | WriteItemChange<T> | WriteQueryChange<T>;
 
 /** Apply a set of changes to a synchronous provider. */
-export function changeProvider(provider: Provider, ...changes: Optional<WriteChange<Data>>[]): ItemChanges {
-	return mapArray(changes.filter(notNullish), _changeItem, provider);
+export function changeProvider<T extends Data>(provider: Provider, ...changes: Optional<WriteChange<T>>[]): ImmutableArray<WriteChange<T>> {
+	return mapArray(changes.filter(notOptional), _writeProvider, provider);
 }
-function _changeItem(change: WriteChange<Data>, provider: Provider): ItemChange<Data> {
-	const { action, collection } = change;
-	if (action === "add") return { action: "set", collection, id: provider.addItem(collection, change.data), data: change.data };
-	else if (action === "set") provider.setItem(collection, change.id, change.data);
-	else if (action === "update") provider.updateQuery(collection, getItemQuery(change.id), change.updates);
-	else if (action === "delete") provider.deleteItem(collection, change.id);
+function _writeProvider<T extends Data>(change: WriteChange<T>, provider: Provider): WriteChange<T> {
+	const { action, collection, id, query } = change;
+	if (action === "add") {
+		return { action: "set", collection, id: provider.addItem(collection, change.data), data: change.data };
+	} else if (id) {
+		if (action === "set") provider.setItem(collection, id, change.data);
+		else if (action === "update") provider.updateItem(collection, id, change.updates);
+		else if (action === "delete") provider.deleteItem(collection, id);
+	} else if (query) {
+		if (action === "set") provider.setQuery(collection, query, change.data);
+		else if (action === "update") provider.updateQuery(collection, query, change.updates);
+		else if (action === "delete") provider.deleteQuery(collection, query);
+	}
 	return change;
 }
 
 /** Apply a set of changes to an asynchronous provider. */
-export function changeAsyncProvider(provider: AsyncProvider, ...changes: Optional<WriteChange<Data>>[]): Promise<ItemChanges> {
-	return Promise.all(mapItems(changes.filter(notNullish), _changeAsyncItem, provider));
+export function changeAsyncProvider<T extends Data>(provider: AsyncProvider, ...changes: Optional<WriteChange<T>>[]): Promise<ImmutableArray<WriteChange<T>>> {
+	return Promise.all(mapItems(changes.filter(notOptional), _writeAsyncProvider, provider));
 }
-async function _changeAsyncItem(change: WriteChange<Data>, provider: AsyncProvider): Promise<ItemChange<Data>> {
-	const { collection, action } = change;
-	if (action === "add") return { action: "set", collection, id: await provider.addItem(collection, change.data), data: change.data };
-	else if (action === "set") await provider.setItem(collection, change.id, change.data);
-	else if (action === "update") await provider.updateQuery(collection, getItemQuery(change.id), change.updates);
-	else if (action === "delete") await provider.deleteItem(collection, change.id);
+async function _writeAsyncProvider<T extends Data>(change: WriteChange<T>, provider: AsyncProvider): Promise<WriteChange<T>> {
+	const { collection, action, id, query } = change;
+	if (action === "add") {
+		return { action: "set", collection, id: await provider.addItem(collection, change.data), data: change.data };
+	} else if (id) {
+		if (action === "set") await provider.setItem(collection, id, change.data);
+		else if (action === "update") await provider.updateItem(collection, id, change.updates);
+		else if (action === "delete") await provider.deleteItem(collection, id);
+	} else if (query) {
+		if (action === "set") await provider.setQuery(collection, query, change.data);
+		else if (action === "update") await provider.updateQuery(collection, query, change.updates);
+		else if (action === "delete") await provider.deleteQuery(collection, query);
+	}
 	return change;
 }
