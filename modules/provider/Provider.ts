@@ -9,11 +9,13 @@ abstract class AbstractProvider {
 	 *
 	 * @return The item value, or `null` if it doesn't exist.
 	 */
+	abstract getItem<T extends Data>(collection: string, id: string): ItemValue<T> | PromiseLike<ItemValue<T>>;
 	abstract getItem(collection: string, id: string): ItemValue | PromiseLike<ItemValue>;
 
 	/**
 	 * Subscribe to the value of this item with an async iterator.
 	 */
+	abstract getItemSequence<T extends Data>(collection: string, id: string): AsyncIterable<ItemValue<T>>;
 	abstract getItemSequence(collection: string, id: string): AsyncIterable<ItemValue>;
 
 	/**
@@ -23,12 +25,14 @@ abstract class AbstractProvider {
 	 * @param data Complete data to set the item to.
 	 * @return String ID for the created item (possibly promised).
 	 */
+	abstract addItem<T extends Data>(collection: string, data: T): string | PromiseLike<string>;
 	abstract addItem(collection: string, data: Data): string | PromiseLike<string>;
 
 	/**
 	 * Set the data a item (whether it exists or not).
 	 * @param data Data to set the item to.
 	 */
+	abstract setItem<T extends Data>(collection: string, id: string, data: T): void | PromiseLike<void>;
 	abstract setItem(collection: string, id: string, data: Data): void | PromiseLike<void>;
 
 	/**
@@ -37,11 +41,13 @@ abstract class AbstractProvider {
 	 * @param updates Set of property updates to apply to the item.
 	 * @throws Error If the item does not exist (ideally a `RequiredError` but may be provider-specific).
 	 */
+	abstract updateItem<T extends Data>(collection: string, id: string, updates: Updates<T>): void | PromiseLike<void>;
 	abstract updateItem(collection: string, id: string, updates: Updates): void | PromiseLike<void>;
 
 	/**
 	 * Delete a specified item.
 	 */
+	abstract deleteItem<T extends Data>(collection: string, id: string): void | PromiseLike<void>; // eslint-disable-line @typescript-eslint/no-unused-vars
 	abstract deleteItem(collection: string, id: string): void | PromiseLike<void>;
 
 	/**
@@ -49,11 +55,13 @@ abstract class AbstractProvider {
 	 *
 	 * @return Set of values in `id: data` format.
 	 */
+	abstract getQuery<T extends Data>(collection: string, query: ItemQuery<T>): ItemArray<T> | PromiseLike<ItemArray<T>>;
 	abstract getQuery(collection: string, query: ItemQuery): ItemArray | PromiseLike<ItemArray>;
 
 	/**
 	 * Subscribe to all matching items with an async iterator.
 	 */
+	abstract getQuerySequence<T extends Data>(collection: string, query: ItemQuery<T>): AsyncIterable<ItemArray<T>>;
 	abstract getQuerySequence(collection: string, query: ItemQuery): AsyncIterable<ItemArray>;
 
 	/**
@@ -62,6 +70,7 @@ abstract class AbstractProvider {
 	 * @param data Data to set matching items to.
 	 * @return Number of items that were set.
 	 */
+	abstract setQuery<T extends Data>(collection: string, query: ItemQuery<T>, data: T): number | PromiseLike<number>;
 	abstract setQuery(collection: string, query: ItemQuery, data: Data): number | PromiseLike<number>;
 
 	/**
@@ -70,12 +79,14 @@ abstract class AbstractProvider {
 	 * @param updates Set of property updates to apply to matching items.
 	 * @return Number of items that were updated.
 	 */
+	abstract updateQuery<T extends Data>(collection: string, query: ItemQuery<T>, updates: Updates<T>): number | PromiseLike<number>;
 	abstract updateQuery(collection: string, query: ItemQuery, updates: Updates): number | PromiseLike<number>;
 
 	/**
 	 * Delete all matching items.
 	 * @return Number of items that were deleted.
 	 */
+	abstract deleteQuery<T extends Data>(collection: string, query: ItemQuery<T>): number | PromiseLike<number>;
 	abstract deleteQuery(collection: string, query: ItemQuery): number | PromiseLike<number>;
 }
 
