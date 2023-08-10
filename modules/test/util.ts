@@ -1,9 +1,9 @@
-import type { ItemData } from "../db/ItemReference.js";
 import type { Data } from "../util/data.js";
 import type { AnyFunction } from "../util/function.js";
+import type { ItemData } from "../util/item.js";
 import type { NotString } from "../util/string.js";
 import { expect } from "@jest/globals";
-import { getIDs } from "../db/ItemReference.js";
+import { getItemIDs } from "../util/item.js";
 
 /** Match any `Promiselike` object. */
 export const PromiseLike = expect.objectContaining({
@@ -36,7 +36,7 @@ export function expectToThrowMatchObject(func: AnyFunction, obj: Record<string, 
 export function expectUnorderedKeys<T extends Data>(entities: Iterable<ItemData<T>>, keys: Iterable<string> & NotString): void {
 	try {
 		expect(entities).toBeInstanceOf(Object);
-		expect(Array.from(getIDs(entities)).sort()).toEqual(Array.from(keys).sort());
+		expect(Array.from(getItemIDs(entities)).sort()).toEqual(Array.from(keys).sort());
 	} catch (thrown) {
 		throw thrown instanceof Error ? popErrorStack(thrown) : thrown;
 	}
@@ -46,7 +46,7 @@ export function expectUnorderedKeys<T extends Data>(entities: Iterable<ItemData<
 export function expectOrderedKeys<T extends Data>(entities: Iterable<ItemData<T>>, keys: Iterable<string> & NotString): void {
 	try {
 		expect(entities).toBeInstanceOf(Object);
-		expect(Array.from(getIDs(entities))).toEqual(Array.from(keys));
+		expect(Array.from(getItemIDs(entities))).toEqual(Array.from(keys));
 	} catch (thrown) {
 		throw thrown instanceof Error ? popErrorStack(thrown) : thrown;
 	}

@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 
-import type { AsyncProvider, Provider } from "./Provider.js";
+import type { AbstractProvider, AsyncProvider, Provider } from "./Provider.js";
 import type { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
-import type { ItemArray, ItemQuery, ItemValue } from "../db/ItemReference.js";
 import type { Data } from "../util/data.js";
+import type { ItemArray, ItemQuery, ItemValue } from "../util/item.js";
 import type { Updates } from "../util/update.js";
 
 /** Provider that logs operations to a source provider to the console. */
 abstract class AbstractDebugProvider {
-	abstract readonly source: Provider | AsyncProvider;
+	abstract readonly source: AbstractProvider;
 	async *getItemSequence(collection: string, id: string): AsyncIterableIterator<ItemValue> {
 		try {
 			console.debug("⋯ ITERATE", collection, id);

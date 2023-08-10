@@ -1,9 +1,9 @@
-import type { ItemArray, ItemQuery, ItemValue } from "../db/ItemReference.js";
 import type { Data } from "../util/data.js";
+import type { ItemArray, ItemQuery, ItemValue } from "../util/item.js";
 import type { Updates } from "../util/update.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
-abstract class AbstractProvider {
+export abstract class AbstractProvider {
 	/**
 	 * Get the value of a item.
 	 *
@@ -102,7 +102,7 @@ export abstract class Provider extends AbstractProvider {
 	abstract override updateItem(collection: string, id: string, updates: Updates): void;
 	abstract override deleteItem<T extends Data>(collection: string, id: string): void; // eslint-disable-line @typescript-eslint/no-unused-vars
 	abstract override deleteItem(collection: string, id: string): void;
-	abstract override getQuery<T extends Data>(collection: string, query: ItemQuery<T>): ItemArray;
+	abstract override getQuery<T extends Data>(collection: string, query: ItemQuery<T>): ItemArray<T>;
 	abstract override getQuery(collection: string, query: ItemQuery): ItemArray;
 	abstract override setQuery<T extends Data>(collection: string, query: ItemQuery<T>, data: T): number;
 	abstract override setQuery(collection: string, query: ItemQuery, data: Data): number;
@@ -124,7 +124,7 @@ export abstract class AsyncProvider extends AbstractProvider {
 	abstract override updateItem(collection: string, id: string, updates: Updates): Promise<void>;
 	abstract override deleteItem<T extends Data>(collection: string, id: string): Promise<void>; // eslint-disable-line @typescript-eslint/no-unused-vars
 	abstract override deleteItem(collection: string, id: string): Promise<void>;
-	abstract override getQuery<T extends Data>(collection: string, query: ItemQuery<T>): Promise<ItemArray>;
+	abstract override getQuery<T extends Data>(collection: string, query: ItemQuery<T>): Promise<ItemArray<T>>;
 	abstract override getQuery(collection: string, query: ItemQuery): Promise<ItemArray>;
 	abstract override setQuery<T extends Data>(collection: string, query: ItemQuery<T>, data: T): Promise<number>;
 	abstract override setQuery(collection: string, query: ItemQuery, data: Data): Promise<number>;

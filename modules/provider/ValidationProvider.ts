@@ -1,8 +1,8 @@
-import type { AsyncProvider, Provider } from "./Provider.js";
-import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../db/ItemReference.js";
+import type { AbstractProvider, AsyncProvider, Provider } from "./Provider.js";
 import type { DataSchema, DataSchemas } from "../schema/DataSchema.js";
 import type { Data, DataKey, Datas } from "../util/data.js";
 import type { MutableDictionary } from "../util/dictionary.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../util/item.js";
 import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
 import { ValidationError } from "../error/ValidationError.js";
@@ -11,14 +11,14 @@ import { updateData } from "../util/update.js";
 import { validateWithContext } from "../util/validate.js";
 
 // Constants.
-const VALIDATION_CONTEXT_GET: Data = { action: "get", id: true };
-const VALIDATION_CONTEXT_ADD: Data = { action: "add" };
-const VALIDATION_CONTEXT_SET: Data = { action: "set" };
-const VALIDATION_CONTEXT_UPDATE: Data = { action: "update", partial: true };
+const VALIDATION_CONTEXT_GET = { action: "get", id: true as const };
+const VALIDATION_CONTEXT_ADD = { action: "add" };
+const VALIDATION_CONTEXT_SET = { action: "set" };
+const VALIDATION_CONTEXT_UPDATE = { action: "update", partial: true as const };
 
 /** Validate a source provider (source can have any type because validation guarantees the type). */
-abstract class BaseValidationProvider<T extends Datas> {
-	abstract source: Provider | AsyncProvider;
+abstract class AbstractValidationProvider<T extends Datas> {
+	abstract source: AbstractProvider;
 	readonly schemas: DataSchemas<T>;
 	constructor(schemas: DataSchemas<T>) {
 		this.schemas = schemas;
@@ -37,7 +37,7 @@ abstract class BaseValidationProvider<T extends Datas> {
 }
 
 /** Validate a synchronous source provider (source can have any type because validation guarantees the type). */
-export class ValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements Provider, Sourceable<Provider> {
+export class ValidationProvider<T extends Datas> extends AbstractValidationProvider<T> implements Provider, Sourceable<Provider> {
 	readonly source: Provider;
 	constructor(source: Provider, schemas: DataSchemas<T>) {
 		super(schemas);
@@ -75,7 +75,7 @@ export class ValidationProvider<T extends Datas> extends BaseValidationProvider<
 }
 
 /** Validate an asynchronous source provider (source can have any type because validation guarantees the type). */
-export class AsyncValidationProvider<T extends Datas> extends BaseValidationProvider<T> implements AsyncProvider, Sourceable<AsyncProvider> {
+export class AsyncValidationProvider<T extends Datas> extends AbstractValidationProvider<T> implements AsyncProvider, Sourceable<AsyncProvider> {
 	readonly source: AsyncProvider;
 	constructor(source: AsyncProvider, schemas: DataSchemas<T>) {
 		super(schemas);
@@ -116,7 +116,7 @@ export class AsyncValidationProvider<T extends Datas> extends BaseValidationProv
 function _validateItemValue<T extends Data>(collection: string, unsafeEntity: ItemValue<Data>, schema: DataSchema<T>): ItemValue<T> {
 	if (!unsafeEntity) return undefined;
 	try {
-		return validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET) as ItemData<T>;
+		return validateWithContext<T>(unsafeEntity, schema, VALIDATION_CONTEXT_GET);
 	} catch (thrown) {
 		if (!(thrown instanceof Feedback)) throw thrown;
 		throw new ValidationError(`Invalid data for "${collection}"`, thrown.message);
@@ -132,7 +132,7 @@ function* _validateItems<T extends Data>(collection: string, unsafeEntities: Ite
 	const messages: MutableDictionary<string> = {};
 	for (const unsafeEntity of unsafeEntities) {
 		try {
-			yield validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET) as ItemData<T>;
+			yield validateWithContext(unsafeEntity, schema, VALIDATION_CONTEXT_GET);
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
 			invalid = true;

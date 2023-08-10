@@ -1,6 +1,5 @@
-import type { ItemArray, ItemData, ItemValue } from "./ItemReference.js";
-import type { AsyncQueryReference, QueryReference } from "./QueryReference.js";
-import type { AsyncProvider, Provider } from "../provider/Provider.js";
+import type { AbstractProvider } from "../provider/Provider.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../util/item.js";
 import type { StopCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
@@ -16,7 +15,9 @@ import { getOptionalSource } from "../util/source.js";
 
 /** Hold the current state of a query. */
 export class QueryState<T extends Data = Data> extends State<ItemArray<T>> implements Iterable<ItemData<T>> {
-	readonly ref: QueryReference<T> | AsyncQueryReference<T>;
+	readonly provider: AbstractProvider;
+	readonly collection: string;
+	readonly query: ItemQuery<T>;
 	readonly busy = new BooleanState();
 	readonly limit: number;
 
@@ -56,12 +57,13 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 		return this.value.length;
 	}
 
-	constructor(ref: QueryReference<T> | AsyncQueryReference<T>) {
-		const { provider, collection, query } = ref;
+	constructor(provider: AbstractProvider, collection: string, query: ItemQuery<T>) {
 		const memory = getOptionalSource(CacheProvider, provider)?.memory;
 		const time = memory ? memory.getQueryTime(collection, query) : undefined;
-		super(memory && typeof time === "number" ? (memory.getQuery(collection, query) as ItemArray<T>) : NONE, time);
-		this.ref = ref;
+		super(memory && typeof time === "number" ? memory.getQuery(collection, query) : NONE, time);
+		this.provider = provider;
+		this.collection = collection;
+		this.query = query;
 		this.limit = getLimit(query) ?? Infinity;
 
 		// Queue a request to refresh the value if it doesn't exist.
@@ -69,14 +71,14 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 	}
 
 	/** Refresh this state from the source provider. */
-	refresh(provider: Provider | AsyncProvider = this.ref.provider): void {
+	refresh(provider: AbstractProvider = this.provider): void {
 		if (!this.busy.value) void this._refresh(provider);
 	}
-	private async _refresh(provider: Provider | AsyncProvider): Promise<void> {
+	private async _refresh(provider: AbstractProvider): Promise<void> {
 		this.busy.value = true;
 		this.reason = undefined; // Optimistically clear the error.
 		try {
-			const items = (await provider.getQuery(this.ref.collection, this.ref.query)) as ItemArray<T>;
+			const items = await provider.getQuery(this.collection, this.query);
 			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
 			this.value = items;
 		} catch (thrown) {
@@ -92,8 +94,8 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 	}
 
 	/** Subscribe this state to a provider. */
-	connect(provider: Provider | AsyncProvider = this.ref.provider): StopCallback {
-		return runSequence(this.through(provider.getQuerySequence(this.ref.collection, this.ref.query) as AsyncIterable<ItemArray<T>>));
+	connect(provider: AbstractProvider = this.provider): StopCallback {
+		return runSequence(this.through(provider.getQuerySequence(this.collection, this.query)));
 	}
 
 	/**
@@ -108,8 +110,8 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 		this.reason = undefined; // Optimistically clear the error.
 		try {
 			const last = this.last;
-			const ref = last ? this.ref.with(getAfterQuery(this.ref.query, last)) : this.ref;
-			const items = await ref.items;
+			const query = last ? getAfterQuery(this.query, last) : this.query;
+			const items = await this.provider.getQuery(this.collection, query);
 			this.value = [...this.items, ...items];
 			this._hasMore = items.length >= this.limit; // If the query returned {limit} or more items, we can assume there are more items waiting to be queried.
 		} catch (thrown) {
@@ -135,9 +137,8 @@ export class QueryState<T extends Data = Data> extends State<ItemArray<T>> imple
 	/** Start subscription to `MemoryProvider` if there is one. */
 	start() {
 		if (!this._stop) {
-			const { collection, query, provider } = this.ref;
-			const memory = getOptionalSource(CacheProvider, provider)?.memory;
-			if (memory) this._stop = runSequence(this.through(memory.getCachedQuerySequence(collection, query) as AsyncIterable<ItemArray<T>>));
+			const memory = getOptionalSource(CacheProvider, this.provider)?.memory;
+			if (memory) this._stop = runSequence(this.through(memory.getCachedQuerySequence(this.collection, this.query)));
 		}
 	}
 	/** Stop subscription to `MemoryProvider` if there is one. */

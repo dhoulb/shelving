@@ -1,7 +1,7 @@
-import type { ItemQuery } from "../db/ItemReference.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Data } from "../util/data.js";
+import type { ItemQuery } from "../util/item.js";
 import type { Updates } from "../util/update.js";
 import { type Optional, notOptional } from "../util/optional.js";
 

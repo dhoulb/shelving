@@ -1,15 +1,18 @@
-import type { ItemArray, ItemData, ItemQuery, ItemValue } from "./ItemReference.js";
 import type { AddItemChange, DeleteItemChange, DeleteQueryChange, SetItemChange, SetQueryChange, UpdateItemChange, UpdateQueryChange } from "../change/Change.js";
-import type { AsyncProvider, Provider } from "../provider/Provider.js";
+import type { AbstractProvider, AsyncProvider, Provider } from "../provider/Provider.js";
 import type { Data } from "../util/data.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../util/item.js";
 import type { Updates } from "../util/update.js";
-import { countArray, getFirstItem, getOptionalFirstItem, getOptionalLastItem, isArrayLength } from "../util/array.js";
+import { countArray, getFirstItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
 import { AsyncItemReference, ItemReference } from "./ItemReference.js";
 import { AsyncQueryReference, QueryReference } from "./QueryReference.js";
 
+const NO_QUERY: ItemQuery<any> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+const SINGLE_QUERY: ItemQuery<any> = { $limit: 1 }; // eslint-disable-line @typescript-eslint/no-explicit-any
+
 /** Reference to a collection in a synchronous or asynchronous provider. */
 abstract class AbstractCollectionReference<T extends Data = Data> {
-	abstract readonly provider: Provider | AsyncProvider;
+	abstract readonly provider: AbstractProvider;
 	readonly collection: string;
 	constructor(collection: string) {
 		this.collection = collection;
@@ -22,16 +25,16 @@ abstract class AbstractCollectionReference<T extends Data = Data> {
 	abstract items: ItemArray<T> | PromiseLike<ItemArray<T>>;
 
 	/**
-	 * Count the number of results of this set of items.
-	 * @return Number of items matching the query (possibly promised).
-	 */
-	abstract count: number | PromiseLike<number>;
-
-	/**
 	 * Does at least one item exist for this query?
 	 * @return `true` if a item exists or `false` otherwise (possibly promised).
 	 */
 	abstract exists: boolean | PromiseLike<boolean>;
+
+	/**
+	 * Count the number of results of this set of items.
+	 * @return Number of items matching the query (possibly promised).
+	 */
+	abstract count: number | PromiseLike<number>;
 
 	/**
 	 * Get the first item matched by this query or `null` if this query has no results.
@@ -133,22 +136,22 @@ export class CollectionReference<T extends Data = Data> extends AbstractCollecti
 		this.provider = provider;
 	}
 	get items(): ItemArray<T> {
-		return _getItemArray(this);
+		return this.provider.getQuery<T>(this.collection, NO_QUERY);
+	}
+	get exists(): boolean {
+		return !!this.first;
 	}
 	get count(): number {
 		return this.items.length;
 	}
-	get exists(): boolean {
-		return !!_getSingleItemArray(this).length;
-	}
 	get first(): ItemValue<T> {
-		return getOptionalFirstItem(_getSingleItemArray(this));
+		return getOptionalFirstItem(this.provider.getQuery<T>(this.collection, SINGLE_QUERY));
 	}
 	get last(): ItemValue<T> {
 		return getOptionalLastItem(this.items);
 	}
 	get data(): ItemData<T> {
-		return getFirstItem(_getSingleItemArray(this));
+		return getFirstItem(this.provider.getQuery<T>(this.collection, SINGLE_QUERY));
 	}
 	query(constraints?: ItemQuery<T>): QueryReference<T> {
 		return new QueryReference<T>(this.provider, this.collection, constraints);
@@ -172,7 +175,7 @@ export class CollectionReference<T extends Data = Data> extends AbstractCollecti
 		return this.provider.deleteItem<T>(this.collection, id);
 	}
 	getQuery(query: ItemQuery<T>): ItemArray<T> {
-		return this.provider.getQuery<T>(this.collection, query) as ItemArray<T>;
+		return this.provider.getQuery<T>(this.collection, query);
 	}
 	setQuery(query: ItemQuery<T>, data: T): number {
 		return this.provider.setQuery<T>(this.collection, query, data);
@@ -193,22 +196,22 @@ export class AsyncCollectionReference<T extends Data = Data> extends AbstractCol
 		this.provider = provider;
 	}
 	get items(): Promise<ItemArray<T>> {
-		return _getItemArray(this);
+		return this.provider.getQuery(this.collection, NO_QUERY);
+	}
+	get exists(): Promise<boolean> {
+		return this.first.then(Boolean);
 	}
 	get count(): Promise<number> {
 		return this.items.then(countArray);
 	}
-	get exists(): Promise<boolean> {
-		return _getSingleItemArray(this).then(isArrayLength);
-	}
 	get first(): Promise<ItemValue<T>> {
-		return _getSingleItemArray(this).then(getOptionalFirstItem);
+		return this.provider.getQuery(this.collection, SINGLE_QUERY).then(getOptionalFirstItem);
 	}
 	get last(): Promise<ItemValue<T>> {
 		return this.items.then(getOptionalLastItem);
 	}
 	get data(): Promise<ItemData<T>> {
-		return _getSingleItemArray(this).then(getFirstItem);
+		return this.provider.getQuery(this.collection, SINGLE_QUERY).then(getFirstItem);
 	}
 	query(query?: ItemQuery<T>): AsyncQueryReference<T> {
 		return new AsyncQueryReference<T>(this.provider, this.collection, query);
@@ -232,7 +235,7 @@ export class AsyncCollectionReference<T extends Data = Data> extends AbstractCol
 		return this.provider.deleteItem<T>(this.collection, id);
 	}
 	getQuery(query: ItemQuery<T>): Promise<ItemArray<T>> {
-		return this.provider.getQuery<T>(this.collection, query) as Promise<ItemArray<T>>;
+		return this.provider.getQuery<T>(this.collection, query);
 	}
 	setQuery(query: ItemQuery<T>, data: T): Promise<number> {
 		return this.provider.setQuery<T>(this.collection, query, data);
@@ -243,16 +246,4 @@ export class AsyncCollectionReference<T extends Data = Data> extends AbstractCol
 	deleteQuery(query: ItemQuery<T>): Promise<number> {
 		return this.provider.deleteQuery<T>(this.collection, query);
 	}
-}
-
-function _getItemArray<T extends Data>({ provider, collection }: CollectionReference<T>): ItemArray<T>;
-function _getItemArray<T extends Data>({ provider, collection }: AsyncCollectionReference<T>): Promise<ItemArray<T>>;
-function _getItemArray({ provider, collection }: CollectionReference | AsyncCollectionReference): ItemArray | Promise<ItemArray> {
-	return provider.getQuery(collection, {});
-}
-
-function _getSingleItemArray<T extends Data>({ provider, collection }: CollectionReference<T>): ItemArray<T>;
-function _getSingleItemArray<T extends Data>({ provider, collection }: AsyncCollectionReference<T>): Promise<ItemArray<T>>;
-function _getSingleItemArray({ provider, collection }: CollectionReference | AsyncCollectionReference): ItemArray | Promise<ItemArray> {
-	return provider.getQuery(collection, { $limit: 1 });
 }

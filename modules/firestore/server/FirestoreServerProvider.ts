@@ -1,12 +1,12 @@
-import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../../db/ItemReference.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { Data, DataProp } from "../../util/data.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../../util/item.js";
 import type { ImmutableObject } from "../../util/object.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { BulkWriter, DocumentData, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot } from "@google-cloud/firestore";
 import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
-import { getItemData } from "../../db/ItemReference.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
+import { getItemData } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";

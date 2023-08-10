@@ -1,12 +1,12 @@
-import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../../db/ItemReference.js";
 import type { AsyncProvider } from "../../provider/Provider.js";
 import type { Data, DataProp } from "../../util/data.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../../util/item.js";
 import type { ImmutableObject } from "../../util/object.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocumentSnapshot } from "firebase/firestore/lite";
 import { addDoc, collection, deleteDoc, doc, documentId, getDoc, getDocs, increment, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore/lite";
-import { getItemData } from "../../db/ItemReference.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
+import { getItemData } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";

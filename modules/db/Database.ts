@@ -1,8 +1,8 @@
-import type { ItemArray, ItemQuery, ItemValue } from "./ItemReference.js";
 import type { AddItemChange, DeleteItemChange, DeleteQueryChange, SetItemChange, SetQueryChange, UpdateItemChange, UpdateQueryChange, WriteChange } from "../change/Change.js";
-import type { AsyncProvider, Provider } from "../provider/Provider.js";
+import type { AbstractProvider, AsyncProvider, Provider } from "../provider/Provider.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { DataKey, DataValue, Datas } from "../util/data.js";
+import type { ItemArray, ItemQuery, ItemValue } from "../util/item.js";
 import type { Optional } from "../util/optional.js";
 import type { Updates } from "../util/update.js";
 import { writeAsyncProviderChange, writeAsyncProviderChanges, writeProviderChange, writeProviderChanges } from "../change/Change.js";
@@ -11,8 +11,8 @@ import { AsyncItemReference, ItemReference } from "./ItemReference.js";
 import { AsyncQueryReference, QueryReference } from "./QueryReference.js";
 
 /** Database with a synchronous or asynchronous provider. */
-abstract class AbstractDatabase<T extends Datas> {
-	abstract readonly provider: Provider | AsyncProvider;
+export abstract class AbstractDatabase<T extends Datas> {
+	abstract readonly provider: AbstractProvider;
 
 	/** Create a query on a collection in this database. */
 	abstract collection<K extends DataKey<T>>(collection: K): CollectionReference<T[K]> | AsyncCollectionReference<T[K]>;
@@ -124,7 +124,7 @@ export class Database<T extends Datas = Datas> extends AbstractDatabase<T> {
 		return this.provider.deleteItem<T[K]>(collection, id);
 	}
 	getQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): ItemArray<T[K]> {
-		return this.provider.getQuery<T[K]>(collection, query) as ItemArray<T[K]>;
+		return this.provider.getQuery<T[K]>(collection, query);
 	}
 	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): number {
 		return this.provider.setQuery<T[K]>(collection, query, data);
@@ -175,7 +175,7 @@ export class AsyncDatabase<T extends Datas = Datas> extends AbstractDatabase<T> 
 		return this.provider.deleteItem<T[K]>(collection, id);
 	}
 	getQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<ItemArray<T[K]>> {
-		return this.provider.getQuery<T[K]>(collection, query) as Promise<ItemArray<T[K]>>;
+		return this.provider.getQuery<T[K]>(collection, query);
 	}
 	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): Promise<number> {
 		return this.provider.setQuery<T[K]>(collection, query, data);

@@ -1,4 +1,4 @@
-import type { ItemData } from "../db/ItemReference.js";
+import type { ItemData } from "../util/item.js";
 import type { ValidatorType } from "../util/validate.js";
 import { ALLOW_STRING } from "../schema/AllowSchema.js";
 import { ARRAY } from "../schema/ArraySchema.js";

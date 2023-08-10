@@ -1,12 +1,12 @@
 import type { Provider } from "./Provider.js";
-import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../db/ItemReference.js";
 import type { Data } from "../util/data.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../util/item.js";
 import type { Updates } from "../util/update.js";
-import { getItemData } from "../db/ItemReference.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { getArray } from "../util/array.js";
 import { isArrayEqual } from "../util/equal.js";
+import { getItemData } from "../util/item.js";
 import { filterSequence } from "../util/match.js";
 import { queryItems, queryWritableItems } from "../util/query.js";
 import { getRandomKey } from "../util/random.js";
@@ -22,68 +22,68 @@ export class MemoryProvider implements Provider {
 	private _tables: { [collection: string]: MemoryTable<Data> } = {};
 
 	/** Get a table for a collection. */
-	getTable(collection: string): MemoryTable {
-		return this._tables[collection] || (this._tables[collection] = new MemoryTable());
+	getTable<T extends Data = Data>(collection: string): MemoryTable<T> {
+		return (this._tables[collection] as MemoryTable<T>) || (this._tables[collection] = new MemoryTable<T>());
 	}
 
-	getItemTime(collection: string, id: string): number | undefined {
-		return this.getTable(collection).getItemTime(id);
+	getItemTime<T extends Data = Data>(collection: string, id: string): number | undefined {
+		return this.getTable<T>(collection).getItemTime(id);
 	}
 
-	getItem(collection: string, id: string): ItemValue {
-		return this.getTable(collection).getItem(id);
+	getItem<T extends Data = Data>(collection: string, id: string): ItemValue<T> {
+		return this.getTable<T>(collection).getItem(id);
 	}
 
-	getItemSequence(collection: string, id: string): AsyncIterable<ItemValue> {
-		return this.getTable(collection).getItemSequence(id);
+	getItemSequence<T extends Data = Data>(collection: string, id: string): AsyncIterable<ItemValue<T>> {
+		return this.getTable<T>(collection).getItemSequence(id);
 	}
 
-	getCachedItemSequence(collection: string, id: string): AsyncIterable<ItemValue> {
-		return this.getTable(collection).getCachedItemSequence(id);
+	getCachedItemSequence<T extends Data = Data>(collection: string, id: string): AsyncIterable<ItemValue<T>> {
+		return this.getTable<T>(collection).getCachedItemSequence(id);
 	}
 
-	addItem(collection: string, data: Data): string {
-		return this.getTable(collection).addItem(data);
+	addItem<T extends Data = Data>(collection: string, data: T): string {
+		return this.getTable<T>(collection).addItem(data);
 	}
 
-	setItem(collection: string, id: string, data: Data): boolean {
-		return this.getTable(collection).setItem(id, data);
+	setItem<T extends Data = Data>(collection: string, id: string, data: T): boolean {
+		return this.getTable<T>(collection).setItem(id, data);
 	}
 
-	updateItem(collection: string, id: string, updates: Updates): boolean {
-		return this.getTable(collection).updateItem(id, updates);
+	updateItem<T extends Data = Data>(collection: string, id: string, updates: Updates<T>): boolean {
+		return this.getTable<T>(collection).updateItem(id, updates);
 	}
 
-	deleteItem(collection: string, id: string): boolean {
-		return this.getTable(collection).deleteItem(id);
+	deleteItem<T extends Data = Data>(collection: string, id: string): boolean {
+		return this.getTable<T>(collection).deleteItem(id);
 	}
 
-	getQueryTime(collection: string, query: ItemQuery): number | undefined {
-		return this.getTable(collection).getQueryTime(query);
+	getQueryTime<T extends Data = Data>(collection: string, query: ItemQuery<T>): number | undefined {
+		return this.getTable<T>(collection).getQueryTime(query);
 	}
 
-	getQuery(collection: string, query: ItemQuery): ItemArray {
-		return this.getTable(collection).getQuery(query);
+	getQuery<T extends Data = Data>(collection: string, query: ItemQuery<T>): ItemArray<T> {
+		return this.getTable<T>(collection).getQuery(query);
 	}
 
-	getQuerySequence(collection: string, query: ItemQuery): AsyncIterable<ItemArray> {
-		return this.getTable(collection).getQuerySequence(query);
+	getQuerySequence<T extends Data = Data>(collection: string, query: ItemQuery<T>): AsyncIterable<ItemArray<T>> {
+		return this.getTable<T>(collection).getQuerySequence(query);
 	}
 
-	getCachedQuerySequence(collection: string, query: ItemQuery): AsyncIterable<ItemArray> {
-		return this.getTable(collection).getCachedQuerySequence(query);
+	getCachedQuerySequence<T extends Data = Data>(collection: string, query: ItemQuery<T>): AsyncIterable<ItemArray<T>> {
+		return this.getTable<T>(collection).getCachedQuerySequence(query);
 	}
 
-	setQuery(collection: string, query: ItemQuery, data: Data): number {
-		return this.getTable(collection).setQuery(query, data);
+	setQuery<T extends Data = Data>(collection: string, query: ItemQuery<T>, data: T): number {
+		return this.getTable<T>(collection).setQuery(query, data);
 	}
 
-	updateQuery(collection: string, query: ItemQuery, updates: Updates): number {
-		return this.getTable(collection).updateQuery(query, updates);
+	updateQuery<T extends Data = Data>(collection: string, query: ItemQuery<T>, updates: Updates): number {
+		return this.getTable<T>(collection).updateQuery(query, updates);
 	}
 
-	deleteQuery(collection: string, query: ItemQuery): number {
-		return this.getTable(collection).deleteQuery(query);
+	deleteQuery<T extends Data = Data>(collection: string, query: ItemQuery<T>): number {
+		return this.getTable<T>(collection).deleteQuery(query);
 	}
 }
 

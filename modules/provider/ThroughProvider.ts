@@ -1,6 +1,6 @@
 import type { AsyncProvider, Provider } from "./Provider.js";
-import type { ItemArray, ItemQuery, ItemValue } from "../db/ItemReference.js";
 import type { Data } from "../util/data.js";
+import type { ItemArray, ItemQuery, ItemValue } from "../util/item.js";
 import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
 

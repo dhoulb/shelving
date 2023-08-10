@@ -1,48 +1,25 @@
 import type { DeleteItemChange, SetItemChange, UpdateItemChange } from "../change/Change.js";
-import type { AsyncProvider, Provider } from "../provider/Provider.js";
-import type { ImmutableArray } from "../util/array.js";
+import type { AbstractProvider, AsyncProvider, Provider } from "../provider/Provider.js";
 import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
-import type { Query } from "../util/query.js";
 import type { Updates } from "../util/update.js";
+import { type ItemData, type ItemValue, getItemQuery } from "../util/item.js";
 import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
-
-/** Item data with a string ID that uniquely identifies it. */
-export type ItemData<T extends Data = Data> = T & { id: string };
-
-/** Entity or `null` to indicate the item doesn't exist. */
-export type ItemValue<T extends Data = Data> = ItemData<T> | undefined;
-
-/** Get the ID from item data. */
-export const getID = <T extends Data>({ id }: ItemData<T>): string => id;
-
-/** Get the IDs of an iterable set item data. */
-export function* getIDs<T extends Data>(entities: Iterable<ItemData<T>>): Iterable<string> {
-	for (const { id } of entities) yield id;
-}
-
-/** Merge an ID into a set of data to make an `ItemData` */
-export const getItemData = <T extends Data>(id: string, data: T | ItemData<T>): ItemData<T> => (data.id === id ? (data as ItemData<T>) : { ...data, id });
-
-/** An array of item data. */
-export type ItemArray<T extends Data = Data> = ImmutableArray<ItemData<T>>;
-
-/** A set of query constraints for item data. */
-export type ItemQuery<T extends Data = Data> = Query<ItemData<T>>;
-
-/** Get query that targets a single database item by its ID. */
-export const getItemQuery = (id: string): Query<{ id: string }> => ({ id, $limit: 1 });
+import { AsyncQueryReference, QueryReference } from "./QueryReference.js";
 
 /** Reference to an item in a synchronous or asynchronous database. */
-abstract class AbstractItemReference<T extends Data = Data> implements AsyncIterable<ItemValue<T>> {
-	abstract readonly provider: Provider | AsyncProvider;
+export abstract class AbstractItemReference<T extends Data = Data> implements AsyncIterable<ItemValue<T>> {
+	abstract readonly provider: AbstractProvider;
 	readonly collection: string;
 	readonly id: string;
 	constructor(collection: string, id: string) {
 		this.collection = collection;
 		this.id = id;
 	}
+
+	/** Get a query corresponding to this item. */
+	abstract optional: QueryReference<T> | AsyncQueryReference<T>;
 
 	/**
 	 * Does this item exist?
@@ -112,6 +89,9 @@ export class ItemReference<T extends Data = Data> extends AbstractItemReference<
 		super(collection, id);
 		this.provider = provider;
 	}
+	get optional(): QueryReference<T> {
+		return new QueryReference(this.provider, this.collection, getItemQuery<T>(this.id));
+	}
 	get exists(): boolean {
 		return !!this.provider.getItem(this.collection, this.id);
 	}
@@ -138,6 +118,9 @@ export class AsyncItemReference<T extends Data = Data> extends AbstractItemRefer
 	constructor(provider: AsyncProvider, collection: string, id: string) {
 		super(collection, id);
 		this.provider = provider;
+	}
+	get optional(): AsyncQueryReference<T> {
+		return new AsyncQueryReference(this.provider, this.collection, getItemQuery<T>(this.id));
 	}
 	get exists(): Promise<boolean> {
 		return this.provider.getItem(this.collection, this.id).then(Boolean);
