@@ -3,11 +3,11 @@ import type { Validator } from "../util/validate.js";
 /** Options allowed by a `Schema` instance. */
 export type SchemaOptions = {
 	/** Title of the schema, e.g. for using as the title of a corresponding field. */
-	readonly title?: string;
+	readonly title?: string | undefined;
 	/** Description of the schema, e.g. for using as a description in a corresponding field. */
-	readonly description?: string;
+	readonly description?: string | undefined;
 	/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
-	readonly placeholder?: string;
+	readonly placeholder?: string | undefined;
 	/** Default value for the schema if `validate()` is called with an `undefined` value. */
 	readonly value?: unknown;
 };
