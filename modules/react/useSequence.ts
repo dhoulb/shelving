@@ -8,7 +8,6 @@ import { runSequence } from "../util/sequence.js";
  * @param sequence An object implementing the `AsyncIterable` interface.
  * - Subscription is recreated every time this value changes.
  * - Memoise this value to persist the subscription for the lifetime of the component.
- * - If the value is a `State` instance
  */
 export function useSequence<T>(sequence?: AsyncIterable<T>): T | undefined {
 	const [value, setValue] = useState<T | undefined>(undefined);

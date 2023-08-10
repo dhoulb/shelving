@@ -1,7 +1,7 @@
 import type { ImmutableArray } from "../index.js";
 import { ArrayStore, runMicrotasks, runSequence } from "../index.js";
 
-test("ArrayState with initial value", async () => {
+test("ArrayStore with initial value", async () => {
 	const store = new ArrayStore<number>([1, 2, 3]);
 	expect(store).toBeInstanceOf(ArrayStore);
 	expect(store.value).toEqual([1, 2, 3]);

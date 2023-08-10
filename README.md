@@ -9,7 +9,7 @@
 - Schemas (validation)
 - Databases (via providers including in-memory, Firestore, IndexedDB)
 - Querying (sorting, filtering, slicing)
-- State (events and state)
+- Store (events and state)
 - React (hooks and state)
 - Helpers (errors, arrays, objects, strings, dates, equality, merging, diffing, cloning, debug)
 
