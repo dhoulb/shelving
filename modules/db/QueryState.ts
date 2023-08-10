@@ -1,7 +1,7 @@
 import type { AbstractProvider } from "../provider/Provider.js";
-import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../util/item.js";
 import type { StopCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
+import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../util/item.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
 import { BooleanState } from "../state/BooleanState.js";
 import { State } from "../state/State.js";
