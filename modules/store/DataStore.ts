@@ -3,16 +3,16 @@ import type { Updates } from "../util/update.js";
 import { withProp } from "../util/object.js";
 import { getRequired } from "../util/optional.js";
 import { updateData } from "../util/update.js";
-import { State } from "./State.js";
+import { Store } from "./Store.js";
 
-/** State that stores a data object and has additional methods to help with that. */
-export class DataState<T extends Data> extends State<T> {
-	/** Get the data of this state. */
+/** Store a data object. */
+export class DataStore<T extends Data> extends Store<T> {
+	/** Get the data of this store. */
 	get data(): T {
 		return this.value;
 	}
 
-	/** Set the data of this state. */
+	/** Set the data of this store. */
 	set data(data: T) {
 		this.value = data;
 	}
@@ -33,14 +33,14 @@ export class DataState<T extends Data> extends State<T> {
 	}
 }
 
-/** State that stores an optional data object and has additional methods to help with that. */
-export class OptionalDataState<T extends Data> extends State<T | undefined> {
-	/** Get current data value of this state (or throw `Promise` that resolves to the next required value). */
+/** Store an optional data object. */
+export class OptionalDataStore<T extends Data> extends Store<T | undefined> {
+	/** Get current data value of this store (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
 		return getRequired(this.value);
 	}
 
-	/** Set the data of this state. */
+	/** Set the data of this store. */
 	set data(data: T) {
 		this.value = data;
 	}

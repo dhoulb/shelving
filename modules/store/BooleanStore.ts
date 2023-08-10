@@ -1,8 +1,8 @@
 import type { NONE } from "../util/constants.js";
-import { State } from "./State.js";
+import { Store } from "./Store.js";
 
-/** State that stores a boolean and has additional methods to help with that. */
-export class BooleanState extends State<boolean> {
+/** Store a boolean. */
+export class BooleanStore extends Store<boolean> {
 	constructor(value: boolean | typeof NONE = false, time?: number) {
 		super(value, time);
 	}

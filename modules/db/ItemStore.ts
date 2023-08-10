@@ -3,8 +3,8 @@ import type { StopCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
 import type { ItemData, ItemValue } from "../util/item.js";
 import { CacheProvider } from "../provider/CacheProvider.js";
-import { BooleanState } from "../state/BooleanState.js";
-import { State } from "../state/State.js";
+import { BooleanStore } from "../store/BooleanStore.js";
+import { Store } from "../store/Store.js";
 import { call } from "../util/callback.js";
 import { NONE } from "../util/constants.js";
 import { getItemData } from "../util/item.js";
@@ -12,19 +12,19 @@ import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
 import { getOptionalSource } from "../util/source.js";
 
-/** Hold the current state of a item. */
-export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
+/** Store a single item. */
+export class ItemStore<T extends Data = Data> extends Store<ItemValue<T>> {
 	readonly provider: AbstractProvider;
 	readonly collection: string;
 	readonly id: string;
-	readonly busy = new BooleanState();
+	readonly busy = new BooleanStore();
 
-	/** Get the data of this state (throws `RequiredError` if item doesn't exist). */
+	/** Get the data of this store (throws `RequiredError` if item doesn't exist). */
 	get data(): ItemData<T> {
 		return getRequired(this.value);
 	}
 
-	/** Set the data of this state. */
+	/** Set the data of this store. */
 	set data(data: T | ItemData<T>) {
 		this.value = getItemData(this.id, data);
 	}
@@ -46,7 +46,7 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 		if (this.loading) this.refresh();
 	}
 
-	/** Refresh this state from the source provider. */
+	/** Refresh this store from the source provider. */
 	refresh(provider: AbstractProvider = this.provider): void {
 		if (!this.busy.value) void this._refresh(provider);
 	}
@@ -62,17 +62,17 @@ export class ItemState<T extends Data = Data> extends State<ItemValue<T>> {
 		}
 	}
 
-	/** Refresh this state if data in the cache is older than `maxAge` (in milliseconds). */
+	/** Refresh this store if data in the cache is older than `maxAge` (in milliseconds). */
 	refreshStale(maxAge: number, provider?: AbstractProvider) {
 		if (this.age > maxAge) this.refresh(provider);
 	}
 
-	/** Subscribe this state to a provider. */
+	/** Subscribe this store to a provider. */
 	connect(provider: AbstractProvider = this.provider): StopCallback {
 		return runSequence(this.through(provider.getItemSequence(this.collection, this.id)));
 	}
 
-	// Override to subscribe to `MemoryProvider` while things are iterating over this state.
+	// Override to subscribe to `MemoryProvider` while things are iterating over this store.
 	override async *[Symbol.asyncIterator](): AsyncGenerator<ItemValue<T>, void, void> {
 		this.start();
 		this._iterating++;

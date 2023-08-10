@@ -1,14 +1,14 @@
 import type { ImmutableArray } from "../util/array.js";
 import { omitArrayItems, toggleArrayItems, withArrayItems } from "../util/array.js";
-import { State } from "./State.js";
+import { Store } from "./Store.js";
 
-/** State that stores an array and has additional methods to help with that. */
-export class ArrayState<T> extends State<ImmutableArray<T>> implements Iterable<T> {
+/** Store an array. */
+export class ArrayStore<T> extends Store<ImmutableArray<T>> implements Iterable<T> {
 	constructor(value: ImmutableArray<T> = [], time?: number) {
 		super(value, time);
 	}
 
-	/** Get the length of the current value of this state. */
+	/** Get the length of the current value of this store. */
 	get count(): number {
 		return this.value.length;
 	}

@@ -35,7 +35,7 @@
 		"./react": "./react/index.js",
 		"./schema": "./schema/index.js",
 		"./sequence": "./sequence/index.js",
-		"./state": "./state/index.js",
+		"./store": "./store/index.js",
 		"./test": "./test/index.js",
 		"./util": "./util/index.js"
 	},

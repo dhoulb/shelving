@@ -18,6 +18,6 @@ export * from "./provider/index.js";
 // export * from "./react/index.js"; // Not exported.
 export * from "./schema/index.js";
 export * from "./sequence/index.js";
-export * from "./state/index.js";
+export * from "./store/index.js";
 // export * from "./test/index.js"; // Not exported.
 export * from "./util/index.js";

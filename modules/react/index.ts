@@ -5,4 +5,4 @@ export * from "./useInstance.js";
 export * from "./useLazy.js";
 export * from "./useReduce.js";
 export * from "./useSequence.js";
-export * from "./useState.js";
+export * from "./useStore.js";

@@ -3,15 +3,15 @@ import type { Updates } from "../util/update.js";
 import { getDictionaryItems, omitDictionaryItems } from "../util/dictionary.js";
 import { withProp } from "../util/object.js";
 import { updateData } from "../util/update.js";
-import { State } from "./State.js";
+import { Store } from "./Store.js";
 
-/** State that stores a dictionary object and has additional methods to help with that. */
-export class DictionaryState<T> extends State<ImmutableDictionary<T>> implements Iterable<DictionaryItem<T>> {
+/** Store a dictionary object. */
+export class DictionaryStore<T> extends Store<ImmutableDictionary<T>> implements Iterable<DictionaryItem<T>> {
 	constructor(value: ImmutableDictionary<T> = {}, time?: number) {
 		super(value, time);
 	}
 
-	/** Get the length of the current value of this state. */
+	/** Get the length of the current value of this store. */
 	get count(): number {
 		return Object.keys(this.value).length;
 	}
