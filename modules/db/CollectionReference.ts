@@ -1,5 +1,5 @@
-import type { AddChange, DeleteItemChange, DeleteQueryChange, SetItemChange, SetQueryChange, UpdateItemChange, UpdateQueryChange } from "./Change.js";
 import type { ItemArray, ItemData, ItemQuery, ItemValue } from "./ItemReference.js";
+import type { AddItemChange, DeleteItemChange, DeleteQueryChange, SetItemChange, SetQueryChange, UpdateItemChange, UpdateQueryChange } from "../change/Change.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { Data } from "../util/data.js";
 import type { Updates } from "../util/update.js";
@@ -58,7 +58,7 @@ abstract class AbstractCollectionReference<T extends Data = Data> {
 	abstract item(id: string): ItemReference<T> | AsyncItemReference<T>;
 
 	/** Get an add change for an item in a database collection. */
-	getAdd(data: T): AddChange<T> {
+	getItemAdd(data: T): AddItemChange<T> {
 		return { action: "add", collection: this.collection, data };
 	}
 
@@ -93,7 +93,7 @@ abstract class AbstractCollectionReference<T extends Data = Data> {
 	}
 
 	/** Add an item to a database collection. */
-	abstract add(data: T): string | Promise<string>;
+	abstract addItem(data: T): string | Promise<string>;
 
 	/** Get an item from a database collection. */
 	abstract getItem(id: string): ItemValue<T> | Promise<ItemValue<T>>;
@@ -156,7 +156,7 @@ export class CollectionReference<T extends Data = Data> extends AbstractCollecti
 	item(id: string): ItemReference<T> {
 		return new ItemReference<T>(this.provider, this.collection, id);
 	}
-	add(data: T): string {
+	addItem(data: T): string {
 		return this.provider.addItem<T>(this.collection, data);
 	}
 	getItem(id: string): ItemValue<T> {
@@ -216,7 +216,7 @@ export class AsyncCollectionReference<T extends Data = Data> extends AbstractCol
 	item(id: string): AsyncItemReference<T> {
 		return new AsyncItemReference<T>(this.provider, this.collection, id);
 	}
-	add(data: T): Promise<string> {
+	addItem(data: T): Promise<string> {
 		return this.provider.addItem<T>(this.collection, data);
 	}
 	getItem(id: string): Promise<ItemValue<T>> {

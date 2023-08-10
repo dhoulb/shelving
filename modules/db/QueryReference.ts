@@ -1,4 +1,5 @@
 import type { ItemArray, ItemData, ItemQuery, ItemValue } from "./ItemReference.js";
+import type { DeleteQueryChange, SetQueryChange, UpdateQueryChange } from "../change/Change.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
 import type { Data } from "../util/data.js";
@@ -90,9 +91,24 @@ abstract class AbstractQueryReference<T extends Data = Data> implements AsyncIte
 		return runSequence(this, onNext, onError);
 	}
 
+	/** Get a set change for this query. */
+	getSet(data: T): SetQueryChange<T> {
+		return { action: "set", collection: this.collection, query: this.query, data };
+	}
+
+	/** Get an update change for this query. */
+	getUpdate(updates: Updates<T>): UpdateQueryChange<T> {
+		return { action: "update", collection: this.collection, query: this.query, updates };
+	}
+
+	/** Get a delete change for this query. */
+	getDelete(): DeleteQueryChange<T> {
+		return { action: "delete", collection: this.collection, query: this.query };
+	}
+
 	// Implement AsyncIterable
 	[Symbol.asyncIterator](): AsyncIterator<ItemArray<T>> {
-		return this.provider.getQuerySequence(this.collection, this.query)[Symbol.asyncIterator]() as AsyncIterator<ItemArray<T>>;
+		return this.provider.getQuerySequence<T>(this.collection, this.query)[Symbol.asyncIterator]();
 	}
 }
 

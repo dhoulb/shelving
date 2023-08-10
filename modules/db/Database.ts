@@ -1,8 +1,11 @@
-import type { AddChange, DeleteItemChange, DeleteQueryChange, SetItemChange, SetQueryChange, UpdateItemChange, UpdateQueryChange } from "./Change.js";
 import type { ItemArray, ItemQuery, ItemValue } from "./ItemReference.js";
+import type { AddItemChange, DeleteItemChange, DeleteQueryChange, SetItemChange, SetQueryChange, UpdateItemChange, UpdateQueryChange, WriteChange } from "../change/Change.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
-import type { DataKey, Datas } from "../util/data.js";
+import type { ImmutableArray } from "../util/array.js";
+import type { DataKey, DataValue, Datas } from "../util/data.js";
+import type { Optional } from "../util/optional.js";
 import type { Updates } from "../util/update.js";
+import { writeAsyncProviderChange, writeAsyncProviderChanges, writeProviderChange, writeProviderChanges } from "../change/Change.js";
 import { AsyncCollectionReference, CollectionReference } from "./CollectionReference.js";
 import { AsyncItemReference, ItemReference } from "./ItemReference.js";
 import { AsyncQueryReference, QueryReference } from "./QueryReference.js";
@@ -21,7 +24,7 @@ abstract class AbstractDatabase<T extends Datas> {
 	abstract item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> | AsyncItemReference<T[K]>;
 
 	/** Get an add change for an item in a database collection. */
-	getAdd<K extends DataKey<T>>(collection: K, data: T[K]): AddChange<T[K]> {
+	getItemAdd<K extends DataKey<T>>(collection: K, data: T[K]): AddItemChange<T[K]> {
 		return { action: "add", collection, data };
 	}
 
@@ -56,7 +59,7 @@ abstract class AbstractDatabase<T extends Datas> {
 	}
 
 	/** Add an item to a database collection. */
-	abstract add<K extends DataKey<T>>(collection: K, data: T[K]): string | Promise<string>;
+	abstract addItem<K extends DataKey<T>>(collection: K, data: T[K]): string | Promise<string>;
 
 	/** Get an item from a database collection. */
 	abstract getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> | Promise<ItemValue<T[K]>>;
@@ -81,6 +84,12 @@ abstract class AbstractDatabase<T extends Datas> {
 
 	/** Delete multiple items in a database collection. */
 	abstract deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): number | Promise<number>;
+
+	/** Write a single change to this database. */
+	abstract writeChange<K extends DataKey<T>>(change: WriteChange<T[K]>): WriteChange<T[K]> | PromiseLike<WriteChange<T[K]>>;
+
+	/** Write a set of changes to this database. */
+	abstract writeChanges(...changes: Optional<WriteChange<DataValue<T>>>[]): ImmutableArray<WriteChange<DataValue<T>>> | PromiseLike<ImmutableArray<WriteChange<DataValue<T>>>>;
 }
 
 /** Database with a synchronous provider. */
@@ -99,7 +108,7 @@ export class Database<T extends Datas = Datas> extends AbstractDatabase<T> {
 	item<K extends DataKey<T>>(collection: K, id: string): ItemReference<T[K]> {
 		return new ItemReference<T[K]>(this.provider, collection, id);
 	}
-	add<K extends DataKey<T>>(collection: K, data: T[K]): string {
+	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
 		return this.provider.addItem<T[K]>(collection, data);
 	}
 	getItem<K extends DataKey<T>>(collection: K, id: string): ItemValue<T[K]> {
@@ -126,6 +135,12 @@ export class Database<T extends Datas = Datas> extends AbstractDatabase<T> {
 	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): number {
 		return this.provider.deleteQuery<T[K]>(collection, query);
 	}
+	writeChange<K extends DataKey<T>>(change: WriteChange<T[K]>): WriteChange<T[K]> {
+		return writeProviderChange(this.provider, change);
+	}
+	writeChanges(...changes: Optional<WriteChange<DataValue<T>>>[]): ImmutableArray<WriteChange<DataValue<T>>> {
+		return writeProviderChanges(this.provider, ...changes);
+	}
 }
 
 /** Database with a synchronous provider. */
@@ -144,7 +159,7 @@ export class AsyncDatabase<T extends Datas = Datas> extends AbstractDatabase<T> 
 	item<K extends DataKey<T>>(collection: K, id: string): AsyncItemReference<T[K]> {
 		return new AsyncItemReference<T[K]>(this.provider, collection, id);
 	}
-	add<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
+	addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
 		return this.provider.addItem<T[K]>(collection, data);
 	}
 	getItem<K extends DataKey<T>>(collection: K, id: string): Promise<ItemValue<T[K]>> {
@@ -170,5 +185,11 @@ export class AsyncDatabase<T extends Datas = Datas> extends AbstractDatabase<T> 
 	}
 	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<number> {
 		return this.provider.deleteQuery<T[K]>(collection, query);
+	}
+	writeChange<K extends DataKey<T>>(change: WriteChange<T[K]>): PromiseLike<WriteChange<T[K]>> {
+		return writeAsyncProviderChange(this.provider, change);
+	}
+	writeChanges(...changes: Optional<WriteChange<DataValue<T>>>[]): PromiseLike<ImmutableArray<WriteChange<DataValue<T>>>> {
+		return writeAsyncProviderChanges(this.provider, ...changes);
 	}
 }

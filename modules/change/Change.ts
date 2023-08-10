@@ -1,10 +1,9 @@
-import type { ItemQuery } from "./ItemReference.js";
+import type { ItemQuery } from "../db/ItemReference.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Data } from "../util/data.js";
 import type { Updates } from "../util/update.js";
 import { type Optional, notOptional } from "../util/optional.js";
-import { mapArray, mapItems } from "../util/transform.js";
 
 /** A change to a database. */
 export interface Change {
@@ -19,7 +18,7 @@ export interface CollectionChange<T extends Data> extends Change {
 }
 
 /** Add an item to a database collection. */
-export interface AddChange<T extends Data> extends CollectionChange<T> {
+export interface AddItemChange<T extends Data> extends CollectionChange<T> {
 	readonly action: "add";
 	readonly id?: never;
 	readonly query?: never;
@@ -79,15 +78,22 @@ export type WriteItemChange<T extends Data> = SetItemChange<T> | UpdateItemChang
 export type WriteQueryChange<T extends Data> = SetQueryChange<T> | UpdateQueryChange<T> | DeleteQueryChange<T>;
 
 /** Write an item or multiple items in a database collection. */
-export type WriteChange<T extends Data> = AddChange<T> | WriteItemChange<T> | WriteQueryChange<T>;
+export type WriteChange<T extends Data> = AddItemChange<T> | WriteItemChange<T> | WriteQueryChange<T>;
 
-/** Apply a set of changes to a synchronous provider. */
-export function changeProvider<T extends Data>(provider: Provider, ...changes: Optional<WriteChange<T>>[]): ImmutableArray<WriteChange<T>> {
-	return mapArray(changes.filter(notOptional), _writeProvider, provider);
+/** Write a set of changes to a synchronous provider. */
+export function writeProviderChanges<T extends Data>(provider: Provider, ...changes: Optional<WriteChange<T>>[]): ImmutableArray<WriteChange<T>> {
+	return changes.filter(notOptional).map(change => writeProviderChange(provider, change));
 }
-function _writeProvider<T extends Data>(change: WriteChange<T>, provider: Provider): WriteChange<T> {
+
+/**
+ * Write a single change to a synchronous provider.
+ * @param change Change that should be written.
+ * @return Change that was written.
+ */
+export function writeProviderChange<T extends Data>(provider: Provider, change: WriteChange<T>): WriteChange<T> {
 	const { action, collection, id, query } = change;
 	if (action === "add") {
+		// `add` change returns a `set` change so it includes the ID to reflect the change that was written.
 		return { action: "set", collection, id: provider.addItem(collection, change.data), data: change.data };
 	} else if (id) {
 		if (action === "set") provider.setItem(collection, id, change.data);
@@ -101,13 +107,20 @@ function _writeProvider<T extends Data>(change: WriteChange<T>, provider: Provid
 	return change;
 }
 
-/** Apply a set of changes to an asynchronous provider. */
-export function changeAsyncProvider<T extends Data>(provider: AsyncProvider, ...changes: Optional<WriteChange<T>>[]): Promise<ImmutableArray<WriteChange<T>>> {
-	return Promise.all(mapItems(changes.filter(notOptional), _writeAsyncProvider, provider));
+/** Write a set of changes to an asynchronous provider. */
+export function writeAsyncProviderChanges<T extends Data>(provider: AsyncProvider, ...changes: Optional<WriteChange<T>>[]): Promise<ImmutableArray<WriteChange<T>>> {
+	return Promise.all(changes.filter(notOptional).map(change => writeAsyncProviderChange(provider, change)));
 }
-async function _writeAsyncProvider<T extends Data>(change: WriteChange<T>, provider: AsyncProvider): Promise<WriteChange<T>> {
+
+/**
+ * Write a single change to an asynchronous provider.
+ * @param change Change that should be written.
+ * @return Change that was written.
+ */
+export async function writeAsyncProviderChange<T extends Data>(provider: AsyncProvider, change: WriteChange<T>): Promise<WriteChange<T>> {
 	const { collection, action, id, query } = change;
 	if (action === "add") {
+		// `add` change returns a `set` change so it includes the ID to reflect the change that was written.
 		return { action: "set", collection, id: await provider.addItem(collection, change.data), data: change.data };
 	} else if (id) {
 		if (action === "set") await provider.setItem(collection, id, change.data);

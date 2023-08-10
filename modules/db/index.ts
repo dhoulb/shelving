@@ -4,4 +4,3 @@ export * from "./ItemReference.js";
 export * from "./ItemState.js";
 export * from "./QueryReference.js";
 export * from "./QueryState.js";
-export * from "./Change.js";

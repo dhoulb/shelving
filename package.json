@@ -22,6 +22,7 @@
 	"exports": {
 		".": "./index.js",
 		"./api": "./api/index.js",
+		"./change": "./change/index.js",
 		"./db": "./db/index.js",
 		"./error": "./error/index.js",
 		"./feedback": "./feedback/index.js",

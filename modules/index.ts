@@ -5,6 +5,7 @@
  */
 
 export * from "./api/index.js";
+export * from "./change/index.js";
 export * from "./db/index.js";
 export * from "./error/index.js";
 export * from "./feedback/index.js";

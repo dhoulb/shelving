@@ -1,4 +1,4 @@
-import type { DeleteItemChange, SetItemChange, UpdateItemChange } from "./Change.js";
+import type { DeleteItemChange, SetItemChange, UpdateItemChange } from "../change/Change.js";
 import type { AsyncProvider, Provider } from "../provider/Provider.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { ErrorCallback, StopCallback, ValueCallback } from "../util/callback.js";
@@ -85,7 +85,7 @@ abstract class AbstractItemReference<T extends Data = Data> implements AsyncIter
 	}
 
 	/** Get a delete change for this item. */
-	getDelete(): DeleteItemChange {
+	getDelete(): DeleteItemChange<T> {
 		return { action: "delete", collection: this.collection, id: this.id };
 	}
 
@@ -101,7 +101,7 @@ abstract class AbstractItemReference<T extends Data = Data> implements AsyncIter
 
 	// Implement AsyncIterable
 	[Symbol.asyncIterator](): AsyncIterator<ItemValue<T>> {
-		return this.provider.getItemSequence(this.collection, this.id)[Symbol.asyncIterator]() as AsyncIterator<ItemValue<T>>;
+		return this.provider.getItemSequence<T>(this.collection, this.id)[Symbol.asyncIterator]();
 	}
 }
 

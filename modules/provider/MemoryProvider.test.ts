@@ -34,9 +34,9 @@ test("MemoryProvider: set/get/delete documents", () => {
 	// Merge documents.
 	// collectionpeople.item("person3").result).toMatchObject({ ...person3, name: { ...person3.name, first: "NEW" } });
 	// Add new documents (with random IDs).
-	const addedBasicId = basicsCollection.add(basic9);
+	const addedBasicId = basicsCollection.addItem(basic9);
 	expect(typeof addedBasicId).toBe("string");
-	const addedPersonId = peopleCollection.add(person5);
+	const addedPersonId = peopleCollection.addItem(person5);
 	expect(typeof addedPersonId).toBe("string");
 	// Delete documents.
 	basicsCollection.item("basic2").delete();
@@ -136,7 +136,7 @@ test("MemoryProvider: subscribing to documents", async () => {
 	collection.item("basic2").set(basic2);
 	collection.item("basic2").update({ str: "NEW" });
 	collection.item("basic2").delete();
-	collection.add(basic3);
+	collection.addItem(basic3);
 	await runMicrotasks();
 	expect(calls1.length).toBe(4);
 	// Unsubscribe.
@@ -158,7 +158,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	expect(calls1.length).toBe(1);
 	expectOrderedKeys(calls1[0]!, []); // Empty at first (no last argument).
 	// Add id1.
-	const id1 = collection.add(basic1);
+	const id1 = collection.addItem(basic1);
 	await runMicrotasks();
 	expect(calls1.length).toBe(2);
 	expectOrderedKeys(calls1[1]!, [id1]); // id1 is added.
@@ -258,7 +258,7 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	await runMicrotasks();
 	expectOrderedKeys(calls1[2]!, ["basic2", "basic3"]);
 	// Add a new one at the start.
-	const id1 = collection.add({ ...basic999, num: 0 });
+	const id1 = collection.addItem({ ...basic999, num: 0 });
 	await runMicrotasks();
 	expectOrderedKeys(calls1[3]!, [id1, "basic2"]);
 	// Delete everything.
