@@ -90,6 +90,3 @@ export class Store<T> implements AsyncIterable<T> {
 		yield* this.next;
 	}
 }
-
-/** Is an unknown value a `Store` instance. */
-export const isStore = <T extends AnyStore>(value: T | unknown): value is T => value instanceof Store;
