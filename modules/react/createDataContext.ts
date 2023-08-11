@@ -22,16 +22,16 @@ export function createDataContext<T extends Datas>({
 } {
 	const { CacheProvider, useCache } = createCacheContext<ItemStore<T[any]> | QueryStore<T[any]>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-	const useOptionalItem = <K extends DataKey<T>>(collection: K, id: Optional<string>): ItemStore<T[K]> | undefined => {
+	const useOptionalItem = <K extends DataKey<T>>(collection: Optional<K>, id: Optional<string>): ItemStore<T[K]> | undefined => {
 		const cache = useCache();
-		const key = id && `${collection}/${id}`;
-		return useStore(id && key ? (cache.get(key) as ItemStore<T[K]>) || setMapItem(cache, key, new ItemStore<T[K]>(provider, collection, id)) : undefined);
+		const key = collection && id && `${collection}/${id}`;
+		return useStore(key ? (cache.get(key) as ItemStore<T[K]>) || setMapItem(cache, key, new ItemStore<T[K]>(provider, collection, id)) : undefined);
 	};
 
-	const useOptionalQuery = <K extends DataKey<T>>(collection: K, query: Optional<ItemQuery<T[K]>>): QueryStore<T[K]> | undefined => {
+	const useOptionalQuery = <K extends DataKey<T>>(collection: Optional<K>, query: Optional<ItemQuery<T[K]>>): QueryStore<T[K]> | undefined => {
 		const cache = useCache();
-		const key = `${collection}?${JSON.stringify(query)}`;
-		return useStore(query && key ? (cache.get(key) as QueryStore<T[K]>) || setMapItem(cache, key, new QueryStore<T[K]>(provider, collection, query)) : undefined);
+		const key = collection && query && `${collection}?${JSON.stringify(query)}`;
+		return useStore(key ? (cache.get(key) as QueryStore<T[K]>) || setMapItem(cache, key, new QueryStore<T[K]>(provider, collection, query)) : undefined);
 	};
 
 	return {
