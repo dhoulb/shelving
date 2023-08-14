@@ -80,8 +80,11 @@ export type WriteQueryChange<T extends Data> = SetQueryChange<T> | UpdateQueryCh
 /** Write an item or multiple items in a database collection. */
 export type WriteChange<T extends Data> = AddItemChange<T> | WriteItemChange<T> | WriteQueryChange<T>;
 
+/** Write an item or multiple items in a database collection. */
+export type WriteChanges<T extends Data> = ImmutableArray<WriteChange<T>>;
+
 /** Write a set of changes to a synchronous provider. */
-export function writeProviderChanges<T extends Data>(provider: Provider, ...changes: Optional<WriteChange<T>>[]): ImmutableArray<WriteChange<T>> {
+export function writeProviderChanges<T extends Data>(provider: Provider, ...changes: Optional<WriteChange<T>>[]): WriteChanges<T> {
 	return changes.filter(notOptional).map(change => writeProviderChange(provider, change));
 }
 
@@ -108,7 +111,7 @@ export function writeProviderChange<T extends Data>(provider: Provider, change: 
 }
 
 /** Write a set of changes to an asynchronous provider. */
-export function writeAsyncProviderChanges<T extends Data>(provider: AsyncProvider, ...changes: Optional<WriteChange<T>>[]): Promise<ImmutableArray<WriteChange<T>>> {
+export function writeAsyncProviderChanges<T extends Data>(provider: AsyncProvider, ...changes: Optional<WriteChange<T>>[]): Promise<WriteChanges<T>> {
 	return Promise.all(changes.filter(notOptional).map(change => writeAsyncProviderChange(provider, change)));
 }
 
