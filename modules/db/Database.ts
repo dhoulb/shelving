@@ -44,17 +44,17 @@ export abstract class AbstractDatabase<T extends Datas> {
 	}
 
 	/** Get a set change for multiple items in a database collection. */
-	getQuerySet<K extends DataKey<T>>(collection: K, query: ItemQuery<T>, data: T[K]): SetQueryChange<T[K]> {
+	getQuerySet<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): SetQueryChange<T[K]> {
 		return { action: "set", collection, query, data };
 	}
 
 	/** Get an update change for multiple items in a database collection. */
-	getQueryUpdate<K extends DataKey<T>>(collection: K, query: ItemQuery<T>, updates: Updates<T[K]>): UpdateQueryChange<T[K]> {
+	getQueryUpdate<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): UpdateQueryChange<T[K]> {
 		return { action: "update", collection, query, updates };
 	}
 
 	/** Get a delete change for multiple items in a database collection. */
-	getQueryDelete<K extends DataKey<T>>(collection: K, query: ItemQuery<T>): DeleteQueryChange<T> {
+	getQueryDelete<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): DeleteQueryChange<T> {
 		return { action: "delete", collection, query };
 	}
 
