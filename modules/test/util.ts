@@ -1,6 +1,6 @@
 import type { Data } from "../util/data.js";
 import type { AnyFunction } from "../util/function.js";
-import type { ItemData } from "../util/item.js";
+import type { Item } from "../util/item.js";
 import type { NotString } from "../util/string.js";
 import { expect } from "@jest/globals";
 import { getItemIDs } from "../util/item.js";
@@ -33,7 +33,7 @@ export function expectToThrowMatchObject(func: AnyFunction, obj: Record<string, 
 }
 
 /** Expect keys in any order. */
-export function expectUnorderedKeys<T extends Data>(entities: Iterable<ItemData<T>>, keys: Iterable<string> & NotString): void {
+export function expectUnorderedKeys<T extends Data>(entities: Iterable<Item<T>>, keys: Iterable<string> & NotString): void {
 	try {
 		expect(entities).toBeInstanceOf(Object);
 		expect(Array.from(getItemIDs(entities)).sort()).toEqual(Array.from(keys).sort());
@@ -43,7 +43,7 @@ export function expectUnorderedKeys<T extends Data>(entities: Iterable<ItemData<
 }
 
 /** Expect the specified keys in the specified order. */
-export function expectOrderedKeys<T extends Data>(entities: Iterable<ItemData<T>>, keys: Iterable<string> & NotString): void {
+export function expectOrderedKeys<T extends Data>(entities: Iterable<Item<T>>, keys: Iterable<string> & NotString): void {
 	try {
 		expect(entities).toBeInstanceOf(Object);
 		expect(Array.from(getItemIDs(entities))).toEqual(Array.from(keys));

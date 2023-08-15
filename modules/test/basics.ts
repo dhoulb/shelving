@@ -1,4 +1,4 @@
-import type { ItemData } from "../util/item.js";
+import type { Item } from "../util/item.js";
 import type { ValidatorType } from "../util/validate.js";
 import { ALLOW_STRING } from "../schema/AllowSchema.js";
 import { ARRAY } from "../schema/ArraySchema.js";
@@ -17,7 +17,7 @@ export const BASIC_SCHEMA = DATA({
 	sub: DATA({ str: STRING, num: NUMBER, odd: BOOLEAN, even: BOOLEAN }),
 });
 export type BasicData = ValidatorType<typeof BASIC_SCHEMA>;
-export type BasicItemData = ItemData<BasicData>;
+export type BasicItemData = Item<BasicData>;
 
 export const basic1: BasicItemData = { id: "basic1", str: "aaa", num: 100, even: false, odd: true, group: "a", tags: ["odd", "prime"], sub: { str: "aaa", num: 100, even: false, odd: true } };
 export const basic2: BasicItemData = { id: "basic2", str: "bbb", num: 200, even: true, odd: false, group: "a", tags: ["even", "prime"], sub: { str: "bbb", num: 200, even: true, odd: false } };

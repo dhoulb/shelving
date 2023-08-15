@@ -1,32 +1,32 @@
-import type { AbstractProvider } from "../provider/Provider.js";
+import type { AbstractProvider } from "./Provider.js";
 import type { StopCallback } from "../util/callback.js";
-import type { Data } from "../util/data.js";
-import type { ItemData, ItemValue } from "../util/item.js";
-import { CacheProvider } from "../provider/CacheProvider.js";
+import type { DataKey, Database } from "../util/data.js";
+import type { Item, OptionalItem } from "../util/item.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { Store } from "../store/Store.js";
 import { call } from "../util/callback.js";
 import { NONE } from "../util/constants.js";
-import { getItemData } from "../util/item.js";
+import { getItem } from "../util/item.js";
 import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
 import { getOptionalSource } from "../util/source.js";
+import { CacheProvider } from "./CacheProvider.js";
 
 /** Store a single item. */
-export class ItemStore<T extends Data = Data> extends Store<ItemValue<T>> {
-	readonly provider: AbstractProvider;
-	readonly collection: string;
+export class ItemStore<T extends Database, K extends DataKey<T>> extends Store<OptionalItem<T[K]>> {
+	readonly provider: AbstractProvider<T>;
+	readonly collection: K;
 	readonly id: string;
 	readonly busy = new BooleanStore();
 
 	/** Get the data of this store (throws `RequiredError` if item doesn't exist). */
-	get data(): ItemData<T> {
+	get data(): Item<T[K]> {
 		return getRequired(this.value);
 	}
 
 	/** Set the data of this store. */
-	set data(data: T | ItemData<T>) {
-		this.value = getItemData(this.id, data);
+	set data(data: T[K] | Item<T[K]>) {
+		this.value = getItem(this.id, data);
 	}
 
 	/** Does the item exist? */
@@ -34,8 +34,8 @@ export class ItemStore<T extends Data = Data> extends Store<ItemValue<T>> {
 		return !!this.value;
 	}
 
-	constructor(provider: AbstractProvider, collection: string, id: string) {
-		const memory = getOptionalSource(CacheProvider, provider)?.memory;
+	constructor(provider: AbstractProvider<T>, collection: K, id: string) {
+		const memory = getOptionalSource<CacheProvider<T>>(CacheProvider, provider)?.memory;
 		const time = memory ? memory.getItemTime(collection, id) : undefined;
 		super(memory && typeof time === "number" ? memory.getItem(collection, id) : NONE, time);
 		this.provider = provider;
@@ -47,10 +47,10 @@ export class ItemStore<T extends Data = Data> extends Store<ItemValue<T>> {
 	}
 
 	/** Refresh this store from the source provider. */
-	refresh(provider: AbstractProvider = this.provider): void {
+	refresh(provider: AbstractProvider<T> = this.provider): void {
 		if (!this.busy.value) void this._refresh(provider);
 	}
-	private async _refresh(provider: AbstractProvider): Promise<void> {
+	private async _refresh(provider: AbstractProvider<T>): Promise<void> {
 		this.busy.value = true;
 		this.reason = undefined; // Optimistically clear the error.
 		try {
@@ -63,17 +63,17 @@ export class ItemStore<T extends Data = Data> extends Store<ItemValue<T>> {
 	}
 
 	/** Refresh this store if data in the cache is older than `maxAge` (in milliseconds). */
-	refreshStale(maxAge: number, provider?: AbstractProvider) {
+	refreshStale(maxAge: number, provider?: AbstractProvider<T>) {
 		if (this.age > maxAge) this.refresh(provider);
 	}
 
 	/** Subscribe this store to a provider. */
-	connect(provider: AbstractProvider = this.provider): StopCallback {
+	connect(provider: AbstractProvider<T> = this.provider): StopCallback {
 		return runSequence(this.through(provider.getItemSequence(this.collection, this.id)));
 	}
 
 	// Override to subscribe to `MemoryProvider` while things are iterating over this store.
-	override async *[Symbol.asyncIterator](): AsyncGenerator<ItemValue<T>, void, void> {
+	override async *[Symbol.asyncIterator](): AsyncGenerator<OptionalItem<T[K]>, void, void> {
 		this.start();
 		this._iterating++;
 		try {
@@ -88,8 +88,8 @@ export class ItemStore<T extends Data = Data> extends Store<ItemValue<T>> {
 	/** Start subscription to `MemoryProvider` if there is one. */
 	start() {
 		if (!this._stop) {
-			const memory = getOptionalSource(CacheProvider, this.provider)?.memory;
-			if (memory) this._stop = runSequence(this.through(memory.getCachedItemSequence(this.collection, this.id)));
+			const table = getOptionalSource<CacheProvider<T>>(CacheProvider, this.provider)?.memory.getTable(this.collection);
+			if (table) this._stop = runSequence(this.through(table.getCachedItemSequence(this.id)));
 		}
 	}
 	/** Stop subscription to `MemoryProvider` if there is one. */

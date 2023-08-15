@@ -19,8 +19,8 @@ export type DataProp<T extends Data> = {
 	readonly [K in DataKey<T>]: readonly [K, T[K]];
 }[DataKey<T>];
 
-/** Set of named data objects. */
-export type Datas = { readonly [K in string]: Data };
+/** Database is a set of named data objects. */
+export type Database = { readonly [K in string]: Data };
 
 /**
  * Flattened data object with every branch node of the data, flattened into `a.c.b` format.

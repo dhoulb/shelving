@@ -23,7 +23,7 @@ export type Update =
 export function getUpdates<T extends Data>(data: Updates<T>): ImmutableArray<Update> {
 	return getProps(data).map(_getUpdate).filter(isDefined);
 }
-function _getUpdate([key, value]: DataProp<Data>): Update | undefined {
+function _getUpdate([key, value]: DataProp<Updates>): Update | undefined {
 	if (value !== undefined) {
 		if (key.startsWith("+=")) return { action: "sum", key: key.slice(2), value: getNumber(value) };
 		else if (key.startsWith("-=")) return { action: "sum", key: key.slice(2), value: 0 - getNumber(value) };

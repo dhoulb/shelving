@@ -1,6 +1,6 @@
 import type { OptionalSchema } from "./OptionalSchema.js";
 import type { SchemaOptions } from "./Schema.js";
-import type { Data, Datas } from "../util/data.js";
+import type { Data, Database } from "../util/data.js";
 import type { Validators } from "../util/validate.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { isData } from "../util/data.js";
@@ -29,7 +29,7 @@ export class DataSchema<T extends Data> extends Schema<T> {
 }
 
 /** Set of named data schemas. */
-export type DataSchemas<T extends Datas> = { [K in keyof T]: DataSchema<T[K]> };
+export type DatabaseSchemas<T extends Database> = { [K in keyof T]: DataSchema<T[K]> };
 
 /** Valid data object with specifed properties. */
 export const DATA = <T extends Data>(props: Validators<T>): DataSchema<T> => new DataSchema({ props });

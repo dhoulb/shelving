@@ -1,12 +1,11 @@
-import type { AsyncProvider } from "../../provider/Provider.js";
-import type { Data, DataProp } from "../../util/data.js";
-import type { ItemArray, ItemData, ItemQuery, ItemValue } from "../../util/item.js";
-import type { ImmutableObject } from "../../util/object.js";
+import type { AsyncProvider } from "../../db/Provider.js";
+import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
+import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
 import type { Update, Updates } from "../../util/update.js";
-import type { BulkWriter, DocumentData, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot } from "@google-cloud/firestore";
+import type { BulkWriter, CollectionReference, DocumentData, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot, UpdateData } from "@google-cloud/firestore";
 import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
-import { getItemData } from "../../util/item.js";
+import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";
@@ -28,80 +27,95 @@ const OPERATORS = {
 	lte: "<=",
 } as const;
 
+function _getCollection<T extends Database, K extends DataKey<T>>(firestore: Firestore, c: K): CollectionReference<T[K]> {
+	return firestore.collection(c) as CollectionReference<T[K]>;
+}
+
 /** Create a corresponding `QueryReference` from a Query. */
-function _getQuery(firestore: Firestore, c: string, q: ItemQuery): Query {
-	let query: Query = firestore.collection(c);
-	for (const { key, direction } of getOrders(q)) query = query.orderBy(key === "id" ? ID : key, direction);
-	for (const { key, operator, value } of getFilters(q)) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
-	const l = getLimit(q);
-	if (typeof l === "number") query = query.limit(l);
+function _getQuery<T extends Database, K extends DataKey<T>>(firestore: Firestore, c: K, q?: ItemQuery<T[K]>): Query<T[K]> {
+	let query: Query<T[K]> = _getCollection<T, K>(firestore, c);
+	if (q) {
+		for (const { key, direction } of getOrders(q)) query = query.orderBy(key === "id" ? ID : key, direction);
+		for (const { key, operator, value } of getFilters(q)) query = query.where(key === "id" ? ID : key, OPERATORS[operator], value);
+		const l = getLimit(q);
+		if (typeof l === "number") query = query.limit(l);
+	}
 	return query;
 }
 
-function _getItemArray(snapshot: QuerySnapshot): ItemArray {
-	return snapshot.docs.map(_getItemData);
+function _getItemArray<T extends Database, K extends DataKey<T>>(snapshot: QuerySnapshot<T[K]>): Items<T[K]> {
+	return snapshot.docs.map(_getItem);
 }
 
-function _getItemData(snapshot: QueryDocumentSnapshot): ItemData {
+function _getItem<T extends Database, K extends DataKey<T>>(snapshot: QueryDocumentSnapshot<T[K]>): Item<T[K]> {
 	const data = snapshot.data();
-	return getItemData(snapshot.id, data);
+	return getItem(snapshot.id, data);
 }
 
-function _getItemValue(snapshot: DocumentSnapshot): ItemValue {
+function _getOptionalItem<T extends Database, K extends DataKey<T>>(snapshot: DocumentSnapshot<T[K]>): OptionalItem<T[K]> {
 	const data = snapshot.data();
-	if (data) return getItemData(snapshot.id, data);
+	if (data) return getItem(snapshot.id, data);
 }
 
 /** Convert `Update` instances into corresponding Firestore `FieldValue` instances. */
-const _getFieldValues = <T extends Data>(updates: Updates<T>): ImmutableObject => getObject(mapItems(getUpdates(updates), _getFieldValue));
-const _getFieldValue = ({ key, action, value }: Update): DataProp<Data> => [key, action === "sum" ? FieldValue.increment(value) : action === "set" ? value : action];
+function _getFieldValues<T extends Data>(updates: Updates<T>): UpdateData<T> {
+	return getObject(mapItems(getUpdates(updates), _getFieldValue)) as UpdateData<T>;
+}
+function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
+	return [key, action === "sum" ? FieldValue.increment(value) : action === "set" ? value : action];
+}
 
 /**
  * Firestore server database provider.
  * - Works with the Firebase Admin SDK for Node.JS
  */
-export class FirestoreServerProvider implements AsyncProvider {
+export class FirestoreServerProvider<T extends Database> implements AsyncProvider<T> {
 	private readonly _firestore: Firestore;
 
 	constructor(firestore = new Firestore()) {
 		this._firestore = firestore;
 	}
 
-	async getItem(c: string, id: string): Promise<ItemValue> {
-		return _getItemValue(await this._firestore.collection(c).doc(id).get());
+	async getItem<K extends DataKey<T>>(c: K, id: string): Promise<OptionalItem<T[K]>> {
+		return _getOptionalItem(await _getCollection<T, K>(this._firestore, c).doc(id).get());
 	}
 
-	getItemSequence(c: string, id: string): AsyncIterable<ItemValue> {
-		const ref = this._firestore.collection(c).doc(id);
+	getItemSequence<K extends DataKey<T>>(c: K, id: string): AsyncIterable<OptionalItem<T[K]>> {
+		const ref = _getCollection<T, K>(this._firestore, c).doc(id);
 		return new LazyDeferredSequence(sequence =>
 			ref.onSnapshot(
-				snapshot => sequence.resolve(_getItemValue(snapshot)), //
+				snapshot => sequence.resolve(_getOptionalItem(snapshot)), //
 				sequence.reject,
 			),
 		);
 	}
 
-	async addItem(c: string, data: Data): Promise<string> {
-		return (await this._firestore.collection(c).add(data)).id;
+	async addItem<K extends DataKey<T>>(c: K, data: T[K]): Promise<string> {
+		return (await _getCollection<T, K>(this._firestore, c).add(data)).id;
 	}
 
-	async setItem(c: string, id: string, data: Data): Promise<void> {
-		await this._firestore.collection(c).doc(id).set(data);
+	async setItem<K extends DataKey<T>>(c: K, id: string, data: T[K]): Promise<void> {
+		await _getCollection<T, K>(this._firestore, c).doc(id).set(data);
 	}
 
-	async updateItem(c: string, id: string, updates: Updates): Promise<void> {
-		await this._firestore.collection(c).doc(id).update(_getFieldValues(updates));
+	async updateItem<K extends DataKey<T>>(c: K, id: string, updates: Updates<T[K]>): Promise<void> {
+		await _getCollection<T, K>(this._firestore, c).doc(id).update(_getFieldValues(updates));
 	}
 
-	async deleteItem(c: string, id: string): Promise<void> {
-		await this._firestore.collection(c).doc(id).delete();
+	async deleteItem<K extends DataKey<T>>(c: K, id: string): Promise<void> {
+		await _getCollection<T, K>(this._firestore, c).doc(id).delete();
 	}
 
-	async getQuery(c: string, q: ItemQuery): Promise<ItemArray> {
+	async countQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<T[K]>): Promise<number> {
+		const snapshot = await _getQuery(this._firestore, c, q).count().get();
+		return snapshot.data().count;
+	}
+
+	async getQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<T[K]>): Promise<Items<T[K]>> {
 		return _getItemArray(await _getQuery(this._firestore, c, q).get());
 	}
 
-	getQuerySequence<K extends string>(c: K, q: ItemQuery): AsyncIterable<ItemArray> {
+	getQuerySequence<K extends DataKey<T>>(c: K, q?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
 		const ref = _getQuery(this._firestore, c, q);
 		return new LazyDeferredSequence(sequence =>
 			ref.onSnapshot(
@@ -111,35 +125,32 @@ export class FirestoreServerProvider implements AsyncProvider {
 		);
 	}
 
-	async setQuery(c: string, q: ItemQuery, data: Data): Promise<number> {
+	async setQuery<K extends DataKey<T>>(c: K, q: ItemQuery<T[K]>, data: T[K]): Promise<void> {
 		return await bulkWrite(this._firestore, c, q, (w, s) => void w.set(s.ref, data));
 	}
 
-	async updateQuery(c: string, q: ItemQuery, updates: Updates): Promise<number> {
+	async updateQuery<K extends DataKey<T>>(c: K, q: ItemQuery<T[K]>, updates: Updates): Promise<void> {
 		const fieldValues = _getFieldValues(updates);
 		return await bulkWrite(this._firestore, c, q, (w, s) => void w.update<DocumentData>(s.ref, fieldValues));
 	}
 
-	async deleteQuery(c: string, q: ItemQuery): Promise<number> {
+	async deleteQuery<K extends DataKey<T>>(c: K, q: ItemQuery<T[K]>): Promise<void> {
 		return await bulkWrite(this._firestore, c, q, (w, s) => void w.delete(s.ref));
 	}
 }
 
 /** Perform a bulk update on a set of documents using a `BulkWriter` */
-async function bulkWrite(firestore: Firestore, c: string, q: ItemQuery, callback: (writer: BulkWriter, snapshot: QueryDocumentSnapshot) => void): Promise<number> {
-	let count = 0;
+async function bulkWrite<T extends Database, K extends DataKey<T>>(firestore: Firestore, c: K, q: ItemQuery<T[K]>, callback: (writer: BulkWriter, snapshot: QueryDocumentSnapshot<T[K]>) => void): Promise<void> {
 	const writer = firestore.bulkWriter();
-	const query = _getQuery(firestore, c, q).limit(BATCH_SIZE).select(); // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
-	let current: Query | false = query;
+	const query = _getQuery(firestore, c, q).limit(BATCH_SIZE).select() as Query<T[K]>; // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
+	let current: Query<T[K]> | false = query;
 	while (current) {
-		const { docs, size }: QuerySnapshot = await current.get();
-		count += size;
+		const { docs, size }: QuerySnapshot<T[K]> = await current.get();
 		for (const s of docs) callback(writer, s);
-		current = size >= BATCH_SIZE && query.startAfter(docs.pop()).select();
+		current = size >= BATCH_SIZE && (query.startAfter(docs.pop()).select() as Query<T[K]>);
 		void writer.flush();
 	}
 	await writer.close();
-	return count;
 }
 
 const BATCH_SIZE = 1000;

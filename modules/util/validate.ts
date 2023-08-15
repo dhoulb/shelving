@@ -1,7 +1,7 @@
 import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import type { Data } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
-import type { ItemData } from "./item.js";
+import type { Item } from "./item.js";
 import type { MutableObject } from "./object.js";
 import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
@@ -169,7 +169,7 @@ const CONTEXTS: MutableArray<Data> = [{}];
 export const getValidationContext = (): Data => getLastItem(CONTEXTS);
 
 /** Validate a unknown value with a validator, and supply a context that can be read during the validation process. */
-export function validateWithContext<T extends Data>(unsafeValue: ItemData<Data>, validator: Validator<T>, context: Data & { readonly id: true }): ItemData<T>;
+export function validateWithContext<T extends Data>(unsafeValue: Item<Data>, validator: Validator<T>, context: Data & { readonly id: true }): Item<T>;
 export function validateWithContext<T extends Data>(unsafeValue: unknown, validator: Validator<T>, context: Data & { readonly partial: true }): Partial<T>;
 export function validateWithContext<T>(unsafeValue: unknown, validator: Validator<T>, context: Data): T;
 export function validateWithContext<T>(unsafeValue: unknown, validator: Validator<T>, context: Data): T {

@@ -2,14 +2,14 @@
 
 import type { AbstractProvider, AsyncProvider, Provider } from "./Provider.js";
 import type { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
-import type { Data } from "../util/data.js";
-import type { ItemArray, ItemQuery, ItemValue } from "../util/item.js";
+import type { DataKey, Database } from "../util/data.js";
+import type { ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Updates } from "../util/update.js";
 
 /** Provider that logs operations to a source provider to the console. */
-abstract class AbstractDebugProvider {
-	abstract readonly source: AbstractProvider;
-	async *getItemSequence(collection: string, id: string): AsyncIterableIterator<ItemValue> {
+abstract class AbstractDebugProvider<T extends Database> {
+	abstract readonly source: AbstractProvider<T>;
+	async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterableIterator<OptionalItem<T[K]>> {
 		try {
 			console.debug("⋯ ITERATE", collection, id);
 			for await (const item of this.source.getItemSequence(collection, id)) {
@@ -21,7 +21,7 @@ abstract class AbstractDebugProvider {
 			console.error("✘ ITERATE", collection, id, thrown);
 		}
 	}
-	async *getQuerySequence(collection: string, query: ItemQuery): AsyncIterableIterator<ItemArray> {
+	async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterableIterator<Items<T[K]>> {
 		try {
 			console.debug("⋯ ITERATE", collection, query);
 			for await (const items of this.source.getQuerySequence(collection, query)) {
@@ -36,13 +36,13 @@ abstract class AbstractDebugProvider {
 }
 
 /** Provider that logs operations to a synchronous source provider to the console. */
-export class DebugProvider extends AbstractDebugProvider implements ThroughProvider {
-	readonly source: Provider;
-	constructor(source: Provider) {
+export class DebugProvider<T extends Database> extends AbstractDebugProvider<T> implements ThroughProvider<T> {
+	readonly source: Provider<T>;
+	constructor(source: Provider<T>) {
 		super();
 		this.source = source;
 	}
-	getItem(collection: string, id: string): ItemValue {
+	getItem<K extends DataKey<T>>(collection: K, id: string): OptionalItem<T[K]> {
 		try {
 			const item = this.source.getItem(collection, id);
 			console.debug("↩ GET", collection, id, item);
@@ -52,7 +52,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	addItem(collection: string, data: Data): string {
+	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
 		try {
 			const id = this.source.addItem(collection, data);
 			console.debug("✔ ADD", collection, data, id);
@@ -62,7 +62,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	setItem(collection: string, id: string, data: Data): void {
+	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
 		try {
 			this.source.setItem(collection, id, data);
 			console.debug("✔ SET", collection, id, data);
@@ -71,7 +71,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	updateItem(collection: string, id: string, updates: Updates): void {
+	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates): void {
 		try {
 			this.source.updateItem(collection, id, updates);
 			console.debug("✔ UPDATE", collection, id, updates);
@@ -80,7 +80,7 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	deleteItem(collection: string, id: string): void {
+	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
 		try {
 			this.source.deleteItem(collection, id);
 			console.debug("✔ DELETE", collection, id);
@@ -89,7 +89,17 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	getQuery(collection: string, query: ItemQuery): ItemArray {
+	countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number {
+		try {
+			const count = this.source.countQuery(collection, query);
+			console.debug("✔ GET", collection, query, count);
+			return count;
+		} catch (reason) {
+			console.error("✘ GET", collection, query, reason);
+			throw reason;
+		}
+	}
+	getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Items<T[K]> {
 		try {
 			const items = this.source.getQuery(collection, query);
 			console.debug("✔ GET", collection, query, items);
@@ -99,31 +109,28 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 			throw reason;
 		}
 	}
-	setQuery(collection: string, query: ItemQuery, data: Data): number {
+	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): void {
 		try {
-			const num = this.source.setQuery(collection, query, data);
-			console.debug("✔ SET", collection, query, data, num);
-			return num;
+			this.source.setQuery(collection, query, data);
+			console.debug("✔ SET", collection, query, data);
 		} catch (reason) {
 			console.error("✘ SET", collection, query, data, reason);
 			throw reason;
 		}
 	}
-	updateQuery(collection: string, query: ItemQuery, updates: Updates): number {
+	updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates): void {
 		try {
-			const num = this.source.updateQuery(collection, query, updates);
-			console.debug("✔ UPDATE", collection, query, updates, num);
-			return num;
+			this.source.updateQuery(collection, query, updates);
+			console.debug("✔ UPDATE", collection, query, updates);
 		} catch (reason) {
 			console.error("✘ UPDATE", collection, query, updates, reason);
 			throw reason;
 		}
 	}
-	deleteQuery(collection: string, query: ItemQuery): number {
+	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void {
 		try {
-			const num = this.source.deleteQuery(collection, query);
-			console.debug("✔ DELETE", collection, query, num);
-			return num;
+			this.source.deleteQuery(collection, query);
+			console.debug("✔ DELETE", collection, query);
 		} catch (reason) {
 			console.error("✘ DELETE", collection, query, reason);
 			throw reason;
@@ -132,13 +139,13 @@ export class DebugProvider extends AbstractDebugProvider implements ThroughProvi
 }
 
 /** Provider that logs operations to a synchronous source provider to the console. */
-export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncThroughProvider {
-	readonly source: AsyncProvider;
-	constructor(source: AsyncProvider) {
+export class AsyncDebugProvider<T extends Database> extends AbstractDebugProvider<T> implements AsyncThroughProvider<T> {
+	readonly source: AsyncProvider<T>;
+	constructor(source: AsyncProvider<T>) {
 		super();
 		this.source = source;
 	}
-	async getItem(collection: string, id: string): Promise<ItemValue> {
+	async getItem<K extends DataKey<T>>(collection: K, id: string): Promise<OptionalItem<T[K]>> {
 		try {
 			console.debug("⋯ GET", collection, id);
 			const item = await this.source.getItem(collection, id);
@@ -149,7 +156,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async addItem(collection: string, data: Data): Promise<string> {
+	async addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
 		try {
 			console.debug("⋯ ADD", collection, data);
 			const id = await this.source.addItem(collection, data);
@@ -160,7 +167,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async setItem(collection: string, id: string, data: Data): Promise<void> {
+	async setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
 		try {
 			console.debug("⋯ SET", collection, id, data);
 			await this.source.setItem(collection, id, data);
@@ -170,7 +177,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async updateItem(collection: string, id: string, updates: Updates): Promise<void> {
+	async updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates): Promise<void> {
 		try {
 			console.debug("⋯ UPDATE", collection, id, updates);
 			await this.source.updateItem(collection, id, updates);
@@ -180,7 +187,7 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async deleteItem(collection: string, id: string): Promise<void> {
+	async deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
 		try {
 			console.debug("⋯ DELETE", collection, id);
 			await this.source.deleteItem(collection, id);
@@ -190,7 +197,18 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async getQuery(collection: string, query: ItemQuery): Promise<ItemArray> {
+	async countQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<number> {
+		try {
+			console.debug("⋯ COUNT", collection, query);
+			const count = await this.source.countQuery(collection, query);
+			console.debug("✔ COUNT", collection, query, count);
+			return count;
+		} catch (reason) {
+			console.error("✘ COUNT", collection, query, reason);
+			throw reason;
+		}
+	}
+	async getQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<Items<T[K]>> {
 		try {
 			console.debug("⋯ GET", collection, query);
 			const items = await this.source.getQuery(collection, query);
@@ -201,34 +219,31 @@ export class AsyncDebugProvider extends AbstractDebugProvider implements AsyncTh
 			throw reason;
 		}
 	}
-	async setQuery(collection: string, query: ItemQuery, data: Data): Promise<number> {
+	async setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): Promise<void> {
 		try {
 			console.debug("⋯ SET", collection, query, data);
-			const num = await this.source.setQuery(collection, query, data);
-			console.debug("✔ SET", collection, query, data, num);
-			return num;
+			await this.source.setQuery(collection, query, data);
+			console.debug("✔ SET", collection, query, data);
 		} catch (reason) {
 			console.error("✘ SET", collection, query, data, reason);
 			throw reason;
 		}
 	}
-	async updateQuery(collection: string, query: ItemQuery, updates: Updates): Promise<number> {
+	async updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates): Promise<void> {
 		try {
 			console.debug("⋯ UPDATE", collection, query, updates);
-			const num = await this.source.updateQuery(collection, query, updates);
-			console.debug("✔ UPDATE", collection, query, updates, num);
-			return num;
+			await this.source.updateQuery(collection, query, updates);
+			console.debug("✔ UPDATE", collection, query, updates);
 		} catch (reason) {
 			console.error("✘ UPDATE", collection, query, updates, reason);
 			throw reason;
 		}
 	}
-	async deleteQuery(collection: string, query: ItemQuery): Promise<number> {
+	async deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<void> {
 		try {
 			console.debug("⋯ DELETE", collection, query);
-			const num = await this.source.deleteQuery(collection, query);
-			console.debug("✔ DELETE", collection, query, num);
-			return num;
+			await this.source.deleteQuery(collection, query);
+			console.debug("✔ DELETE", collection, query);
 		} catch (reason) {
 			console.error("✘ DELETE", collection, query, reason);
 			throw reason;
