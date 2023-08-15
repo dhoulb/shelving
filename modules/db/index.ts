@@ -9,4 +9,4 @@ export * from "./MemoryProvider.js";
 export * from "./ValidationProvider.js";
 export * from "./CacheProvider.js";
 export * from "./DebugProvider.js";
-export * from "./ChangeProvider.js";
+export * from "./ConvenienceProvider.js";
