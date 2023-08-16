@@ -84,7 +84,7 @@ export type DatabaseChange<T extends Database> = ItemAddChange<T, DataKey<T>> | 
 export type DatabaseChanges<T extends Database> = ImmutableArray<DatabaseChange<T>>;
 
 /** Get a set change for an item. */
-export function getItemAdd<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, id: string, data: T[K]): ItemAddChange<T, K> {
+export function getItemAdd<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, data: T[K]): ItemAddChange<T, K> {
 	return { action: "add", collection, data };
 }
 

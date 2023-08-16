@@ -17,8 +17,8 @@ export class ConvenienceProvider<T extends Database> extends ThroughProvider<T> 
 	requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Item<T[K]> {
 		return getFirstItem(this.getQuery(collection, { ...query, $limit: 1 }));
 	}
-	getItemAdd<K extends DataKey<T>>(collection: K, id: string, data: T[K]): ItemAddChange<T, K> {
-		return getItemAdd(this, collection, id, data);
+	getItemAdd<K extends DataKey<T>>(collection: K, data: T[K]): ItemAddChange<T, K> {
+		return getItemAdd(this, collection, data);
 	}
 	getItemSet<K extends DataKey<T>>(collection: K, id: string, data: T[K]): ItemSetChange<T, K> {
 		return getItemSet(this, collection, id, data);
@@ -56,8 +56,8 @@ export class AsyncConvenienceProvider<T extends Database> extends AsyncThroughPr
 	async requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<Item<T[K]>> {
 		return getFirstItem(await this.getQuery(collection, { ...query, $limit: 1 }));
 	}
-	getItemAdd<K extends DataKey<T>>(collection: K, id: string, data: T[K]): ItemAddChange<T, K> {
-		return getItemAdd(this, collection, id, data);
+	getItemAdd<K extends DataKey<T>>(collection: K, data: T[K]): ItemAddChange<T, K> {
+		return getItemAdd(this, collection, data);
 	}
 	getItemSet<K extends DataKey<T>>(collection: K, id: string, data: T[K]): ItemSetChange<T, K> {
 		return getItemSet(this, collection, id, data);
