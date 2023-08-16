@@ -18,7 +18,7 @@ export interface CollectionChange<T extends Database, K extends DataKey<T>> exte
 }
 
 /** Add an item to a database collection. */
-export interface AddItemChange<T extends Database, K extends DataKey<T>> extends CollectionChange<T, K> {
+export interface ItemAddChange<T extends Database, K extends DataKey<T>> extends CollectionChange<T, K> {
 	readonly action: "add";
 	readonly id?: never;
 	readonly query?: never;
@@ -78,10 +78,15 @@ export type DatabaseItemChange<T extends Database> = ItemSetChange<T, DataKey<T>
 export type DatabaseQueryChange<T extends Database> = QuerySetChange<T, DataKey<T>> | QueryUpdateChange<T, DataKey<T>> | QueryDeleteChange<T, DataKey<T>>;
 
 /** Write an item or multiple items in a set of collection. */
-export type DatabaseChange<T extends Database> = AddItemChange<T, DataKey<T>> | DatabaseItemChange<T> | DatabaseQueryChange<T>;
+export type DatabaseChange<T extends Database> = ItemAddChange<T, DataKey<T>> | DatabaseItemChange<T> | DatabaseQueryChange<T>;
 
 /** Write an item or multiple items in a set of collection. */
 export type DatabaseChanges<T extends Database> = ImmutableArray<DatabaseChange<T>>;
+
+/** Get a set change for an item. */
+export function getItemAdd<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, id: string, data: T[K]): ItemAddChange<T, K> {
+	return { action: "add", collection, data };
+}
 
 /** Get a set change for an item. */
 export function getItemSet<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, id: string, data: T[K]): ItemSetChange<T, K> {

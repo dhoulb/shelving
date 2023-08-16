@@ -1,8 +1,8 @@
-import type { DatabaseChange, DatabaseChanges, ItemDeleteChange, ItemSetChange, ItemUpdateChange, QueryDeleteChange, QuerySetChange, QueryUpdateChange } from "../change/Change.js";
+import type { DatabaseChange, DatabaseChanges, ItemAddChange, ItemDeleteChange, ItemSetChange, ItemUpdateChange, QueryDeleteChange, QuerySetChange, QueryUpdateChange } from "../change/Change.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, OptionalItem } from "../util/item.js";
 import type { Updates } from "../util/update.js";
-import { getItemDelete, getItemSet, getItemUpdate, getQueryDelete, getQuerySet, getQueryUpdate, writeAsyncProviderChange, writeAsyncProviderChanges, writeProviderChange, writeProviderChanges } from "../change/Change.js";
+import { getItemAdd, getItemDelete, getItemSet, getItemUpdate, getQueryDelete, getQuerySet, getQueryUpdate, writeAsyncProviderChange, writeAsyncProviderChanges, writeProviderChange, writeProviderChanges } from "../change/Change.js";
 import { getFirstItem, getOptionalFirstItem } from "../util/array.js";
 import { type Optional, getRequired } from "../util/optional.js";
 import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
@@ -16,6 +16,9 @@ export class ConvenienceProvider<T extends Database> extends ThroughProvider<T> 
 	}
 	requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Item<T[K]> {
 		return getFirstItem(this.getQuery(collection, { ...query, $limit: 1 }));
+	}
+	getItemAdd<K extends DataKey<T>>(collection: K, id: string, data: T[K]): ItemAddChange<T, K> {
+		return getItemAdd(this, collection, id, data);
 	}
 	getItemSet<K extends DataKey<T>>(collection: K, id: string, data: T[K]): ItemSetChange<T, K> {
 		return getItemSet(this, collection, id, data);
@@ -52,6 +55,9 @@ export class AsyncConvenienceProvider<T extends Database> extends AsyncThroughPr
 	}
 	async requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<Item<T[K]>> {
 		return getFirstItem(await this.getQuery(collection, { ...query, $limit: 1 }));
+	}
+	getItemAdd<K extends DataKey<T>>(collection: K, id: string, data: T[K]): ItemAddChange<T, K> {
+		return getItemAdd(this, collection, id, data);
 	}
 	getItemSet<K extends DataKey<T>>(collection: K, id: string, data: T[K]): ItemSetChange<T, K> {
 		return getItemSet(this, collection, id, data);
