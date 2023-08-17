@@ -40,8 +40,8 @@ export function call<A extends Arguments = []>(callback: (...v: A) => unknown, .
 }
 
 /** Return a callback function that safely calls a callback function (possibly with a value). */
-export function called<T>(dispatcher: AsyncValueCallback<T>): ValueCallback<T> {
-	return (value: T) => call(dispatcher, value);
+export function called<A extends Arguments = []>(dispatcher: (...v: A) => unknown, ...values: A): Callback {
+	return () => call(dispatcher, ...values);
 }
 
 /** Safely call a callback method (possibly wth a value). */
