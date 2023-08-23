@@ -157,6 +157,12 @@ function* _getWords(str: string): Iterable<string> {
 }
 const WORD = /([^\s"]+)|"([^"]*)"|'([^']*)'/g; // Runs of characters without spaces, or "quoted phrases"
 
+/** Get the (trimmed) first full line of a string. */
+export function getFirstLine(str: string): string {
+	const i = str.indexOf("\n");
+	return (i >= 0 ? str.substr(0, i) : str).trim();
+}
+
 /** Is the first character of a string an uppercase letter? */
 export const isUppercaseLetter = (str: string): boolean => isBetween(str.charCodeAt(0), 65, 90);
 
