@@ -7,7 +7,9 @@ export type PossibleDate = Date | number | string;
 export type PossibleOptionalDate = Date | number | string | null;
 
 /** Is a value a date? */
-export const isDate = (value: Date | unknown): value is Date => value instanceof Date;
+export function isDate(value: Date | unknown): value is Date {
+	return value instanceof Date;
+}
 
 /** Assert that a value is a `Date` instance. */
 export function assertDate(value: Date | unknown): asserts value is Date {
@@ -43,13 +45,26 @@ export function getOptionalDate(possible: unknown): Date | null {
 	if (typeof possible === "string" || typeof possible === "number") return _getValidDate(new Date(possible));
 	return null;
 }
-const _getValidDate = (date: Date): Date | null => (Number.isFinite(date.getTime()) ? date : null);
+function _getValidDate(date: Date): Date | null {
+	return Number.isFinite(date.getTime()) ? date : null;
+}
 
 /** Convert a possible date to a `Date` instance, or throw `AssertionError` if it couldn't be converted. */
 export function getDate(possible: PossibleDate = "now"): Date {
 	const date = getOptionalDate(possible);
 	if (!date) throw new AssertionError(`Must be date`, possible);
 	return date;
+}
+
+/** Convert an unknown value to a timestamp (milliseconds past Unix epoch), or `null` if it couldn't be converted. */
+export function getOptionalTimestamp(possible: unknown): number | null {
+	const date = getOptionalDate(possible);
+	return date ? date.getTime() : null;
+}
+
+/** Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw `AssertionError` if it couldn't be converted. */
+export function getTimestamp(possible?: PossibleDate): number {
+	return getDate(possible).getTime();
 }
 
 /** Convert an unknown value to a YMD date string like "2015-09-12", or `null` if it couldn't be converted. */
@@ -59,23 +74,29 @@ export function getOptionalYMD(possible: unknown): string | null {
 }
 
 /** Convert a `Date` instance to a YMD string like "2015-09-12", or throw `AssertionError` if it couldn't be converted.  */
-export const getYMD = (possible: PossibleDate = "now"): string => _ymd(getDate(possible));
-const _ymd = (date: Date): string => {
+export function getYMD(possible?: PossibleDate): string {
+	return _ymd(getDate(possible));
+}
+function _ymd(date: Date): string {
 	const y = _pad(date.getUTCFullYear(), 4);
 	const m = _pad(date.getUTCMonth() + 1, 2);
 	const d = _pad(date.getUTCDate(), 2);
 	return `${y}-${m}-${d}`;
-};
-const _pad = (num: number, size: 2 | 3 | 4): string => num.toString(10).padStart(size, "0000");
+}
+function _pad(num: number, size: 2 | 3 | 4): string {
+	return num.toString(10).padStart(size, "0000");
+}
 
 /** List of day-of-week strings. */
-export const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
+export const DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 
 /** Type listing day-of-week strings. */
-export type Day = (typeof days)[number];
+export type Day = (typeof DAYS)[number];
 
 /** Convert a `Date` instance to a day-of-week string like "monday" */
-export const getDay = (target?: PossibleDate): Day => days[getDate(target).getDay()] as Day;
+export function getDay(target?: PossibleDate): Day {
+	return DAYS[getDate(target).getDay()] as Day;
+}
 
 /** Get a Date representing exactly midnight of the specified date. */
 export function getMidnight(target?: PossibleDate): Date {
@@ -113,37 +134,61 @@ export function addHours(change: number, target?: PossibleDate): Date {
  * @param target The date when the thing will happen or did happen.
  * @param current Today's date (or a different date to measure from).
  */
-export const getDuration = (target?: PossibleDate, current?: PossibleDate): number => getDate(target).getTime() - getDate(current).getTime();
+export function getDuration(target?: PossibleDate, current?: PossibleDate): number {
+	return getDate(target).getTime() - getDate(current).getTime();
+}
 
 /** Count the number of seconds until a date. */
-export const getSecondsUntil = (target: PossibleDate, current?: PossibleDate): number => getDuration(target, current) / 1000;
+export function getSecondsUntil(target: PossibleDate, current?: PossibleDate): number {
+	return getDuration(target, current) / 1000;
+}
 
 /** Count the number of days ago a date was. */
-export const getSecondsAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - getSecondsUntil(target, current);
+export function getSecondsAgo(target: PossibleDate, current?: PossibleDate): number {
+	return 0 - getSecondsUntil(target, current);
+}
 
 /** Count the number of days until a date. */
-export const getDaysUntil = (target: PossibleDate, current?: PossibleDate): number => Math.round((getMidnight(target).getTime() - getMidnight(current).getTime()) / 86400000);
+export function getDaysUntil(target: PossibleDate, current?: PossibleDate): number {
+	return Math.round((getMidnight(target).getTime() - getMidnight(current).getTime()) / 86400000);
+}
 
 /** Count the number of days ago a date was. */
-export const getDaysAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - getDaysUntil(target, current);
+export function getDaysAgo(target: PossibleDate, current?: PossibleDate): number {
+	return 0 - getDaysUntil(target, current);
+}
 
 /** Count the number of weeks until a date. */
-export const getWeeksUntil = (target: PossibleDate, current?: PossibleDate): number => Math.floor(getDaysUntil(target, current) / 7);
+export function getWeeksUntil(target: PossibleDate, current?: PossibleDate): number {
+	return Math.floor(getDaysUntil(target, current) / 7);
+}
 
 /** Count the number of weeks ago a date was. */
-export const getWeeksAgo = (target: PossibleDate, current?: PossibleDate): number => 0 - getWeeksUntil(target, current);
+export function getWeeksAgo(target: PossibleDate, current?: PossibleDate): number {
+	return 0 - getWeeksUntil(target, current);
+}
 
 /** Is a date in the past? */
-export const isPast = (target: PossibleDate, current?: PossibleDate): boolean => getDate(target) < getDate(current);
+export function isPast(target: PossibleDate, current?: PossibleDate): boolean {
+	return getDate(target) < getDate(current);
+}
 
 /** Is a date in the future? */
-export const isFuture = (target: PossibleDate, current?: PossibleDate): boolean => getDate(target) > getDate(current);
+export function isFuture(target: PossibleDate, current?: PossibleDate): boolean {
+	return getDate(target) > getDate(current);
+}
 
 /** Is a date today (taking into account midnight). */
-export const isToday = (target: PossibleDate, current?: PossibleDate): boolean => getMidnight(target) === getMidnight(current);
+export function isToday(target: PossibleDate, current?: PossibleDate): boolean {
+	return getMidnight(target) === getMidnight(current);
+}
 
 /** Format a date in the browser locale. */
-export const formatDate = (date: PossibleDate): string => getDate(date).toLocaleDateString();
+export function formatDate(date: PossibleDate): string {
+	return getDate(date).toLocaleDateString();
+}
 
 /** Format an optional time as a string. */
-export const formatOptionalDate = (date?: unknown): string | null => getOptionalDate(date)?.toLocaleDateString() || null;
+export function formatOptionalDate(date?: unknown): string | null {
+	return getOptionalDate(date)?.toLocaleDateString() || null;
+}
