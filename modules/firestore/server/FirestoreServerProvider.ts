@@ -64,8 +64,8 @@ function _getFieldValues<T extends Data>(updates: Updates<T>): UpdateData<T> {
 function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
 	if (action === "set") return [key, value];
 	if (action === "sum") return [key, FieldValue.increment(value)];
-	if (action === "with") return [key, FieldValue.arrayUnion(value)];
-	if (action === "omit") return [key, FieldValue.arrayRemove(value)];
+	if (action === "with") return [key, FieldValue.arrayUnion(...value)];
+	if (action === "omit") return [key, FieldValue.arrayRemove(...value)];
 	return action; // Never happens.
 }
 

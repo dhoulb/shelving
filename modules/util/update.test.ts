@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { ImmutableDictionary, Updates } from "./index.js";
+import type { ImmutableArray, ImmutableDictionary, Updates } from "./index.js";
 import { getUpdates, updateData } from "./index.js";
 
 type T = {
@@ -22,6 +22,7 @@ type T = {
 		readonly str: string;
 		readonly num: number;
 	}>;
+	readonly arr: ImmutableArray<number>;
 };
 
 const data: T = Object.freeze({
@@ -46,6 +47,7 @@ const data: T = Object.freeze({
 			num: 1,
 		},
 	}),
+	arr: [1, 2, 3],
 });
 
 const updates: Updates<T> = {
@@ -56,6 +58,8 @@ const updates: Updates<T> = {
 	"-=a.data.num": 10,
 	"=dict2.a.str": "A",
 	"+=dict2.a.num": 100,
+	"+[]arr": 99,
+	"-[]arr": [1, 2],
 };
 
 const validUpdates1: Updates<T> = {
@@ -134,6 +138,8 @@ test("getUpdates()", () => {
 		{ key: "a.data.num", action: "sum", value: -10 },
 		{ key: "dict2.a.str", action: "set", value: "A" },
 		{ key: "dict2.a.num", action: "sum", value: 100 },
+		{ key: "arr", action: "with", value: [99] },
+		{ key: "arr", action: "omit", value: [1, 2] },
 	]);
 });
 test("updateObject()", () => {
@@ -159,6 +165,7 @@ test("updateObject()", () => {
 				num: 101,
 			},
 		},
+		arr: [3, 99],
 	};
 
 	// Changes.
