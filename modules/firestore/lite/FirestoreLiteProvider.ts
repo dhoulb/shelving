@@ -3,7 +3,7 @@ import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { CollectionReference, DocumentReference, DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocumentSnapshot, UpdateData } from "firebase/firestore/lite";
-import { addDoc, collection, deleteDoc, doc, documentId, getCount, getDoc, getDocs, increment, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore/lite";
+import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, documentId, getCount, getDoc, getDocs, increment, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore/lite";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
@@ -53,7 +53,11 @@ function _getFieldValues<T extends Data>(updates: Updates<T>): UpdateData<T> {
 	return getObject(mapItems(getUpdates(updates), _getFieldValue)) as UpdateData<T>;
 }
 function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
-	return [key, action === "sum" ? increment(value) : action === "set" ? value : action];
+	if (action === "set") return [key, value];
+	if (action === "sum") return [key, increment(value)];
+	if (action === "with") return [key, arrayUnion(value)];
+	if (action === "omit") return [key, arrayRemove(value)];
+	return action; // Never happens.
 }
 
 /**
