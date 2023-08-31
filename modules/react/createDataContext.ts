@@ -16,8 +16,8 @@ export function createDataContext<T extends Database>(
 ): {
 	readonly useItem: <K extends DataKey<T>>(collection: K, id: string) => ItemStore<T, K>;
 	readonly useQuery: <K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>) => QueryStore<T, K>;
-	readonly useOptionalItem: <K extends DataKey<T>>(collection: K, id: Optional<string>) => ItemStore<T, K> | undefined;
-	readonly useOptionalQuery: <K extends DataKey<T>>(collection: K, query: Optional<ItemQuery<T[K]>>) => QueryStore<T, K> | undefined;
+	readonly useOptionalItem: <K extends DataKey<T>>(collection: Optional<K>, id: Optional<string>) => ItemStore<T, K> | undefined;
+	readonly useOptionalQuery: <K extends DataKey<T>>(collection: Optional<K>, query: Optional<ItemQuery<T[K]>>) => QueryStore<T, K> | undefined;
 	readonly DataProvider: ({ children }: { children: React.ReactNode }) => React.ReactElement;
 } {
 	const { CacheProvider, useCache } = createCacheContext<ItemStore<T, any> | QueryStore<T, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
