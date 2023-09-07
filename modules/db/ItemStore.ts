@@ -36,14 +36,15 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends Store<O
 
 	constructor(provider: AbstractProvider<T>, collection: K, id: string) {
 		const memory = getOptionalSource<CacheProvider<T>>(CacheProvider, provider)?.memory;
-		const time = memory ? memory.getItemTime(collection, id) : undefined;
-		super(memory && typeof time === "number" ? memory.getItem(collection, id) : NONE, time);
+		const time = memory?.getItemTime(collection, id);
+		const value = memory && typeof time === "number" ? memory.getItem(collection, id) : NONE; // Use the value in the memory provider if it's cached, or use mark this store as loading otherwise (which will trigger `refresh()` below.
+		super(value, time);
 		this.provider = provider;
 		this.collection = collection;
 		this.id = id;
 
 		// Queue a request to refresh the value if it doesn't exist.
-		if (this.loading) this.refresh();
+		if (typeof time !== "number") this.refresh();
 	}
 
 	/** Refresh this store from the source provider. */

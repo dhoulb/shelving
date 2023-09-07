@@ -58,14 +58,16 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends Store<
 
 	constructor(provider: AbstractProvider<T>, collection: K, query: ItemQuery<T[K]>) {
 		const memory = getOptionalSource<CacheProvider<T>>(CacheProvider, provider)?.memory;
-		super(memory?.getQuery(collection, query) || NONE, memory?.getQueryTime(collection, query));
+		const time = memory?.getQueryTime(collection, query);
+		const value = memory?.getQuery(collection, query) || NONE; // Always use any matching items currently in the memory store (this might update when we call `refresh()` below).
+		super(value, time);
 		this.provider = provider;
 		this.collection = collection;
 		this.query = query;
 		this.limit = getLimit(query) ?? Infinity;
 
 		// Queue a request to refresh the value if it doesn't exist.
-		if (this.loading) this.refresh();
+		if (typeof time !== "number") this.refresh();
 	}
 
 	/** Refresh this store from the source provider. */
