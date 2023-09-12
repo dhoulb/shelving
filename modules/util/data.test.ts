@@ -78,12 +78,6 @@ test("LeafData", () => {
 		"dict2.a.num": 123,
 	};
 
-	/**
-	 * @todo Typescript can't infer type from template literal in computed property key.
-	 * - See https://github.com/microsoft/TypeScript/issues/13948
-	 * - Workaround is currently to use `getData()` and construct an object manually.
-	 */
-	// @ts-expect-error This will error until Typescript fixes the issue.
 	const validLeafData3: Partial<LeafData<X>> = {
 		[`dict2.${"id"}.num`]: 123,
 	};
