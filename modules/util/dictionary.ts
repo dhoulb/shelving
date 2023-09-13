@@ -18,10 +18,10 @@ export type DictionaryValue<T extends ImmutableDictionary> = T[string];
 export type PossibleDictionary<T> = ImmutableDictionary<T> | Iterable<DictionaryItem<T>>;
 
 /** Is an unknown value a dictionary object? */
-export const isDictionary = <T extends ImmutableDictionary<T>>(value: T | unknown): value is T => isPlainObject(value);
+export const isDictionary = (value: unknown): value is ImmutableDictionary => isPlainObject(value);
 
 /** Assert that an unknown value is a dictionary object */
-export function assertDictionary<T>(value: ImmutableDictionary<T> | unknown): asserts value is ImmutableDictionary<T> {
+export function assertDictionary(value: unknown): asserts value is ImmutableDictionary {
 	if (!isDictionary(value)) throw new AssertionError("Must be dictionary", value);
 }
 

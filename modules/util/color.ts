@@ -72,10 +72,10 @@ const _parse = (hex: string) => parseInt(hex.padStart(2, "00"), 16);
 const _hex = (channel: number) => channel.toString(16).padStart(2, "00");
 
 /** Is an unknown value a `Color` instance. */
-export const isColor = (value: Color | unknown): value is Color => value instanceof Color;
+export const isColor = (value: unknown): value is Color => value instanceof Color;
 
 /** Assert that an unknown value is a `Color` instance. */
-export function assertColor(value: Color | unknown): asserts value is Color {
+export function assertColor(value: unknown): asserts value is Color {
 	if (!isColor(value)) throw new AssertionError("Invalid color", value);
 }
 

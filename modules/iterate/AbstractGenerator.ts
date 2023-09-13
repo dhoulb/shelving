@@ -4,7 +4,7 @@ export abstract class AbstractGenerator<T, R, N> implements Generator<T, R, N> {
 
 	// Implement `Iterator`
 	abstract next(value: N): IteratorResult<T, R>;
-	throw(thrown: Error | unknown): IteratorResult<T, R> {
+	throw(thrown: unknown): IteratorResult<T, R> {
 		// Default behaviour for a generator is to throw the error back out of the iterator and not continue.
 		throw thrown;
 	}

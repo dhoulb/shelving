@@ -21,15 +21,15 @@ export type Value<T> = T[keyof T];
 export type PossibleObject<T> = T | Iterable<Prop<T>>;
 
 /** Is an unknown value an unknown object? */
-export const isObject = <T extends ImmutableObject>(value: T | unknown): value is T => typeof value === "object" && value !== null;
+export const isObject = (value: unknown): value is ImmutableObject => typeof value === "object" && value !== null;
 
 /** Assert that a value is an object */
-export function assertObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
+export function assertObject(value: unknown): asserts value is ImmutableObject {
 	if (!isObject(value)) throw new AssertionError("Must be object", value);
 }
 
 /** Is an unknown value a plain object? */
-export function isPlainObject<T extends ImmutableObject>(value: T | unknown): value is T {
+export function isPlainObject(value: unknown): value is ImmutableObject {
 	if (isObject(value)) {
 		const proto = getPrototype(value);
 		return proto === null || proto === Object.prototype;
@@ -38,7 +38,7 @@ export function isPlainObject<T extends ImmutableObject>(value: T | unknown): va
 }
 
 /** Assert that an unknown value is a plain object */
-export function assertPlainObject<T extends ImmutableObject>(value: T | unknown): asserts value is T {
+export function assertPlainObject(value: unknown): asserts value is ImmutableObject {
 	if (!isPlainObject(value)) throw new AssertionError(`Must be plain object`, value);
 }
 
@@ -170,7 +170,7 @@ export function deleteProps<T extends MutableObject>(obj: T, ...keys: Key<T>[]):
  * - Use `Object` otherwise.
  */
 export function formatObject(obj: ImmutableObject): string {
-	if (typeof obj.toString === "function" && obj.toString !== Object.prototype.toString) return obj.toString();
+	if (typeof obj.toString === "function" && obj.toString !== Object.prototype.toString) return obj.toString(); // eslint-disable-line @typescript-eslint/no-base-to-string
 	const name = obj.name;
 	if (typeof name === "string") return name;
 	const title = obj.title;

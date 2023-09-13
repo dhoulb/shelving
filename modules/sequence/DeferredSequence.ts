@@ -38,7 +38,7 @@ export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> 
 		this._nextReason = reason;
 		queueMicrotask(this._fulfill);
 	};
-	private _nextReason: Error | unknown | typeof _NOVALUE = _NOVALUE;
+	private _nextReason: unknown = _NOVALUE;
 
 	/** Fulfill the current deferred by resolving or rejecting it. */
 	private readonly _fulfill = () => {

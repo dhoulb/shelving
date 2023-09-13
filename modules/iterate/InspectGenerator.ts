@@ -47,7 +47,7 @@ export class InspectGenerator<T, R, N> extends ThroughGenerator<T, R, N> {
 	override next(value: N): IteratorResult<T, R> {
 		return this._inspect(this.next(value));
 	}
-	override throw(thrown: Error | unknown): IteratorResult<T, R> {
+	override throw(thrown: unknown): IteratorResult<T, R> {
 		return this._inspect(this.throw(thrown));
 	}
 	override return(value: R): IteratorResult<T, R> {

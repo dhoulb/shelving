@@ -6,7 +6,7 @@ export function assert(condition: unknown, ...receivedExpected: [received?: unkn
 }
 
 /** Assert two values are equal. */
-export function assertEqual<T>(left: T | unknown, right: T): asserts left is T {
+export function assertEqual<T>(left: unknown, right: T): asserts left is T {
 	if (left !== right) throw new AssertionError(`Must be equal`, left, right);
 }
 

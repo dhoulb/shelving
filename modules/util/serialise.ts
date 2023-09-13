@@ -27,7 +27,7 @@ export function serialise(value: unknown): string {
 		const type = prototype !== Object.prototype && prototype !== null ? prototype?.constructor?.name : undefined;
 
 		// Use custom `toString()` function if it's defined.
-		if (type && value.toString !== Object.prototype.toString) return `{"$type":${escapeString(type)},"value":${escapeString(value.toString())}}`;
+		if (type && value.toString !== Object.prototype.toString) return `{"$type":${escapeString(type)},"value":${escapeString(value.toString())}}`; // eslint-disable-line @typescript-eslint/no-base-to-string
 
 		// Otherwise crawl the object and sort the props ascendingly.
 		const props = Object.entries(value).map(serialiseEntry).sort();

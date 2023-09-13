@@ -11,7 +11,7 @@ import { runSequence } from "../util/sequence.js";
  */
 export function useSequence<T>(sequence?: AsyncIterable<T>): T | undefined {
 	const [value, setValue] = useState<T | undefined>(undefined);
-	const [error, setError] = useState<Error | unknown>(undefined);
+	const [error, setError] = useState<unknown>(undefined);
 	useEffect(sequence ? () => runSequence(sequence, setValue, setError) : BLACKHOLE, [sequence]);
 	if (error) throw error;
 	return value;

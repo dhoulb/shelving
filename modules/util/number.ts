@@ -5,12 +5,12 @@ import { NNBSP } from "./constants.js";
 export const isNumber = (value: unknown): value is number => typeof value === "number";
 
 /** Assert that a value is a number. */
-export function assertNumber(value: number | unknown): asserts value is number {
+export function assertNumber(value: unknown): asserts value is number {
 	if (typeof value !== "number") throw new AssertionError(`Must be number`, value);
 }
 
 /** Assert that a value is a number greater than. */
-export function assertFinite(value: number | unknown): asserts value is number {
+export function assertFinite(value: unknown): asserts value is number {
 	if (typeof value !== "number" || !Number.isFinite(value)) throw new AssertionError(`Must be finite number`, value);
 }
 
@@ -24,17 +24,17 @@ export function assertFinite(value: number | unknown): asserts value is number {
 export const isBetween = (num: number, min: number, max: number): boolean => num >= min && num <= max;
 
 /** Assert that a value is a number greater than. */
-export function assertBetween(value: number | unknown, min: number, max: number): asserts value is number {
+export function assertBetween(value: unknown, min: number, max: number): asserts value is number {
 	if (typeof value !== "number" || isBetween(value, min, max)) throw new AssertionError(`Must be number between ${min} and ${max}`, value);
 }
 
 /** Assert that a value is a number greater than. */
-export function assertMax(value: number | unknown, max: number): asserts value is number {
+export function assertMax(value: unknown, max: number): asserts value is number {
 	if (typeof value !== "number" || value > max) throw new AssertionError(`Must be number with maximum ${max}`, value);
 }
 
 /** Assert that a value is a number less than. */
-export function assertMin(value: number | unknown, min: number): asserts value is number {
+export function assertMin(value: unknown, min: number): asserts value is number {
 	if (typeof value !== "number" || value < min) throw new AssertionError(`Must be number with minimum ${min}`, value);
 }
 

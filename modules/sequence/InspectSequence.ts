@@ -47,7 +47,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	override async next(): Promise<IteratorResult<T, R>> {
 		return this._inspect(await this.next());
 	}
-	override async throw(thrown: Error | unknown): Promise<IteratorResult<T, R>> {
+	override async throw(thrown: unknown): Promise<IteratorResult<T, R>> {
 		return this._inspect(await this.throw(thrown));
 	}
 	override async return(value: R): Promise<IteratorResult<T, R>> {

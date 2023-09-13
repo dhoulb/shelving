@@ -22,18 +22,18 @@ export type ArrayItem<T extends ImmutableArray> = T[number];
 export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
 
 /** Is an unknown value an array? */
-export const isArray = <T extends ImmutableArray>(value: T | unknown): value is T => Array.isArray(value);
+export const isArray = (value: unknown): value is ImmutableArray => Array.isArray(value);
 
 /** Assert that an unknown value is an array. */
-export function assertArray<T>(arr: ImmutableArray<T> | unknown): asserts arr is ImmutableArray<T> {
+export function assertArray<T>(arr: unknown): asserts arr is ImmutableArray<T> {
 	if (!isArray(arr)) throw new AssertionError(`Must be array`, arr);
 }
 
 /** Is an unknown value an item in a specified array? */
-export const isArrayItem = <T>(arr: ImmutableArray<T>, item: T | unknown): item is T => arr.includes(item as T);
+export const isArrayItem = <T>(arr: ImmutableArray<T>, item: unknown): item is T => arr.includes(item as T);
 
 /** Assert that an unknown value is an item in a specified array. */
-export function assertArrayItem<T>(arr: ImmutableArray<T>, item: T | unknown): asserts item is T {
+export function assertArrayItem<T>(arr: ImmutableArray<T>, item: unknown): asserts item is T {
 	if (!isArrayItem(arr, item)) throw new AssertionError(`Must be array item`, item);
 }
 
@@ -187,27 +187,27 @@ export function isArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Infinity
 	return arr.length >= min && arr.length <= max;
 }
 
-/** Assert that a value has a specific length (or length is in a specific range). */
+/** Assert that an array has a specific length (or length is in a specific range). */
 export function assertArrayLength<T>(arr: MutableArray<T>, min: 1, max: 1): asserts arr is [T];
 export function assertArrayLength<T>(arr: MutableArray<T>, min: 2, max: 2): asserts arr is [T, T];
 export function assertArrayLength<T>(arr: MutableArray<T>, min: 3, max: 3): asserts arr is [T, T, T];
 export function assertArrayLength<T>(arr: MutableArray<T>, min: 4, max: 4): asserts arr is [T, T, T, T];
-export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min?: 1, max?: number): asserts arr is [T, ...T[]];
-export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min: 2, max?: number): asserts arr is [T, T, ...T[]];
-export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min: 3, max?: number): asserts arr is [T, T, T, ...T[]];
-export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min: 4, max?: number): asserts arr is [T, T, T, T, ...T[]];
-export function assertArrayLength<T>(arr: MutableArray<T> | unknown, min: number, max?: number): asserts arr is MutableArray<T>;
+export function assertArrayLength<T>(arr: MutableArray<T>, min?: 1, max?: number): asserts arr is [T, ...T[]];
+export function assertArrayLength<T>(arr: MutableArray<T>, min: 2, max?: number): asserts arr is [T, T, ...T[]];
+export function assertArrayLength<T>(arr: MutableArray<T>, min: 3, max?: number): asserts arr is [T, T, T, ...T[]];
+export function assertArrayLength<T>(arr: MutableArray<T>, min: 4, max?: number): asserts arr is [T, T, T, T, ...T[]];
+export function assertArrayLength<T>(arr: MutableArray<T>, min: number, max?: number): asserts arr is MutableArray<T>;
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 1, max: 1): asserts arr is readonly [T];
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 2, max: 2): asserts arr is readonly [T, T];
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 3, max: 3): asserts arr is readonly [T, T, T];
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 4, max: 4): asserts arr is readonly [T, T, T, T];
-export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min?: 1, max?: number): asserts arr is readonly [T, ...T[]];
-export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min: 2, max?: number): asserts arr is readonly [T, T, ...T[]];
-export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min: 3, max?: number): asserts arr is readonly [T, T, T, ...T[]];
-export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min: 4, max?: number): asserts arr is readonly [T, T, T, T, ...T[]];
-export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min: number, max?: number): asserts arr is ImmutableArray<T>;
-export function assertArrayLength<T>(arr: ImmutableArray<T> | unknown, min = 1, max = Infinity): asserts arr is ImmutableArray<T> {
-	if (!isArray<ImmutableArray<T>>(arr) || !isArrayLength<T>(arr, min, max)) throw new AssertionError(`Must be array with length ${formatRange(min, max)}`, arr);
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min?: 1, max?: number): asserts arr is readonly [T, ...T[]];
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 2, max?: number): asserts arr is readonly [T, T, ...T[]];
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 3, max?: number): asserts arr is readonly [T, T, T, ...T[]];
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 4, max?: number): asserts arr is readonly [T, T, T, T, ...T[]];
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min: number, max?: number): asserts arr is ImmutableArray<T>;
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Infinity): asserts arr is ImmutableArray<T> {
+	if (!isArray(arr) || !isArrayLength<T>(arr, min, max)) throw new AssertionError(`Must be array with length ${formatRange(min, max)}`, arr);
 }
 
 /** Get an array if it has the specified minimum length.  */

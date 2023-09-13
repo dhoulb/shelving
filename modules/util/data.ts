@@ -73,10 +73,10 @@ export type LeafProp<T extends Data> = {
 }[DataKey<T>];
 
 /** Is an unknown value a data object? */
-export const isData = <T extends Data>(value: T | unknown): value is T => isPlainObject(value);
+export const isData = (value: unknown): value is Data => isPlainObject(value);
 
 /** Assert that an unknown value is a data object. */
-export function assertData<T extends Data>(value: T | unknown): asserts value is T {
+export function assertData(value: unknown): asserts value is Data {
 	if (!isPlainObject(value)) throw new AssertionError("Must be data", value);
 }
 

@@ -21,7 +21,7 @@ export const SAME: unique symbol = Symbol("shelving/SAME");
  */
 export function deepDiff<R extends ImmutableObject>(left: unknown, right: R): R | DeepPartial<R> | typeof SAME;
 export function deepDiff<R extends unknown>(left: unknown, right: R): R | typeof SAME;
-export function deepDiff(left: unknown, right: DeepPartial<ImmutableObject> | unknown): DeepPartial<ImmutableObject> | unknown | typeof SAME {
+export function deepDiff(left: unknown, right: unknown): unknown {
 	if (left === right) return SAME;
 	if (isArray(right)) return isArray(left) ? deepDiffArray(left, right) : right;
 	if (isObject(right)) return isObject(left) && !isArray(left) ? deepDiffObject(left, right) : right;

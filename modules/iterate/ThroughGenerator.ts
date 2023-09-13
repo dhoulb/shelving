@@ -12,7 +12,7 @@ export class ThroughGenerator<T, R, N> extends AbstractGenerator<T, R, N> {
 	next(value: N): IteratorResult<T, R> {
 		return this._source.next(value);
 	}
-	override throw(thrown: Error | unknown): IteratorResult<T, R> {
+	override throw(thrown: unknown): IteratorResult<T, R> {
 		return this._source.throw ? this._source.throw(thrown) : super.throw(thrown);
 	}
 	override return(value: R): IteratorResult<T, R> {

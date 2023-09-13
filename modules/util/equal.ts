@@ -84,7 +84,7 @@ export function isArrayEqual<T extends ImmutableArray>(left: ImmutableArray, rig
 }
 
 /** Is unknown value `left` in array `right`? */
-export const isInArray = <R>(left: R | unknown, right: ImmutableArray<R>): left is R => right.includes(left as R);
+export const isInArray = <R>(left: unknown, right: ImmutableArray<R>): left is R => right.includes(left as R);
 
 /** Is unknown value `left` not in array `right`? */
 export const notInArray = (left: unknown, right: ImmutableArray): boolean => !isInArray(left, right);

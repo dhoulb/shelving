@@ -8,7 +8,7 @@ export abstract class AbstractSequence<T, R, N> implements AsyncGenerator<T, R, 
 		// Default behaviour for a generator is to return `done: true` and the input value.
 		return { done: true, value: await returnValue };
 	}
-	throw(reason: Error | unknown): Promise<IteratorResult<T, R>> {
+	throw(reason: unknown): Promise<IteratorResult<T, R>> {
 		// Default behaviour for a generator is to throw the error back out of the iterator and not continue.
 		throw reason;
 	}

@@ -3,15 +3,15 @@ import { AssertionError } from "../error/AssertionError.js";
 /** Unknown function. */
 export type UnknownFunction = (...args: unknown[]) => unknown;
 
-/** Any function (designed for use with `extends AnyFunction` guards). */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyFunction = (...args: any) => any; // Note: `any` works better than `any[]` for `args`
+/** Any function (purposefully as wide as possible for use with `extends X` or `is X` statements). */
+// Note: `any` works better than `any[]` for `args`
+export type AnyFunction = (...args: any) => any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** Is a value a function? */
-export const isFunction = <T extends AnyFunction>(value: T | unknown): value is T => typeof value === "function";
+export const isFunction = (value: unknown): value is AnyFunction => typeof value === "function";
 
 /** Assert that a value is a function. */
-export function assertFunction<T extends AnyFunction>(value: T | unknown): asserts value is T {
+export function assertFunction(value: unknown): asserts value is AnyFunction {
 	if (typeof value !== "function") throw new AssertionError("Must be function", value);
 }
 

@@ -55,7 +55,7 @@ export class Store<T> implements AsyncIterable<T> {
 	get reason(): unknown {
 		return this._reason;
 	}
-	set reason(reason: Error | unknown) {
+	set reason(reason: unknown) {
 		this._reason = reason;
 		if (reason !== undefined) {
 			this.next.reject(reason);

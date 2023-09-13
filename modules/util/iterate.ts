@@ -1,11 +1,5 @@
-/**
- * Is a value an iterable object?
- * - Any object with a `Symbol.iterator` property is iterable.
- * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
- */
-
 /** Is an unknown value an iterable? */
-export const isIterable = <T extends Iterable<unknown>>(value: T | unknown): value is T => typeof value === "object" && !!value && Symbol.iterator in value;
+export const isIterable = (value: unknown): value is Iterable<unknown> => typeof value === "object" && !!value && Symbol.iterator in value;
 
 /** An iterable containing items or nested iterables of items. */
 export type DeepIterable<T> = T | Iterable<DeepIterable<T>>;
@@ -26,7 +20,7 @@ export function hasItems(items: Iterable<unknown>): boolean {
 }
 
 /** Is an unknown value one of the values of an iterable? */
-export function isItem<T>(items: Iterable<T>, value: T | unknown): value is T {
+export function isItem<T>(items: Iterable<T>, value: unknown): value is T {
 	for (const item of items) if (value === item) return true;
 	return false;
 }

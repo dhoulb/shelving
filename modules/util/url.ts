@@ -5,10 +5,10 @@ export type PossibleURL = string | URL;
 export type PossibleOptionalURL = PossibleURL | null;
 
 /** Is an unknown value a URL? */
-export const isURL = (value: URL | unknown): value is URL => value instanceof URL;
+export const isURL = (value: unknown): value is URL => value instanceof URL;
 
 /** Assert that an unknown value is a URL. */
-export function assertURL(value: URL | unknown): asserts value is URL {
+export function assertURL(value: unknown): asserts value is URL {
 	if (!isURL(value)) throw new AssertionError("Invalid URL", value);
 }
 

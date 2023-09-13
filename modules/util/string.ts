@@ -53,7 +53,7 @@ export function getString(value: unknown): string {
 export const isStringLength = (str: string, min = 1, max = Infinity): boolean => str.length >= min && str.length <= max;
 
 /** Assert that a value has a specific length (or length is in a specific range). */
-export function assertStringLength(str: string | unknown, min = 1, max = Infinity): asserts str is string {
+export function assertStringLength(str: unknown, min = 1, max = Infinity): asserts str is string {
 	if (!isString(str) || !isStringLength(str, min, max)) throw new AssertionError(`Must be string with length ${formatRange(min, max)}`, str);
 }
 

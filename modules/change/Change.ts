@@ -13,8 +13,6 @@ export interface Change {
 /** A change to a database collection. */
 export interface CollectionChange<T extends Database, K extends DataKey<T>> extends Change {
 	readonly collection: K;
-	readonly id?: string | never;
-	readonly query?: ItemQuery<T[K]> | never;
 }
 
 /** Add an item to a database collection. */

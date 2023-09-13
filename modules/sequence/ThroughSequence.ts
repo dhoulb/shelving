@@ -12,7 +12,7 @@ export class ThroughSequence<T, R, N> extends AbstractSequence<T, R, N> {
 	next(next: N): Promise<IteratorResult<T, R>> {
 		return this._source.next(next);
 	}
-	override throw(thrown: Error | unknown): Promise<IteratorResult<T, R>> {
+	override throw(thrown: unknown): Promise<IteratorResult<T, R>> {
 		return this._source.throw ? this._source.throw(thrown) : super.throw(thrown);
 	}
 	override return(value: R | PromiseLike<R>): Promise<IteratorResult<T, R>> {

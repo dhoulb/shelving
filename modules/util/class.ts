@@ -6,20 +6,19 @@ import { debug } from "./debug.js";
 export type Constructor<T, A extends Arguments> = new (...args: A) => T;
 
 /** Any function arguments (designed for use with `extends Arguments` guards). */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyConstructor = new (...args: any) => any; // Note: `any` works better than `any[]` for `args`
+// Note: `any` works better than `any[]` for `args`
+export type AnyConstructor = new (...args: any) => any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-/** Class prototype that can be used with `instanceof` (string name, as per `Function`, and a prototype field matching the object). */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Class<T> = new (...args: any) => T;
+/** Class prototype that can be used with `instanceof`. */
+export type Class<T> = new (...args: any) => T; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** Is a given value a class constructor? */
-export const isConstructor = <T extends AnyConstructor>(value: T | unknown): value is T => typeof value === "function" && value.toString().startsWith("class");
+export const isConstructor = (value: unknown): value is AnyConstructor => typeof value === "function" && value.toString().startsWith("class");
 
 /** Is a value an instance of a class? */
 export const isInstance = <T>(value: unknown, type: Class<T>): value is T => value instanceof type;
 
 /** Assert that a value is an instance of something. */
-export function assertInstance<T>(value: T | unknown, type: Class<T>): asserts value is T {
+export function assertInstance<T>(value: unknown, type: Class<T>): asserts value is T {
 	if (!(value instanceof type)) throw new AssertionError(`Must be instance of ${debug(type)}`, value);
 }
