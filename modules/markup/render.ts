@@ -1,8 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import type { MarkupOptions } from "./options.js";
-import type { MarkupRule, MarkupRuleMatch } from "./rule.js";
-import type { Data } from "../util/data.js";
+import type { MarkupElement } from "./rule.js";
 import type { JSXElement, JSXNode } from "../util/jsx.js";
 import { isArray } from "../util/array.js";
 import { MARKUP_OPTIONS } from "./options.js";
@@ -71,7 +70,7 @@ function _renderNode(node: JSXNode, options: MarkupOptions, context: string): JS
  * Render a JSX element in a given context.
  */
 function _renderElement(element: JSXElement, options: MarkupOptions, context: string): JSXElement {
-	if (element.props.children) element.props.children = _renderNode(element.props.children, options, context);
+	element.props.children = _renderNode(element.props.children, options, context);
 	return element;
 }
 
@@ -80,9 +79,8 @@ function _renderElement(element: JSXElement, options: MarkupOptions, context: st
  *
  * @param offset Keeps track of where we are within the wider string we're parsing when we're several calls deep.
  */
-function* _parseString(input: string, options: MarkupOptions, context: string, offset = 0): Iterable<JSXElement | string> {
-	let matchedRule: MarkupRule | undefined = undefined;
-	let matchedResult: MarkupRuleMatch<Data> | undefined = undefined;
+function* _parseString(input: string, options: MarkupOptions, outerContext: string, offset = 0): Iterable<JSXElement | string> {
+	let element: MarkupElement | undefined = undefined;
 	let highPriority = Number.MIN_SAFE_INTEGER;
 	let lowIndex = Number.MIN_SAFE_INTEGER;
 
@@ -91,15 +89,14 @@ function* _parseString(input: string, options: MarkupOptions, context: string, o
 		// Only apply this rule if both:
 		// 1. The priority is equal or higher to the current priority.
 		// 2. The rule is allowed in the current context.
-		const { priority } = rule;
-		if (rule.priority >= highPriority && rule.contexts.includes(context)) {
-			const result = rule.match(input, options);
-			if (result) {
+		const { priority = 0, contexts } = rule;
+		if (priority >= highPriority && contexts.includes(outerContext)) {
+			const match = rule.match(input, options);
+			if (match) {
 				// Use the match if it has length and is earlier in the string or is higher priority.
-				const { 0: { length } = "", index } = result;
-				if (length && (index < lowIndex || rule.priority > highPriority)) {
-					matchedRule = rule;
-					matchedResult = result;
+				const { index, length } = match;
+				if (length && (index < lowIndex || priority > highPriority)) {
+					element = match;
 					highPriority = priority;
 					lowIndex = index;
 				}
@@ -108,24 +105,22 @@ function* _parseString(input: string, options: MarkupOptions, context: string, o
 	}
 
 	// Did at least one rule match?
-	if (matchedRule && matchedResult) {
+	if (element) {
 		// If index is more than zero, then the string before the match may match another rule at lower priority.
 		const prefix = input.slice(0, lowIndex);
-		if (prefix.length) yield* _parseString(prefix, options, context, offset);
+		if (prefix.length) yield* _parseString(prefix, options, outerContext, offset);
 
 		// Call the rule's `render()` function to generate the node.
 		// React gets annoyed if we don't set a `key:` property on lists of elements.
 		// We use the string offset as the `.key` property in the element because it's cheap to calculate and guaranteed to be unique within the string.
 		// Trying to generate an incrementing number would require tracking the number and passing it back and forth through `_parseString()`
-		const { 0: { length } = "", groups, index } = matchedResult;
-		const element = matchedRule.render(groups, options);
+		const { index, length, context } = element;
 		element.key = offset + index;
-		const { subcontext } = matchedRule;
-		yield subcontext ? _renderElement(element, options, subcontext) : element;
+		yield context ? _renderElement(element, options, context) : element;
 
 		// Decrement the content.
 		const suffix = input.slice(index + length);
-		if (suffix.length) yield* _parseString(suffix, options, context, offset + index + length);
+		if (suffix.length) yield* _parseString(suffix, options, outerContext, offset + index + length);
 	} else {
 		// If nothing matched return the entire string..
 		yield input;

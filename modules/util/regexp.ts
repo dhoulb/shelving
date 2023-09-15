@@ -12,19 +12,6 @@ export const NEVER_REGEXP = /^(?=a)a/;
 /** Things that can be convert to a regular expression. */
 export type PossibleRegExp = string | RegExp;
 
-/** Set of named match groups from a regular expression. */
-export type NamedRegExpData = { [named: string]: string };
-
-/** Regular expression match array that you've asserted contains the specified named groups. */
-export interface NamedRegExpArray<T extends NamedRegExpData = NamedRegExpData> extends RegExpExecArray {
-	groups: T; // Groups is always set if a single `(?<named> placeholder)` appears in the RegExp.
-}
-
-/** Regular expression that you've asserted contains the specified named capture groups. */
-export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extends RegExp {
-	exec(input: string): NamedRegExpArray<T> | null;
-}
-
 /** Is an unknown value a `RegExp` instance? */
 export const isRegExp = (value: unknown): value is RegExp => value instanceof RegExp;
 
@@ -70,3 +57,26 @@ export const isRegExpMatch: Match<[item: string, target: RegExp]> = (item, targe
 
 /** Match function for finding strings that match against regular expressions (use with `filter()` to negatively filter iterable sets of items). */
 export const notRegExpMatch: Match<[item: string, target: RegExp]> = (item, target) => !target.test(item);
+
+/** Regular expression match array that you've asserted contains the specified named groups. */
+export interface TypedRegExpExecArray<T extends string = string> extends RegExpExecArray {
+	0: T;
+}
+
+/** Regular expression that you've asserted contains the specified named capture groups. */
+export interface TypedRegExp<T extends string = string> extends RegExp {
+	exec(input: string): TypedRegExpExecArray<T> | null;
+}
+
+/** Set of named match groups from a regular expression. */
+export type NamedRegExpData = { [named: string]: string };
+
+/** Regular expression match array that you've asserted contains the specified named groups. */
+export interface NamedRegExpExecArray<T extends NamedRegExpData = NamedRegExpData> extends RegExpExecArray {
+	groups: T; // Groups is always set if a single `(?<named> placeholder)` appears in the RegExp.
+}
+
+/** Regular expression that you've asserted contains the specified named capture groups. */
+export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extends RegExp {
+	exec(input: string): NamedRegExpExecArray<T> | null;
+}

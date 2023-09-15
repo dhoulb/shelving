@@ -1,13 +1,10 @@
-/* eslint-disable import/export */
-
 import type { MarkupOptions } from "./options.js";
 import type { MarkupRules } from "./rule.js";
-import type { EmptyData } from "../util/data.js";
 import type { JSXElement } from "../util/jsx.js";
 import type { NamedRegExp } from "../util/regexp.js";
 import { getRegExp } from "../util/regexp.js";
 import { BLOCK_REGEXP, LINE_REGEXP, WordRegExp, getBlockRegExp, getLineRegExp } from "./regexp.js";
-import { LinkRegExpMarkupRule, NamedRegExpMarkupRule, RegExpMarkupRule } from "./rule.js";
+import { getLinkRegExpMarkupRule, getNamedRegExpMarkupRule, getRegExpMarkupRule } from "./rule.js";
 
 /** React security symbol — see https://github.com/facebook/react/pull/4832 */
 const $$typeof = Symbol.for("react.element");
@@ -18,7 +15,7 @@ const $$typeof = Symbol.for("react.element");
  * - Same as Markdown syntax.
  * - Markdown's underline syntax is not supported (for simplification).
  */
-export const HEADING_RULE = new NamedRegExpMarkupRule<{ prefix: string; heading: string }>(
+export const HEADING_RULE = getNamedRegExpMarkupRule<{ prefix: string; heading: string }>(
 	getLineRegExp(`(?<prefix>#{1,6}) +(?<heading>${LINE_REGEXP.source})`) as NamedRegExp<{ prefix: string; heading: string }>,
 	({ prefix, heading }) => ({
 		type: `h${prefix.length}`,
@@ -26,9 +23,9 @@ export const HEADING_RULE = new NamedRegExpMarkupRule<{ prefix: string; heading:
 		ref: null,
 		$$typeof,
 		props: { children: heading.trim() },
+		context: "inline",
 	}),
 	["block"],
-	"inline",
 );
 
 /**
@@ -38,8 +35,8 @@ export const HEADING_RULE = new NamedRegExpMarkupRule<{ prefix: string; heading:
  * - Character must be the same every time (can't mix)
  * - Might have infinite number of spaces between the characters.
  */
-export const SEPARATOR_RULE = new RegExpMarkupRule(
-	getLineRegExp("([-*•+_=])(?: *\\1){2,}") as NamedRegExp<EmptyData>,
+export const SEPARATOR_RULE = getRegExpMarkupRule(
+	getLineRegExp("([-*•+_=])(?: *\\1){2,}"),
 	() => ({
 		type: "hr",
 		key: null,
@@ -60,7 +57,7 @@ export const SEPARATOR_RULE = new RegExpMarkupRule(
 const UNORDERED_PREFIX = "[-*•+] +";
 const UNORDERED_SPLIT = new RegExp(`(?:^|\n)+${UNORDERED_PREFIX}`, "g");
 const UNORDERED_INDENT = /^\t/gm;
-export const UNORDERED_RULE = new NamedRegExpMarkupRule<{ list: string }>(
+export const UNORDERED_RULE = getNamedRegExpMarkupRule<{ list: string }>(
 	getBlockRegExp(`(?<list>${UNORDERED_PREFIX}${BLOCK_REGEXP.source})`),
 	({ list }) => ({
 		type: "ul",
@@ -68,9 +65,9 @@ export const UNORDERED_RULE = new NamedRegExpMarkupRule<{ list: string }>(
 		ref: null,
 		$$typeof,
 		props: { children: list.split(UNORDERED_SPLIT).filter(Boolean).map(_mapUnordered) },
+		context: "list",
 	}),
 	["block", "list"],
-	"list",
 );
 const _mapUnordered = (item: string, key: number): JSXElement => ({
 	type: "li",
@@ -88,7 +85,7 @@ const _mapUnordered = (item: string, key: number): JSXElement => ({
 const ORDERED_PREFIX = "[1-9][0-9]{0,8}[.):] +"; // Number for a numbered list, e.g. `1.` or `2)` or `3:`
 const ORDERED_SPLIT = new RegExp(`\n+(?=${ORDERED_PREFIX})`, "g");
 const ORDERED_INDENT = UNORDERED_INDENT;
-export const ORDERED_RULE = new NamedRegExpMarkupRule<{ list: string }>(
+export const ORDERED_RULE = getNamedRegExpMarkupRule<{ list: string }>(
 	getBlockRegExp(`(?<list>${ORDERED_PREFIX}${BLOCK_REGEXP.source})`),
 	({ list }) => ({
 		type: "ol",
@@ -96,9 +93,9 @@ export const ORDERED_RULE = new NamedRegExpMarkupRule<{ list: string }>(
 		ref: null,
 		$$typeof,
 		props: { children: list.split(ORDERED_SPLIT).map(_mapOrdered) },
+		context: "list",
 	}),
 	["block", "list"],
-	"list",
 );
 const _mapOrdered = (item: string, key: number): JSXElement => ({
 	type: "li",
@@ -122,7 +119,7 @@ const _mapOrdered = (item: string, key: number): JSXElement => ({
  */
 const BLOCKQUOTE_PREFIX = "> *";
 const BLOCKQUOTE_INDENT = new RegExp(`^${BLOCKQUOTE_PREFIX}`, "gm");
-export const BLOCKQUOTE_RULE = new NamedRegExpMarkupRule<{ quote: string }>(
+export const BLOCKQUOTE_RULE = getNamedRegExpMarkupRule<{ quote: string }>(
 	getLineRegExp(`(?<quote>${BLOCKQUOTE_PREFIX}${LINE_REGEXP.source}(?:\n${BLOCKQUOTE_PREFIX}${LINE_REGEXP.source})*)`),
 	({ quote }) => ({
 		type: "blockquote",
@@ -130,9 +127,9 @@ export const BLOCKQUOTE_RULE = new NamedRegExpMarkupRule<{ quote: string }>(
 		ref: null,
 		$$typeof,
 		props: { children: quote.replace(BLOCKQUOTE_INDENT, "") },
+		context: "block",
 	}),
 	["block", "list"],
-	"block",
 );
 
 /**
@@ -142,7 +139,7 @@ export const BLOCKQUOTE_RULE = new NamedRegExpMarkupRule<{ quote: string }>(
  * - If there's no closing fence the code block will run to the end of the current string.
  * - Markdown-style four-space indent syntax is not supported (only fenced code, since it's easier to use).
  */
-export const FENCED_CODE_RULE = new NamedRegExpMarkupRule<{ wrap: string; title?: string; code: string }>(
+export const FENCED_CODE_RULE = getNamedRegExpMarkupRule<{ wrap: string; title?: string; code: string }>(
 	// Matcher has its own end that only stops when it reaches a matching closing fence or the end of the string.
 	getLineRegExp(`(?<wrap>\`{3,}|~{3,}) *(?<title>${LINE_REGEXP.source})\n(?<code>${BLOCK_REGEXP.source})`, `(?:\n\\k<wrap>|$)`) as NamedRegExp<{ wrap: string; title?: string; code: string }>,
 	({ title, code }) => ({
@@ -161,7 +158,6 @@ export const FENCED_CODE_RULE = new NamedRegExpMarkupRule<{ wrap: string; title?
 		},
 	}),
 	["block", "list"],
-	null,
 	10, // Higher priority than other blocks so e.g. lists inside fenced code don't become lists.
 );
 
@@ -169,7 +165,7 @@ export const FENCED_CODE_RULE = new NamedRegExpMarkupRule<{ wrap: string; title?
  * Paragraph.
  * - When ordering rules, paragraph should go after other "block" context elements (because it has a very generous capture).
  */
-export const PARAGRAPH_RULE = new NamedRegExpMarkupRule<{ paragraph: string }>(
+export const PARAGRAPH_RULE = getNamedRegExpMarkupRule<{ paragraph: string }>(
 	getBlockRegExp(`(?<paragraph>${BLOCK_REGEXP.source})`),
 	({ paragraph }) => ({
 		type: `p`,
@@ -177,20 +173,21 @@ export const PARAGRAPH_RULE = new NamedRegExpMarkupRule<{ paragraph: string }>(
 		ref: null,
 		$$typeof,
 		props: { children: paragraph.trim() },
+		context: "inline",
 	}),
 	["block"],
-	"inline",
 	-10, // Lower precedence than other blocks so it matches last and paragraphs can be broken by other blocks.
 );
 
 /** Render function for URL and LINK rules. */
-export function renderLinkRule({ href, title }: { title: string; href: string }, { rel }: MarkupOptions): JSXElement {
+export function renderLinkRule(title: string, href: string, { rel }: MarkupOptions) {
 	return {
 		type: "a",
 		key: null,
 		ref: null,
 		$$typeof,
 		props: { children: title, href, rel },
+		context: "link",
 	};
 }
 
@@ -201,11 +198,10 @@ export function renderLinkRule({ href, title }: { title: string; href: string },
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `options.schemes` will match (defaults to `http:` and `https:`).
  */
-export const URL_RULE = new LinkRegExpMarkupRule(
+export const URL_RULE = getLinkRegExpMarkupRule(
 	getRegExp(/(?<href>[a-z]+:[-$_@.&!*,=;/#?:%a-zA-Z0-9]+)(?: +(?:\((?<title>[^)]*?)\)))?/) as NamedRegExp<{ title?: string; href: string }>, //
 	renderLinkRule,
 	["inline", "list"],
-	"link",
 );
 
 /**
@@ -216,11 +212,10 @@ export const URL_RULE = new LinkRegExpMarkupRule(
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only `http://` or `https://` links will work (if invalid the unparsed text will be returned).
  */
-export const LINK_RULE = new LinkRegExpMarkupRule(
+export const LINK_RULE = getLinkRegExpMarkupRule(
 	getRegExp(/\[(?<title>[^\]]*?)\]\((?<href>[^)]*?)\)/) as NamedRegExp<{ title: string; href: string }>, //
 	renderLinkRule,
 	["inline", "list"],
-	"link",
 );
 
 /**
@@ -230,7 +225,7 @@ export const LINK_RULE = new LinkRegExpMarkupRule(
  * - Closing characters must exactly match opening characters.
  * - Same as Markdown syntax.
  */
-export const CODE_RULE = new NamedRegExpMarkupRule(
+export const CODE_RULE = getNamedRegExpMarkupRule(
 	new RegExp(`(?<wrap>\`+)(?<code>${BLOCK_REGEXP.source})\\k<wrap>`) as NamedRegExp<{ code: string }>,
 	({ code }) => ({
 		type: "code",
@@ -240,7 +235,6 @@ export const CODE_RULE = new NamedRegExpMarkupRule(
 		props: { children: code },
 	}),
 	["inline", "list"],
-	null,
 	10, // Higher priority than e.g. `strong` or `em` (from CommonMark spec: "Code span backticks have higher precedence than any other inline constructs except HTML tags and autolinks.")
 );
 
@@ -258,7 +252,7 @@ export const CODE_RULE = new NamedRegExpMarkupRule(
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
 const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", "_": "em", "=": "mark", ":": "mark" }; // Hyphen must be first so it works when we use the keys as a character class.
-export const INLINE_RULE = new NamedRegExpMarkupRule(
+export const INLINE_RULE = getNamedRegExpMarkupRule(
 	new WordRegExp(`(?<wrap>(?<char>[${Object.keys(INLINE_CHARS).join("")}])+)(?<text>(?!\\k<char>)\\S|(?!\\k<char>)\\S[\\s\\S]*?(?!\\k<char>)\\S)\\k<wrap>`) as NamedRegExp<{ char: keyof typeof INLINE_CHARS; wrap: string; text: string }>, // prettier-ignore
 	({ char, text }) => ({
 		type: INLINE_CHARS[char],
@@ -266,9 +260,9 @@ export const INLINE_RULE = new NamedRegExpMarkupRule(
 		ref: null,
 		$$typeof,
 		props: { children: text },
+		context: "inline",
 	}),
 	["inline", "list", "link"],
-	"inline",
 );
 
 /**
@@ -279,7 +273,7 @@ export const INLINE_RULE = new NamedRegExpMarkupRule(
  *   - This is more intuitive (a linebreak becomes a linebreak is isn't silently ignored).
  *   - This works better with textareas that wrap text (since manually breaking up long lines is no longer necessary).
  */
-export const LINEBREAK_RULE = new RegExpMarkupRule(
+export const LINEBREAK_RULE = getRegExpMarkupRule(
 	/\n/,
 	() => ({
 		type: "br",
@@ -289,7 +283,6 @@ export const LINEBREAK_RULE = new RegExpMarkupRule(
 		props: {},
 	}),
 	["inline", "list", "link"],
-	"inline",
 );
 
 /**
