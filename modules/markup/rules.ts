@@ -4,7 +4,7 @@ import type { JSXElement } from "../util/jsx.js";
 import type { NamedRegExp } from "../util/regexp.js";
 import { getRegExp } from "../util/regexp.js";
 import { BLOCK_REGEXP, LINE_REGEXP, WordRegExp, getBlockRegExp, getLineRegExp } from "./regexp.js";
-import { getLinkMarkupRule, getNamedMarkupRule, getMarkupRule } from "./rule.js";
+import { getLinkMarkupRule, getMarkupRule, getNamedMarkupRule } from "./rule.js";
 
 /** React security symbol — see https://github.com/facebook/react/pull/4832 */
 const $$typeof = Symbol.for("react.element");
