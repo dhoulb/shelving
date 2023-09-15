@@ -98,13 +98,22 @@ export const roundNumber = (num: number, precision = 0): number => Math.round(nu
  */
 export const truncateNumber = (num: number, precision = 0): number => Math.trunc(num * 10 ** precision) / 10 ** precision;
 
-/** Bound a number so it fits between two values. */
+/**
+ * Bound a number between two values.
+ * - e.g. `12` bounded by `2` and `8` is `8`
+ */
 export function boundNumber(num: number, min: number, max: number): number {
 	assertMin(max, min); // Assert that max is more than min.
 	return Math.max(min, Math.min(max, num));
 }
 
-/** Wrap a number so it fits between two values. */
+/**
+ * Wrap a number between two values.
+ * - Numbers wrap around between min and max (like a clock).
+ * - e.g. `12` bounded by `2` and `8` is `6`
+ * - Words in both directions.
+ * - e.g. `-2` bounded by `2` and `8` is `4`
+ */
 export function wrapNumber(num: number, min: number, max: number): number {
 	assertMin(max, min); // Assert that max is more than min.
 	if (num >= max) return ((num - max) % (max - min)) + min;

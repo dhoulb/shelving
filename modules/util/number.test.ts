@@ -15,6 +15,8 @@ test("boundNumber()", () => {
 });
 test("wrapNumber()", () => {
 	// Wrapping needed.
+	expect(wrapNumber(12, 2, 8)).toBe(6);
+	expect(wrapNumber(-2, 2, 8)).toBe(4);
 	expect(wrapNumber(-180, 0, 360)).toBe(180);
 	expect(wrapNumber(-40, 0, 60)).toBe(20);
 	expect(wrapNumber(100, 0, 60)).toBe(40);
