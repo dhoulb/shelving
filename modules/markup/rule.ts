@@ -33,7 +33,7 @@ export interface MarkupRule {
 	match(input: string, options: MarkupOptions): MarkupElement | undefined;
 }
 
-export function getRegExpMarkupRule<T extends string = string>(
+export function getMarkupRule<T extends string = string>(
 	regexp: TypedRegExp<T>, //
 	render: (props: TypedRegExpExecArray<T>, options: MarkupOptions) => JSXElement,
 	contexts: ImmutableArray<string>,
@@ -56,7 +56,7 @@ export function getRegExpMarkupRule<T extends string = string>(
 	};
 }
 
-export function getNamedRegExpMarkupRule<T extends NamedRegExpData>(
+export function getNamedMarkupRule<T extends NamedRegExpData>(
 	regexp: NamedRegExp<T>, //
 	render: (data: T, options: MarkupOptions) => JSXElement,
 	contexts: ImmutableArray<string>,
@@ -80,7 +80,7 @@ export function getNamedRegExpMarkupRule<T extends NamedRegExpData>(
 	};
 }
 
-export function getLinkRegExpMarkupRule(
+export function getLinkMarkupRule(
 	regexp: NamedRegExp<{ title?: string; href: string }>, //
 	render: (title: string, href: string, options: MarkupOptions) => JSXElement,
 	contexts: ImmutableArray<string>,
