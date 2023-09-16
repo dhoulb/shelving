@@ -33,77 +33,71 @@ export interface MarkupRule {
 	match(input: string, options: MarkupOptions): MarkupElement | undefined;
 }
 
-export function getMarkupRule<T extends string = string>(
-	regexp: TypedRegExp<T>, //
-	render: (props: TypedRegExpExecArray<T>, options: MarkupOptions) => JSXElement,
-	contexts: ImmutableArray<string>,
-	priority?: number,
-): MarkupRule & { regexp: TypedRegExp<T> } {
-	return {
-		regexp,
-		match(input: string, options): MarkupElement | undefined {
-			const match = regexp.exec(input);
-			if (match) {
-				const {
-					index,
-					0: { length },
-				} = match;
-				return { index, length, ...render(match, options) };
-			}
-		},
-		contexts,
-		priority,
-	};
+export class RegExpMarkupRule<T extends string = string> implements MarkupRule {
+	constructor(
+		readonly regexp: TypedRegExp<T>, //
+		readonly render: (props: TypedRegExpExecArray<T>, options: MarkupOptions) => JSXElement,
+		readonly contexts: ImmutableArray<string>,
+		readonly priority?: number,
+	) {
+		//
+	}
+	match(input: string, options: MarkupOptions): MarkupElement | undefined {
+		const match = this.regexp.exec(input);
+		if (match) {
+			const {
+				index,
+				0: { length },
+			} = match;
+			return { index, length, ...this.render(match, options) };
+		}
+	}
 }
 
-export function getNamedMarkupRule<T extends NamedRegExpData>(
-	regexp: NamedRegExp<T>, //
-	render: (data: T, options: MarkupOptions) => JSXElement,
-	contexts: ImmutableArray<string>,
-	priority?: number,
-): MarkupRule & { regexp: NamedRegExp<T> } {
-	return {
-		regexp,
-		match(input: string, options): MarkupElement | undefined {
-			const match = regexp.exec(input);
-			if (match) {
-				const {
-					index,
-					0: { length },
-					groups,
-				} = match;
-				return { index, length, ...render(groups, options) };
-			}
-		},
-		contexts,
-		priority,
-	};
+export class NamedRegExpMarkupRule<T extends NamedRegExpData> implements MarkupRule {
+	constructor(
+		readonly regexp: NamedRegExp<T>, //
+		readonly render: (data: T, options: MarkupOptions) => JSXElement,
+		readonly contexts: ImmutableArray<string>,
+		readonly priority?: number,
+	) {
+		//
+	}
+	match(input: string, options: MarkupOptions): MarkupElement | undefined {
+		const match = this.regexp.exec(input);
+		if (match) {
+			const {
+				index,
+				0: { length },
+				groups,
+			} = match;
+			return { index, length, ...this.render(groups, options) };
+		}
+	}
 }
 
-export function getLinkMarkupRule(
-	regexp: NamedRegExp<{ title?: string; href: string }>, //
-	render: (title: string, href: string, options: MarkupOptions) => JSXElement,
-	contexts: ImmutableArray<string>,
-	priority?: number,
-): MarkupRule & { regexp: NamedRegExp<{ title?: string; href: string }> } {
-	return {
-		regexp,
-		match(input: string, options: MarkupOptions): MarkupElement | undefined {
-			const match = this.regexp.exec(input);
-			if (match) {
-				const { schemes, url: base } = options;
-				const {
-					0: { length },
-					index,
-					groups: { href, title },
-				} = match;
-				const url = getOptionalURL(href, base);
-				if (url && schemes.includes(url.protocol)) return { index, length, ...render(title?.trim() || formatURL(url), url.href, options) };
-			}
-		},
-		contexts,
-		priority,
-	};
+export class LinkRegExpMarkupRule implements MarkupRule {
+	constructor(
+		readonly regexp: NamedRegExp<{ title?: string; href: string }>, //
+		readonly render: (title: string, href: string, options: MarkupOptions) => JSXElement,
+		readonly contexts: ImmutableArray<string>,
+		readonly priority?: number,
+	) {
+		//
+	}
+	match(input: string, options: MarkupOptions): MarkupElement | undefined {
+		const match = this.regexp.exec(input);
+		if (match) {
+			const { schemes, url: base } = options;
+			const {
+				0: { length },
+				index,
+				groups: { href, title },
+			} = match;
+			const url = getOptionalURL(href, base);
+			if (url && schemes.includes(url.protocol)) return { index, length, ...this.render(title?.trim() || formatURL(url), url.href, options) };
+		}
+	}
 }
 
 export type MarkupRules = MarkupRule[];
