@@ -1,5 +1,4 @@
 import type { Deferred } from "../util/async.js";
-import type { ErrorCallback, ValueCallback } from "../util/callback.js";
 import { getDeferred } from "../util/async.js";
 import { AbstractSequence } from "./AbstractSequence.js";
 
@@ -25,23 +24,23 @@ export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> 
 	}
 
 	/** Resolve the current deferred in the sequence. */
-	readonly resolve: ValueCallback<T> = value => {
+	resolve(value: T): void {
 		this._nextValue = value;
 		this._nextReason = _NOVALUE;
-		queueMicrotask(this._fulfill);
-	};
+		queueMicrotask(() => this._fulfill());
+	}
 	private _nextValue: T | typeof _NOVALUE = _NOVALUE;
 
 	/** Reject the current deferred in the sequence. */
-	readonly reject: ErrorCallback = reason => {
+	reject(reason: unknown): void {
 		this._nextValue = _NOVALUE;
 		this._nextReason = reason;
-		queueMicrotask(this._fulfill);
-	};
+		queueMicrotask(() => this._fulfill());
+	}
 	private _nextReason: unknown = _NOVALUE;
 
 	/** Fulfill the current deferred by resolving or rejecting it. */
-	private readonly _fulfill = () => {
+	private _fulfill() {
 		const { _deferred, _nextReason, _nextValue } = this;
 		this._deferred = undefined;
 		this._nextReason = _NOVALUE;
@@ -50,7 +49,7 @@ export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> 
 			if (_nextReason !== _NOVALUE) _deferred.reject(_nextReason);
 			else if (_nextValue !== _NOVALUE) _deferred.resolve(_nextValue);
 		}
-	};
+	}
 
 	// Implement `AsyncIterator`
 	async next(): Promise<IteratorResult<T, void>> {
