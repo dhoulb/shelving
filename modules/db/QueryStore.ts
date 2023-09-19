@@ -3,17 +3,17 @@ import type { StopCallback } from "../util/callback.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
 import { BooleanStore } from "../store/BooleanStore.js";
-import { Store } from "../store/Store.js";
+import { LazyStore } from "../store/LazyStore.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
-import { call } from "../util/callback.js";
 import { NONE } from "../util/constants.js";
+import { BLACKHOLE } from "../util/function.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { runSequence } from "../util/sequence.js";
 import { getOptionalSource } from "../util/source.js";
 import { CacheProvider } from "./CacheProvider.js";
 
 /** Store a set of multiple items. */
-export class QueryStore<T extends Database, K extends DataKey<T>> extends Store<Items<T[K]>> implements Iterable<Item<T[K]>> {
+export class QueryStore<T extends Database, K extends DataKey<T>> extends LazyStore<Items<T[K]>> implements Iterable<Item<T[K]>> {
 	readonly provider: AbstractProvider<T>;
 	readonly collection: K;
 	readonly query: ItemQuery<T[K]>;
@@ -57,10 +57,10 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends Store<
 	}
 
 	constructor(provider: AbstractProvider<T>, collection: K, query: ItemQuery<T[K]>) {
-		const memory = getOptionalSource<CacheProvider<T>>(CacheProvider, provider)?.memory;
-		const time = memory?.getQueryTime(collection, query);
-		const value = memory?.getQuery(collection, query) || NONE; // Always use any matching items currently in the memory store (this might update when we call `refresh()` below).
-		super(value, time);
+		const cache = getOptionalSource<CacheProvider<T>>(CacheProvider, provider);
+		const time = cache?.getCachedQueryTime(collection, query);
+		const value = cache?.getCachedQuery(collection, query) || NONE; // Always use any matching items currently in the cache (this might update when we call `refresh()` below).
+		super(store => (cache ? runSequence(store.through(cache.getCachedQuerySequence(collection, query))) : BLACKHOLE), value, time);
 		this.provider = provider;
 		this.collection = collection;
 		this.query = query;
@@ -119,37 +119,6 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends Store<
 		} finally {
 			this.busy.value = false;
 		}
-	}
-
-	// Override to subscribe to `MemoryProvider` while things are iterating over this store.
-	override async *[Symbol.asyncIterator](): AsyncGenerator<Items<T[K]>, void, void> {
-		this.start();
-		this._iterating++;
-		try {
-			yield* super[Symbol.asyncIterator]();
-		} finally {
-			this._iterating--;
-			if (this._iterating < 1) this.stop();
-		}
-	}
-	private _iterating = 0;
-
-	/** Start subscription to `MemoryProvider` if there is one. */
-	start() {
-		if (!this._stop) {
-			const table = getOptionalSource<CacheProvider<T>>(CacheProvider, this.provider)?.memory.getTable(this.collection);
-			if (table) this._stop = runSequence(this.through(table.getCachedQuerySequence(this.query)));
-		}
-	}
-	/** Stop subscription to `MemoryProvider` if there is one. */
-	stop() {
-		if (this._stop) this._stop = void call(this._stop);
-	}
-	private _stop: StopCallback | undefined = undefined;
-
-	// Implement `Disposable`
-	[Symbol.dispose](): void {
-		this.stop();
 	}
 
 	// Implement `Iteratable`
