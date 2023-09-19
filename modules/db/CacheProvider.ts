@@ -21,6 +21,15 @@ export class CacheProvider<T extends Database> implements AsyncProvider<T>, Sour
 	getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>> {
 		return this.memory.setItemSequence(collection, id, this.source.getItemSequence(collection, id));
 	}
+	getCachedItem<K extends DataKey<T>>(collection: K, id: string): OptionalItem<T[K]> {
+		return this.memory.getItem(collection, id);
+	}
+	getCachedItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>> {
+		return this.memory.getItemSequence(collection, id);
+	}
+	getCachedItemTime<K extends DataKey<T>>(collection: K, id: string): number | undefined {
+		return this.memory.getItemTime(collection, id);
+	}
 	async addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
 		const id = await this.source.addItem(collection, data);
 		this.memory.setItem(collection, id, data);
@@ -48,6 +57,15 @@ export class CacheProvider<T extends Database> implements AsyncProvider<T>, Sour
 	}
 	getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
 		return this.memory.setItemsSequence(collection, this.source.getQuerySequence(collection, query), query);
+	}
+	getCachedQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Items<T[K]> {
+		return this.memory.getQuery(collection, query);
+	}
+	getCachedQuerySequence<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
+		return this.memory.getQuerySequence(collection, query);
+	}
+	getCachedQueryTime<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): number | undefined {
+		return this.memory.getQueryTime(collection, query);
 	}
 	async setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): Promise<void> {
 		await this.source.setQuery(collection, query, data);

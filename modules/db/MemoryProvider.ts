@@ -37,6 +37,10 @@ export class MemoryProvider<T extends Database> implements Provider<T> {
 		return this.getTable(collection).getItemSequence(id);
 	}
 
+	getCachedItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>> {
+		return this.getTable(collection).getCachedItemSequence(id);
+	}
+
 	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
 		return this.getTable(collection).addItem(data);
 	}
@@ -71,6 +75,10 @@ export class MemoryProvider<T extends Database> implements Provider<T> {
 
 	getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
 		return this.getTable(collection).getQuerySequence(query);
+	}
+
+	getCachedQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
+		return this.getTable(collection).getCachedQuerySequence(query);
 	}
 
 	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): void {
