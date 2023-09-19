@@ -89,7 +89,7 @@ export class FirestoreServerProvider<T extends Database> implements AsyncProvide
 		return new LazyDeferredSequence(sequence =>
 			ref.onSnapshot(
 				snapshot => sequence.resolve(_getOptionalItem(snapshot)), //
-				sequence.reject,
+				reason => sequence.reject(reason),
 			),
 		);
 	}
@@ -124,7 +124,7 @@ export class FirestoreServerProvider<T extends Database> implements AsyncProvide
 		return new LazyDeferredSequence(sequence =>
 			ref.onSnapshot(
 				snapshot => sequence.resolve(_getItemArray(snapshot)), //
-				sequence.reject,
+				reason => sequence.reject(reason),
 			),
 		);
 	}
