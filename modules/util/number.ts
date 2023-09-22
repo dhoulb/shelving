@@ -128,10 +128,10 @@ export interface NumberOptions extends Intl.NumberFormatOptions {
 }
 
 /** Format a number (based on the user's browser language settings). */
-export function formatNumber(num: number, options: NumberOptions = { maximumFractionDigits: 2 }): string {
+export function formatNumber(num: number, options?: NumberOptions): string {
 	if (Number.isNaN(num)) return "None";
 	if (!Number.isFinite(num)) return "∞";
-	return new Intl.NumberFormat(undefined, options as Intl.NumberFormatOptions | undefined).format(num);
+	return new Intl.NumberFormat(undefined, options).format(num);
 }
 
 /** Format a number range (based on the user's browser language settings). */
