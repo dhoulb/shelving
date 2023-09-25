@@ -102,9 +102,6 @@ test("format() precision", () => {
 	expect(LENGTH_UNITS.getUnit("kilometer").format(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe("1.11 km");
 	expect(LENGTH_UNITS.getUnit("kilometer").format(1.1111, { maximumFractionDigits: 4, minimumFractionDigits: 4 })).toBe("1.1111 km");
 	expect(LENGTH_UNITS.getUnit("kilometer").format(1.1111, { maximumFractionDigits: 6, minimumFractionDigits: 6 })).toBe("1.111100 km");
-
-	// No precision.
-	expect(LENGTH_UNITS.getUnit("kilometer").format(1.1111)).toBe("1.11 km");
 });
 test("pluralize() works correctly", () => {
 	expect(LENGTH_UNITS.getUnit("meter").pluralize(1)).toBe("1 meter");

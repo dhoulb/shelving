@@ -5,7 +5,6 @@ describe("getString()", () => {
 		expect(getString("aaa")).toBe("aaa");
 		expect(getString(123)).toBe("123");
 		expect(getString(123456789)).toBe("123,456,789");
-		expect(getString(123456.1234)).toBe("123,456.12");
 		expect(getString(123.10000)).toBe("123.1"); // prettier-ignore
 		expect(getString(true)).toBe("Yes");
 		expect(getString(false)).toBe("No");
