@@ -44,7 +44,7 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends LazySto
 		this.id = id;
 
 		// Start loading the value from the provider if it doesn't exist.
-		if (this.loading) this.refresh();
+		if (time === null) this.refresh();
 	}
 
 	/** Refresh this store from the source provider. */
