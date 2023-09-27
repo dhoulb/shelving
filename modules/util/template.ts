@@ -44,8 +44,10 @@ const TEMPLATE_CACHE = new Map<string, TemplateChunks>();
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of strings alternating separator and placeholder.
  */
-const _splitTemplate = (template: string): TemplateChunks => TEMPLATE_CACHE.get(template) || setMapItem(TEMPLATE_CACHE, template, _split(template));
-const _split = (template: string): TemplateChunks => {
+function _splitTemplate(template: string): TemplateChunks {
+	return TEMPLATE_CACHE.get(template) || setMapItem(TEMPLATE_CACHE, template, _split(template));
+}
+function _split(template: string): TemplateChunks {
 	const matches = template.split(R_PLACEHOLDERS);
 	let asterisks = 0;
 	const chunks: TemplateChunk[] = [];
@@ -58,7 +60,7 @@ const _split = (template: string): TemplateChunks => {
 		chunks.push({ pre, placeholder, name, post });
 	}
 	return chunks;
-};
+}
 
 /**
  * Get list of placeholders named in a template string.
@@ -66,8 +68,12 @@ const _split = (template: string): TemplateChunks => {
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of clean string names of found placeholders, e.g. `["name", "country", "city"]`
  */
-export const getPlaceholders = (template: string): readonly string[] => _splitTemplate(template).map(_getPlaceholder);
-const _getPlaceholder = ({ name }: TemplateChunk): string => name;
+export function getPlaceholders(template: string): readonly string[] {
+	return _splitTemplate(template).map(_getPlaceholder);
+}
+function _getPlaceholder({ name }: TemplateChunk): string {
+	return name;
+}
 
 /**
  * Match a template against a target string.
@@ -123,14 +129,14 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  *
  * @throws {ReferenceError} If a placeholder in the template string is not specified in values.
  */
-export const renderTemplate = (template: string, value: PlaceholderValues): string => {
+export function renderTemplate(template: string, value: PlaceholderValues): string {
 	const chunks = _splitTemplate(template);
 	if (!chunks.length) return template;
 	let output = template;
 	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replace(name, value));
 	return output;
-};
-const _replace = (name: string, value: PlaceholderValues): string => {
+}
+function _replace(name: string, value: PlaceholderValues): string {
 	if (typeof value === "string") return value;
 	if (typeof value === "function") return value(name);
 	if (isObject(value)) {
@@ -138,4 +144,4 @@ const _replace = (name: string, value: PlaceholderValues): string => {
 		if (typeof v === "string") return v;
 	}
 	throw new ReferenceError(`Template "value.${name}" must be defined`);
-};
+}
