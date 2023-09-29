@@ -6,3 +6,4 @@ export * from "./useLazy.js";
 export * from "./useReduce.js";
 export * from "./useSequence.js";
 export * from "./useStore.js";
+export * from "./useMount.js";
