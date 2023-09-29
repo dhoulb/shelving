@@ -3,7 +3,7 @@ import type { Arguments } from "./function.js";
 import { call } from "./callback.js";
 
 /** Callback function that starts something with multiple values and returns an optional stop callback. */
-export type Start<T extends Arguments = []> = (...values: T) => Stop | undefined;
+export type Start<T extends Arguments = []> = (...values: T) => Stop | void;
 
 /** Callback function that stops something. */
 export type Stop = () => void;
