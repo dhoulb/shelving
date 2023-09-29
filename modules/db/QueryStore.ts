@@ -1,7 +1,7 @@
 import type { AbstractProvider } from "./Provider.js";
-import type { StopCallback } from "../util/callback.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
+import type { Stop } from "../util/start.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { LazyStore } from "../store/LazyStore.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
@@ -94,7 +94,7 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends LazySt
 	}
 
 	/** Subscribe this store to a provider. */
-	connect(provider: AbstractProvider<T> = this.provider): StopCallback {
+	connect(provider: AbstractProvider<T> = this.provider): Stop {
 		return runSequence(this.through(provider.getQuerySequence(this.collection, this.query)));
 	}
 

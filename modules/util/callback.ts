@@ -20,15 +20,6 @@ export type ValuesCallback<T extends Arguments = []> = (...values: T) => void;
 /** Callback function that receives multiple values and possibly returns a promise that must be handled. */
 export type AsyncValuesCallback<T extends Arguments = []> = (...values: T) => void | PromiseLike<void>;
 
-/** Callback function that handles an error. */
-export type ErrorCallback = (reason: unknown) => void;
-
-/** Callback function that starts something (and returns an optional stop callback). */
-export type StartCallback<T> = (value: T) => StopCallback;
-
-/** Callback function that stops something. */
-export type StopCallback = () => void;
-
 /** Safely call a callback function (possibly with a value). */
 export function call<A extends Arguments = []>(callback: (...v: A) => unknown, ...values: A): void {
 	try {

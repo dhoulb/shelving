@@ -1,5 +1,6 @@
-/** Handle an error by logging it to the console. */
-import type { ErrorCallback } from "./callback.js";
+/** Callback function that reports an error. */
+export type Report = (reason: unknown) => void;
 
+/** Log an error to the console. */
 // eslint-disable-next-line no-console
-export const logError: ErrorCallback = reason => console.error(reason);
+export const logError: Report = reason => console.error(reason);

@@ -18,6 +18,7 @@ export * from "./equal.js";
 export * from "./error.js";
 export * from "./focus.js";
 export * from "./function.js";
+export * from "./start.js";
 export * from "./hash.js";
 export * from "./hydrate.js";
 export * from "./item.js";

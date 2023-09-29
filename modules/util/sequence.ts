@@ -1,4 +1,6 @@
-import type { AsyncValueCallback, ErrorCallback, StopCallback, ValueCallback } from "./callback.js";
+import type { AsyncValueCallback, ValueCallback } from "./callback.js";
+import type { Report } from "./error.js";
+import type { Stop } from "./start.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { getDeferred, getDelay } from "./async.js";
 import { call, callMethod } from "./callback.js";
@@ -51,12 +53,12 @@ export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
 }
 
 /** Pull values from a sequence until the returned function is called. */
-export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError?: ErrorCallback): StopCallback {
+export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError?: Report): Stop {
 	const { promise, resolve } = getDeferred<void>();
 	void _runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError);
 	return resolve;
 }
-async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<void>, onNext?: ValueCallback<T>, onError?: ErrorCallback): Promise<unknown> {
+async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<void>, onNext?: ValueCallback<T>, onError?: Report): Promise<unknown> {
 	try {
 		const result = await Promise.race([stopped, sequence.next()]);
 		if (!result) {
