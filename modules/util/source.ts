@@ -10,12 +10,11 @@ export interface Sourceable<T> {
 /**
  * Recurse through `Sourceable` objects and return the first one that is an instance of `type`, or `null` if no source object matches.
  */
-export function getOptionalSource<T>(type: Class<T>, value: unknown): T | null {
+export function getOptionalSource<T>(type: Class<T>, value: unknown): T | undefined {
 	if (isObject(value)) {
 		if (value instanceof type) return value as unknown as T;
 		if ("source" in value) return getOptionalSource(type, value.source);
 	}
-	return null;
 }
 
 /**
