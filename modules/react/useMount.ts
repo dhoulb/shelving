@@ -15,8 +15,8 @@ export function useMount<T extends Element, A extends Arguments = []>(start: Sta
 		starter: new Starter(start),
 		ref(next: T | null) {
 			if (internals.current !== next) {
-				internals.starter.stop();
 				internals.current = next;
+				internals.starter.stop();
 				if (internals.current) internals.starter.start(internals.current, ...internals.args);
 			}
 		},
