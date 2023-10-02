@@ -1,23 +1,30 @@
+import type { Arguments } from "../util/function.js";
 import { useRef } from "react";
+import { isArrayEqual } from "../util/equal.js";
 import { type Start, Starter } from "../util/start.js";
 
-/**
- * Call a `StartCallback` when an element is mounted, and the returned `StopCallback` when it's unmounted again.
- * - Takes care of state so `start()` won't be called twice for the same element.
- * - Returns a `RefCallback` which should be set as `ref={ref}` on the target element.
- */
-export function useMount<T extends Element>(start: Start<[T]>): React.RefCallback<T> {
-	const ref = useRef<React.RefCallback<T>>();
-	if (!ref.current) {
-		let current: T | null;
-		const starter = new Starter(start);
-		ref.current = (next: T | null) => {
-			if (current !== next) {
-				starter.stop();
-				current = next;
-				if (current) starter.start(current);
+export function useMount<T extends Element, A extends Arguments = []>(start: Start<[T, ...A]>, ...args: A): React.RefCallback<T> {
+	const internals = (useRef<{
+		args: A;
+		current: T | null;
+		readonly starter: Starter<[T, ...A]>;
+		readonly ref: React.RefCallback<T>;
+	}>().current ||= {
+		args,
+		current: null,
+		starter: new Starter(start),
+		ref(next: T | null) {
+			if (internals.current !== next) {
+				internals.starter.stop();
+				internals.current = next;
+				if (internals.current) internals.starter.start(internals.current, ...internals.args);
 			}
-		};
+		},
+	});
+	if (!isArrayEqual<A>(args, internals.args)) {
+		internals.args = args;
+		internals.starter.stop();
+		if (internals.current) internals.starter.start(internals.current, ...internals.args);
 	}
-	return ref.current;
+	return internals.ref;
 }
