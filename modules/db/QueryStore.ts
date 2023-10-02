@@ -1,3 +1,4 @@
+import type { MemoryProvider } from "./MemoryProvider.js";
 import type { AbstractProvider } from "./Provider.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
@@ -6,11 +7,8 @@ import { BooleanStore } from "../store/BooleanStore.js";
 import { LazyStore } from "../store/LazyStore.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
 import { NONE } from "../util/constants.js";
-import { BLACKHOLE } from "../util/function.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { runSequence } from "../util/sequence.js";
-import { getOptionalSource } from "../util/source.js";
-import { CacheProvider } from "./CacheProvider.js";
 
 /** Store a set of multiple items. */
 export class QueryStore<T extends Database, K extends DataKey<T>> extends LazyStore<Items<T[K]>> implements Iterable<Item<T[K]>> {
@@ -56,18 +54,21 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends LazySt
 		return this.value.length;
 	}
 
-	constructor(provider: AbstractProvider<T>, collection: K, query: ItemQuery<T[K]>) {
-		const cache = getOptionalSource<CacheProvider<T>>(CacheProvider, provider);
-		const time = cache?.getCachedQueryTime(collection, query);
-		const value = cache?.getCachedQuery(collection, query) || NONE; // Always use any matching items currently in the cache (this might update when we call `refresh()` below).
-		super(store => (cache ? runSequence(store.through(cache.getCachedQuerySequence(collection, query))) : BLACKHOLE), value, time);
+	constructor(collection: K, query: ItemQuery<T[K]>, provider: AbstractProvider<T>, memory?: MemoryProvider<T>) {
+		const time = memory?.getQueryTime(collection, query);
+		const items = memory?.getQuery(collection, query) || [];
+		super(
+			store => memory && runSequence(store.through(memory.getCachedQuerySequence(collection, query))),
+			typeof time === "number" || items.length ? items : NONE, // Use the value if it was definitely cached or is not empty.
+			time,
+		);
 		this.provider = provider;
 		this.collection = collection;
 		this.query = query;
 		this.limit = getLimit(query) ?? Infinity;
 
-		// Start loading the value from the provider if it doesn't exist.
-		if (time === undefined) this.refresh();
+		// Start loading the value from the provider if it is not definitely cached.
+		if (typeof time !== "number") this.refresh();
 	}
 
 	/** Refresh this store from the source provider. */

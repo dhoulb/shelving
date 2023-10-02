@@ -1,3 +1,4 @@
+import type { MemoryProvider } from "./MemoryProvider.js";
 import type { AbstractProvider } from "./Provider.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, OptionalItem } from "../util/item.js";
@@ -5,12 +6,9 @@ import type { Stop } from "../util/start.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { LazyStore } from "../store/LazyStore.js";
 import { NONE } from "../util/constants.js";
-import { BLACKHOLE } from "../util/function.js";
 import { getItem } from "../util/item.js";
 import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
-import { getOptionalSource } from "../util/source.js";
-import { CacheProvider } from "./CacheProvider.js";
 
 /** Store a single item. */
 export class ItemStore<T extends Database, K extends DataKey<T>> extends LazyStore<OptionalItem<T[K]>> {
@@ -34,17 +32,20 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends LazySto
 		return !!this.value;
 	}
 
-	constructor(provider: AbstractProvider<T>, collection: K, id: string) {
-		const cache = getOptionalSource<CacheProvider<T>>(CacheProvider, provider);
-		const time = cache?.getCachedItemTime(collection, id);
-		const value = cache && typeof time === "number" ? cache.getCachedItem(collection, id) : NONE; // Use the value in the cache if it's cached, or use mark this store as loading otherwise (which will trigger `refresh()` below).
-		super(store => (cache ? runSequence(store.through(cache.getCachedItemSequence(collection, id))) : BLACKHOLE), value, time);
+	constructor(collection: K, id: string, provider: AbstractProvider<T>, memory?: MemoryProvider<T>) {
+		const time = memory?.getItemTime(collection, id);
+		const item = memory?.getItem(collection, id);
+		super(
+			store => memory && runSequence(store.through(memory.getCachedItemSequence(collection, id))),
+			typeof time === "number" || item ? item : NONE, // Use the cached value if it was definitely cached or is not undefined.
+			time,
+		);
 		this.provider = provider;
 		this.collection = collection;
 		this.id = id;
 
-		// Start loading the value from the provider if it doesn't exist.
-		if (time === undefined) this.refresh();
+		// Start loading the value from the provider if it wasn't cached.
+		if (typeof time !== "number") this.refresh();
 	}
 
 	/** Refresh this store from the source provider. */
