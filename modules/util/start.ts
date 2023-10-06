@@ -12,7 +12,7 @@ export type Stop = () => void;
  * Wrapper class to handle state on start/stop callback process.
  * - If process has already started, `starter.start()` won't be called twice (including if `start()` didn't return a `stop()` callback).
  */
-export class Starter<T extends Arguments = []> implements Disposable {
+export class Starter<T extends Arguments> implements Disposable {
 	private readonly _start: Start<T>;
 	private _stop: Stop | boolean = false;
 	constructor(start: Start<T>) {
@@ -30,4 +30,12 @@ export class Starter<T extends Arguments = []> implements Disposable {
 	[Symbol.dispose]() {
 		this.stop();
 	}
+}
+
+/** Something that can be made into a `Starter` */
+export type PossibleStarter<T extends Arguments> = Start<T> | Starter<T>;
+
+/** Get a `Starter` from a `PossibleStarter` */
+export function getStarter<T extends Arguments>(start: Start<T> | Starter<T>): Starter<T> {
+	return typeof start === "function" ? new Starter(start) : start;
 }
