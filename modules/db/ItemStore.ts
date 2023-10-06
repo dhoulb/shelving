@@ -4,14 +4,14 @@ import type { DataKey, Database } from "../util/data.js";
 import type { Item, OptionalItem } from "../util/item.js";
 import type { Stop } from "../util/start.js";
 import { BooleanStore } from "../store/BooleanStore.js";
-import { LazyStore } from "../store/LazyStore.js";
+import { Store } from "../store/Store.js";
 import { NONE } from "../util/constants.js";
 import { getItem } from "../util/item.js";
 import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Store a single item. */
-export class ItemStore<T extends Database, K extends DataKey<T>> extends LazyStore<OptionalItem<T[K]>> {
+export class ItemStore<T extends Database, K extends DataKey<T>> extends Store<OptionalItem<T[K]>> {
 	readonly provider: AbstractProvider<T>;
 	readonly collection: K;
 	readonly id: string;
@@ -36,9 +36,9 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends LazySto
 		const time = memory?.getItemTime(collection, id);
 		const item = memory?.getItem(collection, id);
 		super(
-			store => memory && runSequence(store.through(memory.getCachedItemSequence(collection, id))),
 			typeof time === "number" || item ? item : NONE, // Use the cached value if it was definitely cached or is not undefined.
 			time,
+			memory && (store => runSequence(store.through(memory.getCachedItemSequence(collection, id)))),
 		);
 		this.provider = provider;
 		this.collection = collection;

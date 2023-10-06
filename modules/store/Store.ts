@@ -1,5 +1,6 @@
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { NONE } from "../util/constants.js";
+import { type PossibleStarter, type Starter, getStarter } from "../util/start.js";
 
 /** Any `Store` instance. */
 export type AnyStore = Store<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -63,10 +64,13 @@ export class Store<T> implements AsyncIterable<T> {
 	}
 	private _reason: unknown = undefined;
 
+	private _starter: Starter<[this]> | undefined;
+
 	/** Store is initiated with an initial store. */
-	constructor(value: T | typeof NONE, time = Date.now()) {
+	constructor(value: T | typeof NONE, time = Date.now(), start?: PossibleStarter<[Store<T>]>) {
 		this._value = value;
 		this._time = time;
+		this._starter = start && getStarter(start);
 	}
 
 	/** Set the value of the store. */
@@ -86,7 +90,15 @@ export class Store<T> implements AsyncIterable<T> {
 	// Issues the current value of the store first, then any subsequent values that are issued.
 	async *[Symbol.asyncIterator](): AsyncGenerator<T, void, void> {
 		await Promise.resolve(); // Introduce a slight delay, i.e. don't immediately yield `this.value` in case it is changed synchronously.
-		if (!this.loading) yield this.value;
-		yield* this.next;
+		this._starter?.start(this);
+		this._iterating++;
+		try {
+			if (!this.loading) yield this.value;
+			yield* this.next;
+		} finally {
+			this._iterating--;
+			if (this._iterating < 1) this._starter?.stop();
+		}
 	}
+	private _iterating = 0;
 }

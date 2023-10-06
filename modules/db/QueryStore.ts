@@ -4,14 +4,14 @@ import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Stop } from "../util/start.js";
 import { BooleanStore } from "../store/BooleanStore.js";
-import { LazyStore } from "../store/LazyStore.js";
+import { Store } from "../store/Store.js";
 import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
 import { NONE } from "../util/constants.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Store a set of multiple items. */
-export class QueryStore<T extends Database, K extends DataKey<T>> extends LazyStore<Items<T[K]>> implements Iterable<Item<T[K]>> {
+export class QueryStore<T extends Database, K extends DataKey<T>> extends Store<Items<T[K]>> implements Iterable<Item<T[K]>> {
 	readonly provider: AbstractProvider<T>;
 	readonly collection: K;
 	readonly query: ItemQuery<T[K]>;
@@ -58,9 +58,9 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends LazySt
 		const time = memory?.getQueryTime(collection, query);
 		const items = memory?.getQuery(collection, query) || [];
 		super(
-			store => memory && runSequence(store.through(memory.getCachedQuerySequence(collection, query))),
 			typeof time === "number" || items.length ? items : NONE, // Use the value if it was definitely cached or is not empty.
 			time,
+			memory && (store => runSequence(store.through(memory.getCachedQuerySequence(collection, query)))),
 		);
 		this.provider = provider;
 		this.collection = collection;

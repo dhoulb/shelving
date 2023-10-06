@@ -1,4 +1,5 @@
 import type { DictionaryItem, ImmutableDictionary } from "../util/dictionary.js";
+import type { PossibleStarter } from "../util/start.js";
 import type { Updates } from "../util/update.js";
 import { getDictionaryItems, omitDictionaryItems } from "../util/dictionary.js";
 import { withProp } from "../util/object.js";
@@ -7,8 +8,8 @@ import { Store } from "./Store.js";
 
 /** Store a dictionary object. */
 export class DictionaryStore<T> extends Store<ImmutableDictionary<T>> implements Iterable<DictionaryItem<T>> {
-	constructor(value: ImmutableDictionary<T> = {}, time?: number) {
-		super(value, time);
+	constructor(value: ImmutableDictionary<T> = {}, time?: number, start?: PossibleStarter<[Store<ImmutableDictionary<T>>]>) {
+		super(value, time, start);
 	}
 
 	/** Get the length of the current value of this store. */
