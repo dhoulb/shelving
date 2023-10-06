@@ -109,7 +109,7 @@ export const sanitizeLines = (str: string): string =>
  * Simplify a string by removing anything that isn't a number, letter, or space.
  * - Used when you're running a query against a string entered by a user.
  *
- * @example normalizeString("Däve-is\nREALLY    éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
+ * @example simplifyString("Däve-is\nREALLY    éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
  *
  * @todo Convert letter-like characters (e.g. `ℝ`) to their ASCII equivalent (e.g. `R`).
  */
