@@ -10,16 +10,19 @@ export const HEX6_REGEXP = /^#?([0-F]{2})([0-F]{2})([0-F]{2})([0-F]{2})?$/i;
 
 /** Things that can be converted to a `Color` instance. */
 export type PossibleColor = Color | string;
-export type PossibleOptionalColor = PossibleColor | null;
 
 /** Represent a color. */
 export class Color {
-	/** Make a `Color` from a 3 or 6 or 8 byte hex string. */
-	static fromHex(str: string): Color | null {
-		const matches = (str.match(HEX3_REGEXP) || str.match(HEX6_REGEXP)) as [never, string, string, string, string | undefined] | undefined;
-		if (!matches) return null;
-		const [, r, g, b, a] = matches;
-		return new Color(_parse(r), _parse(g), _parse(b), typeof a === "string" ? _parse(a) : undefined);
+	/** Make a `Color` from an unknown value. */
+	static from(possible: unknown): Color | undefined {
+		if (isColor(possible)) return possible;
+		if (typeof possible === "string") {
+			const matches = (possible.match(HEX3_REGEXP) || possible.match(HEX6_REGEXP)) as [never, string, string, string, string | undefined] | undefined;
+			if (matches) {
+				const [, r, g, b, a] = matches;
+				return new Color(_parse(r), _parse(g), _parse(b), typeof a === "string" ? _parse(a) : undefined);
+			}
+		}
 	}
 
 	readonly r: number;
@@ -79,11 +82,9 @@ export function assertColor(value: unknown): asserts value is Color {
 	if (!isColor(value)) throw new AssertionError("Invalid color", value);
 }
 
-/** Convert a possible color to a `Color` instance or `null` */
-export function getOptionalColor(possible: unknown): Color | null {
-	if (isColor(possible)) return possible;
-	if (typeof possible === "string") return Color.fromHex(possible);
-	return null;
+/** Convert a possible color to a `Color` instance or `undefined` */
+export function getOptionalColor(possible: unknown): Color | undefined {
+	return Color.from(possible);
 }
 
 /** Convert a possible color to a `Color` instance */

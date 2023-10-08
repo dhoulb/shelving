@@ -39,20 +39,19 @@ export function assertMin(value: unknown, min: number): asserts value is number 
 }
 
 /**
- * Convert an unknown value to a finite number or `null`
- * - Note: numbers can be non-finite numbers like `NaN` or `Infinity`. These are detected and will always return `null`
+ * Convert an unknown value to a finite number or `undefined`
+ * - Note: numbers can be non-finite numbers like `NaN` or `Infinity`. These are detected and will always return `undefined`
  *
  * Conversion rules:
- * - Numbers (except `NaN` and `+Infinity` and `-Infinity`) return numbers.
+ * - Finite numbers return numbers.
  * - Strings are parsed as numbers.
- * - Dates return their milliseconds (e.g. `date.getTime()`)
- * - Everything else returns `null`
+ * - Dates return their milliseconds (e.g. `date.getTime()`).
+ * - Everything else returns `undefined`
  */
-export function getOptionalNumber(value: unknown): number | null {
-	if (typeof value === "number") return !Number.isFinite(value) ? null : value === 0 ? 0 : value;
+export function getOptionalNumber(value: unknown): number | undefined {
+	if (typeof value === "number" && Number.isFinite(value)) return value === 0 ? 0 : value; // Convert `-0` to `0`
 	else if (typeof value === "string") return getOptionalNumber(parseFloat(value.replace(NOT_NUMERIC_REGEXP, "")));
 	else if (value instanceof Date) return getOptionalNumber(value.getTime());
-	return null;
 }
 const NOT_NUMERIC_REGEXP = /[^0-9-.]/g;
 

@@ -91,13 +91,13 @@ describe("getOptionalNumber()", () => {
 		expect(getOptionalNumber("99999.99999")).toBe(99999.99999);
 		expect(getOptionalNumber("-99999.99999")).toBe(-99999.99999);
 	});
-	test("Empty string returns null", () => {
-		expect(getOptionalNumber("")).toBe(null);
+	test("Empty string returns undefined", () => {
+		expect(getOptionalNumber("")).toBe(undefined);
 	});
-	test("Non-numbers return null", () => {
-		expect(getOptionalNumber(".")).toBe(null);
-		expect(getOptionalNumber("a")).toBe(null);
-		expect(getOptionalNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(null);
+	test("Non-numbers return undefined", () => {
+		expect(getOptionalNumber(".")).toBe(undefined);
+		expect(getOptionalNumber("a")).toBe(undefined);
+		expect(getOptionalNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(undefined);
 	});
 });
 test("sumNumbers()", () => {

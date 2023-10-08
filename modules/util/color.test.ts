@@ -9,12 +9,12 @@ test("toColor(): colors", () => {
 	expect(getOptionalColor("ffffffff")).toBeInstanceOf(Color); // Can skip `#` hash.
 });
 test("toColor(): non-colors", () => {
-	expect(getOptionalColor("#f")).toEqual(null);
-	expect(getOptionalColor("#ff")).toEqual(null);
-	expect(getOptionalColor("#ffff")).toEqual(null);
-	expect(getOptionalColor("#fffff")).toEqual(null);
-	expect(getOptionalColor("#GGG")).toEqual(null);
-	expect(getOptionalColor("#GGGGGG")).toEqual(null);
+	expect(getOptionalColor("#f")).toBe(undefined);
+	expect(getOptionalColor("#ff")).toBe(undefined);
+	expect(getOptionalColor("#ffff")).toBe(undefined);
+	expect(getOptionalColor("#fffff")).toBe(undefined);
+	expect(getOptionalColor("#GGG")).toBe(undefined);
+	expect(getOptionalColor("#GGGGGG")).toBe(undefined);
 });
 test("getColor(): works correctly", () => {
 	expect(getColor("#00ccff")).toBeInstanceOf(Color);

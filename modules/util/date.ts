@@ -3,12 +3,9 @@ import { AssertionError } from "../error/AssertionError.js";
 /** Things that converted to dates. */
 export type PossibleDate = Date | number | string;
 
-/** Things that converted to dates or `null` */
-export type PossibleOptionalDate = Date | number | string | null;
-
 /** Is a value a date? */
 export function isDate(value: unknown): value is Date {
-	return value instanceof Date;
+	return value instanceof Date && Number.isFinite(value.getTime());
 }
 
 /** Assert that a value is a `Date` instance. */
@@ -22,7 +19,7 @@ export function assertDate(value: unknown): asserts value is Date {
  *
  * Conversion rules:
  * - `Date` instance returns unchanged (BUT if the date isn't valid, `null` is returned).
- * - `null` returns `null`
+ * - `null` or `""` empty string or the string `"none"` returns `undefined`
  * - `undefined` returns the current date (e.g. `new Date()`).
  * - The string `"now"` returns the current date (e.g. `new Date()`).
  * - The string `"today"` returns the current date at midnight (e.g. `getMidnight()`).
@@ -35,31 +32,29 @@ export function assertDate(value: unknown): asserts value is Date {
  * @param possible Any value that we want to parse as a valid date.
  * @returns `Date` instance if the value could be converted to a valid date, and `null` if not.
  */
-export function getOptionalDate(possible: unknown): Date | null {
-	if (possible === undefined || possible === "now") return new Date();
-	if (isDate(possible)) return _getValidDate(possible);
+export function getOptionalDate(possible: unknown = "now"): Date | undefined {
+	if (possible === null) return undefined;
+	if (possible === "now") return new Date();
 	if (possible === "today") return getMidnight();
 	if (possible === "tomorrow") return addDays(1, getMidnight());
 	if (possible === "yesterday") return addDays(-1, getMidnight());
-	if (possible === null || possible === "") return null; // We know empty string is always an invalid date.
-	if (typeof possible === "string" || typeof possible === "number") return _getValidDate(new Date(possible));
-	return null;
-}
-function _getValidDate(date: Date): Date | null {
-	return Number.isFinite(date.getTime()) ? date : null;
+	if (isDate(possible)) return possible;
+	if (typeof possible === "string" || typeof possible === "number") {
+		const date = new Date(possible);
+		if (Number.isFinite(date.getTime())) return date;
+	}
 }
 
 /** Convert a possible date to a `Date` instance, or throw `AssertionError` if it couldn't be converted. */
-export function getDate(possible: PossibleDate = "now"): Date {
+export function getDate(possible?: PossibleDate): Date {
 	const date = getOptionalDate(possible);
 	if (!date) throw new AssertionError(`Must be date`, possible);
 	return date;
 }
 
-/** Convert an unknown value to a timestamp (milliseconds past Unix epoch), or `null` if it couldn't be converted. */
-export function getOptionalTimestamp(possible: unknown): number | null {
-	const date = getOptionalDate(possible);
-	return date ? date.getTime() : null;
+/** Convert an unknown value to a timestamp (milliseconds past Unix epoch), or `undefined` if it couldn't be converted. */
+export function getOptionalTimestamp(possible: unknown): number | undefined {
+	return getOptionalDate(possible)?.getTime();
 }
 
 /** Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw `AssertionError` if it couldn't be converted. */
@@ -67,10 +62,10 @@ export function getTimestamp(possible?: PossibleDate): number {
 	return getDate(possible).getTime();
 }
 
-/** Convert an unknown value to a YMD date string like "2015-09-12", or `null` if it couldn't be converted. */
-export function getOptionalYMD(possible: unknown): string | null {
+/** Convert an unknown value to a YMD date string like "2015-09-12", or `undefined` if it couldn't be converted. */
+export function getOptionalYMD(possible: unknown): string | undefined {
 	const date = getOptionalDate(possible);
-	return date ? _ymd(date) : null;
+	if (date) return _ymd(date);
 }
 
 /** Convert a `Date` instance to a YMD string like "2015-09-12", or throw `AssertionError` if it couldn't be converted.  */
@@ -189,6 +184,6 @@ export function formatDate(date: PossibleDate): string {
 }
 
 /** Format an optional time as a string. */
-export function formatOptionalDate(date?: unknown): string | null {
-	return getOptionalDate(date)?.toLocaleDateString() || null;
+export function formatOptionalDate(date?: unknown): string | undefined {
+	return getOptionalDate(date)?.toLocaleDateString();
 }

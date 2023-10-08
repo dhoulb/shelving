@@ -1,5 +1,6 @@
 import type { SchemaOptions } from "./Schema.js";
-import type { PossibleOptionalTime, PossibleTime } from "../util/time.js";
+import type { Optional } from "../util/optional.js";
+import type { PossibleTime } from "../util/time.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { roundStep } from "../util/number.js";
 import { Time, getOptionalTime } from "../util/time.js";
@@ -9,21 +10,21 @@ import { Schema } from "./Schema.js";
 /** Allowed options for `TimeSchama` */
 export type TimeSchemaOptions = SchemaOptions & {
 	readonly value?: PossibleTime | undefined;
-	readonly min?: PossibleOptionalTime | undefined;
-	readonly max?: PossibleOptionalTime | undefined;
-	readonly step?: number | null | undefined;
+	readonly min?: Optional<PossibleTime> | undefined;
+	readonly max?: Optional<PossibleTime> | undefined;
+	readonly step?: number | undefined;
 };
 
 /** Define a valid time in 24h hh:mm:ss.fff format, e.g. `23:59` or `24:00 */
 export class TimeSchema extends Schema<string> {
 	declare readonly value: PossibleTime;
-	readonly min: Time | null;
-	readonly max: Time | null;
+	readonly min: Time | undefined;
+	readonly max: Time | undefined;
 	/**
 	 * Rounding step (in milliseconds, because that's the base unit for time), e.g. `60000` will round to the nearest second.
 	 * - Note: `<input type="time">` elements expect `step=""` to be  in _seconds_ so you need to multiply this by `1000`
 	 */
-	readonly step: number | null;
+	readonly step: number | undefined;
 	constructor(options: TimeSchemaOptions) {
 		super({ title: "Time", value: "now", ...options });
 		const { min = null, max = null, step = 60 } = options;

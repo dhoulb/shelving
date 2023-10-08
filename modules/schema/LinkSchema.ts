@@ -1,4 +1,5 @@
 import type { StringSchemaOptions } from "./StringSchema.js";
+import type { ImmutableArray } from "../util/array.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { getOptionalURL } from "../util/url.js";
 import { OPTIONAL } from "./OptionalSchema.js";
@@ -6,8 +7,8 @@ import { StringSchema } from "./StringSchema.js";
 
 /** Allowed options for `LinkSchema` */
 export type LinkSchemaOptions = Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline"> & {
-	readonly schemes?: string[] | undefined;
-	readonly hosts?: string[] | undefined;
+	readonly schemes?: ImmutableArray<string> | undefined;
+	readonly hosts?: ImmutableArray<string> | undefined;
 };
 
 /**
@@ -17,8 +18,8 @@ export type LinkSchemaOptions = Omit<StringSchemaOptions, "type" | "min" | "max"
  * - Falsy values are converted to `""` empty string.
  */
 export class LinkSchema extends StringSchema {
-	readonly schemes: string[];
-	readonly hosts: string[] | undefined;
+	readonly schemes: ImmutableArray<string>;
+	readonly hosts: ImmutableArray<string> | undefined;
 	constructor(options: LinkSchemaOptions) {
 		super({
 			title: "Link",

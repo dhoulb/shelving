@@ -121,24 +121,24 @@ export const simplifyString = (str: string) =>
 		.trim()
 		.toLowerCase();
 
-/** Convert a string to a `kebab-case` URL slug, or throw `AssertionError` */
-export const getOptionalSlug = (str: string): string | null => simplifyString(str).replace(/ /g, "-") || null;
+/** Convert a string to a `kebab-case` URL slug, or return `undefined` if conversion resulted in an empty ref. */
+export const getOptionalSlug = (str: string): string | undefined => simplifyString(str).replace(/ /g, "-") || undefined;
 
-/* Convert a string to a `kebab-case` URL slug, or throw `AssertionError` */
+/* Convert a string to a `kebab-case` URL slug, or throw `AssertionError` if conversion resulted in an empty ref. */
 export function getSlug(str: string): string {
 	const slug = getOptionalSlug(str);
 	if (slug) return slug;
-	throw new AssertionError(`String slug cannot be empty (received "${str}")`);
+	throw new AssertionError("Invalid slug", str);
 }
 
-/** Convert a string to a unique ref e.g. `abc123`, or `null` */
-export const getOptionalRef = (str: string): string | null => simplifyString(str).replace(/ /g, "") || null;
+/** Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty ref. */
+export const getOptionalRef = (str: string): string | undefined => simplifyString(str).replace(/ /g, "") || undefined;
 
-/** Convert a string to a unique ref e.g. `abc123`, or throw `AssertionError` */
+/** Convert a string to a unique ref e.g. `abc123`, or throw `AssertionError` if conversion resulted in an empty ref. */
 export function getRef(str: string): string {
 	const ref = getOptionalRef(str);
 	if (ref) return ref;
-	throw new AssertionError(`String ref cannot be empty (received "${str}")`);
+	throw new AssertionError("Invalid string ref", str);
 }
 
 /**

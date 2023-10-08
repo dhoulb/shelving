@@ -91,9 +91,9 @@ describe("options.max", () => {
 	});
 });
 describe("options.step", () => {
-	test("Defaults to null", () => {
+	test("Defaults to undefined", () => {
 		const schema = new NumberSchema({});
-		expect(schema.step).toBe(null);
+		expect(schema.step).toBe(undefined);
 	});
 	test("Numbers with step are rounded correctly", () => {
 		const schema1 = new NumberSchema({ step: 1 });

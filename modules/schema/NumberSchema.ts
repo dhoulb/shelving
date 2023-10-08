@@ -9,7 +9,7 @@ export type NumberSchemaOptions = SchemaOptions & {
 	readonly value?: number | undefined;
 	readonly min?: number | undefined;
 	readonly max?: number | undefined;
-	readonly step?: number | null | undefined;
+	readonly step?: number | undefined;
 };
 
 /** Schema that defines a valid number. */
@@ -17,10 +17,10 @@ export class NumberSchema extends Schema<number> {
 	declare readonly value: number;
 	readonly min: number;
 	readonly max: number;
-	readonly step: number | null;
+	readonly step: number | undefined;
 	constructor(options: NumberSchemaOptions) {
 		super({ title: "Number", value: 0, ...options });
-		const { min = -Infinity, max = Infinity, step = null } = options;
+		const { min = -Infinity, max = Infinity, step } = options;
 		this.min = min;
 		this.max = max;
 		this.step = step;

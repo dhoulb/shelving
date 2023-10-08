@@ -15,48 +15,49 @@ describe("toDate()", () => {
 		expect(getOptionalDate(0)).toBeInstanceOf(Date);
 		expect(getOptionalDate(new Date("0000-01-01").getTime())).toBeInstanceOf(Date);
 	});
-	test("toDate(): Parses invalid values to null", () => {
-		expect(getOptionalDate(null)).toBe(null);
-		expect(getOptionalDate("")).toBe(null);
-		expect(getOptionalDate(true)).toBe(null);
-		expect(getOptionalDate(false)).toBe(null);
-		expect(getOptionalDate(new Date(""))).toBe(null);
-		expect(getOptionalDate(() => null)).toBe(null);
-		expect(getOptionalDate(() => "")).toBe(null);
-		expect(getOptionalDate(() => true)).toBe(null);
-		expect(getOptionalDate(() => false)).toBe(null);
-		expect(getOptionalDate(() => new Date(""))).toBe(null);
+	test("toDate(): Parses invalid values to undefined", () => {
+		expect(getOptionalDate(null)).toBe(undefined);
+		expect(getOptionalDate("")).toBe(undefined);
+		expect(getOptionalDate(true)).toBe(undefined);
+		expect(getOptionalDate(false)).toBe(undefined);
+		expect(getOptionalDate(new Date(""))).toBe(undefined);
+		expect(getOptionalDate(() => null)).toBe(undefined);
+		expect(getOptionalDate(() => "")).toBe(undefined);
+		expect(getOptionalDate(() => true)).toBe(undefined);
+		expect(getOptionalDate(() => false)).toBe(undefined);
+		expect(getOptionalDate(() => new Date(""))).toBe(undefined);
 	});
 });
-describe("toYmd()", () => {
-	test("toYmd(): Correctly converts date to string", () => {
+describe("getOptionalYMD()", () => {
+	test("getOptionalYMD(): Correctly converts date to string", () => {
 		expect(getOptionalYMD(new Date("2019-11-27"))).toBe("2019-11-27");
 		expect(getOptionalYMD(new Date("0001-01-01"))).toBe("0001-01-01");
 		expect(getOptionalYMD(new Date("9999-12-31"))).toBe("9999-12-31");
 	});
-	test("toYmd(): Correctly converts possible dates to sring", () => {
+	test("getOptionalYMD(): Correctly converts possible dates to sring", () => {
 		expect(getOptionalYMD("2019-11-27")).toBe("2019-11-27");
 		expect(getOptionalYMD("0001-01-01")).toBe("0001-01-01");
 		expect(getOptionalYMD("9999-12-31")).toBe("9999-12-31");
 		expect(getOptionalYMD(new Date("2019-11-27").getTime())).toBe("2019-11-27");
 		expect(getOptionalYMD(new Date("0001-01-01").getTime())).toBe("0001-01-01");
 		expect(getOptionalYMD(new Date("9999-12-31").getTime())).toBe("9999-12-31");
+		expect(typeof getOptionalYMD("now")).toBe("string");
 	});
-	test("toYmd(): Correctly converts invalid dates and other things to null", () => {
-		expect(getOptionalYMD(null as any)).toBe(null);
-		expect(getOptionalYMD("nope")).toBe(null);
-		expect(getOptionalYMD(new Date(Infinity))).toBe(null);
-		expect(getOptionalYMD(new Date("nope"))).toBe(null);
+	test("getOptionalYMD(): Correctly converts invalid dates and other things to undefined", () => {
+		expect(getOptionalYMD(null)).toBe(undefined);
+		expect(getOptionalYMD("nope")).toBe(undefined);
+		expect(getOptionalYMD(new Date(Infinity))).toBe(undefined);
+		expect(getOptionalYMD(new Date("nope"))).toBe(undefined);
 	});
 });
-describe("getYmd()", () => {
-	test("getYmd(): Correctly converts date to string", () => {
+describe("getYMD()", () => {
+	test("getYMD(): Correctly converts date to string", () => {
 		expect(getYMD(new Date("2019-11-27"))).toBe("2019-11-27");
 		expect(getYMD(new Date("2019-07-27"))).toBe("2019-07-27");
 		expect(getYMD(new Date("0001-01-01"))).toBe("0001-01-01");
 		expect(getYMD(new Date("9999-12-31"))).toBe("9999-12-31");
 	});
-	test("getYmd(): Correctly converts possible dates to sring", () => {
+	test("getYMD(): Correctly converts possible dates to sring", () => {
 		expect(getYMD("2019-11-27")).toBe("2019-11-27");
 		expect(getYMD("0001-01-01")).toBe("0001-01-01");
 		expect(getYMD("9999-12-31")).toBe("9999-12-31");
@@ -64,7 +65,7 @@ describe("getYmd()", () => {
 		expect(getYMD(new Date("0001-01-01").getTime())).toBe("0001-01-01");
 		expect(getYMD(new Date("9999-12-31").getTime())).toBe("9999-12-31");
 	});
-	test("getYmd(): Correctly throws on invalid dates", () => {
+	test("getYMD(): Correctly throws on invalid dates", () => {
 		expect(() => getYMD(null as unknown as PossibleDate)).toThrow(Error);
 		expect(() => getYMD("nope")).toThrow(Error);
 		expect(() => getYMD(new Date(Infinity))).toThrow(Error);

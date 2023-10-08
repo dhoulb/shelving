@@ -5,18 +5,19 @@ import { wrapNumber } from "./number.js";
 
 /** Class representing a time in the day in 24 hour format in the user's current locale. */
 export class Time {
-	/** Make a new `Time` instance from a date (or any value that can be converted to a date). */
-	static fromDate(possible?: unknown): Time | null {
-		const date = getOptionalDate(possible);
-		return date ? new Time(date.getHours() * HOUR + date.getMinutes() * MINUTE + date.getSeconds() * SECOND + date.getMilliseconds()) : null;
-	}
-
 	/** Make a new `Time` instance from a time string. */
-	static fromString(str: string): Time | null {
-		const matches = str.match(TIME_REGEXP);
-		if (!matches) return null;
-		const [, h, m, s, ms] = matches as [never, string, string, string | undefined, string | undefined];
-		return new Time(parseInt(h, 10) * HOUR + parseInt(m, 10) * MINUTE + (typeof s === "string" ? parseInt(s, 10) * SECOND : 0) + (typeof ms === "string" ? parseInt(ms, 10) : 0));
+	static from(possible: unknown = "now"): Time | undefined {
+		if (possible === null) return undefined;
+		if (isTime(possible)) return possible;
+		if (typeof possible === "string") {
+			const matches = possible.match(TIME_REGEXP);
+			if (matches) {
+				const [, h, m, s, ms] = matches as [never, string, string, string | undefined, string | undefined];
+				return new Time(parseInt(h, 10) * HOUR + parseInt(m, 10) * MINUTE + (typeof s === "string" ? parseInt(s, 10) * SECOND : 0) + (typeof ms === "string" ? parseInt(ms, 10) : 0));
+			}
+		}
+		const date = getOptionalDate(possible);
+		if (date) return new Time(date.getHours() * HOUR + date.getMinutes() * MINUTE + date.getSeconds() * SECOND + date.getMilliseconds());
 	}
 
 	/* Total number of milliseconds in this time (always a number between `0` and `86400000` because higher/lower numbers wrap into the next/previous day). */
@@ -64,7 +65,7 @@ export class Time {
 	/** Get a date corresponding to this time. */
 	get date(): Date {
 		const date = new Date();
-		date.setHours(0, 0, 0, 0);
+		date.setHours(this.h, this.m, this.s, this.ms);
 		return date;
 	}
 
@@ -99,24 +100,20 @@ export const TIME_REGEXP = /([0-9]+):([0-9]+)(?::([0-9]+)(?:.([0-9]+))?)?/;
 /** Things that converted to times. */
 export type PossibleTime = Time | Date | number | string;
 
-/** Things that converted to times or `null` */
-export type PossibleOptionalTime = Time | Date | number | string | null;
-
 /** Is an unknown value a `Time` instance. */
 export const isTime = (value: unknown): value is Time => value instanceof Time;
 
 /**
- * Convert a value to a `Time` instance or `null`
+ * Convert a value to a `Time` instance or `undefined`
  * - Works with possible dates, e.g. `now` or `Date` or `2022-09-12 18:32` or `19827263567`
  * - Works with time strings, e.g. `18:32` or `23:59:59.999`
  */
-export function getOptionalTime(possible: unknown): Time | null {
-	if (isTime(possible)) return possible;
-	return (typeof possible === "string" && Time.fromString(possible)) || Time.fromDate(possible) || null;
+export function getOptionalTime(possible: unknown): Time | undefined {
+	return Time.from(possible);
 }
 
 /** Convert a possible time to a `Time` instance, or throw `AssertionError` if it couldn't be converted. */
-export function getTime(possible: PossibleTime = "now"): Time {
+export function getTime(possible?: PossibleTime): Time {
 	const time = getOptionalTime(possible);
 	if (!time) throw new AssertionError(`Must be time`, possible);
 	return time;
@@ -135,4 +132,4 @@ export const getLongTime = (time?: PossibleTime): string => getTime(time).long;
 export const formatTime = (time?: PossibleTime, precision: 2 | 3 | 4 | 5 | 6 = 2): string => getTime(time).format(precision);
 
 /** Format an optional time as a string based on the browser locale settings. */
-export const formatOptionalTime = (time?: unknown, precision: 2 | 3 | 4 | 5 | 6 = 2): string | null => getOptionalTime(time)?.format(precision) || null;
+export const formatOptionalTime = (time?: unknown, precision: 2 | 3 | 4 | 5 | 6 = 2): string | undefined => getOptionalTime(time)?.format(precision);

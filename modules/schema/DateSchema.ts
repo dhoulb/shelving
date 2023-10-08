@@ -1,5 +1,6 @@
 import type { SchemaOptions } from "./Schema.js";
-import type { PossibleDate, PossibleOptionalDate } from "../util/date.js";
+import type { PossibleDate } from "../util/date.js";
+import type { Optional } from "../util/optional.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { formatDate, getOptionalDate, getYMD } from "../util/date.js";
 import { OPTIONAL } from "./OptionalSchema.js";
@@ -8,15 +9,15 @@ import { Schema } from "./Schema.js";
 /** Allowed options for `DateSchema` */
 export type DateSchemaOptions = SchemaOptions & {
 	readonly value?: PossibleDate | undefined;
-	readonly min?: PossibleOptionalDate | undefined;
-	readonly max?: PossibleOptionalDate | undefined;
+	readonly min?: Optional<PossibleDate> | undefined;
+	readonly max?: Optional<PossibleDate> | undefined;
 };
 
 /** Define a valid date in YMD format, e.g. `2005-09-12` */
 export class DateSchema extends Schema<string> {
 	declare readonly value: PossibleDate;
-	readonly min: Date | null;
-	readonly max: Date | null;
+	readonly min: Date | undefined;
+	readonly max: Date | undefined;
 	constructor(options: DateSchemaOptions) {
 		super({ title: "Date", value: "now", ...options });
 		const { min = null, max = null } = options;
