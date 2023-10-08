@@ -64,13 +64,18 @@ export class Store<T> implements AsyncIterable<T> {
 	}
 	private _reason: unknown = undefined;
 
+	/** Set a starter for this store to allow a function to execute when this store has subscribers or not. */
+	set starter(start: PossibleStarter<[this]>) {
+		if (this._starter) this._starter.stop(); // Stop the current starter.
+		this._starter = getStarter(start);
+		if (this._iterating) this._starter.start(this); // Start the new starter if we're already iterating.
+	}
 	private _starter: Starter<[this]> | undefined;
 
 	/** Store is initiated with an initial store. */
-	constructor(value: T | typeof NONE, time = Date.now(), start?: PossibleStarter<[Store<T>]>) {
+	constructor(value: T | typeof NONE, time = Date.now()) {
 		this._value = value;
 		this._time = time;
-		this._starter = start && getStarter(start);
 	}
 
 	/** Set the value of the store. */

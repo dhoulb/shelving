@@ -35,11 +35,8 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends Store<O
 	constructor(collection: K, id: string, provider: AbstractProvider<T>, memory?: MemoryProvider<T>) {
 		const time = memory?.getItemTime(collection, id);
 		const item = memory?.getItem(collection, id);
-		super(
-			typeof time === "number" || item ? item : NONE, // Use the cached value if it was definitely cached or is not undefined.
-			time,
-			memory && (store => runSequence(store.through(memory.getCachedItemSequence(collection, id)))),
-		);
+		super(typeof time === "number" || item ? item : NONE, time); // Use the cached value if it was definitely cached or is not undefined.
+		if (memory) this.starter = store => runSequence(store.through(memory.getCachedItemSequence(collection, id)));
 		this.provider = provider;
 		this.collection = collection;
 		this.id = id;

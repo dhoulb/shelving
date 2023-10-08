@@ -1,12 +1,11 @@
 import type { ImmutableArray } from "../util/array.js";
-import type { PossibleStarter } from "../util/start.js";
 import { omitArrayItems, toggleArrayItems, withArrayItems } from "../util/array.js";
 import { Store } from "./Store.js";
 
 /** Store an array. */
 export class ArrayStore<T> extends Store<ImmutableArray<T>> implements Iterable<T> {
-	constructor(value: ImmutableArray<T> = [], time?: number, start?: PossibleStarter<[Store<ImmutableArray<T>>]>) {
-		super(value, time, start);
+	constructor(value: ImmutableArray<T> = [], time?: number) {
+		super(value, time);
 	}
 
 	/** Get the length of the current value of this store. */

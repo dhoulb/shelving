@@ -57,11 +57,8 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends Store<
 	constructor(collection: K, query: ItemQuery<T[K]>, provider: AbstractProvider<T>, memory?: MemoryProvider<T>) {
 		const time = memory?.getQueryTime(collection, query);
 		const items = memory?.getQuery(collection, query) || [];
-		super(
-			typeof time === "number" || items.length ? items : NONE, // Use the value if it was definitely cached or is not empty.
-			time,
-			memory && (store => runSequence(store.through(memory.getCachedQuerySequence(collection, query)))),
-		);
+		super(typeof time === "number" || items.length ? items : NONE, time); // Use the value if it was definitely cached or is not empty.
+		if (memory) this.starter = store => runSequence(store.through(memory.getCachedQuerySequence(collection, query)));
 		this.provider = provider;
 		this.collection = collection;
 		this.query = query;
