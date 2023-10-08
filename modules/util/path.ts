@@ -6,6 +6,9 @@ export type AbsolutePath = `/` | `/${string}`;
 /** Relative path starts with `./` or `../` */
 export type RelativePath = `.` | `./${string}` | `..` | `../${string}`;
 
+/** Absolute path or relative path. */
+export type Path = AbsolutePath | RelativePath;
+
 /** Is a string path an absolute path? */
 export const isAbsolutePath = (path: string): path is AbsolutePath => path.startsWith("/");
 
@@ -35,13 +38,14 @@ export function cleanPath(path: string): string {
  * @param base Absolute path or `URL` instance used for resolving relative paths in `path`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function getPath(path: string | URL, base: AbsolutePath | URL = "/"): AbsolutePath {
+export function getPath(path: string | URL, base: AbsolutePath | URL | Location = _LOCATION): AbsolutePath {
 	try {
-		return cleanPath(new URL(path, `http://j.com${base instanceof URL ? base.pathname : base}/`).pathname as AbsolutePath);
+		return cleanPath(new URL(path, `http://j.com${typeof base === "string" ? base : base.pathname}/`).pathname as AbsolutePath);
 	} catch {
 		throw new AssertionError("Invalid path", path);
 	}
 }
+const _LOCATION = typeof window === "object" ? window.location : "/";
 
 /** Is a target path active? */
 export function isPathActive(target: AbsolutePath, current: AbsolutePath): boolean {
