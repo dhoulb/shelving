@@ -1,6 +1,6 @@
-import type { AbsolutePath, Path } from "../util/path.js";
+import type { AbsolutePath } from "../util/path.js";
 import type { PossibleStarter } from "../util/start.js";
-import { getAbsolutePath, isPathActive, isPathProud } from "../util/path.js";
+import { getPath, isPathActive, isPathProud } from "../util/path.js";
 import { Store } from "./Store.js";
 
 /** Store an absolute path, e.g. `/a/b/c` */
@@ -20,12 +20,12 @@ export class PathStore extends Store<AbsolutePath> {
 	}
 
 	/** Get an absolute path from a path relative to the current navigation path. */
-	getAbsolute(path: Path): AbsolutePath {
-		return getAbsolutePath(path, this.value);
+	getAbsolute(path: string): AbsolutePath {
+		return getPath(path, this.value);
 	}
 
 	// Override to clean the path.
-	override set(path: Path): void {
-		super.set(getAbsolutePath(path, this.value));
+	override set(path: string): void {
+		super.set(getPath(path, this.value));
 	}
 }

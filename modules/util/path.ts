@@ -1,13 +1,10 @@
 import { AssertionError } from "../error/AssertionError.js";
 
-/** Relative path starts with `./` or `../` */
-export type RelativePath = `./${string}` | `../${string}`;
-
 /** Absolute path starts with `/` slash. */
-export type AbsolutePath = `/${string}`;
+export type AbsolutePath = `/` | `/${string}`;
 
-/** Path is either an absolute or relative path. */
-export type Path = AbsolutePath | RelativePath;
+/** Relative path starts with `./` or `../` */
+export type RelativePath = `.` | `./${string}` | `..` | `../${string}`;
 
 /** Is a string path an absolute path? */
 export const isAbsolutePath = (path: string): path is AbsolutePath => path.startsWith("/");
@@ -17,24 +14,30 @@ export const isRelativePath = (path: string): path is RelativePath => path.start
 
 /**
  * Clean a path.
- * - Remove runs of more than one slash, e.g. `/a//b` becomes `/a/b`
- * - Remove trailing slashes, e.g. `/a/b/` becomes `/a/b`
+ * - Runs of `//` two or more slashes are normalised to `/` single slash, e.g. `/a//b` becomes `/a/b`
+ * - `\` Windows slashes are nromalised to `/` UNIX slashes.
+ * - Trailing slashes are removed, e.g. `/a/b/` becomes `/a/b`
  */
 export function cleanPath(path: AbsolutePath): AbsolutePath;
 export function cleanPath(path: string): string;
 export function cleanPath(path: string): string {
 	return path
-		.replace(/\/{2,}/g, "/") // Normalise runs of two or more slashes.
-		.replace(/(?!^)\/+$/g, ""); // Trailing slashes.
+		.replace(/[/\\]+/g, "/") // Normalise slashes.
+		.replace(/(?!^)\/$/g, ""); // Trailing slashes.
 }
 
 /**
- * Get an absolute path.
+ * Resolve an absolute path.
+ * - Uses `new URL` to do path processing, so URL strings e.g.
+ * - Returned paths are cleaned with `cleanPath()` so runs of slashes and trailing slashes are removed.
+ *
+ * @param path Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
+ * @param base Absolute path or `URL` instance used for resolving relative paths in `path`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function getAbsolutePath(path: Path, base: AbsolutePath = "/"): AbsolutePath {
+export function getPath(path: string | URL, base: AbsolutePath | URL = "/"): AbsolutePath {
 	try {
-		return cleanPath(new URL(path, `http://j.com${base}/`).pathname as AbsolutePath);
+		return cleanPath(new URL(path, `http://j.com${base instanceof URL ? base.pathname : base}/`).pathname as AbsolutePath);
 	} catch {
 		throw new AssertionError("Invalid path", path);
 	}
