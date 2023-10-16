@@ -10,12 +10,12 @@ export class PathStore extends Store<AbsolutePath> {
 
 	/** Based on the current store path, is a path active? */
 	isActive(path: AbsolutePath): boolean {
-		return isPathActive(path, this.value);
+		return isPathActive(this.value, path);
 	}
 
 	/** Based on the current store path, is a path proud (i.e. a child of the current store path)? */
 	isProud(path: AbsolutePath): boolean {
-		return isPathProud(path, this.value);
+		return isPathProud(this.value, path);
 	}
 
 	/** Get an absolute path from a path relative to the current store path. */
