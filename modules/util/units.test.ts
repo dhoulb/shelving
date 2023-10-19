@@ -98,7 +98,7 @@ test("format() works correctly", () => {
 });
 test("format() precision", () => {
 	// Precision.
-	expect(LENGTH_UNITS.getUnit("kilometer").format(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0 })).toBe("1 km");
+	expect(LENGTH_UNITS.getUnit("kilometer").format(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0 })).toBe("1km");
 	expect(LENGTH_UNITS.getUnit("kilometer").format(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe("1.11 km");
 	expect(LENGTH_UNITS.getUnit("kilometer").format(1.1111, { maximumFractionDigits: 4, minimumFractionDigits: 4 })).toBe("1.1111 km");
 	expect(LENGTH_UNITS.getUnit("kilometer").format(1.1111, { maximumFractionDigits: 6, minimumFractionDigits: 6 })).toBe("1.111100 km");

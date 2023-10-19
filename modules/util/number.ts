@@ -139,7 +139,10 @@ export function formatRange(min: number, max: number, options?: NumberOptions): 
 }
 
 /** Format a number with a short suffix, e.g. `1,000 kg` */
-export const formatQuantity = (num: number, abbr: string, options?: NumberOptions): string => `${formatNumber(num, options)}${NNBSP}${abbr}`;
+export function formatQuantity(num: number, abbr: string, options?: NumberOptions): string {
+	const str = formatNumber(num, options);
+	return `${str}${str.length > 2 || abbr.length > 2 ? NNBSP : ""}${abbr}`;
+}
 
 /** Format a number with a longer full-word suffix. */
 export function pluralizeQuantity(num: number, singular: string, plural: string, options?: NumberOptions): string {
