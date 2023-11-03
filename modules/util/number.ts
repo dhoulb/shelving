@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { NNBSP } from "./constants.js";
 
 /** Is a value a number? */
@@ -6,12 +6,12 @@ export const isNumber = (value: unknown): value is number => typeof value === "n
 
 /** Assert that a value is a number. */
 export function assertNumber(value: unknown): asserts value is number {
-	if (typeof value !== "number") throw new AssertionError(`Must be number`, value);
+	if (typeof value !== "number") throw new ValueError(`Must be number`, value);
 }
 
 /** Assert that a value is a number greater than. */
 export function assertFinite(value: unknown): asserts value is number {
-	if (typeof value !== "number" || !Number.isFinite(value)) throw new AssertionError(`Must be finite number`, value);
+	if (typeof value !== "number" || !Number.isFinite(value)) throw new ValueError(`Must be finite number`, value);
 }
 
 /**
@@ -25,17 +25,17 @@ export const isBetween = (num: number, min: number, max: number): boolean => num
 
 /** Assert that a value is a number greater than. */
 export function assertBetween(value: unknown, min: number, max: number): asserts value is number {
-	if (typeof value !== "number" || isBetween(value, min, max)) throw new AssertionError(`Must be number between ${min} and ${max}`, value);
+	if (typeof value !== "number" || isBetween(value, min, max)) throw new ValueError(`Must be number between ${min} and ${max}`, value);
 }
 
 /** Assert that a value is a number greater than. */
 export function assertMax(value: unknown, max: number): asserts value is number {
-	if (typeof value !== "number" || value > max) throw new AssertionError(`Must be number with maximum ${max}`, value);
+	if (typeof value !== "number" || value > max) throw new ValueError(`Must be number with maximum ${max}`, value);
 }
 
 /** Assert that a value is a number less than. */
 export function assertMin(value: unknown, min: number): asserts value is number {
-	if (typeof value !== "number" || value < min) throw new AssertionError(`Must be number with minimum ${min}`, value);
+	if (typeof value !== "number" || value < min) throw new ValueError(`Must be number with minimum ${min}`, value);
 }
 
 /**
@@ -57,7 +57,7 @@ const NOT_NUMERIC_REGEXP = /[^0-9-.]/g;
 
 /**
  * Assertively convert an unknown value to a finite number.
- * @throws `AssertionError` if the value cannot be converted.
+ * @throws `ValueError` if the value cannot be converted.
  */
 export function getNumber(value: unknown): number {
 	const num = getOptionalNumber(value);

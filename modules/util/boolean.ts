@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 
 /** Is a value a boolean? */
 export const isBoolean = (value: unknown): value is boolean => typeof value === "boolean";
@@ -17,25 +17,25 @@ export const isFalsey = (value: unknown): boolean => !value;
 
 /** Assert that a value is a boolean. */
 export function assertBoolean(value: unknown): asserts value is boolean {
-	if (typeof value !== "boolean") throw new AssertionError(`Must be boolean`, value);
+	if (typeof value !== "boolean") throw new ValueError(`Must be boolean`, value);
 }
 
 /** Assert that a value is true. */
 export function assertTrue(value: unknown): asserts value is true {
-	if (value !== true) throw new AssertionError(`Must be true`, value);
+	if (value !== true) throw new ValueError(`Must be true`, value);
 }
 
 /** Assert that a value is false. */
 export function assertFalse(value: unknown): asserts value is false {
-	if (value !== false) throw new AssertionError(`Must be false`, value);
+	if (value !== false) throw new ValueError(`Must be false`, value);
 }
 
 /** Assert that a value is truthy. */
 export function assertTruthy(value: unknown): asserts value is true {
-	if (!value) throw new AssertionError(`Must be truthy`, value);
+	if (!value) throw new ValueError(`Must be truthy`, value);
 }
 
 /** Assert that a value is falsy. */
 export function assertFalsy(value: unknown): asserts value is false {
-	if (value) throw new AssertionError(`Must be falsy`, value);
+	if (value) throw new ValueError(`Must be falsy`, value);
 }

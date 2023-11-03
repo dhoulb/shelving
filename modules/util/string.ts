@@ -2,6 +2,7 @@
 
 import type { ImmutableArray } from "./array.js";
 import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { getArray, isArray } from "./array.js";
 import { formatDate, isDate } from "./date.js";
 import { formatNumber, formatRange, isBetween } from "./number.js";
@@ -20,7 +21,7 @@ export const isString = (value: unknown): value is string => typeof value === "s
 
 /** Assert that a value is a string. */
 export function assertString(value: unknown): asserts value is string {
-	if (typeof value !== "string") throw new AssertionError(`Must be string`, value);
+	if (typeof value !== "string") throw new ValueError(`Must be string`, value);
 }
 
 /**

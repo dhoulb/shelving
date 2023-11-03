@@ -4,7 +4,7 @@ import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { CollectionReference, DocumentReference, DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocumentSnapshot, UpdateData } from "firebase/firestore/lite";
 import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, documentId, getCount, getDoc, getDocs, increment, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore/lite";
-import { UnsupportedError } from "../../error/UnsupportedError.js";
+import { UnimplementedError } from "../../error/UnimplementedError.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
@@ -76,7 +76,7 @@ export class FirestoreLiteProvider<T extends Database> implements AsyncProvider<
 		return _getOptionalItem(snapshot);
 	}
 	getItemSequence<K extends DataKey<T>>(): AsyncIterableIterator<OptionalItem<T[K]>> {
-		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
+		throw new UnimplementedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 	async addItem<K extends DataKey<T>>(c: K, data: Data): Promise<string> {
 		const reference = await addDoc(collection(this._firestore, c), data);
@@ -100,7 +100,7 @@ export class FirestoreLiteProvider<T extends Database> implements AsyncProvider<
 		return snapshot.docs.map(_getItem);
 	}
 	getQuerySequence<K extends DataKey<T>>(): AsyncIterableIterator<Items<T[K]>> {
-		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
+		throw new UnimplementedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 	async setQuery<K extends DataKey<T>>(c: K, q: ItemQuery<T[K]>, data: Data): Promise<void> {
 		const snapshot = await getDocs(_getQuery(this._firestore, c, q));

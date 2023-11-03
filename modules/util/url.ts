@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { type Optional, notOptional } from "./optional.js";
 
 /** Things that can be converted to a URL instance. */
@@ -9,7 +9,7 @@ export const isURL = (value: unknown): value is URL => value instanceof URL;
 
 /** Assert that an unknown value is a URL. */
 export function assertURL(value: unknown): asserts value is URL {
-	if (!isURL(value)) throw new AssertionError("Invalid URL", value);
+	if (!isURL(value)) throw new ValueError("Invalid URL", value);
 }
 
 /** Convert a possible URL to a URL or return `null` if conversion fails. */
@@ -25,10 +25,10 @@ export function getOptionalURL(url: Optional<PossibleURL>, base: PossibleURL | L
 }
 const _LOCATION = typeof window === "object" ? window.location : undefined;
 
-/** Convert a possible URL to a URL but throw `AssertionError` if conversion fails. */
+/** Convert a possible URL to a URL but throw `ValueError` if conversion fails. */
 export function getURL(possibleURL: PossibleURL, base?: PossibleURL): URL {
 	const url = getOptionalURL(possibleURL, base);
-	if (!url) throw new AssertionError("Invalid URL", possibleURL);
+	if (!url) throw new ValueError("Invalid URL", possibleURL);
 	return url;
 }
 

@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 
 /** Things that converted to dates. */
 export type PossibleDate = Date | number | string;
@@ -10,7 +10,7 @@ export function isDate(value: unknown): value is Date {
 
 /** Assert that a value is a `Date` instance. */
 export function assertDate(value: unknown): asserts value is Date {
-	if (!isDate(value)) throw new AssertionError(`Must be date`, value);
+	if (!isDate(value)) throw new ValueError(`Must be date`, value);
 }
 
 /**
@@ -45,10 +45,10 @@ export function getOptionalDate(possible: unknown = "now"): Date | undefined {
 	}
 }
 
-/** Convert a possible date to a `Date` instance, or throw `AssertionError` if it couldn't be converted. */
+/** Convert a possible date to a `Date` instance, or throw `ValueError` if it couldn't be converted. */
 export function getDate(possible?: PossibleDate): Date {
 	const date = getOptionalDate(possible);
-	if (!date) throw new AssertionError(`Must be date`, possible);
+	if (!date) throw new ValueError(`Must be date`, possible);
 	return date;
 }
 
@@ -57,7 +57,7 @@ export function getOptionalTimestamp(possible: unknown): number | undefined {
 	return getOptionalDate(possible)?.getTime();
 }
 
-/** Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw `AssertionError` if it couldn't be converted. */
+/** Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw `ValueError` if it couldn't be converted. */
 export function getTimestamp(possible?: PossibleDate): number {
 	return getDate(possible).getTime();
 }
@@ -68,7 +68,7 @@ export function getOptionalYMD(possible: unknown): string | undefined {
 	if (date) return _ymd(date);
 }
 
-/** Convert a `Date` instance to a YMD string like "2015-09-12", or throw `AssertionError` if it couldn't be converted.  */
+/** Convert a `Date` instance to a YMD string like "2015-09-12", or throw `ValueError` if it couldn't be converted.  */
 export function getYMD(possible?: PossibleDate): string {
 	return _ymd(getDate(possible));
 }

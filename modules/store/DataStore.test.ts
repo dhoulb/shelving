@@ -1,4 +1,4 @@
-import { DataStore, OptionalDataStore, RequiredError, runMicrotasks, runSequence } from "../index.js";
+import { DataStore, RequiredError, OptionalDataStore, runMicrotasks, runSequence } from "../index.js";
 
 test("DataStore.prototype.data", async () => {
 	type T = { a: number };

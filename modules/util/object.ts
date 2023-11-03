@@ -50,7 +50,7 @@ export function assertProp<T extends ImmutableObject>(obj: T, key: PropertyKey):
 	if (!isProp(obj, key)) throw new AssertionError("Must be object prop", key);
 }
 
-/** turn a possible object into an object. */
+/** Turn a possible object into an object. */
 export function getObject<T extends ImmutableObject>(obj: PossibleObject<T>): T {
 	return isIterable(obj) ? (Object.fromEntries(obj) as T) : obj;
 }

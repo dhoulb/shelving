@@ -1,6 +1,6 @@
 import type { Match } from "./match.js";
 import type { NotString } from "./string.js";
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { getArray } from "./array.js";
 
 /** Regular expression that always matches everything. */
@@ -17,7 +17,7 @@ export const isRegExp = (value: unknown): value is RegExp => value instanceof Re
 
 /** Assert that an unknown value is a `RegExp` instance. */
 export function assertRegExp(value: unknown): asserts value is RegExp {
-	if (!(value instanceof RegExp)) throw new AssertionError("Must be regular expression", value);
+	if (!(value instanceof RegExp)) throw new ValueError("Must be regular expression", value);
 }
 
 /** Convert a string to a regular expression that matches that string. */

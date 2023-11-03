@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 
 /** Unknown function. */
 export type UnknownFunction = (...args: unknown[]) => unknown;
@@ -12,7 +12,7 @@ export const isFunction = (value: unknown): value is AnyFunction => typeof value
 
 /** Assert that a value is a function. */
 export function assertFunction(value: unknown): asserts value is AnyFunction {
-	if (typeof value !== "function") throw new AssertionError("Must be function", value);
+	if (typeof value !== "function") throw new ValueError("Must be function", value);
 }
 
 /** Readonly unknown array that is being used as a set of arguments to a function. */

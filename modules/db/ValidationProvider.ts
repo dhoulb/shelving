@@ -5,7 +5,7 @@ import type { MutableDictionary } from "../util/dictionary.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
-import { ValidationError } from "../error/ValidationError.js";
+import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { updateData } from "../util/update.js";
 import { validateWithContext } from "../util/validate.js";
@@ -127,7 +127,7 @@ function _validateItem<T extends Data>(collection: string, unsafeEntity: Optiona
 		return validateWithContext<T>(unsafeEntity, schema, VALIDATION_CONTEXT_GET);
 	} catch (thrown) {
 		if (!(thrown instanceof Feedback)) throw thrown;
-		throw new ValidationError(`Invalid data for "${collection}"`, thrown.message);
+		throw new ValueError(`Invalid data for "${collection}"`, thrown.message);
 	}
 }
 
@@ -147,5 +147,5 @@ function* _yieldValidItems<T extends Data>(collection: string, unsafeEntities: I
 			messages[unsafeEntity.id] = thrown.message;
 		}
 	}
-	if (invalid) throw new ValidationError(`Invalid data for "${collection}"`, messages);
+	if (invalid) throw new ValueError(`Invalid data for "${collection}"`, messages);
 }

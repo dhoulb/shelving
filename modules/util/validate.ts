@@ -3,7 +3,7 @@ import type { Data } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
 import type { Item } from "./item.js";
 import type { MutableObject } from "./object.js";
-import { ValidationError } from "../error/ValidationError.js";
+import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { Feedbacks } from "../feedback/Feedbacks.js";
 import { getLastItem, isArray } from "./array.js";
@@ -41,7 +41,7 @@ export function getValid<T>(unsafeValue: unknown, validator: Validator<T>): T {
 	try {
 		return validator.validate(unsafeValue);
 	} catch (thrown) {
-		if (thrown instanceof Feedback) throw new ValidationError("Must validate", thrown);
+		if (thrown instanceof Feedback) throw new ValueError("Must validate", thrown);
 		throw thrown;
 	}
 }

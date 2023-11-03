@@ -1,7 +1,7 @@
 import type { MapKey } from "./map.js";
 import type { NumberOptions } from "./number.js";
 import type { ImmutableObject } from "./object.js";
-import { ConditionError } from "../error/ConditionError.js";
+import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
 import { ImmutableMap } from "./map.js";
@@ -87,7 +87,7 @@ export class Unit<K extends string> {
 		const thisToBase = this._to?.[base.key];
 		if (thisToBase) return base._toUnit(_convert(amount, thisToBase), unit);
 		// Cannot convert.
-		throw new ConditionError(`Cannot convert "${this.key}" to "${unit.key}"`);
+		throw new AssertionError(`Cannot convert "${this.key}" to "${unit.key}"`);
 	}
 
 	/** Format an amount with a given unit of measure, e.g. `12 kg` or `29.5 l` */
@@ -129,7 +129,7 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	 */
 	getUnit(units: K): Unit<K> {
 		if (this.has(units)) return this.get(units) as Unit<K>;
-		throw new RequiredError(`Unit "${units}" not found`);
+		throw new RequiredError(`Unknown unit`, units);
 	}
 }
 

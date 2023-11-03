@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { boundNumber, roundNumber } from "./number.js";
 
 // Constants.
@@ -79,7 +79,7 @@ export const isColor = (value: unknown): value is Color => value instanceof Colo
 
 /** Assert that an unknown value is a `Color` instance. */
 export function assertColor(value: unknown): asserts value is Color {
-	if (!isColor(value)) throw new AssertionError("Invalid color", value);
+	if (!isColor(value)) throw new ValueError("Invalid color", value);
 }
 
 /** Convert a possible color to a `Color` instance or `undefined` */
@@ -90,6 +90,6 @@ export function getOptionalColor(possible: unknown): Color | undefined {
 /** Convert a possible color to a `Color` instance */
 export function getColor(possible: PossibleColor): Color {
 	const color = getOptionalColor(possible);
-	if (!color) throw new AssertionError("Invalid color", possible);
+	if (!color) throw new ValueError("Invalid color", possible);
 	return color;
 }

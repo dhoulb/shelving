@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MINUTE, SECOND } from "./constants.js";
 import { getOptionalDate } from "./date.js";
 import { wrapNumber } from "./number.js";
@@ -112,10 +112,10 @@ export function getOptionalTime(possible: unknown): Time | undefined {
 	return Time.from(possible);
 }
 
-/** Convert a possible time to a `Time` instance, or throw `AssertionError` if it couldn't be converted. */
+/** Convert a possible time to a `Time` instance, or throw `ValueError` if it couldn't be converted. */
 export function getTime(possible?: PossibleTime): Time {
 	const time = getOptionalTime(possible);
-	if (!time) throw new AssertionError(`Must be time`, possible);
+	if (!time) throw new ValueError(`Must be time`, possible);
 	return time;
 }
 
