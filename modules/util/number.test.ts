@@ -1,4 +1,4 @@
-import { AssertionError, boundNumber, formatNumber, getOptionalNumber, getRange, roundNumber, roundStep, sumNumbers, truncateNumber, wrapNumber } from "../index.js";
+import { ValueError, boundNumber, formatNumber, getOptionalNumber, getRange, roundNumber, roundStep, sumNumbers, truncateNumber, wrapNumber } from "../index.js";
 
 test("roundNumber(): Works correctly", () => {
 	expect(roundNumber(123.456, 0)).toBe(123);
@@ -11,7 +11,7 @@ test("boundNumber()", () => {
 	expect(boundNumber(-250, -100, 100)).toBe(-100);
 
 	// Min must be higher than max.
-	expect(() => boundNumber(1, 100, 99)).toThrow(AssertionError);
+	expect(() => boundNumber(1, 100, 99)).toThrow(ValueError);
 });
 test("wrapNumber()", () => {
 	// Wrapping needed.
@@ -34,7 +34,7 @@ test("wrapNumber()", () => {
 	expect(wrapNumber(19, 0, 59)).toBe(19);
 
 	// Min must be higher than max.
-	expect(() => wrapNumber(1, 100, 99)).toThrow(AssertionError);
+	expect(() => wrapNumber(1, 100, 99)).toThrow(ValueError);
 });
 test("truncateNumber(): Works correctly", () => {
 	expect(truncateNumber(123, 0)).toBe(123);
