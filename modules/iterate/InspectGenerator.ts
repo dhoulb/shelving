@@ -1,5 +1,5 @@
 import type { Mutable } from "../util/object.js";
-import { AssertionError } from "../error/AssertionError.js";
+import { StateError } from "../error/StateError.js";
 import { ThroughGenerator } from "./ThroughGenerator.js";
 
 /** Used when the sequence hasn't inspected anything yet. */
@@ -24,21 +24,21 @@ export class InspectGenerator<T, R, N> extends ThroughGenerator<T, R, N> {
 
 	/** The first yielded value (throws if the iteration yielded no values, i.e. `this.count === 0`). */
 	get first(): T {
-		if (this._first === _NOVALUE) throw new AssertionError("Iteration not started");
+		if (this._first === _NOVALUE) throw new StateError("Iteration not started");
 		return this._first;
 	}
 	private _first: T | typeof _NOVALUE = _NOVALUE;
 
 	/** The last yielded value (throws if the iteration yielded no values, i.e. `this.count === 0`). */
 	get last(): T {
-		if (this._last === _NOVALUE) throw new AssertionError("Iteration not started");
+		if (this._last === _NOVALUE) throw new StateError("Iteration not started");
 		return this._last;
 	}
 	private _last: T | typeof _NOVALUE = _NOVALUE;
 
 	/** The returned value (throws if the iteration is not done, i.e. `this.done === false`). */
 	get returned(): R {
-		if (this._returned === _NOVALUE) throw new AssertionError("Iteration not done");
+		if (this._returned === _NOVALUE) throw new StateError("Iteration not done");
 		return this._returned;
 	}
 	private _returned: R | typeof _NOVALUE = _NOVALUE;
