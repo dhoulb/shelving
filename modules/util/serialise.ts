@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { isArray } from "./array.js";
 import { getPrototype, isObject } from "./object.js";
 
@@ -33,7 +33,7 @@ export function serialise(value: unknown): string {
 		const props = Object.entries(value).map(serialiseEntry).sort();
 		return `{${type ? `"$type":${escapeString(type)}${props.length ? "," : ""}` : ""}${props.join(",")}}`;
 	}
-	throw new AssertionError("serialize(): Unknown value", value);
+	throw new ValueError("Cannot serialize value", value);
 }
 const serialiseEntry = ([key, value]: [string, unknown]) => `${escapeString(key)}:${serialise(value)}`;
 const escapeString = (str: string): string => `"${str.replace(R_QUOTE, `\\"`)}"`;

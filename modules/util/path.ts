@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 
 /** Absolute path starts with `/` slash. */
 export type AbsolutePath = `/` | `/${string}`;
@@ -42,7 +42,7 @@ export function getPath(path: string | URL, base: AbsolutePath | URL | Location 
 	try {
 		return cleanPath(new URL(path, `http://j.com${typeof base === "string" ? base : base.pathname}/`).pathname as AbsolutePath);
 	} catch {
-		throw new AssertionError("Invalid path", path);
+		throw new ValueError("Invalid path", path);
 	}
 }
 const _LOCATION = typeof window === "object" ? window.location : "/";

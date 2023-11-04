@@ -79,7 +79,7 @@ export const isColor = (value: unknown): value is Color => value instanceof Colo
 
 /** Assert that an unknown value is a `Color` instance. */
 export function assertColor(value: unknown): asserts value is Color {
-	if (!isColor(value)) throw new ValueError("Invalid color", value);
+	if (!isColor(value)) throw new ValueError("Must be color", value);
 }
 
 /** Convert a possible color to a `Color` instance or `undefined` */

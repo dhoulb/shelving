@@ -1,7 +1,7 @@
 import type { ImmutableArray } from "./array.js";
 import type { EntryObject } from "./entry.js";
 import type { DeepPartial } from "./object.js";
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { isIterable } from "./iterate.js";
 import { isObject, isPlainObject } from "./object.js";
 
@@ -77,7 +77,7 @@ export const isData = (value: unknown): value is Data => isPlainObject(value);
 
 /** Assert that an unknown value is a data object. */
 export function assertData(value: unknown): asserts value is Data {
-	if (!isPlainObject(value)) throw new AssertionError("Must be data", value);
+	if (!isPlainObject(value)) throw new ValueError("Must be data", value);
 }
 
 /** Is an unknown value the key for an own prop of a data object. */
@@ -85,7 +85,7 @@ export const isDataProp = <T extends Data>(data: T, key: unknown): key is DataKe
 
 /** Assert that an unknown value is the key for an own prop of a data object. */
 export function assertDataProp<T extends Data>(data: T, key: unknown): asserts key is DataKey<T> {
-	if (!isDataProp(data, key)) throw new AssertionError("Must be data prop", key);
+	if (!isDataProp(data, key)) throw new ValueError("Must be data prop", key);
 }
 
 /** Convert a data object or set of `DataProp` props for that object back into the full object. */

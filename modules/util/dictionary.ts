@@ -1,4 +1,3 @@
-import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import { isIterable } from "./iterate.js";
@@ -44,7 +43,7 @@ export const isDictionaryItem = <T>(obj: ImmutableDictionary<T>, key: unknown): 
 
 /** Assert that an unknown value is the key for an own prop of a dictionary. */
 export function assertDictionaryItem<T>(obj: ImmutableDictionary<T>, key: unknown): asserts key is string {
-	if (!isDictionaryItem(obj, key)) throw new AssertionError("Must be dictionary item", key);
+	if (!isDictionaryItem(obj, key)) throw new ValueError("Must be dictionary item", key);
 }
 
 /** Get an item in a map or throw an error if it doesn't exist. */

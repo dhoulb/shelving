@@ -2,6 +2,7 @@ import type { ImmutableArray } from "./array.js";
 import type { ImmutableDictionary } from "./dictionary.js";
 import type { Mutable } from "./object.js";
 import type { NotString } from "./string.js";
+import { ValueError } from "../error/ValueError.js";
 import { EMPTY_DATA } from "./data.js";
 import { setMapItem } from "./map.js";
 import { isObject } from "./object.js";
@@ -55,7 +56,7 @@ function _split(template: string): TemplateChunks {
 		const pre = matches[i - 1] as string;
 		const placeholder = matches[i] as string;
 		const post = matches[i + 1] as string;
-		if (i > 1 && !pre.length) throw new SyntaxError("Placeholders must be separated by at least one character");
+		if (i > 1 && !pre.length) throw new ValueError("Placeholders must be separated by at least one character", template);
 		const name = placeholder === "*" ? String(asterisks++) : R_NAME.exec(placeholder)?.[0] || "";
 		chunks.push({ pre, placeholder, name, post });
 	}

@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 
-import { getPlaceholders, matchTemplate, matchTemplates, renderTemplate } from "../index.js";
+import { ValueError, getPlaceholders, matchTemplate, matchTemplates, renderTemplate } from "../index.js";
 
 // Tests.
 describe("matchTemplate()", () => {
@@ -36,8 +36,8 @@ describe("matchTemplate()", () => {
 		expect(matchTemplate("a/{b}/{c}", "a/b/")).toEqual(undefined);
 	});
 	test("Cannot match two placeholders that touch", () => {
-		expect(() => matchTemplate(":a:b", "ab")).toThrow(SyntaxError);
-		expect(() => matchTemplate(":a{b}", "ab")).toThrow(SyntaxError);
+		expect(() => matchTemplate(":a:b", "ab")).toThrow(ValueError);
+		expect(() => matchTemplate(":a{b}", "ab")).toThrow(ValueError);
 	});
 });
 describe("getPlaceholders()", () => {
@@ -56,8 +56,8 @@ describe("getPlaceholders()", () => {
 		expect(getPlaceholders(":a/:b")).toEqual(["a", "b"]);
 	});
 	test("Cannot match two placeholders that touch", () => {
-		expect(() => getPlaceholders("/:a{b}${c}{{d}}/")).toThrow(SyntaxError);
-		expect(() => getPlaceholders(":a{b}")).toThrow(SyntaxError);
+		expect(() => getPlaceholders("/:a{b}${c}{{d}}/")).toThrow(ValueError);
+		expect(() => getPlaceholders(":a{b}")).toThrow(ValueError);
 	});
 });
 describe("renderTemplate()", () => {

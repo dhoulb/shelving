@@ -115,7 +115,7 @@ export function getOptionalTime(possible: unknown): Time | undefined {
 /** Convert a possible time to a `Time` instance, or throw `ValueError` if it couldn't be converted. */
 export function getTime(possible?: PossibleTime): Time {
 	const time = getOptionalTime(possible);
-	if (!time) throw new ValueError(`Must be time`, possible);
+	if (!time) throw new ValueError(`Invalid time`, possible);
 	return time;
 }
 

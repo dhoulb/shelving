@@ -48,7 +48,7 @@ export function getOptionalDate(possible: unknown = "now"): Date | undefined {
 /** Convert a possible date to a `Date` instance, or throw `ValueError` if it couldn't be converted. */
 export function getDate(possible?: PossibleDate): Date {
 	const date = getOptionalDate(possible);
-	if (!date) throw new ValueError(`Must be date`, possible);
+	if (!date) throw new ValueError(`Invalid date`, possible);
 	return date;
 }
 

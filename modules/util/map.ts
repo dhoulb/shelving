@@ -1,6 +1,6 @@
 import type { Entry } from "./entry.js";
-import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import { ValueError } from "../error/ValueError.js";
 import { isIterable, limitItems } from "./iterate.js";
 
 /** `Map` that cannot be changed. */
@@ -32,7 +32,7 @@ export const isMap = (value: unknown): value is ImmutableMap => value instanceof
 
 /** Assert that a value is a `Map` instance. */
 export function assertMap(value: unknown): asserts value is ImmutableMap {
-	if (!isMap(value)) throw new AssertionError("Must be map", value);
+	if (!isMap(value)) throw new ValueError("Must be map", value);
 }
 
 /** Is an unknown value a key for an item in a map? */
@@ -40,7 +40,7 @@ export const isMapItem = <K, V>(map: ImmutableMap<K, V>, key: unknown): key is K
 
 /** Assert that an unknown value is a key for an item in a map. */
 export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): asserts key is K {
-	if (!isMapItem(map, key)) throw new AssertionError("Must be map item", key);
+	if (!isMapItem(map, key)) throw new ValueError("Must be map item", key);
 }
 
 /** Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged). */

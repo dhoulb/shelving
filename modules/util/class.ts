@@ -1,5 +1,5 @@
 import type { Arguments } from "./function.js";
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { debug } from "./debug.js";
 
 /** Class that has a public `constructor()` function. */
@@ -20,5 +20,5 @@ export const isInstance = <T>(value: unknown, type: Class<T>): value is T => val
 
 /** Assert that a value is an instance of something. */
 export function assertInstance<T>(value: unknown, type: Class<T>): asserts value is T {
-	if (!(value instanceof type)) throw new AssertionError(`Must be instance of ${debug(type)}`, value);
+	if (!(value instanceof type)) throw new ValueError(`Must be instance of ${debug(type)}`, value);
 }

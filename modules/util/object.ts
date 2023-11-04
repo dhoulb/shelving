@@ -1,5 +1,5 @@
 import type { ImmutableArray } from "./array.js";
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { isIterable } from "./iterate.js";
 
 /** Any readonly object. */
@@ -25,7 +25,7 @@ export const isObject = (value: unknown): value is ImmutableObject => typeof val
 
 /** Assert that a value is an object */
 export function assertObject(value: unknown): asserts value is ImmutableObject {
-	if (!isObject(value)) throw new AssertionError("Must be object", value);
+	if (!isObject(value)) throw new ValueError("Must be object", value);
 }
 
 /** Is an unknown value a plain object? */
@@ -39,7 +39,7 @@ export function isPlainObject(value: unknown): value is ImmutableObject {
 
 /** Assert that an unknown value is a plain object */
 export function assertPlainObject(value: unknown): asserts value is ImmutableObject {
-	if (!isPlainObject(value)) throw new AssertionError(`Must be plain object`, value);
+	if (!isPlainObject(value)) throw new ValueError(`Must be plain object`, value);
 }
 
 /** Is an unknown value the key for an own prop of an object. */
@@ -47,7 +47,7 @@ export const isProp = <T extends ImmutableObject>(obj: T, key: PropertyKey): key
 
 /** Assert that an unknown value is the key for an own prop of an object. */
 export function assertProp<T extends ImmutableObject>(obj: T, key: PropertyKey): asserts key is keyof T {
-	if (!isProp(obj, key)) throw new AssertionError("Must be object prop", key);
+	if (!isProp(obj, key)) throw new ValueError("Must be object prop", key);
 }
 
 /** Turn a possible object into an object. */

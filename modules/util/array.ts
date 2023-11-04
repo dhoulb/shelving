@@ -1,5 +1,5 @@
-import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import { ValueError } from "../error/ValueError.js";
 import { omitItems, pickItems } from "./iterate.js";
 import { formatRange } from "./number.js";
 
@@ -26,7 +26,7 @@ export const isArray = (value: unknown): value is ImmutableArray => Array.isArra
 
 /** Assert that an unknown value is an array. */
 export function assertArray<T>(arr: unknown): asserts arr is ImmutableArray<T> {
-	if (!isArray(arr)) throw new AssertionError(`Must be array`, arr);
+	if (!isArray(arr)) throw new ValueError(`Must be array`, arr);
 }
 
 /** Is an unknown value an item in a specified array? */
@@ -34,7 +34,7 @@ export const isArrayItem = <T>(arr: ImmutableArray<T>, item: unknown): item is T
 
 /** Assert that an unknown value is an item in a specified array. */
 export function assertArrayItem<T>(arr: ImmutableArray<T>, item: unknown): asserts item is T {
-	if (!isArrayItem(arr, item)) throw new AssertionError(`Must be array item`, item);
+	if (!isArrayItem(arr, item)) throw new ValueError(`Must be array item`, item);
 }
 
 /** Convert an iterable to an array (if its not already an array). */
@@ -207,7 +207,7 @@ export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 3, max?: numbe
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 4, max?: number): asserts arr is readonly [T, T, T, T, ...T[]];
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: number, max?: number): asserts arr is ImmutableArray<T>;
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Infinity): asserts arr is ImmutableArray<T> {
-	if (!isArray(arr) || !isArrayLength<T>(arr, min, max)) throw new AssertionError(`Must be array with length ${formatRange(min, max)}`, arr);
+	if (!isArray(arr) || !isArrayLength<T>(arr, min, max)) throw new ValueError(`Must be array with length ${formatRange(min, max)}`, arr);
 }
 
 /** Get an array if it has the specified minimum length.  */

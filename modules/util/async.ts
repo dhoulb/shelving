@@ -1,6 +1,6 @@
 import type { ValueCallback } from "./callback.js";
 import type { Report } from "./error.js";
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
 export const isAsync = <T>(value: PromiseLike<T> | T): value is PromiseLike<T> => typeof value === "object" && value !== null && typeof (value as Promise<T>).then === "function";
@@ -20,17 +20,17 @@ export function throwAsync<T>(value: PromiseLike<T> | T): T {
 
 /** Assert a synchronous value. */
 export function assertNotAsync<T>(value: PromiseLike<T> | T): asserts value is T {
-	if (isAsync(value)) throw new AssertionError("Must be synchronous", value);
+	if (isAsync(value)) throw new ValueError("Must be synchronous", value);
 }
 
 /** Assert an asynchronous value. */
 export function assertAsync<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
-	if (!isAsync(value)) throw new AssertionError("Must be asynchronous", value);
+	if (!isAsync(value)) throw new ValueError("Must be asynchronous", value);
 }
 
 /** Assert a promise. */
 export function assertPromise<T>(value: Promise<T> | T): asserts value is Promise<T> {
-	if (!(value instanceof Promise)) throw new AssertionError("Must be promise", value);
+	if (!(value instanceof Promise)) throw new ValueError("Must be promise", value);
 }
 
 /** Run any queued microtasks now. */

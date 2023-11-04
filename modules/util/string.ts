@@ -1,7 +1,6 @@
 /* eslint-disable no-control-regex */
 
 import type { ImmutableArray } from "./array.js";
-import { AssertionError } from "../error/AssertionError.js";
 import { ValueError } from "../error/ValueError.js";
 import { getArray, isArray } from "./array.js";
 import { formatDate, isDate } from "./date.js";
@@ -55,7 +54,7 @@ export const isStringLength = (str: string, min = 1, max = Infinity): boolean =>
 
 /** Assert that a value has a specific length (or length is in a specific range). */
 export function assertStringLength(str: unknown, min = 1, max = Infinity): asserts str is string {
-	if (!isString(str) || !isStringLength(str, min, max)) throw new AssertionError(`Must be string with length ${formatRange(min, max)}`, str);
+	if (!isString(str) || !isStringLength(str, min, max)) throw new ValueError(`Must be string with length ${formatRange(min, max)}`, str);
 }
 
 /** Get a string if it has the specified minimum length.  */
@@ -125,21 +124,21 @@ export const simplifyString = (str: string) =>
 /** Convert a string to a `kebab-case` URL slug, or return `undefined` if conversion resulted in an empty ref. */
 export const getOptionalSlug = (str: string): string | undefined => simplifyString(str).replace(/ /g, "-") || undefined;
 
-/* Convert a string to a `kebab-case` URL slug, or throw `AssertionError` if conversion resulted in an empty ref. */
+/* Convert a string to a `kebab-case` URL slug, or throw `ValueError` if conversion resulted in an empty ref. */
 export function getSlug(str: string): string {
 	const slug = getOptionalSlug(str);
 	if (slug) return slug;
-	throw new AssertionError("Invalid slug", str);
+	throw new ValueError("Invalid slug", str);
 }
 
 /** Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty ref. */
 export const getOptionalRef = (str: string): string | undefined => simplifyString(str).replace(/ /g, "") || undefined;
 
-/** Convert a string to a unique ref e.g. `abc123`, or throw `AssertionError` if conversion resulted in an empty ref. */
+/** Convert a string to a unique ref e.g. `abc123`, or throw `ValueError` if conversion resulted in an empty ref. */
 export function getRef(str: string): string {
 	const ref = getOptionalRef(str);
 	if (ref) return ref;
-	throw new AssertionError("Invalid string ref", str);
+	throw new ValueError("Invalid string ref", str);
 }
 
 /**
@@ -187,8 +186,8 @@ export function limitString(str: string, maxLength: number, append = "…") {
  * - Excess segments in `String.prototype.split()` is counterintuitive because further parts are thrown away.
  * - Excess segments in `splitString()` are concatenated onto the last segment (set `max` to `null` if you want infinite segments).
  *
- * @throws AssertionError if `min` isn't met.
- * @throws AssertionError if any of the segments are empty.
+ * @throws ValueError if `min` isn't met.
+ * @throws ValueError if any of the segments are empty.
  */
 export function splitString(str: string, separator: string, min: 1, max: 1): readonly [string];
 export function splitString(str: string, separator: string, min: 2, max: 2): readonly [string, string];
@@ -202,6 +201,6 @@ export function splitString(str: string, separator: string, min?: number, max?: 
 export function splitString(str: string, separator: string, min = 1, max = Infinity): ImmutableArray<string> {
 	const segments = str.split(separator);
 	if (segments.length > max) segments.splice(max - 1, segments.length, segments.slice(max - 1).join(separator));
-	if (segments.length < min || !segments.every(Boolean)) throw new AssertionError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, str);
+	if (segments.length < min || !segments.every(Boolean)) throw new ValueError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, str);
 	return segments;
 }

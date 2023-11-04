@@ -1,5 +1,5 @@
 import type { Class } from "./class.js";
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { isObject } from "./object.js";
 
 /** Something that has a source of a specified type. */
@@ -22,6 +22,6 @@ export function getOptionalSource<T>(type: Class<T>, value: unknown): T | undefi
  */
 export function getSource<T>(type: Class<T>, data: unknown): T {
 	const source = getOptionalSource(type, data);
-	if (!source) throw new AssertionError(`Source "${type.name}" not found`, data);
+	if (!source) throw new ValueError(`Source "${type.name}" not found`, data);
 	return source;
 }

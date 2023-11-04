@@ -1,5 +1,5 @@
 import {
-	AssertionError,
+	ValueError,
 	addArrayItem,
 	addArrayItems,
 	assertArrayLength,
@@ -118,18 +118,18 @@ test("isArrayLength()", () => {
 test("assertArrayLength()", () => {
 	// Assert maximum.
 	expect(() => assertArrayLength([1, 2, 3], 3)).not.toThrow();
-	expect(() => assertArrayLength([1, 2, 3], 5)).toThrow(AssertionError);
+	expect(() => assertArrayLength([1, 2, 3], 5)).toThrow(ValueError);
 
 	// Assert minimum.
 	expect(() => assertArrayLength([1, 2, 3], 0, 3)).not.toThrow();
-	expect(() => assertArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(AssertionError);
+	expect(() => assertArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(ValueError);
 });
 test("getArrayLength()", () => {
 	// Check maximum.
 	expect(getArrayLength([1, 2, 3], 3)).toEqual([1, 2, 3]);
-	expect(() => getArrayLength([1, 2, 3], 5)).toThrow(AssertionError);
+	expect(() => getArrayLength([1, 2, 3], 5)).toThrow(ValueError);
 
 	// Check minimum.
 	expect(getArrayLength([1, 2, 3], 0, 3)).toEqual([1, 2, 3]);
-	expect(() => getArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(AssertionError);
+	expect(() => getArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(ValueError);
 });

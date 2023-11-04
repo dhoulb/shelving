@@ -1,8 +1,8 @@
 import type { MapKey } from "./map.js";
 import type { NumberOptions } from "./number.js";
 import type { ImmutableObject } from "./object.js";
-import { AssertionError } from "../error/AssertionError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
 import { ImmutableMap } from "./map.js";
 import { formatQuantity, pluralizeQuantity } from "./number.js";
@@ -87,7 +87,7 @@ export class Unit<K extends string> {
 		const thisToBase = this._to?.[base.key];
 		if (thisToBase) return base._toUnit(_convert(amount, thisToBase), unit);
 		// Cannot convert.
-		throw new AssertionError(`Cannot convert "${this.key}" to "${unit.key}"`);
+		throw new ValueError(`Cannot convert "${this.key}" to "${unit.key}"`);
 	}
 
 	/** Format an amount with a given unit of measure, e.g. `12 kg` or `29.5 l` */

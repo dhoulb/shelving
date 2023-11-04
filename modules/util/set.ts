@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { limitItems } from "./iterate.js";
 
 /** `Set` that cannot be changed. */
@@ -18,7 +18,7 @@ export const isSet = (value: unknown): value is ImmutableSet => value instanceof
 
 /** Assert that a value is a `Set` instance. */
 export function assertSet(value: unknown): asserts value is ImmutableSet {
-	if (!isSet(value)) throw new AssertionError(`Must be set`, value);
+	if (!isSet(value)) throw new ValueError(`Must be set`, value);
 }
 
 /** Is an unknown value an item in a set? */
@@ -26,7 +26,7 @@ export const isSetItem = <T>(set: ImmutableSet<T>, item: unknown): item is T => 
 
 /** Assert that an unknown value is an item in a set. */
 export function assertSetItem<T>(set: ImmutableSet<T>, item: unknown): asserts item is T {
-	if (!isSetItem(set, item)) throw new AssertionError("Must be set item", item);
+	if (!isSetItem(set, item)) throw new ValueError("Must be set item", item);
 }
 
 /** Convert an iterable to a `Set` (if it's already a `Set` it passes through unchanged). */

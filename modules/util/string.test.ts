@@ -1,4 +1,4 @@
-import { AssertionError, NBSP, NNBSP, THINSP, assertStringLength, getSlug, getString, getStringLength, getWords, isStringLength, sanitizeLines, sanitizeString, simplifyString, splitString } from "../index.js";
+import { NBSP, NNBSP, THINSP, ValueError, assertStringLength, getSlug, getString, getStringLength, getWords, isStringLength, sanitizeLines, sanitizeString, simplifyString, splitString } from "../index.js";
 
 describe("getString()", () => {
 	test("Correct returned value", () => {
@@ -143,11 +143,11 @@ test("splitString()", () => {
 	expect(splitString("a/b/c/d//e", "/", 4, 4)).toEqual(["a", "b", "c", "d//e"]);
 
 	// Segments cannot be empty.
-	expect(() => splitString("a//c", "/", 10)).toThrow(AssertionError);
+	expect(() => splitString("a//c", "/", 10)).toThrow(ValueError);
 
 	// Min segments is not met.
-	expect(() => splitString("a/b/c", "/", 4)).toThrow(AssertionError);
-	expect(() => splitString("a/b/c/d/e/f", "/", 4, 3)).toThrow(AssertionError);
+	expect(() => splitString("a/b/c", "/", 4)).toThrow(ValueError);
+	expect(() => splitString("a/b/c/d/e/f", "/", 4, 3)).toThrow(ValueError);
 });
 test("isStringLength()", () => {
 	// Check maximum.
@@ -161,18 +161,18 @@ test("isStringLength()", () => {
 test("assertStringLength()", () => {
 	// Assert maximum.
 	expect(() => assertStringLength("abc", 3)).not.toThrow();
-	expect(() => assertStringLength("abc", 5)).toThrow(AssertionError);
+	expect(() => assertStringLength("abc", 5)).toThrow(ValueError);
 
 	// Assert minimum.
 	expect(() => assertStringLength("abc", 0, 3)).not.toThrow();
-	expect(() => assertStringLength("abcde", 0, 3)).toThrow(AssertionError);
+	expect(() => assertStringLength("abcde", 0, 3)).toThrow(ValueError);
 });
 test("getStringLength()", () => {
 	// Check maximum.
 	expect(getStringLength("abc", 3)).toBe("abc");
-	expect(() => getStringLength("abc", 5)).toThrow(AssertionError);
+	expect(() => getStringLength("abc", 5)).toThrow(ValueError);
 
 	// Check minimum.
 	expect(getStringLength("abc", 0, 3)).toBe("abc");
-	expect(() => getStringLength("abcde", 0, 3)).toThrow(AssertionError);
+	expect(() => getStringLength("abcde", 0, 3)).toThrow(ValueError);
 });

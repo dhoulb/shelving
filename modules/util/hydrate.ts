@@ -1,7 +1,7 @@
 import type { Class } from "./class.js";
 import type { ImmutableDictionary } from "./dictionary.js";
 import type { ImmutableObject } from "./object.js";
-import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { isArray } from "./array.js";
 import { isDate } from "./date.js";
 import { isMap } from "./map.js";
@@ -39,7 +39,7 @@ export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 		if ($type === "Date") return new Date($value as ConstructorParameters<typeof Date>[0]);
 		const hydration = hydrations[$type];
 		if (hydration) return { __proto__: hydration.prototype as unknown, ...mapObject($value as ImmutableObject, hydrate, hydrations) };
-		throw new AssertionError(`Cannot hydrate "${$type}" object`, value);
+		throw new ValueError(`Cannot hydrate "${$type}" object`, value);
 	}
 	return value;
 }
@@ -64,7 +64,7 @@ export function dehydrate(value: unknown, hydrations: Hydrations): unknown {
 		else {
 			const proto = getPrototype(value);
 			for (const [$type, hydration] of getProps(hydrations)) if (proto === hydration.prototype) return { $type, $value: mapObject(value, dehydrate, hydrations) };
-			throw new AssertionError(`Cannot dehydrate object`, value);
+			throw new ValueError(`Cannot dehydrate object`, value);
 		}
 	}
 	return value;
