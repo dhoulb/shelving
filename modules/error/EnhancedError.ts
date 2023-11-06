@@ -5,7 +5,7 @@ import { debug } from "../util/debug.js";
  * - Context is appended to `.message` in the format `message: debuggedContext`
  * - Context is converted to a string using `debug()`
  */
-export class EnhancedError extends global.Error {
+export class EnhancedError extends Error {
 	readonly context: unknown;
 	constructor(message: string, context?: unknown) {
 		const debugged = context !== undefined ? debug(context, 2) : "";
