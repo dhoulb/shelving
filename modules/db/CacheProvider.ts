@@ -1,15 +1,16 @@
-import type { AsyncProvider } from "./Provider.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
 import { MemoryProvider } from "./MemoryProvider.js";
+import { AsyncProvider } from "./Provider.js";
 
 /** Keep a copy of asynchronous remote data in a local synchronous cache. */
-export class CacheProvider<T extends Database> implements AsyncProvider<T>, Sourceable<AsyncProvider<T>> {
+export class CacheProvider<T extends Database> extends AsyncProvider<T> implements Sourceable<AsyncProvider<T>> {
 	readonly source: AsyncProvider<T>;
 	readonly memory: MemoryProvider<T>;
 	constructor(source: AsyncProvider<T>, cache: MemoryProvider<T> = new MemoryProvider<T>()) {
+		super();
 		this.source = source;
 		this.memory = cache;
 	}
@@ -38,7 +39,7 @@ export class CacheProvider<T extends Database> implements AsyncProvider<T>, Sour
 		await this.source.deleteItem(collection, id);
 		this.memory.deleteItem(collection, id);
 	}
-	countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<number> {
+	override countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<number> {
 		return this.source.countQuery(collection, query);
 	}
 	async getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<Items<T[K]>> {

@@ -5,8 +5,9 @@ export * from "./QueryStore.js";
 // Providers.
 export * from "./Provider.js";
 export * from "./ThroughProvider.js";
-export * from "./MemoryProvider.js";
-export * from "./ValidationProvider.js";
 export * from "./CacheProvider.js";
+export * from "./ChangeProvider.js";
 export * from "./DebugProvider.js";
-export * from "./ConvenienceProvider.js";
+export * from "./MemoryProvider.js";
+export * from "./OperationProvider.js";
+export * from "./ValidationProvider.js";

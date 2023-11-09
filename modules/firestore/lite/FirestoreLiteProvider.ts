@@ -1,9 +1,9 @@
-import type { AsyncProvider } from "../../db/Provider.js";
 import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { CollectionReference, DocumentReference, DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocumentSnapshot, UpdateData } from "firebase/firestore/lite";
 import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, documentId, getCount, getDoc, getDocs, increment, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore/lite";
+import { AsyncProvider } from "../../db/Provider.js";
 import { UnimplementedError } from "../../error/UnimplementedError.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
@@ -66,9 +66,10 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
  * - Does not support offline mode.
  * - Does not support realtime subscriptions.
  */
-export class FirestoreLiteProvider<T extends Database> implements AsyncProvider<T> {
+export class FirestoreLiteProvider<T extends Database> extends AsyncProvider<T> {
 	private readonly _firestore: Firestore;
 	constructor(firestore: Firestore) {
+		super();
 		this._firestore = firestore;
 	}
 	async getItem<K extends DataKey<T>>(c: K, id: string): Promise<OptionalItem<T[K]>> {
@@ -91,7 +92,7 @@ export class FirestoreLiteProvider<T extends Database> implements AsyncProvider<
 	async deleteItem<K extends DataKey<T>>(c: K, id: string): Promise<void> {
 		await deleteDoc(doc(this._firestore, c, id));
 	}
-	async countQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<T[K]>): Promise<number> {
+	override async countQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<T[K]>): Promise<number> {
 		const snapshot = await getCount(_getQuery(this._firestore, c, q));
 		return snapshot.data().count;
 	}

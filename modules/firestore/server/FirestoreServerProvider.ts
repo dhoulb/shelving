@@ -1,9 +1,9 @@
-import type { AsyncProvider } from "../../db/Provider.js";
 import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
 import type { Update, Updates } from "../../util/update.js";
 import type { BulkWriter, CollectionReference, DocumentData, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot, UpdateData } from "@google-cloud/firestore";
 import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
+import { AsyncProvider } from "../../db/Provider.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
@@ -73,10 +73,11 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
  * Firestore server database provider.
  * - Works with the Firebase Admin SDK for Node.JS
  */
-export class FirestoreServerProvider<T extends Database> implements AsyncProvider<T> {
+export class FirestoreServerProvider<T extends Database> extends AsyncProvider<T> {
 	private readonly _firestore: Firestore;
 
 	constructor(firestore = new Firestore()) {
+		super();
 		this._firestore = firestore;
 	}
 
@@ -110,7 +111,7 @@ export class FirestoreServerProvider<T extends Database> implements AsyncProvide
 		await _getCollection<T, K>(this._firestore, c).doc(id).delete();
 	}
 
-	async countQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<T[K]>): Promise<number> {
+	override async countQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<T[K]>): Promise<number> {
 		const snapshot = await _getQuery(this._firestore, c, q).count().get();
 		return snapshot.data().count;
 	}

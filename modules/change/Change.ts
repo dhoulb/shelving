@@ -3,7 +3,6 @@ import type { ImmutableArray } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { ItemQuery } from "../util/item.js";
 import type { Updates } from "../util/update.js";
-import { type Optional, notOptional } from "../util/optional.js";
 
 /** A change to a database. */
 export interface Change {
@@ -116,17 +115,8 @@ export function getQueryDelete<T extends Database, K extends DataKey<T>>(provide
 	return { action: "delete", collection, query };
 }
 
-/** Write a set of changes to a synchronous provider. */
-export function writeProviderChanges<T extends Database>(provider: Provider<T>, ...changes: Optional<DatabaseChange<T>>[]): DatabaseChanges<T> {
-	return changes.filter(notOptional).map(change => writeProviderChange(provider, change));
-}
-
-/**
- * Write a single change to a synchronous provider.
- * @param change Change that should be written.
- * @return Change that was written.
- */
-export function writeProviderChange<T extends Database>(provider: Provider<T>, change: DatabaseChange<T>): DatabaseChange<T> {
+/** Write a single change to a synchronous provider and return an array of the changes that were written. */
+export function writeChange<T extends Database>(provider: Provider<T>, change: DatabaseChange<T>): DatabaseChange<T> {
 	const { action, collection, id, query } = change;
 	if (action === "add") {
 		// `add` change returns a `set` change so it includes the ID to reflect the change that was written.
@@ -143,17 +133,8 @@ export function writeProviderChange<T extends Database>(provider: Provider<T>, c
 	return change;
 }
 
-/** Write a set of changes to an asynchronous provider. */
-export function writeAsyncProviderChanges<T extends Database>(provider: AsyncProvider<T>, ...changes: Optional<DatabaseChange<T>>[]): Promise<DatabaseChanges<T>> {
-	return Promise.all(changes.filter(notOptional).map(change => writeAsyncProviderChange(provider, change)));
-}
-
-/**
- * Write a single change to an asynchronous provider.
- * @param change Change that should be written.
- * @return Change that was written.
- */
-export async function writeAsyncProviderChange<T extends Database>(provider: AsyncProvider<T>, change: DatabaseChange<T>): Promise<DatabaseChange<T>> {
+/** Write a single change to an asynchronous provider and return the change that was written. */
+export async function writeAsyncChange<T extends Database>(provider: AsyncProvider<T>, change: DatabaseChange<T>): Promise<DatabaseChange<T>> {
 	const { collection, action, id, query } = change;
 	if (action === "add") {
 		// `add` change returns a `set` change so it includes the ID to reflect the change that was written.

@@ -1,4 +1,4 @@
-import type { AbstractProvider, AsyncProvider, Provider } from "./Provider.js";
+import type { AsyncProvider, Provider } from "./Provider.js";
 import type { DataSchema, DatabaseSchemas } from "../schema/DataSchema.js";
 import type { Data, DataKey, Database } from "../util/data.js";
 import type { MutableDictionary } from "../util/dictionary.js";
@@ -9,6 +9,7 @@ import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { updateData } from "../util/update.js";
 import { validateWithContext } from "../util/validate.js";
+import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 
 // Constants.
 const VALIDATION_CONTEXT_GET = { action: "get", id: true as const };
@@ -16,105 +17,108 @@ const VALIDATION_CONTEXT_ADD = { action: "add" };
 const VALIDATION_CONTEXT_SET = { action: "set" };
 const VALIDATION_CONTEXT_UPDATE = { action: "update", partial: true as const };
 
-/** Validate a source provider (source can have any type because validation guarantees the type). */
-abstract class AbstractValidationProvider<T extends Database> {
-	abstract source: AbstractProvider<T>;
+/** Validate a synchronous source provider (source can have any type because validation guarantees the type). */
+export class ValidationProvider<T extends Database> extends ThroughProvider<T> implements Provider<T>, Sourceable<Provider<T>> {
 	readonly schemas: DatabaseSchemas<T>;
-	constructor(schemas: DatabaseSchemas<T>) {
+	constructor(schemas: DatabaseSchemas<T>, source: Provider<T>) {
+		super(source);
+		this.schemas = schemas;
+	}
+	/** Get a named schema. */
+	getSchema<K extends DataKey<T>>(collection: K): DataSchema<T[K]> {
+		return this.schemas[collection];
+	}
+	override getItem<K extends DataKey<T>>(collection: K, id: string): OptionalItem<T[K]> {
+		return _validateItem(collection, super.getItem(collection, id), this.getSchema(collection));
+	}
+	override async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>> {
+		const schema = this.getSchema(collection);
+		for await (const unsafeItem of super.getItemSequence(collection, id)) yield _validateItem(collection, unsafeItem, schema);
+	}
+	override addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
+		return super.addItem(collection, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_ADD));
+	}
+	override setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
+		return super.setItem(collection, id, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_SET));
+	}
+	override updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
+		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
+		return super.updateItem(collection, id, updates);
+	}
+	override deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
+		return super.deleteItem(collection, id);
+	}
+	override countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number {
+		return super.countQuery(collection, query);
+	}
+	override getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Items<T[K]> {
+		return _validateItems(collection, super.getQuery(collection, query), this.getSchema(collection));
+	}
+	override setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): void {
+		return super.setQuery(collection, query, this.getSchema(collection).validate(data));
+	}
+	override updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): void {
+		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
+		return super.updateQuery(collection, query, updates);
+	}
+	override deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void {
+		return super.deleteQuery(collection, query);
+	}
+	override async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
+		const schema = this.getSchema(collection);
+		for await (const unsafeItems of super.getQuerySequence(collection, query)) yield _validateItems(collection, unsafeItems, schema);
+	}
+}
+
+/** Validate an asynchronous source provider (source can have any type because validation guarantees the type). */
+export class AsyncValidationProvider<T extends Database> extends AsyncThroughProvider<T> implements AsyncProvider<T>, Sourceable<AsyncProvider<T>> {
+	readonly schemas: DatabaseSchemas<T>;
+	constructor(schemas: DatabaseSchemas<T>, source: AsyncProvider<T>) {
+		super(source);
 		this.schemas = schemas;
 	}
 	getSchema<K extends DataKey<T>>(collection: K): DataSchema<T[K]> {
 		return this.schemas[collection];
 	}
-	async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>> {
+	override async getItem<K extends DataKey<T>>(collection: K, id: string): Promise<OptionalItem<T[K]>> {
+		return _validateItem(collection, await super.getItem(collection, id), this.getSchema(collection));
+	}
+	override async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>> {
 		const schema = this.getSchema(collection);
-		for await (const unsafeItem of this.source.getItemSequence(collection, id)) yield _validateItem(collection, unsafeItem, schema);
+		for await (const unsafeItem of super.getItemSequence(collection, id)) yield _validateItem(collection, unsafeItem, schema);
 	}
-	async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
+	override addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
+		return super.addItem(collection, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_ADD));
+	}
+	override setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
+		return super.setItem(collection, id, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_SET));
+	}
+	override updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
+		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
+		return super.updateItem(collection, id, updates);
+	}
+	override deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
+		return super.deleteItem(collection, id);
+	}
+	override countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<number> {
+		return super.countQuery(collection, query);
+	}
+	override async getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<Items<T[K]>> {
+		return _validateItems(collection, await super.getQuery(collection, query), this.getSchema(collection));
+	}
+	override async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
 		const schema = this.getSchema(collection);
-		for await (const unsafeItems of this.source.getQuerySequence(collection, query)) yield _validateItems(collection, unsafeItems, schema);
+		for await (const unsafeItems of super.getQuerySequence(collection, query)) yield _validateItems(collection, unsafeItems, schema);
 	}
-}
-
-/** Validate a synchronous source provider (source can have any type because validation guarantees the type). */
-export class ValidationProvider<T extends Database> extends AbstractValidationProvider<T> implements Provider<T>, Sourceable<Provider<T>> {
-	readonly source: Provider<T>;
-	constructor(schemas: DatabaseSchemas<T>, source: Provider<T>) {
-		super(schemas);
-		this.source = source;
+	override setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): Promise<void> {
+		return super.setQuery(collection, query, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_SET));
 	}
-	getItem<K extends DataKey<T>>(collection: K, id: string): OptionalItem<T[K]> {
-		return _validateItem(collection, this.source.getItem(collection, id), this.getSchema(collection));
-	}
-	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
-		return this.source.addItem(collection, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_ADD));
-	}
-	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
-		return this.source.setItem(collection, id, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_SET));
-	}
-	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
+	override updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): Promise<void> {
 		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
-		return this.source.updateItem(collection, id, updates);
+		return super.updateQuery(collection, query, updates);
 	}
-	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
-		return this.source.deleteItem(collection, id);
-	}
-	countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number {
-		return this.source.countQuery(collection, query);
-	}
-	getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Items<T[K]> {
-		return _validateItems(collection, this.source.getQuery(collection, query), this.getSchema(collection));
-	}
-	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, value: T[K]): void {
-		return this.source.setQuery(collection, query, this.getSchema(collection).validate(value));
-	}
-	updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): void {
-		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
-		return this.source.updateQuery(collection, query, updates);
-	}
-	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void {
-		return this.source.deleteQuery(collection, query);
-	}
-}
-
-/** Validate an asynchronous source provider (source can have any type because validation guarantees the type). */
-export class AsyncValidationProvider<T extends Database> extends AbstractValidationProvider<T> implements AsyncProvider<T>, Sourceable<AsyncProvider<T>> {
-	readonly source: AsyncProvider<T>;
-	constructor(schemas: DatabaseSchemas<T>, source: AsyncProvider<T>) {
-		super(schemas);
-		this.source = source;
-	}
-	async getItem<K extends DataKey<T>>(collection: K, id: string): Promise<OptionalItem<T[K]>> {
-		return _validateItem(collection, await this.source.getItem(collection, id), this.getSchema(collection));
-	}
-	addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
-		return this.source.addItem(collection, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_ADD));
-	}
-	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
-		return this.source.setItem(collection, id, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_SET));
-	}
-	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
-		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
-		return this.source.updateItem(collection, id, updates);
-	}
-	deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
-		return this.source.deleteItem(collection, id);
-	}
-	countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<number> {
-		return this.source.countQuery(collection, query);
-	}
-	async getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<Items<T[K]>> {
-		return _validateItems(collection, await this.source.getQuery(collection, query), this.getSchema(collection));
-	}
-	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, value: T[K]): Promise<void> {
-		return this.source.setQuery(collection, query, validateWithContext(value, this.getSchema(collection), VALIDATION_CONTEXT_SET));
-	}
-	updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): Promise<void> {
-		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
-		return this.source.updateQuery(collection, query, updates);
-	}
-	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<void> {
-		return this.source.deleteQuery(collection, query);
+	override deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<void> {
+		return super.deleteQuery(collection, query);
 	}
 }
 

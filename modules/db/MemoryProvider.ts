@@ -1,4 +1,3 @@
-import type { Provider } from "./Provider.js";
 import type { Data, DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Updates } from "../util/update.js";
@@ -10,13 +9,14 @@ import { countItems } from "../util/iterate.js";
 import { queryItems, queryWritableItems } from "../util/query.js";
 import { getRandomKey } from "../util/random.js";
 import { updateData } from "../util/update.js";
+import { Provider } from "./Provider.js";
 
 /**
  * Fast in-memory store for data.
  * - Extremely fast (ideal for caching!), but does not persist data after the browser window is closed.
  * - `get()` etc return the exact same instance of an object that's passed into `set()`
  */
-export class MemoryProvider<T extends Database> implements Provider<T> {
+export class MemoryProvider<T extends Database> extends Provider<T> {
 	/** List of tables in `{ collection: Table }` format. */
 	private _tables: { [K in DataKey<T>]?: MemoryTable<T[K]> } = {};
 
@@ -65,7 +65,7 @@ export class MemoryProvider<T extends Database> implements Provider<T> {
 		return this.getTable(collection).getQueryTime(query);
 	}
 
-	countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number {
+	override countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number {
 		return this.getTable(collection).countQuery(query);
 	}
 
