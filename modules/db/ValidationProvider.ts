@@ -49,8 +49,8 @@ export class ValidationProvider<T extends Database> extends AbstractValidationPr
 	addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
 		return this.source.addItem(collection, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_ADD));
 	}
-	setItem<K extends DataKey<T>>(collection: K, id: string, value: T[K]): void {
-		return this.source.setItem(collection, id, validateWithContext(value, this.getSchema(collection), VALIDATION_CONTEXT_SET));
+	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
+		return this.source.setItem(collection, id, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_SET));
 	}
 	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
 		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
@@ -90,8 +90,8 @@ export class AsyncValidationProvider<T extends Database> extends AbstractValidat
 	addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
 		return this.source.addItem(collection, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_ADD));
 	}
-	setItem<K extends DataKey<T>>(collection: K, id: string, value: T[K]): Promise<void> {
-		return this.source.setItem(collection, id, validateWithContext(value, this.getSchema(collection), VALIDATION_CONTEXT_SET));
+	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
+		return this.source.setItem(collection, id, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_SET));
 	}
 	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
 		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
