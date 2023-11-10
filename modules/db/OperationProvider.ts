@@ -4,7 +4,7 @@ import type { AsyncValueCallback, ValueCallback } from "../util/callback.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { ItemQuery } from "../util/item.js";
 import type { Updates } from "../util/update.js";
-import { type DatabaseChange, type DatabaseChanges, getItemDelete, getItemSet, getItemUpdate, getQueryDelete, getQuerySet, getQueryUpdate, writeAsyncChange, writeChange } from "../change/Change.js";
+import { type DatabaseChange, type DatabaseChanges, writeAsyncChange, writeChange } from "../change/Change.js";
 import { type Optional, notOptional } from "../util/optional.js";
 import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 
@@ -33,32 +33,32 @@ export class OperationProvider<T extends Database> extends ThroughProvider<T> {
 	readonly _written: MutableArray<DatabaseChange<T>> = [];
 	override addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
 		const id = super.addItem(collection, data);
-		this._written.push(getItemSet(this, collection, id, data));
+		this._written.push({ action: "set", collection, id, data });
 		return id;
 	}
 	override setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
 		super.setItem(collection, id, data);
-		this._written.push(getItemSet(this, collection, id, data));
+		this._written.push({ action: "set", collection, id, data });
 	}
 	override updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
 		super.updateItem(collection, id, updates);
-		this._written.push(getItemUpdate(this, collection, id, updates));
+		this._written.push({ action: "update", collection, id, updates });
 	}
 	override deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
 		super.deleteItem(collection, id);
-		this._written.push(getItemDelete(this, collection, id));
+		this._written.push({ action: "delete", collection, id });
 	}
 	override setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): void {
 		super.setQuery(collection, query, data);
-		this._written.push(getQuerySet(this, collection, query, data));
+		this._written.push({ action: "set", collection, query, data });
 	}
 	override updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): void {
 		super.updateQuery(collection, query, updates);
-		this._written.push(getQueryUpdate(this, collection, query, updates));
+		this._written.push({ action: "update", collection, query, updates });
 	}
 	override deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void {
 		super.deleteQuery(collection, query);
-		this._written.push(getQueryDelete(this, collection, query));
+		this._written.push({ action: "delete", collection, query });
 	}
 }
 
@@ -89,31 +89,31 @@ export class AsyncOperationProvider<T extends Database> extends AsyncThroughProv
 	readonly _written: MutableArray<DatabaseChange<T>> = [];
 	override async addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
 		const id = await super.addItem(collection, data);
-		this._written.push(getItemSet(this, collection, id, data));
+		this._written.push({ action: "set", collection, id, data });
 		return id;
 	}
 	override async setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
 		await super.setItem(collection, id, data);
-		this._written.push(getItemSet(this, collection, id, data));
+		this._written.push({ action: "set", collection, id, data });
 	}
 	override async updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void> {
 		await super.updateItem(collection, id, updates);
-		this._written.push(getItemUpdate(this, collection, id, updates));
+		this._written.push({ action: "update", collection, id, updates });
 	}
 	override async deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
 		await super.deleteItem(collection, id);
-		this._written.push(getItemDelete(this, collection, id));
+		this._written.push({ action: "delete", collection, id });
 	}
 	override async setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): Promise<void> {
 		await super.setQuery(collection, query, data);
-		this._written.push(getQuerySet(this, collection, query, data));
+		this._written.push({ action: "set", collection, query, data });
 	}
 	override async updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): Promise<void> {
 		await super.updateQuery(collection, query, updates);
-		this._written.push(getQueryUpdate(this, collection, query, updates));
+		this._written.push({ action: "update", collection, query, updates });
 	}
 	override async deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<void> {
 		await super.deleteQuery(collection, query);
-		this._written.push(getQueryDelete(this, collection, query));
+		this._written.push({ action: "delete", collection, query });
 	}
 }

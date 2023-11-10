@@ -6,7 +6,6 @@ export * from "./QueryStore.js";
 export * from "./Provider.js";
 export * from "./ThroughProvider.js";
 export * from "./CacheProvider.js";
-export * from "./ChangeProvider.js";
 export * from "./DebugProvider.js";
 export * from "./MemoryProvider.js";
 export * from "./OperationProvider.js";

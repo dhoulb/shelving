@@ -1,4 +1,4 @@
-import type { AbstractProvider, AsyncProvider, Provider } from "../db/Provider.js";
+import type { AsyncProvider, Provider } from "../db/Provider.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { ItemQuery } from "../util/item.js";
@@ -79,41 +79,6 @@ export type DatabaseChange<T extends Database> = ItemAddChange<T, DataKey<T>> | 
 
 /** Write an item or multiple items in a set of collection. */
 export type DatabaseChanges<T extends Database> = ImmutableArray<DatabaseChange<T>>;
-
-/** Get a set change for an item. */
-export function getItemAdd<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, data: T[K]): ItemAddChange<T, K> {
-	return { action: "add", collection, data };
-}
-
-/** Get a set change for an item. */
-export function getItemSet<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, id: string, data: T[K]): ItemSetChange<T, K> {
-	return { action: "set", collection, id, data };
-}
-
-/** Get an update change an item. */
-export function getItemUpdate<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, id: string, updates: Updates<T[K]>): ItemUpdateChange<T, K> {
-	return { action: "update", collection, id, updates };
-}
-
-/** Get a set change for an item. */
-export function getItemDelete<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, id: string): ItemDeleteChange<T, K> {
-	return { action: "delete", collection, id };
-}
-
-/** Get a set change for an query. */
-export function getQuerySet<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, query: ItemQuery<T[K]>, data: T[K]): QuerySetChange<T, K> {
-	return { action: "set", collection, query, data };
-}
-
-/** Get an update change an query. */
-export function getQueryUpdate<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): QueryUpdateChange<T, K> {
-	return { action: "update", collection, query, updates };
-}
-
-/** Get a set change for an query. */
-export function getQueryDelete<T extends Database, K extends DataKey<T>>(provider: AbstractProvider<T>, collection: K, query: ItemQuery<T[K]>): QueryDeleteChange<T, K> {
-	return { action: "delete", collection, query };
-}
 
 /** Write a single change to a synchronous provider and return an array of the changes that were written. */
 export function writeChange<T extends Database>(provider: Provider<T>, change: DatabaseChange<T>): DatabaseChange<T> {
