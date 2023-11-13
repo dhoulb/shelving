@@ -22,7 +22,6 @@
 	"exports": {
 		".": "./index.js",
 		"./api": "./api/index.js",
-		"./change": "./change/index.js",
 		"./db": "./db/index.js",
 		"./error": "./error/index.js",
 		"./feedback": "./feedback/index.js",
@@ -31,7 +30,6 @@
 		"./firestore/server": "./firestore/server/index.js",
 		"./iterate": "./iterate/index.js",
 		"./markup": "./markup/index.js",
-		"./provider": "./provider/index.js",
 		"./react": "./react/index.js",
 		"./schema": "./schema/index.js",
 		"./sequence": "./sequence/index.js",
