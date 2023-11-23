@@ -62,7 +62,9 @@ export function compareAscending(left: unknown, right: unknown): number {
 }
 
 /** Compare two unknown values in descending order. */
-export const compareDescending = (left: unknown, right: unknown): number => 0 - compareAscending(left, right);
+export function compareDescending(left: unknown, right: unknown): number {
+	return 0 - compareAscending(left, right);
+}
 
 /**
  * Quick sort algorithm.

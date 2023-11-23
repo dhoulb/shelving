@@ -16,7 +16,9 @@ import { formatObject, isObject } from "./object.js";
 export type NotString = { toUpperCase?: never; toLowerCase?: never };
 
 /** Is a value a string? */
-export const isString = (value: unknown): value is string => typeof value === "string";
+export function isString(value: unknown): value is string {
+	return typeof value === "string";
+}
 
 /** Assert that a value is a string. */
 export function assertString(value: unknown): asserts value is string {
@@ -50,7 +52,9 @@ export function getString(value: unknown): string {
 }
 
 /** Does a string have the specified minimum length.  */
-export const isStringLength = (str: string, min = 1, max = Infinity): boolean => str.length >= min && str.length <= max;
+export function isStringLength(str: string, min = 1, max = Infinity): boolean {
+	return str.length >= min && str.length <= max;
+}
 
 /** Assert that a value has a specific length (or length is in a specific range). */
 export function assertStringLength(str: unknown, min = 1, max = Infinity): asserts str is string {
@@ -64,7 +68,9 @@ export function getStringLength(str: string, min = 1, max = Infinity): string {
 }
 
 /** Concatenate an iterable set of strings together. */
-export const joinStrings = (strs: Iterable<string> & NotString, joiner = ""): string => getArray(strs).join(joiner);
+export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): string {
+	return getArray(strs).join(joiner);
+}
 
 /**
  * Sanitize a single-line string.
@@ -75,11 +81,12 @@ export const joinStrings = (strs: Iterable<string> & NotString, joiner = ""): st
  *
  * @example santizeString("\x00Nice!   "); // Returns `"Nice!"`
  */
-export const sanitizeString = (str: string): string =>
-	str
+export function sanitizeString(str: string): string {
+	return str
 		.replace(/[^\P{C}\s]/gu, "") // Strip control characters (except whitespace).
 		.replace(/\s+/gu, " ") // Normalise runs of whitespace to one ` ` space.
 		.trim(); // Trim whitespace from the start and end of the string.
+}
 
 /**
  * Sanitize a multiline string.
@@ -93,8 +100,8 @@ export const sanitizeString = (str: string): string =>
  *
  * @todo Use lookbehind when Safari supports it, so replacements don't need `$1`
  */
-export const sanitizeLines = (str: string): string =>
-	str
+export function sanitizeLines(str: string): string {
+	return str
 		.replace(/[^\P{C}\s]/gu, "") // Strip control characters (except whitespace).
 		.replace(/\r\n?|\v|\x85|\u2028/g, "\n") // Normalise line separators to `\n` newline
 		.replace(/[^\S\n]+(?=\n|$)/g, "") // Trim trailing whitespace on each line.
@@ -104,6 +111,7 @@ export const sanitizeLines = (str: string): string =>
 		.replace(/(\S)[^\S\n]+(?=\S)/g, "$1 ") // Normalise runs of whitespace in the middle of each line to one ` ` space.
 		.replace(/ {4}/g, "\t") // Normalise runs of `    ` four spaces to a single `\t` tab (this will only exist in indentation because we already stripped it in other places).
 		.replace(/(^|\n|\t) +/g, "$1"); // Remove runs  of ` ` space in indentation (will only match three or fewer because four spaces have already been normalised to `\t` tab).
+}
 
 /**
  * Simplify a string by removing anything that isn't a number, letter, or space.
@@ -113,16 +121,19 @@ export const sanitizeLines = (str: string): string =>
  *
  * @todo Convert letter-like characters (e.g. `ℝ`) to their ASCII equivalent (e.g. `R`).
  */
-export const simplifyString = (str: string) =>
-	str
+export function simplifyString(str: string) {
+	return str
 		.normalize("NFD") // Convert ligatures (e.g. `ﬀ`) and letters with marks (e.g. `ü`) to separate characters (e.g. `ff` and `u◌̈`)`.
 		.replace(/[\s\p{P}\p{S}\p{Z}]+/gu, " ") // Normalise word separators to ` ` space.
 		.replace(/[^\p{L}\p{N} ]+/gu, "") // Strip characters that aren't letters, numbers, spaces.
 		.trim()
 		.toLowerCase();
+}
 
 /** Convert a string to a `kebab-case` URL slug, or return `undefined` if conversion resulted in an empty ref. */
-export const getOptionalSlug = (str: string): string | undefined => simplifyString(str).replace(/ /g, "-") || undefined;
+export function getOptionalSlug(str: string): string | undefined {
+	return simplifyString(str).replace(/ /g, "-") || undefined;
+}
 
 /* Convert a string to a `kebab-case` URL slug, or throw `ValueError` if conversion resulted in an empty ref. */
 export function getSlug(str: string): string {
@@ -132,7 +143,9 @@ export function getSlug(str: string): string {
 }
 
 /** Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty ref. */
-export const getOptionalRef = (str: string): string | undefined => simplifyString(str).replace(/ /g, "") || undefined;
+export function getOptionalRef(str: string): string | undefined {
+	return simplifyString(str).replace(/ /g, "") || undefined;
+}
 
 /** Convert a string to a unique ref e.g. `abc123`, or throw `ValueError` if conversion resulted in an empty ref. */
 export function getRef(str: string): string {
@@ -148,7 +161,9 @@ export function getRef(str: string): string {
  *
  * Note: this splits words based on spaces, so won't work well with logographic writing systems e.g. kanji.
  */
-export const getWords = (str: string): ImmutableArray<string> => Array.from(_getWords(str));
+export function getWords(str: string): ImmutableArray<string> {
+	return Array.from(_getWords(str));
+}
 function* _getWords(str: string): Iterable<string> {
 	for (const [, a, b, c] of str.matchAll(WORD)) {
 		const word = a || b || c;
@@ -164,10 +179,14 @@ export function getFirstLine(str: string): string {
 }
 
 /** Is the first character of a string an uppercase letter? */
-export const isUppercaseLetter = (str: string): boolean => isBetween(str.charCodeAt(0), 65, 90);
+export function isUppercaseLetter(str: string): boolean {
+	return isBetween(str.charCodeAt(0), 65, 90);
+}
 
 /** Is the first character of a string a lowercase letter? */
-export const isLowercaseLetter = (str: string): boolean => isBetween(str.charCodeAt(0), 97, 122);
+export function isLowercaseLetter(str: string): boolean {
+	return isBetween(str.charCodeAt(0), 97, 122);
+}
 
 /**
  * Limit a string to a given length.

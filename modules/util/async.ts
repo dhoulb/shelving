@@ -3,10 +3,14 @@ import type { Report } from "./error.js";
 import { ValueError } from "../error/ValueError.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
-export const isAsync = <T>(value: PromiseLike<T> | T): value is PromiseLike<T> => typeof value === "object" && value !== null && typeof (value as Promise<T>).then === "function";
+export function isAsync<T>(value: PromiseLike<T> | T): value is PromiseLike<T> {
+	return typeof value === "object" && value !== null && typeof (value as Promise<T>).then === "function";
+}
 
 /** Is a value a synchronous value. */
-export const notAsync = <T>(value: PromiseLike<T> | T): value is T => !isAsync(value);
+export function notAsync<T>(value: PromiseLike<T> | T): value is T {
+	return !isAsync(value);
+}
 
 /**
  * Throw the value if it's an async (promised) value.

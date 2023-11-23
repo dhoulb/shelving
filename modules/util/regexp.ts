@@ -1,4 +1,3 @@
-import type { Match } from "./match.js";
 import type { NotString } from "./string.js";
 import { ValueError } from "../error/ValueError.js";
 import { getArray } from "./array.js";
@@ -13,7 +12,9 @@ export const NEVER_REGEXP = /^(?=a)a/;
 export type PossibleRegExp = string | RegExp;
 
 /** Is an unknown value a `RegExp` instance? */
-export const isRegExp = (value: unknown): value is RegExp => value instanceof RegExp;
+export function isRegExp(value: unknown): value is RegExp {
+	return value instanceof RegExp;
+}
 
 /** Assert that an unknown value is a `RegExp` instance. */
 export function assertRegExp(value: unknown): asserts value is RegExp {
@@ -28,10 +29,14 @@ export function getRegExp(pattern: PossibleRegExp, flags?: string): RegExp {
 }
 
 /** Convert a regular expression to its string source. */
-export const getRegExpSource = (regexp: PossibleRegExp): string => (typeof regexp === "string" ? regexp : regexp.source);
+export function getRegExpSource(regexp: PossibleRegExp): string {
+	return typeof regexp === "string" ? regexp : regexp.source;
+}
 
 /** Escape special characters in a string regular expression. */
-export const escapeRegExp = (pattern: string): string => pattern.replace(REPLACE_ESCAPED, "\\$&");
+export function escapeRegExp(pattern: string): string {
+	return pattern.replace(REPLACE_ESCAPED, "\\$&");
+}
 const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
 /** Create regular expression that matches any of a list of other expressions. */
@@ -53,10 +58,14 @@ export function getAllRegExp(patterns: Iterable<PossibleRegExp> & NotString, fla
 }
 
 /** Match function for finding strings that match against regular expressions (use with `filter()` to positively filter iterable sets of items). */
-export const isRegExpMatch: Match<[item: string, target: RegExp]> = (item, target) => target.test(item);
+export function isRegExpMatch(item: string, target: RegExp): boolean {
+	return target.test(item);
+}
 
 /** Match function for finding strings that match against regular expressions (use with `filter()` to negatively filter iterable sets of items). */
-export const notRegExpMatch: Match<[item: string, target: RegExp]> = (item, target) => !target.test(item);
+export function notRegExpMatch(item: string, target: RegExp): boolean {
+	return !target.test(item);
+}
 
 /** Regular expression match array that you've asserted contains the specified named groups. */
 export interface TypedRegExpExecArray<T extends string = string> extends RegExpExecArray {

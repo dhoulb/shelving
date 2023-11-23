@@ -15,7 +15,9 @@ type Conversion = number | ((num: number) => number);
 type Conversions<T extends string> = { readonly [K in T]?: Conversion };
 
 /** Convert an amount using a `Conversion. */
-const _convert = (amount: number, conversion: Conversion): number => (typeof conversion === "function" ? conversion(amount) : conversion === 1 ? amount : amount * conversion);
+function _convert(amount: number, conversion: Conversion): number {
+	return typeof conversion === "function" ? conversion(amount) : conversion === 1 ? amount : amount * conversion;
+}
 
 // Params for a unit.
 type UnitProps<T extends string> = {

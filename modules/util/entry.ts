@@ -23,10 +23,14 @@ export type EntryValue<X> = X extends Entry<unknown, infer Y> ? Y : never;
 export type EntryObject<T extends Entry<PropertyKey, unknown>> = { readonly [E in T as E[0]]: E[1] };
 
 /** Extract the key from an object entry. */
-export const getEntryKey = <K, T>([k]: Entry<K, T>): K => k;
+export function getEntryKey<K, T>([k]: Entry<K, T>): K {
+	return k;
+}
 
 /** Extract the value from an object entry. */
-export const getEntryValue = <K, T>([, v]: Entry<K, T>): T => v;
+export function getEntryValue<K, T>([, v]: Entry<K, T>): T {
+	return v;
+}
 
 /** Yield the keys of an iterable set of entries. */
 export function* getEntryKeys<K, T>(input: Iterable<Entry<K, T>>): Iterable<K> {

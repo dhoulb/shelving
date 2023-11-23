@@ -19,10 +19,14 @@ export type JSXElement<P extends JSXProps = JSXProps> = {
 export type JSXNode = undefined | null | string | JSXElement | JSXNode[];
 
 /** Is an unknown value a JSX element? */
-export const isJSXElement = (value: unknown): value is JSXElement => typeof value === "object" && value !== null && "type" in value;
+export function isJSXElement(value: unknown): value is JSXElement {
+	return typeof value === "object" && value !== null && "type" in value;
+}
 
 /** Is an unknown value a JSX node? */
-export const isJSXNode = (value: unknown): value is JSXNode => value === null || typeof value === "string" || isJSXElement(value) || isArray(value);
+export function isJSXNode(value: unknown): value is JSXNode {
+	return value === null || typeof value === "string" || isJSXElement(value) || isArray(value);
+}
 
 /**
  * Take a Markup JSX node and strip all tags from it to produce a plain text string.

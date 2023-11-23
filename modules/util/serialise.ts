@@ -18,22 +18,28 @@ export function serialise(value: unknown): string {
 	if (value === undefined) return `{"$type":"undefined"}`;
 	if (value === null) return `null`;
 	if (typeof value === "number") return value.toString();
-	if (typeof value === "string") return escapeString(value);
-	if (typeof value === "symbol") return value.description ? `{"$type":"symbol","description":${escapeString(value.description)}}` : `{"$type":"symbol"}`;
-	if (typeof value === "function") return value.name ? `{"$type":"function","name":${escapeString(value.name)}}` : `{"$type":"function"}`;
+	if (typeof value === "string") return _escapeString(value);
+	if (typeof value === "symbol") return value.description ? `{"$type":"symbol","description":${_escapeString(value.description)}}` : `{"$type":"symbol"}`;
+	if (typeof value === "function") return value.name ? `{"$type":"function","name":${_escapeString(value.name)}}` : `{"$type":"function"}`;
 	if (isArray(value)) return `[${value.map(serialise).join(",")}]`;
 	if (isObject(value)) {
 		const prototype = getPrototype(value);
 		const type = prototype !== Object.prototype && prototype !== null ? prototype?.constructor?.name : undefined;
 
 		// Use custom `toString()` function if it's defined.
-		if (type && value.toString !== Object.prototype.toString) return `{"$type":${escapeString(type)},"value":${escapeString(value.toString())}}`; // eslint-disable-line @typescript-eslint/no-base-to-string
+		if (type && value.toString !== Object.prototype.toString) return `{"$type":${_escapeString(type)},"value":${_escapeString(value.toString())}}`; // eslint-disable-line @typescript-eslint/no-base-to-string
 
 		// Otherwise crawl the object and sort the props ascendingly.
-		const props = Object.entries(value).map(serialiseEntry).sort();
-		return `{${type ? `"$type":${escapeString(type)}${props.length ? "," : ""}` : ""}${props.join(",")}}`;
+		const props = Object.entries(value).map(_serialiseEntry).sort();
+		return `{${type ? `"$type":${_escapeString(type)}${props.length ? "," : ""}` : ""}${props.join(",")}}`;
 	}
 	throw new ValueError("Cannot serialize value", value);
 }
-const serialiseEntry = ([key, value]: [string, unknown]) => `${escapeString(key)}:${serialise(value)}`;
-const escapeString = (str: string): string => `"${str.replace(R_QUOTE, `\\"`)}"`;
+
+function _serialiseEntry([key, value]: [string, unknown]) {
+	return `${_escapeString(key)}:${serialise(value)}`;
+}
+
+function _escapeString(str: string): string {
+	return `"${str.replace(R_QUOTE, `\\"`)}"`;
+}

@@ -1,19 +1,29 @@
 import { ValueError } from "../error/ValueError.js";
 
 /** Is a value a boolean? */
-export const isBoolean = (value: unknown): value is boolean => typeof value === "boolean";
+export function isBoolean(value: unknown): value is boolean {
+	return typeof value === "boolean";
+}
 
 /** Is a value true? */
-export const isTrue = (value: unknown): value is true => value === true;
+export function isTrue(value: unknown): value is true {
+	return value === true;
+}
 
 /** Is a value false? */
-export const isFalse = (value: unknown): value is false => value === false;
+export function isFalse(value: unknown): value is false {
+	return value === false;
+}
 
 /** Is a value truthy? */
-export const isTruthy = (value: unknown): boolean => !!value;
+export function isTruthy(value: unknown): boolean {
+	return !!value;
+}
 
 /** Is a value falsey? */
-export const isFalsey = (value: unknown): boolean => !value;
+export function isFalsey(value: unknown): boolean {
+	return !value;
+}
 
 /** Assert that a value is a boolean. */
 export function assertBoolean(value: unknown): asserts value is boolean {

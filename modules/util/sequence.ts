@@ -11,7 +11,9 @@ import { STOP } from "./constants.js";
  * - Any object with a `Symbol.iterator` property is iterable.
  * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
  */
-export const isSequence = (value: unknown): value is AsyncIterable<unknown> => typeof value === "object" && !!value && Symbol.asyncIterator in value;
+export function isSequence(value: unknown): value is AsyncIterable<unknown> {
+	return typeof value === "object" && !!value && Symbol.asyncIterator in value;
+}
 
 /** Infinite sequence that yields until a `SIGNAL` is received. */
 export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof STOP>, ...Promise<typeof STOP>[]]): AsyncIterable<T> {

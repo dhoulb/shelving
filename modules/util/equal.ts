@@ -8,22 +8,34 @@ import { isObject, isProp } from "./object.js";
 import { compareAscending } from "./sort.js";
 
 /** Is unknown value `left` exactly equal to `right`? */
-export const isEqual = <T>(left: unknown, right: T): left is T => left === right;
+export function isEqual<T>(left: unknown, right: T): left is T {
+	return left === right;
+}
 
 /** Is unknown value `left` not exactly equal to `right`? */
-export const notEqual = <T, N>(left: T | N, right: N): left is T => !isEqual(left, right);
+export function notEqual<T, N>(left: T | N, right: N): left is T {
+	return !isEqual(left, right);
+}
 
 /** Is unknown value `left` less than `right`? */
-export const isLess = (left: unknown, right: unknown) => compareAscending(left, right) < 0;
+export function isLess(left: unknown, right: unknown) {
+	return compareAscending(left, right) < 0;
+}
 
 /** Is unknown value `left` less than or equal to `right`? */
-export const isEqualLess = (left: unknown, right: unknown) => compareAscending(left, right) <= 0;
+export function isEqualLess(left: unknown, right: unknown) {
+	return compareAscending(left, right) <= 0;
+}
 
 /** Is unknown value `left` greater than `right`? */
-export const isGreater = (left: unknown, right: unknown) => compareAscending(left, right) > 0;
+export function isGreater(left: unknown, right: unknown) {
+	return compareAscending(left, right) > 0;
+}
 
 /** Is unknown value `left` greater than or equal to `right`? */
-export const isEqualGreater = (left: unknown, right: unknown) => compareAscending(left, right) >= 0;
+export function isEqualGreater(left: unknown, right: unknown) {
+	return compareAscending(left, right) >= 0;
+}
 
 // Internal shared by shallow/deep equal.
 function _isEqualRecursively(left: unknown, right: unknown, recursor: Match): boolean {
@@ -40,19 +52,27 @@ function _isEqualRecursively(left: unknown, right: unknown, recursor: Match): bo
  * Are two unknown values shallowly equal?
  * - If the values are both arrays/objects, see if the items/properties are **shallowly** equal with each other.
  */
-export const isShallowEqual = <T extends unknown>(left: unknown, right: T): left is T => _isEqualRecursively(left, right, isEqual);
+export function isShallowEqual<T extends unknown>(left: unknown, right: T): left is T {
+	return _isEqualRecursively(left, right, isEqual);
+}
 
 /** Are two unknown values not shallowly equal? */
-export const notShallowEqual = <T extends unknown>(left: unknown, right: T): left is T => !isShallowEqual(left, right);
+export function notShallowEqual<T extends unknown>(left: unknown, right: T): left is T {
+	return !isShallowEqual(left, right);
+}
 
 /**
  * Are two unknown values deeply equal?
  * - If the values are both arrays/objects, see if the items/properties are **deeply** equal with each other.
  */
-export const isDeepEqual = <T extends unknown>(left: unknown, right: T): left is T => _isEqualRecursively(left, right, isDeepEqual);
+export function isDeepEqual<T extends unknown>(left: unknown, right: T): left is T {
+	return _isEqualRecursively(left, right, isDeepEqual);
+}
 
 /** Are two unknown values not deeply equal? */
-export const notDeepEqual = <T extends unknown>(left: unknown, right: T): left is T => !isShallowEqual(left, right);
+export function notDeepEqual<T extends unknown>(left: unknown, right: T): left is T {
+	return !isShallowEqual(left, right);
+}
 
 /**
  * Are two maps equal (based on their items).
@@ -84,16 +104,24 @@ export function isArrayEqual<T extends ImmutableArray>(left: ImmutableArray, rig
 }
 
 /** Is unknown value `left` in array `right`? */
-export const isInArray = <R>(left: unknown, right: ImmutableArray<R>): left is R => right.includes(left as R);
+export function isInArray<R>(left: unknown, right: ImmutableArray<R>): left is R {
+	return right.includes(left as R);
+}
 
 /** Is unknown value `left` not in array `right`? */
-export const notInArray = (left: unknown, right: ImmutableArray): boolean => !isInArray(left, right);
+export function notInArray(left: unknown, right: ImmutableArray): boolean {
+	return !isInArray(left, right);
+}
 
 /** Is unknown value `left` an array including `right`? */
-export const isArrayWith = <T>(left: unknown, right: T): left is ImmutableArray<T> => isArray(left) && left.includes(right);
+export function isArrayWith<T>(left: unknown, right: T): left is ImmutableArray<T> {
+	return isArray(left) && left.includes(right);
+}
 
 /** Is unknown value `left` not an array or does not include `right`? */
-export const notArrayWith = (left: unknown, right: unknown): boolean => !notArrayWith(left, right);
+export function notArrayWith(left: unknown, right: unknown): boolean {
+	return !notArrayWith(left, right);
+}
 
 /**
  * Are two objects equal based on their own props?
@@ -130,7 +158,11 @@ export function isObjectMatch<L extends ImmutableObject, R extends ImmutableObje
 }
 
 /** Is unknown value `left` an object with every prop from `right`? */
-export const isObjectWith = (left: unknown, right: ImmutableObject): boolean => isObject(left) && isObjectMatch(left, right);
+export function isObjectWith(left: unknown, right: ImmutableObject): boolean {
+	return isObject(left) && isObjectMatch(left, right);
+}
 
 /** Is unknown value `left` not an object or missing one or more props from `right`? */
-export const notObjectWith = (left: unknown, right: ImmutableObject): boolean => !isObjectWith(left, right);
+export function notObjectWith(left: unknown, right: ImmutableObject): boolean {
+	return !isObjectWith(left, right);
+}

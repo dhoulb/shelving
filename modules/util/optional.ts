@@ -10,4 +10,6 @@ export function getRequired<T>(value: Optional<T>): T {
 }
 
 /** Is a value not optional? */
-export const notOptional = <T>(value: Optional<T>): value is T => value !== null && value !== undefined;
+export function notOptional<T>(value: Optional<T>): value is T {
+	return value !== null && value !== undefined;
+}

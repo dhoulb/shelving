@@ -28,8 +28,10 @@ export type ErrorCode =
 export type Report = (reason: unknown) => void;
 
 /** Log an error to the console. */
-// eslint-disable-next-line no-console
-export const logError: Report = reason => console.error(reason);
+export function logError(reason: unknown): void {
+	// eslint-disable-next-line no-console
+	return console.error(reason);
+}
 
 /** Is an unknown value an `Error` instance? */
 export function isError(v: unknown): v is Error & { readonly code?: string | undefined } {

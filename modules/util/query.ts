@@ -81,7 +81,9 @@ function _getOrder(key: string): Order {
 }
 
 /** Get the limit for a query. */
-export const getLimit = <T extends Data>({ $limit }: Query<T>): number | undefined => $limit;
+export function getLimit<T extends Data>({ $limit }: Query<T>): number | undefined {
+	return $limit;
+}
 
 /** Query a set of data items using a query. */
 export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {

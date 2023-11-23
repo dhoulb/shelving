@@ -1,13 +1,17 @@
 import { ValueError } from "../error/ValueError.js";
 
 /** Function that always returns null. */
-export const getNull = (): null => null;
+export function getNull(): null {
+	return null;
+}
 
 /** Nullable is the value or `null` */
 export type Nullable<T> = T | null;
 
 /** Is a value null? */
-export const isNull = (value: unknown): value is null => value === null;
+export function isNull(value: unknown): value is null {
+	return value === null;
+}
 
 /** Assert that a value is not null. */
 export function assertNull<T>(value: Nullable<T>): asserts value is T {
@@ -15,7 +19,9 @@ export function assertNull<T>(value: Nullable<T>): asserts value is T {
 }
 
 /** Is a value not null? */
-export const notNull = <T>(value: Nullable<T>): value is T => value !== null;
+export function notNull<T>(value: Nullable<T>): value is T {
+	return value !== null;
+}
 
 /** Assert that a value is not null. */
 export function assertNotNull<T>(value: Nullable<T>): asserts value is T {
@@ -32,7 +38,9 @@ export function getNotNull<T>(value: Nullable<T>): T {
 export type Nullish<T> = T | null | undefined | void;
 
 /** Is a value nullish? */
-export const isNullish = <T>(value: Nullish<T>): value is null | undefined | void => value === null || value === undefined;
+export function isNullish<T>(value: Nullish<T>): value is null | undefined | void {
+	return value === null || value === undefined;
+}
 
 /** Assert that a value is not nullish. */
 export function assertNullish<T>(value: Nullish<T>): asserts value is T {
@@ -40,7 +48,9 @@ export function assertNullish<T>(value: Nullish<T>): asserts value is T {
 }
 
 /** Is a value not nullish? */
-export const notNullish = <T>(value: Nullish<T>): value is T => value !== null && value !== undefined;
+export function notNullish<T>(value: Nullish<T>): value is T {
+	return value !== null && value !== undefined;
+}
 
 /** Assert that a value is not nullish. */
 export function assertNotNullish<T>(value: Nullish<T>): asserts value is T {

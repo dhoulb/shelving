@@ -71,11 +71,19 @@ export class Color {
 		return this.rgba;
 	}
 }
-const _parse = (hex: string) => parseInt(hex.padStart(2, "00"), 16);
-const _hex = (channel: number) => channel.toString(16).padStart(2, "00");
+
+function _parse(hex: string) {
+	return parseInt(hex.padStart(2, "00"), 16);
+}
+
+function _hex(channel: number) {
+	return channel.toString(16).padStart(2, "00");
+}
 
 /** Is an unknown value a `Color` instance. */
-export const isColor = (value: unknown): value is Color => value instanceof Color;
+export function isColor(value: unknown): value is Color {
+	return value instanceof Color;
+}
 
 /** Assert that an unknown value is a `Color` instance. */
 export function assertColor(value: unknown): asserts value is Color {

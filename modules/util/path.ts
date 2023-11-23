@@ -10,10 +10,14 @@ export type RelativePath = `.` | `./${string}` | `..` | `../${string}`;
 export type Path = AbsolutePath | RelativePath;
 
 /** Is a string path an absolute path? */
-export const isAbsolutePath = (path: string): path is AbsolutePath => path.startsWith("/");
+export function isAbsolutePath(path: string): path is AbsolutePath {
+	return path.startsWith("/");
+}
 
 /** Is a string path an absolute path? */
-export const isRelativePath = (path: string): path is RelativePath => path.startsWith("./") || path.startsWith("../");
+export function isRelativePath(path: string): path is RelativePath {
+	return path.startsWith("./") || path.startsWith("../");
+}
 
 /**
  * Clean a path.

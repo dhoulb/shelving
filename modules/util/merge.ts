@@ -17,7 +17,9 @@ function _merge(left: unknown, right: unknown, recursor: MergeRecursor) {
  * Exact merge two unknown values.
  * - Always returns `right`.
  */
-export const exactMerge: MergeRecursor = (left: unknown, right: unknown): unknown => right;
+export function exactMerge(left: unknown, right: unknown): unknown {
+	return right;
+}
 
 /**
  * Shallow merge two unknown values.

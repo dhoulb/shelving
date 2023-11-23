@@ -19,7 +19,9 @@ export type DictionaryValue<T extends ImmutableDictionary> = T[string];
 export type PossibleDictionary<T> = ImmutableDictionary<T> | Iterable<DictionaryItem<T>>;
 
 /** Is an unknown value a dictionary object? */
-export const isDictionary = (value: unknown): value is ImmutableDictionary => isPlainObject(value);
+export function isDictionary(value: unknown): value is ImmutableDictionary {
+	return isPlainObject(value);
+}
 
 /** Assert that an unknown value is a dictionary object */
 export function assertDictionary(value: unknown): asserts value is ImmutableDictionary {
@@ -39,7 +41,9 @@ export function getDictionaryItems<T>(obj: PossibleDictionary<T>): Iterable<Dict
 }
 
 /** Is an unknown value the key for an own prop of a dictionary. */
-export const isDictionaryItem = <T>(obj: ImmutableDictionary<T>, key: unknown): key is string => typeof key === "string" && Object.hasOwn(obj, key);
+export function isDictionaryItem<T>(obj: ImmutableDictionary<T>, key: unknown): key is string {
+	return typeof key === "string" && Object.hasOwn(obj, key);
+}
 
 /** Assert that an unknown value is the key for an own prop of a dictionary. */
 export function assertDictionaryItem<T>(obj: ImmutableDictionary<T>, key: unknown): asserts key is string {

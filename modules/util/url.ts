@@ -5,7 +5,9 @@ import { type Optional, notOptional } from "./optional.js";
 export type PossibleURL = string | URL;
 
 /** Is an unknown value a URL? */
-export const isURL = (value: unknown): value is URL => value instanceof URL;
+export function isURL(value: unknown): value is URL {
+	return value instanceof URL;
+}
 
 /** Assert that an unknown value is a URL. */
 export function assertURL(value: unknown): asserts value is URL {

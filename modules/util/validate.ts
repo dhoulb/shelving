@@ -166,7 +166,9 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 const CONTEXTS: MutableArray<Data> = [{}];
 
 /** Get the current validation context. */
-export const getValidationContext = (): Data => getLastItem(CONTEXTS);
+export function getValidationContext(): Data {
+	return getLastItem(CONTEXTS);
+}
 
 /** Validate a unknown value with a validator, and supply a context that can be read during the validation process. */
 export function validateWithContext<T extends Data>(unsafeValue: Item<Data>, validator: Validator<T>, context: Data & { readonly id: true }): Item<T>;

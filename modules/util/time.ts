@@ -92,7 +92,9 @@ export class Time {
 		return this.long;
 	}
 }
-const _pad = (num: number, size: 2 | 3 | 4): string => num.toString(10).padStart(size, "0000");
+function _pad(num: number, size: 2 | 3 | 4): string {
+	return num.toString(10).padStart(size, "0000");
+}
 
 /** Regular expression that matches a time in ISO 8601 format. */
 export const TIME_REGEXP = /([0-9]+):([0-9]+)(?::([0-9]+)(?:.([0-9]+))?)?/;
@@ -101,7 +103,9 @@ export const TIME_REGEXP = /([0-9]+):([0-9]+)(?::([0-9]+)(?:.([0-9]+))?)?/;
 export type PossibleTime = Time | Date | number | string;
 
 /** Is an unknown value a `Time` instance. */
-export const isTime = (value: unknown): value is Time => value instanceof Time;
+export function isTime(value: unknown): value is Time {
+	return value instanceof Time;
+}
 
 /**
  * Convert a value to a `Time` instance or `undefined`
@@ -120,16 +124,26 @@ export function getTime(possible?: PossibleTime): Time {
 }
 
 /** Get the time as in `hh:mm` format (hours, minutes), e.g. `13.59` */
-export const getShortTime = (time?: PossibleTime): string => getTime(time).long;
+export function getShortTime(time?: PossibleTime): string {
+	return getTime(time).long;
+}
 
 /** Get the time in `hh:mm:ss` format (hours, minutes seconds), e.g. `13.16.19.123` */
-export const getMediumTime = (time?: PossibleTime): string => getTime(time).long;
+export function getMediumTime(time?: PossibleTime): string {
+	return getTime(time).long;
+}
 
 /** Get this time in `hh:mm:ss.fff` format (ISO 8601 compatible, hours, minutes, seconds, milliseconds), e.g. `13:16:19.123` */
-export const getLongTime = (time?: PossibleTime): string => getTime(time).long;
+export function getLongTime(time?: PossibleTime): string {
+	return getTime(time).long;
+}
 
 /** Format a time as a string based on the browser locale settings. */
-export const formatTime = (time?: PossibleTime, precision: 2 | 3 | 4 | 5 | 6 = 2): string => getTime(time).format(precision);
+export function formatTime(time?: PossibleTime, precision: 2 | 3 | 4 | 5 | 6 = 2): string {
+	return getTime(time).format(precision);
+}
 
 /** Format an optional time as a string based on the browser locale settings. */
-export const formatOptionalTime = (time?: unknown, precision: 2 | 3 | 4 | 5 | 6 = 2): string | undefined => getOptionalTime(time)?.format(precision);
+export function formatOptionalTime(time?: unknown, precision: 2 | 3 | 4 | 5 | 6 = 2): string | undefined {
+	return getOptionalTime(time)?.format(precision);
+}

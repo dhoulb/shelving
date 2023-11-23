@@ -4,10 +4,14 @@ import { ValueError } from "../error/ValueError.js";
 export const getUndefined = (): undefined => undefined;
 
 /** Is a value undefined? */
-export const isUndefined = (value: unknown): value is undefined | void => value === undefined;
+export function isUndefined(value: unknown): value is undefined | void {
+	return value === undefined;
+}
 
 /** Is a value defined? */
-export const isDefined = <T>(value: T | undefined | void): value is T => value !== undefined;
+export function isDefined<T>(value: T | undefined | void): value is T {
+	return value !== undefined;
+}
 
 /** Is a value defined? */
 export const notUndefined = isDefined;

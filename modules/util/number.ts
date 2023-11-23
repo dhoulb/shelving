@@ -2,7 +2,9 @@ import { ValueError } from "../error/ValueError.js";
 import { NNBSP } from "./constants.js";
 
 /** Is a value a number? */
-export const isNumber = (value: unknown): value is number => typeof value === "number";
+export function isNumber(value: unknown): value is number {
+	return typeof value === "number";
+}
 
 /** Assert that a value is a number. */
 export function assertNumber(value: unknown): asserts value is number {
@@ -73,7 +75,9 @@ export function getNumber(value: unknown): number {
  *
  * @returns The number rounded to the specified step.
  */
-export const roundStep = (num: number, step = 1): number => Math.round(num / step) * step;
+export function roundStep(num: number, step = 1): number {
+	return Math.round(num / step) * step;
+}
 
 /**
  * Round a number to a specified set of decimal places.
@@ -85,7 +89,9 @@ export const roundStep = (num: number, step = 1): number => Math.round(num / ste
  *
  * @returns The number rounded to the specified precision.
  */
-export const roundNumber = (num: number, precision = 0): number => Math.round(num * 10 ** precision) / 10 ** precision;
+export function roundNumber(num: number, precision = 0): number {
+	return Math.round(num * 10 ** precision) / 10 ** precision;
+}
 
 /**
  * Truncate a number to a specified set of decimal places.
@@ -95,7 +101,9 @@ export const roundNumber = (num: number, precision = 0): number => Math.round(nu
  * @param precision Maximum number of digits shown after the decimal point (defaults to 0).
  * @returns The number truncated to the specified precision.
  */
-export const truncateNumber = (num: number, precision = 0): number => Math.trunc(num * 10 ** precision) / 10 ** precision;
+export function truncateNumber(num: number, precision = 0): number {
+	return Math.trunc(num * 10 ** precision) / 10 ** precision;
+}
 
 /**
  * Bound a number between two values.
@@ -156,7 +164,9 @@ export function pluralizeQuantity(num: number, singular: string, plural: string,
  * @param numerator Number representing the amount of progress.
  * @param denumerator The number representing the whole amount.
  */
-export const getPercent = (numerator: number, denumerator: number) => Math.max(0, Math.min(100, (100 / denumerator) * numerator));
+export function getPercent(numerator: number, denumerator: number) {
+	return Math.max(0, Math.min(100, (100 / denumerator) * numerator));
+}
 
 /**
  * Format a percentage (combines `getPercent()` and `formatQuantity()` for convenience).
@@ -166,7 +176,9 @@ export const getPercent = (numerator: number, denumerator: number) => Math.max(0
  * @param numerator Number representing the amount of progress.
  * @param denumerator The number representing the whole amount.
  */
-export const formatPercent = (numerator: number, denumerator: number, options?: NumberOptions): string => formatQuantity(getPercent(numerator, denumerator), "%", { maximumFractionDigits: 0, roundingMode: "trunc", ...options });
+export function formatPercent(numerator: number, denumerator: number, options?: NumberOptions): string {
+	return formatQuantity(getPercent(numerator, denumerator), "%", { maximumFractionDigits: 0, roundingMode: "trunc", ...options });
+}
 
 /** Sum an iterable set of numbers and return the total. */
 export function sumNumbers(nums: Iterable<number>): number {

@@ -21,7 +21,9 @@ export type Value<T> = T[keyof T];
 export type PossibleObject<T> = T | Iterable<Prop<T>>;
 
 /** Is an unknown value an unknown object? */
-export const isObject = (value: unknown): value is ImmutableObject => typeof value === "object" && value !== null;
+export function isObject(value: unknown): value is ImmutableObject {
+	return typeof value === "object" && value !== null;
+}
 
 /** Assert that a value is an object */
 export function assertObject(value: unknown): asserts value is ImmutableObject {

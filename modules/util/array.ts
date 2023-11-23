@@ -22,7 +22,9 @@ export type ArrayItem<T extends ImmutableArray> = T[number];
 export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
 
 /** Is an unknown value an array? */
-export const isArray = (value: unknown): value is ImmutableArray => Array.isArray(value);
+export function isArray(value: unknown): value is ImmutableArray {
+	return Array.isArray(value);
+}
 
 /** Assert that an unknown value is an array. */
 export function assertArray<T>(arr: unknown): asserts arr is ImmutableArray<T> {
@@ -30,7 +32,9 @@ export function assertArray<T>(arr: unknown): asserts arr is ImmutableArray<T> {
 }
 
 /** Is an unknown value an item in a specified array? */
-export const isArrayItem = <T>(arr: ImmutableArray<T>, item: unknown): item is T => arr.includes(item as T);
+export function isArrayItem<T>(arr: ImmutableArray<T>, item: unknown): item is T {
+	return arr.includes(item as T);
+}
 
 /** Assert that an unknown value is an item in a specified array. */
 export function assertArrayItem<T>(arr: ImmutableArray<T>, item: unknown): asserts item is T {
@@ -62,9 +66,6 @@ export function omitArrayItems<T>(input: ImmutableArray<T> | Iterable<T>, ...omi
 	const output = Array.from(omitItems(input, ...omit));
 	return isArray(input) && output.length === input.length ? input : output;
 }
-
-/** Clear an array (immutably) and return a new empty array (or the same array if no changes were made). */
-export const clearArray = <T>(input: ImmutableArray<T>): ImmutableArray<T> => (input.length ? [] : input);
 
 /** Toggle an item in and out of an array (immutably) and return a new array with or without the specified items (or the same array if no changes were made). */
 export function toggleArrayItems<T>(input: ImmutableArray<T>, ...items: T[]): ImmutableArray<T> {

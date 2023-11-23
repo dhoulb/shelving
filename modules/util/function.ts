@@ -8,7 +8,9 @@ export type UnknownFunction = (...args: unknown[]) => unknown;
 export type AnyFunction = (...args: any) => any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** Is a value a function? */
-export const isFunction = (value: unknown): value is AnyFunction => typeof value === "function";
+export function isFunction(value: unknown): value is AnyFunction {
+	return typeof value === "function";
+}
 
 /** Assert that a value is a function. */
 export function assertFunction(value: unknown): asserts value is AnyFunction {
@@ -19,7 +21,11 @@ export function assertFunction(value: unknown): asserts value is AnyFunction {
 export type Arguments = readonly unknown[];
 
 /** Function that just passes through the first argument. */
-export const PASSTHROUGH = <T>(value: T): T => value;
+export function PASSTHROUGH<T>(value: T): T {
+	return value;
+}
 
 /** Function that does nothing with its arguments and always returns void. */
-export const BLACKHOLE: (...args: Arguments) => void | undefined = () => undefined;
+export function BLACKHOLE(...unused: Arguments): void | undefined {
+	return undefined;
+}

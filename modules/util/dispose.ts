@@ -36,7 +36,9 @@ export function dispose(value: Disposable): void {
 }
 
 /** Is an unknown value a disposable object? */
-export const isDisposable = (v: unknown): v is Disposable => isObject(v) && typeof v[Symbol.dispose] === "function";
+export function isDisposable(v: unknown): v is Disposable {
+	return isObject(v) && typeof v[Symbol.dispose] === "function";
+}
 
 /**
  * Version of `Map` that is disposable.

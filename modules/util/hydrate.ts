@@ -20,7 +20,9 @@ export type Hydrations = ImmutableDictionary<Class<unknown>>;
 export type DehydratedObject = { readonly $type: string; readonly $value: unknown };
 
 /** Is an unknown value a dehydrated object with a `$type` key. */
-const isDehydrated = (value: DehydratedObject | ImmutableObject): value is DehydratedObject => isString(value.$type);
+function _isDehydrated(value: DehydratedObject | ImmutableObject): value is DehydratedObject {
+	return isString(value.$type);
+}
 
 /**
  * Deeply hydrate a class instance based on a set of `Hydrations`
@@ -32,7 +34,7 @@ const isDehydrated = (value: DehydratedObject | ImmutableObject): value is Dehyd
 export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 	if (isArray(value)) return mapArray(value, hydrate, hydrations);
 	if (isPlainObject(value)) {
-		if (!isDehydrated(value)) return mapObject(value, hydrate, hydrations);
+		if (!_isDehydrated(value)) return mapObject(value, hydrate, hydrations);
 		const { $type, $value } = value;
 		if ($type === "Map") return new Map($value as ConstructorParameters<typeof Map>[0]);
 		if ($type === "Set") return new Set($value as ConstructorParameters<typeof Set>[0]);

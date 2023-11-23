@@ -14,7 +14,9 @@ export type PossibleSet<T> = ImmutableSet<T> | Iterable<T>;
 export type SetItem<X> = X extends ReadonlySet<infer Y> ? Y : never;
 
 /** Is an unknown value a set? */
-export const isSet = (value: unknown): value is ImmutableSet => value instanceof Set;
+export function isSet(value: unknown): value is ImmutableSet {
+	return value instanceof Set;
+}
 
 /** Assert that a value is a `Set` instance. */
 export function assertSet(value: unknown): asserts value is ImmutableSet {
@@ -22,7 +24,9 @@ export function assertSet(value: unknown): asserts value is ImmutableSet {
 }
 
 /** Is an unknown value an item in a set? */
-export const isSetItem = <T>(set: ImmutableSet<T>, item: unknown): item is T => set.has(item as T);
+export function isSetItem<T>(set: ImmutableSet<T>, item: unknown): item is T {
+	return set.has(item as T);
+}
 
 /** Assert that an unknown value is an item in a set. */
 export function assertSetItem<T>(set: ImmutableSet<T>, item: unknown): asserts item is T {
