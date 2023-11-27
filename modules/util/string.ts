@@ -115,39 +115,48 @@ export function sanitizeLines(str: string): string {
 
 /**
  * Simplify a string by removing anything that isn't a number, letter, or space.
- * - Used when you're running a query against a string entered by a user.
+ * - Normalizes the string by
+ * - Useful when you're running a query against a string entered by a user.
  *
  * @example simplifyString("Däve-is\nREALLY    éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
  *
- * @todo Convert letter-like characters (e.g. `ℝ`) to their ASCII equivalent (e.g. `R`).
+ * @todo Convert confusables (e.g. `ℵ` alef symbol or `℮` estimate symbol) to their letterlike equivalent (e.g. `N` and `e`).
  */
-export function simplifyString(str: string) {
+export function simplifyString(str: string): string {
 	return str
-		.normalize("NFD") // Convert ligatures (e.g. `ﬀ`) and letters with marks (e.g. `ü`) to separate characters (e.g. `ff` and `u◌̈`)`.
-		.replace(/[\s\p{P}\p{S}\p{Z}]+/gu, " ") // Normalise word separators to ` ` space.
-		.replace(/[^\p{L}\p{N} ]+/gu, "") // Strip characters that aren't letters, numbers, spaces.
+		.normalize("NFKD") // Normalize ligatures (e.g. `ﬀ` to `ff`), combined characters (e.g. `Ⓜ` to `m`), accents (e.g. `å` to `a`).
+		.replace(/[^\p{L}\p{N}\p{Z}\p{Pc}\p{Pd}]+/gu, "") // Strip characters that aren't `\p{L}` letters, `\p{N}` numbers, `\p{Z}` separators (e.g. ` ` space), `\p{Pc}` connector punctuation (e.g. `_` underscore_, `\p{Pd}` dash punctuation (e.g. `-` hyphen)
+		.replace(/[\p{Z}\p{Pc}\p{Pd}]+/gu, " ") // Normalise runs of `\p{Z}` separators (e.g. ` ` space), `\p{Pc}` connector punctuation (e.g. `_` underscore_, `\p{Pd}` dash punctuation (e.g. `-` hyphen), to ` ` single space.
 		.trim()
 		.toLowerCase();
 }
 
-/** Convert a string to a `kebab-case` URL slug, or return `undefined` if conversion resulted in an empty ref. */
+/**
+ * Convert a string to a `kebab-case` URL slug, or return `undefined` if conversion resulted in an empty ref.
+ */
 export function getOptionalSlug(str: string): string | undefined {
-	return simplifyString(str).replace(/ /g, "-") || undefined;
+	return simplifyString(str).replaceAll(" ", "-") || undefined;
 }
 
-/* Convert a string to a `kebab-case` URL slug, or throw `ValueError` if conversion resulted in an empty ref. */
+/**
+ * Convert a string to a `kebab-case` URL slug, or throw `ValueError` if conversion resulted in an empty ref.
+ */
 export function getSlug(str: string): string {
 	const slug = getOptionalSlug(str);
 	if (slug) return slug;
 	throw new ValueError("Invalid slug", str);
 }
 
-/** Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty ref. */
+/**
+ * Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty string.
+ */
 export function getOptionalRef(str: string): string | undefined {
-	return simplifyString(str).replace(/ /g, "") || undefined;
+	return simplifyString(str).replaceAll(" ", "") || undefined;
 }
 
-/** Convert a string to a unique ref e.g. `abc123`, or throw `ValueError` if conversion resulted in an empty ref. */
+/**
+ * Convert a string to a unique ref e.g. `abc123`, or throw `ValueError` if conversion resulted in an empty string.
+ */
 export function getRef(str: string): string {
 	const ref = getOptionalRef(str);
 	if (ref) return ref;

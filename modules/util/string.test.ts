@@ -88,16 +88,19 @@ describe("simplifyString()", () => {
 		expect(simplifyString("    aaa    ")).toBe("aaa");
 		expect(simplifyString("aaa    bbb    ccc")).toBe("aaa bbb ccc");
 		expect(simplifyString("$^$%@£$ symbols £$%%£@^&@")).toBe("symbols"); // Symbols are removed.
-		expect(simplifyString("[aaa](bbb):ccc:")).toBe("aaa bbb ccc"); // Punctuation is removed.
 		expect(simplifyString("Fráncé")).toBe("france"); // Marks are normalised.
+		expect(simplifyString("𝓔𝓌ⅅⓂ①ﬀ")).toBe("ewdm1ff"); // Characters and ligatures are decomposed.
+		expect(simplifyString("Dave's Angles")).toBe("daves angles"); // Apostrophes are sensible.
+		expect(simplifyString("abc % def")).toBe("abc def");
 	});
 });
-describe("toSlug()", () => {
+describe("getSlug()", () => {
 	test("Works correctly", () => {
 		expect(getSlug("A Sentence In Sentence Case")).toBe("a-sentence-in-sentence-case");
 		expect(getSlug("SOMETHING VERY loud")).toBe("something-very-loud");
 		expect(getSlug("This: Something to not-be proud of")).toBe("this-something-to-not-be-proud-of");
 		expect(getSlug("under_score")).toBe("under-score");
+		expect(getSlug("Dave's Angles")).toBe("daves-angles");
 	});
 	test("Hyphens are cleaned up", () => {
 		expect(getSlug("multiple----hyphens")).toBe("multiple-hyphens");
