@@ -16,6 +16,7 @@ export * from "./duration.js";
 export * from "./entry.js";
 export * from "./equal.js";
 export * from "./error.js";
+export * from "./file.js";
 export * from "./focus.js";
 export * from "./function.js";
 export * from "./hash.js";
