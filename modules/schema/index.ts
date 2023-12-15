@@ -8,6 +8,7 @@ export * from "./DataSchema.js";
 export * from "./DateSchema.js";
 export * from "./DictionarySchema.js";
 export * from "./EmailSchema.js";
+export * from "./FileSchema.js";
 export * from "./KeySchema.js";
 export * from "./LinkSchema.js";
 export * from "./NumberSchema.js";
