@@ -6,9 +6,9 @@ import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /** Allowed options for `FileSchema` */
-export type FileSchemaOptions = StringSchemaOptions & {
+export interface FileSchemaOptions extends StringSchemaOptions {
 	readonly types?: FileTypes | undefined;
-};
+}
 
 /** Validate a file name matching one or more extensions. */
 export class FileSchema extends StringSchema {

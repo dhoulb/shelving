@@ -8,12 +8,12 @@ import { OPTIONAL } from "./OptionalSchema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `TimeSchama` */
-export type TimeSchemaOptions = SchemaOptions & {
+export interface TimeSchemaOptions extends SchemaOptions {
 	readonly value?: PossibleTime | undefined;
 	readonly min?: Optional<PossibleTime> | undefined;
 	readonly max?: Optional<PossibleTime> | undefined;
 	readonly step?: number | undefined;
-};
+}
 
 /** Define a valid time in 24h hh:mm:ss.fff format, e.g. `23:59` or `24:00 */
 export class TimeSchema extends Schema<string> {

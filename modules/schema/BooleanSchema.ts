@@ -2,9 +2,9 @@ import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `BooleanSchema` */
-export type BooleanSchemaOptions = SchemaOptions & {
+export interface BooleanSchemaOptions extends SchemaOptions {
 	readonly value?: boolean | undefined;
-};
+}
 
 /** Define a valid boolean. */
 export class BooleanSchema extends Schema<boolean> {

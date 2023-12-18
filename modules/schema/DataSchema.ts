@@ -9,10 +9,10 @@ import { OPTIONAL } from "./OptionalSchema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `DataSchema` */
-export type DataSchemaOptions<T extends Data> = SchemaOptions & {
+export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
 	readonly props: Validators<T>;
 	readonly value?: Partial<T> | undefined;
-};
+}
 
 /** Validate a data object. */
 export class DataSchema<T extends Data> extends Schema<T> {

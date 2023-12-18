@@ -11,7 +11,7 @@ export type HtmlInputType = "text" | "password" | "color" | "date" | "email" | "
 export type Sanitizer = (str: string) => string;
 
 /** Options for `StringSchema` */
-export type StringSchemaOptions = SchemaOptions & {
+export interface StringSchemaOptions extends SchemaOptions {
 	readonly value?: string | undefined;
 	readonly type?: HtmlInputType | undefined;
 	readonly min?: number | undefined;
@@ -19,7 +19,7 @@ export type StringSchemaOptions = SchemaOptions & {
 	readonly match?: RegExp | undefined;
 	readonly sanitizer?: Sanitizer | undefined;
 	readonly multiline?: boolean | undefined;
-};
+}
 
 /**
  * Schema that defines a valid string.

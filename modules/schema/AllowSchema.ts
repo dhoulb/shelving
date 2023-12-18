@@ -8,10 +8,10 @@ import { getString } from "../util/string.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `AllowSchama` */
-export type AllowSchemaOptions<K, T> = Omit<SchemaOptions, "value"> & {
+export interface AllowSchemaOptions<K, T> extends Omit<SchemaOptions, "value"> {
 	/** Specify correct options using a `Map` or iterable set of entries. */
 	allow: PossibleMap<K, T>;
-};
+}
 
 /** Define a valid value from an allowed set of values. */
 export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>> {

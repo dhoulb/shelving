@@ -5,12 +5,12 @@ import { OPTIONAL } from "./OptionalSchema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `NumberSchema` */
-export type NumberSchemaOptions = SchemaOptions & {
+export interface NumberSchemaOptions extends SchemaOptions {
 	readonly value?: number | undefined;
 	readonly min?: number | undefined;
 	readonly max?: number | undefined;
 	readonly step?: number | undefined;
-};
+}
 
 /** Schema that defines a valid number. */
 export class NumberSchema extends Schema<number> {

@@ -7,13 +7,13 @@ import { validateArray } from "../util/validate.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `ArraySchema` */
-export type ArraySchemaOptions<T> = SchemaOptions & {
+export interface ArraySchemaOptions<T> extends SchemaOptions {
 	readonly value?: ImmutableArray;
 	readonly items: Validator<T>;
 	readonly min?: number;
 	readonly max?: number;
 	readonly unique?: boolean;
-};
+}
 
 /**
  * Define a valid array.
@@ -48,8 +48,8 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	readonly unique: boolean;
 	readonly min: number;
 	readonly max: number;
-	constructor({ items, unique = false, min = 0, max = Infinity, value = [], ...options }: ArraySchemaOptions<T>) {
-		super({ value, ...options });
+	constructor({ items, unique = false, min = 0, max = Infinity, title = "List", value = [], ...options }: ArraySchemaOptions<T>) {
+		super({ title, value, ...options });
 		this.items = items;
 		this.unique = unique;
 		this.min = min;

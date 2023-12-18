@@ -3,7 +3,9 @@ import type { Sourceable } from "../util/source.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `ThroughSchama` */
-export type ThroughSchemaOptions<T> = SchemaOptions & { source: Schema<T> };
+export interface ThroughSchemaOptions<T> extends SchemaOptions {
+	source: Schema<T>;
+}
 
 /** Schema that passes through to a source schema. */
 export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<Schema<T>> {

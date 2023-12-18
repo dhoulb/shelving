@@ -6,10 +6,10 @@ import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /** Allowed options for `LinkSchema` */
-export type LinkSchemaOptions = Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline"> & {
+export interface LinkSchemaOptions extends Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline"> {
 	readonly schemes?: ImmutableArray<string> | undefined;
 	readonly hosts?: ImmutableArray<string> | undefined;
-};
+}
 
 /**
  * Type of `StringSchema` that defines a valid URL.

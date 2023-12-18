@@ -7,11 +7,11 @@ import { OPTIONAL } from "./OptionalSchema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `DateSchema` */
-export type DateSchemaOptions = SchemaOptions & {
+export interface DateSchemaOptions extends SchemaOptions {
 	readonly value?: PossibleDate | undefined;
 	readonly min?: Optional<PossibleDate> | undefined;
 	readonly max?: Optional<PossibleDate> | undefined;
-};
+}
 
 /** Define a valid date in YMD format, e.g. `2005-09-12` */
 export class DateSchema extends Schema<string> {

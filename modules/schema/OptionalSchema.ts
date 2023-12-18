@@ -2,10 +2,10 @@ import type { Schema, SchemaOptions } from "./Schema.js";
 import { ThroughSchema } from "./ThroughSchema.js";
 
 /** Allowed options for `OptionalSchema` */
-export type OptionalSchemaOptions<T> = SchemaOptions & {
+export interface OptionalSchemaOptions<T> extends SchemaOptions {
 	readonly source: Schema<T>;
 	readonly value?: T | null;
-};
+}
 
 /** Validate a value of a specific type or `null`. */
 export class OptionalSchema<T> extends ThroughSchema<T | null> {

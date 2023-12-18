@@ -5,9 +5,9 @@ import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /** Allowed options for `EntitySchema` with specific types */
-export type EntitySchemaOptions<T extends string> = StringSchemaOptions & {
+export interface EntitySchemaOptions<T extends string> extends StringSchemaOptions {
 	readonly types?: ImmutableArray<T> | undefined;
-};
+}
 
 /** Validate a file name matching one or more extensions. */
 export class EntitySchema<T extends string> extends StringSchema {

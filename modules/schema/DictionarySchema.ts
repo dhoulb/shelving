@@ -7,12 +7,12 @@ import { validateDictionary } from "../util/validate.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `DictionarySchema` */
-export type DictionarySchemaOptions<T> = SchemaOptions & {
+export interface DictionarySchemaOptions<T> extends SchemaOptions {
 	readonly items: Validator<T>;
 	readonly value?: ImmutableDictionary | undefined;
 	readonly min?: number | undefined;
 	readonly max?: number | undefined;
-};
+}
 
 /** Validate a dictionary object (whose props are all the same with string keys). */
 export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
