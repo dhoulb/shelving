@@ -48,7 +48,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	readonly unique: boolean;
 	readonly min: number;
 	readonly max: number;
-	constructor({ items, unique = false, min = 0, max = Infinity, title = "List", value = [], ...options }: ArraySchemaOptions<T>) {
+	constructor({ items, unique = false, min = 0, max = Infinity, title = "Items", value = [], ...options }: ArraySchemaOptions<T>) {
 		super({ title, value, ...options });
 		this.items = items;
 		this.unique = unique;
