@@ -10,8 +10,8 @@ export type OptionalSchemaOptions<T> = SchemaOptions & {
 /** Validate a value of a specific type or `null`. */
 export class OptionalSchema<T> extends ThroughSchema<T | null> {
 	declare readonly value: T | null;
-	constructor(options: OptionalSchemaOptions<T>) {
-		super({ value: null, ...options });
+	constructor({ value = null, ...options }: OptionalSchemaOptions<T>) {
+		super({ value, ...options });
 	}
 	override validate(unsafeValue: unknown = this.value): T | null {
 		if (unsafeValue === null || unsafeValue === undefined || unsafeValue === "" || Number.isNaN(unsafeValue)) return null;

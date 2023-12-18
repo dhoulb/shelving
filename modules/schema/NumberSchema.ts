@@ -18,9 +18,8 @@ export class NumberSchema extends Schema<number> {
 	readonly min: number;
 	readonly max: number;
 	readonly step: number | undefined;
-	constructor(options: NumberSchemaOptions) {
-		super({ title: "Number", value: 0, ...options });
-		const { min = -Infinity, max = Infinity, step } = options;
+	constructor({ min = -Infinity, max = Infinity, step, title = "Number", value = 0, ...options }: NumberSchemaOptions) {
+		super({ title, value, ...options });
 		this.min = min;
 		this.max = max;
 		this.step = step;

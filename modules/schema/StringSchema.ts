@@ -49,9 +49,8 @@ export class StringSchema extends Schema<string> {
 	readonly match: RegExp | undefined;
 	readonly sanitizer: Sanitizer | undefined;
 	readonly multiline: boolean;
-	constructor(options: StringSchemaOptions) {
-		super({ value: "", ...options });
-		const { type = "text", min = 0, max = Infinity, match, sanitizer, multiline = false } = options;
+	constructor({ type = "text", min = 0, max = Infinity, match, sanitizer, multiline = false, value = "", ...options }: StringSchemaOptions) {
+		super({ value, ...options });
 		this.type = type;
 		this.min = min;
 		this.max = max;

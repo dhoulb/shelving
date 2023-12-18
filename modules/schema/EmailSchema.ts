@@ -22,9 +22,9 @@ const R_MATCH = /^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a
  *     - TLD is a segment of 2-63 characters, possibly in `xn--` international format.
  */
 export class EmailSchema extends StringSchema {
-	constructor(options: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline">) {
+	constructor({ title = "Email", ...options }: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline">) {
 		super({
-			title: "Email",
+			title,
 			...options,
 			type: "email",
 			min: 1,
@@ -42,5 +42,5 @@ export class EmailSchema extends StringSchema {
 /** Valid email, e.g. `test@test.com` */
 export const EMAIL = new EmailSchema({});
 
-/** Valid email, e.g. `test@test.com`, or `null` */
+/** Valid optional email, e.g. `test@test.com`, or `null` */
 export const OPTIONAL_EMAIL = OPTIONAL(EMAIL);

@@ -9,8 +9,8 @@ export type BooleanSchemaOptions = SchemaOptions & {
 /** Define a valid boolean. */
 export class BooleanSchema extends Schema<boolean> {
 	declare readonly value: boolean;
-	constructor(options: BooleanSchemaOptions) {
-		super({ value: false, ...options });
+	constructor({ value = false, ...options }: BooleanSchemaOptions) {
+		super({ value, ...options });
 	}
 	validate(unsafeValue: unknown = this.value): boolean {
 		return !!unsafeValue;

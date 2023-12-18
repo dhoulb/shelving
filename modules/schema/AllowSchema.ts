@@ -9,6 +9,7 @@ import { Schema } from "./Schema.js";
 
 /** Allowed options for `AllowSchama` */
 export type AllowSchemaOptions<K, T> = Omit<SchemaOptions, "value"> & {
+	/** Specify correct options using a `Map` or iterable set of entries. */
 	allow: PossibleMap<K, T>;
 };
 
@@ -18,7 +19,8 @@ export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>
 	readonly allow: ImmutableMap<K, T>;
 	constructor(options: AllowSchemaOptions<K, T>) {
 		const allow = getMap(options.allow);
-		super({ value: getFirstItem(allow.keys()), ...options });
+		const value = getFirstItem(allow.keys());
+		super({ value, ...options });
 		this.allow = allow;
 	}
 	validate(unsafeValue: unknown = this.value): K {
@@ -34,6 +36,7 @@ export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>
 
 /** Allowed options for `AllowStringSchama` */
 export type AllowStringSchemaOptions<K extends string, T> = Omit<SchemaOptions, "value"> & {
+	/** Specify correct options using a `Map`, iterable set of entries, or an object with string keys. */
 	allow: PossibleStringMap<K, T>;
 };
 

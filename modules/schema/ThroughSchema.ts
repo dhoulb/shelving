@@ -8,8 +8,7 @@ export type ThroughSchemaOptions<T> = SchemaOptions & { source: Schema<T> };
 /** Schema that passes through to a source schema. */
 export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<Schema<T>> {
 	readonly source: Schema<T>;
-	constructor(options: ThroughSchemaOptions<T>) {
-		const source = options.source;
+	constructor({ source, ...options }: ThroughSchemaOptions<T>) {
 		super({ ...source, ...options });
 		this.source = source;
 	}

@@ -18,9 +18,9 @@ export type DataSchemaOptions<T extends Data> = SchemaOptions & {
 export class DataSchema<T extends Data> extends Schema<T> {
 	declare readonly value: Partial<T>;
 	readonly props: Validators<T>;
-	constructor(options: DataSchemaOptions<T>) {
-		super({ value: {}, ...options });
-		this.props = options.props;
+	constructor({ props, title = "Data", value = {}, ...options }: DataSchemaOptions<T>) {
+		super({ title, value, ...options });
+		this.props = props;
 	}
 	override validate(unsafeValue: unknown = this.value): T {
 		if (!isData(unsafeValue)) throw new Feedback("Must be object", unsafeValue);

@@ -13,9 +13,9 @@ const PHONE_REGEXP = /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/;
  * - Falsy values are converted to `""` empty string.
  */
 export class PhoneSchema extends StringSchema {
-	constructor(options: StringSchemaOptions) {
+	constructor({ title = "Phone", ...options }: StringSchemaOptions) {
 		super({
-			title: "Phone",
+			title,
 			...options,
 			type: "tel",
 			min: 1,

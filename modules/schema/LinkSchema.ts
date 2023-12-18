@@ -20,17 +20,17 @@ export type LinkSchemaOptions = Omit<StringSchemaOptions, "type" | "min" | "max"
 export class LinkSchema extends StringSchema {
 	readonly schemes: ImmutableArray<string>;
 	readonly hosts: ImmutableArray<string> | undefined;
-	constructor(options: LinkSchemaOptions) {
+	constructor({ schemes = ["http:", "https:"], hosts, title = "Link", ...options }: LinkSchemaOptions) {
 		super({
-			title: "Link",
+			title,
 			...options,
 			type: "url",
 			min: 1,
 			max: 512,
 			multiline: false,
 		});
-		this.schemes = options.schemes || ["http:", "https:"];
-		this.hosts = options.hosts;
+		this.schemes = schemes;
+		this.hosts = hosts;
 	}
 	// Override to clean the URL using the builtin `URL` class and check the schemes and hosts against the whitelists.
 	override validate(unsafeValue: unknown): string {

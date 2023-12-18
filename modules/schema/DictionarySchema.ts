@@ -20,9 +20,8 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	readonly items: Validator<T>;
 	readonly min: number;
 	readonly max: number;
-	constructor(options: DictionarySchemaOptions<T>) {
-		super({ value: {}, ...options });
-		const { items, min = 0, max = Infinity } = options;
+	constructor({ items, min = 0, max = Infinity, value = {}, ...options }: DictionarySchemaOptions<T>) {
+		super({ value, ...options });
 		this.items = items;
 		this.min = min;
 		this.max = max;

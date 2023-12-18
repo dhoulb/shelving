@@ -8,8 +8,8 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
  * - Default maximum key length is 64 characters.
  */
 export class KeySchema extends StringSchema {
-	constructor(options: StringSchemaOptions) {
-		super({ min: 1, max: 64, ...options });
+	constructor({ min = 1, max = 64, ...options }: StringSchemaOptions) {
+		super({ min, max, ...options });
 	}
 }
 
