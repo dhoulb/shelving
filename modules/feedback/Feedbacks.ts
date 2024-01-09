@@ -1,5 +1,4 @@
 import type { ImmutableDictionary } from "../util/dictionary.js";
-import { indent } from "../util/debug.js";
 import { getProp } from "../util/object.js";
 import { mapDictionary } from "../util/transform.js";
 import { Feedback } from "./Feedback.js";
@@ -15,9 +14,8 @@ export class Feedbacks extends Feedback {
 	}
 
 	constructor(feedbacks: ImmutableDictionary<Feedback>, value?: unknown) {
-		super(`${Object.entries(feedbacks).map(_mapMessages).join("\n")}`, value);
+		const first = Object.values(feedbacks)[0];
+		super(first?.message || "Unknown error", value);
 		this.feedbacks = feedbacks;
 	}
 }
-
-const _mapMessages = ([name, { message }]: readonly [string, Feedback]) => `${name}:${indent(message)}`;
