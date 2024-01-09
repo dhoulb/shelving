@@ -259,7 +259,7 @@ export type AreaUnitKey = MapKey<typeof AREA_UNITS>;
 export const VOLUME_UNITS = new UnitList({
 	// Metric.
 	"milliliter": { abbr: "ml" },
-	"liter": { to: { milliliter: 1000 } },
+	"liter": { abbr: "ltr", to: { milliliter: 1000 } },
 	"cubic-centimeter": { abbr: "cm³", to: { milliliter: 1 } },
 	"cubic-meter": { abbr: "m³", to: { milliliter: MILLION } },
 	// US.
