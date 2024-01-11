@@ -202,7 +202,7 @@ export class MemoryTable<T extends Data> {
 			await this._changed;
 			const nextItems = this.getQuery(query);
 			if (!isArrayEqual(lastItems, nextItems)) {
-				yield this.getQuery(query);
+				yield nextItems;
 				lastItems = nextItems;
 			}
 		}
