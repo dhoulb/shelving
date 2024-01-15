@@ -31,14 +31,14 @@ export function createDataContext<T extends Database>(provider: AbstractProvider
 
 	return {
 		useItem: <K extends DataKey<T>>(collection: Optional<K>, id: Optional<string>): ItemStore<T, K> | undefined => {
-			const cache = useCache();
+			const cache = useCache() as Map<string, ItemStore<T, K>>;
 			const key = collection && id && `${collection}/${id}`;
-			return useStore(key ? (cache.get(key) as ItemStore<T, K>) || setMapItem(cache, key, new ItemStore<T, K>(collection, id, provider, memory)) : undefined);
+			return useStore(key ? cache.get(key) || setMapItem(cache, key, new ItemStore(collection, id, provider, memory)) : undefined);
 		},
 		useQuery: <K extends DataKey<T>>(collection: Optional<K>, query: Optional<ItemQuery<T[K]>>): QueryStore<T, K> | undefined => {
-			const cache = useCache();
+			const cache = useCache() as Map<string, QueryStore<T, K>>;
 			const key = collection && query && `${collection}?${JSON.stringify(query)}`;
-			return useStore(key ? (cache.get(key) as QueryStore<T, K>) || setMapItem(cache, key, new QueryStore<T, K>(collection, query, provider, memory)) : undefined);
+			return useStore(key ? cache.get(key) || setMapItem(cache, key, new QueryStore(collection, query, provider, memory)) : undefined);
 		},
 		DataContext: CacheContext,
 	} as DataContext<T>;
