@@ -11,12 +11,6 @@ import { createCacheContext } from "./createCacheContext.js";
 import { useStore } from "./useStore.js";
 
 export interface DataContext<T extends Database> {
-	/** Get an `ItemStore` for the specified collection item in the current `DataProvider` context. */
-	useCacheItem<K extends DataKey<T>>(this: void, collection: K, id: string): ItemStore<T, K>;
-	useCacheItem<K extends DataKey<T>>(this: void, collection: Optional<K>, id: Optional<string>): ItemStore<T, K> | undefined;
-	/** Get an `QueryStore` for the specified collection query in the current `DataProvider` context. */
-	useCacheQuery<K extends DataKey<T>>(this: void, collection: K, query: ItemQuery<T[K]>): QueryStore<T, K>;
-	useCacheQuery<K extends DataKey<T>>(this: void, collection: Optional<K>, query: Optional<ItemQuery<T[K]>>): QueryStore<T, K> | undefined;
 	/** Get an `ItemStore` for the specified collection item in the current `DataProvider` context and subscribe to any changes in it. */
 	useItem<K extends DataKey<T>>(this: void, collection: K, id: string): ItemStore<T, K>;
 	useItem<K extends DataKey<T>>(this: void, collection: Optional<K>, id: Optional<string>): ItemStore<T, K> | undefined;
@@ -35,23 +29,17 @@ export function createDataContext<T extends Database>(provider: AbstractProvider
 	// If this provider is backed by an in-memory cache, pass it to the `ItemStore` and `QueryStore` instances we create.
 	const memory = getOptionalSource<CacheProvider<T>>(CacheProvider, provider)?.memory;
 
-	const useCacheItem = <K extends DataKey<T>>(collection: Optional<K>, id: Optional<string>): ItemStore<T, K> | undefined => {
-		const cache = useCache();
-		const key = collection && id && `${collection}/${id}`;
-		return key ? (cache.get(key) as ItemStore<T, K>) || setMapItem(cache, key, new ItemStore<T, K>(collection, id, provider, memory)) : undefined;
-	};
-
-	const useCacheQuery = <K extends DataKey<T>>(collection: Optional<K>, query: Optional<ItemQuery<T[K]>>): QueryStore<T, K> | undefined => {
-		const cache = useCache();
-		const key = collection && query && `${collection}?${JSON.stringify(query)}`;
-		return key ? (cache.get(key) as QueryStore<T, K>) || setMapItem(cache, key, new QueryStore<T, K>(collection, query, provider, memory)) : undefined;
-	};
-
 	return {
-		useCacheItem,
-		useCacheQuery,
-		useItem: <K extends DataKey<T>>(collection: Optional<K>, id: Optional<string>): ItemStore<T, K> | undefined => useStore(useCacheItem(collection, id)),
-		useQuery: <K extends DataKey<T>>(collection: Optional<K>, query: Optional<ItemQuery<T[K]>>): QueryStore<T, K> | undefined => useStore(useCacheQuery(collection, query)),
+		useItem: <K extends DataKey<T>>(collection: Optional<K>, id: Optional<string>): ItemStore<T, K> | undefined => {
+			const cache = useCache();
+			const key = collection && id && `${collection}/${id}`;
+			return useStore(key ? (cache.get(key) as ItemStore<T, K>) || setMapItem(cache, key, new ItemStore<T, K>(collection, id, provider, memory)) : undefined);
+		},
+		useQuery: <K extends DataKey<T>>(collection: Optional<K>, query: Optional<ItemQuery<T[K]>>): QueryStore<T, K> | undefined => {
+			const cache = useCache();
+			const key = collection && query && `${collection}?${JSON.stringify(query)}`;
+			return useStore(key ? (cache.get(key) as QueryStore<T, K>) || setMapItem(cache, key, new QueryStore<T, K>(collection, query, provider, memory)) : undefined);
+		},
 		DataContext: CacheContext,
 	} as DataContext<T>;
 }
