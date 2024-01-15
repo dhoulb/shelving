@@ -1,17 +1,16 @@
 import type { MemoryProvider } from "./MemoryProvider.js";
 import type { AbstractProvider } from "./Provider.js";
 import type { DataKey, Database } from "../util/data.js";
-import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
+import type { Item, ItemQuery } from "../util/item.js";
 import type { Stop } from "../util/start.js";
+import { ArrayStore } from "../store/ArrayStore.js";
 import { BooleanStore } from "../store/BooleanStore.js";
-import { Store } from "../store/Store.js";
-import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem } from "../util/array.js";
 import { NONE } from "../util/constants.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Store a set of multiple items. */
-export class QueryStore<T extends Database, K extends DataKey<T>> extends Store<Items<T[K]>> implements Iterable<Item<T[K]>> {
+export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayStore<Item<T[K]>> {
 	readonly provider: AbstractProvider<T>;
 	readonly collection: K;
 	readonly query: ItemQuery<T[K]>;
@@ -23,36 +22,6 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends Store<
 		return this._hasMore;
 	}
 	private _hasMore = false;
-
-	/** Get the first item in this store or `null` if this query has no items. */
-	get optionalFirst(): OptionalItem<T[K]> {
-		return getOptionalFirstItem(this.value);
-	}
-
-	/** Get the last item in this store or `null` if this query has no items. */
-	get optionalLast(): OptionalItem<T[K]> {
-		return getOptionalLastItem(this.value);
-	}
-
-	/** Get the first item in this store. */
-	get first(): Item<T[K]> {
-		return getFirstItem(this.value);
-	}
-
-	/** Get the last item in this store. */
-	get last(): Item<T[K]> {
-		return getLastItem(this.value);
-	}
-
-	/** Does the document have at least one result. */
-	get exists(): boolean {
-		return !!this.value.length;
-	}
-
-	/** Get the number of items matching this query. */
-	get count(): number {
-		return this.value.length;
-	}
 
 	constructor(collection: K, query: ItemQuery<T[K]>, provider: AbstractProvider<T>, memory?: MemoryProvider<T>) {
 		const time = memory?.getQueryTime(collection, query);
