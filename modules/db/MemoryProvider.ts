@@ -111,7 +111,7 @@ export class MemoryTable<T extends Data> {
 	protected readonly _times = new Map<string, number>();
 
 	/** Deferred sequence of next values. */
-	readonly _changed = new DeferredSequence();
+	public readonly next = new DeferredSequence();
 
 	getItemTime(id: string): number | undefined {
 		return this._times.get(id);
@@ -125,7 +125,7 @@ export class MemoryTable<T extends Data> {
 		let lastValue = this.getItem(id);
 		yield lastValue;
 		while (true) {
-			await this._changed;
+			await this.next;
 			const nextValue = this.getItem(id);
 			if (nextValue !== lastValue) {
 				yield nextValue;
@@ -138,7 +138,7 @@ export class MemoryTable<T extends Data> {
 		let lastTime = this._times.get(id);
 		if (typeof lastTime === "number") yield this.getItem(id);
 		while (true) {
-			await this._changed;
+			await this.next;
 			const nextTime = this._times.get(id);
 			if (nextTime !== lastTime) {
 				if (typeof nextTime === "number") yield this.getItem(id);
@@ -159,7 +159,7 @@ export class MemoryTable<T extends Data> {
 		if (this._data.get(id) !== item) {
 			this._data.set(id, item);
 			this._times.set(id, Date.now());
-			this._changed.resolve();
+			this.next.resolve();
 		}
 	}
 
@@ -179,7 +179,7 @@ export class MemoryTable<T extends Data> {
 		if (this._data.has(id)) {
 			this._data.delete(id);
 			this._times.set(id, Date.now());
-			this._changed.resolve();
+			this.next.resolve();
 		}
 	}
 
@@ -199,7 +199,7 @@ export class MemoryTable<T extends Data> {
 		let lastItems = this.getQuery(query);
 		yield lastItems;
 		while (true) {
-			await this._changed;
+			await this.next;
 			const nextItems = this.getQuery(query);
 			if (!isArrayEqual(lastItems, nextItems)) {
 				yield nextItems;
@@ -213,7 +213,7 @@ export class MemoryTable<T extends Data> {
 		let lastTime = this._times.get(key);
 		if (typeof lastTime === "number") yield this.getQuery(query);
 		while (true) {
-			await this._changed;
+			await this.next;
 			const nextTime = this._times.get(key);
 			if (lastTime !== nextTime) {
 				if (typeof nextTime === "number") yield this.getQuery(query);
@@ -231,7 +231,7 @@ export class MemoryTable<T extends Data> {
 		if (changed) {
 			const key = _getQueryKey(query);
 			this._times.set(key, Date.now());
-			this._changed.resolve();
+			this.next.resolve();
 		}
 	}
 
@@ -244,7 +244,7 @@ export class MemoryTable<T extends Data> {
 		if (count) {
 			const key = _getQueryKey(query);
 			this._times.set(key, Date.now());
-			this._changed.resolve();
+			this.next.resolve();
 		}
 	}
 
@@ -257,7 +257,7 @@ export class MemoryTable<T extends Data> {
 		if (count) {
 			const key = _getQueryKey(query);
 			this._times.set(key, Date.now());
-			this._changed.resolve();
+			this.next.resolve();
 		}
 	}
 
@@ -266,7 +266,7 @@ export class MemoryTable<T extends Data> {
 		if (query) {
 			const key = _getQueryKey(query);
 			this._times.set(key, Date.now());
-			this._changed.resolve();
+			this.next.resolve();
 		}
 	}
 
