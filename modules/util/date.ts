@@ -1,3 +1,4 @@
+import type { Optional } from "./optional.js";
 import { ValueError } from "../error/ValueError.js";
 
 /** Things that converted to dates. */
@@ -14,26 +15,25 @@ export function assertDate(value: unknown): asserts value is Date {
 }
 
 /**
- * Convert an unknown value to a valid `Date` instance, or `null` if it couldn't be converted.
+ * Convert an unknown value to a valid `Date` instance, or return `undefined` if it couldn't be converted.
  * - Note: `Date` instances can be invalid (e.g. `new Date("blah blah").getTime()` returns `NaN`). These are detected and will always return `null`
  *
  * Conversion rules:
- * - `Date` instance returns unchanged (BUT if the date isn't valid, `null` is returned).
- * - `null` or `""` empty string or the string `"none"` returns `undefined`
- * - `undefined` returns the current date (e.g. `new Date()`).
+ * - `Date` instance returns unchanged (BUT if the date isn't valid, `undefined` is returned).
+ * - `null` or `undefined` or `""` empty string returns `undefined`
  * - The string `"now"` returns the current date (e.g. `new Date()`).
  * - The string `"today"` returns the current date at midnight (e.g. `getMidnight()`).
  * - The string `"tomorrow"` returns tomorrow's date at midnight (e.g. `addDays(getMidnight(), 1)`).
  * - The string `"yesterday"` returns yesterday's date at midnight (e.g. `addDays(getMidnight(), 1)`).
  * - Strings (e.g. `"2003-09-12"` or `"2003 feb 20:09"`) return the corresponding date (using `new Date(string)`).
  * - Numbers are return the corresponding date (using `new Date(number)`, i.e. milliseconds since 01/01/1970).
- * - Anything else is converted to `null`
+ * - Anything else returns `undefined`
  *
- * @param possible Any value that we want to parse as a valid date.
+ * @param possible Any value that we want to parse as a valid date (defaults to `undefined`).
  * @returns `Date` instance if the value could be converted to a valid date, and `null` if not.
  */
-export function getOptionalDate(possible: unknown = "now"): Date | undefined {
-	if (possible === null) return undefined;
+export function getOptionalDate(possible: unknown): Date | undefined {
+	if (possible === undefined || possible === null || possible === "") return undefined;
 	if (possible === "now") return new Date();
 	if (possible === "today") return getMidnight();
 	if (possible === "tomorrow") return addDays(1, getMidnight());
@@ -45,8 +45,11 @@ export function getOptionalDate(possible: unknown = "now"): Date | undefined {
 	}
 }
 
-/** Convert a possible date to a `Date` instance, or throw `ValueError` if it couldn't be converted. */
-export function getDate(possible?: PossibleDate): Date {
+/**
+ * Convert a possible date to a `Date` instance, or throw `ValueError` if it couldn't be converted.
+ * @param possible Any value that we want to parse as a valid date (defaults to `"now"`).
+ */
+export function getDate(possible: PossibleDate = "now"): Date {
 	const date = getOptionalDate(possible);
 	if (!date) throw new ValueError(`Invalid date`, possible);
 	return date;
@@ -69,7 +72,7 @@ export function getOptionalYMD(possible: unknown): string | undefined {
 }
 
 /** Convert a `Date` instance to a YMD string like "2015-09-12", or throw `ValueError` if it couldn't be converted.  */
-export function getYMD(possible?: PossibleDate): string {
+export function getYMD(possible: PossibleDate): string {
 	return _ymd(getDate(possible));
 }
 function _ymd(date: Date): string {
@@ -184,6 +187,6 @@ export function formatDate(date: PossibleDate): string {
 }
 
 /** Format an optional time as a string. */
-export function formatOptionalDate(date?: unknown): string | undefined {
+export function formatOptionalDate(date: Optional<PossibleDate>): string | undefined {
 	return getOptionalDate(date)?.toLocaleDateString();
 }

@@ -1,3 +1,4 @@
+import type { Optional } from "./optional.js";
 import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MINUTE, SECOND } from "./constants.js";
 import { getOptionalDate } from "./date.js";
@@ -6,8 +7,8 @@ import { wrapNumber } from "./number.js";
 /** Class representing a time in the day in 24 hour format in the user's current locale. */
 export class Time {
 	/** Make a new `Time` instance from a time string. */
-	static from(possible: unknown = "now"): Time | undefined {
-		if (possible === null) return undefined;
+	static from(possible: unknown): Time | undefined {
+		if (possible === undefined || possible === null || possible === "") return undefined;
 		if (isTime(possible)) return possible;
 		if (typeof possible === "string") {
 			const matches = possible.match(TIME_REGEXP);
@@ -97,7 +98,7 @@ function _pad(num: number, size: 2 | 3 | 4): string {
 }
 
 /** Regular expression that matches a time in ISO 8601 format. */
-export const TIME_REGEXP = /([0-9]+):([0-9]+)(?::([0-9]+)(?:.([0-9]+))?)?/;
+const TIME_REGEXP = /([0-9]+):([0-9]+)(?::([0-9]+)(?:.([0-9]+))?)?/;
 
 /** Things that converted to times. */
 export type PossibleTime = Time | Date | number | string;
@@ -108,34 +109,24 @@ export function isTime(value: unknown): value is Time {
 }
 
 /**
- * Convert a value to a `Time` instance or `undefined`
+ * Convert a value to a `Time` instance, or return `undefined` if it couldn't be converted.
  * - Works with possible dates, e.g. `now` or `Date` or `2022-09-12 18:32` or `19827263567`
  * - Works with time strings, e.g. `18:32` or `23:59:59.999`
+ *
+ * @param possible Any value that we want to parse as a valid time (defaults to `undefined`).
  */
 export function getOptionalTime(possible: unknown): Time | undefined {
 	return Time.from(possible);
 }
 
-/** Convert a possible time to a `Time` instance, or throw `ValueError` if it couldn't be converted. */
-export function getTime(possible?: PossibleTime): Time {
+/**
+ * Convert a possible date to a `Time` instance, or throw `ValueError` if it couldn't be converted (defaults to `"now"`).
+ * @param possible Any value that we want to parse as a valid time (defaults to `"now"`).
+ */
+export function getTime(possible: PossibleTime = "now"): Time {
 	const time = getOptionalTime(possible);
 	if (!time) throw new ValueError(`Invalid time`, possible);
 	return time;
-}
-
-/** Get the time as in `hh:mm` format (hours, minutes), e.g. `13.59` */
-export function getShortTime(time?: PossibleTime): string {
-	return getTime(time).long;
-}
-
-/** Get the time in `hh:mm:ss` format (hours, minutes seconds), e.g. `13.16.19.123` */
-export function getMediumTime(time?: PossibleTime): string {
-	return getTime(time).long;
-}
-
-/** Get this time in `hh:mm:ss.fff` format (ISO 8601 compatible, hours, minutes, seconds, milliseconds), e.g. `13:16:19.123` */
-export function getLongTime(time?: PossibleTime): string {
-	return getTime(time).long;
 }
 
 /** Format a time as a string based on the browser locale settings. */
@@ -144,6 +135,6 @@ export function formatTime(time?: PossibleTime, precision: 2 | 3 | 4 | 5 | 6 = 2
 }
 
 /** Format an optional time as a string based on the browser locale settings. */
-export function formatOptionalTime(time?: unknown, precision: 2 | 3 | 4 | 5 | 6 = 2): string | undefined {
+export function formatOptionalTime(time: Optional<PossibleTime>, precision: 2 | 3 | 4 | 5 | 6 = 2): string | undefined {
 	return getOptionalTime(time)?.format(precision);
 }

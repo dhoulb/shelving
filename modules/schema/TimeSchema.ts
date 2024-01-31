@@ -25,7 +25,7 @@ export class TimeSchema extends Schema<string> {
 	 * - Note: `<input type="time">` elements expect `step=""` to be  in _seconds_ so you need to multiply this by `1000`
 	 */
 	readonly step: number | undefined;
-	constructor({ min = null, max = null, step = 60, title = "Time", value = "now", ...options }: TimeSchemaOptions) {
+	constructor({ min, max, step = 60, title = "Time", value = "now", ...options }: TimeSchemaOptions) {
 		super({ title, value, ...options });
 		this.min = getOptionalTime(min);
 		this.max = getOptionalTime(max);

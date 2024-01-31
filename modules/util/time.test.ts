@@ -2,7 +2,6 @@ import { Time, ValueError, getOptionalTime, getTime } from "../index.js";
 
 test("getOptionalTime()", () => {
 	// Parsed as dates.
-	expect(getOptionalTime(undefined)).toBeInstanceOf(Time);
 	expect(getOptionalTime("now")).toBeInstanceOf(Time);
 	expect(getOptionalTime("today")).toBeInstanceOf(Time);
 	expect(getOptionalTime("yesterday")).toBeInstanceOf(Time);
@@ -14,6 +13,7 @@ test("getOptionalTime()", () => {
 	expect(getOptionalTime("18:19:20.123")).toBeInstanceOf(Time);
 
 	// Not parseable.
+	expect(getOptionalTime(undefined)).toBe(undefined);
 	expect(getOptionalTime("")).toBe(undefined);
 	expect(getOptionalTime(null)).toBe(undefined);
 });
@@ -51,7 +51,6 @@ describe("Time", () => {
 		expect(Time.from(Date.now())).toBeInstanceOf(Time);
 
 		// Parse misc times.
-		expect(Time.from()).toBeInstanceOf(Time);
 		expect(Time.from("now")).toBeInstanceOf(Time);
 		expect(Time.from("today")).toBeInstanceOf(Time);
 		expect(Time.from("yesterday")).toBeInstanceOf(Time);
@@ -59,6 +58,7 @@ describe("Time", () => {
 
 		// Parse misc undefined.
 		expect(Time.from("")).toBe(undefined);
+		expect(Time.from(undefined)).toBe(undefined);
 		expect(Time.from(null)).toBe(undefined);
 	});
 	test(".h, .m. .s, .ms", () => {
@@ -67,9 +67,9 @@ describe("Time", () => {
 		expect(Time.from("18:19:20.123")?.s).toBe(20);
 		expect(Time.from("18:19:20.123")?.ms).toBe(123);
 	});
-	test(".iso", () => {
-		expect(getTime("18:19").long).toBe("18:19:00.000");
-		expect(getTime("18:19:20").long).toBe("18:19:20.000");
-		expect(getTime("18:19:20.123").long).toBe("18:19:20.123");
+	test(".long", () => {
+		expect(Time.from("18:19")?.long).toBe("18:19:00.000");
+		expect(Time.from("18:19:20")?.long).toBe("18:19:20.000");
+		expect(Time.from("18:19:20.123")?.long).toBe("18:19:20.123");
 	});
 });

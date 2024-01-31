@@ -18,7 +18,7 @@ export class DateSchema extends Schema<string> {
 	declare readonly value: PossibleDate;
 	readonly min: Date | undefined;
 	readonly max: Date | undefined;
-	constructor({ min = null, max = null, title = "Date", value = "now", ...options }: DateSchemaOptions) {
+	constructor({ min, max, title = "Date", value = "now", ...options }: DateSchemaOptions) {
 		super({ title, value, ...options });
 		this.min = getOptionalDate(min);
 		this.max = getOptionalDate(max);

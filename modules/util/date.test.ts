@@ -1,9 +1,8 @@
 import type { PossibleDate } from "../index.js";
 import { getOptionalDate, getOptionalYMD, getYMD } from "../index.js";
 
-describe("toDate()", () => {
-	test("toDate(): Parses valid possible dates to Date instances", () => {
-		expect(getOptionalDate(undefined)).toBeInstanceOf(Date);
+describe("getOptionalDate()", () => {
+	test("getOptionalDate(): Parses valid possible dates to Date instances", () => {
 		expect(getOptionalDate(new Date("2019-11-27"))).toBeInstanceOf(Date);
 		expect(getOptionalDate(new Date())).toBeInstanceOf(Date);
 		expect(getOptionalDate("2019-11-27")).toBeInstanceOf(Date);
@@ -15,7 +14,8 @@ describe("toDate()", () => {
 		expect(getOptionalDate(0)).toBeInstanceOf(Date);
 		expect(getOptionalDate(new Date("0000-01-01").getTime())).toBeInstanceOf(Date);
 	});
-	test("toDate(): Parses invalid values to undefined", () => {
+	test("getOptionalDate(): Parses invalid values to undefined", () => {
+		expect(getOptionalDate(undefined)).toBe(undefined);
 		expect(getOptionalDate(null)).toBe(undefined);
 		expect(getOptionalDate("")).toBe(undefined);
 		expect(getOptionalDate(true)).toBe(undefined);
