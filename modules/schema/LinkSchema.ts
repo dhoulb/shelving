@@ -1,12 +1,13 @@
 import type { StringSchemaOptions } from "./StringSchema.js";
 import type { ImmutableArray } from "../util/array.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { getOptionalURL } from "../util/url.js";
+import { type AbsoluteURI, type PossibleURL, getOptionalAbsoluteURI, getOptionalURL } from "../util/url.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /** Allowed options for `LinkSchema` */
 export interface LinkSchemaOptions extends Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline"> {
+	readonly base?: PossibleURL | undefined;
 	readonly schemes?: ImmutableArray<string> | undefined;
 	readonly hosts?: ImmutableArray<string> | undefined;
 }
@@ -18,9 +19,10 @@ export interface LinkSchemaOptions extends Omit<StringSchemaOptions, "type" | "m
  * - Falsy values are converted to `""` empty string.
  */
 export class LinkSchema extends StringSchema {
+	readonly base: AbsoluteURI | undefined;
 	readonly schemes: ImmutableArray<string>;
 	readonly hosts: ImmutableArray<string> | undefined;
-	constructor({ schemes = ["http:", "https:"], hosts, title = "Link", ...options }: LinkSchemaOptions) {
+	constructor({ base, schemes = ["http:", "https:"], hosts, title = "Link", ...options }: LinkSchemaOptions) {
 		super({
 			title,
 			...options,
@@ -29,17 +31,18 @@ export class LinkSchema extends StringSchema {
 			max: 512,
 			multiline: false,
 		});
+		this.base = getOptionalAbsoluteURI(base);
 		this.schemes = schemes;
 		this.hosts = hosts;
 	}
-	// Override to clean the URL using the builtin `URL` class and check the schemes and hosts against the whitelists.
+	// Override to clean the URL using builtin helper functions and check the schemes and hosts against the whitelists.
 	override validate(unsafeValue: unknown): string {
 		const unsafeString = super.validate(unsafeValue);
-		const optionalURL = getOptionalURL(super.sanitize(unsafeString));
-		if (!optionalURL) throw new Feedback(unsafeString ? "Invalid format" : "Required", unsafeString);
-		if (!this.schemes.includes(optionalURL.protocol)) throw new Feedback(`Scheme "${optionalURL.protocol}" is not allowed`, unsafeString);
-		if (this.hosts && !this.hosts.includes(optionalURL.host)) throw new Feedback(`Domain "${optionalURL.host}" is not allowed`, unsafeString);
-		return optionalURL.href;
+		const url = getOptionalURL(super.sanitize(unsafeString), this.base);
+		if (!url) throw new Feedback(unsafeString ? "Invalid format" : "Required", unsafeString);
+		if (!this.schemes.includes(url.protocol)) throw new Feedback(`Scheme "${url.protocol}" is not allowed`, unsafeString);
+		if (this.hosts && !this.hosts.includes(url.host)) throw new Feedback(`Domain "${url.host}" is not allowed`, unsafeString);
+		return url.href;
 	}
 }
 
