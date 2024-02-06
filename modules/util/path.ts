@@ -1,4 +1,5 @@
 import { ValueError } from "../error/ValueError.js";
+import { type Optional, notOptional } from "./optional.js";
 
 /** Absolute path starts with `/` slash. */
 export type AbsolutePath = `/` | `/${string}`;
@@ -25,31 +26,48 @@ export function isRelativePath(path: string): path is RelativePath {
  * - `\` Windows slashes are nromalised to `/` UNIX slashes.
  * - Trailing slashes are removed, e.g. `/a/b/` becomes `/a/b`
  */
-export function cleanPath(path: AbsolutePath): AbsolutePath;
-export function cleanPath(path: string): string;
-export function cleanPath(path: string): string {
+function _cleanPath(path: AbsolutePath): AbsolutePath;
+function _cleanPath(path: string): string;
+function _cleanPath(path: string): string {
 	return path
 		.replace(/[/\\]+/g, "/") // Normalise slashes.
 		.replace(/(?!^)\/$/g, ""); // Trailing slashes.
 }
 
 /**
- * Resolve an absolute path.
+ * Resolve a relative or absolute path and return the path, or `undefined` if not a valid path.
  * - Uses `new URL` to do path processing, so URL strings e.g.
  * - Returned paths are cleaned with `cleanPath()` so runs of slashes and trailing slashes are removed.
  *
- * @param path Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
- * @param base Absolute path or `URL` instance used for resolving relative paths in `path`
+ * @param possible Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
+ * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function getPath(path: string | URL, base: AbsolutePath | URL | Location = _LOCATION): AbsolutePath {
-	try {
-		return cleanPath(new URL(path, `http://j.com${typeof base === "string" ? base : base.pathname}/`).pathname as AbsolutePath);
-	} catch {
-		throw new ValueError("Invalid path", path);
+export function getOptionalPath(possible: Optional<string | URL>, base: AbsolutePath | undefined = "/"): AbsolutePath | undefined {
+	if (notOptional(possible)) {
+		try {
+			const { pathname, search, hash } = new URL(possible, `http://j.com${base}/`);
+			if (isAbsolutePath(pathname)) return `${_cleanPath(pathname)}${search}${hash}`;
+		} catch {
+			//
+		}
 	}
 }
-const _LOCATION = typeof window === "object" ? window.location : "/";
+
+/**
+ * Resolve a relative or absolute path and return the path, or throw `ValueError` if not a valid path.
+ * - Internally uses `new URL` to do path processing but shouldn't ever reveal that fact.
+ * - Returned paths are cleaned with `cleanPath()` so runs of slashes and trailing slashes are removed.
+ *
+ * @param possible Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
+ * @param base Absolute path used for resolving relative paths in `possible`
+ * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
+ */
+export function getPath(possible: string, base?: AbsolutePath): AbsolutePath {
+	const path = getOptionalPath(possible, base);
+	if (!path) throw new ValueError("Invalid URL", possible);
+	return path;
+}
 
 /** Is a target path active? */
 export function isPathActive(target: AbsolutePath, current: AbsolutePath): boolean {
