@@ -88,14 +88,14 @@ export class LinkRegExpMarkupRule implements MarkupRule {
 	match(input: string, options: MarkupOptions): MarkupElement | undefined {
 		const match = this.regexp.exec(input);
 		if (match) {
-			const { schemes, url: base } = options;
+			const { schemes, base, hosts } = options;
 			const {
 				0: { length },
 				index,
 				groups: { href, title },
 			} = match;
 			const url = getOptionalURL(href, base);
-			if (url && schemes.includes(url.protocol)) return { index, length, ...this.render(title?.trim() || formatURL(url), url.href, options) };
+			if (url && schemes.includes(url.protocol) && (!hosts || !hosts.includes(url.host))) return { index, length, ...this.render(title?.trim() || formatURL(url), url.href, options) };
 		}
 	}
 }

@@ -192,14 +192,14 @@ export function renderLinkRule(title: string, href: string, { rel }: MarkupOptio
 }
 
 /**
- * Autolinked URL starts with `http:` or `https:` or `mailto:` (any scheme in `options.schemes`) and matches an unlimited number of non-space characters.
+ * Autolinked URL starts with `http:` or `https:` (any scheme in `options.schemes`) and matches an unlimited number of non-space characters.
  * - If followed by space and then text in `()` round or `[]` square brackets that will be used as the title, e.g. `http://google.com/maps (Google Maps)` or `http://google.com/maps [Google Maps]` (this syntax is from Todoist and maybe other things too).
  * - If no title is specified a cleaned up version of the URL will be used, e.g. `google.com/maps`
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `options.schemes` will match (defaults to `http:` and `https:`).
  */
-export const URL_RULE = new LinkRegExpMarkupRule(
-	getRegExp(/(?<href>[a-z]+:[-$_@.&!*,=;/#?:%a-zA-Z0-9]+)(?: +(?:\((?<title>[^)]*?)\)))?/) as NamedRegExp<{ title?: string; href: string }>, //
+export const AUTOLINK_RULE = new LinkRegExpMarkupRule(
+	getRegExp(/(?<href>[a-z]+:\S+)(?: +(?:\((?<title>[^)]*?)\)))?/) as NamedRegExp<{ title?: string; href: string }>, //
 	renderLinkRule,
 	["inline", "list"],
 );
@@ -213,7 +213,7 @@ export const URL_RULE = new LinkRegExpMarkupRule(
  * - For security only `http://` or `https://` links will work (if invalid the unparsed text will be returned).
  */
 export const LINK_RULE = new LinkRegExpMarkupRule(
-	getRegExp(/\[(?<title>[^\]]*?)\]\((?<href>[^)]*?)\)/) as NamedRegExp<{ title: string; href: string }>, //
+	getRegExp(/\[(?<title>[^\]]*?)\] *\((?<href>[^)]*?)\)/) as NamedRegExp<{ title: string; href: string }>, //
 	renderLinkRule,
 	["inline", "list"],
 );
@@ -303,7 +303,7 @@ export const MARKUP_RULES: MarkupRules = [
 	FENCED_CODE_RULE,
 	PARAGRAPH_RULE,
 	LINK_RULE,
-	URL_RULE,
+	AUTOLINK_RULE,
 	CODE_RULE,
 	INLINE_RULE,
 	LINEBREAK_RULE,
@@ -325,7 +325,7 @@ export const MARKUP_RULES_BLOCK: MarkupRules = [
 /** Subset of markup rules that work in an inline context. */
 export const MARKUP_RULES_INLINE: MarkupRules = [
 	LINK_RULE,
-	URL_RULE,
+	AUTOLINK_RULE,
 	CODE_RULE,
 	INLINE_RULE,
 	LINEBREAK_RULE,
@@ -338,7 +338,7 @@ export const MARKUP_RULES_SHORTFORM: MarkupRules = [
 	ORDERED_RULE,
 	PARAGRAPH_RULE,
 	LINK_RULE,
-	URL_RULE,
+	AUTOLINK_RULE,
 	CODE_RULE,
 	INLINE_RULE,
 	LINEBREAK_RULE,

@@ -134,7 +134,7 @@ describe("renderMarkup(): Inline rules", () => {
 
 		// Relative links use the `url` from the passed in context.
 		const relativeElement = { type: "a", props: { href: "https://x.com/a/b/c", children: "XXX" } };
-		expect(renderMarkup("[XXX](a/b/c)", { context: "inline", url: "https://x.com" })).toMatchObject(relativeElement);
+		expect(renderMarkup("[XXX](a/b/c)", { context: "inline", base: "https://x.com" })).toMatchObject(relativeElement);
 
 		// Links can contain other inlines.
 		expect(renderMarkup("[BEFORE *STRONG* AFTER](http://google.com)", { context: "inline" })).toMatchObject(linkWithStrongElement);
