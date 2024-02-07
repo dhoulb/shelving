@@ -1,13 +1,13 @@
 import { ValueError } from "../error/ValueError.js";
 import { type Optional, notOptional } from "./optional.js";
 
-/** Absolute path starts with `/` slash. */
+/** Absolute path string starts with `/` slash. */
 export type AbsolutePath = `/` | `/${string}`;
 
-/** Relative path starts with `./` or `../` */
+/** Relative path string starts with `./` or `../` */
 export type RelativePath = `.` | `./${string}` | `..` | `../${string}`;
 
-/** Absolute path or relative path. */
+/** Either an absolute path string or a relative path string. */
 export type Path = AbsolutePath | RelativePath;
 
 /** Is a string path an absolute path? */

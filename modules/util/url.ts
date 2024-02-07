@@ -78,6 +78,9 @@ export type AbsoluteURI = `${string}://${string}`;
 /** Relative URI string starts with `./` or `../` or `/` */
 export type RelativeURI = `.` | `./${string}` | `..` | `../${string}` | `/` | `/${string}`;
 
+/** Either an absolute URI string or a relative URI string. */
+export type URI = AbsoluteURI | RelativeURI;
+
 /** Convert a possible URL to a absolute URI string or return `undefined` if conversion fails. */
 export function getOptionalAbsoluteURI(possible: Optional<PossibleURL>, base?: AbsoluteURL | AbsoluteURI): AbsoluteURI | undefined {
 	return getOptionalAbsoluteURL(possible, base)?.href;
