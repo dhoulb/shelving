@@ -1,13 +1,13 @@
 import type { StringSchemaOptions } from "./StringSchema.js";
 import type { ImmutableArray } from "../util/array.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { type Link, getOptionalLinkURL } from "../util/link.js";
+import { type AbsoluteLink, getOptionalLinkURL } from "../util/link.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /** Allowed options for `LinkSchema` */
 export interface LinkSchemaOptions extends Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline"> {
-	readonly base?: Link | undefined;
+	readonly base?: AbsoluteLink | undefined;
 	readonly schemes?: ImmutableArray<string> | undefined;
 	readonly hosts?: ImmutableArray<string> | undefined;
 }
@@ -19,7 +19,7 @@ export interface LinkSchemaOptions extends Omit<StringSchemaOptions, "type" | "m
  * - Falsy values are converted to `""` empty string.
  */
 export class LinkSchema extends StringSchema {
-	readonly base: Link | undefined;
+	readonly base: AbsoluteLink | undefined;
 	readonly schemes: ImmutableArray<string> | undefined;
 	readonly hosts: ImmutableArray<string> | undefined;
 	constructor({ base, schemes, hosts, title = "Link", ...options }: LinkSchemaOptions) {
@@ -36,7 +36,7 @@ export class LinkSchema extends StringSchema {
 		this.hosts = hosts;
 	}
 	// Override to clean the URL using builtin helper functions and check the schemes and hosts against the whitelists.
-	override validate(unsafeValue: unknown): Link {
+	override validate(unsafeValue: unknown): AbsoluteLink {
 		const unsafeString = super.validate(unsafeValue);
 		const url = getOptionalLinkURL(super.sanitize(unsafeString), this.base, this.schemes, this.hosts);
 		if (!url) throw new Feedback(unsafeString ? "Invalid format" : "Required", unsafeString);
