@@ -1,6 +1,5 @@
 import type { MarkupRules } from "./rule.js";
-import type { ImmutableArray } from "../util/array.js";
-import type { AbsoluteURI } from "../util/url.js";
+import type { Link, LinkHosts, LinkSchemes } from "../util/link.js";
 import { MARKUP_RULES } from "./rules.js";
 
 /** The current parsing options (represents the current state of the parsing). */
@@ -12,11 +11,11 @@ export type MarkupOptions = {
 	/** Set the `rel=""` property used for any links (e.g. `rel="nofollow ugc"`). */
 	readonly rel: string | undefined;
 	/** Set the base URL that any relative links will be relative to (defaults to `window.location.href`, if undefined then relative links won't work). */
-	readonly base: AbsoluteURI | undefined;
+	readonly base: Link | undefined;
 	/** Valid URL schemes/protocols for links (including trailing commas), defaults to `[`http:`, `https:`]` */
-	readonly schemes: ImmutableArray<string>;
+	readonly schemes: LinkSchemes | undefined;
 	/** Valid URL hosts for links (including trailing commas) */
-	readonly hosts: ImmutableArray<string> | undefined;
+	readonly hosts: LinkHosts | undefined;
 };
 
 /** Default options */
@@ -25,6 +24,6 @@ export const MARKUP_OPTIONS: MarkupOptions = {
 	rules: MARKUP_RULES,
 	rel: undefined,
 	base: undefined,
-	schemes: ["http:", "https:"],
+	schemes: undefined,
 	hosts: undefined,
 };

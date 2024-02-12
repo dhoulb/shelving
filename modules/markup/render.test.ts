@@ -184,9 +184,9 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("mailto:dave@shax.com", { context: "inline" })).toBe("mailto:dave@shax.com");
 
 		// Links using schemes in whitelist are linked.
-		expect(renderMarkup("mailto:dave@shax.com", { context: "inline", schemes: ["mailto:"] })).toMatchObject({
+		expect(renderMarkup("ftp://localhost/a/b", { context: "inline", schemes: ["ftp:"] })).toMatchObject({
 			type: "a",
-			props: { href: "mailto:dave@shax.com", children: "dave@shax.com" },
+			props: { href: "ftp://localhost/a/b", children: "localhost/a/b" },
 		});
 	});
 	test("CODE", () => {

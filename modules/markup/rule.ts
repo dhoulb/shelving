@@ -2,7 +2,8 @@ import type { MarkupOptions } from "./options.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { JSXElement } from "../util/jsx.js";
 import type { NamedRegExp, NamedRegExpData, TypedRegExp, TypedRegExpExecArray } from "../util/regexp.js";
-import { formatURL, getOptionalURL } from "../util/url.js";
+import { getOptionalLink } from "../util/link.js";
+import { formatURL } from "../util/url.js";
 
 export type MarkupElement = {
 	/** String index where this element was matched in the input string. */
@@ -94,8 +95,8 @@ export class LinkRegExpMarkupRule implements MarkupRule {
 				index,
 				groups: { href, title },
 			} = match;
-			const url = getOptionalURL(href, base);
-			if (url && schemes.includes(url.protocol) && (!hosts || !hosts.includes(url.host))) return { index, length, ...this.render(title?.trim() || formatURL(url), url.href, options) };
+			const link = getOptionalLink(href, base, schemes, hosts);
+			if (link) return { index, length, ...this.render(title?.trim() || formatURL(link), link, options) };
 		}
 	}
 }
