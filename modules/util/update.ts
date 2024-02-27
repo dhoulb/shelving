@@ -55,7 +55,7 @@ function _updatePropDeep<T extends Data>(obj: T, update: Update, keys: Immutable
 		// Final key.
 		if (action === "sum") newValue = typeof oldValue === "number" ? oldValue + value : value;
 		else if (action === "set") newValue = value;
-		else if (action === "with") newValue = isArray(oldValue) ? withArrayItems(oldValue, ...value) : [value];
+		else if (action === "with") newValue = isArray(oldValue) ? withArrayItems(oldValue, ...value) : value;
 		else if (action === "omit") newValue = isArray(oldValue) ? omitArrayItems(oldValue, ...value) : [];
 		else return action; // Never happens.
 	} else {
