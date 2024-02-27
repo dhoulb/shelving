@@ -1,35 +1,30 @@
 import type { MemoryProvider } from "./MemoryProvider.js";
 import type { AbstractProvider } from "./Provider.js";
 import type { DataKey, Database } from "../util/data.js";
-import type { Item, OptionalItem } from "../util/item.js";
+import type { Item } from "../util/item.js";
 import type { Stop } from "../util/start.js";
 import { BooleanStore } from "../store/BooleanStore.js";
-import { Store } from "../store/Store.js";
+import { OptionalDataStore } from "../store/DataStore.js";
 import { NONE } from "../util/constants.js";
 import { getItem } from "../util/item.js";
 import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Store a single item. */
-export class ItemStore<T extends Database, K extends DataKey<T>> extends Store<OptionalItem<T[K]>> {
+export class ItemStore<T extends Database, K extends DataKey<T>> extends OptionalDataStore<Item<T[K]>> {
 	readonly provider: AbstractProvider<T>;
 	readonly collection: K;
 	readonly id: string;
 	readonly busy = new BooleanStore();
 
 	/** Get the data of this store (throws `RequiredError` if item doesn't exist). */
-	get data(): Item<T[K]> {
+	override get data(): Item<T[K]> {
 		return getRequired(this.value);
 	}
 
 	/** Set the data of this store. */
-	set data(data: T[K] | Item<T[K]>) {
+	override set data(data: T[K] | Item<T[K]>) {
 		this.value = getItem(this.id, data);
-	}
-
-	/** Does the item exist? */
-	get exists(): boolean {
-		return !!this.value;
 	}
 
 	constructor(collection: K, id: string, provider: AbstractProvider<T>, memory?: MemoryProvider<T>) {

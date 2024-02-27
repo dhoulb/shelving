@@ -47,7 +47,7 @@ export class OptionalDataStore<T extends Data> extends Store<T | undefined> {
 
 	/** Does the data exist or not? */
 	get exists(): boolean {
-		return !this.loading && !!this.value;
+		return !!this.value;
 	}
 
 	/** Update several props in this data. */
