@@ -1,6 +1,6 @@
 import type { ImmutableArray } from "./array.js";
 import type { Data, DataProp, LeafData, LeafKey } from "./data.js";
-import type { Match } from "./match.js";
+import type { Match } from "./filter.js";
 import type { Mutable } from "./object.js";
 import { getLastItem, isArray, limitArray } from "./array.js";
 import { getDataProp } from "./data.js";

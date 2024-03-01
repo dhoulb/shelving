@@ -1,6 +1,6 @@
 import type { ImmutableArray } from "./array.js";
+import type { Match } from "./filter.js";
 import type { ImmutableMap } from "./map.js";
-import type { Match } from "./match.js";
 import type { ImmutableObject } from "./object.js";
 import { isArray } from "./array.js";
 import { isMap } from "./map.js";
