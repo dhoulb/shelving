@@ -1,4 +1,4 @@
-import { filterArray, getAllRegExp, getAnyRegExp, isMatch, notMatch } from "../index.js";
+import { filterArray, getAllRegExp, getAnyRegExp, getMatch, getMatchGroups, getOptionalMatch, getOptionalMatchGroups, isMatch, notMatch } from "../index.js";
 
 test("getAllRegExp()", () => {
 	// No pattern (always true).
@@ -53,4 +53,16 @@ test("notMatch()", () => {
 
 	// Returs same instance if no filtering needed.
 	expect(filterArray(arr, notMatch, /tapir/)).toBe(arr);
+});
+test("getOptionalMatch()", () => {
+	expect(getOptionalMatch("abc1", /[a-z]{3}[0-9]/)).toMatchObject({ 0: "abc1" });
+});
+test("getMatch()", () => {
+	expect(getMatch("abc1", /[a-z]{3}[0-9]/)).toMatchObject({ 0: "abc1" });
+});
+test("getOptionalMatchGroups()", () => {
+	expect(getOptionalMatchGroups("abc123", /(?<str>[a-z]+)(?<num>[0-9]+)/)).toMatchObject({ str: "abc", num: "123" });
+});
+test("getMatchGroups()", () => {
+	expect(getMatchGroups("abc123", /(?<str>[a-z]+)(?<num>[0-9]+)/)).toMatchObject({ str: "abc", num: "123" });
 });
