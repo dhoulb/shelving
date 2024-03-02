@@ -71,7 +71,7 @@ export const UNORDERED_RULE = new NamedRegExpMarkupRule<{ list: string }>(
 );
 const _mapUnordered = (item: string, key: number): JSXElement => ({
 	type: "li",
-	key,
+	key: key.toString(),
 	ref: null,
 	$$typeof,
 	props: { children: item.replace(UNORDERED_INDENT, "") },
@@ -99,7 +99,7 @@ export const ORDERED_RULE = new NamedRegExpMarkupRule<{ list: string }>(
 );
 const _mapOrdered = (item: string, key: number): JSXElement => ({
 	type: "li",
-	key,
+	key: key.toString(),
 	ref: null,
 	$$typeof,
 	props: {

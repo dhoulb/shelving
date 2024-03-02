@@ -4,6 +4,7 @@ import type { MarkupOptions } from "./options.js";
 import type { MarkupElement } from "./rule.js";
 import type { JSXElement, JSXNode } from "../util/jsx.js";
 import { isArray } from "../util/array.js";
+import { mapArray } from "../util/transform.js";
 import { MARKUP_OPTIONS } from "./options.js";
 
 /**
@@ -59,10 +60,7 @@ function _renderString(input: string, options: MarkupOptions, context: string): 
 function _renderNode(node: JSXNode, options: MarkupOptions, context: string): JSXNode {
 	if (!node) return node;
 	if (typeof node === "string") return _renderString(node, options, context);
-	if (isArray(node)) {
-		for (let i = 0; i <= node.length - 1; i++) node[i] = _renderNode(node[i], options, context);
-		return node;
-	}
+	if (isArray(node)) return mapArray(node, _renderNode, options, context);
 	return _renderElement(node, options, context);
 }
 
@@ -115,7 +113,7 @@ function* _parseString(input: string, options: MarkupOptions, outerContext: stri
 		// We use the string offset as the `.key` property in the element because it's cheap to calculate and guaranteed to be unique within the string.
 		// Trying to generate an incrementing number would require tracking the number and passing it back and forth through `_parseString()`
 		const { index, length, context } = element;
-		element.key = offset + index;
+		element.key = (offset + index).toString();
 		yield context ? _renderElement(element, options, context) : element;
 
 		// Decrement the content.

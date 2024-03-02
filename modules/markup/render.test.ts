@@ -1,4 +1,3 @@
-import type { JSXElement } from "../index.js";
 import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
 import { renderMarkup } from "../index.js";
@@ -82,36 +81,36 @@ const linkWithEmElement = {
 };
 const inlineMarkup = "*STRONG* and _EM_ and ++INS++ and ~~DEL~~ and `CODE` and http://google.com and [Google](http://google.com)";
 const inlineElements = [
-	{ type: "strong", key: 0, props: { children: "STRONG" } },
+	{ type: "strong", key: "0", props: { children: "STRONG" } },
 	" and ",
-	{ type: "em", key: 13, props: { children: "EM" } },
+	{ type: "em", key: "13", props: { children: "EM" } },
 	" and ",
-	{ type: "ins", key: 22, props: { children: "INS" } },
+	{ type: "ins", key: "22", props: { children: "INS" } },
 	" and ",
-	{ type: "del", key: 34, props: { children: "DEL" } },
+	{ type: "del", key: "34", props: { children: "DEL" } },
 	" and ",
-	{ type: "code", key: 46, props: { children: "CODE" } },
+	{ type: "code", key: "46", props: { children: "CODE" } },
 	" and ",
-	{ type: "a", key: 57, props: { children: "google.com", href: "http://google.com/" } },
+	{ type: "a", key: "57", props: { children: "google.com", href: "http://google.com/" } },
 	" and ",
-	{ type: "a", key: 79, props: { children: "Google", href: "http://google.com/" } },
+	{ type: "a", key: "79", props: { children: "Google", href: "http://google.com/" } },
 ];
 const wrappedInlineMarkup = "BEFORE *STRONG* and _EM_ and ++INS++ and ~~DEL~~ and `CODE` and http://google.com and [Google](http://google.com) AFTER";
 const wrappedInlineElements = [
 	"BEFORE ",
-	{ type: "strong", key: 7, props: { children: "STRONG" } },
+	{ type: "strong", key: "7", props: { children: "STRONG" } },
 	" and ",
-	{ type: "em", key: 20, props: { children: "EM" } },
+	{ type: "em", key: "20", props: { children: "EM" } },
 	" and ",
-	{ type: "ins", key: 29, props: { children: "INS" } },
+	{ type: "ins", key: "29", props: { children: "INS" } },
 	" and ",
-	{ type: "del", key: 41, props: { children: "DEL" } },
+	{ type: "del", key: "41", props: { children: "DEL" } },
 	" and ",
-	{ type: "code", key: 53, props: { children: "CODE" } },
+	{ type: "code", key: "53", props: { children: "CODE" } },
 	" and ",
-	{ type: "a", key: 64, props: { children: "google.com", href: "http://google.com/" } },
+	{ type: "a", key: "64", props: { children: "google.com", href: "http://google.com/" } },
 	" and ",
-	{ type: "a", key: 86, props: { children: "Google", href: "http://google.com/" } },
+	{ type: "a", key: "86", props: { children: "Google", href: "http://google.com/" } },
 	" AFTER",
 ];
 
@@ -596,9 +595,9 @@ describe("renderMarkup(): React compatibility", () => {
 		});
 	});
 	test("Generated elements can be rendered without error", () => {
-		expect(() => renderToString(renderMarkup("PARAGRAPH") as JSXElement)).not.toThrow();
-		expect(() => renderToString(renderMarkup("- ITEM") as JSXElement)).not.toThrow();
-		expect(() => renderToString(renderMarkup("```\nCODE") as JSXElement)).not.toThrow();
+		expect(() => renderToString(renderMarkup("PARAGRAPH") as React.ReactNode)).not.toThrow();
+		expect(() => renderToString(renderMarkup("- ITEM") as React.ReactNode)).not.toThrow();
+		expect(() => renderToString(renderMarkup("```\nCODE") as React.ReactNode)).not.toThrow();
 	});
 });
 describe("renderMarkup(): Weird cases", () => {

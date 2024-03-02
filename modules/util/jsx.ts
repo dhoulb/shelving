@@ -1,22 +1,22 @@
 import { isArray } from "./array.js";
 
 /** Set of valid props for a JSX element. */
-export type JSXProps = {
+export interface JSXProps {
 	[key: string]: unknown;
 	children?: JSXNode;
-};
+}
 
 /** JSX element (similar to `React.ReactElement`)  */
-export type JSXElement<P extends JSXProps = JSXProps> = {
-	type: string | ((props: P) => JSXElement | null);
+export interface JSXElement<P extends JSXProps = JSXProps> {
+	type: string | ((props: P) => JSXNode | null);
 	props: P;
-	key: string | number | null;
+	key: string | null;
 	ref?: null;
 	$$typeof?: symbol;
-};
+}
 
 /** JSX node (similar to `React.ReactNode`) */
-export type JSXNode = undefined | null | string | JSXElement | JSXNode[];
+export type JSXNode = undefined | null | string | JSXElement | readonly JSXNode[];
 
 /** Is an unknown value a JSX element? */
 export function isJSXElement(value: unknown): value is JSXElement {
