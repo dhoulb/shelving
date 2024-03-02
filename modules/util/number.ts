@@ -46,12 +46,13 @@ export function assertMin(value: unknown, min: number): asserts value is number 
  *
  * Conversion rules:
  * - Finite numbers return numbers.
+ * - `-0` is normalised to `0`
  * - Strings are parsed as numbers.
  * - Dates return their milliseconds (e.g. `date.getTime()`).
  * - Everything else returns `undefined`
  */
 export function getOptionalNumber(value: unknown): number | undefined {
-	if (typeof value === "number" && Number.isFinite(value)) return value === 0 ? 0 : value; // Convert `-0` to `0`
+	if (typeof value === "number" && Number.isFinite(value)) return value === 0 ? 0 : value;
 	else if (typeof value === "string") return getOptionalNumber(parseFloat(value.replace(NOT_NUMERIC_REGEXP, "")));
 	else if (value instanceof Date) return getOptionalNumber(value.getTime());
 }
