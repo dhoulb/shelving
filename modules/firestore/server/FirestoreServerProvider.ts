@@ -1,7 +1,7 @@
 import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
 import type { Update, Updates } from "../../util/update.js";
-import type { BulkWriter, CollectionReference, DocumentData, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot, UpdateData } from "@google-cloud/firestore";
+import type { BulkWriter, CollectionReference, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot, UpdateData } from "@google-cloud/firestore";
 import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
 import { AsyncProvider } from "../../db/Provider.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
@@ -136,7 +136,7 @@ export class FirestoreServerProvider<T extends Database> extends AsyncProvider<T
 
 	async updateQuery<K extends DataKey<T>>(c: K, q: ItemQuery<T[K]>, updates: Updates): Promise<void> {
 		const fieldValues = _getFieldValues(updates);
-		return await bulkWrite(this._firestore, c, q, (w, s) => void w.update<DocumentData>(s.ref, fieldValues));
+		return await bulkWrite(this._firestore, c, q, (w, s) => void w.update(s.ref, fieldValues));
 	}
 
 	async deleteQuery<K extends DataKey<T>>(c: K, q: ItemQuery<T[K]>): Promise<void> {
