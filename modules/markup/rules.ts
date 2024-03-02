@@ -3,7 +3,7 @@ import type { MarkupRules } from "./rule.js";
 import type { JSXElement } from "../util/jsx.js";
 import type { NamedRegExp } from "../util/regexp.js";
 import { getRegExp } from "../util/regexp.js";
-import { BLOCK_REGEXP, LINE_REGEXP, WordRegExp, getBlockRegExp, getLineRegExp } from "./regexp.js";
+import { BLOCK_REGEXP, LINE_REGEXP, getBlockRegExp, getLineRegExp, getWordRegExp } from "./regexp.js";
 import { LinkRegExpMarkupRule, NamedRegExpMarkupRule, RegExpMarkupRule } from "./rule.js";
 
 /** React security symbol — see https://github.com/facebook/react/pull/4832 */
@@ -253,7 +253,7 @@ export const CODE_RULE = new NamedRegExpMarkupRule(
  */
 const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", "_": "em", "=": "mark", ":": "mark" }; // Hyphen must be first so it works when we use the keys as a character class.
 export const INLINE_RULE = new NamedRegExpMarkupRule(
-	new WordRegExp(`(?<wrap>(?<char>[${Object.keys(INLINE_CHARS).join("")}])+)(?<text>(?!\\k<char>)\\S|(?!\\k<char>)\\S[\\s\\S]*?(?!\\k<char>)\\S)\\k<wrap>`) as NamedRegExp<{ char: keyof typeof INLINE_CHARS; wrap: string; text: string }>, // prettier-ignore
+	getWordRegExp(`(?<wrap>(?<char>[${Object.keys(INLINE_CHARS).join("")}])+)(?<text>(?!\\k<char>)\\S(?:[\\s\\S]*?(?!\\k<char>)\\S)?)\\k<wrap>`) as NamedRegExp<{ char: keyof typeof INLINE_CHARS; text: string }>, // prettier-ignore
 	({ char, text }) => ({
 		type: INLINE_CHARS[char],
 		key: null,
