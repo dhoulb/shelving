@@ -2,17 +2,6 @@ import { logError } from "./error.js";
 import { isObject } from "./object.js";
 
 /**
- * Temporary polyfill for `Symbol.dipose` type.
- * @todo Remove this with TypeScript 5.2 as it will be part of TS lib.
- */
-declare global {
-	interface SymbolConstructor {
-		/** Disposable interface. */
-		readonly dispose: unique symbol;
-	}
-}
-
-/**
  * Temporary polyfill for `Symbol.dipose` value.
  * @todo Remove this once browsers support `Symbol.dispose`
  */
