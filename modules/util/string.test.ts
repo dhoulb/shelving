@@ -50,6 +50,10 @@ describe("sanitizeLines()", () => {
 		expect(sanitizeLines(`\tAAA    BBB`)).toBe("\tAAA BBB");
 		expect(sanitizeLines(`\tAAA        BBB`)).toBe("\tAAA BBB");
 		expect(sanitizeLines(`\tAAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("\tAAA BBB");
+		// Leading indentation is not stripped on second line.
+		expect(sanitizeLines(`ZZZ\n\tAAA    BBB`)).toBe("ZZZ\n\tAAA BBB");
+		expect(sanitizeLines(`ZZZ\n\tAAA        BBB`)).toBe("ZZZ\n\tAAA BBB");
+		expect(sanitizeLines(`ZZZ\n\tAAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("ZZZ\n\tAAA BBB");
 	});
 	test("Normalise indentation", () => {
 		expect(sanitizeLines("\tAAA")).toBe("\tAAA");
@@ -80,6 +84,12 @@ describe("sanitizeLines()", () => {
 	test("Strip excess linebreaks", () => {
 		expect(sanitizeLines("\n\n\nAAA\nBBB\nCCC\n\n\n")).toBe("AAA\nBBB\nCCC");
 		expect(sanitizeLines("AAA\n\n\nBBB\n\n\nCCC")).toBe("AAA\n\nBBB\n\nCCC");
+	});
+	test("Convert paragraph separators to double newline", () => {
+		expect(sanitizeLines("AAA\fAAA")).toBe("AAA\n\nAAA");
+		expect(sanitizeLines("AAA\u2029AAA")).toBe("AAA\n\nAAA");
+		expect(sanitizeLines("AAA  \fAAA")).toBe("AAA\n\nAAA");
+		expect(sanitizeLines("AAA  \u2029AAA")).toBe("AAA\n\nAAA");
 	});
 });
 describe("simplifyString()", () => {

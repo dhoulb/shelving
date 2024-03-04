@@ -97,20 +97,18 @@ export function sanitizeString(str: string): string {
  * - Normalise indentation to tabs (four or more spaces are a tab, three or fewer spaces are removed).
  * - Allow spaces at the start of each line (for indentation) but trim the end of each line.
  * - Trim excess newlines at the start and end of the string and runs of more than two newlines in a row.
- *
- * @todo Use lookbehind when Safari supports it, so replacements don't need `$1`
  */
 export function sanitizeLines(str: string): string {
 	return str
 		.replace(/[^\P{C}\s]/gu, "") // Strip control characters (except whitespace).
 		.replace(/\r\n?|\v|\x85|\u2028/g, "\n") // Normalise line separators to `\n` newline
-		.replace(/[^\S\n]+(?=\n|$)/g, "") // Trim trailing whitespace on each line.
 		.replace(/\f|\u2029/g, "\n\n") // Normalise paragraph separators to `\n\n` double newline.
+		.replace(/[^\S\n]+(?=\n|$)/g, "") // Trim trailing whitespace on each line.
 		.replace(/^\n+|\n+$/g, "") // Trim leading and trailing newlines.
-		.replace(/\n{3,}/g, "\n\n") // Normalise `\n\n\n` triple newline (or more) to `\n\n` double newline.
-		.replace(/(\S)[^\S\n]+(?=\S)/g, "$1 ") // Normalise runs of whitespace in the middle of each line to one ` ` space.
-		.replace(/ {4}/g, "\t") // Normalise runs of `    ` four spaces to a single `\t` tab (this will only exist in indentation because we already stripped it in other places).
-		.replace(/(^|\n|\t) +/g, "$1"); // Remove runs  of ` ` space in indentation (will only match three or fewer because four spaces have already been normalised to `\t` tab).
+		.replace(/\n{3,}/g, "\n\n") // Normalise three or more `\n\n\n` newline to `\n\n` double newline.
+		.replace(/(\S)[^\S\n]+/g, "$1 ") // Normalise runs of non-leading whitespace to ` ` single space.
+		.replace(/[^\S\t\n]{4}/g, "\t") // Normalise leading `    ` four whitespace characters to a single `\t` tab.
+		.replace(/(^|\t|\n)[^\S\t\n]+/g, "$1"); // Remove leading whitespace that isn't a tab.
 }
 
 /**
