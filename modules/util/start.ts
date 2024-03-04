@@ -1,4 +1,3 @@
-import type { Disposable } from "./dispose.js";
 import type { Arguments } from "./function.js";
 import { call } from "./callback.js";
 

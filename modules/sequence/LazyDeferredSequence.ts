@@ -1,4 +1,3 @@
-import type { Disposable } from "../util/dispose.js";
 import { type Start, Starter } from "../util/start.js";
 import { DeferredSequence } from "./DeferredSequence.js";
 import { IteratorSequence } from "./IteratorSequence.js";
