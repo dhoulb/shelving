@@ -7,14 +7,6 @@ import { isObject } from "./object.js";
  */
 (Symbol as { dispose: symbol }).dispose ??= Symbol("Symbol.dispose");
 
-/**
- * Temporary polyfill for `Disposable`
- * @todo Remove this with TypeScript 5.2 as it should be part of TS lib.
- */
-export interface Disposable {
-	[Symbol.dispose](): void;
-}
-
 /** Safely dispose a disposable. */
 export function dispose(value: Disposable): void {
 	try {
