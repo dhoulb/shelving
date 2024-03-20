@@ -1,8 +1,9 @@
 import type { Data } from "../index.js";
-import { FEEDBACK_HYDRATIONS, Feedback, dehydrate, hydrate } from "../index.js";
+import { Feedback, Feedbacks, dehydrate, hydrate } from "../index.js";
 
 const HYDRATIONS = {
-	...FEEDBACK_HYDRATIONS,
+	Feedback,
+	Feedbacks,
 };
 
 test("hydrate(): Works correctly with class instances", () => {
