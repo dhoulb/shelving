@@ -114,8 +114,8 @@ describe("options.props", () => {
 			expect(invalid).toEqual(
 				new Feedbacks(
 					{
-						dogs: new Feedback("Must be number", "abc"),
-						cats: new Feedback("Must be number", null),
+						dogs: "Must be number",
+						cats: "Must be number",
 					},
 					data,
 				),

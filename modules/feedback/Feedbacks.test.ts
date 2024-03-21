@@ -1,12 +1,10 @@
-import { Feedback, Feedbacks } from "../index.js";
+import { Feedbacks } from "../index.js";
 
 test("Feedbacks", () => {
-	const one = new Feedback("ONE");
-	const two = new Feedback("TWO");
 	// Check props.
-	const feedbacks = new Feedbacks({ one, two });
-	expect(feedbacks.feedbacks.one).toBe(one);
-	expect(feedbacks.feedbacks.two).toBe(two);
-	expect(feedbacks.message).toEqual("ONE");
+	const feedbacks = new Feedbacks({ one: "ONE", two: "TWO" });
+	expect(feedbacks.messages.one).toBe("ONE");
+	expect(feedbacks.messages.two).toBe("TWO");
+	expect(feedbacks.message).toEqual("Multiple errors");
 	expect(feedbacks.messages).toEqual({ one: "ONE", two: "TWO" });
 });

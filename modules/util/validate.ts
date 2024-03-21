@@ -61,18 +61,18 @@ export function assertValid<T>(unsafeValue: unknown, validator: Validator<T>): a
 export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator: Validator<T>): Iterable<T> {
 	let index = 0;
 	let valid = true;
-	const feedbacks: MutableDictionary<Feedback> = {};
+	const messages: MutableDictionary<string> = {};
 	for (const unsafeItem of unsafeItems) {
 		try {
 			yield validator.validate(unsafeItem);
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			feedbacks[index] = thrown;
+			messages[index] = thrown.message;
 			valid = false;
 		}
 		index++;
 	}
-	if (!valid) throw new Feedbacks(feedbacks, unsafeItems);
+	if (!valid) throw new Feedbacks(messages, unsafeItems);
 }
 
 /**
@@ -87,7 +87,7 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
 	let valid = true;
 	let changed = true;
 	const safeArray: MutableArray<T> = [];
-	const feedbacks: MutableDictionary<Feedback> = {};
+	const messages: MutableDictionary<string> = {};
 	for (const unsafeItem of unsafeArray) {
 		try {
 			const safeItem = validator.validate(unsafeItem);
@@ -95,12 +95,12 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
 			if (!changed && safeItem !== unsafeItem) changed = true;
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			feedbacks[index] = thrown;
+			messages[index] = thrown.message;
 			valid = false;
 		}
 		index++;
 	}
-	if (!valid) throw new Feedbacks(feedbacks, unsafeArray);
+	if (!valid) throw new Feedbacks(messages, unsafeArray);
 	return changed || !isArray(unsafeArray) ? safeArray : (unsafeArray as ImmutableArray<T>);
 }
 
@@ -114,7 +114,7 @@ export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unkno
 	let valid = true;
 	let changed = false;
 	const safeDictionary: MutableDictionary<T> = {};
-	const feedbacks: MutableDictionary<Feedback> = {};
+	const messages: MutableDictionary<string> = {};
 	for (const [key, unsafeValue] of getDictionaryItems(unsafeDictionary)) {
 		try {
 			const safeValue = validator.validate(unsafeValue);
@@ -122,11 +122,11 @@ export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unkno
 			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			feedbacks[key] = thrown;
+			messages[key] = thrown.message;
 			valid = false;
 		}
 	}
-	if (!valid) throw new Feedbacks(feedbacks, unsafeDictionary);
+	if (!valid) throw new Feedbacks(messages, unsafeDictionary);
 	return changed || isIterable(unsafeDictionary) ? safeDictionary : (unsafeDictionary as ImmutableDictionary<T>);
 }
 
@@ -144,7 +144,7 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 	let valid = true;
 	let changed = true;
 	const safeData: MutableObject = id && typeof unsafeData.id === "string" ? { id: unsafeData.id } : {};
-	const feedbacks: MutableDictionary<Feedback> = {};
+	const messages: MutableDictionary<string> = {};
 	for (const [key, validator] of getDataProps(validators)) {
 		const unsafeValue = unsafeData[key];
 		if (unsafeValue === undefined && partial) continue; // Silently skip `undefined` props if in partial mode.
@@ -154,11 +154,11 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			feedbacks[key] = thrown;
+			messages[key] = thrown.message;
 			valid = false;
 		}
 	}
-	if (!valid) throw new Feedbacks(feedbacks, unsafeData);
+	if (!valid) throw new Feedbacks(messages, unsafeData);
 	return changed ? (safeData as T) : (unsafeData as T);
 }
 

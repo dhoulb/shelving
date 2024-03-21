@@ -128,8 +128,8 @@ describe("options.items", () => {
 			expect(invalid).toEqual(
 				new Feedbacks(
 					{
-						"0": new Feedback("Must be number", "abc"),
-						"2": new Feedback("Must be number", "def"),
+						"0": "Must be number",
+						"2": "Must be number",
 					},
 					arr,
 				),

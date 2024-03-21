@@ -69,7 +69,7 @@ describe("options.items", () => {
 			expect(invalid).toEqual(
 				new Feedbacks(
 					{
-						str: new Feedback("Must be number", "abc"),
+						str: "Must be number",
 					},
 					dict,
 				),

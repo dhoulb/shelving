@@ -1,21 +1,13 @@
 import type { ImmutableDictionary } from "../util/dictionary.js";
-import { getProp } from "../util/object.js";
-import { mapDictionary } from "../util/transform.js";
 import { Feedback } from "./Feedback.js";
 
-/** Feedback with a list of sub-feedbacks. */
+/** Feedback with a set of named messages. */
 export class Feedbacks extends Feedback {
-	/** List of sub-feedbacks. */
-	readonly feedbacks: ImmutableDictionary<Feedback>;
+	/** List of named messages. */
+	readonly messages: ImmutableDictionary<string>;
 
-	/** List of sub-messages. */
-	get messages(): ImmutableDictionary<string> {
-		return mapDictionary<Feedback, string, ["message"]>(this.feedbacks, getProp, "message");
-	}
-
-	constructor(feedbacks: ImmutableDictionary<Feedback>, value?: unknown) {
-		const first = Object.values(feedbacks)[0];
-		super(first?.message || "Unknown error", value);
-		this.feedbacks = feedbacks;
+	constructor(messages: ImmutableDictionary<string>, value?: unknown) {
+		super("Multiple errors", value);
+		this.messages = messages;
 	}
 }
