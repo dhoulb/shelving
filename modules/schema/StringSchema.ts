@@ -1,5 +1,5 @@
 import type { SchemaOptions } from "./Schema.js";
-import { Feedback } from "../feedback/Feedback.js";
+import { ValueFeedback } from "../feedback/Feedback.js";
 import { sanitizeLines, sanitizeString } from "../util/string.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { Schema } from "./Schema.js";
@@ -60,11 +60,11 @@ export class StringSchema extends Schema<string> {
 	}
 	override validate(unsafeValue: unknown = this.value): string {
 		const possibleString = typeof unsafeValue === "number" ? unsafeValue.toString() : unsafeValue;
-		if (typeof possibleString !== "string") throw new Feedback("Must be string", unsafeValue);
+		if (typeof possibleString !== "string") throw new ValueFeedback("Must be string", unsafeValue);
 		const saneString = this.sanitize(possibleString);
-		if (saneString.length < this.min) throw new Feedback(saneString ? `Minimum ${this.min} characters` : "Required", saneString);
-		if (saneString.length > this.max) throw new Feedback(`Maximum ${this.max} characters`, saneString);
-		if (this.match && !this.match.test(saneString)) throw new Feedback(saneString ? "Invalid format" : "Required", saneString);
+		if (saneString.length < this.min) throw new ValueFeedback(saneString ? `Minimum ${this.min} characters` : "Required", saneString);
+		if (saneString.length > this.max) throw new ValueFeedback(`Maximum ${this.max} characters`, saneString);
+		if (this.match && !this.match.test(saneString)) throw new ValueFeedback(saneString ? "Invalid format" : "Required", saneString);
 		return saneString;
 	}
 

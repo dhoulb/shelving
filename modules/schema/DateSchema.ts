@@ -1,7 +1,7 @@
 import type { SchemaOptions } from "./Schema.js";
 import type { PossibleDate } from "../util/date.js";
 import type { Optional } from "../util/optional.js";
-import { Feedback } from "../feedback/Feedback.js";
+import { ValueFeedback } from "../feedback/Feedback.js";
 import { formatDate, getOptionalDate, getYMD } from "../util/date.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { Schema } from "./Schema.js";
@@ -25,9 +25,9 @@ export class DateSchema extends Schema<string> {
 	}
 	override validate(unsafeValue: unknown = this.value): string {
 		const optionalDate = getOptionalDate(unsafeValue);
-		if (!optionalDate) throw new Feedback(unsafeValue ? "Invalid date" : "Required", unsafeValue);
-		if (this.min && optionalDate < this.min) throw new Feedback(`Minimum ${formatDate(this.min)}`, optionalDate);
-		if (this.max && optionalDate > this.max) throw new Feedback(`Maximum ${formatDate(this.max)}`, optionalDate);
+		if (!optionalDate) throw new ValueFeedback(unsafeValue ? "Invalid date" : "Required", unsafeValue);
+		if (this.min && optionalDate < this.min) throw new ValueFeedback(`Minimum ${formatDate(this.min)}`, optionalDate);
+		if (this.max && optionalDate > this.max) throw new ValueFeedback(`Maximum ${formatDate(this.max)}`, optionalDate);
 		return getYMD(optionalDate);
 	}
 }

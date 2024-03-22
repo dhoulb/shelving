@@ -1,5 +1,5 @@
 import type { Validator } from "../index.js";
-import { ARRAY, ArraySchema, DATA, Feedback, Feedbacks, NUMBER, STRING } from "../index.js";
+import { ARRAY, ArraySchema, DATA, Feedback, NUMBER, STRING, ValueFeedbacks } from "../index.js";
 
 // Vars.
 const stringArray = ["a", "b", "c"];
@@ -124,9 +124,9 @@ describe("options.items", () => {
 			schema.validate(arr);
 			expect(false).toBe(true); // Not reached.
 		} catch (invalid: any) {
-			expect(invalid).toBeInstanceOf(Feedbacks);
+			expect(invalid).toBeInstanceOf(ValueFeedbacks);
 			expect(invalid).toEqual(
-				new Feedbacks(
+				new ValueFeedbacks(
 					{
 						"0": "Must be number",
 						"2": "Must be number",

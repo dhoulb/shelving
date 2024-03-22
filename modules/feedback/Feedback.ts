@@ -10,15 +10,20 @@ export class Feedback {
 	/** String feedback message that is safe to show to a user. */
 	readonly message: string;
 
-	/** Nested details providing deeper feedback. */
-	readonly value: unknown;
-
-	constructor(feedback: string, value?: unknown) {
-		this.message = feedback;
-		this.value = value;
+	constructor(message: string) {
+		this.message = message;
 	}
 
 	toString() {
 		return this.message;
+	}
+}
+
+/** Feedback with a known and typed `.value` field. */
+export class ValueFeedback<T> extends Feedback {
+	readonly value: T;
+	constructor(message: string, value: T) {
+		super(message);
+		this.value = value;
 	}
 }

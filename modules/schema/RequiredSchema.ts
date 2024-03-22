@@ -1,12 +1,12 @@
 import type { Schema } from "./Schema.js";
-import { Feedback } from "../feedback/Feedback.js";
+import { ValueFeedback } from "../feedback/Feedback.js";
 import { ThroughSchema } from "./ThroughSchema.js";
 
 /** Validate a value of a specifed type, but throw `Feedback` if the validated value is falsy. */
 export class RequiredSchema<T> extends ThroughSchema<T> {
 	override validate(unsafeValue: unknown): T {
 		const safeValue = super.validate(unsafeValue);
-		if (!safeValue) throw new Feedback("Required", safeValue);
+		if (!safeValue) throw new ValueFeedback("Required", safeValue);
 		return safeValue;
 	}
 }

@@ -1,6 +1,6 @@
 import type { StringSchemaOptions } from "./StringSchema.js";
 import type { ImmutableArray } from "../util/array.js";
-import { Feedback } from "../feedback/Feedback.js";
+import { ValueFeedback } from "../feedback/Feedback.js";
 import { type AbsoluteLink, getOptionalLinkURL } from "../util/link.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema } from "./StringSchema.js";
@@ -39,7 +39,7 @@ export class LinkSchema extends StringSchema {
 	override validate(unsafeValue: unknown): AbsoluteLink {
 		const unsafeString = super.validate(unsafeValue);
 		const url = getOptionalLinkURL(super.sanitize(unsafeString), this.base, this.schemes, this.hosts);
-		if (!url) throw new Feedback(unsafeString ? "Invalid format" : "Required", unsafeString);
+		if (!url) throw new ValueFeedback(unsafeString ? "Invalid format" : "Required", unsafeString);
 		return url.href;
 	}
 }

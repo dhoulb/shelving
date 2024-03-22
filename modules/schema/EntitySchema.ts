@@ -1,4 +1,4 @@
-import { Feedback } from "../feedback/Feedback.js";
+import { ValueFeedback } from "../feedback/Feedback.js";
 import { type ImmutableArray, isArrayItem } from "../util/array.js";
 import { type Entity, splitOptionalEntity } from "../util/entity.js";
 import { OPTIONAL } from "./OptionalSchema.js";
@@ -19,8 +19,8 @@ export class EntitySchema<T extends string> extends StringSchema {
 	override validate(unsafeValue: unknown = this.value): Entity<T> {
 		const entity = super.validate(unsafeValue);
 		const [type] = splitOptionalEntity(entity);
-		if (!type) throw new Feedback("Must be entity", unsafeValue);
-		if (this.types && !isArrayItem(this.types, type)) throw new Feedback("Invalid entity type", type);
+		if (!type) throw new ValueFeedback("Must be entity", unsafeValue);
+		if (this.types && !isArrayItem(this.types, type)) throw new ValueFeedback("Invalid entity type", type);
 		return entity as Entity<T>;
 	}
 }

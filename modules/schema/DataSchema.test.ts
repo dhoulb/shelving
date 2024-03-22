@@ -1,5 +1,5 @@
 import type { Validator } from "../index.js";
-import { BOOLEAN, DATA, DataSchema, Feedback, Feedbacks, NUMBER, STRING, StringSchema } from "../index.js";
+import { BOOLEAN, DATA, DataSchema, Feedback, NUMBER, STRING, StringSchema, ValueFeedbacks } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -110,9 +110,9 @@ describe("options.props", () => {
 		try {
 			expect(schema.validate(data)).toBe("Never");
 		} catch (invalid: unknown) {
-			expect(invalid).toBeInstanceOf(Feedbacks);
+			expect(invalid).toBeInstanceOf(ValueFeedbacks);
 			expect(invalid).toEqual(
-				new Feedbacks(
+				new ValueFeedbacks(
 					{
 						dogs: "Must be number",
 						cats: "Must be number",

@@ -5,7 +5,7 @@ import type { Item } from "./item.js";
 import type { MutableObject } from "./object.js";
 import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { Feedbacks } from "../feedback/Feedbacks.js";
+import { ValueFeedbacks } from "../feedback/Feedbacks.js";
 import { getLastItem, isArray } from "./array.js";
 import { getDataProps } from "./data.js";
 import { getDictionaryItems } from "./dictionary.js";
@@ -72,7 +72,7 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
 		}
 		index++;
 	}
-	if (!valid) throw new Feedbacks(messages, unsafeItems);
+	if (!valid) throw new ValueFeedbacks(messages, unsafeItems);
 }
 
 /**
@@ -100,7 +100,7 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
 		}
 		index++;
 	}
-	if (!valid) throw new Feedbacks(messages, unsafeArray);
+	if (!valid) throw new ValueFeedbacks(messages, unsafeArray);
 	return changed || !isArray(unsafeArray) ? safeArray : (unsafeArray as ImmutableArray<T>);
 }
 
@@ -126,7 +126,7 @@ export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unkno
 			valid = false;
 		}
 	}
-	if (!valid) throw new Feedbacks(messages, unsafeDictionary);
+	if (!valid) throw new ValueFeedbacks(messages, unsafeDictionary);
 	return changed || isIterable(unsafeDictionary) ? safeDictionary : (unsafeDictionary as ImmutableDictionary<T>);
 }
 
@@ -158,7 +158,7 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 			valid = false;
 		}
 	}
-	if (!valid) throw new Feedbacks(messages, unsafeData);
+	if (!valid) throw new ValueFeedbacks(messages, unsafeData);
 	return changed ? (safeData as T) : (unsafeData as T);
 }
 

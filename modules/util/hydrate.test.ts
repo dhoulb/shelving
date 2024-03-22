@@ -1,9 +1,11 @@
 import type { Data } from "../index.js";
-import { Feedback, Feedbacks, dehydrate, hydrate } from "../index.js";
+import { Feedback, Feedbacks, ValueFeedback, ValueFeedbacks, dehydrate, hydrate } from "../index.js";
 
 const HYDRATIONS = {
 	Feedback,
 	Feedbacks,
+	ValueFeedback,
+	ValueFeedbacks,
 };
 
 test("hydrate(): Works correctly with class instances", () => {
@@ -17,7 +19,7 @@ test("hydrate(): Works correctly with class instances", () => {
 	expect(original1).toEqual(hydrated1);
 
 	// Deep.
-	const original2 = new Feedback("abc", {
+	const original2 = new ValueFeedback("abc", {
 		invalid: new Feedback("def"),
 		success: new Feedback("def"),
 		map: new Map([
@@ -51,7 +53,7 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 	const original2 = [
 		"abc",
 		123,
-		new Feedback("abc", {
+		new ValueFeedback("abc", {
 			invalid: new Feedback("def"),
 			success: new Feedback("def"),
 		}),
@@ -94,7 +96,7 @@ test("hydrate(): Works correctly with plain objects of objects", () => {
 	// Deep.
 	const original2 = {
 		str: "abc",
-		feedback: new Feedback("abc", {
+		feedback: new ValueFeedback("abc", {
 			invalid: new Feedback("def"),
 			success: new Feedback("def"),
 		}),

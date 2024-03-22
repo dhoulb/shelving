@@ -2,7 +2,7 @@ import type { OptionalSchema } from "./OptionalSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 import type { Data, Database } from "../util/data.js";
 import type { Validators } from "../util/validate.js";
-import { Feedback } from "../feedback/Feedback.js";
+import { ValueFeedback } from "../feedback/Feedback.js";
 import { isData } from "../util/data.js";
 import { validateData } from "../util/validate.js";
 import { OPTIONAL } from "./OptionalSchema.js";
@@ -23,7 +23,7 @@ export class DataSchema<T extends Data> extends Schema<T> {
 		this.props = props;
 	}
 	override validate(unsafeValue: unknown = this.value): T {
-		if (!isData(unsafeValue)) throw new Feedback("Must be object", unsafeValue);
+		if (!isData(unsafeValue)) throw new ValueFeedback("Must be object", unsafeValue);
 		return validateData(unsafeValue, this.props);
 	}
 }

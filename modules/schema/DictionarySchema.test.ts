@@ -1,5 +1,5 @@
 import type { ImmutableDictionary, Validator } from "../index.js";
-import { BOOLEAN, DICTIONARY, DictionarySchema, Feedback, Feedbacks, NUMBER, STRING } from "../index.js";
+import { BOOLEAN, DICTIONARY, DictionarySchema, Feedback, NUMBER, STRING, ValueFeedbacks } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -65,9 +65,9 @@ describe("options.items", () => {
 		try {
 			expect(schema.validate(dict)).toBe("Never");
 		} catch (invalid: any) {
-			expect(invalid).toBeInstanceOf(Feedbacks);
+			expect(invalid).toBeInstanceOf(ValueFeedbacks);
 			expect(invalid).toEqual(
-				new Feedbacks(
+				new ValueFeedbacks(
 					{
 						str: "Must be number",
 					},

@@ -1,7 +1,7 @@
 import type { SchemaOptions } from "./Schema.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Validator } from "../util/validate.js";
-import { Feedback } from "../feedback/Feedback.js";
+import { ValueFeedback } from "../feedback/Feedback.js";
 import { getUniqueArray, isArray } from "../util/array.js";
 import { validateArray } from "../util/validate.js";
 import { Schema } from "./Schema.js";
@@ -56,11 +56,11 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		this.max = max;
 	}
 	override validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
-		if (!isArray(unsafeValue)) throw new Feedback("Must be array", unsafeValue);
+		if (!isArray(unsafeValue)) throw new ValueFeedback("Must be array", unsafeValue);
 		const validArray = validateArray(unsafeValue, this.items);
 		const uniqueArray = this.unique ? getUniqueArray(validArray) : validArray;
-		if (uniqueArray.length < this.min) throw new Feedback(uniqueArray.length ? `Minimum ${this.min} items` : "Required", uniqueArray);
-		if (uniqueArray.length > this.max) throw new Feedback(`Maximum ${this.max} items`, uniqueArray);
+		if (uniqueArray.length < this.min) throw new ValueFeedback(uniqueArray.length ? `Minimum ${this.min} items` : "Required", uniqueArray);
+		if (uniqueArray.length > this.max) throw new ValueFeedback(`Maximum ${this.max} items`, uniqueArray);
 		return uniqueArray;
 	}
 }
