@@ -1,3 +1,4 @@
+import type { ImmutableArray } from "./array.js";
 import type { ValueCallback } from "./callback.js";
 import type { Report } from "./error.js";
 import { ValueError } from "../error/ValueError.js";
@@ -41,6 +42,26 @@ export function assertPromise<T>(value: Promise<T> | T): asserts value is Promis
 export function runMicrotasks(): Promise<void> {
 	// Timeouts are part of the main event queue, and events in the main queue are run _after_ all microtasks complete.
 	return new Promise(resolve => setTimeout(resolve));
+}
+
+/**
+ * Run multiple promises concurrently.
+ *
+ * DH: An issue with `Promise.all()` is: if _one_ of its promises rejects, the parent promise rejects immediately.
+ * - This leaves all of the other promises lost in unhandled purgatory.
+ * - The program may then have dangling open threads that prevent the program from exiting, even after it has returned its main result.
+ * - This function waits for the resolution of *all* promises before rejecting.
+ *
+ * @param promises Promises that we need to wait for.
+ * @throws unknown Rethrows the first error found after resolving all the promises (the first in the _list_, not the first overall).
+ */
+export async function runConcurrent<T extends ImmutableArray<unknown>>(...promises: T): Promise<{ readonly [P in keyof T]: Awaited<T[P]> }>;
+export async function runConcurrent(...promises: PromiseLike<unknown>[]): Promise<ImmutableArray<unknown>> {
+	return (await Promise.allSettled(promises)).map(_getFulfilledResult);
+}
+function _getFulfilledResult<T>(result: PromiseSettledResult<T>): T {
+	if (result.status === "rejected") throw result.reason;
+	return result.value;
 }
 
 /** Type of `Promise` with `._resolve()` and `._reject()` methods available. */
