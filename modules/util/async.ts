@@ -45,7 +45,7 @@ export function runMicrotasks(): Promise<void> {
 }
 
 /**
- * Run multiple promises concurrently.
+ * Get the result of multiple promises concurrently.
  *
  * DH: An issue with `Promise.all()` is: if _one_ of its promises rejects, the parent promise rejects immediately.
  * - This leaves all of the other promises lost in unhandled purgatory.
@@ -55,8 +55,8 @@ export function runMicrotasks(): Promise<void> {
  * @param promises Promises that we need to wait for.
  * @throws unknown Rethrows the first error found after resolving all the promises (the first in the _list_, not the first overall).
  */
-export async function runConcurrent<T extends ImmutableArray<unknown>>(...promises: T): Promise<{ readonly [P in keyof T]: Awaited<T[P]> }>;
-export async function runConcurrent(...promises: PromiseLike<unknown>[]): Promise<ImmutableArray<unknown>> {
+export async function getConcurrent<T extends ImmutableArray<unknown>>(...promises: T): Promise<{ readonly [P in keyof T]: Awaited<T[P]> }>;
+export async function getConcurrent(...promises: PromiseLike<unknown>[]): Promise<ImmutableArray<unknown>> {
 	return (await Promise.allSettled(promises)).map(_getFulfilledResult);
 }
 function _getFulfilledResult<T>(result: PromiseSettledResult<T>): T {

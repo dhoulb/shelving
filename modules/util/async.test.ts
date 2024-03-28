@@ -1,4 +1,4 @@
-import { getDeferred, runConcurrent } from "../index.js";
+import { getConcurrent, getDeferred } from "../index.js";
 
 describe("Deferred", () => {
 	test("Works correctly", async () => {
@@ -14,9 +14,9 @@ describe("Deferred", () => {
 		expect(await promise.then()).toBe("ABC");
 	});
 });
-describe("runConcurrently()", () => {
+describe("getConcurrent()", () => {
 	test("Works correctly with successful resolution", async () => {
-		const result1 = await runConcurrent(Promise.resolve("A"), new Promise<string>(resolve => setTimeout(() => resolve("B"), 50)), Promise.resolve("C"));
+		const result1 = await getConcurrent(Promise.resolve("A"), new Promise<string>(resolve => setTimeout(() => resolve("B"), 50)), Promise.resolve("C"));
 		const result2: readonly [string, string, string] = result1;
 		expect(result2).toEqual(["A", "B", "C"]);
 	});
@@ -24,7 +24,7 @@ describe("runConcurrently()", () => {
 		let a: string = "NOTA";
 		let c: string = "NOTC";
 		try {
-			await runConcurrent(
+			await getConcurrent(
 				new Promise<string>(resolve =>
 					setTimeout(() => {
 						a = "A";
