@@ -1,6 +1,7 @@
+import { describe, expect, test } from "@jest/globals";
 import type { ImmutableArray } from "../index.js";
-import type { BasicData } from "../test/index.js";
 import { filterQueryItems, getFilters, getItemIDs, getOrders, matchQueryItem, queryItems, sortQueryItems } from "../index.js";
+import type { BasicData } from "../test/index.js";
 import { basic1, basic2, basics, expectUnorderedKeys } from "../test/index.js";
 import { expectOrderedKeys } from "../test/util.js";
 
@@ -67,14 +68,49 @@ describe("filterQueryItems()", () => {
 		expect(matchQueryItem(basic1, getFilters({ "!id": "basic1" }))).toBe(false);
 		expect(matchQueryItem(basic2, getFilters({ "!id": "basic1" }))).toBe(true);
 		// Filter plain.
-		expectUnorderedKeys(filterQueryItems(basics, getFilters({ "!str": "aaa" })), ["basic2", "basic3", "basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
-		expectUnorderedKeys(filterQueryItems(basics, getFilters({ "!group": "a" })), ["basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
+		expectUnorderedKeys(filterQueryItems(basics, getFilters({ "!str": "aaa" })), [
+			"basic2",
+			"basic3",
+			"basic4",
+			"basic5",
+			"basic6",
+			"basic7",
+			"basic8",
+			"basic9",
+		]);
+		expectUnorderedKeys(filterQueryItems(basics, getFilters({ "!group": "a" })), [
+			"basic4",
+			"basic5",
+			"basic6",
+			"basic7",
+			"basic8",
+			"basic9",
+		]);
 		// Match deep.
 		expect(matchQueryItem(basic1, getFilters({ "!sub.str": "aaa" }))).toBe(false);
 		expect(matchQueryItem(basic2, getFilters({ "!sub.str": "aaa" }))).toBe(true);
 		// Filter deep.
-		expectUnorderedKeys(filterQueryItems(basics, getFilters({ "!sub.str": "aaa" })), ["basic2", "basic3", "basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
-		expectUnorderedKeys(filterQueryItems(basics, getFilters({ "!sub.str": "NOPE" })), ["basic1", "basic2", "basic3", "basic4", "basic5", "basic6", "basic7", "basic8", "basic9"]);
+		expectUnorderedKeys(filterQueryItems(basics, getFilters({ "!sub.str": "aaa" })), [
+			"basic2",
+			"basic3",
+			"basic4",
+			"basic5",
+			"basic6",
+			"basic7",
+			"basic8",
+			"basic9",
+		]);
+		expectUnorderedKeys(filterQueryItems(basics, getFilters({ "!sub.str": "NOPE" })), [
+			"basic1",
+			"basic2",
+			"basic3",
+			"basic4",
+			"basic5",
+			"basic6",
+			"basic7",
+			"basic8",
+			"basic9",
+		]);
 	});
 	test("out", () => {
 		// Match array.
@@ -84,9 +120,21 @@ describe("filterQueryItems()", () => {
 		expect(matchQueryItem(basic2, getFilters({ "!id": ["basic1"] }))).toBe(true);
 	});
 	test("contains", () => {
-		expectUnorderedKeys(filterQueryItems(basics, getFilters<BasicData>({ "tags[]": "odd" })), ["basic1", "basic3", "basic5", "basic7", "basic9"]);
+		expectUnorderedKeys(filterQueryItems(basics, getFilters<BasicData>({ "tags[]": "odd" })), [
+			"basic1",
+			"basic3",
+			"basic5",
+			"basic7",
+			"basic9",
+		]);
 		expectUnorderedKeys(filterQueryItems(basics, getFilters<BasicData>({ "tags[]": "even" })), ["basic2", "basic4", "basic6", "basic8"]);
-		expectUnorderedKeys(filterQueryItems(basics, getFilters<BasicData>({ "tags[]": "prime" })), ["basic1", "basic2", "basic3", "basic5", "basic7"]);
+		expectUnorderedKeys(filterQueryItems(basics, getFilters<BasicData>({ "tags[]": "prime" })), [
+			"basic1",
+			"basic2",
+			"basic3",
+			"basic5",
+			"basic7",
+		]);
 		expectUnorderedKeys(filterQueryItems(basics, getFilters<BasicData>({ "tags[]": "NOPE" })), []);
 	});
 	test("lt", () => {
@@ -131,6 +179,6 @@ describe("filterQueryItems()", () => {
 	});
 });
 test("queryItems()", () => {
-	expectOrderedKeys(queryItems(basics, { "num>=": 500, "$order": "!str", "$limit": 3 }), ["basic9", "basic8", "basic7"]);
-	expectOrderedKeys(queryItems(basics, { "tags[]": "even", "$order": "!num", "$limit": 2 }), ["basic8", "basic6"]);
+	expectOrderedKeys(queryItems(basics, { "num>=": 500, $order: "!str", $limit: 3 }), ["basic9", "basic8", "basic7"]);
+	expectOrderedKeys(queryItems(basics, { "tags[]": "even", $order: "!num", $limit: 2 }), ["basic8", "basic6"]);
 });

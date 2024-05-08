@@ -29,8 +29,7 @@ export type Report = (reason: unknown) => void;
 
 /** Log an error to the console. */
 export function logError(reason: unknown): void {
-	// eslint-disable-next-line no-console
-	return console.error(reason);
+	console.error(reason);
 }
 
 /** Is an unknown value an `Error` instance? */

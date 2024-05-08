@@ -1,6 +1,6 @@
-import type { Entry } from "./entry.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
+import type { Entry } from "./entry.js";
 import { isIterable, limitItems } from "./iterate.js";
 
 /** `Map` that cannot be changed. */
@@ -77,7 +77,7 @@ export function removeMapItems<K, T>(map: MutableMap<K, T>, ...keys: K[]): void 
 
 /** Get an item in a map or throw an error if it doesn't exist. */
 export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T {
-	if (!map.has(key)) throw new RequiredError(`Map item is required`);
+	if (!map.has(key)) throw new RequiredError("Map item is required");
 	return map.get(key) as T;
 }
 

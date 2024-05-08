@@ -17,7 +17,7 @@ export type SchemaOptions = {
  * - Type `T` represents the type of value `validate()` returns.
  * - `validate()` returns `Invalid` if value was not valid.
  */
-export abstract class Schema<T extends unknown = unknown> implements Validator<T> {
+export abstract class Schema<T = unknown> implements Validator<T> {
 	/** Title of the schema, e.g. for using as the title of a corresponding field. */
 	readonly title: string | undefined;
 	/** Description of the schema, e.g. for using as a description in a corresponding field. */

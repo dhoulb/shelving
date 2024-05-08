@@ -1,8 +1,8 @@
+import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
 import type { EntryObject } from "./entry.js";
-import type { DeepPartial } from "./object.js";
-import { ValueError } from "../error/ValueError.js";
 import { isIterable } from "./iterate.js";
+import type { DeepPartial } from "./object.js";
 import { isObject, isPlainObject } from "./object.js";
 
 /** Data object. */

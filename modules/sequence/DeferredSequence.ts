@@ -20,7 +20,8 @@ export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> 
 
 	/** Get the next promise to be deferred/rejected. */
 	get promise(): Promise<T> {
-		return (this._deferred ||= getDeferred<T>()).promise;
+		this._deferred ||= getDeferred<T>();
+		return this._deferred.promise;
 	}
 
 	/** Resolve the current deferred in the sequence. */
@@ -57,6 +58,7 @@ export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> 
 	}
 
 	// Implement `Promise`
+	// biome-ignore lint/suspicious/noThenProperty: This is intentional.
 	then<X = T, Y = never>(onNext?: (v: T) => X | PromiseLike<X>, onError?: (r: unknown) => Y | PromiseLike<Y>): Promise<X | Y> {
 		return this.promise.then(onNext, onError);
 	}

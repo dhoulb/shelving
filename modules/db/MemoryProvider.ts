@@ -1,13 +1,13 @@
-import type { Data, DataKey, Database } from "../util/data.js";
-import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
-import type { Updates } from "../util/update.js";
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { getArray } from "../util/array.js";
+import type { Data, DataKey, Database } from "../util/data.js";
 import { isArrayEqual } from "../util/equal.js";
+import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
 import { getItem } from "../util/item.js";
 import { countItems } from "../util/iterate.js";
 import { queryItems, queryWritableItems } from "../util/query.js";
 import { getRandomKey } from "../util/random.js";
+import type { Updates } from "../util/update.js";
 import { updateData } from "../util/update.js";
 import { Provider } from "./Provider.js";
 
@@ -22,6 +22,7 @@ export class MemoryProvider<T extends Database> extends Provider<T> {
 
 	/** Get a table for a collection. */
 	getTable<K extends DataKey<T>>(collection: K): MemoryTable<T[K]> {
+		// biome-ignore lint/suspicious/noAssignInExpressions: This is convenient.
 		return (this._tables[collection] ||= new MemoryTable<T[K]>());
 	}
 
@@ -46,19 +47,23 @@ export class MemoryProvider<T extends Database> extends Provider<T> {
 	}
 
 	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
-		return this.getTable(collection).setItem(id, data);
+		this.getTable(collection).setItem(id, data);
 	}
 
-	setItemSequence<K extends DataKey<T>>(collection: K, id: string, sequence: AsyncIterable<OptionalItem<T[K]>>): AsyncIterable<OptionalItem<T[K]>> {
+	setItemSequence<K extends DataKey<T>>(
+		collection: K,
+		id: string,
+		sequence: AsyncIterable<OptionalItem<T[K]>>,
+	): AsyncIterable<OptionalItem<T[K]>> {
 		return this.getTable(collection).setItemSequence(id, sequence);
 	}
 
 	updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
-		return this.getTable(collection).updateItem(id, updates);
+		this.getTable(collection).updateItem(id, updates);
 	}
 
 	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
-		return this.getTable(collection).deleteItem(id);
+		this.getTable(collection).deleteItem(id);
 	}
 
 	getQueryTime<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number | undefined {
@@ -82,22 +87,26 @@ export class MemoryProvider<T extends Database> extends Provider<T> {
 	}
 
 	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): void {
-		return this.getTable(collection).setQuery(query, data);
+		this.getTable(collection).setQuery(query, data);
 	}
 
 	updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): void {
-		return this.getTable(collection).updateQuery(query, updates);
+		this.getTable(collection).updateQuery(query, updates);
 	}
 
 	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void {
-		return this.getTable(collection).deleteQuery(query);
+		this.getTable(collection).deleteQuery(query);
 	}
 
 	setItems<K extends DataKey<T>>(collection: K, items: Items<T[K]>, query?: ItemQuery<T[K]>): void {
-		return this.getTable(collection).setItems(items, query);
+		this.getTable(collection).setItems(items, query);
 	}
 
-	setItemsSequence<K extends DataKey<T>>(collection: K, sequence: AsyncIterable<Items<T[K]>>, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
+	setItemsSequence<K extends DataKey<T>>(
+		collection: K,
+		sequence: AsyncIterable<Items<T[K]>>,
+		query?: ItemQuery<T[K]>,
+	): AsyncIterable<Items<T[K]>> {
 		return this.getTable(collection).setItemsSequence(sequence, query);
 	}
 }
@@ -172,7 +181,7 @@ export class MemoryTable<T extends Data> {
 
 	updateItem(id: string, updates: Updates<T>): void {
 		const oldItem = this._data.get(id);
-		if (oldItem) return this.setItem(id, updateData<Item<T>>(oldItem, updates));
+		if (oldItem) this.setItem(id, updateData<Item<T>>(oldItem, updates));
 	}
 
 	deleteItem(id: string): void {

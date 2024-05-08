@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import type { BranchData, ImmutableDictionary, LeafData } from "../index.js";
 import { getData, getDataProp } from "../index.js";
 
@@ -23,19 +24,19 @@ type X = {
 
 test("BranchData", () => {
 	const validBranchData: BranchData<T> = {
-		"a": { a2: { a2a: true }, a1: 123 },
+		a: { a2: { a2a: true }, a1: 123 },
 		"a.a1": 123,
 		"a.a2": { a2a: true },
 		"a.a2.a2a": true,
-		"g": "abc",
+		g: "abc",
 	};
 
 	const validBranchData2: BranchData<X> = {
-		"str": "abc",
-		"num": 123,
-		"dict1": { a: 1, b: 2 },
+		str: "abc",
+		num: 123,
+		dict1: { a: 1, b: 2 },
 		"dict1.a": 1,
-		"dict2": { a: { str: "abc", num: 123 } },
+		dict2: { a: { str: "abc", num: 123 } },
 		"dict2.a": { str: "abc", num: 123 },
 	};
 
@@ -45,7 +46,7 @@ test("BranchData", () => {
 		// @ts-expect-error "a.a2.a2a" is not boolean.
 		"a.a2.a2a": 123,
 		// @ts-expect-error "g" is not string.
-		"g": 123,
+		g: 123,
 	};
 
 	const invalidBranchData3: Partial<BranchData<T>> = {
@@ -67,12 +68,12 @@ test("LeafData", () => {
 	const validLeafData: LeafData<T> = {
 		"a.a1": 123,
 		"a.a2.a2a": true,
-		"g": "abc",
+		g: "abc",
 	};
 
 	const validLeafData2: LeafData<X> = {
-		"str": "abc",
-		"num": 123,
+		str: "abc",
+		num: 123,
 		"dict1.a": 1,
 		"dict2.a.str": "abc",
 		"dict2.a.num": 123,
@@ -91,7 +92,7 @@ test("LeafData", () => {
 		// @ts-expect-error "a.a2.a2a" is not boolean.
 		"a.a2.a2a": 123,
 		// @ts-expect-error "g" is not string.
-		"g": 123,
+		g: 123,
 	};
 
 	const invalidLeafData3: Partial<LeafData<T>> = {

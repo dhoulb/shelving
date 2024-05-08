@@ -1,11 +1,11 @@
-import type { ImmutableArray } from "./array.js";
-import type { ImmutableDictionary } from "./dictionary.js";
-import type { Mutable } from "./object.js";
-import type { NotString } from "./string.js";
 import { ValueError } from "../error/ValueError.js";
+import type { ImmutableArray } from "./array.js";
 import { EMPTY_DATA } from "./data.js";
+import type { ImmutableDictionary } from "./dictionary.js";
 import { setMapItem } from "./map.js";
+import type { Mutable } from "./object.js";
 import { isObject } from "./object.js";
+import type { NotString } from "./string.js";
 
 /** Single template chunk. */
 type TemplateChunk = {
@@ -100,7 +100,7 @@ export function matchTemplate(template: string, target: string): TemplateValues 
 	let startIndex = firstChunk.pre.length;
 	const values: Mutable<TemplateValues> = {};
 	for (const { name, post } of chunks) {
-		const stopIndex = !post ? Infinity : target.indexOf(post, startIndex);
+		const stopIndex = !post ? Number.POSITIVE_INFINITY : target.indexOf(post, startIndex);
 		if (stopIndex < 0) return undefined; // Target doesn't match template because chunk post wasn't found.
 		const value = target.slice(startIndex, stopIndex);
 		if (!value.length) return undefined; // Target doesn't match template because chunk value was missing.

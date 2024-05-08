@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { ImmutableArray } from "../index.js";
 import { deepMerge, mergeArray, mergeObject, shallowMerge } from "../index.js";
 

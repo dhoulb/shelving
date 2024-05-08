@@ -1,7 +1,7 @@
+import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
 import type { Optional } from "./optional.js";
-import { ValueError } from "../error/ValueError.js";
-import { type Path } from "./path.js";
+import type { Path } from "./path.js";
 import { type PossibleURL, getOptionalURL, isURL } from "./url.js";
 
 /** Default whitelist for URL schemes. */
@@ -41,25 +41,45 @@ export function isLinkURL(value: unknown): value is AbsoluteLinkURL {
 }
 
 /** Convert a possible URL to a URL or return `undefined` if conversion fails. */
-export function getOptionalLinkURL(possible: Optional<PossibleURL>, base?: AbsoluteLinkURL | AbsoluteLink, schemes: LinkSchemes = _SCHEMES, hosts?: LinkHosts): AbsoluteLinkURL | undefined {
+export function getOptionalLinkURL(
+	possible: Optional<PossibleURL>,
+	base?: AbsoluteLinkURL | AbsoluteLink,
+	schemes: LinkSchemes = _SCHEMES,
+	hosts?: LinkHosts,
+): AbsoluteLinkURL | undefined {
 	const url = getOptionalURL(possible, base);
 	if (url && schemes.includes(url.protocol) && (!hosts || hosts.includes(url.host))) return url as AbsoluteLinkURL;
 }
 
 /** Convert a possible URL to a URL or return `undefined` if conversion fails. */
-export function getLinkURL(possible: PossibleURL, base?: AbsoluteLinkURL | AbsoluteLink, schemes?: LinkSchemes, hosts?: LinkHosts): AbsoluteLinkURL {
+export function getLinkURL(
+	possible: PossibleURL,
+	base?: AbsoluteLinkURL | AbsoluteLink,
+	schemes?: LinkSchemes,
+	hosts?: LinkHosts,
+): AbsoluteLinkURL {
 	const url = getOptionalLinkURL(possible, base, schemes, hosts);
 	if (!url) throw new ValueError("Invalid link", possible);
 	return url;
 }
 
 /** Convert a possible URL to a absolute URL string or return `undefined` if conversion fails. */
-export function getOptionalLink(possible: Optional<PossibleURL>, base?: AbsoluteLinkURL | AbsoluteLink, schemes: LinkSchemes = _SCHEMES, hosts?: LinkHosts): AbsoluteLink | undefined {
+export function getOptionalLink(
+	possible: Optional<PossibleURL>,
+	base?: AbsoluteLinkURL | AbsoluteLink,
+	schemes: LinkSchemes = _SCHEMES,
+	hosts?: LinkHosts,
+): AbsoluteLink | undefined {
 	const url = getOptionalURL(possible, base);
 	if (url && schemes.includes(url.protocol) && (!hosts || hosts.includes(url.host))) return url.href as AbsoluteLink;
 }
 
 /** Convert a possible URL to an absolute URL string. */
-export function getLink(possible: PossibleURL, base?: AbsoluteLinkURL | AbsoluteLink, schemes?: LinkSchemes, hosts?: LinkHosts): AbsoluteLink {
+export function getLink(
+	possible: PossibleURL,
+	base?: AbsoluteLinkURL | AbsoluteLink,
+	schemes?: LinkSchemes,
+	hosts?: LinkHosts,
+): AbsoluteLink {
 	return getLinkURL(possible, base, schemes, hosts).href;
 }

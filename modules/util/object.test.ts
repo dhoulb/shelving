@@ -1,5 +1,16 @@
+import { expect, test } from "@jest/globals";
 import type { ImmutableDictionary, MutableDictionary } from "../index.js";
-import { deleteDictionaryItems, getProp, isObject, omitProps, pickProps, setDictionaryItem, setDictionaryItems, withDictionaryItem, withProps } from "../index.js";
+import {
+	deleteDictionaryItems,
+	getProp,
+	isObject,
+	omitProps,
+	pickProps,
+	setDictionaryItem,
+	setDictionaryItems,
+	withDictionaryItem,
+	withProps,
+} from "../index.js";
 
 const maplikeObj: ImmutableDictionary<number> = { a: 1, b: 2, c: 3, d: 4 };
 

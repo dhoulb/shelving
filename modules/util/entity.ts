@@ -1,5 +1,5 @@
-import type { Optional } from "./optional.js";
 import { ValueError } from "../error/ValueError.js";
+import type { Optional } from "./optional.js";
 
 /** Entity strings combine a type and ID, e.g. `challenge:a1b2c3` */
 export type Entity<T extends string = string> = `${T}:${string}`;

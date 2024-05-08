@@ -1,6 +1,6 @@
-import type { NotString } from "./string.js";
 import { ValueError } from "../error/ValueError.js";
 import { getArray } from "./array.js";
+import type { NotString } from "./string.js";
 
 /** Regular expression that always matches everything. */
 export const ALWAYS_REGEXP = /^.*$/;

@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { Data } from "../index.js";
 import { DeferredSequence, runMicrotasks, runSequence } from "../index.js";
 import { LazyDeferredSequence } from "./LazyDeferredSequence.js";

@@ -1,8 +1,8 @@
-import type { AsyncProvider, Provider } from "./Provider.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
+import type { AsyncProvider, Provider } from "./Provider.js";
 
 /** A provider that passes through to a synchronous source. */
 export class ThroughProvider<T extends Database> implements Provider<T>, Sourceable<Provider<T>> {
@@ -23,13 +23,13 @@ export class ThroughProvider<T extends Database> implements Provider<T>, Sourcea
 		return this.source.addItem(collection, data);
 	}
 	setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
-		return this.source.setItem(collection, id, data);
+		this.source.setItem(collection, id, data);
 	}
 	updateItem<K extends DataKey<T>>(collection: K, id: string, update: Updates<T[K]>): void {
-		return this.source.updateItem(collection, id, update);
+		this.source.updateItem(collection, id, update);
 	}
 	deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
-		return this.source.deleteItem(collection, id);
+		this.source.deleteItem(collection, id);
 	}
 	countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number {
 		return this.source.countQuery(collection, query);
@@ -41,13 +41,13 @@ export class ThroughProvider<T extends Database> implements Provider<T>, Sourcea
 		return this.source.getQuerySequence(collection, query);
 	}
 	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): void {
-		return this.source.setQuery(collection, query, data);
+		this.source.setQuery(collection, query, data);
 	}
 	updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, update: Updates<T[K]>): void {
-		return this.source.updateQuery(collection, query, update);
+		this.source.updateQuery(collection, query, update);
 	}
 	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void {
-		return this.source.deleteQuery(collection, query);
+		this.source.deleteQuery(collection, query);
 	}
 	getFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): OptionalItem<T[K]> {
 		return this.source.getFirst(collection, query);

@@ -1,14 +1,14 @@
-import type { MemoryProvider } from "./MemoryProvider.js";
-import type { AbstractProvider } from "./Provider.js";
-import type { DataKey, Database } from "../util/data.js";
-import type { Item } from "../util/item.js";
-import type { Stop } from "../util/start.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { OptionalDataStore } from "../store/DataStore.js";
 import { NONE } from "../util/constants.js";
+import type { DataKey, Database } from "../util/data.js";
+import type { Item } from "../util/item.js";
 import { getItem } from "../util/item.js";
 import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
+import type { Stop } from "../util/start.js";
+import type { MemoryProvider } from "./MemoryProvider.js";
+import type { AbstractProvider } from "./Provider.js";
 
 /** Store a single item. */
 export class ItemStore<T extends Database, K extends DataKey<T>> extends OptionalDataStore<Item<T[K]>> {

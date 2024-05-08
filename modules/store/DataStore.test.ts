@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { DataStore, OptionalDataStore, RequiredError, runMicrotasks, runSequence } from "../index.js";
 
 test("DataStore.prototype.data", async () => {
@@ -28,7 +29,7 @@ test("DataStore.prototype.update()", async () => {
 	const calls1: T[] = [];
 	const stop = runSequence(store.next, v => calls1.push(v));
 	// Apply a data transform.
-	expect(store.update({ "a": 111, "+=b": 100 })).toBe(undefined);
+	expect(store.update({ a: 111, "+=b": 100 })).toBe(undefined);
 	expect(store.value).toEqual({ a: 111, b: 102 });
 	// Checks.
 	await runMicrotasks();
@@ -76,7 +77,7 @@ test("OptionalDataStore.prototype.update()", async () => {
 	const calls1: (T | undefined)[] = [];
 	const stop = runSequence(store.next, v => calls1.push(v));
 	// Apply a data transform.
-	expect(store.update({ "a": 111, "-=b": 100 })).toBe(undefined);
+	expect(store.update({ a: 111, "-=b": 100 })).toBe(undefined);
 	expect(store.value).toEqual({ a: 111, b: -98 });
 	// Checks.
 	await runMicrotasks();

@@ -1,5 +1,5 @@
-import type { Mutable } from "../util/object.js";
 import { StateError } from "../error/StateError.js";
+import type { Mutable } from "../util/object.js";
 import { ThroughSequence } from "./ThroughSequence.js";
 
 /** Used when the sequence hasn't inspected anything yet. */

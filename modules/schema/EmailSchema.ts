@@ -1,8 +1,9 @@
-import type { StringSchemaOptions } from "./StringSchema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
-const R_MATCH = /^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.){1,3}(?:[a-z]{2,63}|xn--[a-z0-9-]{0,58}[a-z0-9])$/;
+const R_MATCH =
+	/^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.){1,3}(?:[a-z]{2,63}|xn--[a-z0-9-]{0,58}[a-z0-9])$/;
 
 /**
  * Define a valid email address.

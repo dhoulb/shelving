@@ -1,6 +1,6 @@
-import type { Arguments } from "./function.js";
 import { isAsync } from "./async.js";
 import { logError } from "./error.js";
+import type { Arguments } from "./function.js";
 
 /** Callback function with no value. */
 export type Callback = () => void;
@@ -36,7 +36,11 @@ export function called<A extends Arguments = []>(dispatcher: (...v: A) => unknow
 }
 
 /** Safely call a callback method (possibly wth a value). */
-export function callMethod<A extends Arguments, M extends string | symbol>(obj: { [K in M]?: ((...v: A) => unknown) | undefined }, key: M, ...values: A): void {
+export function callMethod<A extends Arguments, M extends string | symbol>(
+	obj: { [K in M]?: ((...v: A) => unknown) | undefined },
+	key: M,
+	...values: A
+): void {
 	try {
 		const result = obj[key]?.(...values);
 		if (isAsync(result)) result.then(undefined, logError);

@@ -1,8 +1,8 @@
-import type { DatabaseChange, DatabaseChanges } from "./Change.js";
 import type { MutableArray } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { ItemQuery } from "../util/item.js";
 import type { Updates } from "../util/update.js";
+import type { DatabaseChange, DatabaseChanges } from "./Change.js";
 import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 
 /** Synchronous provider that keeps a log of any written changes to its `.changes` property. */

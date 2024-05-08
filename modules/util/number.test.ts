@@ -1,4 +1,16 @@
-import { ValueError, boundNumber, formatNumber, getOptionalNumber, getRange, roundNumber, roundStep, sumNumbers, truncateNumber, wrapNumber } from "../index.js";
+import { describe, expect, test } from "@jest/globals";
+import {
+	ValueError,
+	boundNumber,
+	formatNumber,
+	getOptionalNumber,
+	getRange,
+	roundNumber,
+	roundStep,
+	sumNumbers,
+	truncateNumber,
+	wrapNumber,
+} from "../index.js";
 
 test("roundNumber(): Works correctly", () => {
 	expect(roundNumber(123.456, 0)).toBe(123);

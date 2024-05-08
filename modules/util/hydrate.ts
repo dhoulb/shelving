@@ -1,10 +1,10 @@
-import type { Class } from "./class.js";
-import type { ImmutableDictionary } from "./dictionary.js";
-import type { ImmutableObject } from "./object.js";
 import { ValueError } from "../error/ValueError.js";
 import { isArray } from "./array.js";
+import type { Class } from "./class.js";
 import { isDate } from "./date.js";
+import type { ImmutableDictionary } from "./dictionary.js";
 import { isMap } from "./map.js";
+import type { ImmutableObject } from "./object.js";
 import { getProps, getPrototype, isObject, isPlainObject } from "./object.js";
 import { isSet } from "./set.js";
 import { isString } from "./string.js";
@@ -59,15 +59,15 @@ export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 export function dehydrate(value: unknown, hydrations: Hydrations): unknown {
 	if (isObject(value)) {
 		if (isArray(value)) return mapArray(value, dehydrate, hydrations);
-		else if (isMap(value)) return { $type: "Map", $value: mapArray(value.entries(), dehydrate, hydrations) };
-		else if (isSet(value)) return { $type: "Set", $value: mapArray(value.values(), dehydrate, hydrations) };
-		else if (isDate(value)) return { $type: "Date", $value: value.getTime() };
-		else if (isPlainObject(value)) return mapObject(value, dehydrate, hydrations);
-		else {
-			const proto = getPrototype(value);
-			for (const [$type, hydration] of getProps(hydrations)) if (proto === hydration.prototype) return { $type, $value: mapObject(value, dehydrate, hydrations) };
-			throw new ValueError(`Cannot dehydrate object`, value);
-		}
+		if (isMap(value)) return { $type: "Map", $value: mapArray(value.entries(), dehydrate, hydrations) };
+		if (isSet(value)) return { $type: "Set", $value: mapArray(value.values(), dehydrate, hydrations) };
+		if (isDate(value)) return { $type: "Date", $value: value.getTime() };
+		if (isPlainObject(value)) return mapObject(value, dehydrate, hydrations);
+
+		const proto = getPrototype(value);
+		for (const [$type, hydration] of getProps(hydrations))
+			if (proto === hydration.prototype) return { $type, $value: mapObject(value, dehydrate, hydrations) };
+		throw new ValueError("Cannot dehydrate object", value);
 	}
 	return value;
 }

@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { isArrayEqual, isDeepEqual, isEqual, isObjectEqual, isObjectMatch } from "../index.js";
 
 const arrFlat = [1, "b", true, false, null];

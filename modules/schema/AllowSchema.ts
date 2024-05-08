@@ -1,10 +1,10 @@
-import type { SchemaOptions } from "./Schema.js";
-import type { Entry } from "../util/entry.js";
-import type { ImmutableMap, PossibleMap, PossibleStringMap } from "../util/map.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
 import { getFirstItem } from "../util/array.js";
+import type { Entry } from "../util/entry.js";
+import type { ImmutableMap, PossibleMap, PossibleStringMap } from "../util/map.js";
 import { getMap, isMapItem } from "../util/map.js";
 import { getString } from "../util/string.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `AllowSchama` */

@@ -1,5 +1,5 @@
-import type { Arguments } from "../util/function.js";
 import { useRef } from "react";
+import type { Arguments } from "../util/function.js";
 
 /**
  * Use memoised value with reduction logic.
@@ -9,8 +9,12 @@ import { useRef } from "react";
  * - Returns whatever `reduce()` returns on this render.
  */
 export function useReduce<T, A extends Arguments = []>(reduce: (previous: T | undefined, ...a: A) => T, ...args: A): T;
-export function useReduce<T, A extends Arguments = []>(reduce: (previous: T | undefined, ...a: A) => T | undefined, ...args: A): T | undefined; // Allows inference if `undefined` is a value that `reduce()` can return.
+export function useReduce<T, A extends Arguments = []>(
+	reduce: (previous: T | undefined, ...a: A) => T | undefined,
+	...args: A
+): T | undefined; // Allows inference if `undefined` is a value that `reduce()` can return.
 export function useReduce<T, A extends Arguments = []>(reduce: (previous: T | undefined, ...a: A) => T, ...args: A): T {
 	const ref = useRef<T>();
-	return (ref.current = reduce(ref.current, ...args));
+	ref.current = reduce(ref.current, ...args);
+	return ref.current;
 }

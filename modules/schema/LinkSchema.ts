@@ -1,8 +1,8 @@
-import type { StringSchemaOptions } from "./StringSchema.js";
-import type { ImmutableArray } from "../util/array.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
+import type { ImmutableArray } from "../util/array.js";
 import { type AbsoluteLink, getOptionalLinkURL } from "../util/link.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /** Allowed options for `LinkSchema` */

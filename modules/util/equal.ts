@@ -1,9 +1,9 @@
 import type { ImmutableArray } from "./array.js";
+import { isArray } from "./array.js";
 import type { Match } from "./filter.js";
 import type { ImmutableMap } from "./map.js";
-import type { ImmutableObject } from "./object.js";
-import { isArray } from "./array.js";
 import { isMap } from "./map.js";
+import type { ImmutableObject } from "./object.js";
 import { isObject, isProp } from "./object.js";
 import { compareAscending } from "./sort.js";
 
@@ -52,12 +52,12 @@ function _isEqualRecursively(left: unknown, right: unknown, recursor: Match): bo
  * Are two unknown values shallowly equal?
  * - If the values are both arrays/objects, see if the items/properties are **shallowly** equal with each other.
  */
-export function isShallowEqual<T extends unknown>(left: unknown, right: T): left is T {
+export function isShallowEqual<T>(left: unknown, right: T): left is T {
 	return _isEqualRecursively(left, right, isEqual);
 }
 
 /** Are two unknown values not shallowly equal? */
-export function notShallowEqual<T extends unknown>(left: unknown, right: T): left is T {
+export function notShallowEqual<T>(left: unknown, right: T): left is T {
 	return !isShallowEqual(left, right);
 }
 
@@ -65,12 +65,12 @@ export function notShallowEqual<T extends unknown>(left: unknown, right: T): lef
  * Are two unknown values deeply equal?
  * - If the values are both arrays/objects, see if the items/properties are **deeply** equal with each other.
  */
-export function isDeepEqual<T extends unknown>(left: unknown, right: T): left is T {
+export function isDeepEqual<T>(left: unknown, right: T): left is T {
 	return _isEqualRecursively(left, right, isDeepEqual);
 }
 
 /** Are two unknown values not deeply equal? */
-export function notDeepEqual<T extends unknown>(left: unknown, right: T): left is T {
+export function notDeepEqual<T>(left: unknown, right: T): left is T {
 	return !isShallowEqual(left, right);
 }
 
@@ -150,7 +150,11 @@ export function isObjectEqual<T extends ImmutableObject>(left: ImmutableObject, 
  * - Defaults to `isEqual()` to check strict equality of the properties.
  * - Use `isDeepEqual()` as the recursor to check to check deep equality of the properties.
  */
-export function isObjectMatch<L extends ImmutableObject, R extends ImmutableObject>(left: L | R, right: R, recursor: Match = isEqual): left is L & R {
+export function isObjectMatch<L extends ImmutableObject, R extends ImmutableObject>(
+	left: L | R,
+	right: R,
+	recursor: Match = isEqual,
+): left is L & R {
 	if (left === right) return true; // Referentially equal.
 	const rightEntries = Object.entries(right);
 	for (const [k, r] of rightEntries) if (!isProp(left, k) || !recursor(left[k], r)) return false;

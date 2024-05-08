@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { Schema } from "../index.js";
 import { ENTITY, EntitySchema, Feedback, OPTIONAL_ENTITY } from "../index.js";
 

@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { Feedbacks, ValueFeedbacks } from "../index.js";
 
 test("Feedbacks", () => {

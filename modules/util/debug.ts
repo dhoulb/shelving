@@ -1,5 +1,3 @@
-/* eslint-disable no-control-regex */
-
 /** Note: try to avoid non-type imports in this file, it can easily cause circular imports. */
 import type { ImmutableArray } from "./array.js";
 import type { ImmutableMap } from "./map.js";
@@ -17,6 +15,7 @@ export function debug(value: unknown, depth = 1): string {
 	if (typeof value === "object") {
 		if (value instanceof Date) return value.toISOString();
 		if (value instanceof Error) return value.toString();
+		// biome-ignore lint/suspicious/useIsArray: Intential in this context.
 		if (value instanceof Array) return debugArray(value, depth);
 		if (value instanceof Map) return debugMap(value, depth);
 		if (value instanceof Set) return debugSet(value, depth);
@@ -27,8 +26,18 @@ export function debug(value: unknown, depth = 1): string {
 
 /** Debug a string. */
 export const debugString = (value: string): string => `"${value.replace(ESCAPE_REGEXP, _escapeChar)}"`;
+// biome-ignore lint/suspicious/noControlCharactersInRegex: Intentional.
 const ESCAPE_REGEXP = /[\x00-\x08\x0B-\x1F\x7F-\x9F"\\]/g; // Match control characters, `"` double quote, `\` backslash.
-const ESCAPE_LIST: { [key: string]: string } = { '"': '\\"', "\\": "\\\\", "\r": "\\r", "\n": "\\n", "\t": "\\t", "\b": "\\b", "\f": "\\f", "\v": "\\v" };
+const ESCAPE_LIST: { [key: string]: string } = {
+	'"': '\\"',
+	"\\": "\\\\",
+	"\r": "\\r",
+	"\n": "\\n",
+	"\t": "\\t",
+	"\b": "\\b",
+	"\f": "\\f",
+	"\v": "\\v",
+};
 const _escapeChar = (char: string): string => ESCAPE_LIST[char] || `\\x${char.charCodeAt(0).toString(16).padStart(2, "00")}`;
 
 /** Debug an array. */

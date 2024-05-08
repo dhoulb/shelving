@@ -1,9 +1,9 @@
-import type { AsyncProvider, Provider } from "./Provider.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { ItemQuery } from "../util/item.js";
-import type { Updates } from "../util/update.js";
 import { type Optional, notOptional } from "../util/optional.js";
+import type { Updates } from "../util/update.js";
+import type { AsyncProvider, Provider } from "./Provider.js";
 
 /** A change to a database. */
 export interface Change {
@@ -70,10 +70,16 @@ export interface QueryDeleteChange<T extends Database, K extends DataKey<T>> ext
 }
 
 /** Write an item in a set of collection. */
-export type DatabaseItemChange<T extends Database> = ItemSetChange<T, DataKey<T>> | ItemUpdateChange<T, DataKey<T>> | ItemDeleteChange<T, DataKey<T>>;
+export type DatabaseItemChange<T extends Database> =
+	| ItemSetChange<T, DataKey<T>>
+	| ItemUpdateChange<T, DataKey<T>>
+	| ItemDeleteChange<T, DataKey<T>>;
 
 /** Write multiple item in a set of collection. */
-export type DatabaseQueryChange<T extends Database> = QuerySetChange<T, DataKey<T>> | QueryUpdateChange<T, DataKey<T>> | QueryDeleteChange<T, DataKey<T>>;
+export type DatabaseQueryChange<T extends Database> =
+	| QuerySetChange<T, DataKey<T>>
+	| QueryUpdateChange<T, DataKey<T>>
+	| QueryDeleteChange<T, DataKey<T>>;
 
 /** Write an item or multiple items in a set of collection. */
 export type DatabaseChange<T extends Database> = ItemAddChange<T, DataKey<T>> | DatabaseItemChange<T> | DatabaseQueryChange<T>;
@@ -87,7 +93,8 @@ export function writeChange<T extends Database>(provider: Provider<T>, change: D
 	if (action === "add") {
 		// `add` change returns a `set` change so it includes the ID to reflect the change that was written.
 		return { action: "set", collection, id: provider.addItem(collection, change.data), data: change.data };
-	} else if (id) {
+	}
+	if (id) {
 		if (action === "set") provider.setItem(collection, id, change.data);
 		else if (action === "update") provider.updateItem(collection, id, change.updates);
 		else if (action === "delete") provider.deleteItem(collection, id);
@@ -105,12 +112,16 @@ export function writeChanges<T extends Database>(provider: Provider<T>, ...chang
 }
 
 /** Write a single change to an asynchronous provider and return the change that was written. */
-export async function writeAsyncChange<T extends Database>(provider: AsyncProvider<T>, change: DatabaseChange<T>): Promise<DatabaseChange<T>> {
+export async function writeAsyncChange<T extends Database>(
+	provider: AsyncProvider<T>,
+	change: DatabaseChange<T>,
+): Promise<DatabaseChange<T>> {
 	const { collection, action, id, query } = change;
 	if (action === "add") {
 		// `add` change returns a `set` change so it includes the ID to reflect the change that was written.
 		return { action: "set", collection, id: await provider.addItem(collection, change.data), data: change.data };
-	} else if (id) {
+	}
+	if (id) {
 		if (action === "set") await provider.setItem(collection, id, change.data);
 		else if (action === "update") await provider.updateItem(collection, id, change.updates);
 		else if (action === "delete") await provider.deleteItem(collection, id);
@@ -123,6 +134,9 @@ export async function writeAsyncChange<T extends Database>(provider: AsyncProvid
 }
 
 /** Write a set of changes to an asynchronous provider. */
-export function writeAsyncChanges<T extends Database>(provider: AsyncProvider<T>, ...changes: Optional<DatabaseChange<T>>[]): Promise<DatabaseChanges<T>> {
+export function writeAsyncChanges<T extends Database>(
+	provider: AsyncProvider<T>,
+	...changes: Optional<DatabaseChange<T>>[]
+): Promise<DatabaseChanges<T>> {
 	return Promise.all(changes.filter(notOptional).map(change => writeAsyncChange(provider, change)));
 }

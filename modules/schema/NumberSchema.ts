@@ -1,7 +1,7 @@
-import type { SchemaOptions } from "./Schema.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
 import { formatNumber, getOptionalNumber, roundStep } from "../util/number.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `NumberSchema` */
@@ -18,7 +18,14 @@ export class NumberSchema extends Schema<number> {
 	readonly min: number;
 	readonly max: number;
 	readonly step: number | undefined;
-	constructor({ min = -Infinity, max = Infinity, step, title = "Number", value = 0, ...options }: NumberSchemaOptions) {
+	constructor({
+		min = Number.NEGATIVE_INFINITY,
+		max = Number.POSITIVE_INFINITY,
+		step,
+		title = "Number",
+		value = 0,
+		...options
+	}: NumberSchemaOptions) {
 		super({ title, value, ...options });
 		this.min = min;
 		this.max = max;
@@ -59,7 +66,13 @@ export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_
 export const OPTIONAL_INTEGER = OPTIONAL(INTEGER);
 
 /** Valid Unix timestamp (including milliseconds). */
-export const TIMESTAMP = new NumberSchema({ title: "Timestamp", step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER, value: 0 });
+export const TIMESTAMP = new NumberSchema({
+	title: "Timestamp",
+	step: 1,
+	min: Number.MIN_SAFE_INTEGER,
+	max: Number.MAX_SAFE_INTEGER,
+	value: 0,
+});
 
 /** Valid Unix timestamp (including milliseconds). */
 export const OPTIONAL_TIMESTAMP = OPTIONAL_INTEGER;

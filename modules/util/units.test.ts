@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { ANGLE_UNITS, AREA_UNITS, LENGTH_UNITS, MASS_UNITS, SPEED_UNITS, TEMPERATURE_UNITS, TIME_UNITS, VOLUME_UNITS } from "../index.js";
 
 test("to() works correctly with base", () => {
@@ -116,7 +117,13 @@ test("pluralize() works correctly", () => {
 });
 test("pluralize() precision", () => {
 	expect(LENGTH_UNITS.getUnit("kilometer").pluralize(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0 })).toBe("1 kilometer");
-	expect(LENGTH_UNITS.getUnit("kilometer").pluralize(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe("1.11 kilometers");
-	expect(LENGTH_UNITS.getUnit("kilometer").pluralize(1.1111, { maximumFractionDigits: 4, minimumFractionDigits: 4 })).toBe("1.1111 kilometers");
-	expect(LENGTH_UNITS.getUnit("kilometer").pluralize(1.1111, { maximumFractionDigits: 6, minimumFractionDigits: 6 })).toBe("1.111100 kilometers");
+	expect(LENGTH_UNITS.getUnit("kilometer").pluralize(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe(
+		"1.11 kilometers",
+	);
+	expect(LENGTH_UNITS.getUnit("kilometer").pluralize(1.1111, { maximumFractionDigits: 4, minimumFractionDigits: 4 })).toBe(
+		"1.1111 kilometers",
+	);
+	expect(LENGTH_UNITS.getUnit("kilometer").pluralize(1.1111, { maximumFractionDigits: 6, minimumFractionDigits: 6 })).toBe(
+		"1.111100 kilometers",
+	);
 });

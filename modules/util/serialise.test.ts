@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import { serialise } from "../index.js";
 
 describe("serialise()", () => {
@@ -22,14 +23,16 @@ describe("serialise()", () => {
 
 		// Arrays.
 		expect(serialise([1, 2, 3])).toBe("[1,2,3]");
-		expect(serialise([Symbol("abc"), function bbbb() {}])).toBe(`[{"$type":"symbol","description":"abc"},{"$type":"function","name":"bbbb"}]`);
+		expect(serialise([Symbol("abc"), function bbbb() {}])).toBe(
+			`[{"$type":"symbol","description":"abc"},{"$type":"function","name":"bbbb"}]`,
+		);
 
 		// Objects.
 		expect(serialise({ a: 1, b: 2 })).toBe(`{"a":1,"b":2}`);
 		expect(serialise({ symbol: Symbol("abc") })).toBe(`{"symbol":{"$type":"symbol","description":"abc"}}`);
 
 		// Object keys are escaped.
-		expect(serialise({ [`a"b"c`]: 1 })).toBe(`{"a\\"b\\"c":1}`);
+		expect(serialise({ 'a"b"c': 1 })).toBe(`{"a\\"b\\"c":1}`);
 
 		// Object keys are sorted.
 		expect(serialise({ c: 3, b: 2, a: 1 })).toBe(`{"a":1,"b":2,"c":3}`);

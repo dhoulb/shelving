@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { runMicrotasks, runSequence } from "../index.js";
 import { DeferredSequence } from "./DeferredSequence.js";
 

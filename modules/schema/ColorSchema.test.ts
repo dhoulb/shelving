@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { Schema } from "../index.js";
 import { COLOR, ColorSchema, Feedback, OPTIONAL_COLOR } from "../index.js";
 

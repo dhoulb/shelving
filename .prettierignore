@@ -1,7 +1,0 @@
-# Always ignored folders.
-/node_modules/
-/dist/
-/coverage/
-
-# Always ignore lock files.
-package-lock.json

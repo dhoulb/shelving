@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import { ValueError, getPath, isAbsolutePath, isPathProud } from "../index.js";
 
 test("isAbsolutePath()", () => {

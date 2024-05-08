@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { isConstructor } from "../index.js";
 
 test("isClass(): Works correctly", () => {

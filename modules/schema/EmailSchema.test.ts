@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { Schema } from "../index.js";
 import { EMAIL, EmailSchema, Feedback, OPTIONAL_EMAIL } from "../index.js";
 
@@ -60,7 +61,9 @@ describe("validate()", () => {
 			expect(schema.validate("jo@a.northwesternmutual")).toBe("jo@a.northwesternmutual");
 		});
 		test("Domain labels with up 63 characters are valid", () => {
-			expect(schema.validate("jo@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com")).toBe("jo@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com");
+			expect(schema.validate("jo@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com")).toBe(
+				"jo@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com",
+			);
 		});
 		test("Domain labels longer than 63 characters are invalid", () => {
 			expect(() => schema.validate("jo@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax.com")).toThrow(Feedback);

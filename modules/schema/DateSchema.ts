@@ -1,9 +1,9 @@
-import type { SchemaOptions } from "./Schema.js";
-import type { PossibleDate } from "../util/date.js";
-import type { Optional } from "../util/optional.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
+import type { PossibleDate } from "../util/date.js";
 import { formatDate, getOptionalDate, getYMD } from "../util/date.js";
+import type { Optional } from "../util/optional.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `DateSchema` */

@@ -1,6 +1,6 @@
-import type { Arguments } from "../util/function.js";
 import { useRef } from "react";
 import { isArrayEqual } from "../util/equal.js";
+import type { Arguments } from "../util/function.js";
 
 /**
  * Use a memoised class instance.
@@ -8,6 +8,7 @@ import { isArrayEqual } from "../util/equal.js";
  * - Returns same instance for as long as `args` is equal to previous `args`.
  */
 export function useInstance<T, A extends Arguments = []>(Constructor: new (...a: A) => T, ...args: A): T {
+	// biome-ignore lint/suspicious/noAssignInExpressions: This is the most efficient way to do this.
 	const internals = (useRef<{
 		value: T;
 		args: A;

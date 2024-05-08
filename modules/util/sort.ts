@@ -1,6 +1,6 @@
 import type { ImmutableArray, MutableArray } from "./array.js";
-import type { Arguments } from "./function.js";
 import { isArray } from "./array.js";
+import type { Arguments } from "./function.js";
 
 /** Function that can compare two values for sorting. */
 export type Compare<T, A extends Arguments = []> = (left: T, right: T, ...args: A) => number;
@@ -34,7 +34,7 @@ export function compareAscending(left: unknown, right: unknown): number {
 		// String rank (uses locale-aware comparison).
 		if (typeof right === "string") return left.localeCompare(right);
 		// right is higher if number.
-		else if (typeof right === "number") return 1;
+		if (typeof right === "number") return 1;
 	} else if (left === true) {
 		// right is higher if number, string.
 		if ((typeof right === "number" && !Number.isNaN(right)) || typeof right === "string") return 1;
@@ -47,9 +47,10 @@ export function compareAscending(left: unknown, right: unknown): number {
 	} else if (typeof left !== "undefined") {
 		// Anything else, e.g. object, array, symbol, NaN.
 		// right is higher if number, string, boolean, null.
-		if ((typeof right === "number" && !Number.isNaN(right)) || typeof right === "string" || typeof right === "boolean" || right === null) return 1;
+		if ((typeof right === "number" && !Number.isNaN(right)) || typeof right === "string" || typeof right === "boolean" || right === null)
+			return 1;
 		// Undefined is lower, anything else is equal.
-		else if (typeof right !== "undefined") return 0;
+		if (typeof right !== "undefined") return 0;
 	} else {
 		// Both undefined.
 		if (typeof right === "undefined") return 0;
@@ -79,24 +80,34 @@ export function compareDescending(left: unknown, right: unknown): number {
  *
  * @return `true` if the array order changed, and `false` otherwise.
  */
-function _quicksort<T, A extends Arguments>(items: MutableArray<T>, compare: Compare<T, A>, args: A, leftPointer = 0, rightPointer: number = items.length - 1): boolean {
+function _quicksort<T, A extends Arguments>(
+	items: MutableArray<T>,
+	compare: Compare<T, A>,
+	args: A,
+	leftPointer = 0,
+	rightPointer: number = items.length - 1,
+): boolean {
 	// Have any swaps been made?
 	let changed = false;
 
 	// Calculate the middle value.
 	const pivot = Math.floor((leftPointer + rightPointer) / 2);
-	const middle = items[pivot]!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+	// biome-ignore lint/style/noNonNullAssertion: Pointers keep track of this.
+	const middle = items[pivot]!;
 
 	// Partitioning.
 	let l = leftPointer;
 	let r = rightPointer;
 	while (l <= r) {
-		while (compare(items[l]!, middle, ...args) < 0) l++; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-		while (compare(items[r]!, middle, ...args) > 0) r--; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		// biome-ignore lint/style/noNonNullAssertion: Pointers keep track of this.
+		while (compare(items[l]!, middle, ...args) < 0) l++;
+		// biome-ignore lint/style/noNonNullAssertion: Pointers keep track of this.
+		while (compare(items[r]!, middle, ...args) > 0) r--;
 		if (l <= r) {
 			if (l < r) {
 				changed = true;
-				[items[l], items[r]] = [items[r]!, items[l]!]; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+				// biome-ignore lint/style/noNonNullAssertion: Pointers keep track of this.
+				[items[l], items[r]] = [items[r]!, items[l]!];
 			}
 			l++;
 			r--;
@@ -112,7 +123,11 @@ function _quicksort<T, A extends Arguments>(items: MutableArray<T>, compare: Com
 }
 
 /** Sort an iterable set of items using a ranker (defaults to sorting in ascending order). */
-export function sortArray<T, A extends Arguments = []>(input: ImmutableArray<T> | Iterable<T>, compare: Compare<T, A> = compareAscending as unknown as Compare<T, A>, ...args: A): ImmutableArray<T> {
+export function sortArray<T, A extends Arguments = []>(
+	input: ImmutableArray<T> | Iterable<T>,
+	compare: Compare<T, A> = compareAscending as unknown as Compare<T, A>,
+	...args: A
+): ImmutableArray<T> {
 	if (isArray(input)) {
 		if (input.length < 2) return input;
 		const output = Array.from(input);

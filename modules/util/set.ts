@@ -20,7 +20,7 @@ export function isSet(value: unknown): value is ImmutableSet {
 
 /** Assert that a value is a `Set` instance. */
 export function assertSet(value: unknown): asserts value is ImmutableSet {
-	if (!isSet(value)) throw new ValueError(`Must be set`, value);
+	if (!isSet(value)) throw new ValueError("Must be set", value);
 }
 
 /** Is an unknown value an item in a set? */

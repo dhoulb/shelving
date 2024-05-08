@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { countItems, getArray, getChunks, getRange, limitItems, mergeItems, reduceItems } from "../index.js";
 
 test("getRange()", () => {
@@ -42,7 +43,7 @@ test("getChunks()", () => {
 	expect(getArray(getChunks(getRange(11, 19), 2))).toEqual([[11, 12], [13, 14], [15, 16], [17, 18], [19]]);
 });
 test("reduceItems()", () => {
-	expect(reduceItems([1, 2, 3], (p = 0, v) => p + v)).toBe(6);
+	expect(reduceItems([1, 2, 3], (p, v) => (typeof p === "number" ? p + v : v))).toBe(6);
 	expect(reduceItems([1, 2, 3], (p, v) => p + v, 100)).toBe(106);
 });
 test("mergeItems()", () => {

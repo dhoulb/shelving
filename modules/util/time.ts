@@ -1,8 +1,8 @@
-import type { Optional } from "./optional.js";
 import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MINUTE, SECOND } from "./constants.js";
 import { getOptionalDate } from "./date.js";
 import { wrapNumber } from "./number.js";
+import type { Optional } from "./optional.js";
 
 /** Class representing a time in the day in 24 hour format in the user's current locale. */
 export class Time {
@@ -14,7 +14,12 @@ export class Time {
 			const matches = possible.match(TIME_REGEXP);
 			if (matches) {
 				const [, h, m, s, ms] = matches as [never, string, string, string | undefined, string | undefined];
-				return new Time(parseInt(h, 10) * HOUR + parseInt(m, 10) * MINUTE + (typeof s === "string" ? parseInt(s, 10) * SECOND : 0) + (typeof ms === "string" ? parseInt(ms, 10) : 0));
+				return new Time(
+					Number.parseInt(h, 10) * HOUR +
+						Number.parseInt(m, 10) * MINUTE +
+						(typeof s === "string" ? Number.parseInt(s, 10) * SECOND : 0) +
+						(typeof ms === "string" ? Number.parseInt(ms, 10) : 0),
+				);
 			}
 		}
 		const date = getOptionalDate(possible);
@@ -125,7 +130,7 @@ export function getOptionalTime(possible: unknown): Time | undefined {
  */
 export function getTime(possible: PossibleTime = "now"): Time {
 	const time = getOptionalTime(possible);
-	if (!time) throw new ValueError(`Invalid time`, possible);
+	if (!time) throw new ValueError("Invalid time", possible);
 	return time;
 }
 

@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { ImmutableDictionary, Validator } from "../index.js";
 import { BOOLEAN, DICTIONARY, DictionarySchema, Feedback, NUMBER, STRING, ValueFeedbacks } from "../index.js";
 

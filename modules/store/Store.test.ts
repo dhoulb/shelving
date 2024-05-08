@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { NONE, Store, runMicrotasks, runSequence } from "../index.js";
 import { expectToThrowPromiseLike } from "../test/util.js";
 

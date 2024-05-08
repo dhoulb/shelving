@@ -1,7 +1,8 @@
-import type { Arguments } from "./function.js";
 import { call } from "./callback.js";
+import type { Arguments } from "./function.js";
 
 /** Callback function that starts something with multiple values and returns an optional stop callback. */
+// biome-ignore lint/suspicious/noConfusingVoidType: Start function can return nothing.
 export type Start<T extends Arguments = []> = (...values: T) => Stop | void;
 
 /** Callback function that stops something. */

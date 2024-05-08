@@ -1,7 +1,7 @@
+import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
 import type { ValueCallback } from "./callback.js";
 import type { Report } from "./error.js";
-import { ValueError } from "../error/ValueError.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
 export function isAsync<T>(value: PromiseLike<T> | T): value is PromiseLike<T> {
@@ -82,8 +82,10 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 			_resolve = x;
 			_reject = y;
 		});
-		this._resolve = _resolve!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-		this._reject = _reject!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		// biome-ignore lint/style/noNonNullAssertion: This is set inside the executor callback.
+		this._resolve = _resolve!;
+		// biome-ignore lint/style/noNonNullAssertion: This is set inside the executor callback.
+		this._reject = _reject!;
 	}
 }
 
@@ -106,8 +108,10 @@ export function getDeferred<T = unknown>(): Deferred<T> {
 			resolve = x;
 			reject = y;
 		}),
-		resolve: resolve!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-		reject: reject!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		// biome-ignore lint/style/noNonNullAssertion: This is set inside the executor callback.
+		resolve: resolve!,
+		// biome-ignore lint/style/noNonNullAssertion: This is set inside the executor callback.
+		reject: reject!,
 	};
 }
 

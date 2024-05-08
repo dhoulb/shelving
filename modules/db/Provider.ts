@@ -1,8 +1,8 @@
+import { RequiredError } from "../error/RequiredError.js";
+import { countArray, getOptionalFirstItem } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Updates } from "../util/update.js";
-import { RequiredError } from "../error/RequiredError.js";
-import { countArray, getOptionalFirstItem } from "../util/array.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
 export interface AbstractProvider<T extends Database> {
@@ -49,7 +49,7 @@ export interface AbstractProvider<T extends Database> {
 	 * Delete a specified item.
 	 * - Should not throw if the item doesn't exist.
 	 */
-	deleteItem<K extends DataKey<T>>(collection: K, id: string): void | PromiseLike<void>; // eslint-disable-line @typescript-eslint/no-unused-vars
+	deleteItem<K extends DataKey<T>>(collection: K, id: string): void | PromiseLike<void>;
 
 	/**
 	 * Count number of items in a query.
@@ -111,7 +111,7 @@ export abstract class Provider<T extends Database> implements AbstractProvider<T
 	abstract addItem<K extends DataKey<T>>(collection: K, data: T[K]): string;
 	abstract setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void;
 	abstract updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void;
-	abstract deleteItem<K extends DataKey<T>>(collection: K, id: string): void; // eslint-disable-line @typescript-eslint/no-unused-vars
+	abstract deleteItem<K extends DataKey<T>>(collection: K, id: string): void;
 	abstract getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Items<T[K]>;
 	countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number {
 		return countArray(this.getQuery(collection, query));
@@ -142,7 +142,7 @@ export abstract class AsyncProvider<T extends Database> implements AbstractProvi
 	abstract addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string>;
 	abstract setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void>;
 	abstract updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): Promise<void>;
-	abstract deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void>; // eslint-disable-line @typescript-eslint/no-unused-vars
+	abstract deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void>;
 	abstract getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<Items<T[K]>>;
 	async countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<number> {
 		return countArray(await this.getQuery(collection, query));

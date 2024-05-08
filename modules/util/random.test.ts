@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { getRandom, getRandomCharacter, getRandomItem, getRandomKey } from "../index.js";
 
 test("getRandomCharacter()", () => {

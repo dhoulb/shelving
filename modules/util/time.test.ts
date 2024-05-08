@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import { Time, ValueError, getOptionalTime, getTime } from "../index.js";
 
 test("getOptionalTime()", () => {

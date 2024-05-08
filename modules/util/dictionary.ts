@@ -52,7 +52,7 @@ export function assertDictionaryItem<T>(obj: ImmutableDictionary<T>, key: unknow
 
 /** Get an item in a map or throw an error if it doesn't exist. */
 export function getDictionaryItem<T>(obj: ImmutableDictionary<T>, key: string): T {
-	if (!Object.hasOwn(obj, key)) throw new RequiredError(`Dictionary item is required`);
+	if (!Object.hasOwn(obj, key)) throw new RequiredError("Dictionary item is required");
 	return obj[key] as T;
 }
 

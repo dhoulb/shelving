@@ -1,5 +1,5 @@
-import type { BranchData, BranchKey, Data, DataProp, LeafData, LeafKey } from "./data.js";
 import { type ImmutableArray, isArray, omitArrayItems, withArrayItems } from "./array.js";
+import type { BranchData, BranchKey, Data, DataProp, LeafData, LeafKey } from "./data.js";
 import { reduceItems } from "./iterate.js";
 import { getNumber } from "./number.js";
 import { getProps, isObject } from "./object.js";
@@ -13,7 +13,9 @@ export type Updates<T extends Data = Data> = {
 } & {
 	readonly [K in LeafKey<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] | undefined : never; // Sum update.
 } & {
-	readonly [K in LeafKey<T> as `+[]${K}` | `-[]${K}`]?: LeafData<T>[K] extends ImmutableArray<unknown> ? LeafData<T>[K] | LeafData<T>[K][number] | undefined : never; // With/omit update.
+	readonly [K in LeafKey<T> as `+[]${K}` | `-[]${K}`]?: LeafData<T>[K] extends ImmutableArray<unknown>
+		? LeafData<T>[K] | LeafData<T>[K][number] | undefined
+		: never; // With/omit update.
 };
 
 /** A single update to a keyed property in an object. */

@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import { getConcurrent, getDeferred } from "../index.js";
 
 describe("Deferred", () => {
@@ -16,13 +17,17 @@ describe("Deferred", () => {
 });
 describe("getConcurrent()", () => {
 	test("Works correctly with successful resolution", async () => {
-		const result1 = await getConcurrent(Promise.resolve("A"), new Promise<string>(resolve => setTimeout(() => resolve("B"), 50)), Promise.resolve("C"));
+		const result1 = await getConcurrent(
+			Promise.resolve("A"),
+			new Promise<string>(resolve => setTimeout(() => resolve("B"), 50)),
+			Promise.resolve("C"),
+		);
 		const result2: readonly [string, string, string] = result1;
 		expect(result2).toEqual(["A", "B", "C"]);
 	});
 	test("Works correctly with successful rejection", async () => {
-		let a: string = "NOTA";
-		let c: string = "NOTC";
+		let a = "NOTA";
+		let c = "NOTC";
 		try {
 			await getConcurrent(
 				new Promise<string>(resolve =>

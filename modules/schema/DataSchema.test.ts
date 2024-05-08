@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { Validator } from "../index.js";
 import { BOOLEAN, DATA, DataSchema, Feedback, NUMBER, STRING, StringSchema, ValueFeedbacks } from "../index.js";
 

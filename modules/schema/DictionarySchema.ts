@@ -1,9 +1,9 @@
-import type { SchemaOptions } from "./Schema.js";
-import type { ImmutableDictionary } from "../util/dictionary.js";
-import type { Validator } from "../util/validate.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
+import type { ImmutableDictionary } from "../util/dictionary.js";
 import { isDictionary } from "../util/dictionary.js";
+import type { Validator } from "../util/validate.js";
 import { validateDictionary } from "../util/validate.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `DictionarySchema` */
@@ -20,7 +20,7 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	readonly items: Validator<T>;
 	readonly min: number;
 	readonly max: number;
-	constructor({ items, min = 0, max = Infinity, title = "Items", value = {}, ...options }: DictionarySchemaOptions<T>) {
+	constructor({ items, min = 0, max = Number.POSITIVE_INFINITY, title = "Items", value = {}, ...options }: DictionarySchemaOptions<T>) {
 		super({ title, value, ...options });
 		this.items = items;
 		this.min = min;

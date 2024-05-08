@@ -1,14 +1,22 @@
-import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
-import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
-import type { Update, Updates } from "../../util/update.js";
-import type { BulkWriter, CollectionReference, DocumentSnapshot, Query, QueryDocumentSnapshot, QuerySnapshot, UpdateData } from "@google-cloud/firestore";
+import type {
+	BulkWriter,
+	CollectionReference,
+	DocumentSnapshot,
+	Query,
+	QueryDocumentSnapshot,
+	QuerySnapshot,
+	UpdateData,
+} from "@google-cloud/firestore";
 import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
 import { AsyncProvider } from "../../db/Provider.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
+import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
+import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";
+import type { Update, Updates } from "../../util/update.js";
 import { getUpdates } from "../../util/update.js";
 
 // Constants.
@@ -145,7 +153,12 @@ export class FirestoreServerProvider<T extends Database> extends AsyncProvider<T
 }
 
 /** Perform a bulk update on a set of documents using a `BulkWriter` */
-async function bulkWrite<T extends Database, K extends DataKey<T>>(firestore: Firestore, c: K, q: ItemQuery<T[K]>, callback: (writer: BulkWriter, snapshot: QueryDocumentSnapshot<T[K]>) => void): Promise<void> {
+async function bulkWrite<T extends Database, K extends DataKey<T>>(
+	firestore: Firestore,
+	c: K,
+	q: ItemQuery<T[K]>,
+	callback: (writer: BulkWriter, snapshot: QueryDocumentSnapshot<T[K]>) => void,
+): Promise<void> {
 	const writer = firestore.bulkWriter();
 	const query = _getQuery(firestore, c, q).limit(BATCH_SIZE).select() as Query<T[K]>; // `select()` turs the query into a field mask query (with no field masks) which saves data transfer and memory.
 	let current: Query<T[K]> | false = query;

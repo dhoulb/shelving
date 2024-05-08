@@ -1,14 +1,14 @@
-import type { AsyncProvider, Provider } from "./Provider.js";
+import { ValueError } from "../error/ValueError.js";
+import { Feedback } from "../feedback/Feedback.js";
 import type { DataSchema, DatabaseSchemas } from "../schema/DataSchema.js";
 import type { Data, DataKey, Database } from "../util/data.js";
 import type { MutableDictionary } from "../util/dictionary.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
-import { ValueError } from "../error/ValueError.js";
-import { Feedback } from "../feedback/Feedback.js";
 import { updateData } from "../util/update.js";
 import { validateWithContext } from "../util/validate.js";
+import type { AsyncProvider, Provider } from "./Provider.js";
 import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 
 // Constants.
@@ -39,14 +39,14 @@ export class ValidationProvider<T extends Database> extends ThroughProvider<T> i
 		return super.addItem(collection, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_ADD));
 	}
 	override setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
-		return super.setItem(collection, id, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_SET));
+		super.setItem(collection, id, validateWithContext(data, this.getSchema(collection), VALIDATION_CONTEXT_SET));
 	}
 	override updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates<T[K]>): void {
 		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
-		return super.updateItem(collection, id, updates);
+		super.updateItem(collection, id, updates);
 	}
 	override deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
-		return super.deleteItem(collection, id);
+		super.deleteItem(collection, id);
 	}
 	override countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number {
 		return super.countQuery(collection, query);
@@ -55,14 +55,14 @@ export class ValidationProvider<T extends Database> extends ThroughProvider<T> i
 		return _validateItems(collection, super.getQuery(collection, query), this.getSchema(collection));
 	}
 	override setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): void {
-		return super.setQuery(collection, query, this.getSchema(collection).validate(data));
+		super.setQuery(collection, query, this.getSchema(collection).validate(data));
 	}
 	override updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): void {
 		validateWithContext(updateData<Data>({}, updates), this.getSchema(collection), VALIDATION_CONTEXT_UPDATE);
-		return super.updateQuery(collection, query, updates);
+		super.updateQuery(collection, query, updates);
 	}
 	override deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void {
-		return super.deleteQuery(collection, query);
+		super.deleteQuery(collection, query);
 	}
 	override async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
 		const schema = this.getSchema(collection);
@@ -71,7 +71,10 @@ export class ValidationProvider<T extends Database> extends ThroughProvider<T> i
 }
 
 /** Validate an asynchronous source provider (source can have any type because validation guarantees the type). */
-export class AsyncValidationProvider<T extends Database> extends AsyncThroughProvider<T> implements AsyncProvider<T>, Sourceable<AsyncProvider<T>> {
+export class AsyncValidationProvider<T extends Database>
+	extends AsyncThroughProvider<T>
+	implements AsyncProvider<T>, Sourceable<AsyncProvider<T>>
+{
 	readonly schemas: DatabaseSchemas<T>;
 	constructor(schemas: DatabaseSchemas<T>, source: AsyncProvider<T>) {
 		super(source);

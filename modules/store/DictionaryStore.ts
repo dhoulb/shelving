@@ -1,7 +1,7 @@
 import type { DictionaryItem, ImmutableDictionary } from "../util/dictionary.js";
-import type { Updates } from "../util/update.js";
 import { getDictionaryItems, omitDictionaryItems } from "../util/dictionary.js";
 import { withProp } from "../util/object.js";
+import type { Updates } from "../util/update.js";
 import { updateData } from "../util/update.js";
 import { Store } from "./Store.js";
 

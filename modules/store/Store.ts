@@ -3,7 +3,8 @@ import { NONE } from "../util/constants.js";
 import { type PossibleStarter, type Starter, getStarter } from "../util/start.js";
 
 /** Any `Store` instance. */
-export type AnyStore = Store<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: `unknown` causes edge case matching issues.
+export type AnyStore = Store<any>;
 
 /**
  * Store that retains its most recent value and is async-iterable to allow values to be observed.
@@ -49,7 +50,7 @@ export class Store<T> implements AsyncIterable<T> {
 	/** How old this store's value is (in milliseconds). */
 	get age(): number {
 		const time = this.time;
-		return typeof time === "number" ? Date.now() - time : Infinity;
+		return typeof time === "number" ? Date.now() - time : Number.POSITIVE_INFINITY;
 	}
 
 	/** Current error of this store (or `undefined` if there is no reason). */

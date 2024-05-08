@@ -1,10 +1,10 @@
-import type { SchemaOptions } from "./Schema.js";
-import type { Optional } from "../util/optional.js";
-import type { PossibleTime } from "../util/time.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
 import { roundStep } from "../util/number.js";
+import type { Optional } from "../util/optional.js";
+import type { PossibleTime } from "../util/time.js";
 import { Time, getOptionalTime } from "../util/time.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `TimeSchama` */

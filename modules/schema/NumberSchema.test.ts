@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import { Feedback, NUMBER, NumberSchema, OPTIONAL_NUMBER, Schema } from "../index.js";
 
 // Tests.
@@ -40,8 +41,8 @@ describe("validate()", () => {
 		expect(Object.is(schema.validate(-0), -0)).toBe(false);
 	});
 	test("Infinity returns invalid", () => {
-		expect(() => schema.validate(Infinity)).toThrow(Feedback);
-		expect(() => schema.validate(-Infinity)).toThrow(Feedback);
+		expect(() => schema.validate(Number.POSITIVE_INFINITY)).toThrow(Feedback);
+		expect(() => schema.validate(Number.NEGATIVE_INFINITY)).toThrow(Feedback);
 	});
 	test("Non-number strings are invalid", () => {
 		expect(() => schema.validate("abc")).toThrow(Feedback);
@@ -69,7 +70,7 @@ describe("options.value", () => {
 describe("options.min", () => {
 	test("Defaults to -Infinity", () => {
 		const schema = new NumberSchema({});
-		expect(schema.min).toBe(-Infinity);
+		expect(schema.min).toBe(Number.NEGATIVE_INFINITY);
 	});
 	test("Min is checked correctly", () => {
 		const schema = new NumberSchema({ min: 100 });
@@ -81,7 +82,7 @@ describe("options.min", () => {
 describe("options.max", () => {
 	test("Defaults to Infinity", () => {
 		const schema = new NumberSchema({});
-		expect(schema.max).toBe(Infinity);
+		expect(schema.max).toBe(Number.POSITIVE_INFINITY);
 	});
 	test("Max is checked correctly", () => {
 		const schema = new NumberSchema({ max: 100 });

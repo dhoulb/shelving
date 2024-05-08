@@ -19,6 +19,6 @@
 		"target": "es2022",
 		"noEmit": true
 	},
-	"include": ["./**/*.ts", "./**/*.cjs", "./**/*.mjs", "./**/*.json"],
+	"include": ["./modules/**/*", "./**/*.json"],
 	"exclude": ["node_modules", "dist"]
 }

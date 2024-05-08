@@ -17,7 +17,9 @@ export class Color {
 	static from(possible: unknown): Color | undefined {
 		if (isColor(possible)) return possible;
 		if (typeof possible === "string") {
-			const matches = (possible.match(HEX3_REGEXP) || possible.match(HEX6_REGEXP)) as [never, string, string, string, string | undefined] | undefined;
+			const matches = (possible.match(HEX3_REGEXP) || possible.match(HEX6_REGEXP)) as
+				| [never, string, string, string, string | undefined]
+				| undefined;
 			if (matches) {
 				const [, r, g, b, a] = matches;
 				return new Color(_parse(r), _parse(g), _parse(b), typeof a === "string" ? _parse(a) : undefined);
@@ -73,7 +75,7 @@ export class Color {
 }
 
 function _parse(hex: string) {
-	return parseInt(hex.padStart(2, "00"), 16);
+	return Number.parseInt(hex.padStart(2, "00"), 16);
 }
 
 function _hex(channel: number) {

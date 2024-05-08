@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import { SAME, deepDiff, deepDiffArray, deepDiffObject } from "../index.js";
 
 const arrFlat = [1, "b", true, false, null];

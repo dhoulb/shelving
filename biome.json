@@ -1,0 +1,72 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"files": {
+		"ignore": ["node_modules", "dist", ".git", "package-lock.json"]
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"formatter": {
+		"formatWithErrors": true,
+		"lineWidth": 140
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"correctness": {
+				"noUndeclaredVariables": "error",
+				"noUnusedImports": "error",
+				"useHookAtTopLevel": "error"
+			},
+			"style": {
+				"noNamespace": "error",
+				"noNamespaceImport": "error",
+				"noShoutyConstants": "error",
+				"useCollapsedElseIf": "error",
+				"useForOf": "error",
+				"useShorthandAssign": "error"
+			},
+			"suspicious": {
+				"noConsoleLog": "error",
+				"noEmptyBlockStatements": "error",
+				"noSkippedTests": "error",
+				"useAwait": "error"
+			},
+			"nursery": {
+				"noDuplicateJsonKeys": "error",
+				"noCssEmptyBlock": "error",
+				"noUnknownFunction": "error",
+				"noUnknownUnit": "error",
+				"useConsistentBuiltinInstantiation": "error",
+				"noConstantMathMinMaxClamp": "error",
+				"useGenericFontNames": "error"
+			}
+		}
+	},
+	"javascript": {
+		"globals": [],
+		"formatter": {
+			"arrowParentheses": "asNeeded"
+		}
+	},
+	"overrides": [
+		{
+			"include": ["*.test.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noNonNullAssertion": "off"
+					},
+					"suspicious": {
+						"noEmptyBlockStatements": "off",
+						"noExplicitAny": "off"
+					}
+				}
+			},
+			"javascript": {
+				"globals": ["test", "describe", "expect"]
+			}
+		}
+	]
+}

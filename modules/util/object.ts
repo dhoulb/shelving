@@ -1,5 +1,5 @@
-import type { ImmutableArray } from "./array.js";
 import { ValueError } from "../error/ValueError.js";
+import type { ImmutableArray } from "./array.js";
 import { isIterable } from "./iterate.js";
 
 /** Any readonly object. */
@@ -41,7 +41,7 @@ export function isPlainObject(value: unknown): value is ImmutableObject {
 
 /** Assert that an unknown value is a plain object */
 export function assertPlainObject(value: unknown): asserts value is ImmutableObject {
-	if (!isPlainObject(value)) throw new ValueError(`Must be plain object`, value);
+	if (!isPlainObject(value)) throw new ValueError("Must be plain object", value);
 }
 
 /** Is an unknown value the key for an own prop of an object. */
@@ -95,7 +95,9 @@ export type OmitProps<T, TT> = Omit<T, { [K in keyof T]: T[K] extends TT ? K : n
 export function getProps<T>(obj: T): ImmutableArray<Prop<T>>;
 export function getProps<T>(obj: T | Partial<T>): ImmutableArray<Prop<T>>;
 export function getProps<T>(obj: T | Partial<T> | Iterable<Prop<T>>): Iterable<Prop<T>>;
-export function getProps(obj: ImmutableObject | Partial<ImmutableObject> | Iterable<Prop<ImmutableObject>>): Iterable<Prop<ImmutableObject>> {
+export function getProps(
+	obj: ImmutableObject | Partial<ImmutableObject> | Iterable<Prop<ImmutableObject>>,
+): Iterable<Prop<ImmutableObject>> {
 	return isIterable(obj) ? obj : Object.entries(obj);
 }
 
@@ -172,7 +174,7 @@ export function deleteProps<T extends MutableObject>(obj: T, ...keys: Key<T>[]):
  * - Use `Object` otherwise.
  */
 export function formatObject(obj: ImmutableObject): string {
-	if (typeof obj.toString === "function" && obj.toString !== Object.prototype.toString) return obj.toString(); // eslint-disable-line @typescript-eslint/no-base-to-string
+	if (typeof obj.toString === "function" && obj.toString !== Object.prototype.toString) return obj.toString();
 	const name = obj.name;
 	if (typeof name === "string") return name;
 	const title = obj.title;

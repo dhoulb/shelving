@@ -1,21 +1,21 @@
+import { expect } from "@jest/globals";
 import type { Data } from "../util/data.js";
 import type { AnyFunction } from "../util/function.js";
 import type { Item } from "../util/item.js";
-import type { NotString } from "../util/string.js";
-import { expect } from "@jest/globals";
 import { getItemIDs } from "../util/item.js";
-
-/** Match any `Promiselike` object. */
-export const PromiseLike = expect.objectContaining({
-	then: expect.any(Function),
-});
+import type { NotString } from "../util/string.js";
 
 /** Expect the thing to throw a `PromiseLike` object. */
 export function expectToThrowPromiseLike(func: AnyFunction) {
 	try {
 		func();
 	} catch (thrown) {
-		expect(thrown).toMatchObject(PromiseLike);
+		expect(thrown).toMatchObject(
+			expect.objectContaining({
+				// biome-ignore lint/suspicious/noThenProperty: On purpose.
+				then: expect.any(Function),
+			}),
+		);
 		return;
 	}
 	throw popErrorStack(new Error("Expected to throw but did not"));

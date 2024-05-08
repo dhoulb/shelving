@@ -1,11 +1,11 @@
 import type { ImmutableArray } from "./array.js";
-import type { Data, DataProp, LeafData, LeafKey } from "./data.js";
-import type { Match } from "./filter.js";
-import type { Mutable } from "./object.js";
 import { getLastItem, isArray, limitArray } from "./array.js";
+import type { Data, DataProp, LeafData, LeafKey } from "./data.js";
 import { getDataProp } from "./data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";
+import type { Match } from "./filter.js";
 import { limitItems } from "./iterate.js";
+import type { Mutable } from "./object.js";
 import { getProps } from "./object.js";
 import { compareAscending, compareDescending, sortArray } from "./sort.js";
 import { isDefined } from "./undefined.js";
@@ -61,13 +61,14 @@ export function getFilters<T extends Data>(query: Query<T>): ImmutableArray<Filt
 }
 function _getFilters([key, value]: DataProp<Data>): Filter | undefined {
 	if (key !== "$order" && key !== "$limit" && value !== undefined) {
-		if (key.startsWith("!")) return isArray(value) ? { key: key.slice(1), operator: "out", value } : { key: key.slice(1), operator: "not", value };
-		else if (key.endsWith("[]")) return { key: key.slice(0, -2), operator: "contains", value };
-		else if (key.endsWith(">")) return { key: key.slice(0, -1), operator: "gt", value };
-		else if (key.endsWith(">=")) return { key: key.slice(0, -2), operator: "gte", value };
-		else if (key.endsWith("<")) return { key: key.slice(0, -1), operator: "lt", value };
-		else if (key.endsWith("<=")) return { key: key.slice(0, -2), operator: "lte", value };
-		else return isArray(value) ? { key, operator: "in", value } : { key: key, operator: "is", value };
+		if (key.startsWith("!"))
+			return isArray(value) ? { key: key.slice(1), operator: "out", value } : { key: key.slice(1), operator: "not", value };
+		if (key.endsWith("[]")) return { key: key.slice(0, -2), operator: "contains", value };
+		if (key.endsWith(">")) return { key: key.slice(0, -1), operator: "gt", value };
+		if (key.endsWith(">=")) return { key: key.slice(0, -2), operator: "gte", value };
+		if (key.endsWith("<")) return { key: key.slice(0, -1), operator: "lt", value };
+		if (key.endsWith("<=")) return { key: key.slice(0, -2), operator: "lte", value };
+		return isArray(value) ? { key, operator: "in", value } : { key: key, operator: "is", value };
 	}
 }
 
@@ -77,7 +78,7 @@ export function getOrders<T extends Data>({ $order }: Query<T>): ImmutableArray<
 }
 function _getOrder(key: string): Order {
 	if (key.startsWith("!")) return { key: key.slice(1), direction: "desc" };
-	else return { key, direction: "asc" };
+	return { key, direction: "asc" };
 }
 
 /** Get the limit for a query. */

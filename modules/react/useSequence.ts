@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { BLACKHOLE } from "../util/function.js";
 import { runSequence } from "../util/sequence.js";
 
 /**
@@ -12,7 +11,9 @@ import { runSequence } from "../util/sequence.js";
 export function useSequence<T>(sequence?: AsyncIterable<T>): T | undefined {
 	const [value, setValue] = useState<T | undefined>(undefined);
 	const [error, setError] = useState<unknown>(undefined);
-	useEffect(sequence ? () => runSequence(sequence, setValue, setError) : BLACKHOLE, [sequence]);
+	useEffect(() => {
+		if (sequence) runSequence(sequence, setValue, setError);
+	}, [sequence]);
 	if (error) throw error;
 	return value;
 }

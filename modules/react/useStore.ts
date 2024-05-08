@@ -1,8 +1,8 @@
-import type { AnyStore, Store } from "../store/Store.js";
-import type { Optional } from "../util/optional.js";
 import { useCallback, useSyncExternalStore } from "react";
+import type { AnyStore, Store } from "../store/Store.js";
 import { NONE } from "../util/constants.js";
 import { BLACKHOLE } from "../util/function.js";
+import type { Optional } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
 
 /** Subscribe to a Shelving `Store` instance to refresh this component when its value changes. */

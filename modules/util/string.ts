@@ -1,7 +1,5 @@
-/* eslint-disable no-control-regex */
-
-import type { ImmutableArray } from "./array.js";
 import { ValueError } from "../error/ValueError.js";
+import type { ImmutableArray } from "./array.js";
 import { getArray, isArray } from "./array.js";
 import { formatDate, isDate } from "./date.js";
 import { formatNumber, formatRange, isBetween } from "./number.js";
@@ -22,7 +20,7 @@ export function isString(value: unknown): value is string {
 
 /** Assert that a value is a string. */
 export function assertString(value: unknown): asserts value is string {
-	if (typeof value !== "string") throw new ValueError(`Must be string`, value);
+	if (typeof value !== "string") throw new ValueError("Must be string", value);
 }
 
 /**
@@ -52,17 +50,17 @@ export function getString(value: unknown): string {
 }
 
 /** Does a string have the specified minimum length.  */
-export function isStringLength(str: string, min = 1, max = Infinity): boolean {
+export function isStringLength(str: string, min = 1, max = Number.POSITIVE_INFINITY): boolean {
 	return str.length >= min && str.length <= max;
 }
 
 /** Assert that a value has a specific length (or length is in a specific range). */
-export function assertStringLength(str: unknown, min = 1, max = Infinity): asserts str is string {
+export function assertStringLength(str: unknown, min = 1, max = Number.POSITIVE_INFINITY): asserts str is string {
 	if (!isString(str) || !isStringLength(str, min, max)) throw new ValueError(`Must be string with length ${formatRange(min, max)}`, str);
 }
 
 /** Get a string if it has the specified minimum length.  */
-export function getStringLength(str: string, min = 1, max = Infinity): string {
+export function getStringLength(str: string, min = 1, max = Number.POSITIVE_INFINITY): string {
 	assertStringLength(str, min, max);
 	return str;
 }
@@ -224,9 +222,10 @@ export function splitString(str: string, separator: string, min: 2, max?: number
 export function splitString(str: string, separator: string, min: 3, max?: number): readonly [string, string, string, ...string[]];
 export function splitString(str: string, separator: string, min: 4, max?: number): readonly [string, string, string, string, ...string[]];
 export function splitString(str: string, separator: string, min?: number, max?: number): ImmutableArray<string>;
-export function splitString(str: string, separator: string, min = 1, max = Infinity): ImmutableArray<string> {
+export function splitString(str: string, separator: string, min = 1, max = Number.POSITIVE_INFINITY): ImmutableArray<string> {
 	const segments = str.split(separator);
 	if (segments.length > max) segments.splice(max - 1, segments.length, segments.slice(max - 1).join(separator));
-	if (segments.length < min || !segments.every(Boolean)) throw new ValueError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, str);
+	if (segments.length < min || !segments.every(Boolean))
+		throw new ValueError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, str);
 	return segments;
 }

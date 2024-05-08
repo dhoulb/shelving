@@ -1,7 +1,7 @@
 import type { ImmutableArray } from "./array.js";
-import type { DeepPartial, ImmutableObject, MutableObject } from "./object.js";
 import { isArray } from "./array.js";
 import { isArrayEqual, isDeepEqual } from "./equal.js";
+import type { DeepPartial, ImmutableObject, MutableObject } from "./object.js";
 import { isObject } from "./object.js";
 
 /** The `SAME` symbol indicates sameness. */
@@ -20,7 +20,7 @@ export const SAME: unique symbol = Symbol("shelving/SAME");
  * - If `right` is an object, returns whatever `deepDiffObject()` returns.
  */
 export function deepDiff<R extends ImmutableObject>(left: unknown, right: R): R | DeepPartial<R> | typeof SAME;
-export function deepDiff<R extends unknown>(left: unknown, right: R): R | typeof SAME;
+export function deepDiff<R>(left: unknown, right: R): R | typeof SAME;
 export function deepDiff(left: unknown, right: unknown): unknown {
 	if (left === right) return SAME;
 	if (isArray(right)) return isArray(left) ? deepDiffArray(left, right) : right;

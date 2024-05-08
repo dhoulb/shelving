@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { Schema } from "../index.js";
 import { Feedback, REQUIRED_STRING, STRING, StringSchema } from "../index.js";
 

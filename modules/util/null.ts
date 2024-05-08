@@ -35,10 +35,10 @@ export function getNotNull<T>(value: Nullable<T>): T {
 }
 
 /** Nullish is the value or `null` or `undefined` */
-export type Nullish<T> = T | null | undefined | void;
+export type Nullish<T> = T | null | undefined;
 
 /** Is a value nullish? */
-export function isNullish<T>(value: Nullish<T>): value is null | undefined | void {
+export function isNullish<T>(value: Nullish<T>): value is null | undefined {
 	return value === null || value === undefined;
 }
 

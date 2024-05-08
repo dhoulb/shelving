@@ -1,9 +1,9 @@
-import type { MarkupOptions } from "./options.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { JSXElement } from "../util/jsx.js";
-import type { NamedRegExp, NamedRegExpData, TypedRegExp, TypedRegExpExecArray } from "../util/regexp.js";
 import { getOptionalLink } from "../util/link.js";
+import type { NamedRegExp, NamedRegExpData, TypedRegExp, TypedRegExpExecArray } from "../util/regexp.js";
 import { formatURL } from "../util/url.js";
+import type { MarkupOptions } from "./options.js";
 
 export type MarkupElement = {
 	/** String index where this element was matched in the input string. */
@@ -57,7 +57,7 @@ export class RegExpMarkupRule<T extends string = string> implements MarkupRule {
 
 export class NamedRegExpMarkupRule<T extends NamedRegExpData> implements MarkupRule {
 	constructor(
-		readonly regexp: NamedRegExp<T>, //
+		readonly regexp: NamedRegExp<T>,
 		readonly render: (data: T, options: MarkupOptions) => JSXElement,
 		readonly contexts: ImmutableArray<string>,
 		readonly priority?: number,

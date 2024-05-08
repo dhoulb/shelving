@@ -1,6 +1,6 @@
 import type { ImmutableArray } from "./array.js";
+import type { Data } from "./data.js";
 import type { Query } from "./query.js";
-import { type Data } from "./data.js";
 
 /** Item data with a string ID that uniquely identifies it. */
 export type Item<T extends Data = Data> = T & { id: string };

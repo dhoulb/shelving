@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { Schema } from "../index.js";
 import { DATE, DateSchema, Feedback, OPTIONAL_DATE, getYMD } from "../index.js";
 
@@ -51,8 +52,8 @@ describe("validate()", () => {
 		expect(schema.validate(1530586357000)).toEqual("2018-07-03");
 	});
 	test("Infinite numbers are invalid", () => {
-		expect(() => schema.validate(Infinity)).toThrow(Feedback);
-		expect(() => schema.validate(-Infinity)).toThrow(Feedback);
+		expect(() => schema.validate(Number.POSITIVE_INFINITY)).toThrow(Feedback);
+		expect(() => schema.validate(Number.NEGATIVE_INFINITY)).toThrow(Feedback);
 	});
 	test("Invalid values are invalid", () => {
 		expect(() => schema.validate(true)).toThrow(Feedback);

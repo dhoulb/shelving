@@ -1,5 +1,5 @@
-import type { StringSchemaOptions } from "./StringSchema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 // Valid phone number is max 16 digits made up of:

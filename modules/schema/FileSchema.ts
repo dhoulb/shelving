@@ -1,5 +1,5 @@
-import type { FileTypes } from "../util/file.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
+import type { FileTypes } from "../util/file.js";
 import { getOptionalFileExtension } from "../util/file.js";
 import { isProp } from "../util/object.js";
 import { OPTIONAL } from "./OptionalSchema.js";

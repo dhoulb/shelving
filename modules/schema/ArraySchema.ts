@@ -1,9 +1,9 @@
-import type { SchemaOptions } from "./Schema.js";
-import type { ImmutableArray } from "../util/array.js";
-import type { Validator } from "../util/validate.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
+import type { ImmutableArray } from "../util/array.js";
 import { getUniqueArray, isArray } from "../util/array.js";
+import type { Validator } from "../util/validate.js";
 import { validateArray } from "../util/validate.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `ArraySchema` */
@@ -48,7 +48,15 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	readonly unique: boolean;
 	readonly min: number;
 	readonly max: number;
-	constructor({ items, unique = false, min = 0, max = Infinity, title = "Items", value = [], ...options }: ArraySchemaOptions<T>) {
+	constructor({
+		items,
+		unique = false,
+		min = 0,
+		max = Number.POSITIVE_INFINITY,
+		title = "Items",
+		value = [],
+		...options
+	}: ArraySchemaOptions<T>) {
 		super({ title, value, ...options });
 		this.items = items;
 		this.unique = unique;

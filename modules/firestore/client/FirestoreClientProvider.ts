@@ -1,14 +1,43 @@
-import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
-import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
-import type { Update, Updates } from "../../util/update.js";
-import type { CollectionReference, DocumentReference, DocumentSnapshot, Firestore, Query, QueryConstraint, QueryDocumentSnapshot, QuerySnapshot, UpdateData } from "firebase/firestore";
-import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, documentId, getCountFromServer, getDoc, getDocs, increment, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
+import type {
+	CollectionReference,
+	DocumentReference,
+	DocumentSnapshot,
+	Firestore,
+	Query,
+	QueryConstraint,
+	QueryDocumentSnapshot,
+	QuerySnapshot,
+	UpdateData,
+} from "firebase/firestore";
+import {
+	addDoc,
+	arrayRemove,
+	arrayUnion,
+	collection,
+	deleteDoc,
+	doc,
+	documentId,
+	getCountFromServer,
+	getDoc,
+	getDocs,
+	increment,
+	limit,
+	onSnapshot,
+	orderBy,
+	query,
+	setDoc,
+	updateDoc,
+	where,
+} from "firebase/firestore";
 import { AsyncProvider } from "../../db/Provider.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
+import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
+import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";
+import type { Update, Updates } from "../../util/update.js";
 import { getUpdates } from "../../util/update.js";
 
 // Constants.
@@ -29,7 +58,9 @@ const OPERATORS = {
 
 /** Get a Firestore QueryReference for a given query. */
 function _getQuery<T extends Database, K extends DataKey<T>>(firestore: Firestore, c: K, q?: ItemQuery<T[K]>): Query<T[K]> {
-	return q ? (query(collection(firestore, c), ..._getConstraints(q)) as Query<T[K]>) : (collection(firestore, c) as CollectionReference<T[K]>);
+	return q
+		? (query(collection(firestore, c), ..._getConstraints(q)) as Query<T[K]>)
+		: (collection(firestore, c) as CollectionReference<T[K]>);
 }
 function* _getConstraints(q: ItemQuery): Iterable<QueryConstraint> {
 	for (const { key, direction } of getOrders(q)) yield orderBy(key === "id" ? ID : key, direction);

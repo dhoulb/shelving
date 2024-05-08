@@ -1,13 +1,13 @@
-import type { MemoryProvider } from "./MemoryProvider.js";
-import type { AbstractProvider } from "./Provider.js";
-import type { DataKey, Database } from "../util/data.js";
-import type { Item, ItemQuery } from "../util/item.js";
-import type { Stop } from "../util/start.js";
 import { ArrayStore } from "../store/ArrayStore.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { NONE } from "../util/constants.js";
+import type { DataKey, Database } from "../util/data.js";
+import type { Item, ItemQuery } from "../util/item.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { runSequence } from "../util/sequence.js";
+import type { Stop } from "../util/start.js";
+import type { MemoryProvider } from "./MemoryProvider.js";
+import type { AbstractProvider } from "./Provider.js";
 
 /** Store a set of multiple items. */
 export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayStore<Item<T[K]>> {
@@ -31,7 +31,7 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 		this.provider = provider;
 		this.collection = collection;
 		this.query = query;
-		this.limit = getLimit(query) ?? Infinity;
+		this.limit = getLimit(query) ?? Number.POSITIVE_INFINITY;
 
 		// Start loading the value from the provider if it is not definitely cached.
 		if (typeof time !== "number") this.refresh();

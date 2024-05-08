@@ -1,4 +1,15 @@
-import { filterArray, getAllRegExp, getAnyRegExp, getMatch, getMatchGroups, getOptionalMatch, getOptionalMatchGroups, isMatch, notMatch } from "../index.js";
+import { expect, test } from "@jest/globals";
+import {
+	filterArray,
+	getAllRegExp,
+	getAnyRegExp,
+	getMatch,
+	getMatchGroups,
+	getOptionalMatch,
+	getOptionalMatchGroups,
+	isMatch,
+	notMatch,
+} from "../index.js";
 
 test("getAllRegExp()", () => {
 	// No pattern (always true).

@@ -1,9 +1,9 @@
-import type { MarkupOptions } from "./options.js";
-import type { MarkupRules } from "./rule.js";
 import type { JSXElement } from "../util/jsx.js";
 import type { NamedRegExp } from "../util/regexp.js";
 import { getRegExp } from "../util/regexp.js";
+import type { MarkupOptions } from "./options.js";
 import { BLOCK_REGEXP, LINE_REGEXP, getBlockRegExp, getLineRegExp, getWordRegExp } from "./regexp.js";
+import type { MarkupRules } from "./rule.js";
 import { LinkRegExpMarkupRule, NamedRegExpMarkupRule, RegExpMarkupRule } from "./rule.js";
 
 /** React security symbol — see https://github.com/facebook/react/pull/4832 */
@@ -103,7 +103,7 @@ const _mapOrdered = (item: string, key: number): JSXElement => ({
 	ref: null,
 	$$typeof,
 	props: {
-		value: parseInt(item, 10),
+		value: Number.parseInt(item, 10),
 		children: item
 			.slice(item.indexOf(" ") + 1)
 			.trim()
@@ -141,7 +141,10 @@ export const BLOCKQUOTE_RULE = new NamedRegExpMarkupRule<{ quote: string }>(
  */
 export const FENCED_CODE_RULE = new NamedRegExpMarkupRule<{ wrap: string; title?: string; code: string }>(
 	// Matcher has its own end that only stops when it reaches a matching closing fence or the end of the string.
-	getLineRegExp(`(?<wrap>\`{3,}|~{3,}) *(?<title>${LINE_REGEXP.source})\n(?<code>${BLOCK_REGEXP.source})`, `(?:\n\\k<wrap>|$)`) as NamedRegExp<{ wrap: string; title?: string; code: string }>,
+	getLineRegExp(
+		`(?<wrap>\`{3,}|~{3,}) *(?<title>${LINE_REGEXP.source})\n(?<code>${BLOCK_REGEXP.source})`,
+		"(?:\n\\k<wrap>|$)",
+	) as NamedRegExp<{ wrap: string; title?: string; code: string }>,
 	({ title, code }) => ({
 		type: "pre",
 		key: null,
@@ -168,7 +171,7 @@ export const FENCED_CODE_RULE = new NamedRegExpMarkupRule<{ wrap: string; title?
 export const PARAGRAPH_RULE = new NamedRegExpMarkupRule<{ paragraph: string }>(
 	getBlockRegExp(`(?<paragraph>${BLOCK_REGEXP.source})`),
 	({ paragraph }) => ({
-		type: `p`,
+		type: "p",
 		key: null,
 		ref: null,
 		$$typeof,
@@ -251,9 +254,11 @@ export const CODE_RULE = new NamedRegExpMarkupRule(
  * - Closing characters must exactly match opening characters.
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
-const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", "_": "em", "=": "mark", ":": "mark" }; // Hyphen must be first so it works when we use the keys as a character class.
+const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", _: "em", "=": "mark", ":": "mark" }; // Hyphen must be first so it works when we use the keys as a character class.
 export const INLINE_RULE = new NamedRegExpMarkupRule(
-	getWordRegExp(`(?<wrap>(?<char>[${Object.keys(INLINE_CHARS).join("")}])+)(?<text>(?!\\k<char>)\\S(?:[\\s\\S]*?(?!\\k<char>)\\S)?)\\k<wrap>`) as NamedRegExp<{ char: keyof typeof INLINE_CHARS; text: string }>, // prettier-ignore
+	getWordRegExp(
+		`(?<wrap>(?<char>[${Object.keys(INLINE_CHARS).join("")}])+)(?<text>(?!\\k<char>)\\S(?:[\\s\\S]*?(?!\\k<char>)\\S)?)\\k<wrap>`,
+	) as NamedRegExp<{ char: keyof typeof INLINE_CHARS; text: string }>, // prettier-ignore
 	({ char, text }) => ({
 		type: INLINE_CHARS[char],
 		key: null,

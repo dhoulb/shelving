@@ -1,16 +1,17 @@
-import type { Arguments } from "./function.js";
 import { ValueError } from "../error/ValueError.js";
 import { debug } from "./debug.js";
+import type { Arguments } from "./function.js";
 
 /** Class that has a public `constructor()` function. */
 export type Constructor<T, A extends Arguments> = new (...args: A) => T;
 
 /** Any function arguments (designed for use with `extends Arguments` guards). */
-// Note: `any` works better than `any[]` for `args`
-export type AnyConstructor = new (...args: any) => any; // eslint-disable-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: `unknown` causes edge case matching issues.
+export type AnyConstructor = new (...args: any) => any;
 
 /** Class prototype that can be used with `instanceof`. */
-export type Class<T> = new (...args: any) => T; // eslint-disable-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: `unknown` causes edge case matching issues.
+export type Class<T> = new (...args: any) => T;
 
 /** Is a given value a class constructor? */
 export function isConstructor(value: unknown): value is AnyConstructor {

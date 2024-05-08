@@ -1,14 +1,15 @@
-import type { Arguments } from "../util/function.js";
-import { useRef } from "react";
+import { type RefCallback, useRef } from "react";
 import { isArrayEqual } from "../util/equal.js";
+import type { Arguments } from "../util/function.js";
 import { type Start, Starter } from "../util/start.js";
 
-export function useMount<T extends Element, A extends Arguments = []>(start: Start<[T, ...A]>, ...args: A): React.RefCallback<T> {
+export function useMount<T extends Element, A extends Arguments = []>(start: Start<[T, ...A]>, ...args: A): RefCallback<T> {
+	// biome-ignore lint/suspicious/noAssignInExpressions: This is the most efficient way to do this.
 	const internals = (useRef<{
 		args: A;
 		current: T | null;
 		readonly starter: Starter<[T, ...A]>;
-		readonly ref: React.RefCallback<T>;
+		readonly ref: RefCallback<T>;
 	}>().current ||= {
 		args,
 		current: null,

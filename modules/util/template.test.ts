@@ -1,5 +1,4 @@
-/* eslint-disable no-template-curly-in-string */
-
+import { describe, expect, test } from "@jest/globals";
 import { ValueError, getPlaceholders, matchTemplate, matchTemplates, renderTemplate } from "../index.js";
 
 // Tests.

@@ -1,9 +1,9 @@
 import type { ImmutableArray } from "./array.js";
+import { isArray } from "./array.js";
+import { isIterable } from "./iterate.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableObject } from "./object.js";
 import type { ImmutableSet } from "./set.js";
-import { isArray } from "./array.js";
-import { isIterable } from "./iterate.js";
 import { isSet } from "./set.js";
 
 /**
@@ -43,10 +43,16 @@ export function* getEntryValues<K, T>(input: Iterable<Entry<K, T>>): Iterable<T>
 }
 
 /** Yield the entries in something that can yield entries. */
-export function getEntries<K extends string, T = K>(...input: (ImmutableSet<K & T> | Partial<ImmutableObject<K, T>> | Iterable<Entry<K, T>>)[]): Iterable<Entry<K, T>>;
-export function getEntries<K extends number, T = K>(...input: (ImmutableArray<T> | ImmutableSet<K & T> | Iterable<Entry<K, T>>)[]): Iterable<Entry<K, T>>;
+export function getEntries<K extends string, T = K>(
+	...input: (ImmutableSet<K & T> | Partial<ImmutableObject<K, T>> | Iterable<Entry<K, T>>)[]
+): Iterable<Entry<K, T>>;
+export function getEntries<K extends number, T = K>(
+	...input: (ImmutableArray<T> | ImmutableSet<K & T> | Iterable<Entry<K, T>>)[]
+): Iterable<Entry<K, T>>;
 export function getEntries<K, T = K>(...input: (ImmutableSet<K & T> | Iterable<Entry<K, T>>)[]): Iterable<Entry<K, T>>;
-export function* getEntries(...input: (ImmutableArray | ImmutableSet | ImmutableObject | ImmutableMap | Iterable<Entry>)[]): Iterable<Entry> {
+export function* getEntries(
+	...input: (ImmutableArray | ImmutableSet | ImmutableObject | ImmutableMap | Iterable<Entry>)[]
+): Iterable<Entry> {
 	for (const entries of input) {
 		if (isArray(entries) || isSet(entries)) yield* entries.entries();
 		else if (isIterable(entries)) yield* entries;

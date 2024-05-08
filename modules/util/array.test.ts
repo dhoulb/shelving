@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import {
 	ValueError,
 	addArrayItem,
@@ -65,7 +66,17 @@ test("filterArray()", () => {
 	expect(filterArray(["a", "b", "c"], isEqualGreater, "b")).toEqual(["b", "c"]);
 	expect(filterArray(["a", "b", "c"], isEqualLess, "b")).toEqual(["a", "b"]);
 	expect(filterArray(["a", "b", "c"], isLess, "b")).toEqual(["a"]);
-	expect(filterArray([[1, 2, 3],  [4, 5, 6],  [6, 7, 8]], isArrayWith, 5)).toEqual([[4, 5, 6]]); // prettier-ignore
+	expect(
+		filterArray(
+			[
+				[1, 2, 3],
+				[4, 5, 6],
+				[6, 7, 8],
+			],
+			isArrayWith,
+			5,
+		),
+	).toEqual([[4, 5, 6]]); // prettier-ignore
 });
 test("addArrayItem()", () => {
 	const arr = [1, 2, 3];

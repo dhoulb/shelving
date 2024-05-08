@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import { Feedback, TIME, TimeSchema } from "../index.js";
 
 test("constructor()", () => {

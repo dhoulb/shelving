@@ -1,6 +1,14 @@
 import type { ImmutableArray } from "../util/array.js";
+import {
+	getFirstItem,
+	getLastItem,
+	getOptionalFirstItem,
+	getOptionalLastItem,
+	omitArrayItems,
+	toggleArrayItems,
+	withArrayItems,
+} from "../util/array.js";
 import type { NONE } from "../util/constants.js";
-import { getFirstItem, getLastItem, getOptionalFirstItem, getOptionalLastItem, omitArrayItems, toggleArrayItems, withArrayItems } from "../util/array.js";
 import { Store } from "./Store.js";
 
 /** Store an array. */

@@ -1,11 +1,12 @@
-import type { AbstractProvider } from "../db/Provider.js";
-import type { DataKey, Database } from "../util/data.js";
-import type { ItemQuery } from "../util/item.js";
-import type { Optional } from "../util/optional.js";
+import type { ReactElement, ReactNode } from "react";
 import { CacheProvider } from "../db/CacheProvider.js";
 import { ItemStore } from "../db/ItemStore.js";
+import type { AbstractProvider } from "../db/Provider.js";
 import { QueryStore } from "../db/QueryStore.js";
+import type { DataKey, Database } from "../util/data.js";
+import type { ItemQuery } from "../util/item.js";
 import { setMapItem } from "../util/map.js";
+import type { Optional } from "../util/optional.js";
 import { getOptionalSource } from "../util/source.js";
 import { createCacheContext } from "./createCacheContext.js";
 import { useStore } from "./useStore.js";
@@ -17,14 +18,15 @@ export interface DataContext<T extends Database> {
 	/** Get an `QueryStore` for the specified collection query in the current `DataProvider` context and subscribe to any changes in it. */
 	useQuery<K extends DataKey<T>>(this: void, collection: K, query: ItemQuery<T[K]>): QueryStore<T, K>;
 	useQuery<K extends DataKey<T>>(this: void, collection: Optional<K>, query: Optional<ItemQuery<T[K]>>): QueryStore<T, K> | undefined;
-	readonly DataContext: ({ children }: { children: React.ReactNode }) => React.ReactElement;
+	readonly DataContext: ({ children }: { children: ReactNode }) => ReactElement;
 }
 
 /**
  * Create a data context that can be provided to React elements and allows them to call `useItem()` and `useQuery()`
  */
 export function createDataContext<T extends Database>(provider: AbstractProvider<T>): DataContext<T> {
-	const { CacheContext, useCache } = createCacheContext<ItemStore<T, any> | QueryStore<T, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: The outer function enforces the type.
+	const { CacheContext, useCache } = createCacheContext<ItemStore<T, any> | QueryStore<T, any>>();
 
 	// If this provider is backed by an in-memory cache, pass it to the `ItemStore` and `QueryStore` instances we create.
 	const memory = getOptionalSource<CacheProvider<T>>(CacheProvider, provider)?.memory;

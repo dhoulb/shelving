@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import { compareAscending, compareDescending, sortArray } from "../index.js";
 
 describe("ASC & DESC", () => {
@@ -25,29 +26,29 @@ describe("ASC & DESC", () => {
 		expect(compareAscending(true, true)).toBe(0);
 		expect(compareAscending(true, false)).toBe(-1);
 		expect(compareAscending(true, null)).toBe(-1);
-		expect(compareAscending(true, NaN)).toBe(-1);
+		expect(compareAscending(true, Number.NaN)).toBe(-1);
 		// False.
 		expect(compareAscending(false, true)).toBe(1);
 		expect(compareAscending(false, false)).toBe(0);
 		expect(compareAscending(false, null)).toBe(-1);
-		expect(compareAscending(false, NaN)).toBe(-1);
+		expect(compareAscending(false, Number.NaN)).toBe(-1);
 		// Null.
 		expect(compareAscending(null, false)).toBe(1);
 		expect(compareAscending(null, null)).toBe(0);
 		expect(compareAscending(null, {})).toBe(-1);
-		expect(compareAscending(null, NaN)).toBe(-1);
+		expect(compareAscending(null, Number.NaN)).toBe(-1);
 		expect(compareAscending(null, Symbol())).toBe(-1);
 		// Anything else.
-		expect(compareAscending(NaN, null)).toBe(1);
-		expect(compareAscending(NaN, NaN)).toBe(0);
-		expect(compareAscending(NaN, undefined)).toBe(-1);
+		expect(compareAscending(Number.NaN, null)).toBe(1);
+		expect(compareAscending(Number.NaN, Number.NaN)).toBe(0);
+		expect(compareAscending(Number.NaN, undefined)).toBe(-1);
 		expect(compareAscending(Symbol(), null)).toBe(1);
 		expect(compareAscending(Symbol(), Symbol())).toBe(0);
 		expect(compareAscending(Symbol(), undefined)).toBe(-1);
 		// Undefined
 		expect(compareAscending(undefined, Symbol())).toBe(1);
 		expect(compareAscending(undefined, {})).toBe(1);
-		expect(compareAscending(undefined, NaN)).toBe(1);
+		expect(compareAscending(undefined, Number.NaN)).toBe(1);
 		expect(compareAscending(undefined, undefined)).toBe(0);
 	});
 	test("Compare values of some types in descending order", () => {
@@ -65,8 +66,8 @@ describe("sortItems() & ASC", () => {
 		expect(sortArray([1, 2, 3], compareAscending)).toEqual([1, 2, 3]);
 		expect(sortArray([2, 3, 1], compareAscending)).toEqual([1, 2, 3]);
 		expect(sortArray([undefined, 1], compareAscending)).toEqual([1, undefined]);
-		const unsorted = [1, -1, -Infinity, 0.5, -0.5, Infinity, 100, 0, -100, NaN];
-		const sorted = [-Infinity, -100, -1, -0.5, 0, 0.5, 1, 100, Infinity, NaN];
+		const unsorted = [1, -1, Number.NEGATIVE_INFINITY, 0.5, -0.5, Number.POSITIVE_INFINITY, 100, 0, -100, Number.NaN];
+		const sorted = [Number.NEGATIVE_INFINITY, -100, -1, -0.5, 0, 0.5, 1, 100, Number.POSITIVE_INFINITY, Number.NaN];
 		expect(sortArray(unsorted, compareAscending)).toEqual(sorted);
 	});
 	test("sortItems(): Strings are sorted correctly", () => {

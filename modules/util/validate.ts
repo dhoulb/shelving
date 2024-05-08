@@ -1,15 +1,15 @@
-import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
-import type { Data } from "./data.js";
-import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
-import type { Item } from "./item.js";
-import type { MutableObject } from "./object.js";
 import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValueFeedbacks } from "../feedback/Feedbacks.js";
+import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import { getLastItem, isArray } from "./array.js";
+import type { Data } from "./data.js";
 import { getDataProps } from "./data.js";
+import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
+import type { Item } from "./item.js";
 import { isIterable } from "./iterate.js";
+import type { MutableObject } from "./object.js";
 import { getUndefined } from "./undefined.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
@@ -171,8 +171,16 @@ export function getValidationContext(): Data {
 }
 
 /** Validate a unknown value with a validator, and supply a context that can be read during the validation process. */
-export function validateWithContext<T extends Data>(unsafeValue: Item<Data>, validator: Validator<T>, context: Data & { readonly id: true }): Item<T>;
-export function validateWithContext<T extends Data>(unsafeValue: unknown, validator: Validator<T>, context: Data & { readonly partial: true }): Partial<T>;
+export function validateWithContext<T extends Data>(
+	unsafeValue: Item<Data>,
+	validator: Validator<T>,
+	context: Data & { readonly id: true },
+): Item<T>;
+export function validateWithContext<T extends Data>(
+	unsafeValue: unknown,
+	validator: Validator<T>,
+	context: Data & { readonly partial: true },
+): Partial<T>;
 export function validateWithContext<T>(unsafeValue: unknown, validator: Validator<T>, context: Data): T;
 export function validateWithContext<T>(unsafeValue: unknown, validator: Validator<T>, context: Data): T {
 	CONTEXTS.push(context);

@@ -8,12 +8,12 @@ export function isNumber(value: unknown): value is number {
 
 /** Assert that a value is a number. */
 export function assertNumber(value: unknown): asserts value is number {
-	if (typeof value !== "number") throw new ValueError(`Must be number`, value);
+	if (typeof value !== "number") throw new ValueError("Must be number", value);
 }
 
 /** Assert that a value is a number greater than. */
 export function assertFinite(value: unknown): asserts value is number {
-	if (typeof value !== "number" || !Number.isFinite(value)) throw new ValueError(`Must be finite number`, value);
+	if (typeof value !== "number" || !Number.isFinite(value)) throw new ValueError("Must be finite number", value);
 }
 
 /**
@@ -53,8 +53,8 @@ export function assertMin(value: unknown, min: number): asserts value is number 
  */
 export function getOptionalNumber(value: unknown): number | undefined {
 	if (typeof value === "number" && Number.isFinite(value)) return value === 0 ? 0 : value;
-	else if (typeof value === "string") return getOptionalNumber(parseFloat(value.replace(NOT_NUMERIC_REGEXP, "")));
-	else if (value instanceof Date) return getOptionalNumber(value.getTime());
+	if (typeof value === "string") return getOptionalNumber(Number.parseFloat(value.replace(NOT_NUMERIC_REGEXP, "")));
+	if (value instanceof Date) return getOptionalNumber(value.getTime());
 }
 const NOT_NUMERIC_REGEXP = /[^0-9-.]/g;
 

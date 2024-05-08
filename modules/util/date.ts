@@ -1,5 +1,5 @@
-import type { Optional } from "./optional.js";
 import { ValueError } from "../error/ValueError.js";
+import type { Optional } from "./optional.js";
 
 /** Things that converted to dates. */
 export type PossibleDate = Date | number | string;
@@ -11,7 +11,7 @@ export function isDate(value: unknown): value is Date {
 
 /** Assert that a value is a `Date` instance. */
 export function assertDate(value: unknown): asserts value is Date {
-	if (!isDate(value)) throw new ValueError(`Must be date`, value);
+	if (!isDate(value)) throw new ValueError("Must be date", value);
 }
 
 /**
@@ -51,7 +51,7 @@ export function getOptionalDate(possible: unknown): Date | undefined {
  */
 export function getDate(possible: PossibleDate = "now"): Date {
 	const date = getOptionalDate(possible);
-	if (!date) throw new ValueError(`Invalid date`, possible);
+	if (!date) throw new ValueError("Invalid date", possible);
 	return date;
 }
 

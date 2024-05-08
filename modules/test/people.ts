@@ -1,8 +1,8 @@
-import type { Item } from "../util/item.js";
-import type { ValidatorType } from "../util/validate.js";
 import { DATA } from "../schema/DataSchema.js";
 import { OPTIONAL_DATE } from "../schema/DateSchema.js";
 import { REQUIRED_STRING } from "../schema/StringSchema.js";
+import type { Item } from "../util/item.js";
+import type { ValidatorType } from "../util/validate.js";
 
 export const PERSON_SCHEMA = DATA({
 	name: DATA({ first: REQUIRED_STRING, last: REQUIRED_STRING }),

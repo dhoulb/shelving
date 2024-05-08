@@ -1,7 +1,27 @@
-import type { BasicData, BasicItemData, TestCollections } from "../test/index.js";
+import { expect, test } from "@jest/globals";
 import { type ImmutableArray, type OptionalItem, runSequence } from "../index.js";
 import { MemoryProvider, runMicrotasks } from "../index.js";
-import { basic1, basic2, basic3, basic4, basic6, basic7, basic8, basic9, basic999, basics, expectOrderedKeys, expectUnorderedKeys, people, person1, person2, person3, person4, person5 } from "../test/index.js";
+import type { BasicData, BasicItemData, TestCollections } from "../test/index.js";
+import {
+	basic1,
+	basic2,
+	basic3,
+	basic4,
+	basic6,
+	basic7,
+	basic8,
+	basic9,
+	basic999,
+	basics,
+	expectOrderedKeys,
+	expectUnorderedKeys,
+	people,
+	person1,
+	person2,
+	person3,
+	person4,
+	person5,
+} from "../test/index.js";
 
 test("MemoryProvider: set/get/delete documents", () => {
 	// Setup.
@@ -98,7 +118,7 @@ test("MemoryProvider: get queries", () => {
 	// Combinations.
 	expectOrderedKeys(db.getQuery("basics", { $order: "id", $limit: 2 }), ["basic1", "basic2"]);
 	expectOrderedKeys(db.getQuery("basics", { $order: "!id", $limit: 1 }), ["basic9"]);
-	expectOrderedKeys(db.getQuery("basics", { "tags[]": "prime", "$order": "!id", "$limit": 2 }), ["basic7", "basic5"]);
+	expectOrderedKeys(db.getQuery("basics", { "tags[]": "prime", $order: "!id", $limit: 2 }), ["basic7", "basic5"]);
 });
 test("MemoryProvider: subscribing to documents", async () => {
 	// Setup.

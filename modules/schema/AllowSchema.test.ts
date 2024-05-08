@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import type { Schema } from "../index.js";
 import { ALLOW, ALLOW_STRING, AllowSchema, AllowStringSchema, Feedback } from "../index.js";
 

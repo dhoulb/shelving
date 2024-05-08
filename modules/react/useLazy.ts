@@ -1,7 +1,7 @@
-import type { Arguments } from "../util/function.js";
-import type { Lazy } from "../util/lazy.js";
 import { useRef } from "react";
 import { isArrayEqual } from "../util/equal.js";
+import type { Arguments } from "../util/function.js";
+import type { Lazy } from "../util/lazy.js";
 import { getLazy } from "../util/lazy.js";
 
 /**
@@ -13,6 +13,7 @@ export function useLazy<T, A extends Arguments = []>(value: (...args: A) => T, .
 export function useLazy<T>(value: T, ...args: Arguments): T;
 export function useLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T;
 export function useLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T {
+	// biome-ignore lint/suspicious/noAssignInExpressions: This is the most efficient way to do this.
 	const internals = (useRef<{
 		value: T;
 		args: A;

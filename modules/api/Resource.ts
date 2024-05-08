@@ -1,6 +1,6 @@
-import type { Validator } from "../util/validate.js";
 import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
+import type { Validator } from "../util/validate.js";
 import { UNDEFINED_VALIDATOR } from "../util/validate.js";
 
 /**
@@ -23,7 +23,11 @@ export class Resource<P = undefined, R = void> implements Validator<R> {
 	constructor(name: string, payload: Validator<P>, result: Validator<R>);
 	constructor(name: string, payload: Validator<P>);
 	constructor(name: string);
-	constructor(name: string, payload: Validator<P> = UNDEFINED_VALIDATOR as Validator<P>, result: Validator<R> = UNDEFINED_VALIDATOR as Validator<R>) {
+	constructor(
+		name: string,
+		payload: Validator<P> = UNDEFINED_VALIDATOR as Validator<P>,
+		result: Validator<R> = UNDEFINED_VALIDATOR as Validator<R>,
+	) {
 		this.name = name;
 		this.payload = payload;
 		this.result = result;
@@ -49,7 +53,7 @@ export class Resource<P = undefined, R = void> implements Validator<R> {
 		try {
 			return this.result.validate(unsafeResult);
 		} catch (thrown) {
-			if (thrown instanceof Feedback) throw new ValueError(`Invalid result for resource`, thrown);
+			if (thrown instanceof Feedback) throw new ValueError("Invalid result for resource", thrown);
 			throw thrown;
 		}
 	}

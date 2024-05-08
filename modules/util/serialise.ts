@@ -15,19 +15,21 @@ const R_QUOTE = /"/g;
 export function serialise(value: unknown): string {
 	if (value === true) return "true";
 	if (value === false) return "false";
-	if (value === undefined) return `{"$type":"undefined"}`;
-	if (value === null) return `null`;
+	if (value === undefined) return '{"$type":"undefined"}';
+	if (value === null) return "null";
 	if (typeof value === "number") return value.toString();
 	if (typeof value === "string") return _escapeString(value);
-	if (typeof value === "symbol") return value.description ? `{"$type":"symbol","description":${_escapeString(value.description)}}` : `{"$type":"symbol"}`;
-	if (typeof value === "function") return value.name ? `{"$type":"function","name":${_escapeString(value.name)}}` : `{"$type":"function"}`;
+	if (typeof value === "symbol")
+		return value.description ? `{"$type":"symbol","description":${_escapeString(value.description)}}` : '{"$type":"symbol"}';
+	if (typeof value === "function") return value.name ? `{"$type":"function","name":${_escapeString(value.name)}}` : '{"$type":"function"}';
 	if (isArray(value)) return `[${value.map(serialise).join(",")}]`;
 	if (isObject(value)) {
 		const prototype = getPrototype(value);
 		const type = prototype !== Object.prototype && prototype !== null ? prototype?.constructor?.name : undefined;
 
 		// Use custom `toString()` function if it's defined.
-		if (type && value.toString !== Object.prototype.toString) return `{"$type":${_escapeString(type)},"value":${_escapeString(value.toString())}}`; // eslint-disable-line @typescript-eslint/no-base-to-string
+		if (type && value.toString !== Object.prototype.toString)
+			return `{"$type":${_escapeString(type)},"value":${_escapeString(value.toString())}}`;
 
 		// Otherwise crawl the object and sort the props ascendingly.
 		const props = Object.entries(value).map(_serialiseEntry).sort();

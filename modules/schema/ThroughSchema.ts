@@ -1,5 +1,5 @@
-import type { SchemaOptions } from "./Schema.js";
 import type { Sourceable } from "../util/source.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `ThroughSchama` */

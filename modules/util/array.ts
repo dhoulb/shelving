@@ -28,7 +28,7 @@ export function isArray(value: unknown): value is ImmutableArray {
 
 /** Assert that an unknown value is an array. */
 export function assertArray<T>(arr: unknown): asserts arr is ImmutableArray<T> {
-	if (!isArray(arr)) throw new ValueError(`Must be array`, arr);
+	if (!isArray(arr)) throw new ValueError("Must be array", arr);
 }
 
 /** Is an unknown value an item in a specified array? */
@@ -38,7 +38,7 @@ export function isArrayItem<T>(arr: ImmutableArray<T>, item: unknown): item is T
 
 /** Assert that an unknown value is an item in a specified array. */
 export function assertArrayItem<T>(arr: ImmutableArray<T>, item: unknown): asserts item is T {
-	if (!isArrayItem(arr, item)) throw new ValueError(`Must be array item`, item);
+	if (!isArrayItem(arr, item)) throw new ValueError("Must be array item", item);
 }
 
 /** Convert an iterable to an array (if its not already an array). */
@@ -126,7 +126,8 @@ export function shuffleArray<T>(input: PossibleArray<T>): ImmutableArray<T> {
 	const output = Array.from(input);
 	for (let i = output.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
-		[output[i], output[j]] = [output[j]!, output[i]!]; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+		// biome-ignore lint/style/noNonNullAssertion: We know these keys are set.
+		[output[i], output[j]] = [output[j]!, output[i]!];
 	}
 	return output;
 }
@@ -184,7 +185,7 @@ export function isArrayLength<T>(arr: ImmutableArray<T>, min: 2, max?: number): 
 export function isArrayLength<T>(arr: ImmutableArray<T>, min: 3, max?: number): arr is readonly [T, T, T, ...T[]];
 export function isArrayLength<T>(arr: ImmutableArray<T>, min: 4, max?: number): arr is readonly [T, T, T, T, ...T[]];
 export function isArrayLength<T>(arr: ImmutableArray<T>, min?: number, max?: number): boolean;
-export function isArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Infinity): boolean {
+export function isArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Number.POSITIVE_INFINITY): boolean {
 	return arr.length >= min && arr.length <= max;
 }
 
@@ -207,7 +208,7 @@ export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 2, max?: numbe
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 3, max?: number): asserts arr is readonly [T, T, T, ...T[]];
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 4, max?: number): asserts arr is readonly [T, T, T, T, ...T[]];
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: number, max?: number): asserts arr is ImmutableArray<T>;
-export function assertArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Infinity): asserts arr is ImmutableArray<T> {
+export function assertArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Number.POSITIVE_INFINITY): asserts arr is ImmutableArray<T> {
 	if (!isArray(arr) || !isArrayLength<T>(arr, min, max)) throw new ValueError(`Must be array with length ${formatRange(min, max)}`, arr);
 }
 
@@ -230,7 +231,7 @@ export function getArrayLength<T>(arr: ImmutableArray<T>, min: 2, max?: number):
 export function getArrayLength<T>(arr: ImmutableArray<T>, min: 3, max?: number): readonly [T, T, T, ...T[]];
 export function getArrayLength<T>(arr: ImmutableArray<T>, min: 4, max?: number): readonly [T, T, T, T, ...T[]];
 export function getArrayLength<T>(arr: ImmutableArray<T>, min?: number, max?: number): ImmutableArray<T>;
-export function getArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Infinity): ImmutableArray<T> {
+export function getArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Number.POSITIVE_INFINITY): ImmutableArray<T> {
 	assertArrayLength(arr, min, max);
 	return arr;
 }

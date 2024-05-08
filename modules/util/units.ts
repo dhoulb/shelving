@@ -1,11 +1,11 @@
-import type { MapKey } from "./map.js";
-import type { NumberOptions } from "./number.js";
-import type { ImmutableObject } from "./object.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
+import type { MapKey } from "./map.js";
 import { ImmutableMap } from "./map.js";
+import type { NumberOptions } from "./number.js";
 import { formatQuantity, pluralizeQuantity } from "./number.js";
+import type { ImmutableObject } from "./object.js";
 import { getProps } from "./object.js";
 
 /** Conversion from one unit to another (either an amount to multiple by, or a function to convert). */
@@ -131,7 +131,7 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	 */
 	getUnit(units: K): Unit<K> {
 		if (this.has(units)) return this.get(units) as Unit<K>;
-		throw new RequiredError(`Unknown unit`, units);
+		throw new RequiredError("Unknown unit", units);
 	}
 }
 
@@ -233,7 +233,12 @@ export type LengthUnitKey = MapKey<typeof LENGTH_UNITS>;
 export const SPEED_UNITS = new UnitList({
 	// Metric.
 	"meter-per-second": { abbr: "m/s", singular: "meter per second", plural: "meters per second", to: { "kilometer-per-hour": 3.6 } },
-	"kilometer-per-hour": { abbr: "kph", singular: "kilometer per hour", plural: "kilometers per hour", to: { "meter-per-second": MM_PER_KM / HOUR } },
+	"kilometer-per-hour": {
+		abbr: "kph",
+		singular: "kilometer per hour",
+		plural: "kilometers per hour",
+		to: { "meter-per-second": MM_PER_KM / HOUR },
+	},
 	// Imperial.
 	"mile-per-hour": { abbr: "mph", singular: "mile per hour", plural: "miles per hour", to: { "meter-per-second": MM_PER_MI / HOUR } },
 });
@@ -246,41 +251,75 @@ export const AREA_UNITS = new UnitList({
 	"square-centimeter": { abbr: "cm²", to: { "square-millimeter": MM_PER_CM ** 2 } },
 	"square-meter": { abbr: "m²", to: { "square-millimeter": MM_PER_M ** 2 } },
 	"square-kilometer": { abbr: "km²", to: { "square-millimeter": MM_PER_KM ** 2 } },
-	"hectare": { abbr: "ha", to: { "square-millimeter": (MM_PER_M * 100) ** 2 } },
+	hectare: { abbr: "ha", to: { "square-millimeter": (MM_PER_M * 100) ** 2 } },
 	// Imperial.
-	"square-inch": { abbr: `in²`, plural: "square inches", to: { "square-millimeter": MM2_PER_IN2 } },
-	"square-foot": { abbr: `ft²`, plural: "square feet", to: { "square-millimeter": IN_PER_FT ** 2 * MM2_PER_IN2, "square-inch": IN_PER_FT ** 2 } },
-	"square-yard": { abbr: `yd²`, to: { "square-millimeter": IN_PER_YD ** 2 * MM2_PER_IN2, "square-foot": FT_PER_YD ** 2, "square-inch": IN_PER_YD ** 2 } },
-	"acre": { abbr: "acre", to: { "square-millimeter": IN_PER_YD ** 2 * YD2_PER_ACRE * MM2_PER_IN2, "square-foot": FT2_PER_ACRE, "square-yard": YD2_PER_ACRE } },
+	"square-inch": { abbr: "in²", plural: "square inches", to: { "square-millimeter": MM2_PER_IN2 } },
+	"square-foot": {
+		abbr: "ft²",
+		plural: "square feet",
+		to: { "square-millimeter": IN_PER_FT ** 2 * MM2_PER_IN2, "square-inch": IN_PER_FT ** 2 },
+	},
+	"square-yard": {
+		abbr: "yd²",
+		to: { "square-millimeter": IN_PER_YD ** 2 * MM2_PER_IN2, "square-foot": FT_PER_YD ** 2, "square-inch": IN_PER_YD ** 2 },
+	},
+	acre: {
+		abbr: "acre",
+		to: { "square-millimeter": IN_PER_YD ** 2 * YD2_PER_ACRE * MM2_PER_IN2, "square-foot": FT2_PER_ACRE, "square-yard": YD2_PER_ACRE },
+	},
 });
 export type AreaUnitKey = MapKey<typeof AREA_UNITS>;
 
 /** Volume units. */
 export const VOLUME_UNITS = new UnitList({
 	// Metric.
-	"milliliter": { abbr: "ml" },
-	"liter": { abbr: "ltr", to: { milliliter: 1000 } },
+	milliliter: { abbr: "ml" },
+	liter: { abbr: "ltr", to: { milliliter: 1000 } },
 	"cubic-centimeter": { abbr: "cm³", to: { milliliter: 1 } },
 	"cubic-meter": { abbr: "m³", to: { milliliter: MILLION } },
 	// US.
-	"us-fluid-ounce": { abbr: `fl${NNBSP}oz`, singular: "US fluid ounce", plural: "US fluid ounces", to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 128 } },
-	"us-pint": { abbr: "pt", singular: "US pint", to: { "milliliter": (US_IN3_PER_GAL * ML_PER_IN3) / 8, "us-fluid-ounce": 16 } },
-	"us-quart": { abbr: "qt", singular: "US quart", to: { "milliliter": (US_IN3_PER_GAL * ML_PER_IN3) / 4, "us-pint": 2, "us-fluid-ounce": 32 } },
-	"us-gallon": { abbr: "gal", singular: "US gallon", to: { "milliliter": US_IN3_PER_GAL * ML_PER_IN3, "us-quart": 4, "us-pint": 8, "us-fluid-ounce": 128 } },
+	"us-fluid-ounce": {
+		abbr: `fl${NNBSP}oz`,
+		singular: "US fluid ounce",
+		plural: "US fluid ounces",
+		to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 128 },
+	},
+	"us-pint": { abbr: "pt", singular: "US pint", to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 8, "us-fluid-ounce": 16 } },
+	"us-quart": {
+		abbr: "qt",
+		singular: "US quart",
+		to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 4, "us-pint": 2, "us-fluid-ounce": 32 },
+	},
+	"us-gallon": {
+		abbr: "gal",
+		singular: "US gallon",
+		to: { milliliter: US_IN3_PER_GAL * ML_PER_IN3, "us-quart": 4, "us-pint": 8, "us-fluid-ounce": 128 },
+	},
 	// Imperial.
 	"imperial-fluid-ounce": { abbr: `fl${NNBSP}oz`, to: { milliliter: IMP_ML_PER_GAL / 160 } },
-	"imperial-pint": { abbr: `pt`, to: { "milliliter": IMP_ML_PER_GAL / 8, "imperial-fluid-ounce": 20 } },
-	"imperial-quart": { abbr: "qt", to: { "milliliter": IMP_ML_PER_GAL / 4, "imperial-pint": 2, "imperial-fluid-ounce": 40 } },
-	"imperial-gallon": { abbr: "gal", to: { "milliliter": IMP_ML_PER_GAL, "imperial-quart": 4, "imperial-pint": 8, "imperial-fluid-ounce": 160 } },
+	"imperial-pint": { abbr: "pt", to: { milliliter: IMP_ML_PER_GAL / 8, "imperial-fluid-ounce": 20 } },
+	"imperial-quart": { abbr: "qt", to: { milliliter: IMP_ML_PER_GAL / 4, "imperial-pint": 2, "imperial-fluid-ounce": 40 } },
+	"imperial-gallon": {
+		abbr: "gal",
+		to: { milliliter: IMP_ML_PER_GAL, "imperial-quart": 4, "imperial-pint": 8, "imperial-fluid-ounce": 160 },
+	},
 	"cubic-inch": { abbr: "in³", plural: "cubic inches", to: { milliliter: ML_PER_IN3 } },
-	"cubic-foot": { abbr: "ft³", plural: "cubic feet", to: { "milliliter": IN_PER_FT ** 3 * ML_PER_IN3, "cubic-inch": IN_PER_FT ** 3 } },
-	"cubic-yard": { abbr: "yd³", to: { "milliliter": IN_PER_YD ** 3 * ML_PER_IN3, "cubic-foot": FT_PER_YD ** 3, "cubic-inch": IN_PER_YD ** 3 } },
+	"cubic-foot": { abbr: "ft³", plural: "cubic feet", to: { milliliter: IN_PER_FT ** 3 * ML_PER_IN3, "cubic-inch": IN_PER_FT ** 3 } },
+	"cubic-yard": {
+		abbr: "yd³",
+		to: { milliliter: IN_PER_YD ** 3 * ML_PER_IN3, "cubic-foot": FT_PER_YD ** 3, "cubic-inch": IN_PER_YD ** 3 },
+	},
 });
 export type VolumeUnitKey = MapKey<typeof VOLUME_UNITS>;
 
 /** Temperature units. */
 export const TEMPERATURE_UNITS = new UnitList({
-	celsius: { abbr: "°C", singular: "degree Celsius", plural: "degrees Celsius", to: { fahrenheit: n => n * (9 / 5) + 32, kelvin: n => n + 273.15 } },
+	celsius: {
+		abbr: "°C",
+		singular: "degree Celsius",
+		plural: "degrees Celsius",
+		to: { fahrenheit: n => n * (9 / 5) + 32, kelvin: n => n + 273.15 },
+	},
 	fahrenheit: { abbr: "°F", singular: "degree Fahrenheit", plural: "degrees Fahrenheit", to: { celsius: n => (n - 32) * (5 / 9) } },
 	kelvin: { abbr: "°K", singular: "degree Kelvin", plural: "degrees Kelvin", to: { celsius: n => n - 273.15 } },
 });

@@ -1,7 +1,7 @@
-import type { SchemaOptions } from "./Schema.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
 import { sanitizeLines, sanitizeString } from "../util/string.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
@@ -49,7 +49,16 @@ export class StringSchema extends Schema<string> {
 	readonly match: RegExp | undefined;
 	readonly sanitizer: Sanitizer | undefined;
 	readonly multiline: boolean;
-	constructor({ type = "text", min = 0, max = Infinity, match, sanitizer, multiline = false, value = "", ...options }: StringSchemaOptions) {
+	constructor({
+		type = "text",
+		min = 0,
+		max = Number.POSITIVE_INFINITY,
+		match,
+		sanitizer,
+		multiline = false,
+		value = "",
+		...options
+	}: StringSchemaOptions) {
 		super({ value, ...options });
 		this.type = type;
 		this.min = min;

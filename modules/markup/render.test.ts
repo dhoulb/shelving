@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
 import { renderMarkup } from "../index.js";
@@ -95,7 +96,8 @@ const inlineElements = [
 	" and ",
 	{ type: "a", key: "79", props: { children: "Google", href: "http://google.com/" } },
 ];
-const wrappedInlineMarkup = "BEFORE *STRONG* and _EM_ and ++INS++ and ~~DEL~~ and `CODE` and http://google.com and [Google](http://google.com) AFTER";
+const wrappedInlineMarkup =
+	"BEFORE *STRONG* and _EM_ and ++INS++ and ~~DEL~~ and `CODE` and http://google.com and [Google](http://google.com) AFTER";
 const wrappedInlineElements = [
 	"BEFORE ",
 	{ type: "strong", key: "7", props: { children: "STRONG" } },
@@ -194,21 +196,44 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("``A``", { context: "inline" })).toMatchObject({ type: "code", props: { children: "A" } });
 		expect(renderMarkup("``AAA``", { context: "inline" })).toMatchObject({ type: "code", props: { children: "AAA" } });
 		expect(renderMarkup("``````AAA``````", { context: "inline" })).toMatchObject({ type: "code", props: { children: "AAA" } });
-		expect(renderMarkup("BEFORE `AAA`", { context: "inline" })).toMatchObject(["BEFORE ", { type: "code", props: { children: "AAA" } }]);
-		expect(renderMarkup("`AAA` AFTER", { context: "inline" })).toMatchObject([{ type: "code", props: { children: "AAA" } }, " AFTER"]);
+		expect(renderMarkup("BEFORE `AAA`", { context: "inline" })).toMatchObject([
+			"BEFORE ",
+			{ type: "code", props: { children: "AAA" } },
+		] as Record<any, any>);
+		expect(renderMarkup("`AAA` AFTER", { context: "inline" })).toMatchObject([
+			{ type: "code", props: { children: "AAA" } },
+			" AFTER",
+		] as Record<any, any>);
 
 		// Matching is non-greedy.
-		expect(renderMarkup("`AAA` `AAA`", { context: "inline" })).toMatchObject([{ type: "code", props: { children: "AAA" } }, " ", { type: "code", props: { children: "AAA" } }]);
+		expect(renderMarkup("`AAA` `AAA`", { context: "inline" })).toMatchObject([
+			{ type: "code", props: { children: "AAA" } },
+			" ",
+			{ type: "code", props: { children: "AAA" } },
+		] as Record<any, any>);
 
 		// Code cannot contain other inline elements.
-		expect(renderMarkup("`WORD *STRONG* WORD`", { context: "inline" })).toMatchObject({ type: "code", props: { children: "WORD *STRONG* WORD" } });
+		expect(renderMarkup("`WORD *STRONG* WORD`", { context: "inline" })).toMatchObject({
+			type: "code",
+			props: { children: "WORD *STRONG* WORD" },
+		});
 		expect(renderMarkup("`WORD _EM_ WORD`", { context: "inline" })).toMatchObject({ type: "code", props: { children: "WORD _EM_ WORD" } });
 		expect(renderMarkup("`*STRONG*`", { context: "inline" })).toMatchObject({ type: "code", props: { children: "*STRONG*" } });
 
 		// Match even if the opening and closing punctuation is in the middle of the word.
-		expect(renderMarkup("TEXT`CODE`", { context: "inline" })).toMatchObject(["TEXT", { type: "code", props: { children: "CODE" } }]);
-		expect(renderMarkup("`CODE`TEXT", { context: "inline" })).toMatchObject([{ type: "code", props: { children: "CODE" } }, "TEXT"]);
-		expect(renderMarkup("TEXT`CODE`TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "code", props: { children: "CODE" } }, "TEXT"]);
+		expect(renderMarkup("TEXT`CODE`", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "code", props: { children: "CODE" } },
+		] as Record<any, any>);
+		expect(renderMarkup("`CODE`TEXT", { context: "inline" })).toMatchObject([
+			{ type: "code", props: { children: "CODE" } },
+			"TEXT",
+		] as Record<any, any>);
+		expect(renderMarkup("TEXT`CODE`TEXT", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "code", props: { children: "CODE" } },
+			"TEXT",
+		] as Record<any, any>);
 	});
 	test("STRONG", () => {
 		expect(renderMarkup("*A*", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "A" } });
@@ -217,11 +242,21 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("*AAA BBB*", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "AAA BBB" } });
 		expect(renderMarkup("**AAA BBB**", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "AAA BBB" } });
 		expect(renderMarkup("******AAA BBB******", { context: "inline" })).toMatchObject({ type: "strong", props: { children: "AAA BBB" } });
-		expect(renderMarkup("BEFORE *AAA*", { context: "inline" })).toMatchObject(["BEFORE ", { type: "strong", props: { children: "AAA" } }]);
-		expect(renderMarkup("*AAA* AFTER", { context: "inline" })).toMatchObject([{ type: "strong", props: { children: "AAA" } }, " AFTER"]);
+		expect(renderMarkup("BEFORE *AAA*", { context: "inline" })).toMatchObject([
+			"BEFORE ",
+			{ type: "strong", props: { children: "AAA" } },
+		] as Record<any, any>);
+		expect(renderMarkup("*AAA* AFTER", { context: "inline" })).toMatchObject([
+			{ type: "strong", props: { children: "AAA" } },
+			" AFTER",
+		] as Record<any, any>);
 
 		// Matching is non-greedy.
-		expect(renderMarkup("*AAA* *AAA*", { context: "inline" })).toMatchObject([{ type: "strong", props: { children: "AAA" } }, " ", { type: "strong", props: { children: "AAA" } }]);
+		expect(renderMarkup("*AAA* *AAA*", { context: "inline" })).toMatchObject([
+			{ type: "strong", props: { children: "AAA" } },
+			" ",
+			{ type: "strong", props: { children: "AAA" } },
+		] as Record<any, any>);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("*BEFORE _EM_ AFTER*", { context: "inline" })).toMatchObject({
@@ -234,17 +269,27 @@ describe("renderMarkup(): Inline rules", () => {
 		});
 
 		// Match even if the opening and closing punctuation is in the middle of the word.
-		expect(renderMarkup("TEXT*STRONG*", { context: "inline" })).toMatchObject(["TEXT", { type: "strong", props: { children: "STRONG" } }]);
-		expect(renderMarkup("*STRONG*TEXT", { context: "inline" })).toMatchObject([{ type: "strong", props: { children: "STRONG" } }, "TEXT"]);
-		expect(renderMarkup("TEXT*STRONG*TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "strong", props: { children: "STRONG" } }, "TEXT"]);
+		expect(renderMarkup("TEXT*STRONG*", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "strong", props: { children: "STRONG" } },
+		] as Record<any, any>);
+		expect(renderMarkup("*STRONG*TEXT", { context: "inline" })).toMatchObject([
+			{ type: "strong", props: { children: "STRONG" } },
+			"TEXT",
+		] as Record<any, any>);
+		expect(renderMarkup("TEXT*STRONG*TEXT", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "strong", props: { children: "STRONG" } },
+			"TEXT",
+		] as Record<any, any>);
 
 		// Only match if it doesn't contain whitespace at the start/end of the element.
-		expect(renderMarkup("*AAA *", { context: "inline" })).toEqual("*AAA *");
-		expect(renderMarkup("* AAA*", { context: "inline" })).toEqual("* AAA*");
-		expect(renderMarkup("* AAA *", { context: "inline" })).toEqual("* AAA *");
-		expect(renderMarkup("**AAA **", { context: "inline" })).toEqual("**AAA **");
-		expect(renderMarkup("** AAA**", { context: "inline" })).toEqual("** AAA**");
-		expect(renderMarkup("** AAA **", { context: "inline" })).toEqual("** AAA **");
+		expect(renderMarkup("*AAA *", { context: "inline" })).toBe("*AAA *");
+		expect(renderMarkup("* AAA*", { context: "inline" })).toBe("* AAA*");
+		expect(renderMarkup("* AAA *", { context: "inline" })).toBe("* AAA *");
+		expect(renderMarkup("**AAA **", { context: "inline" })).toBe("**AAA **");
+		expect(renderMarkup("** AAA**", { context: "inline" })).toBe("** AAA**");
+		expect(renderMarkup("** AAA **", { context: "inline" })).toBe("** AAA **");
 	});
 	test("EM", () => {
 		expect(renderMarkup("_A_", { context: "inline" })).toMatchObject({ type: "em", props: { children: "A" } });
@@ -253,11 +298,21 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("_AAA BBB_", { context: "inline" })).toMatchObject({ type: "em", props: { children: "AAA BBB" } });
 		expect(renderMarkup("__AAA BBB__", { context: "inline" })).toMatchObject({ type: "em", props: { children: "AAA BBB" } });
 		expect(renderMarkup("______AAA BBB______", { context: "inline" })).toMatchObject({ type: "em", props: { children: "AAA BBB" } });
-		expect(renderMarkup("BEFORE _AAA_", { context: "inline" })).toMatchObject(["BEFORE ", { type: "em", props: { children: "AAA" } }]);
-		expect(renderMarkup("_AAA_ AFTER", { context: "inline" })).toMatchObject([{ type: "em", props: { children: "AAA" } }, " AFTER"]);
+		expect(renderMarkup("BEFORE _AAA_", { context: "inline" })).toMatchObject([
+			"BEFORE ",
+			{ type: "em", props: { children: "AAA" } },
+		] as Record<any, any>);
+		expect(renderMarkup("_AAA_ AFTER", { context: "inline" })).toMatchObject([
+			{ type: "em", props: { children: "AAA" } },
+			" AFTER",
+		] as Record<any, any>);
 
 		// Matching is non-greedy.
-		expect(renderMarkup("_AAA_ _AAA_", { context: "inline" })).toMatchObject([{ type: "em", props: { children: "AAA" } }, " ", { type: "em", props: { children: "AAA" } }]);
+		expect(renderMarkup("_AAA_ _AAA_", { context: "inline" })).toMatchObject([
+			{ type: "em", props: { children: "AAA" } },
+			" ",
+			{ type: "em", props: { children: "AAA" } },
+		] as Record<any, any>);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("_BEFORE *STRONG* AFTER_", { context: "inline" })).toMatchObject({
@@ -270,17 +325,27 @@ describe("renderMarkup(): Inline rules", () => {
 		});
 
 		// Match even if the opening and closing punctuation is in the middle of the word.
-		expect(renderMarkup("TEXT_EM_", { context: "inline" })).toMatchObject(["TEXT", { type: "em", props: { children: "EM" } }]);
-		expect(renderMarkup("_EM_TEXT", { context: "inline" })).toMatchObject([{ type: "em", props: { children: "EM" } }, "TEXT"]);
-		expect(renderMarkup("TEXT_EM_TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "em", props: { children: "EM" } }, "TEXT"]);
+		expect(renderMarkup("TEXT_EM_", { context: "inline" })).toMatchObject(["TEXT", { type: "em", props: { children: "EM" } }] as Record<
+			any,
+			any
+		>);
+		expect(renderMarkup("_EM_TEXT", { context: "inline" })).toMatchObject([{ type: "em", props: { children: "EM" } }, "TEXT"] as Record<
+			any,
+			any
+		>);
+		expect(renderMarkup("TEXT_EM_TEXT", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "em", props: { children: "EM" } },
+			"TEXT",
+		] as Record<any, any>);
 
 		// Only match if it doesn't contain whitespace at the start/end of the element.
-		expect(renderMarkup("_AAA _", { context: "inline" })).toEqual("_AAA _");
-		expect(renderMarkup("_ AAA_", { context: "inline" })).toEqual("_ AAA_");
-		expect(renderMarkup("_ AAA _", { context: "inline" })).toEqual("_ AAA _");
-		expect(renderMarkup("__AAA __", { context: "inline" })).toEqual("__AAA __");
-		expect(renderMarkup("__ AAA__", { context: "inline" })).toEqual("__ AAA__");
-		expect(renderMarkup("__ AAA __", { context: "inline" })).toEqual("__ AAA __");
+		expect(renderMarkup("_AAA _", { context: "inline" })).toBe("_AAA _");
+		expect(renderMarkup("_ AAA_", { context: "inline" })).toBe("_ AAA_");
+		expect(renderMarkup("_ AAA _", { context: "inline" })).toBe("_ AAA _");
+		expect(renderMarkup("__AAA __", { context: "inline" })).toBe("__AAA __");
+		expect(renderMarkup("__ AAA__", { context: "inline" })).toBe("__ AAA__");
+		expect(renderMarkup("__ AAA __", { context: "inline" })).toBe("__ AAA __");
 	});
 	test("INS", () => {
 		expect(renderMarkup("+A+", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "A" } });
@@ -289,11 +354,21 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("+AAA BBB+", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "AAA BBB" } });
 		expect(renderMarkup("++AAA BBB++", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "AAA BBB" } });
 		expect(renderMarkup("++++++AAA BBB++++++", { context: "inline" })).toMatchObject({ type: "ins", props: { children: "AAA BBB" } });
-		expect(renderMarkup("BEFORE ++AAA++", { context: "inline" })).toMatchObject(["BEFORE ", { type: "ins", props: { children: "AAA" } }]);
-		expect(renderMarkup("++AAA++ AFTER", { context: "inline" })).toMatchObject([{ type: "ins", props: { children: "AAA" } }, " AFTER"]);
+		expect(renderMarkup("BEFORE ++AAA++", { context: "inline" })).toMatchObject([
+			"BEFORE ",
+			{ type: "ins", props: { children: "AAA" } },
+		] as Record<any, any>);
+		expect(renderMarkup("++AAA++ AFTER", { context: "inline" })).toMatchObject([
+			{ type: "ins", props: { children: "AAA" } },
+			" AFTER",
+		] as Record<any, any>);
 
 		// Matching is non-greedy.
-		expect(renderMarkup("++AAA++ ++AAA++", { context: "inline" })).toMatchObject([{ type: "ins", props: { children: "AAA" } }, " ", { type: "ins", props: { children: "AAA" } }]);
+		expect(renderMarkup("++AAA++ ++AAA++", { context: "inline" })).toMatchObject([
+			{ type: "ins", props: { children: "AAA" } },
+			" ",
+			{ type: "ins", props: { children: "AAA" } },
+		] as Record<any, any>);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("++BEFORE *STRONG* AFTER++", { context: "inline" })).toMatchObject({
@@ -306,14 +381,24 @@ describe("renderMarkup(): Inline rules", () => {
 		});
 
 		// Match even if the opening and closing punctuation is in the middle of the word.
-		expect(renderMarkup("TEXT++INS++", { context: "inline" })).toMatchObject(["TEXT", { type: "ins", props: { children: "INS" } }]);
-		expect(renderMarkup("++INS++TEXT", { context: "inline" })).toMatchObject([{ type: "ins", props: { children: "INS" } }, "TEXT"]);
-		expect(renderMarkup("TEXT++INS++TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "ins", props: { children: "INS" } }, "TEXT"]);
+		expect(renderMarkup("TEXT++INS++", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "ins", props: { children: "INS" } },
+		] as Record<any, any>);
+		expect(renderMarkup("++INS++TEXT", { context: "inline" })).toMatchObject([
+			{ type: "ins", props: { children: "INS" } },
+			"TEXT",
+		] as Record<any, any>);
+		expect(renderMarkup("TEXT++INS++TEXT", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "ins", props: { children: "INS" } },
+			"TEXT",
+		] as Record<any, any>);
 
 		// Only match if it doesn't contain whitespace at the start/end of the element.
-		expect(renderMarkup("++AAA ++", { context: "inline" })).toEqual("++AAA ++");
-		expect(renderMarkup("++ AAA++", { context: "inline" })).toEqual("++ AAA++");
-		expect(renderMarkup("++ AAA ++", { context: "inline" })).toEqual("++ AAA ++");
+		expect(renderMarkup("++AAA ++", { context: "inline" })).toBe("++AAA ++");
+		expect(renderMarkup("++ AAA++", { context: "inline" })).toBe("++ AAA++");
+		expect(renderMarkup("++ AAA ++", { context: "inline" })).toBe("++ AAA ++");
 	});
 	test("DEL (with tilde)", () => {
 		expect(renderMarkup("~A~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "A" } });
@@ -322,11 +407,21 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("~AAA BBB~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
 		expect(renderMarkup("~~AAA BBB~~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
 		expect(renderMarkup("~~~~~~AAA BBB~~~~~~", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
-		expect(renderMarkup("BEFORE ~~AAA~~", { context: "inline" })).toMatchObject(["BEFORE ", { type: "del", props: { children: "AAA" } }]);
-		expect(renderMarkup("~~AAA~~ AFTER", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "AAA" } }, " AFTER"]);
+		expect(renderMarkup("BEFORE ~~AAA~~", { context: "inline" })).toMatchObject([
+			"BEFORE ",
+			{ type: "del", props: { children: "AAA" } },
+		] as Record<any, any>);
+		expect(renderMarkup("~~AAA~~ AFTER", { context: "inline" })).toMatchObject([
+			{ type: "del", props: { children: "AAA" } },
+			" AFTER",
+		] as Record<any, any>);
 
 		// Matching is non~~greedy.
-		expect(renderMarkup("~~AAA~~ ~~AAA~~", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "AAA" } }, " ", { type: "del", props: { children: "AAA" } }]);
+		expect(renderMarkup("~~AAA~~ ~~AAA~~", { context: "inline" })).toMatchObject([
+			{ type: "del", props: { children: "AAA" } },
+			" ",
+			{ type: "del", props: { children: "AAA" } },
+		] as Record<any, any>);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("~~BEFORE *STRONG* AFTER~~", { context: "inline" })).toMatchObject({
@@ -339,17 +434,27 @@ describe("renderMarkup(): Inline rules", () => {
 		});
 
 		// Match even if the opening and closing punctuation is in the middle of the word.
-		expect(renderMarkup("TEXT~~DEL~~", { context: "inline" })).toMatchObject(["TEXT", { type: "del", props: { children: "DEL" } }]);
-		expect(renderMarkup("~~DEL~~TEXT", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "DEL" } }, "TEXT"]);
-		expect(renderMarkup("TEXT~~DEL~~TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "del", props: { children: "DEL" } }, "TEXT"]);
+		expect(renderMarkup("TEXT~~DEL~~", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "del", props: { children: "DEL" } },
+		] as Record<any, any>);
+		expect(renderMarkup("~~DEL~~TEXT", { context: "inline" })).toMatchObject([
+			{ type: "del", props: { children: "DEL" } },
+			"TEXT",
+		] as Record<any, any>);
+		expect(renderMarkup("TEXT~~DEL~~TEXT", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "del", props: { children: "DEL" } },
+			"TEXT",
+		] as Record<any, any>);
 
 		// Only match if it doesn't contain whitespace at the start/end of the element.
-		expect(renderMarkup("~AAA ~", { context: "inline" })).toEqual("~AAA ~");
-		expect(renderMarkup("~ AAA~", { context: "inline" })).toEqual("~ AAA~");
-		expect(renderMarkup("~ AAA ~", { context: "inline" })).toEqual("~ AAA ~");
-		expect(renderMarkup("~~AAA ~~", { context: "inline" })).toEqual("~~AAA ~~");
-		expect(renderMarkup("~~ AAA~~", { context: "inline" })).toEqual("~~ AAA~~");
-		expect(renderMarkup("~~ AAA ~~", { context: "inline" })).toEqual("~~ AAA ~~");
+		expect(renderMarkup("~AAA ~", { context: "inline" })).toBe("~AAA ~");
+		expect(renderMarkup("~ AAA~", { context: "inline" })).toBe("~ AAA~");
+		expect(renderMarkup("~ AAA ~", { context: "inline" })).toBe("~ AAA ~");
+		expect(renderMarkup("~~AAA ~~", { context: "inline" })).toBe("~~AAA ~~");
+		expect(renderMarkup("~~ AAA~~", { context: "inline" })).toBe("~~ AAA~~");
+		expect(renderMarkup("~~ AAA ~~", { context: "inline" })).toBe("~~ AAA ~~");
 	});
 	test("DEL (with hyphen)", () => {
 		expect(renderMarkup("-A-", { context: "inline" })).toMatchObject({ type: "del", props: { children: "A" } });
@@ -358,11 +463,21 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("-AAA BBB-", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
 		expect(renderMarkup("--AAA BBB--", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
 		expect(renderMarkup("------AAA BBB------", { context: "inline" })).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
-		expect(renderMarkup("BEFORE --AAA--", { context: "inline" })).toMatchObject(["BEFORE ", { type: "del", props: { children: "AAA" } }]);
-		expect(renderMarkup("--AAA-- AFTER", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "AAA" } }, " AFTER"]);
+		expect(renderMarkup("BEFORE --AAA--", { context: "inline" })).toMatchObject([
+			"BEFORE ",
+			{ type: "del", props: { children: "AAA" } },
+		] as Record<any, any>);
+		expect(renderMarkup("--AAA-- AFTER", { context: "inline" })).toMatchObject([
+			{ type: "del", props: { children: "AAA" } },
+			" AFTER",
+		] as Record<any, any>);
 
 		// Matching is non--greedy.
-		expect(renderMarkup("--AAA-- --AAA--", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "AAA" } }, " ", { type: "del", props: { children: "AAA" } }]);
+		expect(renderMarkup("--AAA-- --AAA--", { context: "inline" })).toMatchObject([
+			{ type: "del", props: { children: "AAA" } },
+			" ",
+			{ type: "del", props: { children: "AAA" } },
+		] as Record<any, any>);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("--BEFORE *STRONG* AFTER--", { context: "inline" })).toMatchObject({
@@ -375,17 +490,27 @@ describe("renderMarkup(): Inline rules", () => {
 		});
 
 		// Match even if the opening and closing punctuation is in the middle of the word.
-		expect(renderMarkup("TEXT--DEL--", { context: "inline" })).toMatchObject(["TEXT", { type: "del", props: { children: "DEL" } }]);
-		expect(renderMarkup("--DEL--TEXT", { context: "inline" })).toMatchObject([{ type: "del", props: { children: "DEL" } }, "TEXT"]);
-		expect(renderMarkup("TEXT--DEL--TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "del", props: { children: "DEL" } }, "TEXT"]);
+		expect(renderMarkup("TEXT--DEL--", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "del", props: { children: "DEL" } },
+		] as Record<any, any>);
+		expect(renderMarkup("--DEL--TEXT", { context: "inline" })).toMatchObject([
+			{ type: "del", props: { children: "DEL" } },
+			"TEXT",
+		] as Record<any, any>);
+		expect(renderMarkup("TEXT--DEL--TEXT", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "del", props: { children: "DEL" } },
+			"TEXT",
+		] as Record<any, any>);
 
 		// Only match if it doesn't contain whitespace at the start/end of the element.
-		expect(renderMarkup("-AAA -", { context: "inline" })).toEqual("-AAA -");
-		expect(renderMarkup("- AAA-", { context: "inline" })).toEqual("- AAA-");
-		expect(renderMarkup("- AAA -", { context: "inline" })).toEqual("- AAA -");
-		expect(renderMarkup("--AAA --", { context: "inline" })).toEqual("--AAA --");
-		expect(renderMarkup("-- AAA--", { context: "inline" })).toEqual("-- AAA--");
-		expect(renderMarkup("-- AAA --", { context: "inline" })).toEqual("-- AAA --");
+		expect(renderMarkup("-AAA -", { context: "inline" })).toBe("-AAA -");
+		expect(renderMarkup("- AAA-", { context: "inline" })).toBe("- AAA-");
+		expect(renderMarkup("- AAA -", { context: "inline" })).toBe("- AAA -");
+		expect(renderMarkup("--AAA --", { context: "inline" })).toBe("--AAA --");
+		expect(renderMarkup("-- AAA--", { context: "inline" })).toBe("-- AAA--");
+		expect(renderMarkup("-- AAA --", { context: "inline" })).toBe("-- AAA --");
 	});
 	test("MARK", () => {
 		expect(renderMarkup("=A=", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "A" } });
@@ -394,11 +519,21 @@ describe("renderMarkup(): Inline rules", () => {
 		expect(renderMarkup("=AAA BBB=", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "AAA BBB" } });
 		expect(renderMarkup("==AAA BBB==", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "AAA BBB" } });
 		expect(renderMarkup("======AAA BBB======", { context: "inline" })).toMatchObject({ type: "mark", props: { children: "AAA BBB" } });
-		expect(renderMarkup("BEFORE ==AAA==", { context: "inline" })).toMatchObject(["BEFORE ", { type: "mark", props: { children: "AAA" } }]);
-		expect(renderMarkup("==AAA== AFTER", { context: "inline" })).toMatchObject([{ type: "mark", props: { children: "AAA" } }, " AFTER"]);
+		expect(renderMarkup("BEFORE ==AAA==", { context: "inline" })).toMatchObject([
+			"BEFORE ",
+			{ type: "mark", props: { children: "AAA" } },
+		] as Record<any, any>);
+		expect(renderMarkup("==AAA== AFTER", { context: "inline" })).toMatchObject([
+			{ type: "mark", props: { children: "AAA" } },
+			" AFTER",
+		] as Record<any, any>);
 
 		// Matching is non==greedy.
-		expect(renderMarkup("==AAA== ==AAA==", { context: "inline" })).toMatchObject([{ type: "mark", props: { children: "AAA" } }, " ", { type: "mark", props: { children: "AAA" } }]);
+		expect(renderMarkup("==AAA== ==AAA==", { context: "inline" })).toMatchObject([
+			{ type: "mark", props: { children: "AAA" } },
+			" ",
+			{ type: "mark", props: { children: "AAA" } },
+		] as Record<any, any>);
 
 		// Can contain other inline elements.
 		expect(renderMarkup("==BEFORE *STRONG* AFTER==", { context: "inline" })).toMatchObject({
@@ -411,21 +546,31 @@ describe("renderMarkup(): Inline rules", () => {
 		});
 
 		// Match even if the opening and closing punctuation is in the middle of the word.
-		expect(renderMarkup("TEXT==DEL==", { context: "inline" })).toMatchObject(["TEXT", { type: "mark", props: { children: "DEL" } }]);
-		expect(renderMarkup("==DEL==TEXT", { context: "inline" })).toMatchObject([{ type: "mark", props: { children: "DEL" } }, "TEXT"]);
-		expect(renderMarkup("TEXT==DEL==TEXT", { context: "inline" })).toMatchObject(["TEXT", { type: "mark", props: { children: "DEL" } }, "TEXT"]);
+		expect(renderMarkup("TEXT==DEL==", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "mark", props: { children: "DEL" } },
+		] as Record<any, any>);
+		expect(renderMarkup("==DEL==TEXT", { context: "inline" })).toMatchObject([
+			{ type: "mark", props: { children: "DEL" } },
+			"TEXT",
+		] as Record<any, any>);
+		expect(renderMarkup("TEXT==DEL==TEXT", { context: "inline" })).toMatchObject([
+			"TEXT",
+			{ type: "mark", props: { children: "DEL" } },
+			"TEXT",
+		] as Record<any, any>);
 
 		// Only match if it doesn't contain whitespace at the start/end of the element.
-		expect(renderMarkup("=AAA =", { context: "inline" })).toEqual("=AAA =");
-		expect(renderMarkup("= AAA=", { context: "inline" })).toEqual("= AAA=");
-		expect(renderMarkup("= AAA =", { context: "inline" })).toEqual("= AAA =");
-		expect(renderMarkup("==AAA ==", { context: "inline" })).toEqual("==AAA ==");
-		expect(renderMarkup("== AAA==", { context: "inline" })).toEqual("== AAA==");
-		expect(renderMarkup("== AAA ==", { context: "inline" })).toEqual("== AAA ==");
+		expect(renderMarkup("=AAA =", { context: "inline" })).toBe("=AAA =");
+		expect(renderMarkup("= AAA=", { context: "inline" })).toBe("= AAA=");
+		expect(renderMarkup("= AAA =", { context: "inline" })).toBe("= AAA =");
+		expect(renderMarkup("==AAA ==", { context: "inline" })).toBe("==AAA ==");
+		expect(renderMarkup("== AAA==", { context: "inline" })).toBe("== AAA==");
+		expect(renderMarkup("== AAA ==", { context: "inline" })).toBe("== AAA ==");
 	});
 	test("Inline combinations", () => {
-		expect(renderMarkup(inlineMarkup, { context: "inline" })).toMatchObject(inlineElements);
-		expect(renderMarkup(wrappedInlineMarkup, { context: "inline" })).toMatchObject(wrappedInlineElements);
+		expect(renderMarkup(inlineMarkup, { context: "inline" })).toMatchObject(inlineElements as Record<any, any>);
+		expect(renderMarkup(wrappedInlineMarkup, { context: "inline" })).toMatchObject(wrappedInlineElements as Record<any, any>);
 	});
 });
 describe("renderMarkup(): Block rules", () => {
@@ -461,7 +606,7 @@ describe("renderMarkup(): Block rules", () => {
 		expect(renderMarkup("- ITEM\n\t- ITEM1\n\t- ITEM2")).toMatchObject(nestedUnorderedItemElements);
 
 		// List items can contain inlines.
-		expect(renderMarkup("- " + wrappedInlineMarkup)).toMatchObject({
+		expect(renderMarkup(`- ${wrappedInlineMarkup}`)).toMatchObject({
 			type: "ul",
 			props: { children: [{ type: "li", props: { children: wrappedInlineElements } }] },
 		});
@@ -480,10 +625,12 @@ describe("renderMarkup(): Block rules", () => {
 		expect(renderMarkup("1111. ITEM1\n2222. ITEM2\n3333. ITEM3")).toMatchObject(orderedItemElements);
 
 		// Nested.
-		expect(renderMarkup("1. PARENT1\n\t1111. ITEM1\n\t2222. ITEM2\n\t3333. ITEM3\n2. PARENT2\n3. PARENT3")).toMatchObject(nestedOrderedItemElements);
+		expect(renderMarkup("1. PARENT1\n\t1111. ITEM1\n\t2222. ITEM2\n\t3333. ITEM3\n2. PARENT2\n3. PARENT3")).toMatchObject(
+			nestedOrderedItemElements,
+		);
 
 		// List items can contain inlines.
-		expect(renderMarkup("369. " + wrappedInlineMarkup)).toMatchObject({
+		expect(renderMarkup(`369. ${wrappedInlineMarkup}`)).toMatchObject({
 			type: "ol",
 			props: { children: [{ type: "li", props: { value: 369, children: wrappedInlineElements } }] },
 		});
@@ -595,13 +742,13 @@ describe("renderMarkup(): React compatibility", () => {
 		});
 	});
 	test("Generated elements can be rendered without error", () => {
-		expect(() => renderToString(renderMarkup("PARAGRAPH") as React.ReactNode)).not.toThrow();
-		expect(() => renderToString(renderMarkup("- ITEM") as React.ReactNode)).not.toThrow();
-		expect(() => renderToString(renderMarkup("```\nCODE") as React.ReactNode)).not.toThrow();
+		expect(() => renderToString(renderMarkup("PARAGRAPH"))).not.toThrow();
+		expect(() => renderToString(renderMarkup("- ITEM"))).not.toThrow();
+		expect(() => renderToString(renderMarkup("```\nCODE"))).not.toThrow();
 	});
 });
 describe("renderMarkup(): Weird cases", () => {
 	test("Empty string is `null`", () => {
-		expect(renderMarkup("")).toEqual(null);
+		expect(renderMarkup("")).toBe(null);
 	});
 });

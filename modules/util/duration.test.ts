@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { DAY, HOUR, formatWhen, getDuration } from "../index.js";
 
 test("getDuration()", () => {

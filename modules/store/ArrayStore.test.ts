@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import type { ImmutableArray } from "../index.js";
 import { ArrayStore, runMicrotasks, runSequence } from "../index.js";
 

@@ -1,6 +1,3 @@
-/* eslint-disable no-console */
-
-import type { AsyncProvider, Provider } from "./Provider.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Updates } from "../util/update.js";
@@ -8,9 +5,6 @@ import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 
 /** Provider that logs operations to a synchronous source provider to the console. */
 export class DebugProvider<T extends Database> extends ThroughProvider<T> {
-	constructor(source: Provider<T>) {
-		super(source);
-	}
 	override getItem<K extends DataKey<T>>(collection: K, id: string): OptionalItem<T[K]> {
 		try {
 			const item = super.getItem(collection, id);
@@ -133,9 +127,6 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 
 /** Provider that logs operations to a synchronous source provider to the console. */
 export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider<T> {
-	constructor(source: AsyncProvider<T>) {
-		super(source);
-	}
 	override async getItem<K extends DataKey<T>>(collection: K, id: string): Promise<OptionalItem<T[K]>> {
 		try {
 			console.debug("⋯ GET", collection, id);

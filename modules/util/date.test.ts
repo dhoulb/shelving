@@ -1,3 +1,4 @@
+import { describe, expect, test } from "@jest/globals";
 import type { PossibleDate } from "../index.js";
 import { getOptionalDate, getOptionalYMD, getYMD } from "../index.js";
 
@@ -46,7 +47,7 @@ describe("getOptionalYMD()", () => {
 	test("getOptionalYMD(): Correctly converts invalid dates and other things to undefined", () => {
 		expect(getOptionalYMD(null)).toBe(undefined);
 		expect(getOptionalYMD("nope")).toBe(undefined);
-		expect(getOptionalYMD(new Date(Infinity))).toBe(undefined);
+		expect(getOptionalYMD(new Date(Number.POSITIVE_INFINITY))).toBe(undefined);
 		expect(getOptionalYMD(new Date("nope"))).toBe(undefined);
 	});
 });
@@ -68,7 +69,7 @@ describe("getYMD()", () => {
 	test("getYMD(): Correctly throws on invalid dates", () => {
 		expect(() => getYMD(null as unknown as PossibleDate)).toThrow(Error);
 		expect(() => getYMD("nope")).toThrow(Error);
-		expect(() => getYMD(new Date(Infinity))).toThrow(Error);
+		expect(() => getYMD(new Date(Number.POSITIVE_INFINITY))).toThrow(Error);
 		expect(() => getYMD(new Date("nope"))).toThrow(Error);
 	});
 });

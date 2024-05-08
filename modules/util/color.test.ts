@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { Color, ValueError, getColor, getOptionalColor } from "../index.js";
 
 test("toColor(): colors", () => {

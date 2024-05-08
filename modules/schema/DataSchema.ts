@@ -1,11 +1,11 @@
-import type { OptionalSchema } from "./OptionalSchema.js";
-import type { SchemaOptions } from "./Schema.js";
-import type { Data, Database } from "../util/data.js";
-import type { Validators } from "../util/validate.js";
 import { ValueFeedback } from "../feedback/Feedback.js";
+import type { Data, Database } from "../util/data.js";
 import { isData } from "../util/data.js";
+import type { Validators } from "../util/validate.js";
 import { validateData } from "../util/validate.js";
+import type { OptionalSchema } from "./OptionalSchema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
+import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** Allowed options for `DataSchema` */

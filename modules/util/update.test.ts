@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { expect, test } from "@jest/globals";
 import type { ImmutableArray, ImmutableDictionary, Updates } from "./index.js";
 import { getUpdates, updateData } from "./index.js";
 

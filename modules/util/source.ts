@@ -1,5 +1,5 @@
-import type { Class } from "./class.js";
 import { ValueError } from "../error/ValueError.js";
+import type { Class } from "./class.js";
 import { isObject } from "./object.js";
 
 /** Something that has a source of a specified type. */

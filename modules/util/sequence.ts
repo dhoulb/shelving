@@ -1,10 +1,10 @@
-import type { AsyncValueCallback, ValueCallback } from "./callback.js";
-import type { Report } from "./error.js";
-import type { Stop } from "./start.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { getDeferred, getDelay } from "./async.js";
+import type { AsyncValueCallback, ValueCallback } from "./callback.js";
 import { call, callMethod } from "./callback.js";
 import { STOP } from "./constants.js";
+import type { Report } from "./error.js";
+import type { Stop } from "./start.js";
 
 /**
  * Is a value an async iterable object?
@@ -16,18 +16,21 @@ export function isSequence(value: unknown): value is AsyncIterable<unknown> {
 }
 
 /** Infinite sequence that yields until a `SIGNAL` is received. */
-export async function* repeatUntil<T>(source: AsyncIterable<T>, ...signals: [Promise<typeof STOP>, ...Promise<typeof STOP>[]]): AsyncIterable<T> {
+export async function* repeatUntil<T>(
+	source: AsyncIterable<T>,
+	...signals: [Promise<typeof STOP>, ...Promise<typeof STOP>[]]
+): AsyncIterable<T> {
 	const iterator: AsyncIterator<T, unknown, undefined> = source[Symbol.asyncIterator]();
 	while (true) {
 		const result = await Promise.race([iterator.next(), ...signals]);
 		if (result === STOP) {
 			await iterator.return?.(); // Make sure we call `return()` on the iterator because it might do cleanup.
 			return STOP;
-		} else if (result.done) {
-			return result.value;
-		} else {
-			yield result.value;
 		}
+		if (result.done) {
+			return result.value;
+		}
+		yield result.value;
 	}
 }
 
@@ -60,7 +63,12 @@ export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallbac
 	void _runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError);
 	return resolve;
 }
-async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<void>, onNext?: ValueCallback<T>, onError?: Report): Promise<unknown> {
+async function _runSequence<T>(
+	sequence: AsyncIterator<T>,
+	stopped: Promise<void>,
+	onNext?: ValueCallback<T>,
+	onError?: Report,
+): Promise<unknown> {
 	try {
 		const result = await Promise.race([stopped, sequence.next()]);
 		if (!result) {
@@ -68,14 +76,14 @@ async function _runSequence<T>(sequence: AsyncIterator<T>, stopped: Promise<void
 			// Call `return()` on the iterator so it can perform any clean up.
 			callMethod(sequence, "return");
 			return;
-		} else if (result.done) {
+		}
+		if (result.done) {
 			// Stop iteration because iterator is done.
 			// Don't need to call `return()` on the iterator (assume it stopped itself when it sent `done: true`).
 			return;
-		} else {
-			// Forward the value to the next callback.
-			if (onNext) call(onNext, result.value);
 		}
+		// Forward the value to the next callback.
+		if (onNext) call(onNext, result.value);
 	} catch (thrown) {
 		// Forward the error to the error callback.
 		if (onError) call(onError, thrown);

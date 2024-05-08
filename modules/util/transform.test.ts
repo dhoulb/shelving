@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import { getUndefined, mapArray, mapObject, transformObject } from "../index.js";
 
 test("mapArray()", () => {

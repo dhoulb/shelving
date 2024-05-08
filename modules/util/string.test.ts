@@ -1,11 +1,27 @@
-import { NBSP, NNBSP, THINSP, ValueError, assertStringLength, getSlug, getString, getStringLength, getWords, isStringLength, sanitizeLines, sanitizeString, simplifyString, splitString } from "../index.js";
+import { describe, expect, test } from "@jest/globals";
+import {
+	NBSP,
+	NNBSP,
+	THINSP,
+	ValueError,
+	assertStringLength,
+	getSlug,
+	getString,
+	getStringLength,
+	getWords,
+	isStringLength,
+	sanitizeLines,
+	sanitizeString,
+	simplifyString,
+	splitString,
+} from "../index.js";
 
 describe("getString()", () => {
 	test("Correct returned value", () => {
 		expect(getString("aaa")).toBe("aaa");
 		expect(getString(123)).toBe("123");
 		expect(getString(123456789)).toBe("123,456,789");
-		expect(getString(123.10000)).toBe("123.1"); // prettier-ignore
+		expect(getString(123.1)).toBe("123.1"); // prettier-ignore
 		expect(getString(true)).toBe("Yes");
 		expect(getString(false)).toBe("No");
 		expect(getString(null)).toBe("None");
@@ -43,16 +59,16 @@ describe("sanitizeLines()", () => {
 		expect(sanitizeLines("AAA\vBBB")).toBe("AAA\nBBB");
 	});
 	test("Normalise runs of whitespace (except indentation) that isn't `\n` newline to ` ` space", () => {
-		expect(sanitizeLines(`AAA    BBB`)).toBe("AAA BBB");
-		expect(sanitizeLines(`AAA        BBB`)).toBe("AAA BBB");
+		expect(sanitizeLines("AAA    BBB")).toBe("AAA BBB");
+		expect(sanitizeLines("AAA        BBB")).toBe("AAA BBB");
 		expect(sanitizeLines(`AAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("AAA BBB");
 		// Leading indentation is not stripped.
-		expect(sanitizeLines(`\tAAA    BBB`)).toBe("\tAAA BBB");
-		expect(sanitizeLines(`\tAAA        BBB`)).toBe("\tAAA BBB");
+		expect(sanitizeLines("\tAAA    BBB")).toBe("\tAAA BBB");
+		expect(sanitizeLines("\tAAA        BBB")).toBe("\tAAA BBB");
 		expect(sanitizeLines(`\tAAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("\tAAA BBB");
 		// Leading indentation is not stripped on second line.
-		expect(sanitizeLines(`ZZZ\n\tAAA    BBB`)).toBe("ZZZ\n\tAAA BBB");
-		expect(sanitizeLines(`ZZZ\n\tAAA        BBB`)).toBe("ZZZ\n\tAAA BBB");
+		expect(sanitizeLines("ZZZ\n\tAAA    BBB")).toBe("ZZZ\n\tAAA BBB");
+		expect(sanitizeLines("ZZZ\n\tAAA        BBB")).toBe("ZZZ\n\tAAA BBB");
 		expect(sanitizeLines(`ZZZ\n\tAAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("ZZZ\n\tAAA BBB");
 	});
 	test("Normalise indentation", () => {
@@ -145,8 +161,8 @@ test("splitString()", () => {
 
 	// Max is higher.
 	expect(splitString("a/b", "/", 2, 3)).toEqual(["a", "b"]);
-	expect(splitString("a/b", "/", 2, Infinity)).toEqual(["a", "b"]);
-	expect(splitString("a/b/c/d/e/f", "/", 2, Infinity)).toEqual(["a", "b", "c", "d", "e", "f"]);
+	expect(splitString("a/b", "/", 2, Number.POSITIVE_INFINITY)).toEqual(["a", "b"]);
+	expect(splitString("a/b/c/d/e/f", "/", 2, Number.POSITIVE_INFINITY)).toEqual(["a", "b", "c", "d", "e", "f"]);
 
 	// Excess segments are joined into last segment..
 	expect(splitString("a/b/c", "/", 2, 2)).toEqual(["a", "b/c"]);

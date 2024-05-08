@@ -10,6 +10,7 @@ export class LazyDeferredSequence<T = void> extends DeferredSequence<T> implemen
 		super();
 		this._starter = new Starter(start);
 	}
+	// biome-ignore lint/suspicious/useAwait: We want the method to be async but we're using `yield*` rather than `await`
 	override async *[Symbol.asyncIterator](): AsyncGenerator<T, void, void> {
 		this._starter.start(this);
 		this._iterating++;
