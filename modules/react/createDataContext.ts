@@ -22,7 +22,9 @@ export interface DataContext<T extends Database> {
 }
 
 /**
- * Create a data context that can be provided to React elements and allows them to call `useItem()` and `useQuery()`
+ * Create a data context
+ * - Allows React elements to call `useItem()` and `useQuery()` to access items/queries in a database provider.
+ * - If the database has a `CacheProvider` in its chain then in-memory data will be used in the returned stores.
  */
 export function createDataContext<T extends Database>(provider: AbstractProvider<T>): DataContext<T> {
 	// biome-ignore lint/suspicious/noExplicitAny: The outer function enforces the type.
