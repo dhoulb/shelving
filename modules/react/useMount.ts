@@ -3,6 +3,9 @@ import { isArrayEqual } from "../util/equal.js";
 import type { Arguments } from "../util/function.js";
 import { type Start, Starter } from "../util/start.js";
 
+/**
+ * @todo DH: In React v19 `ref={}` allows a `Stop` callback to be returned, so this is probably unneccessary.
+ */
 export function useMount<T extends Element, A extends Arguments = []>(start: Start<[T, ...A]>, ...args: A): RefCallback<T> {
 	// biome-ignore lint/suspicious/noAssignInExpressions: This is the most efficient way to do this.
 	const internals = (useRef<{
@@ -22,10 +25,13 @@ export function useMount<T extends Element, A extends Arguments = []>(start: Sta
 			}
 		},
 	});
+
+	//
 	if (!isArrayEqual<A>(args, internals.args)) {
 		internals.args = args;
 		internals.starter.stop();
 		if (internals.current) internals.starter.start(internals.current, ...internals.args);
 	}
+
 	return internals.ref;
 }
