@@ -43,7 +43,7 @@
 		"build": "npm run build:setup && npm run build:copy && npm run build:typescript && npm run build:check && npm run build:jest",
 		"build:setup": "rm -rf ./dist && mkdir -p ./dist",
 		"build:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore",
-		"build:typescript": "tsc -p ./tsconfig.build.json",
+		"build:typescript": "tsc",
 		"build:check": "node ./dist/index.js",
 		"build:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.build.cjs"
 	},

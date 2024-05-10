@@ -8,7 +8,7 @@
 		"isolatedModules": true,
 		"verbatimModuleSyntax": true,
 		"jsx": "react-jsx",
-		"lib": ["dom", "dom.iterable", "es2022"],
+		"lib": ["dom", "dom.iterable", "esnext"],
 		"module": "nodenext",
 		"noEmitOnError": true,
 		"noErrorTruncation": true,
@@ -16,8 +16,9 @@
 		"noUncheckedIndexedAccess": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"target": "es2022",
-		"noEmit": true
+		"target": "esnext",
+		"rootDir": "./modules",
+		"outDir": "./dist"
 	},
 	"include": ["./modules/**/*", "./**/*.json"],
 	"exclude": ["node_modules", "dist"]
