@@ -5,18 +5,38 @@ import { getNumber } from "./number.js";
 import { getProps, isObject } from "./object.js";
 import { isDefined } from "./undefined.js";
 
-/** Set of named updates for a data object. */
+/**
+ * Set of named updates for a data object.
+ *
+ * Note: string templates infer best when you have fixed character(s) at the start,
+ *   so our `Update` syntax always
+ */
 export type Updates<T extends Data = Data> = {
-	// Set update.
+	/**
+	 * Set update (all branches)
+	 * - Can set `a` and `a.a1` in `{ a: { a1: 123 } }`
+	 * - Sometimes inference gets confused, if that happens use `=` syntax instead.
+	 */
 	readonly [K in BranchKey<T> as `${K}`]?: BranchData<T>[K] | undefined;
 } & {
-	// Set update.
+	/**
+	 * Set update (leaves only)
+	 * - Can set `a.a1` in `{ a: { a1: 123 } }`, but cannot set `a`
+	 * - Deeply-nested properties don't always infer when leaves and branches are combined.
+	 * - This syntax is more exact and will infer better.
+	 */
 	readonly [K in LeafKey<T> as `=${K}`]?: LeafData<T>[K] | undefined;
 } & {
-	// Sum update.
+	/**
+	 * Sum update.
+	 * - Increment/decrement numbers.
+	 */
 	readonly [K in LeafKey<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] | undefined : never;
 } & {
-	// With/omit update.
+	/**
+	 * With/omit update.
+	 * - Add or remove items from arrays.
+	 */
 	readonly [K in LeafKey<T> as `+[]${K}` | `-[]${K}`]?: LeafData<T>[K] extends ImmutableArray<unknown>
 		? LeafData<T>[K] | LeafData<T>[K][number] | undefined
 		: never;
