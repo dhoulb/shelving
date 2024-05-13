@@ -7,15 +7,19 @@ import { isDefined } from "./undefined.js";
 
 /** Set of named updates for a data object. */
 export type Updates<T extends Data = Data> = {
-	readonly [K in BranchKey<T> as `${K}`]?: BranchData<T>[K] | undefined; // Set update.
+	// Set update.
+	readonly [K in BranchKey<T> as `${K}`]?: BranchData<T>[K] | undefined;
 } & {
-	readonly [K in LeafKey<T> as `=${K}`]?: LeafData<T>[K] | undefined; // Set update.
+	// Set update.
+	readonly [K in LeafKey<T> as `=${K}`]?: LeafData<T>[K] | undefined;
 } & {
-	readonly [K in LeafKey<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] | undefined : never; // Sum update.
+	// Sum update.
+	readonly [K in LeafKey<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] | undefined : never;
 } & {
+	// With/omit update.
 	readonly [K in LeafKey<T> as `+[]${K}` | `-[]${K}`]?: LeafData<T>[K] extends ImmutableArray<unknown>
 		? LeafData<T>[K] | LeafData<T>[K][number] | undefined
-		: never; // With/omit update.
+		: never;
 };
 
 /** A single update to a keyed property in an object. */
