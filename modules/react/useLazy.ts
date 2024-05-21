@@ -1,8 +1,7 @@
-import { useRef } from "react";
 import { isArrayEqual } from "../util/equal.js";
 import type { Arguments } from "../util/function.js";
-import type { Lazy } from "../util/lazy.js";
-import { getLazy } from "../util/lazy.js";
+import { type Lazy, getLazy } from "../util/lazy.js";
+import { useInternals } from "./useInternals.js";
 
 /**
  * Use a memoised value with lazy initialisation.
@@ -13,17 +12,14 @@ export function useLazy<T, A extends Arguments = []>(value: (...args: A) => T, .
 export function useLazy<T>(value: T, ...args: Arguments): T;
 export function useLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T;
 export function useLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T {
-	// biome-ignore lint/suspicious/noAssignInExpressions: This is the most efficient way to do this.
-	const internals = (useRef<{
-		value: T;
-		args: A;
-	}>().current ||= {
-		value: getLazy(value, ...args),
-		args,
-	});
-	if (!isArrayEqual<A>(args, internals.args)) {
+	const internals = useInternals<{ value: T; args: A }>();
+
+	// Update `internals` if `args` changes.
+	if (internals.args === undefined || !isArrayEqual<A>(args, internals.args)) {
 		internals.value = getLazy(value, ...args);
 		internals.args = args;
 	}
-	return internals.value;
+
+	// biome-ignore lint/style/noNonNullAssertion: We know this is set.
+	return internals.value!;
 }
