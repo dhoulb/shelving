@@ -1,10 +1,10 @@
+import { RequiredError } from "../error/RequiredError.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { OptionalDataStore } from "../store/DataStore.js";
 import { NONE } from "../util/constants.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item } from "../util/item.js";
 import { getItem } from "../util/item.js";
-import { getRequired } from "../util/optional.js";
 import { runSequence } from "../util/sequence.js";
 import type { Stop } from "../util/start.js";
 import type { MemoryProvider } from "./MemoryProvider.js";
@@ -19,7 +19,9 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends Optiona
 
 	/** Get the data of this store (throws `RequiredError` if item doesn't exist). */
 	override get data(): Item<T[K]> {
-		return getRequired(this.value);
+		const item = this.value;
+		if (!item) throw new RequiredError(`Item must exist in "${this.collection}"`, this.id);
+		return item;
 	}
 
 	/** Set the data of this store. */
