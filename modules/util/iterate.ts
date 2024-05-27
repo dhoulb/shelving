@@ -77,11 +77,6 @@ export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T | undef
 }
 
 /** Yield chunks of a given size. */
-export function getChunks<T>(items: Iterable<T>, size: 1): Iterable<readonly [T]>;
-export function getChunks<T>(items: Iterable<T>, size: 2): Iterable<readonly [T, T]>;
-export function getChunks<T>(items: Iterable<T>, size: 3): Iterable<readonly [T, T, T]>;
-export function getChunks<T>(items: Iterable<T>, size: 4): Iterable<readonly [T, T, T, T]>;
-export function getChunks<T>(items: Iterable<T>, size: number): Iterable<readonly T[]>;
 export function* getChunks<T>(items: Iterable<T>, size: number): Iterable<readonly T[]> {
 	let chunk: T[] = [];
 	for (const item of items) {
