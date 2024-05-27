@@ -1,21 +1,21 @@
 # Run `npm upgrade` and then `npm run fix` every week.
 # If changes were made and the tests pass, commit the changes back.
-name: Upgrade
+name: Update
 on:
   workflow_dispatch:
   schedule:
     - cron: "* 2 * * SUN"
 jobs:
   upgrade:
-    name: Upgrade
+    name: Update
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: oven-sh/setup-bun@v1
       - name: install
         run: bun install
-      - name: upgrade
-        run: npm outdated && echo "Nothing to upgrade" || npm upgrade
+      - name: update
+        run: bun update
       - name: fix
         run: bun run fix
       - name: test
@@ -39,4 +39,4 @@ jobs:
           git config --global commit.gpgsign true
       - name: git commit
         run: |
-          git commit -am "chore: Upgrade" && git push || echo "Nothing to commit"
+          git commit -am "chore: Update" && git push || echo "Nothing to commit"
