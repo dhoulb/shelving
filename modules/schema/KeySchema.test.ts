@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
 import { Feedback, KEY, KeySchema, OPTIONAL_KEY } from "../index.js";
 

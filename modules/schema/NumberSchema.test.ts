@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import { Feedback, NUMBER, NumberSchema, OPTIONAL_NUMBER, Schema } from "../index.js";
 
 // Tests.
@@ -94,7 +94,7 @@ describe("options.max", () => {
 describe("options.step", () => {
 	test("Defaults to undefined", () => {
 		const schema = new NumberSchema({});
-		expect(schema.step).toBe(undefined);
+		expect<number | undefined>(schema.step).toBe(undefined);
 	});
 	test("Numbers with step are rounded correctly", () => {
 		const schema1 = new NumberSchema({ step: 1 });

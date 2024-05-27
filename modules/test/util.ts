@@ -1,4 +1,4 @@
-import { expect } from "@jest/globals";
+import { expect } from "bun:test";
 import type { Data } from "../util/data.js";
 import type { AnyFunction } from "../util/function.js";
 import type { Item } from "../util/item.js";

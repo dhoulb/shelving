@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import { DataStore, OptionalDataStore, RequiredError, runMicrotasks, runSequence } from "../index.js";
 
 test("DataStore.prototype.data", async () => {
@@ -41,7 +41,7 @@ test("OptionalDataStore.prototype.data", async () => {
 	type T = { a: number };
 	const store = new OptionalDataStore<T>(undefined);
 	expect(store).toBeInstanceOf(OptionalDataStore);
-	expect(store.value).toEqual(undefined);
+	expect<T | undefined>(store.value).toEqual(undefined);
 	expect(() => store.data).toThrow(RequiredError);
 	// Ons and onces.
 	const calls: (T | undefined)[] = [];
@@ -56,7 +56,7 @@ test("OptionalDataStore.prototype.data", async () => {
 	expect(store.data).toEqual({ a: 2 });
 	// Delete data value.
 	expect(store.unset()).toBe(undefined);
-	expect(store.value).toBe(undefined);
+	expect<T | undefined>(store.value).toBe(undefined);
 	expect(() => store.data).toThrow(RequiredError);
 	// Set undefined value.
 	store.value = undefined;

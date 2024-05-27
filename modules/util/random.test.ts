@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import { getRandom, getRandomCharacter, getRandomItem, getRandomKey } from "../index.js";
 
 test("getRandomCharacter()", () => {

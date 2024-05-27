@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import { getConcurrent, getDeferred } from "../index.js";
 
 describe("Deferred", () => {
@@ -12,7 +12,7 @@ describe("Deferred", () => {
 		setTimeout(() => {
 			resolve("ABC");
 		}, 50);
-		expect(await promise.then()).toBe("ABC");
+		expect<string>(await promise.then()).toBe("ABC");
 	});
 });
 describe("getConcurrent()", () => {

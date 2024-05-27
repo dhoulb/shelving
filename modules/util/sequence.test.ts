@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import type { MutableArray } from "../index.js";
 import { STOP, getDeferred, repeatDelay, repeatUntil, runSequence } from "../index.js";
 

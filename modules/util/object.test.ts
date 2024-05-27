@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import type { ImmutableDictionary, MutableDictionary } from "../index.js";
 import {
 	deleteDictionaryItems,

@@ -1,8 +1,9 @@
-import { expect, test } from "@jest/globals";
-import { type ImmutableArray, type OptionalItem, runSequence } from "../index.js";
-import { MemoryProvider, runMicrotasks } from "../index.js";
-import type { BasicData, BasicItemData, TestCollections } from "../test/index.js";
+import { expect, test } from "bun:test";
+import { type ImmutableArray, type Item, MemoryProvider, type OptionalItem, runMicrotasks, runSequence } from "../index.js";
 import {
+	type BasicData,
+	type PersonData,
+	type TestCollections,
 	basic1,
 	basic2,
 	basic3,
@@ -38,12 +39,12 @@ test("MemoryProvider: set/get/delete documents", () => {
 	expect(db.getItem("basics", "basic1")).toMatchObject(basic1);
 	expect(db.getItem("basics", "basic2")).toMatchObject(basic2);
 	expect(db.getItem("basics", "basic3")).toMatchObject(basic3);
-	expect(db.getItem("basics", "basicNone")).toBe(undefined);
+	expect<Item<BasicData> | undefined>(db.getItem("basics", "basicNone")).toBe(undefined);
 	expect(db.countQuery("basics", {})).toBe(3);
 	expect(db.getItem("people", "person1")).toMatchObject(person1);
 	expect(db.getItem("people", "person2")).toMatchObject(person2);
 	expect(db.getItem("people", "person3")).toMatchObject(person3);
-	expect(db.getItem("people", "peopleNone")).toBe(undefined);
+	expect<Item<PersonData> | undefined>(db.getItem("people", "peopleNone")).toBe(undefined);
 	expect(db.countQuery("people", {})).toBe(3);
 	// Update documents.
 	db.updateItem("basics", "basic1", { str: "NEW" });
@@ -73,10 +74,10 @@ test("MemoryProvider: set/get/delete collections", () => {
 	expect(db.getQuery("basics", {})).toEqual(basics);
 	expect(db.getItem("basics", "basic1")).toMatchObject(basic1);
 	expect(db.getItem("basics", "basic6")).toMatchObject(basic6);
-	expect(db.getItem("basics", "basicNone")).toBe(undefined);
+	expect<Item<BasicData> | undefined>(db.getItem("basics", "basicNone")).toBe(undefined);
 	expect(db.getQuery("people", {})).toEqual(people);
 	expect(db.getItem("people", "person4")).toMatchObject(person4);
-	expect(db.getItem("people", "peopleNone")).toBe(undefined);
+	expect<Item<PersonData> | undefined>(db.getItem("people", "peopleNone")).toBe(undefined);
 	// Delete collections.
 	db.deleteQuery("basics", {});
 	db.deleteQuery("people", {});
@@ -128,7 +129,7 @@ test("MemoryProvider: subscribing to documents", async () => {
 	const un1 = runSequence(db.getItemSequence("basics", "basic1"), v => calls1.push(v));
 	await runMicrotasks();
 	expect(calls1.length).toBe(1);
-	expect(calls1[0]).toBe(undefined);
+	expect<Item<BasicData> | undefined>(calls1[0]).toBe(undefined);
 	// Set.
 	db.setItem("basics", "basic1", basic1);
 	await runMicrotasks();
@@ -142,7 +143,7 @@ test("MemoryProvider: subscribing to documents", async () => {
 	// Delete.
 	db.deleteItem("basics", "basic1");
 	await runMicrotasks();
-	expect(calls1[3]).toBe(undefined);
+	expect<Item<BasicData> | undefined>(calls1[3]).toBe(undefined);
 	// Change unrelated documents.
 	db.setItem("basics", "basic2", basic2);
 	db.updateItem("basics", "basic2", { str: "NEW" });
@@ -161,7 +162,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	// Setup.
 	const db = new MemoryProvider<TestCollections>();
 	// Subscribe fn1.
-	const calls1: ImmutableArray<BasicItemData>[] = [];
+	const calls1: ImmutableArray<Item<BasicData>>[] = [];
 	const stop1 = runSequence(db.getQuerySequence("basics", {}), results => void calls1.push(results));
 	await runMicrotasks();
 	expect(calls1.length).toBe(1);
@@ -172,11 +173,11 @@ test("MemoryProvider: subscribing to collections", async () => {
 	expect(calls1.length).toBe(2);
 	expectOrderedKeys(calls1[1]!, [id1]); // id1 is added.
 	// Subscribe fn2.
-	const calls2: ImmutableArray<BasicItemData>[] = [];
+	const calls2: ImmutableArray<Item<BasicData>>[] = [];
 	const stop2 = runSequence(db.getQuerySequence("basics", {}), results => void calls2.push(results));
 	await runMicrotasks();
 	expectOrderedKeys(calls2[0]!, [id1]); // Called with current results.
-	expect(calls1[2]).toBe(undefined);
+	expect<ImmutableArray<Item<BasicData>> | undefined>(calls1[2]).toBe(undefined);
 	// Set basic2.
 	db.setItem("basics", "basic2", basic2);
 	await runMicrotasks();
@@ -204,7 +205,7 @@ test("MemoryProvider: subscribing to collections", async () => {
 	db.updateItem("basics", "basic3", { str: "NEW" });
 	await runMicrotasks();
 	expectOrderedKeys(calls1[6]!, [id1, "basic2", "basic3"]);
-	expect(calls2[6]).toBe(undefined);
+	expect<ImmutableArray<Item<BasicData>> | undefined>(calls2[6]).toBe(undefined);
 	// Unsubscribe fn1.
 	expect(stop1()).toBe(undefined);
 });
@@ -214,7 +215,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	db.setItem("basics", "basic6", basic6);
 	db.setItem("basics", "basic7", basic7);
 	// Subscribe (should find only basic7).
-	const calls1: ImmutableArray<BasicItemData>[] = [];
+	const calls1: ImmutableArray<Item<BasicData>>[] = [];
 	const stop1 = runSequence(db.getQuerySequence("basics", { "tags[]": "odd" }), results => void calls1.push(results)); // Query for odds.
 	await runMicrotasks();
 	expectUnorderedKeys(calls1[0]!, ["basic7"]);
@@ -225,7 +226,7 @@ test("MemoryProvider: subscribing to filter query", async () => {
 	// Set basic2 (shouldn't call fn1).
 	db.setItem("basics", "basic2", basic2);
 	await runMicrotasks();
-	expect(calls1[3]).toBe(undefined);
+	expect<ImmutableArray<Item<BasicData>> | undefined>(calls1[3]).toBe(undefined);
 	// Change basic2 and basic3 (should have updated basic3 in result).
 	db.updateQuery("basics", { id: ["basic2", "basic3"] }, { str: "NEW" });
 	await runMicrotasks();
@@ -247,14 +248,14 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	const db = new MemoryProvider<TestCollections>();
 	for (const { id, ...data } of basics) db.setItem("basics", id, data);
 	// Subscribe (should find only basic7).
-	const calls1: ImmutableArray<BasicItemData>[] = [];
+	const calls1: ImmutableArray<Item<BasicData>>[] = [];
 	const stop1 = runSequence(db.getQuerySequence("basics", { $order: "num", $limit: 2 }), arr => void calls1.push(arr));
 	await runMicrotasks();
 	expectOrderedKeys(calls1[0]!, ["basic1", "basic2"]);
 	// Delete basic9 (shouldn't affect result as it's outside the slice).
 	db.deleteItem("basics", "basic9");
 	await runMicrotasks();
-	expect(calls1[1]).toBe(undefined);
+	expect<ImmutableArray<Item<BasicData>> | undefined>(calls1[1]).toBe(undefined);
 	// Delete basic1 (should be removed from result, which brings in basic3).
 	db.deleteItem("basics", "basic1");
 	await runMicrotasks();
@@ -282,7 +283,7 @@ test("MemoryProvider: subscribing to sort and limit query", async () => {
 	// Delete basic8 (shouldn't call fn1).
 	db.deleteItem("basics", "basic8");
 	await runMicrotasks();
-	expect(calls1[6]).toBe(undefined);
+	expect<ImmutableArray<Item<BasicData>> | undefined>(calls1[6]).toBe(undefined);
 	// Check end result.
 	await runMicrotasks();
 	expectUnorderedKeys(db.getQuery("basics", {}), []);

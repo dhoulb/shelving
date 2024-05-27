@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import { Color, ValueError, getColor, getOptionalColor } from "../index.js";
 
 test("toColor(): colors", () => {
@@ -10,12 +10,12 @@ test("toColor(): colors", () => {
 	expect(getOptionalColor("ffffffff")).toBeInstanceOf(Color); // Can skip `#` hash.
 });
 test("toColor(): non-colors", () => {
-	expect(getOptionalColor("#f")).toBe(undefined);
-	expect(getOptionalColor("#ff")).toBe(undefined);
-	expect(getOptionalColor("#ffff")).toBe(undefined);
-	expect(getOptionalColor("#fffff")).toBe(undefined);
-	expect(getOptionalColor("#GGG")).toBe(undefined);
-	expect(getOptionalColor("#GGGGGG")).toBe(undefined);
+	expect<Color | undefined>(getOptionalColor("#f")).toBe(undefined);
+	expect<Color | undefined>(getOptionalColor("#ff")).toBe(undefined);
+	expect<Color | undefined>(getOptionalColor("#ffff")).toBe(undefined);
+	expect<Color | undefined>(getOptionalColor("#fffff")).toBe(undefined);
+	expect<Color | undefined>(getOptionalColor("#GGG")).toBe(undefined);
+	expect<Color | undefined>(getOptionalColor("#GGGGGG")).toBe(undefined);
 });
 test("getColor(): works correctly", () => {
 	expect(getColor("#00ccff")).toBeInstanceOf(Color);

@@ -1,6 +1,15 @@
-import { describe, expect, test } from "@jest/globals";
-import type { ImmutableDictionary, Validator } from "../index.js";
-import { BOOLEAN, DICTIONARY, DictionarySchema, Feedback, NUMBER, STRING, ValueFeedbacks } from "../index.js";
+import { describe, expect, test } from "bun:test";
+import {
+	BOOLEAN,
+	DICTIONARY,
+	DictionarySchema,
+	Feedback,
+	type ImmutableDictionary,
+	NUMBER,
+	STRING,
+	type Validator,
+	ValueFeedbacks,
+} from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -64,7 +73,7 @@ describe("options.items", () => {
 		const dict = { num1: 123, num2: 456, str: "abc" };
 		const schema = new DictionarySchema({ items: NUMBER });
 		try {
-			expect(schema.validate(dict)).toBe("Never");
+			expect<unknown>(schema.validate(dict)).toBe("Never");
 		} catch (invalid: any) {
 			expect(invalid).toBeInstanceOf(ValueFeedbacks);
 			expect(invalid).toEqual(

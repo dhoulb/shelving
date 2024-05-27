@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import type { ImmutableArray } from "../index.js";
 import { filterQueryItems, getFilters, getItemIDs, getOrders, matchQueryItem, queryItems, sortQueryItems } from "../index.js";
 import type { BasicData } from "../test/index.js";

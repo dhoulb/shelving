@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import type { Validator } from "../index.js";
 import { BOOLEAN, DATA, DataSchema, Feedback, NUMBER, STRING, StringSchema, ValueFeedbacks } from "../index.js";
 
@@ -109,7 +109,7 @@ describe("options.props", () => {
 			cats: NUMBER,
 		});
 		try {
-			expect(schema.validate(data)).toBe("Never");
+			expect<unknown>(schema.validate(data)).toBe("Never");
 		} catch (invalid: unknown) {
 			expect(invalid).toBeInstanceOf(ValueFeedbacks);
 			expect(invalid).toEqual(

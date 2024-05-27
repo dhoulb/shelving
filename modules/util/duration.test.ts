@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import { DAY, HOUR, formatWhen, getDuration } from "../index.js";
 
 test("getDuration()", () => {

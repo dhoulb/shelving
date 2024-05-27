@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import { countItems, getArray, getChunks, getRange, limitItems, mergeItems, reduceItems } from "../index.js";
 
 test("getRange()", () => {

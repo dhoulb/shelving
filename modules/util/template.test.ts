@@ -1,5 +1,5 @@
-import { describe, expect, test } from "@jest/globals";
-import { ValueError, getPlaceholders, matchTemplate, matchTemplates, renderTemplate } from "../index.js";
+import { describe, expect, test } from "bun:test";
+import { type ImmutableDictionary, ValueError, getPlaceholders, matchTemplate, matchTemplates, renderTemplate } from "../index.js";
 
 // Tests.
 describe("matchTemplate()", () => {
@@ -16,23 +16,23 @@ describe("matchTemplate()", () => {
 	});
 	test("Correct non-matches", () => {
 		// No params.
-		expect(matchTemplate("a", "b")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("a", "b")).toBe(undefined);
 		// Incorrect start.
-		expect(matchTemplate("-{a}", "|1")).toBe(undefined);
-		expect(matchTemplate("-{a}", "!!!-1")).toBe(undefined);
-		expect(matchTemplate("!!!-{a}", "-1")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("-{a}", "|1")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("-{a}", "!!!-1")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("!!!-{a}", "-1")).toBe(undefined);
 		// Incorrect separator.
-		expect(matchTemplate("-{a}-{b}-", "-1|2-")).toBe(undefined);
-		expect(matchTemplate("-{a}-{b}-", "-1-!!!-2-")).toBe(undefined);
-		expect(matchTemplate("-{a}-!!!-{b}-", "-1-2-")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("-{a}-{b}-", "-1|2-")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("-{a}-{b}-", "-1-!!!-2-")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("-{a}-!!!-{b}-", "-1-2-")).toBe(undefined);
 		// Incorrect end.
-		expect(matchTemplate("-{a}-{b}-", "-1-2|")).toBe(undefined);
-		expect(matchTemplate("-{a}-{b}-", "-1-2-!!!")).toBe(undefined);
-		expect(matchTemplate("-{a}-{b}-!!!", "-1-2-")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("-{a}-{b}-", "-1-2|")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("-{a}-{b}-", "-1-2-!!!")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("-{a}-{b}-!!!", "-1-2-")).toBe(undefined);
 		// Empty placeholder values.
-		expect(matchTemplate("{a}", "")).toEqual(undefined);
-		expect(matchTemplate("a/{b}", "a/")).toEqual(undefined);
-		expect(matchTemplate("a/{b}/{c}", "a/b/")).toEqual(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("{a}", "")).toEqual(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("a/{b}", "a/")).toEqual(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplate("a/{b}/{c}", "a/b/")).toEqual(undefined);
 	});
 	test("Cannot match two placeholders that touch", () => {
 		expect(() => matchTemplate(":a:b", "ab")).toThrow(ValueError);
@@ -111,7 +111,7 @@ describe("matchTemplates()", () => {
 	});
 	test("Correct non-matches", () => {
 		// No templates match.
-		expect(matchTemplates(["/:a/", "/:a/:b/"], "/a/b/c/")).toBe(undefined);
-		expect(matchTemplates(new Set(["/:a/", "/:a/:b/"]), "/a/b/c/")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplates(["/:a/", "/:a/:b/"], "/a/b/c/")).toBe(undefined);
+		expect<ImmutableDictionary<string> | undefined>(matchTemplates(new Set(["/:a/", "/:a/:b/"]), "/a/b/c/")).toBe(undefined);
 	});
 });

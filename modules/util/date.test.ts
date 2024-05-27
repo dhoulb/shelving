@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import type { PossibleDate } from "../index.js";
 import { getOptionalDate, getOptionalYMD, getYMD } from "../index.js";
 
@@ -16,17 +16,17 @@ describe("getOptionalDate()", () => {
 		expect(getOptionalDate(new Date("0000-01-01").getTime())).toBeInstanceOf(Date);
 	});
 	test("getOptionalDate(): Parses invalid values to undefined", () => {
-		expect(getOptionalDate(undefined)).toBe(undefined);
-		expect(getOptionalDate(null)).toBe(undefined);
-		expect(getOptionalDate("")).toBe(undefined);
-		expect(getOptionalDate(true)).toBe(undefined);
-		expect(getOptionalDate(false)).toBe(undefined);
-		expect(getOptionalDate(new Date(""))).toBe(undefined);
-		expect(getOptionalDate(() => null)).toBe(undefined);
-		expect(getOptionalDate(() => "")).toBe(undefined);
-		expect(getOptionalDate(() => true)).toBe(undefined);
-		expect(getOptionalDate(() => false)).toBe(undefined);
-		expect(getOptionalDate(() => new Date(""))).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(undefined)).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(null)).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate("")).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(true)).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(false)).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(new Date(""))).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(() => null)).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(() => "")).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(() => true)).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(() => false)).toBe(undefined);
+		expect<Date | undefined>(getOptionalDate(() => new Date(""))).toBe(undefined);
 	});
 });
 describe("getOptionalYMD()", () => {
@@ -45,10 +45,10 @@ describe("getOptionalYMD()", () => {
 		expect(typeof getOptionalYMD("now")).toBe("string");
 	});
 	test("getOptionalYMD(): Correctly converts invalid dates and other things to undefined", () => {
-		expect(getOptionalYMD(null)).toBe(undefined);
-		expect(getOptionalYMD("nope")).toBe(undefined);
-		expect(getOptionalYMD(new Date(Number.POSITIVE_INFINITY))).toBe(undefined);
-		expect(getOptionalYMD(new Date("nope"))).toBe(undefined);
+		expect<string | undefined>(getOptionalYMD(null)).toBe(undefined);
+		expect<string | undefined>(getOptionalYMD("nope")).toBe(undefined);
+		expect<string | undefined>(getOptionalYMD(new Date(Number.POSITIVE_INFINITY))).toBe(undefined);
+		expect<string | undefined>(getOptionalYMD(new Date("nope"))).toBe(undefined);
 	});
 });
 describe("getYMD()", () => {

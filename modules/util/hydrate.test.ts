@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import type { Data } from "../index.js";
 import { Feedback, Feedbacks, ValueFeedback, ValueFeedbacks, dehydrate, hydrate } from "../index.js";
 
@@ -17,7 +17,7 @@ test("hydrate(): Works correctly with class instances", () => {
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS);
 	expect(hydrated1).toBeInstanceOf(Feedback);
 	expect(original1).not.toBe(hydrated1);
-	expect(original1).toEqual(hydrated1);
+	expect<unknown>(original1).toEqual(hydrated1);
 
 	// Deep.
 	const original2 = new ValueFeedback("abc", {
@@ -83,7 +83,7 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 	const original3 = ["a", "b"] as const;
 	const dehydrated3 = dehydrate(original3, HYDRATIONS);
 	const hydrated3 = hydrate(dehydrated3, HYDRATIONS);
-	expect(original3).toEqual(hydrated3);
+	expect<unknown>(original3).toEqual(hydrated3);
 });
 test("hydrate(): Works correctly with plain objects of objects", () => {
 	// Flat.
@@ -126,5 +126,5 @@ test("hydrate(): Works correctly with plain objects of objects", () => {
 	const original3 = { str: "abc", num: 123 };
 	const dehydrated3 = dehydrate(original3, HYDRATIONS);
 	const hydrated3 = hydrate(dehydrated3, HYDRATIONS);
-	expect(original3).toEqual(hydrated3);
+	expect<unknown>(original3).toEqual(hydrated3);
 });

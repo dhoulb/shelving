@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import type { ImmutableArray, ImmutableDictionary, Updates } from "./index.js";
 import { getUpdates, updateData } from "./index.js";
 

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import {
 	ValueError,
 	boundNumber,
@@ -104,12 +104,12 @@ describe("getOptionalNumber()", () => {
 		expect(getOptionalNumber("-99999.99999")).toBe(-99999.99999);
 	});
 	test("Empty string returns undefined", () => {
-		expect(getOptionalNumber("")).toBe(undefined);
+		expect<number | undefined>(getOptionalNumber("")).toBe(undefined);
 	});
 	test("Non-numbers return undefined", () => {
-		expect(getOptionalNumber(".")).toBe(undefined);
-		expect(getOptionalNumber("a")).toBe(undefined);
-		expect(getOptionalNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(undefined);
+		expect<number | undefined>(getOptionalNumber(".")).toBe(undefined);
+		expect<number | undefined>(getOptionalNumber("a")).toBe(undefined);
+		expect<number | undefined>(getOptionalNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(undefined);
 	});
 });
 test("sumNumbers()", () => {

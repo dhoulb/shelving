@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import type { Validator } from "../index.js";
 import { ARRAY, ArraySchema, DATA, Feedback, NUMBER, STRING, ValueFeedbacks } from "../index.js";
 

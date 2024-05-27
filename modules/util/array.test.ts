@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import {
 	ValueError,
 	addArrayItem,
@@ -97,15 +97,15 @@ test("getNextItem()", () => {
 	const arr = [1, 2, 3];
 	expect(getOptionalNextItem(arr, 1)).toBe(2);
 	expect(getOptionalNextItem(arr, 2)).toBe(3);
-	expect(getOptionalNextItem(arr, 3)).toBe(undefined);
-	expect(getOptionalNextItem(arr, 4)).toBe(undefined);
+	expect<number | undefined>(getOptionalNextItem(arr, 3)).toBe(undefined);
+	expect<number | undefined>(getOptionalNextItem(arr, 4)).toBe(undefined);
 });
 test("getPrevItem()", () => {
 	const arr = [1, 2, 3];
-	expect(getOptionalPrevItem(arr, 1)).toBe(undefined);
+	expect<number | undefined>(getOptionalPrevItem(arr, 1)).toBe(undefined);
 	expect(getOptionalPrevItem(arr, 2)).toBe(1);
 	expect(getOptionalPrevItem(arr, 3)).toBe(2);
-	expect(getOptionalPrevItem(arr, 4)).toBe(undefined);
+	expect<number | undefined>(getOptionalPrevItem(arr, 4)).toBe(undefined);
 });
 test("shuffleArray()", () => {
 	const arr = [1, 2, 3];

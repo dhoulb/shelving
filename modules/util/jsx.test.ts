@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
 import type { JSXElement, JSXNode } from "../index.js";
 import { getJSXNodeElements, getJSXNodeText, renderMarkup } from "../index.js";

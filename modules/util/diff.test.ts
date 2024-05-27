@@ -1,28 +1,28 @@
-import { describe, expect, test } from "@jest/globals";
-import { SAME, deepDiff, deepDiffArray, deepDiffObject } from "../index.js";
+import { describe, expect, test } from "bun:test";
+import { type Data, SAME, deepDiff, deepDiffArray, deepDiffObject } from "../index.js";
 
-const arrFlat = [1, "b", true, false, null];
-const arrFlatSame = [1, "b", true, false, null];
-const arrFlatExtra = [1, "b", true, false, null, "MYSTERY"];
-const arrFlatMissing = [1, "b", true, false];
-const arrFlatShuffle = [true, 1, false, null, "b"];
+const arrFlat: readonly unknown[] = [1, "b", true, false, null];
+const arrFlatSame: readonly unknown[] = [1, "b", true, false, null];
+const arrFlatExtra: readonly unknown[] = [1, "b", true, false, null, "MYSTERY"];
+const arrFlatMissing: readonly unknown[] = [1, "b", true, false];
+const arrFlatShuffle: readonly unknown[] = [true, 1, false, null, "b"];
 const arrFlatEmpty: string[] = [];
 
-const objFlat = { a: 1, b: "C", c: true, d: false, e: null };
-const objFlatSame = { a: 1, b: "C", c: true, d: false, e: null };
-const objFlatExtra = { a: 1, b: "C", c: true, d: false, e: null, f: "MYSTERY" };
-const objFlatMissing = { a: 1, b: "C", c: true, d: false };
-const objFlatEmpty = {};
+const objFlat: Data = { a: 1, b: "C", c: true, d: false, e: null };
+const objFlatSame: Data = { a: 1, b: "C", c: true, d: false, e: null };
+const objFlatExtra: Data = { a: 1, b: "C", c: true, d: false, e: null, f: "MYSTERY" };
+const objFlatMissing: Data = { a: 1, b: "C", c: true, d: false };
+const objFlatEmpty: Data = {};
 
-const arrDeep = [arrFlat, { a: 1, b: "b", c: objFlat }];
-const arrDeepSame = [arrFlatSame, { a: 1, b: "b", c: objFlat }];
-const arrDeepExtra = [arrFlatSame, { a: 1, b: "b", c: objFlat, d: true }];
-const arrDeepMissing = [arrFlatSame, { a: 1 }];
+const arrDeep: readonly unknown[] = [arrFlat, { a: 1, b: "b", c: objFlat }];
+const arrDeepSame: readonly unknown[] = [arrFlatSame, { a: 1, b: "b", c: objFlat }];
+const arrDeepExtra: readonly unknown[] = [arrFlatSame, { a: 1, b: "b", c: objFlat, d: true }];
+const arrDeepMissing: readonly unknown[] = [arrFlatSame, { a: 1 }];
 
-const objDeep = { obj1: objFlat, obj2: { a: 1, b: "b" } };
-const objDeepSame = { obj1: objFlat, obj2: { a: 1, b: "b" } };
-const objDeepExtra = { obj1: objFlat, obj2: { a: 1, b: "b", c: "MYSTERY" } };
-const objDeepMissing = { obj1: objFlat, obj2: { a: 1 } };
+const objDeep: Data = { obj1: objFlat, obj2: { a: 1, b: "b" } };
+const objDeepSame: Data = { obj1: objFlat, obj2: { a: 1, b: "b" } };
+const objDeepExtra: Data = { obj1: objFlat, obj2: { a: 1, b: "b", c: "MYSTERY" } };
+const objDeepMissing: Data = { obj1: objFlat, obj2: { a: 1 } };
 
 describe("deepDiff()", () => {
 	test("deepDiff(): Diff equal simple values", () => {

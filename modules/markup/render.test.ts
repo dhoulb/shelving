@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
 import { renderMarkup } from "../index.js";

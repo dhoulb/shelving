@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import { getUndefined, mapArray, mapObject, transformObject } from "../index.js";
 
 test("mapArray()", () => {
@@ -14,7 +14,7 @@ test("mapObject()", () => {
 	expect(mapObject(obj, n => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
 });
 test("transformObject()", () => {
-	const obj = { a: 10, b: 20 };
+	const obj: { a?: number; b: number } = { a: 10, b: 20 };
 	// Function transforms.
 	expect(transformObject(obj, { b: n => n * n })).toEqual({ a: 10, b: 400 });
 	// `undefined` deletes the element.

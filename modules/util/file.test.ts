@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import { ValueError } from "../index.js";
 import { getFileExtension, getOptionalFileExtension } from "./file.js";
 
@@ -6,7 +6,7 @@ test("getOptionalFileExtension()", () => {
 	expect(getOptionalFileExtension("abc.jpg")).toBe("jpg");
 	expect(getOptionalFileExtension(".jpg")).toBe("jpg");
 	expect(getOptionalFileExtension("abc.something.jpg")).toBe("jpg");
-	expect(getOptionalFileExtension("something")).toBe(undefined);
+	expect<string | undefined>(getOptionalFileExtension("something")).toBe(undefined);
 });
 test("getFileExtension()", () => {
 	expect(getFileExtension("abc.jpg")).toBe("jpg");

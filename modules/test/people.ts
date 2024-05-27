@@ -9,12 +9,11 @@ export const PERSON_SCHEMA = DATA({
 	birthday: OPTIONAL_DATE,
 });
 export type PersonData = ValidatorType<typeof PERSON_SCHEMA>;
-export type PersonItemData = Item<PersonData>;
 
-export const person1: PersonItemData = { id: "person1", name: { first: "Dave", last: "Brook" }, birthday: "1985-12-06" };
-export const person2: PersonItemData = { id: "person2", name: { first: "Sally", last: "Callister" }, birthday: "1973-11-19" };
-export const person3: PersonItemData = { id: "person3", name: { first: "Sammy", last: "Canister" }, birthday: null };
-export const person4: PersonItemData = { id: "person4", name: { first: "Jilly", last: "Jones" }, birthday: null };
-export const person5: PersonItemData = { id: "person5", name: { first: "Terry", last: "Times" }, birthday: "1964-08-01" };
+export const person1: Item<PersonData> = { id: "person1", name: { first: "Dave", last: "Brook" }, birthday: "1985-12-06" };
+export const person2: Item<PersonData> = { id: "person2", name: { first: "Sally", last: "Callister" }, birthday: "1973-11-19" };
+export const person3: Item<PersonData> = { id: "person3", name: { first: "Sammy", last: "Canister" }, birthday: null };
+export const person4: Item<PersonData> = { id: "person4", name: { first: "Jilly", last: "Jones" }, birthday: null };
+export const person5: Item<PersonData> = { id: "person5", name: { first: "Terry", last: "Times" }, birthday: "1964-08-01" };
 
-export const people: ReadonlyArray<PersonItemData> = [person1, person2, person3, person4, person5];
+export const people: ReadonlyArray<Item<PersonData>> = [person1, person2, person3, person4, person5];

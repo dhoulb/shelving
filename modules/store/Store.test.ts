@@ -1,4 +1,4 @@
-import { expect, test } from "@jest/globals";
+import { expect, test } from "bun:test";
 import { NONE, Store, runMicrotasks, runSequence } from "../index.js";
 import { expectToThrowPromiseLike } from "../test/util.js";
 

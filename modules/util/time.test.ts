@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import { Time, ValueError, getOptionalTime, getTime } from "../index.js";
 
 test("getOptionalTime()", () => {
@@ -14,9 +14,9 @@ test("getOptionalTime()", () => {
 	expect(getOptionalTime("18:19:20.123")).toBeInstanceOf(Time);
 
 	// Not parseable.
-	expect(getOptionalTime(undefined)).toBe(undefined);
-	expect(getOptionalTime("")).toBe(undefined);
-	expect(getOptionalTime(null)).toBe(undefined);
+	expect<Time | undefined>(getOptionalTime(undefined)).toBe(undefined);
+	expect<Time | undefined>(getOptionalTime("")).toBe(undefined);
+	expect<Time | undefined>(getOptionalTime(null)).toBe(undefined);
 });
 test("getTime()", () => {
 	// Parsed as date.
@@ -58,9 +58,9 @@ describe("Time", () => {
 		expect(Time.from("tomorrow")).toBeInstanceOf(Time);
 
 		// Parse misc undefined.
-		expect(Time.from("")).toBe(undefined);
-		expect(Time.from(undefined)).toBe(undefined);
-		expect(Time.from(null)).toBe(undefined);
+		expect<Time | undefined>(Time.from("")).toBe(undefined);
+		expect<Time | undefined>(Time.from(undefined)).toBe(undefined);
+		expect<Time | undefined>(Time.from(null)).toBe(undefined);
 	});
 	test(".h, .m. .s, .ms", () => {
 		expect(Time.from("18:19:20.123")?.h).toBe(18);

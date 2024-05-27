@@ -17,9 +17,8 @@ export const BASIC_SCHEMA = DATA({
 	sub: DATA({ str: STRING, num: NUMBER, odd: BOOLEAN, even: BOOLEAN }),
 });
 export type BasicData = ValidatorType<typeof BASIC_SCHEMA>;
-export type BasicItemData = Item<BasicData>;
 
-export const basic1: BasicItemData = {
+export const basic1: Item<BasicData> = {
 	id: "basic1",
 	str: "aaa",
 	num: 100,
@@ -29,7 +28,7 @@ export const basic1: BasicItemData = {
 	tags: ["odd", "prime"],
 	sub: { str: "aaa", num: 100, even: false, odd: true },
 };
-export const basic2: BasicItemData = {
+export const basic2: Item<BasicData> = {
 	id: "basic2",
 	str: "bbb",
 	num: 200,
@@ -39,7 +38,7 @@ export const basic2: BasicItemData = {
 	tags: ["even", "prime"],
 	sub: { str: "bbb", num: 200, even: true, odd: false },
 };
-export const basic3: BasicItemData = {
+export const basic3: Item<BasicData> = {
 	id: "basic3",
 	str: "ccc",
 	num: 300,
@@ -49,7 +48,7 @@ export const basic3: BasicItemData = {
 	tags: ["odd", "prime"],
 	sub: { str: "ccc", num: 300, even: false, odd: true },
 };
-export const basic4: BasicItemData = {
+export const basic4: Item<BasicData> = {
 	id: "basic4",
 	str: "ddd",
 	num: 400,
@@ -59,7 +58,7 @@ export const basic4: BasicItemData = {
 	tags: ["even"],
 	sub: { str: "ddd", num: 400, even: true, odd: false },
 };
-export const basic5: BasicItemData = {
+export const basic5: Item<BasicData> = {
 	id: "basic5",
 	str: "eee",
 	num: 500,
@@ -69,7 +68,7 @@ export const basic5: BasicItemData = {
 	tags: ["odd", "prime"],
 	sub: { str: "eee", num: 500, even: false, odd: true },
 };
-export const basic6: BasicItemData = {
+export const basic6: Item<BasicData> = {
 	id: "basic6",
 	str: "fff",
 	num: 600,
@@ -79,7 +78,7 @@ export const basic6: BasicItemData = {
 	tags: ["even"],
 	sub: { str: "fff", num: 600, even: true, odd: false },
 };
-export const basic7: BasicItemData = {
+export const basic7: Item<BasicData> = {
 	id: "basic7",
 	str: "ggg",
 	num: 700,
@@ -89,7 +88,7 @@ export const basic7: BasicItemData = {
 	tags: ["odd", "prime"],
 	sub: { str: "ggg", num: 700, even: false, odd: true },
 };
-export const basic8: BasicItemData = {
+export const basic8: Item<BasicData> = {
 	id: "basic8",
 	str: "hhh",
 	num: 800,
@@ -99,7 +98,7 @@ export const basic8: BasicItemData = {
 	tags: ["even"],
 	sub: { str: "hhh", num: 800, even: true, odd: false },
 };
-export const basic9: BasicItemData = {
+export const basic9: Item<BasicData> = {
 	id: "basic9",
 	str: "iii",
 	num: 900,
@@ -110,7 +109,7 @@ export const basic9: BasicItemData = {
 	sub: { str: "iii", num: 900, even: false, odd: true },
 };
 
-export const basics: ReadonlyArray<BasicItemData> = [basic3, basic5, basic7, basic4, basic1, basic2, basic8, basic6, basic9];
+export const basics: ReadonlyArray<Item<BasicData>> = [basic3, basic5, basic7, basic4, basic1, basic2, basic8, basic6, basic9];
 
 export const basic999: BasicData = {
 	str: "zzz",

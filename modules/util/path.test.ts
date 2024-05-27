@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 import { ValueError, getPath, isAbsolutePath, isPathProud } from "../index.js";
 
 test("isAbsolutePath()", () => {
