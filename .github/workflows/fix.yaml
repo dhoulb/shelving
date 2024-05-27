@@ -14,7 +14,7 @@ jobs:
       - name: fix
         run: bun run fix
       - name: test
-          bun run test
+        run: bun run test
       - name: git config
         env:
           BOT_USER_NAME: ${{ vars.BOT_USER_NAME }}
