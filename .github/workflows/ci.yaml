@@ -17,7 +17,6 @@ jobs:
       - name: build
         run: bun run build
       - name: git config
-        shell: bash
         env:
           BOT_USER_NAME: ${{ vars.BOT_USER_NAME }}
           BOT_USER_ID: ${{ vars.BOT_USER_ID }}

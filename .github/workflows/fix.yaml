@@ -8,11 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
+      - uses: oven-sh/setup-bun@v1
+      - name: install
+        run: bun install
+      - name: fix
+        run: bun run fix
+      - name: test
+          bun run test
       - name: git config
-        shell: bash
         env:
           BOT_USER_NAME: ${{ vars.BOT_USER_NAME }}
           BOT_USER_ID: ${{ vars.BOT_USER_ID }}
@@ -29,10 +32,6 @@ jobs:
           git config --global gpg.format ssh
           git config --global user.signingkey ~/.ssh/git.pub
           git config --global commit.gpgsign true
-      - name: npm run fix
-        shell: bash
+      - name: git commit
         run: |
-          npm ci
-          npm run fix
-          npm run test
-          git commit -am "style: npm run fix" && git push || echo "Nothing to commit"
+          git commit -am "style: Fix" && git push || echo "Nothing to commit"
