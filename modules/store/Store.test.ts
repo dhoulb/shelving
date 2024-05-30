@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
 import { NONE, Store, runMicrotasks, runSequence } from "../index.js";
-import { expectToThrowPromiseLike } from "../test/util.js";
+import { EXPECT_PROMISELIKE } from "../test/util.js";
 
 test("No initial value", async () => {
 	const store = new Store<number>(NONE);
-	// SUbscribe.
+	// Subscribe.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
 	const stop1 = runSequence(store, v => calls1.push(v));
@@ -12,7 +12,12 @@ test("No initial value", async () => {
 	await runMicrotasks();
 	// Get with no value throws promise.
 	expect(store.loading).toBe(true);
-	expectToThrowPromiseLike(() => store.value);
+	try {
+		store.value;
+		expect(false).toBe(true); // Not reached.
+	} catch (thrown) {
+		expect(thrown).toMatchObject(EXPECT_PROMISELIKE);
+	}
 	// Set initial value.
 	store.value = 111;
 	expect(store.loading).toBe(false);
