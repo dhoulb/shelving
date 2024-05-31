@@ -21,7 +21,7 @@ describe("getString()", () => {
 		expect(getString("aaa")).toBe("aaa");
 		expect(getString(123)).toBe("123");
 		expect(getString(123456789)).toBe("123,456,789");
-		expect(getString(123.1)).toBe("123.1"); // prettier-ignore
+		expect(getString(123.1)).toBe("123.1");
 		expect(getString(true)).toBe("Yes");
 		expect(getString(false)).toBe("No");
 		expect(getString(null)).toBe("None");

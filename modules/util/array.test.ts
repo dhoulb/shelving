@@ -76,7 +76,7 @@ test("filterArray()", () => {
 			isArrayWith,
 			5,
 		),
-	).toEqual([[4, 5, 6]]); // prettier-ignore
+	).toEqual([[4, 5, 6]]);
 });
 test("addArrayItem()", () => {
 	const arr = [1, 2, 3];
