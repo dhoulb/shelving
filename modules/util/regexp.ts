@@ -22,8 +22,14 @@ export function assertRegExp(value: unknown): asserts value is RegExp {
 }
 
 /** Convert a string to a regular expression that matches that string. */
-export function getRegExp<T extends string>(pattern: `(?<${T}>${string})`, flags?: string): NamedRegExp<{ [K in T]: string }>; // Detect named capturing groups.
-export function getRegExp(pattern: PossibleRegExp, flags?: string): RegExp;
+export function getRegExp<T extends NamedRegExpData>(
+	pattern: NamedRegExp<T>,
+	flags?: string,
+): T extends NamedRegExpData ? NamedRegExp<T> : RegExp;
+export function getRegExp<T extends NamedRegExpData | undefined = undefined>(
+	pattern: PossibleRegExp,
+	flags?: string,
+): T extends NamedRegExpData ? NamedRegExp<T> : RegExp;
 export function getRegExp(pattern: PossibleRegExp, flags?: string): RegExp {
 	return typeof pattern === "string" ? new RegExp(pattern, flags) : pattern;
 }
