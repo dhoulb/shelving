@@ -2,10 +2,12 @@ import { describe, expect, test } from "bun:test";
 import type { MutableArray } from "../index.js";
 import { STOP, getDeferred, repeatDelay, repeatUntil, runSequence } from "../index.js";
 
+const DELAY = 50;
+
 test("repeatUntil() and repeatDelay()", async () => {
 	const yielded: number[] = [];
 	const { promise, resolve } = getDeferred<typeof STOP>();
-	for await (const count of repeatUntil(repeatDelay(50), promise)) {
+	for await (const count of repeatUntil(repeatDelay(DELAY), promise)) {
 		yielded.push(count);
 		if (count >= 3) resolve(STOP);
 	}
@@ -27,7 +29,7 @@ describe("runSequence()", () => {
 		};
 		const numbers: MutableArray<number> = [];
 		const stop = runSequence(iterable, n => numbers.push(n));
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		await new Promise(resolve => setTimeout(resolve, DELAY));
 		stop();
 		expect(numbers).toEqual([1, 2]);
 	});
@@ -52,7 +54,7 @@ describe("runSequence()", () => {
 			n => numbers.push(n),
 			e => errors.push(e),
 		);
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		await new Promise(resolve => setTimeout(resolve, DELAY));
 		stop();
 		expect(numbers).toEqual([1, 2]);
 		expect(errors).toEqual([new Error("ERR")]);
