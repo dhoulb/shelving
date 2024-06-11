@@ -15,6 +15,7 @@
 		"rules": {
 			"recommended": true,
 			"correctness": {
+				"noConstantMathMinMaxClamp": "error",
 				"noUndeclaredVariables": "error",
 				"noUnusedImports": "error",
 				"useHookAtTopLevel": "error"
@@ -35,11 +36,10 @@
 			},
 			"nursery": {
 				"noDuplicateJsonKeys": "error",
-				"noCssEmptyBlock": "error",
+				"noEmptyBlock": "error",
 				"noUnknownFunction": "error",
 				"noUnknownUnit": "error",
 				"useConsistentBuiltinInstantiation": "error",
-				"noConstantMathMinMaxClamp": "error",
 				"useGenericFontNames": "error"
 			}
 		}

@@ -39,7 +39,7 @@
 		"test:types": "tsc --noEmit",
 		"test:unit": "bun test",
 		"fix": "bun run fix:biome",
-		"fix:biome": "biome check --apply .",
+		"fix:biome": "biome check --write .",
 		"build": "bun run build:setup && bun run build:copy && bun run build:emit && bun run build:test:syntax && bun run build:test:unit",
 		"build:setup": "rm -rf ./dist && mkdir -p ./dist",
 		"build:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore",
@@ -48,7 +48,7 @@
 		"build:test:unit": "bun test ./dist/**/*.test.js --bail"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.7.3",
+		"@biomejs/biome": "^1.8.1",
 		"@google-cloud/firestore": "^7.7.0",
 		"@types/bun": "^1.1.3",
 		"@types/react": "^18.3.3",
