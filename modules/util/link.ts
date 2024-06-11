@@ -5,7 +5,7 @@ import type { Path } from "./path.js";
 import { type PossibleURL, getOptionalURL, isURL } from "./url.js";
 
 /** Default whitelist for URL schemes. */
-const _SCHEMES = ["http:", "https:"];
+const SCHEMES: readonly string[] = ["http:", "https:"];
 
 /**
  * URL string with a `scheme:` at the start and a path component, e.g. `https://` or `file://`
@@ -15,16 +15,33 @@ const _SCHEMES = ["http:", "https:"];
  */
 export type AbsoluteLink = `${string}:${string}`;
 
-/** Relative link starts with `./` or `../` or `/` */
+/**
+ * Relative link starts with `./` or `../` or `/`
+ * @example "/a/b/c"
+ * @example "./d/e/f"
+ * @example "../g/h/i"
+ */
 export type RelativeLink = Path;
 
-/** Either an absolute URL string or a relative URL string. */
+/**
+ * Either an absolute URL string or a relative URL string.
+ * @example "http://www.google.com"
+ * @example "/a/b/c"
+ * @example "./d/e/f"
+ * @example "../g/h/i"
+ */
 export type Link = AbsoluteLink | RelativeLink;
 
-/** List of allowed schemes for a link. */
+/**
+ * List of allowed schemes for a link.
+ * @example ["http:", "https:", "mailto:"]
+ */
 export type LinkSchemes = ImmutableArray<string>;
 
-/** List of allowed hosts for a link. */
+/**
+ * List of allowed hosts for a link.
+ * @example ["google.com", "www.google.com"]
+ */
 export type LinkHosts = ImmutableArray<string>;
 
 /**
@@ -44,7 +61,7 @@ export function isLinkURL(value: unknown): value is AbsoluteLinkURL {
 export function getOptionalLinkURL(
 	possible: Optional<PossibleURL>,
 	base?: AbsoluteLinkURL | AbsoluteLink,
-	schemes: LinkSchemes = _SCHEMES,
+	schemes: LinkSchemes = SCHEMES,
 	hosts?: LinkHosts,
 ): AbsoluteLinkURL | undefined {
 	const url = getOptionalURL(possible, base);
@@ -67,7 +84,7 @@ export function getLinkURL(
 export function getOptionalLink(
 	possible: Optional<PossibleURL>,
 	base?: AbsoluteLinkURL | AbsoluteLink,
-	schemes: LinkSchemes = _SCHEMES,
+	schemes: LinkSchemes = SCHEMES,
 	hosts?: LinkHosts,
 ): AbsoluteLink | undefined {
 	const url = getOptionalURL(possible, base);
