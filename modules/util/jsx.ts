@@ -2,17 +2,16 @@ import { isArray } from "./array.js";
 
 /** Set of valid props for a JSX element. */
 export interface JSXProps {
-	[key: string]: unknown;
-	children?: JSXNode;
+	readonly [key: string]: unknown;
+	readonly children?: JSXNode;
 }
 
 /** JSX element (similar to `React.ReactElement`)  */
 export interface JSXElement<P extends JSXProps = JSXProps> {
-	type: string | ((props: P) => JSXNode | null);
-	props: P;
-	key: string | null;
-	ref?: null;
-	$$typeof?: symbol;
+	readonly type: string | ((props: P) => JSXNode | null);
+	readonly props: P;
+	readonly key: string | null;
+	readonly $$typeof?: symbol;
 }
 
 /** JSX node (similar to `React.ReactNode`) */
