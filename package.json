@@ -48,9 +48,9 @@
 		"build:test:unit": "bun test ./dist/**/*.test.js --bail"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.8.2",
-		"@google-cloud/firestore": "^7.8.0",
-		"@types/bun": "^1.1.5",
+		"@biomejs/biome": "^1.8.3",
+		"@google-cloud/firestore": "^7.9.0",
+		"@types/bun": "^1.1.6",
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
 		"firebase": "^10.12.2",
