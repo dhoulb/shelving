@@ -14,8 +14,10 @@
 		"noErrorTruncation": true,
 		"noImplicitOverride": true,
 		"noUncheckedIndexedAccess": true,
+		"noUncheckedSideEffectImports": true,
 		"skipLibCheck": true,
 		"strict": true,
+		"strictBuiltinIteratorReturn": true,
 		"target": "esnext",
 		"rootDir": "./modules",
 		"outDir": "./dist"
