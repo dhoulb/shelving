@@ -35,6 +35,8 @@ type UnitProps<T extends string> = {
 export class Unit<K extends string> {
 	private readonly _to: Conversions<K> | undefined;
 
+	/** `UnitList` this unit belongs to. */
+	public readonly list: UnitList<K>;
 	/** String key for this unit, e.g. `kilometer` */
 	public readonly key: K;
 	/** Short abbreviation for this unit, e.g. `km` (defaults to first letter of `id`). */
@@ -51,12 +53,13 @@ export class Unit<K extends string> {
 
 	constructor(
 		/** `UnitList` this unit belongs to. */
-		public readonly list: UnitList<K>,
+		list: UnitList<K>,
 		/** String key for this unit, e.g. `kilometer` */
 		key: K,
 		/** Props to configure this unit. */
 		{ abbr = key.slice(0, 1), singular = key.replace(/-/, " "), plural = `${singular}s`, to }: UnitProps<K>,
 	) {
+		this.list = list;
 		this.key = key;
 		this.abbr = abbr;
 		this.singular = singular;
