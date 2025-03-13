@@ -55,7 +55,7 @@ describe("LazyDeferredSequence", () => {
 		await iterator1.next();
 		expect((sequence as unknown as Data)._iterating).toBe(1);
 		expect(started).toBe(true);
-		await iterator1.return();
+		await iterator1.return?.();
 		expect(started).toBe(false);
 	});
 });

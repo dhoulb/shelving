@@ -1,3 +1,3 @@
-export * from "./AbstractGenerator.js";
-export * from "./ThroughGenerator.js";
-export * from "./InspectGenerator.js";
+export * from "./AbstractIterator.js";
+export * from "./ThroughIterator.js";
+export * from "./InspectIterator.js";

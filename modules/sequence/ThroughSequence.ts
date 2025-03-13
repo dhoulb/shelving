@@ -1,7 +1,7 @@
 import { AbstractSequence } from "./AbstractSequence.js";
 
 /** Async iterable that pulls values from a source async iterable. */
-export class ThroughSequence<T, R, N> extends AbstractSequence<T, R, N> {
+export class ThroughSequence<T, R, N> extends AbstractSequence<T, R, N> implements AsyncIterator<T, R, N>, AsyncIterable<T, R, N> {
 	private readonly _source: AsyncIterator<T, R, N>;
 	constructor(source: AsyncIterator<T, R, N>) {
 		super();

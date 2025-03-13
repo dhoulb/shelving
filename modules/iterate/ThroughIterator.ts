@@ -1,14 +1,14 @@
-import { AbstractGenerator } from "./AbstractGenerator.js";
+import { AbstractIterator } from "./AbstractIterator.js";
 
 /** Iterable that pulls values from a source iterable. */
-export class ThroughGenerator<T, R, N> extends AbstractGenerator<T, R, N> {
+export class ThroughIterator<T, R, N> extends AbstractIterator<T, R, N> implements Iterator<T, R, N>, Iterable<T, R, N> {
 	private readonly _source: Iterator<T, R, N>;
 	constructor(iterator: Iterator<T, R, N>) {
 		super();
 		this._source = iterator;
 	}
 
-	// Implement `AbstractGenerator`
+	// Implement `AbstractIterator`
 	next(value: N): IteratorResult<T, R> {
 		return this._source.next(value);
 	}

@@ -1,5 +1,5 @@
 /** Sequence of values designed to be extended that implements the full async generator protocol. */
-export abstract class AbstractSequence<T, R, N> implements AsyncGenerator<T, R, N> {
+export abstract class AbstractSequence<T, R, N> implements AsyncIterator<T, R, N>, AsyncIterable<T, R, N> {
 	readonly [Symbol.toStringTag] = "Sequence";
 
 	// Implement `AsyncIterator`
@@ -14,7 +14,7 @@ export abstract class AbstractSequence<T, R, N> implements AsyncGenerator<T, R, 
 	}
 
 	// Implement `AsyncIterable`
-	[Symbol.asyncIterator](): AsyncGenerator<T, R> {
+	[Symbol.asyncIterator](): AsyncIterator<T, R, N> {
 		return this;
 	}
 }

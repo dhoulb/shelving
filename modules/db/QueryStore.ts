@@ -105,7 +105,7 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 	}
 
 	// Implement `Iteratable`
-	[Symbol.iterator](): Iterator<Item<T[K]>> {
+	override [Symbol.iterator](): Iterator<Item<T[K]>> {
 		return this.value.values();
 	}
 }

@@ -1,7 +1,5 @@
 /** Abstract generator designed to be extended that implements the full generator protocol. */
-export abstract class AbstractGenerator<T, R, N> implements Generator<T, R, N> {
-	readonly [Symbol.toStringTag] = "Generator";
-
+export abstract class AbstractIterator<T, R, N> implements Iterator<T, R, N>, Iterable<T, R, N> {
 	// Implement `Iterator`
 	abstract next(value: N): IteratorResult<T, R>;
 	throw(thrown: unknown): IteratorResult<T, R> {
@@ -14,7 +12,7 @@ export abstract class AbstractGenerator<T, R, N> implements Generator<T, R, N> {
 	}
 
 	// Implement `Iterable`
-	[Symbol.iterator](): Generator<T, R, N> {
+	[Symbol.iterator](): Iterator<T, R, N> {
 		return this;
 	}
 }

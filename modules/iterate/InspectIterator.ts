@@ -1,6 +1,6 @@
 import { StateError } from "../error/StateError.js";
 import type { Mutable } from "../util/object.js";
-import { ThroughGenerator } from "./ThroughGenerator.js";
+import { ThroughIterator } from "./ThroughIterator.js";
 
 /** Used when the sequence hasn't inspected anything yet. */
 const _NOVALUE: unique symbol = Symbol("shelving/InspectGenerator.NOVALUE");
@@ -10,12 +10,12 @@ const _NOVALUE: unique symbol = Symbol("shelving/InspectGenerator.NOVALUE");
  * - Stores: first/last yielded value, returned value, whether iteration is done, the number of items that were iterated.
  *
  * @example
- * 	const watch = new WatchIterator(iterable);
+ * 	const watch = new InspectIterator(iterable);
  * 	for (const next of capture) console.log("YIELDED", next);
  * 	console.log("FIRST", watch.first);
  * 	console.log("RETURNED", watch.returned);
  */
-export class InspectGenerator<T, R, N> extends ThroughGenerator<T, R, N> {
+export class InspectIterator<T, R, N> extends ThroughIterator<T, R, N> implements Iterator<T, R, N>, Iterable<T, R, N> {
 	/** Get the number of results received by this iterator so far. */
 	readonly count = 0;
 

@@ -10,12 +10,12 @@ const _NOVALUE: unique symbol = Symbol("shelving/InspectSequence.NOVALUE");
  * - Stores: first/last yielded value, returned value, whether iteration is done, the number of items that were iterated.
  *
  * @example
- * 	const watch = new WatchIterator(iterable);
- * 	for (const next of capture) console.log("YIELDED", next);
+ * 	const watch = new InspectSequence(iterable);
+ * 	for await (const next of capture) console.log("YIELDED", next);
  * 	console.log("FIRST", watch.first);
  * 	console.log("RETURNED", watch.returned);
  */
-export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
+export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> implements AsyncIterator<T, R, N>, AsyncIterable<T, R, N> {
 	/** Get the number of results received by this iterator so far. */
 	readonly count = 0;
 
