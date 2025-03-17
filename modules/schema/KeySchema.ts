@@ -13,8 +13,8 @@ export class KeySchema extends StringSchema {
 	}
 }
 
-/** Valid color hex string, e.g. `#00CCFF` (required because empty string is invalid). */
+/** Valid database key. */
 export const KEY = new KeySchema({});
 
-/** Valid color hex string, e.g. `#00CCFF`, or `null` */
+/** Valid optional database key. */
 export const OPTIONAL_KEY = OPTIONAL(KEY);
