@@ -1,3 +1,4 @@
+export * from "./EnhancedError.js";
 export * from "./StateError.js";
 export * from "./ConnectionError.js";
 export * from "./PermissionError.js";
