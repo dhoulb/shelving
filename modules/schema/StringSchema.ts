@@ -94,13 +94,13 @@ export const STRING = new StringSchema({});
 export const REQUIRED_STRING = new StringSchema({ min: 1 });
 
 /** Title string, e.g. `Title of something` */
-export const TITLE = new StringSchema({});
+export const TITLE = new StringSchema({ title: "Title", min: 1, max: 100 });
 
 /** Optional name string, e.g. `Title of something` or `null` */
 export const OPTIONAL_TITLE = OPTIONAL(TITLE);
 
 /** Name string, e.g. `Name of Something` */
-export const NAME = new StringSchema({ title: "Name" });
+export const NAME = new StringSchema({ title: "Name", min: 1, max: 100 });
 
 /** Optional name string, e.g. `Name of Something` or `null` */
 export const OPTIONAL_NAME = OPTIONAL(NAME);
