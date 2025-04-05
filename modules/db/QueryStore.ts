@@ -1,5 +1,5 @@
 import { collection, query } from "firebase/firestore";
-import { RequiredError } from "../error/RequiredError.js";
+import { NotFoundError } from "../error/NotFoundError.js";
 import { ArrayStore } from "../store/ArrayStore.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { NONE } from "../util/constants.js";
@@ -28,14 +28,14 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 	/** Get the first item in this store. */
 	override get first(): Item<T[K]> {
 		const first = this.optionalFirst;
-		if (!first) throw new RequiredError(`First item must exist in "${collection}"`, query);
+		if (!first) throw new NotFoundError(`First item must exist in "${collection}"`, query);
 		return first;
 	}
 
 	/** Get the last item in this store. */
 	override get last(): Item<T[K]> {
 		const last = this.optionalLast;
-		if (!last) throw new RequiredError(`Last item must exist in "${collection}"`, query);
+		if (!last) throw new NotFoundError(`Last item must exist in "${collection}"`, query);
 		return last;
 	}
 

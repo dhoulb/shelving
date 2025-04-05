@@ -1,5 +1,5 @@
-import { RequiredError } from "../error/RequiredError.js";
-import { ValueError } from "../error/ValueError.js";
+import { NotFoundError } from "../error/NotFoundError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { isIterable } from "./iterate.js";
 import { deleteProps, isPlainObject, omitProps, pickProps, setProp, setProps, withProp, withProps } from "./object.js";
 
@@ -25,7 +25,7 @@ export function isDictionary(value: unknown): value is ImmutableDictionary {
 
 /** Assert that an unknown value is a dictionary object */
 export function assertDictionary(value: unknown): asserts value is ImmutableDictionary {
-	if (!isDictionary(value)) throw new ValueError("Must be dictionary", value);
+	if (!isDictionary(value)) throw new ValidationError("Must be dictionary", value);
 }
 
 /** turn a possible dictionary into a dictionary. */
@@ -47,12 +47,12 @@ export function isDictionaryItem<T>(obj: ImmutableDictionary<T>, key: unknown): 
 
 /** Assert that an unknown value is the key for an own prop of a dictionary. */
 export function assertDictionaryItem<T>(obj: ImmutableDictionary<T>, key: unknown): asserts key is string {
-	if (!isDictionaryItem(obj, key)) throw new ValueError("Must be dictionary item", key);
+	if (!isDictionaryItem(obj, key)) throw new ValidationError("Must be dictionary item", key);
 }
 
 /** Get an item in a map or throw an error if it doesn't exist. */
 export function getDictionaryItem<T>(obj: ImmutableDictionary<T>, key: string): T {
-	if (!Object.hasOwn(obj, key)) throw new RequiredError("Dictionary item is required");
+	if (!Object.hasOwn(obj, key)) throw new NotFoundError("Dictionary item is required");
 	return obj[key] as T;
 }
 

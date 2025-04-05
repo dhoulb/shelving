@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import type { Class } from "./class.js";
 import { isObject } from "./object.js";
 
@@ -22,6 +22,6 @@ export function getOptionalSource<T>(type: Class<T>, value: unknown): T | undefi
  */
 export function getSource<T>(type: Class<T>, data: unknown): T {
 	const source = getOptionalSource(type, data);
-	if (!source) throw new ValueError(`Source "${type.name}" not found`, data);
+	if (!source) throw new ValidationError(`Source "${type.name}" not found`, data);
 	return source;
 }

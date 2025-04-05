@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { debug } from "./debug.js";
 import type { Arguments } from "./function.js";
 
@@ -25,5 +25,5 @@ export function isInstance<T>(value: unknown, type: Class<T>): value is T {
 
 /** Assert that a value is an instance of something. */
 export function assertInstance<T>(value: unknown, type: Class<T>): asserts value is T {
-	if (!(value instanceof type)) throw new ValueError(`Must be instance of ${debug(type)}`, value);
+	if (!(value instanceof type)) throw new ValidationError(`Must be instance of ${debug(type)}`, value);
 }

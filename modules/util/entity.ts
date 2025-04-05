@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import type { Optional } from "./optional.js";
 
 /** Entity strings combine a type and ID, e.g. `challenge:a1b2c3` */
@@ -19,7 +19,7 @@ export function splitEntity(entity: string): [type: string, id: string];
 export function splitEntity(entity: string): [type: string, id: string] {
 	const bits = entity.split(":", 2);
 	if (bits[0] && bits[1]) return bits as [type: string, id: string];
-	throw new ValueError("Invalid entity");
+	throw new ValidationError("Invalid entity");
 }
 
 /** Split an optional entity tag like `challenge:a1b2c3` into `["challenge", "a1b2c3"]`, or `undefined` or `null` */

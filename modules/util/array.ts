@@ -1,5 +1,5 @@
-import { RequiredError } from "../error/RequiredError.js";
-import { ValueError } from "../error/ValueError.js";
+import { NotFoundError } from "../error/NotFoundError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { omitItems, pickItems } from "./iterate.js";
 import { formatRange } from "./number.js";
 
@@ -28,7 +28,7 @@ export function isArray(value: unknown): value is ImmutableArray {
 
 /** Assert that an unknown value is an array. */
 export function assertArray<T>(arr: unknown): asserts arr is ImmutableArray<T> {
-	if (!isArray(arr)) throw new ValueError("Must be array", arr);
+	if (!isArray(arr)) throw new ValidationError("Must be array", arr);
 }
 
 /** Is an unknown value an item in a specified array? */
@@ -38,7 +38,7 @@ export function isArrayItem<T>(arr: ImmutableArray<T>, item: unknown): item is T
 
 /** Assert that an unknown value is an item in a specified array. */
 export function assertArrayItem<T>(arr: ImmutableArray<T>, item: unknown): asserts item is T {
-	if (!isArrayItem(arr, item)) throw new ValueError("Must be array item", item);
+	if (!isArrayItem(arr, item)) throw new ValidationError("Must be array item", item);
 }
 
 /** Convert an iterable to an array (if its not already an array). */
@@ -83,7 +83,7 @@ export function getOptionalFirstItem<T>(items: PossibleArray<T>): T | undefined 
 /** Get the first item from an array or iterable. */
 export function getFirstItem<T>(items: PossibleArray<T>): T {
 	const item = getOptionalFirstItem(items);
-	if (item === undefined) throw new RequiredError("First item is required");
+	if (item === undefined) throw new NotFoundError("First item is required");
 	return item;
 }
 
@@ -97,7 +97,7 @@ export function getOptionalLastItem<T>(items: PossibleArray<T>): T | undefined {
 /** Get the last item from an array or iterable. */
 export function getLastItem<T>(items: PossibleArray<T>): T {
 	const item = getOptionalLastItem(items);
-	if (item === undefined) throw new RequiredError("Last item is required");
+	if (item === undefined) throw new NotFoundError("Last item is required");
 	return item;
 }
 
@@ -209,7 +209,8 @@ export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 3, max?: numbe
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: 4, max?: number): asserts arr is readonly [T, T, T, T, ...T[]];
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min: number, max?: number): asserts arr is ImmutableArray<T>;
 export function assertArrayLength<T>(arr: ImmutableArray<T>, min = 1, max = Number.POSITIVE_INFINITY): asserts arr is ImmutableArray<T> {
-	if (!isArray(arr) || !isArrayLength<T>(arr, min, max)) throw new ValueError(`Must be array with length ${formatRange(min, max)}`, arr);
+	if (!isArray(arr) || !isArrayLength<T>(arr, min, max))
+		throw new ValidationError(`Must be array with length ${formatRange(min, max)}`, arr);
 }
 
 /** Get an array if it has the specified minimum length.  */

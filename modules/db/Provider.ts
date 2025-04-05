@@ -1,4 +1,4 @@
-import { RequiredError } from "../error/RequiredError.js";
+import { NotFoundError } from "../error/NotFoundError.js";
 import { countArray, getOptionalFirstItem } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
@@ -104,7 +104,7 @@ export abstract class Provider<T extends Database> implements AbstractProvider<T
 	abstract getItem<K extends DataKey<T>>(collection: K, id: string): OptionalItem<T[K]>;
 	requireItem<K extends DataKey<T>>(collection: K, id: string): Item<T[K]> {
 		const item = this.getItem(collection, id);
-		if (!item) throw new RequiredError(`Item must exist in "${collection}"`, id);
+		if (!item) throw new NotFoundError(`Item must exist in "${collection}"`, id);
 		return item;
 	}
 	abstract getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>>;
@@ -125,7 +125,7 @@ export abstract class Provider<T extends Database> implements AbstractProvider<T
 	}
 	requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Item<T[K]> {
 		const first = this.getFirst(collection, query);
-		if (!first) throw new RequiredError(`First item must exist in "${collection}"`, query);
+		if (!first) throw new NotFoundError(`First item must exist in "${collection}"`, query);
 		return first;
 	}
 }
@@ -135,7 +135,7 @@ export abstract class AsyncProvider<T extends Database> implements AbstractProvi
 	abstract getItem<K extends DataKey<T>>(collection: K, id: string): Promise<OptionalItem<T[K]>>;
 	async requireItem<K extends DataKey<T>>(collection: K, id: string): Promise<Item<T[K]>> {
 		const item = await this.getItem(collection, id);
-		if (!item) throw new RequiredError(`Item must exist in "${collection}"`, id);
+		if (!item) throw new NotFoundError(`Item must exist in "${collection}"`, id);
 		return item;
 	}
 	abstract getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>>;
@@ -156,7 +156,7 @@ export abstract class AsyncProvider<T extends Database> implements AbstractProvi
 	}
 	async requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<Item<T[K]>> {
 		const first = await this.getFirst(collection, query);
-		if (!first) throw new RequiredError(`First item must exist in "${collection}"`, query);
+		if (!first) throw new NotFoundError(`First item must exist in "${collection}"`, query);
 		return first;
 	}
 }

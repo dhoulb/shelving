@@ -1,9 +1,10 @@
 import { EnhancedError } from "./EnhancedError.js";
 
 /** Error thrown when functionality is called but is not implemented by an interface. */
-export class UnimplementedError extends EnhancedError {
+export class NotImplementedError extends EnhancedError {
+	override readonly code = 501;
 	constructor(message = "Not implemented", value?: unknown) {
 		super(message, value);
 	}
 }
-UnimplementedError.prototype.name = "UnimplementedError";
+NotImplementedError.prototype.name = "NotImplementedError";

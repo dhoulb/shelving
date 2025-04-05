@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import type { ImmutableArray } from "./array.js";
 import { getArray, isArray } from "./array.js";
 import { formatDate, isDate } from "./date.js";
@@ -20,7 +20,7 @@ export function isString(value: unknown): value is string {
 
 /** Assert that a value is a string. */
 export function assertString(value: unknown): asserts value is string {
-	if (typeof value !== "string") throw new ValueError("Must be string", value);
+	if (typeof value !== "string") throw new ValidationError("Must be string", value);
 }
 
 /**
@@ -56,7 +56,8 @@ export function isStringLength(str: string, min = 1, max = Number.POSITIVE_INFIN
 
 /** Assert that a value has a specific length (or length is in a specific range). */
 export function assertStringLength(str: unknown, min = 1, max = Number.POSITIVE_INFINITY): asserts str is string {
-	if (!isString(str) || !isStringLength(str, min, max)) throw new ValueError(`Must be string with length ${formatRange(min, max)}`, str);
+	if (!isString(str) || !isStringLength(str, min, max))
+		throw new ValidationError(`Must be string with length ${formatRange(min, max)}`, str);
 }
 
 /** Get a string if it has the specified minimum length.  */
@@ -140,7 +141,7 @@ export function getOptionalSlug(str: string): string | undefined {
 export function getSlug(str: string): string {
 	const slug = getOptionalSlug(str);
 	if (slug) return slug;
-	throw new ValueError("Invalid slug", str);
+	throw new ValidationError("Invalid slug", str);
 }
 
 /**
@@ -156,7 +157,7 @@ export function getOptionalRef(str: string): string | undefined {
 export function getRef(str: string): string {
 	const ref = getOptionalRef(str);
 	if (ref) return ref;
-	throw new ValueError("Invalid string ref", str);
+	throw new ValidationError("Invalid string ref", str);
 }
 
 /**
@@ -226,6 +227,6 @@ export function splitString(str: string, separator: string, min = 1, max = Numbe
 	const segments = str.split(separator);
 	if (segments.length > max) segments.splice(max - 1, segments.length, segments.slice(max - 1).join(separator));
 	if (segments.length < min || !segments.every(Boolean))
-		throw new ValueError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, str);
+		throw new ValidationError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, str);
 	return segments;
 }

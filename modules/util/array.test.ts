@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import {
-	ValueError,
+	ValidationError,
 	addArrayItem,
 	addArrayItems,
 	assertArrayLength,
@@ -129,18 +129,18 @@ test("isArrayLength()", () => {
 test("assertArrayLength()", () => {
 	// Assert maximum.
 	expect(() => assertArrayLength([1, 2, 3], 3)).not.toThrow();
-	expect(() => assertArrayLength([1, 2, 3], 5)).toThrow(ValueError);
+	expect(() => assertArrayLength([1, 2, 3], 5)).toThrow(ValidationError);
 
 	// Assert minimum.
 	expect(() => assertArrayLength([1, 2, 3], 0, 3)).not.toThrow();
-	expect(() => assertArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(ValueError);
+	expect(() => assertArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(ValidationError);
 });
 test("getArrayLength()", () => {
 	// Check maximum.
 	expect(getArrayLength([1, 2, 3], 3)).toEqual([1, 2, 3]);
-	expect(() => getArrayLength([1, 2, 3], 5)).toThrow(ValueError);
+	expect(() => getArrayLength([1, 2, 3], 5)).toThrow(ValidationError);
 
 	// Check minimum.
 	expect(getArrayLength([1, 2, 3], 0, 3)).toEqual([1, 2, 3]);
-	expect(() => getArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(ValueError);
+	expect(() => getArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(ValidationError);
 });

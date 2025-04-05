@@ -1,4 +1,4 @@
-import { RequiredError } from "../error/RequiredError.js";
+import { NotFoundError } from "../error/NotFoundError.js";
 import { getDeferred, getDelay } from "./async.js";
 import type { AsyncValueCallback, ValueCallback } from "./callback.js";
 import { call, callMethod } from "./callback.js";
@@ -54,7 +54,7 @@ export async function* callSequence<T>(sequence: AsyncIterable<T>, callback: Asy
 /** Get the first value from an async iterator. **/
 export async function getNextValue<T>(sequence: AsyncIterable<T>): Promise<T> {
 	for await (const item of sequence) return item;
-	throw new RequiredError("First value is required");
+	throw new NotFoundError("First value is required");
 }
 
 /** Pull values from a sequence until the returned function is called. */

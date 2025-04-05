@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { type Optional, notOptional } from "./optional.js";
 
 /** Absolute path string starts with `/` slash. */
@@ -65,7 +65,7 @@ export function getOptionalPath(possible: Optional<string | URL>, base: Absolute
  */
 export function getPath(possible: string, base?: AbsolutePath): AbsolutePath {
 	const path = getOptionalPath(possible, base);
-	if (!path) throw new ValueError("Invalid URL", possible);
+	if (!path) throw new ValidationError("Invalid URL", possible);
 	return path;
 }
 

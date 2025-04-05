@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import type { DataSchema, DatabaseSchemas } from "../schema/DataSchema.js";
 import type { Data, DataKey, Database } from "../util/data.js";
@@ -134,7 +134,7 @@ function _validateItem<T extends Data>(collection: string, unsafeEntity: Optiona
 		return validateWithContext<T>(unsafeEntity, schema, VALIDATION_CONTEXT_GET);
 	} catch (thrown) {
 		if (!(thrown instanceof Feedback)) throw thrown;
-		throw new ValueError(`Invalid data for "${collection}"`, thrown.message);
+		throw new ValidationError(`Invalid data for "${collection}"`, thrown.message);
 	}
 }
 
@@ -154,5 +154,5 @@ function* _yieldValidItems<T extends Data>(collection: string, unsafeEntities: I
 			messages[unsafeEntity.id] = thrown.message;
 		}
 	}
-	if (invalid) throw new ValueError(`Invalid data for "${collection}"`, messages);
+	if (invalid) throw new ValidationError(`Invalid data for "${collection}"`, messages);
 }

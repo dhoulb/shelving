@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValueFeedbacks } from "../feedback/Feedbacks.js";
 import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
@@ -41,7 +41,7 @@ export function getValid<T>(unsafeValue: unknown, validator: Validator<T>): T {
 	try {
 		return validator.validate(unsafeValue);
 	} catch (thrown) {
-		if (thrown instanceof Feedback) throw new ValueError("Must validate", thrown);
+		if (thrown instanceof Feedback) throw new ValidationError("Must validate", thrown);
 		throw thrown;
 	}
 }

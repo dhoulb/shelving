@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import type { Validator } from "../util/validate.js";
 import { UNDEFINED_VALIDATOR } from "../util/validate.js";
@@ -53,7 +53,7 @@ export class Resource<P = undefined, R = void> implements Validator<R> {
 		try {
 			return this.result.validate(unsafeResult);
 		} catch (thrown) {
-			if (thrown instanceof Feedback) throw new ValueError("Invalid result for resource", thrown);
+			if (thrown instanceof Feedback) throw new ValidationError("Invalid result for resource", thrown);
 			throw thrown;
 		}
 	}

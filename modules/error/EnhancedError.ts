@@ -6,6 +6,7 @@ import { debug } from "../util/debug.js";
  * - Context is converted to a string using `debug()`
  */
 export class EnhancedError extends Error {
+	readonly code: number = 500;
 	readonly context: unknown;
 	constructor(message: string, context?: unknown) {
 		const debugged = context !== undefined ? debug(context, 2) : "";

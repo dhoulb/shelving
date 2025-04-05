@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { ValueError } from "../index.js";
+import { ValidationError } from "../index.js";
 import { getFileExtension, getOptionalFileExtension } from "./file.js";
 
 test("getOptionalFileExtension()", () => {
@@ -12,5 +12,5 @@ test("getFileExtension()", () => {
 	expect(getFileExtension("abc.jpg")).toBe("jpg");
 	expect(getFileExtension(".jpg")).toBe("jpg");
 	expect(getFileExtension("abc.something.jpg")).toBe("jpg");
-	expect(() => getFileExtension("something")).toThrow(ValueError);
+	expect(() => getFileExtension("something")).toThrow(ValidationError);
 });

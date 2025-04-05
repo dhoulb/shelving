@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import type { ImmutableArray } from "./array.js";
 import type { ValueCallback } from "./callback.js";
 import type { Report } from "./error.js";
@@ -25,17 +25,17 @@ export function throwAsync<T>(value: PromiseLike<T> | T): T {
 
 /** Assert a synchronous value. */
 export function assertNotAsync<T>(value: PromiseLike<T> | T): asserts value is T {
-	if (isAsync(value)) throw new ValueError("Must be synchronous", value);
+	if (isAsync(value)) throw new ValidationError("Must be synchronous", value);
 }
 
 /** Assert an asynchronous value. */
 export function assertAsync<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
-	if (!isAsync(value)) throw new ValueError("Must be asynchronous", value);
+	if (!isAsync(value)) throw new ValidationError("Must be asynchronous", value);
 }
 
 /** Assert a promise. */
 export function assertPromise<T>(value: Promise<T> | T): asserts value is Promise<T> {
-	if (!(value instanceof Promise)) throw new ValueError("Must be promise", value);
+	if (!(value instanceof Promise)) throw new ValidationError("Must be promise", value);
 }
 
 /** Run any queued microtasks now. */

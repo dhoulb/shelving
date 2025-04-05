@@ -1,5 +1,5 @@
-import { RequiredError } from "../error/RequiredError.js";
-import { ValueError } from "../error/ValueError.js";
+import { NotFoundError } from "../error/NotFoundError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import type { Entry } from "./entry.js";
 import { isIterable, limitItems } from "./iterate.js";
 
@@ -34,7 +34,7 @@ export function isMap(value: unknown): value is ImmutableMap {
 
 /** Assert that a value is a `Map` instance. */
 export function assertMap(value: unknown): asserts value is ImmutableMap {
-	if (!isMap(value)) throw new ValueError("Must be map", value);
+	if (!isMap(value)) throw new ValidationError("Must be map", value);
 }
 
 /** Is an unknown value a key for an item in a map? */
@@ -44,7 +44,7 @@ export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K
 
 /** Assert that an unknown value is a key for an item in a map. */
 export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): asserts key is K {
-	if (!isMapItem(map, key)) throw new ValueError("Must be map item", key);
+	if (!isMapItem(map, key)) throw new ValidationError("Must be map item", key);
 }
 
 /** Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged). */
@@ -77,7 +77,7 @@ export function removeMapItems<K, T>(map: MutableMap<K, T>, ...keys: K[]): void 
 
 /** Get an item in a map or throw an error if it doesn't exist. */
 export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T {
-	if (!map.has(key)) throw new RequiredError("Map item is required");
+	if (!map.has(key)) throw new NotFoundError("Map item is required");
 	return map.get(key) as T;
 }
 

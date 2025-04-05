@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Time, ValueError, getOptionalTime, getTime } from "../index.js";
+import { Time, ValidationError, getOptionalTime, getTime } from "../index.js";
 
 test("getOptionalTime()", () => {
 	// Parsed as dates.
@@ -28,7 +28,7 @@ test("getTime()", () => {
 	expect(getTime("18:19:20.123").long).toBe("18:19:20.123");
 
 	// Not parseable.
-	expect(() => getTime("")).toThrow(ValueError);
+	expect(() => getTime("")).toThrow(ValidationError);
 });
 describe("Time", () => {
 	test("from()", () => {

@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { NNBSP } from "./constants.js";
 
 /** Is a value a number? */
@@ -8,12 +8,12 @@ export function isNumber(value: unknown): value is number {
 
 /** Assert that a value is a number. */
 export function assertNumber(value: unknown): asserts value is number {
-	if (typeof value !== "number") throw new ValueError("Must be number", value);
+	if (typeof value !== "number") throw new ValidationError("Must be number", value);
 }
 
 /** Assert that a value is a number greater than. */
 export function assertFinite(value: unknown): asserts value is number {
-	if (typeof value !== "number" || !Number.isFinite(value)) throw new ValueError("Must be finite number", value);
+	if (typeof value !== "number" || !Number.isFinite(value)) throw new ValidationError("Must be finite number", value);
 }
 
 /**
@@ -27,17 +27,17 @@ export const isBetween = (num: number, min: number, max: number): boolean => num
 
 /** Assert that a value is a number greater than. */
 export function assertBetween(value: unknown, min: number, max: number): asserts value is number {
-	if (typeof value !== "number" || isBetween(value, min, max)) throw new ValueError(`Must be number between ${min} and ${max}`, value);
+	if (typeof value !== "number" || isBetween(value, min, max)) throw new ValidationError(`Must be number between ${min} and ${max}`, value);
 }
 
 /** Assert that a value is a number greater than. */
 export function assertMax(value: unknown, max: number): asserts value is number {
-	if (typeof value !== "number" || value > max) throw new ValueError(`Must be number with maximum ${max}`, value);
+	if (typeof value !== "number" || value > max) throw new ValidationError(`Must be number with maximum ${max}`, value);
 }
 
 /** Assert that a value is a number less than. */
 export function assertMin(value: unknown, min: number): asserts value is number {
-	if (typeof value !== "number" || value < min) throw new ValueError(`Must be number with minimum ${min}`, value);
+	if (typeof value !== "number" || value < min) throw new ValidationError(`Must be number with minimum ${min}`, value);
 }
 
 /**

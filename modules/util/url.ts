@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { type Optional, notOptional } from "./optional.js";
 
 /** Things that can be converted to a URL instance. */
@@ -11,7 +11,7 @@ export function isURL(value: unknown): value is URL {
 
 /** Assert that an unknown value is a URL object. */
 export function assertURL(value: unknown): asserts value is URL {
-	if (!isURL(value)) throw new ValueError("Invalid URL", value);
+	if (!isURL(value)) throw new ValidationError("Invalid URL", value);
 }
 
 /** Convert a possible URL to a URL or return `undefined` if conversion fails. */
@@ -29,7 +29,7 @@ const _BASE = typeof document === "object" ? document.baseURI : undefined;
 /** Convert a possible URL to a URL but throw `ValueError` if conversion fails. */
 export function getURL(possible: PossibleURL, base?: PossibleURL): URL {
 	const url = getOptionalURL(possible, base);
-	if (!url) throw new ValueError("Invalid URL", possible);
+	if (!url) throw new ValidationError("Invalid URL", possible);
 	return url;
 }
 

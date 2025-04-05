@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ValueError, getPath, isAbsolutePath, isPathProud } from "../index.js";
+import { ValidationError, getPath, isAbsolutePath, isPathProud } from "../index.js";
 
 test("isAbsolutePath()", () => {
 	// Absolute.
@@ -84,7 +84,7 @@ describe("getPath()", () => {
 	});
 	test("Invalid paths", () => {
 		// Non-https schemes don't have a path starting with `/` so they're always invalid.
-		expect(() => getPath("mailto:a@b.com")).toThrow(ValueError);
+		expect(() => getPath("mailto:a@b.com")).toThrow(ValidationError);
 	});
 });
 test("isPathProud()", () => {

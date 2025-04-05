@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { getArray } from "./array.js";
 import type { NotString } from "./string.js";
 
@@ -18,7 +18,7 @@ export function isRegExp(value: unknown): value is RegExp {
 
 /** Assert that an unknown value is a `RegExp` instance. */
 export function assertRegExp(value: unknown): asserts value is RegExp {
-	if (!(value instanceof RegExp)) throw new ValueError("Must be regular expression", value);
+	if (!(value instanceof RegExp)) throw new ValidationError("Must be regular expression", value);
 }
 
 /** Convert a string to a regular expression that matches that string. */
@@ -110,7 +110,7 @@ export function getMatch<T extends string>(str: string, regexp: TypedRegExp<T>):
 export function getMatch(str: string, regexp: RegExp): RegExpExecArray;
 export function getMatch(str: string, regexp: RegExp): RegExpExecArray {
 	const match = getOptionalMatch(str, regexp);
-	if (!match) throw new ValueError("Must match regular expression", str);
+	if (!match) throw new ValidationError("Must match regular expression", str);
 	return match;
 }
 
@@ -126,6 +126,6 @@ export function getMatchGroups<T extends NamedRegExpData>(str: string, regexp: N
 export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData;
 export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData {
 	const groups = getOptionalMatchGroups(str, regexp);
-	if (!groups) throw new ValueError("Must match regular expression", str);
+	if (!groups) throw new ValidationError("Must match regular expression", str);
 	return groups;
 }

@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 
 /** Function that always returns undefined. */
 export const getUndefined = (): undefined => undefined;
@@ -18,7 +18,7 @@ export const notUndefined = isDefined;
 
 /** Assert that a value is not `undefined` */
 export function assertDefined<T>(value: T | undefined): asserts value is T {
-	if (value === undefined) throw new ValueError("Must be defined", value);
+	if (value === undefined) throw new ValidationError("Must be defined", value);
 }
 
 /** Get a defined value. */

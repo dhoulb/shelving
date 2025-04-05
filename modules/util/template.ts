@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import type { ImmutableArray } from "./array.js";
 import { EMPTY_DATA } from "./data.js";
 import type { ImmutableDictionary } from "./dictionary.js";
@@ -56,7 +56,7 @@ function _split(template: string): TemplateChunks {
 		const pre = matches[i - 1] as string;
 		const placeholder = matches[i] as string;
 		const post = matches[i + 1] as string;
-		if (i > 1 && !pre.length) throw new ValueError("Placeholders must be separated by at least one character", template);
+		if (i > 1 && !pre.length) throw new ValidationError("Placeholders must be separated by at least one character", template);
 		const name = placeholder === "*" ? String(asterisks++) : R_NAME.exec(placeholder)?.[0] || "";
 		chunks.push({ pre, placeholder, name, post });
 	}

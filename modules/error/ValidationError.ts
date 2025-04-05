@@ -1,9 +1,10 @@
 import { EnhancedError } from "./EnhancedError.js";
 
 /** Error thrown when a value isn't valid. */
-export class ValueError extends EnhancedError {
+export class ValidationError extends EnhancedError {
+	override readonly code = 422;
 	constructor(message = "Invalid value", context?: unknown) {
 		super(message, context);
 	}
 }
-ValueError.prototype.name = "ValidationError";
+ValidationError.prototype.name = "ValidationError";

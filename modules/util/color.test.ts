@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { Color, ValueError, getColor, getOptionalColor } from "../index.js";
+import { Color, ValidationError, getColor, getOptionalColor } from "../index.js";
 
 test("toColor(): colors", () => {
 	expect(getOptionalColor("#fff")).toBeInstanceOf(Color);
@@ -19,7 +19,7 @@ test("toColor(): non-colors", () => {
 });
 test("getColor(): works correctly", () => {
 	expect(getColor("#00ccff")).toBeInstanceOf(Color);
-	expect(() => getColor("nope")).toThrow(ValueError);
+	expect(() => getColor("nope")).toThrow(ValidationError);
 });
 test("Color: conversion", () => {
 	expect(getColor("#00ccff").hex).toEqual("#00ccff");

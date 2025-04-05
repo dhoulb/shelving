@@ -1,4 +1,4 @@
-import { RequiredError } from "../error/RequiredError.js";
+import { NotFoundError } from "../error/NotFoundError.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { OptionalDataStore } from "../store/DataStore.js";
 import { NONE } from "../util/constants.js";
@@ -20,7 +20,7 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends Optiona
 	/** Get the data of this store (throws `RequiredError` if item doesn't exist). */
 	override get data(): Item<T[K]> {
 		const item = this.value;
-		if (!item) throw new RequiredError(`Item must exist in "${this.collection}"`, this.id);
+		if (!item) throw new NotFoundError(`Item must exist in "${this.collection}"`, this.id);
 		return item;
 	}
 

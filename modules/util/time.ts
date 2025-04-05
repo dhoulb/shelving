@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import { DAY, HOUR, MINUTE, SECOND } from "./constants.js";
 import { getOptionalDate } from "./date.js";
 import { wrapNumber } from "./number.js";
@@ -130,7 +130,7 @@ export function getOptionalTime(possible: unknown): Time | undefined {
  */
 export function getTime(possible: PossibleTime = "now"): Time {
 	const time = getOptionalTime(possible);
-	if (!time) throw new ValueError("Invalid time", possible);
+	if (!time) throw new ValidationError("Invalid time", possible);
 	return time;
 }
 

@@ -1,4 +1,4 @@
-import { ValueError } from "../error/ValueError.js";
+import { ValidationError } from "../error/ValidationError.js";
 import type { ImmutableArray } from "./array.js";
 import type { Optional } from "./optional.js";
 import type { Path } from "./path.js";
@@ -76,7 +76,7 @@ export function getLinkURL(
 	hosts?: LinkHosts,
 ): AbsoluteLinkURL {
 	const url = getOptionalLinkURL(possible, base, schemes, hosts);
-	if (!url) throw new ValueError("Invalid link", possible);
+	if (!url) throw new ValidationError("Invalid link", possible);
 	return url;
 }
 

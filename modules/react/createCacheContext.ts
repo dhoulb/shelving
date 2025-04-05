@@ -1,5 +1,5 @@
 import { type ReactElement, type ReactNode, createContext, createElement, useContext, useRef } from "react";
-import { StateError } from "../error/StateError.js";
+import { ConflictError } from "../error/ConflictError.js";
 
 /**
  * Create a cache context that can be provided to React elements and allows them to call `useCache()`
@@ -15,7 +15,7 @@ export function createCacheContext<T>(): {
 	return {
 		useCache() {
 			const cache = useContext(context);
-			if (!cache) throw new StateError("useCache() must be used inside <Cache>");
+			if (!cache) throw new ConflictError("useCache() must be used inside <Cache>");
 			return cache;
 		},
 		CacheContext({ children }: { children: ReactNode }): ReactElement {
