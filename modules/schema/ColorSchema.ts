@@ -1,6 +1,5 @@
 import { OPTIONAL } from "./OptionalSchema.js";
-import type { StringSchemaOptions } from "./StringSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import { TextSchema, type TextSchemaOptions } from "./TextSchema.js";
 
 const COLOR_REGEXP = /^#[0-9A-F]{6}$/;
 const NOT_HEX_REGEXP = /[^0-9A-F]/g;
@@ -14,12 +13,8 @@ const NOT_HEX_REGEXP = /[^0-9A-F]/g;
  *
  * Colors are limited to 512 characters (this can be changed with `max`), but generally these won't be data: URIs so this is a reasonable limit.
  */
-export class ColorSchema extends StringSchema {
-	constructor({
-		title = "Color",
-		value = "#000000",
-		...options
-	}: Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline" | "match">) {
+export class ColorSchema extends TextSchema {
+	constructor({ title = "Color", value = "#000000", ...options }: Omit<TextSchemaOptions, "type" | "min" | "max" | "multiline" | "match">) {
 		super({
 			title,
 			value,

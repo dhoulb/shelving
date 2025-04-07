@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { Feedback, REQUIRED_STRING, STRING, StringSchema } from "../index.js";
+import { Feedback, REQUIRED_TEXT, TEXT, TextSchema } from "../index.js";
 
 // Vars.
 const longString =
@@ -9,27 +9,27 @@ const longString =
 // Tests.
 test("TypeScript", () => {
 	// Test string.optional
-	const schema1: Schema<string | null> = STRING;
+	const schema1: Schema<string | null> = TEXT;
 	const schemaResult1: string | null = schema1.validate("ABC");
 
 	// Test string.required
-	const schema2: Schema<string> = REQUIRED_STRING;
+	const schema2: Schema<string> = REQUIRED_TEXT;
 	const schemaResult2: string = schema2.validate("ABC");
 
 	// Test string({})
-	const schema4: StringSchema = new StringSchema({});
+	const schema4: TextSchema = new TextSchema({});
 	const schemaResult4: string = schema4.validate("ABC");
 });
 test("constructor()", () => {
-	const schema1 = new StringSchema({});
-	expect(schema1).toBeInstanceOf(StringSchema);
-	const schema2 = REQUIRED_STRING;
-	expect(schema2).toBeInstanceOf(StringSchema);
-	const schema3 = STRING;
-	expect(schema3).toBeInstanceOf(StringSchema);
+	const schema1 = new TextSchema({});
+	expect(schema1).toBeInstanceOf(TextSchema);
+	const schema2 = REQUIRED_TEXT;
+	expect(schema2).toBeInstanceOf(TextSchema);
+	const schema3 = TEXT;
+	expect(schema3).toBeInstanceOf(TextSchema);
 });
 describe("validate()", () => {
-	const schema = new StringSchema({});
+	const schema = new TextSchema({});
 	test("Strings pass through unchanged", () => {
 		expect(schema.validate(longString)).toBe(longString);
 		expect(schema.validate("abcdef")).toBe("abcdef");
@@ -50,23 +50,51 @@ describe("validate()", () => {
 });
 describe("options.default", () => {
 	test("Undefined returns empty string", () => {
-		const schema = new StringSchema({});
+		const schema = new TextSchema({});
 		expect(schema.validate(undefined)).toBe("");
 	});
 	test("Undefined with default returns default value", () => {
-		const schema = new StringSchema({ value: "abc" });
+		const schema = new TextSchema({ value: "abc" });
 		expect(schema.validate(undefined)).toBe("abc");
+	});
+});
+describe("options.match", () => {
+	test("String with match must match format", () => {
+		const schema1 = new TextSchema({ match: /[a-z]+/ });
+		expect(schema1.validate("abc")).toBe("abc");
+		const schema2 = new TextSchema({ match: /[0-9]+/ });
+		expect(schema2.validate("038203")).toBe("038203");
+	});
+	test("String not matching format returns Invalid", () => {
+		const schema1 = new TextSchema({ match: /[0-9]+/ });
+		expect(() => schema1.validate("abc")).toThrow(Feedback);
+		const schema2 = new TextSchema({ match: /[a-z]/ });
+		expect(() => schema2.validate("ABC")).toThrow(Feedback);
+	});
+});
+describe("options.multiline", () => {
+	test("String without multiline strips tab and newline", () => {
+		const schema1 = new TextSchema({});
+		expect(schema1.validate("aaa\0aaa")).toBe("aaaaaa"); // Control character is stripped.
+		expect(schema1.validate("aaa\taaa")).toBe("aaa aaa"); // Tab in middle of line is converted to space.
+		expect(schema1.validate("aaa\n\taaa")).toBe("aaa aaa"); // Newline + tab at start of line is converted to space.
+	});
+	test("String with multiline keeps newline", () => {
+		const schema1 = new TextSchema({ multiline: true });
+		expect(schema1.validate("aaa\0aaa")).toBe("aaaaaa"); // Control character is stripped.
+		expect(schema1.validate("aaa\taaa")).toBe("aaa aaa"); // Tab in middle of line is converted to space.
+		expect(schema1.validate("aaa\n\taaa")).toBe("aaa\n\taaa"); // Newline + tab at start of line is kept.
 	});
 });
 describe("options.min", () => {
 	test("Strings shorter than the minimum are invalid", () => {
-		const schema = new StringSchema({ min: 10 });
+		const schema = new TextSchema({ min: 10 });
 		expect(() => schema.validate("a")).toThrow(Feedback);
 	});
 });
 describe("options.max", () => {
 	test("Strings longer than the maximum are trimmed", () => {
-		const schema = new StringSchema({ max: 3 });
+		const schema = new TextSchema({ max: 3 });
 		expect(() => schema.validate("abcdef")).toThrow(Feedback);
 	});
 });

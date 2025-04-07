@@ -72,7 +72,7 @@ export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): st
 }
 
 /**
- * Sanitize a single-line string.
+ * Sanitize a single line of text.
  * - Used when you're sanitising a single-line input, e.g. a title for something.
  * - Remove allow control characters
  * - Normalise runs of whitespace to one ` ` space,
@@ -80,7 +80,7 @@ export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): st
  *
  * @example santizeString("\x00Nice!   "); // Returns `"Nice!"`
  */
-export function sanitizeString(str: string): string {
+export function sanitizeText(str: string): string {
 	return str
 		.replace(/[^\P{C}\s]/gu, "") // Strip control characters (except whitespace).
 		.replace(/\s+/gu, " ") // Normalise runs of whitespace to one ` ` space.
@@ -88,7 +88,7 @@ export function sanitizeString(str: string): string {
 }
 
 /**
- * Sanitize a multiline string.
+ * Sanitize multiple lines of text.
  * - Used when you're sanitising a multi-line input, e.g. a description for something.
  * - Remove all control characters except `\n` newline.
  * - Normalise weird characters like paragraph separator, line separator, `\t` tab, `\r` carriage return.
@@ -97,7 +97,7 @@ export function sanitizeString(str: string): string {
  * - Allow spaces at the start of each line (for indentation) but trim the end of each line.
  * - Trim excess newlines at the start and end of the string and runs of more than two newlines in a row.
  */
-export function sanitizeLines(str: string): string {
+export function sanitizeMultilineText(str: string): string {
 	return str
 		.replace(/[^\P{C}\s]/gu, "") // Strip control characters (except whitespace).
 		.replace(/\r\n?|\v|\x85|\u2028/g, "\n") // Normalise line separators to `\n` newline

@@ -1,6 +1,6 @@
 import { OPTIONAL } from "./OptionalSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import { TextSchema } from "./TextSchema.js";
 
 // Valid phone number is max 16 digits made up of:
 // - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).
@@ -12,7 +12,7 @@ const PHONE_REGEXP = /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/;
  * - Multiple string formats are automatically converted to E.164 format (starting with `+` plus).
  * - Falsy values are converted to `""` empty string.
  */
-export class PhoneSchema extends StringSchema {
+export class PhoneSchema extends TextSchema {
 	constructor({ title = "Phone", ...options }: StringSchemaOptions) {
 		super({
 			title,

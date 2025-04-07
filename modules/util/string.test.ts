@@ -10,8 +10,8 @@ import {
 	getStringLength,
 	getWords,
 	isStringLength,
-	sanitizeLines,
-	sanitizeString,
+	sanitizeMultilineText,
+	sanitizeText,
 	simplifyString,
 	splitString,
 } from "../index.js";
@@ -34,78 +34,78 @@ describe("getString()", () => {
 });
 describe("sanitizeString()", () => {
 	test("Normalise runs of whitespace to single ` ` space", () => {
-		expect(sanitizeString("aaa\t\t\t   \r\r\rbbb")).toBe("aaa bbb");
+		expect(sanitizeText("aaa\t\t\t   \r\r\rbbb")).toBe("aaa bbb");
 	});
 	test("Strip control characters", () => {
-		expect(sanitizeString("aaa\0bbb")).toBe("aaabbb");
-		expect(sanitizeString("a\x01b\x1Fcd\x7Fe\x9Ff")).toBe("abcdef");
+		expect(sanitizeText("aaa\0bbb")).toBe("aaabbb");
+		expect(sanitizeText("a\x01b\x1Fcd\x7Fe\x9Ff")).toBe("abcdef");
 		const value1 =
 			"ab\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09cd\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\x7F\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9Fef";
-		expect(sanitizeString(value1)).toBe("ab cd ef");
+		expect(sanitizeText(value1)).toBe("ab cd ef");
 	});
 	test("Trim whitespace from the start and end of the string", () => {
-		expect(sanitizeString("      aaa      ")).toBe("aaa");
+		expect(sanitizeText("      aaa      ")).toBe("aaa");
 	});
 });
 describe("sanitizeLines()", () => {
 	test("Strip control characters (except newline)", () => {
-		expect(sanitizeLines("a\0b\nc\0d\ne\0f")).toBe("ab\ncd\nef");
+		expect(sanitizeMultilineText("a\0b\nc\0d\ne\0f")).toBe("ab\ncd\nef");
 	});
 	test("Normalise weird characters", () => {
-		expect(sanitizeLines("AAA\u2029BBB")).toBe("AAA\n\nBBB");
-		expect(sanitizeLines("AAA\u2028BBB")).toBe("AAA\nBBB");
-		expect(sanitizeLines("AAA\r\nBBB")).toBe("AAA\nBBB");
-		expect(sanitizeLines("AAA\rBBB")).toBe("AAA\nBBB");
-		expect(sanitizeLines("AAA\vBBB")).toBe("AAA\nBBB");
+		expect(sanitizeMultilineText("AAA\u2029BBB")).toBe("AAA\n\nBBB");
+		expect(sanitizeMultilineText("AAA\u2028BBB")).toBe("AAA\nBBB");
+		expect(sanitizeMultilineText("AAA\r\nBBB")).toBe("AAA\nBBB");
+		expect(sanitizeMultilineText("AAA\rBBB")).toBe("AAA\nBBB");
+		expect(sanitizeMultilineText("AAA\vBBB")).toBe("AAA\nBBB");
 	});
 	test("Normalise runs of whitespace (except indentation) that isn't `\n` newline to ` ` space", () => {
-		expect(sanitizeLines("AAA    BBB")).toBe("AAA BBB");
-		expect(sanitizeLines("AAA        BBB")).toBe("AAA BBB");
-		expect(sanitizeLines(`AAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("AAA BBB");
+		expect(sanitizeMultilineText("AAA    BBB")).toBe("AAA BBB");
+		expect(sanitizeMultilineText("AAA        BBB")).toBe("AAA BBB");
+		expect(sanitizeMultilineText(`AAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("AAA BBB");
 		// Leading indentation is not stripped.
-		expect(sanitizeLines("\tAAA    BBB")).toBe("\tAAA BBB");
-		expect(sanitizeLines("\tAAA        BBB")).toBe("\tAAA BBB");
-		expect(sanitizeLines(`\tAAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("\tAAA BBB");
+		expect(sanitizeMultilineText("\tAAA    BBB")).toBe("\tAAA BBB");
+		expect(sanitizeMultilineText("\tAAA        BBB")).toBe("\tAAA BBB");
+		expect(sanitizeMultilineText(`\tAAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("\tAAA BBB");
 		// Leading indentation is not stripped on second line.
-		expect(sanitizeLines("ZZZ\n\tAAA    BBB")).toBe("ZZZ\n\tAAA BBB");
-		expect(sanitizeLines("ZZZ\n\tAAA        BBB")).toBe("ZZZ\n\tAAA BBB");
-		expect(sanitizeLines(`ZZZ\n\tAAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("ZZZ\n\tAAA BBB");
+		expect(sanitizeMultilineText("ZZZ\n\tAAA    BBB")).toBe("ZZZ\n\tAAA BBB");
+		expect(sanitizeMultilineText("ZZZ\n\tAAA        BBB")).toBe("ZZZ\n\tAAA BBB");
+		expect(sanitizeMultilineText(`ZZZ\n\tAAA   \t\t\t${THINSP}${NBSP}${NNBSP}BBB`)).toBe("ZZZ\n\tAAA BBB");
 	});
 	test("Normalise indentation", () => {
-		expect(sanitizeLines("\tAAA")).toBe("\tAAA");
-		expect(sanitizeLines("\t\tAAA")).toBe("\t\tAAA");
+		expect(sanitizeMultilineText("\tAAA")).toBe("\tAAA");
+		expect(sanitizeMultilineText("\t\tAAA")).toBe("\t\tAAA");
 		// Three (or fewer) spaces normalised to no tabs.
-		expect(sanitizeLines(" AAA")).toBe("AAA");
-		expect(sanitizeLines("  AAA")).toBe("AAA");
-		expect(sanitizeLines("   AAA")).toBe("AAA");
+		expect(sanitizeMultilineText(" AAA")).toBe("AAA");
+		expect(sanitizeMultilineText("  AAA")).toBe("AAA");
+		expect(sanitizeMultilineText("   AAA")).toBe("AAA");
 		// Four (or more) spaces normalised to one tab.
-		expect(sanitizeLines("    AAA")).toBe("\tAAA");
-		expect(sanitizeLines("     AAA")).toBe("\tAAA");
-		expect(sanitizeLines("      AAA")).toBe("\tAAA");
-		expect(sanitizeLines("       AAA")).toBe("\tAAA");
+		expect(sanitizeMultilineText("    AAA")).toBe("\tAAA");
+		expect(sanitizeMultilineText("     AAA")).toBe("\tAAA");
+		expect(sanitizeMultilineText("      AAA")).toBe("\tAAA");
+		expect(sanitizeMultilineText("       AAA")).toBe("\tAAA");
 		// Eight (or more) spaces normalised to two tabs.
-		expect(sanitizeLines("        AAA")).toBe("\t\tAAA");
-		expect(sanitizeLines("         AAA")).toBe("\t\tAAA");
-		expect(sanitizeLines("          AAA")).toBe("\t\tAAA");
-		expect(sanitizeLines("           AAA")).toBe("\t\tAAA");
+		expect(sanitizeMultilineText("        AAA")).toBe("\t\tAAA");
+		expect(sanitizeMultilineText("         AAA")).toBe("\t\tAAA");
+		expect(sanitizeMultilineText("          AAA")).toBe("\t\tAAA");
+		expect(sanitizeMultilineText("           AAA")).toBe("\t\tAAA");
 		// Runs of fewer than 4 spaces in indentation are removed.
-		expect(sanitizeLines(" \t AAA")).toBe("\tAAA");
-		expect(sanitizeLines("  \t  AAA")).toBe("\tAAA");
-		expect(sanitizeLines("   \t   AAA")).toBe("\tAAA");
+		expect(sanitizeMultilineText(" \t AAA")).toBe("\tAAA");
+		expect(sanitizeMultilineText("  \t  AAA")).toBe("\tAAA");
+		expect(sanitizeMultilineText("   \t   AAA")).toBe("\tAAA");
 	});
 	test("Trim whitespace from the end of each line", () => {
-		expect(sanitizeLines("AAA      \nBBB      ")).toBe("AAA\nBBB");
-		expect(sanitizeLines("AAA      \n      \nBBB      ")).toBe("AAA\n\nBBB");
+		expect(sanitizeMultilineText("AAA      \nBBB      ")).toBe("AAA\nBBB");
+		expect(sanitizeMultilineText("AAA      \n      \nBBB      ")).toBe("AAA\n\nBBB");
 	});
 	test("Strip excess linebreaks", () => {
-		expect(sanitizeLines("\n\n\nAAA\nBBB\nCCC\n\n\n")).toBe("AAA\nBBB\nCCC");
-		expect(sanitizeLines("AAA\n\n\nBBB\n\n\nCCC")).toBe("AAA\n\nBBB\n\nCCC");
+		expect(sanitizeMultilineText("\n\n\nAAA\nBBB\nCCC\n\n\n")).toBe("AAA\nBBB\nCCC");
+		expect(sanitizeMultilineText("AAA\n\n\nBBB\n\n\nCCC")).toBe("AAA\n\nBBB\n\nCCC");
 	});
 	test("Convert paragraph separators to double newline", () => {
-		expect(sanitizeLines("AAA\fAAA")).toBe("AAA\n\nAAA");
-		expect(sanitizeLines("AAA\u2029AAA")).toBe("AAA\n\nAAA");
-		expect(sanitizeLines("AAA  \fAAA")).toBe("AAA\n\nAAA");
-		expect(sanitizeLines("AAA  \u2029AAA")).toBe("AAA\n\nAAA");
+		expect(sanitizeMultilineText("AAA\fAAA")).toBe("AAA\n\nAAA");
+		expect(sanitizeMultilineText("AAA\u2029AAA")).toBe("AAA\n\nAAA");
+		expect(sanitizeMultilineText("AAA  \fAAA")).toBe("AAA\n\nAAA");
+		expect(sanitizeMultilineText("AAA  \u2029AAA")).toBe("AAA\n\nAAA");
 	});
 });
 describe("simplifyString()", () => {

@@ -3,7 +3,7 @@ import type { ImmutableArray } from "../util/array.js";
 import { type AbsoluteLink, getOptionalLinkURL } from "../util/link.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import { TextSchema } from "./TextSchema.js";
 
 /** Allowed options for `LinkSchema` */
 export interface LinkSchemaOptions extends Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline"> {
@@ -18,7 +18,7 @@ export interface LinkSchemaOptions extends Omit<StringSchemaOptions, "type" | "m
  * - URLs are limited to 512 characters, but generally these won't be data: URIs so this is a reasonable limit.
  * - Falsy values are converted to `""` empty string.
  */
-export class LinkSchema extends StringSchema {
+export class LinkSchema extends TextSchema {
 	readonly base: AbsoluteLink | undefined;
 	readonly schemes: ImmutableArray<string> | undefined;
 	readonly hosts: ImmutableArray<string> | undefined;

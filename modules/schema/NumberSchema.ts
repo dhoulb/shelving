@@ -42,7 +42,7 @@ export class NumberSchema extends Schema<number> {
 }
 
 /** Valid number, e.g. `2048.12345` or `0` zero. */
-export const NUMBER = new NumberSchema({});
+export const NUMBER = new NumberSchema({ title: "Number" });
 
 /** Valid optional number, e.g. `2048.12345` or `0` zero, or `null` */
 export const OPTIONAL_NUMBER = OPTIONAL(NUMBER);
