@@ -34,9 +34,8 @@ export class EmailSchema extends TextSchema {
 			multiline: false,
 		});
 	}
-	override sanitize(uncleanString: string): string {
-		const sanitizedString = super.sanitize(uncleanString);
-		return typeof sanitizedString === "string" ? sanitizedString.toLowerCase() : sanitizedString;
+	override sanitize(str: string): string {
+		return super.sanitize(str).toLowerCase();
 	}
 }
 
