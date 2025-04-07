@@ -15,11 +15,10 @@ export class SlugSchema extends StringSchema {
 			...options,
 			min: 2,
 			max: 32,
-			multiline: false,
 		});
 	}
-	override sanitize(insaneString: string): string {
-		return getSlug(insaneString);
+	override sanitize(str: string): string {
+		return getSlug(str);
 	}
 }
 
