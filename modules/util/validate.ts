@@ -2,14 +2,15 @@ import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValueFeedbacks } from "../feedback/Feedbacks.js";
 import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
-import { getLastItem, isArray } from "./array.js";
+import { isArray } from "./array.js";
 import type { Data } from "./data.js";
 import { getDataProps } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
-import type { Item } from "./item.js";
+import { PASSTHROUGH } from "./function.js";
 import { isIterable } from "./iterate.js";
-import type { MutableObject } from "./object.js";
+import { getNull } from "./null.js";
+import type { DeepPartial, MutableObject } from "./object.js";
 import { getUndefined } from "./undefined.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
@@ -130,64 +131,53 @@ export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unkno
 	return changed || isIterable(unsafeDictionary) ? safeDictionary : (unsafeDictionary as ImmutableDictionary<T>);
 }
 
+/** Keep track of whether we're doing a deep-partial match or not. */
+let isDeeplyPartial = false;
+
 /**
  * Validate a data object with a set of validators.
  * - Defined props in the object will be validated against the corresponding validator.
  * - `undefined` props in the object will be set to the default value of that prop.
  *
+ * @param partial Whether we're validating a partial match, or not.
  * @return Valid object.
  * @throw Feedback if one or more props did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
-	const { partial = false, id = false } = getValidationContext();
+export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial: true): DeepPartial<T>;
+export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial?: false): T;
+export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial = isDeeplyPartial): T {
 	let valid = true;
 	let changed = true;
-	const safeData: MutableObject = id && typeof unsafeData.id === "string" ? { id: unsafeData.id } : {};
+	const safeData: MutableObject = {};
 	const messages: MutableDictionary<string> = {};
-	for (const [key, validator] of getDataProps(validators)) {
-		const unsafeValue = unsafeData[key];
-		if (unsafeValue === undefined && partial) continue; // Silently skip `undefined` props if in partial mode.
-		try {
-			const safeValue = validator.validate(unsafeValue);
-			safeData[key] = safeValue;
-			if (!changed && safeValue !== unsafeValue) changed = true;
-		} catch (thrown) {
-			if (!(thrown instanceof Feedback)) throw thrown;
-			messages[key] = thrown.message;
-			valid = false;
+	try {
+		isDeeplyPartial = partial;
+		for (const [key, validator] of getDataProps(validators)) {
+			const unsafeValue = unsafeData[key];
+			if (unsafeValue === undefined && partial) continue; // Silently skip `undefined` props if in partial mode.
+			try {
+				const safeValue = validator.validate(unsafeValue);
+				safeData[key] = safeValue;
+				if (!changed && safeValue !== unsafeValue) changed = true;
+			} catch (thrown) {
+				if (!(thrown instanceof Feedback)) throw thrown;
+				messages[key] = thrown.message;
+				valid = false;
+			}
 		}
+		if (!valid) throw new ValueFeedbacks(messages, unsafeData);
+		return changed ? (safeData as T) : (unsafeData as T);
+	} finally {
+		isDeeplyPartial = false;
 	}
-	if (!valid) throw new ValueFeedbacks(messages, unsafeData);
-	return changed ? (safeData as T) : (unsafeData as T);
 }
 
-/** Store a list of current contexts. */
-const CONTEXTS: MutableArray<Data> = [{}];
+// Undefined validator always returns `undefined`
+export const UNDEFINED: Validator<undefined> = { validate: getUndefined };
 
-/** Get the current validation context. */
-export function getValidationContext(): Data {
-	return getLastItem(CONTEXTS);
-}
+// Null validator always returns `null`
+export const NULL: Validator<null> = { validate: getNull };
 
-/** Validate a unknown value with a validator, and supply a context that can be read during the validation process. */
-export function validateWithContext<T extends Data>(
-	unsafeValue: Item<Data>,
-	validator: Validator<T>,
-	context: Data & { readonly id: true },
-): Item<T>;
-export function validateWithContext<T extends Data>(
-	unsafeValue: unknown,
-	validator: Validator<T>,
-	context: Data & { readonly partial: true },
-): Partial<T>;
-export function validateWithContext<T>(unsafeValue: unknown, validator: Validator<T>, context: Data): T;
-export function validateWithContext<T>(unsafeValue: unknown, validator: Validator<T>, context: Data): T {
-	CONTEXTS.push(context);
-	const validValue = validator.validate(unsafeValue);
-	CONTEXTS.pop();
-	return validValue;
-}
-
-// Undefined validator always returns undefined.
-export const UNDEFINED_VALIDATOR: Validator<undefined> = { validate: getUndefined };
+// Unknown validator always passes through its input value as `unknown`
+export const UNKNOWN: Validator<unknown> = { validate: PASSTHROUGH };

@@ -1,7 +1,7 @@
 import { ValidationError } from "../error/ValidationError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import type { Validator } from "../util/validate.js";
-import { UNDEFINED_VALIDATOR } from "../util/validate.js";
+import { UNDEFINED } from "../util/validate.js";
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions..
@@ -23,11 +23,7 @@ export class Resource<P = undefined, R = void> implements Validator<R> {
 	constructor(name: string, payload: Validator<P>, result: Validator<R>);
 	constructor(name: string, payload: Validator<P>);
 	constructor(name: string);
-	constructor(
-		name: string,
-		payload: Validator<P> = UNDEFINED_VALIDATOR as Validator<P>,
-		result: Validator<R> = UNDEFINED_VALIDATOR as Validator<R>,
-	) {
+	constructor(name: string, payload: Validator<P> = UNDEFINED as Validator<P>, result: Validator<R> = UNDEFINED as Validator<R>) {
 		this.name = name;
 		this.payload = payload;
 		this.result = result;
