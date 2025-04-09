@@ -10,6 +10,7 @@ export * from "./DictionarySchema.js";
 export * from "./EmailSchema.js";
 export * from "./EntitySchema.js";
 export * from "./FileSchema.js";
+export * from "./ItemSchema.js";
 export * from "./KeySchema.js";
 export * from "./LinkSchema.js";
 export * from "./NumberSchema.js";
