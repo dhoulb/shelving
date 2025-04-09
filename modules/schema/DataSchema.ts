@@ -29,7 +29,7 @@ export class DataSchema<T extends Data> extends Schema<T> {
 }
 
 /** Set of named data schemas. */
-export type DatabaseSchemas<T extends Database> = { [K in keyof T]: DataSchema<T[K]> };
+export type DataSchemas<T extends Database> = { [K in keyof T]: DataSchema<T[K]> };
 
 /** Valid data object with specifed properties. */
 export const DATA = <T extends Data>(props: Validators<T>): DataSchema<T> => new DataSchema({ props });
