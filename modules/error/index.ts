@@ -1,4 +1,5 @@
-export * from "./EnhancedError.js";
+export * from "./CodedError.js";
+
 export * from "./ConflictError.js";
 export * from "./ConnectionError.js";
 export * from "./ForbiddenError.js";
