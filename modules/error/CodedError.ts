@@ -7,9 +7,13 @@ import { debug } from "../util/debug.js";
  * - Details are converted to string using `debug()`
  */
 export class CodedError extends Error {
+	/** Number in the range of 400-599, roughly corresponding to HTTP error codes. */
 	readonly code: number = 500;
+
+	/** Details about the error, which are appended to the message. */
 	readonly details: unknown;
-	constructor(message: string, details?: unknown) {
+
+	constructor(message = CodedError.prototype.message, details?: unknown) {
 		const debugged = details !== undefined ? debug(details, 2) : "";
 		super(debugged.length ? `${message}: ${debugged}` : message);
 		this.details = details;
@@ -17,3 +21,4 @@ export class CodedError extends Error {
 	}
 }
 CodedError.prototype.name = "CodedError";
+CodedError.prototype.message = "Internal error";
