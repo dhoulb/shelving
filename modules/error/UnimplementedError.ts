@@ -1,9 +1,7 @@
-import { InternalError } from "./InternalError.js";
-
 /** Error thrown when functionality is called but is not implemented by an interface. */
-export class UnimplementedError extends InternalError {
-	constructor(message = UnimplementedError.prototype.message, details?: unknown) {
-		super(message, details);
+export class UnimplementedError extends Error {
+	constructor(message = UnimplementedError.prototype.message, options?: ErrorOptions) {
+		super(message, options);
 		Error.captureStackTrace(this, UnimplementedError);
 	}
 }

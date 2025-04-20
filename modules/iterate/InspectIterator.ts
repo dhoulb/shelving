@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/internal/AssertionError.js";
+import { AssertionError } from "../error/AssertionError.js";
 import type { Mutable } from "../util/object.js";
 import { ThroughIterator } from "./ThroughIterator.js";
 

@@ -28,7 +28,7 @@ import {
 	where,
 } from "firebase/firestore/lite";
 import { AsyncProvider } from "../../db/Provider.js";
-import { UnimplementedError } from "../../error/internal/UnimplementedError.js";
+import { UnimplementedError } from "../../error/UnimplementedError.js";
 import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";

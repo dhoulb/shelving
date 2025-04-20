@@ -3,8 +3,8 @@ import { RequestError } from "./RequestError.js";
 /** Thrown if if a value is required but doesn't exist. */
 export class NotFoundError extends RequestError {
 	override readonly code = 404;
-	constructor(message = NotFoundError.prototype.message, details?: unknown) {
-		super(message, details);
+	constructor(message = NotFoundError.prototype.message, options?: ErrorOptions) {
+		super(message, options);
 		Error.captureStackTrace(this, NotFoundError);
 	}
 }

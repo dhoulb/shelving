@@ -1,5 +1,5 @@
 import { type ReactElement, type ReactNode, createContext, createElement, useContext, useRef } from "react";
-import { AssertionError } from "../error/internal/AssertionError.js";
+import { AssertionError } from "../error/AssertionError.js";
 
 /**
  * Create a cache context that can be provided to React elements and allows them to call `useCache()`

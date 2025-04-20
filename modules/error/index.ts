@@ -1,11 +1,11 @@
 /**
- * Internal errors.
- * Indicate something is wrong with the program itself, not the user's request.
+ * Basic errors.
+ * - Indicate something is wrong with the program itself, not the user's request.
+ * - Don;t be afraid to use the internal Javascript errors too like `TypeError`, `ReferenceError`, `RangeError` too.
  */
-export * from "./internal/InternalError.js";
-export * from "./internal/AssertionError.js";
-export * from "./internal/UnimplementedError.js";
-export * from "./internal/NetworkError.js";
+export * from "./AssertionError.js";
+export * from "./UnimplementedError.js";
+export * from "./NetworkError.js";
 
 /**
  * Errors with a user's request (4xx errors).

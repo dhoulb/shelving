@@ -1,9 +1,7 @@
-import { InternalError } from "./InternalError.js";
-
 /** Thrown in the event of network issues e.g. the user's internet connection is down, or the server is down. */
-export class NetworkError extends InternalError {
-	constructor(message = NetworkError.prototype.message, context?: unknown) {
-		super(message, context);
+export class NetworkError extends Error {
+	constructor(message: string, options?: ErrorOptions) {
+		super(message, options);
 		Error.captureStackTrace(this, NetworkError);
 	}
 }
