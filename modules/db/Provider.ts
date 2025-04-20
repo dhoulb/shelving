@@ -1,4 +1,4 @@
-import { NotFoundError } from "../error/NotFoundError.js";
+import { NotFoundError } from "../error/request/NotFoundError.js";
 import { countArray, getOptionalFirstItem } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";

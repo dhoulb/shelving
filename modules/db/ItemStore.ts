@@ -1,4 +1,4 @@
-import { NotFoundError } from "../error/NotFoundError.js";
+import { NotFoundError } from "../error/request/NotFoundError.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { OptionalDataStore } from "../store/DataStore.js";
 import { NONE } from "../util/constants.js";

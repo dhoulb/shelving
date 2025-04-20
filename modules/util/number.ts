@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import { NNBSP } from "./constants.js";
 
 /** Is a value a number? */

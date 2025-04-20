@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import { type Optional, notOptional } from "./optional.js";
 
 /** Absolute path string starts with `/` slash. */

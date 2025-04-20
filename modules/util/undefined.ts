@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 
 /** Function that always returns undefined. */
 export const getUndefined = (): undefined => undefined;

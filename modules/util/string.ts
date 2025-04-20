@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import type { ImmutableArray } from "./array.js";
 import { getArray, isArray } from "./array.js";
 import { formatDate, isDate } from "./date.js";

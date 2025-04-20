@@ -1,5 +1,5 @@
-import { NotFoundError } from "../error/NotFoundError.js";
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
+import { NotFoundError } from "../error/request/NotFoundError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
 import type { MapKey } from "./map.js";
 import { ImmutableMap } from "./map.js";

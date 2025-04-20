@@ -1,5 +1,5 @@
-import { NotFoundError } from "../error/NotFoundError.js";
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
+import { NotFoundError } from "../error/request/NotFoundError.js";
 import { omitItems, pickItems } from "./iterate.js";
 import { formatRange } from "./number.js";
 

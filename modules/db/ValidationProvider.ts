@@ -1,4 +1,4 @@
-import { ValidationError as ConflictError } from "../error/ValidationError.js";
+import { ValidationError as ConflictError } from "../error/request/InputError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import type { DataSchema, DataSchemas } from "../schema/DataSchema.js";
 import { KEY } from "../schema/KeySchema.js";

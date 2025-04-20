@@ -1,5 +1,5 @@
 import { collection, query } from "firebase/firestore";
-import { NotFoundError } from "../error/NotFoundError.js";
+import { NotFoundError } from "../error/request/NotFoundError.js";
 import { ArrayStore } from "../store/ArrayStore.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { NONE } from "../util/constants.js";

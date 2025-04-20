@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 
 /** Is a value a boolean? */
 export function isBoolean(value: unknown): value is boolean {

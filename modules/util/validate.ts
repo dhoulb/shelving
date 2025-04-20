@@ -1,5 +1,4 @@
-import type { CodedError } from "../error/CodedError.js";
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValueFeedbacks } from "../feedback/Feedbacks.js";
 import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
@@ -43,7 +42,7 @@ export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> }
 export function getValid<T>(
 	unsafeValue: unknown,
 	validator: Validator<T>,
-	error: Constructor<CodedError, [string, unknown]> = ValidationError,
+	error: Constructor<Error, [string, unknown]> = ValidationError,
 ): T {
 	try {
 		return validator.validate(unsafeValue);
@@ -57,7 +56,7 @@ export function getValid<T>(
 export function assertValid<T>(
 	unsafeValue: unknown,
 	validator: Validator<T>,
-	error: Constructor<CodedError, [string, unknown]> = ValidationError,
+	error: Constructor<ValidationError, [string, unknown]> = ValidationError,
 ): asserts unsafeValue is T {
 	getValid(unsafeValue, validator, error);
 }

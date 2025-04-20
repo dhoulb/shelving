@@ -1,10 +1,10 @@
-import { CodedError } from "./CodedError.js";
+import { RequestError } from "./RequestError.js";
 
 /** Thrown if if a value is required but doesn't exist. */
-export class NotFoundError extends CodedError {
+export class NotFoundError extends RequestError {
 	override readonly code = 404;
-	constructor(message = NotFoundError.prototype.message, context?: unknown) {
-		super(message, context);
+	constructor(message = NotFoundError.prototype.message, details?: unknown) {
+		super(message, details);
 		Error.captureStackTrace(this, NotFoundError);
 	}
 }

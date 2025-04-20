@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import { DAY, HOUR, MINUTE, SECOND } from "./constants.js";
 import { getOptionalDate } from "./date.js";
 import { wrapNumber } from "./number.js";

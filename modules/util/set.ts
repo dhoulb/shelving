@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import { limitItems } from "./iterate.js";
 
 /** `Set` that cannot be changed. */

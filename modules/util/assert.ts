@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 
 /** Assert two values are equal. */
 export function assertEqual<T>(left: unknown, right: T): asserts left is T {

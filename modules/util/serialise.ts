@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import { isArray } from "./array.js";
 import { getPrototype, isObject } from "./object.js";
 

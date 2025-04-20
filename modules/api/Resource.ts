@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import type { Validator } from "../util/validate.js";
 import { UNDEFINED } from "../util/validate.js";

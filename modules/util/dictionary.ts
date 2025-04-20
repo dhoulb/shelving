@@ -1,5 +1,5 @@
-import { NotFoundError } from "../error/NotFoundError.js";
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
+import { NotFoundError } from "../error/request/NotFoundError.js";
 import { isIterable } from "./iterate.js";
 import { deleteProps, isPlainObject, omitProps, pickProps, setProp, setProps, withProp, withProps } from "./object.js";
 

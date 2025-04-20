@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import { getArray } from "./array.js";
 import type { NotString } from "./string.js";
 

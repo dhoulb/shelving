@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 
 /** List of file types in `extension: mime` format. */
 export type FileTypes = { [extension: string]: string };

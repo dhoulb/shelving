@@ -1,4 +1,4 @@
-import { NotFoundError } from "../error/NotFoundError.js";
+import { NotFoundError } from "../error/request/NotFoundError.js";
 
 /** Optional is the value or `null` or `undefined` (synonym for `Nullish`). */
 export type Optional<T> = T | null | undefined;

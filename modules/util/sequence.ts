@@ -1,4 +1,4 @@
-import { NotFoundError } from "../error/NotFoundError.js";
+import { NotFoundError } from "../error/request/NotFoundError.js";
 import { getDeferred, getDelay } from "./async.js";
 import type { AsyncValueCallback, ValueCallback } from "./callback.js";
 import { call, callMethod } from "./callback.js";

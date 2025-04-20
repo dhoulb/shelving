@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 
 /** Unknown function. */
 export type UnknownFunction = (...args: unknown[]) => unknown;

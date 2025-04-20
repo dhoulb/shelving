@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import type { Optional } from "./optional.js";
 
 /** Entity strings combine a type and ID, e.g. `challenge:a1b2c3` */

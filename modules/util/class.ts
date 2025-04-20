@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/ValidationError.js";
+import { ValidationError } from "../error/request/InputError.js";
 import { debug } from "./debug.js";
 import type { Arguments } from "./function.js";
 

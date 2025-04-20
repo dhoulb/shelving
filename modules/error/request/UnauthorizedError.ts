@@ -1,8 +1,8 @@
-import { CodedError } from "./CodedError.js";
+import { RequestError } from "./RequestError.js";
 
 /** Thrown if an operation failed because the user is logged in but does not have sufficient privileges to access something. */
-export class UnauthorizedError extends CodedError {
-	override readonly code = 401;
+export class UnauthorizedError extends RequestError {
+	override readonly code: number = 401;
 	constructor(message = UnauthorizedError.prototype.message, context?: unknown) {
 		super(message, context);
 		Error.captureStackTrace(this, UnauthorizedError);
