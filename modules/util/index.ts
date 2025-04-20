@@ -1,6 +1,7 @@
 export * from "./array.js";
 export * from "./assert.js";
 export * from "./async.js";
+export * from "./base64.js";
 export * from "./boolean.js";
 export * from "./callback.js";
 export * from "./class.js";
