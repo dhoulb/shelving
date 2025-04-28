@@ -41,14 +41,14 @@ export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> }
 
 /** Get value that validates against a given `Validator`, or throw `ValueError` */
 export function getValid<T>(
-	unsafeValue: unknown,
+	value: unknown,
 	validator: Validator<T>,
 	ErrorConstructor: Constructor<BaseError, [string, BaseErrorOptions]> = ValueError,
 ): T {
 	try {
-		return validator.validate(unsafeValue);
+		return validator.validate(value);
 	} catch (thrown) {
-		if (thrown instanceof Feedback) throw new ErrorConstructor("Invalid value", { cause: thrown, caller: getValid });
+		if (thrown instanceof Feedback) throw new ErrorConstructor(thrown.message, { received: value, cause: thrown, caller: getValid });
 		throw thrown;
 	}
 }
