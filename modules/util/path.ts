@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { type Optional, notOptional } from "./optional.js";
 
 /** Absolute path string starts with `/` slash. */
@@ -43,7 +43,7 @@ function _cleanPath(path: string): string {
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function getOptionalPath(possible: Optional<string | URL>, base: AbsolutePath | undefined = "/"): AbsolutePath | undefined {
+export function getPath(possible: Optional<string | URL>, base: AbsolutePath | undefined = "/"): AbsolutePath | undefined {
 	if (notOptional(possible)) {
 		try {
 			const { pathname, search, hash } = new URL(possible, `http://j.com${base}/`);
@@ -55,7 +55,7 @@ export function getOptionalPath(possible: Optional<string | URL>, base: Absolute
 }
 
 /**
- * Resolve a relative or absolute path and return the path, or throw `ValueError` if not a valid path.
+ * Resolve a relative or absolute path and return the path, or throw `RequiredError` if not a valid path.
  * - Internally uses `new URL` to do path processing but shouldn't ever reveal that fact.
  * - Returned paths are cleaned with `cleanPath()` so runs of slashes and trailing slashes are removed.
  *
@@ -63,9 +63,9 @@ export function getOptionalPath(possible: Optional<string | URL>, base: Absolute
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function getPath(possible: string, base?: AbsolutePath): AbsolutePath {
-	const path = getOptionalPath(possible, base);
-	if (!path) throw new ValidationError("Invalid URL", possible);
+export function requirePath(possible: string, base?: AbsolutePath): AbsolutePath {
+	const path = getPath(possible, base);
+	if (!path) throw new RequiredError("Invalid URL", { received: possible, caller: requirePath });
 	return path;
 }
 

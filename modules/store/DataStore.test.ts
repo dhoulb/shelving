@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { DataStore, NotFoundError, OptionalDataStore, runMicrotasks, runSequence } from "../index.js";
+import { DataStore, OptionalDataStore, RequiredError, runMicrotasks, runSequence } from "../index.js";
 
 test("DataStore.prototype.data", async () => {
 	type T = { a: number };
@@ -42,7 +42,7 @@ test("OptionalDataStore.prototype.data", async () => {
 	const store = new OptionalDataStore<T>(undefined);
 	expect(store).toBeInstanceOf(OptionalDataStore);
 	expect<T | undefined>(store.value).toEqual(undefined);
-	expect(() => store.data).toThrow(NotFoundError);
+	expect(() => store.data).toThrow(RequiredError);
 	// Ons and onces.
 	const calls: (T | undefined)[] = [];
 	const stop = runSequence(store.next, v => calls.push(v));
@@ -57,11 +57,11 @@ test("OptionalDataStore.prototype.data", async () => {
 	// Delete data value.
 	expect(store.unset()).toBe(undefined);
 	expect<T | undefined>(store.value).toBe(undefined);
-	expect(() => store.data).toThrow(NotFoundError);
+	expect(() => store.data).toThrow(RequiredError);
 	// Set undefined value.
 	store.value = undefined;
 	expect(store.value).toBe(undefined);
-	expect(() => store.data).toThrow(NotFoundError);
+	expect(() => store.data).toThrow(RequiredError);
 	// Checks.
 	await runMicrotasks();
 	expect(calls).toEqual([undefined]);

@@ -1,5 +1,5 @@
 import { type ReactElement, type ReactNode, createContext, createElement, useContext, useRef } from "react";
-import { AssertionError } from "../error/AssertionError.js";
+import { UnexpectedError } from "../error/UnexpectedError.js";
 
 /**
  * Create a cache context that can be provided to React elements and allows them to call `useCache()`
@@ -12,16 +12,15 @@ export function createCacheContext<T>(): {
 	readonly useCache: () => Map<string, T>;
 } {
 	const context = createContext<Map<string, T> | undefined>(undefined);
-	return {
-		useCache() {
-			const cache = useContext(context);
-			if (!cache) throw new AssertionError("useCache() must be used inside <Cache>");
-			return cache;
-		},
-		CacheContext({ children }: { children: ReactNode }): ReactElement {
-			// biome-ignore lint/suspicious/noAssignInExpressions: This is the most efficient way to do this.
-			const cache = (useRef<Map<string, T>>().current ||= new Map());
-			return createElement(context.Provider, { children, value: cache });
-		},
+	const useCache = () => {
+		const cache = useContext(context);
+		if (!cache) throw new UnexpectedError("useCache() must be used inside <Cache>", { caller: useCache });
+		return cache;
 	};
+	const CacheContext = ({ children }: { children: ReactNode }): ReactElement => {
+		// biome-ignore lint/suspicious/noAssignInExpressions: This is the most efficient way to do this.
+		const cache = (useRef<Map<string, T>>().current ||= new Map());
+		return createElement(context.Provider, { children, value: cache });
+	};
+	return { useCache, CacheContext };
 }

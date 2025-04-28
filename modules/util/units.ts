@@ -1,10 +1,10 @@
-import { ValidationError } from "../error/request/InputError.js";
-import { NotFoundError } from "../error/request/NotFoundError.js";
+import { RequiredError } from "../error/RequiredError.js";
+import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
+import type { AnyFunction } from "./function.js";
 import type { MapKey } from "./map.js";
 import { ImmutableMap } from "./map.js";
-import type { NumberOptions } from "./number.js";
-import { formatQuantity, pluralizeQuantity } from "./number.js";
+import { formatNumber, formatQuantity, pluralizeQuantity } from "./number.js";
 import type { ImmutableObject } from "./object.js";
 import { getProps } from "./object.js";
 
@@ -29,6 +29,8 @@ type UnitProps<T extends string> = {
 	readonly plural?: string;
 	/** Conversions to other units (typically needs at least the base conversion, unless it's already the base unit). */
 	readonly to?: Conversions<T>;
+	/** Possible options for formatting these units with `Intl.NumberFormat` (`.unit` can be specified if different from key, but is not required). */
+	readonly options?: Intl.NumberFormatOptions;
 };
 
 /** Represent a unit. */
@@ -45,6 +47,8 @@ export class Unit<K extends string> {
 	public readonly singular: string;
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `singular` + "s"). */
 	public readonly plural: string;
+	/** Possible options for formatting these units with `Intl.NumberFormat` (`.unit` can be specified if different from key, but is not required). */
+	public readonly options?: Readonly<Intl.NumberFormatOptions>;
 
 	/** Title for this unit (uses format `abbr (plural)`, e.g. `fl oz (US fluid ounces)`) */
 	get title(): string {
@@ -68,41 +72,57 @@ export class Unit<K extends string> {
 	}
 
 	/** Convert an amount from this unit to another unit. */
-	to(amount: number, units?: K): number {
-		return this._toUnit(amount, units ? this.list.getUnit(units) : this.list.base);
+	to(amount: number, targetKey?: K): number {
+		const target = targetKey ? _requireUnit(this.to, this.list, targetKey) : this.list.base;
+		return this._convertTo(amount, target, this.to);
 	}
 
 	/** Convert an amount from another unit to this unit. */
-	from(amount: number, units?: K): number {
-		return (units ? this.list.getUnit(units) : this.list.base)._toUnit(amount, this);
+	from(amount: number, sourceKey?: K): number {
+		const source = sourceKey ? _requireUnit(this.from, this.list, sourceKey) : this.list.base;
+		return source._convertTo(amount, this, this.from);
 	}
 
 	/** Convert an amount from this unit to another unit (must specify another `Unit` instance). */
-	private _toUnit(amount: number, unit: Unit<K>): number {
-		// Convert to self.
-		if (unit === this) return amount;
+	private _convertTo(amount: number, target: Unit<K>, caller: AnyFunction): number {
+		// No conversion.
+		if (target === this) return amount;
+
 		// Exact conversion.
-		const thisToUnit = this._to?.[unit.key];
+		// When this unit knows the multiplier or function to convert to the target unit.
+		const thisToUnit = this._to?.[target.key];
 		if (thisToUnit) return _convert(amount, thisToUnit);
-		// Invert number conversion (can't do this for function conversions).
-		const unitToThis = unit._to?.[this.key];
+
+		// Invert number conversion.
+		// This is where the target type knows the multiplier to convert to this.
+		// Can't do this for function conversions.
+		const unitToThis = target._to?.[this.key];
 		if (typeof unitToThis === "number") return amount / unitToThis;
-		// Two step conversion via base.
+
+		// Via base conversion.
+		// Everything should know how to convert to its base units.
 		const base = this.list.base;
 		const thisToBase = this._to?.[base.key];
-		if (thisToBase) return base._toUnit(_convert(amount, thisToBase), unit);
-		// Cannot convert.
-		throw new ValidationError(`Cannot convert "${this.key}" to "${unit.key}"`);
+		if (thisToBase) return base._convertTo(_convert(amount, thisToBase), target, caller);
+
+		// Not convertable.
+		throw new ValueError(`Cannot convert "${base.key}" to "${this.key}"`, { list: this, caller });
 	}
 
-	/** Format an amount with a given unit of measure, e.g. `12 kg` or `29.5 l` */
-	format(amount: number, options?: NumberOptions): string {
-		return formatQuantity(amount, this.abbr, options);
-	}
+	/**
+	 * Format an amount with a given unit of measure, e.g. `12 kg` or `29.5 l`
+	 * - Uses `Intl.NumberFormat` if this is a supported unit (so e.g. `ounce` is translated to e.g. `Unze` in German).
+	 * - Polyfills unsupported units to use long/short form based on `options.unitDisplay`.
+	 */
+	format(amount: number, options?: Intl.NumberFormatOptions): string {
+		// If possible use `Intl` so that the user's locale is used.
+		if (Intl.supportedValuesOf("unit").includes(this.key))
+			return formatNumber(amount, { style: "unit", unitDisplay: "short", ...this.options, ...options, unit: this.key });
 
-	/** Format an amount with a given unit of measure, e.g. `12 kilograms` or `29.5 liters` or `1 degree` */
-	pluralize(amount: number, options?: NumberOptions): string {
-		return pluralizeQuantity(amount, this.singular, this.plural, options);
+		// Otherwise, use the default number format.
+		// If unitDisplay is "long" use the singular/plural form.
+		const o: Intl.NumberFormatOptions = { style: "decimal", unitDisplay: "short", ...this.options, ...options };
+		return o.unitDisplay === "long" ? pluralizeQuantity(amount, this.singular, this.plural, o) : formatQuantity(amount, this.abbr, o);
 	}
 }
 
@@ -124,18 +144,23 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	}
 
 	/** Convert an amount from a unit to another unit. */
-	convert(amount: number, sourceUnits: K, targetUnits: K): number {
-		return this.getUnit(sourceUnits).to(amount, targetUnits);
+	convert(amount: number, sourceKey: K, targetKey: K): number {
+		return _requireUnit(this.convert, this, sourceKey).to(amount, targetKey);
 	}
 
 	/**
-	 * Get a unit from this list.
-	 * @throws RequiredError if the unit is not found.
+	 * Require a unit from this list.
+	 * @throws RequiredError if the unit key is not found.
 	 */
-	getUnit(units: K): Unit<K> {
-		if (this.has(units)) return this.get(units) as Unit<K>;
-		throw new NotFoundError("Unknown unit", units);
+	require(key: K): Unit<K> {
+		return _requireUnit(this.require, this, key);
 	}
+}
+
+function _requireUnit<K extends string>(caller: AnyFunction, list: UnitList<K>, key: K): Unit<K> {
+	const unit = list.get(key);
+	if (!unit) throw new RequiredError(`Unknown unit "${key}"`, { key, list, caller });
+	return unit;
 }
 
 // Distance constants.
@@ -202,17 +227,21 @@ export const MASS_UNITS = new UnitList({
 });
 export type MassUnitKey = MapKey<typeof MASS_UNITS>;
 
+const TIME_OPTIONS: Intl.NumberFormatOptions = {
+	roundingMode: "trunc",
+	maximumFractionDigits: 0,
+};
+
 /** Time units. */
 export const TIME_UNITS = new UnitList({
-	// Metric.
-	millisecond: { abbr: "ms" },
-	second: { to: { millisecond: SECOND } },
-	minute: { to: { millisecond: MINUTE } },
-	hour: { to: { millisecond: HOUR } },
-	day: { to: { millisecond: DAY } },
-	week: { to: { millisecond: WEEK } },
-	month: { to: { millisecond: MONTH } },
-	year: { to: { millisecond: YEAR } },
+	millisecond: { abbr: "ms", options: TIME_OPTIONS },
+	second: { to: { millisecond: SECOND }, options: TIME_OPTIONS },
+	minute: { to: { millisecond: MINUTE }, options: TIME_OPTIONS },
+	hour: { to: { millisecond: HOUR }, options: TIME_OPTIONS },
+	day: { to: { millisecond: DAY }, options: TIME_OPTIONS },
+	week: { to: { millisecond: WEEK }, options: TIME_OPTIONS },
+	month: { to: { millisecond: MONTH }, options: TIME_OPTIONS },
+	year: { to: { millisecond: YEAR }, options: TIME_OPTIONS },
 });
 export type TimeUnitKey = MapKey<typeof TIME_UNITS>;
 

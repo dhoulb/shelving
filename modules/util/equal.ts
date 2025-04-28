@@ -1,3 +1,4 @@
+import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
 import { isArray } from "./array.js";
 import type { Match } from "./filter.js";
@@ -7,6 +8,16 @@ import type { ImmutableObject } from "./object.js";
 import { isObject, isProp } from "./object.js";
 import { compareAscending } from "./sort.js";
 
+/** Assert two values are equal. */
+export function assertEqual<T>(left: unknown, right: T): asserts left is T {
+	if (left !== right) new AssertionError("Must be equal", { left, right, caller: assertEqual });
+}
+
+/** Assert two values are equal. */
+export function assertNot<T, N>(left: T | N, right: N): asserts left is T {
+	if (left === right) new AssertionError("Must not be equal", { left, right, caller: assertNot });
+}
+
 /** Is unknown value `left` exactly equal to `right`? */
 export function isEqual<T>(left: unknown, right: T): left is T {
 	return left === right;
@@ -14,7 +25,7 @@ export function isEqual<T>(left: unknown, right: T): left is T {
 
 /** Is unknown value `left` not exactly equal to `right`? */
 export function notEqual<T, N>(left: T | N, right: N): left is T {
-	return !isEqual(left, right);
+	return left !== right;
 }
 
 /** Is unknown value `left` less than `right`? */

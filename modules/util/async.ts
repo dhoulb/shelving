@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
 import type { ValueCallback } from "./callback.js";
 import type { Report } from "./error.js";
@@ -23,19 +23,19 @@ export function throwAsync<T>(value: PromiseLike<T> | T): T {
 	return value;
 }
 
-/** Assert a synchronous value. */
+/** Assert an unknown value is synchronous (i.e. does not have a `.then()` method). */
 export function assertNotAsync<T>(value: PromiseLike<T> | T): asserts value is T {
-	if (isAsync(value)) throw new ValidationError("Must be synchronous", value);
+	if (isAsync(value)) throw new AssertionError("Must be synchronous", { received: value, caller: assertNotAsync });
 }
 
-/** Assert an asynchronous value. */
+/** Assert an unknown value is asynchronous (i.e. has a `.then()` method). */
 export function assertAsync<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
-	if (!isAsync(value)) throw new ValidationError("Must be asynchronous", value);
+	if (!isAsync(value)) throw new AssertionError("Must be asynchronous", { received: value, caller: assertAsync });
 }
 
-/** Assert a promise. */
+/** Assert that an unknown value is a `Promise` */
 export function assertPromise<T>(value: Promise<T> | T): asserts value is Promise<T> {
-	if (!(value instanceof Promise)) throw new ValidationError("Must be promise", value);
+	if (!(value instanceof Promise)) throw new AssertionError("Must be promise", { received: value, caller: assertPromise });
 }
 
 /** Run any queued microtasks now. */

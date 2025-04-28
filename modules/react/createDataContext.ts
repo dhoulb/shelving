@@ -7,7 +7,7 @@ import type { DataKey, Database } from "../util/data.js";
 import type { ItemQuery } from "../util/item.js";
 import { setMapItem } from "../util/map.js";
 import type { Optional } from "../util/optional.js";
-import { getOptionalSource } from "../util/source.js";
+import { getSource } from "../util/source.js";
 import { createCacheContext } from "./createCacheContext.js";
 import { useStore } from "./useStore.js";
 
@@ -31,7 +31,7 @@ export function createDataContext<T extends Database>(provider: AbstractProvider
 	const { CacheContext, useCache } = createCacheContext<ItemStore<T, any> | QueryStore<T, any>>();
 
 	// If this provider is backed by an in-memory cache, pass it to the `ItemStore` and `QueryStore` instances we create.
-	const memory = getOptionalSource<CacheProvider<T>>(CacheProvider, provider)?.memory;
+	const memory = getSource<CacheProvider<T>>(CacheProvider, provider)?.memory;
 
 	return {
 		useItem: <K extends DataKey<T>>(collection: Optional<K>, id: Optional<string>): ItemStore<T, K> | undefined => {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ValidationError, getPath, isAbsolutePath, isPathProud } from "../index.js";
+import { RequiredError, isAbsolutePath, isPathProud, requirePath } from "../index.js";
 
 test("isAbsolutePath()", () => {
 	// Absolute.
@@ -23,68 +23,68 @@ test("isAbsolutePath()", () => {
 describe("getPath()", () => {
 	test("Valid paths", () => {
 		// Relative paths.
-		expect(getPath("./a/b/c")).toBe("/a/b/c");
-		expect(getPath("./b/c", "/a")).toBe("/a/b/c");
-		expect(getPath("a/b/c")).toBe("/a/b/c");
-		expect(getPath("b/c", "/a")).toBe("/a/b/c");
+		expect(requirePath("./a/b/c")).toBe("/a/b/c");
+		expect(requirePath("./b/c", "/a")).toBe("/a/b/c");
+		expect(requirePath("a/b/c")).toBe("/a/b/c");
+		expect(requirePath("b/c", "/a")).toBe("/a/b/c");
 
 		// Absolute paths.
-		expect(getPath("/a/b/c")).toBe("/a/b/c");
-		expect(getPath("/b/c", "/a")).toBe("/b/c");
+		expect(requirePath("/a/b/c")).toBe("/a/b/c");
+		expect(requirePath("/b/c", "/a")).toBe("/b/c");
 
 		// Remove redundant `/./` paths.
-		expect(getPath("./a/./b")).toBe("/a/b");
-		expect(getPath("./a/b/.")).toBe("/a/b");
-		expect(getPath("/a/./b")).toBe("/a/b");
-		expect(getPath("/a/b/.")).toBe("/a/b");
-		expect(getPath("a/./b")).toBe("/a/b");
-		expect(getPath("a/b/.")).toBe("/a/b");
+		expect(requirePath("./a/./b")).toBe("/a/b");
+		expect(requirePath("./a/b/.")).toBe("/a/b");
+		expect(requirePath("/a/./b")).toBe("/a/b");
+		expect(requirePath("/a/b/.")).toBe("/a/b");
+		expect(requirePath("a/./b")).toBe("/a/b");
+		expect(requirePath("a/b/.")).toBe("/a/b");
 
 		// Convert windows slashes.
-		expect(getPath("/a\\b/c")).toBe("/a/b/c");
+		expect(requirePath("/a\\b/c")).toBe("/a/b/c");
 
 		// Normalise double slashes.
-		expect(getPath("./b//c", "/a")).toBe("/a/b/c");
-		expect(getPath("/b///c", "/a")).toBe("/b/c");
-		expect(getPath("b///c", "/a")).toBe("/a/b/c");
-		expect(getPath("c", "//a/b")).toBe("/a/b/c");
-		expect(getPath("c", "/a//b")).toBe("/a/b/c");
+		expect(requirePath("./b//c", "/a")).toBe("/a/b/c");
+		expect(requirePath("/b///c", "/a")).toBe("/b/c");
+		expect(requirePath("b///c", "/a")).toBe("/a/b/c");
+		expect(requirePath("c", "//a/b")).toBe("/a/b/c");
+		expect(requirePath("c", "/a//b")).toBe("/a/b/c");
 
 		// Remove trailing slashes.
-		expect(getPath("./b/c/", "/a")).toBe("/a/b/c");
-		expect(getPath("/b/c/", "/a")).toBe("/b/c");
-		expect(getPath("b/c/", "/a")).toBe("/a/b/c");
-		expect(getPath("./b/c//", "/a")).toBe("/a/b/c");
-		expect(getPath("/b/c//", "/a")).toBe("/b/c");
-		expect(getPath("b/c//", "/a")).toBe("/a/b/c");
-		expect(getPath("./b/c///", "/a")).toBe("/a/b/c");
-		expect(getPath("/b/c///", "/a")).toBe("/b/c");
-		expect(getPath("b/c///", "/a")).toBe("/a/b/c");
+		expect(requirePath("./b/c/", "/a")).toBe("/a/b/c");
+		expect(requirePath("/b/c/", "/a")).toBe("/b/c");
+		expect(requirePath("b/c/", "/a")).toBe("/a/b/c");
+		expect(requirePath("./b/c//", "/a")).toBe("/a/b/c");
+		expect(requirePath("/b/c//", "/a")).toBe("/b/c");
+		expect(requirePath("b/c//", "/a")).toBe("/a/b/c");
+		expect(requirePath("./b/c///", "/a")).toBe("/a/b/c");
+		expect(requirePath("/b/c///", "/a")).toBe("/b/c");
+		expect(requirePath("b/c///", "/a")).toBe("/a/b/c");
 
 		// Resolve relative paths.
-		expect(getPath("./a/../b")).toBe("/b");
-		expect(getPath("/a/../b")).toBe("/b");
-		expect(getPath("./a/../../b")).toBe("/b");
-		expect(getPath("/a/../../b")).toBe("/b");
-		expect(getPath("./a/../b/../c/../d")).toBe("/d");
-		expect(getPath("/a/../b/../c/../d")).toBe("/d");
-		expect(getPath("a/../b/../c/../d")).toBe("/d");
-		expect(getPath("./../../a")).toBe("/a");
-		expect(getPath("/../../a")).toBe("/a");
-		expect(getPath("../../a")).toBe("/a");
+		expect(requirePath("./a/../b")).toBe("/b");
+		expect(requirePath("/a/../b")).toBe("/b");
+		expect(requirePath("./a/../../b")).toBe("/b");
+		expect(requirePath("/a/../../b")).toBe("/b");
+		expect(requirePath("./a/../b/../c/../d")).toBe("/d");
+		expect(requirePath("/a/../b/../c/../d")).toBe("/d");
+		expect(requirePath("a/../b/../c/../d")).toBe("/d");
+		expect(requirePath("./../../a")).toBe("/a");
+		expect(requirePath("/../../a")).toBe("/a");
+		expect(requirePath("../../a")).toBe("/a");
 
 		// Search query and hash are kept.
-		expect(getPath("/a/b/c?d=d#e")).toBe("/a/b/c?d=d#e");
-		expect(getPath("/a/b/c/?d=d#e")).toBe("/a/b/c?d=d#e");
+		expect(requirePath("/a/b/c?d=d#e")).toBe("/a/b/c?d=d#e");
+		expect(requirePath("/a/b/c/?d=d#e")).toBe("/a/b/c?d=d#e");
 
 		// Edge cases.
-		expect(getPath("..")).toBe("/");
-		expect(getPath(".")).toBe("/");
-		expect(getPath("")).toBe("/");
+		expect(requirePath("..")).toBe("/");
+		expect(requirePath(".")).toBe("/");
+		expect(requirePath("")).toBe("/");
 	});
 	test("Invalid paths", () => {
 		// Non-https schemes don't have a path starting with `/` so they're always invalid.
-		expect(() => getPath("mailto:a@b.com")).toThrow(ValidationError);
+		expect(() => requirePath("mailto:a@b.com")).toThrow(RequiredError);
 	});
 });
 test("isPathProud()", () => {

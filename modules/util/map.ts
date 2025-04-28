@@ -1,5 +1,5 @@
-import { ValidationError } from "../error/request/InputError.js";
-import { NotFoundError } from "../error/request/NotFoundError.js";
+import { AssertionError } from "../error/AssertionError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import type { Entry } from "./entry.js";
 import { isIterable, limitItems } from "./iterate.js";
 
@@ -34,7 +34,7 @@ export function isMap(value: unknown): value is ImmutableMap {
 
 /** Assert that a value is a `Map` instance. */
 export function assertMap(value: unknown): asserts value is ImmutableMap {
-	if (!isMap(value)) throw new ValidationError("Must be map", value);
+	if (!isMap(value)) throw new AssertionError("Must be map", { received: value, caller: assertMap });
 }
 
 /** Is an unknown value a key for an item in a map? */
@@ -44,7 +44,7 @@ export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K
 
 /** Assert that an unknown value is a key for an item in a map. */
 export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): asserts key is K {
-	if (!isMapItem(map, key)) throw new ValidationError("Must be map item", key);
+	if (!isMapItem(map, key)) throw new AssertionError("Key must exist in map", { key, map, caller: assertMapItem });
 }
 
 /** Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged). */
@@ -75,13 +75,13 @@ export function removeMapItems<K, T>(map: MutableMap<K, T>, ...keys: K[]): void 
 	for (const key of keys) map.delete(key);
 }
 
-/** Get an item in a map or throw an error if it doesn't exist. */
-export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T {
-	if (!map.has(key)) throw new NotFoundError("Map item is required");
+/** Get an item in a map, or throw `RequiredError` if it doesn't exist. */
+export function requireMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T {
+	if (!map.has(key)) throw new RequiredError("Key must exist in map", { key, map, caller: requireMapItem });
 	return map.get(key) as T;
 }
 
-/** Get an item in a map or `undefined` if it doesn't exist. */
-export function getOptionalMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | undefined {
+/** Get an item in a map, or `undefined` if it doesn't exist. */
+export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | undefined {
 	return map.get(key);
 }

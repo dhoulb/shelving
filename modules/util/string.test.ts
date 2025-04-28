@@ -1,15 +1,17 @@
 import { describe, expect, test } from "bun:test";
 import {
+	AssertionError,
 	NBSP,
 	NNBSP,
+	RequiredError,
 	THINSP,
-	ValidationError,
+	ValueError,
 	assertStringLength,
-	getSlug,
 	getString,
-	getStringLength,
 	getWords,
 	isStringLength,
+	requireSlug,
+	requireStringLength,
 	sanitizeMultilineText,
 	sanitizeText,
 	simplifyString,
@@ -122,17 +124,17 @@ describe("simplifyString()", () => {
 });
 describe("getSlug()", () => {
 	test("Works correctly", () => {
-		expect(getSlug("A Sentence In Sentence Case")).toBe("a-sentence-in-sentence-case");
-		expect(getSlug("SOMETHING VERY loud")).toBe("something-very-loud");
-		expect(getSlug("This: Something to not-be proud of")).toBe("this-something-to-not-be-proud-of");
-		expect(getSlug("under_score")).toBe("under-score");
-		expect(getSlug("Dave's Angles")).toBe("daves-angles");
+		expect(requireSlug("A Sentence In Sentence Case")).toBe("a-sentence-in-sentence-case");
+		expect(requireSlug("SOMETHING VERY loud")).toBe("something-very-loud");
+		expect(requireSlug("This: Something to not-be proud of")).toBe("this-something-to-not-be-proud-of");
+		expect(requireSlug("under_score")).toBe("under-score");
+		expect(requireSlug("Dave's Angles")).toBe("daves-angles");
 	});
 	test("Hyphens are cleaned up", () => {
-		expect(getSlug("multiple----hyphens")).toBe("multiple-hyphens");
-		expect(getSlug("----trim-hyphens----")).toBe("trim-hyphens");
-		expect(getSlug("trim-hyphens----")).toBe("trim-hyphens");
-		expect(getSlug("----trim-hyphens")).toBe("trim-hyphens");
+		expect(requireSlug("multiple----hyphens")).toBe("multiple-hyphens");
+		expect(requireSlug("----trim-hyphens----")).toBe("trim-hyphens");
+		expect(requireSlug("trim-hyphens----")).toBe("trim-hyphens");
+		expect(requireSlug("----trim-hyphens")).toBe("trim-hyphens");
 	});
 });
 test("getWords()", () => {
@@ -172,11 +174,11 @@ test("splitString()", () => {
 	expect(splitString("a/b/c/d//e", "/", 4, 4)).toEqual(["a", "b", "c", "d//e"]);
 
 	// Segments cannot be empty.
-	expect(() => splitString("a//c", "/", 10)).toThrow(ValidationError);
+	expect(() => splitString("a//c", "/", 10)).toThrow(ValueError);
 
 	// Min segments is not met.
-	expect(() => splitString("a/b/c", "/", 4)).toThrow(ValidationError);
-	expect(() => splitString("a/b/c/d/e/f", "/", 4, 3)).toThrow(ValidationError);
+	expect(() => splitString("a/b/c", "/", 4)).toThrow(ValueError);
+	expect(() => splitString("a/b/c/d/e/f", "/", 4, 3)).toThrow(ValueError);
 });
 test("isStringLength()", () => {
 	// Check maximum.
@@ -190,18 +192,18 @@ test("isStringLength()", () => {
 test("assertStringLength()", () => {
 	// Assert maximum.
 	expect(() => assertStringLength("abc", 3)).not.toThrow();
-	expect(() => assertStringLength("abc", 5)).toThrow(ValidationError);
+	expect(() => assertStringLength("abc", 5)).toThrow(AssertionError);
 
 	// Assert minimum.
 	expect(() => assertStringLength("abc", 0, 3)).not.toThrow();
-	expect(() => assertStringLength("abcde", 0, 3)).toThrow(ValidationError);
+	expect(() => assertStringLength("abcde", 0, 3)).toThrow(AssertionError);
 });
 test("getStringLength()", () => {
 	// Check maximum.
-	expect(getStringLength("abc", 3)).toBe("abc");
-	expect(() => getStringLength("abc", 5)).toThrow(ValidationError);
+	expect(requireStringLength("abc", 3)).toBe("abc");
+	expect(() => requireStringLength("abc", 5)).toThrow(RequiredError);
 
 	// Check minimum.
-	expect(getStringLength("abc", 0, 3)).toBe("abc");
-	expect(() => getStringLength("abcde", 0, 3)).toThrow(ValidationError);
+	expect(requireStringLength("abc", 0, 3)).toBe("abc");
+	expect(() => requireStringLength("abcde", 0, 3)).toThrow(RequiredError);
 });

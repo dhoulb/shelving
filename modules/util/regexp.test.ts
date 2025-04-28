@@ -1,45 +1,45 @@
 import { expect, test } from "bun:test";
 import {
+	createRegExpAll,
+	createRegExpAny,
 	filterArray,
-	getAllRegExp,
-	getAnyRegExp,
 	getMatch,
 	getMatchGroups,
-	getOptionalMatch,
-	getOptionalMatchGroups,
 	isMatch,
 	notMatch,
+	requireMatch,
+	requireMatchGroups,
 } from "../index.js";
 
 test("getAllRegExp()", () => {
 	// No pattern (always true).
-	expect(getAllRegExp([]).test("")).toBe(true);
-	expect(getAllRegExp([]).test("the dog and the cat")).toBe(true);
+	expect(createRegExpAll([]).test("")).toBe(true);
+	expect(createRegExpAll([]).test("the dog and the cat")).toBe(true);
 
 	// Array with one pattern.
-	expect(getAllRegExp(["dog"]).test("the dog and the cat")).toBe(true);
-	expect(getAllRegExp(["cat"]).test("the dog and the cat")).toBe(true);
-	expect(getAllRegExp(["tapir"]).test("the dog and the cat")).toBe(false);
+	expect(createRegExpAll(["dog"]).test("the dog and the cat")).toBe(true);
+	expect(createRegExpAll(["cat"]).test("the dog and the cat")).toBe(true);
+	expect(createRegExpAll(["tapir"]).test("the dog and the cat")).toBe(false);
 
 	// Array with multiple pattern.
-	expect(getAllRegExp(["dog", "cat"]).test("the dog and the cat")).toBe(true);
-	expect(getAllRegExp(["the", "the"]).test("the dog and the cat")).toBe(true);
-	expect(getAllRegExp(["tapir", "cat"]).test("the dog and the cat")).toBe(false);
+	expect(createRegExpAll(["dog", "cat"]).test("the dog and the cat")).toBe(true);
+	expect(createRegExpAll(["the", "the"]).test("the dog and the cat")).toBe(true);
+	expect(createRegExpAll(["tapir", "cat"]).test("the dog and the cat")).toBe(false);
 });
 test("getAnyRegExp()", () => {
 	// No pattern (always false).
-	expect(getAnyRegExp([]).test("")).toBe(false);
-	expect(getAnyRegExp([]).test("the dog and the cat")).toBe(false);
+	expect(createRegExpAny([]).test("")).toBe(false);
+	expect(createRegExpAny([]).test("the dog and the cat")).toBe(false);
 
 	// Array with one pattern.
-	expect(getAnyRegExp(["dog"]).test("the dog and the cat")).toBe(true);
-	expect(getAnyRegExp(["cat"]).test("the dog and the cat")).toBe(true);
-	expect(getAnyRegExp(["tapir"]).test("the dog and the cat")).toBe(false);
+	expect(createRegExpAny(["dog"]).test("the dog and the cat")).toBe(true);
+	expect(createRegExpAny(["cat"]).test("the dog and the cat")).toBe(true);
+	expect(createRegExpAny(["tapir"]).test("the dog and the cat")).toBe(false);
 
 	// Array with multiple pattern.
-	expect(getAnyRegExp(["dog", "cat"]).test("the dog and the cat")).toBe(true);
-	expect(getAnyRegExp(["tapir", "cat"]).test("the dog and the cat")).toBe(true);
-	expect(getAnyRegExp(["tapir", "elephant"]).test("the dog and the cat")).toBe(false);
+	expect(createRegExpAny(["dog", "cat"]).test("the dog and the cat")).toBe(true);
+	expect(createRegExpAny(["tapir", "cat"]).test("the dog and the cat")).toBe(true);
+	expect(createRegExpAny(["tapir", "elephant"]).test("the dog and the cat")).toBe(false);
 });
 test("isMatch()", () => {
 	const arr = ["the dog", "the man", "the cat"];
@@ -66,14 +66,14 @@ test("notMatch()", () => {
 	expect(filterArray(arr, notMatch, /tapir/)).toBe(arr);
 });
 test("getOptionalMatch()", () => {
-	expect(getOptionalMatch("abc1", /[a-z]{3}[0-9]/)).toMatchObject({ 0: "abc1" });
-});
-test("getMatch()", () => {
 	expect(getMatch("abc1", /[a-z]{3}[0-9]/)).toMatchObject({ 0: "abc1" });
 });
+test("getMatch()", () => {
+	expect(requireMatch("abc1", /[a-z]{3}[0-9]/)).toMatchObject({ 0: "abc1" });
+});
 test("getOptionalMatchGroups()", () => {
-	expect(getOptionalMatchGroups("abc123", /(?<str>[a-z]+)(?<num>[0-9]+)/)).toMatchObject({ str: "abc", num: "123" });
+	expect(getMatchGroups("abc123", /(?<str>[a-z]+)(?<num>[0-9]+)/)).toMatchObject({ str: "abc", num: "123" });
 });
 test("getMatchGroups()", () => {
-	expect(getMatchGroups("abc123", /(?<str>[a-z]+)(?<num>[0-9]+)/)).toMatchObject({ str: "abc", num: "123" });
+	expect(requireMatchGroups("abc123", /(?<str>[a-z]+)(?<num>[0-9]+)/)).toMatchObject({ str: "abc", num: "123" });
 });

@@ -1,6 +1,6 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
-import { getFirstItem } from "../util/array.js";
 import type { Entry } from "../util/entry.js";
+import { requireFirstItem } from "../util/iterate.js";
 import type { ImmutableMap, PossibleMap, PossibleStringMap } from "../util/map.js";
 import { getMap, isMapItem } from "../util/map.js";
 import { getString } from "../util/string.js";
@@ -19,7 +19,7 @@ export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>
 	readonly allow: ImmutableMap<K, T>;
 	constructor(options: AllowSchemaOptions<K, T>) {
 		const allow = getMap(options.allow);
-		const value = getFirstItem(allow.keys());
+		const value = requireFirstItem(allow.keys());
 		super({ value, ...options });
 		this.allow = allow;
 	}

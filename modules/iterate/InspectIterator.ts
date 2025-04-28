@@ -1,4 +1,5 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { UnexpectedError } from "../error/UnexpectedError.js";
+import { getGetter } from "../util/class.js";
 import type { Mutable } from "../util/object.js";
 import { ThroughIterator } from "./ThroughIterator.js";
 
@@ -24,21 +25,33 @@ export class InspectIterator<T, R, N> extends ThroughIterator<T, R, N> implement
 
 	/** The first yielded value (throws if the iteration yielded no values, i.e. `this.count === 0`). */
 	get first(): T {
-		if (this._first === _NOVALUE) throw new AssertionError("Iteration not started");
+		if (this._first === _NOVALUE)
+			throw new UnexpectedError("Iteration not started", {
+				iterator: this,
+				caller: getGetter(this, "first"),
+			});
 		return this._first;
 	}
 	private _first: T | typeof _NOVALUE = _NOVALUE;
 
 	/** The last yielded value (throws if the iteration yielded no values, i.e. `this.count === 0`). */
 	get last(): T {
-		if (this._last === _NOVALUE) throw new AssertionError("Iteration not started");
+		if (this._last === _NOVALUE)
+			throw new UnexpectedError("Iteration not started", {
+				iterator: this,
+				caller: getGetter(this, "last"),
+			});
 		return this._last;
 	}
 	private _last: T | typeof _NOVALUE = _NOVALUE;
 
 	/** The returned value (throws if the iteration is not done, i.e. `this.done === false`). */
 	get returned(): R {
-		if (this._returned === _NOVALUE) throw new AssertionError("Iteration not done");
+		if (this._returned === _NOVALUE)
+			throw new UnexpectedError("Iteration not done", {
+				iterator: this,
+				caller: getGetter(this, "returned"),
+			});
 		return this._returned;
 	}
 	private _returned: R | typeof _NOVALUE = _NOVALUE;

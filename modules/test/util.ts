@@ -1,6 +1,5 @@
 import { expect } from "bun:test";
 import type { Data } from "../util/data.js";
-import { popErrorStack } from "../util/error.js";
 import type { Item } from "../util/item.js";
 import { getItemIDs } from "../util/item.js";
 import type { NotString } from "../util/string.js";
@@ -17,7 +16,8 @@ export function expectUnorderedItems<T extends Data>(items: Iterable<Item<T>>, k
 		expect(items).toBeInstanceOf(Object);
 		expect(Array.from(getItemIDs(items)).sort()).toEqual(Array.from(keys).sort());
 	} catch (thrown) {
-		throw thrown instanceof Error ? popErrorStack(thrown) : thrown;
+		if (thrown instanceof Error) Error.captureStackTrace(thrown, expectUnorderedItems);
+		throw thrown;
 	}
 }
 
@@ -27,6 +27,7 @@ export function expectOrderedItems<T extends Data>(items: Iterable<Item<T>>, key
 		expect(items).toBeInstanceOf(Object);
 		expect(Array.from(getItemIDs(items))).toEqual(Array.from(keys));
 	} catch (thrown) {
-		throw thrown instanceof Error ? popErrorStack(thrown) : thrown;
+		if (thrown instanceof Error) Error.captureStackTrace(thrown, expectOrderedItems);
+		throw thrown;
 	}
 }

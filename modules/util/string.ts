@@ -1,4 +1,6 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { AssertionError } from "../error/AssertionError.js";
+import { RequiredError } from "../error/RequiredError.js";
+import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
 import { getArray, isArray } from "./array.js";
 import { formatDate, isDate } from "./date.js";
@@ -20,7 +22,7 @@ export function isString(value: unknown): value is string {
 
 /** Assert that a value is a string. */
 export function assertString(value: unknown): asserts value is string {
-	if (typeof value !== "string") throw new ValidationError("Must be string", value);
+	if (typeof value !== "string") throw new ValueError("Must be string", { received: value, caller: assertString });
 }
 
 /**
@@ -49,20 +51,21 @@ export function getString(value: unknown): string {
 	return "Unknown";
 }
 
-/** Does a string have the specified minimum length.  */
+/** Does a string have the specified length. */
 export function isStringLength(str: string, min = 1, max = Number.POSITIVE_INFINITY): boolean {
 	return str.length >= min && str.length <= max;
 }
 
-/** Assert that a value has a specific length (or length is in a specific range). */
+/** Assert that a value has a specific length, or throw `AssertionError` if the string is outside that length. */
 export function assertStringLength(str: unknown, min = 1, max = Number.POSITIVE_INFINITY): asserts str is string {
 	if (!isString(str) || !isStringLength(str, min, max))
-		throw new ValidationError(`Must be string with length ${formatRange(min, max)}`, str);
+		throw new AssertionError(`Must be string with length ${formatRange(min, max)}`, { received: str, caller: assertStringLength });
 }
 
-/** Get a string if it has the specified minimum length.  */
-export function getStringLength(str: string, min = 1, max = Number.POSITIVE_INFINITY): string {
-	assertStringLength(str, min, max);
+/** Get a string if it has the specified length, or throw `RequiredError` if the string was outside that length. */
+export function requireStringLength(str: string, min = 1, max = Number.POSITIVE_INFINITY): string {
+	if (!isStringLength(str, min, max))
+		throw new RequiredError(`Must be string with length ${formatRange(min, max)}`, { received: str, caller: requireStringLength });
 	return str;
 }
 
@@ -128,36 +131,28 @@ export function simplifyString(str: string): string {
 		.toLowerCase();
 }
 
-/**
- * Convert a string to a `kebab-case` URL slug, or return `undefined` if conversion resulted in an empty ref.
- */
-export function getOptionalSlug(str: string): string | undefined {
+/** Convert a string to a `kebab-case` URL slug, or return `undefined` if conversion resulted in an empty ref. */
+export function getSlug(str: string): string | undefined {
 	return simplifyString(str).replaceAll(" ", "-") || undefined;
 }
 
-/**
- * Convert a string to a `kebab-case` URL slug, or throw `ValueError` if conversion resulted in an empty ref.
- */
-export function getSlug(str: string): string {
-	const slug = getOptionalSlug(str);
+/** Convert a string to a `kebab-case` URL slug, or throw `RequiredError` if conversion resulted in an empty ref. */
+export function requireSlug(str: string): string {
+	const slug = getSlug(str);
 	if (slug) return slug;
-	throw new ValidationError("Invalid slug", str);
+	throw new RequiredError("Invalid slug", { received: str, caller: requireSlug });
 }
 
-/**
- * Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty string.
- */
-export function getOptionalRef(str: string): string | undefined {
+/** Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty string. */
+export function getRef(str: string): string | undefined {
 	return simplifyString(str).replaceAll(" ", "") || undefined;
 }
 
-/**
- * Convert a string to a unique ref e.g. `abc123`, or throw `ValueError` if conversion resulted in an empty string.
- */
-export function getRef(str: string): string {
-	const ref = getOptionalRef(str);
+/** Convert a string to a unique ref e.g. `abc123`, or throw `RequiredError` if conversion resulted in an empty string. */
+export function requireRef(str: string): string {
+	const ref = getRef(str);
 	if (ref) return ref;
-	throw new ValidationError("Invalid string ref", str);
+	throw new RequiredError("Invalid string ref", { received: str, caller: requireRef });
 }
 
 /**
@@ -211,8 +206,8 @@ export function limitString(str: string, maxLength: number, append = "…") {
  * - Excess segments in `String.prototype.split()` is counterintuitive because further parts are thrown away.
  * - Excess segments in `splitString()` are concatenated onto the last segment (set `max` to `null` if you want infinite segments).
  *
- * @throws ValueError if `min` isn't met.
- * @throws ValueError if any of the segments are empty.
+ * @throws AssertionError if `min` isn't met.
+ * @throws AssertionError if any of the segments are empty.
  */
 export function splitString(str: string, separator: string, min: 1, max: 1): readonly [string];
 export function splitString(str: string, separator: string, min: 2, max: 2): readonly [string, string];
@@ -227,6 +222,9 @@ export function splitString(str: string, separator: string, min = 1, max = Numbe
 	const segments = str.split(separator);
 	if (segments.length > max) segments.splice(max - 1, segments.length, segments.slice(max - 1).join(separator));
 	if (segments.length < min || !segments.every(Boolean))
-		throw new ValidationError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, str);
+		throw new ValueError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, {
+			received: str,
+			caller: splitString,
+		});
 	return segments;
 }

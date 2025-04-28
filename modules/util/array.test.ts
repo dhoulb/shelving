@@ -1,14 +1,14 @@
 import { expect, test } from "bun:test";
 import {
-	ValidationError,
+	AssertionError,
+	RequiredError,
 	addArrayItem,
 	addArrayItems,
 	assertArrayLength,
 	deleteArrayItems,
 	filterArray,
-	getArrayLength,
-	getOptionalNextItem,
-	getOptionalPrevItem,
+	getNextItem,
+	getPrevItem,
 	getUniqueArray,
 	isArrayLength,
 	isArrayWith,
@@ -20,12 +20,13 @@ import {
 	isLess,
 	notEqual,
 	omitArrayItems,
+	requireArrayLength,
 	shuffleArray,
 	toggleArrayItems,
 	withArrayItems,
 } from "../index.js";
 
-test("toggleItems()", () => {
+test("toggleArrayItems()", () => {
 	const arr = [1, 2, 3];
 	expect(toggleArrayItems(arr, 2)).toEqual([1, 3]);
 	expect(toggleArrayItems(arr, 2)).not.toBe(arr);
@@ -38,7 +39,7 @@ test("toggleItems()", () => {
 	expect(toggleArrayItems(arr, 1, 4)).toEqual([2, 3, 4]);
 	expect(toggleArrayItems(arr, 1, 4)).not.toBe(arr);
 });
-test("withItems()", () => {
+test("withArrayItems()", () => {
 	const arr = [1, 2, 3];
 	expect(withArrayItems(arr, 4)).toEqual([1, 2, 3, 4]);
 	expect(withArrayItems(arr, 4)).not.toBe(arr);
@@ -95,17 +96,17 @@ test("deleteArrayItems()", () => {
 });
 test("getNextItem()", () => {
 	const arr = [1, 2, 3];
-	expect(getOptionalNextItem(arr, 1)).toBe(2);
-	expect(getOptionalNextItem(arr, 2)).toBe(3);
-	expect<number | undefined>(getOptionalNextItem(arr, 3)).toBe(undefined);
-	expect<number | undefined>(getOptionalNextItem(arr, 4)).toBe(undefined);
+	expect(getNextItem(arr, 1)).toBe(2);
+	expect(getNextItem(arr, 2)).toBe(3);
+	expect<number | undefined>(getNextItem(arr, 3)).toBe(undefined);
+	expect<number | undefined>(getNextItem(arr, 4)).toBe(undefined);
 });
 test("getPrevItem()", () => {
 	const arr = [1, 2, 3];
-	expect<number | undefined>(getOptionalPrevItem(arr, 1)).toBe(undefined);
-	expect(getOptionalPrevItem(arr, 2)).toBe(1);
-	expect(getOptionalPrevItem(arr, 3)).toBe(2);
-	expect<number | undefined>(getOptionalPrevItem(arr, 4)).toBe(undefined);
+	expect<number | undefined>(getPrevItem(arr, 1)).toBe(undefined);
+	expect(getPrevItem(arr, 2)).toBe(1);
+	expect(getPrevItem(arr, 3)).toBe(2);
+	expect<number | undefined>(getPrevItem(arr, 4)).toBe(undefined);
 });
 test("shuffleArray()", () => {
 	const arr = [1, 2, 3];
@@ -129,18 +130,18 @@ test("isArrayLength()", () => {
 test("assertArrayLength()", () => {
 	// Assert maximum.
 	expect(() => assertArrayLength([1, 2, 3], 3)).not.toThrow();
-	expect(() => assertArrayLength([1, 2, 3], 5)).toThrow(ValidationError);
+	expect(() => assertArrayLength([1, 2, 3], 5)).toThrow(AssertionError);
 
 	// Assert minimum.
 	expect(() => assertArrayLength([1, 2, 3], 0, 3)).not.toThrow();
-	expect(() => assertArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(ValidationError);
+	expect(() => assertArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(AssertionError);
 });
-test("getArrayLength()", () => {
+test("requireArrayLength()", () => {
 	// Check maximum.
-	expect(getArrayLength([1, 2, 3], 3)).toEqual([1, 2, 3]);
-	expect(() => getArrayLength([1, 2, 3], 5)).toThrow(ValidationError);
+	expect(requireArrayLength([1, 2, 3], 3)).toEqual([1, 2, 3]);
+	expect(() => requireArrayLength([1, 2, 3], 5)).toThrow(RequiredError);
 
 	// Check minimum.
-	expect(getArrayLength([1, 2, 3], 0, 3)).toEqual([1, 2, 3]);
-	expect(() => getArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(ValidationError);
+	expect(requireArrayLength([1, 2, 3], 0, 3)).toEqual([1, 2, 3]);
+	expect(() => requireArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(RequiredError);
 });

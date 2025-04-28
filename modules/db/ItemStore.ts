@@ -1,6 +1,7 @@
-import { NotFoundError } from "../error/request/NotFoundError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { OptionalDataStore } from "../store/DataStore.js";
+import { getGetter } from "../util/class.js";
 import { NONE } from "../util/constants.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item } from "../util/item.js";
@@ -20,7 +21,14 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends Optiona
 	/** Get the data of this store (throws `RequiredError` if item doesn't exist). */
 	override get data(): Item<T[K]> {
 		const item = this.value;
-		if (!item) throw new NotFoundError(`Item must exist in "${this.collection}"`, this.id);
+		if (!item)
+			throw new RequiredError(`Item does not exist in collection "${this.collection}"`, {
+				store: this,
+				provider: this.provider,
+				collection: this.collection,
+				id: this.id,
+				caller: getGetter(this, "data"),
+			});
 		return item;
 	}
 

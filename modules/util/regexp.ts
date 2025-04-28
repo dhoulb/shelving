@@ -1,4 +1,5 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { getArray } from "./array.js";
 import type { NotString } from "./string.js";
 
@@ -18,7 +19,7 @@ export function isRegExp(value: unknown): value is RegExp {
 
 /** Assert that an unknown value is a `RegExp` instance. */
 export function assertRegExp(value: unknown): asserts value is RegExp {
-	if (!(value instanceof RegExp)) throw new ValidationError("Must be regular expression", value);
+	if (!(value instanceof RegExp)) throw new AssertionError("Must be regular expression", { received: value, caller: assertRegExp });
 }
 
 /** Convert a string to a regular expression that matches that string. */
@@ -46,7 +47,7 @@ export function escapeRegExp(pattern: string): string {
 const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
 /** Create regular expression that matches any of a list of other expressions. */
-export function getAnyRegExp(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
+export function createRegExpAny(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
 	const arr = getArray(patterns).filter(Boolean);
 	// If there are no patterns to match against then _no_ string can ever match against any of nothing.
 	if (!arr.length) return NEVER_REGEXP;
@@ -55,7 +56,7 @@ export function getAnyRegExp(patterns: Iterable<PossibleRegExp> & NotString, fla
 }
 
 /** Create regular expression that matches all of a list of other expressions. */
-export function getAllRegExp(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
+export function createRegExpAll(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
 	const arr = getArray(patterns).filter(Boolean);
 	// If there are no patterns to match against then _every_ string will match against the entire list of nothing.
 	if (!arr.length) return ALWAYS_REGEXP;
@@ -97,35 +98,35 @@ export function notMatch(str: string, regexp: RegExp): boolean {
 }
 
 /** Get an optional regular expression match, or `undefined` if no match could be made. */
-export function getOptionalMatch<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): NamedRegExpExecArray<T> | undefined;
-export function getOptionalMatch<T extends string>(str: string, regexp: TypedRegExp<T>): TypedRegExpExecArray<T> | undefined;
-export function getOptionalMatch(str: string, regexp: RegExp): RegExpExecArray | undefined;
-export function getOptionalMatch(str: string, regexp: RegExp): RegExpExecArray | undefined {
+export function getMatch<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): NamedRegExpExecArray<T> | undefined;
+export function getMatch<T extends string>(str: string, regexp: TypedRegExp<T>): TypedRegExpExecArray<T> | undefined;
+export function getMatch(str: string, regexp: RegExp): RegExpExecArray | undefined;
+export function getMatch(str: string, regexp: RegExp): RegExpExecArray | undefined {
 	return regexp.exec(str) || undefined;
 }
 
 /** Get a required regular expression match, or throw `ValueError` if no match could be made. */
-export function getMatch<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): NamedRegExpExecArray<T>;
-export function getMatch<T extends string>(str: string, regexp: TypedRegExp<T>): TypedRegExpExecArray<T>;
-export function getMatch(str: string, regexp: RegExp): RegExpExecArray;
-export function getMatch(str: string, regexp: RegExp): RegExpExecArray {
-	const match = getOptionalMatch(str, regexp);
-	if (!match) throw new ValidationError("Must match regular expression", str);
+export function requireMatch<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): NamedRegExpExecArray<T>;
+export function requireMatch<T extends string>(str: string, regexp: TypedRegExp<T>): TypedRegExpExecArray<T>;
+export function requireMatch(str: string, regexp: RegExp): RegExpExecArray;
+export function requireMatch(str: string, regexp: RegExp): RegExpExecArray {
+	const match = getMatch(str, regexp);
+	if (!match) throw new ValueError("Must match regular expression", { received: str, expected: regexp, caller: requireMatch });
 	return match;
 }
 
 /** Get an optional regular expression match, or `undefined` if no match could be made. */
-export function getOptionalMatchGroups<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): T | undefined;
-export function getOptionalMatchGroups(str: string, regexp: RegExp): NamedRegExpData | undefined;
-export function getOptionalMatchGroups(str: string, regexp: RegExp): NamedRegExpData | undefined {
+export function getMatchGroups<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): T | undefined;
+export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData | undefined;
+export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData | undefined {
 	return regexp.exec(str)?.groups || undefined;
 }
 
 /** Get a required regular expression match, or throw `ValueError` if no match could be made. */
-export function getMatchGroups<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): T;
-export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData;
-export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData {
-	const groups = getOptionalMatchGroups(str, regexp);
-	if (!groups) throw new ValidationError("Must match regular expression", str);
+export function requireMatchGroups<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): T;
+export function requireMatchGroups(str: string, regexp: RegExp): NamedRegExpData;
+export function requireMatchGroups(str: string, regexp: RegExp): NamedRegExpData {
+	const groups = getMatchGroups(str, regexp);
+	if (!groups) throw new ValueError("Must match regular expression", { received: str, expected: regexp, caller: requireMatchGroups });
 	return groups;
 }

@@ -1,9 +1,10 @@
 import type { ImmutableArray } from "./array.js";
-import { getLastItem, isArray, limitArray } from "./array.js";
+import { isArray, limitArray } from "./array.js";
 import type { Data, DataProp, LeafData, LeafKey } from "./data.js";
 import { getDataProp } from "./data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";
 import type { Match } from "./filter.js";
+import { requireLastItem } from "./iterate.js";
 import { limitItems } from "./iterate.js";
 import type { Mutable } from "./object.js";
 import { getProps } from "./object.js";
@@ -117,9 +118,9 @@ export function* filterQueryItems<T extends Data>(items: Iterable<T>, filters: I
 	}
 }
 
-/** Compare two data items using a set of sorts. */
-export function compareQueryItems<T extends Data>(left: T, right: T, sorts: ImmutableArray<Order>): number {
-	for (const { key, direction } of sorts) {
+/** Compare two data items using a set of orders. */
+export function compareQueryItems<T extends Data>(left: T, right: T, orders: ImmutableArray<Order>): number {
+	for (const { key, direction } of orders) {
 		const l = getDataProp(left, key);
 		const r = getDataProp(right, key);
 		const c = direction === "asc" ? compareAscending(l, r) : compareDescending(l, r);
@@ -128,9 +129,9 @@ export function compareQueryItems<T extends Data>(left: T, right: T, sorts: Immu
 	return 0;
 }
 
-/**  Sort a set of data items using a set of sorts. */
-export function sortQueryItems<T extends Data>(items: Iterable<T>, sorts: ImmutableArray<Order>): Iterable<T> {
-	return sorts.length ? sortArray(items, compareQueryItems, sorts) : items;
+/**  Sort a set of data items using a set of orders. */
+export function sortQueryItems<T extends Data>(items: Iterable<T>, orders: ImmutableArray<Order>): Iterable<T> {
+	return orders.length ? sortArray(items, compareQueryItems, orders) : items;
 }
 
 /** LImit a set of data items using a set of limit. */
@@ -141,7 +142,7 @@ export function limitQueryItems<T extends Data>(items: ImmutableArray<T> | Itera
 /** Get a query for items that appear before a specified item. */
 export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
 	const sorts = getOrders(query);
-	const lastSort = getLastItem(sorts);
+	const lastSort = requireLastItem(sorts);
 	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {
 		const { key, direction } = sort;
@@ -154,7 +155,7 @@ export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<
 /** Get a query for items that appear after a specified item. */
 export function getAfterQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
 	const sorts = getOrders(query);
-	const lastSort = getLastItem(sorts);
+	const lastSort = requireLastItem(sorts);
 	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {
 		const { key, direction } = sort;

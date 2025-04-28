@@ -1,9 +1,10 @@
-import { ValidationError as ConflictError } from "../error/request/InputError.js";
+import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import type { DataSchema, DataSchemas } from "../schema/DataSchema.js";
 import { KEY } from "../schema/KeySchema.js";
 import type { Data, DataKey, Database } from "../util/data.js";
 import type { MutableDictionary } from "../util/dictionary.js";
+import type { AnyFunction } from "../util/function.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
 import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
@@ -24,11 +25,11 @@ export class ValidationProvider<T extends Database> extends ThroughProvider<T> i
 		return this.schemas[collection];
 	}
 	override getItem<K extends DataKey<T>>(collection: K, id: string): OptionalItem<T[K]> {
-		return _validateItem(collection, super.getItem(collection, id), this.getSchema(collection));
+		return _validateItem(collection, super.getItem(collection, id), this.getSchema(collection), this.getItem);
 	}
 	override async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>> {
 		const schema = this.getSchema(collection);
-		for await (const unsafeItem of super.getItemSequence(collection, id)) yield _validateItem(collection, unsafeItem, schema);
+		for await (const item of super.getItemSequence(collection, id)) yield _validateItem(collection, item, schema, this.getItemSequence);
 	}
 	override addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
 		return super.addItem(collection, validateData(data, this.getSchema(collection).props));
@@ -47,7 +48,7 @@ export class ValidationProvider<T extends Database> extends ThroughProvider<T> i
 		return super.countQuery(collection, query);
 	}
 	override getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Items<T[K]> {
-		return _validateItems(collection, super.getQuery(collection, query), this.getSchema(collection));
+		return _validateItems(collection, super.getQuery(collection, query), this.getSchema(collection), this.getQuery);
 	}
 	override setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): void {
 		super.setQuery(collection, query, this.getSchema(collection).validate(data));
@@ -61,7 +62,8 @@ export class ValidationProvider<T extends Database> extends ThroughProvider<T> i
 	}
 	override async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
 		const schema = this.getSchema(collection);
-		for await (const unsafeItems of super.getQuerySequence(collection, query)) yield _validateItems(collection, unsafeItems, schema);
+		for await (const items of super.getQuerySequence(collection, query))
+			yield _validateItems(collection, items, schema, this.getQuerySequence);
 	}
 }
 
@@ -82,11 +84,11 @@ export class AsyncValidationProvider<T extends Database>
 	}
 
 	override async getItem<K extends DataKey<T>>(collection: K, id: string): Promise<OptionalItem<T[K]>> {
-		return _validateItem(collection, await super.getItem(collection, id), this.getSchema(collection));
+		return _validateItem(collection, await super.getItem(collection, id), this.getSchema(collection), this.getItem);
 	}
 	override async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>> {
 		const schema = this.getSchema(collection);
-		for await (const unsafeItem of super.getItemSequence(collection, id)) yield _validateItem(collection, unsafeItem, schema);
+		for await (const item of super.getItemSequence(collection, id)) yield _validateItem(collection, item, schema, this.getItemSequence);
 	}
 	override addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
 		return super.addItem(collection, validateData(data, this.getSchema(collection).props));
@@ -105,11 +107,12 @@ export class AsyncValidationProvider<T extends Database>
 		return super.countQuery(collection, query);
 	}
 	override async getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Promise<Items<T[K]>> {
-		return _validateItems(collection, await super.getQuery(collection, query), this.getSchema(collection));
+		return _validateItems(collection, await super.getQuery(collection, query), this.getSchema(collection), this.getQuery);
 	}
 	override async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterable<Items<T[K]>> {
 		const schema = this.getSchema(collection);
-		for await (const unsafeItems of super.getQuerySequence(collection, query)) yield _validateItems(collection, unsafeItems, schema);
+		for await (const items of super.getQuerySequence(collection, query))
+			yield _validateItems(collection, items, schema, this.getQuerySequence);
 	}
 	override setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): Promise<void> {
 		return super.setQuery(collection, query, validateData(data, this.getSchema(collection).props));
@@ -125,38 +128,58 @@ export class AsyncValidationProvider<T extends Database>
 
 /**
  * Validate an entity for a document reference.
- * @throws `ConflictError` if one or more items did not validate (conflict because the program is not in an expected state).
+ * @throws `ValueError` if one or more items did not validate (conflict because the program is not in an expected state).
  */
-function _validateItem<T extends Data>(collection: string, unsafeItem: Item<Data>, schema: DataSchema<T>): Item<T>;
-function _validateItem<T extends Data>(collection: string, unsafeItem: OptionalItem<Data>, schema: DataSchema<T>): OptionalItem<T>;
-function _validateItem<T extends Data>(collection: string, unsafeItem: OptionalItem<Data>, schema: DataSchema<T>): OptionalItem<T> {
-	if (!unsafeItem) return undefined;
+function _validateItem<T extends Data>(
+	collection: string, //
+	item: Item<Data>,
+	schema: DataSchema<T>,
+	caller: AnyFunction,
+): Item<T>;
+function _validateItem<T extends Data>(
+	collection: string,
+	item: OptionalItem<Data>,
+	schema: DataSchema<T>,
+	caller: AnyFunction,
+): OptionalItem<T>;
+function _validateItem<T extends Data>(
+	collection: string,
+	item: OptionalItem<Data>,
+	schema: DataSchema<T>,
+	caller: AnyFunction,
+): OptionalItem<T> {
+	if (!item) return undefined;
 	try {
-		return validateData<Item<T>>(unsafeItem, { id: KEY, ...schema.props } as Validators<Item<T>>);
+		return validateData<Item<T>>(item, { id: KEY, ...schema.props } as Validators<Item<T>>);
 	} catch (thrown) {
 		if (!(thrown instanceof Feedback)) throw thrown;
-		throw new ConflictError(`Invalid data for "${collection}"`, thrown.message);
+		throw new ValueError(`Invalid data for "${collection}"`, { collection, item, cause: thrown, caller });
 	}
 }
 
 /**
  * Validate a set of entities for this query reference.
- * @throws `ConflictError` if one or more items did not validate (conflict because the program is not in an expected state).
+ * @throws `ValueError` if one or more items did not validate (conflict because the program is not in an expected state).
  */
-function _validateItems<T extends Data>(collection: string, unsafeEntities: Items<Data>, schema: DataSchema<T>): Items<T> {
-	return Array.from(_yieldValidItems(collection, unsafeEntities, { id: KEY, ...schema.props } as Validators<Item<T>>));
+function _validateItems<T extends Data>(collection: string, items: Items<Data>, schema: DataSchema<T>, caller: AnyFunction): Items<T> {
+	return Array.from(_yieldValidItems(collection, items, { id: KEY, ...schema.props } as Validators<Item<T>>, caller));
 }
-function* _yieldValidItems<T extends Data>(collection: string, unsafeEntities: Items<Data>, validators: Validators<T>): Iterable<T> {
+function* _yieldValidItems<T extends Data>(
+	collection: string,
+	items: Items<Data>,
+	validators: Validators<T>,
+	caller: AnyFunction,
+): Iterable<T> {
 	let invalid = false;
-	const messages: MutableDictionary<string> = {};
-	for (const unsafeItem of unsafeEntities) {
+	const feedbacks: MutableDictionary<Feedback> = {};
+	for (const item of items) {
 		try {
-			yield validateData(unsafeItem, validators);
+			yield validateData(item, validators);
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
 			invalid = true;
-			messages[unsafeItem.id] = thrown.message;
+			feedbacks[item.id] = thrown;
 		}
 	}
-	if (invalid) throw new ConflictError(`Invalid data for "${collection}"`, messages);
+	if (invalid) throw new ValueError(`Invalid data for "${collection}"`, { collection, items, cause: feedbacks, caller });
 }

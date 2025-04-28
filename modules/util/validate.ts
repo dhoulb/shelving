@@ -1,4 +1,5 @@
-import { ValidationError } from "../error/request/InputError.js";
+import type { BaseError, BaseErrorOptions } from "../error/BaseError.js";
+import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValueFeedbacks } from "../feedback/Feedbacks.js";
 import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
@@ -38,27 +39,18 @@ export type Validators<T extends Data = Data> = { readonly [K in keyof T]: Valid
 /** Extract the type from a set of validators. */
 export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> };
 
-/** Get value that validates against a given `Validator`, or throw `ValidationError` */
+/** Get value that validates against a given `Validator`, or throw `ValueError` */
 export function getValid<T>(
 	unsafeValue: unknown,
 	validator: Validator<T>,
-	error: Constructor<Error, [string, unknown]> = ValidationError,
+	ErrorConstructor: Constructor<BaseError, [string, BaseErrorOptions]> = ValueError,
 ): T {
 	try {
 		return validator.validate(unsafeValue);
 	} catch (thrown) {
-		if (thrown instanceof Feedback) throw new error(thrown.message, thrown);
+		if (thrown instanceof Feedback) throw new ErrorConstructor("Invalid value", { cause: thrown, caller: getValid });
 		throw thrown;
 	}
-}
-
-/** Assert that a value validates against a given `Validator`, or throw `ValidationError` */
-export function assertValid<T>(
-	unsafeValue: unknown,
-	validator: Validator<T>,
-	error: Constructor<ValidationError, [string, unknown]> = ValidationError,
-): asserts unsafeValue is T {
-	getValid(unsafeValue, validator, error);
 }
 
 /**

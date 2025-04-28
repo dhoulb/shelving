@@ -1,34 +1,34 @@
 import { describe, expect, test } from "bun:test";
-import { Time, ValidationError, getOptionalTime, getTime } from "../index.js";
+import { Time, ValueError, getTime, requireTime } from "../index.js";
 
 test("getOptionalTime()", () => {
 	// Parsed as dates.
-	expect(getOptionalTime("now")).toBeInstanceOf(Time);
-	expect(getOptionalTime("today")).toBeInstanceOf(Time);
-	expect(getOptionalTime("yesterday")).toBeInstanceOf(Time);
-	expect(getOptionalTime("tomorrow")).toBeInstanceOf(Time);
+	expect(getTime("now")).toBeInstanceOf(Time);
+	expect(getTime("today")).toBeInstanceOf(Time);
+	expect(getTime("yesterday")).toBeInstanceOf(Time);
+	expect(getTime("tomorrow")).toBeInstanceOf(Time);
 
 	// Parsed as string.
-	expect(getOptionalTime("18:19")).toBeInstanceOf(Time);
-	expect(getOptionalTime("18:19:20")).toBeInstanceOf(Time);
-	expect(getOptionalTime("18:19:20.123")).toBeInstanceOf(Time);
+	expect(getTime("18:19")).toBeInstanceOf(Time);
+	expect(getTime("18:19:20")).toBeInstanceOf(Time);
+	expect(getTime("18:19:20.123")).toBeInstanceOf(Time);
 
 	// Not parseable.
-	expect<Time | undefined>(getOptionalTime(undefined)).toBe(undefined);
-	expect<Time | undefined>(getOptionalTime("")).toBe(undefined);
-	expect<Time | undefined>(getOptionalTime(null)).toBe(undefined);
+	expect<Time | undefined>(getTime(undefined)).toBe(undefined);
+	expect<Time | undefined>(getTime("")).toBe(undefined);
+	expect<Time | undefined>(getTime(null)).toBe(undefined);
 });
 test("getTime()", () => {
 	// Parsed as date.
-	expect(getTime(new Date("2022-01-01 18:19:20.123")).long).toBe("18:19:20.123");
+	expect(requireTime(new Date("2022-01-01 18:19:20.123")).long).toBe("18:19:20.123");
 
 	// Parsed as string.
-	expect(getTime("18:19").long).toBe("18:19:00.000");
-	expect(getTime("18:19:20").long).toBe("18:19:20.000");
-	expect(getTime("18:19:20.123").long).toBe("18:19:20.123");
+	expect(requireTime("18:19").long).toBe("18:19:00.000");
+	expect(requireTime("18:19:20").long).toBe("18:19:20.000");
+	expect(requireTime("18:19:20.123").long).toBe("18:19:20.123");
 
 	// Not parseable.
-	expect(() => getTime("")).toThrow(ValidationError);
+	expect(() => requireTime("")).toThrow(ValueError);
 });
 describe("Time", () => {
 	test("from()", () => {

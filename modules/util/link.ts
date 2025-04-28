@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
 import type { Optional } from "./optional.js";
 import type { Path } from "./path.js";
@@ -58,7 +58,7 @@ export function isLinkURL(value: unknown): value is AbsoluteLinkURL {
 }
 
 /** Convert a possible URL to a URL or return `undefined` if conversion fails. */
-export function getOptionalLinkURL(
+export function getLinkURL(
 	possible: Optional<PossibleURL>,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes: LinkSchemes = SCHEMES,
@@ -69,19 +69,19 @@ export function getOptionalLinkURL(
 }
 
 /** Convert a possible URL to a URL or return `undefined` if conversion fails. */
-export function getLinkURL(
+export function requireLinkURL(
 	possible: PossibleURL,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes?: LinkSchemes,
 	hosts?: LinkHosts,
 ): AbsoluteLinkURL {
-	const url = getOptionalLinkURL(possible, base, schemes, hosts);
-	if (!url) throw new ValidationError("Invalid link", possible);
+	const url = getLinkURL(possible, base, schemes, hosts);
+	if (!url) throw new ValueError("Invalid link", { received: possible, caller: requireLinkURL });
 	return url;
 }
 
 /** Convert a possible URL to a absolute URL string or return `undefined` if conversion fails. */
-export function getOptionalLink(
+export function getLink(
 	possible: Optional<PossibleURL>,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes: LinkSchemes = SCHEMES,
@@ -92,11 +92,11 @@ export function getOptionalLink(
 }
 
 /** Convert a possible URL to an absolute URL string. */
-export function getLink(
+export function requireLink(
 	possible: PossibleURL,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes?: LinkSchemes,
 	hosts?: LinkHosts,
 ): AbsoluteLink {
-	return getLinkURL(possible, base, schemes, hosts).href;
+	return requireLinkURL(possible, base, schemes, hosts).href;
 }

@@ -1,3 +1,6 @@
+import { RequiredError } from "../error/RequiredError.js";
+import { type PossibleArray, getArray } from "./array.js";
+
 /** Is an unknown value an iterable? */
 export const isIterable = (value: unknown): value is Iterable<unknown> => typeof value === "object" && !!value && Symbol.iterator in value;
 
@@ -92,4 +95,51 @@ export function* getChunks<T>(items: Iterable<T>, size: number): Iterable<readon
 /** Merge two or more iterables into a single iterable set. */
 export function* mergeItems<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable<T>[]]): Iterable<T> {
 	for (const input of inputs) yield* input;
+}
+
+/** Get the first item from an array or iterable, or `undefined` if it didn't exist. */
+export function getFirstItem<T>(items: PossibleArray<T>): T | undefined {
+	const array = getArray(items);
+	return 0 in array ? array[0] : undefined;
+}
+
+/** Get the first item from an array or iterable. */
+export function requireFirstItem<T>(items: PossibleArray<T>): T {
+	const item = getFirstItem(items);
+	if (item === undefined) throw new RequiredError("First item is required", { items: items, caller: requireFirstItem });
+	return item;
+}
+
+/** Get the last item from an array or iterable, or `undefined` if it didn't exist. */
+export function getLastItem<T>(items: PossibleArray<T>): T | undefined {
+	const arr = getArray(items);
+	const j = arr.length - 1;
+	if (j in arr) return arr[j] as T;
+}
+
+/** Get the last item from an array or iterable. */
+export function requireLastItem<T>(items: PossibleArray<T>): T {
+	const item = getLastItem(items);
+	if (item === undefined) throw new RequiredError("Last item is required", { items, caller: requireLastItem });
+	return item;
+}
+
+/** Get the next item in an array or iterable. */
+export function getNextItem<T>(items: PossibleArray<T>, value: T): T | undefined {
+	const arr = getArray(items);
+	const i = arr.indexOf(value);
+	if (i >= 0) {
+		const j = i + 1;
+		if (j in arr) return arr[j] as T;
+	}
+}
+
+/** Get the previous item in an array or iterable. */
+export function getPrevItem<T>(items: PossibleArray<T>, value: T): T | undefined {
+	const arr = getArray(items);
+	const i = arr.indexOf(value);
+	if (i >= 1) {
+		const j = i - 1;
+		if (j in arr) return arr[j] as T;
+	}
 }

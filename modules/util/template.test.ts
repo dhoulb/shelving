@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { type ImmutableDictionary, ValidationError, getPlaceholders, matchTemplate, matchTemplates, renderTemplate } from "../index.js";
+import { type ImmutableDictionary, ValueError, getPlaceholders, matchTemplate, matchTemplates, renderTemplate } from "../index.js";
 
 // Tests.
 describe("matchTemplate()", () => {
@@ -35,8 +35,8 @@ describe("matchTemplate()", () => {
 		expect<ImmutableDictionary<string> | undefined>(matchTemplate("a/{b}/{c}", "a/b/")).toEqual(undefined);
 	});
 	test("Cannot match two placeholders that touch", () => {
-		expect(() => matchTemplate(":a:b", "ab")).toThrow(ValidationError);
-		expect(() => matchTemplate(":a{b}", "ab")).toThrow(ValidationError);
+		expect(() => matchTemplate(":a:b", "ab")).toThrow(ValueError);
+		expect(() => matchTemplate(":a{b}", "ab")).toThrow(ValueError);
 	});
 });
 describe("getPlaceholders()", () => {
@@ -55,8 +55,8 @@ describe("getPlaceholders()", () => {
 		expect(getPlaceholders(":a/:b")).toEqual(["a", "b"]);
 	});
 	test("Cannot match two placeholders that touch", () => {
-		expect(() => getPlaceholders("/:a{b}${c}{{d}}/")).toThrow(ValidationError);
-		expect(() => getPlaceholders(":a{b}")).toThrow(ValidationError);
+		expect(() => getPlaceholders("/:a{b}${c}{{d}}/")).toThrow(ValueError);
+		expect(() => getPlaceholders(":a{b}")).toThrow(ValueError);
 	});
 });
 describe("renderTemplate()", () => {

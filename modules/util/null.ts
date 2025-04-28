@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { AssertionError } from "../error/AssertionError.js";
 
 /** Function that always returns null. */
 export function getNull(): null {
@@ -15,7 +15,7 @@ export function isNull(value: unknown): value is null {
 
 /** Assert that a value is not null. */
 export function assertNull<T>(value: Nullable<T>): asserts value is T {
-	if (value !== null) throw new ValidationError("Must be null", value);
+	if (value !== null) throw new AssertionError("Must be null", { received: value, caller: assertNull });
 }
 
 /** Is a value not null? */
@@ -25,7 +25,7 @@ export function notNull<T>(value: Nullable<T>): value is T {
 
 /** Assert that a value is not null. */
 export function assertNotNull<T>(value: Nullable<T>): asserts value is T {
-	if (value === null) throw new ValidationError("Must not be null", value);
+	if (value === null) throw new AssertionError("Must not be null", { received: value, caller: assertNotNull });
 }
 
 /** Get the not-nullish version of value. */
@@ -44,7 +44,8 @@ export function isNullish<T>(value: Nullish<T>): value is null | undefined {
 
 /** Assert that a value is not nullish. */
 export function assertNullish<T>(value: Nullish<T>): asserts value is T {
-	if (value !== null && value !== undefined) throw new ValidationError("Must be null or undefined", value);
+	if (value !== null && value !== undefined)
+		throw new AssertionError("Must be null or undefined", { received: value, caller: assertNullish });
 }
 
 /** Is a value not nullish? */
@@ -54,7 +55,8 @@ export function notNullish<T>(value: Nullish<T>): value is T {
 
 /** Assert that a value is not nullish. */
 export function assertNotNullish<T>(value: Nullish<T>): asserts value is T {
-	if (value === null || value === undefined) throw new ValidationError("Must not be null or undefined", value);
+	if (value === null || value === undefined)
+		throw new AssertionError("Must not be null or undefined", { received: value, caller: assertNotNullish });
 }
 
 /** Get the not-nullish version of value. */

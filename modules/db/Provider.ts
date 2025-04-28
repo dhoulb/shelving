@@ -1,7 +1,8 @@
-import { NotFoundError } from "../error/request/NotFoundError.js";
-import { countArray, getOptionalFirstItem } from "../util/array.js";
+import { RequiredError } from "../error/RequiredError.js";
+import { countArray } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
+import { getFirstItem } from "../util/iterate.js";
 import type { Updates } from "../util/update.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
@@ -104,7 +105,13 @@ export abstract class Provider<T extends Database> implements AbstractProvider<T
 	abstract getItem<K extends DataKey<T>>(collection: K, id: string): OptionalItem<T[K]>;
 	requireItem<K extends DataKey<T>>(collection: K, id: string): Item<T[K]> {
 		const item = this.getItem(collection, id);
-		if (!item) throw new NotFoundError(`Item must exist in "${collection}"`, id);
+		if (!item)
+			throw new RequiredError(`Item does not exist in collection "${collection}"`, {
+				provider: this,
+				collection,
+				id,
+				caller: this.getItem,
+			});
 		return item;
 	}
 	abstract getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>>;
@@ -121,11 +128,17 @@ export abstract class Provider<T extends Database> implements AbstractProvider<T
 	abstract updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): void;
 	abstract deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void;
 	getFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): OptionalItem<T[K]> {
-		return getOptionalFirstItem(this.getQuery(collection, { ...query, $limit: 1 }));
+		return getFirstItem(this.getQuery(collection, { ...query, $limit: 1 }));
 	}
 	requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Item<T[K]> {
 		const first = this.getFirst(collection, query);
-		if (!first) throw new NotFoundError(`First item must exist in "${collection}"`, query);
+		if (!first)
+			throw new RequiredError(`First item does not exist in collection "${collection}"`, {
+				provider: this,
+				collection,
+				query,
+				caller: this.requireFirst,
+			});
 		return first;
 	}
 }
@@ -135,7 +148,13 @@ export abstract class AsyncProvider<T extends Database> implements AbstractProvi
 	abstract getItem<K extends DataKey<T>>(collection: K, id: string): Promise<OptionalItem<T[K]>>;
 	async requireItem<K extends DataKey<T>>(collection: K, id: string): Promise<Item<T[K]>> {
 		const item = await this.getItem(collection, id);
-		if (!item) throw new NotFoundError(`Item must exist in "${collection}"`, id);
+		if (!item)
+			throw new RequiredError(`Item does not exist in collection "${collection}"`, {
+				provider: this,
+				collection,
+				id,
+				caller: this.requireItem,
+			});
 		return item;
 	}
 	abstract getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterable<OptionalItem<T[K]>>;
@@ -152,11 +171,17 @@ export abstract class AsyncProvider<T extends Database> implements AbstractProvi
 	abstract updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): Promise<void>;
 	abstract deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<void>;
 	async getFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<OptionalItem<T[K]>> {
-		return getOptionalFirstItem(await this.getQuery(collection, { ...query, $limit: 1 }));
+		return getFirstItem(await this.getQuery(collection, { ...query, $limit: 1 }));
 	}
 	async requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<Item<T[K]>> {
 		const first = await this.getFirst(collection, query);
-		if (!first) throw new NotFoundError(`First item must exist in "${collection}"`, query);
+		if (!first)
+			throw new RequiredError(`First item does not exist in collection "${collection}"`, {
+				provider: this,
+				collection,
+				query,
+				caller: this.requireFirst,
+			});
 		return first;
 	}
 }

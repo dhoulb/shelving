@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { ValueError } from "../error/ValueError.js";
 import { isArray } from "./array.js";
 import { getPrototype, isObject } from "./object.js";
 
@@ -35,7 +35,7 @@ export function serialise(value: unknown): string {
 		const props = Object.entries(value).map(_serialiseEntry).sort();
 		return `{${type ? `"$type":${_escapeString(type)}${props.length ? "," : ""}` : ""}${props.join(",")}}`;
 	}
-	throw new ValidationError("Cannot serialize value", value);
+	throw new ValueError("Cannot serialize value", { received: value, caller: serialise });
 }
 
 function _serialiseEntry([key, value]: [string, unknown]) {

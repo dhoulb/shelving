@@ -1,7 +1,8 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
 import { EMPTY_DATA } from "./data.js";
 import type { ImmutableDictionary } from "./dictionary.js";
+import type { AnyFunction } from "./function.js";
 import { setMapItem } from "./map.js";
 import type { Mutable } from "./object.js";
 import { isObject } from "./object.js";
@@ -34,9 +35,6 @@ const R_PLACEHOLDERS = /(\*|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-
 // Find actual name within template placeholder e.g. `${name}` → `name`
 const R_NAME = /[a-z0-9]+/i;
 
-// Cache of templates.
-const TEMPLATE_CACHE = new Map<string, TemplateChunks>();
-
 /**
  * Split up a template into an array of separator → placeholder → separator → placeholder → separator
  * - Odd numbered chunks are separators.
@@ -45,10 +43,7 @@ const TEMPLATE_CACHE = new Map<string, TemplateChunks>();
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of strings alternating separator and placeholder.
  */
-function _splitTemplate(template: string): TemplateChunks {
-	return TEMPLATE_CACHE.get(template) || setMapItem(TEMPLATE_CACHE, template, _split(template));
-}
-function _split(template: string): TemplateChunks {
+function _splitTemplate(template: string, caller: AnyFunction): TemplateChunks {
 	const matches = template.split(R_PLACEHOLDERS);
 	let asterisks = 0;
 	const chunks: TemplateChunk[] = [];
@@ -56,11 +51,16 @@ function _split(template: string): TemplateChunks {
 		const pre = matches[i - 1] as string;
 		const placeholder = matches[i] as string;
 		const post = matches[i + 1] as string;
-		if (i > 1 && !pre.length) throw new ValidationError("Placeholders must be separated by at least one character", template);
+		if (i > 1 && !pre.length)
+			throw new ValueError("Placeholders must be separated by at least one character", { received: template, caller });
 		const name = placeholder === "*" ? String(asterisks++) : R_NAME.exec(placeholder)?.[0] || "";
 		chunks.push({ pre, placeholder, name, post });
 	}
 	return chunks;
+}
+const TEMPLATE_CACHE = new Map<string, TemplateChunks>();
+function _splitTemplateCached(template: string, caller: AnyFunction): TemplateChunks {
+	return TEMPLATE_CACHE.get(template) || setMapItem(TEMPLATE_CACHE, template, _splitTemplate(template, caller));
 }
 
 /**
@@ -70,7 +70,7 @@ function _split(template: string): TemplateChunks {
  * @returns Array of clean string names of found placeholders, e.g. `["name", "country", "city"]`
  */
 export function getPlaceholders(template: string): readonly string[] {
-	return _splitTemplate(template).map(_getPlaceholder);
+	return _splitTemplateCached(template, getPlaceholders).map(_getPlaceholder);
 }
 function _getPlaceholder({ name }: TemplateChunk): string {
 	return name;
@@ -87,7 +87,7 @@ function _getPlaceholder({ name }: TemplateChunk): string {
  */
 export function matchTemplate(template: string, target: string): TemplateValues | undefined {
 	// Get separators and placeholders from template.
-	const chunks = _splitTemplate(template);
+	const chunks = _splitTemplateCached(template, matchTemplate);
 	const firstChunk = chunks[0];
 
 	// Return early if empty.
@@ -131,7 +131,7 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  * @throws {ReferenceError} If a placeholder in the template string is not specified in values.
  */
 export function renderTemplate(template: string, value: PlaceholderValues): string {
-	const chunks = _splitTemplate(template);
+	const chunks = _splitTemplateCached(template, renderTemplate);
 	if (!chunks.length) return template;
 	let output = template;
 	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replace(name, value));

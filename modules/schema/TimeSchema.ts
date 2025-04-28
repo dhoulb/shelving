@@ -2,7 +2,7 @@ import { ValueFeedback } from "../feedback/Feedback.js";
 import { roundStep } from "../util/number.js";
 import type { Optional } from "../util/optional.js";
 import type { PossibleTime } from "../util/time.js";
-import { Time, getOptionalTime } from "../util/time.js";
+import { Time, getTime } from "../util/time.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
@@ -27,12 +27,12 @@ export class TimeSchema extends Schema<string> {
 	readonly step: number | undefined;
 	constructor({ min, max, step = 60, title = "Time", value = "now", ...options }: TimeSchemaOptions) {
 		super({ title, value, ...options });
-		this.min = getOptionalTime(min);
-		this.max = getOptionalTime(max);
+		this.min = getTime(min);
+		this.max = getTime(max);
 		this.step = step;
 	}
 	override validate(unsafeValue: unknown = this.value): string {
-		const optionalTime = getOptionalTime(unsafeValue);
+		const optionalTime = getTime(unsafeValue);
 		if (!optionalTime) throw new ValueFeedback(unsafeValue ? "Invalid time" : "Required", unsafeValue);
 		const roundedTime = typeof this.step === "number" ? new Time(roundStep(optionalTime.time, this.step)) : optionalTime;
 		if (this.max && roundedTime > this.max) throw new ValueFeedback(`Maximum ${this.max.format()}`, roundedTime);

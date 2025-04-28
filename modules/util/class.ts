@@ -1,5 +1,4 @@
-import { ValidationError } from "../error/request/InputError.js";
-import { debug } from "./debug.js";
+import { AssertionError } from "../error/AssertionError.js";
 import type { Arguments } from "./function.js";
 
 /** Class that has a public `constructor()` function. */
@@ -25,5 +24,20 @@ export function isInstance<T>(value: unknown, type: Class<T>): value is T {
 
 /** Assert that a value is an instance of something. */
 export function assertInstance<T>(value: unknown, type: Class<T>): asserts value is T {
-	if (!(value instanceof type)) throw new ValidationError(`Must be instance of ${debug(type)}`, value);
+	if (!(value instanceof type))
+		throw new AssertionError(`Must be instance of class "${type.name}"`, { received: value, expected: type, caller: assertInstance });
+}
+
+/** Get the 'getter' function for a given property, or `undefined` if it doesn't exist. */
+// biome-ignore lint/complexity/noBannedTypes: This is correct here.
+export function getGetter<T extends Object, K extends keyof T>(obj: T, prop: K): ((this: T) => T[K]) | undefined {
+	const descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+	return descriptor && typeof descriptor.get === "function" ? descriptor.get : undefined;
+}
+
+/** Get the 'setter' function for a given property, or `undefined` if it doesn't exist. */
+// biome-ignore lint/complexity/noBannedTypes: This is correct here.
+export function getSetter<T extends Object, K extends keyof T>(obj: T, prop: K): ((this: T, value: T[K]) => void) | undefined {
+	const descriptor = Object.getOwnPropertyDescriptor(obj.constructor.prototype, prop);
+	return descriptor && typeof descriptor.set === "function" ? descriptor.set : undefined;
 }

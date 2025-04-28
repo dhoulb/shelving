@@ -1,4 +1,5 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { AssertionError } from "../error/AssertionError.js";
+import { ValueError } from "../error/ValueError.js";
 import { NNBSP } from "./constants.js";
 
 /** Is a value a number? */
@@ -8,12 +9,13 @@ export function isNumber(value: unknown): value is number {
 
 /** Assert that a value is a number. */
 export function assertNumber(value: unknown): asserts value is number {
-	if (typeof value !== "number") throw new ValidationError("Must be number", value);
+	if (typeof value !== "number") throw new AssertionError("Must be number", { received: value, caller: assertNumber });
 }
 
-/** Assert that a value is a number greater than. */
+/** Assert that a value is a finite number (i.e. not `NaN` or positive/negative `Infinity`). */
 export function assertFinite(value: unknown): asserts value is number {
-	if (typeof value !== "number" || !Number.isFinite(value)) throw new ValidationError("Must be finite number", value);
+	if (typeof value !== "number" || !Number.isFinite(value))
+		throw new AssertionError("Must be finite number", { received: value, caller: assertFinite });
 }
 
 /**
@@ -27,17 +29,20 @@ export const isBetween = (num: number, min: number, max: number): boolean => num
 
 /** Assert that a value is a number greater than. */
 export function assertBetween(value: unknown, min: number, max: number): asserts value is number {
-	if (typeof value !== "number" || isBetween(value, min, max)) throw new ValidationError(`Must be number between ${min} and ${max}`, value);
+	if (typeof value !== "number" || isBetween(value, min, max))
+		throw new AssertionError(`Must be number between ${min} and ${max}`, { received: value, caller: assertBetween });
 }
 
 /** Assert that a value is a number greater than. */
 export function assertMax(value: unknown, max: number): asserts value is number {
-	if (typeof value !== "number" || value > max) throw new ValidationError(`Must be number with maximum ${max}`, value);
+	if (typeof value !== "number" || value > max)
+		throw new AssertionError(`Must be number with maximum ${max}`, { received: value, caller: assertMax });
 }
 
 /** Assert that a value is a number less than. */
 export function assertMin(value: unknown, min: number): asserts value is number {
-	if (typeof value !== "number" || value < min) throw new ValidationError(`Must be number with minimum ${min}`, value);
+	if (typeof value !== "number" || value < min)
+		throw new AssertionError(`Must be number with minimum ${min}`, { received: value, caller: assertMin });
 }
 
 /**
@@ -111,7 +116,7 @@ export function truncateNumber(num: number, precision = 0): number {
  * - e.g. `12` bounded by `2` and `8` is `8`
  */
 export function boundNumber(num: number, min: number, max: number): number {
-	assertMin(max, min); // Assert that max is more than min.
+	if (max < min) throw new ValueError("Max must be more than min", { min, max, caller: wrapNumber });
 	return Math.max(min, Math.min(max, num));
 }
 
@@ -123,40 +128,36 @@ export function boundNumber(num: number, min: number, max: number): number {
  * - e.g. `-2` bounded by `2` and `8` is `4`
  */
 export function wrapNumber(num: number, min: number, max: number): number {
-	assertMin(max, min); // Assert that max is more than min.
+	if (max < min) throw new ValueError("Max must be more than min", { min, max, caller: wrapNumber });
 	if (num >= max) return ((num - max) % (max - min)) + min;
 	if (num < min) return ((num - min) % (min - max)) + max;
 	return num;
 }
 
-/** Options for `formatNumber()` and `formatRange()`. */
-export interface NumberOptions extends Intl.NumberFormatOptions {
-	roundingMode?: "ceil" | "floor" | "expand" | "trunc" | "halfCeil" | "halfFloor" | "halfExpand" | "halfTrunc" | "halfEven" | undefined;
-	roundingPriority?: "morePrecision" | "lessPrecision" | undefined;
-}
-
 /** Format a number (based on the user's browser language settings). */
-export function formatNumber(num: number, options?: NumberOptions): string {
-	if (Number.isNaN(num)) return "None";
-	if (!Number.isFinite(num)) return "∞";
-	return new Intl.NumberFormat(undefined, options).format(num);
+export function formatNumber(num: number, options?: Intl.NumberFormatOptions): string {
+	if (!Number.isFinite(num)) return Number.isNaN(num) ? "-" : "∞";
+	return new Intl.NumberFormat(undefined, options).format(num).replace(/ /, NNBSP);
 }
 
 /** Format a number range (based on the user's browser language settings). */
-export function formatRange(min: number, max: number, options?: NumberOptions): string {
+export function formatRange(min: number, max: number, options?: Intl.NumberFormatOptions): string {
 	return `${formatNumber(min, options)}–${formatNumber(max, options)}`;
 }
 
 /** Format a number with a short suffix, e.g. `1,000 kg` */
-export function formatQuantity(num: number, abbr: string, options?: NumberOptions): string {
-	const str = formatNumber(num, options);
-	return `${str}${str.length > 2 || abbr.length > 2 ? NNBSP : ""}${abbr}`;
+export function formatQuantity(num: number, abbr: string, options?: Intl.NumberFormatOptions): string {
+	const o: Intl.NumberFormatOptions = { unitDisplay: "short", ...options, style: "decimal" };
+	const str = formatNumber(num, o);
+	const sep = o.unitDisplay === "narrow" ? "" : NNBSP;
+	return `${str}${sep}${abbr}`;
 }
 
 /** Format a number with a longer full-word suffix. */
-export function pluralizeQuantity(num: number, singular: string, plural: string, options?: NumberOptions): string {
-	const qty = formatNumber(num, options);
-	return `${qty} ${qty === "1" ? singular : plural}`;
+export function pluralizeQuantity(num: number, singular: string, plural: string, options?: Intl.NumberFormatOptions): string {
+	const o: Intl.NumberFormatOptions = { ...options, style: "decimal" };
+	const qty = formatNumber(num, o);
+	return `${qty}${NNBSP}${num === 1 ? singular : plural}`;
 }
 
 /**
@@ -177,8 +178,9 @@ export function getPercent(numerator: number, denumerator: number) {
  * @param numerator Number representing the amount of progress.
  * @param denumerator The number representing the whole amount.
  */
-export function formatPercent(numerator: number, denumerator: number, options?: NumberOptions): string {
-	return formatQuantity(getPercent(numerator, denumerator), "%", { maximumFractionDigits: 0, roundingMode: "trunc", ...options });
+export function formatPercent(numerator: number, denumerator: number, options?: Intl.NumberFormatOptions): string {
+	const fullOptions: Intl.NumberFormatOptions = { style: "percent", maximumFractionDigits: 0, roundingMode: "trunc", ...options };
+	return formatNumber(getPercent(numerator, denumerator), fullOptions);
 }
 
 /** Sum an iterable set of numbers and return the total. */

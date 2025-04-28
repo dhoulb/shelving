@@ -1,8 +1,8 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MINUTE, SECOND } from "./constants.js";
-import { getOptionalDate } from "./date.js";
+import { getDate } from "./date.js";
+import type { AnyFunction } from "./function.js";
 import { wrapNumber } from "./number.js";
-import type { Optional } from "./optional.js";
 
 /** Class representing a time in the day in 24 hour format in the user's current locale. */
 export class Time {
@@ -22,7 +22,7 @@ export class Time {
 				);
 			}
 		}
-		const date = getOptionalDate(possible);
+		const date = getDate(possible);
 		if (date) return new Time(date.getHours() * HOUR + date.getMinutes() * MINUTE + date.getSeconds() * SECOND + date.getMilliseconds());
 	}
 
@@ -84,8 +84,8 @@ export class Time {
 			hour: "2-digit",
 			minute: "2-digit",
 			second: precision >= 3 ? "2-digit" : undefined,
-			fractionalSecondDigits: precision >= 4 ? precision - 3 : undefined,
-		} as Intl.DateTimeFormatOptions);
+			fractionalSecondDigits: precision >= 4 ? ((precision - 3) as 1 | 2 | 3) : undefined,
+		});
 	}
 
 	// Implement `valueOf()`
@@ -120,7 +120,7 @@ export function isTime(value: unknown): value is Time {
  *
  * @param possible Any value that we want to parse as a valid time (defaults to `undefined`).
  */
-export function getOptionalTime(possible: unknown): Time | undefined {
+export function getTime(possible: unknown): Time | undefined {
 	return Time.from(possible);
 }
 
@@ -128,18 +128,16 @@ export function getOptionalTime(possible: unknown): Time | undefined {
  * Convert a possible date to a `Time` instance, or throw `ValueError` if it couldn't be converted (defaults to `"now"`).
  * @param possible Any value that we want to parse as a valid time (defaults to `"now"`).
  */
-export function getTime(possible: PossibleTime = "now"): Time {
-	const time = getOptionalTime(possible);
-	if (!time) throw new ValidationError("Invalid time", possible);
+export function requireTime(possible?: PossibleTime): Time {
+	return _time(requireTime, possible);
+}
+function _time(caller: AnyFunction, possible: PossibleTime = "now"): Time {
+	const time = Time.from(possible);
+	if (!time) throw new ValueError("Invalid time", { received: possible, caller });
 	return time;
 }
 
 /** Format a time as a string based on the browser locale settings. */
 export function formatTime(time?: PossibleTime, precision: 2 | 3 | 4 | 5 | 6 = 2): string {
-	return getTime(time).format(precision);
-}
-
-/** Format an optional time as a string based on the browser locale settings. */
-export function formatOptionalTime(time: Optional<PossibleTime>, precision: 2 | 3 | 4 | 5 | 6 = 2): string | undefined {
-	return getOptionalTime(time)?.format(precision);
+	return _time(formatTime, time).format(precision);
 }

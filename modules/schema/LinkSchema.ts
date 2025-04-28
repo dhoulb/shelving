@@ -1,6 +1,6 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
 import type { ImmutableArray } from "../util/array.js";
-import { type AbsoluteLink, getOptionalLinkURL } from "../util/link.js";
+import { type AbsoluteLink, getLinkURL } from "../util/link.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
 import { TextSchema } from "./TextSchema.js";
@@ -38,7 +38,7 @@ export class LinkSchema extends TextSchema {
 	// Override to clean the URL using builtin helper functions and check the schemes and hosts against the whitelists.
 	override validate(unsafeValue: unknown): AbsoluteLink {
 		const str = super.validate(unsafeValue);
-		const url = getOptionalLinkURL(str, this.base, this.schemes, this.hosts);
+		const url = getLinkURL(str, this.base, this.schemes, this.hosts);
 		if (!url) throw new ValueFeedback(str ? "Invalid format" : "Required", str);
 		return url.href;
 	}

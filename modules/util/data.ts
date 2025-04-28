@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { AssertionError } from "../error/AssertionError.js";
 import type { ImmutableArray } from "./array.js";
 import type { EntryObject } from "./entry.js";
 import { isIterable } from "./iterate.js";
@@ -79,7 +79,7 @@ export function isData(value: unknown): value is Data {
 
 /** Assert that an unknown value is a data object. */
 export function assertData(value: unknown): asserts value is Data {
-	if (!isPlainObject(value)) throw new ValidationError("Must be data", value);
+	if (!isPlainObject(value)) throw new AssertionError("Must be data object", { received: value, caller: assertData });
 }
 
 /** Is an unknown value the key for an own prop of a data object. */
@@ -87,7 +87,7 @@ export const isDataProp = <T extends Data>(data: T, key: unknown): key is DataKe
 
 /** Assert that an unknown value is the key for an own prop of a data object. */
 export function assertDataProp<T extends Data>(data: T, key: unknown): asserts key is DataKey<T> {
-	if (!isDataProp(data, key)) throw new ValidationError("Must be data prop", key);
+	if (!isDataProp(data, key)) throw new AssertionError("Key must exist in data object", { key, data, caller: assertDataProp });
 }
 
 /** Convert a data object or set of `DataProp` props for that object back into the full object. */
@@ -111,9 +111,12 @@ export function getDataKeys(data: Data | Partial<Data>): ImmutableArray<DataKey<
 	return Object.keys(data);
 }
 
-/** Get a (possibly deep) prop from a data object. */
-export function getDataProp<T extends Data, K extends BranchKey<T>>(data: T, key: K): BranchData<T>[K];
-export function getDataProp<T extends Data, K extends BranchKey<T>>(data: DeepPartial<T>, key: K): BranchData<T>[K] | undefined;
+/** Get an optional (possibly deep) prop from a data object, or `undefined` if it doesn't exist. */
+export function getDataProp<T extends Data, K extends BranchKey<T> = BranchKey<T>>(data: T, key: K): BranchData<T>[K];
+export function getDataProp<T extends Data, K extends BranchKey<T> = BranchKey<T>>(
+	data: DeepPartial<T>,
+	key: K,
+): BranchData<T>[K] | undefined;
 export function getDataProp(data: Data, key: string): unknown;
 export function getDataProp(data: Data, key: string): unknown {
 	let current: unknown = data;

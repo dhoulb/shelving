@@ -1,4 +1,4 @@
-import { ValidationError } from "../error/request/InputError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { boundNumber, roundNumber } from "./number.js";
 
 // Constants.
@@ -89,17 +89,17 @@ export function isColor(value: unknown): value is Color {
 
 /** Assert that an unknown value is a `Color` instance. */
 export function assertColor(value: unknown): asserts value is Color {
-	if (!isColor(value)) throw new ValidationError("Must be color", value);
+	if (!isColor(value)) throw new RequiredError("Must be color", { received: value, caller: assertColor });
 }
 
 /** Convert a possible color to a `Color` instance or `undefined` */
-export function getOptionalColor(possible: unknown): Color | undefined {
-	return Color.from(possible);
+export function getColor(value: unknown): Color | undefined {
+	return Color.from(value);
 }
 
-/** Convert a possible color to a `Color` instance */
-export function getColor(possible: PossibleColor): Color {
-	const color = getOptionalColor(possible);
-	if (!color) throw new ValidationError("Invalid color", possible);
+/** Convert a possible color to a `Color` instance, or throw `RequiredError` if it can't be converted. */
+export function requireColor(value: PossibleColor): Color {
+	const color = getColor(value);
+	if (!color) throw new RequiredError("Invalid color", { received: value, caller: requireColor });
 	return color;
 }
