@@ -1,4 +1,4 @@
-import { requireBytes } from "./bytes.js";
+import { type PossibleBytes, requireBytes } from "./bytes.js";
 
 const BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const BASE64URL_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -63,7 +63,7 @@ function _decode(base64: string, alphabet: string): Uint8Array {
 }
 
 /** Encode a string or binary data to Base64 string. */
-export function encodeBase64(input: string | ArrayBuffer | Uint8Array, pad = true): string {
+export function encodeBase64(input: PossibleBytes, pad = true): string {
 	return _encode(requireBytes(input), BASE64_CHARS, pad ? "=" : "");
 }
 
@@ -78,7 +78,7 @@ export function decodeBase64Bytes(base64: string): Uint8Array {
 }
 
 /** Encode a string or binary data to URL-safe Base64 */
-export function encodeBase64Url(input: string | ArrayBuffer | Uint8Array, pad = false): string {
+export function encodeBase64Url(input: PossibleBytes, pad = false): string {
 	return _encode(requireBytes(input), BASE64URL_CHARS, pad ? "=" : "");
 }
 
