@@ -1,45 +1,93 @@
-import { ValueError } from "../error/ValueError.js";
-import type { AnyFunction } from "./function.js";
+import { requireBytes } from "./bytes.js";
 
-/** Encode a string to Base64 (with no `=` padding on the end). */
-export function encodeBase64(str: string): string {
-	return _encodeBase64(encodeBase64, str);
-}
-function _encodeBase64(caller: AnyFunction, str: string): string {
-	try {
-		return btoa(str).replace(/=+$/, "");
-	} catch (thrown) {
-		console.error(thrown);
-		throw new ValueError("String contains invalid characters", {
-			received: str,
-			cause: thrown,
-			caller,
-		});
+const BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const BASE64URL_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+/**
+ * @todo DH: When it's well supported, use `Uint8Array.toBase64()`: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/toBase64
+ */
+function _encode(bytes: Uint8Array, alphabet: string, pad: string): string {
+	const len = bytes.length;
+	let output = "";
+
+	for (let i = 0; i < len; i += 3) {
+		const b1 = bytes[i] as number;
+		const b2 = i + 1 < len ? (bytes[i + 1] as number) : 0;
+		const b3 = i + 2 < len ? (bytes[i + 2] as number) : 0;
+
+		const combined = (b1 << 16) | (b2 << 8) | b3;
+
+		const c1 = (combined >> 18) & 0x3f;
+		const c2 = (combined >> 12) & 0x3f;
+		const c3 = (combined >> 6) & 0x3f;
+		const c4 = combined & 0x3f;
+
+		output += `${alphabet[c1]}${alphabet[c2]}${i + 1 < len ? alphabet[c3] : pad}${i + 2 < len ? alphabet[c4] : pad}`;
 	}
+
+	return output;
 }
 
-/** Decode a string from Base64 (strips `=` padding on the end). */
-export function decodeBase64(base64: string): string {
-	return _decodeBase64(decodeBase64, base64);
-}
-function _decodeBase64(caller: AnyFunction, base64: string): string {
-	try {
-		return atob(base64.replace(/=+$/, ""));
-	} catch (thrown) {
-		throw new ValueError("Base64 string is not correctly encoded", {
-			received: base64,
-			cause: thrown,
-			caller,
-		});
+function _decode(base64: string, alphabet: string): Uint8Array {
+	// Create a reverse lookup table: char -> 6-bit value
+	const values = new Uint8Array(128);
+	for (let i = 0; i < alphabet.length; i++) values[alphabet.charCodeAt(i)] = i;
+
+	// Remove padding.
+	const cleaned = base64.replace(/=+$/, "");
+	const length = cleaned.length;
+
+	// Calculate output byte length
+	// Every 4 base64 chars = 3 bytes; adjust for padding
+	const outputLength = Math.floor((length * 6) / 8);
+	const output = new Uint8Array(outputLength);
+
+	let j = 0;
+	for (let i = 0; i < length; i += 4) {
+		// Get 4 characters (or less at the end)
+		const c1 = values[cleaned.charCodeAt(i)] as number;
+		const c2 = values[cleaned.charCodeAt(i + 1)] as number;
+		const c3 = i + 2 < length ? (values[cleaned.charCodeAt(i + 2)] as number) : 0;
+		const c4 = i + 3 < length ? (values[cleaned.charCodeAt(i + 3)] as number) : 0;
+
+		// Combine into 24 bits
+		const combined = (c1 << 18) | (c2 << 12) | (c3 << 6) | c4;
+
+		// Extract bytes and add to output if within range
+		if (j < outputLength) output[j++] = (combined >> 16) & 0xff;
+		if (j < outputLength) output[j++] = (combined >> 8) & 0xff;
+		if (j < outputLength) output[j++] = combined & 0xff;
 	}
+
+	return output;
 }
 
-/** Encode a string to URL-safe Base64 */
-export function encodeBase64Url(str: string): string {
-	return _encodeBase64(encodeBase64Url, str).replace(/\+/g, "-").replace(/\//g, "_");
+/** Encode a string or binary data to Base64 string. */
+export function encodeBase64(input: string | ArrayBuffer | Uint8Array, pad = true): string {
+	return _encode(requireBytes(input), BASE64_CHARS, pad ? "=" : "");
+}
+
+/** Decode Base64 string to string. */
+export function decodeBase64String(base64: string): string {
+	return new TextDecoder("utf-8").decode(_decode(base64, BASE64_CHARS));
+}
+
+/** Decode URL-safe Base64 string to binary data (as a UInt8Array). */
+export function decodeBase64Bytes(base64: string): Uint8Array {
+	return _decode(base64, BASE64_CHARS);
+}
+
+/** Encode a string or binary data to URL-safe Base64 */
+export function encodeBase64Url(input: string | ArrayBuffer | Uint8Array, pad = false): string {
+	return _encode(requireBytes(input), BASE64URL_CHARS, pad ? "=" : "");
 }
 
 /** Decode a string from URL-safe Base64. */
-export function decodeBase64Url(b64: string): string {
-	return _decodeBase64(decodeBase64Url, b64.replace(/-/g, "+").replace(/_/g, "/"));
+export function decodeBase64UrlString(base64: string): string {
+	return new TextDecoder("utf-8").decode(_decode(base64, BASE64URL_CHARS));
+}
+
+/** Decode URL-safe Base64 string to binary data (as a UInt8Array). */
+export function decodeBase64UrlBytes(base64: string): Uint8Array {
+	return _decode(base64, BASE64URL_CHARS);
 }
