@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { UnauthorizedError, ValueError, encodeToken, verifyToken } from "../index.js";
 
-const TOKEN_SECRET = "mytokensecretmytokensecretmytokensecret";
+const TOKEN_SECRET = "mytokensecretmytokensecretmytokensecretmytokensecretmytokensecretmytokensecret";
 const TOKEN_ISSUER = "mytokenissuer";
 const TOKEN_SUBSCRIBER = "abc";
 const TOKEN_CLAIMS = {
@@ -23,14 +23,19 @@ test("Invalid secret param", async () => {
 	expect(() => verifyToken(token, "")).toThrow(/secret/);
 });
 test("Invalid token based on signature", async () => {
-	const token = await encodeToken(TOKEN_CLAIMS, "BADSIGNATUREBADSIGNATUREBADSIGNATURE");
+	const token = await encodeToken(TOKEN_CLAIMS, "BADSIGNATUREBADSIGNATUREBADSIGNATUREBADSIGNATUREBADSIGNATUREBADSIGNATURE");
 	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(UnauthorizedError);
 	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(/signature/);
 });
 test("Invalid token based on issued date", async () => {
 	const token = await encodeToken({ ...TOKEN_CLAIMS, iat: Number.MAX_SAFE_INTEGER }, TOKEN_SECRET);
 	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(UnauthorizedError);
-	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(/not issued/);
+	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(/issued/);
+});
+test("Invalid token based on not before date", async () => {
+	const token = await encodeToken({ ...TOKEN_CLAIMS, nbf: Number.MIN_SAFE_INTEGER }, TOKEN_SECRET);
+	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(UnauthorizedError);
+	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(/used/);
 });
 test("Invalid token based on expiry", async () => {
 	const token = await encodeToken({ ...TOKEN_CLAIMS, exp: 9999 }, TOKEN_SECRET);

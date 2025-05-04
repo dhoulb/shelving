@@ -1,7 +1,7 @@
 import { RequestError, UnauthorizedError } from "../error/RequestError.js";
 import { ValueError } from "../error/ValueError.js";
 import { decodeBase64UrlBytes, decodeBase64UrlString, encodeBase64Url } from "./base64.js";
-import { requireBytes } from "./bytes.js";
+import { type PossibleBytes, getBytes, requireBytes } from "./bytes.js";
 import { DAY } from "./constants.js";
 import type { Data } from "./data.js";
 import type { AnyFunction } from "./function.js";
@@ -11,9 +11,16 @@ const HASH = "SHA-512";
 const ALGORITHM = { name: "HMAC", hash: HASH };
 const HEADER = { alg: "HS512", typ: "JWT" };
 const EXPIRY_MS = DAY * 10;
-const MIN_SECRET = 16;
+const SKEW_MS = 60; // Allow 1 minute clock skew.
+const SECRET_BYTES = 64; // Minimum 64 bytes / 512 bits
 
-function _getKey(secret: string, ...usages: KeyUsage[]): Promise<CryptoKey> {
+function _getKey(caller: AnyFunction, secret: PossibleBytes, ...usages: KeyUsage[]): Promise<CryptoKey> {
+	const bytes = getBytes(secret);
+	if (!bytes || bytes.length < SECRET_BYTES)
+		throw new ValueError(`JWT secret must be byte sequence with mininum ${SECRET_BYTES} bytes`, {
+			received: secret,
+			caller,
+		});
 	return crypto.subtle.importKey("raw", requireBytes(secret), ALGORITHM, false, usages);
 }
 
@@ -23,23 +30,17 @@ function _getKey(secret: string, ...usages: KeyUsage[]): Promise<CryptoKey> {
  *
  * @throws ValueError If the input parameters, e.g. `secret` or `issuer`, are invalid.
  */
-export async function encodeToken(claims: Data, secret: string): Promise<string> {
-	if (typeof secret !== "string" || secret.length < MIN_SECRET)
-		throw new ValueError(`JWT secret must be string with minimum ${MIN_SECRET} characters`, {
-			received: secret,
-			caller: encodeToken,
-		});
-
+export async function encodeToken(claims: Data, secret: PossibleBytes): Promise<string> {
 	// Encode header.
 	const header = encodeBase64Url(JSON.stringify(HEADER));
 
 	// Encode payload.
-	const iat = Math.floor(Date.now() / 1000);
-	const exp = Math.floor(iat + EXPIRY_MS / 1000);
-	const payload = encodeBase64Url(JSON.stringify({ iat, exp, ...claims }));
+	const now = Math.floor(Date.now() / 1000);
+	const exp = Math.floor(now + EXPIRY_MS / 1000);
+	const payload = encodeBase64Url(JSON.stringify({ nbf: now, iat: now, exp, ...claims }));
 
 	// Create signature.
-	const key = await _getKey(secret, "sign");
+	const key = await _getKey(encodeToken, secret, "sign");
 	const signature = encodeBase64Url(await crypto.subtle.sign("HMAC", key, requireBytes(`${header}.${payload}`)));
 
 	// Combine token.
@@ -96,13 +97,7 @@ export function _splitToken(caller: AnyFunction, token: unknown): TokenData {
  * @throws RequestError If the token is invalid or malformed.
  * @throws UnauthorizedError If the token signature is incorrect, token is expired or not issued yet.
  */
-export async function verifyToken(token: unknown, secret: string): Promise<Data> {
-	if (typeof secret !== "string" || secret.length < MIN_SECRET)
-		throw new ValueError(`JWT secret must be string with minimum ${MIN_SECRET} characters`, {
-			received: secret,
-			caller: verifyToken,
-		});
-
+export async function verifyToken(token: unknown, secret: PossibleBytes): Promise<Data> {
 	const { header, payload, signature, headerData, payloadData } = _splitToken(verifyToken, token);
 
 	// Validate header.
@@ -112,15 +107,19 @@ export async function verifyToken(token: unknown, secret: string): Promise<Data>
 		throw new RequestError(`JWT header algorithm must be \"${HEADER.alg}\"`, { received: headerData.alg, caller: verifyToken });
 
 	// Validate signature.
-	const key = await _getKey(secret, "verify");
+	const key = await _getKey(verifyToken, secret, "verify");
 	const isValid = await crypto.subtle.verify("HMAC", key, decodeBase64UrlBytes(signature), requireBytes(`${header}.${payload}`));
 	if (!isValid) throw new UnauthorizedError("JWT signature does not match", { received: token, caller: verifyToken });
 
 	// Validate payload.
-	const { iat, exp } = payloadData;
+	const { nbf, iat, exp } = payloadData;
 	const now = Math.floor(Date.now() / 1000);
-	if (typeof iat === "number" && iat > now) throw new UnauthorizedError("JWT not issued yet", { received: iat, caller: verifyToken });
-	if (typeof exp === "number" && exp < now) throw new UnauthorizedError("JWT has expired", { received: exp, caller: verifyToken });
+	if (typeof nbf === "number" && nbf < now - SKEW_MS)
+		throw new UnauthorizedError("JWT cannot be used yet", { received: payloadData, expected: now, caller: verifyToken });
+	if (typeof iat === "number" && iat > now + SKEW_MS)
+		throw new UnauthorizedError("JWT not issued yet", { received: payloadData, expected: now, caller: verifyToken });
+	if (typeof exp === "number" && exp < now - SKEW_MS)
+		throw new UnauthorizedError("JWT has expired", { received: payloadData, expected: now, caller: verifyToken });
 
 	return payloadData;
 }
