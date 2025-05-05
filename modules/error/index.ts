@@ -1,6 +1,5 @@
 export * from "./BaseError.js";
 
-export * from "./AssertionError.js";
 export * from "./NetworkError.js";
 export * from "./RequestError.js";
 export * from "./RequiredError.js";
