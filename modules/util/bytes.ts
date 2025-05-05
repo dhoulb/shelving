@@ -20,6 +20,6 @@ export function getBytes(value: unknown): Uint8Array | undefined {
 /** Convert an unknown value to a `Uint8Array` byte sequence, or throw `RequiredError` if the value cannot be converted. */
 export function requireBytes(value: PossibleBytes): Uint8Array {
 	const bytes = getBytes(value);
-	if (bytes === undefined) throw new RequiredError("Value cannot be converted to byte array", { received: value, caller: requireBytes });
+	if (bytes === undefined) throw new RequiredError("Value must be byte sequence", { received: value, caller: requireBytes });
 	return bytes;
 }
