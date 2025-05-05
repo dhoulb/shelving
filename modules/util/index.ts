@@ -21,6 +21,7 @@ export * from "./error.js";
 export * from "./file.js";
 export * from "./filter.js";
 export * from "./focus.js";
+export * from "./format.js";
 export * from "./function.js";
 export * from "./hash.js";
 export * from "./hydrate.js";
