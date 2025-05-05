@@ -1,6 +1,9 @@
 import type { AnyConstructor } from "../util/class.js";
 import type { AnyFunction } from "../util/function.js";
 
+/** Any calling function or constructor that can appear in a stack tracer. */
+export type AnyCaller = AnyFunction | AnyConstructor;
+
 /** Options for `BaseError` that provide additional helpful error functionality. */
 export interface BaseErrorOptions extends ErrorOptions {
 	/**
@@ -11,7 +14,7 @@ export interface BaseErrorOptions extends ErrorOptions {
 	[key: string]: unknown;
 
 	/** Modify the stack to trim off lines after a certain calling function. */
-	caller?: AnyFunction | AnyConstructor | undefined;
+	caller?: AnyCaller | undefined;
 }
 
 /** An error that provides additional helpful functionality. */
