@@ -2,10 +2,10 @@ import { describe, expect, test } from "bun:test";
 import {
 	decodeBase64Bytes,
 	decodeBase64String,
-	decodeBase64UrlBytes,
-	decodeBase64UrlString,
+	decodeBase64URLBytes,
+	decodeBase64URLString,
 	encodeBase64,
-	encodeBase64Url,
+	encodeBase64URL,
 } from "../index.js";
 
 describe("encodeBase64()", () => {
@@ -52,43 +52,43 @@ describe("decodeBase64String()", () => {
 });
 describe("decodeBase64UrlBytes()", () => {
 	test("should decode Base64URL string to correct bytes", () => {
-		expect(Array.from(decodeBase64UrlBytes("Zg"))).toEqual([102]);
-		expect(Array.from(decodeBase64UrlBytes("Zm8"))).toEqual([102, 111]);
-		expect(Array.from(decodeBase64UrlBytes("Zm9v"))).toEqual([102, 111, 111]);
-		expect(Array.from(decodeBase64UrlBytes("Zm9vYg"))).toEqual([102, 111, 111, 98]);
-		expect(Array.from(decodeBase64UrlBytes("Zm9vYmE"))).toEqual([102, 111, 111, 98, 97]);
-		expect(Array.from(decodeBase64UrlBytes("Zm9vYmFy"))).toEqual([102, 111, 111, 98, 97, 114]);
+		expect(Array.from(decodeBase64URLBytes("Zg"))).toEqual([102]);
+		expect(Array.from(decodeBase64URLBytes("Zm8"))).toEqual([102, 111]);
+		expect(Array.from(decodeBase64URLBytes("Zm9v"))).toEqual([102, 111, 111]);
+		expect(Array.from(decodeBase64URLBytes("Zm9vYg"))).toEqual([102, 111, 111, 98]);
+		expect(Array.from(decodeBase64URLBytes("Zm9vYmE"))).toEqual([102, 111, 111, 98, 97]);
+		expect(Array.from(decodeBase64URLBytes("Zm9vYmFy"))).toEqual([102, 111, 111, 98, 97, 114]);
 	});
 	test("should decode empty string to empty Uint8Array", () => {
-		expect(Array.from(decodeBase64UrlBytes(""))).toEqual([]);
+		expect(Array.from(decodeBase64URLBytes(""))).toEqual([]);
 	});
 	test("should decode non-ASCII (UTF-8) Base64URL", () => {
-		expect(Array.from(decodeBase64UrlBytes("4pyTIMOgIGxhIG1vZGU"))).toEqual(Array.from(new TextEncoder().encode("✓ à la mode")));
-		expect(Array.from(decodeBase64UrlBytes("8J-YhQ"))).toEqual(Array.from(new TextEncoder().encode("😅")));
+		expect(Array.from(decodeBase64URLBytes("4pyTIMOgIGxhIG1vZGU"))).toEqual(Array.from(new TextEncoder().encode("✓ à la mode")));
+		expect(Array.from(decodeBase64URLBytes("8J-YhQ"))).toEqual(Array.from(new TextEncoder().encode("😅")));
 	});
 });
 describe("encodeBase64Url()", () => {
 	test("should encode ASCII strings correctly", () => {
-		expect(encodeBase64Url("f")).toBe("Zg");
-		expect(encodeBase64Url("fo")).toBe("Zm8");
-		expect(encodeBase64Url("foo")).toBe("Zm9v");
-		expect(encodeBase64Url("foob")).toBe("Zm9vYg");
-		expect(encodeBase64Url("fooba")).toBe("Zm9vYmE");
-		expect(encodeBase64Url("foobar")).toBe("Zm9vYmFy");
+		expect(encodeBase64URL("f")).toBe("Zg");
+		expect(encodeBase64URL("fo")).toBe("Zm8");
+		expect(encodeBase64URL("foo")).toBe("Zm9v");
+		expect(encodeBase64URL("foob")).toBe("Zm9vYg");
+		expect(encodeBase64URL("fooba")).toBe("Zm9vYmE");
+		expect(encodeBase64URL("foobar")).toBe("Zm9vYmFy");
 	});
 	test("should encode ArrayBuffer", () => {
 		const buf = new Uint8Array([102, 111, 111]); // "foo"
-		expect(encodeBase64Url(buf.buffer)).toBe("Zm9v");
+		expect(encodeBase64URL(buf.buffer)).toBe("Zm9v");
 	});
 	test("should encode TypedArray", () => {
 		const arr0 = new Uint8Array([98, 97, 114]); // "bar"
-		expect(encodeBase64Url(arr0)).toBe("YmFy");
+		expect(encodeBase64URL(arr0)).toBe("YmFy");
 		const arr1 = new Uint8Array([240, 159, 152, 133]); // "😅"
-		expect(encodeBase64Url(arr1)).toBe("8J-YhQ");
+		expect(encodeBase64URL(arr1)).toBe("8J-YhQ");
 	});
 	test("should handle non-ASCII (UTF-8) input", () => {
-		expect(encodeBase64Url("✓ à la mode")).toBe("4pyTIMOgIGxhIG1vZGU");
-		expect(encodeBase64Url("😅")).toBe("8J-YhQ");
+		expect(encodeBase64URL("✓ à la mode")).toBe("4pyTIMOgIGxhIG1vZGU");
+		expect(encodeBase64URL("😅")).toBe("8J-YhQ");
 	});
 });
 describe("decodeBase64Bytes()", () => {
@@ -110,18 +110,18 @@ describe("decodeBase64Bytes()", () => {
 });
 describe("decodeBase64UrlString()", () => {
 	test("should decode Base64URL string to correct string", () => {
-		expect(decodeBase64UrlString("Zg")).toBe("f");
-		expect(decodeBase64UrlString("Zm8")).toBe("fo");
-		expect(decodeBase64UrlString("Zm9v")).toBe("foo");
-		expect(decodeBase64UrlString("Zm9vYg")).toBe("foob");
-		expect(decodeBase64UrlString("Zm9vYmE")).toBe("fooba");
-		expect(decodeBase64UrlString("Zm9vYmFy")).toBe("foobar");
+		expect(decodeBase64URLString("Zg")).toBe("f");
+		expect(decodeBase64URLString("Zm8")).toBe("fo");
+		expect(decodeBase64URLString("Zm9v")).toBe("foo");
+		expect(decodeBase64URLString("Zm9vYg")).toBe("foob");
+		expect(decodeBase64URLString("Zm9vYmE")).toBe("fooba");
+		expect(decodeBase64URLString("Zm9vYmFy")).toBe("foobar");
 	});
 	test("should decode empty string to empty string", () => {
-		expect(decodeBase64UrlString("")).toBe("");
+		expect(decodeBase64URLString("")).toBe("");
 	});
 	test("should decode non-ASCII (UTF-8) Base64URL", () => {
-		expect(decodeBase64UrlString("4pyTIMOgIGxhIG1vZGU")).toBe("✓ à la mode");
-		expect(decodeBase64UrlString("8J-YhQ")).toBe("😅");
+		expect(decodeBase64URLString("4pyTIMOgIGxhIG1vZGU")).toBe("✓ à la mode");
+		expect(decodeBase64URLString("8J-YhQ")).toBe("😅");
 	});
 });

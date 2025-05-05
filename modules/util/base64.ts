@@ -78,16 +78,16 @@ export function decodeBase64Bytes(base64: string): Uint8Array {
 }
 
 /** Encode a string or binary data to URL-safe Base64 */
-export function encodeBase64Url(input: PossibleBytes, pad = false): string {
+export function encodeBase64URL(input: PossibleBytes, pad = false): string {
 	return _encode(requireBytes(input), BASE64URL_CHARS, pad ? "=" : "");
 }
 
 /** Decode a string from URL-safe Base64. */
-export function decodeBase64UrlString(base64: string): string {
+export function decodeBase64URLString(base64: string): string {
 	return new TextDecoder("utf-8").decode(_decode(base64, BASE64URL_CHARS));
 }
 
 /** Decode URL-safe Base64 string to binary data (as a UInt8Array). */
-export function decodeBase64UrlBytes(base64: string): Uint8Array {
+export function decodeBase64URLBytes(base64: string): Uint8Array {
 	return _decode(base64, BASE64URL_CHARS);
 }

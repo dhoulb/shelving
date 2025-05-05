@@ -1,5 +1,5 @@
 import { ValueError } from "../error/ValueError.js";
-import { decodeBase64UrlBytes, encodeBase64Url } from "./base64.js";
+import { decodeBase64URLBytes, encodeBase64URL } from "./base64.js";
 import { requireBytes } from "./bytes.js";
 
 // Constants.
@@ -46,7 +46,7 @@ export async function hashPassword(password: string, iterations = ITERATIONS): P
 	const hash = await crypto.subtle.deriveBits({ ...ALGORITHM, salt, iterations }, key, bits);
 
 	// Return the combined string
-	return `${encodeBase64Url(salt)}$${iterations}$${encodeBase64Url(hash)}`;
+	return `${encodeBase64URL(salt)}$${iterations}$${encodeBase64URL(hash)}`;
 }
 
 /**
@@ -61,7 +61,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 	// Check salthash.
 	const [s, i, h] = hash.split("$");
 	if (!s || !i || !h) return false;
-	const hashBytes = decodeBase64UrlBytes(h);
+	const hashBytes = decodeBase64URLBytes(h);
 
 	// Check iterations.
 	const iterations = Number.parseInt(i, 10);
@@ -69,7 +69,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 
 	// Derive the hash.
 	const key = await _getKey(password);
-	const salt = decodeBase64UrlBytes(s);
+	const salt = decodeBase64URLBytes(s);
 	const bits = hashBytes.length * 8;
 	const derivedBytes = new Uint8Array(await crypto.subtle.deriveBits({ ...ALGORITHM, salt, iterations }, key, bits));
 

@@ -1,6 +1,6 @@
 import { RequestError, UnauthorizedError } from "../error/RequestError.js";
 import { ValueError } from "../error/ValueError.js";
-import { decodeBase64UrlBytes, decodeBase64UrlString, encodeBase64Url } from "./base64.js";
+import { decodeBase64URLBytes, decodeBase64URLString, encodeBase64URL } from "./base64.js";
 import { type PossibleBytes, getBytes, requireBytes } from "./bytes.js";
 import { DAY } from "./constants.js";
 import type { Data } from "./data.js";
@@ -32,16 +32,16 @@ function _getKey(caller: AnyFunction, secret: PossibleBytes, ...usages: KeyUsage
  */
 export async function encodeToken(claims: Data, secret: PossibleBytes): Promise<string> {
 	// Encode header.
-	const header = encodeBase64Url(JSON.stringify(HEADER));
+	const header = encodeBase64URL(JSON.stringify(HEADER));
 
 	// Encode payload.
 	const now = Math.floor(Date.now() / 1000);
 	const exp = Math.floor(now + EXPIRY_MS / 1000);
-	const payload = encodeBase64Url(JSON.stringify({ nbf: now, iat: now, exp, ...claims }));
+	const payload = encodeBase64URL(JSON.stringify({ nbf: now, iat: now, exp, ...claims }));
 
 	// Create signature.
 	const key = await _getKey(encodeToken, secret, "sign");
-	const signature = encodeBase64Url(await crypto.subtle.sign("HMAC", key, requireBytes(`${header}.${payload}`)));
+	const signature = encodeBase64URL(await crypto.subtle.sign("HMAC", key, requireBytes(`${header}.${payload}`)));
 
 	// Combine token.
 	return `${header}.${payload}.${signature}`;
@@ -73,7 +73,7 @@ export function _splitToken(caller: AnyFunction, token: unknown): TokenData {
 	// Decode header.
 	let headerData: Data;
 	try {
-		headerData = JSON.parse(decodeBase64UrlString(header));
+		headerData = JSON.parse(decodeBase64URLString(header));
 	} catch {
 		throw new RequestError("JWT token header must be base64Url encoded JSON", { received: token, caller });
 	}
@@ -81,7 +81,7 @@ export function _splitToken(caller: AnyFunction, token: unknown): TokenData {
 	// Decode payload.
 	let payloadData: Data;
 	try {
-		payloadData = JSON.parse(decodeBase64UrlString(payload));
+		payloadData = JSON.parse(decodeBase64URLString(payload));
 	} catch {
 		throw new RequestError("JWT token payload must be base64Url encoded JSON", { received: token, caller });
 	}
@@ -108,7 +108,7 @@ export async function verifyToken(token: unknown, secret: PossibleBytes): Promis
 
 	// Validate signature.
 	const key = await _getKey(verifyToken, secret, "verify");
-	const isValid = await crypto.subtle.verify("HMAC", key, decodeBase64UrlBytes(signature), requireBytes(`${header}.${payload}`));
+	const isValid = await crypto.subtle.verify("HMAC", key, decodeBase64URLBytes(signature), requireBytes(`${header}.${payload}`));
 	if (!isValid) throw new UnauthorizedError("JWT signature does not match", { received: token, caller: verifyToken });
 
 	// Validate payload.
