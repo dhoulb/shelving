@@ -1,3 +1,4 @@
+import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 
 /** List of file types in `extension: mime` format. */
@@ -10,8 +11,8 @@ export function getFileExtension(file: string): string | undefined {
 }
 
 /** Get the file extension from a file path, or throw `RequiredError` if the input has no extension. */
-export function requireFileExtension(path: string): string {
-	const extension = getFileExtension(path);
-	if (!extension) throw new RequiredError("File extension is required", { received: path, caller: requireFileExtension });
+export function requireFileExtension(file: string, caller: AnyCaller = requireFileExtension): string {
+	const extension = getFileExtension(file);
+	if (!extension) throw new RequiredError("File extension is required", { received: file, caller });
 	return extension;
 }

@@ -1,7 +1,7 @@
 import { type ImmutableArray, isArray, omitArrayItems, withArrayItems } from "./array.js";
 import type { BranchData, BranchKey, Data, DataProp, LeafData, LeafKey } from "./data.js";
 import { reduceItems } from "./iterate.js";
-import { getNumber } from "./number.js";
+import { requireNumber } from "./number.js";
 import { getProps, isObject } from "./object.js";
 import { isDefined } from "./undefined.js";
 
@@ -55,8 +55,10 @@ export function getUpdates<T extends Data>(data: Updates<T>): ImmutableArray<Upd
 }
 function _getUpdate([key, value]: DataProp<Updates>): Update | undefined {
 	if (value !== undefined) {
-		if (key.startsWith("+=")) return { action: "sum", key: key.slice(2), value: getNumber(value) };
-		if (key.startsWith("-=")) return { action: "sum", key: key.slice(2), value: 0 - getNumber(value) };
+		if (key.startsWith("+="))
+			return { action: "sum", key: key.slice(2), value: requireNumber(value as number, undefined, undefined, getUpdates) };
+		if (key.startsWith("-="))
+			return { action: "sum", key: key.slice(2), value: 0 - requireNumber(value as number, undefined, undefined, getUpdates) };
 		if (key.startsWith("=")) return { action: "set", key: key.slice(1), value };
 		if (key.startsWith("+[]")) return { action: "with", key: key.slice(3), value: isArray(value) ? value : [value] };
 		if (key.startsWith("-[]")) return { action: "omit", key: key.slice(3), value: isArray(value) ? value : [value] };

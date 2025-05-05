@@ -1,16 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import {
-	ValueError,
-	boundNumber,
-	formatNumber,
-	getOptionalNumber,
-	getRange,
-	roundNumber,
-	roundStep,
-	sumNumbers,
-	truncateNumber,
-	wrapNumber,
-} from "../index.js";
+import { ValueError, boundNumber, getNumber, getRange, roundNumber, roundStep, sumNumbers, truncateNumber, wrapNumber } from "../index.js";
 
 test("roundNumber(): Works correctly", () => {
 	expect(roundNumber(123.456, 0)).toBe(123);
@@ -54,11 +43,6 @@ test("truncateNumber(): Works correctly", () => {
 	expect(truncateNumber(123.45, 2)).toBe(123.45);
 	expect(truncateNumber(123.456, 3)).toBe(123.456);
 });
-test("formatNumber(): Works correctly", () => {
-	expect(formatNumber(123)).toBe("123");
-	expect(formatNumber(1234)).toBe("1,234");
-	expect(formatNumber(1234.0)).toBe("1,234");
-});
 describe("roundStep()", () => {
 	test("Numbers are rounded correctly without step", () => {
 		expect(roundStep(51)).toBe(51);
@@ -80,36 +64,36 @@ describe("roundStep()", () => {
 		expect(roundStep(100.00001, 0.0001)).toBe(100);
 	});
 });
-describe("getOptionalNumber()", () => {
+describe("getNumber()", () => {
 	test("Whole numbers are converted correctly", () => {
-		expect(getOptionalNumber("0")).toBe(0);
-		expect(getOptionalNumber("1")).toBe(1);
-		expect(getOptionalNumber("0.")).toBe(0);
-		expect(getOptionalNumber("1.")).toBe(1);
-		expect(getOptionalNumber("0000.")).toBe(0);
-		expect(getOptionalNumber("1000.")).toBe(1000);
-		expect(getOptionalNumber("0001.")).toBe(1);
+		expect(getNumber("0")).toBe(0);
+		expect(getNumber("1")).toBe(1);
+		expect(getNumber("0.")).toBe(0);
+		expect(getNumber("1.")).toBe(1);
+		expect(getNumber("0000.")).toBe(0);
+		expect(getNumber("1000.")).toBe(1000);
+		expect(getNumber("0001.")).toBe(1);
 	});
 	test("Decimal numbers are converted correctly", () => {
-		expect(getOptionalNumber("1.1")).toBe(1.1);
-		expect(getOptionalNumber("1.555")).toBe(1.555);
-		expect(getOptionalNumber("123.456")).toBe(123.456);
+		expect(getNumber("1.1")).toBe(1.1);
+		expect(getNumber("1.555")).toBe(1.555);
+		expect(getNumber("123.456")).toBe(123.456);
 	});
 	test("Signs are converted correctly", () => {
-		expect(getOptionalNumber("-1")).toBe(-1);
-		expect(getOptionalNumber("-1.5")).toBe(-1.5);
+		expect(getNumber("-1")).toBe(-1);
+		expect(getNumber("-1.5")).toBe(-1.5);
 	});
 	test("Complicated numbers are fixed correctly", () => {
-		expect(getOptionalNumber("99999.99999")).toBe(99999.99999);
-		expect(getOptionalNumber("-99999.99999")).toBe(-99999.99999);
+		expect(getNumber("99999.99999")).toBe(99999.99999);
+		expect(getNumber("-99999.99999")).toBe(-99999.99999);
 	});
 	test("Empty string returns undefined", () => {
-		expect<number | undefined>(getOptionalNumber("")).toBe(undefined);
+		expect<number | undefined>(getNumber("")).toBe(undefined);
 	});
 	test("Non-numbers return undefined", () => {
-		expect<number | undefined>(getOptionalNumber(".")).toBe(undefined);
-		expect<number | undefined>(getOptionalNumber("a")).toBe(undefined);
-		expect<number | undefined>(getOptionalNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(undefined);
+		expect<number | undefined>(getNumber(".")).toBe(undefined);
+		expect<number | undefined>(getNumber("a")).toBe(undefined);
+		expect<number | undefined>(getNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(undefined);
 	});
 });
 test("sumNumbers()", () => {

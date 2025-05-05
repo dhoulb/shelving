@@ -1,5 +1,13 @@
 import { describe, expect, test } from "bun:test";
-import { type ImmutableDictionary, ValueError, getPlaceholders, matchTemplate, matchTemplates, renderTemplate } from "../index.js";
+import {
+	type ImmutableDictionary,
+	RequiredError,
+	ValueError,
+	getPlaceholders,
+	matchTemplate,
+	matchTemplates,
+	renderTemplate,
+} from "../index.js";
 
 // Tests.
 describe("matchTemplate()", () => {
@@ -82,12 +90,12 @@ describe("renderTemplate()", () => {
 		expect(renderTemplate("/*/", ["A"])).toBe("/A/");
 		expect(renderTemplate("/*/*", ["A", "B"])).toBe("/A/B");
 	});
-	test("ReferenceError for missing parameters", () => {
-		expect(() => renderTemplate("/:a", {})).toThrow(ReferenceError);
-		expect(() => renderTemplate("/:a/:b", { a: "abc" })).toThrow(ReferenceError);
-		expect(() => renderTemplate("/a/:a", {})).toThrow(ReferenceError);
-		expect(() => renderTemplate("/*/", [])).toThrow(ReferenceError);
-		expect(() => renderTemplate("/*/*", ["A"])).toThrow(ReferenceError);
+	test("RequiredError for missing parameters", () => {
+		expect(() => renderTemplate("/:a", {})).toThrow(RequiredError);
+		expect(() => renderTemplate("/:a/:b", { a: "abc" })).toThrow(RequiredError);
+		expect(() => renderTemplate("/a/:a", {})).toThrow(RequiredError);
+		expect(() => renderTemplate("/*/", [])).toThrow(RequiredError);
+		expect(() => renderTemplate("/*/*", ["A"])).toThrow(RequiredError);
 	});
 });
 describe("matchTemplates()", () => {

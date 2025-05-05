@@ -1,16 +1,15 @@
 import { expect, test } from "bun:test";
 import {
-	AssertionError,
 	RequiredError,
 	addArrayItem,
 	addArrayItems,
-	assertArrayLength,
+	assertArray,
 	deleteArrayItems,
 	filterArray,
-	getNextItem,
-	getPrevItem,
+	getNext,
+	getPrev,
 	getUniqueArray,
-	isArrayLength,
+	isArray,
 	isArrayWith,
 	isEqual,
 	isEqualGreater,
@@ -20,7 +19,7 @@ import {
 	isLess,
 	notEqual,
 	omitArrayItems,
-	requireArrayLength,
+	requireArray,
 	shuffleArray,
 	toggleArrayItems,
 	withArrayItems,
@@ -96,17 +95,17 @@ test("deleteArrayItems()", () => {
 });
 test("getNextItem()", () => {
 	const arr = [1, 2, 3];
-	expect(getNextItem(arr, 1)).toBe(2);
-	expect(getNextItem(arr, 2)).toBe(3);
-	expect<number | undefined>(getNextItem(arr, 3)).toBe(undefined);
-	expect<number | undefined>(getNextItem(arr, 4)).toBe(undefined);
+	expect(getNext(arr, 1)).toBe(2);
+	expect(getNext(arr, 2)).toBe(3);
+	expect<number | undefined>(getNext(arr, 3)).toBe(undefined);
+	expect<number | undefined>(getNext(arr, 4)).toBe(undefined);
 });
 test("getPrevItem()", () => {
 	const arr = [1, 2, 3];
-	expect<number | undefined>(getPrevItem(arr, 1)).toBe(undefined);
-	expect(getPrevItem(arr, 2)).toBe(1);
-	expect(getPrevItem(arr, 3)).toBe(2);
-	expect<number | undefined>(getPrevItem(arr, 4)).toBe(undefined);
+	expect<number | undefined>(getPrev(arr, 1)).toBe(undefined);
+	expect(getPrev(arr, 2)).toBe(1);
+	expect(getPrev(arr, 3)).toBe(2);
+	expect<number | undefined>(getPrev(arr, 4)).toBe(undefined);
 });
 test("shuffleArray()", () => {
 	const arr = [1, 2, 3];
@@ -118,30 +117,43 @@ test("shuffleArray()", () => {
 test("getUniqueArray()", () => {
 	expect(getUniqueArray([1, 1, 1])).toEqual([1]);
 });
-test("isArrayLength()", () => {
+test("isArray()", () => {
+	// Check type.
+	expect(isArray([1, 2, 3])).toBe(true);
+	expect(isArray(false)).toBe(false);
+	expect(isArray(123)).toBe(false);
+	expect(isArray("a")).toBe(false);
+
 	// Check maximum.
-	expect(isArrayLength([1, 2, 3], 3)).toEqual(true);
-	expect(isArrayLength([1, 2, 3], 5)).toEqual(false);
+	expect(isArray([1, 2, 3], 3)).toEqual(true);
+	expect(isArray([1, 2, 3], 5)).toEqual(false);
 
 	// Check minimum.
-	expect(isArrayLength([1, 2, 3], 0, 3)).toEqual(true);
-	expect(isArrayLength([1, 2, 3, 4, 5], 0, 3)).toEqual(false);
+	expect(isArray([1, 2, 3], 0, 3)).toEqual(true);
+	expect(isArray([1, 2, 3, 4, 5], 0, 3)).toEqual(false);
 });
-test("assertArrayLength()", () => {
+test("assertArray()", () => {
+	// Check type.
+	expect(() => assertArray([1, 2, 3])).not.toThrow(Array);
+	expect(() => assertArray(false as any)).toThrow(RequiredError);
+
 	// Assert maximum.
-	expect(() => assertArrayLength([1, 2, 3], 3)).not.toThrow();
-	expect(() => assertArrayLength([1, 2, 3], 5)).toThrow(AssertionError);
+	expect(() => assertArray([1, 2, 3], 3)).not.toThrow();
+	expect(() => assertArray([1, 2, 3], 5)).toThrow(RequiredError);
 
 	// Assert minimum.
-	expect(() => assertArrayLength([1, 2, 3], 0, 3)).not.toThrow();
-	expect(() => assertArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(AssertionError);
+	expect(() => assertArray([1, 2, 3], 0, 3)).not.toThrow();
+	expect(() => assertArray([1, 2, 3, 4, 5], 0, 3)).toThrow(RequiredError);
 });
-test("requireArrayLength()", () => {
+test("requireArray()", () => {
+	// Check type.
+	expect(requireArray([1, 2, 3])).toBeInstanceOf(Array);
+
 	// Check maximum.
-	expect(requireArrayLength([1, 2, 3], 3)).toEqual([1, 2, 3]);
-	expect(() => requireArrayLength([1, 2, 3], 5)).toThrow(RequiredError);
+	expect(requireArray([1, 2, 3], 3)).toEqual([1, 2, 3]);
+	expect(() => requireArray([1, 2, 3], 5)).toThrow(RequiredError);
 
 	// Check minimum.
-	expect(requireArrayLength([1, 2, 3], 0, 3)).toEqual([1, 2, 3]);
-	expect(() => requireArrayLength([1, 2, 3, 4, 5], 0, 3)).toThrow(RequiredError);
+	expect(requireArray([1, 2, 3], 0, 3)).toEqual([1, 2, 3]);
+	expect(() => requireArray([1, 2, 3, 4, 5], 0, 3)).toThrow(RequiredError);
 });

@@ -1,7 +1,7 @@
 import type { ImmutableArray } from "../util/array.js";
 import { omitArrayItems, toggleArrayItems, withArrayItems } from "../util/array.js";
+import { getFirst, getLast, requireFirst, requireLast } from "../util/array.js";
 import type { NONE } from "../util/constants.js";
-import { getFirstItem, getLastItem, requireFirstItem, requireLastItem } from "../util/iterate.js";
 import { Store } from "./Store.js";
 
 /** Store an array. */
@@ -12,22 +12,22 @@ export class ArrayStore<T> extends Store<ImmutableArray<T>> implements Iterable<
 
 	/** Get the first item in this store or `null` if this query has no items. */
 	get optionalFirst(): T | undefined {
-		return getFirstItem(this.value);
+		return getFirst(this.value);
 	}
 
 	/** Get the last item in this store or `null` if this query has no items. */
 	get optionalLast(): T | undefined {
-		return getLastItem(this.value);
+		return getLast(this.value);
 	}
 
 	/** Get the first item in this store. */
 	get first(): T {
-		return requireFirstItem(this.value);
+		return requireFirst(this.value);
 	}
 
 	/** Get the last item in this store. */
 	get last(): T {
-		return requireLastItem(this.value);
+		return requireLast(this.value);
 	}
 
 	/** Does the document have at least one result. */

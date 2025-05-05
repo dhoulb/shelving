@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { Entry } from "./entry.js";
 import { isIterable, limitItems } from "./iterate.js";
@@ -33,18 +33,8 @@ export function isMap(value: unknown): value is ImmutableMap {
 }
 
 /** Assert that a value is a `Map` instance. */
-export function assertMap(value: unknown): asserts value is ImmutableMap {
-	if (!isMap(value)) throw new AssertionError("Must be map", { received: value, caller: assertMap });
-}
-
-/** Is an unknown value a key for an item in a map? */
-export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K {
-	return map.has(key as K);
-}
-
-/** Assert that an unknown value is a key for an item in a map. */
-export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): asserts key is K {
-	if (!isMapItem(map, key)) throw new AssertionError("Key must exist in map", { key, map, caller: assertMapItem });
+export function assertMap(value: unknown, caller: AnyCaller = assertMap): asserts value is ImmutableMap {
+	if (!isMap(value)) throw new RequiredError("Must be map", { received: value, caller });
 }
 
 /** Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged). */
@@ -57,6 +47,16 @@ export function getMap(input: PossibleMap<unknown, unknown> | { readonly [key: s
 /** Apply a limit to a map. */
 export function limitMap<T>(map: ImmutableMap<T>, limit: number): ImmutableMap<T> {
 	return limit > map.size ? map : new Map(limitItems(map, limit));
+}
+
+/** Is an unknown value a key for an item in a map? */
+export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K {
+	return map.has(key as K);
+}
+
+/** Assert that an unknown value is a key for an item in a map. */
+export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown, caller: AnyCaller = assertMapItem): asserts key is K {
+	if (!isMapItem(map, key)) throw new RequiredError("Key must exist in map", { key, map, caller });
 }
 
 /** Function that lets new items in a map be created and updated by calling a `reduce()` callback that receives the existing value. */
@@ -75,13 +75,13 @@ export function removeMapItems<K, T>(map: MutableMap<K, T>, ...keys: K[]): void 
 	for (const key of keys) map.delete(key);
 }
 
-/** Get an item in a map, or throw `RequiredError` if it doesn't exist. */
-export function requireMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T {
-	if (!map.has(key)) throw new RequiredError("Key must exist in map", { key, map, caller: requireMapItem });
-	return map.get(key) as T;
-}
-
 /** Get an item in a map, or `undefined` if it doesn't exist. */
 export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | undefined {
 	return map.get(key);
+}
+
+/** Get an item in a map, or throw `RequiredError` if it doesn't exist. */
+export function requireMapItem<K, T>(map: ImmutableMap<K, T>, key: K, caller: AnyCaller = requireMapItem): T {
+	if (!map.has(key)) throw new RequiredError("Key must exist in map", { key, map, caller });
+	return map.get(key) as T;
 }

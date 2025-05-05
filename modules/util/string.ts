@@ -1,11 +1,9 @@
-import { AssertionError } from "../error/AssertionError.js";
+import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
-import { getArray, isArray } from "./array.js";
-import { formatDate, isDate } from "./date.js";
-import { formatNumber, formatRange, isBetween } from "./number.js";
-import { formatObject, isObject } from "./object.js";
+import { requireArray } from "./array.js";
+import { isBetween } from "./number.js";
 
 /**
  * Type that never matches the `string` type.
@@ -15,63 +13,49 @@ import { formatObject, isObject } from "./object.js";
  */
 export type NotString = { toUpperCase?: never; toLowerCase?: never };
 
-/** Is a value a string? */
-export function isString(value: unknown): value is string {
-	return typeof value === "string";
+/** Things that can be easily converted to a string. */
+export type PossibleString = string | number | Date;
+
+/** Is a value a string (optionally with specified min/max length). */
+export function isString(value: unknown, min = 0, max = Number.POSITIVE_INFINITY): value is string {
+	return typeof value === "string" && value.length >= min && value.length <= max;
 }
 
-/** Assert that a value is a string. */
-export function assertString(value: unknown): asserts value is string {
-	if (typeof value !== "string") throw new ValueError("Must be string", { received: value, caller: assertString });
+/** Assert that a value is a string (optionally with specified min/max length). */
+export function assertString(value: unknown, min?: number, max?: number, caller: AnyCaller = requireString): asserts value is string {
+	if (!isString(value, min, max))
+		throw new RequiredError(
+			`Must be string${min !== undefined || max !== undefined ? ` with ${min ?? 0} to ${max ?? "∞"} characters` : ""}`,
+			{
+				received: value,
+				caller,
+			},
+		);
 }
 
-/**
- * Convert an unknown value into a title string for user-facing use.
- * - Strings return the string.
- * - Booleans return `"Yes"` or `"No"`
- * - Numbers return formatted number with commas etc (e.g. `formatNumber()`).
- * - Dates return formatted date (e.g. `formatDate()`).
- * - Arrays return the array items converted to string (with `toTitle()`), and joined with a comma.
- * - Objects return...
- *   1. `object.name` if it exists, or
- *   2. `object.title` if it exists.
- * - Falsy values like `null` and `undefined` return `"None"`
- * - Everything else returns `"Unknown"`
- */
-export function getString(value: unknown): string {
-	if (value === null || value === undefined) return "None";
-	if (typeof value === "boolean") return value ? "Yes" : "No";
-	if (typeof value === "string") return value || "None";
-	if (typeof value === "number") return formatNumber(value);
-	if (typeof value === "symbol") return value.description || "Symbol";
-	if (typeof value === "function") return "Function";
-	if (isDate(value)) return formatDate(value);
-	if (isArray(value)) return value.map(getString).join(", ");
-	if (isObject(value)) return formatObject(value);
-	return "Unknown";
+/** Convert an unknown value to a string, or return `undefined` if conversion fails. */
+export function getString(value: unknown): string | undefined {
+	if (typeof value === "string") return value;
+	if (typeof value === "number") return value.toString();
+	if (value instanceof Date) return value.toISOString();
+	return undefined;
 }
 
-/** Does a string have the specified length. */
-export function isStringLength(str: string, min = 1, max = Number.POSITIVE_INFINITY): boolean {
-	return str.length >= min && str.length <= max;
-}
-
-/** Assert that a value has a specific length, or throw `AssertionError` if the string is outside that length. */
-export function assertStringLength(str: unknown, min = 1, max = Number.POSITIVE_INFINITY): asserts str is string {
-	if (!isString(str) || !isStringLength(str, min, max))
-		throw new AssertionError(`Must be string with length ${formatRange(min, max)}`, { received: str, caller: assertStringLength });
-}
-
-/** Get a string if it has the specified length, or throw `RequiredError` if the string was outside that length. */
-export function requireStringLength(str: string, min = 1, max = Number.POSITIVE_INFINITY): string {
-	if (!isStringLength(str, min, max))
-		throw new RequiredError(`Must be string with length ${formatRange(min, max)}`, { received: str, caller: requireStringLength });
+/** Convert a possible string to a string (optionally with specified min/max length), or throw `RequiredError` if conversion fails. */
+export function requireString(value: PossibleString, min?: number, max?: number, caller: AnyCaller = requireString): string {
+	const str = getString(value);
+	assertString(str, min, max, caller);
 	return str;
+}
+
+/** Does a string have a length between `min` and `max` */
+export function isStringBetween(str: string, min = 0, max = Number.POSITIVE_INFINITY): boolean {
+	return str.length >= min && str.length <= max;
 }
 
 /** Concatenate an iterable set of strings together. */
 export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): string {
-	return getArray(strs).join(joiner);
+	return requireArray(strs, undefined, undefined, joinStrings).join(joiner);
 }
 
 /**
@@ -137,10 +121,10 @@ export function getSlug(str: string): string | undefined {
 }
 
 /** Convert a string to a `kebab-case` URL slug, or throw `RequiredError` if conversion resulted in an empty ref. */
-export function requireSlug(str: string): string {
+export function requireSlug(str: string, caller: AnyCaller = requireSlug): string {
 	const slug = getSlug(str);
-	if (slug) return slug;
-	throw new RequiredError("Invalid slug", { received: str, caller: requireSlug });
+	if (!slug) throw new RequiredError("Invalid slug", { received: str, caller });
+	return slug;
 }
 
 /** Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty string. */
@@ -149,10 +133,10 @@ export function getRef(str: string): string | undefined {
 }
 
 /** Convert a string to a unique ref e.g. `abc123`, or throw `RequiredError` if conversion resulted in an empty string. */
-export function requireRef(str: string): string {
+export function requireRef(str: string, caller: AnyCaller = requireRef): string {
 	const ref = getRef(str);
-	if (ref) return ref;
-	throw new RequiredError("Invalid string ref", { received: str, caller: requireRef });
+	if (!ref) throw new RequiredError("Invalid string ref", { received: str, caller });
+	return ref;
 }
 
 /**
@@ -206,25 +190,49 @@ export function limitString(str: string, maxLength: number, append = "…") {
  * - Excess segments in `String.prototype.split()` is counterintuitive because further parts are thrown away.
  * - Excess segments in `splitString()` are concatenated onto the last segment (set `max` to `null` if you want infinite segments).
  *
- * @throws AssertionError if `min` isn't met.
- * @throws AssertionError if any of the segments are empty.
+ * @throws RequiredError if `min` isn't met.
+ * @throws RequiredError if any of the segments are empty.
  */
-export function splitString(str: string, separator: string, min: 1, max: 1): readonly [string];
-export function splitString(str: string, separator: string, min: 2, max: 2): readonly [string, string];
-export function splitString(str: string, separator: string, min: 3, max: 3): readonly [string, string, string];
-export function splitString(str: string, separator: string, min: 4, max: 4): readonly [string, string, string, string];
-export function splitString(str: string, separator: string, min?: 1, max?: number): readonly [string, ...string[]];
-export function splitString(str: string, separator: string, min: 2, max?: number): readonly [string, string, ...string[]];
-export function splitString(str: string, separator: string, min: 3, max?: number): readonly [string, string, string, ...string[]];
-export function splitString(str: string, separator: string, min: 4, max?: number): readonly [string, string, string, string, ...string[]];
-export function splitString(str: string, separator: string, min?: number, max?: number): ImmutableArray<string>;
-export function splitString(str: string, separator: string, min = 1, max = Number.POSITIVE_INFINITY): ImmutableArray<string> {
+export function splitString(str: string, separator: string, min: 1, max: 1, caller?: AnyCaller): readonly [string];
+export function splitString(str: string, separator: string, min: 2, max: 2, caller?: AnyCaller): readonly [string, string];
+export function splitString(str: string, separator: string, min: 3, max: 3, caller?: AnyCaller): readonly [string, string, string];
+export function splitString(str: string, separator: string, min: 4, max: 4, caller?: AnyCaller): readonly [string, string, string, string];
+export function splitString(str: string, separator: string, min?: 1, max?: number, caller?: AnyCaller): readonly [string, ...string[]];
+export function splitString(
+	str: string,
+	separator: string,
+	min: 2,
+	max?: number,
+	caller?: AnyCaller,
+): readonly [string, string, ...string[]];
+export function splitString(
+	str: string,
+	separator: string,
+	min: 3,
+	max?: number,
+	caller?: AnyCaller,
+): readonly [string, string, string, ...string[]];
+export function splitString(
+	str: string,
+	separator: string,
+	min: 4,
+	max?: number,
+	caller?: AnyCaller,
+): readonly [string, string, string, string, ...string[]];
+export function splitString(str: string, separator: string, min?: number, max?: number, caller?: AnyCaller): ImmutableArray<string>;
+export function splitString(
+	str: string,
+	separator: string,
+	min = 1,
+	max = Number.POSITIVE_INFINITY,
+	caller: AnyCaller = splitString,
+): ImmutableArray<string> {
 	const segments = str.split(separator);
 	if (segments.length > max) segments.splice(max - 1, segments.length, segments.slice(max - 1).join(separator));
 	if (segments.length < min || !segments.every(Boolean))
-		throw new ValueError(`Must be string with ${formatRange(min, max)} non-empty segments separated by "${separator}"`, {
+		throw new ValueError(`Must be string with ${min ?? 0} to ${max ?? "∞"} non-empty segments separated by "${separator}"`, {
 			received: str,
-			caller: splitString,
+			caller,
 		});
 	return segments;
 }

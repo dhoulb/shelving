@@ -1,9 +1,9 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
+import { requireFirst } from "../util/array.js";
 import type { Entry } from "../util/entry.js";
-import { requireFirstItem } from "../util/iterate.js";
+import { formatValue } from "../util/format.js";
 import type { ImmutableMap, PossibleMap, PossibleStringMap } from "../util/map.js";
 import { getMap, isMapItem } from "../util/map.js";
-import { getString } from "../util/string.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
@@ -19,7 +19,7 @@ export class AllowSchema<K, T> extends Schema<K> implements Iterable<Entry<K, T>
 	readonly allow: ImmutableMap<K, T>;
 	constructor(options: AllowSchemaOptions<K, T>) {
 		const allow = getMap(options.allow);
-		const value = requireFirstItem(allow.keys());
+		const value = requireFirst(allow.keys());
 		super({ value, ...options });
 		this.allow = allow;
 	}
@@ -46,7 +46,7 @@ export class AllowStringSchema<K extends string, T> extends AllowSchema<K, T> {
 		super({ allow: getMap(allow), ...options });
 	}
 	validator(unsafeValue: unknown = this.value): K {
-		return super.validate(getString(unsafeValue));
+		return super.validate(formatValue(unsafeValue));
 	}
 }
 

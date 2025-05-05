@@ -1,8 +1,8 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { countArray } from "../util/array.js";
+import { getFirst } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery, Items, OptionalItem } from "../util/item.js";
-import { getFirstItem } from "../util/iterate.js";
 import type { Updates } from "../util/update.js";
 
 /** Provides access to data (e.g. IndexedDB, Firebase, or in-memory cache providers). */
@@ -128,7 +128,7 @@ export abstract class Provider<T extends Database> implements AbstractProvider<T
 	abstract updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): void;
 	abstract deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void;
 	getFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): OptionalItem<T[K]> {
-		return getFirstItem(this.getQuery(collection, { ...query, $limit: 1 }));
+		return getFirst(this.getQuery(collection, { ...query, $limit: 1 }));
 	}
 	requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Item<T[K]> {
 		const first = this.getFirst(collection, query);
@@ -171,7 +171,7 @@ export abstract class AsyncProvider<T extends Database> implements AbstractProvi
 	abstract updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates<T[K]>): Promise<void>;
 	abstract deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<void>;
 	async getFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<OptionalItem<T[K]>> {
-		return getFirstItem(await this.getQuery(collection, { ...query, $limit: 1 }));
+		return getFirst(await this.getQuery(collection, { ...query, $limit: 1 }));
 	}
 	async requireFirst<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<Item<T[K]>> {
 		const first = await this.getFirst(collection, query);

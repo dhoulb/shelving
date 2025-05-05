@@ -1,8 +1,9 @@
-import { ValueError } from "../error/ValueError.js";
+import type { AnyCaller } from "../error/BaseError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import type { Optional } from "./optional.js";
 import type { Path } from "./path.js";
-import { type PossibleURL, getOptionalURL, isURL } from "./url.js";
+import { type PossibleURL, getURL, isURL } from "./url.js";
 
 /** Default whitelist for URL schemes. */
 const SCHEMES: readonly string[] = ["http:", "https:"];
@@ -52,51 +53,67 @@ export type LinkHosts = ImmutableArray<string>;
  */
 export type AbsoluteLinkURL = URL & { href: AbsoluteLink };
 
-/** Is an unknown value a URL object with an absolute path component? */
-export function isLinkURL(value: unknown): value is AbsoluteLinkURL {
-	return isURL(value) && !!value.protocol;
+/**
+ * Is an unknown value a link URL?
+ * - A valid link URL is a `URL` instance with a scheme matching the `schemes` array, and `host` matching the optional `hosts` array.
+ */
+export function isLinkURL(value: unknown, schemes: LinkSchemes = SCHEMES, hosts?: LinkHosts): value is AbsoluteLinkURL {
+	return isURL(value) && schemes.includes(value.protocol) && (!hosts || hosts.includes(value.host));
 }
 
-/** Convert a possible URL to a URL or return `undefined` if conversion fails. */
+/**
+ * Convert a possible URL to a link URL, or return `undefined` if conversion fails.
+ * - A valid link URL is a `URL` instance with a scheme matching the `schemes` array, and `host` matching the optional `hosts` array.
+ */
 export function getLinkURL(
-	possible: Optional<PossibleURL>,
+	value: Optional<PossibleURL>,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes: LinkSchemes = SCHEMES,
 	hosts?: LinkHosts,
 ): AbsoluteLinkURL | undefined {
-	const url = getOptionalURL(possible, base);
-	if (url && schemes.includes(url.protocol) && (!hosts || hosts.includes(url.host))) return url as AbsoluteLinkURL;
+	const url = getURL(value, base);
+	if (isLinkURL(url, schemes, hosts)) return url as AbsoluteLinkURL;
 }
 
-/** Convert a possible URL to a URL or return `undefined` if conversion fails. */
+/**
+ * Convert a possible URL to a link URL, or throw `RequiredError` if conversion fails.
+ * - A valid link URL is a `URL` instance with a scheme matching the `schemes` array, and `host` matching the optional `hosts` array.
+ */
 export function requireLinkURL(
-	possible: PossibleURL,
+	value: PossibleURL,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes?: LinkSchemes,
 	hosts?: LinkHosts,
+	caller: AnyCaller = requireLinkURL,
 ): AbsoluteLinkURL {
-	const url = getLinkURL(possible, base, schemes, hosts);
-	if (!url) throw new ValueError("Invalid link", { received: possible, caller: requireLinkURL });
+	const url = getLinkURL(value, base, schemes, hosts);
+	if (!url) throw new RequiredError("Invalid link", { received: value, base, schemes, hosts, caller });
 	return url;
 }
 
-/** Convert a possible URL to a absolute URL string or return `undefined` if conversion fails. */
+/**
+ * Convert a possible URL to an link URL string, or return `undefined` if conversion fails.
+ * - A valid link URL string is an absolute URL string with a scheme matching the `schemes` array, and `host` matching the optional `hosts` array.
+ */
 export function getLink(
-	possible: Optional<PossibleURL>,
+	value: Optional<PossibleURL>,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes: LinkSchemes = SCHEMES,
 	hosts?: LinkHosts,
 ): AbsoluteLink | undefined {
-	const url = getOptionalURL(possible, base);
-	if (url && schemes.includes(url.protocol) && (!hosts || hosts.includes(url.host))) return url.href as AbsoluteLink;
+	return getLinkURL(value, base, schemes, hosts)?.href;
 }
 
-/** Convert a possible URL to an absolute URL string. */
+/**
+ * Convert a possible URL to an link URL string, or throw `RequiredError` if conversion fails.
+ * - A valid link URL string is an absolute URL string with a scheme matching the `schemes` array, and `host` matching the optional `hosts` array.
+ */
 export function requireLink(
-	possible: PossibleURL,
+	value: PossibleURL,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes?: LinkSchemes,
 	hosts?: LinkHosts,
+	caller: AnyCaller = requireLink,
 ): AbsoluteLink {
-	return requireLinkURL(possible, base, schemes, hosts).href;
+	return requireLinkURL(value, base, schemes, hosts, caller).href;
 }

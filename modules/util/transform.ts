@@ -1,5 +1,5 @@
 import type { ArrayItem, ImmutableArray } from "./array.js";
-import type { ImmutableDictionary, PossibleDictionary } from "./dictionary.js";
+import type { ImmutableDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
 import type { Entry } from "./entry.js";
 import type { Arguments } from "./function.js";
@@ -58,13 +58,17 @@ export function mapObject<I extends ImmutableObject, O extends ImmutableObject, 
 
 /** Modify the values of a dictionary using a transform. */
 export function mapDictionary<I, O, A extends Arguments = []>(
-	dictionary: PossibleDictionary<I>,
+	dictionary: ImmutableDictionary<I>,
 	transform: (v: I, ...args: A) => O,
 	...args: A
 ): ImmutableDictionary<O>; // Helps `I` and `O` carry through functions that use generics.
-// export function mapDictionary<I, O, A extends Arguments = []>(dictionary: PossibleDictionary<I>, transform: Transform<I, O, A>, ...args: A): ImmutableDictionary<O>;
 export function mapDictionary<I, O, A extends Arguments = []>(
-	dictionary: PossibleDictionary<I>,
+	dictionary: ImmutableDictionary<I>,
+	transform: Transform<I, O, A>,
+	...args: A
+): ImmutableDictionary<O>;
+export function mapDictionary<I, O, A extends Arguments = []>(
+	dictionary: ImmutableDictionary<I>,
 	transform: Transform<I, O, A>,
 	...args: A
 ): ImmutableDictionary<O> {

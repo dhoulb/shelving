@@ -1,4 +1,5 @@
-import { AssertionError } from "../error/AssertionError.js";
+import type { AnyCaller } from "../error/BaseError.js";
+import { RequiredError } from "../error/RequiredError.js";
 
 /** Function that always returns null. */
 export function getNull(): null {
@@ -14,8 +15,8 @@ export function isNull(value: unknown): value is null {
 }
 
 /** Assert that a value is not null. */
-export function assertNull<T>(value: Nullable<T>): asserts value is T {
-	if (value !== null) throw new AssertionError("Must be null", { received: value, caller: assertNull });
+export function assertNull<T>(value: Nullable<T>, caller: AnyCaller = assertNull): asserts value is T {
+	if (value !== null) throw new RequiredError("Must be null", { received: value, caller });
 }
 
 /** Is a value not null? */
@@ -24,13 +25,13 @@ export function notNull<T>(value: Nullable<T>): value is T {
 }
 
 /** Assert that a value is not null. */
-export function assertNotNull<T>(value: Nullable<T>): asserts value is T {
-	if (value === null) throw new AssertionError("Must not be null", { received: value, caller: assertNotNull });
+export function assertNotNull<T>(value: Nullable<T>, caller: AnyCaller = assertNotNull): asserts value is T {
+	if (value === null) throw new RequiredError("Must not be null", { received: value, caller });
 }
 
 /** Get the not-nullish version of value. */
-export function getNotNull<T>(value: Nullable<T>): T {
-	assertNotNull(value);
+export function requireNotNull<T>(value: Nullable<T>, caller: AnyCaller = requireNotNull): T {
+	assertNotNull(value, caller);
 	return value;
 }
 
@@ -43,9 +44,8 @@ export function isNullish<T>(value: Nullish<T>): value is null | undefined {
 }
 
 /** Assert that a value is not nullish. */
-export function assertNullish<T>(value: Nullish<T>): asserts value is T {
-	if (value !== null && value !== undefined)
-		throw new AssertionError("Must be null or undefined", { received: value, caller: assertNullish });
+export function assertNullish<T>(value: Nullish<T>, caller: AnyCaller = assertNullish): asserts value is T {
+	if (value !== null && value !== undefined) throw new RequiredError("Must be null or undefined", { received: value, caller });
 }
 
 /** Is a value not nullish? */
@@ -54,13 +54,12 @@ export function notNullish<T>(value: Nullish<T>): value is T {
 }
 
 /** Assert that a value is not nullish. */
-export function assertNotNullish<T>(value: Nullish<T>): asserts value is T {
-	if (value === null || value === undefined)
-		throw new AssertionError("Must not be null or undefined", { received: value, caller: assertNotNullish });
+export function assertNotNullish<T>(value: Nullish<T>, caller: AnyCaller = assertNotNullish): asserts value is T {
+	if (value === null || value === undefined) throw new RequiredError("Must not be null or undefined", { received: value, caller });
 }
 
 /** Get the not-nullish version of value. */
-export function getNotNullish<T>(value: Nullish<T>): T {
-	assertNotNullish(value);
+export function requireNotNullish<T>(value: Nullish<T>, caller: AnyCaller = requireNotNullish): T {
+	assertNotNullish(value, caller);
 	return value;
 }

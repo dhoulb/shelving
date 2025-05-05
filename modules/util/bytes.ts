@@ -1,7 +1,22 @@
+import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 
 /** Types that can be converted to a `Uint8Array` byte sequence. */
 export type PossibleBytes = Uint8Array | ArrayBuffer | string;
+
+/** Assert that an unknown value is a `Uint8Array` byte sequence. */
+export function assertBytes(
+	value: unknown,
+	min = 0,
+	max = Number.POSITIVE_INFINITY,
+	caller: AnyCaller = assertBytes,
+): asserts value is Uint8Array {
+	if (!(value instanceof Uint8Array) || value.length < min || value.length > max)
+		throw new RequiredError(
+			`Value must be byte sequence${min > 0 || max < Number.POSITIVE_INFINITY ? ` with length between ${min} and ${max}` : ""}`,
+			{ received: value, caller },
+		);
+}
 
 /**
  * Convert an unknown value to a `Uint8Array` byte sequence, or `undefined` if the value cannot be converted.
@@ -18,8 +33,8 @@ export function getBytes(value: unknown): Uint8Array | undefined {
 }
 
 /** Convert an unknown value to a `Uint8Array` byte sequence, or throw `RequiredError` if the value cannot be converted. */
-export function requireBytes(value: PossibleBytes): Uint8Array {
+export function requireBytes(value: PossibleBytes, min = 0, max = Number.POSITIVE_INFINITY, caller: AnyCaller = requireBytes): Uint8Array {
 	const bytes = getBytes(value);
-	if (bytes === undefined) throw new RequiredError("Value must be byte sequence", { received: value, caller: requireBytes });
+	assertBytes(bytes, min, max, caller);
 	return bytes;
 }

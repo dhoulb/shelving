@@ -7,7 +7,7 @@ import { isArray } from "./array.js";
 import type { Constructor } from "./class.js";
 import type { Data } from "./data.js";
 import { getDataProps } from "./data.js";
-import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
+import type { ImmutableDictionary, MutableDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
 import { PASSTHROUGH } from "./function.js";
 import { isIterable } from "./iterate.js";
@@ -112,7 +112,7 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
  * @throw Feedback if one or more entry values did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
-export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
+export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
 	let valid = true;
 	let changed = false;
 	const safeDictionary: MutableDictionary<T> = {};

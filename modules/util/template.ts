@@ -1,11 +1,10 @@
+import type { AnyCaller } from "../error/BaseError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
-import { EMPTY_DATA } from "./data.js";
-import type { ImmutableDictionary } from "./dictionary.js";
-import type { AnyFunction } from "./function.js";
+import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
 import { setMapItem } from "./map.js";
-import type { Mutable } from "./object.js";
-import { isObject } from "./object.js";
+import { type Mutable, isObject } from "./object.js";
 import type { NotString } from "./string.js";
 
 /** Single template chunk. */
@@ -26,7 +25,7 @@ type TemplateValues = ImmutableDictionary<string>;
 type PlaceholderValues =
 	| string // Single string used for every placeholder.
 	| ((name: string) => string) // Function that returns the right string for a named placeholder.
-	| string[] // Array of strings (or functions that return strings) used for `*` numbered placeholders e.g. `["Dave"]`
+	| ImmutableArray<string> // Array of strings (or functions that return strings) used for `*` numbered placeholders e.g. `["Dave"]`
 	| TemplateValues; // Object containing named strings used for `{named}` placeholders, e.g. `{ name: "Dave" }`
 
 // RegExp to find named variables in several formats e.g. `:a`, `${b}`, `{{c}}` or `{d}`
@@ -43,7 +42,7 @@ const R_NAME = /[a-z0-9]+/i;
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of strings alternating separator and placeholder.
  */
-function _splitTemplate(template: string, caller: AnyFunction): TemplateChunks {
+function _splitTemplate(template: string, caller: AnyCaller): TemplateChunks {
 	const matches = template.split(R_PLACEHOLDERS);
 	let asterisks = 0;
 	const chunks: TemplateChunk[] = [];
@@ -59,7 +58,7 @@ function _splitTemplate(template: string, caller: AnyFunction): TemplateChunks {
 	return chunks;
 }
 const TEMPLATE_CACHE = new Map<string, TemplateChunks>();
-function _splitTemplateCached(template: string, caller: AnyFunction): TemplateChunks {
+function _splitTemplateCached(template: string, caller: AnyCaller): TemplateChunks {
 	return TEMPLATE_CACHE.get(template) || setMapItem(TEMPLATE_CACHE, template, _splitTemplate(template, caller));
 }
 
@@ -91,7 +90,7 @@ export function matchTemplate(template: string, target: string): TemplateValues 
 	const firstChunk = chunks[0];
 
 	// Return early if empty.
-	if (!firstChunk) return template === target ? EMPTY_DATA : undefined;
+	if (!firstChunk) return template === target ? EMPTY_DICTIONARY : undefined;
 
 	// Check first separator.
 	if (!target.startsWith(firstChunk.pre)) return undefined; // target doesn't match template
@@ -125,24 +124,24 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  * Turn ":year-:month" and `{ year: "2016"... }` etc into "2016-06..." etc.
  *
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
- * @param value An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }` (functions are called, everything else converted to string), or a function or string to use for all placeholders.
+ * @param values An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }` (functions are called, everything else converted to string), or a function or string to use for all placeholders.
  * @return The rendered string, e.g. `Dave-UK/Manchester`
  *
  * @throws {ReferenceError} If a placeholder in the template string is not specified in values.
  */
-export function renderTemplate(template: string, value: PlaceholderValues): string {
+export function renderTemplate(template: string, values: PlaceholderValues): string {
 	const chunks = _splitTemplateCached(template, renderTemplate);
 	if (!chunks.length) return template;
 	let output = template;
-	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replace(name, value));
+	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replaceTemplateKey(name, values));
 	return output;
 }
-function _replace(name: string, value: PlaceholderValues): string {
-	if (typeof value === "string") return value;
-	if (typeof value === "function") return value(name);
-	if (isObject(value)) {
-		const v = value[name];
+function _replaceTemplateKey(key: string, values: PlaceholderValues): string {
+	if (typeof values === "string") return values;
+	if (typeof values === "function") return values(key);
+	if (isObject(values)) {
+		const v = values[key];
 		if (typeof v === "string") return v;
 	}
-	throw new ReferenceError(`Template "value.${name}" must be defined`);
+	throw new RequiredError(`Template key "${key}" must be defined`, { received: values, key, caller: renderTemplate });
 }

@@ -1,17 +1,17 @@
+import type { AnyCaller } from "../error/BaseError.js";
 import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MINUTE, SECOND } from "./constants.js";
 import { getDate } from "./date.js";
-import type { AnyFunction } from "./function.js";
 import { wrapNumber } from "./number.js";
 
 /** Class representing a time in the day in 24 hour format in the user's current locale. */
 export class Time {
 	/** Make a new `Time` instance from a time string. */
-	static from(possible: unknown): Time | undefined {
-		if (possible === undefined || possible === null || possible === "") return undefined;
-		if (isTime(possible)) return possible;
-		if (typeof possible === "string") {
-			const matches = possible.match(TIME_REGEXP);
+	static from(value: unknown): Time | undefined {
+		if (value === undefined || value === null || value === "") return undefined;
+		if (isTime(value)) return value;
+		if (typeof value === "string") {
+			const matches = value.match(TIME_REGEXP);
 			if (matches) {
 				const [, h, m, s, ms] = matches as [never, string, string, string | undefined, string | undefined];
 				return new Time(
@@ -22,7 +22,7 @@ export class Time {
 				);
 			}
 		}
-		const date = getDate(possible);
+		const date = getDate(value);
 		if (date) return new Time(date.getHours() * HOUR + date.getMinutes() * MINUTE + date.getSeconds() * SECOND + date.getMilliseconds());
 	}
 
@@ -105,7 +105,7 @@ function _pad(num: number, size: 2 | 3 | 4): string {
 /** Regular expression that matches a time in ISO 8601 format. */
 const TIME_REGEXP = /([0-9]+):([0-9]+)(?::([0-9]+)(?:.([0-9]+))?)?/;
 
-/** Things that converted to times. */
+/** Values that can be converted to times. */
 export type PossibleTime = Time | Date | number | string;
 
 /** Is an unknown value a `Time` instance. */
@@ -118,26 +118,18 @@ export function isTime(value: unknown): value is Time {
  * - Works with possible dates, e.g. `now` or `Date` or `2022-09-12 18:32` or `19827263567`
  * - Works with time strings, e.g. `18:32` or `23:59:59.999`
  *
- * @param possible Any value that we want to parse as a valid time (defaults to `undefined`).
+ * @param value Any value that we want to parse as a valid time (defaults to `undefined`).
  */
-export function getTime(possible: unknown): Time | undefined {
-	return Time.from(possible);
+export function getTime(value: unknown): Time | undefined {
+	return Time.from(value);
 }
 
 /**
  * Convert a possible date to a `Time` instance, or throw `ValueError` if it couldn't be converted (defaults to `"now"`).
- * @param possible Any value that we want to parse as a valid time (defaults to `"now"`).
+ * @param value Any value that we want to parse as a valid time (defaults to `"now"`).
  */
-export function requireTime(possible?: PossibleTime): Time {
-	return _time(requireTime, possible);
-}
-function _time(caller: AnyFunction, possible: PossibleTime = "now"): Time {
-	const time = Time.from(possible);
-	if (!time) throw new ValueError("Invalid time", { received: possible, caller });
+export function requireTime(value: PossibleTime = "now", caller: AnyCaller = requireTime): Time {
+	const time = Time.from(value);
+	if (!time) throw new ValueError("Invalid time", { received: value, caller });
 	return time;
-}
-
-/** Format a time as a string based on the browser locale settings. */
-export function formatTime(time?: PossibleTime, precision: 2 | 3 | 4 | 5 | 6 = 2): string {
-	return _time(formatTime, time).format(precision);
 }

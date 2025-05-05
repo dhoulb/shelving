@@ -1,39 +1,60 @@
 import { describe, expect, test } from "bun:test";
 import {
-	AssertionError,
 	NBSP,
 	NNBSP,
 	RequiredError,
 	THINSP,
 	ValueError,
-	assertStringLength,
-	getString,
+	assertString,
 	getWords,
-	isStringLength,
+	isStringBetween,
 	requireSlug,
-	requireStringLength,
+	requireString,
 	sanitizeMultilineText,
 	sanitizeText,
 	simplifyString,
 	splitString,
 } from "../index.js";
 
-describe("getString()", () => {
-	test("Correct returned value", () => {
-		expect(getString("aaa")).toBe("aaa");
-		expect(getString(123)).toBe("123");
-		expect(getString(123456789)).toBe("123,456,789");
-		expect(getString(123.1)).toBe("123.1");
-		expect(getString(true)).toBe("Yes");
-		expect(getString(false)).toBe("No");
-		expect(getString(null)).toBe("None");
-		expect(getString(undefined)).toBe("None");
-		expect(getString({ title: "aaa" })).toBe("aaa");
-		expect(getString({ name: "aaa" })).toBe("aaa");
-		expect(getString({})).toBe("Object");
-		expect(getString(Symbol())).toBe("Symbol");
-	});
+test("assertString()", () => {
+	// Assert string.
+	expect(() => assertString("abc")).not.toThrow();
+	expect(() => assertString(123)).toThrow(RequiredError);
+	expect(() => assertString(true)).toThrow(RequiredError);
+
+	// Assert minimum.
+	expect(() => assertString("abc", 3)).not.toThrow();
+	expect(() => assertString("abc", 5)).toThrow(RequiredError);
+	expect(() => assertString("abc", 5)).toThrow(/characters/i);
+
+	// Assert maximum.
+	expect(() => assertString("abc", undefined, 3)).not.toThrow();
+	expect(() => assertString("abcde", undefined, 3)).toThrow(RequiredError);
+	expect(() => assertString("abcde", undefined, 3)).toThrow(/characters/i);
+
+	// Assert both.
+	expect(() => assertString("abc", 0, 3)).not.toThrow();
+	expect(() => assertString("abcde", 0, 3)).toThrow(RequiredError);
+	expect(() => assertString("abcde", 0, 3)).toThrow(/characters/i);
 });
+test("requireString()", () => {
+	// Assert string.
+	expect(() => requireString("abc")).not.toThrow();
+	expect(() => requireString(123)).not.toThrow();
+	expect(() => requireString(new Date())).not.toThrow();
+	expect(() => requireString(true as any)).toThrow(RequiredError);
+
+	// Check maximum.
+	expect(requireString("abc", 3)).toBe("abc");
+	expect(() => requireString("abc", 5)).toThrow(RequiredError);
+	expect(() => requireString("abc", 5)).toThrow(/characters/i);
+
+	// Check minimum.
+	expect(requireString("abc", 0, 3)).toBe("abc");
+	expect(() => requireString("abcde", 0, 3)).toThrow(RequiredError);
+	expect(() => requireString("abcde", 0, 3)).toThrow(/characters/i);
+});
+
 describe("sanitizeString()", () => {
 	test("Normalise runs of whitespace to single ` ` space", () => {
 		expect(sanitizeText("aaa\t\t\t   \r\r\rbbb")).toBe("aaa bbb");
@@ -180,30 +201,12 @@ test("splitString()", () => {
 	expect(() => splitString("a/b/c", "/", 4)).toThrow(ValueError);
 	expect(() => splitString("a/b/c/d/e/f", "/", 4, 3)).toThrow(ValueError);
 });
-test("isStringLength()", () => {
+test("isStringBetween()", () => {
 	// Check maximum.
-	expect(isStringLength("abc", 3)).toBe(true);
-	expect(isStringLength("abc", 5)).toBe(false);
+	expect(isStringBetween("abc", 3)).toBe(true);
+	expect(isStringBetween("abc", 5)).toBe(false);
 
 	// Check minimum.
-	expect(isStringLength("abc", 0, 3)).toBe(true);
-	expect(isStringLength("abcde", 0, 3)).toBe(false);
-});
-test("assertStringLength()", () => {
-	// Assert maximum.
-	expect(() => assertStringLength("abc", 3)).not.toThrow();
-	expect(() => assertStringLength("abc", 5)).toThrow(AssertionError);
-
-	// Assert minimum.
-	expect(() => assertStringLength("abc", 0, 3)).not.toThrow();
-	expect(() => assertStringLength("abcde", 0, 3)).toThrow(AssertionError);
-});
-test("getStringLength()", () => {
-	// Check maximum.
-	expect(requireStringLength("abc", 3)).toBe("abc");
-	expect(() => requireStringLength("abc", 5)).toThrow(RequiredError);
-
-	// Check minimum.
-	expect(requireStringLength("abc", 0, 3)).toBe("abc");
-	expect(() => requireStringLength("abcde", 0, 3)).toThrow(RequiredError);
+	expect(isStringBetween("abc", 0, 3)).toBe(true);
+	expect(isStringBetween("abcde", 0, 3)).toBe(false);
 });

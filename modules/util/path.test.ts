@@ -20,7 +20,7 @@ test("isAbsolutePath()", () => {
 	expect(isAbsolutePath(".")).toBe(false);
 	expect(isAbsolutePath("..")).toBe(false);
 });
-describe("getPath()", () => {
+describe("requirePath()", () => {
 	test("Valid paths", () => {
 		// Relative paths.
 		expect(requirePath("./a/b/c")).toBe("/a/b/c");

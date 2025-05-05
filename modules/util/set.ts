@@ -1,4 +1,5 @@
-import { AssertionError } from "../error/AssertionError.js";
+import type { AnyCaller } from "../error/BaseError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { limitItems } from "./iterate.js";
 
 /** `Set` that cannot be changed. */
@@ -19,8 +20,18 @@ export function isSet(value: unknown): value is ImmutableSet {
 }
 
 /** Assert that a value is a `Set` instance. */
-export function assertSet(value: unknown): asserts value is ImmutableSet {
-	if (!isSet(value)) throw new AssertionError("Must be set", { received: value, caller: assertSet });
+export function assertSet(value: unknown, caller: AnyCaller = assertSet): asserts value is ImmutableSet {
+	if (!isSet(value)) throw new RequiredError("Must be set", { received: value, caller });
+}
+
+/** Convert a possible set to a `Set`. */
+export function getSet<T>(value: PossibleSet<T>): ImmutableSet {
+	return isSet(value) ? value : new Set(value);
+}
+
+/** Apply a limit to a set. */
+export function limitSet<T>(set: ImmutableSet<T>, limit: number): ImmutableSet<T> {
+	return limit > set.size ? set : new Set(limitItems(set, limit));
 }
 
 /** Is an unknown value an item in a set? */
@@ -29,13 +40,8 @@ export function isSetItem<T>(set: ImmutableSet<T>, item: unknown): item is T {
 }
 
 /** Assert that an unknown value is an item in a set. */
-export function assertSetItem<T>(set: ImmutableSet<T>, item: unknown): asserts item is T {
-	if (!isSetItem(set, item)) throw new AssertionError("Item must exist in set", { item, set, caller: assertSetItem });
-}
-
-/** Convert an iterable to a `Set` (if it's already a `Set` it passes through unchanged). */
-export function getSet<T>(iterable: PossibleSet<T>): ImmutableSet<T> {
-	return isSet(iterable) ? iterable : new Set(iterable);
+export function assertSetItem<T>(set: ImmutableSet<T>, item: unknown, caller: AnyCaller = assertSetItem): asserts item is T {
+	if (!isSetItem(set, item)) throw new RequiredError("Item must exist in set", { item, set, caller });
 }
 
 /** Add an item to a set (by reference) and return the set item. */
@@ -52,9 +58,4 @@ export function addSetItems<T>(set: MutableSet<T>, ...items: T[]): void {
 /** Remove multiple items from a set (by reference). */
 export function deleteSetItems<T>(set: MutableSet<T>, ...items: T[]): void {
 	for (const item of items) set.delete(item);
-}
-
-/** Apply a limit to a set. */
-export function limitSet<T>(set: ImmutableSet<T>, limit: number): ImmutableSet<T> {
-	return limit > set.size ? set : new Set(limitItems(set, limit));
 }

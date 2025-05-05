@@ -1,5 +1,5 @@
 import type { ImmutableArray } from "./array.js";
-import { getDefined } from "./undefined.js";
+import { requireDefined } from "./undefined.js";
 
 /** Generate a random integer between two numbers. */
 export function getRandom(min: number = Number.MIN_SAFE_INTEGER, max: number = Number.MAX_SAFE_INTEGER): number {
@@ -35,5 +35,5 @@ export function getRandomCharacter(str: string): string {
 
 /** Get a random item from an array or random character from a string string. */
 export function getRandomItem<T>(arr: ImmutableArray<T>): T {
-	return getDefined<T>(arr[getRandom(0, arr.length - 1)]);
+	return requireDefined<T>(arr[getRandom(0, arr.length - 1)]);
 }

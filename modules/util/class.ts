@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import type { Arguments } from "./function.js";
 
 /** Class that has a public `constructor()` function. */
@@ -25,7 +25,7 @@ export function isInstance<T>(value: unknown, type: Class<T>): value is T {
 /** Assert that a value is an instance of something. */
 export function assertInstance<T>(value: unknown, type: Class<T>): asserts value is T {
 	if (!(value instanceof type))
-		throw new AssertionError(`Must be instance of class "${type.name}"`, { received: value, expected: type, caller: assertInstance });
+		throw new RequiredError(`Must be instance of class "${type.name}"`, { received: value, expected: type, caller: assertInstance });
 }
 
 /** Get the 'getter' function for a given property, or `undefined` if it doesn't exist. */

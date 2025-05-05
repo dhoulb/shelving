@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import { getArray } from "./array.js";
 import type { NotString } from "./string.js";
@@ -19,7 +19,7 @@ export function isRegExp(value: unknown): value is RegExp {
 
 /** Assert that an unknown value is a `RegExp` instance. */
 export function assertRegExp(value: unknown): asserts value is RegExp {
-	if (!(value instanceof RegExp)) throw new AssertionError("Must be regular expression", { received: value, caller: assertRegExp });
+	if (!(value instanceof RegExp)) throw new RequiredError("Must be regular expression", { received: value, caller: assertRegExp });
 }
 
 /** Convert a string to a regular expression that matches that string. */

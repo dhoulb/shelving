@@ -1,3 +1,4 @@
+import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { type Optional, notOptional } from "./optional.js";
 
@@ -35,18 +36,18 @@ function _cleanPath(path: string): string {
 }
 
 /**
- * Resolve a relative or absolute path and return the path, or `undefined` if not a valid path.
- * - Uses `new URL` to do path processing, so URL strings e.g.
+ * Resolve a relative or absolute path and return the absolute path, or `undefined` if not a valid path.
+ * - Uses `new URL` to do path processing, so URL strings can also be resolved.
  * - Returned paths are cleaned with `cleanPath()` so runs of slashes and trailing slashes are removed.
  *
- * @param possible Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
+ * @param value Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function getPath(possible: Optional<string | URL>, base: AbsolutePath | undefined = "/"): AbsolutePath | undefined {
-	if (notOptional(possible)) {
+export function getPath(value: Optional<string | URL>, base: AbsolutePath | undefined = "/"): AbsolutePath | undefined {
+	if (notOptional(value)) {
 		try {
-			const { pathname, search, hash } = new URL(possible, `http://j.com${base}/`);
+			const { pathname, search, hash } = new URL(value, `http://j.com${base}/`);
 			if (isAbsolutePath(pathname)) return `${_cleanPath(pathname)}${search}${hash}`;
 		} catch {
 			//
@@ -59,13 +60,13 @@ export function getPath(possible: Optional<string | URL>, base: AbsolutePath | u
  * - Internally uses `new URL` to do path processing but shouldn't ever reveal that fact.
  * - Returned paths are cleaned with `cleanPath()` so runs of slashes and trailing slashes are removed.
  *
- * @param possible Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
+ * @param value Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function requirePath(possible: string, base?: AbsolutePath): AbsolutePath {
-	const path = getPath(possible, base);
-	if (!path) throw new RequiredError("Invalid URL", { received: possible, caller: requirePath });
+export function requirePath(value: string, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
+	const path = getPath(value, base);
+	if (!path) throw new RequiredError("Invalid URL", { received: value, caller });
 	return path;
 }
 

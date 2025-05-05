@@ -1,10 +1,9 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
+import { formatNumber, formatQuantity, pluralizeQuantity } from "./format.js";
 import type { AnyFunction } from "./function.js";
-import type { MapKey } from "./map.js";
-import { ImmutableMap } from "./map.js";
-import { formatNumber, formatQuantity, pluralizeQuantity } from "./number.js";
+import { ImmutableMap, type MapKey } from "./map.js";
 import type { ImmutableObject } from "./object.js";
 import { getProps } from "./object.js";
 

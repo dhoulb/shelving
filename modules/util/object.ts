@@ -1,4 +1,4 @@
-import { AssertionError } from "../error/AssertionError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import { isIterable } from "./iterate.js";
 
@@ -27,7 +27,7 @@ export function isObject(value: unknown): value is ImmutableObject {
 
 /** Assert that a value is an object */
 export function assertObject(value: unknown): asserts value is ImmutableObject {
-	if (!isObject(value)) throw new AssertionError("Must be object", { received: value, caller: assertObject });
+	if (!isObject(value)) throw new RequiredError("Must be object", { received: value, caller: assertObject });
 }
 
 /** Is an unknown value a plain object? */
@@ -41,7 +41,7 @@ export function isPlainObject(value: unknown): value is ImmutableObject {
 
 /** Assert that an unknown value is a plain object */
 export function assertPlainObject(value: unknown): asserts value is ImmutableObject {
-	if (!isPlainObject(value)) throw new AssertionError("Must be plain object", { received: value, caller: assertPlainObject });
+	if (!isPlainObject(value)) throw new RequiredError("Must be plain object", { received: value, caller: assertPlainObject });
 }
 
 /** Is an unknown value the key for an own prop of an object. */
@@ -49,7 +49,7 @@ export const isProp = <T extends ImmutableObject>(obj: T, key: PropertyKey): key
 
 /** Assert that an unknown value is the key for an own prop of an object. */
 export function assertProp<T extends ImmutableObject>(obj: T, key: PropertyKey): asserts key is keyof T {
-	if (!isProp(obj, key)) throw new AssertionError("Key must exist in object", { key, obj, caller: assertProp });
+	if (!isProp(obj, key)) throw new RequiredError("Key must exist in object", { key, obj, caller: assertProp });
 }
 
 /** Turn a possible object into an object. */
@@ -165,23 +165,6 @@ export function setProps<T extends MutableObject>(obj: T, entries: T | Partial<T
 /** Remove several key/value entries from an object (by reference). */
 export function deleteProps<T extends MutableObject>(obj: T, ...keys: Key<T>[]): void {
 	for (const key of keys) delete obj[key];
-}
-
-/**
- * Format an unknown object as a string.
- * - Use the custom `.toString()` function if it exists (don't use built in `Object.prototype.toString` because it's useless.
- * - Use `.title` or `.name` or `.id` if they exist and are strings.
- * - Use `Object` otherwise.
- */
-export function formatObject(obj: ImmutableObject): string {
-	if (typeof obj.toString === "function" && obj.toString !== Object.prototype.toString) return obj.toString();
-	const name = obj.name;
-	if (typeof name === "string") return name;
-	const title = obj.title;
-	if (typeof title === "string") return title;
-	const id = obj.id;
-	if (typeof id === "string") return id;
-	return "Object";
 }
 
 /**

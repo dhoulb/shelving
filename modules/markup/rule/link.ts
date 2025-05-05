@@ -1,7 +1,8 @@
+import { formatURL } from "../../util/format.js";
 import type { JSXElement } from "../../util/jsx.js";
 import { getLink } from "../../util/link.js";
 import { type NamedRegExpExecArray, getRegExp } from "../../util/regexp.js";
-import { formatURL, getOptionalURL } from "../../util/url.js";
+import { getURL } from "../../util/url.js";
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
@@ -16,7 +17,7 @@ function renderLinkMarkupRule(
 	key: string,
 ): JSXElement {
 	const { base, schemes, hosts, rel } = options;
-	const url = getOptionalURL(unsafeHref, base);
+	const url = getURL(unsafeHref, base);
 	const href = getLink(url, base, schemes, hosts);
 	const children = title ? renderMarkup(title, options, "link") : url ? formatURL(url) : "";
 	return {

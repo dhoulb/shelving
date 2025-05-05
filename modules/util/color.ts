@@ -1,3 +1,4 @@
+import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { boundNumber, roundNumber } from "./number.js";
 
@@ -88,18 +89,18 @@ export function isColor(value: unknown): value is Color {
 }
 
 /** Assert that an unknown value is a `Color` instance. */
-export function assertColor(value: unknown): asserts value is Color {
-	if (!isColor(value)) throw new RequiredError("Must be color", { received: value, caller: assertColor });
+export function assertColor(value: unknown, caller: AnyCaller = assertColor): asserts value is Color {
+	if (!isColor(value)) throw new RequiredError("Must be color", { received: value, caller });
 }
 
-/** Convert a possible color to a `Color` instance or `undefined` */
+/** Convert an unknown value to a `Color` instance, or return `undefined` if conversion fails. */
 export function getColor(value: unknown): Color | undefined {
 	return Color.from(value);
 }
 
 /** Convert a possible color to a `Color` instance, or throw `RequiredError` if it can't be converted. */
-export function requireColor(value: PossibleColor): Color {
+export function requireColor(value: PossibleColor, caller: AnyCaller = requireColor): Color {
 	const color = getColor(value);
-	if (!color) throw new RequiredError("Invalid color", { received: value, caller: requireColor });
+	assertColor(color, requireColor);
 	return color;
 }

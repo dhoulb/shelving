@@ -1,6 +1,7 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
 import type { PossibleDate } from "../util/date.js";
-import { formatDate, getDate, requireYMD } from "../util/date.js";
+import { getDate, requireYMD } from "../util/date.js";
+import { formatDate } from "../util/format.js";
 import type { Optional } from "../util/optional.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import type { SchemaOptions } from "./Schema.js";

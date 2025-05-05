@@ -1,10 +1,10 @@
 import type { ImmutableArray } from "./array.js";
 import { isArray, limitArray } from "./array.js";
+import { requireLast } from "./array.js";
 import type { Data, DataProp, LeafData, LeafKey } from "./data.js";
 import { getDataProp } from "./data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";
 import type { Match } from "./filter.js";
-import { requireLastItem } from "./iterate.js";
 import { limitItems } from "./iterate.js";
 import type { Mutable } from "./object.js";
 import { getProps } from "./object.js";
@@ -142,7 +142,7 @@ export function limitQueryItems<T extends Data>(items: ImmutableArray<T> | Itera
 /** Get a query for items that appear before a specified item. */
 export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
 	const sorts = getOrders(query);
-	const lastSort = requireLastItem(sorts);
+	const lastSort = requireLast(sorts);
 	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {
 		const { key, direction } = sort;
@@ -155,7 +155,7 @@ export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<
 /** Get a query for items that appear after a specified item. */
 export function getAfterQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
 	const sorts = getOrders(query);
-	const lastSort = requireLastItem(sorts);
+	const lastSort = requireLast(sorts);
 	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {
 		const { key, direction } = sort;

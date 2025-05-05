@@ -1,7 +1,10 @@
-import { AssertionError } from "../error/AssertionError.js";
+import type { AnyCaller } from "../error/BaseError.js";
+import { RequiredError } from "../error/RequiredError.js";
 
 /** Function that always returns undefined. */
-export const getUndefined = (): undefined => undefined;
+export function getUndefined(): undefined {
+	return undefined;
+}
 
 /** Is a value undefined? */
 export function isUndefined(value: unknown): value is undefined {
@@ -17,12 +20,12 @@ export function isDefined<T>(value: T | undefined): value is T {
 export const notUndefined = isDefined;
 
 /** Assert that a value is not `undefined` */
-export function assertDefined<T>(value: T | undefined): asserts value is T {
-	if (value === undefined) throw new AssertionError("Must be defined", { received: value, caller: assertDefined });
+export function assertDefined<T>(value: T | undefined, caller: AnyCaller = assertDefined): asserts value is T {
+	if (value === undefined) throw new RequiredError("Must be defined", { received: value, caller });
 }
 
 /** Get a defined value. */
-export function getDefined<T>(value: T | undefined): T {
-	assertDefined(value);
+export function requireDefined<T>(value: T | undefined, caller: AnyCaller = requireDefined): T {
+	assertDefined(value, caller);
 	return value;
 }
