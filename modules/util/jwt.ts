@@ -54,6 +54,7 @@ export type TokenData = {
 	signature: string;
 	headerData: Data;
 	payloadData: Data;
+	signatureBytes: Uint8Array;
 };
 
 /**
@@ -70,23 +71,31 @@ export function _splitToken(caller: AnyFunction, token: unknown): TokenData {
 	if (!header || !payload || !signature)
 		throw new RequestError("JWT token must have header, payload, and signature", { received: token, caller });
 
+	// Decode signature.
+	let signatureBytes: Uint8Array;
+	try {
+		signatureBytes = decodeBase64URLBytes(signature);
+	} catch (cause) {
+		throw new RequestError("JWT token signature must be Base64URL encoded", { received: signature, cause, caller });
+	}
+
 	// Decode header.
 	let headerData: Data;
 	try {
 		headerData = JSON.parse(decodeBase64URLString(header));
-	} catch {
-		throw new RequestError("JWT token header must be base64Url encoded JSON", { received: token, caller });
+	} catch (cause) {
+		throw new RequestError("JWT token header must be Base64URL encoded JSON", { received: header, cause, caller });
 	}
 
 	// Decode payload.
 	let payloadData: Data;
 	try {
 		payloadData = JSON.parse(decodeBase64URLString(payload));
-	} catch {
-		throw new RequestError("JWT token payload must be base64Url encoded JSON", { received: token, caller });
+	} catch (cause) {
+		throw new RequestError("JWT token payload must be Base64URL encoded JSON", { received: payload, cause, caller });
 	}
 
-	return { header, payload, headerData, payloadData, signature };
+	return { header, payload, signature, headerData, payloadData, signatureBytes };
 }
 
 /**
