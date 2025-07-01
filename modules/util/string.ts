@@ -22,7 +22,7 @@ export function isString(value: unknown, min = 0, max = Number.POSITIVE_INFINITY
 }
 
 /** Assert that a value is a string (optionally with specified min/max length). */
-export function assertString(value: unknown, min?: number, max?: number, caller: AnyCaller = requireString): asserts value is string {
+export function assertString(value: unknown, min?: number, max?: number, caller: AnyCaller = assertString): asserts value is string {
 	if (!isString(value, min, max))
 		throw new RequiredError(
 			`Must be string${min !== undefined || max !== undefined ? ` with ${min ?? 0} to ${max ?? "∞"} characters` : ""}`,

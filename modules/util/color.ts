@@ -101,6 +101,6 @@ export function getColor(value: unknown): Color | undefined {
 /** Convert a possible color to a `Color` instance, or throw `RequiredError` if it can't be converted. */
 export function requireColor(value: PossibleColor, caller: AnyCaller = requireColor): Color {
 	const color = getColor(value);
-	assertColor(color, requireColor);
+	assertColor(color, caller);
 	return color;
 }

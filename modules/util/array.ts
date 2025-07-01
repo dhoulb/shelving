@@ -207,7 +207,7 @@ export function getLast<T>(items: PossibleArray<T>): T | undefined {
 }
 
 /** Get the last item from an array or iterable. */
-export function requireLast<T>(items: PossibleArray<T>, caller: AnyCaller = requireFirst): T {
+export function requireLast<T>(items: PossibleArray<T>, caller: AnyCaller = requireLast): T {
 	const item = getLast(items);
 	if (item === undefined) throw new RequiredError("Last item is required", { items, caller });
 	return item;

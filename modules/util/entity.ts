@@ -32,5 +32,5 @@ export function requireEntity(entity: string, caller?: AnyCaller): [type: string
 export function requireEntity(entity: string, caller: AnyCaller = requireEntity): [type: string, id: string] {
 	const bits = entity.split(":", 2);
 	if (bits[0] && bits[1]) return bits as [type: string, id: string];
-	throw new RequiredError("Invalid entity", { received: entity, caller: requireEntity });
+	throw new RequiredError("Invalid entity", { received: entity, caller });
 }
