@@ -25,6 +25,7 @@ export * from "./focus.js";
 export * from "./format.js";
 export * from "./function.js";
 export * from "./hash.js";
+export * from "./http.js";
 export * from "./hydrate.js";
 export * from "./item.js";
 export * from "./iterate.js";
