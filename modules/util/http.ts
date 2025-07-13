@@ -1,10 +1,18 @@
 import type { AnyCaller } from "../error/BaseError.js";
-import { RequestError } from "../error/RequestError.js";
+import { NotFoundError, RequestError } from "../error/RequestError.js";
 import { ResponseError } from "../error/ResponseError.js";
+import type { ImmutableArray } from "./array.js";
 import { type Data, isData } from "./data.js";
+import type { Optional } from "./optional.js";
 
-/** A 'handler' is a function that accepts a `Request` and returns a `Response` (possibly asynchronously). */
+/** A handler function takes a `Request` and returns a `Response` (possibly asynchronously). */
 export type Handler = (request: Request) => Response | Promise<Response>;
+
+/** An optional handler function _may_ match a `Request` and return a `Response`, or may return `undefined` if it doesn't match. */
+export type OptionalHandler = (request: Request) => Optional<Response | Promise<Response>>;
+
+/** A list of `OptionalHandler` functions that may match a `Request` */
+export type Handlers = ImmutableArray<OptionalHandler>;
 
 export async function _getMessageJSON(
 	message: Request | Response,
@@ -139,4 +147,18 @@ export function getRequestContent(message: Request): Promise<unknown> {
  */
 export function getResponseContent(message: Response): Promise<unknown> {
 	return _getMessageContent(message, ResponseError, getResponseContent);
+}
+
+/**
+ * Match a `Request` against a `Handlers` array.
+ *
+ * @returns The resulting `Response` from the first handler that matches the `Request`.
+ * @throws `NotFoundError` if no handler matches the `Request`.
+ */
+export function handleRequest(request: Request, handlers: ImmutableArray<OptionalHandler>): Response | Promise<Response> {
+	for (const handler of handlers) {
+		const response = handler(request);
+		if (response) return response;
+	}
+	throw new NotFoundError("Not found", { request, caller: handleRequest });
 }
