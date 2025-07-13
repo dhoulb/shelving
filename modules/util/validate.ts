@@ -1,4 +1,4 @@
-import type { BaseError, BaseErrorOptions } from "../error/BaseError.js";
+import type { AnyCaller, BaseError, BaseErrorOptions } from "../error/BaseError.js";
 import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValueFeedbacks } from "../feedback/Feedbacks.js";
@@ -44,11 +44,12 @@ export function getValid<T>(
 	value: unknown,
 	validator: Validator<T>,
 	ErrorConstructor: Constructor<BaseError, [string, BaseErrorOptions]> = ValueError,
+	caller: AnyCaller = getValid,
 ): T {
 	try {
 		return validator.validate(value);
 	} catch (thrown) {
-		if (thrown instanceof Feedback) throw new ErrorConstructor(thrown.message, { received: value, cause: thrown, caller: getValid });
+		if (thrown instanceof Feedback) throw new ErrorConstructor(thrown.message, { received: value, cause: thrown, caller });
 		throw thrown;
 	}
 }
