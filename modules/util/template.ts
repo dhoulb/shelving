@@ -133,7 +133,7 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  * @param values An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }` (functions are called, everything else converted to string), or a function or string to use for all placeholders.
  * @return The rendered string, e.g. `Dave-UK/Manchester`
  *
- * @throws {ReferenceError} If a placeholder in the template string is not specified in values.
+ * @throws {RequiredError} If a placeholder in the template string is not specified in values.
  */
 export function renderTemplate(template: string, values: TemplateValues): string {
 	const chunks = _splitTemplateCached(template, renderTemplate);
