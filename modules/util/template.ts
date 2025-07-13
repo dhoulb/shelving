@@ -18,15 +18,21 @@ type TemplateChunk = {
 /** Set of template chunks. */
 type TemplateChunks = ImmutableArray<TemplateChunk>;
 
-/** Template values in `{ placeholder: value }` format. */
-type TemplateValues = ImmutableDictionary<string>;
+/** Dictionary of named template values in `{ myPlaceholder: "value" }` format. */
+export type TemplateDictionary = ImmutableDictionary<string>;
 
-/** Things that can be converted to the value for a named placeholder. */
-type PlaceholderValues =
-	| string // Single string used for every placeholder.
-	| ((name: string) => string) // Function that returns the right string for a named placeholder.
-	| ImmutableArray<string> // Array of strings (or functions that return strings) used for `*` numbered placeholders e.g. `["Dave"]`
-	| TemplateValues; // Object containing named strings used for `{named}` placeholders, e.g. `{ name: "Dave" }`
+/** Callback that returns the right replacement string for a given placeholder. */
+export type TemplateCallback = (placeholder: string) => string;
+
+/**
+ * Things that can be converted to the value for a named placeholder.
+ *
+ * `string` — Single string used for every `{placeholder}`
+ * `ImmutableArray<string>` — Array of strings (or functions that return strings) used for `*` numbered placeholders e.g. `["John"]`
+ * `TemplateValues` — Object containing named strings used for named placeholders, e.g. `{ myPlaceholder: "Ellie" }`
+ * `TemplateCallback` — Function that returns the right string for a named `{placeholder}`.v
+ */
+export type TemplatePlaceholders = string | ImmutableArray<string> | TemplateDictionary | TemplateCallback;
 
 // RegExp to find named variables in several formats e.g. `:a`, `${b}`, `{{c}}` or `{d}`
 const R_PLACEHOLDERS = /(\*|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-9]*\}\}|\{[a-z][a-z0-9]*\})/i;
@@ -84,7 +90,7 @@ function _getPlaceholder({ name }: TemplateChunk): string {
  * @param target The string containing values, e.g. `Dave-UK/Manchester`
  * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.
  */
-export function matchTemplate(template: string, target: string): TemplateValues | undefined {
+export function matchTemplate(template: string, target: string): TemplateDictionary | undefined {
 	// Get separators and placeholders from template.
 	const chunks = _splitTemplateCached(template, matchTemplate);
 	const firstChunk = chunks[0];
@@ -97,7 +103,7 @@ export function matchTemplate(template: string, target: string): TemplateValues 
 
 	// Loop through the placeholders (placeholders are at all the even-numbered positions in `chunks`).
 	let startIndex = firstChunk.pre.length;
-	const values: Mutable<TemplateValues> = {};
+	const values: Mutable<TemplateDictionary> = {};
 	for (const { name, post } of chunks) {
 		const stopIndex = !post ? Number.POSITIVE_INFINITY : target.indexOf(post, startIndex);
 		if (stopIndex < 0) return undefined; // Target doesn't match template because chunk post wasn't found.
@@ -113,7 +119,7 @@ export function matchTemplate(template: string, target: string): TemplateValues 
 /**
  * Match multiple templates against a target string and return the first match.
  */
-export function matchTemplates(templates: Iterable<string> & NotString, target: string): TemplateValues | undefined {
+export function matchTemplates(templates: Iterable<string> & NotString, target: string): TemplateDictionary | undefined {
 	for (const template of templates) {
 		const values = matchTemplate(template, target);
 		if (values) return values;
@@ -129,14 +135,14 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  *
  * @throws {ReferenceError} If a placeholder in the template string is not specified in values.
  */
-export function renderTemplate(template: string, values: PlaceholderValues): string {
+export function renderTemplate(template: string, values: TemplatePlaceholders): string {
 	const chunks = _splitTemplateCached(template, renderTemplate);
 	if (!chunks.length) return template;
 	let output = template;
 	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replaceTemplateKey(name, values));
 	return output;
 }
-function _replaceTemplateKey(key: string, values: PlaceholderValues): string {
+function _replaceTemplateKey(key: string, values: TemplatePlaceholders): string {
 	if (typeof values === "string") return values;
 	if (typeof values === "function") return values(key);
 	if (isObject(values)) {
