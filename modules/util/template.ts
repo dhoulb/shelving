@@ -32,7 +32,7 @@ export type TemplateCallback = (placeholder: string) => string;
  * `TemplateValues` — Object containing named strings used for named placeholders, e.g. `{ myPlaceholder: "Ellie" }`
  * `TemplateCallback` — Function that returns the right string for a named `{placeholder}`.v
  */
-export type TemplatePlaceholders = string | ImmutableArray<string> | TemplateDictionary | TemplateCallback;
+export type TemplateValues = string | ImmutableArray<string> | TemplateDictionary | TemplateCallback;
 
 // RegExp to find named variables in several formats e.g. `:a`, `${b}`, `{{c}}` or `{d}`
 const R_PLACEHOLDERS = /(\*|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-9]*\}\}|\{[a-z][a-z0-9]*\})/i;
@@ -135,14 +135,14 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  *
  * @throws {ReferenceError} If a placeholder in the template string is not specified in values.
  */
-export function renderTemplate(template: string, values: TemplatePlaceholders): string {
+export function renderTemplate(template: string, values: TemplateValues): string {
 	const chunks = _splitTemplateCached(template, renderTemplate);
 	if (!chunks.length) return template;
 	let output = template;
 	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replaceTemplateKey(name, values));
 	return output;
 }
-function _replaceTemplateKey(key: string, values: TemplatePlaceholders): string {
+function _replaceTemplateKey(key: string, values: TemplateValues): string {
 	if (typeof values === "string") return values;
 	if (typeof values === "function") return values(key);
 	if (isObject(values)) {
