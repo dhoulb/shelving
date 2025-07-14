@@ -5,10 +5,7 @@ import type { Path } from "../util/path.js";
 import { UNDEFINED, type Validator } from "../util/validate.js";
 
 /** Types for an HTTP request or response that does something. */
-export type ResourceMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-
-/** A function that handles a resource request, with a payload and returns a result. */
-export type ResourceCallback<P, R> = (payload: P, request: Request) => R | Promise<R>;
+export type EndpointMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions.
@@ -18,11 +15,11 @@ export type ResourceCallback<P, R> = (payload: P, request: Request) => R | Promi
  * @param payload A `Validator` for the payload of the resource.
  * @param result A `Validator` for the result of the resource.
  */
-export class Resource<P, R> implements Validator<R> {
-	/** Resource method. */
-	readonly method: ResourceMethod;
+export class Endpoint<P, R> implements Validator<R> {
+	/** Endpoint method. */
+	readonly method: EndpointMethod;
 
-	/** Resource path, e.g. `/patient/{id}` */
+	/** Endpoint path, e.g. `/patient/{id}` */
 	readonly path: Path;
 
 	/** Payload validator. */
@@ -31,7 +28,7 @@ export class Resource<P, R> implements Validator<R> {
 	/** Result validator. */
 	readonly result: Validator<R>;
 
-	constructor(method: ResourceMethod, path: Path, payload: Validator<P>, result: Validator<R>) {
+	constructor(method: EndpointMethod, path: Path, payload: Validator<P>, result: Validator<R>) {
 		this.method = method;
 		this.path = path;
 		this.payload = payload;
@@ -65,83 +62,83 @@ export class Resource<P, R> implements Validator<R> {
 	}
 }
 
-/** Extract the payload type from a `Resource`. */
-export type PayloadType<X extends Resource<unknown, unknown>> = X extends Resource<infer Y, unknown> ? Y : never;
+/** Extract the payload type from a `Endpoint`. */
+export type PayloadType<X extends Endpoint<unknown, unknown>> = X extends Endpoint<infer Y, unknown> ? Y : never;
 
-/** Extract the result type from a `Resource`. */
-export type ResourceType<X extends Resource<unknown, unknown>> = X extends Resource<unknown, infer Y> ? Y : never;
+/** Extract the result type from a `Endpoint`. */
+export type EndpointType<X extends Endpoint<unknown, unknown>> = X extends Endpoint<unknown, infer Y> ? Y : never;
 
 /**
  * Represent a GET request to a specified path, with validated payload and return types.
  * "The GET method requests a representation of the specified resource. Requests using GET should only retrieve data and should not contain a request content."
  */
-export function GET<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Resource<P, R>;
-export function GET<P>(path: Path, payload: Validator<P>): Resource<P, undefined>;
-export function GET<R>(path: Path, payload: undefined, result: Validator<R>): Resource<undefined, R>;
+export function GET<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
+export function GET<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
+export function GET<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
 export function GET(
 	path: Path,
 	payload: Validator<unknown> = UNDEFINED,
 	result: Validator<unknown> = UNDEFINED,
-): Resource<unknown, unknown> {
-	return new Resource("GET", path, payload, result);
+): Endpoint<unknown, unknown> {
+	return new Endpoint("GET", path, payload, result);
 }
 
 /**
  * Represent a POST request to a specified path, with validated payload and return types.
  * "The POST method submits an entity to the specified resource, often causing a change in state or side effects on the server.
  */
-export function POST<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Resource<P, R>;
-export function POST<P>(path: Path, payload: Validator<P>): Resource<P, undefined>;
-export function POST<R>(path: Path, payload: undefined, result: Validator<R>): Resource<undefined, R>;
+export function POST<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
+export function POST<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
+export function POST<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
 export function POST(
 	path: Path,
 	payload: Validator<unknown> = UNDEFINED,
 	result: Validator<unknown> = UNDEFINED,
-): Resource<unknown, unknown> {
-	return new Resource("POST", path, payload, result);
+): Endpoint<unknown, unknown> {
+	return new Endpoint("POST", path, payload, result);
 }
 
 /**
  * Represent a PUT request to a specified path, with validated payload and return types.
  * "The PUT method replaces all current representations of the target resource with the request content."
  */
-export function PUT<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Resource<P, R>;
-export function PUT<P>(path: Path, payload: Validator<P>): Resource<P, undefined>;
-export function PUT<R>(path: Path, payload: undefined, result: Validator<R>): Resource<undefined, R>;
+export function PUT<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
+export function PUT<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
+export function PUT<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
 export function PUT(
 	path: Path,
 	payload: Validator<unknown> = UNDEFINED,
 	result: Validator<unknown> = UNDEFINED,
-): Resource<unknown, unknown> {
-	return new Resource("PUT", path, payload, result);
+): Endpoint<unknown, unknown> {
+	return new Endpoint("PUT", path, payload, result);
 }
 
 /**
  * Represent a PATCH request to a specified path, with validated payload and return types.
  * "The PATCH method applies partial modifications to a resource."
  */
-export function PATCH<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Resource<P, R>;
-export function PATCH<P>(path: Path, payload: Validator<P>): Resource<P, undefined>;
-export function PATCH<R>(path: Path, payload: undefined, result: Validator<R>): Resource<undefined, R>;
+export function PATCH<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
+export function PATCH<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
+export function PATCH<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
 export function PATCH(
 	path: Path,
 	payload: Validator<unknown> = UNDEFINED,
 	result: Validator<unknown> = UNDEFINED,
-): Resource<unknown, unknown> {
-	return new Resource("PATCH", path, payload, result);
+): Endpoint<unknown, unknown> {
+	return new Endpoint("PATCH", path, payload, result);
 }
 
 /**
  * Represent a DELETE request to a specified path, with validated payload and return types.
  * "The DELETE method deletes the specified resource."
  */
-export function DELETE<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Resource<P, R>;
-export function DELETE<P>(path: Path, payload: Validator<P>): Resource<P, undefined>;
-export function DELETE<R>(path: Path, payload: undefined, result: Validator<R>): Resource<undefined, R>;
+export function DELETE<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
+export function DELETE<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
+export function DELETE<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
 export function DELETE(
 	path: Path,
 	payload: Validator<unknown> = UNDEFINED,
 	result: Validator<unknown> = UNDEFINED,
-): Resource<unknown, unknown> {
-	return new Resource("DELETE", path, payload, result);
+): Endpoint<unknown, unknown> {
+	return new Endpoint("DELETE", path, payload, result);
 }
