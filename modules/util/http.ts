@@ -2,7 +2,7 @@ import type { AnyCaller } from "../error/BaseError.js";
 import { NotFoundError, RequestError } from "../error/RequestError.js";
 import { ResponseError } from "../error/ResponseError.js";
 import type { ImmutableArray } from "./array.js";
-import { type Data, isData } from "./data.js";
+import { type Data, getData, isData } from "./data.js";
 import type { Optional } from "./optional.js";
 
 /** A handler function takes a `Request` and returns a `Response` (possibly asynchronously). */
@@ -56,6 +56,7 @@ export function _getMessageContent(
 	const type = message.headers.get("Content-Type");
 	if (type?.startsWith("application/json")) return _getMessageJSON(message, MessageError, caller);
 	if (type?.startsWith("text/plain")) return message.text();
+	if (type?.startsWith("multipart/form-data")) return message.formData().then(getData);
 	throw new MessageError("Unexpected content type", { received: type, caller });
 }
 
@@ -129,7 +130,8 @@ export function requireResponseData(message: Response): Promise<Data> {
  * Get the content of an HTTP `Request` based on its content type, or throw `RequestError` if the content could not be parsed.
  *
  * @returns string If content type is `text/plain` (including empty string if it's empty).
- * @returns unknown If content type is `application/JSON` and has valid JSON (including `undefined` if the content is empty).
+ * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
+ * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
  *
  * @throws RequestError if the content is not `text/plain`, or `application/json` with valid JSON.
  */
@@ -141,7 +143,8 @@ export function getRequestContent(message: Request): Promise<unknown> {
  * Get the content of an HTTP `Response` based on its content type, or throw `ResponseError` if the content could not be parsed.
  *
  * @returns string If content type is `text/plain` (including empty string if it's empty).
- * @returns unknown If content type is `application/JSON` and has valid JSON (including `undefined` if the content is empty).
+ * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
+ * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
  *
  * @throws RequestError if the content is not `text/plain` or `application/json` with valid JSON.
  */
