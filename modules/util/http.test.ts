@@ -3,10 +3,10 @@ import {
 	NotFoundError,
 	RequestError,
 	ResponseError,
-	getRequestContent,
+	getRequestBody,
 	getRequestData,
 	getRequestJSON,
-	getResponseContent,
+	getResponseBody,
 	getResponseData,
 	getResponseJSON,
 	handleRequest,
@@ -18,12 +18,12 @@ function mockRequest(body: string, contentType = "application/json"): Request {
 	return new Request("http://x.com/", {
 		method: "POST",
 		body,
-		headers: { "Content-Type": contentType },
+		headers: { "Body-Type": contentType },
 	});
 }
 function mockResponse(body: string, contentType = "application/json"): Response {
 	return new Response(body, {
-		headers: { "Content-Type": contentType },
+		headers: { "Body-Type": contentType },
 	});
 }
 
@@ -141,19 +141,19 @@ describe("requireResponseData()", () => {
 	});
 });
 
-describe("getRequestContent()", () => {
+describe("getRequestBody()", () => {
 	test("returns string for text/plain", async () => {
 		const req = mockRequest("hello", "text/plain");
-		expect(await getRequestContent(req)).toBe("hello");
+		expect(await getRequestBody(req)).toBe("hello");
 	});
 	test("returns object for application/json", async () => {
 		const req = mockRequest('{"z":3}');
-		expect(await getRequestContent(req)).toEqual({ z: 3 });
+		expect(await getRequestBody(req)).toEqual({ z: 3 });
 	});
 	test("throws for unsupported content type", async () => {
 		const req = mockRequest("hi", "application/xml");
 		try {
-			await getRequestContent(req);
+			await getRequestBody(req);
 			expect(false).toBe(true);
 		} catch (error) {
 			expect(error).toBeInstanceOf(RequestError);
@@ -161,19 +161,19 @@ describe("getRequestContent()", () => {
 	});
 });
 
-describe("getResponseContent()", () => {
+describe("getResponseBody()", () => {
 	test("returns string for text/plain", async () => {
 		const res = mockResponse("world", "text/plain");
-		expect(await getResponseContent(res)).toBe("world");
+		expect(await getResponseBody(res)).toBe("world");
 	});
 	test("returns object for application/json", async () => {
 		const res = mockResponse('{"w":4}');
-		expect(await getResponseContent(res)).toEqual({ w: 4 });
+		expect(await getResponseBody(res)).toEqual({ w: 4 });
 	});
 	test("throws for unsupported content type", async () => {
 		const res = mockResponse("hi", "application/xml");
 		try {
-			await getResponseContent(res);
+			await getResponseBody(res);
 		} catch (error) {
 			expect(error).toBeInstanceOf(ResponseError);
 		}

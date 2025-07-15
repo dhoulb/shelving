@@ -48,7 +48,7 @@ export async function _requireMessageData(
 	throw new MessageError("Body must be data object", { received: data, caller });
 }
 
-export function _getMessageContent(
+export function _getMessageBody(
 	message: Request | Response,
 	MessageError: typeof RequestError | typeof ResponseError,
 	caller: AnyCaller,
@@ -127,7 +127,7 @@ export function requireResponseData(message: Response): Promise<Data> {
 }
 
 /**
- * Get the content of an HTTP `Request` based on its content type, or throw `RequestError` if the content could not be parsed.
+ * Get the body content of an HTTP `Request` based on its content type, or throw `RequestError` if the content could not be parsed.
  *
  * @returns string If content type is `text/plain` (including empty string if it's empty).
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
@@ -135,12 +135,12 @@ export function requireResponseData(message: Response): Promise<Data> {
  *
  * @throws RequestError if the content is not `text/plain`, or `application/json` with valid JSON.
  */
-export function getRequestContent(message: Request): Promise<unknown> {
-	return _getMessageContent(message, RequestError, getRequestContent);
+export function getRequestBody(message: Request): Promise<unknown> {
+	return _getMessageBody(message, RequestError, getRequestBody);
 }
 
 /**
- * Get the content of an HTTP `Response` based on its content type, or throw `ResponseError` if the content could not be parsed.
+ * Get the body content of an HTTP `Response` based on its content type, or throw `ResponseError` if the content could not be parsed.
  *
  * @returns string If content type is `text/plain` (including empty string if it's empty).
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
@@ -148,17 +148,17 @@ export function getRequestContent(message: Request): Promise<unknown> {
  *
  * @throws RequestError if the content is not `text/plain` or `application/json` with valid JSON.
  */
-export function getResponseContent(message: Response): Promise<unknown> {
-	return _getMessageContent(message, ResponseError, getResponseContent);
+export function getResponseBody(message: Response): Promise<unknown> {
+	return _getMessageBody(message, ResponseError, getResponseBody);
 }
 
 /**
- * Match a `Request` against a `Handlers` array.
+ * Handler a `Request` with the first matching `OptionalHandler` in a `Handlers` array.
  *
  * @returns The resulting `Response` from the first handler that matches the `Request`.
  * @throws `NotFoundError` if no handler matches the `Request`.
  */
-export function handleRequest(request: Request, handlers: ImmutableArray<OptionalHandler>): Response | Promise<Response> {
+export function handleRequest(request: Request, handlers: Handlers): Response | Promise<Response> {
 	for (const handler of handlers) {
 		const response = handler(request);
 		if (response) return response;
