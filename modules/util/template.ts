@@ -57,7 +57,7 @@ function _splitTemplate(template: string, caller: AnyCaller): TemplateChunks {
 		const placeholder = matches[i] as string;
 		const post = matches[i + 1] as string;
 		if (i > 1 && !pre.length)
-			throw new ValueError("Placeholders must be separated by at least one character", { received: template, caller });
+			throw new ValueError("Template placeholders must be separated by at least one character", { received: template, caller });
 		const name = placeholder === "*" ? String(asterisks++) : R_NAME.exec(placeholder)?.[0] || "";
 		chunks.push({ pre, placeholder, name, post });
 	}
@@ -88,11 +88,12 @@ function _getPlaceholder({ name }: TemplateChunk): string {
  * @param templates Either a single template string, or an iterator that returns multiple template template strings.
  * - Template strings can include placeholders (e.g. `:name-${country}/{city}`).
  * @param target The string containing values, e.g. `Dave-UK/Manchester`
+ *
  * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.
  */
-export function matchTemplate(template: string, target: string): TemplateDictionary | undefined {
+export function matchTemplate(template: string, target: string, caller: AnyCaller = matchTemplate): TemplateDictionary | undefined {
 	// Get separators and placeholders from template.
-	const chunks = _splitTemplateCached(template, matchTemplate);
+	const chunks = _splitTemplateCached(template, caller);
 	const firstChunk = chunks[0];
 
 	// Return early if empty.
@@ -135,19 +136,19 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  *
  * @throws {RequiredError} If a placeholder in the template string is not specified in values.
  */
-export function renderTemplate(template: string, values: TemplateValues): string {
-	const chunks = _splitTemplateCached(template, renderTemplate);
+export function renderTemplate(template: string, values: TemplateValues, caller: AnyCaller = renderTemplate): string {
+	const chunks = _splitTemplateCached(template, caller);
 	if (!chunks.length) return template;
 	let output = template;
-	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replaceTemplateKey(name, values));
+	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replaceTemplateKey(name, values, caller));
 	return output;
 }
-function _replaceTemplateKey(key: string, values: TemplateValues): string {
+function _replaceTemplateKey(key: string, values: TemplateValues, caller: AnyCaller): string {
 	if (typeof values === "string") return values;
 	if (typeof values === "function") return values(key);
 	if (isObject(values)) {
 		const v = values[key];
 		if (typeof v === "string") return v;
 	}
-	throw new RequiredError(`Template key "${key}" must be defined`, { received: values, key, caller: renderTemplate });
+	throw new RequiredError(`Template key "${key}" must be defined`, { received: values, key, caller });
 }
