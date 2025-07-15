@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import {
-	NotFoundError,
 	RequestError,
 	ResponseError,
 	getRequestBody,
@@ -9,7 +8,6 @@ import {
 	getResponseBody,
 	getResponseData,
 	getResponseJSON,
-	handleRequest,
 	requireRequestData,
 	requireResponseData,
 } from "../index.js";
@@ -18,12 +16,12 @@ function mockRequest(body: string, contentType = "application/json"): Request {
 	return new Request("http://x.com/", {
 		method: "POST",
 		body,
-		headers: { "Body-Type": contentType },
+		headers: { "Content-Type": contentType },
 	});
 }
 function mockResponse(body: string, contentType = "application/json"): Response {
 	return new Response(body, {
-		headers: { "Body-Type": contentType },
+		headers: { "Content-Type": contentType },
 	});
 }
 
@@ -141,7 +139,7 @@ describe("requireResponseData()", () => {
 	});
 });
 
-describe("getRequestBody()", () => {
+describe("getRequestContent()", () => {
 	test("returns string for text/plain", async () => {
 		const req = mockRequest("hello", "text/plain");
 		expect(await getRequestBody(req)).toBe("hello");
@@ -161,7 +159,7 @@ describe("getRequestBody()", () => {
 	});
 });
 
-describe("getResponseBody()", () => {
+describe("getResponseContent()", () => {
 	test("returns string for text/plain", async () => {
 		const res = mockResponse("world", "text/plain");
 		expect(await getResponseBody(res)).toBe("world");
@@ -177,20 +175,5 @@ describe("getResponseBody()", () => {
 		} catch (error) {
 			expect(error).toBeInstanceOf(ResponseError);
 		}
-	});
-});
-
-describe("handleRequest()", () => {
-	test("returns response from first matching handler", async () => {
-		const handlers = [() => undefined, () => new Response("ok")];
-		const req = mockRequest("{}");
-		const res = await handleRequest(req, handlers);
-		expect(res).toBeInstanceOf(Response);
-		expect(await res.text()).toBe("ok");
-	});
-	test("throws NotFoundError if no handler matches", () => {
-		const handlers = [() => undefined];
-		const req = mockRequest("{}");
-		expect(() => handleRequest(req, handlers)).toThrow(NotFoundError);
 	});
 });
