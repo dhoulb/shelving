@@ -59,8 +59,8 @@ export function _getMessageBody(
  * @returns Data If the content can be parsed as a JSON object, or `undefined` if the content was empty.
  * @throws RequestError if the content is not `text/plain` or `application/json` with valid JSON.
  */
-export function getRequestJSON(message: Request): Promise<unknown> {
-	return _getMessageJSON(message, RequestError, getRequestJSON);
+export function getRequestJSON(message: Request, caller: AnyCaller = getRequestJSON): Promise<unknown> {
+	return _getMessageJSON(message, RequestError, caller);
 }
 
 /**
@@ -70,8 +70,8 @@ export function getRequestJSON(message: Request): Promise<unknown> {
  * @returns Data If the content can be parsed as a JSON object, or `undefined` if the content was empty.
  * @throws ResponseError if the content is not `text/plain` or `application/json` with valid JSON.
  */
-export function getResponseJSON(message: Response): Promise<unknown> {
-	return _getMessageJSON(message, ResponseError, getResponseJSON);
+export function getResponseJSON(message: Response, caller: AnyCaller = getResponseJSON): Promise<unknown> {
+	return _getMessageJSON(message, ResponseError, caller);
 }
 
 /**
@@ -81,8 +81,8 @@ export function getResponseJSON(message: Response): Promise<unknown> {
  * @returns Data If the content can be parsed as a JSON object, or `undefined` if the content was empty.
  * @throws RequestError if the content is not `text/plain` or `application/json` with valid JSON.
  */
-export function getRequestData(message: Request): Promise<Data | undefined> {
-	return _getMessageData(message, RequestError, getRequestData);
+export function getRequestData(message: Request, caller: AnyCaller = getRequestData): Promise<Data | undefined> {
+	return _getMessageData(message, RequestError, caller);
 }
 
 /**
@@ -92,8 +92,8 @@ export function getRequestData(message: Request): Promise<Data | undefined> {
  * @returns Data If the content can be parsed as a JSON object, or `undefined` if the content was empty.
  * @throws ResponseError if the content is not `text/plain` or `application/json` with valid JSON.
  */
-export function getResponseData(message: Response): Promise<Data | undefined> {
-	return _getMessageData(message, ResponseError, getResponseData);
+export function getResponseData(message: Response, caller: AnyCaller = getResponseData): Promise<Data | undefined> {
+	return _getMessageData(message, ResponseError, caller);
 }
 
 /**
@@ -103,8 +103,8 @@ export function getResponseData(message: Response): Promise<Data | undefined> {
  * @returns Data If the content can be parsed as a JSON object, or `undefined` if the content was empty.
  * @throws RequestError if the content is not `application/json` with valid JSON that parses as a Data object.
  */
-export function requireRequestData(message: Request): Promise<Data> {
-	return _requireMessageData(message, RequestError, requireRequestData);
+export function requireRequestData(message: Request, caller: AnyCaller = requireRequestData): Promise<Data> {
+	return _requireMessageData(message, RequestError, caller);
 }
 
 /**
@@ -114,8 +114,8 @@ export function requireRequestData(message: Request): Promise<Data> {
  * @returns Data If the content can be parsed as a JSON object, or `undefined` if the content was empty.
  * @throws ResponseError if the content is not `application/json` with valid JSON that parses as a Data object.
  */
-export function requireResponseData(message: Response): Promise<Data> {
-	return _requireMessageData(message, ResponseError, requireResponseData);
+export function requireResponseData(message: Response, caller: AnyCaller = requireResponseData): Promise<Data> {
+	return _requireMessageData(message, ResponseError, caller);
 }
 
 /**
@@ -127,8 +127,8 @@ export function requireResponseData(message: Response): Promise<Data> {
  *
  * @throws RequestError if the content is not `text/plain`, or `application/json` with valid JSON.
  */
-export function getRequestBody(message: Request): Promise<unknown> {
-	return _getMessageBody(message, RequestError, getRequestBody);
+export function getRequestBody(message: Request, caller: AnyCaller = getRequestBody): Promise<unknown> {
+	return _getMessageBody(message, RequestError, caller);
 }
 
 /**
@@ -140,6 +140,6 @@ export function getRequestBody(message: Request): Promise<unknown> {
  *
  * @throws RequestError if the content is not `text/plain` or `application/json` with valid JSON.
  */
-export function getResponseBody(message: Response): Promise<unknown> {
-	return _getMessageBody(message, ResponseError, getResponseBody);
+export function getResponseBody(message: Response, caller: AnyCaller = getResponseBody): Promise<unknown> {
+	return _getMessageBody(message, ResponseError, caller);
 }
