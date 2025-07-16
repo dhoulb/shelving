@@ -15,8 +15,12 @@ import type { Endpoint } from "./Endpoint.js";
  * - Payload is validated by the payload validator for the `Endpoint`.
  * - If the body of the `Request` is a data object (i.e. a plain object), then body data is merged with the path and query parameters to form a single flat object.
  * - If payload is _not_ a data object (i.e. it's another JSON type like `string` or `number`) then the payload include the path and query parameters, and a key called `content` that contains the body of the request.
+ *
+ * @param request The raw `Request` object in case it needs any additional processing.
+ *
+ * @returns The correct `Result` type for the `Endpoint`, or a raw `Response` object if you wish to return a custom response.
  */
-export type EndpointCallback<P, R> = (payload: P, request: Request) => R | Promise<R>;
+export type EndpointCallback<P, R> = (payload: P, request: Request) => R | Response | Promise<R | Response>;
 
 /**
  * Object combining an abstract `Endpoint` and an `EndpointCallback` implementation.
@@ -38,12 +42,16 @@ export type AnyEndpointHandler = EndpointHandler<any, any>;
 export type EndpointHandlers = ReadonlyArray<AnyEndpointHandler>;
 
 /**
- * Handler a `Request` with the first matching `OptionalHandler` in a `Handlers` array.
+ * Handler a `Request` with the first matching `EndpointHandlers`.
+ *
+ * 1. Define your `Endpoint` objects with a method, path, payload and result validators, e.g. `GET("/test/{id}", PAYLOAD, STRING)`
+ * 2. Make an array of `EndpointHandler` objects combining an `Endpoint` with a `callback` function
+ * -
  *
  * @returns The resulting `Response` from the first handler that matches the `Request`.
  * @throws `NotFoundError` if no handler matches the `Request`.
  */
-export function handleEndpoints(request: Request, endpoints: EndpointHandlers) {
+export function handleEndpoints(request: Request, endpoints: EndpointHandlers): Promise<Response> {
 	// Parse the URL of the request.
 	const url = getURL(request.url);
 	if (!url) throw new RequestError("Invalid request URL", { received: request.url, caller: handleEndpoints });
@@ -59,16 +67,18 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers) {
 		const pathParams = matchTemplate(endpoint.path, pathname, handleEndpoints);
 		if (!pathParams) continue;
 
-		// Merge the search params and path params.
+		// Make a simple dictionary object from the `{placeholder}` path params and the `?a=123` query params from the URL.
 		const params: ImmutableDictionary<string> = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
 
 		// Get the response by calling the callback.
-		return _getResponse(endpoint, callback, params, request);
+		return getEndpointResponse(endpoint, callback, params, request);
 	}
+
+	// No handler matched the request.
 	throw new NotFoundError("Not found", { request, caller: handleEndpoints });
 }
 
-async function _getResponse<P, R>(
+async function getEndpointResponse<P, R>(
 	endpoint: Endpoint<P, R>,
 	callback: EndpointCallback<P, R>,
 	params: ImmutableDictionary<string>,
@@ -83,12 +93,15 @@ async function _getResponse<P, R>(
 	const unsafePayload = content === undefined ? params : isData(content) ? { ...content, ...params } : { content, ...params };
 	const payload = endpoint.prepare(unsafePayload);
 
-	// Call the handler with the validated payload to get the result.
-	const unsafeResult = await callback(payload, request);
+	// Call the callback with the validated payload to get the result.
+	const returned = await callback(payload, request);
 
-	// Validate the result against the endpoint's result type.
+	// If the callback returned a `Response`, return it directly.
+	if (returned instanceof Response) return returned;
+
+	// Otherwise validate the result against the endpoint's result type.
 	// Throw a `ValueError` if the result is not valid, which indicates an internal error in the callback implementation.
-	const result = getValid(unsafeResult, endpoint, ValueError, handleEndpoints);
+	const result = getValid(returned, endpoint, ValueError, handleEndpoints);
 
 	// Return a new `Response` with a 200 status and the validated result data.
 	return Response.json(result);
