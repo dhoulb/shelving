@@ -78,4 +78,25 @@ describe("getResponseContent()", () => {
 			expect(error).toBeInstanceOf(ResponseError);
 		}
 	});
+	test("parses multipart/form-data into object", async () => {
+		const form = new FormData();
+		form.append("foo", "bar");
+		form.append("baz", "qux");
+		const res = new Response(form);
+		const result = await getResponseContent(res);
+		expect(result).toEqual({ foo: "bar", baz: "qux" });
+	});
+
+	test("throws for invalid multipart/form-data", async () => {
+		const boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
+		const body = "not a valid multipart body";
+		const contentType = `multipart/form-data; boundary=${boundary}`;
+		try {
+			const res = mockResponse(body, contentType);
+			const result = await getResponseContent(res);
+			expect(false).toBe(true);
+		} catch (error) {
+			expect(error).toBeInstanceOf(ResponseError);
+		}
+	});
 });
