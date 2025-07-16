@@ -48,19 +48,19 @@
 		"build:test:unit": "bun test ./dist/**/*.test.js --bail"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.8.3",
-		"@google-cloud/firestore": "^7.9.0",
-		"@types/bun": "^1.1.6",
-		"@types/react": "^18.3.3",
-		"@types/react-dom": "^18.3.0",
-		"firebase": "^10.12.5",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
-		"typescript": "^5.8.2"
+		"@biomejs/biome": "^1.9.4",
+		"@google-cloud/firestore": "^7.11.3",
+		"@types/bun": "^1.2.18",
+		"@types/react": "^18.3.23",
+		"@types/react-dom": "^18.3.7",
+		"firebase": "^11.10.0",
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"typescript": "^5.8.3"
 	},
 	"peerDependencies": {
-		"@google-cloud/firestore": ">=4.0.0",
-		"firebase": ">=9.0.0",
-		"react": ">=17.0.0"
+		"@google-cloud/firestore": ">=7.0.0",
+		"firebase": ">=11.0.0",
+		"react": ">=19.0.0"
 	}
 }
