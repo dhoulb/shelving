@@ -1,158 +1,48 @@
 import { describe, expect, test } from "bun:test";
-import {
-	RequestError,
-	ResponseError,
-	getRequestBody,
-	getRequestData,
-	getRequestJSON,
-	getResponseBody,
-	getResponseData,
-	getResponseJSON,
-	requireRequestData,
-	requireResponseData,
-} from "../index.js";
+import { RequestError, ResponseError, getRequestContent, getResponseContent } from "../index.js";
 
-function mockRequest(body: string, contentType = "application/json"): Request {
+function mockRequest(body: string, contentType: string): Request {
 	return new Request("http://x.com/", {
 		method: "POST",
 		body,
 		headers: { "Content-Type": contentType },
 	});
 }
-function mockResponse(body: string, contentType = "application/json"): Response {
+function mockResponse(body: string, contentType: string): Response {
 	return new Response(body, {
 		headers: { "Content-Type": contentType },
 	});
 }
 
-describe("getRequestJSON()", () => {
-	test("parses valid JSON", async () => {
-		const req = mockRequest('{"a":1}');
-		expect(await getRequestJSON(req)).toEqual({ a: 1 });
-	});
-	test("throws on invalid JSON", async () => {
-		const req = mockRequest("not-json");
-		try {
-			await getRequestJSON(req);
-		} catch (error) {
-			expect(error).toBeInstanceOf(RequestError);
-		}
-	});
-});
-
-describe("getResponseJSON()", () => {
-	test("parses valid JSON", async () => {
-		const res = mockResponse('{"b":2}');
-		expect(await getResponseJSON(res)).toEqual({ b: 2 });
-	});
-	test("throws on invalid JSON", async () => {
-		const res = mockResponse("not-json");
-		try {
-			await getResponseJSON(res);
-		} catch (error) {
-			expect(error).toBeInstanceOf(ResponseError);
-		}
-	});
-});
-
-describe("getRequestData()", () => {
-	test("returns object for valid data", async () => {
-		const req = mockRequest('{"x":1}');
-		expect(await getRequestData(req)).toEqual({ x: 1 });
-	});
-	test("returns undefined for empty body", async () => {
-		const req = mockRequest("");
-		expect(await getRequestData(req)).toBeUndefined();
-	});
-	test("throws for non-object JSON", async () => {
-		const req = mockRequest("123");
-		try {
-			await getRequestData(req);
-		} catch (error) {
-			expect(error).toBeInstanceOf(RequestError);
-		}
-	});
-});
-
-describe("getResponseData()", () => {
-	test("returns object for valid data", async () => {
-		const res = mockResponse('{"y":2}');
-		expect(await getResponseData(res)).toEqual({ y: 2 });
-	});
-	test("returns undefined for empty body", async () => {
-		const res = mockResponse("");
-		expect(await getResponseData(res)).toBeUndefined();
-	});
-	test("throws for non-object JSON", async () => {
-		const res = mockResponse("123");
-		try {
-			await getResponseData(res);
-		} catch (error) {
-			expect(error).toBeInstanceOf(ResponseError);
-		}
-	});
-});
-
-describe("requireRequestData()", () => {
-	test("returns object for valid data", async () => {
-		const req = mockRequest('{"foo":1}');
-		expect(await requireRequestData(req)).toEqual({ foo: 1 });
-	});
-	test("throws for empty body", async () => {
-		const req = mockRequest("");
-		try {
-			await requireRequestData(req);
-		} catch (error) {
-			expect(error).toBeInstanceOf(RequestError);
-		}
-	});
-	test("throws for non-object JSON", async () => {
-		const req = mockRequest("123");
-		try {
-			await requireRequestData(req);
-		} catch (error) {
-			expect(error).toBeInstanceOf(RequestError);
-		}
-	});
-});
-
-describe("requireResponseData()", () => {
-	test("returns object for valid data", async () => {
-		const res = mockResponse('{"bar":2}');
-		expect(await requireResponseData(res)).toEqual({ bar: 2 });
-	});
-	test("throws for empty body", async () => {
-		const res = mockResponse("");
-		try {
-			await requireResponseData(res);
-		} catch (error) {
-			expect(error).toBeInstanceOf(ResponseError);
-		}
-	});
-	test("throws for non-object JSON", async () => {
-		const res = mockResponse("123");
-		try {
-			await requireResponseData(res);
-		} catch (error) {
-			expect(error).toBeInstanceOf(ResponseError);
-		}
-	});
-});
-
 describe("getRequestContent()", () => {
 	test("returns string for text/plain", async () => {
-		const req = mockRequest("hello", "text/plain");
-		expect(await getRequestBody(req)).toBe("hello");
+		expect(await getRequestContent(mockRequest("world", "text/plain"))).toBe("world");
+		expect(await getRequestContent(mockRequest("123", "text/plain"))).toBe("123");
+		expect(await getRequestContent(mockRequest("true", "text/plain"))).toBe("true");
+		expect(await getRequestContent(mockRequest("", "text/plain"))).toBe("");
 	});
-	test("returns object for application/json", async () => {
-		const req = mockRequest('{"z":3}');
-		expect(await getRequestBody(req)).toEqual({ z: 3 });
+	test("returns JSON for application/json", async () => {
+		expect(await getRequestContent(mockRequest('{"w":4}', "application/json"))).toEqual({ w: 4 });
+		expect(await getRequestContent(mockRequest("[1,2,3]", "application/json"))).toEqual([1, 2, 3]);
+		expect(await getRequestContent(mockRequest('"abc"', "application/json"))).toEqual("abc");
+		expect(await getRequestContent(mockRequest("123", "application/json"))).toEqual(123);
+		expect(await getRequestContent(mockRequest("true", "application/json"))).toEqual(true);
+		expect(await getRequestContent(mockRequest("false", "application/json"))).toEqual(false);
+		expect(await getRequestContent(mockRequest("null", "application/json"))).toEqual(null);
+		expect(await getRequestContent(mockRequest("", "application/json"))).toEqual(undefined);
+	});
+	test("throws for invalid JSON", async () => {
+		const req = mockRequest("aaaaaa", "application/json");
+		try {
+			await getRequestContent(req);
+			expect(false).toBe(true);
+		} catch (error) {
+			expect(error).toBeInstanceOf(RequestError);
+		}
 	});
 	test("throws for unsupported content type", async () => {
-		const req = mockRequest("hi", "application/xml");
 		try {
-			await getRequestBody(req);
-			expect(false).toBe(true);
+			await getRequestContent(mockRequest("hi", "application/xml"));
 		} catch (error) {
 			expect(error).toBeInstanceOf(RequestError);
 		}
@@ -161,17 +51,29 @@ describe("getRequestContent()", () => {
 
 describe("getResponseContent()", () => {
 	test("returns string for text/plain", async () => {
-		const res = mockResponse("world", "text/plain");
-		expect(await getResponseBody(res)).toBe("world");
+		expect(await getResponseContent(mockResponse("world", "text/plain"))).toBe("world");
 	});
-	test("returns object for application/json", async () => {
-		const res = mockResponse('{"w":4}');
-		expect(await getResponseBody(res)).toEqual({ w: 4 });
+	test("returns JSON for application/json", async () => {
+		expect(await getResponseContent(mockResponse('{"w":4}', "application/json"))).toEqual({ w: 4 });
+		expect(await getResponseContent(mockResponse("[1,2,3]", "application/json"))).toEqual([1, 2, 3]);
+		expect(await getResponseContent(mockResponse('"abc"', "application/json"))).toEqual("abc");
+		expect(await getResponseContent(mockResponse("123", "application/json"))).toEqual(123);
+		expect(await getResponseContent(mockResponse("true", "application/json"))).toEqual(true);
+		expect(await getResponseContent(mockResponse("false", "application/json"))).toEqual(false);
+		expect(await getResponseContent(mockResponse("null", "application/json"))).toEqual(null);
+	});
+	test("throws for invalid JSON", async () => {
+		const req = mockResponse("aaaaaa", "application/json");
+		try {
+			await getResponseContent(req);
+			expect(false).toBe(true);
+		} catch (error) {
+			expect(error).toBeInstanceOf(ResponseError);
+		}
 	});
 	test("throws for unsupported content type", async () => {
-		const res = mockResponse("hi", "application/xml");
 		try {
-			await getResponseBody(res);
+			await getResponseContent(mockResponse("hi", "application/xml"));
 		} catch (error) {
 			expect(error).toBeInstanceOf(ResponseError);
 		}
