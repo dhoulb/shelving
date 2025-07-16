@@ -4,7 +4,7 @@ import { ResponseError } from "../error/ResponseError.js";
 import { getDictionary } from "./dictionary.js";
 
 /** A handler function takes a `Request` and returns a `Response` (possibly asynchronously). */
-export type Handler = (request: Request) => Response | Promise<Response>;
+export type RequestHandler = (request: Request) => Response | Promise<Response>;
 
 export async function _getMessageJSON(
 	message: Request | Response,
