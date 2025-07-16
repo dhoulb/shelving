@@ -1,8 +1,6 @@
-import type { AnyCaller } from "../error/BaseError.js";
-import { ValueError } from "../error/ValueError.js";
-import { Feedback } from "../feedback/Feedback.js";
 import type { Path } from "../util/path.js";
 import { UNDEFINED, type Validator } from "../util/validate.js";
+import type { EndpointCallback, EndpointHandler } from "./util.js";
 
 /** Types for an HTTP request or response that does something. */
 export type EndpointMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -49,16 +47,17 @@ export class Endpoint<P, R> implements Validator<R> {
 	 * Validate a result for this resource.
 	 *
 	 * @returns The validated result for this resource.
-	 * @throws ValueError if the result could not be validated.
+	 * @throws `Feedback` if the value is invalid. `Feedback` instances can be reported safely back to the end client so they know how to fix their request.
 	 */
-	validate(unsafeResult: unknown, caller: AnyCaller = this.validate): R {
-		try {
-			return this.result.validate(unsafeResult);
-		} catch (thrown) {
-			if (thrown instanceof Feedback)
-				throw new ValueError(`Invalid result for resource "${this.path}"`, { received: unsafeResult, caller });
-			throw thrown;
-		}
+	validate(unsafeResult: unknown): R {
+		return this.result.validate(unsafeResult);
+	}
+
+	/**
+	 * Return an `EndpointHandler` for this endpoint
+	 */
+	handler(callback: EndpointCallback<P, R>): EndpointHandler<P, R> {
+		return { endpoint: this, callback };
 	}
 }
 
@@ -75,12 +74,8 @@ export type EndpointType<X extends Endpoint<unknown, unknown>> = X extends Endpo
 export function GET<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
 export function GET<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
 export function GET<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
-export function GET(
-	path: Path,
-	payload: Validator<unknown> = UNDEFINED,
-	result: Validator<unknown> = UNDEFINED,
-): Endpoint<unknown, unknown> {
-	return new Endpoint("GET", path, payload, result);
+export function GET(path: Path, payload?: Validator<unknown>, result?: Validator<unknown>): unknown {
+	return new Endpoint("GET", path, payload || UNDEFINED, result || UNDEFINED);
 }
 
 /**
@@ -90,12 +85,8 @@ export function GET(
 export function POST<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
 export function POST<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
 export function POST<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
-export function POST(
-	path: Path,
-	payload: Validator<unknown> = UNDEFINED,
-	result: Validator<unknown> = UNDEFINED,
-): Endpoint<unknown, unknown> {
-	return new Endpoint("POST", path, payload, result);
+export function POST(path: Path, payload?: Validator<unknown>, result?: Validator<unknown>): unknown {
+	return new Endpoint("POST", path, payload || UNDEFINED, result || UNDEFINED);
 }
 
 /**
@@ -105,12 +96,8 @@ export function POST(
 export function PUT<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
 export function PUT<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
 export function PUT<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
-export function PUT(
-	path: Path,
-	payload: Validator<unknown> = UNDEFINED,
-	result: Validator<unknown> = UNDEFINED,
-): Endpoint<unknown, unknown> {
-	return new Endpoint("PUT", path, payload, result);
+export function PUT(path: Path, payload?: Validator<unknown>, result?: Validator<unknown>): unknown {
+	return new Endpoint("PUT", path, payload || UNDEFINED, result || UNDEFINED);
 }
 
 /**
@@ -120,12 +107,8 @@ export function PUT(
 export function PATCH<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
 export function PATCH<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
 export function PATCH<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
-export function PATCH(
-	path: Path,
-	payload: Validator<unknown> = UNDEFINED,
-	result: Validator<unknown> = UNDEFINED,
-): Endpoint<unknown, unknown> {
-	return new Endpoint("PATCH", path, payload, result);
+export function PATCH(path: Path, payload?: Validator<unknown>, result?: Validator<unknown>): unknown {
+	return new Endpoint("PATCH", path, payload || UNDEFINED, result || UNDEFINED);
 }
 
 /**
@@ -135,10 +118,6 @@ export function PATCH(
 export function DELETE<P, R>(path: Path, payload?: Validator<P>, result?: Validator<R>): Endpoint<P, R>;
 export function DELETE<P>(path: Path, payload: Validator<P>): Endpoint<P, undefined>;
 export function DELETE<R>(path: Path, payload: undefined, result: Validator<R>): Endpoint<undefined, R>;
-export function DELETE(
-	path: Path,
-	payload: Validator<unknown> = UNDEFINED,
-	result: Validator<unknown> = UNDEFINED,
-): Endpoint<unknown, unknown> {
-	return new Endpoint("DELETE", path, payload, result);
+export function DELETE(path: Path, payload?: Validator<unknown>, result?: Validator<unknown>): unknown {
+	return new Endpoint("DELETE", path, payload || UNDEFINED, result || UNDEFINED);
 }
