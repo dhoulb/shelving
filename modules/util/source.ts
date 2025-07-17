@@ -1,3 +1,4 @@
+import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { Class } from "./class.js";
 import { isObject } from "./object.js";
@@ -16,8 +17,8 @@ export function getSource<T>(type: Class<T>, value: unknown): T | undefined {
 }
 
 /** Recurse through `Sourceable` objects and return the first one that is an instance of `type`, or throw `RequiredError` if no source object matches. */
-export function requireSource<T>(type: Class<T>, data: unknown): T {
+export function requireSource<T>(type: Class<T>, data: unknown, caller: AnyCaller = requireSource): T {
 	const source = getSource(type, data);
-	if (!source) throw new RequiredError(`Source "${type.name}" not found`, { received: data, expected: type, caller: requireSource });
+	if (!source) throw new RequiredError(`Source "${type.name}" not found`, { received: data, expected: type, caller });
 	return source;
 }
