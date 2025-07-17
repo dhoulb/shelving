@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import type { JSXElement } from "../../util/jsx.js";
 import { MARKUP_RULES, renderMarkup } from "../index.js";
 
-const $$typeof = Symbol.for("react.element");
+const $$typeof = Symbol.for("react.transitional.element");
 const OPTIONS = {
 	rules: MARKUP_RULES,
 };

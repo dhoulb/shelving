@@ -3,7 +3,7 @@ import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
 import { MARKUP_RULES, renderMarkup } from "../index.js";
 
-const $$typeof = Symbol.for("react.element");
+const $$typeof = Symbol.for("react.transitional.element");
 const OPTIONS = {
 	rules: MARKUP_RULES,
 };
