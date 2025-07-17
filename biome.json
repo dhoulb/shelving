@@ -18,7 +18,9 @@
 				"noConstantMathMinMaxClamp": "error",
 				"noUndeclaredVariables": "error",
 				"noUnusedImports": "error",
-				"useHookAtTopLevel": "error"
+				"useHookAtTopLevel": "error",
+				"noUnknownFunction": "error",
+				"noUnknownUnit": "error"
 			},
 			"style": {
 				"noNamespace": "error",
@@ -26,20 +28,17 @@
 				"noShoutyConstants": "error",
 				"useCollapsedElseIf": "error",
 				"useForOf": "error",
-				"useShorthandAssign": "error"
+				"useShorthandAssign": "error",
+				"useConsistentBuiltinInstantiation": "error"
 			},
 			"suspicious": {
 				"noConsoleLog": "error",
 				"noEmptyBlockStatements": "error",
 				"noSkippedTests": "error",
-				"useAwait": "error"
+				"useAwait": "error",
+				"noEmptyBlock": "error"
 			},
-			"nursery": {
-				"noDuplicateJsonKeys": "error",
-				"noEmptyBlock": "error",
-				"noUnknownFunction": "error",
-				"noUnknownUnit": "error",
-				"useConsistentBuiltinInstantiation": "error",
+			"a11y": {
 				"useGenericFontNames": "error"
 			}
 		}
