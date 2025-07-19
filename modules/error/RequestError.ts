@@ -33,7 +33,6 @@ export class NotFoundError extends RequestError {
 	override readonly code = 404;
 	constructor(message = NotFoundError.prototype.message, options?: RequestErrorOptions) {
 		super(message, { caller: NotFoundError, code: 404, ...options });
-		Error.captureStackTrace(this, NotFoundError);
 	}
 }
 NotFoundError.prototype.name = "NotFoundError";
@@ -44,7 +43,6 @@ export class UnprocessableError extends RequestError {
 	override readonly code: number = 422;
 	constructor(message = UnprocessableError.prototype.message, options?: RequestErrorOptions) {
 		super(message, { caller: UnprocessableError, code: 422, ...options });
-		Error.captureStackTrace(this, UnprocessableError);
 	}
 }
 UnprocessableError.prototype.name = "UnprocessableError";

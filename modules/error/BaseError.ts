@@ -22,16 +22,11 @@ export abstract class BaseError extends Error {
 	/** Provide additional named contextual data that should be attached to the `Error` instance. */
 	[key: string]: unknown;
 
-	constructor(message?: string, options?: BaseErrorOptions) {
-		if (options) {
-			super(message, options);
-			const { cause, caller = BaseError, ...rest } = options;
-			for (const [key, value] of Object.entries(rest)) this[key] = value;
-			Error.captureStackTrace(this, caller);
-		} else {
-			super(message);
-			Error.captureStackTrace(this, BaseError);
-		}
+	constructor(message: string, options: BaseErrorOptions) {
+		super(message, options);
+		const { cause, caller = BaseError, ...rest } = options;
+		for (const [key, value] of Object.entries(rest)) this[key] = value;
+		Error.captureStackTrace(this, caller);
 	}
 }
 BaseError.prototype.name = "BaseError";
