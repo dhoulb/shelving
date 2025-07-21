@@ -7,4 +7,3 @@ export class ValueError extends BaseError {
 	}
 }
 ValueError.prototype.name = "ValueError";
-ValueError.prototype.message = "Invalid value";

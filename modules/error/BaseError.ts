@@ -1,4 +1,5 @@
 import type { AnyConstructor } from "../util/class.js";
+import type { MutableDictionary } from "../util/dictionary.js";
 import type { AnyFunction } from "../util/function.js";
 
 /** Any calling function or constructor that can appear in a stack tracer. */
@@ -19,15 +20,14 @@ export interface BaseErrorOptions extends ErrorOptions {
 
 /** An error that provides additional helpful functionality. */
 export abstract class BaseError extends Error {
-	/** Provide additional named contextual data that should be attached to the `Error` instance. */
-	[key: string]: unknown;
+	/** Provide additional named contextual data that is relevant to the `Error` instance. */
+	readonly [key: string]: unknown;
 
-	constructor(message: string, options: BaseErrorOptions) {
+	constructor(message?: string, options: BaseErrorOptions = {}) {
 		super(message, options);
 		const { cause, caller = BaseError, ...rest } = options;
-		for (const [key, value] of Object.entries(rest)) this[key] = value;
+		for (const [key, value] of Object.entries(rest)) (this as MutableDictionary<unknown>)[key] = value;
 		Error.captureStackTrace(this, caller);
 	}
 }
 BaseError.prototype.name = "BaseError";
-BaseError.prototype.message = "Unknown error";

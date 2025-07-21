@@ -10,4 +10,3 @@ export class RequiredError extends BaseError {
 	}
 }
 RequiredError.prototype.name = "RequiredError";
-RequiredError.prototype.message = "Value is required";

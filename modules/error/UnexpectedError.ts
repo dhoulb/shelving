@@ -7,4 +7,3 @@ export class UnexpectedError extends BaseError {
 	}
 }
 UnexpectedError.prototype.name = "UnexpectedError";
-UnexpectedError.prototype.message = "Unexpected error";

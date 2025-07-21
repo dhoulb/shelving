@@ -7,4 +7,3 @@ export class UnimplementedError extends BaseError {
 	}
 }
 UnimplementedError.prototype.name = "UnimplementedError";
-UnimplementedError.prototype.message = "Not implemented";

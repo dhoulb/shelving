@@ -7,4 +7,3 @@ export class ResponseError extends BaseError {
 	}
 }
 ResponseError.prototype.name = "ResponseError";
-ResponseError.prototype.message = "Invalid response";

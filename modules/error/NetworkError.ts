@@ -7,4 +7,3 @@ export class NetworkError extends BaseError {
 	}
 }
 NetworkError.prototype.name = "NetworkError";
-NetworkError.prototype.message = "Network error";
