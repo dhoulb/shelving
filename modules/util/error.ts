@@ -8,5 +8,5 @@ export function logError(reason: unknown): void {
 
 /** Is an unknown value an `Error` instance? */
 export function isError(v: unknown): v is Error & { readonly code?: string | undefined } {
-	return v instanceof Error;
+	return typeof Error.isError === "function" ? Error.isError(v) : v instanceof Error;
 }
