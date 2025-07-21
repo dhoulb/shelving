@@ -1,6 +1,6 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { Entry } from "./entry.js";
+import type { AnyCaller } from "./function.js";
 import { isIterable, limitItems } from "./iterate.js";
 
 /** `Map` that cannot be changed. */

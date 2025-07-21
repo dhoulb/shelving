@@ -1,10 +1,10 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { UnauthorizedError } from "../error/RequestError.js";
 import { ValueError } from "../error/ValueError.js";
 import { decodeBase64URLBytes, decodeBase64URLString, encodeBase64URL } from "./base64.js";
 import { type PossibleBytes, getBytes, requireBytes } from "./bytes.js";
 import { DAY } from "./constants.js";
 import type { Data } from "./data.js";
+import type { AnyCaller } from "./function.js";
 import type { AnyFunction } from "./function.js";
 
 // Constants.

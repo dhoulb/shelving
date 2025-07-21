@@ -1,9 +1,5 @@
-import type { AnyConstructor } from "../util/class.js";
 import type { MutableDictionary } from "../util/dictionary.js";
-import type { AnyFunction } from "../util/function.js";
-
-/** Any calling function or constructor that can appear in a stack tracer. */
-export type AnyCaller = AnyFunction | AnyConstructor;
+import type { AnyCaller } from "../util/function.js";
 
 /** Options for `BaseError` that provide additional helpful error functionality. */
 export interface BaseErrorOptions extends ErrorOptions {

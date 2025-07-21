@@ -1,8 +1,8 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
 import { requireArray } from "./array.js";
+import type { AnyCaller } from "./function.js";
 import { isBetween } from "./number.js";
 
 /**

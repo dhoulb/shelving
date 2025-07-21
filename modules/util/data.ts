@@ -1,7 +1,7 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import type { EntryObject } from "./entry.js";
+import type { AnyCaller } from "./function.js";
 import { isIterable } from "./iterate.js";
 import type { DeepPartial } from "./object.js";
 import { isObject, isPlainObject } from "./object.js";

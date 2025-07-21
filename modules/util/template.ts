@@ -1,8 +1,8 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
 import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
+import type { AnyCaller } from "./function.js";
 import { setMapItem } from "./map.js";
 import { type Mutable, isObject } from "./object.js";
 import type { NotString } from "./string.js";

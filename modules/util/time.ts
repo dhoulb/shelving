@@ -1,7 +1,7 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MINUTE, SECOND } from "./constants.js";
 import { getDate } from "./date.js";
+import type { AnyCaller } from "./function.js";
 import { wrapNumber } from "./number.js";
 
 /** Class representing a time in the day in 24 hour format in the user's current locale. */

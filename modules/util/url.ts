@@ -1,5 +1,5 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import type { AnyCaller } from "./function.js";
 import { type Optional, notOptional } from "./optional.js";
 
 /** Values that can be converted to a URL instance. */

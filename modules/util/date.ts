@@ -1,6 +1,6 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { DAY, HOUR, MONTH, SECOND, WEEK } from "./constants.js";
+import type { AnyCaller } from "./function.js";
 import { TIME_UNITS, type TimeUnitKey, type Unit } from "./units.js";
 
 /** Values that can be converted to dates. */

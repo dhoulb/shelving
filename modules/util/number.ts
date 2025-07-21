@@ -1,6 +1,6 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
+import type { AnyCaller } from "./function.js";
 
 /** Values that can be converted to a number. */
 export type PossibleNumber = number | string | Date;

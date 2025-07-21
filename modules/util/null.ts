@@ -1,5 +1,5 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import type { AnyCaller } from "./function.js";
 
 /** Function that always returns null. */
 export function getNull(): null {

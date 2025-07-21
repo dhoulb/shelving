@@ -1,7 +1,7 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequestError } from "../error/RequestError.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { getDictionary } from "./dictionary.js";
+import type { AnyCaller } from "./function.js";
 
 /** A handler function takes a `Request` and returns a `Response` (possibly asynchronously). */
 export type RequestHandler = (request: Request) => Response | Promise<Response>;

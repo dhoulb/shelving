@@ -1,4 +1,4 @@
-import type { AnyCaller, BaseError, BaseErrorOptions } from "../error/BaseError.js";
+import type { BaseError, BaseErrorOptions } from "../error/BaseError.js";
 import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
 import { ValueFeedbacks } from "../feedback/Feedbacks.js";
@@ -9,6 +9,7 @@ import type { Data } from "./data.js";
 import { getDataProps } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
+import type { AnyCaller } from "./function.js";
 import { PASSTHROUGH } from "./function.js";
 import { isIterable } from "./iterate.js";
 import { getNull } from "./null.js";

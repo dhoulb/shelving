@@ -1,4 +1,4 @@
-/** Callback function that reports an error. */
+/** Callback function that handles an error (naming matches `RequestHandler`). */
 export type Report = (reason: unknown) => void;
 
 /** Log an error to the console. */

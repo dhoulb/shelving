@@ -1,5 +1,5 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import type { AnyCaller } from "./function.js";
 import { type Optional, notOptional } from "./optional.js";
 
 /** Absolute path string starts with `/` slash. */

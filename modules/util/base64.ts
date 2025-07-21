@@ -1,6 +1,6 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { ValueError } from "../error/ValueError.js";
 import { type PossibleBytes, requireBytes } from "./bytes.js";
+import type { AnyCaller } from "./function.js";
 
 const BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const BASE64URL_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";

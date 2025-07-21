@@ -1,8 +1,8 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import { isArray } from "./array.js";
 import type { Match } from "./filter.js";
+import type { AnyCaller } from "./function.js";
 import type { ImmutableMap } from "./map.js";
 import { isMap } from "./map.js";
 import type { ImmutableObject } from "./object.js";

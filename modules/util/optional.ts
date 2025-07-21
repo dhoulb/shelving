@@ -1,5 +1,5 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import type { AnyCaller } from "./function.js";
 
 /** Optional is the value or `null` or `undefined` (synonym for `Nullish`). */
 export type Optional<T> = T | null | undefined;

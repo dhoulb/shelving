@@ -1,6 +1,6 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { Class } from "./class.js";
+import type { AnyCaller } from "./function.js";
 import { isObject } from "./object.js";
 
 /** Something that has a source of a specified type. */

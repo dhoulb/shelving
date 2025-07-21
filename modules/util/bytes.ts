@@ -1,5 +1,5 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import type { AnyCaller } from "./function.js";
 
 /** Types that can be converted to a `Uint8Array` byte sequence. */
 export type PossibleBytes = Uint8Array | ArrayBuffer | string;

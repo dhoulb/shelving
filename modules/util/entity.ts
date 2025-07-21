@@ -1,5 +1,5 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
+import type { AnyCaller } from "./function.js";
 import type { Optional } from "./optional.js";
 
 /** Entity strings combine a type and ID, e.g. `challenge:a1b2c3` */

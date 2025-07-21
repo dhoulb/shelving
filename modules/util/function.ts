@@ -1,4 +1,5 @@
 import { RequiredError } from "../error/RequiredError.js";
+import type { AnyConstructor } from "./class.js";
 
 /** Unknown function. */
 export type UnknownFunction = (...args: unknown[]) => unknown;
@@ -6,6 +7,9 @@ export type UnknownFunction = (...args: unknown[]) => unknown;
 /** Any function (purposefully as wide as possible for use with `extends X` or `is X` statements). */
 // biome-ignore lint/suspicious/noExplicitAny: `unknown` causes edge case matching issues.
 export type AnyFunction = (...args: any) => any;
+
+/** Any calling function or constructor, usually referring to something that can call in the current scope that can appear in a stack trace. */
+export type AnyCaller = AnyFunction | AnyConstructor;
 
 /** Is a value a function? */
 export function isFunction(value: unknown): value is AnyFunction {

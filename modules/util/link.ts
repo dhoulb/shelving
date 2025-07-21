@@ -1,6 +1,6 @@
-import type { AnyCaller } from "../error/BaseError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
+import type { AnyCaller } from "./function.js";
 import type { Optional } from "./optional.js";
 import type { Path } from "./path.js";
 import { type PossibleURL, getURL, isURL } from "./url.js";
