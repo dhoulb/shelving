@@ -20,6 +20,9 @@ export type ValuesCallback<T extends Arguments = []> = (...values: T) => void;
 /** Callback function that receives multiple values and possibly returns a promise that must be handled. */
 export type AsyncValuesCallback<T extends Arguments = []> = (...values: T) => void | PromiseLike<void>;
 
+/** Callback function that receives an error. */
+export type ErrorCallback = (reason: unknown) => void;
+
 /** Safely call a callback function (possibly with a value). */
 export function call<A extends Arguments = []>(callback: (...v: A) => unknown, ...values: A): void {
 	try {

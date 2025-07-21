@@ -1,7 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
-import type { ValueCallback } from "./callback.js";
-import type { Report } from "./error.js";
+import type { ErrorCallback, ValueCallback } from "./callback.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
 export function isAsync<T>(value: PromiseLike<T> | T): value is PromiseLike<T> {
@@ -74,10 +73,10 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 	/** Resolve this promise with a value. */
 	protected readonly _resolve: ValueCallback<T>;
 	/** Reject this promise with a reason. */
-	protected readonly _reject: Report;
+	protected readonly _reject: ErrorCallback;
 	constructor() {
 		let _resolve: ValueCallback<T>;
-		let _reject: Report;
+		let _reject: ErrorCallback;
 		super((x, y) => {
 			_resolve = x;
 			_reject = y;
@@ -93,7 +92,7 @@ export abstract class AbstractPromise<T> extends Promise<T> {
 export type Deferred<T> = {
 	promise: Promise<T>;
 	resolve: ValueCallback<T>;
-	reject: Report;
+	reject: ErrorCallback;
 };
 
 /**
@@ -102,7 +101,7 @@ export type Deferred<T> = {
  */
 export function getDeferred<T = unknown>(): Deferred<T> {
 	let resolve: ValueCallback<T>;
-	let reject: Report;
+	let reject: ErrorCallback;
 	return {
 		promise: new Promise<T>((x, y) => {
 			resolve = x;

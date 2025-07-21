@@ -1,6 +1,3 @@
-/** Callback function that handles an error (naming matches `RequestHandler`). */
-export type Report = (reason: unknown) => void;
-
 /** Log an error to the console. */
 export function logError(reason: unknown): void {
 	console.error(reason);
