@@ -53,8 +53,9 @@ export type EndpointHandlers = ReadonlyArray<AnyEndpointHandler>;
  */
 export function handleEndpoints(request: Request, endpoints: EndpointHandlers): Promise<Response> {
 	// Parse the URL of the request.
-	const url = getURL(request.url);
-	if (!url) throw new RequestError("Invalid request URL", { received: request.url, caller: handleEndpoints });
+	const requestUrl = request.url;
+	const url = getURL(requestUrl);
+	if (!url) throw new RequestError("Invalid request URL", { received: requestUrl, caller: handleEndpoints });
 	const { pathname, searchParams } = url;
 
 	// Iterate over the handlers and return the first one that matches the request.
@@ -75,9 +76,10 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers): 
 	}
 
 	// No handler matched the request.
-	throw new NotFoundError("Not found", { request, caller: handleEndpoints });
+	throw new NotFoundError("No matching endpoint", { received: requestUrl, caller: handleEndpoints });
 }
 
+/** Handle an individual call to an endpoint callback. */
 async function getEndpointResponse<P, R>(
 	endpoint: Endpoint<P, R>,
 	callback: EndpointCallback<P, R>,
