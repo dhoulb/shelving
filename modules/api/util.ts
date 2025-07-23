@@ -1,7 +1,10 @@
 import { NotFoundError, RequestError } from "../error/RequestError.js";
 import { ValueError } from "../error/ValueError.js";
+import { Feedback } from "../feedback/Feedback.js";
+import type { ErrorCallback } from "../util/callback.js";
 import { isData } from "../util/data.js";
 import { type ImmutableDictionary, getDictionary } from "../util/dictionary.js";
+import { isError, logError } from "../util/error.js";
 import { getRequestContent } from "../util/http.js";
 import { matchTemplate } from "../util/template.js";
 import { getURL } from "../util/url.js";
@@ -107,4 +110,36 @@ async function getEndpointResponse<P, R>(
 
 	// Return a new `Response` with a 200 status and the validated result data.
 	return Response.json(result);
+}
+
+/**
+ * Correctly interpret an error thrown from an endpoint and return the correct `Response`.
+ *
+ * Returns the correct `Response` based on the type of error thrown:
+ * - `Response` if the error is a custom response, return it directly.
+ * - `Feedback` if the error is a feedback message, return a 400 response with the feedback's message as JSON, e.g. `{ message: "Invalid input" }`.
+ * - `RequestError` if the error is a request error, return a response with the error's message and status code.
+ * - All other errors return a 500 response with a generic error message.
+ *
+ * @param reason The error thrown from the endpoint.
+ * @param debug If true, include the error message in the response (useful for debugging).
+ * @param callback A function to log the error, defaults to `logError`.
+ */
+export function handleEndpointError(reason: unknown, debug = false, logger: ErrorCallback = logError): Response {
+	// Throw `Response` to do a custom response that is not logged.
+	if (reason instanceof Response) return reason;
+
+	// Throw 'Feedback' to show a message to the client, e.g. for input validation.
+	// Converted exactly to JSON, so an object with either `.message` or `.messages` fields are sent back.
+	if (reason instanceof Feedback) return Response.json(reason, { status: 400 });
+
+	// Log the thrown error to the console.
+	logger(reason);
+
+	// Errors show `message` (but only if `debug` is true so we don't leak error details to the client).
+	// Request errors (e.g. `UnauthorizedError`) have a status code too.
+	if (isError(reason)) return new Response(debug ? reason.message : "", { status: reason instanceof RequestError ? reason.code : 500 });
+
+	// Non-errors return 500 error.
+	return new Response("", { status: 500 });
 }
