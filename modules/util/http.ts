@@ -1,6 +1,8 @@
 import { RequestError } from "../error/RequestError.js";
 import { ResponseError } from "../error/ResponseError.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { getDictionary } from "./dictionary.js";
+import { isError } from "./error.js";
 import type { AnyCaller } from "./function.js";
 
 /** A handler function takes a `Request` and returns a `Response` (possibly asynchronously). */
@@ -92,4 +94,51 @@ export function getRequestJSON(message: Request, caller: AnyCaller = getRequestJ
  */
 export function getResponseJSON(message: Response, caller: AnyCaller = getResponseJSON): Promise<unknown> {
 	return _getMessageJSON(message, ResponseError, caller);
+}
+
+/**
+ * Get an HTTP `Response` for an unknown value.
+ *
+ * @param value The value to convert to a `Response`.
+ * @returns A `Response` with a 2xx status, and response body as JSON (if it was set), or no body if `value` is `undefined`
+ */
+export function getResponse(value: unknown): Response {
+	// If it's already a `Response`, return it directly.
+	if (value instanceof Response) return value;
+
+	// If result is undefined, return 204 No Content response.
+	if (value === undefined) return new Response(undefined, { status: 204 });
+
+	// Return a new `Response` with a 2xx status and response body as JSON.
+	return Response.json(value, { status: 200 });
+}
+
+/**
+ * Get an HTTP `Response` for an unknown error value.
+ *
+ * Returns the correct `Response` based on the type of error thrown:
+ * - If `reason` is a `Response` instance, return it directly.
+ * - If `reason` is a `Feedback` instance, return a 400 response with the feedback's message as JSON, e.g. `{ message: "Invalid input" }`
+ * - If `reason` is an `RequestError` instance, return a response with the error's message and code (but only if `debug` is true so we don't leak error details to the client).
+ * - If `reason` is an `Error` instance, return a 500 response with the error's message (but only if `debug` is true so we don't leak error details to the client).
+ * - Anything else returns a 500 response.
+ *
+ * @param reason The error value to convert to a `Response`.
+ * @param debug If `true` include the error message in the response (for debugging), or `false` to return generic error codes (for security).
+ */
+export function getErrorResponse(reason: unknown, debug = false): Response {
+	// If it's already a `Response`, return it directly.
+	if (reason instanceof Response) return reason;
+
+	// Throw 'Feedback' to return `{ message: "etc" }` to the client, e.g. for input validation.
+	if (reason instanceof Feedback) return Response.json(reason, { status: 422 }); // HTTP 422 Unprocessable Entity
+
+	// Throw `RequestError` to set a custom status code (e.g. `UnauthorizedError`).
+	const status = reason instanceof RequestError ? reason.code : 500;
+
+	// Throw `Error` to return `{ message: "etc" }` to the client (but only if `debug` is true so we don't leak error details to the client).
+	if (debug && isError(reason)) return Response.json(reason, { status });
+
+	// Otherwise return a generic error message with no details.
+	return new Response(undefined, { status });
 }
