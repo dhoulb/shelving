@@ -1,6 +1,6 @@
-import { ValueError } from "../error/ValueError.js";
+import { getResponse } from "../util/http.js";
 import type { Path } from "../util/path.js";
-import { UNDEFINED, type Validator, getValid } from "../util/validate.js";
+import { UNDEFINED, type Validator } from "../util/validate.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
 /** Types for an HTTP request or response that does something. */
@@ -14,7 +14,7 @@ export type EndpointMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
  * @param payload A `Validator` for the payload of the resource.
  * @param result A `Validator` for the result of the resource.
  */
-export class Endpoint<P, R> implements Validator<R> {
+export class Endpoint<P, R> {
 	/** Endpoint method. */
 	readonly method: EndpointMethod;
 
@@ -35,26 +35,6 @@ export class Endpoint<P, R> implements Validator<R> {
 	}
 
 	/**
-	 * Validate a payload for this resource.
-	 *
-	 * @returns The validated payload for this resource.
-	 * @throws `Feedback` if the payload is invalid. `Feedback` instances can be reported safely back to the end client so they know how to fix their request.
-	 */
-	prepare(unsafePayload: unknown): P {
-		return this.payload.validate(unsafePayload);
-	}
-
-	/**
-	 * Validate a result for this resource.
-	 *
-	 * @returns The validated result for this resource.
-	 * @throws `Feedback` if the value is invalid. `Feedback` instances can be reported safely back to the end client so they know how to fix their request.
-	 */
-	validate(unsafeResult: unknown): R {
-		return this.result.validate(unsafeResult);
-	}
-
-	/**
 	 * Return an `EndpointHandler` for this endpoint.
 	 *
 	 * @param callback The callback function that implements the logic for this endpoint by receiving the payload and returning the response.
@@ -71,20 +51,16 @@ export class Endpoint<P, R> implements Validator<R> {
 	 * @param request The entire HTTP request that is being handled (payload was possibly extracted from this somehow).
 	 */
 	async handle(callback: EndpointCallback<P, R>, unsafePayload: unknown, request: Request): Promise<Response> {
-		const payload = this.prepare(unsafePayload);
+		// Validate the payload against this endpoint's payload type.
+		const payload = this.payload.validate(unsafePayload);
 
 		// Call the callback with the validated payload to get the result.
-		const returned = await callback(payload, request);
+		return getResponse(await callback(payload, request));
+	}
 
-		// If the callback returned a `Response`, return it directly.
-		if (returned instanceof Response) return returned;
-
-		// Otherwise validate the result against the endpoint's result type.
-		// Throw a `ValueError` if the result is not valid, which indicates an internal error in the callback implementation.
-		const result = getValid(returned, this, ValueError, this.handle);
-
-		// Return a new `Response` with a 200 status and the validated result data.
-		return Response.json(result);
+	/** Convert to string, e.g. `GET /user/{id}` */
+	toString(): string {
+		return `${this.method} ${this.path}`;
 	}
 }
 

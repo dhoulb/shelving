@@ -1,8 +1,6 @@
 import { NotFoundError, RequestError } from "../error/RequestError.js";
-import { Feedback } from "../feedback/Feedback.js";
 import { isData } from "../util/data.js";
 import { type ImmutableDictionary, getDictionary } from "../util/dictionary.js";
-import { isError } from "../util/error.js";
 import { getRequestContent } from "../util/http.js";
 import { matchTemplate } from "../util/template.js";
 import { getURL } from "../util/url.js";
@@ -96,34 +94,4 @@ async function handleEndpoint<P, R>(
 
 	// Call `endpoint.handle()` with the payload and request.
 	return endpoint.handle(callback, payload, request);
-}
-
-/**
- * Correctly interpret an error thrown from an endpoint and return the correct `Response`.
- *
- * Returns the correct `Response` based on the type of error thrown:
- * - If `reason` is a `Response` instance, return it directly.
- * - If `reason` is a `Feedback` instance, return a 400 response with the feedback's message as JSON, e.g. `{ message: "Invalid input" }`
- * - If `reason` is an `RequestError` instance, return a response with the error's message and code (but only if `debug` is true so we don't leak error details to the client).
- * - If `reason` is an `Error` instance, return a 500 response with the error's message (but only if `debug` is true so we don't leak error details to the client).
- * - Anything else returns a 500 response.
- *
- * @param reason The error thrown from the endpoint.
- * @param debug If `true` include the error message in the response (for debugging), or `false` to return generic error codes (for security).
- */
-export function handleEndpointError(reason: unknown, debug = false): Response {
-	// Throw `Response` to do a custom response that is not logged.
-	if (reason instanceof Response) return reason;
-
-	// Throw 'Feedback' to return `{ message: "etc" }` to the client, e.g. for input validation.
-	if (reason instanceof Feedback) return Response.json(reason, { status: 422 }); // HTTP 422 Unprocessable Entity
-
-	// Throw `RequestError` to set a custom status code (e.g. `UnauthorizedError`).
-	const status = reason instanceof RequestError ? reason.code : 500;
-
-	// Throw `Error` to return `{ message: "etc" }` to the client (but only if `debug` is true so we don't leak error details to the client).
-	if (debug && isError(reason)) return Response.json(reason, { status });
-
-	// Otherwise return a generic error message.
-	return new Response(undefined, { status });
 }
