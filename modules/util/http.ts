@@ -38,18 +38,17 @@ export function _getMessageContent(
 	caller: AnyCaller,
 ): Promise<unknown> {
 	const type = message.headers.get("Content-Type");
-	if (type?.startsWith("text/plain")) return message.text();
 	if (type?.startsWith("application/json")) return _getMessageJSON(message, MessageError, caller);
 	if (type?.startsWith("multipart/form-data")) return _getMessageFormData(message, MessageError, caller);
-	throw new MessageError("Unexpected content type", { received: type, caller });
+	return message.text();
 }
 
 /**
  * Get the body content of an HTTP `Request` based on its content type, or throw `RequestError` if the content could not be parsed.
  *
- * @returns string If content type is `text/plain` (including empty string if it's empty).
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
  * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
+ * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
  * @throws RequestError if the content is not `text/plain`, or `application/json` with valid JSON.
  */
@@ -61,12 +60,36 @@ export function getRequestContent(message: Request, caller: AnyCaller = getReque
 /**
  * Get the body content of an HTTP `Response` based on its content type, or throw `ResponseError` if the content could not be parsed.
  *
- * @returns string If content type is `text/plain` (including empty string if it's empty).
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
  * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
+ * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
  * @throws RequestError if the content is not `text/plain` or `application/json` with valid JSON.
  */
 export function getResponseContent(message: Response, caller: AnyCaller = getResponseContent): Promise<unknown> {
 	return _getMessageContent(message, ResponseError, caller);
+}
+
+/**
+ * Get the body content of an HTTP `Request` as JSON, or throw `RequestError` if the content could not be parsed.
+ * - Doesn't check the `Content-Type` header, so it can be used for any request.
+ *
+ * @returns unknown The parsed JSON content of the request body, or `undefined` if the body is empty.
+ *
+ * @throws RequestError if the content is not valid JSON.
+ */
+export function getRequestJSON(message: Request, caller: AnyCaller = getRequestJSON): Promise<unknown> {
+	return _getMessageJSON(message, RequestError, caller);
+}
+
+/**
+ * Get the body content of an HTTP `Response` as JSON, or throw `ResponseError` if the content could not be parsed.
+ * - Doesn't check the `Content-Type` header, so it can be used for any response.
+ *
+ * @returns unknown The parsed JSON content of the response body, or `undefined` if the body is empty.
+ *
+ * @throws RequestError if the content is not valid JSON.
+ */
+export function getResponseJSON(message: Response, caller: AnyCaller = getResponseJSON): Promise<unknown> {
+	return _getMessageJSON(message, ResponseError, caller);
 }
