@@ -1,5 +1,6 @@
+import { ValueError } from "../error/ValueError.js";
 import type { Path } from "../util/path.js";
-import { UNDEFINED, type Validator } from "../util/validate.js";
+import { UNDEFINED, type Validator, getValid } from "../util/validate.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
 /** Types for an HTTP request or response that does something. */
@@ -54,10 +55,36 @@ export class Endpoint<P, R> implements Validator<R> {
 	}
 
 	/**
-	 * Return an `EndpointHandler` for this endpoint
+	 * Return an `EndpointHandler` for this endpoint.
+	 *
+	 * @param callback The callback function that implements the logic for this endpoint by receiving the payload and returning the response.
 	 */
 	handler(callback: EndpointCallback<P, R>): EndpointHandler<P, R> {
 		return { endpoint: this, callback };
+	}
+
+	/**
+	 * Handle a request to this endpoint with a callback implementation, with a given payload and request.
+	 *
+	 * @param callback The endpoint callback function that implements the logic for this endpoint by receiving the payload and returning the response.
+	 * @param unsafePayload The payload to pass into the callback (will be validated against this endpoint's payload schema).
+	 * @param request The entire HTTP request that is being handled (payload was possibly extracted from this somehow).
+	 */
+	async handle(callback: EndpointCallback<P, R>, unsafePayload: unknown, request: Request): Promise<Response> {
+		const payload = this.prepare(unsafePayload);
+
+		// Call the callback with the validated payload to get the result.
+		const returned = await callback(payload, request);
+
+		// If the callback returned a `Response`, return it directly.
+		if (returned instanceof Response) return returned;
+
+		// Otherwise validate the result against the endpoint's result type.
+		// Throw a `ValueError` if the result is not valid, which indicates an internal error in the callback implementation.
+		const result = getValid(returned, this, ValueError, this.handle);
+
+		// Return a new `Response` with a 200 status and the validated result data.
+		return Response.json(result);
 	}
 }
 

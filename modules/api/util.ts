@@ -1,14 +1,11 @@
 import { NotFoundError, RequestError } from "../error/RequestError.js";
-import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
-import type { ErrorCallback } from "../util/callback.js";
 import { isData } from "../util/data.js";
 import { type ImmutableDictionary, getDictionary } from "../util/dictionary.js";
-import { isError, logError } from "../util/error.js";
+import { isError } from "../util/error.js";
 import { getRequestContent } from "../util/http.js";
 import { matchTemplate } from "../util/template.js";
 import { getURL } from "../util/url.js";
-import { getValid } from "../util/validate.js";
 import type { Endpoint } from "./Endpoint.js";
 
 /**
@@ -75,7 +72,7 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers): 
 		const params: ImmutableDictionary<string> = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
 
 		// Get the response by calling the callback.
-		return getEndpointResponse(endpoint, callback, params, request);
+		return handleEndpoint(endpoint, callback, params, request);
 	}
 
 	// No handler matched the request.
@@ -83,7 +80,7 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers): 
 }
 
 /** Handle an individual call to an endpoint callback. */
-async function getEndpointResponse<P, R>(
+async function handleEndpoint<P, R>(
 	endpoint: Endpoint<P, R>,
 	callback: EndpointCallback<P, R>,
 	params: ImmutableDictionary<string>,
@@ -95,51 +92,38 @@ async function getEndpointResponse<P, R>(
 	// If content is undefined, it means the request has no body, so params are the only payload.
 	// If the content is a data object merge if with the params.
 	// If the content is not a data object (e.g. string, number, array), set a single `content` property and merge it with the params.
-	const unsafePayload = content === undefined ? params : isData(content) ? { ...content, ...params } : { content, ...params };
-	const payload = endpoint.prepare(unsafePayload);
+	const payload = content === undefined ? params : isData(content) ? { ...content, ...params } : { content, ...params };
 
-	// Call the callback with the validated payload to get the result.
-	const returned = await callback(payload, request);
-
-	// If the callback returned a `Response`, return it directly.
-	if (returned instanceof Response) return returned;
-
-	// Otherwise validate the result against the endpoint's result type.
-	// Throw a `ValueError` if the result is not valid, which indicates an internal error in the callback implementation.
-	const result = getValid(returned, endpoint, ValueError, handleEndpoints);
-
-	// Return a new `Response` with a 200 status and the validated result data.
-	return Response.json(result);
+	// Call `endpoint.handle()` with the payload and request.
+	return endpoint.handle(callback, payload, request);
 }
 
 /**
  * Correctly interpret an error thrown from an endpoint and return the correct `Response`.
  *
  * Returns the correct `Response` based on the type of error thrown:
- * - `Response` if the error is a custom response, return it directly.
- * - `Feedback` if the error is a feedback message, return a 400 response with the feedback's message as JSON, e.g. `{ message: "Invalid input" }`.
- * - `RequestError` if the error is a request error, return a response with the error's message and status code.
- * - All other errors return a 500 response with a generic error message.
+ * - If `reason` is a `Response` instance, return it directly.
+ * - If `reason` is a `Feedback` instance, return a 400 response with the feedback's message as JSON, e.g. `{ message: "Invalid input" }`
+ * - If `reason` is an `RequestError` instance, return a response with the error's message and code (but only if `debug` is true so we don't leak error details to the client).
+ * - If `reason` is an `Error` instance, return a 500 response with the error's message (but only if `debug` is true so we don't leak error details to the client).
+ * - Anything else returns a 500 response.
  *
  * @param reason The error thrown from the endpoint.
- * @param debug If true, include the error message in the response (useful for debugging).
- * @param callback A function to log the error, defaults to `logError`.
+ * @param debug If `true` include the error message in the response (for debugging), or `false` to return generic error codes (for security).
  */
-export function handleEndpointError(reason: unknown, debug = false, logger: ErrorCallback = logError): Response {
+export function handleEndpointError(reason: unknown, debug = false): Response {
 	// Throw `Response` to do a custom response that is not logged.
 	if (reason instanceof Response) return reason;
 
-	// Throw 'Feedback' to show a message to the client, e.g. for input validation.
-	// Converted exactly to JSON, so an object with either `.message` or `.messages` fields are sent back.
-	if (reason instanceof Feedback) return Response.json(reason, { status: 400 });
+	// Throw 'Feedback' to return `{ message: "etc" }` to the client, e.g. for input validation.
+	if (reason instanceof Feedback) return Response.json(reason, { status: 422 }); // HTTP 422 Unprocessable Entity
 
-	// Log the thrown error to the console.
-	logger(reason);
+	// Throw `RequestError` to set a custom status code (e.g. `UnauthorizedError`).
+	const status = reason instanceof RequestError ? reason.code : 500;
 
-	// Errors show `message` (but only if `debug` is true so we don't leak error details to the client).
-	// Request errors (e.g. `UnauthorizedError`) have a status code too.
-	if (isError(reason)) return new Response(debug ? reason.message : "", { status: reason instanceof RequestError ? reason.code : 500 });
+	// Throw `Error` to return `{ message: "etc" }` to the client (but only if `debug` is true so we don't leak error details to the client).
+	if (debug && isError(reason)) return Response.json(reason, { status });
 
-	// Non-errors return 500 error.
-	return new Response("", { status: 500 });
+	// Otherwise return a generic error message.
+	return new Response(undefined, { status });
 }
