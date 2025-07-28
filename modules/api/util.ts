@@ -1,7 +1,7 @@
 import { NotFoundError, RequestError } from "../error/RequestError.js";
-import { isData } from "../util/data.js";
 import { type ImmutableDictionary, getDictionary } from "../util/dictionary.js";
 import { getRequestContent } from "../util/http.js";
+import { isPlainObject } from "../util/object.js";
 import { matchTemplate } from "../util/template.js";
 import { getURL } from "../util/url.js";
 import type { Endpoint } from "./Endpoint.js";
@@ -88,9 +88,9 @@ async function handleEndpoint<P, R>(
 	const content = await getRequestContent(request, handleEndpoints);
 
 	// If content is undefined, it means the request has no body, so params are the only payload.
-	// If the content is a data object merge if with the params.
-	// If the content is not a data object (e.g. string, number, array), set a single `content` property and merge it with the params.
-	const payload = content === undefined ? params : isData(content) ? { ...content, ...params } : { content, ...params };
+	// - If the content is a plain object, merge if with the params.
+	// - If the content is anything else (e.g. string, number, array), set it as a single `content` property.
+	const payload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : { content, ...params };
 
 	// Call `endpoint.handle()` with the payload and request.
 	return endpoint.handle(callback, payload, request);

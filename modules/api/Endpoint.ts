@@ -55,7 +55,10 @@ export class Endpoint<P, R> {
 		const payload = this.payload.validate(unsafePayload);
 
 		// Call the callback with the validated payload to get the result.
-		return getResponse(await callback(payload, request));
+		const result = await callback(payload, request);
+
+		// Convert the result to a `Response` object.
+		return getResponse(result);
 	}
 
 	/** Convert to string, e.g. `GET /user/{id}` */
