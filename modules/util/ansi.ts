@@ -1,24 +1,13 @@
-// Foreground colors.
-export const ANSI_TEXT_DEFAULT = "\x1b[39m";
-export const ANSI_TEXT_BLACK = "\x1b[30m";
-export const ANSI_TEXT_RED = "\x1b[31m";
-export const ANSI_TEXT_GREEN = "\x1b[32m";
-export const ANSI_TEXT_YELLOW = "\x1b[33m";
-export const ANSI_TEXT_BLUE = "\x1b[34m";
-export const ANSI_TEXT_MAGENTA = "\x1b[35m";
-export const ANSI_TEXT_CYAN = "\x1b[36m";
-export const ANSI_TEXT_WHITE = "\x1b[37m";
-
-// Background colors.
-export const ANSI_FILL_DEFAULT = "\x1b[49m";
-export const ANSI_FILL_BLACK = "\x1b[40m";
-export const ANSI_FILL_RED = "\x1b[41m";
-export const ANSI_FILL_GREEN = "\x1b[42m";
-export const ANSI_FILL_YELLOW = "\x1b[43m";
-export const ANSI_FILL_BLUE = "\x1b[44m";
-export const ANSI_FILL_MAGENTA = "\x1b[45m";
-export const ANSI_FILL_CYAN = "\x1b[46m";
-export const ANSI_FILL_WHITE = "\x1b[47m";
+// Colors.
+export const ANSI_DEFAULT = "\x1b[39m";
+export const ANSI_BLACK = "\x1b[30m";
+export const ANSI_RED = "\x1b[31m";
+export const ANSI_GREEN = "\x1b[32m";
+export const ANSI_YELLOW = "\x1b[33m";
+export const ANSI_BLUE = "\x1b[34m";
+export const ANSI_MAGENTA = "\x1b[35m";
+export const ANSI_CYAN = "\x1b[36m";
+export const ANSI_WHITE = "\x1b[37m";
 
 // Styles.
 export const ANSI_BOLD = "\x1b[1m";
