@@ -1,4 +1,4 @@
-import { type Start, Starter } from "../util/start.js";
+import { type StartCallback, Starter } from "../util/start.js";
 import { DeferredSequence } from "./DeferredSequence.js";
 import { IteratorSequence } from "./IteratorSequence.js";
 
@@ -6,7 +6,7 @@ import { IteratorSequence } from "./IteratorSequence.js";
 export class LazyDeferredSequence<T = void> extends DeferredSequence<T> implements Disposable {
 	private _iterating = 0;
 	private _starter: Starter<[DeferredSequence<T>]>;
-	constructor(start: Start<[DeferredSequence<T>]>) {
+	constructor(start: StartCallback<[DeferredSequence<T>]>) {
 		super();
 		this._starter = new Starter(start);
 	}

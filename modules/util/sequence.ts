@@ -3,7 +3,7 @@ import type { AsyncValueCallback, ValueCallback } from "./callback.js";
 import { call, callMethod } from "./callback.js";
 import type { ErrorCallback } from "./callback.js";
 import { STOP } from "./constants.js";
-import type { Stop } from "./start.js";
+import type { StopCallback } from "./start.js";
 
 /**
  * Is a value an async iterable object?
@@ -51,7 +51,7 @@ export async function* callSequence<T>(sequence: AsyncIterable<T>, callback: Asy
 }
 
 /** Pull values from a sequence until the returned function is called. */
-export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError?: ErrorCallback): Stop {
+export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError?: ErrorCallback): StopCallback {
 	const { promise, resolve } = getDeferred<void>();
 	void _runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError);
 	return resolve;

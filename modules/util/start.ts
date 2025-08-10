@@ -2,20 +2,20 @@ import { call } from "./callback.js";
 import type { Arguments } from "./function.js";
 
 /** Callback function that starts something with multiple values and returns an optional stop callback. */
-// biome-ignore lint/suspicious/noConfusingVoidType: Start function can return nothing.
-export type Start<T extends Arguments = []> = (...values: T) => Stop | void;
+// biome-ignore lint/suspicious/noConfusingVoidType: Start function can a return a stop callback or nothing.
+export type StartCallback<T extends Arguments = []> = (...values: T) => StopCallback | void;
 
 /** Callback function that stops something. */
-export type Stop = () => void;
+export type StopCallback = () => void;
 
 /**
  * Wrapper class to handle state on start/stop callback process.
  * - If process has already started, `starter.start()` won't be called twice (including if `start()` didn't return a `stop()` callback).
  */
 export class Starter<T extends Arguments> implements Disposable {
-	private readonly _start: Start<T>;
-	private _stop: Stop | boolean = false;
-	constructor(start: Start<T>) {
+	private readonly _start: StartCallback<T>;
+	private _stop: StopCallback | boolean = false;
+	constructor(start: StartCallback<T>) {
 		this._start = start;
 	}
 	start(...values: T): void {
@@ -33,9 +33,9 @@ export class Starter<T extends Arguments> implements Disposable {
 }
 
 /** Something that can be made into a `Starter` */
-export type PossibleStarter<T extends Arguments> = Start<T> | Starter<T>;
+export type PossibleStarter<T extends Arguments> = StartCallback<T> | Starter<T>;
 
 /** Get a `Starter` from a `PossibleStarter` */
-export function getStarter<T extends Arguments>(start: Start<T> | Starter<T>): Starter<T> {
+export function getStarter<T extends Arguments>(start: StartCallback<T> | Starter<T>): Starter<T> {
 	return typeof start === "function" ? new Starter(start) : start;
 }

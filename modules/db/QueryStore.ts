@@ -7,7 +7,7 @@ import type { DataKey, Database } from "../util/data.js";
 import type { Item, ItemQuery } from "../util/item.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { runSequence } from "../util/sequence.js";
-import type { Stop } from "../util/start.js";
+import type { StopCallback } from "../util/start.js";
 import type { MemoryProvider } from "./MemoryProvider.js";
 import type { AbstractProvider } from "./Provider.js";
 
@@ -91,7 +91,7 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 	}
 
 	/** Subscribe this store to a provider. */
-	connect(provider: AbstractProvider<T> = this.provider): Stop {
+	connect(provider: AbstractProvider<T> = this.provider): StopCallback {
 		return runSequence(this.through(provider.getQuerySequence(this.collection, this.query)));
 	}
 
