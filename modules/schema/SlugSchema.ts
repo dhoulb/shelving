@@ -1,4 +1,4 @@
-import { requireSlug } from "../util/string.js";
+import { getSlug } from "../util/string.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
@@ -18,7 +18,7 @@ export class SlugSchema extends StringSchema {
 		});
 	}
 	override sanitize(str: string): string {
-		return requireSlug(str);
+		return getSlug(str) || "";
 	}
 }
 
