@@ -4,6 +4,7 @@ export * from "./Schema.js";
 export * from "./ThroughSchema.js";
 export * from "./OptionalSchema.js";
 export * from "./RequiredSchema.js";
+export * from "./PartialSchema.js";
 
 // Field schemas.
 export * from "./AllowSchema.js";
