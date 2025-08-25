@@ -1,5 +1,11 @@
 export * from "./Schema.js";
 
+// Utility schemas.
+export * from "./ThroughSchema.js";
+export * from "./OptionalSchema.js";
+export * from "./RequiredSchema.js";
+
+// Field schemas.
 export * from "./AllowSchema.js";
 export * from "./ArraySchema.js";
 export * from "./BooleanSchema.js";
@@ -19,7 +25,4 @@ export * from "./SlugSchema.js";
 export * from "./StringSchema.js";
 export * from "./TextSchema.js";
 export * from "./TimeSchema.js";
-
-export * from "./ThroughSchema.js";
-export * from "./OptionalSchema.js";
-export * from "./RequiredSchema.js";
+export * from "./UUIDSchema.js";
