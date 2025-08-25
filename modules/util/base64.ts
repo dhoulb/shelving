@@ -1,5 +1,5 @@
 import { ValueError } from "../error/ValueError.js";
-import { type PossibleBytes, requireBytes } from "./bytes.js";
+import { type Bytes, type PossibleBytes, requireBytes } from "./bytes.js";
 import type { AnyCaller } from "./function.js";
 
 const BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -15,7 +15,7 @@ for (let i = 0; i < BASE64_CHARS.length; i++) {
 /**
  * @todo DH: When it's well supported, use `Uint8Array.toBase64()`: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/toBase64
  */
-function _encode(bytes: Uint8Array, alphabet: string, pad: string): string {
+function _encode(bytes: Bytes, alphabet: string, pad: string): string {
 	const len = bytes.length;
 	let output = "";
 
@@ -37,7 +37,7 @@ function _encode(bytes: Uint8Array, alphabet: string, pad: string): string {
 	return output;
 }
 
-function _decode(base64: string, caller: AnyCaller): Uint8Array {
+function _decode(base64: string, caller: AnyCaller): Bytes {
 	// Remove padding.
 	const cleaned = base64.replace(/=+$/, "");
 	const length = cleaned.length;
@@ -45,7 +45,7 @@ function _decode(base64: string, caller: AnyCaller): Uint8Array {
 	// Calculate output byte length
 	// Every 4 base64 chars = 3 bytes; adjust for padding
 	const byteLength = Math.floor((length * 6) / 8);
-	const bytes = new Uint8Array(byteLength);
+	const bytes: Bytes = new Uint8Array(byteLength);
 
 	let j = 0;
 	for (let i = 0; i < length; i += 4) {
@@ -85,7 +85,7 @@ export function decodeBase64String(base64: string): string {
 }
 
 /** Decode URL-safe Base64 string to byte sequence (decodes Base64URL too). */
-export function decodeBase64Bytes(base64: string): Uint8Array {
+export function decodeBase64Bytes(base64: string): Bytes {
 	return _decode(base64, decodeBase64Bytes);
 }
 
@@ -100,6 +100,6 @@ export function decodeBase64URLString(base64: string): string {
 }
 
 /** Decode URL-safe Base64 string to byte sequence (decodes Base64 too). */
-export function decodeBase64URLBytes(base64: string): Uint8Array {
+export function decodeBase64URLBytes(base64: string): Bytes {
 	return _decode(base64, decodeBase64URLBytes);
 }

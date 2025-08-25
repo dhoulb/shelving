@@ -1,6 +1,6 @@
 import { ValueError } from "../error/ValueError.js";
 import { decodeBase64URLBytes, encodeBase64URL } from "./base64.js";
-import { requireBytes } from "./bytes.js";
+import { type Bytes, requireBytes } from "./bytes.js";
 
 // Constants.
 const ALGORITHM = { name: "PBKDF2", hash: "SHA-512" };
@@ -15,8 +15,8 @@ function _getKey(password: string): Promise<CryptoKey> {
 }
 
 /** Get random bytes from the crypto API. */
-export function getRandomBytes(length: number): Uint8Array {
-	const bytes = new Uint8Array(length);
+export function getRandomBytes(length: number): Bytes {
+	const bytes: Bytes = new Uint8Array(length);
 	crypto.getRandomValues(bytes);
 	return bytes;
 }
@@ -71,14 +71,14 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 	const key = await _getKey(password);
 	const salt = decodeBase64URLBytes(s);
 	const bits = hashBytes.length * 8;
-	const derivedBytes = new Uint8Array(await crypto.subtle.deriveBits({ ...ALGORITHM, salt, iterations }, key, bits));
+	const derivedBytes: Bytes = new Uint8Array(await crypto.subtle.deriveBits({ ...ALGORITHM, salt, iterations }, key, bits));
 
 	// Compare the derived hash with the stored hash.
 	return _compareBytes(derivedBytes, hashBytes);
 }
 
 /** Compare two sets of bytes using constant time comparison. */
-function _compareBytes(left: Uint8Array, right: Uint8Array): boolean {
+function _compareBytes(left: Bytes, right: Bytes): boolean {
 	if (left.length !== right.length) return false;
 	let result = 0;
 	for (let i = 0; i < left.length; ++i) result |= (left[i] as number) ^ (right[i] as number);

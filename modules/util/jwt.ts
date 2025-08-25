@@ -1,7 +1,7 @@
 import { UnauthorizedError } from "../error/RequestError.js";
 import { ValueError } from "../error/ValueError.js";
 import { decodeBase64URLBytes, decodeBase64URLString, encodeBase64URL } from "./base64.js";
-import { type PossibleBytes, getBytes, requireBytes } from "./bytes.js";
+import { type Bytes, type PossibleBytes, getBytes, requireBytes } from "./bytes.js";
 import { DAY } from "./constants.js";
 import type { Data } from "./data.js";
 import type { AnyCaller } from "./function.js";
@@ -55,7 +55,7 @@ export type TokenData = {
 	signature: string;
 	headerData: Data;
 	payloadData: Data;
-	signatureBytes: Uint8Array;
+	signatureBytes: Bytes;
 };
 
 /**
@@ -68,7 +68,7 @@ export function splitToken(token: string, caller: AnyCaller = splitToken): Token
 		throw new UnauthorizedError("JWT token must have header, payload, and signature", { received: token, caller });
 
 	// Decode signature.
-	let signatureBytes: Uint8Array;
+	let signatureBytes: Bytes;
 	try {
 		signatureBytes = decodeBase64URLBytes(signature);
 	} catch (cause) {
