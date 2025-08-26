@@ -20,7 +20,7 @@ test("TypeScript", () => {
 });
 describe("validate()", () => {
 	test("constructor()", () => {
-		const props = {};
+		const props = { a: STRING, b: STRING };
 		const schema1 = new DataSchema({ props });
 		expect(schema1).toBeInstanceOf(DataSchema);
 		expect(schema1.props).toBe(props);
@@ -42,6 +42,17 @@ describe("validate()", () => {
 		expect(() => schema.validate(0)).toThrow(Feedback);
 		expect(() => schema.validate(null)).toThrow(Feedback);
 		expect(() => schema.validate(false)).toThrow(Feedback);
+	});
+	test("Valid value returns unchanged", () => {
+		const schema = DATA({ a: STRING, b: STRING });
+		const value = { a: "A", b: "B" };
+		expect(schema.validate(value)).toBe(value);
+	});
+	test("Changed/coerced value returns different", () => {
+		const schema = DATA({ a: STRING, b: STRING });
+		const value = { a: 1, b: "B" };
+		expect(schema.validate(value)).toEqual({ a: "1", b: "B" });
+		expect(schema.validate(value)).not.toBe(value);
 	});
 });
 describe("options.value", () => {
