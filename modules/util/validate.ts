@@ -89,7 +89,7 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
 export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator: Validator<T>): ImmutableArray<T> {
 	let index = 0;
 	let valid = true;
-	let changed = true;
+	let changed = false; // start false so we can reuse original if nothing changes
 	const safeArray: MutableArray<T> = [];
 	const messages: MutableDictionary<string> = {};
 	for (const unsafeItem of unsafeArray) {
@@ -151,7 +151,7 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial?: false): T;
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial = isDeeplyPartial): T {
 	let valid = true;
-	let changed = true;
+	let changed = false;
 	const safeData: MutableObject = {};
 	const messages: MutableDictionary<string> = {};
 	try {
