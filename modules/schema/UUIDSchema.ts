@@ -1,5 +1,5 @@
 import { getUUID } from "../util/uuid.js";
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
@@ -26,4 +26,4 @@ export class UUIDSchema extends StringSchema {
 export const UUID = new UUIDSchema({ title: "ID" });
 
 /** Any valid UUID (versions 1-5) or null */
-export const OPTIONAL_UUID = OPTIONAL(UUID);
+export const NULLABLE_UUID = NULLABLE(UUID);

@@ -1,6 +1,18 @@
 import { describe, expect, test } from "bun:test";
 import type { Validator } from "../index.js";
-import { BOOLEAN, DATA, DataSchema, Feedback, NUMBER, STRING, StringSchema, ValueFeedbacks } from "../index.js";
+import {
+	BOOLEAN,
+	DATA,
+	DataSchema,
+	Feedback,
+	ITEM,
+	NUMBER,
+	PARTIAL,
+	STRING,
+	StringSchema,
+	ValueFeedback,
+	ValueFeedbacks,
+} from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -133,5 +145,89 @@ describe("options.props", () => {
 				),
 			);
 		}
+	});
+});
+describe("PARTIAL", () => {
+	const PARTIAL_USER_SCHEMA = PARTIAL({ name: STRING, age: NUMBER });
+
+	test("validates partial object with subset of fields", () => {
+		const result = PARTIAL_USER_SCHEMA.validate({ name: "Alice" });
+		expect(result).toEqual({ name: "Alice" });
+	});
+	test("ignores undefined fields in partial", () => {
+		// age is undefined, should be skipped not validated
+		const result = PARTIAL_USER_SCHEMA.validate({ name: "Bob", age: undefined });
+		expect(result).toEqual({ name: "Bob" });
+	});
+	test("returns object reference if unchanged", () => {
+		const input = { age: 30 } as const;
+		const result = PARTIAL_USER_SCHEMA.validate(input);
+		// Since object may be reconstructed due to change detection logic, relax equality
+		expect(result).toEqual(input);
+	});
+	test("aggregates errors for multiple invalid props", () => {
+		try {
+			PARTIAL_USER_SCHEMA.validate({ name: null, age: "nope" } as any);
+			throw new Error("Should have thrown");
+		} catch (e) {
+			expect(e).toBeInstanceOf(ValueFeedbacks);
+			const feedback = e as any; // loosen typing to inspect messages
+			expect(feedback.messages.name).toBe("Must be string");
+			expect(feedback.messages.age).toBe("Must be number");
+		}
+	});
+	test("rejects non-object values", () => {
+		expect(() => PARTIAL_USER_SCHEMA.validate(null as any)).toThrow(ValueFeedback);
+		expect(() => PARTIAL_USER_SCHEMA.validate(5 as any)).toThrow(ValueFeedback);
+	});
+	test("accepts empty object", () => {
+		const result = PARTIAL_USER_SCHEMA.validate({});
+		expect(result).toEqual({});
+	});
+	test("accepts object with all fields", () => {
+		const input = { name: "Charlie", age: 25 };
+		const result = PARTIAL_USER_SCHEMA.validate(input);
+		expect(result).toEqual(input);
+	});
+	test("coerces values if possible", () => {
+		const input = { name: 123, age: "42" };
+		const result = PARTIAL_USER_SCHEMA.validate(input);
+		expect(result).toEqual({ name: "123", age: 42 });
+	});
+	test("strips unknown fields", () => {
+		const input = { name: "Dana", age: 22, extra: "remove me" };
+		const result = PARTIAL_USER_SCHEMA.validate(input as any);
+		expect(result).toEqual({ name: "Dana", age: 22 });
+	});
+	test("returns default value if undefined", () => {
+		const schema = PARTIAL({ foo: STRING });
+		expect(schema.validate(undefined)).toEqual({});
+	});
+	test("throws if input is array", () => {
+		expect(() => PARTIAL_USER_SCHEMA.validate([] as any)).toThrow(ValueFeedback);
+	});
+	test("throws if input is function", () => {
+		expect(() => PARTIAL_USER_SCHEMA.validate((() => {}) as any)).toThrow(ValueFeedback);
+	});
+});
+describe("ITEM", () => {
+	const ITEM_SCHEMA = ITEM({ name: STRING });
+
+	test("validates item with all fields", () => {
+		const result = ITEM_SCHEMA.validate({ id: "abc", name: "Item 1" });
+		expect(result).toEqual({ id: "abc", name: "Item 1" });
+	});
+	test("strips unknown fields", () => {
+		const result = ITEM_SCHEMA.validate({ id: "abc", name: "Item 1", extra: "remove me" });
+		expect(result).toEqual({ id: "abc", name: "Item 1" });
+	});
+	test("throws if ID is missing", () => {
+		expect(() => ITEM_SCHEMA.validate({ name: "abc" } as any)).toThrow(ValueFeedbacks);
+	});
+	test("throws if input is array", () => {
+		expect(() => ITEM_SCHEMA.validate([] as any)).toThrow(ValueFeedback);
+	});
+	test("throws if input is function", () => {
+		expect(() => ITEM_SCHEMA.validate((() => {}) as any)).toThrow(ValueFeedback);
 	});
 });

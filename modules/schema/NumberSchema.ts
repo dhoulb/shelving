@@ -1,7 +1,7 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
 import { formatNumber } from "../util/format.js";
 import { getNumber, roundStep } from "../util/number.js";
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
@@ -46,7 +46,7 @@ export class NumberSchema extends Schema<number> {
 export const NUMBER = new NumberSchema({ title: "Number" });
 
 /** Valid optional number, e.g. `2048.12345` or `0` zero, or `null` */
-export const OPTIONAL_NUMBER = OPTIONAL(NUMBER);
+export const NULLABLE_NUMBER = NULLABLE(NUMBER);
 
 /** Valid integer number, e.g. `2048` or `0` zero. */
 export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER, value: 0 });
@@ -64,7 +64,7 @@ export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE
 export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0, value: 0 });
 
 /** Valid optional integer number, e.g. `2048` or `0` zero, or `null` */
-export const OPTIONAL_INTEGER = OPTIONAL(INTEGER);
+export const NULLABLE_INTEGER = NULLABLE(INTEGER);
 
 /** Valid Unix timestamp (including milliseconds). */
 export const TIMESTAMP = new NumberSchema({
@@ -76,4 +76,4 @@ export const TIMESTAMP = new NumberSchema({
 });
 
 /** Valid Unix timestamp (including milliseconds). */
-export const OPTIONAL_TIMESTAMP = OPTIONAL_INTEGER;
+export const NULLABLE_TIMESTAMP = NULLABLE_INTEGER;

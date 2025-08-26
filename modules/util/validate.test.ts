@@ -70,6 +70,13 @@ describe("validateData()", () => {
 			);
 		}
 	});
+	test("removes excess fields when rebuilding object (default added)", () => {
+		const input: any = { str: "hello", num: 5, extra: "remove" };
+		const output = validateData(input, VALIDATORS);
+		expect(output).toEqual({ str: "hello", opt: "abc", num: 5 });
+		expect((output as any).extra).toBeUndefined();
+		expect(output).not.toBe(input); // new object created because default applied
+	});
 	describe("deep partial propagation", () => {
 		// Nested validators: a has default, b is number
 		const nestedValidators = {

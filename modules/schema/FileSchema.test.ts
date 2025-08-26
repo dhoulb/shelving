@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { FILE, Feedback, FileSchema, OPTIONAL_FILE } from "../index.js";
+import { FILE, Feedback, FileSchema, NULLABLE_FILE } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
-	const s1: Schema<string | null> = OPTIONAL_FILE;
+	const s1: Schema<string | null> = NULLABLE_FILE;
 	const r1: string | null = s1.validate("test.xml");
 
 	const s2: Schema<string> = FILE;

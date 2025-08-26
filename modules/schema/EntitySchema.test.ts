@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { ENTITY, EntitySchema, Feedback, OPTIONAL_ENTITY } from "../index.js";
+import { ENTITY, EntitySchema, Feedback, NULLABLE_ENTITY } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
-	const s1 = OPTIONAL_ENTITY;
+	const s1 = NULLABLE_ENTITY;
 	const b1: Schema<string | null> = s1;
 	const r1: string | null = s1.validate("challenge:a1b2c3");
 

@@ -1,4 +1,4 @@
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
 import { TextSchema } from "./TextSchema.js";
 
@@ -43,4 +43,4 @@ export class EmailSchema extends TextSchema {
 export const EMAIL = new EmailSchema({});
 
 /** Valid optional email, e.g. `test@test.com`, or `null` */
-export const OPTIONAL_EMAIL = OPTIONAL(EMAIL);
+export const NULLABLE_EMAIL = NULLABLE(EMAIL);

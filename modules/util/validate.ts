@@ -6,7 +6,7 @@ import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import { isArray } from "./array.js";
 import type { Constructor } from "./class.js";
 import type { Data } from "./data.js";
-import { getDataProps } from "./data.js";
+import { getDataKeys, getDataProps } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
 import type { AnyCaller } from "./function.js";
@@ -141,8 +141,10 @@ let isDeeplyPartial = false;
  * Validate a data object with a set of validators.
  * - Defined props in the object will be validated against the corresponding validator.
  * - `undefined` props in the object will be set to the default value of that prop.
+ * - `undefined` props after validation will not be set in the output object.
  *
- * @param partial Whether we're validating a partial match, or not.
+ * @param partial Whether we're validating a partial match or not. This allows props to be missing without error.
+ *
  * @return Valid object.
  * @throw Feedback if one or more props did not validate.
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
@@ -156,12 +158,13 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 	const messages: MutableDictionary<string> = {};
 	try {
 		isDeeplyPartial = partial;
-		for (const [key, validator] of getDataProps(validators)) {
+		const props = getDataProps(validators);
+		for (const [key, validator] of props) {
 			const unsafeValue = unsafeData[key];
 			if (unsafeValue === undefined && partial) continue; // Silently skip `undefined` props if in partial mode.
 			try {
 				const safeValue = validator.validate(unsafeValue);
-				safeData[key] = safeValue;
+				if (safeValue !== undefined) safeData[key] = safeValue;
 				if (!changed && safeValue !== unsafeValue) changed = true;
 			} catch (thrown) {
 				if (!(thrown instanceof Feedback)) throw thrown;
@@ -170,7 +173,8 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 			}
 		}
 		if (!valid) throw new ValueFeedbacks(messages, unsafeData);
-		return changed ? (safeData as T) : (unsafeData as T);
+		if (changed || getDataKeys(unsafeData).length > props.length) return safeData as T;
+		return unsafeData as T;
 	} finally {
 		isDeeplyPartial = false;
 	}

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Feedback, NUMBER, NumberSchema, OPTIONAL_NUMBER, Schema } from "../index.js";
+import { Feedback, NULLABLE_NUMBER, NUMBER, NumberSchema, Schema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -8,7 +8,7 @@ test("TypeScript", () => {
 	const r1: number = s1.validate(123);
 
 	// Test number.required
-	const s2: Schema<number | null> = OPTIONAL_NUMBER;
+	const s2: Schema<number | null> = NULLABLE_NUMBER;
 	const r2: number | null = s2.validate(123);
 
 	// Test new({})
@@ -18,7 +18,7 @@ test("TypeScript", () => {
 test("constructor()", () => {
 	const schema1 = new NumberSchema({});
 	expect(schema1).toBeInstanceOf(Schema);
-	expect(OPTIONAL_NUMBER).toBeInstanceOf(Schema);
+	expect(NULLABLE_NUMBER).toBeInstanceOf(Schema);
 	expect(NUMBER).toBeInstanceOf(Schema);
 });
 describe("validate()", () => {

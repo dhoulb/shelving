@@ -1,4 +1,4 @@
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import { TextSchema, type TextSchemaOptions } from "./TextSchema.js";
 
 const COLOR_REGEXP = /^#[0-9A-F]{6}$/;
@@ -36,4 +36,4 @@ export class ColorSchema extends TextSchema {
 export const COLOR = new ColorSchema({});
 
 /** Valid color hex string, e.g. `#00CCFF`, or `null` */
-export const OPTIONAL_COLOR = OPTIONAL(COLOR);
+export const NULLABLE_COLOR = NULLABLE(COLOR);

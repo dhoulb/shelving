@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { COLOR, ColorSchema, Feedback, OPTIONAL_COLOR } from "../index.js";
+import { COLOR, ColorSchema, Feedback, NULLABLE_COLOR } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
-	const s1: Schema<string | null> = OPTIONAL_COLOR;
+	const s1: Schema<string | null> = NULLABLE_COLOR;
 	const r1: string | null = s1.validate("#FFCC00");
 
 	const s2: Schema<string> = COLOR;

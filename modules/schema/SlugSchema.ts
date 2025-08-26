@@ -1,5 +1,5 @@
 import { getSlug } from "../util/string.js";
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
@@ -26,4 +26,4 @@ export class SlugSchema extends StringSchema {
 export const SLUG = new SlugSchema({});
 
 /** Valid slug, e.g. `this-is-a-slug`, or `null` */
-export const OPTIONAL_SLUG = OPTIONAL(SLUG);
+export const NULLABLE_SLUG = NULLABLE(SLUG);

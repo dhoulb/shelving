@@ -1,4 +1,4 @@
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
 import { TextSchema } from "./TextSchema.js";
 
@@ -36,4 +36,4 @@ export class PhoneSchema extends TextSchema {
 export const PHONE = new PhoneSchema({});
 
 /** Valid phone number, e.g. `+441234567890`, or `null` */
-export const OPTIONAL_PHONE = OPTIONAL(PHONE);
+export const NULLABLE_PHONE = NULLABLE(PHONE);

@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { EMAIL, EmailSchema, Feedback, OPTIONAL_EMAIL } from "../index.js";
+import { EMAIL, EmailSchema, Feedback, NULLABLE_EMAIL } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
-	const s1: Schema<string | null> = OPTIONAL_EMAIL;
+	const s1: Schema<string | null> = NULLABLE_EMAIL;
 	const r1: string | null = s1.validate("dave@test.com");
 
 	const s2: Schema<string> = EMAIL;

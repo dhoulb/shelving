@@ -1,7 +1,7 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
 import type { ImmutableArray } from "../util/array.js";
 import { type AbsoluteLink, getLinkURL } from "../util/link.js";
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
 import { TextSchema } from "./TextSchema.js";
 
@@ -48,4 +48,4 @@ export class LinkSchema extends TextSchema {
 export const LINK = new LinkSchema({});
 
 /** Valid link, e.g. `https://www.google.com`, or `null` */
-export const OPTIONAL_LINK = OPTIONAL(LINK);
+export const NULLABLE_LINK = NULLABLE(LINK);

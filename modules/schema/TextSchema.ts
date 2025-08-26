@@ -1,6 +1,6 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
 import { sanitizeMultilineText, sanitizeText } from "../util/string.js";
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import { type Sanitizer, StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
@@ -55,13 +55,13 @@ export const REQUIRED_TEXT = new TextSchema({ min: 1 });
 export const TITLE = new TextSchema({ title: "Title", min: 1, max: 100 });
 
 /** Optional name string, e.g. `Title of something` or `null` */
-export const OPTIONAL_TITLE = OPTIONAL(TITLE);
+export const NULLABLE_TITLE = NULLABLE(TITLE);
 
 /** Name string, e.g. `Name of Something` */
 export const NAME = new TextSchema({ title: "Name", min: 1, max: 100 });
 
 /** Optional name string, e.g. `Name of Something` or `null` */
-export const OPTIONAL_NAME = OPTIONAL(NAME);
+export const NULLABLE_NAME = NULLABLE(NAME);
 
 /** Password string. */
 export const PASSWORD = new TextSchema({ title: "Password", min: 6, type: "password" });

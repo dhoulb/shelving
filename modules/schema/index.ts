@@ -2,9 +2,9 @@ export * from "./Schema.js";
 
 // Utility schemas.
 export * from "./ThroughSchema.js";
+export * from "./NullableSchema.js";
 export * from "./OptionalSchema.js";
 export * from "./RequiredSchema.js";
-export * from "./PartialSchema.js";
 
 // Field schemas.
 export * from "./AllowSchema.js";
@@ -17,7 +17,6 @@ export * from "./DictionarySchema.js";
 export * from "./EmailSchema.js";
 export * from "./EntitySchema.js";
 export * from "./FileSchema.js";
-export * from "./ItemSchema.js";
 export * from "./KeySchema.js";
 export * from "./LinkSchema.js";
 export * from "./NumberSchema.js";

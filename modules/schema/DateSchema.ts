@@ -3,7 +3,7 @@ import type { PossibleDate } from "../util/date.js";
 import { getDate, requireYMD } from "../util/date.js";
 import { formatDate } from "../util/format.js";
 import type { Optional } from "../util/optional.js";
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
@@ -37,4 +37,4 @@ export class DateSchema extends Schema<string> {
 export const DATE = new DateSchema({});
 
 /** Valid date, e.g. `2005-09-12`, or `null` */
-export const OPTIONAL_DATE = OPTIONAL(DATE);
+export const NULLABLE_DATE = NULLABLE(DATE);

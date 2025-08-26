@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { Feedback, LINK, LinkSchema, OPTIONAL_LINK } from "../index.js";
+import { Feedback, LINK, LinkSchema, NULLABLE_LINK } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
 	// Test url.optional
-	const s1: Schema<string | null> = OPTIONAL_LINK;
+	const s1: Schema<string | null> = NULLABLE_LINK;
 	const r1: string | null = s1.validate("https://test.com");
 
 	// Test url.required
@@ -200,12 +200,12 @@ describe("options.value", () => {
 });
 describe("options.schemes", () => {
 	test("Scheme in default whitelist is allowed", () => {
-		const schema = OPTIONAL_LINK;
+		const schema = NULLABLE_LINK;
 		expect(schema.validate("http://x.com/")).toBe("http://x.com/");
 		expect(schema.validate("https://x.com/")).toBe("https://x.com/");
 	});
 	test("Scheme not in default whitelist is invalid", () => {
-		const schema = OPTIONAL_LINK;
+		const schema = NULLABLE_LINK;
 		expect(() => schema.validate("webcal://x.com")).toThrow(Feedback);
 	});
 	test("Scheme in specified whitelist is valid", () => {

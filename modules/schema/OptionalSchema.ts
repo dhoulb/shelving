@@ -1,23 +1,18 @@
-import type { Schema, SchemaOptions } from "./Schema.js";
+import type { Schema } from "./Schema.js";
 import { ThroughSchema } from "./ThroughSchema.js";
 
-/** Allowed options for `OptionalSchema` */
-export interface OptionalSchemaOptions<T> extends SchemaOptions {
-	readonly source: Schema<T>;
-	readonly value?: T | null;
-}
+/**
+ * Validate a property in an optional way, i.e. it can be the value, or `undefined`
+ * - If the prop is `undefined`, then `undefined` is returned.
+ * - When used with `validateData()` this means the prop can be silently skipped.
+ */
 
-/** Validate a value of a specific type or `null`. */
-export class OptionalSchema<T> extends ThroughSchema<T | null> {
-	declare readonly value: T | null;
-	constructor({ value = null, ...options }: OptionalSchemaOptions<T>) {
-		super({ value, ...options });
-	}
-	override validate(unsafeValue: unknown = this.value): T | null {
-		if (unsafeValue === null || unsafeValue === undefined || unsafeValue === "" || Number.isNaN(unsafeValue)) return null;
+export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
+	override validate(unsafeValue: unknown): T | undefined {
+		if (unsafeValue === undefined) return undefined;
 		return super.validate(unsafeValue);
 	}
 }
+/** Make a property of a set of data optional, i.e. it can be the value or `undefined` */
 
-/** Create a new optional schema from a source schema. */
 export const OPTIONAL = <T>(source: Schema<T>): OptionalSchema<T> => new OptionalSchema({ source });

@@ -2,7 +2,7 @@ import { ValueFeedback } from "../feedback/Feedback.js";
 import type { FileTypes } from "../util/file.js";
 import { getFileExtension } from "../util/file.js";
 import { isProp } from "../util/object.js";
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /** Allowed options for `FileSchema` */
@@ -30,4 +30,4 @@ export class FileSchema extends StringSchema {
 export const FILE = new FileSchema({});
 
 /** Valid optional file, e.g. `file.txt`, or `null` */
-export const OPTIONAL_FILE = OPTIONAL(FILE);
+export const NULLABLE_FILE = NULLABLE(FILE);

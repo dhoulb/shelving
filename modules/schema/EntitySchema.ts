@@ -1,7 +1,7 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
 import { type ImmutableArray, isItem } from "../util/array.js";
 import { type Entity, getEntity } from "../util/entity.js";
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /** Allowed options for `EntitySchema` with specific types */
@@ -29,4 +29,4 @@ export class EntitySchema<T extends string> extends StringSchema {
 export const ENTITY = new EntitySchema({});
 
 /** Valid optional file, e.g. `file.txt`, or `null` */
-export const OPTIONAL_ENTITY = OPTIONAL(ENTITY);
+export const NULLABLE_ENTITY = NULLABLE(ENTITY);

@@ -1,4 +1,4 @@
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 const R_NOT_CHAR = /[^a-zA-Z0-9]/g;
@@ -24,4 +24,4 @@ export class KeySchema extends StringSchema {
 export const KEY = new KeySchema({ title: "ID" });
 
 /** Valid optional database key. */
-export const OPTIONAL_KEY = OPTIONAL(KEY);
+export const NULLABLE_KEY = NULLABLE(KEY);

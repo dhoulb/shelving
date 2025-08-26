@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { DATE, DateSchema, Feedback, OPTIONAL_DATE, requireYMD } from "../index.js";
+import { DATE, DateSchema, Feedback, NULLABLE_DATE, requireYMD } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
-	const s1: Schema<string | null> = OPTIONAL_DATE;
+	const s1: Schema<string | null> = NULLABLE_DATE;
 	const r1: string | null = s1.validate("2015-09-12");
 
 	const s2: Schema<string> = DATE;

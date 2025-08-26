@@ -3,7 +3,7 @@ import { roundStep } from "../util/number.js";
 import type { Optional } from "../util/optional.js";
 import type { PossibleTime } from "../util/time.js";
 import { Time, getTime } from "../util/time.js";
-import { OPTIONAL } from "./OptionalSchema.js";
+import { NULLABLE } from "./NullableSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
@@ -45,4 +45,4 @@ export class TimeSchema extends Schema<string> {
 export const TIME = new TimeSchema({});
 
 /** Valid time, e.g. `2005-09-12`, or `null` */
-export const OPTIONAL_TIME = OPTIONAL(TIME);
+export const NULLABLE_TIME = NULLABLE(TIME);

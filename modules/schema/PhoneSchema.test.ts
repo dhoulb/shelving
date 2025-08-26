@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { Feedback, OPTIONAL_PHONE, PHONE, PhoneSchema } from "../index.js";
+import { Feedback, NULLABLE_PHONE, PHONE, PhoneSchema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
 	// Test phone.optional
-	const s1: Schema<string | null> = OPTIONAL_PHONE;
+	const s1: Schema<string | null> = NULLABLE_PHONE;
 	const r1: string | null = s1.validate("+331234567890");
 
 	// Test phone.required

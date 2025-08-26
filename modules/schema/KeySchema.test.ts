@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { Feedback, KEY, KeySchema, OPTIONAL_KEY } from "../index.js";
+import { Feedback, KEY, KeySchema, NULLABLE_KEY } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
-	const s1: Schema<string | null> = OPTIONAL_KEY;
+	const s1: Schema<string | null> = NULLABLE_KEY;
 	const r1: string | null = s1.validate("ABC");
 
 	const s2: Schema<string> = KEY;
