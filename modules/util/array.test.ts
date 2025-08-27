@@ -9,6 +9,7 @@ import {
 	getNext,
 	getPrev,
 	getUniqueArray,
+	interleaveArray,
 	isArray,
 	isArrayWith,
 	isEqual,
@@ -156,4 +157,32 @@ test("requireArray()", () => {
 	// Check minimum.
 	expect(requireArray([1, 2, 3], 0, 3)).toEqual([1, 2, 3]);
 	expect(() => requireArray([1, 2, 3, 4, 5], 0, 3)).toThrow(RequiredError);
+});
+test("interleaveArray()", () => {
+	// Empty array returns empty array
+	const emptyArr: string[] = [];
+	expect(interleaveArray(emptyArr, ",")).toEqual([]);
+	expect(interleaveArray(emptyArr, ",")).toBe(emptyArr);
+	// Single item returns same array
+	const oneArr = [1];
+	expect(interleaveArray(oneArr, 0)).toEqual([1]);
+	expect(interleaveArray(oneArr, 0)).toBe(oneArr);
+	// Two items
+	const twoArr = [1, 2];
+	expect(interleaveArray(twoArr, 0)).toEqual([1, 0, 2]);
+	expect(interleaveArray(twoArr, 0)).not.toBe(twoArr);
+	// Three items
+	const threeArr = [1, 2, 3];
+	expect(interleaveArray(threeArr, 0)).toEqual([1, 0, 2, 0, 3]);
+	expect(interleaveArray(threeArr, 0)).not.toBe(threeArr);
+	// Separator is a string
+	expect(interleaveArray(["a", "b", "c"], "-")).toEqual(["a", "-", "b", "-", "c"]);
+	// Separator is an object
+	const sep = { s: true };
+	const arr = [{ a: 1 }, { b: 2 }];
+	expect(interleaveArray(arr, sep)).toEqual([{ a: 1 }, sep, { b: 2 }]);
+	// Iterable input (Set)
+	expect(interleaveArray(new Set([1, 2, 3]), 0)).toEqual([1, 0, 2, 0, 3]);
+	// Separator same as item
+	expect(interleaveArray([1, 1, 1], 1)).toEqual([1, 1, 1, 1, 1]);
 });

@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { countItems, getArray, getChunks, getRange, limitItems, mergeItems, reduceItems } from "../index.js";
+import { countItems, getArray, getChunks, getRange, interleaveItems, limitItems, mergeItems, reduceItems } from "../index.js";
 
 test("getRange()", () => {
 	expect(getArray(getRange(1, 4))).toEqual([1, 2, 3, 4]);
@@ -48,4 +48,22 @@ test("reduceItems()", () => {
 });
 test("mergeItems()", () => {
 	expect(getArray(mergeItems([1, 2, 3], [4, 5, 6]))).toEqual([1, 2, 3, 4, 5, 6]);
+});
+test("interleaveItems()", () => {
+	expect(getArray(interleaveItems([1, 2, 3], 0))).toEqual([1, 0, 2, 0, 3]);
+	expect(getArray(interleaveItems([1], 0))).toEqual([1]);
+	expect(getArray(interleaveItems([], 0))).toEqual([]);
+	expect(getArray(interleaveItems(["a", "b", "c"], "-"))).toEqual(["a", "-", "b", "-", "c"]);
+	expect(getArray(interleaveItems(["a"], "-"))).toEqual(["a"]);
+	expect(getArray(interleaveItems([], "-"))).toEqual([]);
+	const result = getArray(interleaveItems([1, 2, 3], "x"));
+	expect(result).toEqual([1, "x", 2, "x", 3]);
+	const set = new Set([10, 20, 30]);
+	expect(getArray(interleaveItems(set, 0))).toEqual([10, 0, 20, 0, 30]);
+	const map = new Map([
+		["a", 1],
+		["b", 2],
+		["c", 3],
+	]);
+	expect(getArray(interleaveItems(map.keys(), "|"))).toEqual(["a", "|", "b", "|", "c"]);
 });

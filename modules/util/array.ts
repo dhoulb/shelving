@@ -1,6 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
-import { omitItems, pickItems } from "./iterate.js";
+import { interleaveItems, omitItems, pickItems } from "./iterate.js";
 
 /**
  * Mutable array: an array that can be changed.
@@ -181,6 +181,14 @@ export function limitArray<T>(list: PossibleArray<T>, limit: number): ImmutableA
 /** Count the items in an array. */
 export function countArray<T>(arr: ImmutableArray<T>): number {
 	return arr.length;
+}
+
+/** Interleave array items with a separator */
+export function interleaveArray<T>(items: PossibleArray<T>, separator: T): ImmutableArray<T>;
+export function interleaveArray<A, B>(items: PossibleArray<A>, separator: B): ImmutableArray<A | B>;
+export function interleaveArray<A, B>(items: PossibleArray<A>, separator: B): ImmutableArray<A | B> {
+	if (isArray<A>(items) && items.length < 2) return items; // Return same empty array if empty or only one item.
+	return Array.from(interleaveItems(items, separator));
 }
 
 /** Get the first item from an array or iterable, or `undefined` if it didn't exist. */

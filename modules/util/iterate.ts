@@ -87,3 +87,15 @@ export function* getChunks<T>(items: Iterable<T>, size: number): Iterable<readon
 export function* mergeItems<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable<T>[]]): Iterable<T> {
 	for (const input of inputs) yield* input;
 }
+
+/** Intersperse items with a separator */
+export function interleaveItems<T>(items: Iterable<T>, separator: T): Iterable<T>;
+export function interleaveItems<A, B>(items: Iterable<A>, separator: B): Iterable<A | B>;
+export function* interleaveItems<T>(items: Iterable<T>, separator: T): Iterable<T> {
+	let first = true;
+	for (const item of items) {
+		if (!first) yield separator;
+		yield item;
+		first = false;
+	}
+}
