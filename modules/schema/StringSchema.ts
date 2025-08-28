@@ -41,7 +41,7 @@ export class StringSchema extends Schema<string> {
 		if (typeof possibleString !== "string") throw new ValueFeedback("Must be string", unsafeValue);
 		const saneString = this.sanitize(possibleString);
 		if (saneString.length < this.min)
-			throw new ValueFeedback(saneString.length ? `Minimum ${this.min} characters` : "Required", saneString);
+			throw new ValueFeedback(possibleString.length ? `Minimum ${this.min} characters` : "Required", saneString);
 		if (saneString.length > this.max) throw new ValueFeedback(`Maximum ${this.max} characters`, saneString);
 		return saneString;
 	}
