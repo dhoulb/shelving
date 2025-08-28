@@ -1,11 +1,11 @@
 import { RequiredError } from "../error/RequiredError.js";
 
+const R_NOT_LOWERCHAR = /[^0-9a-f]/g;
+
 /** Return a random UUID (v4) */
 export function randomUUID(): string {
-	return crypto.randomUUID();
+	return crypto.randomUUID().replace(R_NOT_LOWERCHAR, "");
 }
-
-const R_NOT_LOWERCHAR = /[^0-9a-f]/g;
 
 /** Convert/validate a unknown value as as UUID. */
 export function getUUID(value: string): string | undefined {
