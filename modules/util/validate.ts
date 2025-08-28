@@ -50,7 +50,10 @@ export function getValid<T>(
 	try {
 		return validator.validate(value);
 	} catch (thrown) {
-		if (thrown instanceof Feedback) throw new ErrorConstructor(thrown.message, { received: value, cause: thrown, caller });
+		if (thrown instanceof Feedback) {
+			const { message, ...rest } = thrown;
+			throw new ErrorConstructor(message, { ...rest, cause: thrown, caller });
+		}
 		throw thrown;
 	}
 }
