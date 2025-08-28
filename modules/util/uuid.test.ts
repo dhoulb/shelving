@@ -3,9 +3,9 @@ import { RequiredError, getUUID, randomUUID, requireUUID } from "../index.js";
 
 // filepath: /Users/dhoulb/Repos/shelving/modules/util/uuid.test.ts
 
-const VALID_UUID_CANONICAL = "123e4567-e89b-12d3-a456-426614174000";
+const VALID_UUID_CANONICAL = "123e4567e89b12d3a456426614174000";
+const VALID_UUID_DASH = "123e4567-e89b-12d3-a456-426614174000";
 const VALID_UUID_UPPER = VALID_UUID_CANONICAL.toUpperCase();
-const VALID_UUID_NODASH = VALID_UUID_CANONICAL.replace(/-/g, "");
 const VALID_UUID_BRACED = `{${VALID_UUID_CANONICAL}}`;
 const VALID_UUID_PUNCT = `${VALID_UUID_CANONICAL}!!!`;
 const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -35,8 +35,8 @@ describe("getUUID()", () => {
 	test("normalizes uppercase", () => {
 		expect(getUUID(VALID_UUID_UPPER)).toBe(VALID_UUID_CANONICAL);
 	});
-	test("adds dashes to 32 hex chars", () => {
-		expect(getUUID(VALID_UUID_NODASH)).toBe(VALID_UUID_CANONICAL);
+	test("removes dashes to 32 hex chars", () => {
+		expect(getUUID(VALID_UUID_DASH)).toBe(VALID_UUID_CANONICAL);
 	});
 	test("strips braces", () => {
 		expect(getUUID(VALID_UUID_BRACED)).toBe(VALID_UUID_CANONICAL);
@@ -61,7 +61,7 @@ describe("requireUUID()", () => {
 	test("returns canonical for valid inputs", () => {
 		expect(requireUUID(VALID_UUID_CANONICAL)).toBe(VALID_UUID_CANONICAL);
 		expect(requireUUID(VALID_UUID_UPPER)).toBe(VALID_UUID_CANONICAL);
-		expect(requireUUID(VALID_UUID_NODASH)).toBe(VALID_UUID_CANONICAL);
+		expect(requireUUID(VALID_UUID_DASH)).toBe(VALID_UUID_CANONICAL);
 	});
 	test("throws RequiredError for invalid", () => {
 		expect(() => requireUUID("")).toThrow(RequiredError);

@@ -13,8 +13,8 @@ export class UUIDSchema extends StringSchema {
 		super({
 			title,
 			...rest,
-			min: 36,
-			max: 36, // 36 chars including hyphens
+			min: 32,
+			max: 36, // 36 chars including hyphens (which get stripped by sanitize for appearances).
 		});
 	}
 	override sanitize(str: string): string {
