@@ -7,9 +7,9 @@ export * from "./OptionalSchema.js";
 export * from "./RequiredSchema.js";
 
 // Field schemas.
-export * from "./AllowSchema.js";
 export * from "./ArraySchema.js";
 export * from "./BooleanSchema.js";
+export * from "./ChoiceSchema.js";
 export * from "./ColorSchema.js";
 export * from "./DataSchema.js";
 export * from "./DateSchema.js";

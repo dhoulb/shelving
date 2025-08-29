@@ -1,6 +1,6 @@
-import { ALLOW_STRING } from "../schema/AllowSchema.js";
 import { ARRAY } from "../schema/ArraySchema.js";
 import { BOOLEAN } from "../schema/BooleanSchema.js";
+import { CHOICE } from "../schema/ChoiceSchema.js";
 import { DATA } from "../schema/DataSchema.js";
 import { NUMBER } from "../schema/NumberSchema.js";
 import { STRING } from "../schema/StringSchema.js";
@@ -10,7 +10,7 @@ import type { ValidatorType } from "../util/validate.js";
 export const BASIC_SCHEMA = DATA({
 	str: STRING,
 	num: NUMBER,
-	group: ALLOW_STRING({ a: "A", b: "B", c: "C" }),
+	group: CHOICE({ a: "A", b: "B", c: "C" }),
 	tags: ARRAY(STRING),
 	odd: BOOLEAN,
 	even: BOOLEAN,
