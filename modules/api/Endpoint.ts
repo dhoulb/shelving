@@ -1,6 +1,6 @@
 import { getResponse } from "../util/http.js";
 import type { Path } from "../util/path.js";
-import { UNDEFINED, type Validator } from "../util/validate.js";
+import { UNDEFINED, type Validator, getValid } from "../util/validate.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
 /** Types for an HTTP request or response that does something. */
@@ -55,7 +55,10 @@ export class Endpoint<P, R> {
 		const payload = this.payload.validate(unsafePayload);
 
 		// Call the callback with the validated payload to get the result.
-		const result = await callback(payload, request);
+		const unsafeResult = await callback(payload, request);
+
+		// Validate the result against this endpoint's result type.
+		const result = getValid(unsafeResult, this.result);
 
 		// Convert the result to a `Response` object.
 		return getResponse(result);
