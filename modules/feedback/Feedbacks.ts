@@ -7,7 +7,7 @@ export class Feedbacks extends Feedback {
 	readonly messages: ImmutableDictionary<string>;
 
 	constructor(messages: ImmutableDictionary<string>) {
-		super("Multiple errors");
+		super(Object.values(messages).join("\n"));
 		this.messages = messages;
 	}
 }
