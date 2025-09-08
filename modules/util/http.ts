@@ -137,7 +137,11 @@ export function getErrorResponse(reason: unknown, debug = false): Response {
 	const status = reason instanceof RequestError ? reason.code : 500;
 
 	// Throw `Error` to return `{ message: "etc" }` to the client (but only if `debug` is true so we don't leak error details to the client).
-	if (debug && isError(reason)) return Response.json(reason, { status });
+	if (debug && isError(reason)) {
+		// Manually destructure because `Error.prototype.message` is not enumerable.
+		const { message, ...rest } = reason;
+		return Response.json({ message, ...rest }, { status });
+	}
 
 	// Otherwise return a generic error message with no details.
 	return new Response(undefined, { status });
