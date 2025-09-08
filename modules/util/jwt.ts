@@ -2,7 +2,7 @@ import { UnauthorizedError } from "../error/RequestError.js";
 import { ValueError } from "../error/ValueError.js";
 import { decodeBase64URLBytes, decodeBase64URLString, encodeBase64URL } from "./base64.js";
 import { type Bytes, type PossibleBytes, getBytes, requireBytes } from "./bytes.js";
-import { DAY } from "./constants.js";
+import { DAY, MINUTE, SECOND } from "./constants.js";
 import type { Data } from "./data.js";
 import type { AnyCaller } from "./function.js";
 import type { AnyFunction } from "./function.js";
@@ -12,7 +12,7 @@ const HASH = "SHA-512";
 const ALGORITHM = { name: "HMAC", hash: HASH };
 const HEADER = { alg: "HS512", typ: "JWT" };
 const EXPIRY_MS = DAY * 10;
-const SKEW_MS = 60; // Allow 1 minute clock skew.
+const SKEW_MS = MINUTE; // Allow 1 minute clock skew.
 const SECRET_BYTES = 64; // Minimum 64 bytes / 512 bits
 
 function _getKey(caller: AnyFunction, secret: PossibleBytes, ...usages: KeyUsage[]): Promise<CryptoKey> {
@@ -118,12 +118,12 @@ export async function verifyToken(token: string, secret: PossibleBytes, caller: 
 
 	// Validate payload.
 	const { nbf, iat, exp } = payloadData;
-	const now = Math.floor(Date.now() / 1000);
-	if (typeof nbf === "number" && nbf < now - SKEW_MS)
+	const now = Date.now();
+	if (typeof nbf === "number" && now < nbf * SECOND - SKEW_MS)
 		throw new UnauthorizedError("JWT cannot be used yet", { received: payloadData, expected: now, caller });
-	if (typeof iat === "number" && iat > now + SKEW_MS)
+	if (typeof iat === "number" && now < iat * SECOND - SKEW_MS)
 		throw new UnauthorizedError("JWT not issued yet", { received: payloadData, expected: now, caller });
-	if (typeof exp === "number" && exp < now - SKEW_MS)
+	if (typeof exp === "number" && now > exp * SECOND + SKEW_MS)
 		throw new UnauthorizedError("JWT has expired", { received: payloadData, expected: now, caller });
 
 	return payloadData;
