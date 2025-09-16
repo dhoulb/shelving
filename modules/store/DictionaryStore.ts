@@ -1,6 +1,6 @@
 import type { DictionaryItem, ImmutableDictionary } from "../util/dictionary.js";
 import { getDictionaryItems, omitDictionaryItems } from "../util/dictionary.js";
-import { withProp } from "../util/object.js";
+import { omitProps, withProp } from "../util/object.js";
 import type { Updates } from "../util/update.js";
 import { updateData } from "../util/update.js";
 import { Store } from "./Store.js";
@@ -34,6 +34,11 @@ export class DictionaryStore<T> extends Store<ImmutableDictionary<T>> implements
 	/** Set an item in this dictionary. */
 	set(name: string, value: T): void {
 		this.value = withProp(this.value, name, value);
+	}
+
+	/** Delete an item in this dictionary. */
+	delete(name: string, value: T): void {
+		this.value = omitProps(this.value, name);
 	}
 
 	/** Iterate over the entries of the object. */
