@@ -79,11 +79,6 @@ export class Store<T> implements AsyncIterable<T> {
 		this._time = time;
 	}
 
-	/** Set the value of the store. */
-	set(next: T): void {
-		this.value = next;
-	}
-
 	/** Set the value of the store as values are pulled from a sequence. */
 	async *through(sequence: AsyncIterable<T>): AsyncIterable<T> {
 		for await (const value of sequence) {

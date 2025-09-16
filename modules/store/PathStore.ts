@@ -8,6 +8,14 @@ export class PathStore extends Store<AbsolutePath> {
 		super(requirePath(path), time);
 	}
 
+	// Override to clean the path on set.
+	override get value(): AbsolutePath {
+		return super.value;
+	}
+	override set value(path: string) {
+		super.value = requirePath(path, super.value);
+	}
+
 	/** Based on the current store path, is a path active? */
 	isActive(path: AbsolutePath): boolean {
 		return isPathActive(this.value, path);
@@ -21,10 +29,5 @@ export class PathStore extends Store<AbsolutePath> {
 	/** Get an absolute path from a path relative to the current store path. */
 	getPath(path: string): AbsolutePath {
 		return requirePath(path, this.value);
-	}
-
-	// Override to clean the path.
-	override set(path: string): void {
-		super.set(requirePath(path, this.value));
 	}
 }

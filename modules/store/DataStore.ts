@@ -39,7 +39,7 @@ export class DataStore<T extends Data> extends Store<T> {
 export class OptionalDataStore<T extends Data> extends Store<T | undefined> {
 	/** Get current data value of this store (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
-		return this.requireData(getGetter(this, "data"));
+		return this.require(getGetter(this, "data"));
 	}
 
 	/** Set the data of this store. */
@@ -52,8 +52,8 @@ export class OptionalDataStore<T extends Data> extends Store<T | undefined> {
 		return !!this.value;
 	}
 
-	/** Return the data for this data store, or throw `RequiredError` if it is not set. */
-	requireData(caller: AnyCaller = this.requireData): T {
+	/** Require the data for this data store, or throw `RequiredError` if it is not set. */
+	require(caller: AnyCaller = this.require): T {
 		const data = this.value;
 		if (!data) throw new RequiredError("Data is empty", { caller });
 		return data;
@@ -61,21 +61,21 @@ export class OptionalDataStore<T extends Data> extends Store<T | undefined> {
 
 	/** Update several props in this data. */
 	update(updates: Updates<T>): void {
-		this.value = updateData(this.requireData(this.update), updates);
+		this.value = updateData(this.require(this.update), updates);
 	}
 
 	/** Update a single named prop in this data. */
-	getProp<K extends DataKey<T>>(name: K): T[K] {
-		return this.requireData(this.getProp)[name];
+	get<K extends DataKey<T>>(name: K): T[K] {
+		return this.require(this.get)[name];
 	}
 
 	/** Update a single named prop in this data. */
-	setProp<K extends DataKey<T>>(name: K, value: T[K]): void {
-		this.value = withProp(this.requireData(this.setProp), name, value);
+	set<K extends DataKey<T>>(name: K, value: T[K]): void {
+		this.value = withProp(this.require(this.set), name, value);
 	}
 
 	/** Set the data to `undefined`. */
-	unset(): void {
+	delete(): void {
 		this.value = undefined;
 	}
 }

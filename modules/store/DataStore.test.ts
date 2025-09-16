@@ -55,7 +55,7 @@ test("OptionalDataStore.prototype.data", async () => {
 	expect(store.value).toEqual({ a: 2 });
 	expect(store.data).toEqual({ a: 2 });
 	// Delete data value.
-	expect(store.unset()).toBe(undefined);
+	expect(store.delete()).toBe(undefined);
 	expect<T | undefined>(store.value).toBe(undefined);
 	expect(() => store.data).toThrow(RequiredError);
 	// Set undefined value.

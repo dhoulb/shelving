@@ -22,17 +22,17 @@ export class DictionaryStore<T> extends Store<ImmutableDictionary<T>> implements
 	}
 
 	/** Remove a named entry from this object. */
-	delete(...keys: string[]): void {
+	deleteItems(...keys: string[]): void {
 		this.value = omitDictionaryItems(this.value, ...keys);
 	}
 
 	/** Get an item in this dictionary. */
-	getItem(name: string): T | undefined {
+	get(name: string): T | undefined {
 		return this.value[name];
 	}
 
 	/** Set an item in this dictionary. */
-	setItem(name: string, value: T): void {
+	set(name: string, value: T): void {
 		this.value = withProp(this.value, name, value);
 	}
 
