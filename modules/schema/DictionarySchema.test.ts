@@ -8,7 +8,7 @@ import {
 	NUMBER,
 	STRING,
 	type Validator,
-	ValueFeedbacks,
+	ValueFeedback,
 } from "../index.js";
 
 // Tests.
@@ -75,15 +75,8 @@ describe("options.items", () => {
 		try {
 			expect<unknown>(schema.validate(dict)).toBe("Never");
 		} catch (invalid: any) {
-			expect(invalid).toBeInstanceOf(ValueFeedbacks);
-			expect(invalid).toEqual(
-				new ValueFeedbacks(
-					{
-						str: "Must be number",
-					},
-					dict,
-				),
-			);
+			expect(invalid).toBeInstanceOf(ValueFeedback);
+			expect(invalid).toEqual(new ValueFeedback("str: Must be number", dict));
 		}
 	});
 });

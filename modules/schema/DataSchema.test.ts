@@ -1,18 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Validator } from "../index.js";
-import {
-	BOOLEAN,
-	DATA,
-	DataSchema,
-	Feedback,
-	ITEM,
-	NUMBER,
-	PARTIAL,
-	STRING,
-	StringSchema,
-	ValueFeedback,
-	ValueFeedbacks,
-} from "../index.js";
+import { BOOLEAN, DATA, DataSchema, Feedback, ITEM, NUMBER, PARTIAL, STRING, StringSchema, ValueFeedback } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -134,16 +122,8 @@ describe("options.props", () => {
 		try {
 			expect<unknown>(schema.validate(data)).toBe("Never");
 		} catch (invalid: unknown) {
-			expect(invalid).toBeInstanceOf(ValueFeedbacks);
-			expect(invalid).toEqual(
-				new ValueFeedbacks(
-					{
-						dogs: "Must be number",
-						cats: "Must be number",
-					},
-					data,
-				),
-			);
+			expect(invalid).toBeInstanceOf(ValueFeedback);
+			expect(invalid).toEqual(new ValueFeedback("dogs: Must be number\ncats: Must be number", data));
 		}
 	});
 });
@@ -166,14 +146,13 @@ describe("PARTIAL", () => {
 		expect(result).toEqual(input);
 	});
 	test("aggregates errors for multiple invalid props", () => {
+		const input = { name: null, age: "nope" };
 		try {
-			PARTIAL_USER_SCHEMA.validate({ name: null, age: "nope" } as any);
+			PARTIAL_USER_SCHEMA.validate(input);
 			throw new Error("Should have thrown");
 		} catch (e) {
-			expect(e).toBeInstanceOf(ValueFeedbacks);
-			const feedback = e as any; // loosen typing to inspect messages
-			expect(feedback.messages.name).toBe("Must be string");
-			expect(feedback.messages.age).toBe("Must be number");
+			expect(e).toBeInstanceOf(ValueFeedback);
+			expect(e).toEqual(new ValueFeedback("name: Must be string\nage: Must be number", input));
 		}
 	});
 	test("rejects non-object values", () => {
@@ -222,7 +201,7 @@ describe("ITEM", () => {
 		expect(result).toEqual({ id: "abc", name: "Item 1" });
 	});
 	test("throws if ID is missing", () => {
-		expect(() => ITEM_SCHEMA.validate({ name: "abc" } as any)).toThrow(ValueFeedbacks);
+		expect(() => ITEM_SCHEMA.validate({ name: "abc" } as any)).toThrow(ValueFeedback);
 	});
 	test("throws if input is array", () => {
 		expect(() => ITEM_SCHEMA.validate([] as any)).toThrow(ValueFeedback);

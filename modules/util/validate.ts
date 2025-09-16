@@ -1,7 +1,6 @@
 import type { BaseError, BaseErrorOptions } from "../error/BaseError.js";
 import { ValueError } from "../error/ValueError.js";
-import { Feedback } from "../feedback/Feedback.js";
-import { ValueFeedbacks } from "../feedback/Feedbacks.js";
+import { Feedback, ValueFeedback } from "../feedback/Feedback.js";
 import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import { isArray } from "./array.js";
 import type { Constructor } from "./class.js";
@@ -67,19 +66,17 @@ export function getValid<T>(
  */
 export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator: Validator<T>): Iterable<T> {
 	let index = 0;
-	let valid = true;
-	const messages: MutableDictionary<string> = {};
+	const messages: MutableArray<string> = [];
 	for (const unsafeItem of unsafeItems) {
 		try {
 			yield validator.validate(unsafeItem);
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			messages[index] = thrown.message;
-			valid = false;
+			messages.push(`${index}: ${thrown.message}`);
 		}
 		index++;
 	}
-	if (!valid) throw new ValueFeedbacks(messages, unsafeItems);
+	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeItems);
 }
 
 /**
@@ -91,10 +88,9 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
  */
 export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator: Validator<T>): ImmutableArray<T> {
 	let index = 0;
-	let valid = true;
 	let changed = false; // start false so we can reuse original if nothing changes
 	const safeArray: MutableArray<T> = [];
-	const messages: MutableDictionary<string> = {};
+	const messages: MutableArray<string> = [];
 	for (const unsafeItem of unsafeArray) {
 		try {
 			const safeItem = validator.validate(unsafeItem);
@@ -102,12 +98,11 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
 			if (!changed && safeItem !== unsafeItem) changed = true;
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			messages[index] = thrown.message;
-			valid = false;
+			messages.push(`${index}: ${thrown.message}`);
 		}
 		index++;
 	}
-	if (!valid) throw new ValueFeedbacks(messages, unsafeArray);
+	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeArray);
 	return changed || !isArray(unsafeArray) ? safeArray : (unsafeArray as ImmutableArray<T>);
 }
 
@@ -118,10 +113,9 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
  * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
-	let valid = true;
 	let changed = false;
 	const safeDictionary: MutableDictionary<T> = {};
-	const messages: MutableDictionary<string> = {};
+	const messages: MutableArray<string> = [];
 	for (const [key, unsafeValue] of getDictionaryItems(unsafeDictionary)) {
 		try {
 			const safeValue = validator.validate(unsafeValue);
@@ -129,11 +123,10 @@ export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unkn
 			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			messages[key] = thrown.message;
-			valid = false;
+			messages.push(`${key}: ${thrown.message}`);
 		}
 	}
-	if (!valid) throw new ValueFeedbacks(messages, unsafeDictionary);
+	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeDictionary);
 	return changed || isIterable(unsafeDictionary) ? safeDictionary : (unsafeDictionary as ImmutableDictionary<T>);
 }
 
@@ -155,10 +148,9 @@ let isDeeplyPartial = false;
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial: true): DeepPartial<T>;
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial?: false): T;
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial = isDeeplyPartial): T {
-	let valid = true;
 	let changed = false;
 	const safeData: MutableObject = {};
-	const messages: MutableDictionary<string> = {};
+	const messages: MutableArray<string> = [];
 	try {
 		isDeeplyPartial = partial;
 		const props = getDataProps(validators);
@@ -171,11 +163,10 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 				if (!changed && safeValue !== unsafeValue) changed = true;
 			} catch (thrown) {
 				if (!(thrown instanceof Feedback)) throw thrown;
-				messages[key] = thrown.message;
-				valid = false;
+				messages.push(`${key}: ${thrown.message}`);
 			}
 		}
-		if (!valid) throw new ValueFeedbacks(messages, unsafeData);
+		if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeData);
 		if (changed || getDataKeys(unsafeData).length > props.length) return safeData as T;
 		return unsafeData as T;
 	} finally {

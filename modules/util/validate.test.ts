@@ -5,7 +5,7 @@ import {
 	STRING,
 	StringSchema,
 	ValueError,
-	ValueFeedbacks,
+	ValueFeedback,
 	getValid,
 	validateArray,
 	validateData,
@@ -56,18 +56,9 @@ describe("validateData()", () => {
 			validateData(bad, VALIDATORS);
 			expect("should not reach").toBe("reached");
 		} catch (err) {
-			expect(err).toBeInstanceOf(ValueFeedbacks);
+			expect(err).toBeInstanceOf(ValueFeedback);
 			// Expected messages based on existing schema message patterns
-			expect(err).toEqual(
-				new ValueFeedbacks(
-					{
-						str: "Must be string",
-						opt: "Must be string",
-						num: "Must be number",
-					},
-					bad,
-				),
-			);
+			expect(err).toEqual(new ValueFeedback("str: Must be string\nopt: Must be string\nnum: Must be number", bad));
 		}
 	});
 	test("removes excess fields when rebuilding object (default added)", () => {
@@ -119,8 +110,8 @@ describe("validateItems()", () => {
 			Array.from(validateItems([1, "2", "bad"], NUMBER));
 			expect("reached").toBe("unreachable");
 		} catch (err) {
-			expect(err).toBeInstanceOf(ValueFeedbacks);
-			expect(err).toEqual(new ValueFeedbacks({ 2: "Must be number" }, [1, "2", "bad"]));
+			expect(err).toBeInstanceOf(ValueFeedback);
+			expect(err).toEqual(new ValueFeedback("2: Must be number", [1, "2", "bad"]));
 		}
 	});
 	test("all valid items (with coercion) returned as array via spread", () => {
@@ -146,8 +137,8 @@ describe("validateArray()", () => {
 			validateArray(arr, NUMBER);
 			expect("reached").toBe("unreachable");
 		} catch (err) {
-			expect(err).toBeInstanceOf(ValueFeedbacks);
-			expect(err).toEqual(new ValueFeedbacks({ 2: "Must be number" }, arr));
+			expect(err).toBeInstanceOf(ValueFeedback);
+			expect(err).toEqual(new ValueFeedback("2: Must be number", arr));
 		}
 	});
 });
@@ -174,8 +165,8 @@ describe("validateDictionary()", () => {
 			validateDictionary(dict, NUMBER);
 			expect("reached").toBe("unreachable");
 		} catch (err) {
-			expect(err).toBeInstanceOf(ValueFeedbacks);
-			expect(err).toEqual(new ValueFeedbacks({ b: "Must be number" }, dict));
+			expect(err).toBeInstanceOf(ValueFeedback);
+			expect(err).toEqual(new ValueFeedback("b: Must be number", dict));
 		}
 	});
 });

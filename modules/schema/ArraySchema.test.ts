@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Validator } from "../index.js";
-import { ARRAY, ArraySchema, DATA, Feedback, NUMBER, STRING, ValueFeedbacks } from "../index.js";
+import { ARRAY, ArraySchema, DATA, Feedback, NUMBER, STRING, ValueFeedback } from "../index.js";
 
 // Vars.
 const stringArray = ["a", "b", "c"];
@@ -125,16 +125,8 @@ describe("options.items", () => {
 			schema.validate(arr);
 			expect(false).toBe(true); // Not reached.
 		} catch (invalid: any) {
-			expect(invalid).toBeInstanceOf(ValueFeedbacks);
-			expect(invalid).toEqual(
-				new ValueFeedbacks(
-					{
-						"0": "Must be number",
-						"2": "Must be number",
-					},
-					arr,
-				),
-			);
+			expect(invalid).toBeInstanceOf(ValueFeedback);
+			expect(invalid).toEqual(new ValueFeedback("0: Must be number\n2: Must be number", arr));
 		}
 	});
 });

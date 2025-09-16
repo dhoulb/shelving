@@ -1,12 +1,10 @@
 import { expect, test } from "bun:test";
 import type { Data } from "../index.js";
-import { Feedback, Feedbacks, ValueFeedback, ValueFeedbacks, dehydrate, hydrate } from "../index.js";
+import { Feedback, ValueFeedback, dehydrate, hydrate } from "../index.js";
 
 const HYDRATIONS = {
 	Feedback,
-	Feedbacks,
 	ValueFeedback,
-	ValueFeedbacks,
 };
 
 test("hydrate(): Works correctly with class instances", () => {
