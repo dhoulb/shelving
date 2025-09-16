@@ -2,7 +2,7 @@ import { ValueFeedback } from "../feedback/Feedback.js";
 import type { PossibleDate } from "../util/date.js";
 import { getDate, requireYMD } from "../util/date.js";
 import { formatDate } from "../util/format.js";
-import type { Optional } from "../util/optional.js";
+import type { Nullish } from "../util/null.js";
 import { NULLABLE } from "./NullableSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
@@ -10,8 +10,8 @@ import { Schema } from "./Schema.js";
 /** Allowed options for `DateSchema` */
 export interface DateSchemaOptions extends SchemaOptions {
 	readonly value?: PossibleDate | undefined;
-	readonly min?: Optional<PossibleDate> | undefined;
-	readonly max?: Optional<PossibleDate> | undefined;
+	readonly min?: Nullish<PossibleDate>;
+	readonly max?: Nullish<PossibleDate>;
 }
 
 /** Define a valid date in YMD format, e.g. `2005-09-12` */

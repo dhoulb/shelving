@@ -39,7 +39,6 @@ export * from "./merge.js";
 export * from "./null.js";
 export * from "./number.js";
 export * from "./object.js";
-export * from "./optional.js";
 export * from "./path.js";
 export * from "./query.js";
 export * from "./random.js";

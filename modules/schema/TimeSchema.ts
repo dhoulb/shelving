@@ -1,6 +1,6 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
+import type { Nullish } from "../util/null.js";
 import { roundStep } from "../util/number.js";
-import type { Optional } from "../util/optional.js";
 import type { PossibleTime } from "../util/time.js";
 import { Time, getTime } from "../util/time.js";
 import { NULLABLE } from "./NullableSchema.js";
@@ -10,8 +10,8 @@ import { Schema } from "./Schema.js";
 /** Allowed options for `TimeSchama` */
 export interface TimeSchemaOptions extends SchemaOptions {
 	readonly value?: PossibleTime | undefined;
-	readonly min?: Optional<PossibleTime> | undefined;
-	readonly max?: Optional<PossibleTime> | undefined;
+	readonly min?: Nullish<PossibleTime>;
+	readonly max?: Nullish<PossibleTime>;
 	readonly step?: number | undefined;
 }
 

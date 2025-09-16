@@ -1,6 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
-import type { Optional } from "./optional.js";
+import type { Nullish } from "./null.js";
 
 /** Entity strings combine a type and ID, e.g. `challenge:a1b2c3` */
 export type Entity<T extends string = string> = `${T}:${string}`;
@@ -16,9 +16,9 @@ export const EMPTY_ENTITY: EmptyEntity = [undefined, undefined];
 
 /** Split an optional entity tag like `challenge:a1b2c3` into `["challenge", "a1b2c3"]`, or return `EmptyEntity` if the entity was invalid. */
 export function getEntity<T extends string>(entity: Entity<T>): [type: T, id: string];
-export function getEntity<T extends string>(entity: Optional<Entity<T>>): [type: T, id: string] | EmptyEntity;
-export function getEntity(entity: Optional<string>): [type: string, id: string] | EmptyEntity;
-export function getEntity(entity: Optional<string>): [type: string, id: string] | EmptyEntity {
+export function getEntity<T extends string>(entity: Nullish<Entity<T>>): [type: T, id: string] | EmptyEntity;
+export function getEntity(entity: Nullish<string>): [type: string, id: string] | EmptyEntity;
+export function getEntity(entity: Nullish<string>): [type: string, id: string] | EmptyEntity {
 	if (entity) {
 		const bits = entity.split(":", 2);
 		if (bits[0] && bits[1]) return bits as [type: string, id: string];

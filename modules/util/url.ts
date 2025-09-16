@@ -1,6 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
-import { type Optional, notOptional } from "./optional.js";
+import { type Nullish, notNullish } from "./null.js";
 
 /** Values that can be converted to a URL instance. */
 export type PossibleURL = string | URL;
@@ -16,8 +16,8 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
 }
 
 /** Convert a possible URL to a URL, or return `undefined` if conversion fails. */
-export function getURL(possible: Optional<PossibleURL>, base: PossibleURL | undefined = _BASE): URL | undefined {
-	if (notOptional(possible)) {
+export function getURL(possible: Nullish<PossibleURL>, base: PossibleURL | undefined = _BASE): URL | undefined {
+	if (notNullish(possible)) {
 		try {
 			return isURL(possible) ? possible : new URL(possible, base);
 		} catch (e) {

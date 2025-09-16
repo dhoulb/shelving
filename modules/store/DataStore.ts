@@ -1,6 +1,8 @@
+import { RequiredError } from "../error/RequiredError.js";
+import { getGetter } from "../util/class.js";
 import type { Data, DataKey } from "../util/data.js";
+import type { AnyCaller } from "../util/function.js";
 import { withProp } from "../util/object.js";
-import { getRequired } from "../util/optional.js";
 import type { Updates } from "../util/update.js";
 import { updateData } from "../util/update.js";
 import { Store } from "./Store.js";
@@ -37,7 +39,7 @@ export class DataStore<T extends Data> extends Store<T> {
 export class OptionalDataStore<T extends Data> extends Store<T | undefined> {
 	/** Get current data value of this store (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
-		return getRequired(this.value);
+		return this.requireData(getGetter(this, "data"));
 	}
 
 	/** Set the data of this store. */
@@ -50,19 +52,26 @@ export class OptionalDataStore<T extends Data> extends Store<T | undefined> {
 		return !!this.value;
 	}
 
+	/** Return the data for this data store, or throw `RequiredError` if it is not set. */
+	requireData(caller: AnyCaller = this.requireData): T {
+		const data = this.value;
+		if (!data) throw new RequiredError("Data is empty", { caller });
+		return data;
+	}
+
 	/** Update several props in this data. */
 	update(updates: Updates<T>): void {
-		this.value = updateData(this.data, updates);
+		this.value = updateData(this.requireData(this.update), updates);
 	}
 
 	/** Update a single named prop in this data. */
 	getProp<K extends DataKey<T>>(name: K): T[K] {
-		return this.data[name];
+		return this.requireData(this.getProp)[name];
 	}
 
 	/** Update a single named prop in this data. */
 	setProp<K extends DataKey<T>>(name: K, value: T[K]): void {
-		this.value = withProp(this.data, name, value);
+		this.value = withProp(this.requireData(this.setProp), name, value);
 	}
 
 	/** Set the data to `undefined`. */

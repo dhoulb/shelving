@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import type { AnyCaller } from "./function.js";
-import type { Optional } from "./optional.js";
+import type { Nullish } from "./null.js";
 import type { Path } from "./path.js";
 import { type PossibleURL, getURL, isURL } from "./url.js";
 
@@ -66,7 +66,7 @@ export function isLinkURL(value: unknown, schemes: LinkSchemes = SCHEMES, hosts?
  * - A valid link URL is a `URL` instance with a scheme matching the `schemes` array, and `host` matching the optional `hosts` array.
  */
 export function getLinkURL(
-	value: Optional<PossibleURL>,
+	value: Nullish<PossibleURL>,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes: LinkSchemes = SCHEMES,
 	hosts?: LinkHosts,
@@ -96,7 +96,7 @@ export function requireLinkURL(
  * - A valid link URL string is an absolute URL string with a scheme matching the `schemes` array, and `host` matching the optional `hosts` array.
  */
 export function getLink(
-	value: Optional<PossibleURL>,
+	value: Nullish<PossibleURL>,
 	base?: AbsoluteLinkURL | AbsoluteLink,
 	schemes: LinkSchemes = SCHEMES,
 	hosts?: LinkHosts,

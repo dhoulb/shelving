@@ -1,7 +1,7 @@
 import type { ImmutableArray } from "../util/array.js";
 import type { DataKey, Database } from "../util/data.js";
 import type { ItemQuery } from "../util/item.js";
-import { type Optional, notOptional } from "../util/optional.js";
+import { type Nullish, notNullish } from "../util/null.js";
 import type { Updates } from "../util/update.js";
 import type { AsyncProvider, Provider } from "./Provider.js";
 
@@ -107,8 +107,8 @@ export function writeChange<T extends Database>(provider: Provider<T>, change: D
 }
 
 /** Write a set of changes to a synchronous provider. */
-export function writeChanges<T extends Database>(provider: Provider<T>, ...changes: Optional<DatabaseChange<T>>[]): DatabaseChanges<T> {
-	return changes.filter(notOptional).map(change => writeChange(provider, change));
+export function writeChanges<T extends Database>(provider: Provider<T>, ...changes: Nullish<DatabaseChange<T>>[]): DatabaseChanges<T> {
+	return changes.filter(notNullish).map(change => writeChange(provider, change));
 }
 
 /** Write a single change to an asynchronous provider and return the change that was written. */
@@ -136,7 +136,7 @@ export async function writeAsyncChange<T extends Database>(
 /** Write a set of changes to an asynchronous provider. */
 export function writeAsyncChanges<T extends Database>(
 	provider: AsyncProvider<T>,
-	...changes: Optional<DatabaseChange<T>>[]
+	...changes: Nullish<DatabaseChange<T>>[]
 ): Promise<DatabaseChanges<T>> {
-	return Promise.all(changes.filter(notOptional).map(change => writeAsyncChange(provider, change)));
+	return Promise.all(changes.filter(notNullish).map(change => writeAsyncChange(provider, change)));
 }

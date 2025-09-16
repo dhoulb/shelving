@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { Time, ValueError, getTime, requireTime } from "../index.js";
 
-test("getOptionalTime()", () => {
+test("getTime()", () => {
 	// Parsed as dates.
 	expect(getTime("now")).toBeInstanceOf(Time);
 	expect(getTime("today")).toBeInstanceOf(Time);
@@ -18,7 +18,7 @@ test("getOptionalTime()", () => {
 	expect<Time | undefined>(getTime("")).toBe(undefined);
 	expect<Time | undefined>(getTime(null)).toBe(undefined);
 });
-test("getTime()", () => {
+test("requireTime()", () => {
 	// Parsed as date.
 	expect(requireTime(new Date("2022-01-01 18:19:20.123")).long).toBe("18:19:20.123");
 
