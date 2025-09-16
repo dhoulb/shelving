@@ -25,12 +25,12 @@ export class DataStore<T extends Data> extends Store<T> {
 	}
 
 	/** Update a single named prop in this data. */
-	getProp<K extends DataKey<T>>(name: K): T[K] {
+	get<K extends DataKey<T>>(name: K): T[K] {
 		return this.data[name];
 	}
 
 	/** Update a single named prop in this data. */
-	setProp<K extends DataKey<T>>(name: K, value: T[K]): void {
+	set<K extends DataKey<T>>(name: K, value: T[K]): void {
 		this.value = withProp(this.data, name, value);
 	}
 }
