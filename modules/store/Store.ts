@@ -29,8 +29,8 @@ export class Store<T> implements AsyncIterable<T> {
 	}
 	set value(value: T) {
 		this._reason = undefined;
-		this._time = Date.now();
 		if (this._value === NONE || !this.equal(value, this._value)) {
+			this._time = Date.now();
 			this._value = value;
 			this.next.resolve(value);
 		}
