@@ -37,7 +37,7 @@ export class DictionaryStore<T> extends Store<ImmutableDictionary<T>> implements
 	}
 
 	/** Delete an item in this dictionary. */
-	delete(name: string, value: T): void {
+	delete(name: string): void {
 		this.value = omitProps(this.value, name);
 	}
 
