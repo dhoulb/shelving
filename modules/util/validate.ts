@@ -8,6 +8,7 @@ import type { Data } from "./data.js";
 import { getDataKeys, getDataProps } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
+import { getNamedMessage } from "./error.js";
 import type { AnyCaller } from "./function.js";
 import { PASSTHROUGH } from "./function.js";
 import { isIterable } from "./iterate.js";
@@ -62,7 +63,6 @@ export function getValid<T>(
  *
  * @yield Valid items.
  * @throw Feedback if one or more items did not validate.
- * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator: Validator<T>): Iterable<T> {
 	let index = 0;
@@ -72,7 +72,7 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
 			yield validator.validate(unsafeItem);
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			messages.push(`${index}: ${thrown.message}`);
+			messages.push(getNamedMessage(index.toString(), thrown.message));
 		}
 		index++;
 	}
@@ -84,7 +84,6 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
  *
  * @return Array with valid items.
  * @throw Feedback if one or more entry values did not validate.
- * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator: Validator<T>): ImmutableArray<T> {
 	let index = 0;
@@ -98,7 +97,7 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
 			if (!changed && safeItem !== unsafeItem) changed = true;
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			messages.push(`${index}: ${thrown.message}`);
+			messages.push(getNamedMessage(index.toString(), thrown.message));
 		}
 		index++;
 	}
@@ -110,7 +109,6 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
  * Validate the values of the entries in a dictionary object.
  *
  * @throw Feedback if one or more entry values did not validate.
- * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
 	let changed = false;
@@ -123,7 +121,7 @@ export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unkn
 			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
-			messages.push(`${key}: ${thrown.message}`);
+			messages.push(getNamedMessage(key, thrown.message));
 		}
 	}
 	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeDictionary);
@@ -143,7 +141,6 @@ let isDeeplyPartial = false;
  *
  * @return Valid object.
  * @throw Feedback if one or more props did not validate.
- * - `feedback.details` will contain an entry for each invalid item (keyed by their count in the input iterable).
  */
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial: true): DeepPartial<T>;
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial?: false): T;
@@ -163,7 +160,7 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 				if (!changed && safeValue !== unsafeValue) changed = true;
 			} catch (thrown) {
 				if (!(thrown instanceof Feedback)) throw thrown;
-				messages.push(`${key}: ${thrown.message}`);
+				messages.push(getNamedMessage(key, thrown.message));
 			}
 		}
 		if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeData);

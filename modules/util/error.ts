@@ -52,3 +52,11 @@ export function splitMessage(input: PossibleMessage): ImmutableDictionary<string
 	}
 	return output;
 }
+
+/**
+ * Name a message by applying a `name: ` prefix to it.
+ * - Assumes each line in the message is a separate error, so each line has the same prefix applied.
+ */
+export function getNamedMessage(name: string, message: string): string {
+	return `${name}: ${message.split("\n").join(`\n${name}: `)}`;
+}
