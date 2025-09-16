@@ -30,7 +30,7 @@ export class Store<T> implements AsyncIterable<T> {
 	set value(value: T) {
 		this._reason = undefined;
 		this._time = Date.now();
-		if (!isDeepEqual(value, this._value)) {
+		if (this._value === NONE || !this.equal(value, this._value)) {
 			this._value = value;
 			this.next.resolve(value);
 		}
@@ -103,4 +103,9 @@ export class Store<T> implements AsyncIterable<T> {
 		}
 	}
 	private _iterating = 0;
+
+	/** Compare two values for this store and return whether they are equal. */
+	equal(a: T, b: T): boolean {
+		return isDeepEqual(a, b);
+	}
 }
