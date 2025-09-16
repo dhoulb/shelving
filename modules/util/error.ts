@@ -1,3 +1,8 @@
+import { RequiredError } from "../error/RequiredError.js";
+import type { ImmutableDictionary, MutableDictionary } from "./dictionary.js";
+import type { AnyCaller } from "./function.js";
+import { isObject } from "./object.js";
+
 /** Log an error to the console. */
 export function logError(reason: unknown): void {
 	console.error(reason);
@@ -8,39 +13,42 @@ export function isError(v: unknown): v is Error & { readonly code?: string | und
 	return typeof Error.isError === "function" ? Error.isError(v) : v instanceof Error;
 }
 
-/**
- * Extract the _main message(s)_ from a full error message string.
- *
- * - Error messages can have multiple lines separated by `\n` newline.
- * - Some lines may be _named messages_ in `name: This is a message` format.
- * - The _main_ message is any line(s) that is not a named message.
- *
- * @returns The combined main message(s) found in the full message string.
- */
-export function getMainMessage(fullMessage: string): string {
-	let propMessages = "";
-	for (const [foundMessage] of fullMessage.matchAll(/^\s*(?!.*: )(.*?)\s*/g))
-		if (foundMessage) propMessages = propMessages ? `${propMessages}\n${foundMessage}` : foundMessage;
-	return propMessages;
+/** Things that can be a message. */
+export type PossibleMessage = { message: string } | string;
+
+/** Return the string message from an unknown value, or return `undefined` if it could not be found. */
+export function getMessage(input: unknown): string | undefined {
+	return typeof input === "string" ? input : isObject(input) && typeof input.message === "string" ? input.message : undefined;
+}
+
+/** Require a message from an unknown value, or throw `RequiredError` if it could not be found. */
+export function requireMessage(input: PossibleMessage, caller: AnyCaller = requireMessage): string {
+	const message = getMessage(input);
+	if (message === undefined) throw new RequiredError("Message is required", { received: input, caller });
+	return message;
 }
 
 /**
- * Extract the _named message(s)_ from a full error message string.
- *
- * - Error messages can have multiple lines separated by `\n` newline.
- * - Some lines may be _named messages_ in `name: This is a message` format.
- * - This function extracts any `name: This is a message` lines from the full message string.
- * - Note there may be multiple lines starting with `name:` (in the case where there were multiple errors with that name).
- * - This trims the `name: ` prefix from found messages and rejoins them with `\n` newline.
- *
- * @param fullMessage The full message string which may contain named messages in `name: This is a message` format.
- * @param name The name of the prop to extract the message for.
- *
- * @returns The combined message(s) for the named prop found in the full message string, or an empty string if no messages were found for that prop.
+ * Split a string message into lines, look for prefixes like `name:`, and return a dictionary of those named messages.
+ * - Full messages strings can have multiple lines separated by `\n` newline.
+ * - Named messages are extracted into their own entries in the dictionary.
+ * - Unnamed messages are combined into a single entry with the key `""` (empty string).
  */
-export function getNamedMessage(fullMessage: string, name: string | number): string {
-	let namedMessages = "";
-	for (const [foundMessage] of fullMessage.matchAll(new RegExp(`^${name}: \s*(.*?)\s*$`, "g")))
-		if (foundMessage) namedMessages = namedMessages ? `${namedMessages}\n${foundMessage}` : foundMessage;
-	return namedMessages;
+export function splitMessage(input: PossibleMessage): ImmutableDictionary<string> {
+	const messages = requireMessage(input, splitMessage).split("\n");
+	const output: MutableDictionary<string> = {};
+	for (const line of messages) {
+		const i = line.indexOf(": ");
+		if (i >= 0) {
+			const name = line.slice(0, i).trim();
+			const message = line.slice(i + 2).trim();
+			if (Object.hasOwn(output, name)) output[name] += `\n${message}`;
+			else output[name] = message;
+		} else {
+			const message = line.trim();
+			if (Object.hasOwn(output, "")) output[""] += `\n${message}`;
+			else output[""] = message;
+		}
+	}
+	return output;
 }

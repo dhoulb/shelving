@@ -236,3 +236,13 @@ export function splitString(
 		});
 	return segments;
 }
+
+/** Trim a string (as a function, so it can be used in mapping. */
+export function trimString(str: string): string {
+	return str.trim();
+}
+
+/** Does a string have length? */
+export function isNonEmptyString(str: string): boolean {
+	return str.length > 0;
+}
