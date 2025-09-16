@@ -1,5 +1,6 @@
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { NONE } from "../util/constants.js";
+import { isDeepEqual } from "../util/equal.js";
 import { type PossibleStarter, type Starter, getStarter } from "../util/start.js";
 
 /** Any `Store` instance. */
@@ -29,7 +30,7 @@ export class Store<T> implements AsyncIterable<T> {
 	set value(value: T) {
 		this._reason = undefined;
 		this._time = Date.now();
-		if (value !== this._value) {
+		if (!isDeepEqual(value, this._value)) {
 			this._value = value;
 			this.next.resolve(value);
 		}
