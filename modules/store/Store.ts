@@ -27,9 +27,13 @@ export class Store<T> implements AsyncIterable<T> {
 		if (this._value === NONE) throw this.next;
 		return this._value;
 	}
-	set value(value: T) {
+	set value(value: T | typeof NONE) {
 		this._reason = undefined;
-		if (this._value === NONE || !this.equal(value, this._value)) {
+		if (value === NONE) {
+			this._time = undefined;
+			this._value = value;
+			this.next.cancel();
+		} else if (this._value === NONE || !this.equal(value, this._value)) {
 			this._time = Date.now();
 			this._value = value;
 			this.next.resolve(value);

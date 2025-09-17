@@ -40,15 +40,25 @@ export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> 
 	}
 	private _nextReason: unknown = _NOVALUE;
 
+	/** Cancel the current resolution or rejection. */
+	cancel(): void {
+		this._nextValue = _NOVALUE;
+		this._nextReason = _NOVALUE;
+	}
+
 	/** Fulfill the current deferred by resolving or rejecting it. */
 	private _fulfill() {
 		const { _deferred, _nextReason, _nextValue } = this;
-		this._deferred = undefined;
 		this._nextReason = _NOVALUE;
 		this._nextValue = _NOVALUE;
 		if (_deferred) {
-			if (_nextReason !== _NOVALUE) _deferred.reject(_nextReason);
-			else if (_nextValue !== _NOVALUE) _deferred.resolve(_nextValue);
+			if (_nextReason !== _NOVALUE) {
+				this._deferred = undefined;
+				_deferred.reject(_nextReason);
+			} else if (_nextValue !== _NOVALUE) {
+				this._deferred = undefined;
+				_deferred.resolve(_nextValue);
+			}
 		}
 	}
 
