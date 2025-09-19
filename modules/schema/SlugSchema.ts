@@ -13,7 +13,7 @@ export class SlugSchema extends StringSchema {
 	constructor(options: Omit<StringSchemaOptions, "min" | "max" | "multiline">) {
 		super({
 			...options,
-			min: 2,
+			min: 1,
 			max: 32,
 		});
 	}
