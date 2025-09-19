@@ -4,14 +4,17 @@ import { NULLABLE } from "./NullableSchema.js";
 import { type Sanitizer, StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
-
 export type TextSchemaType = "text" | "password" | "color" | "date" | "email" | "number" | "tel" | "search" | "url";
-/** Options for `TextSchema` */
 
+/** Case conversion. */
+export type TextCase = "upper" | "lower";
+
+/** Options for `TextSchema` */
 export interface TextSchemaOptions extends StringSchemaOptions {
 	readonly type?: TextSchemaType | undefined;
 	readonly match?: RegExp | undefined;
 	readonly multiline?: boolean | undefined;
+	readonly case?: TextCase | undefined;
 }
 
 /**
@@ -27,11 +30,13 @@ export class TextSchema extends StringSchema {
 	readonly match: RegExp | undefined;
 	readonly sanitizer: Sanitizer | undefined;
 	readonly multiline: boolean;
-	constructor({ type = "text", match, multiline = false, ...options }: TextSchemaOptions) {
+	readonly case: TextCase | undefined;
+	constructor({ type = "text", match, multiline = false, case: _case, ...options }: TextSchemaOptions) {
 		super(options);
 		this.type = type;
-		this.match = match;
 		this.multiline = multiline;
+		this.match = match;
+		this.case = _case;
 	}
 
 	override validate(unsafeValue: unknown = this.value): string {
@@ -41,7 +46,10 @@ export class TextSchema extends StringSchema {
 	}
 
 	override sanitize(str: string): string {
-		return this.multiline ? sanitizeMultilineText(str) : sanitizeText(str);
+		const sane = this.multiline ? sanitizeMultilineText(str) : sanitizeText(str);
+		if (this.case === "upper") return sane.toUpperCase();
+		if (this.case === "lower") return sane.toLowerCase();
+		return sane;
 	}
 }
 
