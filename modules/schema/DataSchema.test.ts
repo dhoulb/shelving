@@ -1,6 +1,19 @@
 import { describe, expect, test } from "bun:test";
 import type { Validator } from "../index.js";
-import { BOOLEAN, DATA, DataSchema, Feedback, ITEM, NUMBER, PARTIAL, STRING, StringSchema, ValueFeedback } from "../index.js";
+import {
+	BOOLEAN,
+	DATA,
+	DataSchema,
+	Feedback,
+	ITEM,
+	KEY,
+	NUMBER,
+	PARTIAL,
+	POSITIVE_INTEGER,
+	STRING,
+	StringSchema,
+	ValueFeedback,
+} from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -190,23 +203,32 @@ describe("PARTIAL", () => {
 	});
 });
 describe("ITEM", () => {
-	const ITEM_SCHEMA = ITEM({ name: STRING });
+	const ITEM_KEY_SCHEMA = ITEM(KEY, { name: STRING });
+	const ITEM_NUMBER_SCHEMA = ITEM(POSITIVE_INTEGER, { name: STRING });
 
 	test("validates item with all fields", () => {
-		const result = ITEM_SCHEMA.validate({ id: "abc", name: "Item 1" });
-		expect(result).toEqual({ id: "abc", name: "Item 1" });
+		const result1 = ITEM_KEY_SCHEMA.validate({ id: "abc", name: "Item 1" });
+		expect(result1).toEqual({ id: "abc", name: "Item 1" });
+		const result2 = ITEM_NUMBER_SCHEMA.validate({ id: 123, name: "Item 1" });
+		expect(result2).toEqual({ id: 123, name: "Item 1" });
 	});
 	test("strips unknown fields", () => {
-		const result = ITEM_SCHEMA.validate({ id: "abc", name: "Item 1", extra: "remove me" });
+		const result = ITEM_KEY_SCHEMA.validate({ id: "abc", name: "Item 1", extra: "remove me" });
 		expect(result).toEqual({ id: "abc", name: "Item 1" });
 	});
+	test("converts ids", () => {
+		const result1 = ITEM_KEY_SCHEMA.validate({ id: 123, name: "Item 1" });
+		expect(result1).toEqual({ id: "123", name: "Item 1" });
+		const result2 = ITEM_NUMBER_SCHEMA.validate({ id: "123", name: "Item 1" });
+		expect(result2).toEqual({ id: 123, name: "Item 1" });
+	});
 	test("throws if ID is missing", () => {
-		expect(() => ITEM_SCHEMA.validate({ name: "abc" } as any)).toThrow(ValueFeedback);
+		expect(() => ITEM_KEY_SCHEMA.validate({ name: "abc" } as any)).toThrow(ValueFeedback);
 	});
 	test("throws if input is array", () => {
-		expect(() => ITEM_SCHEMA.validate([] as any)).toThrow(ValueFeedback);
+		expect(() => ITEM_KEY_SCHEMA.validate([] as any)).toThrow(ValueFeedback);
 	});
 	test("throws if input is function", () => {
-		expect(() => ITEM_SCHEMA.validate((() => {}) as any)).toThrow(ValueFeedback);
+		expect(() => ITEM_KEY_SCHEMA.validate((() => {}) as any)).toThrow(ValueFeedback);
 	});
 });

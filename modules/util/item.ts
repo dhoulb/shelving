@@ -1,36 +1,34 @@
 import type { ImmutableArray } from "./array.js";
 import type { Data } from "./data.js";
-import type { Query } from "./query.js";
 
-/** Item data with a string ID that uniquely identifies it. */
-export type Item<T extends Data = Data> = T & { id: string };
+/** Allowed types for the "id" property (identifier) for an item. */
+export type Identifier = string | number;
+
+/** An item object is a data object that includes an "id" identifier property that is either a string or number. */
+export type Item<I extends Identifier, T extends Data> = { id: I } & T;
 
 /** Entity or `undefined` to indicate the item doesn't exist. */
-export type OptionalItem<T extends Data = Data> = Item<T> | undefined;
+export type OptionalItem<I extends Identifier, T extends Data> = Item<I, T> | undefined;
 
-/** Get the ID from item data. */
-export function getItemID<T extends Data>({ id }: Item<T>): string {
+/** Get the identifier from an item object. */
+export function getIdentifier<I extends Identifier, T extends Data>({ id }: Item<I, T>): I {
 	return id;
 }
 
-/** Get the IDs of an iterable set item data. */
-export function* getItemIDs<T extends Data>(entities: Iterable<Item<T>>): Iterable<string> {
+/** Get the identifiers from an iterable set item objects. */
+export function* getIdentifiers<I extends Identifier, T extends Data>(entities: Iterable<Item<I, T>>): Iterable<I> {
 	for (const { id } of entities) yield id;
 }
 
+/** Does a data object or data item object. */
+export function hasIdentifier<I extends Identifier, T extends Data>(item: T | Item<I, T>, id: I): item is Item<I, T> {
+	return item.id === id;
+}
+
 /** Merge an ID into a set of data to make an `ItemData` */
-export function getItem<T extends Data>(id: string, data: T | Item<T>): Item<T> {
-	return data.id === id ? (data as Item<T>) : { ...data, id };
+export function getItem<I extends Identifier, T extends Data>(id: I, data: T | Item<I, T>): Item<I, T> {
+	return hasIdentifier(data, id) ? data : { ...data, id };
 }
 
 /** An array of item data. */
-export type Items<T extends Data = Data> = ImmutableArray<Item<T>>;
-
-/** A set of query constraints for item data. */
-export type ItemQuery<T extends Data = Data> = Query<Item<T>>;
-
-/** Get query that targets a single database item by its ID. */
-export function getItemQuery<T extends Data>(id: string): Query<Item<T>>;
-export function getItemQuery(id: string): Query<{ id: string }> {
-	return { id, $limit: 1 };
-}
+export type Items<I extends Identifier, T extends Data> = ImmutableArray<Item<I, T>>;

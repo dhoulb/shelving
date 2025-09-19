@@ -1,11 +1,12 @@
 import type { DataKey, Database } from "../util/data.js";
-import type { ItemQuery, Items, OptionalItem } from "../util/item.js";
+import type { Identifier, Items, OptionalItem } from "../util/item.js";
+import type { ItemQuery } from "../util/query.js";
 import type { Updates } from "../util/update.js";
 import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
 
 /** Provider that logs operations to a synchronous source provider to the console. */
-export class DebugProvider<T extends Database> extends ThroughProvider<T> {
-	override getItem<K extends DataKey<T>>(collection: K, id: string): OptionalItem<T[K]> {
+export class DebugProvider<I extends Identifier, T extends Database> extends ThroughProvider<I, T> {
+	override getItem<K extends DataKey<T>>(collection: K, id: I): OptionalItem<I, T[K]> {
 		try {
 			const item = super.getItem(collection, id);
 			console.debug("↩ GET", collection, id, item);
@@ -15,7 +16,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			throw reason;
 		}
 	}
-	override async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterableIterator<OptionalItem<T[K]>> {
+	override async *getItemSequence<K extends DataKey<T>>(collection: K, id: I): AsyncIterableIterator<OptionalItem<I, T[K]>> {
 		try {
 			console.debug("⋯ ITERATE", collection, id);
 			for await (const item of super.getItemSequence(collection, id)) {
@@ -27,7 +28,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			console.error("✘ ITERATE", collection, id, thrown);
 		}
 	}
-	override addItem<K extends DataKey<T>>(collection: K, data: T[K]): string {
+	override addItem<K extends DataKey<T>>(collection: K, data: T[K]): I {
 		try {
 			const id = super.addItem(collection, data);
 			console.debug("✔ ADD", collection, data, id);
@@ -37,7 +38,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			throw reason;
 		}
 	}
-	override setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): void {
+	override setItem<K extends DataKey<T>>(collection: K, id: I, data: T[K]): void {
 		try {
 			super.setItem(collection, id, data);
 			console.debug("✔ SET", collection, id, data);
@@ -46,7 +47,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			throw reason;
 		}
 	}
-	override updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates): void {
+	override updateItem<K extends DataKey<T>>(collection: K, id: I, updates: Updates): void {
 		try {
 			super.updateItem(collection, id, updates);
 			console.debug("✔ UPDATE", collection, id, updates);
@@ -55,7 +56,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			throw reason;
 		}
 	}
-	override deleteItem<K extends DataKey<T>>(collection: K, id: string): void {
+	override deleteItem<K extends DataKey<T>>(collection: K, id: I): void {
 		try {
 			super.deleteItem(collection, id);
 			console.debug("✔ DELETE", collection, id);
@@ -64,7 +65,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			throw reason;
 		}
 	}
-	override countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): number {
+	override countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<I, T[K]>): number {
 		try {
 			const count = super.countQuery(collection, query);
 			console.debug("✔ GET", collection, query, count);
@@ -74,7 +75,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			throw reason;
 		}
 	}
-	override getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): Items<T[K]> {
+	override getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<I, T[K]>): Items<I, T[K]> {
 		try {
 			const items = super.getQuery(collection, query);
 			console.debug("✔ GET", collection, query, items);
@@ -84,7 +85,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			throw reason;
 		}
 	}
-	override async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterableIterator<Items<T[K]>> {
+	override async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<I, T[K]>): AsyncIterableIterator<Items<I, T[K]>> {
 		try {
 			console.debug("⋯ ITERATE", collection, query);
 			for await (const items of super.getQuerySequence(collection, query)) {
@@ -96,7 +97,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			console.error("✘ ITERATE", collection, query, thrown);
 		}
 	}
-	override setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): void {
+	override setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>, data: T[K]): void {
 		try {
 			super.setQuery(collection, query, data);
 			console.debug("✔ SET", collection, query, data);
@@ -105,7 +106,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			throw reason;
 		}
 	}
-	override updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates): void {
+	override updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>, updates: Updates): void {
 		try {
 			super.updateQuery(collection, query, updates);
 			console.debug("✔ UPDATE", collection, query, updates);
@@ -114,7 +115,7 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 			throw reason;
 		}
 	}
-	override deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): void {
+	override deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>): void {
 		try {
 			super.deleteQuery(collection, query);
 			console.debug("✔ DELETE", collection, query);
@@ -126,8 +127,8 @@ export class DebugProvider<T extends Database> extends ThroughProvider<T> {
 }
 
 /** Provider that logs operations to a synchronous source provider to the console. */
-export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider<T> {
-	override async getItem<K extends DataKey<T>>(collection: K, id: string): Promise<OptionalItem<T[K]>> {
+export class AsyncDebugProvider<I extends Identifier, T extends Database> extends AsyncThroughProvider<I, T> {
+	override async getItem<K extends DataKey<T>>(collection: K, id: I): Promise<OptionalItem<I, T[K]>> {
 		try {
 			console.debug("⋯ GET", collection, id);
 			const item = await super.getItem(collection, id);
@@ -138,7 +139,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			throw reason;
 		}
 	}
-	override async *getItemSequence<K extends DataKey<T>>(collection: K, id: string): AsyncIterableIterator<OptionalItem<T[K]>> {
+	override async *getItemSequence<K extends DataKey<T>>(collection: K, id: I): AsyncIterableIterator<OptionalItem<I, T[K]>> {
 		try {
 			console.debug("⋯ ITERATE", collection, id);
 			for await (const item of super.getItemSequence(collection, id)) {
@@ -150,7 +151,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			console.error("✘ ITERATE", collection, id, thrown);
 		}
 	}
-	override async addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<string> {
+	override async addItem<K extends DataKey<T>>(collection: K, data: T[K]): Promise<I> {
 		try {
 			console.debug("⋯ ADD", collection, data);
 			const id = await super.addItem(collection, data);
@@ -161,7 +162,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			throw reason;
 		}
 	}
-	override async setItem<K extends DataKey<T>>(collection: K, id: string, data: T[K]): Promise<void> {
+	override async setItem<K extends DataKey<T>>(collection: K, id: I, data: T[K]): Promise<void> {
 		try {
 			console.debug("⋯ SET", collection, id, data);
 			await super.setItem(collection, id, data);
@@ -171,7 +172,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			throw reason;
 		}
 	}
-	override async updateItem<K extends DataKey<T>>(collection: K, id: string, updates: Updates): Promise<void> {
+	override async updateItem<K extends DataKey<T>>(collection: K, id: I, updates: Updates): Promise<void> {
 		try {
 			console.debug("⋯ UPDATE", collection, id, updates);
 			await super.updateItem(collection, id, updates);
@@ -181,7 +182,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			throw reason;
 		}
 	}
-	override async deleteItem<K extends DataKey<T>>(collection: K, id: string): Promise<void> {
+	override async deleteItem<K extends DataKey<T>>(collection: K, id: I): Promise<void> {
 		try {
 			console.debug("⋯ DELETE", collection, id);
 			await super.deleteItem(collection, id);
@@ -191,7 +192,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			throw reason;
 		}
 	}
-	override async countQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<number> {
+	override async countQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>): Promise<number> {
 		try {
 			console.debug("⋯ COUNT", collection, query);
 			const count = await super.countQuery(collection, query);
@@ -202,7 +203,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			throw reason;
 		}
 	}
-	override async getQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<Items<T[K]>> {
+	override async getQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>): Promise<Items<I, T[K]>> {
 		try {
 			console.debug("⋯ GET", collection, query);
 			const items = await super.getQuery(collection, query);
@@ -213,7 +214,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			throw reason;
 		}
 	}
-	override async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<T[K]>): AsyncIterableIterator<Items<T[K]>> {
+	override async *getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<I, T[K]>): AsyncIterableIterator<Items<I, T[K]>> {
 		try {
 			console.debug("⋯ ITERATE", collection, query);
 			for await (const items of super.getQuerySequence(collection, query)) {
@@ -225,7 +226,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			console.error("✘ ITERATE", collection, query, thrown);
 		}
 	}
-	override async setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, data: T[K]): Promise<void> {
+	override async setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>, data: T[K]): Promise<void> {
 		try {
 			console.debug("⋯ SET", collection, query, data);
 			await super.setQuery(collection, query, data);
@@ -235,7 +236,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			throw reason;
 		}
 	}
-	override async updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>, updates: Updates): Promise<void> {
+	override async updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>, updates: Updates): Promise<void> {
 		try {
 			console.debug("⋯ UPDATE", collection, query, updates);
 			await super.updateQuery(collection, query, updates);
@@ -245,7 +246,7 @@ export class AsyncDebugProvider<T extends Database> extends AsyncThroughProvider
 			throw reason;
 		}
 	}
-	override async deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<T[K]>): Promise<void> {
+	override async deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>): Promise<void> {
 		try {
 			console.debug("⋯ DELETE", collection, query);
 			await super.deleteQuery(collection, query);

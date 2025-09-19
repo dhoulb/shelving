@@ -30,9 +30,10 @@ import {
 import { AsyncProvider } from "../../db/Provider.js";
 import { UnimplementedError } from "../../error/UnimplementedError.js";
 import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
-import type { Item, ItemQuery, Items, OptionalItem } from "../../util/item.js";
+import type { Item, Items, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
+import type { ItemQuery } from "../../util/query.js";
 import { getFilters, getLimit, getOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";
 import type { Update, Updates } from "../../util/update.js";
@@ -55,24 +56,24 @@ const OPERATORS = {
 } as const;
 
 /** Create a corresponding `QueryReference` from a Query. */
-function _getQuery<T extends Database, K extends DataKey<T>>(firestore: Firestore, c: K, q?: ItemQuery<T[K]>): Query<T[K]> {
+function _getQuery<T extends Database, K extends DataKey<T>>(firestore: Firestore, c: K, q?: ItemQuery<string, T[K]>): Query<T[K]> {
 	return q
 		? (query(collection(firestore, c), ..._getConstraints(q)) as Query<T[K]>)
 		: (collection(firestore, c) as CollectionReference<T[K]>);
 }
-function* _getConstraints<T extends Data>(q: ItemQuery<T>): Iterable<QueryConstraint> {
+function* _getConstraints<T extends Data>(q: ItemQuery<string, T>): Iterable<QueryConstraint> {
 	for (const { key, direction } of getOrders(q)) yield orderBy(key === "id" ? ID : key, direction);
 	for (const { key, operator, value } of getFilters(q)) yield where(key === "id" ? ID : key, OPERATORS[operator], value);
 	const l = getLimit(q);
 	if (typeof l === "number") yield limit(l);
 }
 
-function _getItem<T extends Data>(snapshot: QueryDocumentSnapshot<T>): Item<T> {
+function _getItem<T extends Data>(snapshot: QueryDocumentSnapshot<T>): Item<string, T> {
 	const data = snapshot.data();
 	return getItem(snapshot.id, data);
 }
 
-function _getOptionalItem<T extends Data>(snapshot: DocumentSnapshot<T>): OptionalItem<T> {
+function _getOptionalItem<T extends Data>(snapshot: DocumentSnapshot<T>): OptionalItem<string, T> {
 	const data = snapshot.data();
 	if (data) return getItem(snapshot.id, data);
 }
@@ -95,17 +96,17 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
  * - Does not support offline mode.
  * - Does not support realtime subscriptions.
  */
-export class FirestoreLiteProvider<T extends Database> extends AsyncProvider<T> {
+export class FirestoreLiteProvider<T extends Database> extends AsyncProvider<string, T> {
 	private readonly _firestore: Firestore;
 	constructor(firestore: Firestore) {
 		super();
 		this._firestore = firestore;
 	}
-	async getItem<K extends DataKey<T>>(c: K, id: string): Promise<OptionalItem<T[K]>> {
+	async getItem<K extends DataKey<T>>(c: K, id: string): Promise<OptionalItem<string, T[K]>> {
 		const snapshot = await getDoc(doc(this._firestore, c, id) as DocumentReference<T[K]>);
 		return _getOptionalItem(snapshot);
 	}
-	getItemSequence<K extends DataKey<T>>(): AsyncIterableIterator<OptionalItem<T[K]>> {
+	getItemSequence<K extends DataKey<T>>(): AsyncIterableIterator<OptionalItem<string, T[K]>> {
 		throw new UnimplementedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 	async addItem<K extends DataKey<T>>(c: K, data: Data): Promise<string> {
@@ -121,27 +122,27 @@ export class FirestoreLiteProvider<T extends Database> extends AsyncProvider<T> 
 	async deleteItem<K extends DataKey<T>>(c: K, id: string): Promise<void> {
 		await deleteDoc(doc(this._firestore, c, id));
 	}
-	override async countQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<T[K]>): Promise<number> {
+	override async countQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<string, T[K]>): Promise<number> {
 		const snapshot = await getCount(_getQuery(this._firestore, c, q));
 		return snapshot.data().count;
 	}
-	async getQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<T[K]>): Promise<Items<T[K]>> {
+	async getQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<string, T[K]>): Promise<Items<string, T[K]>> {
 		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
 		return snapshot.docs.map(_getItem);
 	}
-	getQuerySequence<K extends DataKey<T>>(): AsyncIterableIterator<Items<T[K]>> {
+	getQuerySequence<K extends DataKey<T>>(): AsyncIterableIterator<Items<string, T[K]>> {
 		throw new UnimplementedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
-	async setQuery<K extends DataKey<T>>(c: K, q: ItemQuery<T[K]>, data: Data): Promise<void> {
+	async setQuery<K extends DataKey<T>>(c: K, q: ItemQuery<string, T[K]>, data: Data): Promise<void> {
 		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
 		await Promise.all(snapshot.docs.map(s => setDoc(s.ref, data)));
 	}
-	async updateQuery<K extends DataKey<T>>(c: K, q: ItemQuery<T[K]>, updates: Updates): Promise<void> {
+	async updateQuery<K extends DataKey<T>>(c: K, q: ItemQuery<string, T[K]>, updates: Updates): Promise<void> {
 		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
 		const fieldValues = _getFieldValues<T[K]>(updates);
 		await Promise.all(snapshot.docs.map(s => updateDoc(s.ref, fieldValues)));
 	}
-	async deleteQuery<K extends DataKey<T>>(c: K, q: ItemQuery<T[K]>): Promise<void> {
+	async deleteQuery<K extends DataKey<T>>(c: K, q: ItemQuery<string, T[K]>): Promise<void> {
 		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 	}

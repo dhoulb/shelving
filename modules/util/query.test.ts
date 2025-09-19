@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { ImmutableArray } from "../index.js";
-import { filterQueryItems, getFilters, getItemIDs, getOrders, matchQueryItem, queryItems, sortQueryItems } from "../index.js";
+import { filterQueryItems, getFilters, getIdentifiers, getOrders, matchQueryItem, queryItems, sortQueryItems } from "../index.js";
 import type { BasicData } from "../test/index.js";
 import { basic1, basic2, basics, expectUnorderedItems } from "../test/index.js";
 import { expectOrderedItems } from "../test/util.js";
@@ -140,42 +140,42 @@ describe("filterQueryItems()", () => {
 	test("lt", () => {
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num<": 500 })), ["basic1", "basic2", "basic3", "basic4"]);
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num<": 0 })), []);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num<": 1000 })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num<": 1000 })), getIdentifiers(basics));
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str<": "ddd" })), ["basic1", "basic2", "basic3"]);
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str<": "a" })), []);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str<": "zzz" })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str<": "zzz" })), getIdentifiers(basics));
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id<": "basic3" })), ["basic1", "basic2"]);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id<": "zzzzzz" })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id<": "zzzzzz" })), getIdentifiers(basics));
 	});
 	test("lte", () => {
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num<=": 500 })), ["basic1", "basic2", "basic3", "basic4", "basic5"]);
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num<=": 0 })), []);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num<=": 1000 })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num<=": 1000 })), getIdentifiers(basics));
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str<=": "ddd" })), ["basic1", "basic2", "basic3", "basic4"]);
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str<=": "a" })), []);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str<=": "zzz" })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str<=": "zzz" })), getIdentifiers(basics));
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id<=": "basic3" })), ["basic1", "basic2", "basic3"]);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id<=": "zzzzzz" })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id<=": "zzzzzz" })), getIdentifiers(basics));
 	});
 	test("gt", () => {
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num>": 500 })), ["basic6", "basic7", "basic8", "basic9"]);
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num>": 1000 })), []);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num>": 0 })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num>": 0 })), getIdentifiers(basics));
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str>": "eee" })), ["basic6", "basic7", "basic8", "basic9"]);
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str>": "kkk" })), []);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str>": "" })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str>": "" })), getIdentifiers(basics));
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id>": "basic7" })), ["basic8", "basic9"]);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id>": "" })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id>": "" })), getIdentifiers(basics));
 	});
 	test("gte", () => {
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num>=": 500 })), ["basic5", "basic6", "basic7", "basic8", "basic9"]);
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num>=": 1000 })), []);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num>=": 0 })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "num>=": 0 })), getIdentifiers(basics));
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str>=": "eee" })), ["basic5", "basic6", "basic7", "basic8", "basic9"]);
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str>=": "kkk" })), []);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str>=": "" })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "str>=": "" })), getIdentifiers(basics));
 		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id>=": "basic7" })), ["basic7", "basic8", "basic9"]);
-		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id>=": "" })), getItemIDs(basics));
+		expectUnorderedItems(filterQueryItems(basics, getFilters({ "id>=": "" })), getIdentifiers(basics));
 	});
 });
 test("queryItems()", () => {

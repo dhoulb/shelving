@@ -4,7 +4,8 @@ import { BooleanStore } from "../store/BooleanStore.js";
 import { getGetter } from "../util/class.js";
 import { NONE } from "../util/constants.js";
 import type { DataKey, Database } from "../util/data.js";
-import type { Item, ItemQuery } from "../util/item.js";
+import type { Identifier, Item } from "../util/item.js";
+import type { ItemQuery } from "../util/query.js";
 import { getAfterQuery, getLimit } from "../util/query.js";
 import { runSequence } from "../util/sequence.js";
 import type { StopCallback } from "../util/start.js";
@@ -12,10 +13,10 @@ import type { MemoryProvider } from "./MemoryProvider.js";
 import type { AbstractProvider } from "./Provider.js";
 
 /** Store a set of multiple items. */
-export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayStore<Item<T[K]>> {
-	readonly provider: AbstractProvider<T>;
+export class QueryStore<I extends Identifier, T extends Database, K extends DataKey<T>> extends ArrayStore<Item<I, T[K]>> {
+	readonly provider: AbstractProvider<I, T>;
 	readonly collection: K;
-	readonly query: ItemQuery<T[K]>;
+	readonly query: ItemQuery<I, T[K]>;
 	readonly busy = new BooleanStore();
 	readonly limit: number;
 
@@ -26,7 +27,7 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 	private _hasMore = false;
 
 	/** Get the first item in this store. */
-	override get first(): Item<T[K]> {
+	override get first(): Item<I, T[K]> {
 		const first = this.optionalFirst;
 		if (!first)
 			throw new RequiredError(`First item does not exist in collection "${this.collection}"`, {
@@ -40,7 +41,7 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 	}
 
 	/** Get the last item in this store. */
-	override get last(): Item<T[K]> {
+	override get last(): Item<I, T[K]> {
 		const last = this.optionalLast;
 		if (!last)
 			throw new RequiredError(`Last item does not exist in collection "${this.collection}"`, {
@@ -53,7 +54,7 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 		return last;
 	}
 
-	constructor(collection: K, query: ItemQuery<T[K]>, provider: AbstractProvider<T>, memory?: MemoryProvider<T>) {
+	constructor(collection: K, query: ItemQuery<I, T[K]>, provider: AbstractProvider<I, T>, memory?: MemoryProvider<I, T>) {
 		const time = memory?.getQueryTime(collection, query);
 		const items = memory?.getQuery(collection, query) || [];
 		super(typeof time === "number" || items.length ? items : NONE, time); // Use the value if it was definitely cached or is not empty.
@@ -68,10 +69,10 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 	}
 
 	/** Refresh this store from the source provider. */
-	refresh(provider: AbstractProvider<T> = this.provider): void {
+	refresh(provider: AbstractProvider<I, T> = this.provider): void {
 		if (!this.busy.value) void this._refresh(provider);
 	}
-	private async _refresh(provider: AbstractProvider<T>): Promise<void> {
+	private async _refresh(provider: AbstractProvider<I, T>): Promise<void> {
 		this.busy.value = true;
 		this.reason = undefined; // Optimistically clear the error.
 		try {
@@ -91,7 +92,7 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 	}
 
 	/** Subscribe this store to a provider. */
-	connect(provider: AbstractProvider<T> = this.provider): StopCallback {
+	connect(provider: AbstractProvider<I, T> = this.provider): StopCallback {
 		return runSequence(this.through(provider.getQuerySequence(this.collection, this.query)));
 	}
 
@@ -119,7 +120,7 @@ export class QueryStore<T extends Database, K extends DataKey<T>> extends ArrayS
 	}
 
 	// Implement `Iteratable`
-	override [Symbol.iterator](): Iterator<Item<T[K]>> {
+	override [Symbol.iterator](): Iterator<Item<I, T[K]>> {
 		return this.value.values();
 	}
 }

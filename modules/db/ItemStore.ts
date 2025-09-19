@@ -4,7 +4,7 @@ import { OptionalDataStore } from "../store/DataStore.js";
 import { getGetter } from "../util/class.js";
 import { NONE } from "../util/constants.js";
 import type { DataKey, Database } from "../util/data.js";
-import type { Item } from "../util/item.js";
+import type { Identifier, Item } from "../util/item.js";
 import { getItem } from "../util/item.js";
 import { runSequence } from "../util/sequence.js";
 import type { StopCallback } from "../util/start.js";
@@ -12,14 +12,14 @@ import type { MemoryProvider } from "./MemoryProvider.js";
 import type { AbstractProvider } from "./Provider.js";
 
 /** Store a single item. */
-export class ItemStore<T extends Database, K extends DataKey<T>> extends OptionalDataStore<Item<T[K]>> {
-	readonly provider: AbstractProvider<T>;
+export class ItemStore<I extends Identifier, T extends Database, K extends DataKey<T>> extends OptionalDataStore<Item<I, T[K]>> {
+	readonly provider: AbstractProvider<I, T>;
 	readonly collection: K;
-	readonly id: string;
+	readonly id: I;
 	readonly busy = new BooleanStore();
 
 	/** Get the data of this store (throws `RequiredError` if item doesn't exist). */
-	override get data(): Item<T[K]> {
+	override get data(): Item<I, T[K]> {
 		const item = this.value;
 		if (!item)
 			throw new RequiredError(`Item does not exist in collection "${this.collection}"`, {
@@ -33,11 +33,11 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends Optiona
 	}
 
 	/** Set the data of this store. */
-	override set data(data: T[K] | Item<T[K]>) {
+	override set data(data: T[K] | Item<I, T[K]>) {
 		this.value = getItem(this.id, data);
 	}
 
-	constructor(collection: K, id: string, provider: AbstractProvider<T>, memory?: MemoryProvider<T>) {
+	constructor(collection: K, id: I, provider: AbstractProvider<I, T>, memory?: MemoryProvider<I, T>) {
 		const time = memory?.getItemTime(collection, id);
 		const item = memory?.getItem(collection, id);
 		super(typeof time === "number" || item ? item : NONE, time); // Use the cached value if it was definitely cached or is not undefined.
@@ -51,10 +51,10 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends Optiona
 	}
 
 	/** Refresh this store from the source provider. */
-	refresh(provider: AbstractProvider<T> = this.provider): void {
+	refresh(provider: AbstractProvider<I, T> = this.provider): void {
 		if (!this.busy.value) void this._refresh(provider);
 	}
-	private async _refresh(provider: AbstractProvider<T>): Promise<void> {
+	private async _refresh(provider: AbstractProvider<I, T>): Promise<void> {
 		this.busy.value = true;
 		this.reason = undefined; // Optimistically clear the error.
 		try {
@@ -67,12 +67,12 @@ export class ItemStore<T extends Database, K extends DataKey<T>> extends Optiona
 	}
 
 	/** Refresh this store if data in the cache is older than `maxAge` (in milliseconds). */
-	refreshStale(maxAge: number, provider?: AbstractProvider<T>) {
+	refreshStale(maxAge: number, provider?: AbstractProvider<I, T>) {
 		if (this.age > maxAge) this.refresh(provider);
 	}
 
 	/** Subscribe this store to a provider. */
-	connect(provider: AbstractProvider<T> = this.provider): StopCallback {
+	connect(provider: AbstractProvider<I, T> = this.provider): StopCallback {
 		return runSequence(this.through(provider.getItemSequence(this.collection, this.id)));
 	}
 }

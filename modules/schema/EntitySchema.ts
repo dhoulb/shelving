@@ -1,5 +1,5 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
-import { type ImmutableArray, isItem } from "../util/array.js";
+import { type ImmutableArray, isArrayItem } from "../util/array.js";
 import { type Entity, getEntity } from "../util/entity.js";
 import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
@@ -20,7 +20,7 @@ export class EntitySchema<T extends string> extends StringSchema {
 		const entity = super.validate(unsafeValue);
 		const [type] = getEntity(entity);
 		if (!type) throw new ValueFeedback("Must be entity", unsafeValue);
-		if (this.types && !isItem(this.types, type)) throw new ValueFeedback("Invalid entity type", type);
+		if (this.types && !isArrayItem(this.types, type)) throw new ValueFeedback("Invalid entity type", type);
 		return entity as Entity<T>;
 	}
 }

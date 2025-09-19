@@ -35,17 +35,17 @@ export function limitSet<T>(set: ImmutableSet<T>, limit: number): ImmutableSet<T
 }
 
 /** Is an unknown value an item in a set? */
-export function isSetItem<T>(set: ImmutableSet<T>, item: unknown): item is T {
+export function isSetItem<I, T>(set: ImmutableSet<T>, item: unknown): item is T {
 	return set.has(item as T);
 }
 
 /** Assert that an unknown value is an item in a set. */
-export function assertSetItem<T>(set: ImmutableSet<T>, item: unknown, caller: AnyCaller = assertSetItem): asserts item is T {
+export function assertSetItem<I, T>(set: ImmutableSet<T>, item: unknown, caller: AnyCaller = assertSetItem): asserts item is T {
 	if (!isSetItem(set, item)) throw new RequiredError("Item must exist in set", { item, set, caller });
 }
 
 /** Add an item to a set (by reference) and return the set item. */
-export function addSetItem<T>(set: MutableSet<T>, item: T): T {
+export function addSetItem<I, T>(set: MutableSet<T>, item: T): T {
 	set.add(item);
 	return item;
 }

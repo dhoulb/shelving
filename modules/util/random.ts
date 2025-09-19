@@ -34,6 +34,6 @@ export function getRandomCharacter(str: string): string {
 }
 
 /** Get a random item from an array or random character from a string string. */
-export function getRandomItem<T>(arr: ImmutableArray<T>): T {
+export function getRandomItem<I, T>(arr: ImmutableArray<T>): T {
 	return requireDefined<T>(arr[getRandom(0, arr.length - 1)]);
 }

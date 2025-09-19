@@ -1,7 +1,7 @@
 import { expect } from "bun:test";
 import type { Data } from "../util/data.js";
-import type { Item } from "../util/item.js";
-import { getItemIDs } from "../util/item.js";
+import type { Identifier, Item } from "../util/item.js";
+import { getIdentifiers } from "../util/item.js";
 import type { NotString } from "../util/string.js";
 
 /** Expect that an object matches `PromiseLike` */
@@ -11,10 +11,13 @@ export const EXPECT_PROMISELIKE = expect.objectContaining({
 });
 
 /** Expect `Item` objects with an `.id` prop in any order. */
-export function expectUnorderedItems<T extends Data>(items: Iterable<Item<T>>, keys: Iterable<string> & NotString): void {
+export function expectUnorderedItems<I extends Identifier, T extends Data>(
+	items: Iterable<Item<I, T>>,
+	keys: Iterable<string> & NotString,
+): void {
 	try {
 		expect(items).toBeInstanceOf(Object);
-		expect(Array.from(getItemIDs(items)).sort()).toEqual(Array.from(keys).sort());
+		expect(Array.from(getIdentifiers(items)).sort()).toEqual(Array.from(keys).sort() as I[]);
 	} catch (thrown) {
 		if (thrown instanceof Error) Error.captureStackTrace(thrown, expectUnorderedItems);
 		throw thrown;
@@ -22,10 +25,13 @@ export function expectUnorderedItems<T extends Data>(items: Iterable<Item<T>>, k
 }
 
 /** Expect `Item` objects with an `.id` prop in a specified order. */
-export function expectOrderedItems<T extends Data>(items: Iterable<Item<T>>, keys: Iterable<string> & NotString): void {
+export function expectOrderedItems<I extends Identifier, T extends Data>(
+	items: Iterable<Item<I, T>>,
+	keys: Iterable<string> & NotString,
+): void {
 	try {
 		expect(items).toBeInstanceOf(Object);
-		expect(Array.from(getItemIDs(items))).toEqual(Array.from(keys));
+		expect(Array.from(getIdentifiers(items))).toEqual(Array.from(keys) as I[]);
 	} catch (thrown) {
 		if (thrown instanceof Error) Error.captureStackTrace(thrown, expectOrderedItems);
 		throw thrown;

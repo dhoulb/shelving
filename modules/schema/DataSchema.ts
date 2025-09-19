@@ -2,11 +2,10 @@ import { ValueFeedback } from "../feedback/Feedback.js";
 import type { Data, Database } from "../util/data.js";
 import { isData } from "../util/data.js";
 import type { AnyFunction } from "../util/function.js";
-import type { Item } from "../util/item.js";
+import type { Identifier, Item } from "../util/item.js";
 import { mapObject } from "../util/transform.js";
 import type { Validator, Validators } from "../util/validate.js";
 import { validateData } from "../util/validate.js";
-import { KEY } from "./KeySchema.js";
 import type { NullableSchema } from "./NullableSchema.js";
 import { NULLABLE } from "./NullableSchema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
@@ -51,10 +50,13 @@ export function PARTIAL<T extends Data>(source: Validators<T> | DataSchema<T>): 
 	});
 }
 
-/** Create a `DataSchema` that validates a data item, i.e. it has a string `.id` property. */
-export function ITEM<T extends Data>(validators: Validators<T> | DataSchema<T>, id: Validator<string> = KEY): DataSchema<Item<T>> {
+/** Create a `DataSchema` that validates a data item, i.e. it has a string or number `.id` identifier property. */
+export function ITEM<I extends Identifier, T extends Data>(
+	id: Validator<I>,
+	validators: Validators<T> | DataSchema<T>,
+): DataSchema<Item<I, T>> {
 	const props: Validators<T> = validators instanceof DataSchema ? validators.props : validators;
-	return new DataSchema<Item<T>>({
-		props: { id, ...props } as Validators<Item<T>>,
+	return new DataSchema<Item<I, T>>({
+		props: { id, ...props } as Validators<Item<I, T>>,
 	});
 }

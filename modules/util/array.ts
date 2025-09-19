@@ -89,15 +89,15 @@ export function requireArray<T>(list: PossibleArray<T>, min?: number, max?: numb
 }
 
 /** Is an unknown value an item in a specified array or iterable? */
-export function isItem<T>(list: PossibleArray<T>, item: unknown): item is T {
+export function isArrayItem<T>(list: PossibleArray<T>, item: unknown): item is T {
 	if (isArray(list)) list.includes(item as T);
 	for (const i of list) if (i === item) return true;
 	return false;
 }
 
 /** Assert that an unknown value is an item in a specified array. */
-export function assertItem<T>(arr: PossibleArray<T>, item: unknown, caller: AnyCaller = assertItem): asserts item is T {
-	if (!isItem(arr, item)) throw new RequiredError("Item must exist in array", { item, array: arr, caller });
+export function assertArrayItem<T>(arr: PossibleArray<T>, item: unknown, caller: AnyCaller = assertArrayItem): asserts item is T {
+	if (!isArrayItem(arr, item)) throw new RequiredError("Item must exist in array", { item, array: arr, caller });
 }
 
 /** Add multiple items to an array (immutably) and return a new array with those items (or the same array if no changes were made). */
