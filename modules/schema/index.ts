@@ -23,6 +23,5 @@ export * from "./NumberSchema.js";
 export * from "./PhoneSchema.js";
 export * from "./SlugSchema.js";
 export * from "./StringSchema.js";
-export * from "./TextSchema.js";
 export * from "./TimeSchema.js";
 export * from "./UUIDSchema.js";
