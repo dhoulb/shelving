@@ -18,8 +18,14 @@ type TemplateChunk = {
 /** Set of template chunks. */
 type TemplateChunks = ImmutableArray<TemplateChunk>;
 
+/** Template values can be numbers or strings. */
+export type TemplateValue = string | number;
+
 /** Dictionary of named template values in `{ myPlaceholder: "value" }` format. */
-export type TemplateDictionary = ImmutableDictionary<string>;
+export type TemplateDictionary = ImmutableDictionary<TemplateValue>;
+
+/** Ordered list of unnamed template values. */
+export type TemplateArray = ImmutableArray<TemplateValue>;
 
 /** Callback that returns the right replacement string for a given placeholder. */
 export type TemplateCallback = (placeholder: string) => string;
@@ -32,7 +38,7 @@ export type TemplateCallback = (placeholder: string) => string;
  * `TemplateValues` — Object containing named strings used for named placeholders, e.g. `{ myPlaceholder: "Ellie" }`
  * `TemplateCallback` — Function that returns the right string for a named `{placeholder}`.v
  */
-export type TemplateValues = string | ImmutableArray<string> | TemplateDictionary | TemplateCallback;
+export type TemplateValues = TemplateValue | TemplateArray | TemplateDictionary | TemplateCallback;
 
 // RegExp to find named variables in several formats e.g. `:a`, `${b}`, `{{c}}` or `{d}`
 const R_PLACEHOLDERS = /(\*|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-9]*\}\}|\{[a-z][a-z0-9]*\})/i;
@@ -145,10 +151,12 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 }
 function _replaceTemplateKey(key: string, values: TemplateValues, caller: AnyCaller): string {
 	if (typeof values === "string") return values;
+	if (typeof values === "number") return values.toString();
 	if (typeof values === "function") return values(key);
 	if (isObject(values)) {
 		const v = values[key];
 		if (typeof v === "string") return v;
+		if (typeof v === "number") return v.toString();
 	}
 	throw new RequiredError(`Template key "${key}" must be defined`, { received: values, key, caller });
 }
