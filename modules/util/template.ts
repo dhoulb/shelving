@@ -5,7 +5,7 @@ import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
 import type { AnyCaller } from "./function.js";
 import { setMapItem } from "./map.js";
 import { type Mutable, isObject } from "./object.js";
-import type { NotString } from "./string.js";
+import { type NotString, type PossibleString, getString } from "./string.js";
 
 /** Single template chunk. */
 type TemplateChunk = {
@@ -18,14 +18,11 @@ type TemplateChunk = {
 /** Set of template chunks. */
 type TemplateChunks = ImmutableArray<TemplateChunk>;
 
-/** Template values can be numbers or strings. */
-export type TemplateValue = string | number;
-
 /** Dictionary of named template values in `{ myPlaceholder: "value" }` format. */
-export type TemplateDictionary = ImmutableDictionary<TemplateValue>;
+export type TemplateDictionary = ImmutableDictionary<PossibleString>;
 
 /** Ordered list of unnamed template values. */
-export type TemplateArray = ImmutableArray<TemplateValue>;
+export type TemplateArray = ImmutableArray<PossibleString>;
 
 /** Callback that returns the right replacement string for a given placeholder. */
 export type TemplateCallback = (placeholder: string) => string;
@@ -33,12 +30,12 @@ export type TemplateCallback = (placeholder: string) => string;
 /**
  * Things that can be converted to the value for a named placeholder.
  *
- * `string` — Single string used for every `{placeholder}`
+ * `PossibleString` — Single string used for every `{placeholder}`
  * `ImmutableArray<string>` — Array of strings (or functions that return strings) used for `*` numbered placeholders e.g. `["John"]`
  * `TemplateValues` — Object containing named strings used for named placeholders, e.g. `{ myPlaceholder: "Ellie" }`
  * `TemplateCallback` — Function that returns the right string for a named `{placeholder}`.v
  */
-export type TemplateValues = TemplateValue | TemplateArray | TemplateDictionary | TemplateCallback;
+export type TemplateValues = PossibleString | TemplateArray | TemplateDictionary | TemplateCallback;
 
 // RegExp to find named variables in several formats e.g. `:a`, `${b}`, `{{c}}` or `{d}`
 const R_PLACEHOLDERS = /(\*|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-9]*\}\}|\{[a-z][a-z0-9]*\})/i;
@@ -150,13 +147,15 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 	return output;
 }
 function _replaceTemplateKey(key: string, values: TemplateValues, caller: AnyCaller): string {
-	if (typeof values === "string") return values;
-	if (typeof values === "number") return values.toString();
 	if (typeof values === "function") return values(key);
 	if (isObject(values)) {
-		const v = values[key];
-		if (typeof v === "string") return v;
-		if (typeof v === "number") return v.toString();
+		// Dictionary or array of values.
+		const v = getString(values[key]);
+		if (v !== undefined) return v;
+	} else {
+		// Single value for all placeholders.
+		const v = getString(values);
+		if (v !== undefined) return v;
 	}
 	throw new RequiredError(`Template key "${key}" must be defined`, { received: values, key, caller });
 }
