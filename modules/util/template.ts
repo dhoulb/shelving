@@ -18,24 +18,22 @@ type TemplateChunk = {
 /** Set of template chunks. */
 type TemplateChunks = ImmutableArray<TemplateChunk>;
 
-/** Dictionary of named template values in `{ myPlaceholder: "value" }` format. */
-export type TemplateDictionary = ImmutableDictionary<PossibleString>;
-
-/** Ordered list of unnamed template values. */
-export type TemplateArray = ImmutableArray<PossibleString>;
-
-/** Callback that returns the right replacement string for a given placeholder. */
-export type TemplateCallback = (placeholder: string) => string;
-
 /**
  * Things that can be converted to the value for a named placeholder.
  *
  * `PossibleString` — Single string used for every `{placeholder}`
  * `ImmutableArray<string>` — Array of strings (or functions that return strings) used for `*` numbered placeholders e.g. `["John"]`
- * `TemplateValues` — Object containing named strings used for named placeholders, e.g. `{ myPlaceholder: "Ellie" }`
- * `TemplateCallback` — Function that returns the right string for a named `{placeholder}`.v
+ * `ImmutableDictionary<PossibleString>` — Object containing named strings used for named placeholders, e.g. `{ val1: "Ellie", val2: 123 }`
+ * `(placeholder: string) => string` — Function that returns the right string for a named `{placeholder}`.v
  */
-export type TemplateValues = PossibleString | TemplateArray | TemplateDictionary | TemplateCallback;
+export type TemplateValues =
+	| PossibleString
+	| ImmutableArray<PossibleString>
+	| ImmutableDictionary<PossibleString>
+	| ((placeholder: string) => string);
+
+/** The output of matching a template is a dictionary in `{ myPlaceholder: "value" }` format. */
+export type TemplateMatches = ImmutableDictionary<string>;
 
 // RegExp to find named variables in several formats e.g. `:a`, `${b}`, `{{c}}` or `{d}`
 const R_PLACEHOLDERS = /(\*|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-9]*\}\}|\{[a-z][a-z0-9]*\})/i;
@@ -94,7 +92,7 @@ function _getPlaceholder({ name }: TemplateChunk): string {
  *
  * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.
  */
-export function matchTemplate(template: string, target: string, caller: AnyCaller = matchTemplate): TemplateDictionary | undefined {
+export function matchTemplate(template: string, target: string, caller: AnyCaller = matchTemplate): TemplateMatches | undefined {
 	// Get separators and placeholders from template.
 	const chunks = _splitTemplateCached(template, caller);
 	const firstChunk = chunks[0];
@@ -107,7 +105,7 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
 
 	// Loop through the placeholders (placeholders are at all the even-numbered positions in `chunks`).
 	let startIndex = firstChunk.pre.length;
-	const values: Mutable<TemplateDictionary> = {};
+	const values: Mutable<TemplateMatches> = {};
 	for (const { name, post } of chunks) {
 		const stopIndex = !post ? Number.POSITIVE_INFINITY : target.indexOf(post, startIndex);
 		if (stopIndex < 0) return undefined; // Target doesn't match template because chunk post wasn't found.
@@ -123,7 +121,7 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
 /**
  * Match multiple templates against a target string and return the first match.
  */
-export function matchTemplates(templates: Iterable<string> & NotString, target: string): TemplateDictionary | undefined {
+export function matchTemplates(templates: Iterable<string> & NotString, target: string): TemplateMatches | undefined {
 	for (const template of templates) {
 		const values = matchTemplate(template, target);
 		if (values) return values;

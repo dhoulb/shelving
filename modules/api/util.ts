@@ -67,10 +67,10 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers): 
 		if (!pathParams) continue;
 
 		// Make a simple dictionary object from the `{placeholder}` path params and the `?a=123` query params from the URL.
-		const params: ImmutableDictionary<string> = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
+		const combinedParams = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
 
 		// Get the response by calling the callback.
-		return handleEndpoint(endpoint, callback, params, request);
+		return handleEndpoint(endpoint, callback, combinedParams, request);
 	}
 
 	// No handler matched the request.
