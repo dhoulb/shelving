@@ -88,5 +88,5 @@ test("formatWhen()", () => {
 	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "long" })).toBe("in 9 hours");
 
 	// Rounding tests.
-	expect(formatWhen(DAY, YEAR * 1 + DAY * 10, { unitDisplay: "narrow" })).toBe("12mo ago");
+	expect(formatWhen(DAY, YEAR * 1 + DAY * 10, { unitDisplay: "long" })).toBe("12 months ago");
 });
