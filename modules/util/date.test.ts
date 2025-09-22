@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { PossibleDate } from "../index.js";
-import { DAY, HOUR, getDate, getYMD, requireYMD } from "../index.js";
+import { DAY, HOUR, YEAR, getDate, getYMD, requireYMD } from "../index.js";
 import { formatWhen, getMillisecondsUntil } from "./date.js";
 
 describe("getDate()", () => {
@@ -78,6 +78,7 @@ test("getDuration()", () => {
 	expect(getMillisecondsUntil(10000000, 20000000)).toBe(-10000000);
 });
 test("formatWhen()", () => {
+	// Simple tests.
 	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("24h ago");
 	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("in 9h");
 	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "short" })).toBe("24 hr ago");
@@ -85,4 +86,7 @@ test("formatWhen()", () => {
 	expect(formatWhen(DAY, DAY * 2)).toBe("24 hr ago"); // default is "short"
 	expect(formatWhen(HOUR * 10, HOUR)).toBe("in 9 hr"); // default is "short"
 	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "long" })).toBe("in 9 hours");
+
+	// Rounding tests.
+	expect(formatWhen(DAY, YEAR * 1 + DAY * 10, { unitDisplay: "narrow" })).toBe("12mo ago");
 });

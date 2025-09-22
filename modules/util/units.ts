@@ -29,7 +29,7 @@ type UnitProps<T extends string> = {
 	/** Conversions to other units (typically needs at least the base conversion, unless it's already the base unit). */
 	readonly to?: Conversions<T>;
 	/** Possible options for formatting these units with `Intl.NumberFormat` (`.unit` can be specified if different from key, but is not required). */
-	readonly options?: Intl.NumberFormatOptions;
+	readonly options?: Readonly<Intl.NumberFormatOptions> | undefined;
 };
 
 /** Represent a unit. */
@@ -47,7 +47,7 @@ export class Unit<K extends string> {
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `singular` + "s"). */
 	public readonly plural: string;
 	/** Possible options for formatting these units with `Intl.NumberFormat` (`.unit` can be specified if different from key, but is not required). */
-	public readonly options?: Readonly<Intl.NumberFormatOptions>;
+	public readonly options: Readonly<Intl.NumberFormatOptions> | undefined;
 
 	/** Title for this unit (uses format `abbr (plural)`, e.g. `fl oz (US fluid ounces)`) */
 	get title(): string {
@@ -60,13 +60,14 @@ export class Unit<K extends string> {
 		/** String key for this unit, e.g. `kilometer` */
 		key: K,
 		/** Props to configure this unit. */
-		{ abbr = key.slice(0, 1), singular = key.replace(/-/, " "), plural = `${singular}s`, to }: UnitProps<K>,
+		{ abbr = key.slice(0, 1), singular = key.replace(/-/, " "), plural = `${singular}s`, options, to }: UnitProps<K>,
 	) {
 		this.list = list;
 		this.key = key;
 		this.abbr = abbr;
 		this.singular = singular;
 		this.plural = plural;
+		this.options = options;
 		this._to = to;
 	}
 
