@@ -5,7 +5,7 @@ import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
-export type HTMLInputType = "text" | "password" | "color" | "email" | "number" | "tel" | "search" | "url";
+export type StringInputType = "text" | "password" | "color" | "email" | "number" | "tel" | "search" | "url";
 
 /** Options for `StringSchema` */
 export interface StringSchemaOptions extends SchemaOptions {
@@ -15,7 +15,7 @@ export interface StringSchemaOptions extends SchemaOptions {
 	readonly multiline?: boolean | undefined;
 	readonly match?: RegExp | undefined;
 	readonly case?: "upper" | "lower" | undefined;
-	readonly input?: HTMLInputType | undefined;
+	readonly input?: StringInputType | undefined;
 }
 
 /**
@@ -35,7 +35,7 @@ export interface StringSchemaOptions extends SchemaOptions {
  */
 export class StringSchema extends Schema<string> {
 	declare readonly value: string;
-	readonly input: HTMLInputType;
+	readonly input: StringInputType;
 	readonly min: number;
 	readonly max: number;
 	readonly multiline: boolean;
