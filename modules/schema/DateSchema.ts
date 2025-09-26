@@ -7,29 +7,40 @@ import { NULLABLE } from "./NullableSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
+/** `type=""` prop for HTML `<input />` tags that are relevant for dates. */
+export type DateInputType = "time" | "date" | "datetime-local";
+
 /** Allowed options for `DateSchema` */
 export interface DateSchemaOptions extends SchemaOptions {
 	readonly value?: PossibleDate | undefined;
 	readonly min?: Nullish<PossibleDate>;
 	readonly max?: Nullish<PossibleDate>;
+	readonly input?: DateInputType | undefined;
 }
 
-/** Define a valid date in YMD format, e.g. `2005-09-12` */
 export class DateSchema extends Schema<string> {
 	declare readonly value: PossibleDate;
 	readonly min: Date | undefined;
 	readonly max: Date | undefined;
-	constructor({ min, max, title = "Date", value = "now", ...options }: DateSchemaOptions) {
-		super({ title, value, ...options });
+	readonly input: DateInputType;
+	constructor({ min, max, value = "now", input = "datetime-local", ...options }: DateSchemaOptions) {
+		super({ title: "Date", value, ...options });
 		this.min = getDate(min);
 		this.max = getDate(max);
+		this.input = input;
 	}
 	override validate(value: unknown = this.value): string {
 		const date = getDate(value);
 		if (!date) throw new ValueFeedback(value ? "Invalid date" : "Required", value);
-		if (this.min && date < this.min) throw new ValueFeedback(`Minimum ${formatDate(this.min)}`, date);
-		if (this.max && date > this.max) throw new ValueFeedback(`Maximum ${formatDate(this.max)}`, date);
-		return requireYMD(date);
+		if (this.min && date < this.min) throw new ValueFeedback(`Minimum ${this.format(this.min)}`, date);
+		if (this.max && date > this.max) throw new ValueFeedback(`Maximum ${this.format(this.max)}`, date);
+		return this.stringify(date);
+	}
+	stringify(value: Date): string {
+		return requireYMD(value);
+	}
+	format(value: Date): string {
+		return formatDate(value);
 	}
 }
 
