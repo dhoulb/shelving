@@ -3,7 +3,6 @@ import { NNBSP } from "./constants.js";
 import { type PossibleDate, isDate, requireDate } from "./date.js";
 import { getPercent } from "./number.js";
 import { type ImmutableObject, isObject } from "./object.js";
-import { type PossibleTime, requireTime } from "./time.js";
 import { type PossibleURL, requireURL } from "./url.js";
 
 /** Format a number range (based on the user's browser language settings). */
@@ -27,8 +26,10 @@ export function formatNumber(num: number, options?: Intl.NumberFormatOptions): s
 
 /** Format a number with a longer full-word suffix. */
 export function pluralizeQuantity(num: number, singular: string, plural: string, options?: Intl.NumberFormatOptions): string {
-	const o: Intl.NumberFormatOptions = { ...options, style: "decimal" };
-	const qty = formatNumber(num, o);
+	const qty = formatNumber(num, {
+		...options,
+		style: "decimal",
+	});
 	return `${qty}${NNBSP}${num === 1 ? singular : plural}`;
 }
 
@@ -41,8 +42,12 @@ export function pluralizeQuantity(num: number, singular: string, plural: string,
  * @param denumerator The number representing the whole amount.
  */
 export function formatPercent(numerator: number, denumerator: number, options?: Intl.NumberFormatOptions): string {
-	const fullOptions: Intl.NumberFormatOptions = { style: "percent", maximumFractionDigits: 0, roundingMode: "trunc", ...options };
-	return formatNumber(getPercent(numerator, denumerator), fullOptions);
+	return formatNumber(getPercent(numerator, denumerator), {
+		maximumFractionDigits: 0,
+		roundingMode: "trunc",
+		...options,
+		style: "percent",
+	});
 }
 
 /**
@@ -68,13 +73,31 @@ export function formatArray(arr: ImmutableArray<unknown>, separator = ", "): str
 }
 
 /** Format a date in the browser locale. */
-export function formatDate(date: PossibleDate): string {
-	return requireDate(date, formatDate).toLocaleDateString();
+export function formatDate(date: PossibleDate, options?: Intl.DateTimeFormatOptions): string {
+	return requireDate(date, formatDate).toLocaleDateString(undefined, options);
 }
 
-/** Format a time as a string based on the browser locale settings. */
-export function formatTime(time?: PossibleTime, precision: 2 | 3 | 4 | 5 | 6 = 2): string {
-	return requireTime(time, formatTime).format(precision);
+/** Format a time in the browser locale (no seconds by default). */
+export function formatTime(time?: PossibleDate, options?: Intl.DateTimeFormatOptions): string {
+	return requireDate(time, formatTime).toLocaleTimeString(undefined, {
+		hour: "2-digit",
+		minute: "2-digit",
+		second: undefined, // No seconds by default.
+		...options,
+	});
+}
+
+/** Format a datetime in the browser locale (no seconds by default). */
+export function formatDateTime(date: PossibleDate, options?: Intl.DateTimeFormatOptions): string {
+	return requireDate(date, formatDateTime).toLocaleString(undefined, {
+		year: "numeric",
+		month: "numeric",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		// No seconds by default.
+		...options,
+	});
 }
 
 /** Format a URL as a user-friendly string, e.g. `http://shax.com/test?uid=129483` → `shax.com/test` */
@@ -88,7 +111,7 @@ export function formatURL(possible: PossibleURL, base?: PossibleURL): string {
  * - Strings return the string.
  * - Booleans return `"Yes"` or `"No"`
  * - Numbers return formatted number with commas etc (e.g. `formatNumber()`).
- * - Dates return formatted date (e.g. `formatDate()`).
+ * - Dates return formatted datetime (e.g. `formatDateTime()`).
  * - Arrays return the array items converted to string (with `toTitle()`), and joined with a comma.
  * - Objects return...
  *   1. `object.name` if it exists, or
@@ -103,7 +126,7 @@ export function formatValue(value: unknown): string {
 	if (typeof value === "number") return formatNumber(value);
 	if (typeof value === "symbol") return value.description || "Symbol";
 	if (typeof value === "function") return "Function";
-	if (isDate(value)) return formatDate(value);
+	if (isDate(value)) return formatDateTime(value);
 	if (isArray(value)) return formatArray(value);
 	if (isObject(value)) return formatObject(value);
 	return "Unknown";

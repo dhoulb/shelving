@@ -12,8 +12,10 @@ describe("validate()", () => {
 	test("Strings are parsed correctly", () => {
 		// Date strings.
 		expect(typeof schema.validate("now")).toBe("string");
-		expect(schema.validate("today")).toBe("00:00:00.000");
-		expect(schema.validate("2022-12-20 20:22")).toBe("20:22:00.000");
+		expect(schema.validate("today")).toBe("00:00:00");
+		expect(schema.validate("20:22")).toBe("20:22:00");
+		expect(schema.validate("12:22:23")).toBe("12:22:23");
+		expect(schema.validate("2022-12-20 20:22")).toBe("20:22:00");
 	});
 	test("Numbers are converted to strings", () => {
 		expect(typeof schema.validate(1)).toBe("string");

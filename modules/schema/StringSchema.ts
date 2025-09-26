@@ -5,7 +5,7 @@ import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /** `type=""` prop for HTML `<input />` tags that are relevant for strings. */
-export type HTMLInputType = "text" | "password" | "color" | "date" | "email" | "number" | "tel" | "search" | "url";
+export type HTMLInputType = "text" | "password" | "color" | "email" | "number" | "tel" | "search" | "url";
 
 /** Options for `StringSchema` */
 export interface StringSchemaOptions extends SchemaOptions {

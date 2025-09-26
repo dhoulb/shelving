@@ -23,18 +23,18 @@ export function assertDate(value: unknown, caller: AnyCaller = assertDate): asse
  * Convert an unknown value to a valid `Date` instance, or return `undefined` if it couldn't be converted.
  * - Note: `Date` instances can be invalid (e.g. `new Date("blah blah").getTime()` returns `NaN`). These are detected and will always return `null`
  *
- * Conversion rules:
+ * @param value Any value that we want to parse as a valid date (defaults to `undefined`).
  * - `Date` instance returns unchanged (BUT if the date isn't valid, `undefined` is returned).
  * - `null` or `undefined` or `""` empty string returns `undefined`
  * - The string `"now"` returns the current date (e.g. `new Date()`).
  * - The string `"today"` returns the current date at midnight (e.g. `getMidnight()`).
  * - The string `"tomorrow"` returns tomorrow's date at midnight (e.g. `addDays(getMidnight(), 1)`).
  * - The string `"yesterday"` returns yesterday's date at midnight (e.g. `addDays(getMidnight(), 1)`).
- * - Strings (e.g. `"2003-09-12"` or `"2003 feb 20:09"`) return the corresponding date (using `new Date(string)`).
+ * - Date strings (e.g. `"2003-09-12"` or `"2003 feb 20:09"`) return the corresponding date (using the user's current locale).
+ * - Time strings (e.g. `"18:32"` or `"23:59:59.999"`) return today's date at that time (using the user's current locale).
  * - Numbers are return the corresponding date (using `new Date(number)`, i.e. milliseconds since 01/01/1970).
  * - Anything else returns `undefined`
  *
- * @param value Any value that we want to parse as a valid date (defaults to `undefined`).
  * @returns `Date` instance if the value could be converted to a valid date, and `null` if not.
  */
 export function getDate(value: unknown): Date | undefined {
@@ -46,6 +46,8 @@ export function getDate(value: unknown): Date | undefined {
 	if (typeof value === "string" || typeof value === "number") {
 		const date = new Date(value);
 		if (Number.isFinite(date.getTime())) return date;
+		const time = new Date(`${requireYMD()}T${value}`);
+		if (Number.isFinite(time.getTime())) return time;
 	}
 }
 
@@ -103,18 +105,26 @@ export function getYMD(value?: unknown): string | undefined {
 	if (date) return _ymd(date);
 }
 
-/** Convert a `Date` instance to a YMD string like "2015-09-12", or throw `RequiredError` if it couldn't be converted.  */
+/** Convert a possible `Date` instance to a YMD string like "2015-09-12", or throw `RequiredError` if it couldn't be converted.  */
 export function requireYMD(value?: PossibleDate, caller: AnyCaller = requireYMD): string {
 	return _ymd(requireDate(value, caller));
 }
 function _ymd(date: Date): string {
-	const y = _pad(date.getUTCFullYear(), 4);
-	const m = _pad(date.getUTCMonth() + 1, 2);
-	const d = _pad(date.getUTCDate(), 2);
-	return `${y}-${m}-${d}`;
+	return date.toISOString().slice(0, 10);
 }
-function _pad(num: number, size: 2 | 3 | 4): string {
-	return num.toString(10).padStart(size, "0000");
+
+/** Convert an unknown value to a HMS time string like "18:32:00", or `undefined` if it couldn't be converted. */
+export function getTime(value?: unknown): string | undefined {
+	const date = getDate(value);
+	if (date) return _hms(date);
+}
+
+/** Convert a possible `Date` instance to an HMS string like "18:32:00", or throw `RequiredError` if it couldn't be converted. */
+export function requireTime(value?: PossibleDate, caller: AnyCaller = requireTime): string {
+	return _hms(requireDate(value, caller));
+}
+function _hms(date: Date): string {
+	return date.toISOString().slice(11, 19);
 }
 
 /** List of day-of-week strings. */

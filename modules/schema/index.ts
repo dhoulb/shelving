@@ -13,6 +13,7 @@ export * from "./ChoiceSchema.js";
 export * from "./ColorSchema.js";
 export * from "./DataSchema.js";
 export * from "./DateSchema.js";
+export * from "./DateTimeSchema.js";
 export * from "./DictionarySchema.js";
 export * from "./EmailSchema.js";
 export * from "./EntitySchema.js";

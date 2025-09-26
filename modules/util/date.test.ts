@@ -1,13 +1,19 @@
 import { describe, expect, test } from "bun:test";
 import type { PossibleDate } from "../index.js";
 import { DAY, HOUR, YEAR, getDate, getYMD, requireYMD } from "../index.js";
-import { formatWhen, getMillisecondsUntil } from "./date.js";
+import { formatWhen, getMillisecondsUntil, requireTime } from "./date.js";
 
 describe("getDate()", () => {
 	test("getDate(): Parses valid possible dates to Date instances", () => {
 		expect(getDate(new Date("2019-11-27"))).toBeInstanceOf(Date);
 		expect(getDate(new Date())).toBeInstanceOf(Date);
 		expect(getDate("2019-11-27")).toBeInstanceOf(Date);
+		expect(getDate("20:30")).toBeInstanceOf(Date);
+		expect(getDate("11:22:33")).toBeInstanceOf(Date);
+		expect(getDate("2019-11-27T11:22:33")).toBeInstanceOf(Date);
+		expect(getDate("2019-11-27 11:22:33")).toBeInstanceOf(Date);
+		expect(getDate("2019-11-27T11:22")).toBeInstanceOf(Date);
+		expect(getDate("2019-11-27 11:22")).toBeInstanceOf(Date);
 		expect(getDate("now")).toBeInstanceOf(Date);
 		expect(getDate("yesterday")).toBeInstanceOf(Date);
 		expect(getDate("today")).toBeInstanceOf(Date);
@@ -68,6 +74,26 @@ describe("requireYMD()", () => {
 		expect(requireYMD(new Date("9999-12-31").getTime())).toBe("9999-12-31");
 	});
 	test("requireYMD(): Correctly throws on invalid dates", () => {
+		expect(() => requireYMD(null as unknown as PossibleDate)).toThrow(Error);
+		expect(() => requireYMD("nope")).toThrow(Error);
+		expect(() => requireYMD(new Date(Number.POSITIVE_INFINITY))).toThrow(Error);
+		expect(() => requireYMD(new Date("nope"))).toThrow(Error);
+	});
+});
+describe("requireTime()", () => {
+	test("requireTime(): Correctly converts possible timestamp to string", () => {
+		expect(requireTime("20:30")).toBe("20:30:00");
+		expect(requireTime("20:19")).toBe("20:19:00");
+		expect(requireTime("01:15:20")).toBe("01:15:20");
+		expect(requireTime("12:34:56")).toBe("12:34:56");
+		expect(requireTime("2019-11-27T12:34:56")).toBe("12:34:56");
+		expect(requireTime("0001-01-01T12:34:56")).toBe("12:34:56");
+		expect(requireTime("9999-12-31T12:34:56")).toBe("12:34:56");
+		expect(requireTime(new Date("2019-11-27T12:34:56").getTime())).toBe("12:34:56");
+		expect(requireTime(new Date("0001-01-01T12:34:56").getTime())).toBe("12:34:56");
+		expect(requireTime(new Date("9999-12-31T12:34:56").getTime())).toBe("12:34:56");
+	});
+	test("requireTime(): Correctly throws on invalid dates", () => {
 		expect(() => requireYMD(null as unknown as PossibleDate)).toThrow(Error);
 		expect(() => requireYMD("nope")).toThrow(Error);
 		expect(() => requireYMD(new Date(Number.POSITIVE_INFINITY))).toThrow(Error);
