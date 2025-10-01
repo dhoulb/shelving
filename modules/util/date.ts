@@ -46,7 +46,7 @@ export function getDate(value: unknown): Date | undefined {
 	if (typeof value === "string" || typeof value === "number") {
 		const date = new Date(value);
 		if (Number.isFinite(date.getTime())) return date;
-		const time = new Date(`${requireYMD()}T${value}`);
+		const time = new Date(`${requireDateString()}T${value}`);
 		if (Number.isFinite(time.getTime())) return time;
 	}
 }
@@ -99,34 +99,52 @@ export function requireTimestamp(value?: PossibleDate): number {
 	return requireDate(value, requireTimestamp).getTime();
 }
 
-/** Convert an unknown value to a YMD date string like "2015-09-12", or `undefined` if it couldn't be converted. */
-export function getYMD(value?: unknown): string | undefined {
+// Helpers.
+function _pad(num: number, length = 2): string {
+	return num.toString().padStart(length, "0");
+}
+function _date(date: Date): string {
+	return `${_pad(date.getFullYear(), 4)}-${_pad(date.getMonth() + 1)}-${_pad(date.getDate())}`;
+}
+function _time(date: Date): string {
+	return `${_pad(date.getHours())}:${_pad(date.getMinutes())}:${_pad(date.getSeconds())}`;
+}
+function _datetime(date: Date): string {
+	return `${_date(date)}T${_time(date)}`;
+}
+
+/** Convert an unknown value to a local date string like "2015-09-12T18:30:00", or `undefined` if it couldn't be converted. */
+export function getDateTimeString(value?: unknown): string | undefined {
 	const date = getDate(value);
-	if (date) return _ymd(date);
+	if (date) return _datetime(date);
 }
 
-/** Convert a possible `Date` instance to a YMD string like "2015-09-12", or throw `RequiredError` if it couldn't be converted.  */
-export function requireYMD(value?: PossibleDate, caller: AnyCaller = requireYMD): string {
-	return _ymd(requireDate(value, caller));
-}
-function _ymd(date: Date): string {
-	return date.toISOString().slice(0, 10);
+/** Convert a possible `Date` instance to a local YMD string like "2015-09-12T18:30:00", or throw `RequiredError` if it couldn't be converted.  */
+export function requireDateTimeString(value?: PossibleDate, caller: AnyCaller = requireDateTimeString): string {
+	return _datetime(requireDate(value, caller));
 }
 
-/** Convert an unknown value to a HMS time string like "18:32:00", or `undefined` if it couldn't be converted. */
-export function getTime(value?: unknown): string | undefined {
+/** Convert an unknown value to a local date string like "2015-09-12", or `undefined` if it couldn't be converted. */
+export function getDateString(value?: unknown): string | undefined {
 	const date = getDate(value);
-	if (date) return _hms(date);
+	if (date) return _date(date);
 }
 
-/** Convert a possible `Date` instance to an HMS string like "18:32:00", or throw `RequiredError` if it couldn't be converted. */
-export function requireTime(value?: PossibleDate, caller: AnyCaller = requireTime): string {
-	return _hms(requireDate(value, caller));
-}
-function _hms(date: Date): string {
-	return date.toISOString().slice(11, 19);
+/** Convert a possible `Date` instance to a local date string like "2015-09-12", or throw `RequiredError` if it couldn't be converted.  */
+export function requireDateString(value?: PossibleDate, caller: AnyCaller = requireDateString): string {
+	return _date(requireDate(value, caller));
 }
 
+/** Convert an unknown value to a local time string like "18:32:00", or `undefined` if it couldn't be converted. */
+export function getTimeString(value?: unknown): string | undefined {
+	const date = getDate(value);
+	if (date) return _time(date);
+}
+
+/** Convert a possible `Date` instance to local time string like "18:32:00", or throw `RequiredError` if it couldn't be converted. */
+export function requireTimeString(value?: PossibleDate, caller: AnyCaller = requireTimeString): string {
+	return _time(requireDate(value, caller));
+}
 /** List of day-of-week strings. */
 export const DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 

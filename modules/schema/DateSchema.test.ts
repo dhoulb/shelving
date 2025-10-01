@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { DATE, DateSchema, Feedback, NULLABLE_DATE, requireYMD } from "../index.js";
+import { DATE, DateSchema, Feedback, NULLABLE_DATE, requireDateString } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -65,7 +65,7 @@ describe("validate()", () => {
 describe("options.value", () => {
 	test("Default value is now", () => {
 		const schema = new DateSchema({});
-		expect(schema.validate(undefined)).toBe(requireYMD(new Date()));
+		expect(schema.validate(undefined)).toBe(requireDateString(new Date()));
 	});
 	test("Undefined with default value returns default value", () => {
 		const schema1 = new DateSchema({ value: "1995" });

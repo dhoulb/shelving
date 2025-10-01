@@ -1,6 +1,6 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
 import type { PossibleDate } from "../util/date.js";
-import { getDate, requireYMD } from "../util/date.js";
+import { getDate, requireDateString } from "../util/date.js";
 import { formatDate } from "../util/format.js";
 import type { Nullish } from "../util/null.js";
 import { NULLABLE } from "./NullableSchema.js";
@@ -37,7 +37,7 @@ export class DateSchema extends Schema<string> {
 		return this.stringify(date);
 	}
 	stringify(value: Date): string {
-		return requireYMD(value);
+		return requireDateString(value);
 	}
 	format(value: Date): string {
 		return formatDate(value);

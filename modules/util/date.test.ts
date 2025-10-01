@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { PossibleDate } from "../index.js";
-import { DAY, HOUR, YEAR, getDate, getYMD, requireYMD } from "../index.js";
-import { formatWhen, getMillisecondsUntil, requireTime } from "./date.js";
+import { DAY, HOUR, YEAR, getDate, getDateString, requireDateString } from "../index.js";
+import { formatWhen, getMillisecondsUntil, requireTimeString } from "./date.js";
 
 describe("getDate()", () => {
 	test("getDate(): Parses valid possible dates to Date instances", () => {
@@ -36,68 +36,68 @@ describe("getDate()", () => {
 		expect<Date | undefined>(getDate(() => new Date(""))).toBe(undefined);
 	});
 });
-describe("getYMD()", () => {
-	test("getYMD(): Correctly converts date to string", () => {
-		expect(getYMD(new Date("2019-11-27"))).toBe("2019-11-27");
-		expect(getYMD(new Date("0001-01-01"))).toBe("0001-01-01");
-		expect(getYMD(new Date("9999-12-31"))).toBe("9999-12-31");
+describe("getDateString()", () => {
+	test("getDateString(): Correctly converts date to string", () => {
+		expect(getDateString(new Date("2019-11-27"))).toBe("2019-11-27");
+		expect(getDateString(new Date("0001-01-01"))).toBe("0001-01-01");
+		expect(getDateString(new Date("9999-12-31"))).toBe("9999-12-31");
 	});
-	test("getYMD(): Correctly converts possible dates to sring", () => {
-		expect(getYMD("2019-11-27")).toBe("2019-11-27");
-		expect(getYMD("0001-01-01")).toBe("0001-01-01");
-		expect(getYMD("9999-12-31")).toBe("9999-12-31");
-		expect(getYMD(new Date("2019-11-27").getTime())).toBe("2019-11-27");
-		expect(getYMD(new Date("0001-01-01").getTime())).toBe("0001-01-01");
-		expect(getYMD(new Date("9999-12-31").getTime())).toBe("9999-12-31");
-		expect(typeof getYMD("now")).toBe("string");
+	test("getDateString(): Correctly converts possible dates to sring", () => {
+		expect(getDateString("2019-11-27")).toBe("2019-11-27");
+		expect(getDateString("0001-01-01")).toBe("0001-01-01");
+		expect(getDateString("9999-12-31")).toBe("9999-12-31");
+		expect(getDateString(new Date("2019-11-27").getTime())).toBe("2019-11-27");
+		expect(getDateString(new Date("0001-01-01").getTime())).toBe("0001-01-01");
+		expect(getDateString(new Date("9999-12-31").getTime())).toBe("9999-12-31");
+		expect(typeof getDateString("now")).toBe("string");
 	});
-	test("getYMD(): Correctly converts invalid dates and other things to undefined", () => {
-		expect<string | undefined>(getYMD(null)).toBe(undefined);
-		expect<string | undefined>(getYMD("nope")).toBe(undefined);
-		expect<string | undefined>(getYMD(new Date(Number.POSITIVE_INFINITY))).toBe(undefined);
-		expect<string | undefined>(getYMD(new Date("nope"))).toBe(undefined);
-	});
-});
-describe("requireYMD()", () => {
-	test("requireYMD(): Correctly converts date to string", () => {
-		expect(requireYMD(new Date("2019-11-27"))).toBe("2019-11-27");
-		expect(requireYMD(new Date("2019-07-27"))).toBe("2019-07-27");
-		expect(requireYMD(new Date("0001-01-01"))).toBe("0001-01-01");
-		expect(requireYMD(new Date("9999-12-31"))).toBe("9999-12-31");
-	});
-	test("requireYMD(): Correctly converts possible dates to sring", () => {
-		expect(requireYMD("2019-11-27")).toBe("2019-11-27");
-		expect(requireYMD("0001-01-01")).toBe("0001-01-01");
-		expect(requireYMD("9999-12-31")).toBe("9999-12-31");
-		expect(requireYMD(new Date("2019-11-27").getTime())).toBe("2019-11-27");
-		expect(requireYMD(new Date("0001-01-01").getTime())).toBe("0001-01-01");
-		expect(requireYMD(new Date("9999-12-31").getTime())).toBe("9999-12-31");
-	});
-	test("requireYMD(): Correctly throws on invalid dates", () => {
-		expect(() => requireYMD(null as unknown as PossibleDate)).toThrow(Error);
-		expect(() => requireYMD("nope")).toThrow(Error);
-		expect(() => requireYMD(new Date(Number.POSITIVE_INFINITY))).toThrow(Error);
-		expect(() => requireYMD(new Date("nope"))).toThrow(Error);
+	test("getDateString(): Correctly converts invalid dates and other things to undefined", () => {
+		expect<string | undefined>(getDateString(null)).toBe(undefined);
+		expect<string | undefined>(getDateString("nope")).toBe(undefined);
+		expect<string | undefined>(getDateString(new Date(Number.POSITIVE_INFINITY))).toBe(undefined);
+		expect<string | undefined>(getDateString(new Date("nope"))).toBe(undefined);
 	});
 });
-describe("requireTime()", () => {
-	test("requireTime(): Correctly converts possible timestamp to string", () => {
-		expect(requireTime("20:30")).toBe("20:30:00");
-		expect(requireTime("20:19")).toBe("20:19:00");
-		expect(requireTime("01:15:20")).toBe("01:15:20");
-		expect(requireTime("12:34:56")).toBe("12:34:56");
-		expect(requireTime("2019-11-27T12:34:56")).toBe("12:34:56");
-		expect(requireTime("0001-01-01T12:34:56")).toBe("12:34:56");
-		expect(requireTime("9999-12-31T12:34:56")).toBe("12:34:56");
-		expect(requireTime(new Date("2019-11-27T12:34:56").getTime())).toBe("12:34:56");
-		expect(requireTime(new Date("0001-01-01T12:34:56").getTime())).toBe("12:34:56");
-		expect(requireTime(new Date("9999-12-31T12:34:56").getTime())).toBe("12:34:56");
+describe("requireDateString()", () => {
+	test("requireDateString(): Correctly converts date to string", () => {
+		expect(requireDateString(new Date("2019-11-27"))).toBe("2019-11-27");
+		expect(requireDateString(new Date("2019-07-27"))).toBe("2019-07-27");
+		expect(requireDateString(new Date("0001-01-01"))).toBe("0001-01-01");
+		expect(requireDateString(new Date("9999-12-31"))).toBe("9999-12-31");
 	});
-	test("requireTime(): Correctly throws on invalid dates", () => {
-		expect(() => requireYMD(null as unknown as PossibleDate)).toThrow(Error);
-		expect(() => requireYMD("nope")).toThrow(Error);
-		expect(() => requireYMD(new Date(Number.POSITIVE_INFINITY))).toThrow(Error);
-		expect(() => requireYMD(new Date("nope"))).toThrow(Error);
+	test("requireDateString(): Correctly converts possible dates to sring", () => {
+		expect(requireDateString("2019-11-27")).toBe("2019-11-27");
+		expect(requireDateString("0001-01-01")).toBe("0001-01-01");
+		expect(requireDateString("9999-12-31")).toBe("9999-12-31");
+		expect(requireDateString(new Date("2019-11-27").getTime())).toBe("2019-11-27");
+		expect(requireDateString(new Date("0001-01-01").getTime())).toBe("0001-01-01");
+		expect(requireDateString(new Date("9999-12-31").getTime())).toBe("9999-12-31");
+	});
+	test("requireDateString(): Correctly throws on invalid dates", () => {
+		expect(() => requireDateString(null as unknown as PossibleDate)).toThrow(Error);
+		expect(() => requireDateString("nope")).toThrow(Error);
+		expect(() => requireDateString(new Date(Number.POSITIVE_INFINITY))).toThrow(Error);
+		expect(() => requireDateString(new Date("nope"))).toThrow(Error);
+	});
+});
+describe("requireTimeString()", () => {
+	test("requireTimeString(): Correctly converts possible timestamp to string", () => {
+		expect(requireTimeString("20:30")).toBe("20:30:00");
+		expect(requireTimeString("20:19")).toBe("20:19:00");
+		expect(requireTimeString("01:15:20")).toBe("01:15:20");
+		expect(requireTimeString("12:34:56")).toBe("12:34:56");
+		expect(requireTimeString("2019-11-27T12:34:56")).toBe("12:34:56");
+		expect(requireTimeString("0001-01-01T12:34:56")).toBe("12:34:56");
+		expect(requireTimeString("9999-12-31T12:34:56")).toBe("12:34:56");
+		expect(requireTimeString(new Date("2019-11-27T12:34:56").getTime())).toBe("12:34:56");
+		expect(requireTimeString(new Date("0001-01-01T12:34:56").getTime())).toBe("12:34:56");
+		expect(requireTimeString(new Date("9999-12-31T12:34:56").getTime())).toBe("12:34:56");
+	});
+	test("requireTimeString(): Correctly throws on invalid dates", () => {
+		expect(() => requireDateString(null as unknown as PossibleDate)).toThrow(Error);
+		expect(() => requireDateString("nope")).toThrow(Error);
+		expect(() => requireDateString(new Date(Number.POSITIVE_INFINITY))).toThrow(Error);
+		expect(() => requireDateString(new Date("nope"))).toThrow(Error);
 	});
 });
 test("getDuration()", () => {

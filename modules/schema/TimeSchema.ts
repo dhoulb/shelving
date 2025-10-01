@@ -1,5 +1,5 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
-import { type PossibleDate, getDate, requireTime } from "../util/date.js";
+import { type PossibleDate, getDate, requireTimeString } from "../util/date.js";
 import { formatTime } from "../util/format.js";
 import { roundStep } from "../util/number.js";
 import { DateSchema, type DateSchemaOptions } from "./DateSchema.js";
@@ -28,7 +28,7 @@ export class TimeSchema extends DateSchema {
 		const rounded = typeof this.step === "number" ? new Date(roundStep(date.getTime(), this.step)) : date;
 		if (this.max && rounded > this.max) throw new ValueFeedback(`Maximum ${formatTime(this.max)}`, rounded);
 		if (this.min && rounded < this.min) throw new ValueFeedback(`Minimum ${formatTime(this.min)}`, rounded);
-		return requireTime(rounded);
+		return requireTimeString(rounded);
 	}
 }
 
