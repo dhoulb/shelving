@@ -40,60 +40,48 @@ export function _getMessageContent(
 	caller: AnyCaller,
 ): Promise<unknown> {
 	const type = message.headers.get("Content-Type");
+	if (!type || type?.startsWith("text/")) return message.text();
 	if (type?.startsWith("application/json")) return _getMessageJSON(message, MessageError, caller);
 	if (type?.startsWith("multipart/form-data")) return _getMessageFormData(message, MessageError, caller);
-	return message.text();
+	throw new MessageError("Content-Type must be text/*, application/json, or multipart/form-data", { received: type, caller });
 }
 
 /**
  * Get the body content of an HTTP `Request` based on its content type, or throw `RequestError` if the content could not be parsed.
  *
+ * @returns undefined If the request method is `GET` or `HEAD` (these request methods have no body).
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
  * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
  * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
  * @throws RequestError if the content is not `text/plain`, or `application/json` with valid JSON.
  */
-export function getRequestContent(message: Request, caller: AnyCaller = getRequestContent): Promise<unknown> {
-	if (message.method === "GET" || message.method === "HEAD") return Promise.resolve(undefined);
-	return _getMessageContent(message, RequestError, caller);
+export function getRequestContent(request: Request, caller: AnyCaller = getRequestContent): Promise<unknown> {
+	const { method } = request;
+
+	// The HTTP/1.1 RFC 7231 does not forbid sending a body in GET or HEAD requests, but it is uncommon and not recommended because many servers, proxies, and caches may ignore or mishandle it.
+	if (method === "GET" || method === "HEAD") return Promise.resolve(undefined);
+
+	return _getMessageContent(request, RequestError, caller);
 }
 
 /**
  * Get the body content of an HTTP `Response` based on its content type, or throw `ResponseError` if the content could not be parsed.
  *
+ * @returns undefined If the request status is `204 No Content` (this response has no body).
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
  * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
  * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
  * @throws RequestError if the content is not `text/plain` or `application/json` with valid JSON.
  */
-export function getResponseContent(message: Response, caller: AnyCaller = getResponseContent): Promise<unknown> {
-	return _getMessageContent(message, ResponseError, caller);
-}
+export function getResponseContent(response: Response, caller: AnyCaller = getResponseContent): Promise<unknown> {
+	const { status } = response;
 
-/**
- * Get the body content of an HTTP `Request` as JSON, or throw `RequestError` if the content could not be parsed.
- * - Doesn't check the `Content-Type` header, so it can be used for any request.
- *
- * @returns unknown The parsed JSON content of the request body, or `undefined` if the body is empty.
- *
- * @throws RequestError if the content is not valid JSON.
- */
-export function getRequestJSON(message: Request, caller: AnyCaller = getRequestJSON): Promise<unknown> {
-	return _getMessageJSON(message, RequestError, caller);
-}
+	// RFC 7230 Section 3.3.3: A server MUST NOT send a Content-Length header field in any response with a status code of 1xx (Informational), 204 (No Content), or 304 (Not Modified).
+	if ((status >= 100 && status < 200) || status === 204 || status === 304) return Promise.resolve(undefined);
 
-/**
- * Get the body content of an HTTP `Response` as JSON, or throw `ResponseError` if the content could not be parsed.
- * - Doesn't check the `Content-Type` header, so it can be used for any response.
- *
- * @returns unknown The parsed JSON content of the response body, or `undefined` if the body is empty.
- *
- * @throws RequestError if the content is not valid JSON.
- */
-export function getResponseJSON(message: Response, caller: AnyCaller = getResponseJSON): Promise<unknown> {
-	return _getMessageJSON(message, ResponseError, caller);
+	return _getMessageContent(response, ResponseError, caller);
 }
 
 /**
