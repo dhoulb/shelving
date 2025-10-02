@@ -16,15 +16,29 @@ describe("getRequestContent()", () => {
 	test("returns undefined for no content type", async () => {
 		expect(await getRequestContent(mockRequest("abc"))).toBe("abc");
 	});
-	test("returns string for text/plain content type", async () => {
+	test("returns string for text/* content type", async () => {
 		expect(await getRequestContent(mockRequest("world", "text/plain"))).toBe("world");
 		expect(await getRequestContent(mockRequest("123", "text/plain"))).toBe("123");
 		expect(await getRequestContent(mockRequest("true", "text/plain"))).toBe("true");
 		expect(await getRequestContent(mockRequest("", "text/plain"))).toBe("");
+		expect(await getRequestContent(mockRequest("world", "text/xml"))).toBe("world");
+		expect(await getRequestContent(mockRequest("123", "text/xml"))).toBe("123");
+		expect(await getRequestContent(mockRequest("true", "text/xml"))).toBe("true");
+		expect(await getRequestContent(mockRequest("", "text/xml"))).toBe("");
 	});
-	test("returns string for unknown content type", async () => {
-		expect(await getRequestContent(mockRequest("a", "application/xml"))).toBe("a");
-		expect(await getRequestContent(mockRequest("b", "something/else"))).toBe("b");
+	test("errors for unknown content type", async () => {
+		try {
+			await getRequestContent(mockRequest("a", "application/xml"));
+			expect(false).toBe(true);
+		} catch (error) {
+			expect(error).toBeInstanceOf(RequestError);
+		}
+		try {
+			await getRequestContent(mockRequest("b", "something/else"));
+			expect(false).toBe(true);
+		} catch (error) {
+			expect(error).toBeInstanceOf(RequestError);
+		}
 	});
 	test("returns JSON for application/json content type", async () => {
 		expect(await getRequestContent(mockRequest('{"w":4}', "application/json"))).toEqual({ w: 4 });
