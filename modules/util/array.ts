@@ -110,7 +110,7 @@ function _doesNotInclude<T>(this: T[], value: T) {
 	return !this.includes(value);
 }
 
-/** Pick multiple items from an array (immutably) and return a new array without those items (or the same array if no changes were made). */
+/** Pick multiple items from an array (immutably) and return a new array with those items (or the same array if no changes were made). */
 export function pickArrayItems<T>(items: PossibleArray<T>, ...pick: T[]): ImmutableArray<T> {
 	const arr = Array.from(pickItems(items, ...pick));
 	return isArray(items) && arr.length === items.length ? items : arr;
