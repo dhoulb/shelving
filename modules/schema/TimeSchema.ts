@@ -18,8 +18,8 @@ export class TimeSchema extends DateSchema {
 	 * - Note: `<input type="time">` elements expect `step=""` to be  in _seconds_ so you need to multiply this by `1000`
 	 */
 	readonly step: number | undefined;
-	constructor({ title = "Time", step, ...options }: TimeSchemaOptions) {
-		super({ title, ...options });
+	constructor({ title = "Time", input = "time", step, ...options }: TimeSchemaOptions) {
+		super({ title, input, ...options });
 		this.step = step;
 	}
 	override validate(unsafeValue: unknown = this.value): string {

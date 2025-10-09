@@ -23,7 +23,7 @@ export class DateSchema extends Schema<string> {
 	readonly min: Date | undefined;
 	readonly max: Date | undefined;
 	readonly input: DateInputType;
-	constructor({ min, max, value = "now", input = "datetime-local", ...options }: DateSchemaOptions) {
+	constructor({ min, max, value = "now", input = "date", ...options }: DateSchemaOptions) {
 		super({ title: "Date", value, ...options });
 		this.min = getDate(min);
 		this.max = getDate(max);
