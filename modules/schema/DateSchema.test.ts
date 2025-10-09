@@ -108,23 +108,23 @@ describe("options.input", () => {
 	});
 });
 describe("options.step", () => {
-    const DAY_IN_MS = 24 * 60 * 60 * 1000;
-    test("Rounds date to the nearest step interval", () => {
-        const schema = new DateSchema({ step: DAY_IN_MS });
-        expect(schema.validate("2025-01-15T11:59:59Z")).toBe("2025-01-15");
-        expect(schema.validate("2025-01-15T12:00:01Z")).toBe("2025-01-16");
-        expect(schema.validate("2025-01-15T12:00:00Z")).toBe("2025-01-16");
-        expect(schema.validate("2025-01-15T00:00:00Z")).toBe("2025-01-15");
-    });
-    test("Rounded value is checked against min/max constraints", () => {
-        const schema = new DateSchema({
-            step: DAY_IN_MS,
-            min: "2025-01-15",
-            max: "2025-01-16",
-        });
-        expect(schema.validate("2025-01-14T20:00:00Z")).toBe("2025-01-15");
-        expect(() => schema.validate("2025-01-14T08:00:00Z")).toThrow(Feedback);
-        expect(schema.validate("2025-01-16T08:00:00Z")).toBe("2025-01-16");
-        expect(() => schema.validate("2025-01-16T14:00:00Z")).toThrow(Feedback);
-    });
+	const DAY_IN_MS = 24 * 60 * 60 * 1000;
+	test("Rounds date to the nearest step interval", () => {
+		const schema = new DateSchema({ step: DAY_IN_MS });
+		expect(schema.validate("2025-01-15T11:59:59Z")).toBe("2025-01-15");
+		expect(schema.validate("2025-01-15T12:00:01Z")).toBe("2025-01-16");
+		expect(schema.validate("2025-01-15T12:00:00Z")).toBe("2025-01-16");
+		expect(schema.validate("2025-01-15T00:00:00Z")).toBe("2025-01-15");
+	});
+	test("Rounded value is checked against min/max constraints", () => {
+		const schema = new DateSchema({
+			step: DAY_IN_MS,
+			min: "2025-01-15",
+			max: "2025-01-16",
+		});
+		expect(schema.validate("2025-01-14T20:00:00Z")).toBe("2025-01-15");
+		expect(() => schema.validate("2025-01-14T08:00:00Z")).toThrow(Feedback);
+		expect(schema.validate("2025-01-16T08:00:00Z")).toBe("2025-01-16");
+		expect(() => schema.validate("2025-01-16T14:00:00Z")).toThrow(Feedback);
+	});
 });
