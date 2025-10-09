@@ -102,6 +102,28 @@ describe("options.max", () => {
 		expect(() => schema3.validate(1530586357001)).toThrow(Feedback);
 	});
 });
+describe("options.step", () => {
+	const MINUTE_IN_MS = 60 * 1000;
+	const FIFTEEN_MINUTES_IN_MS = 15 * MINUTE_IN_MS;
+	test("Rounds datetime to the nearest 15 minutes", () => {
+		const schema = new DateTimeSchema({ step: FIFTEEN_MINUTES_IN_MS });
+		expect(schema.validate("2025-10-09T13:37:29.000Z")).toBe("2025-10-09T13:30:00.000Z");
+		expect(schema.validate("2025-10-09T13:37:31.000Z")).toBe("2025-10-09T13:45:00.000Z");
+		expect(schema.validate("2025-10-09T13:37:30.000Z")).toBe("2025-10-09T13:45:00.000Z");
+		expect(schema.validate("2025-10-09T14:00:00.000Z")).toBe("2025-10-09T14:00:00.000Z");
+	});
+	test("Rounded value is checked against min/max constraints", () => {
+		const schema = new DateTimeSchema({
+			step: FIFTEEN_MINUTES_IN_MS,
+			min: "2025-10-09T14:00:00.000Z",
+			max: "2025-10-09T14:15:00.000Z",
+		});
+		expect(schema.validate("2025-10-09T13:52:31.000Z")).toBe("2025-10-09T14:00:00.000Z");
+		expect(() => schema.validate("2025-10-09T13:52:29.000Z")).toThrow(Feedback);
+		expect(schema.validate("2025-10-09T14:22:29.000Z")).toBe("2025-10-09T14:15:00.000Z");
+		expect(() => schema.validate("2025-10-09T14:22:31.000Z")).toThrow(Feedback);
+	});
+});
 describe("options.input", () => {
 	test("Should be date", () => {
 		const schema1 = new DateTimeSchema({});
