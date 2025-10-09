@@ -17,7 +17,7 @@ export interface ChoiceSchemaOptions<K extends string> extends Omit<SchemaOption
 
 /** Choose from an allowed set of values. */
 export class ChoiceSchema<K extends string> extends Schema<K> {
-	declare readonly value: string;
+	declare readonly value: K;
 	readonly options: ChoiceOptions<K>;
 	constructor({ options, value = requireFirst(getKeys(options)), ...rest }: ChoiceSchemaOptions<K>) {
 		super({ value, ...rest });
