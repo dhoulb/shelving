@@ -99,3 +99,11 @@ describe("options.max", () => {
 		expect(() => schema2.validate(1530586357001)).toThrow(Feedback);
 	});
 });
+describe("options.input", () => {
+	test("Should be date", () => {
+		const schema1 = new DateSchema({});
+		expect(schema1.input).toBe("date");
+		const schema2 = DATE;
+		expect(schema2.input).toBe("date");
+	});
+});

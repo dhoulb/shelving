@@ -102,3 +102,11 @@ describe("options.max", () => {
 		expect(() => schema3.validate(1530586357001)).toThrow(Feedback);
 	});
 });
+describe("options.input", () => {
+	test("Should be date", () => {
+		const schema1 = new DateTimeSchema({});
+		expect(schema1.input).toBe("datetime-local");
+		const schema2 = DATETIME;
+		expect(schema2.input).toBe("datetime-local");
+	});
+});

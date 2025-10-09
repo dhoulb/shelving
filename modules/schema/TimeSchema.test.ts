@@ -30,3 +30,11 @@ describe("validate()", () => {
 		expect(() => schema.validate({})).toThrow(Feedback);
 	});
 });
+describe("options.input", () => {
+	test("Should be time", () => {
+		const schema1 = new TimeSchema({});
+		expect(schema1.input).toBe("time");
+		const schema2 = TIME;
+		expect(schema2.input).toBe("time");
+	});
+});
