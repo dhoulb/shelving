@@ -11,14 +11,16 @@ export type ChoiceOptions<K extends string> = { readonly [KK in K]: unknown };
 export interface ChoiceSchemaOptions<K extends string> extends Omit<SchemaOptions, "value"> {
 	/** Specify correct options using a dictionary of entries. */
 	options: ChoiceOptions<K>;
+	/** Default option for the value. */
+	value?: K;
 }
 
 /** Choose from an allowed set of values. */
 export class ChoiceSchema<K extends string> extends Schema<K> {
 	declare readonly value: string;
 	readonly options: ChoiceOptions<K>;
-	constructor({ options, ...rest }: ChoiceSchemaOptions<K>) {
-		super({ value: requireFirst(getKeys(options)), ...rest });
+	constructor({ options, value = requireFirst(getKeys(options)), ...rest }: ChoiceSchemaOptions<K>) {
+		super({ value, ...rest });
 		this.options = options;
 	}
 	validate(unsafeValue: unknown = this.value): K {
