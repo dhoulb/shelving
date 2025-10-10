@@ -11,7 +11,6 @@ export * from "./feedback/index.js";
 // export * from "./firestore/client/index.js"; // Not exported.
 // export * from "./firestore/lite/index.js"; // Not exported.
 // export * from "./firestore/server/index.js"; // Not exported.
-export * from "./iterate/index.js";
 export * from "./markup/index.js";
 // export * from "./react/index.js"; // Not exported.
 export * from "./schema/index.js";
