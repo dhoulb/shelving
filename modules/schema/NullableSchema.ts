@@ -1,9 +1,9 @@
-import type { Schema, SchemaOptions } from "./Schema.js";
-import { ThroughSchema } from "./ThroughSchema.js";
+import type { Schema } from "./Schema.js";
+import { ThroughSchema, type ThroughSchemaOptions } from "./ThroughSchema.js";
 
 /** Allowed options for `NullableSchema` */
-export interface NullableSchemaOptions<T> extends SchemaOptions {
-	readonly source: Schema<T>;
+export interface NullableSchemaOptions<T> extends ThroughSchemaOptions<T | null> {
+	/** Default value (defaults to `null`). */
 	readonly value?: T | null;
 }
 
