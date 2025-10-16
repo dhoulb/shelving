@@ -1,4 +1,4 @@
-import type { Schema } from "./Schema.js";
+import type { Validator } from "../util/validate.js";
 import { ThroughSchema, type ThroughSchemaOptions } from "./ThroughSchema.js";
 
 export interface OptionalSchemaOptions<T> extends ThroughSchemaOptions<T | undefined> {
@@ -24,4 +24,4 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
 }
 
 /** Make a property of a set of data optional, i.e. it can be the value or `undefined` */
-export const OPTIONAL = <T>(source: Schema<T>): OptionalSchema<T> => new OptionalSchema({ source });
+export const OPTIONAL = <T>(source: Validator<T>): OptionalSchema<T> => new OptionalSchema({ source });
