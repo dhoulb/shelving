@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { getUndefined, mapArray, mapObject, transformObject } from "../index.js";
+import { getUndefined, mapArray, mapProps, transformObject } from "../index.js";
 
 test("mapArray()", () => {
 	const arr = [1, 2, 3, 4];
@@ -11,7 +11,7 @@ test("mapObject()", () => {
 	const obj = { a: 1, b: 2, c: 3, d: 4 };
 
 	// Square each number (input is object).
-	expect(mapObject(obj, n => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
+	expect(mapProps(obj, ([, n]) => n * n)).toEqual({ a: 1, b: 4, c: 9, d: 16 });
 });
 test("transformObject()", () => {
 	const obj: { a?: number; b: number } = { a: 10, b: 20 };

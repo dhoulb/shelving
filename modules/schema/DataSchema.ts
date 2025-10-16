@@ -1,9 +1,9 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
 import type { Data, Database } from "../util/data.js";
 import { isData } from "../util/data.js";
-import type { AnyFunction } from "../util/function.js";
 import type { Identifier, Item } from "../util/item.js";
-import { mapObject } from "../util/transform.js";
+import type { Prop } from "../util/object.js";
+import { mapProps } from "../util/transform.js";
 import type { Validator, Validators } from "../util/validate.js";
 import { validateData } from "../util/validate.js";
 import type { NullableSchema } from "./NullableSchema.js";
@@ -43,11 +43,15 @@ export const DATA = <T extends Data>(props: Validators<T>): DataSchema<T> => new
 export const NULLABLE_DATA = <T extends Data>(props: Validators<T>): NullableSchema<T> => NULLABLE(new DataSchema({ props }));
 
 /** Create a `DataSchema` that validates partially, i.e. properties can be their value, or `undefined` */
-export function PARTIAL<T extends Data>(source: Validators<T> | DataSchema<T>): DataSchema<Partial<T>> {
-	const props: Validators<T> = source instanceof DataSchema ? source.props : source;
-	return new DataSchema<Partial<T>>({
-		props: mapObject<Validators<T>, Validators<Partial<T>>>(props, OPTIONAL as AnyFunction) as Validators<Partial<T>>,
+export function PARTIAL<T extends Data>(source: Validators<T> | DataSchema<T>): DataSchema<Partial<T>>;
+export function PARTIAL(source: Validators<Data> | DataSchema<Data>): DataSchema<Partial<Data>> {
+	const props: Validators<Data> = source instanceof DataSchema ? source.props : source;
+	return new DataSchema<Partial<Data>>({
+		props: mapProps(props, _optionalProp),
 	});
+}
+function _optionalProp([, v]: Prop<Validators<Data>>): Validator<unknown> {
+	return OPTIONAL(v);
 }
 
 /** Create a `DataSchema` that validates a data item, i.e. it has a string or number `.id` identifier property. */

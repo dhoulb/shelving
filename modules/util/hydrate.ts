@@ -3,12 +3,13 @@ import { isArray } from "./array.js";
 import type { Class } from "./class.js";
 import { isDate } from "./date.js";
 import type { ImmutableDictionary } from "./dictionary.js";
+import type { Entry } from "./entry.js";
 import { isMap } from "./map.js";
 import type { ImmutableObject } from "./object.js";
 import { getProps, getPrototype, isObject, isPlainObject } from "./object.js";
 import { isSet } from "./set.js";
 import { isString } from "./string.js";
-import { mapArray, mapObject } from "./transform.js";
+import { mapArray, mapProps } from "./transform.js";
 
 /**
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.
@@ -34,7 +35,7 @@ function _isDehydrated(value: DehydratedObject | ImmutableObject): value is Dehy
 export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 	if (isArray(value)) return mapArray(value, hydrate, hydrations);
 	if (isPlainObject(value)) {
-		if (!_isDehydrated(value)) return mapObject(value, hydrate, hydrations);
+		if (!_isDehydrated(value)) return mapProps(value, _hydrateProp, hydrations);
 		const { $type, $value } = value;
 		if ($type === "Map") return new Map($value as ConstructorParameters<typeof Map>[0]);
 		if ($type === "Set") return new Set($value as ConstructorParameters<typeof Set>[0]);
@@ -42,10 +43,13 @@ export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 
 		// Complex object, check the hydrations list.
 		const hydration = hydrations[$type];
-		if (hydration) return { __proto__: hydration.prototype as unknown, ...mapObject($value as ImmutableObject, hydrate, hydrations) };
+		if (hydration) return { __proto__: hydration.prototype as unknown, ...mapProps($value as ImmutableObject, _hydrateProp, hydrations) };
 		throw new ValueError(`Cannot hydrate object "${$type}"`, { type: $type, received: $value, caller: hydrate });
 	}
 	return value;
+}
+function _hydrateProp([, v]: Entry, hydrations: Hydrations): unknown {
+	return hydrate(v, hydrations);
 }
 
 /**
@@ -64,13 +68,16 @@ export function dehydrate(value: unknown, hydrations: Hydrations): unknown {
 		if (isMap(value)) return { $type: "Map", $value: mapArray(value.entries(), dehydrate, hydrations) };
 		if (isSet(value)) return { $type: "Set", $value: mapArray(value.values(), dehydrate, hydrations) };
 		if (isDate(value)) return { $type: "Date", $value: value.getTime() };
-		if (isPlainObject(value)) return mapObject(value, dehydrate, hydrations);
+		if (isPlainObject(value)) return mapProps(value, _dehydrateProp, hydrations);
 
 		// Complex object, check the hydrations list.
 		const proto = getPrototype(value);
 		for (const [$type, hydration] of getProps(hydrations))
-			if (proto === hydration.prototype) return { $type, $value: mapObject(value, dehydrate, hydrations) };
+			if (proto === hydration.prototype) return { $type, $value: mapProps(value, _dehydrateProp, hydrations) };
 		throw new ValueError("Cannot dehydrate object", { received: value, caller: dehydrate });
 	}
 	return value;
+}
+function _dehydrateProp([, v]: Entry, hydrations: Hydrations): unknown {
+	return dehydrate(v, hydrations);
 }
