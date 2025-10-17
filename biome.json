@@ -1,11 +1,9 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"files": {
-		"ignore": ["node_modules", "dist", ".git", "package-lock.json"]
+		"includes": ["**", "!**/node_modules", "!**/dist", "!**/.git", "!**/package-lock.json"]
 	},
-	"organizeImports": {
-		"enabled": true
-	},
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"formatter": {
 		"formatWithErrors": true,
 		"lineWidth": 140
@@ -17,14 +15,16 @@
 			"correctness": {
 				"noConstantMathMinMaxClamp": "error",
 				"noUndeclaredVariables": "error",
-				"noUnusedImports": "error",
+				"noUnusedImports": {
+					"level": "error",
+					"fix": "safe"
+				},
 				"useHookAtTopLevel": "error",
 				"noUnknownFunction": "error",
 				"noUnknownUnit": "error"
 			},
 			"style": {
 				"noNamespace": "error",
-				"noNamespaceImport": "error",
 				"noShoutyConstants": "error",
 				"useCollapsedElseIf": "error",
 				"useForOf": "error",
@@ -32,14 +32,17 @@
 				"useConsistentBuiltinInstantiation": "error"
 			},
 			"suspicious": {
-				"noConsoleLog": "error",
 				"noEmptyBlockStatements": "error",
 				"noSkippedTests": "error",
 				"useAwait": "error",
-				"noEmptyBlock": "error"
+				"noEmptyBlock": "error",
+				"noConsole": { "level": "error", "options": { "allow": ["log"] } }
 			},
 			"a11y": {
 				"useGenericFontNames": "error"
+			},
+			"performance": {
+				"noNamespaceImport": "error"
 			}
 		}
 	},
@@ -51,7 +54,7 @@
 	},
 	"overrides": [
 		{
-			"include": ["*.test.ts"],
+			"includes": ["**/*.test.ts"],
 			"linter": {
 				"rules": {
 					"style": {
