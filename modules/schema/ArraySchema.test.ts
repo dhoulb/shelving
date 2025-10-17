@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Validator } from "../index.js";
+import type { Schema } from "../index.js";
 import { ARRAY, ArraySchema, DATA, Feedback, NUMBER, STRING, ValueFeedback } from "../index.js";
 
 // Vars.
@@ -14,12 +14,12 @@ test("TypeScript", () => {
 	const requiredSchema = ARRAY(NUMBER);
 	const requiredType: ArraySchema<number> = requiredSchema;
 	const requiredValue: ReadonlyArray<number> = requiredSchema.validate([123]);
-	const requiredItemsSchema: Validator<number> = requiredSchema.items;
+	const requiredItemsSchema: Schema<number> = requiredSchema.items;
 
 	const arrayRequiredSchema = new ArraySchema({ items: STRING });
 	const arrayRequiredType: ArraySchema<string> = arrayRequiredSchema;
 	const arrayRequiredv4: ReadonlyArray<string> = arrayRequiredSchema.validate([123]);
-	const arrayRequiredItemsSchema: Validator<string> = arrayRequiredSchema.items;
+	const arrayRequiredItemsSchema: Schema<string> = arrayRequiredSchema.items;
 });
 test("constructor()", () => {
 	const items = STRING;

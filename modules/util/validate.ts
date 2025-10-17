@@ -10,11 +10,8 @@ import type { ImmutableDictionary, MutableDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
 import { getNamedMessage } from "./error.js";
 import type { AnyCaller } from "./function.js";
-import { PASSTHROUGH } from "./function.js";
 import { isIterable } from "./iterate.js";
-import { getNull } from "./null.js";
 import type { DeepPartial, MutableObject } from "./object.js";
-import { getUndefined } from "./undefined.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validator<T> {
@@ -170,12 +167,3 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 		isDeeplyPartial = false;
 	}
 }
-
-// Undefined validator always returns `undefined`
-export const UNDEFINED: Validator<undefined> = { validate: getUndefined };
-
-// Null validator always returns `null`
-export const NULL: Validator<null> = { validate: getNull };
-
-// Unknown validator always passes through its input value as `unknown`
-export const UNKNOWN: Validator<unknown> = { validate: PASSTHROUGH };

@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import type { Validator } from "../index.js";
 import {
 	BOOLEAN,
 	DATA,
@@ -11,6 +10,7 @@ import {
 	PARTIAL,
 	POSITIVE_INTEGER,
 	STRING,
+	type Schema,
 	StringSchema,
 	ValueFeedback,
 } from "../index.js";
@@ -22,7 +22,7 @@ test("TypeScript", () => {
 	const requiredValue1: { num: number } = requiredSchema.validate({ num: 123 });
 	const requiredValue2: { readonly num: number } = requiredSchema.validate({ num: 123 });
 	const requiredPropSchema = requiredSchema.props.num;
-	const requiredPropType: Validator<number> = requiredPropSchema;
+	const requiredPropType: Schema<number> = requiredPropSchema;
 
 	const objectRequiredSchema = new DataSchema({ props: { num: NUMBER } });
 	const objectRequiredType: DataSchema<{ num: number }> = objectRequiredSchema;

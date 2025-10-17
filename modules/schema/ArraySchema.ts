@@ -1,7 +1,6 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
 import type { ImmutableArray } from "../util/array.js";
 import { getUniqueArray, isArray } from "../util/array.js";
-import type { Validator } from "../util/validate.js";
 import { validateArray } from "../util/validate.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
@@ -9,7 +8,7 @@ import { Schema } from "./Schema.js";
 /** Allowed options for `ArraySchema` */
 export interface ArraySchemaOptions<T> extends SchemaOptions {
 	readonly value?: ImmutableArray;
-	readonly items: Validator<T>;
+	readonly items: Schema<T>;
 	readonly min?: number;
 	readonly max?: number;
 	readonly unique?: boolean;
@@ -44,7 +43,7 @@ export interface ArraySchemaOptions<T> extends SchemaOptions {
  */
 export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	declare readonly value: ImmutableArray;
-	readonly items: Validator<T>;
+	readonly items: Schema<T>;
 	readonly unique: boolean;
 	readonly min: number;
 	readonly max: number;
@@ -74,4 +73,4 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 }
 
 /** Valid array with specifed items. */
-export const ARRAY = <T>(items: Validator<T>): ArraySchema<T> => new ArraySchema({ items });
+export const ARRAY = <T>(items: Schema<T>): ArraySchema<T> => new ArraySchema({ items });

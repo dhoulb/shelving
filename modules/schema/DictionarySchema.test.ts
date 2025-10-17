@@ -7,7 +7,7 @@ import {
 	type ImmutableDictionary,
 	NUMBER,
 	STRING,
-	type Validator,
+	type Schema,
 	ValueFeedback,
 } from "../index.js";
 
@@ -17,7 +17,7 @@ test("TypeScript", () => {
 	const requiredType: DictionarySchema<number> = requiredSchema;
 	const requiredValue: Record<string, number> = requiredSchema.validate({ a: 1 });
 	const requiredItemsSchema = requiredSchema.items;
-	const requiredItemsType: Validator<number> = requiredItemsSchema;
+	const requiredItemsType: Schema<number> = requiredItemsSchema;
 
 	const objSchema = new DictionarySchema({ items: NUMBER });
 	const objType: DictionarySchema<number> = objSchema;
