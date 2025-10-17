@@ -23,9 +23,9 @@ type UnitProps<T extends string> = {
 	/** Short abbreviation for this unit, e.g. `km` (defaults to first letter of `id`). */
 	readonly abbr?: string;
 	/** Singular name for this unit, e.g. `kilometer` (defaults to `id` + "s"). */
-	readonly singular?: string;
+	readonly one?: string;
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `id`). */
-	readonly plural?: string;
+	readonly many?: string;
 	/** Conversions to other units (typically needs at least the base conversion, unless it's already the base unit). */
 	readonly to?: Conversions<T>;
 	/** Possible options for formatting these units with `Intl.NumberFormat` (`.unit` can be specified if different from key, but is not required). */
@@ -43,15 +43,15 @@ export class Unit<K extends string> {
 	/** Short abbreviation for this unit, e.g. `km` (defaults to first letter of `id`). */
 	public readonly abbr: string;
 	/** Singular name for this unit, e.g. `kilometer` (defaults to `id`). */
-	public readonly singular: string;
+	public readonly one: string;
 	/** Plural name for this unit, e.g. `kilometers` (defaults to `singular` + "s"). */
-	public readonly plural: string;
+	public readonly many: string;
 	/** Possible options for formatting these units with `Intl.NumberFormat` (`.unit` can be specified if different from key, but is not required). */
 	public readonly options: Readonly<Intl.NumberFormatOptions> | undefined;
 
 	/** Title for this unit (uses format `abbr (plural)`, e.g. `fl oz (US fluid ounces)`) */
 	get title(): string {
-		return `${this.abbr} (${this.plural})`;
+		return `${this.abbr} (${this.many})`;
 	}
 
 	constructor(
@@ -60,13 +60,13 @@ export class Unit<K extends string> {
 		/** String key for this unit, e.g. `kilometer` */
 		key: K,
 		/** Props to configure this unit. */
-		{ abbr = key.slice(0, 1), singular = key.replace(/-/, " "), plural = `${singular}s`, options, to }: UnitProps<K>,
+		{ abbr = key.slice(0, 1), one = key.replace(/-/, " "), many = `${one}s`, options, to }: UnitProps<K>,
 	) {
 		this.list = list;
 		this.key = key;
 		this.abbr = abbr;
-		this.singular = singular;
-		this.plural = plural;
+		this.one = one;
+		this.many = many;
 		this.options = options;
 		this._to = to;
 	}
@@ -122,7 +122,7 @@ export class Unit<K extends string> {
 		// Otherwise, use the default number format.
 		// If unitDisplay is "long" use the singular/plural form.
 		const o: Intl.NumberFormatOptions = { style: "decimal", unitDisplay: "short", ...this.options, ...options };
-		return o.unitDisplay === "long" ? pluralizeQuantity(amount, this.singular, this.plural, o) : formatQuantity(amount, this.abbr, o);
+		return o.unitDisplay === "long" ? pluralizeQuantity(amount, this.one, this.many, o) : formatQuantity(amount, this.abbr, o);
 	}
 }
 
@@ -195,7 +195,7 @@ const IMP_ML_PER_GAL = 4546090 / 1000;
 
 /** Percentage units. */
 export const PERCENT_UNITS = new UnitList({
-	percent: { abbr: "%", plural: "percent" },
+	percent: { abbr: "%", many: "percent" },
 });
 export type PercentUnitKey = MapKey<typeof PERCENT_UNITS>;
 
@@ -223,7 +223,7 @@ export const MASS_UNITS = new UnitList({
 	// Imperial.
 	ounce: { abbr: "oz", to: { milligram: MG_PER_LB / OZ_PER_LB } },
 	pound: { abbr: "lb", to: { milligram: MG_PER_LB, ounce: OZ_PER_LB } },
-	stone: { abbr: "st", plural: "stone", to: { milligram: MG_PER_LB * LB_PER_ST, pound: LB_PER_ST, ounce: OZ_PER_LB * LB_PER_ST } },
+	stone: { abbr: "st", many: "stone", to: { milligram: MG_PER_LB * LB_PER_ST, pound: LB_PER_ST, ounce: OZ_PER_LB * LB_PER_ST } },
 });
 export type MassUnitKey = MapKey<typeof MASS_UNITS>;
 
@@ -253,8 +253,8 @@ export const LENGTH_UNITS = new UnitList({
 	meter: { to: { millimeter: MM_PER_M } },
 	kilometer: { abbr: "km", to: { millimeter: MM_PER_KM } },
 	// Imperial.
-	inch: { abbr: "in", plural: "inches", to: { millimeter: MM_PER_IN } },
-	foot: { abbr: "ft", plural: "feet", to: { millimeter: IN_PER_FT * MM_PER_IN, inch: IN_PER_FT } },
+	inch: { abbr: "in", many: "inches", to: { millimeter: MM_PER_IN } },
+	foot: { abbr: "ft", many: "feet", to: { millimeter: IN_PER_FT * MM_PER_IN, inch: IN_PER_FT } },
 	yard: { abbr: "yd", to: { millimeter: IN_PER_YD * MM_PER_IN, inch: IN_PER_YD, foot: FT_PER_YD } },
 	furlong: { abbr: "fur", to: { millimeter: IN_PER_YD * MM_PER_IN * YD_PER_FUR, foot: YD_PER_FUR * FT_PER_YD, yard: YD_PER_FUR } },
 	mile: { abbr: "mi", to: { millimeter: MM_PER_MI, yard: YD_PER_MI, foot: FT_PER_MI, inch: IN_PER_MI } },
@@ -264,15 +264,15 @@ export type LengthUnitKey = MapKey<typeof LENGTH_UNITS>;
 /** Speed units. */
 export const SPEED_UNITS = new UnitList({
 	// Metric.
-	"meter-per-second": { abbr: "m/s", singular: "meter per second", plural: "meters per second", to: { "kilometer-per-hour": 3.6 } },
+	"meter-per-second": { abbr: "m/s", one: "meter per second", many: "meters per second", to: { "kilometer-per-hour": 3.6 } },
 	"kilometer-per-hour": {
 		abbr: "kph",
-		singular: "kilometer per hour",
-		plural: "kilometers per hour",
+		one: "kilometer per hour",
+		many: "kilometers per hour",
 		to: { "meter-per-second": MM_PER_KM / HOUR },
 	},
 	// Imperial.
-	"mile-per-hour": { abbr: "mph", singular: "mile per hour", plural: "miles per hour", to: { "meter-per-second": MM_PER_MI / HOUR } },
+	"mile-per-hour": { abbr: "mph", one: "mile per hour", many: "miles per hour", to: { "meter-per-second": MM_PER_MI / HOUR } },
 });
 export type SpeedUnitKey = MapKey<typeof SPEED_UNITS>;
 
@@ -285,10 +285,10 @@ export const AREA_UNITS = new UnitList({
 	"square-kilometer": { abbr: "km²", to: { "square-millimeter": MM_PER_KM ** 2 } },
 	hectare: { abbr: "ha", to: { "square-millimeter": (MM_PER_M * 100) ** 2 } },
 	// Imperial.
-	"square-inch": { abbr: "in²", plural: "square inches", to: { "square-millimeter": MM2_PER_IN2 } },
+	"square-inch": { abbr: "in²", many: "square inches", to: { "square-millimeter": MM2_PER_IN2 } },
 	"square-foot": {
 		abbr: "ft²",
-		plural: "square feet",
+		many: "square feet",
 		to: { "square-millimeter": IN_PER_FT ** 2 * MM2_PER_IN2, "square-inch": IN_PER_FT ** 2 },
 	},
 	"square-yard": {
@@ -312,19 +312,19 @@ export const VOLUME_UNITS = new UnitList({
 	// US.
 	"us-fluid-ounce": {
 		abbr: `fl${NNBSP}oz`,
-		singular: "US fluid ounce",
-		plural: "US fluid ounces",
+		one: "US fluid ounce",
+		many: "US fluid ounces",
 		to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 128 },
 	},
-	"us-pint": { abbr: "pt", singular: "US pint", to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 8, "us-fluid-ounce": 16 } },
+	"us-pint": { abbr: "pt", one: "US pint", to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 8, "us-fluid-ounce": 16 } },
 	"us-quart": {
 		abbr: "qt",
-		singular: "US quart",
+		one: "US quart",
 		to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 4, "us-pint": 2, "us-fluid-ounce": 32 },
 	},
 	"us-gallon": {
 		abbr: "gal",
-		singular: "US gallon",
+		one: "US gallon",
 		to: { milliliter: US_IN3_PER_GAL * ML_PER_IN3, "us-quart": 4, "us-pint": 8, "us-fluid-ounce": 128 },
 	},
 	// Imperial.
@@ -335,8 +335,8 @@ export const VOLUME_UNITS = new UnitList({
 		abbr: "gal",
 		to: { milliliter: IMP_ML_PER_GAL, "imperial-quart": 4, "imperial-pint": 8, "imperial-fluid-ounce": 160 },
 	},
-	"cubic-inch": { abbr: "in³", plural: "cubic inches", to: { milliliter: ML_PER_IN3 } },
-	"cubic-foot": { abbr: "ft³", plural: "cubic feet", to: { milliliter: IN_PER_FT ** 3 * ML_PER_IN3, "cubic-inch": IN_PER_FT ** 3 } },
+	"cubic-inch": { abbr: "in³", many: "cubic inches", to: { milliliter: ML_PER_IN3 } },
+	"cubic-foot": { abbr: "ft³", many: "cubic feet", to: { milliliter: IN_PER_FT ** 3 * ML_PER_IN3, "cubic-inch": IN_PER_FT ** 3 } },
 	"cubic-yard": {
 		abbr: "yd³",
 		to: { milliliter: IN_PER_YD ** 3 * ML_PER_IN3, "cubic-foot": FT_PER_YD ** 3, "cubic-inch": IN_PER_YD ** 3 },
@@ -348,11 +348,11 @@ export type VolumeUnitKey = MapKey<typeof VOLUME_UNITS>;
 export const TEMPERATURE_UNITS = new UnitList({
 	celsius: {
 		abbr: "°C",
-		singular: "degree Celsius",
-		plural: "degrees Celsius",
+		one: "degree Celsius",
+		many: "degrees Celsius",
 		to: { fahrenheit: n => n * (9 / 5) + 32, kelvin: n => n + 273.15 },
 	},
-	fahrenheit: { abbr: "°F", singular: "degree Fahrenheit", plural: "degrees Fahrenheit", to: { celsius: n => (n - 32) * (5 / 9) } },
-	kelvin: { abbr: "°K", singular: "degree Kelvin", plural: "degrees Kelvin", to: { celsius: n => n - 273.15 } },
+	fahrenheit: { abbr: "°F", one: "degree Fahrenheit", many: "degrees Fahrenheit", to: { celsius: n => (n - 32) * (5 / 9) } },
+	kelvin: { abbr: "°K", one: "degree Kelvin", many: "degrees Kelvin", to: { celsius: n => n - 273.15 } },
 });
 export type TemperatureUnitKey = MapKey<typeof TEMPERATURE_UNITS>;

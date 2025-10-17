@@ -25,12 +25,12 @@ export function formatNumber(num: number, options?: Intl.NumberFormatOptions): s
 }
 
 /** Format a number with a longer full-word suffix. */
-export function pluralizeQuantity(num: number, singular: string, plural: string, options?: Intl.NumberFormatOptions): string {
+export function pluralizeQuantity(num: number, one: string, many: string, options?: Intl.NumberFormatOptions): string {
 	const qty = formatNumber(num, {
 		...options,
 		style: "decimal",
 	});
-	return `${qty}${NNBSP}${num === 1 ? singular : plural}`;
+	return `${qty}${NNBSP}${num === 1 ? one : many}`;
 }
 
 /**
