@@ -1,5 +1,5 @@
 import type { MutableArray } from "../util/array.js";
-import type { DataKey, Database } from "../util/data.js";
+import type { Database, DataKey } from "../util/data.js";
 import type { Identifier } from "../util/item.js";
 import type { ItemQuery } from "../util/query.js";
 import type { Updates } from "../util/update.js";

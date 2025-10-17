@@ -9,8 +9,8 @@ import {
 	NUMBER,
 	PARTIAL,
 	POSITIVE_INTEGER,
-	STRING,
 	type Schema,
+	STRING,
 	StringSchema,
 	ValueFeedback,
 } from "../index.js";

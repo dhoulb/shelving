@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { RequestError, getRequestContent, getResponseContent } from "../index.js";
+import { getRequestContent, getResponseContent, RequestError } from "../index.js";
 
 function mockRequest(body: string, contentType?: string): Request {
 	return new Request("http://x.com/", {

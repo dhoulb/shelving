@@ -14,7 +14,7 @@ const SEPARATOR_REGEXP = getLineRegExp("([-*•+_=])(?: *\\1){2,}");
 
 export const SEPARATOR_RULE = getMarkupRule(
 	SEPARATOR_REGEXP,
-	(match, options, key) => ({
+	(_match, _options, key) => ({
 		key,
 		$$typeof: REACT_ELEMENT_TYPE,
 		type: "hr",

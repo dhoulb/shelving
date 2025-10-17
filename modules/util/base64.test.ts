@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import {
-	ValueError,
 	decodeBase64Bytes,
 	decodeBase64String,
 	decodeBase64URLBytes,
 	decodeBase64URLString,
 	encodeBase64,
 	encodeBase64URL,
+	ValueError,
 } from "../index.js";
 
 describe("encodeBase64()", () => {

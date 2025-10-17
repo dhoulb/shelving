@@ -1,6 +1,5 @@
 import type { ImmutableArray } from "./array.js";
-import { isArray, limitArray } from "./array.js";
-import { requireLast } from "./array.js";
+import { isArray, limitArray, requireLast } from "./array.js";
 import type { Data, DataProp, LeafData, LeafKey } from "./data.js";
 import { getDataProp } from "./data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";

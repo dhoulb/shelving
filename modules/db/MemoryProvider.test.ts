@@ -2,8 +2,6 @@ import { expect, test } from "bun:test";
 import { type ImmutableArray, type Item, MemoryProvider, type OptionalItem, runMicrotasks, runSequence } from "../index.js";
 import {
 	type BasicData,
-	type PersonData,
-	type TestCollections,
 	basic1,
 	basic2,
 	basic3,
@@ -16,12 +14,14 @@ import {
 	basics,
 	expectOrderedItems,
 	expectUnorderedItems,
+	type PersonData,
 	people,
 	person1,
 	person2,
 	person3,
 	person4,
 	person5,
+	type TestCollections,
 } from "../test/index.js";
 
 test("MemoryProvider: set/get/delete documents", () => {

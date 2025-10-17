@@ -1,5 +1,5 @@
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
-import { BLOCK_CONTENT_REGEXP, BLOCK_START_REGEXP, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP, getBlockRegExp } from "../util/regexp.js";
+import { BLOCK_CONTENT_REGEXP, BLOCK_START_REGEXP, getBlockRegExp, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP } from "../util/regexp.js";
 import { getMarkupRule } from "../util/rule.js";
 
 const FENCE = "`{3,}|~{3,}";
@@ -27,7 +27,7 @@ const FENCED_REGEXP = getBlockRegExp<{
  */
 export const FENCED_RULE = getMarkupRule(
 	FENCED_REGEXP,
-	({ groups: { title, code } }, options, key) => ({
+	({ groups: { title, code } }, _options, key) => ({
 		key,
 		$$typeof: REACT_ELEMENT_TYPE,
 		type: "pre",

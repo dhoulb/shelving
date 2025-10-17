@@ -1,7 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
-import { countArray } from "../util/array.js";
-import { getFirst } from "../util/array.js";
-import type { DataKey, Database } from "../util/data.js";
+import { countArray, getFirst } from "../util/array.js";
+import type { Database, DataKey } from "../util/data.js";
 import type { Identifier, Item, Items, OptionalItem } from "../util/item.js";
 import type { ItemQuery } from "../util/query.js";
 import type { Updates } from "../util/update.js";

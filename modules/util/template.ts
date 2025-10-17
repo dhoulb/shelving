@@ -4,8 +4,8 @@ import type { ImmutableArray } from "./array.js";
 import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
 import type { AnyCaller } from "./function.js";
 import { setMapItem } from "./map.js";
-import { type Mutable, isObject } from "./object.js";
-import { type NotString, type PossibleString, getString } from "./string.js";
+import { isObject, type Mutable } from "./object.js";
+import { getString, type NotString, type PossibleString } from "./string.js";
 
 /** Single template chunk. */
 type TemplateChunk = {

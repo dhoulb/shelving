@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { type Data, SAME, deepDiff, deepDiffArray, deepDiffObject } from "../index.js";
+import { type Data, deepDiff, deepDiffArray, deepDiffObject, SAME } from "../index.js";
 
 const arrFlat: readonly unknown[] = [1, "b", true, false, null];
 const arrFlatSame: readonly unknown[] = [1, "b", true, false, null];

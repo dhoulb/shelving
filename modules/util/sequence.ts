@@ -1,7 +1,6 @@
 import { getDeferred, getDelay } from "./async.js";
-import type { AsyncValueCallback, ValueCallback } from "./callback.js";
+import type { AsyncValueCallback, ErrorCallback, ValueCallback } from "./callback.js";
 import { call, callMethod } from "./callback.js";
-import type { ErrorCallback } from "./callback.js";
 import { STOP } from "./constants.js";
 import type { StopCallback } from "./start.js";
 

@@ -4,7 +4,7 @@ import { BaseError, ValueError } from "../index.js";
 describe("BaseError", () => {
 	test("caller argument works correctly in BaseError", () => {
 		function myFunctionA() {
-			// @ts-ignore: We want to directly test BaseError
+			// @ts-expect-error: We want to directly test BaseError
 			throw new BaseError("abc", { caller: myFunctionA });
 		}
 		function myFunctionB() {

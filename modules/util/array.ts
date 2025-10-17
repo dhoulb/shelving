@@ -34,7 +34,7 @@ export function isArray<T>(arr: ImmutableArray<T>, min: 3, max: 3): arr is reado
 export function isArray<T>(arr: ImmutableArray<T>, min?: 1, max?: number): arr is readonly [T, ...T[]];
 export function isArray<T>(arr: ImmutableArray<T>, min: 2, max?: number): arr is readonly [T, T, ...T[]];
 export function isArray<T>(arr: ImmutableArray<T>, min: 3, max?: number): arr is readonly [T, T, T, ...T[]];
-export function isArray<T>(value: unknown, min?: number, max?: number): value is ImmutableArray;
+export function isArray<T>(value: unknown, min?: number, max?: number): value is ImmutableArray<T>;
 export function isArray(value: unknown, min = 0, max = Number.POSITIVE_INFINITY): boolean {
 	return Array.isArray(value) && value.length >= min && value.length <= max;
 }
@@ -54,7 +54,7 @@ export function assertArray<T>(arr: ImmutableArray<T>, min?: 1, max?: number, ca
 export function assertArray<T>(arr: ImmutableArray<T>, min: 2, max?: number, caller?: AnyCaller): asserts arr is readonly [T, T, ...T[]];
 export function assertArray<T>(arr: ImmutableArray<T>, min: 3, max?: number, caller?: AnyCaller): asserts arr is readonly [T, T, T, ...T[]];
 export function assertArray<T>(value: unknown, min?: number, max?: number, caller?: AnyCaller): asserts value is ImmutableArray<T>;
-export function assertArray<T>(value: unknown, min?: number, max?: number, caller: AnyCaller = assertArray): void {
+export function assertArray(value: unknown, min?: number, max?: number, caller: AnyCaller = assertArray): void {
 	if (!isArray(value, min, max))
 		throw new RequiredError(`Must be array${min !== undefined || max !== undefined ? ` with ${min ?? 0} to ${max ?? "∞"} items` : ""}`, {
 			received: value,

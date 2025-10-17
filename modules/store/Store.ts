@@ -1,7 +1,7 @@
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { NONE } from "../util/constants.js";
 import { isDeepEqual } from "../util/equal.js";
-import { type PossibleStarter, type Starter, getStarter } from "../util/start.js";
+import { getStarter, type PossibleStarter, type Starter } from "../util/start.js";
 
 /** Any `Store` instance. */
 // biome-ignore lint/suspicious/noExplicitAny: `unknown` causes edge case matching issues.

@@ -3,7 +3,7 @@ import { BooleanStore } from "../store/BooleanStore.js";
 import { OptionalDataStore } from "../store/DataStore.js";
 import { getGetter } from "../util/class.js";
 import { NONE } from "../util/constants.js";
-import type { DataKey, Database } from "../util/data.js";
+import type { Database, DataKey } from "../util/data.js";
 import type { Identifier, Item } from "../util/item.js";
 import { getItem } from "../util/item.js";
 import { runSequence } from "../util/sequence.js";

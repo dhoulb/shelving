@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { NONE, Store, runMicrotasks, runSequence } from "../index.js";
+import { NONE, runMicrotasks, runSequence, Store } from "../index.js";
 import { EXPECT_PROMISELIKE } from "../test/util.js";
 
 test("No initial value", async () => {

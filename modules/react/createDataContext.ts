@@ -3,7 +3,7 @@ import { CacheProvider } from "../db/CacheProvider.js";
 import { ItemStore } from "../db/ItemStore.js";
 import type { AbstractProvider } from "../db/Provider.js";
 import { QueryStore } from "../db/QueryStore.js";
-import type { DataKey, Database } from "../util/data.js";
+import type { Database, DataKey } from "../util/data.js";
 import type { Identifier } from "../util/item.js";
 import { setMapItem } from "../util/map.js";
 import type { Nullish } from "../util/null.js";

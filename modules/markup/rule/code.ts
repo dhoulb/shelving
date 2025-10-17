@@ -14,7 +14,7 @@ const CODE_REGEXP = getRegExp<{ code: string }>(`(?<fence>\`+)(?<code>${BLOCK_CO
  */
 export const CODE_RULE = getMarkupRule(
 	CODE_REGEXP,
-	({ groups: { code } }, options, key) => ({
+	({ groups: { code } }, _options, key) => ({
 		key,
 		$$typeof: REACT_ELEMENT_TYPE,
 		type: "code",

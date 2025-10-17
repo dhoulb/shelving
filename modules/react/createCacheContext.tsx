@@ -1,4 +1,4 @@
-import { type ReactElement, type ReactNode, createContext, useContext } from "react";
+import { createContext, type ReactElement, type ReactNode, useContext } from "react";
 import { UnexpectedError } from "../error/UnexpectedError.js";
 import { useMap } from "./useMap.js";
 

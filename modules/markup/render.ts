@@ -33,8 +33,8 @@ function* _parseString(
 ): Iterable<JSXElement | string> {
 	// The best matched rule is the one with the highest priority.
 	// If two have equal priority use the earliest match in the string.
-	let bestMatch: RegExpExecArray | undefined = undefined;
-	let bestRule: MarkupRule | undefined = undefined;
+	let bestMatch: RegExpExecArray | undefined;
+	let bestRule: MarkupRule | undefined;
 
 	// Loop through all rules in the list and see if any match.
 	for (const rule of options.rules) {

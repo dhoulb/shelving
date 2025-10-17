@@ -48,7 +48,9 @@ export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> 
 
 	/** Fulfill the current deferred by resolving or rejecting it. */
 	private _fulfill() {
-		const { _deferred, _nextReason, _nextValue } = this;
+		const _deferred = this._deferred;
+		const _nextReason = this._nextReason;
+		const _nextValue = this._nextValue;
 		this._nextReason = _NOVALUE;
 		this._nextValue = _NOVALUE;
 		if (_deferred) {

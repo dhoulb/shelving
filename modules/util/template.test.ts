@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import {
-	RequiredError,
-	type TemplateMatches,
-	ValueError,
 	getPlaceholders,
 	matchTemplate,
 	matchTemplates,
+	RequiredError,
 	renderTemplate,
+	type TemplateMatches,
+	ValueError,
 } from "../index.js";
 
 // Tests.

@@ -1,6 +1,6 @@
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { getArray } from "../util/array.js";
-import type { Data, DataKey, Database } from "../util/data.js";
+import type { Data, Database, DataKey } from "../util/data.js";
 import { isArrayEqual } from "../util/equal.js";
 import type { Identifier, Item, Items, OptionalItem } from "../util/item.js";
 import { getItem } from "../util/item.js";

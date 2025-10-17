@@ -1,4 +1,4 @@
-import type { DataKey, Database } from "../util/data.js";
+import type { Database, DataKey } from "../util/data.js";
 import type { Identifier, Items, OptionalItem } from "../util/item.js";
 import type { ItemQuery } from "../util/query.js";
 import type { Sourceable } from "../util/source.js";

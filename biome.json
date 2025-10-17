@@ -36,7 +36,10 @@
 				"noSkippedTests": "error",
 				"useAwait": "error",
 				"noEmptyBlock": "error",
-				"noConsole": { "level": "error", "options": { "allow": ["log"] } }
+				"noConsole": {
+					"level": "error",
+					"options": { "allow": ["debug", "warn", "error"] }
+				}
 			},
 			"a11y": {
 				"useGenericFontNames": "error"
@@ -60,7 +63,11 @@
 					"style": {
 						"noNonNullAssertion": "off"
 					},
+					"correctness": {
+						"noUnusedVariables": "off"
+					},
 					"suspicious": {
+						"noTemplateCurlyInString": "off",
 						"noEmptyBlockStatements": "off",
 						"noExplicitAny": "off"
 					}

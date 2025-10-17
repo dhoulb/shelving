@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { Color, RequiredError, getColor, requireColor } from "../index.js";
+import { Color, getColor, RequiredError, requireColor } from "../index.js";
 
 test("toColor(): colors", () => {
 	expect(getColor("#fff")).toBeInstanceOf(Color);

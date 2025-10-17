@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { MutableArray } from "../index.js";
-import { STOP, getDeferred, repeatDelay, repeatUntil, runSequence } from "../index.js";
+import { getDeferred, repeatDelay, repeatUntil, runSequence, STOP } from "../index.js";
 
 const DELAY = 50;
 

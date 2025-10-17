@@ -174,7 +174,7 @@ export function sumNumbers(nums: Iterable<number>): number {
 
 /** Find the number that's closest to a target in an iterable set of numbers. */
 export function getClosestNumber<T extends number>(nums: Iterable<T>, target: number): T | undefined {
-	let closest: T | undefined = undefined;
+	let closest: T | undefined;
 	for (const item of nums) if (closest === undefined || Math.abs(item - target) < Math.abs(closest - target)) closest = item;
 	return closest;
 }

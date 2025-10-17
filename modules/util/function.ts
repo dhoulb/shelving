@@ -31,6 +31,6 @@ export function PASSTHROUGH<T>(value: T): T {
 
 /** Function that does nothing with its arguments and always returns void. */
 // biome-ignore lint/suspicious/noConfusingVoidType: Allow `BLACKHOLE` to be used in places that allow `void`
-export function BLACKHOLE(...unused: Arguments): void | undefined {
+export function BLACKHOLE(..._unused: Arguments): void | undefined {
 	return undefined;
 }

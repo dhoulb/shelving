@@ -1,7 +1,7 @@
 import { formatURL } from "../../util/format.js";
 import type { JSXElement } from "../../util/jsx.js";
 import { getLink } from "../../util/link.js";
-import { type NamedRegExpExecArray, getRegExp } from "../../util/regexp.js";
+import { getRegExp, type NamedRegExpExecArray } from "../../util/regexp.js";
 import { getURL } from "../../util/url.js";
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";

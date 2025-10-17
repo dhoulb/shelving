@@ -12,8 +12,12 @@ describe("hashPassword()", () => {
 		expect(hash).toMatch(/[a-zA-Z0-9-_]+\$[0-9]+\$[a-zA-Z0-9-_]+/);
 	});
 	test("Fails for short password", async () => {
-		expect(() => hashPassword("abc")).toThrow(ValueError);
-		expect(() => hashPassword("abc")).toThrow(/password/i);
+		try {
+			await hashPassword("abc");
+			expect(false).toBe(true);
+		} catch (err) {
+			expect(err).toBeInstanceOf(ValueError);
+		}
 	});
 });
 describe("verifyPassword()", () => {

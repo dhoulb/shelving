@@ -1,6 +1,6 @@
 import { isArrayEqual } from "../util/equal.js";
 import type { Arguments } from "../util/function.js";
-import { type Lazy, getLazy } from "../util/lazy.js";
+import { getLazy, type Lazy } from "../util/lazy.js";
 import { useProps } from "./useProps.js";
 
 /**

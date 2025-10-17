@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, INTEGER, NotFoundError, STRING, handleEndpoints, requireNotNullish } from "../index.js";
+import { DATA, GET, handleEndpoints, INTEGER, NotFoundError, requireNotNullish, STRING } from "../index.js";
 
 const PAYLOAD = DATA({ id: INTEGER });
 

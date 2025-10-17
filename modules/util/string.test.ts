@@ -1,19 +1,19 @@
 import { describe, expect, test } from "bun:test";
 import {
-	NBSP,
-	NNBSP,
-	RequiredError,
-	THINSP,
-	ValueError,
 	assertString,
 	getWords,
 	isStringBetween,
+	NBSP,
+	NNBSP,
+	RequiredError,
 	requireSlug,
 	requireString,
 	sanitizeMultilineText,
 	sanitizeText,
 	simplifyString,
 	splitString,
+	THINSP,
+	ValueError,
 } from "../index.js";
 
 test("assertString()", () => {

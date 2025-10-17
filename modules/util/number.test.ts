@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ValueError, boundNumber, getNumber, getRange, roundNumber, roundStep, sumNumbers, truncateNumber, wrapNumber } from "../index.js";
+import { boundNumber, getNumber, getRange, roundNumber, roundStep, sumNumbers, truncateNumber, ValueError, wrapNumber } from "../index.js";
 
 test("roundNumber(): Works correctly", () => {
 	expect(roundNumber(123.456, 0)).toBe(123);

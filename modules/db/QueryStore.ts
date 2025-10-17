@@ -3,7 +3,7 @@ import { ArrayStore } from "../store/ArrayStore.js";
 import { BooleanStore } from "../store/BooleanStore.js";
 import { getGetter } from "../util/class.js";
 import { NONE } from "../util/constants.js";
-import type { DataKey, Database } from "../util/data.js";
+import type { Database, DataKey } from "../util/data.js";
 import type { Identifier, Item } from "../util/item.js";
 import type { ItemQuery } from "../util/query.js";
 import { getAfterQuery, getLimit } from "../util/query.js";

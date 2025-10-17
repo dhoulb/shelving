@@ -31,7 +31,7 @@ import {
 } from "firebase/firestore";
 import { AsyncProvider } from "../../db/Provider.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
-import type { Data, DataKey, DataProp, Database } from "../../util/data.js";
+import type { Data, Database, DataKey, DataProp } from "../../util/data.js";
 import type { Item, Items, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";

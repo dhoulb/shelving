@@ -13,7 +13,7 @@ import { getMarkupRule } from "../util/rule.js";
  */
 export const LINEBREAK_RULE = getMarkupRule(
 	/[^\n\S]*\n[^\n\S]*/,
-	(match, options, key) => ({
+	(_match, _options, key) => ({
 		key,
 		$$typeof: REACT_ELEMENT_TYPE,
 		type: "br",

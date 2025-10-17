@@ -6,8 +6,8 @@ import {
 	Feedback,
 	type ImmutableDictionary,
 	NUMBER,
-	STRING,
 	type Schema,
+	STRING,
 	ValueFeedback,
 } from "../index.js";
 

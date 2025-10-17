@@ -1,6 +1,6 @@
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
-import { LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP, getLineRegExp } from "../util/regexp.js";
+import { getLineRegExp, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP } from "../util/regexp.js";
 import { getMarkupRule } from "../util/rule.js";
 
 const HEADING_REGEXP = getLineRegExp<{

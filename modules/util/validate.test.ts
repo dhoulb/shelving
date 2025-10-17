@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import {
 	Feedback,
+	getValid,
 	NUMBER,
 	STRING,
 	StringSchema,
 	ValueError,
 	ValueFeedback,
-	getValid,
 	validateArray,
 	validateData,
 	validateDictionary,

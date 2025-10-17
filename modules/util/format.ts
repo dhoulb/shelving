@@ -1,6 +1,6 @@
 import { type ImmutableArray, isArray } from "./array.js";
 import { NNBSP } from "./constants.js";
-import { type PossibleDate, isDate, requireDate } from "./date.js";
+import { isDate, type PossibleDate, requireDate } from "./date.js";
 import { getPercent } from "./number.js";
 import { type ImmutableObject, isObject } from "./object.js";
 import { type PossibleURL, requireURL } from "./url.js";

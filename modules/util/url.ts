@@ -20,7 +20,7 @@ export function getURL(possible: Nullish<PossibleURL>, base: PossibleURL | undef
 	if (notNullish(possible)) {
 		try {
 			return isURL(possible) ? possible : new URL(possible, base);
-		} catch (e) {
+		} catch (_e) {
 			//
 		}
 	}

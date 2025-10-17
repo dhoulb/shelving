@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { PossibleDate } from "../index.js";
-import { DAY, HOUR, YEAR, getDate, getDateString, requireDateString } from "../index.js";
+import { DAY, getDate, getDateString, HOUR, requireDateString, YEAR } from "../index.js";
 import { formatWhen, getMillisecondsUntil, requireTimeString } from "./date.js";
 
 describe("getDate()", () => {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { FILE, Feedback, FileSchema, NULLABLE_FILE } from "../index.js";
+import { Feedback, FILE, FileSchema, NULLABLE_FILE } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {

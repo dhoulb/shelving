@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import type { Data } from "../index.js";
-import { Feedback, ValueFeedback, dehydrate, hydrate } from "../index.js";
+import { dehydrate, Feedback, hydrate, ValueFeedback } from "../index.js";
 
 const HYDRATIONS = {
 	Feedback,

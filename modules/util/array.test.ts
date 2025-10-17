@@ -1,6 +1,5 @@
 import { expect, test } from "bun:test";
 import {
-	RequiredError,
 	addArrayItem,
 	addArrayItems,
 	assertArray,
@@ -20,6 +19,7 @@ import {
 	isLess,
 	notEqual,
 	omitArrayItems,
+	RequiredError,
 	requireArray,
 	shuffleArray,
 	toggleArrayItems,

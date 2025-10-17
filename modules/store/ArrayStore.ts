@@ -1,6 +1,5 @@
 import type { ImmutableArray } from "../util/array.js";
-import { omitArrayItems, toggleArrayItems, withArrayItems } from "../util/array.js";
-import { getFirst, getLast, requireFirst, requireLast } from "../util/array.js";
+import { getFirst, getLast, omitArrayItems, requireFirst, requireLast, toggleArrayItems, withArrayItems } from "../util/array.js";
 import type { NONE } from "../util/constants.js";
 import { Store } from "./Store.js";
 

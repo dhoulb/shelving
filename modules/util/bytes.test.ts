@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { RequiredError, getBytes, requireBytes } from "../index.js";
+import { getBytes, RequiredError, requireBytes } from "../index.js";
 
 describe("getBytes()", () => {
 	test("returns Uint8Array from ArrayBuffer", () => {

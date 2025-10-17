@@ -1,9 +1,9 @@
 import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { type MutableArray, getNamedMessage } from "../index.js";
+import { getNamedMessage, type MutableArray } from "../index.js";
 import type { DataSchema, DataSchemas } from "../schema/DataSchema.js";
 import type { Schema } from "../schema/Schema.js";
-import type { Data, DataKey, Database } from "../util/data.js";
+import type { Data, Database, DataKey } from "../util/data.js";
 import type { AnyFunction } from "../util/function.js";
 import type { Identifier, Item, Items, OptionalItem } from "../util/item.js";
 import type { ItemQuery } from "../util/query.js";

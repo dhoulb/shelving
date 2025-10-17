@@ -3,7 +3,7 @@ import type { ImmutableArray } from "./array.js";
 import type { AnyCaller } from "./function.js";
 import type { Nullish } from "./null.js";
 import type { Path } from "./path.js";
-import { type PossibleURL, getURL, isURL } from "./url.js";
+import { getURL, isURL, type PossibleURL } from "./url.js";
 
 /** Default whitelist for URL schemes. */
 const SCHEMES: readonly string[] = ["http:", "https:"];

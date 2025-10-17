@@ -1,5 +1,5 @@
 import { NotFoundError, RequestError } from "../error/RequestError.js";
-import { type ImmutableDictionary, getDictionary } from "../util/dictionary.js";
+import { getDictionary, type ImmutableDictionary } from "../util/dictionary.js";
 import { getRequestContent } from "../util/http.js";
 import { isPlainObject } from "../util/object.js";
 import { matchTemplate } from "../util/template.js";
@@ -31,7 +31,7 @@ export interface EndpointHandler<P, R> {
 /**
  * Any handler (purposefully as wide as possible for use with `extends X` or `is X` statements).
  */
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: No other way to type this.
 export type AnyEndpointHandler = EndpointHandler<any, any>;
 
 /**

@@ -36,7 +36,7 @@ describe("getConcurrent()", () => {
 						resolve("A");
 					}, 200),
 				),
-				new Promise<string>((resolve, reject) =>
+				new Promise<string>((_resolve, reject) =>
 					setTimeout(() => {
 						reject("B");
 					}, 50),

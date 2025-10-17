@@ -21,7 +21,7 @@ export abstract class BaseError extends Error {
 
 	constructor(message?: string, options: BaseErrorOptions = {}) {
 		super(message, options);
-		const { cause, caller = BaseError, ...rest } = options;
+		const { _cause, caller = BaseError, ...rest } = options;
 		for (const [key, value] of Object.entries(rest)) (this as MutableDictionary<unknown>)[key] = value;
 		Error.captureStackTrace(this, caller);
 	}

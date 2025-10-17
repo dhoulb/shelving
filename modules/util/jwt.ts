@@ -1,11 +1,10 @@
 import { UnauthorizedError } from "../error/RequestError.js";
 import { ValueError } from "../error/ValueError.js";
 import { decodeBase64URLBytes, decodeBase64URLString, encodeBase64URL } from "./base64.js";
-import { type Bytes, type PossibleBytes, getBytes, requireBytes } from "./bytes.js";
+import { type Bytes, getBytes, type PossibleBytes, requireBytes } from "./bytes.js";
 import { DAY, MINUTE, SECOND } from "./constants.js";
 import type { Data } from "./data.js";
-import type { AnyCaller } from "./function.js";
-import type { AnyFunction } from "./function.js";
+import type { AnyCaller, AnyFunction } from "./function.js";
 
 // Constants.
 const HASH = "SHA-512";
@@ -107,9 +106,9 @@ export async function verifyToken(token: string, secret: PossibleBytes, caller: 
 
 	// Validate header.
 	if (headerData.typ !== HEADER.typ)
-		throw new UnauthorizedError(`JWT header type must be \"${HEADER.typ}\"`, { received: headerData.typ, caller });
+		throw new UnauthorizedError(`JWT header type must be "${HEADER.typ}"`, { received: headerData.typ, caller });
 	if (headerData.alg !== HEADER.alg)
-		throw new UnauthorizedError(`JWT header algorithm must be \"${HEADER.alg}\"`, { received: headerData.alg, caller });
+		throw new UnauthorizedError(`JWT header algorithm must be "${HEADER.alg}"`, { received: headerData.alg, caller });
 
 	// Validate signature.
 	const key = await _getKey(verifyToken, secret, "verify");

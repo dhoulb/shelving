@@ -2,7 +2,7 @@ import type { JSXElement } from "../../util/jsx.js";
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
-import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, LINE_SPACE_REGEXP, getBlockRegExp } from "../util/regexp.js";
+import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, getBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
 import { getMarkupRule } from "../util/rule.js";
 
 const INDENT = /^\t/gm; // Nesting is recognised with tabs only.
@@ -39,7 +39,7 @@ export const ORDERED_RULE = getMarkupRule(
 /** Parse a markdown list into a set of items elements. */
 function* _getOrderedItems(list: string, options: MarkupOptions): Iterable<JSXElement> {
 	let key = 0;
-	for (const [unused, number = "", item = ""] of list.matchAll(ITEM)) {
+	for (const [_unused, number = "", item = ""] of list.matchAll(ITEM)) {
 		yield {
 			$$typeof: REACT_ELEMENT_TYPE,
 			type: "li",

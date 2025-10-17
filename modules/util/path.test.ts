@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { RequiredError, isAbsolutePath, isPathProud, requirePath } from "../index.js";
+import { isAbsolutePath, isPathProud, RequiredError, requirePath } from "../index.js";
 
 test("isAbsolutePath()", () => {
 	// Absolute.
