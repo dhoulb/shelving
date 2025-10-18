@@ -45,8 +45,8 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 		if (!isDictionary(unsafeValue)) throw new ValueFeedback("Must be object", unsafeValue);
 		const validDictionary = validateDictionary(unsafeValue, this.items);
 		const length = Object.keys(validDictionary).length;
-		if (length < this.min) throw new ValueFeedback(length ? `Minimum ${this.min} items` : "Required", validDictionary);
-		if (length > this.max) throw new ValueFeedback(`Maximum ${this.max} items`, validDictionary);
+		if (length < this.min) throw new ValueFeedback(length ? `Minimum ${this.min} ${this.many}` : "Required", validDictionary);
+		if (length > this.max) throw new ValueFeedback(`Maximum ${this.max} ${this.many}`, validDictionary);
 		return validDictionary;
 	}
 }

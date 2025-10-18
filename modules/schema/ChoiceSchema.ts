@@ -29,9 +29,9 @@ export function isOption<K extends string>(options: ChoiceOptions<K>, option: st
 /** Allowed options for `ChoiceSchema` */
 export interface ChoiceSchemaOptions<K extends string> extends Omit<SchemaOptions, "value"> {
 	/** Specify correct options using a dictionary of entries. */
-	options: ChoiceOptions<K>;
+	readonly options: ChoiceOptions<K>;
 	/** Default option for the value. */
-	value?: K;
+	readonly value?: K;
 }
 
 /** Choose from an allowed set of values. */
