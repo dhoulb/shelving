@@ -13,8 +13,13 @@ const PHONE_REGEXP = /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/;
  * - Falsy values are converted to `""` empty string.
  */
 export class PhoneSchema extends StringSchema {
-	constructor({ title = "Phone", ...options }: StringSchemaOptions) {
+	constructor({
+		one = "phone number",
+		title = "Phone",
+		...options
+	}: Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "multiline">) {
 		super({
+			one,
 			title,
 			...options,
 			input: "tel",

@@ -6,7 +6,7 @@ import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /** Allowed options for `LinkSchema` */
-export interface LinkSchemaOptions extends Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline"> {
+export interface LinkSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "multiline"> {
 	readonly base?: AbsoluteLink | undefined;
 	readonly schemes?: ImmutableArray<string> | undefined;
 	readonly hosts?: ImmutableArray<string> | undefined;
@@ -22,8 +22,9 @@ export class LinkSchema extends StringSchema {
 	readonly base: AbsoluteLink | undefined;
 	readonly schemes: ImmutableArray<string> | undefined;
 	readonly hosts: ImmutableArray<string> | undefined;
-	constructor({ base, schemes, hosts, title = "Link", ...options }: LinkSchemaOptions) {
+	constructor({ one = "link", title = "Link", base, schemes, hosts, ...options }: LinkSchemaOptions) {
 		super({
+			one,
 			title,
 			...options,
 			input: "url",

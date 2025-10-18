@@ -12,8 +12,8 @@ export interface EntitySchemaOptions<T extends string> extends StringSchemaOptio
 /** Validate a file name matching one or more extensions. */
 export class EntitySchema<T extends string> extends StringSchema {
 	readonly types: ImmutableArray<T> | undefined;
-	constructor({ types, title = "Entity", ...options }: EntitySchemaOptions<T>) {
-		super({ title, ...options });
+	constructor({ one = "entity", title = "Entity", types, ...options }: EntitySchemaOptions<T>) {
+		super({ one, title, ...options });
 		this.types = types;
 	}
 	override validate(unsafeValue: unknown = this.value): Entity<T> {

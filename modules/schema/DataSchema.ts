@@ -22,10 +22,10 @@ export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
 export class DataSchema<T extends Data> extends Schema<unknown> {
 	declare readonly value: T;
 	readonly props: Schemas<T>;
-	constructor({ props, title = "Data", value: partialValue, ...options }: DataSchemaOptions<T>) {
+	constructor({ one = "item", title = "Item", props, value: partialValue, ...options }: DataSchemaOptions<T>) {
 		// Build default value from props and partial value.
 		const value: T = { ...mapProps(props, _getSchemaValue), ...partialValue };
-		super({ title, value, ...options });
+		super({ one, title, value, ...options });
 		this.props = props;
 	}
 	override validate(unsafeValue: unknown = this.value): T {

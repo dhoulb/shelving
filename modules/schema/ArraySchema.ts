@@ -7,8 +7,6 @@ import { Schema } from "./Schema.js";
 
 /** Allowed options for `ArraySchema` */
 export interface ArraySchemaOptions<T> extends SchemaOptions {
-	readonly one?: string;
-	readonly many?: string;
 	readonly value?: ImmutableArray;
 	readonly items: Schema<T>;
 	readonly min?: number;
@@ -45,16 +43,14 @@ export interface ArraySchemaOptions<T> extends SchemaOptions {
  */
 export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	declare readonly value: ImmutableArray<T>;
-	readonly one: string;
-	readonly many: string;
 	readonly items: Schema<T>;
 	readonly unique: boolean;
 	readonly min: number;
 	readonly max: number;
 	constructor({
 		items,
-		one = "item",
-		many = `${one}s`,
+		one = items.one,
+		many = items.many,
 		title = "Items",
 		placeholder = `No ${many}`,
 		unique = false,
@@ -63,9 +59,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		value = [],
 		...options
 	}: ArraySchemaOptions<T>) {
-		super({ title, placeholder, value, ...options });
-		this.one = one;
-		this.many = many;
+		super({ one, many, title, placeholder, value, ...options });
 		this.items = items;
 		this.unique = unique;
 		this.min = min;

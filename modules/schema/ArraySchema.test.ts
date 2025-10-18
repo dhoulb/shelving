@@ -130,3 +130,11 @@ describe("options.items", () => {
 		}
 	});
 });
+describe("options.one and options.many", () => {
+	test("One and many are inherited from items schema", () => {
+		const schema = new ArraySchema({ items: NUMBER });
+		expect(schema.one).toEqual("number");
+		expect(schema.many).toEqual("numbers");
+		expect(schema.placeholder).toEqual("No numbers");
+	});
+});

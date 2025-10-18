@@ -5,8 +5,8 @@ import { NULLABLE } from "./NullableSchema.js";
 
 /** Define a valid time in 24h hh:mm:ss.fff format, e.g. `23:59` or `24:00 */
 export class TimeSchema extends DateSchema {
-	constructor({ title = "Time", input = "time", ...options }: DateSchemaOptions) {
-		super({ title, input, ...options });
+	constructor({ one = "time", title = "Time", input = "time", ...options }: DateSchemaOptions) {
+		super({ one, title, input, ...options });
 	}
 
 	override stringify(value: Date): string {

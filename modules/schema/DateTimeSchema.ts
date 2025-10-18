@@ -9,8 +9,8 @@ import { NULLABLE } from "./NullableSchema.js";
  * - If you wish to define an _abstract_ time without a timezone, e.g. a daily alarm, use `TimeSchema` instead.
  */
 export class DateTimeSchema extends DateSchema {
-	constructor({ title = "Time", input = "datetime-local", ...options }: DateSchemaOptions) {
-		super({ title, input, ...options });
+	constructor({ one = "time", title = "Time", input = "datetime-local", ...options }: DateSchemaOptions) {
+		super({ one, title, input, ...options });
 	}
 	override format(value: Date): string {
 		return formatDateTime(value);

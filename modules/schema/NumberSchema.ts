@@ -20,14 +20,15 @@ export class NumberSchema extends Schema<number> {
 	readonly max: number;
 	readonly step: number | undefined;
 	constructor({
+		one = "number",
+		title = "Number",
 		min = Number.NEGATIVE_INFINITY,
 		max = Number.POSITIVE_INFINITY,
 		step,
-		title = "Number",
 		value = 0,
 		...options
 	}: NumberSchemaOptions) {
-		super({ title, value, ...options });
+		super({ one, title, value, ...options });
 		this.min = min;
 		this.max = max;
 		this.step = step;

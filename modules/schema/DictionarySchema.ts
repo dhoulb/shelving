@@ -7,8 +7,6 @@ import { Schema } from "./Schema.js";
 
 /** Allowed options for `DictionarySchema` */
 export interface DictionarySchemaOptions<T> extends SchemaOptions {
-	readonly one?: string;
-	readonly many?: string;
 	readonly items: Schema<T>;
 	readonly value?: ImmutableDictionary | undefined;
 	readonly min?: number | undefined;
@@ -18,15 +16,13 @@ export interface DictionarySchemaOptions<T> extends SchemaOptions {
 /** Validate a dictionary object (whose props are all the same with string keys). */
 export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	declare readonly value: ImmutableDictionary<T>;
-	readonly one: string;
-	readonly many: string;
 	readonly items: Schema<T>;
 	readonly min: number;
 	readonly max: number;
 	constructor({
 		items,
-		one = "item",
-		many = `${one}s`,
+		one = items.one,
+		many = items.many,
 		placeholder = `No ${many}`,
 		min = 0,
 		max = Number.POSITIVE_INFINITY,
@@ -34,9 +30,7 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 		value = {},
 		...options
 	}: DictionarySchemaOptions<T>) {
-		super({ title, placeholder, value, ...options });
-		this.one = one;
-		this.many = many;
+		super({ one, many, title, placeholder, value, ...options });
 		this.items = items;
 		this.min = min;
 		this.max = max;

@@ -39,12 +39,14 @@ export class ChoiceSchema<K extends string> extends Schema<K> implements Iterabl
 	declare readonly value: K;
 	readonly options: ChoiceOptions<K>;
 	constructor({
+		one = "choice",
+		title = "Choice",
+		placeholder = `No ${one}`,
 		options,
-		placeholder = "Empty",
 		value = requireFirst(isArray(options) ? options : getKeys(options)),
 		...rest
 	}: ChoiceSchemaOptions<K>) {
-		super({ value, placeholder, ...rest });
+		super({ one, title, value, placeholder, ...rest });
 		this.options = options;
 	}
 	validate(unsafeValue: unknown = this.value): K {

@@ -23,8 +23,13 @@ const R_MATCH =
  *     - TLD is a segment of 2-63 characters, possibly in `xn--` international format.
  */
 export class EmailSchema extends StringSchema {
-	constructor({ title = "Email", ...options }: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline">) {
+	constructor({
+		one = "email address",
+		title = "Email",
+		...options
+	}: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline">) {
 		super({
+			one,
 			title,
 			...options,
 			input: "email",

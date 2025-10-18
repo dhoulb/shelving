@@ -13,8 +13,8 @@ export interface FileSchemaOptions extends StringSchemaOptions {
 /** Validate a file name matching one or more extensions. */
 export class FileSchema extends StringSchema {
 	readonly types: FileTypes | undefined;
-	constructor({ types, title = "File", ...options }: FileSchemaOptions) {
-		super({ title, ...options });
+	constructor({ one = "file", title = "File", types, ...options }: FileSchemaOptions) {
+		super({ one, title, ...options });
 		this.types = types;
 	}
 	override validate(unsafeValue: unknown = this.value): string {

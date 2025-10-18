@@ -8,9 +8,9 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
  * - Falsy values are converted to empty string.
  */
 export class UUIDSchema extends StringSchema {
-	constructor(options: StringSchemaOptions = {}) {
-		const { title = "UUID", ...rest } = options;
+	constructor({ one = "UUID", title = "UUID", ...rest }: Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "multiline"> = {}) {
 		super({
+			one,
 			title,
 			...rest,
 			min: 32,

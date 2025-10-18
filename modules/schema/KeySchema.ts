@@ -12,8 +12,8 @@ const R_NOT_CHAR = /[^a-zA-Z0-9]/g;
  * - 32 characters is enough for UUIDs, as the 4 `-` hyphens are removed.
  */
 export class KeySchema extends StringSchema {
-	constructor({ min = 1, max = 32, ...options }: StringSchemaOptions) {
-		super({ min, max, ...options });
+	constructor({ one = "key", min = 1, max = 32, ...options }: StringSchemaOptions) {
+		super({ one, min, max, ...options });
 	}
 	override sanitize(str: string): string {
 		return str.replace(R_NOT_CHAR, "");

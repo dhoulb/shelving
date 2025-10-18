@@ -15,11 +15,13 @@ const NOT_HEX_REGEXP = /[^0-9A-F]/g;
  */
 export class ColorSchema extends StringSchema {
 	constructor({
+		one = "color",
 		title = "Color",
 		value = "#000000",
 		...options
-	}: Omit<StringSchemaOptions, "type" | "min" | "max" | "multiline" | "match">) {
+	}: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline">) {
 		super({
+			one,
 			title,
 			value,
 			...options,

@@ -32,8 +32,8 @@ export class DateSchema extends Schema<string> {
 	readonly input: DateInputType;
 	readonly step: number | undefined;
 
-	constructor({ min, max, value = "now", input = "date", step, ...options }: DateSchemaOptions) {
-		super({ title: "Date", value, ...options });
+	constructor({ one = "date", min, max, value = "now", input = "date", step, ...options }: DateSchemaOptions) {
+		super({ one, title: "Date", value, ...options });
 		this.min = getDate(min);
 		this.max = getDate(max);
 		this.input = input;
