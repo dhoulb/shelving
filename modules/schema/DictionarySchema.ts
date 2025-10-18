@@ -17,7 +17,7 @@ export interface DictionarySchemaOptions<T> extends SchemaOptions {
 
 /** Validate a dictionary object (whose props are all the same with string keys). */
 export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
-	declare readonly value: ImmutableDictionary;
+	declare readonly value: ImmutableDictionary<T>;
 	readonly one: string;
 	readonly many: string;
 	readonly items: Schema<T>;
