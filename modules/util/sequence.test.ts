@@ -1,6 +1,8 @@
+/** biome-ignore-all lint/suspicious/useAwait: False positive for async iterators. */
+
 import { describe, expect, test } from "bun:test";
 import type { MutableArray } from "../index.js";
-import { getDeferred, repeatDelay, repeatUntil, runSequence, STOP } from "../index.js";
+import { getDeferred, mergeSequences, repeatDelay, repeatUntil, runSequence, STOP } from "../index.js";
 
 const DELAY = 50;
 
@@ -58,5 +60,49 @@ describe("runSequence()", () => {
 		stop();
 		expect(numbers).toEqual([1, 2]);
 		expect(errors).toEqual([new Error("ERR")]);
+	});
+});
+describe("mergeSequences()", () => {
+	// Helper to convert async iterable to array
+	async function toArray<T>(sequence: AsyncIterable<T>): Promise<T[]> {
+		const result: T[] = [];
+		for await (const item of sequence) {
+			result.push(item);
+		}
+		return result;
+	}
+
+	// Helper to create async generator from array
+	async function* fromArray<T>(items: T[]): AsyncIterable<T> {
+		for (const item of items) {
+			yield item;
+		}
+	}
+
+	test("merges multiple sequences in order", async () => {
+		const seq1 = fromArray([1, 2, 3]);
+		const seq2 = fromArray([4, 5, 6]);
+		const seq3 = fromArray([7, 8, 9]);
+
+		const result = await toArray(mergeSequences(seq1, seq2, seq3));
+
+		expect(result).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+	});
+
+	test("handles empty sequences", async () => {
+		const seq1 = fromArray([1, 2]);
+		const seq2 = fromArray([]);
+		const seq3 = fromArray([3, 4]);
+
+		const result = await toArray(mergeSequences(seq1, seq2, seq3));
+
+		expect(result).toEqual([1, 2, 3, 4]);
+	});
+	test("handles no sequences", async () => {
+		const emptyseq = fromArray([]);
+
+		const result = await toArray(mergeSequences(emptyseq));
+
+		expect(result).toEqual([]);
 	});
 });

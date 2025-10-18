@@ -84,3 +84,8 @@ async function _runSequence<T>(
 	// Continue iteration.
 	return _runSequence(sequence, stopped, onNext, onError);
 }
+
+/** Merge several sequences (calls the sequences in series). */
+export async function* mergeSequences<T>(...sequences: AsyncIterable<T>[]): AsyncIterable<T> {
+	for await (const sequence of sequences) yield* sequence;
+}
