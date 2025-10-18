@@ -26,14 +26,15 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	constructor({
 		items,
 		one = "item",
-		many = "items",
+		many = `${one}s`,
+		placeholder = `No ${many}`,
 		min = 0,
 		max = Number.POSITIVE_INFINITY,
 		title = "Items",
 		value = {},
 		...options
 	}: DictionarySchemaOptions<T>) {
-		super({ title, value, ...options });
+		super({ title, placeholder, value, ...options });
 		this.one = one;
 		this.many = many;
 		this.items = items;

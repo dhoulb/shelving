@@ -55,14 +55,15 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		items,
 		one = "item",
 		many = `${one}s`,
+		title = "Items",
+		placeholder = `No ${many}`,
 		unique = false,
 		min = 0,
 		max = Number.POSITIVE_INFINITY,
-		title = "Items",
 		value = [],
 		...options
 	}: ArraySchemaOptions<T>) {
-		super({ title, value, ...options });
+		super({ title, placeholder, value, ...options });
 		this.one = one;
 		this.many = many;
 		this.items = items;

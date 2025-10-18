@@ -38,8 +38,13 @@ export interface ChoiceSchemaOptions<K extends string> extends Omit<SchemaOption
 export class ChoiceSchema<K extends string> extends Schema<K> implements Iterable<ChoiceOption<K>> {
 	declare readonly value: K;
 	readonly options: ChoiceOptions<K>;
-	constructor({ options, value = requireFirst(isArray(options) ? options : getKeys(options)), ...rest }: ChoiceSchemaOptions<K>) {
-		super({ value, ...rest });
+	constructor({
+		options,
+		placeholder = "Empty",
+		value = requireFirst(isArray(options) ? options : getKeys(options)),
+		...rest
+	}: ChoiceSchemaOptions<K>) {
+		super({ value, placeholder, ...rest });
 		this.options = options;
 	}
 	validate(unsafeValue: unknown = this.value): K {
