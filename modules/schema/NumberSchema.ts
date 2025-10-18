@@ -37,8 +37,9 @@ export class NumberSchema extends Schema<number> {
 		const optionalNumber = getNumber(unsafeValue);
 		if (typeof optionalNumber !== "number") throw new ValueFeedback("Must be number", unsafeValue);
 		const roundedNumber = typeof this.step === "number" ? roundStep(optionalNumber, this.step) : optionalNumber;
+		if (roundedNumber < this.min)
+			throw new ValueFeedback(!optionalNumber ? "Required" : `Minimum ${formatNumber(this.min)}`, roundedNumber);
 		if (roundedNumber > this.max) throw new ValueFeedback(`Maximum ${formatNumber(this.max)}`, roundedNumber);
-		if (roundedNumber < this.min) throw new ValueFeedback(`Minimum ${formatNumber(this.min)}`, roundedNumber);
 		return roundedNumber;
 	}
 }
