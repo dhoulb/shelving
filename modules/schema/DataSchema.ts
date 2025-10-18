@@ -2,7 +2,7 @@ import { ValueFeedback } from "../feedback/Feedback.js";
 import type { Data, Database } from "../util/data.js";
 import { isData } from "../util/data.js";
 import type { Identifier, Item } from "../util/item.js";
-import type { Prop } from "../util/object.js";
+import type { Prop, Value } from "../util/object.js";
 import { mapProps } from "../util/transform.js";
 import { validateData } from "../util/validate.js";
 import type { NullableSchema } from "./NullableSchema.js";
@@ -20,9 +20,11 @@ export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
 
 /** Validate a data object. */
 export class DataSchema<T extends Data> extends Schema<unknown> {
-	declare readonly value: Partial<T>;
+	declare readonly value: T;
 	readonly props: Schemas<T>;
-	constructor({ props, title = "Data", value = {}, ...options }: DataSchemaOptions<T>) {
+	constructor({ props, title = "Data", value: partialValue, ...options }: DataSchemaOptions<T>) {
+		// Build default value from props and partial value.
+		const value: T = { ...mapProps(props, _getSchemaValue), ...partialValue };
 		super({ title, value, ...options });
 		this.props = props;
 	}
@@ -30,6 +32,10 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 		if (!isData(unsafeValue)) throw new ValueFeedback("Must be object", unsafeValue);
 		return validateData(unsafeValue, this.props);
 	}
+}
+
+function _getSchemaValue<T extends Data>([, { value }]: Prop<Schemas<T>>): Value<T> {
+	return value as Value<T>;
 }
 
 /** Set of named data schemas. */
