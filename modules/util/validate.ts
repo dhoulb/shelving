@@ -11,7 +11,7 @@ import { getDictionaryItems } from "./dictionary.js";
 import { getNamedMessage } from "./error.js";
 import type { AnyCaller } from "./function.js";
 import { isIterable } from "./iterate.js";
-import type { DeepPartial, MutableObject } from "./object.js";
+import type { MutableObject } from "./object.js";
 
 /** Object that can validate an unknown value with its `validate()` method. */
 export interface Validator<T> {
@@ -125,45 +125,32 @@ export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unkn
 	return changed || isIterable(unsafeDictionary) ? safeDictionary : (unsafeDictionary as ImmutableDictionary<T>);
 }
 
-/** Keep track of whether we're doing a deep-partial match or not. */
-let isDeeplyPartial = false;
-
 /**
  * Validate a data object with a set of validators.
  * - Defined props in the object will be validated against the corresponding validator.
  * - `undefined` props in the object will be set to the default value of that prop.
  * - `undefined` props after validation will not be set in the output object.
  *
- * @param partial Whether we're validating a partial match or not. This allows props to be missing without error.
- *
  * @return Valid object.
  * @throw Feedback if one or more props did not validate.
  */
-export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial: true): DeepPartial<T>;
-export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial?: false): T;
-export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>, partial = isDeeplyPartial): T {
-	let changed = false;
+export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
+	let changes = 0;
 	const safeData: MutableObject = {};
 	const messages: MutableArray<string> = [];
-	try {
-		isDeeplyPartial = partial;
-		const props = getDataProps(validators);
-		for (const [key, validator] of props) {
-			const unsafeValue = unsafeData[key];
-			if (unsafeValue === undefined && partial) continue; // Silently skip `undefined` props if in partial mode.
-			try {
-				const safeValue = validator.validate(unsafeValue);
-				if (safeValue !== undefined) safeData[key] = safeValue;
-				if (!changed && safeValue !== unsafeValue) changed = true;
-			} catch (thrown) {
-				if (!(thrown instanceof Feedback)) throw thrown;
-				messages.push(getNamedMessage(key, thrown.message));
-			}
+	const props = getDataProps(validators);
+	for (const [key, validator] of props) {
+		const unsafeValue = unsafeData[key];
+		try {
+			const safeValue = validator.validate(unsafeValue);
+			if (safeValue !== undefined) safeData[key] = safeValue;
+			if (safeValue !== unsafeValue) changes++;
+		} catch (thrown) {
+			if (!(thrown instanceof Feedback)) throw thrown;
+			messages.push(getNamedMessage(key, thrown.message));
 		}
-		if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeData);
-		if (changed || getDataKeys(unsafeData).length > props.length) return safeData as T;
-		return unsafeData as T;
-	} finally {
-		isDeeplyPartial = false;
 	}
+	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeData);
+	if (changes || getDataKeys(unsafeData).length > props.length) return safeData as T;
+	return unsafeData as T;
 }

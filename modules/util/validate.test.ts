@@ -45,11 +45,6 @@ describe("validateData()", () => {
 		// Current implementation always returns a new object (changed flag starts true)
 		expect(output).not.toBe(input);
 	});
-	test("skips missing fields (including defaults) when partial = true", () => {
-		const input = { str: "hello" };
-		const output = validateData(input, VALIDATORS, true);
-		expect(output).toEqual({ str: "hello" });
-	});
 	test("aggregates multiple validation errors", () => {
 		const bad = { str: null, opt: false, num: "NaN" };
 		try {
@@ -68,34 +63,12 @@ describe("validateData()", () => {
 		expect((output as any).extra).toBeUndefined();
 		expect(output).not.toBe(input); // new object created because default applied
 	});
-	describe("deep partial propagation", () => {
-		// Nested validators: a has default, b is number
-		const nestedValidators = {
-			a: new StringSchema({ value: "AAA" }),
-			b: NUMBER,
-		};
-		// Custom nested validator leveraging validateData so we can observe deep-partial behavior
-		const NestedValidator = {
-			validate(value: unknown) {
-				if (!value || typeof value !== "object") throw new Feedback("Must be object");
-				// Do not pass partial flag explicitly; rely on ambient isDeeplyPartial
-				return validateData(value as any, nestedValidators);
-			},
-		};
-		const parentValidators = {
-			id: STRING,
-			nested: NestedValidator,
-		};
-		test("full (partial = false) fills nested defaults", () => {
-			const input = { id: "x", nested: { b: 2 } };
-			const output = validateData(input, parentValidators);
-			expect(output).toEqual({ id: "x", nested: { a: "AAA", b: 2 } });
-		});
-		test("partial = true skips nested defaults", () => {
-			const input = { id: "x", nested: { b: 2 } };
-			const output = validateData(input, parentValidators, true);
-			expect(output).toEqual({ id: "x", nested: { b: 2 } });
-		});
+	test("removes excess fields", () => {
+		const input: any = { extra: "remove" };
+		const output = validateData(input, {});
+		expect(output).toEqual({});
+		expect("extra" in output).toBe(false);
+		expect(output).not.toBe(input); // new object created because default applied
 	});
 	test("returns same object even when values already valid (current behavior)", () => {
 		const input = { str: "alpha", opt: "abc", num: 7 } as const;
