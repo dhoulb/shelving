@@ -5,7 +5,7 @@ import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import { isArray } from "./array.js";
 import type { Constructor } from "./class.js";
 import type { Data } from "./data.js";
-import { getDataKeys, getDataProps } from "./data.js";
+import { getDataProps } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
 import { getNamedMessage } from "./error.js";
@@ -138,19 +138,30 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 	let changes = 0;
 	const safeData: MutableObject = {};
 	const messages: MutableArray<string> = [];
+
+	// Validate the props in `validators`.
 	const props = getDataProps(validators);
 	for (const [key, validator] of props) {
 		const unsafeValue = unsafeData[key];
 		try {
 			const safeValue = validator.validate(unsafeValue);
-			if (safeValue !== undefined) safeData[key] = safeValue;
-			if (safeValue !== unsafeValue) changes++;
+			if (safeValue === undefined) {
+				// Undefined values are not included in the output object
+				if (key in unsafeData) changes++;
+			} else {
+				// Defined values are included in the output object.
+				safeData[key] = safeValue;
+				if (safeValue !== unsafeValue) changes++;
+			}
 		} catch (thrown) {
 			if (!(thrown instanceof Feedback)) throw thrown;
 			messages.push(getNamedMessage(key, thrown.message));
 		}
 	}
 	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeData);
-	if (changes || getDataKeys(unsafeData).length > props.length) return safeData as T;
+	if (changes) return safeData as T;
+
+	// Check that no excess keys exist.
+	for (const key of Object.keys(unsafeData)) if (!(key in validators)) return safeData as T;
 	return unsafeData as T;
 }

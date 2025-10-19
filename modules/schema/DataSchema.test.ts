@@ -7,6 +7,7 @@ import {
 	ITEM,
 	KEY,
 	NUMBER,
+	OPTIONAL,
 	PARTIAL,
 	POSITIVE_INTEGER,
 	type Schema,
@@ -67,6 +68,44 @@ describe("validate()", () => {
 		expect(schema.validate(value)).toEqual({ a: "1", b: "B" });
 		expect(schema.validate(value)).not.toBe(value);
 	});
+	test("Undefined fields are stripped", () => {
+		const schema = DATA({ a: STRING, undef: OPTIONAL(STRING) });
+		const output = schema.validate({ a: "Bob", undef: undefined });
+		expect(output).toEqual({ a: "Bob" } as any);
+		expect(Object.hasOwn(output, "undef")).toBe(false);
+		expect("undef" in output).toBe(false);
+
+		const schema1 = DATA({ a: STRING, undef: OPTIONAL(STRING) });
+		const output1 = schema1.validate({ a: "Bob", undef: undefined });
+		expect(output1).toEqual({ a: "Bob" } as any);
+		expect(Object.hasOwn(output1, "undef")).toBe(false);
+		expect("undef" in output1).toBe(false);
+
+		const schema2 = DATA({ undef: OPTIONAL(STRING) });
+		const output2 = schema2.validate({ undef: undefined });
+		expect(output2).toEqual({} as any);
+		expect(Object.hasOwn(output2, "undef")).toBe(false);
+		expect("undef" in output2).toBe(false);
+	});
+	test("Excess fields are stripped", () => {
+		const schema1 = DATA({ a: STRING, b: OPTIONAL(STRING) });
+		const output1 = schema1.validate({ a: "Bob", b: undefined, excess: 123 });
+		expect(output1).toEqual({ a: "Bob", b: undefined });
+		expect(Object.hasOwn(output1, "excess")).toBe(false);
+		expect("excess" in output1).toBe(false);
+
+		const schema2 = DATA({ a: STRING, b: OPTIONAL(STRING) });
+		const output2 = schema2.validate({ a: "Bob", b: undefined, excess: undefined });
+		expect(output2).toEqual({ a: "Bob", b: undefined });
+		expect(Object.hasOwn(output2, "excess")).toBe(false);
+		expect("excess" in output2).toBe(false);
+
+		const schema = DATA({});
+		const output = schema.validate({ excess: undefined });
+		expect(output).toEqual({});
+		expect(Object.hasOwn(output, "excess")).toBe(false);
+		expect("excess" in output).toBe(false);
+	});
 });
 describe("options.value", () => {
 	test("Undefined returns default value (empty array)", () => {
@@ -124,6 +163,18 @@ describe("options.props", () => {
 				excess: "should be removed",
 			}),
 		).toEqual({ num: 123, str: "abcdef" });
+		expect(
+			schema.validate({
+				num: 123,
+				str: "abcdef",
+				excess: "should be removed",
+			}),
+		).not.toHaveProperty("excess");
+		expect(
+			schema.validate({
+				excess: "should be removed",
+			}),
+		).not.toHaveProperty("excess");
 	});
 	test("Objects with errors in subschemas returns Invalids", () => {
 		const data = { dogs: "abc", turtles: 10, cats: null };
@@ -144,13 +195,60 @@ describe("PARTIAL", () => {
 	const PARTIAL_USER_SCHEMA = PARTIAL({ name: STRING, age: NUMBER });
 
 	test("validates partial object with subset of fields", () => {
-		const result = PARTIAL_USER_SCHEMA.validate({ name: "Alice" });
-		expect(result).toEqual({ name: "Alice" });
+		const input = { name: "Alice" };
+		const output = PARTIAL_USER_SCHEMA.validate(input);
+		expect(output).toEqual({ name: "Alice" });
+		expect(output).toBe(input);
 	});
-	test("ignores undefined fields in partial", () => {
+	test("Returns same valid data", () => {
+		const input = { name: "Charlie", age: 25 };
+		const output = PARTIAL_USER_SCHEMA.validate(input);
+		expect(output).toEqual(input);
+		expect(output).toBe(input);
+	});
+	test("Returns same empty data", () => {
+		const input = {};
+		const output = PARTIAL({}).validate(input);
+		expect(output).toEqual({});
+		expect(output).toBe(input);
+	});
+	test("Undefined fields are stripped", () => {
 		// age is undefined, should be skipped not validated
-		const result = PARTIAL_USER_SCHEMA.validate({ name: "Bob", age: undefined });
-		expect(result).toEqual({ name: "Bob" });
+		const output = PARTIAL_USER_SCHEMA.validate({ name: "Bob", age: undefined });
+		expect(output).toEqual({ name: "Bob" });
+		expect("age" in output).toBe(false);
+	});
+	test("Undefined fields are stripped", () => {
+		const schema = PARTIAL({ a: STRING, undef: OPTIONAL(STRING) });
+		const output = schema.validate({ a: "Bob", undef: undefined });
+		expect(output).toEqual({ a: "Bob", undef: undefined });
+		expect(Object.hasOwn(output, "undef")).toBe(false);
+		expect("undef" in output).toBe(false);
+
+		const schema1 = PARTIAL({ a: STRING, undef: OPTIONAL(STRING) });
+		const output1 = schema1.validate({ a: "Bob", undef: undefined });
+		expect(output1).toEqual({ a: "Bob", undef: undefined });
+		expect(Object.hasOwn(output1, "undef")).toBe(false);
+		expect("undef" in output1).toBe(false);
+	});
+	test("Excess fields are stripped", () => {
+		const schema1 = PARTIAL({ a: STRING, b: OPTIONAL(STRING) });
+		const output1 = schema1.validate({ a: "Bob", b: undefined, excess: 123 });
+		expect(output1).toEqual({ a: "Bob", b: undefined });
+		expect(Object.hasOwn(output1, "excess")).toBe(false);
+		expect("excess" in output1).toBe(false);
+
+		const schema2 = PARTIAL({ a: STRING, b: OPTIONAL(STRING) });
+		const output2 = schema2.validate({ a: "Bob", b: undefined, excess: undefined });
+		expect(output2).toEqual({ a: "Bob", b: undefined });
+		expect(Object.hasOwn(output2, "excess")).toBe(false);
+		expect("excess" in output2).toBe(false);
+
+		const schema = PARTIAL({});
+		const output = schema.validate({ excess: undefined });
+		expect(output).toEqual({});
+		expect(Object.hasOwn(output, "excess")).toBe(false);
+		expect("excess" in output).toBe(false);
 	});
 	test("returns object reference if unchanged", () => {
 		const input = { age: 30 } as const;
@@ -169,17 +267,8 @@ describe("PARTIAL", () => {
 		}
 	});
 	test("rejects non-object values", () => {
-		expect(() => PARTIAL_USER_SCHEMA.validate(null as any)).toThrow(ValueFeedback);
-		expect(() => PARTIAL_USER_SCHEMA.validate(5 as any)).toThrow(ValueFeedback);
-	});
-	test("accepts empty object", () => {
-		const result = PARTIAL_USER_SCHEMA.validate({});
-		expect(result).toEqual({});
-	});
-	test("accepts object with all fields", () => {
-		const input = { name: "Charlie", age: 25 };
-		const result = PARTIAL_USER_SCHEMA.validate(input);
-		expect(result).toEqual(input);
+		expect(() => PARTIAL_USER_SCHEMA.validate(null)).toThrow(ValueFeedback);
+		expect(() => PARTIAL_USER_SCHEMA.validate(5)).toThrow(ValueFeedback);
 	});
 	test("coerces values if possible", () => {
 		const input = { name: 123, age: "42" };
@@ -188,7 +277,7 @@ describe("PARTIAL", () => {
 	});
 	test("strips unknown fields", () => {
 		const input = { name: "Dana", age: 22, extra: "remove me" };
-		const result = PARTIAL_USER_SCHEMA.validate(input as any);
+		const result = PARTIAL_USER_SCHEMA.validate(input);
 		expect(result).toEqual({ name: "Dana", age: 22 });
 	});
 	test("returns default value if undefined", () => {
@@ -196,10 +285,50 @@ describe("PARTIAL", () => {
 		expect(schema.validate(undefined)).toEqual({});
 	});
 	test("throws if input is array", () => {
-		expect(() => PARTIAL_USER_SCHEMA.validate([] as any)).toThrow(ValueFeedback);
+		expect(() => PARTIAL_USER_SCHEMA.validate([])).toThrow(ValueFeedback);
 	});
 	test("throws if input is function", () => {
-		expect(() => PARTIAL_USER_SCHEMA.validate((() => {}) as any)).toThrow(ValueFeedback);
+		expect(() => PARTIAL_USER_SCHEMA.validate(() => {})).toThrow(ValueFeedback);
+	});
+	test("Object with props has unknown fields stripped", () => {
+		const schema1 = PARTIAL({
+			num: NUMBER,
+			str: new StringSchema({ value: "abcdef" }),
+		});
+		const output1 = schema1.validate({
+			num: 123,
+			str: "abcdef",
+			excess: "should be removed",
+		});
+		expect(output1).toEqual({ num: 123, str: "abcdef" });
+		expect(Object.hasOwn(output1, "excess")).toBe(false);
+
+		const schema2 = PARTIAL({});
+		const output2 = schema2.validate({
+			excess: "should be removed",
+		});
+		expect(output2).toEqual({});
+		expect(Object.hasOwn(output2, "excess")).toBe(false);
+
+		const schema3 = PARTIAL({ num: NUMBER });
+		const output3 = schema3.validate({
+			excess: "should be removed",
+		});
+		expect(output3).toEqual({});
+		expect(Object.hasOwn(output3, "excess")).toBe(false);
+	});
+	test("Same object is returned.", () => {
+		const schema = PARTIAL({
+			num: NUMBER,
+			str: new StringSchema({ value: "abcdef" }),
+		});
+		const obj1 = {
+			num: 123,
+			str: "abcdef",
+		};
+		expect(schema.validate(obj1)).toBe(obj1);
+		const obj2 = {};
+		expect(schema.validate(obj2)).toBe(obj2);
 	});
 });
 describe("ITEM", () => {
@@ -223,12 +352,12 @@ describe("ITEM", () => {
 		expect(result2).toEqual({ id: 123, name: "Item 1" });
 	});
 	test("throws if ID is missing", () => {
-		expect(() => ITEM_KEY_SCHEMA.validate({ name: "abc" } as any)).toThrow(ValueFeedback);
+		expect(() => ITEM_KEY_SCHEMA.validate({ name: "abc" })).toThrow(ValueFeedback);
 	});
 	test("throws if input is array", () => {
-		expect(() => ITEM_KEY_SCHEMA.validate([] as any)).toThrow(ValueFeedback);
+		expect(() => ITEM_KEY_SCHEMA.validate([])).toThrow(ValueFeedback);
 	});
 	test("throws if input is function", () => {
-		expect(() => ITEM_KEY_SCHEMA.validate((() => {}) as any)).toThrow(ValueFeedback);
+		expect(() => ITEM_KEY_SCHEMA.validate(() => {})).toThrow(ValueFeedback);
 	});
 });

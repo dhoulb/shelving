@@ -3,6 +3,7 @@ import {
 	Feedback,
 	getValid,
 	NUMBER,
+	OPTIONAL,
 	STRING,
 	StringSchema,
 	ValueError,
@@ -75,6 +76,13 @@ describe("validateData()", () => {
 		const output = validateData(input, VALIDATORS);
 		expect(output).toEqual(input);
 		expect(output).toBe(input); // unchanged object should be returned
+	});
+	test("Undefined fields are stripped from the output", () => {
+		const props = { a: STRING, b: OPTIONAL(STRING) };
+		const output = validateData({ a: "Bob", b: undefined }, props);
+		expect(output).toEqual({ a: "Bob" } as any);
+		expect(Object.hasOwn(output, "b")).toBe(false);
+		expect("b" in output).toBe(false);
 	});
 });
 describe("validateItems()", () => {
