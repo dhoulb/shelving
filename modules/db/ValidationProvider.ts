@@ -1,15 +1,15 @@
 import { ValueError } from "../error/ValueError.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { getNamedMessage, type MutableArray } from "../index.js";
-import type { DataSchema, DataSchemas } from "../schema/DataSchema.js";
+import { type DataSchema, type DataSchemas, PARTIAL } from "../schema/DataSchema.js";
 import type { Schema } from "../schema/Schema.js";
+import type { MutableArray } from "../util/array.js";
 import type { Data, Database, DataKey } from "../util/data.js";
+import { getNamedMessage } from "../util/error.js";
 import type { AnyFunction } from "../util/function.js";
 import type { Identifier, Item, Items, OptionalItem } from "../util/item.js";
 import type { ItemQuery } from "../util/query.js";
 import type { Sourceable } from "../util/source.js";
 import type { Updates } from "../util/update.js";
-import { updateData } from "../util/update.js";
 import { type Validators, validateData } from "../util/validate.js";
 import type { AsyncProvider, Provider } from "./Provider.js";
 import { AsyncThroughProvider, ThroughProvider } from "./ThroughProvider.js";
@@ -45,8 +45,7 @@ export class ValidationProvider<I extends Identifier, T extends Database>
 		super.setItem(collection, id, validateData(data, this.getSchema(collection).props));
 	}
 	override updateItem<K extends DataKey<T>>(collection: K, id: I, updates: Updates<T[K]>): void {
-		validateData(updateData<Data>({}, updates), this.getSchema(collection).props, true);
-		super.updateItem(collection, id, updates);
+		super.updateItem(collection, id, _validateUpdates(collection, updates, this.getSchema(collection), this.updateItem));
 	}
 	override deleteItem<K extends DataKey<T>>(collection: K, id: I): void {
 		super.deleteItem(collection, id);
@@ -61,8 +60,7 @@ export class ValidationProvider<I extends Identifier, T extends Database>
 		super.setQuery(collection, query, this.getSchema(collection).validate(data));
 	}
 	override updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>, updates: Updates<T[K]>): void {
-		validateData(updateData<Data>({}, updates), this.getSchema(collection).props, true);
-		super.updateQuery(collection, query, updates);
+		super.updateQuery(collection, query, _validateUpdates(collection, updates, this.getSchema(collection), this.updateQuery));
 	}
 	override deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>): void {
 		super.deleteQuery(collection, query);
@@ -107,8 +105,7 @@ export class AsyncValidationProvider<I extends Identifier, T extends Database>
 		return super.setItem(collection, id, validateData(data, this.getSchema(collection).props));
 	}
 	override updateItem<K extends DataKey<T>>(collection: K, id: I, updates: Updates<T[K]>): Promise<void> {
-		validateData(updateData<Data>({}, updates), this.getSchema(collection).props, true);
-		return super.updateItem(collection, id, updates);
+		return super.updateItem(collection, id, _validateUpdates(collection, updates, this.getSchema(collection), this.updateItem));
 	}
 	override deleteItem<K extends DataKey<T>>(collection: K, id: I): Promise<void> {
 		return super.deleteItem(collection, id);
@@ -128,8 +125,7 @@ export class AsyncValidationProvider<I extends Identifier, T extends Database>
 		return super.setQuery(collection, query, validateData(data, this.getSchema(collection).props));
 	}
 	override updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>, updates: Updates<T[K]>): Promise<void> {
-		validateData(updateData<Data>({}, updates), this.getSchema(collection).props, true);
-		return super.updateQuery(collection, query, updates);
+		return super.updateQuery(collection, query, _validateUpdates(collection, updates, this.getSchema(collection), this.updateQuery));
 	}
 	override deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>): Promise<void> {
 		return super.deleteQuery(collection, query);
@@ -199,4 +195,15 @@ function* _yieldValidItems<I extends Identifier, T extends Data>(
 		}
 	}
 	if (messages.length) throw new ValueError(`Invalid data for "${collection}"\n${messages.join("\n")}`, { items, caller });
+}
+
+/** Validate a set of updates for a collection. */
+function _validateUpdates<T extends Data>(collection: string, updates: Updates<T>, schema: DataSchema<T>, caller: AnyFunction): Updates<T>;
+function _validateUpdates<T extends Data>(collection: string, updates: Updates<T>, schema: DataSchema<T>, caller: AnyFunction): Partial<T> {
+	try {
+		return validateData<Partial<T>>(updates, PARTIAL(schema).props);
+	} catch (thrown) {
+		if (!(thrown instanceof Feedback)) throw thrown;
+		throw new ValueError(`Invalid updates for "${collection}"\n${thrown.message}`, { updates, caller });
+	}
 }
