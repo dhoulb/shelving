@@ -16,8 +16,8 @@ export async function _getMessageJSON(
 	if (!trimmed.length) return undefined;
 	try {
 		return JSON.parse(trimmed);
-	} catch {
-		throw new MessageError("Body must be valid JSON", { received: trimmed, caller });
+	} catch (cause) {
+		throw new MessageError("Body must be valid JSON", { received: trimmed, cause, caller });
 	}
 }
 
@@ -28,8 +28,8 @@ export async function _getMessageFormData(
 ): Promise<unknown> {
 	try {
 		return await message.formData();
-	} catch {
-		throw new MessageError("Body must be valid valid form multipart data", { caller });
+	} catch (cause) {
+		throw new MessageError(`Body must be valid form multipart data`, { cause, caller });
 	}
 }
 
