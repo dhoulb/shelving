@@ -63,9 +63,9 @@ export async function encodeToken(
 	// Encode payload.
 	const payload = encodeBase64URL(
 		JSON.stringify({
-			nbf: requireDate(nbf).getTime() / 1000, // By JWT convention, times are in seconds.
-			iat: requireDate(iat).getTime() / 1000, // By JWT convention, times are in seconds.
-			exp: (Date.now() + exp) / 1000, // By JWT convention, times are in seconds.
+			nbf: Math.round(requireDate(nbf).getTime() / 1000), // By JWT convention, times are in seconds.
+			iat: Math.round(requireDate(iat).getTime() / 1000), // By JWT convention, times are in seconds.
+			exp: Math.round((Date.now() + exp) / 1000), // By JWT convention, times are in seconds.
 			...claims,
 		}),
 	);
