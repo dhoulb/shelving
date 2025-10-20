@@ -4,13 +4,13 @@ import { decodeBase64URLBytes, decodeBase64URLString, encodeBase64URL } from "./
 import { type Bytes, getBytes, type PossibleBytes, requireBytes } from "./bytes.js";
 import { DAY, MINUTE, SECOND } from "./constants.js";
 import type { Data } from "./data.js";
+import { type PossibleDate, requireDate } from "./date.js";
 import type { AnyCaller, AnyFunction } from "./function.js";
 
 // Constants.
 const HASH = "SHA-512";
 const ALGORITHM = { name: "HMAC", hash: HASH };
 const HEADER = { alg: "HS512", typ: "JWT" };
-const EXPIRY_MS = DAY * 10;
 const SKEW_MS = MINUTE; // Allow 1 minute clock skew.
 const SECRET_BYTES = 64; // Minimum 64 bytes / 512 bits
 
@@ -24,20 +24,51 @@ function _getKey(caller: AnyFunction, secret: PossibleBytes, ...usages: KeyUsage
 	return crypto.subtle.importKey("raw", requireBytes(secret), ALGORITHM, false, usages);
 }
 
+export interface TokenClaims extends Data {
+	/**
+	 * "Issued at" date (defaults to "now").
+	 * - Not used for validation, but always set in the token payload.
+	 * - Can be used to determine when the token was issued, and possibly revoke tokens issued before a certain date.
+	 */
+	readonly iat?: PossibleDate;
+	/**
+	 * "Not before" date.
+	 * - When validating the token, tokens before this date will be rejected
+	 */
+	readonly nbf?: PossibleDate;
+	/**
+	 * Expiry in milliseconds (defaults to "30 days").
+	 * - When validating the token, tokens after this date will be rejected
+	 */
+	readonly exp?: number;
+}
+
 /**
  * Encode a JWT and return the string token.
  * - Currently only supports HMAC SHA-512 signing.
  *
+ * @param claims The payload claims to include in the JWT.
+ * @param secret The secret key to sign the JWT with.
+ * @param expiry The expiry time in milliseconds (defaults to 30 days).
+ *
  * @throws ValueError If the input parameters, e.g. `secret` or `issuer`, are invalid.
  */
-export async function encodeToken(claims: Data, secret: PossibleBytes): Promise<string> {
+export async function encodeToken(
+	{ nbf = "now", iat = "now", exp = DAY * 30, ...claims }: TokenClaims,
+	secret: PossibleBytes,
+): Promise<string> {
 	// Encode header.
 	const header = encodeBase64URL(JSON.stringify(HEADER));
 
 	// Encode payload.
-	const now = Math.floor(Date.now() / 1000);
-	const exp = Math.floor(now + EXPIRY_MS / 1000);
-	const payload = encodeBase64URL(JSON.stringify({ nbf: now, iat: now, exp, ...claims }));
+	const payload = encodeBase64URL(
+		JSON.stringify({
+			nbf: requireDate(nbf).getTime() / 1000, // By JWT convention, times are in seconds.
+			iat: requireDate(iat).getTime() / 1000, // By JWT convention, times are in seconds.
+			exp: (Date.now() + exp) / 1000, // By JWT convention, times are in seconds.
+			...claims,
+		}),
+	);
 
 	// Create signature.
 	const key = await _getKey(encodeToken, secret, "sign");
@@ -116,12 +147,10 @@ export async function verifyToken(token: string, secret: PossibleBytes, caller: 
 	if (!isValid) throw new UnauthorizedError("JWT signature does not match", { received: token, caller });
 
 	// Validate payload.
-	const { nbf, iat, exp } = payloadData;
+	const { nbf, exp } = payloadData;
 	const now = Date.now();
 	if (typeof nbf === "number" && now < nbf * SECOND - SKEW_MS)
 		throw new UnauthorizedError("JWT cannot be used yet", { received: payloadData, expected: now, caller });
-	if (typeof iat === "number" && now < iat * SECOND - SKEW_MS)
-		throw new UnauthorizedError("JWT not issued yet", { received: payloadData, expected: now, caller });
 	if (typeof exp === "number" && now > exp * SECOND + SKEW_MS)
 		throw new UnauthorizedError("JWT has expired", { received: payloadData, expected: now, caller });
 

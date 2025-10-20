@@ -37,18 +37,13 @@ test("Invalid token based on signature", async () => {
 	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(UnauthorizedError);
 	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(/signature/);
 });
-test("Invalid token based on issued date", async () => {
-	const token = await encodeToken({ ...TOKEN_CLAIMS, iat: Date.now() / 1000 + DAY }, TOKEN_SECRET);
-	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(UnauthorizedError);
-	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(/issued/);
-});
 test("Invalid token based on not before date", async () => {
-	const token = await encodeToken({ ...TOKEN_CLAIMS, nbf: Date.now() / 1000 + DAY }, TOKEN_SECRET);
+	const token = await encodeToken({ ...TOKEN_CLAIMS, nbf: Date.now() + DAY }, TOKEN_SECRET);
 	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(UnauthorizedError);
 	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(/used/);
 });
 test("Invalid token based on expiry", async () => {
-	const token = await encodeToken({ ...TOKEN_CLAIMS, exp: Date.now() / 1000 - DAY }, TOKEN_SECRET);
+	const token = await encodeToken({ ...TOKEN_CLAIMS, exp: 0 - DAY }, TOKEN_SECRET);
 	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(UnauthorizedError);
 	expect(() => verifyToken(token, TOKEN_SECRET)).toThrow(/expired/);
 });
