@@ -1,7 +1,6 @@
 import { RequestError } from "../error/RequestError.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { Feedback } from "../feedback/Feedback.js";
-import { getDictionary } from "./dictionary.js";
 import { isError } from "./error.js";
 import type { AnyCaller } from "./function.js";
 
@@ -28,7 +27,7 @@ export async function _getMessageFormData(
 	caller: AnyCaller,
 ): Promise<unknown> {
 	try {
-		return getDictionary(await message.formData());
+		return await message.formData();
 	} catch {
 		throw new MessageError("Body must be valid valid form multipart data", { caller });
 	}
@@ -43,7 +42,7 @@ export function _getMessageContent(
 	if (!type || type?.startsWith("text/")) return message.text();
 	if (type?.startsWith("application/json")) return _getMessageJSON(message, MessageError, caller);
 	if (type?.startsWith("multipart/form-data")) return _getMessageFormData(message, MessageError, caller);
-	throw new MessageError("Content-Type must be text/*, application/json, or multipart/form-data", { received: type, caller });
+	return Promise.resolve();
 }
 
 /**

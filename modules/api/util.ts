@@ -89,8 +89,8 @@ async function handleEndpoint<P, R>(
 
 	// If content is undefined, it means the request has no body, so params are the only payload.
 	// - If the content is a plain object, merge if with the params.
-	// - If the content is anything else (e.g. string, number, array), set it as a single `content` property.
-	const payload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : { content, ...params };
+	// - If the content is anything else (e.g. string, number, array), return it directly (but you'll have no way to access the other params).
+	const payload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : content;
 
 	// Call `endpoint.handle()` with the payload and request.
 	return endpoint.handle(callback, payload, request);
