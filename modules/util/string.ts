@@ -37,7 +37,9 @@ export function assertString(value: unknown, min?: number, max?: number, caller:
 export function getString(value: unknown): string | undefined {
 	if (typeof value === "string") return value;
 	if (typeof value === "number") return value.toString();
+	if (typeof value === "boolean") return value ? "true" : "false";
 	if (value instanceof Date) return value.toISOString();
+	if (Array.isArray(value)) return value.map(getString).filter(Boolean).join(",");
 	return undefined;
 }
 
