@@ -39,10 +39,14 @@ test("assertString()", () => {
 });
 test("requireString()", () => {
 	// Assert string.
-	expect(() => requireString("abc")).not.toThrow();
-	expect(() => requireString(123)).not.toThrow();
-	expect(() => requireString(new Date())).not.toThrow();
-	expect(() => requireString(true as any)).toThrow(RequiredError);
+	expect(requireString("abc")).toBe("abc");
+	expect(requireString(123)).toBe("123");
+	expect(requireString(true)).toBe("true");
+	expect(requireString(false)).toBe("false");
+	expect(typeof requireString(new Date())).toBe("string");
+
+	// Assert not string.
+	expect(() => requireString(undefined as any)).toThrow(RequiredError);
 
 	// Check maximum.
 	expect(requireString("abc", 3)).toBe("abc");

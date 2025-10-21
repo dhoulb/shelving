@@ -13,8 +13,8 @@ import { isBetween } from "./number.js";
  */
 export type NotString = { toUpperCase?: never; toLowerCase?: never };
 
-/** Things that can be easily converted to a string. */
-export type PossibleString = string | number | Date;
+/** Things that can be reliably converted to a string with no confusion. */
+export type PossibleString = boolean | string | number | Date;
 
 /** Is a value a string (optionally with specified min/max length). */
 export function isString(value: unknown, min = 0, max = Number.POSITIVE_INFINITY): value is string {
