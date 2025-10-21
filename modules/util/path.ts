@@ -1,6 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
-import { type Nullish, notNullish } from "./null.js";
+import type { Nullish } from "./null.js";
+import { getURL } from "./url.js";
 
 /** Absolute path string starts with `/` slash. */
 export type AbsolutePath = `/` | `/${string}`;
@@ -44,14 +45,11 @@ function _cleanPath(path: string): string {
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function getPath(value: Nullish<string | URL>, base: AbsolutePath | undefined = "/"): AbsolutePath | undefined {
-	if (notNullish(value)) {
-		try {
-			const { pathname, search, hash } = new URL(value, `http://j.com${base}/`);
-			if (isAbsolutePath(pathname)) return `${_cleanPath(pathname)}${search}${hash}`;
-		} catch {
-			//
-		}
+export function getPath(value: Nullish<string | URL>, base: AbsolutePath = "/"): AbsolutePath | undefined {
+	const url = getURL(value, `http://j.com${base === "/" || base.endsWith("/") ? base : `${base}/`}`);
+	if (url) {
+		const { pathname, search, hash } = url;
+		if (isAbsolutePath(pathname)) return `${_cleanPath(pathname)}${search}${hash}`;
 	}
 }
 
