@@ -110,17 +110,26 @@ function _doesNotInclude<T>(this: T[], value: T) {
 	return !this.includes(value);
 }
 
+/** Add an item to an array (immutably) and return a new array with that item (or the same array if no changes were made). */
+export const withArrayItem: <T>(items: PossibleArray<T>, add: T) => ImmutableArray<T> = withArrayItems;
+
 /** Pick multiple items from an array (immutably) and return a new array with those items (or the same array if no changes were made). */
 export function pickArrayItems<T>(items: PossibleArray<T>, ...pick: T[]): ImmutableArray<T> {
 	const arr = Array.from(pickItems(items, ...pick));
 	return isArray(items) && arr.length === items.length ? items : arr;
 }
 
+/** Pick an item from an array (immutably) and return a new array with that item (or the same array if no changes were made). */
+export const pickArrayItem: <T>(items: PossibleArray<T>, pick: T) => ImmutableArray<T> = pickArrayItems;
+
 /** Remove multiple items from an array (immutably) and return a new array without those items (or the same array if no changes were made). */
 export function omitArrayItems<T>(items: PossibleArray<T>, ...omit: T[]): ImmutableArray<T> {
 	const filtered = Array.from(omitItems(items, ...omit));
 	return isArray(items) && filtered.length === items.length ? items : filtered;
 }
+
+/** Remove an item from an array (immutably) and return a new array without those items (or the same array if no changes were made). */
+export const omitArrayItem: <T>(items: PossibleArray<T>, omit: T) => ImmutableArray<T> = omitArrayItems;
 
 /** Toggle an item in and out of an array (immutably) and return a new array with or without the specified items (or the same array if no changes were made). */
 export function toggleArrayItems<T>(items: PossibleArray<T>, ...toggle: T[]): ImmutableArray<T> {
@@ -129,6 +138,9 @@ export function toggleArrayItems<T>(items: PossibleArray<T>, ...toggle: T[]): Im
 	const filtered = arr.filter(_doesNotInclude, toggle);
 	return extras.length ? [...filtered, ...extras] : filtered.length !== arr.length ? filtered : isArray(items) ? items : arr;
 }
+
+/** Toggle an item in and out of an array (immutably) and return a new array with or without the specified item (or the same array if no changes were made). */
+export const toggleArrayItem: <T>(items: PossibleArray<T>, toggle: T) => ImmutableArray<T> = toggleArrayItems;
 
 /** Return a shuffled version of an array or iterable. */
 export function shuffleArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
@@ -157,13 +169,13 @@ export function addArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
 	for (const item of items) if (arr.indexOf(item) < 0) arr.push(item);
 }
 
-/**
- * Remove multiple items from an array (by reference).
- * - Skip items that already exist.
- */
+/** Remove multiple items from an array (by reference). */
 export function deleteArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
 	for (let i = arr.length - 1; i >= 0; i--) if (i in arr && items.includes(arr[i] as T)) arr.splice(i, 1);
 }
+
+/** Remove an item from an array (by reference). */
+export const deleteArrayItem: <T>(arr: MutableArray<T>, item: T) => void = deleteArrayItems;
 
 /** Return an array of the unique items in an array. */
 export function getUniqueArray<T>(list: PossibleArray<T>): ImmutableArray<T> {

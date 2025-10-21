@@ -72,6 +72,9 @@ export const withDictionaryItems: <T>(dict: ImmutableDictionary<T>, props: Possi
 /** Remove several key/value entries from a dictionary object (immutably) and return a new object without those props. */
 export const omitDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: string[]) => ImmutableDictionary<T> = omitProps;
 
+/** Remove a key/value entry from a dictionary object (immutably) and return a new object without that prop. */
+export const omitDictionaryItem: <T>(dict: ImmutableDictionary<T>, key: string) => ImmutableDictionary<T> = omitProps;
+
 /** Pick several props from a dictionary object and return a new object with only thos props. */
 export const pickDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: string[]) => ImmutableDictionary<T> = pickProps;
 
@@ -83,6 +86,9 @@ export const setDictionaryItems: <T>(dict: MutableDictionary<T>, entries: Possib
 
 /** Remove several key/value entries from a dictionary object (by reference). */
 export const deleteDictionaryItems: <T extends MutableDictionary>(dict: T, ...keys: string[]) => void = deleteProps;
+
+/** Remove a key/value entry from a dictionary object (by reference). */
+export const deleteDictionaryItem: <T extends MutableDictionary>(dict: T, key: string) => void = deleteProps;
 
 /** Type that represents an empty dictionary object. */
 export type EmptyDictionary = { readonly [K in never]: never };

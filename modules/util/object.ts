@@ -142,6 +142,9 @@ function _hasntKey<T extends ImmutableObject>(this: Key<T>[], [key]: Prop<T>): b
 	return !this.includes(key);
 }
 
+/** Remove a prop from an object (immutably) and return a new object without that prop. */
+export const omitProp: <T, K extends Key<T>>(input: T, key: K) => Omit<T, K> = omitProps;
+
 /** Pick several props from an object and return a new object with only thos props. */
 export function pickProps<T, K extends Key<T>>(obj: T, ...keys: K[]): Pick<T, K>;
 export function pickProps(input: ImmutableObject, ...keys: (keyof ImmutableObject)[]): ImmutableObject {
@@ -166,6 +169,9 @@ export function setProps<T extends MutableObject>(obj: T, entries: T | Partial<T
 export function deleteProps<T extends MutableObject>(obj: T, ...keys: Key<T>[]): void {
 	for (const key of keys) delete obj[key];
 }
+
+/** Remove a key/value entry from an object (by reference). */
+export const deleteProp: <T extends MutableObject>(input: T, key: Key<T>) => void = deleteProps;
 
 /**
  * Get the prototype of an object instance.
