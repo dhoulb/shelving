@@ -9,6 +9,9 @@ import { isObject, isPlainObject } from "./object.js";
 /** Data object. */
 export type Data = { readonly [K in string]: unknown };
 
+/** Partial data object (values can be explicitly `undefined`). */
+export type PartialData<T extends Data> = { readonly [K in keyof T]?: T[K] | undefined };
+
 /** Key for a data object prop. */
 export type DataKey<T extends Data> = keyof T & string;
 
