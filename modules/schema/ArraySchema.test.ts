@@ -39,14 +39,26 @@ describe("validate()", () => {
 		expect(ARRAY(DATA({ title: STRING })).validate(nestedArray)).toEqual(nestedArray);
 	});
 	test("Non-arrays are invalid", () => {
-		expect(() => schema.validate("abc")).toThrow(Feedback);
 		expect(() => schema.validate(123)).toThrow(Feedback);
 		expect(() => schema.validate({})).toThrow(Feedback);
 		expect(() => schema.validate(true)).toThrow(Feedback);
 		expect(() => schema.validate(() => {})).toThrow(Feedback);
 		expect(() => schema.validate(0)).toThrow(Feedback);
 		expect(() => schema.validate(false)).toThrow(Feedback);
-		expect(() => schema.validate("")).toThrow(Feedback);
+	});
+	test("Strings are split", () => {
+		expect(schema.validate("abc")).toEqual(["abc"]);
+		expect(schema.validate("")).toEqual([]);
+		expect(schema.validate("a,b,c")).toEqual(["a", "b", "c"]);
+		expect(schema.validate("a,,c")).toEqual(["a", "c"]);
+		expect(schema.validate(",a,,c,")).toEqual(["a", "c"]);
+
+		const schema1 = new ArraySchema({ items: STRING, separator: "/" });
+		expect(schema1.validate("a/b/c")).toEqual(["a", "b", "c"]);
+		expect(schema1.validate("a///b/c")).toEqual(["a", "b", "c"]);
+
+		const schema2 = new ArraySchema({ items: STRING, separator: /[\\/|\- ]/ });
+		expect(schema2.validate("a/b-c d|e")).toEqual(["a", "b", "c", "d", "e"]);
 	});
 });
 describe("options.value", () => {
@@ -137,4 +149,7 @@ describe("options.one and options.many", () => {
 		expect(schema.many).toEqual("numbers");
 		expect(schema.placeholder).toEqual("No numbers");
 	});
+});
+describe("options.separator", () => {
+	test("One and many are inherited from items schema", () => {});
 });

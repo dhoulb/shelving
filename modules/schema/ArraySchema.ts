@@ -7,11 +7,18 @@ import { Schema } from "./Schema.js";
 
 /** Allowed options for `ArraySchema` */
 export interface ArraySchemaOptions<T> extends SchemaOptions {
+	/** The default value */
 	readonly value?: ImmutableArray;
+	/** A schema all the array items in the value must conform to */
 	readonly items: Schema<T>;
+	/** Minimum number of items. */
 	readonly min?: number;
+	/** Maximum number of items. */
 	readonly max?: number;
+	/** Whether to deduplicate the items. */
 	readonly unique?: boolean;
+	/** Separator is used */
+	readonly separator?: string | RegExp;
 }
 
 /**
@@ -19,13 +26,6 @@ export interface ArraySchemaOptions<T> extends SchemaOptions {
  *
  * Validates arrays and ensures the array's items match a specified format.
  * Only returns a new instance of the object if it changes (for immutability).
- *
- * Schema options:
- * - `value` The default value
- * - `length` The exact array length required
- * - `min` The minimum array length required
- * - `max` The maximum array length required
- * - `values` A schema all the array items in the value must conform to
  *
  * @example
  *  const schema = new ArraySchema({ min: 1, max: 2, default: [10,11,12], required: true });
@@ -47,6 +47,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	readonly unique: boolean;
 	readonly min: number;
 	readonly max: number;
+	readonly separator: string | RegExp;
 	constructor({
 		items,
 		one = items.one,
@@ -56,6 +57,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		unique = false,
 		min = 0,
 		max = Number.POSITIVE_INFINITY,
+		separator = ",",
 		value = [],
 		...options
 	}: ArraySchemaOptions<T>) {
@@ -64,10 +66,12 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		this.unique = unique;
 		this.min = min;
 		this.max = max;
+		this.separator = separator;
 	}
 	override validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
-		if (!isArray(unsafeValue)) throw new ValueFeedback("Must be array", unsafeValue);
-		const validArray = validateArray(unsafeValue, this.items);
+		const unsafeArray = typeof unsafeValue === "string" ? unsafeValue.split(this.separator).filter(Boolean) : unsafeValue;
+		if (!isArray(unsafeArray)) throw new ValueFeedback("Must be array", unsafeValue);
+		const validArray = validateArray(unsafeArray, this.items);
 		const uniqueArray = this.unique ? getUniqueArray(validArray) : validArray;
 		if (uniqueArray.length < this.min)
 			throw new ValueFeedback(uniqueArray.length ? `Minimum ${this.min} ${this.many}` : "Required", uniqueArray);
