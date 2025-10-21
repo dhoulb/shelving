@@ -21,9 +21,30 @@ describe("validate()", () => {
 		expect(schema.validate("abc")).toBe(true);
 		expect(schema.validate(123)).toBe(true);
 		expect(schema.validate(0)).toBe(false);
-		expect(schema.validate(null)).toBe(false);
 		expect(schema.validate([])).toBe(true);
 		expect(schema.validate({})).toBe(true);
+		expect(schema.validate(0)).toBe(false);
+		expect(schema.validate(-0)).toBe(false);
+		expect(schema.validate("")).toBe(false);
+		expect(schema.validate(undefined)).toBe(false);
+		expect(schema.validate(null)).toBe(false);
+	});
+	test("Strings are converted to boolean", () => {
+		// False.
+		expect(schema.validate("")).toBe(false);
+		expect(schema.validate("   ")).toBe(false);
+		expect(schema.validate("false")).toBe(false);
+		expect(schema.validate("0")).toBe(false);
+		expect(schema.validate("no")).toBe(false);
+		expect(schema.validate("n")).toBe(false);
+		expect(schema.validate("off")).toBe(false);
+		// True.
+		expect(schema.validate("abc")).toBe(true);
+		expect(schema.validate("true")).toBe(true);
+		expect(schema.validate("1")).toBe(true);
+		expect(schema.validate("yes")).toBe(true);
+		expect(schema.validate("y")).toBe(true);
+		expect(schema.validate("on")).toBe(true);
 	});
 });
 describe("options.value", () => {
