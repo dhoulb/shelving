@@ -1,5 +1,5 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
-import type { Data, Database } from "../util/data.js";
+import type { Data, Database, PartialData } from "../util/data.js";
 import { isData } from "../util/data.js";
 import type { Identifier, Item } from "../util/item.js";
 import type { Prop, Value } from "../util/object.js";
@@ -48,10 +48,10 @@ export const DATA = <T extends Data>(props: Schemas<T>): DataSchema<T> => new Da
 export const NULLABLE_DATA = <T extends Data>(props: Schemas<T>): NullableSchema<T> => NULLABLE(new DataSchema({ props }));
 
 /** Create a `DataSchema` that validates partially, i.e. properties can be their value, or `undefined` */
-export function PARTIAL<T extends Data>(source: Schemas<T> | DataSchema<T>): DataSchema<Partial<T>>;
-export function PARTIAL(source: Schemas<Data> | DataSchema<Data>): DataSchema<Partial<Data>> {
+export function PARTIAL<T extends Data>(source: Schemas<T> | DataSchema<T>): DataSchema<PartialData<T>>;
+export function PARTIAL(source: Schemas<Data> | DataSchema<Data>): DataSchema<PartialData<Data>> {
 	const props: Schemas<Data> = source instanceof DataSchema ? source.props : source;
-	return new DataSchema<Partial<Data>>({
+	return new DataSchema<PartialData<Data>>({
 		props: mapProps(props, _optionalProp),
 	});
 }
