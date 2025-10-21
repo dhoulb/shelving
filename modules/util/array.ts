@@ -1,6 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
-import { interleaveItems, omitItems, pickItems } from "./iterate.js";
+import { interleaveItems, isIterable, omitItems, pickItems } from "./iterate.js";
 
 /**
  * Mutable array: an array that can be changed.
@@ -53,7 +53,7 @@ export function assertArray<T>(arr: ImmutableArray<T>, min: 3, max: 3, caller?: 
 export function assertArray<T>(arr: ImmutableArray<T>, min?: 1, max?: number, caller?: AnyCaller): asserts arr is readonly [T, ...T[]];
 export function assertArray<T>(arr: ImmutableArray<T>, min: 2, max?: number, caller?: AnyCaller): asserts arr is readonly [T, T, ...T[]];
 export function assertArray<T>(arr: ImmutableArray<T>, min: 3, max?: number, caller?: AnyCaller): asserts arr is readonly [T, T, T, ...T[]];
-export function assertArray<T>(value: unknown, min?: number, max?: number, caller?: AnyCaller): asserts value is ImmutableArray<T>;
+export function assertArray<T>(arr: ImmutableArray<T>, min?: number, max?: number, caller?: AnyCaller): asserts arr is ImmutableArray<T>;
 export function assertArray(value: unknown, min?: number, max?: number, caller: AnyCaller = assertArray): void {
 	if (!isArray(value, min, max))
 		throw new RequiredError(`Must be array${min !== undefined || max !== undefined ? ` with ${min ?? 0} to ${max ?? "∞"} items` : ""}`, {
@@ -63,8 +63,8 @@ export function assertArray(value: unknown, min?: number, max?: number, caller: 
 }
 
 /** Convert a possible array to an array. */
-export function getArray<T>(list: PossibleArray<T>): ImmutableArray<T> {
-	return Array.isArray(list) ? list : Array.from(list);
+export function getArray(list: unknown): ImmutableArray<unknown> | undefined {
+	return Array.isArray(list) ? list : isIterable(list) ? Array.from(list) : undefined;
 }
 
 /** Convert a possible array to an array (optionally with specified min/max length), or throw `RequiredError` if conversion fails. */
@@ -83,7 +83,7 @@ export function requireArray<T>(arr: ImmutableArray<T>, min: 2, max?: number, ca
 export function requireArray<T>(arr: ImmutableArray<T>, min: 3, max?: number, caller?: AnyCaller): readonly [T, T, T, ...T[]];
 export function requireArray<T>(list: PossibleArray<T>, min?: number, max?: number, caller?: AnyCaller): ImmutableArray<T>;
 export function requireArray<T>(list: PossibleArray<T>, min?: number, max?: number, caller: AnyCaller = requireArray): ImmutableArray<T> {
-	const arr = getArray(list);
+	const arr = Array.isArray(list) ? list : Array.from(list);
 	assertArray(arr, min, max, caller);
 	return arr;
 }

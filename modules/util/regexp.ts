@@ -1,6 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
-import { getArray } from "./array.js";
+import { requireArray } from "./array.js";
 import type { NotString } from "./string.js";
 
 /** Regular expression that always matches everything. */
@@ -48,20 +48,20 @@ const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
 /** Create regular expression that matches any of a list of other expressions. */
 export function createRegExpAny(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
-	const arr = getArray(patterns).filter(Boolean);
+	const arr = requireArray(patterns).filter(Boolean);
 	// If there are no patterns to match against then _no_ string can ever match against any of nothing.
 	if (!arr.length) return NEVER_REGEXP;
 	// Create RegExp using multiple joined matches like `(?:AAA)|(?:BBB)`
-	return new RegExp(`(?:${getArray(patterns).map(getRegExpSource).join(")|(?:")})`, flags);
+	return new RegExp(`(?:${requireArray(patterns).map(getRegExpSource).join(")|(?:")})`, flags);
 }
 
 /** Create regular expression that matches all of a list of other expressions. */
 export function createRegExpAll(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
-	const arr = getArray(patterns).filter(Boolean);
+	const arr = requireArray(patterns).filter(Boolean);
 	// If there are no patterns to match against then _every_ string will match against the entire list of nothing.
 	if (!arr.length) return ALWAYS_REGEXP;
 	// Create RegExp using multiple lookaheads like `^(?=.*?(?:AAA))(?=.*?(?:BBB))`
-	return new RegExp(`^(?=.*?(?:${getArray(patterns).map(getRegExpSource).join("))(?=.*?(?:")}))`, flags);
+	return new RegExp(`^(?=.*?(?:${requireArray(patterns).map(getRegExpSource).join("))(?=.*?(?:")}))`, flags);
 }
 
 /** Regular expression match array that matches a specific string format. */

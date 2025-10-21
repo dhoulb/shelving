@@ -1,5 +1,5 @@
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
-import { getArray } from "../util/array.js";
+import { requireArray } from "../util/array.js";
 import type { Data, Database, DataKey } from "../util/data.js";
 import { isArrayEqual } from "../util/equal.js";
 import type { Identifier, Item, Items, OptionalItem } from "../util/item.js";
@@ -210,7 +210,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	}
 
 	getQuery(query?: ItemQuery<I, T>): Items<I, T> {
-		return getArray(query ? queryItems(this._data.values(), query) : this._data.values());
+		return requireArray(query ? queryItems(this._data.values(), query) : this._data.values());
 	}
 
 	async *getQuerySequence(query?: ItemQuery<I, T>): AsyncIterable<Items<I, T>> {
