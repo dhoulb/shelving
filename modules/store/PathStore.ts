@@ -30,4 +30,8 @@ export class PathStore extends Store<AbsolutePath> {
 	getPath(path: string): AbsolutePath {
 		return requirePath(path, this.value);
 	}
+
+	override toString(): string {
+		return this.value;
+	}
 }
