@@ -36,9 +36,9 @@ export class DictionaryStore<T> extends Store<ImmutableDictionary<T>> implements
 		this.value = withProp(this.value, name, value);
 	}
 
-	/** Delete an item in this dictionary. */
-	delete(name: string): void {
-		this.value = omitProps(this.value, name);
+	/** Delete an item (or several items) in this dictionary. */
+	delete(name: string, ...names: string[]): void {
+		this.value = omitProps(this.value, name, ...names);
 	}
 
 	/** Iterate over the entries of the object. */
