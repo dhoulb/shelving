@@ -140,7 +140,7 @@ describe("omitURLParam()", () => {
 	test("removes single param", () => {
 		expect(omitURLParam("https://a.com?a=1&b=2", "b").href).toBe("https://a.com/?a=1");
 		expect(omitURLParam(new URL("https://a.com?a=1&b=2"), "b").href).toBe("https://a.com/?a=1");
-		expect(omitURLParam("https://a.com?a=1&b=2", "c").href).toBe("https://a.com/?a=1");
-		expect(omitURLParam(new URL("https://a.com?a=1&b=2"), "c").href).toBe("https://a.com/?a=1");
+		expect(omitURLParam("https://a.com?a=1&b=2", "c").href).toBe("https://a.com/?a=1&b=2");
+		expect(omitURLParam(new URL("https://a.com?a=1&b=2"), "c").href).toBe("https://a.com/?a=1&b=2");
 	});
 });
