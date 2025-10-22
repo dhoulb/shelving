@@ -33,7 +33,7 @@ function _cleanPath(path: string): string;
 function _cleanPath(path: string): string {
 	return path
 		.replace(/[/\\]+/g, "/") // Normalise slashes.
-		.replace(/(?!^)\/$/g, ""); // Trailing slashes.
+		.replace(/(?!^)\/$/g, ""); // Trim trailing slashes.
 }
 
 /**
@@ -45,8 +45,8 @@ function _cleanPath(path: string): string {
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function getPath(value: Nullish<string | URL>, base: AbsolutePath = "/"): AbsolutePath | undefined {
-	const url = getURL(value, `http://j.com${base === "/" || base.endsWith("/") ? base : `${base}/`}`);
+export function getPath(value: Nullish<string | URL>, base?: AbsolutePath): AbsolutePath | undefined {
+	const url = getURL(value, base ? `http://j.com${base}${base.endsWith("/") ? "" : "/"}` : "http://j.com");
 	if (url) {
 		const { pathname, search, hash } = url;
 		if (isAbsolutePath(pathname)) return `${_cleanPath(pathname)}${search}${hash}`;
@@ -62,7 +62,7 @@ export function getPath(value: Nullish<string | URL>, base: AbsolutePath = "/"):
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function requirePath(value: string, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
+export function requirePath(value: string | URL, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
 	const path = getPath(value, base);
 	if (!path) throw new RequiredError("Invalid URL", { received: value, caller });
 	return path;
