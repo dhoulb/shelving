@@ -1,13 +1,15 @@
-import { getSetter } from "../util/class.js";
+import { getGetter, getSetter } from "../util/class.js";
 import type { Data } from "../util/data.js";
-import { getDictionary, type ImmutableDictionary } from "../util/dictionary.js";
 import {
 	getURL,
 	getURLParam,
+	getURLParams,
 	omitURLParams,
 	type PossibleURL,
+	type PossibleURLParams,
 	requireURL,
 	requireURLParam,
+	type URLParams,
 	withURLParam,
 	withURLParams,
 } from "../util/url.js";
@@ -74,8 +76,8 @@ export class URLStore extends Store<URL> {
 	}
 
 	/** Get the URL params as a dictionary. */
-	get params(): ImmutableDictionary<string> {
-		return getDictionary(this.value.searchParams);
+	get params(): URLParams {
+		return getURLParams(this.value.searchParams, getGetter(this, "params"));
 	}
 
 	/** Return a single param in this URL, or `undefined` if it could not be found. */
@@ -114,7 +116,7 @@ export class URLStore extends Store<URL> {
 	}
 
 	/** Return the current URL with an additional param. */
-	withParams(params: Data): URL {
+	withParams(params: PossibleURLParams): URL {
 		return withURLParams(this.value, params, this.withParams);
 	}
 
