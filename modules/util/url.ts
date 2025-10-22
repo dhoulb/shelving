@@ -23,13 +23,7 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
 
 /** Convert a possible URL to a URL, or return `undefined` if conversion fails. */
 export function getURL(possible: Nullish<PossibleURL>, base: PossibleURL | undefined = _BASE): URL | undefined {
-	if (notNullish(possible)) {
-		try {
-			return isURL(possible) ? possible : new URL(possible, base);
-		} catch (_e) {
-			//
-		}
-	}
+	if (notNullish(possible)) return isURL(possible) ? possible : URL.parse(possible, base) || undefined;
 }
 const _BASE = typeof document === "object" ? document.baseURI : undefined;
 
