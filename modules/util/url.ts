@@ -105,7 +105,7 @@ export function withURLParam(url: PossibleURL, key: string, value: unknown, call
  */
 export function withURLParams(url: PossibleURL, params: PossibleURLParams, caller: AnyCaller = withURLParams): URL {
 	const input = requireURL(url);
-	const output = requireURL(url);
+	const output = new URL(input);
 	for (const [key, str] of getURLEntries(params, caller)) output.searchParams.set(key, str);
 	return input.href === output.href ? input : output;
 }
@@ -113,7 +113,7 @@ export function withURLParams(url: PossibleURL, params: PossibleURLParams, calle
 /** Return a URL without one or more params (or same URL if no changes were made). */
 export function omitURLParams(url: PossibleURL, ...keys: string[]): URL {
 	const input = requireURL(url);
-	const output = requireURL(url);
+	const output = new URL(input);
 	for (const key of keys) output.searchParams.delete(key);
 	return input.href === output.href ? input : output;
 }

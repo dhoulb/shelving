@@ -96,6 +96,20 @@ describe("withURLParam()", () => {
 		expect(withURLParam("https://a.com", "a", true).href).toBe("https://a.com/?a=true");
 		expect(withURLParam("https://a.com", "a", [1, true, "b"]).href).toBe("https://a.com/?a=1%2Ctrue%2Cb");
 	});
+	test("returns a new value", () => {
+		const input = new URL("https://a.com");
+		const output = withURLParam(input, "a", "1");
+		expect(output).not.toBe(input);
+		expect(output.href).toBe("https://a.com/?a=1");
+		expect(input.href).toBe("https://a.com/");
+	});
+	test("returns same value if unchanged", () => {
+		const input = new URL("https://a.com?a=1");
+		const output = withURLParam(input, "a", "1");
+		expect(output).toBe(input);
+		expect(output.href).toBe("https://a.com/?a=1");
+		expect(input.href).toBe("https://a.com/?a=1");
+	});
 });
 describe("withURLParams()", () => {
 	test("sets multiple params with data", () => {
@@ -123,6 +137,20 @@ describe("withURLParams()", () => {
 		expect(withURLParams(new URL("https://a.com"), new URL("https://a.com?a=1&b=2")).href).toBe("https://a.com/?a=1&b=2");
 		expect(withURLParams(new URL("https://a.com?c=3"), new URL("https://a.com?a=1&b=2")).href).toBe("https://a.com/?c=3&a=1&b=2");
 	});
+	test("returns a new value", () => {
+		const input = new URL("https://a.com");
+		const output = withURLParams(input, { a: 1, b: "2" });
+		expect(output).not.toBe(input);
+		expect(output.href).toBe("https://a.com/?a=1&b=2");
+		expect(input.href).toBe("https://a.com/");
+	});
+	test("returns same value if unchanged", () => {
+		const input = new URL("https://a.com?a=1&b=2");
+		const output = withURLParams(input, { a: 1, b: "2" });
+		expect(output).toBe(input);
+		expect(output.href).toBe("https://a.com/?a=1&b=2");
+		expect(input.href).toBe("https://a.com/?a=1&b=2");
+	});
 });
 describe("omitURLParams()", () => {
 	test("removes params", () => {
@@ -134,6 +162,20 @@ describe("omitURLParams()", () => {
 		expect(omitURLParams(new URL("https://a.com?a=1&b=2"), "a", "b").href).toBe("https://a.com/");
 		expect(omitURLParams(new URL("https://a.com?a=1&b=2"), "a", "b", "c").href).toBe("https://a.com/");
 		expect(omitURLParams(new URL("https://a.com"), "a", "b", "c").href).toBe("https://a.com/");
+	});
+	test("returns a new value", () => {
+		const input = new URL("https://a.com?a=1&b=2");
+		const output = omitURLParams(input, "a", "b");
+		expect(output).not.toBe(input);
+		expect(output.href).toBe("https://a.com/");
+		expect(input.href).toBe("https://a.com/?a=1&b=2");
+	});
+	test("returns same value if unchanged", () => {
+		const input = new URL("https://a.com?a=1&b=2");
+		const output = omitURLParams(input, "d", "c");
+		expect(output).toBe(input);
+		expect(output.href).toBe("https://a.com/?a=1&b=2");
+		expect(input.href).toBe("https://a.com/?a=1&b=2");
 	});
 });
 describe("omitURLParam()", () => {
