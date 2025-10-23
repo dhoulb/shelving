@@ -20,7 +20,7 @@ export class BooleanSchema extends Schema<boolean> {
 	}
 	validate(unsafeValue: unknown = this.value): boolean {
 		const value: boolean = typeof unsafeValue === "string" ? !NEGATIVE.includes(unsafeValue.toLowerCase().trim()) : !!unsafeValue;
-		if (this.required) throw new Feedback("Required");
+		if (this.required && !value) throw new Feedback("Required");
 		return value;
 	}
 }
