@@ -107,12 +107,12 @@ test("formatWhen()", () => {
 	// Simple tests.
 	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("24h ago");
 	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("in 9h");
-	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "short" })).toBe("24 hr ago");
-	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "short" })).toBe("in 9 hr");
-	expect(formatWhen(DAY, DAY * 2)).toBe("24 hr ago"); // default is "short"
-	expect(formatWhen(HOUR * 10, HOUR)).toBe("in 9 hr"); // default is "short"
-	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "long" })).toBe("in 9 hours");
+	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "short" })).toBe("24 hr ago");
+	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "short" })).toBe("in 9 hr");
+	expect(formatWhen(DAY, DAY * 2)).toBe("24 hr ago"); // default is "short"
+	expect(formatWhen(HOUR * 10, HOUR)).toBe("in 9 hr"); // default is "short"
+	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "long" })).toBe("in 9 hours");
 
 	// Rounding tests.
-	expect(formatWhen(DAY, YEAR * 1 + DAY * 10, { unitDisplay: "long" })).toBe("12 months ago");
+	expect(formatWhen(DAY, YEAR * 1 + DAY * 10, { unitDisplay: "long" })).toBe("12 months ago");
 });

@@ -1,5 +1,16 @@
 import { describe, expect, test } from "bun:test";
-import { boundNumber, getNumber, getRange, roundNumber, roundStep, sumNumbers, truncateNumber, ValueError, wrapNumber } from "../index.js";
+import {
+	boundNumber,
+	getNumber,
+	getPercent,
+	getRange,
+	roundNumber,
+	roundStep,
+	sumNumbers,
+	truncateNumber,
+	ValueError,
+	wrapNumber,
+} from "../index.js";
 
 test("roundNumber(): Works correctly", () => {
 	expect(roundNumber(123.456, 0)).toBe(123);
@@ -94,6 +105,17 @@ describe("getNumber()", () => {
 		expect<number | undefined>(getNumber(".")).toBe(undefined);
 		expect<number | undefined>(getNumber("a")).toBe(undefined);
 		expect<number | undefined>(getNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(undefined);
+	});
+});
+describe("getPercent()", () => {
+	test("Works correctly", () => {
+		expect(getPercent(1)).toBe(1);
+		expect(getPercent(10)).toBe(10);
+		expect(getPercent(1, 1)).toBe(100);
+		expect(getPercent(1, 2)).toBe(50);
+		expect(getPercent(2, 1)).toBe(200);
+		expect(getPercent(0, 1)).toBe(0);
+		expect(getPercent(1, 0)).toBe(Infinity);
 	});
 });
 test("sumNumbers()", () => {

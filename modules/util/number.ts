@@ -159,10 +159,10 @@ export function wrapNumber(num: number, min: number, max: number): number {
  * Get a number as a percentage of another number.
  *
  * @param numerator Number representing the amount of progress.
- * @param denumerator The number representing the whole amount.
+ * @param denumerator The number representing the whole amount (defaults to 100).
  */
-export function getPercent(numerator: number, denumerator: number) {
-	return Math.max(0, Math.min(100, (100 / denumerator) * numerator));
+export function getPercent(numerator: number, denumerator = 100) {
+	return denumerator === 100 ? numerator : (100 / denumerator) * numerator;
 }
 
 /** Sum an iterable set of numbers and return the total. */

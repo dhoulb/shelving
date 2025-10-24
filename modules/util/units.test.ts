@@ -95,62 +95,62 @@ describe("to()", () => {
 });
 describe("format()", () => {
 	test("format() short units that work with Intl.NumberFormat", () => {
-		expect(LENGTH_UNITS.require("meter").format(123)).toBe("123 m");
-		expect(LENGTH_UNITS.require("centimeter").format(1234)).toBe("1,234 cm");
-		expect(LENGTH_UNITS.require("foot").format(123)).toBe("123 ft");
-		expect(LENGTH_UNITS.require("yard").format(1234)).toBe("1,234 yd");
+		expect(LENGTH_UNITS.require("meter").format(123)).toBe("123 m");
+		expect(LENGTH_UNITS.require("centimeter").format(1234)).toBe("1,234 cm");
+		expect(LENGTH_UNITS.require("foot").format(123)).toBe("123 ft");
+		expect(LENGTH_UNITS.require("yard").format(1234)).toBe("1,234 yd");
 
 		// Precision.
-		expect(LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0 })).toBe("1 km");
-		expect(LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe("1.11 km");
-		expect(LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 4, minimumFractionDigits: 4 })).toBe("1.1111 km");
-		expect(LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 6, minimumFractionDigits: 6 })).toBe("1.111100 km");
+		expect(LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0 })).toBe("1 km");
+		expect(LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe("1.11 km");
+		expect(LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 4, minimumFractionDigits: 4 })).toBe("1.1111 km");
+		expect(LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 6, minimumFractionDigits: 6 })).toBe("1.111100 km");
 	});
 	test("format() long units that work with Intl.NumberFormat", () => {
-		expect(LENGTH_UNITS.require("meter").format(0, { unitDisplay: "long" })).toBe("0 meters");
-		expect(LENGTH_UNITS.require("meter").format(1, { unitDisplay: "long" })).toBe("1 meter");
-		expect(LENGTH_UNITS.require("meter").format(2, { unitDisplay: "long" })).toBe("2 meters");
-		expect(LENGTH_UNITS.require("meter").format(123, { unitDisplay: "long" })).toBe("123 meters");
-		expect(LENGTH_UNITS.require("meter").format(1234, { unitDisplay: "long" })).toBe("1,234 meters");
-		expect(LENGTH_UNITS.require("foot").format(1, { unitDisplay: "long" })).toBe("1 foot");
-		expect(LENGTH_UNITS.require("foot").format(123, { unitDisplay: "long" })).toBe("123 feet");
-		expect(LENGTH_UNITS.require("foot").format(1234, { unitDisplay: "long" })).toBe("1,234 feet");
-		expect(LENGTH_UNITS.require("yard").format(1, { unitDisplay: "long" })).toBe("1 yard");
-		expect(LENGTH_UNITS.require("yard").format(123, { unitDisplay: "long" })).toBe("123 yards");
-		expect(LENGTH_UNITS.require("yard").format(1234, { unitDisplay: "long" })).toBe("1,234 yards");
+		expect(LENGTH_UNITS.require("meter").format(0, { unitDisplay: "long" })).toBe("0 meters");
+		expect(LENGTH_UNITS.require("meter").format(1, { unitDisplay: "long" })).toBe("1 meter");
+		expect(LENGTH_UNITS.require("meter").format(2, { unitDisplay: "long" })).toBe("2 meters");
+		expect(LENGTH_UNITS.require("meter").format(123, { unitDisplay: "long" })).toBe("123 meters");
+		expect(LENGTH_UNITS.require("meter").format(1234, { unitDisplay: "long" })).toBe("1,234 meters");
+		expect(LENGTH_UNITS.require("foot").format(1, { unitDisplay: "long" })).toBe("1 foot");
+		expect(LENGTH_UNITS.require("foot").format(123, { unitDisplay: "long" })).toBe("123 feet");
+		expect(LENGTH_UNITS.require("foot").format(1234, { unitDisplay: "long" })).toBe("1,234 feet");
+		expect(LENGTH_UNITS.require("yard").format(1, { unitDisplay: "long" })).toBe("1 yard");
+		expect(LENGTH_UNITS.require("yard").format(123, { unitDisplay: "long" })).toBe("123 yards");
+		expect(LENGTH_UNITS.require("yard").format(1234, { unitDisplay: "long" })).toBe("1,234 yards");
 
 		// Precision.
 		expect(
 			LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0, unitDisplay: "long" }),
-		).toBe("1 kilometer");
+		).toBe("1 kilometer");
 		expect(
 			LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2, unitDisplay: "long" }),
-		).toBe("1.11 kilometers");
+		).toBe("1.11 kilometers");
 		expect(
 			LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 4, minimumFractionDigits: 4, unitDisplay: "long" }),
-		).toBe("1.1111 kilometers");
+		).toBe("1.1111 kilometers");
 		expect(
 			LENGTH_UNITS.require("kilometer").format(1.1111, { maximumFractionDigits: 6, minimumFractionDigits: 6, unitDisplay: "long" }),
-		).toBe("1.111100 kilometers");
+		).toBe("1.111100 kilometers");
 	});
 	test("format() short units that are polyfilled", () => {
-		expect(ANGLE_UNITS.require("radian").format(123)).toBe("123 rad");
+		expect(ANGLE_UNITS.require("radian").format(123)).toBe("123 rad");
 
 		// Precision.
-		expect(ANGLE_UNITS.require("radian").format(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0 })).toBe("1 rad");
-		expect(ANGLE_UNITS.require("radian").format(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe("1.11 rad");
+		expect(ANGLE_UNITS.require("radian").format(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0 })).toBe("1 rad");
+		expect(ANGLE_UNITS.require("radian").format(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2 })).toBe("1.11 rad");
 	});
 	test("format() long units that work with Intl.NumberFormat", () => {
-		expect(ANGLE_UNITS.require("radian").format(0, { unitDisplay: "long" })).toBe("0 radians");
-		expect(ANGLE_UNITS.require("radian").format(1, { unitDisplay: "long" })).toBe("1 radian");
-		expect(ANGLE_UNITS.require("radian").format(2, { unitDisplay: "long" })).toBe("2 radians");
+		expect(ANGLE_UNITS.require("radian").format(0, { unitDisplay: "long" })).toBe("0 radians");
+		expect(ANGLE_UNITS.require("radian").format(1, { unitDisplay: "long" })).toBe("1 radian");
+		expect(ANGLE_UNITS.require("radian").format(2, { unitDisplay: "long" })).toBe("2 radians");
 
 		// Precision.
 		expect(ANGLE_UNITS.require("radian").format(1.1111, { maximumFractionDigits: 0, minimumFractionDigits: 0, unitDisplay: "long" })).toBe(
-			"1 radians",
+			"1 radian",
 		);
 		expect(ANGLE_UNITS.require("radian").format(1.1111, { maximumFractionDigits: 2, minimumFractionDigits: 2, unitDisplay: "long" })).toBe(
-			"1.11 radians",
+			"1.11 radians",
 		);
 	});
 });

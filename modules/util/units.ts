@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
-import { formatNumber, formatQuantity, pluralizeQuantity } from "./format.js";
+import { formatUnit, type QuantityOptions } from "./format.js";
 import type { AnyFunction } from "./function.js";
 import { ImmutableMap, type MapKey } from "./map.js";
 import type { ImmutableObject } from "./object.js";
@@ -19,18 +19,10 @@ function _convert(amount: number, conversion: Conversion): number {
 }
 
 // Params for a unit.
-type UnitProps<T extends string> = {
-	/** Short abbreviation for this unit, e.g. `km` (defaults to first letter of `id`). */
-	readonly abbr?: string;
-	/** Singular name for this unit, e.g. `kilometer` (defaults to `id` + "s"). */
-	readonly one?: string;
-	/** Plural name for this unit, e.g. `kilometers` (defaults to `id`). */
-	readonly many?: string;
+interface UnitProps<T extends string> extends QuantityOptions {
 	/** Conversions to other units (typically needs at least the base conversion, unless it's already the base unit). */
 	readonly to?: Conversions<T>;
-	/** Possible options for formatting these units with `Intl.NumberFormat` (`.unit` can be specified if different from key, but is not required). */
-	readonly options?: Readonly<Intl.NumberFormatOptions> | undefined;
-};
+}
 
 /** Represent a unit. */
 export class Unit<K extends string> {
@@ -40,19 +32,8 @@ export class Unit<K extends string> {
 	public readonly list: UnitList<K>;
 	/** String key for this unit, e.g. `kilometer` */
 	public readonly key: K;
-	/** Short abbreviation for this unit, e.g. `km` (defaults to first letter of `id`). */
-	public readonly abbr: string;
-	/** Singular name for this unit, e.g. `kilometer` (defaults to `id`). */
-	public readonly one: string;
-	/** Plural name for this unit, e.g. `kilometers` (defaults to `singular` + "s"). */
-	public readonly many: string;
-	/** Possible options for formatting these units with `Intl.NumberFormat` (`.unit` can be specified if different from key, but is not required). */
-	public readonly options: Readonly<Intl.NumberFormatOptions> | undefined;
-
-	/** Title for this unit (uses format `abbr (plural)`, e.g. `fl oz (US fluid ounces)`) */
-	get title(): string {
-		return `${this.abbr} (${this.many})`;
-	}
+	/** Possible options for formatting these units. */
+	public readonly options: Readonly<QuantityOptions> | undefined;
 
 	constructor(
 		/** `UnitList` this unit belongs to. */
@@ -60,13 +41,10 @@ export class Unit<K extends string> {
 		/** String key for this unit, e.g. `kilometer` */
 		key: K,
 		/** Props to configure this unit. */
-		{ abbr = key.slice(0, 1), one = key.replace(/-/, " "), many = `${one}s`, options, to }: UnitProps<K>,
+		{ to, ...options }: UnitProps<K>,
 	) {
 		this.list = list;
 		this.key = key;
-		this.abbr = abbr;
-		this.one = one;
-		this.many = many;
 		this.options = options;
 		this._to = to;
 	}
@@ -114,15 +92,8 @@ export class Unit<K extends string> {
 	 * - Uses `Intl.NumberFormat` if this is a supported unit (so e.g. `ounce` is translated to e.g. `Unze` in German).
 	 * - Polyfills unsupported units to use long/short form based on `options.unitDisplay`.
 	 */
-	format(amount: number, options?: Intl.NumberFormatOptions): string {
-		// If possible use `Intl` so that the user's locale is used.
-		if (Intl.supportedValuesOf("unit").includes(this.key))
-			return formatNumber(amount, { style: "unit", unitDisplay: "short", ...this.options, ...options, unit: this.key });
-
-		// Otherwise, use the default number format.
-		// If unitDisplay is "long" use the singular/plural form.
-		const o: Intl.NumberFormatOptions = { style: "decimal", unitDisplay: "short", ...this.options, ...options };
-		return o.unitDisplay === "long" ? pluralizeQuantity(amount, this.one, this.many, o) : formatQuantity(amount, this.abbr, o);
+	format(amount: number, options?: QuantityOptions): string {
+		return formatUnit(amount, this.key, { ...this.options, ...options });
 	}
 }
 
@@ -227,21 +198,21 @@ export const MASS_UNITS = new UnitList({
 });
 export type MassUnitKey = MapKey<typeof MASS_UNITS>;
 
-const TIME_OPTIONS: Intl.NumberFormatOptions = {
+const TIME_OPTIONS: QuantityOptions = {
 	roundingMode: "trunc",
 	maximumFractionDigits: 0,
 };
 
 /** Time units. */
 export const TIME_UNITS = new UnitList({
-	millisecond: { abbr: "ms", options: TIME_OPTIONS },
-	second: { to: { millisecond: SECOND }, options: TIME_OPTIONS },
-	minute: { to: { millisecond: MINUTE }, options: TIME_OPTIONS },
-	hour: { to: { millisecond: HOUR }, options: TIME_OPTIONS },
-	day: { to: { millisecond: DAY }, options: TIME_OPTIONS },
-	week: { to: { millisecond: WEEK }, options: TIME_OPTIONS },
-	month: { to: { millisecond: MONTH }, options: TIME_OPTIONS },
-	year: { to: { millisecond: YEAR }, options: TIME_OPTIONS },
+	millisecond: { ...TIME_OPTIONS, abbr: "ms" },
+	second: { ...TIME_OPTIONS, to: { millisecond: SECOND } },
+	minute: { ...TIME_OPTIONS, to: { millisecond: MINUTE } },
+	hour: { ...TIME_OPTIONS, to: { millisecond: HOUR } },
+	day: { ...TIME_OPTIONS, to: { millisecond: DAY } },
+	week: { ...TIME_OPTIONS, to: { millisecond: WEEK } },
+	month: { ...TIME_OPTIONS, to: { millisecond: MONTH } },
+	year: { ...TIME_OPTIONS, to: { millisecond: YEAR } },
 });
 export type TimeUnitKey = MapKey<typeof TIME_UNITS>;
 
@@ -352,7 +323,17 @@ export const TEMPERATURE_UNITS = new UnitList({
 		many: "degrees Celsius",
 		to: { fahrenheit: n => n * (9 / 5) + 32, kelvin: n => n + 273.15 },
 	},
-	fahrenheit: { abbr: "°F", one: "degree Fahrenheit", many: "degrees Fahrenheit", to: { celsius: n => (n - 32) * (5 / 9) } },
-	kelvin: { abbr: "°K", one: "degree Kelvin", many: "degrees Kelvin", to: { celsius: n => n - 273.15 } },
+	fahrenheit: {
+		abbr: "°F",
+		one: "degree Fahrenheit",
+		many: "degrees Fahrenheit",
+		to: { celsius: n => (n - 32) * (5 / 9) },
+	},
+	kelvin: {
+		abbr: "°K",
+		one: "degree Kelvin",
+		many: "degrees Kelvin",
+		to: { celsius: n => n - 273.15 },
+	},
 });
 export type TemperatureUnitKey = MapKey<typeof TEMPERATURE_UNITS>;

@@ -1,53 +1,104 @@
 import { type ImmutableArray, isArray } from "./array.js";
-import { NNBSP } from "./constants.js";
+
 import { isDate, type PossibleDate, requireDate } from "./date.js";
 import { getPercent } from "./number.js";
 import { type ImmutableObject, isObject } from "./object.js";
 import { type PossibleURL, requireURL } from "./url.js";
 
-/** Format a number range (based on the user's browser language settings). */
-export function formatRange(min: number, max: number, options?: Intl.NumberFormatOptions): string {
-	return `${formatNumber(min, options)}${NNBSP}–${NNBSP}${formatNumber(max, options)}`;
-}
-
-/** Format a number with a short suffix, e.g. `1,000 kg` */
-export function formatQuantity(num: number, suffix: string, options?: Intl.NumberFormatOptions): string {
-	const o: Intl.NumberFormatOptions = { unitDisplay: "short", ...options, style: "decimal" };
-	const str = formatNumber(num, o);
-	const sep = o.unitDisplay === "narrow" ? "" : NNBSP;
-	return `${str}${sep}${suffix}`;
-}
+/** Options we use for number formatting. */
+export type NumberOptions = Omit<
+	Intl.NumberFormatOptions,
+	"style" | "unit" | "unitDisplay" | "currency" | "currencyDisplay" | "currencySign"
+>;
 
 /** Format a number (based on the user's browser language settings). */
-export function formatNumber(num: number, options?: Intl.NumberFormatOptions): string {
-	if (!Number.isFinite(num)) return Number.isNaN(num) ? "-" : "∞";
-	return new Intl.NumberFormat(undefined, options).format(num).replace(/ /, NNBSP);
+export function formatNumber(num: number, options?: NumberOptions): string {
+	return Intl.NumberFormat(undefined, options).format(num);
 }
 
-/** Format a number with a longer full-word suffix. */
-export function pluralizeQuantity(num: number, one: string, many: string, options?: Intl.NumberFormatOptions): string {
-	const qty = formatNumber(num, {
-		...options,
-		style: "decimal",
-	});
-	return `${qty}${NNBSP}${num === 1 ? one : many}`;
+/** Format a number range (based on the user's browser language settings). */
+export function formatRange(from: number, to: number, options?: NumberOptions): string {
+	return Intl.NumberFormat(undefined, options).formatRange(from, to);
 }
+
+/** Options for quantity formatting. */
+export interface QuantityOptions
+	extends Omit<Intl.NumberFormatOptions, "style" | "unit" | "currency" | "currencyDisplay" | "currencySign"> {
+	/**
+	 * String for one of this thing, e.g. `product` or `item` or `sheep`
+	 * - Used for `unitDisplay: "long"` formatting.
+	 * - Defaults to unit reference, e.g. "minute"
+	 */
+	readonly one?: string;
+	/**
+	 * String for several of this thing, e.g. `products` or `items` or `sheep`
+	 * - Used for `unitDisplay: "long"` formatting.
+	 * - Defaults to `one + "s"`
+	 */
+	readonly many?: string;
+	/**
+	 * Abbreviation for this thing, e.g. `products` or `items` or `sheep` (defaults to `one` + "s").
+	 * - Used for `unitDisplay: "narrow"` formatting.
+	 * - Defaults to unit reference, e.g. "minute"
+	 */
+	readonly abbr?: string;
+}
+
+/**
+ * Format a quantity of a given unit.
+ *
+ * - Javascript has built-in support for formatting a number of different units.
+ * - Unfortunately the list of supported units changes in different browsers.
+ * - Ideally we want to format units using the built-in formatting so things like translation and internationalisation are covered.
+ * - But we want provide fallback formatting for unsupported units, and do something _good enough_ job in most cases.
+ */
+export function formatUnit(num: number, unit: string, options?: QuantityOptions): string {
+	// Check if the unit is supported by the browser.
+	if (Intl.supportedValuesOf("unit").includes(unit)) return Intl.NumberFormat(undefined, { ...options, style: "unit", unit }).format(num);
+
+	// Otherwise, use the default number format.
+	const str = Intl.NumberFormat(undefined, { ...options, style: "decimal" }).format(num);
+	const { unitDisplay, abbr = unit, one = unit, many = `${one}s` } = options ?? {};
+	if (unitDisplay === "long") return `${str} ${str === "1" ? one : many}`;
+	return `${str}${unitDisplay === "narrow" ? "" : " "}${abbr}`; // "short" is the default.
+}
+
+/** Options we use for currency formatting. */
+export type CurrencyOptions = Omit<Intl.NumberFormatOptions, "style" | "unit" | "unitDisplay" | "currency">;
+
+/**
+ * Format a currency amount (based on the user's browser language settings).
+ */
+export function formatCurrency(amount: number, currency: string, options?: CurrencyOptions): string {
+	return Intl.NumberFormat(undefined, {
+		style: "currency",
+		currency,
+		...options,
+	}).format(amount);
+}
+
+/** Options we use for percent formatting. */
+export type PercentOptions = Omit<
+	Intl.NumberFormatOptions,
+	"style" | "unit" | "unitDisplay" | "currency" | "currencyDisplay" | "currencySign"
+>;
 
 /**
  * Format a percentage (combines `getPercent()` and `formatQuantity()` for convenience).
  * - Defaults to showing no decimal places.
  * - Defaults to rounding closer to zero (so that 99.99% is shown as 99%).
+ * - Javascript's built-in percent formatting works on the `0` zero to `1` range. This uses `getPercent()` which works on `0` to `100` for convenience.
  *
- * @param numerator Number representing the amount of progress.
- * @param denumerator The number representing the whole amount.
+ * @param numerator Number representing the amount of progress (e.g. `50`).
+ * @param denumerator The number representing the whole amount (defaults to 100).
  */
-export function formatPercent(numerator: number, denumerator: number, options?: Intl.NumberFormatOptions): string {
-	return formatNumber(getPercent(numerator, denumerator), {
-		maximumFractionDigits: 0,
-		roundingMode: "trunc",
-		...options,
+export function formatPercent(numerator: number, denumerator?: number, options?: PercentOptions): string {
+	return Intl.NumberFormat(undefined, {
 		style: "percent",
-	});
+		maximumFractionDigits: 0,
+		roundingMode: "floor",
+		...options,
+	}).format(getPercent(numerator, denumerator) / 100);
 }
 
 /**
