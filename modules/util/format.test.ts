@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { formatNumber, formatPercent, formatUnit, formatValue } from "./format.js";
+import { DAY, HOUR, YEAR } from "./constants.js";
+import { formatAgo, formatDuration, formatNumber, formatPercent, formatUnit, formatUntil, formatValue, formatWhen } from "./format.js";
 
 describe("formatNumber()", () => {
 	test("Works correctly", () => {
@@ -65,4 +66,56 @@ describe("formatValue()", () => {
 		expect(formatValue({})).toBe("Object");
 		expect(formatValue(Symbol())).toBe("Symbol");
 	});
+});
+test("formatWhen()", () => {
+	// Simple tests.
+	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("24h ago");
+	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("in 9h");
+	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "short" })).toBe("24 hr ago");
+	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "short" })).toBe("in 9 hr");
+	expect(formatWhen(DAY, DAY * 2)).toBe("24 hr ago"); // default is "short"
+	expect(formatWhen(HOUR * 10, HOUR)).toBe("in 9 hr"); // default is "short"
+	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "long" })).toBe("in 9 hours");
+
+	// Rounding tests.
+	expect(formatWhen(DAY, YEAR * 1 + DAY * 10, { unitDisplay: "long" })).toBe("12 months ago");
+});
+test("formatAgo()", () => {
+	expect(formatAgo(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("24h");
+	expect(formatAgo(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("-9h");
+});
+test("formatUntil()", () => {
+	expect(formatUntil(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("-24h");
+	expect(formatUntil(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("9h");
+});
+test("formatDuration()", () => {
+	// Default.
+	expect(formatDuration({ seconds: 12 })).toBe("12 sec");
+	expect(formatDuration({ hours: 9 })).toBe("9 hr");
+	expect(formatDuration({ years: 2, months: 6 })).toBe("2 yrs, 6 mths");
+
+	// Narrow.
+	expect(formatDuration({ seconds: 1 }, { style: "narrow" })).toBe("1s");
+	expect(formatDuration({ seconds: 12 }, { style: "narrow" })).toBe("12s");
+	expect(formatDuration({ hours: 1 }, { style: "narrow" })).toBe("1h");
+	expect(formatDuration({ hours: 9 }, { style: "narrow" })).toBe("9h");
+	expect(formatDuration({ years: 2, minutes: 8 }, { style: "narrow" })).toBe("2y 8m");
+	expect(
+		formatDuration({ years: 9, months: 8, weeks: 7, days: 6, hours: 5, minutes: 4, seconds: 3, milliseconds: 2 }, { style: "narrow" }),
+	).toBe("9y 8mo 7w 6d 5h 4m 3s 2ms");
+
+	// Short.
+	expect(formatDuration({ seconds: 1 }, { style: "short" })).toBe("1 sec");
+	expect(formatDuration({ seconds: 12 }, { style: "short" })).toBe("12 sec");
+	expect(formatDuration({ hours: 1 }, { style: "short" })).toBe("1 hr");
+	expect(formatDuration({ hours: 9 }, { style: "short" })).toBe("9 hr");
+	expect(formatDuration({ years: 2, minutes: 8 }, { style: "short" })).toBe("2 yrs, 8 min");
+
+	// Long.
+	expect(formatDuration({ seconds: 1 }, { style: "long" })).toBe("1 second");
+	expect(formatDuration({ seconds: 12 }, { style: "long" })).toBe("12 seconds");
+	expect(formatDuration({ hours: 1 }, { style: "long" })).toBe("1 hour");
+	expect(formatDuration({ hours: 9 }, { style: "long" })).toBe("9 hours");
+	expect(formatDuration({ years: 1, minutes: 1 }, { style: "long" })).toBe("1 year, 1 minute");
+	expect(formatDuration({ years: 2, minutes: 8 }, { style: "long" })).toBe("2 years, 8 minutes");
 });

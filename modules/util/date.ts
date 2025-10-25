@@ -1,7 +1,5 @@
 import { RequiredError } from "../error/RequiredError.js";
-import { DAY, HOUR, MONTH, SECOND, WEEK } from "./constants.js";
 import type { AnyCaller } from "./function.js";
-import { TIME_UNITS, type TimeUnitKey, type Unit } from "./units.js";
 
 /** Values that can be converted to dates. */
 export type PossibleDate = "now" | "today" | "tomorrow" | "yesterday" | Date | number | string;
@@ -79,6 +77,29 @@ export function getTomorrow(): Date {
 	return date;
 }
 
+/** Get a Date representing exactly midnight of the specified date. */
+export function getMidnight(target?: PossibleDate, caller: AnyCaller = getMidnight): Date {
+	const date = new Date(requireDate(target, caller));
+	date.setHours(0, 0, 0, 0);
+	return date;
+}
+
+/** Get a Date representing midnight on Monday of the specified week. */
+export function getMonday(target?: PossibleDate, caller: AnyCaller = getMonday): Date {
+	const date = getMidnight(target, caller);
+	const day = date.getDay();
+	if (day === 0) date.setDate(date.getDate() - 6);
+	else if (day !== 1) date.setDate(date.getDate() - (day - 1));
+	return date;
+}
+
+/** Get a Date representing the first day of the specified month. */
+export function getMonthStart(target?: PossibleDate, caller: AnyCaller = getMonthStart): Date {
+	const date = getMidnight(target, caller);
+	date.setDate(1);
+	return date;
+}
+
 /**
  * Convert a possible date to a `Date` instance, or throw `RequiredError` if it couldn't be converted.
  * @param value Any value that we want to parse as a valid date (defaults to `"now"`).
@@ -146,133 +167,79 @@ export function requireTimeString(value?: PossibleDate, caller: AnyCaller = requ
 	return _time(requireDate(value, caller));
 }
 /** List of day-of-week strings. */
-export const DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
+export const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] as const;
 
 /** Type listing day-of-week strings. */
 export type Day = (typeof DAYS)[number];
 
-/** Convert a `Date` instance to a day-of-week string like "monday" */
+/** Convert a `Date` instance to a day-of-week string like "Monday" */
 export function getDay(target?: PossibleDate): Day {
 	return DAYS[requireDate(target, getDay).getDay()] as Day;
 }
 
-/** Get a Date representing exactly midnight of the specified date. */
-export function getMidnight(target?: PossibleDate, caller: AnyCaller = getMidnight): Date {
-	const date = new Date(requireDate(target, caller)); // New instance, because we modify it.
-	date.setHours(0, 0, 0, 0);
+/**
+ * Return a new date that increase or decreases the month based on an input date.
+ * - February 29th is a special cased and is _rounded down_ to February 28th on non-leap years.
+ */
+export function addYears(change: number, target?: PossibleDate, caller: AnyCaller = addYears): Date {
+	const input = requireDate(target, caller);
+	const output = new Date(input);
+	output.setFullYear(output.getFullYear() + change);
+	if (input.getMonth() !== output.getMonth()) output.setDate(0); // Handle February 29th case.
+	return output;
+}
+
+/**
+ * Return a new date that increase or decreases the month based on an input date.
+ * - Note that with Javascript "rollover" semantics, adding a month when we're on e.g. 31st of August would normally roll _past_ September and return 1st October.
+ * - To avoid this we clamp the date to the end of the month if rollover happens.
+ */
+export function addMonths(change: number, target?: PossibleDate, caller: AnyCaller = addMonths): Date {
+	const input = requireDate(target, caller);
+	const output = new Date(input);
+	output.setMonth(output.getMonth() + change);
+	if (input.getMonth() !== output.getMonth() + change) output.setDate(0); // Handle 31st rollover case.
+	return output;
+}
+
+/** Return a new date that increase or decreases the week based on an input date. */
+export function addWeeks(change: number, target?: PossibleDate, caller: AnyCaller = addWeeks): Date {
+	const date = new Date(requireDate(target, caller));
+	date.setDate(date.getDate() + change * 7);
 	return date;
 }
 
-/** Get a Date representing midnight on Monday of the specified week. */
-export function getMonday(target?: PossibleDate, caller: AnyCaller = getMonday): Date {
-	const date = getMidnight(target, caller); // New instance, because we modify it.
-	const day = date.getDay();
-	if (day === 0) date.setDate(date.getDate() - 6);
-	else if (day !== 1) date.setDate(date.getDate() - (day - 1));
-	return date;
-}
-
-/** Return a new date that increase or decreases the number of days based on an input date. */
-export function addDays(change: number, target?: PossibleDate): Date {
-	const date = new Date(requireDate(target, addDays)); // New instance, because we modify it.
+/** Return a new date that increase or decreases the day based on an input date. */
+export function addDays(change: number, target?: PossibleDate, caller: AnyCaller = addDays): Date {
+	const date = new Date(requireDate(target, caller));
 	date.setDate(date.getDate() + change);
 	return date;
 }
 
-/** Return a new date that increase or decreases the number of hours based on an input date. */
-export function addHours(change: number, target?: PossibleDate): Date {
-	const date = new Date(requireDate(target, addHours)); // New instance, because we modify it.
+/** Return a new date that increase or decreases the hour based on an input date. */
+export function addHours(change: number, target?: PossibleDate, caller: AnyCaller = addHours): Date {
+	const date = new Date(requireDate(target, caller));
 	date.setHours(date.getHours() + change);
 	return date;
 }
 
-/**
- * Get the duration (in milliseconds) between two dates.
- *
- * @param target The date when the thing will happen or did happen.
- * @param current Today's date (or a different date to measure from).
- */
-export function getMillisecondsUntil(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = getMillisecondsUntil): number {
-	return requireDate(target, caller).getTime() - requireDate(current, caller).getTime();
+/** Return a new date that increase or decreases the minute based on an input date. */
+export function addMinutes(change: number, target?: PossibleDate, caller: AnyCaller = addMinutes): Date {
+	const date = new Date(requireDate(target, caller));
+	date.setMinutes(date.getMinutes() + change);
+	return date;
 }
 
-/** Count the number of seconds until a date. */
-export function getSecondsUntil(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = getSecondsUntil): number {
-	return getMillisecondsUntil(target, current, caller) / SECOND;
+/** Return a new date that increase or decreases the minute based on an input date. */
+export function addSeconds(change: number, target?: PossibleDate, caller: AnyCaller = addSeconds): Date {
+	const date = new Date(requireDate(target, caller));
+	date.setSeconds(date.getSeconds() + change);
+	return date;
 }
 
-/** Count the number of days ago a date was. */
-export function getSecondsAgo(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = getSecondsAgo): number {
-	return 0 - getSecondsUntil(target, current, caller);
-}
-
-/** Count the number of days until a date. */
-export function getDaysUntil(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = getDaysUntil): number {
-	return Math.round((requireDate(target, caller).getTime() - requireDate(current, caller).getTime()) / DAY);
-}
-
-/** Count the number of days ago a date was. */
-export function getDaysAgo(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = getDaysAgo): number {
-	return 0 - getDaysUntil(target, current, caller);
-}
-
-/** Count the number of weeks until a date. */
-export function getWeeksUntil(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = getWeeksUntil): number {
-	return Math.floor(getDaysUntil(target, current, caller) / 7);
-}
-
-/** Count the number of weeks ago a date was. */
-export function getWeeksAgo(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = getWeeksAgo): number {
-	return 0 - getWeeksUntil(target, current, caller);
-}
-
-/** Is a date in the past? */
-export function isPast(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = isPast): boolean {
-	return getMillisecondsUntil(target, current, caller) < 0;
-}
-
-/** Is a date in the future? */
-export function isFuture(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = isFuture): boolean {
-	return getMillisecondsUntil(target, current, caller) > 0;
-}
-
-/** Is a date today (taking into account midnight). */
-export function isToday(target: PossibleDate, current?: PossibleDate, caller: AnyCaller = isToday): boolean {
-	return getDaysUntil(target, current, caller) === 0;
-}
-
-/** Get an appropriate time unit based on an amount in milliseconds. */
-function getBestTimeUnit(ms: number): Unit<TimeUnitKey> {
-	const abs = Math.abs(ms);
-	if (abs > 18 * MONTH) return TIME_UNITS.require("year");
-	if (abs > 10 * WEEK) return TIME_UNITS.require("month");
-	if (abs > 2 * WEEK) return TIME_UNITS.require("week");
-	if (abs > DAY) return TIME_UNITS.require("day");
-	if (abs > HOUR) return TIME_UNITS.require("hour");
-	if (abs > 9949) return TIME_UNITS.require("minute");
-	if (abs > SECOND) return TIME_UNITS.require("second");
-	return TIME_UNITS.require("millisecond");
-}
-
-/** Compact when a date happens/happened, e.g. `in 10d` or `2h ago` or `in 1w` or `just now` */
-export function formatWhen(target: PossibleDate, current?: PossibleDate, options?: Intl.NumberFormatOptions): string {
-	const ms = getMillisecondsUntil(target, current, formatWhen);
-	const abs = Math.abs(ms);
-	if (abs < 30 * SECOND) return "just now";
-	const unit = getBestTimeUnit(ms);
-	return ms > 0 ? `in ${unit.format(unit.from(abs), options)}` : `${unit.format(unit.from(abs), options)} ago`;
-}
-
-/** Compact when a date happens, e.g. `10d` or `2h` or `-1w` */
-export function formatUntil(target: PossibleDate, current?: PossibleDate, options?: Intl.NumberFormatOptions): string {
-	const ms = getMillisecondsUntil(target, current, formatUntil);
-	const unit = getBestTimeUnit(ms);
-	return unit.format(unit.from(ms), options);
-}
-
-/** Compact when a date will happen, e.g. `10d` or `2h` or `-1w` */
-export function formatAgo(target: PossibleDate, current?: PossibleDate, options?: Intl.NumberFormatOptions): string {
-	const ms = 0 - getMillisecondsUntil(target, current, formatAgo);
-	const unit = getBestTimeUnit(ms);
-	return unit.format(unit.from(ms), options);
+/** Return a new date that increase or decreases the minute based on an input date. */
+export function addMilliseconds(change: number, target?: PossibleDate, caller: AnyCaller = addMilliseconds): Date {
+	const date = new Date(requireDate(target, caller));
+	date.setMilliseconds(date.getMilliseconds() + change);
+	return date;
 }

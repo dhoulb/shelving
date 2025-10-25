@@ -1,8 +1,10 @@
 import { type ImmutableArray, isArray } from "./array.js";
-
+import { SECOND } from "./constants.js";
 import { isDate, type PossibleDate, requireDate } from "./date.js";
+import { type Duration, getBestTimeUnit, getMilliseconds } from "./duration.js";
 import { getPercent } from "./number.js";
 import { type ImmutableObject, isObject } from "./object.js";
+import { TIME_UNITS, type TimeUnitKey } from "./units.js";
 import { type PossibleURL, requireURL } from "./url.js";
 
 /** Options we use for number formatting. */
@@ -182,3 +184,58 @@ export function formatValue(value: unknown): string {
 	if (isObject(value)) return formatObject(value);
 	return "Unknown";
 }
+
+/**
+ * Compact best-fit when a date happens/happened, e.g. `in 10d` or `2h ago` or `in 1w` or `just now`
+ * - See `getBestTimeUnit()` for details on how the best-fit unit is chosen.
+ * - But: anything under 30 seconds will show `just now`, which makes more sense in most UIs.
+ */
+export function formatWhen(target: PossibleDate, current?: PossibleDate, options?: Intl.NumberFormatOptions): string {
+	const ms = getMilliseconds(current, target, formatWhen);
+	const abs = Math.abs(ms);
+	if (abs < 30 * SECOND) return "just now";
+	const unit = getBestTimeUnit(ms);
+	return ms > 0 ? `in ${unit.format(unit.from(abs), options)}` : `${unit.format(unit.from(abs), options)} ago`;
+}
+
+/** Compact when a date happens, e.g. `10d` or `2h` or `-1w` */
+export function formatUntil(target: PossibleDate, current?: PossibleDate, options?: Intl.NumberFormatOptions): string {
+	const ms = getMilliseconds(current, target, formatUntil);
+	const unit = getBestTimeUnit(ms);
+	return unit.format(unit.from(ms), options);
+}
+
+/** Compact when a date will happen, e.g. `10d` or `2h` or `-1w` */
+export function formatAgo(target: PossibleDate, current?: PossibleDate, options?: Intl.NumberFormatOptions): string {
+	const ms = getMilliseconds(target, current, formatAgo);
+	const unit = getBestTimeUnit(ms);
+	return unit.format(unit.from(ms), options);
+}
+
+/**
+ * This roughly corresponds to `Intl.DurationFormatOptions`
+ * @todo Use `Intl.DurationFormatOptions` instead it's available in TS lib.
+ */
+interface DurationFormatOptions {
+	style?: "short" | "long" | "narrow";
+}
+
+/**
+ * Format a duration as a string, e.g. `1 year, 2 months, 3 days` or `1y 2m 3d`
+ * @todo Use `Intl.DurationFormat().format()` instead it's more widely supported and is available in TS lib.
+ */
+export function formatDuration(duration: Duration, options?: DurationFormatOptions): string {
+	// Map `DurationFormatOptions` to `NumberFormatOptions`
+	const style = options?.style ?? "short";
+	return new Intl.ListFormat(undefined, { style, type: "unit" }).format(
+		_getDurationStrings(duration, { ...options, style: "unit", unitDisplay: style }),
+	);
+}
+export function* _getDurationStrings(duration: Duration, options?: Intl.NumberFormatOptions): Iterable<string> {
+	for (const key of TIME_KEYS) {
+		const value = duration[`${key}s`];
+		if (typeof value === "number" && value !== 0) yield TIME_UNITS.require(key)?.format(value, options);
+	}
+}
+// Keys we loop through in the right order.
+const TIME_KEYS: ImmutableArray<TimeUnitKey> = ["year", "month", "week", "day", "hour", "minute", "second", "millisecond"];

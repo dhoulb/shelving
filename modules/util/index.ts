@@ -16,6 +16,7 @@ export * from "./debug.js";
 export * from "./dictionary.js";
 export * from "./diff.js";
 export * from "./dispose.js";
+export * from "./duration.js";
 export * from "./entity.js";
 export * from "./entry.js";
 export * from "./equal.js";
