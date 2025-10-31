@@ -2,7 +2,7 @@ import { ValueFeedback } from "../feedback/Feedback.js";
 import type { Data, Database, PartialData } from "../util/data.js";
 import { isData } from "../util/data.js";
 import type { Identifier, Item } from "../util/item.js";
-import type { Prop, Value } from "../util/object.js";
+import { type Key, omitProps, type Prop, pickProps, type Value } from "../util/object.js";
 import { mapProps } from "../util/transform.js";
 import { validateData } from "../util/validate.js";
 import type { NullableSchema } from "./NullableSchema.js";
@@ -31,6 +31,13 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 	override validate(unsafeValue: unknown = this.value): T {
 		if (!isData(unsafeValue)) throw new ValueFeedback("Must be object", unsafeValue);
 		return validateData(unsafeValue, this.props);
+	}
+
+	pick<K extends Key<T>>(...keys: K[]): DataSchema<Pick<T, K>> {
+		return new DataSchema<Pick<T, K>>({ ...this, props: pickProps<Schemas<T>, K>(this.props, ...keys) });
+	}
+	omit<K extends Key<T>>(...keys: K[]): DataSchema<Omit<T, K>> {
+		return new DataSchema<Omit<T, K>>({ ...this, props: omitProps<Schemas<T>, K>(this.props, ...keys) });
 	}
 }
 
