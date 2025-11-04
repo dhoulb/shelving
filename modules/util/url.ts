@@ -11,6 +11,18 @@ import { getString, isString } from "./string.js";
 /** Values that can be converted to a URL instance. */
 export type PossibleURL = string | URL;
 
+type URLParser = (value: string | URL, base?: string | URL) => URL | null;
+
+function parseURL(value: string | URL, base?: string | URL): URL | null {
+	const ctor = URL as typeof URL & { parse?: URLParser };
+	if (typeof ctor.parse === "function") return ctor.parse(value, base);
+	try {
+		return new URL(value, base);
+	} catch {
+		return null;
+	}
+}
+
 /** Is an unknown value a URL object? */
 export function isURL(value: unknown): value is URL {
 	return value instanceof URL;
@@ -23,7 +35,7 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
 
 /** Convert a possible URL to a URL, or return `undefined` if conversion fails. */
 export function getURL(possible: Nullish<PossibleURL>, base: PossibleURL | undefined = _BASE): URL | undefined {
-	if (notNullish(possible)) return isURL(possible) ? possible : URL.parse(possible, base) || undefined;
+	if (notNullish(possible)) return isURL(possible) ? possible : parseURL(possible, base) || undefined;
 }
 const _BASE = typeof document === "object" ? document.baseURI : undefined;
 
