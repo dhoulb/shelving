@@ -102,7 +102,7 @@ test("formatDuration()", () => {
 	expect(formatDuration({ years: 2, minutes: 8 }, { style: "narrow" })).toBe("2y 8m");
 	expect(
 		formatDuration({ years: 9, months: 8, weeks: 7, days: 6, hours: 5, minutes: 4, seconds: 3, milliseconds: 2 }, { style: "narrow" }),
-	).toBe("9y 8m 7w 6d 5h 4m 3s 2ms");
+	).toMatch(/9y 8mo? 7w 6d 5h 4m 3s 2ms/); // Weirdness where "months" can be abbreviated as "m" or "mo".
 
 	// Short.
 	expect(formatDuration({ seconds: 1 }, { style: "short" })).toBe("1 sec");
