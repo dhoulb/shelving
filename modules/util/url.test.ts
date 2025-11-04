@@ -30,6 +30,18 @@ describe("getURL()", () => {
 	test("returns undefined for invalid string", () => {
 		expect(getURL("not a url")).toBeUndefined();
 	});
+	test("returns URL when URL.parse is unavailable", () => {
+		const ctor = URL as typeof URL & { parse?: (value: string | URL, base?: string | URL) => URL | null };
+		const descriptor = Object.getOwnPropertyDescriptor(ctor, "parse");
+		try {
+			if (descriptor) Reflect.deleteProperty(ctor, "parse");
+			const url = getURL("https://a.com");
+			expect(url).toBeInstanceOf(URL);
+			expect(url?.href).toBe("https://a.com/");
+		} finally {
+			if (descriptor) Object.defineProperty(ctor, "parse", descriptor);
+		}
+	});
 });
 describe("requireURL()", () => {
 	test("returns URL for valid input", () => {
