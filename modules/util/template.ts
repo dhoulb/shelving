@@ -2,7 +2,7 @@ import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
 import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
-import type { AnyCaller } from "./function.js";
+import { type AnyCaller, isFunction } from "./function.js";
 import { setMapItem } from "./map.js";
 import { isObject, type Mutable } from "./object.js";
 import { getString, type NotString, type PossibleString } from "./string.js";
@@ -26,11 +26,7 @@ type TemplateChunks = ImmutableArray<TemplateChunk>;
  * `ImmutableDictionary<PossibleString>` — Object containing named strings used for named placeholders, e.g. `{ val1: "Ellie", val2: 123 }`
  * `(placeholder: string) => string` — Function that returns the right string for a named `{placeholder}`.v
  */
-export type TemplateValues =
-	| PossibleString
-	| ImmutableArray<PossibleString>
-	| ImmutableDictionary<PossibleString>
-	| ((placeholder: string) => string);
+export type TemplateValues = PossibleString | ImmutableArray<unknown> | ImmutableDictionary<unknown> | ((placeholder: string) => string);
 
 /** The output of matching a template is a dictionary in `{ myPlaceholder: "value" }` format. */
 export type TemplateMatches = ImmutableDictionary<string>;
@@ -149,7 +145,7 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 	return output;
 }
 function _replaceTemplateKey(key: string, values: TemplateValues, caller: AnyCaller): string {
-	if (typeof values === "function") return values(key);
+	if (isFunction(values)) return values(key);
 	if (isObject(values)) {
 		// Dictionary or array of values.
 		const v = getString(values[key]);
@@ -159,5 +155,5 @@ function _replaceTemplateKey(key: string, values: TemplateValues, caller: AnyCal
 		const v = getString(values);
 		if (v !== undefined) return v;
 	}
-	throw new RequiredError(`Template key "${key}" must be defined`, { received: values, key, caller });
+	throw new RequiredError(`Template value for "${key}" must be string`, { received: values, key, caller });
 }

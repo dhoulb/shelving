@@ -1,11 +1,10 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { MutableArray } from "./array.js";
-import { type Data, isData } from "./data.js";
-import type { DictionaryItem, ImmutableDictionary, MutableDictionary } from "./dictionary.js";
+import type { DictionaryItem, ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
+import { getDictionaryItems, isDictionary } from "./dictionary.js";
 import type { AnyCaller } from "./function.js";
 import { type Nullish, notNullish } from "./null.js";
-import { getProps } from "./object.js";
 import { getString, isString } from "./string.js";
 
 /** Values that can be converted to a URL instance. */
@@ -50,7 +49,7 @@ export function requireURL(possible: PossibleURL, base?: PossibleURL, caller: An
 export type URLParams = ImmutableDictionary<string>;
 
 /** Type for things that can be converted to named URL parameters. */
-export type PossibleURLParams = PossibleURL | URLSearchParams | Data | Iterable<DictionaryItem<unknown>>;
+export type PossibleURLParams = PossibleURL | URLSearchParams | PossibleDictionary<unknown>;
 
 /**
  * Get a set of entries for a set of possible URL params.
@@ -67,7 +66,7 @@ export function* getURLEntries(input: PossibleURLParams, caller: AnyCaller = get
 		yield* requireURL(input, undefined, caller).searchParams;
 	} else {
 		const done: MutableArray<string> = [];
-		for (const [key, value] of getProps(input)) {
+		for (const [key, value] of getDictionaryItems(input)) {
 			if (done.includes(key)) continue;
 			done.push(key);
 			const str = getString(value);
@@ -87,7 +86,7 @@ export function getURLParams(input: PossibleURLParams, caller: AnyCaller = getUR
 /** Get a single named param from a URL. */
 export function getURLParam(input: PossibleURLParams, key: string): string | undefined {
 	if (input instanceof URLSearchParams) return input.get(key) || undefined;
-	if (isData(input)) return getString(input[key]);
+	if (isDictionary(input)) return getString(input[key]);
 	return getURLParams(input)[key];
 }
 
