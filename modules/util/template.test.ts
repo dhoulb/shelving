@@ -21,13 +21,19 @@ describe("matchTemplate()", () => {
 		expect(matchTemplate("/:a/{b}/${c}/{{d}}/", "/1/2/3/4/")).toEqual({ a: "1", b: "2", c: "3", d: "4" });
 		expect(matchTemplate("/*", "/1")).toEqual({ "0": "1" });
 		expect(matchTemplate("/*/*", "/1/2")).toEqual({ "0": "1", "1": "2" });
+		expect(matchTemplate("https://x.com/test2/{id}", "https://x.com/test2/123")).toEqual({ id: "123" });
 	});
 	test("Named placeholders only match one path segment", () => {
-		expect<TemplateMatches | undefined>(matchTemplate("/review/{id}", "/review/30/mdt-view")).toBe(undefined);
+		// Matching tests.
 		expect(matchTemplate("/review/{id}", "/review/30")).toEqual({ id: "30" });
 		expect(matchTemplate("/review/{id}/mdt-view", "/review/30/mdt-view")).toEqual({ id: "30" });
 		expect(matchTemplate("/review/*", "/review/30")).toEqual({ "0": "30" });
 		expect(matchTemplate("/review/*/mdt-view", "/review/30/mdt-view")).toEqual({ "0": "30" });
+		expect(matchTemplate("https://x.com/test2/{id}", "https://x.com/test2/123")).toEqual({ id: "123" });
+
+		// Non-matching.
+		expect(matchTemplate("/review/{id}", "/review/30/mdt-view")).toBe(undefined);
+		expect(matchTemplate("https://x.com/test2/{id}/abc", "https://x.com/test2/123")).toBe(undefined);
 	});
 	test("Double splat placeholders can match multiple path segments", () => {
 		expect(matchTemplate("/review/**", "/review/30/mdt-view")).toEqual({ "0": "30/mdt-view" });
