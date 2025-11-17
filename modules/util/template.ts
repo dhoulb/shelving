@@ -106,11 +106,12 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
 	// Loop through the placeholders (placeholders are at all the even-numbered positions in `chunks`).
 	let startIndex = firstChunk.pre.length;
 	const values: Mutable<TemplateMatches> = {};
-	for (const { name, post } of chunks) {
+	for (const { name, post, placeholder } of chunks) {
 		const stopIndex = !post ? Number.POSITIVE_INFINITY : target.indexOf(post, startIndex);
 		if (stopIndex < 0) return undefined; // Target doesn't match template because chunk post wasn't found.
 		const value = target.slice(startIndex, stopIndex);
 		if (!value.length) return undefined; // Target doesn't match template because chunk value was missing.
+		if (placeholder !== "*" && value.includes("/")) return undefined; // Named placeholders can't consume multiple path segments.
 		values[name] = value;
 		startIndex = stopIndex + post.length;
 	}
