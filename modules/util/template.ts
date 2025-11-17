@@ -36,7 +36,7 @@ export type TemplateValues =
 export type TemplateMatches = ImmutableDictionary<string>;
 
 // RegExp to find named variables in several formats e.g. `:a`, `${b}`, `{{c}}` or `{d}`
-const R_PLACEHOLDERS = /(\*|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-9]*\}\}|\{[a-z][a-z0-9]*\})/i;
+const R_PLACEHOLDERS = /(\*\*?|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-9]*\}\}|\{[a-z][a-z0-9]*\})/i;
 
 // Find actual name within template placeholder e.g. `${name}` → `name`
 const R_NAME = /[a-z0-9]+/i;
@@ -59,7 +59,7 @@ function _splitTemplate(template: string, caller: AnyCaller): TemplateChunks {
 		const post = matches[i + 1] as string;
 		if (i > 1 && !pre.length)
 			throw new ValueError("Template placeholders must be separated by at least one character", { received: template, caller });
-		const name = placeholder === "*" ? String(asterisks++) : R_NAME.exec(placeholder)?.[0] || "";
+		const name = placeholder[0] === "*" ? String(asterisks++) : R_NAME.exec(placeholder)?.[0] || "";
 		chunks.push({ pre, placeholder, name, post });
 	}
 	return chunks;
@@ -88,6 +88,9 @@ function _getPlaceholder({ name }: TemplateChunk): string {
  *
  * @param templates Either a single template string, or an iterator that returns multiple template template strings.
  * - Template strings can include placeholders (e.g. `:name-${country}/{city}`).
+ * - Template strings do not match the `/` character.
+ * - The `**` double splat placeholder _can_ match multiple path segments (e.g. `a/b/c`).
+ *
  * @param target The string containing values, e.g. `Dave-UK/Manchester`
  *
  * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.
@@ -111,7 +114,7 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
 		if (stopIndex < 0) return undefined; // Target doesn't match template because chunk post wasn't found.
 		const value = target.slice(startIndex, stopIndex);
 		if (!value.length) return undefined; // Target doesn't match template because chunk value was missing.
-		if (placeholder !== "*" && value.includes("/")) return undefined; // Named placeholders can't consume multiple path segments.
+		if (placeholder !== "**" && value.includes("/")) return undefined; // Placeholders can't consume multiple path segments.
 		values[name] = value;
 		startIndex = stopIndex + post.length;
 	}
