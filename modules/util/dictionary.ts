@@ -1,6 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { AnyCaller } from "./function.js";
+import { isIterable } from "./iterate.js";
 import { deleteProps, isPlainObject, omitProps, pickProps, setProp, setProps, withProp, withProps } from "./object.js";
 
 /** Readonly dictionary object. */
@@ -34,8 +35,10 @@ export function getDictionary<T>(dict: PossibleDictionary<T>): ImmutableDictiona
 }
 
 /** Turn a dictionary object into a set of props. */
-export function getDictionaryItems<T>(dict: ImmutableDictionary<T>): readonly DictionaryItem<T>[] {
-	return Object.entries<T>(dict);
+export function getDictionaryItems<T>(input: ImmutableDictionary<T>): readonly DictionaryItem<T>[];
+export function getDictionaryItems<T>(input: PossibleDictionary<T>): Iterable<DictionaryItem<T>>;
+export function getDictionaryItems<T>(input: PossibleDictionary<T>): Iterable<DictionaryItem<T>> {
+	return isIterable(input) ? input : Object.entries(input);
 }
 
 /** Is an unknown value the key for an own prop of a dictionary. */
