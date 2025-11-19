@@ -54,7 +54,7 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers): 
 	const requestUrl = request.url;
 	const url = getURL(requestUrl);
 	if (!url) throw new RequestError("Invalid request URL", { received: requestUrl, caller: handleEndpoints });
-	const { pathname, searchParams } = url;
+	const { origin, pathname, searchParams } = url;
 
 	// Iterate over the handlers and return the first one that matches the request.
 	for (const { endpoint, callback } of endpoints) {
@@ -63,7 +63,7 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers): 
 
 		// Ensure the request URL e.g. `/user/123` matches the endpoint path e.g. `/user/{id}`
 		// Any `{placeholders}` in the endpoint path are matched against the request URL to extract parameters.
-		const pathParams = matchTemplate(endpoint.path, pathname, handleEndpoints);
+		const pathParams = matchTemplate(endpoint.url, `${origin}${pathname}`, handleEndpoints);
 		if (!pathParams) continue;
 
 		// Make a simple dictionary object from the `{placeholder}` path params and the `?a=123` query params from the URL.
