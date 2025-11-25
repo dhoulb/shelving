@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, POST, ResponseError, STRING } from "../index.js";
+import { DATA, GET, POST, ResponseError, STRING, UNKNOWN } from "../index.js";
 
 describe("Endpoint.toString()", () => {
 	test("toString should include method and URL", () => {
@@ -34,8 +34,18 @@ describe("POST", () => {
 		const req = p.request({ name: "abc" });
 		expect(req.method).toBe("POST");
 		expect(req.headers.get("Content-Type")).toBe("application/json");
-		const bodyText = await req.text();
-		expect(bodyText).toBe(JSON.stringify({ name: "abc" }));
+		const body = await req.text();
+		expect(body).toBe(JSON.stringify({ name: "abc" }));
+	});
+	test("POST requests set FormData body and Content-Type header", async () => {
+		const p = POST("https://api.example.com/items", UNKNOWN, STRING);
+		const data = new FormData();
+		data.set("name", "abc");
+		const req = p.request(data);
+		expect(req.method).toBe("POST");
+		expect(req.headers.get("Content-Type")).toStartWith("multipart/form-data; ");
+		const body = await req.formData();
+		expect(body.get("name")).toBe("abc");
 	});
 });
 describe("Endpoint.fetch()", () => {
