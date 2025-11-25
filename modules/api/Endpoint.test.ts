@@ -47,6 +47,14 @@ describe("POST", () => {
 		const body = await req.formData();
 		expect(body.get("name")).toBe("abc");
 	});
+	test("POST requests set string body and Content-Type header", async () => {
+		const p = POST("https://api.example.com/items", STRING, STRING);
+		const req = p.request("abcdef");
+		expect(req.method).toBe("POST");
+		expect(req.headers.get("Content-Type")).toBe("text/plain");
+		const body = await req.text();
+		expect(body).toBe("abcdef");
+	});
 });
 describe("Endpoint.fetch()", () => {
 	test("fetch() works with application/json type", async () => {
