@@ -99,20 +99,22 @@ export class Endpoint<P, R> {
 	}
 
 	/**
-	 * Validate a payload against this endpoints payload schema, and return an HTTP `Request` that will send it to this endpoint.
+	 * Get an HTTP `Request` object for this endpoint.
+	 * - Validates a payload against this endpoints payload schema
+	 * - Return an HTTP `Request` that will send it the valid payload to this endpoint.
+	 *
+	 * @throws Feedback if the payload is invalid.
 	 */
 	request(payload: P, options: EndpointOptions = {}, caller: AnyCaller = this.request): Request {
 		return createRequest(this.method, this.url, this.payload.validate(payload), options, caller);
 	}
 
 	/**
-	 * Perform a fetch to this endpoint, and validate the returned response against this endpoint's result schema.
+	 * Validate an HTTP `Response` against this endpoint.
+	 * @throws ResponseError if the response status is not ok (200-299)
+	 * @throws ResponseError if the response content is invalid.
 	 */
-	async fetch(payload: P, options: EndpointOptions = {}, caller: AnyCaller = this.fetch): Promise<R> {
-		// Fetch the response.
-		const request = this.request(payload, options, caller);
-		const response = await fetch(request);
-
+	async response(response: Response, caller: AnyCaller = this.response): Promise<R> {
 		// Get the response.
 		const { ok, status } = response;
 		const content = await getResponseContent(response, caller);
@@ -122,6 +124,20 @@ export class Endpoint<P, R> {
 
 		// Validate the success response.
 		return getValid(content, this.result, ResponseError, caller);
+	}
+
+	/**
+	 * Perform a fetch to this endpoint.
+	 * - Validate the `payload` against this endpoint's payload schema.
+	 * - Validate the returned response against this endpoint's result schema.
+	 *
+	 * @throws Feedback if the payload is invalid.
+	 * @throws ResponseError if the response status is not ok (200-299)
+	 * @throws ResponseError if the response content is invalid.
+	 */
+	async fetch(payload: P, options: EndpointOptions = {}, caller: AnyCaller = this.fetch): Promise<R> {
+		const response = await fetch(this.request(payload, options, caller));
+		return this.response(response, caller);
 	}
 
 	/** Convert to string, e.g. `GET https://a.com/user/{id}` */
