@@ -1,7 +1,6 @@
-import type { Data } from "shelving";
 import { ResponseError } from "../error/ResponseError.js";
 import { type Schema, UNDEFINED } from "../schema/Schema.js";
-import { assertDictionary } from "../util/dictionary.js";
+import { assertDictionary, type ImmutableDictionary } from "../util/dictionary.js";
 import { getMessage } from "../util/error.js";
 import type { AnyCaller } from "../util/function.js";
 import { getResponse, getResponseContent } from "../util/http.js";
@@ -226,7 +225,7 @@ function createRequest(
 function createHeadRequest(
 	method: EndpointHeadMethod,
 	url: string,
-	params: Data,
+	params: ImmutableDictionary<unknown>,
 	options: EndpointOptions = {},
 	caller: AnyCaller = createHeadRequest,
 ): Request {
