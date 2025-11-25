@@ -1,5 +1,6 @@
 import { NotFoundError, RequestError } from "../error/RequestError.js";
 import { getDictionary, type ImmutableDictionary } from "../util/dictionary.js";
+import type { AnyCaller } from "../util/function.js";
 import { getRequestContent } from "../util/http.js";
 import { isPlainObject } from "../util/object.js";
 import { matchTemplate } from "../util/template.js";
@@ -44,16 +45,15 @@ export type EndpointHandlers = ReadonlyArray<AnyEndpointHandler>;
  *
  * 1. Define your `Endpoint` objects with a method, path, payload and result validators, e.g. `GET("/test/{id}", PAYLOAD, STRING)`
  * 2. Make an array of `EndpointHandler` objects combining an `Endpoint` with a `callback` function
- * -
  *
  * @returns The resulting `Response` from the first handler that matches the `Request`.
  * @throws `NotFoundError` if no handler matches the `Request`.
  */
-export function handleEndpoints(request: Request, endpoints: EndpointHandlers): Promise<Response> {
+export function handleEndpoints(request: Request, endpoints: EndpointHandlers, caller: AnyCaller = handleEndpoints): Promise<Response> {
 	// Parse the URL of the request.
 	const requestUrl = request.url;
 	const url = getURL(requestUrl);
-	if (!url) throw new RequestError("Invalid request URL", { received: requestUrl, caller: handleEndpoints });
+	if (!url) throw new RequestError("Invalid request URL", { received: requestUrl, caller });
 	const { origin, pathname, searchParams } = url;
 
 	// Iterate over the handlers and return the first one that matches the request.
@@ -63,7 +63,7 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers): 
 
 		// Ensure the request URL e.g. `/user/123` matches the endpoint path e.g. `/user/{id}`
 		// Any `{placeholders}` in the endpoint path are matched against the request URL to extract parameters.
-		const pathParams = matchTemplate(endpoint.url, `${origin}${pathname}`, handleEndpoints);
+		const pathParams = matchTemplate(endpoint.url, `${origin}${pathname}`, caller);
 		if (!pathParams) continue;
 
 		// Make a simple dictionary object from the `{placeholder}` path params and the `?a=123` query params from the URL.
@@ -74,7 +74,7 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers): 
 	}
 
 	// No handler matched the request.
-	throw new NotFoundError("No matching endpoint", { received: requestUrl, caller: handleEndpoints });
+	throw new NotFoundError("No matching endpoint", { received: requestUrl, caller });
 }
 
 /** Handle an individual call to an endpoint callback. */
