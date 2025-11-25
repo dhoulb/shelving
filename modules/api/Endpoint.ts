@@ -1,6 +1,6 @@
+import type { Data } from "shelving";
 import { ResponseError } from "../error/ResponseError.js";
 import { type Schema, UNDEFINED } from "../schema/Schema.js";
-import { assertData } from "../util/data.js";
 import { assertDictionary } from "../util/dictionary.js";
 import { getMessage } from "../util/error.js";
 import type { AnyCaller } from "../util/function.js";
@@ -11,8 +11,17 @@ import { omitURLParams, withURLParams } from "../util/url.js";
 import { getValid } from "../util/validate.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
-/** Types for an HTTP request or response that does something. */
-export type EndpointMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+/** HTTP request methods. */
+export type EndpointMethod = EndpointBodyMethod | EndpointHeadMethod;
+
+/** HTTP request methods that have no body. */
+export type EndpointHeadMethod = "HEAD" | "GET";
+
+/** HTTP request methods that have a body. */
+export type EndpointBodyMethod = "POST" | "PUT" | "PATCH" | "DELETE";
+
+/** Configurable options for endpoint. */
+export type EndpointOptions = Omit<RequestInit, "method" | "body">;
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions.
@@ -81,8 +90,8 @@ export class Endpoint<P, R> {
 
 		// URL has `{placeholders}` to render.
 		const placeholders = getPlaceholders(url);
-		if (placeholders) {
-			assertData(payload, caller);
+		if (placeholders.length) {
+			assertDictionary(payload, caller);
 			return renderTemplate(url, payload, caller);
 		}
 
@@ -93,43 +102,14 @@ export class Endpoint<P, R> {
 	/**
 	 * Validate a payload against this endpoints payload schema, and return an HTTP `Request` that will send it to this endpoint.
 	 */
-	request(payload: P, options: RequestInit = {}, caller: AnyCaller = this.request): Request {
-		const { url, method } = this;
-
-		// Validate the payload — throws `Feedback` instances if validation fails.
-		const body = this.payload.validate(payload);
-
-		// Get requests have no body, so encode their payload as URL parameters or in the URL url.
-		if (method === "GET") {
-			assertDictionary(body, caller);
-			const placeholders = getPlaceholders(url);
-
-			// URL has `{placeholders}` to render, so rendere those to the URL and add all other params as `?query` params.
-			if (placeholders) {
-				const rendered = omitURLParams(withURLParams(renderTemplate(url, body, caller), body, caller), ...placeholders);
-				return new Request(rendered, { method, ...options });
-			}
-
-			// URL has no `{placeholders}`, so add all payload params to the URL.
-			return new Request(withURLParams(url, body, caller), { method, ...options });
-		}
-
-		// Text or `FormData` instances pass through and will set their own content type.
-		if (typeof body === "string" || body instanceof FormData) return new Request(url, { method, ...options, body });
-
-		// All other requests are converted to JSON.
-		return new Request(url, {
-			method,
-			...options,
-			headers: { ...options.headers, "Content-Type": "application/json" },
-			body: JSON.stringify(body),
-		});
+	request(payload: P, options: EndpointOptions = {}, caller: AnyCaller = this.request): Request {
+		return createRequest(this.method, this.url, this.payload.validate(payload), options, caller);
 	}
 
 	/**
 	 * Perform a fetch to this endpoint, and validate the returned response against this endpoint's result schema.
 	 */
-	async fetch(payload: P, options: RequestInit = {}, caller: AnyCaller = this.fetch): Promise<R> {
+	async fetch(payload: P, options: EndpointOptions = {}, caller: AnyCaller = this.fetch): Promise<R> {
 		// Fetch the response.
 		const request = this.request(payload, options, caller);
 		const response = await fetch(request);
@@ -210,4 +190,97 @@ export function DELETE<P>(url: AbsoluteLink, payload: Schema<P>): Endpoint<P, un
 export function DELETE<R>(url: AbsoluteLink, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
 export function DELETE(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("DELETE", url, payload, result);
+}
+
+/**
+ * Create a `Request` instance for a method/url and payload.
+ *
+ * - If `{placeholders}` are set in the URL, they are replaced by values from payload (will throw if `payload` is not a dictionary object).
+ * - If the method is `HEAD` or `GET`, the payload is sent as `?query` parameters in the URL.
+ * - If the method is anything else, the payload is sent in the body (either as JSON, string, or `FormData`).
+ *
+ * @throws ValueError if this is a `HEAD` or `GET` request but `body` is not a dictionary object.
+ * @throws ValueError if `{placeholders}` are set in the URL but `body` is not a dictionary object.
+ */
+function createRequest(
+	method: EndpointMethod,
+	url: string,
+	payload: unknown,
+	options: EndpointOptions = {},
+	caller: AnyCaller = createRequest,
+): Request {
+	// This is a head request, so ensure the payload is a dictionary object.
+	if (method === "GET" || method === "HEAD") {
+		assertDictionary(payload, caller);
+		return createHeadRequest(method, url, payload, options, caller);
+	}
+
+	// This is a normal body request.
+	return createBodyRequest(method, url, payload, options, caller);
+}
+
+/**
+ * Create a body-less request to a URL.
+ * - Any `{placeholders}` in the URL will be rendered with values from `params`, and won't be set in `?query` parameters in the URL.
+ */
+function createHeadRequest(
+	method: EndpointHeadMethod,
+	url: string,
+	params: Data,
+	options: EndpointOptions = {},
+	caller: AnyCaller = createHeadRequest,
+): Request {
+	const placeholders = getPlaceholders(url);
+
+	// URL has `{placeholders}` to render, so rendere those to the URL and add all other params as `?query` params.
+	if (placeholders.length) {
+		const rendered = omitURLParams(withURLParams(renderTemplate(url, params, caller), params, caller), ...placeholders);
+		return new Request(rendered, { ...options, method });
+	}
+
+	// URL has no `{placeholders}`, so add all payload params to the URL.
+	return new Request(withURLParams(url, params, caller), { ...options, method });
+}
+
+/**
+ * Create a body request to a URL.
+ * - Any `{placeholders}` in the URL will be rendered with values from `data`, and won't be set in the request body.
+ * - The payload is sent in the body (either as JSON, string, or `FormData`).
+ *
+ * @throws ValueError if `{placeholders}` are set in the URL but `body` is not a dictionary object.
+ */
+function createBodyRequest(
+	method: EndpointBodyMethod,
+	url: string,
+	body: unknown,
+	options: EndpointOptions = {},
+	caller: AnyCaller = createBodyRequest,
+): Request {
+	const placeholders = getPlaceholders(url);
+
+	// If `{placeholders}` are set in the URL then body must be a dictionary object and is sent as JSON.
+	if (placeholders.length) {
+		assertDictionary(body, caller);
+		return createJSONRequest(method, url, body, options);
+	}
+
+	// `FormData` instances pass through unaltered and will set their own `Content-Type` with complex boundary information.
+	if (body instanceof FormData) return createFormDataRequest(method, url, body, options);
+	if (typeof body === "string") return createTextRequest(method, url, body, options);
+	return createJSONRequest(method, url, body, options); // JSON is the default.
+}
+
+/** Create a `FormData` request to a URL. */
+function createFormDataRequest(method: EndpointBodyMethod, url: string, body: FormData, options: EndpointOptions = {}): Request {
+	return new Request(url, { ...options, method, body });
+}
+
+/** Create a plain text request to a URL. */
+function createTextRequest(method: EndpointBodyMethod, url: string, body: string, { headers, ...options }: EndpointOptions = {}): Request {
+	return new Request(url, { ...options, headers: { ...headers, "Content-Type": "text/plain" }, method, body });
+}
+
+/** Create a JSON request to a URL. */
+function createJSONRequest(method: EndpointBodyMethod, url: string, body: unknown, { headers, ...options }: EndpointOptions = {}): Request {
+	return new Request(url, { ...options, headers: { ...headers, "Content-Type": "application/json" }, method, body: JSON.stringify(body) });
 }
