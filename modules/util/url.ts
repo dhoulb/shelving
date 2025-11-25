@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { MutableArray } from "./array.js";
-import type { DictionaryItem, ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
+import type { DictionaryItem, ImmutableDictionary, MutableDictionary } from "./dictionary.js";
 import { getDictionaryItems, isDictionary } from "./dictionary.js";
 import type { AnyCaller } from "./function.js";
 import { type Nullish, notNullish } from "./null.js";
@@ -9,18 +9,6 @@ import { getString, isString } from "./string.js";
 
 /** Values that can be converted to a URL instance. */
 export type PossibleURL = string | URL;
-
-type URLParser = (value: string | URL, base?: string | URL) => URL | null;
-
-function parseURL(value: string | URL, base?: string | URL): URL | null {
-	const ctor = URL as typeof URL & { parse?: URLParser };
-	if (typeof ctor.parse === "function") return ctor.parse(value, base);
-	try {
-		return new URL(value, base);
-	} catch {
-		return null;
-	}
-}
 
 /** Is an unknown value a URL object? */
 export function isURL(value: unknown): value is URL {
@@ -34,7 +22,14 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
 
 /** Convert a possible URL to a URL, or return `undefined` if conversion fails. */
 export function getURL(possible: Nullish<PossibleURL>, base: PossibleURL | undefined = _BASE): URL | undefined {
-	if (notNullish(possible)) return isURL(possible) ? possible : parseURL(possible, base) || undefined;
+	if (notNullish(possible)) {
+		if (isURL(possible)) return possible;
+		try {
+			return new URL(possible, base);
+		} catch {
+			return undefined;
+		}
+	}
 }
 const _BASE = typeof document === "object" ? document.baseURI : undefined;
 
@@ -49,7 +44,7 @@ export function requireURL(possible: PossibleURL, base?: PossibleURL, caller: An
 export type URLParams = ImmutableDictionary<string>;
 
 /** Type for things that can be converted to named URL parameters. */
-export type PossibleURLParams = PossibleURL | URLSearchParams | PossibleDictionary<unknown>;
+export type PossibleURLParams = PossibleURL | URLSearchParams | ImmutableDictionary<unknown>;
 
 /**
  * Get a set of entries for a set of possible URL params.
