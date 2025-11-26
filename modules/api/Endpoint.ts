@@ -120,7 +120,7 @@ export class Endpoint<P, R> {
 		const content = await getResponseContent(response, caller);
 
 		// Throw `ResponseError` if the API returns status outside the 200-299 range.
-		if (!ok) throw new ResponseError(getMessage(content) ?? `Error ${status}`);
+		if (!ok) throw new ResponseError(getMessage(content) ?? `Error ${status}`, { cause: Response, caller });
 
 		// Validate the success response.
 		return getValid(content, this.result, ResponseError, caller);
