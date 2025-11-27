@@ -4,8 +4,8 @@
  * - Modules that are for internal use, like `shelving/test`
  */
 
-export * from "./api/index.js";
 export * from "./db/index.js";
+export * from "./endpoint/index.js";
 export * from "./error/index.js";
 export * from "./feedback/index.js";
 // export * from "./firestore/client/index.js"; // Not exported.
