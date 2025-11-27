@@ -17,7 +17,7 @@ import type { URL, URLString } from "./url.js";
  * - URLs can be considered as "hierarchical URIs".
  * - All URLs are also URIs, but not all URIs are URLs.
  */
-type URIString = `${string}:${string}`;
+export type URIString = `${string}:${string}`;
 
 /**
  * Object that describes a valid URI, e.g. `urn:isbn:0451450523` or `http://example.com/path/to/resource`
