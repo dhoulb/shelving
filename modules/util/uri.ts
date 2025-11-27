@@ -1,9 +1,9 @@
-import { type Nullish, notNullish } from "shelving";
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
-import type { MutableArray } from "./array.js";
+import type { ImmutableArray, MutableArray } from "./array.js";
 import { type DictionaryItem, getDictionaryItems, type ImmutableDictionary, isDictionary, type MutableDictionary } from "./dictionary.js";
 import type { AnyCaller } from "./function.js";
+import { type Nullish, notNullish } from "./null.js";
 import { getString, isString } from "./string.js";
 import type { URL, URLString } from "./url.js";
 
@@ -36,8 +36,8 @@ export type URIString = `${string}:${string}`;
  * - You can tell the difference because a URL will have a non-empty `host` property, whereas URIs will never have a `host` (it will be `""` empty string).
  */
 export interface URI extends globalThis.URL {
+	protocol: URIScheme;
 	href: URIString;
-	origin: URIString;
 }
 
 /**
@@ -186,3 +186,12 @@ export function omitURIParams(url: PossibleURI, ...keys: string[]): URI {
 
 /** Return a URI without a param (or same URI if no changes were made). */
 export const omitURIParam: (url: PossibleURI, key: string) => URI = omitURIParams;
+
+/** A single schema for a URL. */
+export type URIScheme = `${string}:`;
+
+/** List of allowed URI schemes. */
+export type URISchemes = ImmutableArray<URIScheme>;
+
+/** Valid HTTP schemes for a URI. */
+export const HTTP_SCHEMES: URISchemes = ["http:", "https:"];

@@ -5,7 +5,7 @@ import { type Duration, getBestTimeUnit, getMilliseconds } from "./duration.js";
 import { getPercent } from "./number.js";
 import { type ImmutableObject, isObject } from "./object.js";
 import { TIME_UNITS, type TimeUnitKey } from "./units.js";
-import { type PossibleURL, requireURL } from "./url.js";
+import { isURI, type PossibleURI, requireURI } from "./uri.js";
 
 /** Options we use for number formatting. */
 export type NumberOptions = Omit<
@@ -154,9 +154,9 @@ export function formatDateTime(date: PossibleDate, options?: Intl.DateTimeFormat
 }
 
 /** Format a URL as a user-friendly string, e.g. `http://shax.com/test?uid=129483` → `shax.com/test` */
-export function formatURL(possible: PossibleURL, base?: PossibleURL): string {
-	const { host, pathname } = requireURL(possible, base, formatURL);
-	return `${host}${pathname.length > 1 ? pathname : ""}`;
+export function formatURI(possible: PossibleURI): string {
+	const { host, pathname } = requireURI(possible, formatURI);
+	return `${host}${pathname !== "/" ? pathname : ""}`;
 }
 
 /**
@@ -182,6 +182,7 @@ export function formatValue(value: unknown): string {
 	if (isDate(value)) return formatDateTime(value);
 	if (isArray(value)) return formatArray(value);
 	if (isObject(value)) return formatObject(value);
+	if (isURI(value)) return formatURI(value);
 	return "Unknown";
 }
 

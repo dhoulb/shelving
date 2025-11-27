@@ -1,29 +1,13 @@
 import { ValueFeedback } from "../feedback/Feedback.js";
-import type { ImmutableArray } from "../util/array.js";
-import { getURI, type URIString } from "../util/uri.js";
+import { getURI, HTTP_SCHEMES, type URISchemes, type URIString } from "../util/uri.js";
 import { NULLABLE } from "./NullableSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
-
-/**
- * List of allowed schemes for a URI string.
- * @example ["http:", "https:", "mailto:"]
- */
-export type URISchemes = ImmutableArray<string>;
-
-/**
- * List of allowed hosts for a URI string.
- * @example ["google.com", "www.google.com"]
- */
-export type URIHosts = ImmutableArray<string>;
 
 /** Allowed options for `URISchema` */
 export interface URISchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "multiline"> {
 	readonly schemes?: URISchemes | undefined;
 }
-
-/** Default whitelist for URI schemes. */
-const HTTP_SCHEMES: URISchemes = ["http:", "https:"];
 
 /**
  * Type of `StringSchema` that defines a valid URI string.
@@ -31,9 +15,7 @@ const HTTP_SCHEMES: URISchemes = ["http:", "https:"];
  * - URIs are limited to 512 characters, but generally these won't be data: URIs so this is a reasonable limit.
  */
 export class URISchema extends StringSchema {
-	readonly base: URIString | undefined;
 	readonly schemes: URISchemes;
-	readonly hosts: URIHosts | undefined;
 	constructor({ one = "URI", title = "URI", schemes = HTTP_SCHEMES, ...options }: URISchemaOptions) {
 		super({
 			one,

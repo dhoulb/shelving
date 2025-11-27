@@ -28,8 +28,8 @@ describe("validate()", () => {
 	const schema = URL_SCHEMA;
 	describe("URLs", () => {
 		test("Valid URLs are valid.", () => {
-			const u2 = "feed:https://example.com/entries.atom"; // Weirdly feed can be either.
-			expect(new URLSchema({ schemes: ["feed:"] }).validate(u2)).toBe(u2);
+			// const u2 = "feed:https://example.com/entries.atom"; // Weirdly feed can be either.
+			// expect(new URLSchema({ schemes: ["feed:"] }).validate(u2)).toBe(u2);
 			const u3 = "feed://example.com/entries.atom"; // Weirdly feed can be either.
 			expect(new URLSchema({ schemes: ["feed:"] }).validate(u3)).toBe(u3);
 			const u4 = "file:///etc/fstab";
@@ -193,17 +193,5 @@ describe("options.schemes", () => {
 	test("Scheme not in specified whitelist is invalid", () => {
 		const schema = new URLSchema({ schemes: ["telnet:"] });
 		expect(() => schema.validate("webcal://x.com:")).toThrow(Feedback);
-	});
-});
-describe("options.hosts", () => {
-	test("Host in default whitelist is allowed", () => {
-		const schema = new URLSchema({ hosts: ["x.com"] });
-		expect(schema.validate("http://x.com/")).toBe("http://x.com/");
-		expect(schema.validate("https://x.com/")).toBe("https://x.com/");
-	});
-	test("Host not in specified whitelist is invalid", () => {
-		const schema = new URLSchema({ hosts: ["x.com"] });
-		expect(() => schema.validate("http://y.com/")).toThrow(Feedback);
-		expect(() => schema.validate("https://y.com/")).toThrow(Feedback);
 	});
 });

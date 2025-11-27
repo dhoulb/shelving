@@ -1,7 +1,8 @@
-import type { AbsolutePath, Path } from "shelving";
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 import { type Nullish, notNullish } from "./null.js";
+import type { AbsolutePath, Path } from "./path.js";
+import type { URI } from "./uri.js";
 
 /**
  * A URL string has a protocol and a `//`.
@@ -26,7 +27,7 @@ export type URLString = `${string}://${string}`;
  * - It's more "correct" terminology to use `URI` to refer to what the Javascript `URL` class represents.
  * - You can tell the difference because a URL will have a non-empty `host` property, whereas URIs will never have a `host` (it will be `""` empty string).
  */
-export interface URL extends globalThis.URL {
+export interface URL extends URI {
 	href: URLString;
 	origin: URLString;
 	pathname: AbsolutePath;
@@ -50,10 +51,13 @@ export type PossibleURL = string | globalThis.URL;
 
 /**
  * Is an unknown value a URL object?
- * - Must be a `URL` instance and have a `host` set, otherwise it's only URI but not a URL.
+ * - Must be a `URL` instance and its origin must start with `scheme://`
  */
 export function isURL(value: unknown): value is URL {
-	return value instanceof URL && !!value.host;
+	return value instanceof globalThis.URL && _isValidURL(value);
+}
+function _isValidURL(url: globalThis.URL): url is URL {
+	return url.href.startsWith(`${url.protocol}//`);
 }
 
 /** Assert that an unknown value is a URL object. */
@@ -64,12 +68,15 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
 /** Convert a possible URL to a URL, or return `undefined` if conversion fails. */
 export function getURL(possible: Nullish<PossibleURL>, base: PossibleURL | undefined = _BASE): URL | undefined {
 	if (notNullish(possible)) {
-		if (isURL(possible)) return possible;
-		try {
-			const url = new globalThis.URL(possible, base);
-			if (url.host) return url as URL;
-		} catch {
-			//
+		if (possible instanceof globalThis.URL) {
+			if (_isValidURL(possible)) return possible;
+		} else {
+			try {
+				const url = new globalThis.URL(possible, base);
+				if (_isValidURL(url)) return url;
+			} catch {
+				//
+			}
 		}
 	}
 }

@@ -15,6 +15,22 @@ describe("getURL()", () => {
 		expect(url).toBeInstanceOf(URL);
 		expect(url?.href).toBe("https://a.com/");
 	});
+	test("Check different types", () => {
+		// expect(getURL("https://a.com")?.href).toBe("https://a.com/");
+		// expect(getURL("feed://example.com/entries.atom")?.href).toBe("feed://example.com/entries.atom"); // Weirdly feed can be either.
+		// expect(getURL("file://host/etc/fstab")?.href).toBe("file://host/etc/fstab");
+		expect(getURL("file:///etc/fstab")?.href).toBe("file:///etc/fstab");
+		expect(getURL("ftp://ftp.funet.fi/pub/standards/RFC/rfc959.txt")?.href).toBe("ftp://ftp.funet.fi/pub/standards/RFC/rfc959.txt");
+		expect(getURL("https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Technical_overview")?.href).toBe(
+			"https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Technical_overview",
+		);
+		expect(getURL("irc://irc.efnet.org:6667/DiscworldMUD")?.href).toBe("irc://irc.efnet.org:6667/DiscworldMUD");
+		expect(getURL("telnet://rainmaker.wunderground.com")?.href).toBe("telnet://rainmaker.wunderground.com");
+		expect(getURL("webcal://espn.go.com/travel/sports/calendar/export/espnCal?teams=6_23")?.href).toBe(
+			"webcal://espn.go.com/travel/sports/calendar/export/espnCal?teams=6_23",
+		);
+		expect(getURL("ws://localhost:8080/websocket/wsserver")?.href).toBe("ws://localhost:8080/websocket/wsserver");
+	});
 	test("returns undefined for invalid string", () => {
 		expect(getURL("not a url")).toBeUndefined();
 	});
