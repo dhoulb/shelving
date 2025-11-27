@@ -4,9 +4,9 @@ import { assertDictionary, type ImmutableDictionary } from "../util/dictionary.j
 import { getMessage } from "../util/error.js";
 import type { AnyCaller } from "../util/function.js";
 import { getResponse, getResponseContent } from "../util/http.js";
-import type { AbsoluteLink } from "../util/link.js";
 import { getPlaceholders, renderTemplate } from "../util/template.js";
 import { omitURIParams, withURIParams } from "../util/uri.js";
+import type { URLString } from "../util/url.js";
 import { getValid } from "../util/validate.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
@@ -35,7 +35,7 @@ export class Endpoint<P, R> {
 	readonly method: EndpointMethod;
 
 	/** Endpoint URL, possibly including placeholders e.g. `https://api.mysite.com/users/{id}` */
-	readonly url: AbsoluteLink;
+	readonly url: URLString;
 
 	/** Payload schema. */
 	readonly payload: Schema<P>;
@@ -43,7 +43,7 @@ export class Endpoint<P, R> {
 	/** Result schema. */
 	readonly result: Schema<R>;
 
-	constructor(method: EndpointMethod, url: AbsoluteLink, payload: Schema<P>, result: Schema<R>) {
+	constructor(method: EndpointMethod, url: URLString, payload: Schema<P>, result: Schema<R>) {
 		this.method = method;
 		this.url = url;
 		this.payload = payload;
@@ -156,10 +156,10 @@ export type EndpointType<X extends Endpoint<unknown, unknown>> = X extends Endpo
  * Represent a GET request to a specified URL, with validated payload and return types.
  * "The GET method requests a representation of the specified resource. Requests using GET should only retrieve data and should not contain a request content."
  */
-export function GET<P, R>(url: AbsoluteLink, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function GET<P>(url: AbsoluteLink, payload: Schema<P>): Endpoint<P, undefined>;
-export function GET<R>(url: AbsoluteLink, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function GET(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function GET<P, R>(url: URLString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function GET<P>(url: URLString, payload: Schema<P>): Endpoint<P, undefined>;
+export function GET<R>(url: URLString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function GET(url: URLString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("GET", url, payload, result);
 }
 
@@ -167,10 +167,10 @@ export function GET(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED):
  * Represent a POST request to a specified URL, with validated payload and return types.
  * "The POST method submits an entity to the specified resource, often causing a change in state or side effects on the server.
  */
-export function POST<P, R>(url: AbsoluteLink, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function POST<P>(url: AbsoluteLink, payload: Schema<P>): Endpoint<P, undefined>;
-export function POST<R>(url: AbsoluteLink, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function POST(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function POST<P, R>(url: URLString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function POST<P>(url: URLString, payload: Schema<P>): Endpoint<P, undefined>;
+export function POST<R>(url: URLString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function POST(url: URLString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("POST", url, payload, result);
 }
 
@@ -178,10 +178,10 @@ export function POST(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED)
  * Represent a PUT request to a specified URL, with validated payload and return types.
  * "The PUT method replaces all current representations of the target resource with the request content."
  */
-export function PUT<P, R>(url: AbsoluteLink, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function PUT<P>(url: AbsoluteLink, payload: Schema<P>): Endpoint<P, undefined>;
-export function PUT<R>(url: AbsoluteLink, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function PUT(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function PUT<P, R>(url: URLString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function PUT<P>(url: URLString, payload: Schema<P>): Endpoint<P, undefined>;
+export function PUT<R>(url: URLString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function PUT(url: URLString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("PUT", url, payload, result);
 }
 
@@ -189,10 +189,10 @@ export function PUT(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED):
  * Represent a PATCH request to a specified URL, with validated payload and return types.
  * "The PATCH method applies partial modifications to a resource."
  */
-export function PATCH<P, R>(url: AbsoluteLink, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function PATCH<P>(url: AbsoluteLink, payload: Schema<P>): Endpoint<P, undefined>;
-export function PATCH<R>(url: AbsoluteLink, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function PATCH(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function PATCH<P, R>(url: URLString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function PATCH<P>(url: URLString, payload: Schema<P>): Endpoint<P, undefined>;
+export function PATCH<R>(url: URLString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function PATCH(url: URLString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("PATCH", url, payload, result);
 }
 
@@ -200,10 +200,10 @@ export function PATCH(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED
  * Represent a DELETE request to a specified URL, with validated payload and return types.
  * "The DELETE method deletes the specified resource."
  */
-export function DELETE<P, R>(url: AbsoluteLink, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function DELETE<P>(url: AbsoluteLink, payload: Schema<P>): Endpoint<P, undefined>;
-export function DELETE<R>(url: AbsoluteLink, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function DELETE(url: AbsoluteLink, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function DELETE<P, R>(url: URLString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function DELETE<P>(url: URLString, payload: Schema<P>): Endpoint<P, undefined>;
+export function DELETE<R>(url: URLString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function DELETE(url: URLString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("DELETE", url, payload, result);
 }
 
