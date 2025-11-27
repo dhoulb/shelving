@@ -6,7 +6,7 @@ import type { AnyCaller } from "../util/function.js";
 import { getResponse, getResponseContent } from "../util/http.js";
 import type { AbsoluteLink } from "../util/link.js";
 import { getPlaceholders, renderTemplate } from "../util/template.js";
-import { omitURLParams, withURLParams } from "../util/url.js";
+import { omitURIParams, withURIParams } from "../util/uri.js";
 import { getValid } from "../util/validate.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
@@ -249,12 +249,12 @@ function createHeadRequest(
 
 	// URL has `{placeholders}` to render, so rendere those to the URL and add all other params as `?query` params.
 	if (placeholders.length) {
-		const rendered = omitURLParams(withURLParams(renderTemplate(url, params, caller), params, caller), ...placeholders);
+		const rendered = omitURIParams(withURIParams(renderTemplate(url, params, caller), params, caller), ...placeholders);
 		return new Request(rendered, { ...options, method });
 	}
 
 	// URL has no `{placeholders}`, so add all payload params to the URL.
-	return new Request(withURLParams(url, params, caller), { ...options, method });
+	return new Request(withURIParams(url, params, caller), { ...options, method });
 }
 
 /**

@@ -56,6 +56,7 @@ export * from "./transform.js";
 export * from "./undefined.js";
 export * from "./units.js";
 export * from "./update.js";
+export * from "./uri.js";
 export * from "./url.js";
 export * from "./uuid.js";
 export * from "./validate.js";

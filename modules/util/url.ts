@@ -1,18 +1,59 @@
+import type { AbsolutePath, Path } from "shelving";
 import { RequiredError } from "../error/RequiredError.js";
-import { ValueError } from "../error/ValueError.js";
-import type { MutableArray } from "./array.js";
-import type { DictionaryItem, ImmutableDictionary, MutableDictionary } from "./dictionary.js";
-import { getDictionaryItems, isDictionary } from "./dictionary.js";
 import type { AnyCaller } from "./function.js";
 import { type Nullish, notNullish } from "./null.js";
-import { getString, isString } from "./string.js";
+
+/**
+ * A URL string has a protocol and a `//`.
+ * - The `//` at the start of a URL indicates that it has a hierarchical path component, so this makes it a URL.
+ * - URLs have a concept of "absolute" or "relative" URLs, since they have a path.
+ */
+export type URLString = `${string}://${string}`;
+
+/**
+ * Object that describes a valid URL, e.g. `http://example.com/path/to/resource`
+ * - Improves the builtin Javascript `URL` class to more accurately type its properties.
+ *
+ * URI and URL differences:
+ * - According to RFC 3986, URLs are a subset of URIs that have a hierarchical path component, e.g. `http://example.com/path`.
+ * - The `//` at the start of a URL indicates that it has a hierarchical path component, so this makes it a URL.
+ * - The absence of `//` indicates a non-hierarchical URI.
+ * - URLs can be considered as "hierarchical URIs".
+ * - All URLs are also URIs, but not all URIs are URLs.
+ *
+ * Javascript URL problems:
+ * - Javascript `URL` instance can actually represent any kind of URI (not just URLs).
+ * - It's more "correct" terminology to use `URI` to refer to what the Javascript `URL` class represents.
+ * - You can tell the difference because a URL will have a non-empty `host` property, whereas URIs will never have a `host` (it will be `""` empty string).
+ */
+export interface URL extends globalThis.URL {
+	href: URLString;
+	origin: URLString;
+	pathname: AbsolutePath;
+}
+
+/**
+ * Construct a correctly-typed `URL` object.
+ * - This is a more correctly typed version of the builtin Javascript `URL` constructor.
+ * - Requires a URL string, URL object, or path as input, and optionally a base URL.
+ * - If a path is provided as input, a base URL _must_ also be provided.
+ * - The returned type is
+ */
+export interface URLConstructor {
+	new (input: URLString | URL, base?: URLString | URL): URL;
+	new (input: URLString | URL | Path, base: URLString | URL): URL;
+}
+export const URL = globalThis.URL as URLConstructor;
 
 /** Values that can be converted to a URL instance. */
-export type PossibleURL = string | URL;
+export type PossibleURL = string | globalThis.URL;
 
-/** Is an unknown value a URL object? */
+/**
+ * Is an unknown value a URL object?
+ * - Must be a `URL` instance and have a `host` set, otherwise it's only URI but not a URL.
+ */
 export function isURL(value: unknown): value is URL {
-	return value instanceof URL;
+	return value instanceof URL && !!value.host;
 }
 
 /** Assert that an unknown value is a URL object. */
@@ -25,104 +66,18 @@ export function getURL(possible: Nullish<PossibleURL>, base: PossibleURL | undef
 	if (notNullish(possible)) {
 		if (isURL(possible)) return possible;
 		try {
-			return new URL(possible, base);
+			const url = new globalThis.URL(possible, base);
+			if (url.host) return url as URL;
 		} catch {
-			return undefined;
+			//
 		}
 	}
 }
 const _BASE = typeof document === "object" ? document.baseURI : undefined;
 
 /** Convert a possible URL to a URL, or throw `RequiredError` if conversion fails. */
-export function requireURL(possible: PossibleURL, base?: PossibleURL, caller: AnyCaller = requireURL): URL {
+export function requireURL(possible: PossibleURL, base?: PossibleURL | undefined, caller: AnyCaller = requireURL): URL {
 	const url = getURL(possible, base);
 	assertURL(url, caller);
 	return url;
 }
-
-/** Type for a set of named URL parameters. */
-export type URLParams = ImmutableDictionary<string>;
-
-/** Type for things that can be converted to named URL parameters. */
-export type PossibleURLParams = PossibleURL | URLSearchParams | ImmutableDictionary<unknown>;
-
-/**
- * Get a set of entries for a set of possible URL params.
- *
- * Note: Not as simple as just converting with `Object.fromEntries()`:
- * 1. When `URLSearchParams` contains multiple values for the same key, calling `params.get()` will return the _first_ value.
- * 2. So when converting this to a simple data object, only one value per key can be represented, but it needs to be the _first_ one.
- * 3. Since we're looping through anyway, we also take the time to convert values to strings, so we can accept a wider range of input types.
- */
-export function* getURLEntries(input: PossibleURLParams, caller: AnyCaller = getURLParams): Iterable<DictionaryItem<string>> {
-	if (input instanceof URLSearchParams) {
-		yield* input;
-	} else if (isString(input) || isURL(input)) {
-		yield* requireURL(input, undefined, caller).searchParams;
-	} else {
-		const done: MutableArray<string> = [];
-		for (const [key, value] of getDictionaryItems(input)) {
-			if (done.includes(key)) continue;
-			done.push(key);
-			const str = getString(value);
-			if (str === undefined) throw new ValueError(`URL param "${key}" must be string`, { received: value, caller });
-			yield [key, str];
-		}
-	}
-}
-
-/** Get a set of params for a URL as a dictionary. */
-export function getURLParams(input: PossibleURLParams, caller: AnyCaller = getURLParams): URLParams {
-	const output: MutableDictionary<string> = {};
-	for (const [key, str] of getURLEntries(input, caller)) output[key] = str;
-	return output;
-}
-
-/** Get a single named param from a URL. */
-export function getURLParam(input: PossibleURLParams, key: string): string | undefined {
-	if (input instanceof URLSearchParams) return input.get(key) || undefined;
-	if (isDictionary(input)) return getString(input[key]);
-	return getURLParams(input)[key];
-}
-
-/** Get a single named param from a URL. */
-export function requireURLParam(input: PossibleURLParams, key: string, caller: AnyCaller = requireURLParam): string {
-	const value = getURLParam(input, key);
-	if (value === undefined) throw new RequiredError(`URL param "${key}" is required`, { received: input, caller });
-	return value;
-}
-
-/**
- * Return a URL with a new param set (or same URL if no changes were made).
- * - Throws `ValueError` if the value could not be converted to a string.
- */
-export function withURLParam(url: PossibleURL, key: string, value: unknown, caller: AnyCaller = withURLParam): URL {
-	const input = requireURL(url);
-	const output = new URL(input);
-	const str = getString(value);
-	if (str === undefined) throw new ValueError(`URL param "${key}" must be string`, { received: value, caller });
-	output.searchParams.set(key, str);
-	return input.href === output.href ? input : output;
-}
-
-/**
- * Return a URL with several new params set (or same URL if no changes were made).
- * - Throws `ValueError` if any of the values could not be converted to strings.
- */
-export function withURLParams(url: PossibleURL, params: PossibleURLParams, caller: AnyCaller = withURLParams): URL {
-	const input = requireURL(url);
-	const output = new URL(input);
-	for (const [key, str] of getURLEntries(params, caller)) output.searchParams.set(key, str);
-	return input.href === output.href ? input : output;
-}
-
-/** Return a URL without one or more params (or same URL if no changes were made). */
-export function omitURLParams(url: PossibleURL, ...keys: string[]): URL {
-	const input = requireURL(url);
-	const output = new URL(input);
-	for (const key of keys) output.searchParams.delete(key);
-	return input.href === output.href ? input : output;
-}
-
-/** Return a URL without a param (or same URL if no changes were made). */
-export const omitURLParam: (url: PossibleURL, key: string) => URL = omitURLParams;
