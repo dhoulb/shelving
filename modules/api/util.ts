@@ -51,9 +51,8 @@ export type EndpointHandlers = ReadonlyArray<AnyEndpointHandler>;
  */
 export function handleEndpoints(request: Request, endpoints: EndpointHandlers, caller: AnyCaller = handleEndpoints): Promise<Response> {
 	// Parse the URL of the request.
-	const requestUrl = request.url;
-	const url = getURL(requestUrl);
-	if (!url) throw new RequestError("Invalid request URL", { received: requestUrl, caller });
+	const url = getURL(request.url);
+	if (!url) throw new RequestError("Invalid request URL", { received: request.url, caller });
 	const { origin, pathname, searchParams } = url;
 
 	// Iterate over the handlers and return the first one that matches the request.
@@ -70,11 +69,11 @@ export function handleEndpoints(request: Request, endpoints: EndpointHandlers, c
 		const combinedParams = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
 
 		// Get the response by calling the callback.
-		return handleEndpoint(endpoint, callback, combinedParams, request);
+		return handleEndpoint(endpoint, callback, combinedParams, request, caller);
 	}
 
 	// No handler matched the request.
-	throw new NotFoundError("No matching endpoint", { received: requestUrl, caller });
+	throw new NotFoundError("No matching endpoint", { received: request.url, caller });
 }
 
 /** Handle an individual call to an endpoint callback. */
@@ -83,9 +82,10 @@ async function handleEndpoint<P, R>(
 	callback: EndpointCallback<P, R>,
 	params: ImmutableDictionary<string>,
 	request: Request,
+	caller: AnyCaller = handleEndpoint,
 ): Promise<Response> {
 	// Extract a data object from the request body and validate it against the endpoint's payload type.
-	const content = await getRequestContent(request, handleEndpoints);
+	const content = await getRequestContent(request, caller);
 
 	// If content is undefined, it means the request has no body, so params are the only payload.
 	// - If the content is a plain object, merge if with the params.
