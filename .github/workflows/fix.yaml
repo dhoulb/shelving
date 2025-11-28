@@ -1,7 +1,10 @@
 # Run `npm run fix` on any push or pull request.
 # If changes were made and the tests pass, commit the changes back.
 name: Fix
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 jobs:
   fix:
     name: Fix
