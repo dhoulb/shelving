@@ -2,6 +2,7 @@ export * from "./ArrayStore.js";
 export * from "./BooleanStore.js";
 export * from "./DataStore.js";
 export * from "./DictionaryStore.js";
+export * from "./EndpointStore.js";
 export * from "./PathStore.js";
 export * from "./Store.js";
 export * from "./URLStore.js";
