@@ -1,14 +1,23 @@
 # Runs tests on any push or pull request.
 # If the tests pass and this is a push to the main branch also run Semantic Release.
 name: Release
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+concurrency:
+  group: release-main
+  cancel-in-progress: true
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v1
       - name: install
         run: bun install
