@@ -1,26 +1,13 @@
 import { ResponseError } from "../error/ResponseError.js";
 import { type Schema, UNDEFINED } from "../schema/Schema.js";
-import { assertDictionary, type ImmutableDictionary } from "../util/dictionary.js";
+import { assertDictionary } from "../util/dictionary.js";
 import { getMessage } from "../util/error.js";
 import type { AnyCaller } from "../util/function.js";
-import { getResponse, getResponseContent } from "../util/http.js";
+import { getRequest, getResponse, getResponseContent, type RequestMethod, type RequestOptions } from "../util/http.js";
 import { getPlaceholders, renderTemplate } from "../util/template.js";
-import { omitURIParams, withURIParams } from "../util/uri.js";
 import type { URLString } from "../util/url.js";
 import { getValid } from "../util/validate.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
-
-/** HTTP request methods. */
-export type EndpointMethod = EndpointBodyMethod | EndpointHeadMethod;
-
-/** HTTP request methods that have no body. */
-export type EndpointHeadMethod = "HEAD" | "GET";
-
-/** HTTP request methods that have a body. */
-export type EndpointBodyMethod = "POST" | "PUT" | "PATCH" | "DELETE";
-
-/** Configurable options for endpoint. */
-export type EndpointOptions = Omit<RequestInit, "method" | "body">;
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions.
@@ -32,7 +19,7 @@ export type EndpointOptions = Omit<RequestInit, "method" | "body">;
  */
 export class Endpoint<P, R> {
 	/** Endpoint method. */
-	readonly method: EndpointMethod;
+	readonly method: RequestMethod;
 
 	/** Endpoint URL, possibly including placeholders e.g. `https://api.mysite.com/users/{id}` */
 	readonly url: URLString;
@@ -43,7 +30,7 @@ export class Endpoint<P, R> {
 	/** Result schema. */
 	readonly result: Schema<R>;
 
-	constructor(method: EndpointMethod, url: URLString, payload: Schema<P>, result: Schema<R>) {
+	constructor(method: RequestMethod, url: URLString, payload: Schema<P>, result: Schema<R>) {
 		this.method = method;
 		this.url = url;
 		this.payload = payload;
@@ -105,8 +92,8 @@ export class Endpoint<P, R> {
 	 *
 	 * @throws Feedback if the payload is invalid.
 	 */
-	request(payload: P, options: EndpointOptions = {}, caller: AnyCaller = this.request): Request {
-		return createRequest(this.method, this.url, this.payload.validate(payload), options, caller);
+	request(payload: P, options: RequestOptions = {}, caller: AnyCaller = this.request): Request {
+		return getRequest(this.method, this.url, this.payload.validate(payload), options, caller);
 	}
 
 	/**
@@ -135,7 +122,7 @@ export class Endpoint<P, R> {
 	 * @throws ResponseError if the response status is not ok (200-299)
 	 * @throws ResponseError if the response content is invalid.
 	 */
-	async fetch(payload: P, options: EndpointOptions = {}, caller: AnyCaller = this.fetch): Promise<R> {
+	async fetch(payload: P, options: RequestOptions = {}, caller: AnyCaller = this.fetch): Promise<R> {
 		const response = await fetch(this.request(payload, options, caller));
 		return this.response(response, caller);
 	}
@@ -205,97 +192,4 @@ export function DELETE<P>(url: URLString, payload: Schema<P>): Endpoint<P, undef
 export function DELETE<R>(url: URLString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
 export function DELETE(url: URLString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("DELETE", url, payload, result);
-}
-
-/**
- * Create a `Request` instance for a method/url and payload.
- *
- * - If `{placeholders}` are set in the URL, they are replaced by values from payload (will throw if `payload` is not a dictionary object).
- * - If the method is `HEAD` or `GET`, the payload is sent as `?query` parameters in the URL.
- * - If the method is anything else, the payload is sent in the body (either as JSON, string, or `FormData`).
- *
- * @throws ValueError if this is a `HEAD` or `GET` request but `body` is not a dictionary object.
- * @throws ValueError if `{placeholders}` are set in the URL but `body` is not a dictionary object.
- */
-function createRequest(
-	method: EndpointMethod,
-	url: URLString,
-	payload: unknown,
-	options: EndpointOptions = {},
-	caller: AnyCaller = createRequest,
-): Request {
-	// This is a head request, so ensure the payload is a dictionary object.
-	if (method === "GET" || method === "HEAD") {
-		assertDictionary(payload, caller);
-		return createHeadRequest(method, url, payload, options, caller);
-	}
-
-	// This is a normal body request.
-	return createBodyRequest(method, url, payload, options, caller);
-}
-
-/**
- * Create a body-less request to a URL.
- * - Any `{placeholders}` in the URL will be rendered with values from `params`, and won't be set in `?query` parameters in the URL.
- */
-function createHeadRequest(
-	method: EndpointHeadMethod,
-	url: URLString,
-	params: ImmutableDictionary<unknown>,
-	options: EndpointOptions = {},
-	caller: AnyCaller = createHeadRequest,
-): Request {
-	const placeholders = getPlaceholders(url);
-
-	// URL has `{placeholders}` to render, so rendere those to the URL and add all other params as `?query` params.
-	if (placeholders.length) {
-		const rendered = omitURIParams(withURIParams(renderTemplate(url, params, caller), params, caller), ...placeholders);
-		return new Request(rendered, { ...options, method });
-	}
-
-	// URL has no `{placeholders}`, so add all payload params to the URL.
-	return new Request(withURIParams(url, params, caller), { ...options, method });
-}
-
-/**
- * Create a body request to a URL.
- * - Any `{placeholders}` in the URL will be rendered with values from `data`, and won't be set in the request body.
- * - The payload is sent in the body (either as JSON, string, or `FormData`).
- *
- * @throws ValueError if `{placeholders}` are set in the URL but `body` is not a dictionary object.
- */
-function createBodyRequest(
-	method: EndpointBodyMethod,
-	url: URLString,
-	body: unknown,
-	options: EndpointOptions = {},
-	caller: AnyCaller = createBodyRequest,
-): Request {
-	const placeholders = getPlaceholders(url);
-
-	// If `{placeholders}` are set in the URL then body must be a dictionary object and is sent as JSON.
-	if (placeholders.length) {
-		assertDictionary(body, caller);
-		return createJSONRequest(method, renderTemplate(url, body, caller), body, options);
-	}
-
-	// `FormData` instances pass through unaltered and will set their own `Content-Type` with complex boundary information.
-	if (body instanceof FormData) return createFormDataRequest(method, url, body, options);
-	if (typeof body === "string") return createTextRequest(method, url, body, options);
-	return createJSONRequest(method, url, body, options); // JSON is the default.
-}
-
-/** Create a `FormData` request to a URL. */
-function createFormDataRequest(method: EndpointBodyMethod, url: string, body: FormData, options: EndpointOptions = {}): Request {
-	return new Request(url, { ...options, method, body });
-}
-
-/** Create a plain text request to a URL. */
-function createTextRequest(method: EndpointBodyMethod, url: string, body: string, { headers, ...options }: EndpointOptions = {}): Request {
-	return new Request(url, { ...options, headers: { ...headers, "Content-Type": "text/plain" }, method, body });
-}
-
-/** Create a JSON request to a URL. */
-function createJSONRequest(method: EndpointBodyMethod, url: string, body: unknown, { headers, ...options }: EndpointOptions = {}): Request {
-	return new Request(url, { ...options, headers: { ...headers, "Content-Type": "application/json" }, method, body: JSON.stringify(body) });
 }

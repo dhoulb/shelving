@@ -1,8 +1,12 @@
 import { RequestError } from "../error/RequestError.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { Feedback } from "../feedback/Feedback.js";
+import { assertDictionary, type ImmutableDictionary } from "./dictionary.js";
 import { isError } from "./error.js";
 import type { AnyCaller } from "./function.js";
+import { getPlaceholders, renderTemplate } from "./template.js";
+import { omitURIParams, withURIParams } from "./uri.js";
+import type { URLString } from "./url.js";
 
 /** A handler function takes a `Request` and returns a `Response` (possibly asynchronously). */
 export type RequestHandler = (request: Request) => Response | Promise<Response>;
@@ -132,4 +136,117 @@ export function getErrorResponse(reason: unknown, debug = false): Response {
 
 	// Otherwise return a generic error message with no details.
 	return new Response(undefined, { status });
+}
+
+/** HTTP request methods. */
+export type RequestMethod = RequestBodyMethod | RequestHeadMethod;
+
+/** HTTP request methods that have no body. */
+export type RequestHeadMethod = "HEAD" | "GET";
+
+/** HTTP request methods that have a body. */
+export type RequestBodyMethod = "POST" | "PUT" | "PATCH" | "DELETE";
+
+/** Configurable options for endpoint. */
+export type RequestOptions = Omit<RequestInit, "method" | "body">;
+
+/**
+ * Create a `Request` instance for a method/url and payload.
+ *
+ * - If `{placeholders}` are set in the URL, they are replaced by values from payload (will throw if `payload` is not a dictionary object).
+ * - If the method is `HEAD` or `GET`, the payload is sent as `?query` parameters in the URL.
+ * - If the method is anything else, the payload is sent in the body (plain text string, `FormData` object, or JSON for any other).
+ *
+ * @throws ValueError if this is a `HEAD` or `GET` request but `body` is not a dictionary object.
+ * @throws ValueError if `{placeholders}` are set in the URL but `body` is not a dictionary object.
+ */
+export function getRequest(
+	method: RequestHeadMethod,
+	url: URLString,
+	payload: ImmutableDictionary<unknown>,
+	options?: RequestOptions,
+	caller?: AnyCaller,
+): Request;
+export function getRequest(method: RequestMethod, url: URLString, payload: unknown, options?: RequestOptions, caller?: AnyCaller): Request;
+export function getRequest(
+	method: RequestMethod,
+	url: URLString,
+	payload: unknown,
+	options: RequestOptions = {},
+	caller: AnyCaller = getRequest,
+): Request {
+	// This is a head request, so ensure the payload is a dictionary object.
+	if (method === "GET" || method === "HEAD") {
+		assertDictionary(payload, caller);
+		return getHeadRequest(method, url, payload, options, caller);
+	}
+
+	// This is a normal body request.
+	return getBodyRequest(method, url, payload, options, caller);
+}
+
+/**
+ * Create a body-less request to a URL.
+ * - Any `{placeholders}` in the URL will be rendered with values from `params`, and won't be set in `?query` parameters in the URL.
+ */
+function getHeadRequest(
+	method: RequestHeadMethod,
+	url: URLString,
+	params: ImmutableDictionary<unknown>,
+	options: RequestOptions = {},
+	caller: AnyCaller = getHeadRequest,
+): Request {
+	const placeholders = getPlaceholders(url);
+
+	// URL has `{placeholders}` to render, so rendere those to the URL and add all other params as `?query` params.
+	if (placeholders.length) {
+		const rendered = omitURIParams(withURIParams(renderTemplate(url, params, caller), params, caller), ...placeholders);
+		return new Request(rendered, { ...options, method });
+	}
+
+	// URL has no `{placeholders}`, so add all payload params to the URL.
+	return new Request(withURIParams(url, params, caller), { ...options, method });
+}
+
+/**
+ * Create a body request to a URL.
+ * - Any `{placeholders}` in the URL will be rendered with values from `data`, and won't be set in the request body.
+ * - The payload is sent in the body (either as JSON, string, or `FormData`).
+ *
+ * @throws ValueError if `{placeholders}` are set in the URL but `body` is not a dictionary object.
+ */
+function getBodyRequest(
+	method: RequestBodyMethod,
+	url: URLString,
+	body: unknown,
+	options: RequestOptions = {},
+	caller: AnyCaller = getBodyRequest,
+): Request {
+	const placeholders = getPlaceholders(url);
+
+	// If `{placeholders}` are set in the URL then body must be a dictionary object and is sent as JSON.
+	if (placeholders.length) {
+		assertDictionary(body, caller);
+		return getJSONRequest(method, renderTemplate(url, body, caller), body, options);
+	}
+
+	// `FormData` instances pass through unaltered and will set their own `Content-Type` with complex boundary information.
+	if (body instanceof FormData) return getFormDataRequest(method, url, body, options);
+	if (typeof body === "string") return getTextRequest(method, url, body, options);
+	return getJSONRequest(method, url, body, options); // JSON is the default.
+}
+
+/** Create a `FormData` request to a URL. */
+function getFormDataRequest(method: RequestBodyMethod, url: string, body: FormData, options: RequestOptions = {}): Request {
+	return new Request(url, { ...options, method, body });
+}
+
+/** Create a plain text request to a URL. */
+function getTextRequest(method: RequestBodyMethod, url: string, body: string, { headers, ...options }: RequestOptions = {}): Request {
+	return new Request(url, { ...options, headers: { ...headers, "Content-Type": "text/plain" }, method, body });
+}
+
+/** Create a JSON request to a URL. */
+function getJSONRequest(method: RequestBodyMethod, url: string, body: unknown, { headers, ...options }: RequestOptions = {}): Request {
+	return new Request(url, { ...options, headers: { ...headers, "Content-Type": "application/json" }, method, body: JSON.stringify(body) });
 }
