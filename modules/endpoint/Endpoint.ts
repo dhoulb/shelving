@@ -219,7 +219,7 @@ export function DELETE(url: URLString, payload = UNDEFINED, result = UNDEFINED):
  */
 function createRequest(
 	method: EndpointMethod,
-	url: string,
+	url: URLString,
 	payload: unknown,
 	options: EndpointOptions = {},
 	caller: AnyCaller = createRequest,
@@ -240,7 +240,7 @@ function createRequest(
  */
 function createHeadRequest(
 	method: EndpointHeadMethod,
-	url: string,
+	url: URLString,
 	params: ImmutableDictionary<unknown>,
 	options: EndpointOptions = {},
 	caller: AnyCaller = createHeadRequest,
@@ -266,7 +266,7 @@ function createHeadRequest(
  */
 function createBodyRequest(
 	method: EndpointBodyMethod,
-	url: string,
+	url: URLString,
 	body: unknown,
 	options: EndpointOptions = {},
 	caller: AnyCaller = createBodyRequest,
@@ -276,7 +276,7 @@ function createBodyRequest(
 	// If `{placeholders}` are set in the URL then body must be a dictionary object and is sent as JSON.
 	if (placeholders.length) {
 		assertDictionary(body, caller);
-		return createJSONRequest(method, url, body, options);
+		return createJSONRequest(method, renderTemplate(url, body, caller), body, options);
 	}
 
 	// `FormData` instances pass through unaltered and will set their own `Content-Type` with complex boundary information.
