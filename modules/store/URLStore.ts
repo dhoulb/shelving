@@ -1,5 +1,4 @@
 import { getGetter, getSetter } from "../util/class.js";
-import type { Data } from "../util/data.js";
 import {
 	getURIParam,
 	getURIParams,
@@ -7,10 +6,11 @@ import {
 	type PossibleURIParams,
 	requireURIParam,
 	type URIParams,
+	type URIScheme,
 	withURIParam,
 	withURIParams,
 } from "../util/uri.js";
-import { getURL, type PossibleURL, requireURL, type URL } from "../util/url.js";
+import { getURL, type PossibleURL, requireURL, type URL, type URLString } from "../util/url.js";
 import { Store } from "./Store.js";
 
 /** Store a URL, e.g. `https://top.com/a/b/c` */
@@ -29,18 +29,18 @@ export class URLStore extends Store<URL> {
 		return super.value;
 	}
 
-	get href(): string {
+	get href(): URLString {
 		return this.value.href;
 	}
-	set href(href: string) {
+	set href(href: URLString) {
 		this.value = requireURL(href, this.base, getSetter(this, "href"));
 	}
 
-	get origin(): string {
+	get origin(): URLString {
 		return this.value.origin;
 	}
 
-	get protocol(): string {
+	get protocol(): URIScheme {
 		return this.value.protocol;
 	}
 
@@ -94,7 +94,7 @@ export class URLStore extends Store<URL> {
 	}
 
 	/** Update several params in this URL. */
-	setParams(params: Data): void {
+	setParams(params: PossibleURIParams): void {
 		this.value = withURIParams(this.value, params, this.setParams);
 	}
 
