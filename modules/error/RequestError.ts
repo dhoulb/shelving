@@ -1,48 +1,50 @@
 import { BaseError, type BaseErrorOptions } from "./BaseError.js";
 
-/** Error thrown when a request isn't well-formed. */
-export class RequestError extends BaseError {
-	/** The corresponding HTTP status code for this error, in the range `400-499` */
-	readonly code: number = 400;
+/** Options for `RequestError`. */
+interface RequestErrorOptions extends BaseErrorOptions {
+	readonly code?: number;
+}
 
-	constructor(message?: string, options?: BaseErrorOptions) {
+/** Throw when a request isn't well-formed or is unacceptable in some way. */
+export class RequestError extends BaseError {
+	/** HTTP status code for this error, in the range `400-499` */
+	readonly code: number;
+
+	constructor(message?: string, options?: RequestErrorOptions) {
 		super(message, { caller: RequestError, ...options });
+		this.code = options?.code ?? 400;
 	}
 }
 RequestError.prototype.name = "RequestError";
 
-/** Thrown if an operation failed because the user is not logged in, or the login information is not well-formed. */
+/** Throw if an operation failed because the user is not logged in, or the login information is not well-formed. */
 export class UnauthorizedError extends RequestError {
-	override readonly code: number = 401;
-	constructor(message?: string, options?: BaseErrorOptions) {
-		super(message, { caller: UnauthorizedError, ...options });
+	constructor(message?: string, options?: RequestErrorOptions) {
+		super(message, { caller: UnauthorizedError, code: 401, ...options });
 	}
 }
 UnauthorizedError.prototype.name = "UnauthorizedError";
 
-/** Thrown if the requested content is not found. */
+/** Throw if the requested content is not found. */
 export class NotFoundError extends RequestError {
-	override readonly code: number = 404;
-	constructor(message?: string, options?: BaseErrorOptions) {
-		super(message, { caller: NotFoundError, ...options });
+	constructor(message?: string, options?: RequestErrorOptions) {
+		super(message, { caller: NotFoundError, code: 404, ...options });
 	}
 }
 NotFoundError.prototype.name = "NotFoundError";
 
-/** Error thrown when a request is is valid and well-formed, but its actual data is not. */
+/** Throw when a request is valid and well-formed, but its actual data is not. */
 export class UnprocessableError extends RequestError {
-	override readonly code: number = 422;
-	constructor(message?: string, options?: BaseErrorOptions) {
-		super(message, { caller: UnprocessableError, ...options });
+	constructor(message?: string, options?: RequestErrorOptions) {
+		super(message, { caller: UnprocessableError, code: 422, ...options });
 	}
 }
 UnprocessableError.prototype.name = "UnprocessableError";
 
-/** Thrown if an operation failed because the user is logged in, but does not have sufficient privileges to access this content. */
+/** Throw if an operation failed because the user is logged in, but does not have sufficient privileges to access this content. */
 export class ForbiddenError extends RequestError {
-	override readonly code: number = 403;
-	constructor(message?: string, options?: BaseErrorOptions) {
-		super(message, { caller: ForbiddenError, ...options });
+	constructor(message?: string, options?: RequestErrorOptions) {
+		super(message, { caller: ForbiddenError, code: 403, ...options });
 	}
 }
 ForbiddenError.prototype.name = "ForbiddenError";
