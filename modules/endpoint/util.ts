@@ -93,5 +93,5 @@ async function handleEndpoint<P, R>(
 	const payload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : content;
 
 	// Call `endpoint.handle()` with the payload and request.
-	return endpoint.handle(callback, payload, request);
+	return endpoint.handle(callback, payload, request, caller);
 }

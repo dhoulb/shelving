@@ -1,4 +1,6 @@
 import { ResponseError } from "../error/ResponseError.js";
+import { ValueError } from "../error/ValueError.js";
+import { Feedback } from "../feedback/Feedback.js";
 import { type Schema, UNDEFINED } from "../schema/Schema.js";
 import { assertDictionary } from "../util/dictionary.js";
 import { getMessage } from "../util/error.js";
@@ -6,7 +8,6 @@ import type { AnyCaller } from "../util/function.js";
 import { getRequest, getResponse, getResponseContent, type RequestMethod, type RequestOptions } from "../util/http.js";
 import { getPlaceholders, renderTemplate } from "../util/template.js";
 import type { URLString } from "../util/url.js";
-import { getValid } from "../util/validate.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
 /**
@@ -52,19 +53,35 @@ export class Endpoint<P, R> {
 	 * @param callback The endpoint callback function that implements the logic for this endpoint by receiving the payload and returning the response.
 	 * @param unsafePayload The payload to pass into the callback (will be validated against this endpoint's payload schema).
 	 * @param request The entire HTTP request that is being handled (payload was possibly extracted from this somehow).
+	 *
+	 * @throws `Feedback` if the payload is invalid.
+	 * @throws `ValueError` if `callback()` returns an invalid result.
 	 */
-	async handle(callback: EndpointCallback<P, R>, unsafePayload: unknown, request: Request): Promise<Response> {
+	async handle(
+		callback: EndpointCallback<P, R>,
+		unsafePayload: unknown,
+		request: Request,
+		caller: AnyCaller = this.handle,
+	): Promise<Response> {
 		// Validate the payload against this endpoint's payload type.
 		const payload = this.payload.validate(unsafePayload);
 
 		// Call the callback with the validated payload to get the result.
 		const unsafeResult = await callback(payload, request);
 
-		// Validate the result against this endpoint's result type.
-		const result = getValid(unsafeResult, this.result);
-
-		// Convert the result to a `Response` object.
-		return getResponse(result);
+		try {
+			// Convert the result to a `Response` object.
+			return getResponse(this.result.validate(unsafeResult));
+		} catch (thrown) {
+			if (thrown instanceof Feedback)
+				throw new ValueError(`Invalid result for ${this.toString()}:\n${thrown.message}`, {
+					endpoint: this,
+					callback,
+					cause: thrown,
+					caller,
+				});
+			throw thrown;
+		}
 	}
 
 	/**
@@ -90,7 +107,7 @@ export class Endpoint<P, R> {
 	 * - Validates a payload against this endpoints payload schema
 	 * - Return an HTTP `Request` that will send it the valid payload to this endpoint.
 	 *
-	 * @throws Feedback if the payload is invalid.
+	 * @throws `Feedback` if the payload is invalid.
 	 */
 	request(payload: P, options: RequestOptions = {}, caller: AnyCaller = this.request): Request {
 		return getRequest(this.method, this.url, this.payload.validate(payload), options, caller);
@@ -98,8 +115,9 @@ export class Endpoint<P, R> {
 
 	/**
 	 * Validate an HTTP `Response` against this endpoint.
-	 * @throws ResponseError if the response status is not ok (200-299)
-	 * @throws ResponseError if the response content is invalid.
+	 *
+	 * @throws `ResponseError` if the response status is not ok (200-299)
+	 * @throws `ResponseError` if the response content is invalid.
 	 */
 	async response(response: Response, caller: AnyCaller = this.response): Promise<R> {
 		// Get the response.
@@ -107,10 +125,21 @@ export class Endpoint<P, R> {
 		const content = await getResponseContent(response, caller);
 
 		// Throw `ResponseError` if the API returns status outside the 200-299 range.
-		if (!ok) throw new ResponseError(getMessage(content) ?? `Error ${status}`, { cause: Response, caller });
+		if (!ok) throw new ResponseError(getMessage(content) ?? `Error ${status}`, { code: status, cause: response, caller });
 
 		// Validate the success response.
-		return getValid(content, this.result, ResponseError, caller);
+		try {
+			return this.result.validate(content);
+		} catch (thrown) {
+			if (thrown instanceof Feedback)
+				throw new ResponseError(`Invalid result for ${this.toString()}:\n${thrown.message}`, {
+					endpoint: this,
+					code: 422,
+					cause: thrown,
+					caller,
+				});
+			throw thrown;
+		}
 	}
 
 	/**
@@ -118,9 +147,9 @@ export class Endpoint<P, R> {
 	 * - Validate the `payload` against this endpoint's payload schema.
 	 * - Validate the returned response against this endpoint's result schema.
 	 *
-	 * @throws Feedback if the payload is invalid.
-	 * @throws ResponseError if the response status is not ok (200-299)
-	 * @throws ResponseError if the response content is invalid.
+	 * @throws `Feedback` if the payload is invalid.
+	 * @throws `ResponseError` if the response status is not ok (200-299)
+	 * @throws `ResponseError` if the response content is invalid.
 	 */
 	async fetch(payload: P, options: RequestOptions = {}, caller: AnyCaller = this.fetch): Promise<R> {
 		const response = await fetch(this.request(payload, options, caller));
