@@ -70,12 +70,13 @@ export function getURI(possible: Nullish<PossibleURI>): URI | undefined {
 	if (notNullish(possible)) {
 		if (isURI(possible)) return possible;
 		try {
-			return new globalThis.URL(possible) as URI;
+			return new globalThis.URL(possible, _BASE) as URI;
 		} catch {
 			return undefined;
 		}
 	}
 }
+const _BASE = typeof document === "object" ? document.baseURI : undefined;
 
 /** Convert a possible URI to a URI, or throw `RequiredError` if conversion fails. */
 export function requireURI(possible: PossibleURI, caller: AnyCaller = requireURI): URI {
