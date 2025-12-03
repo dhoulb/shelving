@@ -1,9 +1,7 @@
-import type { BaseError, BaseErrorOptions } from "../error/BaseError.js";
-import { ValueError } from "../error/ValueError.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { Feedback, ValueFeedback } from "../feedback/Feedback.js";
 import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import { isArray } from "./array.js";
-import type { Constructor } from "./class.js";
 import type { Data } from "./data.js";
 import { getDataProps } from "./data.js";
 import type { ImmutableDictionary, MutableDictionary } from "./dictionary.js";
@@ -37,20 +35,22 @@ export type Validators<T extends Data = Data> = { readonly [K in keyof T]: Valid
 /** Extract the type from a set of validators. */
 export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> };
 
-/** Get value that validates against a given `Validator`, or throw `ValueError` */
-export function getValid<T>(
-	value: unknown,
-	validator: Validator<T>,
-	ErrorConstructor: Constructor<BaseError, [string, BaseErrorOptions]> = ValueError,
-	caller: AnyCaller = getValid,
-): T {
+/** Require a valid value for a given validator, or return `undefined` if the value could not be validated. */
+export function getValid<T>(value: unknown, validator: Validator<T>): T | undefined {
 	try {
 		return validator.validate(value);
 	} catch (thrown) {
-		if (thrown instanceof Feedback) {
-			const { message, ...rest } = thrown;
-			throw new ErrorConstructor(message, { ...rest, cause: thrown, caller });
-		}
+		if (thrown instanceof Feedback) return undefined;
+		throw thrown;
+	}
+}
+
+/** Require a valid value for a given validator, or throw `RequiredError` if the value could not be validated. */
+export function requireValid<T>(value: unknown, validator: Validator<T>, caller: AnyCaller = requireValid): T {
+	try {
+		return validator.validate(value);
+	} catch (thrown) {
+		if (thrown instanceof Feedback) throw new RequiredError(thrown.message, { cause: thrown, caller });
 		throw thrown;
 	}
 }

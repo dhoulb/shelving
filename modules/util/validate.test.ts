@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import {
 	Feedback,
-	getValid,
 	NUMBER,
 	OPTIONAL,
+	RequiredError,
+	requireValid,
 	STRING,
 	StringSchema,
-	ValueError,
 	ValueFeedback,
 	validateArray,
 	validateData,
@@ -23,16 +23,16 @@ const VALIDATORS = {
 describe("getValid()", () => {
 	const numValidator = NUMBER;
 	test("returns validated value", () => {
-		const value = getValid("123", numValidator);
+		const value = requireValid("123", numValidator);
 		expect(value).toBe(123);
 	});
 	test("throws ValueError with Feedback cause on invalid value", () => {
 		try {
-			getValid("abc", numValidator);
+			requireValid("abc", numValidator);
 			expect("reached").toBe("unreachable");
 		} catch (err) {
-			expect(err).toBeInstanceOf(ValueError);
-			expect((err as ValueError).message).toBe("Must be number");
+			expect(err).toBeInstanceOf(RequiredError);
+			expect((err as RequiredError).message).toBe("Must be number");
 			// Cause chain includes Feedback.
 			expect((err as any).cause).toBeInstanceOf(Feedback);
 		}
