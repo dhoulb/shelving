@@ -142,7 +142,8 @@ export function toggleArrayItems<T>(items: PossibleArray<T>, ...toggle: T[]): Im
 /** Toggle an item in and out of an array (immutably) and return a new array with or without the specified item (or the same array if no changes were made). */
 export const toggleArrayItem: <T>(items: PossibleArray<T>, toggle: T) => ImmutableArray<T> = toggleArrayItems;
 
-/** Return a shuffled version of an array or iterable. */
+/**
+ */
 export function shuffleArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 	const arr = Array.from(items);
 	for (let i = arr.length - 1; i > 0; i--) {
