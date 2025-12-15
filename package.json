@@ -49,12 +49,13 @@
 		"test:unit": "bun test",
 		"fix": "bun run fix:biome",
 		"fix:biome": "biome check --write .",
-		"prebuild": "rm -rf ./dist && mkdir -p ./dist",
+		"prebuild": "rm -rf ./.build/dist && mkdir -p ./.build/dist",
 		"build": "bun run build:copy && bun run build:emit && bun run build:test:syntax && bun run build:test:unit",
-		"build:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore",
+		"build:copy": "cp package.json .build/dist/package.json && cp LICENSE.md .build/dist/LICENSE.md && cp README.md .build/dist/README.md && cp .npmignore .build/modules/.npmignore",
 		"build:emit": "tsc",
-		"build:test:syntax": "bun run ./dist/index.js",
-		"build:test:unit": "bun test ./dist/**/*.test.js --bail"
+		"build:test:syntax": "bun run ./.build/dist/index.js",
+		"build:test:unit": "bun test ./.build/dist/**/*.test.js --bail",
+		"docs": "bun run scripts/docs.ts"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.8",

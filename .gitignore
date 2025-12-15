@@ -1,7 +1,7 @@
 # Always ignored folders.
 /node_modules/
-/dist/
 /coverage/
+/.build/
 
 # Always ignored files.
 .DS_Store
