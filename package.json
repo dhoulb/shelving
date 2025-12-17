@@ -12,7 +12,10 @@
 		"query-builder"
 	],
 	"version": "0.0.0-semantic",
-	"repository": "https://github.com/dhoulb/shelving",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dhoulb/shelving.git"
+	},
 	"author": "Dave Houlbrooke <dave@shax.com>",
 	"license": "0BSD",
 	"type": "module",
