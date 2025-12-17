@@ -1,5 +1,6 @@
 import { getGetter, getSetter } from "../util/class.js";
 import {
+	clearURIParams,
 	getURIParam,
 	getURIParams,
 	omitURIParams,
@@ -88,14 +89,19 @@ export class URLStore extends Store<URL> {
 		return requireURIParam(this.value.searchParams, key, getSetter(this, "requireParam"));
 	}
 
-	/** Update a single param in this URL. */
-	setParam(key: string, value: unknown): void {
-		this.value = withURIParam(this.value, key, value, this.setParams);
+	/** Set all params in this URL (all current params are cleared). */
+	setParams(params: PossibleURIParams): void {
+		this.value = withURIParams(clearURIParams(this.value, this.setParams), params, this.setParams);
 	}
 
-	/** Update several params in this URL. */
-	setParams(params: PossibleURIParams): void {
-		this.value = withURIParams(this.value, params, this.setParams);
+	/** Set a single named param in this URL. */
+	setParam(key: string, value: unknown): void {
+		this.value = withURIParam(this.value, key, value, this.setParam);
+	}
+
+	/** Update several params in this URL (merged with current params). */
+	updateParams(params: PossibleURIParams): void {
+		this.value = withURIParams(this.value, params, this.updateParams);
 	}
 
 	/** Delete one or more params in this URL. */
@@ -108,6 +114,11 @@ export class URLStore extends Store<URL> {
 		this.value = omitURIParams(this.value, key, ...keys);
 	}
 
+	/** Clear all params from this URL. */
+	clearParams(): void {
+		this.value = clearURIParams(this.value, this.clearParams);
+	}
+
 	/** Return the current URL with an additional param. */
 	withParam(key: string, value: unknown): URL {
 		return withURIParam(this.value, key, value, this.withParam);
@@ -118,18 +129,6 @@ export class URLStore extends Store<URL> {
 		return withURIParams(this.value, params, this.withParams);
 	}
 
-	/** Return the current URL with all params replaced (not merged). */
-	replaceParams(params: PossibleURIParams): URL {
-		const output = new globalThis.URL(this.value) as URL;
-		output.search = "";
-		for (const [key, value] of Object.entries(params)) {
-			if (value !== undefined && value !== null && value !== "") {
-				output.searchParams.set(key, String(value));
-			}
-		}
-		return output;
-	}
-
 	/** Return the current URL with an additional param. */
 	omitParams(...keys: string[]): URL {
 		return omitURIParams(this.value, ...keys);
@@ -138,6 +137,11 @@ export class URLStore extends Store<URL> {
 	/** Return the current URL with an additional param. */
 	omitParam(key: string): URL {
 		return omitURIParams(this.value, key);
+	}
+
+	// Override `equal()` to just compare the hrefs.
+	override equal(a: URL, b: URL): boolean {
+		return a.href === b.href;
 	}
 
 	override toString(): string {
