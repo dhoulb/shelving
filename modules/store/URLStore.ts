@@ -118,6 +118,18 @@ export class URLStore extends Store<URL> {
 		return withURIParams(this.value, params, this.withParams);
 	}
 
+	/** Return the current URL with all params replaced (not merged). */
+	replaceParams(params: PossibleURIParams): URL {
+		const output = new globalThis.URL(this.value) as URL;
+		output.search = "";
+		for (const [key, value] of Object.entries(params)) {
+			if (value !== undefined && value !== null && value !== "") {
+				output.searchParams.set(key, String(value));
+			}
+		}
+		return output;
+	}
+
 	/** Return the current URL with an additional param. */
 	omitParams(...keys: string[]): URL {
 		return omitURIParams(this.value, ...keys);
