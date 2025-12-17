@@ -37,7 +37,7 @@ Shelving does not include code for CommonJS `require()` imports, so using it in 
 
 ## Modules
 
-Shelving is created from small individual modules which can be imported individually (using e.g. `import { addProp } from "shelving/object`). Modules marked with `✅` are also re-exported from the main `"shelving"` module.
+Shelving is created from small individual modules which can be imported individually (using e.g. `import { addProp } from "shelving/util/object`). Modules marked with `✅` are also re-exported from the main `"shelving"` module.
 
 @todo Write these docs!
 
