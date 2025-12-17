@@ -188,6 +188,17 @@ export function omitURIParams(url: PossibleURI, ...keys: string[]): URI {
 /** Return a URI without a param (or same URI if no changes were made). */
 export const omitURIParam: (url: PossibleURI, key: string) => URI = omitURIParams;
 
+/** Return a URI with no search params (or same URI if no changes were made). */
+export function clearURIParams(url: URL | URLString, caller?: AnyCaller): URL;
+export function clearURIParams(url: PossibleURI, caller?: AnyCaller): URI;
+export function clearURIParams(url: PossibleURI, caller: AnyCaller = clearURIParams): URI {
+	const input = requireURI(url, caller);
+	if (!input.search.length) return input;
+	const output = new URI(input);
+	output.search = "";
+	return output;
+}
+
 /** A single schema for a URL. */
 export type URIScheme = `${string}:`;
 
