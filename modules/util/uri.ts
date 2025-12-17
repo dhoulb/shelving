@@ -103,6 +103,7 @@ export type PossibleURIParams = PossibleURI | URLSearchParams | ImmutableDiction
 
 /**
  * Get a set of entries for a set of possible URI params.
+ *- Any params with `undefined` value will be ignored.
  *
  * Note: Not as simple as just converting with `Object.fromEntries()`:
  * 1. When `URLSearchParams` contains multiple values for the same key, calling `params.get()` will return the _first_ value.
@@ -117,6 +118,7 @@ function* getURIEntries(input: PossibleURIParams, caller: AnyCaller = getURIPara
 	} else {
 		const done: MutableArray<string> = [];
 		for (const [key, value] of getDictionaryItems(input)) {
+			if (value === undefined) continue; // Skip undefined.
 			if (done.includes(key)) continue;
 			done.push(key);
 			const str = getString(value);
@@ -126,7 +128,10 @@ function* getURIEntries(input: PossibleURIParams, caller: AnyCaller = getURIPara
 	}
 }
 
-/** Get a set of params for a URI as a dictionary. */
+/**
+ * Get a set of params for a URI as a dictionary.
+ * - Any params with `undefined` value will be ignored.
+ */
 export function getURIParams(input: PossibleURIParams, caller: AnyCaller = getURIParams): URIParams {
 	const output: MutableDictionary<string> = {};
 	for (const [key, str] of getURIEntries(input, caller)) output[key] = str;
@@ -149,12 +154,15 @@ export function requireURIParam(input: PossibleURIParams, key: string, caller: A
 
 /**
  * Return a URI with a new param set (or same URI if no changes were made).
- * - Throws `ValueError` if the value could not be converted to a string.
+ * - Any params with `undefined` value will be ignored.
+ *
+ * @throws `ValueError` if the value could not be converted to a string.
  */
 export function withURIParam(url: URL | URLString, key: string, value: unknown, caller?: AnyCaller): URL;
 export function withURIParam(url: PossibleURI, key: string, value: unknown, caller?: AnyCaller): URI;
 export function withURIParam(url: PossibleURI, key: string, value: unknown, caller: AnyCaller = withURIParam): URI {
 	const input = requireURI(url, caller);
+	if (value === undefined) return input; // Ignore undefined.
 	const output = new URI(input);
 	const str = getString(value);
 	if (str === undefined) throw new ValueError(`URI param "${key}" must be string`, { received: value, caller });
@@ -164,7 +172,9 @@ export function withURIParam(url: PossibleURI, key: string, value: unknown, call
 
 /**
  * Return a URI with several new params set (or same URI if no changes were made).
- * - Throws `ValueError` if any of the values could not be converted to strings.
+ * - Param with `undefined` value will be ignored.
+ *
+ * @throws `ValueError` if any of the values could not be converted to strings.
  */
 export function withURIParams(url: URL | URLString, params: PossibleURIParams, caller?: AnyCaller): URL;
 export function withURIParams(url: PossibleURI, params: PossibleURIParams, caller?: AnyCaller): URI;
@@ -187,6 +197,17 @@ export function omitURIParams(url: PossibleURI, ...keys: string[]): URI {
 
 /** Return a URI without a param (or same URI if no changes were made). */
 export const omitURIParam: (url: PossibleURI, key: string) => URI = omitURIParams;
+
+/** Return a URI with no search params (or same URI if no changes were made). */
+export function clearURIParams(url: URL | URLString, caller?: AnyCaller): URL;
+export function clearURIParams(url: PossibleURI, caller?: AnyCaller): URI;
+export function clearURIParams(url: PossibleURI, caller: AnyCaller = clearURIParams): URI {
+	const input = requireURI(url, caller);
+	if (!input.search.length) return input;
+	const output = new URI(input);
+	output.search = "";
+	return output;
+}
 
 /** A single schema for a URL. */
 export type URIScheme = `${string}:`;
