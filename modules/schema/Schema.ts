@@ -52,6 +52,9 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 	abstract validate(unsafeValue: unknown): T;
 }
 
+/** Extract the type from a schema. */
+export type SchemaType<X> = X extends Schema<infer Y> ? Y : never;
+
 /** A set of named schemas in `{ name: schema }` format. */
 export type Schemas<T extends Data = Data> = { readonly [K in keyof T]: Schema<T[K]> };
 
