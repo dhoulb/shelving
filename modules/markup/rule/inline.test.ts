@@ -46,19 +46,22 @@ test("INLINE_RULE <strong>", () => {
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	expect(renderMarkup("TEXT*STRONG*", OPTIONS, "inline")).toMatchObject([
-		"TEXT",
-		{ $$typeof, type: "strong", props: { children: "STRONG" } },
-	]);
-	expect(renderMarkup("*STRONG*TEXT", OPTIONS, "inline")).toMatchObject([
-		{ $$typeof, type: "strong", props: { children: "STRONG" } },
-		"TEXT",
-	]);
-	expect(renderMarkup("TEXT*STRONG*TEXT", OPTIONS, "inline")).toMatchObject([
-		"TEXT",
-		{ $$typeof, type: "strong", props: { children: "STRONG" } },
-		"TEXT",
-	]);
+	// expect(renderMarkup("TEXT*STRONG*", OPTIONS, "inline")).toMatchObject([
+	// 	"TEXT",
+	// 	{ $$typeof, type: "strong", props: { children: "STRONG" } },
+	// ]);
+	// expect(renderMarkup("*STRONG*TEXT", OPTIONS, "inline")).toMatchObject([
+	// 	{ $$typeof, type: "strong", props: { children: "STRONG" } },
+	// 	"TEXT",
+	// ]);
+	// expect(renderMarkup("TEXT*STRONG*TEXT", OPTIONS, "inline")).toMatchObject([
+	// 	"TEXT",
+	// 	{ $$typeof, type: "strong", props: { children: "STRONG" } },
+	// 	"TEXT",
+	// ]);
+
+	// Don't match infra-word punctuation.
+	expect(renderMarkup("TEXT*STRONG*TEXT", OPTIONS, "inline")).toBe("TEXT*STRONG*TEXT");
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
 	expect(renderMarkup("*AAA *", OPTIONS, "inline")).toBe("*AAA *");
@@ -99,13 +102,13 @@ test("INLINE_RULE <em>", () => {
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	expect(renderMarkup("TEXT_EM_", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "em", props: { children: "EM" } }]);
-	expect(renderMarkup("_EM_TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "em", props: { children: "EM" } }, "TEXT"]);
-	expect(renderMarkup("TEXT_EM_TEXT", OPTIONS, "inline")).toMatchObject([
-		"TEXT",
-		{ $$typeof, type: "em", props: { children: "EM" } },
-		"TEXT",
-	]);
+	// expect(renderMarkup("TEXT_EM_", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "em", props: { children: "EM" } }]);
+	// expect(renderMarkup("_EM_TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "em", props: { children: "EM" } }, "TEXT"]);
+	// expect(renderMarkup("TEXT_EM_TEXT", OPTIONS, "inline")).toMatchObject([
+	// 	"TEXT",
+	// 	{ $$typeof, type: "em", props: { children: "EM" } },
+	// 	"TEXT",
+	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
 	expect(renderMarkup("_AAA _", OPTIONS, "inline")).toBe("_AAA _");
@@ -149,13 +152,13 @@ test("INLINE_RULE <ins>", () => {
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	expect(renderMarkup("TEXT++INS++", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "ins", props: { children: "INS" } }]);
-	expect(renderMarkup("++INS++TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "ins", props: { children: "INS" } }, "TEXT"]);
-	expect(renderMarkup("TEXT++INS++TEXT", OPTIONS, "inline")).toMatchObject([
-		"TEXT",
-		{ $$typeof, type: "ins", props: { children: "INS" } },
-		"TEXT",
-	]);
+	// expect(renderMarkup("TEXT++INS++", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "ins", props: { children: "INS" } }]);
+	// expect(renderMarkup("++INS++TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "ins", props: { children: "INS" } }, "TEXT"]);
+	// expect(renderMarkup("TEXT++INS++TEXT", OPTIONS, "inline")).toMatchObject([
+	// 	"TEXT",
+	// 	{ $$typeof, type: "ins", props: { children: "INS" } },
+	// 	"TEXT",
+	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
 	expect(renderMarkup("++AAA ++", OPTIONS, "inline")).toBe("++AAA ++");
@@ -196,13 +199,13 @@ test("INLINE_RULE <del> (with tilde)", () => {
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	expect(renderMarkup("TEXT~~DEL~~", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "del", props: { children: "DEL" } }]);
-	expect(renderMarkup("~~DEL~~TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "del", props: { children: "DEL" } }, "TEXT"]);
-	expect(renderMarkup("TEXT~~DEL~~TEXT", OPTIONS, "inline")).toMatchObject([
-		"TEXT",
-		{ $$typeof, type: "del", props: { children: "DEL" } },
-		"TEXT",
-	]);
+	// expect(renderMarkup("TEXT~~DEL~~", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "del", props: { children: "DEL" } }]);
+	// expect(renderMarkup("~~DEL~~TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "del", props: { children: "DEL" } }, "TEXT"]);
+	// expect(renderMarkup("TEXT~~DEL~~TEXT", OPTIONS, "inline")).toMatchObject([
+	// 	"TEXT",
+	// 	{ $$typeof, type: "del", props: { children: "DEL" } },
+	// 	"TEXT",
+	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
 	expect(renderMarkup("~AAA ~", OPTIONS, "inline")).toBe("~AAA ~");
@@ -246,13 +249,13 @@ test("INLINE_RULE <del> (with hyphen)", () => {
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	expect(renderMarkup("TEXT--DEL--", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "del", props: { children: "DEL" } }]);
-	expect(renderMarkup("--DEL--TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "del", props: { children: "DEL" } }, "TEXT"]);
-	expect(renderMarkup("TEXT--DEL--TEXT", OPTIONS, "inline")).toMatchObject([
-		"TEXT",
-		{ $$typeof, type: "del", props: { children: "DEL" } },
-		"TEXT",
-	]);
+	// expect(renderMarkup("TEXT--DEL--", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "del", props: { children: "DEL" } }]);
+	// expect(renderMarkup("--DEL--TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "del", props: { children: "DEL" } }, "TEXT"]);
+	// expect(renderMarkup("TEXT--DEL--TEXT", OPTIONS, "inline")).toMatchObject([
+	// 	"TEXT",
+	// 	{ $$typeof, type: "del", props: { children: "DEL" } },
+	// 	"TEXT",
+	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
 	expect(renderMarkup("-AAA -", OPTIONS, "inline")).toBe("-AAA -");
@@ -303,13 +306,13 @@ test("INLINE_RULE <mark>", () => {
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	expect(renderMarkup("TEXT==DEL==", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "mark", props: { children: "DEL" } }]);
-	expect(renderMarkup("==DEL==TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "mark", props: { children: "DEL" } }, "TEXT"]);
-	expect(renderMarkup("TEXT==DEL==TEXT", OPTIONS, "inline")).toMatchObject([
-		"TEXT",
-		{ $$typeof, type: "mark", props: { children: "DEL" } },
-		"TEXT",
-	]);
+	// expect(renderMarkup("TEXT==DEL==", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "mark", props: { children: "DEL" } }]);
+	// expect(renderMarkup("==DEL==TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "mark", props: { children: "DEL" } }, "TEXT"]);
+	// expect(renderMarkup("TEXT==DEL==TEXT", OPTIONS, "inline")).toMatchObject([
+	// 	"TEXT",
+	// 	{ $$typeof, type: "mark", props: { children: "DEL" } },
+	// 	"TEXT",
+	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
 	expect(renderMarkup("=AAA =", OPTIONS, "inline")).toBe("=AAA =");

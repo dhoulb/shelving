@@ -31,7 +31,7 @@ export function getBlockRegExp(
 	start: PossibleRegExp = BLOCK_START_REGEXP,
 	end: PossibleRegExp = BLOCK_END_REGEXP,
 ): RegExp {
-	return new RegExp(`${start}${getRegExpSource(content)}${end}`);
+	return new RegExp(`${start}${getRegExpSource(content)}${end}`, "u");
 }
 
 /** Create regular expression that matches a line of content. */
@@ -50,7 +50,7 @@ export function getLineRegExp(
 	end: PossibleRegExp = LINE_END_REGEXP,
 	start: PossibleRegExp = LINE_START_REGEXP,
 ): RegExp {
-	return new RegExp(`${start}${getRegExpSource(content)}${end}`);
+	return new RegExp(`${start}${getRegExpSource(content)}${end}`, "u");
 }
 
 /** Create regular expression that matches a word of content. */
@@ -69,5 +69,5 @@ export function getWordRegExp(
 	start: PossibleRegExp = WORD_START_REGEXP,
 	end: PossibleRegExp = WORD_END_REGEXP,
 ): RegExp {
-	return new RegExp(`${start}${getRegExpSource(content)}${end}`);
+	return new RegExp(`${start}${getRegExpSource(content)}${end}`, "u");
 }
