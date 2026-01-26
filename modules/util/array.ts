@@ -203,6 +203,18 @@ export function interleaveArray<A, B>(items: PossibleArray<A>, separator: B): Im
 	return Array.from(interleaveItems(items, separator));
 }
 
+/** Return a new array with a new value replacing a specific index in the array (or the same array if the value was unchanged). */
+export function withArrayIndex<T>(arr: ImmutableArray<T>, index: number, value: T): ImmutableArray<T> {
+	if (arr[index] === value) return arr;
+	return [...arr.slice(0, index), value, ...arr.slice(index + 1)];
+}
+
+/** Return a new array without a specific index in the array (or the same array if the value was unchanged). */
+export function omitArrayIndex<T>(arr: ImmutableArray<T>, index: number): ImmutableArray<T> {
+	const output = [...arr.slice(0, index), ...arr.slice(index + 1)];
+	return arr.length !== output.length ? output : arr;
+}
+
 /** Get the first item from an array or iterable, or `undefined` if it didn't exist. */
 export function getFirst<T>(items: PossibleArray<T>): T | undefined {
 	if (isArray(items)) return items[0];
