@@ -1,4 +1,3 @@
-import { ValueFeedback } from "../feedback/Feedback.js";
 import { HTTP_SCHEMES, type URISchemes } from "../util/uri.js";
 import { getURL, type URLString } from "../util/url.js";
 import { NULLABLE } from "./NullableSchema.js";
@@ -36,8 +35,8 @@ export class URLSchema extends StringSchema {
 	override validate(unsafeValue: unknown): URLString {
 		const str = super.validate(unsafeValue);
 		const url = getURL(str, this.base);
-		if (!url) throw new ValueFeedback(str ? "Invalid format" : "Required", str);
-		if (this.schemes && !this.schemes.includes(url.protocol)) throw new ValueFeedback("Invalid URL scheme", str);
+		if (!url) throw str ? "Invalid format" : "Required";
+		if (this.schemes && !this.schemes.includes(url.protocol)) throw "Invalid URL scheme";
 		return url.href;
 	}
 }

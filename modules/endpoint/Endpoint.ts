@@ -1,6 +1,5 @@
 import { ResponseError } from "../error/ResponseError.js";
 import { ValueError } from "../error/ValueError.js";
-import { Feedback } from "../feedback/Feedback.js";
 import { type Schema, UNDEFINED } from "../schema/Schema.js";
 import { assertDictionary } from "../util/dictionary.js";
 import { getMessage } from "../util/error.js";
@@ -54,7 +53,7 @@ export class Endpoint<P, R> {
 	 * @param unsafePayload The payload to pass into the callback (will be validated against this endpoint's payload schema).
 	 * @param request The entire HTTP request that is being handled (payload was possibly extracted from this somehow).
 	 *
-	 * @throws `Feedback` if the payload is invalid.
+	 * @throws `string` if the payload is invalid.
 	 * @throws `ValueError` if `callback()` returns an invalid result.
 	 */
 	async handle(
@@ -73,8 +72,8 @@ export class Endpoint<P, R> {
 			// Convert the result to a `Response` object.
 			return getResponse(this.result.validate(unsafeResult));
 		} catch (thrown) {
-			if (thrown instanceof Feedback)
-				throw new ValueError(`Invalid result for ${this.toString()}:\n${thrown.message}`, {
+			if (typeof thrown === "string")
+				throw new ValueError(`Invalid result for ${this.toString()}:\n${thrown}`, {
 					endpoint: this,
 					callback,
 					cause: thrown,
@@ -107,7 +106,7 @@ export class Endpoint<P, R> {
 	 * - Validates a payload against this endpoints payload schema
 	 * - Return an HTTP `Request` that will send it the valid payload to this endpoint.
 	 *
-	 * @throws `Feedback` if the payload is invalid.
+	 * @throws `string` if the payload is invalid.
 	 */
 	request(payload: P, options: RequestOptions = {}, caller: AnyCaller = this.request): Request {
 		return getRequest(this.method, this.url, this.payload.validate(payload), options, caller);
@@ -131,13 +130,8 @@ export class Endpoint<P, R> {
 		try {
 			return this.result.validate(content);
 		} catch (thrown) {
-			if (thrown instanceof Feedback)
-				throw new ResponseError(`Invalid result for ${this.toString()}:\n${thrown.message}`, {
-					endpoint: this,
-					code: 422,
-					cause: thrown,
-					caller,
-				});
+			if (typeof thrown === "string")
+				throw new ResponseError(`Invalid result for ${this.toString()}:\n${thrown}`, { endpoint: this, code: 422, caller });
 			throw thrown;
 		}
 	}
@@ -147,7 +141,7 @@ export class Endpoint<P, R> {
 	 * - Validate the `payload` against this endpoint's payload schema.
 	 * - Validate the returned response against this endpoint's result schema.
 	 *
-	 * @throws `Feedback` if the payload is invalid.
+	 * @throws `string` if the payload is invalid.
 	 * @throws `ResponseError` if the response status is not ok (200-299)
 	 * @throws `ResponseError` if the response content is invalid.
 	 */

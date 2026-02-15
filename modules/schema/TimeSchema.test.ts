@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Feedback, TIME, TimeSchema } from "../index.js";
+import { TIME, TimeSchema } from "../index.js";
 
 test("constructor()", () => {
 	const schema1 = new TimeSchema({});
@@ -23,11 +23,11 @@ describe("validate()", () => {
 		expect(typeof schema.validate(100039384)).toBe("string");
 	});
 	test("Non-strings (except numbers) throw Invalid", () => {
-		expect(() => schema.validate(null)).toThrow(Feedback);
-		expect(() => schema.validate(false)).toThrow(Feedback);
-		expect(() => schema.validate(true)).toThrow(Feedback);
-		expect(() => schema.validate([])).toThrow(Feedback);
-		expect(() => schema.validate({})).toThrow(Feedback);
+		expect(() => schema.validate(null)).toThrow();
+		expect(() => schema.validate(false)).toThrow();
+		expect(() => schema.validate(true)).toThrow();
+		expect(() => schema.validate([])).toThrow();
+		expect(() => schema.validate({})).toThrow();
 	});
 });
 describe("options.input", () => {
@@ -46,8 +46,8 @@ describe("options.min / options.max", () => {
 		expect(schema.validate("17:00:00")).toBe("17:00:00");
 	});
 	test("Throws for times outside the range", () => {
-		expect(() => schema.validate("08:59:59")).toThrow(Feedback);
-		expect(() => schema.validate("17:00:01")).toThrow(Feedback);
+		expect(() => schema.validate("08:59:59")).toThrow();
+		expect(() => schema.validate("17:00:01")).toThrow();
 	});
 });
 describe("options.step", () => {
@@ -72,8 +72,8 @@ describe("options.step", () => {
 			max: "11:00",
 		});
 		expect(schema.validate("09:59:31")).toBe("10:00:00");
-		expect(() => schema.validate("09:59:29")).toThrow(Feedback);
+		expect(() => schema.validate("09:59:29")).toThrow();
 		expect(schema.validate("11:00:29")).toBe("11:00:00");
-		expect(() => schema.validate("11:00:31")).toThrow(Feedback);
+		expect(() => schema.validate("11:00:31")).toThrow();
 	});
 });

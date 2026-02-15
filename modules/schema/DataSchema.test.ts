@@ -3,7 +3,6 @@ import {
 	BOOLEAN,
 	DATA,
 	DataSchema,
-	Feedback,
 	ITEM,
 	KEY,
 	NUMBER,
@@ -13,7 +12,6 @@ import {
 	type Schema,
 	STRING,
 	StringSchema,
-	ValueFeedback,
 } from "../index.js";
 
 // Tests.
@@ -47,15 +45,15 @@ describe("validate()", () => {
 	});
 	test("Non-objects throw error", () => {
 		const schema = new DataSchema({ props: {} });
-		expect(() => schema.validate("abc")).toThrow(Feedback);
-		expect(() => schema.validate(123)).toThrow(Feedback);
-		expect(() => schema.validate(true)).toThrow(Feedback);
+		expect(() => schema.validate("abc")).toThrow();
+		expect(() => schema.validate(123)).toThrow();
+		expect(() => schema.validate(true)).toThrow();
 	});
 	test("Falsy values are invalid", () => {
 		const schema = new DataSchema({ props: {} });
-		expect(() => schema.validate(0)).toThrow(Feedback);
-		expect(() => schema.validate(null)).toThrow(Feedback);
-		expect(() => schema.validate(false)).toThrow(Feedback);
+		expect(() => schema.validate(0)).toThrow();
+		expect(() => schema.validate(null)).toThrow();
+		expect(() => schema.validate(false)).toThrow();
 	});
 	test("Valid value returns unchanged", () => {
 		const schema = DATA({ a: STRING, b: STRING });
@@ -186,8 +184,7 @@ describe("options.props", () => {
 		try {
 			expect<unknown>(schema.validate(data)).toBe("Never");
 		} catch (invalid: unknown) {
-			expect(invalid).toBeInstanceOf(ValueFeedback);
-			expect(invalid).toEqual(new ValueFeedback("dogs: Must be number\ncats: Must be number", data));
+			expect(invalid).toBe("dogs: Must be number\ncats: Must be number");
 		}
 	});
 });
@@ -262,13 +259,12 @@ describe("PARTIAL", () => {
 			PARTIAL_USER_SCHEMA.validate(input);
 			throw new Error("Should have thrown");
 		} catch (e) {
-			expect(e).toBeInstanceOf(ValueFeedback);
-			expect(e).toEqual(new ValueFeedback("name: Must be string\nage: Must be number", input));
+			expect(e).toBe("name: Must be string\nage: Must be number");
 		}
 	});
 	test("rejects non-object values", () => {
-		expect(() => PARTIAL_USER_SCHEMA.validate(null)).toThrow(ValueFeedback);
-		expect(() => PARTIAL_USER_SCHEMA.validate(5)).toThrow(ValueFeedback);
+		expect(() => PARTIAL_USER_SCHEMA.validate(null)).toThrow();
+		expect(() => PARTIAL_USER_SCHEMA.validate(5)).toThrow();
 	});
 	test("coerces values if possible", () => {
 		const input = { name: 123, age: "42" };
@@ -285,10 +281,10 @@ describe("PARTIAL", () => {
 		expect(schema.validate(undefined)).toEqual({});
 	});
 	test("throws if input is array", () => {
-		expect(() => PARTIAL_USER_SCHEMA.validate([])).toThrow(ValueFeedback);
+		expect(() => PARTIAL_USER_SCHEMA.validate([])).toThrow();
 	});
 	test("throws if input is function", () => {
-		expect(() => PARTIAL_USER_SCHEMA.validate(() => {})).toThrow(ValueFeedback);
+		expect(() => PARTIAL_USER_SCHEMA.validate(() => {})).toThrow();
 	});
 	test("Object with props has unknown fields stripped", () => {
 		const schema1 = PARTIAL({
@@ -352,12 +348,12 @@ describe("ITEM", () => {
 		expect(result2).toEqual({ id: 123, name: "Item 1" });
 	});
 	test("throws if ID is missing", () => {
-		expect(() => ITEM_KEY_SCHEMA.validate({ name: "abc" })).toThrow(ValueFeedback);
+		expect(() => ITEM_KEY_SCHEMA.validate({ name: "abc" })).toThrow();
 	});
 	test("throws if input is array", () => {
-		expect(() => ITEM_KEY_SCHEMA.validate([])).toThrow(ValueFeedback);
+		expect(() => ITEM_KEY_SCHEMA.validate([])).toThrow();
 	});
 	test("throws if input is function", () => {
-		expect(() => ITEM_KEY_SCHEMA.validate(() => {})).toThrow(ValueFeedback);
+		expect(() => ITEM_KEY_SCHEMA.validate(() => {})).toThrow();
 	});
 });

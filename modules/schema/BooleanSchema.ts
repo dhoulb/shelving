@@ -1,4 +1,3 @@
-import { Feedback } from "../feedback/Feedback.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
@@ -20,7 +19,7 @@ export class BooleanSchema extends Schema<boolean> {
 	}
 	validate(unsafeValue: unknown = this.value): boolean {
 		const value: boolean = typeof unsafeValue === "string" ? !NEGATIVE.includes(unsafeValue.toLowerCase().trim()) : !!unsafeValue;
-		if (this.required && !value) throw new Feedback("Required");
+		if (this.required && !value) throw "Required";
 		return value;
 	}
 }

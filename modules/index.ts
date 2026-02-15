@@ -7,7 +7,6 @@
 export * from "./db/index.js";
 export * from "./endpoint/index.js";
 export * from "./error/index.js";
-export * from "./feedback/index.js";
 // export * from "./firestore/client/index.js"; // Not exported.
 // export * from "./firestore/lite/index.js"; // Not exported.
 // export * from "./firestore/server/index.js"; // Not exported.

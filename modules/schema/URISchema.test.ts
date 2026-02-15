@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { Feedback, NULLABLE_URI_SCHEMA, URI_SCHEMA, URISchema } from "../index.js";
+import { NULLABLE_URI_SCHEMA, URI_SCHEMA, URISchema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -63,16 +63,16 @@ describe("validate()", () => {
 			expect(new URISchema({ schemes: ["ws:"] }).validate(u16)).toBe(u16);
 		});
 		test("Invalid URIs are invalid", () => {
-			expect(() => schema.validate("user@")).toThrow(Feedback);
-			expect(() => schema.validate(":port")).toThrow(Feedback);
+			expect(() => schema.validate("user@")).toThrow();
+			expect(() => schema.validate(":port")).toThrow();
 		});
 		test("Non-strings are invalid", () => {
-			expect(() => schema.validate([])).toThrow(Feedback);
-			expect(() => schema.validate({})).toThrow(Feedback);
-			expect(() => schema.validate(true)).toThrow(Feedback);
-			expect(() => schema.validate(null)).toThrow(Feedback);
-			expect(() => schema.validate("")).toThrow(Feedback);
-			expect(() => schema.validate(false)).toThrow(Feedback);
+			expect(() => schema.validate([])).toThrow();
+			expect(() => schema.validate({})).toThrow();
+			expect(() => schema.validate(true)).toThrow();
+			expect(() => schema.validate(null)).toThrow();
+			expect(() => schema.validate("")).toThrow();
+			expect(() => schema.validate(false)).toThrow();
 		});
 	});
 	describe("scheme", () => {
@@ -81,8 +81,8 @@ describe("validate()", () => {
 			expect(schema.validate("https://x.com/")).toBe("https://x.com/");
 		});
 		test("Invalid scheme is invalid", () => {
-			expect(() => schema.validate("data:x.com")).toThrow(Feedback);
-			expect(() => schema.validate("$$$://x.com")).toThrow(Feedback);
+			expect(() => schema.validate("data:x.com")).toThrow();
+			expect(() => schema.validate("$$$://x.com")).toThrow();
 		});
 		test("Scheme is lowercased", () => {
 			expect(schema.validate("HTTP://x.com/")).toBe("http://x.com/");
@@ -139,14 +139,14 @@ describe("validate()", () => {
 			expect(schema.validate("http://x.com:000065535/")).toBe("http://x.com:65535/");
 		});
 		test("Ports lower than 1 are invalid", () => {
-			expect(() => schema.validate("http://x.com:-20000/")).toThrow(Feedback);
+			expect(() => schema.validate("http://x.com:-20000/")).toThrow();
 		});
 		test("Ports higher than 65,535 are invalid", () => {
-			expect(() => schema.validate("http://x.com:65536")).toThrow(Feedback);
-			expect(() => schema.validate("http://x.com:283999482")).toThrow(Feedback);
+			expect(() => schema.validate("http://x.com:65536")).toThrow();
+			expect(() => schema.validate("http://x.com:283999482")).toThrow();
 		});
 		test("Ports that are non-numeric are invalid", () => {
-			expect(() => schema.validate("http://x.com:abc")).toThrow(Feedback);
+			expect(() => schema.validate("http://x.com:abc")).toThrow();
 		});
 	});
 	describe("length", () => {
@@ -156,14 +156,14 @@ describe("validate()", () => {
 		test("URIs that are more than 1024 chars are invalid", () => {
 			const chars1025 = "1".repeat(1025);
 			const longUrl = `http://x.com/?long=${chars1025}`;
-			expect(() => schema.validate(longUrl)).toThrow(Feedback);
+			expect(() => schema.validate(longUrl)).toThrow();
 		});
 	});
 });
 describe("options.value", () => {
 	test("Undefined default value is invalid", () => {
 		const schema = URI_SCHEMA;
-		expect(() => schema.validate(undefined)).toThrow(Feedback);
+		expect(() => schema.validate(undefined)).toThrow();
 	});
 	test("Undefined with default value returns default value", () => {
 		const schema = new URISchema({ value: "http://x.com/" });
@@ -178,7 +178,7 @@ describe("options.schemes", () => {
 	});
 	test("Scheme not in default whitelist is invalid", () => {
 		const schema = NULLABLE_URI_SCHEMA;
-		expect(() => schema.validate("webcal://x.com")).toThrow(Feedback);
+		expect(() => schema.validate("webcal://x.com")).toThrow();
 	});
 	test("Scheme in specified whitelist is valid", () => {
 		const schema = new URISchema({ schemes: ["telnet:"] });
@@ -186,6 +186,6 @@ describe("options.schemes", () => {
 	});
 	test("Scheme not in specified whitelist is invalid", () => {
 		const schema = new URISchema({ schemes: ["telnet:"] });
-		expect(() => schema.validate("webcal://x.com:")).toThrow(Feedback);
+		expect(() => schema.validate("webcal://x.com:")).toThrow();
 	});
 });

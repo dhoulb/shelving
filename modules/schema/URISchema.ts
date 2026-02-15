@@ -1,4 +1,3 @@
-import { ValueFeedback } from "../feedback/Feedback.js";
 import { getURI, HTTP_SCHEMES, type URISchemes, type URIString } from "../util/uri.js";
 import { NULLABLE } from "./NullableSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
@@ -32,8 +31,8 @@ export class URISchema extends StringSchema {
 	override validate(unsafeValue: unknown): URIString {
 		const str = super.validate(unsafeValue);
 		const uri = getURI(str);
-		if (!uri) throw new ValueFeedback(str ? "Invalid format" : "Required", str);
-		if (this.schemes && !this.schemes.includes(uri.protocol)) throw new ValueFeedback("Invalid URI scheme", str);
+		if (!uri) throw str ? "Invalid format" : "Required";
+		if (this.schemes && !this.schemes.includes(uri.protocol)) throw "Invalid URI scheme";
 		return uri.href;
 	}
 }

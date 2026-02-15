@@ -1,4 +1,3 @@
-import { ValueFeedback } from "../feedback/Feedback.js";
 import type { ImmutableArray } from "../util/array.js";
 import { getUniqueArray, isArray } from "../util/array.js";
 import { validateArray } from "../util/validate.js";
@@ -70,12 +69,11 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	}
 	override validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
 		const unsafeArray = typeof unsafeValue === "string" ? unsafeValue.split(this.separator).filter(Boolean) : unsafeValue;
-		if (!isArray(unsafeArray)) throw new ValueFeedback("Must be array", unsafeValue);
+		if (!isArray(unsafeArray)) throw "Must be array";
 		const validArray = validateArray(unsafeArray, this.items);
 		const uniqueArray = this.unique ? getUniqueArray(validArray) : validArray;
-		if (uniqueArray.length < this.min)
-			throw new ValueFeedback(uniqueArray.length ? `Minimum ${this.min} ${this.many}` : "Required", uniqueArray);
-		if (uniqueArray.length > this.max) throw new ValueFeedback(`Maximum ${this.max} ${this.many}`, uniqueArray);
+		if (uniqueArray.length < this.min) throw uniqueArray.length ? `Minimum ${this.min} ${this.many}` : "Required";
+		if (uniqueArray.length > this.max) throw `Maximum ${this.max} ${this.many}`;
 		return uniqueArray;
 	}
 }

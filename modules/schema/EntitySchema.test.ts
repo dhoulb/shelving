@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { ENTITY, EntitySchema, Feedback, NULLABLE_ENTITY } from "../index.js";
+import { ENTITY, EntitySchema, NULLABLE_ENTITY } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -37,8 +37,8 @@ describe("validate()", () => {
 			expect(schema.validate("user:123")).toBe("user:123");
 		});
 		test("Invalid files are invalid", () => {
-			expect(() => schema.validate("challenge")).toThrow(Feedback);
-			expect(() => schema.validate("challenge:")).toThrow(Feedback);
+			expect(() => schema.validate("challenge")).toThrow();
+			expect(() => schema.validate("challenge:")).toThrow();
 		});
 	});
 	describe("EntitySchema with types", () => {
@@ -48,12 +48,12 @@ describe("validate()", () => {
 			expect(schema.validate("user:123")).toBe("user:123");
 		});
 		test("Invalid files are invalid for format reasons", () => {
-			expect(() => schema.validate("challenge")).toThrow(Feedback);
-			expect(() => schema.validate("challenge.")).toThrow(Feedback);
+			expect(() => schema.validate("challenge")).toThrow();
+			expect(() => schema.validate("challenge.")).toThrow();
 		});
 		test("Invalid files are invalid for type reasons", () => {
-			expect(() => schema.validate("icecream:abc123")).toThrow(Feedback);
-			expect(() => schema.validate("challenges:abc")).toThrow(Feedback);
+			expect(() => schema.validate("icecream:abc123")).toThrow();
+			expect(() => schema.validate("challenges:abc")).toThrow();
 		});
 	});
 });

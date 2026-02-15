@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { ARRAY, ArraySchema, DATA, Feedback, NUMBER, STRING, ValueFeedback } from "../index.js";
+import { ARRAY, ArraySchema, DATA, NUMBER, STRING } from "../index.js";
 
 // Vars.
 const stringArray = ["a", "b", "c"];
@@ -39,12 +39,12 @@ describe("validate()", () => {
 		expect(ARRAY(DATA({ title: STRING })).validate(nestedArray)).toEqual(nestedArray);
 	});
 	test("Non-arrays are invalid", () => {
-		expect(() => schema.validate(123)).toThrow(Feedback);
-		expect(() => schema.validate({})).toThrow(Feedback);
-		expect(() => schema.validate(true)).toThrow(Feedback);
-		expect(() => schema.validate(() => {})).toThrow(Feedback);
-		expect(() => schema.validate(0)).toThrow(Feedback);
-		expect(() => schema.validate(false)).toThrow(Feedback);
+		expect(() => schema.validate(123)).toThrow();
+		expect(() => schema.validate({})).toThrow();
+		expect(() => schema.validate(true)).toThrow();
+		expect(() => schema.validate(() => {})).toThrow();
+		expect(() => schema.validate(0)).toThrow();
+		expect(() => schema.validate(false)).toThrow();
 	});
 	test("Strings are split", () => {
 		expect(schema.validate("abc")).toEqual(["abc"]);
@@ -93,7 +93,7 @@ describe("options.unique", () => {
 describe("options.max", () => {
 	test("Arrays with more items than maximum are invalid", () => {
 		const schema = new ArraySchema({ max: 1, items: STRING });
-		expect(() => schema.validate(numberArray)).toThrow(Feedback);
+		expect(() => schema.validate(numberArray)).toThrow();
 	});
 	test("Arrays with leItemsSchema than maximum return unchanged", () => {
 		const schema = new ArraySchema({ max: 10, items: NUMBER });
@@ -103,7 +103,7 @@ describe("options.max", () => {
 describe("options.min", () => {
 	test("Arrays with leItemsSchema than minimum are invalid", () => {
 		const schema = new ArraySchema({ min: 10, items: STRING });
-		expect(() => schema.validate(numberArray)).toThrow(Feedback);
+		expect(() => schema.validate(numberArray)).toThrow();
 	});
 	test("Arrays with more items than minimum return unchanged", () => {
 		const schema = new ArraySchema({ min: 1, items: NUMBER });
@@ -125,9 +125,9 @@ describe("options.items", () => {
 	});
 	test("Arrays that do not validate against format (and cannot be converted) are invalid", () => {
 		const schema1 = new ArraySchema({ items: NUMBER });
-		expect(() => schema1.validate(randomArray)).toThrow(Feedback);
+		expect(() => schema1.validate(randomArray)).toThrow();
 		const schema2 = new ArraySchema({ items: ARRAY(STRING) });
-		expect(() => schema2.validate(randomArray)).toThrow(Feedback);
+		expect(() => schema2.validate(randomArray)).toThrow();
 	});
 	test("Arrays with errors in format subschemas provide access to those errors via Invalid", () => {
 		// Validate and catch Invalids.
@@ -136,9 +136,8 @@ describe("options.items", () => {
 		try {
 			schema.validate(arr);
 			expect(false).toBe(true); // Not reached.
-		} catch (invalid: any) {
-			expect(invalid).toBeInstanceOf(ValueFeedback);
-			expect(invalid).toEqual(new ValueFeedback("0: Must be number\n2: Must be number", arr));
+		} catch (invalid: unknown) {
+			expect(invalid).toBe("0: Must be number\n2: Must be number");
 		}
 	});
 });

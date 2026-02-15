@@ -1,6 +1,5 @@
 import { RequestError } from "../error/RequestError.js";
 import { ResponseError } from "../error/ResponseError.js";
-import { Feedback } from "../feedback/Feedback.js";
 import { assertDictionary, type ImmutableDictionary } from "./dictionary.js";
 import { isError } from "./error.js";
 import type { AnyCaller } from "./function.js";
@@ -109,7 +108,7 @@ export function getResponse(value: unknown): Response {
  *
  * Returns the correct `Response` based on the type of error thrown:
  * - If `reason` is a `Response` instance, return it directly.
- * - If `reason` is a `Feedback` instance, return a 400 response with the feedback's message as JSON, e.g. `{ message: "Invalid input" }`
+ * - If `reason` is a string, return a 422 response with the string message, e.g. `"Invalid input"`
  * - If `reason` is an `RequestError` instance, return a response with the error's message and code (but only if `debug` is true so we don't leak error details to the client).
  * - If `reason` is an `Error` instance, return a 500 response with the error's message (but only if `debug` is true so we don't leak error details to the client).
  * - Anything else returns a 500 response.
@@ -121,8 +120,8 @@ export function getErrorResponse(reason: unknown, debug = false): Response {
 	// If it's already a `Response`, return it directly.
 	if (reason instanceof Response) return reason;
 
-	// Throw 'Feedback' to return `{ message: "etc" }` to the client, e.g. for input validation.
-	if (reason instanceof Feedback) return Response.json(reason, { status: 422 }); // HTTP 422 Unprocessable Entity
+	// Throw validation message strings to return `{ message: "etc" }` to the client.
+	if (typeof reason === "string") return new Response(reason, { status: 422 }); // HTTP 422 Unprocessable Entity
 
 	// Throw `RequestError` to set a custom status code (e.g. `UnauthorizedError`).
 	const status = reason instanceof RequestError ? reason.code : 500;

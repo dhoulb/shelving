@@ -1,5 +1,4 @@
 import { ValueError } from "../error/ValueError.js";
-import { Feedback } from "../feedback/Feedback.js";
 import { type DataSchema, type DataSchemas, PARTIAL } from "../schema/DataSchema.js";
 import type { Schema } from "../schema/Schema.js";
 import type { MutableArray } from "../util/array.js";
@@ -161,8 +160,8 @@ function _validateItem<I extends Identifier, T extends Data>(
 	try {
 		return validateData<Item<I, T>>(item, { id: identifier, ...schema.props } as Validators<Item<I, T>>);
 	} catch (thrown) {
-		if (!(thrown instanceof Feedback)) throw thrown;
-		throw new ValueError(`Invalid data for "${collection}"\n${thrown.message}`, { item, caller });
+		if (typeof thrown !== "string") throw thrown;
+		throw new ValueError(`Invalid data for "${collection}"\n${thrown}`, { item, caller });
 	}
 }
 
@@ -190,8 +189,8 @@ function* _yieldValidItems<I extends Identifier, T extends Data>(
 		try {
 			yield validateData(item, validators);
 		} catch (thrown) {
-			if (!(thrown instanceof Feedback)) throw thrown;
-			messages.push(getNamedMessage(item.id, thrown.message));
+			if (typeof thrown !== "string") throw thrown;
+			messages.push(getNamedMessage(item.id, thrown));
 		}
 	}
 	if (messages.length) throw new ValueError(`Invalid data for "${collection}"\n${messages.join("\n")}`, { items, caller });
@@ -203,7 +202,7 @@ function _validateUpdates<T extends Data>(collection: string, updates: Updates<T
 	try {
 		return validateData<Partial<T>>(updates, PARTIAL(schema).props);
 	} catch (thrown) {
-		if (!(thrown instanceof Feedback)) throw thrown;
-		throw new ValueError(`Invalid updates for "${collection}"\n${thrown.message}`, { updates, caller });
+		if (typeof thrown !== "string") throw thrown;
+		throw new ValueError(`Invalid updates for "${collection}"\n${thrown}`, { updates, caller });
 	}
 }

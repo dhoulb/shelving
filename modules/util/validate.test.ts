@@ -1,13 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import {
-	Feedback,
 	NUMBER,
 	OPTIONAL,
 	RequiredError,
 	requireValid,
 	STRING,
 	StringSchema,
-	ValueFeedback,
 	validateArray,
 	validateData,
 	validateDictionary,
@@ -26,15 +24,14 @@ describe("getValid()", () => {
 		const value = requireValid("123", numValidator);
 		expect(value).toBe(123);
 	});
-	test("throws ValueError with Feedback cause on invalid value", () => {
+	test("throws RequiredError with string cause on invalid value", () => {
 		try {
 			requireValid("abc", numValidator);
 			expect("reached").toBe("unreachable");
 		} catch (err) {
 			expect(err).toBeInstanceOf(RequiredError);
 			expect((err as RequiredError).message).toBe("Must be number");
-			// Cause chain includes Feedback.
-			expect((err as any).cause).toBeInstanceOf(Feedback);
+			expect((err as any).cause).toBe("Must be number");
 		}
 	});
 });
@@ -52,9 +49,7 @@ describe("validateData()", () => {
 			validateData(bad, VALIDATORS);
 			expect("should not reach").toBe("reached");
 		} catch (err) {
-			expect(err).toBeInstanceOf(ValueFeedback);
-			// Expected messages based on existing schema message patterns
-			expect(err).toEqual(new ValueFeedback("str: Must be string\nopt: Must be string\nnum: Must be number", bad));
+			expect(err).toBe("str: Must be string\nopt: Must be string\nnum: Must be number");
 		}
 	});
 	test("removes excess fields when rebuilding object (default added)", () => {
@@ -91,8 +86,7 @@ describe("validateItems()", () => {
 			Array.from(validateItems([1, "2", "bad"], NUMBER));
 			expect("reached").toBe("unreachable");
 		} catch (err) {
-			expect(err).toBeInstanceOf(ValueFeedback);
-			expect(err).toEqual(new ValueFeedback("2: Must be number", [1, "2", "bad"]));
+			expect(err).toBe("2: Must be number");
 		}
 	});
 	test("all valid items (with coercion) returned as array via spread", () => {
@@ -118,8 +112,7 @@ describe("validateArray()", () => {
 			validateArray(arr, NUMBER);
 			expect("reached").toBe("unreachable");
 		} catch (err) {
-			expect(err).toBeInstanceOf(ValueFeedback);
-			expect(err).toEqual(new ValueFeedback("2: Must be number", arr));
+			expect(err).toBe("2: Must be number");
 		}
 	});
 });
@@ -146,8 +139,7 @@ describe("validateDictionary()", () => {
 			validateDictionary(dict, NUMBER);
 			expect("reached").toBe("unreachable");
 		} catch (err) {
-			expect(err).toBeInstanceOf(ValueFeedback);
-			expect(err).toEqual(new ValueFeedback("b: Must be number", dict));
+			expect(err).toBe("b: Must be number");
 		}
 	});
 });

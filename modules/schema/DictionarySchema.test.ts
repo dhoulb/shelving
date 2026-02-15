@@ -1,15 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import {
-	BOOLEAN,
-	DICTIONARY,
-	DictionarySchema,
-	Feedback,
-	type ImmutableDictionary,
-	NUMBER,
-	type Schema,
-	STRING,
-	ValueFeedback,
-} from "../index.js";
+import { BOOLEAN, DICTIONARY, DictionarySchema, type ImmutableDictionary, NUMBER, type Schema, STRING } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -35,12 +25,12 @@ test("constructor()", () => {
 describe("validate()", () => {
 	const schema = new DictionarySchema({ items: STRING });
 	test("Non-objects throw error", () => {
-		expect(() => DICTIONARY(STRING).validate("abc")).toThrow(Feedback);
-		expect(() => DICTIONARY(NUMBER).validate(123)).toThrow(Feedback);
-		expect(() => DICTIONARY(BOOLEAN).validate(true)).toThrow(Feedback);
-		expect(() => schema.validate(0)).toThrow(Feedback);
-		expect(() => schema.validate(null)).toThrow(Feedback);
-		expect(() => schema.validate(false)).toThrow(Feedback);
+		expect(() => DICTIONARY(STRING).validate("abc")).toThrow();
+		expect(() => DICTIONARY(NUMBER).validate(123)).toThrow();
+		expect(() => DICTIONARY(BOOLEAN).validate(true)).toThrow();
+		expect(() => schema.validate(0)).toThrow();
+		expect(() => schema.validate(null)).toThrow();
+		expect(() => schema.validate(false)).toThrow();
 	});
 });
 describe("options.value", () => {
@@ -74,9 +64,8 @@ describe("options.items", () => {
 		const schema = new DictionarySchema({ items: NUMBER });
 		try {
 			expect<unknown>(schema.validate(dict)).toBe("Never");
-		} catch (invalid: any) {
-			expect(invalid).toBeInstanceOf(ValueFeedback);
-			expect(invalid).toEqual(new ValueFeedback("str: Must be number", dict));
+		} catch (invalid: unknown) {
+			expect(invalid).toBe("str: Must be number");
 		}
 	});
 });

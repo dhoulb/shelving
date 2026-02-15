@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { Feedback, KEY, KeySchema, NULLABLE_KEY } from "../index.js";
+import { KEY, KeySchema, NULLABLE_KEY } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -34,14 +34,14 @@ describe("validate()", () => {
 		expect(schema.validate(1234)).toBe("1234");
 	});
 	test("Non-strings are invalid", () => {
-		expect(() => schema.validate([])).toThrow(Feedback);
-		expect(() => schema.validate({})).toThrow(Feedback);
-		expect(() => schema.validate(true)).toThrow(Feedback);
-		expect(() => schema.validate(null)).toThrow(Feedback);
+		expect(() => schema.validate([])).toThrow();
+		expect(() => schema.validate({})).toThrow();
+		expect(() => schema.validate(true)).toThrow();
+		expect(() => schema.validate(null)).toThrow();
 	});
 	test("Empty strings are required", () => {
-		expect(() => schema.validate(undefined)).toThrow(Feedback);
-		expect(() => schema.validate("")).toThrow(Feedback);
+		expect(() => schema.validate(undefined)).toThrow();
+		expect(() => schema.validate("")).toThrow();
 	});
 });
 describe("options.value", () => {

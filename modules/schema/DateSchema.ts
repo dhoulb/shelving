@@ -1,4 +1,3 @@
-import { ValueFeedback } from "../feedback/Feedback.js";
 import type { PossibleDate } from "../util/date.js";
 import { getDate, requireDateString } from "../util/date.js";
 import { formatDate } from "../util/format.js";
@@ -42,12 +41,12 @@ export class DateSchema extends Schema<string> {
 
 	override validate(value: unknown = this.value): string {
 		const date = getDate(value);
-		if (!date) throw new ValueFeedback(value ? "Invalid date" : "Required", value);
+		if (!date) throw value ? "Invalid date" : "Required";
 
 		const rounded = typeof this.step === "number" ? new Date(roundStep(date.getTime(), this.step)) : date;
 
-		if (this.min && rounded < this.min) throw new ValueFeedback(`Minimum ${this.format(this.min)}`, rounded);
-		if (this.max && rounded > this.max) throw new ValueFeedback(`Maximum ${this.format(this.max)}`, rounded);
+		if (this.min && rounded < this.min) throw `Minimum ${this.format(this.min)}`;
+		if (this.max && rounded > this.max) throw `Maximum ${this.format(this.max)}`;
 
 		return this.stringify(rounded);
 	}

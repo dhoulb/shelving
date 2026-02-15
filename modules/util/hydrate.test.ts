@@ -1,26 +1,41 @@
 import { expect, test } from "bun:test";
 import type { Data } from "../index.js";
-import { dehydrate, Feedback, hydrate, ValueFeedback } from "../index.js";
+import { dehydrate, hydrate } from "../index.js";
+
+class Message {
+	readonly message: string;
+	constructor(message: string) {
+		this.message = message;
+	}
+}
+
+class MessageValue<T> extends Message {
+	readonly value: T;
+	constructor(message: string, value: T) {
+		super(message);
+		this.value = value;
+	}
+}
 
 const HYDRATIONS = {
-	Feedback,
-	ValueFeedback,
+	Message,
+	MessageValue,
 };
 
 test("hydrate(): Works correctly with class instances", () => {
 	// Flat.
-	const original1 = new Feedback("aaa");
+	const original1 = new Message("aaa");
 	const dehydrated1 = dehydrate(original1, HYDRATIONS);
 	expect(dehydrated1).not.toBe(original1);
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS);
-	expect(hydrated1).toBeInstanceOf(Feedback);
+	expect(hydrated1).toBeInstanceOf(Message);
 	expect(original1).not.toBe(hydrated1);
 	expect<unknown>(original1).toEqual(hydrated1);
 
 	// Deep.
-	const original2 = new ValueFeedback("abc", {
-		invalid: new Feedback("def"),
-		success: new Feedback("def"),
+	const original2 = new MessageValue("abc", {
+		invalid: new Message("def"),
+		success: new Message("def"),
 		map: new Map([
 			["a", 1],
 			["b", 2],
@@ -30,7 +45,7 @@ test("hydrate(): Works correctly with class instances", () => {
 	});
 	const dehydrated2 = dehydrate(original2, HYDRATIONS) as typeof original2;
 	const hydrated2 = hydrate(dehydrated2, HYDRATIONS) as typeof original2;
-	expect(hydrated2).toBeInstanceOf(Feedback);
+	expect(hydrated2).toBeInstanceOf(Message);
 	expect(original2).not.toBe(hydrated2);
 	expect(original2).toEqual(hydrated2);
 	expect((original2.value as Data).invalid).not.toBe((hydrated2.value as Data).invalid);
@@ -41,10 +56,10 @@ test("hydrate(): Works correctly with class instances", () => {
 });
 test("hydrate(): Works correctly with arrays of objects", () => {
 	// Flat.
-	const original1 = ["abc", new Feedback("aaa"), 123] as const;
+	const original1 = ["abc", new Message("aaa"), 123] as const;
 	const dehydrated1 = dehydrate(original1, HYDRATIONS) as typeof original1;
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS) as typeof original1;
-	expect(hydrated1[1]).toBeInstanceOf(Feedback);
+	expect(hydrated1[1]).toBeInstanceOf(Message);
 	expect(original1).not.toBe(hydrated1);
 	expect(original1).toEqual(hydrated1);
 
@@ -52,9 +67,9 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 	const original2 = [
 		"abc",
 		123,
-		new ValueFeedback("abc", {
-			invalid: new Feedback("def"),
-			success: new Feedback("def"),
+		new MessageValue("abc", {
+			invalid: new Message("def"),
+			success: new Message("def"),
 		}),
 		new Map([
 			["a", 1],
@@ -65,7 +80,7 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 	] as const;
 	const dehydrated2 = dehydrate(original2, HYDRATIONS) as typeof original2;
 	const hydrated2 = hydrate(dehydrated2, HYDRATIONS) as typeof original2;
-	expect(hydrated2[2]).toBeInstanceOf(Feedback);
+	expect(hydrated2[2]).toBeInstanceOf(Message);
 	expect(hydrated2[3]).toBeInstanceOf(Map);
 	expect(hydrated2[4]).toBeInstanceOf(Set);
 	expect(hydrated2[5]).toBeInstanceOf(Date);
@@ -85,20 +100,16 @@ test("hydrate(): Works correctly with arrays of objects", () => {
 });
 test("hydrate(): Works correctly with plain objects of objects", () => {
 	// Flat.
-	const original1 = { str: "abc", obj: new Feedback("aaa"), num: 123 };
+	const original1 = { str: "abc", obj: new Message("aaa"), num: 123 };
 	const dehydrated1 = dehydrate(original1, HYDRATIONS) as typeof original1;
 	const hydrated1 = hydrate(dehydrated1, HYDRATIONS) as typeof original1;
-	expect(hydrated1.obj).toBeInstanceOf(Feedback);
+	expect(hydrated1.obj).toBeInstanceOf(Message);
 	expect(original1).toEqual(hydrated1);
 	expect(original1).not.toBe(hydrated1);
 
 	// Deep.
 	const original2 = {
 		str: "abc",
-		feedback: new ValueFeedback("abc", {
-			invalid: new Feedback("def"),
-			success: new Feedback("def"),
-		}),
 		num: 123,
 		map: new Map([
 			["a", 1],
@@ -110,15 +121,11 @@ test("hydrate(): Works correctly with plain objects of objects", () => {
 	const dehydrated2 = dehydrate(original2, HYDRATIONS) as typeof original2;
 	expect(dehydrated2).not.toBe(original2);
 	const hydrated2 = hydrate(dehydrated2, HYDRATIONS) as typeof original2;
-	expect(hydrated2.feedback).toBeInstanceOf(Feedback);
 	expect(original2).toEqual(hydrated2);
 	expect(original2).not.toBe(hydrated2);
 	expect(original2.map).not.toBe(hydrated2.map);
 	expect(original2.set).not.toBe(hydrated2.set);
 	expect(original2.date).not.toBe(hydrated2.date);
-	expect(original2.feedback).not.toBe(hydrated2.feedback);
-	expect((original2.feedback.value as Data).invalid).not.toBe((hydrated2.feedback.value as Data).invalid);
-	expect((original2.feedback.value as Data).success).not.toBe((hydrated2.feedback.value as Data).success);
 
 	// Same.
 	const original3 = { str: "abc", num: 123 };

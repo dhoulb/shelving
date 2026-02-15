@@ -1,4 +1,3 @@
-import { ValueFeedback } from "../feedback/Feedback.js";
 import { type ImmutableArray, isArray, requireFirst } from "../util/array.js";
 import { getKeys, getProps, isProp } from "../util/object.js";
 import type { SchemaOptions } from "./Schema.js";
@@ -51,7 +50,7 @@ export class ChoiceSchema<K extends string> extends Schema<K> implements Iterabl
 	}
 	validate(unsafeValue: unknown = this.value): K {
 		if (typeof unsafeValue === "string" && isOption(this.options, unsafeValue)) return unsafeValue;
-		throw new ValueFeedback("Unknown value", unsafeValue);
+		throw "Unknown value";
 	}
 
 	// Implement iterable.

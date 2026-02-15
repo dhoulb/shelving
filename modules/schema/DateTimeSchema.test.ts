@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { DATETIME, DateTimeSchema, Feedback, NULLABLE_DATETIME } from "../index.js";
+import { DATETIME, DateTimeSchema, NULLABLE_DATETIME } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -44,22 +44,22 @@ describe("validate()", () => {
 		expect(schema.validate("1995-11-18")).toBe("1995-11-18T00:00:00.000Z");
 	});
 	test("Invalid strings are invalid", () => {
-		expect(() => schema.validate("abc")).toThrow(Feedback);
-		expect(() => schema.validate("7 1995")).toThrow(Feedback);
+		expect(() => schema.validate("abc")).toThrow();
+		expect(() => schema.validate("7 1995")).toThrow();
 	});
 	test("Numbers are converted to ISO date strings", () => {
 		expect(schema.validate(0)).toEqual("1970-01-01T00:00:00.000Z");
 		expect(schema.validate(1530586357000)).toEqual("2018-07-03T02:52:37.000Z");
 	});
 	test("Infinite numbers are invalid", () => {
-		expect(() => schema.validate(Number.POSITIVE_INFINITY)).toThrow(Feedback);
-		expect(() => schema.validate(Number.NEGATIVE_INFINITY)).toThrow(Feedback);
+		expect(() => schema.validate(Number.POSITIVE_INFINITY)).toThrow();
+		expect(() => schema.validate(Number.NEGATIVE_INFINITY)).toThrow();
 	});
 	test("Invalid values are invalid", () => {
-		expect(() => schema.validate(true)).toThrow(Feedback);
-		expect(() => schema.validate(false)).toThrow(Feedback);
-		expect(() => schema.validate(null)).toThrow(Feedback);
-		expect(() => schema.validate("")).toThrow(Feedback);
+		expect(() => schema.validate(true)).toThrow();
+		expect(() => schema.validate(false)).toThrow();
+		expect(() => schema.validate(null)).toThrow();
+		expect(() => schema.validate("")).toThrow();
 	});
 });
 describe("options.value", () => {
@@ -80,26 +80,26 @@ describe("options.min", () => {
 	test("Date outside minimum is invalid", () => {
 		const schema1 = new DateTimeSchema({ min: new Date("2016") });
 		expect(schema1.validate("2016")).toBe("2016-01-01T00:00:00.000Z");
-		expect(() => schema1.validate("2015")).toThrow(Feedback);
+		expect(() => schema1.validate("2015")).toThrow();
 		const schema2 = new DateTimeSchema({ min: "2016-01-01" });
 		expect(schema2.validate("2016")).toBe("2016-01-01T00:00:00.000Z");
-		expect(() => schema2.validate("2015")).toThrow(Feedback);
+		expect(() => schema2.validate("2015")).toThrow();
 		const schema3 = new DateTimeSchema({ min: new Date(1530586357000) });
 		expect(schema3.validate(1530586357000)).toBe("2018-07-03T02:52:37.000Z");
-		expect(() => schema3.validate(1530586356999)).toThrow(Feedback);
+		expect(() => schema3.validate(1530586356999)).toThrow();
 	});
 });
 describe("options.max", () => {
 	test("Date outside maximum is invalid", () => {
 		const schema1 = new DateTimeSchema({ max: new Date("2016") });
 		expect(schema1.validate("2016")).toBe("2016-01-01T00:00:00.000Z");
-		expect(() => schema1.validate("2017")).toThrow(Feedback);
+		expect(() => schema1.validate("2017")).toThrow();
 		const schema2 = new DateTimeSchema({ max: new Date(1530586357000) });
 		expect(schema2.validate(1530586357000)).toBe("2018-07-03T02:52:37.000Z");
-		expect(() => schema2.validate(1530586357001)).toThrow(Feedback);
+		expect(() => schema2.validate(1530586357001)).toThrow();
 		const schema3 = new DateTimeSchema({ max: new Date(1530586357000) });
 		expect(schema3.validate(1530586357000)).toBe("2018-07-03T02:52:37.000Z");
-		expect(() => schema3.validate(1530586357001)).toThrow(Feedback);
+		expect(() => schema3.validate(1530586357001)).toThrow();
 	});
 });
 describe("options.step", () => {
@@ -119,9 +119,9 @@ describe("options.step", () => {
 			max: "2025-10-09T14:15:00.000Z",
 		});
 		expect(schema.validate("2025-10-09T13:52:31.000Z")).toBe("2025-10-09T14:00:00.000Z");
-		expect(() => schema.validate("2025-10-09T13:52:29.000Z")).toThrow(Feedback);
+		expect(() => schema.validate("2025-10-09T13:52:29.000Z")).toThrow();
 		expect(schema.validate("2025-10-09T14:22:29.000Z")).toBe("2025-10-09T14:15:00.000Z");
-		expect(() => schema.validate("2025-10-09T14:22:31.000Z")).toThrow(Feedback);
+		expect(() => schema.validate("2025-10-09T14:22:31.000Z")).toThrow();
 	});
 });
 describe("options.input", () => {

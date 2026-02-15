@@ -1,4 +1,3 @@
-import { ValueFeedback } from "../feedback/Feedback.js";
 import type { ImmutableDictionary } from "../util/dictionary.js";
 import { isDictionary } from "../util/dictionary.js";
 import { validateDictionary } from "../util/validate.js";
@@ -36,11 +35,11 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 		this.max = max;
 	}
 	override validate(unsafeValue: unknown = this.value): ImmutableDictionary<T> {
-		if (!isDictionary(unsafeValue)) throw new ValueFeedback("Must be object", unsafeValue);
+		if (!isDictionary(unsafeValue)) throw "Must be object";
 		const validDictionary = validateDictionary(unsafeValue, this.items);
 		const length = Object.keys(validDictionary).length;
-		if (length < this.min) throw new ValueFeedback(length ? `Minimum ${this.min} ${this.many}` : "Required", validDictionary);
-		if (length > this.max) throw new ValueFeedback(`Maximum ${this.max} ${this.many}`, validDictionary);
+		if (length < this.min) throw length ? `Minimum ${this.min} ${this.many}` : "Required";
+		if (length > this.max) throw `Maximum ${this.max} ${this.many}`;
 		return validDictionary;
 	}
 }

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { Feedback, NULLABLE_PHONE, PHONE, PhoneSchema } from "../index.js";
+import { NULLABLE_PHONE, PHONE, PhoneSchema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -40,24 +40,24 @@ describe("validate()", () => {
 		expect(schema.validate("+1 0 1 2 3 4 5 6 7 8 9 0")).toBe("+101234567890");
 	});
 	test("Non-numeric are invalid", () => {
-		expect(() => schema.validate("abc")).toThrow(Feedback);
+		expect(() => schema.validate("abc")).toThrow();
 	});
 	test("Invalid phone numbers are invalid", () => {
-		expect(() => schema.validate("101234567890")).toThrow(Feedback);
-		expect(() => schema.validate("123")).toThrow(Feedback);
+		expect(() => schema.validate("101234567890")).toThrow();
+		expect(() => schema.validate("123")).toThrow();
 	});
 	test("Non-strings are invalid", () => {
-		expect(() => schema.validate([])).toThrow(Feedback);
-		expect(() => schema.validate({})).toThrow(Feedback);
-		expect(() => schema.validate(true)).toThrow(Feedback);
-		expect(() => schema.validate(null)).toThrow(Feedback);
-		expect(() => schema.validate("")).toThrow(Feedback);
+		expect(() => schema.validate([])).toThrow();
+		expect(() => schema.validate({})).toThrow();
+		expect(() => schema.validate(true)).toThrow();
+		expect(() => schema.validate(null)).toThrow();
+		expect(() => schema.validate("")).toThrow();
 	});
 });
 describe("options.value", () => {
 	test("Undefined returns default default value (empty string)", () => {
 		const schema = new PhoneSchema({});
-		expect(() => schema.validate(undefined)).toThrow(Feedback);
+		expect(() => schema.validate(undefined)).toThrow();
 	});
 	test("Undefined with default value returns default value", () => {
 		const schema = new PhoneSchema({ value: "+441234567890" });

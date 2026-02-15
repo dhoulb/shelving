@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { Feedback, REQUIRED_STRING, STRING, StringSchema } from "../index.js";
+import { REQUIRED_STRING, STRING, StringSchema } from "../index.js";
 
 // Vars.
 const longString =
@@ -40,12 +40,12 @@ describe("validate()", () => {
 		expect(schema.validate(100039384)).toBe("100039384");
 	});
 	test("Non-strings (except numbers) throw Invalid", () => {
-		expect(() => schema.validate(null)).toThrow(Feedback);
-		expect(() => schema.validate(false)).toThrow(Feedback);
-		expect(() => schema.validate(true)).toThrow(Feedback);
-		expect(() => schema.validate([])).toThrow(Feedback);
-		expect(() => schema.validate({})).toThrow(Feedback);
-		expect(() => schema.validate(() => {})).toThrow(Feedback);
+		expect(() => schema.validate(null)).toThrow();
+		expect(() => schema.validate(false)).toThrow();
+		expect(() => schema.validate(true)).toThrow();
+		expect(() => schema.validate([])).toThrow();
+		expect(() => schema.validate({})).toThrow();
+		expect(() => schema.validate(() => {})).toThrow();
 	});
 });
 describe("options.default", () => {
@@ -61,12 +61,12 @@ describe("options.default", () => {
 describe("options.min", () => {
 	test("Strings shorter than the minimum are invalid", () => {
 		const schema = new StringSchema({ min: 10 });
-		expect(() => schema.validate("a")).toThrow(Feedback);
+		expect(() => schema.validate("a")).toThrow();
 	});
 });
 describe("options.max", () => {
 	test("Strings longer than the maximum are trimmed", () => {
 		const schema = new StringSchema({ max: 3 });
-		expect(() => schema.validate("abcdef")).toThrow(Feedback);
+		expect(() => schema.validate("abcdef")).toThrow();
 	});
 });

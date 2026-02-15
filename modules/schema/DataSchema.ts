@@ -1,4 +1,3 @@
-import { ValueFeedback } from "../feedback/Feedback.js";
 import type { Data, Database, PartialData } from "../util/data.js";
 import { isData } from "../util/data.js";
 import type { Identifier, Item } from "../util/item.js";
@@ -29,13 +28,16 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 		this.props = props;
 	}
 	override validate(unsafeValue: unknown = this.value): T {
-		if (!isData(unsafeValue)) throw new ValueFeedback("Must be object", unsafeValue);
+		if (!isData(unsafeValue)) throw "Must be object";
 		return validateData(unsafeValue, this.props);
 	}
 
+	/** Make a new `DataSchema` that only uses a defined subset of the current props. */
 	pick<K extends Key<T>>(...keys: K[]): DataSchema<Pick<T, K>> {
 		return new DataSchema<Pick<T, K>>({ ...this, props: pickProps<Schemas<T>, K>(this.props, ...keys) });
 	}
+
+	/** Make a new `DataSchema` that omits one or more of the current props. */
 	omit<K extends Key<T>>(...keys: K[]): DataSchema<Omit<T, K>> {
 		return new DataSchema<Omit<T, K>>({ ...this, props: omitProps<Schemas<T>, K>(this.props, ...keys) });
 	}

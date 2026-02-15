@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { CHOICE, ChoiceSchema, Feedback } from "../index.js";
+import { CHOICE, ChoiceSchema } from "../index.js";
 
 test("TypeScript", () => {
 	// String object options.
@@ -25,14 +25,14 @@ test("Value is allowed if it exists in array options", () => {
 });
 test("Invalid if value doesn't exist in object options", () => {
 	const schema1 = new ChoiceSchema({ options: { a: "A", b: "B", c: "C" } });
-	expect(() => schema1.validate("d")).toThrow(Feedback);
+	expect(() => schema1.validate("d")).toThrow();
 	const schema2 = new ChoiceSchema({ options: { 1: "A", 2: "B", 3: "C" } });
-	expect(() => schema2.validate(2)).toThrow(Feedback); // Must be string.
+	expect(() => schema2.validate(2)).toThrow(); // Must be string.
 });
 
 test("Invalid if value doesn't exist in array options", () => {
 	const schema1 = new ChoiceSchema({ options: ["a", "b", "c"] });
-	expect(() => schema1.validate("d")).toThrow(Feedback);
+	expect(() => schema1.validate("d")).toThrow();
 	const schema2 = new ChoiceSchema({ options: ["1", "2", "3"] });
-	expect(() => schema2.validate(2)).toThrow(Feedback); // Must be string.
+	expect(() => schema2.validate(2)).toThrow(); // Must be string.
 });

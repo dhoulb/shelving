@@ -1,4 +1,3 @@
-import { ValueFeedback } from "../feedback/Feedback.js";
 import type { FileTypes } from "../util/file.js";
 import { getFileExtension } from "../util/file.js";
 import { isProp } from "../util/object.js";
@@ -20,8 +19,8 @@ export class FileSchema extends StringSchema {
 	override validate(unsafeValue: unknown = this.value): string {
 		const path = super.validate(unsafeValue);
 		const extension = getFileExtension(path);
-		if (!extension) throw new ValueFeedback("Must be file name with extension", unsafeValue);
-		if (this.types && !isProp(this.types, extension)) throw new ValueFeedback("Invalid file type", extension);
+		if (!extension) throw "Must be file name with extension";
+		if (this.types && !isProp(this.types, extension)) throw "Invalid file type";
 		return path;
 	}
 }

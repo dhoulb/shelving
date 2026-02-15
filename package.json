@@ -27,7 +27,6 @@
 		"./api": "./api/index.js",
 		"./db": "./db/index.js",
 		"./error": "./error/index.js",
-		"./feedback": "./feedback/index.js",
 		"./firestore/client": "./firestore/client/index.js",
 		"./firestore/lite": "./firestore/lite/index.js",
 		"./firestore/server": "./firestore/server/index.js",

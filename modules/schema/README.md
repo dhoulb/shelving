@@ -10,7 +10,7 @@ When you have created a schema you can pass unknown values into the `validate()`
 
 - Valid values will be returned unchanged.
 - Invalid values that can be trivially fixed will be modified and returned.
-- Invalid values will return instances of `Feedback`, which contains a user-facing `message` property describing why.
+- Invalid values will return instances of `string`, which contains a user-facing `message` property describing why.
 
 This basic example shows how Shelving schemas can be used in the real world:
 
@@ -50,7 +50,7 @@ export function myServerFunction(unsafeInput: unknown): true {
 
 ### Invalid values
 
-Is you pass an invalid value into `validate()` then two things might happen: 1) If the invalid value can be trivially converted to a valid value without data loss, it will be converted and returned, or 2) An instance of `Feedback` will be returned:
+Is you pass an invalid value into `validate()` then two things might happen: 1) If the invalid value can be trivially converted to a valid value without data loss, it will be converted and returned, or 2) An instance of `string` will be returned:
 
 ```ts
 import { string, number, email, url, boolean, Invalid } from "shelving";
@@ -62,10 +62,10 @@ string().validate(123); // Returns "123" string.
 number().validate("123.456"); // Returns 123.456 number.
 
 // Fully invalid values.
-string().validate(true); // Throws Feedback("Must be string")
-number().validate("abc"); // Throws Feedback("Must be number")
-email().validate("abc"); // Throws Feedback("Invalid email format")
-url().validate("abc"); // Throws Feedback("Invalid URL format")
+string().validate(true); // Throws "Must be string"
+number().validate("abc"); // Throws "Must be number"
+email().validate("abc"); // Throws "Invalid email format"
+url().validate("abc"); // Throws "Invalid URL format"
 ```
 
 With object schemas, `options.props` is used to fill (and trivially convert) missing object props:
@@ -88,14 +88,14 @@ schema.validate({ age: "123" });
 schema.validate({ name: "Dave" });
 ```
 
-Instances of `Feedback` contain a string `.message` property describing the issue:
+Instances of `string` contain a string `.message` property describing the issue:
 
 ```ts
 const invalid = url().validate("abc");
 console.error(invalid.message); // Logs "Invalid URL format"
 ```
 
-When validating an object, it's possible the _contents_ might be invalid. In this situation `Feedback` also has a `.messages` object specifying where, within the object, the data was invalid.
+When validating an object, it's possible the _contents_ might be invalid. In this situation `string` also has a `(named lines in the message)` object specifying where, within the object, the data was invalid.
 
 ```ts
 import { object, string, number } from "shelving"
@@ -112,10 +112,10 @@ const schema = object({
 const invalid = schema.validate({ age: 900 });
 
 console.log(invalid.message); // "Invalid format"
-console.log(invalid.messages); // { name: "Required", age: "Maximum 200" }
+console.log(invalid(named lines in the message)); // { name: "Required", age: "Maximum 200" }
 ```
 
-This also works for arrays. The keys in `.messages` will be numeric strings:
+This also works for arrays. The keys in `(named lines in the message)` will be numeric strings:
 
 ```ts
 import { array, string } from "shelving";
@@ -129,7 +129,7 @@ const schema = array({
 const invalid = schema.validate([123, true, ""]);
 
 console.log(invalid.message); // "Invalid format"
-console.log(invalid.messages); // { "1": "Must be string", "2": "Required" }
+console.log(invalid(named lines in the message)); // { "1": "Must be string", "2": "Required" }
 ```
 
 ### Validating different types
@@ -168,17 +168,17 @@ objectSchema.validate({ a: "A" }); // Returns { a: "A" }
 mapSchema.validate({ a: "A" }); // Returns { a: "A" }
 
 // Successful validation.
-stringSchema.validate(true); // Throws Feedback("Must be string")
-numberSchema.validate(true); // Throws Feedback("Must be number")
-dateSchema.validate("aaaaaaa"); // Throws Feedback("Invalid date")
-colorSchema.validate(true); // Throws Feedback("Must be string")
-emailSchema.validate("111111"); // Throws Feedback("Invalid format")
-phoneSchema.validate("aaaaaa"); // Throws Feedback("Invalid format")
-urlSchema.validate("11111111"); // Throws Feedback("Invalid format")
-keySchema.validate("!!!!!!!"); // Throws Feedback("Invalid format")
-arraySchema.validate(true); // Throws Feedback("Must be array")
-objectSchema.validate(true); // Throws Feedback("Must be object")
-mapSchema.validate(true); // Throws Feedback("Must be object")
+stringSchema.validate(true); // Throws "Must be string"
+numberSchema.validate(true); // Throws "Must be number"
+dateSchema.validate("aaaaaaa"); // Throws "Invalid date"
+colorSchema.validate(true); // Throws "Must be string"
+emailSchema.validate("111111"); // Throws "Invalid format"
+phoneSchema.validate("aaaaaa"); // Throws "Invalid format"
+urlSchema.validate("11111111"); // Throws "Invalid format"
+keySchema.validate("!!!!!!!"); // Throws "Invalid format"
+arraySchema.validate(true); // Throws "Must be array"
+objectSchema.validate(true); // Throws "Must be object"
+mapSchema.validate(true); // Throws "Must be object"
 ```
 
 ### Default values
@@ -207,7 +207,7 @@ const optionalSchema = number({ required: false });
 optionalSchema.validate(null); // Returns null.
 
 const requiredSchema = number({ required: true });
-optionalSchema.validate(null); // Throws Feedback("Required")
+optionalSchema.validate(null); // Throws "Required"
 ```
 
 ### Using TypeScript
@@ -222,7 +222,7 @@ Schemaglobin pays special attention to the TypeScript type of values returned by
   - If `options.options` is set it can return a more specific type, e.g. `"a" | "b" | ""`
 
 ```ts
-import { object, string, number, boolean, Feedback } from "shelving";
+import { object, string, number, boolean } from "shelving";
 
 // `options.required` filters out falsy value.
 const requiredNumber: number = number({ required: true }).validate(123); // No error.
@@ -244,7 +244,7 @@ const objectSchema = object({
 
 // Validated value has type `{ num: number | null, str: string, bool: true }`
 const obj = objectSchema.validate(undefined);
-if (!(obj instanceof Feedback)) {
+if (typeof obj !== "string") {
 	const num: number | null = obj.num; // No error.
 	const str: string = obj.str; // No error.
 	const bool: true = obj.bool; // No error.
@@ -272,7 +272,7 @@ The `schema.array()` creator function creates a `ArraySchema` instance that can 
 `schema.array()` also allows the following options:
 
 - `options.value: [] = []` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then empty arrays will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then empty arrays will throw `"Required"`
 - `options.min: number = null` - The minimum number of items allowed.
 - `options.max: number = null` - The maximum number of items allowed.
 - `options.items: Schema` (required) - Schema that will be used to validate the contents of the array.
@@ -291,7 +291,7 @@ The `schema.boolean()` creator function creates a `BooleanSchema` instance:
 `schema.boolean()` also allows the following options:
 
 - `options.value: boolean = false` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then false values will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then false values will throw `"Required"`
 
 ### `ColorSchema`
 
@@ -305,7 +305,7 @@ The `schema.color()` creator function creates a `ColorSchema` instance that can 
 `schema.color()` also allows the following options:
 
 - `options.value: Date = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then null values will throw `"Required"`
 
 ### `DateSchema`
 
@@ -322,7 +322,7 @@ The `schema.date()` creator function creates a `DateSchema` instance that can va
 `schema.date()` also allows the following options:
 
 - `options.value: Date = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then null values will throw `"Required"`
 - `options.min: string = null` - The minimum date allowed.
 - `options.max: string = null` - The maximum date allowed.
 
@@ -339,7 +339,7 @@ The `schema.email()` creator function creates a `EmailSchema` instance that can 
 `schema.email()` also allows the following options:
 
 - `options.value: string = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then null values will throw `"Required"`
 
 ### `KeySchema`
 
@@ -354,7 +354,7 @@ The `schema.key()` creator function creates a `KeySchema` instance that can vali
 `schema.key()` also allows the following options:
 
 - `options.value: string = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then null values will throw `"Required"`
 - `options.match: RegExp = /[a-zA-Z0-9-]{1,24}/` - Format the database key must match.
 
 ### `MapSchema`
@@ -369,7 +369,7 @@ The `schema.map()` creator function creates a `MapSchema` instance that can vali
 `schema.map()` also allows the following options:
 
 - `options.value: {} = {}` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then empty objects will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then empty objects will throw `"Required"`
 - `options.min: number = null` - The minimum number of items allowed.
 - `options.max: number = null` - The maximum number of items allowed.
 - `options.items: Schema` (required) - Schema that will be used to validate all properties in the object.
@@ -387,7 +387,7 @@ The `schema.number()` creator function creates a `NumberSchema` instance that ca
 `schema.number()` also allows the following options:
 
 - `options.value: number | null = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then null values will throw `"Required"`
 - `options.min: number = null` - The minimum number allowed.
 - `options.max: number = null` - The maximum number allowed.
 - `options.options: number[] | { number: string } = null` - Explicit list of allowed values as either:
@@ -409,7 +409,7 @@ The `schema.phone()` creator function creates a `PhoneSchema` instance that can 
 `schema.phone()` also allows the following options:
 
 - `options.value: string = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then null values will throw `"Required"`
 
 ### `ObjectSchema`
 
@@ -424,7 +424,7 @@ The `schema.object()` creator function creates a `ObjectSchema` instance that ca
 `schema.object()` also allows the following options:
 
 - `options.value: {} | null = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then null values will throw `"Required"`
 - `options.props: { [prop: string]: Schema }` (required) - An object explicitly specifying the type of each individual property.
 
 ### `StringSchema`
@@ -443,7 +443,7 @@ The `schema.string()` creator function creates a `StringSchema` instance:
 `schema.string()` also allows the following options:
 
 - `options.value: string = ""` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then empty strings will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then empty strings will throw `"Required"`
 - `options.min: number = 0` - The minimum number of characters allowed.
 - `options.max: number = null` - The maximum number of characters allowed.
 - `options.options?: string[] | { string: string }` - Explicit list of allowed values as either:
@@ -466,7 +466,7 @@ The `schema.url()` creator function creates a `UrlSchema` instance that can vali
 `schema.url()` also allows the following options:
 
 - `options.value: string = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `Feedback("Required")`
+- `options.required: boolean = false` - If true, then null values will throw `"Required"`
 - `options.schemes: string[] = ["http:", "https:"]` - Whitelist of allowed URL schemes.
 - `options.hosts: string[] = null` - List of allowed hostnames, e.g. `["google.com"]`
 - `options.max: number = 512` - Maximum length of a URL.

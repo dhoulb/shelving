@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { Feedback, FILE, FileSchema, NULLABLE_FILE } from "../index.js";
+import { FILE, FileSchema, NULLABLE_FILE } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -29,8 +29,8 @@ describe("validate()", () => {
 			expect(schema.validate("file.xml")).toBe("file.xml");
 		});
 		test("Invalid files are invalid", () => {
-			expect(() => schema.validate("file")).toThrow(Feedback);
-			expect(() => schema.validate("file.")).toThrow(Feedback);
+			expect(() => schema.validate("file")).toThrow();
+			expect(() => schema.validate("file.")).toThrow();
 		});
 	});
 	describe("FileSchema with types", () => {
@@ -40,12 +40,12 @@ describe("validate()", () => {
 			expect(schema.validate("file.xml")).toBe("file.xml");
 		});
 		test("Invalid files are invalid for format reasons", () => {
-			expect(() => schema.validate("file")).toThrow(Feedback);
-			expect(() => schema.validate("file.")).toThrow(Feedback);
+			expect(() => schema.validate("file")).toThrow();
+			expect(() => schema.validate("file.")).toThrow();
 		});
 		test("Invalid files are invalid for type reasons", () => {
-			expect(() => schema.validate("file.js")).toThrow(Feedback);
-			expect(() => schema.validate("file.png")).toThrow(Feedback);
+			expect(() => schema.validate("file.js")).toThrow();
+			expect(() => schema.validate("file.png")).toThrow();
 		});
 	});
 });

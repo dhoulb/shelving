@@ -1,5 +1,4 @@
 import { RequiredError } from "../error/RequiredError.js";
-import { Feedback, ValueFeedback } from "../feedback/Feedback.js";
 import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import { isArray } from "./array.js";
 import type { Data } from "./data.js";
@@ -21,7 +20,7 @@ export interface Validator<T> {
 	 * @return Valid value.
 	 *
 	 * @throws `Error` If the value is invalid and cannot be fixed.
-	 * @throws `Feedback` If the value is invalid and cannot be fixed and we want to explain why to an end user.
+	 * @throws `string` If the value is invalid and cannot be fixed and we want to explain why to an end user.
 	 */
 	validate(unsafeValue: unknown): T;
 }
@@ -40,7 +39,7 @@ export function getValid<T>(value: unknown, validator: Validator<T>): T | undefi
 	try {
 		return validator.validate(value);
 	} catch (thrown) {
-		if (thrown instanceof Feedback) return undefined;
+		if (typeof thrown === "string") return undefined;
 		throw thrown;
 	}
 }
@@ -50,7 +49,7 @@ export function requireValid<T>(value: unknown, validator: Validator<T>, caller:
 	try {
 		return validator.validate(value);
 	} catch (thrown) {
-		if (thrown instanceof Feedback) throw new RequiredError(thrown.message, { cause: thrown, caller });
+		if (typeof thrown === "string") throw new RequiredError(thrown, { cause: thrown, caller });
 		throw thrown;
 	}
 }
@@ -59,7 +58,7 @@ export function requireValid<T>(value: unknown, validator: Validator<T>, caller:
  * Validate an iterable set of items with a validator.
  *
  * @yield Valid items.
- * @throw Feedback if one or more items did not validate.
+ * @throw string if one or more items did not validate.
  */
 export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator: Validator<T>): Iterable<T> {
 	let index = 0;
@@ -68,19 +67,19 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
 		try {
 			yield validator.validate(unsafeItem);
 		} catch (thrown) {
-			if (!(thrown instanceof Feedback)) throw thrown;
-			messages.push(getNamedMessage(index.toString(), thrown.message));
+			if (typeof thrown !== "string") throw thrown;
+			messages.push(getNamedMessage(index.toString(), thrown));
 		}
 		index++;
 	}
-	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeItems);
+	if (messages.length) throw messages.join("\n");
 }
 
 /**
  * Validate an array of items.
  *
  * @return Array with valid items.
- * @throw Feedback if one or more entry values did not validate.
+ * @throw string if one or more entry values did not validate.
  */
 export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator: Validator<T>): ImmutableArray<T> {
 	let index = 0;
@@ -93,19 +92,19 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
 			safeArray.push(safeItem);
 			if (!changed && safeItem !== unsafeItem) changed = true;
 		} catch (thrown) {
-			if (!(thrown instanceof Feedback)) throw thrown;
-			messages.push(getNamedMessage(index.toString(), thrown.message));
+			if (typeof thrown !== "string") throw thrown;
+			messages.push(getNamedMessage(index.toString(), thrown));
 		}
 		index++;
 	}
-	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeArray);
+	if (messages.length) throw messages.join("\n");
 	return changed || !isArray(unsafeArray) ? safeArray : (unsafeArray as ImmutableArray<T>);
 }
 
 /**
  * Validate the values of the entries in a dictionary object.
  *
- * @throw Feedback if one or more entry values did not validate.
+ * @throw string if one or more entry values did not validate.
  */
 export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
 	let changed = false;
@@ -117,11 +116,11 @@ export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unkn
 			safeDictionary[key] = safeValue;
 			if (!changed && safeValue !== unsafeValue) changed = true;
 		} catch (thrown) {
-			if (!(thrown instanceof Feedback)) throw thrown;
-			messages.push(getNamedMessage(key, thrown.message));
+			if (typeof thrown !== "string") throw thrown;
+			messages.push(getNamedMessage(key, thrown));
 		}
 	}
-	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeDictionary);
+	if (messages.length) throw messages.join("\n");
 	return changed || isIterable(unsafeDictionary) ? safeDictionary : (unsafeDictionary as ImmutableDictionary<T>);
 }
 
@@ -132,7 +131,7 @@ export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unkn
  * - `undefined` props after validation will not be set in the output object.
  *
  * @return Valid object.
- * @throw Feedback if one or more props did not validate.
+ * @throw string if one or more props did not validate.
  */
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
 	let changes = 0;
@@ -154,11 +153,11 @@ export function validateData<T extends Data>(unsafeData: Data, validators: Valid
 				if (safeValue !== unsafeValue) changes++;
 			}
 		} catch (thrown) {
-			if (!(thrown instanceof Feedback)) throw thrown;
-			messages.push(getNamedMessage(key, thrown.message));
+			if (typeof thrown !== "string") throw thrown;
+			messages.push(getNamedMessage(key, thrown));
 		}
 	}
-	if (messages.length) throw new ValueFeedback(messages.join("\n"), unsafeData);
+	if (messages.length) throw messages.join("\n");
 	if (changes) return safeData as T;
 
 	// Check that no excess keys exist.
