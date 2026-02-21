@@ -1,4 +1,4 @@
-import { COUNTRIES, type Country, getCountry } from "../util/country.js";
+import { COUNTRIES, type Country, getCountry } from "../util/geo.js";
 import { isProp } from "../util/object.js";
 import { ChoiceSchema, type ChoiceSchemaOptions } from "./ChoiceSchema.js";
 import { NULLABLE } from "./NullableSchema.js";
