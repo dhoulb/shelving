@@ -12,7 +12,6 @@ import { Schema } from "./Schema.js";
 
 /** Allowed options for `PropsSchema` (a schema that has props). */
 export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
-	readonly id?: Schema<string>;
 	readonly props: Schemas<T>;
 	readonly value?: Partial<T> | undefined;
 }
