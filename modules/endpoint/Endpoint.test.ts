@@ -13,11 +13,11 @@ describe("Endpoint.renderURL()", () => {
 	test("renderURL returns URL unchanged when there are no placeholders", () => {
 		const e = GET("https://api.example.com/static");
 		// renderURL should return the same URL when no {placeholders} exist
-		expect(e.render(undefined as any)).toBe("https://api.example.com/static");
+		expect(e.renderURL(undefined as any)).toBe("https://api.example.com/static");
 	});
 	test("renderURL() replaces placeholders with payload values", () => {
 		const e = GET("https://api.example.com/users/{id}/sub/{sub}", DATA({ id: STRING, sub: STRING }));
-		expect(e.render({ id: "123", sub: "xyz" })).toBe("https://api.example.com/users/123/sub/xyz");
+		expect(e.renderURL({ id: "123", sub: "xyz" })).toBe("https://api.example.com/users/123/sub/xyz");
 	});
 });
 describe("GET", () => {
