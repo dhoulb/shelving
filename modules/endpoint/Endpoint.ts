@@ -1,11 +1,11 @@
 import { ResponseError } from "../error/ResponseError.js";
 import { ValueError } from "../error/ValueError.js";
 import { type Schema, UNDEFINED } from "../schema/Schema.js";
-import { assertDictionary } from "../util/dictionary.js";
+import { type Data, isData } from "../util/data.js";
 import { getMessage } from "../util/error.js";
 import type { AnyCaller } from "../util/function.js";
 import { getRequest, getResponse, getResponseContent, type RequestMethod, type RequestOptions } from "../util/http.js";
-import { getPlaceholders, renderTemplate } from "../util/template.js";
+import { renderTemplate } from "../util/template.js";
 import type { URLString } from "../util/url.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
@@ -85,20 +85,13 @@ export class Endpoint<P, R> {
 
 	/**
 	 * Render the URL for this endpoint with the given payload.
-	 * - URL mioght contain `{placeholder}` values that are replaced with values from the payload.
+	 * - URL might contain `{placeholder}` values that are replaced with values from the payload.
+	 *
+	 * @returns Rendered URL with `{placeholders}` rendered with values from `payload`
+	 * @throws {RequiredError} if `{placeholders}` are set in the URL but `payload` is not a data object.
 	 */
 	renderURL(payload: P, caller: AnyCaller = this.renderURL): string {
-		const { url } = this;
-
-		// URL has `{placeholders}` to render.
-		const placeholders = getPlaceholders(url);
-		if (placeholders.length) {
-			assertDictionary(payload, caller);
-			return renderTemplate(url, payload, caller);
-		}
-
-		// URL has no `{placeholders}`
-		return url;
+		return renderTemplate(this.url, isData(payload) ? payload : {}, caller); // Empty object in `renderTemplate()` will throw intended `RequiredError` for missing `{placeholder}`
 	}
 
 	/**
@@ -163,11 +156,26 @@ export type PayloadType<X extends Endpoint<unknown, unknown>> = X extends Endpoi
 export type EndpointType<X extends Endpoint<unknown, unknown>> = X extends Endpoint<unknown, infer Y> ? Y : never;
 
 /**
+ * Represent a HEAD request to a specified URL, with validated payload and return types.
+ * "The HEAD method requests a representation of the specified resource. Requests using HEAD should only retrieve data and should not contain a request content."
+ *
+ * - Because HEAD requests have no body payload can only be a data object (where props get sent as `{placeholders}` or `?query` params in the URL).
+ */
+export function HEAD<P extends Data, R>(url: URLString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function HEAD<P extends Data>(url: URLString, payload: Schema<P>): Endpoint<P, undefined>;
+export function HEAD<R>(url: URLString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function HEAD(url: URLString, payload = UNDEFINED, result = UNDEFINED): unknown {
+	return new Endpoint("HEAD", url, payload, result);
+}
+
+/**
  * Represent a GET request to a specified URL, with validated payload and return types.
  * "The GET method requests a representation of the specified resource. Requests using GET should only retrieve data and should not contain a request content."
+ *
+ * - Because GET requests have no body payload can only be a data object (where props get sent as `{placeholders}` or `?query` params in the URL).
  */
-export function GET<P, R>(url: URLString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function GET<P>(url: URLString, payload: Schema<P>): Endpoint<P, undefined>;
+export function GET<P extends Data, R>(url: URLString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function GET<P extends Data>(url: URLString, payload: Schema<P>): Endpoint<P, undefined>;
 export function GET<R>(url: URLString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
 export function GET(url: URLString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("GET", url, payload, result);
