@@ -1,4 +1,4 @@
-import type { AddressData } from "../util/address.js";
+import type { AddressData } from "../util/geo.js";
 import { COUNTRY } from "./CountrySchema.js";
 import { DataSchema, type DataSchemaOptions } from "./DataSchema.js";
 import { NULLABLE } from "./NullableSchema.js";
