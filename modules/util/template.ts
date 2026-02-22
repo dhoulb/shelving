@@ -31,6 +31,9 @@ export type TemplateValues = PossibleString | ImmutableArray<unknown> | Immutabl
 /** The output of matching a template is a dictionary in `{ myPlaceholder: "value" }` format. */
 export type TemplateMatches = ImmutableDictionary<string>;
 
+/** List of `{placeholders}` found in a template string. */
+export type TemplatePlaceholders = ImmutableArray<string>;
+
 // RegExp to find named variables in several formats e.g. `:a`, `${b}`, `{{c}}` or `{d}`
 const R_PLACEHOLDERS = /(\*\*?|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-9]*\}\}|\{[a-z][a-z0-9]*\})/i;
 
@@ -71,7 +74,7 @@ function _splitTemplateCached(template: string, caller: AnyCaller): TemplateChun
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of clean string names of found placeholders, e.g. `["name", "country", "city"]`
  */
-export function getPlaceholders(template: string): readonly string[] {
+export function getPlaceholders(template: string): TemplatePlaceholders {
 	return _splitTemplateCached(template, getPlaceholders).map(_getPlaceholder);
 }
 function _getPlaceholder({ name }: TemplateChunk): string {
