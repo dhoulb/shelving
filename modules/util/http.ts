@@ -4,6 +4,7 @@ import { ResponseError } from "../error/ResponseError.js";
 import { type Data, isData } from "./data.js";
 import { isError } from "./error.js";
 import type { AnyCaller } from "./function.js";
+import { isNullish } from "./null.js";
 import { omitProps } from "./object.js";
 import { getPlaceholders, renderTemplate } from "./template.js";
 import { withURIParams } from "./uri.js";
@@ -182,11 +183,15 @@ export function getRequest(
 	// This is a body-less request, so ensure the payload is a data object and set the `?query=params` in the URL.
 	if (method === "GET" || method === "HEAD") {
 		if (!isData(payload)) throw new RequiredError(`Payload for ${method} request must be data object`, { received: payload, caller });
-		return new Request(withURIParams(url, payload), { ...options, method });
+		url = withURIParams(url, payload).href;
+		payload = undefined;
 	}
 
+	// `null` or `undefined` payloads send no body.
+	if (isNullish(payload)) return new Request(url, { ...options, method, body: null });
+
 	// `FormData` instances in body pass through unaltered and will set their own `Content-Type` with complex boundary information
-	if (payload instanceof FormData) return new Request(url);
+	if (payload instanceof FormData) return new Request(url, { ...options, method, body: payload });
 
 	// Strings are sent as plain text.
 	if (typeof payload === "string")
