@@ -4,7 +4,7 @@ name: Update
 on:
   workflow_dispatch:
   schedule:
-    - cron: "* 2 * * SUN"
+    - cron: "28 2 * * SUN"
 jobs:
   upgrade:
     name: Update
