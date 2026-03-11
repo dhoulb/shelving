@@ -43,8 +43,21 @@ describe("splitMessage()", () => {
 		});
 	});
 	test("named line with multiple prefixes", () => {
-		expect(splitMessage("1: name: value"))?.toEqual({ "1": "name: value" });
-		expect(splitMessage(splitMessage("1: name: value")["1"]!))?.toEqual({ name: "value" });
+		expect(splitMessage("1: name: value")).toEqual({ "1": "name: value" });
+		expect(splitMessage(splitMessage("1: name: value")["1"]!)).toEqual({ name: "value" });
+		expect(splitMessage("1: name: value\n1: email: value")).toEqual({
+			"1": "name: value\nemail: value",
+		});
+		expect(splitMessage("1: name: value\n2: address: value\n1: email: value")).toEqual({
+			"1": "name: value\nemail: value",
+			"2": "address: value",
+		});
+	});
+	test("empty lines are skipped", () => {
+		expect(splitMessage("1: name: value\n")).toEqual({ "1": "name: value" });
+		expect(splitMessage("\n1: name: value")).toEqual({ "1": "name: value" });
+		expect(splitMessage(splitMessage("1: name: value")["1"]!)).toEqual({ name: "value" });
+		expect(splitMessage("name: value\n\n\nemail: value")).toEqual({ name: "value", email: "value" });
 	});
 	test("lines with extra whitespace are trimmed", () => {
 		const input = " name : value with spaces \n  plain line  ";

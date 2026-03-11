@@ -42,10 +42,12 @@ export function splitMessage(input: PossibleMessage): ImmutableDictionary<string
 		if (i >= 0) {
 			const name = line.slice(0, i).trim();
 			const message = line.slice(i + 2).trim();
+			if (!message.length) continue;
 			if (Object.hasOwn(output, name)) output[name] += `\n${message}`;
 			else output[name] = message;
 		} else {
 			const message = line.trim();
+			if (!message.length) continue;
 			if (Object.hasOwn(output, "")) output[""] += `\n${message}`;
 			else output[""] = message;
 		}
