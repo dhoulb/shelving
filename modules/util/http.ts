@@ -3,15 +3,18 @@ import { RequiredError } from "../error/RequiredError.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { type Data, isData } from "./data.js";
 import { isError } from "./error.js";
-import type { AnyCaller } from "./function.js";
+import type { AnyCaller, Arguments } from "./function.js";
 import { isNullish } from "./null.js";
 import { omitProps } from "./object.js";
 import { getPlaceholders, renderTemplate } from "./template.js";
 import { withURIParams } from "./uri.js";
 import type { URLString } from "./url.js";
 
-/** A handler function takes a `Request` and returns a `Response` (possibly asynchronously). */
-export type RequestHandler = (request: Request) => Response | Promise<Response>;
+/** A handler function takes a `Request` and optional extra arguments, and returns a `Response` (possibly asynchronously) or `undefined` if the request could not be handled. */
+export type RequestHandler<A extends Arguments = []> = (request: Request, ...args: A) => Response | Promise<Response> | undefined;
+
+/** A list of optional request handlers. */
+export type RequestHandlers<A extends Arguments = []> = Iterable<RequestHandler<A>>;
 
 export async function _getMessageJSON(
 	message: Request | Response,

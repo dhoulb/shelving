@@ -1,13 +1,24 @@
+import { RequestError } from "../error/RequestError.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { ValueError } from "../error/ValueError.js";
 import { type Schema, UNDEFINED } from "../schema/Schema.js";
 import { type Data, isData } from "../util/data.js";
+import { getDictionary } from "../util/dictionary.js";
 import { getMessage } from "../util/error.js";
-import type { AnyCaller } from "../util/function.js";
-import { getRequest, getResponse, getResponseContent, type RequestMethod, type RequestOptions } from "../util/http.js";
-import { renderTemplate } from "../util/template.js";
-import type { URLString } from "../util/url.js";
-import type { EndpointCallback, EndpointHandler } from "./util.js";
+import type { AnyCaller, Arguments } from "../util/function.js";
+import {
+	getRequest,
+	getRequestContent,
+	getResponse,
+	getResponseContent,
+	type RequestHandler,
+	type RequestMethod,
+	type RequestOptions,
+} from "../util/http.js";
+import { isPlainObject } from "../util/object.js";
+import { matchTemplate, renderTemplate } from "../util/template.js";
+import { getURL, type URLString } from "../util/url.js";
+import type { EndpointCallback } from "./util.js";
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions.
@@ -38,49 +49,26 @@ export class Endpoint<P, R> {
 	}
 
 	/**
-	 * Return an `EndpointHandler` for this endpoint.
+	 * Return an optional request handler for this endpoint.
 	 *
 	 * @param callback The callback function that implements the logic for this endpoint by receiving the payload and returning the response.
 	 */
-	handler(callback: EndpointCallback<P, R>): EndpointHandler<P, R> {
-		return { endpoint: this, callback };
-	}
+	handler<A extends Arguments = []>(callback: EndpointCallback<P, R, A>): RequestHandler<A> {
+		const handler = (request: Request, ...args: A) => {
+			// Ensure the request method e.g. `GET` matches the endpoint method e.g. `POST`.
+			if (request.method !== this.method) return undefined;
 
-	/**
-	 * Handle a request to this endpoint with a callback implementation, with a given payload and request.
-	 *
-	 * @param callback The endpoint callback function that implements the logic for this endpoint by receiving the payload and returning the response.
-	 * @param unsafePayload The payload to pass into the callback (will be validated against this endpoint's payload schema).
-	 * @param request The entire HTTP request that is being handled (payload was possibly extracted from this somehow).
-	 *
-	 * @throws `string` if the payload is invalid.
-	 * @throws `ValueError` if `callback()` returns an invalid result.
-	 */
-	async handle(
-		callback: EndpointCallback<P, R>,
-		unsafePayload: unknown,
-		request: Request,
-		caller: AnyCaller = this.handle,
-	): Promise<Response> {
-		// Validate the payload against this endpoint's payload type.
-		const payload = this.payload.validate(unsafePayload);
+			// Ensure the request URL e.g. `/user/123` matches the endpoint path e.g. `/user/{id}`.
+			// Any `{placeholders}` in the endpoint path are matched against the request URL to extract parameters.
+			const url = getURL(request.url);
+			if (!url) throw new RequestError("Invalid request URL", { received: request.url, caller: handler });
+			const { origin, pathname } = url;
+			const pathParams = matchTemplate(this.url, `${origin}${pathname}`, handler);
+			if (!pathParams) return undefined;
 
-		// Call the callback with the validated payload to get the result.
-		const unsafeResult = await callback(payload, request);
-
-		try {
-			// Convert the result to a `Response` object.
-			return getResponse(this.result.validate(unsafeResult));
-		} catch (thrown) {
-			if (typeof thrown === "string")
-				throw new ValueError(`Invalid result for ${this.toString()}:\n${thrown}`, {
-					endpoint: this,
-					callback,
-					cause: thrown,
-					caller,
-				});
-			throw thrown;
-		}
+			return handleEndpoint(this, callback, request, args, handler);
+		};
+		return handler;
 	}
 
 	/**
@@ -146,6 +134,53 @@ export class Endpoint<P, R> {
 	/** Convert to string, e.g. `GET https://a.com/user/{id}` */
 	toString(): string {
 		return `${this.method} ${this.url}`;
+	}
+}
+
+/**
+ * Handle a request to this endpoint with a callback implementation.
+ *
+ * @param callback The endpoint callback function that implements the logic for this endpoint by receiving the payload and returning the response.
+ * @param request The entire HTTP request that is being handled (payload was possibly extracted from this somehow).
+ *
+ * @throws `string` if the payload is invalid.
+ * @throws `ValueError` if `callback()` returns an invalid result.
+ */
+async function handleEndpoint<P, R, A extends Arguments>(
+	endpoint: Endpoint<P, R>,
+	callback: EndpointCallback<P, R, A>,
+	request: Request,
+	args: A,
+	caller: AnyCaller = handleEndpoint,
+): Promise<Response> {
+	// Parse URL and collect path/query params for payload merging.
+	const url = getURL(request.url);
+	if (!url) throw new RequestError("Invalid request URL", { received: request.url, caller });
+	const { origin, pathname, searchParams } = url;
+	const pathParams = matchTemplate(endpoint.url, `${origin}${pathname}`, caller);
+	if (!pathParams) throw new RequestError("Invalid endpoint route", { received: request.url, endpoint, caller });
+	const params = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
+
+	// Extract a data object from the request body and combine it with URL params.
+	const content = await getRequestContent(request, caller);
+	const unsafePayload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : content;
+
+	// Validate the payload against this endpoint's payload type.
+	const payload = endpoint.payload.validate(unsafePayload);
+
+	// Call the callback with the validated payload to get the result.
+	const unsafeResult = await callback(payload, request, ...args);
+
+	try {
+		// Convert the result to a `Response` object.
+		return getResponse(endpoint.result.validate(unsafeResult));
+	} catch (thrown) {
+		// If the result returned from the endpoint was invalid, throw an internal `ValueError`
+		if (typeof thrown === "string")
+			throw new ValueError(`Invalid result for ${endpoint.toString()}:\n${thrown}`, { endpoint, callback, cause: thrown, caller });
+
+		// Otherwise rethrow the error.
+		throw thrown;
 	}
 }
 

@@ -13,26 +13,36 @@ const handlerAll = GET("https://x.com/**", undefined, STRING).handler(async () =
 describe("handleEndpoints()", () => {
 	test("Route works correctly", async () => {
 		const req = new Request("https://x.com/test1/456", { method: "GET" });
-		const response = await handleEndpoints(req, handlers);
+		const response = await handleEndpoints(handlers, req);
 		expect(response).toBeInstanceOf(Response);
 		expect(await requireNotNullish(response).json()).toBe("Hello 456");
 	});
 	test("Catchall route works correctly", async () => {
 		const req = new Request("https://x.com/aaaaaa", { method: "GET" });
-		const response = await handleEndpoints(req, [...handlers, handlerAll]);
+		const response = await handleEndpoints([...handlers, handlerAll], req);
 		expect(response).toBeInstanceOf(Response);
 		expect(await requireNotNullish(response).json()).toBe("Catchall");
 	});
 	test("returns response from first matching endpoint handler if two would match", async () => {
 		const req = new Request("https://x.com/test2a/789", { method: "GET" });
-		const res = await handleEndpoints(req, handlers);
+		const res = await handleEndpoints(handlers, req);
 		expect(res).toBeInstanceOf(Response);
 		expect(await res.json()).toBe("Hello Test 2A 789");
+	});
+	test("passes extra variadic arguments to matching endpoint callback", async () => {
+		type DB = { getRecord: () => Promise<string> };
+		const endpoint = GET("https://x.com/db/{id}", PAYLOAD, STRING);
+		const db: DB = { getRecord: async () => "From DB" };
+		const handler = endpoint.handler(async (_payload, _request, database: DB) => database.getRecord());
+		const req = new Request("https://x.com/db/111", { method: "GET" });
+		const response = await handleEndpoints([handler], req, db);
+		expect(response).toBeInstanceOf(Response);
+		expect(await response.json()).toBe("From DB");
 	});
 	test("Throws NotFoundError if no endpoint handler matches", async () => {
 		// No matching path.
 		try {
-			await handleEndpoints(new Request("http://x.com/", { method: "GET" }), handlers);
+			await handleEndpoints(handlers, new Request("http://x.com/", { method: "GET" }));
 			expect(false).toBe(true);
 		} catch (thrown) {
 			expect(thrown).toBeInstanceOf(NotFoundError);
@@ -40,7 +50,7 @@ describe("handleEndpoints()", () => {
 
 		// Mismatched method.
 		try {
-			await handleEndpoints(new Request("https://x.com/test1/123", { method: "POST" }), handlers);
+			await handleEndpoints(handlers, new Request("https://x.com/test1/123", { method: "POST" }));
 			expect(false).toBe(true);
 		} catch (thrown) {
 			expect(thrown).toBeInstanceOf(NotFoundError);
@@ -48,7 +58,7 @@ describe("handleEndpoints()", () => {
 
 		// Non-https method.
 		try {
-			await handleEndpoints(new Request("http://x.com/test/123", { method: "GET" }), handlers);
+			await handleEndpoints(handlers, new Request("http://x.com/test/123", { method: "GET" }));
 			expect(false).toBe(true);
 		} catch (thrown) {
 			expect(thrown).toBeInstanceOf(NotFoundError);
