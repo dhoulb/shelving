@@ -1,6 +1,6 @@
 import { NotFoundError, RequestError } from "../error/RequestError.js";
 import type { AnyCaller, Arguments } from "../util/function.js";
-import type { RequestHandler, RequestHandlers } from "../util/http.js";
+import type { RequestHandlers } from "../util/http.js";
 import { getURL } from "../util/url.js";
 
 /**
@@ -21,11 +21,6 @@ export type EndpointCallback<P, R, A extends Arguments = []> = (
 	request: Request,
 	...args: A
 ) => R | Response | Promise<R | Response>;
-
-/**
- * List of endpoint handlers that can match and handle requests.
- */
-export type EndpointHandlers<A extends Arguments = []> = ReadonlyArray<RequestHandler<A>>;
 
 /**
  * Handle a `Request` with the first matching endpoint handler.
