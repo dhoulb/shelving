@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import { DAY, HOUR, YEAR } from "./constants.js";
-import { addDays, addMonths } from "./date.js";
 import { formatAgo, formatDuration, formatNumber, formatPercent, formatUnit, formatUntil, formatValue, formatWhen } from "./format.js";
 
 describe("formatNumber()", () => {
@@ -77,9 +76,9 @@ test("formatWhen()", () => {
 	expect(formatWhen(DAY, DAY * 2)).toBe("24 hr ago"); // default is "short"
 	expect(formatWhen(HOUR * 10, HOUR)).toBe("in 9 hr"); // default is "short"
 	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "long" })).toBe("in 9 hours");
-	expect(formatWhen(addMonths(10), undefined, { unitDisplay: "long" })).toBe("in 10 months");
-	expect(formatWhen(addMonths(3), undefined, { unitDisplay: "long" })).toBe("in 2 months");
-	expect(formatWhen(addDays(35), undefined, { unitDisplay: "long" })).toBe("in 35 days");
+	expect(formatWhen("2000-10-29", "2000-01-01", { unitDisplay: "long" })).toBe("in 10 months");
+	expect(formatWhen("2000-03-29", "2000-01-01", { unitDisplay: "long" })).toBe("in 2 months");
+	expect(formatWhen("2000-02-05", "2000-01-01", { unitDisplay: "long" })).toBe("in 35 days");
 
 	// Rounding tests.
 	expect(formatWhen(DAY, YEAR * 1 + DAY * 10, { unitDisplay: "long" })).toBe("12 months ago");
