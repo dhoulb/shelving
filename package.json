@@ -48,7 +48,7 @@
 		"test": "bun run test:check && bun run test:types && bun run test:unit",
 		"test:check": "biome check .",
 		"test:types": "tsc --noEmit",
-		"test:unit": "bun test",
+		"test:unit": "bun test --concurrent",
 		"fix": "bun run fix:biome",
 		"fix:biome": "biome check --write .",
 		"build": "bun run build:setup && bun run build:copy && bun run build:emit && bun run build:test:syntax && bun run build:test:unit",
