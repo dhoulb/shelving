@@ -1,6 +1,6 @@
 import { NotFoundError, RequestError } from "../error/RequestError.js";
 import type { AnyCaller, Arguments } from "../util/function.js";
-import type { RequestHandlers } from "../util/http.js";
+import type { OptionalRequestHandlers } from "../util/http.js";
 import { getURL } from "../util/url.js";
 
 /**
@@ -32,7 +32,7 @@ export type EndpointCallback<P, R, A extends Arguments = []> = (
  * @throws `NotFoundError` if no handler matches the `Request`.
  */
 export function handleEndpoints<A extends Arguments = []>(
-	endpoints: RequestHandlers<A>,
+	endpoints: OptionalRequestHandlers<A>,
 	request: Request,
 	...args: A
 ): Promise<Response> | Response {

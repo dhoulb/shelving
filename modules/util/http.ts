@@ -10,11 +10,14 @@ import { getPlaceholders, renderTemplate } from "./template.js";
 import { withURIParams } from "./uri.js";
 import type { URLString } from "./url.js";
 
-/** A handler function takes a `Request` and optional extra arguments, and returns a `Response` (possibly asynchronously) or `undefined` if the request could not be handled. */
-export type RequestHandler<A extends Arguments = []> = (request: Request, ...args: A) => Response | Promise<Response> | undefined;
+/** A handler function takes a `Request` and optional extra arguments and returns a `Response` (possibly asynchronously). */
+export type RequestHandler<A extends Arguments = []> = (request: Request, ...args: A) => Response | Promise<Response>;
+
+/** An optional request handler that may return `undefined` to indicate no match. */
+export type OptionalRequestHandler<A extends Arguments = []> = (request: Request, ...args: A) => Response | Promise<Response> | undefined;
 
 /** A list of optional request handlers. */
-export type RequestHandlers<A extends Arguments = []> = Iterable<RequestHandler<A>>;
+export type OptionalRequestHandlers<A extends Arguments = []> = Iterable<OptionalRequestHandler<A>>;
 
 export async function _getMessageJSON(
 	message: Request | Response,

@@ -11,7 +11,7 @@ import {
 	getRequestContent,
 	getResponse,
 	getResponseContent,
-	type RequestHandler,
+	type OptionalRequestHandler,
 	type RequestMethod,
 	type RequestOptions,
 } from "../util/http.js";
@@ -53,7 +53,7 @@ export class Endpoint<P, R> {
 	 *
 	 * @param callback The callback function that implements the logic for this endpoint by receiving the payload and returning the response.
 	 */
-	handler<A extends Arguments = []>(callback: EndpointCallback<P, R, A>): RequestHandler<A> {
+	handler<A extends Arguments = []>(callback: EndpointCallback<P, R, A>): OptionalRequestHandler<A> {
 		const handler = (request: Request, ...args: A) => {
 			// Ensure the request method e.g. `GET` matches the endpoint method e.g. `POST`.
 			if (request.method !== this.method) return undefined;
