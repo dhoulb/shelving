@@ -198,19 +198,20 @@ export function isToday(target: PossibleDate, current?: PossibleDate, caller: An
  * - Makes a sensible choice about the best time unit to use.
  * - Years will be used for anything 18 months or more, e.g. `in 2 years`
  * - Months will be used for anything 10 weeks or more, e.g. `in 14 months`
- * - Weeks will be used for anything 2 weeks or more, e.g. `in 9 weeks`
- * - Days will be used for anything 24 hours or more, e.g. `in 13 days`
- * - Hours will be used for anything 90 minutes or more, e.g. `in 23 hours`
- * - Minutes will be used for anything 1 second or more, e.g. `1 minute ago` or `in 59 minutes`
+ * - Weeks will be used for anything 10 days or more, e.g. `in 9 weeks`
+ * - Days will be used for anything 1 day or more, e.g. `in 13 days`
+ * - Hours will be used for anything 1 hour or more, e.g. `in 23 hours`
+ * - Minutes will be used for anything 1 minute or more, e.g. `1 minute ago` or `in 59 minutes`
  * - Seconds will be used for anything 1000 milliseconds or more, e.g. `in 59 seconds`
  */
 export function getBestTimeUnit(ms: number): Unit<TimeUnitKey> {
 	const abs = Math.abs(ms);
 	if (abs > 18 * MONTH) return TIME_UNITS.require("year");
 	if (abs > 10 * WEEK) return TIME_UNITS.require("month");
+	if (abs > 10 * DAY) return TIME_UNITS.require("week");
 	if (abs > DAY) return TIME_UNITS.require("day");
 	if (abs > HOUR) return TIME_UNITS.require("hour");
-	if (abs > MINUTE * 90) return TIME_UNITS.require("minute");
+	if (abs > MINUTE) return TIME_UNITS.require("minute");
 	if (abs > SECOND) return TIME_UNITS.require("second");
 	return TIME_UNITS.require("millisecond");
 }
