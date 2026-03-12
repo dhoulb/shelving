@@ -206,12 +206,12 @@ export function isToday(target: PossibleDate, current?: PossibleDate, caller: An
  */
 export function getBestTimeUnit(ms: number): Unit<TimeUnitKey> {
 	const abs = Math.abs(ms);
-	if (abs > 18 * MONTH) return TIME_UNITS.require("year");
-	if (abs > 10 * WEEK) return TIME_UNITS.require("month");
-	if (abs > 10 * DAY) return TIME_UNITS.require("week");
-	if (abs > DAY) return TIME_UNITS.require("day");
-	if (abs > HOUR) return TIME_UNITS.require("hour");
-	if (abs > MINUTE) return TIME_UNITS.require("minute");
-	if (abs > SECOND) return TIME_UNITS.require("second");
+	if (abs >= 18 * MONTH) return TIME_UNITS.require("year");
+	if (abs >= 10 * WEEK) return TIME_UNITS.require("month");
+	if (abs >= 10 * DAY) return TIME_UNITS.require("week");
+	if (abs >= DAY) return TIME_UNITS.require("day");
+	if (abs >= HOUR) return TIME_UNITS.require("hour");
+	if (abs >= MINUTE) return TIME_UNITS.require("minute");
+	if (abs >= SECOND) return TIME_UNITS.require("second");
 	return TIME_UNITS.require("millisecond");
 }

@@ -69,26 +69,26 @@ describe("formatValue()", () => {
 });
 test("formatWhen()", () => {
 	// Simple tests.
-	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("24h ago");
+	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("1d ago");
 	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("in 9h");
-	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "short" })).toBe("24 hr ago");
+	expect(formatWhen(DAY, DAY * 2, { unitDisplay: "short" })).toBe("1 day ago");
 	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "short" })).toBe("in 9 hr");
-	expect(formatWhen(DAY, DAY * 2)).toBe("24 hr ago"); // default is "short"
+	expect(formatWhen(DAY, DAY * 2)).toBe("1 day ago"); // default is "short"
 	expect(formatWhen(HOUR * 10, HOUR)).toBe("in 9 hr"); // default is "short"
 	expect(formatWhen(HOUR * 10, HOUR, { unitDisplay: "long" })).toBe("in 9 hours");
 	expect(formatWhen("2000-10-29", "2000-01-01", { unitDisplay: "long" })).toBe("in 10 months");
 	expect(formatWhen("2000-03-29", "2000-01-01", { unitDisplay: "long" })).toBe("in 2 months");
-	expect(formatWhen("2000-02-05", "2000-01-01", { unitDisplay: "long" })).toBe("in 35 days");
+	expect(formatWhen("2000-02-05", "2000-01-01", { unitDisplay: "long" })).toBe("in 5 weeks");
 
 	// Rounding tests.
 	expect(formatWhen(DAY, YEAR * 1 + DAY * 10, { unitDisplay: "long" })).toBe("12 months ago");
 });
 test("formatAgo()", () => {
-	expect(formatAgo(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("24h");
+	expect(formatAgo(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("1d");
 	expect(formatAgo(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("-9h");
 });
 test("formatUntil()", () => {
-	expect(formatUntil(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("-24h");
+	expect(formatUntil(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("-1d");
 	expect(formatUntil(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("9h");
 });
 test("formatDuration()", () => {
