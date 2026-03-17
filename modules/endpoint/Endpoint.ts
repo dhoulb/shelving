@@ -14,6 +14,7 @@ import {
 	type OptionalRequestHandler,
 	type RequestMethod,
 	type RequestOptions,
+	type RequestParams,
 } from "../util/http.js";
 import { isPlainObject } from "../util/object.js";
 import { matchTemplate, renderTemplate } from "../util/template.js";
@@ -49,24 +50,38 @@ export class Endpoint<P, R> {
 	}
 
 	/**
+	 * Match a request against this endpoint and return the matched `{placeholder}` and `?query` params, or `undefined` otherwise.
+	 *
+	 * @returns Matched `{placeholder}` params found in the URL path merged with the `?query` params of the URL, or `undefined` if the `Request` does not match this endpoint.
+	 * @throws {RequestError} if the request URL is invalid.
+	 */
+	match(request: Request, caller: AnyCaller = this.match): RequestParams | undefined {
+		// Ensure the request method e.g. `GET` matches the endpoint method e.g. `POST`.
+		if (request.method !== this.method) return undefined;
+
+		// Ensure the request URL e.g. `/user/123` matches the endpoint path e.g. `/user/{id}`.
+		// Any `{placeholders}` in the endpoint path are matched against the request URL to extract parameters.
+		const url = getURL(request.url);
+		if (!url) throw new RequestError("Invalid request URL", { received: request.url, caller });
+		const { origin, pathname, searchParams } = url;
+
+		// Match the matched params.
+		const pathParams = matchTemplate(this.url, `${origin}${pathname}`, caller);
+		if (!pathParams) return undefined;
+
+		// Merge the `pathParams` (e.g. `{name}` matched in the path) with the `searchParams` (e.g. `?age` in the query).
+		return searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
+	}
+
+	/**
 	 * Return an optional request handler for this endpoint.
 	 *
 	 * @param callback The callback function that implements the logic for this endpoint by receiving the payload and returning the response.
 	 */
 	handler<A extends Arguments = []>(callback: EndpointCallback<P, R, A>): OptionalRequestHandler<A> {
 		const handler = (request: Request, ...args: A) => {
-			// Ensure the request method e.g. `GET` matches the endpoint method e.g. `POST`.
-			if (request.method !== this.method) return undefined;
-
-			// Ensure the request URL e.g. `/user/123` matches the endpoint path e.g. `/user/{id}`.
-			// Any `{placeholders}` in the endpoint path are matched against the request URL to extract parameters.
-			const url = getURL(request.url);
-			if (!url) throw new RequestError("Invalid request URL", { received: request.url, caller: handler });
-			const { origin, pathname } = url;
-			const pathParams = matchTemplate(this.url, `${origin}${pathname}`, handler);
-			if (!pathParams) return undefined;
-
-			return handleEndpoint(this, callback, request, args, handler);
+			const params = this.match(request, handler);
+			if (params) return handleEndpoint(this, callback, request, args, params, handler);
 		};
 		return handler;
 	}
@@ -78,7 +93,7 @@ export class Endpoint<P, R> {
 	 * @returns Rendered URL with `{placeholders}` rendered with values from `payload`
 	 * @throws {RequiredError} if `{placeholders}` are set in the URL but `payload` is not a data object.
 	 */
-	renderURL(payload: P, caller: AnyCaller = this.renderURL): string {
+	render(payload: P, caller: AnyCaller = this.render): string {
 		return renderTemplate(this.url, isData(payload) ? payload : {}, caller); // Empty object in `renderTemplate()` will throw intended `RequiredError` for missing `{placeholder}`
 	}
 
@@ -96,8 +111,8 @@ export class Endpoint<P, R> {
 	/**
 	 * Validate an HTTP `Response` against this endpoint.
 	 *
-	 * @throws `ResponseError` if the response status is not ok (200-299)
-	 * @throws `ResponseError` if the response content is invalid.
+	 * @throws {ResponseError} if the response status is not ok (200-299)
+	 * @throws {ResponseError} if the response content is invalid.
 	 */
 	async response(response: Response, caller: AnyCaller = this.response): Promise<R> {
 		// Get the response.
@@ -122,9 +137,9 @@ export class Endpoint<P, R> {
 	 * - Validate the `payload` against this endpoint's payload schema.
 	 * - Validate the returned response against this endpoint's result schema.
 	 *
-	 * @throws `string` if the payload is invalid.
-	 * @throws `ResponseError` if the response status is not ok (200-299)
-	 * @throws `ResponseError` if the response content is invalid.
+	 * @throws {string} if the payload is invalid.
+	 * @throws {ResponseError} if the response status is not ok (200-299)
+	 * @throws {ResponseError} if the response content is invalid.
 	 */
 	async fetch(payload: P, options: RequestOptions = {}, caller: AnyCaller = this.fetch): Promise<R> {
 		const response = await fetch(this.request(payload, options, caller));
@@ -143,24 +158,17 @@ export class Endpoint<P, R> {
  * @param callback The endpoint callback function that implements the logic for this endpoint by receiving the payload and returning the response.
  * @param request The entire HTTP request that is being handled (payload was possibly extracted from this somehow).
  *
- * @throws `string` if the payload is invalid.
- * @throws `ValueError` if `callback()` returns an invalid result.
+ * @throws {string} if the payload is invalid.
+ * @throws {ValueError} if `callback()` returns an invalid result.
  */
 async function handleEndpoint<P, R, A extends Arguments>(
 	endpoint: Endpoint<P, R>,
 	callback: EndpointCallback<P, R, A>,
 	request: Request,
 	args: A,
+	params: RequestParams,
 	caller: AnyCaller = handleEndpoint,
 ): Promise<Response> {
-	// Parse URL and collect path/query params for payload merging.
-	const url = getURL(request.url);
-	if (!url) throw new RequestError("Invalid request URL", { received: request.url, caller });
-	const { origin, pathname, searchParams } = url;
-	const pathParams = matchTemplate(endpoint.url, `${origin}${pathname}`, caller);
-	if (!pathParams) throw new RequestError("Invalid endpoint route", { received: request.url, endpoint, caller });
-	const params = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
-
 	// Extract a data object from the request body and combine it with URL params.
 	const content = await getRequestContent(request, caller);
 	const unsafePayload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : content;

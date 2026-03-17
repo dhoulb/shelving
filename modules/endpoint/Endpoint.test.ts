@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, POST, ResponseError, STRING, UNKNOWN } from "../index.js";
+import { DATA, GET, POST, RequestError, ResponseError, STRING, UNKNOWN } from "../index.js";
 
 describe("Endpoint.toString()", () => {
 	test("toString should include method and URL", () => {
@@ -13,11 +13,29 @@ describe("Endpoint.renderURL()", () => {
 	test("renderURL returns URL unchanged when there are no placeholders", () => {
 		const e = GET("https://api.example.com/static");
 		// renderURL should return the same URL when no {placeholders} exist
-		expect(e.renderURL(undefined as any)).toBe("https://api.example.com/static");
+		expect(e.render(undefined as any)).toBe("https://api.example.com/static");
 	});
 	test("renderURL() replaces placeholders with payload values", () => {
 		const e = GET("https://api.example.com/users/{id}/sub/{sub}", DATA({ id: STRING, sub: STRING }));
-		expect(e.renderURL({ id: "123", sub: "xyz" })).toBe("https://api.example.com/users/123/sub/xyz");
+		expect(e.render({ id: "123", sub: "xyz" })).toBe("https://api.example.com/users/123/sub/xyz");
+	});
+});
+describe("Endpoint.match()", () => {
+	test("match() returns merged path and query params for matching requests", () => {
+		const e = GET("https://api.example.com/users/{id}", DATA({ id: STRING, extra: STRING }));
+		const req = new Request("https://api.example.com/users/123?extra=x", { method: "GET" });
+		expect(e.match(req)).toEqual({ id: "123", extra: "x" });
+	});
+
+	test("match() returns undefined for mismatched methods", () => {
+		const e = GET("https://api.example.com/users/{id}", DATA({ id: STRING }), STRING);
+		const req = new Request("https://api.example.com/users/123", { method: "POST" });
+		expect(e.match(req)).toBeUndefined();
+	});
+
+	test("match() throws RequestError for invalid request URLs", () => {
+		const e = GET("https://api.example.com/users/{id}", DATA({ id: STRING }), STRING);
+		expect(() => e.match({ method: "GET", url: "not a url" } as Request)).toThrow(RequestError);
 	});
 });
 describe("GET", () => {

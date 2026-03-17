@@ -2,6 +2,7 @@ import { RequestError } from "../error/RequestError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { type Data, isData } from "./data.js";
+import type { ImmutableDictionary } from "./dictionary.js";
 import { isError } from "./error.js";
 import type { AnyCaller, Arguments } from "./function.js";
 import { isNullish } from "./null.js";
@@ -157,6 +158,9 @@ export type RequestBodyMethod = "POST" | "PUT" | "PATCH" | "DELETE";
 
 /** Configurable options for endpoint. */
 export type RequestOptions = Omit<RequestInit, "method" | "body">;
+
+/** Params in requests are a dictionary of strings. */
+export type RequestParams = ImmutableDictionary<string>;
 
 /**
  * Create a `Request` instance for a method/url and payload.
