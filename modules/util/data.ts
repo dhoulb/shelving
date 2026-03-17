@@ -1,3 +1,4 @@
+import type { UnionToIntersection } from "@google-cloud/firestore";
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import type { EntryObject } from "./entry.js";
@@ -5,6 +6,7 @@ import type { AnyCaller } from "./function.js";
 import { isIterable } from "./iterate.js";
 import type { DeepPartial } from "./object.js";
 import { isObject, isPlainObject } from "./object.js";
+import type { Resolve } from "./types.js";
 
 /** Data object. */
 export type Data = { readonly [K in string]: unknown };
@@ -12,13 +14,16 @@ export type Data = { readonly [K in string]: unknown };
 /** Partial data object (values can be explicitly `undefined`). */
 export type PartialData<T extends Data> = { readonly [K in keyof T]?: T[K] | undefined };
 
-/** Key for a data object prop. */
+/** Helper type to get the key for for a data object prop. */
 export type DataKey<T extends Data> = keyof T & string;
 
-/** Value for a data object prop. */
-export type DataValue<T extends Data> = T[keyof T & string];
+/** Helper type to get the value for a data object prop. */
+export type DataValue<T extends Data> = T[DataKey<T>];
 
-/** Prop for a data object. */
+/**
+ * Helper type to get a prop for a data object.
+ * i.e. `DataProp<{ a: number }>` produces `readonly ["a", number"]`
+ */
 export type DataProp<T extends Data> = {
 	readonly [K in DataKey<T>]: readonly [K, T[K]];
 }[DataKey<T>];
@@ -27,18 +32,18 @@ export type DataProp<T extends Data> = {
 export type Database = { readonly [K in string]: Data };
 
 /**
- * Flattened data object with every branch node of the data, flattened into `a.c.b` format.
- * - Includes all branches, i.e. `{ a: { a2: number } }` will be `{ "a": object, "a.a2": number }`
+ * Helper type to get a flattened data object with every branch node of the data, flattened into `a.c.b` format.
+ * i.e. `BranchData<{ a: { a2: number } }>` produces `{ "a": object, "a.a2": number }`
  */
 export type BranchData<T extends Data> = EntryObject<BranchProp<T>>;
 
-/** Key for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the key for a flattened data object with deep keys flattened into `a.c.b` format. */
 export type BranchKey<T extends Data> = BranchProp<T>[0];
 
-/** Value for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the value for a flattened data object with deep keys flattened into `a.c.b` format. */
 export type BranchValue<T extends Data> = BranchProp<T>[1];
 
-/** Prop for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the prop for a flattened data object with deep keys flattened into `a.c.b` format. */
 export type BranchProp<T extends Data> = {
 	readonly [K in DataKey<T>]: (
 		T[K] extends Data
@@ -52,18 +57,18 @@ export type BranchProp<T extends Data> = {
 }[DataKey<T>];
 
 /**
- * Flattened data object with only leaf nodes of the data, flattened into `a.c.b` format.
- * - Only include leaf nodes, i.e. `{ a: { a2: number } }` will be `{ "a.a2": number }`
+ * Helper type to get a flattened data object with only leaf nodes of the data, flattened into `a.c.b` format.
+ * i.e. `LeafData<{ a: { a2: number } }>` produces `{ "a.a2": number }`
  */
 export type LeafData<T extends Data> = EntryObject<LeafProp<T>>;
 
-/** Key for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the leaf keys for a flattened data object with deep keys flattened into `a.c.b` format. */
 export type LeafKey<T extends Data> = LeafProp<T>[0];
 
-/** Value for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the leaf values for a flattened data object with deep keys flattened into `a.c.b` format. */
 export type LeafValue<T extends Data> = LeafProp<T>[1];
 
-/** Prop for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the leaf props for a flattened data object with deep keys flattened into `a.c.b` format. */
 export type LeafProp<T extends Data> = {
 	readonly [K in DataKey<T>]: (
 		T[K] extends Data
@@ -75,6 +80,18 @@ export type LeafProp<T extends Data> = {
 			: never
 		: never;
 }[DataKey<T>];
+
+/**
+ * Object with one level of data nested beneath each prop.
+ * i.e. `{ A: { a: number }, B: { b: string } }`
+ */
+export type NestedData = { readonly [key: string]: Data };
+
+/**
+ * Helper type to flatten one level of nested data into a single flat `Data` type.
+ * i.e. `FlattenData<{ A: { a: number }, B: { b: string } }>` produces `{ a: number, b: string }`
+ */
+export type FlattenData<T extends NestedData> = Resolve<UnionToIntersection<T[keyof T]>>;
 
 /** Is an unknown value a data object? */
 export function isData(value: unknown): value is Data {

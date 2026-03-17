@@ -13,13 +13,16 @@ import { isSet } from "./set.js";
  */
 export type Entry<K = unknown, T = unknown> = readonly [K, T];
 
-/** Extract the type for the value of an entry. */
+/** Helper type to extract the type for the value of an entry. */
 export type EntryKey<X> = X extends Entry<infer Y, unknown> ? Y : never;
 
-/** Extract the type for the value of an entry. */
+/** Helper type to extract the type for the value of an entry. */
 export type EntryValue<X> = X extends Entry<unknown, infer Y> ? Y : never;
 
-/** Convert an entry back into an object. */
+/**
+ * Helper type to turn an entry back into an object with one property.
+ * i.e. `EntryObject<Entry<"a", string>>` produces `{ a: string }`
+ */
 export type EntryObject<T extends Entry<PropertyKey, unknown>> = { readonly [E in T as E[0]]: E[1] };
 
 /** Extract the key from an object entry. */
