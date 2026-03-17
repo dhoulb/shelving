@@ -49,4 +49,6 @@ jobs:
           git config --global user.signingkey ~/.ssh/git.pub
           git config --global commit.gpgsign true
       - name: semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bunx semantic-release
