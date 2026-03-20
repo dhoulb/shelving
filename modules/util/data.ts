@@ -91,7 +91,7 @@ export type NestedData = { readonly [key: string]: Data };
  * Helper type to flatten one level of nested data into a single flat `Data` type.
  * i.e. `FlattenData<{ A: { a: number }, B: { b: string } }>` produces `{ a: number, b: string }`
  */
-export type FlattenData<T extends NestedData> = Resolve<UnionToIntersection<T[keyof T]>>;
+export type FlatData<T extends NestedData> = Resolve<UnionToIntersection<T[keyof T]>>;
 
 /** Is an unknown value a data object? */
 export function isData(value: unknown): value is Data {
