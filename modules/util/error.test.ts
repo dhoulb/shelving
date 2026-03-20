@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { RequiredError } from "../error/RequiredError.js";
-import { getMessage, requireMessage, splitMessage } from "./error.js";
+import { getMessage, joinMessage, requireMessage, splitMessage } from "./error.js";
 
 describe("getMessage()", () => {
 	test("returns string when input is string", () => {
@@ -71,5 +71,27 @@ describe("splitMessage()", () => {
 	test("repeated named lines aggregate with newline", () => {
 		const input = "k: one\nk: two\nk: three";
 		expect(splitMessage(input)).toEqual({ k: "one\ntwo\nthree" });
+	});
+});
+describe("joinMessages()", () => {
+	test("joins unnamed messages", () => {
+		expect(joinMessage({ "": "one\ntwo" })).toBe("one\ntwo");
+	});
+	test("joins named messages", () => {
+		expect(joinMessage({ name: "value", email: "a\nb" })).toBe("name: value\nemail: a\nemail: b");
+	});
+	test("joins mixed messages in object order", () => {
+		expect(joinMessage({ title: "First\nSecond", "": "plain", author: "Jane" })).toBe("title: First\ntitle: Second\nplain\nauthor: Jane");
+	});
+	test("normalizes whitespace and skips empty lines", () => {
+		expect(joinMessage({ name: " value \n\n another ", "": "  plain  \n  " })).toBe("name: value\nname: another\nplain");
+	});
+	test("round trips with splitMessage()", () => {
+		const input = {
+			title: "First title\nSecond title",
+			author: "Jane",
+			"": "Some unnamed info\nAnother unnamed line",
+		};
+		expect(splitMessage(joinMessage(input))).toEqual(input);
 	});
 });

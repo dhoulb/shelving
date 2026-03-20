@@ -56,6 +56,24 @@ export function splitMessage(input: PossibleMessage): ImmutableDictionary<string
 }
 
 /**
+ * Join a dictionary of named messages back into a single string.
+ * - The `""` (empty string) key is emitted as unnamed lines.
+ * - Named messages are emitted as `name: message`, one line per message line.
+ * - Empty lines are skipped and each emitted line is trimmed to match `splitMessage()` semantics.
+ */
+export function joinMessage(input: ImmutableDictionary<string>): string {
+	const output: string[] = [];
+	for (const [name, message] of Object.entries(input)) {
+		for (const line of message.split("\n")) {
+			const value = line.trim();
+			if (!value.length) continue;
+			output.push(name ? `${name}: ${value}` : value);
+		}
+	}
+	return output.join("\n");
+}
+
+/**
  * Name a message by applying a `name: ` prefix to it.
  * - Assumes each line in the message is a separate error, so each line has the same prefix applied.
  */
