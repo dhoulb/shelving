@@ -24,93 +24,60 @@ export class MemoryDBProvider<I extends Identifier = Identifier> extends DBProvi
 	private _tables: { [K in string]?: MemoryTable<I, any> } = {};
 
 	/** Get a table for a collection. */
-	getTable<T extends Data>(collection: string): MemoryTable<I, T> {
-		// biome-ignore lint/suspicious/noAssignInExpressions: This is convenient.
-		return (this._tables[collection] ||= new MemoryTable<I, T>());
-	}
-
-	getItemTime<T extends Data>(collection: Collection<string, I, T>, id: I): number | undefined {
-		return this.getTable<T>(collection.name).getItemTime(id);
+	getTable<T extends Data>({ name }: Collection<string, I, T>): MemoryTable<I, T> {
+		return (this._tables[name] ||= new MemoryTable<I, T>());
 	}
 
 	async getItem<T extends Data>(collection: Collection<string, I, T>, id: I): Promise<OptionalItem<I, T>> {
-		return this.getTable<T>(collection.name).getItem(id);
+		return this.getTable(collection).getItem(id);
 	}
 
 	async *getItemSequence<T extends Data>(collection: Collection<string, I, T>, id: I): AsyncIterable<OptionalItem<I, T>> {
-		yield* this.getTable<T>(collection.name).getItemSequence(id);
-	}
-
-	getCachedItemSequence<T extends Data>(collection: Collection<string, I, T>, id: I): AsyncIterable<OptionalItem<I, T>> {
-		return this.getTable<T>(collection.name).getCachedItemSequence(id);
+		yield* this.getTable(collection).getItemSequence(id);
 	}
 
 	async addItem<T extends Data>(collection: Collection<string, I, T>, data: T): Promise<I> {
-		return this.getTable<T>(collection.name).addItem(data);
+		return this.getTable(collection).addItem(data);
 	}
 
 	async setItem<T extends Data>(collection: Collection<string, I, T>, id: I, data: T): Promise<void> {
-		this.getTable<T>(collection.name).setItem(id, data);
-	}
-
-	setItemSequence<T extends Data>(
-		collection: Collection<string, I, T>,
-		id: I,
-		sequence: AsyncIterable<OptionalItem<I, T>>,
-	): AsyncIterable<OptionalItem<I, T>> {
-		return this.getTable<T>(collection.name).setItemSequence(id, sequence);
+		this.getTable(collection).setItem(id, data);
 	}
 
 	async updateItem<T extends Data>(collection: Collection<string, I, T>, id: I, updates: Updates<T>): Promise<void> {
-		this.getTable<T>(collection.name).updateItem(id, updates);
+		this.getTable(collection).updateItem(id, updates);
 	}
 
 	async deleteItem<T extends Data>(collection: Collection<string, I, T>, id: I): Promise<void> {
-		this.getTable<T>(collection.name).deleteItem(id);
-	}
-
-	getQueryTime<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): number | undefined {
-		return this.getTable<T>(collection.name).getQueryTime(query);
+		this.getTable(collection).deleteItem(id);
 	}
 
 	override async countQuery<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): Promise<number> {
-		return this.getTable<T>(collection.name).countQuery(query);
+		return this.getTable(collection).countQuery(query);
 	}
 
 	async getQuery<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): Promise<Items<I, T>> {
-		return this.getTable<T>(collection.name).getQuery(query);
+		return this.getTable(collection).getQuery(query);
 	}
 
 	async *getQuerySequence<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): AsyncIterable<Items<I, T>> {
-		yield* this.getTable<T>(collection.name).getQuerySequence(query);
-	}
-
-	getCachedQuerySequence<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): AsyncIterable<Items<I, T>> {
-		return this.getTable<T>(collection.name).getCachedQuerySequence(query);
+		yield* this.getTable(collection).getQuerySequence(query);
 	}
 
 	async setQuery<T extends Data>(collection: Collection<string, I, T>, query: ItemQuery<I, T>, data: T): Promise<void> {
-		this.getTable<T>(collection.name).setQuery(query, data);
+		this.getTable(collection).setQuery(query, data);
 	}
 
 	async updateQuery<T extends Data>(collection: Collection<string, I, T>, query: ItemQuery<I, T>, updates: Updates<T>): Promise<void> {
-		this.getTable<T>(collection.name).updateQuery(query, updates);
+		this.getTable(collection).updateQuery(query, updates);
 	}
 
 	async deleteQuery<T extends Data>(collection: Collection<string, I, T>, query: ItemQuery<I, T>): Promise<void> {
-		this.getTable<T>(collection.name).deleteQuery(query);
+		this.getTable(collection).deleteQuery(query);
 	}
 
-	setItems<T extends Data>(collection: Collection<string, I, T>, items: Items<I, T>, query?: ItemQuery<I, T>): void {
-		this.getTable<T>(collection.name).setItems(items, query);
-	}
-
-	setItemsSequence<T extends Data>(
-		collection: Collection<string, I, T>,
-		sequence: AsyncIterable<Items<I, T>>,
-		query?: ItemQuery<I, T>,
-	): AsyncIterable<Items<I, T>> {
-		return this.getTable<T>(collection.name).setItemsSequence(sequence, query);
+	setItems<T extends Data>(collection: Collection<string, I, T>, items: Items<I, T>): void {
+		this.getTable(collection).setItems(items);
 	}
 }
 
@@ -119,18 +86,8 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	/** Actual data in this table. */
 	protected readonly _data = new Map<Identifier, Item<I, T>>();
 
-	/** Times data was last updated. */
-	protected readonly _times = new Map<Identifier, number>();
-
-	/** Times query results were last updated. */
-	protected readonly _queryTimes = new Map<string, number>();
-
 	/** Deferred sequence of next values. */
 	public readonly next = new DeferredSequence();
-
-	getItemTime(id: I): number | undefined {
-		return this._times.get(id);
-	}
 
 	getItem(id: I): OptionalItem<I, T> {
 		return this._data.get(id);
@@ -154,24 +111,6 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 		}
 	}
 
-	/**
-	 * Subscribe only after this item has been explicitly cached.
-	 * - Emits nothing until this item has a cached timestamp.
-	 * - Afterwards, only wakes/yields when this item's cache time changes.
-	 */
-	async *getCachedItemSequence(id: I): AsyncIterable<OptionalItem<I, T>> {
-		let lastTime = this._times.get(id);
-		if (typeof lastTime === "number") yield this.getItem(id);
-		while (true) {
-			await this.next;
-			const nextTime = this._times.get(id);
-			if (nextTime !== lastTime) {
-				if (typeof nextTime === "number") yield this.getItem(id);
-				lastTime = nextTime;
-			}
-		}
-	}
-
 	/** Function to generate a random ID for this table. */
 	generateUniqueID(): I;
 	generateUniqueID(): Identifier {
@@ -188,15 +127,9 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	}
 
 	setItem(id: I, data: Item<I, T> | T): void {
-		this._setItem(id, data);
-	}
-
-	protected _setItem(id: I, data: Item<I, T> | T, touchQueries = true): void {
 		const item = getItem(id, data);
 		if (this._data.get(id) !== item) {
 			this._data.set(id, item);
-			this._times.set(id, Date.now());
-			if (touchQueries) this._touchQueries();
 			this.next.resolve();
 		}
 	}
@@ -209,29 +142,20 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	}
 
 	updateItem(id: I, updates: Updates<T>): void {
-		this._updateItem(id, updates);
-	}
-
-	private _updateItem(id: I, updates: Updates<T>, touchQueries = true): void {
 		const oldItem = this._data.get(id);
-		if (oldItem) this._setItem(id, updateData<Item<I, T>>(oldItem, updates), touchQueries);
-	}
-
-	deleteItem(id: I): void {
-		this._deleteItem(id);
-	}
-
-	protected _deleteItem(id: I, touchQueries = true): void {
-		if (this._data.has(id)) {
-			this._data.delete(id);
-			this._times.set(id, Date.now());
-			if (touchQueries) this._touchQueries();
+		if (!oldItem) return;
+		const nextItem = updateData<Item<I, T>>(oldItem, updates);
+		if (this._data.get(id) !== nextItem) {
+			this._data.set(id, nextItem);
 			this.next.resolve();
 		}
 	}
 
-	getQueryTime(query?: ItemQuery<I, T>): number | undefined {
-		return this._queryTimes.get(_getQueryKey(query));
+	deleteItem(id: I): void {
+		if (this._data.has(id)) {
+			this._data.delete(id);
+			this.next.resolve();
+		}
 	}
 
 	countQuery(query?: ItemQuery<I, T>): number {
@@ -260,86 +184,58 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 		}
 	}
 
-	/**
-	 * Subscribe only after this query has been explicitly cached.
-	 * - Emits nothing until this query has a cached query timestamp.
-	 * - Afterwards, only wakes/yields when that cached query time changes.
-	 */
-	async *getCachedQuerySequence(query?: ItemQuery<I, T>): AsyncIterable<Items<I, T>> {
-		const key = _getQueryKey(query);
-		let lastTime = this._queryTimes.get(key);
-		if (typeof lastTime === "number") yield this.getQuery(query);
-		while (true) {
-			await this.next;
-			const nextTime = this._queryTimes.get(key);
-			if (lastTime !== nextTime) {
-				if (typeof nextTime === "number") yield this.getQuery(query);
-				lastTime = nextTime;
+	setQuery(query: ItemQuery<I, T>, data: T): void {
+		let changed = false;
+		for (const { id } of queryWritableItems<Item<I, T>>(this._data.values(), query)) {
+			const item = getItem(id, data);
+			if (this._data.get(id) !== item) {
+				this._data.set(id, item);
+				changed = true;
 			}
 		}
-	}
-
-	setQuery(query: ItemQuery<I, T>, data: T): void {
-		let changed = 0;
-		for (const { id } of queryWritableItems<Item<I, T>>(this._data.values(), query)) {
-			this._setItem(id, data, false);
-			changed++;
-		}
-		if (changed) {
-			const key = _getQueryKey(query);
-			this._queryTimes.set(key, Date.now());
-			this.next.resolve();
-		}
+		if (changed) this.next.resolve();
 	}
 
 	updateQuery(query: ItemQuery<I, T>, updates: Updates<T>): void {
-		let count = 0;
+		let changed = false;
 		for (const { id } of queryWritableItems<Item<I, T>>(this._data.values(), query)) {
-			this._updateItem(id, updates, false);
-			count++;
+			const oldItem = this._data.get(id);
+			if (!oldItem) continue;
+			const nextItem = updateData<Item<I, T>>(oldItem, updates);
+			if (this._data.get(id) !== nextItem) {
+				this._data.set(id, nextItem);
+				changed = true;
+			}
 		}
-		if (count) {
-			const key = _getQueryKey(query);
-			this._queryTimes.set(key, Date.now());
-			this.next.resolve();
-		}
+		if (changed) this.next.resolve();
 	}
 
 	deleteQuery(query: ItemQuery<I, T>): void {
-		let count = 0;
+		let changed = false;
 		for (const { id } of queryWritableItems<Item<I, T>>(this._data.values(), query)) {
-			this._deleteItem(id, false);
-			count++;
+			if (this._data.has(id)) {
+				this._data.delete(id);
+				changed = true;
+			}
 		}
-		if (count) {
-			const key = _getQueryKey(query);
-			this._queryTimes.set(key, Date.now());
-			this.next.resolve();
-		}
+		if (changed) this.next.resolve();
 	}
 
-	setItems(items: Items<I, T>, query?: ItemQuery<I, T>): void {
-		for (const item of items) this._setItem(item.id, item, !query);
-		if (query) {
-			const key = _getQueryKey(query);
-			this._queryTimes.set(key, Date.now());
-			this.next.resolve();
+	setItems(items: Items<I, T>): void {
+		let changed = false;
+		for (const item of items) {
+			if (this._data.get(item.id) !== item) {
+				this._data.set(item.id, item);
+				changed = true;
+			}
 		}
+		if (changed) this.next.resolve();
 	}
 
-	async *setItemsSequence(sequence: AsyncIterable<Items<I, T>>, query?: ItemQuery<I, T>): AsyncIterable<Items<I, T>> {
+	async *setItemsSequence(sequence: AsyncIterable<Items<I, T>>): AsyncIterable<Items<I, T>> {
 		for await (const items of sequence) {
-			this.setItems(items, query);
+			this.setItems(items);
 			yield items;
 		}
 	}
-
-	protected _touchQueries(): void {
-		if (!this._queryTimes.size) return;
-		const time = Date.now();
-		for (const key of this._queryTimes.keys()) this._queryTimes.set(key, time);
-	}
 }
-
-// Queries that have no limit don't care about sorting either.
-const _getQueryKey = <I extends Identifier, T extends Data>(query?: ItemQuery<I, T>): string => (query ? JSON.stringify(query) : "{}");

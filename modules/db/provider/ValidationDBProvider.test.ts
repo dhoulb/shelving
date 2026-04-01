@@ -5,7 +5,7 @@ import { BASICS_COLLECTION, basic1, basic2, basic999 } from "../../test/index.js
 describe("ValidationDBProvider", () => {
 	test("rejects invalid items returned by the source provider", async () => {
 		const source = new MockDBProvider<string>();
-		source.getTable(BASICS_COLLECTION.name).setItem("basic1", { ...basic1, num: "bad" } as never);
+		source.getTable(BASICS_COLLECTION).setItem("basic1", { ...basic1, num: "bad" } as never);
 		const provider = new ValidationDBProvider(source);
 
 		await expect(provider.getItem(BASICS_COLLECTION, "basic1")).rejects.toBeInstanceOf(ValueError);
@@ -13,8 +13,8 @@ describe("ValidationDBProvider", () => {
 
 	test("rejects invalid query results returned by the source provider", async () => {
 		const source = new MockDBProvider<string>();
-		source.getTable(BASICS_COLLECTION.name).setItem("basic1", basic1);
-		source.getTable(BASICS_COLLECTION.name).setItem("basic2", { ...basic2, num: "bad" } as never);
+		source.getTable(BASICS_COLLECTION).setItem("basic1", basic1);
+		source.getTable(BASICS_COLLECTION).setItem("basic2", { ...basic2, num: "bad" } as never);
 		const provider = new ValidationDBProvider(source);
 
 		try {

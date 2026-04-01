@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { CacheDBProvider, type ImmutableArray, MemoryDBProvider, runMicrotasks, runSequence } from "../../index.js";
+import { CacheDBProvider, MemoryDBProvider, runMicrotasks, runSequence } from "../../index.js";
 import { BASICS_COLLECTION, basic1, basic2, expectOrderedItems } from "../../test/index.js";
 
 describe("CacheDBProvider", () => {
@@ -19,7 +19,7 @@ describe("CacheDBProvider", () => {
 	test("writes sequence results into the memory cache", async () => {
 		const source = new MemoryDBProvider<string>();
 		const provider = new CacheDBProvider(source);
-		const calls: ImmutableArray<(typeof basic1)[]> = [];
+		const calls: (typeof basic1)[][] = [];
 		const stop = runSequence(
 			provider.getQuerySequence(BASICS_COLLECTION, { $order: "id" }),
 			items => void calls.push(items as (typeof basic1)[]),
@@ -35,15 +35,15 @@ describe("CacheDBProvider", () => {
 		stop();
 	});
 
-	test("updates cached query subscribers after item writes", async () => {
+	test("updates query subscribers after item writes", async () => {
 		const source = new MemoryDBProvider<string>();
 		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
 		const provider = new CacheDBProvider(source);
-		const calls: ImmutableArray<(typeof basic1)[]> = [];
+		const calls: (typeof basic1)[][] = [];
 
 		await provider.getQuery(BASICS_COLLECTION, { $order: "id" });
 		const stop = runSequence(
-			provider.memory.getCachedQuerySequence(BASICS_COLLECTION, { $order: "id" }),
+			provider.memory.getQuerySequence(BASICS_COLLECTION, { $order: "id" }),
 			items => void calls.push(items as (typeof basic1)[]),
 		);
 		await runMicrotasks();

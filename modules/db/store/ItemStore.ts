@@ -39,16 +39,15 @@ export class ItemStore<I extends Identifier, T extends Data> extends OptionalDat
 	}
 
 	constructor(collection: Collection<string, I, T>, id: I, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
-		const time = memory?.getItemTime(collection, id);
-		const item = memory?.getTable<T>(collection.name).getItem(id);
-		super(typeof time === "number" || item ? item : NONE, time); // Use the cached value if it was definitely cached or is not undefined.
-		if (memory) this.starter = store => runSequence(store.through(memory.getCachedItemSequence(collection, id)));
+		const item = memory?.getTable(collection).getItem(id);
+		super(item ?? NONE); // Use the current memory snapshot if available.
+		if (memory) this.starter = store => runSequence(store.through(memory.getItemSequence(collection, id)));
 		this.provider = provider;
 		this.collection = collection;
 		this.id = id;
 
-		// Start loading the value from the provider if it wasn't cached.
-		if (typeof time !== "number") this.refresh();
+		// Always refresh from source, even if memory supplied an initial value.
+		this.refresh();
 	}
 
 	/** Refresh this store from the source provider. */

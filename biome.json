@@ -32,6 +32,7 @@
 				"useConsistentBuiltinInstantiation": "error"
 			},
 			"suspicious": {
+				"noAssignInExpressions": "off",
 				"noEmptyBlockStatements": "error",
 				"noSkippedTests": "error",
 				"noEmptyBlock": "error",

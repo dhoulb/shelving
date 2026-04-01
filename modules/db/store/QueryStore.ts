@@ -57,17 +57,16 @@ export class QueryStore<I extends Identifier, T extends Data> extends ArrayStore
 	}
 
 	constructor(collection: Collection<string, I, T>, query: ItemQuery<I, T>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
-		const time = memory?.getQueryTime(collection, query);
-		const items = memory?.getTable<T>(collection.name).getQuery(query) || [];
-		super(typeof time === "number" || items.length ? items : NONE, time); // Use the value if it was definitely cached or is not empty.
-		if (memory) this.starter = store => runSequence(store.through(memory.getCachedQuerySequence(collection, query)));
+		const items = memory?.getTable(collection).getQuery(query);
+		super(items ?? NONE); // Use the current memory snapshot if available.
+		if (memory) this.starter = store => runSequence(store.through(memory.getQuerySequence(collection, query)));
 		this.provider = provider;
 		this.collection = collection;
 		this.query = query;
 		this.limit = getLimit(query) ?? Number.POSITIVE_INFINITY;
 
-		// Start loading the value from the provider if it is not definitely cached.
-		if (typeof time !== "number") this.refresh();
+		// Always refresh from source, even if memory supplied an initial value.
+		this.refresh();
 	}
 
 	/** Refresh this store from the source provider. */
