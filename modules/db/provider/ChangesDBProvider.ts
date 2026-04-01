@@ -25,7 +25,7 @@ export class ChangesDBProvider<I extends Identifier = Identifier> extends Throug
 
 	override async addItem<T extends Data>(collection: Collection<string, I, T>, data: T): Promise<I> {
 		const id = await super.addItem(collection, data);
-		this._changes.push({ action: "set", collection: collection.name, id, data });
+		this._changes.push({ action: "add", collection: collection.name, id, data });
 		return id;
 	}
 

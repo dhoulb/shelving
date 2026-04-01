@@ -122,6 +122,9 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	/** Times data was last updated. */
 	protected readonly _times = new Map<Identifier, number>();
 
+	/** Times query results were last updated. */
+	protected readonly _queryTimes = new Map<string, number>();
+
 	/** Deferred sequence of next values. */
 	public readonly next = new DeferredSequence();
 
@@ -133,6 +136,11 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 		return this._data.get(id);
 	}
 
+	/**
+	 * Subscribe to all changes for this item key.
+	 * - Emits the current item immediately, including `undefined` when absent.
+	 * - Wakes on every table change, but only yields when this item's value actually changed.
+	 */
 	async *getItemSequence(id: I): AsyncIterable<OptionalItem<I, T>> {
 		let lastValue = this.getItem(id);
 		yield lastValue;
@@ -146,6 +154,11 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 		}
 	}
 
+	/**
+	 * Subscribe only after this item has been explicitly cached.
+	 * - Emits nothing until this item has a cached timestamp.
+	 * - Afterwards, only wakes/yields when this item's cache time changes.
+	 */
 	async *getCachedItemSequence(id: I): AsyncIterable<OptionalItem<I, T>> {
 		let lastTime = this._times.get(id);
 		if (typeof lastTime === "number") yield this.getItem(id);
@@ -175,10 +188,15 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	}
 
 	setItem(id: I, data: Item<I, T> | T): void {
+		this._setItem(id, data);
+	}
+
+	protected _setItem(id: I, data: Item<I, T> | T, touchQueries = true): void {
 		const item = getItem(id, data);
 		if (this._data.get(id) !== item) {
 			this._data.set(id, item);
 			this._times.set(id, Date.now());
+			if (touchQueries) this._touchQueries();
 			this.next.resolve();
 		}
 	}
@@ -191,20 +209,29 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	}
 
 	updateItem(id: I, updates: Updates<T>): void {
+		this._updateItem(id, updates);
+	}
+
+	private _updateItem(id: I, updates: Updates<T>, touchQueries = true): void {
 		const oldItem = this._data.get(id);
-		if (oldItem) this.setItem(id, updateData<Item<I, T>>(oldItem, updates));
+		if (oldItem) this._setItem(id, updateData<Item<I, T>>(oldItem, updates), touchQueries);
 	}
 
 	deleteItem(id: I): void {
+		this._deleteItem(id);
+	}
+
+	protected _deleteItem(id: I, touchQueries = true): void {
 		if (this._data.has(id)) {
 			this._data.delete(id);
 			this._times.set(id, Date.now());
+			if (touchQueries) this._touchQueries();
 			this.next.resolve();
 		}
 	}
 
 	getQueryTime(query?: ItemQuery<I, T>): number | undefined {
-		return this._times.get(_getQueryKey(query));
+		return this._queryTimes.get(_getQueryKey(query));
 	}
 
 	countQuery(query?: ItemQuery<I, T>): number {
@@ -215,6 +242,11 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 		return requireArray(query ? queryItems(this._data.values(), query) : this._data.values());
 	}
 
+	/**
+	 * Subscribe to the live result of a query.
+	 * - Emits the current query result immediately, even if empty.
+	 * - Wakes on every table change, but only yields when the computed query result changed.
+	 */
 	async *getQuerySequence(query?: ItemQuery<I, T>): AsyncIterable<Items<I, T>> {
 		let lastItems = this.getQuery(query);
 		yield lastItems;
@@ -228,13 +260,18 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 		}
 	}
 
+	/**
+	 * Subscribe only after this query has been explicitly cached.
+	 * - Emits nothing until this query has a cached query timestamp.
+	 * - Afterwards, only wakes/yields when that cached query time changes.
+	 */
 	async *getCachedQuerySequence(query?: ItemQuery<I, T>): AsyncIterable<Items<I, T>> {
 		const key = _getQueryKey(query);
-		let lastTime = this._times.get(key);
+		let lastTime = this._queryTimes.get(key);
 		if (typeof lastTime === "number") yield this.getQuery(query);
 		while (true) {
 			await this.next;
-			const nextTime = this._times.get(key);
+			const nextTime = this._queryTimes.get(key);
 			if (lastTime !== nextTime) {
 				if (typeof nextTime === "number") yield this.getQuery(query);
 				lastTime = nextTime;
@@ -245,12 +282,12 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	setQuery(query: ItemQuery<I, T>, data: T): void {
 		let changed = 0;
 		for (const { id } of queryWritableItems<Item<I, T>>(this._data.values(), query)) {
-			this.setItem(id, data);
+			this._setItem(id, data, false);
 			changed++;
 		}
 		if (changed) {
 			const key = _getQueryKey(query);
-			this._times.set(key, Date.now());
+			this._queryTimes.set(key, Date.now());
 			this.next.resolve();
 		}
 	}
@@ -258,12 +295,12 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	updateQuery(query: ItemQuery<I, T>, updates: Updates<T>): void {
 		let count = 0;
 		for (const { id } of queryWritableItems<Item<I, T>>(this._data.values(), query)) {
-			this.updateItem(id, updates);
+			this._updateItem(id, updates, false);
 			count++;
 		}
 		if (count) {
 			const key = _getQueryKey(query);
-			this._times.set(key, Date.now());
+			this._queryTimes.set(key, Date.now());
 			this.next.resolve();
 		}
 	}
@@ -271,21 +308,21 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	deleteQuery(query: ItemQuery<I, T>): void {
 		let count = 0;
 		for (const { id } of queryWritableItems<Item<I, T>>(this._data.values(), query)) {
-			this.deleteItem(id);
+			this._deleteItem(id, false);
 			count++;
 		}
 		if (count) {
 			const key = _getQueryKey(query);
-			this._times.set(key, Date.now());
+			this._queryTimes.set(key, Date.now());
 			this.next.resolve();
 		}
 	}
 
 	setItems(items: Items<I, T>, query?: ItemQuery<I, T>): void {
-		for (const item of items) this.setItem(item.id, item);
+		for (const item of items) this._setItem(item.id, item, !query);
 		if (query) {
 			const key = _getQueryKey(query);
-			this._times.set(key, Date.now());
+			this._queryTimes.set(key, Date.now());
 			this.next.resolve();
 		}
 	}
@@ -295,6 +332,12 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 			this.setItems(items, query);
 			yield items;
 		}
+	}
+
+	protected _touchQueries(): void {
+		if (!this._queryTimes.size) return;
+		const time = Date.now();
+		for (const key of this._queryTimes.keys()) this._queryTimes.set(key, time);
 	}
 }
 
