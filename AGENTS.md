@@ -99,6 +99,7 @@ bun run build
 - Named exports only — no default exports
 - Barrel files (`index.ts`) re-export with `export * from "./X.js"`
 - Keep barrel exports in sync when moving or adding files
+- Never import from barrel files
 
 ### Types
 
@@ -143,3 +144,4 @@ bun run build
 - When changing runtime behavior, update or add the closest colocated `*.test.ts`
 - When changing TypeScript inference or public generic behavior, include compile-time assignment checks in tests in addition to runtime assertions
 - Reuse fixtures and helpers from `modules/test/` when they fit, especially for collection, provider, and query tests
+- Test files always import from barrel file (highest possible), so the test also ensures the barrel export
