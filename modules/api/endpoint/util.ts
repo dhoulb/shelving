@@ -10,8 +10,13 @@ import type { Endpoint } from "./Endpoint.js";
 
 /**
  * A function that handles an endpoint request, with a payload and returns a result.
- * - `payload` has already been validated against the endpoint payload schema before the callback is invoked.
- * - `request` is always the original incoming request object.
+ *
+ * @param payload The payload for the callback combining the `{placeholders}`, `?search` params, and body content (this has been validated against the Endpoint's payload schema).
+ * @param request The original incoming request object.
+ * @param args Any additional arguments to pass into the endpoint callback
+ *
+ * @returns {Response} Returning a `Response` object (this will pass back to the client without validation).
+ * @returns {R} Returning the return type of the handler (this will be validated against the Endpoint's result schema).
  */
 export type EndpointCallback<P, R, A extends Arguments = []> = (
 	payload: P,
@@ -25,6 +30,7 @@ export interface EndpointHandler<P = unknown, R = unknown, A extends Arguments =
 	readonly callback: EndpointCallback<P, R, A>;
 }
 
+/** Any endpoint handler. */
 // biome-ignore lint/suspicious/noExplicitAny: Intentional.
 export type AnyEndpointHandler<A extends Arguments = []> = EndpointHandler<any, any, A>;
 
@@ -35,7 +41,11 @@ export type EndpointHandlers<A extends Arguments = []> = Iterable<AnyEndpointHan
  * Handle a `Request` with the first matching endpoint handler after stripping any base-path prefix from the request pathname.
  * - The original `Request` object is passed through to the callback unchanged.
  * - Path params and query params are merged before payload validation.
- * @param base The base URL for the API, e.g. `https://myapi.com/`
+ *
+ * @param request The input request to handle.
+ *
+ * @param base The base URL for the API, e.g. `https://myapi.com/a/b`
+ * - `pathname` of this URL gets trimmed from `request.path` to form the target path when matching against endpoints, e.g. `/a/b/c/d` will produce `/c/d` for matching.
  */
 export function handleEndpoints<A extends Arguments = []>(
 	request: Request,
@@ -52,15 +62,16 @@ export function handleEndpoints<A extends Arguments = []>(
 	const { origin: requestOrigin, pathname: requestPath, searchParams } = requireURL(url, base, caller);
 
 	if (baseOrigin !== requestOrigin)
-		throw new NotFoundError("No matching origin", { expected: baseOrigin, received: requestOrigin, caller });
+		throw new NotFoundError("No matching base origin", { expected: baseOrigin, received: requestOrigin, caller });
 
-	const targetPath = _stripPathPrefix(requestPath, basePath, caller);
+	const targetPath = _stripPathPrefix(requestPath, basePath);
+	if (!targetPath) throw new NotFoundError("No matching base path", { received: requestPath, expected: basePath, caller });
 
 	for (const handler of handlers) {
 		const pathParams = handler.endpoint.match(method, targetPath, caller);
 		if (!pathParams) continue;
 		const params = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
-		return handleEndpoint(handler, params, request, args, handleEndpoints);
+		return _handleEndpoint(handler, params, request, args, handleEndpoints);
 	}
 
 	throw new NotFoundError("No matching endpoint", { received: targetPath, caller });
@@ -69,19 +80,20 @@ export function handleEndpoints<A extends Arguments = []>(
 /**
  * Validate and invoke an endpoint callback after the routing layer has already matched URL params.
  */
-async function handleEndpoint<P, R, A extends Arguments>(
+async function _handleEndpoint<P, R, A extends Arguments>(
 	{ endpoint, callback }: EndpointHandler<P, R, A>,
 	/** Params we already matched/parsed from the URL. */
 	params: RequestParams,
 	request: Request,
 	args: A,
-	caller: AnyCaller = handleEndpoint,
+	caller: AnyCaller = _handleEndpoint,
 ): Promise<Response> {
 	const content = await getRequestContent(request, caller);
 	const unsafePayload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : content;
 
 	const payload = endpoint.payload.validate(unsafePayload);
 	const unsafeResult = await callback(payload, request, ...args);
+	if (unsafeResult instanceof Response) return unsafeResult;
 
 	try {
 		return getResponse(endpoint.result.validate(unsafeResult));
@@ -93,10 +105,9 @@ async function handleEndpoint<P, R, A extends Arguments>(
 }
 
 /** Strip a prefix like `/a/b` from a path like `/a/b/c/d` to produce a remainder path like `/c/d`. */
-function _stripPathPrefix(path: AbsolutePath, prefix: AbsolutePath, caller: AnyCaller): AbsolutePath {
+function _stripPathPrefix(path: AbsolutePath, prefix: AbsolutePath): AbsolutePath | undefined {
 	prefix = prefix === "/" ? "/" : (prefix.replace(/\/$/, "") as AbsolutePath);
 	if (prefix === "/") return path;
 	if (path === prefix) return "/";
 	if (path.startsWith(`${prefix}/`)) return path.slice(prefix.length) as AbsolutePath;
-	throw new NotFoundError("No matching endpoint", { received: path, expected: prefix, caller });
 }
