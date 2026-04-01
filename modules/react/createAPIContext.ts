@@ -1,7 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
-import { type AnyEndpointStore, EndpointStore } from "../api/cache/EndpointStore.js";
 import type { Endpoint } from "../api/endpoint/Endpoint.js";
 import type { APIProvider } from "../api/provider/APIProvider.js";
+import { type AnyEndpointStore, EndpointStore } from "../api/store/EndpointStore.js";
 import { MINUTE } from "../util/constants.js";
 import { setMapItem } from "../util/map.js";
 import type { Nullish } from "../util/null.js";

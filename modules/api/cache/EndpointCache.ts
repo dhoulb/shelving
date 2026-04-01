@@ -1,7 +1,7 @@
 import { setMapItem } from "../../util/map.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "../provider/APIProvider.js";
-import { EndpointStore } from "./EndpointStore.js";
+import { EndpointStore } from "../store/EndpointStore.js";
 
 /** Serialize a payload to a stable string key for use in a `Map`. */
 function _serializePayload(payload: unknown): string {
