@@ -101,11 +101,6 @@ export class Store<T> implements AsyncIterable<T> {
 		}
 	}
 
-	// Called when this store starts iterating over a value.
-	private _start(): void {
-		//
-	}
-
 	// Implement `AsyncIterable`
 	// Issues the current value of the store first, then any subsequent values that are issued.
 	async *[Symbol.asyncIterator](): AsyncGenerator<T, void, void> {
