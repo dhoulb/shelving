@@ -3,16 +3,13 @@ import { DATA, GET, MockAPIProvider, POST, ResponseError, STRING, ValidationAPIP
 
 describe("MockAPIProvider", () => {
 	test("fetch() returns parsed handler responses and logs the resolved result", async () => {
-		const provider = new MockAPIProvider({
-			url: "https://api.example.com/v1/",
-			handler: request => {
+		const provider = new MockAPIProvider(
+			request => {
 				expect(request.url).toBe("https://api.example.com/v1/users/123?extra=x");
-				return new Response(JSON.stringify("mocked"), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				});
+				return Response.json("mocked");
 			},
-		});
+			{ url: "https://api.example.com/v1/" },
+		);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING, extra: STRING }), STRING);
 
 		expect(await provider.fetch(endpoint, { id: "123", extra: "x" })).toBe("mocked");
@@ -27,19 +24,15 @@ describe("MockAPIProvider", () => {
 	});
 
 	test("fetch() merges provider default options with call options before invoking the handler", async () => {
-		const provider = new MockAPIProvider({
-			url: "https://api.example.com/",
-			options: { headers: { "X-Default": "provider", "Content-Type": "application/custom" } },
-			handler: request => {
+		const provider = new MockAPIProvider(
+			request => {
 				expect(request.headers.get("X-Default")).toBe("provider");
 				expect(request.headers.get("X-Call")).toBe("call");
 				expect(request.headers.get("Content-Type")).toBe("application/custom");
-				return new Response(JSON.stringify("ok"), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				});
+				return Response.json("ok");
 			},
-		});
+			{ url: "https://api.example.com/", options: { headers: { "X-Default": "provider", "Content-Type": "application/custom" } } },
+		);
 		const endpoint = POST("/items", DATA({ name: STRING }), STRING);
 
 		expect(await provider.fetch(endpoint, { name: "abc" }, { headers: { "X-Call": "call" } })).toBe("ok");
@@ -51,14 +44,7 @@ describe("MockAPIProvider", () => {
 	});
 
 	test("fetch() throws ResponseError for invalid mocked responses (via ValidationAPIProvider)", async () => {
-		const mock = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: async () =>
-				new Response(JSON.stringify(false), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				}),
-		});
+		const mock = new MockAPIProvider(async () => Response.json(false));
 		const provider = new ValidationAPIProvider(mock);
 		const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 

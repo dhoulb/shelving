@@ -5,10 +5,7 @@ import { EXPECT_PROMISELIKE } from "../../test/index.js";
 describe("EndpointStore", () => {
 	test("starts fetching immediately and resolves its value", async () => {
 		const deferred = getDeferred<Response>();
-		const provider = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: () => deferred.promise,
-		});
+		const provider = new MockAPIProvider(() => deferred.promise);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);
 
@@ -20,12 +17,7 @@ describe("EndpointStore", () => {
 			expect(thrown).toMatchObject(EXPECT_PROMISELIKE);
 		}
 
-		deferred.resolve(
-			new Response(JSON.stringify("ready"), {
-				status: 200,
-				headers: { "Content-Type": "application/json" },
-			}),
-		);
+		deferred.resolve(Response.json("ready"));
 		await runMicrotasks();
 
 		expect(store.loading).toBe(false);
@@ -35,10 +27,7 @@ describe("EndpointStore", () => {
 
 	test("fetch() reuses the current in-flight request", async () => {
 		const deferred = getDeferred<Response>();
-		const provider = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: () => deferred.promise,
-		});
+		const provider = new MockAPIProvider(() => deferred.promise);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);
 
@@ -46,12 +35,7 @@ describe("EndpointStore", () => {
 		const second = store.fetch();
 		expect(first).toBe(second);
 
-		deferred.resolve(
-			new Response(JSON.stringify("done"), {
-				status: 200,
-				headers: { "Content-Type": "application/json" },
-			}),
-		);
+		deferred.resolve(Response.json("done"));
 		await first;
 
 		expect(store.value).toBe("done");
@@ -59,18 +43,13 @@ describe("EndpointStore", () => {
 	});
 
 	test("changing payload aborts the old request and fetches the new payload", async () => {
-		class SlowAPIProvider extends APIProvider {
-			readonly calls: Array<{ payload: unknown; signal: AbortSignal | undefined }> = [];
-
-			override fetch<P extends { id: string }, R>(_endpoint: never, payload: P, options?: RequestInit): Promise<R> {
-				this.calls.push({ payload, signal: options?.signal });
-				if (payload.id === "123")
-					return new Promise<R>((_resolve, reject) => options?.signal?.addEventListener("abort", () => reject(options.signal?.reason)));
-				return Promise.resolve(`value:${payload.id}` as R);
-			}
-		}
-
-		const provider = new SlowAPIProvider();
+		const requests: Request[] = [];
+		const provider = new MockAPIProvider(request => {
+			requests.push(request);
+			if (request.url.endsWith("/users/123"))
+				return new Promise<Response>((_resolve, reject) => request.signal.addEventListener("abort", () => reject(request.signal.reason)));
+			return Promise.resolve(Response.json("value:456"));
+		});
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);
 		const error = console.error;
@@ -83,21 +62,15 @@ describe("EndpointStore", () => {
 			console.error = error;
 		}
 
-		expect(provider.calls).toHaveLength(2);
-		expect(provider.calls[0]?.signal?.aborted).toBe(true);
+		expect(requests).toHaveLength(2);
+		expect(requests[0]?.signal.aborted).toBe(true);
+		expect(provider.calls).toHaveLength(1);
 		expect(store.value).toBe("value:456");
 	});
 
 	test("invalidate() clears the current value and refetches on the next read", async () => {
 		let count = 0;
-		const provider = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: async () =>
-				new Response(JSON.stringify(`value:${++count}`), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				}),
-		});
+		const provider = new MockAPIProvider(async () => Response.json(`value:${++count}`));
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);
 

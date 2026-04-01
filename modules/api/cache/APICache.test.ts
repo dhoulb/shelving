@@ -3,13 +3,8 @@ import { APICache, DATA, GET, MockAPIProvider, runMicrotasks, STRING } from "../
 
 describe("APICache", () => {
 	test("creates endpoint stores that fetch through the configured provider", async () => {
-		const provider = new MockAPIProvider({
+		const provider = new MockAPIProvider(async request => Response.json(`ok:${new URL(request.url).pathname}`), {
 			url: "https://api.example.com/v1/",
-			handler: async request =>
-				new Response(JSON.stringify(`ok:${new URL(request.url).pathname}`), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				}),
 		});
 		const cache = new APICache(provider);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING, extra: STRING }), STRING);
@@ -23,14 +18,7 @@ describe("APICache", () => {
 	});
 
 	test("reuses the same store for the same endpoint and payload", () => {
-		const provider = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: async () =>
-				new Response(JSON.stringify("ok"), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				}),
-		});
+		const provider = new MockAPIProvider(async () => Response.json("ok"));
 		const cache = new APICache(provider);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 
@@ -42,14 +30,7 @@ describe("APICache", () => {
 
 	test("invalidate() resets a cached store so the next read refetches", async () => {
 		let count = 0;
-		const provider = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: async () =>
-				new Response(JSON.stringify(`ok:${++count}`), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				}),
-		});
+		const provider = new MockAPIProvider(async () => Response.json(`ok:${++count}`));
 		const cache = new APICache(provider);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = cache.get(endpoint).get({ id: "123" });
@@ -71,17 +52,11 @@ describe("APICache", () => {
 
 	test("refetchAll() refetches every cached payload for an endpoint", async () => {
 		const calls = new Map<string, number>();
-		const provider = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: async request => {
-				const id = request.url.split("/").pop() ?? "";
-				const count = (calls.get(id) ?? 0) + 1;
-				calls.set(id, count);
-				return new Response(JSON.stringify(`${id}:${count}`), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				});
-			},
+		const provider = new MockAPIProvider(async request => {
+			const id = request.url.split("/").pop() ?? "";
+			const count = (calls.get(id) ?? 0) + 1;
+			calls.set(id, count);
+			return Response.json(`${id}:${count}`);
 		});
 		const cache = new APICache(provider);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);

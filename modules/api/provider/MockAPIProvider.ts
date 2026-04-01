@@ -14,14 +14,8 @@ export type MockAPICall = {
 	readonly result: unknown;
 };
 
-/**
- * Construction options for a `MockAPIProvider`.
- * - Accepts the normal `APIProvider` options.
- */
-export interface MockAPIProviderOptions extends ClientAPIProviderOptions {
-	/** Implement this handler to mock the the request/response input/output. */
-	readonly handler: RequestHandler;
-}
+/** Construction options for a `MockAPIProvider`. */
+export interface MockAPIProviderOptions extends ClientAPIProviderOptions {}
 
 /** Provider that logs API calls without sending network requests. */
 export class MockAPIProvider extends ClientAPIProvider {
@@ -29,7 +23,7 @@ export class MockAPIProvider extends ClientAPIProvider {
 
 	readonly handler: RequestHandler;
 
-	constructor({ handler, ...options }: MockAPIProviderOptions) {
+	constructor(handler: RequestHandler, options: MockAPIProviderOptions = { url: "https://api.mock.com" }) {
 		super(options);
 		this.handler = handler;
 	}

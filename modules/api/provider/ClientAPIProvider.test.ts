@@ -30,11 +30,7 @@ describe("ClientAPIProvider", () => {
 		const originalFetch = globalThis.fetch;
 		try {
 			// @ts-expect-error Testing replacement.
-			globalThis.fetch = async () =>
-				new Response(JSON.stringify("Hello from fetch"), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				});
+			globalThis.fetch = async () => Response.json("Hello from fetch");
 
 			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
@@ -68,10 +64,7 @@ describe("ClientAPIProvider", () => {
 				expect(request.headers.get("X-Default")).toBe("provider");
 				expect(request.headers.get("X-Call")).toBe("call");
 				expect(request.headers.get("Content-Type")).toBe("application/custom");
-				return await new Response(JSON.stringify("ok"), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				});
+				return await Response.json("ok");
 			};
 
 			const provider = new ClientAPIProvider({
@@ -92,10 +85,7 @@ describe("ClientAPIProvider", () => {
 			// @ts-expect-error Testing replacement.
 			globalThis.fetch = async (request: Request) => {
 				expect(request.signal.aborted).toBe(false);
-				return await new Response(JSON.stringify("ok"), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				});
+				return await Response.json("ok");
 			};
 
 			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
@@ -112,11 +102,7 @@ describe("ClientAPIProvider", () => {
 		const originalFetch = globalThis.fetch;
 		try {
 			// @ts-expect-error Testing replacement.
-			globalThis.fetch = async () =>
-				new Response(JSON.stringify(false), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				});
+			globalThis.fetch = async () => Response.json(false);
 
 			const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com/" }));
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);

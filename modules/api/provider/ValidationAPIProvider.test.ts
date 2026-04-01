@@ -3,14 +3,7 @@ import { DATA, GET, MockAPIProvider, POST, REQUIRED_STRING, ResponseError, STRIN
 
 describe("ValidationAPIProvider", () => {
 	test("validates payloads before calling the source provider", async () => {
-		const source = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: async () =>
-				new Response(JSON.stringify("ok"), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				}),
-		});
+		const source = new MockAPIProvider(async () => Response.json("ok"));
 		const provider = new ValidationAPIProvider(source);
 		const endpoint = POST("/users", DATA({ name: REQUIRED_STRING }), STRING);
 
@@ -25,14 +18,7 @@ describe("ValidationAPIProvider", () => {
 	});
 
 	test("validates successful source results against the endpoint result schema", async () => {
-		const source = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: async () =>
-				new Response(JSON.stringify(false), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				}),
-		});
+		const source = new MockAPIProvider(async () => Response.json(false));
 		const provider = new ValidationAPIProvider(source);
 		const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 

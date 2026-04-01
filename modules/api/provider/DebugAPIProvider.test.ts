@@ -3,14 +3,7 @@ import { DATA, DebugAPIProvider, GET, MockAPIProvider, ResponseError, STRING } f
 
 describe("DebugAPIProvider", () => {
 	test("logs successful fetches through the source provider", async () => {
-		const source = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: async () =>
-				new Response(JSON.stringify("ok"), {
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				}),
-		});
+		const source = new MockAPIProvider(async () => Response.json("ok"));
 		const provider = new DebugAPIProvider(source);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const logs: unknown[][] = [];
@@ -30,10 +23,7 @@ describe("DebugAPIProvider", () => {
 	});
 
 	test("logs failed fetches and rethrows the source error", async () => {
-		const source = new MockAPIProvider({
-			url: "https://api.example.com/",
-			handler: async () => new Response("Nope", { status: 500, headers: { "Content-Type": "text/plain" } }),
-		});
+		const source = new MockAPIProvider(async () => new Response("Nope", { status: 500, headers: { "Content-Type": "text/plain" } }));
 		const provider = new DebugAPIProvider(source);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const logs: unknown[][] = [];
