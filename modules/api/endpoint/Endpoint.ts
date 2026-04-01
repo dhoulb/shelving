@@ -161,6 +161,7 @@ export function DELETE(path: AbsolutePath, payload = UNDEFINED, result = UNDEFIN
 	return new Endpoint("DELETE", path, payload, result);
 }
 
+/** Assert that an endpoint with `{placeholders}` only allows data payloads. */
 function assertPlaceholderPayload<P, R>(
 	payload: unknown,
 	endpoint: Endpoint<P, R>,

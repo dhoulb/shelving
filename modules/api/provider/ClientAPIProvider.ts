@@ -39,10 +39,15 @@ export class ClientAPIProvider implements APIProvider {
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
 	 */
-	getRequest<P>(endpoint: Endpoint<P, unknown>, payload: P, options?: RequestOptions, caller: AnyCaller = this.getRequest): Request {
+	getRequest<P, R>(endpoint: Endpoint<P, R>, payload: P, options?: RequestOptions, caller: AnyCaller = this.getRequest): Request {
+		// Render the path into the base URL.
 		const url = requireURL(`.${endpoint.renderPath(payload, caller)}`, requireBaseURL(this.url, undefined, caller), caller).href;
+
+		// Placeholders are rendered into the path so get omitted from the body payload.
 		if (endpoint.placeholders.length)
 			return getRequest(endpoint.method, url, omitProps(payload as Data, ...endpoint.placeholders), options);
+
+		// No placeholders.
 		return getRequest(endpoint.method, url, payload, options);
 	}
 
@@ -51,7 +56,7 @@ export class ClientAPIProvider implements APIProvider {
 	 * - Non-2xx responses become `ResponseError`.
 	 * - Does not validate the result against the endpoint schema — use `ValidationAPIProvider` for that.
 	 */
-	async parseResponse<R>(_endpoint: Endpoint<unknown, R>, response: Response, caller: AnyCaller = this.parseResponse): Promise<R> {
+	async parseResponse<P, R>(_endpoint: Endpoint<P, R>, response: Response, caller: AnyCaller = this.parseResponse): Promise<R> {
 		const { ok, status } = response;
 		const content = await getResponseContent(response, caller);
 		if (!ok) throw new ResponseError(getMessage(content) ?? `Error ${status}`, { code: status, cause: response, caller });
