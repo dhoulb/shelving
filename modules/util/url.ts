@@ -88,3 +88,26 @@ export function requireURL(possible: PossibleURL, base?: PossibleURL | undefined
 	assertURL(url, caller);
 	return url;
 }
+
+/**
+ * Convert a possible URL to a base URL string containing only `origin + pathname`.
+ * - The returned pathname always ends in `/`.
+ * - Search params and hash fragments are removed.
+ */
+export function getBaseURL(possible: Nullish<PossibleURL>, base: PossibleURL | undefined = _BASE): URLString | undefined {
+	const url = getURL(possible, base);
+	if (url) return _toBaseURL(url);
+}
+function _toBaseURL({ origin, pathname }: URL): URLString {
+	return `${origin}${pathname.endsWith("/") ? pathname : `${pathname}/`}`;
+}
+
+/**
+ * Convert a possible URL to a base URL string containing only `origin + pathname`, or throw if conversion fails.
+ * - The returned pathname always ends in `/`.
+ */
+export function requireBaseURL(possible: PossibleURL, base?: PossibleURL | undefined, caller: AnyCaller = requireBaseURL): URLString {
+	const url = getURL(possible, base);
+	assertURL(url, caller);
+	return _toBaseURL(url);
+}

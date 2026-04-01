@@ -1,15 +1,14 @@
 import { RequestError } from "../error/RequestError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ResponseError } from "../error/ResponseError.js";
+import { isArrayItem } from "./array.js";
 import { type Data, isData } from "./data.js";
 import type { ImmutableDictionary } from "./dictionary.js";
 import { isError } from "./error.js";
 import type { AnyCaller, Arguments } from "./function.js";
 import { isNullish } from "./null.js";
-import { omitProps } from "./object.js";
-import { getPlaceholders, renderTemplate } from "./template.js";
 import { withURIParams } from "./uri.js";
-import type { URLString } from "./url.js";
+import { type PossibleURL, requireURL } from "./url.js";
 
 /** A handler function takes a `Request` and optional extra arguments and returns a `Response` (possibly asynchronously). */
 export type RequestHandler<A extends Arguments = []> = (request: Request, ...args: A) => Response | Promise<Response>;
@@ -147,54 +146,83 @@ export function getErrorResponse(reason: unknown, debug = false): Response {
 	return new Response(undefined, { status });
 }
 
-/** HTTP request methods. */
-export type RequestMethod = RequestBodyMethod | RequestHeadMethod;
+/** The set of supported HTTP methods that do not send a request body. */
+export const HTTP_HEAD_METHODS = ["HEAD", "GET"] as const;
+
+/** The set of supported HTTP methods that may send a request body. */
+export const HTTP_BODY_METHODS = ["POST", "PUT", "PATCH", "DELETE"] as const;
+
+/** The full set of supported HTTP methods. */
+export const HTTP_METHODS = [...HTTP_HEAD_METHODS, ...HTTP_BODY_METHODS] as const;
 
 /** HTTP request methods that have no body. */
-export type RequestHeadMethod = "HEAD" | "GET";
+export type RequestHeadMethod = (typeof HTTP_HEAD_METHODS)[number];
 
 /** HTTP request methods that have a body. */
-export type RequestBodyMethod = "POST" | "PUT" | "PATCH" | "DELETE";
+export type RequestBodyMethod = (typeof HTTP_BODY_METHODS)[number];
 
-/** Configurable options for endpoint. */
-export type RequestOptions = Omit<RequestInit, "method" | "body">;
+/** HTTP request methods. */
+export type RequestMethod = (typeof HTTP_METHODS)[number];
+
+/** Check whether an arbitrary method string is one of Shelving's supported request methods. */
+export function isRequestMethod(method: string): method is RequestMethod {
+	return (HTTP_METHODS as readonly string[]).includes(method);
+}
 
 /** Params in requests are a dictionary of strings. */
 export type RequestParams = ImmutableDictionary<string>;
 
+/** Configurable options for endpoint requests. */
+export type RequestOptions = Pick<
+	RequestInit,
+	"cache" | "credentials" | "headers" | "integrity" | "keepalive" | "mode" | "redirect" | "referrer" | "referrerPolicy" | "signal"
+>;
+
+/** Options for a plain text request. */
+const REQUEST_TEXT_OPTIONS = { headers: { "Content-Type": "text/plain" } };
+
+/** Options for a JSON request. */
+const REQUEST_JSON_OPTIONS = { headers: { "Content-Type": "application/json" } };
+
 /**
- * Create a `Request` instance for a method/url and payload.
- *
- * - If `{placeholders}` are set in the URL, they are replaced by values from payload (will throw if `payload` is not a data object).
- * - If the method is `HEAD` or `GET`, the payload is sent as `?query` parameters in the URL.
- * - If the method is anything else, the payload is sent in the body (plain text string, `FormData` object, or JSON for any other).
- *
- * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
- * @throws {RequiredError} if `{placeholders}` are set in the URL but `payload` is not a data object.
+ * Merge provider-level and call-level request options.
+ * - Scalar options from `b` override `a`.
+ * - Header dictionaries are merged so call-level headers override default headers by key.
  */
-export function getRequest(method: RequestHeadMethod, url: URLString, payload: Data, options?: RequestOptions, caller?: AnyCaller): Request;
-export function getRequest(method: RequestMethod, url: URLString, payload: unknown, options?: RequestOptions, caller?: AnyCaller): Request;
+export function mergeRequestOptions(
+	{ headers: aHeaders, ...a }: RequestOptions = {},
+	{ headers: bHeaders, ...b }: RequestOptions = {},
+): RequestOptions {
+	return { ...a, ...b, headers: { ...aHeaders, ...bHeaders } };
+}
+
+/**
+ * Create a `Request` instance with a valid content type based on the body.
+ *
+ * - `undefined` or `null` are sent with no body.
+ * - `FormData` is sent with `multipart/formdata`
+ * - `string` is sent with `text/plain` header.
+ * - Anything else is sent as `application/json`
+ * - Expects a fully valid URL (any `{placeholders}` in the URL are not considered).
+ * - As per the HTTP spec, `GET` and `HEAD` requests cannot contain a body
+ *
+ * @returns Request object.
+ *
+ * @throws {RequiredError} if this is a `HEAD` or `GET` request but `body` is not a data object.
+ */
 export function getRequest(
 	method: RequestMethod,
-	url: URLString,
+	url: PossibleURL,
 	payload: unknown,
 	options: RequestOptions = {},
 	caller: AnyCaller = getRequest,
 ): Request {
-	// Render any `{placeholders}` in the URL string.
-	const placeholders = getPlaceholders(url);
-	if (placeholders.length) {
-		if (!isData(payload))
-			throw new RequiredError("Payload for request with URL {placeholders} must be data object", { received: payload, caller });
-		url = renderTemplate(url, payload, caller) as URLString;
-		payload = omitProps(payload, ...placeholders);
-	}
+	url = requireURL(url, undefined, caller);
 
-	// This is a body-less request, so ensure the payload is a data object and set the `?query=params` in the URL.
-	if (method === "GET" || method === "HEAD") {
-		if (!isData(payload)) throw new RequiredError(`Payload for ${method} request must be data object`, { received: payload, caller });
-		url = withURIParams(url, payload).href;
-		payload = undefined;
+	// HEAD or GET have no body (but payload can only be data object).
+	if (isArrayItem(HTTP_HEAD_METHODS, method)) {
+		assertHeadMethodPayload(payload, method, caller);
+		return new Request(withURIParams(url, payload), { ...options, method, body: null });
 	}
 
 	// `null` or `undefined` payloads send no body.
@@ -205,18 +233,17 @@ export function getRequest(
 
 	// Strings are sent as plain text.
 	if (typeof payload === "string")
-		return new Request(url, {
-			...options,
-			headers: { ...options.headers, "Content-Type": "text/plain" },
-			method,
-			body: payload,
-		});
+		return new Request(url, { ...mergeRequestOptions(REQUEST_TEXT_OPTIONS, options), method, body: payload });
 
 	// JSON is the default.
-	return new Request(url, {
-		...options,
-		headers: { ...options.headers, "Content-Type": "application/json" },
-		method,
-		body: JSON.stringify(payload),
-	});
+	return new Request(url, { ...mergeRequestOptions(REQUEST_JSON_OPTIONS, options), method, body: JSON.stringify(payload) });
+}
+
+/** Assert that the payload for a HEAD or GET method is a data object. */
+export function assertHeadMethodPayload(
+	payload: unknown,
+	method: RequestHeadMethod,
+	caller: AnyCaller = assertHeadMethodPayload,
+): asserts payload is Data {
+	if (!isData(payload)) throw new RequiredError(`Payload for ${method} request must be data object`, { received: payload, caller });
 }

@@ -48,3 +48,11 @@ export class ForbiddenError extends RequestError {
 	}
 }
 ForbiddenError.prototype.name = "ForbiddenError";
+
+/** Throw if a request uses an HTTP method that is not supported. */
+export class MethodNotAllowedError extends RequestError {
+	constructor(message?: string, options?: RequestErrorOptions) {
+		super(message, { caller: MethodNotAllowedError, code: 405, ...options });
+	}
+}
+MethodNotAllowedError.prototype.name = "MethodNotAllowedError";
