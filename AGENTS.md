@@ -1,0 +1,100 @@
+# shelving
+
+TypeScript data toolkit with modules for schema validation, database providers, state stores, React integration, and more.
+
+## Modules
+
+Source lives under `modules/`:
+
+- `api` — API request/response handling
+- `cloudflare` — Cloudflare Workers KV provider
+- `db` — Database abstraction (providers, collections, stores)
+- `error` — Error classes
+- `firestore` — Firestore providers (client, lite, server)
+- `iterate` — Iterable utilities
+- `markup` — Markup/HTML utilities
+- `react` — React hooks and context
+- `schema` — Schema validation
+- `sequence` — Sequence utilities
+- `store` — State stores
+- `test` — Test utilities
+- `util` — General utilities (arrays, objects, strings, functions, etc.)
+
+## Commands
+
+**After making any code changes, always run:**
+
+```sh
+bun run fix
+```
+
+This runs Biome to auto-fix lint errors and reformat code.
+
+**To check for errors:**
+
+```sh
+bun run test          # run all checks in parallel
+bun run test:lint     # Biome lint check only
+bun run test:type     # TypeScript type check only
+bun run test:unit     # Bun unit tests only
+```
+
+**To build the dist:**
+
+```sh
+bun run build
+```
+
+## Tooling
+
+- **Biome** — linting and formatting (`biome.json`)
+- **TypeScript** — strict mode with `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, etc. (`tsconfig.json`)
+- **Bun** — test runner (`bun test`)
+
+## Commits
+
+- Use [Conventional Commits](https://www.conventionalcommits.org/) format for all commit messages, for example: `feat: add cache provider` or `fix: handle undefined schema value`
+- Commit types feed semantic-release versioning
+- `feat:` triggers a minor release
+- `fix:` triggers a patch release
+- While the project is still on `v0`, do not use `BREAKING CHANGE:` footers or `!` commit markers to trigger a major release
+- If a change is breaking in practice, describe it clearly in the commit body or PR, but keep the commit type within the non-major release flow for now
+
+## Code Style
+
+### Naming
+
+- Prefer single-word names; use `s` suffix for plurals: `item` / `items`, `key` / `keys`
+- Function naming prefixes:
+  - `is*` — type guard returning `boolean`: `isArray`, `isString`
+  - `assert*` — throws if invalid: `assertArray`, `assertString`
+  - `get*` — returns value or `undefined`: `getString`, `getData`
+  - `require*` — throws if missing: `requireFirst`, `requireString`
+  - `with*` — returns immutable updated copy: `withProp`, `withArrayItem`
+
+### Variables
+
+- Prefer `{ name }` destructuring over `obj.name` property access
+- Prefix unused function arguments with `_` to avoid lint errors: `_event`, `_value`
+
+### Imports/Exports
+
+- Always use `.js` extension in import paths: `import { x } from "./x.js"`
+- Named exports only — no default exports
+- Barrel files (`index.ts`) re-export with `export * from "./X.js"`
+
+### Types
+
+- `readonly` on properties and arrays by default
+- Type guards use `value is T` return type
+- Assertion functions use `asserts value is T` return type
+
+### Functions
+
+- Regular `function` declarations for public API exports
+- Arrow functions for short utilities, callbacks, and one-liners
+
+### Error Handling
+
+- Schema validation errors throw a `string` (human-readable message like `"name: Must be 5-50 characters"`). Let these propagate as-is when they represent user input errors — form handlers and UI layers consume these strings directly.
+- Only wrap validation strings in a typed error (e.g. `ResponseError`, `ValueError`) when the error is a system/transport problem rather than a user input problem. For example, a bad API response body is a server error (`ResponseError` code 422), not a user error.
