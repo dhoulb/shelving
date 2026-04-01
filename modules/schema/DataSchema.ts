@@ -1,4 +1,4 @@
-import type { Data, Database, PartialData } from "../util/data.js";
+import type { Data, PartialData } from "../util/data.js";
 import { isData } from "../util/data.js";
 import type { Identifier, Item } from "../util/item.js";
 import { type Key, omitProps, type Prop, pickProps, type Value } from "../util/object.js";
@@ -45,9 +45,6 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 function _getSchemaValue<T extends Data>([, { value }]: Prop<Schemas<T>>): Value<T> {
 	return value as Value<T>;
 }
-
-/** Set of named data schemas. */
-export type DataSchemas<T extends Database> = { [K in keyof T]: DataSchema<T[K]> };
 
 /** Create a `DataSchema` for a set of properties. */
 export const DATA = <T extends Data>(props: Schemas<T>): DataSchema<T> => new DataSchema({ props });

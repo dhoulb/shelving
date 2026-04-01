@@ -29,9 +29,10 @@ import {
 	updateDoc,
 	where,
 } from "firebase/firestore";
-import { AsyncProvider } from "../../db/Provider.js";
+import type { Collection } from "../../db/collection/Collection.js";
+import { DBProvider } from "../../db/provider/DBProvider.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
-import type { Data, Database, DataKey, DataProp } from "../../util/data.js";
+import type { Data, DataProp } from "../../util/data.js";
 import type { Item, Items, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
@@ -58,10 +59,8 @@ const OPERATORS = {
 } as const;
 
 /** Get a Firestore QueryReference for a given query. */
-function _getQuery<T extends Database, K extends DataKey<T>>(firestore: Firestore, c: K, q?: ItemQuery<string, T[K]>): Query<T[K]> {
-	return q
-		? (query(collection(firestore, c), ..._getConstraints(q)) as Query<T[K]>)
-		: (collection(firestore, c) as CollectionReference<T[K]>);
+function _getQuery<T extends Data>(firestore: Firestore, c: string, q?: ItemQuery<string, T>): Query<T> {
+	return q ? (query(collection(firestore, c), ..._getConstraints(q)) as Query<T>) : (collection(firestore, c) as CollectionReference<T>);
 }
 function* _getConstraints<T extends Data>(q: ItemQuery<string, T>): Iterable<QueryConstraint> {
 	for (const { key, direction } of getOrders(q)) yield orderBy(key === "id" ? ID : key, direction);
@@ -102,65 +101,65 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
  * - Supports offline mode.
  * - Supports realtime subscriptions.
  */
-export class FirestoreClientProvider<T extends Database> extends AsyncProvider<string, T> {
+export class FirestoreClientProvider extends DBProvider<string> {
 	private readonly _firestore: Firestore;
 	constructor(firestore: Firestore) {
 		super();
 		this._firestore = firestore;
 	}
-	async getItem<K extends DataKey<T>>(c: K, id: string): Promise<OptionalItem<string, T[K]>> {
-		const snapshot = await getDoc(doc(this._firestore, c, id) as DocumentReference<T[K]>);
+	async getItem<T extends Data>({ name }: Collection<string, string, T>, id: string): Promise<OptionalItem<string, T>> {
+		const snapshot = await getDoc(doc(this._firestore, name, id) as DocumentReference<T>);
 		return _getOptionalItem(snapshot);
 	}
-	getItemSequence<K extends DataKey<T>>(c: K, id: string): AsyncIterable<OptionalItem<string, T[K]>> {
+	getItemSequence<T extends Data>({ name }: Collection<string, string, T>, id: string): AsyncIterable<OptionalItem<string, T>> {
 		return new LazyDeferredSequence(sequence =>
 			onSnapshot(
-				doc(this._firestore, c, id) as DocumentReference<T[K]>, //
+				doc(this._firestore, name, id) as DocumentReference<T>, //
 				snapshot => sequence.resolve(_getOptionalItem(snapshot)),
 				reason => sequence.reject(reason),
 			),
 		);
 	}
-	async addItem<K extends DataKey<T>>(c: K, data: Data): Promise<string> {
-		const reference = await addDoc(collection(this._firestore, c), data);
+	async addItem<T extends Data>({ name }: Collection<string, string, T>, data: T): Promise<string> {
+		const reference = await addDoc(collection(this._firestore, name), data);
 		return reference.id;
 	}
-	async setItem<K extends DataKey<T>>(c: K, id: string, data: Data): Promise<void> {
-		await setDoc(doc(this._firestore, c, id), data);
+	async setItem<T extends Data>({ name }: Collection<string, string, T>, id: string, data: T): Promise<void> {
+		await setDoc(doc(this._firestore, name, id), data);
 	}
-	async updateItem<K extends DataKey<T>>(c: K, id: string, updates: Updates<T[K]>): Promise<void> {
-		await updateDoc(doc(this._firestore, c, id), _getFieldValues(updates));
+	async updateItem<T extends Data>({ name }: Collection<string, string, T>, id: string, updates: Updates<T>): Promise<void> {
+		await updateDoc(doc(this._firestore, name, id), _getFieldValues(updates));
 	}
-	async deleteItem<K extends DataKey<T>>(c: K, id: string): Promise<void> {
-		await deleteDoc(doc(this._firestore, c, id));
+	async deleteItem<T extends Data>({ name }: Collection<string, string, T>, id: string): Promise<void> {
+		await deleteDoc(doc(this._firestore, name, id));
 	}
-	override async countQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<string, T[K]>): Promise<number> {
-		const snapshot = await getCountFromServer(_getQuery(this._firestore, c, q));
+	override async countQuery<T extends Data>({ name }: Collection<string, string, T>, q?: ItemQuery<string, T>): Promise<number> {
+		const snapshot = await getCountFromServer(_getQuery(this._firestore, name, q));
 		return snapshot.data().count;
 	}
-	async getQuery<K extends DataKey<T>>(c: K, q?: ItemQuery<string, T[K]>): Promise<Items<string, T[K]>> {
-		return _getItems(await getDocs(_getQuery(this._firestore, c, q)));
+	async getQuery<T extends Data>({ name }: Collection<string, string, T>, q?: ItemQuery<string, T>): Promise<Items<string, T>> {
+		return _getItems(await getDocs(_getQuery(this._firestore, name, q)));
 	}
-	getQuerySequence<K extends DataKey<T>>(c: K, q?: ItemQuery<string, T[K]>): AsyncIterable<Items<string, T[K]>> {
+	getQuerySequence<T extends Data>({ name }: Collection<string, string, T>, q?: ItemQuery<string, T>): AsyncIterable<Items<string, T>> {
 		return new LazyDeferredSequence(sequence =>
 			onSnapshot(
-				_getQuery(this._firestore, c, q), //
+				_getQuery(this._firestore, name, q), //
 				snapshot => sequence.resolve(_getItems(snapshot)),
 				reason => sequence.reject(reason),
 			),
 		);
 	}
-	async setQuery<K extends DataKey<T>>(c: K, q: ItemQuery<string, T[K]>, data: Data): Promise<void> {
-		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
+	async setQuery<T extends Data>({ name }: Collection<string, string, T>, q: ItemQuery<string, T>, data: T): Promise<void> {
+		const snapshot = await getDocs(_getQuery(this._firestore, name, q));
 		await Promise.all(snapshot.docs.map(s => setDoc(s.ref, data)));
 	}
-	async updateQuery<K extends DataKey<T>>(c: K, q: ItemQuery<string, T[K]>, updates: Updates<T[K]>): Promise<void> {
-		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
+	async updateQuery<T extends Data>({ name }: Collection<string, string, T>, q: ItemQuery<string, T>, updates: Updates<T>): Promise<void> {
+		const snapshot = await getDocs(_getQuery(this._firestore, name, q));
 		const fieldValues = _getFieldValues(updates);
 		await Promise.all(snapshot.docs.map(s => updateDoc(s.ref, fieldValues)));
 	}
-	async deleteQuery<K extends DataKey<T>>(c: K, q: ItemQuery<string, T[K]>): Promise<void> {
-		const snapshot = await getDocs(_getQuery(this._firestore, c, q));
+	async deleteQuery<T extends Data>({ name }: Collection<string, string, T>, q: ItemQuery<string, T>): Promise<void> {
+		const snapshot = await getDocs(_getQuery(this._firestore, name, q));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 	}
 }

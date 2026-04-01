@@ -2,7 +2,7 @@ import type { Collection } from "../db/collection/Collection.js";
 import { DBProvider } from "../db/provider/DBProvider.js";
 import { UnimplementedError } from "../error/UnimplementedError.js";
 import { requireArray } from "../util/array.js";
-import type { Database, DataKey } from "../util/data.js";
+import type { Data } from "../util/data.js";
 import type { Item, Items, OptionalItem } from "../util/item.js";
 import { getItem } from "../util/item.js";
 import type { ItemQuery } from "../util/query.js";
@@ -60,7 +60,7 @@ function _getPrefix(collection: string): string {
  * - **No bulk get:** Each item value must be fetched individually — there is no multi-get API.
  *   Query operations that match N items require N+1 KV requests (one `list` + N `get` calls per page).
  */
-export class CloudflareKVProvider<T extends Database> extends DBProvider<string, T> {
+export class CloudflareKVProvider extends DBProvider<string> {
 	private readonly _kv: KVNamespace;
 
 	constructor(kv: KVNamespace) {
@@ -68,73 +68,69 @@ export class CloudflareKVProvider<T extends Database> extends DBProvider<string,
 		this._kv = kv;
 	}
 
-	async getItem<K extends DataKey<T>>(c: Collection<K, string, T[K]>, id: string): Promise<OptionalItem<string, T[K]>> {
-		const data = (await this._kv.get(_getKey(c.name, id), { type: "json" })) as T[K] | null;
+	async getItem<T extends Data>({ name }: Collection<string, string, T>, id: string): Promise<OptionalItem<string, T>> {
+		const data = (await this._kv.get(_getKey(name, id), { type: "json" })) as T | null;
 		if (data) return getItem(id, data);
 	}
 
-	getItemSequence<K extends DataKey<T>>(c: Collection<K, string, T[K]>, id: string): AsyncIterable<OptionalItem<string, T[K]>> {
+	getItemSequence<T extends Data>(_c: Collection<string, string, T>, _id: string): AsyncIterable<OptionalItem<string, T>> {
 		throw new UnimplementedError("CloudflareKVProvider does not support realtime subscriptions");
 	}
 
-	async addItem<K extends DataKey<T>>(c: Collection<K, string, T[K]>, data: T[K]): Promise<string> {
+	async addItem<T extends Data>({ name }: Collection<string, string, T>, data: T): Promise<string> {
 		const id = randomUUID();
-		await this._kv.put(_getKey(c.name, id), JSON.stringify(data));
+		await this._kv.put(_getKey(name, id), JSON.stringify(data));
 		return id;
 	}
 
-	async setItem<K extends DataKey<T>>(c: Collection<K, string, T[K]>, id: string, data: T[K]): Promise<void> {
-		await this._kv.put(_getKey(c.name, id), JSON.stringify(data));
+	async setItem<T extends Data>({ name }: Collection<string, string, T>, id: string, data: T): Promise<void> {
+		await this._kv.put(_getKey(name, id), JSON.stringify(data));
 	}
 
-	async updateItem<K extends DataKey<T>>(c: Collection<K, string, T[K]>, id: string, updates: Updates<T[K]>): Promise<void> {
+	async updateItem<T extends Data>(c: Collection<string, string, T>, id: string, updates: Updates<T>): Promise<void> {
 		const existing = await this.getItem(c, id);
-		if (existing) await this.setItem(c, id, updateData<T[K]>(existing, updates));
+		if (existing) await this.setItem(c, id, updateData<T>(existing, updates));
 	}
 
-	async deleteItem<K extends DataKey<T>>(c: Collection<K, string, T[K]>, id: string): Promise<void> {
-		await this._kv.delete(_getKey(c.name, id));
+	async deleteItem<T extends Data>({ name }: Collection<string, string, T>, id: string): Promise<void> {
+		await this._kv.delete(_getKey(name, id));
 	}
 
-	async getQuery<K extends DataKey<T>>(c: Collection<K, string, T[K]>, q?: ItemQuery<string, T[K]>): Promise<Items<string, T[K]>> {
-		const all = await this._getAllItems<K>(c.name);
+	async getQuery<T extends Data>({ name }: Collection<string, string, T>, q?: ItemQuery<string, T>): Promise<Items<string, T>> {
+		const all = await this._getAllItems<T>(name);
 		return q ? requireArray(queryItems(all, q)) : all;
 	}
 
-	getQuerySequence<K extends DataKey<T>>(c: Collection<K, string, T[K]>, q?: ItemQuery<string, T[K]>): AsyncIterable<Items<string, T[K]>> {
+	getQuerySequence<T extends Data>(_c: Collection<string, string, T>, _q?: ItemQuery<string, T>): AsyncIterable<Items<string, T>> {
 		throw new UnimplementedError("CloudflareKVProvider does not support realtime subscriptions");
 	}
 
-	async setQuery<K extends DataKey<T>>(c: Collection<K, string, T[K]>, q: ItemQuery<string, T[K]>, data: T[K]): Promise<void> {
+	async setQuery<T extends Data>(c: Collection<string, string, T>, q: ItemQuery<string, T>, data: T): Promise<void> {
 		const items = await this.getQuery(c, q);
 		await Promise.all(items.map(item => this.setItem(c, item.id, data)));
 	}
 
-	async updateQuery<K extends DataKey<T>>(
-		c: Collection<K, string, T[K]>,
-		q: ItemQuery<string, T[K]>,
-		updates: Updates<T[K]>,
-	): Promise<void> {
+	async updateQuery<T extends Data>(c: Collection<string, string, T>, q: ItemQuery<string, T>, updates: Updates<T>): Promise<void> {
 		const items = await this.getQuery(c, q);
-		await Promise.all(items.map(item => this.setItem(c, item.id, updateData<T[K]>(item, updates))));
+		await Promise.all(items.map(item => this.setItem(c, item.id, updateData<T>(item, updates))));
 	}
 
-	async deleteQuery<K extends DataKey<T>>(c: Collection<K, string, T[K]>, q: ItemQuery<string, T[K]>): Promise<void> {
+	async deleteQuery<T extends Data>(c: Collection<string, string, T>, q: ItemQuery<string, T>): Promise<void> {
 		const items = await this.getQuery(c, q);
 		await Promise.all(items.map(item => this._kv.delete(_getKey(c.name, item.id))));
 	}
 
 	/** Fetch all items in a collection, paginating through `kv.list()`. */
-	private async _getAllItems<K extends DataKey<T>>(collection: K): Promise<Items<string, T[K]>> {
+	private async _getAllItems<T extends Data>(collection: string): Promise<Items<string, T>> {
 		const prefix = _getPrefix(collection);
-		const items: Item<string, T[K]>[] = [];
+		const items: Item<string, T>[] = [];
 		let cursor: string | undefined;
 		do {
 			const result = await this._kv.list(cursor ? { prefix, cursor } : { prefix });
 			const values = await Promise.all(
 				result.keys.map(async key => {
 					const id = key.name.slice(prefix.length);
-					const data = (await this._kv.get(key.name, { type: "json" })) as T[K] | null;
+					const data = (await this._kv.get(key.name, { type: "json" })) as T | null;
 					if (data) return getItem(id, data);
 				}),
 			);

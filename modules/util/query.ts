@@ -4,7 +4,7 @@ import type { Data, DataProp, LeafData, LeafKey } from "./data.js";
 import { getDataProp } from "./data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";
 import type { Match } from "./filter.js";
-import type { Item } from "./item.js";
+import type { Identifier, Item } from "./item.js";
 import { limitItems } from "./iterate.js";
 import type { Mutable } from "./object.js";
 import { getProps } from "./object.js";
@@ -24,7 +24,7 @@ export type Query<T extends Data> = {
 };
 
 /** A set of query constraints for item data. */
-export type ItemQuery<I extends string | number, T extends Data> = Query<Item<I, T>>;
+export type ItemQuery<I extends Identifier, T extends Data> = Query<Item<I, T>>;
 
 /** A single filter that can be applied to a list of data objects. */
 export type Filter =

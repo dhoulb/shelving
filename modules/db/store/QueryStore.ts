@@ -1,22 +1,24 @@
-import { RequiredError } from "../error/RequiredError.js";
-import { ArrayStore } from "../store/ArrayStore.js";
-import { BooleanStore } from "../store/BooleanStore.js";
-import { getGetter } from "../util/class.js";
-import { NONE } from "../util/constants.js";
-import type { Database, DataKey } from "../util/data.js";
-import type { Identifier, Item } from "../util/item.js";
-import type { ItemQuery } from "../util/query.js";
-import { getAfterQuery, getLimit } from "../util/query.js";
-import { runSequence } from "../util/sequence.js";
-import type { StopCallback } from "../util/start.js";
-import type { MemoryProvider } from "./MemoryProvider.js";
-import type { AbstractProvider } from "./Provider.js";
+import { RequiredError } from "../../error/RequiredError.js";
+import { ArrayStore } from "../../store/ArrayStore.js";
+import { BooleanStore } from "../../store/BooleanStore.js";
+import { getGetter } from "../../util/class.js";
+import { NONE } from "../../util/constants.js";
+import type { Data } from "../../util/data.js";
+import type { Identifier, Item } from "../../util/item.js";
+import type { ItemQuery } from "../../util/query.js";
+import { getAfterQuery, getLimit } from "../../util/query.js";
+import { runSequence } from "../../util/sequence.js";
+import type { StopCallback } from "../../util/start.js";
+import type { Collection } from "../collection/Collection.js";
+import type { DBProvider } from "../provider/DBProvider.js";
+import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 
 /** Store a set of multiple items. */
-export class QueryStore<I extends Identifier, T extends Database, K extends DataKey<T>> extends ArrayStore<Item<I, T[K]>> {
-	readonly provider: AbstractProvider<I, T>;
-	readonly collection: K;
-	readonly query: ItemQuery<I, T[K]>;
+export class QueryStore<I extends Identifier, T extends Data> extends ArrayStore<Item<I, T>> {
+	readonly provider: DBProvider<I>;
+	readonly collection: Collection<string, I, T>;
+	readonly query: ItemQuery<I, T>;
+
 	readonly busy = new BooleanStore();
 	readonly limit: number;
 
@@ -27,13 +29,13 @@ export class QueryStore<I extends Identifier, T extends Database, K extends Data
 	private _hasMore = false;
 
 	/** Get the first item in this store. */
-	override get first(): Item<I, T[K]> {
+	override get first(): Item<I, T> {
 		const first = this.optionalFirst;
 		if (!first)
-			throw new RequiredError(`First item does not exist in collection "${this.collection}"`, {
+			throw new RequiredError(`First item does not exist in collection "${this.collection.name}"`, {
 				store: this,
 				provider: this.provider,
-				collection: this.collection,
+				collection: this.collection.name,
 				query: this.query,
 				caller: getGetter(this, "first"),
 			});
@@ -41,22 +43,22 @@ export class QueryStore<I extends Identifier, T extends Database, K extends Data
 	}
 
 	/** Get the last item in this store. */
-	override get last(): Item<I, T[K]> {
+	override get last(): Item<I, T> {
 		const last = this.optionalLast;
 		if (!last)
-			throw new RequiredError(`Last item does not exist in collection "${this.collection}"`, {
+			throw new RequiredError(`Last item does not exist in collection "${this.collection.name}"`, {
 				store: this,
 				provider: this.provider,
-				collection: this.collection,
+				collection: this.collection.name,
 				query: this.query,
 				caller: getGetter(this, "first"),
 			});
 		return last;
 	}
 
-	constructor(collection: K, query: ItemQuery<I, T[K]>, provider: AbstractProvider<I, T>, memory?: MemoryProvider<I, T>) {
+	constructor(collection: Collection<string, I, T>, query: ItemQuery<I, T>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
 		const time = memory?.getQueryTime(collection, query);
-		const items = memory?.getQuery(collection, query) || [];
+		const items = memory?.getTable<T>(collection.name).getQuery(query) || [];
 		super(typeof time === "number" || items.length ? items : NONE, time); // Use the value if it was definitely cached or is not empty.
 		if (memory) this.starter = store => runSequence(store.through(memory.getCachedQuerySequence(collection, query)));
 		this.provider = provider;
@@ -69,10 +71,10 @@ export class QueryStore<I extends Identifier, T extends Database, K extends Data
 	}
 
 	/** Refresh this store from the source provider. */
-	refresh(provider: AbstractProvider<I, T> = this.provider): void {
+	refresh(provider: DBProvider<I> = this.provider): void {
 		if (!this.busy.value) void this._refresh(provider);
 	}
-	private async _refresh(provider: AbstractProvider<I, T>): Promise<void> {
+	private async _refresh(provider: DBProvider<I>): Promise<void> {
 		this.busy.value = true;
 		this.reason = undefined; // Optimistically clear the error.
 		try {
@@ -92,7 +94,7 @@ export class QueryStore<I extends Identifier, T extends Database, K extends Data
 	}
 
 	/** Subscribe this store to a provider. */
-	connect(provider: AbstractProvider<I, T> = this.provider): StopCallback {
+	connect(provider: DBProvider<I> = this.provider): StopCallback {
 		return runSequence(this.through(provider.getQuerySequence(this.collection, this.query)));
 	}
 
@@ -120,7 +122,7 @@ export class QueryStore<I extends Identifier, T extends Database, K extends Data
 	}
 
 	// Implement `Iteratable`
-	override [Symbol.iterator](): Iterator<Item<I, T[K]>> {
+	override [Symbol.iterator](): Iterator<Item<I, T>> {
 		return this.value.values();
 	}
 }

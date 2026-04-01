@@ -1,114 +1,116 @@
-import { DeferredSequence } from "../sequence/DeferredSequence.js";
-import { requireArray } from "../util/array.js";
-import type { Data, Database, DataKey } from "../util/data.js";
-import { isArrayEqual } from "../util/equal.js";
-import type { Identifier, Item, Items, OptionalItem } from "../util/item.js";
-import { getItem } from "../util/item.js";
-import { countItems } from "../util/iterate.js";
-import type { ItemQuery } from "../util/query.js";
-import { queryItems, queryWritableItems } from "../util/query.js";
-import { getRandom, getRandomKey } from "../util/random.js";
-import type { Updates } from "../util/update.js";
-import { updateData } from "../util/update.js";
-import { Provider } from "./Provider.js";
+import { DeferredSequence } from "../../sequence/DeferredSequence.js";
+import { requireArray } from "../../util/array.js";
+import type { Data } from "../../util/data.js";
+import { isArrayEqual } from "../../util/equal.js";
+import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import { getItem } from "../../util/item.js";
+import { countItems } from "../../util/iterate.js";
+import type { ItemQuery } from "../../util/query.js";
+import { queryItems, queryWritableItems } from "../../util/query.js";
+import { getRandom, getRandomKey } from "../../util/random.js";
+import type { Updates } from "../../util/update.js";
+import { updateData } from "../../util/update.js";
+import type { Collection } from "../collection/Collection.js";
+import { DBProvider } from "./DBProvider.js";
 
 /**
  * Fast in-memory store for data.
  * - Extremely fast (ideal for caching!), but does not persist data after the browser window is closed.
  * - `get()` etc return the exact same instance of an object that's passed into `set()`
  */
-export class MemoryProvider<I extends Identifier, T extends Database> extends Provider<I, T> {
+export class MemoryDBProvider<I extends Identifier = Identifier> extends DBProvider<I> {
 	/** List of tables in `{ collection: Table }` format. */
-	private _tables: { [K in DataKey<T>]?: MemoryTable<I, T[K]> } = {};
+	// biome-ignore lint/suspicious/noExplicitAny: Internal storage erases T; getTable<T> restores it per-call.
+	private _tables: { [K in string]?: MemoryTable<I, any> } = {};
 
 	/** Get a table for a collection. */
-	getTable<K extends DataKey<T>>(collection: K): MemoryTable<I, T[K]> {
+	getTable<T extends Data>(collection: string): MemoryTable<I, T> {
 		// biome-ignore lint/suspicious/noAssignInExpressions: This is convenient.
-		return (this._tables[collection] ||= new MemoryTable<I, T[K]>());
+		return (this._tables[collection] ||= new MemoryTable<I, T>());
 	}
 
-	getItemTime<K extends DataKey<T>>(collection: K, id: I): number | undefined {
-		return this.getTable(collection).getItemTime(id);
+	getItemTime<T extends Data>(collection: Collection<string, I, T>, id: I): number | undefined {
+		return this.getTable<T>(collection.name).getItemTime(id);
 	}
 
-	getItem<K extends DataKey<T>>(collection: K, id: I): OptionalItem<I, T[K]> {
-		return this.getTable(collection).getItem(id);
+	async getItem<T extends Data>(collection: Collection<string, I, T>, id: I): Promise<OptionalItem<I, T>> {
+		return this.getTable<T>(collection.name).getItem(id);
 	}
 
-	getItemSequence<K extends DataKey<T>>(collection: K, id: I): AsyncIterable<OptionalItem<I, T[K]>> {
-		return this.getTable(collection).getItemSequence(id);
+	async *getItemSequence<T extends Data>(collection: Collection<string, I, T>, id: I): AsyncIterable<OptionalItem<I, T>> {
+		yield* this.getTable<T>(collection.name).getItemSequence(id);
 	}
 
-	getCachedItemSequence<K extends DataKey<T>>(collection: K, id: I): AsyncIterable<OptionalItem<I, T[K]>> {
-		return this.getTable(collection).getCachedItemSequence(id);
+	getCachedItemSequence<T extends Data>(collection: Collection<string, I, T>, id: I): AsyncIterable<OptionalItem<I, T>> {
+		return this.getTable<T>(collection.name).getCachedItemSequence(id);
 	}
 
-	addItem<K extends DataKey<T>>(collection: K, data: T[K]): I {
-		return this.getTable(collection).addItem(data);
+	async addItem<T extends Data>(collection: Collection<string, I, T>, data: T): Promise<I> {
+		return this.getTable<T>(collection.name).addItem(data);
 	}
 
-	setItem<K extends DataKey<T>>(collection: K, id: I, data: T[K]): void {
-		this.getTable(collection).setItem(id, data);
+	async setItem<T extends Data>(collection: Collection<string, I, T>, id: I, data: T): Promise<void> {
+		this.getTable<T>(collection.name).setItem(id, data);
 	}
 
-	setItemSequence<K extends DataKey<T>>(
-		collection: K,
+	setItemSequence<T extends Data>(
+		collection: Collection<string, I, T>,
 		id: I,
-		sequence: AsyncIterable<OptionalItem<I, T[K]>>,
-	): AsyncIterable<OptionalItem<I, T[K]>> {
-		return this.getTable(collection).setItemSequence(id, sequence);
+		sequence: AsyncIterable<OptionalItem<I, T>>,
+	): AsyncIterable<OptionalItem<I, T>> {
+		return this.getTable<T>(collection.name).setItemSequence(id, sequence);
 	}
 
-	updateItem<K extends DataKey<T>>(collection: K, id: I, updates: Updates<T[K]>): void {
-		this.getTable(collection).updateItem(id, updates);
+	async updateItem<T extends Data>(collection: Collection<string, I, T>, id: I, updates: Updates<T>): Promise<void> {
+		this.getTable<T>(collection.name).updateItem(id, updates);
 	}
 
-	deleteItem<K extends DataKey<T>>(collection: K, id: I): void {
-		this.getTable(collection).deleteItem(id);
+	async deleteItem<T extends Data>(collection: Collection<string, I, T>, id: I): Promise<void> {
+		this.getTable<T>(collection.name).deleteItem(id);
 	}
 
-	getQueryTime<K extends DataKey<T>>(collection: K, query?: ItemQuery<I, T[K]>): number | undefined {
-		return this.getTable(collection).getQueryTime(query);
+	getQueryTime<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): number | undefined {
+		return this.getTable<T>(collection.name).getQueryTime(query);
 	}
 
-	override countQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<I, T[K]>): number {
-		return this.getTable(collection).countQuery(query);
+	override async countQuery<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): Promise<number> {
+		return this.getTable<T>(collection.name).countQuery(query);
 	}
 
-	getQuery<K extends DataKey<T>>(collection: K, query?: ItemQuery<I, T[K]>): Items<I, T[K]> {
-		return this.getTable(collection).getQuery(query);
+	async getQuery<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): Promise<Items<I, T>> {
+		return this.getTable<T>(collection.name).getQuery(query);
 	}
 
-	getQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<I, T[K]>): AsyncIterable<Items<I, T[K]>> {
-		return this.getTable(collection).getQuerySequence(query);
+	async *getQuerySequence<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): AsyncIterable<Items<I, T>> {
+		yield* this.getTable<T>(collection.name).getQuerySequence(query);
 	}
 
-	getCachedQuerySequence<K extends DataKey<T>>(collection: K, query?: ItemQuery<I, T[K]>): AsyncIterable<Items<I, T[K]>> {
-		return this.getTable(collection).getCachedQuerySequence(query);
+	getCachedQuerySequence<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): AsyncIterable<Items<I, T>> {
+		return this.getTable<T>(collection.name).getCachedQuerySequence(query);
 	}
 
-	setQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>, data: T[K]): void {
-		this.getTable(collection).setQuery(query, data);
+	async setQuery<T extends Data>(collection: Collection<string, I, T>, query: ItemQuery<I, T>, data: T): Promise<void> {
+		this.getTable<T>(collection.name).setQuery(query, data);
 	}
 
-	updateQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>, updates: Updates<T[K]>): void {
-		this.getTable(collection).updateQuery(query, updates);
+	async updateQuery<T extends Data>(collection: Collection<string, I, T>, query: ItemQuery<I, T>, updates: Updates<T>): Promise<void> {
+		this.getTable<T>(collection.name).updateQuery(query, updates);
 	}
 
-	deleteQuery<K extends DataKey<T>>(collection: K, query: ItemQuery<I, T[K]>): void {
-		this.getTable(collection).deleteQuery(query);
+	async deleteQuery<T extends Data>(collection: Collection<string, I, T>, query: ItemQuery<I, T>): Promise<void> {
+		this.getTable<T>(collection.name).deleteQuery(query);
 	}
 
-	setItems<K extends DataKey<T>>(collection: K, items: Items<I, T[K]>, query?: ItemQuery<I, T[K]>): void {
-		this.getTable(collection).setItems(items, query);
+	setItems<T extends Data>(collection: Collection<string, I, T>, items: Items<I, T>, query?: ItemQuery<I, T>): void {
+		this.getTable<T>(collection.name).setItems(items, query);
 	}
 
-	setItemsSequence<K extends DataKey<T>>(
-		collection: K,
-		sequence: AsyncIterable<Items<I, T[K]>>,
-		query?: ItemQuery<I, T[K]>,
-	): AsyncIterable<Items<I, T[K]>> {
-		return this.getTable(collection).setItemsSequence(sequence, query);
+	setItemsSequence<T extends Data>(
+		collection: Collection<string, I, T>,
+		sequence: AsyncIterable<Items<I, T>>,
+		query?: ItemQuery<I, T>,
+	): AsyncIterable<Items<I, T>> {
+		return this.getTable<T>(collection.name).setItemsSequence(sequence, query);
 	}
 }
 
