@@ -2,6 +2,7 @@ import { Store } from "../../store/Store.js";
 import { NONE } from "../../util/constants.js";
 import { isDeepEqual } from "../../util/equal.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
+import type { APIProvider } from "../provider/APIProvider.js";
 
 const _CANCELLED = Symbol("EndpointStore/CANCELLED");
 const _TIMEOUT = Symbol("EndpointStore/TIMEOUT");
@@ -10,6 +11,8 @@ const _TIMEOUT = Symbol("EndpointStore/TIMEOUT");
  * Store object that loads a result from an API endpoint and manages its state.
  */
 export class EndpointStore<P, R> extends Store<R> implements Disposable {
+	readonly provider: APIProvider;
+
 	readonly endpoint: Endpoint<P, R>;
 
 	private _payload!: P;
@@ -51,9 +54,10 @@ export class EndpointStore<P, R> extends Store<R> implements Disposable {
 		super.value = value;
 	}
 
-	constructor(endpoint: Endpoint<P, R>, payload: P) {
+	constructor(endpoint: Endpoint<P, R>, payload: P, provider: APIProvider) {
 		super(NONE);
 		this.endpoint = endpoint;
+		this.provider = provider;
 		this.payload = payload;
 	}
 
@@ -86,6 +90,11 @@ export class EndpointStore<P, R> extends Store<R> implements Disposable {
 		return promise;
 	}
 
+	/** Fetch the result if the current value is older than `maxAge` milliseconds. */
+	public refreshStale(maxAge: number): void {
+		if (this.age > maxAge) void this.fetch();
+	}
+
 	/** Abort any in-flight request now. */
 	private abort() {
 		if (this._inflight) {
@@ -98,7 +107,7 @@ export class EndpointStore<P, R> extends Store<R> implements Disposable {
 	/** Fetch the result from the API endpoint now. */
 	private async _fetch(abort: AbortController): Promise<void> {
 		try {
-			const value = await this.endpoint.fetch(this._payload, { signal: abort.signal });
+			const value = await this.provider.fetch(this.endpoint, this._payload, { signal: abort.signal });
 			this.reason = undefined;
 			this.value = value;
 		} catch (thrown) {
@@ -118,6 +127,10 @@ export class EndpointStore<P, R> extends Store<R> implements Disposable {
 		this.abort();
 	}
 }
+
+/** Any endpoint store. */
+// biome-ignore lint/suspicious/noExplicitAny: Intentional.
+export type AnyEndpointStore = EndpointStore<any, any>;
 
 /** A fetch to an endpoint that can be aborted. */
 type AbortableFetch<T> = {

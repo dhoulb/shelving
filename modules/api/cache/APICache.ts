@@ -1,18 +1,24 @@
 import { setMapItem } from "../../util/map.js";
-import type { Endpoint } from "../endpoint/Endpoint.js";
-import { EndpointCache } from "./EndpointCache.js";
+import type { AnyEndpoint, Endpoint } from "../endpoint/Endpoint.js";
+import type { APIProvider } from "../provider/APIProvider.js";
+import { type AnyEndpointCache, EndpointCache } from "./EndpointCache.js";
 
 /**
  * Cache of `EndpointCache` objects for multiple endpoints.
  * - Use `get(endpoint)` to retrieve or create the `EndpointCache` for a given endpoint, then `get(payload)` on that to get a specific `EndpointStore`.
  */
 export class APICache implements Disposable {
-	// biome-ignore lint/suspicious/noExplicitAny: `unknown` causes edge case matching issues.
-	private readonly _caches = new Map<Endpoint<any, any>, EndpointCache<any, any>>();
+	private readonly _caches = new Map<AnyEndpoint, AnyEndpointCache>();
+
+	readonly provider: APIProvider;
+
+	constructor(provider: APIProvider) {
+		this.provider = provider;
+	}
 
 	/** Get (or create) the `EndpointCache` for the given endpoint. */
 	get<P, R>(endpoint: Endpoint<P, R>): EndpointCache<P, R> {
-		return this._caches.get(endpoint) || setMapItem(this._caches, endpoint, new EndpointCache(endpoint));
+		return this._caches.get(endpoint) || setMapItem(this._caches, endpoint, new EndpointCache(endpoint, this.provider));
 	}
 
 	/** Invalidate a specific store for an endpoint. */

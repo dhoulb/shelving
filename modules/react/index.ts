@@ -1,3 +1,4 @@
+export * from "./createAPIContext.js";
 export * from "./createCacheContext.js";
 export * from "./createDataContext.js";
 export * from "./useInstance.js";

@@ -29,7 +29,7 @@ describe("ClientAPIProvider", () => {
 				expect(request.headers.get("X-Default")).toBe("provider");
 				expect(request.headers.get("X-Call")).toBe("call");
 				expect(request.headers.get("Content-Type")).toBe("application/custom");
-				return new Response(JSON.stringify("ok"), {
+				return await new Response(JSON.stringify("ok"), {
 					status: 200,
 					headers: { "Content-Type": "application/json" },
 				});
@@ -53,7 +53,7 @@ describe("ClientAPIProvider", () => {
 			// @ts-expect-error Testing replacement.
 			globalThis.fetch = async (request: Request) => {
 				expect(request.signal.aborted).toBe(false);
-				return new Response(JSON.stringify("ok"), {
+				return await new Response(JSON.stringify("ok"), {
 					status: 200,
 					headers: { "Content-Type": "application/json" },
 				});

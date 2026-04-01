@@ -5,7 +5,7 @@ describe("MockAPIProvider", () => {
 	test("fetch() returns parsed handler responses and logs the resolved result", async () => {
 		const provider = new MockAPIProvider({
 			url: "https://api.example.com/v1/",
-			handler: async (request) => {
+			handler: request => {
 				expect(request.url).toBe("https://api.example.com/v1/users/123?extra=x");
 				return new Response(JSON.stringify("mocked"), {
 					status: 200,
@@ -30,7 +30,7 @@ describe("MockAPIProvider", () => {
 		const provider = new MockAPIProvider({
 			url: "https://api.example.com/",
 			options: { headers: { "X-Default": "provider", "Content-Type": "application/custom" } },
-			handler: async (request) => {
+			handler: request => {
 				expect(request.headers.get("X-Default")).toBe("provider");
 				expect(request.headers.get("X-Call")).toBe("call");
 				expect(request.headers.get("Content-Type")).toBe("application/custom");

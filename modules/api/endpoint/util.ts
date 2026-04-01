@@ -25,8 +25,11 @@ export interface EndpointHandler<P = unknown, R = unknown, A extends Arguments =
 	readonly callback: EndpointCallback<P, R, A>;
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: Intentional.
+export type AnyEndpointHandler<A extends Arguments = []> = EndpointHandler<any, any, A>;
+
 /** A collection of endpoint handlers that can be matched and invoked by `handleEndpoints()`. */
-export type EndpointHandlers<A extends Arguments = []> = Iterable<EndpointHandler<unknown, unknown, A>>;
+export type EndpointHandlers<A extends Arguments = []> = Iterable<AnyEndpointHandler<A>>;
 
 /**
  * Handle a `Request` with the first matching endpoint handler after stripping any base-path prefix from the request pathname.
