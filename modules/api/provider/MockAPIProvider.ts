@@ -36,8 +36,8 @@ export class MockAPIProvider extends ClientAPIProvider {
 
 	/**
 	 * Log a `fetch()` call without using the network.
-	 * - If `getResult` is configured, its return value is validated against the endpoint result schema.
-	 * - Otherwise `undefined` is validated against the endpoint result schema.
+	 * - If `getResult` is configured, its return value is returned as-is (no schema validation).
+	 * - Otherwise `undefined` is returned.
 	 */
 	override async fetch<P, R>(
 		endpoint: Endpoint<P, R>,
@@ -46,9 +46,9 @@ export class MockAPIProvider extends ClientAPIProvider {
 		caller: AnyCaller = this.fetch,
 	): Promise<R> {
 		const options = mergeRequestOptions(this.options, _options);
-		const request = endpoint.getRequest(this.url, payload, options, caller);
+		const request = this.getRequest(endpoint, payload, options, caller);
 		const response = await this.handler(request);
-		const result = await endpoint.parseResponse(response);
+		const result = await this.parseResponse(endpoint, response, caller);
 		this.calls.push({ type: "fetch", endpoint, payload, options, request, response, result });
 		return result;
 	}

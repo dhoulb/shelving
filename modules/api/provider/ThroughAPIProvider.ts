@@ -2,16 +2,15 @@ import type { AnyCaller } from "../../util/function.js";
 import type { RequestOptions } from "../../util/http.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "./APIProvider.js";
-import type { ClientAPIProvider } from "./ClientAPIProvider.js";
 
 /**
  * Provider wrapper that delegates API operations to a source provider.
  * - Extend this when you want to intercept only selected API operations, such as injecting auth headers or logging.
  */
 export class ThroughAPIProvider implements APIProvider {
-	readonly source: ClientAPIProvider;
+	readonly source: APIProvider;
 
-	constructor(source: ClientAPIProvider) {
+	constructor(source: APIProvider) {
 		this.source = source;
 	}
 

@@ -84,3 +84,8 @@ bun run build
 
 - Regular `function` declarations for public API exports
 - Arrow functions for short utilities, callbacks, and one-liners
+
+### Error Handling
+
+- Schema validation errors throw a `string` (human-readable message like `"name: Must be 5-50 characters"`). Let these propagate as-is when they represent user input errors — form handlers and UI layers consume these strings directly.
+- Only wrap validation strings in a typed error (e.g. `ResponseError`, `ValueError`) when the error is a system/transport problem rather than a user input problem. For example, a bad API response body is a server error (`ResponseError` code 422), not a user error.

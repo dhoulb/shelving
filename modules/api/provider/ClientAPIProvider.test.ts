@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ClientAPIProvider, DATA, GET, POST, ResponseError, STRING } from "../../index.js";
+import { ClientAPIProvider, DATA, GET, POST, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
 
 describe("ClientAPIProvider", () => {
 	test("fetch() returns validated JSON responses", async () => {
@@ -69,7 +69,7 @@ describe("ClientAPIProvider", () => {
 		}
 	});
 
-	test("fetch() throws ResponseError when the response payload is invalid", async () => {
+	test("fetch() throws ResponseError when the response payload is invalid (via ValidationAPIProvider)", async () => {
 		const originalFetch = globalThis.fetch;
 		try {
 			// @ts-expect-error Testing replacement.
@@ -79,7 +79,7 @@ describe("ClientAPIProvider", () => {
 					headers: { "Content-Type": "application/json" },
 				});
 
-			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
+			const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com/" }));
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
 			await expect(provider.fetch(endpoint, { id: "1" })).rejects.toBeInstanceOf(ResponseError);

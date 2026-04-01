@@ -1,15 +1,11 @@
 import { RequiredError } from "../../error/RequiredError.js";
-import { ResponseError } from "../../error/ResponseError.js";
 import { type Schema, UNDEFINED } from "../../schema/Schema.js";
 import type { ImmutableArray } from "../../util/array.js";
 import { type Data, isData } from "../../util/data.js";
-import { getMessage } from "../../util/error.js";
 import type { AnyCaller, Arguments } from "../../util/function.js";
-import { getRequest, getResponseContent, type RequestMethod, type RequestOptions, type RequestParams } from "../../util/http.js";
-import { omitProps } from "../../util/object.js";
+import type { RequestMethod, RequestParams } from "../../util/http.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { getPlaceholders, matchTemplate, renderTemplate, type TemplatePlaceholders } from "../../util/template.js";
-import { type PossibleURL, requireBaseURL, requireURL } from "../../util/url.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
 /**
@@ -64,31 +60,6 @@ export class Endpoint<P, R> {
 	}
 
 	/**
-	 * Create a `Request` that targets this endpoint with a given base URL.
-	 * - Path `{placeholders}` are rendered from the payload.
-	 * - For `GET` and `HEAD`, remaining payload fields are appended as `?query` params.
-	 * - For all other requests, payload is sent as the body.
-	 *
-	 * @param base The base URL where this endpoint is targeted. Base URL conversion rules from `getBaseURL()` apply so only the `origin` and `pathname` are kept and always has a trailing slash.
-	 *
-	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
-	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
-	 */
-	getRequest(base: PossibleURL, payload: P, options?: RequestOptions, caller: AnyCaller = this.getRequest): Request {
-		// Render the path into the base URL.
-		const url = requireURL(`.${this.renderPath(payload, caller)}`, requireBaseURL(base, undefined, caller), caller).href;
-
-		// Placeholders are rendered into the path so get omitted from the body payload.
-		if (this.placeholders.length) {
-			assertPlaceholderPayload(payload, this, caller);
-			return getRequest(this.method, url, omitProps(payload, ...this.placeholders), options);
-		}
-
-		// No placeholders.
-		return getRequest(this.method, url, payload, options);
-	}
-
-	/**
 	 * Match a method/path pair against this endpoint and return any matched `{placeholder}` params.
 	 */
 	match(method: RequestMethod, path: AbsolutePath, caller: AnyCaller = this.match): RequestParams | undefined {
@@ -103,28 +74,6 @@ export class Endpoint<P, R> {
 	 */
 	handler<A extends Arguments = []>(callback: EndpointCallback<P, R, A>): EndpointHandler<P, R, A> {
 		return { endpoint: this, callback };
-	}
-
-	/**
-	 * Parse an HTTP `Response` for this endpoint and validate it against the result schema.
-	 * - Non-2xx responses become `ResponseError`.
-	 * - Invalid success payloads also become `ResponseError`.
-	 */
-	async parseResponse(response: Response, caller: AnyCaller = this.parseResponse): Promise<R> {
-		const { ok, status } = response;
-		const content = await getResponseContent(response, caller);
-
-		if (!ok) throw new ResponseError(getMessage(content) ?? `Error ${status}`, { code: status, cause: response, caller });
-
-		try {
-			return this.result.validate(content);
-		} catch (thrown) {
-			// Thrown string indicates a validation error in the returned response.
-			if (typeof thrown === "string")
-				throw new ResponseError(`Invalid result for ${this.toString()}:\n${thrown}`, { endpoint: this, code: 422, caller });
-
-			throw thrown;
-		}
 	}
 
 	/** Convert to string, e.g. `GET /user/{id}` */

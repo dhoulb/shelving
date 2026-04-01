@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, MockAPIProvider, POST, ResponseError, STRING } from "../../index.js";
+import { DATA, GET, MockAPIProvider, POST, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
 
 describe("MockAPIProvider", () => {
 	test("fetch() returns parsed handler responses and logs the resolved result", async () => {
@@ -50,8 +50,8 @@ describe("MockAPIProvider", () => {
 		});
 	});
 
-	test("fetch() throws ResponseError for invalid mocked responses", async () => {
-		const provider = new MockAPIProvider({
+	test("fetch() throws ResponseError for invalid mocked responses (via ValidationAPIProvider)", async () => {
+		const mock = new MockAPIProvider({
 			url: "https://api.example.com/",
 			handler: async () =>
 				new Response(JSON.stringify(false), {
@@ -59,9 +59,10 @@ describe("MockAPIProvider", () => {
 					headers: { "Content-Type": "application/json" },
 				}),
 		});
+		const provider = new ValidationAPIProvider(mock);
 		const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
 		await expect(provider.fetch(endpoint, { id: "1" })).rejects.toBeInstanceOf(ResponseError);
-		expect(provider.calls).toHaveLength(0);
+		expect(mock.calls).toHaveLength(1);
 	});
 });
