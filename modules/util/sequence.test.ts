@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/suspicious/useAwait: False positive for async iterators. */
-
 import { describe, expect, test } from "bun:test";
 import type { MutableArray } from "../index.js";
 import { getDeferred, mergeSequences, repeatDelay, repeatUntil, runSequence, STOP } from "../index.js";

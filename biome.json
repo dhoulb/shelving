@@ -34,7 +34,6 @@
 			"suspicious": {
 				"noEmptyBlockStatements": "error",
 				"noSkippedTests": "error",
-				"useAwait": "error",
 				"noEmptyBlock": "error",
 				"noConsole": {
 					"level": "error",
