@@ -21,7 +21,21 @@ export class Store<T> implements AsyncIterable<T> {
 	/** Deferred sequence this store uses to issue values as they change. */
 	public readonly next: DeferredSequence<T> = new DeferredSequence();
 
-	/** Current value of the store (or throw a promise that resolves when this store receives its next value or error). */
+	/**
+	 * Store is considered to be "loading" if it has no value or error.
+	 * - Calling `this.value` will throw `this.reason` if there's an error reason set, or a `Promise` if there's no value set.
+	 * - Calling `this.loading` is a way to check if this store has a value without triggering those throws.
+	 */
+	get loading(): boolean {
+		return this._value === NONE && this._reason === undefined;
+	}
+
+	/**
+	 * Current value of the store.
+	 *
+	 * @throws {Promise} that resolves when this store receives its next value or error).
+	 * @throws {unknown} if the store currently has an error.
+	 */
 	get value(): T {
 		if (this._reason !== undefined) throw this._reason;
 		if (this._value === NONE) throw this.next;
@@ -41,21 +55,16 @@ export class Store<T> implements AsyncIterable<T> {
 	}
 	private _value: T | typeof NONE = NONE;
 
-	/** Is there a current value, or is it still loading. */
-	get loading(): boolean {
-		return this._value === NONE;
-	}
-
 	/** Time (in milliseconds) this store was last updated with a new value, or `undefined` if this store is currently loading. */
 	get time(): number | undefined {
 		return this._value === NONE ? undefined : this._time;
 	}
-	private _time: number | undefined;
+	private _time: number | undefined = undefined;
 
 	/** How old this store's value is (in milliseconds). */
 	get age(): number {
-		const time = this.time;
-		return typeof time === "number" ? Date.now() - time : Number.POSITIVE_INFINITY;
+		if (this.time === undefined) return Number.POSITIVE_INFINITY;
+		return Date.now() - this.time;
 	}
 
 	/** Current error of this store (or `undefined` if there is no reason). */
@@ -90,6 +99,11 @@ export class Store<T> implements AsyncIterable<T> {
 			this.value = value;
 			yield value;
 		}
+	}
+
+	// Called when this store starts iterating over a value.
+	private _start(): void {
+		//
 	}
 
 	// Implement `AsyncIterable`
