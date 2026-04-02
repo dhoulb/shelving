@@ -1,14 +1,11 @@
 import type { Collection } from "../db/collection/Collection.js";
 import { DBProvider } from "../db/provider/DBProvider.js";
 import { UnimplementedError } from "../error/UnimplementedError.js";
-import { requireArray } from "../util/array.js";
 import type { Data } from "../util/data.js";
-import type { Item, Items, OptionalItem } from "../util/item.js";
+import type { Items, OptionalItem } from "../util/item.js";
 import { getItem } from "../util/item.js";
 import type { ItemQuery } from "../util/query.js";
-import { queryItems } from "../util/query.js";
 import type { Updates } from "../util/update.js";
-import { updateData } from "../util/update.js";
 import { randomUUID } from "../util/uuid.js";
 
 /** Minimal interface matching Cloudflare Workers KV namespace runtime object. */
@@ -16,19 +13,6 @@ export interface KVNamespace {
 	get(key: string, options: { type: "json" }): Promise<unknown>;
 	put(key: string, value: string): Promise<void>;
 	delete(key: string): Promise<void>;
-	list(options?: { prefix?: string; limit?: number; cursor?: string }): Promise<{
-		keys: readonly { name: string }[];
-		list_complete: boolean;
-		cursor?: string;
-	}>;
-}
-
-function _getKey(collection: string, id: string): string {
-	return `${collection}:${id}`;
-}
-
-function _getPrefix(collection: string): string {
-	return `${collection}:`;
 }
 
 /**
@@ -39,26 +23,21 @@ function _getPrefix(collection: string): string {
  *
  * ### Supported
  * - Single item operations: `getItem`, `setItem`, `addItem`, `updateItem`, `deleteItem`.
- * - Query operations: `getQuery`, `setQuery`, `updateQuery`, `deleteQuery`, `countQuery`.
- * - All filter operators: equality, not, in, out, contains, gt, gte, lt, lte.
- * - Sorting (`$order`) and limiting (`$limit`).
  * - ID generation: `addItem()` generates a UUID v4 identifier automatically.
  *
  * ### Not supported
  * - **Realtime subscriptions:** `getItemSequence()` and `getQuerySequence()` throw `UnimplementedError`.
  *   KV has no change feed or push notification mechanism.
+ * - **Updates:** `updateItem()` and `updateQuery()` throw `UnimplementedError`.
+ * - **Collection queries:** `getQuery()`, `setQuery()`, `deleteQuery()`, and `countQuery()` are not supported.
+ *   KV does not expose efficient filtering, sorting, or collection scans, so this provider avoids
+ *   the old "read everything and filter in memory" behavior.
  *
  * ### Performance limitations
- * - **Querying is expensive:** KV has no native query support. Every `getQuery()` call lists all keys
- *   in the collection (paginated, 1000 keys per page), fetches each value individually, then applies
- *   filtering, sorting, and limiting in-memory. Avoid large collections where possible.
- * - **Non-atomic updates:** `updateItem()` performs a read-modify-write cycle. Concurrent writes to the
- *   same item may cause one write to be lost.
- * - **Eventual consistency:** KV is eventually consistent — reads may return stale data, particularly
- *   shortly after writes. This also affects `updateItem`, `setQuery`, `updateQuery`, and `deleteQuery`
- *   since they read before writing.
- * - **No bulk get:** Each item value must be fetched individually — there is no multi-get API.
- *   Query operations that match N items require N+1 KV requests (one `list` + N `get` calls per page).
+ * - **Single-key store only:** This provider is intentionally limited to direct key reads and writes.
+ *   If you need collection queries, filtering, sorting, or bulk mutations, use a different backend.
+ * - **Eventual consistency:** KV is eventually consistent, so reads may briefly return stale values
+ *   shortly after writes.
  */
 export class CloudflareKVProvider extends DBProvider<string> {
 	private readonly _kv: KVNamespace;
@@ -87,58 +66,35 @@ export class CloudflareKVProvider extends DBProvider<string> {
 		await this._kv.put(_getKey(name, id), JSON.stringify(data));
 	}
 
-	async updateItem<T extends Data>(c: Collection<string, string, T>, id: string, updates: Updates<T>): Promise<void> {
-		const existing = await this.getItem(c, id);
-		if (existing) await this.setItem(c, id, updateData<T>(existing, updates));
+	async updateItem<T extends Data>(_c: Collection<string, string, T>, _id: string, _updates: Updates<T>): Promise<void> {
+		throw new UnimplementedError("CloudflareKVProvider does not support updates to items");
 	}
 
 	async deleteItem<T extends Data>({ name }: Collection<string, string, T>, id: string): Promise<void> {
 		await this._kv.delete(_getKey(name, id));
 	}
 
-	async getQuery<T extends Data>({ name }: Collection<string, string, T>, q?: ItemQuery<string, T>): Promise<Items<string, T>> {
-		const all = await this._getAllItems<T>(name);
-		return q ? requireArray(queryItems(all, q)) : all;
+	async getQuery<T extends Data>(_c: Collection<string, string, T>, q?: ItemQuery<string, T>): Promise<Items<string, T>> {
+		throw new UnimplementedError("CloudflareKVProvider does not support querying items");
 	}
 
 	getQuerySequence<T extends Data>(_c: Collection<string, string, T>, _q?: ItemQuery<string, T>): AsyncIterable<Items<string, T>> {
 		throw new UnimplementedError("CloudflareKVProvider does not support realtime subscriptions");
 	}
 
-	async setQuery<T extends Data>(c: Collection<string, string, T>, q: ItemQuery<string, T>, data: T): Promise<void> {
-		const items = await this.getQuery(c, q);
-		await Promise.all(items.map(item => this.setItem(c, item.id, data)));
+	async setQuery<T extends Data>(_c: Collection<string, string, T>, _q: ItemQuery<string, T>, _data: T): Promise<void> {
+		throw new UnimplementedError("CloudflareKVProvider does not support querying items");
 	}
 
-	async updateQuery<T extends Data>(c: Collection<string, string, T>, q: ItemQuery<string, T>, updates: Updates<T>): Promise<void> {
-		const items = await this.getQuery(c, q);
-		await Promise.all(items.map(item => this.setItem(c, item.id, updateData<T>(item, updates))));
+	async updateQuery<T extends Data>(_c: Collection<string, string, T>, _q: ItemQuery<string, T>, _updates: Updates<T>): Promise<void> {
+		throw new UnimplementedError("CloudflareKVProvider does not support updates to items");
 	}
 
 	async deleteQuery<T extends Data>(c: Collection<string, string, T>, q: ItemQuery<string, T>): Promise<void> {
-		const items = await this.getQuery(c, q);
-		await Promise.all(items.map(item => this._kv.delete(_getKey(c.name, item.id))));
+		throw new UnimplementedError("CloudflareKVProvider does not support querying items");
 	}
+}
 
-	/** Fetch all items in a collection, paginating through `kv.list()`. */
-	private async _getAllItems<T extends Data>(collection: string): Promise<Items<string, T>> {
-		const prefix = _getPrefix(collection);
-		const items: Item<string, T>[] = [];
-		let cursor: string | undefined;
-		do {
-			const result = await this._kv.list(cursor ? { prefix, cursor } : { prefix });
-			const values = await Promise.all(
-				result.keys.map(async key => {
-					const id = key.name.slice(prefix.length);
-					const data = (await this._kv.get(key.name, { type: "json" })) as T | null;
-					if (data) return getItem(id, data);
-				}),
-			);
-			for (const item of values) {
-				if (item) items.push(item);
-			}
-			cursor = result.list_complete ? undefined : result.cursor;
-		} while (cursor);
-		return items;
-	}
+function _getKey(collection: string, id: string): string {
+	return `${collection}:${id}`;
 }
