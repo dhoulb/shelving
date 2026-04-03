@@ -90,7 +90,7 @@ export class CloudflareKVProvider extends DBProvider<string> {
 		throw new UnimplementedError("CloudflareKVProvider does not support updates to items");
 	}
 
-	async deleteQuery<T extends Data>(c: Collection<string, string, T>, _q: ItemQuery<string, T>): Promise<void> {
+	async deleteQuery<T extends Data>(_c: Collection<string, string, T>, _q: ItemQuery<string, T>): Promise<void> {
 		throw new UnimplementedError("CloudflareKVProvider does not support querying items");
 	}
 }
