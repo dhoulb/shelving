@@ -43,8 +43,8 @@ export function COLLECTION<K extends string, I extends Identifier, T extends Dat
 	return new Collection(name, id, data);
 }
 
-/** A readonly array of Collection instances. */
-export type Collections = ReadonlyArray<Collection<string, Identifier, Data>>;
+/** A readonly array of Collection instances, possibly with a standardised `Identifier`. */
+export type Collections<I extends Identifier = Identifier> = ReadonlyArray<Collection<string, I, Data>>;
 
 /** Extract the union of collection key strings from a Collections type. */
 export type CollectionKeys<C extends Collections> = C[number]["name"];
