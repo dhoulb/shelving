@@ -5,6 +5,7 @@ export * from "./provider/DBProvider.js";
 export * from "./provider/DebugDBProvider.js";
 export * from "./provider/MemoryDBProvider.js";
 export * from "./provider/MockDBProvider.js";
+export * from "./provider/SQLProvider.js";
 export * from "./provider/ThroughDBProvider.js";
 export * from "./provider/ValidationDBProvider.js";
 export * from "./store/ItemStore.js";
