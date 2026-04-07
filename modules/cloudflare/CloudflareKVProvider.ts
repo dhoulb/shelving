@@ -7,13 +7,7 @@ import { getItem } from "../util/item.js";
 import type { ItemQuery } from "../util/query.js";
 import type { Updates } from "../util/update.js";
 import { randomUUID } from "../util/uuid.js";
-
-/** Minimal interface matching Cloudflare Workers KV namespace runtime object. */
-export interface KVNamespace {
-	get(key: string, options: { type: "json" }): Promise<unknown>;
-	put(key: string, value: string): Promise<void>;
-	delete(key: string): Promise<void>;
-}
+import type { KVNamespace } from "./types.js";
 
 /**
  * Cloudflare Workers KV database provider.
