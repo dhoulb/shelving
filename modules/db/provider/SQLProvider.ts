@@ -1,10 +1,10 @@
 import { UnimplementedError } from "../../error/UnimplementedError.js";
 import type { ImmutableArray } from "../../util/array.js";
-import type { Data } from "../../util/data.js";
+import type { Data, DataPath } from "../../util/data.js";
 import type { Item, Items, OptionalItem } from "../../util/item.js";
 import { assertNumber } from "../../util/number.js";
-import { type Filter, getFilters, getLimit, getOrders, type ItemQuery } from "../../util/query.js";
-import type { Updates } from "../../util/update.js";
+import { getQueryFilters, getQueryLimit, getQueryOrders, type ItemQuery, type QueryFilter, type QueryOrder } from "../../util/query.js";
+import { getUpdates, type Update, type Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
 import { DBProvider } from "./DBProvider.js";
 
@@ -21,10 +21,6 @@ type CountRow = {
 /** Shared SQL execution and CRUD/query behavior. */
 export abstract class SQLProvider extends DBProvider<number> {
 	abstract exec<T extends Data = Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<T>>;
-
-	protected escapeIdentifier(name: string): unknown {
-		return `"${name.replaceAll(`"`, `""`)}"`;
-	}
 
 	async getItem<T extends Data>({ name }: Collection<string, number, T>, id: number): Promise<OptionalItem<number, T>> {
 		const rows = await this.exec<Item<number, T>>`
@@ -64,8 +60,8 @@ export abstract class SQLProvider extends DBProvider<number> {
 		`;
 	}
 
-	async deleteItem<T extends Data>(c: Collection<string, number, T>, id: number): Promise<void> {
-		await this.exec`DELETE FROM ${c} WHERE ${this.sqlIdentifier("id")} = ${id}`;
+	async deleteItem<T extends Data>({ name }: Collection<string, number, T>, id: number): Promise<void> {
+		await this.exec`DELETE FROM ${this.sqlIdentifier(name)} WHERE ${this.sqlIdentifier("id")} = ${id}`;
 	}
 
 	override async countQuery<T extends Data>({ name }: Collection<string, number, T>, query?: ItemQuery<number, T>): Promise<number> {
@@ -107,45 +103,66 @@ export abstract class SQLProvider extends DBProvider<number> {
 	 * Define an SQL fragment using Javascript template literal format.
 	 * @example this.sql`SELECT * FROM ${table}`; // SQLFragment
 	 */
-	protected sql(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): SQLFragment {
+	sql(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): SQLFragment {
 		return { strings, values };
 	}
 
 	/** Define an SQL fragment for an identifier, e.g. `"myTable"` */
-	protected sqlIdentifier(name: string): SQLFragment {
-		return { strings: ["", ""], values: [this.escapeIdentifier(name)] };
+	sqlIdentifier(name: string): SQLFragment {
+		return { strings: [_escapeIdentifier(name)], values: [] };
+	}
+
+	/** Define an SQL fragment that extracts a deeply nested calue for comparison, e.g. `"a" #>> {"b","c"}` in Postgres */
+	sqlExtract(key: DataPath): SQLFragment {
+		if (key.length > 1) throw new UnimplementedError("SQLProvider does not support nested filter keys");
+		return this.sqlIdentifier(key[0]);
 	}
 
 	/** Define an SQL fragment to generate a series of values with a separator, e.g. `"a" = 1 AND "b" = 2` */
-	protected sqlJoin(values: ImmutableArray<unknown>, separator: string = ", "): SQLFragment {
-		return {
-			strings: ["", ...new Array(values.length).fill(separator), ""],
-			values,
-		};
+	sqlConcat(values: ImmutableArray<SQLFragment>, separator = ", ", before = "", after = ""): SQLFragment {
+		const strings = [before, ...new Array(Math.max(0, values.length - 1)).fill(separator), after];
+		return { strings, values };
 	}
 
 	/** Define an SQL fragment for setting a list of values, e.g. `"a" = 1, "b" = 2` */
-	protected sqlSetters<T extends Data>(data: T): SQLFragment {
+	sqlSetters<T extends Data>(data: T): SQLFragment {
 		const entries = Object.entries(data);
-		return this.sqlJoin(
+		return this.sqlConcat(
 			entries.map(([key, value]) => this.sql`${this.sqlIdentifier(key)} = ${value}`),
 			", ",
 		);
 	}
 
-	/** Define an SQL fragment for setting a list of values, e.g. `"a" = 1, "b" = 2` */
-	protected sqlUpdates<T extends Data>(updates: Updates<T>): SQLFragment {
-		// @todo map our `Updates` type into a series of SQL `a = 123` fragments and join them with `, `
+	/** Define an SQL fragment for updates, e.g. `"a" = 1, "b" = "b" + 5` */
+	sqlUpdates<T extends Data>(updates: Updates<T>): SQLFragment {
+		return this.sqlConcat(
+			getUpdates(updates).map(update => this.sqlUpdate(update)),
+			", ",
+		);
+	}
+
+	/**
+	 * Define an SQL fragment for a single update action.
+	 * - Handles flat `set` and `sum` only (single-segment key).
+	 * - Nested keys (multi-segment) and `with`/`omit` actions throw `UnimplementedError`.
+	 * - Subclasses should override to support nested keys and array mutation actions.
+	 */
+	sqlUpdate({ action, key, value }: Update): SQLFragment {
+		if (key.length > 1) throw new UnimplementedError("SQLProvider does not support nested update keys");
+		const column = this.sqlIdentifier(key[0]);
+		if (action === "set") return this.sql`${column} = ${value}`;
+		if (action === "sum") return this.sql`${column} = ${column} + ${value}`;
+		throw new UnimplementedError(`SQLProvider does not support "${action}" updates`);
 	}
 
 	/** Define an SQL fragment for `VALUES` syntax, e.g. `("a", "b") VALUES (1, 2)` */
-	protected sqlValues<T extends Data>(data: T): SQLFragment {
+	sqlValues<T extends Data>(data: T): SQLFragment {
 		const entries = Object.entries(data);
-		const keys = this.sqlJoin(
+		const keys = this.sqlConcat(
 			entries.map(([key]) => this.sqlIdentifier(key)),
 			", ",
 		);
-		const values = this.sqlJoin(
+		const values = this.sqlConcat(
 			entries.map(([, value]) => this.sql`${value}`),
 			", ",
 		);
@@ -153,55 +170,70 @@ export abstract class SQLProvider extends DBProvider<number> {
 	}
 
 	/** Define an SQL for the `WHERE`, `ORDER BY` and `LIMIT` clauses of an SQL query, e.g. e.g. ` WHERE x = 1 ORDER BY "name" LIMIT 0, 50` */
-	protected sqlClauses<T extends Data>(query: ItemQuery<number, T>) {
+	sqlClauses<T extends Data>(query: ItemQuery<number, T>) {
 		return this.sql`${this.sqlWhere(query)}${this.sqlOrder(query)}${this.sqlLimit(query)}`;
 	}
 
 	/** Define an SQL fragment for a `WHERE` clause, e.g. ` WHERE x = 1 AND y <= 100` */
-	protected sqlWhere<T extends Data>(query: ItemQuery<number, T>) {
-		const filters = getFilters(query).map(filter => this.sqlFilter(filter));
-		return filters.length ? this.sql` WHERE ${this.sqlFilter}` : this.sql``;
+	sqlWhere<T extends Data>(query: ItemQuery<number, T>) {
+		const filters = getQueryFilters(query);
+		if (filters.length) return this.sql``;
+		return this.sql` WHERE ${this.sqlConcat(
+			filters.map(filter => this.sqlFilter(filter)),
+			" AND ",
+		)}`;
 	}
 
-	/** Define an SQL fragment for a filter clause on a column, e.g. `x = 1` or `y <= 100` */
-	protected sqlFilter({ key, operator, value }: Filter): SQLFragment {
-		const expression = this.sqlIdentifier(key);
-		if (operator === "contains") {
-			// @todo write this.
-		}
+	/**
+	 * Define an SQL fragment for a filter clause on a column.
+	 */
+	sqlFilter({ key, operator, value }: QueryFilter): SQLFragment {
+		const path = this.sqlExtract(key);
 		if (operator === "in") {
 			if (!value.length) return this.sql`0`;
-			return this.sql`${expression} IN (${this.sqlJoin(value.map(value => this.sql`${value}`))})`;
+			return this.sql`${path} IN (${this.sqlConcat(value.map(v => this.sql`${v}`))})`;
 		}
 		if (operator === "out") {
 			if (!value.length) return this.sql`1`;
-			return this.sql`(${expression} IS NULL OR ${expression} NOT IN (${this.sqlJoin(value.map(value => this.sql`${value}`))}))`;
+			return this.sql`(${path} IS NULL OR ${path} NOT IN (${this.sqlConcat(value.map(v => this.sql`${v}`))}))`;
 		}
-		if (operator === "is") return value === null ? this.sql`${expression} IS NULL` : this.sql`${expression} = ${value}`;
-		if (operator === "not")
-			return value === null ? this.sql`${expression} IS NOT NULL` : this.sql`(${expression} IS NULL OR ${expression} != ${value})`;
-		if (operator === "lt") return this.sql`${expression} < ${value}`;
-		if (operator === "lte") return this.sql`${expression} <= ${value}`;
-		if (operator === "gt") return this.sql`${expression} > ${value}`;
-		if (operator === "gte") return this.sql`${expression} >= ${value}`;
-		throw new UnimplementedError(`SQLProvider does not support "${operator}" filter operator`);
+		if (operator === "is") return value === null ? this.sql`${path} IS NULL` : this.sql`${path} = ${value}`;
+		if (operator === "not") return value === null ? this.sql`${path} IS NOT NULL` : this.sql`(${path} IS NULL OR ${path} != ${value})`;
+		if (operator === "lt") return this.sql`${path} < ${value}`;
+		if (operator === "lte") return this.sql`${path} <= ${value}`;
+		if (operator === "gt") return this.sql`${path} > ${value}`;
+		if (operator === "gte") return this.sql`${path} >= ${value}`;
+		throw new UnimplementedError(`SQLProvider does not support "${operator}" filters`);
 	}
 
-	/** Define an SQL fragment for an `ORDER BY` clause, e.g. ` ORDER BY "a" ASC, "b" DESC` */
-	protected async sqlOrder<T extends Data>(query: ItemQuery<number, T>) {
-		const orders = getOrders(query).map(({ key, direction }) =>
-			direction === "asc" ? this.sql`${this.sqlIdentifier(key)} ASC` : this.sql`${this.sqlIdentifier(key)} DESC`,
-		);
-		return orders.length ? this.sql` ORDER BY ${this.sqlJoin(orders)}` : this.sql``;
+	/**
+	 * Define an SQL fragment for an `ORDER BY` clause, e.g. ` ORDER BY "a" ASC, "b" DESC`
+	 * - Nested keys (multi-segment) throw `UnimplementedError`.
+	 */
+	sqlOrder<T extends Data>(query: ItemQuery<number, T>) {
+		const orders = getQueryOrders(query);
+		if (orders.length < 1) return this.sql``;
+		return this.sql` ORDER BY ${this.sqlConcat(
+			orders.map(order => this.sqlSort(order)),
+			", ",
+		)}`;
+	}
+
+	/** Define an SQL fragment for an individual column in an `ORDER BY`, e.g. `"a" ASC` */
+	sqlSort({ key, direction }: QueryOrder): SQLFragment {
+		const path = this.sqlExtract(key);
+		if (direction === "asc") return this.sql`${path} ASC`;
+		if (direction === "desc") return this.sql`${path} DESC`;
+		return direction; // Never happens.
 	}
 
 	/** Define an SQL fragment for an `LIMIT` clause, e.g. ` LIMIT 50, 100` */
-	protected async sqlLimit<T extends Data>(query: ItemQuery<number, T>) {
-		const limit = getLimit(query);
+	sqlLimit<T extends Data>(query: ItemQuery<number, T>) {
+		const limit = getQueryLimit(query);
 		return typeof limit === "number" ? this.sql` LIMIT ${limit}` : this.sql``;
 	}
 }
 
-function _getItemData<T extends Data>({ id: _id, ...data }: { readonly id: number } & T): T {
-	return data as unknown as T;
+function _escapeIdentifier(name: string): string {
+	return `"${name.replaceAll(`"`, `""`)}"`;
 }
