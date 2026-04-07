@@ -57,7 +57,7 @@ function _getD1Value(value: unknown, caller: AnyCaller): D1Value {
 
 	if (isArray(value) || isPlainObject(value)) {
 		try {
-			JSON.stringify(value);
+			return JSON.stringify(value);
 		} catch (cause) {
 			throw new ValueError("Cannot convert value to D1 JSON value", { cause, received: value, caller });
 		}
