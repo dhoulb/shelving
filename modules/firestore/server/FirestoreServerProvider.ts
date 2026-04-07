@@ -12,6 +12,7 @@ import type { Collection } from "../../db/collection/Collection.js";
 import { DBProvider } from "../../db/provider/DBProvider.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
 import type { Data, DataProp } from "../../util/data.js";
+import { joinDataKey } from "../../util/data.js";
 import type { Item, Items, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
@@ -45,8 +46,14 @@ function _getCollection<T extends Data>(firestore: Firestore, c: string): Collec
 function _getQuery<T extends Data>(firestore: Firestore, c: string, q?: ItemQuery<string, T>): Query<T> {
 	let ref: Query<T> = _getCollection<T>(firestore, c);
 	if (q) {
-		for (const { key, direction } of getOrders(q)) ref = ref.orderBy(key === "id" ? ID : key, direction);
-		for (const { key, operator, value } of getFilters(q)) ref = ref.where(key === "id" ? ID : key, OPERATORS[operator], value);
+		for (const { key, direction } of getOrders(q)) {
+			const k = joinDataKey(key);
+			ref = ref.orderBy(k === "id" ? ID : k, direction);
+		}
+		for (const { key, operator, value } of getFilters(q)) {
+			const k = joinDataKey(key);
+			ref = ref.where(k === "id" ? ID : k, OPERATORS[operator], value);
+		}
 		const l = getLimit(q);
 		if (typeof l === "number") ref = ref.limit(l);
 	}
@@ -72,10 +79,11 @@ function _getFieldValues<T extends Data>(updates: Updates<T>): UpdateData<T> {
 	return getObject(mapItems(getUpdates(updates), _getFieldValue)) as UpdateData<T>;
 }
 function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
-	if (action === "set") return [key, value];
-	if (action === "sum") return [key, FieldValue.increment(value)];
-	if (action === "with") return [key, FieldValue.arrayUnion(...value)];
-	if (action === "omit") return [key, FieldValue.arrayRemove(...value)];
+	const k = joinDataKey(key);
+	if (action === "set") return [k, value];
+	if (action === "sum") return [k, FieldValue.increment(value)];
+	if (action === "with") return [k, FieldValue.arrayUnion(...value)];
+	if (action === "omit") return [k, FieldValue.arrayRemove(...value)];
 	return action; // Never happens.
 }
 

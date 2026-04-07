@@ -33,6 +33,7 @@ import type { Collection } from "../../db/collection/Collection.js";
 import { DBProvider } from "../../db/provider/DBProvider.js";
 import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
 import type { Data, DataProp } from "../../util/data.js";
+import { joinDataKey } from "../../util/data.js";
 import type { Item, Items, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
@@ -63,8 +64,14 @@ function _getQuery<T extends Data>(firestore: Firestore, c: string, q?: ItemQuer
 	return q ? (query(collection(firestore, c), ..._getConstraints(q)) as Query<T>) : (collection(firestore, c) as CollectionReference<T>);
 }
 function* _getConstraints<T extends Data>(q: ItemQuery<string, T>): Iterable<QueryConstraint> {
-	for (const { key, direction } of getOrders(q)) yield orderBy(key === "id" ? ID : key, direction);
-	for (const { key, operator, value } of getFilters(q)) yield where(key === "id" ? ID : key, OPERATORS[operator], value);
+	for (const { key, direction } of getOrders(q)) {
+		const k = joinDataKey(key);
+		yield orderBy(k === "id" ? ID : k, direction);
+	}
+	for (const { key, operator, value } of getFilters(q)) {
+		const k = joinDataKey(key);
+		yield where(k === "id" ? ID : k, OPERATORS[operator], value);
+	}
 	const l = getLimit(q);
 	if (typeof l === "number") yield limit(l);
 }
@@ -88,10 +95,11 @@ function _getFieldValues<T extends Data>(updates: Updates<T>): UpdateData<T> {
 	return getObject(mapItems(getUpdates(updates), _getFieldValue)) as UpdateData<T>;
 }
 function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
-	if (action === "set") return [key, value];
-	if (action === "sum") return [key, increment(value)];
-	if (action === "with") return [key, arrayUnion(...value)];
-	if (action === "omit") return [key, arrayRemove(...value)];
+	const k = joinDataKey(key);
+	if (action === "set") return [k, value];
+	if (action === "sum") return [k, increment(value)];
+	if (action === "with") return [k, arrayUnion(...value)];
+	if (action === "omit") return [k, arrayRemove(...value)];
 	return action; // Never happens.
 }
 

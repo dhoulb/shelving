@@ -1,5 +1,6 @@
 import { type ImmutableArray, isArray, omitArrayItems, withArrayItems } from "./array.js";
-import type { BranchData, BranchKey, Data, DataProp, LeafData, LeafKey } from "./data.js";
+import type { BranchData, BranchDataKey, Data, DataPath, DataProp, LeafData, LeafDataKey } from "./data.js";
+import { splitDataKey } from "./data.js";
 import { reduceItems } from "./iterate.js";
 import { requireNumber } from "./number.js";
 import { getProps, isObject } from "./object.js";
@@ -17,7 +18,7 @@ export type Updates<T extends Data = Data> = {
 	 * - Can set `a` and `a.a1` in `{ a: { a1: 123 } }`
 	 * - Sometimes inference gets confused, if that happens use `=` syntax instead.
 	 */
-	readonly [K in BranchKey<T> as `${K}`]?: BranchData<T>[K] | undefined;
+	readonly [K in BranchDataKey<T> as `${K}`]?: BranchData<T>[K] | undefined;
 } & {
 	/**
 	 * Set update (leaves only)
@@ -25,29 +26,29 @@ export type Updates<T extends Data = Data> = {
 	 * - Deeply-nested properties don't always infer when leaves and branches are combined.
 	 * - This syntax is more exact and will infer better.
 	 */
-	readonly [K in LeafKey<T> as `=${K}`]?: LeafData<T>[K] | undefined;
+	readonly [K in LeafDataKey<T> as `=${K}`]?: LeafData<T>[K] | undefined;
 } & {
 	/**
 	 * Sum update.
 	 * - Increment/decrement numbers.
 	 */
-	readonly [K in LeafKey<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] | undefined : never;
+	readonly [K in LeafDataKey<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] | undefined : never;
 } & {
 	/**
 	 * With/omit update.
 	 * - Add or remove items from arrays.
 	 */
-	readonly [K in LeafKey<T> as `+[]${K}` | `-[]${K}`]?: LeafData<T>[K] extends ImmutableArray<unknown>
+	readonly [K in LeafDataKey<T> as `+[]${K}` | `-[]${K}`]?: LeafData<T>[K] extends ImmutableArray<unknown>
 		? LeafData<T>[K] | LeafData<T>[K][number] | undefined
 		: never;
 };
 
 /** A single update to a keyed property in an object. */
 export type Update =
-	| { action: "set"; key: string; value: unknown } //
-	| { action: "with"; key: string; value: ImmutableArray<unknown> } //
-	| { action: "omit"; key: string; value: ImmutableArray<unknown> } //
-	| { action: "sum"; key: string; value: number };
+	| { action: "set"; key: DataPath; value: unknown } //
+	| { action: "with"; key: DataPath; value: ImmutableArray<unknown> } //
+	| { action: "omit"; key: DataPath; value: ImmutableArray<unknown> } //
+	| { action: "sum"; key: DataPath; value: number };
 
 /** Yield the prop updates in an `Updates` object as a set of `Update` objects. */
 export function getUpdates<T extends Data>(data: Updates<T>): ImmutableArray<Update> {
@@ -56,13 +57,17 @@ export function getUpdates<T extends Data>(data: Updates<T>): ImmutableArray<Upd
 function _getUpdate([key, value]: DataProp<Updates>): Update | undefined {
 	if (value !== undefined) {
 		if (key.startsWith("+="))
-			return { action: "sum", key: key.slice(2), value: requireNumber(value as number, undefined, undefined, getUpdates) };
+			return { action: "sum", key: splitDataKey(key.slice(2)), value: requireNumber(value as number, undefined, undefined, getUpdates) };
 		if (key.startsWith("-="))
-			return { action: "sum", key: key.slice(2), value: 0 - requireNumber(value as number, undefined, undefined, getUpdates) };
-		if (key.startsWith("=")) return { action: "set", key: key.slice(1), value };
-		if (key.startsWith("+[]")) return { action: "with", key: key.slice(3), value: isArray(value) ? value : [value] };
-		if (key.startsWith("-[]")) return { action: "omit", key: key.slice(3), value: isArray(value) ? value : [value] };
-		return { action: "set", key, value };
+			return {
+				action: "sum",
+				key: splitDataKey(key.slice(2)),
+				value: 0 - requireNumber(value as number, undefined, undefined, getUpdates),
+			};
+		if (key.startsWith("=")) return { action: "set", key: splitDataKey(key.slice(1)), value };
+		if (key.startsWith("+[]")) return { action: "with", key: splitDataKey(key.slice(3)), value: isArray(value) ? value : [value] };
+		if (key.startsWith("-[]")) return { action: "omit", key: splitDataKey(key.slice(3)), value: isArray(value) ? value : [value] };
+		return { action: "set", key: splitDataKey(key), value };
 	}
 }
 
@@ -71,7 +76,7 @@ export function updateData<T extends Data>(data: T, updates: Updates<T>): T {
 	return reduceItems(getUpdates(updates), _updateProp, data);
 }
 function _updateProp<T extends Data>(obj: T, update: Update): T {
-	return _updatePropDeep(obj, update, update.key.split("."), 0);
+	return _updatePropDeep(obj, update, update.key, 0);
 }
 function _updatePropDeep<T extends Data>(obj: T, update: Update, keys: ImmutableArray<string>, i: number): T {
 	const { action, value } = update;

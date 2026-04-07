@@ -131,15 +131,15 @@ const invalidUpdates10: Updates<T> = {
 
 test("getUpdates()", () => {
 	expect(getUpdates(updates)).toEqual([
-		{ key: "a.str", action: "set", value: "A" },
-		{ key: "a.data.str", action: "set", value: "A" },
-		{ key: "num", action: "sum", value: 100 },
-		{ key: "a.num", action: "sum", value: 10 },
-		{ key: "a.data.num", action: "sum", value: -10 },
-		{ key: "dict2.a.str", action: "set", value: "A" },
-		{ key: "dict2.a.num", action: "sum", value: 100 },
-		{ key: "arr", action: "with", value: [99] },
-		{ key: "arr", action: "omit", value: [1, 2] },
+		{ key: ["a", "str"], action: "set", value: "A" },
+		{ key: ["a", "data", "str"], action: "set", value: "A" },
+		{ key: ["num"], action: "sum", value: 100 },
+		{ key: ["a", "num"], action: "sum", value: 10 },
+		{ key: ["a", "data", "num"], action: "sum", value: -10 },
+		{ key: ["dict2", "a", "str"], action: "set", value: "A" },
+		{ key: ["dict2", "a", "num"], action: "sum", value: 100 },
+		{ key: ["arr"], action: "with", value: [99] },
+		{ key: ["arr"], action: "omit", value: [1, 2] },
 	]);
 });
 test("updateObject()", () => {
