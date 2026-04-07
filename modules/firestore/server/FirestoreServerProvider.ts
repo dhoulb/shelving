@@ -17,7 +17,7 @@ import type { Item, Items, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
 import type { ItemQuery } from "../../util/query.js";
-import { getFilters, getLimit, getOrders } from "../../util/query.js";
+import { getQueryFilters, getQueryLimit, getQueryOrders } from "../../util/query.js";
 import { mapItems } from "../../util/transform.js";
 import type { Update, Updates } from "../../util/update.js";
 import { getUpdates } from "../../util/update.js";
@@ -46,15 +46,15 @@ function _getCollection<T extends Data>(firestore: Firestore, c: string): Collec
 function _getQuery<T extends Data>(firestore: Firestore, c: string, q?: ItemQuery<string, T>): Query<T> {
 	let ref: Query<T> = _getCollection<T>(firestore, c);
 	if (q) {
-		for (const { key, direction } of getOrders(q)) {
+		for (const { key, direction } of getQueryOrders(q)) {
 			const k = joinDataKey(key);
 			ref = ref.orderBy(k === "id" ? ID : k, direction);
 		}
-		for (const { key, operator, value } of getFilters(q)) {
+		for (const { key, operator, value } of getQueryFilters(q)) {
 			const k = joinDataKey(key);
 			ref = ref.where(k === "id" ? ID : k, OPERATORS[operator], value);
 		}
-		const l = getLimit(q);
+		const l = getQueryLimit(q);
 		if (typeof l === "number") ref = ref.limit(l);
 	}
 	return ref;

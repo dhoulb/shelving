@@ -30,7 +30,7 @@ export type Query<T extends Data> = {
 export type ItemQuery<I extends Identifier, T extends Data> = Query<Item<I, T>>;
 
 /** A single filter that can be applied to a list of data objects. */
-export type Filter =
+export type QueryFilter =
 	| { key: DataPath; operator: "is"; value: unknown }
 	| { key: DataPath; operator: "not"; value: unknown }
 	| { key: DataPath; operator: "in"; value: ImmutableArray }
@@ -42,14 +42,14 @@ export type Filter =
 	| { key: DataPath; operator: "gte"; value: unknown };
 
 /** A single sort order that can be applied to a list of data objects. */
-export type Order = {
+export type QueryOrder = {
 	key: DataPath;
 	direction: "asc" | "desc";
 };
 
 /** Map `Filter` operators to corresponding `Match` function. */
 const MATCHERS: {
-	[T in Filter as T["operator"]]: Match<[unknown, T["value"]]>;
+	[T in QueryFilter as T["operator"]]: Match<[unknown, T["value"]]>;
 } = {
 	is: isEqual,
 	not: notEqual,
@@ -63,10 +63,10 @@ const MATCHERS: {
 };
 
 /** Get the `Filter` objects for a query. */
-export function getFilters<T extends Data>(query: Query<T>): ImmutableArray<Filter> {
-	return Array.from(yieldFilters(query));
+export function getQueryFilters<T extends Data>(query: Query<T>): ImmutableArray<QueryFilter> {
+	return Array.from(yieldQueryFilters(query));
 }
-function* yieldFilters<T extends Data>(query: Query<T>): Iterable<Filter> {
+function* yieldQueryFilters<T extends Data>(query: Query<T>): Iterable<QueryFilter> {
 	for (const [key, value] of getProps<Data>(query)) {
 		if (key === "$order" || key === "$limit" || value === undefined) continue;
 		if (key.startsWith("!"))
@@ -83,10 +83,10 @@ function* yieldFilters<T extends Data>(query: Query<T>): Iterable<Filter> {
 }
 
 /** Get the `Order` objects for a query. */
-export function getOrders<T extends Data>({ $order }: Query<T>): ImmutableArray<Order> {
-	return Array.from(yieldOrders($order));
+export function getQueryOrders<T extends Data>({ $order }: Query<T>): ImmutableArray<QueryOrder> {
+	return Array.from(yieldQueryOrders($order));
 }
-function* yieldOrders(order: string | ImmutableArray<string | undefined> | undefined): Iterable<Order> {
+function* yieldQueryOrders(order: string | ImmutableArray<string | undefined> | undefined): Iterable<QueryOrder> {
 	for (const key of isArray(order) ? order : [order]) {
 		if (key === undefined) continue;
 		if (key.startsWith("!")) yield { key: splitDataKey(key.slice(1)), direction: "desc" };
@@ -95,13 +95,13 @@ function* yieldOrders(order: string | ImmutableArray<string | undefined> | undef
 }
 
 /** Get the limit for a query. */
-export function getLimit<T extends Data>({ $limit }: Query<T>): number | undefined {
+export function getQueryLimit<T extends Data>({ $limit }: Query<T>): number | undefined {
 	return $limit;
 }
 
 /** Query a set of data items using a query. */
 export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
-	return limitQueryItems(sortQueryItems(filterQueryItems(items, getFilters(query)), getOrders(query)), getLimit(query));
+	return limitQueryItems(sortQueryItems(filterQueryItems(items, getQueryFilters(query)), getQueryOrders(query)), getQueryLimit(query));
 }
 
 /**
@@ -109,11 +109,11 @@ export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>):
  * - If no limit is set on the data sorting can be avoided too for performance reasons.
  */
 export function queryWritableItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
-	return getLimit(query) === undefined ? filterQueryItems(items, getFilters(query)) : queryItems(items, query);
+	return getQueryLimit(query) === undefined ? filterQueryItems(items, getQueryFilters(query)) : queryItems(items, query);
 }
 
 /** Match a single data item againt a set of filters. */
-export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<Filter>): boolean {
+export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<QueryFilter>): boolean {
 	for (const { key, operator, value } of filters) {
 		const matcher = MATCHERS[operator] as Match<[unknown, unknown]>;
 		if (!matcher(getDataProp(item, key), value)) return false;
@@ -122,7 +122,7 @@ export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<
 }
 
 /**  Filter a set of data items using a set of filters. */
-export function* filterQueryItems<T extends Data>(items: Iterable<T>, filters: ImmutableArray<Filter>): Iterable<T> {
+export function* filterQueryItems<T extends Data>(items: Iterable<T>, filters: ImmutableArray<QueryFilter>): Iterable<T> {
 	if (filters.length) {
 		for (const item of items) if (matchQueryItem(item, filters)) yield item;
 	} else {
@@ -131,7 +131,7 @@ export function* filterQueryItems<T extends Data>(items: Iterable<T>, filters: I
 }
 
 /** Compare two data items using a set of orders. */
-export function compareQueryItems<T extends Data>(left: T, right: T, orders: ImmutableArray<Order>): number {
+export function compareQueryItems<T extends Data>(left: T, right: T, orders: ImmutableArray<QueryOrder>): number {
 	for (const { key, direction } of orders) {
 		const l = getDataProp(left, key);
 		const r = getDataProp(right, key);
@@ -142,7 +142,7 @@ export function compareQueryItems<T extends Data>(left: T, right: T, orders: Imm
 }
 
 /**  Sort a set of data items using a set of orders. */
-export function sortQueryItems<T extends Data>(items: Iterable<T>, orders: ImmutableArray<Order>): Iterable<T> {
+export function sortQueryItems<T extends Data>(items: Iterable<T>, orders: ImmutableArray<QueryOrder>): Iterable<T> {
 	return orders.length ? sortArray(items, compareQueryItems, orders) : items;
 }
 
@@ -156,7 +156,7 @@ export function limitQueryItems<T extends Data>(items: ImmutableArray<T> | Itera
  * - For token based pagination on a result set.
  */
 export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
-	const sorts = getOrders(query);
+	const sorts = getQueryOrders(query);
 	const lastSort = requireLast(sorts);
 	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {
@@ -174,7 +174,7 @@ export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<
  * - For token based pagination on a result set.
  */
 export function getAfterQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
-	const sorts = getOrders(query);
+	const sorts = getQueryOrders(query);
 	const lastSort = requireLast(sorts);
 	const newQuery: Mutable<Query<Data>> = { ...query };
 	for (const sort of sorts) {

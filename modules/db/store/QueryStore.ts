@@ -6,7 +6,7 @@ import { NONE } from "../../util/constants.js";
 import type { Data } from "../../util/data.js";
 import type { Identifier, Item } from "../../util/item.js";
 import type { ItemQuery } from "../../util/query.js";
-import { getAfterQuery, getLimit } from "../../util/query.js";
+import { getAfterQuery, getQueryLimit } from "../../util/query.js";
 import { runSequence } from "../../util/sequence.js";
 import type { StopCallback } from "../../util/start.js";
 import type { Collection } from "../collection/Collection.js";
@@ -63,7 +63,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends ArrayStore
 		this.provider = provider;
 		this.collection = collection;
 		this.query = query;
-		this.limit = getLimit(query) ?? Number.POSITIVE_INFINITY;
+		this.limit = getQueryLimit(query) ?? Number.POSITIVE_INFINITY;
 
 		// Always refresh from source, even if memory supplied an initial value.
 		this.refresh();
