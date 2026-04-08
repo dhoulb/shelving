@@ -6,7 +6,7 @@ export * from "./provider/APIProvider.js";
 export * from "./provider/ClientAPIProvider.js";
 export * from "./provider/DebugAPIProvider.js";
 export * from "./provider/MockAPIProvider.js";
-export * from "./provider/MockEnpdointAPIProvider.js";
+export * from "./provider/MockEndpointAPIProvider.js";
 export * from "./provider/ThroughAPIProvider.js";
 export * from "./provider/ValidationAPIProvider.js";
 export * from "./store/EndpointStore.js";

@@ -9,36 +9,29 @@ import { type PossibleURL, requireURL } from "../../util/url.js";
 import type { Endpoint } from "./Endpoint.js";
 
 /**
- * The second argument to an `EndpointCallback` is its context.
- * This must contain the `Request` that triggered the callback, but may contain additional details too. */
-export interface EndpointContext {
-	readonly request: Request;
-}
-
-/**
  * A function that handles an endpoint request, with a payload and returns a result.
  *
  * @param payload The payload for the callback combining the `{placeholders}`, `?search` params, and body content (this has been validated against the Endpoint's payload schema).
  * @param request The original incoming request object.
- * @param args Any additional arguments to pass into the endpoint callback
+ * @param context An additional context argument that can be passed into the callback.
  *
  * @returns {Response} Returning a `Response` object (this will pass back to the client without validation).
  * @returns {R} Returning the return type of the handler (this will be validated against the Endpoint's result schema).
  */
-export type EndpointCallback<P, R, C extends EndpointContext> = (payload: P, context: C) => R | Response | Promise<R | Response>;
+export type EndpointCallback<P, R, C = void> = (payload: P, request: Request, context: C) => R | Response | Promise<R | Response>;
 
 /** A typed endpoint definition paired with its implementation callback. */
-export interface EndpointHandler<P, R, C extends EndpointContext> {
+export interface EndpointHandler<P, R, C = void> {
 	readonly endpoint: Endpoint<P, R>;
 	readonly callback: EndpointCallback<P, R, C>;
 }
 
 /** Any endpoint handler. */
 // biome-ignore lint/suspicious/noExplicitAny: Intentional.
-export type AnyEndpointHandler<C extends EndpointContext = EndpointContext> = EndpointHandler<any, any, C>;
+export type AnyEndpointHandler<C = any> = EndpointHandler<any, any, C>;
 
 /** A collection of endpoint handlers that can be matched and invoked by `handleEndpoints()`. */
-export type EndpointHandlers<C extends EndpointContext = EndpointContext> = Iterable<AnyEndpointHandler<C>>;
+export type EndpointHandlers<C = void> = Iterable<AnyEndpointHandler<C>>;
 
 /**
  * Handle a `Request` with the first matching endpoint handler after stripping any base-path prefix from the request pathname.
@@ -50,13 +43,28 @@ export type EndpointHandlers<C extends EndpointContext = EndpointContext> = Iter
  * @param base The base URL for the API, e.g. `https://myapi.com/a/b`
  * - `pathname` of this URL gets trimmed from `request.path` to form the target path when matching against endpoints, e.g. `/a/b/c/d` will produce `/c/d` for matching.
  */
-export function handleEndpoints<C extends EndpointContext>(
+export function handleEndpoints<C>(
 	base: PossibleURL,
 	handlers: EndpointHandlers<C>,
+	request: Request,
+	context: C,
+	caller?: AnyCaller,
+): Promise<Response>;
+export function handleEndpoints(
+	base: PossibleURL,
+	handlers: EndpointHandlers<void>,
+	request: Request,
+	context?: undefined,
+	caller?: AnyCaller,
+): Promise<Response>;
+export function handleEndpoints<C>(
+	base: PossibleURL,
+	handlers: EndpointHandlers<C>,
+	request: Request,
 	context: C,
 	caller: AnyCaller = handleEndpoints,
 ): Promise<Response> {
-	const { url, method } = context.request;
+	const { url, method } = request;
 	if (!isRequestMethod(method)) throw new MethodNotAllowedError("Unsupported request method", { received: method, caller });
 
 	const { origin: baseOrigin, pathname: basePath } = requireURL(base, undefined, caller);
@@ -72,7 +80,7 @@ export function handleEndpoints<C extends EndpointContext>(
 		const pathParams = handler.endpoint.match(method, targetPath, caller);
 		if (!pathParams) continue;
 		const params = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
-		return _handleEndpoint(handler, params, context, handleEndpoints);
+		return _handleEndpoint(handler, params, request, context, handleEndpoints);
 	}
 
 	throw new NotFoundError("No matching endpoint", { received: targetPath, caller });
@@ -81,18 +89,19 @@ export function handleEndpoints<C extends EndpointContext>(
 /**
  * Validate and invoke an endpoint callback after the routing layer has already matched URL params.
  */
-async function _handleEndpoint<P, R, C extends EndpointContext>(
+async function _handleEndpoint<P, R, C>(
 	{ endpoint, callback }: EndpointHandler<P, R, C>,
 	/** Params we already matched/parsed from the URL. */
 	params: RequestParams,
+	request: Request,
 	context: C,
 	caller: AnyCaller,
 ): Promise<Response> {
-	const content = await getRequestContent(context.request, caller);
+	const content = await getRequestContent(request, caller);
 	const unsafePayload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : content;
 
 	const payload = endpoint.payload.validate(unsafePayload);
-	const unsafeResult = await callback(payload, context);
+	const unsafeResult = await callback(payload, request, context);
 	if (unsafeResult instanceof Response) return unsafeResult;
 
 	try {

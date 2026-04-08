@@ -1,5 +1,9 @@
-import { type EndpointContext, type EndpointHandlers, handleEndpoints } from "../endpoint/util.js";
+import { type EndpointHandlers, handleEndpoints } from "../endpoint/util.js";
 import { MockAPIProvider, type MockAPIProviderOptions } from "./MockAPIProvider.js";
+
+export interface MockEndpointAPIProviderOptions<C> extends MockAPIProviderOptions {
+	context: C;
+}
 
 /**
  * Provider that mocks an API that calls and matches an array of `EndpointHandler` objects returned from `Endpoint.handler()`
@@ -12,8 +16,8 @@ import { MockAPIProvider, type MockAPIProviderOptions } from "./MockAPIProvider.
  *  const result = await api.fetch(endpoint, 4); // Mock a call to the endpoint through the provider.
  *  expect(result).toBe(16);
  */
-export class MockEnpdointAPIProvider<C extends EndpointContext> extends MockAPIProvider {
-	constructor(handlers: EndpointHandlers<C>, c: Omit<EndpointContext, "request">, options: MockAPIProviderOptions) {
-		super(request => handleEndpoints<C>(this.url, handlers, { ...c, request } as C), options);
+export class MockEndpointAPIProvider<C> extends MockAPIProvider {
+	constructor(handlers: EndpointHandlers<C>, { context, ...options }: MockEndpointAPIProviderOptions<C>) {
+		super(request => handleEndpoints<C>(this.url, handlers, request, context), options);
 	}
 }
