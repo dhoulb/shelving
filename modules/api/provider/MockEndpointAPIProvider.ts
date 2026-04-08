@@ -1,7 +1,11 @@
 import { type EndpointHandlers, handleEndpoints } from "../endpoint/util.js";
 import { MockAPIProvider, type MockAPIProviderOptions } from "./MockAPIProvider.js";
 
-export interface MockEndpointAPIProviderOptions<C> extends MockAPIProviderOptions {
+/**
+ * Construction options for a `MockAPIProvider`
+ * - Same as options for a normal `MockAPIProviderOptions`, but with a `context` property for the endpoints.
+ */
+export interface MockEndpointAPIProviderOptions<C = void> extends MockAPIProviderOptions {
 	context: C;
 }
 
@@ -18,6 +22,6 @@ export interface MockEndpointAPIProviderOptions<C> extends MockAPIProviderOption
  */
 export class MockEndpointAPIProvider<C> extends MockAPIProvider {
 	constructor(handlers: EndpointHandlers<C>, { context, ...options }: MockEndpointAPIProviderOptions<C>) {
-		super(request => handleEndpoints<C>(this.url, handlers, request, context), options);
+		super(request => handleEndpoints(this.url, handlers, request, context), options);
 	}
 }
