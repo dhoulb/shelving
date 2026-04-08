@@ -2,11 +2,11 @@ import { RequiredError } from "../../error/RequiredError.js";
 import { type Schema, UNDEFINED } from "../../schema/Schema.js";
 import type { ImmutableArray } from "../../util/array.js";
 import { type Data, isData } from "../../util/data.js";
-import type { AnyCaller, Arguments } from "../../util/function.js";
+import type { AnyCaller } from "../../util/function.js";
 import type { RequestMethod, RequestParams } from "../../util/http.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { getPlaceholders, matchTemplate, renderTemplate, type TemplatePlaceholders } from "../../util/template.js";
-import type { EndpointCallback, EndpointHandler } from "./util.js";
+import type { EndpointCallback, EndpointContext, EndpointHandler } from "./util.js";
 
 /**
  * An abstract API resource definition, used to specify types for e.g. serverless functions.
@@ -72,7 +72,7 @@ export class Endpoint<P, R> {
 	 * @param callback The callback function that implements the logic for this endpoint by receiving the payload and returning the response.
 	 * @returns An `EndpointHandler` object combining this endpoint and the callback into a single typed object.
 	 */
-	handler<A extends Arguments = []>(callback: EndpointCallback<P, R, A>): EndpointHandler<P, R, A> {
+	handler<C extends EndpointContext>(callback: EndpointCallback<P, R, C>): EndpointHandler<P, R, C> {
 		return { endpoint: this, callback };
 	}
 
