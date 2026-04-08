@@ -14,8 +14,14 @@ export type MockAPICall = {
 	readonly result: unknown;
 };
 
-/** Construction options for a `MockAPIProvider`. */
-export interface MockAPIProviderOptions extends ClientAPIProviderOptions {}
+/**
+ * Construction options for a `MockAPIProvider`
+ * - Same as options for a normal `ClientAPIProvider`, but with an optional URL.
+ */
+export interface MockAPIProviderOptions extends Omit<ClientAPIProviderOptions, "url"> {
+	/** Optional URL, defaults to `"https://api.mock.com"` */
+	url?: ClientAPIProviderOptions["url"];
+}
 
 /** Provider that logs API calls without sending network requests. */
 export class MockAPIProvider extends ClientAPIProvider {
@@ -23,8 +29,8 @@ export class MockAPIProvider extends ClientAPIProvider {
 
 	readonly handler: RequestHandler;
 
-	constructor(handler: RequestHandler, options: MockAPIProviderOptions = { url: "https://api.mock.com" }) {
-		super(options);
+	constructor(handler: RequestHandler, { url = "https://api.mock.com", ...options }: MockAPIProviderOptions = {}) {
+		super({ url, ...options });
 		this.handler = handler;
 	}
 
