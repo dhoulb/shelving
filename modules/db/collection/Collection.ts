@@ -1,6 +1,7 @@
 import { DataSchema, ITEM } from "../../schema/DataSchema.js";
 import { NumberSchema } from "../../schema/NumberSchema.js";
 import type { Schema, Schemas } from "../../schema/Schema.js";
+import type { ImmutableArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import type { Identifier, Item } from "../../util/item.js";
 
@@ -15,9 +16,9 @@ export const ID = new NumberSchema({
 });
 
 /** Declarative definition of a database collection/table. */
-export class Collection<K extends string, I extends Identifier, T extends Data> extends DataSchema<T> {
+export class Collection<N extends string, I extends Identifier, T extends Data> extends DataSchema<T> {
 	/** Collection name (used as the table/collection key). */
-	readonly name: K;
+	readonly name: N;
 
 	/** Schema for the identifier type. */
 	readonly id: Schema<I>;
@@ -25,7 +26,7 @@ export class Collection<K extends string, I extends Identifier, T extends Data> 
 	/** Schema for a complete item (id + data). */
 	readonly item: DataSchema<Item<I, T>>;
 
-	constructor(name: K, id: Schema<I>, data: Schemas<T> | DataSchema<T>) {
+	constructor(name: N, id: Schema<I>, data: Schemas<T> | DataSchema<T>) {
 		const dataSchema = data instanceof DataSchema ? data : new DataSchema({ props: data });
 		super({ ...dataSchema, props: dataSchema.props });
 		this.name = name;
@@ -43,14 +44,30 @@ export function COLLECTION<K extends string, I extends Identifier, T extends Dat
 	return new Collection(name, id, data);
 }
 
-/** A readonly array of Collection instances, possibly with a standardised `Identifier`. */
-export type Collections<I extends Identifier = Identifier> = ReadonlyArray<Collection<string, I, Data>>;
+/** Any collection object, possibly with a standardised `Identifier` type. */
+export type AnyCollection<I extends Identifier = Identifier> = Collection<string, I, Data>;
 
-/** Extract the union of collection key strings from a Collections type. */
-export type CollectionKeys<C extends Collections> = C[number]["name"];
+/** Extract the string name from a `Collection` instance. */
+export type CollectionName<C extends AnyCollection> = C extends Collection<infer N, infer _I, infer _T> ? N : never;
 
-/** Convert a Collections array type to a Database-style object mapping. */
+/** Extract the `Identifier` type from a `Collection` instance. */
+export type CollectionIdentifier<C extends AnyCollection> = C extends Collection<infer _N, infer I, infer _T> ? I : never;
+
+/** Extract the `Data` type from a `Collection` instance. */
+export type CollectionData<C extends AnyCollection> = C extends Collection<infer _N, infer _I, infer T> ? T : never;
+
+/** Extract the `Item` type from a `Collection` instance. */
+export type CollectionItem<C extends AnyCollection> = C extends Collection<infer _N, infer I, infer T> ? Item<I, T> : never;
+
+/** A readonly array of Collection instances, possibly with a standardised `Identifier` type. */
+export type Collections<I extends Identifier = Identifier> = ImmutableArray<AnyCollection<I>>;
+
+/** Extract the union of string collection names from a `Collections` type. */
+export type CollectionNames<C extends Collections> = C[number]["name"];
+
+/** Convert a `Collections` array type to a Database-style object mapping in `{ name: data }` format. */
 export type CollectionsDatabase<C extends Collections> = {
-	// biome-ignore lint/suspicious/noExplicitAny: Required for conditional type extraction.
-	[E in C[number] as E extends Collection<infer K, any, any> ? K : never]: E extends Collection<string, any, infer T> ? T : never;
+	[E in C[number] as E extends Collection<infer N, Identifier, Data> ? N : never]: E extends Collection<string, Identifier, infer T>
+		? T
+		: never;
 };
