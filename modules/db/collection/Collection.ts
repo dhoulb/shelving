@@ -3,7 +3,7 @@ import { NumberSchema } from "../../schema/NumberSchema.js";
 import type { Schema, Schemas } from "../../schema/Schema.js";
 import type { ImmutableArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
-import type { Identifier, Item } from "../../util/item.js";
+import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
 
 /** Default identifier schema (integer). */
 export const ID = new NumberSchema({
@@ -44,8 +44,8 @@ export function COLLECTION<K extends string, I extends Identifier, T extends Dat
 	return new Collection(name, id, data);
 }
 
-/** Any collection object, possibly with a standardised `Identifier` type. */
-export type AnyCollection<I extends Identifier = Identifier> = Collection<string, I, Data>;
+/** Any collection object, possibly with a standardised `Identifier` and `Data` types. */
+export type AnyCollection<I extends Identifier = Identifier, D extends Data = Data> = Collection<string, I, D>;
 
 /** Extract the string name from a `Collection` instance. */
 export type CollectionName<C extends AnyCollection> = C extends Collection<infer N, infer _I, infer _T> ? N : never;
@@ -57,10 +57,16 @@ export type CollectionIdentifier<C extends AnyCollection> = C extends Collection
 export type CollectionData<C extends AnyCollection> = C extends Collection<infer _N, infer _I, infer T> ? T : never;
 
 /** Extract the `Item` type from a `Collection` instance. */
-export type CollectionItem<C extends AnyCollection> = C extends Collection<infer _N, infer I, infer T> ? Item<I, T> : never;
+export type CollectionItem<C extends AnyCollection> = Item<CollectionIdentifier<C>, CollectionData<C>>;
 
-/** A readonly array of Collection instances, possibly with a standardised `Identifier` type. */
-export type Collections<I extends Identifier = Identifier> = ImmutableArray<AnyCollection<I>>;
+/** Extract the optional (possibly undefined) `Item` type from a `Collection` instance. */
+export type OptionalCollectionItem<C extends AnyCollection> = OptionalItem<CollectionIdentifier<C>, CollectionData<C>>;
+
+/** Extract the array of `Item` types from a `Collection` instance. */
+export type CollectionItems<C extends AnyCollection> = Items<CollectionIdentifier<C>, CollectionData<C>>;
+
+/** A readonly array of Collection instances, possibly with a standardised `Identifier` and `Data` types. */
+export type Collections<I extends Identifier = Identifier, D extends Data = Data> = ImmutableArray<AnyCollection<I, D>>;
 
 /** Extract the union of string collection names from a `Collections` type. */
 export type CollectionNames<C extends Collections> = C[number]["name"];
