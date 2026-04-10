@@ -16,7 +16,7 @@ export type AnyStore = Store<any>;
  * @param initial The initial value for the store, a `Promise` that resolves to the initial value, a source `Subscribable` to subscribe to, or another `Store` instance to take the initial value from and subscribe to.
  * - To set the store to be loading, use the `NONE` constant or a `Promise` value.
  * - To set the store to an explicit value, use that value or another `Store` instance with a value.
- * */
+ */
 export class Store<T> implements AsyncIterable<T> {
 	/** Deferred sequence this store uses to issue values as they change. */
 	public readonly next: DeferredSequence<T> = new DeferredSequence();
@@ -108,7 +108,8 @@ export class Store<T> implements AsyncIterable<T> {
 		this._starter?.start(this);
 		this._iterating++;
 		try {
-			if (!this.loading) yield this.value;
+			if (this._reason !== undefined) throw this._reason;
+			if (this._value !== NONE) yield this._value;
 			yield* this.next;
 		} finally {
 			this._iterating--;
