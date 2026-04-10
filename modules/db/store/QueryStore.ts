@@ -5,8 +5,7 @@ import { getGetter } from "../../util/class.js";
 import { NONE } from "../../util/constants.js";
 import type { Data } from "../../util/data.js";
 import type { Identifier, Item } from "../../util/item.js";
-import type { ItemQuery } from "../../util/query.js";
-import { getAfterQuery, getQueryLimit } from "../../util/query.js";
+import { getAfterQuery, getQueryLimit, type Query } from "../../util/query.js";
 import { runSequence } from "../../util/sequence.js";
 import type { StopCallback } from "../../util/start.js";
 import type { Collection } from "../collection/Collection.js";
@@ -17,7 +16,7 @@ import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 export class QueryStore<I extends Identifier, T extends Data> extends ArrayStore<Item<I, T>> {
 	readonly provider: DBProvider<I>;
 	readonly collection: Collection<string, I, T>;
-	readonly query: ItemQuery<I, T>;
+	readonly query: Query<Item<I, T>>;
 
 	readonly busy = new BooleanStore();
 	readonly limit: number;
@@ -56,7 +55,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends ArrayStore
 		return last;
 	}
 
-	constructor(collection: Collection<string, I, T>, query: ItemQuery<I, T>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
+	constructor(collection: Collection<string, I, T>, query: Query<Item<I, T>>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
 		const items = memory?.getTable(collection).getQuery(query);
 		super(items ?? NONE); // Use the current memory snapshot if available.
 		if (memory) this.starter = store => runSequence(store.through(memory.getQuerySequence(collection, query)));

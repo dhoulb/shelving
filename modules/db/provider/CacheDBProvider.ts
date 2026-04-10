@@ -58,10 +58,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 		return this.source.countQuery(collection, query);
 	}
 
-	async getQuery<II extends I, TT extends T>(
-		collection: Collection<string, II, TT>,
-		query?: Query<Item<II, TT>>,
-	): Promise<Items<II, TT>> {
+	async getQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
 		const items = await this.source.getQuery(collection, query);
 		this.memory.getTable(collection).setItems(items);
 		return items;
@@ -74,11 +71,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 		return this.memory.getTable(collection).setItemsSequence(this.source.getQuerySequence(collection, query));
 	}
 
-	async setQuery<II extends I, TT extends T>(
-		collection: Collection<string, II, TT>,
-		query: Query<Item<II, TT>>,
-		data: TT,
-	): Promise<void> {
+	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
 		await this.source.setQuery(collection, query, data);
 		this.memory.getTable(collection).setQuery(query, data);
 	}

@@ -22,10 +22,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 		return item;
 	}
 
-	abstract getItemSequence<II extends I, TT extends T>(
-		collection: Collection<string, II, TT>,
-		id: II,
-	): AsyncIterable<OptionalItem<II, TT>>;
+	abstract getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): AsyncIterable<OptionalItem<II, TT>>;
 
 	abstract addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II>;
 

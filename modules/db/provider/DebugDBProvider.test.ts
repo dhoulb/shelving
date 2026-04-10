@@ -4,7 +4,7 @@ import { BASICS_COLLECTION, basic1 } from "../../test/index.js";
 
 describe("DebugDBProvider", () => {
 	test("logs successful reads through the source provider", async () => {
-		const source = new MockDBProvider<string>();
+		const source = new MockDBProvider();
 		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
 		const provider = new DebugDBProvider(source);
 		const logs: unknown[][] = [];
@@ -24,7 +24,7 @@ describe("DebugDBProvider", () => {
 	});
 
 	test("logs failed reads and rethrows the source error", async () => {
-		class FailingMockDBProvider extends MockDBProvider<string> {
+		class FailingMockDBProvider extends MockDBProvider {
 			override async getItem(): Promise<never> {
 				throw new Error("Nope");
 			}

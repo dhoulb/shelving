@@ -4,7 +4,7 @@ import { BASICS_COLLECTION, basic1, basic2, basic999 } from "../../test/index.js
 
 describe("ValidationDBProvider", () => {
 	test("rejects invalid items returned by the source provider", async () => {
-		const source = new MockDBProvider<string>();
+		const source = new MockDBProvider();
 		source.getTable(BASICS_COLLECTION).setItem("basic1", { ...basic1, num: "bad" } as never);
 		const provider = new ValidationDBProvider(source);
 
@@ -12,7 +12,7 @@ describe("ValidationDBProvider", () => {
 	});
 
 	test("rejects invalid query results returned by the source provider", async () => {
-		const source = new MockDBProvider<string>();
+		const source = new MockDBProvider();
 		source.getTable(BASICS_COLLECTION).setItem("basic1", basic1);
 		source.getTable(BASICS_COLLECTION).setItem("basic2", { ...basic2, num: "bad" } as never);
 		const provider = new ValidationDBProvider(source);
@@ -27,7 +27,7 @@ describe("ValidationDBProvider", () => {
 	});
 
 	test("validates addItem() data before calling the source provider", async () => {
-		const source = new MockDBProvider<string>();
+		const source = new MockDBProvider();
 		const provider = new ValidationDBProvider(source);
 
 		try {
@@ -40,7 +40,7 @@ describe("ValidationDBProvider", () => {
 	});
 
 	test("validates updateItem() updates before calling the source provider", async () => {
-		const source = new MockDBProvider<string>();
+		const source = new MockDBProvider();
 		const provider = new ValidationDBProvider(source);
 
 		try {

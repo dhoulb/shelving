@@ -4,7 +4,7 @@ import { BASICS_COLLECTION, basic1, basic2, expectOrderedItems } from "../../tes
 
 describe("CacheDBProvider", () => {
 	test("copies fetched items and queries into the memory cache", async () => {
-		const source = new MemoryDBProvider<string>();
+		const source = new MemoryDBProvider();
 		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
 		await source.setItem(BASICS_COLLECTION, "basic2", basic2);
 		const provider = new CacheDBProvider(source);
@@ -17,7 +17,7 @@ describe("CacheDBProvider", () => {
 	});
 
 	test("writes sequence results into the memory cache", async () => {
-		const source = new MemoryDBProvider<string>();
+		const source = new MemoryDBProvider();
 		const provider = new CacheDBProvider(source);
 		const calls: (typeof basic1)[][] = [];
 		const stop = runSequence(
@@ -36,7 +36,7 @@ describe("CacheDBProvider", () => {
 	});
 
 	test("updates query subscribers after item writes", async () => {
-		const source = new MemoryDBProvider<string>();
+		const source = new MemoryDBProvider();
 		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
 		const provider = new CacheDBProvider(source);
 		const calls: (typeof basic1)[][] = [];
