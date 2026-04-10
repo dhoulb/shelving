@@ -1,6 +1,5 @@
 export * from "./createAPIContext.js";
-export * from "./createCacheContext.js";
-export * from "./createDataContext.js";
+export * from "./createDBContext.js";
 export * from "./useInstance.js";
 export * from "./useLazy.js";
 export * from "./useMap.js";
