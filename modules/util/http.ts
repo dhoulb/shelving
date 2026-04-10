@@ -6,7 +6,7 @@ import { type Data, isData } from "./data.js";
 import type { ImmutableDictionary } from "./dictionary.js";
 import { isError } from "./error.js";
 import type { AnyCaller, Arguments } from "./function.js";
-import { isNullish } from "./null.js";
+import { isNullish, type Nullish } from "./null.js";
 import { withURIParams } from "./uri.js";
 import { type PossibleURL, requireURL } from "./url.js";
 
@@ -219,14 +219,14 @@ export function getRequest(
 ): Request {
 	url = requireURL(url, undefined, caller);
 
+	// `null` or `undefined` payloads send no body.
+	if (isNullish(payload)) return new Request(url, { ...options, method, body: null });
+
 	// HEAD or GET have no body (but payload can only be data object).
 	if (isArrayItem(HTTP_HEAD_METHODS, method)) {
 		assertHeadMethodPayload(payload, method, caller);
 		return new Request(withURIParams(url, payload), { ...options, method, body: null });
 	}
-
-	// `null` or `undefined` payloads send no body.
-	if (isNullish(payload)) return new Request(url, { ...options, method, body: null });
 
 	// `FormData` instances in body pass through unaltered and will set their own `Content-Type` with complex boundary information
 	if (payload instanceof FormData) return new Request(url, { ...options, method, body: payload });
@@ -239,11 +239,12 @@ export function getRequest(
 	return new Request(url, { ...mergeRequestOptions(REQUEST_JSON_OPTIONS, options), method, body: JSON.stringify(payload) });
 }
 
-/** Assert that the payload for a HEAD or GET method is a data object. */
+/** Assert that the payload for a HEAD or GET method is a data object, null, or undefined. */
 export function assertHeadMethodPayload(
 	payload: unknown,
 	method: RequestHeadMethod,
 	caller: AnyCaller = assertHeadMethodPayload,
-): asserts payload is Data {
-	if (!isData(payload)) throw new RequiredError(`Payload for ${method} request must be data object`, { received: payload, caller });
+): asserts payload is Nullish<Data> {
+	if (!isData(payload) && !isNullish(payload))
+		throw new RequiredError(`Payload for ${method} request must be data object, null, or undefined`, { received: payload, caller });
 }
