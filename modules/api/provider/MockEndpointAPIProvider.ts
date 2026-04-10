@@ -22,6 +22,6 @@ export interface MockEndpointAPIProviderOptions<C = void> extends MockAPIProvide
  */
 export class MockEndpointAPIProvider<C> extends MockAPIProvider {
 	constructor(handlers: EndpointHandlers<C>, { context, ...options }: MockEndpointAPIProviderOptions<C>) {
-		super(request => handleEndpoints(this.url, handlers, request, context), options);
+		super(request => handleEndpoints(this.url, handlers, request, context, this.fetch), options);
 	}
 }
