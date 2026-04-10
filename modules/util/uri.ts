@@ -172,24 +172,31 @@ export function withURIParam(url: PossibleURI, key: string, value: unknown, call
 
 /**
  * Return a URI with several new params set (or same URI if no changes were made).
- * - Param with `undefined` value will be ignored.
+ * - Any params with `undefined` value will be ignored.
+ *
+ * @param params A set of possible URI params.
+ * - If `params` is `null` or `undefined` the same input URL will be returned.
  *
  * @throws `ValueError` if any of the values could not be converted to strings.
  */
-export function withURIParams(url: URL | URLString, params: PossibleURIParams, caller?: AnyCaller): URL;
-export function withURIParams(url: PossibleURI, params: PossibleURIParams, caller?: AnyCaller): URI;
-export function withURIParams(url: PossibleURI, params: PossibleURIParams, caller: AnyCaller = withURIParams): URI {
+export function withURIParams(url: URL | URLString, params: Nullish<PossibleURIParams>, caller?: AnyCaller): URL;
+export function withURIParams(url: PossibleURI, params: Nullish<PossibleURIParams>, caller?: AnyCaller): URI;
+export function withURIParams(url: PossibleURI, params: Nullish<PossibleURIParams>, caller: AnyCaller = withURIParams): URI {
 	const input = requireURI(url, caller);
+	if (!params) return input;
 	const output = new URI(input);
 	for (const [key, str] of getURIEntries(params, caller)) output.searchParams.set(key, str);
 	return input.href === output.href ? input : output;
 }
 
-/** Return a URI without one or more params (or same URI if no changes were made). */
+/**
+ * Return a URI without one or more params (or same URI if no changes were made).
+ */
 export function omitURIParams(url: URL | URLString, ...keys: string[]): URL;
 export function omitURIParams(url: PossibleURI, ...keys: string[]): URI;
 export function omitURIParams(url: PossibleURI, ...keys: string[]): URI {
 	const input = requireURI(url, omitURIParams);
+	if (!keys.length) return input;
 	const output = new URI(input);
 	for (const key of keys) output.searchParams.delete(key);
 	return input.href === output.href ? input : output;
