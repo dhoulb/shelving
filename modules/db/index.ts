@@ -1,3 +1,5 @@
+export * from "./cache/CollectionCache.js";
+export * from "./cache/DBCache.js";
 export * from "./collection/Collection.js";
 export * from "./migrate/DBMigrator.js";
 export * from "./migrate/PostgreSQLMigrator.js";
