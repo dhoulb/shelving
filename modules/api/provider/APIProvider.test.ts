@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { ClientAPIProvider, DATA, GET, POST, RequiredError, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
+import { APIProvider, DATA, GET, POST, RequiredError, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
 
-describe("ClientAPIProvider", () => {
+describe("APIProvider", () => {
 	test("getRequest() renders placeholders into the URL and omits them from the remaining payload", () => {
-		const provider = new ClientAPIProvider({ url: "https://api.example.com/v1/" });
+		const provider = new APIProvider({ url: "https://api.example.com/v1/" });
 		const endpoint = GET("/users/{id}", DATA({ id: STRING, extra: STRING }), STRING);
 		const request = provider.getRequest(endpoint, { id: "123", extra: "x" });
 
@@ -12,7 +12,7 @@ describe("ClientAPIProvider", () => {
 	});
 
 	test("getRequest() serializes POST payloads as JSON bodies", async () => {
-		const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
+		const provider = new APIProvider({ url: "https://api.example.com/" });
 		const endpoint = POST("/items", DATA({ name: STRING }), STRING);
 		const request = provider.getRequest(endpoint, { name: "abc" });
 
@@ -21,7 +21,7 @@ describe("ClientAPIProvider", () => {
 	});
 
 	test("getRequest() rejects non-data payloads for GET endpoints", () => {
-		const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
+		const provider = new APIProvider({ url: "https://api.example.com/" });
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		expect(() => provider.getRequest(endpoint, "123" as never)).toThrow(RequiredError);
 	});
@@ -32,7 +32,7 @@ describe("ClientAPIProvider", () => {
 			// @ts-expect-error Testing replacement.
 			globalThis.fetch = async () => Response.json("Hello from fetch");
 
-			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
+			const provider = new APIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
 			expect(await provider.fetch(endpoint, { id: "1" })).toBe("Hello from fetch");
@@ -47,7 +47,7 @@ describe("ClientAPIProvider", () => {
 			// @ts-expect-error Testing replacement.
 			globalThis.fetch = async () => new Response("plain text", { status: 200, headers: { "Content-Type": "text/plain" } });
 
-			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
+			const provider = new APIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
 			expect(await provider.fetch(endpoint, { id: "1" })).toBe("plain text");
@@ -67,7 +67,7 @@ describe("ClientAPIProvider", () => {
 				return await Response.json("ok");
 			};
 
-			const provider = new ClientAPIProvider({
+			const provider = new APIProvider({
 				url: "https://api.example.com/",
 				options: { headers: { "X-Default": "provider", "Content-Type": "application/custom" } },
 			});
@@ -88,7 +88,7 @@ describe("ClientAPIProvider", () => {
 				return await Response.json("ok");
 			};
 
-			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
+			const provider = new APIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 			const controller = new AbortController();
 
@@ -104,7 +104,7 @@ describe("ClientAPIProvider", () => {
 			// @ts-expect-error Testing replacement.
 			globalThis.fetch = async () => Response.json(false);
 
-			const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com/" }));
+			const provider = new ValidationAPIProvider(new APIProvider({ url: "https://api.example.com/" }));
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
 			await expect(provider.fetch(endpoint, { id: "1" })).rejects.toBeInstanceOf(ResponseError);
@@ -119,7 +119,7 @@ describe("ClientAPIProvider", () => {
 			// @ts-expect-error Testing replacement.
 			globalThis.fetch = async () => new Response("Teapot", { status: 418, headers: { "Content-Type": "text/plain" } });
 
-			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
+			const provider = new APIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
 			await expect(provider.fetch(endpoint, { id: "1" })).rejects.toMatchObject({ message: "Teapot", code: 418 });

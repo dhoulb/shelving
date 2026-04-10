@@ -12,7 +12,6 @@ const _TIMEOUT = Symbol("EndpointStore/TIMEOUT");
  */
 export class EndpointStore<P, R> extends Store<R> implements Disposable {
 	readonly provider: APIProvider;
-
 	readonly endpoint: Endpoint<P, R>;
 
 	private _payload!: P;

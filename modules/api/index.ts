@@ -3,7 +3,6 @@ export * from "./cache/EndpointCache.js";
 export * from "./endpoint/Endpoint.js";
 export * from "./endpoint/util.js";
 export * from "./provider/APIProvider.js";
-export * from "./provider/ClientAPIProvider.js";
 export * from "./provider/DebugAPIProvider.js";
 export * from "./provider/MockAPIProvider.js";
 export * from "./provider/MockEndpointAPIProvider.js";

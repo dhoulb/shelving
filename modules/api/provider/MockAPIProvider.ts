@@ -1,7 +1,7 @@
 import type { AnyCaller } from "../../util/function.js";
 import { mergeRequestOptions, type RequestHandler, type RequestOptions } from "../../util/http.js";
 import type { AnyEndpoint, Endpoint } from "../endpoint/Endpoint.js";
-import { ClientAPIProvider, type ClientAPIProviderOptions } from "./ClientAPIProvider.js";
+import { APIProvider, type APIProviderOptions } from "./APIProvider.js";
 
 /** A structured log entry emitted by `MockAPIProvider` for one of its provider operations. */
 export type MockAPICall = {
@@ -16,15 +16,15 @@ export type MockAPICall = {
 
 /**
  * Construction options for a `MockAPIProvider`
- * - Same as options for a normal `ClientAPIProvider`, but with an optional URL.
+ * - Same as options for a normal `APIProvider`, but with an optional URL.
  */
-export interface MockAPIProviderOptions extends Omit<ClientAPIProviderOptions, "url"> {
+export interface MockAPIProviderOptions extends Omit<APIProviderOptions, "url"> {
 	/** Optional URL, defaults to `"https://api.mock.com"` */
-	url?: ClientAPIProviderOptions["url"];
+	url?: APIProviderOptions["url"];
 }
 
 /** Provider that logs API calls without sending network requests. */
-export class MockAPIProvider extends ClientAPIProvider {
+export class MockAPIProvider extends APIProvider {
 	readonly calls: MockAPICall[] = [];
 
 	readonly handler: RequestHandler;

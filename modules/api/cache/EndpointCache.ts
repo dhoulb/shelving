@@ -1,13 +1,8 @@
+import type { AnyCaller } from "../../util/function.js";
 import { setMapItem } from "../../util/map.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "../provider/APIProvider.js";
 import { EndpointStore } from "../store/EndpointStore.js";
-
-/** Serialize a payload to a stable string key for use in a `Map`. */
-function _serializePayload(payload: unknown): string {
-	if (payload === undefined) return "";
-	return JSON.stringify(payload);
-}
 
 /**
  * Cache of `EndpointStore` objects for a single endpoint, keyed by serialized payload.
@@ -25,14 +20,14 @@ export class EndpointCache<P, R> implements Disposable {
 	}
 
 	/** Get (or create) the `EndpointStore` for the given payload. */
-	get(payload: P): EndpointStore<P, R> {
-		const key = _serializePayload(payload);
-		return this._stores.get(key) || setMapItem(this._stores, key, new EndpointStore(this.endpoint, payload, this.provider));
+	get(payload: P, caller: AnyCaller = this.get): EndpointStore<P, R> {
+		const url = this.provider.renderURL(this.endpoint, payload, caller).href;
+		return this._stores.get(url) || setMapItem(this._stores, url, new EndpointStore(this.endpoint, payload, this.provider));
 	}
 
 	/** Invalidate a specific store. */
-	invalidate(payload: P): void {
-		this.get(payload)?.invalidate();
+	invalidate(payload: P, caller: AnyCaller = this.invalidate): void {
+		this.get(payload, caller)?.invalidate();
 	}
 
 	/** Invalidate all stores. */
@@ -41,8 +36,8 @@ export class EndpointCache<P, R> implements Disposable {
 	}
 
 	/** Trigger a refetch on a specific store. */
-	refetch(payload: P): void {
-		this.get(payload)?.fetch();
+	refetch(payload: P, caller: AnyCaller = this.invalidate): void {
+		this.get(payload, caller)?.fetch();
 	}
 
 	/** Trigger a refetch on all stores. */
