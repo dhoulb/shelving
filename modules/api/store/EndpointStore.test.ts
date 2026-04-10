@@ -104,7 +104,7 @@ describe("EndpointStore", () => {
 
 		try {
 			console.error = () => undefined;
-			const store = new EndpointStore(endpoint, { id: "123" }, new FailingAPIProvider());
+			const store = new EndpointStore(endpoint, { id: "123" }, new FailingAPIProvider({ url: "https://test.com" }));
 			await runMicrotasks();
 			expect(store.reason).toBe(reason);
 			expect(() => store.value).toThrow("Nope");

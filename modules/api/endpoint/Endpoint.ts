@@ -16,7 +16,7 @@ import type { EndpointCallback, EndpointHandler } from "./util.js";
  * @param payload A `Schema` for the payload of the endpoint.
  * @param result A `Schema` for the result of the endpoint.
  */
-export class Endpoint<P, R> {
+export class Endpoint<P = unknown, R = unknown> {
 	/** Endpoint method. */
 	readonly method: RequestMethod;
 

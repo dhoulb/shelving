@@ -8,7 +8,7 @@ import { EndpointStore } from "../store/EndpointStore.js";
  * Cache of `EndpointStore` objects for a single endpoint, keyed by serialized payload.
  * - Use `get(payload)` to retrieve or create the `EndpointStore` for a given payload.
  */
-export class EndpointCache<P, R> implements Disposable {
+export class EndpointCache<P = unknown, R = unknown> implements Disposable {
 	private readonly _stores = new Map<string, EndpointStore<P, R>>();
 
 	readonly endpoint: Endpoint<P, R>;
@@ -51,7 +51,3 @@ export class EndpointCache<P, R> implements Disposable {
 		this._stores.clear();
 	}
 }
-
-/** Any endpoint cache. */
-// biome-ignore lint/suspicious/noExplicitAny: Intentional.
-export type AnyEndpointCache = EndpointCache<any, any>;

@@ -1,14 +1,14 @@
 import { setMapItem } from "../../util/map.js";
-import type { AnyEndpoint, Endpoint } from "../endpoint/Endpoint.js";
+import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "../provider/APIProvider.js";
-import { type AnyEndpointCache, EndpointCache } from "./EndpointCache.js";
+import { EndpointCache } from "./EndpointCache.js";
 
 /**
  * Cache of `EndpointCache` objects for multiple endpoints.
  * - Use `get(endpoint)` to retrieve or create the `EndpointCache` for a given endpoint, then `get(payload)` on that to get a specific `EndpointStore`.
  */
 export class APICache implements Disposable {
-	private readonly _caches = new Map<AnyEndpoint, AnyEndpointCache>();
+	private readonly _caches = new Map<Endpoint, EndpointCache>();
 
 	readonly provider: APIProvider;
 
@@ -16,29 +16,35 @@ export class APICache implements Disposable {
 		this.provider = provider;
 	}
 
+	private _get<P, R>(endpoint: Endpoint<P, R>): EndpointCache<P, R> | undefined;
+	private _get(endpoint: Endpoint): EndpointCache | undefined {
+		return this._caches.get(endpoint);
+	}
+
 	/** Get (or create) the `EndpointCache` for the given endpoint. */
-	get<P, R>(endpoint: Endpoint<P, R>): EndpointCache<P, R> {
-		return this._caches.get(endpoint) || setMapItem(this._caches, endpoint, new EndpointCache(endpoint, this.provider));
+	get<P, R>(endpoint: Endpoint<P, R>): EndpointCache<P, R>;
+	get(endpoint: Endpoint): EndpointCache {
+		return this._get(endpoint) || setMapItem(this._caches, endpoint, new EndpointCache(endpoint, this.provider));
 	}
 
 	/** Invalidate a specific store for an endpoint. */
 	invalidate<P, R>(endpoint: Endpoint<P, R>, payload: P): void {
-		this._caches.get(endpoint)?.invalidate(payload);
+		this._get(endpoint)?.invalidate(payload);
 	}
 
 	/** Invalidate all stores for an endpoint. */
 	invalidateAll<P, R>(endpoint: Endpoint<P, R>): void {
-		this._caches.get(endpoint)?.invalidateAll();
+		this._get(endpoint)?.invalidateAll();
 	}
 
 	/** Trigger a refetch on a specific store for an endpoint. */
 	refetch<P, R>(endpoint: Endpoint<P, R>, payload: P): void {
-		this._caches.get(endpoint)?.refetch(payload);
+		this._get(endpoint)?.refetch(payload);
 	}
 
 	/** Trigger a refetch on all stores for an endpoint. */
 	refetchAll<P, R>(endpoint: Endpoint<P, R>): void {
-		this._caches.get(endpoint)?.refetchAll();
+		this._get(endpoint)?.refetchAll();
 	}
 
 	// Implement Disposable.
