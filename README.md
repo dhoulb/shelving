@@ -1,6 +1,6 @@
 # Shelving
 
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org) [![GitHub Actions](https://github.com/dhoulb/shelving/workflows/CI/badge.svg?branch=main)](https://github.com/dhoulb/shelving/actions) [![npm](https://img.shields.io/npm/dm/shelving.svg)](https://www.npmjs.com/package/shelving)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org) [![Release](https://github.com/dhoulb/shelving/actions/workflows/release.yaml/badge.svg)](https://github.com/dhoulb/shelving/actions/workflows/release.yaml) [![npm](https://img.shields.io/npm/dm/shelving.svg)](https://www.npmjs.com/package/shelving)
 
 Shelving is a TypeScript toolkit for working with typed data. At its core it is a schema validation library — every schema has a `validate()` method that returns a typed value or throws a human-readable error. On top of that it provides a database provider abstraction, an API provider abstraction, observable state stores, React integration, and a large set of typed utility functions.
 
