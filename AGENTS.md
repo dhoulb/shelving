@@ -7,15 +7,15 @@ TypeScript data toolkit with modules for schema validation, database providers, 
 Source lives under `modules/`:
 
 - `api` — API request/response handling
-- `cloudflare` — Cloudflare Workers KV provider
-- `db` — Database abstraction (providers, collections, stores)
+- `bun` — Bun PostgreSQL provider
+- `cloudflare` — Cloudflare Workers providers (KV, D1)
+- `db` — Database abstraction (providers, collections, stores, migrations)
 - `error` — Error classes
 - `firestore` — Firestore providers (client, lite, server)
-- `iterate` — Iterable utilities
-- `markup` — Markup/HTML utilities
+- `markup` — Markdown renderer for user-facing content
 - `react` — React hooks and context
 - `schema` — Schema validation
-- `sequence` — Sequence utilities
+- `sequence` — Async-iterable utilities
 - `store` — State stores
 - `test` — Test utilities
 - `util` — General utilities (arrays, objects, strings, functions, etc.)
@@ -145,3 +145,12 @@ bun run build
 - When changing TypeScript inference or public generic behavior, include compile-time assignment checks in tests in addition to runtime assertions
 - Reuse fixtures and helpers from `modules/test/` when they fit, especially for collection, provider, and query tests
 - Test files always import from barrel file (highest possible), so the test also ensures the barrel export
+
+## Documentation
+
+- Every public class, function, and type must have a JSDoc comment. Keep comments updated when behaviour changes — a stale comment is worse than none.
+- Classes: one-sentence summary, bullet points for notable behaviour and caveats, `@example` for short inline usage.
+- Functions: one-sentence summary, 0–2 behaviour bullets for anything surprising, `@param`/`@returns`/`@throws`, one `@example`.
+- When you add, remove, or meaningfully change a class or function, check and update its docblock in the same commit.
+- Each module has a `README.md` that acts as a guide page (concepts first, then examples). When module behaviour changes, check whether the README needs updating.
+- Trust source and tests over README if they conflict — but fix the README rather than leaving it wrong.

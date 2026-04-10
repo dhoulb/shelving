@@ -1,519 +1,197 @@
-# shelving/schema: Validate unknown user input against schemas
+# schema
 
-**shelving/schema** is a schema validator for user input written for JavaScript and TypeScript with special attention paid to TypeScript types.
+Schema validation for TypeScript. A `Schema<T>` describes how to coerce and validate an unknown value into a typed `T`. Schemas are the foundation of shelving — database collections, API endpoints, and form handlers all build on them.
+
+By convention, instantiated schemas are constants and use `UPPERCASE`.
+
+## Concepts
+
+### The `Schema<T>` interface
+
+Every schema has a single `validate(value: unknown): T` method. If the value is valid (after any coercion), it returns `T`. If it is not, it throws a plain **string** error message — for example `"Must be 5–50 characters"` or `"Required"`. This is intentional: form handlers and API layers can consume these strings directly without any unwrapping.
+
+Multi-field errors from `DataSchema` are joined by `\n`, one line per failed field, with the field name prepended: `"name: Required\nemail: Invalid format"`.
+
+### Default value
+
+`validate()` is called with `undefined` when no value is provided; the schema falls back to its `value` default.
+
+### Coercion
+
+Schema functionality in Shelving follows the **robustness principle**: "be conservative in what you do, be liberal in what you accept from others". Values that are obvious in their intent are coerced to appropriate valid values.
+
+`StringSchema` converts numbers to strings, `BooleanSchema` converts the strings `"no"` and `"false"` to `false` and tests other values for truthiness, `ArraySchema` splits comma-separated strings into arrays, `NumberSchema` parses strings into numbers.
+
+### Metadata
+
+Every schema carries optional display metadata set at construction time:
+
+| Property      | Default         | Purpose                                            |
+| ------------- | --------------- | -------------------------------------------------- |
+| `one`         | `"value"`       | Singular noun, e.g. `"product"`                   |
+| `many`        | `one + "s"`     | Plural noun, e.g. `"products"`                    |
+| `title`       | `""`            | Human-readable label for a field                  |
+| `description` | `""`            | Longer description for a field                    |
+| `placeholder` | `""`            | Placeholder text for an input                     |
+| `value`       | schema-specific | Default used when `validate(undefined)` is called |
+
+### Factory constants
+
+Pre-built constants and factory functions cover the most common cases:
+
+| Constant / factory      | Validated type       |
+| ----------------------- | -------------------- |
+| `STRING`                | `string`             |
+| `NUMBER`                | `number`             |
+| `BOOLEAN`               | `boolean`            |
+| `DATA(props)`           | `T` (plain object)   |
+| `ARRAY(itemSchema)`     | `readonly T[]`       |
+| `CHOICE(options)`       | union of string keys |
+| `NULLABLE(schema)`      | `T \| null`          |
+| `OPTIONAL(schema)`      | `T \| undefined`     |
+| `PARTIAL(schema)`       | `Partial<T>`         |
+| `ITEM(idSchema, props)` | `{ id: I } & T`      |
 
 ## Usage
 
-Import the `schema` object and use schema creator functions (e.g. `schema.string()`) to make schemas. These functions take an `options` object that configures the schema and returns an instance of the corresponding schema class.
-
-When you have created a schema you can pass unknown values into the `validate()` method to validate those values:
-
-- Valid values will be returned unchanged.
-- Invalid values that can be trivially fixed will be modified and returned.
-- Invalid values will return instances of `string`, which contains a user-facing `message` property describing why.
-
-This basic example shows how Shelving schemas can be used in the real world:
+### Primitive schemas
 
 ```ts
-import { schema } from "shelving";
+import { STRING, NUMBER, BOOLEAN, REQUIRED_STRING } from "shelving/schema";
 
-// Create a schema that can validate the data.
-const objectSchema = schema.object(
-	required: true;
-	props: {
-		"name": schema.string({ required: true }),
-		"age": schema.number({ required: true, min: 0, max: 150 }),
-		"status": schema.boolean(),
-	}
-);
+STRING.validate("hello");        // "hello"
+STRING.validate(42);             // "42"   (numbers coerced)
+STRING.validate(undefined);      // ""     (default)
+REQUIRED_STRING.validate("");    // throws "Required"
 
-// Function that runs on the server that validates input and saves it to the database.
-export function myServerFunction(unsafeInput: unknown): true {
-	// Validate the unsafe input.
-	const data = objectSchema.validate(unsafeInput);
+NUMBER.validate("3.14");         // 3.14   (strings coerced)
+NUMBER.validate(undefined);      // 0      (default)
 
-	// Note that the TypeScript type of data is:
-	// { name: string, age: number, status: boolean }
-
-	// The data was invalid. Throw an error.
-	if (data instanceof Invalid) throw new ServerError("Invalid input: " + data.message);
-
-	// Note: Now that we've filtered out Invalid we know the type is just the expect data object.
-
-	// The data is valid. Now we can save it to the database safely.
-	const status = saveToDatabase(data);
-
-	// Success!
-	return true;
-}
+BOOLEAN.validate("false");       // false
+BOOLEAN.validate(1);             // true
 ```
 
-### Invalid values
-
-Is you pass an invalid value into `validate()` then two things might happen: 1) If the invalid value can be trivially converted to a valid value without data loss, it will be converted and returned, or 2) An instance of `string` will be returned:
+### Custom string and number schemas
 
 ```ts
-import { string, number, email, url, boolean, Invalid } from "shelving";
+import { StringSchema, NumberSchema } from "shelving/schema";
 
-// Trivial conversion.
-boolean().validate("abc"); // Returns `true`
-boolean().validate(""); // Returns `false`
-string().validate(123); // Returns "123" string.
-number().validate("123.456"); // Returns 123.456 number.
+const USERNAME = new StringSchema({ title: "Username", min: 3, max: 20, match: /^[a-z0-9_]+$/ });
+USERNAME.validate("alice_99");   // "alice_99"
+USERNAME.validate("al");         // throws "Minimum 3 characters"
+USERNAME.validate("ALICE");      // throws "Invalid format"
 
-// Fully invalid values.
-string().validate(true); // Throws "Must be string"
-number().validate("abc"); // Throws "Must be number"
-email().validate("abc"); // Throws "Invalid email format"
-url().validate("abc"); // Throws "Invalid URL format"
+const RATING = new NumberSchema({ title: "Rating", min: 1, max: 5, step: 1 });
+RATING.validate(3);              // 3
+RATING.validate(0);              // throws "Minimum 1"
 ```
 
-With object schemas, `options.props` is used to fill (and trivially convert) missing object props:
+### Choice schemas
+
+Define a schema where a user must choose from a list of known valid values. Designed to power a `<select>` field in HTML.
 
 ```ts
-import { object, number, string } from "shelving";
+import { CHOICE } from "shelving/schema";
 
-// Make an object schema.
-const schema = object({
-	props: {
-		name: string({ value: "DEFAULT" }),
-		age: number(),
-	},
+// Array form — keys and labels are the same.
+const STATUS = CHOICE(["draft", "published", "archived"] as const);
+STATUS.validate("published"); // "published"
+STATUS.validate("deleted");   // throws "Unknown value"
+
+// Object form — keys are validated values, object values are display labels.
+const Priority = CHOICE({ low: "Low priority", high: "High priority" });
+```
+
+`ChoiceSchema` is iterable and exposes `.keys()` and `.entries()` for building select menus.
+
+### Data schemas
+
+The term `Data` in Shelving refers to a plain object with known named properties. A `DataSchema` validates a plain object whose properties each have their own schema.
+
+```ts
+import { DATA, STRING, NUMBER, BOOLEAN, StringSchema, NumberSchema } from "shelving/schema";
+
+const PRODUCT = DATA({
+  name: new StringSchema({ title: "Name", min: 1, max: 100 }),
+  price: new NumberSchema({ title: "Price", min: 0 }),
+  available: BOOLEAN,
 });
 
-// Returns { name: "DEFAULT", age: 123 }
-schema.validate({ age: "123" });
+PRODUCT.validate({ name: "Widget", price: 9.99, available: true });
+// { name: "Widget", price: 9.99, available: true }
 
-// Returns { name: "Dave", age: null }
-schema.validate({ name: "Dave" });
+PRODUCT.validate({ name: "", price: -1, available: true });
+// throws "name: Required\nprice: Minimum 0"
 ```
 
-Instances of `string` contain a string `.message` property describing the issue:
+Use `.pick()` and `.omit()` to derive subset schemas without redefining props:
 
 ```ts
-const invalid = url().validate("abc");
-console.error(invalid.message); // Logs "Invalid URL format"
+const PatchProduct = Product.omit("available");
+const NameOnly = Product.pick("name");
 ```
 
-When validating an object, it's possible the _contents_ might be invalid. In this situation `string` also has a `(named lines in the message)` object specifying where, within the object, the data was invalid.
+### Array schemas
+
+Arrays have a `items` property that defines the schema
 
 ```ts
-import { object, string, number } from "shelving"
+import { ARRAY, STRING } from "shelving/schema";
 
-// Make an object schema with `options.props`
-const schema = object({
-	props: {
-		name: string({ required: true }),
-		age: number({ min 0, max: 200 }),
-	}
-});
+const TAGS = ARRAY(STRING);
+TAGS.validate(["a", "b"]);     // ["a", "b"]
+TAGS.validate("a,b,c");        // ["a", "b", "c"]  (split on comma)
+TAGS.validate(undefined);      // []
 
-// Validate an invalid value.
-const invalid = schema.validate({ age: 900 });
-
-console.log(invalid.message); // "Invalid format"
-console.log(invalid(named lines in the message)); // { name: "Required", age: "Maximum 200" }
+const NUMBERS = ARRAY(STRING);
+NUMBERS.validate([1, 2]);     // [1, 2]
+NUMBERS.validate("1,2,3");        // [1, 2, 3]  (split on comma)
+NUMBERS.validate(undefined);      // []
 ```
 
-This also works for arrays. The keys in `(named lines in the message)` will be numeric strings:
+### Item schemas
+
+`ITEM` wraps a `DataSchema` to add a typed `id` field, matching the `Item` type in [util](../util/README.md).
 
 ```ts
-import { array, string } from "shelving";
+import { ITEM, STRING, INTEGER, NUMBER } from "shelving/schema";
 
-// Make an array schema with `options.items`
-const schema = array({
-	items: string({ required: true }),
-});
-
-// Validate an invalid value.
-const invalid = schema.validate([123, true, ""]);
-
-console.log(invalid.message); // "Invalid format"
-console.log(invalid(named lines in the message)); // { "1": "Must be string", "2": "Required" }
+const PRODUCT_ITEM = ITEM(INTEGER, {
+  name: STRING,
+  price: NUMBER,
+}); // Validates: { id: number, name: string, price: number }
 ```
 
-### Validating different types
+### Nullable and optional
 
-Schemaglobin contains a bunch of different schema types you can use:
+`NULLABLE` allows a value to be `null` (and also coerces `undefined` and `""` to `null`). `OPTIONAL` allows `undefined` and is mainly used for partial data props.
 
 ```ts
-import { boolean, string, number, date, email, phone, url, key, array, object, map } from "shelving";
+import { NULLABLE, OPTIONAL, NUMBER } from "shelving/schema";
 
-// Create schemas.
-const booleanSchema = boolean({ required: true, ...etc });
-const stringSchema = string({ required: true, ...etc });
-const numberSchema = number({ required: true, ...etc });
-const colorSchema = color({ required: true, ...etc });
-const dateSchema = date({ required: true, ...etc });
-const emailSchema = email({ required: true, ...etc });
-const phoneSchema = phone({ required: true, ...etc });
-const urlSchema = url({ required: true, ...etc });
-const keySchema = key({ required: true, ...etc });
-const arraySchema = array({ required: true, items: etc, ...etc });
-const objectSchema = object({ required: true, props: etc, ...etc });
-const mapSchema = object({ required: true, items: etc, ...etc });
+const NULLABLE_NUMBER = NULLABLE(NUMBER);
+NULLABLE_NUMBER.validate(null);       // null
+NULLABLE_NUMBER.validate(undefined);  // null
+NULLABLE_NUMBER.validate("");         // null
+NULLABLE_NUMBER.validate(42);         // 42
 
-// Successful validation.
-booleanSchema.validate(true); // Returns true
-stringSchema.validate("abc"); // Returns "abc"
-numberSchema.validate(12345); // Returns 12345
-colorSchema.validate("#00CCFF"); // Returns "#00CCFF"
-dateSchema.validate("1995"); // Returns "1995-01-01"
-emailSchema.validate("me@x.com"); // Returns "me@x.com"
-phoneSchema.validate("+1234567890"); // Returns "+1234567890"
-urlSchema.validate("http://x.com"); // Returns "http://x.com"
-keySchema.validate("ajdk29Jak"); // Returns "ajdk29Jak"
-arraySchema.validate(["a", 2, true]); // Returns ["a", 2, true]
-objectSchema.validate({ a: "A" }); // Returns { a: "A" }
-mapSchema.validate({ a: "A" }); // Returns { a: "A" }
-
-// Successful validation.
-stringSchema.validate(true); // Throws "Must be string"
-numberSchema.validate(true); // Throws "Must be number"
-dateSchema.validate("aaaaaaa"); // Throws "Invalid date"
-colorSchema.validate(true); // Throws "Must be string"
-emailSchema.validate("111111"); // Throws "Invalid format"
-phoneSchema.validate("aaaaaa"); // Throws "Invalid format"
-urlSchema.validate("11111111"); // Throws "Invalid format"
-keySchema.validate("!!!!!!!"); // Throws "Invalid format"
-arraySchema.validate(true); // Throws "Must be array"
-objectSchema.validate(true); // Throws "Must be object"
-mapSchema.validate(true); // Throws "Must be object"
+const OPTIONAL_NUMBER = OPTIONAL(NUMBER);
+OPTIONAL_NUMBER.validate(undefined); // undefined
+OPTIONAL_NUMBER.validate(42);        // 42
 ```
 
-### Default values
+### Partial schemas
 
-Every schema has a default value that is used when the value is `undefined`. The default value can be changed for any schema with `options.value`
+`PARTIAL` wraps a `DataSchema` so every field becomes optional — useful for PATCH-style update payloads.
 
 ```ts
-import { string } from "shelving";
+import { PARTIAL } from "shelving/schema";
 
-const schemaWithoutDefault = string();
-schemaWithDefault.validate(); // Returns ""
-
-const schemaWithDefault = string({ value: "WOW VALUE" });
-schemaWithDefault.validate(); // Returns "WOW VALUE"
-schemaWithDefault.validate(undefined); // Returns "WOW VALUE"
+const PARTIAL_PRODUCT = PARTIAL(PRODUCT);
+PARTIAL_PRODUCT.validate({ price: 4.99 }); // { price: 4.99 }
 ```
 
-### Required values
+## See also
 
-Normally values are not required, meaning `null` or `""` empty string are allowed. This can be changed with `options.required`
-
-```ts
-import { number } from "shelving";
-
-const optionalSchema = number({ required: false });
-optionalSchema.validate(null); // Returns null.
-
-const requiredSchema = number({ required: true });
-optionalSchema.validate(null); // Throws "Required"
-```
-
-### Using TypeScript
-
-Schemaglobin pays special attention to the TypeScript type of values returned by `validate()`, for example:
-
-- `NumberSchema.validate()`
-  - Normally returns `number | null`
-  - If `options.required` is truthy the value will never be `null` (as that would be invalid) so it only returns `number`
-- `StringSchema.validate()`
-  - Normally returns `string`
-  - If `options.options` is set it can return a more specific type, e.g. `"a" | "b" | ""`
-
-```ts
-import { object, string, number, boolean } from "shelving";
-
-// `options.required` filters out falsy value.
-const requiredNumber: number = number({ required: true }).validate(123); // No error.
-const optionalNumber: number = number({ required: false }).validate(123); // Error `number | null` cannot be assigned to `number`
-
-// Return type for StringSchema is inferred from `options.options`
-const enumStringArray: "a" | "b" = string({ options: ["a", "b"] }).validate("a"); // No error.
-const enumStringObject: "a" | "b" = string({ options: { a: "A", b: "B" } }).validate("a"); // No error.
-
-// Return type for ObjectSchema is inferred from `options.props`
-const objectSchema = object({
-	required: true,
-	props: {
-		num: number(),
-		str: string({ required: true }),
-		bool: boolean({ required: true }),
-	},
-});
-
-// Validated value has type `{ num: number | null, str: string, bool: true }`
-const obj = objectSchema.validate(undefined);
-if (typeof obj !== "string") {
-	const num: number | null = obj.num; // No error.
-	const str: string = obj.str; // No error.
-	const bool: true = obj.bool; // No error.
-}
-```
-
-## Reference
-
-All schema creator functions allow the following options (and may allow others too):
-
-- `options.title: string = ""` - A title for the schema (for showing in a user-facing field).
-- `options.description: string = ""` - A description for the schema (for showing in a user-facing field).
-- `options.placeholder: string = ""` - A placeholder for the schema (for showing in a user-facing field).
-- `options.validator?: (value: T) => T` - Additional validation function that is called after all built in validation.
-
-### `ArraySchema`
-
-The `schema.array()` creator function creates a `ArraySchema` instance that can validate arrays and their contents:
-
-- Arrays are valid, e.g. `[1,2,3]`
-- Contents of the array can be validated with `options.items`
-- Falsy values are converted to `[]` empty array.
-- `[]` empty array is an invalid value if `options.required` is truthy.
-
-`schema.array()` also allows the following options:
-
-- `options.value: [] = []` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then empty arrays will throw `"Required"`
-- `options.min: number = null` - The minimum number of items allowed.
-- `options.max: number = null` - The maximum number of items allowed.
-- `options.items: Schema` (required) - Schema that will be used to validate the contents of the array.
-- `options.unique: boolean` - Specify that items cannot appear in the array more than once (duplicates will be de-duped automatically).
-
-### `BooleanSchema`
-
-The `schema.boolean()` creator function creates a `BooleanSchema` instance:
-
-- All truthy values are converted to `true`
-- All falsy values are converted to `false`
-- Default value is `false`
-- `false` is an invalid value if `options.required` is truthy.
-- Doesn't accept any additional options.
-
-`schema.boolean()` also allows the following options:
-
-- `options.value: boolean = false` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then false values will throw `"Required"`
-
-### `ColorSchema`
-
-The `schema.color()` creator function creates a `ColorSchema` instance that can validate hexadecimal color strings:
-
-- Strings in hex color format are valid, e.g. `#00CCFF`
-- Whitespace is trimmed automatically.
-- Falsy values are converted to `null`
-- `null` is an invalid value if `options.required` is truthy.
-
-`schema.color()` also allows the following options:
-
-- `options.value: Date = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `"Required"`
-
-### `DateSchema`
-
-The `schema.date()` creator function creates a `DateSchema` instance that can validate date YMD strings:
-
-- Strings in YMD format are valid, e.g. `1995-10-20`
-- Whitespace is trimmed automatically.
-- Strings in other formats are parsed with `new Date()` and converted to YMD strings.
-- `Date` instances and numbers are converted to YMD strings.
-- `value`, `min` and `max` options can be functions that return calculated values, e.g. using `value: Date.now` will set the value to today's date.
-- Falsy values are converted to `null`
-- `null` is an invalid value if `options.required` is truthy.
-
-`schema.date()` also allows the following options:
-
-- `options.value: Date = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `"Required"`
-- `options.min: string = null` - The minimum date allowed.
-- `options.max: string = null` - The maximum date allowed.
-
-### `EmailSchema`
-
-The `schema.email()` creator function creates a `EmailSchema` instance that can validate email addresses:
-
-- Strings that are valid email addresses are valid, e.g. `dave@gmail.com`
-- Whitespace is trimmed automatically.
-- Email is converted to lowercase automatically.
-- Falsy values are converted to `null`
-- `null` is an invalid value if `options.required` is truthy.
-
-`schema.email()` also allows the following options:
-
-- `options.value: string = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `"Required"`
-
-### `KeySchema`
-
-The `schema.key()` creator function creates a `KeySchema` instance that can validate database key strings:
-
-- Strings that are valid database keys are valid, e.g. `abc` or `AAAA1234`
-- By default key strings can only contain `a-zA-Z0-9` or `-` hyphen.
-- Whitespace is trimmed automatically.
-- Falsy values are converted to `null`
-- `null` is an invalid value if `options.required` is truthy.
-
-`schema.key()` also allows the following options:
-
-- `options.value: string = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `"Required"`
-- `options.match: RegExp = /[a-zA-Z0-9-]{1,24}/` - Format the database key must match.
-
-### `MapSchema`
-
-The `schema.map()` creator function creates a `MapSchema` instance that can validate an object containing a list of key: value entries:
-
-- Objects are valid, e.g. `{ a: 1, b: 2, c: 3 }`
-- Contents of the object can be validated with `options.props`
-- Falsy values are converted to `{}` empty object.
-- `{}` empty object is an invalid value if `options.required` is truthy.
-
-`schema.map()` also allows the following options:
-
-- `options.value: {} = {}` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then empty objects will throw `"Required"`
-- `options.min: number = null` - The minimum number of items allowed.
-- `options.max: number = null` - The maximum number of items allowed.
-- `options.items: Schema` (required) - Schema that will be used to validate all properties in the object.
-
-### `NumberSchema`
-
-The `schema.number()` creator function creates a `NumberSchema` instance that can validate numbers:
-
-- Numbers are valid values.
-- Strings that can be converted to numbers are valid values.
-- `0` zero is a valid value.
-- Falsy values are converted to `null`
-- `null` is an invalid value if `options.required` is truthy.
-
-`schema.number()` also allows the following options:
-
-- `options.value: number | null = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `"Required"`
-- `options.min: number = null` - The minimum number allowed.
-- `options.max: number = null` - The maximum number allowed.
-- `options.options: number[] | { number: string } = null` - Explicit list of allowed values as either:
-  1. An array of numbers where each number is an allowed value.
-  2. An object where each number key is an allowed value and the corresponding value can be a user-facing title for the option.
-- `options.step: number = null` - The step size for the the number (the value will be rounded to the closest step).
-- `options.unit: Unit = null` - The base unit for this schema (e.g. `"meter"` or `"feet"`). Compatible units (e.g. `"280 inches"`) will be converted to the base unit.
-
-### `PhoneSchema`
-
-The `schema.phone()` creator function creates a `PhoneSchema` instance that can validate URLs:
-
-- Strings that are valid phone numbers are valid, e.g. `+441234567890`
-- Whitespace is trimmed automatically.
-- Non-digit characters are stripped automatically.
-- Falsy values are converted to `null`
-- `null` is an invalid value if `options.required` is truthy.
-
-`schema.phone()` also allows the following options:
-
-- `options.value: string = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `"Required"`
-
-### `ObjectSchema`
-
-The `schema.object()` creator function creates a `ObjectSchema` instance that can validate an exact object:
-
-- Objects are valid, e.g. `{ a: 1, b: "two" }`
-- Contents of the object can be validated with `options.props`
-- Properties not specified in `options.props
-- Falsy values are converted to `null`
-- `null` is an invalid value if `options.required` is truthy.
-
-`schema.object()` also allows the following options:
-
-- `options.value: {} | null = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `"Required"`
-- `options.props: { [prop: string]: Schema }` (required) - An object explicitly specifying the type of each individual property.
-
-### `StringSchema`
-
-The `schema.string()` creator function creates a `StringSchema` instance:
-
-- Strings are valid values.
-- Whitespace is trimmed automatically.
-- Control characters are stripped automatically.
-- Newlines (and tabs) are stripped unless the `multiline` option is `true`
-- Numbers are converted to string automatically.
-- Falsy values are converted to `""` empty string
-- Default value is `""` empty string
-- `""` empty string is an invalid value if `options.required` is truthy.
-
-`schema.string()` also allows the following options:
-
-- `options.value: string = ""` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then empty strings will throw `"Required"`
-- `options.min: number = 0` - The minimum number of characters allowed.
-- `options.max: number = null` - The maximum number of characters allowed.
-- `options.options?: string[] | { string: string }` - Explicit list of allowed values as either:
-  1. An array of strings where each string is an allowed value.
-  2. An object where each string key is an allowed value, and the corresponding value is a user-facing title for the option.
-- `options.match: RegExp = null` - A regular expression that the string must match.
-- `options.multiline: boolean = false` - Whether the string allows newlines or not.
-- `options.sanitizer?: (value: string) => string` - Additional sanitization function that runs after initial string conversion (e.g. strip disallowed characters).
-- `options.type: string = "text"` — Type for `<input type="text" />` attribute.
-
-### `UrlSchema`
-
-The `schema.url()` creator function creates a `UrlSchema` instance that can validate URLs:
-
-- Strings that are valid email addresses are valid, e.g. `https://x.com` or `data:anything`
-- Whitespace is trimmed automatically.
-- Falsy values are converted to `null`
-- `null` is an invalid value if `options.required` is truthy
-
-`schema.url()` also allows the following options:
-
-- `options.value: string = null` - The default value which will be used if the value is `undefined`
-- `options.required: boolean = false` - If true, then null values will throw `"Required"`
-- `options.schemes: string[] = ["http:", "https:"]` - Whitelist of allowed URL schemes.
-- `options.hosts: string[] = null` - List of allowed hostnames, e.g. `["google.com"]`
-- `options.max: number = 512` - Maximum length of a URL.
-
-### Shortcuts
-
-The following static schemas are available as shortcuts for simple schemas that will be used a lot:
-
-```js
-import { schema } from "shelving";
-
-// These shortcuts save having to pass `options.required` into the creator function.
-BooleanSchema.REQUIRED.validate(true);
-BooleanSchema.OPTIONAL.validate(false);
-ColorSchema.REQUIRED.validate("#00CCFF");
-ColorSchema.OPTIONAL.validate(null);
-DateSchema.REQUIRED.validate(new Date());
-DateSchema.OPTIONAL.validate(null);
-EmailSchema.REQUIRED.validate("dave@x.com");
-EmailSchema.OPTIONAL.validate(null);
-KeySchema.REQUIRED.validate("abc123");
-KeySchema.OPTIONAL.validate(null);
-NumberSchema.REQUIRED.validate(12345);
-NumberSchema.OPTIONAL.validate(null);
-PhoneSchema.REQUIRED.validate("+44123456789");
-PhoneSchema.OPTIONAL.validate(null);
-StringSchema.REQUIRED.validate("AAAAA");
-StringSchema.OPTIONAL.validate("");
-UrlSchema.REQUIRED.validate("https://x.com");
-UrlSchema.OPTIONAL.validate(null);
-```
-
-Object schemas also provide sugary shortcuts, but as `options.props` and `options.items` are required, they work as functions too:
-
-```js
-import { schema } from "shelving";
-
-// Object shortcuts accept `options.props` as an argument.
-ObjectSchema.from({ num: schema.number.optional }).validate({ num: 123 });
-
-// Array shortcuts accept `options.items` as an argument.
-ArraySchema.from(schema.string.required).validate([1, 2, 3]);
-
-// Map shortcuts accept `options.items` as an argument.
-MapSchema.from(schema.boolean.required).validate({ a: 1, b: 2, c: 3 });
-```
-
-## Changelog
-
-See [Releases](https://github.com/dhoulb/shelving/releases)
+- [util](../util/README.md) — `Data`, `Item`, query, and update types consumed by schemas.
+- [db](../db/README.md) — `Collection` extends `DataSchema` and uses schemas to validate stored documents.
