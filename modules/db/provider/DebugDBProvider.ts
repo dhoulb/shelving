@@ -1,13 +1,13 @@
 import type { Data } from "../../util/data.js";
-import type { Identifier, Items, OptionalItem } from "../../util/item.js";
-import type { ItemQuery } from "../../util/query.js";
+import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import type { Query } from "../../util/query.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
 import { ThroughDBProvider } from "./ThroughDBProvider.js";
 
 /** Provider that logs operations to the console. */
-export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughDBProvider<I> {
-	override async getItem<T extends Data>(collection: Collection<string, I, T>, id: I): Promise<OptionalItem<I, T>> {
+export class DebugDBProvider<I extends Identifier, T extends Data> extends ThroughDBProvider<I, T> {
+	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		try {
 			console.debug("⋯ GET", collection.name, id);
 			const item = await super.getItem(collection, id);
@@ -19,7 +19,10 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async *getItemSequence<T extends Data>(collection: Collection<string, I, T>, id: I): AsyncIterableIterator<OptionalItem<I, T>> {
+	override async *getItemSequence<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		id: II,
+	): AsyncIterableIterator<OptionalItem<II, TT>> {
 		try {
 			console.debug("⋯ ITERATE", collection.name, id);
 			for await (const item of super.getItemSequence(collection, id)) {
@@ -32,7 +35,7 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async addItem<T extends Data>(collection: Collection<string, I, T>, data: T): Promise<I> {
+	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		try {
 			console.debug("⋯ ADD", collection.name, data);
 			const id = await super.addItem(collection, data);
@@ -44,7 +47,7 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async setItem<T extends Data>(collection: Collection<string, I, T>, id: I, data: T): Promise<void> {
+	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		try {
 			console.debug("⋯ SET", collection.name, id, data);
 			await super.setItem(collection, id, data);
@@ -55,7 +58,11 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async updateItem<T extends Data>(collection: Collection<string, I, T>, id: I, updates: Updates<T>): Promise<void> {
+	override async updateItem<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		id: II,
+		updates: Updates<Item<II, TT>>,
+	): Promise<void> {
 		try {
 			console.debug("⋯ UPDATE", collection.name, id, updates);
 			await super.updateItem(collection, id, updates);
@@ -66,7 +73,7 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async deleteItem<T extends Data>(collection: Collection<string, I, T>, id: I): Promise<void> {
+	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		try {
 			console.debug("⋯ DELETE", collection.name, id);
 			await super.deleteItem(collection, id);
@@ -77,7 +84,10 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async countQuery<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): Promise<number> {
+	override async countQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): Promise<number> {
 		try {
 			console.debug("⋯ COUNT", collection.name, query);
 			const count = await super.countQuery(collection, query);
@@ -89,7 +99,10 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async getQuery<T extends Data>(collection: Collection<string, I, T>, query?: ItemQuery<I, T>): Promise<Items<I, T>> {
+	override async getQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): Promise<Items<II, TT>> {
 		try {
 			console.debug("⋯ GET", collection.name, query);
 			const items = await super.getQuery(collection, query);
@@ -101,10 +114,10 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async *getQuerySequence<T extends Data>(
-		collection: Collection<string, I, T>,
-		query?: ItemQuery<I, T>,
-	): AsyncIterableIterator<Items<I, T>> {
+	override async *getQuerySequence<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): AsyncIterableIterator<Items<II, TT>> {
 		try {
 			console.debug("⋯ ITERATE", collection.name, query);
 			for await (const items of super.getQuerySequence(collection, query)) {
@@ -117,7 +130,11 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async setQuery<T extends Data>(collection: Collection<string, I, T>, query: ItemQuery<I, T>, data: T): Promise<void> {
+	override async setQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+		data: TT,
+	): Promise<void> {
 		try {
 			console.debug("⋯ SET", collection.name, query, data);
 			await super.setQuery(collection, query, data);
@@ -128,10 +145,10 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async updateQuery<T extends Data>(
-		collection: Collection<string, I, T>,
-		query: ItemQuery<I, T>,
-		updates: Updates<T>,
+	override async updateQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+		updates: Updates<TT>,
 	): Promise<void> {
 		try {
 			console.debug("⋯ UPDATE", collection.name, query, updates);
@@ -143,7 +160,10 @@ export class DebugDBProvider<I extends Identifier = Identifier> extends ThroughD
 		}
 	}
 
-	override async deleteQuery<T extends Data>(collection: Collection<string, I, T>, query: ItemQuery<I, T>): Promise<void> {
+	override async deleteQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+	): Promise<void> {
 		try {
 			console.debug("⋯ DELETE", collection.name, query);
 			await super.deleteQuery(collection, query);

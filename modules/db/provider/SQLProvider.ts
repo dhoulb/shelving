@@ -1,9 +1,9 @@
+import { RequiredError } from "../../error/RequiredError.js";
 import { UnimplementedError } from "../../error/UnimplementedError.js";
 import type { ImmutableArray } from "../../util/array.js";
 import type { Data, DataPath } from "../../util/data.js";
-import type { Item, Items, OptionalItem } from "../../util/item.js";
-import { assertNumber } from "../../util/number.js";
-import { getQueryFilters, getQueryLimit, getQueryOrders, type ItemQuery, type QueryFilter, type QueryOrder } from "../../util/query.js";
+import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import { getQueryFilters, getQueryLimit, getQueryOrders, type Query, type QueryFilter, type QueryOrder } from "../../util/query.js";
 import { getUpdates, type Update, type Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
 import { DBProvider } from "./DBProvider.js";
@@ -19,84 +19,94 @@ type CountRow = {
 };
 
 /** Shared SQL execution and CRUD/query behavior. */
-export abstract class SQLProvider extends DBProvider<number> {
-	abstract exec<T extends Data = Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<T>>;
+export abstract class SQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends DBProvider<I, T> {
+	abstract exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<X>>;
 
-	async getItem<T extends Data>({ name }: Collection<string, number, T>, id: number): Promise<OptionalItem<number, T>> {
-		const rows = await this.exec<Item<number, T>>`
-			SELECT * FROM ${this.sqlIdentifier(name)}
+	async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
+		const rows = await this.exec<Item<II, TT>>`
+			SELECT * FROM ${this.sqlIdentifier(collection.name)}
 			WHERE ${this.sqlIdentifier("id")} = ${id}
 			LIMIT 1
 		`;
 		return rows[0];
 	}
 
-	getItemSequence<T extends Data>(_collection: Collection<string, number, T>, _id: number): AsyncIterable<OptionalItem<number, T>> {
+	getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): AsyncIterable<OptionalItem<II, TT>> {
 		throw new UnimplementedError(`SQLProvider does not support realtime subscriptions`);
 	}
 
-	async addItem<T extends Data>({ name }: Collection<string, number, T>, data: T): Promise<number> {
-		const rows = await this.exec<{ id: number }>`
-			INSERT INTO ${this.sqlIdentifier(name)} ${this.sqlValues(data)}
+	async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
+		const rows = await this.exec<{ id: II }>`
+			INSERT INTO ${this.sqlIdentifier(collection.name)} ${this.sqlValues(data)}
 			RETURNING ${this.sqlIdentifier("id")}
 		`;
 		const id = rows[0]?.id;
-		assertNumber(id);
+		if (id === undefined) throw new RequiredError(`No id returned from INSERT into "${collection.name}"`, { provider: this });
 		return id;
 	}
 
-	async setItem<T extends Data>({ name }: Collection<string, number, T>, id: number, data: T): Promise<void> {
+	async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await this.exec`
-			INSERT INTO ${this.sqlIdentifier(name)} ${this.sqlValues({ id, ...data })}
+			INSERT INTO ${this.sqlIdentifier(collection.name)} ${this.sqlValues({ id, ...data })}
 			ON CONFLICT (${this.sqlIdentifier("id")}) DO UPDATE SET ${this.sqlSetters(data)}
 		`;
 	}
 
-	async updateItem<T extends Data>({ name }: Collection<string, number, T>, id: number, updates: Updates<T>): Promise<void> {
-		await this.exec<Item<number, T>>`
-			UPDATE ${this.sqlIdentifier(name)}
+	async updateItem<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		id: II,
+		updates: Updates<Item<II, TT>>,
+	): Promise<void> {
+		await this.exec`
+			UPDATE ${this.sqlIdentifier(collection.name)}
 			SET ${this.sqlUpdates(updates)}
 			WHERE ${this.sqlIdentifier("id")} = ${id}
 		`;
 	}
 
-	async deleteItem<T extends Data>({ name }: Collection<string, number, T>, id: number): Promise<void> {
-		await this.exec`DELETE FROM ${this.sqlIdentifier(name)} WHERE ${this.sqlIdentifier("id")} = ${id}`;
+	async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
+		await this.exec`DELETE FROM ${this.sqlIdentifier(collection.name)} WHERE ${this.sqlIdentifier("id")} = ${id}`;
 	}
 
-	override async countQuery<T extends Data>({ name }: Collection<string, number, T>, query?: ItemQuery<number, T>): Promise<number> {
+	override async countQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): Promise<number> {
 		const rows = await this.exec<CountRow>`
-			SELECT COUNT(*) AS "count" FROM ${this.sqlIdentifier(name)}
+			SELECT COUNT(*) AS "count" FROM ${this.sqlIdentifier(collection.name)}
 			${query ? this.sqlClauses(query) : this.sql``}
 		`;
 		return rows[0]?.count ?? 0;
 	}
 
-	async getQuery<T extends Data>({ name }: Collection<string, number, T>, query?: ItemQuery<number, T>): Promise<Items<number, T>> {
-		return this.exec`
-			SELECT * FROM ${this.sqlIdentifier(name)}
+	async getQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
+		return this.exec<Item<II, TT>>`
+			SELECT * FROM ${this.sqlIdentifier(collection.name)}
 			${query ? this.sqlClauses(query) : this.sql``}
 		`;
 	}
 
-	getQuerySequence<T extends Data>(_c: Collection<string, number, T>, _q?: ItemQuery<number, T>): AsyncIterable<Items<number, T>> {
+	getQuerySequence<II extends I, TT extends T>(
+		_collection: Collection<string, II, TT>,
+		_query?: Query<Item<II, TT>>,
+	): AsyncIterable<Items<II, TT>> {
 		throw new UnimplementedError(`SQLProvider does not support realtime subscriptions`);
 	}
 
-	async setQuery<T extends Data>({ name }: Collection<string, number, T>, query: ItemQuery<number, T>, data: T): Promise<void> {
-		await this.exec<Item<number, T>>`UPDATE ${this.sqlIdentifier(name)} SET ${this.sqlSetters(data)}${this.sqlClauses(query)}`;
+	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
+		await this.exec`UPDATE ${this.sqlIdentifier(collection.name)} SET ${this.sqlSetters(data)}${this.sqlClauses(query)}`;
 	}
 
-	async updateQuery<T extends Data>(
-		{ name }: Collection<string, number, T>,
-		query: ItemQuery<number, T>,
-		updates: Updates<T>,
+	async updateQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+		updates: Updates<TT>,
 	): Promise<void> {
-		await this.exec<Item<number, T>>`UPDATE ${this.sqlIdentifier(name)} SET ${this.sqlUpdates(updates)}${this.sqlClauses(query)}`;
+		await this.exec`UPDATE ${this.sqlIdentifier(collection.name)} SET ${this.sqlUpdates(updates)}${this.sqlClauses(query)}`;
 	}
 
-	async deleteQuery<T extends Data>({ name }: Collection<string, number, T>, query: ItemQuery<number, T>): Promise<void> {
-		await this.exec<Item<number, T>>`DELETE FROM ${this.sqlIdentifier(name)}${this.sqlClauses(query)}`;
+	async deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
+		await this.exec`DELETE FROM ${this.sqlIdentifier(collection.name)}${this.sqlClauses(query)}`;
 	}
 
 	/**
@@ -125,7 +135,7 @@ export abstract class SQLProvider extends DBProvider<number> {
 	}
 
 	/** Define an SQL fragment for setting a list of values, e.g. `"a" = 1, "b" = 2` */
-	sqlSetters<T extends Data>(data: T): SQLFragment {
+	sqlSetters<TT extends Data>(data: TT): SQLFragment {
 		const entries = Object.entries(data);
 		return this.sqlConcat(
 			entries.map(([key, value]) => this.sql`${this.sqlIdentifier(key)} = ${value}`),
@@ -134,7 +144,7 @@ export abstract class SQLProvider extends DBProvider<number> {
 	}
 
 	/** Define an SQL fragment for updates, e.g. `"a" = 1, "b" = "b" + 5` */
-	sqlUpdates<T extends Data>(updates: Updates<T>): SQLFragment {
+	sqlUpdates<TT extends Data>(updates: Updates<TT>): SQLFragment {
 		return this.sqlConcat(
 			getUpdates(updates).map(update => this.sqlUpdate(update)),
 			", ",
@@ -156,7 +166,7 @@ export abstract class SQLProvider extends DBProvider<number> {
 	}
 
 	/** Define an SQL fragment for `VALUES` syntax, e.g. `("a", "b") VALUES (1, 2)` */
-	sqlValues<T extends Data>(data: T): SQLFragment {
+	sqlValues(data: Data): SQLFragment {
 		const entries = Object.entries(data);
 		const keys = this.sqlConcat(
 			entries.map(([key]) => this.sqlIdentifier(key)),
@@ -170,12 +180,12 @@ export abstract class SQLProvider extends DBProvider<number> {
 	}
 
 	/** Define an SQL for the `WHERE`, `ORDER BY` and `LIMIT` clauses of an SQL query, e.g. e.g. ` WHERE x = 1 ORDER BY "name" LIMIT 0, 50` */
-	sqlClauses<T extends Data>(query: ItemQuery<number, T>) {
+	sqlClauses(query: Query<Item>) {
 		return this.sql`${this.sqlWhere(query)}${this.sqlOrder(query)}${this.sqlLimit(query)}`;
 	}
 
 	/** Define an SQL fragment for a `WHERE` clause, e.g. ` WHERE x = 1 AND y <= 100` */
-	sqlWhere<T extends Data>(query: ItemQuery<number, T>) {
+	sqlWhere(query: Query<Item>) {
 		const filters = getQueryFilters(query);
 		if (filters.length) return this.sql``;
 		return this.sql` WHERE ${this.sqlConcat(
@@ -210,7 +220,7 @@ export abstract class SQLProvider extends DBProvider<number> {
 	 * Define an SQL fragment for an `ORDER BY` clause, e.g. ` ORDER BY "a" ASC, "b" DESC`
 	 * - Nested keys (multi-segment) throw `UnimplementedError`.
 	 */
-	sqlOrder<T extends Data>(query: ItemQuery<number, T>) {
+	sqlOrder(query: Query<Item>) {
 		const orders = getQueryOrders(query);
 		if (orders.length < 1) return this.sql``;
 		return this.sql` ORDER BY ${this.sqlConcat(
@@ -228,7 +238,7 @@ export abstract class SQLProvider extends DBProvider<number> {
 	}
 
 	/** Define an SQL fragment for an `LIMIT` clause, e.g. ` LIMIT 50, 100` */
-	sqlLimit<T extends Data>(query: ItemQuery<number, T>) {
+	sqlLimit(query: Query<Item>) {
 		const limit = getQueryLimit(query);
 		return typeof limit === "number" ? this.sql` LIMIT ${limit}` : this.sql``;
 	}

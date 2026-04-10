@@ -5,10 +5,13 @@ import type { Data } from "./data.js";
 export type Identifier = string | number;
 
 /** An item object is a data object that includes an "id" identifier property that is either a string or number. */
-export type Item<I extends Identifier, T extends Data> = { id: I } & T;
+export type Item<I extends Identifier = Identifier, T extends Data = Data> = { id: I } & T;
 
 /** Entity or `undefined` to indicate the item doesn't exist. */
-export type OptionalItem<I extends Identifier, T extends Data> = Item<I, T> | undefined;
+export type OptionalItem<I extends Identifier = Identifier, T extends Data = Data> = Item<I, T> | undefined;
+
+/** An array of item data. */
+export type Items<I extends Identifier = Identifier, T extends Data = Data> = ImmutableArray<Item<I, T>>;
 
 /** Get the identifier from an item object. */
 export function getIdentifier<I extends Identifier, T extends Data>({ id }: Item<I, T>): I {
@@ -29,6 +32,3 @@ export function hasIdentifier<I extends Identifier, T extends Data>(item: T | It
 export function getItem<I extends Identifier, T extends Data>(id: I, data: T | Item<I, T>): Item<I, T> {
 	return hasIdentifier(data, id) ? data : { ...data, id };
 }
-
-/** An array of item data. */
-export type Items<I extends Identifier, T extends Data> = ImmutableArray<Item<I, T>>;

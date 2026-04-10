@@ -2,8 +2,9 @@ import type { SQL } from "bun";
 import { PostgreSQLProvider, type SQLFragment } from "../db/index.js";
 import type { ImmutableArray } from "../util/array.js";
 import type { Data } from "../util/data.js";
+import type { Identifier } from "../util/item.js";
 
-export class BunPostgreSQLProvider extends PostgreSQLProvider {
+export class BunPostgreSQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends PostgreSQLProvider<I, T> {
 	private _sql: SQL;
 
 	constructor(sql: SQL) {
@@ -12,7 +13,7 @@ export class BunPostgreSQLProvider extends PostgreSQLProvider {
 	}
 
 	// Implement `SQLProvider` using `Bun.SQL` instance.
-	exec<T extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<T>> {
+	exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<X>> {
 		return this._sql(strings, ...values);
 	}
 

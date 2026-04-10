@@ -1,6 +1,9 @@
-import type { DataPath } from "../../util/data.js";
+import { StringSchema } from "../../schema/StringSchema.js";
+import type { Data, DataPath } from "../../util/data.js";
+import type { Identifier } from "../../util/item.js";
 import type { QueryFilter } from "../../util/query.js";
 import type { Update } from "../../util/update.js";
+import type { Collection } from "../collection/Collection.js";
 import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
 
 /**
@@ -10,7 +13,20 @@ import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
  * - For `with` and `omit` updates this does not preserve ordering of the original array.
  * - For `with` and `omit` updates this does not guarantee equality for de-duplication when working with nested objects or arrays.
  */
-export abstract class SQLiteProvider extends SQLProvider {
+export abstract class SQLiteProvider<I extends Identifier = Identifier, T extends Data = Data> extends SQLProvider<I, T> {
+	// Override `addItem` to support string (UUID) IDs in SQLite.
+	// SQLite has no native UUID generation, so when the collection uses a `StringSchema` ID
+	// we generate the UUID client-side and delegate to `setItem`.
+	// Note: `as II` is required here because TypeScript cannot narrow the generic `II` from `instanceof StringSchema`.
+	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
+		if (collection.id instanceof StringSchema) {
+			const id = crypto.randomUUID() as II; // `as II` needed: TypeScript can't narrow II from instanceof check.
+			await this.setItem(collection, id, data);
+			return id;
+		}
+		return super.addItem(collection, data);
+	}
+
 	/** Get the SQLite JSON path for the nested segments of a key (everything after the column name), e.g. `$.b.c` */
 	private sqlPath(key: DataPath): SQLFragment {
 		return this.sqlConcat(
@@ -20,7 +36,7 @@ export abstract class SQLiteProvider extends SQLProvider {
 		);
 	}
 
-	// Override to support nested JSON extract syntax, e.g. `json_extract("a", $.b.c)`
+	/** Get the SQLite JSON extract syntax, e.g. `json_extract("a", $.b.c)` */
 	override sqlExtract(key: DataPath): SQLFragment {
 		const column = this.sqlIdentifier(key[0]);
 		if (key.length > 1) {

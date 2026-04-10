@@ -4,14 +4,13 @@ import type { Data, DataPath, LeafData, LeafDataKey } from "./data.js";
 import { getDataProp, joinDataKey, splitDataKey } from "./data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";
 import type { Match } from "./filter.js";
-import type { Identifier, Item } from "./item.js";
 import { limitItems } from "./iterate.js";
 import type { Mutable } from "./object.js";
 import { getProps } from "./object.js";
 import { compareAscending, compareDescending, sortArray } from "./sort.js";
 
 /** Query that can be applied to a list of data objects. */
-export type Query<T extends Data> = {
+export type Query<T extends Data = Data> = {
 	readonly [K in LeafDataKey<T> as `${K}` | `!${K}`]?: LeafData<T>[K] | ImmutableArray<LeafData<T>[K]> | undefined; // is/not/in/out
 } & {
 	readonly [K in LeafDataKey<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: LeafData<T>[K] | undefined; // gt/gte/lt/lte
@@ -25,9 +24,6 @@ export type Query<T extends Data> = {
 		| ImmutableArray<`${LeafDataKey<T>}` | `!${LeafDataKey<T>}` | undefined>;
 	readonly $limit?: number | undefined;
 };
-
-/** A set of query constraints for item data. */
-export type ItemQuery<I extends Identifier, T extends Data> = Query<Item<I, T>>;
 
 /** A single filter that can be applied to a list of data objects. */
 export type QueryFilter =
