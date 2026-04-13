@@ -12,9 +12,9 @@ export class EndpointCache<P = unknown, R = unknown> implements Disposable {
 	private readonly _stores = new Map<string, EndpointStore<P, R>>();
 
 	readonly endpoint: Endpoint<P, R>;
-	readonly provider: APIProvider;
+	readonly provider: APIProvider<P, R>;
 
-	constructor(endpoint: Endpoint<P, R>, provider: APIProvider) {
+	constructor(endpoint: Endpoint<P, R>, provider: APIProvider<P, R>) {
 		this.endpoint = endpoint;
 		this.provider = provider;
 	}

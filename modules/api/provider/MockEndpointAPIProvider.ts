@@ -13,8 +13,8 @@ import { MockAPIProvider } from "./MockAPIProvider.js";
  *  const result = await api.fetch(endpoint, 4); // Mock a call to the endpoint through the provider.
  *  expect(result).toBe(16);
  */
-export class MockEndpointAPIProvider<C> extends MockAPIProvider {
-	constructor(handlers: EndpointHandlers<C>, context: C, source?: APIProvider) {
+export class MockEndpointAPIProvider<P, R, C> extends MockAPIProvider<P, R> {
+	constructor(handlers: EndpointHandlers<C>, context: C, source?: APIProvider<P, R>) {
 		super(request => handleEndpoints(this.url, handlers, request, context, this.fetch), source);
 	}
 }

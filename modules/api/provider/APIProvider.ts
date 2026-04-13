@@ -32,7 +32,7 @@ export interface APIProviderOptions {
 }
 
 /** Provider for API endpoints rooted at a common base URL. */
-export class APIProvider {
+export class APIProvider<P = unknown, R = unknown> {
 	/** The common base URL for all rendered endpoint requests. */
 	readonly url: URLString;
 
@@ -55,7 +55,7 @@ export class APIProvider {
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
 	 */
-	renderURL<P, R>(endpoint: Endpoint<P, R>, payload: P, caller: AnyCaller = this.renderURL): URL {
+	renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
 		const url = requireURL(`.${endpoint.renderPath(payload, caller)}`, this.url, caller);
 
 		// HEAD or GET have no body (but payload can only be data object).
@@ -89,7 +89,12 @@ export class APIProvider {
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
 	 */
-	getRequest<P, R>(endpoint: Endpoint<P, R>, payload: P, options?: RequestOptions, caller: AnyCaller = this.getRequest): Request {
+	getRequest<PP extends P, RR extends R>(
+		endpoint: Endpoint<PP, RR>,
+		payload: PP,
+		options?: RequestOptions,
+		caller: AnyCaller = this.getRequest,
+	): Request {
 		// Render the path into the base URL.
 		const url = this.renderURL(endpoint, payload, caller);
 
@@ -118,14 +123,24 @@ export class APIProvider {
 	 * - Non-2xx responses become `ResponseError`.
 	 * - Does not validate the result against the endpoint schema — use `ValidationAPIProvider` for that.
 	 */
-	async parseResponse<P, R>(_endpoint: Endpoint<P, R>, response: Response, caller: AnyCaller = this.parseResponse): Promise<R> {
+	async parseResponse<PP extends P, RR extends R>(
+		_endpoint: Endpoint<PP, RR>,
+		response: Response,
+		caller: AnyCaller = this.parseResponse,
+	): Promise<RR> {
 		const { ok, status } = response;
 		const content = await getResponseContent(response, caller);
 		if (!ok) throw new ResponseError(getMessage(content) ?? `Error ${status}`, { code: status, cause: response, caller });
-		return content as R;
+		return content as RR;
 	}
 
-	async fetch<P, R>(endpoint: Endpoint<P, R>, payload: P, options?: RequestOptions, caller: AnyCaller = this.fetch): Promise<R> {
+	/** Send a payload to an `Endpoint` and retrieve the result. */
+	async fetch<PP extends P, RR extends R>(
+		endpoint: Endpoint<PP, RR>,
+		payload: PP,
+		options?: RequestOptions,
+		caller: AnyCaller = this.fetch,
+	): Promise<RR> {
 		const request = this.getRequest(endpoint, payload, options, caller);
 		const response = await fetch(request);
 		return this.parseResponse(endpoint, response, caller);

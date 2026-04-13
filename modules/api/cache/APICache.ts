@@ -7,43 +7,43 @@ import { EndpointCache } from "./EndpointCache.js";
  * Cache of `EndpointCache` objects for multiple endpoints.
  * - Use `get(endpoint)` to retrieve or create the `EndpointCache` for a given endpoint, then `get(payload)` on that to get a specific `EndpointStore`.
  */
-export class APICache implements Disposable {
+export class APICache<P, R> implements Disposable {
 	private readonly _caches = new Map<Endpoint, EndpointCache>();
 
-	readonly provider: APIProvider;
+	readonly provider: APIProvider<P, R>;
 
-	constructor(provider: APIProvider) {
+	constructor(provider: APIProvider<P, R>) {
 		this.provider = provider;
 	}
 
-	private _get<P, R>(endpoint: Endpoint<P, R>): EndpointCache<P, R> | undefined;
+	private _get<PP, RR>(endpoint: Endpoint<PP, RR>): EndpointCache<PP, RR> | undefined;
 	private _get(endpoint: Endpoint): EndpointCache | undefined {
 		return this._caches.get(endpoint);
 	}
 
 	/** Get (or create) the `EndpointCache` for the given endpoint. */
-	get<P, R>(endpoint: Endpoint<P, R>): EndpointCache<P, R>;
+	get<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): EndpointCache<PP, RR>;
 	get(endpoint: Endpoint): EndpointCache {
 		return this._get(endpoint) || setMapItem(this._caches, endpoint, new EndpointCache(endpoint, this.provider));
 	}
 
 	/** Invalidate a specific store for an endpoint. */
-	invalidate<P, R>(endpoint: Endpoint<P, R>, payload: P): void {
+	invalidate<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
 		this._get(endpoint)?.invalidate(payload);
 	}
 
 	/** Invalidate all stores for an endpoint. */
-	invalidateAll<P, R>(endpoint: Endpoint<P, R>): void {
+	invalidateAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {
 		this._get(endpoint)?.invalidateAll();
 	}
 
 	/** Trigger a refetch on a specific store for an endpoint. */
-	refetch<P, R>(endpoint: Endpoint<P, R>, payload: P): void {
+	refetch<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
 		this._get(endpoint)?.refetch(payload);
 	}
 
 	/** Trigger a refetch on all stores for an endpoint. */
-	refetchAll<P, R>(endpoint: Endpoint<P, R>): void {
+	refetchAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {
 		this._get(endpoint)?.refetchAll();
 	}
 

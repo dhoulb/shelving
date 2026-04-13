@@ -11,7 +11,7 @@ const _TIMEOUT = Symbol("EndpointStore/TIMEOUT");
  * Store object that loads a result from an API endpoint and manages its state.
  */
 export class EndpointStore<P, R> extends Store<R> implements Disposable {
-	readonly provider: APIProvider;
+	readonly provider: APIProvider<P, R>;
 	readonly endpoint: Endpoint<P, R>;
 
 	private _payload!: P;
@@ -53,7 +53,7 @@ export class EndpointStore<P, R> extends Store<R> implements Disposable {
 		super.value = value;
 	}
 
-	constructor(endpoint: Endpoint<P, R>, payload: P, provider: APIProvider) {
+	constructor(endpoint: Endpoint<P, R>, payload: P, provider: APIProvider<P, R>) {
 		super(NONE);
 		this.endpoint = endpoint;
 		this.provider = provider;

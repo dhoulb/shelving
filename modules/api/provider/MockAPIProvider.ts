@@ -20,12 +20,12 @@ export type MockAPICall = {
  * - Extends `ThroughAPIProvider` to delegate request building and response parsing to a source `APIProvider`.
  * - The source provider's `fetch()` is never called — this provider intercepts all fetches and routes them through a `RequestHandler`.
  */
-export class MockAPIProvider extends ThroughAPIProvider {
+export class MockAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	readonly calls: MockAPICall[] = [];
 
 	readonly handler: RequestHandler;
 
-	constructor(handler: RequestHandler, source: APIProvider = new APIProvider({ url: "https://api.mock.com" })) {
+	constructor(handler: RequestHandler, source: APIProvider<P, R> = new APIProvider({ url: "https://api.mock.com" })) {
 		super(source);
 		this.handler = handler;
 	}
@@ -35,12 +35,12 @@ export class MockAPIProvider extends ThroughAPIProvider {
 	 * - If `getResult` is configured, its return value is returned as-is (no schema validation).
 	 * - Otherwise `undefined` is returned.
 	 */
-	override async fetch<P, R>(
-		endpoint: Endpoint<P, R>,
-		payload: P,
+	override async fetch<PP extends P, RR extends R>(
+		endpoint: Endpoint<PP, RR>,
+		payload: PP,
 		_options: RequestOptions = {},
 		caller: AnyCaller = this.fetch,
-	): Promise<R> {
+	): Promise<RR> {
 		const options = mergeRequestOptions(this.options, _options);
 		const request = this.getRequest(endpoint, payload, options, caller);
 		const response = await this.handler(request);

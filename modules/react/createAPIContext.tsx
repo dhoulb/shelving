@@ -11,10 +11,17 @@ import { useStore } from "./useStore.js";
 
 const DEFAULT_MAX_AGE = 5 * MINUTE;
 
-export interface APIContext {
+export interface APIContext<P, R> {
 	/** Get an `EndpointStore` for the specified endpoint/payload in the current `APIProvider` context. */
-	useAPI<P, R>(this: void, endpoint: Endpoint<P, R>, payload: P, maxAge?: number): EndpointStore<P, R>;
-	useAPI<P, R>(this: void, endpoint: Nullish<Endpoint<P, R>>, payload: P, maxAge?: number): EndpointStore<P, R> | undefined;
+	useAPI<PP extends P, RR extends R>(this: void, endpoint: Endpoint<PP, RR>, payload: PP, maxAge?: number): EndpointStore<PP, RR>;
+	useAPI<PP extends P, RR extends R>(
+		this: void,
+		endpoint: Nullish<Endpoint<PP, RR>>,
+		payload: PP,
+		maxAge?: number,
+	): EndpointStore<PP, RR> | undefined;
+
+	/** The `<APIContext>` wrapper to give your React components access to this API provider. */
 	readonly APIContext: ({ children }: { children: ReactNode }) => ReactElement;
 }
 
@@ -25,10 +32,14 @@ export interface APIContext {
  *
  * @todo Use and integreate our `EndpointCache` functionality and use it in this.
  */
-export function createAPIContext(provider: APIProvider): APIContext {
-	const CacheContext = createContext<APICache | undefined>(undefined);
+export function createAPIContext<P, R>(provider: APIProvider<P, R>): APIContext<P, R> {
+	const CacheContext = createContext<APICache<P, R> | undefined>(undefined);
 
-	function useAPI<P, R>(endpoint: Nullish<Endpoint<P, R>>, payload: P, maxAge = DEFAULT_MAX_AGE): EndpointStore<P, R> | undefined {
+	function useAPI<PP extends P, RR extends R>(
+		endpoint: Nullish<Endpoint<PP, RR>>,
+		payload: PP,
+		maxAge = DEFAULT_MAX_AGE,
+	): EndpointStore<PP, RR> | undefined {
 		const cache = use(CacheContext);
 		if (!cache) throw new RequiredError(`useAPI() can only be used inside <APIContext>`, { caller: useAPI });
 		const store = endpoint ? cache.get(endpoint).get(payload) : undefined;
@@ -41,5 +52,5 @@ export function createAPIContext(provider: APIProvider): APIContext {
 		return <CacheContext value={cache}>{children}</CacheContext>;
 	}
 
-	return { useAPI, APIContext } as APIContext;
+	return { useAPI, APIContext } as APIContext<P, R>;
 }
