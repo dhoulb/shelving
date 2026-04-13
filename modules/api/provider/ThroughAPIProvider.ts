@@ -17,6 +17,9 @@ export class ThroughAPIProvider implements APIProvider {
 	get options(): RequestOptions {
 		return this.source.options;
 	}
+	get timeout(): number | undefined {
+		return this.source.timeout;
+	}
 
 	constructor(source: APIProvider) {
 		this.source = source;
