@@ -188,12 +188,15 @@ const REQUEST_JSON_OPTIONS = { headers: { "Content-Type": "application/json" } }
  * Merge provider-level and call-level request options.
  * - Scalar options from `b` override `a`.
  * - Header dictionaries are merged so call-level headers override default headers by key.
+ * - Abort signals are merged, so either abort signal will cancel the request.
  */
 export function mergeRequestOptions(
-	{ headers: aHeaders, ...a }: RequestOptions = {},
-	{ headers: bHeaders, ...b }: RequestOptions = {},
+	{ headers: aHeaders, signal: aSignal, ...a }: RequestOptions = {},
+	{ headers: bHeaders, signal: bSignal, ...b }: RequestOptions = {},
 ): RequestOptions {
-	return { ...a, ...b, headers: { ...aHeaders, ...bHeaders } };
+	const headers: HeadersInit = { ...aHeaders, ...bHeaders };
+	const signal: AbortSignal | null = aSignal && bSignal ? AbortSignal.any([aSignal, bSignal]) : aSignal || bSignal || null;
+	return { ...a, ...b, signal, headers };
 }
 
 /**

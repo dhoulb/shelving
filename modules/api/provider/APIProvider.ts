@@ -21,8 +21,14 @@ export interface APIProviderOptions {
 	/** The common base URL for all rendered endpoint requests. */
 	readonly url: PossibleURL;
 
-	/** Options used for HTTP requests created with `this.getRequest()` and `this.fetch()` */
-	readonly options?: RequestOptions;
+	/**
+	 * Options used for HTTP requests created with `this.getRequest()` and `this.fetch()`
+	 * - Omits `signal` because it's not relevant at the provider level.
+	 */
+	readonly options?: Omit<RequestOptions, "signal">;
+
+	/** Timeout in milliseconds, or `undefined` for no timeout. */
+	readonly timeout?: number | undefined;
 }
 
 /** Provider for API endpoints rooted at a common base URL. */
@@ -33,9 +39,13 @@ export class APIProvider {
 	/** Default options used for HTTP requests created with `this.getRequest()` and `this.fetch()` */
 	readonly options: RequestOptions;
 
-	constructor({ url, options = {} }: APIProviderOptions) {
+	/** Timeout in milliseconds, or `undefined` for no timeout. */
+	readonly timeout: number | undefined;
+
+	constructor({ url, options = {}, timeout }: APIProviderOptions) {
 		this.url = requireBaseURL(url, undefined, APIProvider);
 		this.options = options;
+		this.timeout = timeout;
 	}
 
 	/**
@@ -62,9 +72,19 @@ export class APIProvider {
 
 	/**
 	 * Create a `Request` that targets this endpoint with a given base URL.
-	 * - Path `{placeholders}` are rendered from the payload.
-	 * - For `GET` and `HEAD`, remaining payload fields are appended as `?query` params.
-	 * - For all other requests, payload is sent as the body.
+	 *
+	 * @param payload The payload to embed into the `Request` to send to the endpoint.
+	 * - Path `{placeholders}` are rendered from `payload`
+	 * - For `GET` and `HEAD`, remaining `payload` fields are appended as `?query` params.
+	 * - For all other requests, `payload` is sent as the body.
+	 *
+	 * @param options The `RequestOptions` to use when creating the `Request`
+	 * - Merges `options` with `this.options` to make the final request options.
+	 *
+	 * @returns The created request.
+	 * - Merges `options` with `this.options` to make the final request options.
+	 * - Includes an `AbortSignal` based on `this.timeout` if it's set to a number in milliseconds.
+	 * - The timeout `AbortSignal` is merged with any manual signal set in `
 	 *
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
@@ -73,19 +93,24 @@ export class APIProvider {
 		// Render the path into the base URL.
 		const url = this.renderURL(endpoint, payload, caller);
 
+		// Merge the param options with `this.options`
+		// If we have a timeout set, create an `AbortSignal` for it.
+		const signal = this.timeout ? AbortSignal.timeout(this.timeout) : null;
+		const mergedOptions = mergeRequestOptions({ signal, ...this.options }, options);
+
 		// HEAD or GET requests have no payload because it was already rendered into the URL as `?query` params.
 		if (isArrayItem(HTTP_HEAD_METHODS, endpoint.method)) {
-			return getRequest(endpoint.method, url, undefined, options);
+			return getRequest(endpoint.method, url, undefined, mergedOptions);
 		}
 
 		// Placeholders are rendered into the path so get omitted from the body payload.
 		if (endpoint.placeholders.length) {
 			const params = omitProps(payload as Data, ...endpoint.placeholders); // Omit any params that were already embedded as `{placeholders}`
-			return getRequest(endpoint.method, url, params, options);
+			return getRequest(endpoint.method, url, params, mergedOptions);
 		}
 
 		// No placeholders.
-		return getRequest(endpoint.method, url, payload, options);
+		return getRequest(endpoint.method, url, payload, mergedOptions);
 	}
 
 	/**
@@ -101,7 +126,7 @@ export class APIProvider {
 	}
 
 	async fetch<P, R>(endpoint: Endpoint<P, R>, payload: P, options?: RequestOptions, caller: AnyCaller = this.fetch): Promise<R> {
-		const request = this.getRequest(endpoint, payload, mergeRequestOptions(this.options, options), caller);
+		const request = this.getRequest(endpoint, payload, options, caller);
 		const response = await fetch(request);
 		return this.parseResponse(endpoint, response, caller);
 	}
