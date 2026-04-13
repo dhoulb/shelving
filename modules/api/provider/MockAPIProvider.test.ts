@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, MockAPIProvider, POST, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
+import { APIProvider, DATA, GET, MockAPIProvider, POST, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
 
 describe("MockAPIProvider", () => {
 	test("fetch() returns parsed handler responses and logs the resolved result", async () => {
@@ -8,7 +8,7 @@ describe("MockAPIProvider", () => {
 				expect(request.url).toBe("https://api.example.com/v1/users/123?extra=x");
 				return Response.json("mocked");
 			},
-			{ url: "https://api.example.com/v1/" },
+			new APIProvider({ url: "https://api.example.com/v1/" }),
 		);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING, extra: STRING }), STRING);
 
@@ -31,7 +31,10 @@ describe("MockAPIProvider", () => {
 				expect(request.headers.get("Content-Type")).toBe("application/custom");
 				return Response.json("ok");
 			},
-			{ url: "https://api.example.com/", options: { headers: { "X-Default": "provider", "Content-Type": "application/custom" } } },
+			new APIProvider({
+				url: "https://api.example.com/",
+				options: { headers: { "X-Default": "provider", "Content-Type": "application/custom" } },
+			}),
 		);
 		const endpoint = POST("/items", DATA({ name: STRING }), STRING);
 

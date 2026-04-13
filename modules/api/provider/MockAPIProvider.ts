@@ -1,7 +1,8 @@
 import type { AnyCaller } from "../../util/function.js";
 import { mergeRequestOptions, type RequestHandler, type RequestOptions } from "../../util/http.js";
 import type { AnyEndpoint, Endpoint } from "../endpoint/Endpoint.js";
-import { APIProvider, type APIProviderOptions } from "./APIProvider.js";
+import { APIProvider } from "./APIProvider.js";
+import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
 /** A structured log entry emitted by `MockAPIProvider` for one of its provider operations. */
 export type MockAPICall = {
@@ -15,22 +16,17 @@ export type MockAPICall = {
 };
 
 /**
- * Construction options for a `MockAPIProvider`
- * - Same as options for a normal `APIProvider`, but with an optional URL.
+ * Provider that logs API calls without sending network requests.
+ * - Extends `ThroughAPIProvider` to delegate request building and response parsing to a source `APIProvider`.
+ * - The source provider's `fetch()` is never called — this provider intercepts all fetches and routes them through a `RequestHandler`.
  */
-export interface MockAPIProviderOptions extends Omit<APIProviderOptions, "url"> {
-	/** Optional URL, defaults to `"https://api.mock.com"` */
-	url?: APIProviderOptions["url"];
-}
-
-/** Provider that logs API calls without sending network requests. */
-export class MockAPIProvider extends APIProvider {
+export class MockAPIProvider extends ThroughAPIProvider {
 	readonly calls: MockAPICall[] = [];
 
 	readonly handler: RequestHandler;
 
-	constructor(handler: RequestHandler, { url = "https://api.mock.com", ...options }: MockAPIProviderOptions = {}) {
-		super({ url, ...options });
+	constructor(handler: RequestHandler, source: APIProvider = new APIProvider({ url: "https://api.mock.com" })) {
+		super(source);
 		this.handler = handler;
 	}
 

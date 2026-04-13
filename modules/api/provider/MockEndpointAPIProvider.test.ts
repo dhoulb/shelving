@@ -1,13 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, MockEndpointAPIProvider, NotFoundError, POST, STRING } from "../../index.js";
+import { APIProvider, DATA, GET, MockEndpointAPIProvider, NotFoundError, POST, STRING } from "../../index.js";
 
 describe("MockEndpointAPIProvider", () => {
 	test("fetch() routes requests through endpoint handlers and logs successful calls", async () => {
 		const endpoint = POST("/users/{id}", DATA({ id: STRING, name: STRING }), STRING);
-		const provider = new MockEndpointAPIProvider([endpoint.handler(async ({ id, name }) => `${id}:${name}`)], {
-			context: undefined,
-			url: "https://api.example.com/v1/",
-		});
+		const provider = new MockEndpointAPIProvider(
+			[endpoint.handler(async ({ id, name }) => `${id}:${name}`)],
+			undefined,
+			new APIProvider({ url: "https://api.example.com/v1/" }),
+		);
 
 		expect(await provider.fetch(endpoint, { id: "123", name: "Ada" })).toBe("123:Ada");
 		expect(provider.calls).toHaveLength(1);
@@ -24,10 +25,8 @@ describe("MockEndpointAPIProvider", () => {
 		const endpoint = GET("/greet/{name}", DATA({ name: STRING }), STRING);
 		const provider = new MockEndpointAPIProvider(
 			[endpoint.handler(async ({ name }, _request, { prefix }: { prefix: string }) => `${prefix} ${name}`)],
-			{
-				context: { prefix: "Hello" },
-				url: "https://api.example.com/v1/",
-			},
+			{ prefix: "Hello" },
+			new APIProvider({ url: "https://api.example.com/v1/" }),
 		);
 
 		expect(await provider.fetch(endpoint, { name: "Ada" })).toBe("Hello Ada");
@@ -37,10 +36,11 @@ describe("MockEndpointAPIProvider", () => {
 	test("fetch() propagates unmatched endpoint errors without logging a completed call", async () => {
 		const implemented = POST("/implemented", undefined, STRING);
 		const requested = POST("/missing", undefined, STRING);
-		const provider = new MockEndpointAPIProvider([implemented.handler(async () => "ok")], {
-			context: undefined,
-			url: "https://api.example.com/v1/",
-		});
+		const provider = new MockEndpointAPIProvider(
+			[implemented.handler(async () => "ok")],
+			undefined,
+			new APIProvider({ url: "https://api.example.com/v1/" }),
+		);
 
 		await expect(provider.fetch(requested, undefined)).rejects.toBeInstanceOf(NotFoundError);
 		expect(provider.calls).toHaveLength(0);

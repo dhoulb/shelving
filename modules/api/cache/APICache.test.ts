@@ -1,11 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { APICache, DATA, GET, MockAPIProvider, runMicrotasks, STRING } from "../../index.js";
+import { APICache, APIProvider, DATA, GET, MockAPIProvider, runMicrotasks, STRING } from "../../index.js";
 
 describe("APICache", () => {
 	test("creates endpoint stores that fetch through the configured provider", async () => {
-		const provider = new MockAPIProvider(async request => Response.json(`ok:${new URL(request.url).pathname}`), {
-			url: "https://api.example.com/v1/",
-		});
+		const provider = new MockAPIProvider(
+			async request => Response.json(`ok:${new URL(request.url).pathname}`),
+			new APIProvider({ url: "https://api.example.com/v1/" }),
+		);
 		const cache = new APICache(provider);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING, extra: STRING }), STRING);
 
