@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, POST, RequiredError, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
-import { ClientAPIProvider } from "./ClientAPIProvider.js";
+import { ClientAPIProvider, DATA, GET, POST, RequiredError, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
 
 describe("ClientAPIProvider", () => {
 	test("getRequest() renders placeholders into the URL and omits them from the remaining payload", () => {
