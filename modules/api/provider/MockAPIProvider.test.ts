@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { APIProvider, DATA, GET, MockAPIProvider, POST, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
+import { DATA, GET, MockAPIProvider, POST, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
+import { ClientAPIProvider } from "./ClientAPIProvider.js";
 
 describe("MockAPIProvider", () => {
 	test("fetch() returns parsed handler responses and logs the resolved result", async () => {
@@ -8,7 +9,7 @@ describe("MockAPIProvider", () => {
 				expect(request.url).toBe("https://api.example.com/v1/users/123?extra=x");
 				return Response.json("mocked");
 			},
-			new APIProvider({ url: "https://api.example.com/v1/" }),
+			new ClientAPIProvider({ url: "https://api.example.com/v1/" }),
 		);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING, extra: STRING }), STRING);
 
@@ -31,7 +32,7 @@ describe("MockAPIProvider", () => {
 				expect(request.headers.get("Content-Type")).toBe("application/custom");
 				return Response.json("ok");
 			},
-			new APIProvider({
+			new ClientAPIProvider({
 				url: "https://api.example.com/",
 				options: { headers: { "X-Default": "provider", "Content-Type": "application/custom" } },
 			}),
@@ -39,11 +40,13 @@ describe("MockAPIProvider", () => {
 		const endpoint = POST("/items", DATA({ name: STRING }), STRING);
 
 		expect(await provider.fetch(endpoint, { name: "abc" }, { headers: { "X-Call": "call" } })).toBe("ok");
-		expect(provider.calls[0]?.options.headers).toEqual({
-			"X-Default": "provider",
-			"Content-Type": "application/custom",
-			"X-Call": "call",
-		});
+		expect(provider.calls[0]?.request.headers).toEqual(
+			new Headers({
+				"X-Default": "provider",
+				"Content-Type": "application/custom",
+				"X-Call": "call",
+			}),
+		);
 	});
 
 	test("fetch() throws ResponseError for invalid mocked responses (via ValidationAPIProvider)", async () => {

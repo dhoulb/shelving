@@ -13,14 +13,14 @@ describe("BaseError", () => {
 
 		try {
 			myFunctionB();
-			expect(false).toBe(true);
+			expect.unreachable();
 		} catch (error) {
 			expect(error).toBeInstanceOf(BaseError);
 			if (error instanceof BaseError) {
 				expect(error.stack).toInclude("myFunctionB");
 				expect(error.stack).not.toInclude("myFunctionA");
 			} else {
-				expect(false).toBe(true);
+				expect.unreachable();
 			}
 		}
 	});
@@ -34,14 +34,14 @@ describe("BaseError", () => {
 
 		try {
 			myFunctionB();
-			expect(false).toBe(true);
+			expect.unreachable();
 		} catch (error) {
 			expect(error).toBeInstanceOf(ValueError);
 			if (error instanceof ValueError) {
 				expect(error.stack).toInclude("myFunctionB");
 				expect(error.stack).not.toInclude("myFunctionA");
 			} else {
-				expect(false).toBe(true);
+				expect.unreachable();
 			}
 		}
 	});

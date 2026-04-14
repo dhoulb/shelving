@@ -30,8 +30,10 @@ An `APIProvider` is the interface for executing a fetch against an endpoint. The
 | `ThroughAPIProvider` | Pass-through base for wrapping another provider |
 | `ValidationAPIProvider` | Validates payload and result against endpoint schemas |
 | `DebugAPIProvider` | Logs fetch attempts, results, and errors to the console |
+| `JSONAPIProvider` | Forces JSON request bodies and JSON response parsing |
 | `MockAPIProvider` | Records calls without sending network requests |
 | `MockEndpointAPIProvider` | Dispatches calls through handler objects (useful for unit tests) |
+| `XMLAPIProvider` | Forces XML request bodies and returns raw text responses |
 
 Extend `ThroughAPIProvider` to add custom behaviour such as auth headers:
 

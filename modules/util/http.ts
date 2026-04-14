@@ -1,14 +1,14 @@
 import { RequestError } from "../error/RequestError.js";
 import { RequiredError } from "../error/RequiredError.js";
 import { ResponseError } from "../error/ResponseError.js";
-import { isArrayItem } from "./array.js";
 import { type Data, isData } from "./data.js";
 import type { ImmutableDictionary } from "./dictionary.js";
 import { isError } from "./error.js";
 import type { AnyCaller, Arguments } from "./function.js";
 import { isNullish, type Nullish } from "./null.js";
-import { withURIParams } from "./uri.js";
+import { type PossibleURIParams, withURIParams } from "./uri.js";
 import { type PossibleURL, requireURL } from "./url.js";
+import { getXML } from "./xml.js";
 
 /** A handler function takes a `Request` and optional extra arguments and returns a `Response` (possibly asynchronously). */
 export type RequestHandler<A extends Arguments = []> = (request: Request, ...args: A) => Response | Promise<Response>;
@@ -19,7 +19,8 @@ export type OptionalRequestHandler<A extends Arguments = []> = (request: Request
 /** A list of optional request handlers. */
 export type OptionalRequestHandlers<A extends Arguments = []> = Iterable<OptionalRequestHandler<A>>;
 
-export async function _getMessageJSON(
+/** Get parsed `JSON` from a `Request` or `Response`. */
+async function _parseMessageJSON(
 	message: Request | Response,
 	MessageError: typeof RequestError | typeof ResponseError,
 	caller: AnyCaller,
@@ -33,11 +34,12 @@ export async function _getMessageJSON(
 	}
 }
 
-export async function _getMessageFormData(
+/** Get parsed `FormData` from a `Request` or `Response`. */
+async function _parseMessageFormData(
 	message: Request | Response,
 	MessageError: typeof RequestError | typeof ResponseError,
 	caller: AnyCaller,
-): Promise<unknown> {
+): Promise<FormData> {
 	try {
 		return await message.formData();
 	} catch (cause) {
@@ -45,20 +47,21 @@ export async function _getMessageFormData(
 	}
 }
 
-export function _getMessageContent(
+/** Get parsed body from a `Request` or `Response`. */
+function _parseMessageBody(
 	message: Request | Response,
 	MessageError: typeof RequestError | typeof ResponseError,
 	caller: AnyCaller,
 ): Promise<unknown> {
 	const type = message.headers.get("Content-Type");
-	if (!type || type?.startsWith("text/")) return message.text();
-	if (type?.startsWith("application/json")) return _getMessageJSON(message, MessageError, caller);
-	if (type?.startsWith("multipart/form-data")) return _getMessageFormData(message, MessageError, caller);
-	return Promise.resolve();
+	if (type?.startsWith("text/")) return message.text();
+	if (type?.startsWith("application/json")) return _parseMessageJSON(message, MessageError, caller);
+	if (type?.startsWith("multipart/form-data")) return _parseMessageFormData(message, MessageError, caller);
+	return Promise.resolve(undefined);
 }
 
 /**
- * Get the body content of an HTTP `Request` based on its content type, or throw `RequestError` if the content could not be parsed.
+ * Parse the body content of an HTTP `Request` based on its content type, or throw `RequestError` if the content could not be parsed.
  *
  * @returns undefined If the request method is `GET` or `HEAD` (these request methods have no body).
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
@@ -67,32 +70,57 @@ export function _getMessageContent(
  *
  * @throws RequestError if the content is not `text/plain`, or `application/json` with valid JSON.
  */
-export function getRequestContent(request: Request, caller: AnyCaller = getRequestContent): Promise<unknown> {
-	const { method } = request;
-
-	// The HTTP/1.1 RFC 7231 does not forbid sending a body in GET or HEAD requests, but it is uncommon and not recommended because many servers, proxies, and caches may ignore or mishandle it.
-	if (method === "GET" || method === "HEAD") return Promise.resolve(undefined);
-
-	return _getMessageContent(request, RequestError, caller);
+export function parseRequestBody(request: Request, caller: AnyCaller = parseRequestBody): Promise<unknown> {
+	return _parseMessageBody(request, RequestError, caller);
 }
 
 /**
- * Get the body content of an HTTP `Response` based on its content type, or throw `ResponseError` if the content could not be parsed.
+ * Parse JSON from an HTTP `Request`, or return `undefined` when the request has no body.
  *
- * @returns undefined If the request status is `204 No Content` (this response has no body).
+ * @throws RequestError If the request body is not valid JSON.
+ */
+export function parseRequestJSON(request: Request, caller: AnyCaller = parseRequestJSON): Promise<unknown> {
+	return _parseMessageJSON(request, RequestError, caller);
+}
+
+/**
+ * Parse `FormData` from an HTTP `Request`, or return `undefined` when the request has no body.
+ *
+ * @throws RequestError If the request body is not valid multipart form-data.
+ */
+export function parseRequestFormData(request: Request, caller: AnyCaller = parseRequestFormData): Promise<FormData | undefined> {
+	return _parseMessageFormData(request, RequestError, caller);
+}
+
+/**
+ * Parse the body content of an HTTP `Response` based on its content type, or throw `ResponseError` if the content could not be parsed.
+ *
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
  * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
  * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
- * @throws RequestError if the content is not `text/plain` or `application/json` with valid JSON.
+ * @throws ResponseError if the content is not `text/plain` or `application/json` with valid JSON.
  */
-export function getResponseContent(response: Response, caller: AnyCaller = getResponseContent): Promise<unknown> {
-	const { status } = response;
+export function parseResponseBody(response: Response, caller: AnyCaller = parseResponseBody): Promise<unknown> {
+	return _parseMessageBody(response, ResponseError, caller);
+}
 
-	// RFC 7230 Section 3.3.3: A server MUST NOT send a Content-Length header field in any response with a status code of 1xx (Informational), 204 (No Content), or 304 (Not Modified).
-	if ((status >= 100 && status < 200) || status === 204 || status === 304) return Promise.resolve(undefined);
+/**
+ * Parse JSON from an HTTP `Response`, or return `undefined` when the response has no body.
+ *
+ * @throws ResponseError If the response body is not valid JSON.
+ */
+export function parseResponseJSON(response: Response, caller: AnyCaller = parseResponseJSON): Promise<unknown> {
+	return _parseMessageJSON(response, ResponseError, caller);
+}
 
-	return _getMessageContent(response, ResponseError, caller);
+/**
+ * Parse `FormData` from an HTTP `Response`, or return `undefined` when the response has no body.
+ *
+ * @throws ResponseError If the response body is not valid multipart form-data.
+ */
+export function parseResponseFormData(response: Response, caller: AnyCaller = parseResponseFormData): Promise<FormData> {
+	return _parseMessageFormData(response, ResponseError, caller);
 }
 
 /**
@@ -146,27 +174,28 @@ export function getErrorResponse(reason: unknown, debug = false): Response {
 	return new Response(undefined, { status });
 }
 
-/** The set of supported HTTP methods that do not send a request body. */
-export const HTTP_HEAD_METHODS = ["HEAD", "GET"] as const;
-
-/** The set of supported HTTP methods that may send a request body. */
-export const HTTP_BODY_METHODS = ["POST", "PUT", "PATCH", "DELETE"] as const;
-
-/** The full set of supported HTTP methods. */
-export const HTTP_METHODS = [...HTTP_HEAD_METHODS, ...HTTP_BODY_METHODS] as const;
-
 /** HTTP request methods that have no body. */
-export type RequestHeadMethod = (typeof HTTP_HEAD_METHODS)[number];
+export type RequestHeadMethod = "HEAD" | "GET";
 
 /** HTTP request methods that have a body. */
-export type RequestBodyMethod = (typeof HTTP_BODY_METHODS)[number];
+export type RequestBodyMethod = "POST" | "PUT" | "PATCH" | "DELETE";
 
 /** HTTP request methods. */
-export type RequestMethod = (typeof HTTP_METHODS)[number];
+export type RequestMethod = RequestHeadMethod | RequestBodyMethod;
 
-/** Check whether an arbitrary method string is one of Shelving's supported request methods. */
+// Method arrays.
+const _REQUEST_HEAD_METHODS = ["HEAD", "GET"];
+const _REQUEST_BODY_METHODS = ["POST", "PUT", "PATCH", "DELETE"];
+const _REQUEST_METHODS = [..._REQUEST_HEAD_METHODS, ..._REQUEST_BODY_METHODS];
+
+/** Check whether an HTTP Request method string is a supported request methods. */
 export function isRequestMethod(method: string): method is RequestMethod {
-	return (HTTP_METHODS as readonly string[]).includes(method);
+	return _REQUEST_METHODS.includes(method);
+}
+
+/** Check whether an HTTP Request method string is a supported request method that never sends a body. */
+export function isRequestHeadMethod(method: string): method is RequestHeadMethod {
+	return _REQUEST_HEAD_METHODS.includes(method);
 }
 
 /** Params in requests are a dictionary of strings. */
@@ -177,12 +206,6 @@ export type RequestOptions = Pick<
 	RequestInit,
 	"cache" | "credentials" | "headers" | "integrity" | "keepalive" | "mode" | "redirect" | "referrer" | "referrerPolicy" | "signal"
 >;
-
-/** Options for a plain text request. */
-const REQUEST_TEXT_OPTIONS = { headers: { "Content-Type": "text/plain" } };
-
-/** Options for a JSON request. */
-const REQUEST_JSON_OPTIONS = { headers: { "Content-Type": "application/json" } };
 
 /**
  * Merge provider-level and call-level request options.
@@ -200,8 +223,133 @@ export function mergeRequestOptions(
 }
 
 /**
- * Create a `Request` instance with a valid content type based on the body.
+ * Create a body-less `Request`.
+ * - `HEAD` and `GET` requests never send a body.
  *
+ * @param method The HTTP method.
+ * @param url The target URL.
+ * @param params `?query` params to encode into the URL.
+ * @param options Additional request options.
+ * @returns A `Request` with no body content.
+ *
+ * @example getHeadRequest("POST", "https://api.example.com/items", { name: "abc" })
+ */
+export function getHeadRequest(
+	method: RequestHeadMethod,
+	url: PossibleURL,
+	params: Nullish<PossibleURIParams>,
+	options: RequestOptions = {},
+	caller: AnyCaller = getHeadRequest,
+): Request {
+	return new Request(withURIParams(requireURL(url, undefined, caller), params), { ...options, method, body: null });
+}
+
+/**
+ * Create a plain-text `Request`.
+ *
+ * - `HEAD` and `GET` requests never send a body.
+ *
+ * @param method The HTTP method.
+ * @param url The target URL.
+ * @param body The plain-text request body.
+ * @param options Additional request options.
+ * @returns A `Request` with `text/plain` content type.
+ *
+ * @example getTextRequest("POST", "https://api.example.com/items", "hello")
+ */
+export function getTextRequest(
+	method: RequestMethod,
+	url: PossibleURL,
+	body: string,
+	options: RequestOptions = {},
+	caller: AnyCaller = getTextRequest,
+): Request {
+	return new Request(requireURL(url, undefined, caller), { ...mergeRequestOptions(_REQUEST_TEXT_OPTIONS, options), method, body });
+}
+const _REQUEST_TEXT_OPTIONS = { headers: { "Content-Type": "text/plain" } };
+
+/**
+ * Create a JSON `Request`.
+ * - `HEAD` and `GET` requests never send a body.
+ * - If the JSON body is a data object for `HEAD` or `GET`, it is appended as `?query` params instead.
+ *
+ * @param method The HTTP method.
+ * @param url The target URL.
+ * @param body The value to JSON-encode.
+ * @param options Additional request options.
+ * @returns A `Request` with `application/json` content type.
+ *
+ * @example getJSONRequest("POST", "https://api.example.com/items", { name: "abc" })
+ */
+export function getJSONRequest(
+	method: RequestBodyMethod,
+	url: PossibleURL,
+	body: unknown,
+	options: RequestOptions = {},
+	caller: AnyCaller = getJSONRequest,
+): Request {
+	return new Request(requireURL(url, undefined, caller), {
+		...mergeRequestOptions(_REQUEST_JSON_OPTIONS, options),
+		method,
+		body: JSON.stringify(body),
+	});
+}
+const _REQUEST_JSON_OPTIONS = { headers: { "Content-Type": "application/json" } };
+
+/**
+ * Create a multipart form-data `Request`.
+ * - `HEAD` and `GET` requests never send a body.
+ *
+ * @param method The HTTP method.
+ * @param url The target URL.
+ * @param body The `FormData` payload.
+ * @param options Additional request options.
+ * @returns A `Request` with a multipart body.
+ *
+ * @example getFormDataRequest("POST", "https://api.example.com/upload", new FormData())
+ */
+export function getFormDataRequest(
+	method: RequestBodyMethod,
+	url: PossibleURL,
+	body: FormData,
+	options: RequestOptions = {},
+	caller: AnyCaller = getFormDataRequest,
+): Request {
+	return new Request(requireURL(url, undefined, caller), { ...options, method, body });
+}
+
+/**
+ * Create an XML `Request`.
+ * - `HEAD` and `GET` requests never send a body.
+ * - For `HEAD` and `GET`, the data object is appended as `?query` params instead.
+ *
+ * @param method The HTTP method.
+ * @param url The target URL.
+ * @param data The data object to serialize as XML.
+ * @param options Additional request options.
+ * @returns A `Request` with `application/xml` content type.
+ *
+ * @throws {RequiredError} If the XML data contains invalid element names or values.
+ *
+ * @example getXMLRequest("POST", "https://api.example.com/items", { item: { name: "abc" } })
+ */
+export function getXMLRequest(
+	method: RequestBodyMethod,
+	url: PossibleURL,
+	data: Data,
+	options: RequestOptions = {},
+	caller: AnyCaller = getXMLRequest,
+): Request {
+	return new Request(requireURL(url, undefined, caller), {
+		...mergeRequestOptions(_REQUEST_XML_OPTIONS, options),
+		method,
+		body: `<?xml version="1.0" encoding="UTF-8"?>${getXML(data, caller)}`,
+	});
+}
+const _REQUEST_XML_OPTIONS = { headers: { "Content-Type": "application/xml; charset=UTF-8" } };
+
+/**
+ * Create a `Request` instance with a valid content type based on the body.
  * - `undefined` or `null` are sent with no body.
  * - `FormData` is sent with `multipart/formdata`
  * - `string` is sent with `text/plain` header.
@@ -226,27 +374,26 @@ export function getRequest(
 	if (isNullish(payload)) return new Request(url, { ...options, method, body: null });
 
 	// HEAD or GET have no body (but payload can only be data object).
-	if (isArrayItem(HTTP_HEAD_METHODS, method)) {
-		assertHeadMethodPayload(payload, method, caller);
+	if (isRequestHeadMethod(method)) {
+		assertRequestHeadPayload(payload, method, caller);
 		return new Request(withURIParams(url, payload), { ...options, method, body: null });
 	}
 
 	// `FormData` instances in body pass through unaltered and will set their own `Content-Type` with complex boundary information
-	if (payload instanceof FormData) return new Request(url, { ...options, method, body: payload });
+	if (payload instanceof FormData) return getFormDataRequest(method, url, payload, options, caller);
 
 	// Strings are sent as plain text.
-	if (typeof payload === "string")
-		return new Request(url, { ...mergeRequestOptions(REQUEST_TEXT_OPTIONS, options), method, body: payload });
+	if (typeof payload === "string") return getTextRequest(method, url, payload, options, caller);
 
 	// JSON is the default.
-	return new Request(url, { ...mergeRequestOptions(REQUEST_JSON_OPTIONS, options), method, body: JSON.stringify(payload) });
+	return getJSONRequest(method, url, payload, options, caller);
 }
 
 /** Assert that the payload for a HEAD or GET method is a data object, null, or undefined. */
-export function assertHeadMethodPayload(
+export function assertRequestHeadPayload(
 	payload: unknown,
 	method: RequestHeadMethod,
-	caller: AnyCaller = assertHeadMethodPayload,
+	caller: AnyCaller = assertRequestHeadPayload,
 ): asserts payload is Nullish<Data> {
 	if (!isData(payload) && !isNullish(payload))
 		throw new RequiredError(`Payload for ${method} request must be data object, null, or undefined`, { received: payload, caller });

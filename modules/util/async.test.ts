@@ -48,7 +48,7 @@ describe("getConcurrent()", () => {
 					}, 200),
 				),
 			);
-			expect(false).toBe(true); // Not reached.
+			expect.unreachable();
 		} catch (thrown) {
 			expect(a).toBe("A");
 			expect(thrown).toBe("B");

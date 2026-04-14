@@ -10,17 +10,11 @@ import type { APIProvider } from "./APIProvider.js";
  * - Extend this when you want to intercept only selected API operations, such as injecting auth headers or logging.
  */
 export class ThroughAPIProvider<P, R> implements APIProvider<P, R>, Sourceable<APIProvider<P, R>> {
-	readonly source: APIProvider<P, R>;
-
 	get url(): URLString {
 		return this.source.url;
 	}
-	get options(): RequestOptions {
-		return this.source.options;
-	}
-	get timeout(): number | undefined {
-		return this.source.timeout;
-	}
+
+	readonly source: APIProvider<P, R>;
 
 	constructor(source: APIProvider<P, R>) {
 		this.source = source;

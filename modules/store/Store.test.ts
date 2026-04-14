@@ -14,7 +14,7 @@ test("No initial value", async () => {
 	expect(store.loading).toBe(true);
 	try {
 		store.value;
-		expect(false).toBe(true); // Not reached.
+		expect.unreachable();
 	} catch (thrown) {
 		expect(thrown).toMatchObject(EXPECT_PROMISELIKE);
 	}

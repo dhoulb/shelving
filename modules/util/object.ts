@@ -135,6 +135,7 @@ export function withProps<T>(input: T, props: T | Partial<T> | Iterable<Prop<T>>
 /** Remove several props from an object (immutably) and return a new object without those props. */
 export function omitProps<T, K extends Key<T>>(input: T, ...keys: K[]): Omit<T, K>;
 export function omitProps(input: ImmutableObject, ...keys: (keyof ImmutableObject)[]): ImmutableObject {
+	if (!keys.length) return input;
 	for (const key of keys) if (key in input) return Object.fromEntries(Object.entries(input).filter(_hasntKey, keys));
 	return input;
 }

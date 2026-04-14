@@ -14,7 +14,7 @@ describe("hashPassword()", () => {
 	test("Fails for short password", async () => {
 		try {
 			await hashPassword("abc");
-			expect(false).toBe(true);
+			expect.unreachable();
 		} catch (err) {
 			expect(err).toBeInstanceOf(ValueError);
 		}

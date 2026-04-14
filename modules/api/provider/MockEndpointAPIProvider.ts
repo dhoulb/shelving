@@ -1,5 +1,5 @@
 import { type EndpointHandlers, handleEndpoints } from "../endpoint/util.js";
-import type { APIProvider } from "./APIProvider.js";
+import type { ClientAPIProvider } from "./ClientAPIProvider.js";
 import { MockAPIProvider } from "./MockAPIProvider.js";
 
 /**
@@ -14,7 +14,7 @@ import { MockAPIProvider } from "./MockAPIProvider.js";
  *  expect(result).toBe(16);
  */
 export class MockEndpointAPIProvider<P, R, C> extends MockAPIProvider<P, R> {
-	constructor(handlers: EndpointHandlers<C>, context: C, source?: APIProvider<P, R>) {
+	constructor(handlers: EndpointHandlers<C>, context: C, source?: ClientAPIProvider<P, R>) {
 		super(request => handleEndpoints(this.url, handlers, request, context, this.fetch), source);
 	}
 }

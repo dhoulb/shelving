@@ -15,14 +15,14 @@ describe("RequestError", () => {
 
 		try {
 			myFunctionB();
-			expect(false).toBe(true);
+			expect.unreachable();
 		} catch (error) {
 			expect(error).toBeInstanceOf(RequestError);
 			if (error instanceof RequestError) {
 				expect(error.stack).toInclude("myFunctionB");
 				expect(error.stack).not.toInclude("myFunctionA");
 			} else {
-				expect(false).toBe(true);
+				expect.unreachable();
 			}
 		}
 	});
@@ -41,14 +41,14 @@ describe("NotFoundError", () => {
 
 		try {
 			myFunctionB();
-			expect(false).toBe(true);
+			expect.unreachable();
 		} catch (error) {
 			expect(error).toBeInstanceOf(NotFoundError);
 			if (error instanceof NotFoundError) {
 				expect(error.stack).toInclude("myFunctionB");
 				expect(error.stack).not.toInclude("myFunctionA");
 			} else {
-				expect(false).toBe(true);
+				expect.unreachable();
 			}
 		}
 	});
@@ -67,14 +67,14 @@ describe("UnauthorizedError", () => {
 
 		try {
 			myFunctionB();
-			expect(false).toBe(true);
+			expect.unreachable();
 		} catch (error) {
 			expect(error).toBeInstanceOf(UnauthorizedError);
 			if (error instanceof UnauthorizedError) {
 				expect(error.stack).toInclude("myFunctionB");
 				expect(error.stack).not.toInclude("myFunctionA");
 			} else {
-				expect(false).toBe(true);
+				expect.unreachable();
 			}
 		}
 	});
@@ -93,14 +93,14 @@ describe("UnprocessableError", () => {
 
 		try {
 			myFunctionB();
-			expect(false).toBe(true);
+			expect.unreachable();
 		} catch (error) {
 			expect(error).toBeInstanceOf(UnprocessableError);
 			if (error instanceof UnprocessableError) {
 				expect(error.stack).toInclude("myFunctionB");
 				expect(error.stack).not.toInclude("myFunctionA");
 			} else {
-				expect(false).toBe(true);
+				expect.unreachable();
 			}
 		}
 	});
@@ -119,14 +119,14 @@ describe("ForbiddenError", () => {
 
 		try {
 			myFunctionB();
-			expect(false).toBe(true);
+			expect.unreachable();
 		} catch (error) {
 			expect(error).toBeInstanceOf(ForbiddenError);
 			if (error instanceof ForbiddenError) {
 				expect(error.stack).toInclude("myFunctionB");
 				expect(error.stack).not.toInclude("myFunctionA");
 			} else {
-				expect(false).toBe(true);
+				expect.unreachable();
 			}
 		}
 	});

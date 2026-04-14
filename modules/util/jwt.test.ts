@@ -91,7 +91,7 @@ describe("verifyRequestToken()", () => {
 		setRequestToken(req, "invalidtoken");
 		try {
 			await verifyRequestToken(req, TOKEN_SECRET);
-			expect(false).toBe(true);
+			expect.unreachable();
 		} catch (error) {
 			expect(error).toBeInstanceOf(UnauthorizedError);
 		}

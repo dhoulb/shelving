@@ -2,7 +2,7 @@ import { MethodNotAllowedError, NotFoundError } from "../../error/RequestError.j
 import { ValueError } from "../../error/ValueError.js";
 import { getDictionary } from "../../util/dictionary.js";
 import type { AnyCaller } from "../../util/function.js";
-import { getRequestContent, getResponse, isRequestMethod, type RequestParams } from "../../util/http.js";
+import { getResponse, isRequestMethod, parseRequestBody, type RequestParams } from "../../util/http.js";
 import { isPlainObject } from "../../util/object.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { type PossibleURL, requireURL } from "../../util/url.js";
@@ -97,7 +97,7 @@ async function _handleEndpoint<P, R, C>(
 	context: C,
 	caller: AnyCaller,
 ): Promise<Response> {
-	const content = await getRequestContent(request, caller);
+	const content = await parseRequestBody(request, caller);
 	const unsafePayload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : content;
 
 	const payload = endpoint.payload.validate(unsafePayload);

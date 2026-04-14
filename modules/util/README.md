@@ -97,7 +97,7 @@ getWords(`hello "world foo" bar`);     // ["hello", "world foo", "bar"]
 
 ```ts
 import {
-  isData, assertData, getDataProp, splitDataKey, joinDataKey,
+  isData, assertData, getDataProp, splitDataKey, joinDataKey, getXML,
 } from "shelving/util";
 
 const doc = { user: { name: "Alice", age: 30 } };
@@ -110,6 +110,7 @@ getDataProp(doc, ["user", "age"]); // 30
 
 splitDataKey("user.name");      // ["user", "name"]
 joinDataKey(["user", "name"]);  // "user.name"
+getXML({ user: { name: "Alice" } }); // "<user><name>Alice</name></user>"
 ```
 
 ### Items

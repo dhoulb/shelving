@@ -21,18 +21,28 @@ describe("handleEndpoints()", () => {
 	});
 
 	test("strips the configured prefix before endpoint matching", async () => {
-		const request = new Request("https://x.com/v1/test1/456", { method: "GET" });
-		const response = await handleEndpoints("https://x.com/v1/", handlers, request);
-		expect(response).toBeInstanceOf(Response);
-		expect(await response.json()).toBe("Hello 456");
+		try {
+			const request = new Request("https://x.com/v1/test1/456", { method: "GET" });
+			const response = await handleEndpoints("https://x.com/v1/", handlers, request);
+			expect(response).toBeInstanceOf(Response);
+			expect(await response.json()).toBe("Hello 456");
+		} catch (thrown) {
+			expect(thrown).toBe(undefined);
+			expect.unreachable();
+		}
 	});
 
 	test("merges query params with stripped path params", async () => {
-		const endpoint = GET("/test/{id}", DATA({ id: INTEGER, extra: STRING }), STRING);
-		const handler = endpoint.handler(async ({ id, extra }, request) => `${id}:${extra}:${new URL(request.url).pathname}`);
-		const request = new Request("https://x.com/v1/test/456?extra=x", { method: "GET" });
-		const response = await handleEndpoints("https://x.com/v1/", [handler], request);
-		expect(await response.json()).toBe("456:x:/v1/test/456");
+		try {
+			const endpoint = GET("/test/{id}", DATA({ id: INTEGER, extra: STRING }), STRING);
+			const handler = endpoint.handler(async ({ id, extra }, request) => `${id}:${extra}:${new URL(request.url).pathname}`);
+			const request = new Request("https://x.com/v1/test/456?extra=x", { method: "GET" });
+			const response = await handleEndpoints("https://x.com/v1/", [handler], request);
+			expect(await response.json()).toBe("456:x:/v1/test/456");
+		} catch (thrown) {
+			expect(thrown).toBe(undefined);
+			expect.unreachable();
+		}
 	});
 
 	test("matches the root endpoint when the request path equals the base path", async () => {

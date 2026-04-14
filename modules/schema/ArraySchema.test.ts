@@ -135,7 +135,7 @@ describe("options.items", () => {
 		const schema = new ArraySchema({ items: NUMBER });
 		try {
 			schema.validate(arr);
-			expect(false).toBe(true); // Not reached.
+			expect.unreachable();
 		} catch (invalid: unknown) {
 			expect(invalid).toBe("0: Must be number\n2: Must be number");
 		}

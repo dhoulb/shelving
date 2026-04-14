@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { APIProvider, DATA, EndpointStore, GET, getDeferred, MockAPIProvider, runMicrotasks, STRING } from "../../index.js";
+import { DATA, EndpointStore, GET, getDeferred, MockAPIProvider, runMicrotasks, STRING } from "../../index.js";
 import { EXPECT_PROMISELIKE } from "../../test/index.js";
 
 describe("EndpointStore", () => {
@@ -93,7 +93,7 @@ describe("EndpointStore", () => {
 
 	test("stores thrown reasons from failed fetches", async () => {
 		const reason = new Error("Nope");
-		class FailingAPIProvider extends APIProvider {
+		class FailingAPIProvider extends MockAPIProvider {
 			override fetch(): Promise<never> {
 				return Promise.reject(reason);
 			}
@@ -104,7 +104,7 @@ describe("EndpointStore", () => {
 
 		try {
 			console.error = () => undefined;
-			const store = new EndpointStore(endpoint, { id: "123" }, new FailingAPIProvider({ url: "https://test.com" }));
+			const store = new EndpointStore(endpoint, { id: "123" }, new FailingAPIProvider());
 			await runMicrotasks();
 			expect(store.reason).toBe(reason);
 			expect(() => store.value).toThrow("Nope");
