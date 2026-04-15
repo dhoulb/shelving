@@ -26,7 +26,7 @@ describe("XMLAPIProvider", () => {
 			const provider = new XMLAPIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-			expect(await provider.fetch(endpoint, { id: "1" })).toBe("<ok>true</ok>");
+			expect(await provider.call(endpoint, { id: "1" })).toBe("<ok>true</ok>");
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
@@ -41,7 +41,7 @@ describe("XMLAPIProvider", () => {
 			const provider = new XMLAPIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-			await expect(provider.fetch(endpoint, { id: "1" })).rejects.toMatchObject({ message: "<error>Teapot</error>", code: 418 });
+			await expect(provider.call(endpoint, { id: "1" })).rejects.toMatchObject({ message: "<error>Teapot</error>", code: 418 });
 		} finally {
 			globalThis.fetch = originalFetch;
 		}

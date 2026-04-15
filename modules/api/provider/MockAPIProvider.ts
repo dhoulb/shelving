@@ -4,12 +4,20 @@ import type { AnyEndpoint, Endpoint } from "../endpoint/Endpoint.js";
 import { ClientAPIProvider } from "./ClientAPIProvider.js";
 import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
-/** A structured log entry emitted by `MockAPIProvider` for one of its provider operations. */
-export type MockAPICall = {
-	readonly type: "fetch";
+export type MockAPIFetchCall = {
+	readonly request: Request;
+	readonly response: Response;
+};
+
+export type MockAPIRequestCall = {
 	readonly endpoint: AnyEndpoint;
 	readonly payload: unknown;
+	readonly options: RequestOptions | undefined;
 	readonly request: Request;
+};
+
+export type MockAPIResponseCall = {
+	readonly endpoint: AnyEndpoint;
 	readonly response: Response;
 	readonly result: unknown;
 };
@@ -25,7 +33,9 @@ async function _passthroughHandler(request: Request): Promise<Response> {
  * - The source provider's `fetch()` is never called — this provider intercepts all fetches and routes them through a `RequestHandler`.
  */
 export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvider<P, R> {
-	readonly calls: MockAPICall[] = [];
+	readonly requestCalls: MockAPIRequestCall[] = [];
+	readonly fetchCalls: MockAPIFetchCall[] = [];
+	readonly responseCalls: MockAPIResponseCall[] = [];
 
 	readonly handler: RequestHandler;
 
@@ -37,17 +47,33 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 		this.handler = handler;
 	}
 
-	// Log a `fetch()` call without using the network.
-	override async fetch<PP extends P, RR extends R>(
+	// Override `getRequest()` to log the endpoint and payload before delegating to the source provider for request building.
+	override getRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
-		options: RequestOptions = {},
-		caller: AnyCaller = this.fetch,
+		options?: RequestOptions,
+		caller: AnyCaller = this.getRequest,
+	): Request {
+		const request = super.getRequest(endpoint, payload, options, caller);
+		this.requestCalls.push({ endpoint, payload, options, request });
+		return request;
+	}
+
+	// Override `parseResponse()` to log the response and result.
+	override async parseResponse<PP extends P, RR extends R>(
+		endpoint: Endpoint<PP, RR>,
+		response: Response,
+		caller: AnyCaller = this.parseResponse,
 	): Promise<RR> {
-		const request = this.getRequest(endpoint, payload, options, caller);
-		const response = await this.handler(request);
-		const result = await this.parseResponse(endpoint, response, caller);
-		this.calls.push({ type: "fetch", endpoint, payload, request, response, result });
+		const result = await super.parseResponse(endpoint, response, caller);
+		this.responseCalls.push({ endpoint, response, result });
 		return result;
+	}
+
+	// Override `fetch()` to route through the handler instead of the network.
+	override async fetch(request: Request): Promise<Response> {
+		const response = await this.handler(request);
+		this.fetchCalls.push({ request, response });
+		return response;
 	}
 }

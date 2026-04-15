@@ -106,7 +106,7 @@ export class EndpointStore<P, R> extends Store<R> implements Disposable {
 	/** Fetch the result from the API endpoint now. */
 	private async _fetch(abort: AbortController): Promise<void> {
 		try {
-			const value = await this.provider.fetch(this.endpoint, this._payload, { signal: abort.signal });
+			const value = await this.provider.call(this.endpoint, this._payload, { signal: abort.signal });
 			this.reason = undefined;
 			this.value = value;
 		} catch (thrown) {

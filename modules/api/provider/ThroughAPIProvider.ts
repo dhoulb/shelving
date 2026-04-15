@@ -41,4 +41,8 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 	): Promise<RR> {
 		return this.source.parseResponse(endpoint, response, caller);
 	}
+
+	override fetch(request: Request): Promise<Response> {
+		return this.source.fetch(request);
+	}
 }

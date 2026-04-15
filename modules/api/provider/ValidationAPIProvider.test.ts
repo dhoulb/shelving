@@ -8,13 +8,13 @@ describe("ValidationAPIProvider", () => {
 		const endpoint = POST("/users", DATA({ name: REQUIRED_STRING }), STRING);
 
 		try {
-			await provider.fetch(endpoint, {} as never);
+			await provider.call(endpoint, {} as never);
 			expect.unreachable();
 		} catch (thrown) {
 			expect(thrown).toBeDefined();
 		}
 
-		expect(source.calls).toHaveLength(0);
+		expect(source.fetchCalls).toHaveLength(0);
 	});
 
 	test("validates successful source results against the endpoint result schema", async () => {
@@ -22,7 +22,7 @@ describe("ValidationAPIProvider", () => {
 		const provider = new ValidationAPIProvider(source);
 		const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-		await expect(provider.fetch(endpoint, { id: "123" })).rejects.toBeInstanceOf(ResponseError);
-		expect(source.calls).toHaveLength(1);
+		await expect(provider.call(endpoint, { id: "123" })).rejects.toBeInstanceOf(ResponseError);
+		expect(source.fetchCalls).toHaveLength(1);
 	});
 });

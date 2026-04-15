@@ -11,15 +11,11 @@ describe("MockEndpointAPIProvider", () => {
 			new ClientAPIProvider({ url: "https://api.example.com/v1/" }),
 		);
 
-		expect(await provider.fetch(endpoint, { id: "123", name: "Ada" })).toBe("123:Ada");
-		expect(provider.calls).toHaveLength(1);
-		expect(provider.calls[0]).toMatchObject({
-			type: "fetch",
-			endpoint,
-			payload: { id: "123", name: "Ada" },
-			result: "123:Ada",
-		});
-		expect(provider.calls[0]?.request.url).toBe("https://api.example.com/v1/users/123");
+		expect(await provider.call(endpoint, { id: "123", name: "Ada" })).toBe("123:Ada");
+		expect(provider.requestCalls).toHaveLength(1);
+		expect(provider.fetchCalls).toHaveLength(1);
+		expect(provider.fetchCalls[0]?.request.url).toBe("https://api.example.com/v1/users/123");
+		expect(provider.responseCalls).toHaveLength(1);
 	});
 
 	test("fetch() passes the configured context to matching handlers", async () => {
@@ -32,8 +28,8 @@ describe("MockEndpointAPIProvider", () => {
 		);
 
 		try {
-			expect(await provider.fetch(endpoint, { name: "Ada" })).toBe("Hello Ada");
-			expect(provider.calls[0]?.result).toBe("Hello Ada");
+			expect(await provider.call(endpoint, { name: "Ada" })).toBe("Hello Ada");
+			expect(provider.responseCalls[0]?.result).toBe("Hello Ada");
 		} catch (thrown) {
 			expect(thrown).toBe(undefined);
 			expect.unreachable();
@@ -45,7 +41,7 @@ describe("MockEndpointAPIProvider", () => {
 		const requested = POST("/missing", undefined, STRING);
 		const provider = new MockEndpointAPIProvider([implemented.handler(async () => "ok")], undefined);
 
-		await expect(provider.fetch(requested, undefined)).rejects.toBeInstanceOf(NotFoundError);
-		expect(provider.calls).toHaveLength(0);
+		await expect(provider.call(requested, undefined)).rejects.toBeInstanceOf(NotFoundError);
+		expect(provider.fetchCalls).toHaveLength(0);
 	});
 });

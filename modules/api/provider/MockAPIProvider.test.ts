@@ -13,15 +13,11 @@ describe("MockAPIProvider", () => {
 		);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING, extra: STRING }), STRING);
 
-		expect(await provider.fetch(endpoint, { id: "123", extra: "x" })).toBe("mocked");
-		expect(provider.calls).toHaveLength(1);
-		expect(provider.calls[0]).toMatchObject({
-			type: "fetch",
-			endpoint,
-			payload: { id: "123", extra: "x" },
-			result: "mocked",
-		});
-		expect(provider.calls[0]?.request.url).toBe("https://api.example.com/v1/users/123?extra=x");
+		expect(await provider.call(endpoint, { id: "123", extra: "x" })).toBe("mocked");
+		expect(provider.requestCalls).toHaveLength(1);
+		expect(provider.fetchCalls).toHaveLength(1);
+		expect(provider.fetchCalls[0]?.request.url).toBe("https://api.example.com/v1/users/123?extra=x");
+		expect(provider.responseCalls).toHaveLength(1);
 	});
 
 	test("fetch() merges provider default options with call options before invoking the handler", async () => {
@@ -39,8 +35,8 @@ describe("MockAPIProvider", () => {
 		);
 		const endpoint = POST("/items", DATA({ name: STRING }), STRING);
 
-		expect(await provider.fetch(endpoint, { name: "abc" }, { headers: { "X-Call": "call" } })).toBe("ok");
-		expect(provider.calls[0]?.request.headers).toEqual(
+		expect(await provider.call(endpoint, { name: "abc" }, { headers: { "X-Call": "call" } })).toBe("ok");
+		expect(provider.fetchCalls[0]?.request.headers).toEqual(
 			new Headers({
 				"X-Default": "provider",
 				"Content-Type": "application/custom",
@@ -54,7 +50,7 @@ describe("MockAPIProvider", () => {
 		const provider = new ValidationAPIProvider(mock);
 		const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-		await expect(provider.fetch(endpoint, { id: "1" })).rejects.toBeInstanceOf(ResponseError);
-		expect(mock.calls).toHaveLength(1);
+		await expect(provider.call(endpoint, { id: "1" })).rejects.toBeInstanceOf(ResponseError);
+		expect(mock.fetchCalls).toHaveLength(1);
 	});
 });

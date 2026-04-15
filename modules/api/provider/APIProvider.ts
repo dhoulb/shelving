@@ -43,6 +43,9 @@ export abstract class APIProvider<P = unknown, R = unknown> {
 		caller?: AnyCaller,
 	): Request;
 
+	/** Fetch a `Resource` using this provider (defaults to Javascript `fetch()` API). */
+	abstract fetch(request: Request): Promise<Response>;
+
 	/**
 	 * Parse an HTTP `Response` for this endpoint.
 	 * - Non-2xx responses become `ResponseError`.
@@ -51,14 +54,14 @@ export abstract class APIProvider<P = unknown, R = unknown> {
 	abstract parseResponse<PP extends P, RR extends R>(_endpoint: Endpoint<PP, RR>, response: Response, caller?: AnyCaller): Promise<RR>;
 
 	/** Send a payload to an `Endpoint` and retrieve the result. */
-	async fetch<PP extends P, RR extends R>(
+	async call<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
 		caller?: AnyCaller,
 	): Promise<RR> {
 		const request = this.getRequest(endpoint, payload, options, caller);
-		const response = await fetch(request);
+		const response = await this.fetch(request);
 		return this.parseResponse(endpoint, response, caller);
 	}
 }

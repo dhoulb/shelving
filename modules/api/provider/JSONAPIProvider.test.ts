@@ -20,7 +20,7 @@ describe("JSONAPIProvider", () => {
 			const provider = new JSONAPIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), DATA({ value: STRING }));
 
-			expect(await provider.fetch(endpoint, { id: "1" })).toEqual({ value: "ok" });
+			expect(await provider.call(endpoint, { id: "1" })).toEqual({ value: "ok" });
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
@@ -35,7 +35,7 @@ describe("JSONAPIProvider", () => {
 			const provider = new JSONAPIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-			await expect(provider.fetch(endpoint, { id: "1" })).rejects.toMatchObject({ message: "Teapot", code: 418 });
+			await expect(provider.call(endpoint, { id: "1" })).rejects.toMatchObject({ message: "Teapot", code: 418 });
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
@@ -50,7 +50,7 @@ describe("JSONAPIProvider", () => {
 			const provider = new JSONAPIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-			await expect(provider.fetch(endpoint, { id: "1" })).rejects.toBeInstanceOf(ResponseError);
+			await expect(provider.call(endpoint, { id: "1" })).rejects.toBeInstanceOf(ResponseError);
 		} finally {
 			globalThis.fetch = originalFetch;
 		}

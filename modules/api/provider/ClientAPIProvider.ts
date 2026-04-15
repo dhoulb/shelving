@@ -35,6 +35,14 @@ export interface ClientAPIProviderOptions {
 	readonly timeout?: number | undefined;
 }
 
+/**
+ * A client-side API provider that sends requests over the network using `fetch()`.
+ * - Can be used on a server environment to make outgoing API calls, or in a browser environment to call a server API.
+ * - Renders endpoint paths and query params into the URL and sends body payloads as JSON.
+ * - Parses JSON responses and throws `ResponseError` for non-2xx responses.
+ * - Extendable with custom request-building and response-parsing logic by overriding `getRequest()` and `parseResponse()`.
+ * - Wrap in `ValidationAPIProvider` to add automatic validation of request payloads and response results against endpoint schemas.
+ */
 export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, R> {
 	/** The common base URL for all rendered endpoint requests. */
 	readonly url: URLString;
@@ -109,6 +117,11 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		caller: AnyCaller,
 	): Request {
 		return getRequest(method, url, payload, options, caller);
+	}
+
+	// Override to set default functionality of a client provider to send requests over the network with `fetch()` and parse responses with `parseResponse()`.
+	async fetch(request: Request): Promise<Response> {
+		return fetch(request);
 	}
 
 	async parseResponse<PP extends P, RR extends R>(

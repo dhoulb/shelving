@@ -15,8 +15,8 @@ describe("APICache", () => {
 		await store.fetch();
 
 		expect(store.value).toBe("ok:/v1/users/123");
-		expect(provider.calls).toHaveLength(1);
-		expect(provider.calls[0]?.request.url).toBe("https://api.example.com/v1/users/123?extra=x");
+		expect(provider.fetchCalls).toHaveLength(1);
+		expect(provider.fetchCalls[0]?.request.url).toBe("https://api.example.com/v1/users/123?extra=x");
 	});
 
 	test("reuses the same store for the same endpoint and payload", () => {

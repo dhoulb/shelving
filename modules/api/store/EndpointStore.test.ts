@@ -22,7 +22,7 @@ describe("EndpointStore", () => {
 
 		expect(store.loading).toBe(false);
 		expect(store.value).toBe("ready");
-		expect(provider.calls).toHaveLength(1);
+		expect(provider.fetchCalls).toHaveLength(1);
 	});
 
 	test("fetch() reuses the current in-flight request", async () => {
@@ -39,7 +39,7 @@ describe("EndpointStore", () => {
 		await first;
 
 		expect(store.value).toBe("done");
-		expect(provider.calls).toHaveLength(1);
+		expect(provider.fetchCalls).toHaveLength(1);
 	});
 
 	test("changing payload aborts the old request and fetches the new payload", async () => {
@@ -64,7 +64,7 @@ describe("EndpointStore", () => {
 
 		expect(requests).toHaveLength(2);
 		expect(requests[0]?.signal.aborted).toBe(true);
-		expect(provider.calls).toHaveLength(1);
+		expect(provider.fetchCalls).toHaveLength(1);
 		expect(store.value).toBe("value:456");
 	});
 
@@ -94,7 +94,7 @@ describe("EndpointStore", () => {
 	test("stores thrown reasons from failed fetches", async () => {
 		const reason = new Error("Nope");
 		class FailingAPIProvider extends MockAPIProvider {
-			override fetch(): Promise<never> {
+			override call(): Promise<never> {
 				return Promise.reject(reason);
 			}
 		}

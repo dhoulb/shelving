@@ -15,6 +15,6 @@ import { MockAPIProvider } from "./MockAPIProvider.js";
  */
 export class MockEndpointAPIProvider<P, R, C> extends MockAPIProvider<P, R> {
 	constructor(handlers: EndpointHandlers<C>, context: C, source?: ClientAPIProvider<P, R>) {
-		super(request => handleEndpoints(this.url, handlers, request, context, this.fetch), source);
+		super(request => handleEndpoints(this.url, handlers, request, context, this.call), source);
 	}
 }

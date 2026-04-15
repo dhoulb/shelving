@@ -35,7 +35,7 @@ describe("ClientAPIProvider", () => {
 			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-			expect(await provider.fetch(endpoint, { id: "1" })).toBe("Hello from fetch");
+			expect(await provider.call(endpoint, { id: "1" })).toBe("Hello from fetch");
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
@@ -50,7 +50,7 @@ describe("ClientAPIProvider", () => {
 			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-			expect(await provider.fetch(endpoint, { id: "1" })).toBe("plain text");
+			expect(await provider.call(endpoint, { id: "1" })).toBe("plain text");
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
@@ -73,7 +73,7 @@ describe("ClientAPIProvider", () => {
 			});
 			const endpoint = POST("/items", DATA({ name: STRING }), STRING);
 
-			expect(await provider.fetch(endpoint, { name: "abc" }, { headers: { "X-Call": "call" } })).toBe("ok");
+			expect(await provider.call(endpoint, { name: "abc" }, { headers: { "X-Call": "call" } })).toBe("ok");
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
@@ -92,7 +92,7 @@ describe("ClientAPIProvider", () => {
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 			const controller = new AbortController();
 
-			await provider.fetch(endpoint, { id: "1" }, { signal: controller.signal });
+			await provider.call(endpoint, { id: "1" }, { signal: controller.signal });
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
@@ -107,7 +107,7 @@ describe("ClientAPIProvider", () => {
 			const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com/" }));
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-			await expect(provider.fetch(endpoint, { id: "1" })).rejects.toBeInstanceOf(ResponseError);
+			await expect(provider.call(endpoint, { id: "1" })).rejects.toBeInstanceOf(ResponseError);
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
@@ -122,7 +122,7 @@ describe("ClientAPIProvider", () => {
 			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
 			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
 
-			await expect(provider.fetch(endpoint, { id: "1" })).rejects.toMatchObject({ message: "Teapot", code: 418 });
+			await expect(provider.call(endpoint, { id: "1" })).rejects.toMatchObject({ message: "Teapot", code: 418 });
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
