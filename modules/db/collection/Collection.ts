@@ -33,6 +33,10 @@ export class Collection<N extends string = string, I extends Identifier = Identi
 		this.id = id;
 		this.item = ITEM(id, dataSchema);
 	}
+
+	override toString(): string {
+		return this.name;
+	}
 }
 
 /** Shortcut factory for creating a Collection. */
