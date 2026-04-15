@@ -1,3 +1,4 @@
+import { debugRequest } from "../../util/debug.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestHandler, RequestOptions } from "../../util/http.js";
 import type { AnyEndpoint, Endpoint } from "../endpoint/Endpoint.js";
@@ -23,8 +24,8 @@ export type MockAPIResponseCall = {
 };
 
 /** Default handler just echoes back the input request as text. */
-async function _passthroughHandler(request: Request): Promise<Response> {
-	return new Response(await request.text());
+async function _mockHandler(request: Request): Promise<Response> {
+	return new Response(`Mocked response to ${debugRequest(request)}`, { status: 200, statusText: "OK" });
 }
 
 /**
@@ -40,7 +41,7 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 	readonly handler: RequestHandler;
 
 	constructor(
-		handler: RequestHandler = _passthroughHandler,
+		handler: RequestHandler = _mockHandler,
 		source: ClientAPIProvider<P, R> = new ClientAPIProvider({ url: "https://api.mock.com" }),
 	) {
 		super(source);
