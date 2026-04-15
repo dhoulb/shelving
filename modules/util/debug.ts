@@ -15,6 +15,9 @@ export function debug(value: unknown, depth = 1): string {
 	if (typeof value === "object") {
 		if (value instanceof Date) return value.toISOString();
 		if (value instanceof Error) return value.toString();
+		if (value instanceof Request) return debugRequest(value);
+		if (value instanceof Response) return debugResponse(value);
+		if (value instanceof Headers) return debugHeaders(value);
 		// biome-ignore lint/suspicious/useIsArray: Intential in this context.
 		if (value instanceof Array) return debugArray(value, depth);
 		if (value instanceof Map) return debugMap(value, depth);
@@ -39,6 +42,50 @@ const ESCAPE_LIST: { [key: string]: string } = {
 	"\v": "\\v",
 };
 const _escapeChar = (char: string): string => ESCAPE_LIST[char] || `\\x${char.charCodeAt(0).toString(16).padStart(2, "00")}`;
+
+/** Debug a set of `Headers` as a string. */
+export function debugHeaders(headers: Headers): string {
+	return Array.from(headers, ([key, value]) => `${key}: ${value}`).join("\n");
+}
+
+/**
+ * Debug a full `Request` as a string including its body.
+ * - Clones the request before reading the body so the original request can still be sent or parsed later.
+ * - Omits the body section when the request body is empty.
+ */
+export async function debugFullRequest(request: Request): Promise<string> {
+	return _debugFullMessage(debugRequest(request), request);
+}
+
+/**
+ * Debug a full `Response` as a string including its headers and body.
+ * - Clones the response before reading the body so the original response can still be parsed later.
+ * - Omits the headers section when there are no headers.
+ * - Omits the body section when the response body is empty.
+ */
+export async function debugFullResponse(response: Response): Promise<string> {
+	return _debugFullMessage(debugResponse(response), response);
+}
+
+async function _debugFullMessage(head: string, message: Request | Response): Promise<string> {
+	const headers = debugHeaders(message.headers);
+	const body = await _debugMessageBody(message);
+	return `${head}${headers && `\n${headers}`}${body && `\n\n${body}`}`;
+}
+
+async function _debugMessageBody(message: Request | Response): Promise<string> {
+	return message.bodyUsed ? "[body used]" : await message.clone().text();
+}
+
+/** Debug a `Request` as a string. */
+export function debugRequest(request: Request): string {
+	return `${request.method} ${request.url}`;
+}
+
+/** Debug a `Response` as a string. */
+export function debugResponse(response: Response): string {
+	return `${response.status} ${response.statusText}`;
+}
 
 /** Debug an array. */
 export function debugArray(value: ImmutableArray, depth = 1): string {
