@@ -23,6 +23,24 @@ test("Value is allowed if it exists in array options", () => {
 	const schema2 = new ChoiceSchema({ options: ["1", "2", "3"] });
 	expect(schema2.validate("2")).toBe("2");
 });
+test("Default value is undefined when none is provided", () => {
+	const schema1 = new ChoiceSchema({ options: { a: "A", b: "B", c: "C" } });
+	expect(schema1.value).toBeUndefined();
+	expect(() => schema1.validate(undefined)).toThrow();
+
+	const schema2 = new ChoiceSchema({ options: ["1", "2", "3"] });
+	expect(schema2.value).toBeUndefined();
+	expect(() => schema2.validate(undefined)).toThrow();
+});
+test("Explicit default value is preserved", () => {
+	const schema1 = new ChoiceSchema<"a" | "b" | "c">({ options: { a: "A", b: "B", c: "C" }, value: "b" });
+	expect(schema1.value).toBe("b");
+	expect(schema1.validate(undefined)).toBe("b");
+
+	const schema2 = new ChoiceSchema<"1" | "2" | "3">({ options: ["1", "2", "3"], value: "2" });
+	expect(schema2.value).toBe("2");
+	expect(schema2.validate(undefined)).toBe("2");
+});
 test("Invalid if value doesn't exist in object options", () => {
 	const schema1 = new ChoiceSchema({ options: { a: "A", b: "B", c: "C" } });
 	expect(() => schema1.validate("d")).toThrow();

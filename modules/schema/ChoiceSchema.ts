@@ -1,4 +1,4 @@
-import { type ImmutableArray, isArray, requireFirst } from "../util/array.js";
+import { type ImmutableArray, isArray } from "../util/array.js";
 import { getKeys, getProps, isProp } from "../util/object.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
@@ -35,22 +35,15 @@ export interface ChoiceSchemaOptions<K extends string> extends Omit<SchemaOption
 
 /** Choose from an allowed set of values. */
 export class ChoiceSchema<K extends string> extends Schema<K> implements Iterable<ChoiceOption<K>> {
-	declare readonly value: K;
+	declare readonly value: K | undefined;
 	readonly options: ChoiceOptions<K>;
-	constructor({
-		one = "choice",
-		title = "Choice",
-		placeholder = `No ${one}`,
-		options,
-		value = requireFirst(isArray(options) ? options : getKeys(options)),
-		...rest
-	}: ChoiceSchemaOptions<K>) {
+	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, ...rest }: ChoiceSchemaOptions<K>) {
 		super({ one, title, value, placeholder, ...rest });
 		this.options = options;
 	}
 	validate(unsafeValue: unknown = this.value): K {
 		if (typeof unsafeValue === "string" && isOption(this.options, unsafeValue)) return unsafeValue;
-		throw "Unknown value";
+		throw unsafeValue ? "Unknown value" : "Required";
 	}
 
 	// Implement iterable.
