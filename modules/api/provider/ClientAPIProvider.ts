@@ -18,7 +18,7 @@ import { omitProps } from "../../util/object.js";
 import { type PossibleURIParams, withURIParams } from "../../util/uri.js";
 import { type PossibleURL, requireBaseURL, requireURL, type URL, type URLString } from "../../util/url.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
-import type { APIProvider } from "./APIProvider.js";
+import { APIProvider } from "./APIProvider.js";
 
 /** Options for a `ClientAPIProvider`. */
 export interface ClientAPIProviderOptions {
@@ -35,7 +35,7 @@ export interface ClientAPIProviderOptions {
 	readonly timeout?: number | undefined;
 }
 
-export class ClientAPIProvider<P = unknown, R = unknown> implements APIProvider<P, R> {
+export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, R> {
 	/** The common base URL for all rendered endpoint requests. */
 	readonly url: URLString;
 
@@ -46,6 +46,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> implements APIProvider<
 	readonly timeout: number | undefined;
 
 	constructor({ url, options = {}, timeout }: ClientAPIProviderOptions) {
+		super();
 		this.url = requireBaseURL(url, undefined, ClientAPIProvider);
 		this.options = options;
 		this.timeout = timeout;
@@ -119,16 +120,5 @@ export class ClientAPIProvider<P = unknown, R = unknown> implements APIProvider<
 		const content = await parseResponseBody(response, caller);
 		if (!ok) throw new ResponseError(getMessage(content) ?? `Error ${status}`, { code: status, cause: response, caller });
 		return content as RR;
-	}
-
-	async fetch<PP extends P, RR extends R>(
-		endpoint: Endpoint<PP, RR>,
-		payload: PP,
-		options?: RequestOptions,
-		caller: AnyCaller = this.fetch,
-	): Promise<RR> {
-		const request = this.getRequest(endpoint, payload, options, caller);
-		const response = await fetch(request);
-		return this.parseResponse(endpoint, response, caller);
 	}
 }
