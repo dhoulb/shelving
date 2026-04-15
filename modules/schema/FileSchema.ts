@@ -19,8 +19,8 @@ export class FileSchema extends StringSchema {
 	override validate(unsafeValue: unknown = this.value): string {
 		const path = super.validate(unsafeValue);
 		const extension = getFileExtension(path);
-		if (!extension) throw "Must be file name with extension";
-		if (this.types && !isProp(this.types, extension)) throw "Invalid file type";
+		if (!extension) throw `Must have extension`;
+		if (this.types && !isProp(this.types, extension)) throw `Invalid extension`;
 		return path;
 	}
 }

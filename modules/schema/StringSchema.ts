@@ -42,6 +42,7 @@ export class StringSchema extends Schema<string> {
 	readonly case: "upper" | "lower" | undefined;
 
 	constructor({
+		one = "string",
 		min = 0,
 		max = Number.POSITIVE_INFINITY,
 		value = "",
@@ -51,7 +52,7 @@ export class StringSchema extends Schema<string> {
 		input = "text",
 		...options
 	}: StringSchemaOptions) {
-		super({ value, ...options });
+		super({ one, value, ...options });
 		this.min = min;
 		this.max = max;
 		this.multiline = multiline;
@@ -60,14 +61,14 @@ export class StringSchema extends Schema<string> {
 		this.input = input;
 	}
 
-	override validate(unsafeValue: unknown = this.value): string {
-		const possibleString = typeof unsafeValue === "number" ? unsafeValue.toString() : unsafeValue;
-		if (typeof possibleString !== "string") throw "Must be string";
-		const saneString = this.sanitize(possibleString);
-		if (saneString.length < this.min) throw possibleString.length ? `Minimum ${this.min} characters` : "Required";
-		if (saneString.length > this.max) throw `Maximum ${this.max} characters`;
-		if (this.match && !this.match.test(saneString)) throw saneString ? "Invalid format" : "Required";
-		return saneString;
+	override validate(value: unknown = this.value): string {
+		const str = typeof value === "number" ? value.toString() : value;
+		if (typeof str !== "string") throw value ? `Must be ${this.one}` : "Required";
+		const sane = this.sanitize(str);
+		if (this.match && !this.match.test(sane)) throw str.length ? `Invalid ${this.one}` : "Required";
+		if (sane.length < this.min) throw str.length ? `Minimum ${this.min} characters` : "Required";
+		if (sane.length > this.max) throw `Maximum ${this.max} characters`;
+		return sane;
 	}
 
 	/** Sanitize the string by removing unwanted characters. */

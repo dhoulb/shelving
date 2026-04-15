@@ -39,19 +39,19 @@ describe("validate()", () => {
 		expect(schema.validate("+441+234+56ahshfk7890")).toBe("+441234567890");
 		expect(schema.validate("+1 0 1 2 3 4 5 6 7 8 9 0")).toBe("+101234567890");
 	});
-	test("Non-numeric are invalid", () => {
-		expect(() => schema.validate("abc")).toThrow();
-	});
 	test("Invalid phone numbers are invalid", () => {
-		expect(() => schema.validate("101234567890")).toThrow();
-		expect(() => schema.validate("123")).toThrow();
+		expect(() => schema.validate("101234567890")).toThrow("Invalid phone number");
+		expect(() => schema.validate("123")).toThrow("Invalid phone number");
 	});
 	test("Non-strings are invalid", () => {
-		expect(() => schema.validate([])).toThrow();
-		expect(() => schema.validate({})).toThrow();
-		expect(() => schema.validate(true)).toThrow();
-		expect(() => schema.validate(null)).toThrow();
-		expect(() => schema.validate("")).toThrow();
+		expect(() => schema.validate(false)).toThrow("Required");
+		expect(() => schema.validate(null)).toThrow("Required");
+		expect(() => schema.validate("")).toThrow("Required");
+		expect(() => schema.validate("abc")).toThrow("Invalid phone number");
+		expect(() => schema.validate({})).toThrow("Must be phone number");
+		expect(() => schema.validate([])).toThrow("Must be phone number");
+		expect(() => schema.validate(["a"])).toThrow("Must be phone number");
+		expect(() => schema.validate(true)).toThrow("Must be phone number");
 	});
 });
 describe("options.value", () => {

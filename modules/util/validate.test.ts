@@ -49,7 +49,7 @@ describe("validateData()", () => {
 			validateData(bad, VALIDATORS);
 			expect("should not reach").toBe("reached");
 		} catch (err) {
-			expect(err).toBe("str: Must be string\nopt: Must be string\nnum: Must be number");
+			expect(err).toBe("str: Required\nopt: Required\nnum: Must be number");
 		}
 	});
 	test("removes excess fields when rebuilding object (default added)", () => {

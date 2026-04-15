@@ -31,11 +31,11 @@ describe("validate()", () => {
 			expect(schema.validate("j.i.l.l@google.com")).toBe("j.i.l.l@google.com");
 		});
 		test("Invalid usernames are invalid", () => {
-			expect(() => schema.validate(".jo@google.com")).toThrow();
-			expect(() => schema.validate("jo.@google.com")).toThrow();
-			expect(() => schema.validate("jo<@google.com")).toThrow();
-			expect(() => schema.validate("<jo@google.com")).toThrow();
-			expect(() => schema.validate("^*%&@google.com")).toThrow();
+			expect(() => schema.validate(".jo@google.com")).toThrow("Invalid email address");
+			expect(() => schema.validate("jo.@google.com")).toThrow("Invalid email address");
+			expect(() => schema.validate("jo<@google.com")).toThrow("Invalid email address");
+			expect(() => schema.validate("<jo@google.com")).toThrow("Invalid email address");
+			expect(() => schema.validate("^*%&@google.com")).toThrow("Invalid email address");
 		});
 	});
 	describe("server", () => {
@@ -99,11 +99,12 @@ describe("validate()", () => {
 		expect(() => schema.validate("@server.com")).toThrow();
 	});
 	test("Non-strings are invalid", () => {
-		expect(() => schema.validate([])).toThrow();
-		expect(() => schema.validate({})).toThrow();
-		expect(() => schema.validate(true)).toThrow();
-		expect(() => schema.validate(null)).toThrow();
-		expect(() => schema.validate("")).toThrow();
+		expect(() => schema.validate(false)).toThrow("Required");
+		expect(() => schema.validate(null)).toThrow("Required");
+		expect(() => schema.validate("")).toThrow("Required");
+		expect(() => schema.validate([])).toThrow("Must be email address");
+		expect(() => schema.validate(true)).toThrow("Must be email address");
+		expect(() => schema.validate({})).toThrow("Must be email address");
 	});
 });
 describe("options.value", () => {

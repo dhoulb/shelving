@@ -25,13 +25,13 @@ export interface DateSchemaOptions extends SchemaOptions {
 }
 
 export class DateSchema extends Schema<string> {
-	declare readonly value: PossibleDate;
+	declare readonly value: PossibleDate | undefined;
 	readonly min: Date | undefined;
 	readonly max: Date | undefined;
 	readonly input: DateInputType;
 	readonly step: number | undefined;
 
-	constructor({ one = "date", min, max, value = "now", input = "date", step, ...options }: DateSchemaOptions) {
+	constructor({ one = "date", min, max, value, input = "date", step, ...options }: DateSchemaOptions) {
 		super({ one, title: "Date", value, ...options });
 		this.min = getDate(min);
 		this.max = getDate(max);
@@ -41,14 +41,14 @@ export class DateSchema extends Schema<string> {
 
 	override validate(value: unknown = this.value): string {
 		const date = getDate(value);
-		if (!date) throw value ? "Invalid date" : "Required";
+		if (!date) throw value ? `Invalid ${this.one} format` : "Required";
 
-		const rounded = typeof this.step === "number" ? new Date(roundStep(date.getTime(), this.step)) : date;
+		const stepped = typeof this.step === "number" ? new Date(roundStep(date.getTime(), this.step)) : date;
 
-		if (this.min && rounded < this.min) throw `Minimum ${this.format(this.min)}`;
-		if (this.max && rounded > this.max) throw `Maximum ${this.format(this.max)}`;
+		if (this.min && stepped < this.min) throw `Minimum ${this.format(this.min)}`;
+		if (this.max && stepped > this.max) throw `Maximum ${this.format(this.max)}`;
 
-		return this.stringify(rounded);
+		return this.stringify(stepped);
 	}
 
 	stringify(value: Date): string {

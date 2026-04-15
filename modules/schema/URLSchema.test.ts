@@ -51,16 +51,17 @@ describe("validate()", () => {
 			expect(new URLSchema({ schemes: ["ws:"] }).validate(u16)).toBe(u16);
 		});
 		test("Invalid URLs are invalid", () => {
-			expect(() => schema.validate("user@")).toThrow();
-			expect(() => schema.validate(":port")).toThrow();
+			expect(() => schema.validate("user@")).toThrow("Invalid URL format");
+			expect(() => schema.validate(":port")).toThrow("Invalid URL format");
 		});
 		test("Non-strings are invalid", () => {
-			expect(() => schema.validate([])).toThrow();
-			expect(() => schema.validate({})).toThrow();
-			expect(() => schema.validate(true)).toThrow();
-			expect(() => schema.validate(null)).toThrow();
-			expect(() => schema.validate("")).toThrow();
-			expect(() => schema.validate(false)).toThrow();
+			expect(() => schema.validate(null)).toThrow("Required");
+			expect(() => schema.validate("")).toThrow("Required");
+			expect(() => schema.validate(false)).toThrow("Required");
+			expect(() => schema.validate({})).toThrow("Must be URL");
+			expect(() => schema.validate([])).toThrow("Must be URL");
+			expect(() => schema.validate(["a"])).toThrow("Must be URL");
+			expect(() => schema.validate(true)).toThrow("Must be URL");
 		});
 	});
 	describe("scheme", () => {

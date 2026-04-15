@@ -67,12 +67,13 @@ describe("validate()", () => {
 			expect(() => schema.validate(":port")).toThrow();
 		});
 		test("Non-strings are invalid", () => {
-			expect(() => schema.validate([])).toThrow();
-			expect(() => schema.validate({})).toThrow();
-			expect(() => schema.validate(true)).toThrow();
-			expect(() => schema.validate(null)).toThrow();
-			expect(() => schema.validate("")).toThrow();
-			expect(() => schema.validate(false)).toThrow();
+			expect(() => schema.validate(null)).toThrow("Required");
+			expect(() => schema.validate("")).toThrow("Required");
+			expect(() => schema.validate(false)).toThrow("Required");
+			expect(() => schema.validate({})).toThrow("Must be URI");
+			expect(() => schema.validate([])).toThrow("Must be URI");
+			expect(() => schema.validate(["a"])).toThrow("Must be URI");
+			expect(() => schema.validate(true)).toThrow("Must be URI");
 		});
 	});
 	describe("scheme", () => {
@@ -81,8 +82,8 @@ describe("validate()", () => {
 			expect(schema.validate("https://x.com/")).toBe("https://x.com/");
 		});
 		test("Invalid scheme is invalid", () => {
-			expect(() => schema.validate("data:x.com")).toThrow();
-			expect(() => schema.validate("$$$://x.com")).toThrow();
+			expect(() => schema.validate("data:x.com")).toThrow("Invalid URI scheme");
+			expect(() => schema.validate("$$$://x.com")).toThrow("Invalid URI format");
 		});
 		test("Scheme is lowercased", () => {
 			expect(schema.validate("HTTP://x.com/")).toBe("http://x.com/");

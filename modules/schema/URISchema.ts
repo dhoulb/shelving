@@ -31,8 +31,8 @@ export class URISchema extends StringSchema {
 	override validate(unsafeValue: unknown): URIString {
 		const str = super.validate(unsafeValue);
 		const uri = getURI(str);
-		if (!uri) throw str ? "Invalid format" : "Required";
-		if (this.schemes && !this.schemes.includes(uri.protocol)) throw "Invalid URI scheme";
+		if (!uri) throw str ? `Invalid ${this.one} format` : "Required";
+		if (this.schemes && !this.schemes.includes(uri.protocol)) throw `Invalid ${this.one} scheme`;
 		return uri.href;
 	}
 }

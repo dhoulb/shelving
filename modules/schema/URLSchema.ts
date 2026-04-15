@@ -35,8 +35,8 @@ export class URLSchema extends StringSchema {
 	override validate(unsafeValue: unknown): URLString {
 		const str = super.validate(unsafeValue);
 		const url = getURL(str, this.base);
-		if (!url) throw str ? "Invalid format" : "Required";
-		if (this.schemes && !this.schemes.includes(url.protocol)) throw "Invalid URL scheme";
+		if (!url) throw str ? `Invalid ${this.one} format` : "Required";
+		if (this.schemes && !this.schemes.includes(url.protocol)) throw `Invalid ${this.one} scheme`;
 		return url.href;
 	}
 }

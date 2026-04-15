@@ -43,7 +43,7 @@ export class ChoiceSchema<K extends string> extends Schema<K> implements Iterabl
 	}
 	validate(unsafeValue: unknown = this.value): K {
 		if (typeof unsafeValue === "string" && isOption(this.options, unsafeValue)) return unsafeValue;
-		throw unsafeValue ? "Unknown value" : "Required";
+		throw unsafeValue ? `Unknown ${this.one}` : "Required";
 	}
 
 	// Implement iterable.

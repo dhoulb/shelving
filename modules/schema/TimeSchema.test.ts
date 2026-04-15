@@ -23,11 +23,11 @@ describe("validate()", () => {
 		expect(typeof schema.validate(100039384)).toBe("string");
 	});
 	test("Non-strings (except numbers) throw Invalid", () => {
-		expect(() => schema.validate(null)).toThrow();
-		expect(() => schema.validate(false)).toThrow();
-		expect(() => schema.validate(true)).toThrow();
-		expect(() => schema.validate([])).toThrow();
-		expect(() => schema.validate({})).toThrow();
+		expect(() => schema.validate(null)).toThrow("Required");
+		expect(() => schema.validate(false)).toThrow("Required");
+		expect(() => schema.validate(true)).toThrow("Invalid time format");
+		expect(() => schema.validate([])).toThrow("Invalid time format");
+		expect(() => schema.validate({})).toThrow("Invalid time format");
 	});
 });
 describe("options.input", () => {

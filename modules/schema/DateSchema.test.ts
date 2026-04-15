@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { DATE, DateSchema, NULLABLE_DATE, requireDateString } from "../index.js";
+import { DATE, DateSchema, NULLABLE_DATE } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -56,18 +56,22 @@ describe("validate()", () => {
 		expect(() => schema.validate(Number.NEGATIVE_INFINITY)).toThrow();
 	});
 	test("Invalid values are invalid", () => {
-		expect(() => schema.validate(true)).toThrow();
-		expect(() => schema.validate(false)).toThrow();
-		expect(() => schema.validate(null)).toThrow();
-		expect(() => schema.validate("")).toThrow();
+		expect(() => schema.validate(false)).toThrow("Required");
+		expect(() => schema.validate(null)).toThrow("Required");
+		expect(() => schema.validate("")).toThrow("Required");
+		expect(() => schema.validate(true)).toThrow("Invalid date format");
+		expect(() => schema.validate(() => {})).toThrow("Invalid date format");
+		expect(() => schema.validate({})).toThrow("Invalid date format");
 	});
 });
 describe("options.value", () => {
-	test("Default value is now", () => {
+	test("No default value is invalid", () => {
 		const schema = new DateSchema({});
-		expect(schema.validate(undefined)).toBe(requireDateString(new Date()));
+		expect(() => schema.validate(undefined)).toThrow("Required");
 	});
 	test("Undefined with default value returns default value", () => {
+		const schema0 = new DateSchema({ value: "now" });
+		expect(typeof schema0.validate(undefined)).toEqual("string");
 		const schema1 = new DateSchema({ value: "1995" });
 		expect(schema1.validate(undefined)).toEqual("1995-01-01");
 		const schema2 = new DateSchema({ value: 1530586357000 });

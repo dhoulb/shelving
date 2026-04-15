@@ -34,18 +34,19 @@ describe("validate()", () => {
 		expect(schema.validate(longString)).toBe(longString);
 		expect(schema.validate("abcdef")).toBe("abcdef");
 	});
-	test("Strings are converted to strings", () => {
+	test("Numbers are converted to strings", () => {
 		expect(schema.validate(1)).toBe("1");
 		expect(schema.validate(123)).toBe("123");
 		expect(schema.validate(100039384)).toBe("100039384");
 	});
 	test("Non-strings (except numbers) throw Invalid", () => {
-		expect(() => schema.validate(null)).toThrow();
-		expect(() => schema.validate(false)).toThrow();
-		expect(() => schema.validate(true)).toThrow();
-		expect(() => schema.validate([])).toThrow();
-		expect(() => schema.validate({})).toThrow();
-		expect(() => schema.validate(() => {})).toThrow();
+		expect(() => schema.validate(false)).toThrow("Required");
+		expect(() => schema.validate(null)).toThrow("Required");
+		expect(() => schema.validate(true)).toThrow("Must be string");
+		expect(() => schema.validate([])).toThrow("Must be string");
+		expect(() => schema.validate([1, 2, 3])).toThrow("Must be string");
+		expect(() => schema.validate({})).toThrow("Must be string");
+		expect(() => schema.validate(() => {})).toThrow("Must be string");
 	});
 });
 describe("options.default", () => {

@@ -56,18 +56,21 @@ describe("validate()", () => {
 		expect(() => schema.validate(Number.NEGATIVE_INFINITY)).toThrow();
 	});
 	test("Invalid values are invalid", () => {
-		expect(() => schema.validate(true)).toThrow();
-		expect(() => schema.validate(false)).toThrow();
-		expect(() => schema.validate(null)).toThrow();
-		expect(() => schema.validate("")).toThrow();
+		expect(() => schema.validate(false)).toThrow("Required");
+		expect(() => schema.validate(null)).toThrow("Required");
+		expect(() => schema.validate("")).toThrow("Required");
+		expect(() => schema.validate(true)).toThrow("Invalid time format");
+		expect(() => schema.validate(() => {})).toThrow("Invalid time format");
 	});
 });
 describe("options.value", () => {
-	test("Default value is now", () => {
+	test("No default value is invalid", () => {
 		const schema = new DateTimeSchema({});
-		expect(schema.validate(undefined)).toBe(new Date().toISOString());
+		expect(() => schema.validate(undefined)).toThrow("Required");
 	});
 	test("Undefined with default value returns default value", () => {
+		const schema = new DateTimeSchema({ value: "now" });
+		expect(typeof schema.validate(undefined)).toBe("string");
 		const schema1 = new DateTimeSchema({ value: "1995" });
 		expect(schema1.validate(undefined)).toEqual("1995-01-01T00:00:00.000Z");
 		const schema2 = new DateTimeSchema({ value: 1530586357000 });

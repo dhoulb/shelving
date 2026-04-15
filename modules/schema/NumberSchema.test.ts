@@ -41,25 +41,26 @@ describe("validate()", () => {
 		expect(Object.is(schema.validate(-0), -0)).toBe(false);
 	});
 	test("Infinity returns invalid", () => {
-		expect(() => schema.validate(Number.POSITIVE_INFINITY)).toThrow();
-		expect(() => schema.validate(Number.NEGATIVE_INFINITY)).toThrow();
+		expect(() => schema.validate(Number.POSITIVE_INFINITY)).toThrow("Must be number");
+		expect(() => schema.validate(Number.NEGATIVE_INFINITY)).toThrow("Must be number");
 	});
 	test("Non-number strings are invalid", () => {
-		expect(() => schema.validate("abc")).toThrow();
+		expect(() => schema.validate("")).toThrow("Required");
+		expect(() => schema.validate("abc")).toThrow("Must be number");
 	});
 	test("Non-numbers are invalid", () => {
-		expect(() => schema.validate(null)).toThrow();
-		expect(() => schema.validate(true)).toThrow();
-		expect(() => schema.validate([])).toThrow();
-		expect(() => schema.validate({})).toThrow();
-		expect(() => schema.validate(() => {})).toThrow();
+		expect(() => schema.validate(null)).toThrow("Required");
+		expect(() => schema.validate(true)).toThrow("Must be number");
+		expect(() => schema.validate([])).toThrow("Must be number");
+		expect(() => schema.validate({})).toThrow("Must be number");
+		expect(() => schema.validate(() => {})).toThrow("Must be number");
 	});
 });
 describe("options.value", () => {
-	test("Default value is 0", () => {
+	test("Default value is undefined", () => {
 		const schema = new NumberSchema({});
-		expect(schema.value).toBe(0);
-		expect(schema.validate(undefined)).toBe(0);
+		expect(schema.value).toBe(undefined);
+		expect(() => schema.validate(undefined)).toThrow("Required");
 	});
 	test("Default value is applied correctly", () => {
 		const schema = new NumberSchema({ value: 1234 });

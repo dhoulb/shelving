@@ -14,7 +14,7 @@ export interface NumberSchemaOptions extends SchemaOptions {
 
 /** Schema that defines a valid number. */
 export class NumberSchema extends Schema<number> {
-	declare readonly value: number;
+	declare readonly value: number | undefined;
 	readonly min: number;
 	readonly max: number;
 	readonly step: number | undefined;
@@ -24,7 +24,7 @@ export class NumberSchema extends Schema<number> {
 		min = Number.NEGATIVE_INFINITY,
 		max = Number.POSITIVE_INFINITY,
 		step,
-		value = 0,
+		value,
 		...options
 	}: NumberSchemaOptions) {
 		super({ one, title, value, ...options });
@@ -32,36 +32,36 @@ export class NumberSchema extends Schema<number> {
 		this.max = max;
 		this.step = step;
 	}
-	override validate(unsafeValue: unknown = this.value): number {
-		const optionalNumber = getNumber(unsafeValue);
-		if (typeof optionalNumber !== "number") throw "Must be number";
-		const roundedNumber = typeof this.step === "number" ? roundStep(optionalNumber, this.step) : optionalNumber;
-		if (roundedNumber < this.min) throw !optionalNumber ? "Required" : `Minimum ${formatNumber(this.min)}`;
-		if (roundedNumber > this.max) throw `Maximum ${formatNumber(this.max)}`;
-		return roundedNumber;
+	override validate(value: unknown = this.value): number {
+		const number = getNumber(value);
+		if (typeof number !== "number") throw value ? `Must be ${this.one}` : "Required";
+		const stepped = typeof this.step === "number" ? roundStep(number, this.step) : number;
+		if (stepped < this.min) throw !number ? "Required" : `Minimum ${formatNumber(this.min)}`;
+		if (stepped > this.max) throw `Maximum ${formatNumber(this.max)}`;
+		return stepped;
 	}
 }
 
-/** Valid number, e.g. `2048.12345` or `0` zero. */
+/** Valid number, e.g. `2048.12345` or `0` zero and a default value of zero. */
 export const NUMBER = new NumberSchema({ title: "Number" });
 
 /** Valid optional number, e.g. `2048.12345` or `0` zero, or `null` */
 export const NULLABLE_NUMBER = NULLABLE(NUMBER);
 
 /** Valid integer number, e.g. `2048` or `0` zero. */
-export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER, value: 0 });
+export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER });
 
 /** Valid positive integer number, e.g. `1,2,3` (not including zero). */
-export const POSITIVE_INTEGER = new NumberSchema({ step: 1, min: 1, max: Number.MAX_SAFE_INTEGER, value: 1 });
+export const POSITIVE_INTEGER = new NumberSchema({ step: 1, min: 1, max: Number.MAX_SAFE_INTEGER });
 
 /** Valid non-negative integer number, e.g. `0,1,2,3` (including zero). */
-export const NON_NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: 0, max: Number.MAX_SAFE_INTEGER, value: 0 });
+export const NON_NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: 0, max: Number.MAX_SAFE_INTEGER });
 
 /** Valid negative integer number, e.g. `-1,-2,-3` (not including zero). */
-export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: -1, value: -1 });
+export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: -1 });
 
 /** Valid non-positive integer number, e.g. `0,-1,-2,-3` (including zero). */
-export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0, value: 0 });
+export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0 });
 
 /** Valid optional integer number, e.g. `2048` or `0` zero, or `null` */
 export const NULLABLE_INTEGER = NULLABLE(INTEGER);
@@ -72,7 +72,6 @@ export const TIMESTAMP = new NumberSchema({
 	step: 1,
 	min: Number.MIN_SAFE_INTEGER,
 	max: Number.MAX_SAFE_INTEGER,
-	value: 0,
 });
 
 /** Valid Unix timestamp (including milliseconds). */

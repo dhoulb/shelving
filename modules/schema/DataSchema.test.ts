@@ -6,6 +6,7 @@ import {
 	ITEM,
 	KEY,
 	NUMBER,
+	NumberSchema,
 	OPTIONAL,
 	PARTIAL,
 	POSITIVE_INTEGER,
@@ -150,8 +151,8 @@ describe("options.props", () => {
 	test("Object with props has unknown fields stripped", () => {
 		const schema = new DataSchema({
 			props: {
-				num: NUMBER,
-				str: new StringSchema({ value: "abcdef" }),
+				num: new NumberSchema({ value: 0 }),
+				str: new StringSchema({ value: "" }),
 			},
 		});
 		expect(
@@ -184,7 +185,7 @@ describe("options.props", () => {
 		try {
 			expect<unknown>(schema.validate(data)).toBe("Never");
 		} catch (invalid: unknown) {
-			expect(invalid).toBe("dogs: Must be number\ncats: Must be number");
+			expect(invalid).toBe("dogs: Must be number\ncats: Required");
 		}
 	});
 });
@@ -259,7 +260,7 @@ describe("PARTIAL", () => {
 			PARTIAL_USER_SCHEMA.validate(input);
 			throw new Error("Should have thrown");
 		} catch (e) {
-			expect(e).toBe("name: Must be string\nage: Must be number");
+			expect(e).toBe("name: Required\nage: Must be number");
 		}
 	});
 	test("rejects non-object values", () => {
