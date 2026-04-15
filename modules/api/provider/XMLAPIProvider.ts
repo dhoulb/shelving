@@ -7,7 +7,7 @@ import type { Endpoint } from "../endpoint/Endpoint.js";
 import { ClientAPIProvider } from "./ClientAPIProvider.js";
 
 /** API provider that always sends request bodies as XML and parses responses as plain text. */
-export class XMLAPIProvider<P extends Data = Data, R = string> extends ClientAPIProvider<P, R> {
+export class XMLAPIProvider<P extends Data = Data, R extends string = string> extends ClientAPIProvider<P, R> {
 	protected override _getBodyRequest(
 		method: RequestBodyMethod,
 		url: PossibleURL,
