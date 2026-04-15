@@ -2,6 +2,7 @@ import { debugRequest } from "../../util/debug.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestHandler, RequestOptions } from "../../util/http.js";
 import type { AnyEndpoint, Endpoint } from "../endpoint/Endpoint.js";
+import type { APIProvider } from "./APIProvider.js";
 import { ClientAPIProvider } from "./ClientAPIProvider.js";
 import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
@@ -40,10 +41,7 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 
 	readonly handler: RequestHandler;
 
-	constructor(
-		handler: RequestHandler = _mockHandler,
-		source: ClientAPIProvider<P, R> = new ClientAPIProvider({ url: "https://api.mock.com" }),
-	) {
+	constructor(handler: RequestHandler = _mockHandler, source: APIProvider<P, R> = new ClientAPIProvider({ url: "https://api.mock.com" })) {
 		super(source);
 		this.handler = handler;
 	}
