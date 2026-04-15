@@ -20,6 +20,21 @@ import { type PossibleURL, requireBaseURL, requireURL, type URL, type URLString 
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "./APIProvider.js";
 
+/** Options for a `ClientAPIProvider`. */
+export interface ClientAPIProviderOptions {
+	/** The common base URL for all rendered endpoint requests. */
+	readonly url: PossibleURL;
+
+	/**
+	 * Options used for HTTP requests created with `this.getRequest()` and `this.fetch()`
+	 * - Omits `signal` because it's not relevant at the provider level.
+	 */
+	readonly options?: Omit<RequestOptions, "signal">;
+
+	/** Timeout in milliseconds, or `undefined` for no timeout. */
+	readonly timeout?: number | undefined;
+}
+
 export class ClientAPIProvider<P = unknown, R = unknown> implements APIProvider<P, R> {
 	/** The common base URL for all rendered endpoint requests. */
 	readonly url: URLString;
@@ -116,19 +131,4 @@ export class ClientAPIProvider<P = unknown, R = unknown> implements APIProvider<
 		const response = await fetch(request);
 		return this.parseResponse(endpoint, response, caller);
 	}
-}
-/** Options for an `APIProvider`. */
-
-export interface ClientAPIProviderOptions {
-	/** The common base URL for all rendered endpoint requests. */
-	readonly url: PossibleURL;
-
-	/**
-	 * Options used for HTTP requests created with `this.getRequest()` and `this.fetch()`
-	 * - Omits `signal` because it's not relevant at the provider level.
-	 */
-	readonly options?: Omit<RequestOptions, "signal">;
-
-	/** Timeout in milliseconds, or `undefined` for no timeout. */
-	readonly timeout?: number | undefined;
 }
