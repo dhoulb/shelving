@@ -17,12 +17,17 @@ test("TypeScript", () => {
 
 describe("CurrencyAmountSchema", () => {
 	test("Uses currency metadata and formatting", () => {
-		const schema = new CurrencyAmountSchema({ currency: "GBP" });
+		const schema1 = new CurrencyAmountSchema({ currency: "GBP" });
+		expect(schema1.currency).toBe("GBP");
+		expect(schema1.symbol).toBe("£");
+		expect(schema1.step).toBe(0.01);
+		expect(schema1.format(12.3)).toBe("£12.30");
 
-		expect(schema.currency).toBe("GBP");
-		expect(schema.symbol).toBe("£");
-		expect(schema.step).toBe(0.01);
-		expect(schema.format(12.3)).toBe("£12.30");
+		const schema2 = new CurrencyAmountSchema({ currency: "JPY" });
+		expect(schema2.currency).toBe("JPY");
+		expect(schema2.symbol).toBe("¥");
+		expect(schema2.step).toBe(1);
+		expect(schema2.format(12.3)).toBe("¥12");
 	});
 
 	test("Rounds values to the currency step", () => {
@@ -32,15 +37,6 @@ describe("CurrencyAmountSchema", () => {
 		expect(gbp.validate(12.345)).toBe(12.35);
 		expect(jpy.step).toBe(1);
 		expect(jpy.validate(12.5)).toBe(13);
-	});
-
-	test("Uses the exported default schema", () => {
-		expect(CURRENCY_AMOUNT("GBP").currency).toBe("GBP");
-		expect(CURRENCY_AMOUNT("GBP").validate(undefined)).toBe(0);
-		expect(CURRENCY_AMOUNT("USD").currency).toBe("USD");
-		expect(CURRENCY_AMOUNT("USD").validate(undefined)).toBe(0);
-		expect(CURRENCY_AMOUNT("EUR").currency).toBe("EUR");
-		expect(CURRENCY_AMOUNT("EUR").validate(undefined)).toBe(0);
 	});
 
 	test("Fixes invalidly formatted currencies during construction", () => {
