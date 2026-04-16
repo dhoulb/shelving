@@ -20,7 +20,8 @@ export class NumberSchema extends Schema<number> {
 	readonly min: number;
 	readonly max: number;
 	readonly step: number | undefined;
-	format: (value: number) => string;
+	format: typeof formatNumber;
+
 	constructor({
 		one = "number",
 		title = "Number",
@@ -37,6 +38,7 @@ export class NumberSchema extends Schema<number> {
 		this.step = step;
 		this.format = format;
 	}
+
 	override validate(value: unknown = this.value): number {
 		const number = getNumber(value);
 		if (typeof number !== "number") throw value ? `Must be ${this.one}` : "Required";

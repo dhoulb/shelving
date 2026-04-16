@@ -32,7 +32,7 @@ export class DateSchema extends Schema<string> {
 	readonly max: Date | undefined;
 	readonly input: DateInputType;
 	readonly step: number | undefined;
-	format: (value: Date) => string;
+	format: typeof formatDate;
 
 	constructor({ one = "date", min, max, value, input = "date", step, format = formatDate, ...options }: DateSchemaOptions) {
 		super({ one, title: "Date", value, ...options });
