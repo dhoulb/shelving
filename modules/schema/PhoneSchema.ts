@@ -2,10 +2,8 @@ import { NULLABLE } from "./NullableSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
-// Valid phone number is max 16 digits made up of:
-// - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).
-// - Subscriber number (5-12 digits — the Solomon Islands have five-digit phone numbers apparently).
-const PHONE_REGEXP = /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/;
+/** Options for a `PhoneSchema` */
+export interface PhoneSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "multiline"> {}
 
 /**
  * Type of `StringSchema` that defines a valid phone number.
@@ -13,19 +11,19 @@ const PHONE_REGEXP = /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/;
  * - Falsy values are converted to `""` empty string.
  */
 export class PhoneSchema extends StringSchema {
-	constructor({
-		one = "phone number",
-		title = "Phone",
-		...options
-	}: Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "multiline">) {
+	constructor({ one = "phone number", title = "Phone", ...options }: PhoneSchemaOptions) {
 		super({
 			one,
 			title,
 			...options,
 			input: "tel",
 			min: 1,
-			max: 16, // Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
-			match: PHONE_REGEXP,
+			// Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
+			max: 16,
+			// Valid phone number is max 16 digits made up of:
+			// - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).
+			// - Subscriber number (5-12 digits — the Solomon Islands have five-digit phone numbers apparently).
+			match: /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/,
 		});
 	}
 	override sanitize(insaneString: string): string {
