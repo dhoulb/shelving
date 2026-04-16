@@ -16,6 +16,8 @@ export interface DateSchemaOptions extends SchemaOptions {
 	readonly min?: Nullish<PossibleDate>;
 	readonly max?: Nullish<PossibleDate>;
 	readonly input?: DateInputType | undefined;
+	/** Format the date for display in downstream UIs. */
+	readonly format?: typeof formatDate | undefined;
 	/**
 	 * Rounding step (in milliseconds, because that's the base unit for time).
 	 * - E.g. `1000 * 60` will round to the nearest minute.
@@ -30,13 +32,15 @@ export class DateSchema extends Schema<string> {
 	readonly max: Date | undefined;
 	readonly input: DateInputType;
 	readonly step: number | undefined;
+	format: (value: Date) => string;
 
-	constructor({ one = "date", min, max, value, input = "date", step, ...options }: DateSchemaOptions) {
+	constructor({ one = "date", min, max, value, input = "date", step, format = formatDate, ...options }: DateSchemaOptions) {
 		super({ one, title: "Date", value, ...options });
 		this.min = getDate(min);
 		this.max = getDate(max);
 		this.input = input;
 		this.step = step;
+		this.format = format;
 	}
 
 	override validate(value: unknown = this.value): string {
@@ -53,10 +57,6 @@ export class DateSchema extends Schema<string> {
 
 	stringify(value: Date): string {
 		return requireDateString(value);
-	}
-
-	format(value: Date): string {
-		return formatDate(value);
 	}
 }
 

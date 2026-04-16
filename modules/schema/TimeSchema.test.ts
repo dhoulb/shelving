@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { TIME, TimeSchema } from "../index.js";
+import { formatTime, TIME, TimeSchema } from "../index.js";
 
 test("constructor()", () => {
 	const schema1 = new TimeSchema({});
@@ -75,5 +75,12 @@ describe("options.step", () => {
 		expect(() => schema.validate("09:59:29")).toThrow();
 		expect(schema.validate("11:00:29")).toBe("11:00:00");
 		expect(() => schema.validate("11:00:31")).toThrow();
+	});
+});
+describe("options.format", () => {
+	test("Defaults to formatTime()", () => {
+		const schema = new TimeSchema({});
+		const value = new Date("2025-01-15T12:34:56.000Z");
+		expect(schema.format(value)).toBe(formatTime(value));
 	});
 });

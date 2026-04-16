@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { DATE, DateSchema, NULLABLE_DATE } from "../index.js";
+import { DATE, DateSchema, formatDate, NULLABLE_DATE } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -130,5 +130,18 @@ describe("options.step", () => {
 		expect(() => schema.validate("2025-01-14T08:00:00Z")).toThrow();
 		expect(schema.validate("2025-01-16T08:00:00Z")).toBe("2025-01-16");
 		expect(() => schema.validate("2025-01-16T14:00:00Z")).toThrow();
+	});
+});
+describe("options.format", () => {
+	test("Defaults to formatDate()", () => {
+		const schema = new DateSchema({});
+		const value = new Date("2025-01-15T12:34:56.000Z");
+		expect(schema.format(value)).toBe(formatDate(value));
+	});
+	test("Custom formatter is preserved", () => {
+		const format = (_value: Date) => "Custom date";
+		const schema = new DateSchema({ format });
+		expect(schema.format).toBe(format);
+		expect(schema.format(new Date("2025-01-15T12:34:56.000Z"))).toBe("Custom date");
 	});
 });

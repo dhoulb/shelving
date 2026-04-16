@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Schema } from "../index.js";
-import { DATETIME, DateTimeSchema, NULLABLE_DATETIME } from "../index.js";
+import { DATETIME, DateTimeSchema, formatDateTime, NULLABLE_DATETIME } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -133,5 +133,12 @@ describe("options.input", () => {
 		expect(schema1.input).toBe("datetime-local");
 		const schema2 = DATETIME;
 		expect(schema2.input).toBe("datetime-local");
+	});
+});
+describe("options.format", () => {
+	test("Defaults to formatDateTime()", () => {
+		const schema = new DateTimeSchema({});
+		const value = new Date("2025-01-15T12:34:56.000Z");
+		expect(schema.format(value)).toBe(formatDateTime(value));
 	});
 });

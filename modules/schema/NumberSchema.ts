@@ -10,6 +10,8 @@ export interface NumberSchemaOptions extends SchemaOptions {
 	readonly min?: number | undefined;
 	readonly max?: number | undefined;
 	readonly step?: number | undefined;
+	/** Format the number for display in downstream UIs. */
+	readonly format?: typeof formatNumber | undefined;
 }
 
 /** Schema that defines a valid number. */
@@ -18,12 +20,14 @@ export class NumberSchema extends Schema<number> {
 	readonly min: number;
 	readonly max: number;
 	readonly step: number | undefined;
+	format: (value: number) => string;
 	constructor({
 		one = "number",
 		title = "Number",
 		min = Number.NEGATIVE_INFINITY,
 		max = Number.POSITIVE_INFINITY,
 		step,
+		format = formatNumber,
 		value,
 		...options
 	}: NumberSchemaOptions) {
@@ -31,13 +35,14 @@ export class NumberSchema extends Schema<number> {
 		this.min = min;
 		this.max = max;
 		this.step = step;
+		this.format = format;
 	}
 	override validate(value: unknown = this.value): number {
 		const number = getNumber(value);
 		if (typeof number !== "number") throw value ? `Must be ${this.one}` : "Required";
 		const stepped = typeof this.step === "number" ? roundStep(number, this.step) : number;
-		if (stepped < this.min) throw !number ? "Required" : `Minimum ${formatNumber(this.min)}`;
-		if (stepped > this.max) throw `Maximum ${formatNumber(this.max)}`;
+		if (stepped < this.min) throw !number ? "Required" : `Minimum ${this.format(this.min)}`;
+		if (stepped > this.max) throw `Maximum ${this.format(this.max)}`;
 		return stepped;
 	}
 }

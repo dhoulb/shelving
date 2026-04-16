@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { NULLABLE_NUMBER, NUMBER, NumberSchema, Schema } from "../index.js";
+import { formatNumber, NULLABLE_NUMBER, NUMBER, NumberSchema, Schema } from "../index.js";
 
 // Tests.
 test("TypeScript", () => {
@@ -107,5 +107,17 @@ describe("options.step", () => {
 		const schema3 = new NumberSchema({ step: 100 });
 		expect(schema3.validate(51)).toBe(100);
 		expect(schema3.validate(149)).toBe(100);
+	});
+});
+describe("options.format", () => {
+	test("Defaults to formatNumber()", () => {
+		const schema = new NumberSchema({});
+		expect(schema.format(1234.5)).toBe(formatNumber(1234.5));
+	});
+	test("Custom formatter is preserved", () => {
+		const format = (value: number) => `GBP ${value.toFixed(2)}`;
+		const schema = new NumberSchema({ format });
+		expect(schema.format).toBe(format);
+		expect(schema.format(1234.5)).toBe("GBP 1234.50");
 	});
 });
