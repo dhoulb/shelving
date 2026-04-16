@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { CURRENCY, CurrencyAmountSchema, NULLABLE_CURRENCY } from "./CurrencyAmountSchema.js";
+import { CURRENCY_AMOUNT, CurrencyAmountSchema, NULLABLE_CURRENCY_AMOUNT } from "./CurrencyAmountSchema.js";
 import type { Schema } from "./Schema.js";
 
 test("TypeScript", () => {
-	const s1: Schema<number> = CURRENCY("GBP");
+	const s1: Schema<number> = CURRENCY_AMOUNT("GBP");
 	const r1: number = s1.validate(123.45);
 
-	const s2: Schema<number | null> = NULLABLE_CURRENCY("GBP");
+	const s2: Schema<number | null> = NULLABLE_CURRENCY_AMOUNT("GBP");
 	const r2: number | null = s2.validate(123.45);
 
 	const s3: Schema<number> = new CurrencyAmountSchema({ currency: "GBP" });
@@ -35,12 +35,12 @@ describe("CurrencyAmountSchema", () => {
 	});
 
 	test("Uses the exported default schema", () => {
-		expect(CURRENCY("GBP").currency).toBe("GBP");
-		expect(CURRENCY("GBP").validate(undefined)).toBe(0);
-		expect(CURRENCY("USD").currency).toBe("USD");
-		expect(CURRENCY("USD").validate(undefined)).toBe(0);
-		expect(CURRENCY("EUR").currency).toBe("EUR");
-		expect(CURRENCY("EUR").validate(undefined)).toBe(0);
+		expect(CURRENCY_AMOUNT("GBP").currency).toBe("GBP");
+		expect(CURRENCY_AMOUNT("GBP").validate(undefined)).toBe(0);
+		expect(CURRENCY_AMOUNT("USD").currency).toBe("USD");
+		expect(CURRENCY_AMOUNT("USD").validate(undefined)).toBe(0);
+		expect(CURRENCY_AMOUNT("EUR").currency).toBe("EUR");
+		expect(CURRENCY_AMOUNT("EUR").validate(undefined)).toBe(0);
 	});
 
 	test("Fixes invalidly formatted currencies during construction", () => {

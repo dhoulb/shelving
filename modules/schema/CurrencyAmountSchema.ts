@@ -47,7 +47,13 @@ export class CurrencyAmountSchema extends NumberSchema {
 }
 
 /** Valid non-negative monetary amount in the a currency. */
-export const CURRENCY = (currency: CurrencyCode) => new CurrencyAmountSchema({ title: "Amount", currency, min: 0, value: 0 });
+export const CURRENCY_AMOUNT = (currency: CurrencyCode) => new CurrencyAmountSchema({ currency });
+export const USD_AMOUNT = new CurrencyAmountSchema({ currency: "USD" });
+export const GBP_AMOUNT = new CurrencyAmountSchema({ currency: "GBP" });
+export const EUR_AMOUNT = new CurrencyAmountSchema({ currency: "EUR" });
 
 /** Valid optional monetary amount in the default currency, or `null`. */
-export const NULLABLE_CURRENCY = (currency: CurrencyCode) => NULLABLE(CURRENCY(currency));
+export const NULLABLE_CURRENCY_AMOUNT = (currency: CurrencyCode) => NULLABLE(CURRENCY_AMOUNT(currency));
+export const NULLABLE_USD_AMOUNT = NULLABLE(USD_AMOUNT);
+export const NULLABLE_GBP_AMOUNT = NULLABLE(GBP_AMOUNT);
+export const NULLABLE_EUR_AMOUNT = NULLABLE(EUR_AMOUNT);
