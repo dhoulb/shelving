@@ -76,6 +76,7 @@ pickProps(obj, "a", "c");   // { a: 1, c: 3 }
 import {
   isString, getString, requireString, sanitizeText, sanitizeMultilineText,
   simplifyString, getSlug, limitString, splitString, getWords,
+  getCurrencyCodes, formatCurrency,
 } from "shelving/util";
 
 isString("hi", 1);          // true  (min 1 char)
@@ -91,6 +92,8 @@ getSlug("Hello World!");          // "hello-world"
 
 limitString("A long string here", 10); // "A long…"
 getWords(`hello "world foo" bar`);     // ["hello", "world foo", "bar"]
+getCurrencyCodes().includes("GBP");    // true
+formatCurrency(12.34, "GBP");    // "£12.34"
 ```
 
 ### Data objects

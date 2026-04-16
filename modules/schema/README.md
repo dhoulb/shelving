@@ -34,6 +34,7 @@ Every schema carries optional display metadata set at construction time:
 | `description` | `""`            | Longer description for a field                    |
 | `placeholder` | `""`            | Placeholder text for an input                     |
 | `value`       | schema-specific | Default used when `validate(undefined)` is called |
+| `format`      | schema-specific | Display formatter for downstream form and UI use  |
 
 ### Factory constants
 
@@ -43,6 +44,7 @@ Pre-built constants and factory functions cover the most common cases:
 | ----------------------- | -------------------- |
 | `STRING`                | `string`             |
 | `NUMBER`                | `number`             |
+| `CURRENCY`              | `number`             |
 | `BOOLEAN`               | `boolean`            |
 | `DATA(props)`           | `T` (plain object)   |
 | `ARRAY(itemSchema)`     | `readonly T[]`       |
@@ -74,7 +76,7 @@ BOOLEAN.validate(1);             // true
 ### Custom string and number schemas
 
 ```ts
-import { StringSchema, NumberSchema } from "shelving/schema";
+import { CurrencyAmountSchema, StringSchema, NumberSchema } from "shelving/schema";
 
 const USERNAME = new StringSchema({ title: "Username", min: 3, max: 20, match: /^[a-z0-9_]+$/ });
 USERNAME.validate("alice_99");   // "alice_99"
@@ -84,6 +86,10 @@ USERNAME.validate("ALICE");      // throws "Invalid format"
 const RATING = new NumberSchema({ title: "Rating", min: 1, max: 5, step: 1 });
 RATING.validate(3);              // 3
 RATING.validate(0);              // throws "Minimum 1"
+
+const PRICE = new CurrencyAmountSchema({ title: "Price", currency: "GBP", min: 0 });
+PRICE.validate("12.345");        // 12.35
+PRICE.format(12.3);              // "£12.30"
 ```
 
 ### Choice schemas

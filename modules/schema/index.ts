@@ -4,6 +4,8 @@ export * from "./BooleanSchema.js";
 export * from "./ChoiceSchema.js";
 export * from "./ColorSchema.js";
 export * from "./CountrySchema.js";
+export * from "./CurrencyAmountSchema.js";
+export * from "./CurrencyCodeSchema.js";
 export * from "./DataSchema.js";
 export * from "./DateSchema.js";
 export * from "./DateTimeSchema.js";

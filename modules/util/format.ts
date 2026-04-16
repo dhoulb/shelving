@@ -1,5 +1,6 @@
 import { type ImmutableArray, isArray } from "./array.js";
 import { SECOND } from "./constants.js";
+import { requireCurrencyCode } from "./currency.js";
 import { isDate, type PossibleDate, requireDate } from "./date.js";
 import { type Duration, getBestTimeUnit, getMilliseconds } from "./duration.js";
 import { getPercent } from "./number.js";
@@ -74,7 +75,7 @@ export type CurrencyOptions = Omit<Intl.NumberFormatOptions, "style" | "unit" | 
 export function formatCurrency(amount: number, currency: string, options?: CurrencyOptions): string {
 	return Intl.NumberFormat(undefined, {
 		style: "currency",
-		currency,
+		currency: requireCurrencyCode(currency, formatCurrency),
 		...options,
 	}).format(amount);
 }

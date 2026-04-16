@@ -10,6 +10,7 @@ export * from "./class.js";
 export * from "./color.js";
 export * from "./constants.js";
 export * from "./crypto.js";
+export * from "./currency.js";
 export * from "./data.js";
 export * from "./date.js";
 export * from "./debug.js";
