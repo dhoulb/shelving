@@ -139,7 +139,7 @@ describe("options.format", () => {
 		expect(schema.format(value)).toBe(formatDate(value));
 	});
 	test("Custom formatter is preserved", () => {
-		const format = (_value: Date) => "Custom date";
+		const format = () => "Custom date";
 		const schema = new DateSchema({ format });
 		expect(schema.format).toBe(format);
 		expect(schema.format(new Date("2025-01-15T12:34:56.000Z"))).toBe("Custom date");
