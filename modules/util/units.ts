@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
-import { DAY, HOUR, MILLION, MINUTE, MONTH, NNBSP, SECOND, WEEK, YEAR } from "./constants.js";
-import { formatUnit, type QuantityOptions } from "./format.js";
+import { HOUR, MILLION, NNBSP } from "./constants.js";
+import { formatUnit, type UnitFormatOptions } from "./format.js";
 import type { AnyFunction } from "./function.js";
 import { ImmutableMap, type MapKey } from "./map.js";
 import type { ImmutableObject } from "./object.js";
@@ -19,7 +19,7 @@ function _convert(amount: number, conversion: Conversion): number {
 }
 
 // Params for a unit.
-interface UnitProps<T extends string> extends QuantityOptions {
+interface UnitProps<T extends string> extends UnitFormatOptions {
 	/** Conversions to other units (typically needs at least the base conversion, unless it's already the base unit). */
 	readonly to?: Conversions<T>;
 }
@@ -33,7 +33,7 @@ export class Unit<K extends string> {
 	/** String key for this unit, e.g. `kilometer` */
 	public readonly key: K;
 	/** Possible options for formatting these units. */
-	public readonly options: Readonly<QuantityOptions> | undefined;
+	public readonly options: Readonly<UnitFormatOptions> | undefined;
 
 	constructor(
 		/** `UnitList` this unit belongs to. */
@@ -92,7 +92,7 @@ export class Unit<K extends string> {
 	 * - Uses `Intl.NumberFormat` if this is a supported unit (so e.g. `ounce` is translated to e.g. `Unze` in German).
 	 * - Polyfills unsupported units to use long/short form based on `options.unitDisplay`.
 	 */
-	format(amount: number, options?: QuantityOptions): string {
+	format(amount: number, options?: UnitFormatOptions): string {
 		return formatUnit(amount, this.key, { ...this.options, ...options });
 	}
 }
@@ -197,24 +197,6 @@ export const MASS_UNITS = new UnitList({
 	stone: { abbr: "st", many: "stone", to: { milligram: MG_PER_LB * LB_PER_ST, pound: LB_PER_ST, ounce: OZ_PER_LB * LB_PER_ST } },
 });
 export type MassUnitKey = MapKey<typeof MASS_UNITS>;
-
-const TIME_OPTIONS: QuantityOptions = {
-	roundingMode: "trunc",
-	maximumFractionDigits: 0,
-};
-
-/** Time units. */
-export const TIME_UNITS = new UnitList({
-	millisecond: { ...TIME_OPTIONS, abbr: "ms" },
-	second: { ...TIME_OPTIONS, to: { millisecond: SECOND } },
-	minute: { ...TIME_OPTIONS, to: { millisecond: MINUTE } },
-	hour: { ...TIME_OPTIONS, to: { millisecond: HOUR } },
-	day: { ...TIME_OPTIONS, to: { millisecond: DAY } },
-	week: { ...TIME_OPTIONS, to: { millisecond: WEEK } },
-	month: { ...TIME_OPTIONS, to: { millisecond: MONTH } },
-	year: { ...TIME_OPTIONS, to: { millisecond: YEAR } },
-});
-export type TimeUnitKey = MapKey<typeof TIME_UNITS>;
 
 /** Length units. */
 export const LENGTH_UNITS = new UnitList({

@@ -1,25 +1,12 @@
 import { DAY, HOUR, MINUTE, MONTH, SECOND, WEEK, YEAR } from "./constants.js";
 import { getMidnight, type PossibleDate, requireDate } from "./date.js";
+import type { FormatOptions, UnitFormatOptions } from "./format.js";
 import type { AnyCaller } from "./function.js";
-import { TIME_UNITS, type TimeUnitKey, type Unit } from "./units.js";
+import type { MapKey } from "./map.js";
+import { type Unit, UnitList } from "./units.js";
 
-/**
- * Duration object.
- * - This should be compatible with `Intl.DurationFormat` when that is available.
- */
-
-export type Duration = {
-	readonly years?: number | undefined;
-	readonly months?: number | undefined;
-	readonly weeks?: number | undefined;
-	readonly days?: number | undefined;
-	readonly hours?: number | undefined;
-	readonly minutes?: number | undefined;
-	readonly seconds?: number | undefined;
-	readonly milliseconds?: number | undefined;
-	readonly microseconds?: number | undefined;
-	readonly nanoseconds?: number | undefined;
-};
+/** Duration data object. */
+export type DurationData = { [K in Intl.DurationFormatUnit]?: number };
 
 /** Get the millisecond difference between two dates. */
 export function getMilliseconds(from?: PossibleDate, to?: PossibleDate, caller: AnyCaller = getMilliseconds): number {
@@ -27,7 +14,7 @@ export function getMilliseconds(from?: PossibleDate, to?: PossibleDate, caller: 
 }
 
 /** Count the various time units between two dates and return a `Duration` format. */
-export function getDuration(from?: PossibleDate, to?: PossibleDate, caller: AnyCaller = getDuration): Duration {
+export function getDuration(from?: PossibleDate, to?: PossibleDate, caller: AnyCaller = getDuration): DurationData {
 	const ms = getMilliseconds(from, to, caller);
 	return {
 		years: Math.trunc(ms / YEAR),
@@ -42,12 +29,12 @@ export function getDuration(from?: PossibleDate, to?: PossibleDate, caller: AnyC
 }
 
 /** Get the various time units until a certain date. */
-export function getUntil(target: PossibleDate, current: PossibleDate = "now", caller: AnyCaller = getUntil): Duration {
+export function getUntil(target: PossibleDate, current: PossibleDate = "now", caller: AnyCaller = getUntil): DurationData {
 	return getDuration(current, target, caller);
 }
 
 /** Get the various time units since a certain date. */
-export function getAgo(target: PossibleDate, current: PossibleDate = "now", caller: AnyCaller = getAgo): Duration {
+export function getAgo(target: PossibleDate, current: PossibleDate = "now", caller: AnyCaller = getAgo): DurationData {
 	return getDuration(target, current, caller);
 }
 
@@ -193,8 +180,21 @@ export function isToday(target: PossibleDate, current?: PossibleDate, caller: An
 	return getDaysUntil(target, current, caller) === 0;
 }
 
+/** Duration units. */
+export const DURATION_UNITS = new UnitList({
+	millisecond: { roundingMode: "trunc", maximumFractionDigits: 0, abbr: "ms" },
+	second: { roundingMode: "trunc", maximumFractionDigits: 0, to: { millisecond: SECOND } },
+	minute: { roundingMode: "trunc", maximumFractionDigits: 0, to: { millisecond: MINUTE } },
+	hour: { roundingMode: "trunc", maximumFractionDigits: 0, to: { millisecond: HOUR } },
+	day: { roundingMode: "trunc", maximumFractionDigits: 0, to: { millisecond: DAY } },
+	week: { roundingMode: "trunc", maximumFractionDigits: 0, to: { millisecond: WEEK } },
+	month: { roundingMode: "trunc", maximumFractionDigits: 0, to: { millisecond: MONTH } },
+	year: { roundingMode: "trunc", maximumFractionDigits: 0, to: { millisecond: YEAR } },
+});
+export type DurationUnitKey = MapKey<typeof DURATION_UNITS>;
+
 /**
- * Get a best-fit time unit based on an amount in milliseconds.
+ * Get a best-fit duration unit based on an amount in milliseconds.
  * - Makes a sensible choice about the best time unit to use.
  * - Years will be used for anything 18 months or more, e.g. `in 2 years`
  * - Months will be used for anything 10 weeks or more, e.g. `in 14 months`
@@ -204,14 +204,63 @@ export function isToday(target: PossibleDate, current?: PossibleDate, caller: An
  * - Minutes will be used for anything 1 minute or more, e.g. `1 minute ago` or `in 59 minutes`
  * - Seconds will be used for anything 1000 milliseconds or more, e.g. `in 59 seconds`
  */
-export function getBestTimeUnit(ms: number): Unit<TimeUnitKey> {
+export function getBestDurationUnit(ms: number): Unit<DurationUnitKey> {
 	const abs = Math.abs(ms);
-	if (abs >= 18 * MONTH) return TIME_UNITS.require("year");
-	if (abs >= 10 * WEEK) return TIME_UNITS.require("month");
-	if (abs >= 10 * DAY) return TIME_UNITS.require("week");
-	if (abs >= DAY) return TIME_UNITS.require("day");
-	if (abs >= HOUR) return TIME_UNITS.require("hour");
-	if (abs >= MINUTE) return TIME_UNITS.require("minute");
-	if (abs >= SECOND) return TIME_UNITS.require("second");
-	return TIME_UNITS.require("millisecond");
+	if (abs >= 18 * MONTH) return DURATION_UNITS.require("year");
+	if (abs >= 10 * WEEK) return DURATION_UNITS.require("month");
+	if (abs >= 10 * DAY) return DURATION_UNITS.require("week");
+	if (abs >= DAY) return DURATION_UNITS.require("day");
+	if (abs >= HOUR) return DURATION_UNITS.require("hour");
+	if (abs >= MINUTE) return DURATION_UNITS.require("minute");
+	if (abs >= SECOND) return DURATION_UNITS.require("second");
+	return DURATION_UNITS.require("millisecond");
+}
+
+/**
+ * Compact best-fit when a date happens/happened, e.g. `in 10d` or `2h ago` or `in 1w` or `just now`
+ * - See `getBestTimeUnit()` for details on how the best-fit unit is chosen.
+ * - But: anything under 30 seconds will show `just now`, which makes more sense in most UIs.
+ */
+export function formatWhen(
+	target: PossibleDate,
+	current?: PossibleDate,
+	options?: UnitFormatOptions,
+	caller: AnyCaller = formatWhen,
+): string {
+	const ms = getMilliseconds(current, target, caller);
+	const abs = Math.abs(ms);
+	if (abs < 30 * SECOND) return "just now";
+	const unit = getBestDurationUnit(ms);
+	return ms > 0 ? `in ${unit.format(unit.from(abs), options)}` : `${unit.format(unit.from(abs), options)} ago`;
+}
+
+/** Compact when a date happens, e.g. `10d` or `2h` or `-1w` */
+export function formatUntil(
+	target: PossibleDate,
+	current?: PossibleDate,
+	options?: UnitFormatOptions,
+	caller: AnyCaller = formatUntil,
+): string {
+	const ms = getMilliseconds(current, target, caller);
+	const unit = getBestDurationUnit(ms);
+	return unit.format(unit.from(ms), options);
+}
+
+/** Compact when a date will happen, e.g. `10d` or `2h` or `-1w` */
+export function formatAgo(
+	target: PossibleDate,
+	current?: PossibleDate,
+	options?: UnitFormatOptions,
+	caller: AnyCaller = formatAgo,
+): string {
+	const ms = getMilliseconds(target, current, caller);
+	const unit = getBestDurationUnit(ms);
+	return unit.format(unit.from(ms), options);
+}
+
+interface DurationFormatOptions extends FormatOptions, Intl.DurationFormatOptions {}
+
+/** Format a duration as a string, e.g. `1 year, 2 months, 3 days` or `1y 2m 3d` */
+export function formatDuration(duration: DurationData, options?: DurationFormatOptions): string {
+	return new Intl.DurationFormat(options?.locale, options).format(duration);
 }

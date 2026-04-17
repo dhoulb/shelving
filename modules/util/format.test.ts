@@ -1,6 +1,17 @@
 import { describe, expect, test } from "bun:test";
-import { DAY, HOUR, YEAR } from "./constants.js";
-import { formatAgo, formatDuration, formatNumber, formatPercent, formatUnit, formatUntil, formatValue, formatWhen } from "./format.js";
+import {
+	DAY,
+	formatAgo,
+	formatDuration,
+	formatNumber,
+	formatPercent,
+	formatUnit,
+	formatUntil,
+	formatValue,
+	formatWhen,
+	HOUR,
+	YEAR,
+} from "../index.js";
 
 describe("formatNumber()", () => {
 	test("Works correctly", () => {

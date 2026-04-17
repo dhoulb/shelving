@@ -1,5 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import { ANGLE_UNITS, AREA_UNITS, LENGTH_UNITS, MASS_UNITS, SPEED_UNITS, TEMPERATURE_UNITS, TIME_UNITS, VOLUME_UNITS } from "../index.js";
+import {
+	ANGLE_UNITS,
+	AREA_UNITS,
+	DURATION_UNITS,
+	LENGTH_UNITS,
+	MASS_UNITS,
+	SPEED_UNITS,
+	TEMPERATURE_UNITS,
+	VOLUME_UNITS,
+} from "../index.js";
 
 describe("to()", () => {
 	test("to() works correctly with base", () => {
@@ -32,9 +41,9 @@ describe("to()", () => {
 		expect(LENGTH_UNITS.require("yard").to(1, "inch")).toBe(36);
 
 		// Time.
-		expect(TIME_UNITS.require("millisecond").to(1000, "millisecond")).toBe(1000);
-		expect(TIME_UNITS.require("hour").to(1, "millisecond")).toBe(60 * 60 * 1000);
-		expect(TIME_UNITS.require("year").to(1, "millisecond")).toBe(365 * 24 * 60 * 60 * 1000);
+		expect(DURATION_UNITS.require("millisecond").to(1000, "millisecond")).toBe(1000);
+		expect(DURATION_UNITS.require("hour").to(1, "millisecond")).toBe(60 * 60 * 1000);
+		expect(DURATION_UNITS.require("year").to(1, "millisecond")).toBe(365 * 24 * 60 * 60 * 1000);
 
 		// Speed.
 		expect(SPEED_UNITS.require("meter-per-second").to(123, "meter-per-second")).toBe(123);
