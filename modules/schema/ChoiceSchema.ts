@@ -1,72 +1,57 @@
-import { type ImmutableArray, isArray, isArrayItem } from "../util/array.js";
-import { getKeys, getProps, isProp } from "../util/object.js";
+import { type ImmutableArray, isArray } from "../util/array.js";
+import { isProp } from "../util/object.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /**
  * Set of options for a `ChoiceSchema` can be either:
- * - Array of string options in `[key]` format (`key` will be used as the `title` too).
  * - Dictionary of string options in `{ key: title }` format.
  */
-export type ChoiceOptions<K extends string> = ImmutableArray<K> | { readonly [KK in K]: string };
+export type ChoiceOptions<K extends string> = { readonly [KK in K]: string };
+
+/**
+ * Things that can be converted to a choice options dictionary.
+ * - Array of string options in `[key]` format (`key` will be used as the `title` too).
+ */
+export type PossibleChoiceOptions<K extends string> = ImmutableArray<K> | ChoiceOptions<K>;
 
 /** A single tuple for a choice option in `[key, title]` format. */
 export type ChoiceOption<K extends string> = readonly [title: K, title: string];
 
-/** Is an unknown string a choice option */
-export function isChoiceOption<K extends string>(options: ChoiceOptions<K>, option: string): option is K {
-	return isArray(options) ? isArrayItem(options, option) : isProp(options, option);
+/** Get a `ChoiceOptions` object for a set of `PossibleChoiceOptions`. */
+export function getChoiceOptions<K extends string>(options: PossibleChoiceOptions<K>): ChoiceOptions<K> {
+	return isArray(options) ? (Object.fromEntries(options.map(_getChoiceOption)) as ChoiceOptions<K>) : options;
 }
-
-/** Get a dictionary from a plain array of options. */
-function* _yieldArrayChoiceOptions<K extends string>(options: ImmutableArray<K>): Iterable<ChoiceOption<K>> {
-	for (const k of options) yield [k, k];
+function _getChoiceOption<K extends string>(k: K): ChoiceOption<K> {
+	return [k, k];
 }
 
 /** Allowed options for `ChoiceSchema` */
 export interface ChoiceSchemaOptions<K extends string> extends Omit<SchemaOptions, "value"> {
 	/** Specify correct options using a dictionary of entries. */
-	readonly options: ChoiceOptions<K>;
+	readonly options: PossibleChoiceOptions<K>;
 	/** Default option for the value. */
 	readonly value?: K;
 }
 
 /** Choose from an allowed set of values. */
-export class ChoiceSchema<K extends string> extends Schema<K> implements Iterable<ChoiceOption<K>> {
+export class ChoiceSchema<K extends string> extends Schema<K> {
 	declare readonly value: K | undefined;
 	readonly options: ChoiceOptions<K>;
 	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, ...rest }: ChoiceSchemaOptions<K>) {
 		super({ one, title, value, placeholder, ...rest });
-		this.options = options;
+		this.options = getChoiceOptions(options);
 	}
 	validate(unsafeValue: unknown = this.value): K {
-		if (typeof unsafeValue === "string" && isChoiceOption(this.options, unsafeValue)) return unsafeValue;
+		if (typeof unsafeValue === "string" && isProp(this.options, unsafeValue)) return unsafeValue;
 		throw unsafeValue ? `Unknown ${this.one}` : "Required";
 	}
 	override format(value: K): string {
-		return isArray(this.options) ? value : this.options[value];
-	}
-
-	// Get the current list of keys for this choice.
-	keys(): ImmutableArray<K> {
-		return isArray(this.options) ? this.options : getKeys(this.options);
-	}
-	// Get the current list of entries for this choice.
-	entries(): ImmutableArray<ChoiceOption<K>> {
-		return isArray(this.options) ? Array.from(_yieldArrayChoiceOptions(this.options)) : getProps(this.options);
-	}
-
-	// Implement iterable.
-	*[Symbol.iterator](): Iterator<ChoiceOption<K>> {
-		if (isArray(this.options)) {
-			yield* _yieldArrayChoiceOptions(this.options);
-		} else {
-			yield* getProps(this.options);
-		}
+		return this.options[value];
 	}
 }
 
 /** Choose from an allowed set of values. */
-export function CHOICE<K extends string>(options: ChoiceOptions<K> | ImmutableArray<K>): ChoiceSchema<K> {
+export function CHOICE<K extends string>(options: PossibleChoiceOptions<K> | ImmutableArray<K>): ChoiceSchema<K> {
 	return new ChoiceSchema({ options });
 }
