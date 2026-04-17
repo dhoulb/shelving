@@ -15,14 +15,11 @@ export type ChoiceOptions<K extends string> = { readonly [KK in K]: string };
  */
 export type PossibleChoiceOptions<K extends string> = ImmutableArray<K> | ChoiceOptions<K>;
 
-/** A single tuple for a choice option in `[key, title]` format. */
-export type ChoiceOption<K extends string> = readonly [title: K, title: string];
-
 /** Get a `ChoiceOptions` object for a set of `PossibleChoiceOptions`. */
-export function getChoiceOptions<K extends string>(options: PossibleChoiceOptions<K>): ChoiceOptions<K> {
+function _getChoiceOptions<K extends string>(options: PossibleChoiceOptions<K>): ChoiceOptions<K> {
 	return isArray(options) ? (Object.fromEntries(options.map(_getChoiceOption)) as ChoiceOptions<K>) : options;
 }
-function _getChoiceOption<K extends string>(k: K): ChoiceOption<K> {
+function _getChoiceOption<K extends string>(k: K): readonly [title: K, title: string] {
 	return [k, k];
 }
 
@@ -40,7 +37,7 @@ export class ChoiceSchema<K extends string> extends Schema<K> {
 	readonly options: ChoiceOptions<K>;
 	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, ...rest }: ChoiceSchemaOptions<K>) {
 		super({ one, title, value, placeholder, ...rest });
-		this.options = getChoiceOptions(options);
+		this.options = _getChoiceOptions(options);
 	}
 	validate(unsafeValue: unknown = this.value): K {
 		if (typeof unsafeValue === "string" && isProp(this.options, unsafeValue)) return unsafeValue;
