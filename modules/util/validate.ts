@@ -3,7 +3,7 @@ import type { ImmutableArray, MutableArray, PossibleArray } from "./array.js";
 import { isArray } from "./array.js";
 import type { Data } from "./data.js";
 import { getDataProps } from "./data.js";
-import type { ImmutableDictionary, MutableDictionary } from "./dictionary.js";
+import type { ImmutableDictionary, MutableDictionary, PossibleDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
 import { getNamedMessage } from "./error.js";
 import type { AnyCaller } from "./function.js";
@@ -106,7 +106,7 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
  *
  * @throw string if one or more entry values did not validate.
  */
-export function validateDictionary<T>(unsafeDictionary: ImmutableDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
+export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
 	let changed = false;
 	const safeDictionary: MutableDictionary<T> = {};
 	const messages: MutableArray<string> = [];
