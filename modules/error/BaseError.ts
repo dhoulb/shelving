@@ -1,4 +1,3 @@
-import type { MutableDictionary } from "../util/dictionary.js";
 import type { AnyCaller } from "../util/function.js";
 
 /** Options for `BaseError` that provide additional helpful error functionality. */
@@ -22,7 +21,7 @@ export abstract class BaseError extends Error {
 	constructor(message?: string, options: BaseErrorOptions = {}) {
 		super(message, options);
 		const { cause: _cause, caller = BaseError, ...rest } = options;
-		for (const [key, value] of Object.entries(rest)) (this as MutableDictionary<unknown>)[key] = value;
+		for (const [key, value] of Object.entries(rest)) (this as Record<string, unknown>)[key] = value;
 		Error.captureStackTrace(this, caller);
 	}
 }
