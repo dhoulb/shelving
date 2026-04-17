@@ -49,6 +49,6 @@ export class ChoiceSchema<K extends string> extends Schema<K> {
 }
 
 /** Choose from an allowed set of values. */
-export function CHOICE<K extends string>(options: PossibleChoiceOptions<K> | ImmutableArray<K>): ChoiceSchema<K> {
+export function CHOICE<K extends string>(options: PossibleChoiceOptions<K>): ChoiceSchema<K> {
 	return new ChoiceSchema({ options });
 }
