@@ -1,28 +1,26 @@
-import { type ImmutableArray, isArray } from "../util/array.js";
+import { type ImmutableArray, isArray, isArrayItem } from "../util/array.js";
 import { getKeys, getProps, isProp } from "../util/object.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
-/* Set of options for a `ChoiceSchema` */
-export type ChoiceOptions<K extends string> = ImmutableArray<K> | { readonly [KK in K]: unknown };
-export type ChoiceOption<K extends string> = readonly [K, unknown];
+/**
+ * Set of options for a `ChoiceSchema` can be either:
+ * - Array of string options in `[key]` format (`key` will be used as the `title` too).
+ * - Dictionary of string options in `{ key: title }` format.
+ */
+export type ChoiceOptions<K extends string> = ImmutableArray<K> | { readonly [KK in K]: string };
 
-/** Get the options for a choice field as an array. */
-export function getChoiceEntries<K extends string>(options: ChoiceOptions<K>): ImmutableArray<ChoiceOption<K>> {
-	return isArray(options) ? options.map(_makeKeyEntry) : getProps(options);
-}
-function _makeKeyEntry<K extends string>(k: K): ChoiceOption<K> {
-	return [k, k];
-}
+/** A single tuple for a choice option in `[key, title]` format. */
+export type ChoiceOption<K extends string> = readonly [title: K, title: string];
 
-/** Get the keys for a choice field as an array. */
-export function getChoiceKeys<K extends string>(options: ChoiceOptions<K>): ImmutableArray<K> {
-	return isArray(options) ? options : getKeys(options);
+/** Is an unknown string a choice option */
+export function isChoiceOption<K extends string>(options: ChoiceOptions<K>, option: string): option is K {
+	return isArray(options) ? isArrayItem(options, option) : isProp(options, option);
 }
 
-/** Get the options for a choice field as an array. */
-export function isOption<K extends string>(options: ChoiceOptions<K>, option: string): option is K {
-	return isArray(options) ? options.includes(option as K) : isProp(options, option);
+/** Get a dictionary from a plain array of options. */
+function* _yieldArrayChoiceOptions<K extends string>(options: ImmutableArray<K>): Iterable<ChoiceOption<K>> {
+	for (const k of options) yield [k, k];
 }
 
 /** Allowed options for `ChoiceSchema` */
@@ -42,26 +40,33 @@ export class ChoiceSchema<K extends string> extends Schema<K> implements Iterabl
 		this.options = options;
 	}
 	validate(unsafeValue: unknown = this.value): K {
-		if (typeof unsafeValue === "string" && isOption(this.options, unsafeValue)) return unsafeValue;
+		if (typeof unsafeValue === "string" && isChoiceOption(this.options, unsafeValue)) return unsafeValue;
 		throw unsafeValue ? `Unknown ${this.one}` : "Required";
 	}
-
-	// Implement iterable.
-	*[Symbol.iterator](): Iterator<ChoiceOption<K>> {
-		yield* getChoiceEntries(this.options);
+	override format(value: K): string {
+		return isArray(this.options) ? value : this.options[value];
 	}
 
 	// Get the current list of keys for this choice.
 	keys(): ImmutableArray<K> {
-		return getChoiceKeys(this.options);
+		return isArray(this.options) ? this.options : getKeys(this.options);
 	}
 	// Get the current list of entries for this choice.
 	entries(): ImmutableArray<ChoiceOption<K>> {
-		return getChoiceEntries(this.options);
+		return isArray(this.options) ? Array.from(_yieldArrayChoiceOptions(this.options)) : getProps(this.options);
+	}
+
+	// Implement iterable.
+	*[Symbol.iterator](): Iterator<ChoiceOption<K>> {
+		if (isArray(this.options)) {
+			yield* _yieldArrayChoiceOptions(this.options);
+		} else {
+			yield* getProps(this.options);
+		}
 	}
 }
 
 /** Choose from an allowed set of values. */
-export function CHOICE<K extends string>(options: ChoiceOptions<K>): ChoiceSchema<K> {
+export function CHOICE<K extends string>(options: ChoiceOptions<K> | ImmutableArray<K>): ChoiceSchema<K> {
 	return new ChoiceSchema({ options });
 }

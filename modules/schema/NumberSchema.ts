@@ -20,8 +20,6 @@ export class NumberSchema extends Schema<number> {
 	readonly min: number;
 	readonly max: number;
 	readonly step: number | undefined;
-	format: typeof formatNumber;
-
 	constructor({
 		one = "number",
 		title = "Number",
@@ -36,9 +34,7 @@ export class NumberSchema extends Schema<number> {
 		this.min = min;
 		this.max = max;
 		this.step = step;
-		this.format = format;
 	}
-
 	override validate(value: unknown = this.value): number {
 		const number = getNumber(value);
 		if (typeof number !== "number") throw value ? `Must be ${this.one}` : "Required";
@@ -46,6 +42,9 @@ export class NumberSchema extends Schema<number> {
 		if (stepped < this.min) throw !number ? "Required" : `Minimum ${this.format(this.min)}`;
 		if (stepped > this.max) throw `Maximum ${this.format(this.max)}`;
 		return stepped;
+	}
+	override format(value: number): string {
+		return formatNumber(value);
 	}
 }
 

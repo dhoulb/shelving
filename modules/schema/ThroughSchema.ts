@@ -17,4 +17,7 @@ export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<S
 	validate(unsafeValue: unknown): T {
 		return this.source.validate(unsafeValue);
 	}
+	override format(value: T): string {
+		return this.source.format(value);
+	}
 }

@@ -4,6 +4,9 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 const COLOR_REGEXP = /^#[0-9A-F]{6}$/;
 const NOT_HEX_REGEXP = /[^0-9A-F]/g;
 
+/** Options for a `ColorSchema` */
+export interface ColorSchemaOptions extends Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline"> {}
+
 /**
  * Define a valid color hex string, e.g `#00CCFF`
  *
@@ -14,12 +17,7 @@ const NOT_HEX_REGEXP = /[^0-9A-F]/g;
  * Colors are limited to 512 characters (this can be changed with `max`), but generally these won't be data: URIs so this is a reasonable limit.
  */
 export class ColorSchema extends StringSchema {
-	constructor({
-		one = "color",
-		title = "Color",
-		value = "#000000",
-		...options
-	}: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline">) {
+	constructor({ one = "color", title = "Color", value = "#000000", ...options }: ColorSchemaOptions) {
 		super({
 			one,
 			title,

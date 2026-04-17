@@ -17,6 +17,9 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
 		if (unsafeValue === null || unsafeValue === undefined || unsafeValue === "" || Number.isNaN(unsafeValue)) return null;
 		return super.validate(unsafeValue);
 	}
+	override format(value: T | null): string {
+		return value === null ? `No ${this.source.one}` : super.format(value);
+	}
 }
 
 /** Create a new nullable schema from a source schema. */

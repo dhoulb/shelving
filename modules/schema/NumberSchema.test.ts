@@ -109,15 +109,9 @@ describe("options.step", () => {
 		expect(schema3.validate(149)).toBe(100);
 	});
 });
-describe("options.format", () => {
+describe("format()", () => {
 	test("Defaults to formatNumber()", () => {
 		const schema = new NumberSchema({});
 		expect(schema.format(1234.5)).toBe(formatNumber(1234.5));
-	});
-	test("Custom formatter is preserved", () => {
-		const format = (value: number) => `GBP ${value.toFixed(2)}`;
-		const schema = new NumberSchema({ format });
-		expect(schema.format).toBe(format);
-		expect(schema.format(1234.5)).toBe("GBP 1234.50");
 	});
 });

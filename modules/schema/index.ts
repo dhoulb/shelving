@@ -17,6 +17,7 @@ export * from "./KeySchema.js";
 export * from "./NullableSchema.js";
 export * from "./NumberSchema.js";
 export * from "./OptionalSchema.js";
+export * from "./PasswordSchema.js";
 export * from "./PhoneSchema.js";
 export * from "./RequiredSchema.js";
 export * from "./Schema.js";

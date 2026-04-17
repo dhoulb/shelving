@@ -21,6 +21,9 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
 		if (unsafeValue === undefined) return undefined;
 		return super.validate(unsafeValue);
 	}
+	override format(value: T | undefined): string {
+		return value === undefined ? `No ${this.source.one}` : super.format(value);
+	}
 }
 
 /** Make a property of a set of data optional, i.e. it can be the value or `undefined` */

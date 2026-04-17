@@ -78,6 +78,10 @@ export class StringSchema extends Schema<string> {
 		if (this.case === "lower") return sane.toLowerCase();
 		return sane;
 	}
+
+	override format(str: string): string {
+		return str;
+	}
 }
 
 /** Valid string, e.g. `Hello there!` */
@@ -87,16 +91,13 @@ export const STRING = new StringSchema({});
 export const REQUIRED_STRING = new StringSchema({ min: 1 });
 
 /** Title string, e.g. `Title of something` */
-export const TITLE = new StringSchema({ title: "Title", min: 1, max: 100 });
+export const TITLE = new StringSchema({ one: "title", title: "Title", min: 1, max: 100 });
 
 /** Optional name string, e.g. `Title of something` or `null` */
 export const NULLABLE_TITLE = NULLABLE(TITLE);
 
 /** Name string, e.g. `Name of Something` */
-export const NAME = new StringSchema({ title: "Name", min: 1, max: 100 });
+export const NAME = new StringSchema({ one: "name", title: "Name", min: 1, max: 100 });
 
 /** Optional name string, e.g. `Name of Something` or `null` */
 export const NULLABLE_NAME = NULLABLE(NAME);
-
-/** Password string. */
-export const PASSWORD = new StringSchema({ title: "Password", min: 6, input: "password" });

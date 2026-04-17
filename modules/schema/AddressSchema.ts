@@ -1,4 +1,4 @@
-import type { AddressData } from "../util/geo.js";
+import { type AddressData, formatAddress } from "../util/geo.js";
 import { COUNTRY } from "./CountrySchema.js";
 import { DataSchema, type DataSchemaOptions } from "./DataSchema.js";
 import { NULLABLE } from "./NullableSchema.js";
@@ -21,6 +21,9 @@ export interface AddressSchemaOptions extends Omit<DataSchemaOptions<AddressData
 export class AddressSchema extends DataSchema<AddressData> {
 	constructor({ one = "address", title = "Address", ...options }: AddressSchemaOptions = {}) {
 		super({ one, title, props: ADDRESS_PROPS, ...options });
+	}
+	override format(value: AddressData) {
+		return formatAddress(value);
 	}
 }
 

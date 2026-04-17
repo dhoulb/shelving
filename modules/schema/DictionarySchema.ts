@@ -1,5 +1,6 @@
 import type { ImmutableDictionary } from "../util/dictionary.js";
 import { isDictionary } from "../util/dictionary.js";
+import { formatArray } from "../util/format.js";
 import { validateDictionary } from "../util/validate.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
@@ -41,6 +42,13 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 		if (length < this.min) throw length ? `Minimum ${this.min} ${this.many}` : "Required";
 		if (length > this.max) throw `Maximum ${this.max} ${this.many}`;
 		return validDictionary;
+	}
+	override format(dict: ImmutableDictionary<T>): string {
+		return formatArray(
+			Object.values(dict).map(v => this.items.format(v)),
+			undefined,
+			this.format,
+		);
 	}
 }
 

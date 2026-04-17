@@ -21,28 +21,25 @@ export interface CurrencyAmountSchemaOptions extends NumberSchemaOptions {
  * PRICE.format(12.3); // "£12.30"
  */
 export class CurrencyAmountSchema extends NumberSchema {
+	declare readonly step: number; // Step is always defined for `CurrencyAmountSchema`, as it's inferred from the currency.
 	readonly currency: CurrencyCode;
 	readonly symbol: string;
 
-	constructor({
-		currency,
-		one = "amount",
-		title = "Amount",
-		symbol,
-		step,
-		format = (value, options) => formatCurrency(value, currency, options),
-		...options
-	}: CurrencyAmountSchemaOptions) {
+	constructor({ currency, one = "amount", title = "Amount", symbol, step, ...options }: CurrencyAmountSchemaOptions) {
 		const validCurrency = requireCurrencyCode(currency, CurrencyAmountSchema);
 		super({
 			one,
 			title,
 			step: step ?? getCurrencyStep(validCurrency, CurrencyAmountSchema),
-			format,
 			...options,
 		});
 		this.currency = validCurrency;
 		this.symbol = symbol ?? getCurrencySymbol(validCurrency, CurrencyAmountSchema);
+	}
+
+	override format(value: number): string {
+		const options = this.step >= 1 ? { maximumFractionDigits: 0 } : {}; // Skip showing decimal places if step is 1 or more.
+		return formatCurrency(value, this.currency, options, this.format);
 	}
 }
 

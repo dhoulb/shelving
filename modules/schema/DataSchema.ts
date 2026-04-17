@@ -1,5 +1,6 @@
 import type { Data, PartialData } from "../util/data.js";
 import { isData } from "../util/data.js";
+import { formatObject } from "../util/format.js";
 import type { Identifier, Item } from "../util/item.js";
 import { type Key, omitProps, type Prop, pickProps, type Value } from "../util/object.js";
 import { mapProps } from "../util/transform.js";
@@ -39,6 +40,10 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 	/** Make a new `DataSchema` that omits one or more of the current props. */
 	omit<K extends Key<T>>(...keys: K[]): DataSchema<Omit<T, K>> {
 		return new DataSchema<Omit<T, K>>({ ...this, props: omitProps<Schemas<T>, K>(this.props, ...keys) });
+	}
+
+	override format(value: T): string {
+		return formatObject(value);
 	}
 }
 

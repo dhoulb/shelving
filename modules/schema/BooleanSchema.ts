@@ -1,3 +1,4 @@
+import { formatBoolean } from "../util/format.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
@@ -21,6 +22,9 @@ export class BooleanSchema extends Schema<boolean> {
 		const value: boolean = typeof unsafeValue === "string" ? !NEGATIVE.includes(unsafeValue.toLowerCase().trim()) : !!unsafeValue;
 		if (this.required && !value) throw "Required";
 		return value;
+	}
+	override format(value: boolean): string {
+		return formatBoolean(value);
 	}
 }
 

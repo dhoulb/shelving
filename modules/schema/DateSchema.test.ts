@@ -132,16 +132,10 @@ describe("options.step", () => {
 		expect(() => schema.validate("2025-01-16T14:00:00Z")).toThrow();
 	});
 });
-describe("options.format", () => {
+describe("format()", () => {
 	test("Defaults to formatDate()", () => {
 		const schema = new DateSchema({});
-		const value = new Date("2025-01-15T12:34:56.000Z");
+		const value = "2025-01-15T12:34:56.000Z";
 		expect(schema.format(value)).toBe(formatDate(value));
-	});
-	test("Custom formatter is preserved", () => {
-		const format = () => "Custom date";
-		const schema = new DateSchema({ format });
-		expect(schema.format).toBe(format);
-		expect(schema.format(new Date("2025-01-15T12:34:56.000Z"))).toBe("Custom date");
 	});
 });

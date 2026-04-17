@@ -138,7 +138,7 @@ describe("options.input", () => {
 describe("options.format", () => {
 	test("Defaults to formatDateTime()", () => {
 		const schema = new DateTimeSchema({});
-		const value = new Date("2025-01-15T12:34:56.000Z");
+		const value = "2025-01-15T12:34:56.000Z";
 		expect(schema.format(value)).toBe(formatDateTime(value));
 	});
 });

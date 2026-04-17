@@ -1,5 +1,6 @@
 import type { ImmutableArray } from "../util/array.js";
 import { getUniqueArray, isArray } from "../util/array.js";
+import { formatArray } from "../util/format.js";
 import { validateArray } from "../util/validate.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
@@ -75,6 +76,13 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		if (uniqueArray.length < this.min) throw uniqueArray.length ? `Minimum ${this.min} ${this.many}` : "Required";
 		if (uniqueArray.length > this.max) throw `Maximum ${this.max} ${this.many}`;
 		return uniqueArray;
+	}
+	override format(arr: ImmutableArray<T>): string {
+		return formatArray(
+			arr.map(v => this.items.format(v)),
+			undefined,
+			this.format,
+		);
 	}
 }
 

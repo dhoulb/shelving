@@ -1,3 +1,4 @@
+import { formatURI } from "../util/format.js";
 import { getURI, HTTP_SCHEMES, type URISchemes, type URIString } from "../util/uri.js";
 import { NULLABLE } from "./NullableSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
@@ -34,6 +35,9 @@ export class URISchema extends StringSchema {
 		if (!uri) throw str ? `Invalid ${this.one} format` : "Required";
 		if (this.schemes && !this.schemes.includes(uri.protocol)) throw `Invalid ${this.one} scheme`;
 		return uri.href;
+	}
+	override format(value: string): string {
+		return formatURI(value, this.format);
 	}
 }
 

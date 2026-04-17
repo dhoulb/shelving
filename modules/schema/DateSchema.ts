@@ -16,8 +16,6 @@ export interface DateSchemaOptions extends SchemaOptions {
 	readonly min?: Nullish<PossibleDate>;
 	readonly max?: Nullish<PossibleDate>;
 	readonly input?: DateInputType | undefined;
-	/** Format the date for display in downstream UIs. */
-	readonly format?: typeof formatDate | undefined;
 	/**
 	 * Rounding step (in milliseconds, because that's the base unit for time).
 	 * - E.g. `1000 * 60` will round to the nearest minute.
@@ -32,15 +30,13 @@ export class DateSchema extends Schema<string> {
 	readonly max: Date | undefined;
 	readonly input: DateInputType;
 	readonly step: number | undefined;
-	format: typeof formatDate;
 
-	constructor({ one = "date", min, max, value, input = "date", step, format = formatDate, ...options }: DateSchemaOptions) {
+	constructor({ one = "date", min, max, value, input = "date", step, ...options }: DateSchemaOptions) {
 		super({ one, title: "Date", value, ...options });
 		this.min = getDate(min);
 		this.max = getDate(max);
 		this.input = input;
 		this.step = step;
-		this.format = format;
 	}
 
 	override validate(value: unknown = this.value): string {
@@ -49,14 +45,18 @@ export class DateSchema extends Schema<string> {
 
 		const stepped = typeof this.step === "number" ? new Date(roundStep(date.getTime(), this.step)) : date;
 
-		if (this.min && stepped < this.min) throw `Minimum ${this.format(this.min)}`;
-		if (this.max && stepped > this.max) throw `Maximum ${this.format(this.max)}`;
+		if (this.min && stepped < this.min) throw `Minimum ${this.format(this.stringify(this.min))}`;
+		if (this.max && stepped > this.max) throw `Maximum ${this.format(this.stringify(this.max))}`;
 
 		return this.stringify(stepped);
 	}
 
 	stringify(value: Date): string {
 		return requireDateString(value);
+	}
+
+	override format(value: string): string {
+		return formatDate(value, undefined, this.format);
 	}
 }
 

@@ -47,3 +47,21 @@ describe("CurrencyAmountSchema", () => {
 		expect(() => new CurrencyAmountSchema({ currency: "aaaaaa" })).toThrow("Unknown currency");
 	});
 });
+describe("format()", () => {
+	test("Formats correctly in different currencies", () => {
+		const schema1 = new CurrencyAmountSchema({ currency: "GBP" });
+		expect(schema1.format(12.345)).toBe("£12.35");
+		const schema2 = new CurrencyAmountSchema({ currency: "JPY" });
+		expect(schema2.format(120_000.345)).toBe("¥120,000");
+	});
+
+	test("Currency step 1 or removes decimal places in format()", () => {
+		const schema1 = new CurrencyAmountSchema({ currency: "GBP" });
+		expect(schema1.format(12.345)).toBe("£12.35");
+		expect(schema1.format(12_345.678)).toBe("£12,345.68");
+		const schema2 = new CurrencyAmountSchema({ currency: "GBP", step: 1 });
+		expect(schema2.format(12.5)).toBe("£13");
+		const schema3 = new CurrencyAmountSchema({ currency: "GBP", step: 1000 });
+		expect(schema3.format(12_500)).toBe("£12,500");
+	});
+});
