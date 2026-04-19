@@ -4,7 +4,7 @@ import { getWordRegExp } from "../util/regexp.js";
 import { getMarkupRule } from "../util/rule.js";
 
 /** Map characters, e.g. `*`, to their coresponding HTML tag, e.g. `strong` */
-const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", _: "em", "=": "mark", ":": "mark" }; // Hyphen must be first so it works when we use the keys as a character class.
+const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", _: "em", "=": "mark" }; // Hyphen must be first so it works when we use the keys as a character class.
 
 const INLINE_REGEXP = getWordRegExp<{
 	char: keyof typeof INLINE_CHARS;
