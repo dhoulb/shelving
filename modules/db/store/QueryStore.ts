@@ -13,7 +13,7 @@ import type { DBProvider } from "../provider/DBProvider.js";
 import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 
 /** Store a set of multiple items. */
-export class QueryStore<I extends Identifier, T extends Data> extends ArrayStore<Item<I, T>> {
+export class QueryStore<I extends Identifier, T extends Data> extends ArrayStore<Item<I, T>> implements Disposable {
 	readonly provider: DBProvider<I>;
 	readonly collection: Collection<string, I, T>;
 	readonly query: Query<Item<I, T>>;
@@ -122,5 +122,10 @@ export class QueryStore<I extends Identifier, T extends Data> extends ArrayStore
 	// Implement `Iteratable`
 	override [Symbol.iterator](): Iterator<Item<I, T>> {
 		return this.value.values();
+	}
+
+	// Implement Disposable.
+	[Symbol.dispose]() {
+		// @todo cancel inflight refreshes
 	}
 }

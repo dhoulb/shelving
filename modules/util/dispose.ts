@@ -1,4 +1,5 @@
-import { logError } from "./error.js";
+import { UnexpectedError } from "../error/UnexpectedError.js";
+import type { AnyCaller } from "./function.js";
 import { isObject } from "./object.js";
 
 /**
@@ -8,11 +9,11 @@ import { isObject } from "./object.js";
 (Symbol as { dispose: symbol }).dispose ??= Symbol("Symbol.dispose");
 
 /** Safely dispose a disposable. */
-export function dispose(value: Disposable): void {
+export function dispose(value: Disposable, caller: AnyCaller = dispose): void {
 	try {
 		value[Symbol.dispose]();
 	} catch (thrown) {
-		logError(thrown);
+		throw new UnexpectedError("Unexpected error in dispose method", { disposable: value, cause: thrown, caller });
 	}
 }
 
@@ -22,40 +23,48 @@ export function isDisposable(v: unknown): v is Disposable {
 }
 
 /**
- * Version of `Map` that is disposable.
- * - If items are `Disposable` they are disposed when they're deleted from the map.
- * - Set itself is `Disposable` to delete (and dispose) all items when the map itself is disposed.
+ * Version of `Map` that has disposable values.
+ * - Old values are disposed when they're set to a new value.
+ * - Values are disposed when they're deleted from the map.
+ * - Values are disposed when all items are cleared.
+ * - All items are cleared and their values are disposed when this map itself is disposed.
  */
-export class DisposableMap<K, T> extends Map<K, T> implements Disposable {
+export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements Disposable {
+	override set(key: K, value: T): this {
+		const previous = this.get(key);
+		if (previous && previous !== value) dispose(previous, this.set);
+		return super.set(key, value);
+	}
 	override delete(key: K): boolean {
-		if (this.has(key)) {
-			const value = this.get(key) as T;
-			super.delete(key);
-			if (isDisposable(value)) dispose(value);
-			return true;
-		}
-		return false;
+		const value = this.get(key);
+		if (value) dispose(value, this.delete);
+		return super.delete(key);
+	}
+	override clear(): void {
+		for (const value of this.values()) dispose(value, this.clear);
+		super.clear();
 	}
 	[Symbol.dispose]() {
-		for (const key of this.keys()) this.delete(key);
+		this.clear();
 	}
 }
 
 /**
- * Version of `Set` that is disposable.
- * - If items are `Disposable` they are disposed when they're deleted from the set.
- * - Set itself is `Disposable` to delete (and dispose) all items when the set itself is disposed.
+ * Version of `Set` that has disposable items.
+ * - Values are disposed when they're deleted from the map.
+ * - Values are disposed when all items are cleared.
+ * - All items are cleared (and disposed) when this map itself is disposed.
  */
-export class DisposableSet<T> extends Set<T> implements Disposable {
+export class DisposableSet<T extends Disposable> extends Set<T> implements Disposable {
 	override delete(item: T): boolean {
-		if (this.has(item)) {
-			super.delete(item);
-			if (isDisposable(item)) dispose(item);
-			return true;
-		}
-		return false;
+		if (this.has(item)) dispose(item, this.delete);
+		return super.delete(item);
+	}
+	override clear(): void {
+		for (const item of this) dispose(item, this.clear);
+		super.clear();
 	}
 	[Symbol.dispose]() {
-		for (const item of this) this.delete(item);
+		this.clear();
 	}
 }

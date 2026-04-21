@@ -13,7 +13,7 @@ import type { DBProvider } from "../provider/DBProvider.js";
 import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 
 /** Store a single item. */
-export class ItemStore<I extends Identifier, T extends Data> extends OptionalDataStore<Item<I, T>> {
+export class ItemStore<I extends Identifier, T extends Data> extends OptionalDataStore<Item<I, T>> implements Disposable {
 	readonly provider: DBProvider<I>;
 	readonly collection: Collection<string, I, T>;
 	readonly id: I;
@@ -74,5 +74,10 @@ export class ItemStore<I extends Identifier, T extends Data> extends OptionalDat
 	/** Subscribe this store to a provider. */
 	connect(provider: DBProvider<I> = this.provider): StopCallback {
 		return runSequence(this.through(provider.getItemSequence(this.collection, this.id)));
+	}
+
+	// Implement Disposable.
+	[Symbol.dispose]() {
+		// @todo cancel inflight refreshes
 	}
 }

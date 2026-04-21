@@ -1,3 +1,4 @@
+import { DisposableMap } from "../../util/dispose.js";
 import { setMapItem } from "../../util/map.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "../provider/APIProvider.js";
@@ -8,7 +9,7 @@ import { EndpointCache } from "./EndpointCache.js";
  * - Use `get(endpoint)` to retrieve or create the `EndpointCache` for a given endpoint, then `get(payload)` on that to get a specific `EndpointStore`.
  */
 export class APICache<P, R> implements Disposable {
-	private readonly _caches = new Map<Endpoint, EndpointCache>();
+	private readonly _caches = new DisposableMap<Endpoint, EndpointCache>();
 
 	readonly provider: APIProvider<P, R>;
 
@@ -49,7 +50,6 @@ export class APICache<P, R> implements Disposable {
 
 	// Implement Disposable.
 	[Symbol.dispose](): void {
-		for (const cache of this._caches.values()) cache[Symbol.dispose]();
 		this._caches.clear();
 	}
 }

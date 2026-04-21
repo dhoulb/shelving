@@ -1,3 +1,4 @@
+import { dispose } from "../util/dispose.js";
 import { type StartCallback, Starter } from "../util/start.js";
 import { DeferredSequence } from "./DeferredSequence.js";
 import { IteratorSequence } from "./IteratorSequence.js";
@@ -24,6 +25,6 @@ export class LazyDeferredSequence<T = void> extends DeferredSequence<T> implemen
 		}
 	}
 	[Symbol.dispose](): void {
-		this._starter[Symbol.dispose]();
+		dispose(this._starter);
 	}
 }

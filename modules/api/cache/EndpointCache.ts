@@ -1,3 +1,4 @@
+import { DisposableMap } from "../../util/dispose.js";
 import type { AnyCaller } from "../../util/function.js";
 import { setMapItem } from "../../util/map.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
@@ -9,7 +10,7 @@ import { EndpointStore } from "../store/EndpointStore.js";
  * - Use `get(payload)` to retrieve or create the `EndpointStore` for a given payload.
  */
 export class EndpointCache<P = unknown, R = unknown> implements Disposable {
-	private readonly _stores = new Map<string, EndpointStore<P, R>>();
+	private readonly _stores = new DisposableMap<string, EndpointStore<P, R>>();
 
 	readonly endpoint: Endpoint<P, R>;
 	readonly provider: APIProvider<P, R>;
@@ -47,7 +48,6 @@ export class EndpointCache<P = unknown, R = unknown> implements Disposable {
 
 	// Implement Disposable.
 	[Symbol.dispose](): void {
-		for (const store of this._stores.values()) store[Symbol.dispose]();
 		this._stores.clear();
 	}
 }

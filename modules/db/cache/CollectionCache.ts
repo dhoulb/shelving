@@ -1,4 +1,5 @@
 import type { Data } from "../../util/data.js";
+import { DisposableMap } from "../../util/dispose.js";
 import type { Identifier, Item } from "../../util/item.js";
 import { setMapItem } from "../../util/map.js";
 import type { Query } from "../../util/query.js";
@@ -14,8 +15,8 @@ import { QueryStore } from "../store/QueryStore.js";
  * - Use `getQuery(query)` to retrieve or create the `QueryStore` for a given query.
  */
 export class CollectionCache<I extends Identifier, T extends Data> implements Disposable {
-	private readonly _items = new Map<string, ItemStore<I, T>>();
-	private readonly _queries = new Map<string, QueryStore<I, T>>();
+	private readonly _items = new DisposableMap<string, ItemStore<I, T>>();
+	private readonly _queries = new DisposableMap<string, QueryStore<I, T>>();
 
 	readonly collection: Collection<string, I, T>;
 	readonly provider: DBProvider<I>;
@@ -71,7 +72,6 @@ export class CollectionCache<I extends Identifier, T extends Data> implements Di
 
 	// Implement Disposable.
 	[Symbol.dispose](): void {
-		// Note: `ItemStore`/`QueryStore` are not themselves `Disposable`, so we only drop references.
 		this._items.clear();
 		this._queries.clear();
 	}
