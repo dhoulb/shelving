@@ -1,6 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
-import type { ErrorCallback, ValueCallback } from "./callback.js";
+import type { ValueCallback } from "./function.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
 export function isAsync<T>(value: PromiseLike<T> | T): value is PromiseLike<T> {

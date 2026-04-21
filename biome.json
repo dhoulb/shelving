@@ -33,6 +33,7 @@
 			},
 			"suspicious": {
 				"noAssignInExpressions": "off",
+				"noConfusingVoidType": "off",
 				"noEmptyBlockStatements": "error",
 				"noSkippedTests": "error",
 				"noEmptyBlock": "error",

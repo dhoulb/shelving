@@ -1,4 +1,4 @@
-import type { Callback } from "./callback.js";
+import type { Callback } from "./function.js";
 
 /**
  * Create a new Timeout.

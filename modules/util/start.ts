@@ -1,8 +1,7 @@
-import { call } from "./callback.js";
+import { UnexpectedError } from "../error/UnexpectedError.js";
 import type { Arguments } from "./function.js";
 
 /** Callback function that starts something with multiple values and returns an optional stop callback. */
-// biome-ignore lint/suspicious/noConfusingVoidType: Start function can a return a stop callback or nothing.
 export type StartCallback<T extends Arguments = []> = (...values: T) => StopCallback | void;
 
 /** Callback function that stops something. */
@@ -14,17 +13,29 @@ export type StopCallback = () => void;
  */
 export class Starter<T extends Arguments> implements Disposable {
 	private readonly _start: StartCallback<T>;
-	private _stop: StopCallback | boolean = false;
+	private _started = false;
+	private _stop: StopCallback | void = undefined;
 	constructor(start: StartCallback<T>) {
 		this._start = start;
 	}
 	start(...values: T): void {
-		if (this._stop === false) this._stop = this._start(...values) || true;
+		if (this._started) return;
+		try {
+			this._stop = this._start(...values);
+			this._started = true;
+		} catch (thrown) {
+			throw new UnexpectedError("Unexpected error in start callback", { cause: thrown, caller: this.start });
+		}
 	}
 	stop(): void {
-		if (this._stop !== false) {
-			if (typeof this._stop === "function") call(this._stop);
-			this._stop = false;
+		if (!this._started) return;
+		try {
+			if (typeof this._stop === "function") this._stop();
+		} catch (thrown) {
+			throw new UnexpectedError("Unexpected error in stop callback", { cause: thrown, caller: this.stop });
+		} finally {
+			this._started = true;
+			this._stop = undefined;
 		}
 	}
 	[Symbol.dispose]() {

@@ -5,7 +5,6 @@ export * from "./base64.js";
 export * from "./boolean.js";
 export * from "./buffer.js";
 export * from "./bytes.js";
-export * from "./callback.js";
 export * from "./class.js";
 export * from "./color.js";
 export * from "./constants.js";

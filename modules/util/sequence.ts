@@ -1,7 +1,6 @@
 import { getDeferred, getDelay } from "./async.js";
-import type { AsyncValueCallback, ErrorCallback, ValueCallback } from "./callback.js";
-import { call, callMethod } from "./callback.js";
 import { STOP } from "./constants.js";
+import type { ErrorCallback, ValueCallback } from "./function.js";
 import type { StopCallback } from "./start.js";
 
 /**
@@ -42,9 +41,9 @@ export async function* repeatDelay(ms: number): AsyncIterable<number> {
 }
 
 /** Dispatch items in a sequence to a (possibly async) callback. */
-export async function* callSequence<T>(sequence: AsyncIterable<T>, callback: AsyncValueCallback<T>): AsyncIterable<T> {
+export async function* callSequence<T>(sequence: AsyncIterable<T>, callback: ValueCallback<T>): AsyncIterable<T> {
 	for await (const item of sequence) {
-		call(callback, item);
+		callback(item);
 		yield item;
 	}
 }
@@ -66,7 +65,7 @@ async function _runSequence<T>(
 		if (!result) {
 			// Stop iteration because the stop signal was sent.
 			// Call `return()` on the iterator so it can perform any clean up.
-			callMethod(sequence, "return");
+			sequence.return?.();
 			return;
 		}
 		if (result.done) {
@@ -75,10 +74,10 @@ async function _runSequence<T>(
 			return;
 		}
 		// Forward the value to the next callback.
-		if (onNext) call(onNext, result.value);
+		onNext?.(result.value);
 	} catch (thrown) {
 		// Forward the error to the error callback.
-		if (onError) call(onError, thrown);
+		onError?.(thrown);
 	}
 
 	// Continue iteration.
