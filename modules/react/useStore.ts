@@ -1,9 +1,9 @@
 import { useSyncExternalStore } from "react";
 import type { AnyStore, Store } from "../store/Store.js";
-import type { Callback } from "../util/callback.js";
 import { NONE } from "../util/constants.js";
-import { BLACKHOLE } from "../util/function.js";
+import { BLACKHOLE, type Callback } from "../util/function.js";
 import { runSequence } from "../util/sequence.js";
+import type { StopCallback } from "../util/start.js";
 import { useProps } from "./useProps.js";
 
 /** Subscribe to a Shelving `Store` instance to refresh this component when its value changes. */
@@ -12,7 +12,7 @@ export function useStore<T extends AnyStore>(store?: T | undefined): T | undefin
 export function useStore<T>(store: Store<T> | undefined): Store<T> | undefined {
 	// Store memoized versions of `subscribe()` and `getSnapshot()` so `useSyncExternalStore()` doesn't re-subscribe on every render.
 	const internals = useProps<{
-		subscribe: (onStoreChange: Callback) => Callback;
+		subscribe: (onStoreChange: Callback) => StopCallback;
 		getSnapshot: () => T | undefined | typeof NONE;
 		store: Store<T> | undefined;
 	}>();
