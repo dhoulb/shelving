@@ -1,6 +1,8 @@
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
+import { isAsync } from "../util/async.js";
 import { NONE } from "../util/constants.js";
 import { isDeepEqual } from "../util/equal.js";
+import type { Arguments } from "../util/function.js";
 import { getStarter, type PossibleStarter, type Starter } from "../util/start.js";
 
 /** Any `Store` instance. */
@@ -101,6 +103,28 @@ export class Store<T> implements AsyncIterable<T> {
 		}
 	}
 
+	/**
+	 * Safely call a callback and save its output value in this `Store`, optionally passing an input value.
+	 * @param callback The callback function to call that should return a value to set on this store.
+	 * @oaram args Any arguments to pass to the callback.
+	 */
+	call<A extends Arguments = []>(callback: (...args: A) => T | PromiseLike<T>, ...args: A): void {
+		try {
+			this.resolve(callback(...args));
+		} catch (thrown) {
+			this.reason = thrown;
+		}
+	}
+
+	/**
+	 * Resolve a (possibly async) value and save it to this store.
+	 * - If it rejects, save the rejection `reason` to this store.
+	 */
+	resolve(value: PromiseLike<T> | T): void {
+		if (isAsync(value)) void _resolve(this, value);
+		else this.value = value;
+	}
+
 	// Implement `AsyncIterable`
 	// Issues the current value of the store first, then any subsequent values that are issued.
 	async *[Symbol.asyncIterator](): AsyncGenerator<T, void, void> {
@@ -121,5 +145,14 @@ export class Store<T> implements AsyncIterable<T> {
 	/** Compare two values for this store and return whether they are equal. */
 	equal(a: T, b: T): boolean {
 		return isDeepEqual(a, b);
+	}
+}
+
+/** Resolve an async value and save it to a store. */
+async function _resolve<T>(store: Store<T>, value: PromiseLike<T>): Promise<void> {
+	try {
+		store.value = await value;
+	} catch (reason) {
+		store.reason = reason;
 	}
 }
