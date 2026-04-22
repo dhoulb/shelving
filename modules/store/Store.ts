@@ -118,19 +118,26 @@ export class Store<T> implements AsyncIterable<T>, Disposable {
 	 */
 	call<A extends Arguments = []>(callback: (...args: A) => T | PromiseLike<T>, ...args: A): void {
 		try {
-			this.resolve(callback(...args));
+			const value = callback(...args);
+			if (isAsync(value)) this.await(value);
+			else this.value = value;
 		} catch (thrown) {
 			this.reason = thrown;
 		}
 	}
 
 	/**
-	 * Resolve a (possibly async) value and save it to this store.
+	 * Await an async value and save it to this store.
 	 * - If it rejects, save the rejection `reason` to this store.
+	 *
+	 * @returns Promise that resolves when the value has been saved (either resolves to the value or `undefined` if the value threw).
 	 */
-	resolve(value: PromiseLike<T> | T): void {
-		if (isAsync(value)) void _resolve(this, value);
-		else this.value = value;
+	async await(value: PromiseLike<T>): Promise<void> {
+		try {
+			this.value = await value;
+		} catch (reason) {
+			this.reason = reason;
+		}
 	}
 
 	// Implement `AsyncIterable`
@@ -158,14 +165,5 @@ export class Store<T> implements AsyncIterable<T>, Disposable {
 	// Implement Disposable.
 	[Symbol.dispose]() {
 		this._starter?.stop();
-	}
-}
-
-/** Resolve an async value and save it to a store. */
-async function _resolve<T>(store: Store<T>, value: PromiseLike<T>): Promise<void> {
-	try {
-		store.value = await value;
-	} catch (reason) {
-		store.reason = reason;
 	}
 }
