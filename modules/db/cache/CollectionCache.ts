@@ -15,7 +15,7 @@ import { QueryStore } from "../store/QueryStore.js";
  * - Use `getQuery(query)` to retrieve or create the `QueryStore` for a given query.
  */
 export class CollectionCache<I extends Identifier, T extends Data> implements Disposable {
-	private readonly _items = new DisposableMap<string, ItemStore<I, T>>();
+	private readonly _items = new DisposableMap<I, ItemStore<I, T>>();
 	private readonly _queries = new DisposableMap<string, QueryStore<I, T>>();
 
 	readonly collection: Collection<string, I, T>;
@@ -30,8 +30,7 @@ export class CollectionCache<I extends Identifier, T extends Data> implements Di
 
 	/** Get (or create) the `ItemStore` for the given id. */
 	getItem(id: I): ItemStore<I, T> {
-		const key = String(id);
-		return this._items.get(key) || setMapItem(this._items, key, new ItemStore(this.collection, id, this.provider, this.memory));
+		return this._items.get(id) || setMapItem(this._items, id, new ItemStore(this.collection, id, this.provider, this.memory));
 	}
 
 	/** Get (or create) the `QueryStore` for the given query. */
