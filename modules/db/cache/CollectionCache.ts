@@ -40,29 +40,28 @@ export class CollectionCache<I extends Identifier, T extends Data> implements Di
 	}
 
 	/** Refresh a specific item store. */
-	refreshItem(id: I): void {
-		this._items.get(String(id))?.refresh();
+	async refreshItem(id: I): Promise<void> {
+		await this._items.get(id)?.refresh();
 	}
 
 	/** Refresh every cached item store. */
-	refreshItems(): void {
-		for (const store of this._items.values()) store.refresh();
+	async refreshItems(): Promise<void> {
+		await Promise.all(this._items.values().map(store => store.refresh()));
 	}
 
 	/** Refresh a specific query store. */
-	refreshQuery(query: Query<Item<I, T>>): void {
-		this._queries.get(this._queryKey(query))?.refresh();
+	async refreshQuery(query: Query<Item<I, T>>): Promise<void> {
+		await this._queries.get(this._queryKey(query))?.refresh();
 	}
 
 	/** Refresh every cached query store. */
-	refreshQueries(): void {
-		for (const store of this._queries.values()) store.refresh();
+	async refreshQueries(): Promise<void> {
+		await Promise.all(this._queries.values().map(store => store.refresh()));
 	}
 
 	/** Refresh every cached store (items and queries). */
-	refreshAll(): void {
-		this.refreshItems();
-		this.refreshQueries();
+	async refreshAll(): Promise<void> {
+		await Promise.all([this.refreshItems(), this.refreshQueries()]);
 	}
 
 	private _queryKey(query: Query<Item<I, T>>): string {

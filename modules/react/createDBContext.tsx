@@ -51,8 +51,7 @@ export function createDBContext<I extends Identifier, T extends Data>(provider: 
 	): ItemStore<I, T> | undefined {
 		const cache = use(CacheContext);
 		if (!cache) throw new RequiredError("useItem() can only be used inside <DBContext>", { caller: useItem });
-		const store = collection && id ? cache.getItem(collection, id) : undefined;
-		return useStore(store);
+		return useStore(collection && id ? cache.getItem(collection, id) : undefined);
 	}
 
 	function useQuery(
@@ -61,8 +60,7 @@ export function createDBContext<I extends Identifier, T extends Data>(provider: 
 	): QueryStore<I, T> | undefined {
 		const cache = use(CacheContext);
 		if (!cache) throw new RequiredError("useQuery() can only be used inside <DBContext>", { caller: useQuery });
-		const store = collection && query ? cache.getQuery(collection, query) : undefined;
-		return useStore(store);
+		return useStore(collection && query ? cache.getQuery(collection, query) : undefined);
 	}
 
 	function DBContext({ children }: { children: ReactNode }): ReactElement {

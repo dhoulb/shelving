@@ -39,13 +39,13 @@ export class APICache<P, R> implements Disposable {
 	}
 
 	/** Trigger a refetch on a specific store for an endpoint. */
-	refetch<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
-		this._get(endpoint)?.refetch(payload);
+	refresh<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
+		this._get(endpoint)?.refresh(payload);
 	}
 
 	/** Trigger a refetch on all stores for an endpoint. */
-	refetchAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {
-		this._get(endpoint)?.refetchAll();
+	refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {
+		this._get(endpoint)?.refreshAll();
 	}
 
 	// Implement Disposable.

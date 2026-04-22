@@ -12,7 +12,7 @@ describe("APICache", () => {
 		const endpoint = GET("/users/{id}", DATA({ id: STRING, extra: STRING }), STRING);
 
 		const store = cache.get(endpoint).get({ id: "123", extra: "x" });
-		await store.fetch();
+		await store.refresh();
 
 		expect(store.value).toBe("ok:/v1/users/123");
 		expect(provider.fetchCalls).toHaveLength(1);
@@ -30,24 +30,24 @@ describe("APICache", () => {
 		expect(a).toBe(b);
 	});
 
-	test("invalidate() resets a cached store so the next read refetches", async () => {
+	test("invalidate() marks a cached store stale so the next read refetches", async () => {
 		let count = 0;
 		const provider = new MockAPIProvider(async () => Response.json(`ok:${++count}`));
 		const cache = new APICache(provider);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = cache.get(endpoint).get({ id: "123" });
 
-		await store.fetch();
+		// Initial fetch.
+		store.loading;
+		await runMicrotasks();
 		expect(store.value).toBe("ok:1");
 
+		// Invalidate — old value kept, store marked stale.
 		cache.invalidate(endpoint, { id: "123" });
-		expect(store.loading).toBe(true);
+		expect(store.value).toBe("ok:1"); // value preserved
 
-		try {
-			store.value;
-			expect.unreachable();
-		} catch {}
-
+		// Reading loading triggers the background re-fetch.
+		expect(store.loading).toBe(false);
 		await runMicrotasks();
 		expect(store.value).toBe("ok:2");
 	});
@@ -65,11 +65,14 @@ describe("APICache", () => {
 		const first = cache.get(endpoint).get({ id: "123" });
 		const second = cache.get(endpoint).get({ id: "456" });
 
+		// Trigger initial fetches.
+		first.loading;
+		second.loading;
 		await runMicrotasks();
 		expect(first.value).toBe("123:1");
 		expect(second.value).toBe("456:1");
 
-		cache.refetchAll(endpoint);
+		cache.refreshAll(endpoint);
 		await runMicrotasks();
 
 		expect(first.value).toBe("123:2");

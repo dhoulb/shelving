@@ -3,12 +3,13 @@ import { DATA, EndpointStore, GET, getDeferred, MockAPIProvider, runMicrotasks, 
 import { EXPECT_PROMISELIKE } from "../../test/index.js";
 
 describe("EndpointStore", () => {
-	test("starts fetching immediately and resolves its value", async () => {
+	test("starts loading and resolves after reading loading", async () => {
 		const deferred = getDeferred<Response>();
 		const provider = new MockAPIProvider(() => deferred.promise);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);
 
+		// No fetch has started yet — reading loading triggers it.
 		expect(store.loading).toBe(true);
 		try {
 			store.value;
@@ -25,14 +26,14 @@ describe("EndpointStore", () => {
 		expect(provider.fetchCalls).toHaveLength(1);
 	});
 
-	test("fetch() reuses the current in-flight request", async () => {
+	test("refresh() reuses the current in-flight request", async () => {
 		const deferred = getDeferred<Response>();
 		const provider = new MockAPIProvider(() => deferred.promise);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);
 
-		const first = store.fetch();
-		const second = store.fetch();
+		const first = store.refresh();
+		const second = store.refresh();
 		expect(first).toBe(second);
 
 		deferred.resolve(Response.json("done"));
@@ -42,7 +43,7 @@ describe("EndpointStore", () => {
 		expect(provider.fetchCalls).toHaveLength(1);
 	});
 
-	test("changing payload aborts the old request and fetches the new payload", async () => {
+	test("changing payload aborts the old request and fetches with the new payload", async () => {
 		const requests: Request[] = [];
 		const provider = new MockAPIProvider(request => {
 			requests.push(request);
@@ -56,7 +57,19 @@ describe("EndpointStore", () => {
 
 		try {
 			console.error = () => undefined;
-			store.payload = { id: "456" };
+
+			// Trigger the first fetch (for "123").
+			store.loading;
+			await runMicrotasks();
+			expect(requests).toHaveLength(1);
+
+			// Change payload — aborts "123", _iterate invalidates and calls refresh().
+			// refresh() returns the old inflight (still alive until abort microtask settles).
+			store.payload.value = { id: "456" };
+			await runMicrotasks(); // "123" aborts, inflight clears; _iterate.refresh() was no-op
+
+			// _inflight is now clear and _invalid=true — reading loading starts the "456" fetch.
+			store.loading;
 			await runMicrotasks();
 		} finally {
 			console.error = error;
@@ -68,25 +81,23 @@ describe("EndpointStore", () => {
 		expect(store.value).toBe("value:456");
 	});
 
-	test("invalidate() clears the current value and refetches on the next read", async () => {
+	test("invalidate() marks the store stale; the next loading read re-fetches", async () => {
 		let count = 0;
 		const provider = new MockAPIProvider(async () => Response.json(`value:${++count}`));
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);
 
+		// First fetch.
+		store.loading;
 		await runMicrotasks();
 		expect(store.value).toBe("value:1");
 
+		// Invalidate — old value is kept, store is marked stale.
 		store.invalidate();
-		expect(store.loading).toBe(true);
+		expect(store.value).toBe("value:1"); // value preserved
+		expect(store.loading).toBe(false); // loading is false (value exists)
 
-		try {
-			store.value;
-			expect.unreachable();
-		} catch (thrown) {
-			expect(thrown).toMatchObject(EXPECT_PROMISELIKE);
-		}
-
+		// Reading loading with _invalid=true triggers a background re-fetch.
 		await runMicrotasks();
 		expect(store.value).toBe("value:2");
 	});
@@ -105,7 +116,11 @@ describe("EndpointStore", () => {
 		try {
 			console.error = () => undefined;
 			const store = new EndpointStore(endpoint, { id: "123" }, new FailingAPIProvider());
+
+			// Trigger the fetch.
+			store.loading;
 			await runMicrotasks();
+
 			expect(store.reason).toBe(reason);
 			expect(() => store.value).toThrow("Nope");
 		} finally {

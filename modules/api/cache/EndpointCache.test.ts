@@ -13,7 +13,7 @@ describe("EndpointCache", () => {
 		expect(first).toBe(second);
 	});
 
-	test("refetch() refreshes only the targeted payload", async () => {
+	test("refresh() re-fetches only the targeted payload", async () => {
 		const calls = new Map<string, number>();
 		const provider = new MockAPIProvider(async request => {
 			const id = request.url.split("/").pop() ?? "";
@@ -26,29 +26,45 @@ describe("EndpointCache", () => {
 		const first = cache.get({ id: "123" });
 		const second = cache.get({ id: "456" });
 
+		// Trigger initial fetches.
+		first.loading;
+		second.loading;
 		await runMicrotasks();
 		expect(first.value).toBe("123:1");
 		expect(second.value).toBe("456:1");
 
-		cache.refetch({ id: "123" });
+		cache.refresh({ id: "123" });
 		await runMicrotasks();
 
 		expect(first.value).toBe("123:2");
-		expect(second.value).toBe("456:1");
+		expect(second.value).toBe("456:1"); // untouched
 	});
 
-	test("invalidateAll() resets every cached store", async () => {
+	test("invalidateAll() marks every cached store stale", async () => {
 		const provider = new MockAPIProvider(async () => Response.json("ok"));
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const cache = new EndpointCache(endpoint, provider);
 		const first = cache.get({ id: "123" });
 		const second = cache.get({ id: "456" });
 
-		await first.fetch();
-		await second.fetch();
+		// Populate both stores.
+		await first.refresh();
+		await second.refresh();
+		expect(first.value).toBe("ok");
+		expect(second.value).toBe("ok");
+
 		cache.invalidateAll();
 
-		expect(first.loading).toBe(true);
-		expect(second.loading).toBe(true);
+		// Values are preserved (loading stays false), but stores are marked stale.
+		expect(first.loading).toBe(false);
+		expect(second.loading).toBe(false);
+		expect(first.value).toBe("ok");
+		expect(second.value).toBe("ok");
+
+		// Reading loading (which already happened above) triggers background re-fetches
+		// because _invalid=true. Await to let them complete.
+		await runMicrotasks();
+		expect(first.value).toBe("ok"); // same value returned by provider
+		expect(second.value).toBe("ok");
 	});
 });

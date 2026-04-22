@@ -89,8 +89,12 @@ export class Store<T> implements AsyncIterable<T>, Disposable {
 	}
 	private _reason: unknown = undefined;
 
-	/** Set a starter for this store to allow a function to execute when this store has subscribers or not. */
-	set starter(start: PossibleStarter<[this]>) {
+	/**
+	 * Set a starter for this store to allow a function to execute when this store has subscribers or not.
+	 *
+	 * @todo DH: Change this significantly. Not happy with how it's settable like this. It should be set in `constructor()`?
+	 */
+	protected set starter(start: PossibleStarter<[this]>) {
 		if (this._starter) this._starter.stop(); // Stop the current starter.
 		this._starter = getStarter(start);
 		if (this._iterating) this._starter.start(this); // Start the new starter if we're already iterating.

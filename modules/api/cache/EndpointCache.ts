@@ -37,13 +37,13 @@ export class EndpointCache<P = unknown, R = unknown> implements Disposable {
 	}
 
 	/** Trigger a refetch on a specific store. */
-	refetch(payload: P, caller: AnyCaller = this.invalidate): void {
-		this.get(payload, caller)?.fetch();
+	refresh(payload: P, caller: AnyCaller = this.invalidate): void {
+		this.get(payload, caller)?.refresh();
 	}
 
 	/** Trigger a refetch on all stores. */
-	refetchAll(): void {
-		for (const store of this._stores.values()) store.fetch();
+	refreshAll(): void {
+		for (const store of this._stores.values()) store.refresh();
 	}
 
 	// Implement Disposable.
