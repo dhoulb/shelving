@@ -7,8 +7,8 @@ import { Store } from "./Store.js";
 
 /** Store a dictionary object. */
 export class DictionaryStore<T> extends Store<ImmutableDictionary<T>> implements Iterable<DictionaryItem<T>> {
-	constructor(value: ImmutableDictionary<T> = {}, time?: number) {
-		super(value, time);
+	constructor(value: ImmutableDictionary<T> = {}) {
+		super(value);
 	}
 
 	/** Get the length of the current value of this store. */

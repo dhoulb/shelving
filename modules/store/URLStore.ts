@@ -140,7 +140,7 @@ export class URLStore extends Store<URL> {
 	}
 
 	// Override `equal()` to just compare the hrefs.
-	override equal(a: URL, b: URL): boolean {
+	override isEqual(a: URL, b: URL): boolean {
 		return a.href === b.href;
 	}
 

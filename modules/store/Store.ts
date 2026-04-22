@@ -19,9 +19,9 @@ export type AnyStore = Store<any>;
  * - To set the store to be loading, use the `NONE` constant or a `Promise` value.
  * - To set the store to an explicit value, use that value or another `Store` instance with a value.
  */
-export class Store<T> implements AsyncIterable<T> {
+export class Store<T> implements AsyncIterable<T>, Disposable {
 	/** Deferred sequence this store uses to issue values as they change. */
-	public readonly next: DeferredSequence<T> = new DeferredSequence();
+	public readonly next = new DeferredSequence<T>();
 
 	/**
 	 * Store is considered to be "loading" if it has no value or error.
@@ -49,27 +49,35 @@ export class Store<T> implements AsyncIterable<T> {
 			this._time = undefined;
 			this._value = value;
 			this.next.cancel();
-		} else if (this._value === NONE || !this.equal(value, this._value)) {
+		} else if (this._value === NONE || !this.isEqual(value, this._value)) {
 			this._time = Date.now();
 			this._value = value;
 			this.next.resolve(value);
 		}
 	}
-	private _value: T | typeof NONE = NONE;
+	private _value: T | typeof NONE;
 
-	/** Time (in milliseconds) this store was last updated with a new value, or `undefined` if this store is currently loading. */
+	/**
+	 * Time (in milliseconds) this store was last updated with a new value.
+	 * - Will be `undefined` if the value is still loading.
+	 */
 	get time(): number | undefined {
-		return this._value === NONE ? undefined : this._time;
+		return this._time;
 	}
-	private _time: number | undefined = undefined;
+	private _time: number | undefined;
 
-	/** How old this store's value is (in milliseconds). */
+	/**
+	 * How old this store's value is (in milliseconds).
+	 * - Will be `Infinity` if the value is still loading (to simplify downstream calculations).
+	 *
+	 * @example if (store.age > MINUTE) refreshStore(store);
+	 */
 	get age(): number {
-		if (this.time === undefined) return Number.POSITIVE_INFINITY;
-		return Date.now() - this.time;
+		const time = this.time;
+		return typeof time === "number" ? Date.now() - time : Infinity;
 	}
 
-	/** Current error of this store (or `undefined` if there is no reason). */
+	/** Current error of this store, or `undefined` if there is no error. */
 	get reason(): unknown {
 		return this._reason;
 	}
@@ -90,9 +98,9 @@ export class Store<T> implements AsyncIterable<T> {
 	private _starter: Starter<[this]> | undefined;
 
 	/** Store is initiated with an initial store. */
-	constructor(value: T | typeof NONE, time = Date.now()) {
+	constructor(value: T | typeof NONE) {
 		this._value = value;
-		this._time = time;
+		this._time = value === NONE ? -Infinity : Date.now();
 	}
 
 	/** Set the value of the store as values are pulled from a sequence. */
@@ -143,8 +151,13 @@ export class Store<T> implements AsyncIterable<T> {
 	private _iterating = 0;
 
 	/** Compare two values for this store and return whether they are equal. */
-	equal(a: T, b: T): boolean {
+	isEqual(a: T, b: T): boolean {
 		return isDeepEqual(a, b);
+	}
+
+	// Implement Disposable.
+	[Symbol.dispose]() {
+		this._starter?.stop();
 	}
 }
 

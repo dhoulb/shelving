@@ -3,8 +3,8 @@ import { Store } from "./Store.js";
 
 /** Store a boolean. */
 export class BooleanStore extends Store<boolean> {
-	constructor(value: boolean | typeof NONE = false, time?: number) {
-		super(value, time);
+	constructor(value: boolean | typeof NONE = false) {
+		super(value);
 	}
 
 	/** Toggle the current boolean value. */

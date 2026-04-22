@@ -5,8 +5,8 @@ import { Store } from "./Store.js";
 
 /** Store an array. */
 export class ArrayStore<T> extends Store<ImmutableArray<T>> implements Iterable<T> {
-	constructor(value: ImmutableArray<T> | typeof NONE = [], time?: number) {
-		super(value, time);
+	constructor(value: ImmutableArray<T> | typeof NONE = []) {
+		super(value);
 	}
 
 	/** Get the first item in this store or `null` if this query has no items. */

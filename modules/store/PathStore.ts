@@ -4,8 +4,8 @@ import { Store } from "./Store.js";
 
 /** Store an absolute path, e.g. `/a/b/c` */
 export class PathStore extends Store<AbsolutePath> {
-	constructor(path = ".", time?: number) {
-		super(requirePath(path), time);
+	constructor(path = ".") {
+		super(requirePath(path));
 	}
 
 	// Override to clean the path on set.
