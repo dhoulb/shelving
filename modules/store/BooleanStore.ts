@@ -11,4 +11,9 @@ export class BooleanStore extends Store<boolean> {
 	toggle(): void {
 		this.value = !this.value;
 	}
+
+	// Override for fast equality.
+	override isEqual(a: boolean, b: boolean) {
+		return a === b;
+	}
 }
