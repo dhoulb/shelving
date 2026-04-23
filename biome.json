@@ -48,6 +48,9 @@
 			},
 			"performance": {
 				"noNamespaceImport": "error"
+			},
+			"nursery": {
+				"noFloatingPromises": "error"
 			}
 		}
 	},
