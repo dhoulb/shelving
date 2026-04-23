@@ -11,8 +11,8 @@ describe("LazyDeferredSequence", () => {
 		const errors: unknown[] = [];
 		const stop = runSequence(
 			deferred,
-			v => calls.push(v),
-			e => errors.push(e),
+			v => void calls.push(v),
+			e => void errors.push(e),
 		);
 		// Resolve and check.
 		deferred.resolve(1);

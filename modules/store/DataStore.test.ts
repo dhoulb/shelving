@@ -9,7 +9,7 @@ test("DataStore.prototype.data", async () => {
 	expect(store.data).toEqual({ a: 1 });
 	// Ons and onces.
 	const calls: T[] = [];
-	const stop = runSequence(store.next, v => calls.push(v));
+	const stop = runSequence(store.next, v => void calls.push(v));
 	// Set truthy value.
 	store.value = { a: 2 };
 	expect(store.value).toEqual({ a: 2 });
@@ -27,7 +27,7 @@ test("DataStore.prototype.update()", async () => {
 	expect(store.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
 	const calls1: T[] = [];
-	const stop = runSequence(store.next, v => calls1.push(v));
+	const stop = runSequence(store.next, v => void calls1.push(v));
 	// Apply a data transform.
 	expect(store.update({ a: 111, "+=b": 100 })).toBe(undefined);
 	expect(store.value).toEqual({ a: 111, b: 102 });
@@ -45,7 +45,7 @@ test("OptionalDataStore.prototype.data", async () => {
 	expect(() => store.data).toThrow(RequiredError);
 	// Ons and onces.
 	const calls: (T | undefined)[] = [];
-	const stop = runSequence(store.next, v => calls.push(v));
+	const stop = runSequence(store.next, v => void calls.push(v));
 	// Set data value.
 	store.value = { a: 1 };
 	expect(store.value).toEqual({ a: 1 });
@@ -75,7 +75,7 @@ test("OptionalDataStore.prototype.update()", async () => {
 	expect(store.value).toEqual({ a: 1, b: 2 });
 	// Ons and onces.
 	const calls1: (T | undefined)[] = [];
-	const stop = runSequence(store.next, v => calls1.push(v));
+	const stop = runSequence(store.next, v => void calls1.push(v));
 	// Apply a data transform.
 	expect(store.update({ a: 111, "-=b": 100 })).toBe(undefined);
 	expect(store.value).toEqual({ a: 111, b: -98 });

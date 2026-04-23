@@ -7,8 +7,8 @@ test("No initial value", async () => {
 	// Subscribe.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
-	const stop1 = runSequence(store, v => calls1.push(v));
-	const stop2 = runSequence(store.next, v => calls2.push(v));
+	const stop1 = runSequence(store, v => void calls1.push(v));
+	const stop2 = runSequence(store.next, v => void calls2.push(v));
 	await runMicrotasks();
 	// Get with no value throws promise.
 	expect(store.loading).toBe(true);
@@ -56,8 +56,8 @@ test("Initial value", async () => {
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
-	const stop1 = runSequence(store, v => calls1.push(v));
-	const stop2 = runSequence(store.next, v => calls2.push(v));
+	const stop1 = runSequence(store, v => void calls1.push(v));
+	const stop2 = runSequence(store.next, v => void calls2.push(v));
 	await runMicrotasks();
 	// Set new value.
 	store.value = 222;
@@ -90,8 +90,8 @@ test("Initial value and multiple synchronous `set()` calls", async () => {
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
-	const stop1 = runSequence(store, v => calls1.push(v));
-	const stop2 = runSequence(store.next, v => calls2.push(v));
+	const stop1 = runSequence(store, v => void calls1.push(v));
+	const stop2 = runSequence(store.next, v => void calls2.push(v));
 	// Set multiple times.
 	store.value = 222;
 	store.value = 333;
@@ -116,8 +116,8 @@ test("No initial value and multiple synchronous `set()` calls", async () => {
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
-	const stop1 = runSequence(store, v => calls1.push(v));
-	const stop2 = runSequence(store.next, v => calls2.push(v));
+	const stop1 = runSequence(store, v => void calls1.push(v));
+	const stop2 = runSequence(store.next, v => void calls2.push(v));
 	// Set multiple times.
 	store.value = 222;
 	store.value = 333;

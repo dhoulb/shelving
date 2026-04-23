@@ -124,7 +124,7 @@ test("MemoryDBProvider: subscribing to documents", async () => {
 	const db = new MemoryDBProvider<string>();
 	// Subscribe.
 	const calls1: OptionalItem<string, BasicData>[] = [];
-	const un1 = runSequence(db.getItemSequence(BASICS_COLLECTION, "basic1"), v => calls1.push(v));
+	const un1 = runSequence(db.getItemSequence(BASICS_COLLECTION, "basic1"), v => void calls1.push(v));
 	await runMicrotasks();
 	expect(calls1.length).toBe(1);
 	expect<Item<string, BasicData> | undefined>(calls1[0]).toBe(undefined);

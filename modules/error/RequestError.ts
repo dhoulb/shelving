@@ -10,8 +10,12 @@ export class RequestError extends Error implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */
 	readonly [key: string]: unknown;
 
-	constructor(message?: string, options: BaseErrorOptions = {}) {
+	/** HTTP status code for this error in the range `400-499`, defaults to `400` */
+	readonly code: number;
+
+	constructor(message?: string, { code = 400, ...options }: RequestErrorOptions = {}) {
 		super(message, options);
+		this.code = code;
 		setBaseErrorOptions(RequestError, this, options);
 	}
 }

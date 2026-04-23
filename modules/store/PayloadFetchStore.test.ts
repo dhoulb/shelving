@@ -135,11 +135,11 @@ test("different object payload triggers a re-fetch with the new payload", async 
 
 // --- Dispose ---
 
-test("dispose() cleans up without throwing", async () => {
+test("asyncDispose() cleans up without throwing", async () => {
 	const store = new TestStore<string, string>("A", NONE, () => new Promise(() => {}));
 
 	store.loading; // trigger in-flight fetch
 	await runMicrotasks();
 
-	expect(() => store[Symbol.dispose]()).not.toThrow();
+	await expect(() => store[Symbol.asyncDispose]()).not.toThrow();
 });
