@@ -20,10 +20,10 @@ test("reading loading triggers a fetch", async () => {
 	expect(calls).toBe(1);
 });
 
-test("reading value throws a promise while loading", () => {
+test("reading value throws a promise while loading", async () => {
 	const store = new FetchStore<number>(NONE, () => new Promise(() => {}));
 
-	store.refresh();
+	const r = store.refresh();
 
 	try {
 		store.value;
@@ -31,6 +31,8 @@ test("reading value throws a promise while loading", () => {
 	} catch (thrown) {
 		expect(thrown).toMatchObject(EXPECT_PROMISELIKE);
 	}
+
+	await r;
 });
 
 test("busy is true while fetching and false after", async () => {
@@ -53,8 +55,7 @@ test("error in callback sets reason", async () => {
 	const err = new Error("oops");
 	const store = new FetchStore<number>(NONE, () => Promise.reject(err));
 
-	store.refresh();
-	await runMicrotasks();
+	await store.refresh();
 
 	expect(store.reason).toBe(err);
 });
@@ -91,8 +92,7 @@ test("a new refresh() can start once the previous one settles", async () => {
 test("abort() marks the current signal as aborted", async () => {
 	const store = new FetchStore<number>(NONE, () => new Promise(() => {}));
 
-	store.refresh();
-	await runMicrotasks();
+	await store.refresh();
 
 	const signal = store.signal;
 	expect(signal.aborted).toBe(false);
@@ -104,8 +104,7 @@ test("abort() marks the current signal as aborted", async () => {
 test("abort() does not set reason", async () => {
 	const store = new FetchStore<number>(NONE, () => new Promise(() => {}));
 
-	store.refresh();
-	await runMicrotasks();
+	await store.refresh();
 
 	store.abort();
 	await runMicrotasks();
@@ -116,8 +115,7 @@ test("abort() does not set reason", async () => {
 test("a new signal is created after abort()", async () => {
 	const store = new FetchStore<number>(NONE, () => new Promise(() => {}));
 
-	store.refresh();
-	await runMicrotasks();
+	await store.refresh();
 
 	const signal1 = store.signal;
 	store.abort();
@@ -182,8 +180,7 @@ test("stale-data protection: fetch that resolves after invalidate() applies the 
 
 	// Trigger fetch #2 explicitly (after the first fetch _invalid=false, so reading
 	// loading won't re-trigger — call refresh() directly to start a second fetch).
-	store.refresh();
-	await runMicrotasks();
+	await store.refresh();
 	expect(calls).toBe(2); // second fetch started
 
 	// Invalidate while fetch #2 is still in-flight.

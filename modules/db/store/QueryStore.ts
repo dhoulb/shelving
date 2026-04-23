@@ -12,7 +12,7 @@ import type { DBProvider } from "../provider/DBProvider.js";
 import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 
 /** Store that queries multiple items in a collection from a database provider. */
-export class QueryStore<I extends Identifier, T extends Data> extends FetchStore<Items<I, T>> {
+export class QueryStore<I extends Identifier, T extends Data> extends FetchStore<Items<I, T>> implements Iterable<Item<I, T>> {
 	readonly provider: DBProvider<I>;
 	readonly collection: Collection<string, I, T>;
 	readonly query: Query<Item<I, T>>;
@@ -102,14 +102,8 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	// 	}
 	// }
 
-	// Implement Iterable.
+	// Implement `Iterable`
 	[Symbol.iterator](): Iterator<Item<I, T>> {
 		return this.value.values();
-	}
-
-	// Implement Disposable.
-	override [Symbol.dispose]() {
-		// @todo cancel inflight refreshes
-		super[Symbol.dispose];
 	}
 }

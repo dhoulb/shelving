@@ -4,7 +4,7 @@ import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "../provider/APIProvider.js";
 
 /** Store object that loads a result from an API endpoint and provider. */
-export class EndpointStore<P, R> extends PayloadFetchStore<P, R> implements Disposable {
+export class EndpointStore<P, R> extends PayloadFetchStore<P, R> {
 	readonly provider: APIProvider<P, R>;
 	readonly endpoint: Endpoint<P, R>;
 

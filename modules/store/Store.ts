@@ -1,6 +1,7 @@
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { isAsync } from "../util/async.js";
 import { NONE } from "../util/constants.js";
+import { awaitDispose } from "../util/dispose.js";
 import { isDeepEqual } from "../util/equal.js";
 import type { Arguments } from "../util/function.js";
 import { getStarter, type PossibleStarter, type Starter } from "../util/start.js";
@@ -19,7 +20,7 @@ export type AnyStore = Store<any>;
  * - To set the store to be loading, use the `NONE` constant or a `Promise` value.
  * - To set the store to an explicit value, use that value or another `Store` instance with a value.
  */
-export class Store<T> implements AsyncIterable<T>, Disposable {
+export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	/** Deferred sequence this store uses to issue values as they change. */
 	public readonly next = new DeferredSequence<T>();
 
@@ -123,7 +124,7 @@ export class Store<T> implements AsyncIterable<T>, Disposable {
 	call<A extends Arguments = []>(callback: (...args: A) => T | PromiseLike<T>, ...args: A): void {
 		try {
 			const value = callback(...args);
-			if (isAsync(value)) this.await(value);
+			if (isAsync(value)) void this.await(value);
 			else this.value = value;
 		} catch (thrown) {
 			this.reason = thrown;
@@ -135,6 +136,7 @@ export class Store<T> implements AsyncIterable<T>, Disposable {
 	 * - If it rejects, save the rejection `reason` to this store.
 	 *
 	 * @returns Promise that resolves when the value has been saved (either resolves to the value or `undefined` if the value threw).
+	 * @throws {never} Never throws so safe to call unhandled..
 	 */
 	async await(value: PromiseLike<T>): Promise<void> {
 		try {
@@ -144,9 +146,9 @@ export class Store<T> implements AsyncIterable<T>, Disposable {
 		}
 	}
 
-	// Implement `AsyncIterable`
+	// Implement `AsyncIterator`
 	// Issues the current value of the store first, then any subsequent values that are issued.
-	async *[Symbol.asyncIterator](): AsyncGenerator<T, void, void> {
+	async *[Symbol.asyncIterator](): AsyncIterator<T, void, void> {
 		await Promise.resolve(); // Introduce a slight delay, i.e. don't immediately yield `this.value` in case it is changed synchronously.
 		this._starter?.start(this);
 		this._iterating++;
@@ -166,8 +168,11 @@ export class Store<T> implements AsyncIterable<T>, Disposable {
 		return isDeepEqual(a, b);
 	}
 
-	// Implement Disposable.
-	[Symbol.dispose]() {
-		this._starter?.stop();
+	// Implement `AsyncDisposable`
+	async [Symbol.asyncDispose](): Promise<void> {
+		await awaitDispose(
+			this._starter, // Stop the starter.
+			this.next, // Send `done: true` to all iterators of the next sequence.
+		);
 	}
 }

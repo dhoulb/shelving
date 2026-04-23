@@ -1,5 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { NONE } from "../util/constants.js";
+import { awaitDispose } from "../util/dispose.js";
 import { BooleanStore } from "./BooleanStore.js";
 import { Store } from "./Store.js";
 
@@ -25,14 +26,14 @@ export class FetchStore<T> extends Store<T> {
 	// This is because when we check `store.loading` in a component we are signalling intent that we wish to use that value.
 	override get loading(): boolean {
 		const loading = super.loading;
-		if (loading || this._invalidation) this.refresh();
+		if (loading || this._invalidation) void this.refresh();
 		return loading;
 	}
 
 	// Override to possibly trigger a fetch if `this.value` is still in a loading state or is invalid.
 	// This is because when we check `store.loading` in a component we are signalling intent that we wish to use that value.
 	override get value(): T {
-		if (super.loading) this.refresh();
+		if (super.loading) void this.refresh();
 		return super.value;
 	}
 	override set value(value: T | typeof NONE) {
@@ -52,6 +53,8 @@ export class FetchStore<T> extends Store<T> {
 	 * Fetch the result for this endpoint now.
 	 * - Triggered automatically when someone reads `value` or `loading`
 	 * - Multiple requests to `fetch()` while one is inflight will return the same promise.
+	 *
+	 * @throws {never} Never throws so safe to call unhandled.
 	 */
 	refresh(): Promise<void> {
 		return (this._inflight ||= this._refresh());
@@ -131,9 +134,12 @@ export class FetchStore<T> extends Store<T> {
 		}
 	}
 
-	// Implement Disposable.
-	override [Symbol.dispose]() {
-		this.abort();
-		return super[Symbol.dispose]();
+	// Implement `AsyncDisposable`.
+	override async [Symbol.asyncDispose](): Promise<void> {
+		await awaitDispose(
+			() => this.abort(),
+			this.busy, // Send `done: true` to any iterators of the busy store.
+			super[Symbol.asyncDispose](),
+		);
 	}
 }
