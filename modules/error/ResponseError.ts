@@ -1,4 +1,4 @@
-import { BaseError, type BaseErrorOptions } from "./BaseError.js";
+import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./BaseError.js";
 
 /** Options for `ResponseError`. */
 interface ResponseErrorOptions extends BaseErrorOptions {
@@ -6,13 +6,13 @@ interface ResponseErrorOptions extends BaseErrorOptions {
 }
 
 /** Error thrown when a received HTTP response isn't OK. */
-export class ResponseError extends BaseError {
-	/** HTTP status code for the response. */
-	readonly code: number;
+export class ResponseError extends Error implements BaseError {
+	/** Provide additional named contextual data that is relevant to the `Error` instance. */
+	readonly [key: string]: unknown;
 
-	constructor(message: string = ResponseError.prototype.message, options?: ResponseErrorOptions) {
-		super(message, { caller: ResponseError, ...options });
-		this.code = options?.code ?? 400;
+	constructor(message?: string, options: ResponseErrorOptions = {}) {
+		super(message, options);
+		setBaseErrorOptions(ResponseError, this, options);
 	}
 }
 ResponseError.prototype.name = "ResponseError";

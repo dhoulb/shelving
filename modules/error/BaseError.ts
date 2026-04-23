@@ -1,7 +1,7 @@
 import type { AnyCaller } from "../util/function.js";
 
 /** Options for `BaseError` that provide additional helpful error functionality. */
-export interface BaseErrorOptions extends ErrorOptions {
+export interface BaseErrorOptions extends globalThis.ErrorOptions {
 	/**
 	 * Provide additional named contextual data that should be attached to the `Error` instance.
 	 * - The fields `cause:` and `caller:` are ignored.
@@ -13,16 +13,14 @@ export interface BaseErrorOptions extends ErrorOptions {
 	caller?: AnyCaller | undefined;
 }
 
-/** An error that provides additional helpful functionality. */
-export abstract class BaseError extends Error {
+/** Define an error that provides additional helpful functionality. */
+export interface BaseError extends Error {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */
 	readonly [key: string]: unknown;
-
-	constructor(message?: string, options: BaseErrorOptions = {}) {
-		super(message, options);
-		const { cause: _cause, caller = BaseError, ...rest } = options;
-		for (const [key, value] of Object.entries(rest)) (this as Record<string, unknown>)[key] = value;
-		Error.captureStackTrace(this, caller);
-	}
 }
-BaseError.prototype.name = "BaseError";
+
+export function setBaseErrorOptions(defaultCaller: AnyCaller, error: BaseError, options: BaseErrorOptions): void {
+	const { cause: _cause, caller = defaultCaller, ...rest } = options;
+	for (const [key, value] of Object.entries(rest)) (error as Record<string, unknown>)[key] = value;
+	if (caller) Error.captureStackTrace(error, caller);
+}

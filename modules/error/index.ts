@@ -1,5 +1,5 @@
 export * from "./BaseError.js";
-
+export * from "./Errors.js";
 export * from "./NetworkError.js";
 export * from "./RequestError.js";
 export * from "./RequiredError.js";
