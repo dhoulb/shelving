@@ -1,7 +1,7 @@
 import { RequiredError } from "../../error/RequiredError.js";
 import { countArray, getFirst } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
-import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
@@ -22,7 +22,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 		return item;
 	}
 
-	abstract getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): AsyncIterable<OptionalItem<II, TT>>;
+	abstract getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT>;
 
 	abstract addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II>;
 
@@ -48,7 +48,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	abstract getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
-	): AsyncIterable<Items<II, TT>>;
+	): ItemsSequence<II, TT>;
 
 	abstract setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,

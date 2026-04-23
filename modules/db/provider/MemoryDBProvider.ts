@@ -3,7 +3,7 @@ import { DeferredSequence } from "../../sequence/DeferredSequence.js";
 import { requireArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import { isArrayEqual } from "../../util/equal.js";
-import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { countItems } from "../../util/iterate.js";
 import type { Query } from "../../util/query.js";
@@ -32,7 +32,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		return this.getTable(collection).getItem(id);
 	}
 
-	async *getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): AsyncIterable<OptionalItem<II, TT>> {
+	async *getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		yield* this.getTable(collection).getItemSequence(id);
 	}
 
@@ -70,8 +70,8 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
-	): AsyncIterable<Items<II, TT>> {
-		yield* this.getTable(collection).getQuerySequence(query);
+	): ItemsSequence<II, TT> {
+		return yield* this.getTable(collection).getQuerySequence(query);
 	}
 
 	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {

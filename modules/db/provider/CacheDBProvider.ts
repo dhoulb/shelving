@@ -1,5 +1,5 @@
 import type { Data } from "../../util/data.js";
-import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
 import type { Sourceable } from "../../util/source.js";
 import type { Updates } from "../../util/update.js";
@@ -25,7 +25,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 		return item;
 	}
 
-	getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): AsyncIterable<OptionalItem<II, TT>> {
+	getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		return this.memory.getTable(collection).setItemSequence(id, this.source.getItemSequence(collection, id));
 	}
 
@@ -64,10 +64,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 		return items;
 	}
 
-	getQuerySequence<II extends I, TT extends T>(
-		collection: Collection<string, II, TT>,
-		query?: Query<Item<II, TT>>,
-	): AsyncIterable<Items<II, TT>> {
+	getQuerySequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
 		return this.memory.getTable(collection).setItemsSequence(this.source.getQuerySequence(collection, query));
 	}
 

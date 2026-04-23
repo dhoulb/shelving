@@ -4,7 +4,7 @@ import type { MutableArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import { getNamedMessage } from "../../util/error.js";
 import type { AnyCaller } from "../../util/function.js";
-import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
@@ -19,7 +19,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	override async *getItemSequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		id: II,
-	): AsyncIterable<OptionalItem<II, TT>> {
+	): OptionalItemSequence<II, TT> {
 		for await (const item of super.getItemSequence(collection, id)) yield _validateItem(collection, item, this.getItemSequence);
 	}
 
@@ -53,7 +53,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	override async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
-	): AsyncIterable<Items<II, TT>> {
+	): ItemsSequence<II, TT> {
 		for await (const items of super.getQuerySequence(collection, query)) yield _validateItems(collection, items, this.getQuerySequence);
 	}
 

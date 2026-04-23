@@ -1,5 +1,5 @@
 import type { Data } from "../../util/data.js";
-import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
@@ -22,7 +22,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	override async *getItemSequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		id: II,
-	): AsyncIterableIterator<OptionalItem<II, TT>> {
+	): OptionalItemSequence<II, TT> {
 		try {
 			console.debug("⋯ ITERATE", collection.name, id);
 			for await (const item of super.getItemSequence(collection, id)) {
@@ -117,7 +117,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	override async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
-	): AsyncIterableIterator<Items<II, TT>> {
+	): ItemsSequence<II, TT> {
 		try {
 			console.debug("⋯ ITERATE", collection.name, query);
 			for await (const items of super.getQuerySequence(collection, query)) {

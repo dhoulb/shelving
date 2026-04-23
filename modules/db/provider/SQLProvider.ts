@@ -2,7 +2,7 @@ import { RequiredError } from "../../error/RequiredError.js";
 import { UnimplementedError } from "../../error/UnimplementedError.js";
 import type { ImmutableArray } from "../../util/array.js";
 import type { Data, DataPath } from "../../util/data.js";
-import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import { getQueryFilters, getQueryLimit, getQueryOrders, type Query, type QueryFilter, type QueryOrder } from "../../util/query.js";
 import { getUpdates, type Update, type Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
@@ -31,7 +31,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		return rows[0];
 	}
 
-	getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): AsyncIterable<OptionalItem<II, TT>> {
+	getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
 		throw new UnimplementedError(`SQLProvider does not support realtime subscriptions`);
 	}
 
@@ -89,7 +89,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	getQuerySequence<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_query?: Query<Item<II, TT>>,
-	): AsyncIterable<Items<II, TT>> {
+	): ItemsSequence<II, TT> {
 		throw new UnimplementedError(`SQLProvider does not support realtime subscriptions`);
 	}
 

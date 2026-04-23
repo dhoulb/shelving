@@ -10,8 +10,17 @@ export type Item<I extends Identifier = Identifier, T extends Data = Data> = { i
 /** Entity or `undefined` to indicate the item doesn't exist. */
 export type OptionalItem<I extends Identifier = Identifier, T extends Data = Data> = Item<I, T> | undefined;
 
+/** An async sequence of item objects. */
+export type ItemSequence<I extends Identifier = Identifier, T extends Data = Data> = AsyncIterable<Item<I, T>, void, void>;
+
+/** An async sequence of optional item objects. */
+export type OptionalItemSequence<I extends Identifier = Identifier, T extends Data = Data> = AsyncIterable<OptionalItem<I, T>, void, void>;
+
 /** An array of item data. */
 export type Items<I extends Identifier = Identifier, T extends Data = Data> = ImmutableArray<Item<I, T>>;
+
+/** An async sequence of arrays of item objects. */
+export type ItemsSequence<I extends Identifier = Identifier, T extends Data = Data> = AsyncIterable<Items<I, T>, void, void>;
 
 /** Get the identifier from an item object. */
 export function getIdentifier<I extends Identifier, T extends Data>({ id }: Item<I, T>): I {

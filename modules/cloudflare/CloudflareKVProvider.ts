@@ -2,7 +2,7 @@ import type { Collection } from "../db/collection/Collection.js";
 import { DBProvider } from "../db/provider/DBProvider.js";
 import { UnimplementedError } from "../error/UnimplementedError.js";
 import type { Data } from "../util/data.js";
-import { getItem, type Item, type Items, type OptionalItem } from "../util/item.js";
+import { getItem, type Item, type Items, type ItemsSequence, type OptionalItem, type OptionalItemSequence } from "../util/item.js";
 import type { Query } from "../util/query.js";
 import type { Updates } from "../util/update.js";
 import { randomUUID } from "../util/uuid.js";
@@ -43,7 +43,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 		if (data) return getItem(id, data);
 	}
 
-	getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): AsyncIterable<OptionalItem<II, TT>> {
+	getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
 		throw new UnimplementedError("CloudflareKVProvider does not support realtime subscriptions");
 	}
 
@@ -79,7 +79,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	getQuerySequence<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_query?: Query<Item<II, TT>>,
-	): AsyncIterable<Items<II, TT>> {
+	): ItemsSequence<II, TT> {
 		throw new UnimplementedError("CloudflareKVProvider does not support realtime subscriptions");
 	}
 
