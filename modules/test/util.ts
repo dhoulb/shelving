@@ -6,7 +6,6 @@ import type { NotString } from "../util/string.js";
 
 /** Expect that an object matches `PromiseLike` */
 export const EXPECT_PROMISELIKE = expect.objectContaining({
-	// biome-ignore lint/suspicious/noThenProperty: On purpose.
 	then: expect.any(Function),
 });
 
