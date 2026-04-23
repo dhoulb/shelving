@@ -69,17 +69,17 @@ async function _runSequence<T, R, N>(
 	onError?: ErrorCallback,
 	onReturn?: (value: R | undefined) => void,
 ): Promise<unknown> {
-	try {
-		const result = await Promise.race([stopped, iterator.next()]);
-		if (result.done) return result.value;
-		let n = onNext?.(result.value);
-		while (true) {
+	const result = await Promise.race([stopped, iterator.next()]);
+	if (result.done) return result.value;
+	let n = onNext?.(result.value);
+	while (true) {
+		try {
 			const result = await Promise.race([stopped, iterator.next(n)]);
 			if (result.done) return onReturn?.(result.value);
 			n = onNext?.(result.value);
+		} catch (reason) {
+			onError?.(reason);
 		}
-	} catch (reason) {
-		onError?.(reason);
 	}
 }
 

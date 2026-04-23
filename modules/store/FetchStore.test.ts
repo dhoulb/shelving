@@ -21,7 +21,7 @@ test("reading loading triggers a fetch", async () => {
 });
 
 test("reading value throws a promise while loading", async () => {
-	const store = new FetchStore<number>(NONE, () => new Promise(() => {}));
+	const store = new FetchStore<number>(NONE, () => Promise.resolve(123));
 
 	const r = store.refresh();
 
@@ -90,32 +90,35 @@ test("a new refresh() can start once the previous one settles", async () => {
 // --- abort() ---
 
 test("abort() marks the current signal as aborted", async () => {
-	const store = new FetchStore<number>(NONE, () => new Promise(() => {}));
+	const store = new FetchStore<number>(NONE, () => Promise.resolve(123));
 
-	await store.refresh();
+	const r = store.refresh();
 
 	const signal = store.signal;
 	expect(signal.aborted).toBe(false);
 
 	store.abort();
 	expect(signal.aborted).toBe(true);
+
+	await r;
 });
 
 test("abort() does not set reason", async () => {
-	const store = new FetchStore<number>(NONE, () => new Promise(() => {}));
+	const store = new FetchStore<number>(NONE, () => Promise.resolve(123));
 
-	await store.refresh();
+	const r = store.refresh();
 
 	store.abort();
-	await runMicrotasks();
+
+	await r;
 
 	expect(store.reason).toBe(undefined);
 });
 
 test("a new signal is created after abort()", async () => {
-	const store = new FetchStore<number>(NONE, () => new Promise(() => {}));
+	const store = new FetchStore<number>(NONE, () => Promise.resolve(123));
 
-	await store.refresh();
+	const r = store.refresh();
 
 	const signal1 = store.signal;
 	store.abort();
@@ -124,6 +127,8 @@ test("a new signal is created after abort()", async () => {
 	expect(signal1).not.toBe(signal2);
 	expect(signal1.aborted).toBe(true);
 	expect(signal2.aborted).toBe(false);
+
+	await r;
 });
 
 // --- invalidate() ---
@@ -180,7 +185,7 @@ test("stale-data protection: fetch that resolves after invalidate() applies the 
 
 	// Trigger fetch #2 explicitly (after the first fetch _invalid=false, so reading
 	// loading won't re-trigger — call refresh() directly to start a second fetch).
-	await store.refresh();
+	void store.refresh();
 	expect(calls).toBe(2); // second fetch started
 
 	// Invalidate while fetch #2 is still in-flight.
