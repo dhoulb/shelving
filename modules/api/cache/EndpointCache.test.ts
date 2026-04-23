@@ -33,8 +33,7 @@ describe("EndpointCache", () => {
 		expect(first.value).toBe("123:1");
 		expect(second.value).toBe("456:1");
 
-		cache.refresh({ id: "123" });
-		await runMicrotasks();
+		await cache.refresh({ id: "123" });
 
 		expect(first.value).toBe("123:2");
 		expect(second.value).toBe("456:1"); // untouched

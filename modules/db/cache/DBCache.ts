@@ -1,4 +1,5 @@
 import type { Data } from "../../util/data.js";
+import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item } from "../../util/item.js";
 import { setMapItem } from "../../util/map.js";
 import type { Query } from "../../util/query.js";
@@ -16,8 +17,8 @@ import { CollectionCache } from "./CollectionCache.js";
  * - Use `get(collection)` to retrieve or create the `CollectionCache` for a given collection,
  *   then `getItem(id)` / `getQuery(query)` on that to get a specific store.
  */
-export class DBCache<I extends Identifier = Identifier, T extends Data = Data> implements Disposable {
-	private readonly _caches = new Map<Collection<string, I, T>, CollectionCache<I, T>>();
+export class DBCache<I extends Identifier = Identifier, T extends Data = Data> implements AsyncDisposable {
+	private readonly _collections = new Map<Collection<string, I, T>, CollectionCache<I, T>>();
 
 	readonly provider: DBProvider<I, T>;
 	readonly memory: MemoryDBProvider<I, T> | undefined;
@@ -30,13 +31,13 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 
 	private _get<II extends I, TT extends T>(collection: Collection<string, II, TT>): CollectionCache<II, TT> | undefined;
 	private _get(collection: Collection<string, I, T>): CollectionCache<I, T> | undefined {
-		return this._caches.get(collection);
+		return this._collections.get(collection);
 	}
 
 	/** Get (or create) the `CollectionCache` for the given collection. */
 	get<II extends I, TT extends T>(collection: Collection<string, II, TT>): CollectionCache<II, TT>;
 	get(collection: Collection<string, I, T>): CollectionCache<I, T> {
-		return this._get(collection) || setMapItem(this._caches, collection, new CollectionCache(collection, this.provider, this.memory));
+		return this._get(collection) || setMapItem(this._collections, collection, new CollectionCache(collection, this.provider, this.memory));
 	}
 
 	/** Get (or create) an `ItemStore` for a collection/id in one hop. */
@@ -50,33 +51,35 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	}
 
 	/** Refresh a specific item store for a collection. */
-	refreshItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): void {
-		this._get(collection)?.refreshItem(id);
+	async refreshItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
+		await this._get(collection)?.refreshItem(id);
 	}
 
 	/** Refresh every cached item store for a collection. */
-	refreshItems<II extends I, TT extends T>(collection: Collection<string, II, TT>): void {
-		this._get(collection)?.refreshItems();
+	async refreshItems<II extends I, TT extends T>(collection: Collection<string, II, TT>): Promise<void> {
+		await this._get(collection)?.refreshItems();
 	}
 
 	/** Refresh a specific query store for a collection. */
-	refreshQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): void {
-		this._get(collection)?.refreshQuery(query);
+	async refreshQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
+		await this._get(collection)?.refreshQuery(query);
 	}
 
 	/** Refresh every cached query store for a collection. */
-	refreshQueries<II extends I, TT extends T>(collection: Collection<string, II, TT>): void {
-		this._get(collection)?.refreshQueries();
+	async refreshQueries<II extends I, TT extends T>(collection: Collection<string, II, TT>): Promise<void> {
+		await this._get(collection)?.refreshQueries();
 	}
 
 	/** Refresh every cached store (items and queries) for a collection. */
-	refreshAll<II extends I, TT extends T>(collection: Collection<string, II, TT>): void {
-		this._get(collection)?.refreshAll();
+	async refreshAll<II extends I, TT extends T>(collection: Collection<string, II, TT>): Promise<void> {
+		await this._get(collection)?.refreshAll();
 	}
 
-	// Implement Disposable.
-	[Symbol.dispose](): void {
-		for (const cache of this._caches.values()) cache[Symbol.dispose]();
-		this._caches.clear();
+	// Implement `AsyncDisposable`
+	async [Symbol.asyncDispose](): Promise<void> {
+		return awaitDispose(
+			...this._collections.values(), // Dispose all collections.
+			() => this._collections.clear(), // Clear the collections.
+		);
 	}
 }

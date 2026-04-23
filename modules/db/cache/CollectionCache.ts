@@ -1,5 +1,6 @@
+import { awaitValues } from "../../util/async.js";
 import type { Data } from "../../util/data.js";
-import { DisposableMap } from "../../util/dispose.js";
+import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item } from "../../util/item.js";
 import { setMapItem } from "../../util/map.js";
 import type { Query } from "../../util/query.js";
@@ -14,9 +15,9 @@ import { QueryStore } from "../store/QueryStore.js";
  * - Use `getItem(id)` to retrieve or create the `ItemStore` for a given id.
  * - Use `getQuery(query)` to retrieve or create the `QueryStore` for a given query.
  */
-export class CollectionCache<I extends Identifier, T extends Data> implements Disposable {
-	private readonly _items = new DisposableMap<I, ItemStore<I, T>>();
-	private readonly _queries = new DisposableMap<string, QueryStore<I, T>>();
+export class CollectionCache<I extends Identifier, T extends Data> implements AsyncDisposable {
+	private readonly _items = new Map<I, ItemStore<I, T>>();
+	private readonly _queries = new Map<string, QueryStore<I, T>>();
 
 	readonly collection: Collection<string, I, T>;
 	readonly provider: DBProvider<I>;
@@ -46,7 +47,7 @@ export class CollectionCache<I extends Identifier, T extends Data> implements Di
 
 	/** Refresh every cached item store. */
 	async refreshItems(): Promise<void> {
-		await Promise.all(this._items.values().map(store => store.refresh()));
+		await awaitValues(...this._items.values().map(store => store.refresh()));
 	}
 
 	/** Refresh a specific query store. */
@@ -56,21 +57,25 @@ export class CollectionCache<I extends Identifier, T extends Data> implements Di
 
 	/** Refresh every cached query store. */
 	async refreshQueries(): Promise<void> {
-		await Promise.all(this._queries.values().map(store => store.refresh()));
+		await awaitValues(...this._queries.values().map(store => store.refresh()));
 	}
 
 	/** Refresh every cached store (items and queries). */
 	async refreshAll(): Promise<void> {
-		await Promise.all([this.refreshItems(), this.refreshQueries()]);
+		await awaitValues(this.refreshItems(), this.refreshQueries());
 	}
 
 	private _queryKey(query: Query<Item<I, T>>): string {
 		return JSON.stringify(query);
 	}
 
-	// Implement Disposable.
-	[Symbol.dispose](): void {
-		this._items.clear();
-		this._queries.clear();
+	// Implement `AsyncDisposable`
+	[Symbol.asyncDispose](): Promise<void> {
+		return awaitDispose(
+			...this._items.values(), // Dispose all items.
+			...this._queries.values(), // Dispose all queries.
+			() => this._items.clear(), // Clear the items.
+			() => this._queries.clear(), // Clear the queries.
+		);
 	}
 }

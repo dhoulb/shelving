@@ -1,4 +1,4 @@
-import { DisposableMap } from "../../util/dispose.js";
+import { awaitDispose } from "../../util/dispose.js";
 import { setMapItem } from "../../util/map.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "../provider/APIProvider.js";
@@ -8,8 +8,8 @@ import { EndpointCache } from "./EndpointCache.js";
  * Cache of `EndpointCache` objects for multiple endpoints.
  * - Use `get(endpoint)` to retrieve or create the `EndpointCache` for a given endpoint, then `get(payload)` on that to get a specific `EndpointStore`.
  */
-export class APICache<P, R> implements Disposable {
-	private readonly _caches = new DisposableMap<Endpoint, EndpointCache>();
+export class APICache<P, R> implements AsyncDisposable {
+	private readonly _endpoints = new Map<Endpoint, EndpointCache>();
 
 	readonly provider: APIProvider<P, R>;
 
@@ -19,13 +19,13 @@ export class APICache<P, R> implements Disposable {
 
 	private _get<PP, RR>(endpoint: Endpoint<PP, RR>): EndpointCache<PP, RR> | undefined;
 	private _get(endpoint: Endpoint): EndpointCache | undefined {
-		return this._caches.get(endpoint);
+		return this._endpoints.get(endpoint);
 	}
 
 	/** Get (or create) the `EndpointCache` for the given endpoint. */
 	get<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): EndpointCache<PP, RR>;
 	get(endpoint: Endpoint): EndpointCache {
-		return this._get(endpoint) || setMapItem(this._caches, endpoint, new EndpointCache(endpoint, this.provider));
+		return this._get(endpoint) || setMapItem(this._endpoints, endpoint, new EndpointCache(endpoint, this.provider));
 	}
 
 	/** Invalidate a specific store for an endpoint. */
@@ -48,8 +48,11 @@ export class APICache<P, R> implements Disposable {
 		this._get(endpoint)?.refreshAll();
 	}
 
-	// Implement Disposable.
-	[Symbol.dispose](): void {
-		this._caches.clear();
+	// Implement `AsyncDisposable`
+	[Symbol.asyncDispose](): Promise<void> {
+		return awaitDispose(
+			...this._endpoints.values(), // Dispose all endpoints.
+			() => this._endpoints.clear(), // Clear the endpoints.
+		);
 	}
 }

@@ -55,8 +55,7 @@ describe("DBCache", () => {
 		await runMicrotasks();
 
 		const before = provider.calls.filter(c => c.type === "getItem").length;
-		cache.refreshItem(BASICS_COLLECTION, "basic1");
-		await runMicrotasks();
+		await cache.refreshItem(BASICS_COLLECTION, "basic1");
 		const after = provider.calls.filter(c => c.type === "getItem").length;
 
 		expect(after - before).toBe(1);
@@ -78,8 +77,7 @@ describe("DBCache", () => {
 		const basicsQueriesBefore = provider.calls.filter(c => c.type === "getQuery" && c.collection === "basics").length;
 		const peopleItemsBefore = provider.calls.filter(c => c.type === "getItem" && c.collection === "people").length;
 
-		cache.refreshAll(BASICS_COLLECTION);
-		await runMicrotasks();
+		await cache.refreshAll(BASICS_COLLECTION);
 
 		const basicsItemsAfter = provider.calls.filter(c => c.type === "getItem" && c.collection === "basics").length;
 		const basicsQueriesAfter = provider.calls.filter(c => c.type === "getQuery" && c.collection === "basics").length;
@@ -90,14 +88,14 @@ describe("DBCache", () => {
 		expect(peopleItemsAfter - peopleItemsBefore).toBe(0);
 	});
 
-	test("[Symbol.dispose]() clears the inner caches and disposes each one", () => {
+	test("[Symbol.asyncDispose]() clears the inner caches and disposes each one", async () => {
 		const provider = new MockDBProvider();
 		const cache = new DBCache(provider);
 
 		const firstCollection = cache.get(BASICS_COLLECTION);
 		const firstItem = firstCollection.getItem("basic1");
 
-		cache[Symbol.dispose]();
+		await cache[Symbol.asyncDispose]();
 
 		const secondCollection = cache.get(BASICS_COLLECTION);
 		const secondItem = secondCollection.getItem("basic1");

@@ -48,8 +48,7 @@ describe("CollectionCache", () => {
 		await runMicrotasks();
 
 		const before = provider.calls.filter(c => c.type === "getItem").length;
-		cache.refreshItem("basic1");
-		await runMicrotasks();
+		await cache.refreshItem("basic1");
 		const after = provider.calls.filter(c => c.type === "getItem").length;
 
 		expect(after - before).toBe(1);
@@ -69,8 +68,7 @@ describe("CollectionCache", () => {
 
 		const getItemBefore = provider.calls.filter(c => c.type === "getItem").length;
 		const getQueryBefore = provider.calls.filter(c => c.type === "getQuery").length;
-		cache.refreshItems();
-		await runMicrotasks();
+		await cache.refreshItems();
 		const getItemAfter = provider.calls.filter(c => c.type === "getItem").length;
 		const getQueryAfter = provider.calls.filter(c => c.type === "getQuery").length;
 
@@ -90,8 +88,7 @@ describe("CollectionCache", () => {
 
 		const getItemBefore = provider.calls.filter(c => c.type === "getItem").length;
 		const getQueryBefore = provider.calls.filter(c => c.type === "getQuery").length;
-		cache.refreshQueries();
-		await runMicrotasks();
+		await cache.refreshQueries();
 		const getItemAfter = provider.calls.filter(c => c.type === "getItem").length;
 		const getQueryAfter = provider.calls.filter(c => c.type === "getQuery").length;
 
@@ -110,8 +107,7 @@ describe("CollectionCache", () => {
 
 		const getItemBefore = provider.calls.filter(c => c.type === "getItem").length;
 		const getQueryBefore = provider.calls.filter(c => c.type === "getQuery").length;
-		cache.refreshAll();
-		await runMicrotasks();
+		await cache.refreshAll();
 		const getItemAfter = provider.calls.filter(c => c.type === "getItem").length;
 		const getQueryAfter = provider.calls.filter(c => c.type === "getQuery").length;
 
@@ -119,14 +115,14 @@ describe("CollectionCache", () => {
 		expect(getQueryAfter - getQueryBefore).toBe(1);
 	});
 
-	test("[Symbol.dispose]() clears both internal maps", () => {
+	test("[Symbol.asyncDispose]() clears both internal maps", async () => {
 		const provider = new MockDBProvider<string>();
 		const cache = new CollectionCache(BASICS_COLLECTION, provider);
 
 		const firstItem = cache.getItem("basic1");
 		const firstQuery = cache.getQuery({ $order: "id" });
 
-		cache[Symbol.dispose]();
+		await cache[Symbol.asyncDispose]();
 
 		const secondItem = cache.getItem("basic1");
 		const secondQuery = cache.getQuery({ $order: "id" });
