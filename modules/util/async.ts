@@ -1,3 +1,4 @@
+import { Errors } from "../error/Errors.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import type { ErrorCallback, ValueCallback } from "./function.js";
@@ -51,20 +52,38 @@ export function runMicrotasks(): Promise<void> {
  * - The program may then have dangling open threads that prevent the program from exiting, even after it has returned its main result.
  * - This function waits for the resolution of *all* promises before rejecting.
  *
- * @param promises Promises that we need to wait for.
- * @throws unknown Rethrows the first error found after resolving all the promises (the first in the _list_, not the first overall).
+ * @param promises Values (usually async, but not necessarily) that we need to wait for.
+ * @returns Array of values of all promises (in the same order/positions as input).
+ * @throws {Errors} If one or more promises throws all rejection reasons after resolving all of the promises.
  */
-export async function getConcurrent<T extends ImmutableArray<unknown>>(...promises: T): Promise<{ readonly [P in keyof T]: Awaited<T[P]> }>;
-export async function getConcurrent(...promises: PromiseLike<unknown>[]): Promise<ImmutableArray<unknown>> {
-	return (await Promise.allSettled(promises)).map(_getFulfilledResult);
-}
-function _getFulfilledResult<T>(result: PromiseSettledResult<T>): T {
-	if (result.status === "rejected") throw result.reason;
-	return result.value;
+export async function awaitConcurrent<T extends ImmutableArray<unknown>>(
+	...promises: T
+): Promise<{ readonly [P in keyof T]: Awaited<T[P]> }>;
+export async function awaitConcurrent(...promises: unknown[]): Promise<ImmutableArray<unknown>> {
+	const values: unknown[] = [];
+	const errors: unknown[] = [];
+	for (const result of await Promise.allSettled(promises)) {
+		if (result.status === "rejected") errors.push(result.reason);
+		else values.push(result.value);
+	}
+	if (errors.length) throw new Errors(errors, "Concurrent promise rejections", { caller: awaitConcurrent });
+	return values;
 }
 
-/** Type of `Promise` with `._resolve()` and `._reject()` methods available. */
-export abstract class AbstractPromise<T> extends Promise<T> {
+/**
+ * Get the rejection reasons of multiple promises (concurrently).
+ *
+ * @param promises Values (usually async, but not necessarily) that we need to wait for.
+ * @returns Array of rejection reasons of all promises (or empty array if no promises threw).
+ */
+export async function awaitErrors(...promises: PromiseLike<unknown>[]): Promise<ImmutableArray<unknown>> {
+	const errors: unknown[] = [];
+	for (const result of await Promise.allSettled(promises)) if (result.status === "rejected") errors.push(result.reason);
+	return errors;
+}
+
+/** `Promise` designed for extending with `._resolve()` and `._reject()` methods that can be accessed by subclasses. */
+export abstract class BasePromise<T> extends Promise<T> {
 	// Make `this.then()` create a `Promise` not a `Deferred`
 	// Done with a getter because some implementations implement this with a getter and we need to override it.
 	static override get [Symbol.species]() {

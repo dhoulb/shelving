@@ -1,5 +1,6 @@
 import type { Deferred } from "../util/async.js";
 import { getDeferred } from "../util/async.js";
+import { awaitDispose } from "../util/dispose.js";
 import type { Nullable } from "../util/null.js";
 import { Sequence } from "./Sequence.js";
 
@@ -107,5 +108,13 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 	}
 	finally(onFinally: () => void): Promise<T> {
 		return this.promise.finally(onFinally);
+	}
+
+	// Implement `AsyncIterable`
+	override async [Symbol.asyncDispose](): Promise<void> {
+		await awaitDispose(
+			() => this.done(), // Send `done: true` to all consumers of this sequence.
+			super[Symbol.asyncDispose](),
+		);
 	}
 }

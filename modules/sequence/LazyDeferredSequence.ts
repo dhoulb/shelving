@@ -1,3 +1,4 @@
+import { awaitDispose } from "../util/dispose.js";
 import { type StartCallback, Starter } from "../util/start.js";
 import { DeferredSequence } from "./DeferredSequence.js";
 
@@ -20,7 +21,9 @@ export class LazyDeferredSequence<T = void, R = void, N = void> extends Deferred
 		}
 	}
 	override async [Symbol.asyncDispose](): Promise<void> {
-		this._starter[Symbol.dispose]();
-		await super[Symbol.asyncDispose]();
+		await awaitDispose(
+			this._starter, // Stop the starter.
+			super[Symbol.asyncDispose](),
+		);
 	}
 }
