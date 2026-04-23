@@ -1,7 +1,6 @@
 import { getDeferred, getDelay } from "./async.js";
 import { STOP } from "./constants.js";
 import type { ErrorCallback, ValueCallback } from "./function.js";
-import type { StopCallback } from "./start.js";
 
 /**
  * Is a value an async iterable object?
@@ -16,7 +15,7 @@ export function isSequence(value: unknown): value is AsyncIterable<unknown> {
 export async function* repeatUntil<T>(
 	source: AsyncIterable<T>,
 	...signals: [Promise<typeof STOP>, ...Promise<typeof STOP>[]]
-): AsyncIterable<T> {
+): AsyncGenerator<T> {
 	const iterator: AsyncIterator<T, unknown, undefined> = source[Symbol.asyncIterator]();
 	while (true) {
 		const result = await Promise.race([iterator.next(), ...signals]);
@@ -32,7 +31,7 @@ export async function* repeatUntil<T>(
 }
 
 /** Infinite sequence that yields every X milliseconds (yields a count of the number of iterations). */
-export async function* repeatDelay(ms: number): AsyncIterable<number> {
+export async function* repeatDelay(ms: number): AsyncGenerator<number, void, void> {
 	let count = 1;
 	while (true) {
 		await getDelay(ms);
@@ -41,47 +40,47 @@ export async function* repeatDelay(ms: number): AsyncIterable<number> {
 }
 
 /** Dispatch items in a sequence to a (possibly async) callback. */
-export async function* callSequence<T>(sequence: AsyncIterable<T>, callback: ValueCallback<T>): AsyncIterable<T> {
+export async function* callSequence<T>(sequence: AsyncIterable<T>, callback: ValueCallback<T>): AsyncGenerator<T, void, void> {
 	for await (const item of sequence) {
 		callback(item);
 		yield item;
 	}
 }
 
-/** Pull values from a sequence until the returned function is called. */
-export function runSequence<T>(sequence: AsyncIterable<T>, onNext?: ValueCallback<T>, onError?: ErrorCallback): StopCallback {
-	const { promise, resolve } = getDeferred<void>();
-	void _runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError);
-	return resolve;
-}
-async function _runSequence<T>(
-	sequence: AsyncIterator<T>,
-	stopped: Promise<void>,
-	onNext?: ValueCallback<T>,
+/**
+ * Pull values from a sequence until the returned function is called.
+ *
+ * @return Callback function that can end the sequence run.
+ */
+export function runSequence<T, R, N>(
+	sequence: AsyncIterable<T, R | undefined, N | undefined>,
+	onNext?: (value: T) => N | undefined,
 	onError?: ErrorCallback,
+	onReturn?: (value: R | undefined) => void,
+): (value?: R | undefined) => void {
+	const { promise, resolve } = getDeferred<IteratorResult<T, R | undefined>>();
+	void _runSequence(sequence[Symbol.asyncIterator](), promise, onNext, onError, onReturn);
+	return (value?: R | undefined) => resolve({ done: true, value });
+}
+async function _runSequence<T, R, N>(
+	iterator: AsyncIterator<T, R | undefined, N | undefined>,
+	stopped: Promise<IteratorResult<T, R | undefined>>,
+	onNext?: (value: T) => N | undefined,
+	onError?: ErrorCallback,
+	onReturn?: (value: R | undefined) => void,
 ): Promise<unknown> {
 	try {
-		const result = await Promise.race([stopped, sequence.next()]);
-		if (!result) {
-			// Stop iteration because the stop signal was sent.
-			// Call `return()` on the iterator so it can perform any clean up.
-			sequence.return?.();
-			return;
+		const result = await Promise.race([stopped, iterator.next()]);
+		if (result.done) return result.value;
+		let n = onNext?.(result.value);
+		while (true) {
+			const result = await Promise.race([stopped, iterator.next(n)]);
+			if (result.done) return onReturn?.(result.value);
+			n = onNext?.(result.value);
 		}
-		if (result.done) {
-			// Stop iteration because iterator is done.
-			// Don't need to call `return()` on the iterator (assume it stopped itself when it sent `done: true`).
-			return;
-		}
-		// Forward the value to the next callback.
-		onNext?.(result.value);
-	} catch (thrown) {
-		// Forward the error to the error callback.
-		onError?.(thrown);
+	} catch (reason) {
+		onError?.(reason);
 	}
-
-	// Continue iteration.
-	return _runSequence(sequence, stopped, onNext, onError);
 }
 
 /** Merge several sequences (calls the sequences in series). */

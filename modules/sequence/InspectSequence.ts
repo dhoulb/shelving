@@ -1,6 +1,5 @@
 import { UnexpectedError } from "../error/UnexpectedError.js";
 import { getGetter } from "../util/class.js";
-import type { Mutable } from "../util/object.js";
 import { ThroughSequence } from "./ThroughSequence.js";
 
 /** Used when the sequence hasn't inspected anything yet. */
@@ -16,12 +15,18 @@ const _NOVALUE: unique symbol = Symbol("shelving/InspectSequence.NOVALUE");
  * 	console.log("FIRST", watch.first);
  * 	console.log("RETURNED", watch.returned);
  */
-export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> implements AsyncIterator<T, R, N>, AsyncIterable<T, R, N> {
+export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	/** Get the number of results received by this iterator so far. */
-	readonly count = 0;
+	get count() {
+		return this._count;
+	}
+	private _count = 0;
 
 	/** Is the iteration done? */
-	readonly done: boolean = false;
+	get done() {
+		return this._done;
+	}
+	private _done: boolean = false;
 
 	/** The first yielded value (throws if the iteration yielded no values, i.e. `this.count === 0`). */
 	get first(): T {
@@ -46,7 +51,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> implement
 	private _last: T | typeof _NOVALUE = _NOVALUE;
 
 	/** The returned value (throws if the iteration is not done, i.e. `this.done === false`). */
-	get returned(): R {
+	get returned(): R | undefined {
 		if (this._returned === _NOVALUE)
 			throw new UnexpectedError("Iteration not done", {
 				sequence: this,
@@ -54,28 +59,28 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> implement
 			});
 		return this._returned;
 	}
-	private _returned: R | typeof _NOVALUE = _NOVALUE;
+	private _returned: R | undefined | typeof _NOVALUE = _NOVALUE;
 
 	// Override to watch returned values.
-	override async next(): Promise<IteratorResult<T, R>> {
-		return this._inspect(await this.next());
+	override async next(value?: N | undefined): Promise<IteratorResult<T, R | undefined>> {
+		return this._inspect(await super.next(value));
 	}
-	override async throw(thrown: unknown): Promise<IteratorResult<T, R>> {
-		return this._inspect(await this.throw(thrown));
+	override async return(value?: R | undefined | PromiseLike<R | undefined>): Promise<IteratorResult<T, R | undefined>> {
+		return this._inspect(await super.return(value));
 	}
-	override async return(value: R): Promise<IteratorResult<T, R>> {
-		return this._inspect(await this.return(value));
+	override async throw(reason?: unknown): Promise<IteratorResult<T, R | undefined>> {
+		return this._inspect(await super.throw(reason));
 	}
 
 	/** Capture a result. */
-	private _inspect(result: IteratorResult<T, R>): IteratorResult<T, R> {
+	private _inspect(result: IteratorResult<T, R | undefined>): IteratorResult<T, R | undefined> {
 		if (!result.done) {
 			if (this.first === undefined) this._first = result.value;
 			this._last = result.value;
-			(this as Mutable<this>).count++;
+			this._count++;
 		} else {
 			this._returned = result.value;
-			(this as Mutable<this>).done = true;
+			this._done = true;
 		}
 		return result;
 	}

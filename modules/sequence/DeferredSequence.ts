@@ -1,84 +1,84 @@
 import type { Deferred } from "../util/async.js";
 import { getDeferred } from "../util/async.js";
-import { AbstractSequence } from "./AbstractSequence.js";
+import type { Nullable } from "../util/null.js";
+import { Sequence } from "./Sequence.js";
 
-/** Used when the deferred sequence has no value or reason queued. */
-const _NOVALUE: unique symbol = Symbol("shelving/DeferredSequence.NOVALUE");
+export type DeferredErrorResult = { readonly reason: unknown };
+export type DeferredResult<T, R> = IteratorResult<T, R | undefined> | DeferredErrorResult;
 
 /**
  * Deferred sequence of values that can be async iterated and new values can be published.
+ * - Implements `Deferred` so the next result can be set.
+ * - Implements `Promise` so the next result can be awaited.
  * - Implements `AsyncIterable` so values can be iterated over using `for await...of`
- * - Implements `Promise` so the next value can be awaited.
- * - Implements `Deferred` so next values can be resolved or rejected.
+ * - Call `resolve(value)` to publish the next value, `reject(reason?)` to publish an error, or `done(value?)` to signal completion.
  */
-export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> implements Deferred<T>, Promise<T> {
-	/**
-	 * Next deferred to be rejected/resolved, or `undefined` if we haven't requested one yet..
-	 * - Only create the deferred on demand, because we don't want to reject a deferred that isn't used to or it would throw an unhandled promise error.
-	 */
-	private _deferred: Deferred<T> | undefined;
+export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, R, N> implements Deferred<T>, Promise<T> {
+	/** Lazy deferred that stores iterator values. */
+	private _iteratorDeferred: Deferred<IteratorResult<T, R | undefined>> | undefined;
+	/** Lazy deferred that stores promise values. */
+	private _promiseDeferred: Deferred<T> | undefined;
 
-	/** Get the next promise to be deferred/rejected. */
+	/** Next iterator result to reject the deferred to (on next microtask). */
+	private _next: DeferredResult<T, R | undefined> | undefined;
+
+	/** Get the next promise to be resolved/rejected. */
 	get promise(): Promise<T> {
-		this._deferred ||= getDeferred<T>();
-		return this._deferred.promise;
+		this._promiseDeferred ||= getDeferred();
+		return this._promiseDeferred.promise;
 	}
 
-	/** Resolve the current deferred in the sequence. */
+	/**
+	 * Resolve the current deferred in the sequence with a value.
+	 * - Sends a `{ value: X, done: false }` to any iterators.
+	 */
 	resolve(value: T): void {
-		this._nextValue = value;
-		this._nextReason = _NOVALUE;
+		this._next = { value, done: false };
 		queueMicrotask(() => this._fulfill());
 	}
-	private _nextValue: T | typeof _NOVALUE = _NOVALUE;
 
-	/** Reject the current deferred in the sequence. */
+	/**
+	 * Reject the current deferred in the sequence.
+	 */
 	reject(reason: unknown): void {
-		this._nextValue = _NOVALUE;
-		this._nextReason = reason;
+		this._next = { reason };
 		queueMicrotask(() => this._fulfill());
 	}
-	private _nextReason: unknown = _NOVALUE;
 
-	/** Cancel the current resolution or rejection. */
-	cancel(): void {
-		this._nextValue = _NOVALUE;
-		this._nextReason = _NOVALUE;
+	/**
+	 * Signal that the sequence is done, causing any active `for await` loops to exit cleanly.
+	 * - Sends a `{ value: R, done: true }` to any iterators.
+	 */
+	done(value?: R | undefined): void {
+		this._next = { value, done: true };
+		queueMicrotask(() => this._fulfill());
 	}
 
-	/** Fulfill the current deferred by resolving or rejecting it. */
+	/**
+	 * Cancel the current resolution or rejection.
+	 * - Iterators will contain to wait for a next value.
+	 */
+	cancel(): void {
+		this._next = undefined;
+	}
+
+	/** Fulfill the current deferred by resolving or rejecting both the iterator deferred and the promise deferred. */
 	private _fulfill() {
-		const _deferred = this._deferred;
-		const _nextReason = this._nextReason;
-		const _nextValue = this._nextValue;
-		this._nextReason = _NOVALUE;
-		this._nextValue = _NOVALUE;
-		if (_deferred) {
-			if (_nextReason !== _NOVALUE) {
-				this._deferred = undefined;
-				_deferred.reject(_nextReason);
-			} else if (_nextValue !== _NOVALUE) {
-				this._deferred = undefined;
-				_deferred.resolve(_nextValue);
+		const iteratorDeferred = this._iteratorDeferred;
+		const promiseDeferred = this._promiseDeferred;
+		const next = this._next;
+		if (next) {
+			this._next = undefined;
+			this._iteratorDeferred = undefined;
+			this._promiseDeferred = undefined;
+			if ("reason" in next) {
+				iteratorDeferred?.reject(next.reason);
+				promiseDeferred?.reject(next.reason);
+			} else {
+				iteratorDeferred?.resolve(next);
+				if (!next.done) promiseDeferred?.resolve(next.value);
 			}
 		}
-	}
-
-	// Implement `AsyncIterator`
-	async next(): Promise<IteratorResult<T, void>> {
-		return { value: await this.promise };
-	}
-
-	// Implement `Promise`
-	// biome-ignore lint/suspicious/noThenProperty: This is intentional.
-	then<X = T, Y = never>(onNext?: (v: T) => X | PromiseLike<X>, onError?: (r: unknown) => Y | PromiseLike<Y>): Promise<X | Y> {
-		return this.promise.then(onNext, onError);
-	}
-	catch<Y>(onError: (r: unknown) => Y | PromiseLike<Y>): Promise<T | Y> {
-		return this.promise.catch(onError);
-	}
-	finally(onFinally: () => void): Promise<T> {
-		return this.promise.finally(onFinally);
 	}
 
 	/** Resolve the current deferred from a sequence of values. */
@@ -87,5 +87,25 @@ export class DeferredSequence<T = void> extends AbstractSequence<T, void, void> 
 			this.resolve(item);
 			yield item;
 		}
+	}
+
+	// Implement `AsyncIterator` — returns the promise directly since it already resolves to IteratorResult.
+	next(_next?: N | undefined): Promise<IteratorResult<T, R | undefined>> {
+		this._iteratorDeferred ||= getDeferred();
+		return this._iteratorDeferred.promise;
+	}
+
+	// Implement `Promise`
+	then<X = T, Y = never>(
+		onNext?: Nullable<(v: T) => X | PromiseLike<X>>,
+		onError?: Nullable<(r: unknown) => Y | PromiseLike<Y>>,
+	): Promise<X | Y> {
+		return this.promise.then(onNext, onError);
+	}
+	catch<Y>(onError: (r: unknown) => Y | PromiseLike<Y>): Promise<T | Y> {
+		return this.promise.catch(onError);
+	}
+	finally(onFinally: () => void): Promise<T> {
+		return this.promise.finally(onFinally);
 	}
 }
