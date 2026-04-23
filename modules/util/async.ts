@@ -56,17 +56,15 @@ export function runMicrotasks(): Promise<void> {
  * @returns Array of values of all promises (in the same order/positions as input).
  * @throws {Errors} If one or more promises throws all rejection reasons after resolving all of the promises.
  */
-export async function awaitConcurrent<T extends ImmutableArray<unknown>>(
-	...promises: T
-): Promise<{ readonly [P in keyof T]: Awaited<T[P]> }>;
-export async function awaitConcurrent(...promises: unknown[]): Promise<ImmutableArray<unknown>> {
+export async function awaitValues<T extends ImmutableArray<unknown>>(...promises: T): Promise<{ readonly [P in keyof T]: Awaited<T[P]> }>;
+export async function awaitValues(...promises: unknown[]): Promise<ImmutableArray<unknown>> {
 	const values: unknown[] = [];
 	const errors: unknown[] = [];
 	for (const result of await Promise.allSettled(promises)) {
 		if (result.status === "rejected") errors.push(result.reason);
 		else values.push(result.value);
 	}
-	if (errors.length) throw new Errors(errors, "Concurrent promise rejections", { caller: awaitConcurrent });
+	if (errors.length) throw new Errors(errors, "Concurrent promise rejections", { caller: awaitValues });
 	return values;
 }
 

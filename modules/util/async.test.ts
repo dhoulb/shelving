@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { awaitConcurrent, getDeferred, Errors as ShelvingAggregateError } from "../index.js";
+import { awaitValues, getDeferred, Errors as ShelvingAggregateError } from "../index.js";
 
 describe("Deferred", () => {
 	test("Works correctly", async () => {
@@ -17,7 +17,7 @@ describe("Deferred", () => {
 });
 describe("awaitConcurrent()", () => {
 	test("Works correctly with successful resolution", async () => {
-		const result1 = await awaitConcurrent(
+		const result1 = await awaitValues(
 			Promise.resolve("A"),
 			new Promise<string>(resolve => setTimeout(() => resolve("B"), 50)),
 			Promise.resolve("C"),
@@ -29,7 +29,7 @@ describe("awaitConcurrent()", () => {
 		let a = "NOTA";
 		let c = "NOTC";
 		try {
-			await awaitConcurrent(
+			await awaitValues(
 				new Promise<string>(resolve =>
 					setTimeout(() => {
 						a = "A";
@@ -58,7 +58,7 @@ describe("awaitConcurrent()", () => {
 	});
 	test("Collects multiple errors in list order", async () => {
 		try {
-			await awaitConcurrent(
+			await awaitValues(
 				new Promise<string>((_resolve, reject) => setTimeout(() => reject("A"), 100)),
 				new Promise<string>((_resolve, reject) => setTimeout(() => reject("B"), 50)),
 				Promise.resolve("C"),
