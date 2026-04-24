@@ -150,7 +150,8 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 	} else if (isData(values)) {
 		for (const { name, placeholder } of chunks) {
 			const v = getString(getDataProp(values, name));
-			if (v === undefined) throw new RequiredError(`Template placeholder "${name}" not found in object`, { received: values, name, caller });
+			if (v === undefined)
+				throw new RequiredError(`Template placeholder "${name}" not found in object`, { received: values, name, caller });
 			output = output.replace(placeholder, v);
 		}
 	} else if (isObject(values)) {
