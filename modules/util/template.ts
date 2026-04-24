@@ -1,10 +1,10 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
+import { type Data, getDataProp } from "./data.js";
 import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
 import { type AnyCaller, isFunction } from "./function.js";
 import { setMapItem } from "./map.js";
-import { getDataProp, type Data } from "./data.js";
 import { isObject, type Mutable } from "./object.js";
 import { getString, type NotString, type PossibleString } from "./string.js";
 
