@@ -106,7 +106,7 @@ export abstract class BasePromise<T> extends Promise<T> {
 }
 
 /** Deferred allows you to access the internal resolve/reject callbacks of a `Promise` */
-export type Deferred<T> = {
+export type Deferred<T = unknown> = {
 	promise: Promise<T>;
 	resolve: ValueCallback<T>;
 	reject: ErrorCallback;
@@ -116,7 +116,7 @@ export type Deferred<T> = {
  * Get a deferred to access the `resolve()` and `reject()` functions of a promise.
  * - See https://github.com/tc39/proposal-promise-with-resolvers/
  */
-export function getDeferred<T = unknown>(): Deferred<T> {
+export function getDeferred<T = void>(): Deferred<T> {
 	let resolve: ValueCallback<T>;
 	let reject: ErrorCallback;
 	return {
