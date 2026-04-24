@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "./array.js";
-import { type Data, getDataProp } from "./data.js";
+import { getDataProp, isData } from "./data.js";
 import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
 import { type AnyCaller, isFunction } from "./function.js";
 import { setMapItem } from "./map.js";
@@ -150,9 +150,13 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 }
 function _replaceTemplateKey(key: string, values: TemplateValues, caller: AnyCaller): string {
 	if (isFunction(values)) return values(key);
-	if (isObject(values)) {
-		// Dictionary or array of values. Dotted keys (e.g. "a.b") traverse nested objects.
-		const v = getString(getDataProp(values as Data, key));
+	if (isData(values)) {
+		// Plain object: dotted keys (e.g. "a.b") traverse nested objects.
+		const v = getString(getDataProp(values, key));
+		if (v !== undefined) return v;
+	} else if (isObject(values)) {
+		// Array: look up by key directly.
+		const v = getString(values[key]);
 		if (v !== undefined) return v;
 	} else {
 		// Single value for all placeholders.
