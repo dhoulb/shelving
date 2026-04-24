@@ -6,7 +6,7 @@ import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /** Allowed options for `URLSchema` */
-export interface URLSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "multiline"> {
+export interface URLSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "rows"> {
 	readonly base?: URL | URLString | undefined;
 	readonly schemes?: URISchemes | undefined;
 }
@@ -27,7 +27,7 @@ export class URLSchema extends StringSchema {
 			input: "url",
 			min: 1,
 			max: 512,
-			multiline: false,
+			rows: 1,
 		});
 		this.base = getURL(base)?.href;
 		this.schemes = schemes;

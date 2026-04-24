@@ -8,13 +8,14 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
  * - Falsy values are converted to empty string.
  */
 export class UUIDSchema extends StringSchema {
-	constructor({ one = "UUID", title = "UUID", ...rest }: Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "multiline"> = {}) {
+	constructor({ one = "UUID", title = "UUID", ...rest }: Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "rows"> = {}) {
 		super({
 			one,
 			title,
 			...rest,
 			min: 32,
 			max: 36, // 36 chars including hyphens (which get stripped by sanitize for appearances).
+			rows: 1,
 		});
 	}
 	override sanitize(str: string): string {

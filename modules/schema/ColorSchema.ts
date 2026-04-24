@@ -5,7 +5,7 @@ const COLOR_REGEXP = /^#[0-9A-F]{6}$/;
 const NOT_HEX_REGEXP = /[^0-9A-F]/g;
 
 /** Options for a `ColorSchema` */
-export interface ColorSchemaOptions extends Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline"> {}
+export interface ColorSchemaOptions extends Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "rows"> {}
 
 /**
  * Define a valid color hex string, e.g `#00CCFF`
@@ -26,6 +26,7 @@ export class ColorSchema extends StringSchema {
 			input: "color",
 			min: 1,
 			max: 7,
+			rows: 1,
 			match: COLOR_REGEXP,
 		});
 	}

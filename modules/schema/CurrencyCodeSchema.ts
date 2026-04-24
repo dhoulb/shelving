@@ -5,7 +5,7 @@ import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /** Options for a `CurrencyCodeSchema` */
-export interface CurrencyCodeSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "multiline"> {
+export interface CurrencyCodeSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "rows"> {
 	currencies?: ImmutableArray<CurrencyCode>;
 }
 
@@ -21,6 +21,7 @@ export class CurrencyCodeSchema extends StringSchema {
 			...options,
 			min: 3,
 			max: 3, // Valid currency code is 3 uppercase letters.
+			rows: 1,
 			case: "upper",
 			match: /^[A-Z]{3}$/, // Valid currency code is 3 uppercase letters.
 		});

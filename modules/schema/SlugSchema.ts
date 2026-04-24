@@ -10,11 +10,12 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
  * - Maximum slug length is 64 characters.
  */
 export class SlugSchema extends StringSchema {
-	constructor(options: Omit<StringSchemaOptions, "min" | "max" | "multiline">) {
+	constructor(options: Omit<StringSchemaOptions, "min" | "max" | "rows">) {
 		super({
 			...options,
 			min: 1,
 			max: 32,
+			rows: 1,
 		});
 	}
 	override sanitize(str: string): string {

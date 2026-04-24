@@ -3,7 +3,7 @@ import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /** Options for a `PhoneSchema` */
-export interface PhoneSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "multiline"> {}
+export interface PhoneSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "rows"> {}
 
 /**
  * Type of `StringSchema` that defines a valid phone number.
@@ -20,6 +20,7 @@ export class PhoneSchema extends StringSchema {
 			min: 1,
 			// Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
 			max: 16,
+			rows: 1,
 			// Valid phone number is max 16 digits made up of:
 			// - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).
 			// - Subscriber number (5-12 digits — the Solomon Islands have five-digit phone numbers apparently).

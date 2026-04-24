@@ -27,7 +27,7 @@ export class EmailSchema extends StringSchema {
 		one = "email address",
 		title = "Email",
 		...options
-	}: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "multiline">) {
+	}: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "rows">) {
 		super({
 			one,
 			title,
@@ -35,6 +35,7 @@ export class EmailSchema extends StringSchema {
 			input: "email",
 			min: 1,
 			max: 254,
+			rows: 1,
 			match: R_MATCH,
 		});
 	}
