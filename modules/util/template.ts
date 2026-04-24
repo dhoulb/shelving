@@ -1,11 +1,11 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
-import type { ImmutableArray } from "./array.js";
+import { isArray, type ImmutableArray } from "./array.js";
 import { getDataProp, isData } from "./data.js";
 import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
 import { type AnyCaller, isFunction } from "./function.js";
 import { setMapItem } from "./map.js";
-import { isObject, type Mutable } from "./object.js";
+import { type Mutable } from "./object.js";
 import { getString, type NotString, type PossibleString } from "./string.js";
 
 /** Single template chunk. */
@@ -154,9 +154,9 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 				throw new RequiredError(`Template placeholder "${name}" not found in object`, { received: values, name, caller });
 			output = output.replace(placeholder, v);
 		}
-	} else if (isObject(values)) {
+	} else if (isArray(values)) {
 		for (const { name, placeholder } of chunks) {
-			const v = getString(values[name]);
+			const v = getString(values[Number(name)]);
 			if (v === undefined) throw new RequiredError(`Template placeholder "${name}" not found in array`, { received: values, name, caller });
 			output = output.replace(placeholder, v);
 		}
