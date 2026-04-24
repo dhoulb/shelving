@@ -11,7 +11,7 @@ export type StopCallback = () => void;
  * Wrapper class to handle state on start/stop callback process.
  * - If process has already started, `starter.start()` won't be called twice (including if `start()` didn't return a `stop()` callback).
  */
-export class Starter<T extends Arguments> implements Disposable {
+export class Starter<T extends Arguments = []> implements Disposable {
 	private readonly _start: StartCallback<T>;
 	private _started = false;
 	private _stop: StopCallback | void = undefined;

@@ -10,7 +10,8 @@ import type {
 import { FieldPath, FieldValue, Firestore } from "@google-cloud/firestore";
 import type { Collection } from "../../db/collection/Collection.js";
 import { DBProvider } from "../../db/provider/DBProvider.js";
-import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
+import { DeferredSequence } from "../../sequence/DeferredSequence.js";
+import { LazySequence } from "../../sequence/LazySequence.js";
 import type { Data, DataProp } from "../../util/data.js";
 import { joinDataKey } from "../../util/data.js";
 import type { Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
@@ -123,7 +124,8 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 
 	getItemSequence<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		const ref = this._getCollection(c).doc(id);
-		return new LazyDeferredSequence(sequence =>
+		const sequence = new DeferredSequence<OptionalItem<II, TT>>();
+		return new LazySequence(sequence, () =>
 			ref.onSnapshot(
 				snapshot => sequence.resolve(_getOptionalItem<II, TT>(snapshot)),
 				reason => sequence.reject(reason),
@@ -158,7 +160,8 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 
 	getQuerySequence<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
 		const ref = this._getQuery(c, q);
-		return new LazyDeferredSequence(sequence =>
+		const sequence = new DeferredSequence<Items<II, TT>>();
+		return new LazySequence(sequence, () =>
 			ref.onSnapshot(
 				snapshot => sequence.resolve(_getItems<II, TT>(snapshot)),
 				reason => sequence.reject(reason),

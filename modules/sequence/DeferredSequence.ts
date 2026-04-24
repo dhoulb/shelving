@@ -31,10 +31,10 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 
 	/**
 	 * Resolve the current deferred in the sequence with a value.
-	 * - Sends a `{ value: X, done: false }` to any iterators.
+	 * - Sends a `{ value: X }` to any iterators.
 	 */
 	resolve(value: T): void {
-		this._next = { value, done: false };
+		this._next = { value };
 		queueMicrotask(() => this._fulfill());
 	}
 
@@ -48,10 +48,10 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 
 	/**
 	 * Signal that the sequence is done, causing any active `for await` loops to exit cleanly.
-	 * - Sends a `{ value: R, done: true }` to any iterators.
+	 * - Sends a `{ done: true, value: R }` to any iterators.
 	 */
 	done(value?: R | undefined): void {
-		this._next = { value, done: true };
+		this._next = { done: true, value };
 		queueMicrotask(() => this._fulfill());
 	}
 

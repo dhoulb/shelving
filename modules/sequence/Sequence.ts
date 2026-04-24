@@ -1,5 +1,15 @@
-/** Sequence of values designed to be extended that implements the full async generator protocol. */
-export abstract class Sequence<T, R, N> implements AsyncGenerator<T, R | undefined, N | undefined>, AsyncDisposable {
+/**
+ * Sequence of values designed to be extended that implements the full async generator protocol.
+ *
+ * Note: while this class implements the iterator protocol, it is not a _generator_.
+ * - Generators place additional constraints on the operation of an iterator.
+ * - Key constraint is that a generator only runs one time through and keeps track of its status.
+ * - This means when a generator throws, further requests to `next()` will always return `done: true`
+ * - This class does not provide that guarantee or have that constraint.
+ */
+export abstract class Sequence<T, R, N>
+	implements AsyncIterable<T, R | undefined, N | undefined>, AsyncIterator<T, R | undefined, N | undefined>, AsyncDisposable
+{
 	readonly [Symbol.toStringTag] = "Sequence";
 
 	/**
@@ -37,21 +47,14 @@ export abstract class Sequence<T, R, N> implements AsyncGenerator<T, R | undefin
 	 *
 	 * @param reason Error or other thrown value to send into the iterator.
 	 */
-	throw(reason: unknown): Promise<IteratorResult<T, R | undefined>> {
+	async throw(reason?: unknown): Promise<IteratorResult<T, R | undefined>> {
 		// Default behaviour for a generator is to throw the error back out of the iterator and not continue.
 		throw reason;
 	}
 
 	// Implement `AsyncIterable`
-	async *[Symbol.asyncIterator](): AsyncGenerator<T, R | undefined, N | undefined> {
-		const result = await this.next();
-		if (result.done) return result.value;
-		let n = yield result.value;
-		while (true) {
-			const result = await this.next(n);
-			if (result.done) return result.value;
-			n = yield result.value;
-		}
+	[Symbol.asyncIterator](): AsyncIterator<T, R | undefined, N | undefined> {
+		return this;
 	}
 
 	// Implement `AsyncDisposable`

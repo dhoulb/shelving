@@ -1,3 +1,4 @@
+import { awaitDispose, isAsyncDisposable } from "../util/dispose.js";
 import { Sequence } from "./Sequence.js";
 
 /**
@@ -19,5 +20,11 @@ export class ThroughSequence<T, R, N> extends Sequence<T, R | undefined, N | und
 	}
 	override throw(reason?: unknown): Promise<IteratorResult<T, R | undefined>> {
 		return this.source.throw ? this.source.throw(reason) : super.throw(reason);
+	}
+	override async [Symbol.asyncDispose](): Promise<void> {
+		await awaitDispose(
+			isAsyncDisposable(this.source) ? this.source : undefined, // Stop the source.
+			super[Symbol.asyncDispose](),
+		);
 	}
 }

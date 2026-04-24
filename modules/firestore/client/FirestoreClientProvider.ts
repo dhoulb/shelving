@@ -31,7 +31,8 @@ import {
 } from "firebase/firestore";
 import type { Collection } from "../../db/collection/Collection.js";
 import { DBProvider } from "../../db/provider/DBProvider.js";
-import { LazyDeferredSequence } from "../../sequence/LazyDeferredSequence.js";
+import { DeferredSequence } from "../../sequence/DeferredSequence.js";
+import { LazySequence } from "../../sequence/LazySequence.js";
 import type { Data, DataProp } from "../../util/data.js";
 import { joinDataKey } from "../../util/data.js";
 import type { Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
@@ -130,7 +131,8 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 		return _getOptionalItem<II, TT>(snapshot);
 	}
 	getItemSequence<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
-		return new LazyDeferredSequence(sequence =>
+		const sequence = new DeferredSequence<OptionalItem<II, TT>>();
+		return new LazySequence(sequence, () =>
 			onSnapshot(
 				this._doc(c, id),
 				snapshot => sequence.resolve(_getOptionalItem<II, TT>(snapshot)),
@@ -159,7 +161,8 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 		return _getItems<II, TT>(await getDocs(this._query(c, q)));
 	}
 	getQuerySequence<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
-		return new LazyDeferredSequence(sequence =>
+		const sequence = new DeferredSequence<Items<II, TT>>();
+		return new LazySequence(sequence, () =>
 			onSnapshot(
 				this._query(c, q),
 				snapshot => sequence.resolve(_getItems<II, TT>(snapshot)),

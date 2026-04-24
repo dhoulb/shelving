@@ -1,13 +1,11 @@
 import { RequiredError } from "../error/RequiredError.js";
-import type { NONE } from "../util/constants.js";
+import { ABORTED, type NONE } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { BooleanStore } from "./BooleanStore.js";
 import { Store } from "./Store.js";
 
 /** Callback for a callback fetch store. */
 export type FetchCallback<T> = () => PromiseLike<T>;
-
-const _ABORTED = Symbol();
 
 /**
  * Store that fetches its values from a remote source.
@@ -87,7 +85,7 @@ export class FetchStore<T> extends Store<T> {
 			if (invalidation === this._invalidation) this._invalidation = 0;
 		} catch (thrown) {
 			// If the throw was not an on-purpose abort, save it as the reason.
-			if (thrown !== _ABORTED) this.reason = thrown;
+			if (thrown !== ABORTED) this.reason = thrown;
 		} finally {
 			this._awaits.delete(value);
 			if (!this._awaits.size) this.busy.value = false;
@@ -129,7 +127,7 @@ export class FetchStore<T> extends Store<T> {
 	abort() {
 		const controller = this._controller;
 		if (controller) {
-			controller.abort(_ABORTED);
+			controller.abort(ABORTED);
 			this._controller = undefined;
 		}
 	}
