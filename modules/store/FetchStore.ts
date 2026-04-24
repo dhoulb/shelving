@@ -1,11 +1,12 @@
 import { RequiredError } from "../error/RequiredError.js";
+import { isAsync } from "../util/async.js";
 import { ABORTED, type NONE } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { BooleanStore } from "./BooleanStore.js";
 import { Store } from "./Store.js";
 
 /** Callback for a callback fetch store. */
-export type FetchCallback<T> = () => PromiseLike<T>;
+export type FetchCallback<T> = () => T | PromiseLike<T>;
 
 /**
  * Store that fetches its values from a remote source.
@@ -52,23 +53,23 @@ export class FetchStore<T> extends Store<T> {
 	 * - Triggered automatically when someone reads `value` or `loading`
 	 * - Multiple requests to `fetch()` while one is inflight will return the same promise.
 	 *
+	 * @returns {Promise} that resolves when the fetch is done.
+	 * @returns {void} if this store returned a synchronous value.
 	 * @throws {never} Never throws so safe to call unhandled.
 	 */
-	refresh(): Promise<void> {
-		return (this._inflight ||= this._refresh());
+	refresh(): Promise<void> | void {
+		if (this._inflight) return this._inflight;
+		try {
+			const value = this._fetch();
+			if (isAsync(value)) return (this._inflight = this.await(value));
+			this.value = value;
+		} catch (thrown) {
+			this.reason = thrown;
+		}
 	}
 
 	/** An in-flight refresh, so we don't de-duplicate these. */
 	private _inflight: Promise<void> | undefined = undefined;
-
-	/** Kick off a refresh. */
-	private async _refresh() {
-		try {
-			await this.await(this._fetch());
-		} finally {
-			this._inflight = undefined;
-		}
-	}
 
 	// Override to start/stop `this.busy` when awaiting values, and handle aborts correctly.
 	override async await(value: PromiseLike<T>): Promise<void> {
@@ -88,14 +89,17 @@ export class FetchStore<T> extends Store<T> {
 			if (thrown !== ABORTED) this.reason = thrown;
 		} finally {
 			this._awaits.delete(value);
-			if (!this._awaits.size) this.busy.value = false;
+			if (!this._awaits.size) {
+				this.busy.value = false;
+				this._inflight = undefined; // Clear any inflight refresh if this was the last await.
+			}
 			this._controller = undefined;
 		}
 	}
 	private _awaits = new Set(); // Used to only set `busy` when we have no awaited values left.
 
 	/** Call the callback with the current payload. */
-	protected _fetch(): PromiseLike<T> {
+	protected _fetch(): T | PromiseLike<T> {
 		if (!this._callback) throw new RequiredError("FetchStore has no callback() function", { store: this, caller: this.refresh });
 		return this._callback();
 	}

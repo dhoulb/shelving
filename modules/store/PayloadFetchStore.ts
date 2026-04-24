@@ -3,7 +3,7 @@ import { awaitDispose } from "../util/dispose.js";
 import { FetchStore } from "./FetchStore.js";
 import { Store } from "./Store.js";
 
-export type PayloadFetchCallback<P, R> = (payload: P) => PromiseLike<R>;
+export type PayloadFetchCallback<P, R> = (payload: P) => R | PromiseLike<R>;
 
 /**
  * Store that fetches its values from a remote source by sending a payload to them.
