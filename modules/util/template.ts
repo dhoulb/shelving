@@ -1,10 +1,11 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
-import type { ImmutableArray } from "./array.js";
+import { type ImmutableArray, isArray } from "./array.js";
+import { getDataProp, isData } from "./data.js";
 import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
 import { type AnyCaller, isFunction } from "./function.js";
 import { setMapItem } from "./map.js";
-import { isObject, type Mutable } from "./object.js";
+import type { Mutable } from "./object.js";
 import { getString, type NotString, type PossibleString } from "./string.js";
 
 /** Single template chunk. */
@@ -144,19 +145,25 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 	const chunks = _splitTemplateCached(template, caller);
 	if (!chunks.length) return template;
 	let output = template;
-	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replaceTemplateKey(name, values, caller));
-	return output;
-}
-function _replaceTemplateKey(key: string, values: TemplateValues, caller: AnyCaller): string {
-	if (isFunction(values)) return values(key);
-	if (isObject(values)) {
-		// Dictionary or array of values.
-		const v = getString(values[key]);
-		if (v !== undefined) return v;
+	if (isFunction(values)) {
+		for (const { name, placeholder } of chunks) output = output.replace(placeholder, values(name));
+	} else if (isData(values)) {
+		for (const { name, placeholder } of chunks) {
+			const v = getString(getDataProp(values, name));
+			if (v === undefined)
+				throw new RequiredError(`Template placeholder "${name}" not found in object`, { received: values, name, caller });
+			output = output.replace(placeholder, v);
+		}
+	} else if (isArray(values)) {
+		for (const { name, placeholder } of chunks) {
+			const v = getString(values[Number(name)]);
+			if (v === undefined) throw new RequiredError(`Template placeholder "${name}" not found in array`, { received: values, name, caller });
+			output = output.replace(placeholder, v);
+		}
 	} else {
-		// Single value for all placeholders.
 		const v = getString(values);
-		if (v !== undefined) return v;
+		if (v === undefined) throw new RequiredError(`Template value must be string`, { received: values, caller });
+		for (const { placeholder } of chunks) output = output.replace(placeholder, v);
 	}
-	throw new RequiredError(`Template value for "${key}" must be string`, { received: values, key, caller });
+	return output;
 }
