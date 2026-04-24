@@ -12,7 +12,7 @@ export type PayloadFetchCallback<P, R> = (payload: P) => PromiseLike<R>;
  * @param value The initial value for the store, or `NONE` if it does not have one yet.
  * @param callback An optional callback that, if set, will be called with the current payload when the `fetch()` method is invoked to fetch the next value.
  */
-export abstract class PayloadFetchStore<P, R> extends FetchStore<R> {
+export class PayloadFetchStore<P, R> extends FetchStore<R> {
 	/**
 	 * Store keeping the current payload to send to the fetch on send.
 	 * - New payloads can be set using `this.payload.value`

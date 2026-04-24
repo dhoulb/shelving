@@ -1,19 +1,16 @@
 import { expect, test } from "bun:test";
 import { NONE, PayloadFetchStore, runMicrotasks } from "../index.js";
 
-// PayloadFetchStore is abstract (no abstract members) — extend concretely for tests.
-class TestStore<P, R> extends PayloadFetchStore<P, R> {}
-
 // --- Initial state ---
 
 test("payload is accessible via store.payload.value", () => {
-	const store = new TestStore<number, string>(42, NONE, p => Promise.resolve(`${p}`));
+	const store = new PayloadFetchStore<number, string>(42, NONE, p => Promise.resolve(`${p}`));
 	expect(store.payload.value).toBe(42);
 });
 
 test("reading loading triggers the first fetch with the initial payload", async () => {
 	const received: string[] = [];
-	const store = new TestStore<string, string>("hello", NONE, p => {
+	const store = new PayloadFetchStore<string, string>("hello", NONE, p => {
 		received.push(p);
 		return Promise.resolve(`result:${p}`);
 	});
@@ -29,7 +26,7 @@ test("reading loading triggers the first fetch with the initial payload", async 
 
 test("changing payload invalidates and triggers a re-fetch with the new payload", async () => {
 	const received: string[] = [];
-	const store = new TestStore<string, string>("A", NONE, p => {
+	const store = new PayloadFetchStore<string, string>("A", NONE, p => {
 		received.push(p);
 		return Promise.resolve(`result:${p}`);
 	});
@@ -49,7 +46,7 @@ test("changing payload invalidates and triggers a re-fetch with the new payload"
 });
 
 test("changing payload marks the store as invalid (old value is preserved)", async () => {
-	const store = new TestStore<string, string>("A", NONE, p => Promise.resolve(`result:${p}`));
+	const store = new PayloadFetchStore<string, string>("A", NONE, p => Promise.resolve(`result:${p}`));
 
 	expect(store.loading).toBe(true);
 	await runMicrotasks();
@@ -65,7 +62,7 @@ test("changing payload marks the store as invalid (old value is preserved)", asy
 test("changing payload aborts the in-flight signal", async () => {
 	const signals: AbortSignal[] = [];
 
-	const store = new TestStore<string, string>("A", NONE, _p => {
+	const store = new PayloadFetchStore<string, string>("A", NONE, _p => {
 		signals.push(store.signal);
 		return new Promise(() => {}); // never resolves
 	});
@@ -84,7 +81,7 @@ test("changing payload aborts the in-flight signal", async () => {
 
 test("same payload value does not trigger a re-fetch", async () => {
 	let calls = 0;
-	const store = new TestStore<string, string>("A", NONE, _p => {
+	const store = new PayloadFetchStore<string, string>("A", NONE, _p => {
 		calls++;
 		return Promise.resolve("result");
 	});
@@ -101,7 +98,7 @@ test("same payload value does not trigger a re-fetch", async () => {
 
 test("deep-equal object payload does not trigger a re-fetch", async () => {
 	let calls = 0;
-	const store = new TestStore<{ id: number }, string>({ id: 1 }, NONE, _p => {
+	const store = new PayloadFetchStore<{ id: number }, string>({ id: 1 }, NONE, _p => {
 		calls++;
 		return Promise.resolve("result");
 	});
@@ -117,7 +114,7 @@ test("deep-equal object payload does not trigger a re-fetch", async () => {
 
 test("different object payload triggers a re-fetch with the new payload", async () => {
 	const received: number[] = [];
-	const store = new TestStore<{ id: number }, string>({ id: 1 }, NONE, p => {
+	const store = new PayloadFetchStore<{ id: number }, string>({ id: 1 }, NONE, p => {
 		received.push(p.id);
 		return Promise.resolve(`result:${p.id}`);
 	});
@@ -136,7 +133,7 @@ test("different object payload triggers a re-fetch with the new payload", async 
 // --- Dispose ---
 
 test("asyncDispose() cleans up without throwing", async () => {
-	const store = new TestStore<string, string>("A", NONE, () => new Promise(() => {}));
+	const store = new PayloadFetchStore<string, string>("A", NONE, () => new Promise(() => {}));
 
 	store.loading; // trigger in-flight fetch
 	await runMicrotasks();
