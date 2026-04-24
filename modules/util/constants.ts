@@ -46,8 +46,8 @@ export const THINSP = "\u2009";
 /** Non-breaking narrow space (goes between numbers and their corresponding units). */
 export const NNBSP = "\u202F";
 
-/** The `STOP` symbol indicates something should stop. */
-export const STOP: unique symbol = Symbol("shelving/STOP");
+/** The `ABORTED` symbol indicates something was manually aborted. */
+export const ABORTED: unique symbol = Symbol("shelving/ABORTED");
 
 /** The `NONE` symbol indicates something is nothing. */
 export const NONE: unique symbol = Symbol("shelving/NONE");
