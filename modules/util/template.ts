@@ -145,23 +145,24 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 	const chunks = _splitTemplateCached(template, caller);
 	if (!chunks.length) return template;
 	let output = template;
-	for (const { name, placeholder } of chunks) output = output.replace(placeholder, _replaceTemplateKey(name, values, caller));
-	return output;
-}
-function _replaceTemplateKey(key: string, values: TemplateValues, caller: AnyCaller): string {
-	if (isFunction(values)) return values(key);
-	if (isData(values)) {
-		// Plain object: dotted keys (e.g. "a.b") traverse nested objects.
-		const v = getString(getDataProp(values, key));
-		if (v !== undefined) return v;
+	if (isFunction(values)) {
+		for (const { name, placeholder } of chunks) output = output.replace(placeholder, values(name));
+	} else if (isData(values)) {
+		for (const { name, placeholder } of chunks) {
+			const v = getString(getDataProp(values, name));
+			if (v === undefined) throw new RequiredError(`Template placeholder "${name}" not found in object`, { received: values, name, caller });
+			output = output.replace(placeholder, v);
+		}
 	} else if (isObject(values)) {
-		// Array: look up by key directly.
-		const v = getString(values[key]);
-		if (v !== undefined) return v;
+		for (const { name, placeholder } of chunks) {
+			const v = getString(values[name]);
+			if (v === undefined) throw new RequiredError(`Template placeholder "${name}" not found in array`, { received: values, name, caller });
+			output = output.replace(placeholder, v);
+		}
 	} else {
-		// Single value for all placeholders.
 		const v = getString(values);
-		if (v !== undefined) return v;
+		if (v === undefined) throw new RequiredError(`Template value must be string`, { received: values, caller });
+		for (const { placeholder } of chunks) output = output.replace(placeholder, v);
 	}
-	throw new RequiredError(`Template value for "${key}" must be string`, { received: values, key, caller });
+	return output;
 }
