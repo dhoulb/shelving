@@ -1,15 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import type { MutableArray } from "../index.js";
-import { getDeferred, mergeSequences, repeatDelay, repeatUntil, runSequence, STOP } from "../index.js";
+import { getDeferred, mergeSequences, repeatDelay, repeatUntil, runSequence } from "../index.js";
 
 const DELAY = 50;
 
 test("repeatUntil() and repeatDelay()", async () => {
 	const yielded: number[] = [];
-	const { promise, resolve } = getDeferred<typeof STOP>();
+	const { promise, resolve } = getDeferred();
 	for await (const count of repeatUntil(repeatDelay(DELAY), promise)) {
 		yielded.push(count);
-		if (count >= 3) resolve(STOP);
+		if (count >= 3) resolve();
 	}
 	expect(yielded).toEqual([1, 2, 3]);
 });
