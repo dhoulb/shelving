@@ -11,7 +11,7 @@ export interface StringSchemaOptions extends SchemaOptions {
 	readonly value?: string | undefined;
 	readonly min?: number | undefined;
 	readonly max?: number | undefined;
-	readonly multiline?: boolean | undefined;
+	readonly rows?: number | undefined;
 	readonly match?: RegExp | undefined;
 	readonly case?: "upper" | "lower" | undefined;
 	readonly input?: StringInputType | undefined;
@@ -37,7 +37,7 @@ export class StringSchema extends Schema<string> {
 	readonly input: StringInputType;
 	readonly min: number;
 	readonly max: number;
-	readonly multiline: boolean;
+	readonly rows: number;
 	readonly match: RegExp | undefined;
 	readonly case: "upper" | "lower" | undefined;
 
@@ -46,7 +46,7 @@ export class StringSchema extends Schema<string> {
 		min = 0,
 		max = Number.POSITIVE_INFINITY,
 		value = "",
-		multiline = false,
+		rows = 1,
 		match,
 		case: _case,
 		input = "text",
@@ -55,7 +55,7 @@ export class StringSchema extends Schema<string> {
 		super({ one, value, ...options });
 		this.min = min;
 		this.max = max;
-		this.multiline = multiline;
+		this.rows = rows;
 		this.match = match;
 		this.case = _case;
 		this.input = input;
@@ -73,7 +73,7 @@ export class StringSchema extends Schema<string> {
 
 	/** Sanitize the string by removing unwanted characters. */
 	sanitize(str: string): string {
-		const sane = this.multiline ? sanitizeMultilineText(str) : sanitizeText(str);
+		const sane = this.rows > 1 ? sanitizeMultilineText(str) : sanitizeText(str);
 		if (this.case === "upper") return sane.toUpperCase();
 		if (this.case === "lower") return sane.toLowerCase();
 		return sane;
