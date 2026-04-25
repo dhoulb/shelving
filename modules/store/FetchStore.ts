@@ -45,7 +45,7 @@ export class FetchStore<T> extends Store<T> {
 	// Override to save callback.
 	constructor(value: T | typeof NONE, callback?: FetchCallback<T>) {
 		super(value);
-		this.busy = new BooleanStore(value !== NONE);
+		this.busy = new BooleanStore(value === NONE);
 		this._callback = callback;
 	}
 
