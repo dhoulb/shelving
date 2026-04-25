@@ -1,6 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { isAsync } from "../util/async.js";
-import { ABORTED, type NONE } from "../util/constants.js";
+import { ABORTED, NONE } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { BooleanStore } from "./BooleanStore.js";
 import { Store } from "./Store.js";
@@ -19,7 +19,7 @@ export class FetchStore<T> extends Store<T> {
 	 * Store that indicates the busy state of this store.
 	 * - Can be listened to for e.g. loading spinners etc.
 	 */
-	readonly busy = new BooleanStore(true);
+	readonly busy: BooleanStore;
 
 	// Override to possibly trigger a fetch when `this.loading` is read.
 	// This is because when we check `store.loading` in a component we are signalling intent that we wish to use that value.
@@ -45,6 +45,7 @@ export class FetchStore<T> extends Store<T> {
 	// Override to save callback.
 	constructor(value: T | typeof NONE, callback?: FetchCallback<T>) {
 		super(value);
+		this.busy = new BooleanStore(value !== NONE);
 		this._callback = callback;
 	}
 
