@@ -50,6 +50,8 @@ jobs:
           git config --global gpg.format ssh
           git config --global user.signingkey ~/.ssh/git.pub
           git config --global commit.gpgsign true
+      - name: fetch
+        run: git fetch origin main
       - name: semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
