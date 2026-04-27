@@ -74,7 +74,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	}
 
 	// Override to fetch the result from the database provider.
-	override _fetch(): Promise<Items<I, T>> {
+	override _fetch(_signal: AbortSignal): Promise<Items<I, T>> {
 		return this.provider.getQuery(this.collection, this.query);
 	}
 

@@ -42,8 +42,7 @@ export class PayloadFetchStore<P, R> extends FetchStore<R> {
  */
 async function _iterate<P, R>(store: PayloadFetchStore<P, R>): Promise<void> {
 	for await (const _payload of store.payload.next) {
-		store.abort(); // Abort any in-flight request that used the old payload.
-		store.invalidate(); // Mark stale so the next read (or the refresh below) fetches fresh data.
-		void store.refresh(); // Eagerly start a fresh fetch if no other fetch is already in-flight.
+		store.invalidate(); // Abort any in-flight fetch and mark stale.
+		void store.refresh(); // Eagerly start a fresh fetch with the new payload.
 	}
 }

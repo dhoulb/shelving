@@ -16,9 +16,9 @@ export type AnyStore = Store<any>;
  * - Stores also send their most-recent value to any new subscribers immediately when a new subscriber is added.
  * - Stores can also be in a loading store where they do not have a current value.
  *
- * @param initial The initial value for the store, a `Promise` that resolves to the initial value, a source `Subscribable` to subscribe to, or another `Store` instance to take the initial value from and subscribe to.
- * - To set the store to be loading, use the `NONE` constant or a `Promise` value.
- * - To set the store to an explicit value, use that value or another `Store` instance with a value.
+ * @param initial The initial value for this store, a `Promise` that resolves to the initial value, a source `Subscribable` to subscribe to, or another `Store` instance to take the initial value from and subscribe to.
+ * - To set this store to be loading, use the `NONE` constant or a `Promise` value.
+ * - To set this store to an explicit value, use that value or another `Store` instance with a value.
  */
 export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	/** Deferred sequence this store uses to issue values as they change. */
@@ -34,26 +34,36 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	}
 
 	/**
-	 * Current value of the store.
+	 * Get the current value of this store.
 	 *
-	 * @throws {Promise} that resolves when this store receives its next value or error).
-	 * @throws {unknown} if the store currently has an error.
+	 * @throws {Promise} if this store currently has no value (resolves when this store receives its next value or error).
+	 * @throws {unknown} if this store currently has an error.
 	 */
 	get value(): T {
 		if (this._reason !== undefined) throw this._reason;
 		if (this._value === NONE) throw this.next;
 		return this._value;
 	}
-	set value(value: T | typeof NONE) {
-		this._reason = undefined;
-		if (value === NONE) {
-			this._time = undefined;
-			this._value = value;
-			this.next.cancel();
-		} else if (this._value === NONE || !this.isEqual(value, this._value)) {
-			this._time = Date.now();
-			this._value = value;
-			this.next.resolve(value);
+	/**
+	 * Set the value of this store .
+	 * - Silently discards any pending `await()` calls.
+	 * - Awaits any async values.
+	 */
+	set value(value: T | typeof NONE | PromiseLike<T | typeof NONE>) {
+		if (isAsync(value)) {
+			void this.await(value);
+		} else {
+			this.abort();
+			this._reason = undefined;
+			if (value === NONE) {
+				this._time = undefined;
+				this._value = value;
+				this.next.cancel();
+			} else if (this._value === NONE || !this.isEqual(value, this._value)) {
+				this._time = Date.now();
+				this._value = value;
+				this.next.resolve(value);
+			}
 		}
 	}
 	private _value: T | typeof NONE;
@@ -83,10 +93,9 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 		return this._reason;
 	}
 	set reason(reason: unknown) {
+		this.abort();
 		this._reason = reason;
-		if (reason !== undefined) {
-			this.next.reject(reason);
-		}
+		if (reason !== undefined) this.next.reject(reason);
 	}
 	private _reason: unknown = undefined;
 
@@ -108,7 +117,7 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 		this._time = value === NONE ? -Infinity : Date.now();
 	}
 
-	/** Set the value of the store as values are pulled from a sequence. */
+	/** Set the value of this store as values are pulled from a sequence. */
 	async *through(sequence: AsyncIterable<T>): AsyncIterable<T> {
 		for await (const value of sequence) {
 			this.value = value;
@@ -117,37 +126,81 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	}
 
 	/**
-	 * Safely call a callback and save its output value in this `Store`, optionally passing an input value.
-	 * @param callback The callback function to call that should return a value to set on this store.
-	 * @oaram args Any arguments to pass to the callback.
+	 * Call a callback that returns a new value (possibly async) for this store.
+	 * - Errors are stored as `reason`; never throws.
+	 *
+	 * @returns `true` if the value was applied, `false` if an error occurred or the result was superseded.
 	 */
-	call<A extends Arguments = []>(callback: (...args: A) => T | PromiseLike<T>, ...args: A): void {
+	call<A extends Arguments = []>(callback: (...args: A) => T | PromiseLike<T>, ...args: A): Promise<boolean> | boolean {
 		try {
 			const value = callback(...args);
-			if (isAsync(value)) void this.await(value);
-			else this.value = value;
+			if (isAsync(value)) return this.await(value);
+			this.value = value;
+			return true;
 		} catch (thrown) {
 			this.reason = thrown;
+			return false;
 		}
 	}
 
 	/**
-	 * Await an async value and save it to this store.
-	 * - If it rejects, save the rejection `reason` to this store.
+	 * Reduce the current value using a reducer callback that receives the current value.
 	 *
-	 * @returns Promise that resolves when the value has been saved (either resolves to the value or `undefined` if the value threw).
-	 * @throws {never} Never throws so safe to call unhandled..
+	 * @param reducer The callback function to call that should return a value to set on this store.
+	 * 		@param value The current value of this store.
+	 * 		@param args Any additional input values for the reducer.
+	 * 		@returns New value for this store (possibly async).
+	 * @oaram args Any arguments to pass to the callback.
+	 *
+	 * @throws {Promise} if this store currently has no value (resolves when this store receives its next value or error).
+	 * @throws {unknown} if this store currently has an error reason set.
 	 */
-	async await(value: PromiseLike<T>): Promise<void> {
+	reduce<A extends Arguments = []>(reducer: (value: T, ...args: A) => T | PromiseLike<T>, ...args: A): Promise<boolean> | boolean {
+		return this.call(reducer, this.value, ...args);
+	}
+
+	/**
+	 * Await an async value and save it to this store.
+	 * - Saves the resolved value.
+	 * - If it rejects saves the rejection as `reason`.
+	 * - Silently discarded if a newer value is set.
+	 * - Silently discarded if `await()` is called again.
+	 * - Silently discarded if `abort()` is called.
+	 *
+	 * @returns `true` if the value was applied, `false` if superseded, aborted, or errored.
+	 * @throws {never} Never throws — safe to call without handling the return value.
+	 */
+	async await(asyncValue: PromiseLike<T | typeof NONE>): Promise<boolean> {
+		// Keep track of the value that is being awaited.
+		// If `_pendingValue` changes while waiting for `asyncValue` to resolve, another call to `await()` has `set value`, `set reason`, or `abort()` has invalidated this one.
+		// If that happens we silently discard the resolved value/reason of this await call.
+		this._pendingValue = asyncValue;
 		try {
-			this.value = await value;
+			const value = await asyncValue;
+			if (this._pendingValue === asyncValue) {
+				this.value = value;
+				return true;
+			}
+			return false;
 		} catch (reason) {
-			this.reason = reason;
+			if (this._pendingValue === asyncValue) {
+				this.reason = reason;
+			}
+			return false;
 		}
+	}
+	private _pendingValue: PromiseLike<T | typeof NONE> | undefined = undefined;
+
+	/**
+	 * Abort any current pending `await()` call.
+	 * - The pending call's result will be silently discarded and its error will not be stored.
+	 */
+	abort(): void {
+		this._pendingValue = undefined;
 	}
 
 	// Implement `AsyncIterator`
-	// Issues the current value of the store first, then any subsequent values that are issued.
+	// Issues the current value of this store first, then any subsequent values that are issued.
 	async *[Symbol.asyncIterator](): AsyncIterator<T, void, void> {
 		await Promise.resolve(); // Introduce a slight delay, i.e. don't immediately yield `this.value` in case it is changed synchronously.
 		this._starter?.start(this);

@@ -55,8 +55,9 @@ test("error in callback sets reason", async () => {
 	const err = new Error("oops");
 	const store = new FetchStore<number>(NONE, () => Promise.reject(err));
 
-	await store.refresh();
+	const result = await store.refresh();
 
+	expect(result).toBe(false);
 	expect(store.reason).toBe(err);
 });
 
@@ -166,7 +167,7 @@ test("reading loading after invalidate() triggers a background re-fetch", async 
 	expect(calls).toBe(2);
 });
 
-test("stale-data protection: fetch that resolves after invalidate() applies the stale value but stays flagged for re-fetch", async () => {
+test("stale-data protection: fetch that resolves after invalidate() is discarded; re-fetch produces fresh value", async () => {
 	let calls = 0;
 	const fetches: Array<Deferred<number>> = [];
 	const store = new FetchStore<number>(NONE, () => {
@@ -183,22 +184,20 @@ test("stale-data protection: fetch that resolves after invalidate() applies the 
 	await runMicrotasks();
 	expect(store.value).toBe(1);
 
-	// Trigger fetch #2 explicitly (after the first fetch _invalid=false, so reading
-	// loading won't re-trigger — call refresh() directly to start a second fetch).
+	// Trigger fetch #2 explicitly.
 	void store.refresh();
 	expect(calls).toBe(2); // second fetch started
 
-	// Invalidate while fetch #2 is still in-flight.
+	// Invalidate while fetch #2 is still in-flight — aborts it and marks stale.
 	store.invalidate();
 
-	// Fetch #2 resolves — the stale value IS written (super.value = await value),
-	// but _invalidation counter did not match so the store remains flagged.
+	// Fetch #2 resolves but is discarded (abort() cleared _pendingValue).
 	fetches[1]!.resolve(99);
 	await runMicrotasks();
 
-	// Stale value is visible; store is still flagged (_invalidation != 0).
-	expect(store.value).toBe(99);
-	// Reading loading confirms _invalidation is still set — triggers fetch #3.
+	// Value is unchanged — the aborted fetch result was discarded.
+	expect(store.value).toBe(1);
+	// Reading loading with _invalidation set triggers fetch #3.
 	expect(store.loading).toBe(false); // loading=false because value exists
 	await runMicrotasks(); // fetch #3 triggered by the loading read above
 	fetches[2]!.resolve(2);

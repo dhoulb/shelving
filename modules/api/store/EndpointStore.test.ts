@@ -53,27 +53,16 @@ describe("EndpointStore", () => {
 		});
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);
-		const error = console.error;
 
-		try {
-			console.error = () => undefined;
+		// Trigger the first fetch (for "123").
+		store.loading;
+		await runMicrotasks();
+		expect(requests).toHaveLength(1);
 
-			// Trigger the first fetch (for "123").
-			store.loading;
-			await runMicrotasks();
-			expect(requests).toHaveLength(1);
-
-			// Change payload — aborts "123", _iterate invalidates and calls refresh().
-			// refresh() returns the old inflight (still alive until abort microtask settles).
-			store.payload.value = { id: "456" };
-			await runMicrotasks(); // "123" aborts, inflight clears; _iterate.refresh() was no-op
-
-			// _inflight is now clear and _invalid=true — reading loading starts the "456" fetch.
-			store.loading;
-			await runMicrotasks();
-		} finally {
-			console.error = error;
-		}
+		// Change payload — invalidate() aborts "123" (clears _inflight), then refresh()
+		// immediately starts "456" since _inflight is now clear.
+		store.payload.value = { id: "456" };
+		await runMicrotasks(); // "123" abort fires (discarded), "456" resolves and is applied.
 
 		expect(requests).toHaveLength(2);
 		expect(requests[0]?.signal.aborted).toBe(true);

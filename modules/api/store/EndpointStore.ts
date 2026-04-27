@@ -15,7 +15,7 @@ export class EndpointStore<P, R> extends PayloadFetchStore<P, R> {
 	}
 
 	// Override to fetch the value using the provider and endpoint.
-	protected override _fetch(): Promise<R> {
-		return this.provider.call(this.endpoint, this.payload.value, { signal: this.signal });
+	protected override _fetch(signal: AbortSignal): Promise<R> {
+		return this.provider.call(this.endpoint, this.payload.value, { signal });
 	}
 }

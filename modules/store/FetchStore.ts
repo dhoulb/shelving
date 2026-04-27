@@ -6,43 +6,43 @@ import { BooleanStore } from "./BooleanStore.js";
 import { Store } from "./Store.js";
 
 /** Callback for a callback fetch store. */
-export type FetchCallback<T> = () => T | PromiseLike<T>;
+export type FetchCallback<T> = (signal: AbortSignal) => T | PromiseLike<T>;
 
 /**
  * Store that fetches its values from a remote source.
  *
  * @param value The initial value for the store, or `NONE` if it does not have one yet.
- * @param callback An optional callback that, if set, will be called when the `fetch()` method is invoked to fetch the next value.
+ * @param callback An optional callback that, if set, will be called when the `refresh()` method is invoked to fetch the next value.
  */
 export class FetchStore<T> extends Store<T> {
 	/**
 	 * Store that indicates the busy state of this store.
-	 * - Can be listened to for e.g. loading spinners etc.
+	 * - `true` while a refresh is in-flight, `false` otherwise.
+	 * - Can be subscribed to for e.g. loading spinners.
 	 */
 	readonly busy: BooleanStore;
 
 	// Override to possibly trigger a fetch when `this.loading` is read.
-	// This is because when we check `store.loading` in a component we are signalling intent that we wish to use that value.
+	// Reading `loading` signals intent to use the value, so we start a fetch if needed.
 	override get loading(): boolean {
 		const loading = super.loading;
 		if (loading || this._invalidation) void this.refresh();
 		return loading;
 	}
 
-	// Override to possibly trigger a fetch if `this.value` is still in a loading state or is invalid.
-	// This is because when we check `store.loading` in a component we are signalling intent that we wish to use that value.
+	// Override to possibly trigger a fetch if `this.value` is still loading.
+	// Reading `value` signals intent to use the value, so we start a fetch if needed.
 	override get value(): T {
 		if (super.loading) void this.refresh();
 		return super.value;
 	}
-	override set value(value: T | typeof NONE) {
-		super.value = value;
+	override set value(value: T | typeof NONE | PromiseLike<T | typeof NONE>) {
+		super.value = value; // calls Store.set value() which calls this.abort() then _applyValue()
 
-		// Setting a value resets in the invalid state.
+		// Setting a value resets the invalid state.
 		this._invalidation = 0;
 	}
 
-	// Override to save callback.
 	constructor(value: T | typeof NONE, callback?: FetchCallback<T>) {
 		super(value);
 		this.busy = new BooleanStore(value === NONE);
@@ -50,91 +50,88 @@ export class FetchStore<T> extends Store<T> {
 	}
 
 	/**
-	 * Fetch the result for this endpoint now.
-	 * - Triggered automatically when someone reads `value` or `loading`
-	 * - Multiple requests to `fetch()` while one is inflight will return the same promise.
+	 * Fetch the result for this store now.
+	 * - Triggered automatically when someone reads `value` or `loading`.
+	 * - Concurrent calls while a fetch is in-flight return the same promise (deduplication).
+	 * - Never throws — errors are stored as `reason`.
 	 *
-	 * @returns {Promise} that resolves when the fetch is done.
-	 * @returns {void} if this store returned a synchronous value.
-	 * @throws {never} Never throws so safe to call unhandled.
+	 * @returns `true` if the fetch completed and the value was applied, `false` if aborted or superseded.
+	 * @returns Synchronous `boolean` if the callback returned a synchronous value.
 	 */
-	refresh(): Promise<void> | void {
+	refresh(): Promise<boolean> | boolean {
 		if (this._inflight) return this._inflight;
+		// Cancel any existing controller and create a fresh one for this fetch.
+		this._controller?.abort(ABORTED);
+		this._controller = new AbortController();
 		try {
-			const value = this._fetch();
-			if (isAsync(value)) return (this._inflight = this.await(value));
+			const value = this._fetch(this._controller.signal);
+			if (isAsync(value)) return (this._inflight = this._refresh(value));
 			this.value = value;
+			return true;
 		} catch (thrown) {
 			this.reason = thrown;
+			return false;
 		}
 	}
-
-	/** An in-flight refresh, so we don't de-duplicate these. */
-	private _inflight: Promise<void> | undefined = undefined;
-
-	// Override to start/stop `this.busy` when awaiting values, and handle aborts correctly.
-	override async await(value: PromiseLike<T>): Promise<void> {
+	private _inflight: Promise<boolean> | undefined = undefined;
+	private async _refresh(asyncValue: PromiseLike<T>): Promise<boolean> {
 		this.busy.value = true;
-		this._awaits.add(value);
 		try {
-			// Capture the invalidation number before the change.
-			const invalidation = this._invalidation;
-
-			// Use super.value to set the value directly without resetting the invalidation number.
-			super.value = await value;
-
-			// If this store was not invalidated while awaiting the value (i.e. invalidation number did not change) then reset the invalidation number.
-			if (invalidation === this._invalidation) this._invalidation = 0;
-		} catch (thrown) {
-			// If the throw was not an on-purpose abort, save it as the reason.
-			if (thrown !== ABORTED) this.reason = thrown;
+			const refreshed = await this.await(asyncValue);
+			if (refreshed) this._invalidation = 0;
+			return refreshed;
 		} finally {
-			this._awaits.delete(value);
-			if (!this._awaits.size) {
-				this.busy.value = false;
-				this._inflight = undefined; // Clear any inflight refresh if this was the last await.
-			}
-			this._controller = undefined;
+			this.busy.value = false;
+			this._inflight = undefined;
 		}
-	}
-	private _awaits = new Set(); // Used to only set `busy` when we have no awaited values left.
-
-	/** Call the callback with the current payload. */
-	protected _fetch(): T | PromiseLike<T> {
-		if (!this._callback) throw new RequiredError("FetchStore has no callback() function", { store: this, caller: this.refresh });
-		return this._callback();
-	}
-	private _callback: FetchCallback<T> | undefined;
-
-	/** Invalidate this endpoint, so a new fetch is triggered next time `this.value` is called. */
-	invalidate(): void {
-		this.abort();
-		this._invalidation++;
-	}
-	private _invalidation = 0; // Used to track the "invalidation number" which increments on each invalidation and
-
-	/** Re-fetch the result now if the current value is older than `maxAge` millisecond or has been invalidated. */
-	async refreshStale(maxAge: number): Promise<void> {
-		if (this._invalidation || this.age > maxAge) await this.refresh();
 	}
 
 	/**
-	 * Create or get an `AbortSignal` that can be used to cancel an in-flight fetch for this store.
-	 * - implementation code or subclasses can use this signal when fetching to cancel the most recent request
-	 * - The signal will be reset whenever a fetch completes or a new fetch starts.
+	 * Current `AbortSignal` for this store's in-flight fetch.
+	 * - Created lazily; a new signal is issued each time `refresh()` starts a new fetch or `abort()` is called.
 	 */
 	get signal(): AbortSignal {
 		return (this._controller ||= new AbortController()).signal;
 	}
 	private _controller: AbortController | undefined;
 
-	/** Abort the current signal now. */
-	abort() {
-		const controller = this._controller;
-		if (controller) {
-			controller.abort(ABORTED);
-			this._controller = undefined;
-		}
+	/**
+	 * Call the fetch callback to get the next value.
+	 * @param signal `AbortSignal` for the current fetch — passed through to the callback so it can cancel HTTP requests etc.
+	 */
+	protected _fetch(signal: AbortSignal): T | PromiseLike<T> {
+		if (!this._callback) throw new RequiredError("FetchStore has no callback() function", { store: this, caller: this.refresh });
+		return this._callback(signal);
+	}
+	private _callback: FetchCallback<T> | undefined;
+
+	/**
+	 * Invalidate this store so a new fetch is triggered on the next read of `loading` or `value`.
+	 * - Also aborts any current in-flight fetch.
+	 */
+	invalidate(): void {
+		this.abort();
+		this._invalidation++;
+	}
+	private _invalidation = 0;
+
+	/** Re-fetch now if the current value is older than `maxAge` milliseconds or has been invalidated. */
+	async refreshStale(maxAge: number): Promise<void> {
+		if (this._invalidation || this.age > maxAge) await this.refresh();
+	}
+
+	/**
+	 * Abort any current in-flight fetch and pending async operation.
+	 * - Aborts the current `AbortSignal` and clears the controller (a new signal will be created on the next read or fetch).
+	 * - Clears the in-flight promise and resets busy state.
+	 * - Any pending `await()` result will be silently discarded.
+	 */
+	override abort(): void {
+		this._controller?.abort(ABORTED);
+		this._controller = undefined;
+		this._inflight = undefined;
+		this.busy.value = false;
+		super.abort(); // clears _pendingValue
 	}
 
 	// Implement `AsyncDisposable`.

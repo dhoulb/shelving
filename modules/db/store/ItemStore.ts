@@ -46,7 +46,7 @@ export class ItemStore<I extends Identifier, T extends Data> extends FetchStore<
 	}
 
 	// Override to get the item from the provider.
-	override _fetch(): Promise<OptionalItem<I, T>> {
+	override _fetch(_signal: AbortSignal): Promise<OptionalItem<I, T>> {
 		return this.provider.getItem(this.collection, this.id);
 	}
 }
