@@ -1,6 +1,6 @@
 import { MethodNotAllowedError, NotFoundError } from "../../error/RequestError.js";
 import { ValueError } from "../../error/ValueError.js";
-import { getDictionary } from "../../util/dictionary.js";
+import { requireDictionary } from "../../util/dictionary.js";
 import type { AnyCaller } from "../../util/function.js";
 import { getResponse, isRequestMethod, parseRequestBody, type RequestParams } from "../../util/http.js";
 import { isPlainObject } from "../../util/object.js";
@@ -79,7 +79,7 @@ export function handleEndpoints<C>(
 	for (const handler of handlers) {
 		const pathParams = handler.endpoint.match(method, targetPath, caller);
 		if (!pathParams) continue;
-		const params = searchParams.size ? { ...getDictionary(searchParams), ...pathParams } : pathParams;
+		const params = searchParams.size ? { ...requireDictionary(searchParams), ...pathParams } : pathParams;
 		return _handleEndpoint(handler, params, request, context, handleEndpoints);
 	}
 

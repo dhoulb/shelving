@@ -30,7 +30,7 @@ export function assertDictionary(value: unknown, caller: AnyCaller = assertDicti
 }
 
 /** Convert a possible dictionary into a dictionary. */
-export function getDictionary<T>(dict: PossibleDictionary<T>): ImmutableDictionary<T> {
+export function requireDictionary<T>(dict: PossibleDictionary<T>): ImmutableDictionary<T> {
 	return isDictionary(dict) ? dict : Object.fromEntries(dict as Iterable<DictionaryItem<T>>);
 }
 
