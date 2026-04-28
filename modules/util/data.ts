@@ -3,7 +3,6 @@ import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import type { EntryObject } from "./entry.js";
 import type { AnyCaller } from "./function.js";
-import { isIterable } from "./iterate.js";
 import type { DeepPartial } from "./object.js";
 import { isObject, isPlainObject } from "./object.js";
 import type { Resolve } from "./types.js";
@@ -120,13 +119,6 @@ export function isData(value: unknown): value is Data {
 /** Assert that an unknown value is a data object. */
 export function assertData(value: unknown, caller: AnyCaller = assertData): asserts value is Data {
 	if (!isPlainObject(value)) throw new RequiredError("Must be data object", { received: value, caller });
-}
-
-/** Convert a data object or set of `DataProp` props for that object back into the full object. */
-export function getData<T extends Data>(input: T): T;
-export function getData<T extends Data>(input: T | Iterable<DataProp<T>>): Partial<T>;
-export function getData<T extends Data>(input: T | Iterable<DataProp<T>>): Partial<T> {
-	return isIterable(input) ? (Object.fromEntries(input) as Partial<T>) : input;
 }
 
 /** Is an unknown value the key for an own prop of a data object. */

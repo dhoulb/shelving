@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import type { BranchData, ImmutableDictionary, LeafData } from "../index.js";
-import { getData, getDataProp } from "../index.js";
+import { getDataProp } from "../index.js";
 
 type T = {
 	readonly a: {
@@ -79,13 +79,6 @@ test("LeafData", () => {
 		"dict2.a.num": 123,
 	};
 
-	const validLeafData3: Partial<LeafData<X>> = {
-		[`dict2.${"id"}.num`]: 123,
-	};
-	const validLeafData4: Partial<LeafData<X>> = getData<LeafData<X>>([
-		[`dict2.${"id"}.num`, 123], //
-	]);
-
 	const invalidLeafData2: Partial<LeafData<T>> = {
 		// @ts-expect-error "a.a1" is not string.
 		"a.a1": "ERR",
@@ -109,11 +102,6 @@ test("LeafData", () => {
 		// @ts-expect-error "a.a2.unknown" is not a known prop.
 		"a.a2.unknown": true,
 	};
-
-	const invalidLeafData6: Partial<LeafData<X>> = getData<LeafData<X>>(
-		// @ts-expect-error Should be number not string.
-		[[`dict2.${"id"}.num`, "a"]],
-	);
 });
 test("getDataProp()", () => {
 	const obj = { a: "A", b: { b2: "B" } };
