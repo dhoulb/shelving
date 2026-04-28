@@ -8,15 +8,12 @@ test("isAbsolutePath()", () => {
 	expect(isAbsolutePath("/a/b")).toBe(true);
 
 	// Relative.
-	expect(isAbsolutePath("a")).toBe(false);
-	expect(isAbsolutePath("a/b")).toBe(false);
 	expect(isAbsolutePath("./a")).toBe(false);
 	expect(isAbsolutePath("./a/b")).toBe(false);
 	expect(isAbsolutePath("../a")).toBe(false);
 	expect(isAbsolutePath("../a/b")).toBe(false);
 
 	// Edge cases.
-	expect(isAbsolutePath("")).toBe(false);
 	expect(isAbsolutePath(".")).toBe(false);
 	expect(isAbsolutePath("..")).toBe(false);
 });

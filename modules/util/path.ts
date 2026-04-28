@@ -12,13 +12,16 @@ export type RelativePath = `.` | `./${string}` | `..` | `../${string}`;
 /** Either an absolute path string or a relative path string. */
 export type Path = AbsolutePath | RelativePath;
 
+/** Things that can be converted to a path. */
+export type PossiblePath = string | URL;
+
 /** Is a string path an absolute path? */
-export function isAbsolutePath(path: string): path is AbsolutePath {
+export function isAbsolutePath(path: Path): path is AbsolutePath {
 	return path.startsWith("/");
 }
 
 /** Is a string path an absolute path? */
-export function isRelativePath(path: string): path is RelativePath {
+export function isRelativePath(path: Path): path is RelativePath {
 	return path.startsWith("./") || path.startsWith("../");
 }
 
@@ -45,7 +48,7 @@ function _cleanPath(path: string): string {
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function getPath(value: Nullish<string | URL>, base?: AbsolutePath): AbsolutePath | undefined {
+export function getPath(value: Nullish<PossiblePath>, base?: AbsolutePath): AbsolutePath | undefined {
 	const url = getURL(value, base ? `http://j.com${base}${base.endsWith("/") ? "" : "/"}` : "http://j.com");
 	if (url) {
 		const { pathname, search, hash } = url;
@@ -62,9 +65,9 @@ export function getPath(value: Nullish<string | URL>, base?: AbsolutePath): Abso
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function requirePath(value: string | URL, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
+export function requirePath(value: PossiblePath, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
 	const path = getPath(value, base);
-	if (!path) throw new RequiredError("Invalid URL", { received: value, caller });
+	if (!path) throw new RequiredError("Invalid path", { received: value, caller });
 	return path;
 }
 
