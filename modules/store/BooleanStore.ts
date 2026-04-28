@@ -2,6 +2,11 @@ import { Store } from "./Store.js";
 
 /** Store a boolean. */
 export class BooleanStore extends Store<unknown, boolean> {
+	// Override to set default value to false.
+	constructor(value: boolean = false) {
+		super(value);
+	}
+
 	// Override to automatically convert to boolean.
 	override convert(value: unknown): boolean {
 		return !!value;
