@@ -27,8 +27,13 @@ export class URLStore extends Store<PossibleURL, URL> {
 	}
 
 	// Override to convert possible URL to URL (relative to `this.base`).
-	override convert(value: PossibleURL, caller: AnyCaller = this.convert): URL {
+	protected override _convert(value: PossibleURL, caller: AnyCaller): URL {
 		return requireURL(value, this.base, caller);
+	}
+
+	// Override for fast equality.
+	protected override _equal(a: URL, b: URL): boolean {
+		return a.href === b.href;
 	}
 
 	get href(): URLString {
@@ -138,11 +143,6 @@ export class URLStore extends Store<PossibleURL, URL> {
 	/** Return the current URL with an additional param. */
 	omitParam(key: string): URL {
 		return omitURIParams(this.value, key);
-	}
-
-	// Override `equal()` to just compare the hrefs.
-	override isEqual(a: URL, b: URL): boolean {
-		return a.href === b.href;
 	}
 
 	override toString(): string {

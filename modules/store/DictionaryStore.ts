@@ -13,7 +13,7 @@ export class DictionaryStore<T> extends Store<PossibleDictionary<T>, ImmutableDi
 	}
 
 	// Override to convert a possible dictionary to a dictionary on set.
-	override convert(possible: PossibleDictionary<T>): ImmutableDictionary<T> {
+	protected override _convert(possible: PossibleDictionary<T>): ImmutableDictionary<T> {
 		return requireDictionary(possible);
 	}
 

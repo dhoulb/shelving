@@ -1,7 +1,6 @@
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { isAsync } from "../util/async.js";
-import { getSetter } from "../util/class.js";
-import { NONE, SKIP } from "../util/constants.js";
+import { NONE } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { isDeepEqual } from "../util/equal.js";
 import type { AnyCaller, Arguments } from "../util/function.js";
@@ -45,20 +44,9 @@ export abstract class Store<I, O> implements AsyncIterable<O, void, void>, Async
 	 * - Calling `this.loading` is a way to check if this store has a value without triggering those throws.
 	 */
 	get loading(): boolean {
-		return this._value === NONE && this._reason === undefined;
+		return this._value === NONE && this.reason === undefined;
 	}
 
-	/**
-	 * Get the current value of this store.
-	 *
-	 * @throws {Promise} if this store currently has no value (resolves when this store receives its next value or error).
-	 * @throws {unknown} if this store currently has an error.
-	 */
-	get value(): O {
-		if (this._reason !== undefined) throw this._reason;
-		if (this._value === NONE) throw this.next;
-		return this._value;
-	}
 	/**
 	 * Set the value of this store.
 	 * - Sets any sync values.
@@ -68,35 +56,61 @@ export abstract class Store<I, O> implements AsyncIterable<O, void, void>, Async
 	 * - Setting value to the same as the existing value
 	 * - If this store has any pending `await()` calls they are aborted and their results are silently discarded.
 	 */
-	set value(value: I | PromiseLike<I>) {
-		if (isAsync(value)) {
-			void this.await(value);
+	set value(input: I | PromiseLike<I>) {
+		if (isAsync(input)) {
+			void this.await(input);
 		} else {
 			this.abort();
 			this._reason = undefined;
-			const v =
-				value === NONE || value === SKIP
-					? (value as typeof NONE | typeof SKIP) || typeof SKIP
-					: this.convert(value, getSetter(this, "value"));
-			if (v === NONE) {
-				// Put the store back into a loading state.
+			const storage = this._convert(input);
+			if (storage === NONE) {
+				// Put the store into a loading state.
 				this._time = undefined;
-				this._value = v;
+				this._value = storage;
 				this.next.cancel();
-			} else if (v === SKIP) {
-				// Silently skip this set value call.
-			} else if (this._value === NONE || !this.isEqual(v, this._value)) {
-				// Set this value.
+			} else if (this._value === NONE || !this._equal(storage, this._value)) {
+				// Set this changed value.
 				this._time = Date.now();
-				this._value = v;
-				this.next.resolve(v);
+				this._value = storage;
+				this.next.resolve(this._read(storage));
 			}
 		}
 	}
+
+	/**
+	 * Convert input type to internal storage type.
+	 * - Called only while getting values.
+	 * - Override in subclasses to change getting behaviour.
+	 */
+	protected abstract _convert(value: I, caller?: AnyCaller): O | typeof NONE;
+
+	/** Internal storage for current value. */
 	private _value: O | typeof NONE;
 
-	/** Convert a possible value for this store into an actual value of this store. */
-	abstract convert(possible: I, _caller?: AnyCaller): O | typeof NONE | typeof SKIP;
+	/** Compare two values for this store and return whether they are equal. */
+	protected _equal(a: O, b: O): boolean {
+		return isDeepEqual(a, b);
+	}
+
+	/**
+	 * Get the current value of this store.
+	 *
+	 * @throws {Promise} if this store currently is in a "loading" state (resolves when a value is set).
+	 * @throws {unknown} if this store currently has an error.
+	 */
+	get value(): O {
+		if (this._reason !== undefined) throw this._reason;
+		return this._read(this._value);
+	}
+
+	/**
+	 * Called while reading values. Can be used to override get behaviour.
+	 * - Override in subclasses to change getting behaviour.
+	 */
+	protected _read(value: O | typeof NONE): O {
+		if (value === NONE) throw this.next;
+		return value;
+	}
 
 	/**
 	 * Time (in milliseconds) this store was last updated with a new value.
@@ -133,6 +147,7 @@ export abstract class Store<I, O> implements AsyncIterable<O, void, void>, Async
 	 * Set a starter for this store to allow a function to execute when this store has subscribers or not.
 	 *
 	 * @todo DH: Change this significantly. Not happy with how it's settable like this. It should be set in `constructor()`?
+	 *  - Also would love some internal hooks
 	 */
 	protected set starter(start: PossibleStarter<[this]>) {
 		if (this._starter) this._starter.stop(); // Stop the current starter.
@@ -141,7 +156,7 @@ export abstract class Store<I, O> implements AsyncIterable<O, void, void>, Async
 	}
 	private _starter: Starter<[this]> | undefined;
 
-	/** Store is initiated with an initial store. */
+	/** Store is initiated with a value, or `NONE` to put it in a "loading" state. */
 	constructor(value: O | typeof NONE) {
 		this._value = value;
 		this._time = value === NONE ? -Infinity : Date.now();
@@ -159,7 +174,17 @@ export abstract class Store<I, O> implements AsyncIterable<O, void, void>, Async
 	 * Call a callback that returns a new value (possibly async) for this store.
 	 * - Errors are stored as `reason`; never throws.
 	 *
-	 * @returns `true` if the value was applied, `false` if an error occurred or the result was superseded.
+	 * @param callback The callback function to call that should return a value to set on this store.
+	 * 		@param args Any additional input values for the reducer.
+	 * 		@returns New value for this store (possibly async).
+	 * @param args Any arguments to pass to the callback.
+	 *
+	 * @returns {true} If the callback returned a value and it was set.
+	 * @returns {false} If the callback threw.
+	 * @returns {Promise<true>} If the callback returned a promise and it resolved.
+	 * @returns {Promise<false>} If the callback returned a promise and it rejected, or `abort()` was called before it resolved.
+	 *
+	 * @throws {never} Never throws — safe to call without handling the return value.
 	 */
 	call<A extends Arguments>(callback: StoreCallback<I, A>, ...args: A): Promise<boolean> | boolean {
 		try {
@@ -180,10 +205,14 @@ export abstract class Store<I, O> implements AsyncIterable<O, void, void>, Async
 	 * 		@param value The current value of this store.
 	 * 		@param args Any additional input values for the reducer.
 	 * 		@returns New value for this store (possibly async).
-	 * @oaram args Any arguments to pass to the callback.
+	 * @param args Any arguments to pass to the callback.
 	 *
-	 * @throws {Promise} if this store currently has no value (resolves when this store receives its next value or error).
 	 * @throws {unknown} if this store currently has an error reason set.
+	 *
+	 * @returns {true} If the callback returned a value and it was set.
+	 * @returns {false} If the callback threw.
+	 * @returns {Promise<true>} If the callback returned a promise and it resolved.
+	 * @returns {Promise<false>} If the callback returned a promise and it rejected, or `abort()` was called before it resolved.
 	 */
 	reduce<A extends Arguments>(reducer: StoreReducer<I, O, A>, ...args: A): Promise<boolean> | boolean {
 		return this.call(reducer, this.value, ...args);
@@ -197,36 +226,42 @@ export abstract class Store<I, O> implements AsyncIterable<O, void, void>, Async
 	 * - Silently discarded if `await()` is called again.
 	 * - Silently discarded if `abort()` is called.
 	 *
-	 * @returns `true` if the value was applied, `false` if superseded, aborted, or errored.
+	 * @param pending The pending value to await.
+	 *
+	 * @returns {true} If the callback returned a value and it was set.
+	 * @returns {false} If the callback threw.
+	 * @returns {Promise<true>} If the callback returned a promise and it resolved.
+	 * @returns {Promise<false>} If the callback returned a promise and it rejected, or `abort()` was called before it resolved.
+	 *
 	 * @throws {never} Never throws — safe to call without handling the return value.
 	 */
 	async await(pending: PromiseLike<I>): Promise<boolean> {
 		// Keep track of the value that is being awaited.
 		// If `_pendingValue` changes while waiting for `asyncValue` to resolve, another call to `await()` has `set value`, `set reason`, or `abort()` has invalidated this one.
 		// If that happens we silently discard the resolved value/reason of this await call.
-		this._pending = pending;
+		this._pendingValue = pending;
 		try {
 			const value = await pending;
-			if (this._pending === pending) {
+			if (this._pendingValue === pending) {
 				this.value = value;
 				return true;
 			}
 			return false;
 		} catch (reason) {
-			if (this._pending === pending) {
+			if (this._pendingValue === pending) {
 				this.reason = reason;
 			}
 			return false;
 		}
 	}
-	private _pending: PromiseLike<I> | undefined = undefined;
+	private _pendingValue: PromiseLike<I> | undefined = undefined;
 
 	/**
 	 * Abort any current pending `await()` call.
 	 * - The pending call's result will be silently discarded and its error will not be stored.
 	 */
 	abort(): void {
-		this._pending = undefined;
+		this._pendingValue = undefined;
 	}
 
 	// Implement `AsyncIterator`
@@ -236,8 +271,9 @@ export abstract class Store<I, O> implements AsyncIterable<O, void, void>, Async
 		this._starter?.start(this);
 		this._iterating++;
 		try {
-			if (this._reason !== undefined) throw this._reason;
-			if (this._value !== NONE) yield this._value;
+			const reason = this.reason;
+			if (reason !== undefined) throw reason;
+			if (!this.loading) yield this.value;
 			yield* this.next;
 		} finally {
 			this._iterating--;
@@ -245,11 +281,6 @@ export abstract class Store<I, O> implements AsyncIterable<O, void, void>, Async
 		}
 	}
 	private _iterating = 0;
-
-	/** Compare two values for this store and return whether they are equal. */
-	isEqual(a: O, b: O): boolean {
-		return isDeepEqual(a, b);
-	}
 
 	// Implement `AsyncDisposable`
 	async [Symbol.asyncDispose](): Promise<void> {

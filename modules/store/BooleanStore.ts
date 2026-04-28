@@ -2,23 +2,23 @@ import { Store } from "./Store.js";
 
 /** Store a boolean. */
 export class BooleanStore extends Store<unknown, boolean> {
-	// Override to set default value to false.
+	// Override to set default value to `false`
 	constructor(value: boolean = false) {
 		super(value);
 	}
 
 	// Override to automatically convert to boolean.
-	override convert(value: unknown): boolean {
-		return !!value;
+	protected override _convert(input: unknown): boolean {
+		return !!input;
+	}
+
+	// Override for fast equality.
+	protected override _equal(a: boolean, b: boolean) {
+		return a === b;
 	}
 
 	/** Toggle the current boolean value. */
 	toggle(): void {
 		this.value = !this.value;
-	}
-
-	// Override for fast equality.
-	override isEqual(a: boolean, b: boolean) {
-		return a === b;
 	}
 }

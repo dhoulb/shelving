@@ -3,7 +3,12 @@ import type { AbsolutePath, PossiblePath } from "../util/path.js";
 import { isPathActive, isPathProud, requirePath } from "../util/path.js";
 import { Store } from "./Store.js";
 
-/** Store an absolute path, e.g. `/a/b/c` */
+/**
+ * Store an absolute path, e.g. `/a/b/c`
+ *
+ * @param path: The initial value for the store.
+ * @param base: The base path to resolve relative paths against.
+ */
 export class PathStore extends Store<PossiblePath, AbsolutePath> {
 	readonly base: AbsolutePath;
 
@@ -13,9 +18,14 @@ export class PathStore extends Store<PossiblePath, AbsolutePath> {
 		this.base = base;
 	}
 
-	// Implement to convert a possible path to an absolute path (relative to `this.base`).
-	override convert(possible: PossiblePath, caller: AnyCaller): AbsolutePath {
+	// Override to convert a possible path to an absolute path (relative to `this.base`).
+	protected override _convert(possible: PossiblePath, caller: AnyCaller): AbsolutePath {
 		return requirePath(possible, this.base, caller);
+	}
+
+	// Override for fast equality.
+	protected override _equal(a: AbsolutePath, b: AbsolutePath) {
+		return a === b;
 	}
 
 	/** Based on the current store path, is a path active? */

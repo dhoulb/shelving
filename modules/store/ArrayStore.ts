@@ -9,19 +9,19 @@ import {
 	toggleArrayItems,
 	withArrayItems,
 } from "../util/array.js";
-import type { NONE } from "../util/constants.js";
 import type { AnyCaller } from "../util/function.js";
 import { Store } from "./Store.js";
 
 /** Store an array. */
 export class ArrayStore<T> extends Store<PossibleArray<T>, ImmutableArray<T>> implements Iterable<T> {
-	constructor(value: ImmutableArray<T> | typeof NONE = []) {
-		super(value);
+	// Override to set default value to `[]` and convert possible arrays.
+	constructor(value: PossibleArray<T> = []) {
+		super(requireArray(value, undefined, undefined, ArrayStore));
 	}
 
-	// Implement to automatically convert `PossibleArray`
-	override convert(value: PossibleArray<T>, caller: AnyCaller = this.convert): ImmutableArray<T> {
-		return requireArray(value, undefined, undefined, caller);
+	// Implement to convert possible arrays.
+	protected override _convert(input: PossibleArray<T>, caller: AnyCaller): ImmutableArray<T> {
+		return requireArray(input, undefined, undefined, caller);
 	}
 
 	/** Get the first item in this store or `null` if this query has no items. */
