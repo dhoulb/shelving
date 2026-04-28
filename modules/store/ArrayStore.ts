@@ -1,12 +1,27 @@
-import type { ImmutableArray } from "../util/array.js";
-import { getFirst, getLast, omitArrayItems, requireFirst, requireLast, toggleArrayItems, withArrayItems } from "../util/array.js";
+import type { ImmutableArray, PossibleArray } from "../util/array.js";
+import {
+	getFirst,
+	getLast,
+	omitArrayItems,
+	requireArray,
+	requireFirst,
+	requireLast,
+	toggleArrayItems,
+	withArrayItems,
+} from "../util/array.js";
 import type { NONE } from "../util/constants.js";
+import type { AnyCaller } from "../util/function.js";
 import { Store } from "./Store.js";
 
 /** Store an array. */
-export class ArrayStore<T> extends Store<ImmutableArray<T>> implements Iterable<T> {
+export class ArrayStore<T> extends Store<PossibleArray<T>, ImmutableArray<T>> implements Iterable<T> {
 	constructor(value: ImmutableArray<T> | typeof NONE = []) {
 		super(value);
+	}
+
+	// Implement to automatically convert `PossibleArray`
+	override convert(value: PossibleArray<T>, caller: AnyCaller = this.convert): ImmutableArray<T> {
+		return requireArray(value, undefined, undefined, caller);
 	}
 
 	/** Get the first item in this store or `null` if this query has no items. */

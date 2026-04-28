@@ -1,14 +1,20 @@
-import type { DictionaryItem, ImmutableDictionary } from "../util/dictionary.js";
-import { getDictionaryItems, omitDictionaryItems } from "../util/dictionary.js";
+import type { DictionaryItem, ImmutableDictionary, PossibleDictionary } from "../util/dictionary.js";
+import { EMPTY_DICTIONARY, getDictionaryItems, omitDictionaryItems, requireDictionary } from "../util/dictionary.js";
 import { omitProps, withProp } from "../util/object.js";
 import type { Updates } from "../util/update.js";
 import { updateData } from "../util/update.js";
 import { Store } from "./Store.js";
 
 /** Store a dictionary object. */
-export class DictionaryStore<T> extends Store<ImmutableDictionary<T>> implements Iterable<DictionaryItem<T>> {
-	constructor(value: ImmutableDictionary<T> = {}) {
-		super(value);
+export class DictionaryStore<T> extends Store<PossibleDictionary<T>, ImmutableDictionary<T>> implements Iterable<DictionaryItem<T>> {
+	// Override to set default value to empty dictionary.
+	constructor(value: PossibleDictionary<T> = EMPTY_DICTIONARY) {
+		super(requireDictionary(value));
+	}
+
+	// Override to convert a possible dictionary to a dictionary on set.
+	override convert(possible: PossibleDictionary<T>): ImmutableDictionary<T> {
+		return requireDictionary(possible);
 	}
 
 	/** Get the length of the current value of this store. */

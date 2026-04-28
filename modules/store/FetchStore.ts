@@ -1,6 +1,6 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { isAsync } from "../util/async.js";
-import { ABORTED, NONE } from "../util/constants.js";
+import { ABORT, NONE } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { BooleanStore } from "./BooleanStore.js";
 import { Store } from "./Store.js";
@@ -14,7 +14,7 @@ export type FetchCallback<T> = (signal: AbortSignal) => T | PromiseLike<T>;
  * @param value The initial value for the store, or `NONE` if it does not have one yet.
  * @param callback An optional callback that, if set, will be called when the `refresh()` method is invoked to fetch the next value.
  */
-export class FetchStore<T> extends Store<T> {
+export class FetchStore<T> extends Store<T | typeof NONE, T> {
 	/**
 	 * Store that indicates the busy state of this store.
 	 * - `true` while a refresh is in-flight, `false` otherwise.
@@ -49,6 +49,11 @@ export class FetchStore<T> extends Store<T> {
 		this._callback = callback;
 	}
 
+	// Implement to allow `NONE`
+	override convert(value: T | typeof NONE): T | typeof NONE {
+		return value;
+	}
+
 	/**
 	 * Fetch the result for this store now.
 	 * - Triggered automatically when someone reads `value` or `loading`.
@@ -61,7 +66,7 @@ export class FetchStore<T> extends Store<T> {
 	refresh(): Promise<boolean> | boolean {
 		if (this._inflight) return this._inflight;
 		// Cancel any existing controller and create a fresh one for this fetch.
-		this._controller?.abort(ABORTED);
+		this._controller?.abort(ABORT);
 		this._controller = new AbortController();
 		try {
 			const value = this._fetch(this._controller.signal);
@@ -127,7 +132,7 @@ export class FetchStore<T> extends Store<T> {
 	 * - Any pending `await()` result will be silently discarded.
 	 */
 	override abort(): void {
-		this._controller?.abort(ABORTED);
+		this._controller?.abort(ABORT);
 		this._controller = undefined;
 		this._inflight = undefined;
 		this.busy.value = false;

@@ -8,7 +8,7 @@ import { updateData } from "../util/update.js";
 import { Store } from "./Store.js";
 
 /** Store a data object. */
-export class DataStore<T extends Data> extends Store<T> {
+export class DataStore<T extends Data> extends Store<T, T> {
 	/** Get the data of this store. */
 	get data(): T {
 		return this.value;
@@ -33,10 +33,15 @@ export class DataStore<T extends Data> extends Store<T> {
 	set<K extends DataKey<T>>(name: K, value: T[K]): void {
 		this.value = withProp(this.data, name, value);
 	}
+
+	// Implement to passthrough.
+	override convert(value: T): T {
+		return value;
+	}
 }
 
 /** Store an optional data object. */
-export class OptionalDataStore<T extends Data> extends Store<T | undefined> {
+export class OptionalDataStore<T extends Data> extends Store<T | undefined, T | undefined> {
 	/** Get current data value of this store (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
 		return this.require(getGetter(this, "data"));
@@ -77,5 +82,10 @@ export class OptionalDataStore<T extends Data> extends Store<T | undefined> {
 	/** Set the data to `undefined`. */
 	delete(): void {
 		this.value = undefined;
+	}
+
+	// Implement to passthrough.
+	override convert(value: T): T {
+		return value;
 	}
 }

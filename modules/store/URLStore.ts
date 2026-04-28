@@ -1,4 +1,5 @@
 import { getGetter, getSetter } from "../util/class.js";
+import type { AnyCaller } from "../util/function.js";
 import {
 	clearURIParams,
 	getURIParam,
@@ -15,26 +16,26 @@ import { getURL, type PossibleURL, requireURL, type URL, type URLString } from "
 import { Store } from "./Store.js";
 
 /** Store a URL, e.g. `https://top.com/a/b/c` */
-export class URLStore extends Store<URL> {
+export class URLStore extends Store<PossibleURL, URL> {
 	readonly base: URL | undefined;
+
+	// Override to convert possible URL to URL.
 	constructor(url: PossibleURL, base?: PossibleURL) {
 		const baseURL = getURL(base);
-		super(requireURL(url, baseURL));
+		super(requireURL(url, baseURL, URLStore));
 		this.base = baseURL;
 	}
 
-	override set value(url: PossibleURL) {
-		super.value = requireURL(url, this.base, getSetter(this, "value"));
-	}
-	override get value(): URL {
-		return super.value;
+	// Override to convert possible URL to URL (relative to `this.base`).
+	override convert(value: PossibleURL, caller: AnyCaller = this.convert): URL {
+		return requireURL(value, this.base, caller);
 	}
 
 	get href(): URLString {
 		return this.value.href;
 	}
 	set href(href: URLString) {
-		this.value = requireURL(href, this.base, getSetter(this, "href"));
+		this.value = href;
 	}
 
 	get origin(): URLString {

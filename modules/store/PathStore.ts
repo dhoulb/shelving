@@ -1,19 +1,21 @@
-import type { AbsolutePath } from "../util/path.js";
+import type { AnyCaller } from "../util/function.js";
+import type { AbsolutePath, PossiblePath } from "../util/path.js";
 import { isPathActive, isPathProud, requirePath } from "../util/path.js";
 import { Store } from "./Store.js";
 
 /** Store an absolute path, e.g. `/a/b/c` */
-export class PathStore extends Store<AbsolutePath> {
-	constructor(path = ".") {
-		super(requirePath(path));
+export class PathStore extends Store<PossiblePath, AbsolutePath> {
+	readonly base: AbsolutePath;
+
+	// Override to set default path to `.` and base to `/`
+	constructor(path = ".", base: AbsolutePath = "/") {
+		super(requirePath(path, base, PathStore));
+		this.base = base;
 	}
 
-	// Override to clean the path on set.
-	override get value(): AbsolutePath {
-		return super.value;
-	}
-	override set value(path: string) {
-		super.value = requirePath(path, super.value);
+	// Implement to convert a possible path to an absolute path (relative to `this.base`).
+	override convert(possible: PossiblePath, caller: AnyCaller): AbsolutePath {
+		return requirePath(possible, this.base, caller);
 	}
 
 	/** Based on the current store path, is a path active? */

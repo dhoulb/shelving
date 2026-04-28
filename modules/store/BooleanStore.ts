@@ -1,10 +1,10 @@
-import type { NONE } from "../util/constants.js";
 import { Store } from "./Store.js";
 
 /** Store a boolean. */
-export class BooleanStore extends Store<boolean> {
-	constructor(value: boolean | typeof NONE = false) {
-		super(value);
+export class BooleanStore extends Store<unknown, boolean> {
+	// Override to automatically convert to boolean.
+	override convert(value: unknown): boolean {
+		return !!value;
 	}
 
 	/** Toggle the current boolean value. */

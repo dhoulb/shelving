@@ -1,14 +1,21 @@
 import { DeferredSequence } from "../sequence/DeferredSequence.js";
 import { isAsync } from "../util/async.js";
-import { NONE } from "../util/constants.js";
+import { getSetter } from "../util/class.js";
+import { NONE, SKIP } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { isDeepEqual } from "../util/equal.js";
-import type { Arguments } from "../util/function.js";
+import type { AnyCaller, Arguments } from "../util/function.js";
 import { getStarter, type PossibleStarter, type Starter } from "../util/start.js";
 
 /** Any `Store` instance. */
 // biome-ignore lint/suspicious/noExplicitAny: `unknown` causes edge case matching issues.
-export type AnyStore = Store<any>;
+export type AnyStore = Store<any, any>;
+
+/** Callback that sets a store's value (possibly asynchronously). */
+export type StoreCallback<I, A extends Arguments = []> = (...args: A) => I | PromiseLike<I>;
+
+/** Reducer that receives a store's current value and sets the stores next value (possibly asynchronously). */
+export type StoreReducer<I, O, A extends Arguments = []> = (value: O, ...args: A) => I | PromiseLike<I>;
 
 /**
  * Store that retains its most recent value and is async-iterable to allow values to be observed.
@@ -19,10 +26,18 @@ export type AnyStore = Store<any>;
  * @param initial The initial value for this store, a `Promise` that resolves to the initial value, a source `Subscribable` to subscribe to, or another `Store` instance to take the initial value from and subscribe to.
  * - To set this store to be loading, use the `NONE` constant or a `Promise` value.
  * - To set this store to an explicit value, use that value or another `Store` instance with a value.
+ *
+ * @param I The "input type" for this store.
+ * - Indicates what values `this.value` can be set to.
+ * - Methods that set values like `this.call()` and `this.await()` can also accept these values.
+ * @param O The "output type" for this store.
+ * - Indicates what value `this.value` will return.
+ * - Must extend the input type `I`.
+ * - Defaults to I.
  */
-export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
+export abstract class Store<I, O> implements AsyncIterable<O, void, void>, AsyncDisposable {
 	/** Deferred sequence this store uses to issue values as they change. */
-	public readonly next = new DeferredSequence<T>();
+	public readonly next = new DeferredSequence<O>();
 
 	/**
 	 * Store is considered to be "loading" if it has no value or error.
@@ -39,34 +54,49 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	 * @throws {Promise} if this store currently has no value (resolves when this store receives its next value or error).
 	 * @throws {unknown} if this store currently has an error.
 	 */
-	get value(): T {
+	get value(): O {
 		if (this._reason !== undefined) throw this._reason;
 		if (this._value === NONE) throw this.next;
 		return this._value;
 	}
 	/**
-	 * Set the value of this store .
-	 * - Silently discards any pending `await()` calls.
+	 * Set the value of this store.
+	 * - Sets any sync values.
 	 * - Awaits any async values.
+	 * - Setting value the `NONE` symbol indicates the store has no value so should be in a "loading" state.
+	 * - Setting value to `SKIP` indicates the value should be silently ignored (sometimes it's helpful to have a way to skip setting entirely).
+	 * - Setting value to the same as the existing value
+	 * - If this store has any pending `await()` calls they are aborted and their results are silently discarded.
 	 */
-	set value(value: T | typeof NONE | PromiseLike<T | typeof NONE>) {
+	set value(value: I | PromiseLike<I>) {
 		if (isAsync(value)) {
 			void this.await(value);
 		} else {
 			this.abort();
 			this._reason = undefined;
-			if (value === NONE) {
+			const v =
+				value === NONE || value === SKIP
+					? (value as typeof NONE | typeof SKIP) || typeof SKIP
+					: this.convert(value, getSetter(this, "value"));
+			if (v === NONE) {
+				// Put the store back into a loading state.
 				this._time = undefined;
-				this._value = value;
+				this._value = v;
 				this.next.cancel();
-			} else if (this._value === NONE || !this.isEqual(value, this._value)) {
+			} else if (v === SKIP) {
+				// Silently skip this set value call.
+			} else if (this._value === NONE || !this.isEqual(v, this._value)) {
+				// Set this value.
 				this._time = Date.now();
-				this._value = value;
-				this.next.resolve(value);
+				this._value = v;
+				this.next.resolve(v);
 			}
 		}
 	}
-	private _value: T | typeof NONE;
+	private _value: O | typeof NONE;
+
+	/** Convert a possible value for this store into an actual value of this store. */
+	abstract convert(possible: I, _caller?: AnyCaller): O | typeof NONE | typeof SKIP;
 
 	/**
 	 * Time (in milliseconds) this store was last updated with a new value.
@@ -112,13 +142,13 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	private _starter: Starter<[this]> | undefined;
 
 	/** Store is initiated with an initial store. */
-	constructor(value: T | typeof NONE) {
+	constructor(value: O | typeof NONE) {
 		this._value = value;
 		this._time = value === NONE ? -Infinity : Date.now();
 	}
 
 	/** Set the value of this store as values are pulled from a sequence. */
-	async *through(sequence: AsyncIterable<T>): AsyncIterable<T> {
+	async *through(sequence: AsyncIterable<I>): AsyncIterable<I> {
 		for await (const value of sequence) {
 			this.value = value;
 			yield value;
@@ -131,7 +161,7 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	 *
 	 * @returns `true` if the value was applied, `false` if an error occurred or the result was superseded.
 	 */
-	call<A extends Arguments = []>(callback: (...args: A) => T | PromiseLike<T>, ...args: A): Promise<boolean> | boolean {
+	call<A extends Arguments>(callback: StoreCallback<I, A>, ...args: A): Promise<boolean> | boolean {
 		try {
 			const value = callback(...args);
 			if (isAsync(value)) return this.await(value);
@@ -155,7 +185,7 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	 * @throws {Promise} if this store currently has no value (resolves when this store receives its next value or error).
 	 * @throws {unknown} if this store currently has an error reason set.
 	 */
-	reduce<A extends Arguments = []>(reducer: (value: T, ...args: A) => T | PromiseLike<T>, ...args: A): Promise<boolean> | boolean {
+	reduce<A extends Arguments>(reducer: StoreReducer<I, O, A>, ...args: A): Promise<boolean> | boolean {
 		return this.call(reducer, this.value, ...args);
 	}
 
@@ -170,38 +200,38 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	 * @returns `true` if the value was applied, `false` if superseded, aborted, or errored.
 	 * @throws {never} Never throws — safe to call without handling the return value.
 	 */
-	async await(asyncValue: PromiseLike<T | typeof NONE>): Promise<boolean> {
+	async await(pending: PromiseLike<I>): Promise<boolean> {
 		// Keep track of the value that is being awaited.
 		// If `_pendingValue` changes while waiting for `asyncValue` to resolve, another call to `await()` has `set value`, `set reason`, or `abort()` has invalidated this one.
 		// If that happens we silently discard the resolved value/reason of this await call.
-		this._pendingValue = asyncValue;
+		this._pending = pending;
 		try {
-			const value = await asyncValue;
-			if (this._pendingValue === asyncValue) {
+			const value = await pending;
+			if (this._pending === pending) {
 				this.value = value;
 				return true;
 			}
 			return false;
 		} catch (reason) {
-			if (this._pendingValue === asyncValue) {
+			if (this._pending === pending) {
 				this.reason = reason;
 			}
 			return false;
 		}
 	}
-	private _pendingValue: PromiseLike<T | typeof NONE> | undefined = undefined;
+	private _pending: PromiseLike<I> | undefined = undefined;
 
 	/**
 	 * Abort any current pending `await()` call.
 	 * - The pending call's result will be silently discarded and its error will not be stored.
 	 */
 	abort(): void {
-		this._pendingValue = undefined;
+		this._pending = undefined;
 	}
 
 	// Implement `AsyncIterator`
 	// Issues the current value of this store first, then any subsequent values that are issued.
-	async *[Symbol.asyncIterator](): AsyncIterator<T, void, void> {
+	async *[Symbol.asyncIterator](): AsyncIterator<O, void, void> {
 		await Promise.resolve(); // Introduce a slight delay, i.e. don't immediately yield `this.value` in case it is changed synchronously.
 		this._starter?.start(this);
 		this._iterating++;
@@ -217,7 +247,7 @@ export class Store<T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	private _iterating = 0;
 
 	/** Compare two values for this store and return whether they are equal. */
-	isEqual(a: T, b: T): boolean {
+	isEqual(a: O, b: O): boolean {
 		return isDeepEqual(a, b);
 	}
 

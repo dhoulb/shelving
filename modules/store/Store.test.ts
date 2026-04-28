@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { getDeferred, NONE, runMicrotasks, runSequence, Store } from "../index.js";
+import { getDeferred, NONE, runMicrotasks, runSequence, Store, ValueStore } from "../index.js";
 import { EXPECT_PROMISELIKE } from "../test/util.js";
 
 test("No initial value", async () => {
-	const store = new Store<number>(NONE);
+	const store = new ValueStore<number>(NONE);
 	// Subscribe.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
@@ -49,7 +49,7 @@ test("No initial value", async () => {
 	expect(calls2).toEqual([111, 222, 333]);
 });
 test("Initial value", async () => {
-	const store = new Store(111);
+	const store = new ValueStore(111);
 	expect(store).toBeInstanceOf(Store);
 	expect(store.loading).toBe(false);
 	expect(store.value).toBe(111);
@@ -86,7 +86,7 @@ test("Initial value", async () => {
 	expect(calls2).toEqual([222, 333]);
 });
 test("Initial value and multiple synchronous `set()` calls", async () => {
-	const store = new Store<number>(111);
+	const store = new ValueStore<number>(111);
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
@@ -112,7 +112,7 @@ test("Initial value and multiple synchronous `set()` calls", async () => {
 	expect(calls2).toEqual([444]);
 });
 test("No initial value and multiple synchronous `set()` calls", async () => {
-	const store = new Store<number>(NONE);
+	const store = new ValueStore<number>(NONE);
 	// Listeners.
 	const calls1: number[] = [];
 	const calls2: number[] = [];
@@ -142,7 +142,7 @@ test("No initial value and multiple synchronous `set()` calls", async () => {
 
 describe("await() resolves and rejects correctly", () => {
 	test("resolved value is applied to the store", async () => {
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		const result = await store.await(Promise.resolve(42));
 		expect(result).toBe(true);
 		expect(store.value).toBe(42);
@@ -150,7 +150,7 @@ describe("await() resolves and rejects correctly", () => {
 
 	test("rejected error is stored as reason", async () => {
 		const err = new Error("fail");
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		const result = await store.await(Promise.reject(err));
 		expect(result).toBe(false);
 		expect(store.reason).toBe(err);
@@ -158,7 +158,7 @@ describe("await() resolves and rejects correctly", () => {
 
 	test("loading reflects pending state throughout", async () => {
 		const d = getDeferred<number>();
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		expect(store.loading).toBe(true);
 		const p = store.await(d.promise);
 		expect(store.loading).toBe(true); // still no value
@@ -172,7 +172,7 @@ describe("await() resolves and rejects correctly", () => {
 describe("await() abort", () => {
 	test("abort() discards a result that arrives after the abort", async () => {
 		const d = getDeferred<number>();
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		const awaitResult = store.await(d.promise);
 		store.abort();
 		d.resolve(42); // arrives after abort — should be discarded
@@ -183,7 +183,7 @@ describe("await() abort", () => {
 
 	test("setting a new value discards a pending await result", async () => {
 		const d = getDeferred<number>();
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		const awaitResult = store.await(d.promise);
 		store.value = 99; // explicit set cancels the pending await
 		d.resolve(42); // arrives after value was set — should be discarded
@@ -197,20 +197,20 @@ describe("await() abort", () => {
 
 describe("call() synchronous", () => {
 	test("return value of callback is set as value", () => {
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		void store.call(() => 42);
 		expect(store.value).toBe(42);
 	});
 
 	test("additional args are passed to the callback", () => {
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		void store.call((x: number, y: number) => x + y, 20, 22);
 		expect(store.value).toBe(42);
 	});
 
 	test("thrown error is stored as reason", () => {
 		const err = new Error("oops");
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		void store.call(() => {
 			throw err;
 		});
@@ -218,13 +218,13 @@ describe("call() synchronous", () => {
 	});
 
 	test("returns true when callback succeeds", () => {
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		const result = store.call(() => 42);
 		expect(result).toBe(true);
 	});
 
 	test("returns false when callback throws", () => {
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		const result = store.call(() => {
 			throw new Error("oops");
 		});
@@ -236,20 +236,20 @@ describe("call() synchronous", () => {
 
 describe("call() asynchronous", () => {
 	test("resolved value of async callback is set as value", async () => {
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		await store.call(async () => 42);
 		expect(store.value).toBe(42);
 	});
 
 	test("additional args are passed to the async callback", async () => {
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		await store.call(async (x: number, y: number) => x + y, 20, 22);
 		expect(store.value).toBe(42);
 	});
 
 	test("rejected async callback stores error as reason", async () => {
 		const err = new Error("oops");
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		await store.call(async () => {
 			throw err;
 		});
@@ -257,13 +257,13 @@ describe("call() asynchronous", () => {
 	});
 
 	test("returns Promise<true> when async callback resolves", async () => {
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		const result = await store.call(async () => 42);
 		expect(result).toBe(true);
 	});
 
 	test("returns Promise<false> when async callback rejects", async () => {
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		const result = await store.call(async () => {
 			throw new Error("oops");
 		});
@@ -272,7 +272,7 @@ describe("call() asynchronous", () => {
 
 	test("returns Promise<false> when aborted before result arrives", async () => {
 		const d = getDeferred<number>();
-		const store = new Store<number>(NONE);
+		const store = new ValueStore<number>(NONE);
 		const callResult = store.call(() => d.promise);
 		store.abort();
 		d.resolve(99);

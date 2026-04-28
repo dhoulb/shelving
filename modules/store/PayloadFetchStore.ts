@@ -1,7 +1,7 @@
 import type { NONE } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { FetchStore } from "./FetchStore.js";
-import { Store } from "./Store.js";
+import { ValueStore } from "./ValueStore.js";
 
 export type PayloadFetchCallback<P, R> = (payload: P) => R | PromiseLike<R>;
 
@@ -17,11 +17,11 @@ export class PayloadFetchStore<P, R> extends FetchStore<R> {
 	 * Store keeping the current payload to send to the fetch on send.
 	 * - New payloads can be set using `this.payload.value`
 	 */
-	readonly payload: Store<P>;
+	readonly payload: ValueStore<P>;
 
 	// Override to save initial payload and callback.
 	constructor(payload: P, value: R | typeof NONE, callback?: PayloadFetchCallback<P, R>) {
-		const payloadStore = new Store(payload);
+		const payloadStore = new ValueStore(payload);
 		super(value, callback && (() => callback(payloadStore.value)));
 		this.payload = payloadStore;
 		void _iterate(this);
