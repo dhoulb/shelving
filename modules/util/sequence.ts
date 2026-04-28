@@ -1,10 +1,10 @@
 import { UnexpectedError } from "../error/UnexpectedError.js";
 import { getDeferred, getDelay } from "./async.js";
-import { ABORTED } from "./constants.js";
+import { ABORT } from "./constants.js";
 import type { AnyCaller, ErrorCallback, ValueCallback } from "./function.js";
 
 export interface IteratorAbortResult<R> {
-	done: typeof ABORTED;
+	done: typeof ABORT;
 	value: R;
 }
 
@@ -13,7 +13,7 @@ export type IteratorAbortableResult<T, R> = IteratorResult<T, R> | IteratorAbort
 
 /** Turn a `Promise<R>` into an `IteratorAbortResult<R>` */
 async function _awaitAbort<R>(value: PromiseLike<R>): Promise<IteratorAbortResult<R | undefined>> {
-	return { done: ABORTED, value: await value };
+	return { done: ABORT, value: await value };
 }
 
 /** Call an iterator's `return()` method (if it exists) with an initial value, and return the `value` it returns. */
@@ -54,7 +54,7 @@ export async function* repeatUntil<T = void, R = void, N = void>(
 			]);
 			if (done) {
 				// For aborts, tell the iterator we're no longer using it.
-				if (done === ABORTED) return _iteratorReturn(iterator, value, repeatUntil);
+				if (done === ABORT) return _iteratorReturn(iterator, value, repeatUntil);
 
 				// Don't need to do this for `done: true` results from the iterator, because we assume the iterator stopped itself.
 				return value;
@@ -107,7 +107,7 @@ export function runSequence<T, R, N>(
 ): (value?: R | undefined) => void {
 	const { promise, resolve } = getDeferred<IteratorAbortResult<R | undefined>>();
 	void _runSequenceIterator(sequence[Symbol.asyncIterator](), promise, onNext, onError, onReturn);
-	return (value?: R | undefined) => resolve({ done: ABORTED, value });
+	return (value?: R | undefined) => resolve({ done: ABORT, value });
 }
 async function _runSequenceIterator<T, R, N>(
 	iterator: AsyncIterator<T, R | undefined, N | undefined>,
@@ -122,7 +122,7 @@ async function _runSequenceIterator<T, R, N>(
 			const { done, value }: IteratorAbortableResult<T, R | undefined> = await Promise.race([stopped, iterator.next(n)]);
 			if (done) {
 				// For manual aborts tell the iterator we're no longer using it.
-				if (done === ABORTED) {
+				if (done === ABORT) {
 					const v = await _iteratorReturn(iterator, value, runSequence);
 					return onReturn?.(v);
 				}
