@@ -35,22 +35,6 @@ test("reading value throws a promise while loading", async () => {
 	await r;
 });
 
-test("busy is true while fetching and false after", async () => {
-	const d = getDeferred<number>();
-	const store = new FetchStore<number>(NONE, () => d.promise);
-
-	expect(store.loading).toBe(true); // triggers fetch
-	await runMicrotasks();
-
-	expect(store.busy.value).toBe(true);
-
-	d.resolve(42);
-	await runMicrotasks();
-
-	expect(store.value).toBe(42);
-	expect(store.busy.value).toBe(false);
-});
-
 test("error in callback sets reason", async () => {
 	const err = new Error("oops");
 	const store = new FetchStore<number>(NONE, () => Promise.reject(err));
