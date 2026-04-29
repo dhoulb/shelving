@@ -3,10 +3,10 @@ import { EMPTY_DICTIONARY, getDictionaryItems, omitDictionaryItems, requireDicti
 import { omitProps, withProp } from "../util/object.js";
 import type { Updates } from "../util/update.js";
 import { updateData } from "../util/update.js";
-import { Store } from "./Store.js";
+import { BusyStore } from "./BusyStore.js";
 
 /** Store a dictionary object. */
-export class DictionaryStore<T> extends Store<PossibleDictionary<T>, ImmutableDictionary<T>> implements Iterable<DictionaryItem<T>> {
+export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, PossibleDictionary<T>> implements Iterable<DictionaryItem<T>> {
 	// Override to set default value to empty dictionary.
 	constructor(value: PossibleDictionary<T> = EMPTY_DICTIONARY) {
 		super(requireDictionary(value));

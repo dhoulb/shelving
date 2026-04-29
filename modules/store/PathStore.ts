@@ -1,7 +1,7 @@
 import type { AnyCaller } from "../util/function.js";
 import type { AbsolutePath, PossiblePath } from "../util/path.js";
 import { isPathActive, isPathProud, requirePath } from "../util/path.js";
-import { Store } from "./Store.js";
+import { BusyStore } from "./BusyStore.js";
 
 /**
  * Store an absolute path, e.g. `/a/b/c`
@@ -9,7 +9,7 @@ import { Store } from "./Store.js";
  * @param path: The initial value for the store.
  * @param base: The base path to resolve relative paths against.
  */
-export class PathStore extends Store<PossiblePath, AbsolutePath> {
+export class PathStore extends BusyStore<AbsolutePath, PossiblePath> {
 	readonly base: AbsolutePath;
 
 	// Override to set default path to `.` and base to `/`

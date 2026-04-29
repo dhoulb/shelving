@@ -9,12 +9,12 @@ import { useProps } from "./useProps.js";
 /** Subscribe to a Shelving `Store` instance to refresh this component when its value changes. */
 export function useStore<T extends AnyStore>(store: T): T;
 export function useStore<T extends AnyStore>(store?: T | undefined): T | undefined;
-export function useStore<I, O>(store: Store<I, O> | undefined): Store<I, O> | undefined {
+export function useStore<T, TT>(store: Store<T, TT> | undefined): Store<T, TT> | undefined {
 	// Store memoized versions of `subscribe()` and `getSnapshot()` so `useSyncExternalStore()` doesn't re-subscribe on every render.
 	const internals = useProps<{
 		subscribe: (onStoreChange: Callback) => StopCallback;
-		getSnapshot: () => O | undefined | typeof NONE;
-		store: Store<I, O> | undefined;
+		getSnapshot: () => T | undefined | typeof NONE;
+		store: Store<T, TT> | undefined;
 	}>();
 
 	// Update `internals` if `store` changes.

@@ -10,10 +10,10 @@ import {
 	withArrayItems,
 } from "../util/array.js";
 import type { AnyCaller } from "../util/function.js";
-import { Store } from "./Store.js";
+import { BusyStore } from "./BusyStore.js";
 
 /** Store an array. */
-export class ArrayStore<T> extends Store<PossibleArray<T>, ImmutableArray<T>> implements Iterable<T> {
+export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>> implements Iterable<T> {
 	// Override to set default value to `[]` and convert possible arrays.
 	constructor(value: PossibleArray<T> = []) {
 		super(requireArray(value, undefined, undefined, ArrayStore));

@@ -5,10 +5,10 @@ import type { AnyCaller } from "../util/function.js";
 import { withProp } from "../util/object.js";
 import type { Updates } from "../util/update.js";
 import { updateData } from "../util/update.js";
-import { ValueStore } from "./ValueStore.js";
+import { BusyStore } from "./BusyStore.js";
 
 /** Store a data object. */
-export class DataStore<T extends Data> extends ValueStore<T> {
+export class DataStore<T extends Data> extends BusyStore<T> {
 	/** Get the data of this store. */
 	get data(): T {
 		return this.value;
@@ -36,7 +36,7 @@ export class DataStore<T extends Data> extends ValueStore<T> {
 }
 
 /** Store an optional data object. */
-export class OptionalDataStore<T extends Data> extends ValueStore<T | undefined> {
+export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> {
 	/** Get current data value of this store (or throw `Promise` that resolves to the next required value). */
 	get data(): T {
 		return this.require(getGetter(this, "data"));

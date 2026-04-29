@@ -1,7 +1,7 @@
 import { Store } from "./Store.js";
 
 /** Store a boolean. */
-export class BooleanStore extends Store<unknown, boolean> {
+export class BooleanStore extends Store<boolean, unknown> {
 	// Override to set default value to `false`
 	constructor(value: boolean = false) {
 		super(value);

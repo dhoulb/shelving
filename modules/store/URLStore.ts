@@ -13,10 +13,10 @@ import {
 	withURIParams,
 } from "../util/uri.js";
 import { getURL, type PossibleURL, requireURL, type URL, type URLString } from "../util/url.js";
-import { Store } from "./Store.js";
+import { BusyStore } from "./BusyStore.js";
 
 /** Store a URL, e.g. `https://top.com/a/b/c` */
-export class URLStore extends Store<PossibleURL, URL> {
+export class URLStore extends BusyStore<URL, PossibleURL> {
 	readonly base: URL | undefined;
 
 	// Override to convert possible URL to URL.

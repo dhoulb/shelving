@@ -1,9 +1,8 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { isAsync } from "../util/async.js";
-import { ABORT, NONE } from "../util/constants.js";
-import { awaitDispose } from "../util/dispose.js";
-import { BooleanStore } from "./BooleanStore.js";
-import { Store } from "./Store.js";
+import { ABORT, type NONE, SKIP } from "../util/constants.js";
+import { BusyStore } from "./BusyStore.js";
+import type { StoreInput } from "./Store.js";
 
 /** Callback for a callback fetch store. */
 export type FetchCallback<T> = (signal: AbortSignal) => T | PromiseLike<T>;
@@ -13,39 +12,35 @@ export type FetchCallback<T> = (signal: AbortSignal) => T | PromiseLike<T>;
  *
  * @param value The initial value for the store, or `NONE` if it does not have one yet.
  * @param callback An optional callback that, if set, will be called when the `refresh()` method is invoked to fetch the next value.
+ * - Override `this._fetch()` in subclasses to define custom fetching behaviour for a subclass.
  */
-export class FetchStore<T> extends Store<T | typeof NONE, T> {
-	/**
-	 * Store that indicates the busy state of this store.
-	 * - `true` while a refresh is in-flight, `false` otherwise.
-	 * - Can be subscribed to for e.g. loading spinners.
-	 */
-	readonly busy = new BooleanStore(false);
-
+export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	// Override to trigger a refresh when `this.loading` is read.
-	// Reading `loading` signals intent to use the value, so we optimistically start fetching so the value is available.
+	// Calling `store.loading` signals intent to use the value.
+	// We optimistically refresh so the value is available the next time the user wants it.
 	override get loading(): boolean {
 		const loading = super.loading;
-		if (loading || this._invalidation) void this.refresh();
+		if (this._invalidation || loading) void this.refresh();
 		return loading;
 	}
 
 	// Override to reset the invalidation state.
 	// Setting a value means this store is no longer invalid.
-	protected override _convert(value: T | typeof NONE): T | typeof NONE {
-		if (!isAsync(value)) this._invalidation = 0;
-		return value;
+	override write(input: StoreInput<TT>) {
+		if (input !== SKIP) this._invalidation = 0;
+		super.write(input);
 	}
 
 	// Override to trigger refresh on `NONE`
-	// Reading `value` signals intent to use the value, so we optimistically start fetching so the value is available.
-	protected override _read(value: T | typeof NONE): T {
-		if (value === NONE) void this.refresh();
-		return super._read(value);
+	// Calling `store.value` signals intent to use the value.
+	// We optimistically refresh so the value is available the next time the user wants it.
+	override read() {
+		this.loading; // Ping loading to possibly trigger the intiial fetch.
+		return super.read();
 	}
 
 	// Override to create to save `callback`
-	constructor(value: T | typeof NONE, callback?: FetchCallback<T>) {
+	constructor(value: T | typeof NONE, callback?: FetchCallback<TT>) {
 		super(value);
 		this._callback = callback;
 	}
@@ -70,13 +65,6 @@ export class FetchStore<T> extends Store<T | typeof NONE, T> {
 	}
 	private _pendingRefresh: Promise<boolean> | undefined = undefined;
 
-	// Overload to set `this.busy` to `true` when we start awaiting a value.
-	// Gets set back to `false` when `abort()` is called.
-	override await(pending: PromiseLike<T>): Promise<boolean> {
-		this.busy.value = true;
-		return super.await(pending);
-	}
-
 	/**
 	 * Current `AbortSignal` for this store's in-flight fetch.
 	 * - Created lazily; a new signal is issued each time `refresh()` starts a new fetch or `abort()` is called.
@@ -93,11 +81,11 @@ export class FetchStore<T> extends Store<T | typeof NONE, T> {
 	 * Call the fetch callback to get the next value.
 	 * @param signal `AbortSignal` for the current fetch — passed through to the callback so it can cancel HTTP requests etc.
 	 */
-	protected _fetch(signal: AbortSignal): T | PromiseLike<T> {
+	protected _fetch(signal: AbortSignal): TT | PromiseLike<TT> {
 		if (!this._callback) throw new RequiredError("FetchStore has no callback() function", { store: this, caller: this.refresh });
 		return this._callback(signal);
 	}
-	private _callback: FetchCallback<T> | undefined;
+	private _callback: FetchCallback<TT> | undefined;
 
 	/**
 	 * Invalidate this store so a new fetch is triggered on the next read of `loading` or `value`.
@@ -110,30 +98,18 @@ export class FetchStore<T> extends Store<T | typeof NONE, T> {
 	private _invalidation = 0;
 
 	/** Re-fetch now if the current value is older than `maxAge` milliseconds or has been invalidated. */
-	async refreshStale(maxAge: number): Promise<void> {
-		if (this._invalidation || this.age > maxAge) await this.refresh();
+	refreshStale(maxAge: number): Promise<boolean> | boolean {
+		if (this._invalidation || this.age > maxAge) return this.refresh();
+		return true;
 	}
 
-	/**
-	 * Abort any current in-flight fetch and pending async operation.
-	 * - Sends `ABORT` to the current `AbortSignal` and clears the controller (a new signal will be created on the next read or fetch).
-	 * - Clears the inflight promise or await and resets busy state.
-	 * - Any pending `await()` result will be silently discarded.
-	 */
+	// Override to abort any current in-flight fetch and pending async operation.
+	// - Sends `ABORT` to the current `AbortSignal` and clears the controller (a new signal will be created on the next read or fetch).
+	// - Any pending `await()` result will be silently discarded.
 	override abort(): void {
 		this._aborter?.abort(ABORT);
 		this._aborter = undefined;
 		this._pendingRefresh = undefined;
-		this.busy.value = false;
 		super.abort(); // clears _pendingValue
-	}
-
-	// Implement `AsyncDisposable`.
-	override async [Symbol.asyncDispose](): Promise<void> {
-		await awaitDispose(
-			() => this.abort(),
-			this.busy, // Send `done: true` to any iterators of the busy store.
-			super[Symbol.asyncDispose](),
-		);
 	}
 }
