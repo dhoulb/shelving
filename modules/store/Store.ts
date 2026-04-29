@@ -191,6 +191,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 
 	/**
 	 * Call a callback and save the returned value to this store.
+	 * - If the callback returns an async value, it is awaited and values/errors will be saved.
 	 */
 	call<A extends Arguments>(callback: StoreCallback<TT, A>, ...args: A): Promise<boolean> | boolean {
 		try {
@@ -206,6 +207,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 
 	/**
 	 * Send the current value to a callback and save the returned value to this store.
+	 * - If the callback returns an async value, it is awaited and values/errors will be saved.
 	 */
 	reduce<A extends Arguments>(reducer: StoreReducer<TT, T, A>, ...args: A): Promise<boolean> | boolean {
 		return this.call(reducer, this.value, ...args);
@@ -213,15 +215,17 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 
 	/**
 	 * Run a callback and ignore any returned value.
+	 * - If the callback returns an async value, it is awaited and errors will be saved.
 	 */
-	run<A extends Arguments>(callback: (...args: A) => void | PromiseLike<void>, ...args: A): Promise<boolean> | boolean {
+	run<A extends Arguments>(callback: (...args: A) => void, ...args: A): Promise<boolean> | boolean {
 		return this.call(_callSkipped, callback, ...args);
 	}
 
 	/**
 	 * Send the current value to a callback and ignore any returned value.
+	 * - If the callback returns an async value, it is awaited and errors will be saved.
 	 */
-	send<A extends Arguments>(callback: (value: T, ...args: A) => void | PromiseLike<void>, ...args: A): Promise<boolean> | boolean {
+	send<A extends Arguments>(callback: (value: T, ...args: A) => void, ...args: A): Promise<boolean> | boolean {
 		return this.call(_callSkipped, callback, this.value, ...args);
 	}
 
