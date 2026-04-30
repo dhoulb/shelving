@@ -18,7 +18,7 @@
 		"rootDir": "./modules",
 		"skipLibCheck": true,
 		"target": "esnext",
-		"verbatimModuleSyntax": true,
+		"verbatimModuleSyntax": true
 	},
 	"include": ["./modules/**/*", "./**/*.json"],
 	"exclude": ["node_modules", "dist"]
