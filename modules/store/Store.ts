@@ -46,6 +46,13 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	public readonly next = new DeferredSequence<T>();
 
 	/**
+	 * Snapshot returns either the current reason or the current value (or `NONE` if reason is unset).
+	 */
+	get snapshot(): unknown {
+		return this._reason !== undefined ? this._reason : this._value;
+	}
+
+	/**
 	 * Store is considered to be "loading" if it has no value or error.
 	 * - Calling `this.value` will throw `this.reason` if there's an error reason set, or a `Promise` if there's no value set.
 	 * - Calling `this.loading` is a way to check if this store has a value without triggering those throws.
