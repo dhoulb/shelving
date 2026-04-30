@@ -3,5 +3,8 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"typescript.native-preview.tsdk": "/Users/dhoulb/Repos/shelving/node_modules/@typescript/native-preview"
+	}
 }
