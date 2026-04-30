@@ -1,10 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
+import type { AddressData, Schema } from "../index.js";
 import { ADDRESS, AddressSchema, formatAddress, NULLABLE_ADDRESS } from "../index.js";
 
 test("TypeScript", () => {
-	const s1: Schema<{ address1: string; address2: string; city: string; state: string; postcode: string; country: string } | null> =
-		NULLABLE_ADDRESS;
+	const s1: Schema<AddressData | null> = NULLABLE_ADDRESS;
 	const r1 = s1.validate({
 		address1: "1 Main St",
 		address2: "",
@@ -37,6 +36,18 @@ describe("AddressSchema", () => {
 		});
 		expect(output.postcode).toBe("SW1A 1AA");
 		expect(output.country).toBe("GB");
+	});
+
+	test("Validates with empty state", () => {
+		const output = ADDRESS.validate({
+			address1: "1 Main St",
+			address2: "",
+			city: "London",
+			state: "",
+			postcode: "sw1a 1aa",
+			country: "GB",
+		});
+		expect(output.state).toBe("");
 	});
 
 	test("Formats address lines", () => {
