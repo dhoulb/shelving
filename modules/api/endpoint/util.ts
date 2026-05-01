@@ -4,8 +4,8 @@ import { requireDictionary } from "../../util/dictionary.js";
 import type { AnyCaller } from "../../util/function.js";
 import { getResponse, isRequestMethod, parseRequestBody, type RequestParams } from "../../util/http.js";
 import { isPlainObject } from "../../util/object.js";
-import type { AbsolutePath } from "../../util/path.js";
-import { type PossibleURL, requireURL } from "../../util/url.js";
+import { matchURLPrefix, type PossibleURL } from "../../util/url.js";
+
 import type { Endpoint } from "./Endpoint.js";
 
 /**
@@ -67,14 +67,9 @@ export function handleEndpoints<C>(
 	const { url, method } = request;
 	if (!isRequestMethod(method)) throw new MethodNotAllowedError("Unsupported request method", { received: method, caller });
 
-	const { origin: baseOrigin, pathname: basePath } = requireURL(base, undefined, caller);
-	const { origin: requestOrigin, pathname: requestPath, searchParams } = requireURL(url, base, caller);
-
-	if (baseOrigin !== requestOrigin)
-		throw new NotFoundError("No matching base origin", { expected: baseOrigin, received: requestOrigin, caller });
-
-	const targetPath = _stripPathPrefix(requestPath, basePath);
-	if (!targetPath) throw new NotFoundError("No matching base path", { received: requestPath, expected: basePath, caller });
+	const { pathname: requestPath, searchParams } = new URL(url, base);
+	const targetPath = matchURLPrefix(url, base);
+	if (!targetPath) throw new NotFoundError("No matching base path", { received: requestPath, caller });
 
 	for (const handler of handlers) {
 		const pathParams = handler.endpoint.match(method, targetPath, caller);
@@ -111,12 +106,4 @@ async function _handleEndpoint<P, R, C>(
 			throw new ValueError(`Invalid result for ${endpoint.toString()}:\n${thrown}`, { endpoint, callback, cause: thrown, caller });
 		throw thrown;
 	}
-}
-
-/** Strip a prefix like `/a/b` from a path like `/a/b/c/d` to produce a remainder path like `/c/d`. */
-function _stripPathPrefix(path: AbsolutePath, prefix: AbsolutePath): AbsolutePath | undefined {
-	prefix = prefix === "/" ? "/" : (prefix.replace(/\/$/, "") as AbsolutePath);
-	if (prefix === "/") return path;
-	if (path === prefix) return "/";
-	if (path.startsWith(`${prefix}/`)) return path.slice(prefix.length) as AbsolutePath;
 }

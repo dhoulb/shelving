@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { isAbsolutePath, isPathProud, RequiredError, requirePath } from "../index.js";
+import { isAbsolutePath, isPathProud, matchPathPrefix, RequiredError, requirePath } from "../index.js";
 
 test("isAbsolutePath()", () => {
 	// Absolute.
@@ -96,4 +96,14 @@ test("isPathProud()", () => {
 
 	// Children of root are never proud.
 	expect(isPathProud("/", "/a/b")).toBe(false);
+});
+
+describe("matchPathPrefix()", () => {
+	test("matches and strips base prefix by path segment", () => {
+		expect(matchPathPrefix("/abc/def", "/abc")).toBe("/def");
+		expect(matchPathPrefix("/abc/def", "/abc/")).toBe("/def");
+		expect(matchPathPrefix("/abc", "/abc")).toBe("/");
+		expect(matchPathPrefix("/abc", "/abcd")).toBeUndefined();
+		expect(matchPathPrefix("/abcd", "/abc")).toBeUndefined();
+	});
 });

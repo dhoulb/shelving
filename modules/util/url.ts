@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 import { type Nullish, notNullish } from "./null.js";
-import type { AbsolutePath, Path } from "./path.js";
+import { type AbsolutePath, matchPathPrefix, type Path } from "./path.js";
 import type { URI } from "./uri.js";
 
 /**
@@ -110,4 +110,25 @@ export function requireBaseURL(possible: PossibleURL, base?: PossibleURL | undef
 	const url = getURL(possible, base);
 	assertURL(url, caller);
 	return _toBaseURL(url);
+}
+
+/**
+ * Resolve and match a target URL/path against a base URL and return the remaining path.
+ * - Relative targets are resolved against the normalized base URL.
+ * - Returns `undefined` for parse failures, origin mismatches, or non-matching paths.
+ */
+export function matchURLPrefix(target: PossibleURL, base: PossibleURL): AbsolutePath | undefined {
+	const baseURL = getURL(base);
+	if (!baseURL) return;
+	const normalizedBase = _normalizeBaseURL(baseURL);
+	const targetURL = getURL(target, normalizedBase);
+	if (!targetURL || targetURL.origin !== normalizedBase.origin) return;
+	return matchPathPrefix(targetURL.pathname, normalizedBase.pathname);
+}
+function _normalizeBaseURL(base: URL): URL {
+	const url = new URL(base.href);
+	url.search = "";
+	url.hash = "";
+	if (!url.pathname.endsWith("/")) url.pathname = `${url.pathname}/`;
+	return url;
 }

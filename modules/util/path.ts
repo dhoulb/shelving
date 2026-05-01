@@ -71,6 +71,25 @@ export function requirePath(value: PossiblePath, base?: AbsolutePath, caller: An
 	return path;
 }
 
+/**
+ * Match and strip a base path prefix from a path using segment-aware pathname rules.
+ * - Both inputs must be absolute paths that begin with `/`.
+ * - Returns `/` when the paths are an exact match.
+ */
+export function matchPathPrefix(target: Path, base: AbsolutePath): AbsolutePath | undefined {
+	const targetPath = getPath(target, base);
+	if (!targetPath) return;
+	const normalBasePath = _normalizeBasePath(base);
+	if (normalBasePath === "/") return targetPath;
+	if (targetPath === normalBasePath) return "/";
+	if (!targetPath.startsWith(`${normalBasePath}/`)) return;
+	return targetPath.slice(normalBasePath.length) as AbsolutePath;
+}
+function _normalizeBasePath(base: AbsolutePath): AbsolutePath {
+	if (base === "/") return "/";
+	return (base.endsWith("/") ? base.slice(0, -1) : base) as AbsolutePath;
+}
+
 /** Is a target path active? */
 export function isPathActive(target: AbsolutePath, current: AbsolutePath): boolean {
 	return target === current;
