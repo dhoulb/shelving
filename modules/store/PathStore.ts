@@ -1,6 +1,6 @@
 import type { AnyCaller } from "../util/function.js";
-import type { AbsolutePath, PossiblePath } from "../util/path.js";
-import { isPathActive, isPathProud, requirePath } from "../util/path.js";
+import type { AbsolutePath, RelativePath } from "../util/path.js";
+import { isPathActive, isPathProud, requireAbsolutePath } from "../util/path.js";
 import { BusyStore } from "./BusyStore.js";
 
 /**
@@ -9,18 +9,18 @@ import { BusyStore } from "./BusyStore.js";
  * @param path: The initial value for the store.
  * @param base: The base path to resolve relative paths against.
  */
-export class PathStore extends BusyStore<AbsolutePath, PossiblePath> {
+export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePath> {
 	readonly base: AbsolutePath;
 
 	// Override to set default path to `.` and base to `/`
-	constructor(path = ".", base: AbsolutePath = "/") {
-		super(requirePath(path, base, PathStore));
+	constructor(path: AbsolutePath | RelativePath = ".", base: AbsolutePath = "/") {
+		super(requireAbsolutePath(path, base, PathStore));
 		this.base = base;
 	}
 
 	// Override to convert a possible path to an absolute path (relative to `this.base`).
-	protected override _convert(possible: PossiblePath, caller: AnyCaller): AbsolutePath {
-		return requirePath(possible, this.base, caller);
+	protected override _convert(possible: AbsolutePath | RelativePath, caller: AnyCaller): AbsolutePath {
+		return requireAbsolutePath(possible, this.base, caller);
 	}
 
 	// Override for fast equality.
@@ -39,8 +39,8 @@ export class PathStore extends BusyStore<AbsolutePath, PossiblePath> {
 	}
 
 	/** Get an absolute path from a path relative to the current store path. */
-	getPath(path: string): AbsolutePath {
-		return requirePath(path, this.value);
+	getPath(path: AbsolutePath | RelativePath): AbsolutePath {
+		return requireAbsolutePath(path, this.value);
 	}
 
 	override toString(): string {

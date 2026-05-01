@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 import { type Nullish, notNullish } from "./null.js";
-import { type AbsolutePath, matchPathPrefix, type Path } from "./path.js";
+import { type AbsolutePath, matchPathPrefix } from "./path.js";
 import type { URI } from "./uri.js";
 
 /**
@@ -42,7 +42,7 @@ export interface URL extends URI {
  */
 export interface URLConstructor {
 	new (input: URLString | URL, base?: URLString | URL): URL;
-	new (input: URLString | URL | Path, base: URLString | URL): URL;
+	new (input: URLString | URL | string, base: URLString | URL): URL;
 }
 export const URL = globalThis.URL as URLConstructor;
 

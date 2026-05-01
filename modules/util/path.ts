@@ -1,59 +1,85 @@
 import { RequiredError } from "../error/RequiredError.js";
+import type { ImmutableArray } from "./array.js";
 import type { AnyCaller } from "./function.js";
 import type { Nullish } from "./null.js";
-import { getURL } from "./url.js";
 
 /** Absolute path string starts with `/` slash. */
 export type AbsolutePath = `/` | `/${string}`;
 
-/** Relative path string starts with `./` or `../` */
-export type RelativePath = `.` | `./${string}` | `..` | `../${string}`;
+/** Relative path string is `.` dot, or starts with `./` dot slash. */
+export type RelativePath = `.` | `./` | `./${string}`;
 
-/** Either an absolute path string or a relative path string. */
-export type Path = AbsolutePath | RelativePath;
+/** Simple path string like `a/b/c` */
+export type SimplePath = string;
 
 /** Things that can be converted to a path. */
-export type PossiblePath = string | URL;
+export type PossiblePath = string;
 
-/** Is a string path an absolute path? */
-export function isAbsolutePath(path: Path): path is AbsolutePath {
-	return path.startsWith("/");
+/** List of non-empty path segments. */
+export type PathSegments = ImmutableArray<string>;
+
+const SPLIT_SEGMENTS = /[\\/]+/g;
+const ALL_DOTS = /^\.+$/;
+const UNSAFE_CHARS = /[^A-Za-z0-9_.-]+/g;
+
+/**
+ * Is a string a valid path segment, e.g. `abc` or `myFile.pdf` or `.myFile`
+ * - Disallows `""` empty string.
+ * - Disallows runs of `.` as the only contents (e.g. `.`, `..` or `...`).
+ * - Disallows characters outside `A-Za-z0-9_.-`
+ */
+export function isPathSegment(segment: string): boolean {
+	return segment.length > 0 && !ALL_DOTS.test(segment) && !UNSAFE_CHARS.test(segment);
 }
 
-/** Is a string path an absolute path? */
-export function isRelativePath(path: Path): path is RelativePath {
-	return path.startsWith("./") || path.startsWith("../");
+/** Get a simple path segment after filtering out invalid characters. */
+export function getPathSegment(input: string): string {
+	const output = input.replace(UNSAFE_CHARS, "");
+	return ALL_DOTS.test(output) ? "" : output;
 }
 
 /**
- * Clean a path.
- * - Runs of `//` two or more slashes are normalised to `/` single slash, e.g. `/a//b` becomes `/a/b`
- * - `\` Windows slashes are nromalised to `/` UNIX slashes.
- * - Trailing slashes are removed, e.g. `/a/b/` becomes `/a/b`
+ * Is a string a simple path, e.g. `a/b/c`
+ * - Separated by `/` slashes.
+ * - No leading/trailing slashes.
  */
-function _cleanPath(path: AbsolutePath): AbsolutePath;
-function _cleanPath(path: string): string;
-function _cleanPath(path: string): string {
-	return path
-		.replace(/[/\\]+/g, "/") // Normalise slashes.
-		.replace(/(?!^)\/$/g, ""); // Trim trailing slashes.
+export function isPath(path: string): boolean {
+	return !path.length || path.split("/").every(isPathSegment);
+}
+
+/** Is a string path an absolute path? */
+export function isAbsolutePath(path: string): path is AbsolutePath {
+	return path.startsWith("/") && isPath(path.slice(1));
+}
+
+/** Is a string path an relative path? */
+export function isRelativePath(path: string): path is RelativePath {
+	return path === "." || (path.startsWith("./") && isPath(path.slice(2)));
+}
+
+/** Split a path into simple path segments, e.g. `a/b/c` -> ["a", "b", "c"] */
+export function splitPath(path: string): PathSegments {
+	return path?.split(SPLIT_SEGMENTS).map(getPathSegment).filter(Boolean) ?? [];
+}
+
+/** Join path segments into an absolute path, e.g. ["a", "b", "c"] -> `/a/b/c` */
+export function joinPath(...segments: PathSegments): AbsolutePath {
+	return `/${segments.join("/")}`;
 }
 
 /**
  * Resolve a relative or absolute path and return the absolute path, or `undefined` if not a valid path.
- * - Uses `new URL` to do path processing, so URL strings can also be resolved.
  * - Returned paths are cleaned with `cleanPath()` so runs of slashes and trailing slashes are removed.
  *
- * @param value Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
+ * @param path Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
  * @param base Absolute path used for resolving relative paths in `possible`
- * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
+ * @return Absolute path with a leading slash but no trailing slash, e.g. `/a/c/b`
  */
-export function getPath(value: Nullish<PossiblePath>, base?: AbsolutePath): AbsolutePath | undefined {
-	const url = getURL(value, base ? `http://j.com${base}${base.endsWith("/") ? "" : "/"}` : "http://j.com");
-	if (url) {
-		const { pathname, search, hash } = url;
-		if (isAbsolutePath(pathname)) return `${_cleanPath(pathname)}${search}${hash}`;
-	}
+export function getAbsolutePath(path: Nullish<PossiblePath>, base: AbsolutePath = "/"): AbsolutePath | undefined {
+	if (!path) return;
+	if (path === "/") return "/"; // Hot passthrough.
+	if (path.startsWith("/")) return joinPath(...splitPath(path));
+	return joinPath(...splitPath(base), ...splitPath(path));
 }
 
 /**
@@ -61,14 +87,18 @@ export function getPath(value: Nullish<PossiblePath>, base?: AbsolutePath): Abso
  * - Internally uses `new URL` to do path processing but shouldn't ever reveal that fact.
  * - Returned paths are cleaned with `cleanPath()` so runs of slashes and trailing slashes are removed.
  *
- * @param value Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
+ * @param path Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function requirePath(value: PossiblePath, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
-	const path = getPath(value, base);
-	if (!path) throw new RequiredError("Invalid path", { received: value, caller });
-	return path;
+export function requireAbsolutePath(
+	path: AbsolutePath | RelativePath,
+	base?: AbsolutePath,
+	caller: AnyCaller = requireAbsolutePath,
+): AbsolutePath {
+	const output = getAbsolutePath(path, base);
+	if (!output) throw new RequiredError("Invalid path", { received: path, caller });
+	return output;
 }
 
 /**
@@ -76,18 +106,16 @@ export function requirePath(value: PossiblePath, base?: AbsolutePath, caller: An
  * - Both inputs must be absolute paths that begin with `/`.
  * - Returns `/` when the paths are an exact match.
  */
-export function matchPathPrefix(target: Path, base: AbsolutePath): AbsolutePath | undefined {
-	const targetPath = getPath(target, base);
-	if (!targetPath) return;
-	const normalBasePath = _normalizeBasePath(base);
-	if (normalBasePath === "/") return targetPath;
-	if (targetPath === normalBasePath) return "/";
-	if (!targetPath.startsWith(`${normalBasePath}/`)) return;
-	return targetPath.slice(normalBasePath.length) as AbsolutePath;
-}
-function _normalizeBasePath(base: AbsolutePath): AbsolutePath {
-	if (base === "/") return "/";
-	return (base.endsWith("/") ? base.slice(0, -1) : base) as AbsolutePath;
+export function matchPathPrefix(
+	path: AbsolutePath | RelativePath,
+	base: AbsolutePath,
+	caller: AnyCaller = matchPathPrefix,
+): AbsolutePath | undefined {
+	const normalBase = requireAbsolutePath(base, undefined, caller);
+	const normalPath = requireAbsolutePath(path, normalBase, caller);
+	if (normalBase === "/") return normalPath;
+	if (normalPath === normalBase) return "/";
+	if (normalPath.startsWith(`${normalBase}/`)) return normalPath.slice(normalBase.length) as AbsolutePath;
 }
 
 /** Is a target path active? */
