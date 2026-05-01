@@ -1,5 +1,6 @@
 import { getGetter, getSetter } from "../util/class.js";
 import type { AnyCaller } from "../util/function.js";
+import type { AbsolutePath } from "../util/index.js";
 import {
 	clearURIParams,
 	getURIParam,
@@ -71,7 +72,7 @@ export class URLStore extends BusyStore<URL, PossibleURL> {
 		return this.value.port;
 	}
 
-	get pathname(): string {
+	get pathname(): AbsolutePath {
 		return this.value.pathname;
 	}
 
