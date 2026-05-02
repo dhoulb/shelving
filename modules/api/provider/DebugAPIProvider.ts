@@ -17,18 +17,18 @@ export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 		try {
 			request = this.getRequest(endpoint, payload, options, caller);
 		} catch (reason) {
-			console.error("✘ FETCH", this.url, endpoint.toString(), payload, reason);
+			console.error("✘ FETCH", this.url.toString(), endpoint.toString(), payload, reason);
 			throw reason;
 		}
 		const debuggedRequest = await debugFullRequest(request);
-		console.debug("… FETCH", this.url, endpoint.toString(), payload, debuggedRequest);
+		console.debug("… FETCH", this.url.toString(), endpoint.toString(), payload, debuggedRequest);
 
 		// Fetch the response and debug if it throws.
 		let response: Response;
 		try {
 			response = await this.fetch(request);
 		} catch (reason) {
-			console.error("✘ FETCH", this.url, endpoint.toString(), payload, debuggedRequest, reason);
+			console.error("✘ FETCH", this.url.toString(), endpoint.toString(), payload, debuggedRequest, reason);
 			throw reason;
 		}
 		const debuggedResponse = await debugFullResponse(response);
@@ -36,10 +36,10 @@ export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 		// Convert the  result or any parsing error.
 		try {
 			const result = await this.parseResponse(endpoint, response, caller);
-			console.debug("✔ FETCH", this.url, endpoint.toString(), payload, debuggedRequest, debuggedResponse, result);
+			console.debug("✔ FETCH", this.url.toString(), endpoint.toString(), payload, debuggedRequest, debuggedResponse, result);
 			return result;
 		} catch (reason) {
-			console.error("✘ FETCH", this.url, endpoint.toString(), payload, debuggedRequest, debuggedResponse, reason);
+			console.error("✘ FETCH", this.url.toString(), endpoint.toString(), payload, debuggedRequest, debuggedResponse, reason);
 			throw reason;
 		}
 	}

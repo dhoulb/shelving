@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getURL, isURL, requireURL } from "../index.js";
+import { getURL, isURL, matchURLPrefix, requireURL } from "../index.js";
 
 describe("isURL()", () => {
 	test("returns true for URL instance", () => {
@@ -53,5 +53,17 @@ describe("requireURL()", () => {
 	});
 	test("throws for invalid input", () => {
 		expect(() => requireURL("not a url")).toThrow();
+	});
+});
+describe("matchURLPrefix()", () => {
+	test("resolves relative target against base and strips matched path", () => {
+		expect(matchURLPrefix("def", "https://x.com/abc/")).toBe("/def");
+		expect(matchURLPrefix("https://x.com/abc/def", "https://x.com/abc/")).toBe("/def");
+		expect(matchURLPrefix("https://y.com/abc/def", "https://x.com/abc/")).toBeUndefined();
+	});
+
+	test("normalizes base path to directory semantics", () => {
+		expect(matchURLPrefix("def", "https://x.com/abc")).toBe("/def");
+		expect(matchURLPrefix("https://x.com/abc", "https://x.com/abc")).toBe("/");
 	});
 });
