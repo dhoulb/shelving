@@ -78,7 +78,7 @@ export function joinPath(...segments: PathSegments): AbsolutePath {
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading slash but no trailing slash, e.g. `/a/c/b`
  */
-export function getAbsolutePath(path: Nullish<PossiblePath>, base: AbsolutePath = "/"): AbsolutePath | undefined {
+export function getPath(path: Nullish<PossiblePath>, base: AbsolutePath = "/"): AbsolutePath | undefined {
 	if (!path) return;
 	if (path === "/") return "/"; // Hot passthrough.
 	if (path.startsWith("/")) return joinPath(...splitPath(path));
@@ -94,12 +94,8 @@ export function getAbsolutePath(path: Nullish<PossiblePath>, base: AbsolutePath 
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function requireAbsolutePath(
-	path: AbsolutePath | RelativePath,
-	base?: AbsolutePath,
-	caller: AnyCaller = requireAbsolutePath,
-): AbsolutePath {
-	const output = getAbsolutePath(path, base);
+export function requirePath(path: AbsolutePath | RelativePath, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
+	const output = getPath(path, base);
 	if (!output) throw new RequiredError("Invalid path", { received: path, caller });
 	return output;
 }
@@ -114,8 +110,8 @@ export function matchPathPrefix(
 	base: AbsolutePath,
 	caller: AnyCaller = matchPathPrefix,
 ): AbsolutePath | undefined {
-	const basePath = requireAbsolutePath(base, undefined, caller);
-	const targetPath = requireAbsolutePath(target, basePath, caller);
+	const basePath = requirePath(base, undefined, caller);
+	const targetPath = requirePath(target, basePath, caller);
 	if (basePath === "/") return targetPath;
 	if (targetPath === basePath) return "/";
 	if (targetPath.startsWith(`${basePath}/`)) return targetPath.slice(basePath.length) as AbsolutePath;
