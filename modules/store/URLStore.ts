@@ -13,12 +13,12 @@ import {
 	withURIParam,
 	withURIParams,
 } from "../util/uri.js";
-import { getURL, type PossibleURL, requireURL, type URL, type URLString } from "../util/url.js";
+import { getURL, type ImmutableURL, type PossibleURL, requireURL, type URLString } from "../util/url.js";
 import { BusyStore } from "./BusyStore.js";
 
 /** Store a URL, e.g. `https://top.com/a/b/c` */
-export class URLStore extends BusyStore<URL, PossibleURL> {
-	readonly base: URL | undefined;
+export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
+	readonly base: ImmutableURL | undefined;
 
 	// Override to convert possible URL to URL.
 	constructor(url: PossibleURL, base?: PossibleURL) {
@@ -28,12 +28,12 @@ export class URLStore extends BusyStore<URL, PossibleURL> {
 	}
 
 	// Override to convert possible URL to URL (relative to `this.base`).
-	protected override _convert(value: PossibleURL, caller: AnyCaller): URL {
+	protected override _convert(value: PossibleURL, caller: AnyCaller): ImmutableURL {
 		return requireURL(value, this.base, caller);
 	}
 
 	// Override for fast equality.
-	protected override _equal(a: URL, b: URL): boolean {
+	protected override _equal(a: ImmutableURL, b: ImmutableURL): boolean {
 		return a.href === b.href;
 	}
 
@@ -127,22 +127,22 @@ export class URLStore extends BusyStore<URL, PossibleURL> {
 	}
 
 	/** Return the current URL with an additional param. */
-	withParam(key: string, value: unknown): URL {
+	withParam(key: string, value: unknown): ImmutableURL {
 		return withURIParam(this.value, key, value, this.withParam);
 	}
 
 	/** Return the current URL with an additional param. */
-	withParams(params: PossibleURIParams): URL {
+	withParams(params: PossibleURIParams): ImmutableURL {
 		return withURIParams(this.value, params, this.withParams);
 	}
 
 	/** Return the current URL with an additional param. */
-	omitParams(...keys: string[]): URL {
+	omitParams(...keys: string[]): ImmutableURL {
 		return omitURIParams(this.value, ...keys);
 	}
 
 	/** Return the current URL with an additional param. */
-	omitParam(key: string): URL {
+	omitParam(key: string): ImmutableURL {
 		return omitURIParams(this.value, key);
 	}
 

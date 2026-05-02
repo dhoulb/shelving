@@ -1,7 +1,6 @@
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestOptions } from "../../util/http.js";
 import type { Sourceable } from "../../util/source.js";
-import type { BaseURL, URL } from "../../util/url.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import { APIProvider } from "./APIProvider.js";
 
@@ -10,7 +9,7 @@ import { APIProvider } from "./APIProvider.js";
  * - Extend this when you want to intercept only selected API operations, such as injecting auth headers or logging.
  */
 export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourceable<APIProvider<P, R>> {
-	get url(): BaseURL {
+	get url(): URL {
 		return this.source.url;
 	}
 

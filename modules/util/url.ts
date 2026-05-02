@@ -2,11 +2,7 @@ import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 import type { Nullish } from "./null.js";
 import type { AbsolutePath } from "./path.js";
-import type { URI } from "./uri.js";
-
-// Builtin URL constructor might infact not be a valid URL. See `URL` below.
-type BuiltinURL = globalThis.URL;
-const BuiltinURL = globalThis.URL;
+import type { ImmutableURI } from "./uri.js";
 
 /**
  * A URL string has a protocol and a `//`.
@@ -14,6 +10,18 @@ const BuiltinURL = globalThis.URL;
  * - URLs have a concept of "absolute" or "relative" URLs, since they have a path.
  */
 export type URLString = `${string}://${string}`;
+
+/**
+ * Construct a correctly-typed `URL` object.
+ * - This is a more correctly typed version of the builtin Javascript `URL` constructor.
+ * - Requires a URL string, URL object, or path as input, and optionally a base URL.
+ * - If a path is provided as input, a base URL _must_ also be provided.
+ * - The returned type is
+ */
+export interface ImmutableURLConstructor {
+	new (input: URLString | ImmutableURL, base?: URLString | ImmutableURL): ImmutableURL;
+	new (input: URLString | ImmutableURL | string, base: URLString | ImmutableURL): ImmutableURL;
+}
 
 /**
  * Object that describes a valid URL, e.g. `http://example.com/path/to/resource`
@@ -30,70 +38,63 @@ export type URLString = `${string}://${string}`;
  * - Javascript `URL` instance can actually represent any kind of URI (not just URLs).
  * - It's more "correct" terminology to use `URI` to refer to what the Javascript `URL` class represents.
  * - You can tell the difference because a URL will have a non-empty `host` property, whereas URIs will never have a `host` (it will be `""` empty string).
+ * - Javascript URLs are mutable which can lead to subtle bugs.
  */
-export interface URL extends URI {
+export interface ImmutableURL extends ImmutableURI {
 	readonly href: URLString;
 	readonly origin: URLString;
-	readonly pathname: `/` | `/${string}`;
+	readonly pathname: AbsolutePath;
 }
-
-/**
- * Construct a correctly-typed `URL` object.
- * - This is a more correctly typed version of the builtin Javascript `URL` constructor.
- * - Requires a URL string, URL object, or path as input, and optionally a base URL.
- * - If a path is provided as input, a base URL _must_ also be provided.
- * - The returned type is
- */
-export interface URLConstructor {
-	new (input: URLString | URL, base?: URLString | URL): URL;
-	new (input: URLString | URL | string, base: URLString | URL): URL;
-}
-export const URL = BuiltinURL as URLConstructor;
+export const ImmutableURL = URL as ImmutableURLConstructor;
 
 /** Values that can be converted to a URL instance. */
-export type PossibleURL = string | BuiltinURL;
+export type PossibleURL = string | URL;
 
 /**
  * Is an unknown value a URL object?
  * - Must be a `URL` instance and its origin must start with `scheme://`
  */
-export function isURL(value: unknown): value is URL {
-	return value instanceof BuiltinURL && _isURL(value);
+export function isURL(value: unknown): value is ImmutableURL {
+	return value instanceof URL && _isURL(value);
 }
-function _isURL(uri: BuiltinURL): uri is URL {
+function _isURL(uri: URL): uri is ImmutableURL {
 	return uri.href.startsWith(`${uri.protocol}//`);
 }
 
 /** Assert that an unknown value is a URL object. */
-export function assertURL(value: unknown, caller: AnyCaller = assertURL): asserts value is URL {
+export function assertURL(value: unknown, caller: AnyCaller = assertURL): asserts value is ImmutableURL {
 	if (!isURL(value)) throw new RequiredError("Invalid URL", { received: value, caller });
 }
 
 /**
- * Convert a possible URL to a URL, or return `undefined` if conversion fails.
- * - Slightly subverts the builtin relative URL parsing by appending a '/' trailing slash to `base`
- * - This means if the current URL has a path segment like `/a/b/c` then a relative path like `d/e/f` will be parsed relative to `c` (default behaviour is to strip segments without a trailing slash, which is usually unexpected).
+ * Resolve a possible URL relative to a base URL, or return `undefined` if conversion fails.
+ *
+ * Note: When resolving relative URLs this treats `base` as if it ends in a slash.
+ * - e.g. if `base` is `http://p.com/a/b/c` the path will be relative to `c` as if a `/` trailing slash was present.
+ * - This is different to the default behaviour of `new URL()`, but is the more natural expected result
+ * - This is consistent with our e.g. `getURL()` utilities.
+ *
  */
-export function getURL(possible: Nullish<PossibleURL>, base?: PossibleURL): URL | undefined {
-	if (!possible) return;
-	const uri = _getBuiltinURL(possible, base);
+export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURL | undefined {
+	if (!target) return;
+	const uri = _getURL(target, base);
 	if (uri && _isURL(uri)) return uri;
 }
-function _getBuiltinURL(possible: PossibleURL, base?: PossibleURL): BuiltinURL | undefined {
-	if (possible instanceof BuiltinURL) return possible;
+function _getURL(target: PossibleURL, base?: PossibleURL): URL | undefined {
+	if (target instanceof URL) return target;
 	try {
 		// We need a base URL to potentially parse this URL against.
 		// Use the document base (if set) as the default URL.
 		const baseURL = getBaseURL(base ?? (typeof document === "object" ? document.baseURI : undefined));
-		return new BuiltinURL(possible, baseURL);
+		return new URL(target, baseURL);
 	} catch {
 		//
 	}
 }
 
 /** Convert a possible URL to a URL, or throw `RequiredError` if conversion fails. */
-export function requireURL(possible: PossibleURL, base?: PossibleURL, caller: AnyCaller = requireURL): URL {
-	const url = getURL(possible, base);
+export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyCaller = requireURL): ImmutableURL {
+	const url = getURL(target, base);
 	assertURL(url, caller);
 	return url;
 }
@@ -121,7 +122,7 @@ export function matchURLPrefix(target: PossibleURL, base: PossibleURL, caller: A
 }
 
 /** BaseURL is a URL with a guaranteed trailing slash on pathname. */
-export interface BaseURL extends URL {
+export interface BaseURL extends ImmutableURL {
 	readonly pathname: `/` | `/${string}/`;
 }
 
@@ -129,17 +130,17 @@ export interface BaseURL extends URL {
 export function isBaseURL(value: PossibleURL): value is BaseURL {
 	return isURL(value) && _isBaseURL(value);
 }
-function _isBaseURL(uri: BuiltinURL): uri is BaseURL {
+function _isBaseURL(uri: URL): uri is BaseURL {
 	return uri.pathname.endsWith("/");
 }
 
 /** Get a Base URL. */
 export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
 	if (!input) return;
-	const uri = _getBuiltinURL(input, undefined);
+	const uri = _getURL(input, undefined);
 	if (!uri || !_isURL(uri)) return;
 	if (_isBaseURL(uri)) return uri;
-	const base: BuiltinURL = typeof input === "string" ? uri : new BuiltinURL(uri);
+	const base: URL = typeof input === "string" ? uri : new URL(uri);
 	base.pathname = `${uri.pathname}/`; // Add a trailing slash.
 	return base as BaseURL;
 }

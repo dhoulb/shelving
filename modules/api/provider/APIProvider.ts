@@ -1,12 +1,11 @@
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestOptions } from "../../util/http.js";
-import type { BaseURL, URL } from "../../util/url.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 
 /** Provider for API endpoints rooted at a common base URL. */
 export abstract class APIProvider<P = unknown, R = unknown> {
 	/** The base URL for this API. */
-	abstract readonly url: BaseURL;
+	abstract readonly url: URL;
 
 	/**
 	 * Render the full final URL for an API request to a given endpoint with a given payload.

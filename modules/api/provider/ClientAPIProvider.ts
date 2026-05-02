@@ -16,13 +16,20 @@ import {
 import type { Nullish } from "../../util/null.js";
 import { omitProps } from "../../util/object.js";
 import { type PossibleURIParams, withURIParams } from "../../util/uri.js";
-import { type BaseURL, type PossibleURL, requireBaseURL, requireURL, type URL } from "../../util/url.js";
+import { type PossibleURL, requireBaseURL, requireURL } from "../../util/url.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import { APIProvider } from "./APIProvider.js";
 
 /** Options for a `ClientAPIProvider`. */
 export interface ClientAPIProviderOptions {
-	/** The common base URL for all rendered endpoint requests. */
+	/**
+	 * The common base URL for all rendered endpoint requests.
+	 *
+	 * Note: When resolving URLs for endpoints this is treated as if it ends in a slash.
+	 * - e.g. in `http://p.com/a/b/c` the path will be relative to `c` as if a `/` trailing slash was present.
+	 * - This is different to the default behaviour of `new URL()`, but is the more natural expected result
+	 * - This is consistent with our e.g. `getURL()` utilities.
+	 */
 	readonly url: PossibleURL;
 
 	/**
@@ -45,7 +52,7 @@ export interface ClientAPIProviderOptions {
  */
 export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, R> {
 	/** The common base URL for all rendered endpoint requests. */
-	readonly url: BaseURL;
+	readonly url: URL;
 
 	/** Default options used for HTTP requests created with `this.getRequest()` and `this.fetch()` */
 	readonly options: RequestOptions;
@@ -61,6 +68,10 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	}
 
 	renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
+		// Construct the full URL from `this.url` and the rendered path.
+		// Adding the `.` turns the absolute path from `renderPath()` into a relative URL.
+		// `requireURL()` resolves that path relative to `this.url`
+		// Note that `requireURL()` rendering treats paths as folders, e.g. in `/a/b/c` the path will be relative to `c` not `b`
 		const url = requireURL(`.${endpoint.renderPath(payload, caller)}`, this.url, caller);
 
 		// HEAD or GET have no body (but payload can only be data object).
