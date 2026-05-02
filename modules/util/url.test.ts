@@ -55,7 +55,6 @@ describe("requireURL()", () => {
 		expect(() => requireURL("not a url")).toThrow();
 	});
 });
-
 describe("matchURLPrefix()", () => {
 	test("resolves relative target against base and strips matched path", () => {
 		expect(matchURLPrefix("def", "https://x.com/abc/")).toBe("/def");

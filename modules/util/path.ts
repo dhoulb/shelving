@@ -6,6 +6,9 @@ import type { Nullish } from "./null.js";
 /** Absolute path string starts with `/` slash. */
 export type AbsolutePath = `/` | `/${string}`;
 
+/** Base path string starts with `/` slash and ends with `/` */
+export type BasePath = `/` | `/${string}`;
+
 /** Relative path string is `.` dot, or starts with `./` dot slash. */
 export type RelativePath = `.` | `./` | `./${string}`;
 
@@ -107,15 +110,15 @@ export function requireAbsolutePath(
  * - Returns `/` when the paths are an exact match.
  */
 export function matchPathPrefix(
-	path: AbsolutePath | RelativePath,
+	target: AbsolutePath | RelativePath,
 	base: AbsolutePath,
 	caller: AnyCaller = matchPathPrefix,
 ): AbsolutePath | undefined {
-	const normalBase = requireAbsolutePath(base, undefined, caller);
-	const normalPath = requireAbsolutePath(path, normalBase, caller);
-	if (normalBase === "/") return normalPath;
-	if (normalPath === normalBase) return "/";
-	if (normalPath.startsWith(`${normalBase}/`)) return normalPath.slice(normalBase.length) as AbsolutePath;
+	const basePath = requireAbsolutePath(base, undefined, caller);
+	const targetPath = requireAbsolutePath(target, basePath, caller);
+	if (basePath === "/") return targetPath;
+	if (targetPath === basePath) return "/";
+	if (targetPath.startsWith(`${basePath}/`)) return targetPath.slice(basePath.length) as AbsolutePath;
 }
 
 /** Is a target path active? */

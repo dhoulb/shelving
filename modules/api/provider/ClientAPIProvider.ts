@@ -16,7 +16,7 @@ import {
 import type { Nullish } from "../../util/null.js";
 import { omitProps } from "../../util/object.js";
 import { type PossibleURIParams, withURIParams } from "../../util/uri.js";
-import { type PossibleURL, requireBaseURL, requireURL, type URL, type URLString } from "../../util/url.js";
+import { type BaseURL, type PossibleURL, requireBaseURL, requireURL, type URL } from "../../util/url.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import { APIProvider } from "./APIProvider.js";
 
@@ -45,7 +45,7 @@ export interface ClientAPIProviderOptions {
  */
 export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, R> {
 	/** The common base URL for all rendered endpoint requests. */
-	readonly url: URLString;
+	readonly url: BaseURL;
 
 	/** Default options used for HTTP requests created with `this.getRequest()` and `this.fetch()` */
 	readonly options: RequestOptions;
@@ -55,7 +55,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 
 	constructor({ url, options = {}, timeout }: ClientAPIProviderOptions) {
 		super();
-		this.url = requireBaseURL(url, undefined, ClientAPIProvider);
+		this.url = requireBaseURL(url, ClientAPIProvider);
 		this.options = options;
 		this.timeout = timeout;
 	}
