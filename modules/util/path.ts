@@ -6,14 +6,11 @@ import type { Nullish } from "./null.js";
 /** Absolute path string starts with `/` slash. */
 export type AbsolutePath = `/` | `/${string}`;
 
-/** Base path string starts with `/` slash and ends with `/` */
-export type BasePath = `/` | `/${string}`;
-
 /** Relative path string is `.` dot, or starts with `./` dot slash. */
 export type RelativePath = `.` | `./` | `./${string}`;
 
-/** Simple path string like `a/b/c` */
-export type SimplePath = string;
+/** Either an absolute or relative path. */
+export type Path = AbsolutePath | RelativePath;
 
 /** Things that can be converted to a path. */
 export type PossiblePath = string;
@@ -94,7 +91,7 @@ export function getPath(path: Nullish<PossiblePath>, base: AbsolutePath = "/"): 
  * @param base Absolute path used for resolving relative paths in `possible`
  * @return Absolute path with a leading trailing slash, e.g. `/a/c/b`
  */
-export function requirePath(path: AbsolutePath | RelativePath, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
+export function requirePath(path: PossiblePath, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
 	const output = getPath(path, base);
 	if (!output) throw new RequiredError("Invalid path", { received: path, caller });
 	return output;
@@ -105,11 +102,7 @@ export function requirePath(path: AbsolutePath | RelativePath, base?: AbsolutePa
  * - Both inputs must be absolute paths that begin with `/`.
  * - Returns `/` when the paths are an exact match.
  */
-export function matchPathPrefix(
-	target: AbsolutePath | RelativePath,
-	base: AbsolutePath,
-	caller: AnyCaller = matchPathPrefix,
-): AbsolutePath | undefined {
+export function matchPathPrefix(target: PossiblePath, base: PossiblePath, caller: AnyCaller = matchPathPrefix): AbsolutePath | undefined {
 	const basePath = requirePath(base, undefined, caller);
 	const targetPath = requirePath(target, basePath, caller);
 	if (basePath === "/") return targetPath;
