@@ -134,10 +134,15 @@ test("different object payload triggers a re-fetch with the new payload", async 
 
 test("debounce: busy is true immediately but fetch is delayed", async () => {
 	const received: string[] = [];
-	const store = new PayloadFetchStore<string, string>("A", NONE, p => {
-		received.push(p);
-		return Promise.resolve(`result:${p}`);
-	}, 20);
+	const store = new PayloadFetchStore<string, string>(
+		"A",
+		NONE,
+		p => {
+			received.push(p);
+			return Promise.resolve(`result:${p}`);
+		},
+		20,
+	);
 
 	store.payload.value = "B";
 	await runMicrotasks();
@@ -154,10 +159,15 @@ test("debounce: busy is true immediately but fetch is delayed", async () => {
 
 test("debounce: rapid payload changes only trigger one fetch with the last payload", async () => {
 	const received: string[] = [];
-	const store = new PayloadFetchStore<string, string>("A", NONE, p => {
-		received.push(p);
-		return Promise.resolve(`result:${p}`);
-	}, 20);
+	const store = new PayloadFetchStore<string, string>(
+		"A",
+		NONE,
+		p => {
+			received.push(p);
+			return Promise.resolve(`result:${p}`);
+		},
+		20,
+	);
 
 	store.payload.value = "B";
 	await runMicrotasks();
@@ -192,10 +202,15 @@ test("debounce: busy stays true across rapid changes", async () => {
 
 test("debounce=0: behaves identically to no debounce", async () => {
 	const received: string[] = [];
-	const store = new PayloadFetchStore<string, string>("A", NONE, p => {
-		received.push(p);
-		return Promise.resolve(`result:${p}`);
-	}, 0);
+	const store = new PayloadFetchStore<string, string>(
+		"A",
+		NONE,
+		p => {
+			received.push(p);
+			return Promise.resolve(`result:${p}`);
+		},
+		0,
+	);
 
 	expect(store.loading).toBe(true);
 	await runMicrotasks();

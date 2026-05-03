@@ -1,5 +1,5 @@
-import type { NONE } from "../util/constants.js";
 import { awaitAbort, getDelay } from "../util/async.js";
+import type { NONE } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { FetchStore } from "./FetchStore.js";
 import { Store } from "./Store.js";
@@ -24,13 +24,15 @@ export class PayloadFetchStore<P, R> extends FetchStore<R> {
 	// Override to save initial payload and callback.
 	constructor(payload: P, value: R | typeof NONE, callback?: PayloadFetchCallback<P, R>, debounce = 0) {
 		const payloadStore = new Store(payload);
-		const fetch = callback && (debounce > 0
-			? async (signal: AbortSignal) => {
-				const snap = payloadStore.value;
-				await Promise.race([getDelay(debounce), awaitAbort(signal)]);
-				return callback(snap, signal);
-			}
-			: (signal: AbortSignal) => callback(payloadStore.value, signal));
+		const fetch =
+			callback &&
+			(debounce > 0
+				? async (signal: AbortSignal) => {
+						const snap = payloadStore.value;
+						await Promise.race([getDelay(debounce), awaitAbort(signal)]);
+						return callback(snap, signal);
+					}
+				: (signal: AbortSignal) => callback(payloadStore.value, signal));
 		super(value, fetch);
 		this.payload = payloadStore;
 		void _iterate(this);
