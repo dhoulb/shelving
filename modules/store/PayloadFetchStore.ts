@@ -22,17 +22,16 @@ export class PayloadFetchStore<P, R> extends FetchStore<R> {
 	readonly payload: Store<P>;
 
 	// Override to save initial payload and callback.
-	constructor(payload: P, value: R | typeof NONE, callback?: PayloadFetchCallback<P, R>, debounce = 0) {
+	constructor(payload: P | typeof NONE, value: R | typeof NONE, callback?: PayloadFetchCallback<P, R>, debounce = 0) {
 		const payloadStore = new Store(payload);
 		const fetch =
 			callback &&
-			(debounce > 0
-				? async (signal: AbortSignal) => {
-						const snap = payloadStore.value;
-						await Promise.race([getDelay(debounce), awaitAbort(signal)]);
-						return callback(snap, signal);
-					}
-				: (signal: AbortSignal) => callback(payloadStore.value, signal));
+			(async (signal: AbortSignal) => {
+				const abort = awaitAbort(signal);
+				if (debounce > 0) await Promise.race([getDelay(debounce), abort]);
+				const value = payloadStore.loading ? await Promise.race([payloadStore.next, abort]) : payloadStore.value;
+				return callback(value, signal);
+			});
 		super(value, fetch);
 		this.payload = payloadStore;
 		void _iterate(this);
