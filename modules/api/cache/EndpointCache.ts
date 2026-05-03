@@ -33,9 +33,9 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * - Waits for the in-flight fetch if the store is loading.
 	 * - Throws if the fetch fails, matching `APIProvider.call` behaviour.
 	 */
-	async call(payload: P, caller: AnyCaller = this.call): Promise<R> {
+	async call(payload: P, maxAge?: number, caller: AnyCaller = this.call): Promise<R> {
 		const store = this.get(payload, caller);
-		if (store.loading) await store.refresh();
+		await store.refresh(maxAge);
 		return store.value;
 	}
 
@@ -50,13 +50,13 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	}
 
 	/** Trigger a refetch on a specific store. */
-	async refresh(payload: P, caller: AnyCaller = this.invalidate): Promise<void> {
-		await this.get(payload, caller)?.refresh();
+	async refresh(payload: P, maxAge?: number, caller: AnyCaller = this.invalidate): Promise<void> {
+		await this.get(payload, caller)?.refresh(maxAge);
 	}
 
 	/** Trigger a refetch on all stores. */
-	async refreshAll(): Promise<void> {
-		await awaitValues(...this._endpoints.values().map(store => store.refresh()));
+	async refreshAll(maxAge?: number): Promise<void> {
+		await awaitValues(...this._endpoints.values().map(store => store.refresh(maxAge)));
 	}
 
 	// Implement `AsyncDisposable`

@@ -51,28 +51,32 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	}
 
 	/** Refresh a specific item store for a collection. */
-	async refreshItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
-		await this._get(collection)?.refreshItem(id);
+	async refreshItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, maxAge?: number): Promise<void> {
+		await this._get(collection)?.refreshItem(id, maxAge);
 	}
 
 	/** Refresh every cached item store for a collection. */
-	async refreshItems<II extends I, TT extends T>(collection: Collection<string, II, TT>): Promise<void> {
-		await this._get(collection)?.refreshItems();
+	async refreshItems<II extends I, TT extends T>(collection: Collection<string, II, TT>, maxAge?: number): Promise<void> {
+		await this._get(collection)?.refreshItems(maxAge);
 	}
 
 	/** Refresh a specific query store for a collection. */
-	async refreshQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
-		await this._get(collection)?.refreshQuery(query);
+	async refreshQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+		maxAge?: number,
+	): Promise<void> {
+		await this._get(collection)?.refreshQuery(query, maxAge);
 	}
 
 	/** Refresh every cached query store for a collection. */
-	async refreshQueries<II extends I, TT extends T>(collection: Collection<string, II, TT>): Promise<void> {
-		await this._get(collection)?.refreshQueries();
+	async refreshQueries<II extends I, TT extends T>(collection: Collection<string, II, TT>, maxAge?: number): Promise<void> {
+		await this._get(collection)?.refreshQueries(maxAge);
 	}
 
 	/** Refresh every cached store (items and queries) for a collection. */
-	async refreshAll<II extends I, TT extends T>(collection: Collection<string, II, TT>): Promise<void> {
-		await this._get(collection)?.refreshAll();
+	async refreshAll<II extends I, TT extends T>(collection: Collection<string, II, TT>, maxAge?: number): Promise<void> {
+		await this._get(collection)?.refreshAll(maxAge);
 	}
 
 	// Implement `AsyncDisposable`

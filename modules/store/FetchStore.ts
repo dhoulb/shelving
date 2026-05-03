@@ -20,7 +20,7 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	// We optimistically refresh so the value is available the next time the user wants it.
 	override get loading(): boolean {
 		const loading = super.loading;
-		if (this._invalidation || loading) void this.refresh();
+		if (this.invalidated || loading) void this.refresh();
 		return loading;
 	}
 
@@ -39,6 +39,11 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 		return super.read();
 	}
 
+	// Override to consider invalid to be really old.
+	override get age(): number {
+		return this.invalidated ? Infinity : super.age;
+	}
+
 	// Override to create to save `callback`
 	constructor(value: T | typeof NONE, callback?: FetchCallback<TT>) {
 		super(value);
@@ -51,8 +56,9 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	 * - Refreshes are de-duplicated. Concurrent calls while a fetch is in-flight return the same promise.
 	 * - Never throws — errors are stored as `reason`.
 	 */
-	refresh(): Promise<boolean> | boolean {
+	refresh(maxAge?: number): Promise<boolean> | boolean {
 		if (this._pendingRefresh) return this._pendingRefresh;
+		if (!this.stale(maxAge)) return false;
 		try {
 			const value = this._fetch(this.signal); // Retrieving a new signal calls `abort()` which cancels the previous one.
 			if (isAsync(value)) return (this._pendingRefresh = this.await(value));
@@ -87,6 +93,11 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	}
 	private _callback: FetchCallback<TT> | undefined;
 
+	/** Whether this store is has currently been invalidated and needs a refresh. */
+	get invalidated(): boolean {
+		return !!this._invalidation;
+	}
+
 	/**
 	 * Invalidate this store so a new fetch is triggered on the next read of `loading` or `value`.
 	 * - Triggers `abort()` so any current awaits are cancelled.
@@ -96,12 +107,6 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 		this._invalidation++;
 	}
 	private _invalidation = 0;
-
-	/** Re-fetch now if the current value is older than `maxAge` milliseconds or has been invalidated. */
-	refreshStale(maxAge: number): Promise<boolean> | boolean {
-		if (this._invalidation || this.age > maxAge) return this.refresh();
-		return true;
-	}
 
 	// Override to abort any current in-flight fetch and pending async operation.
 	// - Sends `ABORT` to the current `AbortSignal` and clears the controller (a new signal will be created on the next read or fetch).

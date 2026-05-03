@@ -1,4 +1,5 @@
 import { awaitDispose } from "../../util/dispose.js";
+import type { AnyCaller } from "../../util/function.js";
 import { setMapItem } from "../../util/map.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "../provider/APIProvider.js";
@@ -34,8 +35,13 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * - Waits for the in-flight fetch if the store is loading.
 	 * - Throws if the fetch fails, matching `APIProvider.call` behaviour.
 	 */
-	async call<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): Promise<RR> {
-		return this.get(endpoint).call(payload);
+	async call<PP extends P, RR extends R>(
+		endpoint: Endpoint<PP, RR>,
+		payload: PP,
+		maxAge?: number,
+		caller: AnyCaller = this.call,
+	): Promise<RR> {
+		return this.get(endpoint).call(payload, maxAge, caller);
 	}
 
 	/** Invalidate a specific store for an endpoint. */
@@ -49,13 +55,13 @@ export class APICache<P, R> implements AsyncDisposable {
 	}
 
 	/** Trigger a refetch on a specific store for an endpoint. */
-	refresh<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
-		this._get(endpoint)?.refresh(payload);
+	refresh<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, maxAge?: number): void {
+		this._get(endpoint)?.refresh(payload, maxAge);
 	}
 
 	/** Trigger a refetch on all stores for an endpoint. */
-	refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {
-		this._get(endpoint)?.refreshAll();
+	refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, maxAge?: number): void {
+		this._get(endpoint)?.refreshAll(maxAge);
 	}
 
 	// Implement `AsyncDisposable`

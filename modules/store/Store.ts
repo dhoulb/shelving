@@ -158,6 +158,18 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 		return typeof time === "number" ? Date.now() - time : Infinity;
 	}
 
+	/**
+	 * Whether this store is stale based on a `maxAge` value in milliseconds.
+	 *
+	 * @param maxAge The maximum age for the stale check.
+	 * - `0` zero means "always refresh" (this is the default).
+	 * - `Infinity` means "refresh only if store is still in a loading state.
+	 * - Any other value may or may not be stale based on `this.age`
+	 */
+	stale(maxAge: number = 0): boolean {
+		return this.age >= maxAge;
+	}
+
 	/** Current error of this store, or `undefined` if there is no error. */
 	get reason(): unknown {
 		return this._reason;
