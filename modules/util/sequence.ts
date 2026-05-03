@@ -12,8 +12,13 @@ export interface IteratorAbortResult<R> {
 export type IteratorAbortableResult<T, R> = IteratorResult<T, R> | IteratorAbortResult<R>;
 
 /** Turn a `Promise<R>` into an `IteratorAbortResult<R>` */
-async function _awaitAbort<R>(value: PromiseLike<R>): Promise<IteratorAbortResult<R | undefined>> {
-	return { done: ABORT, value: await value };
+function _awaitAbortResult<R>(value: PromiseLike<R>): PromiseLike<IteratorAbortResult<R>> {
+	return value.then(_getAbortResult);
+}
+
+/** Turn a result `R` into an `IteratorAbortResult<R>` */
+function _getAbortResult<R>(value: R): IteratorAbortResult<R> {
+	return { done: ABORT, value };
 }
 
 /** Call an iterator's `return()` method (if it exists) with an initial value, and return the `value` it returns. */
@@ -45,13 +50,12 @@ export async function* repeatUntil<T = void, R = void, N = void>(
 	...signals: [PromiseLike<R>, ...PromiseLike<R>[]]
 ): AsyncGenerator<T, R | undefined, N | undefined> {
 	const iterator: AsyncIterator<T, R | undefined, N | undefined> = source[Symbol.asyncIterator]();
+	const aborts = signals.map(_awaitAbortResult);
 	let n: N | undefined;
 	while (true) {
 		try {
-			const { done, value } = await Promise.race([
-				iterator.next(n),
-				...signals.map<Promise<IteratorAbortResult<R | undefined>>>(_awaitAbort),
-			]);
+			const next = iterator.next(n);
+			const { done, value } = await (aborts.length ? Promise.race([next, ...aborts]) : next);
 			if (done) {
 				// For aborts, tell the iterator we're no longer using it.
 				if (done === ABORT) return _iteratorReturn(iterator, value, repeatUntil);
@@ -107,7 +111,7 @@ export function runSequence<T, R, N>(
 ): (value?: R | undefined) => void {
 	const { promise, resolve } = getDeferred<IteratorAbortResult<R | undefined>>();
 	void _runSequenceIterator(sequence[Symbol.asyncIterator](), promise, onNext, onError, onReturn);
-	return (value?: R | undefined) => resolve({ done: ABORT, value });
+	return (value?: R | undefined) => resolve(_getAbortResult(value));
 }
 async function _runSequenceIterator<T, R, N>(
 	iterator: AsyncIterator<T, R | undefined, N | undefined>,
