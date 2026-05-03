@@ -27,6 +27,18 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 		return this._endpoints.get(url) || setMapItem(this._endpoints, url, new EndpointStore(this.endpoint, payload, this.provider));
 	}
 
+	/**
+	 * Fetch (or return a cached result) for the given payload.
+	 * - Returns the cached value immediately if one exists.
+	 * - Waits for the in-flight fetch if the store is loading.
+	 * - Throws if the fetch fails, matching `APIProvider.call` behaviour.
+	 */
+	async call(payload: P, caller: AnyCaller = this.call): Promise<R> {
+		const store = this.get(payload, caller);
+		if (store.loading) await store.refresh();
+		return store.value;
+	}
+
 	/** Invalidate a specific store. */
 	invalidate(payload: P, caller: AnyCaller = this.invalidate): void {
 		this.get(payload, caller)?.invalidate();

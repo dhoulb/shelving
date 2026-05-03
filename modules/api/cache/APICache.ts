@@ -28,6 +28,16 @@ export class APICache<P, R> implements AsyncDisposable {
 		return this._get(endpoint) || setMapItem(this._endpoints, endpoint, new EndpointCache(endpoint, this.provider));
 	}
 
+	/**
+	 * Fetch (or return a cached result) for the given endpoint and payload.
+	 * - Returns the cached value immediately if one exists.
+	 * - Waits for the in-flight fetch if the store is loading.
+	 * - Throws if the fetch fails, matching `APIProvider.call` behaviour.
+	 */
+	async call<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): Promise<RR> {
+		return this.get(endpoint).call(payload);
+	}
+
 	/** Invalidate a specific store for an endpoint. */
 	invalidate<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
 		this._get(endpoint)?.invalidate(payload);
