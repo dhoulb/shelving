@@ -4,42 +4,52 @@ import type { RequestOptions } from "../../util/http.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
-/** Provider that logs API operations to the console. */
+/** Provider that logs operations to the console. */
 export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
-	override async call<PP extends P, RR extends R>(
+	override getRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
-		caller: AnyCaller = this.call,
+		caller: AnyCaller = this.getRequest,
+	): Request {
+		const url = this.url.toString();
+		const ep = endpoint.toString();
+		try {
+			const request = super.getRequest(endpoint, payload, options, caller);
+			console.debug("✔ REQUEST", url, ep, payload);
+			return request;
+		} catch (reason) {
+			console.error("✘ REQUEST", url, ep, payload, reason);
+			throw reason;
+		}
+	}
+
+	override async fetch(request: Request): Promise<Response> {
+		const url = this.url.toString();
+		try {
+			console.error("→ FETCH", url, await debugFullRequest(request));
+			const response = await super.fetch(request);
+			console.error("← FETCH", url, await debugFullResponse(response));
+			return response;
+		} catch (reason) {
+			console.error("✘ FETCH", url, reason);
+			throw reason;
+		}
+	}
+
+	override async parseResponse<PP extends P, RR extends R>(
+		endpoint: Endpoint<PP, RR>,
+		response: Response,
+		caller: AnyCaller = this.parseResponse,
 	): Promise<RR> {
-		// Turn the payload into a request and debug it before sending.
-		let request: Request;
+		const url = this.url.toString();
+		const ep = endpoint.toString();
 		try {
-			request = this.getRequest(endpoint, payload, options, caller);
-		} catch (reason) {
-			console.error("✘ FETCH", this.url.toString(), endpoint.toString(), payload, reason);
-			throw reason;
-		}
-		const debuggedRequest = await debugFullRequest(request);
-		console.debug("… FETCH", this.url.toString(), endpoint.toString(), payload, debuggedRequest);
-
-		// Fetch the response and debug if it throws.
-		let response: Response;
-		try {
-			response = await this.fetch(request);
-		} catch (reason) {
-			console.error("✘ FETCH", this.url.toString(), endpoint.toString(), payload, debuggedRequest, reason);
-			throw reason;
-		}
-		const debuggedResponse = await debugFullResponse(response);
-
-		// Convert the  result or any parsing error.
-		try {
-			const result = await this.parseResponse(endpoint, response, caller);
-			console.debug("✔ FETCH", this.url.toString(), endpoint.toString(), payload, debuggedRequest, debuggedResponse, result);
+			const result = await super.parseResponse(endpoint, response, caller);
+			console.debug("✔ RESPONSE", url, ep, result);
 			return result;
 		} catch (reason) {
-			console.error("✘ FETCH", this.url.toString(), endpoint.toString(), payload, debuggedRequest, debuggedResponse, reason);
+			console.error("✘ RESPONSE", url, ep, reason);
 			throw reason;
 		}
 	}
