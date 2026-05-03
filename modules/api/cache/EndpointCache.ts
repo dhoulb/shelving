@@ -27,6 +27,18 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 		return this._endpoints.get(url) || setMapItem(this._endpoints, url, new EndpointStore(this.endpoint, payload, this.provider));
 	}
 
+	/**
+	 * Fetch (or return a cached result) for the given payload.
+	 * - Returns the cached value immediately if one exists.
+	 * - Waits for the in-flight fetch if the store is loading.
+	 * - Throws if the fetch fails, matching `APIProvider.call` behaviour.
+	 */
+	async call(payload: P, maxAge?: number, caller: AnyCaller = this.call): Promise<R> {
+		const store = this.get(payload, caller);
+		await store.refresh(maxAge);
+		return store.value;
+	}
+
 	/** Invalidate a specific store. */
 	invalidate(payload: P, caller: AnyCaller = this.invalidate): void {
 		this.get(payload, caller)?.invalidate();
@@ -38,13 +50,13 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	}
 
 	/** Trigger a refetch on a specific store. */
-	async refresh(payload: P, caller: AnyCaller = this.invalidate): Promise<void> {
-		await this.get(payload, caller)?.refresh();
+	async refresh(payload: P, maxAge?: number, caller: AnyCaller = this.invalidate): Promise<void> {
+		await this.get(payload, caller)?.refresh(maxAge);
 	}
 
 	/** Trigger a refetch on all stores. */
-	async refreshAll(): Promise<void> {
-		await awaitValues(...this._endpoints.values().map(store => store.refresh()));
+	async refreshAll(maxAge?: number): Promise<void> {
+		await awaitValues(...this._endpoints.values().map(store => store.refresh(maxAge)));
 	}
 
 	// Implement `AsyncDisposable`

@@ -190,35 +190,38 @@ test("stale-data protection: fetch that resolves after invalidate() is discarded
 	expect(calls).toBe(3);
 });
 
-// --- refreshStale() ---
+// --- refresh() ---
 
-test("refreshStale() fetches when the store has never loaded", async () => {
+test("refresh() fetches when the store has never loaded", async () => {
 	let calls = 0;
 	const store = new FetchStore<number>(NONE, () => Promise.resolve(++calls));
 
-	await store.refreshStale(1000);
+	await store.refresh(1000);
 	expect(calls).toBe(1);
 });
 
-test("refreshStale() does not re-fetch when value is fresh", async () => {
+test("refresh() does not re-fetch when value is fresh", async () => {
 	let calls = 0;
 	const store = new FetchStore<number>(NONE, () => Promise.resolve(++calls));
 
-	await store.refreshStale(1000);
+	await store.refresh(1000);
 	expect(calls).toBe(1);
 
-	await store.refreshStale(1000);
+	await store.refresh(1000);
 	expect(calls).toBe(1); // not stale yet
+
+	await store.refresh(0);
+	expect(calls).toBe(2); // stale now
 });
 
-test("refreshStale() re-fetches after invalidate()", async () => {
+test("refresh() re-fetches after invalidate()", async () => {
 	let calls = 0;
 	const store = new FetchStore<number>(NONE, () => Promise.resolve(++calls));
 
-	await store.refreshStale(1000);
+	await store.refresh(1000);
 	expect(calls).toBe(1);
 
 	store.invalidate();
-	await store.refreshStale(1000);
+	await store.refresh(1000);
 	expect(calls).toBe(2);
 });

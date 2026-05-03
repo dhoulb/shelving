@@ -41,28 +41,28 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	}
 
 	/** Refresh a specific item store. */
-	async refreshItem(id: I): Promise<void> {
-		await this._items.get(id)?.refresh();
+	async refreshItem(id: I, maxAge?: number): Promise<void> {
+		await this._items.get(id)?.refresh(maxAge);
 	}
 
 	/** Refresh every cached item store. */
-	async refreshItems(): Promise<void> {
-		await awaitValues(...this._items.values().map(store => store.refresh()));
+	async refreshItems(maxAge?: number): Promise<void> {
+		await awaitValues(...this._items.values().map(store => store.refresh(maxAge)));
 	}
 
 	/** Refresh a specific query store. */
-	async refreshQuery(query: Query<Item<I, T>>): Promise<void> {
-		await this._queries.get(this._queryKey(query))?.refresh();
+	async refreshQuery(query: Query<Item<I, T>>, maxAge?: number): Promise<void> {
+		await this._queries.get(this._queryKey(query))?.refresh(maxAge);
 	}
 
 	/** Refresh every cached query store. */
-	async refreshQueries(): Promise<void> {
-		await awaitValues(...this._queries.values().map(store => store.refresh()));
+	async refreshQueries(maxAge?: number): Promise<void> {
+		await awaitValues(...this._queries.values().map(store => store.refresh(maxAge)));
 	}
 
 	/** Refresh every cached store (items and queries). */
-	async refreshAll(): Promise<void> {
-		await awaitValues(this.refreshItems(), this.refreshQueries());
+	async refreshAll(maxAge?: number): Promise<void> {
+		await awaitValues(this.refreshItems(maxAge), this.refreshQueries(maxAge));
 	}
 
 	private _queryKey(query: Query<Item<I, T>>): string {
