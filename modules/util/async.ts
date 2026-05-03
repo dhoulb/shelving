@@ -1,7 +1,7 @@
 import { Errors } from "../error/Errors.js";
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
-import type { ErrorCallback, ValueCallback } from "./function.js";
+import { BLACKHOLE, type ErrorCallback, type ValueCallback } from "./function.js";
 
 /** Is a value an asynchronous value implementing a `then()` function. */
 export function isAsync<T>(value: PromiseLike<T> | T): value is PromiseLike<T> {
@@ -139,13 +139,28 @@ export function getDelay(ms: number): Promise<void> {
 /**
  * Get a promise that rejects with the signal's reason when an `AbortSignal` fires.
  * - Rejects immediately if the signal is already aborted.
- * - Use with `Promise.race()` to cancel a concurrent operation when a signal fires.
+ * - Use with `awaitRace()` to cancel a concurrent operation when a signal fires.
  *
- * @example await Promise.race([getDelay(300), awaitAbort(signal)]);
+ * @example await awaitRace(getDelay(300), awaitAbort(signal));
  */
 export function awaitAbort(signal: AbortSignal): Promise<never> {
-	return new Promise<never>((_, reject) => {
+	const promise = new Promise<never>((_, reject) => {
 		if (signal.aborted) reject(signal.reason);
 		else signal.addEventListener("abort", () => reject(signal.reason), { once: true });
 	});
+	promise.catch(BLACKHOLE);
+	return promise;
+}
+
+/**
+ * Race promises like `Promise.race()` but silently swallow rejections from the losers.
+ * - Returns a promise that settles with the first input to settle, exactly like `Promise.race()`.
+ * - The losing inputs keep running (Promises cannot be cancelled), but their eventual rejection — if any — is silently absorbed instead of bubbling up as an unhandled rejection.
+ * - Built for cancellation/timeout patterns, where the loser's eventual fate is genuinely uninteresting once another arm has settled. Do not use when both arms might surface meaningful errors that the caller should see.
+ *
+ * @example await awaitRace(getDelay(300), awaitAbort(signal)); // delay or abort, no leaked ABORT rejection if delay wins
+ */
+export function awaitRace<T>(...promises: Promise<T>[]): Promise<T> {
+	for (const promise of promises) promise.catch(BLACKHOLE);
+	return Promise.race(promises);
 }

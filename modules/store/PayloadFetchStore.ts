@@ -1,4 +1,4 @@
-import { awaitAbort, getDelay } from "../util/async.js";
+import { awaitAbort, awaitRace, getDelay } from "../util/async.js";
 import type { NONE } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { FetchStore } from "./FetchStore.js";
@@ -27,9 +27,8 @@ export class PayloadFetchStore<P, R> extends FetchStore<R> {
 		const fetch =
 			callback &&
 			(async (signal: AbortSignal) => {
-				const abort = awaitAbort(signal);
-				if (debounce > 0) await Promise.race([getDelay(debounce), abort]);
-				const value = payloadStore.loading ? await Promise.race([payloadStore.next, abort]) : payloadStore.value;
+				if (debounce > 0) await awaitRace(getDelay(debounce), awaitAbort(signal));
+				const value = payloadStore.loading ? await awaitRace(payloadStore.next, awaitAbort(signal)) : payloadStore.value;
 				return callback(value, signal);
 			});
 		super(value, fetch);
