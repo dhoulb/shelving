@@ -1,6 +1,32 @@
 import { describe, expect, test } from "bun:test";
-import { awaitValues, getDeferred, Errors as ShelvingAggregateError } from "../index.js";
+import { awaitAbort, awaitValues, getDeferred, Errors as ShelvingAggregateError } from "../index.js";
 
+describe("awaitAbort()", () => {
+	test("rejects when signal is already aborted", async () => {
+		const controller = new AbortController();
+		controller.abort("reason");
+		await expect(awaitAbort(controller.signal)).rejects.toBe("reason");
+	});
+	test("rejects when signal fires after creation", async () => {
+		const controller = new AbortController();
+		const promise = awaitAbort(controller.signal);
+		controller.abort("later");
+		await expect(promise).rejects.toBe("later");
+	});
+	test("races against getDelay — delay wins when signal never fires", async () => {
+		const controller = new AbortController();
+		const { getDelay } = await import("./async.js");
+		const result = await Promise.race([getDelay(10).then(() => "done"), awaitAbort(controller.signal).catch(() => "aborted")]);
+		expect(result).toBe("done");
+	});
+	test("races against getDelay — abort wins when signal fires first", async () => {
+		const controller = new AbortController();
+		const { getDelay } = await import("./async.js");
+		const race = Promise.race([getDelay(100).then(() => "done"), awaitAbort(controller.signal).catch(() => "aborted")]);
+		controller.abort();
+		expect(await race).toBe("aborted");
+	});
+});
 describe("Deferred", () => {
 	test("Works correctly", async () => {
 		const { promise, resolve, reject } = getDeferred<string>();

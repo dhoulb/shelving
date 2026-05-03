@@ -135,3 +135,17 @@ export function getDeferred<T = void>(): Deferred<T> {
 export function getDelay(ms: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+/**
+ * Get a promise that rejects with the signal's reason when an `AbortSignal` fires.
+ * - Rejects immediately if the signal is already aborted.
+ * - Use with `Promise.race()` to cancel a concurrent operation when a signal fires.
+ *
+ * @example await Promise.race([getDelay(300), awaitAbort(signal)]);
+ */
+export function awaitAbort(signal: AbortSignal): Promise<never> {
+	return new Promise<never>((_, reject) => {
+		if (signal.aborted) reject(signal.reason);
+		else signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+	});
+}

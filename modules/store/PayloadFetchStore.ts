@@ -1,4 +1,5 @@
 import type { NONE } from "../util/constants.js";
+import { awaitAbort, getDelay } from "../util/async.js";
 import { awaitDispose } from "../util/dispose.js";
 import { FetchStore } from "./FetchStore.js";
 import { Store } from "./Store.js";
@@ -11,6 +12,7 @@ export type PayloadFetchCallback<P, R> = (payload: P, signal: AbortSignal) => R 
  * @param payload The initial payload for the store.
  * @param value The initial value for the store, or `NONE` if it does not have one yet.
  * @param callback An optional callback that, if set, will be called with the current payload when the `fetch()` method is invoked to fetch the next value.
+ * @param debounce Delay in milliseconds before the fetch is triggered after a payload change. `busy` becomes `true` immediately; the actual fetch waits for the debounce period to expire. If the payload changes again before the delay expires the previous fetch is cancelled and the timer resets.
  */
 export class PayloadFetchStore<P, R> extends FetchStore<R> {
 	/**
@@ -20,9 +22,16 @@ export class PayloadFetchStore<P, R> extends FetchStore<R> {
 	readonly payload: Store<P>;
 
 	// Override to save initial payload and callback.
-	constructor(payload: P, value: R | typeof NONE, callback?: PayloadFetchCallback<P, R>) {
+	constructor(payload: P, value: R | typeof NONE, callback?: PayloadFetchCallback<P, R>, debounce = 0) {
 		const payloadStore = new Store(payload);
-		super(value, callback && (signal => callback(payloadStore.value, signal)));
+		const fetch = callback && (debounce > 0
+			? async (signal: AbortSignal) => {
+				const snap = payloadStore.value;
+				await Promise.race([getDelay(debounce), awaitAbort(signal)]);
+				return callback(snap, signal);
+			}
+			: (signal: AbortSignal) => callback(payloadStore.value, signal));
+		super(value, fetch);
 		this.payload = payloadStore;
 		void _iterate(this);
 	}

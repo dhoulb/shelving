@@ -130,6 +130,79 @@ test("different object payload triggers a re-fetch with the new payload", async 
 	expect(received).toEqual([1, 2]);
 });
 
+// --- Debounce ---
+
+test("debounce: busy is true immediately but fetch is delayed", async () => {
+	const received: string[] = [];
+	const store = new PayloadFetchStore<string, string>("A", NONE, p => {
+		received.push(p);
+		return Promise.resolve(`result:${p}`);
+	}, 20);
+
+	store.payload.value = "B";
+	await runMicrotasks();
+
+	// Busy immediately, but callback not yet called.
+	expect(store.busy.value).toBe(true);
+	expect(received).toEqual([]);
+
+	await new Promise(r => setTimeout(r, 30));
+
+	expect(store.value).toBe("result:B");
+	expect(received).toEqual(["B"]);
+});
+
+test("debounce: rapid payload changes only trigger one fetch with the last payload", async () => {
+	const received: string[] = [];
+	const store = new PayloadFetchStore<string, string>("A", NONE, p => {
+		received.push(p);
+		return Promise.resolve(`result:${p}`);
+	}, 20);
+
+	store.payload.value = "B";
+	await runMicrotasks();
+	store.payload.value = "C";
+	await runMicrotasks();
+	store.payload.value = "D";
+	await runMicrotasks();
+
+	// Still no fetch yet.
+	expect(received).toEqual([]);
+
+	await new Promise(r => setTimeout(r, 30));
+
+	expect(store.value).toBe("result:D");
+	expect(received).toEqual(["D"]);
+});
+
+test("debounce: busy stays true across rapid changes", async () => {
+	const store = new PayloadFetchStore<string, string>("A", NONE, p => Promise.resolve(`result:${p}`), 20);
+
+	store.payload.value = "B";
+	await runMicrotasks();
+	expect(store.busy.value).toBe(true);
+
+	store.payload.value = "C";
+	await runMicrotasks();
+	expect(store.busy.value).toBe(true);
+
+	await new Promise(r => setTimeout(r, 30));
+	expect(store.busy.value).toBe(false);
+});
+
+test("debounce=0: behaves identically to no debounce", async () => {
+	const received: string[] = [];
+	const store = new PayloadFetchStore<string, string>("A", NONE, p => {
+		received.push(p);
+		return Promise.resolve(`result:${p}`);
+	}, 0);
+
+	expect(store.loading).toBe(true);
+	await runMicrotasks();
+	expect(store.value).toBe("result:A");
+	expect(received).toEqual(["A"]);
+});
+
 // --- Dispose ---
 
 test("asyncDispose() cleans up without throwing", async () => {
