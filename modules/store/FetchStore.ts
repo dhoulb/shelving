@@ -2,10 +2,10 @@ import { RequiredError } from "../error/RequiredError.js";
 import { isAsync } from "../util/async.js";
 import { ABORT, type NONE, SKIP } from "../util/constants.js";
 import { BusyStore } from "./BusyStore.js";
-import type { StoreInput } from "./Store.js";
+import type { AsyncStoreInput, StoreInput } from "./Store.js";
 
 /** Callback for a callback fetch store. */
-export type FetchCallback<T> = (signal: AbortSignal) => T | PromiseLike<T>;
+export type FetchCallback<T> = (signal: AbortSignal) => StoreInput<T> | PromiseLike<StoreInput<T>>;
 
 /**
  * Store that fetches its values from a remote source.
@@ -87,7 +87,7 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	 * Call the fetch callback to get the next value.
 	 * @param signal `AbortSignal` for the current fetch — passed through to the callback so it can cancel HTTP requests etc.
 	 */
-	protected _fetch(signal: AbortSignal): TT | PromiseLike<TT> {
+	protected _fetch(signal: AbortSignal): AsyncStoreInput<TT> {
 		if (!this._callback) throw new RequiredError("FetchStore has no callback() function", { store: this, caller: this.refresh });
 		return this._callback(signal);
 	}

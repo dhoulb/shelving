@@ -13,14 +13,17 @@ export type AnyStore = Store<any, any>;
 /** Values that a store natively knows how to process as inputs. */
 export type StoreInput<I> = I | typeof SKIP | typeof NONE;
 
+/** Values that a store natively knows how to process as inputs. */
+export type AsyncStoreInput<I> = StoreInput<I> | PromiseLike<StoreInput<I>>;
+
 /** Internal storage value for a store. */
 export type StoreInternal<O> = O | typeof NONE;
 
 /** Callback that sets a store's value (possibly asynchronously). */
-export type StoreCallback<I, A extends Arguments = []> = (...args: A) => StoreInput<I> | PromiseLike<StoreInput<I>>;
+export type StoreCallback<I, A extends Arguments = []> = (...args: A) => AsyncStoreInput<I>;
 
 /** Reducer that receives a store's current value and sets the stores next value (possibly asynchronously). */
-export type StoreReducer<I, O, A extends Arguments = []> = (value: O, ...args: A) => StoreInput<I> | PromiseLike<StoreInput<I>>;
+export type StoreReducer<I, O, A extends Arguments = []> = (value: O, ...args: A) => AsyncStoreInput<I>;
 
 /**
  * Store that retains its most recent value and is async-iterable to allow values to be observed.
@@ -70,7 +73,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 * - Setting value to the same as the existing value
 	 * - If this store has any pending `await()` calls they are aborted and their results are silently discarded.
 	 */
-	set value(input: StoreInput<TT> | PromiseLike<StoreInput<TT>>) {
+	set value(input: AsyncStoreInput<TT>) {
 		if (isAsync(input)) void this.await(input);
 		else this.write(input);
 	}

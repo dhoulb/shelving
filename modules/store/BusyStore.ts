@@ -1,6 +1,6 @@
 import { awaitDispose } from "../util/dispose.js";
 import { BooleanStore } from "./BooleanStore.js";
-import { Store } from "./Store.js";
+import { Store, type StoreInput } from "./Store.js";
 
 /**
  * Store that tracks its busy status via a separate `this.busy` store.
@@ -11,7 +11,7 @@ export class BusyStore<T, TT = T> extends Store<T, TT> {
 
 	// Overload to set `this.busy` to `true` when we start awaiting a value.
 	// Gets set back to `false` when `abort()` is called (this also happens whenever a value or reason is set).
-	override await(pending: PromiseLike<TT>): Promise<boolean> {
+	override await(pending: PromiseLike<StoreInput<TT>>): Promise<boolean> {
 		this.busy.value = true;
 		return super.await(pending);
 	}
