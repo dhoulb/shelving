@@ -1,0 +1,14 @@
+.code,
+.prose :is(code, kbd, samp, var) {
+	/* Box */
+	display: inline-block;
+	padding-inline: 0.375em;
+
+	/* Style */
+	border-radius: var(--radius-inline);
+	color: var(--color-text);
+	background-color: var(--color-surface);
+
+	/* Typography */
+	font-weight: var(--weight-normal);
+}

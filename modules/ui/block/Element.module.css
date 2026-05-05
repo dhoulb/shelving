@@ -1,0 +1,12 @@
+.element {
+	/* Box */
+	margin: var(--element-spacing, var(--spacing-element)) 0;
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-top: 0;
+	}
+	&:last-child {
+		margin-bottom: 0;
+	}
+}

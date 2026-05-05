@@ -1,0 +1,9 @@
+.inserted,
+.prose ins {
+	/* Style */
+	color: var(--success-text);
+	text-decoration: underline var(--border-block);
+
+	/* Typography */
+	font-weight: var(--weight-strong);
+}

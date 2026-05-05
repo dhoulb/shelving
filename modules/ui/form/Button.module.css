@@ -1,0 +1,83 @@
+.button {
+	/* Box */
+	display: flex;
+	box-sizing: border-box;
+	inline-size: 100%;
+	min-inline-size: fit-content; /* Buttons never go smaller than their contents. */
+	border-radius: var(--button-radius, var(--radius-element));
+	border: var(--button-border, var(--border-element)) solid var(--button-color-border, var(--color-border));
+	padding-block: var(--button-padding, var(--spacing-element));
+	padding-inline: var(--button-padding, var(--spacing-element));
+	margin-inline: 0;
+	margin-block: var(--button-spacing, var(--spacing-element));
+	flex-grow: var(--grow-timid); /* When displayed in flex rows inputs expand timidly compared to other elements inputs. */
+
+	/* Content */
+	white-space: nowrap;
+	overflow-wrap: normal;
+	text-wrap: nowrap;
+	word-break: normal;
+
+	/* Style */
+	color: var(--button-color-text, var(--color-quiet));
+	background: var(--button-color-bg, var(--color-surface));
+	text-decoration: none;
+	transition: all 120ms ease-in-out;
+	cursor: pointer;
+	outline: var(--button-focus-border, var(--border-focus)) solid transparent;
+	outline-offset: calc(0px - var(--button-border, var(--border-element)));
+
+	/* Typography */
+	font-family: var(--button-font, var(--font-body));
+	font-weight: var(--button-weight, var(--weight-strong));
+	font-size: var(--button-size, var(--size-normal));
+	line-height: var(--button-leading, var(--leading-normal));
+
+	/* Pseudo-classes */
+	&:disabled,
+	&:where(a:not(:any-link)) {
+		opacity: var(--button-disabled-opacity, 0.5);
+		cursor: default;
+	}
+	&:where(:enabled:hover, :focus:not(:focus-visible)) {
+		background: color-mix(in srgb, var(--button-color-bg, var(--color-surface)) 85%, white);
+		border-color: color-mix(in srgb, var(--button-color-border, var(--color-border)) 85%, var(--button-color-text, var(--color-text)));
+	}
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+
+	/* Variants */
+	&.small {
+		padding-block: var(--button-small-padding, var(--spacing-small));
+		padding-inline: var(--button-small-padding, var(--spacing-small));
+	}
+	&.fit {
+		inline-size: fit-content;
+	}
+	&.strong {
+		color: var(--button-strong-contrast, var(--color-contrast));
+		border-color: var(--button-strong-contrast, var(--color-text));
+		background: var(--button-strong-contrast, var(--color-text));
+
+		&:where(:enabled:hover, :focus:not(:focus-visible)) {
+			background: color-mix(in srgb, var(--button-strong-contrast, var(--color-text)) 80%, white);
+		}
+	}
+	&.plain:not(:hover, :focus) {
+		border-color: transparent;
+		background: transparent;
+	}
+	&.outline:not(:hover, :focus) {
+		background: transparent;
+	}
+
+	/* Visible focus ring overrides all */
+	&:focus-visible {
+		outline-color: var(--button-color-focus, var(--focus-text));
+		border-color: var(--button-color-focus, var(--focus-text));
+	}
+}

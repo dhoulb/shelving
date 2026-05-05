@@ -1,0 +1,36 @@
+.paragraph,
+.prose p {
+	/* Low-specificity defaults */
+	:where(&) {
+		/* Typography */
+		text-align: left;
+	}
+
+	/* Box */
+	display: block;
+	inline-size: 100%;
+	margin-inline: 0;
+	margin-block: var(--paragraph-spacing, var(--spacing-paragraph));
+
+	/* Variants */
+	&.left {
+		text-align: left;
+	}
+	&.center {
+		text-align: center;
+	}
+	&.right {
+		text-align: right;
+	}
+	&.spacious {
+		margin-block: var(--paragraph-spacious-spacing, var(--spacing-spacious));
+	}
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+}

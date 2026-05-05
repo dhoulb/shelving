@@ -41,6 +41,7 @@
 		"./sequence": "./sequence/index.js",
 		"./store": "./store/index.js",
 		"./test": "./test/index.js",
+		"./ui": "./ui/index.js",
 		"./util": "./util/index.js"
 	},
 	"description": "Toolkit for using data in JavaScript.",
@@ -68,12 +69,14 @@
 		"fix:0:lint": "biome check --write .",
 		"build": "bun run --sequential build:*",
 		"build:0:setup": "rm -rf ./dist && mkdir -p ./dist",
-		"build:1:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore",
+		"build:1:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore && cp -r modules/ui dist/ui",
 		"build:2:emit": "tsgo",
 		"build:3:syntax": "bun run ./dist/index.js",
 		"build:4:unit": "bun test ./dist/**/*.test.js --concurrent --only-failures --bail"
 	},
-	"sideEffects": false,
+	"sideEffects": [
+		"*.css"
+	],
 	"type": "module",
 	"types": "./index.d.ts"
 }

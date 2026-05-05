@@ -1,0 +1,23 @@
+.preformatted,
+.prose pre {
+	/* Box */
+	display: block;
+	margin-inline: 0;
+	margin-block: var(--preformatted-spacing, var(--spacing-block));
+	padding: var(--preformatted-padding, var(--spacing-inline));
+
+	/* Style */
+	font-family: var(--preformatted-font, var(--font-code));
+	color: var(--preformatted-color-text, var(--color-text));
+	background-color: var(--preformatted-color-bg, var(--color-surface));
+	border: var(--preformatted-border, var(--border-block)) solid var(--preformatted-color-border, var(--color-surface));
+	tab-size: 2;
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+}

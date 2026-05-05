@@ -1,0 +1,23 @@
+.subheading,
+.prose :is(h2, h3, h4, h5, h6) {
+	/* Box */
+	display: block;
+	inline-size: 100%;
+	margin-inline: 0;
+	margin-block: var(--subheading-spacing, var(--spacing-paragraph));
+
+	/* Style */
+	font-family: var(--subheading-font, var(--font-body));
+	font-weight: var(--subheading-weight, var(--weight-strong));
+	font-size: var(--subheading-font-size, var(--size-large));
+	line-height: var(--subheading-leading, var(--leading-tight));
+	color: var(--subheading-color, var(--color-text));
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+}

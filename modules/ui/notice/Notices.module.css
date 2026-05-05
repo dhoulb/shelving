@@ -1,0 +1,10 @@
+.notices {
+	position: fixed;
+	bottom: var(--spacing-block);
+	right: var(--spacing-block);
+	z-index: 1000;
+	display: flex;
+	max-width: var(--width-narrow);
+	flex-direction: column;
+	gap: var(--spacing-element);
+}

@@ -1,0 +1,168 @@
+:root {
+	color-scheme: light;
+
+	/* Widths */
+	--width-narrow: min(100%, 22.5rem);
+	--width-wide: min(100%, 33.75rem);
+
+	/* Font weights */
+	--weight-normal: 400;
+	--weight-strong: 700;
+	--weight-label: var(--weight-strong);
+
+	/* Font faces */
+	--font-sans: system-ui, -apple-system, -apple-system-font, "Segoe UI", "Roboto", sans-serif;
+	--font-mono: "Courier New", "Courier", monospace;
+	--font-serif: "Palatino", "Garamond", serif;
+
+	/* Semantic font faces */
+	--font-body: var(--font-sans);
+	--font-code: var(--font-mono);
+
+	/* Font sizes */
+	--size-small: 0.875rem;
+	--size-normal: 1rem;
+	--size-large: 1.5rem;
+	--size-xlarge: 2.5rem;
+	--size-xxlarge: 5rem;
+	--size-icon: 1.5rem;
+
+	/* Line heights */
+	--leading-none: 0;
+	--leading-tight: 1.25;
+	--leading-normal: 1.5;
+
+	/* Spacings */
+	--spacing-small: 0.25rem;
+	--spacing-inline: 0.5rem;
+	--spacing-paragraph: 1rem;
+	--spacing-element: 0.75rem;
+	--spacing-block: 1rem;
+	--spacing-spacious: 3rem;
+
+	/* Border widths */
+	--border-element: 2px;
+	--border-block: 2px;
+	--border-focus: 3px;
+
+	/* Radii */
+	--radius-inline: 0.25rem;
+	--radius-element: 0.5rem;
+	--radius-block: 1rem;
+
+	/* Durations */
+	--duration-fast: 150ms;
+	--duration-normal: 300ms;
+	--duration-slow: 600ms;
+
+	/* Grows */
+	--grow-greedy: 1000000; /* Take up as much space as possible, unless other elements are greedy too. */
+	--grow-normal: 1000; /* Take up a normal amount of space. */
+	--grow-timid: 1; /* Take up minimal space, unless the only other elements are timid too. */
+	--grow-none: 0;
+
+	/* Colors */
+	--color-blue: #156ef4;
+	--color-cyan: #15edf4;
+	--color-green: #8ce814;
+	--color-orange: #ffb21a;
+	--color-pink: #e718a2;
+	--color-purple: #ad15f4;
+	--color-red: #e5352f;
+	--color-yellow: #ffe01a;
+	--color-black: black;
+	--color-gray: color-mix(var(--color-blue) 30%, rgb(128 128 128)); /* Used as the "tone" color for scale of grays. */
+	--color-white: white;
+
+	/* Grays */
+	--gray-05: color-mix(var(--color-gray) 10%, var(--color-white));
+	--gray-10: color-mix(var(--color-gray) 20%, var(--color-white));
+	--gray-20: color-mix(var(--color-gray) 40%, var(--color-white));
+	--gray-30: color-mix(var(--color-gray) 60%, var(--color-white));
+	--gray-40: color-mix(var(--color-gray) 80%, var(--color-white));
+	--gray-50: var(--color-gray);
+	--gray-60: color-mix(var(--color-gray) 80%, var(--color-black));
+	--gray-70: color-mix(var(--color-gray) 60%, var(--color-black));
+	--gray-80: color-mix(var(--color-gray) 40%, var(--color-black));
+	--gray-90: color-mix(var(--color-gray) 20%, var(--color-black));
+	--gray-95: color-mix(var(--color-gray) 10%, var(--color-black));
+
+	/* Named colors */
+	--color-text: var(--color-black);
+	--color-contrast: var(--color-white); /* Contrast color — must be readable on `--color-text` */
+	--color-quiet: var(--gray-40); /* Quiet color is grey, used for secondary text etc. */
+	--color-bg: var(--color-white); /* Background color is usually the opposite of text colour. */
+	--color-border: var(--gray-10);
+	--color-overlay: color-mix(in srgb, var(--color-text) 40%, transparent);
+	--color-link: var(--color-blue); /* Links are usually blue. */
+	--color-focus: var(--color-blue); /* Focus is usually blue. */
+	--color-surface: var(--gray-10); /* Surface color is used for notices and buttons — must be readable on `--color-text` */
+
+	/* Shadows */
+	--shadow-element: 0 3px 16px -8px var(--color-overlay);
+	--shadow-block: 0 4px 24px -12px var(--color-overlay);
+
+	/* Primary colors */
+	--primary-text: var(--color-blue);
+	--primary-contrast: var(--color-white);
+	--primary-surface: color-mix(in srgb, var(--primary-text) 12%, white);
+
+	/* Secondary colors */
+	--secondary-text: var(--color-purple);
+	--secondary-contrast: var(--color-white);
+	--secondary-surface: color-mix(in srgb, var(--secondary-text) 12%, white);
+
+	/* Tertiary colors */
+	--tertiary-text: var(--color-cyan);
+	--tertiary-contrast: var(--color-white);
+	--tertiary-surface: color-mix(in srgb, var(--tertiary-text) 12%, white);
+
+	/* Quiet colors */
+	--quiet-text: var(--color-quiet);
+	--quiet-contrast: var(--color-contrast);
+	--quiet-surface: var(--color-surface);
+
+	/* Focus colors */
+	--focus-text: var(--color-focus);
+	--focus-contrast: var(--color-white);
+	--focus-surface: color-mix(in srgb, var(--focus-text) 12%, white);
+
+	/* Loading colors */
+	--loading-text: var(--color-loading);
+	--loading-contrast: var(--color-contrast);
+	--loading-surface: var(--color-surface);
+
+	/* Info colors */
+	--info-text: var(--color-blue);
+	--info-contrast: var(--color-white);
+	--info-surface: color-mix(in srgb, var(--info-text) 12%, white);
+
+	/* Success colors */
+	--success-text: var(--color-green);
+	--success-contrast: var(--color-white);
+	--success-surface: color-mix(in srgb, var(--success-text) 12%, white);
+
+	/* Warning colors */
+	--warning-text: var(--color-orange);
+	--warning-contrast: var(--color-white);
+	--warning-surface: color-mix(in srgb, var(--warning-text) 12%, white);
+
+	/* Error colors */
+	--error-text: var(--color-red);
+	--error-contrast: var(--color-white);
+	--error-surface: color-mix(in srgb, var(--error-text) 12%, white);
+
+	/* Danger colors */
+	--danger-text: var(--color-red);
+	--danger-contrast: var(--color-white);
+	--danger-surface: color-mix(in srgb, var(--danger-text) 12%, white);
+
+	/* Highlight colors */
+	--highlight-text: var(--color-yellow);
+	--highlight-contrast: var(--color-black);
+	--highlight-surface: color-mix(in srgb, var(--highlight-text) 12%, white);
+}
+
+.app {
+	/* Empty */
+}

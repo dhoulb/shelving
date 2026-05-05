@@ -62,6 +62,22 @@
 	},
 	"overrides": [
 		{
+			"includes": ["modules/ui/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noDescendingSpecificity": "off"
+					},
+					"suspicious": {
+						"noDuplicateProperties": "off"
+					},
+					"performance": {
+						"noNamespaceImport": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": ["**/*.test.ts"],
 			"linter": {
 				"rules": {

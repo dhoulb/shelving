@@ -1,0 +1,155 @@
+.input {
+	/* Box */
+	box-sizing: border-box;
+	width: 100%; /* Buttons never go smaller than their contents. */
+	margin: var(--input-spacing, var(--spacing-element)) 0;
+	border-radius: var(--input-radius, var(--radius-element));
+	border: var(--input-border, var(--border-element)) solid var(--input-color-border, var(--color-border));
+	padding: var(--input-padding, var(--spacing-element)) var(--input-padding, var(--spacing-element));
+	flex-grow: var(--grow-greedy);
+
+	/* Style */
+	color: var(--input-color-text, var(--color-text));
+	background: var(--input-color-bg, var(--color-bg));
+	transition: all 120ms ease-in-out;
+	cursor: default;
+	outline: var(--input-border, var(--border-focus)) solid transparent;
+	outline-offset: calc(0px - var(--input-border, var(--border-element)));
+	box-shadow: none;
+
+	/* Typography */
+	font-family: var(--input-font, var(--font-body));
+	font-weight: var(--input-weight, var(--weight-normal));
+	font-size: var(--input-size, var(--size-normal));
+	line-height: var(--input-leading, var(--leading-normal));
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-top: 0;
+	}
+	&:last-child {
+		margin-bottom: 0;
+	}
+
+	/* Variants. */
+	&.select {
+		/* Select inputs have pointer cursor, down arrow image. */
+		cursor: pointer;
+		appearance: none;
+		background-repeat: no-repeat;
+		background-size: var(--input-icon-size, var(--size-icon));
+		padding-right: 2.5em;
+		background-position: right var(--input-padding, var(--spacing-element)) center;
+		background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMS40NyA0LjcyYS43NS43NSAwIDAgMSAxLjA2IDBsMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDEuMDZMMTIgNi4zMSA4Ljc4IDkuNTNhLjc1Ljc1IDAgMCAxLTEuMDYtMS4wNmwzLjc1LTMuNzVabS0zLjc1IDkuNzVhLjc1Ljc1IDAgMCAxIDEuMDYgMEwxMiAxNy42OWwzLjIyLTMuMjJhLjc1Ljc1IDAgMSAxIDEuMDYgMS4wNmwtMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDBsLTMuNzUtMy43NWEuNzUuNzUgMCAwIDEgMC0xLjA2WiIgY2xpcC1ydWxlPSJldmVub2RkIiAvPjwvc3ZnPgo=");
+
+		/* Placeholder color if contains checked empty option. */
+		&:has(.empty:checked) {
+			color: var(--input-placeholder-color, var(--color-quiet));
+		}
+
+		/* Success if contains value checked option. */
+		&:has(.value:checked) {
+			border-color: var(--input-success-color, var(--success-text));
+		}
+	}
+	&.text {
+		/* Text inputs have text cursor, selection, placeholder. */
+		cursor: text;
+		resize: none;
+
+		&::selection {
+			color: var(--input-focus-color-contrast, var(--focus-contrast));
+			background-color: var(--input-focus-color, var(--focus-text));
+		}
+		&::placeholder {
+			color: var(--input-placeholder-color, var(--color-quiet));
+		}
+
+		/* Success if valid and has content. */
+		&:valid:not(:placeholder-shown) {
+			border-color: var(--input-success-color, var(--success-text));
+		}
+
+		/* Error if is invalid and is not empty. */
+		&:invalid:not(:placeholder-shown) {
+			border-color: var(--input-error-color, var(--error-text));
+		}
+
+		&.multiline {
+			/* Textarea has pre-spacing and field-sizing for auto-resizing. */
+			white-space: pre-wrap;
+			word-break: break-word;
+			field-sizing: content;
+			min-height: calc(1lh * attr(rows number, 2));
+		}
+	}
+	&.button,
+	&.label {
+		/* Button and label inputs have a pointer cursor and show their contents as flexbox. */
+		cursor: pointer;
+
+		/* Success if contains checked radio, checkbox, option. */
+		/* Success if contains text that is valid and is not empty. */
+		&:has(.checkbox:checked, .radio:checked, .option:checked, .text:valid:not(:placeholder-shown)) {
+			border-color: var(--input-success-color, var(--success-text));
+		}
+
+		/* Error if contains text that is invalid and is not empty. */
+		&:has(.text:invalid:not(:placeholder-shown)) {
+			border-color: var(--input-error-color, var(--error-text));
+		}
+	}
+
+	/* Error if aria invalid or contains aria invalid. */
+	&[aria-invalid="true"],
+	&:has([aria-invalid="true"]) {
+		border-color: var(--input-error-color, var(--error-text));
+	}
+
+	/* Important pseudo-classes */
+	&.disabled,
+	&:disabled,
+	&:has(.disabled, :disabled) {
+		opacity: var(--input-disabled-opacity, 0.5);
+		cursor: default;
+	}
+	&.focus,
+	&:focus,
+	&:focus-within,
+	&:has(.focus) {
+		border-color: var(--input-focus-color, var(--focus-text));
+		outline-color: var(--input-focus-color, var(--focus-text));
+	}
+
+	/* Children */
+	> .input {
+		/* Nested inputs don't double up border or padding. */
+		padding: 0;
+		border: 0;
+		margin: 0;
+		outline: 0;
+	}
+	&& > [data-slot="icon"] {
+		inline-size: var(--input-icon-size, var(--size-icon));
+		block-size: var(--input-icon-size, var(--size-icon));
+		flex: none;
+	}
+}
+
+.placeholder {
+	color: var(--input-placeholder-color, var(--color-quiet));
+}
+
+.checkbox,
+.radio {
+	display: block;
+	width: calc(var(--input-icon-size, var(--size-icon)) - 4px);
+	height: calc(var(--input-icon-size, var(--size-icon)) - 4px);
+	margin: 2px;
+	flex: 0 0 auto;
+	accent-color: var(--input-color-accent, var(--primary-text));
+	cursor: inherit;
+	outline: none;
+	font-size: inherit;
+	line-height: inherit;
+}

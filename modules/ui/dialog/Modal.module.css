@@ -1,0 +1,11 @@
+.modal {
+	margin: auto;
+	max-width: 100%;
+	border-radius: var(--modal-radius, var(--radius-block));
+	border: var(--modal-border, var(--border-block)) solid var(--modal-color-border, var(--color-border));
+	background: var(--modal-color-bg, var(--color-bg));
+	padding: var(--modal-padding, var(--spacing-block));
+	color: var(--modal-color-text, var(--color-text));
+	box-shadow: var(--modal-shadow, var(--shadow-block));
+	width: var(--modal-width, var(--width-narrow));
+}

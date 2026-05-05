@@ -1,0 +1,9 @@
+.superscript,
+.prose sup {
+	/* Style */
+	font-size: 80%;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+	top: -0.5em;
+}
