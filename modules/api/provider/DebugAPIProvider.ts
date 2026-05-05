@@ -27,9 +27,9 @@ export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	override async fetch(request: Request): Promise<Response> {
 		const url = this.url.toString();
 		try {
-			console.error("→ FETCH", url, await debugFullRequest(request));
+			console.debug("→ FETCH", url, await debugFullRequest(request));
 			const response = await super.fetch(request);
-			console.error("← FETCH", url, await debugFullResponse(response));
+			console.debug("← FETCH", url, await debugFullResponse(response));
 			return response;
 		} catch (reason) {
 			console.error("✘ FETCH", url, reason);
