@@ -1,6 +1,6 @@
 import { Component, createContext, type ReactElement, type ReactNode, use } from "react";
-import { ArrowPathIcon } from "shared/icon";
 import { type Callback, getMessage } from "shelving";
+import { ArrowPathIcon } from "shelving/icon";
 import { Button, type ButtonVariants } from "../form/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";

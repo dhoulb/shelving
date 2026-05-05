@@ -1,5 +1,5 @@
 import { type MouseEvent, type ReactElement, type ReactNode, useEffect, useRef, useState } from "react";
-import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from "shared/icon";
+import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from "shelving/icon";
 import { getModuleClass } from "../util/css.js";
 import styles from "./Video.module.css";
 

@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { ArrowRightIcon } from "shared/icon";
+import { ArrowRightIcon } from "shelving/icon";
 import { useStore } from "shelving/react";
 import { Loading } from "../misc/Loading.js";
 import { getStatusClass } from "../notice/Status.js";

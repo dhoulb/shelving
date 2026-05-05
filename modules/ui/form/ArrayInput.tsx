@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
-import { PlusIcon, XMarkIcon } from "shared/icon";
 import { formatUnit, type ImmutableArray, omitArrayIndex, type Schema, splitMessage, withArrayIndex } from "shelving";
+import { PlusIcon, XMarkIcon } from "shelving/icon";
 import { Elements } from "../block/Elements.js";
 import { Button } from "./Button.js";
 import { Input, type ValueInputProps } from "./Input.js";
