@@ -138,6 +138,115 @@ bun run build
 - Store implementations suppress duplicate emissions when values are equal and use the `NONE` sentinel for loading state. Preserve those semantics in new store types
 - React context helpers return both a provider component and typed hooks, for example `createDataContext()` and `createCacheContext()`. Follow that pattern for new React integrations
 
+## Style
+
+These are stylistic habits the codebase uses pervasively. They aren't enforced by Biome or TypeScript — match them anyway, even when an alternative would technically work. Deviations get refactored, so respect them on first pass.
+
+### Destructuring
+
+- Always destructure when reading 2+ properties from the same object — `const { method, url } = request`, not `request.method` and `request.url`
+- Destructure even single properties when the source name is long: `const { requireSource } = require...()`
+- Rename on destructure with `:` to disambiguate or to mark validation state: `const { data: unsafeData } = ...`, `const { data: rawValue } = ...`
+- Function parameters destructure inline in the signature, including renames: `function foo({ key, data: unsafeData }: Args) { ... }`
+- Methods on a class destructure `this`: `const { state, props } = this`
+
+### Coercion
+
+- Use `.toString()` on values, not `String(value)`
+- Use `Number.parseInt` / `Number.parseFloat` over the `Number(...)` global; only use `Number(...)` when no method-form alternative exists
+- Use `!!x` for boolean coercion
+
+### Truthy and nullish
+
+- Prefer truthy checks over explicit `=== undefined` / `=== null` / `=== ""`: write `if (!value) return ...`, not `if (value === undefined || value === "")`
+- Use `||` (not `??`) when empty string and zero should also fall through to the default — this is the common case
+- Reserve `??` for narrow null/undefined defaults, especially `process.env.X ?? ""`
+- Use optional chaining + truthiness liberally: `if (items?.length) ...`
+
+### Guard clauses
+
+- Guard clauses are written as one-line `if (...) return ...;` without braces, stacked at the top of the function:
+  ```ts
+  if (!n.length) return "";
+  if (n.startsWith("44")) return formatUK(n.slice(2));
+  ```
+- Module-scope throw guards use the same form: `if (!process.env.API_URL) throw new ReferenceError("...")`
+- Combine a `for` loop with a one-line `if` body when filtering: `for (const [k, v] of Object.entries(data)) if (v) ...`
+
+### Local variable naming
+
+- Inside small scopes, very short names are preferred: `n`, `nn`, `cc`, `k`, `v`, `i`, `r`, `e`, `el`
+- Outer / exported scope names stay descriptive (`hostname`, `searchParams`, `cookieData`) — the terseness is an inside-the-function thing
+- Event-handler parameters are `e`, never `event` or `evt`
+- Pre-validation values are prefixed `unsafe` or `raw`: `unsafeData`, `unsafeValue`, `rawName`. The validated counterpart drops the prefix
+
+### Loops and iteration
+
+- Use `for...of` over `.forEach()`
+- Use `Array.from(iter).join(...)` over `[...iter].join(...)`
+- Use `function*` generators when assembling a sequence with conditional yields
+
+### Comments
+
+- Use short single-line `// ` comments to label sections of a function. Sentence case, ending in a period: `// Stop the page reloading.`, `// Get relevant elements.`
+- Group constants under a `// Constants.` label at the top of the file when there are several
+- Avoid comments that restate what the code says — comment the *why* or the section purpose
+- The trailing-empty-comment trick — `Foo, //` — is used deliberately to force Biome's formatter to keep an argument list multi-line for readability:
+  ```ts
+  return getClass(
+      ELEMENTS_BUTTON_CLASS, //
+      getModuleClass(BUTTON_CSS, variants),
+  );
+  ```
+  Preserve these when editing nearby code; don't strip them
+
+### Class private members
+
+- Every `_`-prefixed class member is also marked `private` or `protected` — and vice versa. Never `private foo` without an underscore, never bare `_foo` without an access modifier
+- The two travel together as a single signal: "this is internal"
+- This applies only to class members. Module-private functions and constants use just the `_` prefix (covered under Code Style → Functions)
+
+### `BLACKHOLE` for intentionally-swallowed promise rejections
+
+- `BLACKHOLE` is exported from `modules/util/function.ts`. Use `.catch(BLACKHOLE)` to mark a promise rejection as deliberately ignored
+- Two patterns:
+  - `_promise.catch(BLACKHOLE)` — a promise we don't await here but whose error will resurface when something else awaits it. The catch stops the unhandled-rejection warning
+  - `await flakyOp().catch(BLACKHOLE)` — a known-flaky operation whose rejection is expected and harmless
+- Don't replace with empty `() => {}` or omit the catch. The named symbol documents intent
+
+### `caller: AnyCaller = thisFunction` for attributable errors
+
+- Throw-capable helpers (e.g. `assertArray`, `requireArray`) accept `caller: AnyCaller` as their last parameter, defaulting to the function itself: `caller: AnyCaller = assertArray`
+- When the helper throws, the caller chain attributes the error to the user's call site instead of the internal plumbing
+- When forwarding to another `caller`-aware helper, pass `caller` through: `assertArray(value, min, max, caller)`
+- New helpers that throw `RequiredError` / `AssertionError` should accept this parameter and follow the same default pattern
+
+### Object spreads and merging
+
+- Merge defaults with object spread, defaults first: `{ ...DEFAULTS, ...options }`
+- Order of spreads matters and is intentional — don't reorder
+- Forward props with rest spread; preserve the existing order
+
+### Verb-prefix vocabulary
+
+The codebase uses a tight, consistent prefix system for function names. Pick the prefix that matches the contract — these are not interchangeable. Extends the prefixes listed under Code Style → Naming with:
+
+| Prefix | Contract | Examples |
+|---|---|---|
+| `has*` | Boolean predicate (possession, not type) | `hasItems` |
+| `to*` | Pure conversion to another shape | `toStringValue` |
+| `format*` | Value → display string | `formatNumber`, `formatDate`, `formatUnit` |
+| `parse*` | String → structured value (inverse of `format*`) | `parseRequest` |
+| `match*` | Result of matching / filtering | `matchQuery`, `matchTemplate` |
+| `validate*` | Throws on invalid; returns the validated value | `validateData` |
+| `merge*` | Returns a new value combining multiple inputs | `mergeArray`, `mergeObject` |
+| `add*` | Returns immutable updated copy with an item added | `addArrayItem`, `addSetItem` |
+| `update*` | Returns immutable updated copy with changes applied | `updateData` |
+| `await*` | Async counterpart of an otherwise-sync helper | `awaitArray` |
+| `run*` | Executes a callback or sequence | `runSequence` |
+
+**Pairing rule:** `get*` and `require*` come as pairs over the same target. `is*` and `assert*` likewise pair. Choosing between them is a contract decision the caller depends on. If you add a new `require*`, consider whether a sibling `get*` belongs alongside it, and similarly for `assert*` / `is*`.
+
 ## Testing
 
 - Use `bun:test` and place tests next to the module they cover
