@@ -1,5 +1,5 @@
 import { type MouseEvent, memo, type ReactElement, type ReactNode, Suspense, useEffect, useRef } from "react";
-import type { ButtonVariants } from "shared/component";
+import type { ButtonVariants } from "../form/Button.js";
 import { XMarkIcon } from "shared/icon";
 import type { Callback } from "shelving";
 import { getModuleClass } from "../util/css.js";

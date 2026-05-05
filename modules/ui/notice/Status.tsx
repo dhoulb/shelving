@@ -1,5 +1,5 @@
 import { getModuleClass } from "../util/css.js";
-import * as STATUS_CSS from "./Status.module.css";
+import STATUS_CSS from "./Status.module.css";
 
 /** Variants for statuses. */
 export type StatusVariants = {
