@@ -11,7 +11,7 @@
 	--weight-label: var(--weight-strong);
 
 	/* Font faces */
-	--font-sans: system-ui, -apple-system, -apple-system-font, "Segoe UI", "Roboto", sans-serif;
+	--font-sans: system-ui;
 	--font-mono: "Courier New", "Courier", monospace;
 	--font-serif: "Palatino", "Garamond", serif;
 

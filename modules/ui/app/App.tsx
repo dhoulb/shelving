@@ -7,6 +7,8 @@ export interface AppProps extends PossibleMetaData {
 	children: ReactNode;
 }
 
+const _appClass = APP_CSS.app;
+
 /**
  * Root component for an application.
  * - Adds the theme CSS class (which sets CSS token variables on `:root`) to `document.body` on mount and removes it on unmount.
@@ -14,9 +16,10 @@ export interface AppProps extends PossibleMetaData {
  */
 export function App({ children, ...metadata }: AppProps): ReactElement {
 	useEffect(() => {
-		document.body.classList.add(APP_CSS.app!);
+		if (!_appClass) return;
+		document.body.classList.add(_appClass);
 		return () => {
-			document.body.classList.remove(APP_CSS.app!);
+			document.body.classList.remove(_appClass);
 		};
 	}, []);
 	return <Meta {...metadata}>{children}</Meta>;
