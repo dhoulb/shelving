@@ -22,12 +22,11 @@ describe("DebugAPIProvider", () => {
 
 		expect(debugLogs).toEqual([
 			["✔ REQUEST", "https://api.mock.com/", "GET /users/{id}", { id: "123" }],
-			["✔ RESPONSE", "https://api.mock.com/", "GET /users/{id}", "BODY"],
-		]);
-		expect(errorLogs).toEqual([
 			["→ FETCH", "https://api.mock.com/", "GET https://api.mock.com/users/123"],
 			["← FETCH", "https://api.mock.com/", '200 OK\ncontent-type: application/json;charset=utf-8\n\n"BODY"'],
+			["✔ RESPONSE", "https://api.mock.com/", "GET /users/{id}", "BODY"],
 		]);
+		expect(errorLogs).toEqual([]);
 	});
 
 	test("logs failed responses and rethrows the error", async () => {
@@ -50,13 +49,15 @@ describe("DebugAPIProvider", () => {
 			console.error = error;
 		}
 
-		expect(debugLogs).toEqual([["✔ REQUEST", "https://api.mock.com/", "GET /users/{id}", { id: "123" }]]);
-		expect(errorLogs).toHaveLength(3);
-		expect(errorLogs[0]).toEqual(["→ FETCH", "https://api.mock.com/", "GET https://api.mock.com/users/123"]);
-		expect(errorLogs[1]).toEqual(["← FETCH", "https://api.mock.com/", "500 Internal Server Error\ncontent-type: text/plain\n\nNOPE"]);
-		expect(errorLogs[2]?.[0]).toBe("✘ RESPONSE");
-		expect(errorLogs[2]?.[1]).toBe("https://api.mock.com/");
-		expect(errorLogs[2]?.[2]).toBe("GET /users/{id}");
-		expect(errorLogs[2]?.[3]).toBeInstanceOf(ResponseError);
+		expect(debugLogs).toEqual([
+			["✔ REQUEST", "https://api.mock.com/", "GET /users/{id}", { id: "123" }],
+			["→ FETCH", "https://api.mock.com/", "GET https://api.mock.com/users/123"],
+			["← FETCH", "https://api.mock.com/", "500 Internal Server Error\ncontent-type: text/plain\n\nNOPE"],
+		]);
+		expect(errorLogs).toHaveLength(1);
+		expect(errorLogs[0]?.[0]).toBe("✘ RESPONSE");
+		expect(errorLogs[0]?.[1]).toBe("https://api.mock.com/");
+		expect(errorLogs[0]?.[2]).toBe("GET /users/{id}");
+		expect(errorLogs[0]?.[3]).toBeInstanceOf(ResponseError);
 	});
 });
