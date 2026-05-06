@@ -18,3 +18,10 @@ export const ANSI_INVERSE = "\x1b[7m";
 
 // Reset.
 export const ANSI_RESET = "\x1b[0m";
+
+// Icons.
+export const ANSI_ICON_WAITING = "\x1b[34m⋯\x1b[0m"; // ⋯
+export const ANSI_ICON_SUCCESS = "\x1b[32m✓\x1b[0m"; // ✓
+export const ANSI_ICON_ERROR = "\x1b[31m✗\x1b[0m"; // ✗
+export const ANSI_ICON_REQUEST = "\x1b[34m→\x1b[0m"; // →
+export const ANSI_ICON_RESPONSE = "\x1b[34m←\x1b[0m"; // ←
