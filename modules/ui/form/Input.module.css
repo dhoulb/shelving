@@ -134,6 +134,41 @@
 		block-size: var(--input-icon-size, var(--size-icon));
 		flex: none;
 	}
+
+	&.wrapper {
+		position: relative;
+
+		/* Absolutely position any slotted element and center it vertically. */
+		& > [data-slot] {
+			position: absolute;
+			inset-block: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			inline-size: calc(var(--input-padding, var(--spacing-element)) + var(--input-icon-size, var(--size-icon)));
+			pointer-events: none;
+		}
+
+		/* First [data-slot] child anchors to the left. */
+		& > [data-slot]:first-child {
+			inset-inline-start: 0;
+		}
+
+		/* Last [data-slot] child anchors to the right. */
+		& > [data-slot]:last-child {
+			inset-inline-end: 0;
+		}
+
+		/* Push the inner .input left padding to clear the left slot. */
+		&:has(> [data-slot]:first-child) > .input {
+			padding-inline-start: var(--input-icon-size, var(--size-icon));
+		}
+
+		/* Push the inner .input right padding to clear the right slot. */
+		&:has(> [data-slot]:last-child) > .input {
+			padding-inline-end: var(--input-icon-size, var(--size-icon));
+		}
+	}
 }
 
 .placeholder {

@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
 import { ELEMENTS_CSS } from "../block/Elements.js";
 import { LOADING } from "../misc/Loading.js";
 import { getClass } from "../util/css.js";
@@ -20,6 +20,7 @@ export const ELEMENTS_BUTTON_INPUT_CLASS = getClass(INPUT_CSS.input, INPUT_CSS.b
 export const PLACEHOLDER_ELEMENTS_BUTTON_INPUT_CLASS = getClass(ELEMENTS_BUTTON_INPUT_CLASS, INPUT_CSS.placeholder);
 export const ELEMENTS_LABEL_INPUT_CLASS = getClass(INPUT_CSS.input, INPUT_CSS.label, ELEMENTS_CSS.elements, ELEMENTS_CSS.left);
 export const PLACEHOLDER_ELEMENTS_LABEL_INPUT_CLASS = getClass(ELEMENTS_LABEL_INPUT_CLASS, INPUT_CSS.placeholder);
+export const WRAPPER_INPUT_CLASS = getClass(INPUT_CSS.input, INPUT_CSS.wrapper);
 
 /** Props all inputs allow. */
 export interface InputProps {
@@ -73,3 +74,8 @@ export function Input({
 
 /** Input that is loading. */
 export const LOADING_INPUT = <div className={ELEMENTS_INPUT_CLASS}>{LOADING}</div>;
+
+/** Wraps an input with support for absolutely-positioned `data-slot` icon elements on either side. */
+export function InputWrapper({ children }: { children: ReactNode }): ReactElement {
+	return <div className={WRAPPER_INPUT_CLASS}>{children}</div>;
+}
