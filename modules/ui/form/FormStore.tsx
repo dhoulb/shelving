@@ -1,17 +1,14 @@
-import {
-	type Arguments,
-	awaitDispose,
-	type Data,
-	type DataKey,
-	type DataSchema,
-	DataStore,
-	DictionaryStore,
-	getRandomKey,
-	type ImmutableDictionary,
-	RequiredError,
-	Schema,
-	splitMessage,
-} from "shelving";
+import { RequiredError } from "../../error/RequiredError.js";
+import type { DataSchema } from "../../schema/DataSchema.js";
+import { Schema } from "../../schema/Schema.js";
+import { DataStore } from "../../store/DataStore.js";
+import { DictionaryStore } from "../../store/DictionaryStore.js";
+import type { Data, DataKey } from "../../util/data.js";
+import type { ImmutableDictionary } from "../../util/dictionary.js";
+import { awaitDispose } from "../../util/dispose.js";
+import { splitMessage } from "../../util/error.js";
+import type { Arguments } from "../../util/function.js";
+import { getRandomKey } from "../../util/random.js";
 
 /** Store the current value of a form. */
 export class FormStore<T extends Data> extends DataStore<Partial<T>> implements AsyncDisposable {

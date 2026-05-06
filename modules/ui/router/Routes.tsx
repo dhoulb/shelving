@@ -1,5 +1,9 @@
 import type { ComponentClass, FunctionComponent, ReactElement } from "react";
-import { type AbsolutePath, matchTemplate, type Nullish, renderTemplate, UnexpectedError, type URIParams } from "shelving";
+import { UnexpectedError } from "../../error/UnexpectedError.js";
+import type { Nullish } from "../../util/null.js";
+import type { AbsolutePath } from "../../util/path.js";
+import { matchTemplate, renderTemplate } from "../../util/template.js";
+import type { URIParams } from "../../util/uri.js";
 
 /**
  * Props for a component that works as a route in the router.

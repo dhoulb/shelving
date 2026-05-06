@@ -1,6 +1,9 @@
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import type { ReactElement } from "react";
-import { formatUnit, type ImmutableArray, omitArrayIndex, type Schema, splitMessage, withArrayIndex } from "shelving";
-import { PlusIcon, XMarkIcon } from "shelving/icon";
+import type { Schema } from "../../schema/Schema.js";
+import { type ImmutableArray, omitArrayIndex, withArrayIndex } from "../../util/array.js";
+import { splitMessage } from "../../util/error.js";
+import { formatUnit } from "../../util/format.js";
 import { Elements } from "../block/Elements.js";
 import { Button } from "./Button.js";
 import { Input, type ValueInputProps } from "./Input.js";

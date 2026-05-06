@@ -1,6 +1,11 @@
 import type { ReactElement, ReactNode, SubmitEvent } from "react";
-import { type Arguments, type Data, type DataSchema, type ImmutableDictionary, isAsync, type PartialData } from "shelving";
-import { useInstance, useStore } from "shelving/react";
+import { useInstance } from "../../react/useInstance.js";
+import { useStore } from "../../react/useStore.js";
+import type { DataSchema } from "../../schema/DataSchema.js";
+import { isAsync } from "../../util/async.js";
+import type { Data, PartialData } from "../../util/data.js";
+import type { ImmutableDictionary } from "../../util/dictionary.js";
+import type { Arguments } from "../../util/function.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
 import styles from "./Form.module.css";
 import { FormContext } from "./FormContext.js";

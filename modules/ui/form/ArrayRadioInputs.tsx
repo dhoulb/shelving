@@ -1,5 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
-import { formatValue, type ImmutableArray } from "shelving";
+import type { ImmutableArray } from "../../util/array.js";
+import { formatValue } from "../../util/format.js";
 import { Elements } from "../block/Elements.js";
 import type { ValueInputProps } from "./Input.js";
 import { RadioInput } from "./RadioInput.js";

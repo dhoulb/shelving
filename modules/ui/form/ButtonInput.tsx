@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { notNullish } from "shelving";
+import { notNullish } from "../../util/null.js";
 import { type ClickableProps, getClickable } from "./Clickable.js";
 import { ELEMENTS_BUTTON_INPUT_CLASS, type InputProps, PLACEHOLDER_ELEMENTS_BUTTON_INPUT_CLASS } from "./Input.js";
 

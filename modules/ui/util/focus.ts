@@ -1,4 +1,5 @@
-import { getFirstFocusable, type Nullish } from "shelving";
+import { getFirstFocusable } from "../../util/focus.js";
+import type { Nullish } from "../../util/null.js";
 
 /** Focus on the first focusable element inside an element. */
 export function focusFirstFocusable(el: Nullish<Element>): void {

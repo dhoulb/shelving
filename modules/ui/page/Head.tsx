@@ -1,5 +1,7 @@
 import { type ReactElement, useEffect } from "react";
-import { getProps, isDefined, notNullish } from "shelving";
+import { notNullish } from "../../util/null.js";
+import { getProps } from "../../util/object.js";
+import { isDefined } from "../../util/undefined.js";
 import { requireMeta } from "../misc/Meta.js";
 import { joinTitles } from "../util/meta.js";
 

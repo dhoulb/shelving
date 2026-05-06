@@ -1,6 +1,7 @@
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { Component, createContext, type ReactElement, type ReactNode, use } from "react";
-import { type Callback, getMessage } from "shelving";
-import { ArrowPathIcon } from "shelving/icon";
+import { getMessage } from "../../util/error.js";
+import type { Callback } from "../../util/function.js";
 import { Button, type ButtonVariants } from "../form/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";

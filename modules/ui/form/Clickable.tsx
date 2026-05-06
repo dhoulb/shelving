@@ -1,6 +1,8 @@
 import type { MouseEvent, ReactElement, ReactNode } from "react";
-import { BusyStore, type PossibleURL, requireURL } from "shelving";
-import { useInstance, useStore } from "shelving/react";
+import { useInstance } from "../../react/useInstance.js";
+import { useStore } from "../../react/useStore.js";
+import { BusyStore } from "../../store/BusyStore.js";
+import { type PossibleURL, requireURL } from "../../util/url.js";
 import { LOADING } from "../misc/Loading.js";
 import { callNotifiedElement } from "../util/notice.js";
 

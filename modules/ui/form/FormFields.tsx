@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { useStore } from "shelving/react";
+import { useStore } from "../../react/useStore.js";
 import { Field } from "./Field.js";
 import { requireForm, useField } from "./FormContext.js";
 import type { InputProps } from "./Input.js";

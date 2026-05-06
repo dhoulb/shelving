@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
-import { type ChoiceOptions, getProps } from "shelving";
+import type { ChoiceOptions } from "../../schema/ChoiceSchema.js";
+import { getProps } from "../../util/object.js";
 import { EMPTY_OPTION_INPUT_CLASS, SELECT_INPUT_CLASS, VALUE_OPTION_INPUT_CLASS, type ValueInputProps } from "./Input.js";
 
 export interface SelectProps<T extends string> extends ValueInputProps<T> {

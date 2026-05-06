@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useStore } from "shelving/react";
+import { useStore } from "../../react/useStore.js";
 import { notifySuccess } from "../util/notice.js";
 import { requireForm } from "./FormContext.js";
 

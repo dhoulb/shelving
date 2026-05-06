@@ -3,7 +3,8 @@
 
 import type { ReactElement, ReactNode } from "react";
 
-import { type Callback, isTruthy } from "shelving";
+import { isTruthy } from "../../util/boolean.js";
+import type { Callback } from "../../util/function.js";
 import { eventPreventDefault } from "../util/event.js";
 import { eventLoopFocus } from "../util/focus.js";
 import styles from "./Popover.module.css";

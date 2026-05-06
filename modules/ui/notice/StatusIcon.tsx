@@ -1,5 +1,5 @@
+import { CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import type { ComponentType, ReactElement } from "react";
-import { CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XCircleIcon } from "shelving/icon";
 import { Loading } from "../misc/Loading.js";
 import { getModuleClass } from "../util/css.js";
 import type { Status } from "./Status.js";

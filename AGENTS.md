@@ -99,7 +99,8 @@ bun run build
 - Named exports only — no default exports
 - Barrel files (`index.ts`) re-export with `export * from "./X.js"`
 - Keep barrel exports in sync when moving or adding files
-- Never import from barrel files
+- In source files, always import from the declaration file directly (e.g. `../../util/array.js`), never from a barrel
+- In test files, always import from the highest applicable barrel (e.g. `shelving/util` not `../../util/array.js`) — this verifies the barrel export exists
 
 ### Types
 

@@ -1,5 +1,6 @@
 import type { ReactElement, SyntheticEvent } from "react";
-import { type DateInputType, getDateString, getDateTimeString, getTimeString, type PossibleDate } from "shelving";
+import type { DateInputType } from "../../schema/DateSchema.js";
+import { getDateString, getDateTimeString, getTimeString, type PossibleDate } from "../../util/date.js";
 import { TEXT_INPUT_CLASS, type ValueInputProps } from "./Input.js";
 
 /** Convert a `PossibleDate` to a string for a specific date `<input type="etc">` type. */

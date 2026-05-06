@@ -1,14 +1,11 @@
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import type { ReactElement } from "react";
-import {
-	formatUnit,
-	type ImmutableDictionary,
-	omitDictionaryItem,
-	omitProp,
-	type Schema,
-	splitMessage,
-	withDictionaryItem,
-} from "shelving";
-import { PlusIcon, XMarkIcon } from "shelving/icon";
+import type { Schema } from "../../schema/Schema.js";
+import type { ImmutableDictionary } from "../../util/dictionary.js";
+import { omitDictionaryItem, withDictionaryItem } from "../../util/dictionary.js";
+import { splitMessage } from "../../util/error.js";
+import { formatUnit } from "../../util/format.js";
+import { omitProp } from "../../util/object.js";
 import { Elements } from "../block/Elements.js";
 import { Button } from "./Button.js";
 import { Input, type ValueInputProps } from "./Input.js";

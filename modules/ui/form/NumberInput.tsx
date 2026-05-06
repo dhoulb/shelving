@@ -1,5 +1,6 @@
 import type { ReactElement, SyntheticEvent } from "react";
-import { formatNumber, getNumber } from "shelving";
+import { formatNumber } from "../../util/format.js";
+import { getNumber } from "../../util/number.js";
 import { TEXT_INPUT_CLASS, type ValueInputProps } from "./Input.js";
 
 type NumberFormatter = (num: number) => string;

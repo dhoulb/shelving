@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect } from "react";
-import { useStore } from "shelving/react";
+import { useStore } from "../../react/useStore.js";
 import { ELEMENTS_CSS } from "../block/Elements.js";
 import { getClass } from "../util/css.js";
 import { subscribeNotices } from "../util/notice.js";

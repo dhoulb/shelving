@@ -1,5 +1,6 @@
 import type { ReactElement, SyntheticEvent } from "react";
-import { PASSTHROUGH, type StringInputType } from "shelving";
+import type { StringInputType } from "../../schema/StringSchema.js";
+import { PASSTHROUGH } from "../../util/function.js";
 import { MULTILINE_TEXT_INPUT_CLASS, TEXT_INPUT_CLASS, type ValueInputProps } from "./Input.js";
 
 type TextFormatter = (str: string) => string;

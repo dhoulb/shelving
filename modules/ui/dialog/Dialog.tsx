@@ -1,6 +1,6 @@
+import { XMarkIcon } from "@heroicons/react/24/solid";
 import { type MouseEvent, memo, type ReactElement, type ReactNode, Suspense, useEffect, useRef } from "react";
-import type { Callback } from "shelving";
-import { XMarkIcon } from "shelving/icon";
+import type { Callback } from "../../util/function.js";
 import type { ButtonVariants } from "../form/Button.js";
 import { getModuleClass } from "../util/css.js";
 import styles from "./Dialog.module.css";

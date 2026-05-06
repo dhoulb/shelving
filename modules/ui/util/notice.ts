@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
-import { type Arguments, getMessage, isAsync } from "shelving";
+import { isAsync } from "../../util/async.js";
+import { getMessage } from "../../util/error.js";
+import type { Arguments } from "../../util/function.js";
 import type { Status } from "../notice/Status.js";
 
 // Constants.

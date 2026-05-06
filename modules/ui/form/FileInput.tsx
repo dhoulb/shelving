@@ -1,5 +1,5 @@
 import type { ReactElement, SyntheticEvent } from "react";
-import type { FileTypes } from "shelving";
+import type { FileTypes } from "../../util/file.js";
 import { INPUT_CLASS, type ValueInputProps } from "./Input.js";
 
 export interface FileInputProps extends ValueInputProps<string | File> {

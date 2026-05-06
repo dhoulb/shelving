@@ -15,9 +15,6 @@
 		"noImplicitOverride": true,
 		"noUncheckedIndexedAccess": true,
 		"outDir": "./dist",
-		"paths": {
-			"shelving/icon": ["./modules/icon/index.ts"]
-		},
 		"rootDir": "./modules",
 		"skipLibCheck": true,
 		"target": "esnext",

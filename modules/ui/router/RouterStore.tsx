@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
-import { type PossibleURL, requireURL, URLStore } from "shelving";
+import { URLStore } from "../../store/URLStore.js";
+import { type PossibleURL, requireURL } from "../../util/url.js";
 import { matchRoute, type Routes } from "./Routes.js";
 
 /** Store the current router state. */

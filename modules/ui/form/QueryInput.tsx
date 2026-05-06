@@ -1,6 +1,11 @@
 import type { ReactElement, ReactNode } from "react";
-import { formatValue, type ImmutableArray, NONE, type PayloadFetchCallback, PayloadFetchStore, type Schema, SECOND } from "shelving";
-import { useInstance, useStore } from "shelving/react";
+import { useInstance } from "../../react/useInstance.js";
+import { useStore } from "../../react/useStore.js";
+import type { Schema } from "../../schema/Schema.js";
+import { type PayloadFetchCallback, PayloadFetchStore } from "../../store/PayloadFetchStore.js";
+import type { ImmutableArray } from "../../util/array.js";
+import { NONE, SECOND } from "../../util/constants.js";
+import { formatValue } from "../../util/format.js";
 import { ErrorNotice } from "../misc/Catcher.js";
 import { LOADING_NOTICE, Notice } from "../notice/Notice.js";
 import { ArrayRadioInputs } from "./ArrayRadioInputs.js";

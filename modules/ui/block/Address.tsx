@@ -1,5 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
-import { type AddressData, formatAddress, type Nullish } from "shelving";
+import { type AddressData, formatAddress } from "../../schema/AddressSchema.js";
+import type { Nullish } from "../../util/null.js";
 import { Small } from "../inline/Small.js";
 import { Strong } from "../inline/Strong.js";
 import styles from "./Address.module.css";

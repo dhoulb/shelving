@@ -1,4 +1,5 @@
-import { getDictionaryItems, type ImmutableArray, type ImmutableDictionary, isArray, isDictionary } from "shelving";
+import { type ImmutableArray, isArray } from "../../util/array.js";
+import { getDictionaryItems, type ImmutableDictionary, isDictionary } from "../../util/dictionary.js";
 
 /**
  * Set of classnames that can be joined.

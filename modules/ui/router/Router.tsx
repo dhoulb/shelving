@@ -1,6 +1,7 @@
 import { Fragment, type ReactElement, type ReactNode, useEffect } from "react";
-import { getURIParams } from "shelving";
-import { useInstance, useStore } from "shelving/react";
+import { useInstance } from "../../react/useInstance.js";
+import { useStore } from "../../react/useStore.js";
+import { getURIParams } from "../../util/uri.js";
 import { Meta } from "../misc/Meta.js";
 import { RouterContext, requireRouter } from "./RouterContext.js";
 import { RouterStore } from "./RouterStore.js";

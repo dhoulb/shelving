@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { ArrayStore, awaitDispose } from "shelving";
+import { ArrayStore } from "../../store/ArrayStore.js";
+import { awaitDispose } from "../../util/dispose.js";
 import { NoticeStore } from "./NoticeStore.js";
 import type { Status } from "./Status.js";
 

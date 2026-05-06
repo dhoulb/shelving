@@ -1,14 +1,9 @@
-import {
-	type AnyCaller,
-	type ImmutableArray,
-	type ImmutableDictionary,
-	type ImmutableURL,
-	type Nullish,
-	type PossibleURIParams,
-	type PossibleURL,
-	requireURL,
-	withURIParams,
-} from "shelving";
+import type { ImmutableArray } from "../../util/array.js";
+import type { ImmutableDictionary } from "../../util/dictionary.js";
+import type { AnyCaller } from "../../util/function.js";
+import type { Nullish } from "../../util/null.js";
+import { type PossibleURIParams, withURIParams } from "../../util/uri.js";
+import { type ImmutableURL, type PossibleURL, requireURL } from "../../util/url.js";
 
 /** Set of named meta `<meta />` tags in `{ rel: href }` format. */
 export type MetaTags = ImmutableDictionary<Nullish<string | boolean>>;

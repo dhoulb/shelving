@@ -1,3 +1,4 @@
+/// <reference types="react/canary" />
 import { type ReactElement, type ReactNode, ViewTransition } from "react";
 import { getClass } from "../util/css.js";
 import type { TransitionClasses } from "./util.js";

@@ -14,9 +14,9 @@ export interface AppProps extends PossibleMetaData {
  */
 export function App({ children, ...metadata }: AppProps): ReactElement {
 	useEffect(() => {
-		document.body.classList.add(APP_CSS.app);
+		document.body.classList.add(APP_CSS.app!);
 		return () => {
-			document.body.classList.remove(APP_CSS.app);
+			document.body.classList.remove(APP_CSS.app!);
 		};
 	}, []);
 	return <Meta {...metadata}>{children}</Meta>;

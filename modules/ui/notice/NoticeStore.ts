@@ -1,5 +1,9 @@
 import type { ReactNode } from "react";
-import { awaitDispose, DataStore, getRandomKey, SECOND, Timeout } from "shelving";
+import { DataStore } from "../../store/DataStore.js";
+import { SECOND } from "../../util/constants.js";
+import { awaitDispose } from "../../util/dispose.js";
+import { getRandomKey } from "../../util/random.js";
+import { Timeout } from "../../util/timeout.js";
 import type { NoticesStore } from "./NoticesStore.js";
 
 // Constants.

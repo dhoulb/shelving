@@ -1,6 +1,8 @@
 import { createContext } from "react";
-import type { AnyCaller, Data, Schema } from "shelving";
-import { useStore } from "shelving/react";
+import { useStore } from "../../react/useStore.js";
+import type { Schema } from "../../schema/Schema.js";
+import type { Data } from "../../util/data.js";
+import type { AnyCaller } from "../../util/function.js";
 import { requireContext } from "../util/context.js";
 import type { FormStore } from "./FormStore.js";
 import { isSchemaRequired, type SchemaInputProps } from "./SchemaInput.js";

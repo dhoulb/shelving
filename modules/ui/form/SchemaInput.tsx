@@ -1,28 +1,24 @@
 import type { ReactElement, ReactNode } from "react";
-import {
-	ArraySchema,
-	BooleanSchema,
-	ChoiceSchema,
-	type Data,
-	DataSchema,
-	DateSchema,
-	DictionarySchema,
-	getKeys,
-	getNumber,
-	getSource,
-	getString,
-	isArray,
-	isData,
-	isDictionary,
-	NullableSchema,
-	NumberSchema,
-	OptionalSchema,
-	requireSource,
-	type Schema,
-	StringSchema,
-	UnexpectedError,
-	type ValidatorType,
-} from "shelving";
+import { UnexpectedError } from "../../error/UnexpectedError.js";
+import { ArraySchema } from "../../schema/ArraySchema.js";
+import { BooleanSchema } from "../../schema/BooleanSchema.js";
+import { ChoiceSchema } from "../../schema/ChoiceSchema.js";
+import { DataSchema } from "../../schema/DataSchema.js";
+import { DateSchema } from "../../schema/DateSchema.js";
+import { DictionarySchema } from "../../schema/DictionarySchema.js";
+import { NullableSchema } from "../../schema/NullableSchema.js";
+import { NumberSchema } from "../../schema/NumberSchema.js";
+import { OptionalSchema } from "../../schema/OptionalSchema.js";
+import type { Schema } from "../../schema/Schema.js";
+import { StringSchema } from "../../schema/StringSchema.js";
+import { isArray } from "../../util/array.js";
+import { type Data, isData } from "../../util/data.js";
+import { isDictionary } from "../../util/dictionary.js";
+import { getNumber } from "../../util/number.js";
+import { getKeys } from "../../util/object.js";
+import { getSource, requireSource } from "../../util/source.js";
+import { getString } from "../../util/string.js";
+import type { ValidatorType } from "../../util/validate.js";
 import { ArrayInput } from "./ArrayInput.js";
 import { CheckboxInput } from "./CheckboxInput.js";
 import { ChoiceRadioInputs } from "./ChoiceRadioInputs.js";

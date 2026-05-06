@@ -1,6 +1,8 @@
 import { createContext, type ReactElement, type ReactNode, use } from "react";
-import { ArrayStore, getRandomKey } from "shelving";
-import { useInstance, useStore } from "shelving/react";
+import { useInstance } from "../../react/useInstance.js";
+import { useStore } from "../../react/useStore.js";
+import { ArrayStore } from "../../store/ArrayStore.js";
+import { getRandomKey } from "../../util/random.js";
 import { Dialog } from "./Dialog.js";
 
 /** How long before a hidden dialogs are removed from the DOM (allow time for animates to complete). */

@@ -36,7 +36,6 @@
 		"./firestore/client": "./firestore/client/index.js",
 		"./firestore/lite": "./firestore/lite/index.js",
 		"./firestore/server": "./firestore/server/index.js",
-		"./icon": "./icon/index.js",
 		"./iterate": "./iterate/index.js",
 		"./markup": "./markup/index.js",
 		"./react": "./react/index.js",

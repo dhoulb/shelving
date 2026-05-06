@@ -1,5 +1,6 @@
 import { type RefObject, useEffect, useRef } from "react";
-import type { Callback, Nullish } from "shelving";
+import type { Callback } from "../../util/function.js";
+import type { Nullish } from "../../util/null.js";
 
 /**
  * Fires a callback when an element enters the visible scrolling area on the client.

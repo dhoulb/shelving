@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { useStore } from "shelving/react";
+import { useStore } from "../../react/useStore.js";
 import { Notice, type NoticeProps } from "../notice/Notice.js";
 import { requireForm } from "./FormContext.js";
 

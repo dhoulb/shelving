@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { notNullish } from "shelving";
+import { notNullish } from "../../util/null.js";
 import { ELEMENTS_LABEL_INPUT_CLASS, PLACEHOLDER_ELEMENTS_LABEL_INPUT_CLASS, RADIO_CLASS, type ValueInputProps } from "./Input.js";
 
 export interface RadioInputProps extends ValueInputProps<boolean> {

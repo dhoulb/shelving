@@ -1,6 +1,6 @@
+import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import type { ReactElement, ReactNode } from "react";
-import { ArrowRightIcon } from "shelving/icon";
-import { useStore } from "shelving/react";
+import { useStore } from "../../react/useStore.js";
 import { Loading } from "../misc/Loading.js";
 import { getStatusClass } from "../notice/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";

@@ -1,5 +1,7 @@
 import { type Context, use } from "react";
-import { type AnyCaller, type Nullish, notNullish, RequiredError } from "shelving";
+import { RequiredError } from "../../error/RequiredError.js";
+import type { AnyCaller } from "../../util/function.js";
+import { type Nullish, notNullish } from "../../util/null.js";
 
 /** Use the value of a React `Context`, or throw `RequiredError` if the context was unset. */
 export function requireContext<T>(context: Context<T | null>, caller?: AnyCaller): T;

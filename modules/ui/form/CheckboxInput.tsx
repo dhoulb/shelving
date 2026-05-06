@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { notNullish } from "shelving";
+import { notNullish } from "../../util/null.js";
 import { CHECKBOX_CLASS, ELEMENTS_LABEL_INPUT_CLASS, type ValueInputProps } from "./Input.js";
 
 export interface CheckboxProps extends ValueInputProps<boolean> {

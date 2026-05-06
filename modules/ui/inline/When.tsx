@@ -1,14 +1,8 @@
 import type { ReactElement, ReactNode } from "react";
-import {
-	type AnyCaller,
-	formatAgo,
-	formatDateTime,
-	formatUntil,
-	formatWhen,
-	getSecondsAgo,
-	type PossibleDate,
-	requireDate,
-} from "shelving";
+import { type PossibleDate, requireDate } from "../../util/date.js";
+import { formatAgo, formatUntil, formatWhen, getSecondsAgo } from "../../util/duration.js";
+import { formatDateTime } from "../../util/format.js";
+import type { AnyCaller } from "../../util/function.js";
 
 const _OPTIONS: Intl.NumberFormatOptions = { unitDisplay: "narrow" };
 

@@ -1,3 +1,4 @@
+/// <reference types="react/canary" />
 import { addTransitionType } from "react";
 
 /**

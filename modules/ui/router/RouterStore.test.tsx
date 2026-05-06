@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement } from "react";
-import type { AbsolutePath } from "shelving";
+import type { AbsolutePath } from "../../util/path.js";
 import { matchRoute, type RouteProps, type Routes } from "../index.js";
 
 function PropsPage(_props: RouteProps): ReactElement {

@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
-import { type ChoiceOptions, getProps } from "shelving";
+import type { ChoiceOptions } from "../../schema/ChoiceSchema.js";
+import { getProps } from "../../util/object.js";
 import { Elements } from "../block/Elements.js";
 import type { ValueInputProps } from "./Input.js";
 import { RadioInput } from "./RadioInput.js";
