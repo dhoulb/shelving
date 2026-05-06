@@ -34,6 +34,15 @@ describe("debugResponse()", () => {
 	test("falls back to standard status text", async () => {
 		expect(await debugFullResponse(new Response("ok", { status: 200, statusText: "OK" }))).toBe("200 OK\n\nok");
 	});
+
+	test("truncates oversized bodies", async () => {
+		const big = "x".repeat(64 * 1024 + 100);
+		const response = new Response(big, { status: 200, statusText: "OK" });
+		const result = await debugFullResponse(response);
+		expect(result).toContain("[truncated at 65536 bytes]");
+		expect(result.length).toBeLessThan(big.length);
+		expect(await response.text()).toBe(big);
+	});
 });
 
 describe("debug()", () => {

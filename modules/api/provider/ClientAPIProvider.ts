@@ -38,7 +38,11 @@ export interface ClientAPIProviderOptions {
 	 */
 	readonly options?: Omit<RequestOptions, "signal">;
 
-	/** Timeout in milliseconds, or `undefined` for no timeout. */
+	/**
+	 * Timeout in milliseconds before the request is aborted with `TimeoutError`.
+	 * - Defaults to `20_000` (20 seconds) — chosen to fire before common platform wall-clock caps (Cloudflare Workers ~30s, Vercel/AWS API Gateway ~29s) so the abort propagates as a clean rejection instead of an opaque runtime termination.
+	 * - Pass `0` to disable the timeout (e.g. for streaming or long-poll endpoints). Raise it for specifically slow endpoints.
+	 */
 	readonly timeout?: number | undefined;
 }
 
@@ -57,10 +61,10 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	/** Default options used for HTTP requests created with `this.getRequest()` and `this.fetch()` */
 	readonly options: RequestOptions;
 
-	/** Timeout in milliseconds, or `undefined` for no timeout. */
-	readonly timeout: number | undefined;
+	/** Timeout in milliseconds before the request is aborted, or `0` for no timeout. */
+	readonly timeout: number;
 
-	constructor({ url, options = {}, timeout }: ClientAPIProviderOptions) {
+	constructor({ url, options = {}, timeout = 20_000 }: ClientAPIProviderOptions) {
 		super();
 		this.url = requireBaseURL(url, ClientAPIProvider);
 		this.options = options;

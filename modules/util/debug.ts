@@ -73,8 +73,33 @@ async function _debugFullMessage(head: string, message: Request | Response): Pro
 	return `${head}${headers && `\n${headers}`}${body && `\n\n${body}`}`;
 }
 
+/** Maximum bytes read from a Request/Response body when debugging. Caps memory and prevents hangs on streaming bodies. */
+const _DEBUG_BODY_LIMIT = 64 * 1024;
+
 async function _debugMessageBody(message: Request | Response): Promise<string> {
-	return message.bodyUsed ? "[body used]" : await message.clone().text();
+	if (message.bodyUsed) return "[body used]";
+	const body = message.clone().body;
+	if (!body) return "";
+	const reader = body.getReader();
+	const decoder = new TextDecoder();
+	let bytes = 0;
+	let text = "";
+	try {
+		while (true) {
+			const { done, value } = await reader.read();
+			if (done) return text + decoder.decode();
+			bytes += value.byteLength;
+			if (bytes > _DEBUG_BODY_LIMIT) {
+				const keep = value.byteLength - (bytes - _DEBUG_BODY_LIMIT);
+				text += decoder.decode(value.subarray(0, keep), { stream: true });
+				await reader.cancel();
+				return `${text}${decoder.decode()}\n[truncated at ${_DEBUG_BODY_LIMIT} bytes]`;
+			}
+			text += decoder.decode(value, { stream: true });
+		}
+	} catch (reason) {
+		return `${text}\n[read failed: ${(reason as Error)?.message ?? reason}]`;
+	}
 }
 
 /** Debug a `Request` as a string. */
