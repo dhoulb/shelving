@@ -70,9 +70,6 @@
 					},
 					"suspicious": {
 						"noDuplicateProperties": "off"
-					},
-					"performance": {
-						"noNamespaceImport": "off"
 					}
 				}
 			}
