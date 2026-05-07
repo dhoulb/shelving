@@ -22,18 +22,11 @@ The pipeline has two halves.
 - `components/Storybook.tsx` is the UI library showcase: a single page exhibiting every component in `shelving/ui` that renders meaningfully without client-side JS.
 - `index.tsx` ties it together with `writeDocs()`.
 
-## CSS modules at SSR time
+## Build pipeline
 
-`util/cssModules.ts` is a Bun plugin that lets `import styles from "./Foo.module.css"` work during a script run. It:
+`scripts/docs.tsx` is a thin orchestrator. It runs `Bun.build()` over `scripts/docs-render.tsx`, which is where the actual indexing-and-rendering work happens. Bun's bundler natively resolves `*.module.css` imports — it scopes class names per file and emits a single CSS asset alongside the bundled JS. The orchestrator then runs the bundled entry (writing the HTML pages) and copies the bundled CSS asset to `.build/docs/style.css`.
 
-- Reads the CSS file and finds every `.local-name` selector.
-- Hashes the file path into a short suffix and rewrites every selector to `.local-name__hash`.
-- Stashes the transformed CSS in a registry.
-- Returns a JS module exporting `{ "local-name": "local-name__hash", … }` so `styles.foo` resolves to a real class name.
-
-After every page is rendered, `writeDocs()` writes a single concatenated `style.css` containing every transformed module touched during the run.
-
-The plugin must be active before any `*.module.css` import is resolved, which is why the entry script is invoked with `bun --preload ./scripts/docs-preload.ts ./scripts/docs.tsx` — preload runs before any other module is loaded.
+The split lets us keep the renderer as plain TSX with `import styles from "./X.module.css"` everywhere — Bun handles the rest, and we don't reimplement CSS modules.
 
 ## Usage
 

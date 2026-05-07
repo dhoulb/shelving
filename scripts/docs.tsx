@@ -1,29 +1,36 @@
-import { globSync } from "node:fs";
+import { copyFile, mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
-import { Storybook } from "../modules/docs/components/Storybook.js";
-import { writeDocs } from "../modules/docs/index.js";
-import { getFileNode } from "../modules/docs/util/file.js";
-import { nestPathNodes } from "../modules/docs/util/nodes.js";
 
-// The CSS-modules plugin is registered via the `--preload` flag (see `bunfig.toml`).
+// Build orchestrator. Bundles `docs-render.tsx` with Bun.build (which handles CSS modules
+// natively), then runs the bundled entry (it writes HTML pages), then copies the bundled
+// CSS asset to `style.css` alongside the HTML.
 
+const BIN_PATH = join(process.cwd(), ".build/docs-bin");
 const OUTPUT_PATH = join(process.cwd(), ".build/docs");
+const STYLESHEET_NAME = "style.css";
 
-const paths = globSync("modules/**/*.{ts,tsx,md}", {
-	exclude: ["modules/test/**/*", "**/*.test.ts", "**/*.test.tsx"],
+await rm(BIN_PATH, { recursive: true, force: true });
+await rm(OUTPUT_PATH, { recursive: true, force: true });
+await mkdir(OUTPUT_PATH, { recursive: true });
+
+const result = await Bun.build({
+	entrypoints: ["./scripts/docs-render.tsx"],
+	outdir: BIN_PATH,
+	target: "bun",
 });
 
-// Strip the leading `modules/` so URLs match module-name root paths (e.g. `ui/block/Card`).
-const files = await Promise.all(paths.map(async path => ({ ...(await getFileNode(path)), path: path.replace(/^modules\//, "") })));
-const dirs = nestPathNodes(files);
+if (!result.success) {
+	for (const log of result.logs) console.error(log);
+	process.exit(1);
+}
 
-await writeDocs(dirs, OUTPUT_PATH, [
-	{
-		path: "storybook",
-		title: "UI library",
-		lede: "Live examples of every component in shelving/ui.",
-		body: <Storybook />,
-	},
-]);
+const entry = result.outputs.find(o => o.kind === "entry-point");
+const cssAsset = result.outputs.find(o => o.path.endsWith(".css"));
+if (!entry) throw new Error("Bun.build did not produce an entry-point");
+
+// Run the bundled render entry — it writes HTML pages to OUTPUT_PATH.
+await import(entry.path);
+
+if (cssAsset) await copyFile(cssAsset.path, join(OUTPUT_PATH, STYLESHEET_NAME));
 
 process.stdout.write(`Docs written to ${OUTPUT_PATH}\n`);
