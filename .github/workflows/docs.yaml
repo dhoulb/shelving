@@ -1,11 +1,11 @@
 # Build and publish the documentation site.
 #
-# - On a push to `main`, the site is published to the root of the `gh-pages` branch
+# - On a push to `main`, the site is published to the root of the `docs` branch
 #   so it serves at `https://<owner>.github.io/<repo>/`.
 # - On a pull request, the site is published under `pr-<number>/` on the same branch
 #   so a preview is available at `https://<owner>.github.io/<repo>/pr-<number>/`. A
 #   comment is added (or updated) on the PR with the preview URL.
-# - When a pull request is closed, its preview directory is removed from `gh-pages`.
+# - When a pull request is closed, its preview directory is removed from `docs`.
 name: Docs
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./.build/docs
-          publish_branch: gh-pages
+          publish_branch: docs
           keep_files: true
           exclude_assets: pr-*
       - name: deploy (preview)
@@ -49,7 +49,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./.build/docs
-          publish_branch: gh-pages
+          publish_branch: docs
           destination_dir: pr-${{ github.event.pull_request.number }}
           keep_files: true
       - name: comment preview URL
@@ -73,10 +73,10 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: checkout gh-pages
+      - name: checkout docs branch
         uses: actions/checkout@v6
         with:
-          ref: gh-pages
+          ref: docs
           fetch-depth: 0
       - name: remove preview directory
         env:
