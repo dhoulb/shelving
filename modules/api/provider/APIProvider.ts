@@ -3,7 +3,7 @@ import type { RequestOptions } from "../../util/http.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 
 /** Provider for API endpoints rooted at a common base URL. */
-export abstract class APIProvider<P = unknown, R = unknown> {
+export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisposable {
 	/** The base URL for this API. */
 	abstract readonly url: URL;
 
@@ -62,5 +62,10 @@ export abstract class APIProvider<P = unknown, R = unknown> {
 		const request = this.getRequest(endpoint, payload, options, caller);
 		const response = await this.fetch(request);
 		return this.parseResponse(endpoint, response, caller);
+	}
+
+	// Implement `AsyncDisposable`
+	async [Symbol.asyncDispose]() {
+		// Empty by default.
 	}
 }

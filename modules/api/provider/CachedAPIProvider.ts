@@ -1,4 +1,5 @@
 import { AVOID_REFRESH } from "../../store/FetchStore.js";
+import { awaitDispose } from "../../util/dispose.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestOptions } from "../../util/http.js";
 import { APICache } from "../cache/APICache.js";
@@ -16,7 +17,7 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
  * - Note: This is not used for `refresh()` calls — when you call `refresh()` you likely mean "do it now".
  * - When we are using `call()` on a cache, the entire point of the cache is to "cache", so the default isn't `0` like it is for `refresh()`
  */
-export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
+export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements AsyncDisposable {
 	readonly maxAge: number | undefined;
 	private readonly _cache: APICache<P, R>;
 
@@ -50,5 +51,13 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 
 	refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {
 		this._cache.refreshAll(endpoint, this.maxAge);
+	}
+
+	// Implement `AsyncDisposable`
+	override async [Symbol.asyncDispose]() {
+		await awaitDispose(
+			this._cache, // Dispose the cache.
+			super[Symbol.asyncDispose](), // Chain.
+		);
 	}
 }

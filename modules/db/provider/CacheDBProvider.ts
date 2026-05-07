@@ -1,4 +1,5 @@
 import type { Data } from "../../util/data.js";
+import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
 import type { Sourceable } from "../../util/source.js";
@@ -85,5 +86,14 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	async deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
 		await this.source.deleteQuery(collection, query);
 		this.memory.getTable(collection).deleteQuery(query);
+	}
+
+	// Implement `AsyncDisposable`
+	override async [Symbol.asyncDispose]() {
+		await awaitDispose(
+			this.source, // Dispose the source API provider.
+			this.memory, // Dispose the source API provider.
+			super[Symbol.asyncDispose](), // Chain.
+		);
 	}
 }

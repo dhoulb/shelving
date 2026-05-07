@@ -1,3 +1,4 @@
+import { awaitDispose } from "../../util/dispose.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestOptions } from "../../util/http.js";
 import type { Sourceable } from "../../util/source.js";
@@ -43,5 +44,12 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 
 	override fetch(request: Request): Promise<Response> {
 		return this.source.fetch(request);
+	}
+
+	// Implement `AsyncDisposable`
+	override async [Symbol.asyncDispose]() {
+		await awaitDispose(
+			this.source, // Dispose the source API provider.
+		);
 	}
 }

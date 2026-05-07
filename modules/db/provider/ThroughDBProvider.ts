@@ -1,4 +1,5 @@
 import type { Data } from "../../util/data.js";
+import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
 import type { Sourceable } from "../../util/source.js";
@@ -76,5 +77,12 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 
 	requireFirst<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<Item<II, TT>> {
 		return this.source.requireFirst(collection, query);
+	}
+
+	// Implement `AsyncDisposable`
+	async [Symbol.asyncDispose]() {
+		await awaitDispose(
+			this.source, // Dispose the source API provider.
+		);
 	}
 }

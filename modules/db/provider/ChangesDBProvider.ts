@@ -16,7 +16,10 @@ export type DBChange<I extends Identifier> = {
 	readonly updates?: unknown;
 };
 
-/** Asynchronous provider that keeps a log of any written changes to its `.changes` property. */
+/**
+ * Database provider that keeps a log of any written changes to its `.changes` property.
+ * - This is useful if you want to hook into a database to build out audit logging functionality.
+ */
 export class ChangesDBProvider<I extends Identifier, T extends Data> extends ThroughDBProvider<I, T> {
 	get changes(): ReadonlyArray<DBChange<I>> {
 		return this._changes;

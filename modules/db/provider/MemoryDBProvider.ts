@@ -17,7 +17,7 @@ import { DBProvider } from "./DBProvider.js";
 /**
  * Fast in-memory store for data.
  * - Extremely fast (ideal for caching!), but does not persist data after the browser window is closed.
- * - `get()` etc return the exact same instance of an object that's passed into `set()`
+ * - `getItem()` etc return the exact same instance of an object that's passed into `setItem()`
  */
 export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data = Data> extends DBProvider<I, T> {
 	/** List of tables in `{ name: MemoryTable }` format. */

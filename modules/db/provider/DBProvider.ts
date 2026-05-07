@@ -1,13 +1,14 @@
 import { RequiredError } from "../../error/RequiredError.js";
 import { countArray, getFirst } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
+import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
 
 /** Provider with a fully asynchronous interface for database access. */
-export abstract class DBProvider<I extends Identifier = Identifier, T extends Data = Data> {
+export abstract class DBProvider<I extends Identifier = Identifier, T extends Data = Data> implements AsyncDisposable {
 	abstract getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>>;
 
 	async requireItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<Item<II, TT>> {
@@ -84,5 +85,12 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 				caller: this.requireFirst,
 			});
 		return first;
+	}
+
+	// Implement `AsyncDisposable`
+	async [Symbol.asyncDispose]() {
+		await awaitDispose(
+			// Empty by default.
+		);
 	}
 }
