@@ -1,0 +1,66 @@
+@layer base {
+	:root {
+		--horizontal-transition-size: 25vw;
+		--horizontal-transition-duration: var(--duration-normal);
+	}
+}
+
+@keyframes slideInFromLeft {
+	from {
+		opacity: 0;
+		transform: translateX(calc(0px - var(--horizontal-transition-size)));
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes slideInFromRight {
+	from {
+		opacity: 0;
+		transform: translateX(var(--horizontal-transition-size));
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes slideOutToLeft {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(calc(0px - var(--horizontal-transition-size)));
+	}
+}
+
+@keyframes slideOutToRight {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(var(--horizontal-transition-size));
+	}
+}
+
+::view-transition-new(.slideRight) {
+	animation: slideInFromRight var(--horizontal-transition-duration) ease-in-out both;
+}
+
+::view-transition-old(.slideRight) {
+	animation: slideOutToLeft var(--horizontal-transition-duration) ease-in-out both;
+}
+
+::view-transition-new(.slideLeft) {
+	animation: slideInFromLeft var(--horizontal-transition-duration) ease-in-out both;
+}
+
+::view-transition-old(.slideLeft) {
+	animation: slideOutToRight var(--horizontal-transition-duration) ease-in-out both;
+}

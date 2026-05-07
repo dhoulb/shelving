@@ -1,0 +1,79 @@
+.primary {
+	--color-text: var(--primary-text);
+	--color-contrast: var(--primary-contrast);
+	--color-link: var(--primary-text);
+	--color-quiet: var(--primary-text);
+	--color-surface: var(--primary-surface);
+}
+
+.secondary {
+	--color-text: var(--secondary-text);
+	--color-contrast: var(--secondary-contrast);
+	--color-link: var(--secondary-text);
+	--color-quiet: var(--secondary-text);
+	--color-surface: var(--secondary-surface);
+}
+
+.tertiary {
+	--color-text: var(--tertiary-text);
+	--color-contrast: var(--tertiary-contrast);
+	--color-link: var(--tertiary-text);
+	--color-quiet: var(--tertiary-text);
+	--color-surface: var(--tertiary-surface);
+}
+
+.quiet {
+	--color-text: var(--quiet-text);
+	--color-contrast: var(--quiet-contrast);
+	--color-link: var(--quiet-text);
+	--color-quiet: var(--quiet-text);
+	--color-surface: var(--quiet-surface);
+}
+
+.info {
+	--color-text: var(--info-text);
+	--color-contrast: var(--info-contrast);
+	--color-link: var(--info-text);
+	--color-quiet: var(--info-text);
+	--color-surface: var(--info-surface);
+}
+
+.success {
+	--color-text: var(--success-text);
+	--color-contrast: var(--success-contrast);
+	--color-link: var(--success-text);
+	--color-quiet: var(--success-text);
+	--color-surface: var(--success-surface);
+}
+
+.warning {
+	--color-text: var(--warning-text);
+	--color-contrast: var(--warning-contrast);
+	--color-link: var(--warning-text);
+	--color-quiet: var(--warning-text);
+	--color-surface: var(--warning-surface);
+}
+
+.highlight {
+	--color-text: var(--highlight-text);
+	--color-contrast: var(--highlight-contrast);
+	--color-link: var(--highlight-text);
+	--color-quiet: var(--highlight-text);
+	--color-surface: var(--highlight-surface);
+}
+
+.danger {
+	--color-text: var(--danger-text);
+	--color-contrast: var(--danger-contrast);
+	--color-link: var(--danger-text);
+	--color-quiet: var(--danger-text);
+	--color-surface: var(--danger-surface);
+}
+
+.error {
+	--color-text: var(--error-text);
+	--color-contrast: var(--error-contrast);
+	--color-link: var(--error-text);
+	--color-quiet: var(--error-text);
+	--color-surface: var(--error-surface);
+}

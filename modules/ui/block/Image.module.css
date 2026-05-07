@@ -1,0 +1,20 @@
+.image,
+.prose img {
+	/* Box */
+	display: block;
+	width: 100%;
+	margin-inline: 0;
+	margin-block: var(--image-spacing, var(--spacing-block));
+
+	/* Style */
+	object-position: center center;
+	object-fit: cover; /* Don't distort when resized. */
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+}

@@ -1,0 +1,9 @@
+.small,
+.prose small {
+	/* Style */
+	color: var(--color-quiet);
+
+	/* Typography */
+	font-weight: var(--weight-normal);
+	font-size: inherit;
+}

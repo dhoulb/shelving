@@ -1,0 +1,15 @@
+.mark,
+.prose mark {
+	/* Box */
+	display: inline-block;
+	padding-inline: 0.375em;
+
+	/* Style */
+	border-radius: var(--radius-inline);
+	/* vertical-align: baseline; */
+	color: var(--highlight-contrast);
+	background-color: var(--highlight-text);
+
+	/* Typography */
+	font-weight: var(--weight-strong);
+}

@@ -1,0 +1,25 @@
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+::view-transition-new(.fade) {
+	animation: fadeIn var(--fade-transition-duration, var(--duration-fast)) ease-in-out both;
+}
+
+::view-transition-old(.fade) {
+	animation: fadeOut var(--fade-transition-duration, var(--duration-fast)) ease-in-out both;
+}

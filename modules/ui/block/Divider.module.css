@@ -1,0 +1,19 @@
+.divider,
+.prose hr {
+	/* Box */
+	display: block;
+	border: 0;
+	margin-inline: 0;
+	margin-block: var(--divider-spacing, var(--spacing-block));
+
+	/* Style */
+	border-block-start: var(--divider-border, var(--border-block)) solid var(--divider-color, var(--color-border));
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+}

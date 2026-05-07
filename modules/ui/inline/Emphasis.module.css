@@ -1,0 +1,5 @@
+.emphasis,
+.prose :is(em, i) {
+	/* Style */
+	font-style: italic;
+}

@@ -1,0 +1,8 @@
+.message {
+	/* Typography */
+	text-align: var(--message-align, center);
+	font-weight: var(--message-weight, var(--weight-strong));
+
+	/* Style */
+	color: var(--message-color, var(--color-text));
+}

@@ -11,16 +11,18 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.14",
 		"@google-cloud/firestore": "^8.5.0",
+		"@heroicons/react": "^2.2.0",
 		"@types/bun": "^1.3.13",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"@typescript/native-preview": "^7.0.0-dev.20260502.1",
 		"firebase": "^12.12.1",
-		"react": "^19.2.5",
-		"react-dom": "^19.2.5"
+		"react": "canary",
+		"react-dom": "canary"
 	},
 	"peerDependencies": {
 		"@google-cloud/firestore": ">=7.0.0",
+		"@heroicons/react": ">=2.0.0",
 		"firebase": ">=11.0.0",
 		"react": ">=19.0.0"
 	},
@@ -41,6 +43,7 @@
 		"./sequence": "./sequence/index.js",
 		"./store": "./store/index.js",
 		"./test": "./test/index.js",
+		"./ui": "./ui/index.js",
 		"./util": "./util/index.js"
 	},
 	"description": "Toolkit for using data in JavaScript.",
@@ -68,12 +71,14 @@
 		"fix:0:lint": "biome check --write .",
 		"build": "bun run --sequential build:*",
 		"build:0:setup": "rm -rf ./dist && mkdir -p ./dist",
-		"build:1:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore",
+		"build:1:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore && cp -r modules/ui dist/ui",
 		"build:2:emit": "tsgo",
 		"build:3:syntax": "bun run ./dist/index.js",
 		"build:4:unit": "bun test ./dist/**/*.test.js --concurrent --only-failures --bail"
 	},
-	"sideEffects": false,
+	"sideEffects": [
+		"*.css"
+	],
 	"type": "module",
 	"types": "./index.d.ts"
 }

@@ -1,0 +1,19 @@
+.link,
+.prose a {
+	/* Style */
+	color: var(--link-weight, var(--color-link));
+	text-decoration: none;
+	cursor: inherit;
+
+	/* Typography */
+	font-weight: var(--link-weight, var(--weight-strong));
+
+	&:any-link {
+		cursor: pointer;
+		text-decoration: underline var(--border-block);
+
+		&:hover {
+			text-decoration: none;
+		}
+	}
+}

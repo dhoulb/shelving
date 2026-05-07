@@ -13,6 +13,7 @@ export * from "./error/index.js";
 export * from "./markup/index.js";
 // export * from "./react/index.js"; // Not exported.
 export * from "./schema/index.js";
+// export * from "./ui/index.js"; // Not exported — shelving/ui requires a bundler (CSS Modules, JSX) and is consumed as source.
 export * from "./sequence/index.js";
 export * from "./store/index.js";
 // export * from "./test/index.js"; // Not exported.
