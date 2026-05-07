@@ -1,0 +1,25 @@
+.tag {
+	/* Box */
+	display: inline-block;
+	padding-inline: 0.5em;
+	padding-block: 0.125em;
+
+	/* Style */
+	border-radius: 999px;
+	color: var(--color-contrast, var(--color-text));
+	background-color: var(--color-text, currentColor);
+
+	/* Typography */
+	font-family: var(--font-body);
+	font-size: var(--size-small);
+	font-weight: var(--weight-strong);
+	line-height: var(--leading-tight);
+	white-space: nowrap;
+	vertical-align: baseline;
+}
+
+.outline {
+	color: var(--color-text);
+	background-color: transparent;
+	box-shadow: inset 0 0 0 1px currentColor;
+}

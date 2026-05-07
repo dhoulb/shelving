@@ -8,4 +8,5 @@ export * from "./Small.js";
 export * from "./Strong.js";
 export * from "./Subscript.js";
 export * from "./Superscript.js";
+export * from "./Tag.js";
 export * from "./When.js";
