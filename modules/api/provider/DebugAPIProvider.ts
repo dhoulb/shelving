@@ -1,10 +1,11 @@
-import { debugFullRequest, debugFullResponse } from "../../util/debug.js";
+import { ANSI_FAILURE, ANSI_LEFT, ANSI_RIGHT, ANSI_SUCCESS, ANSI_WAITING } from "../../util/ansi.js";
+import { debugFullRequest, debugFullResponse, debugRequest } from "../../util/debug.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestOptions } from "../../util/http.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
-/** Provider that logs operations to the console. */
+/** Provider that logs everything to the console in some detail to help diagnose issues in development. */
 export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	override getRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -12,27 +13,24 @@ export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 		options?: RequestOptions,
 		caller: AnyCaller = this.getRequest,
 	): Request {
-		const url = this.url.toString();
-		const ep = endpoint.toString();
 		try {
 			const request = super.getRequest(endpoint, payload, options, caller);
-			console.debug("✔ REQUEST", url, ep, payload);
+			console.debug(`${ANSI_WAITING} ${endpoint.toString()}`, payload);
 			return request;
 		} catch (reason) {
-			console.error("✘ REQUEST", url, ep, payload, reason);
+			console.error(`${ANSI_FAILURE} ${endpoint.toString()}`, payload, reason);
 			throw reason;
 		}
 	}
 
 	override async fetch(request: Request): Promise<Response> {
-		const url = this.url.toString();
 		try {
-			console.debug("→ FETCH", url, await debugFullRequest(request));
+			console.debug(`${ANSI_RIGHT} ${await debugFullRequest(request)}`);
 			const response = await super.fetch(request);
-			console.debug("← FETCH", url, await debugFullResponse(response));
+			console.debug(`${ANSI_LEFT} ${debugRequest(request)}\n\n${await debugFullResponse(response)}`);
 			return response;
 		} catch (reason) {
-			console.error("✘ FETCH", url, reason);
+			console.error(`${ANSI_FAILURE} ${debugRequest(request)}`, reason);
 			throw reason;
 		}
 	}
@@ -42,14 +40,12 @@ export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 		response: Response,
 		caller: AnyCaller = this.parseResponse,
 	): Promise<RR> {
-		const url = this.url.toString();
-		const ep = endpoint.toString();
 		try {
 			const result = await super.parseResponse(endpoint, response, caller);
-			console.debug("✔ RESPONSE", url, ep, result);
+			console.debug(`${ANSI_SUCCESS} ${endpoint.toString()}`, result);
 			return result;
 		} catch (reason) {
-			console.error("✘ RESPONSE", url, ep, reason);
+			console.error(`${ANSI_FAILURE} ${endpoint.toString()}`, reason);
 			throw reason;
 		}
 	}

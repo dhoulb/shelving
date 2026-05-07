@@ -2,9 +2,9 @@ import { awaitAbort, awaitRace, getDelay } from "../util/async.js";
 import type { NONE } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { FetchStore } from "./FetchStore.js";
-import { Store } from "./Store.js";
+import { type AsyncStoreInput, Store } from "./Store.js";
 
-export type PayloadFetchCallback<P, R> = (payload: P, signal: AbortSignal) => R | PromiseLike<R>;
+export type PayloadFetchCallback<P, R> = (payload: P, signal: AbortSignal) => AsyncStoreInput<R>;
 
 /**
  * Store that fetches its values from a remote source by sending a payload to them.
