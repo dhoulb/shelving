@@ -1,0 +1,21 @@
+.body {
+	margin: 0;
+}
+
+.header {
+	margin-bottom: var(--spacing-block);
+	padding-bottom: var(--spacing-block);
+	border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+	margin: 0;
+	font-size: var(--size-large);
+	font-weight: var(--weight-strong);
+	color: var(--color-text);
+}
+
+.lede {
+	margin-top: var(--spacing-element);
+	color: var(--color-quiet);
+}
