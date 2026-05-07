@@ -1,0 +1,32 @@
+.card {
+	/* Box */
+	position: relative;
+	margin-inline: 0;
+	margin-block: var(--card-spacing, var(--spacing-block));
+
+	/* Style */
+	background: var(--card-color-bg, var(--color-surface));
+	border: var(--card-border, var(--border-block)) solid var(--card-color-border, var(--color-border));
+	padding: var(--card-padding, var(--spacing-block));
+	color: var(--card-color-text, var(--color-text));
+	border-radius: var(--card-radius, var(--radius-block));
+	box-shadow: var(--card-shadow, none);
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+
+	/* Variants */
+	&.narrow {
+		margin-inline: auto;
+		max-width: var(--section-width-narrow, var(--width-narrow));
+	}
+	&.wide {
+		margin-inline: auto;
+		max-width: var(--section-width-wide, var(--width-wide));
+	}
+}

@@ -1,0 +1,25 @@
+.wrap {
+	position: relative;
+
+	/* Children */
+	&& > * {
+		margin: 0;
+	}
+}
+
+.panel {
+	display: flow-root; /* Clearfix equivalent */
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: calc(100% + var(--popover-offset-y, var(--spacing-inline)));
+	z-index: 1000;
+	max-height: var(--popover-max-height, 30vh);
+	overflow-y: auto;
+	overscroll-behavior: none;
+	border-radius: var(--popover-radius, var(--radius-element));
+	border: var(--popover-border, var(--border-element)) solid var(--popover-color-border, var(--color-border));
+	background: var(--popover-color-bg, var(--color-bg));
+	padding: var(--popover-padding, var(--spacing-element));
+	box-shadow: var(--popover-shadow, var(--shadow-element));
+}

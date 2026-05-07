@@ -1,0 +1,19 @@
+.spinner {
+	inline-size: var(--loading-size, var(--size-icon));
+	block-size: var(--loading-size, var(--size-icon));
+	flex: none;
+}
+
+.track {
+	fill: none;
+	stroke: var(--loading-color, var(--color-surface));
+	stroke-width: var(--loading-stroke-width, 2.5);
+}
+
+.indicator {
+	fill: none;
+	stroke: var(--loading-fill, var(--color-quiet));
+	stroke-width: var(--loading-stroke-width, 2.5);
+	stroke-linecap: round;
+	stroke-dasharray: var(--loading-indicator-length, 28 100);
+}

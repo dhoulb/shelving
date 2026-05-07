@@ -1,0 +1,28 @@
+.section {
+	/* Box */
+	position: relative;
+	display: block;
+	margin-inline: 0;
+	margin-block: var(--section-spacing, var(--spacing-block));
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+
+	/* Variants */
+	&.narrow {
+		margin-inline: auto;
+		max-width: var(--section-width-narrow, var(--width-narrow));
+	}
+	&.wide {
+		margin-inline: auto;
+		max-width: var(--section-width-wide, var(--width-wide));
+	}
+	&.spacious {
+		margin-block: var(--paragraph-spacious-spacing, var(--spacing-spacious));
+	}
+}

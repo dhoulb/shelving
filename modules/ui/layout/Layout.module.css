@@ -1,0 +1,64 @@
+/*
+ * Lock the document and let .layout own the page scroll.
+ *
+ * `.layout` says "this element is the main layout container, not <body>".
+ * When .layout appears anywhere in the page:
+ * - <html> and <body> are pinned to the viewport (no rubber-band on iOS).
+ * - <body> stacks its children vertically (flex column).
+ * - The .layout element grows to fill the body (flex: 1) and is the only scroll container.
+ */
+html:has(.layout) {
+	margin: 0;
+	padding: 0;
+	height: 100vh;
+	height: 100dvh; /** Make the height dynamically expand/contract as the address bar shows/hides on iOS. */
+	width: 100vw;
+	width: 100dvw;
+	overflow: hidden;
+	overflow-wrap: anywhere;
+	overscroll-behavior: none;
+}
+
+body:has(.layout) {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+
+	/* Lock body to prevent iOS Safari triggering viewport scrolling on focus change. */
+	position: fixed;
+	inset: 0;
+
+	/* Apply baseline body typography (font, colors, default spacing) to page body in a layout. */
+	font-family: var(--font-body);
+	font-weight: var(--weight-normal);
+	font-size: var(--size-normal);
+	line-height: var(--leading-normal);
+	color: var(--color-text);
+	background: var(--layout-body-bg, var(--color-bg));
+}
+
+.layout {
+	/* Low specificity defaults */
+	:where(&) {
+		/* Top/bottom use `layout-spacing` and left/right use `layout-padding` */
+		padding: var(--layout-spacing, var(--spacing-block)) var(--layout-padding, var(--spacing-block));
+
+		/* Default page padding (with safe-area additions). */
+		padding-top: calc(var(--layout-spacing, var(--spacing-block)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
+		padding-bottom: calc(
+			var(--layout-spacing, var(--spacing-block)) +
+			max(var(--layout-inset-bottom, 0px), env(safe-area-inset-bottom, 0px))
+		);
+		padding-left: calc(var(--layout-padding, var(--spacing-block)) + max(var(--layout-inset-left, 0px), env(safe-area-inset-left, 0px)));
+		padding-right: calc(var(--layout-padding, var(--spacing-block)) + max(var(--layout-inset-right, 0px), env(safe-area-inset-right, 0px)));
+
+		/* Grow to fill the body. */
+		flex: 1;
+	}
+
+	/* Own the page's vertical scroll. */
+	overflow: hidden auto;
+	scroll-behavior: smooth;
+	overscroll-behavior: none;
+}

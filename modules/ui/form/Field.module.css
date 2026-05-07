@@ -1,0 +1,45 @@
+.field {
+	/* Box */
+	position: relative;
+	flex: 1 1 50%;
+	margin-inline: 0;
+	margin-block: var(--field-spacing, var(--spacing-block));
+
+	/* Contents */
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: stretch;
+	text-align: left;
+	gap: var(--field-gap, var(--spacing-inline));
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+
+	/* Children */
+	.title {
+		font-size: var(--field-title-size, var(--size-normal));
+		font-weight: var(--field-title-weight, var(--weight-strong));
+		color: var(--field-color-title, var(--color-text));
+	}
+	.description {
+		font-size: var(--field-description-font-size, var(--size-normal));
+		font-weight: var(--field-description-weight, var(--weight-normal));
+		color: var(--field-color-description, var(--color-quiet));
+	}
+	&& > * {
+		margin: 0;
+	}
+}
+
+.message {
+	display: block;
+	text-align: end;
+	font-weight: var(--field-message-weight, var(--weight-strong));
+	color: var(--field-color-message, var(--error-text));
+}

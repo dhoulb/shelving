@@ -1,0 +1,29 @@
+.dialog {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	margin: 0;
+	width: 100vw;
+	height: 100vh;
+	align-items: center;
+	justify-content: center;
+	background: var(--dialog-color-overlay, var(--color-overlay));
+	padding: var(--dialog-padding, var(--spacing-block));
+	opacity: 0;
+	transition: opacity var(--dialog-transition-duration, var(--duration-fast)) ease-in-out;
+
+	&[open] {
+		opacity: 1;
+	}
+
+	@starting-style {
+		opacity: 0;
+	}
+}
+
+.close {
+	position: fixed;
+	top: var(--dialog-close-offset, var(--spacing-element));
+	right: var(--dialog-close-offset, var(--spacing-element));
+}

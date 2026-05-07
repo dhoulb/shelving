@@ -1,0 +1,23 @@
+.heading,
+.prose h1 {
+	/* Box */
+	display: block;
+	inline-size: 100%;
+	margin-inline: 0;
+	margin-block: var(--heading-spacing, var(--spacing-paragraph));
+
+	/* Style */
+	font-family: var(--heading-font, var(--font-body));
+	font-weight: var(--heading-weight, var(--weight-strong));
+	font-size: var(--heading-font-size, var(--size-xlarge));
+	line-height: var(--heading-leading, var(--leading-tight));
+	color: var(--heading-color, var(--color-text));
+
+	/* Psuedo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+}

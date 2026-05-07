@@ -25,6 +25,7 @@
 			},
 			"style": {
 				"noNamespace": "error",
+				"noNonNullAssertion": "error",
 				"noShoutyConstants": "error",
 				"useCollapsedElseIf": "error",
 				"useForOf": "error",
@@ -61,6 +62,19 @@
 		}
 	},
 	"overrides": [
+		{
+			"includes": ["modules/ui/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noDescendingSpecificity": "off"
+					},
+					"suspicious": {
+						"noDuplicateProperties": "off"
+					}
+				}
+			}
+		},
 		{
 			"includes": ["**/*.test.ts"],
 			"linter": {

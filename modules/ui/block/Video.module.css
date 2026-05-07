@@ -1,0 +1,103 @@
+.video {
+	/* Block */
+	aspect-ratio: 16 / 9;
+	margin-inline: 0;
+	margin-block: var(--video-spacing, var(--spacing-block));
+
+	/* Contents */
+	display: flex;
+	flex-direction: column;
+	gap: var(--video-gap, var(--spacing-block));
+	justify-content: center;
+	align-items: center;
+	position: relative;
+
+	/* Style */
+	background: var(--video-color-bg, var(--color-black));
+	color: var(--video-color-text, var(--color-white));
+	overflow: hidden;
+	border-radius: var(--video-radius, var(--radius-element));
+
+	&.narrow {
+		margin-inline: auto;
+		max-width: var(--section-width-narrow, var(--width-narrow));
+	}
+
+	&.wide {
+		margin-inline: auto;
+		max-width: var(--section-width-wide, var(--width-wide));
+	}
+
+	&:first-child {
+		margin-block-start: 0;
+	}
+
+	&:last-child {
+		margin-block-end: 0;
+	}
+
+	&:fullscreen {
+		border-radius: 0;
+	}
+}
+
+.buttons {
+	position: absolute;
+	top: var(--video-controls-offset-y, var(--spacing-block));
+	right: var(--video-controls-offset-x, var(--spacing-block));
+	display: flex;
+	gap: var(--video-controls-gap, var(--spacing-element));
+
+	&.left {
+		right: auto;
+		left: var(--video-controls-offset-x, var(--spacing-block));
+	}
+}
+
+.button {
+	display: inline-flex;
+	flex-direction: row;
+	gap: var(--video-control-gap, var(--spacing-element));
+	height: var(--video-control-size, 3rem);
+	min-width: var(--video-control-size, 3rem);
+	padding-inline: var(--video-control-padding-x, var(--spacing-inline));
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--video-control-radius, 100rem);
+	border: var(--video-control-border, var(--border-block)) solid transparent;
+	color: var(--video-color-control-text, var(--video-color-bg, var(--color-black)));
+	background: var(--video-color-control-bg, var(--video-color-text, var(--color-white)));
+	transition:
+		box-shadow var(--duration-fast) ease-in-out,
+		background-color var(--duration-fast) ease-in-out,
+		border-color var(--duration-fast) ease-in-out;
+
+	&:hover {
+		box-shadow: var(--video-control-shadow-hover, var(--shadow-element));
+		background: var(--video-color-control-hover-bg, color-mix(in srgb, var(--color-quiet) 20%, transparent));
+	}
+
+	&:disabled {
+		opacity: var(--video-control-disabled-opacity, 0.5);
+		cursor: default;
+	}
+
+	&.danger {
+		border-color: var(--video-color-danger-border, var(--error-text));
+		background: var(--video-color-danger-bg, var(--error-text));
+		color: var(--video-color-danger-text, var(--error-contrast));
+	}
+
+	&.danger:hover {
+		background: var(--video-color-danger-hover-bg, color-mix(in srgb, var(--video-color-danger-bg, var(--error-text)) 80%, white));
+		border-color: var(
+			--video-color-danger-hover-border,
+			color-mix(in srgb, var(--video-color-danger-border, var(--error-text)) 80%, white)
+		);
+	}
+
+	& svg {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+}

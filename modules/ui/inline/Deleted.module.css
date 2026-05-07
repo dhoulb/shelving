@@ -1,0 +1,9 @@
+.deleted,
+.prose del {
+	/* Style */
+	color: var(--error-text);
+	text-decoration: line-through var(--border-block);
+
+	/* Typography */
+	font-weight: var(--weight-strong);
+}

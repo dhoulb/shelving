@@ -1,0 +1,66 @@
+@layer base {
+	:root {
+		--vertical-transition-size: 25vh;
+		--vertical-transition-duration: var(--duration-normal);
+	}
+}
+
+@keyframes slideInFromTop {
+	from {
+		opacity: 0;
+		transform: translateY(calc(0 - var(--vertical-transition-size)));
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slideInFromBottom {
+	from {
+		opacity: 0;
+		transform: translateY(var(--vertical-transition-size));
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slideOutToTop {
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(calc(0 - var(--vertical-transition-size)));
+	}
+}
+
+@keyframes slideOutToBottom {
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(var(--vertical-transition-size));
+	}
+}
+
+::view-transition-new(.slideUp) {
+	animation: slideInFromBottom var(--vertical-transition-duration) ease-in-out both;
+}
+
+::view-transition-old(.slideUp) {
+	animation: slideOutToTop var(--vertical-transition-duration) ease-in-out both;
+}
+
+::view-transition-new(.slideDown) {
+	animation: slideInFromTop var(--vertical-transition-duration) ease-in-out both;
+}
+
+::view-transition-old(.slideDown) {
+	animation: slideOutToBottom var(--vertical-transition-duration) ease-in-out both;
+}

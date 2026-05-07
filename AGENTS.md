@@ -132,7 +132,8 @@ These prefixes are reserved for the upcoming UI / component layer. Don't repurpo
 - Named exports only — no default exports (CSS modules excepted, see React Components)
 - Barrel files (`index.ts`) re-export with `export * from "./X.js"`, alphabetically sorted
 - Keep barrel exports in sync when moving or adding files
-- Never import from barrel files within the same package
+- In source files, always import from the declaration file directly (e.g. `../../util/array.js`), never from a barrel
+- In test files, always import from the highest applicable barrel (e.g. `shelving/util` not `../../util/array.js`) — this verifies the barrel export exists
 - `verbatimModuleSyntax` is on — `import type { ... }` is mandatory for type-only imports. Inline `type` in mixed imports: `import { type Foo, bar }`
 
 ## Types
