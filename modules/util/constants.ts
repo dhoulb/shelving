@@ -54,3 +54,12 @@ export const NONE: unique symbol = Symbol("shelving/NONE");
 
 /** The `SKIP` symbol indicates something should be silently skipped. */
 export const SKIP: unique symbol = Symbol("shelving/SKIP");
+
+// Icons.
+export const WAITING = "⋯";
+export const SUCCESS = "✓";
+export const FAILURE = "✗";
+export const UP = "↑";
+export const DOWN = "↓";
+export const RIGHT = "→";
+export const LEFT = "←";
