@@ -4,6 +4,12 @@ import { ABORT, type NONE, SKIP } from "../util/constants.js";
 import { BusyStore } from "./BusyStore.js";
 import type { AsyncStoreInput, StoreInput } from "./Store.js";
 
+/** Zero passed to `refresh()` means "always refresh this value" (this is the default). */
+export const ALWAYS_REFRESH = 0;
+
+/** Infinity passed to `refresh()` means "only refresh if this value is not loaded or invalid". */
+export const AVOID_REFRESH = Infinity;
+
 /** Callback for a callback fetch store. */
 export type FetchCallback<T> = (signal: AbortSignal) => StoreInput<T> | PromiseLike<StoreInput<T>>;
 
@@ -55,8 +61,13 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	 * - Triggered automatically when someone reads `value` or `loading`.
 	 * - Refreshes are de-duplicated. Concurrent calls while a fetch is in-flight return the same promise.
 	 * - Never throws — errors are stored as `reason`.
+	 *
+	 * @param maxAge The maximum age for whether we refresh or not.
+	 * - `0` zero means "always refresh" (this is the default).
+	 * - `Infinity` means "refresh only if store is still in a loading state.
+	 * - Any other value may or may not be stale based on `this.age`
 	 */
-	refresh(maxAge?: number): Promise<boolean> | boolean {
+	refresh(maxAge: number = ALWAYS_REFRESH): Promise<boolean> | boolean {
 		if (this._pendingRefresh) return this._pendingRefresh;
 		if (!this.stale(maxAge)) return false;
 		try {

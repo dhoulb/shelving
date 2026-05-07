@@ -1,3 +1,4 @@
+import { AVOID_REFRESH } from "../../store/FetchStore.js";
 import { awaitValues } from "../../util/async.js";
 import { awaitDispose } from "../../util/dispose.js";
 import type { AnyCaller } from "../../util/function.js";
@@ -32,8 +33,10 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * - Returns the cached value immediately if one exists.
 	 * - Waits for the in-flight fetch if the store is loading.
 	 * - Throws if the fetch fails, matching `APIProvider.call` behaviour.
+	 *
+	 * @param maxAge The maximum age (defaults to only refreshing if the value is still in a loading state).
 	 */
-	async call(payload: P, maxAge?: number, caller: AnyCaller = this.call): Promise<R> {
+	async call(payload: P, maxAge: number = AVOID_REFRESH, caller: AnyCaller = this.call): Promise<R> {
 		const store = this.get(payload, caller);
 		await store.refresh(maxAge);
 		return store.value;

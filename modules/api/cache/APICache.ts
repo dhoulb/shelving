@@ -1,3 +1,4 @@
+import { AVOID_REFRESH } from "../../store/FetchStore.js";
 import { awaitDispose } from "../../util/dispose.js";
 import type { AnyCaller } from "../../util/function.js";
 import { setMapItem } from "../../util/map.js";
@@ -38,7 +39,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	async call<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
-		maxAge?: number,
+		maxAge: number = AVOID_REFRESH,
 		caller: AnyCaller = this.call,
 	): Promise<RR> {
 		return this.get(endpoint).call(payload, maxAge, caller);

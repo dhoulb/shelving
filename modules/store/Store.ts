@@ -166,10 +166,10 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 *
 	 * @param maxAge The maximum age for the stale check.
 	 * - `0` zero means "always refresh" (this is the default).
-	 * - `Infinity` means "refresh only if store is still in a loading state.
+	 * - `Infinity` means "refresh only if store is still in a loading state"
 	 * - Any other value may or may not be stale based on `this.age`
 	 */
-	stale(maxAge: number = 0): boolean {
+	stale(maxAge: number): boolean {
 		return this.age >= maxAge;
 	}
 
