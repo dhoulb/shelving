@@ -19,6 +19,7 @@ export * from "./dispose.js";
 export * from "./duration.js";
 export * from "./entity.js";
 export * from "./entry.js";
+export * from "./env.js";
 export * from "./equal.js";
 export * from "./error.js";
 export * from "./file.js";
