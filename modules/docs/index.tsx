@@ -165,7 +165,7 @@ function _resolveItem(item: SidebarItem, currentPath: string): SidebarItem {
 
 /** Relative href to the shared stylesheet from a given page's logical path. */
 function _stylesheetHref(currentPath: string): string {
-	const fromDir = currentPath ? posix.dirname(currentPath) : ".";
+	const fromDir = currentPath || ".";
 	const rel = posix.relative(fromDir, STYLESHEET_NAME);
 	return rel || STYLESHEET_NAME;
 }

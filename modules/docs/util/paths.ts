@@ -10,7 +10,7 @@ export function resolveOutputPath(outputRoot: string, logicalPath: string): stri
 }
 
 export function relativeHref(fromPath: string, toPath: string): string {
-	const fromDir = fromPath ? posix.dirname(fromPath) : ".";
+	const fromDir = fromPath || ".";
 	const rel = posix.relative(fromDir, toPath || ".");
 	const suffix = rel.endsWith("/") || rel === "" ? rel : `${rel}/`;
 	return suffix || "./";
