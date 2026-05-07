@@ -1,0 +1,98 @@
+# Build and publish the documentation site.
+#
+# - On a push to `main`, the site is published to the root of the `gh-pages` branch
+#   so it serves at `https://<owner>.github.io/<repo>/`.
+# - On a pull request, the site is published under `pr-<number>/` on the same branch
+#   so a preview is available at `https://<owner>.github.io/<repo>/pr-<number>/`. A
+#   comment is added (or updated) on the PR with the preview URL.
+# - When a pull request is closed, its preview directory is removed from `gh-pages`.
+name: Docs
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and deploy
+    if: github.event_name != 'pull_request' || github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+      - name: install
+        run: bun install
+      - name: build
+        run: bun run docs
+      - name: deploy (main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./.build/docs
+          publish_branch: gh-pages
+          keep_files: true
+          exclude_assets: pr-*
+      - name: deploy (preview)
+        if: github.event_name == 'pull_request'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./.build/docs
+          publish_branch: gh-pages
+          destination_dir: pr-${{ github.event.pull_request.number }}
+          keep_files: true
+      - name: comment preview URL
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: docs-preview
+          message: |
+            **Docs preview** for this PR:
+
+            - https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}/
+            - Storybook: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}/storybook/
+
+            Updated on every push.
+
+  cleanup:
+    name: Remove closed PR preview
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: checkout gh-pages
+        uses: actions/checkout@v6
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+      - name: remove preview directory
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -d "pr-${PR_NUMBER}" ]; then
+            rm -rf "pr-${PR_NUMBER}"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: remove docs preview for PR #${PR_NUMBER}"
+            git push
+          fi
+      - name: update PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: docs-preview
+          message: |
+            Docs preview for this PR has been removed.
