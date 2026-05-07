@@ -18,7 +18,8 @@
 		"@typescript/native-preview": "^7.0.0-dev.20260502.1",
 		"firebase": "^12.12.1",
 		"react": "canary",
-		"react-dom": "canary"
+		"react-dom": "canary",
+		"typescript": "^5"
 	},
 	"peerDependencies": {
 		"@google-cloud/firestore": ">=7.0.0",
