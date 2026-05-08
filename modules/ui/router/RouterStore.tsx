@@ -7,8 +7,8 @@ import { matchRoute, type Routes } from "./Routes.js";
 export class RouterStore extends URLStore {
 	readonly routes: Routes;
 
-	constructor(routes: Routes) {
-		super(requireURL(window.location.href));
+	constructor(routes: Routes, url: PossibleURL = "/", base?: PossibleURL) {
+		super(url, base);
 		this.routes = routes;
 	}
 

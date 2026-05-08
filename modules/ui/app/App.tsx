@@ -1,13 +1,13 @@
 import { type ReactElement, type ReactNode, useEffect } from "react";
 import { Meta } from "../misc/Meta.js";
-import type { PossibleMetaData } from "../util/meta.js";
+import type { PossibleMeta } from "../util/meta.js";
 import APP_CSS from "./App.module.css";
 
-export interface AppProps extends PossibleMetaData {
+export interface AppProps extends PossibleMeta {
 	children: ReactNode;
 }
 
-const _appClass = APP_CSS.app;
+const APP_CLASS = APP_CSS.app;
 
 /**
  * Root component for an application.
@@ -16,11 +16,9 @@ const _appClass = APP_CSS.app;
  */
 export function App({ children, ...metadata }: AppProps): ReactElement {
 	useEffect(() => {
-		if (!_appClass) return;
-		document.body.classList.add(_appClass);
-		return () => {
-			document.body.classList.remove(_appClass);
-		};
+		if (!APP_CLASS) return;
+		document.body.classList.add(APP_CLASS);
+		return () => document.body.classList.remove(APP_CLASS);
 	}, []);
 	return <Meta {...metadata}>{children}</Meta>;
 }

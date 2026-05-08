@@ -2,40 +2,41 @@ import { Fragment, type ReactElement, type ReactNode, useEffect } from "react";
 import { useInstance } from "../../react/useInstance.js";
 import { useStore } from "../../react/useStore.js";
 import { getURIParams } from "../../util/uri.js";
-import { Meta } from "../misc/Meta.js";
+import { Meta, requireMeta } from "../misc/Meta.js";
 import { RouterContext, requireRouter } from "./RouterContext.js";
 import { RouterStore } from "./RouterStore.js";
 import type { Routes } from "./Routes.js";
 
 export interface RouterProps {
-	routes: Routes;
-	children?: ReactNode;
+	readonly routes: Routes;
+	readonly children?: ReactNode | undefined;
 }
 
-export interface RouterIsolateProps {
-	children: ReactNode;
-}
-
-declare const _routerOutputProps: unique symbol;
-
-export interface RouterOutputProps {
-	readonly [_routerOutputProps]?: never;
-}
 /**
  * Provides Router based on the browser URL and renders the active route.
+ * - Creates a new `RouterStore`
+ * - Exposes it via `requireRouter()` to descendants.
+ * - Renders the route matched for the current path.
+ * - Intercepts same-origin anchor clicks (excluding anchors with a `download` attribute) to perform client-side routing.
+ * - Synchronizes store state with browser back/forward (`popstate`) events.
  *
- * Creates a RouterStore, exposes it via context to descendants, renders the route matched for the current path, intercepts same-origin anchor clicks (excluding anchors with a `download` attribute) to perform client-side Router, and synchronizes store state with browser back/forward (`popstate`) events.
+ * Integrated with meta via the current `Meta`
+ * - Set `url` in a wrapper component to set the initial URL for this router, e.g. `<App url="/a/b/c">`
+ * - Set `base` , e.g. `<App base="https://p.com/subdir" />`
  *
  * @param routes - Route definitions used to select and render the active route
  * @param children - Content to render inside the Router Meta; defaults to the routing output component
  * @returns The Router provider element rendering the active route and supplying Router context
  */
 export function Router({ routes, children = <RouterOutput /> }: RouterProps): ReactElement {
-	const nav = useInstance(RouterStore, routes);
+	const { url, base } = requireMeta();
+	const nav = useInstance(RouterStore, routes, url, base);
 	useStore(nav);
 
 	// Effect to attach listeners when this router is active.
 	useEffect(() => {
+		if (typeof document === "undefined" || typeof window === "undefined") return;
+
 		// Listen for `click` events on `<a href="">` anchors and fire the forward event instead.
 		const onClick = (e: MouseEvent) => {
 			// Look for clicks on `<a href="">` elements or `.targeted` elements containing `<a href="" class="target">`
@@ -69,6 +70,10 @@ export function Router({ routes, children = <RouterOutput /> }: RouterProps): Re
 			</Meta>
 		</RouterContext>
 	);
+}
+
+export interface RouterIsolateProps {
+	children: ReactNode;
 }
 
 /**
