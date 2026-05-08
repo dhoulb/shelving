@@ -1,19 +1,21 @@
 import type { ReactElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderToString } from "react-dom/server";
 import { Meta } from "../ui/misc/Meta.js";
 import { type PossibleURL, requireURL } from "../util/url.js";
 
 /**
  * Render a React tree to an HTML string for a given URL.
  * - Wraps `app` in `<Meta url={url} base={base}>` so descendants (Router, Head, etc.) read the URL/base from Meta.
- * - Auto-prepends `<!DOCTYPE html>` if the rendered output starts with `<html` (i.e. `<HTMLPage>` is at the root).
+ * - Auto-prepends `<!DOCTYPE html>` if the rendered output starts with `<html` (i.e. `<HTML>` is at the root).
  *
- * NOTE: Uses `renderToStaticMarkup` for the smallest possible output — matches the current
- * zero-JS deploy. To enable hydration / live SSR later, swap this single call for
- * `renderToString` (or `renderToReadableStream` for streaming). Hydration markers are the
- * only difference; the rest of this module stays identical.
+ * Uses `renderToString` so React 19's metadata hoisting kicks in: any `<title>`,
+ * `<meta>`, `<link>`, or `<script>` rendered anywhere in the tree (typically by `<Head>`
+ * inside `<Page>`) is hoisted into a generated `<head>` element of the document. The
+ * same tree works for client mounting via `hydrateRoot()` — React hoists head tags into
+ * `document.head` on the client. This is the property that lets one component tree
+ * serve both static SSR and client-mounted SPA modes.
  *
- * @param app The React element to render — typically an app root containing `<HTMLPage>`.
+ * @param app The React element to render — typically an app root containing `<HTML>`.
  * @param url The URL of the route being rendered. Forwarded to descendants via `<Meta url={url}>`.
  * @param base Optional base URL. Forwarded to descendants via `<Meta base={base}>`.
  * @returns The rendered HTML string.
@@ -23,7 +25,7 @@ import { type PossibleURL, requireURL } from "../util/url.js";
  *   renderRoute(<MyApp />, "/users/123", "https://app.example.com");
  */
 export function renderRoute(app: ReactElement, url: PossibleURL, base?: PossibleURL): string {
-	const html = renderToStaticMarkup(
+	const html = renderToString(
 		<Meta url={url} base={base ? requireURL(base) : undefined}>
 			{app}
 		</Meta>,

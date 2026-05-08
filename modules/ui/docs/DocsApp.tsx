@@ -1,5 +1,5 @@
 import { posix } from "node:path";
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { renderMarkup } from "../../markup/render.js";
 import { MARKUP_RULES } from "../../markup/rule/index.js";
 import type { DocsExtra, DocsNode, DocsTokens } from "../../util/docs.js";
@@ -8,7 +8,7 @@ import { getSlug } from "../../util/string.js";
 import { App } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { requireMeta } from "../misc/Meta.js";
-import { HTMLPage } from "../page/Page.js";
+import { Page } from "../page/Page.js";
 import styles from "./DocsApp.module.css";
 import { DocsSidebar, type DocsSidebarItem } from "./DocsSidebar.js";
 import { DocsStorybook } from "./DocsStorybook.js";
@@ -21,11 +21,11 @@ export interface DocsAppProps {
 }
 
 /**
- * Top-level docs site component. Takes a `DocsTokens` snapshot and renders the page for the current `<Meta url>`.
- * - Wrapped in `<App>` so `App.module.css` (which defines all the design tokens on `:root`) gets bundled.
- * - Reads the current URL from `requireMeta()` (set by `renderRoute()` / `<Meta url>`).
- * - Walks `tokens.root` to find the matching node, or routes to a `tokens.extras` slot like `"storybook"`.
- * - Wraps everything in `<HTMLPage>` so the rendered output is a complete HTML document.
+ * Top-level docs site component — pure body content.
+ * - `<App>` provides theme tokens and the Meta context (page title, app title, language, stylesheet link).
+ * - The dispatched per-route component wraps its body in `<Page title={…}>`. `<Page>` renders `<Head>` inline, which emits `<title>` / `<meta>` / `<link>` tags. React 19 hoists those into the document `<head>` automatically.
+ *
+ * No `<html>` / `<body>` shell here — that's added by the SSR caller (`<HTML>` wrapping at the `renderRoute` site). The same component works as a client-mounted SPA: just `hydrateRoot(rootEl, <DocsApp tokens={…} />)`.
  */
 export function DocsApp({ tokens }: DocsAppProps): ReactElement {
 	const { url } = requireMeta();
@@ -34,40 +34,63 @@ export function DocsApp({ tokens }: DocsAppProps): ReactElement {
 	const matchedExtra = tokens.extras.find(e => e.path === path);
 	const sidebarItems = _buildSidebarItems(tokens, path);
 	const stylesheet = _relativeHref(path, STYLESHEET_NAME);
-	const title = matchedExtra?.title ?? matchedNode?.name ?? "home";
-	const lede = matchedExtra?.lede;
 
 	return (
-		<App app={tokens.title} language="en">
-			<HTMLPage title={title} links={{ stylesheet }}>
-				<SidebarLayout sidebar={<DocsSidebar title={tokens.title} items={sidebarItems} currentPath={path} />}>
-					<header className={styles.header}>
-						<h1 className={styles.title}>{title}</h1>
-						{lede ? <p className={styles.lede}>{lede}</p> : null}
-					</header>
-					{matchedExtra ? _renderExtra(matchedExtra) : matchedNode ? _renderNode(matchedNode) : null}
-				</SidebarLayout>
-			</HTMLPage>
+		<App app={tokens.title} language="en" links={{ stylesheet }}>
+			<SidebarLayout sidebar={<DocsSidebar title={tokens.title} items={sidebarItems} currentPath={path} />}>
+				{matchedExtra ? (
+					<DocsExtraPage extra={matchedExtra} />
+				) : matchedNode?.kind === "directory" ? (
+					<DocsDirectoryPage node={matchedNode} />
+				) : matchedNode?.kind === "file" ? (
+					<DocsFilePage node={matchedNode} />
+				) : null}
+			</SidebarLayout>
 		</App>
 	);
 }
 
-function _renderExtra(extra: DocsExtra): ReactNode {
-	if (extra.slot === "storybook") return <DocsStorybook />;
-	return null;
+// ──────────────────────────────────────────────────────────────────────────────
+// Per-route page components — each wraps its body in `<Page title={…}>` so the
+// page title flows into Meta context, gets rendered as `<title>` by `<Head>`, and
+// is hoisted by React 19 into the document `<head>`.
+// ──────────────────────────────────────────────────────────────────────────────
+
+function DocsExtraPage({ extra }: { readonly extra: DocsExtra }): ReactElement {
+	return (
+		<Page title={extra.title}>
+			<header className={styles.header}>
+				<h1 className={styles.title}>{extra.title}</h1>
+				{extra.lede ? <p className={styles.lede}>{extra.lede}</p> : null}
+			</header>
+			{extra.slot === "storybook" ? <DocsStorybook /> : null}
+		</Page>
+	);
 }
 
-function _renderNode(node: DocsNode): ReactNode {
-	if (node.kind === "directory") {
-		return node.description ? <div>{_renderMarkdown(node.description)}</div> : <p>No description yet.</p>;
-	}
+function DocsDirectoryPage({ node }: { readonly node: DocsNode }): ReactElement {
+	const title = node.name || "home";
 	return (
-		<div>
+		<Page title={title}>
+			<header className={styles.header}>
+				<h1 className={styles.title}>{title}</h1>
+			</header>
+			{node.description ? <div>{_renderMarkdown(node.description)}</div> : <p>No description yet.</p>}
+		</Page>
+	);
+}
+
+function DocsFilePage({ node }: { readonly node: DocsNode }): ReactElement {
+	return (
+		<Page title={node.name}>
+			<header className={styles.header}>
+				<h1 className={styles.title}>{node.name}</h1>
+			</header>
 			{node.description ? <div>{_renderMarkdown(node.description)}</div> : null}
 			{(node.symbols ?? []).map(symbol => (
 				<DocsSymbolCard key={symbol.name} {...symbol} renderMarkdown={_renderMarkdown} />
 			))}
-		</div>
+		</Page>
 	);
 }
 

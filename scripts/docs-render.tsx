@@ -3,6 +3,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { renderRoutes } from "../modules/render/render.js";
 import { DocsApp } from "../modules/ui/docs/DocsApp.js";
+import { Meta } from "../modules/ui/misc/Meta.js";
+import { HTML } from "../modules/ui/page/HTML.js";
 import { type DocsFile, type DocsNode, parseDocs } from "../modules/util/docs.js";
 
 // Bundled by `scripts/docs.tsx` via `Bun.build`. Bun resolves `*.module.css` imports
@@ -28,8 +30,15 @@ const tokens = parseDocs(files, {
 const allPaths: string[] = ["", ...tokens.extras.map(e => e.path), ...Array.from(_collectPaths(tokens.root))];
 const urls = allPaths.map(p => new URL(`/${p}`, "http://localhost/"));
 
-// 4. Render every URL through DocsApp.
-const html = renderRoutes(<DocsApp tokens={tokens} />, urls);
+// 4. Render every URL. Wrap `<DocsApp>` in `<HTML>` here (only for SSR) so the same `<DocsApp>` component can also be client-mounted into a `<div id="root">` shell without changes.
+const html = renderRoutes(
+	<Meta language="en">
+		<HTML>
+			<DocsApp tokens={tokens} />
+		</HTML>
+	</Meta>,
+	urls,
+);
 
 // 5. Write each rendered page to disk at `<path>/index.html`.
 for (const url of urls) {

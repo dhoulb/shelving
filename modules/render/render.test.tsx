@@ -1,13 +1,20 @@
 import { expect, test } from "bun:test";
-import { HTMLPage } from "../ui/page/Page.js";
+import { HTML } from "../ui/page/HTML.js";
+import { Page } from "../ui/page/Page.js";
 import { renderRoute, renderRoutes } from "./index.js";
 
-test("renderRoute() prepends <!DOCTYPE html> when output starts with <html", () => {
-	const html = renderRoute(<HTMLPage title="Hello">body</HTMLPage>, "http://localhost/foo");
+test("renderRoute() prepends <!DOCTYPE html>, hoists <title> from <Page> into <head>", () => {
+	const html = renderRoute(
+		<HTML>
+			<Page title="Hello">body</Page>
+		</HTML>,
+		"http://localhost/foo",
+	);
 	expect(html.startsWith("<!DOCTYPE html>")).toBe(true);
 	expect(html).toContain("<html");
 	expect(html).toContain('<body id="root">');
-	expect(html).toContain("<title>Hello</title>");
+	// React 19 metadata hoisting moves <title> into <head>.
+	expect(html).toMatch(/<head>[\s\S]*<title>Hello<\/title>[\s\S]*<\/head>/);
 });
 
 test("renderRoute() does not prepend doctype for non-document fragments", () => {

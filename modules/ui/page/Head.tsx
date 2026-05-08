@@ -42,7 +42,14 @@ export function Head(): ReactElement {
 			{links &&
 				getProps(links).map(([k, v]) =>
 					notNullish(v) ? (
-						<link key={k} rel={k} href={v} type={v.endsWith(".png") ? "image/png" : v.endsWith(".ico") ? "image/x-icon" : undefined} />
+						<link
+							key={k}
+							rel={k}
+							href={v}
+							type={v.endsWith(".png") ? "image/png" : v.endsWith(".ico") ? "image/x-icon" : undefined}
+							// `precedence` opts the link into React 19's metadata hoisting — without it, `<link rel="stylesheet">` is left wherever it was rendered instead of being lifted into `<head>`.
+							precedence={k === "stylesheet" ? "default" : undefined}
+						/>
 					) : null,
 				)}
 		</>
