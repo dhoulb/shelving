@@ -19,6 +19,7 @@ export function Head(): ReactElement {
 	const { url, title, base, app, links, tags } = requireMeta();
 
 	useEffect(() => {
+		if (typeof window === "undefined") return;
 		if (url) window.history.replaceState(null, "", url);
 	}, [url]);
 
