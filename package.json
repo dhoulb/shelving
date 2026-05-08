@@ -70,7 +70,7 @@
 		"test:unit": "bun test --concurrent --only-failures",
 		"fix": "bun run --sequential fix:*",
 		"fix:0:lint": "biome check --write .",
-		"docs": "bun --preload ./scripts/docs-preload.ts ./scripts/docs.tsx",
+		"docs": "bun ./scripts/docs.tsx",
 		"build": "bun run --sequential build:*",
 		"build:0:setup": "rm -rf ./dist && mkdir -p ./dist",
 		"build:1:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore && cp -r modules/ui dist/ui",

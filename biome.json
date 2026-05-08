@@ -56,7 +56,7 @@
 		}
 	},
 	"javascript": {
-		"globals": [],
+		"globals": ["Bun"],
 		"formatter": {
 			"arrowParentheses": "asNeeded"
 		}

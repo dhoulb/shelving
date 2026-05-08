@@ -1,5 +1,4 @@
-import { rm } from "node:fs/promises";
-import { posix, resolve as resolvePath } from "node:path";
+import { posix } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { renderMarkup } from "../markup/render.js";
 import { MARKUP_RULES } from "../markup/rule/index.js";
@@ -8,12 +7,11 @@ import { getSlug } from "../util/string.js";
 import { Page } from "./components/Page.js";
 import type { SidebarItem } from "./components/Sidebar.js";
 import { SymbolCard } from "./components/SymbolCard.js";
-import { getCollectedCss } from "./util/cssModules.js";
 import { writeFileEnsured } from "./util/fs.js";
 import type { PathNode, SymbolNode } from "./util/nodes.js";
 import { relativeHref, resolveOutputPath, stripExtension } from "./util/paths.js";
 
-/** Output filename for the bundled stylesheet shared by every docs page. */
+/** Output filename for the bundled stylesheet shared by every docs page. The orchestrator copies the bundled CSS asset to this name. */
 const STYLESHEET_NAME = "style.css";
 
 /** Top-level title displayed in the header of the sidebar. */
@@ -21,24 +19,17 @@ const SIDEBAR_TITLE = "shelving";
 
 /**
  * Render the full docs site for a `PathNode` tree to disk.
- * - Wipes and recreates `outputRoot` first.
  * - Writes one `index.html` per directory and per source file.
- * - Writes a single `style.css` containing all CSS-module styles touched during the render.
+ * - The shared stylesheet is emitted by the build orchestrator, not by this function.
  *
  * @param root  Root path node — typically produced by `nestPathNodes(...)`.
  * @param outputRoot  Absolute output directory.
  * @param extras  Optional additional pages to render (e.g. the storybook page).
  */
 export async function writeDocs(root: PathNode, outputRoot: string, extras: readonly ExtraPage[] = []): Promise<void> {
-	await rm(outputRoot, { recursive: true, force: true });
-
-	// Render pages.
 	const sidebarBase = _buildSidebarBase(root, extras);
 	await _writeNode(root, outputRoot, sidebarBase);
 	for (const extra of extras) await _writeExtra(extra, outputRoot, sidebarBase);
-
-	// Write the single shared stylesheet collected during rendering.
-	await writeFileEnsured(resolvePath(outputRoot, STYLESHEET_NAME), getCollectedCss());
 }
 
 /** An additional page to render alongside the docs (e.g. a UI library showcase). */
