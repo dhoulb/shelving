@@ -1,23 +1,23 @@
 import type { ReactElement, ReactNode } from "react";
-import { Blockquote } from "../../ui/block/Blockquote.js";
-import { Card } from "../../ui/block/Card.js";
-import { Divider } from "../../ui/block/Divider.js";
-import { Heading } from "../../ui/block/Heading.js";
-import { List } from "../../ui/block/List.js";
-import { Paragraph } from "../../ui/block/Paragraph.js";
-import { Subheading } from "../../ui/block/Subheading.js";
-import { Code } from "../../ui/inline/Code.js";
-import { Emphasis } from "../../ui/inline/Emphasis.js";
-import { Mark } from "../../ui/inline/Mark.js";
-import { Small } from "../../ui/inline/Small.js";
-import { Strong } from "../../ui/inline/Strong.js";
-import { Tag } from "../../ui/inline/Tag.js";
-import { Notice } from "../../ui/notice/Notice.js";
-import { getClass } from "../../ui/util/css.js";
-import styles from "./Storybook.module.css";
+import { Blockquote } from "../block/Blockquote.js";
+import { Card } from "../block/Card.js";
+import { Divider } from "../block/Divider.js";
+import { Heading } from "../block/Heading.js";
+import { List } from "../block/List.js";
+import { Paragraph } from "../block/Paragraph.js";
+import { Subheading } from "../block/Subheading.js";
+import { Code } from "../inline/Code.js";
+import { Emphasis } from "../inline/Emphasis.js";
+import { Mark } from "../inline/Mark.js";
+import { Small } from "../inline/Small.js";
+import { Strong } from "../inline/Strong.js";
+import { Tag } from "../inline/Tag.js";
+import { Notice } from "../notice/Notice.js";
+import { getClass } from "../util/css.js";
+import styles from "./DocsStorybook.module.css";
 
 /** Live showcase of every component in the shelving UI library that renders meaningfully without client-side JS. */
-export function Storybook(): ReactElement {
+export function DocsStorybook(): ReactElement {
 	return (
 		<div className={styles.storybook}>
 			<Section title="Tags">

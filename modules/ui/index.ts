@@ -1,6 +1,7 @@
 export * from "./app/index.js";
 export * from "./block/index.js";
 export * from "./dialog/index.js";
+export * from "./docs/index.js";
 export * from "./form/index.js";
 export * from "./inline/index.js";
 export * from "./layout/index.js";

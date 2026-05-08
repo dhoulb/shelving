@@ -1,36 +1,36 @@
 import type { ReactElement } from "react";
-import { getClass } from "../../ui/util/css.js";
-import styles from "./Sidebar.module.css";
+import { getClass } from "../util/css.js";
+import styles from "./DocsSidebar.module.css";
 
-export interface SidebarItem {
+export interface DocsSidebarItem {
 	readonly label: string;
 	readonly href: string;
 	readonly path: string;
-	readonly children?: readonly SidebarItem[] | undefined;
-	readonly tokens?: readonly SidebarItem[] | undefined;
+	readonly children?: readonly DocsSidebarItem[] | undefined;
+	readonly tokens?: readonly DocsSidebarItem[] | undefined;
 }
 
-export interface SidebarProps {
+export interface DocsSidebarProps {
 	readonly title?: string | undefined;
-	readonly items: readonly SidebarItem[];
+	readonly items: readonly DocsSidebarItem[];
 	readonly currentPath: string;
 }
 
-/** Renders the contents of the docs sidebar — a hierarchical link tree with tokens shown under the active page. */
-export function Sidebar({ title, items, currentPath }: SidebarProps): ReactElement {
+/** Hierarchical sidebar nav tree for the docs site, with per-symbol tokens shown under the active page. */
+export function DocsSidebar({ title, items, currentPath }: DocsSidebarProps): ReactElement {
 	return (
 		<nav className={styles.sidebar}>
 			{title ? <h1 className={styles.title}>{title}</h1> : null}
 			<ul className={styles.list}>
 				{items.map(item => (
-					<SidebarNode key={item.href} item={item} currentPath={currentPath} />
+					<DocsSidebarNode key={item.href} item={item} currentPath={currentPath} />
 				))}
 			</ul>
 		</nav>
 	);
 }
 
-function SidebarNode({ item, currentPath }: { readonly item: SidebarItem; readonly currentPath: string }): ReactElement {
+function DocsSidebarNode({ item, currentPath }: { readonly item: DocsSidebarItem; readonly currentPath: string }): ReactElement {
 	const isActive = currentPath === item.path || (!!item.path && currentPath.startsWith(`${item.path}/`));
 	return (
 		<li className={styles.group}>
@@ -54,7 +54,7 @@ function SidebarNode({ item, currentPath }: { readonly item: SidebarItem; readon
 			{item.children?.length ? (
 				<ul className={styles.children}>
 					{item.children.map(child => (
-						<SidebarNode key={child.href} item={child} currentPath={currentPath} />
+						<DocsSidebarNode key={child.href} item={child} currentPath={currentPath} />
 					))}
 				</ul>
 			) : null}

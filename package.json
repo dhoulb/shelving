@@ -40,6 +40,7 @@
 		"./iterate": "./iterate/index.js",
 		"./markup": "./markup/index.js",
 		"./react": "./react/index.js",
+		"./render": "./render/index.js",
 		"./schema": "./schema/index.js",
 		"./sequence": "./sequence/index.js",
 		"./store": "./store/index.js",

@@ -1,12 +1,12 @@
 import type { ReactElement, ReactNode } from "react";
-import { Tag } from "../../ui/inline/Tag.js";
-import type { Status } from "../../ui/notice/Status.js";
+import type { DocsSymbol } from "../../util/docs.js";
 import { requireSlug } from "../../util/string.js";
-import type { SymbolNode, SymbolNodeKind } from "../util/nodes.js";
-import styles from "./SymbolCard.module.css";
+import { Tag } from "../inline/Tag.js";
+import type { Status } from "../notice/Status.js";
+import styles from "./DocsSymbolCard.module.css";
 
 /** Status-variant colour for each symbol kind. Drives the kind tag rendered next to a symbol's name. */
-export const SYMBOL_KIND_STATUS: Record<SymbolNodeKind, Status> = {
+export const DOCS_SYMBOL_KIND_STATUS: Record<DocsSymbol["kind"], Status> = {
 	function: "primary",
 	class: "secondary",
 	interface: "tertiary",
@@ -16,26 +16,26 @@ export const SYMBOL_KIND_STATUS: Record<SymbolNodeKind, Status> = {
 	property: "quiet",
 };
 
-interface SymbolCardProps extends SymbolNode {
+export interface DocsSymbolCardProps extends DocsSymbol {
 	readonly renderMarkdown?: ((text: string) => ReactNode) | undefined;
 }
 
-/** Documentation card for a given symbol — name, kind, signatures, params, returns, examples, and any nested members. */
-export function SymbolCard({
+/** Documentation card for a single symbol — name, kind, signatures, params, returns, examples, and any nested members. */
+export function DocsSymbolCard({
 	name,
 	kind,
 	description,
-	params = [],
+	params,
 	returns,
-	examples = [],
+	examples,
 	signatures = [],
 	static: isStatic,
 	readonly: isReadonly,
-	children = [],
+	children,
 	renderMarkdown,
-}: SymbolCardProps): ReactElement {
+}: DocsSymbolCardProps): ReactElement {
 	const id = requireSlug(name);
-	const status = SYMBOL_KIND_STATUS[kind];
+	const status = DOCS_SYMBOL_KIND_STATUS[kind];
 	return (
 		<section id={id} className={styles.card}>
 			<header className={styles.head}>
@@ -54,7 +54,7 @@ export function SymbolCard({
 				</div>
 			) : null}
 			{description ? <div>{renderMarkdown ? renderMarkdown(description) : description}</div> : null}
-			{params.length ? (
+			{params?.length ? (
 				<div className={styles.section}>
 					<h3 className={styles.sectionTitle}>Parameters</h3>
 					<ul className={styles.params}>
@@ -81,7 +81,7 @@ export function SymbolCard({
 					</div>
 				</div>
 			) : null}
-			{examples.length ? (
+			{examples?.length ? (
 				<div className={styles.section}>
 					<h3 className={styles.sectionTitle}>Examples</h3>
 					{examples.map(example => (
@@ -91,10 +91,10 @@ export function SymbolCard({
 					))}
 				</div>
 			) : null}
-			{children.length ? (
+			{children?.length ? (
 				<div className={styles.children}>
 					{children.map(child => (
-						<SymbolCard key={child.name} {...child} renderMarkdown={renderMarkdown} />
+						<DocsSymbolCard key={child.name} {...child} renderMarkdown={renderMarkdown} />
 					))}
 				</div>
 			) : null}
