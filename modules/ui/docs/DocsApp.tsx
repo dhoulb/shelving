@@ -36,6 +36,7 @@ export function DocsApp({ tokens }: DocsAppProps): ReactElement {
 	const stylesheet = _relativeHref(path, STYLESHEET_NAME);
 
 	return (
+		// TODO 419: `language="en"` is hardcoded; should flow from a real source (DocsTokens or a Meta-based wrap signal — see PROJECT.md item 357).
 		<App app={tokens.title} language="en" links={{ stylesheet }}>
 			<SidebarLayout sidebar={<DocsSidebar title={tokens.title} items={sidebarItems} currentPath={path} />}>
 				{matchedExtra ? (
