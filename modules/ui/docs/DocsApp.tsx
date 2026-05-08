@@ -5,6 +5,7 @@ import { MARKUP_RULES } from "../../markup/rule/index.js";
 import type { DocsExtra, DocsNode, DocsTokens } from "../../util/docs.js";
 import type { JSXNode } from "../../util/jsx.js";
 import { getSlug } from "../../util/string.js";
+import { App } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { requireMeta } from "../misc/Meta.js";
 import { HTMLPage } from "../page/Page.js";
@@ -21,6 +22,7 @@ export interface DocsAppProps {
 
 /**
  * Top-level docs site component. Takes a `DocsTokens` snapshot and renders the page for the current `<Meta url>`.
+ * - Wrapped in `<App>` so `App.module.css` (which defines all the design tokens on `:root`) gets bundled.
  * - Reads the current URL from `requireMeta()` (set by `renderRoute()` / `<Meta url>`).
  * - Walks `tokens.root` to find the matching node, or routes to a `tokens.extras` slot like `"storybook"`.
  * - Wraps everything in `<HTMLPage>` so the rendered output is a complete HTML document.
@@ -36,15 +38,17 @@ export function DocsApp({ tokens }: DocsAppProps): ReactElement {
 	const lede = matchedExtra?.lede;
 
 	return (
-		<HTMLPage app={tokens.title} title={title} language="en" links={{ stylesheet }}>
-			<SidebarLayout sidebar={<DocsSidebar title={tokens.title} items={sidebarItems} currentPath={path} />}>
-				<header className={styles.header}>
-					<h1 className={styles.title}>{title}</h1>
-					{lede ? <p className={styles.lede}>{lede}</p> : null}
-				</header>
-				{matchedExtra ? _renderExtra(matchedExtra) : matchedNode ? _renderNode(matchedNode) : null}
-			</SidebarLayout>
-		</HTMLPage>
+		<App app={tokens.title} language="en">
+			<HTMLPage title={title} links={{ stylesheet }}>
+				<SidebarLayout sidebar={<DocsSidebar title={tokens.title} items={sidebarItems} currentPath={path} />}>
+					<header className={styles.header}>
+						<h1 className={styles.title}>{title}</h1>
+						{lede ? <p className={styles.lede}>{lede}</p> : null}
+					</header>
+					{matchedExtra ? _renderExtra(matchedExtra) : matchedNode ? _renderNode(matchedNode) : null}
+				</SidebarLayout>
+			</HTMLPage>
+		</App>
 	);
 }
 
