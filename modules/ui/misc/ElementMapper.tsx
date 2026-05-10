@@ -1,22 +1,25 @@
-import { createContext, type ReactNode, use } from "react";
+import { type ComponentType, createContext, type JSX, type ReactNode, use } from "react";
 import type { ImmutableArray } from "../../util/array.js";
-import type { Element, ElementProps } from "../../util/element.js";
+import type { Element } from "../../util/element.js";
 
 /**
- * A component registered in the element map.
- * - Receives the element's props directly (title, description, children, signature, etc.).
+ * Type-safe element map entries.
+ * - Keys are `"Prefix.element-type"` composites (e.g. `"TreePage.tree-directory"`).
+ * - The component for each key must accept the props declared in `JSX.IntrinsicElements` for that element type.
+ * - Optionally specify a `Prefix` to restrict keys to a single prefix string.
  */
-export type ElementMapComponent = (props: ElementProps) => ReactNode;
+export type ElementMapEntries<Prefix extends string = string> = {
+	[K in keyof JSX.IntrinsicElements as `${Prefix}.${K}`]?: ComponentType<JSX.IntrinsicElements[K]>;
+};
 
-/** Map of composite `"Prefix.type"` keys to components, e.g. `{ "TreePage.tree-directory": DirectoryPage }`. */
-export type ElementMapEntries = Readonly<Record<string, ElementMapComponent>>;
+/** Loose internal type for context storage and lookup. */
+type _Entries = Record<string, ComponentType<never>>;
 
-const _ElementMapContext = createContext<ElementMapEntries>({});
-_ElementMapContext.displayName = "ElementMapContext";
+const _ElementMapperContext = createContext<_Entries>({});
+_ElementMapperContext.displayName = "ElementMapperContext";
 
-export interface ElementMapperProps {
-	/** Map entries to provide. Merged with (and overrides) any parent context. */
-	map: ElementMapEntries;
+export interface ElementMapperProps<P extends string = string> {
+	map: ElementMapEntries<P>;
 	children: ReactNode;
 }
 
@@ -24,9 +27,9 @@ export interface ElementMapperProps {
  * Provide or extend the element map.
  * - Merges with any parent `ElementMapper`, with this map's entries taking precedence.
  */
-export function ElementMapper({ map, children }: ElementMapperProps): ReactNode {
-	const parent = use(_ElementMapContext);
-	return <_ElementMapContext value={{ ...parent, ...map }}>{children}</_ElementMapContext>;
+export function ElementMapper<P extends string>({ map, children }: ElementMapperProps<P>): ReactNode {
+	const existing = use(_ElementMapperContext);
+	return <_ElementMapperContext value={{ ...existing, ...(map as _Entries) }}>{children}</_ElementMapperContext>;
 }
 
 /**
@@ -38,12 +41,12 @@ export function ElementMapper({ map, children }: ElementMapperProps): ReactNode 
  * Must be called during React render (uses context internally).
  */
 export function mapElements(elements: Iterable<Element>, prefix: string): ImmutableArray<Element> {
-	const entries = use(_ElementMapContext);
+	const entries = use(_ElementMapperContext);
 	const result: Element[] = [];
 	for (const element of elements) {
 		const key = typeof element.type === "string" ? `${prefix}.${element.type}` : undefined;
 		const component = key ? entries[key] : undefined;
-		// biome-ignore lint/suspicious/noExplicitAny: ElementMapComponent returns ReactNode which is wider than Elements; the cast is safe at render time.
+		// biome-ignore lint/suspicious/noExplicitAny: ComponentType returns ReactNode which is wider than Elements; the cast is safe at render time.
 		result.push(component ? { ...element, type: component as any } : element);
 	}
 	return result;
