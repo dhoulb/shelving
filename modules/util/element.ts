@@ -54,3 +54,29 @@ export function* getElements(elements: Elements): Iterable<Element> {
 		if (elements.props.children) yield* getElements(elements.props.children);
 	}
 }
+
+/**
+ * Deeply query elements, filtering by a match function and recursing into children up to `depth` levels.
+ * - Returns a new `Elements` collection containing only elements whose `type` matches.
+ * - Children of matching elements are recursively filtered.
+ * - If `depth` is unset, recursion is infinite.
+ *
+ * @param elements The elements to query.
+ * @param match Function that tests whether an element should be included.
+ * @param depth Maximum depth to recurse (0 = top level only, undefined = infinite).
+ */
+export function queryElements(elements: Elements, match: (element: Element) => boolean, depth?: number): Elements {
+	if (!elements) return elements;
+	if (typeof elements === "string") return elements;
+	if (isArray(elements)) {
+		const results = elements.map(n => queryElements(n, match, depth)).filter(Boolean);
+		return results.length ? results : undefined;
+	}
+	if (isElement(elements)) {
+		if (!match(elements)) return undefined;
+		if (depth === 0 || !elements.props.children) return elements;
+		const children = queryElements(elements.props.children, match, depth !== undefined ? depth - 1 : undefined);
+		return children !== elements.props.children ? { ...elements, props: { ...elements.props, children } } : elements;
+	}
+	return undefined;
+}
