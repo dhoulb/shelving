@@ -3,17 +3,18 @@ import { MARKUP_RULES } from "../markup/rule/index.js";
 import type { MarkupOptions } from "../markup/util/options.js";
 import type { Element, Elements } from "../util/element.js";
 import { getElements, getElementText } from "../util/element.js";
-import type { ContentExtractor } from "./Extractor.js";
+import { type ContentExtractor, Extractor } from "./Extractor.js";
 
 /**
  * Extractor that converts a Markdown string into a file element.
  * - Parses the markdown using the markup module.
  * - Extracts the first `<h1>` heading as the element title.
  */
-export class MarkdownExtractor implements ContentExtractor {
+export class MarkdownExtractor extends Extractor<string> implements ContentExtractor {
 	private readonly _options: MarkupOptions;
 
 	constructor(options: MarkupOptions = { rules: MARKUP_RULES }) {
+		super();
 		this._options = options;
 	}
 

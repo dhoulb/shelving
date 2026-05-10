@@ -1,6 +1,6 @@
 import ts from "typescript";
 import type { CodeElementType, Element } from "../util/element.js";
-import type { ContentExtractor } from "./Extractor.js";
+import { type ContentExtractor, Extractor } from "./Extractor.js";
 
 /**
  * Extractor that converts a TypeScript source string into a file element.
@@ -8,7 +8,7 @@ import type { ContentExtractor } from "./Extractor.js";
  * - Extracts exported, public, non-`_`-prefixed declarations with their JSDoc and type signatures.
  * - Top-of-file JSDoc comment becomes the file's description.
  */
-export class TypescriptExtractor implements ContentExtractor {
+export class TypescriptExtractor extends Extractor<string> implements ContentExtractor {
 	extract(content: string): Element {
 		const source = ts.createSourceFile("source.ts", content, ts.ScriptTarget.Latest, true);
 		const children: Element[] = [];

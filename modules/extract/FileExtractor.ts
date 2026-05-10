@@ -1,6 +1,7 @@
 import type { Element } from "../util/element.js";
+import { splitFileExtension } from "../util/file.js";
 import { requireSlug } from "../util/string.js";
-import type { ContentExtractor, Extractor } from "./Extractor.js";
+import { type ContentExtractor, Extractor } from "./Extractor.js";
 
 /** Options for a file extractor. */
 export interface FileExtractorOptions {
@@ -13,31 +14,21 @@ export interface FileExtractorOptions {
  * - Reads the file content and passes it to the matched extractor.
  * - Sets the element `key` to the slugified filename (without extension).
  */
-export class FileExtractor implements Extractor<File> {
+export class FileExtractor extends Extractor<File> {
 	private readonly _extractors: Readonly<Record<string, ContentExtractor>>;
 
 	constructor({ extractors }: FileExtractorOptions) {
+		super();
 		this._extractors = extractors;
 	}
 
 	async extract(file: File): Promise<Element> {
-		const ext = _getExtension(file.name);
+		const [base, ext] = splitFileExtension(file.name);
+		const key = requireSlug(base ?? file.name);
 		const extractor = ext ? this._extractors[ext] : undefined;
-		if (!extractor) return { type: "tree-file", key: requireSlug(_getBaseName(file.name)), props: {} };
+		if (!extractor) return { type: "tree-file", key, props: {} };
 		const content = await file.text();
 		const element = await extractor.extract(content);
-		return { ...element, key: requireSlug(_getBaseName(file.name)) };
+		return { ...element, key };
 	}
-}
-
-/** Get the file extension including the dot, e.g. `.ts`. */
-function _getExtension(name: string): string | undefined {
-	const i = name.lastIndexOf(".");
-	return i > 0 ? name.slice(i) : undefined;
-}
-
-/** Get the file name without extension, e.g. `array` from `array.ts`. */
-function _getBaseName(name: string): string {
-	const i = name.lastIndexOf(".");
-	return i > 0 ? name.slice(0, i) : name;
 }

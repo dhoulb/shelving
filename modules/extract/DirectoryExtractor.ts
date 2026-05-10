@@ -1,6 +1,6 @@
 import type { Element } from "../util/element.js";
 import { requireSlug } from "../util/string.js";
-import type { Extractor } from "./Extractor.js";
+import { Extractor } from "./Extractor.js";
 import type { FileExtractor } from "./FileExtractor.js";
 
 /** Options for a directory extractor. */
@@ -18,40 +18,33 @@ export interface DirectoryExtractorOptions {
  * - Errors if two child elements resolve to the same slug.
  * - Preserves file system ordering.
  */
-export class DirectoryExtractor implements Extractor<{ name: string; files: File[] }> {
+export class DirectoryExtractor extends Extractor<{ name: string; files: File[] }> {
 	private readonly _index: readonly string[];
 	private readonly _extractor: FileExtractor;
 
 	constructor({ index, extractor }: DirectoryExtractorOptions) {
+		super();
 		this._index = index;
 		this._extractor = extractor;
 	}
 
 	async extract({ name, files }: { name: string; files: File[] }): Promise<Element> {
-		// Find and absorb the index file.
 		let indexElement: Element | undefined;
-		const remaining: File[] = [];
+		const children: Element[] = [];
+		const keys = new Set<string>();
 
 		for (const file of files) {
 			if (!indexElement && this._index.includes(file.name)) {
 				indexElement = await this._extractor.extract(file);
 			} else {
-				remaining.push(file);
+				const element = await this._extractor.extract(file);
+				const { key } = element;
+				if (key) {
+					if (keys.has(key)) throw new Error(`Duplicate key "${key}" in directory "${name}"`);
+					keys.add(key);
+				}
+				children.push(element);
 			}
-		}
-
-		// Extract children from remaining files.
-		const children: Element[] = [];
-		const keys = new Set<string>();
-
-		for (const file of remaining) {
-			const element = await this._extractor.extract(file);
-			const { key } = element;
-			if (key) {
-				if (keys.has(key)) throw new Error(`Duplicate key "${key}" in directory "${name}"`);
-				keys.add(key);
-			}
-			children.push(element);
 		}
 
 		return {
