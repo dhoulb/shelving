@@ -1,5 +1,6 @@
 import type { ImmutableArray } from "./array.js";
 import { isArray } from "./array.js";
+import { isIterable } from "./iterate.js";
 import type { AbsolutePath } from "./path.js";
 
 // Base element types.
@@ -199,7 +200,7 @@ export function getElementText(elements?: PossibleElements): string {
 	if (typeof elements === "string") return elements;
 	if (isArray(elements)) return elements.map(getElementText).filter(Boolean).join(" ");
 	if (isElement(elements)) return getElementText(elements.props.children);
-	if (_isIterable(elements))
+	if (isIterable(elements))
 		return [...elements]
 			.map(el => getElementText(el))
 			.filter(Boolean)
@@ -209,16 +210,16 @@ export function getElementText(elements?: PossibleElements): string {
 
 /**
  * Iterate through all elements in a collection.
- * - This is useful if you, e.g. want to apply a `className` to all `<h1>` elements, or make a list of all URLs found in a collection.
+ * - Yields each `Element` found, recursing into `props.children` up to `depth` levels.
+ * - `depth` controls how many levels of children to recurse into (default: infinite).
+ * - `depth=0` yields elements at the current level only (no recursion into children).
  */
-export function* getElements(elements: PossibleElements): Iterable<Element> {
-	if (isArray(elements)) {
-		for (const n of elements) yield* getElements(n);
-	} else if (isElement(elements)) {
+export function* getElements(elements: PossibleElements, depth?: number): Iterable<Element> {
+	if (isElement(elements)) {
 		yield elements;
-		if (elements.props.children) yield* getElements(elements.props.children);
-	} else if (_isIterable(elements)) {
-		for (const el of elements) yield* getElements(el);
+		if (depth !== 0 && elements.props.children) yield* getElements(elements.props.children, depth !== undefined ? depth - 1 : undefined);
+	} else if (isIterable(elements)) {
+		for (const el of elements) yield* getElements(el, depth);
 	}
 }
 
@@ -237,7 +238,7 @@ export function queryElements(elements: PossibleElements, match: (element: Eleme
 	if (typeof elements === "string") return elements;
 	if (!isElement(elements) && !isArray(elements)) {
 		// Normalize non-array iterables to arrays.
-		return _isIterable(elements) ? queryElements([...elements], match, depth) : undefined;
+		return isIterable(elements) ? queryElements([...elements], match, depth) : undefined;
 	}
 	if (isArray(elements)) {
 		const results = elements.map(n => queryElements(n, match, depth)).filter(Boolean);
@@ -264,9 +265,4 @@ export function* getElementPaths(elements: PossibleElements, prefix = ""): Itera
 		yield path;
 		if (element.props.children) yield* getElementPaths(element.props.children, path);
 	}
-}
-
-/** Check if a value is a non-array, non-string iterable (e.g. generator, Set, Map). */
-function _isIterable(value: unknown): value is Iterable<Element> {
-	return typeof value === "object" && value !== null && Symbol.iterator in value;
 }
