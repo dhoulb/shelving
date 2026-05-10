@@ -1,6 +1,7 @@
 import type { FunctionComponent, ReactNode } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
-import { type Element, type ElementProps, type Elements, getElements, isElement } from "../../util/element.js";
+import { isArray } from "../../util/array.js";
+import { type Element, type ElementProps, getElements, isElement, type PossibleElements } from "../../util/element.js";
 import { mapElements } from "../misc/ElementMapper.js";
 import type { RouteProps } from "../router/Routes.js";
 
@@ -8,7 +9,7 @@ export interface TreePageProps {
 	/** Route params (from the router). */
 	params?: RouteProps | undefined;
 	/** The root elements to search within. */
-	elements?: Elements;
+	elements?: PossibleElements;
 }
 
 /**
@@ -39,7 +40,7 @@ export function TreePage({ params, elements }: TreePageProps): ReactNode {
  * - Each segment of the path is matched against element keys.
  * - Returns the element at the deepest matching level.
  */
-function _resolveElement(elements: Elements, path: string | undefined): Element {
+function _resolveElement(elements: PossibleElements, path: string | undefined): Element {
 	if (!path || path === "/") {
 		// Root path — find the first element, or throw.
 		for (const el of getElements(elements)) {
@@ -49,7 +50,7 @@ function _resolveElement(elements: Elements, path: string | undefined): Element 
 	}
 
 	const segments = path.split("/").filter(Boolean);
-	let current: Elements = elements;
+	let current: PossibleElements = elements;
 
 	for (const segment of segments) {
 		const found = _findChild(current, segment);
@@ -62,16 +63,20 @@ function _resolveElement(elements: Elements, path: string | undefined): Element 
 }
 
 /** Find a direct child element with a matching key. */
-function _findChild(elements: Elements, key: string): Element | undefined {
+/** Find an immediate child element with a matching key (does not recurse into grandchildren). */
+function _findChild(elements: PossibleElements, key: string): Element | undefined {
 	if (!elements) return undefined;
 	if (isElement(elements)) {
 		if (elements.key === key) return elements;
-		// Search immediate children.
 		return _findChild(elements.props.children, key);
 	}
-	if (Array.isArray(elements)) {
+	if (isArray(elements)) {
 		for (const child of elements) {
 			if (isElement(child) && child.key === key) return child;
+		}
+	} else if (typeof elements === "object" && Symbol.iterator in elements) {
+		for (const child of elements as Iterable<Element>) {
+			if (child.key === key) return child;
 		}
 	}
 	return undefined;

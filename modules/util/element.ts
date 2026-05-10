@@ -21,6 +21,9 @@ export interface Element<P extends ElementProps = ElementProps> {
 /** Collection of elements (compatible with `React.ReactNode`). */
 export type Elements = undefined | null | string | Element | readonly Elements[];
 
+/** Widened input type that also accepts any `Iterable<Element>` (e.g. generators, Sets). */
+export type PossibleElements = Elements | Iterable<Element>;
+
 // Tree element types.
 
 /** Props for a tree element — must have a `tree-` prefixed type. */
@@ -192,10 +195,15 @@ export function isElements(value: unknown): value is Elements {
  *
  * @example `- Item with *strong*\n- Item with _em_` becomes `Item with strong Item with em`
  */
-export function getElementText(elements?: Elements): string {
+export function getElementText(elements?: PossibleElements): string {
 	if (typeof elements === "string") return elements;
 	if (isArray(elements)) return elements.map(getElementText).filter(Boolean).join(" ");
 	if (isElement(elements)) return getElementText(elements.props.children);
+	if (_isIterable(elements))
+		return [...elements]
+			.map(el => getElementText(el))
+			.filter(Boolean)
+			.join(" ");
 	return "";
 }
 
@@ -203,12 +211,14 @@ export function getElementText(elements?: Elements): string {
  * Iterate through all elements in a collection.
  * - This is useful if you, e.g. want to apply a `className` to all `<h1>` elements, or make a list of all URLs found in a collection.
  */
-export function* getElements(elements: Elements): Iterable<Element> {
+export function* getElements(elements: PossibleElements): Iterable<Element> {
 	if (isArray(elements)) {
 		for (const n of elements) yield* getElements(n);
 	} else if (isElement(elements)) {
 		yield elements;
 		if (elements.props.children) yield* getElements(elements.props.children);
+	} else if (_isIterable(elements)) {
+		for (const el of elements) yield* getElements(el);
 	}
 }
 
@@ -222,9 +232,13 @@ export function* getElements(elements: Elements): Iterable<Element> {
  * @param match Function that tests whether an element should be included.
  * @param depth Maximum depth to recurse (0 = top level only, undefined = infinite).
  */
-export function queryElements(elements: Elements, match: (element: Element) => boolean, depth?: number): Elements {
-	if (!elements) return elements;
+export function queryElements(elements: PossibleElements, match: (element: Element) => boolean, depth?: number): Elements {
+	if (!elements) return elements as Elements;
 	if (typeof elements === "string") return elements;
+	if (!isElement(elements) && !isArray(elements)) {
+		// Normalize non-array iterables to arrays.
+		return _isIterable(elements) ? queryElements([...elements], match, depth) : undefined;
+	}
 	if (isArray(elements)) {
 		const results = elements.map(n => queryElements(n, match, depth)).filter(Boolean);
 		return results.length ? results : undefined;
@@ -242,7 +256,7 @@ export function queryElements(elements: Elements, match: (element: Element) => b
  * Deeply iterate a tree of elements and yield the absolute path for each element that has a string `key`.
  * - Paths are formed by concatenating `key` values with `/` separators.
  */
-export function* getElementPaths(elements: Elements, prefix = ""): Iterable<AbsolutePath> {
+export function* getElementPaths(elements: PossibleElements, prefix = ""): Iterable<AbsolutePath> {
 	for (const element of getElements(elements)) {
 		const { key } = element;
 		if (!key) continue;
@@ -250,4 +264,9 @@ export function* getElementPaths(elements: Elements, prefix = ""): Iterable<Abso
 		yield path;
 		if (element.props.children) yield* getElementPaths(element.props.children, path);
 	}
+}
+
+/** Check if a value is a non-array, non-string iterable (e.g. generator, Set, Map). */
+function _isIterable(value: unknown): value is Iterable<Element> {
+	return typeof value === "object" && value !== null && Symbol.iterator in value;
 }

@@ -1,11 +1,11 @@
 import type { FunctionComponent, ReactNode } from "react";
-import { type Element, type ElementProps, type Elements, getElements } from "../../util/element.js";
+import { type Element, type ElementProps, getElements, type PossibleElements } from "../../util/element.js";
 import { mapElements } from "../misc/ElementMapper.js";
 import TREE_MENU_CSS from "./TreeMenu.module.css";
 
 export interface TreeMenuProps {
 	/** Elements to render as navigation links. */
-	children?: Elements;
+	children?: PossibleElements;
 }
 
 /** Sidebar navigation menu built from a tree of elements. */

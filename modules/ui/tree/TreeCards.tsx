@@ -1,11 +1,11 @@
 import type { FunctionComponent, ReactNode } from "react";
-import { type Element, type ElementProps, type Elements, getElements } from "../../util/element.js";
+import { type Element, type ElementProps, getElements, type PossibleElements } from "../../util/element.js";
 import { mapElements } from "../misc/ElementMapper.js";
 import TREE_CARDS_CSS from "./TreeCards.module.css";
 
 export interface TreeCardsProps {
 	/** Elements to render as cards. */
-	children?: Elements;
+	children?: PossibleElements;
 }
 
 /** Grid of cards built from a tree of elements. */
