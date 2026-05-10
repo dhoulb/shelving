@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
-import type { Element, Elements } from "../index.js";
+import type { Data, Element, Elements } from "../index.js";
 import { filterElements, getElements, getElementText, queryElements, resolveElementPath } from "../index.js";
 
 const P: Element = {
@@ -28,6 +28,10 @@ const a2: ReactElement = a1;
 const a3: ReactNode = a1;
 const b1: Elements = { type: "div", key: null, props: {} };
 const b2: ReactNode = b1;
+
+// Check Element satisfies Data (for queryItems compatibility).
+const c1: Element = { type: "div", key: null, props: {} };
+const c2: Data = c1;
 
 describe("getElementText()", () => {
 	test("elements can be converted to plain text", () => {
