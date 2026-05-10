@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
 import type { Element, Elements } from "../index.js";
-import { getElements, getElementText, queryElements } from "../index.js";
+import { getElements, getElementText, queryElements, resolveElementPath } from "../index.js";
 
 const P: Element = {
 	key: null,
@@ -94,5 +94,41 @@ describe("queryElements()", () => {
 		expect(Array.from(queryElements(null, el => el.type === "tree-file"))).toHaveLength(0);
 		expect(Array.from(queryElements(undefined, el => el.type === "tree-file"))).toHaveLength(0);
 		expect(Array.from(queryElements("hello", el => el.type === "tree-file"))).toHaveLength(0);
+	});
+});
+
+describe("resolveElementPath()", () => {
+	const TREE: Element[] = [
+		{
+			key: "util",
+			type: "tree-directory",
+			props: {
+				children: [
+					{ key: "array", type: "tree-file", props: { title: "Array" } },
+					{ key: "string", type: "tree-file", props: { title: "String" } },
+				],
+			},
+		},
+		{ key: "readme", type: "tree-file", props: { title: "README" } },
+	];
+
+	test("resolves a single-segment path", () => {
+		const result = resolveElementPath(TREE, "util");
+		expect(result).toMatchObject({ key: "util", type: "tree-directory" });
+	});
+
+	test("resolves a multi-segment path", () => {
+		const result = resolveElementPath(TREE, "util/array");
+		expect(result).toMatchObject({ key: "array", type: "tree-file", props: { title: "Array" } });
+	});
+
+	test("returns first keyed element for empty path", () => {
+		expect(resolveElementPath(TREE, "")).toMatchObject({ key: "util" });
+		expect(resolveElementPath(TREE, undefined)).toMatchObject({ key: "util" });
+	});
+
+	test("returns undefined for non-existent path", () => {
+		expect(resolveElementPath(TREE, "nonexistent")).toBeUndefined();
+		expect(resolveElementPath(TREE, "util/nonexistent")).toBeUndefined();
 	});
 });
