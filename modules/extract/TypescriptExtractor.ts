@@ -1,6 +1,5 @@
 import ts from "typescript";
-import type { Element } from "../../util/element.js";
-import type { CodeElementType } from "../element/CodeElement.js";
+import type { CodeElementType, Element } from "../util/element.js";
 import type { ContentExtractor } from "./Extractor.js";
 
 /**

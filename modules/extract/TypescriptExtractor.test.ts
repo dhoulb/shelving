@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { TypescriptExtractor } from "../index.js";
+import { TypescriptExtractor } from "./index.js";
 
 const extractor = new TypescriptExtractor();
 

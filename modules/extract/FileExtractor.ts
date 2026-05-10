@@ -1,5 +1,5 @@
-import type { Element } from "../../util/element.js";
-import { requireSlug } from "../../util/string.js";
+import type { Element } from "../util/element.js";
+import { requireSlug } from "../util/string.js";
 import type { ContentExtractor, Extractor } from "./Extractor.js";
 
 /** Options for a file extractor. */

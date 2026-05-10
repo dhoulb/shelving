@@ -1,5 +1,5 @@
-import type { Element } from "../../util/element.js";
-import { requireSlug } from "../../util/string.js";
+import type { Element } from "../util/element.js";
+import { requireSlug } from "../util/string.js";
 import type { Extractor } from "./Extractor.js";
 import type { FileExtractor } from "./FileExtractor.js";
 
@@ -61,7 +61,6 @@ export class DirectoryExtractor implements Extractor<{ name: string; files: File
 				title: (indexElement?.props.title as string | undefined) ?? name,
 				description: indexElement?.props.description as string | undefined,
 				content: indexElement?.props.content,
-				path: `/${name}`,
 				children,
 			},
 		};

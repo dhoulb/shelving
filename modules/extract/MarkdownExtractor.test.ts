@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { type Elements, getElementText } from "../../util/element.js";
-import { MarkdownExtractor } from "../index.js";
+import { type Elements, getElementText } from "../util/element.js";
+import { MarkdownExtractor } from "./index.js";
 
 const extractor = new MarkdownExtractor();
 

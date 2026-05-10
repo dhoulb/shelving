@@ -1,4 +1,4 @@
-import type { Element } from "../../util/element.js";
+import type { Element } from "../util/element.js";
 
 /**
  * Base interface for an extractor that converts input into an element.

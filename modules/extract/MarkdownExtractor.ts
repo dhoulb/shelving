@@ -1,8 +1,8 @@
-import { renderMarkup } from "../../markup/render.js";
-import { MARKUP_RULES } from "../../markup/rule/index.js";
-import type { MarkupOptions } from "../../markup/util/options.js";
-import type { Element, Elements } from "../../util/element.js";
-import { getElements, getElementText } from "../../util/element.js";
+import { renderMarkup } from "../markup/render.js";
+import { MARKUP_RULES } from "../markup/rule/index.js";
+import type { MarkupOptions } from "../markup/util/options.js";
+import type { Element, Elements } from "../util/element.js";
+import { getElements, getElementText } from "../util/element.js";
 import type { ContentExtractor } from "./Extractor.js";
 
 /**
