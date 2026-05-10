@@ -11,15 +11,9 @@
 
 ## Todo
 
-- [ ] **342** — Write the module documentation in `README.md` (currently placeholder).
-- [ ] **517** — Fix partial validation in `ValidationDBProvider` — currently only validates top-level keys, not nested structure of the object.
-- [ ] **283** — Integrate `EndpointCache` functionality into `createAPIContext` (`react/createAPIContext.tsx`).
-- [ ] **764** — Implement stale-while-revalidate in `EndpointStore`: set `_age_` to `undefined` instead of clearing the value, so the current value persists but is old enough to trigger a refetch.
-- [ ] **621** — Markup: support loose lists — list items containing paragraphs (`\n\n` double line breaks), wrapping contents in `<p>` tags (`childContext` is `"block"`).
-- [ ] **489** — Markup: support pipe table syntax (`|col|col|`).
-- [ ] **156** — Markup: support todo list syntax (`- [x]` / `- [ ]`).
-- [ ] **738** — Markup: support unified reference/footnote/sidenote syntax that combines reference links, sidenotes, and footnotes into a single `<dl>`-producing format.
-- [ ] **891** — Util: convert confusable characters (e.g. `ℵ` alef symbol, `℮` estimate symbol) to their letterlike equivalents in `string.ts`.
+- [ ] **828** — Make a `ChildrenProps` and `OptionalChildrenProps` interfaces somewhere and `extends` them everywhere rather than defining `readonly children: ReactNode` and `readonly children?: ReactNode | undefined` in every set of props.
+- [ ] **357** — Investigate a Meta-based "wrap" signal so render modes (and probably layouts) can be dispatched from inside the React tree at the right level. The SSR caller would set `<Meta wrap="html">` once; `<App>` (or a similar root) reads it and conditionally emits `<html lang={language}><body id="root">{…}</body></html>`. Lets the language and other shell attributes come from inside the React tree rather than being duplicated at the SSR call site. Probably generalises to layout dispatch (`wrap="centered"`, `wrap="sidebar"`, etc.) the same way.
+- [ ] **419** — Stop hardcoding `language="en"` in the docs site. Currently set both inside `<DocsApp>` (`<App language="en">` for descendant Meta context) and at the SSR call site (`<Meta language="en">` outside `<HTML>` so the `<html lang>` attribute resolves). Goes away once item 357's wrap signal lets the language flow through from inside, or sooner if `<HTML>` gains a `lang` prop.
 
 ---
 
@@ -36,6 +30,14 @@ Items waiting on browser/runtime/TS support before they can be actioned.
 
 ## Later
 
+- [ ] **342** — Write the module documentation in `README.md` (currently placeholder).
+- [ ] **517** — Fix partial validation in `ValidationDBProvider` — currently only validates top-level keys, not nested structure of the object.
+- [ ] **764** — Implement stale-while-revalidate in `EndpointStore`: set `_age_` to `undefined` instead of clearing the value, so the current value persists but is old enough to trigger a refetch.
+- [ ] **621** — Markup: support loose lists — list items containing paragraphs (`\n\n` double line breaks), wrapping contents in `<p>` tags (`childContext` is `"block"`).
+- [ ] **489** — Markup: support pipe table syntax (`|col|col|`).
+- [ ] **156** — Markup: support todo list syntax (`- [x]` / `- [ ]`).
+- [ ] **738** — Markup: support unified reference/footnote/sidenote syntax that combines reference links, sidenotes, and footnotes into a single `<dl>`-producing format.
+- [ ] **891** — Util: convert confusable characters (e.g. `ℵ` alef symbol, `℮` estimate symbol) to their letterlike equivalents in `string.ts`.
 - [ ] **178** — Cut a stable v1.0 release with proper semver once the API is settled.
 - [ ] **556** — Build an API reference / docs site generated from JSDoc (e.g. TypeDoc or similar).
 - [ ] **823** — Add additional DB providers: SQLite via `bun:sqlite`, PlanetScale, Turso.

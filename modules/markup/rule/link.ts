@@ -1,5 +1,5 @@
+import type { Element } from "../../util/element.js";
 import { formatURI } from "../../util/format.js";
-import type { JSXElement } from "../../util/jsx.js";
 import { getRegExp, type NamedRegExpExecArray } from "../../util/regexp.js";
 import { getURI, HTTP_SCHEMES } from "../../util/uri.js";
 import { getURL } from "../../util/url.js";
@@ -15,7 +15,7 @@ function renderLinkMarkupRule(
 	{ groups: { title, href: unsafeHref } }: NamedRegExpExecArray<LinkMarkupRuleData>,
 	options: MarkupOptions,
 	key: string,
-): JSXElement {
+): Element {
 	const { base, schemes = HTTP_SCHEMES, rel } = options;
 	const uri = getURL(unsafeHref, base) ?? getURI(unsafeHref);
 	const href = uri && schemes.includes(uri.protocol) ? uri.href : undefined;

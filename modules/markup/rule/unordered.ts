@@ -1,4 +1,4 @@
-import type { JSXElement } from "../../util/jsx.js";
+import type { Element } from "../../util/element.js";
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
@@ -38,7 +38,7 @@ export const UNORDERED_RULE = getMarkupRule(
 );
 
 /** Parse a markdown list into a set of items elements. */
-export function* _getItems(list: string, options: MarkupOptions): Iterable<JSXElement> {
+export function* _getItems(list: string, options: MarkupOptions): Iterable<Element> {
 	let key = 0;
 	for (const [_unused, item = ""] of list.matchAll(ITEM)) {
 		yield {

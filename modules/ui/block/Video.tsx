@@ -63,7 +63,7 @@ export interface FullscreenVideoButtonProps {
 
 /** Button to make a video element go fullscreen. */
 export function FullscreenVideoButton(): ReactElement | null {
-	const [isFull, setFull] = useState(!!document.fullscreenElement);
+	const [isFull, setFull] = useState(() => typeof document !== "undefined" && !!document.fullscreenElement);
 
 	useEffect(() => {
 		const onChange = () => setFull(!!document.fullscreenElement);
