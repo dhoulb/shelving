@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import type { FunctionComponent, ReactNode } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
-import { type Element, type Elements, getElements, isElement } from "../../util/element.js";
+import { type Element, type ElementProps, type Elements, getElements, isElement } from "../../util/element.js";
+import { mapElements } from "../misc/ElementMap.js";
 import type { RouteProps } from "../router/Routes.js";
-import { useElementComponent } from "./ElementContext.js";
 
 export interface TreePageProps {
 	/** Route params (from the router). */
@@ -14,18 +14,17 @@ export interface TreePageProps {
 /**
  * Resolve a URL path to a tree element and render it.
  * - Splits the `path` route param into segments and walks the tree matching each segment to an element's `key`.
- * - Delegates rendering to the component registered in `ElementContext` for `"page.{type}"`.
+ * - Delegates rendering to the component registered in the element map for `"TreePage.{type}"`.
  * - Throws `NotFoundError` if no element matches at any level.
  */
 export function TreePage({ params, elements }: TreePageProps): ReactNode {
 	const element = _resolveElement(elements, params?.path);
-	return <TreePageElement element={element} />;
-}
-
-function TreePageElement({ element }: { element: Element }): ReactNode {
-	const Component = useElementComponent("page", element.type as string);
-	if (Component) return <Component element={element}>{element.props.children}</Component>;
-	// Fallback: render title and children.
+	const [mapped] = mapElements([element], "TreePage");
+	if (mapped && typeof mapped.type === "function") {
+		const Component = mapped.type as FunctionComponent<ElementProps>;
+		return <Component {...mapped.props} />;
+	}
+	// Fallback: render title and content.
 	const title = element.props.title as string | undefined;
 	return (
 		<>

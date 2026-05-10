@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-import { type Element, type Elements, getElements } from "../../util/element.js";
-import { useElementComponent } from "./ElementContext.js";
+import type { FunctionComponent, ReactNode } from "react";
+import { type Element, type ElementProps, type Elements, getElements } from "../../util/element.js";
+import { mapElements } from "../misc/ElementMap.js";
 import TREE_MENU_CSS from "./TreeMenu.module.css";
 
 export interface TreeMenuProps {
@@ -10,10 +10,14 @@ export interface TreeMenuProps {
 
 /** Sidebar navigation menu built from a tree of elements. */
 export function TreeMenu({ children }: TreeMenuProps): ReactNode {
+	const elements = Array.from(getElements(children)).filter(el => el.key);
+	const mapped = mapElements(elements, "TreeMenu");
 	return (
 		<nav className={TREE_MENU_CSS.menu}>
 			<ul className={TREE_MENU_CSS.list}>
-				{Array.from(getElements(children), element => (element.key ? <TreeMenuItem key={element.key} element={element} /> : null))}
+				{mapped.map(el => (
+					<TreeMenuItem key={el.key} element={el} />
+				))}
 			</ul>
 		</nav>
 	);
@@ -23,10 +27,12 @@ interface TreeMenuItemProps {
 	element: Element;
 }
 
-/** Single menu item — delegates to the registered `menu.*` component if available, otherwise renders a plain link. */
+/** Single menu item — delegates to mapped component if available, otherwise renders a plain link. */
 function TreeMenuItem({ element }: TreeMenuItemProps): ReactNode {
-	const Component = useElementComponent("menu", element.type as string);
-	if (Component) return <Component element={element} />;
+	if (typeof element.type === "function") {
+		const Component = element.type as FunctionComponent<ElementProps>;
+		return <Component {...element.props} />;
+	}
 	const title = (element.props.title as string | undefined) ?? element.key;
 	return (
 		<li className={TREE_MENU_CSS.item}>

@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-import { type Element, type Elements, getElements } from "../../util/element.js";
-import { useElementComponent } from "./ElementContext.js";
+import type { FunctionComponent, ReactNode } from "react";
+import { type Element, type ElementProps, type Elements, getElements } from "../../util/element.js";
+import { mapElements } from "../misc/ElementMap.js";
 import TREE_CARDS_CSS from "./TreeCards.module.css";
 
 export interface TreeCardsProps {
@@ -10,9 +10,13 @@ export interface TreeCardsProps {
 
 /** Grid of cards built from a tree of elements. */
 export function TreeCards({ children }: TreeCardsProps): ReactNode {
+	const elements = Array.from(getElements(children)).filter(el => el.key);
+	const mapped = mapElements(elements, "TreeCard");
 	return (
 		<div className={TREE_CARDS_CSS.grid}>
-			{Array.from(getElements(children), element => (element.key ? <TreeCard key={element.key} element={element} /> : null))}
+			{mapped.map(el => (
+				<TreeCard key={el.key} element={el} />
+			))}
 		</div>
 	);
 }
@@ -21,10 +25,12 @@ interface TreeCardProps {
 	element: Element;
 }
 
-/** Single card — delegates to the registered `card.*` component if available, otherwise renders a default card. */
+/** Single card — delegates to mapped component if available, otherwise renders a default card. */
 function TreeCard({ element }: TreeCardProps): ReactNode {
-	const Component = useElementComponent("card", element.type as string);
-	if (Component) return <Component element={element} />;
+	if (typeof element.type === "function") {
+		const Component = element.type as FunctionComponent<ElementProps>;
+		return <Component {...element.props} />;
+	}
 	const title = (element.props.title as string | undefined) ?? element.key;
 	const description = element.props.description as string | undefined;
 	return (
