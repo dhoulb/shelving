@@ -1,0 +1,29 @@
+.menu {
+	font-size: var(--font-size-small, 0.875rem);
+}
+
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-tight, 0.125rem);
+}
+
+.item {
+	margin: 0;
+}
+
+.link {
+	display: block;
+	padding: var(--spacing-tight, 0.25rem) var(--spacing-snug, 0.5rem);
+	border-radius: var(--radius-small, 0.25rem);
+	color: var(--color-text-muted, inherit);
+	text-decoration: none;
+}
+
+.link:hover {
+	background: var(--color-surface-hover, rgba(0, 0, 0, 0.05));
+	color: var(--color-text, inherit);
+}
