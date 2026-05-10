@@ -1,6 +1,5 @@
 import type { ImmutableArray } from "./array.js";
 import { isArray } from "./array.js";
-import type { Data } from "./data.js";
 import { isIterable } from "./iterate.js";
 import type { AbsolutePath } from "./path.js";
 import type { Query } from "./query.js";
@@ -16,6 +15,7 @@ export interface ElementProps {
 
 /** Element with a type, props, and optional key (compatible with `React.ReactElement`). */
 export interface Element<P extends ElementProps = ElementProps> {
+	readonly [key: string]: unknown;
 	readonly type: string | ((props: P) => Elements | null);
 	readonly props: P;
 	readonly key: string | null;
@@ -236,8 +236,8 @@ export function* getElements(elements: PossibleElements, depth = Infinity): Iter
  * @param query A `Query<Element>` object (e.g. `{ type: "tree-file" }` or `{ type: ["tree-file", "tree-directory"] }`).
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  */
-export function queryElements(elements: PossibleElements, query: Query<Data>, depth = Infinity): Iterable<Element> {
-	return queryItems(getElements(elements, depth) as Iterable<Data>, query) as Iterable<Element>;
+export function queryElements(elements: PossibleElements, query: Query<Element>, depth = Infinity): Iterable<Element> {
+	return queryItems(getElements(elements, depth), query);
 }
 
 /**
