@@ -1,25 +1,25 @@
-import type { JSXElement, JSXNode } from "../util/jsx.js";
+import type { Element, Elements } from "../util/element.js";
 import type { MarkupOptions } from "./util/options.js";
 import type { MarkupRule } from "./util/rule.js";
 
 /**
- * Parse a text string as Markdownish syntax and render it as a JSX node.
+ * Parse a text string as Markdownish syntax and render it as elements.
  * - Syntax is not defined by this code, but by the rules supplied to it.
  *
  * @param input The string content possibly containing markup syntax, e.g. "This is a *bold* string.
  * @param options An options object for the render.
  * @param context The context to render in (defaults to `"block"`).
  *
- * @returns JSXNode, i.e. either a complete `JSXElement`, `null`, `undefined`, `string`, or an array of zero or more of those.
+ * @returns Elements, i.e. either a complete `Element`, `null`, `undefined`, `string`, or an array of zero or more of those.
  */
-export function renderMarkup(input: string, options: MarkupOptions, context = "block"): JSXNode {
+export function renderMarkup(input: string, options: MarkupOptions, context = "block"): Elements {
 	const arr = Array.from(_parseString(input, options, context));
 	return !arr.length ? null : arr.length === 1 ? arr[0] : arr;
 }
 
 /**
- * Parse a string to its corresponding JSX nodes in a given context.
- * - This code is heavily inspired by `simple-markdown`, but intends to be even simpler (and faster) by always producing JSX elements.
+ * Parse a string to its corresponding elements in a given context.
+ * - This code is heavily inspired by `simple-markdown`, but intends to be even simpler (and faster) by always producing elements.
  */
 function* _parseString(
 	/** The input string. */
@@ -30,7 +30,7 @@ function* _parseString(
 	context: string,
 	/** The offset of where we are in the _original_ string — this is used to compute the `key` property for the returned element. */
 	offset = 0,
-): Iterable<JSXElement | string> {
+): Iterable<Element | string> {
 	// The best matched rule is the one with the highest priority.
 	// If two have equal priority use the earliest match in the string.
 	let bestMatch: RegExpExecArray | undefined;

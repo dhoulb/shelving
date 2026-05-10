@@ -17,11 +17,11 @@ export type MetaAssets = ImmutableArray<Nullish<string>>;
 /** Type for a meta `Content-Security-Policy` tag in `{ resource: string[] }` format. */
 export type MetaCSP = { readonly [resource: string]: string[] };
 
-/** Combined meta information for a website page. */
+/** Combined meta data for a website page. */
 export interface MetaData {
 	/** Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). */
 	readonly base?: ImmutableURL | undefined;
-	/** URL of the current page (used to update history API  */
+	/** URL of the current page (used to update history API and as the initial URL for routing). */
 	readonly url?: ImmutableURL | undefined;
 	/** Title of the entire application. */
 	readonly app?: string | undefined;
@@ -30,7 +30,7 @@ export interface MetaData {
 	/** Description of the current page. */
 	readonly description?: string | undefined;
 	readonly image?: string | undefined;
-	/** Language code (used for  */
+	/** Language code (used for `lang` tag in HTML). */
 	readonly language?: string | undefined;
 	readonly csp?: MetaCSP | undefined;
 	readonly tags?: MetaTags | undefined;
@@ -41,7 +41,7 @@ export interface MetaData {
 }
 
 /** Input metadata that can be parsed and converted to proper metadata. */
-export interface PossibleMetaData extends Omit<MetaData, "url"> {
+export interface PossibleMeta extends Omit<MetaData, "url"> {
 	/**
 	 * New URL for the page.
 	 * - Resolved using `requireURL()` if set relative to `base`
@@ -56,7 +56,7 @@ export interface PossibleMetaData extends Omit<MetaData, "url"> {
 }
 
 /** Turn a deconstructed CSP into a string. */
-export function joinCSP(csp: Nullish<MetaCSP>): string | undefined {
+export function joinMetaCSP(csp: Nullish<MetaCSP>): string | undefined {
 	if (typeof csp === "string") return csp;
 	if (csp !== null && csp !== undefined) return Object.entries(csp).map(_mapCSP).join("; ");
 }
@@ -68,15 +68,15 @@ export function joinTitles(...titles: (string | undefined)[]): string {
 }
 
 /**
- * Merge two metadata objects.
+ * Merge two `MetaData` objects.
  * - `title` is merged.
  * - `URL` is resolved to an absolute URL, e.g. `./d/e/f` + `/a/b/c` becomes `https://d.com/a/b/c/d/e/f`
  */
-export function mergeMeta(meta1: MetaData, meta2: PossibleMetaData, caller: AnyCaller = mergeMeta): MetaData {
+export function mergeMeta(meta1: MetaData, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): MetaData {
 	const title = joinTitles(meta2.title, meta1.title);
 
-	const base = mergeURL(undefined, meta1.base, meta2.base, undefined, caller);
-	const url = mergeURL(base, meta1.url, meta2.url, meta2.params, caller);
+	const base = mergeMetaURL(undefined, meta1.base, meta2.base, undefined, caller);
+	const url = mergeMetaURL(base, meta1.url, meta2.url, meta2.params, caller);
 
 	return { ...meta1, ...meta2, base, url, title };
 }
@@ -85,12 +85,12 @@ export function mergeMeta(meta1: MetaData, meta2: PossibleMetaData, caller: AnyC
  * Merge two metadata URLs.
  * - New URL is resolved relative to: current URL, new base URL, current base URL
  */
-export function mergeURL(
+export function mergeMetaURL(
 	base: ImmutableURL | undefined,
 	current: ImmutableURL | undefined,
 	next: PossibleURL | undefined,
 	params: PossibleURIParams | undefined,
-	caller: AnyCaller = mergeURL,
+	caller: AnyCaller = mergeMetaURL,
 ): ImmutableURL | undefined {
 	const url = next ? requireURL(next, base, caller) : current;
 	return url && params ? withURIParams(url, params, caller) : url;

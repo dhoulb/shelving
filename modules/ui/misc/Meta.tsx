@@ -1,11 +1,11 @@
 import { createContext, type ReactNode, use } from "react";
-import { type MetaData, mergeMeta, type PossibleMetaData } from "../util/meta.js";
+import { type MetaData, mergeMeta, type PossibleMeta } from "../util/meta.js";
 
 /** Context to store the `Config` object. */
 const _MetaContext = createContext<MetaData>({});
 _MetaContext.displayName = "MetaContext";
 
-export interface MetaProps extends PossibleMetaData {
+export interface MetaProps extends PossibleMeta {
 	children: ReactNode;
 }
 
