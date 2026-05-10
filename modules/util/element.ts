@@ -250,25 +250,25 @@ export function queryElements(elements: PossibleElements, query: Query<Element>,
  * - `depth=0` yields matching elements at the current level only (no recursion into children).
  */
 export function* filterElements(elements: PossibleElements, match: (element: Element) => boolean, depth = Infinity): Iterable<Element> {
-	for (const element of getElements(elements, depth)) {
-		if (match(element)) yield element;
-	}
+	for (const element of getElements(elements, depth)) if (match(element)) yield element;
 }
 
 /**
- * Resolve a slash-separated path to an element in a tree by walking each segment against element keys.
- * - Splits `path` on `/` and matches each segment to the `key` of an immediate child element.
- * - If `path` is empty or undefined, returns the first keyed element at the root level.
+ * Resolve an element in a tree by walking a sequence of keys.
+ * - Accepts a dot-separated string (e.g. `"util.array"`) or an array of key segments (e.g. `["util", "array"]`).
+ * - Matches each segment to the `key` of an immediate child element.
+ * - If `keys` is empty, undefined, or an empty string, returns the first keyed element at the root level.
  * - Returns `undefined` if no element matches at any level.
  *
  * @param elements The root elements to search within.
- * @param path A slash-separated path like `"util/array"` or `"docs/getting-started"`.
+ * @param keys A dot-separated string or array of key segments.
  *
- * @example resolveElementPath(elements, "util/array") // Element with key "array" inside element with key "util"
- * @example resolveElementPath(elements, "") // First keyed root element
+ * @example resolveElement(elements, "util.array") // Element with key "array" inside element with key "util"
+ * @example resolveElement(elements, ["util", "array"]) // Same as above
+ * @example resolveElement(elements, "") // First keyed root element
  */
-export function resolveElementPath(elements: PossibleElements, path: string | undefined): Element | undefined {
-	const segments = (path || "").split("/").filter(Boolean);
+export function resolveElement(elements: PossibleElements, keys: string | readonly string[] | undefined): Element | undefined {
+	const segments = typeof keys === "string" ? keys.split(".").filter(Boolean) : (keys ?? []);
 
 	if (!segments.length) {
 		// Root — return the first keyed element.
@@ -297,15 +297,16 @@ export function resolveElementPath(elements: PossibleElements, path: string | un
 }
 
 /**
- * Deeply iterate a tree of elements and yield the absolute path for each element that has a string `key`.
- * - Paths are formed by concatenating `key` values with `/` separators.
+ * Deeply iterate a tree of elements and yield the key path for each element that has a string `key`.
+ * - Each yielded value is an array of key segments from root to the element.
+ * - Use `joinPath()` to convert a key array to an `AbsolutePath` string.
  */
-export function* getElementPaths(elements: PossibleElements, prefix = ""): Iterable<AbsolutePath> {
-	for (const element of getElements(elements)) {
+export function* getElementKeys(elements: PossibleElements, prefix: readonly string[] = []): Iterable<readonly string[]> {
+	for (const element of getElements(elements, 0)) {
 		const { key } = element;
 		if (!key) continue;
-		const path = `${prefix}/${key}` as AbsolutePath;
-		yield path;
-		if (element.props.children) yield* getElementPaths(element.props.children, path);
+		const keys = [...prefix, key];
+		yield keys;
+		if (element.props.children) yield* getElementKeys(element.props.children, keys);
 	}
 }

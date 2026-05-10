@@ -1,6 +1,7 @@
 import type { FunctionComponent, ReactNode } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
-import { type ElementProps, type PossibleElements, resolveElementPath } from "../../util/element.js";
+import { type ElementProps, type PossibleElements, resolveElement } from "../../util/element.js";
+import { splitPath } from "../../util/path.js";
 import { mapElements } from "../misc/ElementMapper.js";
 import type { RouteProps } from "../router/Routes.js";
 
@@ -18,7 +19,7 @@ export interface TreePageProps {
  * - Throws `NotFoundError` if no element matches at any level.
  */
 export function TreePage({ params, elements }: TreePageProps): ReactNode {
-	const element = resolveElementPath(elements, params?.path);
+	const element = resolveElement(elements, params?.path ? splitPath(params.path) : undefined);
 	if (!element) throw new NotFoundError("Element not found", { received: params?.path });
 	const [mapped] = mapElements([element], "TreePage");
 	if (mapped && typeof mapped.type === "function") {

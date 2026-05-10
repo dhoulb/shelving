@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
 import type { Data, Element, Elements } from "../index.js";
-import { filterElements, getElements, getElementText, queryElements, resolveElementPath } from "../index.js";
+import { filterElements, getElementKeys, getElements, getElementText, queryElements, resolveElement } from "../index.js";
 
 const P: Element = {
 	key: null,
@@ -131,38 +131,49 @@ describe("filterElements()", () => {
 	});
 });
 
-describe("resolveElementPath()", () => {
-	const TREE: Element[] = [
-		{
-			key: "util",
-			type: "tree-directory",
-			props: {
-				children: [
-					{ key: "array", type: "tree-file", props: { title: "Array" } },
-					{ key: "string", type: "tree-file", props: { title: "String" } },
-				],
-			},
+const RESOLVE_TREE: Element[] = [
+	{
+		key: "util",
+		type: "tree-directory",
+		props: {
+			children: [
+				{ key: "array", type: "tree-file", props: { title: "Array" } },
+				{ key: "string", type: "tree-file", props: { title: "String" } },
+			],
 		},
-		{ key: "readme", type: "tree-file", props: { title: "README" } },
-	];
+	},
+	{ key: "readme", type: "tree-file", props: { title: "README" } },
+];
 
-	test("resolves a single-segment path", () => {
-		const result = resolveElementPath(TREE, "util");
-		expect(result).toMatchObject({ key: "util", type: "tree-directory" });
+describe("resolveElement()", () => {
+	test("resolves a single key", () => {
+		expect(resolveElement(RESOLVE_TREE, "util")).toMatchObject({ key: "util", type: "tree-directory" });
 	});
 
-	test("resolves a multi-segment path", () => {
-		const result = resolveElementPath(TREE, "util/array");
-		expect(result).toMatchObject({ key: "array", type: "tree-file", props: { title: "Array" } });
+	test("resolves a dot-separated string", () => {
+		expect(resolveElement(RESOLVE_TREE, "util.array")).toMatchObject({ key: "array", props: { title: "Array" } });
 	});
 
-	test("returns first keyed element for empty path", () => {
-		expect(resolveElementPath(TREE, "")).toMatchObject({ key: "util" });
-		expect(resolveElementPath(TREE, undefined)).toMatchObject({ key: "util" });
+	test("resolves an array of keys", () => {
+		expect(resolveElement(RESOLVE_TREE, ["util", "array"])).toMatchObject({ key: "array", props: { title: "Array" } });
 	});
 
-	test("returns undefined for non-existent path", () => {
-		expect(resolveElementPath(TREE, "nonexistent")).toBeUndefined();
-		expect(resolveElementPath(TREE, "util/nonexistent")).toBeUndefined();
+	test("returns first keyed element for empty input", () => {
+		expect(resolveElement(RESOLVE_TREE, "")).toMatchObject({ key: "util" });
+		expect(resolveElement(RESOLVE_TREE, [])).toMatchObject({ key: "util" });
+		expect(resolveElement(RESOLVE_TREE, undefined)).toMatchObject({ key: "util" });
+	});
+
+	test("returns undefined for non-existent keys", () => {
+		expect(resolveElement(RESOLVE_TREE, "nonexistent")).toBeUndefined();
+		expect(resolveElement(RESOLVE_TREE, "util.nonexistent")).toBeUndefined();
+		expect(resolveElement(RESOLVE_TREE, ["util", "nonexistent"])).toBeUndefined();
+	});
+});
+
+describe("getElementKeys()", () => {
+	test("yields key arrays for all keyed elements", () => {
+		const keys = Array.from(getElementKeys(RESOLVE_TREE));
+		expect(keys).toEqual([["util"], ["util", "array"], ["util", "string"], ["readme"]]);
 	});
 });
