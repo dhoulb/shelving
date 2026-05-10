@@ -211,46 +211,35 @@ export function getElementText(elements?: PossibleElements): string {
 /**
  * Iterate through all elements in a collection.
  * - Yields each `Element` found, recursing into `props.children` up to `depth` levels.
- * - `depth` controls how many levels of children to recurse into (default: infinite).
+ *
+ * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  * - `depth=0` yields elements at the current level only (no recursion into children).
  */
-export function* getElements(elements: PossibleElements, depth?: number): Iterable<Element> {
+export function* getElements(elements: PossibleElements, depth = Infinity): Iterable<Element> {
 	if (isElement(elements)) {
 		yield elements;
-		if (depth !== 0 && elements.props.children) yield* getElements(elements.props.children, depth !== undefined ? depth - 1 : undefined);
+		if (depth !== 0 && elements.props.children) yield* getElements(elements.props.children, depth - 1);
 	} else if (isIterable(elements)) {
 		for (const el of elements) yield* getElements(el, depth);
 	}
 }
 
 /**
- * Deeply query elements, filtering by a match function and recursing into children up to `depth` levels.
- * - Returns a new `Elements` collection containing only elements whose `type` matches.
- * - Children of matching elements are recursively filtered.
- * - If `depth` is unset, recursion is infinite.
+ * Iterate through all elements in a collection that match a filter function.
+ * - Yields each matching `Element`, recursing into `props.children` up to `depth` levels.
  *
  * @param elements The elements to query.
- * @param match Function that tests whether an element should be included.
- * @param depth Maximum depth to recurse (0 = top level only, undefined = infinite).
+ * @param match Function that tests whether an element should be yielded.
+ * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
+ * - `depth=0` yields matching elements at the current level only (no recursion into children).
  */
-export function queryElements(elements: PossibleElements, match: (element: Element) => boolean, depth?: number): Elements {
-	if (!elements) return elements as Elements;
-	if (typeof elements === "string") return elements;
-	if (!isElement(elements) && !isArray(elements)) {
-		// Normalize non-array iterables to arrays.
-		return isIterable(elements) ? queryElements([...elements], match, depth) : undefined;
-	}
-	if (isArray(elements)) {
-		const results = elements.map(n => queryElements(n, match, depth)).filter(Boolean);
-		return results.length ? results : undefined;
-	}
+export function* queryElements(elements: PossibleElements, match: (element: Element) => boolean, depth = Infinity): Iterable<Element> {
 	if (isElement(elements)) {
-		if (!match(elements)) return undefined;
-		if (depth === 0 || !elements.props.children) return elements;
-		const children = queryElements(elements.props.children, match, depth !== undefined ? depth - 1 : undefined);
-		return children !== elements.props.children ? { ...elements, props: { ...elements.props, children } } : elements;
+		if (match(elements)) yield elements;
+		if (depth !== 0 && elements.props.children) yield* queryElements(elements.props.children, match, depth - 1);
+	} else if (isIterable(elements)) {
+		for (const el of elements) yield* queryElements(el, match, depth);
 	}
-	return undefined;
 }
 
 /**

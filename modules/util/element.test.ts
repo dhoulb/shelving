@@ -66,34 +66,33 @@ describe("queryElements()", () => {
 		},
 	};
 
-	test("filters elements by type", () => {
-		const result = queryElements(TREE, el => el.type === "tree-directory");
-		expect(result).toMatchObject({
-			type: "tree-directory",
-			props: { children: [{ key: "sub", type: "tree-directory" }] },
-		});
+	test("yields only matching elements", () => {
+		const result = Array.from(queryElements(TREE, el => el.type === "tree-directory"));
+		expect(result).toMatchObject([
+			{ key: "root", type: "tree-directory" },
+			{ key: "sub", type: "tree-directory" },
+			{ key: "deep", type: "tree-directory" },
+		]);
 	});
 
 	test("respects depth limit", () => {
-		const result = queryElements(TREE, el => el.type === "tree-directory" || el.type === "tree-file", 1) as Element;
-		// Depth 1 means children of root are included but their children are not recursed.
-		const sub = (result.props.children as Element[]).find(c => c.key === "sub") as Element;
-		expect(sub).toBeDefined();
-		expect(sub.type).toBe("tree-directory");
+		// Depth 0: only root level matches.
+		const result0 = Array.from(queryElements(TREE, el => el.type === "tree-file", 0));
+		expect(result0).toHaveLength(0); // root is tree-directory, no files at depth 0
+
+		// Depth 1: root + immediate children.
+		const result1 = Array.from(queryElements(TREE, el => el.type === "tree-file", 1));
+		expect(result1).toMatchObject([{ key: "file1" }]);
 	});
 
-	test("returns undefined for no matches", () => {
-		const result = queryElements(TREE, el => el.type === "nonexistent");
-		expect(result).toBeUndefined();
+	test("yields nothing for no matches", () => {
+		const result = Array.from(queryElements(TREE, el => el.type === "nonexistent"));
+		expect(result).toHaveLength(0);
 	});
 
-	test("passes through strings unchanged", () => {
-		const result = queryElements("hello", el => el.type === "tree-file");
-		expect(result).toBe("hello");
-	});
-
-	test("passes through null/undefined unchanged", () => {
-		expect(queryElements(null, el => el.type === "tree-file")).toBeNull();
-		expect(queryElements(undefined, el => el.type === "tree-file")).toBeUndefined();
+	test("yields nothing for null/undefined/string input", () => {
+		expect(Array.from(queryElements(null, el => el.type === "tree-file"))).toHaveLength(0);
+		expect(Array.from(queryElements(undefined, el => el.type === "tree-file"))).toHaveLength(0);
+		expect(Array.from(queryElements("hello", el => el.type === "tree-file"))).toHaveLength(0);
 	});
 });
