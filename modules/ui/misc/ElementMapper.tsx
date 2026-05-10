@@ -4,12 +4,11 @@ import type { Element } from "../../util/element.js";
 
 /**
  * Type-safe element map entries.
- * - Keys are `"Prefix.element-type"` composites (e.g. `"TreePage.tree-directory"`).
+ * - Keys are `"prefix.element-type"` composites (e.g. `"TreePage.tree-directory"`).
  * - The component for each key must accept the props declared in `JSX.IntrinsicElements` for that element type.
- * - Optionally specify a `Prefix` to restrict keys to a single prefix string.
  */
-export type ElementMapEntries<Prefix extends string = string> = {
-	[K in keyof JSX.IntrinsicElements as `${Prefix}.${K}`]?: ComponentType<JSX.IntrinsicElements[K]>;
+export type ElementMapEntries = {
+	[K in keyof JSX.IntrinsicElements as `${string}.${K}`]?: ComponentType<JSX.IntrinsicElements[K]>;
 };
 
 /** Loose internal type for context storage and lookup. */
@@ -18,8 +17,8 @@ type _Entries = Record<string, ComponentType<never>>;
 const _ElementMapperContext = createContext<_Entries>({});
 _ElementMapperContext.displayName = "ElementMapperContext";
 
-export interface ElementMapperProps<P extends string = string> {
-	map: ElementMapEntries<P>;
+export interface ElementMapperProps {
+	map: ElementMapEntries;
 	children: ReactNode;
 }
 
@@ -27,7 +26,7 @@ export interface ElementMapperProps<P extends string = string> {
  * Provide or extend the element map.
  * - Merges with any parent `ElementMapper`, with this map's entries taking precedence.
  */
-export function ElementMapper<P extends string>({ map, children }: ElementMapperProps<P>): ReactNode {
+export function ElementMapper({ map, children }: ElementMapperProps): ReactNode {
 	const existing = use(_ElementMapperContext);
 	return <_ElementMapperContext value={{ ...existing, ...(map as _Entries) }}>{children}</_ElementMapperContext>;
 }
