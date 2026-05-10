@@ -4,7 +4,7 @@ import type { AbsolutePath } from "../../util/path.js";
 import { App, type AppProps } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { PageCatcher } from "../misc/Catcher.js";
-import { type ElementMapEntries, ElementMapper } from "../misc/ElementMap.js";
+import { type ElementMapEntries, ElementMapper } from "../misc/ElementMapper.js";
 import { Router } from "../router/Router.js";
 import type { Routes } from "../router/Routes.js";
 import { TreeMenu } from "./TreeMenu.js";

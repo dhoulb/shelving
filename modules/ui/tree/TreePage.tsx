@@ -1,7 +1,7 @@
 import type { FunctionComponent, ReactNode } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
 import { type Element, type ElementProps, type Elements, getElements, isElement } from "../../util/element.js";
-import { mapElements } from "../misc/ElementMap.js";
+import { mapElements } from "../misc/ElementMapper.js";
 import type { RouteProps } from "../router/Routes.js";
 
 export interface TreePageProps {

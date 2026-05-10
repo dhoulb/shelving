@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactNode } from "react";
 import { type Element, type ElementProps, type Elements, getElements } from "../../util/element.js";
-import { mapElements } from "../misc/ElementMap.js";
+import { mapElements } from "../misc/ElementMapper.js";
 import TREE_MENU_CSS from "./TreeMenu.module.css";
 
 export interface TreeMenuProps {
