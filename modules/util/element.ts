@@ -1,7 +1,10 @@
 import type { ImmutableArray } from "./array.js";
 import { isArray } from "./array.js";
+import type { Data } from "./data.js";
 import { isIterable } from "./iterate.js";
 import type { AbsolutePath } from "./path.js";
+import type { Query } from "./query.js";
+import { queryItems } from "./query.js";
 
 // Base element types.
 
@@ -225,20 +228,30 @@ export function* getElements(elements: PossibleElements, depth = Infinity): Iter
 }
 
 /**
- * Iterate through all elements in a collection that match a filter function.
- * - Yields each matching `Element`, recursing into `props.children` up to `depth` levels.
+ * Query elements using a `Query<Element>` object, leveraging the same query system as `queryItems()`.
+ * - Extracts all elements via `getElements()` up to `depth` levels, then applies the query.
+ * - Supports filtering by any element property (e.g. `{ type: "tree-file" }`), sorting, and limiting.
  *
  * @param elements The elements to query.
+ * @param query A `Query<Element>` object (e.g. `{ type: "tree-file" }` or `{ type: ["tree-file", "tree-directory"] }`).
+ * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
+ */
+export function queryElements(elements: PossibleElements, query: Query<Data>, depth = Infinity): Iterable<Element> {
+	return queryItems(getElements(elements, depth) as Iterable<Data>, query) as Iterable<Element>;
+}
+
+/**
+ * Filter elements using a match function.
+ * - Yields each matching `Element`, recursing into `props.children` up to `depth` levels.
+ *
+ * @param elements The elements to filter.
  * @param match Function that tests whether an element should be yielded.
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  * - `depth=0` yields matching elements at the current level only (no recursion into children).
  */
-export function* queryElements(elements: PossibleElements, match: (element: Element) => boolean, depth = Infinity): Iterable<Element> {
-	if (isElement(elements)) {
-		if (match(elements)) yield elements;
-		if (depth !== 0 && elements.props.children) yield* queryElements(elements.props.children, match, depth - 1);
-	} else if (isIterable(elements)) {
-		for (const el of elements) yield* queryElements(el, match, depth);
+export function* filterElements(elements: PossibleElements, match: (element: Element) => boolean, depth = Infinity): Iterable<Element> {
+	for (const element of getElements(elements, depth)) {
+		if (match(element)) yield element;
 	}
 }
 

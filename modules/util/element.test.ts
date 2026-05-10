@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
 import type { Element, Elements } from "../index.js";
-import { getElements, getElementText, queryElements, resolveElementPath } from "../index.js";
+import { filterElements, getElements, getElementText, queryElements, resolveElementPath } from "../index.js";
 
 const P: Element = {
 	key: null,
@@ -44,30 +44,60 @@ test("getElements()", () => {
 	]);
 });
 
-describe("queryElements()", () => {
-	const TREE: Element = {
-		key: "root",
-		type: "tree-directory",
-		props: {
-			children: [
-				{ key: "file1", type: "tree-file", props: {} },
-				{
-					key: "sub",
-					type: "tree-directory",
-					props: {
-						children: [
-							{ key: "file2", type: "tree-file", props: {} },
-							{ key: "deep", type: "tree-directory", props: { children: [{ key: "file3", type: "tree-file", props: {} }] } },
-						],
-					},
+const TREE: Element = {
+	key: "root",
+	type: "tree-directory",
+	props: {
+		children: [
+			{ key: "file1", type: "tree-file", props: {} },
+			{
+				key: "sub",
+				type: "tree-directory",
+				props: {
+					children: [
+						{ key: "file2", type: "tree-file", props: {} },
+						{ key: "deep", type: "tree-directory", props: { children: [{ key: "file3", type: "tree-file", props: {} }] } },
+					],
 				},
-				{ key: "func1", type: "tree-function", props: {} },
-			],
-		},
-	};
+			},
+			{ key: "func1", type: "tree-function", props: {} },
+		],
+	},
+};
 
+describe("queryElements()", () => {
+	test("queries elements by type using Query object", () => {
+		const result = Array.from(queryElements(TREE, { type: "tree-directory" }));
+		expect(result).toMatchObject([
+			{ key: "root", type: "tree-directory" },
+			{ key: "sub", type: "tree-directory" },
+			{ key: "deep", type: "tree-directory" },
+		]);
+	});
+
+	test("queries elements by type array (in filter)", () => {
+		const result = Array.from(queryElements(TREE, { type: ["tree-file", "tree-function"] }));
+		expect(result).toMatchObject([
+			{ key: "file1", type: "tree-file" },
+			{ key: "file2", type: "tree-file" },
+			{ key: "file3", type: "tree-file" },
+			{ key: "func1", type: "tree-function" },
+		]);
+	});
+
+	test("respects depth limit", () => {
+		const result = Array.from(queryElements(TREE, { type: "tree-file" }, 1));
+		expect(result).toMatchObject([{ key: "file1" }]);
+	});
+
+	test("yields nothing for no matches", () => {
+		expect(Array.from(queryElements(TREE, { type: "nonexistent" }))).toHaveLength(0);
+	});
+});
+
+describe("filterElements()", () => {
 	test("yields only matching elements", () => {
-		const result = Array.from(queryElements(TREE, el => el.type === "tree-directory"));
+		const result = Array.from(filterElements(TREE, el => el.type === "tree-directory"));
 		expect(result).toMatchObject([
 			{ key: "root", type: "tree-directory" },
 			{ key: "sub", type: "tree-directory" },
@@ -77,23 +107,23 @@ describe("queryElements()", () => {
 
 	test("respects depth limit", () => {
 		// Depth 0: only root level matches.
-		const result0 = Array.from(queryElements(TREE, el => el.type === "tree-file", 0));
+		const result0 = Array.from(filterElements(TREE, el => el.type === "tree-file", 0));
 		expect(result0).toHaveLength(0); // root is tree-directory, no files at depth 0
 
 		// Depth 1: root + immediate children.
-		const result1 = Array.from(queryElements(TREE, el => el.type === "tree-file", 1));
+		const result1 = Array.from(filterElements(TREE, el => el.type === "tree-file", 1));
 		expect(result1).toMatchObject([{ key: "file1" }]);
 	});
 
 	test("yields nothing for no matches", () => {
-		const result = Array.from(queryElements(TREE, el => el.type === "nonexistent"));
+		const result = Array.from(filterElements(TREE, el => el.type === "nonexistent"));
 		expect(result).toHaveLength(0);
 	});
 
 	test("yields nothing for null/undefined/string input", () => {
-		expect(Array.from(queryElements(null, el => el.type === "tree-file"))).toHaveLength(0);
-		expect(Array.from(queryElements(undefined, el => el.type === "tree-file"))).toHaveLength(0);
-		expect(Array.from(queryElements("hello", el => el.type === "tree-file"))).toHaveLength(0);
+		expect(Array.from(filterElements(null, el => el.type === "tree-file"))).toHaveLength(0);
+		expect(Array.from(filterElements(undefined, el => el.type === "tree-file"))).toHaveLength(0);
+		expect(Array.from(filterElements("hello", el => el.type === "tree-file"))).toHaveLength(0);
 	});
 });
 
