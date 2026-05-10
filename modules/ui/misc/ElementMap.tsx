@@ -14,7 +14,7 @@ export type ElementMapEntries = Readonly<Record<string, ElementMapComponent>>;
 const _ElementMapContext = createContext<ElementMapEntries>({});
 _ElementMapContext.displayName = "ElementMapContext";
 
-export interface ElementMapProps {
+export interface ElementMapperProps {
 	/** Map entries to provide. Merged with (and overrides) any parent context. */
 	map: ElementMapEntries;
 	children: ReactNode;
@@ -22,9 +22,9 @@ export interface ElementMapProps {
 
 /**
  * Provide or extend the element map.
- * - Merges with any parent `ElementMap`, with this map's entries taking precedence.
+ * - Merges with any parent `ElementMapper`, with this map's entries taking precedence.
  */
-export function ElementMap({ map, children }: ElementMapProps): ReactNode {
+export function ElementMapper({ map, children }: ElementMapperProps): ReactNode {
 	const parent = use(_ElementMapContext);
 	return <_ElementMapContext value={{ ...parent, ...map }}>{children}</_ElementMapContext>;
 }

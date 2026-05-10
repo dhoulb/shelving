@@ -4,7 +4,7 @@ import type { AbsolutePath } from "../../util/path.js";
 import { App, type AppProps } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { PageCatcher } from "../misc/Catcher.js";
-import { ElementMap, type ElementMapEntries } from "../misc/ElementMap.js";
+import { type ElementMapEntries, ElementMapper } from "../misc/ElementMap.js";
 import { Router } from "../router/Router.js";
 import type { Routes } from "../router/Routes.js";
 import { TreeMenu } from "./TreeMenu.js";
@@ -35,13 +35,13 @@ export function TreeApp({ elements, map = {}, routes = {}, children, ...appProps
 
 	return (
 		<App {...appProps}>
-			<ElementMap map={map}>
+			<ElementMapper map={map}>
 				<Router routes={allRoutes}>
 					<PageCatcher>
 						<SidebarLayout sidebar={<TreeMenu>{elements}</TreeMenu>}>{children}</SidebarLayout>
 					</PageCatcher>
 				</Router>
-			</ElementMap>
+			</ElementMapper>
 		</App>
 	);
 }
