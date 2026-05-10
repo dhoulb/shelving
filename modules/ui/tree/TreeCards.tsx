@@ -10,12 +10,10 @@ export interface TreeCardsProps {
 
 /** Grid of cards built from a tree of elements. */
 export function TreeCards({ children }: TreeCardsProps): ReactNode {
-	const elements = Array.from(getElements(children)).filter(el => el.key);
-	const mapped = mapElements(elements, "TreeCard");
 	return (
 		<div className={TREE_CARDS_CSS.grid}>
-			{mapped.map(el => (
-				<TreeCard key={el.key} element={el} />
+			{mapElements(getElements(children), "TreeCard").map((el, i) => (
+				<TreeCard key={el.key ?? `index-${i}`} element={el} />
 			))}
 		</div>
 	);

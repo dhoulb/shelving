@@ -10,13 +10,11 @@ export interface TreeMenuProps {
 
 /** Sidebar navigation menu built from a tree of elements. */
 export function TreeMenu({ children }: TreeMenuProps): ReactNode {
-	const elements = Array.from(getElements(children)).filter(el => el.key);
-	const mapped = mapElements(elements, "TreeMenu");
 	return (
 		<nav className={TREE_MENU_CSS.menu}>
 			<ul className={TREE_MENU_CSS.list}>
-				{mapped.map(el => (
-					<TreeMenuItem key={el.key} element={el} />
+				{mapElements(getElements(children), "TreeMenu").map((el, i) => (
+					<TreeMenuItem key={el.key ?? `index-${i}`} element={el} />
 				))}
 			</ul>
 		</nav>
