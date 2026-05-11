@@ -34,6 +34,12 @@ export type DataProp<T extends Data> = {
 export type DataPath = readonly [key: string, ...string[]];
 
 /**
+ * Something that can be converted to a `DataPath`,
+ * i.e. a "dot.separated.string" or an existing `DataPath` array.
+ */
+export type PossibleDataPath = string | DataPath;
+
+/**
  * Helper type to get a flattened data object with every branch node of the data, flattened into `a.c.b` format.
  * i.e. `BranchData<{ a: { a2: number } }>` produces `{ "a": object, "a.a2": number }`
  */
@@ -173,13 +179,21 @@ export function joinDataKey(path: DataPath): string {
  */
 export function getDataProp<T extends Data, K extends BranchDataKey<T>>(data: T, key: K): BranchData<T>[K];
 export function getDataProp<T extends Data, K extends BranchDataKey<T>>(data: DeepPartial<T>, key: K): BranchData<T>[K] | undefined;
-export function getDataProp(data: Data, keyOrPath: string | DataPath): unknown;
-export function getDataProp(data: Data, keyOrPath: string | DataPath): unknown {
-	const path = typeof keyOrPath === "string" ? splitDataKey(keyOrPath) : keyOrPath;
+export function getDataProp(data: Data, key: PossibleDataPath): unknown;
+export function getDataProp(data: Data, key: PossibleDataPath): unknown {
+	const path = getDataPath(key);
 	let current: unknown = data;
 	for (const k of path) {
 		if (!isObject(current)) return undefined;
 		current = current[k];
 	}
 	return current;
+}
+
+/**
+ * Convert a possible data path to a data path array of string segments.
+ * Get an array of data path segments from a string data path, or return the existing existing data path array.
+ */
+export function getDataPath(key: PossibleDataPath): DataPath {
+	return typeof key === "string" ? splitDataKey(key) : key;
 }
