@@ -6,14 +6,14 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
 /** Validate an asynchronous source provider (source can have any type because validation guarantees the type). */
 export class ValidationAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
-	override getRequest<PP extends P, RR extends R>(
+	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
-		caller: AnyCaller = this.getRequest,
+		caller: AnyCaller = this.createRequest,
 	): Request {
 		// Validate payload — let thrown strings bubble up as user-readable messages for e.g. form handlers.
-		return super.getRequest(endpoint, endpoint.payload.validate(payload), options, caller);
+		return super.createRequest(endpoint, endpoint.payload.validate(payload), options, caller);
 	}
 
 	override async parseResponse<PP extends P, RR extends R>(

@@ -8,7 +8,7 @@ import { ClientAPIProvider } from "./ClientAPIProvider.js";
 
 /** API provider that always sends request bodies as JSON and parses responses as JSON. */
 export class JSONAPIProvider<P = unknown, R = unknown> extends ClientAPIProvider<P, R> {
-	protected override _getBodyRequest(
+	protected override _createBodyRequest(
 		method: RequestBodyMethod,
 		url: PossibleURL,
 		payload: P,

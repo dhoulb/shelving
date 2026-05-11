@@ -25,13 +25,13 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 		return this.source.renderURL(endpoint, payload, caller);
 	}
 
-	getRequest<PP extends P, RR extends R>(
+	createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
-		caller: AnyCaller = this.getRequest,
+		caller: AnyCaller = this.createRequest,
 	): Request {
-		return this.source.getRequest(endpoint, payload, options, caller);
+		return this.source.createRequest(endpoint, payload, options, caller);
 	}
 
 	parseResponse<PP extends P, RR extends R>(
