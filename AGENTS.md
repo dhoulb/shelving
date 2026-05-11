@@ -98,8 +98,9 @@ The codebase uses a tight, consistent prefix system. Pick the one that matches t
 | `has*` | Boolean predicate (possession / state, not type) | `hasItems` |
 | `assert*` | Throws if invalid; uses `asserts value is T` | `assertArray`, `assertString` |
 | `validate*` | Throws on invalid; returns the validated value (also strips/coerces) | `validateData` |
-| `get*` | Returns value or `undefined` — never throws for "missing" | `getString`, `getData` |
+| `get*` | Returns value or `undefined` — never throws for "missing"; may return input unchanged when already valid | `getString`, `getData` |
 | `require*` | Returns value or throws `RequiredError` | `requireFirst`, `requireString` |
+| `create*` | Always returns a freshly constructed instance — never returns the input unchanged and never returns `undefined` | `createDeferred`, `createMarkupRule`, `createJSONRequest` |
 | `with*` | Returns immutable updated copy with a value set | `withProp`, `withArrayItem` |
 | `omit*` | Returns immutable updated copy with keys removed | `omitProp`, `omitArrayItem` |
 | `add*` | Returns immutable updated copy with an item added | `addArrayItem`, `addSetItem` |
@@ -114,6 +115,8 @@ The codebase uses a tight, consistent prefix system. Pick the one that matches t
 | `run*` | Executes a callback or sequence | `runSequence` |
 
 **Pairing rule:** `get*` / `require*` and `is*` / `assert*` come as pairs over the same target. Choosing between them is a contract decision the caller depends on. If you add a new `require*`, consider whether a sibling `get*` belongs alongside it; same for `assert*` / `is*`.
+
+**`get*` vs `create*`:** if a helper unconditionally constructs and returns a brand-new instance (e.g. always calls `new X(...)` or always returns a fresh object literal), name it `create*`. Reserve `get*` for "look up, coerce, or normalise" — helpers that may return the input unchanged when it's already valid, or return `undefined` when there's nothing to return. Most factories the codebase needs are written inline as `new X(...)`; the `create*` prefix is for the few cases where a helper wraps construction (typing, defaulting, composing).
 
 ### Reserved prefixes (UI / event layer)
 

@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import {
-	getFormDataRequest,
-	getJSONRequest,
-	getTextRequest,
-	getXMLRequest,
+	createFormDataRequest,
+	createJSONRequest,
+	createTextRequest,
+	createXMLRequest,
 	isRequestHeadMethod,
 	parseRequestBody,
 	parseRequestFormData,
@@ -133,28 +133,28 @@ describe("parseResponseFormData()", () => {
 });
 
 describe("request builders", () => {
-	test("getTextRequest() creates a text request", async () => {
-		const request = getTextRequest("POST", "https://example.com/items", "hello");
+	test("createTextRequest() creates a text request", async () => {
+		const request = createTextRequest("POST", "https://example.com/items", "hello");
 		expect(request.headers.get("Content-Type")).toBe("text/plain");
 		expect(await request.text()).toBe("hello");
 	});
 
-	test("getJSONRequest() creates a JSON request", async () => {
-		const request = getJSONRequest("POST", "https://example.com/items", { name: "abc" });
+	test("createJSONRequest() creates a JSON request", async () => {
+		const request = createJSONRequest("POST", "https://example.com/items", { name: "abc" });
 		expect(request.headers.get("Content-Type")).toBe("application/json");
 		expect(await request.text()).toBe('{"name":"abc"}');
 	});
 
-	test("getFormDataRequest() creates a form-data request", async () => {
+	test("createFormDataRequest() creates a form-data request", async () => {
 		const body = new FormData();
 		body.set("name", "abc");
 
-		const request = getFormDataRequest("POST", "https://example.com/items", body);
+		const request = createFormDataRequest("POST", "https://example.com/items", body);
 		expect((await request.formData()).get("name")).toBe("abc");
 	});
 
-	test("getXMLRequest() creates an XML request", async () => {
-		const request = getXMLRequest("POST", "https://example.com/items", { item: { name: "abc" } });
+	test("createXMLRequest() creates an XML request", async () => {
+		const request = createXMLRequest("POST", "https://example.com/items", { item: { name: "abc" } });
 		expect(request.headers.get("Content-Type")).toBe("application/xml; charset=UTF-8");
 		expect(await request.text()).toBe('<?xml version="1.0" encoding="UTF-8"?><item><name>abc</name></item>');
 	});

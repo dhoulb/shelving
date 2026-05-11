@@ -16,17 +16,17 @@ export const WORD_START_REGEXP = "(?<![\\p{L}\\p{N}])"; // Start of word (previo
 export const WORD_END_REGEXP = "(?![\\p{L}\\p{N}])"; // End of word (next character is not a letter or number).
 
 /** Create regular expression that matches a block of content. */
-export function getBlockRegExp<T extends NamedRegExpData>(
+export function createBlockRegExp<T extends NamedRegExpData>(
 	pattern: NamedRegExp<T>,
 	start?: PossibleRegExp,
 	end?: PossibleRegExp,
 ): T extends NamedRegExpData ? NamedRegExp<T> : RegExp;
-export function getBlockRegExp<T extends NamedRegExpData | undefined = undefined>(
+export function createBlockRegExp<T extends NamedRegExpData | undefined = undefined>(
 	pattern: PossibleRegExp,
 	start?: PossibleRegExp,
 	end?: PossibleRegExp,
 ): T extends NamedRegExpData ? NamedRegExp<T> : RegExp;
-export function getBlockRegExp(
+export function createBlockRegExp(
 	content: PossibleRegExp,
 	start: PossibleRegExp = BLOCK_START_REGEXP,
 	end: PossibleRegExp = BLOCK_END_REGEXP,
@@ -35,17 +35,17 @@ export function getBlockRegExp(
 }
 
 /** Create regular expression that matches a line of content. */
-export function getLineRegExp<T extends NamedRegExpData>(
+export function createLineRegExp<T extends NamedRegExpData>(
 	pattern: NamedRegExp<T>,
 	start?: PossibleRegExp,
 	end?: PossibleRegExp,
 ): T extends NamedRegExpData ? NamedRegExp<T> : RegExp;
-export function getLineRegExp<T extends NamedRegExpData | undefined = undefined>(
+export function createLineRegExp<T extends NamedRegExpData | undefined = undefined>(
 	pattern: PossibleRegExp,
 	start?: PossibleRegExp,
 	end?: PossibleRegExp,
 ): T extends NamedRegExpData ? NamedRegExp<T> : RegExp;
-export function getLineRegExp(
+export function createLineRegExp(
 	content: PossibleRegExp = LINE_CONTENT_REGEXP,
 	end: PossibleRegExp = LINE_END_REGEXP,
 	start: PossibleRegExp = LINE_START_REGEXP,
@@ -54,17 +54,17 @@ export function getLineRegExp(
 }
 
 /** Create regular expression that matches a word of content. */
-export function getWordRegExp<T extends NamedRegExpData>(
+export function createWordRegExp<T extends NamedRegExpData>(
 	pattern: NamedRegExp<T>,
 	start?: PossibleRegExp,
 	end?: PossibleRegExp,
 ): T extends NamedRegExpData ? NamedRegExp<T> : RegExp;
-export function getWordRegExp<T extends NamedRegExpData | undefined = undefined>(
+export function createWordRegExp<T extends NamedRegExpData | undefined = undefined>(
 	pattern: PossibleRegExp,
 	start?: PossibleRegExp,
 	end?: PossibleRegExp,
 ): T extends NamedRegExpData ? NamedRegExp<T> : RegExp;
-export function getWordRegExp(
+export function createWordRegExp(
 	content: PossibleRegExp = WORD_CONTENT_REGEXP,
 	start: PossibleRegExp = WORD_START_REGEXP,
 	end: PossibleRegExp = WORD_END_REGEXP,

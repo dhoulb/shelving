@@ -2,10 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { DATA, GET, JSONAPIProvider, POST, ResponseError, STRING } from "../../index.js";
 
 describe("JSONAPIProvider", () => {
-	test("getRequest() serializes POST payloads as JSON bodies", async () => {
+	test("createRequest() serializes POST payloads as JSON bodies", async () => {
 		const provider = new JSONAPIProvider({ url: "https://api.example.com/" });
 		const endpoint = POST("/items", DATA({ name: STRING }), STRING);
-		const request = provider.getRequest(endpoint, { name: "abc" });
+		const request = provider.createRequest(endpoint, { name: "abc" });
 
 		expect(request.headers.get("Content-Type")).toBe("application/json");
 		expect(await request.text()).toBe('{"name":"abc"}');

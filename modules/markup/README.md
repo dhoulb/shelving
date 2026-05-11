@@ -64,13 +64,13 @@ The third argument to `renderMarkup` is the starting context (`"block"` by defau
 
 ### Custom rules
 
-Build custom rules with `getMarkupRule` and combine them with the defaults:
+Build custom rules with `createMarkupRule` and combine them with the defaults:
 
 ```ts
-import { getMarkupRule, MARKUP_RULES, renderMarkup } from "shelving/markup";
+import { createMarkupRule, MARKUP_RULES, renderMarkup } from "shelving/markup";
 import { REACT_ELEMENT_TYPE } from "shelving/markup/util/internal";
 
-const HIGHLIGHT_RULE = getMarkupRule(
+const HIGHLIGHT_RULE = createMarkupRule(
   /==(?<text>[^=]+)==/,
   ({ groups: { text } }, options, key) => ({
     key,

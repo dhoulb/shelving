@@ -2,8 +2,8 @@ import type { Element } from "../../util/element.js";
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
-import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, getBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
-import { getMarkupRule } from "../util/rule.js";
+import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
+import { createMarkupRule } from "../util/rule.js";
 
 const INDENT = /^\t/gm; // Nesting is recognised with tabs only.
 const NUMBER = "\\d{1,9}[.):]"; // Number for a numbered list, e.g. `1.` or `2)` or `3:` followed by one or more spaces.
@@ -12,7 +12,7 @@ const ITEM = new RegExp(
 	"g",
 );
 
-export const ORDERED_REGEXP = getBlockRegExp<{
+export const ORDERED_REGEXP = createBlockRegExp<{
 	list: string;
 }>(`(?<list>${NUMBER}(?:${LINE_SPACE_REGEXP}+${BLOCK_CONTENT_REGEXP})?)`);
 
@@ -23,7 +23,7 @@ export const ORDERED_REGEXP = getBlockRegExp<{
  * - Second-level list can be created by indenting with `\t` one tab.
  * - Sparse lists are not supported.
  */
-export const ORDERED_RULE = getMarkupRule(
+export const ORDERED_RULE = createMarkupRule(
 	ORDERED_REGEXP,
 	({ groups: { list } }, options, key) => ({
 		key,

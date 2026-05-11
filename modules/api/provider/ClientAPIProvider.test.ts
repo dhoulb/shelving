@@ -2,28 +2,28 @@ import { describe, expect, test } from "bun:test";
 import { ClientAPIProvider, DATA, GET, POST, RequiredError, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
 
 describe("ClientAPIProvider", () => {
-	test("getRequest() renders placeholders into the URL and omits them from the remaining payload", () => {
+	test("createRequest() renders placeholders into the URL and omits them from the remaining payload", () => {
 		const provider = new ClientAPIProvider({ url: "https://api.example.com/v1/" });
 		const endpoint = GET("/users/{id}", DATA({ id: STRING, extra: STRING }), STRING);
-		const request = provider.getRequest(endpoint, { id: "123", extra: "x" });
+		const request = provider.createRequest(endpoint, { id: "123", extra: "x" });
 
 		expect(request.method).toBe("GET");
 		expect(request.url).toBe("https://api.example.com/v1/users/123?extra=x");
 	});
 
-	test("getRequest() serializes POST payloads as JSON bodies", async () => {
+	test("createRequest() serializes POST payloads as JSON bodies", async () => {
 		const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
 		const endpoint = POST("/items", DATA({ name: STRING }), STRING);
-		const request = provider.getRequest(endpoint, { name: "abc" });
+		const request = provider.createRequest(endpoint, { name: "abc" });
 
 		expect(request.headers.get("Content-Type")).toBe("application/json");
 		expect(await request.text()).toBe(JSON.stringify({ name: "abc" }));
 	});
 
-	test("getRequest() rejects non-data payloads for GET endpoints", () => {
+	test("createRequest() rejects non-data payloads for GET endpoints", () => {
 		const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
-		expect(() => provider.getRequest(endpoint, "123" as never)).toThrow(RequiredError);
+		expect(() => provider.createRequest(endpoint, "123" as never)).toThrow(RequiredError);
 	});
 
 	test("fetch() returns validated JSON responses", async () => {

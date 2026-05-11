@@ -1,12 +1,12 @@
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
-import { getWordRegExp } from "../util/regexp.js";
-import { getMarkupRule } from "../util/rule.js";
+import { createWordRegExp } from "../util/regexp.js";
+import { createMarkupRule } from "../util/rule.js";
 
 /** Map characters, e.g. `*`, to their coresponding HTML tag, e.g. `strong` */
 const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", _: "em", "=": "mark" }; // Hyphen must be first so it works when we use the keys as a character class.
 
-const INLINE_REGEXP = getWordRegExp<{
+const INLINE_REGEXP = createWordRegExp<{
 	char: keyof typeof INLINE_CHARS;
 	text: string;
 }>(`(?<wrap>(?<char>[${Object.keys(INLINE_CHARS).join("")}])+)(?<text>(?!\\k<char>)\\S(?:[\\s\\S]*?(?!\\k<char>)\\S)?)\\k<wrap>`);
@@ -24,7 +24,7 @@ const INLINE_REGEXP = getWordRegExp<{
  * - Closing characters must exactly match opening characters.
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  */
-export const INLINE_RULE = getMarkupRule(
+export const INLINE_RULE = createMarkupRule(
 	INLINE_REGEXP,
 	({ groups: { char, text } }, options, key) => ({
 		key,

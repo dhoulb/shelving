@@ -2,8 +2,8 @@ import type { Element } from "../../util/element.js";
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
-import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, getBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
-import { getMarkupRule } from "../util/rule.js";
+import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
+import { createMarkupRule } from "../util/rule.js";
 
 const INDENT = /^\t/gm; // Nesting is recognised with tabs only.
 const BULLET = "[-*•+]"; // Allowed bullet symbol.
@@ -12,7 +12,7 @@ const ITEM = new RegExp(
 	"g",
 );
 
-export const UNORDERED_REGEXP = getBlockRegExp<{
+export const UNORDERED_REGEXP = createBlockRegExp<{
 	list?: string;
 }>(`(?<list>${BULLET}(?:${LINE_SPACE_REGEXP}+${BLOCK_CONTENT_REGEXP})?)`);
 
@@ -24,7 +24,7 @@ export const UNORDERED_REGEXP = getBlockRegExp<{
  * - List block is ended by `\n\n` two newline characters.
  * - Sparse lists are not supported.
  */
-export const UNORDERED_RULE = getMarkupRule(
+export const UNORDERED_RULE = createMarkupRule(
 	UNORDERED_REGEXP,
 	({ groups: { list = "" } }, options, key) => ({
 		key,

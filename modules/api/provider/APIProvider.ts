@@ -35,7 +35,7 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
 	 */
-	abstract getRequest<PP extends P, RR extends R>(
+	abstract createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
@@ -59,7 +59,7 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 		options?: RequestOptions,
 		caller?: AnyCaller,
 	): Promise<RR> {
-		const request = this.getRequest(endpoint, payload, options, caller);
+		const request = this.createRequest(endpoint, payload, options, caller);
 		const response = await this.fetch(request);
 		return this.parseResponse(endpoint, response, caller);
 	}

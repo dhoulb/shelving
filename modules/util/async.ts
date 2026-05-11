@@ -113,10 +113,10 @@ export type Deferred<T = unknown> = {
 };
 
 /**
- * Get a deferred to access the `resolve()` and `reject()` functions of a promise.
+ * Create a deferred to access the `resolve()` and `reject()` functions of a promise.
  * - See https://github.com/tc39/proposal-promise-with-resolvers/
  */
-export function getDeferred<T = void>(): Deferred<T> {
+export function createDeferred<T = void>(): Deferred<T> {
 	let resolve: ValueCallback<T>;
 	let reject: ErrorCallback;
 	return {

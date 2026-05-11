@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { awaitAbort, awaitValues, getDeferred, Errors as ShelvingAggregateError } from "../index.js";
+import { awaitAbort, awaitValues, createDeferred, Errors as ShelvingAggregateError } from "../index.js";
 
 describe("awaitAbort()", () => {
 	test("rejects when signal is already aborted", async () => {
@@ -29,7 +29,7 @@ describe("awaitAbort()", () => {
 });
 describe("Deferred", () => {
 	test("Works correctly", async () => {
-		const { promise, resolve, reject } = getDeferred<string>();
+		const { promise, resolve, reject } = createDeferred<string>();
 		expect(promise).toBeInstanceOf(Promise);
 		expect(resolve).toBeInstanceOf(Function);
 		expect(reject).toBeInstanceOf(Function);

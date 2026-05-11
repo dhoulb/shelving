@@ -1,9 +1,9 @@
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
-import { BLOCK_SPACE_REGEXP, BLOCK_START_REGEXP, getBlockRegExp } from "../util/regexp.js";
-import { getMarkupRule } from "../util/rule.js";
+import { BLOCK_SPACE_REGEXP, BLOCK_START_REGEXP, createBlockRegExp } from "../util/regexp.js";
+import { createMarkupRule } from "../util/rule.js";
 
-export const PARAGRAPH_REGEXP = getBlockRegExp<{
+export const PARAGRAPH_REGEXP = createBlockRegExp<{
 	paragraph: string;
 }>(
 	"(?<paragraph>(?:(?=\\S)[\\s\\S]*?\\S))",
@@ -17,7 +17,7 @@ export const PARAGRAPH_REGEXP = getBlockRegExp<{
  * - Any run of non-whitespace.
  * - Leading and trailing whitespace is trimmed.
  */
-export const PARAGRAPH_RULE = getMarkupRule(
+export const PARAGRAPH_RULE = createMarkupRule(
 	PARAGRAPH_REGEXP,
 	({ groups: { paragraph } }, options, key) => ({
 		key,

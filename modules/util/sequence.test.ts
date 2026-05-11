@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import type { MutableArray } from "../index.js";
-import { getDeferred, mergeSequences, repeatDelay, repeatUntil, runSequence } from "../index.js";
+import { createDeferred, mergeSequences, repeatDelay, repeatUntil, runSequence } from "../index.js";
 
 const DELAY = 50;
 
 test("repeatUntil() and repeatDelay()", async () => {
 	const yielded: number[] = [];
-	const { promise, resolve } = getDeferred();
+	const { promise, resolve } = createDeferred();
 	for await (const count of repeatUntil(repeatDelay(DELAY), promise)) {
 		yielded.push(count);
 		if (count >= 3) resolve();

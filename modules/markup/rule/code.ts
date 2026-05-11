@@ -1,7 +1,7 @@
 import { getRegExp } from "../../util/regexp.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import { BLOCK_CONTENT_REGEXP } from "../util/regexp.js";
-import { getMarkupRule } from "../util/rule.js";
+import { createMarkupRule } from "../util/rule.js";
 
 const CODE_REGEXP = getRegExp<{ code: string }>(`(?<fence>\`+)(?<code>${BLOCK_CONTENT_REGEXP})\\k<fence>`);
 
@@ -12,7 +12,7 @@ const CODE_REGEXP = getRegExp<{ code: string }>(`(?<fence>\`+)(?<code>${BLOCK_CO
  * - Closing characters must exactly match opening characters.
  * - Same as Markdown syntax.
  */
-export const CODE_RULE = getMarkupRule(
+export const CODE_RULE = createMarkupRule(
 	CODE_REGEXP,
 	({ groups: { code } }, _options, key) => ({
 		key,
