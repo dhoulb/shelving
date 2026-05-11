@@ -1,11 +1,11 @@
 import type { ImmutableArray } from "./array.js";
 import { isArray } from "./array.js";
+import { getDataPath } from "./data.js";
 import { isIterable } from "./iterate.js";
+import { isNullish } from "./null.js";
 import type { AbsolutePath } from "./path.js";
 import type { Query } from "./query.js";
 import { queryItems } from "./query.js";
-
-// Base element types.
 
 /** Set of valid props for an element. */
 export interface ElementProps {
@@ -23,12 +23,7 @@ export interface Element<P extends ElementProps = ElementProps> {
 }
 
 /** Collection of elements (compatible with `React.ReactNode`). */
-export type Elements = undefined | null | string | Element | readonly Elements[];
-
-/** Widened input type that also accepts any `Iterable<Element>` (e.g. generators, Sets). */
-export type PossibleElements = Elements | Iterable<Element>;
-
-// Tree element types.
+export type Elements = undefined | null | string | Element | Iterable<Elements>;
 
 /** Props for a tree element — must have a `tree-` prefixed type. */
 export interface TreeElementProps extends ElementProps {
@@ -41,8 +36,6 @@ export interface TreeElementProps extends ElementProps {
 export interface TreeElement<P extends TreeElementProps = TreeElementProps> extends Element<P> {
 	readonly type: `tree-${string}`;
 }
-
-// Path element types.
 
 /** Props for an element representing a file system path. */
 export interface PathElementProps extends TreeElementProps {
@@ -81,8 +74,6 @@ export interface FileElementProps extends PathElementProps {
 export interface FileElement extends TreeElement<FileElementProps> {
 	readonly type: "tree-file";
 }
-
-// Code element types.
 
 /** A single parameter for a code symbol. */
 export interface CodeParam {
@@ -179,8 +170,6 @@ declare module "react" {
 	}
 }
 
-// Element utilities.
-
 /** Is an unknown value an element? */
 export function isElement(value: unknown): value is Element {
 	return typeof value === "object" && value !== null && "type" in value;
@@ -192,6 +181,25 @@ export function isElements(value: unknown): value is Elements {
 }
 
 /**
+ * A path to a (possibly deep) property in a elements list, e.g. `["sub", "str"]`.
+ * - At least one path segment is required.
+ * - Element paths are resolved using the `key` of the element.
+ */
+export type ElementPath = readonly [key: string, ...string[]];
+
+/**
+ * Something that can be converted to a `ElementPath`,
+ * i.e. a "dot.separated.string" or an existing `ElementPath` array.
+ */
+export type PossibleElementPath = string | ElementPath;
+
+/**
+ * Convert a possible element path to an element path array of string segments.
+ * Get an array of element path segments from a string element path, or return the existing existing element path array.
+ */
+export const getElementPath = getDataPath;
+
+/**
  * Strip all tags from elements to produce a plain text string.
  *
  * @param elements An element, a plain string, or null/undefined (or an array of those things).
@@ -199,16 +207,10 @@ export function isElements(value: unknown): value is Elements {
  *
  * @example `- Item with *strong*\n- Item with _em_` becomes `Item with strong Item with em`
  */
-export function getElementText(elements?: PossibleElements): string {
+export function getElementText(elements: Elements): string {
 	if (typeof elements === "string") return elements;
-	if (isArray(elements)) return elements.map(getElementText).filter(Boolean).join(" ");
 	if (isElement(elements)) return getElementText(elements.props.children);
-	if (isIterable(elements))
-		return [...elements]
-			.map(el => getElementText(el))
-			.filter(Boolean)
-			.join(" ");
-	return "";
+	return Array.from(getElements(elements)).map(getElementText).join("");
 }
 
 /**
@@ -218,12 +220,12 @@ export function getElementText(elements?: PossibleElements): string {
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  * - `depth=0` yields elements at the current level only (no recursion into children).
  */
-export function* getElements(elements: PossibleElements, depth = Infinity): Iterable<Element> {
+export function* getElements(elements: Elements, depth = Infinity): Iterable<Element> {
 	if (isElement(elements)) {
-		yield elements;
-		if (depth !== 0 && elements.props.children) yield* getElements(elements.props.children, depth - 1);
+		yield elements; // Yield the element itself.
+		if (depth > 0 && elements.props.children) yield* getElements(elements.props.children, depth - 1); // Yield each child-element.
 	} else if (isIterable(elements)) {
-		for (const el of elements) yield* getElements(el, depth);
+		for (const x of elements) yield* getElements(x, depth);
 	}
 }
 
@@ -236,7 +238,7 @@ export function* getElements(elements: PossibleElements, depth = Infinity): Iter
  * @param query A `Query<Element>` object (e.g. `{ type: "tree-file" }` or `{ type: ["tree-file", "tree-directory"] }`).
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  */
-export function queryElements(elements: PossibleElements, query: Query<Element>, depth = Infinity): Iterable<Element> {
+export function queryElements(elements: Elements, query: Query<Element>, depth = Infinity): Iterable<Element> {
 	return queryItems(getElements(elements, depth), query);
 }
 
@@ -249,7 +251,7 @@ export function queryElements(elements: PossibleElements, query: Query<Element>,
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  * - `depth=0` yields matching elements at the current level only (no recursion into children).
  */
-export function* filterElements(elements: PossibleElements, match: (element: Element) => boolean, depth = Infinity): Iterable<Element> {
+export function* filterElements(elements: Elements, match: (element: Element) => boolean, depth = Infinity): Iterable<Element> {
 	for (const element of getElements(elements, depth)) if (match(element)) yield element;
 }
 
@@ -261,27 +263,19 @@ export function* filterElements(elements: PossibleElements, match: (element: Ele
  * - Returns `undefined` if no element matches at any level.
  *
  * @param elements The root elements to search within.
- * @param keys A dot-separated string or array of key segments.
+ * @param key A dot-separated string, or array of key segments.
  *
  * @example resolveElement(elements, "util.array") // Element with key "array" inside element with key "util"
  * @example resolveElement(elements, ["util", "array"]) // Same as above
  * @example resolveElement(elements, "") // First keyed root element
  */
-export function resolveElement(elements: PossibleElements, keys: string | readonly string[] | undefined): Element | undefined {
-	const segments = typeof keys === "string" ? keys.split(".").filter(Boolean) : (keys ?? []);
+export function resolveElement(elements: Elements, key: PossibleElementPath): Element | undefined {
+	const path = getElementPath(key);
 
-	if (!segments.length) {
-		// Root — return the first keyed element.
-		for (const el of getElements(elements, 0)) {
-			if (el.key) return el;
-		}
-		return undefined;
-	}
-
-	let current: PossibleElements = elements;
+	let current: Elements = elements;
 	let found: Element | undefined;
 
-	for (const segment of segments) {
+	for (const segment of path) {
 		found = undefined;
 		for (const el of getElements(current, 0)) {
 			if (el.key === segment) {
@@ -299,14 +293,27 @@ export function resolveElement(elements: PossibleElements, keys: string | readon
 /**
  * Deeply iterate a tree of elements and yield the key path for each element that has a string `key`.
  * - Each yielded value is an array of key segments from root to the element.
- * - Use `joinPath()` to convert a key array to an `AbsolutePath` string.
+ * - Elements with `undefined` or `null` key are skipped.
+ *
+ * - Use `getElementKeys().map(joinPath)` to convert all the key arrays to an `AbsolutePath` strings.
+ *
+ * @param elements The elements to get keys for.
+ * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
+ * - `depth=0` yields matching elements at the current level only (no recursion into children).
  */
-export function* getElementKeys(elements: PossibleElements, prefix: readonly string[] = []): Iterable<readonly string[]> {
-	for (const element of getElements(elements, 0)) {
-		const { key } = element;
-		if (!key) continue;
-		const keys = [...prefix, key];
+export function getElementKeys(elements: Elements, depth = Infinity): Iterable<ElementPath> {
+	return _getElementKeys(elements, depth);
+}
+export function* _getElementKeys(elements: Elements, depth: number, prefix?: ElementPath): Iterable<ElementPath> {
+	for (const { key, props } of getElements(elements, 0)) {
+		// Skip `null` or `undefined` keys.
+		if (isNullish(key)) continue;
+
+		// Make the path and yield it.
+		const keys: ElementPath = prefix ? [...prefix, key] : [key];
 		yield keys;
-		if (element.props.children) yield* getElementKeys(element.props.children, keys);
+
+		// Recurse into the children.
+		if (depth > 0 && props.children) yield* _getElementKeys(props.children, depth - 1, keys);
 	}
 }

@@ -1,11 +1,9 @@
 import type { ReactNode } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
 import { type Elements, type PossibleElementPath, resolveElement } from "../../util/element.js";
-import { createElementMapper } from "../misc/ElementMap.js";
+import { createMapper } from "../misc/Mapper.js";
 
-const [TreePageMapping, TreePageMapper] = createElementMapper();
-
-export { TreePageMapping };
+export const [TreePageMapping, TreePageMapper] = createMapper();
 
 export interface TreePageProps {
 	path?: PossibleElementPath;

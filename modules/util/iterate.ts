@@ -88,7 +88,7 @@ export function* mergeItems<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable
 	for (const input of inputs) yield* input;
 }
 
-/** Intersperse items with a separator */
+/** Interleave items with a separator, i.e. `[item1, separator, item2, separator, item3]` */
 export function interleaveItems<T>(items: Iterable<T>, separator: T): Iterable<T>;
 export function interleaveItems<A, B>(items: Iterable<A>, separator: B): Iterable<A | B>;
 export function* interleaveItems<T>(items: Iterable<T>, separator: T): Iterable<T> {

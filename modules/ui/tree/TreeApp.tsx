@@ -4,7 +4,7 @@ import type { AbsolutePath } from "../../util/path.js";
 import { App, type AppProps } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { PageCatcher } from "../misc/Catcher.js";
-import type { ElementMapping } from "../misc/ElementMap.js";
+import type { Mapping } from "../misc/Mapper.js";
 import { Router } from "../router/Router.js";
 import type { Routes } from "../router/Routes.js";
 import { TreeCardMapping } from "./TreeCards.js";
@@ -15,11 +15,11 @@ export interface TreeAppProps extends AppProps {
 	/** The tree elements to display. */
 	elements: Elements;
 	/** Element mappings for page rendering. */
-	pageMapping?: ElementMapping | undefined;
+	pageMapping?: Mapping | undefined;
 	/** Element mappings for menu rendering. */
-	menuMapping?: ElementMapping | undefined;
+	menuMapping?: Mapping | undefined;
 	/** Element mappings for card rendering. */
-	cardMapping?: ElementMapping | undefined;
+	cardMapping?: Mapping | undefined;
 	/** Additional routes (merged with the default tree route). */
 	routes?: Routes | undefined;
 }

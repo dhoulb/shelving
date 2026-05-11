@@ -1,11 +1,9 @@
 import type { ReactNode } from "react";
 import type { Elements } from "../../util/element.js";
-import { createElementMapper } from "../misc/ElementMap.js";
+import { createMapper } from "../misc/Mapper.js";
 import TREE_MENU_CSS from "./TreeMenu.module.css";
 
-const [TreeMenuMapping, TreeMenuMapper] = createElementMapper();
-
-export { TreeMenuMapping };
+export const [TreeMenuMapping, TreeMenuMapper] = createMapper();
 
 export interface TreeMenuProps {
 	/** Elements to render as navigation links. */

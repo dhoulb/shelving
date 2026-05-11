@@ -1,11 +1,9 @@
 import type { ReactNode } from "react";
 import type { Elements } from "../../util/element.js";
-import { createElementMapper } from "../misc/ElementMap.js";
+import { createMapper } from "../misc/Mapper.js";
 import TREE_CARDS_CSS from "./TreeCards.module.css";
 
-const [TreeCardMapping, TreeCardMapper] = createElementMapper();
-
-export { TreeCardMapping };
+export const [TreeCardMapping, TreeCardMapper] = createMapper();
 
 export interface TreeCardsProps {
 	/** Elements to render as cards. */
