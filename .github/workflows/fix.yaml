@@ -3,6 +3,7 @@
 name: Fix
 on:
   push:
+    branches: [main]
     paths-ignore:
       - "**.md"
   pull_request:
@@ -14,7 +15,11 @@ jobs:
     name: Fix
     runs-on: ubuntu-latest
     steps:
+      # Check out the PR head ref so the auto-commit can push back to the branch.
+      # On push to main, github.head_ref is empty so checkout falls back to the default.
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
       - uses: oven-sh/setup-bun@v2
       - name: install
         run: bun install
