@@ -12,6 +12,9 @@ on:
 jobs:
   fix:
     name: Fix
+    # Skip the pull_request run when the PR is from the same repository,
+    # since the push event already covers it. Fork PRs still run via pull_request.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
