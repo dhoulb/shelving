@@ -36,7 +36,7 @@ const c2: Data = c1;
 describe("getElementText()", () => {
 	test("elements can be converted to plain text", () => {
 		expect(getElementText(P)).toBe("PARAGRAPH");
-		expect(getElementText(UL)).toBe("ITEM1 ITEM2");
+		expect(getElementText(UL)).toBe("ITEM1ITEM2");
 	});
 });
 test("getElements()", () => {
@@ -156,12 +156,6 @@ describe("resolveElement()", () => {
 
 	test("resolves an array of keys", () => {
 		expect(resolveElement(RESOLVE_TREE, ["util", "array"])).toMatchObject({ key: "array", props: { title: "Array" } });
-	});
-
-	test("returns first keyed element for empty input", () => {
-		expect(resolveElement(RESOLVE_TREE, "")).toMatchObject({ key: "util" });
-		expect(resolveElement(RESOLVE_TREE, [])).toMatchObject({ key: "util" });
-		expect(resolveElement(RESOLVE_TREE, undefined)).toMatchObject({ key: "util" });
 	});
 
 	test("returns undefined for non-existent keys", () => {

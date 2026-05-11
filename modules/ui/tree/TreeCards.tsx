@@ -1,6 +1,6 @@
-import type { FunctionComponent, ReactNode } from "react";
-import { type Element, type ElementProps, getElements, type PossibleElements } from "../../util/element.js";
-import { mapElements } from "../misc/ElementMapper.js";
+import type { ReactNode } from "react";
+import { getElements, type PossibleElements } from "../../util/element.js";
+import { MapElements } from "../misc/ElementMapper.js";
 import TREE_CARDS_CSS from "./TreeCards.module.css";
 
 export interface TreeCardsProps {
@@ -12,29 +12,7 @@ export interface TreeCardsProps {
 export function TreeCards({ children }: TreeCardsProps): ReactNode {
 	return (
 		<div className={TREE_CARDS_CSS.grid}>
-			{mapElements(getElements(children), "TreeCard").map((el, i) => (
-				<TreeCard key={el.key ?? `index-${i}`} element={el} />
-			))}
+			<MapElements prefix="TreeCard">{getElements(children)}</MapElements>
 		</div>
-	);
-}
-
-interface TreeCardProps {
-	element: Element;
-}
-
-/** Single card — delegates to mapped component if available, otherwise renders a default card. */
-function TreeCard({ element }: TreeCardProps): ReactNode {
-	if (typeof element.type === "function") {
-		const Component = element.type as FunctionComponent<ElementProps>;
-		return <Component {...element.props} />;
-	}
-	const title = (element.props.title as string | undefined) ?? element.key;
-	const description = element.props.description as string | undefined;
-	return (
-		<a className={TREE_CARDS_CSS.card} href={`/${element.key}`}>
-			<h3 className={TREE_CARDS_CSS.title}>{title}</h3>
-			{description ? <p className={TREE_CARDS_CSS.description}>{description}</p> : null}
-		</a>
 	);
 }
