@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { type Deferred, FetchStore, getDeferred, NONE, runMicrotasks } from "../index.js";
+import { createDeferred, type Deferred, FetchStore, NONE, runMicrotasks } from "../index.js";
 import { EXPECT_PROMISELIKE } from "../test/util.js";
 
 // --- Basic fetch ---
@@ -156,7 +156,7 @@ test("stale-data protection: fetch that resolves after invalidate() is discarded
 	const fetches: Array<Deferred<number>> = [];
 	const store = new FetchStore<number>(NONE, () => {
 		calls++;
-		const d = getDeferred<number>();
+		const d = createDeferred<number>();
 		fetches.push(d);
 		return d.promise;
 	});

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getDeferred, NONE, runMicrotasks, runSequence, Store } from "../index.js";
+import { createDeferred, NONE, runMicrotasks, runSequence, Store } from "../index.js";
 import { EXPECT_PROMISELIKE } from "../test/util.js";
 
 test("No initial value", async () => {
@@ -157,7 +157,7 @@ describe("await() resolves and rejects correctly", () => {
 	});
 
 	test("loading reflects pending state throughout", async () => {
-		const d = getDeferred<number>();
+		const d = createDeferred<number>();
 		const store = new Store<number>(NONE);
 		expect(store.loading).toBe(true);
 		const p = store.await(d.promise);
@@ -171,7 +171,7 @@ describe("await() resolves and rejects correctly", () => {
 
 describe("await() abort", () => {
 	test("abort() discards a result that arrives after the abort", async () => {
-		const d = getDeferred<number>();
+		const d = createDeferred<number>();
 		const store = new Store<number>(NONE);
 		const awaitResult = store.await(d.promise);
 		store.abort();
@@ -182,7 +182,7 @@ describe("await() abort", () => {
 	});
 
 	test("setting a new value discards a pending await result", async () => {
-		const d = getDeferred<number>();
+		const d = createDeferred<number>();
 		const store = new Store<number>(NONE);
 		const awaitResult = store.await(d.promise);
 		store.value = 99; // explicit set cancels the pending await
@@ -271,7 +271,7 @@ describe("call() asynchronous", () => {
 	});
 
 	test("returns Promise<false> when aborted before result arrives", async () => {
-		const d = getDeferred<number>();
+		const d = createDeferred<number>();
 		const store = new Store<number>(NONE);
 		const callResult = store.call(() => d.promise);
 		store.abort();

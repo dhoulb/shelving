@@ -18,7 +18,7 @@ export interface MarkupRule {
 export type MarkupRules = readonly MarkupRule[];
 
 /** Helper to make it easier to create typed `MarkupRule` instances using `NamedRegExp` regular expressions. */
-export function getMarkupRule<T extends NamedRegExp | RegExp>(
+export function createMarkupRule<T extends NamedRegExp | RegExp>(
 	regexp: T,
 	render: T extends NamedRegExp<infer X>
 		? (match: NamedRegExpExecArray<X>, options: MarkupOptions, key: string) => Element

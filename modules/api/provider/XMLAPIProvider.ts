@@ -1,7 +1,7 @@
 import { ResponseError } from "../../error/ResponseError.js";
 import type { Data } from "../../util/data.js";
 import type { AnyCaller } from "../../util/function.js";
-import { getXMLRequest, type RequestBodyMethod, type RequestOptions } from "../../util/http.js";
+import { createXMLRequest, type RequestBodyMethod, type RequestOptions } from "../../util/http.js";
 import type { PossibleURL } from "../../util/url.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import { ClientAPIProvider } from "./ClientAPIProvider.js";
@@ -15,7 +15,7 @@ export class XMLAPIProvider<P extends Data = Data, R extends string = string> ex
 		options: RequestOptions,
 		caller: AnyCaller,
 	): Request {
-		return getXMLRequest(method, url, payload, options, caller);
+		return createXMLRequest(method, url, payload, options, caller);
 	}
 
 	/**

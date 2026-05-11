@@ -1,7 +1,7 @@
 import { ResponseError } from "../../error/ResponseError.js";
 import { getMessage } from "../../util/error.js";
 import type { AnyCaller } from "../../util/function.js";
-import { getJSONRequest, parseResponseJSON, type RequestBodyMethod, type RequestOptions } from "../../util/http.js";
+import { createJSONRequest, parseResponseJSON, type RequestBodyMethod, type RequestOptions } from "../../util/http.js";
 import type { PossibleURL } from "../../util/url.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import { ClientAPIProvider } from "./ClientAPIProvider.js";
@@ -15,7 +15,7 @@ export class JSONAPIProvider<P = unknown, R = unknown> extends ClientAPIProvider
 		options: RequestOptions,
 		caller: AnyCaller,
 	): Request {
-		return getJSONRequest(method, url, payload, options, caller);
+		return createJSONRequest(method, url, payload, options, caller);
 	}
 
 	/**

@@ -4,8 +4,8 @@ import { getMessage } from "../../util/error.js";
 import type { AnyCaller } from "../../util/function.js";
 import {
 	assertRequestHeadPayload,
-	getHeadRequest,
-	getRequest,
+	createHeadRequest,
+	createRequest,
 	isRequestHeadMethod,
 	mergeRequestOptions,
 	parseResponseBody,
@@ -120,7 +120,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		options: RequestOptions,
 		caller: AnyCaller,
 	): Request {
-		return getHeadRequest(method, url, params, options, caller);
+		return createHeadRequest(method, url, params, options, caller);
 	}
 
 	/** Internal implementation function for `getRequest()` used for requests that have a body.  */
@@ -131,7 +131,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		options: RequestOptions,
 		caller: AnyCaller,
 	): Request {
-		return getRequest(method, url, payload, options, caller);
+		return createRequest(method, url, payload, options, caller);
 	}
 
 	// Override to set default functionality of a client provider to send requests over the network with `fetch()` and parse responses with `parseResponse()`.

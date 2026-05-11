@@ -232,14 +232,14 @@ export function mergeRequestOptions(
  * @param options Additional request options.
  * @returns A `Request` with no body content.
  *
- * @example getHeadRequest("POST", "https://api.example.com/items", { name: "abc" })
+ * @example createHeadRequest("POST", "https://api.example.com/items", { name: "abc" })
  */
-export function getHeadRequest(
+export function createHeadRequest(
 	method: RequestHeadMethod,
 	url: PossibleURL,
 	params: Nullish<PossibleURIParams>,
 	options: RequestOptions = {},
-	caller: AnyCaller = getHeadRequest,
+	caller: AnyCaller = createHeadRequest,
 ): Request {
 	return new Request(withURIParams(requireURL(url, undefined, caller), params), { ...options, method, body: null });
 }
@@ -255,14 +255,14 @@ export function getHeadRequest(
  * @param options Additional request options.
  * @returns A `Request` with `text/plain` content type.
  *
- * @example getTextRequest("POST", "https://api.example.com/items", "hello")
+ * @example createTextRequest("POST", "https://api.example.com/items", "hello")
  */
-export function getTextRequest(
+export function createTextRequest(
 	method: RequestMethod,
 	url: PossibleURL,
 	body: string,
 	options: RequestOptions = {},
-	caller: AnyCaller = getTextRequest,
+	caller: AnyCaller = createTextRequest,
 ): Request {
 	return new Request(requireURL(url, undefined, caller), { ...mergeRequestOptions(_REQUEST_TEXT_OPTIONS, options), method, body });
 }
@@ -279,14 +279,14 @@ const _REQUEST_TEXT_OPTIONS = { headers: { "Content-Type": "text/plain" } };
  * @param options Additional request options.
  * @returns A `Request` with `application/json` content type.
  *
- * @example getJSONRequest("POST", "https://api.example.com/items", { name: "abc" })
+ * @example createJSONRequest("POST", "https://api.example.com/items", { name: "abc" })
  */
-export function getJSONRequest(
+export function createJSONRequest(
 	method: RequestBodyMethod,
 	url: PossibleURL,
 	body: unknown,
 	options: RequestOptions = {},
-	caller: AnyCaller = getJSONRequest,
+	caller: AnyCaller = createJSONRequest,
 ): Request {
 	return new Request(requireURL(url, undefined, caller), {
 		...mergeRequestOptions(_REQUEST_JSON_OPTIONS, options),
@@ -306,14 +306,14 @@ const _REQUEST_JSON_OPTIONS = { headers: { "Content-Type": "application/json" } 
  * @param options Additional request options.
  * @returns A `Request` with a multipart body.
  *
- * @example getFormDataRequest("POST", "https://api.example.com/upload", new FormData())
+ * @example createFormDataRequest("POST", "https://api.example.com/upload", new FormData())
  */
-export function getFormDataRequest(
+export function createFormDataRequest(
 	method: RequestBodyMethod,
 	url: PossibleURL,
 	body: FormData,
 	options: RequestOptions = {},
-	caller: AnyCaller = getFormDataRequest,
+	caller: AnyCaller = createFormDataRequest,
 ): Request {
 	return new Request(requireURL(url, undefined, caller), { ...options, method, body });
 }
@@ -331,14 +331,14 @@ export function getFormDataRequest(
  *
  * @throws {RequiredError} If the XML data contains invalid element names or values.
  *
- * @example getXMLRequest("POST", "https://api.example.com/items", { item: { name: "abc" } })
+ * @example createXMLRequest("POST", "https://api.example.com/items", { item: { name: "abc" } })
  */
-export function getXMLRequest(
+export function createXMLRequest(
 	method: RequestBodyMethod,
 	url: PossibleURL,
 	data: Data,
 	options: RequestOptions = {},
-	caller: AnyCaller = getXMLRequest,
+	caller: AnyCaller = createXMLRequest,
 ): Request {
 	return new Request(requireURL(url, undefined, caller), {
 		...mergeRequestOptions(_REQUEST_XML_OPTIONS, options),
@@ -361,12 +361,12 @@ const _REQUEST_XML_OPTIONS = { headers: { "Content-Type": "application/xml; char
  *
  * @throws {RequiredError} if this is a `HEAD` or `GET` request but `body` is not a data object.
  */
-export function getRequest(
+export function createRequest(
 	method: RequestMethod,
 	url: PossibleURL,
 	payload: unknown,
 	options: RequestOptions = {},
-	caller: AnyCaller = getRequest,
+	caller: AnyCaller = createRequest,
 ): Request {
 	url = requireURL(url, undefined, caller);
 
@@ -380,13 +380,13 @@ export function getRequest(
 	}
 
 	// `FormData` instances in body pass through unaltered and will set their own `Content-Type` with complex boundary information
-	if (payload instanceof FormData) return getFormDataRequest(method, url, payload, options, caller);
+	if (payload instanceof FormData) return createFormDataRequest(method, url, payload, options, caller);
 
 	// Strings are sent as plain text.
-	if (typeof payload === "string") return getTextRequest(method, url, payload, options, caller);
+	if (typeof payload === "string") return createTextRequest(method, url, payload, options, caller);
 
 	// JSON is the default.
-	return getJSONRequest(method, url, payload, options, caller);
+	return createJSONRequest(method, url, payload, options, caller);
 }
 
 /** Assert that the payload for a HEAD or GET method is a data object, null, or undefined. */
