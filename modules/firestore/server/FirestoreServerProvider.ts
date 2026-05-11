@@ -13,7 +13,7 @@ import { DBProvider } from "../../db/provider/DBProvider.js";
 import { DeferredSequence } from "../../sequence/DeferredSequence.js";
 import { LazySequence } from "../../sequence/LazySequence.js";
 import type { Data, DataProp } from "../../util/data.js";
-import { joinDataKey } from "../../util/data.js";
+import { joinDataPath } from "../../util/data.js";
 import type { Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
@@ -57,7 +57,7 @@ function _getFieldValues<TT extends Data>(updates: Updates<TT>): FirestoreUpdate
 	return getObject(mapItems(getUpdates(updates), _getFieldValue)) as FirestoreUpdateData<TT>;
 }
 function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
-	const k = joinDataKey(key);
+	const k = joinDataPath(key);
 	if (action === "set") return [k, value];
 	if (action === "sum") return [k, FieldValue.increment(value)];
 	if (action === "with") return [k, FieldValue.arrayUnion(...value)];
@@ -87,11 +87,11 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 		let ref: FirestoreQueryReference<TT> = this._getCollection(c);
 		if (q) {
 			for (const { key, direction } of getQueryOrders(q)) {
-				const k = joinDataKey(key);
+				const k = joinDataPath(key);
 				ref = ref.orderBy(k === "id" ? ID : k, direction);
 			}
 			for (const { key, operator, value } of getQueryFilters(q)) {
-				const k = joinDataKey(key);
+				const k = joinDataPath(key);
 				ref = ref.where(k === "id" ? ID : k, OPERATORS[operator], value);
 			}
 			const l = getQueryLimit(q);

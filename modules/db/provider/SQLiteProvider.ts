@@ -1,7 +1,8 @@
 import { StringSchema } from "../../schema/StringSchema.js";
-import type { Data, DataPath } from "../../util/data.js";
+import type { Data } from "../../util/data.js";
 import type { Identifier } from "../../util/item.js";
 import type { QueryFilter } from "../../util/query.js";
+import type { Segments } from "../../util/string.js";
 import type { Update } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
 import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
@@ -28,7 +29,7 @@ export abstract class SQLiteProvider<I extends Identifier = Identifier, T extend
 	}
 
 	/** Get the SQLite JSON path for the nested segments of a key (everything after the column name), e.g. `$.b.c` */
-	private sqlPath(key: DataPath): SQLFragment {
+	private sqlPath(key: Segments): SQLFragment {
 		return this.sqlConcat(
 			key.slice(1).map(k => this.sqlIdentifier(k)),
 			".",
@@ -37,7 +38,7 @@ export abstract class SQLiteProvider<I extends Identifier = Identifier, T extend
 	}
 
 	/** Get the SQLite JSON extract syntax, e.g. `json_extract("a", $.b.c)` */
-	override sqlExtract(key: DataPath): SQLFragment {
+	override sqlExtract(key: Segments): SQLFragment {
 		const column = this.sqlIdentifier(key[0]);
 		if (key.length > 1) {
 			const path = this.sqlPath(key);

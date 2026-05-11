@@ -1,11 +1,11 @@
 import type { ImmutableArray } from "./array.js";
 import { isArray } from "./array.js";
-import { getDataPath } from "./data.js";
 import { isIterable } from "./iterate.js";
 import { isNullish } from "./null.js";
 import type { AbsolutePath } from "./path.js";
 import type { Query } from "./query.js";
 import { queryItems } from "./query.js";
+import type { Segments } from "./string.js";
 
 /** Set of valid props for an element. */
 export interface ElementProps {
@@ -181,25 +181,6 @@ export function isElements(value: unknown): value is Elements {
 }
 
 /**
- * A path to a (possibly deep) property in a elements list, e.g. `["sub", "str"]`.
- * - At least one path segment is required.
- * - Element paths are resolved using the `key` of the element.
- */
-export type ElementPath = readonly [key: string, ...string[]];
-
-/**
- * Something that can be converted to a `ElementPath`,
- * i.e. a "dot.separated.string" or an existing `ElementPath` array.
- */
-export type PossibleElementPath = string | ElementPath;
-
-/**
- * Convert a possible element path to an element path array of string segments.
- * Get an array of element path segments from a string element path, or return the existing existing element path array.
- */
-export const getElementPath = getDataPath;
-
-/**
  * Strip all tags from elements to produce a plain text string.
  *
  * @param elements An element, a plain string, or null/undefined (or an array of those things).
@@ -257,21 +238,26 @@ export function* filterElements(elements: Elements, match: (element: Element) =>
 
 /**
  * Resolve an element in a tree by walking a sequence of keys.
- * - Accepts a dot-separated string (e.g. `"util.array"`) or an array of key segments (e.g. `["util", "array"]`).
+ * - Accepts a dot-separated string (e.g. `"util.array"`) or an array of path segments (e.g. `["util", "array"]`).
  * - Matches each segment to the `key` of an immediate child element.
  * - If `keys` is empty, undefined, or an empty string, returns the first keyed element at the root level.
  * - Returns `undefined` if no element matches at any level.
  *
+ * Splitting the path:
+ * - We accept a raw `Segments` array for each element, so they can be joined later however you wish.
+ * - Element paths have no canonical string representation so we use `Segments` instead.
+ * - To split the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(elements), splitDataPath)`
+ * - To split the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(elements), splitAbsolutePath)`
+ *
  * @param elements The root elements to search within.
- * @param key A dot-separated string, or array of key segments.
+ * @param path An array of path segments.
+ * - Element paths have no canonical string representation so we always us the `Segments` format.
  *
  * @example resolveElement(elements, "util.array") // Element with key "array" inside element with key "util"
  * @example resolveElement(elements, ["util", "array"]) // Same as above
  * @example resolveElement(elements, "") // First keyed root element
  */
-export function resolveElement(elements: Elements, key: PossibleElementPath): Element | undefined {
-	const path = getElementPath(key);
-
+export function resolveElementPath(elements: Elements, path: Segments): Element | undefined {
 	let current: Elements = elements;
 	let found: Element | undefined;
 
@@ -291,29 +277,37 @@ export function resolveElement(elements: Elements, key: PossibleElementPath): El
 }
 
 /**
- * Deeply iterate a tree of elements and yield the key path for each element that has a string `key`.
- * - Each yielded value is an array of key segments from root to the element.
+ * Deeply iterate a tree of elements and yield an array of path segments for each element that has a string `key:` property.
+ * - Each yielded value is an array of path segments from root to the element.
+ * - Only elements with a string `key:` property are included.
  * - Elements with `undefined` or `null` key are skipped.
  *
- * - Use `getElementKeys().map(joinPath)` to convert all the key arrays to an `AbsolutePath` strings.
+ * Joining the paths:
+ * - We return a `Segments` array for each element, so they can be joined later however you wish.
+ * - Element paths have no canonical string representation so we use `Segments` instead.
+ * - To join the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(elements), joinDataPath)`
+ * - To join the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(elements), joinAbsolutePath)`
  *
  * @param elements The elements to get keys for.
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  * - `depth=0` yields matching elements at the current level only (no recursion into children).
+ *
+ * @returns Iterable set of path segment arrays, each representing one component.
+ * - Element paths have no canonical string representation so we always us the `Segments` format.
  */
-export function getElementKeys(elements: Elements, depth = Infinity): Iterable<ElementPath> {
-	return _getElementKeys(elements, depth);
+export function getElementPaths(elements: Elements, depth = Infinity): Iterable<Segments> {
+	return _getElementPaths(elements, depth);
 }
-export function* _getElementKeys(elements: Elements, depth: number, prefix?: ElementPath): Iterable<ElementPath> {
+export function* _getElementPaths(elements: Elements, depth: number, prefix?: Segments): Iterable<Segments> {
 	for (const { key, props } of getElements(elements, 0)) {
 		// Skip `null` or `undefined` keys.
 		if (isNullish(key)) continue;
 
 		// Make the path and yield it.
-		const keys: ElementPath = prefix ? [...prefix, key] : [key];
+		const keys: Segments = prefix ? [...prefix, key] : [key];
 		yield keys;
 
 		// Recurse into the children.
-		if (depth > 0 && props.children) yield* _getElementKeys(props.children, depth - 1, keys);
+		if (depth > 0 && props.children) yield* _getElementPaths(props.children, depth - 1, keys);
 	}
 }

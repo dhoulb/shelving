@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
 import type { Data, Element, Elements } from "../index.js";
-import { filterElements, getElementKeys, getElements, getElementText, queryElements, resolveElement } from "../index.js";
+import { filterElements, getElementPaths, getElements, getElementText, queryElements, resolveElementPath } from "../index.js";
 
 const P: Element = {
 	key: null,
@@ -147,27 +147,19 @@ const RESOLVE_TREE: Element[] = [
 
 describe("resolveElement()", () => {
 	test("resolves a single key", () => {
-		expect(resolveElement(RESOLVE_TREE, "util")).toMatchObject({ key: "util", type: "tree-directory" });
-	});
-
-	test("resolves a dot-separated string", () => {
-		expect(resolveElement(RESOLVE_TREE, "util.array")).toMatchObject({ key: "array", props: { title: "Array" } });
-	});
-
-	test("resolves an array of keys", () => {
-		expect(resolveElement(RESOLVE_TREE, ["util", "array"])).toMatchObject({ key: "array", props: { title: "Array" } });
+		expect(resolveElementPath(RESOLVE_TREE, ["util"])).toMatchObject({ key: "util", type: "tree-directory" });
+		expect(resolveElementPath(RESOLVE_TREE, ["util", "array"])).toMatchObject({ key: "array", props: { title: "Array" } });
 	});
 
 	test("returns undefined for non-existent keys", () => {
-		expect(resolveElement(RESOLVE_TREE, "nonexistent")).toBeUndefined();
-		expect(resolveElement(RESOLVE_TREE, "util.nonexistent")).toBeUndefined();
-		expect(resolveElement(RESOLVE_TREE, ["util", "nonexistent"])).toBeUndefined();
+		expect(resolveElementPath(RESOLVE_TREE, ["nonexistent"])).toBeUndefined();
+		expect(resolveElementPath(RESOLVE_TREE, ["util", "nonexistent"])).toBeUndefined();
 	});
 });
 
 describe("getElementKeys()", () => {
 	test("yields key arrays for all keyed elements", () => {
-		const keys = Array.from(getElementKeys(RESOLVE_TREE));
+		const keys = Array.from(getElementPaths(RESOLVE_TREE));
 		expect(keys).toEqual([["util"], ["util", "array"], ["util", "string"], ["readme"]]);
 	});
 });

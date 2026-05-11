@@ -16,6 +16,9 @@ export type NotString = { toUpperCase?: never; toLowerCase?: never };
 /** Things that can be reliably converted to a string with no confusion. */
 export type PossibleString = boolean | string | number | Date;
 
+/** Series of string segments with at least one one (this is what you _actually_ get back when you split a string). */
+export type Segments = readonly [string, ...string[]];
+
 /** Is a value a string (optionally with specified min/max length). */
 export function isString(value: unknown, min = 0, max = Number.POSITIVE_INFINITY): value is string {
 	return typeof value === "string" && value.length >= min && value.length <= max;
