@@ -4,22 +4,31 @@ import { MarkdownExtractor } from "./index.js";
 
 const extractor = new MarkdownExtractor();
 
+function file(content: string, name = "doc.md"): File {
+	return new File([content], name);
+}
+
 describe("MarkdownExtractor", () => {
-	test("extracts title from first h1 heading", () => {
-		const element = extractor.extract("# My Title\n\nSome content.");
+	test("extracts title from first h1 heading", async () => {
+		const element = await extractor.extract(file("# My Title\n\nSome content."));
 		expect(element.props.title).toBe("My Title");
 	});
 
-	test("returns file element with parsed content", () => {
-		const element = extractor.extract("# Hello\n\nWorld.");
+	test("returns file element with parsed content", async () => {
+		const element = await extractor.extract(file("# Hello\n\nWorld."));
 		expect(element.type).toBe("tree-file");
 		expect(element.props.content).toBeDefined();
 		expect(getElementText(element.props.content as Elements)).toContain("Hello");
 	});
 
-	test("handles markdown without heading", () => {
-		const element = extractor.extract("Just some text.");
-		expect(element.props.title).toBeUndefined();
+	test("falls back to filename (without extension) if no heading", async () => {
+		const element = await extractor.extract(file("Just some text.", "TEMPLATE.md"));
+		expect(element.props.title).toBe("TEMPLATE");
 		expect(element.props.content).toBeDefined();
+	});
+
+	test("sets key to slugified filename", async () => {
+		const element = await extractor.extract(file("# Hi", "Some Doc.md"));
+		expect(element.key).toBe("some-doc");
 	});
 });

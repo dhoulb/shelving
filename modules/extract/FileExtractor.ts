@@ -1,34 +1,29 @@
-import type { Element } from "../util/element.js";
+import type { BunFile } from "bun";
+import type { FileElement } from "../util/element.js";
 import { splitFileExtension } from "../util/file.js";
 import { requireSlug } from "../util/string.js";
-import { type ContentExtractor, Extractor } from "./Extractor.js";
-
-/** Options for a file extractor. */
-export interface FileExtractorOptions {
-	/** Map of file extension (e.g. `".md"`, `".ts"`) to content extractor. */
-	readonly extractors: Readonly<Record<string, ContentExtractor>>;
-}
+import { Extractor } from "./Extractor.js";
 
 /**
- * Extractor that dispatches to a content extractor based on file extension.
- * - Reads the file content and passes it to the matched extractor.
- * - Sets the element `key` to the slugified filename (without extension).
+ * Base extractor for a file in a tree.
+ * - Reads the file's content as text and stores it in `content`.
+ * - Sets `key` to the slugified basename (without extension) and `title` to the unslugged basename.
+ * - Sets `path` to the file's absolute path if known.
+ * - Subclasses (e.g. `MarkdownExtractor`, `TypescriptExtractor`) override `extract()` to parse the content into richer elements.
  */
-export class FileExtractor extends Extractor<File> {
-	private readonly _extractors: Readonly<Record<string, ContentExtractor>>;
+export class FileExtractor extends Extractor<BunFile, FileElement> {
+	async extract(file: BunFile): Promise<FileElement> {
+		const { name = "unnamed.txt" } = file;
+		const [title = name] = splitFileExtension(file.name);
 
-	constructor({ extractors }: FileExtractorOptions) {
-		super();
-		this._extractors = extractors;
-	}
-
-	async extract(file: File): Promise<Element> {
-		const [base, ext] = splitFileExtension(file.name);
-		const key = requireSlug(base ?? file.name);
-		const extractor = ext ? this._extractors[ext] : undefined;
-		if (!extractor) return { type: "tree-file", key, props: {} };
-		const content = await file.text();
-		const element = await extractor.extract(content);
-		return { ...element, key };
+		return {
+			type: "tree-file",
+			key: requireSlug(title),
+			props: {
+				name,
+				title,
+				content: await file.text(),
+			},
+		};
 	}
 }
