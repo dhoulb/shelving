@@ -64,7 +64,7 @@ const TREE: Element = {
 					],
 				},
 			},
-			{ key: "func1", type: "tree-function", props: {} },
+			{ key: "func1", type: "tree-documentation", props: {} },
 		],
 	},
 };
@@ -80,12 +80,12 @@ describe("queryElements()", () => {
 	});
 
 	test("queries elements by type array (in filter)", () => {
-		const result = Array.from(queryElements(TREE, { type: ["tree-file", "tree-function"] }));
+		const result = Array.from(queryElements(TREE, { type: ["tree-file", "tree-documentation"] }));
 		expect(result).toMatchObject([
 			{ key: "file1", type: "tree-file" },
 			{ key: "file2", type: "tree-file" },
 			{ key: "file3", type: "tree-file" },
-			{ key: "func1", type: "tree-function" },
+			{ key: "func1", type: "tree-documentation" },
 		]);
 	});
 

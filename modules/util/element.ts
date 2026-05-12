@@ -27,29 +27,31 @@ export type Elements = undefined | null | string | Element | Iterable<Elements>;
 
 /** Props for a tree element — must have a `tree-` prefixed type. */
 export interface TreeElementProps extends ElementProps {
-	readonly title?: string | undefined;
+	readonly title: string;
 	readonly description?: string | undefined;
 	readonly content?: Elements | undefined;
+	/** Children of a tree element must be other tree elements. */
+	readonly children?: TreeElements | undefined;
 }
 
-/** Element in a tree with a `tree-` prefixed type string. */
+/**
+ * Element in a heirarchical tree.
+ * - Has a `tree-` prefixed type string.
+ * - Requires a string `key` prop (can be resolved to a path).
+ * - Props can include `title`, `description`, and/or `content` to be useful.
+ */
 export interface TreeElement<P extends TreeElementProps = TreeElementProps> extends Element<P> {
+	readonly key: string;
 	readonly type: `tree-${string}`;
 }
 
-/** Props for an element representing a file system path. */
-export interface PathElementProps extends TreeElementProps {
-	readonly path: AbsolutePath;
-}
-
-/** Element representing a file system path (file or directory). */
-export interface PathElement<P extends PathElementProps = PathElementProps> extends TreeElement<P> {
-	readonly type: "tree-directory" | "tree-file";
-}
+/** Collection of tree elements. */
+export type TreeElements = undefined | null | TreeElement | Iterable<TreeElements>;
 
 /** Props for a directory element. */
-export interface DirectoryElementProps extends PathElementProps {
-	readonly children?: Elements | undefined;
+export interface DirectoryElementProps extends TreeElementProps {
+	readonly path: AbsolutePath;
+	readonly name: string;
 }
 
 /**
@@ -62,8 +64,8 @@ export interface DirectoryElement extends TreeElement<DirectoryElementProps> {
 }
 
 /** Props for a file element. */
-export interface FileElementProps extends PathElementProps {
-	readonly children?: Elements | undefined;
+export interface FileElementProps extends TreeElementProps {
+	readonly name: string;
 }
 
 /**
@@ -75,80 +77,35 @@ export interface FileElement extends TreeElement<FileElementProps> {
 	readonly type: "tree-file";
 }
 
-/** A single parameter for a code symbol. */
-export interface CodeParam {
+/** A single parameter for a documented code symbol. */
+export interface DocumentationParam {
 	readonly name: string;
 	readonly type?: string | undefined;
 	readonly description?: string | undefined;
 	readonly optional?: boolean | undefined;
 }
 
-/** Props shared by all code elements. */
-export interface CodeElementProps extends TreeElementProps {
+/**
+ * Props for a documented code symbol — a single shape for any kind of code element.
+ * - `kind` distinguishes the symbol category (e.g. `"function"`, `"class"`, `"property"`, or any string).
+ * - All props are optional — not every kind uses every prop (e.g. `returns` only makes sense for functions).
+ */
+export interface DocumentationElementProps extends TreeElementProps {
+	readonly kind?: string | undefined;
 	readonly signature?: string | undefined;
-	readonly params?: ImmutableArray<CodeParam> | undefined;
+	readonly params?: ImmutableArray<DocumentationParam> | undefined;
 	readonly returns?: string | undefined;
 	readonly examples?: ImmutableArray<string> | undefined;
-}
-
-/** Code element type discriminator. */
-export type CodeElementType =
-	| "tree-class"
-	| "tree-function"
-	| "tree-constant"
-	| "tree-method"
-	| "tree-property"
-	| "tree-type"
-	| "tree-interface";
-
-/** Element representing a documented code symbol. */
-export interface CodeElement<P extends CodeElementProps = CodeElementProps> extends TreeElement<P> {
-	readonly type: CodeElementType;
-}
-
-/** Props for a class element. */
-export interface ClassCodeElementProps extends CodeElementProps {
 	readonly extends?: string | undefined;
 	readonly implements?: ImmutableArray<string> | undefined;
-	readonly children?: Elements | undefined;
 }
 
 /**
- * Element representing a class declaration.
- * - Children are the class's methods and properties.
+ * Element representing a documented code symbol.
+ * - The `kind` prop distinguishes specific symbol types (function, class, property, etc.) without baking the list in.
  */
-export interface ClassCodeElement extends CodeElement<ClassCodeElementProps> {
-	readonly type: "tree-class";
-}
-
-/** Element representing a function declaration. */
-export interface FunctionCodeElement extends CodeElement {
-	readonly type: "tree-function";
-}
-
-/** Element representing a constant declaration. */
-export interface ConstantCodeElement extends CodeElement {
-	readonly type: "tree-constant";
-}
-
-/** Element representing a class method. */
-export interface MethodCodeElement extends CodeElement {
-	readonly type: "tree-method";
-}
-
-/** Element representing a class or interface property. */
-export interface PropertyCodeElement extends CodeElement {
-	readonly type: "tree-property";
-}
-
-/** Element representing a type alias. */
-export interface TypeCodeElement extends CodeElement {
-	readonly type: "tree-type";
-}
-
-/** Element representing an interface declaration. */
-export interface InterfaceCodeElement extends CodeElement<ClassCodeElementProps> {
-	readonly type: "tree-interface";
+export interface DocumentationElement extends TreeElement<DocumentationElementProps> {
+	readonly type: "tree-documentation";
 }
 
 // IntrinsicElements declarations for tree-* custom elements.
@@ -159,13 +116,7 @@ declare module "react" {
 		interface IntrinsicElements {
 			"tree-directory": DirectoryElementProps;
 			"tree-file": FileElementProps;
-			"tree-class": ClassCodeElementProps;
-			"tree-function": CodeElementProps;
-			"tree-constant": CodeElementProps;
-			"tree-method": CodeElementProps;
-			"tree-property": CodeElementProps;
-			"tree-type": CodeElementProps;
-			"tree-interface": ClassCodeElementProps;
+			"tree-documentation": DocumentationElementProps;
 		}
 	}
 }
@@ -310,4 +261,13 @@ export function* _getElementPaths(elements: Elements, depth: number, prefix?: Se
 		// Recurse into the children.
 		if (depth > 0 && props.children) yield* _getElementPaths(props.children, depth - 1, keys);
 	}
+}
+
+/** Combine two `Elements`, preserving both if both are set. */
+export function mergeElements<T extends Elements>(a: T, b: T): T;
+export function mergeElements(a: Elements, b: Elements): Elements;
+export function mergeElements(a: Elements, b: Elements): Elements {
+	if (!a) return b;
+	if (!b) return a;
+	return [a, b];
 }
