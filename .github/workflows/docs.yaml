@@ -33,7 +33,7 @@ jobs:
       - name: install
         run: bun install
       - name: build
-        run: APP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" bun run docs
+        run: APP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" bun run docs:build
       - name: deploy (main)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
