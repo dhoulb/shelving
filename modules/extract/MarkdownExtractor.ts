@@ -1,11 +1,8 @@
-import type { BunFile } from "bun";
 import { renderMarkup } from "../markup/render.js";
 import { MARKUP_RULES } from "../markup/rule/index.js";
 import type { MarkupOptions } from "../markup/util/options.js";
-import type { Elements, FileElement } from "../util/element.js";
+import type { Elements, FileElementProps } from "../util/element.js";
 import { getElements, getElementText } from "../util/element.js";
-import { splitFileExtension } from "../util/file.js";
-import { requireSlug } from "../util/string.js";
 import { FileExtractor } from "./FileExtractor.js";
 
 /**
@@ -24,18 +21,10 @@ export class MarkdownExtractor extends FileExtractor {
 		this._options = options;
 	}
 
-	override async extract(file: BunFile): Promise<FileElement> {
-		const { name = "unnamed.md" } = file;
-		const [base = name] = splitFileExtension(name);
-
-		const content = this.render(await file.text());
+	override extractProps(name: string, base: string, text: string): FileElementProps {
+		const content = this.render(text);
 		const title = _getFirstHeadingText(content) ?? base;
-
-		return {
-			type: "tree-file",
-			key: requireSlug(name),
-			props: { name, title, content },
-		};
+		return { name, title, content };
 	}
 
 	render(text: string): Elements {

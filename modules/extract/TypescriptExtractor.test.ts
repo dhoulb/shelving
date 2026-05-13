@@ -1,10 +1,16 @@
 import { describe, expect, test } from "bun:test";
+import type { BunFile } from "bun";
 import { TypescriptExtractor } from "./index.js";
 
 const extractor = new TypescriptExtractor();
 
-function file(source: string, name = "source.ts"): File {
-	return new File([source], name);
+/**
+ * Make a fake `BunFile` for unit tests.
+ * - Web `File` has the same `.name` and `.text()` behaviour the extractor needs.
+ * - The extra `BunFile`-only methods (`writer`, `exists`, etc.) aren't touched by the extractor.
+ */
+function file(source: string, name = "source.ts"): BunFile {
+	return new File([source], name) as unknown as BunFile;
 }
 
 describe("TypescriptExtractor", () => {
@@ -123,7 +129,7 @@ export class Foo {
 		expect(cls.props.children).toHaveLength(1);
 	});
 
-	test("extracts file-level JSDoc comment as description", async () => {
+	test("extracts file-level JSDoc comment as content", async () => {
 		const element = await extractor.extract(
 			file(`
 /**
@@ -134,11 +140,19 @@ export function first<T>(arr: T[]): T | undefined {
 }
 `),
 		);
-		expect(element.props.description).toBe("This module handles array utilities.");
+		expect(element.props.content).toBe("This module handles array utilities.");
 	});
 
 	test("sets title from filename (without extension)", async () => {
 		const element = await extractor.extract(file("export const X = 1;", "array.ts"));
+		expect(element.props.title).toBe("array");
+		expect(element.key).toBe("array");
+	});
+
+	test("strips directory path from filename when computing key/title", async () => {
+		// In production, `BunFile.name` is the full absolute path (e.g. `/Users/.../modules/util/array.ts`).
+		// The extractor should use only the basename.
+		const element = await extractor.extract(file("export const X = 1;", "/Users/foo/modules/util/array.ts"));
 		expect(element.props.title).toBe("array");
 		expect(element.key).toBe("array");
 	});

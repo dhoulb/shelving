@@ -1,7 +1,5 @@
-import type { BunFile } from "bun";
 import ts from "typescript";
-import type { DocumentationElement, FileElement, TreeElement } from "../util/element.js";
-import { splitFileExtension } from "../util/file.js";
+import type { DocumentationElement, FileElementProps, TreeElement } from "../util/element.js";
 import { requireSlug } from "../util/string.js";
 import { FileExtractor } from "./FileExtractor.js";
 
@@ -13,11 +11,8 @@ import { FileExtractor } from "./FileExtractor.js";
  * - Uses the filename (without extension) as the title.
  */
 export class TypescriptExtractor extends FileExtractor {
-	override async extract(file: BunFile): Promise<FileElement> {
-		const { name = "unnamed.ts" } = file;
-		const [title = name] = splitFileExtension(name);
-
-		const source = ts.createSourceFile(name, await file.text(), ts.ScriptTarget.Latest, true);
+	override extractProps(name: string, title: string, text: string): FileElementProps {
+		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
 		const content = _getFileDocComment(source);
 
 		const children: TreeElement[] = [];
@@ -26,11 +21,7 @@ export class TypescriptExtractor extends FileExtractor {
 			if (element) children.push(element);
 		}
 
-		return {
-			type: "tree-file",
-			key: requireSlug(title),
-			props: { name, title, content, children },
-		};
+		return { name, title, content, children };
 	}
 }
 

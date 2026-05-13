@@ -1,6 +1,7 @@
 import type { BunFile } from "bun";
-import type { FileElement } from "../util/element.js";
+import type { FileElement, FileElementProps } from "../util/element.js";
 import { splitFileExtension } from "../util/file.js";
+import { isAbsolutePath, splitAbsolutePath } from "../util/index.js";
 import { requireSlug } from "../util/string.js";
 import { Extractor } from "./Extractor.js";
 
@@ -13,17 +14,18 @@ import { Extractor } from "./Extractor.js";
  */
 export class FileExtractor extends Extractor<BunFile, FileElement> {
 	async extract(file: BunFile): Promise<FileElement> {
-		const { name = "unnamed.txt" } = file;
-		const [title = name] = splitFileExtension(file.name);
+		const path = file.name ?? "unnamed";
+		const name = isAbsolutePath(path) ? (splitAbsolutePath(path).at(-1) ?? "unnamed") : path;
+		const [title = name] = splitFileExtension(name);
 
 		return {
 			type: "tree-file",
 			key: requireSlug(title),
-			props: {
-				name,
-				title,
-				content: await file.text(),
-			},
+			props: this.extractProps(name, title, await file.text()),
 		};
+	}
+
+	extractProps(name: string, title: string, content: string): FileElementProps {
+		return { name, title, content };
 	}
 }
