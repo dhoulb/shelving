@@ -10,7 +10,7 @@ const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
 
 /** Use the details from the current page data context to set the document `<title>`, meta tags, and history state. */
 export function Head(): ReactElement {
-	const { url, title, base, app, links, tags, styles, modules, scripts } = requireMeta();
+	const { url, title, base, app, links, tags, stylesheets, modules, scripts } = requireMeta();
 
 	useEffect(() => {
 		if (typeof window === "undefined") return;
@@ -23,7 +23,7 @@ export function Head(): ReactElement {
 			{base && <base href={base.href} />}
 			{tags && getProps(tags).map(_renderTags)}
 			{links && getProps(links).map(_renderLinks)}
-			{styles?.map(_renderStyles)}
+			{stylesheets?.map(_renderStylesheets)}
 			{modules?.map(_renderModules)}
 			{scripts?.map(_renderScripts)}
 		</head>
@@ -48,7 +48,7 @@ function _renderLinks([k, v]: Prop<MetaLinks>): ReactElement | null {
 	return null;
 }
 
-function _renderStyles(v: ArrayItem<MetaAssets>): ReactElement | null {
+function _renderStylesheets(v: ArrayItem<MetaAssets>): ReactElement | null {
 	return isNullish(v) ? null : <link key={v} rel="stylesheet" type="text/css" href={v} />;
 }
 

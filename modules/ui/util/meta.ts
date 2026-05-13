@@ -37,7 +37,7 @@ export interface MetaData {
 	readonly links?: MetaLinks | undefined;
 	readonly modules?: MetaAssets | undefined;
 	readonly scripts?: MetaAssets | undefined;
-	readonly styles?: MetaAssets | undefined;
+	readonly stylesheets?: MetaAssets | undefined;
 }
 
 /** Input metadata that can be parsed and converted to proper metadata. */
