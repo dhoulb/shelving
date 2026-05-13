@@ -44,6 +44,8 @@ export function dispose(...values: Nullish<Disposable | Callback>[]): void {
  * - `Nullish` values are skipped (for convenience).
  *
  * @throws {Errors} Error that aggregates all the disposal errors.
+ *
+ * @todo Potentially rewrite this to use `AsyncDisposableStack` internally.
  */
 export async function awaitDispose(...values: Nullish<AsyncDisposable | Disposable | Callback | Promise<unknown>>[]): Promise<void> {
 	const errors = await awaitErrors(...values.filter(notNullish).map(_disposeAsync));
