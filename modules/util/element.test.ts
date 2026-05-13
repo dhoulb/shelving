@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
-import type { Data, Element, Elements } from "../index.js";
+import type { Data, Element, Elements, TreeElement } from "../index.js";
 import { filterElements, getElementPaths, getElements, getElementText, queryElements, resolveElementPath } from "../index.js";
 
 const P: Element = {
@@ -131,24 +131,40 @@ describe("filterElements()", () => {
 	});
 });
 
-const RESOLVE_TREE: Element[] = [
-	{
-		key: "util",
-		type: "tree-directory",
-		props: {
-			children: [
-				{ key: "array", type: "tree-file", props: { title: "Array" } },
-				{ key: "string", type: "tree-file", props: { title: "String" } },
-			],
-		},
+const RESOLVE_TREE: TreeElement = {
+	key: "modules",
+	type: "tree-directory",
+	props: {
+		name: "modules",
+		children: [
+			{
+				key: "util",
+				type: "tree-directory",
+				props: {
+					name: "util",
+					children: [
+						{ key: "array", type: "tree-file", props: { name: "array.ts", title: "Array" } },
+						{ key: "string", type: "tree-file", props: { name: "string.ts", title: "String" } },
+					],
+				},
+			},
+			{ key: "readme", type: "tree-file", props: { name: "README.md", title: "README" } },
+		],
 	},
-	{ key: "readme", type: "tree-file", props: { title: "README" } },
-];
+};
 
-describe("resolveElement()", () => {
-	test("resolves a single key", () => {
+describe("resolveElementPath()", () => {
+	test("returns the root itself for an empty path", () => {
+		expect(resolveElementPath(RESOLVE_TREE, [])).toMatchObject({ key: "modules", type: "tree-directory" });
+	});
+
+	test("resolves a descendant by key", () => {
 		expect(resolveElementPath(RESOLVE_TREE, ["util"])).toMatchObject({ key: "util", type: "tree-directory" });
 		expect(resolveElementPath(RESOLVE_TREE, ["util", "array"])).toMatchObject({ key: "array", props: { title: "Array" } });
+	});
+
+	test("does not match the root's own key", () => {
+		expect(resolveElementPath(RESOLVE_TREE, ["modules"])).toBeUndefined();
 	});
 
 	test("returns undefined for non-existent keys", () => {
@@ -157,9 +173,9 @@ describe("resolveElement()", () => {
 	});
 });
 
-describe("getElementKeys()", () => {
-	test("yields key arrays for all keyed elements", () => {
+describe("getElementPaths()", () => {
+	test("yields the root as [] plus every descendant relative to it", () => {
 		const keys = Array.from(getElementPaths(RESOLVE_TREE));
-		expect(keys).toEqual([["util"], ["util", "array"], ["util", "string"], ["readme"]]);
+		expect(keys).toEqual([[], ["util"], ["util", "array"], ["util", "string"], ["readme"]]);
 	});
 });

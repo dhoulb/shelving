@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Elements } from "../../util/element.js";
+import type { TreeElements } from "../../util/element.js";
 import { DirectoryCard } from "../docs/DirectoryCard.js";
 import { DocumentationCard } from "../docs/DocumentationCard.js";
 import { FileCard } from "../docs/FileCard.js";
@@ -18,10 +18,10 @@ export const [TreeCardMapping, TreeCardMapper] = createMapper({
 
 export interface TreeCardsProps {
 	/** Elements to render as cards. */
-	children?: Elements;
+	children: TreeElements;
 }
 
-/** Grid of cards built from a tree of elements. */
+/** Grid of cards rendered from a flat collection of tree elements. */
 export function TreeCards({ children }: TreeCardsProps): ReactNode {
 	return (
 		<div className={TREE_CARDS_CSS.grid}>

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Elements } from "../../util/element.js";
+import type { TreeElement } from "../../util/element.js";
 import { DirectoryMenuItem } from "../docs/DirectoryMenuItem.js";
 import { FileMenuItem } from "../docs/FileMenuItem.js";
 import { createMapper } from "../misc/Mapper.js";
@@ -16,16 +16,16 @@ export const [TreeMenuMapping, TreeMenuMapper] = createMapper({
 });
 
 export interface TreeMenuProps {
-	/** Elements to render as navigation links. */
-	children?: Elements;
+	/** Root element whose children become the navigation links. */
+	tree: TreeElement;
 }
 
-/** Sidebar navigation menu built from a tree of elements. */
-export function TreeMenu({ children }: TreeMenuProps): ReactNode {
+/** Sidebar navigation menu built from the children of a root tree element. */
+export function TreeMenu({ tree }: TreeMenuProps): ReactNode {
 	return (
 		<nav className={TREE_MENU_CSS.menu}>
 			<ul className={TREE_MENU_CSS.list}>
-				<TreeMenuMapper>{children}</TreeMenuMapper>
+				<TreeMenuMapper>{tree.props.children}</TreeMenuMapper>
 			</ul>
 		</nav>
 	);

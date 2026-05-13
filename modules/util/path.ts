@@ -4,7 +4,7 @@
 
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
-import { isNullish, type Segments, splitString } from "./index.js";
+import { isNullish, splitString } from "./index.js";
 import type { Nullish } from "./null.js";
 
 /** Absolute path string starts with `/` slash. */
@@ -96,12 +96,20 @@ export function isPathProud(target: AbsolutePath, current: AbsolutePath): boolea
 	return target === current || (target !== "/" && target.startsWith(`${current}/`));
 }
 
-/** Get the "segments" in an absolute path. */
-export function splitAbsolutePath(path: AbsolutePath | Segments): Segments {
-	return typeof path === "string" ? splitString(path.slice(1), "/", 1, undefined, splitAbsolutePath) : path;
+/**
+ * Get the "segments" in an absolute path.
+ * - `splitAbsolutePath("/")` returns `[]` — the root has no segments.
+ */
+export function splitAbsolutePath(path: AbsolutePath | readonly string[]): readonly string[] {
+	if (typeof path !== "string") return path;
+	if (path === "/") return [];
+	return splitString(path.slice(1), "/", 1, undefined, splitAbsolutePath);
 }
 
-/** Join a set of path segments to form an absolute path. */
-export function joinAbsolutePath(path: Segments | AbsolutePath): AbsolutePath {
-	return typeof path === "string" ? path : `/${path.join("")}`;
+/**
+ * Join a set of path segments to form an absolute path.
+ * - `joinAbsolutePath([])` returns `"/"` — an empty segment list represents the root.
+ */
+export function joinAbsolutePath(path: AbsolutePath | readonly string[]): AbsolutePath {
+	return typeof path === "string" ? path : `/${path.join("/")}`;
 }

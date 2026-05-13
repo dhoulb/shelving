@@ -5,7 +5,6 @@ import { isNullish } from "./null.js";
 import type { AbsolutePath } from "./path.js";
 import type { Query } from "./query.js";
 import { queryItems } from "./query.js";
-import type { Segments } from "./string.js";
 
 /** Set of valid props for an element. */
 export interface ElementProps {
@@ -201,78 +200,77 @@ export function* filterElements(elements: Elements, match: (element: Element) =>
 }
 
 /**
- * Resolve an element in a tree by walking a sequence of keys.
- * - Accepts a dot-separated string (e.g. `"util.array"`) or an array of path segments (e.g. `["util", "array"]`).
- * - Matches each segment to the `key` of an immediate child element.
- * - If `keys` is empty, undefined, or an empty string, returns the first keyed element at the root level.
- * - Returns `undefined` if no element matches at any level.
+ * Resolve an element in a tree by walking a sequence of keys from `root`.
+ * - The `root` element's own key is never matched against path segments — it's the container, not a step in the path.
+ * - Each segment matches the `key` of an immediate child of the current element.
+ * - If `path` is empty, returns `root` itself.
+ * - Returns `undefined` if no descendant matches at any level.
  *
  * Splitting the path:
- * - We accept a raw `Segments` array for each element, so they can be joined later however you wish.
+ * - We accept a raw `Segments` array, so callers can join paths later however they wish.
  * - Element paths have no canonical string representation so we use `Segments` instead.
- * - To split the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(elements), splitDataPath)`
- * - To split the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(elements), splitAbsolutePath)`
+ * - To split the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(root), splitDataPath)`
+ * - To split the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(root), splitAbsolutePath)`
  *
- * @param elements The root elements to search within.
- * @param path An array of path segments.
- * - Element paths have no canonical string representation so we always us the `Segments` format.
+ * @param root The root element to walk from. Its own `key` is treated as a label, not a path segment.
+ * @param path An array of path segments naming descendants of `root`.
  *
- * @example resolveElement(elements, "util.array") // Element with key "array" inside element with key "util"
- * @example resolveElement(elements, ["util", "array"]) // Same as above
- * @example resolveElement(elements, "") // First keyed root element
+ * @example resolveElementPath(root, ["util", "array"]) // Element with key "array" inside child with key "util"
+ * @example resolveElementPath(root, []) // `root` itself
  */
-export function resolveElementPath(elements: Elements, path: Segments): Element | undefined {
-	let current: Elements = elements;
-	let found: Element | undefined;
-
+export function resolveElementPath(root: TreeElement, path: readonly string[]): Element | undefined {
+	let current: Element = root;
 	for (const segment of path) {
-		found = undefined;
-		for (const el of getElements(current, 0)) {
+		let found: Element | undefined;
+		for (const el of getElements(current.props.children, 0)) {
 			if (el.key === segment) {
 				found = el;
 				break;
 			}
 		}
 		if (!found) return undefined;
-		current = found.props.children;
+		current = found;
 	}
-
-	return found;
+	return current;
 }
 
 /**
- * Deeply iterate a tree of elements and yield an array of path segments for each element that has a string `key:` property.
- * - Each yielded value is an array of path segments from root to the element.
- * - Only elements with a string `key:` property are included.
- * - Elements with `undefined` or `null` key are skipped.
+ * Deeply iterate a tree from `root` and yield path segments for each reachable element.
+ * - Yields `[]` for `root` itself.
+ * - Yields `[key]` for each immediate child, `[key, key]` for grandchildren, etc.
+ * - The `root` element's own key never appears in any yielded path — it's the container.
+ * - Children with `undefined` or `null` keys are skipped (and their descendants are not yielded).
  *
  * Joining the paths:
- * - We return a `Segments` array for each element, so they can be joined later however you wish.
+ * - We return a `Segments` array for each element, so callers can join paths later however they wish.
  * - Element paths have no canonical string representation so we use `Segments` instead.
- * - To join the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(elements), joinDataPath)`
- * - To join the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(elements), joinAbsolutePath)`
+ * - To join the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(root), joinDataPath)`
+ * - To join the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(root), joinAbsolutePath)`
  *
- * @param elements The elements to get keys for.
+ * @param root The root element to walk from. Its own `key` is treated as a label, not a path segment.
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
- * - `depth=0` yields matching elements at the current level only (no recursion into children).
+ * - `depth=0` yields only `[]` (the root itself).
  *
- * @returns Iterable set of path segment arrays, each representing one component.
- * - Element paths have no canonical string representation so we always us the `Segments` format.
+ * @returns Iterable set of path segment arrays, each representing one descendant (or the root).
  */
-export function getElementPaths(elements: Elements, depth = Infinity): Iterable<Segments> {
-	return _getElementPaths(elements, depth);
+export function getElementPaths(root: TreeElement, depth = Infinity): Iterable<readonly string[]> {
+	return _getElementPaths(root, depth);
 }
-export function* _getElementPaths(elements: Elements, depth: number, prefix?: Segments): Iterable<Segments> {
+function* _getElementPaths(root: TreeElement, depth: number): Iterable<readonly string[]> {
+	yield [];
+	if (depth > 0) yield* _getDescendantPaths(root.props.children, depth - 1);
+}
+function* _getDescendantPaths(elements: Elements, depth: number, prefix?: readonly string[]): Iterable<readonly string[]> {
 	for (const { key, props } of getElements(elements, 0)) {
-		// Skip `null` or `undefined` keys.
+		// Skip `null` or `undefined` keys (and their descendants).
 		if (isNullish(key)) continue;
 
 		// Make the path and yield it.
-		const keys: Segments = prefix ? [...prefix, key] : [key];
+		const keys: readonly string[] = prefix ? [...prefix, key] : [key];
 		yield keys;
 
 		// Recurse into the children.
-		if (depth > 0 && props.children) yield* _getElementPaths(props.children, depth - 1, keys);
+		if (depth > 0 && props.children) yield* _getDescendantPaths(props.children, depth - 1, keys);
 	}
 }
 
