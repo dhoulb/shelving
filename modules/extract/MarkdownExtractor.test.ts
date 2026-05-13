@@ -27,9 +27,9 @@ describe("MarkdownExtractor", () => {
 		expect(getElementText(element.props.content as Elements)).toContain("Hello");
 	});
 
-	test("falls back to filename (without extension) if no heading", async () => {
+	test("leaves title undefined when no h1 heading is found", async () => {
 		const element = await extractor.extract(file("Just some text.", "TEMPLATE.md"));
-		expect(element.props.title).toBe("TEMPLATE");
+		expect(element.props.title).toBeUndefined();
 		expect(element.props.content).toBeDefined();
 	});
 

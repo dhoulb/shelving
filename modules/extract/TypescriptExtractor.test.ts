@@ -26,7 +26,7 @@ export function add(a: number, b: number): number {
 		expect(element.props.children).toMatchObject([
 			{
 				type: "tree-documentation",
-				props: { kind: "function", title: "add", description: "Add two numbers together.", signature: "(a: number, b: number) => number" },
+				props: { kind: "function", name: "add", description: "Add two numbers together.", signature: "(a: number, b: number) => number" },
 			},
 		]);
 	});
@@ -39,7 +39,7 @@ export const MAX_RETRIES: number = 3;
 `),
 		);
 		expect(element.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "constant", title: "MAX_RETRIES", signature: "number" } },
+			{ type: "tree-documentation", props: { kind: "constant", name: "MAX_RETRIES", signature: "number" } },
 		]);
 	});
 
@@ -58,13 +58,13 @@ export class Store {
 		);
 		const children = element.props.children as unknown[];
 		expect(children).toHaveLength(1);
-		const cls = children[0] as { type: string; props: { kind: string; title: string; children: unknown[] } };
+		const cls = children[0] as { type: string; props: { kind: string; name: string; children: unknown[] } };
 		expect(cls.type).toBe("tree-documentation");
 		expect(cls.props.kind).toBe("class");
-		expect(cls.props.title).toBe("Store");
+		expect(cls.props.name).toBe("Store");
 		expect(cls.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "property", title: "value", signature: "string" } },
-			{ type: "tree-documentation", props: { kind: "method", title: "set" } },
+			{ type: "tree-documentation", props: { kind: "property", name: "value", signature: "string" } },
+			{ type: "tree-documentation", props: { kind: "method", name: "set" } },
 		]);
 	});
 
@@ -78,7 +78,7 @@ export interface ThingOptions {
 }
 `),
 		);
-		expect(element.props.children).toMatchObject([{ type: "tree-documentation", props: { kind: "interface", title: "ThingOptions" } }]);
+		expect(element.props.children).toMatchObject([{ type: "tree-documentation", props: { kind: "interface", name: "ThingOptions" } }]);
 	});
 
 	test("extracts exported type alias", async () => {
@@ -89,7 +89,7 @@ export type NullableString = string | null;
 `),
 		);
 		expect(element.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "type", title: "NullableString", signature: "string | null" } },
+			{ type: "tree-documentation", props: { kind: "type", name: "NullableString", signature: "string | null" } },
 		]);
 	});
 
@@ -143,17 +143,18 @@ export function first<T>(arr: T[]): T | undefined {
 		expect(element.props.content).toBe("This module handles array utilities.");
 	});
 
-	test("sets title from filename (without extension)", async () => {
+	test("leaves title undefined (no confident source for a TS source file)", async () => {
 		const element = await extractor.extract(file("export const X = 1;", "array.ts"));
-		expect(element.props.title).toBe("array");
+		expect(element.props.title).toBeUndefined();
+		expect(element.props.name).toBe("array.ts");
 		expect(element.key).toBe("array");
 	});
 
-	test("strips directory path from filename when computing key/title", async () => {
+	test("strips directory path from filename when computing key/name", async () => {
 		// In production, `BunFile.name` is the full absolute path (e.g. `/Users/.../modules/util/array.ts`).
 		// The extractor should use only the basename.
 		const element = await extractor.extract(file("export const X = 1;", "/Users/foo/modules/util/array.ts"));
-		expect(element.props.title).toBe("array");
+		expect(element.props.name).toBe("array.ts");
 		expect(element.key).toBe("array");
 	});
 });

@@ -129,7 +129,9 @@ export class DirectoryExtractor extends Extractor<Path, DirectoryElement> {
 			props: {
 				path,
 				name,
-				title: index?.element.props.title ?? name,
+				// `title` is only set when the absorbed index file has a confident one (e.g. README H1).
+				// Renderers fall back to `name` otherwise.
+				title: index?.element.props.title,
 				description: index?.element.props.description,
 				content: index?.element.props.content,
 				children: mergeElements(index?.element.props.children, children),

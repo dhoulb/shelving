@@ -8,7 +8,8 @@ import { FileExtractor } from "./FileExtractor.js";
 /**
  * File extractor that parses a Markdown file into a tree element.
  * - Parses the file content using the markup module.
- * - Uses the first `<h1>` heading as the element title (falling back to the filename).
+ * - Sets `title` from the first `<h1>` heading if one is present — otherwise leaves it undefined
+ *   (a confident title only).
  */
 export class MarkdownExtractor extends FileExtractor {
 	/** Markdown contributes the canonical title/path when merging same-key elements. */
@@ -21,9 +22,9 @@ export class MarkdownExtractor extends FileExtractor {
 		this._options = options;
 	}
 
-	override extractProps(name: string, base: string, text: string): FileElementProps {
+	override extractProps(name: string, text: string): FileElementProps {
 		const content = this.render(text);
-		const title = _getFirstHeadingText(content) ?? base;
+		const title = _getFirstHeadingText(content);
 		return { name, title, content };
 	}
 

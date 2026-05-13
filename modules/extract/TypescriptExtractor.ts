@@ -11,7 +11,7 @@ import { FileExtractor } from "./FileExtractor.js";
  * - Uses the filename (without extension) as the title.
  */
 export class TypescriptExtractor extends FileExtractor {
-	override extractProps(name: string, title: string, text: string): FileElementProps {
+	override extractProps(name: string, text: string): FileElementProps {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
 		const content = _getFileDocComment(source);
 
@@ -21,7 +21,9 @@ export class TypescriptExtractor extends FileExtractor {
 			if (element) children.push(element);
 		}
 
-		return { name, title, content, children };
+		// No `title` — TS source files don't have a confident title source (the filename isn't one).
+		// The renderer falls back to `name` when displaying.
+		return { name, content, children };
 	}
 }
 
@@ -65,8 +67,8 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 		type: "tree-documentation",
 		key: requireSlug(name),
 		props: {
+			name,
 			kind,
-			title: name,
 			description: jsDoc?.description,
 			signature,
 			params,
@@ -170,7 +172,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 				type: "tree-documentation",
 				key: requireSlug(name),
 				props: {
-					title: name,
+					name,
 					description,
 					kind: "method",
 					signature: `(${params}) => ${ret}`,
@@ -181,7 +183,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 				type: "tree-documentation",
 				key: requireSlug(name),
 				props: {
-					title: name,
+					name,
 					description,
 					kind: "property",
 					signature: member.type?.getText(source),

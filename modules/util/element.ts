@@ -27,7 +27,19 @@ export type Elements = undefined | null | string | Element | Iterable<Elements>;
 
 /** Props for a tree element — must have a `tree-` prefixed type. */
 export interface TreeElementProps extends ElementProps {
-	readonly title: string;
+	/**
+	 * The primary identifier shown in menus, cards, and other listings.
+	 * - Always set. For files this is the basename (e.g. `"array.ts"`); for directories it's the directory name;
+	 *   for documented symbols it's the declared name (e.g. `"getFirst"`).
+	 * - `key` is typically the slugified version of `name`.
+	 */
+	readonly name: string;
+	/**
+	 * Optional visual-only override for `name`, set only when a confident source is available
+	 * (e.g. a markdown `<h1>`, a docblock title).
+	 * - Renderers should fall back to `name` when `title` is missing.
+	 */
+	readonly title?: string | undefined;
 	readonly description?: string | undefined;
 	readonly content?: Elements | undefined;
 	/** Children of a tree element must be other tree elements. */
@@ -51,7 +63,6 @@ export type TreeElements = undefined | null | TreeElement | Iterable<TreeElement
 /** Props for a directory element. */
 export interface DirectoryElementProps extends TreeElementProps {
 	readonly path: AbsolutePath;
-	readonly name: string;
 }
 
 /**
@@ -65,7 +76,7 @@ export interface DirectoryElement extends TreeElement<DirectoryElementProps> {
 
 /** Props for a file element. */
 export interface FileElementProps extends TreeElementProps {
-	readonly name: string;
+	// `name` is inherited from `TreeElementProps` — the basename including extension (e.g. `"array.ts"`).
 }
 
 /**
@@ -91,6 +102,8 @@ export interface DocumentationParam {
  * - All props are optional — not every kind uses every prop (e.g. `returns` only makes sense for functions).
  */
 export interface DocumentationElementProps extends TreeElementProps {
+	// `name` is inherited from `TreeElementProps` — the declared symbol name (e.g. `"getFirst"`).
+	// `title` is inherited and remains optional — used only if a docblock provides a polished display title.
 	readonly kind?: string | undefined;
 	readonly signature?: string | undefined;
 	readonly params?: ImmutableArray<DocumentationParam> | undefined;
