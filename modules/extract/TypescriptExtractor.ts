@@ -1,29 +1,29 @@
 import ts from "typescript";
-import type { CodeElementType, Element } from "../util/element.js";
-import { type ContentExtractor, Extractor } from "./Extractor.js";
+import type { DocumentationElement, FileElementProps, TreeElement } from "../util/element.js";
+import { requireSlug } from "../util/string.js";
+import { FileExtractor } from "./FileExtractor.js";
 
 /**
- * Extractor that converts a TypeScript source string into a file element.
+ * File extractor that parses a TypeScript source file into a tree element.
  * - Uses the TypeScript compiler API to parse the AST.
- * - Extracts exported, public, non-`_`-prefixed declarations with their JSDoc and type signatures.
- * - Top-of-file JSDoc comment becomes the file's description.
+ * - Extracts exported, public, non-`_`-prefixed declarations as `tree-documentation` children.
+ * - Top-of-file JSDoc comment becomes the file's `content`.
+ * - Does not set `title` — TS source files have no confident title source. The renderer falls back to `name`.
  */
-export class TypescriptExtractor extends Extractor<string> implements ContentExtractor {
-	extract(content: string): Element {
-		const source = ts.createSourceFile("source.ts", content, ts.ScriptTarget.Latest, true);
-		const children: Element[] = [];
-		const description = _getFileDocComment(source);
+export class TypescriptExtractor extends FileExtractor {
+	override extractProps(name: string, text: string): FileElementProps {
+		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
+		const content = _getFileDocComment(source);
 
+		const children: TreeElement[] = [];
 		for (const statement of source.statements) {
 			const element = _extractStatement(statement, source);
 			if (element) children.push(element);
 		}
 
-		return {
-			type: "tree-file",
-			key: null,
-			props: { description, children },
-		};
+		// No `title` — TS source files don't have a confident title source (the filename isn't one).
+		// The renderer falls back to `name` when displaying.
+		return { name, content, children };
 	}
 }
 
@@ -42,7 +42,7 @@ function _getFileDocComment(source: ts.SourceFile): string | undefined {
 }
 
 /** Extract an element from a top-level statement, or return undefined if it should be skipped. */
-function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Element | undefined {
+function _extractStatement(statement: ts.Statement, source: ts.SourceFile): DocumentationElement | undefined {
 	// Skip non-exported statements.
 	if (!_isExported(statement)) return;
 
@@ -54,7 +54,7 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Elem
 	if (name.startsWith("_")) return;
 
 	const jsDoc = _getJSDoc(statement, source);
-	const kind = _getElementType(statement);
+	const kind = _getKind(statement);
 	if (!kind) return;
 
 	const signature = _getSignature(statement, source);
@@ -63,17 +63,20 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Elem
 	const examples = jsDoc?.examples;
 	const children = _getClassMembers(statement, source);
 
-	const props: Record<string, unknown> = {
-		title: name,
-		description: jsDoc?.description,
-		signature,
+	return {
+		type: "tree-documentation",
+		key: requireSlug(name),
+		props: {
+			name,
+			kind,
+			description: jsDoc?.description,
+			signature,
+			params,
+			returns,
+			examples,
+			children,
+		},
 	};
-	if (params?.length) props.params = params;
-	if (returns) props.returns = returns;
-	if (examples?.length) props.examples = examples;
-	if (children?.length) props.children = children;
-
-	return { type: kind, key: null, props };
 }
 
 /** Check if a statement has an `export` modifier. */
@@ -99,13 +102,13 @@ function _getStatementName(statement: ts.Statement): string | undefined {
 	}
 }
 
-/** Map a statement to its tree element type. */
-function _getElementType(statement: ts.Statement): CodeElementType | undefined {
-	if (ts.isFunctionDeclaration(statement)) return "tree-function";
-	if (ts.isClassDeclaration(statement)) return "tree-class";
-	if (ts.isInterfaceDeclaration(statement)) return "tree-interface";
-	if (ts.isTypeAliasDeclaration(statement)) return "tree-type";
-	if (ts.isVariableStatement(statement)) return "tree-constant";
+/** Map a statement to its documentation kind. */
+function _getKind(statement: ts.Statement): string | undefined {
+	if (ts.isFunctionDeclaration(statement)) return "function";
+	if (ts.isClassDeclaration(statement)) return "class";
+	if (ts.isInterfaceDeclaration(statement)) return "interface";
+	if (ts.isTypeAliasDeclaration(statement)) return "type";
+	if (ts.isVariableStatement(statement)) return "constant";
 }
 
 /** Get the text signature of a statement. */
@@ -147,9 +150,9 @@ function _getReturnType(statement: ts.Statement, source: ts.SourceFile): string 
 }
 
 /** Extract class or interface members as child elements. */
-function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Element[] | undefined {
+function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): DocumentationElement[] | undefined {
 	if (!ts.isClassDeclaration(statement) && !ts.isInterfaceDeclaration(statement)) return;
-	const members: Element[] = [];
+	const members: DocumentationElement[] = [];
 
 	for (const member of statement.members) {
 		// Skip private, protected, and _-prefixed members.
@@ -160,20 +163,32 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Eleme
 			if (modifiers?.some(m => m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword)) continue;
 		}
 
-		const jsDoc = _getJSDoc(member, source);
-		const props: Record<string, unknown> = {
-			title: name,
-			description: jsDoc?.description,
-		};
+		const description = _getJSDoc(member, source)?.description;
 
 		if (ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) {
 			const params = member.parameters.map(p => p.getText(source)).join(", ");
 			const ret = member.type ? member.type.getText(source) : "void";
-			props.signature = `(${params}) => ${ret}`;
-			members.push({ type: "tree-method", key: null, props });
+			members.push({
+				type: "tree-documentation",
+				key: requireSlug(name),
+				props: {
+					name,
+					description,
+					kind: "method",
+					signature: `(${params}) => ${ret}`,
+				},
+			});
 		} else if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
-			if (member.type) props.signature = member.type.getText(source);
-			members.push({ type: "tree-property", key: null, props });
+			members.push({
+				type: "tree-documentation",
+				key: requireSlug(name),
+				props: {
+					name,
+					description,
+					kind: "property",
+					signature: member.type?.getText(source),
+				},
+			});
 		}
 	}
 

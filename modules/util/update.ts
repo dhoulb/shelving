@@ -1,9 +1,10 @@
 import { type ImmutableArray, isArray, omitArrayItems, withArrayItems } from "./array.js";
-import type { BranchData, BranchDataKey, Data, DataPath, DataProp, LeafData, LeafDataKey } from "./data.js";
-import { splitDataKey } from "./data.js";
+import type { BranchData, BranchDataPath, Data, DataProp, LeafData, LeafDataPath } from "./data.js";
+import { splitDataPath } from "./data.js";
 import { reduceItems } from "./iterate.js";
 import { requireNumber } from "./number.js";
 import { getProps, isObject } from "./object.js";
+import type { Segments } from "./string.js";
 import { isDefined } from "./undefined.js";
 
 /**
@@ -18,7 +19,7 @@ export type Updates<T extends Data = Data> = {
 	 * - Can set `a` and `a.a1` in `{ a: { a1: 123 } }`
 	 * - Sometimes inference gets confused, if that happens use `=` syntax instead.
 	 */
-	readonly [K in BranchDataKey<T> as `${K}`]?: BranchData<T>[K] | undefined;
+	readonly [K in BranchDataPath<T> as `${K}`]?: BranchData<T>[K] | undefined;
 } & {
 	/**
 	 * Set update (leaves only)
@@ -26,29 +27,29 @@ export type Updates<T extends Data = Data> = {
 	 * - Deeply-nested properties don't always infer when leaves and branches are combined.
 	 * - This syntax is more exact and will infer better.
 	 */
-	readonly [K in LeafDataKey<T> as `=${K}`]?: LeafData<T>[K] | undefined;
+	readonly [K in LeafDataPath<T> as `=${K}`]?: LeafData<T>[K] | undefined;
 } & {
 	/**
 	 * Sum update.
 	 * - Increment/decrement numbers.
 	 */
-	readonly [K in LeafDataKey<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] | undefined : never;
+	readonly [K in LeafDataPath<T> as `+=${K}` | `-=${K}`]?: LeafData<T>[K] extends number ? LeafData<T>[K] | undefined : never;
 } & {
 	/**
 	 * With/omit update.
 	 * - Add or remove items from arrays.
 	 */
-	readonly [K in LeafDataKey<T> as `+[]${K}` | `-[]${K}`]?: LeafData<T>[K] extends ImmutableArray<unknown>
+	readonly [K in LeafDataPath<T> as `+[]${K}` | `-[]${K}`]?: LeafData<T>[K] extends ImmutableArray<unknown>
 		? LeafData<T>[K] | LeafData<T>[K][number] | undefined
 		: never;
 };
 
 /** A single update to a keyed property in an object. */
 export type Update =
-	| { action: "set"; key: DataPath; value: unknown } //
-	| { action: "with"; key: DataPath; value: ImmutableArray<unknown> } //
-	| { action: "omit"; key: DataPath; value: ImmutableArray<unknown> } //
-	| { action: "sum"; key: DataPath; value: number };
+	| { action: "set"; key: Segments; value: unknown } //
+	| { action: "with"; key: Segments; value: ImmutableArray<unknown> } //
+	| { action: "omit"; key: Segments; value: ImmutableArray<unknown> } //
+	| { action: "sum"; key: Segments; value: number };
 
 /** Yield the prop updates in an `Updates` object as a set of `Update` objects. */
 export function getUpdates<T extends Data>(data: Updates<T>): ImmutableArray<Update> {
@@ -57,17 +58,17 @@ export function getUpdates<T extends Data>(data: Updates<T>): ImmutableArray<Upd
 function _getUpdate([key, value]: DataProp<Updates>): Update | undefined {
 	if (value !== undefined) {
 		if (key.startsWith("+="))
-			return { action: "sum", key: splitDataKey(key.slice(2)), value: requireNumber(value as number, undefined, undefined, getUpdates) };
+			return { action: "sum", key: splitDataPath(key.slice(2)), value: requireNumber(value as number, undefined, undefined, getUpdates) };
 		if (key.startsWith("-="))
 			return {
 				action: "sum",
-				key: splitDataKey(key.slice(2)),
+				key: splitDataPath(key.slice(2)),
 				value: 0 - requireNumber(value as number, undefined, undefined, getUpdates),
 			};
-		if (key.startsWith("=")) return { action: "set", key: splitDataKey(key.slice(1)), value };
-		if (key.startsWith("+[]")) return { action: "with", key: splitDataKey(key.slice(3)), value: isArray(value) ? value : [value] };
-		if (key.startsWith("-[]")) return { action: "omit", key: splitDataKey(key.slice(3)), value: isArray(value) ? value : [value] };
-		return { action: "set", key: splitDataKey(key), value };
+		if (key.startsWith("=")) return { action: "set", key: splitDataPath(key.slice(1)), value };
+		if (key.startsWith("+[]")) return { action: "with", key: splitDataPath(key.slice(3)), value: isArray(value) ? value : [value] };
+		if (key.startsWith("-[]")) return { action: "omit", key: splitDataPath(key.slice(3)), value: isArray(value) ? value : [value] };
+		return { action: "set", key: splitDataPath(key), value };
 	}
 }
 

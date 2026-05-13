@@ -5,6 +5,7 @@ import type { EntryObject } from "./entry.js";
 import type { AnyCaller } from "./function.js";
 import type { DeepPartial } from "./object.js";
 import { isObject, isPlainObject } from "./object.js";
+import type { Segments } from "./string.js";
 import type { Resolve } from "./types.js";
 
 /** Data object. */
@@ -28,30 +29,18 @@ export type DataProp<T extends Data> = {
 }[DataKey<T>];
 
 /**
- * A path to a (possibly deep) property in a data object, e.g. `["sub", "str"]`.
- * - At least one path segment is required.
- */
-export type DataPath = readonly [key: string, ...string[]];
-
-/**
- * Something that can be converted to a `DataPath`,
- * i.e. a "dot.separated.string" or an existing `DataPath` array.
- */
-export type PossibleDataPath = string | DataPath;
-
-/**
  * Helper type to get a flattened data object with every branch node of the data, flattened into `a.c.b` format.
  * i.e. `BranchData<{ a: { a2: number } }>` produces `{ "a": object, "a.a2": number }`
  */
 export type BranchData<T extends Data> = EntryObject<BranchDataProp<T>>;
 
-/** Helper type to get the key for a flattened data object with deep keys flattened into `a.c.b` format. */
-export type BranchDataKey<T extends Data> = BranchDataProp<T>[0];
+/** Helper type to get the path for a flattened data object with deep paths flattened into `a.c.b` format. */
+export type BranchDataPath<T extends Data> = BranchDataProp<T>[0];
 
-/** Helper type to get the value for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the value for a flattened data object with deep paths flattened into `a.c.b` format. */
 export type BranchDataValue<T extends Data> = BranchDataProp<T>[1];
 
-/** Helper type to get the prop for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the prop for a flattened data object with deep paths flattened into `a.c.b` format. */
 export type BranchDataProp<T extends Data> = {
 	readonly [K in DataKey<T>]: (
 		T[K] extends Data
@@ -68,8 +57,8 @@ export type BranchDataProp<T extends Data> = {
  * Typed path tuple for every branch node of a data object (including intermediate objects).
  * i.e. `BranchPath<{ a: number, b: { c: string } }>` produces `readonly ["a"] | readonly ["b"] | readonly ["b", "c"]`
  */
-export type BranchDataPath<T extends Data> = {
-	readonly [K in DataKey<T>]: T[K] extends Data ? readonly [K] | readonly [K, ...BranchDataPath<T[K]>] : readonly [K];
+export type BranchDataSegments<T extends Data> = {
+	readonly [K in DataKey<T>]: T[K] extends Data ? readonly [K] | readonly [K, ...BranchDataSegments<T[K]>] : readonly [K];
 }[DataKey<T>];
 
 /**
@@ -78,13 +67,13 @@ export type BranchDataPath<T extends Data> = {
  */
 export type LeafData<T extends Data> = EntryObject<LeafDataProp<T>>;
 
-/** Helper type to get the leaf keys for a flattened data object with deep keys flattened into `a.c.b` format. */
-export type LeafDataKey<T extends Data> = LeafDataProp<T>[0];
+/** Helper type to get the leaf paths for a flattened data object with deep paths flattened into `a.c.b` format. */
+export type LeafDataPath<T extends Data> = LeafDataProp<T>[0];
 
-/** Helper type to get the leaf values for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the leaf values for a flattened data object with deep paths flattened into `a.c.b` format. */
 export type LeafDataValue<T extends Data> = LeafDataProp<T>[1];
 
-/** Helper type to get the leaf props for a flattened data object with deep keys flattened into `a.c.b` format. */
+/** Helper type to get the leaf props for a flattened data object with deep paths flattened into `a.c.b` format. */
 export type LeafDataProp<T extends Data> = {
 	readonly [K in DataKey<T>]: (
 		T[K] extends Data
@@ -101,8 +90,8 @@ export type LeafDataProp<T extends Data> = {
  * Typed path tuple for only leaf nodes of a data object.
  * i.e. `LeafPath<{ a: number, b: { c: string } }>` produces `readonly ["a"] | readonly ["b", "c"]`
  */
-export type LeafDataPath<T extends Data> = {
-	readonly [K in DataKey<T>]: T[K] extends Data ? readonly [K, ...LeafDataPath<T[K]>] : readonly [K];
+export type LeafDataSegments<T extends Data> = {
+	readonly [K in DataKey<T>]: T[K] extends Data ? readonly [K, ...LeafDataSegments<T[K]>] : readonly [K];
 }[DataKey<T>];
 
 /**
@@ -142,7 +131,7 @@ export function getDataProps(data: Data | Partial<Data>): ImmutableArray<DataPro
 	return Object.entries(data);
 }
 
-/** Get the props of a data object as a set of entries. */
+/** Get the keys of a data object as an array. */
 export function getDataKeys<T extends Data>(data: T): ImmutableArray<DataKey<T>>;
 export function getDataKeys<T extends Data>(data: T | Partial<T>): ImmutableArray<DataKey<T>>;
 export function getDataKeys(data: Data | Partial<Data>): ImmutableArray<DataKey<Data>> {
@@ -150,25 +139,25 @@ export function getDataKeys(data: Data | Partial<Data>): ImmutableArray<DataKey<
 }
 
 /**
- * Split a dotted key into a data path tuple.
+ * Split a dotted path into a data path segments.
  * @example splitDataKey<{ a: { b: number } }>("a.b"); // Returns `["a", "b"]`
  */
-export function splitDataKey<T extends Data>(key: BranchDataKey<T>): BranchDataPath<T>;
-export function splitDataKey<T extends Data>(key: LeafDataKey<T>): LeafDataPath<T>;
-export function splitDataKey(key: string): DataPath;
-export function splitDataKey(key: string): DataPath {
-	return key.split(".") as unknown as DataPath;
+export function splitDataPath<T extends Data>(path: BranchDataPath<T> | BranchDataSegments<T>): BranchDataSegments<T>;
+export function splitDataPath<T extends Data>(path: LeafDataPath<T> | LeafDataSegments<T>): LeafDataSegments<T>;
+export function splitDataPath(path: string | Segments): Segments;
+export function splitDataPath(path: string | Segments): ImmutableArray<string> {
+	return typeof path === "string" ? path.split(".") : path;
 }
 
 /**
- * Join a data path tuple back into a dotted key.
+ * Join a set of data path segments into data path tuple back into a dotted path.
  * @example joinDataKey<{ a: { b: number } }>(["a", "b"]); // Returns `"a.b"`
  */
-export function joinDataKey<T extends Data>(path: BranchDataPath<T>): BranchDataKey<T>;
-export function joinDataKey<T extends Data>(path: LeafDataPath<T>): LeafDataKey<T>;
-export function joinDataKey(path: DataPath): string;
-export function joinDataKey(path: DataPath): string {
-	return path.join(".");
+export function joinDataPath<T extends Data>(path: BranchDataSegments<T> | BranchDataPath<T>): BranchDataPath<T>;
+export function joinDataPath<T extends Data>(path: LeafDataSegments<T> | LeafDataPath<T>): LeafDataPath<T>;
+export function joinDataPath(path: Segments | string): string;
+export function joinDataPath(path: Segments | string): string {
+	return typeof path === "string" ? path : path.join(".");
 }
 
 /**
@@ -177,23 +166,15 @@ export function joinDataKey(path: DataPath): string {
  * @example getDataProp<{ a: { b: number } }>({ a: { b: 123 } }, "a.b"); // Returns `123`
  * @example getDataProp({ a: { b: 123 } } as Data, "x.y.z"); // Returns `undefined`
  */
-export function getDataProp<T extends Data, K extends BranchDataKey<T>>(data: T, key: K): BranchData<T>[K];
-export function getDataProp<T extends Data, K extends BranchDataKey<T>>(data: DeepPartial<T>, key: K): BranchData<T>[K] | undefined;
-export function getDataProp(data: Data, key: PossibleDataPath): unknown;
-export function getDataProp(data: Data, key: PossibleDataPath): unknown {
-	const path = getDataPath(key);
+export function getDataProp<T extends Data, K extends BranchDataPath<T>>(data: T, path: K): BranchData<T>[K];
+export function getDataProp<T extends Data, K extends BranchDataPath<T>>(data: DeepPartial<T>, path: K): BranchData<T>[K] | undefined;
+export function getDataProp(data: Data, path: string | Segments): unknown;
+export function getDataProp(data: Data, path: string | Segments): unknown {
+	const segments = splitDataPath(path);
 	let current: unknown = data;
-	for (const k of path) {
+	for (const segment of segments) {
 		if (!isObject(current)) return undefined;
-		current = current[k];
+		current = current[segment];
 	}
 	return current;
-}
-
-/**
- * Convert a possible data path to a data path array of string segments.
- * Get an array of data path segments from a string data path, or return the existing existing data path array.
- */
-export function getDataPath(key: PossibleDataPath): DataPath {
-	return typeof key === "string" ? splitDataKey(key) : key;
 }

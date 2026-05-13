@@ -6,7 +6,7 @@ import type { ValueInputProps } from "./Input.js";
 import { RadioInput } from "./RadioInput.js";
 
 /** Maximum number of options to show in a row. */
-const MAX_ROW_OPTIONS = 3;
+const MAX_ROW_OPTIONS = 2;
 
 export interface ChoiceRadioInputsProps<T extends string> extends ValueInputProps<T> {
 	/** Options for the radios. */

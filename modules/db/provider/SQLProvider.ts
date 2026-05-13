@@ -1,7 +1,8 @@
 import { RequiredError } from "../../error/RequiredError.js";
 import { UnimplementedError } from "../../error/UnimplementedError.js";
 import type { ImmutableArray } from "../../util/array.js";
-import type { Data, DataPath } from "../../util/data.js";
+import type { Data } from "../../util/data.js";
+import type { Segments } from "../../util/index.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import { getQueryFilters, getQueryLimit, getQueryOrders, type Query, type QueryFilter, type QueryOrder } from "../../util/query.js";
 import { getUpdates, type Update, type Updates } from "../../util/update.js";
@@ -122,8 +123,8 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		return { strings: [_escapeIdentifier(name)], values: [] };
 	}
 
-	/** Define an SQL fragment that extracts a deeply nested calue for comparison, e.g. `"a" #>> {"b","c"}` in Postgres */
-	sqlExtract(key: DataPath): SQLFragment {
+	/** Define an SQL fragment that extracts a deeply nested value for comparison, e.g. `"a" #>> {"b","c"}` in Postgres */
+	sqlExtract(key: Segments): SQLFragment {
 		if (key.length > 1) throw new UnimplementedError("SQLProvider does not support nested filter keys");
 		return this.sqlIdentifier(key[0]);
 	}

@@ -1,11 +1,11 @@
 import type { ImmutableArray } from "./array.js";
 import { isArray } from "./array.js";
-import { getDataPath } from "./data.js";
 import { isIterable } from "./iterate.js";
 import { isNullish } from "./null.js";
 import type { AbsolutePath } from "./path.js";
 import type { Query } from "./query.js";
 import { queryItems } from "./query.js";
+import type { Segments } from "./string.js";
 
 /** Set of valid props for an element. */
 export interface ElementProps {
@@ -27,29 +27,42 @@ export type Elements = undefined | null | string | Element | Iterable<Elements>;
 
 /** Props for a tree element — must have a `tree-` prefixed type. */
 export interface TreeElementProps extends ElementProps {
+	/**
+	 * The primary identifier shown in menus, cards, and other listings.
+	 * - Always set. For files this is the basename (e.g. `"array.ts"`); for directories it's the directory name;
+	 *   for documented symbols it's the declared name (e.g. `"getFirst"`).
+	 * - `key` is typically the slugified version of `name`.
+	 */
+	readonly name: string;
+	/**
+	 * Optional visual-only override for `name`, set only when a confident source is available
+	 * (e.g. a markdown `<h1>`, a docblock title).
+	 * - Renderers should fall back to `name` when `title` is missing.
+	 */
 	readonly title?: string | undefined;
 	readonly description?: string | undefined;
 	readonly content?: Elements | undefined;
+	/** Children of a tree element must be other tree elements. */
+	readonly children?: TreeElements | undefined;
 }
 
-/** Element in a tree with a `tree-` prefixed type string. */
+/**
+ * Element in a heirarchical tree.
+ * - Has a `tree-` prefixed type string.
+ * - Requires a string `key` prop (can be resolved to a path).
+ * - Props can include `title`, `description`, and/or `content` to be useful.
+ */
 export interface TreeElement<P extends TreeElementProps = TreeElementProps> extends Element<P> {
+	readonly key: string;
 	readonly type: `tree-${string}`;
 }
 
-/** Props for an element representing a file system path. */
-export interface PathElementProps extends TreeElementProps {
-	readonly path: AbsolutePath;
-}
-
-/** Element representing a file system path (file or directory). */
-export interface PathElement<P extends PathElementProps = PathElementProps> extends TreeElement<P> {
-	readonly type: "tree-directory" | "tree-file";
-}
+/** Collection of tree elements. */
+export type TreeElements = undefined | null | TreeElement | Iterable<TreeElements>;
 
 /** Props for a directory element. */
-export interface DirectoryElementProps extends PathElementProps {
-	readonly children?: Elements | undefined;
+export interface DirectoryElementProps extends TreeElementProps {
+	readonly path: AbsolutePath;
 }
 
 /**
@@ -62,8 +75,8 @@ export interface DirectoryElement extends TreeElement<DirectoryElementProps> {
 }
 
 /** Props for a file element. */
-export interface FileElementProps extends PathElementProps {
-	readonly children?: Elements | undefined;
+export interface FileElementProps extends TreeElementProps {
+	// `name` is inherited from `TreeElementProps` — the basename including extension (e.g. `"array.ts"`).
 }
 
 /**
@@ -75,80 +88,37 @@ export interface FileElement extends TreeElement<FileElementProps> {
 	readonly type: "tree-file";
 }
 
-/** A single parameter for a code symbol. */
-export interface CodeParam {
+/** A single parameter for a documented code symbol. */
+export interface DocumentationParam {
 	readonly name: string;
 	readonly type?: string | undefined;
 	readonly description?: string | undefined;
 	readonly optional?: boolean | undefined;
 }
 
-/** Props shared by all code elements. */
-export interface CodeElementProps extends TreeElementProps {
+/**
+ * Props for a documented code symbol — a single shape for any kind of code element.
+ * - `kind` distinguishes the symbol category (e.g. `"function"`, `"class"`, `"property"`, or any string).
+ * - All props are optional — not every kind uses every prop (e.g. `returns` only makes sense for functions).
+ */
+export interface DocumentationElementProps extends TreeElementProps {
+	// `name` is inherited from `TreeElementProps` — the declared symbol name (e.g. `"getFirst"`).
+	// `title` is inherited and remains optional — used only if a docblock provides a polished display title.
+	readonly kind?: string | undefined;
 	readonly signature?: string | undefined;
-	readonly params?: ImmutableArray<CodeParam> | undefined;
+	readonly params?: ImmutableArray<DocumentationParam> | undefined;
 	readonly returns?: string | undefined;
 	readonly examples?: ImmutableArray<string> | undefined;
-}
-
-/** Code element type discriminator. */
-export type CodeElementType =
-	| "tree-class"
-	| "tree-function"
-	| "tree-constant"
-	| "tree-method"
-	| "tree-property"
-	| "tree-type"
-	| "tree-interface";
-
-/** Element representing a documented code symbol. */
-export interface CodeElement<P extends CodeElementProps = CodeElementProps> extends TreeElement<P> {
-	readonly type: CodeElementType;
-}
-
-/** Props for a class element. */
-export interface ClassCodeElementProps extends CodeElementProps {
 	readonly extends?: string | undefined;
 	readonly implements?: ImmutableArray<string> | undefined;
-	readonly children?: Elements | undefined;
 }
 
 /**
- * Element representing a class declaration.
- * - Children are the class's methods and properties.
+ * Element representing a documented code symbol.
+ * - The `kind` prop distinguishes specific symbol types (function, class, property, etc.) without baking the list in.
  */
-export interface ClassCodeElement extends CodeElement<ClassCodeElementProps> {
-	readonly type: "tree-class";
-}
-
-/** Element representing a function declaration. */
-export interface FunctionCodeElement extends CodeElement {
-	readonly type: "tree-function";
-}
-
-/** Element representing a constant declaration. */
-export interface ConstantCodeElement extends CodeElement {
-	readonly type: "tree-constant";
-}
-
-/** Element representing a class method. */
-export interface MethodCodeElement extends CodeElement {
-	readonly type: "tree-method";
-}
-
-/** Element representing a class or interface property. */
-export interface PropertyCodeElement extends CodeElement {
-	readonly type: "tree-property";
-}
-
-/** Element representing a type alias. */
-export interface TypeCodeElement extends CodeElement {
-	readonly type: "tree-type";
-}
-
-/** Element representing an interface declaration. */
-export interface InterfaceCodeElement extends CodeElement<ClassCodeElementProps> {
-	readonly type: "tree-interface";
+export interface DocumentationElement extends TreeElement<DocumentationElementProps> {
+	readonly type: "tree-documentation";
 }
 
 // IntrinsicElements declarations for tree-* custom elements.
@@ -159,13 +129,7 @@ declare module "react" {
 		interface IntrinsicElements {
 			"tree-directory": DirectoryElementProps;
 			"tree-file": FileElementProps;
-			"tree-class": ClassCodeElementProps;
-			"tree-function": CodeElementProps;
-			"tree-constant": CodeElementProps;
-			"tree-method": CodeElementProps;
-			"tree-property": CodeElementProps;
-			"tree-type": CodeElementProps;
-			"tree-interface": ClassCodeElementProps;
+			"tree-documentation": DocumentationElementProps;
 		}
 	}
 }
@@ -179,25 +143,6 @@ export function isElement(value: unknown): value is Element {
 export function isElements(value: unknown): value is Elements {
 	return value === null || typeof value === "string" || isElement(value) || isArray(value);
 }
-
-/**
- * A path to a (possibly deep) property in a elements list, e.g. `["sub", "str"]`.
- * - At least one path segment is required.
- * - Element paths are resolved using the `key` of the element.
- */
-export type ElementPath = readonly [key: string, ...string[]];
-
-/**
- * Something that can be converted to a `ElementPath`,
- * i.e. a "dot.separated.string" or an existing `ElementPath` array.
- */
-export type PossibleElementPath = string | ElementPath;
-
-/**
- * Convert a possible element path to an element path array of string segments.
- * Get an array of element path segments from a string element path, or return the existing existing element path array.
- */
-export const getElementPath = getDataPath;
 
 /**
  * Strip all tags from elements to produce a plain text string.
@@ -257,21 +202,26 @@ export function* filterElements(elements: Elements, match: (element: Element) =>
 
 /**
  * Resolve an element in a tree by walking a sequence of keys.
- * - Accepts a dot-separated string (e.g. `"util.array"`) or an array of key segments (e.g. `["util", "array"]`).
+ * - Accepts a dot-separated string (e.g. `"util.array"`) or an array of path segments (e.g. `["util", "array"]`).
  * - Matches each segment to the `key` of an immediate child element.
  * - If `keys` is empty, undefined, or an empty string, returns the first keyed element at the root level.
  * - Returns `undefined` if no element matches at any level.
  *
+ * Splitting the path:
+ * - We accept a raw `Segments` array for each element, so they can be joined later however you wish.
+ * - Element paths have no canonical string representation so we use `Segments` instead.
+ * - To split the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(elements), splitDataPath)`
+ * - To split the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(elements), splitAbsolutePath)`
+ *
  * @param elements The root elements to search within.
- * @param key A dot-separated string, or array of key segments.
+ * @param path An array of path segments.
+ * - Element paths have no canonical string representation so we always us the `Segments` format.
  *
  * @example resolveElement(elements, "util.array") // Element with key "array" inside element with key "util"
  * @example resolveElement(elements, ["util", "array"]) // Same as above
  * @example resolveElement(elements, "") // First keyed root element
  */
-export function resolveElement(elements: Elements, key: PossibleElementPath): Element | undefined {
-	const path = getElementPath(key);
-
+export function resolveElementPath(elements: Elements, path: Segments): Element | undefined {
 	let current: Elements = elements;
 	let found: Element | undefined;
 
@@ -291,29 +241,46 @@ export function resolveElement(elements: Elements, key: PossibleElementPath): El
 }
 
 /**
- * Deeply iterate a tree of elements and yield the key path for each element that has a string `key`.
- * - Each yielded value is an array of key segments from root to the element.
+ * Deeply iterate a tree of elements and yield an array of path segments for each element that has a string `key:` property.
+ * - Each yielded value is an array of path segments from root to the element.
+ * - Only elements with a string `key:` property are included.
  * - Elements with `undefined` or `null` key are skipped.
  *
- * - Use `getElementKeys().map(joinPath)` to convert all the key arrays to an `AbsolutePath` strings.
+ * Joining the paths:
+ * - We return a `Segments` array for each element, so they can be joined later however you wish.
+ * - Element paths have no canonical string representation so we use `Segments` instead.
+ * - To join the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(elements), joinDataPath)`
+ * - To join the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(elements), joinAbsolutePath)`
  *
  * @param elements The elements to get keys for.
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  * - `depth=0` yields matching elements at the current level only (no recursion into children).
+ *
+ * @returns Iterable set of path segment arrays, each representing one component.
+ * - Element paths have no canonical string representation so we always us the `Segments` format.
  */
-export function getElementKeys(elements: Elements, depth = Infinity): Iterable<ElementPath> {
-	return _getElementKeys(elements, depth);
+export function getElementPaths(elements: Elements, depth = Infinity): Iterable<Segments> {
+	return _getElementPaths(elements, depth);
 }
-export function* _getElementKeys(elements: Elements, depth: number, prefix?: ElementPath): Iterable<ElementPath> {
+export function* _getElementPaths(elements: Elements, depth: number, prefix?: Segments): Iterable<Segments> {
 	for (const { key, props } of getElements(elements, 0)) {
 		// Skip `null` or `undefined` keys.
 		if (isNullish(key)) continue;
 
 		// Make the path and yield it.
-		const keys: ElementPath = prefix ? [...prefix, key] : [key];
+		const keys: Segments = prefix ? [...prefix, key] : [key];
 		yield keys;
 
 		// Recurse into the children.
-		if (depth > 0 && props.children) yield* _getElementKeys(props.children, depth - 1, keys);
+		if (depth > 0 && props.children) yield* _getElementPaths(props.children, depth - 1, keys);
 	}
+}
+
+/** Combine two `Elements`, preserving both if both are set. */
+export function mergeElements<T extends Elements>(a: T, b: T): T;
+export function mergeElements(a: Elements, b: Elements): Elements;
+export function mergeElements(a: Elements, b: Elements): Elements {
+	if (!a) return b;
+	if (!b) return a;
+	return [a, b];
 }

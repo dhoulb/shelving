@@ -32,7 +32,7 @@ import type { Collection } from "../../db/collection/Collection.js";
 import { DBProvider } from "../../db/provider/DBProvider.js";
 import { UnimplementedError } from "../../error/UnimplementedError.js";
 import type { Data, DataProp } from "../../util/data.js";
-import { joinDataKey } from "../../util/data.js";
+import { joinDataPath } from "../../util/data.js";
 import type { Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { getObject } from "../../util/object.js";
@@ -59,11 +59,11 @@ const OPERATORS = {
 
 function* _getConstraints<II extends string, TT extends Data>(q: Query<Item<II, TT>>): Iterable<FirestoreQueryConstraint> {
 	for (const { key, direction } of getQueryOrders(q)) {
-		const k = joinDataKey(key);
+		const k = joinDataPath(key);
 		yield orderBy(k === "id" ? ID : k, direction);
 	}
 	for (const { key, operator, value } of getQueryFilters(q)) {
-		const k = joinDataKey(key);
+		const k = joinDataPath(key);
 		yield where(k === "id" ? ID : k, OPERATORS[operator], value);
 	}
 	const l = getQueryLimit(q);
@@ -88,7 +88,7 @@ function _getFieldValues<TT extends Data>(updates: Updates<TT>): FirestoreUpdate
 	return getObject(mapItems(getUpdates(updates), _getFieldValue)) as FirestoreUpdateData<TT>;
 }
 function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
-	const k = joinDataKey(key);
+	const k = joinDataPath(key);
 	if (action === "set") return [k, value];
 	if (action === "sum") return [k, increment(value)];
 	if (action === "with") return [k, arrayUnion(...value)];

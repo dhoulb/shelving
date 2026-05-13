@@ -1,13 +1,14 @@
-import type { Data, DataPath } from "../../util/data.js";
+import type { Data } from "../../util/data.js";
 import type { Identifier } from "../../util/item.js";
 import type { QueryFilter } from "../../util/query.js";
+import type { Segments } from "../../util/string.js";
 import type { Update } from "../../util/update.js";
 import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
 
 /** Abstract PostgreSQL provider with JSONB function support for nested keys, array containment, and array mutations. */
 export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends SQLProvider<I, T> {
 	/** Get the Postgres JSONB path for the nested segments of a key, e.g. `{"b","c"}`. */
-	private sqlPath(key: DataPath): SQLFragment {
+	private sqlPath(key: Segments): SQLFragment {
 		return this.sqlConcat(
 			key.slice(1).map(k => this.sqlIdentifier(k)),
 			",",
@@ -17,7 +18,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 	}
 
 	/** Get the Postgres JSONB extract syntax, e.g. `"a" #>> {"b","c"}` */
-	override sqlExtract(key: DataPath): SQLFragment {
+	override sqlExtract(key: Segments): SQLFragment {
 		const column = this.sqlIdentifier(key[0]);
 		if (key.length > 1) {
 			const path = this.sqlPath(key);

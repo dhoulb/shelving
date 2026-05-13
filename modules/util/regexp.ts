@@ -1,7 +1,14 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
-import { requireArray } from "./array.js";
+import { type ImmutableArray, requireArray } from "./array.js";
+import { isNullish, type Nullish } from "./null.js";
 import type { NotString } from "./string.js";
+
+/** A thing that a string can be matched against. */
+export type Matchable = string | RegExp;
+
+/** A list of things that strings can be matched against. */
+export type Matchables = ImmutableArray<Nullish<Matchable>>;
 
 /** Regular expression that always matches everything. */
 export const ALWAYS_REGEXP = /^.*$/;
@@ -87,14 +94,63 @@ export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extend
 	exec(input: string): NamedRegExpExecArray<T> | null;
 }
 
-/** Match function for finding strings that match against regular expressions (use with `filter()` to positively filter iterable sets of items). */
-export function isMatch(str: string, regexp: RegExp): boolean {
-	return regexp.test(str);
+/**
+ * Does a string match against a regular expressions or string.
+ * - Use with `filter()` to positively filter iterable sets of items.
+ *
+ * @param str String to test against the regular expression.
+ * @param regexp Regular expression to test against the string.
+ * - If `regexp` is a `RegExp` it is tested against the string using `RegExp.test()`.
+ * - If `regexp` is a `string` it is simply tested against the string using `===` equality.
+ * @returns `true` if the string matches the regular expression, otherwise `false`.
+ */
+export function isMatch(str: string, regexp: Matchable): boolean {
+	return typeof regexp === "string" ? regexp === str : regexp.test(str);
 }
 
-/** Match function for finding strings that match against regular expressions (use with `filter()` to negatively filter iterable sets of items). */
-export function notMatch(str: string, regexp: RegExp): boolean {
-	return !regexp.test(str);
+/**
+ * Does a string not match against a regular expressions or string.
+ * - Use with `filter()` to negatively filter iterable sets of items.
+ *
+ * @param str String to test against the regular expression.
+ * @param regexp Regular expression to test against the string.
+ * - If `regexp` is a `RegExp` it is tested against the string using `RegExp.test()`.
+ * - If `regexp` is a `string` it is simply tested against the string using `!==` equality.
+ * @returns `true` if the string matches the regular expression, otherwise `false`.
+ */
+export function notMatch(str: string, regexp: Matchable): boolean {
+	return !isMatch(str, regexp);
+}
+
+/**
+ * All of the provided regular expressions match the string.
+ *
+ * @param regexps - Regular expressions to match against the string.
+ * - If empty the function returns `true` (since all zero of the provided regexps match everything).
+ * - If a `RegExp` it is tested against the string using `RegExp.test()`.
+ * - If a `string` it is simply tested against the string using `===` equality.
+ * - If `null` or `undefined` it is ignored.
+ */
+export function allMatch(str: string, ...regexps: Matchables): boolean {
+	for (const x of regexps) {
+		if (isNullish(x)) continue;
+		if (!isMatch(str, x)) return false;
+	}
+	return true;
+}
+
+/** At least one of the provided regular expressions matches the string. */
+export function anyMatch(str: string, ...regexps: Matchables): boolean {
+	for (const x of regexps) {
+		if (isNullish(x)) continue;
+		if (isMatch(str, x)) return true;
+	}
+	return false;
+}
+
+/** None of the provided regular expressions match the string. */
+export function noneMatch(str: string, ...regexps: Matchables): boolean {
+	return !allMatch(str, ...regexps);
 }
 
 /** Get an optional regular expression match, or `undefined` if no match could be made. */

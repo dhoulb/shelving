@@ -15,9 +15,12 @@ test("getFileExtension()", () => {
 	expect(() => requireFileExtension("something")).toThrow(RequiredError);
 });
 test("splitFileExtension()", () => {
-	expect(splitFileExtension("array.ts")).toEqual(["array", ".ts"]);
-	expect(splitFileExtension("some.thing.test.ts")).toEqual(["some.thing.test", ".ts"]);
+	expect(splitFileExtension("array.ts")).toEqual(["array", "ts"]);
+	expect(splitFileExtension("some.thing.test.ts")).toEqual(["some.thing.test", "ts"]);
 	expect(splitFileExtension("no-ext")).toEqual(["no-ext", undefined]);
-	expect(splitFileExtension(".gitignore")).toEqual([undefined, ".gitignore"]);
+	expect(splitFileExtension(".gitignore")).toEqual([undefined, "gitignore"]);
 	expect(splitFileExtension("README")).toEqual(["README", undefined]);
+	expect(splitFileExtension("")).toEqual([undefined, undefined]);
+	expect(splitFileExtension(null)).toEqual([undefined, undefined]);
+	expect(splitFileExtension(undefined)).toEqual([undefined, undefined]);
 });
