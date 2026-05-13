@@ -1,10 +1,9 @@
 import type { Dirent } from "node:fs";
 import { readdir } from "node:fs/promises";
-import type { Path } from "typescript";
 import type { ImmutableDictionary, MutableDictionary } from "../util/dictionary.js";
 import { type DirectoryElement, mergeElements, type TreeElement } from "../util/element.js";
 import { splitFileExtension } from "../util/file.js";
-import { type AbsolutePath, anyMatch, type Matchables, requirePath, splitAbsolutePath } from "../util/index.js";
+import { type AbsolutePath, anyMatch, type Matchables, type Path, requirePath, splitAbsolutePath } from "../util/index.js";
 import { requireSlug } from "../util/string.js";
 import { Extractor, mergeTreeElements } from "./Extractor.js";
 import { FileExtractor } from "./FileExtractor.js";
