@@ -2,19 +2,19 @@ import { describe, expect, test } from "bun:test";
 import { DATA, type Endpoint, GET, POST, RequiredError, STRING, XMLAPIProvider } from "../../index.js";
 
 describe("XMLAPIProvider", () => {
-	test("getRequest() serializes POST payloads as XML bodies", async () => {
+	test("createRequest() serializes POST payloads as XML bodies", async () => {
 		const provider = new XMLAPIProvider({ url: "https://api.example.com/" });
 		const endpoint = POST("/items", DATA({ item: DATA({ name: STRING }) }), STRING);
-		const request = provider.getRequest(endpoint, { item: { name: "abc" } });
+		const request = provider.createRequest(endpoint, { item: { name: "abc" } });
 
 		expect(request.headers.get("Content-Type")).toBe("application/xml; charset=UTF-8");
 		expect(await request.text()).toBe('<?xml version="1.0" encoding="UTF-8"?><item><name>abc</name></item>');
 	});
 
-	test("getRequest() rejects non-data XML payloads", () => {
+	test("createRequest() rejects non-data XML payloads", () => {
 		const provider = new XMLAPIProvider({ url: "https://api.example.com/" });
 		const endpoint = POST("/items", STRING, STRING);
-		expect(() => provider.getRequest(endpoint as Endpoint<any, string>, "abc")).toThrow(RequiredError);
+		expect(() => provider.createRequest(endpoint as Endpoint<any, string>, "abc")).toThrow(RequiredError);
 	});
 
 	test("fetch() parses responses as plain text", async () => {

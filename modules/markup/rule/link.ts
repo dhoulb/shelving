@@ -6,7 +6,7 @@ import { getURL } from "../../util/url.js";
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
-import { getMarkupRule } from "../util/rule.js";
+import { createMarkupRule } from "../util/rule.js";
 
 type LinkMarkupRuleData = { title?: string; href: string };
 
@@ -38,7 +38,7 @@ export const LINK_REGEXP = getRegExp<LinkMarkupRuleData>(/\[(?<title>[^\]\n]*?)\
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only `http://` or `https://` links will work (if invalid the unparsed text will be returned).
  */
-export const LINK_RULE = getMarkupRule(
+export const LINK_RULE = createMarkupRule(
 	LINK_REGEXP, //
 	renderLinkMarkupRule,
 	["inline", "list"],
@@ -53,7 +53,7 @@ export const AUTOLINK_REGEXP = getRegExp<LinkMarkupRuleData>(/(?<href>[a-z]{2,}:
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `options.schemes` will match (defaults to `http:` and `https:`).
  */
-export const AUTOLINK_RULE = getMarkupRule(
+export const AUTOLINK_RULE = createMarkupRule(
 	AUTOLINK_REGEXP, //
 	renderLinkMarkupRule,
 	["inline", "list"],

@@ -4,8 +4,8 @@ import { getMessage } from "../../util/error.js";
 import type { AnyCaller } from "../../util/function.js";
 import {
 	assertRequestHeadPayload,
-	getHeadRequest,
-	getRequest,
+	createHeadRequest,
+	createRequest,
 	isRequestHeadMethod,
 	mergeRequestOptions,
 	parseResponseBody,
@@ -33,7 +33,7 @@ export interface ClientAPIProviderOptions {
 	readonly url: PossibleURL;
 
 	/**
-	 * Options used for HTTP requests created with `this.getRequest()` and `this.fetch()`
+	 * Options used for HTTP requests created with `this.createRequest()` and `this.fetch()`
 	 * - Omits `signal` because it's not relevant at the provider level.
 	 */
 	readonly options?: Omit<RequestOptions, "signal">;
@@ -51,14 +51,14 @@ export interface ClientAPIProviderOptions {
  * - Can be used on a server environment to make outgoing API calls, or in a browser environment to call a server API.
  * - Renders endpoint paths and query params into the URL and sends body payloads as JSON.
  * - Parses JSON responses and throws `ResponseError` for non-2xx responses.
- * - Extendable with custom request-building and response-parsing logic by overriding `getRequest()` and `parseResponse()`.
+ * - Extendable with custom request-building and response-parsing logic by overriding `createRequest()` and `parseResponse()`.
  * - Wrap in `ValidationAPIProvider` to add automatic validation of request payloads and response results against endpoint schemas.
  */
 export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, R> {
 	/** The common base URL for all rendered endpoint requests. */
 	readonly url: URL;
 
-	/** Default options used for HTTP requests created with `this.getRequest()` and `this.fetch()` */
+	/** Default options used for HTTP requests created with `this.createRequest()` and `this.fetch()` */
 	readonly options: RequestOptions;
 
 	/** Timeout in milliseconds before the request is aborted, or `0` for no timeout. */
@@ -90,11 +90,11 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		return url;
 	}
 
-	getRequest<PP extends P, RR extends R>(
+	createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
-		caller: AnyCaller = this.getRequest,
+		caller: AnyCaller = this.createRequest,
 	): Request {
 		// Render the path into the base URL.
 		const url = this.renderURL(endpoint, payload, caller);
@@ -105,33 +105,33 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		const mergedOptions = mergeRequestOptions({ signal, ...this.options }, options);
 
 		// HEAD or GET requests need no payload because it was already rendered into the URL as `?query` params by `this.renderURL()`
-		if (isRequestHeadMethod(endpoint.method)) return this._getHeadRequest(endpoint.method, url, undefined, mergedOptions, caller);
+		if (isRequestHeadMethod(endpoint.method)) return this._createHeadRequest(endpoint.method, url, undefined, mergedOptions, caller);
 
 		// Body request.
 		const body: P = isData(payload) ? (omitProps(payload, ...endpoint.placeholders) as P) : payload; // Omit any params that have already been embedded as `{placeholders}`.
-		return this._getBodyRequest(endpoint.method, url, body, mergedOptions, caller);
+		return this._createBodyRequest(endpoint.method, url, body, mergedOptions, caller);
 	}
 
-	/** Internal implementation function for `getRequest()` used for requests that have no body. */
-	protected _getHeadRequest(
+	/** Internal implementation function for `createRequest()` used for requests that have no body. */
+	protected _createHeadRequest(
 		method: RequestHeadMethod, //
 		url: PossibleURL,
 		params: Nullish<PossibleURIParams>,
 		options: RequestOptions,
 		caller: AnyCaller,
 	): Request {
-		return getHeadRequest(method, url, params, options, caller);
+		return createHeadRequest(method, url, params, options, caller);
 	}
 
-	/** Internal implementation function for `getRequest()` used for requests that have a body.  */
-	protected _getBodyRequest(
+	/** Internal implementation function for `createRequest()` used for requests that have a body.  */
+	protected _createBodyRequest(
 		method: RequestBodyMethod, //
 		url: PossibleURL,
 		payload: P,
 		options: RequestOptions,
 		caller: AnyCaller,
 	): Request {
-		return getRequest(method, url, payload, options, caller);
+		return createRequest(method, url, payload, options, caller);
 	}
 
 	// Override to set default functionality of a client provider to send requests over the network with `fetch()` and parse responses with `parseResponse()`.

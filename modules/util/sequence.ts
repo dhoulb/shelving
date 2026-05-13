@@ -1,5 +1,5 @@
 import { UnexpectedError } from "../error/UnexpectedError.js";
-import { getDeferred, getDelay } from "./async.js";
+import { createDeferred, getDelay } from "./async.js";
 import { ABORT } from "./constants.js";
 import type { AnyCaller, ErrorCallback, ValueCallback } from "./function.js";
 
@@ -109,7 +109,7 @@ export function runSequence<T, R, N>(
 	onError?: ErrorCallback,
 	onReturn?: (value: R | undefined) => void,
 ): (value?: R | undefined) => void {
-	const { promise, resolve } = getDeferred<IteratorAbortResult<R | undefined>>();
+	const { promise, resolve } = createDeferred<IteratorAbortResult<R | undefined>>();
 	void _runSequenceIterator(sequence[Symbol.asyncIterator](), promise, onNext, onError, onReturn);
 	return (value?: R | undefined) => resolve(_getAbortResult(value));
 }

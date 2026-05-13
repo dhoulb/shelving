@@ -1,8 +1,8 @@
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
-import { getLineRegExp } from "../util/regexp.js";
-import { getMarkupRule } from "../util/rule.js";
+import { createLineRegExp } from "../util/regexp.js";
+import { createMarkupRule } from "../util/rule.js";
 
-const SEPARATOR_REGEXP = getLineRegExp("([-*•+_=])(?: *\\1){2,}");
+const SEPARATOR_REGEXP = createLineRegExp("([-*•+_=])(?: *\\1){2,}");
 
 /**
  * Separator (horizontal rule / thematic break).
@@ -12,7 +12,7 @@ const SEPARATOR_REGEXP = getLineRegExp("([-*•+_=])(?: *\\1){2,}");
  * - Might have infinite number of spaces between the characters.
  */
 
-export const SEPARATOR_RULE = getMarkupRule(
+export const SEPARATOR_RULE = createMarkupRule(
 	SEPARATOR_REGEXP,
 	(_match, _options, key) => ({
 		key,

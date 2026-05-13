@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, EndpointStore, GET, getDeferred, MockAPIProvider, runMicrotasks, STRING } from "../../index.js";
+import { createDeferred, DATA, EndpointStore, GET, MockAPIProvider, runMicrotasks, STRING } from "../../index.js";
 import { EXPECT_PROMISELIKE } from "../../test/index.js";
 
 describe("EndpointStore", () => {
 	test("starts loading and resolves after reading loading", async () => {
-		const deferred = getDeferred<Response>();
+		const deferred = createDeferred<Response>();
 		const provider = new MockAPIProvider(() => deferred.promise);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);
@@ -27,7 +27,7 @@ describe("EndpointStore", () => {
 	});
 
 	test("refresh() reuses the current in-flight request", async () => {
-		const deferred = getDeferred<Response>();
+		const deferred = createDeferred<Response>();
 		const provider = new MockAPIProvider(() => deferred.promise);
 		const endpoint = GET("/users/{id}", DATA({ id: STRING }), STRING);
 		const store = new EndpointStore(endpoint, { id: "123" }, provider);

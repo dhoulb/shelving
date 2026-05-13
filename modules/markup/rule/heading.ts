@@ -1,9 +1,9 @@
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
-import { getLineRegExp, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP } from "../util/regexp.js";
-import { getMarkupRule } from "../util/rule.js";
+import { createLineRegExp, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP } from "../util/regexp.js";
+import { createMarkupRule } from "../util/rule.js";
 
-const HEADING_REGEXP = getLineRegExp<{
+const HEADING_REGEXP = createLineRegExp<{
 	prefix: string;
 	heading?: string;
 }>(`(?<prefix>#{1,6})(?:${LINE_SPACE_REGEXP}+(?<heading>${LINE_CONTENT_REGEXP}))?`);
@@ -14,7 +14,7 @@ const HEADING_REGEXP = getLineRegExp<{
  * - `#` must be the first character on the line.
  * - Markdown's underline syntax is not supported (for simplification).
  */
-export const HEADING_RULE = getMarkupRule(
+export const HEADING_RULE = createMarkupRule(
 	HEADING_REGEXP,
 	({ groups: { prefix, heading = "" } }, options, key) => ({
 		key,

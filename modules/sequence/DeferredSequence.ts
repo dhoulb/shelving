@@ -1,5 +1,5 @@
 import type { Deferred } from "../util/async.js";
-import { getDeferred } from "../util/async.js";
+import { createDeferred } from "../util/async.js";
 import { awaitDispose } from "../util/dispose.js";
 import type { Nullable } from "../util/null.js";
 import { Sequence } from "./Sequence.js";
@@ -25,7 +25,7 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 
 	/** Get the next promise to be resolved/rejected. */
 	get promise(): Promise<T> {
-		this._promiseDeferred ||= getDeferred();
+		this._promiseDeferred ||= createDeferred();
 		return this._promiseDeferred.promise;
 	}
 
@@ -92,7 +92,7 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 
 	// Implement `AsyncIterator` — returns the promise directly since it already resolves to IteratorResult.
 	next(_next?: N | undefined): Promise<IteratorResult<T, R | undefined>> {
-		this._iteratorDeferred ||= getDeferred();
+		this._iteratorDeferred ||= createDeferred();
 		return this._iteratorDeferred.promise;
 	}
 

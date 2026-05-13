@@ -46,14 +46,14 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 		this.handler = handler;
 	}
 
-	// Override `getRequest()` to log the endpoint and payload before delegating to the source provider for request building.
-	override getRequest<PP extends P, RR extends R>(
+	// Override `createRequest()` to log the endpoint and payload before delegating to the source provider for request building.
+	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
-		caller: AnyCaller = this.getRequest,
+		caller: AnyCaller = this.createRequest,
 	): Request {
-		const request = super.getRequest(endpoint, payload, options, caller);
+		const request = super.createRequest(endpoint, payload, options, caller);
 		this.requestCalls.push({ endpoint, payload, options, request });
 		return request;
 	}

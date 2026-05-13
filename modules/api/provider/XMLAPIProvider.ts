@@ -1,21 +1,21 @@
 import { ResponseError } from "../../error/ResponseError.js";
 import type { Data } from "../../util/data.js";
 import type { AnyCaller } from "../../util/function.js";
-import { getXMLRequest, type RequestBodyMethod, type RequestOptions } from "../../util/http.js";
+import { createXMLRequest, type RequestBodyMethod, type RequestOptions } from "../../util/http.js";
 import type { PossibleURL } from "../../util/url.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import { ClientAPIProvider } from "./ClientAPIProvider.js";
 
 /** API provider that always sends request bodies as XML and parses responses as plain text. */
 export class XMLAPIProvider<P extends Data = Data, R extends string = string> extends ClientAPIProvider<P, R> {
-	protected override _getBodyRequest(
+	protected override _createBodyRequest(
 		method: RequestBodyMethod,
 		url: PossibleURL,
 		payload: P,
 		options: RequestOptions,
 		caller: AnyCaller,
 	): Request {
-		return getXMLRequest(method, url, payload, options, caller);
+		return createXMLRequest(method, url, payload, options, caller);
 	}
 
 	/**

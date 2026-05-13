@@ -7,14 +7,14 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
 /** Provider that logs everything to the console in some detail to help diagnose issues in development. */
 export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
-	override getRequest<PP extends P, RR extends R>(
+	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
-		caller: AnyCaller = this.getRequest,
+		caller: AnyCaller = this.createRequest,
 	): Request {
 		try {
-			const request = super.getRequest(endpoint, payload, options, caller);
+			const request = super.createRequest(endpoint, payload, options, caller);
 			console.debug(`${ANSI_WAITING} ${endpoint.toString()}`, payload);
 			return request;
 		} catch (reason) {
