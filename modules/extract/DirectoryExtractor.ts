@@ -1,11 +1,10 @@
+import type { Dirent } from "node:fs";
 import { readdir } from "node:fs/promises";
-import type { Dirent } from "fs";
-import type { ImmutableArray } from "../util/array.js";
+import type { Path } from "typescript";
 import type { ImmutableDictionary, MutableDictionary } from "../util/dictionary.js";
 import { type DirectoryElement, mergeElements, type TreeElement } from "../util/element.js";
 import { splitFileExtension } from "../util/file.js";
-import { requirePath, splitAbsolutePath } from "../util/index.js";
-import type { AbsolutePath, Path } from "../util/path.js";
+import { type AbsolutePath, anyMatch, type Matchables, requirePath, splitAbsolutePath } from "../util/index.js";
 import { requireSlug } from "../util/string.js";
 import { Extractor, mergeTreeElements } from "./Extractor.js";
 import { FileExtractor } from "./FileExtractor.js";
@@ -17,7 +16,7 @@ import { TypescriptExtractor } from "./TypescriptExtractor.js";
  * - Matched case-insensitively (all entries stored lowercase).
  * - If matched but no extractor is registered for the file's extension, the index is silently skipped.
  */
-const DEFAULT_INDEX: ImmutableArray<string | RegExp> = [/^readme\.txt$/i, /^readme\.md$/i, /^index\.md$/i, /^index\.ts$/i, /^index\.tsx$/i];
+const DEFAULT_INDEX: Matchables = [/^readme\.txt$/i, /^readme\.md$/i, /^index\.md$/i, /^index\.ts$/i, /^index\.tsx$/i];
 
 /** Default file extractor dispatch by extension. */
 const DEFAULT_EXTRACTORS: ImmutableDictionary<FileExtractor> = {
@@ -33,12 +32,12 @@ const DEFAULT_EXTRACTORS: ImmutableDictionary<FileExtractor> = {
  * - Skip `node_modules` directories.
  * - Skip hidden `.` prefixed and underscore-prefixed files and directories.
  */
-const DEFAULT_IGNORE: ImmutableArray<string | RegExp> = [/\.test\.tsx?$/i, /\.spec\.tsx?$/i, /^node_modules$/i, /^[_.]/i];
+const DEFAULT_IGNORE: Matchables = [/\.test\.tsx?$/i, /\.spec\.tsx?$/i, /^node_modules$/i, /^[_.]/i];
 
 /** Options for a directory extractor. */
 export interface DirectoryExtractorOptions {
 	/** Filenames to treat as the directory's index file. Matched case-insensitively. */
-	readonly index?: ImmutableArray<string | RegExp>;
+	readonly index?: Matchables;
 	/**
 	 * Extractor dispatch table keyed by file extension (with leading dot, e.g. `".md"`).
 	 * - Files with no matching extractor are silently skipped.
@@ -52,7 +51,7 @@ export interface DirectoryExtractorOptions {
 	 * - Defaults to test and spec files: `["*.test.ts", "*.test.tsx", "*.spec.ts", "*.spec.tsx"]`.
 	 * - Hidden entries (`.`-prefixed), underscore-prefixed entries, and `node_modules` are always skipped on top of these patterns.
 	 */
-	readonly ignore?: ImmutableArray<string | RegExp>;
+	readonly ignore?: Matchables;
 }
 
 /** A child element with a priority. */
@@ -80,10 +79,10 @@ function _mergeChild(existing: ChildData | undefined, next: ChildData): ChildDat
  * - Throws if a directory and a file (or two directories) share the same `key`.
  */
 export class DirectoryExtractor extends Extractor<Path, DirectoryElement> {
-	private readonly _indexes: ImmutableArray<string | RegExp>;
+	private readonly _indexes: Matchables;
 	private readonly _extractors: ImmutableDictionary<FileExtractor>;
 	private readonly _base: AbsolutePath | undefined;
-	private readonly _ignore: ImmutableArray<string | RegExp>;
+	private readonly _ignore: Matchables;
 
 	constructor({ index = DEFAULT_INDEX, extractors = DEFAULT_EXTRACTORS, base, ignore = DEFAULT_IGNORE }: DirectoryExtractorOptions = {}) {
 		super();
@@ -107,15 +106,13 @@ export class DirectoryExtractor extends Extractor<Path, DirectoryElement> {
 
 		for (const entry of entries) {
 			// Should we ignore this entry?
-			for (const g of this._ignore) if (entry.name.match(g)) continue;
-
-			// Is this entry an index? If so, we'll treat it as the directory itself and merge it with any existing index entry if needed.
-			const isIndex = this._indexes.some(i => entry.name.match(i));
+			if (anyMatch(entry.name, ...this._ignore)) continue;
 
 			// Extract the child element and possibly merge it.
 			const child = await this._extractChild(path, entry);
 			if (child) {
-				if (isIndex) {
+				// Is this entry an index? If so, we'll treat it as the directory itself and merge it with any existing index entry if needed.
+				if (anyMatch(entry.name, ...this._indexes)) {
 					index = _mergeChild(index, child);
 				} else {
 					const key = child.element.key;
