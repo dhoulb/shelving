@@ -15,7 +15,7 @@ import { TreeCards } from "../modules/ui/tree/TreeCards.js";
 import { TreeMenu } from "../modules/ui/tree/TreeMenu.js";
 import { TreePage } from "../modules/ui/tree/TreePage.js";
 import type { Element } from "../modules/util/element.js";
-import { getElementPaths } from "../modules/util/element.js";
+import { getElementPaths, getElements } from "../modules/util/element.js";
 import type { AbsolutePath, Path } from "../modules/util/path.js";
 
 // --- Configuration ---
@@ -49,10 +49,9 @@ export async function extractModules(modulesDir: Path): Promise<{ elements: Elem
 	const root = await directoryExtractor.extract(modulesDir);
 
 	// Unwrap the top-level children — each module is a directory.
-	// Filter out any file-level children (e.g. `modules/index.ts`) — only directories are modules.
-	const elements: Element[] = root.props.children
-		? Array.from(root.props.children as Iterable<Element>).filter(el => el.type === "tree-directory")
-		: [];
+	// Use `getElements(..., 0)` to flatten any nested iterables produced by `mergeElements`,
+	// then filter to top-level directories (skip file-level children like `modules/index.ts`'s exports).
+	const elements: Element[] = Array.from(getElements(root.props.children, 0)).filter(el => el.type === "tree-directory");
 
 	// Sort top-level modules alphabetically by key.
 	elements.sort((a, b) => (a.key ?? "").localeCompare(b.key ?? ""));
