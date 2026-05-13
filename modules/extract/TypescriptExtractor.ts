@@ -7,8 +7,8 @@ import { FileExtractor } from "./FileExtractor.js";
  * File extractor that parses a TypeScript source file into a tree element.
  * - Uses the TypeScript compiler API to parse the AST.
  * - Extracts exported, public, non-`_`-prefixed declarations as `tree-documentation` children.
- * - Top-of-file JSDoc comment becomes the file's description.
- * - Uses the filename (without extension) as the title.
+ * - Top-of-file JSDoc comment becomes the file's `content`.
+ * - Does not set `title` — TS source files have no confident title source. The renderer falls back to `name`.
  */
 export class TypescriptExtractor extends FileExtractor {
 	override extractProps(name: string, text: string): FileElementProps {
