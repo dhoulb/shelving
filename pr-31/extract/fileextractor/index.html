@@ -1,0 +1,6 @@
+<!DOCTYPE html><html lang="en"><head><title>FileExtractor.ts - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><div class="grid_HlHAZg"><div><h3><code>FileExtractor</code></h3><p>Base extractor for a file in a tree.
+- Reads the file&#x27;s content as text and stores it in `content`.
+- Sets `key` to the slugified basename (without extension).
+- Does NOT set `title` — `title` is only set by subclasses that have a confident source for one
+  (e.g. `MarkdownExtractor` uses the first `&lt;h1&gt;`). Renderers fall back to `name` when missing.
+- Subclasses (e.g. `MarkdownExtractor`, `TypescriptExtractor`) override `extractProps()` to parse the content into richer elements.</p></div></div></div></div></main></body></html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html><html lang="en"><head><title>merge.ts - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><div class="grid_HlHAZg"><div><h3><code>exactMerge</code></h3><pre><code>(_left: unknown, right: unknown) =&gt; unknown</code></pre><p>Exact merge two unknown values.
+- Always returns `right`.</p></div><div><h3><code>shallowMerge</code></h3><pre><code>(left: L, right: R) =&gt; L &amp; R</code></pre><p>Shallow merge two unknown values.
+
+- Two objects: props are merged together (shallowly).
+- Two arrays: unique items are merged together (shallowly).
+- Any other value: right value is returned.</p></div><div><h3><code>shallowMerge</code></h3><pre><code>(left: ImmutableArray&lt;L&gt;, right: ImmutableArray&lt;R&gt;) =&gt; ImmutableArray&lt;L | R&gt;</code></pre></div><div><h3><code>shallowMerge</code></h3><pre><code>(left: unknown, right: R) =&gt; R</code></pre></div><div><h3><code>shallowMerge</code></h3><pre><code>(left: unknown, right: unknown) =&gt; unknown</code></pre></div><div><h3><code>deepMerge</code></h3><pre><code>(left: L, right: R) =&gt; L &amp; R</code></pre><p>Deeply merge two unknown values.
+
+- Two objects: props are merged together (deeply).
+- Two arrays: unique items are merged together (shallowly — arrays have no way to deep merge because array keys are not stable).
+- Any other value: right value is returned.</p></div><div><h3><code>deepMerge</code></h3><pre><code>(left: ImmutableArray&lt;L&gt;, right: ImmutableArray&lt;R&gt;) =&gt; ImmutableArray&lt;L | R&gt;</code></pre></div><div><h3><code>deepMerge</code></h3><pre><code>(left: unknown, right: R) =&gt; R</code></pre></div><div><h3><code>deepMerge</code></h3><pre><code>(left: unknown, right: unknown) =&gt; unknown</code></pre></div><div><h3><code>mergeArray</code></h3><pre><code>(left: ImmutableArray&lt;L&gt;, right: ImmutableArray&lt;R&gt; | ImmutableArray&lt;L&gt;) =&gt; ImmutableArray&lt;L | R&gt;</code></pre><p>Merge two arrays.
+- Values are considered unique so values will not appear twice.
+- Arrays have no concept of `deep merge` because array keys are not stable.
+- Use an map/object data structure instead for values that need to be deeply mergeable (only use arrays for primitive values).</p></div><div><h3><code>mergeArray</code></h3><pre><code>(left: ImmutableArray, right: ImmutableArray) =&gt; ImmutableArray</code></pre></div><div><h3><code>mergeObject</code></h3><pre><code>(left: L, right: R, recursor?: MergeRecursor) =&gt; L &amp; R</code></pre><p>Merge two data objects.
+
+Properties that exist in `right` will replace or be deeply merged with properties in `left`.
+- Only works on enumerable own keys (as returned by `Object.keys()`).
+- Always returns a new object (or the `left` object if no changes were made).
+- Resulting object is `cleaned`, i.e. properties in `left` or `right` that are `undefined` will be removed from the merged object.</p></div><div><h3><code>mergeObject</code></h3><pre><code>(left: ImmutableObject, right: ImmutableObject, recursor: MergeRecursor = exactMerge) =&gt; ImmutableObject</code></pre></div></div></div></div></main></body></html>

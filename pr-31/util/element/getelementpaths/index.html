@@ -1,0 +1,10 @@
+<!DOCTYPE html><html lang="en"><head><title>getElementPaths - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><pre><code>(elements: Elements, depth = Infinity) =&gt; Iterable&lt;Segments&gt;</code></pre><p>Deeply iterate a tree of elements and yield an array of path segments for each element that has a string `key:` property.
+- Each yielded value is an array of path segments from root to the element.
+- Only elements with a string `key:` property are included.
+- Elements with `undefined` or `null` key are skipped.
+
+Joining the paths:
+- We return a `Segments` array for each element, so they can be joined later however you wish.
+- Element paths have no canonical string representation so we use `Segments` instead.
+- To join the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(elements), joinDataPath)`
+- To join the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(elements), joinAbsolutePath)`</p><section><h2>Parameters</h2><dl><div><dt><code>elements</code>: <code>Elements</code></dt><dd>The elements to get keys for.</dd></div><div><dt><code>depth</code> (optional)</dt><dd>Controls how many levels of children to recurse into (defaults to infinite depth).</dd></div></dl></section><section><h2>Returns</h2><p><code>Iterable&lt;Segments&gt;</code></p></section></div></div></main></body></html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="en"><head><title>EmailSchema.ts - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><div class="grid_HlHAZg"><div><h3><code>EmailSchema</code></h3><p>Define a valid email address.
+
+- Falsy values are converted to `&quot;&quot;` empty string.
+- Total length must be 254 characters or fewer (in SMTP email is encoded with `&lt;` and `&gt;` to make 256 characters).
+- No minimum length is enforced because the email&#x27;s format is enforced instead.
+- RFC specifies username _should_ be case insensitive to avoid confusion.
+    - We lowercase the entire address as a simple way to enforce this.
+    - This is technically incorrect but practically better, and avoids case insensitive lookups in databases etc.
+- Username portion must be 64 characters or fewer from the range `[a-z0-9.!#$%&amp;’*+/=?^_`{|}~-]`
+    - We subset this to `[a-z0-9._+-]` with no special characters at start/end (and we lowercase automatically).
+    - If someone uses e.g. `*` asterisk at all or &#x27;-&#x27; at the start then it&#x27;s most likely to be a mistake.
+- Server portion must be a valid domain
+    - Limited to `[a-z0-9]` with mid-word hyphens only.
+    - Up to 10 segments of up to 63 characters each, separated by `.`
+    - TLD is a segment of 2-63 characters, possibly in `xn--` international format.</p></div><div><h3><code>EMAIL</code></h3><p>Valid email, e.g. `test@test.com`</p></div><div><h3><code>NULLABLE_EMAIL</code></h3><p>Valid optional email, e.g. `test@test.com`, or `null`</p></div></div></div></div></main></body></html>

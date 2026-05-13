@@ -1,0 +1,9 @@
+<!DOCTYPE html><html lang="en"><head><title>getNumber - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><pre><code>(value: unknown) =&gt; number | undefined</code></pre><p>Convert an unknown value to a finite number, or return `undefined` if it cannot be converted.
+- Note: numbers can be non-finite numbers like `NaN` or `Infinity`. These are detected and will always return `undefined`
+
+Conversion rules:
+- Finite numbers return numbers.
+- `-0` is normalised to `0`
+- Strings are parsed as numbers using `Number.parseFloat()` after removing all non-numeric characters.
+- Dates return their milliseconds (e.g. `date.getTime()`).
+- Everything else returns `undefined`</p><section><h2>Parameters</h2><dl><div><dt><code>value</code>: <code>unknown</code></dt></div></dl></section><section><h2>Returns</h2><p><code>number | undefined</code></p></section></div></div></main></body></html>

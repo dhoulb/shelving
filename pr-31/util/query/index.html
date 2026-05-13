@@ -1,0 +1,28 @@
+<!DOCTYPE html><html lang="en"><head><title>query.ts - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><div class="grid_HlHAZg"><div><h3><code>Query</code></h3><pre><code>{
+	readonly [K in LeafDataPath&lt;T&gt; as `${K}` | `!${K}`]?: LeafData&lt;T&gt;[K] | ImmutableArray&lt;LeafData&lt;T&gt;[K]&gt; | undefined; // is/not/in/out
+} &amp; {
+	readonly [K in LeafDataPath&lt;T&gt; as `${K}&lt;` | `${K}&lt;=` | `${K}&gt;` | `${K}&gt;=`]?: LeafData&lt;T&gt;[K] | undefined; // gt/gte/lt/lte
+} &amp; {
+	readonly [K in LeafDataPath&lt;T&gt; as `${K}[]`]?: LeafData&lt;T&gt;[K] extends ImmutableArray&lt;infer X&gt; ? X | undefined : never; // contains
+} &amp; {
+	readonly $order?:
+		| `${LeafDataPath&lt;T&gt;}`
+		| `!${LeafDataPath&lt;T&gt;}`
+		| undefined
+		| ImmutableArray&lt;`${LeafDataPath&lt;T&gt;}` | `!${LeafDataPath&lt;T&gt;}` | undefined&gt;;
+	readonly $limit?: number | undefined;
+}</code></pre><p>Query that can be applied to a list of data objects.</p></div><div><h3><code>QueryFilter</code></h3><pre><code>| { key: Segments; operator: &quot;is&quot;; value: unknown }
+	| { key: Segments; operator: &quot;not&quot;; value: unknown }
+	| { key: Segments; operator: &quot;in&quot;; value: ImmutableArray }
+	| { key: Segments; operator: &quot;out&quot;; value: ImmutableArray }
+	| { key: Segments; operator: &quot;contains&quot;; value: unknown }
+	| { key: Segments; operator: &quot;lt&quot;; value: unknown }
+	| { key: Segments; operator: &quot;lte&quot;; value: unknown }
+	| { key: Segments; operator: &quot;gt&quot;; value: unknown }
+	| { key: Segments; operator: &quot;gte&quot;; value: unknown }</code></pre><p>A single filter that can be applied to a list of data objects.</p></div><div><h3><code>QueryOrder</code></h3><pre><code>{
+	key: Segments;
+	direction: &quot;asc&quot; | &quot;desc&quot;;
+}</code></pre><p>A single sort order that can be applied to a list of data objects.</p></div><div><h3><code>getQueryFilters</code></h3><pre><code>(query: Query&lt;T&gt;) =&gt; ImmutableArray&lt;QueryFilter&gt;</code></pre><p>Get the `Filter` objects for a query.</p></div><div><h3><code>getQueryOrders</code></h3><pre><code>({ $order }: Query&lt;T&gt;) =&gt; ImmutableArray&lt;QueryOrder&gt;</code></pre><p>Get the `Order` objects for a query.</p></div><div><h3><code>getQueryLimit</code></h3><pre><code>({ $limit }: Query&lt;T&gt;) =&gt; number | undefined</code></pre><p>Get the limit for a query.</p></div><div><h3><code>queryItems</code></h3><pre><code>(items: Iterable&lt;T&gt;, query: Query&lt;T&gt;) =&gt; Iterable&lt;T&gt;</code></pre><p>Query a set of data items using a query.</p></div><div><h3><code>queryWritableItems</code></h3><pre><code>(items: Iterable&lt;T&gt;, query: Query&lt;T&gt;) =&gt; Iterable&lt;T&gt;</code></pre><p>Query a set of data items for writing using a query.
+- If no limit is set on the data sorting can be avoided too for performance reasons.</p></div><div><h3><code>matchQueryItem</code></h3><pre><code>(item: T, filters: ImmutableArray&lt;QueryFilter&gt;) =&gt; boolean</code></pre><p>Match a single data item againt a set of filters.</p></div><div><h3><code>filterQueryItems</code></h3><pre><code>(items: Iterable&lt;T&gt;, filters: ImmutableArray&lt;QueryFilter&gt;) =&gt; Iterable&lt;T&gt;</code></pre><p>Filter a set of data items using a set of filters.</p></div><div><h3><code>compareQueryItems</code></h3><pre><code>(left: T, right: T, orders: ImmutableArray&lt;QueryOrder&gt;) =&gt; number</code></pre><p>Compare two data items using a set of orders.</p></div><div><h3><code>sortQueryItems</code></h3><pre><code>(items: Iterable&lt;T&gt;, orders: ImmutableArray&lt;QueryOrder&gt;) =&gt; Iterable&lt;T&gt;</code></pre><p>Sort a set of data items using a set of orders.</p></div><div><h3><code>limitQueryItems</code></h3><pre><code>(items: ImmutableArray&lt;T&gt; | Iterable&lt;T&gt;, limit: number | undefined) =&gt; Iterable&lt;T&gt;</code></pre><p>LImit a set of data items using a set of limit.</p></div><div><h3><code>getBeforeQuery</code></h3><pre><code>(query: Query&lt;T&gt;, item: T) =&gt; Query&lt;T&gt;</code></pre><p>Get a query for items that appear before a specified item.
+- For token based pagination on a result set.</p></div><div><h3><code>getAfterQuery</code></h3><pre><code>(query: Query&lt;T&gt;, item: T) =&gt; Query&lt;T&gt;</code></pre><p>Get a query for items that appear after a specified item.
+- For token based pagination on a result set.</p></div></div></div></div></main></body></html>

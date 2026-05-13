@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="en"><head><title>Updates - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><pre><code>{
+	/**
+	 * Set update (all branches)
+	 * - Can set `a` and `a.a1` in `{ a: { a1: 123 } }`
+	 * - Sometimes inference gets confused, if that happens use `=` syntax instead.
+	 */
+	readonly [K in BranchDataPath&lt;T&gt; as `${K}`]?: BranchData&lt;T&gt;[K] | undefined;
+} &amp; {
+	/**
+	 * Set update (leaves only)
+	 * - Can set `a.a1` in `{ a: { a1: 123 } }`, but cannot set `a`
+	 * - Deeply-nested properties don&#x27;t always infer when leaves and branches are combined.
+	 * - This syntax is more exact and will infer better.
+	 */
+	readonly [K in LeafDataPath&lt;T&gt; as `=${K}`]?: LeafData&lt;T&gt;[K] | undefined;
+} &amp; {
+	/**
+	 * Sum update.
+	 * - Increment/decrement numbers.
+	 */
+	readonly [K in LeafDataPath&lt;T&gt; as `+=${K}` | `-=${K}`]?: LeafData&lt;T&gt;[K] extends number ? LeafData&lt;T&gt;[K] | undefined : never;
+} &amp; {
+	/**
+	 * With/omit update.
+	 * - Add or remove items from arrays.
+	 */
+	readonly [K in LeafDataPath&lt;T&gt; as `+[]${K}` | `-[]${K}`]?: LeafData&lt;T&gt;[K] extends ImmutableArray&lt;unknown&gt;
+		? LeafData&lt;T&gt;[K] | LeafData&lt;T&gt;[K][number] | undefined
+		: never;
+}</code></pre><p>Set of named updates for a data object.
+
+Note: string templates infer best when you have fixed character(s) at the start,
+  so our `Update` syntax always</p></div></div></main></body></html>

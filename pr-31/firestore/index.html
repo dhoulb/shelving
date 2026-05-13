@@ -1,0 +1,36 @@
+<!DOCTYPE html><html lang="en"><head><title>firestore - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><h1>firestore</h1><p><a>DBProvider</a> implementations for Google Firestore. Three variants are available, each targeting a different SDK and runtime context. Choose the one that matches where your code runs.</p><p>| Provider | SDK | Realtime | Bundle size |<br/>|<del>|---|</del>|---|<br/>| <code>FirestoreClientProvider</code> | <code>firebase/firestore</code> | Yes | Full |<br/>| <code>FirestoreLiteProvider</code> | <code>firebase/firestore/lite</code> | No | Smaller |<br/>| <code>FirestoreServerProvider</code> | <code>@google-cloud/firestore</code> | Yes | Server only |</p><p>All three support filtering, sorting, pagination, partial updates, and <code>countQuery()</code>. The difference is in realtime support, SDK size, and where the code runs.</p><h2>Client SDK (<code>FirestoreClientProvider</code>)</h2><p>Use in the browser or in any environment where the full Firebase JS SDK is appropriate. Supports offline persistence and realtime subscriptions via <code>getItemSequence()</code> and <code>getQuerySequence()</code>.</p><p><strong>Install:</strong></p><pre><code title="sh">npm install firebase shelving</code></pre><p><strong>Usage:</strong></p><pre><code title="ts">import { initializeApp } from &quot;firebase/app&quot;;
+import { getFirestore } from &quot;firebase/firestore&quot;;
+import { FirestoreClientProvider } from &quot;shelving/firestore/client&quot;;
+
+const app = initializeApp({
+  apiKey: &quot;...&quot;,
+  authDomain: &quot;...&quot;,
+  projectId: &quot;...&quot;,
+});
+
+const db = getFirestore(app);
+const provider = new FirestoreClientProvider(db);</code></pre><h2>Lite SDK (<code>FirestoreLiteProvider</code>)</h2><p>A lighter alternative to the full client SDK, suitable for browser or server environments where realtime updates are not needed. Produces a smaller bundle and avoids the overhead of persistent connections.</p><p><code>getItemSequence()</code> and <code>getQuerySequence()</code> throw <code>UnimplementedError</code>.</p><p><strong>Install:</strong></p><pre><code title="sh">npm install firebase shelving</code></pre><p><strong>Usage:</strong></p><pre><code title="ts">import { initializeApp } from &quot;firebase/app&quot;;
+import { getFirestore } from &quot;firebase/firestore/lite&quot;;
+import { FirestoreLiteProvider } from &quot;shelving/firestore/lite&quot;;
+
+const app = initializeApp({
+  apiKey: &quot;...&quot;,
+  authDomain: &quot;...&quot;,
+  projectId: &quot;...&quot;,
+});
+
+const db = getFirestore(app);
+const provider = new FirestoreLiteProvider(db);</code></pre><h2>Server SDK (<code>FirestoreServerProvider</code>)</h2><p>Use in Node.js backend environments with the Firebase Admin SDK. Authenticates via a service account rather than a user credential. Supports realtime subscriptions and uses <code>BulkWriter</code> for efficient bulk mutations.</p><p><strong>Install:</strong></p><pre><code title="sh">npm install firebase-admin shelving</code></pre><p><strong>Usage:</strong></p><pre><code title="ts">import { initializeApp, cert } from &quot;firebase-admin/app&quot;;
+import { getFirestore } from &quot;firebase-admin/firestore&quot;;
+import { FirestoreServerProvider } from &quot;shelving/firestore/server&quot;;
+
+initializeApp({
+  credential: cert({
+    projectId: &quot;...&quot;,
+    clientEmail: &quot;...&quot;,
+    privateKey: &quot;...&quot;,
+  }),
+});
+
+const db = getFirestore();
+const provider = new FirestoreServerProvider(db);</code></pre><p>If you call <code>new FirestoreServerProvider()</code> with no argument it constructs a <code>Firestore</code> instance using Application Default Credentials, which works when running on Google Cloud infrastructure.</p><div class="grid_HlHAZg"><div><h3>lite</h3></div><div><h3>server</h3></div><div><h3>client</h3></div></div></div></div></main></body></html>

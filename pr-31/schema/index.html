@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="en"><head><title>schema - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><h1>schema</h1><p>Schema validation for TypeScript. A <code>Schema&lt;T&gt;</code> describes how to coerce and validate an unknown value into a typed <code>T</code>. Schemas are the foundation of shelving — database collections, API endpoints, and form handlers all build on them.</p><p>By convention, instantiated schemas are constants and use <code>UPPERCASE</code>.</p><h2>Concepts</h2><h3>The <code>Schema&lt;T&gt;</code> interface</h3><p>Every schema has a single <code>validate(value: unknown): T</code> method. If the value is valid (after any coercion), it returns <code>T</code>. If it is not, it throws a plain <strong>string</strong> error message — for example <code>&quot;Must be 5–50 characters&quot;</code> or <code>&quot;Required&quot;</code>. This is intentional: form handlers and API layers can consume these strings directly without any unwrapping.</p><p>Multi-field errors from <code>DataSchema</code> are joined by <code>\n</code>, one line per failed field, with the field name prepended: <code>&quot;name: Required\nemail: Invalid format&quot;</code>.</p><h3>Default value</h3><p><code>validate()</code> is called with <code>undefined</code> when no value is provided; the schema falls back to its <code>value</code> default.</p><h3>Coercion</h3><p>Schema functionality in Shelving follows the <strong>robustness principle</strong>: &quot;be conservative in what you do, be liberal in what you accept from others&quot;. Values that are obvious in their intent are coerced to appropriate valid values.</p><p><code>StringSchema</code> converts numbers to strings, <code>BooleanSchema</code> converts the strings <code>&quot;no&quot;</code> and <code>&quot;false&quot;</code> to <code>false</code> and tests other values for truthiness, <code>ArraySchema</code> splits comma-separated strings into arrays, <code>NumberSchema</code> parses strings into numbers.</p><h3>Metadata</h3><p>Every schema carries optional display metadata set at construction time:</p><p>| Property      | Default         | Purpose                                            |<br/>| ------------- | --------------- | -------------------------------------------------- |<br/>| <code>one</code>         | <code>&quot;value&quot;</code>       | Singular noun, e.g. <code>&quot;product&quot;</code>                   |<br/>| <code>many</code>        | <code>one + &quot;s&quot;</code>     | Plural noun, e.g. <code>&quot;products&quot;</code>                    |<br/>| <code>title</code>       | <code>&quot;&quot;</code>            | Human-readable label for a field                  |<br/>| <code>description</code> | <code>&quot;&quot;</code>            | Longer description for a field                    |<br/>| <code>placeholder</code> | <code>&quot;&quot;</code>            | Placeholder text for an input                     |<br/>| <code>value</code>       | schema-specific | Default used when <code>validate(undefined)</code> is called |<br/>| <code>format</code>      | schema-specific | Display formatter for downstream form and UI use  |</p><h3>Factory constants</h3><p>Pre-built constants and factory functions cover the most common cases:</p><p>| Constant / factory      | Validated type       |<br/>| ----------------------- | -------------------- |<br/>| <code>STRING</code>                | <code>string</code>             |<br/>| <code>NUMBER</code>                | <code>number</code>             |<br/>| <code>CURRENCY</code>              | <code>number</code>             |<br/>| <code>BOOLEAN</code>               | <code>boolean</code>            |<br/>| <code>DATA(props)</code>           | <code>T</code> (plain object)   |<br/>| <code>ARRAY(itemSchema)</code>     | <code>readonly T[]</code>       |<br/>| <code>CHOICE(options)</code>       | union of string keys |<br/>| <code>NULLABLE(schema)</code>      | <code>T \| null</code>          |<br/>| <code>OPTIONAL(schema)</code>      | <code>T \| undefined</code>     |<br/>| <code>PARTIAL(schema)</code>       | <code>Partial&lt;T&gt;</code>         |<br/>| <code>ITEM(idSchema, props)</code> | <code>{ id: I } &amp; T</code>      |</p><h2>Usage</h2><h3>Primitive schemas</h3><pre><code title="ts">import { STRING, NUMBER, BOOLEAN, REQUIRED_STRING } from &quot;shelving/schema&quot;;
+
+STRING.validate(&quot;hello&quot;);        // &quot;hello&quot;
+STRING.validate(42);             // &quot;42&quot;   (numbers coerced)
+STRING.validate(undefined);      // &quot;&quot;     (default)
+REQUIRED_STRING.validate(&quot;&quot;);    // throws &quot;Required&quot;
+
+NUMBER.validate(&quot;3.14&quot;);         // 3.14   (strings coerced)
+NUMBER.validate(undefined);      // 0      (default)
+
+BOOLEAN.validate(&quot;false&quot;);       // false
+BOOLEAN.validate(1);             // true</code></pre><h3>Custom string and number schemas</h3><pre><code title="ts">import { CurrencyAmountSchema, StringSchema, NumberSchema } from &quot;shelving/schema&quot;;
+
+const USERNAME = new StringSchema({ title: &quot;Username&quot;, min: 3, max: 20, match: /^[a-z0-9_]+$/ });
+USERNAME.validate(&quot;alice_99&quot;);   // &quot;alice_99&quot;
+USERNAME.validate(&quot;al&quot;);         // throws &quot;Minimum 3 characters&quot;
+USERNAME.validate(&quot;ALICE&quot;);      // throws &quot;Invalid format&quot;
+
+const RATING = new NumberSchema({ title: &quot;Rating&quot;, min: 1, max: 5, step: 1 });
+RATING.validate(3);              // 3
+RATING.validate(0);              // throws &quot;Minimum 1&quot;
+
+const PRICE = new CurrencyAmountSchema({ title: &quot;Price&quot;, currency: &quot;GBP&quot;, min: 0 });
+PRICE.validate(&quot;12.345&quot;);        // 12.35
+PRICE.format(12.3);              // &quot;£12.30&quot;</code></pre><h3>Choice schemas</h3><p>Define a schema where a user must choose from a list of known valid values. Designed to power a <code>&lt;select&gt;</code> field in HTML.</p><pre><code title="ts">import { CHOICE } from &quot;shelving/schema&quot;;
+
+// Array form — keys and labels are the same.
+const STATUS = CHOICE([&quot;draft&quot;, &quot;published&quot;, &quot;archived&quot;] as const);
+STATUS.validate(&quot;published&quot;); // &quot;published&quot;
+STATUS.validate(&quot;deleted&quot;);   // throws &quot;Unknown value&quot;
+
+// Object form — keys are validated values, object values are display labels.
+const Priority = CHOICE({ low: &quot;Low priority&quot;, high: &quot;High priority&quot; });</code></pre><p><code>ChoiceSchema</code> is iterable and exposes <code>.keys()</code> and <code>.entries()</code> for building select menus. It does not implicitly default to the first option; pass <code>value</code> if you want a preselected choice.</p><h3>Data schemas</h3><p>The term <code>Data</code> in Shelving refers to a plain object with known named properties. A <code>DataSchema</code> validates a plain object whose properties each have their own schema.</p><pre><code title="ts">import { DATA, STRING, NUMBER, BOOLEAN, StringSchema, NumberSchema } from &quot;shelving/schema&quot;;
+
+const PRODUCT = DATA({
+  name: new StringSchema({ title: &quot;Name&quot;, min: 1, max: 100 }),
+  price: new NumberSchema({ title: &quot;Price&quot;, min: 0 }),
+  available: BOOLEAN,
+});
+
+PRODUCT.validate({ name: &quot;Widget&quot;, price: 9.99, available: true });
+// { name: &quot;Widget&quot;, price: 9.99, available: true }
+
+PRODUCT.validate({ name: &quot;&quot;, price: -1, available: true });
+// throws &quot;name: Required\nprice: Minimum 0&quot;</code></pre><p>Use <code>.pick()</code> and <code>.omit()</code> to derive subset schemas without redefining props:</p><pre><code title="ts">const PatchProduct = Product.omit(&quot;available&quot;);
+const NameOnly = Product.pick(&quot;name&quot;);</code></pre><h3>Array schemas</h3><p>Arrays have a <code>items</code> property that defines the schema</p><pre><code title="ts">import { ARRAY, STRING } from &quot;shelving/schema&quot;;
+
+const TAGS = ARRAY(STRING);
+TAGS.validate([&quot;a&quot;, &quot;b&quot;]);     // [&quot;a&quot;, &quot;b&quot;]
+TAGS.validate(&quot;a,b,c&quot;);        // [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]  (split on comma)
+TAGS.validate(undefined);      // []
+
+const NUMBERS = ARRAY(STRING);
+NUMBERS.validate([1, 2]);     // [1, 2]
+NUMBERS.validate(&quot;1,2,3&quot;);        // [1, 2, 3]  (split on comma)
+NUMBERS.validate(undefined);      // []</code></pre><h3>Item schemas</h3><p><code>ITEM</code> wraps a <code>DataSchema</code> to add a typed <code>id</code> field, matching the <code>Item</code> type in <a>util</a>.</p><pre><code title="ts">import { ITEM, STRING, INTEGER, NUMBER } from &quot;shelving/schema&quot;;
+
+const PRODUCT_ITEM = ITEM(INTEGER, {
+  name: STRING,
+  price: NUMBER,
+}); // Validates: { id: number, name: string, price: number }</code></pre><h3>Nullable and optional</h3><p><code>NULLABLE</code> allows a value to be <code>null</code> (and also coerces <code>undefined</code> and <code>&quot;&quot;</code> to <code>null</code>). <code>OPTIONAL</code> allows <code>undefined</code> and is mainly used for partial data props.</p><pre><code title="ts">import { NULLABLE, OPTIONAL, NUMBER } from &quot;shelving/schema&quot;;
+
+const NULLABLE_NUMBER = NULLABLE(NUMBER);
+NULLABLE_NUMBER.validate(null);       // null
+NULLABLE_NUMBER.validate(undefined);  // null
+NULLABLE_NUMBER.validate(&quot;&quot;);         // null
+NULLABLE_NUMBER.validate(42);         // 42
+
+const OPTIONAL_NUMBER = OPTIONAL(NUMBER);
+OPTIONAL_NUMBER.validate(undefined); // undefined
+OPTIONAL_NUMBER.validate(42);        // 42</code></pre><h3>Partial schemas</h3><p><code>PARTIAL</code> wraps a <code>DataSchema</code> so every field becomes optional — useful for PATCH-style update payloads.</p><pre><code title="ts">import { PARTIAL } from &quot;shelving/schema&quot;;
+
+const PARTIAL_PRODUCT = PARTIAL(PRODUCT);
+PARTIAL_PRODUCT.validate({ price: 4.99 }); // { price: 4.99 }</code></pre><h2>See also</h2><ul><li><a>util</a> — <code>Data</code>, <code>Item</code>, query, and update types consumed by schemas.</li><li><a>db</a> — <code>Collection</code> extends <code>DataSchema</code> and uses schemas to validate stored documents.</li></ul><div class="grid_HlHAZg"><div><h3>EntitySchema.ts</h3></div><div><h3>URISchema.ts</h3></div><div><h3>NullableSchema.ts</h3></div><div><h3>ColorSchema.ts</h3></div><div><h3>ChoiceSchema.ts</h3></div><div><h3>TimeSchema.ts</h3></div><div><h3>CurrencyCodeSchema.ts</h3></div><div><h3>PasswordSchema.ts</h3></div><div><h3>OptionalSchema.ts</h3></div><div><h3>URLSchema.ts</h3></div><div><h3>SlugSchema.ts</h3></div><div><h3>BooleanSchema.ts</h3></div><div><h3>DataSchema.ts</h3></div><div><h3>DateTimeSchema.ts</h3></div><div><h3>NumberSchema.ts</h3></div><div><h3>FileSchema.ts</h3></div><div><h3>CountrySchema.ts</h3></div><div><h3>DateSchema.ts</h3></div><div><h3>StringSchema.ts</h3></div><div><h3>CurrencyAmountSchema.ts</h3></div><div><h3>Schema.ts</h3></div><div><h3>ArraySchema.ts</h3></div><div><h3>EmailSchema.ts</h3></div><div><h3>ThroughSchema.ts</h3></div><div><h3>PhoneSchema.ts</h3></div><div><h3>KeySchema.ts</h3></div><div><h3>AddressSchema.ts</h3></div><div><h3>DictionarySchema.ts</h3></div><div><h3>RequiredSchema.ts</h3></div><div><h3>UUIDSchema.ts</h3></div></div></div></div></main></body></html>

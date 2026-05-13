@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="en"><head><title>api - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><h1>api</h1><p>Typed, provider-based framework for HTTP API access. Define your routes as <code>Endpoint</code> definitions, then call them through a composable provider stack — the same pattern the [<code>db</code>](../db/README.md) module uses for databases.</p><h2>Concepts</h2><h3>Endpoint</h3><p>An <code>Endpoint</code> is a declarative, typed description of a single API route. It captures the HTTP method, the URL path (with optional <code>{placeholder}</code> segments), a <a>schema</a> for the request payload, and a schema for the response. Think of it the way [<code>Collection</code>](../db/README.md) describes a database table — a shared definition both client and server reference.</p><p>Factory functions (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>, <code>HEAD</code>) create endpoints concisely:</p><pre><code title="ts">import { GET, POST } from &quot;shelving/api&quot;
+import { STRING, NUMBER } from &quot;shelving/schema&quot;
+
+const getUser = GET(&quot;/users/{id}&quot;, { id: STRING }, { name: STRING, age: NUMBER })
+const createPost = POST(&quot;/posts&quot;, { title: STRING, body: STRING }, { id: STRING })</code></pre><p>For <code>GET</code> and <code>HEAD</code> requests, payload fields that don&#x27;t fill a <code>{placeholder}</code> are appended as <code>?query</code> params. All other methods send a JSON body.</p><h3>Providers</h3><p>An <code>APIProvider</code> is the interface for executing a fetch against an endpoint. The base <code>APIProvider</code> uses the global <code>fetch</code> API. Wrap it with <code>ThroughAPIProvider</code> subclasses to layer in behaviour without rewriting transport logic:</p><p>| Provider | Purpose |<br/>|<del>|</del>|<br/>| <code>APIProvider</code> | Base provider — builds and sends requests with <code>fetch</code> |<br/>| <code>ThroughAPIProvider</code> | Pass-through base for wrapping another provider |<br/>| <code>ValidationAPIProvider</code> | Validates payload and result against endpoint schemas |<br/>| <code>DebugAPIProvider</code> | Logs fetch attempts, results, and errors to the console |<br/>| <code>JSONAPIProvider</code> | Forces JSON request bodies and JSON response parsing |<br/>| <code>MockAPIProvider</code> | Records calls without sending network requests |<br/>| <code>MockEndpointAPIProvider</code> | Dispatches calls through handler objects (useful for unit tests) |<br/>| <code>XMLAPIProvider</code> | Forces XML request bodies and returns raw text responses |</p><p>Extend <code>ThroughAPIProvider</code> to add custom behaviour such as auth headers:</p><pre><code title="ts">import { ThroughAPIProvider } from &quot;shelving/api&quot;
+
+class AuthAPIProvider extends ThroughAPIProvider {
+  constructor(source: APIProvider, readonly token: string) { super(source) }
+  override fetch(endpoint, payload, options) {
+    return super.fetch(endpoint, payload, {
+      ...options,
+      headers: { Authorization: `Bearer ${this.token}` },
+    })
+  }
+}</code></pre><h3>Caching</h3><p><code>APICache</code> manages <code>EndpointCache</code> objects, one per endpoint. Each <code>EndpointCache</code> manages <code>EndpointStore</code> objects, one per unique payload — keyed by the rendered URL. For <code>GET</code>/<code>HEAD</code> requests, query params are part of the key so <code>?role=admin</code> and <code>?role=editor</code> are stored separately. <code>EndpointStore</code> fetches automatically on first read and de-duplicates in-flight requests.</p><p>The cache is primarily useful as the backbone of the <a>React integration</a>. Use it directly only when you need a reactive layer outside React.</p><h2>Usage</h2><h3>Define endpoints and fetch directly</h3><pre><code title="ts">import { GET, POST, APIProvider, ValidationAPIProvider } from &quot;shelving/api&quot;
+import { DATA, STRING } from &quot;shelving/schema&quot;
+
+const UserSchema = DATA({ id: STRING, name: STRING, email: STRING })
+const getUser    = GET(&quot;/users/{id}&quot;, { id: STRING }, UserSchema)
+const createUser = POST(&quot;/users&quot;, { name: STRING, email: STRING }, UserSchema)
+
+const provider = new ValidationAPIProvider(new APIProvider({ url: &quot;https://api.example.com&quot; }))
+
+const user    = await provider.fetch(getUser, { id: &quot;u_123&quot; })
+const created = await provider.fetch(createUser, { name: &quot;Alice&quot;, email: &quot;alice@example.com&quot; })</code></pre><h3>Server-side routing</h3><pre><code title="ts">import { handleEndpoints } from &quot;shelving/api&quot;
+
+const handlers = [
+  getUser.handler(({ id }) =&gt; db.users.get(id)),
+  createUser.handler(({ name, email }) =&gt; db.users.create({ name, email })),
+]
+
+// In a Cloudflare Worker or similar:
+export default {
+  fetch(request: Request) {
+    return handleEndpoints(&quot;https://api.example.com&quot;, handlers, request)
+  },
+}</code></pre><h3>Testing with <code>MockEndpointAPIProvider</code></h3><p>Wires your handler array directly into a mock transport so you can test client and server code together without a real network:</p><pre><code title="ts">import { MockEndpointAPIProvider } from &quot;shelving/api&quot;
+
+const api = new MockEndpointAPIProvider(handlers, { context: undefined })
+const user = await api.fetch(getUser, { id: &quot;u_123&quot; })</code></pre><h2>React integration</h2><p>The [<code>react</code>](../react/README.md) module&#x27;s <code>createAPIContext()</code> is the primary way to use a provider in a React app. It creates a context backed by an <code>APICache</code> and exposes typed hooks — <code>useEndpoint()</code>, <code>useProvider()</code> — that return reactive <code>EndpointStore</code> instances and suspend automatically while loading.</p><pre><code title="ts">import { createAPIContext } from &quot;shelving/react&quot;
+import { APIProvider, ValidationAPIProvider } from &quot;shelving/api&quot;
+
+const provider = new ValidationAPIProvider(new APIProvider({ url: &quot;https://api.example.com&quot; }))
+export const { APIContext, useEndpoint } = createAPIContext(provider)</code></pre><p>See the [<code>react</code>](../react/README.md) module for full usage.</p><h2>See also</h2><ul><li>[<code>schema</code>](../schema/README.md) — schemas for endpoint payload and result validation</li><li>[<code>db</code>](../db/README.md) — the parallel database provider module</li><li>[<code>store</code>](../store/README.md) — <code>Store</code> base class that <code>EndpointStore</code> extends</li><li>[<code>react</code>](../react/README.md) — <code>createAPIContext()</code> for React integration</li></ul><div class="grid_HlHAZg"><div><h3>provider</h3></div><div><h3>store</h3></div><div><h3>endpoint</h3></div><div><h3>cache</h3></div></div></div></div></main></body></html>

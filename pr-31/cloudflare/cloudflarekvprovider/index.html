@@ -1,0 +1,20 @@
+<!DOCTYPE html><html lang="en"><head><title>CloudflareKVProvider.ts - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><div class="grid_HlHAZg"><div><h3><code>CloudflareKVProvider</code></h3><p>Cloudflare Workers KV database provider.
+
+Items are stored as JSON values under keys formatted as `collection:id`.
+The `KVNamespace` object is provided by the Cloudflare Workers runtime environment.
+
+### Supported
+- Single item operations: `getItem`, `setItem`, `addItem`, `updateItem`, `deleteItem`.
+- ID generation: `addItem()` generates a UUID v4 identifier automatically.
+
+### Not supported
+- **Realtime subscriptions:** `getItemSequence()` and `getQuerySequence()` throw `UnimplementedError`.
+  KV has no change feed or push notification mechanism.
+- **Updates:** `updateItem()` and `updateQuery()` throw `UnimplementedError`.
+- **Collection queries:** `getQuery()`, `setQuery()`, `deleteQuery()`, and `countQuery()` are not supported.
+  KV does not expose efficient filtering, sorting, or collection scans, so this provider avoids the old &quot;read everything and filter in memory&quot; behavior.
+
+### Performance limitations
+- **Single-key store only:** This provider is intentionally limited to direct key reads and writes.
+  If you need collection queries, filtering, sorting, or bulk mutations, use a different backend.
+- **Eventual consistency:** KV is eventually consistent, so reads may briefly return stale values shortly after writes.</p></div></div></div></div></main></body></html>
