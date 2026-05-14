@@ -1,6 +1,5 @@
 import type { ReactElement } from "react";
 import type { TreeElement } from "../../util/index.js";
-import type { AbsolutePath } from "../../util/path.js";
 import { App } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { PageCatcher } from "../misc/Catcher.js";
@@ -32,7 +31,7 @@ export function TreeApp({ tree, routes = {}, children = <RouterOutput />, ...app
 		...routes,
 		"/": () => <TreePage tree={tree} />,
 		// `**` captures the multi-segment remainder under index `"0"` (named placeholders are single-segment only).
-		"/**": ({ 0: sub }) => <TreePage path={`/${sub ?? ""}` as AbsolutePath} tree={tree} />,
+		"/**": ({ 0: path = "" }) => <TreePage path={`/${path}`} tree={tree} />,
 	};
 
 	return (
