@@ -46,4 +46,4 @@ watch(MODULES_DIR, { recursive: true }, (_event, filename) => {
 	}, 200);
 });
 
-console.warn("Watching modules/ for changes...\n");
+console.warn("Watching /modules for changes...\n");

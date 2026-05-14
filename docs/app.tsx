@@ -5,6 +5,7 @@ import { renderToString } from "react-dom/server";
 import { DirectoryExtractor } from "../modules/extract/DirectoryExtractor.js";
 import { Meta } from "../modules/ui/misc/Meta.js";
 import { HTML } from "../modules/ui/page/HTML.js";
+import { RouterOutput } from "../modules/ui/router/Router.js";
 import { TreeApp } from "../modules/ui/tree/TreeApp.js";
 import { getElementPaths } from "../modules/util/element.js";
 import { type AbsolutePath, joinAbsolutePath } from "../modules/util/path.js";
@@ -68,7 +69,9 @@ export async function buildApp(entrypoint: AbsolutePath, outdir: AbsolutePath): 
 				base={APP_URL}
 				stylesheets={[stylesheet]}
 				tags={{ viewport: "width=device-width, initial-scale=1" }}
-			/>
+			>
+				<RouterOutput />
+			</TreeApp>
 		</HTML>
 	);
 
