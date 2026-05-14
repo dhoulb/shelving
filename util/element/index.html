@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>element.ts - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><div class="grid_HlHAZg"><div><h3><code>ElementProps</code></h3><p>Set of valid props for an element.</p></div><div><h3><code>Element</code></h3><p>Element with a type, props, and optional key (compatible with `React.ReactElement`).</p></div><div><h3><code>Elements</code></h3><pre><code>undefined | null | string | Element | Iterable&lt;Elements&gt;</code></pre><p>Collection of elements (compatible with `React.ReactNode`).</p></div><div><h3><code>TreeElementProps</code></h3><p>Props for a tree element — must have a `tree-` prefixed type.</p></div><div><h3><code>TreeElement</code></h3><p>Element in a heirarchical tree.
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"/><title>element.ts - Shelving</title></head><body id="root"><main class=""><aside><nav><ul><span>test</span><span>sequence</span><span>bun</span><span>ui</span><span>extract</span><span>error</span><span>cloudflare</span><span>markup</span><span>store</span><span>util</span><span>api</span><span>db</span><span>react</span><span>schema</span><span>firestore</span></ul></nav></aside><div><div><head><base href="https://dhoulb.github.io/shelving"/><link rel="stylesheet" type="text/css" href="/app-bundle.css"/></head><div><div><h3><code>ElementProps</code></h3><p>Set of valid props for an element.</p></div><div><h3><code>Element</code></h3><p>Element with a type, props, and optional key (compatible with `React.ReactElement`).</p></div><div><h3><code>Elements</code></h3><pre><code>undefined | null | string | Element | Iterable&lt;Elements&gt;</code></pre><p>Collection of elements (compatible with `React.ReactNode`).</p></div><div><h3><code>TreeElementProps</code></h3><p>Props for a tree element — must have a `tree-` prefixed type.</p></div><div><h3><code>TreeElement</code></h3><p>Element in a heirarchical tree.
 - Has a `tree-` prefixed type string.
 - Requires a string `key` prop (can be resolved to a path).
 - Props can include `title`, `description`, and/or `content` to be useful.</p></div><div><h3><code>TreeElements</code></h3><pre><code>undefined | null | TreeElement | Iterable&lt;TreeElements&gt;</code></pre><p>Collection of tree elements.</p></div><div><h3><code>DirectoryElementProps</code></h3><p>Props for a directory element.</p></div><div><h3><code>DirectoryElement</code></h3><p>Element representing a directory in a file tree.
@@ -12,23 +12,24 @@
 - Yields each `Element` found, recursing into `props.children` up to `depth` levels.</p></div><div><h3><code>queryElements</code></h3><pre><code>(elements: Elements, query: Query&lt;Element&gt;, depth = Infinity) =&gt; Iterable&lt;Element&gt;</code></pre><p>Query elements using a `Query&lt;Element&gt;` object, leveraging the same query system as `queryItems()`.
 - Extracts all elements via `getElements()` up to `depth` levels, then applies the query.
 - Supports filtering by any element property (e.g. `{ type: &quot;tree-file&quot; }`), sorting, and limiting.</p></div><div><h3><code>filterElements</code></h3><pre><code>(elements: Elements, match: (element: Element) =&gt; boolean, depth = Infinity) =&gt; Iterable&lt;Element&gt;</code></pre><p>Filter elements using a match function.
-- Yields each matching `Element`, recursing into `props.children` up to `depth` levels.</p></div><div><h3><code>resolveElementPath</code></h3><pre><code>(elements: Elements, path: Segments) =&gt; Element | undefined</code></pre><p>Resolve an element in a tree by walking a sequence of keys.
-- Accepts a dot-separated string (e.g. `&quot;util.array&quot;`) or an array of path segments (e.g. `[&quot;util&quot;, &quot;array&quot;]`).
-- Matches each segment to the `key` of an immediate child element.
-- If `keys` is empty, undefined, or an empty string, returns the first keyed element at the root level.
-- Returns `undefined` if no element matches at any level.
+- Yields each matching `Element`, recursing into `props.children` up to `depth` levels.</p></div><div><h3><code>resolveElementPath</code></h3><pre><code>(root: TreeElement, path: readonly string[]) =&gt; Element | undefined</code></pre><p>Resolve an element in a tree by walking a sequence of keys from `root`.
+- The `root` element&#x27;s own key is never matched against path segments — it&#x27;s the container, not a step in the path.
+- Each segment matches the `key` of an immediate child of the current element.
+- If `path` is empty, returns `root` itself.
+- Returns `undefined` if no descendant matches at any level.
 
 Splitting the path:
-- We accept a raw `Segments` array for each element, so they can be joined later however you wish.
+- We accept a raw `Segments` array, so callers can join paths later however they wish.
 - Element paths have no canonical string representation so we use `Segments` instead.
-- To split the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(elements), splitDataPath)`
-- To split the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(elements), splitAbsolutePath)`</p></div><div><h3><code>getElementPaths</code></h3><pre><code>(elements: Elements, depth = Infinity) =&gt; Iterable&lt;Segments&gt;</code></pre><p>Deeply iterate a tree of elements and yield an array of path segments for each element that has a string `key:` property.
-- Each yielded value is an array of path segments from root to the element.
-- Only elements with a string `key:` property are included.
-- Elements with `undefined` or `null` key are skipped.
+- To split the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(root), splitDataPath)`
+- To split the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(root), splitAbsolutePath)`</p></div><div><h3><code>getElementPaths</code></h3><pre><code>(root: TreeElement, depth = Infinity) =&gt; Iterable&lt;readonly string[]&gt;</code></pre><p>Deeply iterate a tree from `root` and yield path segments for each reachable element.
+- Yields `[]` for `root` itself.
+- Yields `[key]` for each immediate child, `[key, key]` for grandchildren, etc.
+- The `root` element&#x27;s own key never appears in any yielded path — it&#x27;s the container.
+- Children with `undefined` or `null` keys are skipped (and their descendants are not yielded).
 
 Joining the paths:
-- We return a `Segments` array for each element, so they can be joined later however you wish.
+- We return a `Segments` array for each element, so callers can join paths later however they wish.
 - Element paths have no canonical string representation so we use `Segments` instead.
-- To join the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(elements), joinDataPath)`
-- To join the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(elements), joinAbsolutePath)`</p></div><div><h3><code>mergeElements</code></h3><pre><code>(a: T, b: T) =&gt; T</code></pre><p>Combine two `Elements`, preserving both if both are set.</p></div><div><h3><code>mergeElements</code></h3><pre><code>(a: Elements, b: Elements) =&gt; Elements</code></pre></div><div><h3><code>mergeElements</code></h3><pre><code>(a: Elements, b: Elements) =&gt; Elements</code></pre></div></div></div></div></main></body></html>
+- To join the keys in `a.b.c` dotted data format use `mapItems(getElementPaths(root), joinDataPath)`
+- To join the keys in `/a/b/c` absolute path format use `mapItems(getElementPaths(root), joinAbsolutePath)`</p></div><div><h3><code>mergeElements</code></h3><pre><code>(a: T, b: T) =&gt; T</code></pre><p>Combine two `Elements`, preserving both if both are set.</p></div><div><h3><code>mergeElements</code></h3><pre><code>(a: Elements, b: Elements) =&gt; Elements</code></pre></div><div><h3><code>mergeElements</code></h3><pre><code>(a: Elements, b: Elements) =&gt; Elements</code></pre></div></div></div></div></main></body></html>

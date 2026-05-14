@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>EmailSchema - Shelving</title><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/build-bundle.css"/><style>body { background: var(--color-bg, white); }</style></head><body id="root"><main class="main_RA9qqw layout_t79Vlg"><aside class="sidebar_RA9qqw"><nav class="menu_0k7eJA"><ul class="list_0k7eJA"><span>api</span><span>bun</span><span>cloudflare</span><span>db</span><span>error</span><span>extract</span><span>firestore</span><span>markup</span><span>react</span><span>schema</span><span>sequence</span><span>store</span><span>test</span><span>ui</span><span>util</span></ul></nav></aside><div class="content_RA9qqw"><div class="contentInner_RA9qqw"><head></head><p>Define a valid email address.
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"/><title>EmailSchema - Shelving</title></head><body id="root"><main class=""><aside><nav><ul><span>test</span><span>sequence</span><span>bun</span><span>ui</span><span>extract</span><span>error</span><span>cloudflare</span><span>markup</span><span>store</span><span>util</span><span>api</span><span>db</span><span>react</span><span>schema</span><span>firestore</span></ul></nav></aside><div><div><head><base href="https://dhoulb.github.io/shelving"/><link rel="stylesheet" type="text/css" href="/app-bundle.css"/></head><p>Define a valid email address.
 
 - Falsy values are converted to `&quot;&quot;` empty string.
 - Total length must be 254 characters or fewer (in SMTP email is encoded with `&lt;` and `&gt;` to make 256 characters).
@@ -12,4 +12,4 @@
 - Server portion must be a valid domain
     - Limited to `[a-z0-9]` with mid-word hyphens only.
     - Up to 10 segments of up to 63 characters each, separated by `.`
-    - TLD is a segment of 2-63 characters, possibly in `xn--` international format.</p><div class="grid_HlHAZg"><div><h3><code>sanitize</code></h3><pre><code>(str: string) =&gt; string</code></pre></div></div></div></div></main></body></html>
+    - TLD is a segment of 2-63 characters, possibly in `xn--` international format.</p><div><div><h3><code>sanitize</code></h3><pre><code>(str: string) =&gt; string</code></pre></div></div></div></div></main></body></html>
