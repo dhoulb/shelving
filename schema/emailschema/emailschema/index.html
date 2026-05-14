@@ -1,15 +1,1 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"/><title>EmailSchema - Shelving</title></head><body id="root"><main class=""><aside><nav><ul><span>test</span><span>sequence</span><span>bun</span><span>ui</span><span>extract</span><span>error</span><span>cloudflare</span><span>markup</span><span>store</span><span>util</span><span>api</span><span>db</span><span>react</span><span>schema</span><span>firestore</span></ul></nav></aside><div><div><head><base href="https://dhoulb.github.io/shelving"/><link rel="stylesheet" type="text/css" href="/app-bundle.css"/></head><p>Define a valid email address.
-
-- Falsy values are converted to `&quot;&quot;` empty string.
-- Total length must be 254 characters or fewer (in SMTP email is encoded with `&lt;` and `&gt;` to make 256 characters).
-- No minimum length is enforced because the email&#x27;s format is enforced instead.
-- RFC specifies username _should_ be case insensitive to avoid confusion.
-    - We lowercase the entire address as a simple way to enforce this.
-    - This is technically incorrect but practically better, and avoids case insensitive lookups in databases etc.
-- Username portion must be 64 characters or fewer from the range `[a-z0-9.!#$%&amp;’*+/=?^_`{|}~-]`
-    - We subset this to `[a-z0-9._+-]` with no special characters at start/end (and we lowercase automatically).
-    - If someone uses e.g. `*` asterisk at all or &#x27;-&#x27; at the start then it&#x27;s most likely to be a mistake.
-- Server portion must be a valid domain
-    - Limited to `[a-z0-9]` with mid-word hyphens only.
-    - Up to 10 segments of up to 63 characters each, separated by `.`
-    - TLD is a segment of 2-63 characters, possibly in `xn--` international format.</p><div><div><h3><code>sanitize</code></h3><pre><code>(str: string) =&gt; string</code></pre></div></div></div></div></main></body></html>
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><title>Shelving</title><base href="https://dhoulb.github.io/shelving"/></head><body id="root"><main class=""><aside><nav><ul><span>util</span><span>db</span><span>bun</span><span>extract</span><span>react</span><span>ui</span><span>error</span><span>api</span><span>cloudflare</span><span>markup</span><span>test</span><span>schema</span><span>sequence</span><span>firestore</span><span>store</span></ul></nav></aside><div><div></div></div></main></body></html>

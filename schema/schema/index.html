@@ -1,16 +1,1 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Schema.ts - Shelving</title></head><body id="root"><main class=""><aside><nav><ul><span>test</span><span>sequence</span><span>bun</span><span>ui</span><span>extract</span><span>error</span><span>cloudflare</span><span>markup</span><span>store</span><span>util</span><span>api</span><span>db</span><span>react</span><span>schema</span><span>firestore</span></ul></nav></aside><div><div><head><base href="https://dhoulb.github.io/shelving"/><link rel="stylesheet" type="text/css" href="/app-bundle.css"/></head><div><div><h3><code>SchemaOptions</code></h3><pre><code>{
-	/** String for one of this thing, e.g. `product` or `item` or `sheep` */
-	readonly one?: string;
-	/** String for several of this thing, e.g. `products` or `items` or `sheep` (defaults to `one` + &quot;s&quot;) */
-	readonly many?: string;
-	/** Title of the schema, e.g. for using as the title of a corresponding field. */
-	readonly title?: string | undefined;
-	/** Description of the schema, e.g. for using as a description in a corresponding field. */
-	readonly description?: string | undefined;
-	/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
-	readonly placeholder?: string | undefined;
-	/** Default value for the schema if `validate()` is called with an `undefined` value. */
-	readonly value?: unknown;
-}</code></pre><p>Options allowed by a `Schema` instance.</p></div><div><h3><code>Schema</code></h3><p>Schema is an object instance with a `validate()` method.
-- Type `T` represents the type of value `validate()` returns.
-- `validate()` returns `Invalid` if value was not valid.</p></div><div><h3><code>SchemaType</code></h3><pre><code>X extends Schema&lt;infer Y&gt; ? Y : never</code></pre><p>Extract the type from a schema.</p></div><div><h3><code>Schemas</code></h3><pre><code>{ readonly [K in keyof T]: Schema&lt;T[K]&gt; }</code></pre><p>A set of named schemas in `{ name: schema }` format.</p></div><div><h3><code>UNKNOWN</code></h3><pre><code>Schema&lt;unknown&gt;</code></pre></div><div><h3><code>UNDEFINED</code></h3><pre><code>Schema&lt;undefined&gt;</code></pre></div><div><h3><code>NULL</code></h3><pre><code>Schema&lt;null&gt;</code></pre></div></div></div></div></main></body></html>
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><title>Shelving</title><base href="https://dhoulb.github.io/shelving"/></head><body id="root"><main class=""><aside><nav><ul><span>util</span><span>db</span><span>bun</span><span>extract</span><span>react</span><span>ui</span><span>error</span><span>api</span><span>cloudflare</span><span>markup</span><span>test</span><span>schema</span><span>sequence</span><span>firestore</span><span>store</span></ul></nav></aside><div><div></div></div></main></body></html>
