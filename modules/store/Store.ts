@@ -3,8 +3,9 @@ import { isAsync } from "../util/async.js";
 import { NONE, SKIP } from "../util/constants.js";
 import { awaitDispose } from "../util/dispose.js";
 import { isDeepEqual } from "../util/equal.js";
-import type { AnyCaller, Arguments } from "../util/function.js";
-import { getStarter, type PossibleStarter, type Starter } from "../util/start.js";
+import type { AnyCaller, Arguments, Callback, ErrorCallback, ValueCallback } from "../util/function.js";
+import { runSequence } from "../util/index.js";
+import { getStarter, type PossibleStarter, type Starter, type StopCallback } from "../util/start.js";
 
 /** Any `Store` instance. */
 // biome-ignore lint/suspicious/noExplicitAny: `unknown` causes edge case matching issues.
@@ -321,6 +322,14 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 			this._starter, // Stop the starter.
 			this.next, // Send `done: true` to all iterators of the next sequence.
 		);
+	}
+
+	/**
+	 * Subscribe to this store with handlers.
+	 * - Returns a `StopCallback` to stop the subscription.
+	 */
+	subscribe(onNext?: ValueCallback<T>, onError?: ErrorCallback, onReturn?: Callback): StopCallback {
+		return runSequence(this, onNext, onError, onReturn);
 	}
 }
 
