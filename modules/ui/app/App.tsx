@@ -1,9 +1,9 @@
 import { type ReactElement, type ReactNode, useEffect } from "react";
 import { Meta } from "../misc/Meta.js";
-import type { PossibleMeta } from "../util/meta.js";
+import type { PossibleMetaData } from "../util/meta.js";
 import APP_CSS from "./App.module.css";
 
-export interface AppProps extends PossibleMeta {
+export interface AppProps extends PossibleMetaData {
 	children: ReactNode;
 }
 

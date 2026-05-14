@@ -41,7 +41,7 @@ export interface MetaData {
 }
 
 /** Input metadata that can be parsed and converted to proper metadata. */
-export interface PossibleMeta extends Omit<MetaData, "url"> {
+export interface PossibleMetaData extends Omit<MetaData, "url"> {
 	/**
 	 * New URL for the page.
 	 * - Resolved using `requireURL()` if set relative to `base`
@@ -72,7 +72,7 @@ export function joinTitles(...titles: (string | undefined)[]): string {
  * - `title` is merged.
  * - `URL` is resolved to an absolute URL, e.g. `./d/e/f` + `/a/b/c` becomes `https://d.com/a/b/c/d/e/f`
  */
-export function mergeMeta(meta1: MetaData, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): MetaData {
+export function mergeMeta(meta1: MetaData, meta2: PossibleMetaData, caller: AnyCaller = mergeMeta): MetaData {
 	const title = joinTitles(meta2.title, meta1.title);
 
 	const base = mergeMetaURL(undefined, meta1.base, meta2.base, undefined, caller);
