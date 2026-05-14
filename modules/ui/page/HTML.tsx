@@ -6,14 +6,18 @@ export interface HTMLProps {
 }
 
 /**
- * Output a `<html>` element wrapping `<body id="root">`.
- * - No `<head>` element is rendered. Head tags (`<title>`, `<meta>`, `<link>`, `<script>`) are emitted inline by `<Page>` / `<Head>` lower in the tree, and React 19 hoists them automatically — to the document `<head>` on the client, and to a generated `<head>` element during `renderToString` SSR.
- * - This means the same component tree works for both modes without any shell-aware logic.
+ * Output a `<html>` element wrapping `<head>` (via `<Head>`) and `<body id="root">`.
+ * - `<Head>` renders the literal `<head>` with `<base>` and other shell-level metadata; per-page hoistable elements (title, meta, links, stylesheets, scripts) come from `<PageHead>` inside `<Page>` and are hoisted into this `<head>` by React 19.
  */
 export function HTML({ children }: HTMLProps): ReactElement {
-	const { language } = requireMeta();
+	const { language, base, app } = requireMeta();
 	return (
 		<html lang={language}>
+			<head>
+				<meta charSet="utf-8" />
+				{base && <base href={base.href} />}
+				{app && <title>{app}</title>}
+			</head>
 			<body id="root">{children}</body>
 		</html>
 	);

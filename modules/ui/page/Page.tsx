@@ -9,8 +9,8 @@ export interface PageProps extends PossibleMeta {
 
 /**
  * Component for a single page (or screen) within an app.
- * - Sets the document title and other head metadata.
- * - `<Head />` renders `<title>` / `<meta>` / `<link>` tags inline; React 19 hoists them automatically to the document `<head>` (or to `document.head` on the client). Works for both client-mounted SPAs and `renderToString` SSR.
+ * - Sets the document title and other head metadata via `<Head>`, which emits hoistable tags inline; React 19 hoists each one into the document `<head>`. `<base>` is not emitted here — it lives in the `<HTML>` shell's `<Head>`.
+ * - Also updates `window.history` to match the page URL.
  */
 export function Page({ children, ...metadata }: PageProps): ReactElement {
 	return (

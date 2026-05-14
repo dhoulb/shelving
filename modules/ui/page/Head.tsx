@@ -8,29 +8,35 @@ import { joinTitles, type MetaAssets, type MetaLinks, type MetaTags } from "../u
 /** Meta tags with a capital first letter and hyphens, e.g. `Content-Security-Policy` or `Accept`, are `http-equiv=""` tags. */
 const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
 
-/** Use the details from the current page data context to set the document `<title>`, meta tags, and history state. */
+/**
+ * Per-page meta tags plus history navigation.
+ * - Emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
+ * - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
+ * - Updates `window.history` to match the page URL.
+ */
 export function Head(): ReactElement {
-	const { url, title, base, app, links, tags, stylesheets, modules, scripts } = requireMeta();
+	const meta = requireMeta();
+	const { url, title, app, links, tags, stylesheets, modules, scripts } = meta;
 
 	useEffect(() => {
 		if (typeof window === "undefined") return;
 		if (url) window.history.replaceState(null, "", url);
 	}, [url]);
 
+	const fullTitle = joinTitles(title, app);
 	return (
-		<head>
-			<title>{joinTitles(title, app)}</title>
-			{base && <base href={base.href} />}
-			{tags && getProps(tags).map(_renderTags)}
-			{links && getProps(links).map(_renderLinks)}
-			{stylesheets?.map(_renderStylesheets)}
-			{modules?.map(_renderModules)}
-			{scripts?.map(_renderScripts)}
-		</head>
+		<>
+			{fullTitle && <title>{fullTitle}</title>}
+			{tags && getProps(tags).map(_renderTag)}
+			{links && getProps(links).map(_renderLink)}
+			{stylesheets?.map(_renderStylesheet)}
+			{modules?.map(_renderModule)}
+			{scripts?.map(_renderScript)}
+		</>
 	);
 }
 
-function _renderTags([k, x]: Prop<MetaTags>): ReactElement | null {
+function _renderTag([k, x]: Prop<MetaTags>): ReactElement | null {
 	if (notNullish(x)) {
 		const y = x === true ? "yes" : x === false ? "no" : x;
 		if (k.startsWith("og:")) return <meta key={k} property={k} content={y} />; // Tags that start with `og:` use `property=""`
@@ -40,7 +46,7 @@ function _renderTags([k, x]: Prop<MetaTags>): ReactElement | null {
 	return null;
 }
 
-function _renderLinks([k, v]: Prop<MetaLinks>): ReactElement | null {
+function _renderLink([k, v]: Prop<MetaLinks>): ReactElement | null {
 	if (notNullish(v)) {
 		const type = k.endsWith("icon") ? "image/x-icon" : "text/css";
 		return <link key={k} rel={k} href={v} type={type} />;
@@ -48,14 +54,14 @@ function _renderLinks([k, v]: Prop<MetaLinks>): ReactElement | null {
 	return null;
 }
 
-function _renderStylesheets(v: ArrayItem<MetaAssets>): ReactElement | null {
-	return isNullish(v) ? null : <link key={v} rel="stylesheet" type="text/css" href={v} />;
+function _renderStylesheet(v: ArrayItem<MetaAssets>): ReactElement | null {
+	return isNullish(v) ? null : <link key={v} rel="stylesheet" type="text/css" href={v} precedence="default" />;
 }
 
-function _renderModules(v: ArrayItem<MetaAssets>): ReactElement | null {
-	return isNullish(v) ? null : <script key={v} type="module" src={v} defer />;
+function _renderModule(v: ArrayItem<MetaAssets>): ReactElement | null {
+	return isNullish(v) ? null : <script key={v} type="module" src={v} async={true} />;
 }
 
-function _renderScripts(v: ArrayItem<MetaAssets>): ReactElement | null {
-	return isNullish(v) ? null : <script key={v} type="text/javascript" src={v} defer />;
+function _renderScript(v: ArrayItem<MetaAssets>): ReactElement | null {
+	return isNullish(v) ? null : <script key={v} type="text/javascript" src={v} async={true} />;
 }
