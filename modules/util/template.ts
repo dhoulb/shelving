@@ -122,7 +122,11 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
  * - Like `matchTemplate`, but with `/` segment semantics: non-catchall placeholders cannot span path segments; catchall placeholders can.
  * - A trailing catchall (e.g. `/files/{...path}`) also matches when the trailing separator is absent (e.g. `/files`), with the catchall value as `""`.
  */
-export function matchPathTemplate(template: AbsolutePath, target: AbsolutePath, caller: AnyCaller = matchPathTemplate): TemplateMatches | undefined {
+export function matchPathTemplate(
+	template: AbsolutePath,
+	target: AbsolutePath,
+	caller: AnyCaller = matchPathTemplate,
+): TemplateMatches | undefined {
 	return _matchTemplate(template, target, "/", caller);
 }
 
@@ -135,7 +139,14 @@ function _matchTemplate(template: string, target: string, separator: string, cal
 	if (!firstChunk) return template === target ? EMPTY_DICTIONARY : undefined;
 
 	// Special case: single trailing catchall whose `pre` ends with the separator (e.g. `/files/{...path}`) — also match the variant without the trailing separator (`/files`).
-	if (separator && chunks.length === 1 && firstChunk.catchall && !firstChunk.post && firstChunk.pre.endsWith(separator) && target === firstChunk.pre.slice(0, -separator.length)) {
+	if (
+		separator &&
+		chunks.length === 1 &&
+		firstChunk.catchall &&
+		!firstChunk.post &&
+		firstChunk.pre.endsWith(separator) &&
+		target === firstChunk.pre.slice(0, -separator.length)
+	) {
 		return { [firstChunk.name]: "" };
 	}
 
