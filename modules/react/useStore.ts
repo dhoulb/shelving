@@ -25,6 +25,6 @@ export function useStore<T, TT>(store: Store<T, TT> | undefined): Store<T, TT> |
 				subscribe: c => store.subscribe(c, c),
 				getSnapshot: () => store.snapshot,
 			});
-	useSyncExternalStore(subscribe, getSnapshot);
+	useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 	return store;
 }
