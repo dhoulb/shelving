@@ -3,9 +3,9 @@ import { dirname, join } from "node:path";
 import type { ReactElement } from "react";
 import { renderToString } from "react-dom/server";
 import { DirectoryExtractor } from "../modules/extract/DirectoryExtractor.js";
-import { Meta } from "../modules/ui/misc/Meta.js";
+import { MetaContext } from "../modules/ui/misc/MetaContext.js";
 import { HTML } from "../modules/ui/page/HTML.js";
-import { RouterOutput } from "../modules/ui/router/Router.js";
+import { Navigation } from "../modules/ui/router/Navigation.js";
 import { TreeApp } from "../modules/ui/tree/TreeApp.js";
 import { getElementPaths } from "../modules/util/element.js";
 import { type AbsolutePath, joinAbsolutePath } from "../modules/util/path.js";
@@ -14,15 +14,11 @@ import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
 
 /**
  * Render `app` to an HTML string for a given URL path.
- * - Wraps `app` in a `<Meta>` context that sets the current page URL.
+ * - Wraps `app` in a `MetaContext` that sets the current page URL.
  * - Returns a full HTML document including `<!DOCTYPE html>`.
  */
 export function renderPage(app: ReactElement, path: AbsolutePath): string {
-	const html = renderToString(
-		<Meta url={path} base={APP_URL}>
-			{app}
-		</Meta>,
-	);
+	const html = renderToString(<MetaContext value={{ url: new URL(path, APP_URL), base: APP_URL }}>{app}</MetaContext>);
 	return `<!DOCTYPE html>${html}`;
 }
 
@@ -60,18 +56,17 @@ export async function buildApp(entrypoint: AbsolutePath, outdir: AbsolutePath): 
 	// Compose the site-wide `app` element.
 	// Per-page content is mounted by `<TreeApp>` itself via its catch-all route, so there's no per-path branch here.
 	const app = (
-		<HTML>
-			<TreeApp
-				tree={root}
-				app={APP_TITLE}
-				description={APP_DESCRIPTION}
-				language={APP_LANGUAGE}
-				base={APP_URL}
-				stylesheets={[stylesheet]}
-				tags={{ viewport: "width=device-width, initial-scale=1" }}
-			>
-				<RouterOutput />
-			</TreeApp>
+		<HTML
+			app={APP_TITLE}
+			description={APP_DESCRIPTION}
+			language={APP_LANGUAGE}
+			base={APP_URL}
+			stylesheets={[stylesheet]}
+			tags={{ viewport: "width=device-width, initial-scale=1" }}
+		>
+			<Navigation>
+				<TreeApp tree={root} />
+			</Navigation>
 		</HTML>
 	);
 

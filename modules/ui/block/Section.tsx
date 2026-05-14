@@ -31,10 +31,10 @@ export function Section(props: SectionProps): ReactElement {
 	return renderSection("section", props);
 }
 
-export interface NavigationProps extends SectionProps {}
+export interface NavProps extends SectionProps {}
 
 /** A single HTML `<nav>` with correct spacing. */
-export function Navigation(props: NavigationProps): ReactElement {
+export function Nav(props: NavProps): ReactElement {
 	return renderSection("nav", props);
 }
 

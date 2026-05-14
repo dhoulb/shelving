@@ -18,7 +18,7 @@ export type MetaAssets = ImmutableArray<Nullish<string>>;
 export type MetaCSP = { readonly [resource: string]: string[] };
 
 /** Combined meta data for a website page. */
-export interface MetaData {
+export interface Meta {
 	/** Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). */
 	readonly base?: ImmutableURL | undefined;
 	/** URL of the current page (used to update history API and as the initial URL for routing). */
@@ -41,7 +41,7 @@ export interface MetaData {
 }
 
 /** Input metadata that can be parsed and converted to proper metadata. */
-export interface PossibleMetaData extends Omit<MetaData, "url"> {
+export interface PossibleMeta extends Omit<Meta, "url"> {
 	/**
 	 * New URL for the page.
 	 * - Resolved using `requireURL()` if set relative to `base`
@@ -72,7 +72,7 @@ export function joinTitles(...titles: (string | undefined)[]): string {
  * - `title` is merged.
  * - `URL` is resolved to an absolute URL, e.g. `./d/e/f` + `/a/b/c` becomes `https://d.com/a/b/c/d/e/f`
  */
-export function mergeMeta(meta1: MetaData, meta2: PossibleMetaData, caller: AnyCaller = mergeMeta): MetaData {
+export function mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): Meta {
 	const title = joinTitles(meta2.title, meta1.title);
 
 	const base = mergeMetaURL(undefined, meta1.base, meta2.base, undefined, caller);

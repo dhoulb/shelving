@@ -2,7 +2,7 @@ import { type ReactElement, useEffect } from "react";
 import type { ArrayItem } from "../../util/array.js";
 import { isNullish, notNullish } from "../../util/null.js";
 import { getProps, type Prop } from "../../util/object.js";
-import { requireMeta } from "../misc/Meta.js";
+import { requireMeta } from "../misc/MetaContext.js";
 import { joinTitles, type MetaAssets, type MetaLinks, type MetaTags } from "../util/meta.js";
 
 /** Meta tags with a capital first letter and hyphens, e.g. `Content-Security-Policy` or `Accept`, are `http-equiv=""` tags. */
