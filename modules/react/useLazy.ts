@@ -1,7 +1,7 @@
+import { useRef } from "react";
 import { isArrayEqual } from "../util/equal.js";
 import type { Arguments } from "../util/function.js";
 import { getLazy, type Lazy } from "../util/lazy.js";
-import { useProps } from "./useProps.js";
 
 /**
  * Use a memoised value with lazy initialisation.
@@ -12,13 +12,16 @@ export function useLazy<T, A extends Arguments = []>(value: (...args: A) => T, .
 export function useLazy<T>(value: T, ...args: Arguments): T;
 export function useLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T;
 export function useLazy<T, A extends Arguments = []>(value: Lazy<T, A>, ...args: A): T {
-	const internals = useProps<{ value: T; args: A }>();
+	const _internals = (useRef<{ value: T; args: A }>(undefined).current ??= {
+		value: getLazy(value, ...args),
+		args,
+	});
 
-	// Update `internals` if `args` changes.
-	if (!internals.args || !isArrayEqual<A>(args, internals.args)) {
-		internals.value = getLazy(value, ...args);
-		internals.args = args;
+	// Update `_internals` if `args` changes.
+	if (!isArrayEqual<A>(args, _internals.args)) {
+		_internals.value = getLazy(value, ...args);
+		_internals.args = args;
 	}
 
-	return internals.value as T;
+	return _internals.value;
 }

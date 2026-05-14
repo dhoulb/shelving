@@ -3,7 +3,6 @@ export * from "./createDBContext.js";
 export * from "./useInstance.js";
 export * from "./useLazy.js";
 export * from "./useMap.js";
-export * from "./useProps.js";
 export * from "./useReduce.js";
 export * from "./useSequence.js";
 export * from "./useStore.js";

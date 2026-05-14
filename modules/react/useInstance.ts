@@ -1,6 +1,6 @@
+import { useRef } from "react";
 import { isArrayEqual } from "../util/equal.js";
 import type { Arguments } from "../util/function.js";
-import { useProps } from "./useProps.js";
 
 /**
  * Use a memoised class instance.
@@ -8,13 +8,16 @@ import { useProps } from "./useProps.js";
  * - Returns same instance for as long as `args` is equal to previous `args`.
  */
 export function useInstance<T, A extends Arguments = []>(Constructor: new (...a: A) => T, ...args: A): T {
-	const internals = useProps<{ instance: T; args: A }>();
+	const _internals = (useRef<{ instance: T; args: A }>(undefined).current ??= {
+		instance: new Constructor(...args),
+		args,
+	});
 
-	// Update `internals` if `args` changes or `instance` is not set.
-	if (!internals.args || !internals.instance || !isArrayEqual<A>(args, internals.args)) {
-		internals.instance = new Constructor(...args);
-		internals.args = args;
+	// Update `_internals` if `args` changes.
+	if (!isArrayEqual<A>(args, _internals.args)) {
+		_internals.instance = new Constructor(...args);
+		_internals.args = args;
 	}
 
-	return internals.instance;
+	return _internals.instance;
 }

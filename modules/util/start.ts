@@ -1,11 +1,14 @@
 import { UnexpectedError } from "../error/UnexpectedError.js";
-import type { Arguments } from "./function.js";
+import { type Arguments, BLACKHOLE } from "./function.js";
 
 /** Callback function that starts something with multiple values and returns an optional stop callback. */
 export type StartCallback<T extends Arguments = []> = (...values: T) => StopCallback | void;
 
 /** Callback function that stops something. */
 export type StopCallback = () => void;
+
+/** Callback function that does nothing and returns a blackhole stop callback. */
+export const STOPHOLE: (...args: Arguments) => StopCallback = () => BLACKHOLE;
 
 /**
  * Wrapper class to handle state on start/stop callback process.

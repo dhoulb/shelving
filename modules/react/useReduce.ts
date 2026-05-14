@@ -14,7 +14,7 @@ export function useReduce<T, A extends Arguments = []>(
 	...args: A
 ): T | undefined; // Allows inference if `undefined` is a value that `reduce()` can return.
 export function useReduce<T, A extends Arguments = []>(reduce: (previous: T | undefined, ...a: A) => T, ...args: A): T {
-	const ref = useRef<T | undefined>(undefined);
-	ref.current = reduce(ref.current, ...args);
-	return ref.current;
+	const _ref = useRef<T | undefined>(undefined);
+	_ref.current = reduce(_ref.current, ...args);
+	return _ref.current;
 }
