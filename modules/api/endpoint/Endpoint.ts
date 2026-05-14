@@ -5,7 +5,7 @@ import { type Data, isData } from "../../util/data.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestMethod, RequestParams } from "../../util/http.js";
 import type { AbsolutePath } from "../../util/path.js";
-import { getPlaceholders, matchTemplate, renderTemplate, type TemplatePlaceholders } from "../../util/template.js";
+import { getPlaceholders, matchPathTemplate, renderPathTemplate, type TemplatePlaceholders } from "../../util/template.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
 /**
@@ -52,7 +52,7 @@ export class Endpoint<P = unknown, R = unknown> {
 		// Placeholders.
 		if (this.placeholders.length) {
 			assertPlaceholderPayload(payload, this, caller);
-			return renderTemplate(this.path, payload, caller) as AbsolutePath;
+			return renderPathTemplate(this.path, payload, caller);
 		}
 
 		// No placeholders.
@@ -64,7 +64,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 */
 	match(method: RequestMethod, path: AbsolutePath, caller: AnyCaller = this.match): RequestParams | undefined {
 		if (method !== this.method) return undefined;
-		return matchTemplate(this.path, path, caller);
+		return matchPathTemplate(this.path, path, caller);
 	}
 
 	/**

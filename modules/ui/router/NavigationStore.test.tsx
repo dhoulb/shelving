@@ -25,7 +25,7 @@ describe("matchRoute", () => {
 			"/enquiry/{form}": PropsPage,
 		};
 
-		const inner = unwrap(matchRoute(routes, "/enquiry/loan", { url: requireURL("https://x.com/enquiry/loan?gclid=abc123&form=query-form") }));
+		const inner = unwrap(matchRoute(routes, { url: requireURL("https://x.com/enquiry/loan?gclid=abc123&form=query-form") }));
 
 		expect(inner?.props).toEqual({ gclid: "abc123", form: "loan" });
 	});
@@ -36,7 +36,7 @@ describe("matchRoute", () => {
 			"/enquiry/{form}": PropsPage,
 		};
 
-		const inner = unwrap(matchRoute(routes, "/old/loan", { url: requireURL("https://x.com/old/loan?gclid=abc123") }));
+		const inner = unwrap(matchRoute(routes, { url: requireURL("https://x.com/old/loan?gclid=abc123") }));
 
 		expect(inner?.props).toEqual({ gclid: "abc123", form: "loan" });
 	});
@@ -46,6 +46,6 @@ describe("matchRoute", () => {
 			"/test": NoPropsPage,
 		};
 
-		expect(matchRoute(routes, "/test", {})).not.toBeNull();
+		expect(matchRoute(routes, { url: requireURL("https://x.com/test") })).not.toBeNull();
 	});
 });

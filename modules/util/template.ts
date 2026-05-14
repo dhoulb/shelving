@@ -6,6 +6,7 @@ import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
 import { type AnyCaller, isFunction } from "./function.js";
 import { setMapItem } from "./map.js";
 import type { Mutable } from "./object.js";
+import type { AbsolutePath } from "./path.js";
 import { getString, type NotString, type PossibleString } from "./string.js";
 
 /** Single template chunk. */
@@ -14,6 +15,8 @@ type TemplateChunk = {
 	readonly name: string;
 	readonly placeholder: string;
 	readonly post: string;
+	/** True if this placeholder is a catchall (`**`, `...prefix`, or `*suffix`) — allows empty values and (in path mode) spans separators. */
+	readonly catchall: boolean;
 };
 
 /** Set of template chunks. */
@@ -35,8 +38,17 @@ export type TemplateMatches = ImmutableDictionary<string>;
 /** List of `{placeholders}` found in a template string. */
 export type TemplatePlaceholders = ImmutableArray<string>;
 
-// RegExp to find named variables in several formats e.g. `:a`, `${b}`, `{{c}}` or `{d}`
-const R_PLACEHOLDERS = /(\*\*?|:[a-z][a-z0-9]*|\$\{[a-z][a-z0-9]*\}|\{\{[a-z][a-z0-9]*\}\}|\{[a-z][a-z0-9]*\})/i;
+/**
+ * RegExp to find named placeholders in several formats, each with optional catchall modifiers (`...prefix` or `*suffix` — three-or-more dots, one-or-more stars):
+ * - Anonymous: `*` (single segment), `**` / `***` / etc. (catchall).
+ * - Colon: `:name`, `:name*`, `:name**` (catchall).
+ * - Dollar-brace: `${name}`, `${...name}`, `${name*}`, `${....name}`, `${name**}`.
+ * - Double-brace: `{{name}}`, `{{...name}}`, `{{name*}}`.
+ * - Single-brace: `{name}`, `{...name}`, `{name*}`.
+ * - Square-bracket: `[name]`, `[...name]`, `[name*]`.
+ */
+const R_PLACEHOLDERS =
+	/(\*+|:[a-z][a-z0-9]*\**|\$\{(?:\.{3,})?[a-z][a-z0-9]*\**\}|\{\{(?:\.{3,})?[a-z][a-z0-9]*\**\}\}|\{(?:\.{3,})?[a-z][a-z0-9]*\**\}|\[(?:\.{3,})?[a-z][a-z0-9]*\**\])/i;
 
 // Find actual name within template placeholder e.g. `${name}` → `name`
 const R_NAME = /[a-z0-9]+/i;
@@ -59,8 +71,17 @@ function _splitTemplate(template: string, caller: AnyCaller): TemplateChunks {
 		const post = matches[i + 1] as string;
 		if (i > 1 && !pre.length)
 			throw new ValueError("Template placeholders must be separated by at least one character", { received: template, caller });
-		const name = placeholder[0] === "*" ? String(asterisks++) : R_NAME.exec(placeholder)?.[0] || "";
-		chunks.push({ pre, placeholder, name, post });
+		let name: string;
+		let catchall: boolean;
+		if (placeholder[0] === "*") {
+			// Anonymous: `*` is a single segment, `**` (or more stars) is a catchall.
+			name = String(asterisks++);
+			catchall = placeholder.length > 1;
+		} else {
+			name = R_NAME.exec(placeholder)?.[0] || "";
+			catchall = placeholder.includes("...") || placeholder.includes("*");
+		}
+		chunks.push({ pre, placeholder, name, post, catchall });
 	}
 	return chunks;
 }
@@ -83,19 +104,29 @@ function _getPlaceholder({ name }: TemplateChunk): string {
 }
 
 /**
- * Match a template against a target string.
- * - Turn ":year-:month" and "2016-06..." etc into `{ year: "2016"... }`
+ * Match a template against a target string with no separator semantics.
+ * - Turn `:year-:month` and `2016-06`... etc into `{ year: "2016"... }`.
+ * - Non-catchall placeholders match non-empty values; catchall placeholders (`**`, `:name*`, `{...name}`, etc.) allow empty values.
  *
- * @param templates Either a single template string, or an iterator that returns multiple template template strings.
- * - Template strings can include placeholders (e.g. `:name-${country}/{city}`).
- * - Template strings do not match the `/` character.
- * - The `**` double splat placeholder _can_ match multiple path segments (e.g. `a/b/c`).
+ * @param template The template string, e.g. `:name-${country}/{city}`.
+ * @param target The string containing values, e.g. `Dave-UK/Manchester`.
  *
- * @param target The string containing values, e.g. `Dave-UK/Manchester`
- *
- * @return An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`, or undefined if target didn't match the template.
+ * @return An object containing values (e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`), or `undefined` if no match.
  */
 export function matchTemplate(template: string, target: string, caller: AnyCaller = matchTemplate): TemplateMatches | undefined {
+	return _matchTemplate(template, target, "", caller);
+}
+
+/**
+ * Match a path-shaped template against a target path.
+ * - Like `matchTemplate`, but with `/` segment semantics: non-catchall placeholders cannot span path segments; catchall placeholders can.
+ * - A trailing catchall (e.g. `/files/{...path}`) also matches when the trailing separator is absent (e.g. `/files`), with the catchall value as `""`.
+ */
+export function matchPathTemplate(template: AbsolutePath, target: AbsolutePath, caller: AnyCaller = matchPathTemplate): TemplateMatches | undefined {
+	return _matchTemplate(template, target, "/", caller);
+}
+
+function _matchTemplate(template: string, target: string, separator: string, caller: AnyCaller): TemplateMatches | undefined {
 	// Get separators and placeholders from template.
 	const chunks = _splitTemplateCached(template, caller);
 	const firstChunk = chunks[0];
@@ -103,18 +134,25 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
 	// Return early if empty.
 	if (!firstChunk) return template === target ? EMPTY_DICTIONARY : undefined;
 
+	// Special case: single trailing catchall whose `pre` ends with the separator (e.g. `/files/{...path}`) — also match the variant without the trailing separator (`/files`).
+	if (separator && chunks.length === 1 && firstChunk.catchall && !firstChunk.post && firstChunk.pre.endsWith(separator) && target === firstChunk.pre.slice(0, -separator.length)) {
+		return { [firstChunk.name]: "" };
+	}
+
 	// Check first separator.
 	if (!target.startsWith(firstChunk.pre)) return undefined; // target doesn't match template
 
 	// Loop through the placeholders (placeholders are at all the even-numbered positions in `chunks`).
 	let startIndex = firstChunk.pre.length;
 	const values: Mutable<TemplateMatches> = {};
-	for (const { name, post, placeholder } of chunks) {
+	for (const { name, post, catchall } of chunks) {
 		const stopIndex = !post ? Number.POSITIVE_INFINITY : target.indexOf(post, startIndex);
 		if (stopIndex < 0) return undefined; // Target doesn't match template because chunk post wasn't found.
 		const value = target.slice(startIndex, stopIndex);
-		if (!value.length) return undefined; // Target doesn't match template because chunk value was missing.
-		if (placeholder !== "**" && value.includes("/")) return undefined; // Placeholders can't consume multiple path segments.
+		if (!catchall) {
+			if (!value.length) return undefined; // Empty values only allowed for catchall placeholders.
+			if (separator && value.includes(separator)) return undefined; // Non-catchall placeholders can't span separators (when one is configured).
+		}
 		values[name] = value;
 		startIndex = stopIndex + post.length;
 	}
@@ -122,12 +160,18 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
 	return values;
 }
 
-/**
- * Match multiple templates against a target string and return the first match.
- */
+/** Match multiple templates against a target string and return the first match (no separator semantics). */
 export function matchTemplates(templates: Iterable<string> & NotString, target: string): TemplateMatches | undefined {
 	for (const template of templates) {
 		const values = matchTemplate(template, target);
+		if (values) return values;
+	}
+}
+
+/** Match multiple path-shaped templates against a target path and return the first match. */
+export function matchPathTemplates(templates: Iterable<AbsolutePath> & NotString, target: AbsolutePath): TemplateMatches | undefined {
+	for (const template of templates) {
+		const values = matchPathTemplate(template, target);
 		if (values) return values;
 	}
 }
@@ -166,4 +210,11 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 		for (const { placeholder } of chunks) output = output.replace(placeholder, v);
 	}
 	return output;
+}
+
+/**
+ * Render a path-shaped template. Behaviourally identical to `renderTemplate` — substitution doesn't need separator awareness — but provided as a sibling to `matchPathTemplate` so callers can pair them.
+ */
+export function renderPathTemplate(template: AbsolutePath, values: TemplateValues, caller: AnyCaller = renderPathTemplate): AbsolutePath {
+	return renderTemplate(template, values, caller) as AbsolutePath;
 }

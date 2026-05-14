@@ -30,8 +30,8 @@ export function TreeApp({ tree, routes = {}, children, ...appProps }: TreeAppPro
 	const allRoutes: Routes = {
 		...routes,
 		"/": () => <TreePage tree={tree} />,
-		// `**` captures the multi-segment remainder under index `"0"` (named placeholders are single-segment only).
-		"/**": ({ 0: path = "" }) => <TreePage path={`/${path}`} tree={tree} />,
+		// `{...path}` is a named catchall — captures any remaining segments (including empty) as `path`.
+		"/{...path}": ({ path = "" }) => <TreePage path={`/${path}`} tree={tree} />,
 	};
 
 	return (

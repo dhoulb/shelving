@@ -3,7 +3,7 @@ import { UnexpectedError } from "../../error/UnexpectedError.js";
 import { type ImmutableURL, matchURLPrefix } from "../../util/index.js";
 import type { Nullish } from "../../util/null.js";
 import type { AbsolutePath } from "../../util/path.js";
-import { matchTemplate, renderTemplate } from "../../util/template.js";
+import { matchPathTemplate, renderPathTemplate } from "../../util/template.js";
 import { getURIParams, type URIParams, withURIParams } from "../../util/uri.js";
 import { MetaContext } from "../misc/MetaContext.js";
 import type { Meta } from "../util/meta.js";
@@ -55,7 +55,7 @@ export function matchRoute(routes: Routes, meta: Meta): ReactElement | null {
 }
 function _matchRoute(routes: Routes, path: AbsolutePath, url: ImmutableURL, meta: Meta, depth = 0): ReactElement | null {
 	for (const [route, Route] of Object.entries(routes)) {
-		const placeholders = matchTemplate(route, path);
+		const placeholders = matchPathTemplate(route as AbsolutePath, path);
 		if (placeholders) {
 			// Skip falsy. This allows a route to be conditionally disabled by setting its value to `null` or `false`.
 			if (!Route) continue;
@@ -63,7 +63,7 @@ function _matchRoute(routes: Routes, path: AbsolutePath, url: ImmutableURL, meta
 			// String value is a redirect; re-run matching with the new path. Guard against infinite redirect loops by limiting depth.
 			if (typeof Route === "string") {
 				if (depth > 10) throw new UnexpectedError("Infinite redirect loop", { received: route, expected: path, caller: matchRoute });
-				return _matchRoute(routes, renderTemplate(Route, placeholders) as AbsolutePath, url, meta, depth + 1);
+				return _matchRoute(routes, renderPathTemplate(Route, placeholders), url, meta, depth + 1);
 			}
 
 			// Either a React element or a component.
