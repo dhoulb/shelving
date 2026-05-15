@@ -1,5 +1,14 @@
 import ts from "typescript";
-import type { DocumentationElement, FileElementProps, TreeElement } from "../util/element.js";
+import type {
+	DocumentationElement,
+	DocumentationElementProps,
+	DocumentationExample,
+	DocumentationParam,
+	DocumentationReturn,
+	DocumentationThrow,
+	FileElementProps,
+	TreeElement,
+} from "../util/element.js";
 import { requireSlug } from "../util/string.js";
 import { FileExtractor } from "./FileExtractor.js";
 
@@ -7,6 +16,7 @@ import { FileExtractor } from "./FileExtractor.js";
  * File extractor that parses a TypeScript source file into a tree element.
  * - Uses the TypeScript compiler API to parse the AST.
  * - Extracts exported, public, non-`_`-prefixed declarations as `tree-documentation` children.
+ * - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`.
  * - Top-of-file JSDoc comment becomes the file's `content`.
  * - Does not set `title` — TS source files have no confident title source. The renderer falls back to `name`.
  */
@@ -15,16 +25,44 @@ export class TypescriptExtractor extends FileExtractor {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
 		const content = _getFileDocComment(source);
 
-		const children: TreeElement[] = [];
+		// Collect elements by key, merging overloads (same name) by appending signatures.
+		const byKey = new Map<string, DocumentationElement>();
 		for (const statement of source.statements) {
 			const element = _extractStatement(statement, source);
-			if (element) children.push(element);
+			if (!element) continue;
+			const existing = byKey.get(element.key);
+			byKey.set(element.key, existing ? _mergeOverloads(existing, element) : element);
 		}
 
 		// No `title` — TS source files don't have a confident title source (the filename isn't one).
 		// The renderer falls back to `name` when displaying.
-		return { name, content, children };
+		return { name, content, children: Array.from(byKey.values()) };
 	}
+}
+
+/** Merge a newly-extracted overload into the existing documentation element with the same key. */
+function _mergeOverloads(existing: DocumentationElement, next: DocumentationElement): DocumentationElement {
+	const a = existing.props;
+	const b = next.props;
+	const merged: DocumentationElementProps = {
+		...a,
+		// Keep first description encountered; fill in if `existing` had none.
+		description: a.description ?? b.description,
+		// Append signatures.
+		signatures: _concat(a.signatures, b.signatures),
+		// Append params, returns, throws, examples — never dedupe (per spec).
+		params: _concat(a.params, b.params),
+		returns: _concat(a.returns, b.returns),
+		throws: _concat(a.throws, b.throws),
+		examples: _concat(a.examples, b.examples),
+	};
+	return { ...existing, props: merged };
+}
+
+function _concat<T>(a: readonly T[] | undefined, b: readonly T[] | undefined): readonly T[] | undefined {
+	if (!a) return b;
+	if (!b) return a;
+	return [...a, ...b];
 }
 
 /** Get the leading JSDoc comment of the file (before the first statement). */
@@ -58,8 +96,9 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 	if (!kind) return;
 
 	const signature = _getSignature(statement, source);
-	const params = _getParams(statement, source);
-	const returns = _getReturnType(statement, source);
+	const params = _getParams(statement, source, jsDoc?.params);
+	const returns = _getReturns(statement, source, jsDoc?.returns);
+	const throws = jsDoc?.throws;
 	const examples = jsDoc?.examples;
 	const children = _getClassMembers(statement, source);
 
@@ -70,9 +109,10 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 			name,
 			kind,
 			description: jsDoc?.description,
-			signature,
+			signatures: signature ? [signature] : undefined,
 			params,
 			returns,
+			throws,
 			examples,
 			children,
 		},
@@ -127,14 +167,14 @@ function _getSignature(statement: ts.Statement, source: ts.SourceFile): string |
 	}
 }
 
-/** Extract parameters from a function or method declaration. */
+/** Extract parameters from a function or method declaration, enriched with JSDoc `@param` descriptions. */
 function _getParams(
 	statement: ts.Statement,
 	source: ts.SourceFile,
-): { name: string; type?: string | undefined; description?: string | undefined; optional?: boolean | undefined }[] | undefined {
+	jsDocParams: readonly DocumentationParam[] | undefined,
+): readonly DocumentationParam[] | undefined {
 	if (!ts.isFunctionDeclaration(statement)) return;
-	const jsDocParams = _getJSDoc(statement, source)?.params;
-	const params = statement.parameters.map(p => {
+	const params: DocumentationParam[] = statement.parameters.map(p => {
 		const name = p.name.getText(source);
 		const type = p.type?.getText(source);
 		const optional = !!p.questionToken || !!p.initializer;
@@ -144,9 +184,21 @@ function _getParams(
 	return params.length ? params : undefined;
 }
 
-/** Get the return type of a function declaration. */
-function _getReturnType(statement: ts.Statement, source: ts.SourceFile): string | undefined {
-	if (ts.isFunctionDeclaration(statement) && statement.type) return statement.type.getText(source);
+/** Extract return entries — combines the signature return type with any `@returns` descriptions. */
+function _getReturns(
+	statement: ts.Statement,
+	source: ts.SourceFile,
+	jsDocReturns: readonly DocumentationReturn[] | undefined,
+): readonly DocumentationReturn[] | undefined {
+	if (!ts.isFunctionDeclaration(statement)) return jsDocReturns;
+	const type = statement.type?.getText(source);
+	if (jsDocReturns?.length) {
+		// Merge: first entry gets the inferred type if it doesn't already have one.
+		const [first, ...rest] = jsDocReturns;
+		if (!first) return jsDocReturns;
+		return [{ type: first.type ?? type, description: first.description }, ...rest];
+	}
+	if (type && type !== "void") return [{ type }];
 }
 
 /** Extract class or interface members as child elements. */
@@ -168,26 +220,28 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 		if (ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) {
 			const params = member.parameters.map(p => p.getText(source)).join(", ");
 			const ret = member.type ? member.type.getText(source) : "void";
-			members.push({
-				type: "tree-documentation",
-				key: requireSlug(name),
-				props: {
-					name,
-					description,
-					kind: "method",
-					signature: `(${params}) => ${ret}`,
-				},
-			});
+			const signature = `(${params}) => ${ret}`;
+			const key = requireSlug(name);
+			const existingIndex = members.findIndex(m => m.key === key);
+			if (existingIndex >= 0) {
+				const existing = members[existingIndex]!;
+				members[existingIndex] = {
+					...existing,
+					props: { ...existing.props, signatures: _concat(existing.props.signatures, [signature]) },
+				};
+			} else {
+				members.push({
+					type: "tree-documentation",
+					key,
+					props: { name, description, kind: "method", signatures: [signature] },
+				});
+			}
 		} else if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
+			const type = member.type?.getText(source);
 			members.push({
 				type: "tree-documentation",
 				key: requireSlug(name),
-				props: {
-					name,
-					description,
-					kind: "property",
-					signature: member.type?.getText(source),
-				},
+				props: { name, description, kind: "property", signatures: type ? [type] : undefined },
 			});
 		}
 	}
@@ -197,8 +251,10 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 
 interface JSDocResult {
 	description?: string | undefined;
-	params?: { name: string; description: string }[] | undefined;
-	examples?: string[] | undefined;
+	params?: DocumentationParam[] | undefined;
+	returns?: DocumentationReturn[] | undefined;
+	throws?: DocumentationThrow[] | undefined;
+	examples?: DocumentationExample[] | undefined;
 }
 
 /** Extract JSDoc from a node. */
@@ -215,11 +271,15 @@ function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefine
 
 		const description = _parseJSDocComment(text);
 		const params = _parseJSDocParams(text);
+		const returns = _parseJSDocReturns(text);
+		const throws = _parseJSDocThrows(text);
 		const examples = _parseJSDocExamples(text);
 
 		return {
 			description: description || undefined,
 			params: params.length ? params : undefined,
+			returns: returns.length ? returns : undefined,
+			throws: throws.length ? throws : undefined,
 			examples: examples.length ? examples : undefined,
 		};
 	}
@@ -244,26 +304,58 @@ function _parseJSDocComment(text: string): string | undefined {
 	return result || undefined;
 }
 
-/** Parse `@param` tags from a JSDoc comment. */
-function _parseJSDocParams(text: string): { name: string; description: string }[] {
-	const results: { name: string; description: string }[] = [];
-	const regexp = /@param\s+(?:\{[^}]*\}\s+)?(\w+)\s+(.*)/g;
+/** Parse `@param` tags from a JSDoc comment. Duplicates are kept (overloads). */
+function _parseJSDocParams(text: string): DocumentationParam[] {
+	const results: DocumentationParam[] = [];
+	// `@param {Type} name description` — type is optional.
+	const regexp = /@param\s+(?:\{([^}]*)\}\s+)?(\w+)\s+(.*)/g;
 	let match: RegExpExecArray | null;
 	while ((match = regexp.exec(text))) {
-		const name = match[1];
-		const description = match[2];
-		if (name && description) results.push({ name, description: description.trim() });
+		const type = match[1]?.trim();
+		const name = match[2];
+		const description = match[3]?.trim();
+		if (name) results.push({ name, type: type || undefined, description: description || undefined });
+	}
+	return results;
+}
+
+/** Parse `@returns` / `@return` tags from a JSDoc comment. */
+function _parseJSDocReturns(text: string): DocumentationReturn[] {
+	const results: DocumentationReturn[] = [];
+	// `@returns {Type} description` or `@return {Type} description`.
+	const regexp = /@returns?\s+(?:\{([^}]*)\}\s*)?(.*)/g;
+	let match: RegExpExecArray | null;
+	while ((match = regexp.exec(text))) {
+		const type = match[1]?.trim();
+		const description = match[2]?.trim();
+		if (type || description) results.push({ type: type || undefined, description: description || undefined });
+	}
+	return results;
+}
+
+/** Parse `@throws` / `@throw` tags from a JSDoc comment. */
+function _parseJSDocThrows(text: string): DocumentationThrow[] {
+	const results: DocumentationThrow[] = [];
+	// `@throws {Type} description` or `@throw {Type} description`.
+	const regexp = /@throws?\s+(?:\{([^}]*)\}\s*)?(.*)/g;
+	let match: RegExpExecArray | null;
+	while ((match = regexp.exec(text))) {
+		const type = match[1]?.trim();
+		const description = match[2]?.trim();
+		if (type || description) results.push({ type: type || undefined, description: description || undefined });
 	}
 	return results;
 }
 
 /** Parse `@example` tags from a JSDoc comment. */
-function _parseJSDocExamples(text: string): string[] {
-	const results: string[] = [];
-	const regexp = /@example\s+(.*)/g;
+function _parseJSDocExamples(text: string): DocumentationExample[] {
+	const results: DocumentationExample[] = [];
+	// `@example` followed by the rest of the line.
+	const regexp = /@examples?\s+(.+)/g;
 	let match: RegExpExecArray | null;
 	while ((match = regexp.exec(text))) {
-		if (match[1]) results.push(match[1].trim());
+		const description = match[1]?.trim();
+		if (description) results.push({ description });
 	}
 	return results;
 }
