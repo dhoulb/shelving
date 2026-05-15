@@ -15,15 +15,28 @@
 	margin: 0;
 }
 
-.link {
+.entry {
 	display: block;
-	padding: var(--spacing-tight, 0.25rem) var(--spacing-snug, 0.5rem);
+	padding-block: var(--spacing-tight, 0.25rem);
+	padding-inline-end: var(--spacing-snug, 0.5rem);
+	padding-inline-start: calc(var(--spacing-snug, 0.5rem) + var(--menu-depth, 0) * var(--spacing-normal, 0.75rem));
 	border-radius: var(--radius-small, 0.25rem);
 	color: var(--color-text-muted, inherit);
 	text-decoration: none;
 }
 
-.link:hover {
+.entry:hover {
 	background: var(--color-surface-hover, rgba(0, 0, 0, 0.05));
 	color: var(--color-text, inherit);
+}
+
+.entry:focus-visible {
+	outline: 2px solid var(--color-accent, currentColor);
+	outline-offset: 2px;
+}
+
+.entry[aria-current="page"] {
+	background: var(--color-surface-active, rgba(0, 0, 0, 0.08));
+	color: var(--color-text, inherit);
+	font-weight: 600;
 }
