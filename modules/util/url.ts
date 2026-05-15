@@ -121,6 +121,31 @@ export function matchURLPrefix(target: PossibleURL, base: PossibleURL, caller: A
 	if (targetPath.startsWith(basePath)) return targetPath.slice(basePath.length - 1) as AbsolutePath;
 }
 
+/**
+ * Is a target URL active relative to a base URL?
+ * - Active means `target` and `base` resolve to the exact same URL (same origin, same path).
+ * - Origin mismatches return `false`.
+ *
+ * @param target URL whose status to test — relative paths resolve against `base`.
+ * @param base Base URL to test against.
+ */
+export function isURLActive(target: PossibleURL, base: PossibleURL, caller: AnyCaller = isURLActive): boolean {
+	return matchURLPrefix(target, base, caller) === "/";
+}
+
+/**
+ * Is a target URL proud relative to a base URL?
+ * - Proud means `target` is `base` or a descendant of `base` — i.e. `base` is at or above `target` in the URL hierarchy.
+ * - Useful for marking a menu item as "current branch" when the user is somewhere deeper in its sub-tree.
+ * - Origin mismatches return `false`.
+ *
+ * @param target URL whose status to test — relative paths resolve against `base`.
+ * @param base Base URL to test against.
+ */
+export function isURLProud(target: PossibleURL, base: PossibleURL, caller: AnyCaller = isURLProud): boolean {
+	return matchURLPrefix(target, base, caller) !== undefined;
+}
+
 /** BaseURL is a URL with a guaranteed trailing slash on pathname. */
 export interface BaseURL extends ImmutableURL {
 	readonly pathname: `/` | `/${string}/`;

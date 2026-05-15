@@ -13,7 +13,7 @@ import {
 	withURIParam,
 	withURIParams,
 } from "../util/uri.js";
-import { getURL, type ImmutableURL, type PossibleURL, requireURL, type URLString } from "../util/url.js";
+import { getURL, type ImmutableURL, isURLActive, isURLProud, type PossibleURL, requireURL, type URLString } from "../util/url.js";
 import { BusyStore } from "./BusyStore.js";
 
 /** Store a URL, e.g. `https://top.com/a/b/c` */
@@ -144,6 +144,27 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/** Return the current URL with an additional param. */
 	omitParam(key: string): ImmutableURL {
 		return omitURIParams(this.value, key);
+	}
+
+	/**
+	 * Is `target` active relative to this store's URL?
+	 * - Active means `target` resolves to the exact same URL as this store's current value.
+	 *
+	 * @param target URL (or relative path resolved against this store's `base`) to test.
+	 */
+	isActive(target: PossibleURL): boolean {
+		return isURLActive(this.value, requireURL(target, this.base, this.isActive));
+	}
+
+	/**
+	 * Is `target` proud relative to this store's URL?
+	 * - Proud means this store's URL is `target` or a descendant of `target` — i.e. `target` sits at or above the current URL in the hierarchy.
+	 * - Useful for marking a menu item as "current branch" when the user is somewhere deeper in its sub-tree.
+	 *
+	 * @param target URL (or relative path resolved against this store's `base`) to test.
+	 */
+	isProud(target: PossibleURL): boolean {
+		return isURLProud(this.value, requireURL(target, this.base, this.isProud));
 	}
 
 	override toString(): string {
