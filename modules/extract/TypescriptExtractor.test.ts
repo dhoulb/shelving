@@ -146,7 +146,7 @@ export function first<T>(arr: T[]): T | undefined {
 	test("leaves title undefined (no confident source for a TS source file)", async () => {
 		const element = await extractor.extract(file("export const X = 1;", "array.ts"));
 		expect(element.props.title).toBeUndefined();
-		expect(element.props.name).toBe("array.ts");
+		expect(element.props.name).toBe("array");
 		expect(element.key).toBe("array");
 	});
 
@@ -154,7 +154,7 @@ export function first<T>(arr: T[]): T | undefined {
 		// In production, `BunFile.name` is the full absolute path (e.g. `/Users/.../modules/util/array.ts`).
 		// The extractor should use only the basename.
 		const element = await extractor.extract(file("export const X = 1;", "/Users/foo/modules/util/array.ts"));
-		expect(element.props.name).toBe("array.ts");
+		expect(element.props.name).toBe("array");
 		expect(element.key).toBe("array");
 	});
 });
