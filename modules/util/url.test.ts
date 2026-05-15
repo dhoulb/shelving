@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getURL, isURL, matchURLPrefix, requireURL } from "../index.js";
+import { getURL, isURL, isURLActive, isURLProud, matchURLPrefix, requireURL } from "../index.js";
 
 describe("isURL()", () => {
 	test("returns true for URL instance", () => {
@@ -65,5 +65,44 @@ describe("matchURLPrefix()", () => {
 	test("normalizes base path to directory semantics", () => {
 		expect(matchURLPrefix("def", "https://x.com/abc")).toBe("/def");
 		expect(matchURLPrefix("https://x.com/abc", "https://x.com/abc")).toBe("/");
+	});
+});
+describe("isURLActive()", () => {
+	test("true when target equals base (after resolution)", () => {
+		expect(isURLActive("https://x.com/users", "https://x.com/users")).toBe(true);
+		expect(isURLActive("https://x.com/users/", "https://x.com/users")).toBe(true);
+		expect(isURLActive("/users", "https://x.com/users")).toBe(true);
+	});
+	test("false when target is a descendant of base", () => {
+		expect(isURLActive("https://x.com/users/123", "https://x.com/users")).toBe(false);
+	});
+	test("false when target is unrelated to base", () => {
+		expect(isURLActive("https://x.com/posts", "https://x.com/users")).toBe(false);
+	});
+	test("false on origin mismatch", () => {
+		expect(isURLActive("https://y.com/users", "https://x.com/users")).toBe(false);
+	});
+});
+
+describe("isURLProud()", () => {
+	test("true when target equals base", () => {
+		expect(isURLProud("https://x.com/users", "https://x.com/users")).toBe(true);
+	});
+	test("true when target is a descendant of base", () => {
+		expect(isURLProud("https://x.com/users/123", "https://x.com/users")).toBe(true);
+		expect(isURLProud("https://x.com/users/123/edit", "https://x.com/users")).toBe(true);
+		expect(isURLProud("/users/123", "https://x.com/users")).toBe(true);
+	});
+	test("true for any descendant of root", () => {
+		expect(isURLProud("https://x.com/anything", "https://x.com/")).toBe(true);
+	});
+	test("false when target is an ancestor of base", () => {
+		expect(isURLProud("https://x.com/", "https://x.com/users")).toBe(false);
+	});
+	test("false when target is unrelated to base", () => {
+		expect(isURLProud("https://x.com/posts", "https://x.com/users")).toBe(false);
+	});
+	test("false on origin mismatch", () => {
+		expect(isURLProud("https://y.com/users/123", "https://x.com/users")).toBe(false);
 	});
 });
