@@ -90,24 +90,46 @@ export interface FileElement extends TreeElement<FileElementProps> {
 /** A single parameter for a documented code symbol. */
 export interface DocumentationParam {
 	readonly name: string;
+	/** Type expression (e.g. `"string"`, `"number"`); renderers default to `"unknown"` when missing. */
 	readonly type?: string | undefined;
 	readonly description?: string | undefined;
 	readonly optional?: boolean | undefined;
+}
+
+/** A single `@returns` entry — multiple allowed to document union return types separately. */
+export interface DocumentationReturn {
+	/** Type expression for the return value; renderers default to `"unknown"` when missing. */
+	readonly type?: string | undefined;
+	readonly description?: string | undefined;
+}
+
+/** A single `@throws` entry — multiple allowed to document distinct error types. */
+export interface DocumentationThrow {
+	/** Type expression for the thrown value; renderers default to `"unknown"` when missing. */
+	readonly type?: string | undefined;
+	readonly description?: string | undefined;
+}
+
+/** A single `@example` entry — the example text/code block. */
+export interface DocumentationExample {
+	readonly description?: string | undefined;
 }
 
 /**
  * Props for a documented code symbol — a single shape for any kind of code element.
  * - `kind` distinguishes the symbol category (e.g. `"function"`, `"class"`, `"property"`, or any string).
  * - All props are optional — not every kind uses every prop (e.g. `returns` only makes sense for functions).
+ * - `signatures` is an array so overloaded function/method declarations can each contribute their own signature to the same documentation element.
  */
 export interface DocumentationElementProps extends TreeElementProps {
 	// `name` is inherited from `TreeElementProps` — the declared symbol name (e.g. `"getFirst"`).
 	// `title` is inherited and remains optional — used only if a docblock provides a polished display title.
 	readonly kind?: string | undefined;
-	readonly signature?: string | undefined;
+	readonly signatures?: ImmutableArray<string> | undefined;
 	readonly params?: ImmutableArray<DocumentationParam> | undefined;
-	readonly returns?: string | undefined;
-	readonly examples?: ImmutableArray<string> | undefined;
+	readonly returns?: ImmutableArray<DocumentationReturn> | undefined;
+	readonly throws?: ImmutableArray<DocumentationThrow> | undefined;
+	readonly examples?: ImmutableArray<DocumentationExample> | undefined;
 	readonly extends?: string | undefined;
 	readonly implements?: ImmutableArray<string> | undefined;
 }

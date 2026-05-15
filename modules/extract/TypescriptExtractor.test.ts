@@ -26,7 +26,12 @@ export function add(a: number, b: number): number {
 		expect(element.props.children).toMatchObject([
 			{
 				type: "tree-documentation",
-				props: { kind: "function", name: "add", description: "Add two numbers together.", signature: "(a: number, b: number) => number" },
+				props: {
+					kind: "function",
+					name: "add",
+					description: "Add two numbers together.",
+					signatures: ["(a: number, b: number) => number"],
+				},
 			},
 		]);
 	});
@@ -39,7 +44,7 @@ export const MAX_RETRIES: number = 3;
 `),
 		);
 		expect(element.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "constant", name: "MAX_RETRIES", signature: "number" } },
+			{ type: "tree-documentation", props: { kind: "constant", name: "MAX_RETRIES", signatures: ["number"] } },
 		]);
 	});
 
@@ -63,7 +68,7 @@ export class Store {
 		expect(cls.props.kind).toBe("class");
 		expect(cls.props.name).toBe("Store");
 		expect(cls.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "property", name: "value", signature: "string" } },
+			{ type: "tree-documentation", props: { kind: "property", name: "value", signatures: ["string"] } },
 			{ type: "tree-documentation", props: { kind: "method", name: "set" } },
 		]);
 	});
@@ -89,7 +94,7 @@ export type NullableString = string | null;
 `),
 		);
 		expect(element.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "type", name: "NullableString", signature: "string | null" } },
+			{ type: "tree-documentation", props: { kind: "type", name: "NullableString", signatures: ["string | null"] } },
 		]);
 	});
 
@@ -148,6 +153,74 @@ export function first<T>(arr: T[]): T | undefined {
 		expect(element.props.title).toBeUndefined();
 		expect(element.props.name).toBe("array.ts");
 		expect(element.key).toBe("array");
+	});
+
+	test("merges overloaded function declarations into one element with multiple signatures", async () => {
+		const element = await extractor.extract(
+			file(`
+/** Add two values. */
+export function add(a: number, b: number): number;
+export function add(a: string, b: string): string;
+export function add(a: any, b: any): any { return a + b; }
+`),
+		);
+		const children = element.props.children as unknown[];
+		expect(children).toHaveLength(1);
+		expect(children[0]).toMatchObject({
+			type: "tree-documentation",
+			props: {
+				name: "add",
+				kind: "function",
+				signatures: ["(a: number, b: number) => number", "(a: string, b: string) => string", "(a: any, b: any) => any"],
+			},
+		});
+	});
+
+	test("parses @returns with type and description", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Get the first element.
+ * @returns {T} The first element of the array.
+ */
+export function first<T>(arr: T[]): T { return arr[0]!; }
+`),
+		);
+		const children = element.props.children as { props: { returns?: unknown } }[];
+		expect(children[0]?.props.returns).toEqual([{ type: "T", description: "The first element of the array." }]);
+	});
+
+	test("parses @throws tags as an array", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Divide two numbers.
+ * @throws {RangeError} When divisor is zero.
+ * @throws {TypeError} When inputs aren't numbers.
+ */
+export function divide(a: number, b: number): number { return a / b; }
+`),
+		);
+		const children = element.props.children as { props: { throws?: unknown } }[];
+		expect(children[0]?.props.throws).toEqual([
+			{ type: "RangeError", description: "When divisor is zero." },
+			{ type: "TypeError", description: "When inputs aren't numbers." },
+		]);
+	});
+
+	test("parses @example tags as an array of { description }", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Add numbers.
+ * @example add(1, 2)
+ * @example add(3, 4)
+ */
+export function add(a: number, b: number): number { return a + b; }
+`),
+		);
+		const children = element.props.children as { props: { examples?: unknown } }[];
+		expect(children[0]?.props.examples).toEqual([{ description: "add(1, 2)" }, { description: "add(3, 4)" }]);
 	});
 
 	test("strips directory path from filename when computing key/name", async () => {
