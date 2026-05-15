@@ -8,9 +8,8 @@ export function DocumentationCard({ title, name, description, signatures }: Docu
 			<h3>
 				<code>{title ?? name}</code>
 			</h3>
-			{signatures?.map((sig, i) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: signatures have no stable identity beyond position.
-				<pre key={i}>
+			{signatures?.map(sig => (
+				<pre key={sig}>
 					<code>{sig}</code>
 				</pre>
 			))}

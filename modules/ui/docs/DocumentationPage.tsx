@@ -23,69 +23,64 @@ export function DocumentationPage({
 }: DocumentationElementProps): ReactNode {
 	return (
 		<Page title={title ?? name}>
-			{signatures?.map((sig, i) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: signatures have no stable identity beyond position.
-				<pre key={i}>
+			{signatures?.map(sig => (
+				<pre key={sig}>
 					<code>{sig}</code>
 				</pre>
 			))}
 			{description && <p>{description}</p>}
-			{params && params.length > 0 && (
+			{params?.length && (
 				<section>
 					<h2>Parameters</h2>
 					<dl>
-						{params.map((p, i) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: params can repeat across overloads — order is identity.
-							<div key={i}>
+						{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
+							<div key={`${name}-${type}-${description}`}>
 								<dt>
-									<code>{p.name}</code>: <code>{p.type ?? DEFAULT_TYPE}</code>
-									{p.optional && <> (optional)</>}
+									<code>{name}</code>: <code>{type ?? DEFAULT_TYPE}</code>
+									{optional && <> (optional)</>}
 								</dt>
-								{p.description && <dd>{p.description}</dd>}
+								{description && <dd>{description}</dd>}
 							</div>
 						))}
 					</dl>
 				</section>
 			)}
-			{returns && returns.length > 0 && (
+			{returns?.length && (
 				<section>
 					<h2>Returns</h2>
 					<dl>
-						{returns.map((r, i) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: returns can repeat across overloads — order is identity.
-							<div key={i}>
+						{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
+							<div key={`${type}-${description}`}>
 								<dt>
-									<code>{r.type ?? DEFAULT_TYPE}</code>
+									<code>{type}</code>
 								</dt>
-								{r.description && <dd>{r.description}</dd>}
+								{description && <dd>{description}</dd>}
 							</div>
 						))}
 					</dl>
 				</section>
 			)}
-			{throws && throws.length > 0 && (
+			{throws?.length && (
 				<section>
 					<h2>Throws</h2>
 					<dl>
-						{throws.map((t, i) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: throws can repeat — order is identity.
-							<div key={i}>
+						{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
+							<div key={`${type}-${description}`}>
 								<dt>
-									<code>{t.type ?? DEFAULT_TYPE}</code>
+									<code>{type}</code>
 								</dt>
-								{t.description && <dd>{t.description}</dd>}
+								{description && <dd>{description}</dd>}
 							</div>
 						))}
 					</dl>
 				</section>
 			)}
-			{examples && examples.length > 0 && (
+			{examples?.length && (
 				<section>
 					<h2>Examples</h2>
-					{examples.map((e, i) => (
-						// biome-ignore lint/suspicious/noArrayIndexKey: examples have no stable identity beyond order.
-						<pre key={i}>
-							<code>{e.description}</code>
+					{examples.map(({ description }) => (
+						<pre key={description}>
+							<code>{description}</code>
 						</pre>
 					))}
 				</section>
