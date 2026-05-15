@@ -23,7 +23,24 @@
 	text-decoration: none;
 }
 
-.link:hover {
+.link:hover,
+.link:focus-visible {
 	background: var(--color-surface-hover, rgba(0, 0, 0, 0.05));
 	color: var(--color-text, inherit);
+}
+
+.link[aria-current="page"] {
+	background: var(--color-surface-active, rgba(0, 0, 0, 0.08));
+	color: var(--color-text, inherit);
+	font-weight: 600;
+}
+
+.proud > .link {
+	color: var(--color-text, inherit);
+}
+
+.nested {
+	margin-top: var(--spacing-tight, 0.125rem);
+	padding-left: var(--spacing-snug, 0.75rem);
+	border-left: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
 }

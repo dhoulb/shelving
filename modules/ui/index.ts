@@ -5,6 +5,7 @@ export * from "./docs/index.js";
 export * from "./form/index.js";
 export * from "./inline/index.js";
 export * from "./layout/index.js";
+export * from "./menu/index.js";
 export * from "./misc/index.js";
 export * from "./notice/index.js";
 export * from "./page/index.js";

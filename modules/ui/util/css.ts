@@ -75,6 +75,7 @@ export function getModuleClass(module: CSSModule, ...classes: Classes[]): string
 function* getModuleClasses(module: CSSModule, classes: Classes[]): Iterable<string> {
 	for (const x of getClasses(classes)) {
 		const y = module[x];
-		if (y) yield y;
+		// Only yield string values — guards against accidental hits on `String.prototype` methods (e.g. `.link`, `.bold`) when the CSS module is a string at SSR runtime.
+		if (typeof y === "string") yield y;
 	}
 }

@@ -180,18 +180,30 @@ export function getElementText(elements: Elements): string {
 }
 
 /**
+ * An element yielded by a walker, with its ancestor-chain path attached.
+ * - `path` is the chain of `key`s from the walk-root, including the element's own key as the last entry.
+ * - Path is relative to whatever was passed in: `getElements(tree)` yields elements with path starting at `tree.key`; `getElements(tree.props.children)` yields elements with path starting at each child's `key`.
+ */
+export type WalkedElement<E extends Element = Element> = E & { readonly path: readonly string[] };
+
+/**
  * Iterate through all elements in a collection.
- * - Yields each `Element` found, recursing into `props.children` up to `depth` levels.
+ * - Yields each element as a `WalkedElement` with its ancestor-chain `path` attached.
+ * - Recurses into `props.children` up to `depth` levels.
  *
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  * - `depth=0` yields elements at the current level only (no recursion into children).
  */
-export function* getElements(elements: Elements, depth = Infinity): Iterable<Element> {
+export function getElements(elements: Elements, depth = Infinity): Iterable<WalkedElement> {
+	return _walkElements(elements, depth, []);
+}
+function* _walkElements(elements: Elements, depth: number, parents: readonly string[]): Iterable<WalkedElement> {
 	if (isElement(elements)) {
-		yield elements; // Yield the element itself.
-		if (depth > 0 && elements.props.children) yield* getElements(elements.props.children, depth - 1); // Yield each child-element.
+		const path: readonly string[] = elements.key !== null ? [...parents, elements.key] : parents;
+		yield { ...elements, path } as WalkedElement;
+		if (depth > 0 && elements.props.children) yield* _walkElements(elements.props.children, depth - 1, path);
 	} else if (isIterable(elements)) {
-		for (const x of elements) yield* getElements(x, depth);
+		for (const x of elements) yield* _walkElements(x, depth, parents);
 	}
 }
 
@@ -204,8 +216,8 @@ export function* getElements(elements: Elements, depth = Infinity): Iterable<Ele
  * @param query A `Query<Element>` object (e.g. `{ type: "tree-file" }` or `{ type: ["tree-file", "tree-directory"] }`).
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  */
-export function queryElements(elements: Elements, query: Query<Element>, depth = Infinity): Iterable<Element> {
-	return queryItems(getElements(elements, depth), query);
+export function queryElements(elements: Elements, query: Query<Element>, depth = Infinity): Iterable<WalkedElement> {
+	return queryItems(getElements(elements, depth), query) as Iterable<WalkedElement>;
 }
 
 /**
@@ -217,7 +229,7 @@ export function queryElements(elements: Elements, query: Query<Element>, depth =
  * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
  * - `depth=0` yields matching elements at the current level only (no recursion into children).
  */
-export function* filterElements(elements: Elements, match: (element: Element) => boolean, depth = Infinity): Iterable<Element> {
+export function* filterElements(elements: Elements, match: (element: Element) => boolean, depth = Infinity): Iterable<WalkedElement> {
 	for (const element of getElements(elements, depth)) if (match(element)) yield element;
 }
 
