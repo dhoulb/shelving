@@ -18,6 +18,14 @@ export type TreeMapping = ImmutableDictionary<ComponentType<any>>;
 const TreeMappingContext = createContext<TreeMapping>({});
 TreeMappingContext.displayName = "TreeMappingContext";
 
+/**
+ * Context carrying the active fallback component for nested `<TreeRenderer>` calls.
+ * - Lets a mapped component recurse via `<TreeRenderer tree={…}/>` without re-specifying the fallback.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: Different element types have different prop shapes.
+const TreeFallbackContext = createContext<ComponentType<any> | undefined>(undefined);
+TreeFallbackContext.displayName = "TreeFallbackContext";
+
 export interface TreeRendererProps {
 	/** The tree (or collection of elements) to render. */
 	tree: Elements;
@@ -25,8 +33,11 @@ export interface TreeRendererProps {
 	query?: Query<Element>;
 	/** How many levels of children to walk into. Defaults to `0` (just the top level). */
 	depth?: number;
-	/** Component dispatch table by element `type`. Falls back to the surrounding `TreeMappingContext` if omitted. */
-	mapping?: TreeMapping;
+	/** Component dispatch table by element `type` for "special" types. Falls back to the surrounding `TreeMappingContext` if omitted. */
+	mapping?: TreeMapping | undefined;
+	/** Component used when no `mapping` entry matches an element's `type`. If omitted, unmapped elements are silently skipped. */
+	// biome-ignore lint/suspicious/noExplicitAny: Different element types have different prop shapes.
+	fallback?: ComponentType<any> | undefined;
 }
 
 /**
@@ -35,15 +46,17 @@ export interface TreeRendererProps {
  * - Elements whose `type` isn't in `mapping` are silently skipped — handy for filtering whole categories out.
  * - Composable: a mapped component can recurse with `<TreeRenderer tree={children}/>` and inherits the surrounding mapping via context.
  */
-export function TreeRenderer({ tree, query, depth = 0, mapping }: TreeRendererProps): ReactNode {
+export function TreeRenderer({ tree, query, depth = 0, mapping, fallback }: TreeRendererProps): ReactNode {
 	const inheritedMapping = use(TreeMappingContext);
+	const inheritedFallback = use(TreeFallbackContext);
 	const parentPath = use(TreePathContext);
-	const effective: TreeMapping = mapping ?? inheritedMapping;
+	const effectiveMapping: TreeMapping = mapping ?? inheritedMapping;
+	const effectiveFallback = fallback ?? inheritedFallback;
 	const walked = queryElements(tree, query ?? {}, depth);
 	const items: ReactNode[] = [];
 	for (const element of walked) {
 		const type = element.type as string;
-		const Component = effective[type];
+		const Component = effectiveMapping[type] ?? effectiveFallback;
 		if (!Component) continue;
 		const fullPath: readonly string[] = parentPath.length ? [...parentPath, ...element.path] : element.path;
 		items.push(
@@ -52,5 +65,9 @@ export function TreeRenderer({ tree, query, depth = 0, mapping }: TreeRendererPr
 			</TreePathContext>,
 		);
 	}
-	return <TreeMappingContext value={effective}>{items}</TreeMappingContext>;
+	return (
+		<TreeMappingContext value={effectiveMapping}>
+			<TreeFallbackContext value={effectiveFallback}>{items}</TreeFallbackContext>
+		</TreeMappingContext>
+	);
 }
