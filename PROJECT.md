@@ -39,7 +39,6 @@
 - [ ] **718** — Polish styling of documentation cards (`DocumentationCard`) and file cards (`FileCard`) in `modules/ui/docs/`. Currently plain `<div><h3><code>name</code></h3>…</div>` — needs typography, spacing, dividers, proper code-block treatment, and better visual hierarchy.
 - [ ] **405** — General styling polish of the entire documentation site. Typography scale, spacing rhythm, page max-width, code blocks, table treatment, link styles, sidebar treatment, mobile responsiveness. Bring it in line with the rest of the shelving design language.
 - [ ] **829** — Add colourful tags for code elements based on `kind` (e.g. `function`, `class`, `interface`, `type`, `constant`, `method`, `property`). Implement a `DocumentationKind` component that renders the `kind` prop as a small colour-coded badge — distinct hue per kind. Surface the badge in cards, on the page header, optionally in the sidebar, and anywhere else a documented symbol appears. Define the colour palette as CSS custom properties so it can be reused elsewhere in the design system.
-- [ ] **692** — Change `FileExtractor` (and subclasses) so the `name` prop is the basename **without** extension (e.g. `"OptionalSchema"`, not `"OptionalSchema.ts"`). The `.ts` clutters menus and cards. The extension can still be derived from the source filename if anything ever needs it, but `name` should be display-ready.
 
 ---
 
