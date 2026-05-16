@@ -26,9 +26,7 @@
     - **Preserve existing behaviour**: `BaseURL` (trailing-slash variant), `matchURLPrefix`, `matchPathPrefix`, `splitPath` / `joinPath`, `isPathActive` / `isPathProud`, and the segment helpers (`isPathSegment`, `getPathSegment`) all keep working — update their signatures to use the new class / string-type names but don't change their semantics.
     - **Tests**: update `path.test.ts` and `url.test.ts` to cover both the class constructors (valid + invalid inputs, base resolution, `instanceof` checks) and the renamed string types. Test files import from the highest applicable barrel (`shelving/util`).
     - **Barrel + public API**: re-export `AbsoluteURL` and `AbsolutePath` classes from `modules/util/index.ts` alphabetically; check `modules/index.ts` and `package.json` `exports` don't need touching (these live under `util`, which is already public).
-- [ ] **718** — Polish styling of documentation cards (`DocumentationCard`) and file cards (`FileCard`) in `modules/ui/docs/`. Currently plain `<div><h3><code>name</code></h3>…</div>` — needs typography, spacing, dividers, proper code-block treatment, and better visual hierarchy.
 - [ ] **405** — General styling polish of the entire documentation site. Typography scale, spacing rhythm, page max-width, code blocks, table treatment, link styles, sidebar treatment, mobile responsiveness. Bring it in line with the rest of the shelving design language.
-- [ ] **829** — Add colourful tags for code elements based on `kind` (e.g. `function`, `class`, `interface`, `type`, `constant`, `method`, `property`). Implement a `DocumentationKind` component that renders the `kind` prop as a small colour-coded badge — distinct hue per kind. Surface the badge in cards, on the page header, optionally in the sidebar, and anywhere else a documented symbol appears. Define the colour palette as CSS custom properties so it can be reused elsewhere in the design system.
 
 ---
 
@@ -55,6 +53,8 @@ Items waiting on browser/runtime/TS support before they can be actioned.
 - [ ] **891** — Util: convert confusable characters (e.g. `ℵ` alef symbol, `℮` estimate symbol) to their letterlike equivalents in `string.ts`.
 - [ ] **178** — Cut a stable v1.0 release with proper semver once the API is settled.
 - [x] **556** — Build an API reference / docs site generated from JSDoc (e.g. TypeDoc or similar). Done: `docs/build.tsx` extracts from source and renders via `TreeApp` + reusable components in `modules/ui/docs/`.
+- [x] **718** — Polish styling of documentation cards (`DocumentationCard`) and file cards (`FileCard`) in `modules/ui/docs/`. Done in #39: cards now compose `<Card>` / `<Heading>` / `<Code>` / `<Paragraph>` / `<Preformatted>` from the library — any further polish belongs at the `<Card>` design-system level.
+- [x] **829** — Add colourful tags for code elements based on `kind`. Done in #38: `DocumentationKind` component built on `<Tag>` with a kind→colour mapping, surfaced in cards and on the page header.
 - [ ] **274** — Write a guide explaining how to build documentation sites using the tree module, extractors, and `TreeApp` shell — use `docs/build.tsx` and `docs/start.tsx` as working examples.
 - [ ] **137** — Populate module `README.md` files with proper documentation for each module. Many modules currently have placeholder or missing READMEs; once written, the docs site picks them up automatically as each directory's index content (via the new `DirectoryExtractor` index-file absorption).
 - [ ] **823** — Add additional DB providers: SQLite via `bun:sqlite`, PlanetScale, Turso.
