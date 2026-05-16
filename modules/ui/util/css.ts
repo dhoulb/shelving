@@ -61,21 +61,21 @@ function* getClasses(classes: Classes): Iterable<string> {
  * Parse a list of possible `className` strings, match them in a `CSSModule` dictionary, and join them into a single string.
  * - See `Classes` type for parsing rules.
  *
- * @param module CSS module styles object.
+ * @param module CSS module object _or_ a string.
+ * - Allows "string" because if this environment does not process `*.module.css` files then `import styles from "./styles.module.css"` will be a string.
+ * - This allows this situation to be handled gracefully and classes will be silently ignored in this environment.
+ *
  * @param classes Class keys/values to merge.
  * @returns The merged string classname.
- *
- * @throws {RequiredError} if the specified `className` does not exist in the CSS module.
  */
-export function getModuleClass(module: CSSModule, ...classes: Classes[]): string {
-	return Array.from(getModuleClasses(module, classes)).join(" ");
+export function getModuleClass(module: CSSModule | string, ...classes: Classes[]): string | undefined {
+	if (isDictionary(module)) return Array.from(getModuleClasses(module, classes)).join(" ");
 }
 
 /** Yield the items in a list of possible `className` strings that match a `CSSModule` dictionary. */
 function* getModuleClasses(module: CSSModule, classes: Classes[]): Iterable<string> {
 	for (const x of getClasses(classes)) {
 		const y = module[x];
-		// Only yield string values — guards against accidental hits on `String.prototype` methods (e.g. `.link`, `.bold`) when the CSS module is a string at SSR runtime.
-		if (typeof y === "string") yield y;
+		if (y) yield y;
 	}
 }
