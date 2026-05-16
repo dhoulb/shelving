@@ -1,6 +1,7 @@
 export * from "./Address.js";
 export * from "./Blockquote.js";
 export * from "./Card.js";
+export * from "./Definitions.js";
 export * from "./Divider.js";
 export * from "./Element.js";
 export * from "./Elements.js";

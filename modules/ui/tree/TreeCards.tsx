@@ -3,15 +3,7 @@ import type { TreeElements } from "../../util/element.js";
 import { DirectoryCard } from "../docs/DirectoryCard.js";
 import { DocumentationCard } from "../docs/DocumentationCard.js";
 import { FileCard } from "../docs/FileCard.js";
-import { getModuleClass } from "../util/css.js";
-import TREE_CARDS_CSS from "./TreeCards.module.css";
 import { type TreeMapping, TreeRenderer } from "./TreeRenderer.js";
-
-// Classes.
-export const TREE_CARDS_GRID_CLASS = getModuleClass(TREE_CARDS_CSS, "grid");
-export const TREE_CARD_CLASS = getModuleClass(TREE_CARDS_CSS, "card");
-export const TREE_CARD_TITLE_CLASS = getModuleClass(TREE_CARDS_CSS, "title");
-export const TREE_CARD_DESCRIPTION_CLASS = getModuleClass(TREE_CARDS_CSS, "description");
 
 /**
  * Default mapping for card renderers.
@@ -30,11 +22,10 @@ export interface TreeCardsProps {
 	mapping?: TreeMapping;
 }
 
-/** Grid of cards rendered from a flat collection of tree elements. */
+/**
+ * Stack of cards rendered from a flat collection of tree elements.
+ * - Each rendered card supplies its own `<Card>`-based styling; this component just sequences them.
+ */
 export function TreeCards({ children, mapping = DEFAULT_TREE_CARD_MAPPING }: TreeCardsProps): ReactNode {
-	return (
-		<div className={TREE_CARDS_GRID_CLASS}>
-			<TreeRenderer tree={children} mapping={mapping} />
-		</div>
-	);
+	return <TreeRenderer tree={children} mapping={mapping} />;
 }

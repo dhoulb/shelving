@@ -2,11 +2,12 @@ import type { MouseEvent, ReactElement, ReactNode } from "react";
 import { useInstance } from "../../react/useInstance.js";
 import { useStore } from "../../react/useStore.js";
 import { BusyStore } from "../../store/BusyStore.js";
-import { type PossibleURL, requireURL } from "../../util/url.js";
+import type { Path } from "../../util/path.js";
+import { type ImmutableURI, isURI, type URIString } from "../../util/uri.js";
 import { LOADING } from "../misc/Loading.js";
 import { callNotifiedElement } from "../util/notice.js";
 
-/**
+/***
  * Handler for a clickable `onClick` event.
  * - Returned value (if defined) is notified to the user using `notifySuccess()`
  * - Thrown value is notified to the user using `notifyError()`
@@ -18,7 +19,7 @@ export interface ClickableProps {
 	/** Whether the clickable is currently disabled. */
 	disabled?: boolean | undefined;
 	/** If present then render this element as an `<a>` link (takes precidence over `onClick`). */
-	href?: PossibleURL | undefined;
+	href?: ImmutableURI | Path | URIString | undefined;
 	/** If present then render this element as a `<button>` */
 	onClick?: ClickableCallback | undefined;
 	/** Target, e.g. `_blank` */
@@ -46,9 +47,9 @@ function LinkClickable({
 	children = "Go",
 	className,
 }: ClickableProps & { className: string | undefined }): ReactElement {
-	const url = disabled ? undefined : href ? requireURL(href, undefined).href : undefined;
+	const link: string | undefined = disabled ? undefined : isURI(href) ? href.href : href;
 	return (
-		<a href={url} title={title} download={download} target={target} className={className}>
+		<a href={link} title={title} download={download} target={target} className={className}>
 			{children}
 		</a>
 	);

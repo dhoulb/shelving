@@ -11,6 +11,7 @@
 	color: var(--card-color-text, var(--color-text));
 	border-radius: var(--card-radius, var(--radius-block));
 	box-shadow: var(--card-shadow, none);
+	transition: border-color var(--duration-fast);
 
 	/* Psuedo-classes */
 	&:first-child {
@@ -28,5 +29,43 @@
 	&.wide {
 		margin-inline: auto;
 		max-width: var(--section-width-wide, var(--width-wide));
+	}
+
+	/* Hover/focus affordance driven by the overlay link/button. */
+	&:has(.overlay:hover) {
+		border-color: var(--color-focus);
+	}
+	&:has(.overlay:focus-visible) {
+		outline: var(--border-focus) solid var(--color-focus);
+		outline-offset: 2px;
+	}
+
+	/* Inline interactive elements lift above the overlay so they remain clickable. */
+	:where(& a:not(.overlay), & button:not(.overlay)) {
+		position: relative;
+		z-index: 2;
+	}
+}
+
+.overlay {
+	/* Cover the entire card. */
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	border: 0;
+	background: transparent;
+	cursor: pointer;
+
+	/* Hide the link's text content visually but keep it in the accessibility tree as the link's name. */
+	color: transparent;
+	font: inherit;
+	overflow: hidden;
+	text-decoration: none;
+	text-align: start;
+	white-space: nowrap;
+
+	/* The card itself shows the focus outline via :has() — the link doesn't need its own. */
+	&:focus-visible {
+		outline: 0;
 	}
 }

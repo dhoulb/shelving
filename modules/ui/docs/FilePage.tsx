@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { FileElementProps } from "../../util/element.js";
+import { Paragraph } from "../block/Paragraph.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "../tree/TreeCards.js";
 
@@ -7,7 +8,7 @@ import { TreeCards } from "../tree/TreeCards.js";
 export function FilePage({ title, name, description, content, children }: FileElementProps): ReactNode {
 	return (
 		<Page title={title ?? name}>
-			{description && <p>{description}</p>}
+			{description && <Paragraph>{description}</Paragraph>}
 			{content}
 			{children && <TreeCards>{children}</TreeCards>}
 		</Page>
