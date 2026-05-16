@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
-import { requireTreeHref } from "../tree/TreePathContext.js";
 import TREE_CARDS_CSS from "../tree/TreeCards.module.css";
+import { requireTreeHref } from "../tree/TreePathContext.js";
 
 /** Card renderer for a `tree-documentation` element. */
 export function DocumentationCard({ title, name, description, signatures }: DocumentationElementProps): ReactNode {
