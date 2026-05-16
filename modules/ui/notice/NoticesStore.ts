@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { ArrayStore } from "../../store/ArrayStore.js";
 import { awaitDispose } from "../../util/dispose.js";
+import type { Status } from "../misc/Status.js";
 import { NoticeStore } from "./NoticeStore.js";
-import type { Status } from "./Status.js";
 
 /** Store a list of notices. */
 export class NoticesStore<S extends string> extends ArrayStore<NoticeStore<S>> {

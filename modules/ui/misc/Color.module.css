@@ -1,0 +1,105 @@
+:root {
+	/* Red */
+	--red-text: var(--color-red);
+	--red-contrast: var(--color-white);
+	--red-surface: color-mix(in srgb, var(--red-text) 12%, white);
+
+	/* Orange */
+	--orange-text: var(--color-orange);
+	--orange-contrast: var(--color-black);
+	--orange-surface: color-mix(in srgb, var(--orange-text) 12%, white);
+
+	/* Yellow */
+	--yellow-text: var(--color-yellow);
+	--yellow-contrast: var(--color-black);
+	--yellow-surface: color-mix(in srgb, var(--yellow-text) 12%, white);
+
+	/* Green */
+	--green-text: var(--color-green);
+	--green-contrast: var(--color-black);
+	--green-surface: color-mix(in srgb, var(--green-text) 12%, white);
+
+	/* Cyan */
+	--cyan-text: var(--color-cyan);
+	--cyan-contrast: var(--color-black);
+	--cyan-surface: color-mix(in srgb, var(--cyan-text) 12%, white);
+
+	/* Blue */
+	--blue-text: var(--color-blue);
+	--blue-contrast: var(--color-white);
+	--blue-surface: color-mix(in srgb, var(--blue-text) 12%, white);
+
+	/* Purple */
+	--purple-text: var(--color-purple);
+	--purple-contrast: var(--color-white);
+	--purple-surface: color-mix(in srgb, var(--purple-text) 12%, white);
+
+	/* Pink */
+	--pink-text: var(--color-pink);
+	--pink-contrast: var(--color-white);
+	--pink-surface: color-mix(in srgb, var(--pink-text) 12%, white);
+}
+
+.red {
+	--color-text: var(--red-text);
+	--color-contrast: var(--red-contrast);
+	--color-link: var(--red-text);
+	--color-quiet: var(--red-text);
+	--color-surface: var(--red-surface);
+}
+
+.orange {
+	--color-text: var(--orange-text);
+	--color-contrast: var(--orange-contrast);
+	--color-link: var(--orange-text);
+	--color-quiet: var(--orange-text);
+	--color-surface: var(--orange-surface);
+}
+
+.yellow {
+	--color-text: var(--yellow-text);
+	--color-contrast: var(--yellow-contrast);
+	--color-link: var(--yellow-text);
+	--color-quiet: var(--yellow-text);
+	--color-surface: var(--yellow-surface);
+}
+
+.green {
+	--color-text: var(--green-text);
+	--color-contrast: var(--green-contrast);
+	--color-link: var(--green-text);
+	--color-quiet: var(--green-text);
+	--color-surface: var(--green-surface);
+}
+
+.cyan {
+	--color-text: var(--cyan-text);
+	--color-contrast: var(--cyan-contrast);
+	--color-link: var(--cyan-text);
+	--color-quiet: var(--cyan-text);
+	--color-surface: var(--cyan-surface);
+}
+
+.blue {
+	--color-text: var(--blue-text);
+	--color-contrast: var(--blue-contrast);
+	--color-link: var(--blue-text);
+	--color-quiet: var(--blue-text);
+	--color-surface: var(--blue-surface);
+}
+
+.purple {
+	--color-text: var(--purple-text);
+	--color-contrast: var(--purple-contrast);
+	--color-link: var(--purple-text);
+	--color-quiet: var(--purple-text);
+	--color-surface: var(--purple-surface);
+}
+
+.pink {
+	--color-text: var(--pink-text);
+	--color-contrast: var(--pink-contrast);
+	--color-link: var(--pink-text);
+	--color-quiet: var(--pink-text);
+	--color-surface: var(--pink-surface);
+}

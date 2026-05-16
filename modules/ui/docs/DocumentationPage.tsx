@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "../tree/TreeCards.js";
+import { DocumentationKind } from "./DocumentationKind.js";
 
 const DEFAULT_TYPE = "unknown";
 
@@ -13,6 +14,7 @@ const DEFAULT_TYPE = "unknown";
 export function DocumentationPage({
 	title,
 	name,
+	kind,
 	description,
 	signatures,
 	params,
@@ -23,6 +25,7 @@ export function DocumentationPage({
 }: DocumentationElementProps): ReactNode {
 	return (
 		<Page title={title ?? name}>
+			{kind && <DocumentationKind kind={kind} />}
 			{signatures?.map(sig => (
 				<pre key={sig}>
 					<code>{sig}</code>

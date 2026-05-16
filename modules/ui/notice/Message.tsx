@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 import { PARAGRAPH_CSS, type ParagraphProps } from "../block/Paragraph.js";
+import { type ColorVariants, getColorClass } from "../misc/Color.js";
 import { LOADING } from "../misc/Loading.js";
+import { getStatusClass, type Status } from "../misc/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import MESSAGE_CSS from "./Message.module.css";
-import { getStatusClass, type Status } from "./Status.js";
 
-export interface MessageProps extends ParagraphProps {
+export interface MessageProps extends ParagraphProps, ColorVariants {
 	children?: ReactNode;
 	/** Status of the message (defaults to "error") */
 	status?: Status | undefined;
@@ -20,6 +21,7 @@ export function Message({ children, status = "info", ...variants }: MessageProps
 				getModuleClass(PARAGRAPH_CSS, "paragraph", variants), //
 				MESSAGE_CSS.message,
 				getStatusClass(status),
+				getColorClass(variants),
 			)}
 		>
 			{children}

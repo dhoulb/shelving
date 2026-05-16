@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { isAsync } from "../../util/async.js";
 import { getMessage } from "../../util/error.js";
 import type { Arguments } from "../../util/function.js";
-import type { Status } from "../notice/Status.js";
+import type { Status } from "../misc/Status.js";
 
 // Constants.
 const NOTICE_EVENT = "notice";
