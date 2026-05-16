@@ -47,7 +47,7 @@ function* _yieldXML(data: Data, caller: AnyCaller): Iterable<string> {
 
 function _getXMLValue(value: unknown, caller: AnyCaller): string {
 	if (typeof value === "string") return escapeXML(value);
-	if (typeof value === "number" || typeof value === "boolean") return requireString(value, undefined, undefined, caller);
+	if (typeof value === "number" || typeof value === "boolean") return requireString(value, caller);
 	if (isData(value)) return getXML(value, caller);
 	throw new RequiredError("Value cannot be converted to XML", { received: value, caller });
 }

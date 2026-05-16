@@ -31,6 +31,6 @@ export type StatusVariants = {
 export type Status = keyof StatusVariants;
 
 /** Get a class for a status. */
-export function getStatusClass(status: Status | StatusVariants): string {
+export function getStatusClass(status: Status | StatusVariants): string | undefined {
 	return getModuleClass(STATUS_CSS, status);
 }

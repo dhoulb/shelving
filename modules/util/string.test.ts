@@ -1,13 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import {
-	assertString,
+	assertStringLength,
 	getWords,
 	isStringBetween,
 	NBSP,
 	NNBSP,
 	RequiredError,
 	requireSlug,
-	requireString,
+	requireStringLength,
 	sanitizeMultilineText,
 	sanitizeText,
 	simplifyString,
@@ -16,47 +16,47 @@ import {
 	ValueError,
 } from "../index.js";
 
-test("assertString()", () => {
+test("assertStringLength()", () => {
 	// Assert string.
-	expect(() => assertString("abc")).not.toThrow();
-	expect(() => assertString(123)).toThrow(RequiredError);
-	expect(() => assertString(true)).toThrow(RequiredError);
+	expect(() => assertStringLength("abc")).not.toThrow();
+	expect(() => assertStringLength(123)).toThrow(RequiredError);
+	expect(() => assertStringLength(true)).toThrow(RequiredError);
 
 	// Assert minimum.
-	expect(() => assertString("abc", 3)).not.toThrow();
-	expect(() => assertString("abc", 5)).toThrow(RequiredError);
-	expect(() => assertString("abc", 5)).toThrow(/characters/i);
+	expect(() => assertStringLength("abc", 3)).not.toThrow();
+	expect(() => assertStringLength("abc", 5)).toThrow(RequiredError);
+	expect(() => assertStringLength("abc", 5)).toThrow(/characters/i);
 
 	// Assert maximum.
-	expect(() => assertString("abc", undefined, 3)).not.toThrow();
-	expect(() => assertString("abcde", undefined, 3)).toThrow(RequiredError);
-	expect(() => assertString("abcde", undefined, 3)).toThrow(/characters/i);
+	expect(() => assertStringLength("abc", undefined, 3)).not.toThrow();
+	expect(() => assertStringLength("abcde", undefined, 3)).toThrow(RequiredError);
+	expect(() => assertStringLength("abcde", undefined, 3)).toThrow(/characters/i);
 
 	// Assert both.
-	expect(() => assertString("abc", 0, 3)).not.toThrow();
-	expect(() => assertString("abcde", 0, 3)).toThrow(RequiredError);
-	expect(() => assertString("abcde", 0, 3)).toThrow(/characters/i);
+	expect(() => assertStringLength("abc", 0, 3)).not.toThrow();
+	expect(() => assertStringLength("abcde", 0, 3)).toThrow(RequiredError);
+	expect(() => assertStringLength("abcde", 0, 3)).toThrow(/characters/i);
 });
-test("requireString()", () => {
+test("requireStringLength()", () => {
 	// Assert string.
-	expect(requireString("abc")).toBe("abc");
-	expect(requireString(123)).toBe("123");
-	expect(requireString(true)).toBe("true");
-	expect(requireString(false)).toBe("false");
-	expect(typeof requireString(new Date())).toBe("string");
+	expect(requireStringLength("abc")).toBe("abc");
+	expect(requireStringLength(123)).toBe("123");
+	expect(requireStringLength(true)).toBe("true");
+	expect(requireStringLength(false)).toBe("false");
+	expect(typeof requireStringLength(new Date())).toBe("string");
 
 	// Assert not string.
-	expect(() => requireString(undefined as any)).toThrow(RequiredError);
+	expect(() => requireStringLength(undefined as any)).toThrow(RequiredError);
 
 	// Check maximum.
-	expect(requireString("abc", 3)).toBe("abc");
-	expect(() => requireString("abc", 5)).toThrow(RequiredError);
-	expect(() => requireString("abc", 5)).toThrow(/characters/i);
+	expect(requireStringLength("abc", 3)).toBe("abc");
+	expect(() => requireStringLength("abc", 5)).toThrow(RequiredError);
+	expect(() => requireStringLength("abc", 5)).toThrow(/characters/i);
 
 	// Check minimum.
-	expect(requireString("abc", 0, 3)).toBe("abc");
-	expect(() => requireString("abcde", 0, 3)).toThrow(RequiredError);
-	expect(() => requireString("abcde", 0, 3)).toThrow(/characters/i);
+	expect(requireStringLength("abc", 0, 3)).toBe("abc");
+	expect(() => requireStringLength("abcde", 0, 3)).toThrow(RequiredError);
+	expect(() => requireStringLength("abcde", 0, 3)).toThrow(/characters/i);
 });
 
 describe("sanitizeString()", () => {
