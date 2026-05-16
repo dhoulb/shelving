@@ -2,7 +2,7 @@ import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import type { ReactElement, ReactNode } from "react";
 import { useStore } from "../../react/useStore.js";
 import { Loading } from "../misc/Loading.js";
-import { getStatusClass } from "../notice/Status.js";
+import { getStatusClass } from "../misc/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import { BUTTON_CSS, type ButtonVariants, ELEMENTS_BUTTON_CLASS } from "./Button.js";
 import { requireForm } from "./FormContext.js";

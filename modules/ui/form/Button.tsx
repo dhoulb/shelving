@@ -1,12 +1,13 @@
 import type { ReactElement } from "react";
 import { ELEMENTS_CSS, type ElementsVariants } from "../block/Elements.js";
-import { getStatusClass, type StatusVariants } from "../notice/Status.js";
+import { type ColorVariants, getColorClass } from "../misc/Color.js";
+import { getStatusClass, type StatusVariants } from "../misc/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import BUTTON_CSS from "./Button.module.css";
 import { type ClickableProps, getClickable } from "./Clickable.js";
 
 /** Variants for buttons. */
-export interface ButtonVariants extends ElementsVariants, StatusVariants {
+export interface ButtonVariants extends ElementsVariants, StatusVariants, ColorVariants {
 	/** This is the default button in a form and should be displayed stronger. */
 	strong?: boolean | undefined;
 	/** Add plain styling (background only appears on hover or focus). */
@@ -41,6 +42,7 @@ export function Button({ disabled, href, onClick, title, target, download, child
 			getModuleClass(BUTTON_CSS, variants),
 			getModuleClass(ELEMENTS_CSS, variants),
 			getStatusClass(variants), // Buttons have status colours.
+			getColorClass(variants), // Buttons can also have raw colour overrides.
 		),
 	);
 }

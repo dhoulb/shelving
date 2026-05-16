@@ -1,12 +1,13 @@
 import type { ReactElement, ReactNode } from "react";
 import { ELEMENT_CSS } from "../block/Element.js";
 import { ELEMENTS_CSS, type ElementsVariants } from "../block/Elements.js";
+import { type ColorVariants, getColorClass } from "../misc/Color.js";
+import { getStatusClass, type Status } from "../misc/Status.js";
+import { StatusIcon } from "../misc/StatusIcon.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import NOTICE_CSS from "./Notice.module.css";
-import { getStatusClass, type Status } from "./Status.js";
-import { StatusIcon } from "./StatusIcon.js";
 
-export interface NoticeProps extends ElementsVariants {
+export interface NoticeProps extends ElementsVariants, ColorVariants {
 	/** Status for the notice. */
 	status?: Status | undefined;
 	/** Children for the notice. */
@@ -28,7 +29,8 @@ export function Notice({
 				ELEMENT_CSS.element,
 				getModuleClass(NOTICE_CSS, "notice", variants), //
 				getModuleClass(ELEMENTS_CSS, "elements", variants),
-				getStatusClass(status), // Buttons have status colours.
+				getStatusClass(status), // Notices have status colours.
+				getColorClass(variants), // Notices can also have raw colour overrides.
 			)}
 		>
 			{icon}
