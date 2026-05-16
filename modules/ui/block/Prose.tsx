@@ -12,6 +12,7 @@ import superscriptStyles from "../inline/Superscript.module.css";
 import { getClass } from "../util/css.js";
 import addressStyles from "./Address.module.css";
 import blockquoteStyles from "./Blockquote.module.css";
+import definitionsStyles from "./Definitions.module.css";
 import dividerStyles from "./Divider.module.css";
 import figureStyles from "./Figure.module.css";
 import headingStyles from "./Heading.module.css";
@@ -29,6 +30,7 @@ const PROSE_STYLES = getClass(
 	addressStyles.prose,
 	blockquoteStyles.prose,
 	codeStyles.prose,
+	definitionsStyles.prose,
 	deletedStyles.prose,
 	emphasisStyles.prose,
 	figureStyles.prose,

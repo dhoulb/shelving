@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
+import { Definition, Definitions } from "../block/Definitions.js";
+import { Heading } from "../block/Heading.js";
+import { Paragraph } from "../block/Paragraph.js";
+import { Preformatted } from "../block/Preformatted.js";
+import { Section } from "../block/Section.js";
+import { Code } from "../inline/Code.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationKind } from "./DocumentationKind.js";
@@ -27,66 +33,60 @@ export function DocumentationPage({
 		<Page title={title ?? name}>
 			{kind && <DocumentationKind kind={kind} />}
 			{signatures?.map(sig => (
-				<pre key={sig}>
-					<code>{sig}</code>
-				</pre>
+				<Preformatted key={sig}>{sig}</Preformatted>
 			))}
-			{description && <p>{description}</p>}
+			{description && <Paragraph>{description}</Paragraph>}
 			{params?.length && (
-				<section>
-					<h2>Parameters</h2>
-					<dl>
+				<Section>
+					<Heading level="2">Parameters</Heading>
+					<Definitions row>
 						{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
-							<div key={`${name}-${type}-${description}`}>
-								<dt>
-									<code>{name}</code>: <code>{type ?? DEFAULT_TYPE}</code>
-									{optional && <> (optional)</>}
-								</dt>
-								{description && <dd>{description}</dd>}
-							</div>
+							<Definition
+								key={`${name}-${type}-${description}`}
+								term={
+									<>
+										<Code>{name}</Code>: <Code>{type}</Code>
+										{optional && <> (optional)</>}
+									</>
+								}
+							>
+								{description}
+							</Definition>
 						))}
-					</dl>
-				</section>
+					</Definitions>
+				</Section>
 			)}
 			{returns?.length && (
-				<section>
-					<h2>Returns</h2>
-					<dl>
+				<Section>
+					<Heading level="2">Returns</Heading>
+					<Definitions row>
 						{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
-							<div key={`${type}-${description}`}>
-								<dt>
-									<code>{type}</code>
-								</dt>
-								{description && <dd>{description}</dd>}
-							</div>
+							<Definition key={`${type}-${description}`} term={<Code>{type}</Code>}>
+								{description}
+							</Definition>
 						))}
-					</dl>
-				</section>
+					</Definitions>
+				</Section>
 			)}
 			{throws?.length && (
-				<section>
-					<h2>Throws</h2>
-					<dl>
+				<Section>
+					<Heading level="2">Throws</Heading>
+					<Definitions row>
 						{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
-							<div key={`${type}-${description}`}>
-								<dt>
-									<code>{type}</code>
-								</dt>
-								{description && <dd>{description}</dd>}
-							</div>
+							<Definition key={`${type}-${description}`} term={<Code>{type}</Code>}>
+								{description}
+							</Definition>
 						))}
-					</dl>
-				</section>
+					</Definitions>
+				</Section>
 			)}
 			{examples?.length && (
-				<section>
-					<h2>Examples</h2>
+				<Section>
+					<Heading level="2">Examples</Heading>
 					{examples.map(({ description }) => (
-						<pre key={description}>
-							<code>{description}</code>
-						</pre>
+						<Preformatted key={description}>{description}</Preformatted>
 					))}
-				</section>
+				</Section>
 			)}
 			{children && <TreeCards>{children}</TreeCards>}
 		</Page>
