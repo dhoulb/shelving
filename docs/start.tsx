@@ -8,11 +8,8 @@
 
 import { watch } from "node:fs";
 import { join } from "node:path";
-import { buildApp } from "./app.js";
+import { buildApp } from "./build.js";
 import { APP_URL, MODULES_DIR, OUTPUT_DIR } from "./env.js";
-
-// Build the static site first, then serve it.
-await buildApp(MODULES_DIR, OUTPUT_DIR);
 
 // Serve static files.
 Bun.serve({
