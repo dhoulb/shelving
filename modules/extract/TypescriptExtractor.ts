@@ -7,7 +7,6 @@ import type {
 	DocumentationReturn,
 	DocumentationThrow,
 	FileElementProps,
-	TreeElement,
 } from "../util/element.js";
 import { requireSlug } from "../util/string.js";
 import { FileExtractor } from "./FileExtractor.js";
@@ -223,8 +222,8 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 			const signature = `(${params}) => ${ret}`;
 			const key = requireSlug(name);
 			const existingIndex = members.findIndex(m => m.key === key);
-			if (existingIndex >= 0) {
-				const existing = members[existingIndex]!;
+			const existing = members[existingIndex];
+			if (existing) {
 				members[existingIndex] = {
 					...existing,
 					props: { ...existing.props, signatures: _concat(existing.props.signatures, [signature]) },

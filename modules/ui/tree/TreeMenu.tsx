@@ -1,32 +1,31 @@
 import type { ReactNode } from "react";
 import type { TreeElement } from "../../util/element.js";
-import { DirectoryMenuItem } from "../docs/DirectoryMenuItem.js";
-import { FileMenuItem } from "../docs/FileMenuItem.js";
-import { createMapper } from "../misc/Mapper.js";
-import TREE_MENU_CSS from "./TreeMenu.module.css";
+import { Menu } from "../menu/Menu.js";
+import { TreeMenuItem } from "./TreeMenuItem.js";
+import { type TreeMapping, TreeRenderer } from "./TreeRenderer.js";
 
 /**
- * Default mappings for the most common tree element types.
- * - Consumers can override individual entries via `<TreeMenuMapping>`.
- * - Only directories and files appear in menus by default — code symbols are kept off the navigation.
+ * Sidebar navigation menu built from the children of a root tree element.
+ * - Renders each child element via `<TreeMenuItem>` by default (label + optional nested expansion when proud).
+ * - Pass `mapping` to override specific element types with custom renderers; unmapped types fall back to `<TreeMenuItem>`.
+ * - Only directories and files appear by default — code symbols are kept off the navigation.
  */
-export const [TreeMenuMapping, TreeMenuMapper] = createMapper({
-	"tree-directory": DirectoryMenuItem,
-	"tree-file": FileMenuItem,
-});
-
 export interface TreeMenuProps {
 	/** Root element whose children become the navigation links. */
 	tree: TreeElement;
+	/** Type-specific overrides. Anything not mapped uses the fallback `<TreeMenuItem>`. */
+	mapping?: TreeMapping;
 }
 
-/** Sidebar navigation menu built from the children of a root tree element. */
-export function TreeMenu({ tree }: TreeMenuProps): ReactNode {
+export function TreeMenu({ tree, mapping }: TreeMenuProps): ReactNode {
 	return (
-		<nav className={TREE_MENU_CSS.menu}>
-			<ul className={TREE_MENU_CSS.list}>
-				<TreeMenuMapper>{tree.props.children}</TreeMenuMapper>
-			</ul>
-		</nav>
+		<Menu>
+			<TreeRenderer
+				tree={tree.props.children}
+				query={{ type: ["tree-directory", "tree-file"] }}
+				mapping={mapping}
+				fallback={TreeMenuItem}
+			/>
+		</Menu>
 	);
 }

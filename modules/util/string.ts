@@ -19,21 +19,14 @@ export type PossibleString = boolean | string | number | Date;
 /** Series of string segments with at least one one (this is what you _actually_ get back when you split a string). */
 export type Segments = readonly [string, ...string[]];
 
-/** Is a value a string (optionally with specified min/max length). */
-export function isString(value: unknown, min = 0, max = Number.POSITIVE_INFINITY): value is string {
-	return typeof value === "string" && value.length >= min && value.length <= max;
+/** Is a value a string? */
+export function isString(value: unknown): value is string {
+	return typeof value === "string";
 }
 
-/** Assert that a value is a string (optionally with specified min/max length). */
-export function assertString(value: unknown, min?: number, max?: number, caller: AnyCaller = assertString): asserts value is string {
-	if (!isString(value, min, max))
-		throw new RequiredError(
-			`Must be string${min !== undefined || max !== undefined ? ` with ${min ?? 0} to ${max ?? "∞"} characters` : ""}`,
-			{
-				received: value,
-				caller,
-			},
-		);
+/** Assert that a value is a string. */
+export function assertString(value: unknown, caller: AnyCaller = assertString): asserts value is string {
+	if (!isString(value)) throw new RequiredError(`Must be string`, { received: value, caller });
 }
 
 /** Convert an unknown value to a string, or return `undefined` if conversion fails. */
@@ -47,9 +40,27 @@ export function getString(value: unknown): string | undefined {
 }
 
 /** Convert a possible string to a string (optionally with specified min/max length), or throw `RequiredError` if conversion fails. */
-export function requireString(value: PossibleString, min?: number, max?: number, caller: AnyCaller = requireString): string {
+export function requireString(value: PossibleString, caller: AnyCaller = requireString): string {
 	const str = getString(value);
-	assertString(str, min, max, caller);
+	assertString(str, caller);
+	return str;
+}
+
+/** Is a value a string with min/max length? */
+export function isStringLength(value: unknown, min = 0, max = Number.POSITIVE_INFINITY): value is string {
+	return typeof value === "string" && value.length >= min && value.length <= max;
+}
+
+/** Assert that a value is a string with min/max length. */
+export function assertStringLength(value: unknown, min?: number, max?: number, caller: AnyCaller = assertString): asserts value is string {
+	if (!isStringLength(value, min, max))
+		throw new RequiredError(`Must be string with ${min ?? 0} to ${max ?? "∞"} characters`, { received: value, caller });
+}
+
+/** Convert a possible string to a string (optionally with specified min/max length), or throw `RequiredError` if conversion fails. */
+export function requireStringLength(value: PossibleString, min?: number, max?: number, caller: AnyCaller = requireString): string {
+	const str = getString(value);
+	assertStringLength(str, min, max, caller);
 	return str;
 }
 
