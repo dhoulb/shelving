@@ -65,6 +65,15 @@ bun run build
 - If you add or remove a public package subpath, also update `package.json` `exports`
 - `modules/index.ts` intentionally excludes peer-dependency modules like `react` and `firestore/*`, plus internal `test` helpers, from the root package export. Preserve that split unless you are intentionally changing the public package surface
 
+## Reuse and Composition
+
+Before writing new code, find what already exists. The codebase deliberately exposes shared primitives — components, utility functions, types, classes — and most new work should compose them rather than reinvent.
+
+- **Scan first.** Before writing a new component, utility, or type, check the relevant module(s) for something that already does the job — exactly, or closely enough that a parameter or variant would cover the difference. AI agents tend to write fresh code when an existing helper would do; the explicit pre-write check is the cure
+- **Compose, don't restyle.** A "complex" component bound to a content type (e.g. a `*Page` or `*Card` for a specific kind of content) should rarely ship its own CSS module. It picks up its visual identity from existing library components (`Card`, `Page`, `Button`, `Tag`, `Notice`, etc.). A small handful of genuinely custom small components per app may legitimately need their own styling; everything else reuses
+- **Propose, don't silently modify.** If an existing component, utility, or type is missing a needed capability — a prop, a variant, a parameter, a return-shape tweak — stop and propose the targeted change. Wait for input on how it should be designed. Never silently extend existing code in this project; modifications to existing modules require explicit discussion every time
+- **Propose, don't invent.** If nothing in the library covers a need, propose the new component/utility/type and how it would slot in. Wait for input before building it. Don't add new shared primitives unannounced
+
 ## Commits
 
 - Use [Conventional Commits](https://www.conventionalcommits.org/) format for all commit messages, for example: `feat: add cache provider` or `fix: handle undefined schema value`
@@ -303,8 +312,6 @@ Conventions for the upcoming reusable component layer.
 
 - Never use inline `style` props — all styling lives in a `.module.css` file colocated with the component
 - Variants are boolean props on the component (`small`, `primary`, `plain`, `column`, etc.) that map to class names in the CSS module via `getModuleClass(styles, "base", variants)`
-- If a problem can be solved by adding a variant to an existing component, prefer that
-- If a reusable component is missing that would belong in a standard component library, add it
 - CSS custom properties (variables) are used for theming with fallback chains: `var(--button-color-bg, var(--color-surface))`
 - CSS nesting is used for variants (`&.small { ... }`), pseudo-classes (`&:hover { ... }`), and child selectors (`:where(& > *) { ... }`)
 - `:where()` is used to keep specificity low for default child styles
