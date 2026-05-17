@@ -2,10 +2,11 @@ import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
 import { Definition, Definitions } from "../block/Definitions.js";
 import { Heading } from "../block/Heading.js";
-import { Paragraph } from "../block/Paragraph.js";
 import { Preformatted } from "../block/Preformatted.js";
+import { Prose } from "../block/Prose.js";
 import { Section } from "../block/Section.js";
 import { Code } from "../inline/Code.js";
+import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationKind } from "./DocumentationKind.js";
@@ -14,7 +15,7 @@ const DEFAULT_TYPE = "unknown";
 
 /**
  * Page renderer for a `tree-documentation` element.
- * - Renders title, signatures (one per overload), description, parameters, returns, throws, examples, and child symbols.
+ * - Renders title, signatures (one per overload), content, parameters, returns, throws, examples, and child symbols.
  * - All sections are conditional — only render when their array has entries.
  */
 export function DocumentationPage({
@@ -22,6 +23,7 @@ export function DocumentationPage({
 	name,
 	kind,
 	description,
+	content,
 	signatures,
 	params,
 	returns,
@@ -30,12 +32,16 @@ export function DocumentationPage({
 	children,
 }: DocumentationElementProps): ReactNode {
 	return (
-		<Page title={title ?? name}>
+		<Page title={title ?? name} description={description}>
 			{kind && <DocumentationKind kind={kind} />}
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
 			))}
-			{description && <Paragraph>{description}</Paragraph>}
+			{content && (
+				<Prose>
+					<Markup>{content}</Markup>
+				</Prose>
+			)}
 			{params?.length && (
 				<Section>
 					<Heading level="2">Parameters</Heading>
