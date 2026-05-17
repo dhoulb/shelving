@@ -1,3 +1,4 @@
+import type { MarkupOptions } from "../util/options.js";
 import type { MarkupRules } from "../util/rule.js";
 import { BLOCKQUOTE_RULE } from "./blockquote.js";
 import { CODE_RULE } from "./code.js";
@@ -52,6 +53,9 @@ export const MARKUP_RULES_INLINE: MarkupRules = [CODE_RULE, LINK_RULE, AUTOLINK_
  *   - If the first thing in the definition isn't a URL, then it's recognised as a sidenote/footnote and tapping it will scroll you to that point (and popup the definition like Marco Arment's Bigfoot code).
  */
 export const MARKUP_RULES: MarkupRules = [...MARKUP_RULES_BLOCK, ...MARKUP_RULES_INLINE];
+
+/** Default markup options — uses `MARKUP_RULES` with no other overrides. */
+export const MARKUP_OPTIONS: MarkupOptions = { rules: MARKUP_RULES };
 
 export * from "./blockquote.js";
 export * from "./code.js";

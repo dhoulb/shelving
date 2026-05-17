@@ -29,7 +29,7 @@ export function add(a: number, b: number): number {
 				props: {
 					kind: "function",
 					name: "add",
-					description: "Add two numbers together.",
+					content: "Add two numbers together.",
 					signatures: ["(a: number, b: number) => number"],
 				},
 			},
@@ -221,6 +221,25 @@ export function add(a: number, b: number): number { return a + b; }
 		);
 		const children = element.props.children as { props: { examples?: unknown } }[];
 		expect(children[0]?.props.examples).toEqual([{ description: "add(1, 2)" }, { description: "add(3, 4)" }]);
+	});
+
+	test("appends unhandled @rule blocks to content", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Add two numbers.
+ * @param a First operand.
+ * @custom This is a custom tag
+ * that spans multiple lines.
+ * @deprecated Use \`sum()\` instead.
+ */
+export function add(a: number, b: number): number { return a + b; }
+`),
+		);
+		const children = element.props.children as { props: { content?: string } }[];
+		expect(children[0]?.props.content).toBe(
+			"Add two numbers.\n\n@custom This is a custom tag\nthat spans multiple lines.\n\n@deprecated Use `sum()` instead.",
+		);
 	});
 
 	test("strips directory path from filename when computing key/name", async () => {

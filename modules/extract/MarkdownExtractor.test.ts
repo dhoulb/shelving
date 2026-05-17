@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import type { BunFile } from "bun";
-import { type Elements, getElementText } from "../util/element.js";
 import { MarkdownExtractor } from "./index.js";
 
 const extractor = new MarkdownExtractor();
@@ -20,17 +19,17 @@ describe("MarkdownExtractor", () => {
 		expect(element.props.title).toBe("My Title");
 	});
 
-	test("returns file element with parsed content", async () => {
-		const element = await extractor.extract(file("# Hello\n\nWorld."));
+	test("stores raw markdown as content", async () => {
+		const text = "# Hello\n\nWorld.";
+		const element = await extractor.extract(file(text));
 		expect(element.type).toBe("tree-file");
-		expect(element.props.content).toBeDefined();
-		expect(getElementText(element.props.content as Elements)).toContain("Hello");
+		expect(element.props.content).toBe(text);
 	});
 
 	test("leaves title undefined when no h1 heading is found", async () => {
 		const element = await extractor.extract(file("Just some text.", "TEMPLATE.md"));
 		expect(element.props.title).toBeUndefined();
-		expect(element.props.content).toBeDefined();
+		expect(element.props.content).toBe("Just some text.");
 	});
 
 	test("sets key to slugified filename (without extension)", async () => {

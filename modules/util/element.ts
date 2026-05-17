@@ -39,8 +39,18 @@ export interface TreeElementProps extends ElementProps {
 	 * - Renderers should fall back to `name` when `title` is missing.
 	 */
 	readonly title?: string | undefined;
+	/**
+	 * Short summary used for the page's `<meta name="description">` tag — not rendered as visible page body.
+	 * - Pages plumb this through `Meta.description`; `<Head>` emits the meta tag.
+	 * - For visible body content (rendered inside the page) use `content` instead.
+	 */
 	readonly description?: string | undefined;
-	readonly content?: Elements | undefined;
+	/**
+	 * Markup source string that should be rendered as the element's visible body content.
+	 * - Rendered via the `<Markup>` component (typically inside a `<Prose>` wrapper).
+	 * - For Markdown files this is the file's text; for TypeScript symbols this is the JSDoc description.
+	 */
+	readonly content?: string | undefined;
 	/** Children of a tree element must be other tree elements. */
 	readonly children?: TreeElements | undefined;
 }

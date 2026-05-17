@@ -35,8 +35,15 @@ export function mergeTreeElements(primary: TreeElement, secondary: TreeElement):
 			title: primary.props.title,
 			path: primary.props.path,
 			description: primary.props.description ?? secondary.props.description,
-			content: mergeElements(primary.props.content, secondary.props.content),
+			content: _mergeContent(primary.props.content, secondary.props.content),
 			children: mergeElements(primary.props.children, secondary.props.children),
 		},
 	};
+}
+
+/** Merge two markup content strings — primary first, secondary appended after a blank line. Returns `undefined` if both are empty. */
+function _mergeContent(a: string | undefined, b: string | undefined): string | undefined {
+	if (!a) return b;
+	if (!b) return a;
+	return `${a}\n\n${b}`;
 }
