@@ -11,6 +11,7 @@
 	color: var(--preformatted-color-text, var(--color-text));
 	background-color: var(--preformatted-color-bg, var(--color-surface));
 	border: var(--preformatted-border, var(--border-block)) solid var(--preformatted-color-border, var(--color-surface));
+	border-radius: var(--preformatted-radius, var(--radius-element));
 	tab-size: 2;
 
 	/* Wrap long lines by default — newlines and indentation within wrapped lines are still preserved. */

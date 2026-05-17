@@ -1,8 +1,10 @@
 /*
- * Sidebar layout: a fixed-width column on the left, scrollable main content on the right.
+ * Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
  *
- * The outer `.layout` class (from Layout.module.css) owns the overall page scroll,
- * but here we override that: the sidebar and the main column each scroll independently.
+ * The outer `.layout` class (from Layout.module.css) owns the overall page scroll —
+ * here we override its block-level behaviour so the sidebar and content each scroll independently.
+ * The inner `.content` element reuses the `.layout` class too so it picks up the standard
+ * layout padding, safe-area insets, and `overflow: hidden auto` scroll behaviour.
  */
 
 .main {
@@ -22,9 +24,7 @@
 }
 
 .content {
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	padding: var(--spacing-block) var(--spacing-spacious);
+	/* Combined with `.layout` (added at the JSX layer) for scroll/padding/safe-area behaviour. */
 	min-width: 0;
 }
 

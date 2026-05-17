@@ -5,8 +5,8 @@
 	margin-inline: 0;
 	margin-block: var(--blockquote-spacing, var(--spacing-block));
 	border-inline-start: var(--blockquote-border, var(--border-focus)) solid var(--blockquote-color-border, var(--color-border));
-	padding-inline-start: var(--blockquote-padding, var(--spacing-paragraph));
-	padding-block: var(--spacing-inline);
+	padding-block: var(--blockquote-padding, var(--spacing-element));
+	padding-inline-start: var(--blockquote-indent, var(--spacing-paragraph));
 
 	/* Style */
 	color: var(--blockquote-color-text, inherit);

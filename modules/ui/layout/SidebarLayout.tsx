@@ -24,7 +24,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 		</aside>
 	);
 	const contentEl = (
-		<div key="content" className={SIDEBAR_LAYOUT_CSS.content}>
+		<div key="content" className={getClass(LAYOUT_CSS.layout, SIDEBAR_LAYOUT_CSS.content)}>
 			<div className={SIDEBAR_LAYOUT_CSS.contentInner}>{children}</div>
 		</div>
 	);

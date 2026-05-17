@@ -11,4 +11,5 @@
 
 	/* Typography */
 	font-weight: var(--weight-normal);
+	font-size: var(--size-small);
 }
