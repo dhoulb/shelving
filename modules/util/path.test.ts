@@ -34,12 +34,12 @@ describe("getPath()", () => {
 		expect(getPath("/b/c", "/a")).toBe("/b/c");
 
 		// Remove redundant `/./` paths.
-		// expect(getPath("./a/./b")).toBe("/a/b");
-		// expect(getPath("./a/b/.")).toBe("/a/b");
-		// expect(getPath("/a/./b")).toBe("/a/b");
-		// expect(getPath("/a/b/.")).toBe("/a/b");
-		// expect(getPath("a/./b")).toBe("/a/b");
-		// expect(getPath("a/b/.")).toBe("/a/b");
+		expect(getPath("./a/./b")).toBe("/a/b");
+		expect(getPath("./a/b/.")).toBe("/a/b");
+		expect(getPath("/a/./b")).toBe("/a/b");
+		expect(getPath("/a/b/.")).toBe("/a/b");
+		expect(getPath("a/./b")).toBe("/a/b");
+		expect(getPath("a/b/.")).toBe("/a/b");
 
 		// Convert windows slashes.
 		expect(getPath("/a\\b/c")).toBe("/a/b/c");
@@ -96,8 +96,8 @@ describe("getPath()", () => {
 		// expect(getPath("../../a")).toBe("/a");
 
 		// Edge cases.
+		expect(getPath(".")).toBe("/");
 		// expect(getPath("..")).toBe("/");
-		// expect(getPath(".")).toBe("/");
 	});
 	test("Unparseable paths", () => {
 		// expect(getPath("")).toBe(undefined);

@@ -17,16 +17,16 @@ export type RelativePath = `.` | `./` | `./${string}`;
 export type Path = AbsolutePath | RelativePath;
 
 /** Things that can be converted to a path. */
-export type PossiblePath = string;
+export type PossiblePath = string | readonly string[];
 
 /** Is a string path an absolute path? */
-export function isAbsolutePath(path: string): path is AbsolutePath {
-	return path.startsWith("/");
+export function isAbsolutePath(path: PossiblePath): path is AbsolutePath {
+	return typeof path === "string" && path.startsWith("/");
 }
 
 /** Is a string path an relative path? */
-export function isRelativePath(path: string): path is RelativePath {
-	return path === "." || path.startsWith("./");
+export function isRelativePath(path: PossiblePath): path is RelativePath {
+	return typeof path === "string" && (path === "." || path.startsWith("./"));
 }
 
 /**
@@ -41,21 +41,22 @@ export function isRelativePath(path: string): path is RelativePath {
  */
 export function getPath(inputPath: Nullish<PossiblePath>, inputBase: AbsolutePath = "/"): AbsolutePath | undefined {
 	if (isNullish(inputPath)) return;
-	const path = cleanPath(inputPath);
-	if (isAbsolutePath(path)) return path;
-	const base = cleanPath(inputBase);
-	if (path.startsWith("./")) return `${base}/${path.slice(2)}`;
-	return `${base}/${path}`;
+	if (isAbsolutePath(inputPath)) return cleanPath(inputPath);
+	return joinPath(inputBase, isRelativePath(inputPath) ? inputPath.slice(2) : inputPath);
 }
 
-/** Remove trailing slashes and normalise `//` runs in a path. */
+/**
+ * Normalise a path:
+ * - Runs of `/` and `\` collapsed to a single `/`.
+ * - `.` "current-directory" segments dropped (so `./a/b` → `a/b`, `a/./b` → `a/b`, `.` → `""`).
+ * - Trailing slashes stripped.
+ * - The root `"/"` is preserved as-is.
+ */
 export function cleanPath(path: AbsolutePath): AbsolutePath;
-export function cleanPath(path: RelativePath): RelativePath;
-export function cleanPath(path: Path): Path;
 export function cleanPath(path: string): string;
 export function cleanPath(path: string): string {
-	const clean = path.replace(/[\\/]+/g, "/");
-	return clean.endsWith("/") ? clean.slice(0, -1) : clean;
+	const clean = path.replace(/[\\/]+(?:\.(?:[\\/]+|$))*/g, "/");
+	return clean.length > 1 && clean.endsWith("/") ? clean.slice(0, -1) : clean;
 }
 
 /**
@@ -98,18 +99,31 @@ export function isPathProud(target: AbsolutePath, current: AbsolutePath): boolea
 
 /**
  * Get the "segments" in an absolute path.
- * - `splitAbsolutePath("/")` returns `[]` — the root has no segments.
+ * - `splitPath("/")` returns `[]` — the root has no segments.
  */
-export function splitAbsolutePath(path: AbsolutePath | readonly string[]): readonly string[] {
+export function splitPath(path: PossiblePath): readonly string[] {
 	if (typeof path !== "string") return path;
 	if (path === "/") return [];
-	return splitString(path.slice(1), "/", 1, undefined, splitAbsolutePath);
+	return splitString(path.slice(1), "/", 1, undefined, splitPath);
 }
 
+/** A single argument accepted by `joinPath()` — either a string (full path or single segment) or an array of segments. */
+export type PathPart = string | readonly string[];
+
 /**
- * Join a set of path segments to form an absolute path.
- * - `joinAbsolutePath([])` returns `"/"` — an empty segment list represents the root.
+ * Join one or more path parts into a single path string.
+ * - Each part can be a string (e.g. `"/foo/bar"`, `"foo"`) or an array of segments (e.g. `["foo", "bar"]`). String parts may themselves contain `/` separators — they're flattened and normalised.
+ * - Runs of `//` are collapsed and trailing slashes stripped (via `cleanPath()`); `\` Windows slashes are converted too.
+ * - If the first argument is an `AbsolutePath` string (starts with `/`), the result is also an `AbsolutePath`; otherwise the return type is `string`.
+ *
+ * @example joinPath("/foo", "bar") // → "/foo/bar"
+ * @example joinPath("/foo", ["bar", "baz"]) // → "/foo/bar/baz"
+ * @example joinPath(["foo", "bar"], "baz") // → "foo/bar/baz" (relative — no leading slash)
+ * @example joinPath("/a/", "/b/") // → "/a/b" (slashes normalised)
+ * @example joinPath("/") // → "/"
  */
-export function joinAbsolutePath(path: AbsolutePath | readonly string[]): AbsolutePath {
-	return typeof path === "string" ? path : `/${path.join("/")}`;
+export function joinPath(first: AbsolutePath, ...rest: PathPart[]): AbsolutePath;
+export function joinPath(...parts: PathPart[]): string;
+export function joinPath(...parts: PathPart[]): string {
+	return cleanPath(parts.flat().join("/"));
 }
