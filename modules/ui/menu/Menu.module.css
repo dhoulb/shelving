@@ -1,19 +1,17 @@
 .menu {
-	/* Typography */
-	font-family: var(--menu-font, var(--font-body));
-	font-size: var(--menu-size, var(--size-small));
-	line-height: var(--menu-leading, var(--leading-normal));
-	color: var(--menu-color-text, var(--color-quiet));
-}
-
-.list {
-	/* Box */
+	/* Box (list reset + layout) */
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	display: flex;
 	flex-direction: column;
 	gap: var(--menu-gap, var(--spacing-small));
+
+	/* Typography */
+	font-family: var(--menu-font, var(--font-body));
+	font-size: var(--menu-size, var(--size-small));
+	line-height: var(--menu-leading, var(--leading-normal));
+	color: var(--menu-color-text, var(--color-quiet));
 }
 
 .item {
@@ -54,8 +52,8 @@
 	color: var(--menu-link-color-proud, var(--color-text));
 }
 
-/* Nested children of a proud item — Blockquote-style left border to signal hierarchy. */
-.nested {
+/* Submenu — Blockquote-style left border to signal hierarchy. */
+.menu .menu {
 	margin-block: var(--menu-nested-spacing, var(--spacing-small));
 	border-inline-start: var(--menu-nested-border, var(--border-focus)) solid var(--menu-nested-color-border, var(--color-border));
 	padding-inline-start: var(--menu-nested-indent, var(--spacing-paragraph));

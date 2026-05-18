@@ -2,7 +2,7 @@
 .prose :is(code, kbd, samp, var) {
 	/* Box */
 	display: inline-block;
-	padding-inline: 0.375em;
+	padding-inline: 0.375rem;
 
 	/* Style */
 	border-radius: var(--radius-inline);
@@ -11,5 +11,5 @@
 
 	/* Typography */
 	font-weight: var(--weight-normal);
-	font-size: var(--size-small);
+	font-size: var(--size-smaller);
 }

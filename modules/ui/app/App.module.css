@@ -27,6 +27,12 @@
 	--size-xxlarge: 5rem;
 	--size-icon: 1.5rem;
 
+	/* Relative sizes */
+	--size-smaller: 0.875em;
+	--size-larger: 1.5em;
+	--size-xlarger: 2.5em;
+	--size-xxlarger: 5em;
+
 	/* Line heights */
 	--leading-none: 0;
 	--leading-tight: 1.25;
