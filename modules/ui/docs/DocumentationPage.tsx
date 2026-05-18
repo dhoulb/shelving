@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
+import type { AbsolutePath } from "../../util/path.js";
 import { Definition, Definitions } from "../block/Definitions.js";
 import { Heading } from "../block/Heading.js";
 import { Preformatted } from "../block/Preformatted.js";
@@ -7,6 +8,7 @@ import { Prose } from "../block/Prose.js";
 import { Section } from "../block/Section.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
+import { requireMeta } from "../misc/MetaContext.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationKind } from "./DocumentationKind.js";
@@ -31,6 +33,8 @@ export function DocumentationPage({
 	examples,
 	children,
 }: DocumentationElementProps): ReactNode {
+	const { url } = requireMeta();
+	const path = (url?.pathname ?? "/") as AbsolutePath;
 	return (
 		<Page title={title ?? name} description={description}>
 			{kind && <DocumentationKind kind={kind} />}
@@ -94,7 +98,7 @@ export function DocumentationPage({
 					))}
 				</Section>
 			)}
-			{children && <TreeCards>{children}</TreeCards>}
+			<TreeCards path={path}>{children}</TreeCards>
 		</Page>
 	);
 }

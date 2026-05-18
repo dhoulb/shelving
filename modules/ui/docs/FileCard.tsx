@@ -1,15 +1,20 @@
 import type { ReactNode } from "react";
 import type { FileElementProps } from "../../util/element.js";
+import { type AbsolutePath, joinPath } from "../../util/path.js";
 import { Card } from "../block/Card.js";
 import { Heading } from "../block/Heading.js";
 import { Prose } from "../block/Prose.js";
 import { Markup } from "../misc/Markup.js";
-import { requireTreeHref } from "../tree/TreePathContext.js";
+
+interface FileCardProps extends FileElementProps {
+	path?: AbsolutePath | undefined;
+}
 
 /** Card renderer for a `tree-file` element. */
-export function FileCard({ title, name, content }: FileElementProps): ReactNode {
+export function FileCard({ path = "/", title, name, content }: FileCardProps): ReactNode {
+	const href = joinPath(path, name);
 	return (
-		<Card href={requireTreeHref()}>
+		<Card href={href}>
 			<Heading level="3">{title ?? name}</Heading>
 			{content && (
 				<Prose>

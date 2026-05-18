@@ -1,37 +1,31 @@
-import { type ComponentType, createContext, type FunctionComponent, type JSX, type ReactElement, type ReactNode, use } from "react";
+import { type ComponentType, createContext, type FunctionComponent, type JSX, type ReactNode, use } from "react";
 import type { Elements } from "../../util/element.js";
-import { getElements } from "../../util/element.js";
-
-/**
- * Props received by a component dispatched through a `Mapper`.
- * - Spreads the element's own `props` (so a renderer for `tree-file` gets `FileElementProps`).
- * - Adds `mapped` — the dispatched `ReactElement` itself. Useful for components that need to reflect on the element beyond its props (e.g. walking `parent` to compute an href).
- *
- * @example function FileCard({ mapped, title, name }: MappedProps<FileElementProps>) { ... }
- */
-export type MappedProps<P> = P & { readonly mapped: ReactElement<P> };
+import { walkElements } from "../../util/element.js";
 
 /**
  * Dispatch table from a `JSX.IntrinsicElements` key to a renderer component.
  * - Each entry is optional — unmapped elements fall through and render as themselves (e.g. an unmapped `<tree-foo>` appears as a raw `<tree-foo>` HTML element).
- * - Per-entry component receives `MappedProps<JSX.IntrinsicElements[K]>` — the declared props for that element type plus the `mapped` element reference.
+ * - Per-entry component receives `JSX.IntrinsicElements[K] & E` — the declared props for that element type, plus any extra props `E` the mapper is configured to thread through.
  */
-export type Mapping = {
-	[K in keyof JSX.IntrinsicElements]?: ComponentType<MappedProps<JSX.IntrinsicElements[K]>>;
+export type Mapping<E = unknown> = {
+	[K in keyof JSX.IntrinsicElements]?: ComponentType<JSX.IntrinsicElements[K] & E>;
 };
 
 /** Props for the `Mapping` component returned by `createMapper()`. */
-export interface MappingProps {
+export interface MappingProps<E = unknown> {
 	/** Mapping entries that extend or override the inherited mapping inside this subtree. */
-	readonly mapping: Mapping;
+	readonly mapping: Mapping<E>;
 	readonly children: ReactNode;
 }
 
-/** Props for the `Mapper` component returned by `createMapper()`. */
-export interface MapperProps {
-	/** Pre-walked elements to dispatch — typically the output of `getElements()` / `queryElements()`. */
+/**
+ * Props for the `Mapper` component returned by `createMapper()`.
+ * - `children` holds the pre-walked elements to dispatch.
+ * - All other props are spread onto every mapped child as additional props (`E`).
+ */
+export type MapperProps<E = unknown> = E & {
 	readonly children?: Elements;
-}
+};
 
 // Indexing the heterogeneous `Mapping` by an arbitrary string is unsafe by design — per-key value types diverge.
 // biome-ignore lint/suspicious/noExplicitAny: Each mapping value is a `ComponentType<P>` with its own `P`; we accept `any` for dispatch.
@@ -41,48 +35,50 @@ type AnyMapping = Record<string, ComponentType<any> | undefined>;
  * Create a `[Mapping, Mapper]` pair of components backed by their own private React context.
  *
  * - `Mapping` extends or overrides the mapping inside a subtree (useful for swapping in custom renderers for specific element types).
- * - `Mapper` accepts a pre-walked iterable of elements as `children` and dispatches each to the registered component for its `type`. Elements whose `type` has no mapping entry render as themselves (e.g. an unmapped `<tree-foo>` becomes a raw `<tree-foo>` HTML element).
+ * - `Mapper` accepts a pre-walked iterable of elements as `children` and dispatches each to the registered component for its `type`. Any other props passed to `Mapper` are spread onto every dispatched child.
  *
  * Each call creates its own context — independent mappers don't interfere with each other.
  *
- * @param defaults Default mapping entries (lowest priority — overridden by any wrapping `Mapping`).
- * @returns A `[Mapping, Mapper]` tuple of React components.
+ * @typeParam E The shape of any extra props the mapper threads through to every dispatched child. Defaults to `unknown` (no extras).
  *
  * @example
+ * // No extras:
  * const [TreeCardMapping, TreeCardMapper] = createMapper({
  *   "tree-directory": DirectoryCard,
  *   "tree-file": FileCard,
  * });
- * // Default usage:
- * <TreeCardMapper>{getElements(parent.props.children, 0, parent)}</TreeCardMapper>
- * // Custom override at the app level:
- * <TreeCardMapping mapping={{ "tree-file": CustomFileCard }}>
- *   …
- * </TreeCardMapping>
+ * <TreeCardMapper>{walkElements(children)}</TreeCardMapper>
+ *
+ * @example
+ * // With extras (`path` threaded into every dispatched child):
+ * const [TreeMenuMapping, TreeMenuMapper] = createMapper<{ path?: AbsolutePath }>({
+ *   "tree-directory": TreeMenuItem,
+ *   "tree-file": TreeMenuItem,
+ * });
+ * <TreeMenuMapper path="/foo">{queryElements(children, query)}</TreeMenuMapper>
  */
-export function createMapper(defaults: Mapping = {}): [Mapping: FunctionComponent<MappingProps>, Mapper: FunctionComponent<MapperProps>] {
+export function createMapper<E = unknown>(
+	defaults: Mapping<E> = {},
+): [Mapping: FunctionComponent<MappingProps<E>>, Mapper: FunctionComponent<MapperProps<E>>] {
 	const Context = createContext<AnyMapping>(defaults);
 
-	function Mapping({ mapping, children }: MappingProps): ReactNode {
+	function Mapping({ mapping, children }: MappingProps<E>): ReactNode {
 		const inherited = use(Context);
 		return <Context value={{ ...inherited, ...mapping }}>{children}</Context>;
 	}
 
-	function Mapper({ children }: MapperProps): ReactNode {
+	function Mapper({ children, ...extras }: MapperProps<E>): ReactNode {
 		const mapping = use(Context);
 		const items: ReactNode[] = [];
-		for (const element of getElements(children, 0)) {
+		for (const element of walkElements(children)) {
 			if (typeof element.type !== "string") {
-				// Functional elements (already-React-rendered output) pass through verbatim.
 				items.push(element);
 				continue;
 			}
 			const Component = mapping[element.type];
 			if (Component) {
-				// Mapped component — create a new component with the same key, props, and a `mapped={originalElement}`
-				items.push(<Component key={element.key} mapped={element} {...element.props} />);
+				items.push(<Component key={element.key} {...extras} {...element.props} />);
 			} else {
-				// No mapping for this type — render the element as itself (e.g. `<tree-foo>`).
 				items.push(element);
 			}
 		}
