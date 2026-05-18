@@ -1,13 +1,15 @@
 :root {
 	color-scheme: light;
 
-	/* Widths */
+	/* Semantic widths */
 	--width-narrow: min(100%, 22.5rem);
 	--width-wide: min(100%, 33.75rem);
 
 	/* Font weights */
 	--weight-normal: 400;
 	--weight-strong: 700;
+
+	/* Semantic font weights */
 	--weight-label: var(--weight-strong);
 
 	/* Font faces */
@@ -19,13 +21,19 @@
 	--font-body: var(--font-sans);
 	--font-code: var(--font-mono);
 
-	/* Font sizes */
-	--size-small: 0.875rem;
-	--size-normal: 1rem;
-	--size-large: 1.5rem;
-	--size-xlarge: 2.5rem;
-	--size-xxlarge: 5rem;
-	--size-icon: 1.5rem;
+	/* Sizings */
+	--size: 1rem;
+	--size-scale: 1.25;
+	--size-xxsmall: calc(var(--size) * pow(var(--size-scale), -3));
+	--size-xsmall: calc(var(--size) * pow(var(--size-scale), -2));
+	--size-small: calc(var(--size) * pow(var(--size-scale), -1));
+	--size-normal: calc(var(--size) * pow(var(--size-scale), 0));
+	--size-large: calc(var(--size) * pow(var(--size-scale), 1));
+	--size-xlarge: calc(var(--size) * pow(var(--size-scale), 2));
+	--size-xxlarge: calc(var(--size) * pow(var(--size-scale), 3));
+
+	/* Semantic sizes */
+	--size-icon: var(--size-large);
 
 	/* Relative sizes */
 	--size-smaller: 0.875em;
@@ -39,22 +47,38 @@
 	--leading-normal: 1.5;
 
 	/* Spacings */
-	--spacing-small: 0.25rem;
-	--spacing-inline: 0.5rem;
-	--spacing-paragraph: 1rem;
-	--spacing-element: 0.75rem;
-	--spacing-block: 1rem;
-	--spacing-spacious: 3rem;
-
-	/* Border widths */
-	--border-element: 2px;
-	--border-block: 2px;
-	--border-focus: 3px;
+	--space: 1rem;
+	--space-xxsmall: calc(var(--space) * 0.25); /* 4px */
+	--space-xsmall: calc(var(--space) * 0.5); /* 8px */
+	--space-small: calc(var(--space) * 0.75); /* 12px */
+	--space-normal: calc(var(--space) * 1); /* 16px */
+	--space-large: calc(var(--space) * 1.5); /* 24px */
+	--space-xlarge: calc(var(--space) * 2); /* 32px */
+	--space-xxlarge: calc(var(--space) * 3); /* 48px */
 
 	/* Radii */
-	--radius-inline: 0.25rem;
-	--radius-element: 0.5rem;
-	--radius-block: 1rem;
+	--radius: 1rem;
+	--radius-xxsmall: calc(var(--radius) * 0.25); /* 4px */
+	--radius-xsmall: calc(var(--radius) * 0.5); /* 8px */
+	--radius-small: calc(var(--radius) * 0.75); /* 12px */
+	--radius-normal: calc(var(--radius) * 1); /* 16px */
+	--radius-large: calc(var(--radius) * 1.5); /* 24px */
+	--radius-xlarge: calc(var(--radius) * 2); /* 32px */
+	--radius-xxlarge: calc(var(--radius) * 3); /* 48px */
+
+	/* Strokes */
+	--stroke: 2px;
+	--stroke-xxthin: calc(var(--stroke) * 0.25);
+	--stroke-xthin: calc(var(--stroke) * 0.5);
+	--stroke-thin: calc(var(--stroke) * 0.75);
+	--stroke-normal: calc(var(--stroke) * 1);
+	--stroke-thick: calc(var(--stroke) * 1.5);
+	--stroke-xthick: calc(var(--stroke) * 2);
+	--stroke-xxthick: calc(var(--stroke) * 3);
+
+	/* Semantic strokes */
+	--stroke-hairline: 1px;
+	--stroke-focus: var(--stroke-thick);
 
 	/* Durations */
 	--duration-fast: 150ms;
@@ -93,7 +117,7 @@
 	--gray-90: color-mix(var(--color-gray) 20%, var(--color-black));
 	--gray-95: color-mix(var(--color-gray) 10%, var(--color-black));
 
-	/* Named colors */
+	/* Semantic colors */
 	--color-text: var(--color-black);
 	--color-contrast: var(--color-white); /* Contrast color — must be readable on `--color-text` */
 	--color-quiet: var(--gray-40); /* Quiet color is grey, used for secondary text etc. */
@@ -102,16 +126,16 @@
 	--color-overlay: color-mix(in srgb, var(--color-text) 40%, transparent);
 	--color-link: var(--color-blue); /* Links are usually blue. */
 	--color-focus: var(--color-blue); /* Focus is usually blue. */
-	--color-surface: var(--gray-10); /* Surface color is used for notices and buttons — must be readable on `--color-text` */
+	--color-surface: var(--gray-05); /* Surface color is used for notices and buttons — must be readable on `--color-text` */
 
 	/* Shadows */
-	--shadow-element: 0 3px 16px -8px var(--color-overlay);
-	--shadow-block: 0 4px 24px -12px var(--color-overlay);
-
-	/* Focus colors */
-	--focus-text: var(--color-focus);
-	--focus-contrast: var(--color-white);
-	--focus-surface: color-mix(in srgb, var(--focus-text) 12%, white);
+	--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-overlay);
+	--shadow-xsmall: 0 0.25rem 1rem -0.5rem var(--color-overlay);
+	--shadow-small: 0 0.375rem 1.5rem -0.75rem var(--color-overlay);
+	--shadow-normal: 0 0.5rem 2rem -1rem var(--color-overlay);
+	--shadow-large: 0 0.75 3rem -1.5rem var(--color-overlay);
+	--shadow-xlarge: 0 1rem 4rem -2rem var(--color-overlay);
+	--shadow-xxlarge: 0 1.5rem 6rem -3rem var(--color-overlay);
 }
 
 .app {

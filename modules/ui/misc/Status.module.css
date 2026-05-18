@@ -1,24 +1,4 @@
 :root {
-	/* Primary colors */
-	--primary-text: var(--color-blue);
-	--primary-contrast: var(--color-white);
-	--primary-surface: color-mix(in srgb, var(--primary-text) 12%, white);
-
-	/* Secondary colors */
-	--secondary-text: var(--color-purple);
-	--secondary-contrast: var(--color-white);
-	--secondary-surface: color-mix(in srgb, var(--secondary-text) 12%, white);
-
-	/* Tertiary colors */
-	--tertiary-text: var(--color-cyan);
-	--tertiary-contrast: var(--color-white);
-	--tertiary-surface: color-mix(in srgb, var(--tertiary-text) 12%, white);
-
-	/* Quiet colors */
-	--quiet-text: var(--color-quiet);
-	--quiet-contrast: var(--color-contrast);
-	--quiet-surface: var(--color-surface);
-
 	/* Loading colors */
 	--loading-text: var(--color-loading);
 	--loading-contrast: var(--color-contrast);
@@ -48,43 +28,6 @@
 	--danger-text: var(--color-red);
 	--danger-contrast: var(--color-white);
 	--danger-surface: color-mix(in srgb, var(--danger-text) 12%, white);
-
-	/* Highlight colors */
-	--highlight-text: var(--color-yellow);
-	--highlight-contrast: var(--color-black);
-	--highlight-surface: color-mix(in srgb, var(--highlight-text) 12%, white);
-}
-
-.primary {
-	--color-text: var(--primary-text);
-	--color-contrast: var(--primary-contrast);
-	--color-link: var(--primary-text);
-	--color-quiet: var(--primary-text);
-	--color-surface: var(--primary-surface);
-}
-
-.secondary {
-	--color-text: var(--secondary-text);
-	--color-contrast: var(--secondary-contrast);
-	--color-link: var(--secondary-text);
-	--color-quiet: var(--secondary-text);
-	--color-surface: var(--secondary-surface);
-}
-
-.tertiary {
-	--color-text: var(--tertiary-text);
-	--color-contrast: var(--tertiary-contrast);
-	--color-link: var(--tertiary-text);
-	--color-quiet: var(--tertiary-text);
-	--color-surface: var(--tertiary-surface);
-}
-
-.quiet {
-	--color-text: var(--quiet-text);
-	--color-contrast: var(--quiet-contrast);
-	--color-link: var(--quiet-text);
-	--color-quiet: var(--quiet-text);
-	--color-surface: var(--quiet-surface);
 }
 
 .loading {
@@ -117,14 +60,6 @@
 	--color-link: var(--warning-text);
 	--color-quiet: var(--warning-text);
 	--color-surface: var(--warning-surface);
-}
-
-.highlight {
-	--color-text: var(--highlight-text);
-	--color-contrast: var(--highlight-contrast);
-	--color-link: var(--highlight-text);
-	--color-quiet: var(--highlight-text);
-	--color-surface: var(--highlight-surface);
 }
 
 .danger {

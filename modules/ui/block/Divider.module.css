@@ -4,10 +4,10 @@
 	display: block;
 	border: 0;
 	margin-inline: 0;
-	margin-block: var(--divider-spacing, var(--spacing-block));
+	margin-block: var(--divider-spacing, var(--space-normal));
 
 	/* Style */
-	border-block-start: var(--divider-border, var(--border-block)) solid var(--divider-color, var(--color-border));
+	border-block-start: var(--divider-border, var(--stroke-normal)) solid var(--divider-color, var(--color-border));
 
 	/* Psuedo-classes */
 	&:first-child {

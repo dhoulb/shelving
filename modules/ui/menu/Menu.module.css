@@ -5,7 +5,7 @@
 	padding: 0;
 	display: flex;
 	flex-direction: column;
-	gap: var(--menu-gap, var(--spacing-small));
+	gap: var(--menu-gap, var(--space-xxsmall));
 
 	/* Typography */
 	font-family: var(--menu-font, var(--font-body));
@@ -21,9 +21,9 @@
 .link {
 	/* Box */
 	display: block;
-	padding-block: var(--menu-link-padding, var(--spacing-small));
-	padding-inline: var(--menu-link-padding, var(--spacing-inline));
-	border-radius: var(--menu-link-radius, var(--radius-inline));
+	padding-block: var(--menu-link-padding, var(--space-xxsmall));
+	padding-inline: var(--menu-link-padding, var(--space-xsmall));
+	border-radius: var(--menu-link-radius, var(--radius-xxsmall));
 
 	/* Style */
 	color: inherit;
@@ -37,7 +37,7 @@
 		color: var(--menu-link-color-hover-text, var(--color-text));
 	}
 	&:focus-visible {
-		outline: var(--menu-link-focus-border, var(--border-focus)) solid var(--menu-link-color-focus, var(--focus-text));
+		outline: var(--menu-link-focus-border, var(--stroke-focus)) solid var(--menu-link-color-focus, var(--focus-text));
 		outline-offset: 1px;
 	}
 	&[aria-current="page"] {
@@ -54,7 +54,7 @@
 
 /* Submenu — Blockquote-style left border to signal hierarchy. */
 .menu .menu {
-	margin-block: var(--menu-nested-spacing, var(--spacing-small));
-	border-inline-start: var(--menu-nested-border, var(--border-focus)) solid var(--menu-nested-color-border, var(--color-border));
-	padding-inline-start: var(--menu-nested-indent, var(--spacing-paragraph));
+	margin-block: var(--menu-nested-spacing, var(--space-xxsmall));
+	border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--color-border));
+	padding-inline-start: var(--menu-nested-indent, var(--space-normal));
 }

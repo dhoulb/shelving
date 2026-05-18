@@ -5,7 +5,7 @@
 	/* Box */
 	display: block;
 	margin-inline: 0;
-	margin-block: var(--list-spacing, var(--spacing-paragraph));
+	margin-block: var(--list-spacing, var(--space-normal));
 
 	/* Typography */
 	text-align: left;

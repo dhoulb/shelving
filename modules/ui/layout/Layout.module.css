@@ -42,16 +42,16 @@ body:has(.layout) {
 	/* Low specificity defaults */
 	:where(&) {
 		/* Top/bottom use `layout-spacing` and left/right use `layout-padding` */
-		padding: var(--layout-spacing, var(--spacing-block)) var(--layout-padding, var(--spacing-block));
+		padding: var(--layout-spacing, var(--space-normal)) var(--layout-padding, var(--space-normal));
 
 		/* Default page padding (with safe-area additions). */
-		padding-top: calc(var(--layout-spacing, var(--spacing-block)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
+		padding-top: calc(var(--layout-spacing, var(--space-normal)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
 		padding-bottom: calc(
-			var(--layout-spacing, var(--spacing-block)) +
+			var(--layout-spacing, var(--space-normal)) +
 			max(var(--layout-inset-bottom, 0px), env(safe-area-inset-bottom, 0px))
 		);
-		padding-left: calc(var(--layout-padding, var(--spacing-block)) + max(var(--layout-inset-left, 0px), env(safe-area-inset-left, 0px)));
-		padding-right: calc(var(--layout-padding, var(--spacing-block)) + max(var(--layout-inset-right, 0px), env(safe-area-inset-right, 0px)));
+		padding-left: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-left, 0px), env(safe-area-inset-left, 0px)));
+		padding-right: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-right, 0px), env(safe-area-inset-right, 0px)));
 
 		/* Grow to fill the body. */
 		flex: 1;

@@ -2,12 +2,12 @@
 	/* Block */
 	aspect-ratio: 16 / 9;
 	margin-inline: 0;
-	margin-block: var(--video-spacing, var(--spacing-block));
+	margin-block: var(--video-spacing, var(--space-normal));
 
 	/* Contents */
 	display: flex;
 	flex-direction: column;
-	gap: var(--video-gap, var(--spacing-block));
+	gap: var(--video-gap, var(--space-normal));
 	justify-content: center;
 	align-items: center;
 	position: relative;
@@ -16,7 +16,7 @@
 	background: var(--video-color-bg, var(--color-black));
 	color: var(--video-color-text, var(--color-white));
 	overflow: hidden;
-	border-radius: var(--video-radius, var(--radius-element));
+	border-radius: var(--video-radius, var(--radius-xsmall));
 
 	&.narrow {
 		margin-inline: auto;
@@ -43,28 +43,28 @@
 
 .buttons {
 	position: absolute;
-	top: var(--video-controls-offset-y, var(--spacing-block));
-	right: var(--video-controls-offset-x, var(--spacing-block));
+	top: var(--video-controls-offset-y, var(--space-normal));
+	right: var(--video-controls-offset-x, var(--space-normal));
 	display: flex;
-	gap: var(--video-controls-gap, var(--spacing-element));
+	gap: var(--video-controls-gap, var(--space-small));
 
 	&.left {
 		right: auto;
-		left: var(--video-controls-offset-x, var(--spacing-block));
+		left: var(--video-controls-offset-x, var(--space-normal));
 	}
 }
 
 .button {
 	display: inline-flex;
 	flex-direction: row;
-	gap: var(--video-control-gap, var(--spacing-element));
+	gap: var(--video-control-gap, var(--space-small));
 	height: var(--video-control-size, 3rem);
 	min-width: var(--video-control-size, 3rem);
-	padding-inline: var(--video-control-padding-x, var(--spacing-inline));
+	padding-inline: var(--video-control-padding-x, var(--space-xsmall));
 	align-items: center;
 	justify-content: center;
 	border-radius: var(--video-control-radius, 100rem);
-	border: var(--video-control-border, var(--border-block)) solid transparent;
+	border: var(--video-control-border, var(--stroke-normal)) solid transparent;
 	color: var(--video-color-control-text, var(--video-color-bg, var(--color-black)));
 	background: var(--video-color-control-bg, var(--video-color-text, var(--color-white)));
 	transition:
@@ -73,7 +73,7 @@
 		border-color var(--duration-fast) ease-in-out;
 
 	&:hover {
-		box-shadow: var(--video-control-shadow-hover, var(--shadow-element));
+		box-shadow: var(--video-control-shadow-hover, var(--shadow-small));
 		background: var(--video-color-control-hover-bg, color-mix(in srgb, var(--color-quiet) 20%, transparent));
 	}
 

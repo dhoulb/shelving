@@ -7,7 +7,7 @@
 
 	/* Contents */
 	flex-direction: row;
-	gap: var(--elements-gap, var(--spacing-element));
+	gap: var(--elements-gap, var(--space-small));
 	justify-content: stretch;
 	align-items: center;
 

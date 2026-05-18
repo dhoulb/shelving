@@ -4,7 +4,7 @@
 	position: relative;
 	display: block;
 	margin-inline: 0;
-	margin-block: var(--figure-spacing, var(--spacing-block));
+	margin-block: var(--figure-spacing, var(--space-normal));
 
 	/* Psuedo-classes */
 	&:first-child {
@@ -19,7 +19,7 @@
 .prose figcaption {
 	/* Box */
 	display: block;
-	margin-block-start: var(--caption-gap, var(--spacing-paragraph));
+	margin-block-start: var(--caption-gap, var(--space-normal));
 
 	/* Style */
 	font-size: var(--caption-font-size, var(--size-small));

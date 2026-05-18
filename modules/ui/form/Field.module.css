@@ -3,7 +3,7 @@
 	position: relative;
 	flex: 1 1 50%;
 	margin-inline: 0;
-	margin-block: var(--field-spacing, var(--spacing-block));
+	margin-block: var(--field-spacing, var(--space-normal));
 
 	/* Contents */
 	display: flex;
@@ -11,7 +11,7 @@
 	justify-content: start;
 	align-items: stretch;
 	text-align: left;
-	gap: var(--field-gap, var(--spacing-inline));
+	gap: var(--field-gap, var(--space-xsmall));
 
 	/* Psuedo-classes */
 	&:first-child {

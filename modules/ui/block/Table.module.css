@@ -3,7 +3,7 @@
 	/* Box */
 	display: table;
 	margin-inline: 0;
-	margin-block: var(--table-spacing, var(--spacing-block));
+	margin-block: var(--table-spacing, var(--space-normal));
 
 	/* Contents */
 	text-indent: 0;
@@ -24,9 +24,9 @@
 	/* Children */
 	th,
 	td {
-		padding-block: var(--table-padding, var(--spacing-inline));
-		padding-inline: var(--table-padding, var(--spacing-inline));
-		border-block: var(--table-border, var(--border-block)) solid var(--table-color-border, var(--color-border));
+		padding-block: var(--table-padding, var(--space-xsmall));
+		padding-inline: var(--table-padding, var(--space-xsmall));
+		border-block: var(--table-border, var(--stroke-normal)) solid var(--table-color-border, var(--color-border));
 	}
 	th:first-child,
 	td:first-child {
@@ -62,9 +62,9 @@
 .wrap {
 	/* Box */
 	display: block;
-	margin-block: var(--table-spacing, var(--spacing-block));
-	margin-inline: calc(var(--spacing-block) * -1);
-	padding-inline: var(--spacing-block);
+	margin-block: var(--table-spacing, var(--space-normal));
+	margin-inline: calc(var(--space-normal) * -1);
+	padding-inline: var(--space-normal);
 
 	/* Contents */
 	overflow-x: auto;

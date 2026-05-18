@@ -4,7 +4,7 @@
 	display: block;
 	inline-size: 100%;
 	margin-inline: 0;
-	margin-block: var(--subheading-spacing, var(--spacing-paragraph));
+	margin-block: var(--subheading-spacing, var(--space-normal));
 
 	/* Style */
 	font-family: var(--subheading-font, var(--font-body));

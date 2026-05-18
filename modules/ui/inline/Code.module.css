@@ -5,7 +5,7 @@
 	padding-inline: 0.375rem;
 
 	/* Style */
-	border-radius: var(--radius-inline);
+	border-radius: var(--radius-xxsmall);
 	color: var(--color-text);
 	background-color: var(--color-surface);
 

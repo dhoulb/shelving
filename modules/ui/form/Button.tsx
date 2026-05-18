@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { FLEX_CSS, type FlexVariants } from "../block/Flex.js";
 import { type ColorVariants, getColorClass } from "../misc/Color.js";
 import { getStatusClass, type StatusVariants } from "../misc/Status.js";
-import { getClass, getModuleClass } from "../util/css.js";
+import { type Classes, getClass, getModuleClass } from "../util/css.js";
 import BUTTON_CSS from "./Button.module.css";
 import { type ClickableProps, getClickable } from "./Clickable.js";
 
@@ -20,9 +20,6 @@ export interface ButtonVariants extends FlexVariants, StatusVariants, ColorVaria
 	fit?: boolean | undefined;
 }
 
-// Precomposed styles.
-export const ELEMENTS_BUTTON_CLASS = getClass(BUTTON_CSS.button, FLEX_CSS.elements, FLEX_CSS.center);
-
 interface ButtonProps extends ButtonVariants, ClickableProps {}
 
 /** Return either a `<button>` or an `<a href="">` styled as an button, based on whether an `onClick` or `href` prop is provided. */
@@ -37,14 +34,16 @@ export function Button({ disabled, href, onClick, title, target, download, child
 			download,
 			children,
 		},
-		getClass(
-			ELEMENTS_BUTTON_CLASS, //
-			getModuleClass(BUTTON_CSS, variants),
-			getModuleClass(FLEX_CSS, variants),
-			getStatusClass(variants), // Buttons have status colours.
-			getColorClass(variants), // Buttons can also have raw colour overrides.
-		),
+		getButtonClass(variants),
 	);
 }
 
-export { BUTTON_CSS };
+/** Get the full className for a button. */
+export function getButtonClass(variants: ButtonVariants): string {
+	return getClass(
+		getModuleClass(BUTTON_CSS, "button", variants as Classes),
+		getModuleClass(FLEX_CSS, "flex", "center", variants as Classes),
+		getStatusClass(variants), // Buttons have status colours.
+		getColorClass(variants), // Buttons can also have raw colour overrides.
+	);
+}

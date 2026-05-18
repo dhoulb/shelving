@@ -1,8 +1,8 @@
 .notice {
 	/* Box */
-	border-radius: var(--notice-radius, var(--radius-element));
-	border: var(--notice-border, var(--border-block)) solid var(--notice-color-border, var(--color-quiet));
-	padding: var(--notice-padding, var(--spacing-element));
+	border-radius: var(--notice-radius, var(--radius-xsmall));
+	border: var(--notice-border, var(--stroke-normal)) solid var(--notice-color-border, var(--color-quiet));
+	padding: var(--notice-padding, var(--space-small));
 
 	/* Style */
 	color: var(--notice-color-text, var(--color-quiet));
