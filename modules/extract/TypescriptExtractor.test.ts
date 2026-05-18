@@ -9,7 +9,7 @@ const extractor = new TypescriptExtractor();
  * - Web `File` has the same `.name` and `.text()` behaviour the extractor needs.
  * - The extra `BunFile`-only methods (`writer`, `exists`, etc.) aren't touched by the extractor.
  */
-function file(source: string, name = "source.ts"): BunFile {
+function file(source: string, name = "/tmp/source.ts"): BunFile {
 	return new File([source], name) as unknown as BunFile;
 }
 
@@ -149,7 +149,7 @@ export function first<T>(arr: T[]): T | undefined {
 	});
 
 	test("leaves title undefined (no confident source for a TS source file)", async () => {
-		const element = await extractor.extract(file("export const X = 1;", "array.ts"));
+		const element = await extractor.extract(file("export const X = 1;", "/tmp/array.ts"));
 		expect(element.props.title).toBeUndefined();
 		expect(element.props.name).toBe("array");
 		expect(element.key).toBe("array");

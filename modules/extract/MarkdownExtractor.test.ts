@@ -9,7 +9,7 @@ const extractor = new MarkdownExtractor();
  * - Web `File` has the same `.name` and `.text()` behaviour the extractor needs.
  * - The extra `BunFile`-only methods (`writer`, `exists`, etc.) aren't touched by the extractor.
  */
-function file(content: string, name = "doc.md"): BunFile {
+function file(content: string, name = "/tmp/doc.md"): BunFile {
 	return new File([content], name) as unknown as BunFile;
 }
 
@@ -27,19 +27,19 @@ describe("MarkdownExtractor", () => {
 	});
 
 	test("leaves title undefined when no h1 heading is found", async () => {
-		const element = await extractor.extract(file("Just some text.", "TEMPLATE.md"));
+		const element = await extractor.extract(file("Just some text.", "/tmp/TEMPLATE.md"));
 		expect(element.props.title).toBeUndefined();
 		expect(element.props.content).toBe("Just some text.");
 	});
 
-	test("sets key to slugified filename (without extension)", async () => {
-		const element = await extractor.extract(file("# Hi", "Some Doc.md"));
-		expect(element.key).toBe("some-doc");
+	test("sets name to basename (preserving case) and key to its slug", async () => {
+		const element = await extractor.extract(file("# Hi", "/tmp/SomeDoc.md"));
+		expect(element.props.name).toBe("SomeDoc");
+		expect(element.key).toBe("somedoc");
 	});
 
 	test("strips directory path from filename when computing key", async () => {
-		// In production, `BunFile.name` is the full absolute path (e.g. `/Users/.../docs/foo.md`).
-		// The extractor should use only the basename.
+		// `BunFile.name` is the full absolute path; the extractor uses only the basename.
 		const element = await extractor.extract(file("# Hi", "/tmp/some-dir/foo.md"));
 		expect(element.key).toBe("foo");
 	});

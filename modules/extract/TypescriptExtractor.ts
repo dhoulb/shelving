@@ -20,7 +20,7 @@ import { FileExtractor } from "./FileExtractor.js";
  * - Does not set `title` — TS source files have no confident title source. The renderer falls back to `name`.
  */
 export class TypescriptExtractor extends FileExtractor {
-	override extractProps(name: string, text: string): FileElementProps {
+	override extractProps(name: string, text: string): Partial<FileElementProps> & { name: string } {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
 		const content = _getFileDocComment(source);
 

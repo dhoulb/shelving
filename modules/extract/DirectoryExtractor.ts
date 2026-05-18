@@ -3,7 +3,7 @@ import { readdir } from "node:fs/promises";
 import type { ImmutableDictionary, MutableDictionary } from "../util/dictionary.js";
 import { type DirectoryElement, mergeElements, type TreeElement } from "../util/element.js";
 import { splitFileExtension } from "../util/file.js";
-import { type AbsolutePath, anyMatch, type Matchables, type Path, requirePath, splitAbsolutePath } from "../util/index.js";
+import { type AbsolutePath, anyMatch, type Matchables, type Path, requirePath, splitPath } from "../util/index.js";
 import { requireSlug } from "../util/string.js";
 import { Extractor, mergeTreeElements } from "./Extractor.js";
 import { FileExtractor } from "./FileExtractor.js";
@@ -91,13 +91,13 @@ export class DirectoryExtractor extends Extractor<Path, DirectoryElement> {
 		this._ignore = ignore;
 	}
 
-	override extract(path: Path): Promise<DirectoryElement> {
-		return this._extractDirectory(requirePath(path, this._base, this.extract));
+	override extract(source: Path): Promise<DirectoryElement> {
+		return this._extractDirectory(requirePath(source, this._base, this.extract));
 	}
 
-	private async _extractDirectory(path: AbsolutePath): Promise<DirectoryElement> {
-		const name = splitAbsolutePath(path).at(-1) ?? "";
-		const entries = await readdir(path, { withFileTypes: true });
+	private async _extractDirectory(source: AbsolutePath): Promise<DirectoryElement> {
+		const name = splitPath(source).at(-1) ?? "";
+		const entries = await readdir(source, { withFileTypes: true });
 
 		// Keep track of the current index entry and children by key, so we can merge same-key elements.
 		let index: ChildData | undefined;
@@ -108,7 +108,7 @@ export class DirectoryExtractor extends Extractor<Path, DirectoryElement> {
 			if (anyMatch(entry.name, ...this._ignore)) continue;
 
 			// Extract the child element and possibly merge it.
-			const child = await this._extractChild(path, entry);
+			const child = await this._extractChild(source, entry);
 			if (child) {
 				// Is this entry an index? If so, we'll treat it as the directory itself and merge it with any existing index entry if needed.
 				if (anyMatch(entry.name, ...this._indexes)) {
@@ -126,7 +126,7 @@ export class DirectoryExtractor extends Extractor<Path, DirectoryElement> {
 			type: "tree-directory",
 			key: requireSlug(name),
 			props: {
-				path,
+				source,
 				name,
 				// `title` is only set when the absorbed index file has a confident one (e.g. README H1).
 				// Renderers fall back to `name` otherwise.

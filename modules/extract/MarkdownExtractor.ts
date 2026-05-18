@@ -11,7 +11,7 @@ export class MarkdownExtractor extends FileExtractor {
 	/** Markdown contributes the canonical title/path when merging same-key elements. */
 	override readonly priority = 10;
 
-	override extractProps(name: string, text: string): FileElementProps {
+	override extractProps(name: string, text: string): Partial<FileElementProps> & { name: string } {
 		return { name, title: extractMarkdownTitle(text), content: text };
 	}
 }
