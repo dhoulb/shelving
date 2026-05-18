@@ -31,6 +31,7 @@
 	--size-large: calc(var(--size) * pow(var(--size-scale), 1));
 	--size-xlarge: calc(var(--size) * pow(var(--size-scale), 2));
 	--size-xxlarge: calc(var(--size) * pow(var(--size-scale), 3));
+	--size-xxxlarge: calc(var(--size) * pow(var(--size-scale), 4));
 
 	/* Semantic sizes */
 	--size-icon: var(--size-large);
