@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { Elements } from "../block/Elements.js";
+import { Flex } from "../block/Flex.js";
 import { Footer } from "../block/Section.js";
 import { FormMessage } from "./FormMessage.js";
 import { SubmitButton } from "./SubmitButton.js";
@@ -17,10 +17,10 @@ export interface FormFooterProps {
 export function FormFooter({ children, submit }: FormFooterProps): ReactElement {
 	return (
 		<Footer>
-			<Elements reverse>
+			<Flex reverse>
 				<SubmitButton>{submit}</SubmitButton>
 				{children}
-			</Elements>
+			</Flex>
 			<FormMessage />
 		</Footer>
 	);

@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { ELEMENTS_CSS } from "../block/Elements.js";
+import { FLEX_CSS } from "../block/Flex.js";
 import { LOADING } from "../misc/Loading.js";
 import { getClass } from "../util/css.js";
 import { type ClickableProps, getClickable } from "./Clickable.js";
@@ -15,10 +15,10 @@ export const MULTILINE_TEXT_INPUT_CLASS = getClass(TEXT_INPUT_CLASS, INPUT_CSS.m
 export const SELECT_INPUT_CLASS = getClass(INPUT_CSS.input, INPUT_CSS.select);
 export const EMPTY_OPTION_INPUT_CLASS = INPUT_CSS.empty;
 export const VALUE_OPTION_INPUT_CLASS = INPUT_CSS.value;
-export const ELEMENTS_INPUT_CLASS = getClass(INPUT_CSS.input, ELEMENTS_CSS.elements, ELEMENTS_CSS.center);
-export const ELEMENTS_BUTTON_INPUT_CLASS = getClass(INPUT_CSS.input, INPUT_CSS.button, ELEMENTS_CSS.elements, ELEMENTS_CSS.center);
+export const ELEMENTS_INPUT_CLASS = getClass(INPUT_CSS.input, FLEX_CSS.elements, FLEX_CSS.center);
+export const ELEMENTS_BUTTON_INPUT_CLASS = getClass(INPUT_CSS.input, INPUT_CSS.button, FLEX_CSS.elements, FLEX_CSS.center);
 export const PLACEHOLDER_ELEMENTS_BUTTON_INPUT_CLASS = getClass(ELEMENTS_BUTTON_INPUT_CLASS, INPUT_CSS.placeholder);
-export const ELEMENTS_LABEL_INPUT_CLASS = getClass(INPUT_CSS.input, INPUT_CSS.label, ELEMENTS_CSS.elements, ELEMENTS_CSS.left);
+export const ELEMENTS_LABEL_INPUT_CLASS = getClass(INPUT_CSS.input, INPUT_CSS.label, FLEX_CSS.elements, FLEX_CSS.left);
 export const PLACEHOLDER_ELEMENTS_LABEL_INPUT_CLASS = getClass(ELEMENTS_LABEL_INPUT_CLASS, INPUT_CSS.placeholder);
 export const WRAPPER_INPUT_CLASS = getClass(INPUT_CSS.input, INPUT_CSS.wrapper);
 

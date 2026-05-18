@@ -1,10 +1,10 @@
 import type { ReactElement, ReactNode } from "react";
 import { getClass, getModuleClass } from "../util/css.js";
-import { ELEMENT_CSS } from "./Element.js";
-import ELEMENTS_CSS from "./Elements.module.css";
+import { BLOCK_CLASS } from "./Block.js";
+import FLEX_CSS from "./Flex.module.css";
 
-/** Variants for elements. */
-export interface ElementsVariants {
+/** Variants for flex areas. */
+export interface FlexVariants {
 	/** Wrap overflowing elements onto the next line (defaults to no wrapping). */
 	wrap?: boolean | undefined;
 	/** Display the elements as a column (defaults to row). */
@@ -23,17 +23,17 @@ export interface ElementsVariants {
 	reverse?: boolean | undefined;
 }
 
-export interface ElementsProps extends ElementsVariants {
+export interface FlexProps extends FlexVariants {
 	children?: ReactNode | undefined;
 }
 
-/** Block with element spacing and flex children. */
-export function Elements({ children, ...variants }: ElementsProps): ReactElement {
+/** Block with flex children. */
+export function Flex({ children, ...variants }: FlexProps): ReactElement {
 	return (
 		<div
 			className={getClass(
-				ELEMENT_CSS.element, // Elements has element spacing.
-				getModuleClass(ELEMENTS_CSS, "elements", variants),
+				BLOCK_CLASS, //
+				getModuleClass(FLEX_CSS, "elements", variants),
 			)}
 		>
 			{children}
@@ -41,4 +41,4 @@ export function Elements({ children, ...variants }: ElementsProps): ReactElement
 	);
 }
 
-export { ELEMENTS_CSS };
+export { FLEX_CSS };

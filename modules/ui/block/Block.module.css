@@ -1,4 +1,4 @@
-.element {
+.block {
 	/* Box */
 	margin: var(--element-spacing, var(--spacing-element)) 0;
 

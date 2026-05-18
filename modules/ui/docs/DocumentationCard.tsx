@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
 import { type AbsolutePath, joinPath } from "../../util/path.js";
 import { Card } from "../block/Card.js";
-import { Elements } from "../block/Elements.js";
+import { Flex } from "../block/Flex.js";
 import { Heading } from "../block/Heading.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
@@ -20,10 +20,10 @@ export function DocumentationCard({ path = "/", title, name, kind, content, sign
 	return (
 		<Card href={href}>
 			<Heading level="3">
-				<Elements left>
+				<Flex left>
 					<Code>{title ?? name}</Code>
 					{kind && <DocumentationKind kind={kind} />}
-				</Elements>
+				</Flex>
 			</Heading>
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>

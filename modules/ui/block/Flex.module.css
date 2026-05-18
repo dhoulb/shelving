@@ -1,5 +1,5 @@
-/** Flex styles reused by a few other elements including <Elements>, <Notice>, <Button>, <InputButton> */
-.elements {
+/** Flex styles reused by a few other elements including <Flex>, <Notice>, <Button>, <InputButton> */
+.flex {
 	/* Box */
 	&& {
 		display: flex; /* Raise specificity of this. */

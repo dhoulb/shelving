@@ -1,7 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
 import type { ImmutableArray } from "../../util/array.js";
 import { formatValue } from "../../util/format.js";
-import { Elements } from "../block/Elements.js";
+import { Flex } from "../block/Flex.js";
 import type { ValueInputProps } from "./Input.js";
 import { RadioInput } from "./RadioInput.js";
 
@@ -26,7 +26,7 @@ export function ArrayRadioInputs<T>({
 	...props
 }: ArrayRadioInputsProps<T>): ReactElement {
 	return (
-		<Elements column>
+		<Flex column>
 			{items.map((v, i) => {
 				return (
 					<RadioInput //
@@ -48,6 +48,6 @@ export function ArrayRadioInputs<T>({
 					{...props}
 				/>
 			) : null}
-		</Elements>
+		</Flex>
 	);
 }
