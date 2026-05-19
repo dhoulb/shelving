@@ -36,8 +36,9 @@ describe("getLink()", () => {
 		test("ignores url when root is given", () => {
 			expect(getLink("/schema", requireURL("https://other.com/page/"), ROOT)).toBe("https://x.com/app/schema");
 		});
-		test("falls back to url with URL-spec default (host root) when no root", () => {
-			expect(getLink("/schema", PAGE)).toBe("https://x.com/schema");
+		test("defaults root to url when root is omitted, resolving under url's directory", () => {
+			// PAGE is "https://x.com/app/schema/" — absolute paths resolve under it.
+			expect(getLink("/db", PAGE)).toBe("https://x.com/app/schema/db");
 		});
 		test("returns undefined when neither url nor root given", () => {
 			expect(getLink("/schema")).toBeUndefined();

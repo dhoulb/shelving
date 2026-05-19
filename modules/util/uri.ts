@@ -72,34 +72,37 @@ export function assertURI(value: unknown, caller: AnyCaller = assertURI): assert
 	if (!isURI(value)) throw new RequiredError("Invalid URI", { received: value, caller });
 }
 
-/** Convert a possible URI to a URI, or return `undefined` if conversion fails. */
-export function getURI(possible: Nullish<PossibleURI>): ImmutableURI | undefined {
+/**
+ * Convert a possible URI to a URI, or return `undefined` if conversion fails.
+ * - When `base` is given, it's used as the resolution base for relative inputs (e.g. `getURI("./foo", "https://x.com/page/")` → URI for `https://x.com/page/foo`). Self-contained URIs with their own scheme (e.g. `mailto:a@b`) ignore the base, same as the URL constructor.
+ * - When `base` is omitted, only inputs that already encode a complete URI succeed — relative inputs return `undefined` rather than silently resolving against `document.baseURI`.
+ */
+export function getURI(possible: Nullish<PossibleURI>, base?: PossibleURI): ImmutableURI | undefined {
 	if (notNullish(possible)) {
 		if (isURI(possible)) return possible;
 		try {
-			return new URL(possible, _BASE) as ImmutableURI;
+			return new URL(possible, base as string | URL | undefined) as ImmutableURI;
 		} catch {
 			return undefined;
 		}
 	}
 }
-const _BASE = typeof document === "object" ? document.baseURI : undefined;
 
 /** Convert a possible URI to a URI, or throw `RequiredError` if conversion fails. */
-export function requireURI(possible: PossibleURI, caller: AnyCaller = requireURI): ImmutableURI {
-	const url = getURI(possible);
+export function requireURI(possible: PossibleURI, base?: PossibleURI, caller: AnyCaller = requireURI): ImmutableURI {
+	const url = getURI(possible, base);
 	assertURI(url, caller);
 	return url;
 }
 
 /** Convert a possible URI to a URI string, or return `undefined` if conversion fails. */
-export function getURIString(possible: Nullish<PossibleURI>): URIString | undefined {
-	return getURI(possible)?.href;
+export function getURIString(possible: Nullish<PossibleURI>, base?: PossibleURI): URIString | undefined {
+	return getURI(possible, base)?.href;
 }
 
 /** Convert a possible URI to a URI string, or throw `RequiredError` if conversion fails. */
-export function requireURIString(possible: PossibleURI, caller: AnyCaller = requireURIString): URIString | undefined {
-	return requireURI(possible, caller).href;
+export function requireURIString(possible: PossibleURI, base?: PossibleURI, caller: AnyCaller = requireURIString): URIString | undefined {
+	return requireURI(possible, base, caller).href;
 }
 
 /** Type for a set of named URL parameters. */
@@ -121,7 +124,7 @@ function* getURIEntries(params: PossibleURIParams, caller: AnyCaller = getURIPar
 	if (params instanceof URLSearchParams) {
 		yield* params;
 	} else if (isString(params) || params instanceof URL) {
-		yield* requireURI(params, caller).searchParams;
+		yield* requireURI(params, undefined, caller).searchParams;
 	} else {
 		const done: MutableArray<string> = [];
 		for (const [key, value] of getDictionaryItems(params)) {
@@ -168,7 +171,7 @@ export function requireURIParam(params: PossibleURIParams, key: string, caller: 
 export function withURIParam(uri: ImmutableURL | URLString, key: string, value: unknown, caller?: AnyCaller): ImmutableURL;
 export function withURIParam(uri: PossibleURI, key: string, value: unknown, caller?: AnyCaller): ImmutableURI;
 export function withURIParam(uri: PossibleURI, key: string, value: unknown, caller: AnyCaller = withURIParam): ImmutableURI {
-	const input = requireURI(uri, caller);
+	const input = requireURI(uri, undefined, caller);
 	if (value === undefined) return input; // Ignore undefined.
 	const output = new ImmutableURI(input);
 	const str = getString(value);
@@ -189,7 +192,7 @@ export function withURIParam(uri: PossibleURI, key: string, value: unknown, call
 export function withURIParams(uri: ImmutableURL | URLString, params: Nullish<PossibleURIParams>, caller?: AnyCaller): ImmutableURL;
 export function withURIParams(uri: PossibleURI, params: Nullish<PossibleURIParams>, caller?: AnyCaller): ImmutableURI;
 export function withURIParams(uri: PossibleURI, params: Nullish<PossibleURIParams>, caller: AnyCaller = withURIParams): ImmutableURI {
-	const input = requireURI(uri, caller);
+	const input = requireURI(uri, undefined, caller);
 	if (!params) return input;
 	const output = new ImmutableURI(input);
 	for (const [key, str] of getURIEntries(params, caller)) output.searchParams.set(key, str);
@@ -202,7 +205,7 @@ export function withURIParams(uri: PossibleURI, params: Nullish<PossibleURIParam
 export function omitURIParams(uri: ImmutableURL | URLString, ...keys: string[]): ImmutableURL;
 export function omitURIParams(uri: PossibleURI, ...keys: string[]): ImmutableURI;
 export function omitURIParams(uri: PossibleURI, ...keys: string[]): ImmutableURI {
-	const input = requireURI(uri, omitURIParams);
+	const input = requireURI(uri, undefined, omitURIParams);
 	if (!keys.length) return input;
 	const output = new ImmutableURI(input);
 	for (const key of keys) output.searchParams.delete(key);
@@ -216,7 +219,7 @@ export const omitURIParam: (uri: PossibleURI, key: string) => ImmutableURI = omi
 export function clearURIParams(uri: ImmutableURL | URLString, caller?: AnyCaller): ImmutableURL;
 export function clearURIParams(uri: PossibleURI, caller?: AnyCaller): ImmutableURI;
 export function clearURIParams(uri: PossibleURI, caller: AnyCaller = clearURIParams): ImmutableURI {
-	const input = requireURI(uri, caller);
+	const input = requireURI(uri, undefined, caller);
 	if (!input.search.length) return input;
 	const output = new URL(input);
 	output.search = "";
