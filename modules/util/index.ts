@@ -36,6 +36,7 @@ export * from "./item.js";
 export * from "./iterate.js";
 export * from "./jwt.js";
 export * from "./lazy.js";
+export * from "./link.js";
 export * from "./map.js";
 export * from "./merge.js";
 export * from "./null.js";
