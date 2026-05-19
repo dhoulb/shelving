@@ -83,10 +83,7 @@ export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): Immuta
 function _getURL(target: PossibleURL, base?: PossibleURL): URL | undefined {
 	if (target instanceof URL) return target;
 	try {
-		// We need a base URL to potentially parse this URL against.
-		// Use the document base (if set) as the default URL.
-		const baseURL = getBaseURL(base ?? (typeof document === "object" ? document.baseURI : undefined));
-		return new URL(target, baseURL);
+		return new URL(target, getBaseURL(base));
 	} catch {
 		//
 	}

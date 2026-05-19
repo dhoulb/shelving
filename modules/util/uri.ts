@@ -75,7 +75,7 @@ export function assertURI(value: unknown, caller: AnyCaller = assertURI): assert
 /**
  * Convert a possible URI to a URI, or return `undefined` if conversion fails.
  * - When `base` is given, it's used as the resolution base for relative inputs (e.g. `getURI("./foo", "https://x.com/page/")` → URI for `https://x.com/page/foo`). Self-contained URIs with their own scheme (e.g. `mailto:a@b`) ignore the base, same as the URL constructor.
- * - When `base` is omitted, only inputs that already encode a complete URI succeed — relative inputs return `undefined` rather than silently resolving against `document.baseURI`.
+ * - When `base` is omitted, only inputs that already encode a complete URI succeed — relative inputs return `undefined`. No implicit fallback to the document or window URL; callers thread their base in explicitly (e.g. from `Meta.url` / `Meta.root` in the UI layer).
  */
 export function getURI(possible: Nullish<PossibleURI>, base?: PossibleURI): ImmutableURI | undefined {
 	if (notNullish(possible)) {
