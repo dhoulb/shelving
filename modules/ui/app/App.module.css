@@ -43,8 +43,7 @@
 	--size-xxlarger: 5em;
 
 	/* Line heights */
-	--leading-none: 0;
-	--leading-tight: 1.25;
+	--leading: clamp(1.05em, calc(1em + 0.5rem), 1.5em);
 	--leading-normal: 1.5;
 
 	/* Spacings */

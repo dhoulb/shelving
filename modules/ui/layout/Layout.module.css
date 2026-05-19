@@ -33,7 +33,7 @@ body:has(.layout) {
 	font-family: var(--font-body);
 	font-weight: var(--weight-normal);
 	font-size: var(--size-normal);
-	line-height: var(--leading-normal);
+	line-height: var(--leading);
 	color: var(--color-text);
 	background: var(--layout-body-bg, var(--color-bg));
 }

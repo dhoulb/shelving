@@ -9,7 +9,7 @@
 	/* Style */
 	font-family: var(--heading-font, var(--font-body));
 	font-weight: var(--heading-weight, var(--weight-strong));
-	line-height: var(--heading-leading, var(--leading-tight));
+	line-height: var(--heading-leading, var(--leading));
 	color: var(--heading-color, var(--color-text));
 
 	/*
