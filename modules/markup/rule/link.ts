@@ -1,8 +1,8 @@
 import type { Element } from "../../util/element.js";
 import { formatURI } from "../../util/format.js";
+import { getLink } from "../../util/link.js";
 import { getRegExp, type NamedRegExpExecArray } from "../../util/regexp.js";
-import { getURI, HTTP_SCHEMES } from "../../util/uri.js";
-import { getURL } from "../../util/url.js";
+import { HTTP_SCHEMES } from "../../util/uri.js";
 import { renderMarkup } from "../render.js";
 import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
@@ -16,10 +16,10 @@ function renderLinkMarkupRule(
 	options: MarkupOptions,
 	key: string,
 ): Element {
-	const { base, schemes = HTTP_SCHEMES, rel } = options;
-	const uri = getURL(unsafeHref, base) ?? getURI(unsafeHref);
-	const href = uri && schemes.includes(uri.protocol) ? uri.href : undefined;
-	const children = title ? renderMarkup(title, options, "link") : uri ? formatURI(uri) : "";
+	const { url, root, schemes = HTTP_SCHEMES, rel } = options;
+	const resolved = getLink(unsafeHref, url, root);
+	const href = resolved && schemes.some(s => resolved.startsWith(s)) ? resolved : undefined;
+	const children = title ? renderMarkup(title, options, "link") : resolved ? formatURI(resolved) : "";
 	return {
 		key,
 		$$typeof: REACT_ELEMENT_TYPE,
