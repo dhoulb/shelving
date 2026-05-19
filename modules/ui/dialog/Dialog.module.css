@@ -9,7 +9,7 @@
 	align-items: center;
 	justify-content: center;
 	background: var(--dialog-color-overlay, var(--color-overlay));
-	padding: var(--dialog-padding, var(--spacing-block));
+	padding: var(--dialog-padding, var(--space-normal));
 	opacity: 0;
 	transition: opacity var(--dialog-transition-duration, var(--duration-fast)) ease-in-out;
 
@@ -24,6 +24,6 @@
 
 .close {
 	position: fixed;
-	top: var(--dialog-close-offset, var(--spacing-element));
-	right: var(--dialog-close-offset, var(--spacing-element));
+	top: var(--dialog-close-offset, var(--space-small));
+	right: var(--dialog-close-offset, var(--space-small));
 }

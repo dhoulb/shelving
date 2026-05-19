@@ -10,7 +10,7 @@
 	display: block;
 	inline-size: 100%;
 	margin-inline: 0;
-	margin-block: var(--paragraph-spacing, var(--spacing-paragraph));
+	margin-block: var(--paragraph-spacing, var(--space-normal));
 
 	/* Variants */
 	&.left {
@@ -23,7 +23,7 @@
 		text-align: right;
 	}
 	&.spacious {
-		margin-block: var(--paragraph-spacious-spacing, var(--spacing-spacious));
+		margin-block: var(--paragraph-spacious-spacing, var(--space-xxlarge));
 	}
 
 	/* Psuedo-classes */

@@ -1,13 +1,13 @@
 import type { ReactElement } from "react";
-import { ELEMENTS_CSS, type ElementsVariants } from "../block/Elements.js";
+import { FLEX_CSS, type FlexVariants } from "../block/Flex.js";
 import { type ColorVariants, getColorClass } from "../misc/Color.js";
 import { getStatusClass, type StatusVariants } from "../misc/Status.js";
-import { getClass, getModuleClass } from "../util/css.js";
+import { type Classes, getClass, getModuleClass } from "../util/css.js";
 import BUTTON_CSS from "./Button.module.css";
 import { type ClickableProps, getClickable } from "./Clickable.js";
 
 /** Variants for buttons. */
-export interface ButtonVariants extends ElementsVariants, StatusVariants, ColorVariants {
+export interface ButtonVariants extends FlexVariants, StatusVariants, ColorVariants {
 	/** This is the default button in a form and should be displayed stronger. */
 	strong?: boolean | undefined;
 	/** Add plain styling (background only appears on hover or focus). */
@@ -19,9 +19,6 @@ export interface ButtonVariants extends ElementsVariants, StatusVariants, ColorV
 	/** Make the button content-width. */
 	fit?: boolean | undefined;
 }
-
-// Precomposed styles.
-export const ELEMENTS_BUTTON_CLASS = getClass(BUTTON_CSS.button, ELEMENTS_CSS.elements, ELEMENTS_CSS.center);
 
 interface ButtonProps extends ButtonVariants, ClickableProps {}
 
@@ -37,14 +34,16 @@ export function Button({ disabled, href, onClick, title, target, download, child
 			download,
 			children,
 		},
-		getClass(
-			ELEMENTS_BUTTON_CLASS, //
-			getModuleClass(BUTTON_CSS, variants),
-			getModuleClass(ELEMENTS_CSS, variants),
-			getStatusClass(variants), // Buttons have status colours.
-			getColorClass(variants), // Buttons can also have raw colour overrides.
-		),
+		getButtonClass(variants),
 	);
 }
 
-export { BUTTON_CSS };
+/** Get the full className for a button. */
+export function getButtonClass(variants: ButtonVariants): string {
+	return getClass(
+		getModuleClass(BUTTON_CSS, "button", variants as Classes),
+		getModuleClass(FLEX_CSS, "flex", "center", variants as Classes),
+		getStatusClass(variants), // Buttons have status colours.
+		getColorClass(variants), // Buttons can also have raw colour overrides.
+	);
+}

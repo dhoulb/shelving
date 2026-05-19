@@ -2,7 +2,7 @@
 .prose ins {
 	/* Style */
 	color: var(--success-text);
-	text-decoration: underline var(--border-block);
+	text-decoration: underline var(--stroke-normal);
 
 	/* Typography */
 	font-weight: var(--weight-strong);

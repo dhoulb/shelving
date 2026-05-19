@@ -1,31 +1,37 @@
 import type { ReactNode } from "react";
-import type { TreeElements } from "../../util/element.js";
+import { type TreeElements, walkElements } from "../../util/element.js";
+import type { AbsolutePath } from "../../util/path.js";
 import { DirectoryCard } from "../docs/DirectoryCard.js";
 import { DocumentationCard } from "../docs/DocumentationCard.js";
 import { FileCard } from "../docs/FileCard.js";
-import { type TreeMapping, TreeRenderer } from "./TreeRenderer.js";
+import { createMapper } from "../misc/Mapper.js";
 
-/**
- * Default mapping for card renderers.
- * - Override by passing a different `mapping` prop to `<TreeCards>`.
- */
-export const DEFAULT_TREE_CARD_MAPPING: TreeMapping = {
+/** Extras threaded through `TreeCardMapper` to every card — currently just the parent URL path. */
+export interface TreeCardExtras {
+	/** URL path of the parent element. Each card computes its own path as `path + mapped.key`. Defaults to `/`. */
+	readonly path?: AbsolutePath | undefined;
+}
+
+/** Mapping + Mapper pair for tree cards — wrap children in `<TreeCardMapping>` to override. */
+export const [TreeCardMapping, TreeCardMapper] = createMapper<TreeCardExtras>({
 	"tree-directory": DirectoryCard,
 	"tree-file": FileCard,
 	"tree-documentation": DocumentationCard,
-};
+});
 
 export interface TreeCardsProps {
-	/** Elements to render as cards. */
-	children: TreeElements;
-	/** Component dispatch table — defaults to `DEFAULT_TREE_CARD_MAPPING`. */
-	mapping?: TreeMapping;
+	/** The children to render as cards. */
+	readonly children?: TreeElements;
+	/** URL path of the parent element. Each card appends its own key to compute its href. */
+	readonly path?: AbsolutePath | undefined;
 }
 
 /**
- * Stack of cards rendered from a flat collection of tree elements.
- * - Each rendered card supplies its own `<Card>`-based styling; this component just sequences them.
+ * Render a list of tree elements as a stack of cards.
+ * - Each element is dispatched via `<TreeCardMapper>` to its registered renderer.
+ * - `path` is threaded through to each card so it can compute its href as `path + key`.
+ * - To override the renderer for a specific element type, wrap in `<TreeCardMapping mapping={…}>`.
  */
-export function TreeCards({ children, mapping = DEFAULT_TREE_CARD_MAPPING }: TreeCardsProps): ReactNode {
-	return <TreeRenderer tree={children} mapping={mapping} />;
+export function TreeCards({ children, path }: TreeCardsProps): ReactNode {
+	return <TreeCardMapper path={path}>{walkElements(children)}</TreeCardMapper>;
 }

@@ -1,21 +1,21 @@
 .tag {
 	display: inline-block;
-	padding: 0 var(--spacing-small);
+	padding: 0 var(--space-xxsmall);
 	border: 0;
-	border-radius: var(--radius-inline);
+	border-radius: var(--radius-xxsmall);
 	background: var(--color-surface);
 	color: var(--color-text);
 	font-family: var(--font-body);
 	font-size: var(--size-small);
 	font-weight: var(--weight-strong);
-	line-height: var(--leading-tight);
+	line-height: var(--leading);
 	text-transform: uppercase;
 	text-decoration: none;
 	letter-spacing: 0.05em;
 
 	&.small {
 		font-size: calc(var(--size-small) * 0.85);
-		padding: 0 calc(var(--spacing-small) * 0.75);
+		padding: 0 calc(var(--space-xxsmall) * 0.75);
 	}
 
 	&:hover {
@@ -23,7 +23,7 @@
 	}
 
 	&:focus-visible {
-		outline: var(--border-focus) solid var(--color-focus);
+		outline: var(--stroke-focus) solid var(--color-focus);
 		outline-offset: 2px;
 	}
 }

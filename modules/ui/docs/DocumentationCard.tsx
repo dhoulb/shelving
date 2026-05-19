@@ -1,26 +1,38 @@
 import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
+import { type AbsolutePath, joinPath } from "../../util/path.js";
 import { Card } from "../block/Card.js";
+import { Flex } from "../block/Flex.js";
 import { Heading } from "../block/Heading.js";
-import { Paragraph } from "../block/Paragraph.js";
 import { Preformatted } from "../block/Preformatted.js";
+import { Prose } from "../block/Prose.js";
 import { Code } from "../inline/Code.js";
-import { requireTreeHref } from "../tree/TreePathContext.js";
+import { Markup } from "../misc/Markup.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
+interface DocumentationCardProps extends DocumentationElementProps {
+	path?: AbsolutePath | undefined;
+}
+
 /** Card renderer for a `tree-documentation` element. */
-export function DocumentationCard({ title, name, kind, description, signatures }: DocumentationElementProps): ReactNode {
-	const label = title ?? name;
+export function DocumentationCard({ path = "/", title, name, kind, content, signatures }: DocumentationCardProps): ReactNode {
+	const href = joinPath(path, name);
 	return (
-		<Card href={requireTreeHref()} title={label}>
+		<Card href={href}>
 			<Heading level="3">
-				<Code>{label}</Code>
+				<Flex left>
+					<Code>{title ?? name}</Code>
+					{kind && <DocumentationKind kind={kind} />}
+				</Flex>
 			</Heading>
-			{kind && <DocumentationKind kind={kind} />}
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
 			))}
-			{description && <Paragraph>{description}</Paragraph>}
+			{content && (
+				<Prose>
+					<Markup>{content}</Markup>
+				</Prose>
+			)}
 		</Card>
 	);
 }

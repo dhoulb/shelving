@@ -16,7 +16,7 @@ import { Navigation } from "../modules/ui/router/Navigation.js";
 import { TreeApp } from "../modules/ui/tree/TreeApp.js";
 import { getElementPaths, type TreeElement } from "../modules/util/element.js";
 import { requireURL } from "../modules/util/index.js";
-import { type AbsolutePath, joinAbsolutePath } from "../modules/util/path.js";
+import { type AbsolutePath, joinPath } from "../modules/util/path.js";
 import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
 
 /**
@@ -43,7 +43,7 @@ export async function renderApp(root: TreeElement, outdir: AbsolutePath, stylesh
 		</HTML>
 	);
 
-	const paths: AbsolutePath[] = Array.from(getElementPaths(root)).map(joinAbsolutePath);
+	const paths: AbsolutePath[] = Array.from(getElementPaths(root)).map(segments => joinPath("/", segments));
 
 	for (const path of paths) {
 		const html = `<!DOCTYPE html>${renderToString(<MetaContext value={{ url: requireURL(path, APP_URL), base: APP_URL }}>{app}</MetaContext>)}`;

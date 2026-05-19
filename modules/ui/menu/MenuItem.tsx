@@ -1,36 +1,37 @@
 import type { ReactNode } from "react";
-import { isPathActive, isPathProud } from "../../util/path.js";
+import { type AbsolutePath, isPathActive, isPathProud } from "../../util/path.js";
 import { requireMeta } from "../misc/MetaContext.js";
-import { requireTreeHref } from "../tree/TreePathContext.js";
 import { getModuleClass } from "../util/css.js";
 import MENU_CSS from "./Menu.module.css";
 
 export interface MenuItemProps {
-	/** Label/content for the menu item — typically `title ?? name`. */
+	/** Link target — rendered as the `<a>`'s `href`. */
+	readonly href?: AbsolutePath | undefined;
+	/**
+	 * The first child becomes the link label (rendered inside the `<a>`).
+	 * - Any additional children form the submenu — only rendered when this item is "proud" (an ancestor of the current page). The caller is responsible for wrapping the submenu in a nested `<Menu>` if it wants the CSS `.menu .menu` descendant rules to apply.
+	 */
 	readonly children?: ReactNode;
-	/** Nested content rendered beneath the link when this item is "proud" (active or ancestor of active). */
-	readonly nested?: ReactNode;
 }
 
 /**
- * A `<li>` containing an `<a>` link, plus optional nested children rendered when "proud".
- * - Reads its own `href` from the surrounding `<TreePathContext>` (the path-chain of the currently-rendering tree element).
- * - Reads the page URL from the surrounding `<Meta>` context and computes `active` / `proud` via `isPathActive` / `isPathProud`.
- * - Works without `<Navigation>` — a static site sets `<Meta url>` once and the comparison still works.
+ * A `<li>` containing an `<a>` link, plus optional submenu content shown when this item is "proud".
+ * - Reads the current page URL from `<Meta>` and computes `active` / `proud` against its own `href`.
+ * - Splits `children` into `[label, ...after]`: label goes inside the `<a>`; `after` is rendered as siblings below it, only when proud.
  */
-export function MenuItem({ children, nested }: MenuItemProps): ReactNode {
-	const href = requireTreeHref();
+export function MenuItem({ href, children }: MenuItemProps): ReactNode {
 	const { url } = requireMeta();
 	const current = url?.pathname;
-	const active = current ? isPathActive(current, href) : false;
-	const proud = current ? isPathProud(current, href) : false;
-
+	const active = !!href && !!current && isPathActive(current, href);
+	const proud = !!href && !!current && isPathProud(current, href);
+	const list = Array.isArray(children) ? children : [children];
+	const [label, ...after] = list;
 	return (
 		<li className={getModuleClass(MENU_CSS, "item", { proud })}>
 			<a className={getModuleClass(MENU_CSS, "link")} href={href} aria-current={active ? "page" : undefined}>
-				{children}
+				{label}
 			</a>
-			{proud && nested ? <div className={getModuleClass(MENU_CSS, "nested")}>{nested}</div> : null}
+			{proud && after}
 		</li>
 	);
 }

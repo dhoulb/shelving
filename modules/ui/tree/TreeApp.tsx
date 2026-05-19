@@ -6,8 +6,8 @@ import { PageCatcher } from "../misc/Catcher.js";
 import { Router } from "../router/Router.js";
 import type { Routes } from "../router/Routes.js";
 import type { PossibleMeta } from "../util/index.js";
-import { TreeMenu } from "./TreeMenu.js";
 import { TreePage } from "./TreePage.js";
+import { TreeSidebar } from "./TreeSidebar.js";
 
 export interface TreeAppProps extends PossibleMeta {
 	/** The tree elements to display. */
@@ -21,7 +21,7 @@ export interface TreeAppProps extends PossibleMeta {
 /**
  * Top-level app component for a tree-based documentation site.
  * - Wraps `<App>` with error catching and a sidebar layout.
- * - The sidebar shows a `<TreeMenu>` of top-level elements.
+ * - The sidebar shows a `<TreeSidebar>` (root as a home link + a menu of its children).
  * - `/` renders the root via `<TreePage>`; `/**` catches every deeper path and feeds the full sub-path into `<TreePage>`.
  * - Element rendering uses the default mappings on `<TreePage>`, `<TreeMenu>`, `<TreeCards>`.
  *   Override by wrapping with `<TreePageMapping>`, `<TreeMenuMapping>`, or `<TreeCardMapping>`.
@@ -37,7 +37,7 @@ export function TreeApp({ tree, routes = {}, children, ...appProps }: TreeAppPro
 	return (
 		<App {...appProps}>
 			<PageCatcher>
-				<SidebarLayout sidebar={<TreeMenu tree={tree} />}>{children ?? <Router routes={allRoutes} />}</SidebarLayout>
+				<SidebarLayout sidebar={<TreeSidebar tree={tree} />}>{children ?? <Router routes={allRoutes} />}</SidebarLayout>
 			</PageCatcher>
 		</App>
 	);

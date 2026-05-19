@@ -3,7 +3,7 @@
 	/* Box */
 	display: block;
 	margin-inline: 0;
-	margin-block: var(--definitions-spacing, var(--spacing-block));
+	margin-block: var(--definitions-spacing, var(--space-normal));
 
 	/* Pseudo-classes */
 	&:first-child {
@@ -16,8 +16,8 @@
 	/* Children */
 	.pair {
 		display: block;
-		padding-block: var(--definitions-padding, var(--spacing-inline));
-		border-block: var(--definitions-border, var(--border-block)) solid var(--definitions-color-border, var(--color-border));
+		padding-block: var(--definitions-padding, var(--space-xsmall));
+		border-block: var(--definitions-border, var(--stroke-normal)) solid var(--definitions-color-border, var(--color-border));
 
 		&:first-child {
 			padding-block-start: 0;
@@ -47,7 +47,7 @@
 	&.row .pair {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-		gap: var(--definitions-padding, var(--spacing-inline));
+		gap: var(--definitions-padding, var(--space-xsmall));
 		align-items: baseline;
 	}
 

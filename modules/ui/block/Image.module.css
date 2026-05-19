@@ -4,7 +4,7 @@
 	display: block;
 	width: 100%;
 	margin-inline: 0;
-	margin-block: var(--image-spacing, var(--spacing-block));
+	margin-block: var(--image-spacing, var(--space-normal));
 
 	/* Style */
 	object-position: center center;

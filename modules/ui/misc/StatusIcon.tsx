@@ -10,7 +10,6 @@ const STATUS_ICONS: {
 	[K in Status]?: ComponentType<Record<string, unknown>>;
 } = {
 	loading: Loading,
-	primary: CheckCircleIcon,
 	success: CheckCircleIcon,
 	error: XCircleIcon,
 	warning: ExclamationTriangleIcon,

@@ -3,7 +3,7 @@
 	/* Box */
 	display: block;
 	margin-inline: 0;
-	margin-block: var(--address-spacing, var(--spacing-block));
+	margin-block: var(--address-spacing, var(--space-normal));
 
 	/* Contents */
 	white-space: pre-line;

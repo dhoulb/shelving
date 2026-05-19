@@ -16,7 +16,7 @@ const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
  */
 export function Head(): ReactElement {
 	const meta = requireMeta();
-	const { url, title, app, links, tags, stylesheets, modules, scripts } = meta;
+	const { url, title, app, description, links, tags, stylesheets, modules, scripts } = meta;
 
 	useEffect(() => {
 		if (typeof window === "undefined") return;
@@ -27,6 +27,7 @@ export function Head(): ReactElement {
 	return (
 		<>
 			{fullTitle && <title>{fullTitle}</title>}
+			{description && <meta name="description" content={description} />}
 			{tags && getProps(tags).map(_renderTag)}
 			{links && getProps(links).map(_renderLink)}
 			{stylesheets?.map(_renderStylesheet)}

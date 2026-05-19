@@ -20,7 +20,7 @@ import { FileExtractor } from "./FileExtractor.js";
  * - Does not set `title` — TS source files have no confident title source. The renderer falls back to `name`.
  */
 export class TypescriptExtractor extends FileExtractor {
-	override extractProps(name: string, text: string): FileElementProps {
+	override extractProps(name: string, text: string): Partial<FileElementProps> & { name: string } {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
 		const content = _getFileDocComment(source);
 
@@ -45,8 +45,8 @@ function _mergeOverloads(existing: DocumentationElement, next: DocumentationElem
 	const b = next.props;
 	const merged: DocumentationElementProps = {
 		...a,
-		// Keep first description encountered; fill in if `existing` had none.
-		description: a.description ?? b.description,
+		// Keep first content encountered; fill in if `existing` had none.
+		content: a.content ?? b.content,
 		// Append signatures.
 		signatures: _concat(a.signatures, b.signatures),
 		// Append params, returns, throws, examples — never dedupe (per spec).
@@ -107,7 +107,7 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 		props: {
 			name,
 			kind,
-			description: jsDoc?.description,
+			content: _buildJSDocContent(jsDoc?.description, jsDoc?.unhandled),
 			signatures: signature ? [signature] : undefined,
 			params,
 			returns,
@@ -116,6 +116,17 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 			children,
 		},
 	};
+}
+
+/**
+ * Combine the JSDoc leading-description text and any unhandled `@rule` blocks into a single markup content string.
+ * - Unhandled rules (anything not `@param`/`@returns`/`@throws`/`@example`) are appended after the description, separated by blank lines, with their `@name` preserved.
+ * - Returns `undefined` if both are empty.
+ */
+function _buildJSDocContent(description: string | undefined, unhandled: string | undefined): string | undefined {
+	if (!description) return unhandled;
+	if (!unhandled) return description;
+	return `${description}\n\n${unhandled}`;
 }
 
 /** Check if a statement has an `export` modifier. */
@@ -214,7 +225,8 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 			if (modifiers?.some(m => m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword)) continue;
 		}
 
-		const description = _getJSDoc(member, source)?.description;
+		const memberJSDoc = _getJSDoc(member, source);
+		const content = _buildJSDocContent(memberJSDoc?.description, memberJSDoc?.unhandled);
 
 		if (ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) {
 			const params = member.parameters.map(p => p.getText(source)).join(", ");
@@ -232,7 +244,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 				members.push({
 					type: "tree-documentation",
 					key,
-					props: { name, description, kind: "method", signatures: [signature] },
+					props: { name, content, kind: "method", signatures: [signature] },
 				});
 			}
 		} else if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
@@ -240,7 +252,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 			members.push({
 				type: "tree-documentation",
 				key: requireSlug(name),
-				props: { name, description, kind: "property", signatures: type ? [type] : undefined },
+				props: { name, content, kind: "property", signatures: type ? [type] : undefined },
 			});
 		}
 	}
@@ -254,7 +266,12 @@ interface JSDocResult {
 	returns?: DocumentationReturn[] | undefined;
 	throws?: DocumentationThrow[] | undefined;
 	examples?: DocumentationExample[] | undefined;
+	/** Unhandled `@rule` blocks concatenated into a single markup string (each rule preserved as `@name body`, separated by blank lines). */
+	unhandled?: string | undefined;
 }
+
+/** `@rule` names handled by dedicated parsers — everything else is appended to `unhandled` as raw markup. */
+const _HANDLED_RULES = new Set(["param", "params", "return", "returns", "throw", "throws", "example", "examples"]);
 
 /** Extract JSDoc from a node. */
 function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefined {
@@ -273,6 +290,7 @@ function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefine
 		const returns = _parseJSDocReturns(text);
 		const throws = _parseJSDocThrows(text);
 		const examples = _parseJSDocExamples(text);
+		const unhandled = _parseJSDocUnhandled(text);
 
 		return {
 			description: description || undefined,
@@ -280,8 +298,47 @@ function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefine
 			returns: returns.length ? returns : undefined,
 			throws: throws.length ? throws : undefined,
 			examples: examples.length ? examples : undefined,
+			unhandled,
 		};
 	}
+}
+
+/**
+ * Walk the JSDoc body for `@rule` blocks not handled by dedicated parsers (param/returns/throws/example).
+ * - Each rule block extends from its `@name` line up to the next `@rule` or the end of the docblock.
+ * - Returns the unhandled blocks joined by blank lines as `@name body`, preserved verbatim for downstream markup rendering.
+ * - Returns `undefined` if every rule is handled or there are none.
+ */
+function _parseJSDocUnhandled(text: string): string | undefined {
+	const body = text
+		.replace(/^\/\*\*\s*/, "")
+		.replace(/\s*\*\/$/, "")
+		.split("\n")
+		.map(l => l.replace(/^\s*\*\s?/, ""))
+		.join("\n");
+
+	const sections: string[] = [];
+	let currentName: string | undefined;
+	let currentLines: string[] = [];
+	const flush = () => {
+		if (currentName && !_HANDLED_RULES.has(currentName)) {
+			sections.push(`@${currentName} ${currentLines.join("\n")}`.trimEnd());
+		}
+		currentName = undefined;
+		currentLines = [];
+	};
+	for (const line of body.split("\n")) {
+		const match = line.match(/^@(\w+)\s*(.*)$/);
+		if (match) {
+			flush();
+			currentName = match[1];
+			currentLines = match[2] ? [match[2]] : [];
+		} else if (currentName) {
+			currentLines.push(line);
+		}
+	}
+	flush();
+	return sections.length ? sections.join("\n\n") : undefined;
 }
 
 /** Parse a JSDoc comment block into its description text. */

@@ -6,11 +6,11 @@ export interface MenuProps {
 	readonly children?: ReactNode;
 }
 
-/** A `<nav>` containing a `<ul>` list of `<MenuItem>` children. */
+/**
+ * A `<menu>` list of `<MenuItem>` children.
+ * - Renders as a bare `<menu>` element — semantically equivalent to `<ul>` per HTML spec but more meaningful for menu contexts. Place inside a `<nav>` (or use the sidebar-style nav at the layout level) if a navigation landmark is needed.
+ * - Nested `<Menu>` instances (typically inside a `<MenuItem>`) get indented via the `.menu .menu` CSS rule.
+ */
 export function Menu({ children }: MenuProps): ReactNode {
-	return (
-		<nav className={getModuleClass(MENU_CSS, "menu")}>
-			<ul className={getModuleClass(MENU_CSS, "list")}>{children}</ul>
-		</nav>
-	);
+	return <menu className={getModuleClass(MENU_CSS, "menu")}>{children}</menu>;
 }

@@ -20,7 +20,7 @@ export abstract class Extractor<I, O extends TreeElement = TreeElement> {
 
 /**
  * Merge two file elements with the same `key`.
- * - `title` and `path` are taken from `primary` (the higher-priority element).
+ * - `title` and `source` are taken from `primary` (the higher-priority element).
  * - `description` is taken from `primary` if set, otherwise from `secondary`.
  * - `content` and `children` from both are concatenated (primary first).
  */
@@ -33,10 +33,17 @@ export function mergeTreeElements(primary: TreeElement, secondary: TreeElement):
 		props: {
 			...primary.props,
 			title: primary.props.title,
-			path: primary.props.path,
+			source: primary.props.source,
 			description: primary.props.description ?? secondary.props.description,
-			content: mergeElements(primary.props.content, secondary.props.content),
+			content: _mergeContent(primary.props.content, secondary.props.content),
 			children: mergeElements(primary.props.children, secondary.props.children),
 		},
 	};
+}
+
+/** Merge two markup content strings — primary first, secondary appended after a blank line. Returns `undefined` if both are empty. */
+function _mergeContent(a: string | undefined, b: string | undefined): string | undefined {
+	if (!a) return b;
+	if (!b) return a;
+	return `${a}\n\n${b}`;
 }

@@ -10,7 +10,7 @@
 
 	&:any-link {
 		cursor: pointer;
-		text-decoration: underline var(--border-block);
+		text-decoration: underline var(--stroke-normal);
 
 		&:hover {
 			text-decoration: none;

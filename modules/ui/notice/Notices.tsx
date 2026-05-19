@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect } from "react";
 import { useStore } from "../../react/useStore.js";
-import { ELEMENTS_CSS } from "../block/Elements.js";
+import { FLEX_CSS } from "../block/Flex.js";
 import { getClass } from "../util/css.js";
 import { subscribeNotices } from "../util/notice.js";
 import { Notice } from "./Notice.js";
@@ -19,7 +19,7 @@ export function Notices(): ReactElement {
 		return subscribeNotices((message, status) => NOTICES.show(message, status));
 	});
 	return (
-		<div className={getClass(NOTICES_CSS.notices, ELEMENTS_CSS.elements, ELEMENTS_CSS.column)}>
+		<div className={getClass(NOTICES_CSS.notices, FLEX_CSS.elements, FLEX_CSS.column)}>
 			{notices.map(({ key, value }) => (
 				<Notice key={key} {...value} />
 			))}

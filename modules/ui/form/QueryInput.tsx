@@ -87,7 +87,7 @@ export function QueryInput<I, O>({
 					{...props}
 				/>
 			) : empty ? (
-				<Notice status="quiet">{empty}</Notice>
+				<Notice>{empty}</Notice>
 			) : null}
 		</Popover>
 	);

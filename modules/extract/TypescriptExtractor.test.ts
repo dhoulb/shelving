@@ -9,7 +9,7 @@ const extractor = new TypescriptExtractor();
  * - Web `File` has the same `.name` and `.text()` behaviour the extractor needs.
  * - The extra `BunFile`-only methods (`writer`, `exists`, etc.) aren't touched by the extractor.
  */
-function file(source: string, name = "source.ts"): BunFile {
+function file(source: string, name = "/tmp/source.ts"): BunFile {
 	return new File([source], name) as unknown as BunFile;
 }
 
@@ -29,7 +29,7 @@ export function add(a: number, b: number): number {
 				props: {
 					kind: "function",
 					name: "add",
-					description: "Add two numbers together.",
+					content: "Add two numbers together.",
 					signatures: ["(a: number, b: number) => number"],
 				},
 			},
@@ -149,7 +149,7 @@ export function first<T>(arr: T[]): T | undefined {
 	});
 
 	test("leaves title undefined (no confident source for a TS source file)", async () => {
-		const element = await extractor.extract(file("export const X = 1;", "array.ts"));
+		const element = await extractor.extract(file("export const X = 1;", "/tmp/array.ts"));
 		expect(element.props.title).toBeUndefined();
 		expect(element.props.name).toBe("array");
 		expect(element.key).toBe("array");
@@ -221,6 +221,25 @@ export function add(a: number, b: number): number { return a + b; }
 		);
 		const children = element.props.children as { props: { examples?: unknown } }[];
 		expect(children[0]?.props.examples).toEqual([{ description: "add(1, 2)" }, { description: "add(3, 4)" }]);
+	});
+
+	test("appends unhandled @rule blocks to content", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Add two numbers.
+ * @param a First operand.
+ * @custom This is a custom tag
+ * that spans multiple lines.
+ * @deprecated Use \`sum()\` instead.
+ */
+export function add(a: number, b: number): number { return a + b; }
+`),
+		);
+		const children = element.props.children as { props: { content?: string } }[];
+		expect(children[0]?.props.content).toBe(
+			"Add two numbers.\n\n@custom This is a custom tag\nthat spans multiple lines.\n\n@deprecated Use `sum()` instead.",
+		);
 	});
 
 	test("strips directory path from filename when computing key/name", async () => {

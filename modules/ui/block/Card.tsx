@@ -22,10 +22,12 @@ export interface CardProps extends ClickableProps {
  * @example <Card href="/foo" title="Open foo"><Heading>Clickable</Heading></Card>
  */
 export function Card({ children, disabled, href, onClick, title, target, download, ...variants }: CardProps): ReactElement {
+	const overlay =
+		href || onClick ? getClickable({ disabled, href, onClick, title, target, download, children: title ?? "Open" }, styles.overlay) : null;
 	return (
 		<article className={getModuleClass(styles, "card", variants)}>
-			{(href || onClick) && getClickable({ disabled, href, onClick, title, target, download, children: title ?? "Open" }, styles.overlay)}
-			{children}
+			{overlay}
+			{overlay ? <div>{children}</div> : children}
 		</article>
 	);
 }

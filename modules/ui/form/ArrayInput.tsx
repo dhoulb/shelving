@@ -4,7 +4,7 @@ import type { Schema } from "../../schema/Schema.js";
 import { type ImmutableArray, omitArrayIndex, withArrayIndex } from "../../util/array.js";
 import { splitMessage } from "../../util/error.js";
 import { formatUnit } from "../../util/format.js";
-import { Elements } from "../block/Elements.js";
+import { Flex } from "../block/Flex.js";
 import { Button } from "./Button.js";
 import { Input, type ValueInputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
@@ -39,12 +39,12 @@ export function ArrayInput({
 	const disableRemove = disabled || length <= min;
 	const addNewItem = () => onValue([...value, items.value]);
 	return (
-		<Elements column>
+		<Flex column>
 			{length ? (
 				value.map((v, i) => {
 					const k = i.toString();
 					return (
-						<Elements key={k}>
+						<Flex key={k}>
 							<SchemaInput
 								name={k}
 								schema={items}
@@ -60,7 +60,7 @@ export function ArrayInput({
 							>
 								<XMarkIcon />
 							</Button>
-						</Elements>
+						</Flex>
 					);
 				})
 			) : (
@@ -68,7 +68,7 @@ export function ArrayInput({
 					{placeholder}
 				</Input>
 			)}
-			<Elements>
+			<Flex>
 				<Button //
 					onClick={addNewItem}
 					disabled={disabled || (typeof max === "number" && length >= max)}
@@ -84,7 +84,7 @@ export function ArrayInput({
 						<XMarkIcon /> Clear {many}
 					</Button>
 				) : null}
-			</Elements>
-		</Elements>
+			</Flex>
+		</Flex>
 	);
 }

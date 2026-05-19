@@ -3,27 +3,17 @@ import STATUS_CSS from "./Status.module.css";
 
 /** Variants for statuses. */
 export type StatusVariants = {
-	/** Element has loading colors. */
+	/** Element has loading status. */
 	loading?: boolean | undefined;
-	/** Element has primary colors. */
-	primary?: boolean | undefined;
-	/** Element has secondary colors. */
-	secondary?: boolean | undefined;
-	/** Element has tertiary colors. */
-	tertiary?: boolean | undefined;
-	/** Element has quiet colors. */
-	quiet?: boolean | undefined;
-	/** Element has info colors. */
+	/** Element has info status. */
 	info?: boolean | undefined;
-	/** Element has danger colors. */
+	/** Element has danger status. */
 	danger?: boolean | undefined;
-	/** Element has error colors. */
+	/** Element has error status. */
 	error?: boolean | undefined;
-	/** Element has warning colors. */
+	/** Element has warning status. */
 	warning?: boolean | undefined;
-	/** Element has highlight colors. */
-	highlight?: boolean | undefined;
-	/** Element has success colors. */
+	/** Element has success status. */
 	success?: boolean | undefined;
 };
 

@@ -3,7 +3,7 @@ import type { Schemas } from "../../schema/Schema.js";
 import type { Data } from "../../util/data.js";
 import { splitMessage } from "../../util/error.js";
 import { getProps, withProp } from "../../util/object.js";
-import { Elements } from "../block/Elements.js";
+import { Flex } from "../block/Flex.js";
 import type { ValueInputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 
@@ -27,7 +27,7 @@ export function DataInput({
 	const messages = splitMessage(message);
 	const entries = getProps(props);
 	return (
-		<Elements column={entries.length > 2}>
+		<Flex column={entries.length > 2}>
 			{entries.map(([k, s]) => (
 				<SchemaInput //
 					key={k}
@@ -38,6 +38,6 @@ export function DataInput({
 					message={messages[k]}
 				/>
 			))}
-		</Elements>
+		</Flex>
 	);
 }

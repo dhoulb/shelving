@@ -2,14 +2,14 @@
 	/* Box */
 	position: relative;
 	margin-inline: 0;
-	margin-block: var(--card-spacing, var(--spacing-block));
+	margin-block: var(--card-spacing, var(--space-normal));
 
 	/* Style */
 	background: var(--card-color-bg, var(--color-surface));
-	border: var(--card-border, var(--border-block)) solid var(--card-color-border, var(--color-border));
-	padding: var(--card-padding, var(--spacing-block));
+	border: var(--card-border, var(--stroke-normal)) solid var(--card-color-border, var(--color-border));
+	padding: var(--card-padding, var(--space-normal));
 	color: var(--card-color-text, var(--color-text));
-	border-radius: var(--card-radius, var(--radius-block));
+	border-radius: var(--card-radius, var(--radius-normal));
 	box-shadow: var(--card-shadow, none);
 	transition: border-color var(--duration-fast);
 
@@ -36,7 +36,7 @@
 		border-color: var(--color-focus);
 	}
 	&:has(.overlay:focus-visible) {
-		outline: var(--border-focus) solid var(--color-focus);
+		outline: var(--stroke-focus) solid var(--color-focus);
 		outline-offset: 2px;
 	}
 
