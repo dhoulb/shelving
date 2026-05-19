@@ -100,11 +100,6 @@ export function getURIString(possible: Nullish<PossibleURI>, base?: PossibleURI)
 	return getURI(possible, base)?.href;
 }
 
-/** Convert a possible URI to a URI string, or throw `RequiredError` if conversion fails. */
-export function requireURIString(possible: PossibleURI, base?: PossibleURI, caller: AnyCaller = requireURIString): URIString | undefined {
-	return requireURI(possible, base, caller).href;
-}
-
 /** Type for a set of named URL parameters. */
 export type URIParams = ImmutableDictionary<string>;
 
