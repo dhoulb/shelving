@@ -12,8 +12,8 @@ export type PossibleLink = Path | ImmutableURI | URIString;
  *
  * Classification:
  * - **`URL` instance** → returns its `.href` directly.
- * - **Absolute path** (starts with `/`, e.g. `/schema`) → resolved against `root` with a dot prefix so the resolution honors `root`'s subfolder — `/schema` against `https://x.com/app/` becomes `https://x.com/app/schema`, not `https://x.com/schema`.
- * - **Anything else** — relative ref (`./foo`, `../foo`, `foo`, `#anchor`, `?q`) or scheme-prefixed URI (`mailto:a@b`, `tel:123`, `https://x.com/y`) → fed to `getURI` with `url` as the base. Self-contained URIs ignore the base (their own scheme makes them absolute); relative refs resolve against the page URL.
+ * - **Absolute path** (single leading `/`, e.g. `/schema`) → resolved against `root` with a dot prefix so the resolution honors `root`'s subfolder — `/schema` against `https://x.com/app/` becomes `https://x.com/app/schema`, not `https://x.com/schema`.
+ * - **Anything else** — relative ref (`./foo`, `../foo`, `foo`, `#anchor`, `?q`), protocol-relative URL (`//host/path`), or scheme-prefixed URI (`mailto:a@b`, `tel:123`, `https://x.com/y`) → fed to `getURI` with `url` as the base. Self-contained URIs ignore the base (their own scheme makes them absolute); protocol-relative and relative refs resolve against the page URL.
  *
  * Defaults:
  * - `root` defaults to `url`, so passing only `url` makes absolute paths resolve under the page URL's directory (same coordinate space the page lives in).
@@ -34,7 +34,8 @@ export function getLink(link: unknown, url?: ImmutableURL, root: ImmutableURL | 
 	if (!link) return;
 	if (link instanceof URL) return link.href as URIString;
 	if (typeof link !== "string") return;
-	if (isAbsolutePath(link)) return getURL(`.${link}`, root)?.href;
+	// Single leading slash is a site-absolute path; `//` is a protocol-relative URL and falls through to `getURI`.
+	if (isAbsolutePath(link) && !link.startsWith("//")) return getURL(`.${link}`, root)?.href;
 	return getURI(link, url ?? root)?.href;
 }
 

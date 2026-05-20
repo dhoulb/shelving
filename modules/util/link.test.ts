@@ -58,6 +58,9 @@ describe("getLink()", () => {
 		test("returns http URL ignoring url and root", () => {
 			expect(getLink("http://other.com/foo", PAGE, ROOT)).toBe("http://other.com/foo");
 		});
+		test("resolves protocol-relative URL against url's protocol", () => {
+			expect(getLink("//other.com/foo", PAGE, ROOT)).toBe("https://other.com/foo");
+		});
 		test("ignores document base for scheme classification", () => {
 			// Even though a relative path containing a colon could resolve via document.baseURI in browsers,
 			// scheme detection should be deterministic — only true scheme-prefixed strings pass through.
