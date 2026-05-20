@@ -10,10 +10,11 @@ import { mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { renderToString } from "react-dom/server";
 import { HTML } from "../modules/ui/page/HTML.js";
+import type { PossibleMeta } from "../modules/ui/util/meta.js";
 import { getElementPaths, type TreeElement } from "../modules/util/element.js";
 import { requireURL } from "../modules/util/index.js";
 import { type AbsolutePath, joinPath } from "../modules/util/path.js";
-import { App, type AppMeta } from "./App.js";
+import { App } from "./App.js";
 import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
 
 /**
@@ -30,7 +31,7 @@ export async function renderApp(root: TreeElement, outdir: AbsolutePath, script:
 	for (const path of paths) {
 		// Raw meta for this page — embedded in the HTML so the browser can rebuild the identical app while hydrating.
 		// `path` is site-absolute (`/util`); the `.` prefix resolves it *under* `APP_URL`'s subfolder, not its origin.
-		const meta: AppMeta = {
+		const meta: PossibleMeta = {
 			url: requireURL(`.${path}`, APP_URL).href,
 			root: APP_URL.href,
 			app: APP_TITLE,

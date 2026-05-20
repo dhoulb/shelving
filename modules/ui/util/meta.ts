@@ -4,7 +4,7 @@ import type { AnyCaller } from "../../util/function.js";
 import { type PossibleLink, requireLink } from "../../util/link.js";
 import type { Nullish } from "../../util/null.js";
 import { type ImmutableURI, type PossibleURI, type PossibleURIParams, withURIParams } from "../../util/uri.js";
-import { type ImmutableURL, requireURL } from "../../util/url.js";
+import { type ImmutableURL, type PossibleURL, requireURL } from "../../util/url.js";
 
 /** Set of named meta `<meta />` tags in `{ name: content }` format. */
 export type MetaTags = ImmutableDictionary<string | boolean | null | undefined>;
@@ -52,7 +52,10 @@ export interface Meta {
 }
 
 /** Input metadata that can be parsed and converted to proper metadata. */
-export interface PossibleMeta extends Omit<Meta, "url" | "links" | "scripts" | "modules" | "stylesheets"> {
+export interface PossibleMeta extends Omit<Meta, "root" | "url" | "links" | "scripts" | "modules" | "stylesheets"> {
+	/** Base URL for the app — accepts a string or `URL`, resolved with `requireURL()`. */
+	readonly root?: PossibleURL | undefined;
+
 	/**
 	 * New URL for the page.
 	 * - Resolved using `requireURL()` if set relative to `root`
@@ -112,13 +115,21 @@ export function mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = 
 }
 
 /**
+ * Resolve a `PossibleMeta` into a fully-formed `Meta`.
+ * - Like `mergeMeta()` but with no previous `Meta` to merge into — initialises meta from scratch.
+ */
+export function getMeta(meta: PossibleMeta, caller: AnyCaller = getMeta): Meta {
+	return mergeMeta({}, meta, caller);
+}
+
+/**
  * Merge two metadata URLs.
  * - New URL is resolved relative to: current URL, new base URL, current base URL
  */
 export function mergeMetaURL(
 	base: ImmutableURL | undefined,
 	current: ImmutableURL | undefined,
-	next: PossibleURI | undefined,
+	next: PossibleURL | undefined,
 	params: PossibleURIParams | undefined,
 	caller: AnyCaller = mergeMetaURL,
 ): ImmutableURL | undefined {
