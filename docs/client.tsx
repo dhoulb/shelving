@@ -15,7 +15,8 @@ import { requireURL } from "../modules/util/index.js";
 import { App, type AppMeta } from "./App.js";
 
 async function hydrate(): Promise<void> {
-	const container = document.getElementById("app");
+	// EXPERIMENT: hydrate `<body id="root">` directly, instead of a dedicated wrapper element.
+	const container = document.getElementById("root");
 	const data = document.getElementById("docs-data")?.textContent;
 	if (!container || !data) return;
 
