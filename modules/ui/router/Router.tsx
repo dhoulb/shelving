@@ -21,7 +21,7 @@ export interface RouterProps extends PossibleMeta {
  * - Returns `null` when there's no URL in context or the URL is outside the base.
  */
 export function Router({ routes, ...meta }: RouterProps): ReactElement | null {
-	const { url, base } = requireMeta(meta);
+	const { url, root: base } = requireMeta(meta);
 	if (!url) return null;
 	const path = base ? matchURLPrefix(url, base) : url.pathname;
 	if (!path) return null;

@@ -112,15 +112,22 @@ export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyC
  *
  * @returns Absolute path starting with `/`, or `undefined` for origin mismatches or non-matching paths.
  */
-export function matchURLPrefix(target: PossibleURL, base: PossibleURL, caller: AnyCaller = matchURLPrefix): AbsolutePath | undefined {
-	const baseURL = requireBaseURL(base, caller);
+export function matchURLPrefix(
+	target: PossibleURL | undefined,
+	base: PossibleURL | undefined,
+	caller: AnyCaller = matchURLPrefix,
+): AbsolutePath | undefined {
+	if (!target || !base) return;
+	const baseURL = requireURL(base, undefined, caller);
 	const targetURL = requireURL(target, baseURL, caller);
 	if (targetURL.origin !== baseURL.origin) return;
 	const basePath = baseURL.pathname;
 	const targetPath = targetURL.pathname;
 	if (basePath === "/") return targetPath;
-	if (targetPath === basePath.slice(0, -1)) return "/"; // e.g. `/abc` and `/abc/`
-	if (targetPath.startsWith(basePath)) return targetPath.slice(basePath.length - 1) as AbsolutePath;
+	// `basePath` may or may not have a trailing slash, so strip it and re-assert the directory boundary explicitly.
+	const bareBase = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;
+	if (targetPath === bareBase) return "/"; // e.g. `/abc` matches base `/abc` or `/abc/`
+	if (targetPath.startsWith(bareBase) && targetPath[bareBase.length] === "/") return targetPath.slice(bareBase.length) as AbsolutePath;
 }
 
 /**
@@ -131,8 +138,8 @@ export function matchURLPrefix(target: PossibleURL, base: PossibleURL, caller: A
  * @param target URL whose status to test — relative paths resolve against `base`.
  * @param base Base URL to test against.
  */
-export function isURLActive(target: PossibleURL, base: PossibleURL, caller: AnyCaller = isURLActive): boolean {
-	return matchURLPrefix(target, base, caller) === "/";
+export function isURLActive(target: PossibleURL | undefined, base: PossibleURL | undefined, caller: AnyCaller = isURLActive): boolean {
+	return !!target && !!base && matchURLPrefix(target, base, caller) === "/";
 }
 
 /**
@@ -144,8 +151,8 @@ export function isURLActive(target: PossibleURL, base: PossibleURL, caller: AnyC
  * @param target URL whose status to test — relative paths resolve against `base`.
  * @param base Base URL to test against.
  */
-export function isURLProud(target: PossibleURL, base: PossibleURL, caller: AnyCaller = isURLProud): boolean {
-	return matchURLPrefix(target, base, caller) !== undefined;
+export function isURLProud(target: PossibleURL | undefined, base: PossibleURL | undefined, caller: AnyCaller = isURLProud): boolean {
+	return !!target && !!base && matchURLPrefix(target, base, caller) !== undefined;
 }
 
 /** BaseURL is a URL with a guaranteed trailing slash on pathname. */

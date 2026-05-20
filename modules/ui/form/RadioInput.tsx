@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
 import { notNullish } from "../../util/null.js";
-import { ELEMENTS_LABEL_INPUT_CLASS, PLACEHOLDER_ELEMENTS_LABEL_INPUT_CLASS, RADIO_CLASS, type ValueInputProps } from "./Input.js";
+import { FLEX_LABEL_INPUT_CLASS, PLACEHOLDER_FLEX_LABEL_INPUT_CLASS, RADIO_CLASS, type ValueInputProps } from "./Input.js";
 
 export interface RadioInputProps extends ValueInputProps<boolean> {
 	children?: ReactNode | undefined;
@@ -20,7 +20,7 @@ export function RadioInput({
 }: RadioInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
-		<label className={hasChildren ? ELEMENTS_LABEL_INPUT_CLASS : PLACEHOLDER_ELEMENTS_LABEL_INPUT_CLASS}>
+		<label className={hasChildren ? FLEX_LABEL_INPUT_CLASS : PLACEHOLDER_FLEX_LABEL_INPUT_CLASS}>
 			<input
 				className={RADIO_CLASS}
 				type="radio"

@@ -8,7 +8,7 @@ Observable value containers for reactive state. A `Store<T>` holds a single curr
 
 **Error state** — setting `store.reason` puts the store in an error state. Subsequent reads of `store.value` throw that reason, which React error boundaries can catch.
 
-**Async iteration** — `Store<T>` implements `AsyncIterable<T>`. Iterating with `for await...of` first emits the current value (if one exists), then emits each subsequent value as it changes. The iterator blocks between values using the store's internal [`DeferredSequence`](../sequence/README.md).
+**Async iteration** — `Store<T>` implements `AsyncIterable<T>`. Iterating with `for await...of` first emits the current value (if one exists), then emits each subsequent value as it changes. The iterator blocks between values using the store's internal [`DeferredSequence`](/sequence).
 
 **Duplicate suppression** — deep equality is checked before emitting. Setting the same value twice only triggers one emission.
 
@@ -23,7 +23,7 @@ Observable value containers for reactive state. A `Store<T>` holds a single curr
 | `ArrayStore<T>` | Stores an array; adds `.first`, `.last`, `.count`, `.add()`, `.delete()`, `.toggle()`. |
 | `BooleanStore` | Stores a boolean; adds `.toggle()`. |
 
-`ItemStore` and `QueryStore` in the [`db`](../db/README.md) module extend `OptionalDataStore` and `ArrayStore` respectively, adding database-aware refresh and subscription logic.
+`ItemStore` and `QueryStore` in the [`db`](/db) module extend `OptionalDataStore` and `ArrayStore` respectively, adding database-aware refresh and subscription logic.
 
 ## Usage
 
@@ -90,5 +90,5 @@ async function connect(stream: AsyncIterable<number>) {
 
 ## See also
 
-- [`sequence`](../sequence/README.md) — `DeferredSequence` that powers the store's async iteration
-- [`db`](../db/README.md) — `ItemStore` and `QueryStore` extend `Store` for database-backed reactive state
+- [`sequence`](/sequence) — `DeferredSequence` that powers the store's async iteration
+- [`db`](/db) — `ItemStore` and `QueryStore` extend `Store` for database-backed reactive state

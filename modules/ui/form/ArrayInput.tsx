@@ -6,7 +6,8 @@ import { splitMessage } from "../../util/error.js";
 import { formatUnit } from "../../util/format.js";
 import { Flex } from "../block/Flex.js";
 import { Button } from "./Button.js";
-import { Input, type ValueInputProps } from "./Input.js";
+import { ButtonInput } from "./ButtonInput.js";
+import type { ValueInputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 
 export interface ArrayInputProps<T> extends ValueInputProps<ImmutableArray<T>> {
@@ -64,9 +65,9 @@ export function ArrayInput({
 					);
 				})
 			) : (
-				<Input onClick={addNewItem} name={name} required={required && min > 1} disabled={disabled}>
+				<ButtonInput onClick={addNewItem} name={name} required={required && min > 1} disabled={disabled}>
 					{placeholder}
-				</Input>
+				</ButtonInput>
 			)}
 			<Flex>
 				<Button //

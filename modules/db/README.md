@@ -1,12 +1,12 @@
 # db
 
-Typed database provider abstraction. Define your schema once as a [`Collection`](../schema/README.md), then swap providers (in-memory, SQLite, Firestore, Cloudflare D1, …) without changing any call sites. Providers are composable wrappers — add validation, logging, or caching by stacking them in a chain.
+Typed database provider abstraction. Define your schema once as a [`Collection`](/schema), then swap providers (in-memory, SQLite, Firestore, Cloudflare D1, …) without changing any call sites. Providers are composable wrappers — add validation, logging, or caching by stacking them in a chain.
 
 ## Concepts
 
 ### Collection
 
-A `Collection` is a declarative description of a database table or collection. It extends [`DataSchema`](../schema/README.md) and carries three things: a string `name`, an `id` schema (the identifier type), and a data schema (the shape of each record).
+A `Collection` is a declarative description of a database table or collection. It extends [`DataSchema`](/schema) and carries three things: a string `name`, an `id` schema (the identifier type), and a data schema (the shape of each record).
 
 ```ts
 import { COLLECTION } from "shelving/db"
@@ -57,7 +57,7 @@ Providers are layered wrappers. Each takes a `source` and delegates to it, inter
 - **`ThroughDBProvider`** — identity wrapper; extend this to intercept only specific methods (e.g. `DebugDBProvider`).
 - **`SQLiteProvider`** / **`PostgreSQLProvider`** — SQL-backed abstract providers. Concrete subclasses bind them to a specific driver.
 
-Cloud providers live in the [`cloudflare`](../cloudflare/README.md) and [`firestore`](../firestore/README.md) sibling modules.
+Cloud providers live in the [`cloudflare`](/cloudflare) and [`firestore`](/firestore) sibling modules.
 
 ### Migrations
 
@@ -117,7 +117,7 @@ for await (const post of provider.getItemSequence(POSTS, id)) {
 
 ## React integration
 
-The [`react`](../react/README.md) module's `createDBContext()` is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a `CacheDBProvider` in the chain) and exposes typed hooks — `useItem()`, `useQuery()`, `useProvider()` — that return reactive `Store` instances and suspend automatically while loading.
+The [`react`](/react) module's `createDBContext()` is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a `CacheDBProvider` in the chain) and exposes typed hooks — `useItem()`, `useQuery()`, `useProvider()` — that return reactive `Store` instances and suspend automatically while loading.
 
 ```ts
 import { createDBContext } from "shelving/react"
@@ -127,12 +127,12 @@ const provider = new CacheDBProvider(new ValidationDBProvider(new MemoryDBProvid
 export const { DBContext, useItem, useQuery } = createDBContext(provider)
 ```
 
-See the [`react`](../react/README.md) module for full usage.
+See the [`react`](/react) module for full usage.
 
 ## See also
 
-- [`schema`](../schema/README.md) — `DataSchema` that `Collection` extends
-- [`store`](../store/README.md) — `Store` base class used by `ItemStore` and `QueryStore`
-- [`react`](../react/README.md) — `createDBContext()` for React integration
-- [`cloudflare`](../cloudflare/README.md) — Cloudflare KV and D1 providers
-- [`firestore`](../firestore/README.md) — Firestore providers
+- [`schema`](/schema) — `DataSchema` that `Collection` extends
+- [`store`](/store) — `Store` base class used by `ItemStore` and `QueryStore`
+- [`react`](/react) — `createDBContext()` for React integration
+- [`cloudflare`](/cloudflare) — Cloudflare KV and D1 providers
+- [`firestore`](/firestore) — Firestore providers

@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import COLOR_CSS from "./Color.module.css";
 
 /** Variants for raw colours — pure hue overrides independent of semantic status. */
-export type ColorVariants = {
+export interface ColorVariants {
 	/** Element has primary colors. */
 	primary?: boolean | undefined;
 	/** Element has secondary colors. */
@@ -27,7 +27,7 @@ export type ColorVariants = {
 	purple?: boolean | undefined;
 	/** Element has pink colours. */
 	pink?: boolean | undefined;
-};
+}
 
 /** Possible colour strings. */
 export type Color = keyof ColorVariants;

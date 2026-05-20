@@ -121,5 +121,5 @@ try {
 
 ## See also
 
-- [schema](../schema/README.md) — schema validation (throws plain strings, not Error instances)
-- [util](../util/README.md) — `require*()` functions that throw `RequiredError`
+- [schema](/schema) — schema validation (throws plain strings, not Error instances)
+- [util](/util) — `require*()` functions that throw `RequiredError`

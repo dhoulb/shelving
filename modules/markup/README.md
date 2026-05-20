@@ -51,7 +51,7 @@ const node = renderMarkup(content, {
 });
 ```
 
-Link href resolution goes through [`getLink`](../util/README.md) — site-absolute paths resolve against `root`, relative refs resolve against `url`, scheme-prefixed URIs (`mailto:`, `tel:`, …) pass through, `URL` instances are emitted as-is.
+Link href resolution goes through [`getLink`](/util) — site-absolute paths resolve against `root`, relative refs resolve against `url`, scheme-prefixed URIs (`mailto:`, `tel:`, …) pass through, `URL` instances are emitted as-is.
 
 ### Block-only or inline-only rendering
 
@@ -92,5 +92,5 @@ const node = renderMarkup(content, {
 
 ## See also
 
-- [error](../error/README.md) — error classes used elsewhere in shelving
-- [util](../util/README.md) — shared utilities including JSX types and regexp helpers
+- [error](/error) — error classes used elsewhere in shelving
+- [util](/util) — shared utilities including JSX types and regexp helpers

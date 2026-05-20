@@ -23,6 +23,7 @@ export * from "./FormNotify.js";
 export * from "./FormStore.js";
 export * from "./Input.js";
 export * from "./NumberInput.js";
+export * from "./OutputInput.js";
 export * from "./Popover.js";
 export * from "./Progress.js";
 export * from "./QueryInput.js";

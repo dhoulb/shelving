@@ -12,7 +12,7 @@ Async-iterator primitives used throughout the shelving library. A "sequence" is 
 
 **ThroughSequence** and **IteratorSequence** are thin adapters for piping values between sequences.
 
-Most application code interacts with sequences indirectly via [`Store`](../store/README.md), which uses `DeferredSequence` internally. Use the sequence primitives directly only when building new reactive data sources.
+Most application code interacts with sequences indirectly via [`Store`](/store), which uses `DeferredSequence` internally. Use the sequence primitives directly only when building new reactive data sources.
 
 ## Usage
 
@@ -59,5 +59,5 @@ const next = await seq; // waits for the next resolve()
 
 ## See also
 
-- [`Store`](../store/README.md) — observable value container built on `DeferredSequence`
-- [`DB`](../db/README.md) — database providers that expose `AsyncIterable` via `getItemSequence` / `getQuerySequence`
+- [`Store`](/store) — observable value container built on `DeferredSequence`
+- [`DB`](/db) — database providers that expose `AsyncIterable` via `getItemSequence` / `getQuerySequence`
