@@ -10,6 +10,7 @@ import { AUTOLINK_RULE, LINK_RULE } from "./link.js";
 import { ORDERED_RULE } from "./ordered.js";
 import { PARAGRAPH_RULE } from "./paragraph.js";
 import { SEPARATOR_RULE } from "./separator.js";
+import { TABLE_RULE } from "./table.js";
 import { UNORDERED_RULE } from "./unordered.js";
 
 /** Markup rules that work in a block context. */
@@ -20,6 +21,7 @@ export const MARKUP_RULES_BLOCK: MarkupRules = [
 	UNORDERED_RULE,
 	ORDERED_RULE,
 	BLOCKQUOTE_RULE,
+	TABLE_RULE,
 	PARAGRAPH_RULE,
 ];
 
@@ -39,7 +41,6 @@ export const MARKUP_RULES_INLINE: MarkupRules = [CODE_RULE, LINK_RULE, AUTOLINK_
  *   - Hard because you have to capture the entire list including `\n\n`, so there's no obvious place to end it.
  *   - If there are breaks then any sub-lines need to be indented by two or more spaces otherwise it will break the list.
  *   - Make reference lists support this loose format too.
- * @todo [ ] Default rules support tables using `|` pipe syntax.
  * @todo [ ] Default rules support todo lists using `- [x]` syntax.
  * @todo [ ] Default rules support new reference syntax (combines reference lists/sidenotes/footnotes/reference and produces <dl> syntax).
  *   - All of these can be the same because reference links and Extended Markdown footnotes are basically the same.
@@ -68,4 +69,5 @@ export * from "./link.js";
 export * from "./ordered.js";
 export * from "./paragraph.js";
 export * from "./separator.js";
+export * from "./table.js";
 export * from "./unordered.js";
