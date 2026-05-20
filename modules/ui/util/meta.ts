@@ -115,10 +115,10 @@ export function mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = 
 }
 
 /**
- * Resolve a `PossibleMeta` into a fully-formed `Meta`.
+ * Create a fully-formed `Meta` from a `PossibleMeta`.
  * - Like `mergeMeta()` but with no previous `Meta` to merge into — initialises meta from scratch.
  */
-export function getMeta(meta: PossibleMeta, caller: AnyCaller = getMeta): Meta {
+export function createMeta(meta: PossibleMeta, caller: AnyCaller = createMeta): Meta {
 	return mergeMeta({}, meta, caller);
 }
 
