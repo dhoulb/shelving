@@ -43,11 +43,11 @@ Items waiting on browser/runtime/TS support before they can be actioned.
 
 ## Later
 
-- [ ] **342** — Write the module documentation in `README.md` (currently placeholder).
+- [x] **342** — Write the module documentation in `README.md`. Done in #41: root `README.md` is now a proper package readme and the home-page module overview moved to `modules/README.md`.
 - [ ] **517** — Fix partial validation in `ValidationDBProvider` — currently only validates top-level keys, not nested structure of the object.
 - [ ] **764** — Implement stale-while-revalidate in `EndpointStore`: set `_age_` to `undefined` instead of clearing the value, so the current value persists but is old enough to trigger a refetch.
 - [ ] **621** — Markup: support loose lists — list items containing paragraphs (`\n\n` double line breaks), wrapping contents in `<p>` tags (`childContext` is `"block"`).
-- [ ] **489** — Markup: support pipe table syntax (`|col|col|`).
+- [x] **489** — Markup: support pipe table syntax (`|col|col|`). Done in #45: `modules/markup/rule/table.ts` adds a table rule to the markup parser.
 - [ ] **156** — Markup: support todo list syntax (`- [x]` / `- [ ]`).
 - [ ] **738** — Markup: support unified reference/footnote/sidenote syntax that combines reference links, sidenotes, and footnotes into a single `<dl>`-producing format.
 - [ ] **891** — Util: convert confusable characters (e.g. `ℵ` alef symbol, `℮` estimate symbol) to their letterlike equivalents in `string.ts`.
