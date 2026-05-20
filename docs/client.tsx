@@ -3,7 +3,7 @@
  *
  * Bundled with `target: "browser"` (see `docs/build.tsx`) and loaded on every page. It rebuilds the
  * exact React tree the server rendered and hands it to `hydrateRoot()`, which adopts the existing
- * server HTML inside `#app` and makes it interactive — from then on `<Navigation>` handles routing.
+ * server HTML inside `<body>` and makes it interactive — from then on `<Navigation>` handles routing.
  *
  * The page embeds its meta as JSON (`#docs-data`); the larger element tree is fetched once from
  * `tree.json`. The script is `async`, so we wait for the DOM before reading either.
@@ -15,7 +15,7 @@ import { requireURL } from "../modules/util/index.js";
 import { App, type AppMeta } from "./App.js";
 
 async function hydrate(): Promise<void> {
-	// EXPERIMENT: hydrate `<body id="root">` directly, instead of a dedicated wrapper element.
+	// Hydrate `<body id="root">` directly — React 19 tolerates the trailing nodes outside its tree.
 	const container = document.getElementById("root");
 	const data = document.getElementById("docs-data")?.textContent;
 	if (!container || !data) return;

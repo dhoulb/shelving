@@ -17,13 +17,6 @@ import { App, type AppMeta } from "./App.js";
 import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
 
 /**
- * EXPERIMENT: foreign elements spliced onto the end of `<body>` after rendering.
- * - They are never part of any React render — the same situation a browser extension or third-party
- *   script creates — so they test whether hydrating `<body>` directly tolerates unknown trailing nodes.
- */
-const _EXPERIMENT_EXTRAS = `<div data-experiment="a" style="background:#ffe01a;padding:.5rem;text-align:center;font-family:sans-serif">Experiment A — element injected into the body after render</div><div data-experiment="b" style="background:#8ce814;padding:.5rem;text-align:center;font-family:sans-serif">Experiment B — a second injected element</div>`;
-
-/**
  * Render every page in `root` to static HTML and write it under `outdir`.
  * - `/` writes to `outdir/index.html`; `/foo/bar` writes to `outdir/foo/bar/index.html`.
  *
@@ -47,17 +40,15 @@ export async function renderApp(root: TreeElement, outdir: AbsolutePath, script:
 			modules: [script],
 			tags: { viewport: "width=device-width, initial-scale=1" },
 		};
-		// EXPERIMENT: render the app straight into `<body id="root">` (no wrapper div), then splice foreign
-		// elements onto the end of `<body>` — `client.tsx` hydrates `<body>` itself, so this tests tolerance.
-		const rendered = renderToString(
+		// The app renders straight into `<body id="root">`, which `client.tsx` hydrates directly.
+		const html = `<!DOCTYPE html>${renderToString(
 			<HTML app={APP_TITLE} language={APP_LANGUAGE} root={APP_URL}>
 				<App tree={root} meta={meta} />
 				<script type="application/json" id="docs-data">
 					{JSON.stringify(meta)}
 				</script>
 			</HTML>,
-		);
-		const html = `<!DOCTYPE html>${rendered.replace("</body>", `${_EXPERIMENT_EXTRAS}</body>`)}`;
+		)}`;
 		const filePath = path === "/" ? join(outdir, "index.html") : join(outdir, path.slice(1), "index.html");
 		await mkdir(dirname(filePath), { recursive: true });
 		await Bun.write(filePath, html);
