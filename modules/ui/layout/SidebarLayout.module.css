@@ -6,9 +6,8 @@
  * The inner `.content` element reuses the `.layout` class too so it picks up the standard
  * layout padding, safe-area insets, and `overflow: hidden auto` scroll behaviour.
  *
- * On narrow viewports the sidebar becomes an off-canvas drawer: it slides off the left edge of the
- * screen and is toggled by the hidden `.toggle` checkbox via its `.show` / `.close` `<label>` buttons.
- * Driving the drawer with a checkbox + CSS means it works even when the page ships no client-side JS.
+ * On narrow viewports the sidebar becomes an off-canvas drawer that slides off the left edge of the
+ * screen; the `.show` / `.close` buttons toggle it (both are hidden entirely on wide viewports).
  */
 
 .main {
@@ -38,38 +37,16 @@
 	margin: 0 auto;
 }
 
-/* Toggle checkbox — hidden entirely on wide viewports (see media query for the narrow-viewport state). */
-.toggle {
-	display: none;
-}
-
-/* Menu toggle buttons — hidden by default, only shown on narrow viewports (see media query below). */
+/* Wrappers for the menu toggle buttons — hidden on wide viewports, shown on narrow ones (see media query). */
 .show,
 .close {
 	display: none;
-	width: fit-content;
-	margin: 0;
-	align-items: center;
-	justify-content: center;
-	padding: var(--space-small);
-	border-radius: var(--radius-xsmall);
-	color: var(--color-text);
-	cursor: pointer;
-
-	& svg {
-		width: var(--size-icon);
-		height: var(--size-icon);
-	}
-
-	&:hover {
-		background: var(--color-surface);
-	}
+	margin-bottom: var(--space-xsmall);
 }
 
 /* The close button sits at the top of the sidebar, aligned to its trailing edge. */
 .close {
-	margin-inline-start: auto;
-	margin-bottom: var(--space-xsmall);
+	justify-content: flex-end;
 }
 
 /* On narrow viewports the sidebar becomes an off-canvas drawer that slides in from the left. */
@@ -87,28 +64,12 @@
 		transform: translateX(-100%);
 		transition: transform var(--duration-normal) ease-in-out;
 	}
-	/* Checked checkbox → drawer slides on screen. */
-	.toggle:checked ~ .sidebar {
+	.sidebar.open {
 		transform: translateX(0);
 		box-shadow: 0 0 1.5rem var(--color-overlay);
-	}
-	/* Keep the checkbox visually hidden but still focusable for keyboard users. */
-	.toggle {
-		display: block;
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
 	}
 	.show,
 	.close {
 		display: flex;
-	}
-	/* Forward the checkbox's keyboard focus ring to whichever toggle button is on screen. */
-	.toggle:focus-visible ~ .content .show,
-	.toggle:focus-visible ~ .sidebar .close {
-		outline: var(--stroke-focus) solid var(--color-focus);
-		outline-offset: 2px;
 	}
 }
