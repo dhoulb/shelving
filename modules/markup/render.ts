@@ -1,4 +1,4 @@
-import type { Element, Elements } from "../util/element.js";
+import type { ReactElement, ReactNode } from "react";
 import type { MarkupOptions } from "./util/options.js";
 import type { MarkupRule } from "./util/rule.js";
 
@@ -10,9 +10,9 @@ import type { MarkupRule } from "./util/rule.js";
  * @param options An options object for the render.
  * @param context The context to render in (defaults to `"block"`).
  *
- * @returns Elements, i.e. either a complete `Element`, `null`, `undefined`, `string`, or an array of zero or more of those.
+ * @returns A React node — an element, a string, `null`, or an array of zero or more of those.
  */
-export function renderMarkup(input: string, options: MarkupOptions, context = "block"): Elements {
+export function renderMarkup(input: string, options: MarkupOptions, context = "block"): ReactNode {
 	const arr = Array.from(_parseString(input, options, context));
 	return !arr.length ? null : arr.length === 1 ? arr[0] : arr;
 }
@@ -30,7 +30,7 @@ function* _parseString(
 	context: string,
 	/** The offset of where we are in the _original_ string — this is used to compute the `key` property for the returned element. */
 	offset = 0,
-): Iterable<Element | string> {
+): Iterable<ReactElement | string> {
 	// The best matched rule is the one with the highest priority.
 	// If two have equal priority use the earliest match in the string.
 	let bestMatch: RegExpExecArray | undefined;

@@ -1,10 +1,9 @@
 import { renderMarkup } from "../render.js";
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import { createWordRegExp } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
 
 /** Map characters, e.g. `*`, to their coresponding HTML tag, e.g. `strong` */
-const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", _: "em", "=": "mark" }; // Hyphen must be first so it works when we use the keys as a character class.
+const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", _: "em", "=": "mark" } as const; // Hyphen must be first so it works when we use the keys as a character class.
 
 const INLINE_REGEXP = createWordRegExp<{
 	char: keyof typeof INLINE_CHARS;
@@ -26,11 +25,9 @@ const INLINE_REGEXP = createWordRegExp<{
  */
 export const INLINE_RULE = createMarkupRule(
 	INLINE_REGEXP,
-	({ groups: { char, text } }, options, key) => ({
-		key,
-		$$typeof: REACT_ELEMENT_TYPE,
-		type: INLINE_CHARS[char],
-		props: { children: renderMarkup(text, options, "inline") },
-	}),
+	({ groups: { char, text } }, options, key) => {
+		const Inline = INLINE_CHARS[char];
+		return <Inline key={key}>{renderMarkup(text, options, "inline")}</Inline>;
+	},
 	["inline", "list", "link"],
 );

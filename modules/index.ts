@@ -10,7 +10,7 @@ export * from "./error/index.js";
 // export * from "./firestore/client/index.js"; // Not exported.
 // export * from "./firestore/lite/index.js"; // Not exported.
 // export * from "./firestore/server/index.js"; // Not exported.
-export * from "./markup/index.js";
+// export * from "./markup/index.js"; // Not exported — `shelving/markup` now compiles JSX and imports React's JSX runtime.
 // export * from "./react/index.js"; // Not exported.
 export * from "./schema/index.js";
 // export * from "./ui/index.js"; // Not exported — shelving/ui requires a bundler (CSS Modules, JSX) and is consumed as source.

@@ -1,4 +1,3 @@
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import { BLOCK_CONTENT_REGEXP, BLOCK_START_REGEXP, createBlockRegExp, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
 
@@ -27,22 +26,11 @@ const FENCED_REGEXP = createBlockRegExp<{
  */
 export const FENCED_RULE = createMarkupRule(
 	FENCED_REGEXP,
-	({ groups: { title, code } }, _options, key) => ({
-		key,
-		$$typeof: REACT_ELEMENT_TYPE,
-		type: "pre",
-		props: {
-			children: {
-				$$typeof: REACT_ELEMENT_TYPE,
-				type: "code",
-				key: null,
-				props: {
-					title: title?.trim() || undefined,
-					children: code.trim(),
-				},
-			},
-		},
-	}),
+	({ groups: { title, code } }, _options, key) => (
+		<pre key={key}>
+			<code title={title?.trim() || undefined}>{code.trim()}</code>
+		</pre>
+	),
 	["block", "list"],
 	10, // Higher priority than other `block` rules because it might contain content that matches other rules.
 );

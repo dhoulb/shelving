@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
-import { MARKUP_RULES, renderMarkup } from "../index.js";
+import { MARKUP_RULES, renderMarkup } from "./index.js";
 
 const $$typeof = Symbol.for("react.transitional.element");
 const OPTIONS = {
