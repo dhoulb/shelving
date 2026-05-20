@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getURL, isURL, isURLActive, isURLProud, matchURLPrefix, requireURL } from "../index.js";
+import { getBasedURI, getURL, isURL, isURLActive, isURLProud, matchURLPrefix, requireURL } from "../index.js";
 
 describe("isURL()", () => {
 	test("returns true for URL instance", () => {
@@ -53,6 +53,36 @@ describe("requireURL()", () => {
 	});
 	test("throws for invalid input", () => {
 		expect(() => requireURL("not a url")).toThrow();
+	});
+});
+describe("getBasedURI()", () => {
+	test("returns a complete URL unchanged", () => {
+		expect(getBasedURI("https://a.com/foo")?.href).toBe("https://a.com/foo");
+	});
+	test("returns a non-URL URI unchanged", () => {
+		expect(getBasedURI("mailto:a@b")?.href).toBe("mailto:a@b");
+	});
+	test("returns a URL instance as-is", () => {
+		const url = requireURL("https://a.com/foo");
+		expect(getBasedURI(url)).toBe(url);
+	});
+	test("resolves a relative ref against the base", () => {
+		expect(getBasedURI("./foo", "https://x.com/a/b/")?.href).toBe("https://x.com/a/b/foo");
+	});
+	test("treats the base as a directory even without a trailing slash", () => {
+		// Same trailing-slash normalisation as getURL — the last segment is not dropped.
+		expect(getBasedURI("./foo", "https://x.com/a/b")?.href).toBe("https://x.com/a/b/foo");
+	});
+	test("resolves a scheme-prefixed URI ignoring the base", () => {
+		expect(getBasedURI("mailto:a@b", "https://x.com/a/")?.href).toBe("mailto:a@b");
+	});
+	test("returns undefined for a relative ref with no base", () => {
+		expect(getBasedURI("./foo")).toBeUndefined();
+	});
+	test("returns undefined for nullish input", () => {
+		expect(getBasedURI(undefined)).toBeUndefined();
+		expect(getBasedURI(null)).toBeUndefined();
+		expect(getBasedURI("")).toBeUndefined();
 	});
 });
 describe("matchURLPrefix()", () => {

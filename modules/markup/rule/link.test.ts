@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
 import type { Element } from "../../util/element.js";
+import { requireURL } from "../../util/url.js";
 import { MARKUP_RULES, renderMarkup } from "../index.js";
 
 const $$typeof = Symbol.for("react.transitional.element");
@@ -129,16 +130,23 @@ test("LINK_RULE", () => {
 		props: { href: "http://google.com/", children: "Google" },
 	});
 
-	// Relative links use `base` from the passed in context.
-	expect(renderMarkup("[XXX](a/b/c)", { ...OPTIONS, base: "https://x.com" }, "inline")).toMatchObject({
+	// Relative links use `url` from the passed in context.
+	expect(renderMarkup("[XXX](a/b/c)", { ...OPTIONS, url: requireURL("https://x.com") }, "inline")).toMatchObject({
 		$$typeof,
 		type: "a",
 		props: { href: "https://x.com/a/b/c", children: "XXX" },
 	});
-	expect(renderMarkup("[](a/b/c)", { ...OPTIONS, base: "https://x.com" }, "inline")).toMatchObject({
+	expect(renderMarkup("[](a/b/c)", { ...OPTIONS, url: requireURL("https://x.com") }, "inline")).toMatchObject({
 		$$typeof,
 		type: "a",
 		props: { href: "https://x.com/a/b/c", children: "x.com/a/b/c" },
+	});
+
+	// Site-absolute paths use `root` from the passed in context — honoring its subfolder.
+	expect(renderMarkup("[Schema](/schema)", { ...OPTIONS, root: requireURL("https://x.com/app/") }, "inline")).toMatchObject({
+		$$typeof,
+		type: "a",
+		props: { href: "https://x.com/app/schema", children: "Schema" },
 	});
 
 	// Links can contain other inlines.

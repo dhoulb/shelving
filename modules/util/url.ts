@@ -67,29 +67,31 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
 }
 
 /**
- * Resolve a possible URL relative to a base URL, or return `undefined` if conversion fails.
+ * Resolve a possible URI relative to a base, or return `undefined` if conversion fails.
+ * - Returns any kind of URI — not just hierarchical `scheme://host` URLs. Use `getURL()` when a true URL is specifically required.
+ * - A `URL` instance is returned as-is (already absolute, base ignored).
  *
- * Note: When resolving relative URLs this treats `base` as if it ends in a slash.
- * - e.g. if `base` is `http://p.com/a/b/c` the path will be relative to `c` as if a `/` trailing slash was present.
- * - This is different to the default behaviour of `new URL()`, but is the more natural expected result
- * - This is consistent with our e.g. `getURL()` utilities.
- *
+ * Note: the base is normalised with `getBaseURL()`, so it is always treated as if it ends in a slash.
+ * - e.g. if `base` is `http://p.com/a/b/c` the path resolves relative to `c/` as if a trailing slash was present.
+ * - This differs from the default behaviour of `new URL()`, but is the more natural expected result.
  */
-export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURL | undefined {
-	if (!target) return;
-	const uri = _getURL(target, base);
-	if (uri && _isURL(uri)) return uri;
-}
-function _getURL(target: PossibleURL, base?: PossibleURL): URL | undefined {
-	if (target instanceof URL) return target;
+export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURI | undefined {
+	if (!input) return;
+	if (input instanceof URL) return input as ImmutableURI;
 	try {
-		// We need a base URL to potentially parse this URL against.
-		// Use the document base (if set) as the default URL.
-		const baseURL = getBaseURL(base ?? (typeof document === "object" ? document.baseURI : undefined));
-		return new URL(target, baseURL);
+		return new URL(input, getBaseURL(base)) as ImmutableURI;
 	} catch {
 		//
 	}
+}
+
+/**
+ * Resolve a possible URL relative to a base URL, or return `undefined` if conversion fails.
+ * - Like `getBasedURI()` but only succeeds for true `scheme://host` URLs — other URIs (e.g. `mailto:`) return `undefined`.
+ */
+export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURL | undefined {
+	const uri = getBasedURI(target, base);
+	if (uri && _isURL(uri)) return uri;
 }
 
 /** Convert a possible URL to a URL, or throw `RequiredError` if conversion fails. */
@@ -162,9 +164,10 @@ function _isBaseURL(uri: URL): uri is BaseURL {
 /** Get a Base URL. */
 export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
 	if (!input) return;
-	const uri = _getURL(input, undefined);
+	const uri = getBasedURI(input, undefined);
 	if (!uri || !_isURL(uri)) return;
 	if (_isBaseURL(uri)) return uri;
+	// Clone before mutating: when `input` was a `URL` instance, `getBasedURI` returned that same instance, so mutating it would corrupt the caller's object. A string input always yields a fresh `uri`.
 	const base: URL = typeof input === "string" ? uri : new URL(uri);
 	base.pathname = `${uri.pathname}/`; // Add a trailing slash.
 	return base as BaseURL;

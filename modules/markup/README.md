@@ -37,17 +37,21 @@ const node = renderMarkup("# Hello\n\nThis is **bold** and _italic_.", {
 |---|---|---|
 | `rules` | `MarkupRules` | The rules to apply (required). Use `MARKUP_RULES` for the default set. |
 | `rel` | `string` | `rel` attribute applied to all rendered links, e.g. `"nofollow ugc"`. |
-| `base` | `URLString` | Base URL for resolving relative links. Defaults to `window.location.href` in browser environments. |
+| `url` | `ImmutableURL` | Current page URL — base for resolving relative refs (`./foo`, `#x`, bare segments). |
+| `root` | `ImmutableURL` | Site root URL — base for resolving site-absolute paths (`/foo`), honoring its subfolder. |
 | `schemes` | `URISchemes` | Allowed URI schemes for links. Defaults to `["http:", "https:"]`. |
 
 ```ts
 const node = renderMarkup(content, {
   rules: MARKUP_RULES,
   rel: "nofollow ugc",
-  base: "https://example.com",
+  url: requireURL("https://example.com/page/"),
+  root: requireURL("https://example.com/"),
   schemes: ["http:", "https:", "mailto:"],
 });
 ```
+
+Link href resolution goes through [`getLink`](../util/README.md) — site-absolute paths resolve against `root`, relative refs resolve against `url`, scheme-prefixed URIs (`mailto:`, `tel:`, …) pass through, `URL` instances are emitted as-is.
 
 ### Block-only or inline-only rendering
 
