@@ -1,6 +1,6 @@
 # react
 
-React hooks and context helpers for integrating Shelving [stores](../store/README.md), async sequences, and API/DB providers into React components. The module is built on `useSyncExternalStore` and standard React patterns — no magic, no global state.
+React hooks and context helpers for integrating Shelving [stores](/store), async sequences, and API/DB providers into React components. The module is built on `useSyncExternalStore` and standard React patterns — no magic, no global state.
 
 ## Concepts
 
@@ -147,6 +147,6 @@ const stable = useReduce((prev, next) => {
 
 ## See also
 
-- [store](../store/README.md) — the `Store` class that `useStore` subscribes to
-- [api](../api/README.md) — `APIProvider`, `APICache`, and `EndpointStore`
-- [db](../db/README.md) — `DBProvider`, `DBCache`, `ItemStore`, and `QueryStore`
+- [store](/store) — the `Store` class that `useStore` subscribes to
+- [api](/api) — `APIProvider`, `APICache`, and `EndpointStore`
+- [db](/db) — `DBProvider`, `DBCache`, `ItemStore`, and `QueryStore`

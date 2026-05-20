@@ -17,9 +17,9 @@ function renderLinkMarkupRule(
 	key: string,
 ): Element {
 	const { url, root, schemes = HTTP_SCHEMES, rel } = options;
-	const resolved = getLink(unsafeHref, url, root);
-	const href = resolved && schemes.some(s => resolved.startsWith(s)) ? resolved : undefined;
-	const children = title ? renderMarkup(title, options, "link") : resolved ? formatURI(resolved) : "";
+	const link = getLink(unsafeHref, url, root);
+	const href = link && schemes.includes(link.protocol) ? link?.href : undefined;
+	const children = title ? renderMarkup(title, options, "link") : link ? formatURI(link) : "";
 	return {
 		key,
 		$$typeof: REACT_ELEMENT_TYPE,

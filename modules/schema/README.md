@@ -157,7 +157,7 @@ NUMBERS.validate(undefined);      // []
 
 ### Item schemas
 
-`ITEM` wraps a `DataSchema` to add a typed `id` field, matching the `Item` type in [util](../util/README.md).
+`ITEM` wraps a `DataSchema` to add a typed `id` field, matching the `Item` type in [util](/util).
 
 ```ts
 import { ITEM, STRING, INTEGER, NUMBER } from "shelving/schema";
@@ -199,5 +199,5 @@ PARTIAL_PRODUCT.validate({ price: 4.99 }); // { price: 4.99 }
 
 ## See also
 
-- [util](../util/README.md) — `Data`, `Item`, query, and update types consumed by schemas.
-- [db](../db/README.md) — `Collection` extends `DataSchema` and uses schemas to validate stored documents.
+- [util](/util) — `Data`, `Item`, query, and update types consumed by schemas.
+- [db](/db) — `Collection` extends `DataSchema` and uses schemas to validate stored documents.

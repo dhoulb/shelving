@@ -22,7 +22,7 @@ export interface NavigationProps extends PossibleMeta {
  * TODO: switch click/popstate handling to the browser Navigation API when broadly supported.
  */
 export function Navigation({ children, ...meta }: NavigationProps): ReactElement {
-	const { url, base, ...merged } = requireMeta(meta);
+	const { url, root: base, ...merged } = requireMeta(meta);
 	const nav = useInstance(NavigationStore, url, base);
 	useStore(nav);
 
@@ -56,7 +56,7 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 
 	return (
 		<NavigationContext value={nav}>
-			<MetaContext value={{ base, url: nav.value, ...merged }}>{children}</MetaContext>
+			<MetaContext value={{ root: base, url: nav.value, ...merged }}>{children}</MetaContext>
 		</NavigationContext>
 	);
 }

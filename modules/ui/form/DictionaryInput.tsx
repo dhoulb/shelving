@@ -8,7 +8,8 @@ import { formatUnit } from "../../util/format.js";
 import { omitProp } from "../../util/object.js";
 import { Flex } from "../block/Flex.js";
 import { Button } from "./Button.js";
-import { Input, type ValueInputProps } from "./Input.js";
+import { ButtonInput } from "./ButtonInput.js";
+import type { ValueInputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 import { TextInput } from "./TextInput.js";
 
@@ -80,9 +81,9 @@ export function DictionaryInput({
 					);
 				})
 			) : (
-				<Input onClick={addNewItem} name={name} required={required && min > 1} disabled={disabled}>
+				<ButtonInput onClick={addNewItem} name={name} required={required && min > 1} disabled={disabled}>
 					{placeholder}
-				</Input>
+				</ButtonInput>
 			)}
 			<Flex>
 				<Button //

@@ -208,5 +208,5 @@ isArrayWith(["x", "y"], "x");           // true
 
 ## See also
 
-- [schema](../schema/README.md) — Schema validation built on the `Data` and `Item` types from this module.
-- [db](../db/README.md) — Database layer that uses `Query`, `Updates`, and `Item` from this module.
+- [schema](/schema) — Schema validation built on the `Data` and `Item` types from this module.
+- [db](/db) — Database layer that uses `Query`, `Updates`, and `Item` from this module.

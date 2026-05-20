@@ -1,6 +1,6 @@
 # cloudflare
 
-[DBProvider](../db/README.md) implementations for Cloudflare Workers. Two backends are available: Workers KV for simple key-value storage and D1 for relational SQL.
+[DBProvider](/db) implementations for Cloudflare Workers. Two backends are available: Workers KV for simple key-value storage and D1 for relational SQL.
 
 Both providers accept a binding object injected by the Cloudflare Workers runtime. Declare the binding in `wrangler.toml` and access it through the `env` parameter of your Worker's `fetch` handler.
 

@@ -76,7 +76,7 @@
 		"build": "bun run --sequential build:*",
 		"build:0:setup": "rm -rf ./dist && mkdir -p ./dist",
 		"build:1:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore && cp -r modules/ui dist/ui",
-		"build:2:emit": "tsgo",
+		"build:2:emit": "tsgo -p tsconfig.build.json",
 		"build:3:syntax": "bun run ./dist/index.js",
 		"build:4:unit": "bun test ./dist/**/*.test.js --concurrent --only-failures --bail"
 	},

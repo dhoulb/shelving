@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { type ClickableProps, getClickable } from "../form/Clickable.js";
+import { Clickable, type ClickableProps } from "../form/Clickable.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import { type ColorVariants, getColorClass } from "./Color.js";
 import { getStatusClass, type StatusVariants } from "./Status.js";
@@ -23,16 +23,15 @@ export interface TagProps extends TagVariants, ClickableProps {
  * @example <Tag success>Active</Tag>
  * @example <Tag purple href="/beta">Beta</Tag>
  */
-export function Tag({ disabled, href, onClick, title, target, download, children, ...variants }: TagProps): ReactElement {
-	return getClickable(
-		{ disabled, href, onClick, title, target, download, children },
-		getClass(
-			TAG_CSS.tag, //
-			getModuleClass(TAG_CSS, variants),
-			getStatusClass(variants),
-			getColorClass(variants),
-		),
-	);
+export function Tag(props: TagProps): ReactElement {
+	return <Clickable {...props} className={getTagClass(props)} />;
 }
 
-export { TAG_CSS };
+export function getTagClass(variants: TagVariants): string {
+	return getClass(
+		TAG_CSS.tag, //
+		getModuleClass(TAG_CSS, variants),
+		getStatusClass(variants),
+		getColorClass(variants),
+	);
+}

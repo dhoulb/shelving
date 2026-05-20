@@ -2,9 +2,12 @@ import type { MouseEvent, ReactElement, ReactNode } from "react";
 import { useInstance } from "../../react/useInstance.js";
 import { useStore } from "../../react/useStore.js";
 import { BusyStore } from "../../store/BusyStore.js";
+import { isURLActive } from "../../util/index.js";
+import { getLink } from "../../util/link.js";
 import type { Path } from "../../util/path.js";
-import { type ImmutableURI, isURI, type URIString } from "../../util/uri.js";
+import type { ImmutableURI, URIString } from "../../util/uri.js";
 import { LOADING } from "../misc/Loading.js";
+import { requireMeta } from "../misc/MetaContext.js";
 import { callNotifiedElement } from "../util/notice.js";
 
 /***
@@ -32,13 +35,17 @@ export interface ClickableProps {
 	children?: ReactNode | undefined;
 }
 
+export interface StylableClickableProps extends ClickableProps {
+	className?: string | undefined;
+}
+
 /** Return either a `<button>` or an `<a href="">` based on whether an `onClick` or `href` prop is provided. */
-export function getClickable(props: ClickableProps, className?: string): ReactElement {
-	return props.href ? <LinkClickable {...props} className={className} /> : <ButtonClickable {...props} className={className} />;
+export function Clickable(props: StylableClickableProps): ReactElement {
+	return props.href ? <LinkClickable {...props} /> : <ButtonClickable {...props} />;
 }
 
 /** Return an `<a href="">` element. */
-function LinkClickable({
+export function LinkClickable({
 	disabled = false,
 	href,
 	title,
@@ -46,23 +53,20 @@ function LinkClickable({
 	download,
 	children = "Go",
 	className,
-}: ClickableProps & { className: string | undefined }): ReactElement {
-	const link: string | undefined = disabled ? undefined : isURI(href) ? href.href : href;
+}: StylableClickableProps): ReactElement {
+	// Resolve `href` against the current page URL and site root so site-absolute paths (`/foo`) honour the base subfolder.
+	const { url, root } = requireMeta();
+	const link = disabled ? undefined : getLink(href, url, root);
+	const active = isURLActive(link, url);
 	return (
-		<a href={link} title={title} download={download} target={target} className={className}>
+		<a href={link?.href} title={title} download={download} target={target} className={className} aria-current={active ? "page" : undefined}>
 			{children}
 		</a>
 	);
 }
 
 /** Return a `<button>` element. */
-function ButtonClickable({
-	disabled = false,
-	onClick,
-	title,
-	children = "Click",
-	className,
-}: ClickableProps & { className: string | undefined }): ReactElement {
+export function ButtonClickable({ disabled = false, onClick, title, children = "Click", className }: StylableClickableProps): ReactElement {
 	// Create a `BusyStore<undefined>` to keep track of the `onClick` call and any thrown errors.
 	const store = useInstance(BusyStore, undefined);
 

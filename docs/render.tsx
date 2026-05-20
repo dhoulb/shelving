@@ -33,7 +33,7 @@ export async function renderApp(root: TreeElement, outdir: AbsolutePath, stylesh
 			app={APP_TITLE}
 			description={APP_DESCRIPTION}
 			language={APP_LANGUAGE}
-			base={APP_URL}
+			root={APP_URL}
 			stylesheets={[stylesheet]}
 			tags={{ viewport: "width=device-width, initial-scale=1" }}
 		>
@@ -46,7 +46,8 @@ export async function renderApp(root: TreeElement, outdir: AbsolutePath, stylesh
 	const paths: AbsolutePath[] = Array.from(getElementPaths(root)).map(segments => joinPath("/", segments));
 
 	for (const path of paths) {
-		const html = `<!DOCTYPE html>${renderToString(<MetaContext value={{ url: requireURL(path, APP_URL), base: APP_URL }}>{app}</MetaContext>)}`;
+		// `path` is site-absolute (`/util`); the `.` prefix makes it resolve *under* `APP_URL`'s subfolder instead of its origin.
+		const html = `<!DOCTYPE html>${renderToString(<MetaContext value={{ url: requireURL(`.${path}`, APP_URL), root: APP_URL }}>{app}</MetaContext>)}`;
 		const filePath = path === "/" ? join(outdir, "index.html") : join(outdir, path.slice(1), "index.html");
 		await mkdir(dirname(filePath), { recursive: true });
 		await Bun.write(filePath, html);

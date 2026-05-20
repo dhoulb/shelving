@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 import { isAbsolutePath, type Path } from "./path.js";
-import type { ImmutableURI, URIString } from "./uri.js";
+import { type ImmutableURI, isURI, type URIString } from "./uri.js";
 import { getBasedURI, getURL, type ImmutableURL } from "./url.js";
 
 /** Anything that can be turned into an `<a href>` value — a site/relative path, a URI string, or a `URL` instance. */
@@ -21,22 +21,22 @@ export type PossibleLink = Path | ImmutableURI | URIString;
  *
  * Bases are passed through to `getURL` / `getBasedURI` lazily — neither `url` nor `root` is materialised into a normalised base until the chosen branch needs it.
  *
- * @param link The link to resolve. Strings are classified by shape; `URL` instances pass through.
+ * @param href The link to resolve. Strings are classified by shape; `URL` instances pass through.
  * @param url The current page URL — base for relative refs and scheme-prefixed URIs.
  * @param root The site root URL — base for absolute paths. Defaults to `url`.
- * @returns An absolute URI string, or `undefined` if `link` is missing, not a string/URL, or cannot be resolved.
+ * @returns An absolute URI object, or `undefined` if `link` is missing, not a string/URL, or cannot be resolved.
  *
  * @example getLink("/schema", pageURL, siteRoot) // → "https://x.com/app/schema" when siteRoot is "https://x.com/app/"
  * @example getLink("./db", new URL("https://x.com/app/schema/")) // → "https://x.com/app/schema/db"
  * @example getLink("mailto:a@b") // → "mailto:a@b"
  */
-export function getLink(link: unknown, url?: ImmutableURL, root: ImmutableURL | undefined = url): URIString | undefined {
-	if (!link) return;
-	if (link instanceof URL) return link.href as URIString;
-	if (typeof link !== "string") return;
+export function getLink(href: unknown, url?: ImmutableURL, root: ImmutableURL | undefined = url): ImmutableURI | undefined {
+	if (!href) return;
+	if (isURI(href)) return href;
+	if (typeof href !== "string") return;
 	// Single leading slash is a site-absolute path; `//` is a protocol-relative URL and falls through to `getBasedURI`.
-	if (isAbsolutePath(link) && !link.startsWith("//")) return getURL(`.${link}`, root)?.href;
-	return getBasedURI(link, url ?? root)?.href;
+	if (isAbsolutePath(href) && !href.startsWith("//")) return getURL(`.${href}`, root);
+	return getBasedURI(href, url ?? root);
 }
 
 /**
@@ -44,15 +44,15 @@ export function getLink(link: unknown, url?: ImmutableURL, root: ImmutableURL | 
  *
  * Same classification and defaults as `getLink`. Use when an absolute URI is required and there's no sensible "do nothing" path for the caller.
  *
- * @param link The link to resolve.
+ * @param href The link to resolve.
  * @param url The current page URL — base for relative refs and scheme-prefixed URIs.
  * @param root The site root URL — base for absolute paths. Defaults to `url`.
  * @param caller Identity of the calling function for error attribution.
  * @returns An absolute URI string.
  * @throws `RequiredError` if `link` cannot be resolved.
  */
-export function requireLink(link: PossibleLink, url?: ImmutableURL, root?: ImmutableURL, caller: AnyCaller = requireLink): URIString {
-	const href = getLink(link, url, root);
-	if (!href) throw new RequiredError("Invalid link", { received: link, caller });
-	return href;
+export function requireLink(href: PossibleLink, url?: ImmutableURL, root?: ImmutableURL, caller: AnyCaller = requireLink): ImmutableURI {
+	const uri = getLink(href, url, root);
+	if (!uri) throw new RequiredError("Invalid link", { received: href, caller });
+	return uri;
 }

@@ -1,6 +1,5 @@
 import { type ReactElement, useEffect } from "react";
 import type { ArrayItem } from "../../util/array.js";
-import { isNullish, notNullish } from "../../util/null.js";
 import { getProps, type Prop } from "../../util/object.js";
 import { requireMeta } from "../misc/MetaContext.js";
 import { joinTitles, type MetaAssets, type MetaLinks, type MetaTags } from "../util/meta.js";
@@ -38,31 +37,26 @@ export function Head(): ReactElement {
 }
 
 function _renderTag([k, x]: Prop<MetaTags>): ReactElement | null {
-	if (notNullish(x)) {
-		const y = x === true ? "yes" : x === false ? "no" : x;
-		if (k.startsWith("og:")) return <meta key={k} property={k} content={y} />; // Tags that start with `og:` use `property=""`
-		if (k.match(R_HTTP_EQUIV)) return <meta key={k} httpEquiv={k} content={y} />; // Tags that are in `Snake-Case` use `http-equiv=""`
-		return <meta key={k} name={k} content={y} />; // All other tags use `content=""`
-	}
-	return null;
+	if (x === null || x === undefined) return null;
+	const y = x === true ? "yes" : x === false ? "no" : x;
+	if (k.startsWith("og:")) return <meta key={k} property={k} content={y} />; // Tags that start with `og:` use `property=""`
+	if (k.match(R_HTTP_EQUIV)) return <meta key={k} httpEquiv={k} content={y} />; // Tags that are in `Snake-Case` use `http-equiv=""`
+	return <meta key={k} name={k} content={y} />; // All other tags use `content=""`
 }
 
-function _renderLink([k, v]: Prop<MetaLinks>): ReactElement | null {
-	if (notNullish(v)) {
-		const type = k.endsWith("icon") ? "image/x-icon" : "text/css";
-		return <link key={k} rel={k} href={v} type={type} />;
-	}
-	return null;
+function _renderLink([k, { href }]: Prop<MetaLinks>): ReactElement | null {
+	const type = k.endsWith("icon") ? "image/x-icon" : "text/css";
+	return <link key={k} rel={k} href={href} type={type} />;
 }
 
-function _renderStylesheet(v: ArrayItem<MetaAssets>): ReactElement | null {
-	return isNullish(v) ? null : <link key={v} rel="stylesheet" type="text/css" href={v} precedence="default" />;
+function _renderStylesheet({ href }: ArrayItem<MetaAssets>): ReactElement | null {
+	return <link key={href} rel="stylesheet" type="text/css" href={href} precedence="default" />;
 }
 
-function _renderModule(v: ArrayItem<MetaAssets>): ReactElement | null {
-	return isNullish(v) ? null : <script key={v} type="module" src={v} async={true} />;
+function _renderModule({ href }: ArrayItem<MetaAssets>): ReactElement | null {
+	return <script key={href} type="module" src={href} async={true} />;
 }
 
-function _renderScript(v: ArrayItem<MetaAssets>): ReactElement | null {
-	return isNullish(v) ? null : <script key={v} type="text/javascript" src={v} async={true} />;
+function _renderScript({ href }: ArrayItem<MetaAssets>): ReactElement | null {
+	return <script key={href} type="text/javascript" src={href} async={true} />;
 }

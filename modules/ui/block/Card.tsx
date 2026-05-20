@@ -1,7 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
-import { type ClickableProps, getClickable } from "../form/Clickable.js";
+import { Clickable, type ClickableProps } from "../form/Clickable.js";
 import { getModuleClass } from "../util/css.js";
-import styles from "./Card.module.css";
+import CARD_CSS from "./Card.module.css";
 
 export interface CardProps extends ClickableProps {
 	children?: ReactNode;
@@ -21,11 +21,10 @@ export interface CardProps extends ClickableProps {
  * @example <Card><Heading>Static</Heading></Card>
  * @example <Card href="/foo" title="Open foo"><Heading>Clickable</Heading></Card>
  */
-export function Card({ children, disabled, href, onClick, title, target, download, ...variants }: CardProps): ReactElement {
-	const overlay =
-		href || onClick ? getClickable({ disabled, href, onClick, title, target, download, children: title ?? "Open" }, styles.overlay) : null;
+export function Card({ children, href, onClick, title = "Open", ...props }: CardProps): ReactElement {
+	const overlay = (href || onClick) && <Clickable title={title} href={href} onClick={onClick} {...props} className={CARD_CSS.overlay} />;
 	return (
-		<article className={getModuleClass(styles, "card", variants)}>
+		<article className={getModuleClass(CARD_CSS, "card", props)}>
 			{overlay}
 			{overlay ? <div>{children}</div> : children}
 		</article>

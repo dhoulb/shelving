@@ -1,6 +1,6 @@
 # firestore
 
-[DBProvider](../db/README.md) implementations for Google Firestore. Three variants are available, each targeting a different SDK and runtime context. Choose the one that matches where your code runs.
+[DBProvider](/db) implementations for Google Firestore. Three variants are available, each targeting a different SDK and runtime context. Choose the one that matches where your code runs.
 
 | Provider | SDK | Realtime | Bundle size |
 |---|---|---|---|

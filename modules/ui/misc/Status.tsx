@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import STATUS_CSS from "./Status.module.css";
 
 /** Variants for statuses. */
-export type StatusVariants = {
+export interface StatusVariants {
 	/** Element has loading status. */
 	loading?: boolean | undefined;
 	/** Element has info status. */
@@ -15,7 +15,7 @@ export type StatusVariants = {
 	warning?: boolean | undefined;
 	/** Element has success status. */
 	success?: boolean | undefined;
-};
+}
 
 /** Possible status strings. */
 export type Status = keyof StatusVariants;

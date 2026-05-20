@@ -1,6 +1,6 @@
 # bun
 
-[DBProvider](../db/README.md) implementation for PostgreSQL using Bun's built-in `Bun.sql` API. No external database driver is required.
+[DBProvider](/db) implementation for PostgreSQL using Bun's built-in `Bun.sql` API. No external database driver is required.
 
 `BunPostgreSQLProvider` extends the shared `PostgreSQLProvider`, which handles SQL generation, filtering, sorting, pagination, JSONB nested key access, and partial updates. The Bun-specific layer provides the tagged-template SQL execution and wraps identifier quoting through Bun's native SQL engine for additional safety.
 

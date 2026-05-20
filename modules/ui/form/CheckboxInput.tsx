@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
 import { notNullish } from "../../util/null.js";
-import { CHECKBOX_CLASS, ELEMENTS_LABEL_INPUT_CLASS, type ValueInputProps } from "./Input.js";
+import { CHECKBOX_CLASS, FLEX_LABEL_INPUT_CLASS, type ValueInputProps } from "./Input.js";
 
 export interface CheckboxProps extends ValueInputProps<boolean> {
 	children?: ReactNode | undefined;
@@ -20,7 +20,7 @@ export function CheckboxInput({
 }: CheckboxProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
-		<label className={ELEMENTS_LABEL_INPUT_CLASS} aria-invalid={!!message}>
+		<label className={FLEX_LABEL_INPUT_CLASS} aria-invalid={!!message}>
 			<input
 				name={name}
 				type="checkbox"

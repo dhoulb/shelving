@@ -4,7 +4,7 @@ import { type ColorVariants, getColorClass } from "../misc/Color.js";
 import { getStatusClass, type StatusVariants } from "../misc/Status.js";
 import { type Classes, getClass, getModuleClass } from "../util/css.js";
 import BUTTON_CSS from "./Button.module.css";
-import { type ClickableProps, getClickable } from "./Clickable.js";
+import { Clickable, type ClickableProps } from "./Clickable.js";
 
 /** Variants for buttons. */
 export interface ButtonVariants extends FlexVariants, StatusVariants, ColorVariants {
@@ -23,19 +23,8 @@ export interface ButtonVariants extends FlexVariants, StatusVariants, ColorVaria
 interface ButtonProps extends ButtonVariants, ClickableProps {}
 
 /** Return either a `<button>` or an `<a href="">` styled as an button, based on whether an `onClick` or `href` prop is provided. */
-export function Button({ disabled, href, onClick, title, target, download, children, ...variants }: ButtonProps): ReactElement {
-	return getClickable(
-		{
-			disabled,
-			href,
-			onClick,
-			title,
-			target,
-			download,
-			children,
-		},
-		getButtonClass(variants),
-	);
+export function Button(props: ButtonProps): ReactElement {
+	return <Clickable {...props} className={getButtonClass(props)} />;
 }
 
 /** Get the full className for a button. */

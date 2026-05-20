@@ -1,5 +1,5 @@
 import type { ImmutableArray } from "./array.js";
-import type { DictionaryItem, ImmutableDictionary } from "./dictionary.js";
+import type { ImmutableDictionary } from "./dictionary.js";
 import { getDictionaryItems } from "./dictionary.js";
 import type { Entry } from "./entry.js";
 import type { Arguments } from "./function.js";
@@ -37,10 +37,10 @@ export function mapProps<I extends ImmutableObject, O extends ImmutableObject, A
 /** Modify the _values_ of a dictionary using a transform. */
 export function mapDictionary<I, O, A extends Arguments = []>(
 	dictionary: ImmutableDictionary<I>,
-	transform: (item: DictionaryItem<I>, ...args: A) => O,
+	transform: (value: I, ...args: A) => O,
 	...args: A
 ): ImmutableDictionary<O> {
-	return Object.fromEntries(mapEntries(getDictionaryItems(dictionary), transform, ...args));
+	return Object.fromEntries(mapEntryValues(getDictionaryItems(dictionary), transform, ...args));
 }
 
 /** Modify the _values_ of a set of entries using a transform. */
@@ -50,6 +50,15 @@ export function* mapEntries<K, I, O, A extends Arguments = []>(
 	...args: A
 ): Iterable<Entry<K, O>> {
 	for (const e of entries) yield [e[0], transform(e, ...args)];
+}
+
+/** Modify the _values_ of a set of entries using a transform. */
+export function* mapEntryValues<K, I, O, A extends Arguments = []>(
+	entries: Iterable<Entry<K, I>>,
+	transform: (value: I, ...args: A) => O,
+	...args: A
+): Iterable<Entry<K, O>> {
+	for (const e of entries) yield [e[0], transform(e[1], ...args)];
 }
 
 /**
