@@ -15,7 +15,7 @@ html:has(.layout) {
 	width: 100vw;
 	width: 100dvw;
 	overflow: hidden;
-	overflow-wrap: anywhere;
+	overflow-wrap: break-word; /* Break overlong words only as a last resort; `anywhere` would also break mid-word to fit narrow table/flex columns. */
 	overscroll-behavior: none;
 }
 
