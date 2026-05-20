@@ -40,7 +40,7 @@ export async function renderApp(root: TreeElement, outdir: AbsolutePath, script:
 			modules: [script],
 			tags: { viewport: "width=device-width, initial-scale=1" },
 		};
-		// The app renders straight into `<body id="root">`, which `client.tsx` hydrates directly.
+		// The app renders straight into `<body>`, which `client.tsx` hydrates directly.
 		const html = `<!DOCTYPE html>${renderToString(
 			<HTML app={APP_TITLE} language={APP_LANGUAGE} root={APP_URL}>
 				<App tree={root} meta={meta} />

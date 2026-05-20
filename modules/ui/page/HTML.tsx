@@ -7,7 +7,7 @@ export interface HTMLProps extends PossibleMeta {
 }
 
 /**
- * Output a `<html>` element wrapping `<head>` (via `<Head>`) and `<body id="root">`.
+ * Output a `<html>` element wrapping `<head>` (via `<Head>`) and `<body>`.
  * - `<Head>` renders the literal `<head>` with `<base>` and other shell-level metadata; per-page hoistable elements (title, meta, links, stylesheets, scripts) come from `<PageHead>` inside `<Page>` and are hoisted into this `<head>` by React 19.
  */
 export function HTML({ children, ...meta }: HTMLProps): ReactElement {
@@ -20,7 +20,7 @@ export function HTML({ children, ...meta }: HTMLProps): ReactElement {
 				{base && <base href={base.href} />}
 				{app && <title>{app}</title>}
 			</head>
-			<body id="root">
+			<body>
 				<MetaContext value={merged}>{children}</MetaContext>
 			</body>
 		</html>

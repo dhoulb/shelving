@@ -15,15 +15,14 @@ import { requireURL } from "../modules/util/index.js";
 import { App, type AppMeta } from "./App.js";
 
 async function hydrate(): Promise<void> {
-	// Hydrate `<body id="root">` directly — React 19 tolerates the trailing nodes outside its tree.
-	const container = document.getElementById("root");
 	const data = document.getElementById("docs-data")?.textContent;
-	if (!container || !data) return;
+	if (!data) return;
 
 	const meta = JSON.parse(data) as AppMeta;
 	const tree = (await fetch(requireURL("tree.json", meta.root).href).then(r => r.json())) as TreeElement;
 
-	hydrateRoot(container, <App tree={tree} meta={meta} />);
+	// Hydrate `<body>` directly — React 19 tolerates the trailing nodes outside its tree.
+	hydrateRoot(document.body, <App tree={tree} meta={meta} />);
 }
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => void hydrate());
