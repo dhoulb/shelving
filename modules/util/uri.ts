@@ -3,7 +3,7 @@ import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray, MutableArray } from "./array.js";
 import { type DictionaryItem, getDictionaryItems, type ImmutableDictionary, isDictionary, type MutableDictionary } from "./dictionary.js";
 import type { AnyCaller } from "./function.js";
-import { type Nullish, notNullish } from "./null.js";
+import type { Nullish } from "./null.js";
 import { getString, isString } from "./string.js";
 import type { ImmutableURL, URLString } from "./url.js";
 
@@ -24,10 +24,9 @@ export type URIHash = `#${string}`;
 
 /**
  * Construct a correctly-typed `URI` object.
- * - This is a more correctly typed version of the builtin Javascript `URI` constructor.
- * - Requires a URI string, URI object, or path as input, and optionally a base URI.
- * - If a path is provided as input, a base URI _must_ also be provided.
- * - The returned type is
+ * - This is a more correctly typed version of the builtin Javascript `URL` constructor.
+ * - Takes a URI string or URI object that already encodes a complete URI — no base parameter, so relative inputs are not accepted.
+ * - To resolve a relative input against a base, use `getBasedURI()` from `url.ts`.
  */
 export interface ImmutableURIConstructor {
 	new (input: URIString | ImmutableURI): ImmutableURI;
@@ -78,13 +77,12 @@ export function assertURI(value: unknown, caller: AnyCaller = assertURI): assert
  * - To resolve a relative ref against a base, use `getBasedURI()` from `url.ts`.
  */
 export function getURI(possible: Nullish<PossibleURI>): ImmutableURI | undefined {
-	if (notNullish(possible)) {
-		if (isURI(possible)) return possible;
-		try {
-			return new URL(possible) as ImmutableURI;
-		} catch {
-			return undefined;
-		}
+	if (!possible) return;
+	if (isURI(possible)) return possible;
+	try {
+		return new URL(possible) as ImmutableURI;
+	} catch {
+		//
 	}
 }
 

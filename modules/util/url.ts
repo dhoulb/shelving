@@ -167,6 +167,7 @@ export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
 	const uri = getBasedURI(input, undefined);
 	if (!uri || !_isURL(uri)) return;
 	if (_isBaseURL(uri)) return uri;
+	// Clone before mutating: when `input` was a `URL` instance, `getBasedURI` returned that same instance, so mutating it would corrupt the caller's object. A string input always yields a fresh `uri`.
 	const base: URL = typeof input === "string" ? uri : new URL(uri);
 	base.pathname = `${uri.pathname}/`; // Add a trailing slash.
 	return base as BaseURL;
