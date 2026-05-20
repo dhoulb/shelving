@@ -1,5 +1,4 @@
 import { renderMarkup } from "../render.js";
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import { BLOCK_CONTENT_REGEXP, createBlockRegExp } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
 
@@ -16,11 +15,6 @@ export const BLOCKQUOTE_REGEXP = createBlockRegExp(`${PREFIX}${BLOCK_CONTENT_REG
  */
 export const BLOCKQUOTE_RULE = createMarkupRule(
 	BLOCKQUOTE_REGEXP,
-	([quote], options, key) => ({
-		key,
-		$$typeof: REACT_ELEMENT_TYPE,
-		type: "blockquote",
-		props: { children: renderMarkup(quote.replace(INDENT, ""), options, "block") },
-	}),
+	([quote], options, key) => <blockquote key={key}>{renderMarkup(quote.replace(INDENT, ""), options, "block")}</blockquote>,
 	["block", "list"],
 );

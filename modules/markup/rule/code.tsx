@@ -1,5 +1,4 @@
 import { getRegExp } from "../../util/regexp.js";
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import { BLOCK_CONTENT_REGEXP } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
 
@@ -14,12 +13,7 @@ const CODE_REGEXP = getRegExp<{ code: string }>(`(?<fence>\`+)(?<code>${BLOCK_CO
  */
 export const CODE_RULE = createMarkupRule(
 	CODE_REGEXP,
-	({ groups: { code } }, _options, key) => ({
-		key,
-		$$typeof: REACT_ELEMENT_TYPE,
-		type: "code",
-		props: { children: code },
-	}),
+	({ groups: { code } }, _options, key) => <code key={key}>{code}</code>,
 	["inline", "list"],
 	10,
 );

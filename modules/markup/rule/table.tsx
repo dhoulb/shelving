@@ -1,6 +1,5 @@
-import type { Element } from "../../util/element.js";
+import type { ReactElement } from "react";
 import { renderMarkup } from "../render.js";
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
 import { createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
@@ -29,7 +28,7 @@ export const TABLE_RULE = createMarkupRule(TABLE_REGEXP, ({ groups: { table } },
 ]);
 
 /** Render a matched table block into a `<table>` element. */
-function _renderTable(table: string, options: MarkupOptions, key: string): Element {
+function _renderTable(table: string, options: MarkupOptions, key: string): ReactElement {
 	const lines = table.split("\n");
 
 	// Column count and alignment come from the first delimiter row — always line 1, guaranteed by `TABLE_REGEXP`.
@@ -49,42 +48,30 @@ function _renderTable(table: string, options: MarkupOptions, key: string): Eleme
 	}
 	sections.push(section);
 
-	// First section is `<thead>`; the last is `<tfoot>` when there are 3+ sections; sections in between are each a `<tbody>`.
+	// Build the table with explicit loops — markup elements are static and positional, so the loop index is the natural key.
 	const last = sections.length - 1;
-	const children = sections.map((rows, s): Element => {
-		const type = s === 0 ? "thead" : s === last && last >= 2 ? "tfoot" : "tbody";
-		return {
-			$$typeof: REACT_ELEMENT_TYPE,
-			type,
-			key: `${type}-${s}`,
-			props: { children: Array.from(_renderRows(rows, s === 0 ? "th" : "td", aligns, options)) },
-		};
-	});
-
-	return { key, $$typeof: REACT_ELEMENT_TYPE, type: "table", props: { children } };
-}
-
-/** Render the rows of one section into `<tr>` elements of `<th>` or `<td>` cells. */
-function* _renderRows(
-	rows: string[],
-	cell: "th" | "td",
-	aligns: readonly (string | undefined)[],
-	options: MarkupOptions,
-): Iterable<Element> {
-	let r = 0;
-	for (const row of rows) {
-		const values = _splitRow(row);
-		const cells = aligns.map((align, c): Element => {
-			const children = renderMarkup(values[c] ?? "", options, "inline");
-			return {
-				$$typeof: REACT_ELEMENT_TYPE,
-				type: cell,
-				key: c.toString(),
-				props: align ? { align, children } : { children },
-			};
-		});
-		yield { $$typeof: REACT_ELEMENT_TYPE, type: "tr", key: (r++).toString(), props: { children: cells } };
+	const body: ReactElement[] = [];
+	for (let s = 0; s < sections.length; s++) {
+		// First section is `<thead>`; the last is `<tfoot>` with 3+ sections; sections in between are each a `<tbody>`.
+		const Section = s === 0 ? "thead" : s === last && last >= 2 ? "tfoot" : "tbody";
+		const Cell = s === 0 ? "th" : "td";
+		const rowLines = sections[s] ?? [];
+		const rows: ReactElement[] = [];
+		for (let r = 0; r < rowLines.length; r++) {
+			const values = _splitRow(rowLines[r] ?? "");
+			const cells: ReactElement[] = [];
+			for (let c = 0; c < aligns.length; c++) {
+				cells.push(
+					<Cell key={c} align={aligns[c]}>
+						{renderMarkup(values[c] ?? "", options, "inline")}
+					</Cell>,
+				);
+			}
+			rows.push(<tr key={r}>{cells}</tr>);
+		}
+		body.push(<Section key={s}>{rows}</Section>);
 	}
+	return <table key={key}>{body}</table>;
 }
 
 /** Split a table row into trimmed cell strings, honouring `\|` escaped pipes. */

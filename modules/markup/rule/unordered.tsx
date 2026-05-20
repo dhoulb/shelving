@@ -1,6 +1,5 @@
-import type { Element } from "../../util/element.js";
+import type { ReactElement } from "react";
 import { renderMarkup } from "../render.js";
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
 import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
@@ -26,29 +25,14 @@ export const UNORDERED_REGEXP = createBlockRegExp<{
  */
 export const UNORDERED_RULE = createMarkupRule(
 	UNORDERED_REGEXP,
-	({ groups: { list = "" } }, options, key) => ({
-		key,
-		$$typeof: REACT_ELEMENT_TYPE,
-		type: "ul",
-		props: {
-			children: Array.from(_getItems(list, options)),
-		},
-	}),
+	({ groups: { list = "" } }, options, key) => <ul key={key}>{Array.from(_getItems(list, options))}</ul>,
 	["block", "list"],
 );
 
 /** Parse a markdown list into a set of items elements. */
-export function* _getItems(list: string, options: MarkupOptions): Iterable<Element> {
+export function* _getItems(list: string, options: MarkupOptions): Iterable<ReactElement> {
 	let key = 0;
 	for (const [_unused, item = ""] of list.matchAll(ITEM)) {
-		yield {
-			$$typeof: REACT_ELEMENT_TYPE,
-			type: "li",
-			props: {
-				children: renderMarkup(item.replace(INDENT, ""), options, "list"),
-			},
-			key: key.toString(),
-		};
-		key++;
+		yield <li key={key++}>{renderMarkup(item.replace(INDENT, ""), options, "list")}</li>;
 	}
 }

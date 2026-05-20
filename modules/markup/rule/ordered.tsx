@@ -1,6 +1,5 @@
-import type { Element } from "../../util/element.js";
+import type { ReactElement } from "react";
 import { renderMarkup } from "../render.js";
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import type { MarkupOptions } from "../util/options.js";
 import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
@@ -25,30 +24,18 @@ export const ORDERED_REGEXP = createBlockRegExp<{
  */
 export const ORDERED_RULE = createMarkupRule(
 	ORDERED_REGEXP,
-	({ groups: { list } }, options, key) => ({
-		key,
-		$$typeof: REACT_ELEMENT_TYPE,
-		type: "ol",
-		props: {
-			children: Array.from(_getOrderedItems(list, options)),
-		},
-	}),
+	({ groups: { list } }, options, key) => <ol key={key}>{Array.from(_getOrderedItems(list, options))}</ol>,
 	["block", "list"],
 );
 
 /** Parse a markdown list into a set of items elements. */
-function* _getOrderedItems(list: string, options: MarkupOptions): Iterable<Element> {
+function* _getOrderedItems(list: string, options: MarkupOptions): Iterable<ReactElement> {
 	let key = 0;
 	for (const [_unused, number = "", item = ""] of list.matchAll(ITEM)) {
-		yield {
-			$$typeof: REACT_ELEMENT_TYPE,
-			type: "li",
-			props: {
-				value: Number.parseInt(number, 10),
-				children: renderMarkup(item.replace(INDENT, ""), options, "list"),
-			},
-			key: key.toString(),
-		};
-		key++;
+		yield (
+			<li key={key++} value={Number.parseInt(number, 10)}>
+				{renderMarkup(item.replace(INDENT, ""), options, "list")}
+			</li>
+		);
 	}
 }

@@ -1,4 +1,3 @@
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import { createLineRegExp } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
 
@@ -11,14 +10,4 @@ const SEPARATOR_REGEXP = createLineRegExp("([-*•+_=])(?: *\\1){2,}");
  * - Character must be the same every time (can't mix)
  * - Might have infinite number of spaces between the characters.
  */
-
-export const SEPARATOR_RULE = createMarkupRule(
-	SEPARATOR_REGEXP,
-	(_match, _options, key) => ({
-		key,
-		$$typeof: REACT_ELEMENT_TYPE,
-		type: "hr",
-		props: {},
-	}),
-	["block"],
-);
+export const SEPARATOR_RULE = createMarkupRule(SEPARATOR_REGEXP, (_match, _options, key) => <hr key={key} />, ["block"]);

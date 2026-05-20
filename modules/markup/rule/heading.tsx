@@ -1,5 +1,4 @@
 import { renderMarkup } from "../render.js";
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import { createLineRegExp, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
 
@@ -16,11 +15,10 @@ const HEADING_REGEXP = createLineRegExp<{
  */
 export const HEADING_RULE = createMarkupRule(
 	HEADING_REGEXP,
-	({ groups: { prefix, heading = "" } }, options, key) => ({
-		key,
-		$$typeof: REACT_ELEMENT_TYPE,
-		type: `h${prefix.length}`,
-		props: { children: renderMarkup(heading.trim(), options, "inline") },
-	}),
+	({ groups: { prefix, heading = "" } }, options, key) => {
+		// The hash count picks the heading level; cast the dynamic tag to the known `h1`–`h6` set.
+		const Heading = `h${prefix.length}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+		return <Heading key={key}>{renderMarkup(heading.trim(), options, "inline")}</Heading>;
+	},
 	["block"],
 );

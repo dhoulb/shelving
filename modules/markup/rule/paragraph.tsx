@@ -1,5 +1,4 @@
 import { renderMarkup } from "../render.js";
-import { REACT_ELEMENT_TYPE } from "../util/internal.js";
 import { BLOCK_SPACE_REGEXP, BLOCK_START_REGEXP, createBlockRegExp } from "../util/regexp.js";
 import { createMarkupRule } from "../util/rule.js";
 
@@ -19,12 +18,7 @@ export const PARAGRAPH_REGEXP = createBlockRegExp<{
  */
 export const PARAGRAPH_RULE = createMarkupRule(
 	PARAGRAPH_REGEXP,
-	({ groups: { paragraph } }, options, key) => ({
-		key,
-		$$typeof: REACT_ELEMENT_TYPE,
-		type: "p",
-		props: { children: renderMarkup(paragraph, options, "inline") },
-	}),
+	({ groups: { paragraph } }, options, key) => <p key={key}>{renderMarkup(paragraph, options, "inline")}</p>,
 	["block"],
 	-10, // Low priority so it matches after other `block` elements (because it has a very generous capture).
 );
