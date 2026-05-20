@@ -42,7 +42,9 @@ export async function renderApp(root: TreeElement, outdir: AbsolutePath, script:
 		};
 		const html = `<!DOCTYPE html>${renderToString(
 			<HTML app={APP_TITLE} language={APP_LANGUAGE} root={APP_URL}>
-				<div id="app">
+				{/* `display: contents` keeps this hydration-root wrapper out of the layout, so the app's
+				    `.layout` element stays a direct flex child of `<body>` and scrolls correctly. */}
+				<div id="app" style={{ display: "contents" }}>
 					<App tree={root} meta={meta} />
 				</div>
 				<script type="application/json" id="docs-data">
