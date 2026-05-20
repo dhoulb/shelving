@@ -18,6 +18,7 @@ import { getElementPaths, type TreeElement } from "../modules/util/element.js";
 import { requireURL } from "../modules/util/index.js";
 import { type AbsolutePath, joinPath } from "../modules/util/path.js";
 import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
+import { HydrationProbe } from "./HydrationProbe.js";
 
 /**
  * Render every page in `root` to static HTML and write it under `outdir`.
@@ -37,9 +38,15 @@ export async function renderApp(root: TreeElement, outdir: AbsolutePath, stylesh
 			stylesheets={[stylesheet]}
 			tags={{ viewport: "width=device-width, initial-scale=1" }}
 		>
+			{/* Hydration spike: a server-rendered island that the client bundle below hydrates into life. */}
+			<div id="hydration-probe">
+				<HydrationProbe />
+			</div>
 			<Navigation>
 				<TreeApp tree={root} />
 			</Navigation>
+			{/* Loads the browser bundle that calls `hydrateRoot()` — without this the page stays static. */}
+			<script type="module" src="/client.js" />
 		</HTML>
 	);
 

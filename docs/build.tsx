@@ -18,7 +18,8 @@ interface RenderModule {
  * 1. Extract the directory tree from `entrypoint`.
  * 2. Bundle `docs/render.tsx` via `Bun.build` into a temporary directory. This processes every `.module.css` import in the dependency graph, emitting matching hashed class names in the JS bundle and the CSS asset.
  * 3. Copy the CSS asset into `outdir` so the rendered HTML can link to it.
- * 4. Import the bundled JS module and call its `renderApp` to write every page.
+ * 4. Bundle `docs/client.tsx` for the browser and copy it to `outdir` as `client.js` — the script that hydrates each page.
+ * 5. Import the bundled render module and call its `renderApp` to write every page.
  */
 export async function buildApp(entrypoint: AbsolutePath, outdir: AbsolutePath): Promise<void> {
 	// Clean up first.
@@ -59,6 +60,24 @@ export async function buildApp(entrypoint: AbsolutePath, outdir: AbsolutePath): 
 		const stylesheet = basename(cssPath.path);
 		await Bun.write(join(outdir, stylesheet), Bun.file(cssPath.path));
 		console.warn(`  Stylesheet: ${stylesheet}`);
+
+		// Bundle `docs/client.tsx` separately with `target: "browser"` so it can run in a browser.
+		// This is the JavaScript the static HTML loads to hydrate itself — without it the page has no JS at all.
+		console.warn("Bundling client script...");
+		const clientResult = await Bun.build({
+			entrypoints: [join(import.meta.dir, "client.tsx")],
+			outdir: tempdir,
+			target: "browser",
+			naming: { entry: "client.js" },
+			define: { "process.env.NODE_ENV": JSON.stringify("production") },
+			minify: false,
+		});
+		if (!clientResult.success) {
+			for (const log of clientResult.logs) console.error(log);
+			throw new Error("Failed to bundle client script");
+		}
+		await Bun.write(join(outdir, "client.js"), Bun.file(join(tempdir, "client.js")));
+		console.warn("  Client script: client.js");
 
 		// Import the bundled JS module — `.module.css` imports now resolve to hashed class-name objects that match the CSS asset.
 		const { renderApp } = (await import(jsPath.path)) as RenderModule;
