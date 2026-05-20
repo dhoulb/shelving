@@ -15,9 +15,12 @@ on:
     types: [opened, synchronize, reopened, closed]
   workflow_dispatch:
 
+# Serialize every run onto a single queue. All runs publish to the `docs`
+# branch, so they must not race; and a PR-close cleanup run must never cancel
+# the main-branch deploy that publishes the site root.
 concurrency:
-  group: docs-${{ github.ref }}
-  cancel-in-progress: true
+  group: docs
+  cancel-in-progress: false
 
 jobs:
   build:
