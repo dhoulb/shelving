@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import type { Element } from "../../util/element.js";
+import type { Element, ElementProps } from "../../util/element.js";
 import { requireURL } from "../../util/url.js";
 import { MARKUP_RULES, renderMarkup } from "../index.js";
 
@@ -72,7 +72,7 @@ test("AUTOLINK_RULE", () => {
 		type: "a",
 		props: { children: "dave@shax.com" },
 	});
-	expect((renderMarkup("mailto:dave@shax.com", OPTIONS, "inline") as Element).props.href).toBe(undefined);
+	expect((renderMarkup("mailto:dave@shax.com", OPTIONS, "inline") as Element<ElementProps & { href?: string }>).props.href).toBe(undefined);
 
 	// Links using schemes in whitelist are linked.
 	expect(renderMarkup("ftp://localhost/a/b", { ...OPTIONS, schemes: ["ftp:"] }, "inline")).toMatchObject({
@@ -115,13 +115,13 @@ test("LINK_RULE", () => {
 		type: "a",
 		props: { children: "LINK" },
 	});
-	expect((renderMarkup("[LINK]()", OPTIONS, "inline") as Element).props.href).toBe(undefined);
+	expect((renderMarkup("[LINK]()", OPTIONS, "inline") as Element<ElementProps & { href?: string }>).props.href).toBe(undefined);
 	expect(renderMarkup("[]()", OPTIONS, "inline")).toMatchObject({
 		$$typeof,
 		type: "a",
 		props: { children: "" },
 	});
-	expect((renderMarkup("[]()", OPTIONS, "inline") as Element).props.href).toBe(undefined);
+	expect((renderMarkup("[]()", OPTIONS, "inline") as Element<ElementProps & { href?: string }>).props.href).toBe(undefined);
 
 	// `href` strips whitespace.
 	expect(renderMarkup("[Google](\t  http://google.com  \t)", OPTIONS, "inline")).toMatchObject({
@@ -173,7 +173,9 @@ test("LINK_RULE", () => {
 		type: "a",
 		props: { children: "NOPE" },
 	});
-	expect((renderMarkup("[NOPE](mailto:dave@shax.com)", OPTIONS, "inline") as Element).props.href).toBe(undefined);
+	expect((renderMarkup("[NOPE](mailto:dave@shax.com)", OPTIONS, "inline") as Element<ElementProps & { href?: string }>).props.href).toBe(
+		undefined,
+	);
 
 	// Links using schemes in whitelist are linked.
 	expect(renderMarkup("[YEP](mailto:dave@shax.com)", { ...OPTIONS, schemes: ["mailto:"] }, "inline")).toMatchObject({

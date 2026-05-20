@@ -6,19 +6,20 @@ import type { Query } from "./query.js";
 import { queryItems } from "./query.js";
 
 /** Set of valid props for an element. */
-export interface ElementProps {
-	readonly [key: string]: unknown;
+export type ElementProps = {
 	readonly children?: Elements;
-}
+};
 
-/** Element with a type, props, and optional key (compatible with `React.ReactElement`). */
-export interface Element<P extends ElementProps = ElementProps> {
-	readonly [key: string]: unknown;
+/**
+ * Element with a type, props, and optional key (compatible with `React.ReactElement`).
+ * - Declared as a `type`, not an `interface`, so its implicit index signature lets it satisfy `Data` — `queryElements()` runs elements through `queryItems<T extends Data>`.
+ */
+export type Element<P extends ElementProps = ElementProps> = {
 	readonly type: string | ((props: P) => Elements | null);
 	readonly props: P;
 	readonly key: string | null;
 	readonly $$typeof?: symbol;
-}
+};
 
 /** Collection of elements (compatible with `React.ReactNode`). */
 export type Elements<T extends Element = Element> = undefined | null | string | T | Iterable<Elements<T>>;

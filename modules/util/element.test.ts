@@ -33,6 +33,12 @@ const b2: ReactNode = b1;
 const c1: Element = { type: "div", key: null, props: {} };
 const c2: Data = c1;
 
+// `Element` → `ReactElement` works (see `a2` above). The reverse does NOT: `ReactElement` lacks the
+// string index signature `Element` needs for `Data`, and even with that removed `Element`'s `Elements`
+// content model is narrower than React's `ReactNode` (no `number` / `boolean` / `Promise`).
+// @ts-expect-error — documents the one-way gap; remove this line if `Element` is ever unified with `ReactElement`.
+const d1: Element = {} as ReactElement;
+
 describe("getElementText()", () => {
 	test("elements can be converted to plain text", () => {
 		expect(getElementText(P)).toBe("PARAGRAPH");
