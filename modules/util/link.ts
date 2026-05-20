@@ -1,8 +1,8 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 import { isAbsolutePath, type Path } from "./path.js";
-import { getURI, type ImmutableURI, type URIString } from "./uri.js";
-import { getURL, type ImmutableURL } from "./url.js";
+import type { ImmutableURI, URIString } from "./uri.js";
+import { getBasedURI, getURL, type ImmutableURL } from "./url.js";
 
 /** Anything that can be turned into an `<a href>` value — a site/relative path, a URI string, or a `URL` instance. */
 export type PossibleLink = Path | ImmutableURI | URIString;
@@ -13,13 +13,13 @@ export type PossibleLink = Path | ImmutableURI | URIString;
  * Classification:
  * - **`URL` instance** → returns its `.href` directly.
  * - **Absolute path** (single leading `/`, e.g. `/schema`) → resolved against `root` with a dot prefix so the resolution honors `root`'s subfolder — `/schema` against `https://x.com/app/` becomes `https://x.com/app/schema`, not `https://x.com/schema`.
- * - **Anything else** — relative ref (`./foo`, `../foo`, `foo`, `#anchor`, `?q`), protocol-relative URL (`//host/path`), or scheme-prefixed URI (`mailto:a@b`, `tel:123`, `https://x.com/y`) → fed to `getURI` with `url` as the base. Self-contained URIs ignore the base (their own scheme makes them absolute); protocol-relative and relative refs resolve against the page URL.
+ * - **Anything else** — relative ref (`./foo`, `../foo`, `foo`, `#anchor`, `?q`), protocol-relative URL (`//host/path`), or scheme-prefixed URI (`mailto:a@b`, `tel:123`, `https://x.com/y`) → fed to `getBasedURI` with `url` as the base. Self-contained URIs ignore the base (their own scheme makes them absolute); protocol-relative and relative refs resolve against the page URL.
  *
  * Defaults:
  * - `root` defaults to `url`, so passing only `url` makes absolute paths resolve under the page URL's directory (same coordinate space the page lives in).
  * - When both are omitted, all branches return `undefined` (no base to resolve against).
  *
- * Bases are passed through to `getURL` / `getURI` lazily — neither `url` nor `root` is materialised into a normalised base until the chosen branch needs it.
+ * Bases are passed through to `getURL` / `getBasedURI` lazily — neither `url` nor `root` is materialised into a normalised base until the chosen branch needs it.
  *
  * @param link The link to resolve. Strings are classified by shape; `URL` instances pass through.
  * @param url The current page URL — base for relative refs and scheme-prefixed URIs.
@@ -34,9 +34,9 @@ export function getLink(link: unknown, url?: ImmutableURL, root: ImmutableURL | 
 	if (!link) return;
 	if (link instanceof URL) return link.href as URIString;
 	if (typeof link !== "string") return;
-	// Single leading slash is a site-absolute path; `//` is a protocol-relative URL and falls through to `getURI`.
+	// Single leading slash is a site-absolute path; `//` is a protocol-relative URL and falls through to `getBasedURI`.
 	if (isAbsolutePath(link) && !link.startsWith("//")) return getURL(`.${link}`, root)?.href;
-	return getURI(link, url ?? root)?.href;
+	return getBasedURI(link, url ?? root)?.href;
 }
 
 /**
