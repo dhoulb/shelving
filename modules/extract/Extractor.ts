@@ -32,8 +32,6 @@ export function mergeTreeElements(primary: TreeElement, secondary: TreeElement):
 		key: primary.key,
 		props: {
 			...primary.props,
-			title: primary.props.title,
-			source: primary.props.source,
 			description: primary.props.description ?? secondary.props.description,
 			content: _mergeContent(primary.props.content, secondary.props.content),
 			children: mergeElements(primary.props.children, secondary.props.children),
