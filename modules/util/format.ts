@@ -183,7 +183,7 @@ export function formatDateTime(date: PossibleDate, options?: DateFormatOptions, 
  * e.g. `http://shax.com/test?uid=129483` → `shax.com/test`
  */
 export function formatURI(url: PossibleURI, caller: AnyCaller = formatURI): string {
-	return _formatURI(requireURI(url, undefined, caller));
+	return _formatURI(requireURI(url, caller));
 }
 function _formatURI({ host, pathname }: URL): string {
 	return `${host}${pathname.endsWith("/") ? pathname.slice(0, -1) : pathname}`;
