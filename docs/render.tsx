@@ -28,10 +28,6 @@ import { HydrationProbe } from "./HydrationProbe.js";
  * @returns The number of pages written.
  */
 export async function renderApp(root: TreeElement, outdir: AbsolutePath, stylesheet: AbsolutePath): Promise<number> {
-	// Resolve the client bundle against `APP_URL` (the `./` prefix keeps it under any sub-path, e.g. the
-	// GitHub Pages PR preview at `/pr-43/`) — a bare `/client.js` would point at the site origin and 404 there.
-	const clientScript = requireURL("./client.js", APP_URL).href;
-
 	// Compose the site-wide `app` element once — per-page content is mounted by `<TreeApp>`'s catch-all route.
 	const app = (
 		<HTML
@@ -40,17 +36,16 @@ export async function renderApp(root: TreeElement, outdir: AbsolutePath, stylesh
 			language={APP_LANGUAGE}
 			root={APP_URL}
 			stylesheets={[stylesheet]}
+			modules={["/client.js"]}
 			tags={{ viewport: "width=device-width, initial-scale=1" }}
 		>
-			{/* Hydration spike: a server-rendered island that the client bundle below hydrates into life. */}
+			{/* Hydration spike: a server-rendered island that `client.js` (loaded via `modules` above) hydrates. */}
 			<div id="hydration-probe">
 				<HydrationProbe />
 			</div>
 			<Navigation>
 				<TreeApp tree={root} />
 			</Navigation>
-			{/* Loads the browser bundle that calls `hydrateRoot()` — without this the page stays static. */}
-			<script type="module" src={clientScript} />
 		</HTML>
 	);
 
