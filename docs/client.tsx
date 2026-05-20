@@ -1,24 +1,29 @@
 /**
- * Browser entry point for the hydration spike.
+ * Browser entry point.
  *
- * Bundled separately from `render.tsx` (see `docs/build.tsx`) with `target: "browser"`. It is loaded
- * on every page via the `modules` meta, which renders a hoisted `<script type="module" async>` and
- * resolves the URL against the site root so it works under sub-paths (e.g. the PR preview).
+ * Bundled with `target: "browser"` (see `docs/build.tsx`) and loaded on every page. It rebuilds the
+ * exact React tree the server rendered and hands it to `hydrateRoot()`, which adopts the existing
+ * server HTML inside `#app` and makes it interactive — from then on `<Navigation>` handles routing.
  *
- * `hydrateRoot()` does NOT re-render the page from scratch — it walks the server-rendered DOM already
- * inside `#hydration-probe`, reuses those elements, and attaches React's event listeners and state.
- *
- * Because the script is `async` (required for React to hoist it) it can run before the page has
- * finished parsing, so we wait for the DOM to be ready before looking for the container.
+ * The page embeds its meta as JSON (`#docs-data`); the larger element tree is fetched once from
+ * `tree.json`. The script is `async`, so we wait for the DOM before reading either.
  */
 
 import { hydrateRoot } from "react-dom/client";
-import { HydrationProbe } from "./HydrationProbe.js";
+import type { TreeElement } from "../modules/util/element.js";
+import { requireURL } from "../modules/util/index.js";
+import { App, type AppMeta } from "./App.js";
 
-function hydrate(): void {
-	const container = document.getElementById("hydration-probe");
-	if (container) hydrateRoot(container, <HydrationProbe />);
+async function hydrate(): Promise<void> {
+	const container = document.getElementById("app");
+	const data = document.getElementById("docs-data")?.textContent;
+	if (!container || !data) return;
+
+	const meta = JSON.parse(data) as AppMeta;
+	const tree = (await fetch(requireURL("tree.json", meta.root).href).then(r => r.json())) as TreeElement;
+
+	hydrateRoot(container, <App tree={tree} meta={meta} />);
 }
 
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", hydrate);
-else hydrate();
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => void hydrate());
+else void hydrate();

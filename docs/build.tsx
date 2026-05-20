@@ -8,18 +8,19 @@ import { MODULES_DIR, OUTPUT_DIR } from "./env.js";
 
 /** Shape exposed by the bundled `docs/render.tsx` module. */
 interface RenderModule {
-	readonly renderApp: (root: TreeElement, outdir: AbsolutePath, stylesheet: AbsolutePath) => Promise<number>;
+	readonly renderApp: (root: TreeElement, outdir: AbsolutePath, script: AbsolutePath, stylesheet: AbsolutePath) => Promise<number>;
 }
 
 /**
  * Build the entire documentation site to `outdir`.
  *
  * Pipeline:
- * 1. Extract the directory tree from `entrypoint`.
- * 2. Bundle `docs/render.tsx` via `Bun.build` into a temporary directory. This processes every `.module.css` import in the dependency graph, emitting matching hashed class names in the JS bundle and the CSS asset.
- * 3. Copy the CSS asset into `outdir` so the rendered HTML can link to it.
- * 4. Bundle `docs/client.tsx` for the browser and copy it to `outdir` as `client.js` — the script that hydrates each page.
- * 5. Import the bundled render module and call its `renderApp` to write every page.
+ * 1. Extract the directory tree from `entrypoint`, and write it to `tree.json` for the browser to hydrate from.
+ * 2. Bundle `docs/client.tsx` for the browser — this single build yields BOTH browser assets: the client JS
+ *    and the CSS extracted from every `.module.css` imported across the component tree.
+ * 3. Bundle `docs/render.tsx` for Bun — the server-side renderer. It resolves `.module.css` imports to the
+ *    same hashed class names (so its markup matches the browser CSS); its own CSS output is discarded.
+ * 4. Import the bundled renderer and call `renderApp` to write every page, linking the two browser assets.
  */
 export async function buildApp(entrypoint: AbsolutePath, outdir: AbsolutePath): Promise<void> {
 	// Clean up first.
@@ -28,62 +29,59 @@ export async function buildApp(entrypoint: AbsolutePath, outdir: AbsolutePath): 
 
 	const startTime = performance.now();
 
-	// Extract the directory tree from `entrypoint`.
+	// Extract the directory tree, and write it out for the browser to fetch and hydrate from.
 	console.warn("Extracting tree...");
 	const root = await new DirectoryExtractor().extract(entrypoint);
+	await Bun.write(join(outdir, "tree.json"), JSON.stringify(root));
 
-	// Bundle `docs/render.tsx` (and everything it imports, including `.module.css` files).
-	console.warn("Bundling render script...");
-	const renderEntrypoint = join(import.meta.dir, "render.tsx") as AbsolutePath;
 	const tempdir = await mkdtemp(join(tmpdir(), "shelving-docs-"));
 	try {
-		const result = await Bun.build({
-			entrypoints: [renderEntrypoint],
+		// Bundle the browser entry. One build produces both browser assets: the client JS and the CSS
+		// (extracted from the `.module.css` files imported across the component tree).
+		console.warn("Bundling browser assets...");
+		const browser = await Bun.build({
+			entrypoints: [join(import.meta.dir, "client.tsx")],
+			outdir: tempdir,
+			target: "browser",
+			naming: { entry: "[name]-[hash].[ext]", asset: "[name]-[hash].[ext]" },
+			define: { "process.env.NODE_ENV": JSON.stringify("production") },
+			minify: true,
+		});
+		if (!browser.success) {
+			for (const log of browser.logs) console.error(log);
+			throw new Error("Failed to bundle browser assets");
+		}
+		const scriptPath = browser.outputs.find(o => o.kind === "entry-point" && o.path.endsWith(".js"));
+		const stylePath = browser.outputs.find(o => o.path.endsWith(".css"));
+		if (!scriptPath) throw new Error("Browser bundle produced no JS entry");
+		if (!stylePath) throw new Error("Browser bundle produced no CSS asset");
+		const script = basename(scriptPath.path);
+		const stylesheet = basename(stylePath.path);
+		await Bun.write(join(outdir, script), Bun.file(scriptPath.path));
+		await Bun.write(join(outdir, stylesheet), Bun.file(stylePath.path));
+		console.warn(`  Browser assets: ${script}, ${stylesheet}`);
+
+		// Bundle the server-side renderer (its own CSS output is identical to the browser build's, and discarded).
+		console.warn("Bundling render script...");
+		const render = await Bun.build({
+			entrypoints: [join(import.meta.dir, "render.tsx")],
 			outdir: tempdir,
 			target: "bun",
 			naming: { entry: "[name]-[hash].[ext]", asset: "[name]-[hash].[ext]" },
 			minify: false,
 			external: ["typescript"],
 		});
-		if (!result.success) {
-			for (const log of result.logs) console.error(log);
+		if (!render.success) {
+			for (const log of render.logs) console.error(log);
 			throw new Error("Failed to bundle render script");
 		}
+		const renderPath = render.outputs.find(o => o.kind === "entry-point" && o.path.endsWith(".js"));
+		if (!renderPath) throw new Error("Render bundle produced no JS entry");
 
-		// Find the paths to the JS file and the CSS file.
-		const jsPath = result.outputs.find(o => o.kind === "entry-point" && o.path.endsWith(".js"));
-		const cssPath = result.outputs.find(o => o.path.endsWith(".css"));
-		if (!jsPath) throw new Error("Bundle produced no JS entry");
-		if (!cssPath) throw new Error("Bundle produced no CSS asset");
-
-		// Copy the stylesheet into `outdir` so the rendered HTML can link to it.
-		const stylesheet = basename(cssPath.path);
-		await Bun.write(join(outdir, stylesheet), Bun.file(cssPath.path));
-		console.warn(`  Stylesheet: ${stylesheet}`);
-
-		// Bundle `docs/client.tsx` separately with `target: "browser"` so it can run in a browser.
-		// This is the JavaScript the static HTML loads to hydrate itself — without it the page has no JS at all.
-		console.warn("Bundling client script...");
-		const clientResult = await Bun.build({
-			entrypoints: [join(import.meta.dir, "client.tsx")],
-			outdir: tempdir,
-			target: "browser",
-			naming: { entry: "client.js" },
-			define: { "process.env.NODE_ENV": JSON.stringify("production") },
-			minify: false,
-		});
-		if (!clientResult.success) {
-			for (const log of clientResult.logs) console.error(log);
-			throw new Error("Failed to bundle client script");
-		}
-		await Bun.write(join(outdir, "client.js"), Bun.file(join(tempdir, "client.js")));
-		console.warn("  Client script: client.js");
-
-		// Import the bundled JS module — `.module.css` imports now resolve to hashed class-name objects that match the CSS asset.
-		const { renderApp } = (await import(jsPath.path)) as RenderModule;
-
+		// Import the bundled renderer and write every page, linking the two browser assets.
+		const { renderApp } = (await import(renderPath.path)) as RenderModule;
 		console.warn("Rendering pages...");
-		const count = await renderApp(root, outdir, `/${stylesheet}`);
+		const count = await renderApp(root, outdir, `/${script}`, `/${stylesheet}`);
 		console.warn(`  Rendered ${count} pages`);
 	} finally {
 		await rm(tempdir, { recursive: true, force: true });
