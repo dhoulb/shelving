@@ -35,8 +35,14 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: install
         run: bun install
-      - name: build
+      # APP_URL must match where the build is actually served so links and assets resolve correctly.
+      - name: build (main)
+        if: github.event_name != 'pull_request'
         run: APP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" bun run docs:build
+      # PR previews are served from the `pr-<number>/` sub-directory, so the build resolves against that.
+      - name: build (preview)
+        if: github.event_name == 'pull_request'
+        run: APP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}" bun run docs:build
       - name: deploy (main)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
