@@ -7,7 +7,8 @@
  * layout padding, safe-area insets, and `overflow: hidden auto` scroll behaviour.
  *
  * On narrow viewports the sidebar becomes an off-canvas drawer that slides off the left edge of the
- * screen; the `.show` / `.close` buttons toggle it (both are hidden entirely on wide viewports).
+ * screen; the `.toggle` button opens/closes it and the `.overlay` dims the page behind the open
+ * drawer (both are hidden entirely on wide viewports).
  */
 
 .main {
@@ -37,16 +38,25 @@
 	margin: 0 auto;
 }
 
-/* Wrappers for the menu toggle buttons — hidden on wide viewports, shown on narrow ones (see media query). */
-.show,
-.close {
+/* Wrapper for the menu toggle button — hidden on wide viewports, shown on narrow ones (see media query). */
+.toggle {
 	display: none;
-	margin-bottom: var(--space-xsmall);
+	width: fit-content;
+	margin: 0 0 0 auto;
 }
 
-/* The close button sits at the top of the sidebar, aligned to its trailing edge. */
-.close {
-	justify-content: flex-end;
+/* Full-page dimmer behind the open drawer — hidden on wide viewports. */
+.overlay {
+	display: none;
+}
+
+@keyframes overlay-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 /* On narrow viewports the sidebar becomes an off-canvas drawer that slides in from the left. */
@@ -68,15 +78,24 @@
 		transform: translateX(0);
 		box-shadow: 0 0 1.5rem var(--color-overlay);
 	}
-	.show,
-	.close {
-		display: flex;
-	}
-	/* Pin the menu button so it stays reachable while the content column scrolls. */
-	.show {
+	/* Pin the toggle button to the top-right so it stays reachable while the content column scrolls. */
+	.toggle {
+		display: block;
 		position: sticky;
 		top: 0;
-		z-index: 50;
-		background: var(--color-bg);
+		z-index: 110;
+	}
+	/* Dim the page behind the open drawer; clicking the overlay closes it. */
+	.overlay {
+		display: block;
+		position: fixed;
+		inset: 0;
+		z-index: 90;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: var(--color-overlay);
+		cursor: pointer;
+		animation: overlay-fade-in var(--duration-normal) ease-in-out;
 	}
 }

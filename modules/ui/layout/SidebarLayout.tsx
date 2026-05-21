@@ -19,7 +19,8 @@ export interface SidebarLayoutProps {
 /**
  * Layout with a fixed-width side column (typically navigation) next to a scrollable main content column.
  * - The sidebar is rendered as `<nav>` — it almost always contains the page's primary navigation.
- * - On narrow viewports the sidebar becomes an off-canvas drawer toggled by the "show menu" / "close" buttons.
+ * - On narrow viewports the sidebar becomes an off-canvas drawer toggled by a single menu button that switches between a burger and a close icon.
+ * - While the drawer is open an overlay dims the rest of the page; clicking the overlay closes the drawer.
  * - Inside a `<Navigation>` the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
  * - Use the `--sidebar-layout-width` and `--sidebar-layout-bg` custom properties to override defaults.
  */
@@ -34,26 +35,26 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 
 	const sidebarEl = (
 		<nav key="sidebar" className={getClass(SIDEBAR_LAYOUT_CSS.sidebar, open && SIDEBAR_LAYOUT_CSS.open)}>
-			<div className={SIDEBAR_LAYOUT_CSS.close}>
-				<Button plain fit title="Close menu" onClick={() => setOpen(false)}>
-					<XMarkIcon />
-				</Button>
-			</div>
 			{sidebar}
 		</nav>
 	);
 	const contentEl = (
 		<div key="content" className={getClass(LAYOUT_CSS.layout, SIDEBAR_LAYOUT_CSS.content)}>
-			<div className={SIDEBAR_LAYOUT_CSS.show}>
-				<Button plain fit title="Show menu" onClick={() => setOpen(true)}>
-					<Bars3Icon />
+			<div className={SIDEBAR_LAYOUT_CSS.toggle}>
+				<Button fit cyan={!open} title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
+					{open ? <XMarkIcon /> : <Bars3Icon />}
 				</Button>
 			</div>
 			<div className={SIDEBAR_LAYOUT_CSS.contentInner}>{children}</div>
 		</div>
 	);
+	const overlayEl = open && (
+		<button key="overlay" type="button" className={SIDEBAR_LAYOUT_CSS.overlay} aria-label="Close menu" onClick={() => setOpen(false)} />
+	);
 	return (
-		<main className={getClass(SIDEBAR_LAYOUT_CSS.main, LAYOUT_CSS.layout)}>{right ? [contentEl, sidebarEl] : [sidebarEl, contentEl]}</main>
+		<main className={getClass(SIDEBAR_LAYOUT_CSS.main, LAYOUT_CSS.layout)}>
+			{right ? [contentEl, sidebarEl, overlayEl] : [sidebarEl, contentEl, overlayEl]}
+		</main>
 	);
 }
 
