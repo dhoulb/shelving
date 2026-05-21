@@ -21,69 +21,30 @@ Observable value containers for reactive state. A `Store<T>` holds a single curr
 | `DataStore<T>` | Adds `.data`, `.update()`, `.get()`, `.set()` helpers for object values. |
 | `OptionalDataStore<T>` | Like `DataStore` but the value may be `undefined`; `.exists` and `.require()` handle the absent case. |
 | `ArrayStore<T>` | Stores an array; adds `.first`, `.last`, `.count`, `.add()`, `.delete()`, `.toggle()`. |
+| `DictionaryStore<T>` | Stores a string-keyed object; adds `.get()`, `.set()`, `.delete()`, `.update()`. |
 | `BooleanStore` | Stores a boolean; adds `.toggle()`. |
+| `PathStore` | Stores an absolute path; adds `.isActive()` / `.isProud()` route helpers. |
+| `URLStore` | Stores a URL; adds query-param helpers and `.isActive()` / `.isProud()`. |
+| `BusyStore<T>` | Adds a `.busy` boolean store that is `true` while awaiting a value. |
+| `FetchStore<T>` | Fetches its value from a callback; adds `refresh()` / `invalidate()`. |
+| `PayloadFetchStore<P, R>` | A `FetchStore` driven by a `.payload` store — changing the payload re-fetches. |
 
 `ItemStore` and `QueryStore` in the [`db`](/db) module extend `FetchStore` directly, adding database-aware fetch and subscription logic.
 
 ## Usage
 
-### Create and update a store
+Every store shares the same core: set `.value`, read it back (or `for await` it), and consumers see the change. The base [`Store`](/store/Store) page covers the full lifecycle; each subclass page covers its own helpers.
+
+As an integration example, `store.through(sequence)` bridges any `AsyncIterable` source into a store — it sets the store's value for each item yielded and re-yields it:
 
 ```ts
 import { Store, NONE } from "shelving/store";
 
-// Start loading (no value yet).
 const store = new Store<number>(NONE);
 
-// Provide a value — any waiting iterators are unblocked.
-store.value = 42;
-
-// Update again.
-store.value = 43;
-```
-
-### Iterate over changes
-
-```ts
-for await (const v of store) {
-  console.log(v); // receives 42, then 43, then any future values
-}
-```
-
-### Check state safely
-
-```ts
-if (store.loading) {
-  // No value yet — safe to check without risk of throwing.
-} else {
-  console.log(store.value);
-}
-```
-
-### Starter — run code only while subscribed
-
-```ts
-import { DataStore, NONE } from "shelving/store";
-
-const store = new DataStore<{ count: number }>(NONE);
-
-// The function runs when the first `for await` begins, and stops when the last one ends.
-store.starter = () => {
-  const id = setInterval(() => {
-    store.value = { count: Date.now() };
-  }, 1000);
-  return () => clearInterval(id);
-};
-```
-
-### Pipe from an async iterable
-
-`store.through(sequence)` is an async generator that sets the store's value for each item yielded by `sequence` and re-yields it. This is the bridge between any `AsyncIterable` source and a `Store`.
-
-```ts
 async function connect(stream: AsyncIterable<number>) {
   for await (const _ of store.through(stream)) {
-    // store.value is updated on each iteration
+    // store.value is updated on each iteration; any consumers re-render
   }
 }
 ```
@@ -92,3 +53,4 @@ async function connect(stream: AsyncIterable<number>) {
 
 - [`sequence`](/sequence) — `DeferredSequence` that powers the store's async iteration
 - [`db`](/db) — `ItemStore` and `QueryStore` extend `Store` for database-backed reactive state
+- [`react`](/react) — `useStore()` subscribes a React component to a store

@@ -14,7 +14,7 @@ SQLite realtime sequences (`getItemSequence`, `getQuerySequence`) are not suppor
 
 ### Provider chain
 
-Stack providers to compose behaviour. Each wrapping provider delegates to its `source` and intercepts only what it needs.
+Stack providers to compose behaviour. Each wrapping provider delegates to its `source` and intercepts only what it needs. Each provider has its own page with focused usage examples.
 
 | Provider | Role |
 |---|---|
@@ -25,29 +25,9 @@ Stack providers to compose behaviour. Each wrapping provider delegates to its `s
 | `DebugDBProvider` | Logs all operations to the console (ANSI-formatted). Extends `ThroughDBProvider`. |
 | `ChangesDBProvider` | Accumulates a `.changes` log of every write. Useful for audit trails and testing. Extends `ThroughDBProvider`. |
 | `MockDBProvider` | Extends `MemoryDBProvider` and records every call in `.calls`. Use in tests to assert operations. |
-| `SQLiteProvider` | Abstract SQL backend targeting SQLite/D1 with JSON1 support for nested keys and array operations. |
+| `SQLProvider` | Abstract SQL base — concrete subclasses bind it to a driver. |
+| `SQLiteProvider` | Abstract SQL backend targeting SQLite / D1 with JSON1 support for nested keys and array operations. |
 | `PostgreSQLProvider` | Abstract SQL backend targeting PostgreSQL with JSONB support. |
-
-### Extending ThroughDBProvider
-
-`ThroughDBProvider` is the right base for any intercepting layer. Override only the methods you care about and call `super` to delegate the rest:
-
-```ts
-import { ThroughDBProvider } from "shelving/db";
-
-class TimingDBProvider extends ThroughDBProvider {
-  override async getItem(collection, id) {
-    const t = performance.now();
-    const result = await super.getItem(collection, id);
-    console.log(`getItem took ${performance.now() - t}ms`);
-    return result;
-  }
-}
-```
-
-### SQL providers
-
-`SQLProvider` is the abstract SQL base. Concrete subclasses must implement `exec<X>(strings, ...values)` to run a parameterised query and return rows as plain objects. `SQLiteProvider` and `PostgreSQLProvider` extend `SQLProvider` with dialect-specific JSON path syntax, array operations (`with` / `omit`), and generated column support.
 
 ## Usage
 
@@ -66,30 +46,6 @@ const provider = new CacheDBProvider(
 ```
 
 `ValidationDBProvider` sits between the cache and the backend so bad data from the database surfaces as a `ValueError` before it reaches the cache.
-
-### Testing with MockDBProvider
-
-```ts
-import { MockDBProvider } from "shelving/db";
-
-const mock = new MockDBProvider();
-await mock.addItem(POSTS, { title: "Hello", body: "", published: false });
-
-console.log(mock.calls[0]);
-// { type: "addItem", collection: "posts", data: { ... }, result: <id> }
-```
-
-### Tracking writes with ChangesDBProvider
-
-```ts
-import { ChangesDBProvider, MemoryDBProvider } from "shelving/db";
-
-const db = new ChangesDBProvider(new MemoryDBProvider());
-await db.setItem(POSTS, "abc", { title: "Hi", body: "", published: true });
-
-console.log(db.changes);
-// [{ action: "set", collection: "posts", id: "abc", data: { ... } }]
-```
 
 ## See also
 
