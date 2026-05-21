@@ -41,6 +41,8 @@ import { Card, Paragraph, Subheading } from "shelving/ui";
 
 `href` turns the card into a navigable overlay. Real interactive elements inside (like inline `<Link>` components) stay clickable via `position: relative; z-index: 2` rules in the stylesheet.
 
+`<Card>` also accepts a `status` colour and raw `ColorVariants` — e.g. `<Card status="error">` for a prominent error panel. The card styles the box; compose its contents however the use case needs.
+
 ### Structured page section
 
 ```tsx
