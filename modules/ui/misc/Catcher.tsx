@@ -53,9 +53,8 @@ type CatcherState = {
  * If an error occurs in any component under this, a general error will be shown to the user.
  */
 export class Catcher extends Component<CatcherProps, CatcherState> {
-	static defaultProps: CatcherProps = {
+	static defaultProps: Pick<CatcherProps, "as"> = {
 		as: ErrorNotice,
-		children: null,
 	};
 	override state: CatcherState = {
 		reason: undefined,
@@ -79,7 +78,7 @@ export class Catcher extends Component<CatcherProps, CatcherState> {
 	}
 }
 
-export interface PageCatcherProps extends OptionalChildProps {}
+export interface PageCatcherProps extends ChildProps {}
 
 /** Catch errors in a page. */
 export function PageCatcher({ children }: PageCatcherProps): ReactElement {
