@@ -5,7 +5,7 @@ These helpers work specifically with hierarchical `scheme://host` URLs (a strict
 **Things to know:**
 
 - A URL is distinguished from a generic URI by the `://` in its href. `isURL()` checks this at runtime. `mailto:`, `urn:`, etc. are URIs but not URLs and will not pass `isURL()`.
-- `getBaseURL()` ensures a trailing slash on the pathname, which makes relative resolution behave naturally (paths resolve relative to the directory, not the file).
+- `getURL()`, `requireURL()` and `getBasedURI()` always normalise their base internally (via `getBaseURL()`), so relative paths resolve against the base's directory — you never need to append a trailing slash yourself to get correct resolution. `getBaseURL()` / `requireBaseURL()` just expose that normalised URL: use them for semantic clarity, or as a marginal efficiency win when one base is reused for many resolutions.
 - `getBasedURI()` accepts any input — including relative paths — and resolves them against the base. It can return a non-URL URI (e.g. `mailto:`). Use `getURL()` when you specifically need a `scheme://` URL.
 - `isURLActive` and `isURLProud` are designed for navigation menus: "active" means exact match, "proud" means the link's URL is an ancestor of the current location.
 
@@ -18,8 +18,8 @@ import { getURL, requireURL, getBasedURI, isURL, assertURL } from "shelving/util
 
 getURL("https://example.com/page");          // ImmutableURL
 getURL("not-a-url");                         // undefined
-getURL("/page", "https://example.com/app/"); // https://example.com/app/page
-getBasedURI("/page", "https://example.com/app/b"); // resolves as https://example.com/app/b/page
+getURL("page", "https://example.com/app/");  // https://example.com/app/page
+getBasedURI("page", "https://example.com/app/b"); // https://example.com/app/b/page  (base normalised to .../b/)
 
 requireURL("https://example.com");           // ImmutableURL or throws RequiredError
 isURL(new URL("https://x.com"));             // true

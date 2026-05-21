@@ -86,15 +86,43 @@ export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): Im
 }
 
 /**
- * Resolve a possible URL relative to a base URL, or return `undefined` if conversion fails.
+ * Resolve a possible URL relative to a base, or return `undefined` if conversion fails.
  * - Like `getBasedURI()` but only succeeds for true `scheme://host` URLs — other URIs (e.g. `mailto:`) return `undefined`.
+ *
+ * The `base` is normalised with `getBaseURL()` before resolution, so it always behaves as if it ends in a
+ * trailing slash — a relative `target` resolves against the base's *directory* and never drops its last
+ * segment. Resolution is therefore correct whether or not `base` already ends in `/`; you do NOT need to
+ * convert `base` with `getBaseURL()` / `requireBaseURL()` first to get the right path. Passing an
+ * already-normalised base only skips re-building the trailing-slash URL on each call (a marginal efficiency
+ * gain) — it never changes the result.
+ *
+ * @param target URL or path to resolve — a `URL` instance is returned as-is.
+ * @param base Base URL that a relative `target` resolves against.
+ * @returns The resolved URL, or `undefined` if `target` is missing or does not resolve to a `scheme://host` URL.
+ *
+ * @example getURL("./b", "https://x.com/app") // → "https://x.com/app/b" — `app` is treated as a directory
+ * @example getURL("./b", "https://x.com/app/") // → "https://x.com/app/b" — identical result with the slash
  */
 export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURL | undefined {
 	const uri = getBasedURI(target, base);
 	if (uri && _isURL(uri)) return uri;
 }
 
-/** Convert a possible URL to a URL, or throw `RequiredError` if conversion fails. */
+/**
+ * Resolve a possible URL relative to a base, or throw `RequiredError` if conversion fails.
+ * - The throwing counterpart of `getURL()` — same resolution rules and the same `getBaseURL()` base-normalisation.
+ *
+ * Because the `base` is normalised internally, a plain URL resolves relative paths correctly on its own:
+ * there is no need to pass a `getBaseURL()` / `requireBaseURL()` result to "fix" path resolution.
+ *
+ * @param target URL or path to resolve — a `URL` instance is returned as-is.
+ * @param base Base URL that a relative `target` resolves against.
+ * @param caller Identity of the calling function for error attribution.
+ * @returns The resolved URL.
+ * @throws `RequiredError` if `target` cannot be resolved to a `scheme://host` URL.
+ *
+ * @example requireURL("./x", "http://h/a/b") // → "http://h/a/b/x" — base resolves as a directory
+ */
 export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyCaller = requireURL): ImmutableURL {
 	const url = getURL(target, base);
 	assertURL(url, caller);
@@ -168,7 +196,23 @@ function _isBaseURL(uri: URL): uri is BaseURL {
 	return uri.pathname.endsWith("/");
 }
 
-/** Get a Base URL. */
+/**
+ * Resolve a possible URL and return it with a guaranteed trailing slash on its pathname, or `undefined` if conversion fails.
+ *
+ * A "base URL" is simply a `URL` whose pathname ends in `/` (typed as `BaseURL`). This is NOT required for
+ * correct path resolution — `getURL()`, `requireURL()` and `getBasedURI()` all normalise their base
+ * internally, so resolving a relative path against a plain URL gives exactly the same result. Reach for
+ * `getBaseURL()` only for: (a) the semantic intent of marking a value as "a base URL", and (b) marginal
+ * efficiency when one base is reused for many resolutions — normalising once avoids re-building the
+ * trailing-slash URL on every call.
+ *
+ * - A URL already ending in `/` is returned unchanged; otherwise a copy with `/` appended is returned (the input is never mutated).
+ *
+ * @param input URL or path to convert to a base URL.
+ * @returns A base URL with a trailing-slash pathname, or `undefined` if `input` is missing or not a `scheme://host` URL.
+ *
+ * @example getBaseURL("https://x.com/app") // → "https://x.com/app/"
+ */
 export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
 	if (!input) return;
 	const uri = getBasedURI(input, undefined);
@@ -180,7 +224,18 @@ export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
 	return base as BaseURL;
 }
 
-/** Require a Base URL. */
+/**
+ * Resolve a possible URL and return it with a guaranteed trailing slash, or throw `RequiredError` if conversion fails.
+ * - The throwing counterpart of `getBaseURL()` — same behaviour and the same caveat.
+ *
+ * Like `getBaseURL()`, this is not needed for correct path resolution (`requireURL()` normalises its base
+ * anyway) — use it for semantic clarity, or to pre-normalise a base that is reused for many resolutions.
+ *
+ * @param value URL or path to convert to a base URL.
+ * @param caller Identity of the calling function for error attribution.
+ * @returns A base URL with a trailing-slash pathname.
+ * @throws `RequiredError` if `value` cannot be resolved to a `scheme://host` URL.
+ */
 export function requireBaseURL(value: PossibleURL, caller: AnyCaller): BaseURL {
 	const url = getBaseURL(value);
 	if (!url) throw new RequiredError("Invalid base URL", { received: value, caller });
