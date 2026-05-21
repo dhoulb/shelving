@@ -84,4 +84,4 @@ addHours(2, "now");          // 2 hours from now
 ## See also
 
 - [util](/util) — full util module overview
-- [constants](/util/CONSTANTS) — `DAY`, `WEEK`, `MONTH`, `YEAR` in milliseconds
+- [constants](/util/constants) — `DAY`, `WEEK`, `MONTH`, `YEAR` in milliseconds

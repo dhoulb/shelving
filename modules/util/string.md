@@ -77,5 +77,5 @@ joinStrings(["a", "b", "c"], ", "); // "a, b, c"
 
 ## See also
 
-- [template](/util/TEMPLATE) — String templates that use placeholder substitution and matching.
+- [template](/util/template) — String templates that use placeholder substitution and matching.
 - [util](/util) — Overview of all util helpers.

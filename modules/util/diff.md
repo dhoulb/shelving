@@ -55,4 +55,4 @@ if (diff !== SAME) applyUpdate(diff);
 ## See also
 
 - [util](/util) — full util module overview
-- [data](/util/DATA) — `Data` type used with object diffs
+- [data](/util/data) — `Data` type used with object diffs

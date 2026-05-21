@@ -22,5 +22,5 @@ The `TypedArray` type exported from this file covers all numeric typed array cla
 
 ## See also
 
-- [bytes](/util/BYTES) — `Uint8Array`-specific helpers with conversion and assertion support
+- [bytes](/util/bytes) — `Uint8Array`-specific helpers with conversion and assertion support
 - [util](/util)

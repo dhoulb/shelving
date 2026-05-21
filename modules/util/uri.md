@@ -62,5 +62,5 @@ HTTP_SCHEMES; // ["http:", "https:"]
 
 ## See also
 
-- [url](/util/URL) — `getURL()`, `getBasedURI()`, and base-URL utilities for hierarchical URLs.
+- [url](/util/url) — `getURL()`, `getBasedURI()`, and base-URL utilities for hierarchical URLs.
 - [util](/util) — naming conventions and the full helper overview.

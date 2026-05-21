@@ -45,5 +45,5 @@ const token = encodeBase64URL(key);
 
 ## See also
 
-- [bytes](/util/BYTES) — the `Bytes` / `PossibleBytes` types used as encode input
+- [bytes](/util/bytes) — the `Bytes` / `PossibleBytes` types used as encode input
 - [util](/util)

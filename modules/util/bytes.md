@@ -35,6 +35,6 @@ requireBytes(value, 8);                  // also requires at least 8 bytes
 
 ## See also
 
-- [base64](/util/BASE64) — encode/decode `Bytes` to Base64 strings
-- [buffer](/util/BUFFER) — broader typed-array type guards (`ArrayBuffer`, `DataView`, etc.)
+- [base64](/util/base64) — encode/decode `Bytes` to Base64 strings
+- [buffer](/util/buffer) — broader typed-array type guards (`ArrayBuffer`, `DataView`, etc.)
 - [util](/util)

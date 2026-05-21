@@ -67,4 +67,4 @@ deleteDictionaryItems(dict, "b", "c");    // dict is now { d:4 }
 ## See also
 
 - [util](/util) — full util module overview
-- [data](/util/DATA) — `Data` type, a close relative for untyped-value plain objects
+- [data](/util/data) — `Data` type, a close relative for untyped-value plain objects

@@ -2,7 +2,7 @@
 
 Turn a folder of source files into a navigable tree of documentation. `extract` is the engine behind the Shelving documentation site itself.
 
-API references and hand-written guides usually live in separate tools. `extract` unifies them: it reads files and directories from disk and produces a single `TreeElement` tree describing every directory, file, and exported code symbol. A directory's `README.md` becomes that directory's intro page. A TypeScript file's exports become documented symbols. A `NAME.md` file sitting next to `name.ts` is merged onto the same page. One tree, one site, prose and source together.
+API references and hand-written guides usually live in separate tools. `extract` unifies them: it reads files and directories from disk and produces a single `TreeElement` tree describing every directory, file, and exported code symbol. A directory's `README.md` becomes that directory's intro page. A TypeScript file's exports become documented symbols. A `name.md` file sitting next to `name.ts` is merged onto the same page. One tree, one site, prose and source together.
 
 Pair the tree with the [tree components](/ui/tree) and you have a complete static documentation site — exactly how this site is built.
 
@@ -23,7 +23,7 @@ An `Extractor` converts an input into a `TreeElement`. Extractors are composable
 
 ### The tree
 
-Every extractor produces a `TreeElement` (see [element](/util/ELEMENT)). There are three element types:
+Every extractor produces a `TreeElement` (see [element](/util/element)). There are three element types:
 
 - `tree-directory` — a directory. Its content is absorbed from an index file.
 - `tree-file` — a file. For TypeScript, its children are the exported symbols.
@@ -37,9 +37,9 @@ A directory's index file — `README.md` by default — is *absorbed* into the d
 
 ### Same-key merging
 
-Files whose names slugify to the same key are merged into one element. `TEMPLATE.md` and `template.ts` both have the key `template`, so they become a single page: the Markdown supplies the prose, the TypeScript supplies the documented symbols. Markdown has the higher `priority`, so it wins on `title`.
+Files whose names slugify to the same key are merged into one element. `template.md` and `template.ts` both have the key `template`, so they become a single page: the Markdown supplies the prose, the TypeScript supplies the documented symbols. Markdown has the higher `priority`, so it wins on `title`.
 
-This is the pattern behind every `util/*.ts` file paired with a `NAME.md` guide — the hand-written page and the extracted API land together.
+This is the pattern behind every `util/*.ts` file paired with a `name.md` guide — the hand-written page and the extracted API land together.
 
 ## Building a documentation site
 
@@ -112,5 +112,5 @@ The tree components render through *mappings* — wrap a subtree to swap a rende
 
 - [ui/tree](/ui/tree) — `<TreeApp>`, `<TreePage>`, and the sidebar and menu components
 - [ui/docs](/ui/docs) — the directory, file, and documentation page and card renderers
-- [element](/util/ELEMENT) — the `TreeElement` types and tree-walking helpers
+- [element](/util/element) — the `TreeElement` types and tree-walking helpers
 - [markup](/markup) — renders the Markdown `content` carried by each element

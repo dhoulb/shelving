@@ -54,4 +54,4 @@ VOLUME_UNITS.require("liter").format(1, { unitDisplay: "long" }); // "1 liter"
 ## See also
 
 - [util](/util) — naming conventions and the full helper overview.
-- [duration](/util/DURATION) — `getBestDurationUnit` uses `UnitList` from this module.
+- [duration](/util/duration) — `getBestDurationUnit` uses `UnitList` from this module.

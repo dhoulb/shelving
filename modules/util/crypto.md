@@ -34,4 +34,4 @@ const token = getRandomBytes(32); // Uint8Array of 32 random bytes
 ## See also
 
 - [util](/util) — full util module overview
-- [base64](/util/BASE64) — base64url encoding used internally by this module
+- [base64](/util/base64) — base64url encoding used internally by this module

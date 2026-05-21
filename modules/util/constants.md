@@ -62,4 +62,4 @@ console.log(`${FAILURE} Failed`);
 ## See also
 
 - [util](/util) — full util module overview
-- [date](/util/DATE) — date helpers that use `DAY`, `WEEK`, etc. conceptually
+- [date](/util/date) — date helpers that use `DAY`, `WEEK`, etc. conceptually
