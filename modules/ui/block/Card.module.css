@@ -45,6 +45,11 @@
 		position: relative;
 		z-index: 2;
 	}
+
+	/* Headings render one size down inside a card — a page-level heading is oversized in this context. */
+	:where(& .heading) {
+		--heading-font-size: var(--size-large);
+	}
 }
 
 .overlay {
