@@ -1,12 +1,12 @@
 import type { ReactElement, ReactNode } from "react";
 import { Message } from "../notice/Message.js";
+import type { ChildProps } from "../util/props.js";
 import styles from "./Field.module.css";
 
-export interface FieldProps {
+export interface FieldProps extends ChildProps {
 	title?: ReactNode | undefined;
 	description?: ReactNode | undefined;
 	message?: ReactNode | undefined;
-	children: ReactNode;
 	required?: boolean | undefined;
 }
 

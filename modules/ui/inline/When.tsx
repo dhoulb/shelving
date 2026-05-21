@@ -1,8 +1,9 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { type PossibleDate, requireDate } from "../../util/date.js";
 import { formatAgo, formatUntil, formatWhen, getSecondsAgo } from "../../util/duration.js";
 import { formatDateTime } from "../../util/format.js";
 import type { AnyCaller } from "../../util/function.js";
+import type { OptionalChildProps } from "../util/props.js";
 
 const _OPTIONS: Intl.NumberFormatOptions = { unitDisplay: "narrow" };
 
@@ -22,10 +23,9 @@ function _getWhen(
 	);
 }
 
-export interface WhenProps {
+export interface WhenProps extends OptionalChildProps {
 	target: PossibleDate | undefined;
 	current?: PossibleDate | undefined;
-	children?: ReactNode | undefined;
 	full?: boolean | undefined;
 }
 

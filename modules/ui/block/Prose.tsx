@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import codeStyles from "../inline/Code.module.css";
 import deletedStyles from "../inline/Deleted.module.css";
 import emphasisStyles from "../inline/Emphasis.module.css";
@@ -10,6 +10,7 @@ import strongStyles from "../inline/Strong.module.css";
 import subscriptStyles from "../inline/Subscript.module.css";
 import superscriptStyles from "../inline/Superscript.module.css";
 import { getClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import addressStyles from "./Address.module.css";
 import blockquoteStyles from "./Blockquote.module.css";
 import definitionsStyles from "./Definitions.module.css";
@@ -48,9 +49,7 @@ const PROSE_STYLES = getClass(
 	dividerStyles.prose,
 );
 
-export interface ProseProps {
-	children?: ReactNode;
-}
+export interface ProseProps extends OptionalChildProps {}
 
 /** A section of longform text containing lots of `<p>` or `<ul>` style elements. */
 export function Prose({ children }: ProseProps): ReactElement {

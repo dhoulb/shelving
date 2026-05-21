@@ -9,6 +9,7 @@ import type { ImmutableURI, URIString } from "../../util/uri.js";
 import { LOADING } from "../misc/Loading.js";
 import { requireMeta } from "../misc/MetaContext.js";
 import { callNotifiedElement } from "../util/notice.js";
+import type { OptionalChildProps } from "../util/props.js";
 
 /***
  * Handler for a clickable `onClick` event.
@@ -18,7 +19,7 @@ import { callNotifiedElement } from "../util/notice.js";
 export type ClickableCallback = (event: MouseEvent<HTMLButtonElement>) => ReactNode | void | PromiseLike<ReactNode | void>;
 
 /** Props for a thing that can be clicked, either has a string `href` link or an `onClick` callback handler. */
-export interface ClickableProps {
+export interface ClickableProps extends OptionalChildProps {
 	/** Whether the clickable is currently disabled. */
 	disabled?: boolean | undefined;
 	/** If present then render this element as an `<a>` link (takes precidence over `onClick`). */
@@ -31,8 +32,6 @@ export interface ClickableProps {
 	download?: string | undefined;
 	/** Title shown on hover. */
 	title?: string | undefined;
-	/** The contents of the clickable. */
-	children?: ReactNode | undefined;
 }
 
 export interface StylableClickableProps extends ClickableProps {

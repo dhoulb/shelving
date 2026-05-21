@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { PARAGRAPH_CSS, type ParagraphProps } from "../block/Paragraph.js";
 import { type ColorVariants, getColorClass } from "../misc/Color.js";
 import { LOADING } from "../misc/Loading.js";
@@ -7,7 +6,6 @@ import { getClass, getModuleClass } from "../util/css.js";
 import MESSAGE_CSS from "./Message.module.css";
 
 export interface MessageProps extends ParagraphProps, ColorVariants {
-	children?: ReactNode;
 	/** Status of the message (defaults to "error") */
 	status?: Status | undefined;
 }

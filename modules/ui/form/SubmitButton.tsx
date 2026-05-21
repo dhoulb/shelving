@@ -1,7 +1,8 @@
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { useStore } from "../../react/useStore.js";
 import { Loading } from "../misc/Loading.js";
+import type { OptionalChildProps } from "../util/props.js";
 import { type ButtonVariants, getButtonClass } from "./Button.js";
 import { requireForm } from "./FormContext.js";
 
@@ -16,9 +17,7 @@ export function SubmitButton({ children = SUBMIT_CHILDREN, strong = true, primar
 	);
 }
 
-export interface SubmitButtonProps extends ButtonVariants {
-	children?: ReactNode | undefined;
-}
+export interface SubmitButtonProps extends ButtonVariants, OptionalChildProps {}
 
 const SUBMIT_CHILDREN = (
 	<>

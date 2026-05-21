@@ -1,9 +1,7 @@
-import type { ReactNode } from "react";
+import type { ChildProps } from "../util/props.js";
 import styles from "./Table.module.css";
 
-export interface TableProps {
-	children: ReactNode;
-}
+export interface TableProps extends ChildProps {}
 
 export function Table({ children }: TableProps) {
 	return (

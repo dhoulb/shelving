@@ -1,11 +1,10 @@
 import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
-import { type MouseEvent, type ReactElement, type ReactNode, useEffect, useRef, useState } from "react";
+import { type MouseEvent, type ReactElement, useEffect, useRef, useState } from "react";
 import { getModuleClass } from "../util/css.js";
+import type { ChildProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Video.module.css";
 
-export interface VideoProps {
-	children?: ReactNode;
-
+export interface VideoProps extends OptionalChildProps {
 	/** Constrain the video to narrow width (defaults to full-width). */
 	narrow?: boolean;
 
@@ -13,13 +12,11 @@ export interface VideoProps {
 	wide?: boolean;
 }
 
-export interface VideoButtonsProps {
-	children: ReactNode;
+export interface VideoButtonsProps extends ChildProps {
 	left?: boolean;
 }
 
-export interface VideoButtonProps {
-	children: ReactNode;
+export interface VideoButtonProps extends ChildProps {
 	title?: string | undefined;
 	onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 	danger?: boolean;

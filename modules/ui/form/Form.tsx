@@ -7,6 +7,7 @@ import type { Data, PartialData } from "../../util/data.js";
 import type { ImmutableDictionary } from "../../util/dictionary.js";
 import type { Arguments } from "../../util/function.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
+import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Form.module.css";
 import { FormContext } from "./FormContext.js";
 import { FormFields } from "./FormFields.js";
@@ -23,7 +24,7 @@ export type FormCallback<T extends Data> = (
 	event: SubmitEvent<HTMLFormElement>,
 ) => ReactNode | void | PromiseLike<ReactNode | void>;
 
-export interface FormProps<T extends Data> {
+export interface FormProps<T extends Data> extends OptionalChildProps {
 	/** Schema for the form. */
 	schema: DataSchema<T>;
 	/** Initial data for the form. */
@@ -34,12 +35,6 @@ export interface FormProps<T extends Data> {
 	onSubmit?: FormCallback<T> | undefined;
 	/** Initial set of messages for the form as either a dictionary or a string with `fieldName:` style messages. */
 	messages?: ImmutableDictionary<string> | string | undefined;
-	/**
-	 * Children for the form (defaults to showing `<FormFields>` then `<FormFooter>`
-	 * - Note: if defining this manually, ensure you include a `<SubmitButton>` and somewhere in the form.
-	 * - Note: if defining this manually, ensure you include a `<FormNotice>`, `<FormMessage>` or `<FormNotify>` somewhere somewhere in the form.
-	 */
-	children?: ReactNode | undefined;
 }
 
 export function Form<T extends Data>(props: FormProps<T>): ReactElement;

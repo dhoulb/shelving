@@ -1,12 +1,12 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { type MouseEvent, memo, type ReactElement, type ReactNode, Suspense, useEffect, useRef } from "react";
+import { type MouseEvent, memo, type ReactElement, Suspense, useEffect, useRef } from "react";
 import type { Callback } from "../../util/function.js";
 import type { ButtonVariants } from "../form/Button.js";
 import { getModuleClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Dialog.module.css";
 
-export interface DialogProps {
-	children?: ReactNode;
+export interface DialogProps extends OptionalChildProps {
 	onClose?: Callback;
 }
 
@@ -39,9 +39,7 @@ function _closeOnBackdropClick({ currentTarget, target }: MouseEvent<HTMLDialogE
 	if (target instanceof Element && target.closest("a:any-link, nav button:enabled")) currentTarget.close();
 }
 
-export interface DialogCloseButtonProps extends ButtonVariants {
-	children?: ReactNode | undefined;
-}
+export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildProps {}
 
 /** Button that closes its wrapping dialog with an X icon. */
 export function DialogCloseButton({ children = <XMarkIcon />, ...variants }: DialogCloseButtonProps): ReactElement {

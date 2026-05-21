@@ -1,9 +1,9 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { getModuleClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import PARAGRAPH_CSS from "./Paragraph.module.css";
 
-export interface ParagraphProps {
-	children?: ReactNode;
+export interface ParagraphProps extends OptionalChildProps {
 	/** Align the paragraph to the right. */
 	right?: boolean | undefined;
 	/** Align the paragraph to the center. */

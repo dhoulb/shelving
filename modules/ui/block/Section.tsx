@@ -1,9 +1,9 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { getModuleClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Section.module.css";
 
-export interface SectionProps {
-	children?: ReactNode;
+export interface SectionProps extends OptionalChildProps {
 	/** Constrain the section to narrow width (defaults to full-width). */
 	narrow?: boolean;
 	/** Constrain the section to wide width (defaults to full-width). */

@@ -4,14 +4,13 @@ import { useStore } from "../../react/useStore.js";
 import { Button } from "../form/Button.js";
 import { NavigationContext } from "../router/NavigationContext.js";
 import { getClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import { LAYOUT_CSS } from "./Layout.js";
 import SIDEBAR_LAYOUT_CSS from "./SidebarLayout.module.css";
 
-export interface SidebarLayoutProps {
+export interface SidebarLayoutProps extends OptionalChildProps {
 	/** Content rendered in the fixed-width side column. */
 	sidebar: ReactNode;
-	/** Main content rendered in the scrollable content column. */
-	children?: ReactNode;
 	/** Render the sidebar on the right rather than the left. */
 	right?: boolean | undefined;
 }

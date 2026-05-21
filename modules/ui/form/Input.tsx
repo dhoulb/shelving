@@ -1,7 +1,8 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { FLEX_CSS } from "../block/Flex.js";
 import { LOADING } from "../misc/Loading.js";
 import { getClass } from "../util/css.js";
+import type { ChildProps } from "../util/props.js";
 import INPUT_CSS from "./Input.module.css";
 
 // Precomposed classes.
@@ -52,6 +53,6 @@ export const LOADING_INPUT = <div className={FLEX_INPUT_CLASS}>{LOADING}</div>;
  * Wraps an input with support for absolutely-positioned `data-slot` icon elements on either side.
  * - This is so you can put an icon before or after an input.
  */
-export function InputWrapper({ children }: { children: ReactNode }): ReactElement {
+export function InputWrapper({ children }: ChildProps): ReactElement {
 	return <div className={WRAPPER_INPUT_CLASS}>{children}</div>;
 }

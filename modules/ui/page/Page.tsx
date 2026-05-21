@@ -1,11 +1,10 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/index.js";
+import type { ChildProps } from "../util/props.js";
 import { Head } from "./Head.js";
 
-export interface PageProps extends PossibleMeta {
-	children: ReactNode;
-}
+export interface PageProps extends PossibleMeta, ChildProps {}
 
 /**
  * Component for a single page (or screen) within an app.

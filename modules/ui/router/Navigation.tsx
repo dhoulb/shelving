@@ -1,14 +1,13 @@
-import { Fragment, type ReactElement, type ReactNode, useEffect } from "react";
+import { Fragment, type ReactElement, useEffect } from "react";
 import { useInstance } from "../../react/useInstance.js";
 import { useStore } from "../../react/useStore.js";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/index.js";
+import type { ChildProps, OptionalChildProps } from "../util/props.js";
 import { NavigationContext, requireNavigation } from "./NavigationContext.js";
 import { NavigationStore } from "./NavigationStore.js";
 
-export interface NavigationProps extends PossibleMeta {
-	readonly children?: ReactNode;
-}
+export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
 
 /**
  * Top-level navigation provider.
@@ -61,9 +60,7 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 	);
 }
 
-export interface NavigationIsolateProps {
-	children: ReactNode;
-}
+export interface NavigationIsolateProps extends ChildProps {}
 
 /**
  * Force a full remount of children whenever the navigation URL changes.

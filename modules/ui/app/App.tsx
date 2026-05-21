@@ -1,11 +1,10 @@
-import { type ReactElement, type ReactNode, useEffect } from "react";
+import { type ReactElement, useEffect } from "react";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/index.js";
+import type { ChildProps } from "../util/props.js";
 import APP_CSS from "./App.module.css";
 
-export interface AppProps extends PossibleMeta {
-	children: ReactNode;
-}
+export interface AppProps extends PossibleMeta, ChildProps {}
 
 const APP_CLASS = APP_CSS.app;
 

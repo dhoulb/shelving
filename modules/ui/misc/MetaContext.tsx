@@ -1,14 +1,13 @@
-import { createContext, type ReactNode, use } from "react";
+import { createContext, use } from "react";
 import { getURIParams, type URIParams } from "../../util/uri.js";
 import { type Meta, mergeMeta, type PossibleMeta } from "../util/meta.js";
+import type { ChildProps } from "../util/props.js";
 
 /** Context to store the `Config` object. */
 export const MetaContext = createContext<Meta>({});
 MetaContext.displayName = "MetaContext";
 
-export interface MetaProps extends PossibleMeta {
-	children: ReactNode;
-}
+export interface MetaProps extends PossibleMeta, ChildProps {}
 
 /** Require the current meta context in a component. */
 export function requireMeta(meta?: PossibleMeta): Meta {

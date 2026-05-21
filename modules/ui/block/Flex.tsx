@@ -1,5 +1,6 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { getClass, getModuleClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import { BLOCK_CLASS } from "./Block.js";
 import FLEX_CSS from "./Flex.module.css";
 
@@ -23,9 +24,7 @@ export interface FlexVariants {
 	reverse?: boolean | undefined;
 }
 
-export interface FlexProps extends FlexVariants {
-	children?: ReactNode | undefined;
-}
+export interface FlexProps extends FlexVariants, OptionalChildProps {}
 
 /** Block with flex children. */
 export function Flex({ children, ...variants }: FlexProps): ReactElement {

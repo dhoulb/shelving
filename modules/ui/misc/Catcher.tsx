@@ -9,14 +9,13 @@ import { Button, type ButtonVariants } from "../form/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";
 import { Page } from "../page/Page.js";
+import type { ChildProps, OptionalChildProps } from "../util/props.js";
 import { StatusIcon } from "./StatusIcon.js";
 
 const RetryContext = createContext<Callback | undefined>(undefined);
 RetryContext.displayName = "RetryContext";
 
-export interface RetryButtonProps extends ButtonVariants {
-	children?: ReactNode | undefined;
-}
+export interface RetryButtonProps extends ButtonVariants, OptionalChildProps {}
 
 const RETRY_CHILDREN = (
 	<>
@@ -39,11 +38,9 @@ export interface ErrorComponentProps {
 	reason: unknown;
 }
 
-export interface CatcherProps {
+export interface CatcherProps extends ChildProps {
 	/** Component to render an error (defaults to `<ErrorNotice />`) */
 	as: (props: ErrorComponentProps) => ReactElement;
-	/** Content that's shown if there's no error. */
-	children: ReactNode;
 }
 
 type CatcherState = {
@@ -82,9 +79,7 @@ export class Catcher extends Component<CatcherProps, CatcherState> {
 	}
 }
 
-export interface PageCatcherProps {
-	children?: ReactNode;
-}
+export interface PageCatcherProps extends OptionalChildProps {}
 
 /** Catch errors in a page. */
 export function PageCatcher({ children }: PageCatcherProps): ReactElement {

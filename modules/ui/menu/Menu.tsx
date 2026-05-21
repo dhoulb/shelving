@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
 import { getModuleClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import MENU_CSS from "./Menu.module.css";
 
-export interface MenuProps {
-	readonly children?: ReactNode;
-}
+export interface MenuProps extends OptionalChildProps {}
 
 /**
  * A `<menu>` list of `<MenuItem>` children.
