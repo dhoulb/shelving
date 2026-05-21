@@ -23,7 +23,7 @@
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	padding: var(--space-normal);
-	background: var(--sidebar-layout-bg, var(--color-surface));
+	background: var(--sidebar-layout-bg, var(--color-bg));
 	border-right: 1px solid var(--color-border);
 }
 

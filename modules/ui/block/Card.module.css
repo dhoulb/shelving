@@ -5,12 +5,12 @@
 	margin-block: var(--card-spacing, var(--space-normal));
 
 	/* Style */
-	background: var(--card-color-bg, var(--color-surface));
+	background: var(--card-color-bg, var(--color-bg));
 	border: var(--card-border, var(--stroke-normal)) solid var(--card-color-border, var(--color-border));
 	padding: var(--card-padding, var(--space-normal));
 	color: var(--card-color-text, var(--color-text));
 	border-radius: var(--card-radius, var(--radius-normal));
-	box-shadow: var(--card-shadow, none);
+	box-shadow: var(--card-shadow, var(--shadow-xsmall));
 	transition: border-color var(--duration-fast);
 
 	/* Psuedo-classes */
