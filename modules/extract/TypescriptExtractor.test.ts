@@ -29,6 +29,7 @@ export function add(a: number, b: number): number {
 				props: {
 					kind: "function",
 					name: "add",
+					title: "add()",
 					content: "Add two numbers together.",
 					signatures: ["(a: number, b: number) => number"],
 				},
@@ -44,7 +45,7 @@ export const MAX_RETRIES: number = 3;
 `),
 		);
 		expect(element.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "constant", name: "MAX_RETRIES", signatures: ["number"] } },
+			{ type: "tree-documentation", props: { kind: "constant", name: "MAX_RETRIES", title: "MAX_RETRIES", signatures: ["number"] } },
 		]);
 	});
 
@@ -63,13 +64,14 @@ export class Store {
 		);
 		const children = element.props.children as unknown[];
 		expect(children).toHaveLength(1);
-		const cls = children[0] as { type: string; props: { kind: string; name: string; children: unknown[] } };
+		const cls = children[0] as { type: string; props: { kind: string; name: string; title: string; children: unknown[] } };
 		expect(cls.type).toBe("tree-documentation");
 		expect(cls.props.kind).toBe("class");
 		expect(cls.props.name).toBe("Store");
+		expect(cls.props.title).toBe("Store");
 		expect(cls.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "property", name: "value", signatures: ["string"] } },
-			{ type: "tree-documentation", props: { kind: "method", name: "set" } },
+			{ type: "tree-documentation", props: { kind: "property", name: "value", title: "value", signatures: ["string"] } },
+			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "set()" } },
 		]);
 	});
 
@@ -83,7 +85,9 @@ export interface ThingOptions {
 }
 `),
 		);
-		expect(element.props.children).toMatchObject([{ type: "tree-documentation", props: { kind: "interface", name: "ThingOptions" } }]);
+		expect(element.props.children).toMatchObject([
+			{ type: "tree-documentation", props: { kind: "interface", name: "ThingOptions", title: "ThingOptions" } },
+		]);
 	});
 
 	test("extracts exported type alias", async () => {
@@ -94,7 +98,10 @@ export type NullableString = string | null;
 `),
 		);
 		expect(element.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "type", name: "NullableString", signatures: ["string | null"] } },
+			{
+				type: "tree-documentation",
+				props: { kind: "type", name: "NullableString", title: "NullableString", signatures: ["string | null"] },
+			},
 		]);
 	});
 
@@ -148,11 +155,47 @@ export function first<T>(arr: T[]): T | undefined {
 		expect(element.props.content).toBe("This module handles array utilities.");
 	});
 
-	test("leaves title undefined (no confident source for a TS source file)", async () => {
+	test("leaves the file element title undefined (no confident source for a TS source file)", async () => {
 		const element = await extractor.extract(file("export const X = 1;", "/tmp/array.ts"));
 		expect(element.props.title).toBeUndefined();
 		expect(element.props.name).toBe("array");
 		expect(element.key).toBe("array");
+	});
+
+	test("sets title with () for functions and methods, bare name for other kinds", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A function. */
+export function doThing(): void {}
+/** A constant. */
+export const VALUE = 1;
+/** A type. */
+export type Thing = string;
+/** A class. */
+export class Widget {
+	/** A property. */
+	size: number;
+	/** A method. */
+	resize(): void {}
+}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{ props: { kind: "function", name: "doThing", title: "doThing()" } },
+			{ props: { kind: "constant", name: "VALUE", title: "VALUE" } },
+			{ props: { kind: "type", name: "Thing", title: "Thing" } },
+			{
+				props: {
+					kind: "class",
+					name: "Widget",
+					title: "Widget",
+					children: [
+						{ props: { kind: "property", name: "size", title: "size" } },
+						{ props: { kind: "method", name: "resize", title: "resize()" } },
+					],
+				},
+			},
+		]);
 	});
 
 	test("merges overloaded function declarations into one element with multiple signatures", async () => {
@@ -170,6 +213,7 @@ export function add(a: any, b: any): any { return a + b; }
 			type: "tree-documentation",
 			props: {
 				name: "add",
+				title: "add()",
 				kind: "function",
 				signatures: ["(a: number, b: number) => number", "(a: string, b: string) => string", "(a: any, b: any) => any"],
 			},
