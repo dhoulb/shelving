@@ -1,22 +1,19 @@
 .subheading,
-.prose :is(h2, h3, h4, h5, h6) {
+.prose :is(h3, h4, h5, h6) {
 	/* Box */
 	display: block;
 	inline-size: 100%;
 	margin-inline: 0;
-	margin-block: var(--subheading-spacing, var(--space-normal));
+	/* `em` top margin scales with font-size, so larger headings get proportionally more space above them. */
+	margin-block-start: var(--subheading-spacing-before, 1.5em);
+	margin-block-end: var(--subheading-spacing, var(--space-normal));
 
 	/* Style */
 	font-family: var(--subheading-font, var(--font-body));
 	font-weight: var(--subheading-weight, var(--weight-strong));
 	line-height: var(--subheading-leading, var(--leading));
 	color: var(--subheading-color, var(--color-text));
-
-	/*
-	 * Default font-size — applies to h2 (the `<Subheading>` default).
-	 * Per-level rules below override for `<Subheading level="3-6">` cases and for `.prose` headings.
-	 */
-	font-size: var(--subheading-font-size, var(--size-xxlarge));
+	font-size: var(--subheading-font-size, var(--size-large));
 
 	/* Psuedo-classes */
 	&:first-child {
@@ -25,14 +22,4 @@
 	&:last-child {
 		margin-block-end: 0;
 	}
-}
-
-/* Per-level font-size scaling — `<Subheading level="N">` (and prose headings) size by tag. */
-.subheading:is(h3),
-.prose h3 {
-	font-size: var(--subheading-font-size, var(--size-xlarge));
-}
-.subheading:is(h4, h5, h6),
-.prose :is(h4, h5, h6) {
-	font-size: var(--subheading-font-size, var(--size-large));
 }

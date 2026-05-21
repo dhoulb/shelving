@@ -31,10 +31,10 @@ Some block components ship multiple pieces intended to compose:
 ### Content card with a heading
 
 ```tsx
-import { Card, Heading, Paragraph } from "shelving/ui";
+import { Card, Paragraph, Subheading } from "shelving/ui";
 
 <Card href="/products/42" title="Open product">
-  <Heading level={2}>Widget Pro</Heading>
+  <Subheading>Widget Pro</Subheading>
   <Paragraph>The best widget on the market.</Paragraph>
 </Card>
 ```
@@ -56,7 +56,7 @@ import { Section, Heading, Definitions, Definition } from "shelving/ui";
 </Section>
 ```
 
-`<Subheading>` uses the same `level` prop as `<Heading>` but applies secondary typography styles — use it for in-section labels and panel titles.
+`<Title>`, `<Heading>`, and `<Subheading>` render `<h1>`, `<h2>`, and `<h3>` respectively — pick the component that matches the level rather than overriding it with the `level` prop. Use `<Subheading>` for card titles, in-section labels, and panel titles.
 
 ### Prose content from a renderer
 
@@ -73,12 +73,12 @@ Wrap `<Markup>` (or any component that emits raw HTML elements) in `<Prose>` to 
 ### Flex row of cards
 
 ```tsx
-import { Flex, Card, Heading } from "shelving/ui";
+import { Card, Flex, Subheading } from "shelving/ui";
 
 <Flex wrap>
   {products.map(p => (
     <Card key={p.id} href={`/products/${p.id}`}>
-      <Heading level={3}>{p.name}</Heading>
+      <Subheading>{p.name}</Subheading>
     </Card>
   ))}
 </Flex>

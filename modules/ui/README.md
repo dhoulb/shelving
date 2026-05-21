@@ -21,7 +21,7 @@ A few conventions run through every component (see also the React Components sec
 
 | Folder | What's inside |
 |---|---|
-| [block](/ui/block) | Block-level content — `Card`, `Section`, `Heading`, `Table`, `List`, `Prose`, `Figure`, `Flex` |
+| [block](/ui/block) | Block-level content — `Card`, `Section`, `Title`, `Heading`, `Table`, `List`, `Prose`, `Figure`, `Flex` |
 | [inline](/ui/inline) | Inline content — `Code`, `Strong`, `Emphasis`, `Link`, `Mark`, `Small` |
 | [misc](/ui/misc) | Cross-cutting pieces — `Markup`, `Tag`, `Status`, `Loading`, `Color`, `Catcher`, `Mapper` |
 
@@ -57,14 +57,14 @@ A few conventions run through every component (see also the React Components sec
 A minimal single-screen app:
 
 ```tsx
-import { App, CenteredLayout, Section, Heading, Paragraph } from "shelving/ui";
+import { App, CenteredLayout, Section, Title, Paragraph } from "shelving/ui";
 
 function HelloApp() {
   return (
     <App app="My app">
       <CenteredLayout>
         <Section narrow>
-          <Heading>Hello</Heading>
+          <Title>Hello</Title>
           <Paragraph>Welcome to the app.</Paragraph>
         </Section>
       </CenteredLayout>
