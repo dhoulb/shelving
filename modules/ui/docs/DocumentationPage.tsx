@@ -6,6 +6,7 @@ import { Heading } from "../block/Heading.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Section } from "../block/Section.js";
+import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { requireMeta } from "../misc/MetaContext.js";
@@ -37,7 +38,7 @@ export function DocumentationPage({
 	const path = (url?.pathname ?? "/") as AbsolutePath;
 	return (
 		<Page title={title ?? name} description={description}>
-			<Heading>{title ?? name}</Heading>
+			<Title>{title ?? name}</Title>
 			{kind && <DocumentationKind kind={kind} />}
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
@@ -49,7 +50,7 @@ export function DocumentationPage({
 			)}
 			{params?.length && (
 				<Section>
-					<Heading level="2">Parameters</Heading>
+					<Heading>Parameters</Heading>
 					<Definitions row>
 						{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
 							<Definition
@@ -69,7 +70,7 @@ export function DocumentationPage({
 			)}
 			{returns?.length && (
 				<Section>
-					<Heading level="2">Returns</Heading>
+					<Heading>Returns</Heading>
 					<Definitions row>
 						{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
 							<Definition key={`${type}-${description}`} term={<Code>{type}</Code>}>
@@ -81,7 +82,7 @@ export function DocumentationPage({
 			)}
 			{throws?.length && (
 				<Section>
-					<Heading level="2">Throws</Heading>
+					<Heading>Throws</Heading>
 					<Definitions row>
 						{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
 							<Definition key={`${type}-${description}`} term={<Code>{type}</Code>}>
@@ -93,7 +94,7 @@ export function DocumentationPage({
 			)}
 			{examples?.length && (
 				<Section>
-					<Heading level="2">Examples</Heading>
+					<Heading>Examples</Heading>
 					{examples.map(({ description }) => (
 						<Preformatted key={description}>{description}</Preformatted>
 					))}
