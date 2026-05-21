@@ -55,6 +55,8 @@
 /* Submenu — Blockquote-style left border to signal hierarchy. */
 .menu .menu {
 	margin-block: var(--menu-nested-spacing, var(--space-xxsmall));
+	/* Inset the border by the link's inline padding so it lines up with the parent item's label. */
+	margin-inline-start: var(--menu-link-padding, var(--space-xsmall));
 	border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--color-border));
-	padding-inline-start: var(--menu-nested-indent, var(--space-normal));
+	padding-inline-start: var(--menu-nested-indent, var(--space-xsmall));
 }
