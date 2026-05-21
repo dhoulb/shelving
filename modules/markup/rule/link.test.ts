@@ -167,6 +167,24 @@ test("LINK_RULE", () => {
 		},
 	});
 
+	// Links can contain inline code in their text.
+	expect(renderMarkup("[`CODE`](http://google.com)", OPTIONS, "inline")).toMatchObject({
+		$$typeof,
+		type: "a",
+		props: {
+			href: "http://google.com/",
+			children: { $$typeof, type: "code", props: { children: "CODE" } },
+		},
+	});
+	expect(renderMarkup("[BEFORE `CODE` AFTER](http://google.com)", OPTIONS, "inline")).toMatchObject({
+		$$typeof,
+		type: "a",
+		props: {
+			href: "http://google.com/",
+			children: ["BEFORE ", { $$typeof, type: "code", props: { children: "CODE" } }, " AFTER"],
+		},
+	});
+
 	// Links using schemes not in the whitelist are not linked.
 	expect(renderMarkup("[NOPE](mailto:dave@shax.com)", OPTIONS, "inline")).toMatchObject({
 		$$typeof,

@@ -38,6 +38,9 @@ test("CODE_RULE", () => {
 	});
 	expect(renderMarkup("`*STRONG*`", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "code", props: { children: "*STRONG*" } });
 
+	// Code spans also render in the "link" context (inside link text).
+	expect(renderMarkup("`A`", OPTIONS, "link")).toMatchObject({ $$typeof, type: "code", props: { children: "A" } });
+
 	// Match even if the opening and closing punctuation is in the middle of the word.
 	expect(renderMarkup("TEXT`CODE`", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "code", props: { children: "CODE" } }]);
 	expect(renderMarkup("`CODE`TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "code", props: { children: "CODE" } }, "TEXT"]);

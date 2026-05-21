@@ -61,14 +61,15 @@ function* _parseString(
 		const end = bestMatch.index + length;
 
 		// Parse the prefix and yield any elements.
-		if (bestMatch.index > 0) yield* _parseString(input.slice(0, bestMatch.index), options, context);
+		// The prefix starts at the same place as `input`, so it keeps the current `offset`.
+		if (bestMatch.index > 0) yield* _parseString(input.slice(0, bestMatch.index), options, context, offset);
 
 		// Yield the matched element.
 		yield bestRule.render(bestMatch, options, (offset + index).toString());
 
 		// Parse the suffix and yield any elements.
-		// Pass `end` as `offset` so that `key` for any yielded elements acknowledges its increased position in the string.
-		if (input.length > end) yield* _parseString(input.slice(end), options, context, end);
+		// Pass `offset + end` so that `key` for any yielded elements reflects their absolute position in the original string.
+		if (input.length > end) yield* _parseString(input.slice(end), options, context, offset + end);
 	} else if (input.length) {
 		// Nothing matched so return the entire string because this is a text node.
 		yield input;
