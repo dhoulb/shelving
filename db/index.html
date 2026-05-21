@@ -36,7 +36,7 @@ await provider.deleteItem(POSTS, id)</code></pre><h3>Query items</h3><pre><code 
   $limit: 10,
 })</code></pre><h3>Realtime subscriptions</h3><pre><code title="ts">for await (const post of provider.getItemSequence(POSTS, id)) {
   console.log(post) // emits whenever this item changes
-}</code></pre><h2>React integration</h2><p>The [<code>react</code>](/react) module&#x27;s <code>createDBContext()</code> is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a <code>CacheDBProvider</code> in the chain) and exposes typed hooks — <code>useItem()</code>, <code>useQuery()</code>, <code>useProvider()</code> — that return reactive <code>Store</code> instances and suspend automatically while loading.</p><pre><code title="ts">import { createDBContext } from &quot;shelving/react&quot;
+}</code></pre><h2>React integration</h2><p>The [<code>react</code>](/react) module&#x27;s <code>createDBContext()</code> is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a <code>CacheDBProvider</code> in the chain) and exposes typed hooks — <code>useItem()</code> and <code>useQuery()</code> — that return reactive <code>Store</code> instances and suspend automatically while loading.</p><pre><code title="ts">import { createDBContext } from &quot;shelving/react&quot;
 import { CacheDBProvider, ValidationDBProvider, MemoryDBProvider } from &quot;shelving/db&quot;
 
 const provider = new CacheDBProvider(new ValidationDBProvider(new MemoryDBProvider()))
