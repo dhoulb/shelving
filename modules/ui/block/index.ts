@@ -15,4 +15,5 @@ export * from "./Prose.js";
 export * from "./Section.js";
 export * from "./Subheading.js";
 export * from "./Table.js";
+export * from "./Title.js";
 export * from "./Video.js";
