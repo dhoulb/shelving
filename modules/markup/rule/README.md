@@ -34,7 +34,7 @@ Rules declare which contexts they apply in. Block rules only fire in a `"block"`
 
 | Rule constant | Element | Syntax |
 |---|---|---|
-| `CODE_RULE` | `<code>` | `` `backtick-wrapped` `` text (priority `10`) |
+| `CODE_RULE` | `<code>` | `` `backtick-wrapped` `` text; also works inside link text |
 | `LINK_RULE` | `<a>` | `[title](url)` |
 | `AUTOLINK_RULE` | `<a>` | Bare URL starting with any scheme, e.g. `https://example.com` |
 | `INLINE_RULE` | `<strong>`, `<em>`, `<del>`, `<ins>`, `<mark>` | `*bold*`, `_italic_`, `-del-` or `~del~`, `+ins+`, `=mark=` |

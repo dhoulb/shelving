@@ -323,6 +323,20 @@ test("INLINE_RULE <mark>", () => {
 	expect(renderMarkup("== AAA ==", OPTIONS, "inline")).toBe("== AAA ==");
 });
 
+test("INLINE_RULE with code span", () => {
+	// An inline element wrapping a code span must not be split apart by that code span.
+	expect(renderMarkup("*STRONG `CODE` STRONG*", OPTIONS, "inline")).toMatchObject({
+		$$typeof,
+		type: "strong",
+		props: { children: ["STRONG ", { $$typeof, type: "code", props: { children: "CODE" } }, " STRONG"] },
+	});
+	expect(renderMarkup("*`CODE`*", OPTIONS, "inline")).toMatchObject({
+		$$typeof,
+		type: "strong",
+		props: { children: { $$typeof, type: "code", props: { children: "CODE" } } },
+	});
+});
+
 test("INLINE_RULE nesting", () => {
 	expect(renderMarkup("BEFORE ***BEFORE __ITALIC__ AFTER*** AFTER", OPTIONS, "inline")).toMatchObject([
 		"BEFORE ",

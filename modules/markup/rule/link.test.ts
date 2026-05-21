@@ -167,6 +167,31 @@ test("LINK_RULE", () => {
 		},
 	});
 
+	// Links can contain inline code spans — a code span in the link text must not split the link apart.
+	expect(renderMarkup("[BEFORE `CODE` AFTER](http://google.com)", OPTIONS, "inline")).toMatchObject({
+		$$typeof,
+		type: "a",
+		props: {
+			href: "http://google.com/",
+			children: ["BEFORE ", { $$typeof, type: "code", props: { children: "CODE" } }, " AFTER"],
+		},
+	});
+	expect(renderMarkup("[`CODE`](http://google.com)", OPTIONS, "inline")).toMatchObject({
+		$$typeof,
+		type: "a",
+		props: { href: "http://google.com/", children: { $$typeof, type: "code", props: { children: "CODE" } } },
+	});
+
+	// Code spans inside link text work with surrounding whitespace and a site-absolute path (the docs-site case).
+	expect(renderMarkup("[ `app` ](/ui/app)", { ...OPTIONS, root: requireURL("https://x.com/") }, "inline")).toMatchObject({
+		$$typeof,
+		type: "a",
+		props: {
+			href: "https://x.com/ui/app",
+			children: [" ", { $$typeof, type: "code", props: { children: "app" } }, " "],
+		},
+	});
+
 	// Links using schemes not in the whitelist are not linked.
 	expect(renderMarkup("[NOPE](mailto:dave@shax.com)", OPTIONS, "inline")).toMatchObject({
 		$$typeof,
