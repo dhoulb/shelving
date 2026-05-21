@@ -43,6 +43,9 @@ jobs:
       - name: build (preview)
         if: github.event_name == 'pull_request'
         run: APP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}" bun run docs:build
+      # `keep_files: true` leaves every existing `pr-<number>/` preview untouched. Do NOT add
+      # `exclude_assets: pr-*` here — peaceiris's `exclude_assets` runs `rm -rf` on matching
+      # paths in the publish branch, so it would delete every PR preview on each main deploy.
       - name: deploy (main)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
@@ -51,7 +54,6 @@ jobs:
           publish_dir: ./.build/docs
           publish_branch: docs
           keep_files: true
-          exclude_assets: pr-*
       - name: deploy (preview)
         if: github.event_name == 'pull_request'
         uses: peaceiris/actions-gh-pages@v4
