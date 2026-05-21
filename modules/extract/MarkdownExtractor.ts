@@ -1,4 +1,6 @@
-import type { FileElementProps } from "../util/element.js";
+import { renderMarkup } from "../markup/render.js";
+import { MARKUP_OPTIONS } from "../markup/rule/index.js";
+import { type Elements, type FileElementProps, getElementText } from "../util/element.js";
 import { FileExtractor } from "./FileExtractor.js";
 
 /**
@@ -29,6 +31,7 @@ export function extractMarkdownTitle(text: string): string | undefined {
 /**
  * Find the first prose paragraph in a markdown source string and return it as a plain-text summary, or `undefined` if none.
  * - Skips headings, fenced code blocks, and blank lines, then collects the first ordinary paragraph.
+ * - Renders that paragraph as markup and strips every tag, so inline syntax (`` `code` ``, `*emphasis*`, links) becomes plain text.
  * - Collapses internal whitespace so the result is a single line suitable for a `description` / `<meta>` summary.
  */
 export function extractMarkdownDescription(text: string): string | undefined {
@@ -49,6 +52,9 @@ export function extractMarkdownDescription(text: string): string | undefined {
 		}
 		paragraph.push(trimmed);
 	}
-	const summary = paragraph.join(" ").replace(/\s+/g, " ").trim();
+	if (!paragraph.length) return;
+	// Render the paragraph as markup then strip every tag, so inline syntax resolves to clean plain text.
+	const rendered = renderMarkup(paragraph.join(" "), MARKUP_OPTIONS) as Elements;
+	const summary = getElementText(rendered).replace(/\s+/g, " ").trim();
 	return summary || undefined;
 }

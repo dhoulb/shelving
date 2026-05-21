@@ -74,6 +74,12 @@ describe("extractMarkdownDescription", () => {
 		expect(extractMarkdownDescription("# Title\n\n```ts\nconst x = 1;\n```\n\nThe prose.")).toBe("The prose.");
 	});
 
+	test("strips inline markdown syntax to plain text", () => {
+		expect(extractMarkdownDescription("# Title\n\nUse `getFirst()` and *emphasis* and [a link](http://x.com).")).toBe(
+			"Use getFirst() and emphasis and a link.",
+		);
+	});
+
 	test("returns undefined when there is no prose", () => {
 		expect(extractMarkdownDescription("# Heading\n\n## Another heading")).toBeUndefined();
 		expect(extractMarkdownDescription("")).toBeUndefined();

@@ -194,7 +194,13 @@ export function isElements(value: unknown): value is Elements {
 export function getElementText(elements: Elements): string {
 	if (typeof elements === "string") return elements;
 	if (isElement(elements)) return getElementText(elements.props.children);
-	return Array.from(walkElements(elements)).map(getElementText).join("");
+	// Iterate the collection directly — `walkElements()` skips loose strings, so it would drop text that sits alongside elements.
+	if (isIterable(elements)) {
+		let text = "";
+		for (const child of elements) text += getElementText(child);
+		return text;
+	}
+	return "";
 }
 
 /**

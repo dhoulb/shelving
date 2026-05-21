@@ -44,6 +44,14 @@ describe("getElementText()", () => {
 		expect(getElementText(P)).toBe("PARAGRAPH");
 		expect(getElementText(UL)).toBe("ITEM1ITEM2");
 	});
+	test("keeps loose text that sits alongside elements", () => {
+		const MIXED: Element = {
+			key: null,
+			type: "p",
+			props: { children: ["Use ", { key: null, type: "code", props: { children: "code" } }, " here."] },
+		};
+		expect(getElementText(MIXED)).toBe("Use code here.");
+	});
 });
 
 describe("walkElements()", () => {
