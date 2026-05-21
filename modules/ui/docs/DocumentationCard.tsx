@@ -11,11 +11,11 @@ import { Markup } from "../misc/Markup.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
 interface DocumentationCardProps extends DocumentationElementProps {
-	path?: AbsolutePath | undefined;
+	path: AbsolutePath;
 }
 
 /** Card renderer for a `tree-documentation` element. */
-export function DocumentationCard({ path = "/", title, name, kind, content, signatures }: DocumentationCardProps): ReactNode {
+export function DocumentationCard({ path, title, name, kind, content, signatures }: DocumentationCardProps): ReactNode {
 	const href = joinPath(path, name);
 	return (
 		<Card href={href}>

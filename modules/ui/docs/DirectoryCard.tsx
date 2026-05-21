@@ -7,11 +7,11 @@ import { Prose } from "../block/Prose.js";
 import { Markup } from "../misc/Markup.js";
 
 interface DirectoryCardProps extends DirectoryElementProps {
-	path?: AbsolutePath | undefined;
+	path: AbsolutePath;
 }
 
 /** Card renderer for a `tree-directory` element. */
-export function DirectoryCard({ path = "/", title, name, content }: DirectoryCardProps): ReactNode {
+export function DirectoryCard({ path, name, title, content }: DirectoryCardProps): ReactNode {
 	const href = joinPath(path, name);
 	return (
 		<Card href={href}>
