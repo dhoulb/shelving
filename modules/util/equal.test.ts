@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { isArrayEqual, isDeepEqual, isEqual, isObjectEqual, isObjectMatch } from "../index.js";
+import { isArrayEqual, isArrayWith, isDeepEqual, isEqual, isObjectEqual, isObjectMatch, notArrayWith } from "../index.js";
 
 const arrFlat = [1, "b", true, false, null];
 const arrFlatSame = [1, "b", true, false, null];
@@ -220,4 +220,14 @@ test("isObjectMatch(): Matching values", () => {
 });
 test("isObjectMatch(): Non-matching values", () => {
 	expect(isObjectMatch(objFlatMissing, objFlat)).toBe(false);
+});
+test("isArrayWith(): Array including the value", () => {
+	expect(isArrayWith([1, 2, 3], 2)).toBe(true);
+	expect(isArrayWith([1, 2, 3], 9)).toBe(false);
+	expect(isArrayWith("not an array", 2)).toBe(false);
+});
+test("notArrayWith(): Not an array or array not including the value", () => {
+	expect(notArrayWith([1, 2, 3], 9)).toBe(true);
+	expect(notArrayWith("not an array", 2)).toBe(true);
+	expect(notArrayWith([1, 2, 3], 2)).toBe(false);
 });
