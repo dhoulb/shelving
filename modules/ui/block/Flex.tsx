@@ -33,7 +33,7 @@ export function Flex({ children, ...variants }: FlexProps): ReactElement {
 		<div
 			className={getClass(
 				BLOCK_CLASS, //
-				getModuleClass(FLEX_CSS, "elements", variants),
+				getModuleClass(FLEX_CSS, "flex", variants),
 			)}
 		>
 			{children}
