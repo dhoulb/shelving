@@ -62,7 +62,8 @@
 	&& > * {
 		margin: 0; /* No margins on children (high specificity). */
 	}
-	&& > [data-slot="icon"] {
+	/* Low-precedence default — `:where()` keeps specificity at zero so an icon's own size variant (e.g. `<StatusIcon large>`) can override it. */
+	:where(& > [data-slot="icon"]) {
 		inline-size: var(--elements-size-icon, var(--size-icon));
 		block-size: var(--elements-size-icon, var(--size-icon));
 		flex: none;

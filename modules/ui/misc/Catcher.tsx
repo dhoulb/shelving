@@ -115,7 +115,7 @@ export function ErrorPage({ reason }: ErrorPageProps): ReactElement {
 				<Card status="error">
 					<Subheading>
 						<Flex left>
-							<StatusIcon status="error" xxlarge /> {message}
+							<StatusIcon status="error" xlarge /> {message}
 						</Flex>
 						<RetryButton />
 					</Subheading>
