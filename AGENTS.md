@@ -28,6 +28,14 @@ Source lives under `modules/`:
 - React files only use `.tsx` when they contain JSX; typed React helpers without JSX stay in `.ts`
 - Public docs can lag behind the implementation. If `README.md` or older module docs conflict with code, trust source, tests, `package.json`, and this file
 
+## Project Tasks
+
+Outstanding todos, known gaps, and deferred decisions are tracked as **GitHub issues** on the [`dhoulb/shelving`](https://github.com/dhoulb/shelving/issues) repository. There is no in-repo task list — this replaces the former `PROJECT.md`.
+
+- Each issue is labelled with the module folder name(s) it relates to — `util`, `markup`, `ui`, `db`, `api`, `extract`, `bun`, `test`, etc.
+- When a PR resolves an issue, reference it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so the issue closes automatically when the PR merges. List every issue the PR resolves.
+- When a new gap or deferred decision is found, open a new issue and apply the relevant module label(s).
+
 ## Commands
 
 **After making any code changes, always run:**
