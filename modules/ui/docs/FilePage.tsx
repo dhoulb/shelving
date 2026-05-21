@@ -17,9 +17,7 @@ export function FilePage({ title, name, description, content, children }: FileEl
 					<Markup>{content}</Markup>
 				</Prose>
 			)}
-			<TreeCards path={path} grouped>
-				{children}
-			</TreeCards>
+			<TreeCards path={path}>{children}</TreeCards>
 		</Page>
 	);
 }

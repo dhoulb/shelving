@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import type { DocumentationElementProps } from "../../util/element.js";
+import { type DocumentationElementProps, type Element, queryElements, type TreeElement } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
+import type { Query } from "../../util/query.js";
 import { Definition, Definitions } from "../block/Definitions.js";
 import { Flex } from "../block/Flex.js";
 import { Heading } from "../block/Heading.js";
@@ -17,10 +18,22 @@ import { DocumentationKind } from "./DocumentationKind.js";
 
 const DEFAULT_TYPE = "unknown";
 
+/** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. */
+const KIND_SECTIONS: ReadonlyArray<readonly [kind: string, label: string]> = [
+	["function", "Functions"],
+	["class", "Classes"],
+	["interface", "Interfaces"],
+	["type", "Types"],
+	["constant", "Constants"],
+	["method", "Methods"],
+	["property", "Properties"],
+];
+
 /**
- * Page renderer for a `tree-documentation` element.
- * - Renders title, signatures (one per overload), content, parameters, returns, throws, examples, and child symbols.
- * - All sections are conditional — only render when their array has entries.
+ * Page renderer for a `tree-documentation` element (also used for `tree-file` elements, whose props are a compatible subset).
+ * - Renders title, signatures (one per overload), content, parameters, returns, throws, and examples.
+ * - Child symbols are grouped by `kind` into card sections (Functions, Classes, Methods, Properties, …), each under its own heading.
+ * - All sections are conditional — only render when they have entries.
  */
 export function DocumentationPage({
 	title,
@@ -105,9 +118,16 @@ export function DocumentationPage({
 					))}
 				</Section>
 			)}
-			<TreeCards path={path} grouped>
-				{children}
-			</TreeCards>
+			{KIND_SECTIONS.map(([kind, label]) => {
+				// Pre-filter the children for this kind; only render the section when it has cards.
+				const group = Array.from(queryElements(children, { "props.kind": kind } as Query<Element>)) as TreeElement[];
+				return group.length ? (
+					<Section key={kind}>
+						<Heading>{label}</Heading>
+						<TreeCards path={path}>{group}</TreeCards>
+					</Section>
+				) : null;
+			})}
 		</Page>
 	);
 }
