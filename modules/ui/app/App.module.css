@@ -14,7 +14,7 @@
 
 	/* Font faces */
 	--font-sans: system-ui;
-	--font-mono: "Courier New", "Courier", monospace;
+	--font-mono: ui-monospace, "SF Mono", "Consolas", "Menlo", monospace;
 	--font-serif: "Palatino", "Garamond", serif;
 
 	/* Semantic font faces */
