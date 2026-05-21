@@ -22,11 +22,11 @@ For `GET` and `HEAD` requests, payload fields that don't fill a `{placeholder}` 
 
 ### Providers
 
-An `APIProvider` is the interface for executing a fetch against an endpoint. The base `APIProvider` uses the global `fetch` API. Wrap it with `ThroughAPIProvider` subclasses to layer in behaviour without rewriting transport logic:
+An `APIProvider` is the abstract interface for executing calls against endpoints. `ClientAPIProvider` is the concrete implementation that uses the global `fetch` API. Wrap it with `ThroughAPIProvider` subclasses to layer in behaviour without rewriting transport logic:
 
 | Provider | Purpose |
 |---|---|
-| `APIProvider` | Base provider — builds and sends requests with `fetch` |
+| `ClientAPIProvider` | Concrete base — sends requests over the network with `fetch()` |
 | `ThroughAPIProvider` | Pass-through base for wrapping another provider |
 | `ValidationAPIProvider` | Validates payload and result against endpoint schemas |
 | `DebugAPIProvider` | Logs fetch attempts, results, and errors to the console |
@@ -40,13 +40,12 @@ Extend `ThroughAPIProvider` to add custom behaviour such as auth headers:
 ```ts
 import { ThroughAPIProvider } from "shelving/api"
 
-class AuthAPIProvider extends ThroughAPIProvider {
-  constructor(source: APIProvider, readonly token: string) { super(source) }
-  override fetch(endpoint, payload, options) {
-    return super.fetch(endpoint, payload, {
-      ...options,
-      headers: { Authorization: `Bearer ${this.token}` },
-    })
+class AuthAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
+  constructor(source: APIProvider<P, R>, readonly token: string) { super(source) }
+  override fetch(request: Request): Promise<Response> {
+    return super.fetch(new Request(request, {
+      headers: { ...Object.fromEntries(request.headers), Authorization: `Bearer ${this.token}` },
+    }))
   }
 }
 ```
@@ -62,17 +61,17 @@ The cache is primarily useful as the backbone of the [React integration](#react-
 ### Define endpoints and fetch directly
 
 ```ts
-import { GET, POST, APIProvider, ValidationAPIProvider } from "shelving/api"
+import { GET, POST, ClientAPIProvider, ValidationAPIProvider } from "shelving/api"
 import { DATA, STRING } from "shelving/schema"
 
 const UserSchema = DATA({ id: STRING, name: STRING, email: STRING })
-const getUser    = GET("/users/{id}", { id: STRING }, UserSchema)
-const createUser = POST("/users", { name: STRING, email: STRING }, UserSchema)
+const getUser    = GET("/users/{id}", DATA({ id: STRING }), UserSchema)
+const createUser = POST("/users", DATA({ name: STRING, email: STRING }), UserSchema)
 
-const provider = new ValidationAPIProvider(new APIProvider({ url: "https://api.example.com" }))
+const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }))
 
-const user    = await provider.fetch(getUser, { id: "u_123" })
-const created = await provider.fetch(createUser, { name: "Alice", email: "alice@example.com" })
+const user    = await provider.call(getUser, { id: "u_123" })
+const created = await provider.call(createUser, { name: "Alice", email: "alice@example.com" })
 ```
 
 ### Server-side routing
@@ -100,8 +99,8 @@ Wires your handler array directly into a mock transport so you can test client a
 ```ts
 import { MockEndpointAPIProvider } from "shelving/api"
 
-const api = new MockEndpointAPIProvider(handlers, { context: undefined })
-const user = await api.fetch(getUser, { id: "u_123" })
+const api = new MockEndpointAPIProvider(handlers, undefined)
+const user = await api.call(getUser, { id: "u_123" })
 ```
 
 ## React integration
@@ -110,9 +109,9 @@ The [`react`](/react) module's `createAPIContext()` is the primary way to use a 
 
 ```ts
 import { createAPIContext } from "shelving/react"
-import { APIProvider, ValidationAPIProvider } from "shelving/api"
+import { ClientAPIProvider, ValidationAPIProvider } from "shelving/api"
 
-const provider = new ValidationAPIProvider(new APIProvider({ url: "https://api.example.com" }))
+const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }))
 export const { APIContext, useEndpoint } = createAPIContext(provider)
 ```
 

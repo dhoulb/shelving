@@ -23,7 +23,7 @@ Observable value containers for reactive state. A `Store<T>` holds a single curr
 | `ArrayStore<T>` | Stores an array; adds `.first`, `.last`, `.count`, `.add()`, `.delete()`, `.toggle()`. |
 | `BooleanStore` | Stores a boolean; adds `.toggle()`. |
 
-`ItemStore` and `QueryStore` in the [`db`](/db) module extend `OptionalDataStore` and `ArrayStore` respectively, adding database-aware refresh and subscription logic.
+`ItemStore` and `QueryStore` in the [`db`](/db) module extend `FetchStore` directly, adding database-aware fetch and subscription logic.
 
 ## Usage
 

@@ -24,7 +24,7 @@ A recurring React problem is stale closures and unnecessary re-renders caused by
 
 ```tsx
 import { Suspense } from "react";
-import { useStore } from "@shelving/shelving/react";
+import { useStore } from "shelving/react";
 
 function UserCard({ store }: { store: Store<User> }) {
   useStore(store); // Subscribe — re-renders when the store updates.
@@ -48,14 +48,14 @@ function App() {
 Call `createAPIContext(provider)` once (outside any component) to produce a context component and a `useAPI` hook. Wrap your tree in the context component and call `useAPI` wherever you need data.
 
 ```tsx
-import { APIProvider, ValidationAPIProvider, GET } from "@shelving/shelving/api";
-import { createAPIContext } from "@shelving/shelving/react";
-import { STRING, DATA } from "@shelving/shelving/schema";
+import { ClientAPIProvider, ValidationAPIProvider, GET } from "shelving/api";
+import { createAPIContext } from "shelving/react";
+import { STRING, DATA } from "shelving/schema";
 
 const UserSchema = DATA({ id: STRING, name: STRING });
 const getUser = GET("/users/{id}", { id: STRING }, UserSchema);
 
-const provider = new ValidationAPIProvider(new APIProvider({ url: "https://api.example.com" }));
+const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }));
 const { APIContext, useAPI } = createAPIContext(provider);
 
 function UserCard({ id }: { id: string }) {
@@ -84,7 +84,7 @@ function App() {
 The DB equivalent works the same way but exposes `useItem` and `useQuery` hooks:
 
 ```tsx
-import { createDBContext } from "@shelving/shelving/react";
+import { createDBContext } from "shelving/react";
 
 const { DBContext, useItem, useQuery } = createDBContext(dbProvider);
 
@@ -106,8 +106,8 @@ function UserList() {
 Creates a stable class instance. A new instance is only constructed when the arguments change (by deep equality). Useful for creating stores or caches inside a component without moving them to module scope.
 
 ```tsx
-import { useInstance } from "@shelving/shelving/react";
-import { APICache } from "@shelving/shelving/api";
+import { useInstance } from "shelving/react";
+import { APICache } from "shelving/api";
 
 function MyComponent({ provider }: { provider: APIProvider }) {
   const cache = useInstance(APICache, provider); // Stable across renders.
@@ -120,7 +120,7 @@ function MyComponent({ provider }: { provider: APIProvider }) {
 Subscribes to an `AsyncIterable` for the lifetime of the component and returns the most recent value. The subscription is recreated whenever the iterable reference changes, so memoising the iterable keeps it stable.
 
 ```tsx
-import { useSequence } from "@shelving/shelving/react";
+import { useSequence } from "shelving/react";
 
 function LiveCounter({ counter }: { counter: AsyncIterable<number> }) {
   const count = useSequence(counter); // undefined until first emission.
