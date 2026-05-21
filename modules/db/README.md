@@ -117,7 +117,7 @@ for await (const post of provider.getItemSequence(POSTS, id)) {
 
 ## React integration
 
-The [`react`](/react) module's `createDBContext()` is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a `CacheDBProvider` in the chain) and exposes typed hooks — `useItem()`, `useQuery()`, `useProvider()` — that return reactive `Store` instances and suspend automatically while loading.
+The [`react`](/react) module's `createDBContext()` is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a `CacheDBProvider` in the chain) and exposes typed hooks — `useItem()` and `useQuery()` — that return reactive `Store` instances and suspend automatically while loading.
 
 ```ts
 import { createDBContext } from "shelving/react"

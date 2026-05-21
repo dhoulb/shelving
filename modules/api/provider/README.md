@@ -15,13 +15,17 @@ The transport layer for API calls. A provider builds requests, sends them, and p
 | `ValidationAPIProvider` | Validates payload before request creation and result after response parsing. |
 | `LoggingAPIProvider` | Logs requests, responses, and errors using configurable callbacks (production-safe). |
 | `DebugAPIProvider` | Verbose console output including full request/response bodies — development only. |
-| `JSONAPIProvider` | Forces JSON request bodies and always parses responses as JSON. |
-| `XMLAPIProvider` | Sends XML request bodies and returns raw text responses. |
+| `JSONAPIProvider` | A `ClientAPIProvider` that forces JSON request bodies and always parses responses as JSON. |
+| `XMLAPIProvider` | A `ClientAPIProvider` that sends XML request bodies and returns raw text responses. |
 | `MockAPIProvider` | Intercepts fetches through a `RequestHandler`; records all calls. No network requests. |
 | `MockEndpointAPIProvider` | Routes mock fetches through a real `EndpointHandler` array — test client and server together. |
-| `CachedAPIProvider` | Serves calls through an `APICache` and exposes `invalidate`/`refresh` helpers. |
+| `CachedAPIProvider` | Serves calls through an `APICache` and exposes `invalidate` / `refresh` helpers. |
+
+Each provider has its own page with focused usage examples.
 
 ### Building a provider chain
+
+Wrap outermost to innermost — the outer provider sees every call first:
 
 ```ts
 import { ClientAPIProvider, ValidationAPIProvider, LoggingAPIProvider } from "shelving/api"
@@ -35,62 +39,7 @@ const provider = new LoggingAPIProvider(
 const user = await provider.call(getUser, { id: "u_123" })
 ```
 
-Wrap outermost to innermost: `LoggingAPIProvider` sees every call first, `ValidationAPIProvider` validates next, `ClientAPIProvider` sends last.
-
-### Custom provider
-
-Extend `ThroughAPIProvider` to inject auth headers or any other per-request behaviour:
-
-```ts
-import { ThroughAPIProvider } from "shelving/api"
-
-class AuthAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
-  constructor(source: APIProvider<P, R>, readonly token: string) { super(source) }
-
-  override fetch(request: Request): Promise<Response> {
-    const authed = new Request(request, {
-      headers: { ...Object.fromEntries(request.headers), Authorization: `Bearer ${this.token}` },
-    })
-    return super.fetch(authed)
-  }
-}
-```
-
-### Testing with MockAPIProvider and MockEndpointAPIProvider
-
-`MockAPIProvider` captures all calls and routes fetches through a `RequestHandler` instead of the network. `MockEndpointAPIProvider` goes further — it wires the mock transport directly to a real handler array, so client and server code run together in a single process:
-
-```ts
-import { MockEndpointAPIProvider } from "shelving/api"
-
-const handlers = [
-  getUser.handler(async ({ id }) => ({ id, name: "Alice", email: "alice@example.com" })),
-]
-
-const api = new MockEndpointAPIProvider(handlers, undefined)
-const user = await api.call(getUser, { id: "u_1" })
-// user == { id: "u_1", name: "Alice", email: "alice@example.com" }
-
-console.log(api.requestCalls) // inspect recorded calls
-```
-
-### `CachedAPIProvider`
-
-Wraps any provider with an `APICache` so repeated calls for the same endpoint+payload skip the network. Exposes `invalidate`, `invalidateAll`, `refresh`, and `refreshAll` for cache control:
-
-```ts
-import { CachedAPIProvider, ValidationAPIProvider, ClientAPIProvider } from "shelving/api"
-
-const provider = new CachedAPIProvider(
-  new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }))
-)
-
-await provider.call(getUser, { id: "u_1" }) // fetches
-await provider.call(getUser, { id: "u_1" }) // returns cached
-
-provider.invalidate(getUser, { id: "u_1" }) // mark stale
-provider.refresh(getUser, { id: "u_1" })    // re-fetch eagerly
-```
+`LoggingAPIProvider` sees every call first, `ValidationAPIProvider` validates next, `ClientAPIProvider` sends last.
 
 ## See also
 

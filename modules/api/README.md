@@ -105,14 +105,14 @@ const user = await api.call(getUser, { id: "u_123" })
 
 ## React integration
 
-The [`react`](/react) module's `createAPIContext()` is the primary way to use a provider in a React app. It creates a context backed by an `APICache` and exposes typed hooks — `useEndpoint()`, `useProvider()` — that return reactive `EndpointStore` instances and suspend automatically while loading.
+The [`react`](/react) module's `createAPIContext()` is the primary way to use a provider in a React app. It creates a context backed by an `APICache` and exposes a typed `useAPI()` hook that returns reactive `EndpointStore` instances and suspends automatically while loading.
 
 ```ts
 import { createAPIContext } from "shelving/react"
 import { ClientAPIProvider, ValidationAPIProvider } from "shelving/api"
 
 const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }))
-export const { APIContext, useEndpoint } = createAPIContext(provider)
+export const { APIContext, useAPI } = createAPIContext(provider)
 ```
 
 See the [`react`](/react) module for full usage.
