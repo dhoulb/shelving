@@ -2,10 +2,12 @@ import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { Definition, Definitions } from "../block/Definitions.js";
+import { Flex } from "../block/Flex.js";
 import { Heading } from "../block/Heading.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Section } from "../block/Section.js";
+import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { requireMeta } from "../misc/MetaContext.js";
@@ -37,7 +39,12 @@ export function DocumentationPage({
 	const path = (url?.pathname ?? "/") as AbsolutePath;
 	return (
 		<Page title={title ?? name} description={description}>
-			{kind && <DocumentationKind kind={kind} />}
+			<Title>
+				<Flex left>
+					{title ?? name}
+					{kind && <DocumentationKind kind={kind} />}
+				</Flex>
+			</Title>
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
 			))}
@@ -48,7 +55,7 @@ export function DocumentationPage({
 			)}
 			{params?.length && (
 				<Section>
-					<Heading level="2">Parameters</Heading>
+					<Heading>Parameters</Heading>
 					<Definitions row>
 						{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
 							<Definition
@@ -68,7 +75,7 @@ export function DocumentationPage({
 			)}
 			{returns?.length && (
 				<Section>
-					<Heading level="2">Returns</Heading>
+					<Heading>Returns</Heading>
 					<Definitions row>
 						{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
 							<Definition key={`${type}-${description}`} term={<Code>{type}</Code>}>
@@ -80,7 +87,7 @@ export function DocumentationPage({
 			)}
 			{throws?.length && (
 				<Section>
-					<Heading level="2">Throws</Heading>
+					<Heading>Throws</Heading>
 					<Definitions row>
 						{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
 							<Definition key={`${type}-${description}`} term={<Code>{type}</Code>}>
@@ -92,7 +99,7 @@ export function DocumentationPage({
 			)}
 			{examples?.length && (
 				<Section>
-					<Heading level="2">Examples</Heading>
+					<Heading>Examples</Heading>
 					{examples.map(({ description }) => (
 						<Preformatted key={description}>{description}</Preformatted>
 					))}
