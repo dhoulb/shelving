@@ -4,7 +4,7 @@ Inline and global toast-style notices for user feedback. `<Notice>` is a standal
 
 ## Concepts
 
-**`<Notice>`** renders an `<aside>` with a status icon and a message. It accepts a `status` prop (`"info"`, `"success"`, `"error"`, `"danger"`, `"loading"`, etc.) and maps it to the appropriate colour and ARIA role. The icon defaults to `<StatusIcon>` but can be replaced or hidden.
+**`<Notice>`** renders an `<aside>` with a status icon and a message. It accepts a `status` prop (`"info"`, `"success"`, `"error"`, `"danger"`, `"loading"`, etc.) and maps it to the appropriate colour and ARIA role. The icon defaults to `<StatusIcon>` but can be replaced or hidden. The icon always sits beside the message; pass an `actions` prop (e.g. a button) to add a row of actions on its own line below the message.
 
 **`<Message>`** is a lighter variant — a `<p>` tag with the same status colours, for short inline feedback inside a form or card rather than a banner.
 
@@ -25,6 +25,14 @@ import { Notice } from "shelving/ui";
 ```
 
 When `status` is omitted, `<Notice>` defaults to `"info"` if `children` is present, or `"loading"` if not.
+
+Pass `actions` to put buttons on their own row below the message.
+
+```tsx
+<Notice status="error" actions={<Button onClick={retry}>Retry</Button>}>
+  Something went wrong.
+</Notice>
+```
 
 Use `<Message>` for shorter inline feedback inside paragraphs or forms.
 

@@ -1,5 +1,8 @@
 .notice {
-	/* Box */
+	/* Box — a vertical stack: the message row, then the actions row. */
+	display: flex;
+	flex-direction: column;
+	gap: var(--notice-gap, var(--space-small));
 	border-radius: var(--notice-radius, var(--radius-xsmall));
 	border: var(--notice-border, var(--stroke-normal)) solid var(--notice-color-border, var(--color-quiet));
 	padding: var(--notice-padding, var(--space-small));
@@ -12,4 +15,36 @@
 	font-size: var(--notice-size, var(--size-normal));
 	font-weight: var(--notice-weight, var(--weight-strong));
 	text-align: start;
+}
+
+/* The icon and the message always sit beside each other on one row. */
+.body {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: var(--notice-gap, var(--space-small));
+}
+
+/* The message grows to fill the row beside the icon. */
+.message {
+	flex: 1 1 auto;
+	min-inline-size: 0;
+}
+
+/* Keep the icon at its intrinsic size — it never grows or shrinks. */
+.body > :where(svg, [data-slot="icon"]) {
+	flex: 0 0 auto;
+}
+
+/* Actions (e.g. buttons) get their own row below the message. */
+.actions {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: var(--notice-gap, var(--space-small));
+}
+
+/* Drop the actions row entirely when it has nothing to show (e.g. a retry button with no handler). */
+.actions:empty {
+	display: none;
 }

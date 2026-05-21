@@ -93,9 +93,8 @@ export interface ErrorNoticeProps extends ErrorComponentProps {}
 export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
 	const message = getMessage(reason) ?? "Unknown error";
 	return (
-		<Notice status="error">
-			<p>{message}</p>
-			<RetryButton small fit />
+		<Notice status="error" actions={<RetryButton small />}>
+			{message}
 		</Notice>
 	);
 }
