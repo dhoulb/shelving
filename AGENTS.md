@@ -33,7 +33,7 @@ Source lives under `modules/`:
 Outstanding todos, known gaps, and deferred decisions are tracked as **GitHub issues** on the [`dhoulb/shelving`](https://github.com/dhoulb/shelving/issues) repository. There is no in-repo task list — this replaces the former `PROJECT.md`.
 
 - Each issue is labelled with the module folder name(s) it relates to — `util`, `markup`, `ui`, `db`, `api`, `extract`, `bun`, `test`, etc.
-- When a PR resolves an issue, reference it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so the issue closes automatically when the PR merges. List every issue the PR resolves.
+- When a PR resolves an issue, link it with a `Closes #123` / `Fixes #123` keyword so it closes automatically on merge — see the [Pull Requests](#pull-requests) section.
 - When a new gap or deferred decision is found, open a new issue and apply the relevant module label(s).
 
 ## Commands
@@ -90,6 +90,10 @@ Before writing new code, find what already exists. The codebase deliberately exp
 - `fix:` triggers a patch release
 - While the project is still on `v0`, do not use `BREAKING CHANGE:` footers or `!` commit markers to trigger a major release
 - If a change is breaking in practice, describe it clearly in the commit body or PR, but keep the commit type within the non-major release flow for now
+
+## Pull Requests
+
+- Every PR that resolves a tracked issue **must** link it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so GitHub closes the issue automatically when the PR merges. List every issue the PR resolves, one keyword each. This is mandatory: never rely on closing issues by hand after merge.
 
 ## Naming
 
