@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { Definition, Definitions } from "../block/Definitions.js";
+import { Flex } from "../block/Flex.js";
 import { Heading } from "../block/Heading.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
@@ -38,8 +39,12 @@ export function DocumentationPage({
 	const path = (url?.pathname ?? "/") as AbsolutePath;
 	return (
 		<Page title={title ?? name} description={description}>
-			<Title>{title ?? name}</Title>
-			{kind && <DocumentationKind kind={kind} />}
+			<Title>
+				<Flex left>
+					{title ?? name}
+					{kind && <DocumentationKind kind={kind} />}
+				</Flex>
+			</Title>
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
 			))}
