@@ -286,6 +286,62 @@ export function add(a: number, b: number): number { return a + b; }
 		);
 	});
 
+	test("derives description from the first paragraph of a symbol's JSDoc", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Add two numbers together.
+ *
+ * A second paragraph with more detail that should not appear in the summary.
+ */
+export function add(a: number, b: number): number {
+	return a + b;
+}
+`),
+		);
+		const children = element.props.children as { props: { description?: string; content?: string } }[];
+		expect(children[0]?.props.description).toBe("Add two numbers together.");
+		// The full multi-paragraph text still lands in `content`.
+		expect(children[0]?.props.content).toContain("A second paragraph");
+	});
+
+	test("derives description for class members from their JSDoc", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A store. */
+export class Store {
+	/** The current value of the store. */
+	value: string;
+	/** Replace the stored value. */
+	set(v: string): void {}
+}
+`),
+		);
+		const cls = (element.props.children as { props: { children: { props: { description?: string } }[] } }[])[0];
+		expect(cls?.props.children[0]?.props.description).toBe("The current value of the store.");
+		expect(cls?.props.children[1]?.props.description).toBe("Replace the stored value.");
+	});
+
+	test("derives the file description from the file-level JSDoc", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * This module handles array utilities.
+ */
+export function first<T>(arr: T[]): T | undefined {
+	return arr[0];
+}
+`),
+		);
+		expect(element.props.description).toBe("This module handles array utilities.");
+	});
+
+	test("leaves description undefined when a symbol has no JSDoc", async () => {
+		const element = await extractor.extract(file("export const X = 1;"));
+		const children = element.props.children as { props: { description?: string } }[];
+		expect(children[0]?.props.description).toBeUndefined();
+	});
+
 	test("strips directory path from filename when computing key/name", async () => {
 		// In production, `BunFile.name` is the full absolute path (e.g. `/Users/.../modules/util/array.ts`).
 		// The extractor should use only the basename.

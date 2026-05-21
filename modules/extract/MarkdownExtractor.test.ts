@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { BunFile } from "bun";
-import { MarkdownExtractor } from "./index.js";
+import { extractMarkdownDescription, MarkdownExtractor } from "./index.js";
 
 const extractor = new MarkdownExtractor();
 
@@ -42,5 +42,40 @@ describe("MarkdownExtractor", () => {
 		// `BunFile.name` is the full absolute path; the extractor uses only the basename.
 		const element = await extractor.extract(file("# Hi", "/tmp/some-dir/foo.md"));
 		expect(element.key).toBe("foo");
+	});
+
+	test("sets description to the first prose paragraph after the heading", async () => {
+		const element = await extractor.extract(file("# Title\n\nThe first paragraph.\n\nThe second paragraph."));
+		expect(element.props.description).toBe("The first paragraph.");
+	});
+
+	test("leaves description undefined when there is no prose paragraph", async () => {
+		const element = await extractor.extract(file("# Just A Heading"));
+		expect(element.props.description).toBeUndefined();
+	});
+});
+
+describe("extractMarkdownDescription", () => {
+	test("returns the first prose paragraph", () => {
+		expect(extractMarkdownDescription("# Title\n\nFirst paragraph.\n\nSecond paragraph.")).toBe("First paragraph.");
+	});
+
+	test("collapses internal whitespace onto a single line", () => {
+		expect(extractMarkdownDescription("# Title\n\nA paragraph that\nwraps across\nseveral lines.")).toBe(
+			"A paragraph that wraps across several lines.",
+		);
+	});
+
+	test("skips headings and blank lines while searching", () => {
+		expect(extractMarkdownDescription("# Title\n\n## Subheading\n\nThe prose.")).toBe("The prose.");
+	});
+
+	test("skips fenced code blocks", () => {
+		expect(extractMarkdownDescription("# Title\n\n```ts\nconst x = 1;\n```\n\nThe prose.")).toBe("The prose.");
+	});
+
+	test("returns undefined when there is no prose", () => {
+		expect(extractMarkdownDescription("# Heading\n\n## Another heading")).toBeUndefined();
+		expect(extractMarkdownDescription("")).toBeUndefined();
 	});
 });
