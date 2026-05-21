@@ -105,7 +105,9 @@ export function DocumentationPage({
 					))}
 				</Section>
 			)}
-			<TreeCards path={path}>{children}</TreeCards>
+			<TreeCards path={path} grouped>
+				{children}
+			</TreeCards>
 		</Page>
 	);
 }

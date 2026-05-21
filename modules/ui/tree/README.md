@@ -10,7 +10,7 @@ Shell components for a tree-based documentation site. Given a `TreeElement` from
 
 **`<TreeMenu>` and `<TreeSidebar>` build navigation.** `<TreeSidebar>` renders a single home link for the root, then its children via `<TreeMenuMapper>`. `<TreeMenu>` renders a menu from a tree element's children directly. Only `tree-directory` and `tree-file` elements appear — code symbols are kept off the navigation.
 
-**`<TreeCards>` renders a card list.** It dispatches each child element to a card renderer via `<TreeCardMapper>`. Used by the page renderers in [ui/docs](/ui/docs) to fill out directory and file pages.
+**`<TreeCards>` renders a card list.** It dispatches each child element to a card renderer via `<TreeCardMapper>`. Used by the page renderers in [ui/docs](/ui/docs) to fill out directory and file pages. With the `grouped` prop it partitions `tree-documentation` children by `kind` into headed sections — Functions, Classes, Methods, Properties, and so on.
 
 **Mappings — override any renderer.** Each dispatch layer is backed by a `[Mapping, Mapper]` pair created by `createMapper()`. Wrap any subtree with a `*Mapping` component to swap the renderer for a specific element type without touching anything else.
 
