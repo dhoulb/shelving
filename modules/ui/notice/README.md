@@ -1,40 +1,94 @@
 # Notices
 
-## Basic notices
+Inline and global toast-style notices for user feedback. `<Notice>` is a standalone status banner; `<Notices>` is the global list that listens for dispatched events and shows them automatically.
 
-Basic notices appear inside code:
+## Concepts
 
-```.tsx
-<div>
-This is some content.
-<Notice>This is a notice<Notice>
-This is some more content.
-</div>
+**`<Notice>`** renders an `<aside>` with a status icon and a message. It accepts a `status` prop (`"info"`, `"success"`, `"error"`, `"danger"`, `"loading"`, etc.) and maps it to the appropriate colour and ARIA role. The icon defaults to `<StatusIcon>` but can be replaced or hidden.
+
+**`<Message>`** is a lighter variant — a `<p>` tag with the same status colours, for short inline feedback inside a form or card rather than a banner.
+
+**`<Notices>`** renders the global list of active notices. It subscribes to `"notice"` events on `window` (dispatched by the `notify` helpers in [ui/util](/ui/util)) and shows each one as a `<Notice>`. Notices auto-dismiss after 5 seconds unless they carry a `"loading"` status.
+
+**`NoticeStore` and `NoticesStore`** are the reactive stores behind `<Notices>`. `NoticesStore` is an `ArrayStore<NoticeStore>` that manages the list. Each `NoticeStore` is a `DataStore` holding one notice's message and status, and removes itself from the list when it closes.
+
+## Basic usage
+
+Place `<Notice>` anywhere to show inline status feedback.
+
+```tsx
+import { Notice } from "shelving/ui";
+
+<Notice status="success">Your changes have been saved.</Notice>
+<Notice status="error">Something went wrong.</Notice>
+<Notice status="loading" />
 ```
 
-Basic notices can use any of the status classes (see the `Status` type in `Status.tsx`):
+When `status` is omitted, `<Notice>` defaults to `"info"` if `children` is present, or `"loading"` if not.
 
+Use `<Message>` for shorter inline feedback inside paragraphs or forms.
 
-```.tsx
-<Notice status="error">This is an error.<Notice>
-<Notice status="success">This is a success!<Notice>
+```tsx
+import { Message } from "shelving/ui";
+
+<Message status="error">This field is required.</Message>
 ```
-
 
 ## Global notices
 
-Global notices are powered by the `Notices` module and the global notices context. To show a notice in the global context use the `requireNotices()` function:
+Mount `<Notices>` once near the root of your app. It renders at that point in the DOM and listens automatically.
 
-```.tsx
-function MyComponent() {
-	const notices = requireNotices();
-	return <button type="button" onClick={() => notices.success("Good thing happened!")}>Good thing</button>;
-	return <button type="button" onClick={() => notices.error("Bad thing happened!")}>Bad thing</button>;
+```tsx
+import { Notices } from "shelving/ui";
+
+export function AppLayout({ children }) {
+  return (
+    <>
+      {children}
+      <Notices />
+    </>
+  );
 }
 ```
 
-Use the `<Notices>` component somewhere in your app to output the global notices at that point.
+Dispatch notices from anywhere — no context required:
 
-## Forms and buttons
+```tsx
+import { notifySuccess, notifyError, callNotified } from "shelving/ui";
 
-Forms and buttons are already wired to use global notices. Callbacks to `<Form onSubmit={callback}>` and `<Button onClick={callback}>` can return `string` or a Shelving `Feedback` instance, in order to show a success notice, or throw a `etring` or `Feedback` instance
+// Direct dispatch.
+notifySuccess("Profile updated.");
+notifyError("Could not connect.");
+
+// Wrap an async callback — dispatches success or error automatically.
+callNotified(async () => {
+  await saveProfile(data);
+  return "Profile updated.";
+});
+```
+
+## Programmatic control via `NoticesStore`
+
+The global `NOTICES` singleton is exported for advanced use — for example, keeping a reference to a specific notice so you can update or close it manually.
+
+```tsx
+import { NOTICES } from "shelving/ui";
+
+// Show a loading notice and hold a reference to it.
+const notice = NOTICES.show(undefined, "loading");
+
+await uploadFile(file);
+
+// Update the same notice in place.
+notice.show("Upload complete.", "success");
+
+// Or close it immediately.
+notice.close();
+```
+
+`NoticeStore` implements `AsyncDisposable`, so it can be used in an `await using` block to close automatically when the scope exits.
+
+## See also
+
+- [ui/util](/ui/util) — `notify`, `notifySuccess`, `notifyError`, `callNotified`, and `subscribeNotices`
+- [store](/store) — `ArrayStore` and `DataStore` that `NoticesStore` and `NoticeStore` extend

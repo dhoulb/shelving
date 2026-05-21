@@ -16,7 +16,7 @@ Plus `requireNavigation()` for imperative `forward()` / `redirect()` calls from 
 ## Basic setup
 
 ```tsx
-<HTML url={initialUrl} base="https://example.com/">
+<HTML url={initialUrl} root="https://example.com/">
   <Navigation>
     <Router routes={{
       "/": HomePage,
@@ -169,11 +169,11 @@ Force a full remount of children whenever the URL changes:
 
 ## SSR / static rendering
 
-`<Router>` has no client requirements — it reads from `<Meta>` and re-renders when context changes. For static rendering, set `url` and `base` on the outer wrapper and skip `<Navigation>`:
+`<Router>` has no client requirements — it reads from `<Meta>` and re-renders when context changes. For static rendering, set `url` and `root` on the outer wrapper and skip `<Navigation>`:
 
 ```tsx
 renderToString(
-  <HTML url={path} base="https://example.com/">
+  <HTML url={path} root="https://example.com/">
     <Router routes={…}/>
   </HTML>
 );
@@ -183,4 +183,4 @@ For client-side SPAs, wrap the same tree in `<Navigation>` for live URL updates.
 
 ## Base paths
 
-`base="https://example.com/app/"` is supported. The base path prefix is stripped from the URL before route matching via `matchURLPrefix`. URLs that fall outside the base render as `null` from the router.
+`root="https://example.com/app/"` is supported. The base path prefix is stripped from the URL before route matching via `matchURLPrefix`. URLs that fall outside the base render as `null` from the router.

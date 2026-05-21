@@ -76,7 +76,7 @@ pickProps(obj, "a", "c");   // { a: 1, c: 3 }
 import {
   isString, getString, requireString, sanitizeText, sanitizeMultilineText,
   simplifyString, getSlug, limitString, splitString, getWords,
-  getCurrencyCodes, formatCurrency,
+  CURRENCY_CODES, formatCurrency,
 } from "shelving/util";
 
 isString("hi", 1);          // true  (min 1 char)
@@ -92,15 +92,15 @@ getSlug("Hello World!");          // "hello-world"
 
 limitString("A long string here", 10); // "A long…"
 getWords(`hello "world foo" bar`);     // ["hello", "world foo", "bar"]
-getCurrencyCodes().includes("GBP");    // true
-formatCurrency(12.34, "GBP");    // "£12.34"
+CURRENCY_CODES.includes("GBP");        // true
+formatCurrency(12.34, "GBP");          // "£12.34"
 ```
 
 ### Data objects
 
 ```ts
 import {
-  isData, assertData, getDataProp, splitDataKey, joinDataKey, getXML,
+  isData, assertData, getDataProp, splitDataPath, joinDataPath, getXML,
 } from "shelving/util";
 
 const doc = { user: { name: "Alice", age: 30 } };
@@ -111,8 +111,8 @@ isData(new Map());              // false
 getDataProp(doc, "user.name");  // "Alice"
 getDataProp(doc, ["user", "age"]); // 30
 
-splitDataKey("user.name");      // ["user", "name"]
-joinDataKey(["user", "name"]);  // "user.name"
+splitDataPath("user.name");     // ["user", "name"]
+joinDataPath(["user", "name"]); // "user.name"
 getXML({ user: { name: "Alice" } }); // "<user><name>Alice</name></user>"
 ```
 

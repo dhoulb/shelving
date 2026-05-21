@@ -1,6 +1,6 @@
 # db
 
-Typed database provider abstraction. Define your schema once as a [`Collection`](/schema), then swap providers (in-memory, SQLite, Firestore, Cloudflare D1, …) without changing any call sites. Providers are composable wrappers — add validation, logging, or caching by stacking them in a chain.
+Typed database provider abstraction. Define your schema once as a [`Collection`](/db/collection), then swap providers (in-memory, SQLite, Firestore, Cloudflare D1, …) without changing any call sites. Providers are composable wrappers — add validation, logging, or caching by stacking them in a chain.
 
 ## Concepts
 
