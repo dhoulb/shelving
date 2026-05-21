@@ -72,4 +72,11 @@
 	.close {
 		display: flex;
 	}
+	/* Pin the menu button so it stays reachable while the content column scrolls. */
+	.show {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: var(--color-bg);
+	}
 }
