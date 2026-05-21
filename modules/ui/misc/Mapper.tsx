@@ -1,6 +1,7 @@
 import { type ComponentType, createContext, type FunctionComponent, type JSX, type ReactNode, use } from "react";
 import type { Elements } from "../../util/element.js";
 import { walkElements } from "../../util/element.js";
+import type { ChildProps } from "../util/props.js";
 
 /**
  * Dispatch table from a `JSX.IntrinsicElements` key to a renderer component.
@@ -12,10 +13,9 @@ export type Mapping<E = unknown> = {
 };
 
 /** Props for the `Mapping` component returned by `createMapper()`. */
-export interface MappingProps<E = unknown> {
+export interface MappingProps<E = unknown> extends ChildProps {
 	/** Mapping entries that extend or override the inherited mapping inside this subtree. */
 	readonly mapping: Mapping<E>;
-	readonly children: ReactNode;
 }
 
 /**

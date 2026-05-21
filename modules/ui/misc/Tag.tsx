@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import { type ColorVariants, getColorClass } from "./Color.js";
@@ -11,9 +11,7 @@ export interface TagVariants extends StatusVariants, ColorVariants {
 	small?: boolean | undefined;
 }
 
-export interface TagProps extends TagVariants, ClickableProps {
-	children?: ReactNode;
-}
+export interface TagProps extends TagVariants, ClickableProps {}
 
 /**
  * Small inline label used to annotate other content.

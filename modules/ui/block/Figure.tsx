@@ -1,8 +1,8 @@
 import type { ReactElement, ReactNode } from "react";
+import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Figure.module.css";
 
-export interface FigureProps {
-	children?: ReactNode;
+export interface FigureProps extends OptionalChildProps {
 	caption?: ReactNode;
 }
 

@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
 import { type ColorVariants, getColorClass } from "../misc/Color.js";
 import { getStatusClass, type Status } from "../misc/Status.js";
@@ -6,8 +6,6 @@ import { getClass, getModuleClass } from "../util/css.js";
 import CARD_CSS from "./Card.module.css";
 
 export interface CardProps extends ClickableProps, ColorVariants {
-	children?: ReactNode;
-
 	/** Constrain the card to narrow width (defaults to full-width). */
 	narrow?: boolean | undefined;
 

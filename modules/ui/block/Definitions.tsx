@@ -1,9 +1,9 @@
 import type { ReactElement, ReactNode } from "react";
 import { getModuleClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Definitions.module.css";
 
-export interface DefinitionsProps {
-	children?: ReactNode;
+export interface DefinitionsProps extends OptionalChildProps {
 	/** Lay out each term/value pair side-by-side instead of stacked (collapses to stacked at narrow widths). */
 	row?: boolean | undefined;
 }
@@ -23,11 +23,9 @@ export function Definitions({ children, ...variants }: DefinitionsProps): ReactE
 	return <dl className={getModuleClass(styles, "definitions", variants)}>{children}</dl>;
 }
 
-export interface DefinitionProps {
+export interface DefinitionProps extends OptionalChildProps {
 	/** The term — what's being defined. Rendered as `<dt>`. */
 	term: ReactNode;
-	/** The value — the definition. Rendered as `<dd>`. */
-	children?: ReactNode;
 }
 
 /**

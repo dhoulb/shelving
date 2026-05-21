@@ -1,9 +1,9 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { getModuleClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Preformatted.module.css";
 
-export interface PreformattedProps {
-	children?: ReactNode;
+export interface PreformattedProps extends OptionalChildProps {
 	/** Disable line wrapping — long lines overflow horizontally instead of wrapping. */
 	nowrap?: boolean | undefined;
 }

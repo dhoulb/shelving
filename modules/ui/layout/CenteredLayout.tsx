@@ -1,10 +1,10 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { getClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/props.js";
 import CENTERED_LAYOUT_CSS from "./CenteredLayout.module.css";
 import { LAYOUT_CSS } from "./Layout.js";
 
-export interface CenteredLayoutProps {
-	children?: ReactNode;
+export interface CenteredLayoutProps extends OptionalChildProps {
 	fullWidth?: boolean;
 }
 

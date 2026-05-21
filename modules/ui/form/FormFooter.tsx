@@ -1,11 +1,11 @@
 import type { ReactElement, ReactNode } from "react";
 import { Flex } from "../block/Flex.js";
 import { Footer } from "../block/Section.js";
+import type { OptionalChildProps } from "../util/props.js";
 import { FormMessage } from "./FormMessage.js";
 import { SubmitButton } from "./SubmitButton.js";
 
-export interface FormFooterProps {
-	children?: ReactNode | undefined;
+export interface FormFooterProps extends OptionalChildProps {
 	submit?: ReactNode | undefined;
 }
 

@@ -1,12 +1,12 @@
 /// <reference types="react/canary" />
-import { type ReactElement, type ReactNode, ViewTransition } from "react";
+import { type ReactElement, ViewTransition } from "react";
 import { getClass } from "../util/css.js";
+import type { ChildProps } from "../util/props.js";
 import type { TransitionClasses } from "./util.js";
 import "./Transition.css";
 
 /** Variants that can be applied to any transition component. */
-export interface TransitionProps {
-	children: ReactNode;
+export interface TransitionProps extends ChildProps {
 	/** Render this transition above other transitions (z-index: 100 on the group). */
 	overlay?: boolean | undefined;
 }

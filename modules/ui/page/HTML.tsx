@@ -1,10 +1,9 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/index.js";
+import type { ChildProps } from "../util/props.js";
 
-export interface HTMLProps extends PossibleMeta {
-	children: ReactNode;
-}
+export interface HTMLProps extends PossibleMeta, ChildProps {}
 
 /**
  * Output a `<html>` element wrapping `<head>` (via `<Head>`) and `<body>`.

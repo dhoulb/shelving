@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import type { TreeElement } from "../../util/index.js";
 import { App } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
@@ -6,16 +6,15 @@ import { PageCatcher } from "../misc/Catcher.js";
 import { Router } from "../router/Router.js";
 import type { Routes } from "../router/Routes.js";
 import type { PossibleMeta } from "../util/index.js";
+import type { OptionalChildProps } from "../util/props.js";
 import { TreePage } from "./TreePage.js";
 import { TreeSidebar } from "./TreeSidebar.js";
 
-export interface TreeAppProps extends PossibleMeta {
+export interface TreeAppProps extends PossibleMeta, OptionalChildProps {
 	/** The tree elements to display. */
 	tree: TreeElement;
 	/** Additional routes (merged with the default tree route). */
 	routes?: Routes | undefined;
-	/** Children rendered inside the layout; defaults to a `<Router>` over the tree routes. */
-	children?: ReactNode | undefined;
 }
 
 /**

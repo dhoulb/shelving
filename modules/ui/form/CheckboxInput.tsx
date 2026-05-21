@@ -1,10 +1,9 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { notNullish } from "../../util/null.js";
+import type { OptionalChildProps } from "../util/props.js";
 import { CHECKBOX_CLASS, FLEX_LABEL_INPUT_CLASS, type ValueInputProps } from "./Input.js";
 
-export interface CheckboxProps extends ValueInputProps<boolean> {
-	children?: ReactNode | undefined;
-}
+export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildProps {}
 
 /** Checkbox element. */
 export function CheckboxInput({

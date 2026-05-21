@@ -133,6 +133,19 @@ import { useRefresh } from "shelving/ui";
 useRefresh(1000); // re-render every second
 ```
 
+## Props — `ChildProps` and `OptionalChildProps`
+
+Shared base interfaces for the `children` prop. Component props interfaces `extend` one of them instead of redeclaring `children` inline, which keeps the `readonly children: ReactNode` shape consistent everywhere.
+
+- **`ChildProps`** — `readonly children: ReactNode` (children are required).
+- **`OptionalChildProps`** — `readonly children?: ReactNode | undefined` (children are optional).
+
+```ts
+import type { OptionalChildProps } from "shelving/ui";
+
+export interface BlockquoteProps extends OptionalChildProps {}
+```
+
 ## See also
 
 - [ui/notice](/ui/notice) — `<Notice>`, `<Notices>`, and the store layer built on top of the `notify` helpers

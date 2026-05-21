@@ -1,13 +1,12 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { type AddressData, formatAddress } from "../../schema/AddressSchema.js";
 import type { Nullish } from "../../util/null.js";
 import { Small } from "../inline/Small.js";
 import { Strong } from "../inline/Strong.js";
+import type { ChildProps } from "../util/props.js";
 import styles from "./Address.module.css";
 
-export interface AddressProps {
-	children: ReactNode;
-}
+export interface AddressProps extends ChildProps {}
 
 export interface PhysicalAddressProps {
 	name?: Nullish<string>;

@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement } from "react";
 import { UnexpectedError } from "../../error/UnexpectedError.js";
 import { ArraySchema } from "../../schema/ArraySchema.js";
 import { BooleanSchema } from "../../schema/BooleanSchema.js";
@@ -19,6 +19,7 @@ import { getKeys } from "../../util/object.js";
 import { getSource, requireSource } from "../../util/source.js";
 import { getString } from "../../util/string.js";
 import type { ValidatorType } from "../../util/validate.js";
+import type { OptionalChildProps } from "../util/props.js";
 import { ArrayInput } from "./ArrayInput.js";
 import { CheckboxInput } from "./CheckboxInput.js";
 import { ChoiceRadioInputs } from "./ChoiceRadioInputs.js";
@@ -135,9 +136,7 @@ export function DataSchemaInput({ schema, value, ...props }: DataSchemaInputProp
 	return <DataInput {...schema} value={isData(value) ? value : undefined} {...props} />;
 }
 
-export interface SchemaFieldProps extends SchemaInputProps<Schema, unknown> {
-	children?: ReactNode | undefined;
-}
+export interface SchemaFieldProps extends SchemaInputProps<Schema, unknown>, OptionalChildProps {}
 
 /**
  * Show the right control/input for a named property of a form, wrapped in a `<Field>`
