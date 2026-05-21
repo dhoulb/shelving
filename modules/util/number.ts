@@ -33,7 +33,7 @@ export function assertNumber(value: unknown, min?: number, max?: number, caller:
 export function getNumber(value: unknown): number | undefined {
 	if (typeof value === "number" && Number.isFinite(value)) return value === 0 ? 0 : value;
 	if (typeof value === "string") return getNumber(Number.parseFloat(value.replace(NOT_NUMERIC_REGEXP, "")));
-	if (value instanceof Date) getNumber(value.getTime());
+	if (value instanceof Date) return getNumber(value.getTime());
 }
 const NOT_NUMERIC_REGEXP = /[^0-9-.]/g;
 

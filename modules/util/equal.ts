@@ -132,7 +132,7 @@ export function isArrayWith<T>(left: unknown, right: T): left is ImmutableArray<
 
 /** Is unknown value `left` not an array or does not include `right`? */
 export function notArrayWith(left: unknown, right: unknown): boolean {
-	return !notArrayWith(left, right);
+	return !isArrayWith(left, right);
 }
 
 /**
