@@ -3,6 +3,7 @@ import { Component, createContext, type ReactElement, type ReactNode, use } from
 import { getMessage } from "../../util/error.js";
 import type { Callback } from "../../util/function.js";
 import { Card } from "../block/Card.js";
+import { Flex } from "../block/Flex.js";
 import { Subheading } from "../block/Subheading.js";
 import { Button, type ButtonVariants } from "../form/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
@@ -112,9 +113,12 @@ export function ErrorPage({ reason }: ErrorPageProps): ReactElement {
 		<Page title="Error">
 			<CenteredLayout>
 				<Card status="error">
-					<StatusIcon status="error" xxlarge />
-					<Subheading>{message}</Subheading>
-					<RetryButton />
+					<Subheading>
+						<Flex left>
+							<StatusIcon status="error" xxlarge /> {message}
+						</Flex>
+						<RetryButton />
+					</Subheading>
 				</Card>
 			</CenteredLayout>
 		</Page>
