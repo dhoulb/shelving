@@ -9,7 +9,7 @@
 
 	/* Typography */
 	font-family: var(--menu-font, var(--font-body));
-	font-size: var(--menu-size, var(--size-small));
+	font-size: var(--menu-size, var(--size-normal));
 	line-height: var(--menu-leading, var(--leading-normal));
 	color: var(--menu-color-text, var(--color-quiet));
 }
