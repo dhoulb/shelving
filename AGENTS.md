@@ -345,5 +345,6 @@ Conventions for the upcoming reusable component layer.
 - Classes: one-sentence summary, bullet points for notable behaviour and caveats, `@example` for short inline usage
 - Functions: one-sentence summary, 0–2 behaviour bullets for anything surprising, `@param` / `@returns` / `@throws`, one `@example`
 - When you add, remove, or meaningfully change a class or function, check and update its docblock in the same commit
-- Each module has a `README.md` that acts as a guide page (concepts first, then examples). When module behaviour changes, check whether the README needs updating
+- Each module has a `README.md` that acts as the module's guide page. It covers **purpose, key concepts, and integration examples** — how to combine the module's classes and functions to accomplish real tasks (and, for families like `error`, shared traits). When module behaviour changes, check whether the README needs updating
+- **Per-class / per-function usage examples** live in a sibling `MyClass.md` / `myFunction.md` next to the source file. `DirectoryExtractor` merges that markdown onto the symbol's own page (`MarkdownExtractor` outranks `TypescriptExtractor`), so detailed usage belongs there rather than in the module README. `modules/util/template.md` is the precedent
 - Trust source and tests over README if they conflict — but fix the README rather than leaving it wrong

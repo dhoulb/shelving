@@ -14,135 +14,58 @@ React hooks and context helpers for integrating Shelving [stores](/store), async
 
 ### Stable references
 
-A recurring React problem is stale closures and unnecessary re-renders caused by objects being recreated on every render. `useProps`, `useInstance`, `useLazy`, and `useReduce` each solve a specific variant of this: `useProps` gives you a single mutable object that lives for the lifetime of the component; `useInstance` memoises a class constructor call; `useLazy` memoises an arbitrary factory call; `useReduce` lets you fold render state with custom equality logic.
+A recurring React problem is stale closures and unnecessary re-renders caused by objects being recreated on every render. `useInstance`, `useLazy`, `useReduce`, and `useMap` each solve a specific variant of this: `useInstance` memoises a class constructor call; `useLazy` memoises an arbitrary factory call; `useReduce` lets you fold render state with custom equality logic; `useMap` gives you a single mutable `Map` that lives for the lifetime of the component.
 
 ## Usage
 
-### `useStore` with Suspense
+The per-symbol pages below carry the detailed usage for each hook and context factory. This section shows how the pieces fit together for real tasks — start here, then follow the links for specifics.
 
-`useStore` subscribes to a store and returns it. The component suspends while the store is loading and surfaces errors to the nearest error boundary.
+### Rendering data with a DB context
+
+Create a context once at module scope, wrap the tree in it, and let child components suspend while data loads. The same shape works for `createAPIContext` — swap `useItem` / `useQuery` for `useAPI`.
 
 ```tsx
 import { Suspense } from "react";
-import { useStore } from "shelving/react";
-
-function UserCard({ store }: { store: Store<User> }) {
-  useStore(store); // Subscribe — re-renders when the store updates.
-  const user = store.value; // Throws Promise (loading) or reason (error).
-  return <div>{user.name}</div>;
-}
-
-function App() {
-  return (
-    <ErrorBoundary fallback={<p>Something went wrong.</p>}>
-      <Suspense fallback={<p>Loading...</p>}>
-        <UserCard store={userStore} />
-      </Suspense>
-    </ErrorBoundary>
-  );
-}
-```
-
-### `createAPIContext`
-
-Call `createAPIContext(provider)` once (outside any component) to produce a context component and a `useAPI` hook. Wrap your tree in the context component and call `useAPI` wherever you need data.
-
-```tsx
-import { ClientAPIProvider, ValidationAPIProvider, GET } from "shelving/api";
-import { createAPIContext } from "shelving/react";
-import { STRING, DATA } from "shelving/schema";
-
-const UserSchema = DATA({ id: STRING, name: STRING });
-const getUser = GET("/users/{id}", { id: STRING }, UserSchema);
-
-const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }));
-const { APIContext, useAPI } = createAPIContext(provider);
-
-function UserCard({ id }: { id: string }) {
-  const store = useAPI(getUser, { id }); // Returns an EndpointStore; component suspends while loading.
-  const user = store.value;
-  return <div>{user.name}</div>;
-}
-
-function App() {
-  return (
-    <APIContext>
-      <ErrorBoundary fallback={<p>Error</p>}>
-        <Suspense fallback={<p>Loading...</p>}>
-          <UserCard id="u_123" />
-        </Suspense>
-      </ErrorBoundary>
-    </APIContext>
-  );
-}
-```
-
-`useAPI` accepts an optional `maxAge` (milliseconds, default 5 minutes). If the cached response is older than `maxAge`, a background re-fetch is triggered automatically.
-
-### `createDBContext`
-
-The DB equivalent works the same way but exposes `useItem` and `useQuery` hooks:
-
-```tsx
 import { createDBContext } from "shelving/react";
 
 const { DBContext, useItem, useQuery } = createDBContext(dbProvider);
 
 function UserCard({ id }: { id: string }) {
-  const store = useItem(Users, id); // ItemStore — suspends while loading.
-  const user = store.value;
-  return <div>{user.name}</div>;
+  const user = useItem(Users, id).value; // Suspends while loading.
+  return <li>{user.name}</li>;
 }
 
 function UserList() {
-  const store = useQuery(Users, { $order: "name" }); // QueryStore.
-  const users = store.value;
-  return <ul>{users.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
+  const users = useQuery(Users, { $order: "name" }).value;
+  return <ul>{users.map(u => <UserCard key={u.id} id={u.id} />)}</ul>;
+}
+
+function App() {
+  return (
+    <DBContext>
+      <ErrorBoundary fallback={<p>Something went wrong.</p>}>
+        <Suspense fallback={<p>Loading…</p>}>
+          <UserList />
+        </Suspense>
+      </ErrorBoundary>
+    </DBContext>
+  );
 }
 ```
 
-### `useInstance`
+### Building a store inside a component
 
-Creates a stable class instance. A new instance is only constructed when the arguments change (by deep equality). Useful for creating stores or caches inside a component without moving them to module scope.
+A store that depends on props can't live at module scope. `useInstance` constructs it once and keeps it stable across renders, while `useStore` subscribes the component to its updates.
 
 ```tsx
-import { useInstance } from "shelving/react";
-import { APICache } from "shelving/api";
+import { useInstance, useStore } from "shelving/react";
+import { BooleanStore } from "shelving/store";
 
-function MyComponent({ provider }: { provider: APIProvider }) {
-  const cache = useInstance(APICache, provider); // Stable across renders.
-  // ...
+function Toggle() {
+  const open = useInstance(BooleanStore); // Created once, stable across renders.
+  useStore(open); // Re-render whenever the store changes.
+  return <button onClick={() => open.toggle()}>{open.value ? "Open" : "Closed"}</button>;
 }
-```
-
-### `useSequence`
-
-Subscribes to an `AsyncIterable` for the lifetime of the component and returns the most recent value. The subscription is recreated whenever the iterable reference changes, so memoising the iterable keeps it stable.
-
-```tsx
-import { useSequence } from "shelving/react";
-
-function LiveCounter({ counter }: { counter: AsyncIterable<number> }) {
-  const count = useSequence(counter); // undefined until first emission.
-  return <span>{count ?? "—"}</span>;
-}
-```
-
-### `useLazy` and `useReduce`
-
-`useLazy` computes a value once and recomputes only when its arguments change:
-
-```tsx
-const sorted = useLazy((items) => [...items].sort(), items);
-```
-
-`useReduce` runs a reducer on every render, receiving the previous return value so you can implement custom memoisation:
-
-```tsx
-const stable = useReduce((prev, next) => {
-  if (prev && isDeepEqual(prev, next)) return prev; // Preserve reference if equal.
-  return next;
-}, incoming);
 ```
 
 ## See also

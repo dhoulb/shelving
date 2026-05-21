@@ -24,9 +24,7 @@ function requirePositive(n: number): number {
 }
 ```
 
-## Usage
-
-### Choosing the right class
+## Choosing the right class
 
 | Class | When to throw |
 |---|---|
@@ -40,61 +38,13 @@ function requirePositive(n: number): number {
 
 `RequestError` has named subclasses for common HTTP status codes: `UnauthorizedError` (401), `ForbiddenError` (403), `NotFoundError` (404), `MethodNotAllowedError` (405), and `UnprocessableError` (422).
 
-### Basic usage
+See each class's own page for focused usage examples.
 
-```ts
-import {
-  RequiredError,
-  ValueError,
-  NetworkError,
-  NotFoundError,
-  ResponseError,
-  UnexpectedError,
-  UnimplementedError,
-} from "shelving/error";
-
-// Something required is missing.
-function getUser(id: string | undefined): User {
-  if (!id) throw new RequiredError("User ID is required");
-  // ...
-}
-
-// A value from an external source failed validation.
-function parseConfig(raw: unknown): Config {
-  if (!isConfig(raw)) throw new ValueError("Invalid config from server", { received: raw });
-  return raw;
-}
-
-// Network or transport failure.
-async function fetchData(url: string): Promise<Response> {
-  try {
-    return await fetch(url);
-  } catch {
-    throw new NetworkError("Could not reach server");
-  }
-}
-
-// HTTP error response.
-function checkResponse(res: Response): void {
-  if (!res.ok) throw new ResponseError(res.statusText, { code: res.status });
-}
-
-// Guard against code paths that should be unreachable.
-function assertNever(x: never): never {
-  throw new UnexpectedError("Unhandled case", { received: x });
-}
-
-// Stub out a method that must be overridden.
-class BaseProvider {
-  save(): Promise<void> {
-    throw new UnimplementedError("save() is not implemented");
-  }
-}
-```
+## Usage
 
 ### Attaching context
 
-Any extra fields in the options bag land on the error instance and will appear in structured logs:
+Any extra fields in the options bag land on the error instance and will appear in structured logs — this works the same way for every class in the module:
 
 ```ts
 throw new ValueError("Unexpected status", {
@@ -106,6 +56,8 @@ throw new ValueError("Unexpected status", {
 ```
 
 ### Catching by type
+
+Every class participates in `instanceof` checks, and subclasses match their base class — so a `catch` block can branch from specific to general:
 
 ```ts
 import { NotFoundError, ResponseError } from "shelving/error";
