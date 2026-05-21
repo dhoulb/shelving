@@ -37,6 +37,7 @@ export function DocumentationPage({
 	const path = (url?.pathname ?? "/") as AbsolutePath;
 	return (
 		<Page title={title ?? name} description={description}>
+			<Heading>{title ?? name}</Heading>
 			{kind && <DocumentationKind kind={kind} />}
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
