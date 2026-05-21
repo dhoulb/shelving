@@ -5,6 +5,7 @@ import type { Callback } from "../../util/function.js";
 import { Button, type ButtonVariants } from "../form/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";
+import { NoticeCard } from "../notice/NoticeCard.js";
 import { Page } from "../page/Page.js";
 
 const RetryContext = createContext<Callback | undefined>(undefined);
@@ -102,12 +103,16 @@ export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
 
 export interface ErrorPageProps extends ErrorComponentProps {}
 
-/** Output a `<Page>` with a `<Notice>` for an unknown error reason. */
+/** Output a `<Page>` with a prominent `<NoticeCard>` for an unknown error reason. */
 export function ErrorPage({ reason }: ErrorPageProps): ReactElement {
+	const message = getMessage(reason) ?? "Unknown error";
 	return (
 		<Page title="Error">
 			<CenteredLayout>
-				<ErrorNotice reason={reason} />
+				<NoticeCard status="error">
+					{message}
+					<RetryButton />
+				</NoticeCard>
 			</CenteredLayout>
 		</Page>
 	);

@@ -6,6 +6,8 @@ Inline and global toast-style notices for user feedback. `<Notice>` is a standal
 
 **`<Notice>`** renders an `<aside>` with a status icon and a message. It accepts a `status` prop (`"info"`, `"success"`, `"error"`, `"danger"`, `"loading"`, etc.) and maps it to the appropriate colour and ARIA role. The icon defaults to `<StatusIcon>` but can be replaced or hidden.
 
+**`<NoticeCard>`** is the chunky variant — the box treatment of a `Card` combined with the status styling of a `Notice`. It lays its icon and content out in a centered column, with a large status icon by default, and a regular-size `<Button>` sits comfortably inside. Use it for a prominent standalone message (e.g. a full-page "not found" or error state) where an inline `<Notice>` reads too quietly.
+
 **`<Message>`** is a lighter variant — a `<p>` tag with the same status colours, for short inline feedback inside a form or card rather than a banner.
 
 **`<Notices>`** renders the global list of active notices. It subscribes to `"notice"` events on `window` (dispatched by the `notify` helpers in [ui/util](/ui/util)) and shows each one as a `<Notice>`. Notices auto-dismiss after 5 seconds unless they carry a `"loading"` status.
@@ -25,6 +27,17 @@ import { Notice } from "shelving/ui";
 ```
 
 When `status` is omitted, `<Notice>` defaults to `"info"` if `children` is present, or `"loading"` if not.
+
+Use `<NoticeCard>` for a prominent, full-attention message — it centers its content and carries a regular-size button.
+
+```tsx
+import { NoticeCard } from "shelving/ui";
+
+<NoticeCard status="error">
+  Page not found.
+  <Button onClick={retry}>Retry</Button>
+</NoticeCard>
+```
 
 Use `<Message>` for shorter inline feedback inside paragraphs or forms.
 

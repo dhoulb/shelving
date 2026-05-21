@@ -1,0 +1,36 @@
+/* Chunky, card-like status panel — Card box treatment combined with Notice status styling. */
+.card {
+	/* Box — a centered column of icon + content. */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--notice-card-gap, var(--space-normal));
+	margin-inline: 0;
+	margin-block: var(--notice-card-spacing, var(--space-normal));
+	padding: var(--notice-card-padding, var(--space-large));
+
+	/* Style */
+	border-radius: var(--notice-card-radius, var(--radius-normal));
+	border: var(--notice-card-border, var(--stroke-normal)) solid var(--notice-card-color-border, var(--color-quiet));
+	box-shadow: var(--notice-card-shadow, var(--shadow-xsmall));
+	color: var(--notice-card-color-text, var(--color-quiet));
+	background: var(--notice-card-color-bg, var(--color-surface));
+
+	/* Typography */
+	font-size: var(--notice-card-size, var(--size-normal));
+	font-weight: var(--notice-card-weight, var(--weight-strong));
+	text-align: center;
+
+	/* Pseudo-classes */
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+
+	/* No margins on children — the column gap owns the spacing. */
+	:where(& > *) {
+		margin: 0;
+	}
+}
