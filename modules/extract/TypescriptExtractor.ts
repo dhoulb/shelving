@@ -10,6 +10,7 @@ import type {
 } from "../util/element.js";
 import { requireSlug } from "../util/string.js";
 import { FileExtractor } from "./FileExtractor.js";
+import { extractMarkdownDescription } from "./MarkdownExtractor.js";
 
 /**
  * File extractor that parses a TypeScript source file into a tree element.
@@ -17,6 +18,7 @@ import { FileExtractor } from "./FileExtractor.js";
  * - Extracts exported, public, non-`_`-prefixed declarations as `tree-documentation` children.
  * - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`.
  * - Top-of-file JSDoc comment becomes the file's `content`.
+ * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on the file and every `tree-documentation` child.
  * - Sets `title` on every `tree-documentation` child — `name()` for functions and methods, `name` for other kinds.
  * - The file element itself has no `title` — a TS source file has no confident title source; renderers fall back to `name`.
  */
@@ -36,7 +38,7 @@ export class TypescriptExtractor extends FileExtractor {
 
 		// The file element itself gets no `title` — a TS source file has no confident title source (the filename isn't one),
 		// so renderers fall back to `name`. The `tree-documentation` children each carry their own `title`.
-		return { name, content, children: Array.from(byKey.values()) };
+		return { name, description: extractMarkdownDescription(content ?? ""), content, children: Array.from(byKey.values()) };
 	}
 }
 
@@ -110,6 +112,7 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 			// Functions read as callable with `()`; other kinds use the bare name.
 			title: kind === "function" ? `${name}()` : name,
 			kind,
+			description: extractMarkdownDescription(jsDoc?.description ?? ""),
 			content: _buildJSDocContent(jsDoc?.description, jsDoc?.unhandled),
 			signatures: signature ? [signature] : undefined,
 			params,
@@ -247,7 +250,14 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 				members.push({
 					type: "tree-documentation",
 					key,
-					props: { name, title: `${name}()`, content, kind: "method", signatures: [signature] },
+					props: {
+						name,
+						title: `${name}()`,
+						description: extractMarkdownDescription(memberJSDoc?.description ?? ""),
+						content,
+						kind: "method",
+						signatures: [signature],
+					},
 				});
 			}
 		} else if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
@@ -255,7 +265,14 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 			members.push({
 				type: "tree-documentation",
 				key: requireSlug(name),
-				props: { name, title: name, content, kind: "property", signatures: type ? [type] : undefined },
+				props: {
+					name,
+					title: name,
+					description: extractMarkdownDescription(memberJSDoc?.description ?? ""),
+					content,
+					kind: "property",
+					signatures: type ? [type] : undefined,
+				},
 			});
 		}
 	}

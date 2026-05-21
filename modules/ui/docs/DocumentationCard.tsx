@@ -3,19 +3,18 @@ import type { DocumentationElementProps } from "../../util/element.js";
 import { type AbsolutePath, joinPath } from "../../util/path.js";
 import { Card } from "../block/Card.js";
 import { Flex } from "../block/Flex.js";
+import { Paragraph } from "../block/Paragraph.js";
 import { Preformatted } from "../block/Preformatted.js";
-import { Prose } from "../block/Prose.js";
 import { Subheading } from "../block/Subheading.js";
 import { Code } from "../inline/Code.js";
-import { Markup } from "../misc/Markup.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
 interface DocumentationCardProps extends DocumentationElementProps {
 	path: AbsolutePath;
 }
 
-/** Card renderer for a `tree-documentation` element. */
-export function DocumentationCard({ path, title, name, kind, content, signatures }: DocumentationCardProps): ReactNode {
+/** Card renderer for a `tree-documentation` element — a summary card showing the heading, signatures, and description. */
+export function DocumentationCard({ path, title, name, kind, description, signatures }: DocumentationCardProps): ReactNode {
 	const href = joinPath(path, name);
 	return (
 		<Card href={href}>
@@ -28,11 +27,7 @@ export function DocumentationCard({ path, title, name, kind, content, signatures
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
 			))}
-			{content && (
-				<Prose>
-					<Markup>{content}</Markup>
-				</Prose>
-			)}
+			{description && <Paragraph>{description}</Paragraph>}
 		</Card>
 	);
 }

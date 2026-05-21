@@ -1,7 +1,9 @@
 import type { ReactElement } from "react";
+import { DocumentationPage } from "../modules/ui/docs/DocumentationPage.js";
 import { MetaContext } from "../modules/ui/misc/MetaContext.js";
 import { Navigation } from "../modules/ui/router/Navigation.js";
 import { TreeApp } from "../modules/ui/tree/TreeApp.js";
+import { TreePageMapping } from "../modules/ui/tree/TreePage.js";
 import { createMeta, type PossibleMeta } from "../modules/ui/util/meta.js";
 import type { TreeElement } from "../modules/util/element.js";
 
@@ -22,10 +24,14 @@ export interface AppProps {
  * identical on the server (where `App` sits inside `HTML`'s context) and during client hydration.
  */
 export function App({ tree, meta }: AppProps): ReactElement {
+	// `tree-file` pages render via `DocumentationPage` (a file's props are a compatible subset of a symbol's),
+	// so file pages get the same kind-grouped card sections as symbol pages.
 	return (
 		<MetaContext value={createMeta(meta)}>
 			<Navigation>
-				<TreeApp tree={tree} />
+				<TreePageMapping mapping={{ "tree-file": DocumentationPage }}>
+					<TreeApp tree={tree} />
+				</TreePageMapping>
 			</Navigation>
 		</MetaContext>
 	);
