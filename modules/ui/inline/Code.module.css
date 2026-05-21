@@ -10,6 +10,6 @@
 	background-color: var(--color-surface);
 
 	/* Typography */
-	font-weight: var(--weight-normal);
+	font-weight: inherit;
 	font-size: var(--size-smaller);
 }
