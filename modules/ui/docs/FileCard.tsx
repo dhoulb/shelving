@@ -7,11 +7,11 @@ import { Prose } from "../block/Prose.js";
 import { Markup } from "../misc/Markup.js";
 
 interface FileCardProps extends FileElementProps {
-	path?: AbsolutePath | undefined;
+	path: AbsolutePath;
 }
 
 /** Card renderer for a `tree-file` element. */
-export function FileCard({ path = "/", title, name, content }: FileCardProps): ReactNode {
+export function FileCard({ path, name, title, content }: FileCardProps): ReactNode {
 	const href = joinPath(path, name);
 	return (
 		<Card href={href}>

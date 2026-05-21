@@ -9,7 +9,7 @@ import { createMapper } from "../misc/Mapper.js";
 /** Extras threaded through `TreeCardMapper` to every card — currently just the parent URL path. */
 export interface TreeCardExtras {
 	/** URL path of the parent element. Each card computes its own path as `path + mapped.name`. Defaults to `/`. */
-	readonly path?: AbsolutePath | undefined;
+	readonly path: AbsolutePath;
 }
 
 /** Mapping + Mapper pair for tree cards — wrap children in `<TreeCardMapping>` to override. */
@@ -32,6 +32,6 @@ export interface TreeCardsProps {
  * - `path` is threaded through to each card so it can compute its href as `path + name`.
  * - To override the renderer for a specific element type, wrap in `<TreeCardMapping mapping={…}>`.
  */
-export function TreeCards({ children, path }: TreeCardsProps): ReactNode {
+export function TreeCards({ path = "/", children }: TreeCardsProps): ReactNode {
 	return <TreeCardMapper path={path}>{walkElements(children)}</TreeCardMapper>;
 }

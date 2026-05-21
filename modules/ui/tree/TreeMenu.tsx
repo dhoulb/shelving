@@ -12,7 +12,7 @@ export const MENU_QUERY: Query<{ type: string }> = { type: ["tree-directory", "t
 /** Extras threaded through `TreeMenuMapper` to every menu item — the parent's URL path. */
 interface TreeMenuExtras {
 	/** URL path of the parent element. Each item appends its own `name` to compute its own path. Defaults to `/`. */
-	readonly path?: AbsolutePath | undefined;
+	readonly path: AbsolutePath;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface TreeMenuProps {
  * - To customise renderers for specific types, wrap in `<TreeMenuMapping mapping={…}>`.
  * - Only directories and files appear — code symbols are kept off the navigation.
  */
-export function TreeMenu({ tree, path = "/" }: TreeMenuProps): ReactNode {
+export function TreeMenu({ path = "/", tree }: TreeMenuProps): ReactNode {
 	return (
 		<Menu>
 			<TreeMenuMapper path={path}>{queryElements(tree.props.children, MENU_QUERY)}</TreeMenuMapper>
