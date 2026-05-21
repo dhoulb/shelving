@@ -106,6 +106,11 @@ describe("getNumber()", () => {
 		expect<number | undefined>(getNumber("a")).toBe(undefined);
 		expect<number | undefined>(getNumber("Willow perceptiveness purely sportsmanship namaste victoriously?")).toBe(undefined);
 	});
+	test("Dates are converted to their millisecond timestamp", () => {
+		const date = new Date("2026-05-21T00:00:00.000Z");
+		expect(getNumber(date)).toBe(date.getTime());
+		expect(getNumber(new Date(0))).toBe(0);
+	});
 });
 describe("getPercent()", () => {
 	test("Works correctly", () => {
