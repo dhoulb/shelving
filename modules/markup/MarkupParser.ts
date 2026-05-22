@@ -209,40 +209,34 @@ function* _scanTier(
 	priority: number,
 	higher: MarkupClaim[],
 ): Generator<MarkupClaim> {
-	// Materialise this tier's rules and prime one cached match per rule. The cache is essential
-	// working state, not plumbing — it is the only array this scan allocates.
-	const rules: MarkupRule[] = [];
-	const next: (MarkupClaim | undefined)[] = [];
-	for (const rule of parser.getRules(context, priority)) {
-		rules.push(rule);
-		next.push(_findFrom(rule, masked, input, 0, higher));
-	}
+	// Materialise this tier's rules.
+	const rules = Array.from(parser.getRules(context, priority));
+
+	// Prime one cached match per rule.
+	const cache: (MarkupClaim | undefined)[] = [];
+	for (const rule of rules) cache.push(_findFrom(rule, masked, input, 0, higher));
 
 	for (;;) {
 		// The leftmost cached match wins; on a tie the earlier rule in the list wins.
 		let best: MarkupClaim | undefined;
-		for (const claim of next) if (claim && (!best || claim.start < best.start)) best = claim;
+		for (const claim of cache) if (claim && (!best || claim.start < best.start)) best = claim;
 		if (!best) return;
 		yield best;
 
-		// Keep every cached match still ahead of `best`; recompute only the rules whose match
-		// overlapped (or was) `best`.
+		// Keep every cached match still ahead of `best`; recompute only the rules whose match overlapped (or was) `best`.
 		for (let i = 0; i < rules.length; i++) {
 			const rule = rules[i];
-			const claim = next[i];
-			if (rule && (!claim || claim.start < best.end)) next[i] = _findFrom(rule, masked, input, best.end, higher);
+			const claim = cache[i];
+			if (rule && (!claim || claim.start < best.end)) cache[i] = _findFrom(rule, masked, input, best.end, higher);
 		}
 	}
 }
 
 /**
  * Find the first valid claim for `rule` in `masked` at or after `from`, or `undefined`.
- *
- * A claim is valid if it sits in free space, or if it genuinely wraps the higher-tier claims it
- * spans — confirmed by re-running the rule on the original (unmasked) slice and checking it still
- * matches the whole region. A match that merely straddles a masked region (e.g. a paragraph's
- * trailing whitespace swallowing a fenced block) is spurious and is retried bounded by the claim
- * it crossed.
+ * - A claim is valid if it sits in free space, or if it genuinely wraps the higher-tier claims it spans.
+ * - Confirmed by re-running the rule on the original (unmasked) slice and checking it still matches the whole region.
+ * - A match that merely straddles a masked region (e.g. a paragraph's trailing whitespace swallowing a fenced block) is spurious and is retried bounded by the claim it crossed.
  */
 function _findFrom(rule: MarkupRule, masked: string, input: string, from: number, higher: MarkupClaim[]): MarkupClaim | undefined {
 	let lo = from;
