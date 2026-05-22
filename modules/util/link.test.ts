@@ -102,10 +102,10 @@ describe("getLink()", () => {
 			expect(getLink(undefined, PAGE, ROOT)).toBeUndefined();
 		});
 		test("returns undefined for number", () => {
-			expect(getLink(123, PAGE, ROOT)).toBeUndefined();
+			expect(getLink(123 as any, PAGE, ROOT)).toBeUndefined();
 		});
 		test("returns undefined for object", () => {
-			expect(getLink({ href: "/foo" }, PAGE, ROOT)).toBeUndefined();
+			expect(getLink({ href: "/foo" } as any, PAGE, ROOT)).toBeUndefined();
 		});
 	});
 });
