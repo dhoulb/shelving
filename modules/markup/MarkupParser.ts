@@ -307,10 +307,16 @@ function _findFrom(rule: MarkupRule, masked: string, input: string, from: number
 	}
 }
 
-/** Blank the `[start, end)` region of `text` — every character becomes a space, except newlines. */
+// Placeholder a claimed region is blanked to: non-whitespace and non-word, so lower tiers see a
+// masked region as opaque *content* rather than whitespace. Blanking to a space made a leading or
+// trailing code span look like whitespace to inline emphasis (which rejects whitespace at its
+// start/end), so `**`code`**` failed to form. Newlines are kept so block structure survives.
+const _MASK_CHAR = "\u0000";
+
+/** Blank the `[start, end)` region of `text` — every character becomes `_MASK_CHAR`, except newlines. */
 function _mask(text: string, start: number, end: number): string {
 	let blanked = "";
-	for (let i = start; i < end; i++) blanked += text[i] === "\n" ? "\n" : " ";
+	for (let i = start; i < end; i++) blanked += text[i] === "\n" ? "\n" : _MASK_CHAR;
 	return `${text.slice(0, start)}${blanked}${text.slice(end)}`;
 }
 

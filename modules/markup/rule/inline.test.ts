@@ -285,6 +285,46 @@ test("INLINE_RULE <mark>", () => {
 	expect(PARSER.parse("== AAA ==", "inline")).toBe("== AAA ==");
 });
 
+test("INLINE_RULE around code spans", () => {
+	// Inline emphasis must still form when its content starts or ends with a code span. Code
+	// spans are a higher-priority tier that is masked before emphasis resolves, so a leading or
+	// trailing code span must be treated as content — not mistaken for whitespace.
+
+	// The exact markdown from the bug report (`**` strong starting with a code span).
+	expect(PARSER.parse("**`<TreeApp>` is the entry point.**", "inline")).toMatchObject({
+		type: "strong",
+		props: {
+			children: [{ type: "code", props: { children: "<TreeApp>" } }, " is the entry point."],
+		},
+	});
+
+	// Strong wrapping only a code span.
+	expect(PARSER.parse("**`CODE`**", "inline")).toMatchObject({
+		type: "strong",
+		props: { children: { type: "code", props: { children: "CODE" } } },
+	});
+
+	// Code span at the start.
+	expect(PARSER.parse("*`CODE` AFTER*", "inline")).toMatchObject({
+		type: "strong",
+		props: { children: [{ type: "code", props: { children: "CODE" } }, " AFTER"] },
+	});
+
+	// Code span at the end.
+	expect(PARSER.parse("**BEFORE `CODE`**", "inline")).toMatchObject({
+		type: "strong",
+		props: { children: ["BEFORE ", { type: "code", props: { children: "CODE" } }] },
+	});
+
+	// Code spans at both ends (with `_` emphasis).
+	expect(PARSER.parse("__`AAA` and `BBB`__", "inline")).toMatchObject({
+		type: "em",
+		props: {
+			children: [{ type: "code", props: { children: "AAA" } }, " and ", { type: "code", props: { children: "BBB" } }],
+		},
+	});
+});
+
 test("INLINE_RULE nesting", () => {
 	expect(PARSER.parse("BEFORE ***BEFORE __ITALIC__ AFTER*** AFTER", "inline")).toMatchObject([
 		"BEFORE ",
