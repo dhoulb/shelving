@@ -48,7 +48,8 @@
 }
 
 /* "Proud" item — an ancestor of the active page; emphasised in colour and reveals its nested children. */
-.proud > .link {
+/* The active page is excluded so its own `[aria-current]` styling wins instead of the proud colour. */
+.proud > .link:not([aria-current="page"]) {
 	color: var(--menu-link-color-proud, var(--color-text));
 }
 
