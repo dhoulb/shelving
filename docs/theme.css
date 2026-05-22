@@ -10,16 +10,17 @@
  */
 
 :root {
-	/* Surfaces — warm cream page; a deeper peach `--color-surface` for inset chips, tags and code. */
+	/* Surfaces — warm cream page; a translucent peach `--color-surface` that deepens whatever it sits on. */
 	--color-bg: color-mix(in srgb, var(--color-orange) 6%, white);
-	--color-surface: color-mix(in srgb, var(--color-orange) 24%, white);
+	--color-surface: color-mix(in srgb, var(--color-orange) 8%, transparent);
 
 	/* Borders keep a gentle purple tint for tables, inputs and inline surfaces. */
 	--color-border: color-mix(in srgb, var(--color-purple) 22%, white);
 
 	/*
-	 * Cards — a soft mid peach, lighter than the `--color-surface` behind code chips and tags so
-	 * those read as darker insets against the card. The border is dropped: a purple edge looked harsh.
+	 * Cards — a soft opaque mid peach. Code chips and tags use the translucent `--color-surface`,
+	 * so they sit a shade darker than the card — and darker again wherever surfaces stack. The
+	 * border is dropped: a purple edge looked harsh.
 	 */
 	--card-color-bg: color-mix(in srgb, var(--color-orange) 14%, white);
 	--card-color-border: transparent;
