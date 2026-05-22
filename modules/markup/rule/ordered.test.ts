@@ -120,3 +120,53 @@ test("ORDERED", () => {
 		},
 	});
 });
+
+test("ORDERED loose lists", () => {
+	// Items separated by a blank line make the whole list "loose" — each item is wrapped in `<p>`.
+	expect(PARSER.parse("1. ITEM1\n\n2. ITEM2")).toMatchObject({
+		type: "ol",
+		props: {
+			children: [
+				{ type: "li", props: { value: 1, children: { type: "p", props: { children: "ITEM1" } } } },
+				{ type: "li", props: { value: 2, children: { type: "p", props: { children: "ITEM2" } } } },
+			],
+		},
+	});
+
+	// A loose item can contain multiple paragraphs from indented continuation lines.
+	expect(PARSER.parse("1. ITEM1\n\n   CONTINUED\n2. ITEM2")).toMatchObject({
+		type: "ol",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						value: 1,
+						children: [
+							{ type: "p", props: { children: "ITEM1" } },
+							{ type: "p", props: { children: "CONTINUED" } },
+						],
+					},
+				},
+				{ type: "li", props: { value: 2, children: { type: "p", props: { children: "ITEM2" } } } },
+			],
+		},
+	});
+
+	// A list with no blank lines stays "tight" — items are not wrapped in `<p>`.
+	expect(PARSER.parse("1. ITEM1\n2. ITEM2")).toMatchObject({
+		type: "ol",
+		props: {
+			children: [
+				{ type: "li", props: { value: 1, children: "ITEM1" } },
+				{ type: "li", props: { value: 2, children: "ITEM2" } },
+			],
+		},
+	});
+
+	// Two blank lines end the list — `\n\n\n` splits it into two separate lists.
+	expect(PARSER.parse("1. ITEM1\n\n\n2. ITEM2")).toMatchObject([
+		{ type: "ol", props: { children: [{ type: "li", props: { value: 1, children: "ITEM1" } }] } },
+		{ type: "ol", props: { children: [{ type: "li", props: { value: 2, children: "ITEM2" } }] } },
+	]);
+});

@@ -130,3 +130,109 @@ test("UNORDERED", () => {
 		},
 	});
 });
+
+test("UNORDERED loose lists", () => {
+	// Items separated by a blank line make the whole list "loose" — each item is wrapped in `<p>`.
+	expect(PARSER.parse("- ITEM1\n\n- ITEM2")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{ type: "li", props: { children: { type: "p", props: { children: "ITEM1" } } } },
+				{ type: "li", props: { children: { type: "p", props: { children: "ITEM2" } } } },
+			],
+		},
+	});
+
+	// Works with any bullet symbol.
+	expect(PARSER.parse("* ITEM1\n\n* ITEM2")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{ type: "li", props: { children: { type: "p", props: { children: "ITEM1" } } } },
+				{ type: "li", props: { children: { type: "p", props: { children: "ITEM2" } } } },
+			],
+		},
+	});
+
+	// A loose item can contain multiple paragraphs from indented continuation lines.
+	expect(PARSER.parse("- ITEM1\n\n  CONTINUED\n- ITEM2")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: [
+							{ type: "p", props: { children: "ITEM1" } },
+							{ type: "p", props: { children: "CONTINUED" } },
+						],
+					},
+				},
+				{ type: "li", props: { children: { type: "p", props: { children: "ITEM2" } } } },
+			],
+		},
+	});
+
+	// A list with no blank lines stays "tight" — items are not wrapped in `<p>`.
+	expect(PARSER.parse("- ITEM1\n- ITEM2")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{ type: "li", props: { children: "ITEM1" } },
+				{ type: "li", props: { children: "ITEM2" } },
+			],
+		},
+	});
+
+	// Two blank lines end the list — `\n\n\n` splits it into two separate lists.
+	expect(PARSER.parse("- ITEM1\n\n\n- ITEM2")).toMatchObject([
+		{ type: "ul", props: { children: [{ type: "li", props: { children: "ITEM1" } }] } },
+		{ type: "ul", props: { children: [{ type: "li", props: { children: "ITEM2" } }] } },
+	]);
+
+	// A loose list can contain a nested (tight) sub-list.
+	expect(PARSER.parse("- ITEM1\n\t- SUB1\n\t- SUB2\n\n- ITEM2")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: [
+							{ type: "p", props: { children: "ITEM1" } },
+							{
+								type: "ul",
+								props: {
+									children: [
+										{ type: "li", props: { children: "SUB1" } },
+										{ type: "li", props: { children: "SUB2" } },
+									],
+								},
+							},
+						],
+					},
+				},
+				{ type: "li", props: { children: { type: "p", props: { children: "ITEM2" } } } },
+			],
+		},
+	});
+
+	// A blank line before a nested sub-list keeps the sub-list intact, with no stray `<br>`.
+	expect(PARSER.parse("- ITEM1\n\n\t- SUB\n- ITEM2")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: [
+							{ type: "p", props: { children: "ITEM1" } },
+							{ type: "ul", props: { children: [{ type: "li", props: { children: "SUB" } }] } },
+						],
+					},
+				},
+				{ type: "li", props: { children: { type: "p", props: { children: "ITEM2" } } } },
+			],
+		},
+	});
+});
