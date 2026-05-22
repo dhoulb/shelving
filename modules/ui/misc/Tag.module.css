@@ -1,6 +1,11 @@
 .tag {
 	display: inline-block;
-	flex-grow: var(--grow-none); /* Tags stay content-width in flex rows — never stretch to fill space. */
+	flex: 0 0 fit-content; /* Content-width; never grow or shrink, like icons. */
+	/* Truncate overlong text instead of overflowing the container. */
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	padding: 0 var(--space-xxsmall);
 	border: 0;
 	border-radius: var(--radius-xxsmall);
