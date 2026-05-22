@@ -132,8 +132,7 @@ export class MarkupParser implements Parser<string, ReactNode> {
 function _getPriorities(rules: MarkupRules): ImmutableArray<number> {
 	const priorities: MutableArray<number> = [];
 	for (const { priority = 0 } of rules) if (!priorities.includes(priority)) priorities.push(priority);
-	priorities.sort();
-	return priorities;
+	return priorities.sort().reverse();
 }
 
 /** A region of the input string claimed by a single rule. */
