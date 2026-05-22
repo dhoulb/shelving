@@ -1,3 +1,8 @@
+:root {
+	/* Opaque surface colour for content nested inside a card — slightly darker than `--color-surface`. */
+	--card-color-surface: color-mix(in srgb, var(--color-surface) 92%, black);
+}
+
 .card {
 	/* Box */
 	position: relative;
@@ -45,6 +50,12 @@
 		position: relative;
 		z-index: 2;
 	}
+}
+
+/* Content nested in a card uses the card's opaque surface colour, so translucent surfaces don't double up. */
+/* `:where()` keeps specificity at zero so colour/status variant classes on descendants still win. */
+:where(.card) * {
+	--color-surface: var(--card-color-surface);
 }
 
 .overlay {
