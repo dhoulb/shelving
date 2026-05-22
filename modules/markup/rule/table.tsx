@@ -1,8 +1,6 @@
 import type { ReactElement } from "react";
-import { renderMarkup } from "../render.js";
-import type { MarkupOptions } from "../util/options.js";
+import { createMarkupRule } from "../MarkupRule.js";
 import { createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
-import { createMarkupRule } from "../util/rule.js";
 
 // Constants.
 const _SPACE = `${LINE_SPACE_REGEXP}*`; // Run of line whitespace (never crosses a newline).
@@ -12,9 +10,6 @@ const _DELIMITER = new RegExp(`^${_DELIMITER_SOURCE}$`, "u"); // Tests whether a
 const _ROW = "[^\\n]*\\|[^\\n]*"; // Any line containing at least one pipe.
 const _SPLIT = /(?<!\\)\|/; // Splits a row into cells on unescaped pipes.
 
-/** Regular expression matching a table block: a header row, a delimiter row, then any number of pipe rows. */
-export const TABLE_REGEXP = createBlockRegExp<{ table: string }>(`(?<table>${_ROW}\\n${_DELIMITER_SOURCE}(?:\\n${_ROW})*)`);
-
 /**
  * Table.
  * - Markdown-style pipe table: a header row, a `|---|` delimiter row, then body rows.
@@ -23,56 +18,57 @@ export const TABLE_REGEXP = createBlockRegExp<{ table: string }>(`(?<table>${_RO
  * - Column count and per-column alignment (`:--` left, `--:` right, `:-:` centered) come from the first delimiter row; ragged rows are padded or truncated to that count.
  * - Cell content is rendered as inline markup; write `\|` for a literal pipe inside a cell.
  */
-export const TABLE_RULE = createMarkupRule(TABLE_REGEXP, ({ groups: { table } }, options, key) => _renderTable(table, options, key), [
-	"block",
-]);
+export const TABLE_RULE = createMarkupRule<{
+	table: string;
+}>(
+	createBlockRegExp(`(?<table>${_ROW}\\n${_DELIMITER_SOURCE}(?:\\n${_ROW})*)`),
+	(key, { table }, parser) => {
+		const lines = table.split("\n");
 
-/** Render a matched table block into a `<table>` element. */
-function _renderTable(table: string, options: MarkupOptions, key: string): ReactElement {
-	const lines = table.split("\n");
+		// Column count and alignment come from the first delimiter row — always line 1, guaranteed by `TABLE_REGEXP`.
+		const aligns = _splitRow(lines[1] ?? "").map(_getAlign);
 
-	// Column count and alignment come from the first delimiter row — always line 1, guaranteed by `TABLE_REGEXP`.
-	const aligns = _splitRow(lines[1] ?? "").map(_getAlign);
-
-	// Split lines into sections at delimiter rows. Line 0 is the header and is never treated as a delimiter.
-	const sections: string[][] = [];
-	let section: string[] = [lines[0] ?? ""];
-	for (let i = 1; i < lines.length; i++) {
-		const line = lines[i] ?? "";
-		if (_DELIMITER.test(line)) {
-			sections.push(section);
-			section = [];
-		} else {
-			section.push(line);
-		}
-	}
-	sections.push(section);
-
-	// Build the table with explicit loops — markup elements are static and positional, so the loop index is the natural key.
-	const last = sections.length - 1;
-	const body: ReactElement[] = [];
-	for (let s = 0; s < sections.length; s++) {
-		// First section is `<thead>`; the last is `<tfoot>` with 3+ sections; sections in between are each a `<tbody>`.
-		const Section = s === 0 ? "thead" : s === last && last >= 2 ? "tfoot" : "tbody";
-		const Cell = s === 0 ? "th" : "td";
-		const rowLines = sections[s] ?? [];
-		const rows: ReactElement[] = [];
-		for (let r = 0; r < rowLines.length; r++) {
-			const values = _splitRow(rowLines[r] ?? "");
-			const cells: ReactElement[] = [];
-			for (let c = 0; c < aligns.length; c++) {
-				cells.push(
-					<Cell key={c} align={aligns[c]}>
-						{renderMarkup(values[c] ?? "", options, "inline")}
-					</Cell>,
-				);
+		// Split lines into sections at delimiter rows. Line 0 is the header and is never treated as a delimiter.
+		const sections: string[][] = [];
+		let section: string[] = [lines[0] ?? ""];
+		for (let i = 1; i < lines.length; i++) {
+			const line = lines[i] ?? "";
+			if (_DELIMITER.test(line)) {
+				sections.push(section);
+				section = [];
+			} else {
+				section.push(line);
 			}
-			rows.push(<tr key={r}>{cells}</tr>);
 		}
-		body.push(<Section key={s}>{rows}</Section>);
-	}
-	return <table key={key}>{body}</table>;
-}
+		sections.push(section);
+
+		// Build the table with explicit loops — markup elements are static and positional, so the loop index is the natural key.
+		const last = sections.length - 1;
+		const body: ReactElement[] = [];
+		for (let s = 0; s < sections.length; s++) {
+			// First section is `<thead>`; the last is `<tfoot>` with 3+ sections; sections in between are each a `<tbody>`.
+			const Section = s === 0 ? "thead" : s === last && last >= 2 ? "tfoot" : "tbody";
+			const Cell = s === 0 ? "th" : "td";
+			const rowLines = sections[s] ?? [];
+			const rows: ReactElement[] = [];
+			for (let r = 0; r < rowLines.length; r++) {
+				const values = _splitRow(rowLines[r] ?? "");
+				const cells: ReactElement[] = [];
+				for (let c = 0; c < aligns.length; c++) {
+					cells.push(
+						<Cell key={c} align={aligns[c]}>
+							{parser.parse(values[c] ?? "", "inline")}
+						</Cell>,
+					);
+				}
+				rows.push(<tr key={r}>{cells}</tr>);
+			}
+			body.push(<Section key={s}>{rows}</Section>);
+		}
+		return <table key={key}>{body}</table>;
+	},
+	["block"],
+);
 
 /** Split a table row into trimmed cell strings, honouring `\|` escaped pipes. */
 function _splitRow(row: string): string[] {

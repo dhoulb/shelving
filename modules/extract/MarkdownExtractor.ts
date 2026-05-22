@@ -1,5 +1,4 @@
-import { renderMarkup } from "../markup/render.js";
-import { MARKUP_OPTIONS } from "../markup/rule/index.js";
+import { MARKUP_PARSER } from "../markup/MarkupParser.js";
 import { type Elements, type FileElementProps, getElementText } from "../util/element.js";
 import { FileExtractor } from "./FileExtractor.js";
 
@@ -54,7 +53,7 @@ export function extractMarkdownDescription(text: string): string | undefined {
 	}
 	if (!paragraph.length) return;
 	// Render the paragraph as markup then strip every tag, so inline syntax resolves to clean plain text.
-	const rendered = renderMarkup(paragraph.join(" "), MARKUP_OPTIONS) as Elements;
+	const rendered = MARKUP_PARSER.parse(paragraph.join(" ")) as Elements;
 	const summary = getElementText(rendered).replace(/\s+/g, " ").trim();
 	return summary || undefined;
 }

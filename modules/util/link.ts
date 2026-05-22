@@ -1,11 +1,12 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
-import { isAbsolutePath, type Path } from "./path.js";
-import { type ImmutableURI, isURI, type URIString } from "./uri.js";
+import type { Nullish } from "./null.js";
+import { isAbsolutePath } from "./path.js";
+import { type ImmutableURI, isURI, type PossibleURI } from "./uri.js";
 import { getBasedURI, getURL, type ImmutableURL } from "./url.js";
 
-/** Anything that can be turned into an `<a href>` value — a site/relative path, a URI string, or a `URL` instance. */
-export type PossibleLink = Path | ImmutableURI | URIString;
+/** Anything that can be turned into an `<a href>` */
+export type PossibleLink = PossibleURI;
 
 /**
  * Resolve a possible link to an absolute URI string, or return `undefined` if resolution fails.
@@ -30,7 +31,7 @@ export type PossibleLink = Path | ImmutableURI | URIString;
  * @example getLink("./db", new URL("https://x.com/app/schema/")) // → "https://x.com/app/schema/db"
  * @example getLink("mailto:a@b") // → "mailto:a@b"
  */
-export function getLink(href: unknown, url?: ImmutableURL, root: ImmutableURL | undefined = url): ImmutableURI | undefined {
+export function getLink(href: Nullish<PossibleLink>, url?: ImmutableURL, root: ImmutableURL | undefined = url): ImmutableURI | undefined {
 	if (!href) return;
 	if (isURI(href)) return href;
 	if (typeof href !== "string") return;

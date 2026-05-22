@@ -1,19 +1,7 @@
+import { createMarkupRule } from "../MarkupRule.js";
 import { BLOCK_CONTENT_REGEXP, BLOCK_START_REGEXP, createBlockRegExp, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP } from "../util/regexp.js";
-import { createMarkupRule } from "../util/rule.js";
 
 const FENCE = "`{3,}|~{3,}";
-
-const FENCED_REGEXP = createBlockRegExp<{
-	fence: string;
-	title?: string;
-	code: string;
-}>(
-	`(?<code>${BLOCK_CONTENT_REGEXP})`,
-	// Starts with the fence
-	`${BLOCK_START_REGEXP}(?<fence>${FENCE}) *(?<title>${LINE_CONTENT_REGEXP})\n`,
-	// Ends when we hit the end of the string or the matching closing fence (trims any matching newlines after the fence).
-	`(?:${LINE_SPACE_REGEXP}*\n\\k<fence>(?:\\s*\\n)?|$)`,
-);
 
 /**
  * Fenced code blocks
@@ -24,9 +12,17 @@ const FENCED_REGEXP = createBlockRegExp<{
  * - If there's no closing fence the code block will run to the end of the current string.
  * - Markdown-style four-space indent syntax is not supported (only fenced code since it's less confusing and more common).
  */
-export const FENCED_RULE = createMarkupRule(
-	FENCED_REGEXP,
-	({ groups: { title, code } }, _options, key) => (
+export const FENCED_RULE = createMarkupRule<{
+	fence: string;
+	title?: string;
+	code: string;
+}>(
+	createBlockRegExp(
+		`(?<code>${BLOCK_CONTENT_REGEXP})`,
+		`${BLOCK_START_REGEXP}(?<fence>${FENCE}) *(?<title>${LINE_CONTENT_REGEXP})\n`, // Starts with the fence
+		`(?:${LINE_SPACE_REGEXP}*\n\\k<fence>(?:\\s*\\n)?|$)`, // Ends when we hit the end of the string or the matching closing fence (trims any matching newlines after the fence).
+	),
+	(key, { title, code }) => (
 		<pre key={key}>
 			<code title={title?.trim() || undefined}>{code.trim()}</code>
 		</pre>

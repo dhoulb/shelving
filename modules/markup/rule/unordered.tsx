@@ -1,19 +1,14 @@
 import type { ReactElement } from "react";
-import { renderMarkup } from "../render.js";
-import type { MarkupOptions } from "../util/options.js";
+import type { MarkupParser } from "../MarkupParser.js";
+import { createMarkupRule } from "../MarkupRule.js";
 import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
-import { createMarkupRule } from "../util/rule.js";
 
-const INDENT = /^\t/gm; // Nesting is recognised with tabs only.
-const BULLET = "[-*•+]"; // Allowed bullet symbol.
-const ITEM = new RegExp(
-	`(?:^|\n)${BULLET}(?:${LINE_SPACE_REGEXP}+(${BLOCK_CONTENT_REGEXP}))?${BLOCK_SPACE_REGEXP}*(?=\n${BULLET}(?:\\s|$)|$)`,
+const _INDENT = /^\t/gm; // Nesting is recognised with tabs only.
+const _BULLET = "[-*•+]"; // Allowed bullet symbol.
+const _ITEM = new RegExp(
+	`(?:^|\n)${_BULLET}(?:${LINE_SPACE_REGEXP}+(${BLOCK_CONTENT_REGEXP}))?${BLOCK_SPACE_REGEXP}*(?=\n${_BULLET}(?:\\s|$)|$)`,
 	"g",
 );
-
-export const UNORDERED_REGEXP = createBlockRegExp<{
-	list?: string;
-}>(`(?<list>${BULLET}(?:${LINE_SPACE_REGEXP}+${BLOCK_CONTENT_REGEXP})?)`);
 
 /**
  * Unordered list.
@@ -23,16 +18,16 @@ export const UNORDERED_REGEXP = createBlockRegExp<{
  * - List block is ended by `\n\n` two newline characters.
  * - Sparse lists are not supported.
  */
-export const UNORDERED_RULE = createMarkupRule(
-	UNORDERED_REGEXP,
-	({ groups: { list = "" } }, options, key) => <ul key={key}>{Array.from(_getItems(list, options))}</ul>,
+export const UNORDERED_RULE = createMarkupRule<{
+	list: string;
+}>(
+	createBlockRegExp(`(?<list>${_BULLET}(?:${LINE_SPACE_REGEXP}+${BLOCK_CONTENT_REGEXP})?)`),
+	(key, { list }, parser) => <ul key={key}>{Array.from(_getItems(list, parser))}</ul>,
 	["block", "list"],
 );
 
 /** Parse a markdown list into a set of items elements. */
-export function* _getItems(list: string, options: MarkupOptions): Iterable<ReactElement> {
+export function* _getItems(list: string, parser: MarkupParser): Iterable<ReactElement> {
 	let key = 0;
-	for (const [_unused, item = ""] of list.matchAll(ITEM)) {
-		yield <li key={key++}>{renderMarkup(item.replace(INDENT, ""), options, "list")}</li>;
-	}
+	for (const [_unused, item = ""] of list.matchAll(_ITEM)) yield <li key={key++}>{parser.parse(item.replace(_INDENT, ""), "list")}</li>;
 }

@@ -1,4 +1,4 @@
-import { createMarkupRule } from "../util/rule.js";
+import { createMarkupRule } from "../MarkupRule.js";
 
 /**
  * Hard linebreak (`<br />` tag).
@@ -10,8 +10,8 @@ import { createMarkupRule } from "../util/rule.js";
  *   - This is more intuitive (a linebreak becomes a linebreak is isn't silently ignored).
  *   - This works better with textareas that wrap text (since manually breaking up long lines is no longer necessary).
  */
-export const LINEBREAK_RULE = createMarkupRule(/[^\n\S]*\n[^\n\S]*/, (_match, _options, key) => <br key={key} />, [
-	"inline",
-	"list",
-	"link",
-]);
+export const LINEBREAK_RULE = createMarkupRule(
+	/[^\n\S]*\n[^\n\S]*/, //
+	key => <br key={key} />,
+	["inline", "list", "link"],
+);
