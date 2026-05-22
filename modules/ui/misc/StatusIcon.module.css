@@ -1,5 +1,5 @@
 .icon {
-	flex: 0 0 fit-content;
+	flex: none;
 	border-radius: 999px;
 	width: var(--status-icon-size, 1lh);
 	height: var(--status-icon-size, 1lh);
