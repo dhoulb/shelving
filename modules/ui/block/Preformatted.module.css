@@ -26,10 +26,20 @@
 		margin-block-end: 0;
 	}
 
-	/* Variants */
-	&.nowrap {
-		white-space: pre;
+	/* When a direct <code> child is present (Markdown fenced output and the default <Preformatted>), hand padding + scroll to the inner <code> so long lines scroll horizontally and right-side padding survives at scroll-end. */
+	&:has(> code) {
+		padding: 0;
+		white-space: normal;
 		overflow-wrap: normal;
 		overflow-x: auto;
+
+		> code {
+			display: block;
+			padding: var(--preformatted-padding, var(--space-xsmall));
+			font: inherit;
+			color: inherit;
+			background: transparent;
+			white-space: pre;
+		}
 	}
 }
