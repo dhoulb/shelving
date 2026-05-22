@@ -216,6 +216,25 @@ test("UNORDERED loose lists", () => {
 			],
 		},
 	});
+
+	// A blank line before a nested sub-list keeps the sub-list intact, with no stray `<br>`.
+	expect(PARSER.parse("- ITEM1\n\n\t- SUB\n- ITEM2")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: [
+							{ type: "p", props: { children: "ITEM1" } },
+							{ type: "ul", props: { children: [{ type: "li", props: { children: "SUB" } }] } },
+						],
+					},
+				},
+				{ type: "li", props: { children: { type: "p", props: { children: "ITEM2" } } } },
+			],
+		},
+	});
 });
 
 test("UNORDERED todo lists", () => {

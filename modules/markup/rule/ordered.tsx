@@ -15,10 +15,9 @@ const _ITEM = new RegExp(
 // paragraph keeps the list going (a "loose" list); anything else ends the list.
 const _END = `${BLOCK_SPACE_REGEXP}*(?:$|\\n${LINE_SPACE_REGEXP}*\\n(?!${LINE_SPACE_REGEXP}|${_NUMBER}))`;
 
-// A list is "loose" when it contains a blank line between top-level content — i.e. a blank line
-// that is not purely interior to a nested (tab-indented) sub-list. Loose items are rendered as
-// `<p>`-wrapped blocks instead of inline content.
-const _LOOSE = new RegExp(`\\n${LINE_SPACE_REGEXP}*\\n(?!\\t)`);
+// A list is "loose" when it contains a blank line. Loose items are parsed as blocks so their
+// content is wrapped in `<p>` tags instead of rendered inline.
+const _LOOSE = new RegExp(`\\n${LINE_SPACE_REGEXP}*\\n`);
 
 /**
  * Ordered list.
