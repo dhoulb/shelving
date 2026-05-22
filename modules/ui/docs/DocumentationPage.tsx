@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { type DocumentationElementProps, type Element, queryElements, type TreeElement } from "../../util/element.js";
-import type { AbsolutePath } from "../../util/path.js";
 import type { Query } from "../../util/query.js";
+import { matchURLPrefix } from "../../util/url.js";
 import { Definition, Definitions } from "../block/Definitions.js";
 import { Flex } from "../block/Flex.js";
 import { Heading } from "../block/Heading.js";
@@ -48,8 +48,9 @@ export function DocumentationPage({
 	examples,
 	children,
 }: DocumentationElementProps): ReactNode {
-	const { url } = requireMeta();
-	const path = (url?.pathname ?? "/") as AbsolutePath;
+	const { url, root } = requireMeta();
+	// Path must be site-root-relative: card hrefs are later resolved against `root`, so including its subfolder here would double it.
+	const path = matchURLPrefix(url, root) ?? "/";
 	return (
 		<Page title={title ?? name} description={description}>
 			<Title>
