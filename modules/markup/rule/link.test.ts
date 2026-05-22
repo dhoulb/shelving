@@ -59,7 +59,7 @@ test("AUTOLINK_RULE", () => {
 	});
 
 	// Links using schemes not in the whitelist are not linked.
-	expect(PARSER.parse("mailto:dave@shax.com", "inline")).toMatchObject({
+	expect(MAILTO_PARSER.parse("mailto:dave@shax.com", "inline")).toMatchObject({
 		type: "a",
 		props: { children: "dave@shax.com" },
 	});

@@ -1,5 +1,9 @@
 import type { ReactElement, ReactNode } from "react";
-import { HTTP_SCHEMES, type ImmutableArray, type ImmutableURL, type MutableArray, type URISchemes } from "../util/index.js";
+import type { ImmutableArray, MutableArray } from "../util/array.js";
+import { getLink, type PossibleLink } from "../util/link.js";
+import type { Nullish } from "../util/null.js";
+import { HTTP_SCHEMES, type ImmutableURI, type URISchemes } from "../util/uri.js";
+import type { ImmutableURL } from "../util/url.js";
 import type { MarkupRule, MarkupRules } from "./MarkupRule.js";
 import type { Parser } from "./Parser.js";
 import { MARKUP_RULES } from "./rule/index.js";
@@ -110,6 +114,17 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	/** Yield the rules with the given context and priority. */
 	*getRules(context: string, priority: number): Iterable<MarkupRule> {
 		for (const r of this.rules) if ((r.priority ?? 0) === priority && r.contexts.includes(context)) yield r;
+	}
+
+	/**
+	 * Get a HREF link with the correct context of our `options.url` and `options.root`
+	 *
+	 * @returns `ImmutableURI` a (URL) object if the link matches and is parseable and has an allowed scheme.
+	 * @returns `undefined` if the link does not amtch the allowed `options.schemes`
+	 */
+	getLink(href: Nullish<PossibleLink>): ImmutableURI | undefined {
+		const link = getLink(href, this.url, this.root);
+		if (link && this.schemes.includes(link.protocol)) return link;
 	}
 }
 
