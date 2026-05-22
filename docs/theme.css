@@ -1,0 +1,26 @@
+/*
+ * Documentation site theme.
+ *
+ * A token-only overlay on top of the base design tokens defined by `modules/ui/`. Only CSS custom
+ * properties (the `--variable` design tokens) are set here — never component selectors — so the docs
+ * site gets a brighter, more colourful personality without forking a single component's styling.
+ *
+ * Imported last in `client.tsx` so these `:root` declarations land after the base tokens and win.
+ * Every value leans on the existing palette (`--color-*`) rather than introducing new raw colours.
+ */
+
+:root {
+	/* Surfaces — warm cream page, soft peach cards/buttons/notices instead of flat white and cool grey. */
+	--color-bg: color-mix(in srgb, var(--color-orange) 6%, white);
+	--color-surface: color-mix(in srgb, var(--color-orange) 13%, white);
+
+	/* Borders pick up a gentle purple tint to tie surfaces to the accent colour. */
+	--color-border: color-mix(in srgb, var(--color-purple) 22%, white);
+
+	/* A distinct lavender sidebar so navigation reads as its own surface, separate from cards. */
+	--sidebar-layout-bg: color-mix(in srgb, var(--color-purple) 11%, white);
+
+	/* Interactive colours — brighter and more characterful, straight from the palette. */
+	--color-link: var(--color-purple);
+	--color-focus: var(--color-pink);
+}
