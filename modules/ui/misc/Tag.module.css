@@ -1,5 +1,6 @@
 .tag {
 	display: inline-block;
+	flex-grow: var(--grow-timid); /* When displayed in a flex row, tags expand timidly compared to other elements. */
 	padding: 0 var(--space-xxsmall);
 	border: 0;
 	border-radius: var(--radius-xxsmall);
