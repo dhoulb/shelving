@@ -48,7 +48,7 @@ export interface TreeElementProps extends ElementProps {
 	/**
 	 * Markup source string that should be rendered as the element's visible body content.
 	 * - Rendered via the `<Markup>` component (typically inside a `<Prose>` wrapper).
-	 * - For Markdown files this is the file's text; for TypeScript symbols this is the JSDoc description.
+	 * - For Markdown files this is the file's body (the title `# h1` is lifted into `title`); for TypeScript symbols this is the JSDoc description.
 	 */
 	readonly content?: string | undefined;
 	/** Children of a tree element must be other tree elements. */

@@ -19,11 +19,22 @@ describe("MarkupExtractor", () => {
 		expect(element.props.title).toBe("My Title");
 	});
 
-	test("stores raw markdown as content", async () => {
-		const text = "# Hello\n\nWorld.";
-		const element = await extractor.extract(file(text));
+	test("strips the title heading from the stored content", async () => {
+		const element = await extractor.extract(file("# Hello\n\nWorld."));
 		expect(element.type).toBe("tree-file");
-		expect(element.props.content).toBe(text);
+		expect(element.props.title).toBe("Hello");
+		expect(element.props.content).toBe("World.");
+	});
+
+	test("keeps body headings other than the title in the content", async () => {
+		const element = await extractor.extract(file("# Title\n\nIntro.\n\n## Section\n\nMore."));
+		expect(element.props.content).toBe("Intro.\n\n## Section\n\nMore.");
+	});
+
+	test("leaves content untouched when there is no title heading", async () => {
+		const element = await extractor.extract(file("## Subheading\n\nBody.", "/tmp/TEMPLATE.md"));
+		expect(element.props.title).toBeUndefined();
+		expect(element.props.content).toBe("## Subheading\n\nBody.");
 	});
 
 	test("leaves title undefined when no h1 heading is found", async () => {

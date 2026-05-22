@@ -4,9 +4,11 @@ import { FileExtractor } from "./FileExtractor.js";
 
 /**
  * File extractor for Markdown files.
- * - Stores the raw markdown text as `content`; rendering happens at output time via `<Markup>`.
+ * - Stores the markdown text as `content`; rendering happens at output time via `<Markup>`.
  * - Sets `title` from the first `# h1` heading if one is present — otherwise leaves it undefined
  *   (a confident title only).
+ * - When a `title` is found, strips the leading `# h1` from `content` so renderers (which show
+ *   `title` separately) don't display the heading twice.
  * - Sets `description` to the first prose paragraph as a plain-text summary (used for card listings and `<meta>`).
  */
 export class MarkupExtractor extends FileExtractor {
@@ -15,7 +17,8 @@ export class MarkupExtractor extends FileExtractor {
 
 	override extractProps(name: string, text: string): Partial<FileElementProps> & { name: string } {
 		const { title, description } = extractMarkdownProps(text);
-		return { name, title, description, content: text };
+		// The title `# h1` is surfaced separately as `title`, so strip it from the body to avoid rendering it twice.
+		return { name, title, description, content: title ? _stripTitle(text) : text };
 	}
 }
 
@@ -43,4 +46,9 @@ export function extractMarkdownProps(text: string): { title: string | undefined;
 /** Flatten an element to a single-line plain-text summary, or `undefined` if it has no text. */
 function _plain(element: Element): string | undefined {
 	return getElementText(element).replace(/\s+/g, " ").trim() || undefined;
+}
+
+/** Strip a leading `# h1` heading (and any blank lines after it) from markdown text. */
+function _stripTitle(text: string): string {
+	return text.replace(/^\s*#[^\n\S]+\S[^\n]*(?:\n+|$)/, "");
 }
