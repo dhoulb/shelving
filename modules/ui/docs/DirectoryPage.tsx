@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { DirectoryElementProps } from "../../util/element.js";
 import { Prose } from "../block/Prose.js";
+import { Title } from "../block/Title.js";
 import { Markup } from "../misc/Markup.js";
 import { requireMeta } from "../misc/MetaContext.js";
 import { Page } from "../page/Page.js";
@@ -12,6 +13,7 @@ export function DirectoryPage({ title, name, description, content, children }: D
 	const path = url?.pathname ?? "/";
 	return (
 		<Page title={title ?? name} description={description}>
+			<Title>{title ?? name}</Title>
 			{content && (
 				<Prose>
 					<Markup>{content}</Markup>
