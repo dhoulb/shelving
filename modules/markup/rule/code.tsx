@@ -9,11 +9,14 @@ const CODE_REGEXP = getRegExp<{ code: string }>(`(?<fence>\`+)(?<code>${BLOCK_CO
  * - Text surrounded by one or more "`" backtick tilde characters.
  * - Unlike strong/emphasis first or last character of the element can be space, (e.g. `- abc -` will not work).
  * - Closing characters must exactly match opening characters.
+ * - Works inside link text too, e.g. `` [`code`](url) ``.
  * - Same as Markdown syntax.
  */
+// Priority 10: code is a higher-precedence tier, resolved and masked before links/emphasis, so a
+// code span that straddles a link delimiter wins and the link cannot form across it.
 export const CODE_RULE = createMarkupRule(
 	CODE_REGEXP,
 	({ groups: { code } }, _options, key) => <code key={key}>{code}</code>,
-	["inline", "list"],
+	["inline", "list", "link"],
 	10,
 );
