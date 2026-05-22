@@ -217,3 +217,181 @@ test("UNORDERED loose lists", () => {
 		},
 	});
 });
+
+test("UNORDERED todo lists", () => {
+	// A checked `[x]` todo item — a checked checkbox plus the content, wrapped in a label.
+	expect(PARSER.parse("- [x] DONE")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: {
+							type: "label",
+							props: {
+								children: [{ type: "input", props: { type: "checkbox", defaultChecked: true } }, "DONE"],
+							},
+						},
+					},
+				},
+			],
+		},
+	});
+
+	// An unchecked `[ ]` todo item — an unchecked checkbox.
+	expect(PARSER.parse("- [ ] TODO")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: {
+							type: "label",
+							props: {
+								children: [{ type: "input", props: { type: "checkbox", defaultChecked: false } }, "TODO"],
+							},
+						},
+					},
+				},
+			],
+		},
+	});
+
+	// The checkbox letter is case-insensitive.
+	expect(PARSER.parse("- [X] DONE")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: { children: { type: "label", props: { children: [{ type: "input", props: { defaultChecked: true } }, "DONE"] } } },
+				},
+			],
+		},
+	});
+
+	// Todo and plain items can be mixed in the same list.
+	expect(PARSER.parse("- [x] DONE\n- PLAIN")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: { children: { type: "label", props: { children: [{ type: "input", props: { defaultChecked: true } }, "DONE"] } } },
+				},
+				{ type: "li", props: { children: "PLAIN" } },
+			],
+		},
+	});
+
+	// A `[x]` not followed by whitespace is literal text, not a checkbox.
+	expect(PARSER.parse("- [x]NOTASK")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [{ type: "li", props: { children: "[x]NOTASK" } }],
+		},
+	});
+
+	// Todo items can contain inline markup.
+	expect(PARSER.parse("- [ ] BEFORE **STRONG** AFTER")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: {
+							type: "label",
+							props: {
+								children: [
+									{ type: "input", props: { defaultChecked: false } },
+									["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"],
+								],
+							},
+						},
+					},
+				},
+			],
+		},
+	});
+
+	// Todo lists nest within each other.
+	expect(PARSER.parse("- [x] PARENT\n\t- [ ] CHILD")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: {
+							type: "label",
+							props: {
+								children: [
+									{ type: "input", props: { defaultChecked: true } },
+									[
+										"PARENT",
+										{
+											type: "ul",
+											props: {
+												children: [
+													{
+														type: "li",
+														props: {
+															children: {
+																type: "label",
+																props: { children: [{ type: "input", props: { defaultChecked: false } }, "CHILD"] },
+															},
+														},
+													},
+												],
+											},
+										},
+									],
+								],
+							},
+						},
+					},
+				},
+			],
+		},
+	});
+
+	// Todo lists can be loose — items are wrapped in `<p>`.
+	expect(PARSER.parse("- [x] DONE\n\n- [ ] TODO")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: {
+							type: "label",
+							props: {
+								children: [
+									{ type: "input", props: { defaultChecked: true } },
+									{ type: "p", props: { children: "DONE" } },
+								],
+							},
+						},
+					},
+				},
+				{
+					type: "li",
+					props: {
+						children: {
+							type: "label",
+							props: {
+								children: [
+									{ type: "input", props: { defaultChecked: false } },
+									{ type: "p", props: { children: "TODO" } },
+								],
+							},
+						},
+					},
+				},
+			],
+		},
+	});
+});
