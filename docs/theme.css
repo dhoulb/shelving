@@ -10,24 +10,37 @@
  */
 
 :root {
-	/* Surfaces — warm cream page, soft peach cards/buttons/notices instead of flat white and cool grey. */
+	/* Surfaces — warm cream page; soft peach `--color-surface` for chips, tags and code. */
 	--color-bg: color-mix(in srgb, var(--color-orange) 6%, white);
 	--color-surface: color-mix(in srgb, var(--color-orange) 13%, white);
 
-	/* Borders pick up a gentle purple tint to tie surfaces to the accent colour. */
+	/* Borders keep a gentle purple tint for tables, inputs and inline surfaces. */
 	--color-border: color-mix(in srgb, var(--color-purple) 22%, white);
+
+	/*
+	 * Cards — a deeper apricot, a clear step up from `--color-surface` so peach code chips and
+	 * tags read against them. The border is dropped: a purple edge on the peach looked harsh.
+	 */
+	--card-color-bg: color-mix(in srgb, var(--color-orange) 24%, white);
+	--card-color-border: transparent;
 
 	/* Interactive colours — brighter and more characterful, straight from the palette. */
 	--color-link: var(--color-purple);
 	--color-focus: var(--color-pink);
 
+	/* Buttons — bold purple blocks with white content; the site's signature interactive element. */
+	--button-color-bg: var(--color-purple);
+	--button-color-text: var(--color-white);
+	--button-color-border: var(--color-purple);
+
 	/*
-	 * Sidebar navigation — a soft lavender panel with the divider line dropped. The only menu
-	 * recolour is inactive links → a deep purple readable on the lavender; active and proud links
-	 * keep the Menu component's own black, strong defaults (active on its default white pill) so
-	 * "black and strong" consistently signals the current page and the path leading to it.
+	 * Sidebar navigation — a soft lavender panel with the divider dropped. Inactive links are
+	 * recoloured to a deep purple readable on the lavender; active and proud links keep the Menu
+	 * component's black, strong defaults. Hover is a deeper shade of the panel's own purple, so it
+	 * never reaches for the warm peach used by surfaces elsewhere.
 	 */
 	--sidebar-layout-bg: color-mix(in srgb, var(--color-purple) 18%, white);
 	--sidebar-layout-border: 0;
 	--menu-color-text: color-mix(in srgb, var(--color-purple) 70%, black);
+	--menu-link-color-hover-bg: color-mix(in srgb, var(--color-purple) 30%, white);
 }
