@@ -19,7 +19,7 @@ export function DocumentationCard({ path, title, name, kind, description, signat
 	return (
 		<Card href={href}>
 			<Subheading>
-				<Flex left>
+				<Flex left wrap>
 					<Code>{title ?? name}</Code>
 					{kind && <DocumentationKind kind={kind} />}
 				</Flex>

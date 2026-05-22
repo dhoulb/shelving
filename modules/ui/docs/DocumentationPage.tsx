@@ -53,7 +53,7 @@ export function DocumentationPage({
 	return (
 		<Page title={title ?? name} description={description}>
 			<Title>
-				<Flex left>
+				<Flex left wrap>
 					{title ?? name}
 					{kind && <DocumentationKind kind={kind} />}
 				</Flex>
