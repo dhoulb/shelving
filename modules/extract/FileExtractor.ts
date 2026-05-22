@@ -12,8 +12,8 @@ import { Extractor } from "./Extractor.js";
  * - Sets `source` to the file's absolute path (`BunFile.name`); throws `RequiredError` if missing or non-absolute.
  * - Sets `name` to the basename without extension, preserving case (e.g. `"OptionalSchema"` from `"OptionalSchema.ts"`); URL paths use `name`.
  * - Sets `key` to the slugified `name` (e.g. `"optionalschema"`) — only used by React for reconciliation and by `DirectoryExtractor` to merge same-key siblings (e.g. `TEMPLATE.md` + `template.ts`).
- * - Does NOT set `title` — `title` is only set by subclasses that have a confident source for one (e.g. `MarkdownExtractor` uses the first `<h1>`). Renderers fall back to `name` when missing.
- * - Subclasses (e.g. `MarkdownExtractor`, `TypescriptExtractor`) override `extractProps()` to parse the content into richer elements.
+ * - Does NOT set `title` — `title` is only set by subclasses that have a confident source for one (e.g. `MarkupExtractor` uses the first `<h1>`). Renderers fall back to `name` when missing.
+ * - Subclasses (e.g. `MarkupExtractor`, `TypescriptExtractor`) override `extractProps()` to parse the content into richer elements.
  */
 export class FileExtractor extends Extractor<BunFile, FileElement> {
 	async extract(file: BunFile): Promise<FileElement> {

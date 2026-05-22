@@ -16,7 +16,7 @@ An `Extractor` converts an input into a `TreeElement`. Extractors are composable
 |---|---|---|
 | `DirectoryExtractor` | a directory path | `DirectoryElement`, recursing into subdirectories |
 | `FileExtractor` | a file | `FileElement` holding the raw text |
-| `MarkdownExtractor` | a `.md` file | `FileElement` with `title` taken from the first `# heading` |
+| `MarkupExtractor` | a `.md` file | `FileElement` with `title` taken from the first `# heading` |
 | `TypescriptExtractor` | a `.ts` / `.tsx` file | `FileElement` whose children are the exported symbols |
 
 `DirectoryExtractor` is the entry point. It walks a directory, dispatches each file to a `FileExtractor` by extension, and recurses into subdirectories.
@@ -86,7 +86,7 @@ Internally `<TreeApp>` wires together:
 ```ts
 new DirectoryExtractor({
   index: [/^readme\.md$/i],                     // filenames treated as the directory index
-  extractors: { md: new MarkdownExtractor() },  // file extension → extractor
+  extractors: { md: new MarkupExtractor() },  // file extension → extractor
   ignore: [/\.test\.tsx?$/i],                   // entries to skip
   base: "/abs/path",                            // base for resolving relative paths
 });

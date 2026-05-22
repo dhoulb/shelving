@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import type { BunFile } from "bun";
-import { extractMarkdownDescription, MarkdownExtractor } from "./index.js";
+import { extractMarkdownProps, MarkupExtractor } from "./index.js";
 
-const extractor = new MarkdownExtractor();
+const extractor = new MarkupExtractor();
 
 /**
  * Make a fake `BunFile` for unit tests.
@@ -13,7 +13,7 @@ function file(content: string, name = "/tmp/doc.md"): BunFile {
 	return new File([content], name) as unknown as BunFile;
 }
 
-describe("MarkdownExtractor", () => {
+describe("MarkupExtractor", () => {
 	test("extracts title from first h1 heading", async () => {
 		const element = await extractor.extract(file("# My Title\n\nSome content."));
 		expect(element.props.title).toBe("My Title");
@@ -55,33 +55,44 @@ describe("MarkdownExtractor", () => {
 	});
 });
 
-describe("extractMarkdownDescription", () => {
-	test("returns the first prose paragraph", () => {
-		expect(extractMarkdownDescription("# Title\n\nFirst paragraph.\n\nSecond paragraph.")).toBe("First paragraph.");
+describe("extractMarkdownProps", () => {
+	test("returns the first h1 as title and first paragraph as description", () => {
+		expect(extractMarkdownProps("# Title\n\nFirst paragraph.\n\nSecond paragraph.")).toEqual({
+			title: "Title",
+			description: "First paragraph.",
+		});
 	});
 
 	test("collapses internal whitespace onto a single line", () => {
-		expect(extractMarkdownDescription("# Title\n\nA paragraph that\nwraps across\nseveral lines.")).toBe(
+		expect(extractMarkdownProps("# Title\n\nA paragraph that\nwraps across\nseveral lines.").description).toBe(
 			"A paragraph that wraps across several lines.",
 		);
 	});
 
-	test("skips headings and blank lines while searching", () => {
-		expect(extractMarkdownDescription("# Title\n\n## Subheading\n\nThe prose.")).toBe("The prose.");
+	test("skips headings and blank lines while searching for the description", () => {
+		expect(extractMarkdownProps("# Title\n\n## Subheading\n\nThe prose.").description).toBe("The prose.");
 	});
 
 	test("skips fenced code blocks", () => {
-		expect(extractMarkdownDescription("# Title\n\n```ts\nconst x = 1;\n```\n\nThe prose.")).toBe("The prose.");
+		expect(extractMarkdownProps("# Title\n\n```ts\nconst x = 1;\n```\n\nThe prose.").description).toBe("The prose.");
 	});
 
-	test("strips inline markdown syntax to plain text", () => {
-		expect(extractMarkdownDescription("# Title\n\nUse `getFirst()` and *emphasis* and [a link](http://x.com).")).toBe(
+	test("strips inline markdown syntax from the description", () => {
+		expect(extractMarkdownProps("# Title\n\nUse `getFirst()` and *emphasis* and [a link](http://x.com).").description).toBe(
 			"Use getFirst() and emphasis and a link.",
 		);
 	});
 
-	test("returns undefined when there is no prose", () => {
-		expect(extractMarkdownDescription("# Heading\n\n## Another heading")).toBeUndefined();
-		expect(extractMarkdownDescription("")).toBeUndefined();
+	test("strips inline markdown syntax from the title", () => {
+		expect(extractMarkdownProps("# Use `getFirst()` for *this*").title).toBe("Use getFirst() for this");
+	});
+
+	test("returns undefined for both when there is no h1 or prose", () => {
+		expect(extractMarkdownProps("## Another heading")).toEqual({ title: undefined, description: undefined });
+		expect(extractMarkdownProps("")).toEqual({ title: undefined, description: undefined });
+	});
+
+	test("derives title and description independently", () => {
+		expect(extractMarkdownProps("Just a paragraph.")).toEqual({ title: undefined, description: "Just a paragraph." });
 	});
 });

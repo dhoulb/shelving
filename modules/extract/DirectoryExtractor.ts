@@ -7,7 +7,7 @@ import { type AbsolutePath, anyMatch, type Matchables, type Path, requirePath, s
 import { requireSlug } from "../util/string.js";
 import { Extractor, mergeTreeElements } from "./Extractor.js";
 import { FileExtractor } from "./FileExtractor.js";
-import { MarkdownExtractor } from "./MarkdownExtractor.js";
+import { MarkupExtractor } from "./MarkupExtractor.js";
 import { TypescriptExtractor } from "./TypescriptExtractor.js";
 
 /**
@@ -19,7 +19,7 @@ const DEFAULT_INDEX: Matchables = [/^readme\.txt$/i, /^readme\.md$/i, /^index\.m
 
 /** Default file extractor dispatch by extension. */
 const DEFAULT_EXTRACTORS: ImmutableDictionary<FileExtractor> = {
-	md: new MarkdownExtractor(),
+	md: new MarkupExtractor(),
 	ts: new TypescriptExtractor(),
 	tsx: new TypescriptExtractor(),
 	txt: new FileExtractor(),

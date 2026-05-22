@@ -13,7 +13,7 @@ export abstract class Extractor<I, O extends TreeElement = TreeElement> {
 	 * Priority used to resolve same-key collisions when merging elements.
 	 * - Higher-priority elements contribute their `title`, `description`, `path` to the merged result.
 	 * - Higher-priority elements a prefixed (rather than suffixed) in `children` and `content` when merged.
-	 * - Defaults to `0`; subclasses override (e.g. `MarkdownExtractor` is `10`).
+	 * - Defaults to `0`; subclasses override (e.g. `MarkupExtractor` is `10`).
 	 */
 	readonly priority: number = 0;
 }

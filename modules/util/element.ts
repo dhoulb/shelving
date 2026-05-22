@@ -185,6 +185,7 @@ export function isElements(value: unknown): value is Elements {
 
 /**
  * Strip all tags from elements to produce a plain text string.
+ * - A `<br>` element becomes a newline (`\n`) — matching DOM `innerText`, so words either side of a line break don't fuse together.
  *
  * @param elements An element, a plain string, or null/undefined (or an array of those things).
  * @returns The combined string made from the elements.
@@ -193,7 +194,11 @@ export function isElements(value: unknown): value is Elements {
  */
 export function getElementText(elements: Elements): string {
 	if (typeof elements === "string") return elements;
-	if (isElement(elements)) return getElementText(elements.props.children);
+	if (isElement(elements)) {
+		// A `<br>` carries no children but renders as a line break — emit `\n` so adjacent words stay separated.
+		if (elements.type === "br") return "\n";
+		return getElementText(elements.props.children);
+	}
 	// Iterate the collection directly — `walkElements()` skips loose strings, so it would drop text that sits alongside elements.
 	if (isIterable(elements)) {
 		let text = "";
