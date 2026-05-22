@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from "react";
 import type { ImmutableArray, MutableArray } from "../util/array.js";
 import { getLink, type PossibleLink } from "../util/link.js";
 import type { Nullish } from "../util/null.js";
+import type { NamedRegExpData } from "../util/regexp.js";
 import { HTTP_SCHEMES, type ImmutableURI, type URISchemes } from "../util/uri.js";
 import type { ImmutableURL } from "../util/url.js";
 import type { MarkupRule, MarkupRules } from "./MarkupRule.js";
@@ -111,9 +112,9 @@ export class MarkupParser implements Parser<string, ReactNode> {
 		return !nodes.length ? null : nodes.length === 1 ? nodes[0] : nodes;
 	}
 
-	/** Yield the rules with the given context and priority. */
+	/** Yield the rules active in `context` that sit in the given priority tier. */
 	*getRules(context: string, priority: number): Iterable<MarkupRule> {
-		for (const r of this.rules) if ((r.priority ?? 0) === priority && r.contexts.includes(context)) yield r;
+		for (const r of this.rules) if (r.priority === priority && r.contexts.includes(context)) yield r;
 	}
 
 	/**
@@ -128,10 +129,10 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	}
 }
 
-/** Extract a unique sorted array of priorities from  */
+/** Extract the unique rule priorities, ordered highest first — these are the tiers to resolve in turn. */
 function _getPriorities(rules: MarkupRules): ImmutableArray<number> {
 	const priorities: MutableArray<number> = [];
-	for (const { priority = 0 } of rules) if (!priorities.includes(priority)) priorities.push(priority);
+	for (const { priority } of rules) if (!priorities.includes(priority)) priorities.push(priority);
 	return priorities.sort().reverse();
 }
 
@@ -143,6 +144,8 @@ type MarkupClaim = {
 	readonly start: number;
 	/** Offset just past the last claimed character in the original input string. */
 	readonly end: number;
+	/** Named capture groups from the rule's match, recovered against the original (unmasked) text. */
+	readonly groups: NamedRegExpData | undefined;
 };
 
 /**
@@ -154,7 +157,7 @@ type MarkupClaim = {
  * for code spans that straddle link delimiters: a code span is masked before links resolve, so a
  * link either wraps a whole masked code span (and re-parses it) or cannot form at all.
  *
- * Rules own the recursion into their own children — they call `renderMarkup` again, optionally
+ * Rules own the recursion into their own children — they call `parser.parse` again, optionally
  * with a different context — so the engine never reaches inside a rule's content itself.
  */
 function _parseNodes(input: string, parser: MarkupParser, context: string): (ReactElement | string)[] {
@@ -162,9 +165,9 @@ function _parseNodes(input: string, parser: MarkupParser, context: string): (Rea
 	// region from every lower tier.
 	const claimed: MarkupClaim[] = [];
 	let masked = input;
-	for (const tier of _getTiers(parser.rules, context)) {
+	for (const priority of parser.priorities) {
 		const higher = Array.from(claimed); // Snapshot — claims from already-resolved (higher) tiers.
-		for (const claim of _scanTier(masked, input, tier, higher)) {
+		for (const claim of _scanTier(masked, input, parser, context, priority, higher)) {
 			// A claim that wraps earlier (higher-tier) claims absorbs them: the wrapper re-parses
 			// that text itself (e.g. a link re-parsing its own title).
 			for (let i = claimed.length - 1; i >= 0; i--) {
@@ -176,36 +179,19 @@ function _parseNodes(input: string, parser: MarkupParser, context: string): (Rea
 		}
 	}
 
-	// Walk left to right: raw text fills the gaps, rendered elements fill the claims.
+	// Walk left to right: raw text fills the gaps, rendered elements fill the claims. Each claim
+	// already carries the capture groups recovered against the original text, so no rule's regexp
+	// needs to run a second time here.
 	claimed.sort((a, b) => a.start - b.start);
 	const nodes: (ReactElement | string)[] = [];
 	let pos = 0;
-	for (const { rule, start, end } of claimed) {
+	for (const { rule, start, end, groups } of claimed) {
 		if (start > pos) nodes.push(input.slice(pos, start));
-		// Re-run the rule on the ORIGINAL slice. The claim was found against `masked`, so its
-		// capture groups would otherwise hold blanked characters.
-		const slice = input.slice(start, end);
-		const match = rule.regexp.exec(slice);
-		nodes.push(match ? rule.render(start.toString(), match.groups, parser) : slice);
+		nodes.push(rule.render(start.toString(), groups, parser));
 		pos = end;
 	}
 	if (pos < input.length) nodes.push(input.slice(pos));
 	return nodes;
-}
-
-/** Group the rules active in `context` into priority tiers, highest priority first. */
-function _getTiers(rules: MarkupRules, context: string): MarkupRule[][] {
-	const byPriority = new Map<number, MarkupRule[]>();
-	for (const rule of rules) {
-		if (rule.contexts.includes(context)) {
-			const tier = byPriority.get(rule.priority);
-			if (tier) tier.push(rule);
-			else byPriority.set(rule.priority, [rule]);
-		}
-	}
-	return Array.from(byPriority)
-		.sort(([a], [b]) => b - a)
-		.map(([, tier]) => tier);
 }
 
 /**
@@ -215,8 +201,23 @@ function _getTiers(rules: MarkupRules, context: string): MarkupRule[][] {
  * away we cache one match per rule, and only recompute a rule's match when the chosen claim
  * actually invalidated it. A rule whose match still lies ahead is reused untouched.
  */
-function* _scanTier(masked: string, input: string, rules: MarkupRule[], higher: MarkupClaim[]): Generator<MarkupClaim> {
-	const next: (MarkupClaim | undefined)[] = rules.map(rule => _findFrom(rule, masked, input, 0, higher));
+function* _scanTier(
+	masked: string,
+	input: string,
+	parser: MarkupParser,
+	context: string,
+	priority: number,
+	higher: MarkupClaim[],
+): Generator<MarkupClaim> {
+	// Materialise this tier's rules and prime one cached match per rule. The cache is essential
+	// working state, not plumbing — it is the only array this scan allocates.
+	const rules: MarkupRule[] = [];
+	const next: (MarkupClaim | undefined)[] = [];
+	for (const rule of parser.getRules(context, priority)) {
+		rules.push(rule);
+		next.push(_findFrom(rule, masked, input, 0, higher));
+	}
+
 	for (;;) {
 		// The leftmost cached match wins; on a tie the earlier rule in the list wins.
 		let best: MarkupClaim | undefined;
@@ -261,13 +262,35 @@ function _findFrom(rule: MarkupRule, masked: string, input: string, from: number
 		if (!match) return undefined;
 		const start = lo + match.index;
 		const end = start + match[0].length;
-		const overlapping = higher.filter(h => h.start < end && h.end > start);
-		if (!overlapping.length) return { rule, start, end };
+
+		// Inspect the higher-tier claims this match touches in a single allocation-free pass:
+		// - `leadingEnd` — a claim starts at/before the match, so the match cannot begin here.
+		// - `interior` — every spanned claim sits strictly inside (a possible genuine wrapper).
+		// - `wallStart`/`wallEnd` — the first claim the match crosses, used to bound a retry.
+		let overlaps = false;
+		let leadingEnd = -1;
+		let interior = true;
+		let wallStart = masked.length;
+		let wallEnd = -1;
+		for (const h of higher) {
+			if (h.start < end && h.end > start) {
+				overlaps = true;
+				if (h.start <= start) {
+					if (h.end > leadingEnd) leadingEnd = h.end;
+				} else if (h.end >= end) {
+					interior = false;
+				}
+				if (h.start < wallStart) {
+					wallStart = h.start;
+					wallEnd = h.end;
+				}
+			}
+		}
+		if (!overlaps) return { rule, start, end, groups: match.groups };
 
 		// A higher claim starts at or before this match — it cannot begin here, skip past it.
-		const leading = overlapping.find(h => h.start <= start);
-		if (leading) {
-			lo = leading.end;
+		if (leadingEnd >= 0) {
+			lo = leadingEnd;
 			continue;
 		}
 
@@ -275,26 +298,18 @@ function _findFrom(rule: MarkupRule, masked: string, input: string, from: number
 		// both sides) and still matches the whole region when re-run on the original (unmasked)
 		// slice. A claim that merely shares a boundary — a paragraph whose trailing whitespace
 		// swallows the block below it — is spurious, not a wrapper.
-		if (overlapping.every(h => h.start > start && h.end < end)) {
+		if (interior) {
 			const original = rule.regexp.exec(input.slice(start, end));
-			if (original && !original.index && original[0].length === end - start) return { rule, start, end };
+			if (original && !original.index && original[0].length === end - start) return { rule, start, end, groups: original.groups };
 		}
 
 		// Spurious span — retry bounded by the first claim it crossed.
-		let wall = masked.length;
-		let wallClaim: MarkupClaim | undefined;
-		for (const h of overlapping)
-			if (h.start < wall) {
-				wall = h.start;
-				wallClaim = h;
-			}
-		const bounded = rule.regexp.exec(masked.slice(lo, wall));
+		const bounded = rule.regexp.exec(masked.slice(lo, wallStart));
 		if (bounded) {
 			const s = lo + bounded.index;
-			return { rule, start: s, end: s + bounded[0].length };
+			return { rule, start: s, end: s + bounded[0].length, groups: bounded.groups };
 		}
-		if (!wallClaim) return undefined;
-		lo = wallClaim.end;
+		lo = wallEnd;
 	}
 }
 
