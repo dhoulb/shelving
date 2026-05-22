@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import { renderMarkup } from "../../markup/render.js";
-import { MARKUP_OPTIONS } from "../../markup/rule/index.js";
+import { MarkupParser } from "../../markup/MarkupParser.js";
 import type { MarkupOptions } from "../../markup/util/options.js";
 import { requireMeta } from "./MetaContext.js";
 
@@ -18,10 +17,12 @@ export interface MarkupProps extends Partial<MarkupOptions> {
  *
  * @example <Prose><Markup>{`A *bold* word with \`code\`.`}</Markup></Prose>
  */
-export function Markup({ children, ...overrides }: MarkupProps): ReactNode {
+export function Markup({ children, ...options }: MarkupProps): ReactNode {
 	if (!children) return null;
+
 	// Thread the current page URL + site root from `<Meta>` so link rules can resolve site-absolute and relative hrefs.
-	const { url, root: base } = requireMeta();
-	const options: MarkupOptions = { ...MARKUP_OPTIONS, url, root: base, ...overrides };
-	return renderMarkup(children, options);
+	const { url, root } = requireMeta();
+
+	// Return the parsed markup.
+	return new MarkupParser({ url, root, ...options }).parse(children);
 }

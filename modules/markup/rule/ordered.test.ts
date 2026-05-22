@@ -1,139 +1,122 @@
 import { expect, test } from "bun:test";
-import { MARKUP_RULES, renderMarkup } from "../index.js";
+import { MarkupParser } from "../index.js";
 
-const $$typeof = Symbol.for("react.transitional.element");
-const OPTIONS = {
-	rules: MARKUP_RULES,
-};
+const PARSER = new MarkupParser();
 
 test("ORDERED", () => {
 	const ORDERED_ITEMS = {
-		$$typeof,
 		type: "ol",
 		props: {
 			children: [
-				{ $$typeof, type: "li", props: { value: 1111, children: "ITEM1" } },
-				{ $$typeof, type: "li", props: { value: 2222, children: "ITEM2" } },
-				{ $$typeof, type: "li", props: { value: 3333, children: "ITEM3" } },
+				{ type: "li", props: { value: 1111, children: "ITEM1" } },
+				{ type: "li", props: { value: 2222, children: "ITEM2" } },
+				{ type: "li", props: { value: 3333, children: "ITEM3" } },
 			],
 		},
 	};
 
 	// Single item.
-	expect(renderMarkup("1. ITEM", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("1. ITEM")).toMatchObject({
 		type: "ol",
 		props: {
-			children: [{ $$typeof, type: "li", props: { value: 1, children: "ITEM" } }],
+			children: [{ type: "li", props: { value: 1, children: "ITEM" } }],
 		},
 	});
-	expect(renderMarkup("1) ITEM", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("1) ITEM")).toMatchObject({
 		type: "ol",
 		props: {
-			children: [{ $$typeof, type: "li", props: { value: 1, children: "ITEM" } }],
+			children: [{ type: "li", props: { value: 1, children: "ITEM" } }],
 		},
 	});
-	expect(renderMarkup("1: ITEM", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("1: ITEM")).toMatchObject({
 		type: "ol",
 		props: {
-			children: [{ $$typeof, type: "li", props: { value: 1, children: "ITEM" } }],
+			children: [{ type: "li", props: { value: 1, children: "ITEM" } }],
 		},
 	});
-	expect(renderMarkup("2222. ITEM", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("2222. ITEM")).toMatchObject({
 		type: "ol",
-		props: { children: [{ $$typeof, type: "li", props: { value: 2222, children: "ITEM" } }] },
+		props: { children: [{ type: "li", props: { value: 2222, children: "ITEM" } }] },
 	});
 
 	// Multiple items.
-	expect(renderMarkup("1111. ITEM1\n2222. ITEM2\n3333. ITEM3", OPTIONS)).toMatchObject(ORDERED_ITEMS);
+	expect(PARSER.parse("1111. ITEM1\n2222. ITEM2\n3333. ITEM3")).toMatchObject(ORDERED_ITEMS);
 
 	// Nested.
-	expect(renderMarkup("1. PARENT1\n\t1111. ITEM1\n\t2222. ITEM2\n\t3333. ITEM3\n2. PARENT2\n3. PARENT3", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("1. PARENT1\n\t1111. ITEM1\n\t2222. ITEM2\n\t3333. ITEM3\n2. PARENT2\n3. PARENT3")).toMatchObject({
 		type: "ol",
 		props: {
 			children: [
-				{ $$typeof, type: "li", props: { value: 1, children: ["PARENT1", ORDERED_ITEMS] } },
-				{ $$typeof, type: "li", props: { value: 2, children: "PARENT2" } },
-				{ $$typeof, type: "li", props: { value: 3, children: "PARENT3" } },
+				{ type: "li", props: { value: 1, children: ["PARENT1", ORDERED_ITEMS] } },
+				{ type: "li", props: { value: 2, children: "PARENT2" } },
+				{ type: "li", props: { value: 3, children: "PARENT3" } },
 			],
 		},
 	});
 
 	// List items can be empty.
-	expect(renderMarkup("- ITEM1\n-\n- ITEM3", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("- ITEM1\n-\n- ITEM3")).toMatchObject({
 		type: "ul",
 		props: {
 			children: [
-				{ $$typeof, type: "li", props: { children: "ITEM1" } },
-				{ $$typeof, type: "li", props: { children: null } },
-				{ $$typeof, type: "li", props: { children: "ITEM3" } },
+				{ type: "li", props: { children: "ITEM1" } },
+				{ type: "li", props: { children: null } },
+				{ type: "li", props: { children: "ITEM3" } },
 			],
 		},
 	});
 
 	// List items trim whitespace.
-	expect(renderMarkup("1.    ITEM1    ", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("1.    ITEM1    ")).toMatchObject({
 		type: "ol",
 		props: {
-			children: [{ $$typeof, type: "li", props: { value: 1, children: "ITEM1" } }],
+			children: [{ type: "li", props: { value: 1, children: "ITEM1" } }],
 		},
 	});
-	expect(renderMarkup("1.\t\tITEM1\t\t", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("1.\t\tITEM1\t\t")).toMatchObject({
 		type: "ol",
 		props: {
-			children: [{ $$typeof, type: "li", props: { value: 1, children: "ITEM1" } }],
+			children: [{ type: "li", props: { value: 1, children: "ITEM1" } }],
 		},
 	});
 
 	// List items can be empty.
-	expect(renderMarkup("1. ITEM1\n2.    \n3. ITEM3", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("1. ITEM1\n2.    \n3. ITEM3")).toMatchObject({
 		type: "ol",
 		props: {
 			children: [
-				{ $$typeof, type: "li", props: { value: 1, children: "ITEM1" } },
-				{ $$typeof, type: "li", props: { value: 2, children: null } },
-				{ $$typeof, type: "li", props: { value: 3, children: "ITEM3" } },
+				{ type: "li", props: { value: 1, children: "ITEM1" } },
+				{ type: "li", props: { value: 2, children: null } },
+				{ type: "li", props: { value: 3, children: "ITEM3" } },
 			],
 		},
 	});
-	expect(renderMarkup("2.    ", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("2.    ")).toMatchObject({
 		type: "ol",
 		props: {
-			children: [{ $$typeof, type: "li", props: { value: 2, children: null } }],
+			children: [{ type: "li", props: { value: 2, children: null } }],
 		},
 	});
-	expect(renderMarkup("2.", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("2.")).toMatchObject({
 		type: "ol",
 		props: {
-			children: [{ $$typeof, type: "li", props: { value: 2, children: null } }],
+			children: [{ type: "li", props: { value: 2, children: null } }],
 		},
 	});
 
 	// Newlines before/after are stripped.
-	expect(renderMarkup("\n    \n1. ITEM1\n    \n", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("\n    \n1. ITEM1\n    \n")).toMatchObject({
 		type: "ol",
 		props: {
-			children: [{ $$typeof, type: "li", props: { value: 1, children: "ITEM1" } }],
+			children: [{ type: "li", props: { value: 1, children: "ITEM1" } }],
 		},
 	});
 
 	// List items can contain inlines.
-	expect(renderMarkup("369. BEFORE **STRONG** AFTER", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("369. BEFORE **STRONG** AFTER")).toMatchObject({
 		type: "ol",
 		props: {
-			children: [{ $$typeof, type: "li", props: { children: ["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"] } }],
+			children: [{ type: "li", props: { children: ["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"] } }],
 		},
 	});
 });

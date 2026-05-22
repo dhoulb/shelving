@@ -20,7 +20,7 @@ export function createBlockRegExp<T extends NamedRegExpData>(
 	pattern: NamedRegExp<T>,
 	start?: PossibleRegExp,
 	end?: PossibleRegExp,
-): T extends NamedRegExpData ? NamedRegExp<T> : RegExp;
+): NamedRegExp<T>;
 export function createBlockRegExp<T extends NamedRegExpData | undefined = undefined>(
 	pattern: PossibleRegExp,
 	start?: PossibleRegExp,

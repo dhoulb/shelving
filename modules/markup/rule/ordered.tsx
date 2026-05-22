@@ -1,19 +1,14 @@
 import type { ReactElement } from "react";
-import { renderMarkup } from "../render.js";
-import type { MarkupOptions } from "../util/options.js";
+import type { MarkupParser } from "../MarkupParser.js";
+import { createMarkupRule } from "../MarkupRule.js";
 import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
-import { createMarkupRule } from "../util/rule.js";
 
-const INDENT = /^\t/gm; // Nesting is recognised with tabs only.
-const NUMBER = "\\d{1,9}[.):]"; // Number for a numbered list, e.g. `1.` or `2)` or `3:` followed by one or more spaces.
-const ITEM = new RegExp(
-	`(?:^|\n)(${NUMBER})(?:${LINE_SPACE_REGEXP}+(${BLOCK_CONTENT_REGEXP}))?${BLOCK_SPACE_REGEXP}*(?=\n${NUMBER}(?:\\s|$)|$)`,
+const _INDENT = /^\t/gm; // Nesting is recognised with tabs only.
+const _NUMBER = "\\d{1,9}[.):]"; // Number for a numbered list, e.g. `1.` or `2)` or `3:` followed by one or more spaces.
+const _ITEM = new RegExp(
+	`(?:^|\n)(${_NUMBER})(?:${LINE_SPACE_REGEXP}+(${BLOCK_CONTENT_REGEXP}))?${BLOCK_SPACE_REGEXP}*(?=\n${_NUMBER}(?:\\s|$)|$)`,
 	"g",
 );
-
-export const ORDERED_REGEXP = createBlockRegExp<{
-	list: string;
-}>(`(?<list>${NUMBER}(?:${LINE_SPACE_REGEXP}+${BLOCK_CONTENT_REGEXP})?)`);
 
 /**
  * Ordered list.
@@ -22,19 +17,21 @@ export const ORDERED_REGEXP = createBlockRegExp<{
  * - Second-level list can be created by indenting with `\t` one tab.
  * - Sparse lists are not supported.
  */
-export const ORDERED_RULE = createMarkupRule(
-	ORDERED_REGEXP,
-	({ groups: { list } }, options, key) => <ol key={key}>{Array.from(_getOrderedItems(list, options))}</ol>,
+export const ORDERED_RULE = createMarkupRule<{
+	list: string;
+}>(
+	createBlockRegExp(`(?<list>${_NUMBER}(?:${LINE_SPACE_REGEXP}+${BLOCK_CONTENT_REGEXP})?)`),
+	(key, { list }, parser) => <ol key={key}>{Array.from(_getOrderedItems(list, parser))}</ol>,
 	["block", "list"],
 );
 
 /** Parse a markdown list into a set of items elements. */
-function* _getOrderedItems(list: string, options: MarkupOptions): Iterable<ReactElement> {
+function* _getOrderedItems(list: string, parser: MarkupParser): Iterable<ReactElement> {
 	let key = 0;
-	for (const [_unused, number = "", item = ""] of list.matchAll(ITEM)) {
+	for (const [_unused, number = "", item = ""] of list.matchAll(_ITEM)) {
 		yield (
 			<li key={key++} value={Number.parseInt(number, 10)}>
-				{renderMarkup(item.replace(INDENT, ""), options, "list")}
+				{parser.parse(item.replace(_INDENT, ""), "list")}
 			</li>
 		);
 	}

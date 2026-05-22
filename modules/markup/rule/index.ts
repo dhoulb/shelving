@@ -1,5 +1,5 @@
 import type { MarkupOptions } from "../util/options.js";
-import type { MarkupRules } from "../util/rule.js";
+import type { MarkupRules } from "../MarkupRule.js";
 import { BLOCKQUOTE_RULE } from "./blockquote.js";
 import { CODE_RULE } from "./code.js";
 import { FENCED_RULE } from "./fenced.js";

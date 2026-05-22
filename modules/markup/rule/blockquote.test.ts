@@ -1,81 +1,68 @@
 import { expect, test } from "bun:test";
-import { MARKUP_RULES, renderMarkup } from "../index.js";
+import { MarkupParser } from "../index.js";
 
-const $$typeof = Symbol.for("react.transitional.element");
-const OPTIONS = {
-	rules: MARKUP_RULES,
-};
+const PARSER = new MarkupParser();
 
 test("BLOCKQUOTE_RULE", () => {
 	// Single line.
-	expect(renderMarkup(">QUOTE", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse(">QUOTE")).toMatchObject({
 		type: "blockquote",
-		props: { children: { $$typeof, type: "p", props: { children: "QUOTE" } } },
+		props: { children: { type: "p", props: { children: "QUOTE" } } },
 	});
-	expect(renderMarkup("> QUOTE", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("> QUOTE")).toMatchObject({
 		type: "blockquote",
-		props: { children: { $$typeof, type: "p", props: { children: "QUOTE" } } },
+		props: { children: { type: "p", props: { children: "QUOTE" } } },
 	});
 
 	// Multiline.
-	expect(renderMarkup(">QUOTE1\n>\n>QUOTE2", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse(">QUOTE1\n>\n>QUOTE2")).toMatchObject({
 		type: "blockquote",
 		props: {
 			children: [
-				{ $$typeof, type: "p", props: { children: "QUOTE1" } },
-				{ $$typeof, type: "p", props: { children: "QUOTE2" } },
+				{ type: "p", props: { children: "QUOTE1" } },
+				{ type: "p", props: { children: "QUOTE2" } },
 			],
 		},
 	});
-	expect(renderMarkup("> QUOTE1\n>\n> QUOTE2", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("> QUOTE1\n>\n> QUOTE2")).toMatchObject({
 		type: "blockquote",
 		props: {
 			children: [
-				{ $$typeof, type: "p", props: { children: "QUOTE1" } },
-				{ $$typeof, type: "p", props: { children: "QUOTE2" } },
+				{ type: "p", props: { children: "QUOTE1" } },
+				{ type: "p", props: { children: "QUOTE2" } },
 			],
 		},
 	});
 
 	// Empty.
-	expect(renderMarkup(">", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse(">")).toMatchObject({
 		type: "blockquote",
 		props: { children: null },
 	});
 
 	// Whitespace is stripped.
-	expect(renderMarkup(">    QUOTE    ", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse(">    QUOTE    ")).toMatchObject({
 		type: "blockquote",
-		props: { children: { $$typeof, type: "p", props: { children: "QUOTE" } } },
+		props: { children: { type: "p", props: { children: "QUOTE" } } },
 	});
-	expect(renderMarkup(">\t\tQUOTE\t\t", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse(">\t\tQUOTE\t\t")).toMatchObject({
 		type: "blockquote",
-		props: { children: { $$typeof, type: "p", props: { children: "QUOTE" } } },
+		props: { children: { type: "p", props: { children: "QUOTE" } } },
 	});
-	expect(renderMarkup("\n    \n> QUOTE\n    \n", OPTIONS)).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("\n    \n> QUOTE\n    \n")).toMatchObject({
 		type: "blockquote",
-		props: { children: { $$typeof, type: "p", props: { children: "QUOTE" } } },
+		props: { children: { type: "p", props: { children: "QUOTE" } } },
 	});
 
 	// Multiple quotes.
-	expect(renderMarkup("> QUOTE1\n\n> QUOTE2", OPTIONS)).toMatchObject([
+	expect(PARSER.parse("> QUOTE1\n\n> QUOTE2")).toMatchObject([
 		{
-			$$typeof,
 			type: "blockquote",
-			props: { children: { $$typeof, type: "p", props: { children: "QUOTE1" } } },
+			props: { children: { type: "p", props: { children: "QUOTE1" } } },
 		},
 		{
-			$$typeof,
 			type: "blockquote",
-			props: { children: { $$typeof, type: "p", props: { children: "QUOTE2" } } },
+			props: { children: { type: "p", props: { children: "QUOTE2" } } },
 		},
 	]);
 });

@@ -1,339 +1,299 @@
 import { expect, test } from "bun:test";
-import { MARKUP_RULES, renderMarkup } from "../index.js";
+import { MarkupParser } from "../index.js";
 
-const $$typeof = Symbol.for("react.transitional.element");
-const OPTIONS = {
-	rules: MARKUP_RULES,
-};
+const PARSER = new MarkupParser();
 
 test("INLINE_RULE <strong>", () => {
-	expect(renderMarkup("*A*", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "strong", props: { children: "A" } });
-	expect(renderMarkup("**A**", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "strong", props: { children: "A" } });
-	expect(renderMarkup("******A******", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "strong", props: { children: "A" } });
-	expect(renderMarkup("*AAA BBB*", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "strong", props: { children: "AAA BBB" } });
-	expect(renderMarkup("**AAA BBB**", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "strong", props: { children: "AAA BBB" } });
-	expect(renderMarkup("******AAA BBB******", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("*A*", "inline")).toMatchObject({ type: "strong", props: { children: "A" } });
+	expect(PARSER.parse("**A**", "inline")).toMatchObject({ type: "strong", props: { children: "A" } });
+	expect(PARSER.parse("******A******", "inline")).toMatchObject({ type: "strong", props: { children: "A" } });
+	expect(PARSER.parse("*AAA BBB*", "inline")).toMatchObject({ type: "strong", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("**AAA BBB**", "inline")).toMatchObject({ type: "strong", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("******AAA BBB******", "inline")).toMatchObject({
 		type: "strong",
 		props: { children: "AAA BBB" },
 	});
-	expect(renderMarkup("BEFORE *AAA*", OPTIONS, "inline")).toMatchObject([
-		"BEFORE ",
-		{ $$typeof, type: "strong", props: { children: "AAA" } },
-	]);
-	expect(renderMarkup("*AAA* AFTER", OPTIONS, "inline")).toMatchObject([
-		{ $$typeof, type: "strong", props: { children: "AAA" } },
-		" AFTER",
-	]);
+	expect(PARSER.parse("BEFORE *AAA*", "inline")).toMatchObject(["BEFORE ", { type: "strong", props: { children: "AAA" } }]);
+	expect(PARSER.parse("*AAA* AFTER", "inline")).toMatchObject([{ type: "strong", props: { children: "AAA" } }, " AFTER"]);
 
 	// Matching is non-greedy.
-	expect(renderMarkup("*AAA* *AAA*", OPTIONS, "inline")).toMatchObject([
-		{ $$typeof, type: "strong", props: { children: "AAA" } },
+	expect(PARSER.parse("*AAA* *AAA*", "inline")).toMatchObject([
+		{ type: "strong", props: { children: "AAA" } },
 		" ",
-		{ $$typeof, type: "strong", props: { children: "AAA" } },
+		{ type: "strong", props: { children: "AAA" } },
 	]);
 
 	// Can contain other inline elements.
-	expect(renderMarkup("*BEFORE _EM_ AFTER*", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("*BEFORE _EM_ AFTER*", "inline")).toMatchObject({
 		type: "strong",
-		props: { children: ["BEFORE ", { $$typeof, type: "em", props: { children: "EM" } }, " AFTER"] },
+		props: { children: ["BEFORE ", { type: "em", props: { children: "EM" } }, " AFTER"] },
 	});
-	expect(renderMarkup("*_EM_*", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("*_EM_*", "inline")).toMatchObject({
 		type: "strong",
-		props: { children: { $$typeof, type: "em", props: { children: "EM" } } },
+		props: { children: { type: "em", props: { children: "EM" } } },
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	// expect(renderMarkup("TEXT*STRONG*", OPTIONS, "inline")).toMatchObject([
+	// expect(PARSER.parse("TEXT*STRONG*", "inline")).toMatchObject([
 	// 	"TEXT",
-	// 	{ $$typeof, type: "strong", props: { children: "STRONG" } },
+	// 	{  type: "strong", props: { children: "STRONG" } },
 	// ]);
-	// expect(renderMarkup("*STRONG*TEXT", OPTIONS, "inline")).toMatchObject([
-	// 	{ $$typeof, type: "strong", props: { children: "STRONG" } },
+	// expect(PARSER.parse("*STRONG*TEXT", "inline")).toMatchObject([
+	// 	{  type: "strong", props: { children: "STRONG" } },
 	// 	"TEXT",
 	// ]);
-	// expect(renderMarkup("TEXT*STRONG*TEXT", OPTIONS, "inline")).toMatchObject([
+	// expect(PARSER.parse("TEXT*STRONG*TEXT", "inline")).toMatchObject([
 	// 	"TEXT",
-	// 	{ $$typeof, type: "strong", props: { children: "STRONG" } },
+	// 	{  type: "strong", props: { children: "STRONG" } },
 	// 	"TEXT",
 	// ]);
 
 	// Don't match infra-word punctuation.
-	expect(renderMarkup("TEXT*STRONG*TEXT", OPTIONS, "inline")).toBe("TEXT*STRONG*TEXT");
+	expect(PARSER.parse("TEXT*STRONG*TEXT", "inline")).toBe("TEXT*STRONG*TEXT");
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
-	expect(renderMarkup("*AAA *", OPTIONS, "inline")).toBe("*AAA *");
-	expect(renderMarkup("* AAA*", OPTIONS, "inline")).toBe("* AAA*");
-	expect(renderMarkup("* AAA *", OPTIONS, "inline")).toBe("* AAA *");
-	expect(renderMarkup("**AAA **", OPTIONS, "inline")).toBe("**AAA **");
-	expect(renderMarkup("** AAA**", OPTIONS, "inline")).toBe("** AAA**");
-	expect(renderMarkup("** AAA **", OPTIONS, "inline")).toBe("** AAA **");
+	expect(PARSER.parse("*AAA *", "inline")).toBe("*AAA *");
+	expect(PARSER.parse("* AAA*", "inline")).toBe("* AAA*");
+	expect(PARSER.parse("* AAA *", "inline")).toBe("* AAA *");
+	expect(PARSER.parse("**AAA **", "inline")).toBe("**AAA **");
+	expect(PARSER.parse("** AAA**", "inline")).toBe("** AAA**");
+	expect(PARSER.parse("** AAA **", "inline")).toBe("** AAA **");
 });
 
 test("INLINE_RULE <em>", () => {
-	expect(renderMarkup("_A_", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "em", props: { children: "A" } });
-	expect(renderMarkup("__A__", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "em", props: { children: "A" } });
-	expect(renderMarkup("______A______", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "em", props: { children: "A" } });
-	expect(renderMarkup("_AAA BBB_", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "em", props: { children: "AAA BBB" } });
-	expect(renderMarkup("__AAA BBB__", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "em", props: { children: "AAA BBB" } });
-	expect(renderMarkup("______AAA BBB______", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "em", props: { children: "AAA BBB" } });
-	expect(renderMarkup("BEFORE _AAA_", OPTIONS, "inline")).toMatchObject(["BEFORE ", { $$typeof, type: "em", props: { children: "AAA" } }]);
-	expect(renderMarkup("_AAA_ AFTER", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "em", props: { children: "AAA" } }, " AFTER"]);
+	expect(PARSER.parse("_A_", "inline")).toMatchObject({ type: "em", props: { children: "A" } });
+	expect(PARSER.parse("__A__", "inline")).toMatchObject({ type: "em", props: { children: "A" } });
+	expect(PARSER.parse("______A______", "inline")).toMatchObject({ type: "em", props: { children: "A" } });
+	expect(PARSER.parse("_AAA BBB_", "inline")).toMatchObject({ type: "em", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("__AAA BBB__", "inline")).toMatchObject({ type: "em", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("______AAA BBB______", "inline")).toMatchObject({ type: "em", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("BEFORE _AAA_", "inline")).toMatchObject(["BEFORE ", { type: "em", props: { children: "AAA" } }]);
+	expect(PARSER.parse("_AAA_ AFTER", "inline")).toMatchObject([{ type: "em", props: { children: "AAA" } }, " AFTER"]);
 
 	// Matching is non-greedy.
-	expect(renderMarkup("_AAA_ _AAA_", OPTIONS, "inline")).toMatchObject([
-		{ $$typeof, type: "em", props: { children: "AAA" } },
+	expect(PARSER.parse("_AAA_ _AAA_", "inline")).toMatchObject([
+		{ type: "em", props: { children: "AAA" } },
 		" ",
-		{ $$typeof, type: "em", props: { children: "AAA" } },
+		{ type: "em", props: { children: "AAA" } },
 	]);
 
 	// Can contain other inline elements.
-	expect(renderMarkup("_BEFORE *STRONG* AFTER_", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("_BEFORE *STRONG* AFTER_", "inline")).toMatchObject({
 		type: "em",
-		props: { children: ["BEFORE ", { $$typeof, type: "strong", props: { children: "STRONG" } }, " AFTER"] },
+		props: { children: ["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"] },
 	});
-	expect(renderMarkup("_*STRONG*_", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("_*STRONG*_", "inline")).toMatchObject({
 		type: "em",
-		props: { children: { $$typeof, type: "strong", props: { children: "STRONG" } } },
+		props: { children: { type: "strong", props: { children: "STRONG" } } },
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	// expect(renderMarkup("TEXT_EM_", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "em", props: { children: "EM" } }]);
-	// expect(renderMarkup("_EM_TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "em", props: { children: "EM" } }, "TEXT"]);
-	// expect(renderMarkup("TEXT_EM_TEXT", OPTIONS, "inline")).toMatchObject([
+	// expect(PARSER.parse("TEXT_EM_", "inline")).toMatchObject(["TEXT", {  type: "em", props: { children: "EM" } }]);
+	// expect(PARSER.parse("_EM_TEXT", "inline")).toMatchObject([{  type: "em", props: { children: "EM" } }, "TEXT"]);
+	// expect(PARSER.parse("TEXT_EM_TEXT", "inline")).toMatchObject([
 	// 	"TEXT",
-	// 	{ $$typeof, type: "em", props: { children: "EM" } },
+	// 	{  type: "em", props: { children: "EM" } },
 	// 	"TEXT",
 	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
-	expect(renderMarkup("_AAA _", OPTIONS, "inline")).toBe("_AAA _");
-	expect(renderMarkup("_ AAA_", OPTIONS, "inline")).toBe("_ AAA_");
-	expect(renderMarkup("_ AAA _", OPTIONS, "inline")).toBe("_ AAA _");
-	expect(renderMarkup("__AAA __", OPTIONS, "inline")).toBe("__AAA __");
-	expect(renderMarkup("__ AAA__", OPTIONS, "inline")).toBe("__ AAA__");
-	expect(renderMarkup("__ AAA __", OPTIONS, "inline")).toBe("__ AAA __");
+	expect(PARSER.parse("_AAA _", "inline")).toBe("_AAA _");
+	expect(PARSER.parse("_ AAA_", "inline")).toBe("_ AAA_");
+	expect(PARSER.parse("_ AAA _", "inline")).toBe("_ AAA _");
+	expect(PARSER.parse("__AAA __", "inline")).toBe("__AAA __");
+	expect(PARSER.parse("__ AAA__", "inline")).toBe("__ AAA__");
+	expect(PARSER.parse("__ AAA __", "inline")).toBe("__ AAA __");
 });
 
 test("INLINE_RULE <ins>", () => {
-	expect(renderMarkup("+A+", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "ins", props: { children: "A" } });
-	expect(renderMarkup("++A++", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "ins", props: { children: "A" } });
-	expect(renderMarkup("++++++A++++++", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "ins", props: { children: "A" } });
-	expect(renderMarkup("+AAA BBB+", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "ins", props: { children: "AAA BBB" } });
-	expect(renderMarkup("++AAA BBB++", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "ins", props: { children: "AAA BBB" } });
-	expect(renderMarkup("++++++AAA BBB++++++", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "ins", props: { children: "AAA BBB" } });
-	expect(renderMarkup("BEFORE ++AAA++", OPTIONS, "inline")).toMatchObject([
-		"BEFORE ",
-		{ $$typeof, type: "ins", props: { children: "AAA" } },
-	]);
-	expect(renderMarkup("++AAA++ AFTER", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "ins", props: { children: "AAA" } }, " AFTER"]);
+	expect(PARSER.parse("+A+", "inline")).toMatchObject({ type: "ins", props: { children: "A" } });
+	expect(PARSER.parse("++A++", "inline")).toMatchObject({ type: "ins", props: { children: "A" } });
+	expect(PARSER.parse("++++++A++++++", "inline")).toMatchObject({ type: "ins", props: { children: "A" } });
+	expect(PARSER.parse("+AAA BBB+", "inline")).toMatchObject({ type: "ins", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("++AAA BBB++", "inline")).toMatchObject({ type: "ins", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("++++++AAA BBB++++++", "inline")).toMatchObject({ type: "ins", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("BEFORE ++AAA++", "inline")).toMatchObject(["BEFORE ", { type: "ins", props: { children: "AAA" } }]);
+	expect(PARSER.parse("++AAA++ AFTER", "inline")).toMatchObject([{ type: "ins", props: { children: "AAA" } }, " AFTER"]);
 
 	// Matching is non-greedy.
-	expect(renderMarkup("++AAA++ ++AAA++", OPTIONS, "inline")).toMatchObject([
-		{ $$typeof, type: "ins", props: { children: "AAA" } },
+	expect(PARSER.parse("++AAA++ ++AAA++", "inline")).toMatchObject([
+		{ type: "ins", props: { children: "AAA" } },
 		" ",
-		{ $$typeof, type: "ins", props: { children: "AAA" } },
+		{ type: "ins", props: { children: "AAA" } },
 	]);
 
 	// Can contain other inline elements.
-	expect(renderMarkup("++BEFORE *STRONG* AFTER++", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("++BEFORE *STRONG* AFTER++", "inline")).toMatchObject({
 		type: "ins",
-		props: { children: ["BEFORE ", { $$typeof, type: "strong", props: { children: "STRONG" } }, " AFTER"] },
+		props: { children: ["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"] },
 	});
-	expect(renderMarkup("++*STRONG*++", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("++*STRONG*++", "inline")).toMatchObject({
 		type: "ins",
-		props: { children: { $$typeof, type: "strong", props: { children: "STRONG" } } },
+		props: { children: { type: "strong", props: { children: "STRONG" } } },
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	// expect(renderMarkup("TEXT++INS++", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "ins", props: { children: "INS" } }]);
-	// expect(renderMarkup("++INS++TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "ins", props: { children: "INS" } }, "TEXT"]);
-	// expect(renderMarkup("TEXT++INS++TEXT", OPTIONS, "inline")).toMatchObject([
+	// expect(PARSER.parse("TEXT++INS++", "inline")).toMatchObject(["TEXT", {  type: "ins", props: { children: "INS" } }]);
+	// expect(PARSER.parse("++INS++TEXT", "inline")).toMatchObject([{  type: "ins", props: { children: "INS" } }, "TEXT"]);
+	// expect(PARSER.parse("TEXT++INS++TEXT", "inline")).toMatchObject([
 	// 	"TEXT",
-	// 	{ $$typeof, type: "ins", props: { children: "INS" } },
+	// 	{  type: "ins", props: { children: "INS" } },
 	// 	"TEXT",
 	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
-	expect(renderMarkup("++AAA ++", OPTIONS, "inline")).toBe("++AAA ++");
-	expect(renderMarkup("++ AAA++", OPTIONS, "inline")).toBe("++ AAA++");
-	expect(renderMarkup("++ AAA ++", OPTIONS, "inline")).toBe("++ AAA ++");
+	expect(PARSER.parse("++AAA ++", "inline")).toBe("++AAA ++");
+	expect(PARSER.parse("++ AAA++", "inline")).toBe("++ AAA++");
+	expect(PARSER.parse("++ AAA ++", "inline")).toBe("++ AAA ++");
 });
 
 test("INLINE_RULE <del> (with tilde)", () => {
-	expect(renderMarkup("~A~", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "A" } });
-	expect(renderMarkup("~~A~~", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "A" } });
-	expect(renderMarkup("~~~~~~A~~~~~~", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "A" } });
-	expect(renderMarkup("~AAA BBB~", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "AAA BBB" } });
-	expect(renderMarkup("~~AAA BBB~~", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "AAA BBB" } });
-	expect(renderMarkup("~~~~~~AAA BBB~~~~~~", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "AAA BBB" } });
-	expect(renderMarkup("BEFORE ~~AAA~~", OPTIONS, "inline")).toMatchObject([
-		"BEFORE ",
-		{ $$typeof, type: "del", props: { children: "AAA" } },
-	]);
-	expect(renderMarkup("~~AAA~~ AFTER", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "del", props: { children: "AAA" } }, " AFTER"]);
+	expect(PARSER.parse("~A~", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
+	expect(PARSER.parse("~~A~~", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
+	expect(PARSER.parse("~~~~~~A~~~~~~", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
+	expect(PARSER.parse("~AAA BBB~", "inline")).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("~~AAA BBB~~", "inline")).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("~~~~~~AAA BBB~~~~~~", "inline")).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("BEFORE ~~AAA~~", "inline")).toMatchObject(["BEFORE ", { type: "del", props: { children: "AAA" } }]);
+	expect(PARSER.parse("~~AAA~~ AFTER", "inline")).toMatchObject([{ type: "del", props: { children: "AAA" } }, " AFTER"]);
 
 	// Matching is non~~greedy.
-	expect(renderMarkup("~~AAA~~ ~~AAA~~", OPTIONS, "inline")).toMatchObject([
-		{ $$typeof, type: "del", props: { children: "AAA" } },
+	expect(PARSER.parse("~~AAA~~ ~~AAA~~", "inline")).toMatchObject([
+		{ type: "del", props: { children: "AAA" } },
 		" ",
-		{ $$typeof, type: "del", props: { children: "AAA" } },
+		{ type: "del", props: { children: "AAA" } },
 	]);
 
 	// Can contain other inline elements.
-	expect(renderMarkup("~~BEFORE *STRONG* AFTER~~", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("~~BEFORE *STRONG* AFTER~~", "inline")).toMatchObject({
 		type: "del",
-		props: { children: ["BEFORE ", { $$typeof, type: "strong", props: { children: "STRONG" } }, " AFTER"] },
+		props: { children: ["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"] },
 	});
-	expect(renderMarkup("~~*STRONG*~~", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("~~*STRONG*~~", "inline")).toMatchObject({
 		type: "del",
-		props: { children: { $$typeof, type: "strong", props: { children: "STRONG" } } },
+		props: { children: { type: "strong", props: { children: "STRONG" } } },
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	// expect(renderMarkup("TEXT~~DEL~~", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "del", props: { children: "DEL" } }]);
-	// expect(renderMarkup("~~DEL~~TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "del", props: { children: "DEL" } }, "TEXT"]);
-	// expect(renderMarkup("TEXT~~DEL~~TEXT", OPTIONS, "inline")).toMatchObject([
+	// expect(PARSER.parse("TEXT~~DEL~~", "inline")).toMatchObject(["TEXT", {  type: "del", props: { children: "DEL" } }]);
+	// expect(PARSER.parse("~~DEL~~TEXT", "inline")).toMatchObject([{  type: "del", props: { children: "DEL" } }, "TEXT"]);
+	// expect(PARSER.parse("TEXT~~DEL~~TEXT", "inline")).toMatchObject([
 	// 	"TEXT",
-	// 	{ $$typeof, type: "del", props: { children: "DEL" } },
+	// 	{  type: "del", props: { children: "DEL" } },
 	// 	"TEXT",
 	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
-	expect(renderMarkup("~AAA ~", OPTIONS, "inline")).toBe("~AAA ~");
-	expect(renderMarkup("~ AAA~", OPTIONS, "inline")).toBe("~ AAA~");
-	expect(renderMarkup("~ AAA ~", OPTIONS, "inline")).toBe("~ AAA ~");
-	expect(renderMarkup("~~AAA ~~", OPTIONS, "inline")).toBe("~~AAA ~~");
-	expect(renderMarkup("~~ AAA~~", OPTIONS, "inline")).toBe("~~ AAA~~");
-	expect(renderMarkup("~~ AAA ~~", OPTIONS, "inline")).toBe("~~ AAA ~~");
+	expect(PARSER.parse("~AAA ~", "inline")).toBe("~AAA ~");
+	expect(PARSER.parse("~ AAA~", "inline")).toBe("~ AAA~");
+	expect(PARSER.parse("~ AAA ~", "inline")).toBe("~ AAA ~");
+	expect(PARSER.parse("~~AAA ~~", "inline")).toBe("~~AAA ~~");
+	expect(PARSER.parse("~~ AAA~~", "inline")).toBe("~~ AAA~~");
+	expect(PARSER.parse("~~ AAA ~~", "inline")).toBe("~~ AAA ~~");
 });
 
 test("INLINE_RULE <del> (with hyphen)", () => {
-	expect(renderMarkup("-A-", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "A" } });
-	expect(renderMarkup("--A--", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "A" } });
-	expect(renderMarkup("------A------", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "A" } });
-	expect(renderMarkup("-AAA BBB-", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "AAA BBB" } });
-	expect(renderMarkup("--AAA BBB--", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "AAA BBB" } });
-	expect(renderMarkup("------AAA BBB------", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "del", props: { children: "AAA BBB" } });
-	expect(renderMarkup("BEFORE --AAA--", OPTIONS, "inline")).toMatchObject([
-		"BEFORE ",
-		{ $$typeof, type: "del", props: { children: "AAA" } },
-	]);
-	expect(renderMarkup("--AAA-- AFTER", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "del", props: { children: "AAA" } }, " AFTER"]);
+	expect(PARSER.parse("-A-", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
+	expect(PARSER.parse("--A--", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
+	expect(PARSER.parse("------A------", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
+	expect(PARSER.parse("-AAA BBB-", "inline")).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("--AAA BBB--", "inline")).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("------AAA BBB------", "inline")).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("BEFORE --AAA--", "inline")).toMatchObject(["BEFORE ", { type: "del", props: { children: "AAA" } }]);
+	expect(PARSER.parse("--AAA-- AFTER", "inline")).toMatchObject([{ type: "del", props: { children: "AAA" } }, " AFTER"]);
 
 	// Matching is non--greedy.
-	expect(renderMarkup("--AAA-- --AAA--", OPTIONS, "inline")).toMatchObject([
-		{ $$typeof, type: "del", props: { children: "AAA" } },
+	expect(PARSER.parse("--AAA-- --AAA--", "inline")).toMatchObject([
+		{ type: "del", props: { children: "AAA" } },
 		" ",
-		{ $$typeof, type: "del", props: { children: "AAA" } },
+		{ type: "del", props: { children: "AAA" } },
 	]);
 
 	// Can contain other inline elements.
-	expect(renderMarkup("--BEFORE *STRONG* AFTER--", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("--BEFORE *STRONG* AFTER--", "inline")).toMatchObject({
 		type: "del",
-		props: { children: ["BEFORE ", { $$typeof, type: "strong", props: { children: "STRONG" } }, " AFTER"] },
+		props: { children: ["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"] },
 	});
-	expect(renderMarkup("--*STRONG*--", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("--*STRONG*--", "inline")).toMatchObject({
 		type: "del",
-		props: { children: { $$typeof, type: "strong", props: { children: "STRONG" } } },
+		props: { children: { type: "strong", props: { children: "STRONG" } } },
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	// expect(renderMarkup("TEXT--DEL--", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "del", props: { children: "DEL" } }]);
-	// expect(renderMarkup("--DEL--TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "del", props: { children: "DEL" } }, "TEXT"]);
-	// expect(renderMarkup("TEXT--DEL--TEXT", OPTIONS, "inline")).toMatchObject([
+	// expect(PARSER.parse("TEXT--DEL--", "inline")).toMatchObject(["TEXT", {  type: "del", props: { children: "DEL" } }]);
+	// expect(PARSER.parse("--DEL--TEXT", "inline")).toMatchObject([{  type: "del", props: { children: "DEL" } }, "TEXT"]);
+	// expect(PARSER.parse("TEXT--DEL--TEXT", "inline")).toMatchObject([
 	// 	"TEXT",
-	// 	{ $$typeof, type: "del", props: { children: "DEL" } },
+	// 	{  type: "del", props: { children: "DEL" } },
 	// 	"TEXT",
 	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
-	expect(renderMarkup("-AAA -", OPTIONS, "inline")).toBe("-AAA -");
-	expect(renderMarkup("- AAA-", OPTIONS, "inline")).toBe("- AAA-");
-	expect(renderMarkup("- AAA -", OPTIONS, "inline")).toBe("- AAA -");
-	expect(renderMarkup("--AAA --", OPTIONS, "inline")).toBe("--AAA --");
-	expect(renderMarkup("-- AAA--", OPTIONS, "inline")).toBe("-- AAA--");
-	expect(renderMarkup("-- AAA --", OPTIONS, "inline")).toBe("-- AAA --");
+	expect(PARSER.parse("-AAA -", "inline")).toBe("-AAA -");
+	expect(PARSER.parse("- AAA-", "inline")).toBe("- AAA-");
+	expect(PARSER.parse("- AAA -", "inline")).toBe("- AAA -");
+	expect(PARSER.parse("--AAA --", "inline")).toBe("--AAA --");
+	expect(PARSER.parse("-- AAA--", "inline")).toBe("-- AAA--");
+	expect(PARSER.parse("-- AAA --", "inline")).toBe("-- AAA --");
 });
 
 test("INLINE_RULE <mark>", () => {
-	expect(renderMarkup("=A=", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "mark", props: { children: "A" } });
-	expect(renderMarkup("==A==", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "mark", props: { children: "A" } });
-	expect(renderMarkup("======A======", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "mark", props: { children: "A" } });
-	expect(renderMarkup("=AAA BBB=", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "mark", props: { children: "AAA BBB" } });
-	expect(renderMarkup("==AAA BBB==", OPTIONS, "inline")).toMatchObject({ $$typeof, type: "mark", props: { children: "AAA BBB" } });
-	expect(renderMarkup("======AAA BBB======", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("=A=", "inline")).toMatchObject({ type: "mark", props: { children: "A" } });
+	expect(PARSER.parse("==A==", "inline")).toMatchObject({ type: "mark", props: { children: "A" } });
+	expect(PARSER.parse("======A======", "inline")).toMatchObject({ type: "mark", props: { children: "A" } });
+	expect(PARSER.parse("=AAA BBB=", "inline")).toMatchObject({ type: "mark", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("==AAA BBB==", "inline")).toMatchObject({ type: "mark", props: { children: "AAA BBB" } });
+	expect(PARSER.parse("======AAA BBB======", "inline")).toMatchObject({
 		type: "mark",
 		props: { children: "AAA BBB" },
 	});
-	expect(renderMarkup("BEFORE ==AAA==", OPTIONS, "inline")).toMatchObject([
-		"BEFORE ",
-		{ $$typeof, type: "mark", props: { children: "AAA" } },
-	]);
-	expect(renderMarkup("==AAA== AFTER", OPTIONS, "inline")).toMatchObject([
-		{ $$typeof, type: "mark", props: { children: "AAA" } },
-		" AFTER",
-	]);
+	expect(PARSER.parse("BEFORE ==AAA==", "inline")).toMatchObject(["BEFORE ", { type: "mark", props: { children: "AAA" } }]);
+	expect(PARSER.parse("==AAA== AFTER", "inline")).toMatchObject([{ type: "mark", props: { children: "AAA" } }, " AFTER"]);
 
 	// Matching is non==greedy.
-	expect(renderMarkup("==AAA== ==AAA==", OPTIONS, "inline")).toMatchObject([
-		{ $$typeof, type: "mark", props: { children: "AAA" } },
+	expect(PARSER.parse("==AAA== ==AAA==", "inline")).toMatchObject([
+		{ type: "mark", props: { children: "AAA" } },
 		" ",
-		{ $$typeof, type: "mark", props: { children: "AAA" } },
+		{ type: "mark", props: { children: "AAA" } },
 	]);
 
 	// Can contain other inline elements.
-	expect(renderMarkup("==BEFORE *STRONG* AFTER==", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("==BEFORE *STRONG* AFTER==", "inline")).toMatchObject({
 		type: "mark",
-		props: { children: ["BEFORE ", { $$typeof, type: "strong", props: { children: "STRONG" } }, " AFTER"] },
+		props: { children: ["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"] },
 	});
-	expect(renderMarkup("==*STRONG*==", OPTIONS, "inline")).toMatchObject({
-		$$typeof,
+	expect(PARSER.parse("==*STRONG*==", "inline")).toMatchObject({
 		type: "mark",
-		props: { children: { $$typeof, type: "strong", props: { children: "STRONG" } } },
+		props: { children: { type: "strong", props: { children: "STRONG" } } },
 	});
 
 	// Match even if the opening and closing punctuation is in the middle of the word.
-	// expect(renderMarkup("TEXT==DEL==", OPTIONS, "inline")).toMatchObject(["TEXT", { $$typeof, type: "mark", props: { children: "DEL" } }]);
-	// expect(renderMarkup("==DEL==TEXT", OPTIONS, "inline")).toMatchObject([{ $$typeof, type: "mark", props: { children: "DEL" } }, "TEXT"]);
-	// expect(renderMarkup("TEXT==DEL==TEXT", OPTIONS, "inline")).toMatchObject([
+	// expect(PARSER.parse("TEXT==DEL==", "inline")).toMatchObject(["TEXT", {  type: "mark", props: { children: "DEL" } }]);
+	// expect(PARSER.parse("==DEL==TEXT", "inline")).toMatchObject([{  type: "mark", props: { children: "DEL" } }, "TEXT"]);
+	// expect(PARSER.parse("TEXT==DEL==TEXT", "inline")).toMatchObject([
 	// 	"TEXT",
-	// 	{ $$typeof, type: "mark", props: { children: "DEL" } },
+	// 	{  type: "mark", props: { children: "DEL" } },
 	// 	"TEXT",
 	// ]);
 
 	// Only match if it doesn't contain whitespace at the start/end of the element.
-	expect(renderMarkup("=AAA =", OPTIONS, "inline")).toBe("=AAA =");
-	expect(renderMarkup("= AAA=", OPTIONS, "inline")).toBe("= AAA=");
-	expect(renderMarkup("= AAA =", OPTIONS, "inline")).toBe("= AAA =");
-	expect(renderMarkup("==AAA ==", OPTIONS, "inline")).toBe("==AAA ==");
-	expect(renderMarkup("== AAA==", OPTIONS, "inline")).toBe("== AAA==");
-	expect(renderMarkup("== AAA ==", OPTIONS, "inline")).toBe("== AAA ==");
+	expect(PARSER.parse("=AAA =", "inline")).toBe("=AAA =");
+	expect(PARSER.parse("= AAA=", "inline")).toBe("= AAA=");
+	expect(PARSER.parse("= AAA =", "inline")).toBe("= AAA =");
+	expect(PARSER.parse("==AAA ==", "inline")).toBe("==AAA ==");
+	expect(PARSER.parse("== AAA==", "inline")).toBe("== AAA==");
+	expect(PARSER.parse("== AAA ==", "inline")).toBe("== AAA ==");
 });
 
 test("INLINE_RULE nesting", () => {
-	expect(renderMarkup("BEFORE ***BEFORE __ITALIC__ AFTER*** AFTER", OPTIONS, "inline")).toMatchObject([
+	expect(PARSER.parse("BEFORE ***BEFORE __ITALIC__ AFTER*** AFTER", "inline")).toMatchObject([
 		"BEFORE ",
 		{
-			$$typeof,
 			type: "strong",
 			props: {
 				children: [
 					"BEFORE ",
 					{
-						$$typeof,
 						type: "em",
 						props: { children: "ITALIC" },
 					},

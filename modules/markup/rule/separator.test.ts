@@ -1,18 +1,15 @@
 import { expect, test } from "bun:test";
-import { MARKUP_RULES, renderMarkup } from "../index.js";
+import { MarkupParser } from "../index.js";
 
-const $$typeof = Symbol.for("react.transitional.element");
-const OPTIONS = {
-	rules: MARKUP_RULES,
-};
+const PARSER = new MarkupParser();
 
 test("BREAK", () => {
-	expect(renderMarkup("***", OPTIONS)).toMatchObject({ $$typeof, type: "hr", props: {} });
-	expect(renderMarkup("---", OPTIONS)).toMatchObject({ $$typeof, type: "hr", props: {} });
-	expect(renderMarkup("+++", OPTIONS)).toMatchObject({ $$typeof, type: "hr", props: {} });
-	expect(renderMarkup("•••", OPTIONS)).toMatchObject({ $$typeof, type: "hr", props: {} });
-	expect(renderMarkup("* * *", OPTIONS)).toMatchObject({ $$typeof, type: "hr", props: {} });
-	expect(renderMarkup("- - -", OPTIONS)).toMatchObject({ $$typeof, type: "hr", props: {} });
-	expect(renderMarkup("+ + +", OPTIONS)).toMatchObject({ $$typeof, type: "hr", props: {} });
-	expect(renderMarkup("• • •", OPTIONS)).toMatchObject({ $$typeof, type: "hr", props: {} });
+	expect(PARSER.parse("***")).toMatchObject({ type: "hr", props: {} });
+	expect(PARSER.parse("---")).toMatchObject({ type: "hr", props: {} });
+	expect(PARSER.parse("+++")).toMatchObject({ type: "hr", props: {} });
+	expect(PARSER.parse("•••")).toMatchObject({ type: "hr", props: {} });
+	expect(PARSER.parse("* * *")).toMatchObject({ type: "hr", props: {} });
+	expect(PARSER.parse("- - -")).toMatchObject({ type: "hr", props: {} });
+	expect(PARSER.parse("+ + +")).toMatchObject({ type: "hr", props: {} });
+	expect(PARSER.parse("• • •")).toMatchObject({ type: "hr", props: {} });
 });

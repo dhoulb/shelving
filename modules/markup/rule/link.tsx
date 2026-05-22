@@ -1,24 +1,21 @@
 import type { ReactElement } from "react";
 import { formatURI } from "../../util/format.js";
 import { getLink } from "../../util/link.js";
-import { getRegExp, type NamedRegExpExecArray } from "../../util/regexp.js";
-import { HTTP_SCHEMES } from "../../util/uri.js";
-import { renderMarkup } from "../render.js";
-import type { MarkupOptions } from "../util/options.js";
-import { createMarkupRule } from "../util/rule.js";
+import { getRegExp } from "../../util/regexp.js";
+import type { MarkupParser } from "../MarkupParser.js";
+import { createMarkupRule } from "../MarkupRule.js";
 
-type LinkMarkupRuleData = { title?: string; href: string };
+type LinkData = {
+	title?: string;
+	href: string;
+};
 
 /** Render `<a href="">` if the link is a valid one, or `<a>` (with no `href`) if it isn't. */
-function renderLinkMarkupRule(
-	{ groups: { title, href: unsafeHref } }: NamedRegExpExecArray<LinkMarkupRuleData>,
-	options: MarkupOptions,
-	key: string,
-): ReactElement {
-	const { url, root, schemes = HTTP_SCHEMES, rel } = options;
+function renderLinkMarkupRule(key: string, { title, href: unsafeHref }: LinkData, parser: MarkupParser): ReactElement {
+	const { url, root, schemes, rel } = parser;
 	const link = getLink(unsafeHref, url, root);
 	const href = link && schemes.includes(link.protocol) ? link?.href : undefined;
-	const children = title ? renderMarkup(title, options, "link") : link ? formatURI(link) : "";
+	const children = title ? parser.parse(title, "link") : link ? formatURI(link) : "";
 	return (
 		<a key={key} href={href} rel={rel}>
 			{children}
@@ -26,7 +23,7 @@ function renderLinkMarkupRule(
 	);
 }
 
-export const LINK_REGEXP = getRegExp<LinkMarkupRuleData>(/\[(?<title>[^\]\n]*?)\]\((?<href>[^)\n]*?)\)/);
+export const LINK_REGEXP = getRegExp<LinkData>(/\[(?<title>[^\]\n]*?)\]\((?<href>[^)\n]*?)\)/);
 
 /**
  * Markdown-style link.
@@ -36,9 +33,13 @@ export const LINK_REGEXP = getRegExp<LinkMarkupRuleData>(/\[(?<title>[^\]\n]*?)\
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only `http://` or `https://` links will work (if invalid the unparsed text will be returned).
  */
-export const LINK_RULE = createMarkupRule(LINK_REGEXP, renderLinkMarkupRule, ["inline", "list"]);
+export const LINK_RULE = createMarkupRule<LinkData>(
+	LINK_REGEXP, //
+	renderLinkMarkupRule,
+	["inline", "list"],
+);
 
-export const AUTOLINK_REGEXP = getRegExp<LinkMarkupRuleData>(/(?<href>[a-z]{2,}:\S+)(?: +(?:\((?<title>[^)\n]*?)\)))?/);
+export const AUTOLINK_REGEXP = getRegExp<LinkData>(/(?<href>[a-z]{2,}:\S+)(?: +(?:\((?<title>[^)\n]*?)\)))?/);
 
 /**
  * Autolinked URL starts with `scheme://` (any scheme in `options.schemes`) and matches an unlimited number of non-space characters.
@@ -47,4 +48,8 @@ export const AUTOLINK_REGEXP = getRegExp<LinkMarkupRuleData>(/(?<href>[a-z]{2,}:
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `options.schemes` will match (defaults to `http:` and `https:`).
  */
-export const AUTOLINK_RULE = createMarkupRule(AUTOLINK_REGEXP, renderLinkMarkupRule, ["inline", "list"]);
+export const AUTOLINK_RULE = createMarkupRule<LinkData>(
+	AUTOLINK_REGEXP, //
+	renderLinkMarkupRule,
+	["inline", "list"],
+);
