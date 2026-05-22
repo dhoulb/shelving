@@ -22,17 +22,13 @@
 	--color-focus: var(--color-pink);
 
 	/*
-	 * Sidebar navigation — a bold full-purple panel with white menu text, and an inverted
-	 * white-on-purple pill for the active item. These `--menu-*` hooks are global, but every
-	 * `<Menu>` on the docs site lives inside the sidebar, so the overrides only ever reach it.
+	 * Sidebar navigation — a soft lavender panel, distinct from the warm content area without
+	 * shouting. The divider line is dropped (the colour change separates it well enough) and the
+	 * active item lifts onto a clean white pill. Menu text deliberately keeps the component's
+	 * default dark colours: an exact-match item is both `active` and `proud`, and `.proud > .link`
+	 * wins the cascade — so a light text override here would land as white-on-white on the pill.
 	 */
-	--sidebar-layout-bg: var(--color-purple);
-	--menu-color-text: var(--color-white);
-	--menu-link-color-proud: var(--color-white);
-	--menu-link-color-hover-bg: color-mix(in srgb, white 22%, transparent);
-	--menu-link-color-hover-text: var(--color-white);
-	--menu-link-color-focus: var(--color-white);
+	--sidebar-layout-bg: color-mix(in srgb, var(--color-purple) 18%, white);
+	--sidebar-layout-border: 0;
 	--menu-link-color-active-bg: var(--color-white);
-	--menu-link-color-active-text: var(--color-purple);
-	--menu-nested-color-border: color-mix(in srgb, white 40%, transparent);
 }
