@@ -10,7 +10,7 @@ import type {
 } from "../util/element.js";
 import { requireSlug } from "../util/string.js";
 import { FileExtractor } from "./FileExtractor.js";
-import { extractMarkdownDescription } from "./MarkdownExtractor.js";
+import { extractMarkdownProps } from "./MarkupExtractor.js";
 
 /**
  * File extractor that parses a TypeScript source file into a tree element.
@@ -38,7 +38,7 @@ export class TypescriptExtractor extends FileExtractor {
 
 		// The file element itself gets no `title` — a TS source file has no confident title source (the filename isn't one),
 		// so renderers fall back to `name`. The `tree-documentation` children each carry their own `title`.
-		return { name, description: extractMarkdownDescription(content ?? ""), content, children: Array.from(byKey.values()) };
+		return { name, description: extractMarkdownProps(content ?? "").description, content, children: Array.from(byKey.values()) };
 	}
 }
 
@@ -112,7 +112,7 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 			// Functions read as callable with `()`; other kinds use the bare name.
 			title: kind === "function" ? `${name}()` : name,
 			kind,
-			description: extractMarkdownDescription(jsDoc?.description ?? ""),
+			description: extractMarkdownProps(jsDoc?.description ?? "").description,
 			content: _buildJSDocContent(jsDoc?.description, jsDoc?.unhandled),
 			signatures: signature ? [signature] : undefined,
 			params,
@@ -253,7 +253,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 					props: {
 						name,
 						title: `${name}()`,
-						description: extractMarkdownDescription(memberJSDoc?.description ?? ""),
+						description: extractMarkdownProps(memberJSDoc?.description ?? "").description,
 						content,
 						kind: "method",
 						signatures: [signature],
@@ -268,7 +268,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 				props: {
 					name,
 					title: name,
-					description: extractMarkdownDescription(memberJSDoc?.description ?? ""),
+					description: extractMarkdownProps(memberJSDoc?.description ?? "").description,
 					content,
 					kind: "property",
 					signatures: type ? [type] : undefined,

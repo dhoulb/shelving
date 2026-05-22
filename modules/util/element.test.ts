@@ -52,6 +52,14 @@ describe("getElementText()", () => {
 		};
 		expect(getElementText(MIXED)).toBe("Use code here.");
 	});
+	test("a <br> element becomes a newline", () => {
+		const BROKEN: Element = {
+			key: null,
+			type: "p",
+			props: { children: ["before", { key: null, type: "br", props: {} }, "after"] },
+		};
+		expect(getElementText(BROKEN)).toBe("before\nafter");
+	});
 });
 
 describe("walkElements()", () => {
