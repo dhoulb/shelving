@@ -17,10 +17,22 @@
 	/* Borders pick up a gentle purple tint to tie surfaces to the accent colour. */
 	--color-border: color-mix(in srgb, var(--color-purple) 22%, white);
 
-	/* A distinct lavender sidebar so navigation reads as its own surface, separate from cards. */
-	--sidebar-layout-bg: color-mix(in srgb, var(--color-purple) 11%, white);
-
 	/* Interactive colours — brighter and more characterful, straight from the palette. */
 	--color-link: var(--color-purple);
 	--color-focus: var(--color-pink);
+
+	/*
+	 * Sidebar navigation — a bold full-purple panel with white menu text, and an inverted
+	 * white-on-purple pill for the active item. These `--menu-*` hooks are global, but every
+	 * `<Menu>` on the docs site lives inside the sidebar, so the overrides only ever reach it.
+	 */
+	--sidebar-layout-bg: var(--color-purple);
+	--menu-color-text: var(--color-white);
+	--menu-link-color-proud: var(--color-white);
+	--menu-link-color-hover-bg: color-mix(in srgb, white 22%, transparent);
+	--menu-link-color-hover-text: var(--color-white);
+	--menu-link-color-focus: var(--color-white);
+	--menu-link-color-active-bg: var(--color-white);
+	--menu-link-color-active-text: var(--color-purple);
+	--menu-nested-color-border: color-mix(in srgb, white 40%, transparent);
 }
