@@ -11,7 +11,7 @@
 	font-family: var(--menu-font, var(--font-body));
 	font-size: var(--menu-size, var(--size-normal));
 	line-height: var(--menu-leading, var(--leading-normal));
-	color: var(--menu-color-text, var(--color-quiet));
+	color: var(--menu-color-text, var(--color-text));
 }
 
 .item {
@@ -41,16 +41,17 @@
 		outline-offset: 1px;
 	}
 	&[aria-current="page"] {
-		background: var(--menu-link-color-active-bg, var(--color-surface));
+		background: var(--menu-link-color-active-bg, var(--color-white));
 		color: var(--menu-link-color-active-text, var(--color-text));
 		font-weight: var(--menu-link-active-weight, var(--weight-strong));
 	}
 }
 
-/* "Proud" item — an ancestor of the active page; emphasised in colour and reveals its nested children. */
-/* The active page is excluded so its own `[aria-current]` styling wins instead of the proud colour. */
+/* "Proud" item — an ancestor of the active page; emphasised with a strong weight, and reveals its nested children. */
+/* The active page is excluded so its own `[aria-current]` styling wins instead of the proud styling. */
 .proud > .link:not([aria-current="page"]) {
 	color: var(--menu-link-color-proud, var(--color-text));
+	font-weight: var(--menu-link-proud-weight, var(--weight-strong));
 }
 
 /* Submenu — Blockquote-style left border to signal hierarchy. */
