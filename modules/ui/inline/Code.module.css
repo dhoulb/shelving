@@ -1,5 +1,5 @@
 .code,
-.prose :is(code, kbd, samp, var) {
+.prose :is(code, kbd, samp, var):not(pre *) {
 	/* Box */
 	display: inline-block;
 	padding-inline: 0.375rem;
