@@ -10,6 +10,10 @@ const _ITEM = new RegExp(
 	"g",
 );
 
+// A GitHub-style todo checkbox at the start of an item: `[ ]` (unchecked) or `[x]` (checked,
+// case-insensitive), which must be followed by whitespace or the end of the item.
+const _CHECKBOX = /^\[([ xX])\](?!\S)[^\n\S]*/;
+
 // End of a list block: the end of the string, or a blank line that is *not* followed by another
 // item or an indented continuation line. A blank line before a new item or a continuation
 // paragraph keeps the list going (a "loose" list); anything else ends the list.
@@ -26,6 +30,7 @@ const _LOOSE = new RegExp(`\\n${LINE_SPACE_REGEXP}*\\n`);
  * - Second-level list can be created by indenting with `\t` one tab.
  * - List block runs until a blank line that is not followed by another item or an indented continuation line.
  * - A list with blank lines between its items (or before a continuation paragraph) is "loose": its items are wrapped in `<p>` tags.
+ * - An item starting with `[ ]` or `[x]` (case-insensitive) is a todo item: a checkbox `<input>` plus the content wrapped in a `<label>` so clicking it toggles the checkbox.
  * - Sparse lists are not supported.
  */
 export const UNORDERED_RULE = createMarkupRule<{
@@ -41,5 +46,21 @@ export function* _getItems(list: string, parser: MarkupParser): Iterable<ReactEl
 	// Items of a loose list are parsed as blocks so `PARAGRAPH_RULE` wraps their content in `<p>`.
 	const context = _LOOSE.test(list) ? "block" : "list";
 	let key = 0;
-	for (const [_unused, item = ""] of list.matchAll(_ITEM)) yield <li key={key++}>{parser.parse(item.replace(_INDENT, ""), context)}</li>;
+	for (const [_unused, raw = ""] of list.matchAll(_ITEM)) {
+		const item = raw.replace(_INDENT, "");
+		// A todo item renders a checkbox; the `<label>` wrapping the content toggles it on click.
+		const checkbox = _CHECKBOX.exec(item);
+		if (checkbox) {
+			yield (
+				<li key={key++}>
+					<label>
+						<input type="checkbox" defaultChecked={checkbox[1] !== " "} />
+						{parser.parse(item.slice(checkbox[0].length), context)}
+					</label>
+				</li>
+			);
+		} else {
+			yield <li key={key++}>{parser.parse(item, context)}</li>;
+		}
+	}
 }
