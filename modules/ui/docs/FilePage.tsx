@@ -1,16 +1,19 @@
 import type { ReactNode } from "react";
 import type { FileElementProps } from "../../util/element.js";
+import type { AbsolutePath } from "../../util/path.js";
 import { Prose } from "../block/Prose.js";
 import { Title } from "../block/Title.js";
 import { Markup } from "../misc/Markup.js";
-import { requireMeta } from "../misc/MetaContext.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "../tree/TreeCards.js";
 
+interface FilePageProps extends FileElementProps {
+	/** Site-root-relative path of this page — threaded down so child cards build correct hrefs. */
+	readonly path: AbsolutePath;
+}
+
 /** Page renderer for a `tree-file` element — shows title, content, and child code symbols. */
-export function FilePage({ title, name, description, content, children }: FileElementProps): ReactNode {
-	const { url } = requireMeta();
-	const path = url?.pathname ?? "/";
+export function FilePage({ path, title, name, description, content, children }: FilePageProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
 			<Title>{title ?? name}</Title>

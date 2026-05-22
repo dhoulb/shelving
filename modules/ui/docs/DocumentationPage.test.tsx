@@ -11,7 +11,7 @@ function doc(name: string, kind: string): DocumentationElement {
 describe("DocumentationPage", () => {
 	test("groups child symbols into kind-based sections, in order", () => {
 		const html = renderToStaticMarkup(
-			<DocumentationPage name="array">
+			<DocumentationPage path="/array" name="array">
 				{[doc("getThing", "function"), doc("Widget", "class"), doc("getOther", "function")]}
 			</DocumentationPage>,
 		);
@@ -23,7 +23,7 @@ describe("DocumentationPage", () => {
 
 	test("renders a section only for kinds that have children", () => {
 		const html = renderToStaticMarkup(
-			<DocumentationPage name="Store" kind="class">
+			<DocumentationPage path="/Store" name="Store" kind="class">
 				{[doc("get", "method"), doc("size", "property")]}
 			</DocumentationPage>,
 		);

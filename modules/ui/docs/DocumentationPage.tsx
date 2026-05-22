@@ -11,7 +11,6 @@ import { Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
-import { requireMeta } from "../misc/MetaContext.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationKind } from "./DocumentationKind.js";
@@ -29,6 +28,11 @@ const KIND_SECTIONS: ReadonlyArray<readonly [kind: string, label: string]> = [
 	["property", "Properties"],
 ];
 
+interface DocumentationPageProps extends DocumentationElementProps {
+	/** Site-root-relative path of this page — threaded down so child cards build correct hrefs. */
+	readonly path: AbsolutePath;
+}
+
 /**
  * Page renderer for a `tree-documentation` element (also used for `tree-file` elements, whose props are a compatible subset).
  * - Renders title, signatures (one per overload), content, parameters, returns, throws, and examples.
@@ -36,6 +40,7 @@ const KIND_SECTIONS: ReadonlyArray<readonly [kind: string, label: string]> = [
  * - All sections are conditional — only render when they have entries.
  */
 export function DocumentationPage({
+	path,
 	title,
 	name,
 	kind,
@@ -47,9 +52,7 @@ export function DocumentationPage({
 	throws,
 	examples,
 	children,
-}: DocumentationElementProps): ReactNode {
-	const { url } = requireMeta();
-	const path = (url?.pathname ?? "/") as AbsolutePath;
+}: DocumentationPageProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
 			<Title>
