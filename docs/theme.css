@@ -18,12 +18,13 @@
 	--color-border: color-mix(in srgb, var(--color-purple) 22%, white);
 
 	/*
-	 * Cards — a soft opaque mid peach. Code chips and tags use the translucent `--color-surface`,
-	 * so they sit a shade darker than the card — and darker again wherever surfaces stack. The
-	 * border is dropped: a purple edge looked harsh.
+	 * Cards — a soft mid peach with no border. Content inside (code, tags) sits on an opaque
+	 * `--card-color-surface` a few shades deeper, so `<pre><code>` reads as one clean block
+	 * instead of double-stacking the translucent page surface into a murky frame.
 	 */
 	--card-color-bg: color-mix(in srgb, var(--color-orange) 14%, white);
-	--card-color-border: transparent;
+	--card-border: 0;
+	--card-color-surface: color-mix(in srgb, var(--color-orange) 21%, white);
 
 	/* Interactive colours — brighter and more characterful, straight from the palette. */
 	--color-link: var(--color-purple);
