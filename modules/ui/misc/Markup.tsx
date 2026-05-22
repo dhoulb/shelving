@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import { MarkupParser } from "../../markup/MarkupParser.js";
-import type { MarkupOptions } from "../../markup/util/options.js";
+import { type MarkupOptions, MarkupParser } from "../../markup/MarkupParser.js";
 import { requireMeta } from "./MetaContext.js";
 
 /** Props for `<Markup>` — extends `MarkupOptions` so callers can override `rules`, `rel`, `url`, `root`, or `schemes` directly. */
