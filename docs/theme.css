@@ -17,6 +17,9 @@
 	/* Borders keep a gentle purple tint for tables, inputs and inline surfaces. */
 	--color-border: color-mix(in srgb, var(--color-purple) 22%, white);
 
+	/* Quiet text — table headers, captions, definition labels — picks up the same purple personality. */
+	--color-quiet: var(--color-purple);
+
 	/*
 	 * Cards — a soft mid peach with no border. Content nested inside (code chips, tags) uses the
 	 * deeper opaque `--card-color-surface`, giving it its own depth distinct from the lighter
