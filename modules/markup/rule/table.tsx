@@ -65,7 +65,14 @@ export const TABLE_RULE = createMarkupRule<{
 			}
 			body.push(<Section key={s}>{rows}</Section>);
 		}
-		return <table key={key}>{body}</table>;
+		// Scrollable region pattern: focusable, labelled <figure> wraps the table so keyboard users can arrow-scroll wide columns.
+		return (
+			// biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region pattern needs keyboard focus
+			// biome-ignore lint/a11y/useSemanticElements: <figure> is the spec-blessed wrapper for self-contained tables
+			<figure key={key} tabIndex={0} role="region" aria-label="Scrollable region">
+				<table>{body}</table>
+			</figure>
+		);
 	},
 	["block"],
 );

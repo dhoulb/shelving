@@ -30,6 +30,5 @@
 	&.nowrap {
 		white-space: pre;
 		overflow-wrap: normal;
-		overflow-x: auto;
 	}
 }

@@ -81,9 +81,9 @@ test("PARAGRAPH", () => {
 			props: { children: "PARAGRAPH" },
 		},
 		{
-			type: "pre",
+			type: "figure",
 			props: {
-				children: { type: "code", props: { children: "LINE1\nLINE2" } },
+				children: { type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 			},
 		},
 	]);

@@ -1,12 +1,96 @@
 .block {
 	/* Box */
-	margin: var(--element-spacing, var(--spacing-section)) 0;
+	position: relative;
+	display: block;
+	margin-inline: 0;
+	margin-block: var(--block-spacing, var(--spacing-section));
 
 	/* Psuedo-classes */
 	&:first-child {
-		margin-top: 0;
+		margin-block-start: 0;
 	}
 	&:last-child {
-		margin-bottom: 0;
+		margin-block-end: 0;
 	}
+
+	/* Variants */
+	&.narrow {
+		margin-inline: auto;
+		max-width: var(--block-width-narrow, var(--width-narrow));
+	}
+	&.wide {
+		margin-inline: auto;
+		max-width: var(--block-width-wide, var(--width-wide));
+	}
+	&.spacious {
+		margin-block: var(--block-spacious-spacing, var(--space-xxlarge));
+	}
+}
+
+/* Plain semantic blocks inside prose pick up the same spacing as a <Block>. */
+.prose :where(section, article, aside, nav, header, footer, figure) {
+	margin-inline: 0;
+	margin-block: var(--block-spacing, var(--spacing-section));
+
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+}
+
+/* Scrollable region — keyboard-focusable horizontal scroll container. Targets both the .scrollable variant and any prose element marked `role="region" tabindex="0"` (e.g. Markdown fenced/table output). */
+.scrollable,
+.prose [role="region"][tabindex="0"] {
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+
+	&:focus-visible {
+		outline: var(--focus-stroke, var(--stroke-thick)) solid var(--focus-color, var(--color-accent));
+		outline-offset: var(--focus-offset, var(--space-xxsmall));
+	}
+
+	/* Stretch the inner block to fill the scroll container so short content still spans the width. */
+	> :is(table, pre) {
+		min-width: 100%;
+	}
+
+	/* Force long lines so they trigger horizontal scroll instead of wrapping; grow the box with the content (`width: max-content`) so the pre's own right-side padding survives at scroll-end. */
+	> pre {
+		width: max-content;
+		white-space: pre;
+		overflow-wrap: normal;
+	}
+
+	/* Caption stays pinned to the left during horizontal scroll. Spacing/typography come from the shared figcaption rule below. */
+	> :is(.caption, figcaption) {
+		position: sticky;
+		left: 0;
+	}
+}
+
+.caption,
+.prose figcaption {
+	display: block;
+	margin-block: var(--caption-gap, var(--space-xsmall));
+	font-size: var(--caption-font-size, var(--size-small));
+	color: var(--caption-color, var(--color-quiet));
+
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
+}
+
+/* Captions have tighter margins than most block elements, so zero the abutting margin of any neighbouring sibling — otherwise margin collapse would let the bigger neighbour margin win, drifting the caption away from its content. */
+.caption + *,
+.prose figcaption + * {
+	margin-block-start: 0;
+}
+:has(+ .caption),
+.prose :has(+ figcaption) {
+	margin-block-end: 0;
 }

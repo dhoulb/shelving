@@ -12,10 +12,10 @@ import superscriptStyles from "../inline/Superscript.module.css";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import addressStyles from "./Address.module.css";
+import blockStyles from "./Block.module.css";
 import blockquoteStyles from "./Blockquote.module.css";
 import definitionsStyles from "./Definitions.module.css";
 import dividerStyles from "./Divider.module.css";
-import figureStyles from "./Figure.module.css";
 import headingStyles from "./Heading.module.css";
 import imageStyles from "./Image.module.css";
 import listStyles from "./List.module.css";
@@ -29,12 +29,12 @@ const PROSE_STYLES = getClass(
 	headingStyles.prose,
 	subheadingStyles.prose,
 	addressStyles.prose,
+	blockStyles.prose,
 	blockquoteStyles.prose,
 	codeStyles.prose,
 	definitionsStyles.prose,
 	deletedStyles.prose,
 	emphasisStyles.prose,
-	figureStyles.prose,
 	imageStyles.prose,
 	insertedStyles.prose,
 	listStyles.prose,
