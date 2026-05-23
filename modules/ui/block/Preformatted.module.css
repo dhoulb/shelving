@@ -9,8 +9,9 @@
 	/* Style */
 	font-family: var(--preformatted-font, var(--font-code));
 	color: var(--preformatted-color-text, var(--color-text));
-	background-color: var(--preformatted-color-bg, var(--color-surface));
-	border: var(--preformatted-border, var(--stroke-normal)) solid var(--preformatted-color-border, var(--color-surface));
+	background-color: var(--preformatted-color-bg, color-mix(in srgb, var(--color-surface) 92%, black));
+	border: var(--preformatted-border, var(--stroke-normal)) solid
+		var(--preformatted-color-border, color-mix(in srgb, var(--color-surface) 92%, black));
 	border-radius: var(--preformatted-radius, var(--radius-normal));
 	tab-size: 2;
 

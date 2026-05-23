@@ -7,7 +7,7 @@
 	/* Style */
 	border-radius: var(--radius-xxsmall);
 	color: var(--color-text);
-	background-color: var(--color-surface);
+	background-color: color-mix(in srgb, var(--color-surface) 92%, black);
 
 	/* Typography */
 	font-weight: inherit;

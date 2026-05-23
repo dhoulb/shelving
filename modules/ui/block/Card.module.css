@@ -1,8 +1,3 @@
-:root {
-	/* Opaque surface colour for content nested inside a card — slightly darker than `--color-surface`. */
-	--card-color-surface: color-mix(in srgb, var(--color-surface) 92%, black);
-}
-
 /* TEST #125 (v2): re-bind global tokens on the card scope using the theme hook with `inherit` */
 /* as the fallback — when the hook is undefined, the declaration becomes `--color-surface: inherit` */
 /* so the parent's value is used. No self-reference, no cycle, spec-clean cross-browser. */
@@ -60,12 +55,6 @@
 		position: relative;
 		z-index: 2;
 	}
-}
-
-/* Content nested in a card uses the card's opaque surface colour, so translucent surfaces don't double up. */
-/* `:where()` keeps specificity at zero so colour/status variant classes on descendants still win. */
-:where(.card) * {
-	--color-surface: var(--card-color-surface);
 }
 
 .overlay {
