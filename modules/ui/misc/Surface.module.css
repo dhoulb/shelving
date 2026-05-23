@@ -1,0 +1,35 @@
+/*
+ * `.surface` participates in the surface-depth chain — apply it to any component that paints a background
+ * with `--color-surface` and you'll get:
+ *
+ *   1. `--surface-depth` automatically incremented as surfaces nest (counted via descendant selectors,
+ *      capped at 4 since CSS doesn't allow a true counter increment on custom properties).
+ *   2. `background` automatically set to the depth-darkened `--color-surface`, so each tier of nesting
+ *      reads ~10% darker than its parent surface. Components only need to add `SURFACE_CLASS`; they no
+ *      longer redeclare `background` themselves.
+ *
+ * The depth step (10%) matches the gray-05 → gray-10 increment in App.module.css — the smallest tier
+ * of visible distinction the design system already uses.
+ */
+.surface {
+	--surface-depth: 0;
+
+	/* The depth-darkened surface colour — exposed as a token so derived effects (hover, focus, disabled) */
+	/* can reference the actually-painted bg colour without re-deriving the formula. */
+	--color-surface-active: color-mix(in srgb, var(--color-surface) calc(100% - var(--surface-depth, 0) * 10%), black);
+
+	background: var(--color-surface-active);
+}
+
+.surface .surface {
+	--surface-depth: 1;
+}
+.surface .surface .surface {
+	--surface-depth: 2;
+}
+.surface .surface .surface .surface {
+	--surface-depth: 3;
+}
+.surface .surface .surface .surface .surface {
+	--surface-depth: 4;
+}

@@ -14,8 +14,7 @@
 	margin-inline: 0;
 	margin-block: var(--card-spacing, var(--space-normal));
 
-	/* Style — read the (now-rebound) global tokens directly */
-	background: var(--color-surface);
+	/* Style — `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
 	border: var(--card-border, var(--stroke-normal)) solid var(--color-border);
 	padding: var(--card-padding, var(--space-normal));
 	color: var(--color-text);

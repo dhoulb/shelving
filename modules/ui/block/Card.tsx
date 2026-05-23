@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
 import { type ColorVariants, getColorClass } from "../misc/Color.js";
 import { getStatusClass, type Status } from "../misc/Status.js";
+import { SURFACE_CLASS } from "../misc/Surface.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import CARD_CSS from "./Card.module.css";
 
@@ -31,6 +32,7 @@ export function Card({ children, href, onClick, title = "Open", status, ...props
 	return (
 		<article
 			className={getClass(
+				SURFACE_CLASS, // Card paints a surface — opt into the depth-tracking + auto-darkening chain.
 				getModuleClass(CARD_CSS, "card", props), //
 				status && getStatusClass(status), // Cards can have status colours.
 				getColorClass(props), // Cards can also have raw colour overrides.

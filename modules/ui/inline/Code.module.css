@@ -4,12 +4,19 @@
 	display: inline-block;
 	padding-inline: 0.375rem;
 
-	/* Style */
+	/* Style — `.code` gets `background` from `SURFACE_CLASS`; the `.prose` selector below adds a fallback */
+	/* for raw markdown-rendered `<code>` elements that don't carry `SURFACE_CLASS`. */
 	border-radius: var(--radius-xxsmall);
 	color: var(--color-text);
-	background-color: color-mix(in srgb, var(--color-surface) 92%, black);
 
 	/* Typography */
 	font-weight: inherit;
 	font-size: var(--size-smaller);
+}
+
+/* Markdown-rendered code chips don't have `SURFACE_CLASS` (no React wrapper), so paint a depth-aware */
+/* background by reading `--color-surface-active` (set by the nearest `.surface` ancestor) and darkening */
+/* by one extra step. Falls back to `--color-surface` when no surface ancestor exists. */
+.prose :is(code, kbd, samp, var):not(pre *) {
+	background-color: color-mix(in srgb, var(--color-surface-active, var(--color-surface)) 92%, black);
 }

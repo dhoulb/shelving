@@ -25,9 +25,8 @@
 	text-wrap: nowrap;
 	word-break: normal;
 
-	/* Style */
+	/* Style — `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
 	color: var(--color-quiet);
-	background: var(--color-surface);
 	text-decoration: none;
 	transition: all 120ms ease-in-out;
 	cursor: pointer;
@@ -47,8 +46,8 @@
 		cursor: default;
 	}
 	&:where(:enabled:hover, :focus:not(:focus-visible)) {
-		background: color-mix(in srgb, var(--button-color-bg, var(--color-surface)) 85%, white);
-		border-color: color-mix(in srgb, var(--button-color-border, var(--color-border)) 85%, var(--button-color-text, var(--color-text)));
+		background: color-mix(in srgb, var(--color-surface-active) 85%, white);
+		border-color: color-mix(in srgb, var(--color-border) 85%, var(--color-text));
 	}
 	&:first-child {
 		margin-block-start: 0;

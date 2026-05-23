@@ -11,9 +11,8 @@
 	border: var(--notice-border, var(--stroke-normal)) solid var(--notice-color-border, var(--color-quiet));
 	padding: var(--notice-padding, var(--space-small));
 
-	/* Style — reads the (now-rebound) global tokens directly */
+	/* Style — `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
 	color: var(--color-quiet);
-	background: var(--color-surface);
 
 	/* Typography */
 	font-size: var(--notice-size, var(--size-normal));

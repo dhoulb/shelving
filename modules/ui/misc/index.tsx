@@ -6,5 +6,6 @@ export * from "./Markup.js";
 export * from "./MetaContext.js";
 export * from "./Status.js";
 export * from "./StatusIcon.js";
+export * from "./Surface.js";
 export * from "./Tag.js";
 export * from "./Typography.js";
