@@ -68,14 +68,6 @@
 		position: sticky;
 		left: 0;
 	}
-
-	/* Drop block margins on elements directly adjacent to a caption so the caption's own margin is the only spacer between the two. */
-	> :is(.caption, figcaption) + * {
-		margin-block-start: 0;
-	}
-	> *:has(+ :is(.caption, figcaption)) {
-		margin-block-end: 0;
-	}
 }
 
 .caption,
@@ -91,4 +83,14 @@
 	&:last-child {
 		margin-block-end: 0;
 	}
+}
+
+/* Captions have tighter margins than most block elements, so zero the abutting margin of any neighbouring sibling — otherwise margin collapse would let the bigger neighbour margin win, drifting the caption away from its content. */
+.caption + *,
+.prose figcaption + * {
+	margin-block-start: 0;
+}
+:has(+ .caption),
+.prose :has(+ figcaption) {
+	margin-block-end: 0;
 }
