@@ -56,10 +56,19 @@
 		min-width: 100%;
 	}
 
-	/* Force the inner pre to long lines so they trigger horizontal scroll instead of wrapping. */
+	/* Force long lines so they trigger horizontal scroll instead of wrapping; grow the box with the content (`width: max-content`) so the pre's own right-side padding survives at scroll-end. */
 	> pre {
+		width: max-content;
+		margin-block: 0;
 		white-space: pre;
 		overflow-wrap: normal;
+	}
+
+	/* Caption above the content — sticky so it stays pinned to the left during horizontal scroll, with a tight gap between caption and content. */
+	> figcaption {
+		position: sticky;
+		left: 0;
+		margin-block: 0 var(--scrollable-caption-gap, var(--space-xxsmall));
 	}
 }
 

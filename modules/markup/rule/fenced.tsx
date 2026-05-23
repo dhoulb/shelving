@@ -29,10 +29,10 @@ export const FENCED_RULE = createMarkupRule<{
 			// biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region pattern needs keyboard focus
 			// biome-ignore lint/a11y/useSemanticElements: <figure> is the spec-blessed wrapper for self-contained code blocks
 			<figure key={key} tabIndex={0} role="region" aria-label="Scrollable region">
+				<figcaption>{caption}</figcaption>
 				<pre>
 					<code>{code.trim()}</code>
 				</pre>
-				<figcaption>{caption}</figcaption>
 			</figure>
 		) : (
 			// biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region pattern needs keyboard focus

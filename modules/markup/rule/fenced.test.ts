@@ -44,8 +44,8 @@ test("FENCED_RULE", () => {
 		type: "figure",
 		props: {
 			children: [
-				{ type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 				{ type: "figcaption", props: { children: "file.js" } },
+				{ type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 			],
 		},
 	});
@@ -55,8 +55,8 @@ test("FENCED_RULE", () => {
 		type: "figure",
 		props: {
 			children: [
-				{ type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 				{ type: "figcaption", props: { children: "file.js" } },
+				{ type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 			],
 		},
 	});
@@ -64,8 +64,8 @@ test("FENCED_RULE", () => {
 		type: "figure",
 		props: {
 			children: [
-				{ type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 				{ type: "figcaption", props: { children: "file.js" } },
+				{ type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 			],
 		},
 	});
