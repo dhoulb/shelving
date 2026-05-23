@@ -3,7 +3,7 @@
 	position: relative;
 	display: block;
 	margin-inline: 0;
-	margin-block: var(--block-spacing, var(--space-normal));
+	margin-block: var(--block-spacing, var(--spacing-section));
 
 	/* Psuedo-classes */
 	&:first-child {
@@ -30,7 +30,7 @@
 /* Plain semantic blocks inside prose pick up the same spacing as a <Block>. */
 .prose :where(section, article, aside, nav, header, footer, figure) {
 	margin-inline: 0;
-	margin-block: var(--block-spacing, var(--space-normal));
+	margin-block: var(--block-spacing, var(--spacing-section));
 
 	&:first-child {
 		margin-block-start: 0;

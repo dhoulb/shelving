@@ -4,8 +4,7 @@
 	display: block;
 	inline-size: 100%;
 	margin-inline: 0;
-	/* `em` top margin scales with font-size, so larger headings get proportionally more space above them. */
-	margin-block-start: var(--title-spacing-before, 1.5em);
+	margin-block-start: var(--title-spacing-before, var(--spacing-section));
 	margin-block-end: var(--title-spacing, var(--space-normal));
 
 	/* Style */
