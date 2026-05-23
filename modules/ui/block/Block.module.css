@@ -1,6 +1,6 @@
 .block {
 	/* Box */
-	margin: var(--element-spacing, var(--space-small)) 0;
+	margin: var(--element-spacing, var(--spacing-section)) 0;
 
 	/* Psuedo-classes */
 	&:first-child {
