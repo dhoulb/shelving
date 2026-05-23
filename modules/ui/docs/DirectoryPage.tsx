@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import type { DirectoryElementProps } from "../../util/element.js";
+import { type DirectoryElementProps, walkElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
+import { Heading } from "../block/Heading.js";
 import { Prose } from "../block/Prose.js";
 import { Title } from "../block/Title.js";
 import { Markup } from "../misc/Markup.js";
@@ -14,6 +15,7 @@ interface DirectoryPageProps extends DirectoryElementProps {
 
 /** Page renderer for a `tree-directory` element — shows title, content, and child cards. */
 export function DirectoryPage({ path, title, name, description, content, children }: DirectoryPageProps): ReactNode {
+	const cards = Array.from(walkElements(children));
 	return (
 		<Page title={title ?? name} description={description}>
 			<Title>{title ?? name}</Title>
@@ -22,7 +24,12 @@ export function DirectoryPage({ path, title, name, description, content, childre
 					<Markup>{content}</Markup>
 				</Prose>
 			)}
-			<TreeCards path={path}>{children}</TreeCards>
+			{cards.length > 0 && (
+				<>
+					<Heading>Modules</Heading>
+					<TreeCards path={path}>{cards}</TreeCards>
+				</>
+			)}
 		</Page>
 	);
 }
