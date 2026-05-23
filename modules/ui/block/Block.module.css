@@ -51,11 +51,6 @@
 		outline-offset: var(--focus-offset, var(--space-xxsmall));
 	}
 
-	/* Reset block margins on all children — the figure owns outer spacing, and the caption's own margin is the only spacer between it and any neighbour. */
-	> * {
-		margin-block: 0;
-	}
-
 	/* Stretch the inner block to fill the scroll container so short content still spans the width. */
 	> :is(table, pre) {
 		min-width: 100%;
@@ -68,16 +63,17 @@
 		overflow-wrap: normal;
 	}
 
-	/* Caption stays pinned to the left during horizontal scroll, with a tight gap to any adjacent content. */
-	> figcaption {
+	/* Caption stays pinned to the left during horizontal scroll. Spacing/typography come from the shared figcaption rule below. */
+	> :is(.caption, figcaption) {
 		position: sticky;
 		left: 0;
-		margin-block: var(--scrollable-caption-gap, var(--space-xxsmall));
 	}
-	> figcaption:first-child {
+
+	/* Drop block margins on elements directly adjacent to a caption so the caption's own margin is the only spacer between the two. */
+	> :is(.caption, figcaption) + * {
 		margin-block-start: 0;
 	}
-	> figcaption:last-child {
+	> *:has(+ :is(.caption, figcaption)) {
 		margin-block-end: 0;
 	}
 }
@@ -85,7 +81,14 @@
 .caption,
 .prose figcaption {
 	display: block;
-	margin-block-start: var(--caption-gap, var(--space-xsmall));
+	margin-block: var(--caption-gap, var(--space-xsmall));
 	font-size: var(--caption-font-size, var(--size-small));
 	color: var(--caption-color, var(--color-quiet));
+
+	&:first-child {
+		margin-block-start: 0;
+	}
+	&:last-child {
+		margin-block-end: 0;
+	}
 }
