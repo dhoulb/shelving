@@ -1,3 +1,10 @@
+/* TEST #125: same pattern as Card — re-bind global tokens on button scope. */
+:where(.button) {
+	--color-surface: var(--button-color-bg, var(--color-surface));
+	--color-border: var(--button-color-border, var(--color-border));
+	--color-quiet: var(--button-color-text, var(--color-quiet));
+}
+
 .button {
 	/* Box */
 	display: flex;
@@ -5,7 +12,7 @@
 	inline-size: 100%;
 	min-inline-size: fit-content; /* Buttons never go smaller than their contents. */
 	border-radius: var(--button-radius, var(--radius-xsmall));
-	border: var(--button-border, var(--stroke-normal)) solid var(--button-color-border, var(--color-border));
+	border: var(--button-border, var(--stroke-normal)) solid var(--color-border);
 	padding-block: var(--button-padding, var(--space-small));
 	padding-inline: var(--button-padding, var(--space-small));
 	margin-inline: 0;
@@ -19,8 +26,8 @@
 	word-break: normal;
 
 	/* Style */
-	color: var(--button-color-text, var(--color-quiet));
-	background: var(--button-color-bg, var(--color-surface));
+	color: var(--color-quiet);
+	background: var(--color-surface);
 	text-decoration: none;
 	transition: all 120ms ease-in-out;
 	cursor: pointer;

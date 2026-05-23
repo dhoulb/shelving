@@ -3,17 +3,27 @@
 	--card-color-surface: color-mix(in srgb, var(--color-surface) 92%, black);
 }
 
+/* TEST #125: re-bind the global tokens on the card scope using the theme hook with self-fallback. */
+/* `:where()` keeps specificity at 0 so variants (`.primary`, `.red`, status classes) still win. */
+/* When the hook is unset, the inner `var(--color-surface)` self-references → cycle → declaration */
+/* invalid at computed-value time → falls through to inherited `--color-surface` from `:root`. */
+:where(.card) {
+	--color-surface: var(--card-color-bg, var(--color-surface));
+	--color-border: var(--card-color-border, var(--color-border));
+	--color-text: var(--card-color-text, var(--color-text));
+}
+
 .card {
 	/* Box */
 	position: relative;
 	margin-inline: 0;
 	margin-block: var(--card-spacing, var(--space-normal));
 
-	/* Style */
-	background: var(--card-color-bg, var(--color-surface));
-	border: var(--card-border, var(--stroke-normal)) solid var(--card-color-border, var(--color-border));
+	/* Style — read the (now-rebound) global tokens directly */
+	background: var(--color-surface);
+	border: var(--card-border, var(--stroke-normal)) solid var(--color-border);
 	padding: var(--card-padding, var(--space-normal));
-	color: var(--card-color-text, var(--color-text));
+	color: var(--color-text);
 	border-radius: var(--card-radius, var(--radius-normal));
 	box-shadow: var(--card-shadow, none);
 	transition: border-color var(--duration-fast);
