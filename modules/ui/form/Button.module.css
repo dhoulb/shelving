@@ -1,8 +1,8 @@
-/* TEST #125: same pattern as Card — re-bind global tokens on button scope. */
+/* TEST #125 (v2): same pattern as Card — see comment there. */
 :where(.button) {
-	--color-surface: var(--button-color-bg, var(--color-surface));
-	--color-border: var(--button-color-border, var(--color-border));
-	--color-quiet: var(--button-color-text, var(--color-quiet));
+	--color-surface: var(--button-color-bg, inherit);
+	--color-border: var(--button-color-border, inherit);
+	--color-quiet: var(--button-color-text, inherit);
 }
 
 .button {
