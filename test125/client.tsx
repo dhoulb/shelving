@@ -1,53 +1,95 @@
 import { type ReactElement, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "../modules/ui/app/App.js";
 import { Block } from "../modules/ui/block/Block.js";
 import { Card } from "../modules/ui/block/Card.js";
 import { Heading } from "../modules/ui/block/Heading.js";
 import { Paragraph } from "../modules/ui/block/Paragraph.js";
 import { Title } from "../modules/ui/block/Title.js";
 import { Button } from "../modules/ui/form/Button.js";
+import { Code } from "../modules/ui/inline/Code.js";
+import { Notice } from "../modules/ui/notice/Notice.js";
 
-// Theme file that exercises the bug: setting `--card-color-bg` and `--button-color-bg` at `:root`
-// makes variant colours (status="success", colour="red", etc.) silently stop working.
+// Load the base design tokens (`--color-*`, `--space-*`, etc.) at `:root` for side effect.
+import "../modules/ui/app/App.module.css";
+
+// Theme file that sets per-component hooks (`--card-color-bg`, `--button-color-bg`, `--notice-color-bg`).
+// With the new `:where()` rebind pattern, variants and ancestor-scope overrides should still beat the theme.
 import "./theme.css";
 
 function Page(): ReactElement {
 	return (
-		<App app="test125">
-			<Block narrow>
-				<Title>Issue #125</Title>
-				<Paragraph>
-					The theme sets <code>--card-color-bg</code> and <code>--button-color-bg</code> at <code>:root</code>. The plain card and button
-					below pick up the theme correctly. The success/red ones should switch colour from their variant — but the theme hooks
-					short-circuit the <code>var()</code> fallback, so the variants silently lose.
-				</Paragraph>
+		<Block narrow>
+			<Title>Issue #125 — stress test</Title>
+			<Paragraph>
+				Every scenario below should render <em>correctly</em>: the theme hooks paint the default, variant classes (
+				<Code>status="success"</Code>, <Code>red</Code>, <Code>primary</Code>) win on the element they're applied to, and an ancestor
+				wrapping <Code>&lt;div&gt;</Code> that sets <Code>--color-surface</Code> is respected by anything without a theme hook or variant.
+			</Paragraph>
 
-				<Heading>Plain card + button (theme applies)</Heading>
+			<Heading>1. Nested cards</Heading>
+			<Card>
+				<Paragraph>Outer: plain card (theme peach).</Paragraph>
 				<Card>
-					<Paragraph>Card background should be the theme's peach.</Paragraph>
-					<Button>Plain button (theme lavender)</Button>
+					<Paragraph>Inner: plain card — should ALSO be theme peach.</Paragraph>
 				</Card>
-
-				<Heading>Success card (should be green — bug: stays peach)</Heading>
 				<Card status="success">
-					<Paragraph>
-						This card has <code>status="success"</code>. With no theme it would be green. With the theme it's still peach because{" "}
-						<code>--card-color-bg</code> wins over the variant's <code>--color-surface</code>.
-					</Paragraph>
-					<Button status="success">Success button (should be green — stays lavender)</Button>
+					<Paragraph>Inner: success card — should be GREEN even inside the peach parent.</Paragraph>
 				</Card>
+			</Card>
 
-				<Heading>Red card with primary button (both broken)</Heading>
-				<Card red>
-					<Paragraph>
-						This card has the <code>red</code> colour variant and contains a <code>primary</code> button. Both should pick up their variant
-						colour; both silently fall back to the theme.
-					</Paragraph>
-					<Button primary>Primary button (should be blue)</Button>
+			<Heading>2. Notices inside cards</Heading>
+			<Card>
+				<Notice>Plain notice inside plain card (theme cornsilk).</Notice>
+				<Notice status="success">Success notice inside plain card (should be green).</Notice>
+				<Notice status="error">Error notice inside plain card (should be red).</Notice>
+			</Card>
+			<Card status="error">
+				<Notice>Plain notice inside ERROR card. Should pick up the notice theme (cornsilk), NOT inherit error red.</Notice>
+				<Notice status="warning">Warning notice inside error card — should be its own warning colour.</Notice>
+			</Card>
+
+			<Heading>3. Code chips inside cards</Heading>
+			<Card>
+				<Paragraph>
+					Plain card with <Code>code chip</Code> — chip should use the card's nested-surface tier (darker than the card itself), not the
+					theme peach.
+				</Paragraph>
+			</Card>
+			<Card status="success">
+				<Paragraph>
+					Success card with <Code>code chip</Code> — chip should still use the card's nested-surface, not inherit success green.
+				</Paragraph>
+			</Card>
+
+			<Heading>4. Buttons in variant cards</Heading>
+			<Card status="error">
+				<Paragraph>Error card containing a button:</Paragraph>
+				<Button>Plain button — should be theme lavender (button's own hook beats inheriting error from card).</Button>
+				<Button success>Success button — should be GREEN (variant beats theme).</Button>
+				<Button primary>Primary button — should be BLUE.</Button>
+			</Card>
+
+			<Heading>5. Custom ancestor that sets --color-surface</Heading>
+			<div style={{ "--color-surface": "mistyrose", padding: "1rem", border: "2px dashed mistyrose" }}>
+				<Paragraph>This wrapping div sets --color-surface = mistyrose on its scope.</Paragraph>
+				<Card>
+					<Paragraph>Card inside it — should use the THEME peach (own hook wins over ancestor's --color-surface).</Paragraph>
 				</Card>
-			</Block>
-		</App>
+				<Button>Button inside it — same, should use theme lavender.</Button>
+				<Notice>Notice inside it — should use theme cornsilk.</Notice>
+				<Paragraph>
+					Inline <Code>code chip</Code> — has no hook of its own; should pick up the ancestor's mistyrose.
+				</Paragraph>
+			</div>
+
+			<Heading>6. Custom ancestor with NO theme hooks unset</Heading>
+			<div style={{ "--color-surface": "mistyrose", "--card-color-bg": "initial", padding: "1rem", border: "2px dashed mistyrose" }}>
+				<Paragraph>Same div, but also resets --card-color-bg to initial (as if no theme).</Paragraph>
+				<Card>
+					<Paragraph>Card — should now inherit mistyrose from the wrapper (no hook, inherit fallback kicks in).</Paragraph>
+				</Card>
+			</div>
+		</Block>
 	);
 }
 
