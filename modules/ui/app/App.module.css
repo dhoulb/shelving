@@ -56,6 +56,10 @@
 	--space-xlarge: calc(var(--space) * 2); /* 32px */
 	--space-xxlarge: calc(var(--space) * 3); /* 48px */
 
+	/* Semantic spacings */
+	/* Gap between sibling sections/blocks and the top margin of titles/headings, so the rhythm stays consistent whether a heading is wrapped in a Section or rendered bare. */
+	--spacing-section: 2rem;
+
 	/* Radii */
 	--radius: 1rem;
 	--radius-xxsmall: calc(var(--radius) * 0.25); /* 4px */

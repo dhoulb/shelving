@@ -3,7 +3,7 @@
 	position: relative;
 	display: block;
 	margin-inline: 0;
-	margin-block: var(--section-spacing, var(--space-normal));
+	margin-block: var(--section-spacing, var(--spacing-section));
 
 	/* Psuedo-classes */
 	&:first-child {
