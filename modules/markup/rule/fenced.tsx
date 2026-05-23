@@ -22,11 +22,28 @@ export const FENCED_RULE = createMarkupRule<{
 		`${BLOCK_START_REGEXP}(?<fence>${FENCE}) *(?<title>${LINE_CONTENT_REGEXP})\n`, // Starts with the fence
 		`(?:${LINE_SPACE_REGEXP}*\n\\k<fence>(?:\\s*\\n)?|$)`, // Ends when we hit the end of the string or the matching closing fence (trims any matching newlines after the fence).
 	),
-	(key, { title, code }) => (
-		<pre key={key}>
-			<code title={title?.trim() || undefined}>{code.trim()}</code>
-		</pre>
-	),
+	(key, { title, code }) => {
+		const caption = title?.trim();
+		// Scrollable region pattern: focusable, labelled <figure> wraps the code block so keyboard users can arrow-scroll wide lines.
+		return caption ? (
+			// biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region pattern needs keyboard focus
+			// biome-ignore lint/a11y/useSemanticElements: <figure> is the spec-blessed wrapper for self-contained code blocks
+			<figure key={key} tabIndex={0} role="region" aria-label="Scrollable region">
+				<pre>
+					<code>{code.trim()}</code>
+				</pre>
+				<figcaption>{caption}</figcaption>
+			</figure>
+		) : (
+			// biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region pattern needs keyboard focus
+			// biome-ignore lint/a11y/useSemanticElements: <figure> is the spec-blessed wrapper for self-contained code blocks
+			<figure key={key} tabIndex={0} role="region" aria-label="Scrollable region">
+				<pre>
+					<code>{code.trim()}</code>
+				</pre>
+			</figure>
+		);
+	},
 	["block", "list"],
 	10, // Higher priority than other `block` rules because it might contain content that matches other rules.
 );

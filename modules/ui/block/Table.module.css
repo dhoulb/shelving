@@ -58,28 +58,3 @@
 		font-size: var(--table-label-size, var(--size-small));
 	}
 }
-
-.wrap {
-	/* Box */
-	display: block;
-	margin-block: var(--table-spacing, var(--space-normal));
-	margin-inline: calc(var(--space-normal) * -1);
-	padding-inline: var(--space-normal);
-
-	/* Contents */
-	overflow-x: auto;
-	white-space: nowrap;
-
-	/* Psuedo-classes */
-	&:first-child {
-		margin-block-start: 0;
-	}
-	&:last-child {
-		margin-block-end: 0;
-	}
-
-	/* Children */
-	.table {
-		min-width: 100%;
-	}
-}

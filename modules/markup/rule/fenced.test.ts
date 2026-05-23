@@ -6,63 +6,83 @@ const PARSER = new MarkupParser();
 test("FENCED_RULE", () => {
 	// Basic fenced block.
 	expect(PARSER.parse("```\nLINE1\nLINE2\n```")).toMatchObject({
-		type: "pre",
+		type: "figure",
 		props: {
-			children: { type: "code", props: { children: "LINE1\nLINE2" } },
+			role: "region",
+			tabIndex: 0,
+			"aria-label": "Scrollable region",
+			children: { type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 		},
 	});
 	expect(PARSER.parse("``````\nLINE1\nLINE2\n``````")).toMatchObject({
-		type: "pre",
+		type: "figure",
 		props: {
-			children: { type: "code", props: { children: "LINE1\nLINE2" } },
+			children: { type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 		},
 	});
 	expect(PARSER.parse("~~~\nLINE1\nLINE2\n~~~")).toMatchObject({
-		type: "pre",
+		type: "figure",
 		props: {
-			children: { type: "code", props: { children: "LINE1\nLINE2" } },
+			children: { type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 		},
 	});
 	expect(PARSER.parse("~~~~~~\nLINE1\nLINE2\n~~~~~~")).toMatchObject({
-		type: "pre",
+		type: "figure",
 		props: {
-			children: { type: "code", props: { children: "LINE1\nLINE2" } },
+			children: { type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 		},
 	});
 	expect(PARSER.parse("```\nLINE1\nLINE2")).toMatchObject({
-		type: "pre",
+		type: "figure",
 		props: {
-			children: { type: "code", props: { children: "LINE1\nLINE2" } },
+			children: { type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
 		},
 	}); // No close (runs to the end of the string).
 
-	// With filename.
+	// With filename — title becomes a <figcaption>.
 	expect(PARSER.parse("```file.js\nLINE1\nLINE2\n```")).toMatchObject({
-		type: "pre",
-		props: { children: { type: "code", props: { title: "file.js", children: "LINE1\nLINE2" } } },
+		type: "figure",
+		props: {
+			children: [
+				{ type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
+				{ type: "figcaption", props: { children: "file.js" } },
+			],
+		},
 	});
 
 	// Whitespace around name is stripped.
 	expect(PARSER.parse("```    file.js    \nLINE1\nLINE2\n```")).toMatchObject({
-		type: "pre",
-		props: { children: { type: "code", props: { title: "file.js", children: "LINE1\nLINE2" } } },
+		type: "figure",
+		props: {
+			children: [
+				{ type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
+				{ type: "figcaption", props: { children: "file.js" } },
+			],
+		},
 	});
 	expect(PARSER.parse("```\t\tfile.js\t\t\nLINE1\nLINE2\n```")).toMatchObject({
-		type: "pre",
-		props: { children: { type: "code", props: { title: "file.js", children: "LINE1\nLINE2" } } },
+		type: "figure",
+		props: {
+			children: [
+				{ type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
+				{ type: "figcaption", props: { children: "file.js" } },
+			],
+		},
 	});
 
 	// Newlines before/after are stripped.
 	expect(PARSER.parse("\n   \n```\nLINE1\nLINE2\n```\n   \n")).toMatchObject({
-		type: "pre",
-		props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } },
+		type: "figure",
+		props: {
+			children: { type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
+		},
 	});
 
 	// Fenced does not nest other markup.
 	expect(PARSER.parse("```\n- ITEM1\n*STRONG*\n```")).toMatchObject({
-		type: "pre",
+		type: "figure",
 		props: {
-			children: { type: "code", props: { children: "- ITEM1\n*STRONG*" } },
+			children: { type: "pre", props: { children: { type: "code", props: { children: "- ITEM1\n*STRONG*" } } } },
 		},
 	});
 });
