@@ -1,0 +1,17 @@
+/*
+ * Minimal theme that triggers the bug described in issue #125.
+ *
+ * Setting `--card-color-bg` and `--button-color-bg` at `:root` is a legitimate use of the per-component
+ * theme hooks — but it short-circuits the `var(--card-color-bg, var(--color-surface))` fallback in
+ * `Card.module.css` / `Button.module.css`, so the colour/status variants that override `--color-surface`
+ * locally on the element silently stop working.
+ */
+
+:root {
+	--card-color-bg: color-mix(in srgb, peachpuff 60%, white);
+	--card-color-border: peachpuff;
+
+	--button-color-bg: lavender;
+	--button-color-border: mediumpurple;
+	--button-color-text: indigo;
+}
