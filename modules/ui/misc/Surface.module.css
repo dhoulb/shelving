@@ -10,8 +10,14 @@
  *
  * The depth step (10%) matches the gray-05 → gray-10 increment in App.module.css — the smallest tier
  * of visible distinction the design system already uses.
+ *
+ * All declarations use `:where()` so any normal-specificity selector wins:
+ *   - Variant classes (`.primary`, `.success`, …) at `(0,1,0)` beat the depth rules at `(0,0,0)` — so a
+ *     variant card resets `--surface-depth` to 0 and renders its variant colour cleanly, no muddying.
+ *   - Themes wanting fixed per-depth colours can write `.surface { --color-surface-active: blue; }` and
+ *     `.surface .surface { --color-surface-active: red; }` — these beat the calculated default.
  */
-.surface {
+:where(.surface) {
 	--surface-depth: 0;
 
 	/* The depth-darkened surface colour — exposed as a token so derived effects (hover, focus, disabled) */
@@ -21,15 +27,15 @@
 	background: var(--color-surface-active);
 }
 
-.surface .surface {
+:where(.surface) :where(.surface) {
 	--surface-depth: 1;
 }
-.surface .surface .surface {
+:where(.surface) :where(.surface) :where(.surface) {
 	--surface-depth: 2;
 }
-.surface .surface .surface .surface {
+:where(.surface) :where(.surface) :where(.surface) :where(.surface) {
 	--surface-depth: 3;
 }
-.surface .surface .surface .surface .surface {
+:where(.surface) :where(.surface) :where(.surface) :where(.surface) :where(.surface) {
 	--surface-depth: 4;
 }
