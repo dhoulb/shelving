@@ -3,7 +3,9 @@
 @layer components {
 	/* Rebind globals on the notice scope — see Card.module.css for the pattern. Border keeps its */
 	/* original fallback chain since Status variants don't override `--color-border`. */
+	/* Reset `--surface-depth` to 0 so a themed Notice inside a surface paints its own colour cleanly. */
 	.notice {
+		--surface-depth: 0;
 		--color-surface: var(--notice-color-bg, inherit);
 		--color-quiet: var(--notice-color-text, inherit);
 	}

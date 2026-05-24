@@ -2,7 +2,9 @@
 
 @layer components {
 	/* Rebind global tokens on the button scope — same pattern as Card. Layers handle variant precedence. */
+	/* Reset `--surface-depth` to 0 so a themed Button inside a surface paints its own colour cleanly. */
 	.button {
+		--surface-depth: 0;
 		--color-surface: var(--button-color-bg, inherit);
 		--color-border: var(--button-color-border, inherit);
 		--color-quiet: var(--button-color-text, inherit);

@@ -4,7 +4,10 @@
 	/* Rebind global tokens on the card scope using the theme hook with `inherit` as the fallback */
 	/* — when the hook is undefined, the declaration becomes `--color-surface: inherit` so the parent's */
 	/* value is used. No `:where()` needed: layers handle the variant-beats-component cascade. */
+	/* Reset `--surface-depth` to 0 so a themed Card inside another surface paints its own colour */
+	/* cleanly without depth-darkening muddying the theme. Same rationale as the variant depth-reset. */
 	.card {
+		--surface-depth: 0;
 		--color-surface: var(--card-color-bg, inherit);
 		--color-border: var(--card-color-border, inherit);
 		--color-text: var(--card-color-text, inherit);
