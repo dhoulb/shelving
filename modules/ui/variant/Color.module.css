@@ -100,8 +100,6 @@
 	.primary {
 		--color-text: var(--primary-text);
 		--color-contrast: var(--primary-contrast);
-		--color-link: var(--primary-text);
-		--color-quiet: var(--primary-text);
 		--color-surface: var(--primary-surface);
 		--color-border: var(--primary-border);
 	}
@@ -109,8 +107,6 @@
 	.secondary {
 		--color-text: var(--secondary-text);
 		--color-contrast: var(--secondary-contrast);
-		--color-link: var(--secondary-text);
-		--color-quiet: var(--secondary-text);
 		--color-surface: var(--secondary-surface);
 		--color-border: var(--secondary-border);
 	}
@@ -118,8 +114,6 @@
 	.tertiary {
 		--color-text: var(--tertiary-text);
 		--color-contrast: var(--tertiary-contrast);
-		--color-link: var(--tertiary-text);
-		--color-quiet: var(--tertiary-text);
 		--color-surface: var(--tertiary-surface);
 		--color-border: var(--tertiary-border);
 	}
@@ -127,8 +121,6 @@
 	.quiet {
 		--color-text: var(--quiet-text);
 		--color-contrast: var(--quiet-contrast);
-		--color-link: var(--quiet-text);
-		--color-quiet: var(--quiet-text);
 		--color-surface: var(--quiet-surface);
 		--color-border: var(--quiet-border);
 	}
@@ -136,8 +128,6 @@
 	.red {
 		--color-text: var(--red-text);
 		--color-contrast: var(--red-contrast);
-		--color-link: var(--red-text);
-		--color-quiet: var(--red-text);
 		--color-surface: var(--red-surface);
 		--color-border: var(--red-border);
 	}
@@ -145,8 +135,6 @@
 	.orange {
 		--color-text: var(--orange-text);
 		--color-contrast: var(--orange-contrast);
-		--color-link: var(--orange-text);
-		--color-quiet: var(--orange-text);
 		--color-surface: var(--orange-surface);
 		--color-border: var(--orange-border);
 	}
@@ -154,8 +142,6 @@
 	.yellow {
 		--color-text: var(--yellow-text);
 		--color-contrast: var(--yellow-contrast);
-		--color-link: var(--yellow-text);
-		--color-quiet: var(--yellow-text);
 		--color-surface: var(--yellow-surface);
 		--color-border: var(--yellow-border);
 	}
@@ -163,8 +149,6 @@
 	.green {
 		--color-text: var(--green-text);
 		--color-contrast: var(--green-contrast);
-		--color-link: var(--green-text);
-		--color-quiet: var(--green-text);
 		--color-surface: var(--green-surface);
 		--color-border: var(--green-border);
 	}
@@ -172,8 +156,6 @@
 	.cyan {
 		--color-text: var(--cyan-text);
 		--color-contrast: var(--cyan-contrast);
-		--color-link: var(--cyan-text);
-		--color-quiet: var(--cyan-text);
 		--color-surface: var(--cyan-surface);
 		--color-border: var(--cyan-border);
 	}
@@ -181,8 +163,6 @@
 	.blue {
 		--color-text: var(--blue-text);
 		--color-contrast: var(--blue-contrast);
-		--color-link: var(--blue-text);
-		--color-quiet: var(--blue-text);
 		--color-surface: var(--blue-surface);
 		--color-border: var(--blue-border);
 	}
@@ -190,8 +170,6 @@
 	.purple {
 		--color-text: var(--purple-text);
 		--color-contrast: var(--purple-contrast);
-		--color-link: var(--purple-text);
-		--color-quiet: var(--purple-text);
 		--color-surface: var(--purple-surface);
 		--color-border: var(--purple-border);
 	}
@@ -199,16 +177,26 @@
 	.pink {
 		--color-text: var(--pink-text);
 		--color-contrast: var(--pink-contrast);
-		--color-link: var(--pink-text);
-		--color-quiet: var(--pink-text);
 		--color-surface: var(--pink-surface);
 		--color-border: var(--pink-border);
 	}
 
-	/* Variants always reset `--surface-depth` to 0 so the variant's colour renders cleanly without */
-	/* depth-darkening — a `.success` notice inside a card shows pure success-green, not a muddied version. */
-	/* Lives in `@layer variants`, which always beats the `.surface .surface { … }` depth rules in `defaults`. */
-	:is(.primary, .secondary, .tertiary, .quiet, .red, .orange, .yellow, .green, .cyan, .blue, .purple, .pink) {
+	.primary,
+	.secondary,
+	.tertiary,
+	.quiet,
+	.red,
+	.orange,
+	.yellow,
+	.green,
+	.cyan,
+	.blue,
+	.purple,
+	.pink {
+		/* Variants always reset `--surface-depth` to 0 so the variant's colour renders without darkening. */
 		--surface-depth: 0;
+
+		--color-link: var(--color-text);
+		--color-quiet: var(--color-text);
 	}
 }

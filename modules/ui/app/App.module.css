@@ -112,17 +112,17 @@
 		--color-white: white;
 
 		/* Grays */
-		--gray-05: color-mix(var(--color-gray) 10%, var(--color-white));
-		--gray-10: color-mix(var(--color-gray) 20%, var(--color-white));
-		--gray-20: color-mix(var(--color-gray) 40%, var(--color-white));
-		--gray-30: color-mix(var(--color-gray) 60%, var(--color-white));
-		--gray-40: color-mix(var(--color-gray) 80%, var(--color-white));
+		--gray-05: color-mix(var(--color-gray) 10%, white);
+		--gray-10: color-mix(var(--color-gray) 20%, white);
+		--gray-20: color-mix(var(--color-gray) 40%, white);
+		--gray-30: color-mix(var(--color-gray) 60%, white);
+		--gray-40: color-mix(var(--color-gray) 80%, white);
 		--gray-50: var(--color-gray);
-		--gray-60: color-mix(var(--color-gray) 80%, var(--color-black));
-		--gray-70: color-mix(var(--color-gray) 60%, var(--color-black));
-		--gray-80: color-mix(var(--color-gray) 40%, var(--color-black));
-		--gray-90: color-mix(var(--color-gray) 20%, var(--color-black));
-		--gray-95: color-mix(var(--color-gray) 10%, var(--color-black));
+		--gray-60: color-mix(var(--color-gray) 80%, black);
+		--gray-70: color-mix(var(--color-gray) 60%, black);
+		--gray-80: color-mix(var(--color-gray) 40%, black);
+		--gray-90: color-mix(var(--color-gray) 20%, black);
+		--gray-95: color-mix(var(--color-gray) 10%, black);
 
 		/* Semantic colors */
 		--color-text: var(--color-black);

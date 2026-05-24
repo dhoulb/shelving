@@ -18,9 +18,9 @@
 	}
 
 	/* Markdown-rendered code chips don't have `SURFACE_CLASS` (no React wrapper), so paint a depth-aware */
-	/* background by reading `--color-surface-active` (set by the nearest `.surface` ancestor) and darkening */
+	/* background by reading `--surface-color` (set by the nearest `.surface` ancestor) and darkening */
 	/* by one extra step. Falls back to `--color-surface` when no surface ancestor exists. */
 	.prose :is(code, kbd, samp, var):not(pre *) {
-		background-color: color-mix(in srgb, var(--color-surface-active, var(--color-surface)) 92%, black);
+		background-color: color-mix(in srgb, var(--surface-color, var(--color-surface)) 92%, black);
 	}
 }

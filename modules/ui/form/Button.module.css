@@ -49,7 +49,7 @@
 			cursor: default;
 		}
 		&:where(:enabled:hover, :focus:not(:focus-visible)) {
-			background: color-mix(in srgb, var(--color-surface-active) 85%, white);
+			background: color-mix(in srgb, var(--surface-color) 85%, white);
 			border-color: color-mix(in srgb, var(--color-border) 85%, var(--color-text));
 		}
 		&:first-child {

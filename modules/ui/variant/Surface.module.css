@@ -12,26 +12,14 @@
  *
  * The depth step (10%) matches the gray-05 → gray-10 increment in App.module.css — the smallest tier
  * of visible distinction the design system already uses.
- *
- * All rules sit in `@layer defaults`, the lowest-priority layer. Variants in `@layer variants` (the
- * `:is(.primary, …) { --surface-depth: 0 }` reset in Color/Status, plus the variant classes
- * themselves) always win regardless of selector specificity.
- *
- * Themes wanting fixed per-depth colours can write `.surface { --color-surface-active: blue; }` and
- * `.surface .surface { --color-surface-active: red; }` in `@layer theme` (or unlayered) and beat the
- * calculated default automatically.
  */
 @layer defaults {
 	.surface {
 		--surface-depth: 0;
+		--surface-color: color-mix(in srgb, var(--color-surface) calc(100% - var(--surface-depth, 0) * 10%), var(--surface-mix, black));
 
-		/* The depth-darkened surface colour — exposed as a token so derived effects (hover, focus, disabled) */
-		/* can reference the actually-painted bg colour without re-deriving the formula. */
-		--color-surface-active: color-mix(in srgb, var(--color-surface) calc(100% - var(--surface-depth, 0) * 10%), black);
-
-		background: var(--color-surface-active);
+		background-color: var(--surface-color);
 	}
-
 	.surface .surface {
 		--surface-depth: 1;
 	}
