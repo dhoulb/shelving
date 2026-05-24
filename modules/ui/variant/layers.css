@@ -14,9 +14,6 @@
  *   components — component-defining CSS. The bulk of the codebase: `.card`, `.button`, `.notice`,
  *                 `.paragraph`, etc. Beats `defaults` automatically.
  *
- *   theme      — site-level overrides (`docs/theme.css`, `test125/theme.css`). Beats `components`
- *                 so consumers can customise theme hooks without specificity gymnastics.
- *
  *   variants   — cross-cutting opt-in modifiers (`Color`, `Status`, `Surface` resets, `Flex`,
  *                 `Align`, `Spacing`). Always wins, so a `.primary` class on an element beats
  *                 everything else regardless of selector specificity.
@@ -25,4 +22,4 @@
  * downstream theme forgets to `@import` this file and wrap its overrides in `@layer theme { … }`,
  * those rules will silently dominate variants. Document this prominently for consumers.
  */
-@layer defaults, components, theme, variants;
+@layer defaults, components, variants;
