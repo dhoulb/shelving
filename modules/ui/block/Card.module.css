@@ -1,4 +1,4 @@
-@import "../variant/layers.css";
+@import "../style/base.css";
 
 @layer components {
 	/* Rebind global tokens on the card scope using the theme hook with `inherit` as the fallback */

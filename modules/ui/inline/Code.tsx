@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
+import { SURFACE_CLASS } from "../style/Surface.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { SURFACE_CLASS } from "../variant/Surface.js";
 import styles from "./Code.module.css";
 
 const CODE_CLASS = getClass(SURFACE_CLASS, styles.code);

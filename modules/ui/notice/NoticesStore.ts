@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ArrayStore } from "../../store/ArrayStore.js";
 import { awaitDispose } from "../../util/dispose.js";
-import type { Status } from "../variant/Status.js";
+import type { Status } from "../style/Status.js";
 import { NoticeStore } from "./NoticeStore.js";
 
 /** Store a list of notices. */

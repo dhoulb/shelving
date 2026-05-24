@@ -1,4 +1,31 @@
-@import "../variant/layers.css";
+/*
+ * Base styles for the shelving UI library.
+ *
+ * Every `*.module.css` `@import`s this file at the very top. It does three things:
+ *
+ *   1. Declares the cascade-layer order (lowest → highest priority):
+ *      • `defaults`   — `:root` design tokens, body baseline, low-priority opt-in defaults, `.surface`
+ *                       depth chain. Anything in a later layer beats these.
+ *      • `components` — component-defining CSS. The bulk of the codebase: `.card`, `.button`, `.notice`,
+ *                       `.paragraph`, etc. Beats `defaults` automatically.
+ *      • `variants`   — cross-cutting opt-in modifiers (`Color`, `Status`, `Surface` resets, `Flex`,
+ *                       `Align`, `Spacing`, `Typography`). Always wins.
+ *
+ *   2. Defines the design-token constants at `:root` — colours, sizes, spacing, etc. Everything else
+ *      in the codebase reads these tokens via `var(--…)`; consumers override them at `:root` to retheme.
+ *
+ *   3. Sets baseline typography on `body` so a page with no Layout still reads correctly.
+ *
+ * Re-declaring the same layer order across every importer is a no-op — whichever file the parser hits
+ * first establishes the order, every subsequent import just confirms it. This is resilient to bundle
+ * order across module-graph permutations.
+ *
+ * Footgun: unlayered author rules (rules outside any `@layer { … }` block) beat ALL layered rules.
+ * If a downstream theme writes its overrides without participating in the layer system, those rules
+ * will silently dominate variants. Themes should override tokens at `:root` (an inheritance mechanism
+ * that doesn't need layer participation), not via class selectors.
+ */
+@layer defaults, components, variants;
 
 @layer defaults {
 	:root {
@@ -108,21 +135,21 @@
 		--color-red: #e5352f;
 		--color-yellow: #ffe01a;
 		--color-black: black;
-		--color-gray: color-mix(var(--color-blue) 30%, rgb(128 128 128)); /* Used as the "tone" color for scale of grays. */
+		--color-gray: color-mix(in srgb, var(--color-blue) 30%, rgb(128 128 128)); /* Used as the "tone" color for scale of grays. */
 		--color-white: white;
 
 		/* Grays */
-		--gray-05: color-mix(var(--color-gray) 10%, white);
-		--gray-10: color-mix(var(--color-gray) 20%, white);
-		--gray-20: color-mix(var(--color-gray) 40%, white);
-		--gray-30: color-mix(var(--color-gray) 60%, white);
-		--gray-40: color-mix(var(--color-gray) 80%, white);
+		--gray-05: color-mix(in srgb, var(--color-gray) 10%, white);
+		--gray-10: color-mix(in srgb, var(--color-gray) 20%, white);
+		--gray-20: color-mix(in srgb, var(--color-gray) 40%, white);
+		--gray-30: color-mix(in srgb, var(--color-gray) 60%, white);
+		--gray-40: color-mix(in srgb, var(--color-gray) 80%, white);
 		--gray-50: var(--color-gray);
-		--gray-60: color-mix(var(--color-gray) 80%, black);
-		--gray-70: color-mix(var(--color-gray) 60%, black);
-		--gray-80: color-mix(var(--color-gray) 40%, black);
-		--gray-90: color-mix(var(--color-gray) 20%, black);
-		--gray-95: color-mix(var(--color-gray) 10%, black);
+		--gray-60: color-mix(in srgb, var(--color-gray) 80%, black);
+		--gray-70: color-mix(in srgb, var(--color-gray) 60%, black);
+		--gray-80: color-mix(in srgb, var(--color-gray) 40%, black);
+		--gray-90: color-mix(in srgb, var(--color-gray) 20%, black);
+		--gray-95: color-mix(in srgb, var(--color-gray) 10%, black);
 
 		/* Semantic colors */
 		--color-text: var(--color-black);
@@ -145,7 +172,18 @@
 		--shadow-xxlarge: 0 1.5rem 6rem -3rem var(--color-overlay);
 	}
 
-	.app {
-		/* Empty */
+	/*
+	 * Baseline typography for the page. Applies to every `<body>` regardless of whether a `<Layout>` is
+	 * mounted — a plain page using a few shelving components still reads with the design's font, size,
+	 * and colour. Layout-specific things like `position: fixed` for iOS focus locking stay in
+	 * `Layout.module.css` and apply only when a `.layout` element is present.
+	 */
+	body {
+		font-family: var(--font-body);
+		font-weight: var(--weight-normal);
+		font-size: var(--size-normal);
+		line-height: var(--leading);
+		color: var(--color-text);
+		background: var(--color-bg);
 	}
 }

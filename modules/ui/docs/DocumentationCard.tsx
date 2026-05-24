@@ -6,7 +6,7 @@ import { Paragraph } from "../block/Paragraph.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Subheading } from "../block/Subheading.js";
 import { Code } from "../inline/Code.js";
-import { Flex } from "../variant/Flex.js";
+import { Flex } from "../style/Flex.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
 interface DocumentationCardProps extends DocumentationElementProps {

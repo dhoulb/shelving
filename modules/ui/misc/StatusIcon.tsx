@@ -1,8 +1,8 @@
 import { CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import type { ComponentType, ReactElement } from "react";
+import type { Status } from "../style/Status.js";
+import statusStyles from "../style/Status.module.css";
 import { getModuleClass } from "../util/css.js";
-import type { Status } from "../variant/Status.js";
-import statusStyles from "../variant/Status.module.css";
 import { Loading } from "./Loading.js";
 import styles from "./StatusIcon.module.css";
 

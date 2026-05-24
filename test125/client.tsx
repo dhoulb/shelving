@@ -3,17 +3,18 @@ import { createRoot } from "react-dom/client";
 import { Block } from "../modules/ui/block/Block.js";
 import { Card } from "../modules/ui/block/Card.js";
 import { Heading } from "../modules/ui/block/Heading.js";
+import { Panel } from "../modules/ui/block/Panel.js";
 import { Paragraph } from "../modules/ui/block/Paragraph.js";
 import { Title } from "../modules/ui/block/Title.js";
 import { Button } from "../modules/ui/form/Button.js";
 import { Code } from "../modules/ui/inline/Code.js";
 import { Notice } from "../modules/ui/notice/Notice.js";
 
-// Load the base design tokens (`--color-*`, `--space-*`, etc.) at `:root` for side effect.
-import "../modules/ui/app/App.module.css";
+// Load base design tokens, layer order, and body baseline typography for side effect.
+import "../modules/ui/style/base.css";
 
 // Theme file that sets per-component hooks (`--card-color-bg`, `--button-color-bg`, `--notice-color-bg`).
-// With the new `:where()` rebind pattern, variants and ancestor-scope overrides should still beat the theme.
+// Plain CSS — token overrides at `:root` propagate via inheritance, no layer participation needed.
 import "./theme.css";
 
 function Page(): ReactElement {
@@ -89,13 +90,60 @@ function Page(): ReactElement {
 					<Paragraph>Card — should now inherit mistyrose from the wrapper (no hook, inherit fallback kicks in).</Paragraph>
 				</Card>
 			</div>
+
+			<Heading>7. Panel — full-width vertical regions</Heading>
+			<Paragraph>
+				<Code>&lt;Panel&gt;</Code> is a full-width section with xxlarge padding and the current surface colour. Nested Panels darken one
+				tier via the same <Code>SURFACE_CLASS</Code> depth chain as Card.
+			</Paragraph>
 		</Block>
+	);
+}
+
+function FullWidthPanels(): ReactElement {
+	return (
+		<>
+			<Panel>
+				<Block narrow>
+					<Heading>Plain panel</Heading>
+					<Paragraph>Default theme surface (page). Cards inside still get their theme peach.</Paragraph>
+					<Card>
+						<Paragraph>
+							A card inside a plain panel. <Code>code chip</Code> for contrast.
+						</Paragraph>
+					</Card>
+				</Block>
+			</Panel>
+			<Panel status="success">
+				<Block narrow>
+					<Heading>Success panel</Heading>
+					<Paragraph>Panel with status="success" — pure success green, no muddying.</Paragraph>
+				</Block>
+			</Panel>
+			<Panel as="aside" purple monospace>
+				<Block narrow>
+					<Heading>Purple monospace aside</Heading>
+					<Paragraph>
+						Rendered as <Code>&lt;aside&gt;</Code> with <Code>purple</Code> + <Code>monospace</Code> typography variants.
+					</Paragraph>
+				</Block>
+			</Panel>
+		</>
+	);
+}
+
+function App(): ReactElement {
+	return (
+		<>
+			<Page />
+			<FullWidthPanels />
+		</>
 	);
 }
 
 const root = document.body.appendChild(document.createElement("div"));
 createRoot(root).render(
 	<StrictMode>
-		<Page />
+		<App />
 	</StrictMode>,
 );

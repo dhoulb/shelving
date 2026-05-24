@@ -8,8 +8,8 @@ import { Button, type ButtonVariants } from "../form/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";
 import { Page } from "../page/Page.js";
+import { Flex } from "../style/Flex.js";
 import type { ChildProps, OptionalChildProps } from "../util/props.js";
-import { Flex } from "../variant/Flex.js";
 import { StatusIcon } from "./StatusIcon.js";
 
 const RetryContext = createContext<Callback | undefined>(undefined);

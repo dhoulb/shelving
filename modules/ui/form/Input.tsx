@@ -1,8 +1,8 @@
 import type { ReactElement } from "react";
 import { LOADING } from "../misc/Loading.js";
+import { FLEX_CSS } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
-import { FLEX_CSS } from "../variant/Flex.js";
 import INPUT_CSS from "./Input.module.css";
 
 // Precomposed classes.

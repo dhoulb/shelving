@@ -1,12 +1,13 @@
 import type { ReactElement } from "react";
+import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { getSpacingClass, type SpacingVariants } from "../variant/Spacing.js";
 import styles from "./Block.module.css";
 
 export const BLOCK_CLASS = getModuleClass(styles, "block");
 
-export interface BlockProps extends SpacingVariants, OptionalChildProps {
+export interface BlockProps extends SpacingVariants, TypographyVariants, OptionalChildProps {
 	/** Constrain the block to narrow width. */
 	narrow?: boolean | undefined;
 	/** Constrain the block to wide width. */
@@ -21,6 +22,7 @@ function renderBlock(Component: BlockElement, { children, ...variants }: BlockPr
 	const className = getClass(
 		getModuleClass(styles, "block", variants), //
 		getSpacingClass(variants),
+		getTypographyClass(variants),
 	);
 	return variants.scrollable ? (
 		<Component className={className} tabIndex={0} role="region" aria-label="Scrollable region">

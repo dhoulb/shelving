@@ -1,24 +1,18 @@
-import { type ReactElement, useEffect } from "react";
+import type { ReactElement } from "react";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
+// Side-effect import: loads design tokens at `:root` + body baseline typography, declares cascade-layer order.
+// Components import this transitively via their own `.module.css` files, but `<App>` imports it explicitly
+// so a host that uses no UI components still gets the base styles.
+import "../style/base.css";
 import type { PossibleMeta } from "../util/index.js";
 import type { ChildProps } from "../util/props.js";
-import APP_CSS from "./App.module.css";
 
 export interface AppProps extends PossibleMeta, ChildProps {}
 
-const APP_CLASS = APP_CSS.app;
-
 /**
- * Root component for an application.
- * - Adds the app CSS class (which sets CSS token variables on `:root`) to `document.body` on mount and removes it on unmount.
- * - Provides a `Meta` context to its children so descendants can read or update metadata.
+ * Root component for an application. Provides a `Meta` context to its children so descendants can read
+ * or update metadata. Design tokens and body baseline typography are set globally via `style/base.css`.
  */
 export function App({ children, ...meta }: AppProps): ReactElement {
-	const merged = requireMeta(meta);
-	useEffect(() => {
-		if (!APP_CLASS) return;
-		document.body.classList.add(APP_CLASS);
-		return () => document.body.classList.remove(APP_CLASS);
-	}, []);
-	return <MetaContext value={merged}>{children}</MetaContext>;
+	return <MetaContext value={requireMeta(meta)}>{children}</MetaContext>;
 }

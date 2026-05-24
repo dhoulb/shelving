@@ -1,4 +1,4 @@
-@import "../variant/layers.css";
+@import "../style/base.css";
 
 @layer components {
 	/* Rebind globals on the notice scope — see Card.module.css for the pattern. Border keeps its */

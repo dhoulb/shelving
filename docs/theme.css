@@ -1,15 +1,14 @@
-@import "../modules/ui/variant/layers.css";
-
 /*
-* Documentation site theme.
-*
-* A token-only overlay on top of the base design tokens defined by `modules/ui/`. Only CSS custom
-* properties (the `--variable` design tokens) are set here — never component selectors — so the docs
-* site gets a brighter, more colourful personality without forking a single component's styling.
-*
-* Imported last in `client.tsx` so these `:root` declarations land after the base tokens and win.
-* Every value leans on the existing palette (`--color-*`) rather than introducing new raw colours.
-*/
+ * Documentation site theme.
+ *
+ * A token-only overlay on top of the base design tokens defined by `style/base.css`. Only CSS custom
+ * properties (the `--variable` design tokens) are set here — never component selectors — so the docs
+ * site gets a brighter, more colourful personality without forking a single component's styling.
+ *
+ * Plain CSS, no layer participation: token overrides propagate via inheritance, not cascade competition.
+ * Imported last in `client.tsx` so these `:root` declarations land after the base tokens and win on
+ * source order (both are at `:root` specificity, both unlayered).
+ */
 :root {
 	/* Surfaces — warm cream page; soft peach `--color-surface` for prose-level chips, tags and code. */
 	--color-bg: color-mix(in srgb, var(--color-orange) 6%, white);

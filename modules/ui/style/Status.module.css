@@ -1,4 +1,4 @@
-@import "layers.css";
+@import "base.css";
 
 /* Token definitions go in `@layer defaults` so themes can override them at `:root` in `@layer theme`. */
 @layer defaults {

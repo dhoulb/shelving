@@ -1,26 +1,20 @@
-@import "../modules/ui/variant/layers.css";
-
-@layer theme {
-	/*
+/*
  * Theme for the issue #125 stress test.
  *
- * Sets per-component theme hooks at `:root`. With the new `:where(.x) { --color-surface: var(--x-color-bg, inherit) }`
- * rebind pattern, each component should pick up its theme colour by default, AND respect variant classes
- * (`.primary`, `.red`, `.success`, …) and ancestor-scope overrides (a wrapping `<div>` that sets `--color-surface`).
+ * Sets per-component theme hooks at `:root`. Plain CSS, no layer participation — token overrides
+ * propagate via inheritance, not via cascade competition, so there's nothing to layer.
  */
+:root {
+	/* Card — soft peach */
+	--card-color-bg: color-mix(in srgb, peachpuff 60%, white);
+	--card-color-border: peachpuff;
 
-	:root {
-		/* Card — soft peach */
-		--card-color-bg: color-mix(in srgb, peachpuff 60%, white);
-		--card-color-border: peachpuff;
+	/* Button — lavender block */
+	--button-color-bg: lavender;
+	--button-color-border: mediumpurple;
+	--button-color-text: indigo;
 
-		/* Button — lavender block */
-		--button-color-bg: lavender;
-		--button-color-border: mediumpurple;
-		--button-color-text: indigo;
-
-		/* Notice — cornsilk */
-		--notice-color-bg: cornsilk;
-		--notice-color-text: darkgoldenrod;
-	}
+	/* Notice — cornsilk */
+	--notice-color-bg: cornsilk;
+	--notice-color-text: darkgoldenrod;
 }

@@ -1,0 +1,17 @@
+@import "../style/base.css";
+
+@layer components {
+	/*
+	 * Full-width region that paints the current surface and gives generous vertical breathing room.
+	 * `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`).
+	 */
+	.panel {
+		display: block;
+		inline-size: 100%;
+		margin-inline: 0;
+		margin-block: 0;
+		padding-block: var(--panel-padding-block, var(--space-xxlarge));
+		padding-inline: var(--panel-padding-inline, var(--space-normal));
+		color: var(--color-text);
+	}
+}

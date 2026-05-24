@@ -1,4 +1,4 @@
-@import "layers.css";
+@import "base.css";
 
 @layer variants {
 	/* Block-spacing variants — apply via `getSpacingClass()` to bump margin-block on block-level components. */

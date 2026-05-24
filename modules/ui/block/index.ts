@@ -7,6 +7,7 @@ export * from "./Divider.js";
 export * from "./Heading.js";
 export * from "./Image.js";
 export * from "./List.js";
+export * from "./Panel.js";
 export * from "./Paragraph.js";
 export * from "./Preformatted.js";
 export * from "./Prose.js";

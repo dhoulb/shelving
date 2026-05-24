@@ -1,4 +1,4 @@
-@import "../variant/layers.css";
+@import "../style/base.css";
 
 @layer components {
 	.heading,

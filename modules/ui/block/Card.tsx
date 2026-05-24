@@ -1,12 +1,13 @@
 import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { getStatusClass, type Status } from "../style/Status.js";
+import { SURFACE_CLASS } from "../style/Surface.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import { type ColorVariants, getColorClass } from "../variant/Color.js";
-import { getStatusClass, type Status } from "../variant/Status.js";
-import { SURFACE_CLASS } from "../variant/Surface.js";
 import CARD_CSS from "./Card.module.css";
 
-export interface CardProps extends ClickableProps, ColorVariants {
+export interface CardProps extends ClickableProps, ColorVariants, TypographyVariants {
 	/** Constrain the card to narrow width (defaults to full-width). */
 	narrow?: boolean | undefined;
 
@@ -36,6 +37,7 @@ export function Card({ children, href, onClick, title = "Open", status, ...props
 				getModuleClass(CARD_CSS, "card", props), //
 				status && getStatusClass(status), // Cards can have status colours.
 				getColorClass(props), // Cards can also have raw colour overrides.
+				getTypographyClass(props), // Cards can also set font family / size for their content.
 			)}
 		>
 			{overlay}

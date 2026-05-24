@@ -1,4 +1,4 @@
-@import "layers.css";
+@import "base.css";
 
 /* Child defaults sit in `@layer defaults` so any explicit styling from consumers wins automatically. */
 @layer defaults {

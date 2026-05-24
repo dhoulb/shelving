@@ -1,4 +1,4 @@
-@import "../variant/layers.css";
+@import "../style/base.css";
 
 /* Low-priority padding/flex defaults live in `@layer defaults` so consumers can override them */
 /* with normal-specificity selectors without needing `:where()` tricks. */
@@ -53,12 +53,7 @@
 		position: fixed;
 		inset: 0;
 
-		/* Apply baseline body typography (font, colors, default spacing) to page body in a layout. */
-		font-family: var(--font-body);
-		font-weight: var(--weight-normal);
-		font-size: var(--size-normal);
-		line-height: var(--leading);
-		color: var(--color-text);
+		/* Layout-specific bg hook. Typography and `--color-bg` come from base body styles in style/base.css. */
 		background: var(--layout-body-bg, var(--color-bg));
 	}
 

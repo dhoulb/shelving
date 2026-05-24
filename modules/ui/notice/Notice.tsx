@@ -1,12 +1,12 @@
 import type { ReactElement } from "react";
 import { BLOCK_CLASS } from "../block/Block.js";
 import { StatusIcon } from "../misc/StatusIcon.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { FLEX_CSS, type FlexVariants } from "../style/Flex.js";
+import { getStatusClass, type Status } from "../style/Status.js";
+import { SURFACE_CLASS } from "../style/Surface.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { type ColorVariants, getColorClass } from "../variant/Color.js";
-import { FLEX_CSS, type FlexVariants } from "../variant/Flex.js";
-import { getStatusClass, type Status } from "../variant/Status.js";
-import { SURFACE_CLASS } from "../variant/Surface.js";
 import NOTICE_CSS from "./Notice.module.css";
 
 export interface NoticeProps extends FlexVariants, ColorVariants, OptionalChildProps {

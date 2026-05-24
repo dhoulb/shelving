@@ -1,4 +1,4 @@
-@import "layers.css";
+@import "base.css";
 
 @layer variants {
 	/* Text-alignment variants — apply via `getAlignClass()` to any component that wants opt-in alignment. */

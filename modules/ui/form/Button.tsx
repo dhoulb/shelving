@@ -1,9 +1,9 @@
 import type { ReactElement } from "react";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { FLEX_CSS, type FlexVariants } from "../style/Flex.js";
+import { getStatusClass, type StatusVariants } from "../style/Status.js";
+import { SURFACE_CLASS } from "../style/Surface.js";
 import { type Classes, getClass, getModuleClass } from "../util/css.js";
-import { type ColorVariants, getColorClass } from "../variant/Color.js";
-import { FLEX_CSS, type FlexVariants } from "../variant/Flex.js";
-import { getStatusClass, type StatusVariants } from "../variant/Status.js";
-import { SURFACE_CLASS } from "../variant/Surface.js";
 import BUTTON_CSS from "./Button.module.css";
 import { Clickable, type ClickableProps } from "./Clickable.js";
 

@@ -1,4 +1,4 @@
-@import "layers.css";
+@import "base.css";
 
 /*
  * `.surface` participates in the surface-depth chain — apply it to any component that paints a background
