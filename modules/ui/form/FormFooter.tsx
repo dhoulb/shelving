@@ -1,7 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
 import { Footer } from "../block/Block.js";
-import { Flex } from "../block/Flex.js";
 import type { OptionalChildProps } from "../util/props.js";
+import { Flex } from "../variant/Flex.js";
 import { FormMessage } from "./FormMessage.js";
 import { SubmitButton } from "./SubmitButton.js";
 

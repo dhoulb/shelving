@@ -4,7 +4,6 @@ export * from "./Blockquote.js";
 export * from "./Card.js";
 export * from "./Definitions.js";
 export * from "./Divider.js";
-export * from "./Flex.js";
 export * from "./Heading.js";
 export * from "./Image.js";
 export * from "./List.js";

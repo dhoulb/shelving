@@ -13,3 +13,4 @@ export * from "./router/index.js";
 export * from "./transition/index.js";
 export * from "./tree/index.js";
 export * from "./util/index.js";
+export * from "./variant/index.js";

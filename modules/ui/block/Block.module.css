@@ -22,9 +22,6 @@
 		margin-inline: auto;
 		max-width: var(--block-width-wide, var(--width-wide));
 	}
-	&.spacious {
-		margin-block: var(--block-spacious-spacing, var(--space-xxlarge));
-	}
 }
 
 /* Plain semantic blocks inside prose pick up the same spacing as a <Block>. */

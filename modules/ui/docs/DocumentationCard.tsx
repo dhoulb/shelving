@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 import type { DocumentationElementProps } from "../../util/element.js";
 import { type AbsolutePath, joinPath } from "../../util/path.js";
 import { Card } from "../block/Card.js";
-import { Flex } from "../block/Flex.js";
 import { Paragraph } from "../block/Paragraph.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Subheading } from "../block/Subheading.js";
 import { Code } from "../inline/Code.js";
+import { Flex } from "../variant/Flex.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
 interface DocumentationCardProps extends DocumentationElementProps {

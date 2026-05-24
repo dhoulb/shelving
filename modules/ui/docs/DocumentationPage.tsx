@@ -4,7 +4,6 @@ import type { AbsolutePath } from "../../util/path.js";
 import type { Query } from "../../util/query.js";
 import { Section } from "../block/Block.js";
 import { Definition, Definitions } from "../block/Definitions.js";
-import { Flex } from "../block/Flex.js";
 import { Heading } from "../block/Heading.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
@@ -13,6 +12,7 @@ import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "../tree/TreeCards.js";
+import { Flex } from "../variant/Flex.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
 const DEFAULT_TYPE = "unknown";

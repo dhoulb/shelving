@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
-import { SURFACE_CLASS } from "../misc/Surface.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
+import { SURFACE_CLASS } from "../variant/Surface.js";
 import styles from "./Preformatted.module.css";
 
 export interface PreformattedProps extends OptionalChildProps {

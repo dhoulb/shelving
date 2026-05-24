@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
-import type { Color } from "../misc/Color.js";
 import { Tag } from "../misc/Tag.js";
+import type { Color } from "../variant/Color.js";
 
 /** Props for `DocumentationKind`. */
 export interface DocumentationKindProps {

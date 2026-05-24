@@ -2,8 +2,8 @@ import { CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XCircl
 import type { ComponentType, ReactElement } from "react";
 import { getModuleClass } from "../util/css.js";
 import { Loading } from "./Loading.js";
-import type { Status } from "./Status.js";
-import statusStyles from "./Status.module.css";
+import type { Status } from "../variant/Status.js";
+import statusStyles from "../variant/Status.module.css";
 import styles from "./StatusIcon.module.css";
 
 const STATUS_ICONS: {
