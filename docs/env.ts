@@ -5,6 +5,7 @@ import type { AbsolutePath } from "../modules/util/path.js";
 export const DOCS_DIR = resolve(import.meta.dir) as AbsolutePath;
 export const ROOT_DIR = resolve(DOCS_DIR, "..") as AbsolutePath;
 export const MODULES_DIR = resolve(ROOT_DIR, "modules") as AbsolutePath;
+export const PACKAGE_JSON_PATH = resolve(ROOT_DIR, "package.json") as AbsolutePath;
 export const OUTPUT_DIR = resolve(ROOT_DIR, ".build/docs") as AbsolutePath;
 
 export const APP_TITLE = "Shelving";

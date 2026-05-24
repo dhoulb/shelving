@@ -159,7 +159,7 @@ export function first<T>(arr: T[]): T | undefined {
 		const element = await extractor.extract(file("export const X = 1;", "/tmp/array.ts"));
 		expect(element.props.title).toBeUndefined();
 		expect(element.props.name).toBe("array");
-		expect(element.key).toBe("array");
+		expect(element.key).toBe("array.ts");
 	});
 
 	test("sets title with () for functions and methods, bare name for other kinds", async () => {
@@ -347,6 +347,6 @@ export function first<T>(arr: T[]): T | undefined {
 		// The extractor should use only the basename.
 		const element = await extractor.extract(file("export const X = 1;", "/Users/foo/modules/util/array.ts"));
 		expect(element.props.name).toBe("array");
-		expect(element.key).toBe("array");
+		expect(element.key).toBe("array.ts");
 	});
 });

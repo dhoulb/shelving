@@ -1,0 +1,95 @@
+import { describe, expect, test } from "bun:test";
+import type { DirectoryElement, FileElement, TreeElement } from "../util/element.js";
+import type { AbsolutePath } from "../util/path.js";
+import { Extractor } from "./Extractor.js";
+import { MergingExtractor } from "./MergingExtractor.js";
+
+/** Helper to build a `tree-file` element for tests. */
+function _file(key: string, props: Partial<FileElement["props"]> = {}): FileElement {
+	const [name] = key.split(".");
+	return {
+		type: "tree-file",
+		key,
+		props: { name: name ?? key, source: `/tmp/${key}` as AbsolutePath, ...props },
+	};
+}
+
+/** Helper to build a `tree-directory` element for tests. */
+function _dir(key: string, children: TreeElement[], props: Partial<DirectoryElement["props"]> = {}): DirectoryElement {
+	return {
+		type: "tree-directory",
+		key,
+		props: { name: key, source: `/tmp/${key}` as AbsolutePath, children, ...props },
+	};
+}
+
+/** Minimal source extractor that just returns whatever it's constructed with — lets us test through-extractor behaviour in isolation. */
+class _StubExtractor extends Extractor<void, DirectoryElement> {
+	private readonly _root: DirectoryElement;
+	constructor(root: DirectoryElement) {
+		super();
+		this._root = root;
+	}
+	extract(): DirectoryElement {
+		return this._root;
+	}
+}
+
+describe("MergingExtractor", () => {
+	test("merges sibling .md into .ts and keeps the .ts key", async () => {
+		const root = _dir("util", [
+			_file("string.ts", { children: [{ type: "tree-documentation", key: "getstring", props: { name: "getString" } }] }),
+			_file("string.md", { title: "String utilities", content: "Notes about strings." }),
+		]);
+		const out = await new MergingExtractor(new _StubExtractor(root)).extract(undefined);
+		const kids = Array.from(out.props.children as Iterable<TreeElement>);
+		expect(kids).toHaveLength(1);
+		const merged = kids[0] as FileElement;
+		expect(merged.key).toBe("string.ts");
+		expect(merged.props.title).toBe("String utilities");
+		expect(merged.props.content).toBe("Notes about strings.");
+		// Children from the .ts side are preserved.
+		expect(Array.from(merged.props.children as Iterable<TreeElement>)).toHaveLength(1);
+	});
+
+	test("leaves a standalone .md in place when no primary candidate exists", async () => {
+		const root = _dir("util", [_file("concepts.md", { title: "Concepts", content: "Standalone prose." })]);
+		const out = await new MergingExtractor(new _StubExtractor(root)).extract(undefined);
+		const kids = Array.from(out.props.children as Iterable<TreeElement>);
+		expect(kids).toHaveLength(1);
+		expect(kids[0]?.key).toBe("concepts.md");
+		expect(kids[0]?.props.title).toBe("Concepts");
+	});
+
+	test("merges into the first candidate that exists, in declaration order", async () => {
+		const root = _dir("util", [_file("a.md", { title: "A docs" }), _file("a.tsx", { content: "tsx body" })]);
+		const out = await new MergingExtractor(new _StubExtractor(root), {
+			merges: { "{base}.md": ["{base}.ts", "{base}.tsx"] },
+		}).extract(undefined);
+		const kids = Array.from(out.props.children as Iterable<TreeElement>);
+		expect(kids).toHaveLength(1);
+		expect(kids[0]?.key).toBe("a.tsx"); // Skipped .ts (doesn't exist), matched .tsx.
+		expect(kids[0]?.props.title).toBe("A docs");
+	});
+
+	test("descends into subdirectories", async () => {
+		const root = _dir("modules", [_dir("util", [_file("string.ts", { content: "ts" }), _file("string.md", { content: "md" })])]);
+		const out = await new MergingExtractor(new _StubExtractor(root)).extract(undefined);
+		const subdir = Array.from(out.props.children as Iterable<TreeElement>)[0] as DirectoryElement;
+		const kids = Array.from(subdir.props.children as Iterable<TreeElement>);
+		expect(kids).toHaveLength(1);
+		expect(kids[0]?.key).toBe("string.ts");
+		expect(kids[0]?.props.content).toBe("ts\n\nmd");
+	});
+
+	test("respects a custom merges map", async () => {
+		const root = _dir("x", [_file("readme.txt", { content: "txt" }), _file("readme.md", { content: "md" })]);
+		const out = await new MergingExtractor(new _StubExtractor(root), {
+			merges: { "{base}.txt": ["{base}.md"] },
+		}).extract(undefined);
+		const kids = Array.from(out.props.children as Iterable<TreeElement>);
+		expect(kids).toHaveLength(1);
+		expect(kids[0]?.key).toBe("readme.md");
+		expect(kids[0]?.props.content).toBe("md\n\ntxt");
+	});
+});

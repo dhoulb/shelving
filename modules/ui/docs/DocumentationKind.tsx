@@ -10,6 +10,7 @@ export interface DocumentationKindProps {
 
 /** Mapping from a documented symbol's `kind` to its tag colour. */
 const KIND_COLOR: { readonly [K in string]?: Color } = {
+	module: "red",
 	function: "blue",
 	class: "purple",
 	interface: "cyan",

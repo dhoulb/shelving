@@ -238,7 +238,8 @@ export function* filterElements(elements: Elements, match: (element: Element) =>
 /**
  * Resolve an element in a tree by walking a sequence of names from `root`.
  * - The `root` element's own name is never matched against path segments — it's the container, not a step in the path.
- * - Each segment matches the `name` prop of an immediate child of the current element.
+ * - A child's `name` may contain `/` separators, in which case it matches multiple consecutive path segments
+ *   (e.g. a module named `"util/string"` matches the segments `["util", "string"]`).
  * - If `path` is empty, returns `root` itself.
  * - Returns `undefined` if no descendant matches at any level.
  *
@@ -252,22 +253,27 @@ export function* filterElements(elements: Elements, match: (element: Element) =>
  * @param path An array of path segments naming descendants of `root`.
  *
  * @example resolveElementPath(root, ["util", "array"]) // Element with name "array" inside child with name "util"
+ * @example resolveElementPath(root, ["util", "string"]) // Module child with composite name "util/string"
  * @example resolveElementPath(root, []) // `root` itself
  */
 export function resolveElementPath(root: TreeElement, path: readonly string[]): TreeElement | undefined {
-	let current: TreeElement = root;
-	for (const segment of path) {
-		let found: TreeElement | undefined;
-		for (const el of walkElements(current.props.children)) {
-			if ((el as TreeElement).props.name === segment) {
-				found = el as TreeElement;
+	if (!path.length) return root;
+	for (const el of walkElements(root.props.children)) {
+		const child = el as TreeElement;
+		const nameSegments = child.props.name.split("/");
+		if (nameSegments.length > path.length) continue;
+		let matches = true;
+		for (let i = 0; i < nameSegments.length; i++) {
+			if (nameSegments[i] !== path[i]) {
+				matches = false;
 				break;
 			}
 		}
-		if (!found) return undefined;
-		current = found;
+		if (!matches) continue;
+		const result = resolveElementPath(child, path.slice(nameSegments.length));
+		if (result) return result;
 	}
-	return current;
+	return undefined;
 }
 
 /**

@@ -9,7 +9,7 @@
 import { watch } from "node:fs";
 import { join } from "node:path";
 import { buildApp } from "./build.js";
-import { APP_URL, MODULES_DIR, OUTPUT_DIR } from "./env.js";
+import { APP_URL, MODULES_DIR, OUTPUT_DIR, PACKAGE_JSON_PATH } from "./env.js";
 
 // Serve static files.
 Bun.serve({
@@ -34,7 +34,7 @@ watch(MODULES_DIR, { recursive: true }, (_event, filename) => {
 		console.warn(`\nFile changed: ${filename}`);
 		try {
 			// Build the static site first, then serve it.
-			await buildApp(MODULES_DIR, OUTPUT_DIR);
+			await buildApp(MODULES_DIR, PACKAGE_JSON_PATH, OUTPUT_DIR);
 
 			console.warn("Ready.");
 		} catch (error) {

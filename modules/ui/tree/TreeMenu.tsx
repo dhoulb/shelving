@@ -1,13 +1,21 @@
 import type { ReactNode } from "react";
-import { queryElements, type TreeElement, type TreeElementProps } from "../../util/element.js";
+import { type Element, filterElements, type TreeElement, type TreeElementProps } from "../../util/element.js";
 import { type AbsolutePath, joinPath } from "../../util/path.js";
-import type { Query } from "../../util/query.js";
 import { Menu } from "../menu/Menu.js";
 import { MenuItem } from "../menu/MenuItem.js";
 import { createMapper } from "../misc/Mapper.js";
 
-/** Tree element types that appear in the menu — directories and files only, no code symbols. */
-export const MENU_QUERY: Query<{ type: string }> = { type: ["tree-directory", "tree-file"] };
+/**
+ * Match an element that should appear in the sidebar menu.
+ * - Directories and plain files always qualify.
+ * - For documentation elements, only `kind: "module"` qualifies — functions, classes, methods, properties, etc. are kept off the navigation.
+ */
+export function matchMenuElement(element: Element): boolean {
+	const { type, props } = element;
+	if (type === "tree-directory" || type === "tree-file") return true;
+	if (type === "tree-documentation") return (props as { kind?: string }).kind === "module";
+	return false;
+}
 
 /** Extras threaded through `TreeMenuMapper` to every menu item — the parent's URL path. */
 interface TreeMenuExtras {
@@ -22,7 +30,7 @@ interface TreeMenuExtras {
  */
 export function TreeMenuItem({ path = "/", name, title, children }: TreeElementProps & TreeMenuExtras): ReactNode {
 	const href = joinPath(path, name);
-	const submenu = Array.from(queryElements(children, MENU_QUERY));
+	const submenu = Array.from(filterElements(children, matchMenuElement));
 	return (
 		<MenuItem href={href}>
 			{title ?? name}
@@ -39,6 +47,7 @@ export function TreeMenuItem({ path = "/", name, title, children }: TreeElementP
 export const [TreeMenuMapping, TreeMenuMapper] = createMapper<TreeMenuExtras>({
 	"tree-directory": TreeMenuItem,
 	"tree-file": TreeMenuItem,
+	"tree-documentation": TreeMenuItem,
 });
 
 export interface TreeMenuProps {
@@ -57,7 +66,7 @@ export interface TreeMenuProps {
 export function TreeMenu({ path = "/", tree }: TreeMenuProps): ReactNode {
 	return (
 		<Menu>
-			<TreeMenuMapper path={path}>{queryElements(tree.props.children, MENU_QUERY)}</TreeMenuMapper>
+			<TreeMenuMapper path={path}>{filterElements(tree.props.children, matchMenuElement)}</TreeMenuMapper>
 		</Menu>
 	);
 }
