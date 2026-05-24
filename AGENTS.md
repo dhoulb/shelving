@@ -328,6 +328,7 @@ Conventions for the upcoming reusable component layer.
 - CSS nesting is used for variants (`&.small { ... }`), pseudo-classes (`&:hover { ... }`), and child selectors (`:where(& > *) { ... }`)
 - `:where()` is used to keep specificity low for default child styles
 - CSS modules are imported as default: `import styles from "./Foo.module.css"`, or with a `_CSS` suffix for named-export style: `import BUTTON_CSS from "./Button.module.css"`. CSS modules are the one exception to the named-exports-only rule
+- **CSS custom property naming.** Variables owned by a specific module file (theme hooks consumers can set, internal runtime variables the module writes and reads) must start with the file's kebab-case name. So `Surface.module.css` owns `--surface-depth` and `--surface-color`; `Card.module.css` owns `--card-color-bg`, `--card-padding`, `--card-radius`; `Flex.module.css` owns `--flex-gap`, `--flex-icon-size`. This makes the originating file obvious from any `var(--...)` reference. Exempt: design-token constants declared at `:root` (`App.module.css`'s `--color-*` / `--space-*` / `--size-*` etc., the variant palettes `--primary-*` / `--success-*` / `--red-*` in `Color.module.css` and `Status.module.css`). Writing into a pre-existing global token (`.primary { --color-surface: var(--primary-surface); }`) is also fine — you're using the global namespace, not defining a new variable
 
 ### Copy
 
