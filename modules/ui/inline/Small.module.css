@@ -1,9 +1,13 @@
-.small,
-.prose small {
-	/* Style */
-	color: var(--color-quiet);
+@import "../variant/layers.css";
 
-	/* Typography */
-	font-weight: var(--weight-normal);
-	font-size: inherit;
+@layer components {
+	.small,
+	.prose small {
+		/* Style */
+		color: var(--color-quiet);
+
+		/* Typography */
+		font-weight: var(--weight-normal);
+		font-size: inherit;
+	}
 }

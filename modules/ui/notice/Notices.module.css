@@ -1,10 +1,14 @@
-.notices {
-	position: fixed;
-	bottom: var(--space-normal);
-	right: var(--space-normal);
-	z-index: 1000;
-	display: flex;
-	max-width: var(--width-narrow);
-	flex-direction: column;
-	gap: var(--space-small);
+@import "../variant/layers.css";
+
+@layer components {
+	.notices {
+		position: fixed;
+		bottom: var(--space-normal);
+		right: var(--space-normal);
+		z-index: 1000;
+		display: flex;
+		max-width: var(--width-narrow);
+		flex-direction: column;
+		gap: var(--space-small);
+	}
 }

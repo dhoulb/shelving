@@ -1,16 +1,20 @@
-.paragraph,
-.prose p {
-	/* Box */
-	display: block;
-	inline-size: 100%;
-	margin-inline: 0;
-	margin-block: var(--paragraph-spacing, var(--space-normal));
+@import "../variant/layers.css";
 
-	/* Psuedo-classes */
-	&:first-child {
-		margin-block-start: 0;
-	}
-	&:last-child {
-		margin-block-end: 0;
+@layer components {
+	.paragraph,
+	.prose p {
+		/* Box */
+		display: block;
+		inline-size: 100%;
+		margin-inline: 0;
+		margin-block: var(--paragraph-spacing, var(--space-normal));
+
+		/* Psuedo-classes */
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
 	}
 }

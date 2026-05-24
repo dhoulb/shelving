@@ -1,19 +1,23 @@
-.link,
-.prose a {
-	/* Style */
-	color: var(--link-weight, var(--color-link));
-	text-decoration: none;
-	cursor: inherit;
+@import "../variant/layers.css";
 
-	/* Typography */
-	font-weight: var(--link-weight, var(--weight-strong));
+@layer components {
+	.link,
+	.prose a {
+		/* Style */
+		color: var(--link-weight, var(--color-link));
+		text-decoration: none;
+		cursor: inherit;
 
-	&:any-link {
-		cursor: pointer;
-		text-decoration: underline var(--stroke-normal);
+		/* Typography */
+		font-weight: var(--link-weight, var(--weight-strong));
 
-		&:hover {
-			text-decoration: none;
+		&:any-link {
+			cursor: pointer;
+			text-decoration: underline var(--stroke-normal);
+
+			&:hover {
+				text-decoration: none;
+			}
 		}
 	}
 }

@@ -1,31 +1,35 @@
-.progress {
-	display: grid;
-	grid-template-columns: repeat(var(--steps), minmax(0, 1fr));
-	gap: var(--progress-gap, 0.375rem);
-}
+@import "../variant/layers.css";
 
-.item {
-	height: var(--progress-height, 0.375rem);
-	border-radius: var(--progress-radius, 999px);
-	background: var(--progress-color-bg, var(--gray-20));
-}
+@layer components {
+	.progress {
+		display: grid;
+		grid-template-columns: repeat(var(--steps), minmax(0, 1fr));
+		gap: var(--progress-gap, 0.375rem);
+	}
 
-.active {
-	background: var(--progress-color-active, var(--primary-text));
-}
+	.item {
+		height: var(--progress-height, 0.375rem);
+		border-radius: var(--progress-radius, 999px);
+		background: var(--progress-color-bg, var(--gray-20));
+	}
 
-.progress.primary .active {
-	background: var(--progress-primary-color-active, var(--progress-color-active, var(--primary-text)));
-}
+	.active {
+		background: var(--progress-color-active, var(--primary-text));
+	}
 
-.progress.success .active {
-	background: var(--progress-success-color-active, var(--success-text));
-}
+	.progress.primary .active {
+		background: var(--progress-primary-color-active, var(--progress-color-active, var(--primary-text)));
+	}
 
-.progress.warning .active {
-	background: var(--progress-warning-color-active, var(--warning-text));
-}
+	.progress.success .active {
+		background: var(--progress-success-color-active, var(--success-text));
+	}
 
-.progress.danger .active {
-	background: var(--progress-danger-color-active, var(--danger-text));
+	.progress.warning .active {
+		background: var(--progress-warning-color-active, var(--warning-text));
+	}
+
+	.progress.danger .active {
+		background: var(--progress-danger-color-active, var(--danger-text));
+	}
 }

@@ -1,13 +1,17 @@
-/* Text-alignment variants — apply via `getAlignClass()` to any component that wants opt-in alignment. */
+@import "layers.css";
 
-.left {
-	text-align: left;
-}
+@layer variants {
+	/* Text-alignment variants — apply via `getAlignClass()` to any component that wants opt-in alignment. */
 
-.center {
-	text-align: center;
-}
+	.left {
+		text-align: left;
+	}
 
-.right {
-	text-align: right;
+	.center {
+		text-align: center;
+	}
+
+	.right {
+		text-align: right;
+	}
 }

@@ -1,5 +1,9 @@
-/* Block-spacing variants — apply via `getSpacingClass()` to bump margin-block on block-level components. */
+@import "layers.css";
 
-.spacious {
-	margin-block: var(--spacing-spacious, var(--space-xxlarge));
+@layer variants {
+	/* Block-spacing variants — apply via `getSpacingClass()` to bump margin-block on block-level components. */
+
+	.spacious {
+		margin-block: var(--spacing-spacious, var(--space-xxlarge));
+	}
 }

@@ -1,13 +1,17 @@
-.main {
-	/** Contents */
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: start;
-}
+@import "../variant/layers.css";
 
-.mainInner {
-	width: 100%;
-	max-width: var(--width-wide);
-	margin: auto;
+@layer components {
+	.main {
+		/** Contents */
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: start;
+	}
+
+	.mainInner {
+		width: 100%;
+		max-width: var(--width-wide);
+		margin: auto;
+	}
 }

@@ -1,30 +1,34 @@
-.unordered,
-.ordered,
-.prose ul,
-.prose ol {
-	/* Box */
-	display: block;
-	margin-inline: 0;
-	margin-block: var(--list-spacing, var(--space-normal));
+@import "../variant/layers.css";
 
-	/* Typography */
-	text-align: left;
+@layer components {
+	.unordered,
+	.ordered,
+	.prose ul,
+	.prose ol {
+		/* Box */
+		display: block;
+		margin-inline: 0;
+		margin-block: var(--list-spacing, var(--space-normal));
 
-	/* Psuedo-classes */
-	&:first-child {
-		margin-block-start: 0;
+		/* Typography */
+		text-align: left;
+
+		/* Psuedo-classes */
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
 	}
-	&:last-child {
-		margin-block-end: 0;
+
+	.unordered,
+	.prose ul {
+		padding-inline-start: var(--unordered-list-padding-inline-start, 1.125em);
 	}
-}
 
-.unordered,
-.prose ul {
-	padding-inline-start: var(--unordered-list-padding-inline-start, 1.125em);
-}
-
-.ordered,
-.prose ol {
-	padding-inline-start: var(--ordered-list-padding-inline-start, 1.8em);
+	.ordered,
+	.prose ol {
+		padding-inline-start: var(--ordered-list-padding-inline-start, 1.8em);
+	}
 }

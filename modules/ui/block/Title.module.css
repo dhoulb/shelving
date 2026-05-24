@@ -1,24 +1,28 @@
-.title,
-.prose h1 {
-	/* Box */
-	display: block;
-	inline-size: 100%;
-	margin-inline: 0;
-	margin-block-start: var(--title-spacing-before, var(--spacing-section));
-	margin-block-end: var(--title-spacing, var(--space-normal));
+@import "../variant/layers.css";
 
-	/* Style */
-	font-family: var(--title-font, var(--font-body));
-	font-weight: var(--title-weight, var(--weight-strong));
-	line-height: var(--title-leading, var(--leading));
-	color: var(--title-color, var(--color-text));
-	font-size: var(--title-font-size, var(--size-xxxlarge));
+@layer components {
+	.title,
+	.prose h1 {
+		/* Box */
+		display: block;
+		inline-size: 100%;
+		margin-inline: 0;
+		margin-block-start: var(--title-spacing-before, var(--spacing-section));
+		margin-block-end: var(--title-spacing, var(--space-normal));
 
-	/* Psuedo-classes */
-	&:first-child {
-		margin-block-start: 0;
-	}
-	&:last-child {
-		margin-block-end: 0;
+		/* Style */
+		font-family: var(--title-font, var(--font-body));
+		font-weight: var(--title-weight, var(--weight-strong));
+		line-height: var(--title-leading, var(--leading));
+		color: var(--title-color, var(--color-text));
+		font-size: var(--title-font-size, var(--size-xxxlarge));
+
+		/* Psuedo-classes */
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
 	}
 }

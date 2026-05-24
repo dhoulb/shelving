@@ -1,0 +1,28 @@
+/*
+ * Cascade-layer order for the shelving UI library.
+ *
+ * Every `*.module.css` and `theme.css` in the codebase `@import`s this file at the very top, which
+ * establishes (or re-declares) the layer order before any rules are parsed. Importing it from each
+ * file makes the order resilient to bundle order — whichever file the parser hits first sets the
+ * order, and every subsequent file's import re-declares the same order (a no-op).
+ *
+ * Order, lowest to highest priority:
+ *
+ *   defaults   — `:root` design tokens, low-priority opt-in defaults, the `.surface` depth chain.
+ *                 Anything in a later layer beats these.
+ *
+ *   components — component-defining CSS. The bulk of the codebase: `.card`, `.button`, `.notice`,
+ *                 `.paragraph`, etc. Beats `defaults` automatically.
+ *
+ *   theme      — site-level overrides (`docs/theme.css`, `test125/theme.css`). Beats `components`
+ *                 so consumers can customise theme hooks without specificity gymnastics.
+ *
+ *   variants   — cross-cutting opt-in modifiers (`Color`, `Status`, `Surface` resets, `Flex`,
+ *                 `Align`, `Spacing`). Always wins, so a `.primary` class on an element beats
+ *                 everything else regardless of selector specificity.
+ *
+ * Note: unlayered rules (rules outside any `@layer { … }` block) beat ALL layered rules. If a
+ * downstream theme forgets to `@import` this file and wrap its overrides in `@layer theme { … }`,
+ * those rules will silently dominate variants. Document this prominently for consumers.
+ */
+@layer defaults, components, theme, variants;

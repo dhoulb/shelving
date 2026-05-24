@@ -1,54 +1,58 @@
-.body {
-	font-family: var(--font-body);
-}
+@import "../variant/layers.css";
 
-.monospace {
-	font-family: var(--font-monospace);
-}
+@layer components {
+	.body {
+		font-family: var(--font-body);
+	}
 
-.sans {
-	font-family: var(--font-sans);
-}
+	.monospace {
+		font-family: var(--font-monospace);
+	}
 
-.serif {
-	font-family: var(--font-serif);
-}
+	.sans {
+		font-family: var(--font-sans);
+	}
 
-.code {
-	font-family: var(--font-code);
-}
+	.serif {
+		font-family: var(--font-serif);
+	}
 
-.xxsmall {
-	font-size: var(--size-xxsmall);
-	line-height: Var(--leading);
-}
+	.code {
+		font-family: var(--font-code);
+	}
 
-.xsmall {
-	font-size: var(--size-xsmall);
-	line-height: Var(--leading);
-}
+	.xxsmall {
+		font-size: var(--size-xxsmall);
+		line-height: Var(--leading);
+	}
 
-.small {
-	font-size: var(--size-small);
-	line-height: Var(--leading);
-}
+	.xsmall {
+		font-size: var(--size-xsmall);
+		line-height: Var(--leading);
+	}
 
-.normal {
-	font-size: var(--size-normal);
-	line-height: Var(--leading);
-}
+	.small {
+		font-size: var(--size-small);
+		line-height: Var(--leading);
+	}
 
-.large {
-	font-size: var(--size-large);
-	line-height: Var(--leading);
-}
+	.normal {
+		font-size: var(--size-normal);
+		line-height: Var(--leading);
+	}
 
-.xlarge {
-	font-size: var(--size-xlarge);
-	line-height: Var(--leading);
-}
+	.large {
+		font-size: var(--size-large);
+		line-height: Var(--leading);
+	}
 
-.xxlarge {
-	font-size: var(--size-xxlarge);
-	line-height: Var(--leading);
+	.xlarge {
+		font-size: var(--size-xlarge);
+		line-height: Var(--leading);
+	}
+
+	.xxlarge {
+		font-size: var(--size-xxlarge);
+		line-height: Var(--leading);
+	}
 }

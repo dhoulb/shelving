@@ -1,40 +1,44 @@
-.preformatted,
-.prose pre {
-	/* Box */
-	display: block;
-	margin-inline: 0;
-	margin-block: var(--preformatted-spacing, var(--space-normal));
-	padding: var(--preformatted-padding, var(--space-xsmall));
+@import "../variant/layers.css";
 
-	/* Style — `.preformatted` gets `background` from `SURFACE_CLASS`; `.prose pre` (markdown-rendered) */
-	/* falls back to depth-aware `--color-surface-active`. Border matches the bg in either case. */
-	font-family: var(--preformatted-font, var(--font-code));
-	color: var(--preformatted-color-text, var(--color-text));
-	border: var(--preformatted-border, var(--stroke-normal)) solid
-		var(--preformatted-color-border, var(--color-surface-active, var(--color-surface)));
-	border-radius: var(--preformatted-radius, var(--radius-normal));
-	tab-size: 2;
+@layer components {
+	.preformatted,
+	.prose pre {
+		/* Box */
+		display: block;
+		margin-inline: 0;
+		margin-block: var(--preformatted-spacing, var(--space-normal));
+		padding: var(--preformatted-padding, var(--space-xsmall));
 
-	/* Wrap long lines by default — newlines and indentation within wrapped lines are still preserved. */
-	white-space: pre-wrap;
-	overflow-wrap: anywhere;
+		/* Style — `.preformatted` gets `background` from `SURFACE_CLASS`; `.prose pre` (markdown-rendered) */
+		/* falls back to depth-aware `--color-surface-active`. Border matches the bg in either case. */
+		font-family: var(--preformatted-font, var(--font-code));
+		color: var(--preformatted-color-text, var(--color-text));
+		border: var(--preformatted-border, var(--stroke-normal)) solid
+			var(--preformatted-color-border, var(--color-surface-active, var(--color-surface)));
+		border-radius: var(--preformatted-radius, var(--radius-normal));
+		tab-size: 2;
 
-	/* Psuedo-classes */
-	&:first-child {
-		margin-block-start: 0;
+		/* Wrap long lines by default — newlines and indentation within wrapped lines are still preserved. */
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+
+		/* Psuedo-classes */
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
+
+		/* Variants */
+		&.nowrap {
+			white-space: pre;
+			overflow-wrap: normal;
+		}
 	}
-	&:last-child {
-		margin-block-end: 0;
-	}
 
-	/* Variants */
-	&.nowrap {
-		white-space: pre;
-		overflow-wrap: normal;
+	/* Markdown-rendered `<pre>` doesn't carry `SURFACE_CLASS`, so paint its own depth-aware background. */
+	.prose pre {
+		background-color: var(--preformatted-color-bg, var(--color-surface-active, var(--color-surface)));
 	}
-}
-
-/* Markdown-rendered `<pre>` doesn't carry `SURFACE_CLASS`, so paint its own depth-aware background. */
-.prose pre {
-	background-color: var(--preformatted-color-bg, var(--color-surface-active, var(--color-surface)));
 }

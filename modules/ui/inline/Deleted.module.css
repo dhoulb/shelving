@@ -1,9 +1,13 @@
-.deleted,
-.prose del {
-	/* Style */
-	color: var(--error-text);
-	text-decoration: line-through var(--stroke-normal);
+@import "../variant/layers.css";
 
-	/* Typography */
-	font-weight: var(--weight-strong);
+@layer components {
+	.deleted,
+	.prose del {
+		/* Style */
+		color: var(--error-text);
+		text-decoration: line-through var(--stroke-normal);
+
+		/* Typography */
+		font-weight: var(--weight-strong);
+	}
 }

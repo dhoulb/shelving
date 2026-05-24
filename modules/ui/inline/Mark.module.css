@@ -1,16 +1,20 @@
-.mark,
-.prose mark {
-	/* Box */
-	display: inline-block;
-	padding-inline: 0.375em;
+@import "../variant/layers.css";
 
-	/* Style */
-	border-radius: var(--radius-xxsmall);
-	color: var(--mark-color-text, var(--color-black));
-	/* biome-ignore lint/correctness/noUnknownFunction: contrast-color() is new so we provide a fallback. */
-	color: var(--mark-color-text, contrast-color(var(--color-highlight)));
-	background-color: var(--mark-color-bg, var(--color-highlight));
+@layer components {
+	.mark,
+	.prose mark {
+		/* Box */
+		display: inline-block;
+		padding-inline: 0.375em;
 
-	/* Typography */
-	font-weight: var(--weight-strong);
+		/* Style */
+		border-radius: var(--radius-xxsmall);
+		color: var(--mark-color-text, var(--color-black));
+		/* biome-ignore lint/correctness/noUnknownFunction: contrast-color() is new so we provide a fallback. */
+		color: var(--mark-color-text, contrast-color(var(--color-highlight)));
+		background-color: var(--mark-color-bg, var(--color-highlight));
+
+		/* Typography */
+		font-weight: var(--weight-strong);
+	}
 }

@@ -1,4 +1,7 @@
-/*
+@import "../variant/layers.css";
+
+@layer components {
+	/*
  * Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
  *
  * The outer `.layout` class (from Layout.module.css) owns the overall page scroll —
@@ -11,91 +14,92 @@
  * drawer (both are hidden entirely on wide viewports).
  */
 
-.main {
-	display: grid;
-	grid-template-columns: var(--sidebar-layout-width, 17.5rem) 1fr;
-	gap: 0;
-	padding: 0;
-	overflow: hidden;
-}
-
-.sidebar {
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	padding: var(--space-normal);
-	background: var(--sidebar-layout-bg, var(--color-surface));
-	border-right: var(--sidebar-layout-border, 1px) solid var(--sidebar-layout-color-border, var(--color-border));
-}
-
-.content {
-	/* Combined with `.layout` (added at the JSX layer) for scroll/padding/safe-area behaviour. */
-	min-width: 0;
-}
-
-.contentInner {
-	width: 100%;
-	max-width: var(--width-wide);
-	margin: 0 auto;
-}
-
-/* Wrapper for the menu toggle button — hidden on wide viewports, shown on narrow ones (see media query). */
-.toggle {
-	display: none;
-	width: fit-content;
-	margin: 0 0 0 auto;
-}
-
-/* Full-page dimmer behind the open drawer — hidden on wide viewports. */
-.overlay {
-	display: none;
-}
-
-@keyframes overlay-fade-in {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
-
-/* On narrow viewports the sidebar becomes an off-canvas drawer that slides in from the left. */
-@media (max-width: 48rem) {
 	.main {
-		grid-template-columns: 1fr;
-	}
-	.sidebar {
-		position: fixed;
-		z-index: 100;
-		inset-block: 0;
-		left: 0;
-		width: var(--sidebar-layout-width, 17.5rem);
-		max-width: 85vw;
-		transform: translateX(-100%);
-		transition: transform var(--duration-normal) ease-in-out;
-	}
-	.sidebar.open {
-		transform: translateX(0);
-		box-shadow: 0 0 1.5rem var(--color-overlay);
-	}
-	/* Pin the toggle button to the top-right so it stays reachable while the content column scrolls. */
-	.toggle {
-		display: block;
-		position: sticky;
-		top: 0;
-		z-index: 110;
-	}
-	/* Dim the page behind the open drawer; clicking the overlay closes it. */
-	.overlay {
-		display: block;
-		position: fixed;
-		inset: 0;
-		z-index: 90;
-		margin: 0;
+		display: grid;
+		grid-template-columns: var(--sidebar-layout-width, 17.5rem) 1fr;
+		gap: 0;
 		padding: 0;
-		border: 0;
-		background: var(--color-overlay);
-		cursor: pointer;
-		animation: overlay-fade-in var(--duration-normal) ease-in-out;
+		overflow: hidden;
+	}
+
+	.sidebar {
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: var(--space-normal);
+		background: var(--sidebar-layout-bg, var(--color-surface));
+		border-right: var(--sidebar-layout-border, 1px) solid var(--sidebar-layout-color-border, var(--color-border));
+	}
+
+	.content {
+		/* Combined with `.layout` (added at the JSX layer) for scroll/padding/safe-area behaviour. */
+		min-width: 0;
+	}
+
+	.contentInner {
+		width: 100%;
+		max-width: var(--width-wide);
+		margin: 0 auto;
+	}
+
+	/* Wrapper for the menu toggle button — hidden on wide viewports, shown on narrow ones (see media query). */
+	.toggle {
+		display: none;
+		width: fit-content;
+		margin: 0 0 0 auto;
+	}
+
+	/* Full-page dimmer behind the open drawer — hidden on wide viewports. */
+	.overlay {
+		display: none;
+	}
+
+	@keyframes overlay-fade-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	/* On narrow viewports the sidebar becomes an off-canvas drawer that slides in from the left. */
+	@media (max-width: 48rem) {
+		.main {
+			grid-template-columns: 1fr;
+		}
+		.sidebar {
+			position: fixed;
+			z-index: 100;
+			inset-block: 0;
+			left: 0;
+			width: var(--sidebar-layout-width, 17.5rem);
+			max-width: 85vw;
+			transform: translateX(-100%);
+			transition: transform var(--duration-normal) ease-in-out;
+		}
+		.sidebar.open {
+			transform: translateX(0);
+			box-shadow: 0 0 1.5rem var(--color-overlay);
+		}
+		/* Pin the toggle button to the top-right so it stays reachable while the content column scrolls. */
+		.toggle {
+			display: block;
+			position: sticky;
+			top: 0;
+			z-index: 110;
+		}
+		/* Dim the page behind the open drawer; clicking the overlay closes it. */
+		.overlay {
+			display: block;
+			position: fixed;
+			inset: 0;
+			z-index: 90;
+			margin: 0;
+			padding: 0;
+			border: 0;
+			background: var(--color-overlay);
+			cursor: pointer;
+			animation: overlay-fade-in var(--duration-normal) ease-in-out;
+		}
 	}
 }

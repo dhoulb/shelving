@@ -1,147 +1,151 @@
-:root {
-	color-scheme: light;
+@import "../variant/layers.css";
 
-	/* Semantic widths */
-	--width-narrow: min(100%, 22.5rem);
-	--width-wide: min(100%, 33.75rem);
+@layer defaults {
+	:root {
+		color-scheme: light;
 
-	/* Font weights */
-	--weight-normal: 400;
-	--weight-strong: 700;
+		/* Semantic widths */
+		--width-narrow: min(100%, 22.5rem);
+		--width-wide: min(100%, 33.75rem);
 
-	/* Semantic font weights */
-	--weight-label: var(--weight-strong);
+		/* Font weights */
+		--weight-normal: 400;
+		--weight-strong: 700;
 
-	/* Font faces */
-	--font-sans: system-ui;
-	--font-mono: ui-monospace, "SF Mono", "Consolas", "Menlo", monospace;
-	--font-serif: "Palatino", "Garamond", serif;
+		/* Semantic font weights */
+		--weight-label: var(--weight-strong);
 
-	/* Semantic font faces */
-	--font-body: var(--font-sans);
-	--font-code: var(--font-mono);
+		/* Font faces */
+		--font-sans: system-ui;
+		--font-mono: ui-monospace, "SF Mono", "Consolas", "Menlo", monospace;
+		--font-serif: "Palatino", "Garamond", serif;
 
-	/* Sizings */
-	--size: 1rem;
-	--size-scale: 1.25;
-	--size-xxsmall: calc(var(--size) * pow(var(--size-scale), -3));
-	--size-xsmall: calc(var(--size) * pow(var(--size-scale), -2));
-	--size-small: calc(var(--size) * pow(var(--size-scale), -1));
-	--size-normal: calc(var(--size) * pow(var(--size-scale), 0));
-	--size-large: calc(var(--size) * pow(var(--size-scale), 1));
-	--size-xlarge: calc(var(--size) * pow(var(--size-scale), 2));
-	--size-xxlarge: calc(var(--size) * pow(var(--size-scale), 3));
-	--size-xxxlarge: calc(var(--size) * pow(var(--size-scale), 4));
+		/* Semantic font faces */
+		--font-body: var(--font-sans);
+		--font-code: var(--font-mono);
 
-	/* Semantic sizes */
-	--size-icon: var(--size-large);
+		/* Sizings */
+		--size: 1rem;
+		--size-scale: 1.25;
+		--size-xxsmall: calc(var(--size) * pow(var(--size-scale), -3));
+		--size-xsmall: calc(var(--size) * pow(var(--size-scale), -2));
+		--size-small: calc(var(--size) * pow(var(--size-scale), -1));
+		--size-normal: calc(var(--size) * pow(var(--size-scale), 0));
+		--size-large: calc(var(--size) * pow(var(--size-scale), 1));
+		--size-xlarge: calc(var(--size) * pow(var(--size-scale), 2));
+		--size-xxlarge: calc(var(--size) * pow(var(--size-scale), 3));
+		--size-xxxlarge: calc(var(--size) * pow(var(--size-scale), 4));
 
-	/* Relative sizes */
-	--size-smaller: 0.875em;
-	--size-larger: 1.5em;
-	--size-xlarger: 2.5em;
-	--size-xxlarger: 5em;
+		/* Semantic sizes */
+		--size-icon: var(--size-large);
 
-	/* Line heights */
-	--leading: clamp(1.05em, calc(1em + 0.5rem), 1.5em);
-	--leading-normal: 1.5;
+		/* Relative sizes */
+		--size-smaller: 0.875em;
+		--size-larger: 1.5em;
+		--size-xlarger: 2.5em;
+		--size-xxlarger: 5em;
 
-	/* Spacings */
-	--space: 1rem;
-	--space-xxsmall: calc(var(--space) * 0.25); /* 4px */
-	--space-xsmall: calc(var(--space) * 0.5); /* 8px */
-	--space-small: calc(var(--space) * 0.75); /* 12px */
-	--space-normal: calc(var(--space) * 1); /* 16px */
-	--space-large: calc(var(--space) * 1.5); /* 24px */
-	--space-xlarge: calc(var(--space) * 2); /* 32px */
-	--space-xxlarge: calc(var(--space) * 3); /* 48px */
+		/* Line heights */
+		--leading: clamp(1.05em, calc(1em + 0.5rem), 1.5em);
+		--leading-normal: 1.5;
 
-	/* Semantic spacings */
-	/* Gap between sibling sections/blocks and the top margin of titles/headings, so the rhythm stays consistent whether a heading is wrapped in a Section or rendered bare. */
-	--spacing-section: 2rem;
+		/* Spacings */
+		--space: 1rem;
+		--space-xxsmall: calc(var(--space) * 0.25); /* 4px */
+		--space-xsmall: calc(var(--space) * 0.5); /* 8px */
+		--space-small: calc(var(--space) * 0.75); /* 12px */
+		--space-normal: calc(var(--space) * 1); /* 16px */
+		--space-large: calc(var(--space) * 1.5); /* 24px */
+		--space-xlarge: calc(var(--space) * 2); /* 32px */
+		--space-xxlarge: calc(var(--space) * 3); /* 48px */
 
-	/* Radii */
-	--radius: 1rem;
-	--radius-xxsmall: calc(var(--radius) * 0.25); /* 4px */
-	--radius-xsmall: calc(var(--radius) * 0.5); /* 8px */
-	--radius-small: calc(var(--radius) * 0.75); /* 12px */
-	--radius-normal: calc(var(--radius) * 1); /* 16px */
-	--radius-large: calc(var(--radius) * 1.5); /* 24px */
-	--radius-xlarge: calc(var(--radius) * 2); /* 32px */
-	--radius-xxlarge: calc(var(--radius) * 3); /* 48px */
+		/* Semantic spacings */
+		/* Gap between sibling sections/blocks and the top margin of titles/headings, so the rhythm stays consistent whether a heading is wrapped in a Section or rendered bare. */
+		--spacing-section: 2rem;
 
-	/* Strokes */
-	--stroke: 2px;
-	--stroke-xxthin: calc(var(--stroke) * 0.25);
-	--stroke-xthin: calc(var(--stroke) * 0.5);
-	--stroke-thin: calc(var(--stroke) * 0.75);
-	--stroke-normal: calc(var(--stroke) * 1);
-	--stroke-thick: calc(var(--stroke) * 1.5);
-	--stroke-xthick: calc(var(--stroke) * 2);
-	--stroke-xxthick: calc(var(--stroke) * 3);
+		/* Radii */
+		--radius: 1rem;
+		--radius-xxsmall: calc(var(--radius) * 0.25); /* 4px */
+		--radius-xsmall: calc(var(--radius) * 0.5); /* 8px */
+		--radius-small: calc(var(--radius) * 0.75); /* 12px */
+		--radius-normal: calc(var(--radius) * 1); /* 16px */
+		--radius-large: calc(var(--radius) * 1.5); /* 24px */
+		--radius-xlarge: calc(var(--radius) * 2); /* 32px */
+		--radius-xxlarge: calc(var(--radius) * 3); /* 48px */
 
-	/* Semantic strokes */
-	--stroke-hairline: 1px;
-	--stroke-focus: var(--stroke-thick);
+		/* Strokes */
+		--stroke: 2px;
+		--stroke-xxthin: calc(var(--stroke) * 0.25);
+		--stroke-xthin: calc(var(--stroke) * 0.5);
+		--stroke-thin: calc(var(--stroke) * 0.75);
+		--stroke-normal: calc(var(--stroke) * 1);
+		--stroke-thick: calc(var(--stroke) * 1.5);
+		--stroke-xthick: calc(var(--stroke) * 2);
+		--stroke-xxthick: calc(var(--stroke) * 3);
 
-	/* Durations */
-	--duration-fast: 150ms;
-	--duration-normal: 300ms;
-	--duration-slow: 600ms;
+		/* Semantic strokes */
+		--stroke-hairline: 1px;
+		--stroke-focus: var(--stroke-thick);
 
-	/* Grows */
-	--grow-greedy: 1000000; /* Take up as much space as possible, unless other elements are greedy too. */
-	--grow-normal: 1000; /* Take up a normal amount of space. */
-	--grow-timid: 1; /* Take up minimal space, unless the only other elements are timid too. */
-	--grow-none: 0;
+		/* Durations */
+		--duration-fast: 150ms;
+		--duration-normal: 300ms;
+		--duration-slow: 600ms;
 
-	/* Colors */
-	--color-blue: #156ef4;
-	--color-cyan: #15edf4;
-	--color-green: #8ce814;
-	--color-orange: #ffb21a;
-	--color-pink: #e718a2;
-	--color-purple: #ad15f4;
-	--color-red: #e5352f;
-	--color-yellow: #ffe01a;
-	--color-black: black;
-	--color-gray: color-mix(var(--color-blue) 30%, rgb(128 128 128)); /* Used as the "tone" color for scale of grays. */
-	--color-white: white;
+		/* Grows */
+		--grow-greedy: 1000000; /* Take up as much space as possible, unless other elements are greedy too. */
+		--grow-normal: 1000; /* Take up a normal amount of space. */
+		--grow-timid: 1; /* Take up minimal space, unless the only other elements are timid too. */
+		--grow-none: 0;
 
-	/* Grays */
-	--gray-05: color-mix(var(--color-gray) 10%, var(--color-white));
-	--gray-10: color-mix(var(--color-gray) 20%, var(--color-white));
-	--gray-20: color-mix(var(--color-gray) 40%, var(--color-white));
-	--gray-30: color-mix(var(--color-gray) 60%, var(--color-white));
-	--gray-40: color-mix(var(--color-gray) 80%, var(--color-white));
-	--gray-50: var(--color-gray);
-	--gray-60: color-mix(var(--color-gray) 80%, var(--color-black));
-	--gray-70: color-mix(var(--color-gray) 60%, var(--color-black));
-	--gray-80: color-mix(var(--color-gray) 40%, var(--color-black));
-	--gray-90: color-mix(var(--color-gray) 20%, var(--color-black));
-	--gray-95: color-mix(var(--color-gray) 10%, var(--color-black));
+		/* Colors */
+		--color-blue: #156ef4;
+		--color-cyan: #15edf4;
+		--color-green: #8ce814;
+		--color-orange: #ffb21a;
+		--color-pink: #e718a2;
+		--color-purple: #ad15f4;
+		--color-red: #e5352f;
+		--color-yellow: #ffe01a;
+		--color-black: black;
+		--color-gray: color-mix(var(--color-blue) 30%, rgb(128 128 128)); /* Used as the "tone" color for scale of grays. */
+		--color-white: white;
 
-	/* Semantic colors */
-	--color-text: var(--color-black);
-	--color-contrast: var(--color-white); /* Contrast color — must be readable on `--color-text` */
-	--color-quiet: var(--gray-40); /* Quiet color is grey, used for secondary text etc. */
-	--color-bg: var(--color-white); /* Background color is usually the opposite of text colour. */
-	--color-border: var(--gray-10);
-	--color-overlay: color-mix(in srgb, var(--color-text) 40%, transparent);
-	--color-link: var(--color-blue); /* Links are usually blue. */
-	--color-focus: var(--color-blue); /* Focus is usually blue. */
-	--color-surface: var(--gray-05); /* Surface color is used for notices and buttons — must be readable on `--color-text` */
+		/* Grays */
+		--gray-05: color-mix(var(--color-gray) 10%, var(--color-white));
+		--gray-10: color-mix(var(--color-gray) 20%, var(--color-white));
+		--gray-20: color-mix(var(--color-gray) 40%, var(--color-white));
+		--gray-30: color-mix(var(--color-gray) 60%, var(--color-white));
+		--gray-40: color-mix(var(--color-gray) 80%, var(--color-white));
+		--gray-50: var(--color-gray);
+		--gray-60: color-mix(var(--color-gray) 80%, var(--color-black));
+		--gray-70: color-mix(var(--color-gray) 60%, var(--color-black));
+		--gray-80: color-mix(var(--color-gray) 40%, var(--color-black));
+		--gray-90: color-mix(var(--color-gray) 20%, var(--color-black));
+		--gray-95: color-mix(var(--color-gray) 10%, var(--color-black));
 
-	/* Shadows */
-	--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-overlay);
-	--shadow-xsmall: 0 0.25rem 1rem -0.5rem var(--color-overlay);
-	--shadow-small: 0 0.375rem 1.5rem -0.75rem var(--color-overlay);
-	--shadow-normal: 0 0.5rem 2rem -1rem var(--color-overlay);
-	--shadow-large: 0 0.75 3rem -1.5rem var(--color-overlay);
-	--shadow-xlarge: 0 1rem 4rem -2rem var(--color-overlay);
-	--shadow-xxlarge: 0 1.5rem 6rem -3rem var(--color-overlay);
-}
+		/* Semantic colors */
+		--color-text: var(--color-black);
+		--color-contrast: var(--color-white); /* Contrast color — must be readable on `--color-text` */
+		--color-quiet: var(--gray-40); /* Quiet color is grey, used for secondary text etc. */
+		--color-bg: var(--color-white); /* Background color is usually the opposite of text colour. */
+		--color-border: var(--gray-10);
+		--color-overlay: color-mix(in srgb, var(--color-text) 40%, transparent);
+		--color-link: var(--color-blue); /* Links are usually blue. */
+		--color-focus: var(--color-blue); /* Focus is usually blue. */
+		--color-surface: var(--gray-05); /* Surface color is used for notices and buttons — must be readable on `--color-text` */
 
-.app {
-	/* Empty */
+		/* Shadows */
+		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-overlay);
+		--shadow-xsmall: 0 0.25rem 1rem -0.5rem var(--color-overlay);
+		--shadow-small: 0 0.375rem 1.5rem -0.75rem var(--color-overlay);
+		--shadow-normal: 0 0.5rem 2rem -1rem var(--color-overlay);
+		--shadow-large: 0 0.75 3rem -1.5rem var(--color-overlay);
+		--shadow-xlarge: 0 1rem 4rem -2rem var(--color-overlay);
+		--shadow-xxlarge: 0 1.5rem 6rem -3rem var(--color-overlay);
+	}
+
+	.app {
+		/* Empty */
+	}
 }

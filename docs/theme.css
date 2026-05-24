@@ -1,4 +1,7 @@
-/*
+@import "../modules/ui/variant/layers.css";
+
+@layer theme {
+	/*
  * Documentation site theme.
  *
  * A token-only overlay on top of the base design tokens defined by `modules/ui/`. Only CSS custom
@@ -9,43 +12,44 @@
  * Every value leans on the existing palette (`--color-*`) rather than introducing new raw colours.
  */
 
-:root {
-	/* Surfaces — warm cream page; soft peach `--color-surface` for prose-level chips, tags and code. */
-	--color-bg: color-mix(in srgb, var(--color-orange) 6%, white);
-	--color-surface: color-mix(in srgb, var(--color-orange) 13%, white);
+	:root {
+		/* Surfaces — warm cream page; soft peach `--color-surface` for prose-level chips, tags and code. */
+		--color-bg: color-mix(in srgb, var(--color-orange) 6%, white);
+		--color-surface: color-mix(in srgb, var(--color-orange) 13%, white);
 
-	/* Borders keep a gentle purple tint for tables, inputs and inline surfaces. */
-	--color-border: color-mix(in srgb, var(--color-purple) 22%, white);
+		/* Borders keep a gentle purple tint for tables, inputs and inline surfaces. */
+		--color-border: color-mix(in srgb, var(--color-purple) 22%, white);
 
-	/* Quiet text — table headers, captions, definition labels — picks up the same purple personality. */
-	--color-quiet: var(--color-purple);
+		/* Quiet text — table headers, captions, definition labels — picks up the same purple personality. */
+		--color-quiet: var(--color-purple);
 
-	/*
+		/*
 	 * Cards — a soft mid peach with no border. Content nested inside (code chips, tags) uses the
 	 * deeper opaque `--card-color-surface`, giving it its own depth distinct from the lighter
 	 * prose-level `--color-surface`.
 	 */
-	--card-color-bg: color-mix(in srgb, var(--color-orange) 14%, white);
-	--card-border: 0;
-	--card-color-surface: color-mix(in srgb, var(--color-orange) 21%, white);
+		--card-color-bg: color-mix(in srgb, var(--color-orange) 14%, white);
+		--card-border: 0;
+		--card-color-surface: color-mix(in srgb, var(--color-orange) 21%, white);
 
-	/* Interactive colours — brighter and more characterful, straight from the palette. */
-	--color-link: var(--color-purple);
-	--color-focus: var(--color-pink);
+		/* Interactive colours — brighter and more characterful, straight from the palette. */
+		--color-link: var(--color-purple);
+		--color-focus: var(--color-pink);
 
-	/* Buttons — bold purple blocks with white content; the site's signature interactive element. */
-	--button-color-bg: var(--color-purple);
-	--button-color-text: var(--color-white);
-	--button-color-border: var(--color-purple);
+		/* Buttons — bold purple blocks with white content; the site's signature interactive element. */
+		--button-color-bg: var(--color-purple);
+		--button-color-text: var(--color-white);
+		--button-color-border: var(--color-purple);
 
-	/*
+		/*
 	 * Sidebar navigation — a soft lavender panel with the divider dropped. Inactive links are
 	 * recoloured to a deep purple readable on the lavender; active and proud links keep the Menu
 	 * component's black, strong defaults. Hover is a deeper shade of the panel's own purple, so it
 	 * never reaches for the warm peach used by surfaces elsewhere.
 	 */
-	--sidebar-layout-bg: color-mix(in srgb, var(--color-purple) 18%, white);
-	--sidebar-layout-border: 0;
-	--menu-color-text: color-mix(in srgb, var(--color-purple) 70%, black);
-	--menu-link-color-hover-bg: color-mix(in srgb, var(--color-purple) 30%, white);
+		--sidebar-layout-bg: color-mix(in srgb, var(--color-purple) 18%, white);
+		--sidebar-layout-border: 0;
+		--menu-color-text: color-mix(in srgb, var(--color-purple) 70%, black);
+		--menu-link-color-hover-bg: color-mix(in srgb, var(--color-purple) 30%, white);
+	}
 }

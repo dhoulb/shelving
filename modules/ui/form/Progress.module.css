@@ -1,30 +1,34 @@
-.track {
-	position: relative;
-	inline-size: 100%;
-	height: var(--progress-height, 0.375rem);
-	border-radius: var(--progress-radius, 999px);
-	background: var(--progress-color-bg, var(--gray-20));
-	overflow: hidden;
-}
+@import "../variant/layers.css";
 
-.fill {
-	display: block;
-	block-size: 100%;
-	inline-size: var(--progress-value, 0%);
-	background: var(--progress-color-active, var(--primary-text));
-	transition:
-		inline-size 160ms ease-out,
-		background-color var(--duration-fast) ease-in-out;
-}
+@layer components {
+	.track {
+		position: relative;
+		inline-size: 100%;
+		height: var(--progress-height, 0.375rem);
+		border-radius: var(--progress-radius, 999px);
+		background: var(--progress-color-bg, var(--gray-20));
+		overflow: hidden;
+	}
 
-.success {
-	background: var(--progress-success-color-active, var(--success-text));
-}
+	.fill {
+		display: block;
+		block-size: 100%;
+		inline-size: var(--progress-value, 0%);
+		background: var(--progress-color-active, var(--primary-text));
+		transition:
+			inline-size 160ms ease-out,
+			background-color var(--duration-fast) ease-in-out;
+	}
 
-.warning {
-	background: var(--progress-warning-color-active, var(--warning-text));
-}
+	.success {
+		background: var(--progress-success-color-active, var(--success-text));
+	}
 
-.danger {
-	background: var(--progress-danger-color-active, var(--danger-text));
+	.warning {
+		background: var(--progress-warning-color-active, var(--warning-text));
+	}
+
+	.danger {
+		background: var(--progress-danger-color-active, var(--danger-text));
+	}
 }
