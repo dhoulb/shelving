@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import { queryElements, type TreeElement } from "../../util/element.js";
+import { filterElements, type TreeElement } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { Menu } from "../menu/Menu.js";
 import { MenuItem } from "../menu/MenuItem.js";
-import { MENU_QUERY, TreeMenuMapper } from "./TreeMenu.js";
+import { matchMenuElement, TreeMenuMapper } from "./TreeMenu.js";
 
 export interface TreeSidebarProps {
 	/** Root element of the tree. */
@@ -22,7 +22,7 @@ export function TreeSidebar({ tree, path = "/" as AbsolutePath }: TreeSidebarPro
 	return (
 		<Menu>
 			<MenuItem href={path}>{tree.props.title ?? tree.props.name}</MenuItem>
-			<TreeMenuMapper path={path}>{queryElements(tree.props.children, MENU_QUERY)}</TreeMenuMapper>
+			<TreeMenuMapper path={path}>{filterElements(tree.props.children, matchMenuElement)}</TreeMenuMapper>
 		</Menu>
 	);
 }

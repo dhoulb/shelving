@@ -43,16 +43,16 @@ describe("MarkupExtractor", () => {
 		expect(element.props.content).toBe("Just some text.");
 	});
 
-	test("sets name to basename (preserving case) and key to its slug", async () => {
+	test("sets name to basename (preserving case) and key to verbatim filename", async () => {
 		const element = await extractor.extract(file("# Hi", "/tmp/SomeDoc.md"));
 		expect(element.props.name).toBe("SomeDoc");
-		expect(element.key).toBe("somedoc");
+		expect(element.key).toBe("SomeDoc.md");
 	});
 
 	test("strips directory path from filename when computing key", async () => {
 		// `BunFile.name` is the full absolute path; the extractor uses only the basename.
 		const element = await extractor.extract(file("# Hi", "/tmp/some-dir/foo.md"));
-		expect(element.key).toBe("foo");
+		expect(element.key).toBe("foo.md");
 	});
 
 	test("sets description to the first prose paragraph after the heading", async () => {

@@ -2,9 +2,12 @@ import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { DirectoryExtractor } from "../modules/extract/DirectoryExtractor.js";
+import { IndexFileExtractor } from "../modules/extract/IndexFileExtractor.js";
+import { MergingExtractor } from "../modules/extract/MergingExtractor.js";
+import { PackageExtractor } from "../modules/extract/PackageExtractor.js";
 import type { TreeElement } from "../modules/util/element.js";
 import type { AbsolutePath } from "../modules/util/path.js";
-import { MODULES_DIR, OUTPUT_DIR } from "./env.js";
+import { MODULES_DIR, OUTPUT_DIR, PACKAGE_JSON_PATH } from "./env.js";
 
 /** Shape exposed by the bundled `docs/render.tsx` module. */
 interface RenderModule {
@@ -15,23 +18,28 @@ interface RenderModule {
  * Build the entire documentation site to `outdir`.
  *
  * Pipeline:
- * 1. Extract the directory tree from `entrypoint`, and write it to `tree.json` for the browser to hydrate from.
- * 2. Bundle `docs/client.tsx` for the browser — this single build yields BOTH browser assets: the client JS
+ * 1. Walk the source `modules/` directory, merge `.md` siblings into their `.ts` counterparts, and absorb each
+ *    directory's `README.md` into the directory element itself.
+ * 2. Read the package.json and produce the module tree — one `kind: "module"` entry per export. Write it to
+ *    `tree.json` for the browser to hydrate from.
+ * 3. Bundle `docs/client.tsx` for the browser — this single build yields BOTH browser assets: the client JS
  *    and the CSS extracted from every `.module.css` imported across the component tree.
- * 3. Bundle `docs/render.tsx` for Bun — the server-side renderer. It resolves `.module.css` imports to the
+ * 4. Bundle `docs/render.tsx` for Bun — the server-side renderer. It resolves `.module.css` imports to the
  *    same hashed class names (so its markup matches the browser CSS); its own CSS output is discarded.
- * 4. Import the bundled renderer and call `renderApp` to write every page, linking the two browser assets.
+ * 5. Import the bundled renderer and call `renderApp` to write every page, linking the two browser assets.
  */
-export async function buildApp(entrypoint: AbsolutePath, outdir: AbsolutePath): Promise<void> {
+export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePath, outdir: AbsolutePath): Promise<void> {
 	// Clean up first.
 	await rm(outdir, { recursive: true, force: true });
 	await mkdir(outdir, { recursive: true });
 
 	const startTime = performance.now();
 
-	// Extract the directory tree, and write it out for the browser to fetch and hydrate from.
+	// Extract the source tree (merging `.md` siblings and absorbing README files), then build the module tree from
+	// package.json exports. Write the resulting tree for the browser to fetch and hydrate from.
 	console.warn("Extracting tree...");
-	const root = await new DirectoryExtractor().extract(entrypoint);
+	const tree = await new IndexFileExtractor(new MergingExtractor(new DirectoryExtractor())).extract(sourceDir);
+	const root = await new PackageExtractor({ tree }).extract(packageJson);
 	await Bun.write(join(outdir, "tree.json"), JSON.stringify(root));
 
 	const tempdir = await mkdtemp(join(tmpdir(), "shelving-docs-"));
@@ -92,4 +100,4 @@ export async function buildApp(entrypoint: AbsolutePath, outdir: AbsolutePath): 
 }
 
 /** Build the app now. */
-await buildApp(MODULES_DIR, OUTPUT_DIR);
+await buildApp(MODULES_DIR, PACKAGE_JSON_PATH, OUTPUT_DIR);

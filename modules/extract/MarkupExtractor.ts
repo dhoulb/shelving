@@ -12,9 +12,6 @@ import { FileExtractor } from "./FileExtractor.js";
  * - Sets `description` to the first prose paragraph as a plain-text summary (used for card listings and `<meta>`).
  */
 export class MarkupExtractor extends FileExtractor {
-	/** Markdown contributes the canonical title/path when merging same-key elements. */
-	override readonly priority = 10;
-
 	override extractProps(name: string, text: string): Partial<FileElementProps> & { name: string } {
 		const { title, description } = extractMarkdownProps(text);
 		// The title `# h1` is surfaced separately as `title`, so strip it from the body to avoid rendering it twice.
