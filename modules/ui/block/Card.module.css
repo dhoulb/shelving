@@ -1,6 +1,11 @@
-:root {
-	/* Opaque surface colour for content nested inside a card — slightly darker than `--color-surface`. */
-	--card-color-surface: color-mix(in srgb, var(--color-surface) 92%, black);
+/* TEST #125 (v2): re-bind global tokens on the card scope using the theme hook with `inherit` */
+/* as the fallback — when the hook is undefined, the declaration becomes `--color-surface: inherit` */
+/* so the parent's value is used. No self-reference, no cycle, spec-clean cross-browser. */
+/* `:where()` keeps specificity at 0 so variants (`.primary`, `.red`, status classes) still win. */
+:where(.card) {
+	--color-surface: var(--card-color-bg, inherit);
+	--color-border: var(--card-color-border, inherit);
+	--color-text: var(--card-color-text, inherit);
 }
 
 .card {
@@ -9,11 +14,10 @@
 	margin-inline: 0;
 	margin-block: var(--card-spacing, var(--space-normal));
 
-	/* Style */
-	background: var(--card-color-bg, var(--color-surface));
-	border: var(--card-border, var(--stroke-normal)) solid var(--card-color-border, var(--color-border));
+	/* Style — `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
+	border: var(--card-border, var(--stroke-normal)) solid var(--color-border);
 	padding: var(--card-padding, var(--space-normal));
-	color: var(--card-color-text, var(--color-text));
+	color: var(--color-text);
 	border-radius: var(--card-radius, var(--radius-normal));
 	box-shadow: var(--card-shadow, none);
 	transition: border-color var(--duration-fast);
@@ -50,12 +54,6 @@
 		position: relative;
 		z-index: 2;
 	}
-}
-
-/* Content nested in a card uses the card's opaque surface colour, so translucent surfaces don't double up. */
-/* `:where()` keeps specificity at zero so colour/status variant classes on descendants still win. */
-:where(.card) * {
-	--color-surface: var(--card-color-surface);
 }
 
 .overlay {

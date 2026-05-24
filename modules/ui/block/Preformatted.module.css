@@ -6,11 +6,12 @@
 	margin-block: var(--preformatted-spacing, var(--space-normal));
 	padding: var(--preformatted-padding, var(--space-xsmall));
 
-	/* Style */
+	/* Style — `.preformatted` gets `background` from `SURFACE_CLASS`; `.prose pre` (markdown-rendered) */
+	/* falls back to depth-aware `--color-surface-active`. Border matches the bg in either case. */
 	font-family: var(--preformatted-font, var(--font-code));
 	color: var(--preformatted-color-text, var(--color-text));
-	background-color: var(--preformatted-color-bg, var(--color-surface));
-	border: var(--preformatted-border, var(--stroke-normal)) solid var(--preformatted-color-border, var(--color-surface));
+	border: var(--preformatted-border, var(--stroke-normal)) solid
+		var(--preformatted-color-border, var(--color-surface-active, var(--color-surface)));
 	border-radius: var(--preformatted-radius, var(--radius-normal));
 	tab-size: 2;
 
@@ -31,4 +32,9 @@
 		white-space: pre;
 		overflow-wrap: normal;
 	}
+}
+
+/* Markdown-rendered `<pre>` doesn't carry `SURFACE_CLASS`, so paint its own depth-aware background. */
+.prose pre {
+	background-color: var(--preformatted-color-bg, var(--color-surface-active, var(--color-surface)));
 }

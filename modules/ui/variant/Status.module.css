@@ -77,3 +77,9 @@
 	--color-quiet: var(--error-text);
 	--color-surface: var(--error-surface);
 }
+
+/* Status variants always reset `--surface-depth` to 0 so the variant's colour renders cleanly without */
+/* depth-darkening — see `Color.module.css` for the rationale. */
+:is(.loading, .info, .success, .warning, .danger, .error) {
+	--surface-depth: 0;
+}

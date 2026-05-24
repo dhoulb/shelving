@@ -6,7 +6,7 @@ import { omitDictionaryItem, withDictionaryItem } from "../../util/dictionary.js
 import { splitMessage } from "../../util/error.js";
 import { formatUnit } from "../../util/format.js";
 import { omitProp } from "../../util/object.js";
-import { Flex } from "../block/Flex.js";
+import { Flex } from "../variant/Flex.js";
 import { Button } from "./Button.js";
 import { ButtonInput } from "./ButtonInput.js";
 import type { ValueInputProps } from "./Input.js";

@@ -3,13 +3,13 @@ import { Component, createContext, type ReactElement, type ReactNode, use } from
 import { getMessage } from "../../util/error.js";
 import type { Callback } from "../../util/function.js";
 import { Card } from "../block/Card.js";
-import { Flex } from "../block/Flex.js";
 import { Subheading } from "../block/Subheading.js";
 import { Button, type ButtonVariants } from "../form/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";
 import { Page } from "../page/Page.js";
 import type { ChildProps, OptionalChildProps } from "../util/props.js";
+import { Flex } from "../variant/Flex.js";
 import { StatusIcon } from "./StatusIcon.js";
 
 const RetryContext = createContext<Callback | undefined>(undefined);

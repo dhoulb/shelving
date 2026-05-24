@@ -1,3 +1,10 @@
+/* TEST #125 (v2): same pattern as Card — see comment there. */
+:where(.button) {
+	--color-surface: var(--button-color-bg, inherit);
+	--color-border: var(--button-color-border, inherit);
+	--color-quiet: var(--button-color-text, inherit);
+}
+
 .button {
 	/* Box */
 	display: flex;
@@ -5,7 +12,7 @@
 	inline-size: 100%;
 	min-inline-size: fit-content; /* Buttons never go smaller than their contents. */
 	border-radius: var(--button-radius, var(--radius-xsmall));
-	border: var(--button-border, var(--stroke-normal)) solid var(--button-color-border, var(--color-border));
+	border: var(--button-border, var(--stroke-normal)) solid var(--color-border);
 	padding-block: var(--button-padding, var(--space-small));
 	padding-inline: var(--button-padding, var(--space-small));
 	margin-inline: 0;
@@ -18,9 +25,8 @@
 	text-wrap: nowrap;
 	word-break: normal;
 
-	/* Style */
-	color: var(--button-color-text, var(--color-quiet));
-	background: var(--button-color-bg, var(--color-surface));
+	/* Style — `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
+	color: var(--color-quiet);
 	text-decoration: none;
 	transition: all 120ms ease-in-out;
 	cursor: pointer;
@@ -40,8 +46,8 @@
 		cursor: default;
 	}
 	&:where(:enabled:hover, :focus:not(:focus-visible)) {
-		background: color-mix(in srgb, var(--button-color-bg, var(--color-surface)) 85%, white);
-		border-color: color-mix(in srgb, var(--button-color-border, var(--color-border)) 85%, var(--button-color-text, var(--color-text)));
+		background: color-mix(in srgb, var(--color-surface-active) 85%, white);
+		border-color: color-mix(in srgb, var(--color-border) 85%, var(--color-text));
 	}
 	&:first-child {
 		margin-block-start: 0;

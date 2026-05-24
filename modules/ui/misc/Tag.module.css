@@ -9,7 +9,7 @@
 	padding: 0 var(--space-xxsmall);
 	border: 0;
 	border-radius: var(--radius-xxsmall);
-	background: var(--color-surface);
+	/* `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
 	color: var(--color-text);
 	font-family: var(--font-body);
 	font-size: var(--size-small);

@@ -1,8 +1,8 @@
 import { type ReactElement, useEffect } from "react";
 import { useStore } from "../../react/useStore.js";
-import { FLEX_CSS } from "../block/Flex.js";
 import { getClass } from "../util/css.js";
 import { subscribeNotices } from "../util/notice.js";
+import { FLEX_CSS } from "../variant/Flex.js";
 import { Notice } from "./Notice.js";
 import NOTICES_CSS from "./Notices.module.css";
 import { NOTICES } from "./NoticesStore.js";

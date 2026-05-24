@@ -197,3 +197,11 @@
 	--color-surface: var(--pink-surface);
 	--color-border: var(--pink-border);
 }
+
+/* Variants always reset `--surface-depth` to 0 so the variant's colour renders cleanly without */
+/* depth-darkening — a `.success` notice inside a card shows pure success-green, not a muddied version. */
+/* `:is()` takes the highest specificity in its argument list (a single class = `(0,1,0)`), which beats */
+/* the `:where(.surface) :where(.surface)` depth rules at `(0,0,0)`. */
+:is(.primary, .secondary, .tertiary, .quiet, .red, .orange, .yellow, .green, .cyan, .blue, .purple, .pink) {
+	--surface-depth: 0;
+}

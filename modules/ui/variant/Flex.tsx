@@ -1,10 +1,9 @@
 import type { ReactElement } from "react";
-import { getClass, getModuleClass } from "../util/css.js";
+import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { BLOCK_CLASS } from "./Block.js";
 import FLEX_CSS from "./Flex.module.css";
 
-/** Variants for flex areas. */
+/** Variants for flex layout — opt-in modifiers any component can mix in via `getFlexClass()`. */
 export interface FlexVariants {
 	/** Wrap overflowing elements onto the next line (defaults to no wrapping). */
 	wrap?: boolean | undefined;
@@ -24,20 +23,20 @@ export interface FlexVariants {
 	reverse?: boolean | undefined;
 }
 
+/** Get the flex class for a component. */
+export function getFlexClass(variants: FlexVariants): string | undefined {
+	return getModuleClass(FLEX_CSS, "flex", variants);
+}
+
 export interface FlexProps extends FlexVariants, OptionalChildProps {}
 
-/** Block with flex children. */
+/**
+ * Dumb flex box — wraps children in a `<div>` with the flex class applied. Carries no external
+ * spacing of its own; if you need block-level margins around it, wrap in a `<Block>` or set them
+ * on the parent. Other components can mix in flex layout directly via `getFlexClass(props)`.
+ */
 export function Flex({ children, ...variants }: FlexProps): ReactElement {
-	return (
-		<div
-			className={getClass(
-				BLOCK_CLASS, //
-				getModuleClass(FLEX_CSS, "flex", variants),
-			)}
-		>
-			{children}
-		</div>
-	);
+	return <div className={getFlexClass(variants)}>{children}</div>;
 }
 
 export { FLEX_CSS };

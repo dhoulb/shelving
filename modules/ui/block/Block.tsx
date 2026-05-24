@@ -1,17 +1,16 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
+import { getSpacingClass, type SpacingVariants } from "../variant/Spacing.js";
 import styles from "./Block.module.css";
 
 export const BLOCK_CLASS = getModuleClass(styles, "block");
 
-export interface BlockProps extends OptionalChildProps {
+export interface BlockProps extends SpacingVariants, OptionalChildProps {
 	/** Constrain the block to narrow width. */
 	narrow?: boolean | undefined;
 	/** Constrain the block to wide width. */
 	wide?: boolean | undefined;
-	/** Use larger block spacing. */
-	spacious?: boolean | undefined;
 	/** Mark as a keyboard-focusable horizontal scroll region — adds `tabindex="0"`, `role="region"`, an `aria-label`, and `overflow-x: auto`. */
 	scrollable?: boolean | undefined;
 }
@@ -19,7 +18,10 @@ export interface BlockProps extends OptionalChildProps {
 type BlockElement = "div" | "section" | "header" | "footer" | "nav" | "aside" | "figure";
 
 function renderBlock(Component: BlockElement, { children, ...variants }: BlockProps): ReactElement {
-	const className = getModuleClass(styles, "block", variants);
+	const className = getClass(
+		getModuleClass(styles, "block", variants), //
+		getSpacingClass(variants),
+	);
 	return variants.scrollable ? (
 		<Component className={className} tabIndex={0} role="region" aria-label="Scrollable region">
 			{children}

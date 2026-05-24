@@ -1,8 +1,8 @@
 import { PARAGRAPH_CSS, type ParagraphProps } from "../block/Paragraph.js";
-import { type ColorVariants, getColorClass } from "../misc/Color.js";
 import { LOADING } from "../misc/Loading.js";
-import { getStatusClass, type Status } from "../misc/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import { type ColorVariants, getColorClass } from "../variant/Color.js";
+import { getStatusClass, type Status } from "../variant/Status.js";
 import MESSAGE_CSS from "./Message.module.css";
 
 export interface MessageProps extends ParagraphProps, ColorVariants {

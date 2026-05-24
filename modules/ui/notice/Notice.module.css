@@ -1,12 +1,18 @@
+/* TEST #125: rebind globals on the notice scope — see Card.module.css for the pattern. */
+/* Border keeps its original fallback chain since Status variants don't override --color-border. */
+:where(.notice) {
+	--color-surface: var(--notice-color-bg, inherit);
+	--color-quiet: var(--notice-color-text, inherit);
+}
+
 .notice {
 	/* Box */
 	border-radius: var(--notice-radius, var(--radius-xsmall));
 	border: var(--notice-border, var(--stroke-normal)) solid var(--notice-color-border, var(--color-quiet));
 	padding: var(--notice-padding, var(--space-small));
 
-	/* Style */
-	color: var(--notice-color-text, var(--color-quiet));
-	background: var(--notice-color-bg, var(--color-surface));
+	/* Style — `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
+	color: var(--color-quiet);
 
 	/* Typography */
 	font-size: var(--notice-size, var(--size-normal));
