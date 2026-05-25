@@ -27,6 +27,16 @@ function Page(): ReactElement {
 				wrapping <Code>&lt;div&gt;</Code> that sets <Code>--color-surface</Code> is respected by anything without a theme hook or variant.
 			</Paragraph>
 
+			<Heading>0. Colors</Heading>
+			<Button red>Button</Button>
+			<Button orange>Button</Button>
+			<Button yellow>Button</Button>
+			<Button green>Button</Button>
+			<Button aqua>Button</Button>
+			<Button blue>Button</Button>
+			<Button purple>Button</Button>
+			<Button pink>Button</Button>
+
 			<Heading>1. Nested cards</Heading>
 			<Card>
 				<Paragraph>Outer: plain card (theme peach).</Paragraph>
@@ -65,7 +75,6 @@ function Page(): ReactElement {
 			<Heading>4. Buttons in variant cards</Heading>
 			<Card status="error">
 				<Paragraph>Error card containing a button:</Paragraph>
-				<Button>Plain button — should be theme lavender (button's own hook beats inheriting error from card).</Button>
 				<Button success>Success button — should be GREEN (variant beats theme).</Button>
 				<Button primary>Primary button — should be BLUE.</Button>
 			</Card>

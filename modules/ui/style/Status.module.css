@@ -6,38 +6,26 @@
 		/* Loading colors */
 		--loading-text: var(--color-gray);
 		--loading-contrast: var(--color-white);
-		--loading-surface: color-mix(in srgb, var(--loading-text) 10%, white);
-		--loading-border: color-mix(in srgb, var(--loading-text) 40%, white);
 
 		/* Info colors */
 		--info-text: var(--color-blue);
 		--info-contrast: var(--color-white);
-		--info-surface: color-mix(in srgb, var(--info-text) 10%, white);
-		--info-border: color-mix(in srgb, var(--info-text) 40%, white);
 
 		/* Success colors */
 		--success-text: var(--color-green);
 		--success-contrast: var(--color-white);
-		--success-surface: color-mix(in srgb, var(--success-text) 10%, white);
-		--success-border: color-mix(in srgb, var(--success-text) 40%, white);
 
 		/* Warning colors */
 		--warning-text: var(--color-orange);
 		--warning-contrast: var(--color-white);
-		--warning-surface: color-mix(in srgb, var(--warning-text) 10%, white);
-		--warning-border: color-mix(in srgb, var(--warning-text) 40%, white);
 
 		/* Error colors */
 		--error-text: var(--color-red);
 		--error-contrast: var(--color-white);
-		--error-surface: color-mix(in srgb, var(--error-text) 10%, white);
-		--error-border: color-mix(in srgb, var(--error-text) 40%, white);
 
 		/* Danger colors */
 		--danger-text: var(--color-red);
 		--danger-contrast: var(--color-white);
-		--danger-surface: color-mix(in srgb, var(--danger-text) 10%, white);
-		--danger-border: color-mix(in srgb, var(--danger-text) 40%, white);
 	}
 }
 
@@ -46,43 +34,31 @@
 	.loading {
 		--color-text: var(--loading-text);
 		--color-contrast: var(--loading-contrast);
-		--color-surface: var(--loading-surface);
-		--color-border: var(--loading-border);
 	}
 
 	.info {
 		--color-text: var(--info-text);
 		--color-contrast: var(--info-contrast);
-		--color-surface: var(--info-surface);
-		--color-border: var(--info-border);
 	}
 
 	.success {
 		--color-text: var(--success-text);
 		--color-contrast: var(--success-contrast);
-		--color-surface: var(--success-surface);
-		--color-border: var(--success-border);
 	}
 
 	.warning {
 		--color-text: var(--warning-text);
 		--color-contrast: var(--warning-contrast);
-		--color-surface: var(--warning-surface);
-		--color-border: var(--warning-border);
 	}
 
 	.danger {
 		--color-text: var(--danger-text);
 		--color-contrast: var(--danger-contrast);
-		--color-surface: var(--danger-surface);
-		--color-border: var(--danger-border);
 	}
 
 	.error {
 		--color-text: var(--error-text);
 		--color-contrast: var(--error-contrast);
-		--color-surface: var(--error-surface);
-		--color-border: var(--error-border);
 	}
 
 	.loading,
@@ -93,5 +69,7 @@
 	.error {
 		--color-link: var(--color-text);
 		--color-quiet: var(--color-text);
+		--color-surface: color-mix(in oklch, var(--color-text) 20%, white);
+		--color-border: color-mix(in oklch, var(--color-text) 30%, transparent);
 	}
 }

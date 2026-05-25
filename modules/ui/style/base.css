@@ -121,17 +121,34 @@
 		--grow-none: 0;
 
 		/* Colors */
-		--color-blue: #156ef4;
-		--color-cyan: #15edf4;
-		--color-green: #8ce814;
-		--color-orange: #ffb21a;
-		--color-pink: #e718a2;
-		--color-purple: #ad15f4;
-		--color-red: #e5352f;
-		--color-yellow: #ffe01a;
-		--color-black: black;
-		--color-gray: color-mix(in srgb, var(--color-blue) 30%, rgb(128 128 128)); /* "Tone" color for grays with a slight blue tint. */
-		--color-white: white;
+		--color-red: oklch(62% 0.238 30);
+		--color-orange: oklch(70% 0.157 60);
+		--color-yellow: oklch(82% 0.16 92);
+		--color-green: oklch(72% 0.185 130);
+		--color-aqua: oklch(72% 0.121 185);
+		--color-blue: oklch(60% 0.131 240);
+		--color-purple: oklch(58% 0.25 300);
+		--color-pink: oklch(68% 0.239 350);
+
+		/* Lights */
+		--color-red-light: oklch(from var(--color-red) calc(l + 0.18) c h);
+		--color-orange-light: oklch(from var(--color-orange) calc(l + 0.18) c h);
+		--color-yellow-light: oklch(from var(--color-yellow) calc(l + 0.18) c h);
+		--color-green-light: oklch(from var(--color-green) calc(l + 0.18) c h);
+		--color-aqua-light: oklch(from var(--color-aqua) calc(l + 0.18) c h);
+		--color-blue-light: oklch(from var(--color-blue) calc(l + 0.18) c h);
+		--color-purple-light: oklch(from var(--color-purple) calc(l + 0.18) c h);
+		--color-pink-light: oklch(from var(--color-pink) calc(l + 0.18) c h);
+
+		/* Darks */
+		--color-red-dark: oklch(from var(--color-red) calc(l - 0.22) c h);
+		--color-orange-dark: oklch(from var(--color-orange) calc(l - 0.22) c h);
+		--color-yellow-dark: oklch(from var(--color-yellow) calc(l - 0.22) c h);
+		--color-green-dark: oklch(from var(--color-green) calc(l - 0.22) c h);
+		--color-aqua-dark: oklch(from var(--color-aqua) calc(l - 0.22) c h);
+		--color-blue-dark: oklch(from var(--color-blue) calc(l - 0.22) c h);
+		--color-purple-dark: oklch(from var(--color-purple) calc(l - 0.22) c h);
+		--color-pink-dark: oklch(from var(--color-pink) calc(l - 0.22) c h);
 
 		/* Grays — using OKLCH so perceived blue hint stays even across the scale. */
 		--gray-05: color-mix(in oklch, var(--color-gray) 10%, white);
@@ -154,8 +171,8 @@
 		--color-border: var(--gray-10);
 		--color-link: var(--color-blue);
 		--color-focus: var(--color-blue);
-		--color-surface: color-mix(in srgb, var(--color-gray) 10%, transparent); /* Used for button/card/code backgrounds. */
-		--color-shadow: color-mix(in srgb, var(--color-gray) 40%, transparent); /** Used for drop shadows. */
+		--color-surface: color-mix(in oklch, var(--color-gray) 10%, transparent); /* Used for button/card/code backgrounds. */
+		--color-shadow: color-mix(in oklch, var(--color-gray) 40%, transparent); /** Used for drop shadows. */
 
 		/* Shadows */
 		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-shadow);
@@ -175,5 +192,25 @@
 		line-height: var(--leading);
 		color: var(--color-text);
 		background: var(--color-bg);
+	}
+
+	@media (prefers-contrast: more) {
+		:root {
+			/* Darken vivid colors for extra contrast when white text appears on them. */
+			--color-red: var(--color-red-dark);
+			--color-orange: var(--color-orange-dark);
+			--color-yellow: var(--color-yellow-dark);
+			--color-green: var(--color-green-dark);
+			--color-aqua: var(--color-aqua-dark);
+			--color-blue: var(--color-blue-dark);
+			--color-purple: var(--color-purple-dark);
+			--color-pink: var(--color-pink-dark);
+
+			/* Dark semantic colors for extra contrast. */
+			--color-quiet: var(--gray-70);
+			--color-border: var(--gray-40);
+			--color-surface: color-mix(in oklch, var(--color-gray) 25%, transparent);
+			--color-shadow: color-mix(in oklch, var(--color-gray) 60%, transparent);
+		}
 	}
 }

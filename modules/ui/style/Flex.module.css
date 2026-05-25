@@ -1,31 +1,31 @@
 @import "base.css";
 
-/* Child defaults sit in `@layer defaults` so any explicit styling from consumers wins automatically. */
 @layer defaults {
-	.flex > * {
-		flex: var(--grow-normal) 1 auto;
-	}
-	.flex > [data-slot="icon"] {
-		inline-size: var(--flex-icon-size, var(--size-icon));
-		block-size: var(--flex-icon-size, var(--size-icon));
-		flex: none;
-	}
-}
-
-/** Flex styles reused by a few other elements including <Flex>, <Notice>, <Button>, <InputButton>. */
-/* Gap is applied via composing `getGapClass()` in `Flex.tsx` — `<Flex gap-xsmall>` etc. */
-@layer variants {
 	.flex {
-		/* Box */
-		&& {
-			display: flex; /* Raise specificity of this. */
-		}
-
 		/* Contents */
 		flex-direction: row;
 		gap: var(--flex-gap, var(--space-small));
 		justify-content: stretch;
 		align-items: center;
+
+		/* Children grow by default */
+		> * {
+			flex: var(--grow-normal) 1 auto;
+		}
+
+		/* Add default icon sizing. */
+		> [data-slot="icon"] {
+			inline-size: var(--flex-icon-size, var(--size-icon));
+			block-size: var(--flex-icon-size, var(--size-icon));
+			flex: none;
+		}
+	}
+}
+
+@layer variants {
+	.flex {
+		/* Box */
+		display: flex;
 
 		/* Variants */
 		&.wrap {
@@ -68,8 +68,8 @@
 			}
 		}
 
-		/* Children — zero-margin enforcement at high specificity, stays inside variants to win. */
-		&& > * {
+		/* Children */
+		> * {
 			margin: 0;
 		}
 	}

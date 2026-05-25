@@ -19,8 +19,8 @@ export interface ColorVariants {
 	yellow?: boolean | undefined;
 	/** Element has green colours. */
 	green?: boolean | undefined;
-	/** Element has cyan colours. */
-	cyan?: boolean | undefined;
+	/** Element has aqua colours. */
+	aqua?: boolean | undefined;
 	/** Element has blue colours. */
 	blue?: boolean | undefined;
 	/** Element has purple colours. */
@@ -36,5 +36,3 @@ export type Color = keyof ColorVariants;
 export function getColorClass(color: Color | ColorVariants): string | undefined {
 	return getModuleClass(COLOR_CSS, color);
 }
-
-export { COLOR_CSS };

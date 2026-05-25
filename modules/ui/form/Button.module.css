@@ -25,7 +25,7 @@
 		text-overflow: ellipsis;
 		word-break: normal;
 		justify-content: center;
-		align-content: center;
+		align-items: center;
 
 		/* Style */
 		background-color: var(--color-surface);
@@ -49,8 +49,8 @@
 			cursor: default;
 		}
 		&:where(:enabled:hover, :focus:not(:focus-visible)) {
-			background: color-mix(in srgb, var(--color-surface) 85%, white);
-			border-color: color-mix(in srgb, var(--color-border) 85%, var(--color-text));
+			background: color-mix(in oklch, var(--color-surface) 85%, white);
+			border-color: color-mix(in oklch, var(--color-border) 85%, var(--color-text));
 		}
 
 		/* Variants */
@@ -67,7 +67,7 @@
 			background: var(--button-strong-contrast, var(--color-text));
 
 			&:where(:enabled:hover, :focus:not(:focus-visible)) {
-				background: color-mix(in srgb, var(--button-strong-contrast, var(--color-text)) 80%, white);
+				background: oklch(from var(--button-strong-contrast, var(--color-text)) calc(l + 0.08) c h);
 			}
 		}
 		&.plain:not(:hover, :focus) {
