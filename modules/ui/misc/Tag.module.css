@@ -2,23 +2,29 @@
 
 @layer components {
 	.tag {
+		/* Identity */
 		--color-surface: var(--tag-color-bg, inherit);
 		--color-text: var(--tag-color-text, inherit);
 		--color-focus: var(--tag-color-focus, inherit);
 
+		/* Box */
 		display: inline-block;
 		flex: 0 0 fit-content; /* Content-width; never grow or shrink, like icons. */
 		max-width: 100%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 		padding: var(--tag-padding, 0 var(--space-xxsmall));
 		border: 0;
 		border-radius: var(--tag-radius, var(--radius-xxsmall));
 
+		/* Content */
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+
+		/* Style */
 		background: var(--color-surface);
 		color: var(--color-text);
 
+		/* Typography */
 		font-family: var(--tag-font, var(--font-body));
 		font-size: var(--tag-size, var(--size-small));
 		font-weight: var(--tag-weight, var(--weight-strong));

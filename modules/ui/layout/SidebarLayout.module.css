@@ -68,12 +68,15 @@
 			grid-template-columns: 1fr;
 		}
 		.sidebar {
+			/* Box */
 			position: fixed;
 			z-index: 100;
 			inset-block: 0;
 			left: 0;
 			width: var(--sidebar-layout-width, 17.5rem);
 			max-width: 85vw;
+
+			/* Style */
 			transform: translateX(-100%);
 			transition: transform var(--duration-normal) ease-in-out;
 		}
@@ -90,6 +93,7 @@
 		}
 		/* Dim the page behind the open drawer; clicking the overlay closes it. */
 		.overlay {
+			/* Box */
 			display: block;
 			position: fixed;
 			inset: 0;
@@ -97,6 +101,8 @@
 			margin: 0;
 			padding: 0;
 			border: 0;
+
+			/* Style */
 			background: var(--color-shadow);
 			cursor: pointer;
 			animation: overlay-fade-in var(--duration-normal) ease-in-out;

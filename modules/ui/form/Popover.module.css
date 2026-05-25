@@ -11,6 +11,7 @@
 	}
 
 	.panel {
+		/* Box */
 		display: flow-root; /* Clearfix equivalent */
 		position: absolute;
 		left: 0;
@@ -22,8 +23,10 @@
 		overscroll-behavior: none;
 		border-radius: var(--popover-radius, var(--radius-xsmall));
 		border: var(--popover-border, var(--stroke-normal)) solid var(--popover-color-border, var(--color-border));
-		background: var(--popover-color-bg, var(--color-bg));
 		padding: var(--popover-padding, var(--space-small));
+
+		/* Style */
+		background: var(--popover-color-bg, var(--color-bg));
 		box-shadow: var(--popover-shadow, var(--shadow-small));
 	}
 }
