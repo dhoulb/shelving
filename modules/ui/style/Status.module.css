@@ -4,34 +4,40 @@
 @layer defaults {
 	:root {
 		/* Loading colors */
-		--loading-text: var(--color-loading);
-		--loading-contrast: var(--color-contrast);
-		--loading-surface: var(--color-surface);
+		--loading-text: var(--color-gray);
+		--loading-contrast: var(--color-white);
+		--loading-surface: color-mix(in srgb, var(--loading-text) 12%, white);
+		--loading-border: color-mix(in srgb, var(--loading-text) 12%, white);
 
 		/* Info colors */
 		--info-text: var(--color-blue);
 		--info-contrast: var(--color-white);
 		--info-surface: color-mix(in srgb, var(--info-text) 12%, white);
+		--info-border: color-mix(in srgb, var(--info-text) 12%, white);
 
 		/* Success colors */
 		--success-text: var(--color-green);
 		--success-contrast: var(--color-white);
 		--success-surface: color-mix(in srgb, var(--success-text) 12%, white);
+		--success-border: color-mix(in srgb, var(--success-text) 12%, white);
 
 		/* Warning colors */
 		--warning-text: var(--color-orange);
 		--warning-contrast: var(--color-white);
 		--warning-surface: color-mix(in srgb, var(--warning-text) 12%, white);
+		--warning-border: color-mix(in srgb, var(--warning-text) 12%, white);
 
 		/* Error colors */
 		--error-text: var(--color-red);
 		--error-contrast: var(--color-white);
 		--error-surface: color-mix(in srgb, var(--error-text) 12%, white);
+		--error-border: color-mix(in srgb, var(--error-text) 12%, white);
 
 		/* Danger colors */
 		--danger-text: var(--color-red);
 		--danger-contrast: var(--color-white);
 		--danger-surface: color-mix(in srgb, var(--danger-text) 12%, white);
+		--danger-border: color-mix(in srgb, var(--danger-text) 12%, white);
 	}
 }
 
@@ -40,48 +46,52 @@
 	.loading {
 		--color-text: var(--loading-text);
 		--color-contrast: var(--loading-contrast);
-		--color-link: var(--loading-text);
-		--color-quiet: var(--loading-text);
 		--color-surface: var(--loading-surface);
+		--color-border: var(--loading-border);
 	}
 
 	.info {
 		--color-text: var(--info-text);
 		--color-contrast: var(--info-contrast);
-		--color-link: var(--info-text);
-		--color-quiet: var(--info-text);
 		--color-surface: var(--info-surface);
+		--color-border: var(--info-border);
 	}
 
 	.success {
 		--color-text: var(--success-text);
 		--color-contrast: var(--success-contrast);
-		--color-link: var(--success-text);
-		--color-quiet: var(--success-text);
 		--color-surface: var(--success-surface);
+		--color-border: var(--success-border);
 	}
 
 	.warning {
 		--color-text: var(--warning-text);
 		--color-contrast: var(--warning-contrast);
-		--color-link: var(--warning-text);
-		--color-quiet: var(--warning-text);
 		--color-surface: var(--warning-surface);
+		--color-border: var(--warning-border);
 	}
 
 	.danger {
 		--color-text: var(--danger-text);
 		--color-contrast: var(--danger-contrast);
-		--color-link: var(--danger-text);
-		--color-quiet: var(--danger-text);
 		--color-surface: var(--danger-surface);
+		--color-border: var(--danger-border);
 	}
 
 	.error {
 		--color-text: var(--error-text);
 		--color-contrast: var(--error-contrast);
-		--color-link: var(--error-text);
-		--color-quiet: var(--error-text);
 		--color-surface: var(--error-surface);
+		--color-border: var(--error-border);
+	}
+
+	.loading,
+	.info,
+	.success,
+	.warning,
+	.danger,
+	.error {
+		--color-link: var(--color-text);
+		--color-quiet: var(--color-text);
 	}
 }
