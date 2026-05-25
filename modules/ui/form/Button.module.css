@@ -2,7 +2,7 @@
 
 @layer components {
 	.button {
-		/** Identity */
+		/* Identity */
 		--color-surface: var(--button-color-bg, inherit);
 		--color-border: var(--button-color-border, inherit);
 		--color-quiet: var(--button-color-text, inherit);
@@ -20,12 +20,18 @@
 		flex-grow: var(--grow-timid); /* When displayed in flex rows inputs expand timidly compared to other elements inputs. */
 
 		/* Content */
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		word-break: normal;
 		justify-content: center;
 		align-content: center;
+
+		/* Truncate overlong labels — `[data-slot="label"]` wraps button children so text-overflow works on it as a flex item. */
+		& > [data-slot="label"] {
+			min-inline-size: 0;
+			max-inline-size: 100%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			text-align: center;
+		}
 
 		/* Style */
 		background-color: var(--color-surface);

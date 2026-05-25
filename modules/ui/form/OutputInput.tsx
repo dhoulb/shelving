@@ -12,7 +12,7 @@ export function OutputInput({ title, placeholder, children = title, ...props }: 
 	const hasChildren = notNullish(children);
 	return (
 		<output {...props} className={getClass(INPUT_CLASS, getFlexClass(props), hasChildren && PLACEHOLDER_CLASS)}>
-			{hasChildren ? children : placeholder}
+			<span data-slot="label">{hasChildren ? children : placeholder}</span>
 		</output>
 	);
 }

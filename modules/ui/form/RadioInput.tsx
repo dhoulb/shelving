@@ -33,7 +33,7 @@ export function RadioInput({
 				required={required}
 				aria-invalid={!!message}
 			/>
-			{hasChildren ? children : placeholder}
+			<span data-slot="label">{hasChildren ? children : placeholder}</span>
 		</label>
 	);
 }

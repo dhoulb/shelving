@@ -7,6 +7,10 @@ import { Panel } from "../modules/ui/block/Panel.js";
 import { Paragraph } from "../modules/ui/block/Paragraph.js";
 import { Title } from "../modules/ui/block/Title.js";
 import { Button } from "../modules/ui/form/Button.js";
+import { ButtonInput } from "../modules/ui/form/ButtonInput.js";
+import { CheckboxInput } from "../modules/ui/form/CheckboxInput.js";
+import { OutputInput } from "../modules/ui/form/OutputInput.js";
+import { RadioInput } from "../modules/ui/form/RadioInput.js";
 import { Code } from "../modules/ui/inline/Code.js";
 import { Notice } from "../modules/ui/notice/Notice.js";
 
@@ -91,7 +95,32 @@ function Page(): ReactElement {
 				</Card>
 			</div>
 
-			<Heading>7. Panel — full-width vertical regions</Heading>
+			<Heading>7. Button + input truncation</Heading>
+			<Paragraph>
+				Long single-word and multi-word labels should truncate with an ellipsis instead of overflowing the parent. The button is a flex
+				container (so text-overflow on the button itself does nothing) — the fix wraps children in a <Code>[data-slot="label"]</Code> span
+				that the ellipsis can latch onto.
+			</Paragraph>
+			<Card>
+				<Button>Supercalifragilisticexpialidocious-extra-extra-long-single-word-test-of-the-ellipsis-fix</Button>
+				<Button success>
+					A very long success button label that exceeds the available width and should be cut short with an ellipsis at the end
+				</Button>
+				<ButtonInput name="long-input" onClick={() => undefined}>
+					A long ButtonInput label that should also truncate cleanly because input.button has the same data-slot rule
+				</ButtonInput>
+				<OutputInput name="long-output">
+					A long OutputInput value that should also truncate — output is not a flex item by default but gets the same span wrapper
+				</OutputInput>
+				<CheckboxInput name="long-checkbox" onValue={() => undefined}>
+					A long CheckboxInput label that sits beside the checkbox and should truncate without pushing the layout sideways
+				</CheckboxInput>
+				<RadioInput name="long-radio" onValue={() => undefined}>
+					A long RadioInput label that sits beside the radio and should also truncate the same way
+				</RadioInput>
+			</Card>
+
+			<Heading>8. Panel — full-width vertical regions</Heading>
 			<Paragraph>
 				<Code>&lt;Panel&gt;</Code> is a full-width section with xxlarge padding and the current surface colour. Nested Panels darken one
 				tier via the same <Code>SURFACE_CLASS</Code> depth chain as Card.

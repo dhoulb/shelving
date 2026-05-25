@@ -23,8 +23,12 @@ export interface ButtonVariants extends FlexVariants, StatusVariants, ColorVaria
 interface ButtonProps extends ButtonVariants, ClickableProps {}
 
 /** Return either a `<button>` or an `<a href="">` styled as an button, based on whether an `onClick` or `href` prop is provided. */
-export function Button(props: ButtonProps): ReactElement {
-	return <Clickable {...props} className={getButtonClass(props)} />;
+export function Button({ children, ...props }: ButtonProps): ReactElement {
+	return (
+		<Clickable {...props} className={getButtonClass(props)}>
+			{children !== undefined ? <span data-slot="label">{children}</span> : undefined}
+		</Clickable>
+	);
 }
 
 /** Get the full className for a button. */
