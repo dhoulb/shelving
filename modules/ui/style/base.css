@@ -156,10 +156,14 @@
 		--color-quiet: var(--gray-40); /* Quiet color is grey, used for secondary text etc. */
 		--color-bg: var(--color-white); /* Background color is usually the opposite of text colour. */
 		--color-border: var(--gray-10);
-		--color-overlay: color-mix(in srgb, var(--color-text) 40%, transparent);
+		--color-overlay: color-mix(
+			in srgb,
+			var(--color-gray) 10%,
+			transparent
+		); /* Translucent surface overlay. Painted on white this resolves to exactly `--gray-05` — so a `--color-surface: var(--color-overlay)` default keeps the same neutral-grey-with-blue-tint appearance while letting surfaces stack visually when nested. */
 		--color-link: var(--color-blue); /* Links are usually blue. */
 		--color-focus: var(--color-blue); /* Focus is usually blue. */
-		--color-surface: var(--gray-overlay); /* Default surface colour; overridden by variants and rebinds in components. */
+		--color-surface: var(--color-overlay); /* Default surface colour; overridden by variants and rebinds in components. */
 
 		/* Shadows */
 		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-overlay);
