@@ -12,7 +12,7 @@ export function ButtonInput({ title, placeholder, children = title, ...props }: 
 	const hasChildren = notNullish(children);
 	return (
 		<Clickable {...props} className={getClass(BUTTON_INPUT_CLASS, getFlexClass(props), hasChildren && PLACEHOLDER_CLASS)}>
-			<span data-slot="label">{hasChildren ? children : placeholder}</span>
+			{hasChildren ? children : placeholder}
 		</Clickable>
 	);
 }

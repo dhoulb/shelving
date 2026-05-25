@@ -33,7 +33,7 @@ export function CheckboxInput({
 				title={message}
 				className={CHECKBOX_CLASS}
 			/>
-			<span data-slot="label">{hasChildren ? children : placeholder}</span>
+			<span>{hasChildren ? children : placeholder}</span>
 		</label>
 	);
 }
