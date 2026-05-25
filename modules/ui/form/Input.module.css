@@ -26,14 +26,6 @@
 		font-size: var(--input-size, var(--size-normal));
 		line-height: var(--input-leading, var(--leading-normal));
 
-		/* Psuedo-classes */
-		&:first-child {
-			margin-top: 0;
-		}
-		&:last-child {
-			margin-bottom: 0;
-		}
-
 		/* Variants. */
 		&.select {
 			/* Select inputs have pointer cursor, down arrow image. */
@@ -193,5 +185,16 @@
 		outline: none;
 		font-size: inherit;
 		line-height: inherit;
+	}
+}
+
+@layer overrides {
+	.input {
+		&:first-child {
+			margin-top: 0;
+		}
+		&:last-child {
+			margin-bottom: 0;
+		}
 	}
 }
