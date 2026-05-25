@@ -1,8 +1,5 @@
 import type { ReactElement } from "react";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
-// Side-effect import: loads design tokens at `:root` + body baseline typography, declares cascade-layer order.
-// Components import this transitively via their own `.module.css` files, but `<App>` imports it explicitly
-// so a host that uses no UI components still gets the base styles.
 import "../style/base.css";
 import type { PossibleMeta } from "../util/index.js";
 import type { ChildProps } from "../util/props.js";

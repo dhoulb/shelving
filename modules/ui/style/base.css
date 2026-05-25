@@ -130,15 +130,10 @@
 		--color-red: #e5352f;
 		--color-yellow: #ffe01a;
 		--color-black: black;
-		--color-gray: color-mix(
-			in srgb,
-			var(--color-blue) 30%,
-			rgb(128 128 128)
-		); /* "Tone" color for the scale of grays; carries a slight blue tint. */
+		--color-gray: color-mix(in srgb, var(--color-blue) 30%, rgb(128 128 128)); /* "Tone" color for grays with a slight blue tint. */
 		--color-white: white;
 
-		/* Grays — interpolated in OKLCH so perceived chroma stays uniform across the scale (sRGB linear */
-		/* interpolation makes mid-tones look more saturated than the ends). */
+		/* Grays — using OKLCH so perceived blue hint stays even across the scale. */
 		--gray-05: color-mix(in oklch, var(--color-gray) 10%, white);
 		--gray-10: color-mix(in oklch, var(--color-gray) 20%, white);
 		--gray-20: color-mix(in oklch, var(--color-gray) 40%, white);
@@ -159,16 +154,8 @@
 		--color-border: var(--gray-10);
 		--color-link: var(--color-blue);
 		--color-focus: var(--color-blue);
-		--color-shadow: color-mix(
-			in srgb,
-			var(--color-gray) 40%,
-			transparent
-		); /* Translucent shadow colour; used by `--shadow-*` tokens. Gray-tinted (not pure black) to match the neutral palette. */
-		--color-surface: color-mix(
-			in srgb,
-			var(--color-gray) 10%,
-			transparent
-		); /* Default translucent surface — painted on white this resolves to `--gray-05` exactly, but stacks visibly when surfaces nest. Overridden by component rebinds (Card/Button/etc.) and Variants. */
+		--color-surface: color-mix(in srgb, var(--color-gray) 10%, transparent); /* Used for button/card/code backgrounds. */
+		--color-shadow: color-mix(in srgb, var(--color-gray) 40%, transparent); /** Used for drop shadows. */
 
 		/* Shadows */
 		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-shadow);
@@ -180,9 +167,7 @@
 		--shadow-xxlarge: 0 1.5rem 6rem -3rem var(--color-shadow);
 	}
 
-	/* Baseline body styles — typography and bg apply universally, so a plain page using a few shelving */
-	/* components still reads with the design's font, size, and colour. Layout-specific behaviour like */
-	/* `position: fixed` stays in `layout/Layout.module.css`. */
+	/* Typography reset. */
 	body {
 		font-family: var(--font-body);
 		font-weight: var(--weight-normal);
