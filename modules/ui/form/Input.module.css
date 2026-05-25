@@ -86,10 +86,9 @@
 		}
 		&.button,
 		&.label {
-			/* Button and label inputs have a pointer cursor and show their contents as flexbox. */
+			/* Button and label inputs have a pointer cursor and clip overlong labels (no ellipsis). */
 			cursor: pointer;
 			overflow: hidden;
-			text-overflow: ellipsis;
 			white-space: nowrap;
 
 			/* Success if contains checked radio, checkbox, option. */

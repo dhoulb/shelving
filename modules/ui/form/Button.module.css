@@ -2,7 +2,7 @@
 
 @layer components {
 	.button {
-		/** Identity */
+		/* Identity */
 		--color-surface: var(--button-color-bg, inherit);
 		--color-border: var(--button-color-border, inherit);
 		--color-quiet: var(--button-color-text, inherit);
@@ -22,7 +22,6 @@
 		/* Content */
 		white-space: nowrap;
 		overflow: hidden;
-		text-overflow: ellipsis;
 		word-break: normal;
 		justify-content: center;
 		align-items: center;

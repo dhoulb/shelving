@@ -2,7 +2,7 @@
 
 @layer components {
 	.card {
-		/** Identity */
+		/* Identity */
 		--color-surface: var(--card-color-bg, inherit);
 		--color-border: var(--card-color-border, inherit);
 		--color-text: var(--card-color-text, inherit);
@@ -38,14 +38,17 @@
 	}
 
 	.overlay {
+		/* Box */
 		position: absolute;
 		inset: 0;
 		z-index: 1;
 		border: 0;
+
+		/* Style */
 		background: transparent;
 		cursor: pointer;
 
-		/* Hide the link's text content visually but keep it in the accessibility tree. */
+		/* Typography — hide the link's text visually but keep it in the accessibility tree. */
 		color: transparent;
 		font: inherit;
 		overflow: hidden;
