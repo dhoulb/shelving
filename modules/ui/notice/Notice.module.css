@@ -1,22 +1,20 @@
 @import "../style/base.css";
 
 @layer components {
-	/* Rebind globals on the notice scope — see Card.module.css for the pattern. Border keeps its */
-	/* original fallback chain since Status variants don't override `--color-border`. */
-	/* Reset `--surface-depth` to 0 so a themed Notice inside a surface paints its own colour cleanly. */
 	.notice {
-		--surface-depth: 0;
-		--color-surface: var(--notice-color-bg, inherit);
+		/* Rebind globals on the notice scope — see Card.module.css for the pattern. Border keeps its */
+		/* original fallback chain since Status variants don't override `--color-border`. */
+		/* Reset `--surface-depth` to 0 so a themed Notice inside a surface paints its own colour cleanly. */
+		--color-surface: var(--notice-color-bg, var(--surface-color));
 		--color-quiet: var(--notice-color-text, inherit);
-	}
 
-	.notice {
 		/* Box */
 		border-radius: var(--notice-radius, var(--radius-xsmall));
 		border: var(--notice-border, var(--stroke-normal)) solid var(--notice-color-border, var(--color-quiet));
 		padding: var(--notice-padding, var(--space-small));
 
-		/* Style — `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
+		/* Style */
+		background: var(--color-surface);
 		color: var(--color-quiet);
 
 		/* Typography */

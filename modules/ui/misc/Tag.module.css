@@ -1,6 +1,11 @@
 @import "../style/base.css";
 
 @layer components {
+	/* Rebind so variants in `@layer variants` override the depth-driven default. */
+	.tag {
+		--color-surface: var(--surface-color);
+	}
+
 	.tag {
 		display: inline-block;
 		flex: 0 0 fit-content; /* Content-width; never grow or shrink, like icons. */
@@ -12,7 +17,7 @@
 		padding: 0 var(--space-xxsmall);
 		border: 0;
 		border-radius: var(--radius-xxsmall);
-		/* `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
+		background: var(--color-surface);
 		color: var(--color-text);
 		font-family: var(--font-body);
 		font-size: var(--size-small);

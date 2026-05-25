@@ -193,9 +193,6 @@
 	.blue,
 	.purple,
 	.pink {
-		/* Variants always reset `--surface-depth` to 0 so the variant's colour renders without darkening. */
-		--surface-depth: 0;
-
 		--color-link: var(--color-text);
 		--color-quiet: var(--color-text);
 	}
