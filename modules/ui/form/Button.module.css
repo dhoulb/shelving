@@ -1,9 +1,9 @@
 @import "../style/base.css";
 
 @layer components {
-	/* Rebind global tokens on the button scope — same pattern as Card. Layers handle variant precedence. */
+	/* Rebind global tokens on the button scope — see Card.module.css for the rationale. */
 	.button {
-		--color-surface: var(--button-color-bg, inherit);
+		--color-surface: var(--button-color-bg, var(--surface-color));
 		--color-border: var(--button-color-border, inherit);
 		--color-quiet: var(--button-color-text, inherit);
 	}
@@ -28,7 +28,8 @@
 		text-wrap: nowrap;
 		word-break: normal;
 
-		/* Style — `background` comes from `SURFACE_CLASS` (depth-darkened `--color-surface`). */
+		/* Style */
+		background: var(--color-surface);
 		color: var(--color-quiet);
 		text-decoration: none;
 		transition: all 120ms ease-in-out;
@@ -49,7 +50,7 @@
 			cursor: default;
 		}
 		&:where(:enabled:hover, :focus:not(:focus-visible)) {
-			background: color-mix(in srgb, var(--surface-color) 85%, white);
+			background: color-mix(in srgb, var(--color-surface) 85%, white);
 			border-color: color-mix(in srgb, var(--color-border) 85%, var(--color-text));
 		}
 		&:first-child {
