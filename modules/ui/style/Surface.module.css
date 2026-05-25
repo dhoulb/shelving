@@ -17,7 +17,7 @@
  * Hardcoded per-depth tokens, no live `color-mix` formula — predictable, themable, no muddying.
  */
 @layer defaults {
-	.surface {
+	/* .surface {
 		--surface-color: var(--surface-color-0);
 	}
 	.surface .surface {
@@ -31,5 +31,5 @@
 	}
 	.surface .surface .surface .surface .surface {
 		--surface-color: var(--surface-color-4);
-	}
+	} */
 }

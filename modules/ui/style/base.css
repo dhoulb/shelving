@@ -87,8 +87,7 @@
 		--space-xxlarge: calc(var(--space) * 3); /* 48px */
 
 		/* Semantic spacings */
-		/* Gap between sibling sections/blocks and the top margin of titles/headings, so the rhythm stays consistent whether a heading is wrapped in a Section or rendered bare. */
-		--spacing-section: 2rem;
+		--spacing-section: 2rem; /* Gap between sibling sections/blocks and the top margin of titles/headings, so the rhythm stays consistent whether a heading is wrapped in a Section or rendered bare. */
 
 		/* Radii */
 		--radius: 1rem;
@@ -160,20 +159,7 @@
 		--color-overlay: color-mix(in srgb, var(--color-text) 40%, transparent);
 		--color-link: var(--color-blue); /* Links are usually blue. */
 		--color-focus: var(--color-blue); /* Focus is usually blue. */
-		--color-surface: var(--gray-05); /* Default surface colour; overridden by variants and rebinds in components. */
-
-		/*
-		 * Per-depth surface colours. `.surface .surface` chains in `style/Surface.module.css` select the
-		 * right tier based on how deeply a surface element is nested. Themes can override any of these
-		 * to retint the depth tiers globally. Components with their own theme hook
-		 * (`--card-color-bg`, `--button-color-bg`, etc.) override the depth selection entirely — once
-		 * the component is explicitly themed, its colour wins and depth darkening doesn't apply.
-		 */
-		--surface-color-0: var(--gray-05);
-		--surface-color-1: var(--gray-10);
-		--surface-color-2: var(--gray-20);
-		--surface-color-3: var(--gray-30);
-		--surface-color-4: var(--gray-40);
+		--color-surface: var(--gray-overlay); /* Default surface colour; overridden by variants and rebinds in components. */
 
 		/* Shadows */
 		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-overlay);

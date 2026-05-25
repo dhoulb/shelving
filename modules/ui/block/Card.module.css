@@ -1,24 +1,18 @@
 @import "../style/base.css";
 
 @layer components {
-	/* Rebind global tokens on the card scope. When the theme hook is set, the card paints its theme */
-	/* colour (depth-darkening is bypassed entirely — the hook's identity wins). When unset, falls back */
-	/* to `--surface-color` (the depth-appropriate tier from `style/Surface.module.css`). Variants */
-	/* override `--color-surface` in `@layer variants` and beat the rebind by layer order. */
 	.card {
-		--color-surface: var(--card-color-bg, var(--surface-color));
+		--color-surface: var(--card-color-bg, inherit);
 		--color-border: var(--card-color-border, inherit);
 		--color-text: var(--card-color-text, inherit);
-	}
 
-	.card {
 		/* Box */
 		position: relative;
 		margin-inline: 0;
 		margin-block: var(--card-spacing, var(--space-normal));
 
 		/* Style */
-		background: var(--color-surface);
+		background-color: var(--color-surface);
 		border: var(--card-border, var(--stroke-normal)) solid var(--color-border);
 		padding: var(--card-padding, var(--space-normal));
 		color: var(--color-text);

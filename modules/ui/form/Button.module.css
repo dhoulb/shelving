@@ -3,7 +3,7 @@
 @layer components {
 	/* Rebind global tokens on the button scope — see Card.module.css for the rationale. */
 	.button {
-		--color-surface: var(--button-color-bg, var(--surface-color));
+		--color-surface: var(--button-color-bg, inherit);
 		--color-border: var(--button-color-border, inherit);
 		--color-quiet: var(--button-color-text, inherit);
 	}

@@ -1,21 +1,20 @@
 @import "../style/base.css";
 
 @layer components {
-	/* Rebind on the panel scope — see Card.module.css. Panel falls back to `--surface-color` when its */
-	/* theme hook is unset. Variants override `--color-surface` in `@layer variants` and beat the rebind. */
-	.panel {
-		--color-surface: var(--panel-color-bg, var(--surface-color));
-	}
-
 	/* Full-width region that paints the current surface and gives generous vertical breathing room. */
 	.panel {
+		--color-surface: var(--panel-color-bg, inherit);
+		--color-border: var(--panel-color-border, inherit);
+		--color-text: var(--panel-color-text, inherit);
+
 		display: block;
 		inline-size: 100%;
 		margin-inline: 0;
 		margin-block: 0;
+		border-top: var(--panel-border, 0) solid var(--color-border);
 		padding-block: var(--panel-padding-block, var(--space-xxlarge));
 		padding-inline: var(--panel-padding-inline, var(--space-normal));
-		background: var(--color-surface);
+		background-color: var(--color-surface);
 		color: var(--color-text);
 	}
 }
