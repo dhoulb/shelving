@@ -26,6 +26,10 @@
 		font-size: var(--input-size, var(--size-normal));
 		line-height: var(--input-leading, var(--leading-normal));
 
+		/* Contents */
+		justify-content: start;
+		align-items: center;
+
 		/* Variants. */
 		&.select {
 			/* Select inputs have pointer cursor, down arrow image. */
@@ -96,6 +100,9 @@
 			&:has(.text:invalid:not(:placeholder-shown)) {
 				border-color: var(--input-error-color, var(--error-text));
 			}
+		}
+		&.button {
+			justify-content: center;
 		}
 
 		/* Error if aria invalid or contains aria invalid. */

@@ -6,38 +6,38 @@
 		/* Loading colors */
 		--loading-text: var(--color-gray);
 		--loading-contrast: var(--color-white);
-		--loading-surface: color-mix(in srgb, var(--loading-text) 12%, white);
-		--loading-border: color-mix(in srgb, var(--loading-text) 12%, white);
+		--loading-surface: color-mix(in srgb, var(--loading-text) 10%, white);
+		--loading-border: color-mix(in srgb, var(--loading-text) 40%, white);
 
 		/* Info colors */
 		--info-text: var(--color-blue);
 		--info-contrast: var(--color-white);
-		--info-surface: color-mix(in srgb, var(--info-text) 12%, white);
-		--info-border: color-mix(in srgb, var(--info-text) 12%, white);
+		--info-surface: color-mix(in srgb, var(--info-text) 10%, white);
+		--info-border: color-mix(in srgb, var(--info-text) 40%, white);
 
 		/* Success colors */
 		--success-text: var(--color-green);
 		--success-contrast: var(--color-white);
-		--success-surface: color-mix(in srgb, var(--success-text) 12%, white);
-		--success-border: color-mix(in srgb, var(--success-text) 12%, white);
+		--success-surface: color-mix(in srgb, var(--success-text) 10%, white);
+		--success-border: color-mix(in srgb, var(--success-text) 40%, white);
 
 		/* Warning colors */
 		--warning-text: var(--color-orange);
 		--warning-contrast: var(--color-white);
-		--warning-surface: color-mix(in srgb, var(--warning-text) 12%, white);
-		--warning-border: color-mix(in srgb, var(--warning-text) 12%, white);
+		--warning-surface: color-mix(in srgb, var(--warning-text) 10%, white);
+		--warning-border: color-mix(in srgb, var(--warning-text) 40%, white);
 
 		/* Error colors */
 		--error-text: var(--color-red);
 		--error-contrast: var(--color-white);
-		--error-surface: color-mix(in srgb, var(--error-text) 12%, white);
-		--error-border: color-mix(in srgb, var(--error-text) 12%, white);
+		--error-surface: color-mix(in srgb, var(--error-text) 10%, white);
+		--error-border: color-mix(in srgb, var(--error-text) 40%, white);
 
 		/* Danger colors */
 		--danger-text: var(--color-red);
 		--danger-contrast: var(--color-white);
-		--danger-surface: color-mix(in srgb, var(--danger-text) 12%, white);
-		--danger-border: color-mix(in srgb, var(--danger-text) 12%, white);
+		--danger-surface: color-mix(in srgb, var(--danger-text) 10%, white);
+		--danger-border: color-mix(in srgb, var(--danger-text) 40%, white);
 	}
 }
 

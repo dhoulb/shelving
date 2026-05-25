@@ -1,14 +1,12 @@
 @import "../style/base.css";
 
 @layer components {
-	/* Rebind global tokens on the button scope — see Card.module.css for the rationale. */
 	.button {
+		/** Identity */
 		--color-surface: var(--button-color-bg, inherit);
 		--color-border: var(--button-color-border, inherit);
 		--color-quiet: var(--button-color-text, inherit);
-	}
 
-	.button {
 		/* Box */
 		display: flex;
 		box-sizing: border-box;
@@ -27,9 +25,11 @@
 		overflow-wrap: normal;
 		text-wrap: nowrap;
 		word-break: normal;
+		justify-content: center;
+		align-content: center;
 
 		/* Style */
-		background: var(--color-surface);
+		background-color: var(--color-surface);
 		color: var(--color-quiet);
 		text-decoration: none;
 		transition: all 120ms ease-in-out;

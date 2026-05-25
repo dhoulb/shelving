@@ -2,20 +2,22 @@
 
 @layer components {
 	.card {
-		/* Rebind colour tokens so consumers and variants can override at any level. */
+		/** Identity */
 		--color-surface: var(--card-color-bg, inherit);
 		--color-border: var(--card-color-border, inherit);
 		--color-text: var(--card-color-text, inherit);
 
+		/* Box */
 		position: relative;
 		margin-inline: 0;
 		margin-block: var(--card-spacing, var(--spacing-paragraph));
-
-		background-color: var(--color-surface);
 		border: var(--card-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
 		padding: var(--card-padding, var(--space-normal));
-		color: var(--color-text);
 		border-radius: var(--card-radius, var(--radius-normal));
+
+		/* Style */
+		background-color: var(--color-surface);
+		color: var(--color-text);
 		box-shadow: var(--card-shadow, none);
 		transition: border-color var(--duration-fast);
 

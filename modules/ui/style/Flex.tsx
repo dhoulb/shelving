@@ -37,5 +37,3 @@ export interface FlexProps extends FlexVariants, OptionalChildProps {}
 export function Flex({ children, ...variants }: FlexProps): ReactElement {
 	return <div className={getFlexClass(variants)}>{children}</div>;
 }
-
-export { FLEX_CSS };
