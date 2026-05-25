@@ -3,33 +3,25 @@
 @layer components {
 	.definitions,
 	.prose dl {
-		/* Box */
+		--color-text: var(--definitions-color, inherit);
+		--color-border: var(--definitions-color-border, inherit);
+
 		display: block;
 		margin-inline: 0;
-		margin-block: var(--definitions-spacing, var(--space-normal));
-
-		/* Pseudo-classes */
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
+		margin-block: var(--definitions-spacing, var(--spacing-paragraph));
+		color: var(--color-text);
+		text-align: var(--definitions-align, left);
 
 		/* Children */
 		.pair {
 			display: block;
 			padding-block: var(--definitions-padding, var(--space-xsmall));
-			border-block: var(--definitions-border, var(--stroke-normal)) solid var(--definitions-color-border, var(--color-border));
-
-			&:first-child {
-				padding-block-start: 0;
-				border-block-start: 0;
-			}
-			&:last-child {
-				padding-block-end: 0;
-				border-block-end: 0;
-			}
+		}
+		.pair + .pair {
+			/* Gap between successive pairs (first one starts at the top with no extra space). */
+			margin-block-start: var(--definitions-gap, var(--space-xsmall));
+			padding-block-start: var(--definitions-padding, var(--space-xsmall));
+			border-block-start: var(--definitions-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
 		}
 
 		.term {
@@ -43,7 +35,6 @@
 		.value {
 			display: block;
 			margin: 0;
-			color: var(--definitions-color-text, var(--color-text));
 		}
 
 		/* Variants */
@@ -59,6 +50,18 @@
 			&.row .pair {
 				display: block;
 			}
+		}
+	}
+}
+
+@layer overrides {
+	.definitions,
+	.prose dl {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
 		}
 	}
 }

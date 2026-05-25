@@ -2,10 +2,13 @@
 
 @layer components {
 	.video {
+		--color-surface: var(--video-color-bg, inherit);
+		--color-text: var(--video-color-text, inherit);
+
 		/* Block */
 		aspect-ratio: 16 / 9;
 		margin-inline: 0;
-		margin-block: var(--video-spacing, var(--space-normal));
+		margin-block: var(--video-spacing, var(--spacing-paragraph));
 
 		/* Contents */
 		display: flex;
@@ -16,28 +19,10 @@
 		position: relative;
 
 		/* Style */
-		background: var(--video-color-bg, var(--color-black));
-		color: var(--video-color-text, var(--color-white));
+		background: var(--color-surface);
+		color: var(--color-text);
 		overflow: hidden;
 		border-radius: var(--video-radius, var(--radius-xsmall));
-
-		&.narrow {
-			margin-inline: auto;
-			max-width: var(--section-width-narrow, var(--width-narrow));
-		}
-
-		&.wide {
-			margin-inline: auto;
-			max-width: var(--section-width-wide, var(--width-wide));
-		}
-
-		&:first-child {
-			margin-block-start: 0;
-		}
-
-		&:last-child {
-			margin-block-end: 0;
-		}
 
 		&:fullscreen {
 			border-radius: 0;
@@ -102,6 +87,17 @@
 		& svg {
 			width: 1.5rem;
 			height: 1.5rem;
+		}
+	}
+}
+
+@layer overrides {
+	.video {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
 		}
 	}
 }

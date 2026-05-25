@@ -3,21 +3,26 @@
 @layer components {
 	.subheading,
 	.prose :is(h3, h4, h5, h6) {
-		/* Box */
+		--color-text: var(--subheading-color, inherit);
+
 		display: block;
 		inline-size: 100%;
 		margin-inline: 0;
 		margin-block-start: var(--subheading-spacing-before, var(--spacing-section));
-		margin-block-end: var(--subheading-spacing, var(--space-normal));
+		margin-block-end: var(--subheading-spacing, var(--spacing-paragraph));
 
-		/* Style */
 		font-family: var(--subheading-font, var(--font-body));
 		font-weight: var(--subheading-weight, var(--weight-strong));
 		line-height: var(--subheading-leading, var(--leading));
-		color: var(--subheading-color, var(--color-text));
-		font-size: var(--subheading-font-size, var(--size-large));
+		color: var(--color-text);
+		font-size: var(--subheading-size, var(--size-large));
+		text-align: var(--subheading-align, left);
+	}
+}
 
-		/* Psuedo-classes */
+@layer overrides {
+	.subheading,
+	.prose :is(h3, h4, h5, h6) {
 		&:first-child {
 			margin-block-start: 0;
 		}

@@ -79,7 +79,7 @@
 		}
 		.sidebar.open {
 			transform: translateX(0);
-			box-shadow: 0 0 1.5rem var(--color-overlay);
+			box-shadow: 0 0 1.5rem var(--color-shadow);
 		}
 		/* Pin the toggle button to the top-right so it stays reachable while the content column scrolls. */
 		.toggle {
@@ -97,7 +97,7 @@
 			margin: 0;
 			padding: 0;
 			border: 0;
-			background: var(--color-overlay);
+			background: var(--color-shadow);
 			cursor: pointer;
 			animation: overlay-fade-in var(--duration-normal) ease-in-out;
 		}

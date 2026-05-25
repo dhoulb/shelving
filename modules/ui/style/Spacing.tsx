@@ -1,10 +1,16 @@
 import { getModuleClass } from "../util/css.js";
 import SPACING_CSS from "./Spacing.module.css";
 
-/** Block-spacing variants — opt-in modifiers for block-level components. */
+/** Block-spacing variants — opt-in modifiers for block-level components. Set `margin-block` (top + bottom). */
 export interface SpacingVariants {
-	/** Add extra vertical breathing room above and below. */
-	spacious?: boolean | undefined;
+	"space-none"?: boolean | undefined;
+	"space-xxsmall"?: boolean | undefined;
+	"space-xsmall"?: boolean | undefined;
+	"space-small"?: boolean | undefined;
+	"space-normal"?: boolean | undefined;
+	"space-large"?: boolean | undefined;
+	"space-xlarge"?: boolean | undefined;
+	"space-xxlarge"?: boolean | undefined;
 }
 
 /** Possible spacing strings. */

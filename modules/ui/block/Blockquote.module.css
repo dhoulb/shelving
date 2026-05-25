@@ -3,18 +3,24 @@
 @layer components {
 	.blockquote,
 	.prose blockquote {
-		/* Box */
+		--color-text: var(--blockquote-color, inherit);
+		--color-border: var(--blockquote-color-border, inherit);
+
 		display: block;
 		margin-inline: 0;
-		margin-block: var(--blockquote-spacing, var(--space-normal));
-		border-inline-start: var(--blockquote-border, var(--stroke-focus)) solid var(--blockquote-color-border, var(--color-border));
+		margin-block: var(--blockquote-spacing, var(--spacing-paragraph));
+		border-inline-start: var(--blockquote-thickness, var(--thickness, var(--stroke-focus))) solid var(--color-border);
 		padding-block: var(--blockquote-padding, var(--space-small));
 		padding-inline-start: var(--blockquote-indent, var(--space-normal));
 
-		/* Style */
-		color: var(--blockquote-color-text, inherit);
+		color: var(--color-text);
+		text-align: var(--blockquote-align, left);
+	}
+}
 
-		/* Styles */
+@layer overrides {
+	.blockquote,
+	.prose blockquote {
 		&:first-child {
 			margin-block-start: 0;
 		}

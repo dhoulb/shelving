@@ -1,10 +1,13 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
+import { type AlignVariants, getAlignClass } from "../style/Align.js";
+import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import styles from "./Heading.module.css";
 
 /** Props shared by `Title`, `Heading`, and `Subheading`. */
-export interface HeadingProps extends ChildProps {
+export interface HeadingProps extends AlignVariants, SpacingVariants, TypographyVariants, ChildProps {
 	/**
 	 * Heading level (`1`–`6`) — sets the rendered `<h1>`–`<h6>` tag.
 	 * Avoid overriding this in practice: pick the component that matches the level — `Title` (`<h1>`), `Heading` (`<h2>`), or `Subheading` (`<h3>`) — so the visual size and the document outline stay in step.
@@ -18,5 +21,16 @@ export interface HeadingProps extends ChildProps {
  */
 export function Heading({ level = "2", children, ...variants }: HeadingProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;
-	return <Element className={getModuleClass(styles, "heading", variants)}>{children}</Element>;
+	return (
+		<Element
+			className={getClass(
+				getModuleClass(styles, "heading"),
+				getAlignClass(variants),
+				getSpacingClass(variants),
+				getTypographyClass(variants),
+			)}
+		>
+			{children}
+		</Element>
+	);
 }

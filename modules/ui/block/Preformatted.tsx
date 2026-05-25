@@ -1,5 +1,4 @@
 import type { ReactElement } from "react";
-import { SURFACE_CLASS } from "../style/Surface.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Preformatted.module.css";
@@ -15,5 +14,5 @@ export interface PreformattedProps extends OptionalChildProps {
  * - Pass `nowrap` to restore strict `<pre>` behaviour when exact whitespace matters (ASCII art, fixed-column tables). Wrap in a `<Figure scrollable>` (or any `scrollable` block) to add horizontal scrolling.
  */
 export function Preformatted({ children, ...variants }: PreformattedProps): ReactElement {
-	return <pre className={getClass(SURFACE_CLASS, getModuleClass(styles, "preformatted", variants))}>{children}</pre>;
+	return <pre className={getClass(getModuleClass(styles, "preformatted", variants))}>{children}</pre>;
 }

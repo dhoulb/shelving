@@ -4,7 +4,6 @@ import { StatusIcon } from "../misc/StatusIcon.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { FLEX_CSS, type FlexVariants } from "../style/Flex.js";
 import { getStatusClass, type Status } from "../style/Status.js";
-import { SURFACE_CLASS } from "../style/Surface.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import NOTICE_CSS from "./Notice.module.css";
@@ -26,7 +25,6 @@ export function Notice({
 		<aside
 			role={status === "danger" || status === "error" ? "alert" : "status"}
 			className={getClass(
-				SURFACE_CLASS, // Notice paints a surface — opt into depth-tracking + auto-darkening.
 				BLOCK_CLASS,
 				getModuleClass(NOTICE_CSS, "notice", variants), //
 				getModuleClass(FLEX_CSS, "elements", variants),

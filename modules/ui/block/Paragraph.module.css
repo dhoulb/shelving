@@ -3,13 +3,23 @@
 @layer components {
 	.paragraph,
 	.prose p {
-		/* Box */
+		--color-text: var(--paragraph-color, inherit);
+
 		display: block;
 		inline-size: 100%;
 		margin-inline: 0;
-		margin-block: var(--paragraph-spacing, var(--space-normal));
+		margin-block: var(--paragraph-spacing, var(--spacing-paragraph));
 
-		/* Psuedo-classes */
+		color: var(--color-text);
+		font-family: var(--paragraph-font, inherit);
+		font-size: var(--paragraph-size, inherit);
+		text-align: var(--paragraph-align, left);
+	}
+}
+
+@layer overrides {
+	.paragraph,
+	.prose p {
 		&:first-child {
 			margin-block-start: 0;
 		}

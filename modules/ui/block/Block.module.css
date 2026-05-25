@@ -2,52 +2,26 @@
 
 @layer components {
 	.block {
-		/* Box */
 		position: relative;
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--block-spacing, var(--spacing-section));
-
-		/* Psuedo-classes */
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
-
-		/* Variants */
-		&.narrow {
-			margin-inline: auto;
-			max-width: var(--block-width-narrow, var(--width-narrow));
-		}
-		&.wide {
-			margin-inline: auto;
-			max-width: var(--block-width-wide, var(--width-wide));
-		}
 	}
 
 	/* Plain semantic blocks inside prose pick up the same spacing as a <Block>. */
 	.prose :where(section, article, aside, nav, header, footer, figure) {
 		margin-inline: 0;
 		margin-block: var(--block-spacing, var(--spacing-section));
-
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
 	}
 
-	/* Scrollable region — keyboard-focusable horizontal scroll container. Targets both the .scrollable variant and any prose element marked `role="region" tabindex="0"` (e.g. Markdown fenced/table output). */
+	/* Scrollable region — keyboard-focusable horizontal scroll container. */
 	.scrollable,
 	.prose [role="region"][tabindex="0"] {
 		overflow-x: auto;
 		overscroll-behavior-x: contain;
 
 		&:focus-visible {
-			outline: var(--focus-stroke, var(--stroke-thick)) solid var(--focus-color, var(--color-accent));
+			outline: var(--focus-stroke, var(--stroke-thick)) solid var(--focus-color, var(--color-focus));
 			outline-offset: var(--focus-offset, var(--space-xxsmall));
 		}
 
@@ -56,14 +30,14 @@
 			min-width: 100%;
 		}
 
-		/* Force long lines so they trigger horizontal scroll instead of wrapping; grow the box with the content (`width: max-content`) so the pre's own right-side padding survives at scroll-end. */
+		/* Force long lines so they trigger horizontal scroll instead of wrapping. */
 		> pre {
 			width: max-content;
 			white-space: pre;
 			overflow-wrap: normal;
 		}
 
-		/* Caption stays pinned to the left during horizontal scroll. Spacing/typography come from the shared figcaption rule below. */
+		/* Caption stays pinned to the left during horizontal scroll. */
 		> :is(.caption, figcaption) {
 			position: sticky;
 			left: 0;
@@ -72,20 +46,18 @@
 
 	.caption,
 	.prose figcaption {
+		--color-text: var(--caption-color, inherit);
+
 		display: block;
 		margin-block: var(--caption-gap, var(--space-xsmall));
-		font-size: var(--caption-font-size, var(--size-small));
-		color: var(--caption-color, var(--color-quiet));
-
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
+		font-size: var(--caption-size, var(--size-small));
+		color: var(--color-text);
+		text-align: var(--caption-align, left);
 	}
 
-	/* Captions have tighter margins than most block elements, so zero the abutting margin of any neighbouring sibling — otherwise margin collapse would let the bigger neighbour margin win, drifting the caption away from its content. */
+	/* Captions have tighter margins than most block elements, so zero the abutting margin of any */
+	/* neighbouring sibling — otherwise margin collapse would let the bigger neighbour margin win, */
+	/* drifting the caption away from its content. */
 	.caption + *,
 	.prose figcaption + * {
 		margin-block-start: 0;
@@ -93,5 +65,19 @@
 	:has(+ .caption),
 	.prose :has(+ figcaption) {
 		margin-block-end: 0;
+	}
+}
+
+@layer overrides {
+	.block,
+	.prose :where(section, article, aside, nav, header, footer, figure),
+	.caption,
+	.prose figcaption {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
 	}
 }

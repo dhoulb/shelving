@@ -1,9 +1,20 @@
 import type { ReactElement, ReactNode } from "react";
-import { getModuleClass } from "../util/css.js";
+import { type AlignVariants, getAlignClass } from "../style/Align.js";
+import { type GapVariants, getGapClass } from "../style/Gap.js";
+import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Definitions.module.css";
 
-export interface DefinitionsProps extends OptionalChildProps {
+export interface DefinitionsProps
+	extends AlignVariants,
+		GapVariants,
+		SpacingVariants,
+		ThicknessVariants,
+		TypographyVariants,
+		OptionalChildProps {
 	/** Lay out each term/value pair side-by-side instead of stacked (collapses to stacked at narrow widths). */
 	row?: boolean | undefined;
 }
@@ -20,7 +31,20 @@ export interface DefinitionsProps extends OptionalChildProps {
  * </Definitions>
  */
 export function Definitions({ children, ...variants }: DefinitionsProps): ReactElement {
-	return <dl className={getModuleClass(styles, "definitions", variants)}>{children}</dl>;
+	return (
+		<dl
+			className={getClass(
+				getModuleClass(styles, "definitions", variants),
+				getAlignClass(variants),
+				getGapClass(variants),
+				getSpacingClass(variants),
+				getThicknessClass(variants),
+				getTypographyClass(variants),
+			)}
+		>
+			{children}
+		</dl>
+	);
 }
 
 export interface DefinitionProps extends OptionalChildProps {

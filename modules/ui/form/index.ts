@@ -29,7 +29,6 @@ export * from "./Progress.js";
 export * from "./QueryInput.js";
 export * from "./RadioInput.js";
 export * from "./SchemaInput.js";
-export * from "./SegmentedProgress.js";
 export * from "./SelectInput.js";
 export * from "./SubmitButton.js";
 export * from "./TextInput.js";

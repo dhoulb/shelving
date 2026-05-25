@@ -1,11 +1,10 @@
+import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import styles from "./Divider.module.css";
 
-declare const _componentProps: unique symbol;
+export interface DividerProps extends SpacingVariants, ThicknessVariants {}
 
-export interface DividerProps {
-	readonly [_componentProps]?: never;
-}
-
-export function Divider() {
-	return <hr className={styles.divider} />;
+export function Divider(props: DividerProps) {
+	return <hr className={getClass(getModuleClass(styles, "divider"), getSpacingClass(props), getThicknessClass(props))} />;
 }

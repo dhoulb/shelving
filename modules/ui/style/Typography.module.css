@@ -1,58 +1,50 @@
-@import "../style/base.css";
+@import "base.css";
 
-@layer components {
+@layer variants {
+	/* Font-family variants. */
 	.body {
 		font-family: var(--font-body);
 	}
-
-	.monospace {
-		font-family: var(--font-monospace);
+	.code {
+		font-family: var(--font-code);
 	}
-
+	.monospace {
+		font-family: var(--font-mono);
+	}
 	.sans {
 		font-family: var(--font-sans);
 	}
-
 	.serif {
 		font-family: var(--font-serif);
 	}
 
-	.code {
-		font-family: var(--font-code);
-	}
-
-	.xxsmall {
+	/* Font-size variants (prefixed `size-` to avoid clashing with Spacing/Padding/Gap scales). */
+	.size-xxsmall {
 		font-size: var(--size-xxsmall);
-		line-height: Var(--leading);
+		line-height: var(--leading);
 	}
-
-	.xsmall {
+	.size-xsmall {
 		font-size: var(--size-xsmall);
-		line-height: Var(--leading);
+		line-height: var(--leading);
 	}
-
-	.small {
+	.size-small {
 		font-size: var(--size-small);
-		line-height: Var(--leading);
+		line-height: var(--leading);
 	}
-
-	.normal {
+	.size-normal {
 		font-size: var(--size-normal);
-		line-height: Var(--leading);
+		line-height: var(--leading);
 	}
-
-	.large {
+	.size-large {
 		font-size: var(--size-large);
-		line-height: Var(--leading);
+		line-height: var(--leading);
 	}
-
-	.xlarge {
+	.size-xlarge {
 		font-size: var(--size-xlarge);
-		line-height: Var(--leading);
+		line-height: var(--leading);
 	}
-
-	.xxlarge {
+	.size-xxlarge {
 		font-size: var(--size-xxlarge);
-		line-height: Var(--leading);
+		line-height: var(--leading);
 	}
 }

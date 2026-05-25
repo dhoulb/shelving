@@ -3,17 +3,19 @@
 @layer components {
 	.image,
 	.prose img {
-		/* Box */
 		display: block;
-		width: 100%;
+		inline-size: var(--image-width, 100%);
 		margin-inline: 0;
-		margin-block: var(--image-spacing, var(--space-normal));
+		margin-block: var(--image-spacing, var(--spacing-paragraph));
 
-		/* Style */
 		object-position: center center;
 		object-fit: cover; /* Don't distort when resized. */
+	}
+}
 
-		/* Psuedo-classes */
+@layer overrides {
+	.image,
+	.prose img {
 		&:first-child {
 			margin-block-start: 0;
 		}

@@ -3,10 +3,14 @@ import { type AddressData, formatAddress } from "../../schema/AddressSchema.js";
 import type { Nullish } from "../../util/null.js";
 import { Small } from "../inline/Small.js";
 import { Strong } from "../inline/Strong.js";
+import { type AlignVariants, getAlignClass } from "../style/Align.js";
+import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import styles from "./Address.module.css";
 
-export interface AddressProps extends ChildProps {}
+export interface AddressProps extends AlignVariants, SpacingVariants, TypographyVariants, ChildProps {}
 
 export interface PhysicalAddressProps {
 	name?: Nullish<string>;
@@ -19,8 +23,19 @@ export interface EmailAddressProps {
 }
 
 /** Show any kind of contact data. */
-export function Address({ children }: AddressProps) {
-	return <address className={styles.address}>{children}</address>;
+export function Address({ children, ...variants }: AddressProps) {
+	return (
+		<address
+			className={getClass(
+				getModuleClass(styles, "address"),
+				getAlignClass(variants),
+				getSpacingClass(variants),
+				getTypographyClass(variants),
+			)}
+		>
+			{children}
+		</address>
+	);
 }
 
 /** Show an optional `AddressData` object correctly on screen. */

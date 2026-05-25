@@ -11,7 +11,7 @@
 		height: 100vh;
 		align-items: center;
 		justify-content: center;
-		background: var(--dialog-color-overlay, var(--color-overlay));
+		background: var(--dialog-color-overlay, var(--color-shadow));
 		padding: var(--dialog-padding, var(--space-normal));
 		opacity: 0;
 		transition: opacity var(--dialog-transition-duration, var(--duration-fast)) ease-in-out;

@@ -1,17 +1,15 @@
 import type { ReactElement } from "react";
+import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Block.module.css";
 
 export const BLOCK_CLASS = getModuleClass(styles, "block");
 
-export interface BlockProps extends SpacingVariants, TypographyVariants, OptionalChildProps {
-	/** Constrain the block to narrow width. */
-	narrow?: boolean | undefined;
-	/** Constrain the block to wide width. */
-	wide?: boolean | undefined;
+export interface BlockProps extends SpacingVariants, TypographyVariants, WidthVariants, OptionalChildProps {
 	/** Mark as a keyboard-focusable horizontal scroll region — adds `tabindex="0"`, `role="region"`, an `aria-label`, and `overflow-x: auto`. */
 	scrollable?: boolean | undefined;
 }
@@ -20,9 +18,11 @@ type BlockElement = "div" | "section" | "header" | "footer" | "nav" | "aside" | 
 
 function renderBlock(Component: BlockElement, { children, ...variants }: BlockProps): ReactElement {
 	const className = getClass(
-		getModuleClass(styles, "block", variants), //
+		getModuleClass(styles, "block", variants),
+		variants.scrollable && getModuleClass(styles, "scrollable"),
 		getSpacingClass(variants),
 		getTypographyClass(variants),
+		getWidthClass(variants),
 	);
 	return variants.scrollable ? (
 		<Component className={className} tabIndex={0} role="region" aria-label="Scrollable region">
@@ -68,9 +68,9 @@ export function Figure(props: BlockProps): ReactElement {
 	return renderBlock("figure", props);
 }
 
-export interface CaptionProps extends OptionalChildProps {}
+export interface CaptionProps extends AlignVariants, OptionalChildProps {}
 
 /** `<figcaption>` block — caption text for a `<Figure>`. */
-export function Caption({ children }: CaptionProps): ReactElement {
-	return <figcaption className={getModuleClass(styles, "caption")}>{children}</figcaption>;
+export function Caption({ children, ...variants }: CaptionProps): ReactElement {
+	return <figcaption className={getClass(getModuleClass(styles, "caption"), getAlignClass(variants))}>{children}</figcaption>;
 }

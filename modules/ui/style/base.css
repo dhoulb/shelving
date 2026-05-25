@@ -1,31 +1,24 @@
 /*
- * Base styles for the shelving UI library.
+ * Base styles for the shelving UI library. See `modules/ui/README.md` for the styling system overview.
  *
  * Every `*.module.css` `@import`s this file at the very top. It does three things:
  *
  *   1. Declares the cascade-layer order (lowest → highest priority):
- *      • `defaults`   — `:root` design tokens, body baseline, low-priority opt-in defaults, `.surface`
- *                       depth chain. Anything in a later layer beats these.
- *      • `components` — component-defining CSS. The bulk of the codebase: `.card`, `.button`, `.notice`,
- *                       `.paragraph`, etc. Beats `defaults` automatically.
- *      • `variants`   — cross-cutting opt-in modifiers (`Color`, `Status`, `Surface` resets, `Flex`,
- *                       `Align`, `Spacing`, `Typography`). Always wins.
+ *      • `defaults`   — `:root` design tokens + body baseline + low-priority opt-in defaults.
+ *      • `components` — component-defining CSS. The bulk of the codebase.
+ *      • `variants`   — cross-cutting opt-in modifiers (Color, Status, Align, Spacing, Padding, Gap,
+ *                       Thickness, Width, Typography, Flex). Always beat components.
+ *      • `overrides`  — top-priority structural overrides like `:first-child` / `:last-child` margin
+ *                       collapses, which must beat variant-set margins.
  *
- *   2. Defines the design-token constants at `:root` — colours, sizes, spacing, etc. Everything else
- *      in the codebase reads these tokens via `var(--…)`; consumers override them at `:root` to retheme.
+ *   2. Defines the design-token constants at `:root` — colours, sizes, spacing, etc.
  *
- *   3. Sets baseline typography on `body` so a page with no Layout still reads correctly.
+ *   3. Sets baseline typography on `body` so a page with no `<Layout>` still reads correctly.
  *
- * Re-declaring the same layer order across every importer is a no-op — whichever file the parser hits
- * first establishes the order, every subsequent import just confirms it. This is resilient to bundle
- * order across module-graph permutations.
- *
- * Footgun: unlayered author rules (rules outside any `@layer { … }` block) beat ALL layered rules.
- * If a downstream theme writes its overrides without participating in the layer system, those rules
- * will silently dominate variants. Themes should override tokens at `:root` (an inheritance mechanism
- * that doesn't need layer participation), not via class selectors.
+ * Re-declaring the same layer order across every importer is a no-op. Unlayered rules beat all layered
+ * rules — themes should override tokens at `:root` (via inheritance), not via class selectors.
  */
-@layer defaults, components, variants;
+@layer defaults, components, variants, overrides;
 
 @layer defaults {
 	:root {
@@ -87,7 +80,10 @@
 		--space-xxlarge: calc(var(--space) * 3); /* 48px */
 
 		/* Semantic spacings */
-		--spacing-section: 2rem; /* Gap between sibling sections/blocks and the top margin of titles/headings, so the rhythm stays consistent whether a heading is wrapped in a Section or rendered bare. */
+		--spacing-section: 2rem; /* Default top margin for titles/headings/section blocks. */
+		--spacing-paragraph: var(
+			--space-normal
+		); /* Default block-spacing for most prose-level elements (Paragraph, Heading body margin, List, Definitions, Table, etc.). */
 
 		/* Radii */
 		--radius: 1rem;
@@ -99,7 +95,7 @@
 		--radius-xlarge: calc(var(--radius) * 2); /* 32px */
 		--radius-xxlarge: calc(var(--radius) * 3); /* 48px */
 
-		/* Strokes */
+		/* Strokes — border thicknesses, also exposed via the Thickness variant utility. */
 		--stroke: 2px;
 		--stroke-xxthin: calc(var(--stroke) * 0.25);
 		--stroke-xthin: calc(var(--stroke) * 0.5);
@@ -119,9 +115,9 @@
 		--duration-slow: 600ms;
 
 		/* Grows */
-		--grow-greedy: 1000000; /* Take up as much space as possible, unless other elements are greedy too. */
+		--grow-greedy: 1000000; /* Take up as much space as possible. */
 		--grow-normal: 1000; /* Take up a normal amount of space. */
-		--grow-timid: 1; /* Take up minimal space, unless the only other elements are timid too. */
+		--grow-timid: 1; /* Take up minimal space. */
 		--grow-none: 0;
 
 		/* Colors */
@@ -134,53 +130,59 @@
 		--color-red: #e5352f;
 		--color-yellow: #ffe01a;
 		--color-black: black;
-		--color-gray: color-mix(in srgb, var(--color-blue) 30%, rgb(128 128 128)); /* Used as the "tone" color for scale of grays. */
+		--color-gray: color-mix(
+			in srgb,
+			var(--color-blue) 30%,
+			rgb(128 128 128)
+		); /* "Tone" color for the scale of grays; carries a slight blue tint. */
 		--color-white: white;
 
-		/* Grays */
-		--gray-05: color-mix(in srgb, var(--color-gray) 10%, white);
-		--gray-10: color-mix(in srgb, var(--color-gray) 20%, white);
-		--gray-20: color-mix(in srgb, var(--color-gray) 40%, white);
-		--gray-30: color-mix(in srgb, var(--color-gray) 60%, white);
-		--gray-40: color-mix(in srgb, var(--color-gray) 80%, white);
+		/* Grays — interpolated in OKLCH so perceived chroma stays uniform across the scale (sRGB linear */
+		/* interpolation makes mid-tones look more saturated than the ends). */
+		--gray-05: color-mix(in oklch, var(--color-gray) 10%, white);
+		--gray-10: color-mix(in oklch, var(--color-gray) 20%, white);
+		--gray-20: color-mix(in oklch, var(--color-gray) 40%, white);
+		--gray-30: color-mix(in oklch, var(--color-gray) 60%, white);
+		--gray-40: color-mix(in oklch, var(--color-gray) 80%, white);
 		--gray-50: var(--color-gray);
-		--gray-60: color-mix(in srgb, var(--color-gray) 80%, black);
-		--gray-70: color-mix(in srgb, var(--color-gray) 60%, black);
-		--gray-80: color-mix(in srgb, var(--color-gray) 40%, black);
-		--gray-90: color-mix(in srgb, var(--color-gray) 20%, black);
-		--gray-95: color-mix(in srgb, var(--color-gray) 10%, black);
+		--gray-60: color-mix(in oklch, var(--color-gray) 80%, black);
+		--gray-70: color-mix(in oklch, var(--color-gray) 60%, black);
+		--gray-80: color-mix(in oklch, var(--color-gray) 40%, black);
+		--gray-90: color-mix(in oklch, var(--color-gray) 20%, black);
+		--gray-95: color-mix(in oklch, var(--color-gray) 10%, black);
 
 		/* Semantic colors */
 		--color-text: var(--color-black);
-		--color-contrast: var(--color-white); /* Contrast color — must be readable on `--color-text` */
-		--color-quiet: var(--gray-40); /* Quiet color is grey, used for secondary text etc. */
-		--color-bg: var(--color-white); /* Background color is usually the opposite of text colour. */
+		--color-contrast: var(--color-white); /* Contrast colour — must be readable on `--color-text`. */
+		--color-quiet: var(--gray-40); /* Quiet text colour (captions, secondary labels). */
+		--color-bg: var(--color-white); /* Page background — usually the opposite of `--color-text`. */
 		--color-border: var(--gray-10);
-		--color-overlay: color-mix(
+		--color-link: var(--color-blue);
+		--color-focus: var(--color-blue);
+		--color-shadow: color-mix(
+			in srgb,
+			var(--color-gray) 40%,
+			transparent
+		); /* Translucent shadow colour; used by `--shadow-*` tokens. Gray-tinted (not pure black) to match the neutral palette. */
+		--color-surface: color-mix(
 			in srgb,
 			var(--color-gray) 10%,
 			transparent
-		); /* Translucent surface overlay. Painted on white this resolves to exactly `--gray-05` — so a `--color-surface: var(--color-overlay)` default keeps the same neutral-grey-with-blue-tint appearance while letting surfaces stack visually when nested. */
-		--color-link: var(--color-blue); /* Links are usually blue. */
-		--color-focus: var(--color-blue); /* Focus is usually blue. */
-		--color-surface: var(--color-overlay); /* Default surface colour; overridden by variants and rebinds in components. */
+		); /* Default translucent surface — painted on white this resolves to `--gray-05` exactly, but stacks visibly when surfaces nest. Overridden by component rebinds (Card/Button/etc.) and Variants. */
 
 		/* Shadows */
-		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-overlay);
-		--shadow-xsmall: 0 0.25rem 1rem -0.5rem var(--color-overlay);
-		--shadow-small: 0 0.375rem 1.5rem -0.75rem var(--color-overlay);
-		--shadow-normal: 0 0.5rem 2rem -1rem var(--color-overlay);
-		--shadow-large: 0 0.75 3rem -1.5rem var(--color-overlay);
-		--shadow-xlarge: 0 1rem 4rem -2rem var(--color-overlay);
-		--shadow-xxlarge: 0 1.5rem 6rem -3rem var(--color-overlay);
+		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-shadow);
+		--shadow-xsmall: 0 0.25rem 1rem -0.5rem var(--color-shadow);
+		--shadow-small: 0 0.375rem 1.5rem -0.75rem var(--color-shadow);
+		--shadow-normal: 0 0.5rem 2rem -1rem var(--color-shadow);
+		--shadow-large: 0 0.75rem 3rem -1.5rem var(--color-shadow);
+		--shadow-xlarge: 0 1rem 4rem -2rem var(--color-shadow);
+		--shadow-xxlarge: 0 1.5rem 6rem -3rem var(--color-shadow);
 	}
 
-	/*
-	 * Baseline typography for the page. Applies to every `<body>` regardless of whether a `<Layout>` is
-	 * mounted — a plain page using a few shelving components still reads with the design's font, size,
-	 * and colour. Layout-specific things like `position: fixed` for iOS focus locking stay in
-	 * `Layout.module.css` and apply only when a `.layout` element is present.
-	 */
+	/* Baseline body styles — typography and bg apply universally, so a plain page using a few shelving */
+	/* components still reads with the design's font, size, and colour. Layout-specific behaviour like */
+	/* `position: fixed` stays in `layout/Layout.module.css`. */
 	body {
 		font-family: var(--font-body);
 		font-weight: var(--weight-normal);

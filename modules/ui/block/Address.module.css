@@ -3,17 +3,24 @@
 @layer components {
 	.address,
 	.prose address {
-		/* Box */
+		--color-text: var(--address-color, inherit);
+
 		display: block;
 		margin-inline: 0;
-		margin-block: var(--address-spacing, var(--space-normal));
+		margin-block: var(--address-spacing, var(--spacing-paragraph));
 
-		/* Contents */
 		white-space: pre-line;
 		font-style: normal;
-		text-align: left;
+		color: var(--color-text);
+		font-family: var(--address-font, inherit);
+		font-size: var(--address-size, inherit);
+		text-align: var(--address-align, left);
+	}
+}
 
-		/* Styles */
+@layer overrides {
+	.address,
+	.prose address {
 		&:first-child {
 			margin-block-start: 0;
 		}

@@ -2,7 +2,6 @@ import type { ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { FLEX_CSS, type FlexVariants } from "../style/Flex.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
-import { SURFACE_CLASS } from "../style/Surface.js";
 import { type Classes, getClass, getModuleClass } from "../util/css.js";
 import BUTTON_CSS from "./Button.module.css";
 import { Clickable, type ClickableProps } from "./Clickable.js";
@@ -31,7 +30,6 @@ export function Button(props: ButtonProps): ReactElement {
 /** Get the full className for a button. */
 export function getButtonClass(variants: ButtonVariants): string {
 	return getClass(
-		SURFACE_CLASS, // Button paints a surface — opt into depth-tracking + auto-darkening.
 		getModuleClass(BUTTON_CSS, "button", variants as Classes),
 		getModuleClass(FLEX_CSS, "flex", "center", variants as Classes),
 		getStatusClass(variants), // Buttons have status colours.

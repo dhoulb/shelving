@@ -2,24 +2,34 @@
 
 @layer components {
 	.notice {
-		/* Rebind globals on the notice scope — see Card.module.css for the pattern. Border keeps its */
-		/* original fallback chain since Status variants don't override `--color-border`. */
-		/* Reset `--surface-depth` to 0 so a themed Notice inside a surface paints its own colour cleanly. */
-		--color-surface: var(--notice-color-bg, var(--surface-color));
+		/* Rebind colour tokens. Border falls back through `--color-quiet` (Status variants override that). */
+		--color-surface: var(--notice-color-bg, inherit);
 		--color-quiet: var(--notice-color-text, inherit);
+		--color-border: var(--notice-color-border, var(--color-quiet));
 
-		/* Box */
+		display: block;
+		margin-inline: 0;
+		margin-block: var(--notice-spacing, var(--spacing-paragraph));
 		border-radius: var(--notice-radius, var(--radius-xsmall));
-		border: var(--notice-border, var(--stroke-normal)) solid var(--notice-color-border, var(--color-quiet));
+		border: var(--notice-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
 		padding: var(--notice-padding, var(--space-small));
 
-		/* Style */
 		background: var(--color-surface);
 		color: var(--color-quiet);
 
-		/* Typography */
 		font-size: var(--notice-size, var(--size-normal));
 		font-weight: var(--notice-weight, var(--weight-strong));
 		text-align: start;
+	}
+}
+
+@layer overrides {
+	.notice {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
 	}
 }

@@ -3,16 +3,19 @@
 @layer components {
 	.divider,
 	.prose hr {
-		/* Box */
+		--color-border: var(--divider-color, inherit);
+
 		display: block;
 		border: 0;
 		margin-inline: 0;
-		margin-block: var(--divider-spacing, var(--space-normal));
+		margin-block: var(--divider-spacing, var(--spacing-paragraph));
+		border-block-start: var(--divider-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
+	}
+}
 
-		/* Style */
-		border-block-start: var(--divider-border, var(--stroke-normal)) solid var(--divider-color, var(--color-border));
-
-		/* Psuedo-classes */
+@layer overrides {
+	.divider,
+	.prose hr {
 		&:first-child {
 			margin-block-start: 0;
 		}

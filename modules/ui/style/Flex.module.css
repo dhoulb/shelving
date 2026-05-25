@@ -12,7 +12,8 @@
 	}
 }
 
-/** Flex styles reused by a few other elements including <Flex>, <Notice>, <Button>, <InputButton> */
+/** Flex styles reused by a few other elements including <Flex>, <Notice>, <Button>, <InputButton>. */
+/* Gap is applied via composing `getGapClass()` in `Flex.tsx` — `<Flex gap-xsmall>` etc. */
 @layer variants {
 	.flex {
 		/* Box */
@@ -65,9 +66,6 @@
 			&.reverse {
 				flex-direction: column-reverse;
 			}
-		}
-		&.flush {
-			gap: 0;
 		}
 
 		/* Children — zero-margin enforcement at high specificity, stays inside variants to win. */

@@ -2,41 +2,22 @@
 
 @layer components {
 	.card {
+		/* Rebind colour tokens so consumers and variants can override at any level. */
 		--color-surface: var(--card-color-bg, inherit);
 		--color-border: var(--card-color-border, inherit);
 		--color-text: var(--card-color-text, inherit);
 
-		/* Box */
 		position: relative;
 		margin-inline: 0;
-		margin-block: var(--card-spacing, var(--space-normal));
+		margin-block: var(--card-spacing, var(--spacing-paragraph));
 
-		/* Style */
 		background-color: var(--color-surface);
-		border: var(--card-border, var(--stroke-normal)) solid var(--color-border);
+		border: var(--card-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
 		padding: var(--card-padding, var(--space-normal));
 		color: var(--color-text);
 		border-radius: var(--card-radius, var(--radius-normal));
 		box-shadow: var(--card-shadow, none);
 		transition: border-color var(--duration-fast);
-
-		/* Psuedo-classes */
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
-
-		/* Variants */
-		&.narrow {
-			margin-inline: auto;
-			max-width: var(--section-width-narrow, var(--width-narrow));
-		}
-		&.wide {
-			margin-inline: auto;
-			max-width: var(--section-width-wide, var(--width-wide));
-		}
 
 		/* Hover/focus affordance driven by the overlay link/button. */
 		&:has(.overlay:hover) {
@@ -55,7 +36,6 @@
 	}
 
 	.overlay {
-		/* Cover the entire card. */
 		position: absolute;
 		inset: 0;
 		z-index: 1;
@@ -63,7 +43,7 @@
 		background: transparent;
 		cursor: pointer;
 
-		/* Hide the link's text content visually but keep it in the accessibility tree as the link's name. */
+		/* Hide the link's text content visually but keep it in the accessibility tree. */
 		color: transparent;
 		font: inherit;
 		overflow: hidden;
@@ -74,6 +54,17 @@
 		/* The card itself shows the focus outline via :has() — the link doesn't need its own. */
 		&:focus-visible {
 			outline: 0;
+		}
+	}
+}
+
+@layer overrides {
+	.card {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
 		}
 	}
 }

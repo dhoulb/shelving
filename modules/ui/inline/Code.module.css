@@ -4,21 +4,23 @@
 	.code,
 	.prose :is(code, kbd, samp, var) {
 		/* Typography */
-		font-family: var(--font-code);
-		font-size: var(--size-smaller);
+		font-family: var(--code-font, var(--font-code));
+		font-size: var(--code-size, var(--size-smaller));
 		line-height: var(--leading);
 		font-weight: inherit;
 	}
 
 	.code,
 	.prose :is(code, kbd, samp, var):not(pre *) {
-		/* Box */
-		display: inline-block;
-		padding-inline: 0.375rem;
+		/* Rebind colour tokens. */
+		--color-surface: var(--code-color-bg, inherit);
+		--color-text: var(--code-color-text, inherit);
 
-		/* Style */
+		display: inline-block;
+		padding-inline: var(--code-padding, 0.375rem);
+
 		background-color: var(--color-surface);
-		border-radius: var(--radius-xxsmall);
+		border-radius: var(--code-radius, var(--radius-xxsmall));
 		color: var(--color-text);
 	}
 }

@@ -3,21 +3,26 @@
 @layer components {
 	.title,
 	.prose h1 {
-		/* Box */
+		--color-text: var(--title-color, inherit);
+
 		display: block;
 		inline-size: 100%;
 		margin-inline: 0;
 		margin-block-start: var(--title-spacing-before, var(--spacing-section));
-		margin-block-end: var(--title-spacing, var(--space-normal));
+		margin-block-end: var(--title-spacing, var(--spacing-paragraph));
 
-		/* Style */
 		font-family: var(--title-font, var(--font-body));
 		font-weight: var(--title-weight, var(--weight-strong));
 		line-height: var(--title-leading, var(--leading));
-		color: var(--title-color, var(--color-text));
-		font-size: var(--title-font-size, var(--size-xxxlarge));
+		color: var(--color-text);
+		font-size: var(--title-size, var(--size-xxxlarge));
+		text-align: var(--title-align, left);
+	}
+}
 
-		/* Psuedo-classes */
+@layer overrides {
+	.title,
+	.prose h1 {
 		&:first-child {
 			margin-block-start: 0;
 		}
