@@ -123,8 +123,8 @@
 		/* Vivid palette — the saturated middle of the 5-step scale, one per hue. */
 		--vivid-gray: oklch(60% 0.01 240); /* Subtle blue tint so neutrals don't feel "dead". */
 		--vivid-red: oklch(62% 0.2 30); /* Slightly desaturated from default — takes the edge off without losing red identity. */
-		--vivid-orange: oklch(70% 0.157 60);
-		--vivid-yellow: oklch(82% 0.16 92);
+		--vivid-orange: oklch(74% 0.157 60);
+		--vivid-yellow: oklch(86% 0.16 92);
 		--vivid-green: oklch(72% 0.185 130);
 		--vivid-aqua: oklch(72% 0.121 185);
 		--vivid-blue: oklch(57% 0.216 260); /* OKLCH form of #156ef4 — warmer hue (260) than the previous 240. */
