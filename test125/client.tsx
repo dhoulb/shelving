@@ -9,6 +9,8 @@ import { Title } from "../modules/ui/block/Title.js";
 import { Button } from "../modules/ui/form/Button.js";
 import { Code } from "../modules/ui/inline/Code.js";
 import { Notice } from "../modules/ui/notice/Notice.js";
+import { type Color, getColorClass } from "../modules/ui/style/Color.js";
+import { Flex } from "../modules/ui/style/Flex.js";
 
 // Load base design tokens, layer order, and body baseline typography for side effect.
 import "../modules/ui/style/base.css";
@@ -16,13 +18,12 @@ import "../modules/ui/style/base.css";
 // Theme file that sets per-component hooks (e.g. `--card-color-light`, `--button-color-dark`).
 // Plain CSS — token overrides at `:root` propagate via inheritance, no layer participation needed.
 import "./theme.css";
-import { Flex } from "../modules/ui/style/Flex.js";
 
-/** A swatch row showing all 5 scale steps at the current scope (variant or default). */
-function Scale({ label }: { label: string }): ReactElement {
+/** A swatch row showing all 5 scale steps under the named colour variant (or no variant = default grey). */
+function Scale({ color }: { color?: Color | undefined }): ReactElement {
 	return (
-		<div style={{ display: "flex", gap: 8, alignItems: "center", marginBlock: 8 }}>
-			<div style={{ width: 80, fontSize: 12, color: "var(--color-dark)" }}>{label}</div>
+		<div className={color && getColorClass(color)} style={{ display: "flex", gap: 8, alignItems: "center", marginBlock: 8 }}>
+			<div style={{ width: 80, fontSize: 12, color: "var(--color-dark)" }}>{color ?? "default"}</div>
 			{(["black", "dark", "vivid", "light", "white"] as const).map(step => (
 				<div
 					key={step}
@@ -56,31 +57,15 @@ function Page(): ReactElement {
 				<Code>--color-light</Code>, and <Code>--color-white</Code> tokens for that scope. The middle three change per variant; the extremes
 				stay put.
 			</Paragraph>
-			<Scale label="default" />
-			<div className="red">
-				<Scale label="red" />
-			</div>
-			<div className="orange">
-				<Scale label="orange" />
-			</div>
-			<div className="yellow">
-				<Scale label="yellow" />
-			</div>
-			<div className="green">
-				<Scale label="green" />
-			</div>
-			<div className="aqua">
-				<Scale label="aqua" />
-			</div>
-			<div className="blue">
-				<Scale label="blue" />
-			</div>
-			<div className="purple">
-				<Scale label="purple" />
-			</div>
-			<div className="pink">
-				<Scale label="pink" />
-			</div>
+			<Scale />
+			<Scale color="red" />
+			<Scale color="orange" />
+			<Scale color="yellow" />
+			<Scale color="green" />
+			<Scale color="aqua" />
+			<Scale color="blue" />
+			<Scale color="purple" />
+			<Scale color="pink" />
 
 			<Heading>0b. Coloured buttons</Heading>
 			<Paragraph>

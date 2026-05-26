@@ -127,7 +127,7 @@
 		--vivid-yellow: oklch(82% 0.16 92);
 		--vivid-green: oklch(72% 0.185 130);
 		--vivid-aqua: oklch(72% 0.121 185);
-		--vivid-blue: #156ef4; /* Hex preserves the exact requested electric-blue hue; `light` and `dark` derive from this via the same pipeline as the others. */
+		--vivid-blue: oklch(57% 0.216 260); /* OKLCH form of #156ef4 — warmer hue (260) than the previous 240. */
 		--vivid-purple: oklch(58% 0.25 300);
 		--vivid-pink: oklch(68% 0.239 350);
 
