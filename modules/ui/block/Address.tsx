@@ -6,16 +6,12 @@ import { Strong } from "../inline/Strong.js";
 import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
-import { getStatusClass, type Status } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import styles from "./Address.module.css";
 
-export interface AddressProps extends AlignVariants, ColorVariants, SpacingVariants, TypographyVariants, ChildProps {
-	/** Status colour for the address (e.g. `"error"`). Combine with a `text-X` variant to actually tint the text. */
-	status?: Status | undefined;
-}
+export interface AddressProps extends AlignVariants, ColorVariants, SpacingVariants, TypographyVariants, ChildProps {}
 
 export interface PhysicalAddressProps {
 	name?: Nullish<string>;
@@ -28,12 +24,11 @@ export interface EmailAddressProps {
 }
 
 /** Show any kind of contact data. */
-export function Address({ children, status, ...variants }: AddressProps) {
+export function Address({ children, ...variants }: AddressProps) {
 	return (
 		<address
 			className={getClass(
 				getModuleClass(styles, "address"),
-				status && getStatusClass(status),
 				getColorClass(variants),
 				getAlignClass(variants),
 				getSpacingClass(variants),

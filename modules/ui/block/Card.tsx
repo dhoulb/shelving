@@ -3,7 +3,7 @@ import { Clickable, type ClickableProps } from "../form/Clickable.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
-import { getStatusClass, type Status } from "../style/Status.js";
+import { getStatusClass, type Status, type StatusVariants } from "../style/Status.js";
 import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
@@ -15,10 +15,11 @@ export interface CardProps
 		ColorVariants,
 		PaddingVariants,
 		SpacingVariants,
+		StatusVariants,
 		ThicknessVariants,
 		TypographyVariants,
 		WidthVariants {
-	/** Status colour for the card (e.g. `"error"`, `"success"`). */
+	/** Status colour for the card. Accepts a string (`status="success"`) or a boolean variant (`success`) — both forms compose the same class. */
 	status?: Status | undefined;
 }
 
@@ -39,6 +40,7 @@ export function Card({ children, href, onClick, title = "Open", status, ...props
 			className={getClass(
 				getModuleClass(CARD_CSS, "card"),
 				status && getStatusClass(status),
+				getStatusClass(props),
 				getColorClass(props),
 				getPaddingClass(props),
 				getSpacingClass(props),

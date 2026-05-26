@@ -2,7 +2,6 @@ import type { ReactElement } from "react";
 import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
-import { getStatusClass, type Status } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -14,17 +13,14 @@ export const BLOCK_CLASS = getModuleClass(styles, "block");
 export interface BlockProps extends ColorVariants, SpacingVariants, TypographyVariants, WidthVariants, OptionalChildProps {
 	/** Mark as a keyboard-focusable horizontal scroll region — adds `tabindex="0"`, `role="region"`, an `aria-label`, and `overflow-x: auto`. */
 	scrollable?: boolean | undefined;
-	/** Status colour for the block. Combine with a `text-X` variant to tint the text. */
-	status?: Status | undefined;
 }
 
 type BlockElement = "div" | "section" | "header" | "footer" | "nav" | "aside" | "figure";
 
-function renderBlock(Component: BlockElement, { children, status, ...variants }: BlockProps): ReactElement {
+function renderBlock(Component: BlockElement, { children, ...variants }: BlockProps): ReactElement {
 	const className = getClass(
 		getModuleClass(styles, "block", variants),
 		variants.scrollable && getModuleClass(styles, "scrollable"),
-		status && getStatusClass(status),
 		getColorClass(variants),
 		getSpacingClass(variants),
 		getTypographyClass(variants),
@@ -74,18 +70,14 @@ export function Figure(props: BlockProps): ReactElement {
 	return renderBlock("figure", props);
 }
 
-export interface CaptionProps extends AlignVariants, ColorVariants, TypographyVariants, OptionalChildProps {
-	/** Status colour for the caption. Combine with a `text-X` variant to tint the text. */
-	status?: Status | undefined;
-}
+export interface CaptionProps extends AlignVariants, ColorVariants, TypographyVariants, OptionalChildProps {}
 
 /** `<figcaption>` block — caption text for a `<Figure>`. */
-export function Caption({ children, status, ...variants }: CaptionProps): ReactElement {
+export function Caption({ children, ...variants }: CaptionProps): ReactElement {
 	return (
 		<figcaption
 			className={getClass(
 				getModuleClass(styles, "caption"),
-				status && getStatusClass(status),
 				getColorClass(variants),
 				getAlignClass(variants),
 				getTypographyClass(variants),

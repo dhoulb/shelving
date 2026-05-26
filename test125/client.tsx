@@ -202,13 +202,17 @@ function Page(): ReactElement {
 			</Card>
 
 			<Heading>2. Notices inside cards</Heading>
+			<Paragraph>
+				Status-supporting components (Notice, Button, Card, Panel, Message) accept the status either as a string (
+				<Code>status="success"</Code>) or as a boolean variant (<Code>success</Code>) — both forms compose the same class.
+			</Paragraph>
 			<Card>
-				<Notice status="info">Plain info notice inside plain card.</Notice>
-				<Notice status="success">Success notice inside plain card (should be green).</Notice>
-				<Notice status="error">Error notice inside plain card (should be red).</Notice>
+				<Notice status="info">Notice status="info" — string form.</Notice>
+				<Notice success>Notice success — boolean form.</Notice>
+				<Notice error>Notice error — boolean form.</Notice>
 			</Card>
-			<Card status="error">
-				<Notice status="warning">Warning notice inside error card — should be its own warning colour.</Notice>
+			<Card error>
+				<Notice warning>Card error + Notice warning — boolean form on both, each keeps its own colour.</Notice>
 			</Card>
 
 			<Heading>3. Code chips inside cards</Heading>
@@ -224,10 +228,11 @@ function Page(): ReactElement {
 			</Card>
 
 			<Heading>4. Buttons in variant cards</Heading>
-			<Card status="error">
-				<Paragraph>Error card containing buttons:</Paragraph>
-				<Button success>Success button — should be GREEN (variant beats theme).</Button>
-				<Button primary>Primary button — should be BLUE.</Button>
+			<Card error>
+				<Paragraph>Error card (boolean form `error`) containing buttons:</Paragraph>
+				<Button success>Button success — boolean form.</Button>
+				<Button status="warning">Button status="warning" — string form.</Button>
+				<Button primary>Button primary — Color variant beats theme.</Button>
 			</Card>
 
 			<Heading>5. Custom ancestor that sets --color-light</Heading>
@@ -293,14 +298,14 @@ function Page(): ReactElement {
 			<Heading red vivid>
 				&lt;Heading red vivid&gt;
 			</Heading>
-			<Heading status="success" dark>
-				&lt;Heading status="success" dark&gt;
+			<Heading green dark>
+				&lt;Heading green dark&gt;
 			</Heading>
 			<Paragraph orange vivid size-large>
 				&lt;Paragraph orange vivid size-large&gt; — colour, step, size all on one element.
 			</Paragraph>
-			<Paragraph status="error" dark monospace>
-				&lt;Paragraph status="error" dark monospace&gt; — error tint at the dark step, monospace family.
+			<Paragraph red dark monospace>
+				&lt;Paragraph red dark monospace&gt; — Color variant at the dark step, monospace family.
 			</Paragraph>
 			<Paragraph purple>
 				&lt;Paragraph purple&gt; alone — no step variant, so the paragraph still inherits its colour from the page baseline. The variant
