@@ -22,5 +22,3 @@ export type Padding = keyof PaddingVariants;
 export function getPaddingClass(padding: Padding | PaddingVariants): string | undefined {
 	return getModuleClass(PADDING_CSS, padding);
 }
-
-export { PADDING_CSS };

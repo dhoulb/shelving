@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import CENTERED_LAYOUT_CSS from "./CenteredLayout.module.css";
-import { LAYOUT_CSS } from "./Layout.js";
+import { LAYOUT_CLASS } from "./Layout.js";
 
 export interface CenteredLayoutProps extends OptionalChildProps {
 	fullWidth?: boolean;
@@ -14,7 +14,7 @@ export interface CenteredLayoutProps extends OptionalChildProps {
  */
 export function CenteredLayout({ children, fullWidth = false }: CenteredLayoutProps): ReactElement {
 	return (
-		<main className={getClass(CENTERED_LAYOUT_CSS.main, LAYOUT_CSS.layout)}>
+		<main className={getClass(CENTERED_LAYOUT_CSS.main, LAYOUT_CLASS)}>
 			<div className={CENTERED_LAYOUT_CSS.mainInner} style={fullWidth ? { maxWidth: "none" } : undefined}>
 				{children}
 			</div>

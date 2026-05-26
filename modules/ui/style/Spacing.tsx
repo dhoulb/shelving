@@ -20,5 +20,3 @@ export type Spacing = keyof SpacingVariants;
 export function getSpacingClass(spacing: Spacing | SpacingVariants): string | undefined {
 	return getModuleClass(SPACING_CSS, spacing);
 }
-
-export { SPACING_CSS };

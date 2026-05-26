@@ -5,7 +5,7 @@ import { Button } from "../form/Button.js";
 import { NavigationContext } from "../router/NavigationContext.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { LAYOUT_CSS } from "./Layout.js";
+import { LAYOUT_CLASS } from "./Layout.js";
 import SIDEBAR_LAYOUT_CSS from "./SidebarLayout.module.css";
 
 export interface SidebarLayoutProps extends OptionalChildProps {
@@ -38,7 +38,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 		</nav>
 	);
 	const contentEl = (
-		<div key="content" className={getClass(LAYOUT_CSS.layout, SIDEBAR_LAYOUT_CSS.content)}>
+		<div key="content" className={getClass(LAYOUT_CLASS, SIDEBAR_LAYOUT_CSS.content)}>
 			<div className={SIDEBAR_LAYOUT_CSS.toggle}>
 				<Button fit title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
 					{open ? <XMarkIcon /> : <Bars3Icon />}
@@ -51,10 +51,8 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 		<button key="overlay" type="button" className={SIDEBAR_LAYOUT_CSS.overlay} aria-label="Close menu" onClick={() => setOpen(false)} />
 	);
 	return (
-		<main className={getClass(SIDEBAR_LAYOUT_CSS.main, LAYOUT_CSS.layout)}>
+		<main className={getClass(SIDEBAR_LAYOUT_CSS.main, LAYOUT_CLASS)}>
 			{right ? [contentEl, sidebarEl, overlayEl] : [sidebarEl, contentEl, overlayEl]}
 		</main>
 	);
 }
-
-export { SIDEBAR_LAYOUT_CSS };

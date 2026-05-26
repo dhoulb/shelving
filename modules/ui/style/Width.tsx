@@ -16,5 +16,3 @@ export type Width = keyof WidthVariants;
 export function getWidthClass(width: Width | WidthVariants): string | undefined {
 	return getModuleClass(WIDTH_CSS, width);
 }
-
-export { WIDTH_CSS };

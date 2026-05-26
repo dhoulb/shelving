@@ -1,6 +1,8 @@
-import LAYOUT_CSS from "./Layout.module.css";
+import { getModuleClass } from "../util/css.js";
+import styles from "./Layout.module.css";
 
-export { LAYOUT_CSS };
+/** Resolved `.layout` class — for components that want to compose the layout's padding/scroll/safe-area behaviour onto their own element (e.g. `CenteredLayout`). */
+export const LAYOUT_CLASS = getModuleClass(styles, "layout");
 
 /**
  * Adapt the property to the dynamic height of the view port when the keyboard pops up.

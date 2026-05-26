@@ -45,5 +45,3 @@ export function Panel({ children, as = "section", status, ...props }: PanelProps
 		</Component>
 	);
 }
-
-export { PANEL_CSS };

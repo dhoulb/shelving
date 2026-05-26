@@ -24,5 +24,3 @@ export type Thickness = keyof ThicknessVariants;
 export function getThicknessClass(thickness: Thickness | ThicknessVariants): string | undefined {
 	return getModuleClass(THICKNESS_CSS, thickness);
 }
-
-export { THICKNESS_CSS };

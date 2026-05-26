@@ -18,5 +18,3 @@ export type Gap = keyof GapVariants;
 export function getGapClass(gap: Gap | GapVariants): string | undefined {
 	return getModuleClass(GAP_CSS, gap);
 }
-
-export { GAP_CSS };

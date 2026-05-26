@@ -48,5 +48,3 @@ export type TypographyVariants = SizeVariants & FontVariants & TextColorVariants
 export function getTypographyClass(variants: TypographyVariants): string | undefined {
 	return getModuleClass(TYPOGRAPHY_CSS, variants);
 }
-
-export { TYPOGRAPHY_CSS };

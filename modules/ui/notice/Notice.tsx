@@ -39,5 +39,3 @@ export function Notice({
 }
 
 export const LOADING_NOTICE = <Notice status="loading" />;
-
-export { NOTICE_CSS };

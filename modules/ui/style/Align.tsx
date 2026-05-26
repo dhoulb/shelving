@@ -18,5 +18,3 @@ export type Align = keyof AlignVariants;
 export function getAlignClass(align: Align | AlignVariants): string | undefined {
 	return getModuleClass(ALIGN_CSS, align);
 }
-
-export { ALIGN_CSS };
