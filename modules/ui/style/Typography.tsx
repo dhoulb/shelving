@@ -28,20 +28,18 @@ export type FontVariants = {
 
 /** Text-colour variants — set `color` to a step of the 5-step scale. Apply on a container (Block, Panel)
  * to tint everything inside via inheritance, or on an individual text block (Heading, Paragraph) to tint
- * just that one. */
+ * just that one. Reads naturally with Color/Status variants — `<Heading red vivid>` or `<Paragraph black>`. */
 export type TextColorVariants = {
 	/** Maximum-contrast text — `color: var(--color-black)`. */
-	"text-black"?: boolean | undefined;
+	black?: boolean | undefined;
 	/** Dark text (body-text default) — `color: var(--color-dark)`. Picks up variant tint when wrapped in `.red`, `.success`, etc. */
-	"text-dark"?: boolean | undefined;
+	dark?: boolean | undefined;
 	/** Vivid text — `color: var(--color-vivid)`. Picks up variant tint. */
-	"text-vivid"?: boolean | undefined;
+	vivid?: boolean | undefined;
 	/** Light text — `color: var(--color-light)`. Picks up variant tint. */
-	"text-light"?: boolean | undefined;
+	light?: boolean | undefined;
 	/** Page-background-coloured text (for use on dark/vivid surfaces) — `color: var(--color-white)`. */
-	"text-white"?: boolean | undefined;
-	/** Reset back to inherit so nested elements stop overriding. */
-	"text-inherit"?: boolean | undefined;
+	white?: boolean | undefined;
 };
 
 /** Typography variants — combined font-family + font-size + text-colour. */

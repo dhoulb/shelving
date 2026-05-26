@@ -260,24 +260,25 @@ function Page(): ReactElement {
 			<Heading>7. Text-colour variants</Heading>
 			<Paragraph>
 				Text block elements (<Code>&lt;Heading&gt;</Code>, <Code>&lt;Paragraph&gt;</Code>, etc.) no longer set <Code>color</Code> themselves
-				— they inherit from the page baseline or whatever <Code>text-X</Code> variant is applied to an ancestor (or the element itself).
+				— they inherit from the page baseline or whatever <Code>black</Code> / <Code>dark</Code> / <Code>vivid</Code> / <Code>light</Code> /{" "}
+				<Code>white</Code> typography variant is applied to an ancestor (or the element itself).
 			</Paragraph>
 			<Card>
 				<Paragraph>
-					Plain card. No <Code>text-X</Code> anywhere — heading + paragraph both inherit the page baseline (<Code>--color-dark</Code>).
+					Plain card. No text-colour variant anywhere — heading + paragraph both inherit the page baseline (<Code>--color-dark</Code>).
 				</Paragraph>
 				<Subheading>Inherited subheading</Subheading>
 			</Card>
-			<Card red text-vivid>
-				<Subheading>Red card, text-vivid on Card</Subheading>
+			<Card red vivid>
+				<Subheading>Red card, vivid on Card</Subheading>
 				<Paragraph>
 					Heading + paragraph inherit <Code>color: var(--color-vivid)</Code>, which the <Code>.red</Code> variant has set to{" "}
-					<Code>--vivid-red</Code>. Override on a single child to break out — the subheading below uses <Code>text-black</Code>.
+					<Code>--vivid-red</Code>. Override on a single child to break out — the subheading below uses <Code>black</Code>.
 				</Paragraph>
-				<Subheading text-black>This one's text-black</Subheading>
+				<Subheading black>This one's black</Subheading>
 			</Card>
 			<Card green>
-				<Subheading text-vivid>Green card, text-vivid on Subheading only</Subheading>
+				<Subheading vivid>Green card, vivid on Subheading only</Subheading>
 				<Paragraph>
 					Per-element variant — only this Subheading turns vivid green, the paragraph still inherits from the page baseline.
 				</Paragraph>
@@ -285,25 +286,25 @@ function Page(): ReactElement {
 
 			<Heading>7b. Variants directly on text blocks</Heading>
 			<Paragraph>
-				<Code>&lt;Heading&gt;</Code>, <Code>&lt;Paragraph&gt;</Code>, etc. now accept the Color / Status variants directly. The variant only
-				sets the scale at the element's scope — pair it with a <Code>text-X</Code> typography variant on the same element to actually tint
-				the rendered text.
+				<Code>&lt;Heading&gt;</Code>, <Code>&lt;Paragraph&gt;</Code>, etc. now accept Color / Status variants directly. The variant only
+				sets the scale at the element's scope — pair it with a step variant (<Code>black</Code>, <Code>dark</Code>, <Code>vivid</Code>,{" "}
+				<Code>light</Code>, <Code>white</Code>) on the same element to actually tint the rendered text.
 			</Paragraph>
-			<Heading red text-vivid>
-				Heading red text-vivid
+			<Heading red vivid>
+				&lt;Heading red vivid&gt;
 			</Heading>
-			<Heading status="success" text-dark>
-				Heading status="success" text-dark
+			<Heading status="success" dark>
+				&lt;Heading status="success" dark&gt;
 			</Heading>
-			<Paragraph orange text-vivid size-large>
-				Paragraph orange text-vivid size-large — colour, size, and font all live on one element now.
+			<Paragraph orange vivid size-large>
+				&lt;Paragraph orange vivid size-large&gt; — colour, step, size all on one element.
 			</Paragraph>
-			<Paragraph status="error" text-dark monospace>
-				Paragraph status="error" text-dark monospace — error tint on dark, monospace family.
+			<Paragraph status="error" dark monospace>
+				&lt;Paragraph status="error" dark monospace&gt; — error tint at the dark step, monospace family.
 			</Paragraph>
 			<Paragraph purple>
-				Paragraph purple — no text-X here, so the paragraph still inherits its colour from the page baseline. The variant sets the scale at
-				the paragraph's scope but nothing reads it. (This is the wrinkle.)
+				&lt;Paragraph purple&gt; alone — no step variant, so the paragraph still inherits its colour from the page baseline. The variant
+				sets the scale at the paragraph's scope but nothing reads it. (This is the wrinkle.)
 			</Paragraph>
 
 			<Heading>8. Panel — full-width vertical regions</Heading>
@@ -334,12 +335,12 @@ function FullWidthPanels(): ReactElement {
 					<Paragraph>Panel with status="success" — pure success green, no muddying.</Paragraph>
 				</Block>
 			</Panel>
-			<Panel as="aside" purple monospace text-vivid>
+			<Panel as="aside" purple monospace vivid>
 				<Block narrow>
 					<Heading>Purple monospace aside</Heading>
 					<Paragraph>
-						Rendered as <Code>&lt;aside&gt;</Code> with <Code>purple</Code> + <Code>monospace</Code> + <Code>text-vivid</Code> variants —
-						heading and body both now inherit purple instead of the heading staying black.
+						Rendered as <Code>&lt;aside&gt;</Code> with <Code>purple</Code> + <Code>monospace</Code> + <Code>vivid</Code> variants — heading
+						and body both now inherit purple instead of the heading staying black.
 					</Paragraph>
 				</Block>
 			</Panel>
