@@ -283,6 +283,29 @@ function Page(): ReactElement {
 				</Paragraph>
 			</Card>
 
+			<Heading>7b. Variants directly on text blocks</Heading>
+			<Paragraph>
+				<Code>&lt;Heading&gt;</Code>, <Code>&lt;Paragraph&gt;</Code>, etc. now accept the Color / Status variants directly. The variant only
+				sets the scale at the element's scope — pair it with a <Code>text-X</Code> typography variant on the same element to actually tint
+				the rendered text.
+			</Paragraph>
+			<Heading red text-vivid>
+				Heading red text-vivid
+			</Heading>
+			<Heading status="success" text-dark>
+				Heading status="success" text-dark
+			</Heading>
+			<Paragraph orange text-vivid size-large>
+				Paragraph orange text-vivid size-large — colour, size, and font all live on one element now.
+			</Paragraph>
+			<Paragraph status="error" text-dark monospace>
+				Paragraph status="error" text-dark monospace — error tint on dark, monospace family.
+			</Paragraph>
+			<Paragraph purple>
+				Paragraph purple — no text-X here, so the paragraph still inherits its colour from the page baseline. The variant sets the scale at
+				the paragraph's scope but nothing reads it. (This is the wrinkle.)
+			</Paragraph>
+
 			<Heading>8. Panel — full-width vertical regions</Heading>
 			<Paragraph>
 				<Code>&lt;Panel&gt;</Code> is a full-width section with xxlarge padding and the current light/dark pair.

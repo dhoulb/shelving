@@ -1,7 +1,9 @@
 import type { ReactElement, ReactNode } from "react";
 import { type AlignVariants, getAlignClass } from "../style/Align.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { type GapVariants, getGapClass } from "../style/Gap.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getStatusClass, type Status } from "../style/Status.js";
 import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -10,6 +12,7 @@ import styles from "./Definitions.module.css";
 
 export interface DefinitionsProps
 	extends AlignVariants,
+		ColorVariants,
 		GapVariants,
 		SpacingVariants,
 		ThicknessVariants,
@@ -17,6 +20,8 @@ export interface DefinitionsProps
 		OptionalChildProps {
 	/** Lay out each term/value pair side-by-side instead of stacked (collapses to stacked at narrow widths). */
 	row?: boolean | undefined;
+	/** Status colour for the definitions list. Combine with a `text-X` variant to tint the text. */
+	status?: Status | undefined;
 }
 
 /**
@@ -30,11 +35,13 @@ export interface DefinitionsProps
  *   <Definition term="Role">Engineer</Definition>
  * </Definitions>
  */
-export function Definitions({ children, ...variants }: DefinitionsProps): ReactElement {
+export function Definitions({ children, status, ...variants }: DefinitionsProps): ReactElement {
 	return (
 		<dl
 			className={getClass(
 				getModuleClass(styles, "definitions", variants),
+				status && getStatusClass(status),
+				getColorClass(variants),
 				getAlignClass(variants),
 				getGapClass(variants),
 				getSpacingClass(variants),
