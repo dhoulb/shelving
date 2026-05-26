@@ -1,147 +1,79 @@
 @import "base.css";
 
-/* Token definitions go in `@layer defaults` so themes can override them at `:root` in `@layer theme`. */
-@layer defaults {
-	:root {
-		/* Primary colors */
-		--primary-text: var(--color-blue);
-		--primary-contrast: var(--color-white);
-
-		/* Secondary colors */
-		--secondary-text: var(--color-purple);
-		--secondary-contrast: var(--color-white);
-
-		/* Tertiary colors */
-		--tertiary-text: var(--color-cyan);
-		--tertiary-contrast: var(--color-white);
-
-		/* Quiet colors */
-		--quiet-text: var(--color-quiet);
-		--quiet-contrast: var(--color-white);
-
-		/* Black */
-		--black-text: var(--color-black);
-		--black-contrast: var(--color-white);
-
-		/* White */
-		--white-text: var(--color-white);
-		--white-contrast: var(--color-white);
-
-		/* Gray */
-		--gray-text: var(--color-gray);
-		--gray-contrast: var(--color-white);
-
-		/* Red */
-		--red-text: var(--color-red);
-		--red-contrast: var(--color-white);
-
-		/* Orange */
-		--orange-text: var(--color-orange);
-		--orange-contrast: var(--color-white);
-
-		/* Yellow */
-		--yellow-text: var(--color-yellow);
-		--yellow-contrast: var(--color-white);
-
-		/* Green */
-		--green-text: var(--color-green);
-		--green-contrast: var(--color-white);
-
-		/* Aqua */
-		--aqua-text: var(--color-aqua);
-		--aqua-contrast: var(--color-white);
-
-		/* Blue */
-		--blue-text: var(--color-blue);
-		--blue-contrast: var(--color-white);
-
-		/* Purple */
-		--purple-text: var(--color-purple);
-		--purple-contrast: var(--color-white);
-
-		/* Pink */
-		--pink-text: var(--color-pink);
-		--pink-contrast: var(--color-white);
-	}
-}
-
-/* Variant classes go in `@layer variants` — the highest-priority layer, so they always win. */
+/* Variant classes go in `@layer variants` — the highest-priority layer, so they always win.
+ * Each variant overrides the inner three steps of the 5-step scale at its scope; `--color-black`
+ * and `--color-white` inherit from the page so the unchanging extremes stay available. */
 @layer variants {
-	.primary {
-		--color-text: var(--primary-text);
-		--color-contrast: var(--primary-contrast);
-	}
-
-	.secondary {
-		--color-text: var(--secondary-text);
-		--color-contrast: var(--secondary-contrast);
-	}
-
-	.tertiary {
-		--color-text: var(--tertiary-text);
-		--color-contrast: var(--tertiary-contrast);
-	}
-
-	.quiet {
-		--color-text: var(--quiet-text);
-		--color-contrast: var(--quiet-contrast);
-	}
-
 	.red {
-		--color-text: var(--red-text);
-		--color-contrast: var(--red-contrast);
+		--color-dark: var(--dark-red);
+		--color-vivid: var(--vivid-red);
+		--color-light: var(--light-red);
 	}
 
 	.orange {
-		--color-text: var(--orange-text);
-		--color-contrast: var(--orange-contrast);
+		--color-dark: var(--dark-orange);
+		--color-vivid: var(--vivid-orange);
+		--color-light: var(--light-orange);
 	}
 
 	.yellow {
-		--color-text: var(--yellow-text);
-		--color-contrast: var(--yellow-contrast);
+		--color-dark: var(--dark-yellow);
+		--color-vivid: var(--vivid-yellow);
+		--color-light: var(--light-yellow);
 	}
 
 	.green {
-		--color-text: var(--green-text);
-		--color-contrast: var(--green-contrast);
+		--color-dark: var(--dark-green);
+		--color-vivid: var(--vivid-green);
+		--color-light: var(--light-green);
 	}
 
 	.aqua {
-		--color-text: var(--aqua-text);
-		--color-contrast: var(--aqua-contrast);
+		--color-dark: var(--dark-aqua);
+		--color-vivid: var(--vivid-aqua);
+		--color-light: var(--light-aqua);
 	}
 
 	.blue {
-		--color-text: var(--blue-text);
-		--color-contrast: var(--blue-contrast);
-	}
-
-	.pink {
-		--color-text: var(--pink-text);
-		--color-contrast: var(--pink-contrast);
+		--color-dark: var(--dark-blue);
+		--color-vivid: var(--vivid-blue);
+		--color-light: var(--light-blue);
 	}
 
 	.purple {
-		--color-text: var(--purple-text);
-		--color-contrast: var(--purple-contrast);
+		--color-dark: var(--dark-purple);
+		--color-vivid: var(--vivid-purple);
+		--color-light: var(--light-purple);
 	}
 
-	.primary,
-	.secondary,
-	.tertiary,
-	.quiet,
-	.red,
-	.orange,
-	.yellow,
-	.green,
-	.aqua,
-	.blue,
-	.purple,
 	.pink {
-		--color-link: var(--color-text);
-		--color-quiet: var(--color-text);
-		--color-surface: color-mix(in oklch, var(--color-text) 20%, white);
-		--color-border: color-mix(in oklch, var(--color-text) 30%, transparent);
+		--color-dark: var(--dark-pink);
+		--color-vivid: var(--vivid-pink);
+		--color-light: var(--light-pink);
+	}
+
+	/* Semantic aliases — primary/secondary/tertiary map to blue/purple/aqua, quiet stays grey. */
+	.primary {
+		--color-dark: var(--dark-blue);
+		--color-vivid: var(--vivid-blue);
+		--color-light: var(--light-blue);
+	}
+
+	.secondary {
+		--color-dark: var(--dark-purple);
+		--color-vivid: var(--vivid-purple);
+		--color-light: var(--light-purple);
+	}
+
+	.tertiary {
+		--color-dark: var(--dark-aqua);
+		--color-vivid: var(--vivid-aqua);
+		--color-light: var(--light-aqua);
+	}
+
+	.quiet {
+		--color-dark: var(--dark-gray);
+		--color-vivid: var(--vivid-gray);
+		--color-light: var(--light-gray);
 	}
 }

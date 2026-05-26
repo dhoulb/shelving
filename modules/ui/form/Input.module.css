@@ -2,18 +2,26 @@
 
 @layer components {
 	.input {
+		/* Identity */
+		--color-black: var(--input-color-black, inherit);
+		--color-dark: var(--input-color-dark, inherit);
+		--color-vivid: var(--input-color-vivid, inherit);
+		--color-light: var(--input-color-light, inherit);
+		--color-white: var(--input-color-white, inherit);
+
 		/* Box */
 		box-sizing: border-box;
-		width: 100%; /* Buttons never go smaller than their contents. */
+		width: 100%;
 		margin: var(--input-spacing, var(--space-small)) 0;
 		border-radius: var(--input-radius, var(--radius-xsmall));
-		border: var(--input-border, var(--stroke-normal)) solid var(--input-color-border, var(--color-border));
+		border: var(--input-border, var(--stroke-normal)) solid var(--color-vivid);
 		padding: var(--input-padding, var(--space-small)) var(--input-padding, var(--space-small));
 		flex-grow: var(--grow-greedy);
 
-		/* Style */
-		color: var(--input-color-text, var(--color-text));
-		background: var(--input-color-bg, var(--color-bg));
+		/* Style — Inputs always use the un-variant extremes: `bg=white / text=black` (4 steps apart,
+		 * maximum readability). Variant tints surface as borders and validity colours only. */
+		color: var(--color-black);
+		background: var(--color-white);
 		transition: all 120ms ease-in-out;
 		cursor: default;
 		outline: var(--input-border, var(--stroke-focus)) solid transparent;
@@ -26,7 +34,7 @@
 		font-size: var(--input-size, var(--size-normal));
 		line-height: var(--input-leading, var(--leading-normal));
 
-		/* Contents */
+		/* Content */
 		justify-content: start;
 		align-items: center;
 
@@ -41,14 +49,14 @@
 			background-position: right var(--input-padding, var(--space-small)) center;
 			background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMS40NyA0LjcyYS43NS43NSAwIDAgMSAxLjA2IDBsMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDEuMDZMMTIgNi4zMSA4Ljc4IDkuNTNhLjc1Ljc1IDAgMCAxLTEuMDYtMS4wNmwzLjc1LTMuNzVabS0zLjc1IDkuNzVhLjc1Ljc1IDAgMCAxIDEuMDYgMEwxMiAxNy42OWwzLjIyLTMuMjJhLjc1Ljc1IDAgMSAxIDEuMDYgMS4wNmwtMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDBsLTMuNzUtMy43NWEuNzUuNzUgMCAwIDEgMC0xLjA2WiIgY2xpcC1ydWxlPSJldmVub2RkIiAvPjwvc3ZnPgo=");
 
-			/* Placeholder color if contains checked empty option. */
+			/* Placeholder colour if contains checked empty option. */
 			&:has(.empty:checked) {
-				color: var(--input-placeholder-color, var(--color-quiet));
+				color: var(--color-dark);
 			}
 
-			/* Success if contains value checked option. */
+			/* Success border if contains a checked value option. */
 			&:has(.value:checked) {
-				border-color: var(--input-success-color, var(--success-text));
+				border-color: var(--vivid-green);
 			}
 		}
 		&.text {
@@ -57,23 +65,21 @@
 			resize: none;
 
 			&::selection {
-				color: var(--input-focus-color-contrast, var(--color-white));
-				/* biome-ignore lint/correctness/noUnknownFunction: contrast-color() is new so we provide a fallback. */
-				color: var(--input-focus-color-contrast, contrast-color(var(--color-focus)));
-				background-color: var(--input-focus-color, var(--color-focus));
+				color: var(--color-white);
+				background-color: var(--color-focus);
 			}
 			&::placeholder {
-				color: var(--input-placeholder-color, var(--color-quiet));
+				color: var(--color-dark);
 			}
 
-			/* Success if valid and has content. */
+			/* Success border if valid and has content. */
 			&:valid:not(:placeholder-shown) {
-				border-color: var(--input-success-color, var(--success-text));
+				border-color: var(--vivid-green);
 			}
 
-			/* Error if is invalid and is not empty. */
+			/* Error border if invalid and not empty. */
 			&:invalid:not(:placeholder-shown) {
-				border-color: var(--input-error-color, var(--error-text));
+				border-color: var(--vivid-red);
 			}
 
 			&.multiline {
@@ -86,20 +92,19 @@
 		}
 		&.button,
 		&.label {
-			/* Button and label inputs have a pointer cursor and clip overlong labels (no ellipsis). */
+			/* Button and label inputs have a pointer cursor and clip overlong labels. */
 			cursor: pointer;
 			overflow: hidden;
 			white-space: nowrap;
 
-			/* Success if contains checked radio, checkbox, option. */
-			/* Success if contains text that is valid and is not empty. */
+			/* Success border if contains a checked control or valid text. */
 			&:has(.checkbox:checked, .radio:checked, .option:checked, .text:valid:not(:placeholder-shown)) {
-				border-color: var(--input-success-color, var(--success-text));
+				border-color: var(--vivid-green);
 			}
 
-			/* Error if contains text that is invalid and is not empty. */
+			/* Error border if contains invalid text. */
 			&:has(.text:invalid:not(:placeholder-shown)) {
-				border-color: var(--input-error-color, var(--error-text));
+				border-color: var(--vivid-red);
 			}
 		}
 		&.button {
@@ -109,7 +114,7 @@
 		/* Error if aria invalid or contains aria invalid. */
 		&[aria-invalid="true"],
 		&:has([aria-invalid="true"]) {
-			border-color: var(--input-error-color, var(--error-text));
+			border-color: var(--vivid-red);
 		}
 
 		/* Important pseudo-classes */
@@ -123,8 +128,8 @@
 		&:focus,
 		&:focus-within,
 		&:has(.focus) {
-			border-color: var(--input-focus-color, var(--focus-text));
-			outline-color: var(--input-focus-color, var(--focus-text));
+			border-color: var(--color-focus);
+			outline-color: var(--color-focus);
 		}
 
 		/* Children */
@@ -178,7 +183,7 @@
 	}
 
 	.placeholder {
-		color: var(--input-placeholder-color, var(--color-quiet));
+		color: var(--color-dark);
 	}
 
 	.checkbox,
@@ -188,7 +193,7 @@
 		height: calc(var(--input-icon-size, var(--size-icon)) - 4px);
 		margin: 2px;
 		flex: 0 0 auto;
-		accent-color: var(--input-color-accent, var(--primary-text));
+		accent-color: var(--color-vivid);
 		cursor: inherit;
 		outline: none;
 		font-size: inherit;

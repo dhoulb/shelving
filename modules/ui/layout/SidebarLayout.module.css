@@ -26,8 +26,8 @@
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		padding: var(--space-normal);
-		background: var(--sidebar-layout-bg, var(--color-surface));
-		border-right: var(--sidebar-layout-border, 1px) solid var(--sidebar-layout-color-border, var(--color-border));
+		background: var(--sidebar-layout-bg, var(--color-light));
+		border-right: var(--sidebar-layout-border, 1px) solid var(--sidebar-layout-color-border, var(--color-vivid));
 	}
 
 	.content {

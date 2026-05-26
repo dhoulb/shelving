@@ -3,9 +3,11 @@
 @layer components {
 	.tag {
 		/* Identity */
-		--color-surface: var(--tag-color-bg, inherit);
-		--color-text: var(--tag-color-text, inherit);
-		--color-focus: var(--tag-color-focus, inherit);
+		--color-black: var(--tag-color-black, inherit);
+		--color-dark: var(--tag-color-dark, inherit);
+		--color-vivid: var(--tag-color-vivid, inherit);
+		--color-light: var(--tag-color-light, inherit);
+		--color-white: var(--tag-color-white, inherit);
 
 		/* Box */
 		display: inline-block;
@@ -20,9 +22,9 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 
-		/* Style */
-		background: var(--color-surface);
-		color: var(--color-text);
+		/* Style — `bg=light / text=dark` (2-step pair). */
+		background: var(--color-light);
+		color: var(--color-dark);
 
 		/* Typography */
 		font-family: var(--tag-font, var(--font-body));

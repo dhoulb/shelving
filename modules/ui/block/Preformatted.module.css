@@ -3,21 +3,27 @@
 @layer components {
 	.preformatted,
 	.prose pre {
-		--color-surface: var(--preformatted-color-bg, inherit);
-		--color-text: var(--preformatted-color-text, inherit);
-		--color-border: var(--preformatted-color-border, inherit);
+		/* Identity */
+		--color-black: var(--preformatted-color-black, inherit);
+		--color-dark: var(--preformatted-color-dark, inherit);
+		--color-vivid: var(--preformatted-color-vivid, inherit);
+		--color-light: var(--preformatted-color-light, inherit);
+		--color-white: var(--preformatted-color-white, inherit);
 
+		/* Box */
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--preformatted-spacing, var(--spacing-paragraph));
 		padding: var(--preformatted-padding, var(--space-xsmall));
-
-		background-color: var(--color-surface);
-		color: var(--color-text);
-		border: var(--preformatted-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
+		border: var(--preformatted-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-vivid);
 		border-radius: var(--preformatted-radius, var(--radius-normal));
+
+		/* Style — `bg=light / text=dark` (2-step pair). */
+		background-color: var(--color-light);
+		color: var(--color-dark);
 		tab-size: 2;
 
+		/* Typography */
 		font-family: var(--preformatted-font, var(--font-code));
 
 		/* Wrap long lines by default. */

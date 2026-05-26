@@ -3,8 +3,6 @@
 @layer components {
 	.title,
 	.prose h1 {
-		--color-text: var(--title-color, inherit);
-
 		display: block;
 		inline-size: 100%;
 		margin-inline: 0;
@@ -14,7 +12,7 @@
 		font-family: var(--title-font, var(--font-body));
 		font-weight: var(--title-weight, var(--weight-strong));
 		line-height: var(--title-leading, var(--leading));
-		color: var(--color-text);
+		color: var(--title-color, var(--color-black));
 		font-size: var(--title-size, var(--size-xxxlarge));
 		text-align: var(--title-align, left);
 	}

@@ -120,59 +120,54 @@
 		--grow-timid: 1; /* Take up minimal space. */
 		--grow-none: 0;
 
-		/* Colors */
-		--color-red: oklch(62% 0.238 30);
-		--color-orange: oklch(70% 0.157 60);
-		--color-yellow: oklch(82% 0.16 92);
-		--color-green: oklch(72% 0.185 130);
-		--color-aqua: oklch(72% 0.121 185);
-		--color-blue: oklch(60% 0.131 240);
-		--color-purple: oklch(58% 0.25 300);
-		--color-pink: oklch(68% 0.239 350);
+		/* Vivid palette — the saturated middle of the 5-step scale, one per hue. */
+		--vivid-gray: oklch(60% 0.01 240); /* Subtle blue tint so neutrals don't feel "dead". */
+		--vivid-red: oklch(62% 0.238 30);
+		--vivid-orange: oklch(70% 0.157 60);
+		--vivid-yellow: oklch(82% 0.16 92);
+		--vivid-green: oklch(72% 0.185 130);
+		--vivid-aqua: oklch(72% 0.121 185);
+		--vivid-blue: oklch(60% 0.131 240);
+		--vivid-purple: oklch(58% 0.25 300);
+		--vivid-pink: oklch(68% 0.239 350);
 
-		/* Lights */
-		--color-red-light: oklch(from var(--color-red) calc(l + 0.18) c h);
-		--color-orange-light: oklch(from var(--color-orange) calc(l + 0.18) c h);
-		--color-yellow-light: oklch(from var(--color-yellow) calc(l + 0.18) c h);
-		--color-green-light: oklch(from var(--color-green) calc(l + 0.18) c h);
-		--color-aqua-light: oklch(from var(--color-aqua) calc(l + 0.18) c h);
-		--color-blue-light: oklch(from var(--color-blue) calc(l + 0.18) c h);
-		--color-purple-light: oklch(from var(--color-purple) calc(l + 0.18) c h);
-		--color-pink-light: oklch(from var(--color-pink) calc(l + 0.18) c h);
+		/* Light palette — 20% vivid blended into white. Pastel surfaces; chroma reduces naturally so
+		 * the result isn't a high-saturation salmon/lime. */
+		--light-gray: color-mix(in oklch, var(--vivid-gray) 10%, white);
+		--light-red: color-mix(in oklch, var(--vivid-red) 20%, white);
+		--light-orange: color-mix(in oklch, var(--vivid-orange) 20%, white);
+		--light-yellow: color-mix(in oklch, var(--vivid-yellow) 20%, white);
+		--light-green: color-mix(in oklch, var(--vivid-green) 20%, white);
+		--light-aqua: color-mix(in oklch, var(--vivid-aqua) 20%, white);
+		--light-blue: color-mix(in oklch, var(--vivid-blue) 20%, white);
+		--light-purple: color-mix(in oklch, var(--vivid-purple) 20%, white);
+		--light-pink: color-mix(in oklch, var(--vivid-pink) 20%, white);
 
-		/* Darks */
-		--color-red-dark: oklch(from var(--color-red) calc(l - 0.22) c h);
-		--color-orange-dark: oklch(from var(--color-orange) calc(l - 0.22) c h);
-		--color-yellow-dark: oklch(from var(--color-yellow) calc(l - 0.22) c h);
-		--color-green-dark: oklch(from var(--color-green) calc(l - 0.22) c h);
-		--color-aqua-dark: oklch(from var(--color-aqua) calc(l - 0.22) c h);
-		--color-blue-dark: oklch(from var(--color-blue) calc(l - 0.22) c h);
-		--color-purple-dark: oklch(from var(--color-purple) calc(l - 0.22) c h);
-		--color-pink-dark: oklch(from var(--color-pink) calc(l - 0.22) c h);
+		/* Dark palette — same hue, lowered lightness for foregrounds. */
+		--dark-gray: oklch(from var(--vivid-gray) calc(l - 0.3) c h);
+		--dark-red: oklch(from var(--vivid-red) calc(l - 0.22) c h);
+		--dark-orange: oklch(from var(--vivid-orange) calc(l - 0.22) c h);
+		--dark-yellow: oklch(from var(--vivid-yellow) calc(l - 0.22) c h);
+		--dark-green: oklch(from var(--vivid-green) calc(l - 0.22) c h);
+		--dark-aqua: oklch(from var(--vivid-aqua) calc(l - 0.22) c h);
+		--dark-blue: oklch(from var(--vivid-blue) calc(l - 0.22) c h);
+		--dark-purple: oklch(from var(--vivid-purple) calc(l - 0.22) c h);
+		--dark-pink: oklch(from var(--vivid-pink) calc(l - 0.22) c h);
 
-		/* Grays — using OKLCH so perceived blue hint stays even across the scale. */
-		--gray-05: color-mix(in oklch, var(--color-gray) 10%, white);
-		--gray-10: color-mix(in oklch, var(--color-gray) 20%, white);
-		--gray-20: color-mix(in oklch, var(--color-gray) 40%, white);
-		--gray-30: color-mix(in oklch, var(--color-gray) 60%, white);
-		--gray-40: color-mix(in oklch, var(--color-gray) 80%, white);
-		--gray-50: var(--color-gray);
-		--gray-60: color-mix(in oklch, var(--color-gray) 80%, black);
-		--gray-70: color-mix(in oklch, var(--color-gray) 60%, black);
-		--gray-80: color-mix(in oklch, var(--color-gray) 40%, black);
-		--gray-90: color-mix(in oklch, var(--color-gray) 20%, black);
-		--gray-95: color-mix(in oklch, var(--color-gray) 10%, black);
+		/* The 5-step scale — variant classes (.red, .success, etc.) override the middle three at their scope.
+		 * `--color-black` and `--color-white` aren't literal black/white in every theme — they're the darkest
+		 * and lightest *ends* of the active scale (a dark theme inverts them). For literal black/white pixels
+		 * (e.g. blending hover states neutrally) use the CSS keywords `black` / `white` directly. */
+		--color-black: black;
+		--color-dark: var(--dark-gray);
+		--color-vivid: var(--vivid-gray);
+		--color-light: var(--light-gray);
+		--color-white: white;
 
-		/* Semantic colors */
-		--color-text: var(--color-black);
-		--color-contrast: var(--color-white); /* Contrast colour — must be readable on `--color-text`. */
-		--color-quiet: var(--gray-40); /* Quiet text colour (captions, secondary labels). */
-		--color-bg: var(--color-white); /* Page background — usually the opposite of `--color-text`. */
-		--color-border: var(--gray-10);
-		--color-link: var(--color-blue);
-		--color-focus: var(--color-blue);
-		--color-surface: color-mix(in oklch, var(--color-gray) 10%, transparent); /* Used for button/card/code backgrounds. */
-		--color-shadow: color-mix(in oklch, var(--color-gray) 40%, transparent); /** Used for drop shadows. */
+		/* Other semantic colour tokens (separate concerns from the scale). */
+		--color-link: var(--vivid-blue);
+		--color-focus: var(--vivid-blue);
+		--color-shadow: color-mix(in oklch, var(--vivid-gray) 40%, transparent);
 
 		/* Shadows */
 		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-shadow);
@@ -184,33 +179,32 @@
 		--shadow-xxlarge: 0 1.5rem 6rem -3rem var(--color-shadow);
 	}
 
-	/* Typography reset. */
+	/* Typography reset — body uses `dark` text (1 step softer than pure black) on `white` bg so variant
+	 * scopes (e.g. `<aside red>`) can tint body text via `--color-dark`. Components that want max contrast
+	 * (Inputs, Titles) reach for `--color-black` explicitly. */
 	body {
 		font-family: var(--font-body);
 		font-weight: var(--weight-normal);
 		font-size: var(--size-normal);
 		line-height: var(--leading);
-		color: var(--color-text);
-		background: var(--color-bg);
+		color: var(--color-dark);
+		background: var(--color-white);
 	}
 
+	/* Darken vivid for higher contrast — 2-step pairings (vivid+white, light+vivid) gain readability
+	 * without any per-component changes. The light and dark ends already provide enough contrast for
+	 * 3-step pairings (white+dark, light+black), so they don't need to move. */
 	@media (prefers-contrast: more) {
 		:root {
-			/* Darken vivid colors for extra contrast when white text appears on them. */
-			--color-red: var(--color-red-dark);
-			--color-orange: var(--color-orange-dark);
-			--color-yellow: var(--color-yellow-dark);
-			--color-green: var(--color-green-dark);
-			--color-aqua: var(--color-aqua-dark);
-			--color-blue: var(--color-blue-dark);
-			--color-purple: var(--color-purple-dark);
-			--color-pink: var(--color-pink-dark);
-
-			/* Dark semantic colors for extra contrast. */
-			--color-quiet: var(--gray-70);
-			--color-border: var(--gray-40);
-			--color-surface: color-mix(in oklch, var(--color-gray) 25%, transparent);
-			--color-shadow: color-mix(in oklch, var(--color-gray) 60%, transparent);
+			--vivid-gray: var(--dark-gray);
+			--vivid-red: var(--dark-red);
+			--vivid-orange: var(--dark-orange);
+			--vivid-yellow: var(--dark-yellow);
+			--vivid-green: var(--dark-green);
+			--vivid-aqua: var(--dark-aqua);
+			--vivid-blue: var(--dark-blue);
+			--vivid-purple: var(--dark-purple);
+			--vivid-pink: var(--dark-pink);
 		}
 	}
 }

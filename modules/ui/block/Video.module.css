@@ -2,8 +2,12 @@
 
 @layer components {
 	.video {
-		--color-surface: var(--video-color-bg, inherit);
-		--color-text: var(--video-color-text, inherit);
+		/* Identity */
+		--color-black: var(--video-color-black, inherit);
+		--color-dark: var(--video-color-dark, inherit);
+		--color-vivid: var(--video-color-vivid, inherit);
+		--color-light: var(--video-color-light, inherit);
+		--color-white: var(--video-color-white, inherit);
 
 		/* Block */
 		aspect-ratio: 16 / 9;
@@ -18,9 +22,10 @@
 		align-items: center;
 		position: relative;
 
-		/* Style */
-		background: var(--color-surface);
-		color: var(--color-text);
+		/* Style — videos use the high-contrast `black + white` pair (a video frame is its own visual
+		 * surface, so it sits outside the lighter component scale). */
+		background: var(--color-black);
+		color: var(--color-white);
 		overflow: hidden;
 		border-radius: var(--video-radius, var(--radius-xsmall));
 
@@ -53,8 +58,8 @@
 		justify-content: center;
 		border-radius: var(--video-control-radius, 100rem);
 		border: var(--video-control-border, var(--stroke-normal)) solid transparent;
-		color: var(--video-color-control-text, var(--video-color-bg, var(--color-black)));
-		background: var(--video-color-control-bg, var(--video-color-text, var(--color-white)));
+		color: var(--video-color-control-text, var(--color-black));
+		background: var(--video-color-control-bg, var(--color-white));
 		transition:
 			box-shadow var(--duration-fast) ease-in-out,
 			background-color var(--duration-fast) ease-in-out,
@@ -62,7 +67,7 @@
 
 		&:hover {
 			box-shadow: var(--video-control-shadow-hover, var(--shadow-small));
-			background: var(--video-color-control-hover-bg, color-mix(in srgb, var(--color-quiet) 20%, transparent));
+			background: var(--video-color-control-hover-bg, color-mix(in oklch, var(--color-dark) 20%, transparent));
 		}
 
 		&:disabled {
@@ -71,17 +76,14 @@
 		}
 
 		&.danger {
-			border-color: var(--video-color-danger-border, var(--error-text));
-			background: var(--video-color-danger-bg, var(--error-text));
-			color: var(--video-color-danger-text, var(--error-contrast));
+			border-color: var(--video-color-danger-border, var(--vivid-red));
+			background: var(--video-color-danger-bg, var(--vivid-red));
+			color: var(--video-color-danger-text, var(--color-white));
 		}
 
 		&.danger:hover {
-			background: var(--video-color-danger-hover-bg, color-mix(in srgb, var(--video-color-danger-bg, var(--error-text)) 80%, white));
-			border-color: var(
-				--video-color-danger-hover-border,
-				color-mix(in srgb, var(--video-color-danger-border, var(--error-text)) 80%, white)
-			);
+			background: var(--video-color-danger-hover-bg, color-mix(in oklch, var(--vivid-red) 80%, white));
+			border-color: var(--video-color-danger-hover-border, color-mix(in oklch, var(--vivid-red) 80%, white));
 		}
 
 		& svg {

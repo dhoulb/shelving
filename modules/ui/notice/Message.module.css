@@ -7,6 +7,6 @@
 		font-weight: var(--message-weight, var(--weight-strong));
 
 		/* Style */
-		color: var(--message-color, var(--color-text));
+		color: var(--message-color, var(--color-dark));
 	}
 }

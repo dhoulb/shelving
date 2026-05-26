@@ -1,75 +1,36 @@
 @import "base.css";
 
-/* Token definitions go in `@layer defaults` so themes can override them at `:root` in `@layer theme`. */
-@layer defaults {
-	:root {
-		/* Loading colors */
-		--loading-text: var(--color-gray);
-		--loading-contrast: var(--color-white);
-
-		/* Info colors */
-		--info-text: var(--color-blue);
-		--info-contrast: var(--color-white);
-
-		/* Success colors */
-		--success-text: var(--color-green);
-		--success-contrast: var(--color-white);
-
-		/* Warning colors */
-		--warning-text: var(--color-orange);
-		--warning-contrast: var(--color-white);
-
-		/* Error colors */
-		--error-text: var(--color-red);
-		--error-contrast: var(--color-white);
-
-		/* Danger colors */
-		--danger-text: var(--color-red);
-		--danger-contrast: var(--color-white);
-	}
-}
-
-/* Status variant classes + depth reset go in `@layer variants` — highest priority, always win. */
+/* Status variant classes go in `@layer variants` — highest priority, always win.
+ * Each variant overrides the inner three steps of the 5-step scale at its scope. */
 @layer variants {
 	.loading {
-		--color-text: var(--loading-text);
-		--color-contrast: var(--loading-contrast);
+		--color-dark: var(--dark-gray);
+		--color-vivid: var(--vivid-gray);
+		--color-light: var(--light-gray);
 	}
 
 	.info {
-		--color-text: var(--info-text);
-		--color-contrast: var(--info-contrast);
+		--color-dark: var(--dark-blue);
+		--color-vivid: var(--vivid-blue);
+		--color-light: var(--light-blue);
 	}
 
 	.success {
-		--color-text: var(--success-text);
-		--color-contrast: var(--success-contrast);
+		--color-dark: var(--dark-green);
+		--color-vivid: var(--vivid-green);
+		--color-light: var(--light-green);
 	}
 
 	.warning {
-		--color-text: var(--warning-text);
-		--color-contrast: var(--warning-contrast);
+		--color-dark: var(--dark-orange);
+		--color-vivid: var(--vivid-orange);
+		--color-light: var(--light-orange);
 	}
 
+	.error,
 	.danger {
-		--color-text: var(--danger-text);
-		--color-contrast: var(--danger-contrast);
-	}
-
-	.error {
-		--color-text: var(--error-text);
-		--color-contrast: var(--error-contrast);
-	}
-
-	.loading,
-	.info,
-	.success,
-	.warning,
-	.danger,
-	.error {
-		--color-link: var(--color-text);
-		--color-quiet: var(--color-text);
-		--color-surface: color-mix(in oklch, var(--color-text) 20%, white);
-		--color-border: color-mix(in oklch, var(--color-text) 30%, transparent);
+		--color-dark: var(--dark-red);
+		--color-vivid: var(--vivid-red);
+		--color-light: var(--light-red);
 	}
 }

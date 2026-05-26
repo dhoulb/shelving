@@ -3,13 +3,11 @@
 @layer components {
 	.divider,
 	.prose hr {
-		--color-border: var(--divider-color, inherit);
-
 		display: block;
 		border: 0;
 		margin-inline: 0;
 		margin-block: var(--divider-spacing, var(--spacing-paragraph));
-		border-block-start: var(--divider-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
+		border-block-start: var(--divider-thickness, var(--thickness, var(--stroke-normal))) solid var(--divider-color, var(--color-vivid));
 	}
 }
 

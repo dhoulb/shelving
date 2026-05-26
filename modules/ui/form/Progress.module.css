@@ -7,7 +7,7 @@
 		inline-size: 100%;
 		height: var(--progress-height, 0.375rem);
 		border-radius: var(--progress-radius, 999px);
-		background: var(--progress-color-bg, var(--gray-20));
+		background: var(--progress-color-bg, var(--color-light));
 		overflow: hidden;
 	}
 
@@ -15,7 +15,7 @@
 		display: block;
 		block-size: 100%;
 		inline-size: var(--progress-value, 0%);
-		background: var(--progress-color-active, var(--primary-text));
+		background: var(--progress-color-active, var(--vivid-blue));
 		transition:
 			inline-size 160ms ease-out,
 			background-color var(--duration-fast) ease-in-out;
@@ -31,24 +31,24 @@
 	.item {
 		height: var(--progress-height, 0.375rem);
 		border-radius: var(--progress-radius, 999px);
-		background: var(--progress-color-bg, var(--gray-20));
+		background: var(--progress-color-bg, var(--color-light));
 	}
 
 	.active {
-		background: var(--progress-color-active, var(--primary-text));
+		background: var(--progress-color-active, var(--vivid-blue));
 	}
 
 	/* Status variants applied at the container level. */
 	.success .fill,
 	.success .active {
-		background: var(--progress-success-color-active, var(--success-text));
+		background: var(--progress-success-color-active, var(--vivid-green));
 	}
 	.warning .fill,
 	.warning .active {
-		background: var(--progress-warning-color-active, var(--warning-text));
+		background: var(--progress-warning-color-active, var(--vivid-orange));
 	}
 	.danger .fill,
 	.danger .active {
-		background: var(--progress-danger-color-active, var(--danger-text));
+		background: var(--progress-danger-color-active, var(--vivid-red));
 	}
 }

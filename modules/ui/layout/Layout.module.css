@@ -53,8 +53,8 @@
 		position: fixed;
 		inset: 0;
 
-		/* Layout-specific bg hook. Typography and `--color-bg` come from base body styles in style/base.css. */
-		background: var(--layout-body-bg, var(--color-bg));
+		/* Layout-specific bg hook. Typography and page bg come from the body baseline in style/base.css. */
+		background: var(--layout-body-bg, var(--color-white));
 	}
 
 	.layout {

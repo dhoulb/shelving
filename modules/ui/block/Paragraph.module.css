@@ -3,14 +3,12 @@
 @layer components {
 	.paragraph,
 	.prose p {
-		--color-text: var(--paragraph-color, inherit);
-
 		display: block;
 		inline-size: 100%;
 		margin-inline: 0;
 		margin-block: var(--paragraph-spacing, var(--spacing-paragraph));
 
-		color: var(--color-text);
+		color: var(--paragraph-color, var(--color-dark));
 		font-family: var(--paragraph-font, inherit);
 		font-size: var(--paragraph-size, inherit);
 		text-align: var(--paragraph-align, left);

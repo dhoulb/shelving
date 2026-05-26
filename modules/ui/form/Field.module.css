@@ -20,12 +20,12 @@
 		.title {
 			font-size: var(--field-title-size, var(--size-normal));
 			font-weight: var(--field-title-weight, var(--weight-strong));
-			color: var(--field-color-title, var(--color-text));
+			color: var(--field-color-title, var(--color-black));
 		}
 		.description {
 			font-size: var(--field-description-size, var(--size-normal));
 			font-weight: var(--field-description-weight, var(--weight-normal));
-			color: var(--field-color-description, var(--color-quiet));
+			color: var(--field-color-description, var(--color-dark));
 		}
 		&& > * {
 			margin: 0;
@@ -36,7 +36,7 @@
 		display: block;
 		text-align: end;
 		font-weight: var(--field-message-weight, var(--weight-strong));
-		color: var(--field-color-message, var(--error-text));
+		color: var(--field-color-message, var(--vivid-red));
 	}
 }
 

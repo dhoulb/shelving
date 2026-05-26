@@ -3,14 +3,11 @@
 @layer components {
 	.mark,
 	.prose mark {
-		--color-surface: var(--mark-color-bg, var(--color-yellow));
-		--color-text: var(--mark-color-text, var(--color-black));
-
 		display: inline-block;
 		padding-inline: var(--mark-padding, 0.375em);
 		border-radius: var(--mark-radius, var(--radius-xxsmall));
-		background-color: var(--color-surface);
-		color: var(--color-text);
+		background-color: var(--mark-color-bg, var(--light-yellow));
+		color: var(--mark-color-text, var(--dark-yellow));
 		font-weight: var(--mark-weight, var(--weight-strong));
 	}
 }

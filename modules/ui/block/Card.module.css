@@ -3,21 +3,23 @@
 @layer components {
 	.card {
 		/* Identity */
-		--color-surface: var(--card-color-bg, inherit);
-		--color-border: var(--card-color-border, inherit);
-		--color-text: var(--card-color-text, inherit);
+		--color-black: var(--card-color-black, inherit);
+		--color-dark: var(--card-color-dark, inherit);
+		--color-vivid: var(--card-color-vivid, inherit);
+		--color-light: var(--card-color-light, inherit);
+		--color-white: var(--card-color-white, inherit);
 
 		/* Box */
 		position: relative;
 		margin-inline: 0;
 		margin-block: var(--card-spacing, var(--spacing-paragraph));
-		border: var(--card-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
+		border: var(--card-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-vivid);
 		padding: var(--card-padding, var(--space-normal));
 		border-radius: var(--card-radius, var(--radius-normal));
 
-		/* Style */
-		background-color: var(--color-surface);
-		color: var(--color-text);
+		/* Style — `bg=light / text=dark` (2-step pair). */
+		background-color: var(--color-light);
+		color: var(--color-dark);
 		box-shadow: var(--card-shadow, none);
 		transition: border-color var(--duration-fast);
 

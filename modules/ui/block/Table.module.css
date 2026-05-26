@@ -3,9 +3,6 @@
 @layer components {
 	.table,
 	.prose table {
-		--color-text: var(--table-color, inherit);
-		--color-border: var(--table-color-border, inherit);
-
 		display: table;
 		margin-inline: 0;
 		margin-block: var(--table-spacing, var(--spacing-paragraph));
@@ -13,7 +10,7 @@
 
 		border-color: inherit;
 		border-collapse: collapse;
-		color: var(--color-text);
+		color: var(--table-color, var(--color-dark));
 		text-align: var(--table-align, left);
 
 		/* Children */
@@ -21,7 +18,7 @@
 		td {
 			padding-block: var(--table-padding, var(--space-xsmall));
 			padding-inline: var(--table-padding, var(--space-xsmall));
-			border-block: var(--table-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
+			border-block: var(--table-thickness, var(--thickness, var(--stroke-normal))) solid var(--table-color-border, var(--color-vivid));
 		}
 		th:first-child,
 		td:first-child {
@@ -48,7 +45,7 @@
 		}
 		thead th,
 		tfoot th {
-			color: var(--table-label-color, var(--color-quiet));
+			color: var(--table-label-color, var(--color-dark));
 			font-weight: var(--table-label-weight, var(--weight-strong));
 			font-size: var(--table-label-size, var(--size-small));
 		}

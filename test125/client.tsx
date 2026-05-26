@@ -13,29 +13,97 @@ import { Notice } from "../modules/ui/notice/Notice.js";
 // Load base design tokens, layer order, and body baseline typography for side effect.
 import "../modules/ui/style/base.css";
 
-// Theme file that sets per-component hooks (`--card-color-bg`, `--button-color-bg`, `--notice-color-bg`).
+// Theme file that sets per-component hooks (e.g. `--card-color-light`, `--button-color-dark`).
 // Plain CSS — token overrides at `:root` propagate via inheritance, no layer participation needed.
 import "./theme.css";
+
+/** A swatch row showing all 5 scale steps at the current scope (variant or default). */
+function Scale({ label }: { label: string }): ReactElement {
+	return (
+		<div style={{ display: "flex", gap: 8, alignItems: "center", marginBlock: 8 }}>
+			<div style={{ width: 80, fontSize: 12, color: "var(--color-dark)" }}>{label}</div>
+			{(["black", "dark", "vivid", "light", "white"] as const).map(step => (
+				<div
+					key={step}
+					title={step}
+					style={{
+						background: `var(--color-${step})`,
+						width: 48,
+						height: 32,
+						borderRadius: 4,
+						border: "1px solid var(--color-vivid)",
+					}}
+				/>
+			))}
+		</div>
+	);
+}
 
 function Page(): ReactElement {
 	return (
 		<Block narrow>
 			<Title>Issue #125 — stress test</Title>
 			<Paragraph>
-				Every scenario below should render <em>correctly</em>: the theme hooks paint the default, variant classes (
-				<Code>status="success"</Code>, <Code>red</Code>, <Code>primary</Code>) win on the element they're applied to, and an ancestor
-				wrapping <Code>&lt;div&gt;</Code> that sets <Code>--color-surface</Code> is respected by anything without a theme hook or variant.
+				Every scenario below should render <em>correctly</em>: per-component theme hooks paint the default, variant classes (
+				<Code>status="success"</Code>, <Code>red</Code>, <Code>primary</Code>) override the inner three steps of the 5-step scale at their
+				scope.
 			</Paragraph>
 
-			<Heading>0. Colors</Heading>
-			<Button red>Button</Button>
-			<Button orange>Button</Button>
-			<Button yellow>Button</Button>
-			<Button green>Button</Button>
-			<Button aqua>Button</Button>
-			<Button blue>Button</Button>
-			<Button purple>Button</Button>
-			<Button pink>Button</Button>
+			<Heading>0a. The 5-step scale</Heading>
+			<Paragraph>
+				Each row shows the active <Code>--color-black</Code>, <Code>--color-dark</Code>, <Code>--color-vivid</Code>,{" "}
+				<Code>--color-light</Code>, and <Code>--color-white</Code> tokens for that scope. The middle three change per variant; the extremes
+				stay put.
+			</Paragraph>
+			<Scale label="default" />
+			<div className="red">
+				<Scale label="red" />
+			</div>
+			<div className="orange">
+				<Scale label="orange" />
+			</div>
+			<div className="yellow">
+				<Scale label="yellow" />
+			</div>
+			<div className="green">
+				<Scale label="green" />
+			</div>
+			<div className="aqua">
+				<Scale label="aqua" />
+			</div>
+			<div className="blue">
+				<Scale label="blue" />
+			</div>
+			<div className="purple">
+				<Scale label="purple" />
+			</div>
+			<div className="pink">
+				<Scale label="pink" />
+			</div>
+
+			<Heading>0b. Coloured buttons</Heading>
+			<Button red>Red button</Button>
+			<Button orange>Orange button</Button>
+			<Button yellow>Yellow button</Button>
+			<Button green>Green button</Button>
+			<Button aqua>Aqua button</Button>
+			<Button blue>Blue button</Button>
+			<Button purple>Purple button</Button>
+			<Button pink>Pink button</Button>
+
+			<Heading>0c. Strong (vivid) buttons</Heading>
+			<Paragraph>
+				<Code>.strong</Code> swaps the step pair from <Code>bg=light + text=dark</Code> to <Code>bg=vivid + text=white</Code>.
+			</Paragraph>
+			<Button strong red>
+				Strong red
+			</Button>
+			<Button strong success>
+				Strong success
+			</Button>
+			<Button strong primary>
+				Strong primary
+			</Button>
 
 			<Heading>1. Nested cards</Heading>
 			<Card>
@@ -50,51 +118,55 @@ function Page(): ReactElement {
 
 			<Heading>2. Notices inside cards</Heading>
 			<Card>
-				<Notice>Plain notice inside plain card (theme cornsilk).</Notice>
+				<Notice status="info">Plain info notice inside plain card.</Notice>
 				<Notice status="success">Success notice inside plain card (should be green).</Notice>
 				<Notice status="error">Error notice inside plain card (should be red).</Notice>
 			</Card>
 			<Card status="error">
-				<Notice>Plain notice inside ERROR card. Should pick up the notice theme (cornsilk), NOT inherit error red.</Notice>
 				<Notice status="warning">Warning notice inside error card — should be its own warning colour.</Notice>
 			</Card>
 
 			<Heading>3. Code chips inside cards</Heading>
 			<Card>
 				<Paragraph>
-					Plain card with <Code>code chip</Code> — chip should use the card's nested-surface tier (darker than the card itself), not the
-					theme peach.
+					Plain card with <Code>code chip</Code> — chip uses its own light/dark pair (currently grey, theme overrides only Card).
 				</Paragraph>
 			</Card>
 			<Card status="success">
 				<Paragraph>
-					Success card with <Code>code chip</Code> — chip should still use the card's nested-surface, not inherit success green.
+					Success card with <Code>code chip</Code> — chip should still use its own grey, not inherit success green.
 				</Paragraph>
 			</Card>
 
 			<Heading>4. Buttons in variant cards</Heading>
 			<Card status="error">
-				<Paragraph>Error card containing a button:</Paragraph>
+				<Paragraph>Error card containing buttons:</Paragraph>
 				<Button success>Success button — should be GREEN (variant beats theme).</Button>
 				<Button primary>Primary button — should be BLUE.</Button>
 			</Card>
 
-			<Heading>5. Custom ancestor that sets --color-surface</Heading>
-			<div style={{ "--color-surface": "mistyrose", padding: "1rem", border: "2px dashed mistyrose" }}>
-				<Paragraph>This wrapping div sets --color-surface = mistyrose on its scope.</Paragraph>
+			<Heading>5. Custom ancestor that sets --color-light</Heading>
+			<div style={{ "--color-light": "mistyrose", padding: "1rem", border: "2px dashed mistyrose" }}>
+				<Paragraph>This wrapping div sets --color-light = mistyrose on its scope.</Paragraph>
 				<Card>
-					<Paragraph>Card inside it — should use the THEME peach (own hook wins over ancestor's --color-surface).</Paragraph>
+					<Paragraph>Card — its theme hook (peach) wins over the ancestor's --color-light.</Paragraph>
 				</Card>
-				<Button>Button inside it — same, should use theme lavender.</Button>
-				<Notice>Notice inside it — should use theme cornsilk.</Notice>
+				<Button>Button — its theme hook (lavender) wins over the ancestor's --color-light.</Button>
 				<Paragraph>
-					Inline <Code>code chip</Code> — has no hook of its own; should pick up the ancestor's mistyrose.
+					Inline <Code>code chip</Code> — no theme hook; should pick up the ancestor's mistyrose.
 				</Paragraph>
 			</div>
 
-			<Heading>6. Custom ancestor with NO theme hooks unset</Heading>
-			<div style={{ "--color-surface": "mistyrose", "--card-color-bg": "initial", padding: "1rem", border: "2px dashed mistyrose" }}>
-				<Paragraph>Same div, but also resets --card-color-bg to initial (as if no theme).</Paragraph>
+			<Heading>6. Custom ancestor with theme hooks reset</Heading>
+			<div
+				style={{
+					"--color-light": "mistyrose",
+					"--card-color-light": "initial",
+					padding: "1rem",
+					border: "2px dashed mistyrose",
+				}}
+			>
+				<Paragraph>Same div, but `--card-color-light` is reset (as if no theme).</Paragraph>
 				<Card>
 					<Paragraph>Card — should now inherit mistyrose from the wrapper (no hook, inherit fallback kicks in).</Paragraph>
 				</Card>
@@ -102,8 +174,7 @@ function Page(): ReactElement {
 
 			<Heading>7. Panel — full-width vertical regions</Heading>
 			<Paragraph>
-				<Code>&lt;Panel&gt;</Code> is a full-width section with xxlarge padding and the current surface colour. Nested Panels darken one
-				tier via the same <Code>SURFACE_CLASS</Code> depth chain as Card.
+				<Code>&lt;Panel&gt;</Code> is a full-width section with xxlarge padding and the current light/dark pair.
 			</Paragraph>
 		</Block>
 	);
@@ -115,7 +186,7 @@ function FullWidthPanels(): ReactElement {
 			<Panel>
 				<Block narrow>
 					<Heading>Plain panel</Heading>
-					<Paragraph>Default theme surface (page). Cards inside still get their theme peach.</Paragraph>
+					<Paragraph>Default theme surface (grey). Cards inside still get their theme peach.</Paragraph>
 					<Card>
 						<Paragraph>
 							A card inside a plain panel. <Code>code chip</Code> for contrast.

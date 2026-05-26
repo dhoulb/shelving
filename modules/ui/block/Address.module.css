@@ -3,15 +3,13 @@
 @layer components {
 	.address,
 	.prose address {
-		--color-text: var(--address-color, inherit);
-
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--address-spacing, var(--spacing-paragraph));
 
 		white-space: pre-line;
 		font-style: normal;
-		color: var(--color-text);
+		color: var(--address-color, var(--color-dark));
 		font-family: var(--address-font, inherit);
 		font-size: var(--address-size, inherit);
 		text-align: var(--address-align, left);

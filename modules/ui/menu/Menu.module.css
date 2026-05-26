@@ -14,7 +14,7 @@
 		font-family: var(--menu-font, var(--font-body));
 		font-size: var(--menu-size, var(--size-normal));
 		line-height: var(--menu-leading, var(--leading-normal));
-		color: var(--menu-color-text, var(--color-text));
+		color: var(--menu-color-text, var(--color-black));
 	}
 
 	.item {
@@ -36,16 +36,16 @@
 		/* Pseudo-classes */
 		&:hover,
 		&:focus:not(:focus-visible) {
-			background: var(--menu-link-color-hover-bg, color-mix(in srgb, var(--color-surface) 60%, transparent));
-			color: var(--menu-link-color-hover-text, var(--color-text));
+			background: var(--menu-link-color-hover-bg, color-mix(in oklch, var(--color-light) 60%, transparent));
+			color: var(--menu-link-color-hover-text, var(--color-black));
 		}
 		&:focus-visible {
-			outline: var(--menu-link-focus-border, var(--stroke-focus)) solid var(--menu-link-color-focus, var(--focus-text));
+			outline: var(--menu-link-focus-border, var(--stroke-focus)) solid var(--menu-link-color-focus, var(--color-focus));
 			outline-offset: 1px;
 		}
 		&[aria-current="page"] {
 			background: var(--menu-link-color-active-bg, var(--color-white));
-			color: var(--menu-link-color-active-text, var(--color-text));
+			color: var(--menu-link-color-active-text, var(--color-black));
 			font-weight: var(--menu-link-active-weight, var(--weight-strong));
 		}
 	}
@@ -53,7 +53,7 @@
 	/* "Proud" item — an ancestor of the active page; emphasised with a strong weight, and reveals its nested children. */
 	/* The active page is excluded so its own `[aria-current]` styling wins instead of the proud styling. */
 	.proud > .link:not([aria-current="page"]) {
-		color: var(--menu-link-color-proud, var(--color-text));
+		color: var(--menu-link-color-proud, var(--color-black));
 		font-weight: var(--menu-link-proud-weight, var(--weight-strong));
 	}
 
@@ -62,7 +62,7 @@
 		margin-block: var(--menu-nested-spacing, var(--space-xxsmall));
 		/* Inset the border by the link's inline padding so it lines up with the parent item's label. */
 		margin-inline-start: var(--menu-link-padding, var(--space-xsmall));
-		border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--color-border));
+		border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--color-vivid));
 		padding-inline-start: var(--menu-nested-indent, var(--space-xsmall));
 	}
 }

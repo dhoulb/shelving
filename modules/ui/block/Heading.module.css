@@ -3,9 +3,6 @@
 @layer components {
 	.heading,
 	.prose h2 {
-		/* Rebind global colour tokens */
-		--color-text: var(--heading-color, inherit);
-
 		/* Box */
 		display: block;
 		inline-size: 100%;
@@ -17,7 +14,7 @@
 		font-family: var(--heading-font, var(--font-body));
 		font-weight: var(--heading-weight, var(--weight-strong));
 		line-height: var(--heading-leading, var(--leading));
-		color: var(--color-text);
+		color: var(--heading-color, var(--color-black));
 		font-size: var(--heading-size, var(--size-xxlarge));
 		text-align: var(--heading-align, left);
 	}

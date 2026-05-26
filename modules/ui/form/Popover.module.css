@@ -22,11 +22,11 @@
 		overflow-y: auto;
 		overscroll-behavior: none;
 		border-radius: var(--popover-radius, var(--radius-xsmall));
-		border: var(--popover-border, var(--stroke-normal)) solid var(--popover-color-border, var(--color-border));
+		border: var(--popover-border, var(--stroke-normal)) solid var(--popover-color-border, var(--color-vivid));
 		padding: var(--popover-padding, var(--space-small));
 
 		/* Style */
-		background: var(--popover-color-bg, var(--color-bg));
+		background: var(--popover-color-bg, var(--color-white));
 		box-shadow: var(--popover-shadow, var(--shadow-small));
 	}
 }

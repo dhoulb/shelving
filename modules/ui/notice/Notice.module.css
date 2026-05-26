@@ -2,22 +2,24 @@
 
 @layer components {
 	.notice {
-		/* Identity — border falls back through `--color-quiet` (Status variants override that). */
-		--color-surface: var(--notice-color-bg, inherit);
-		--color-quiet: var(--notice-color-text, inherit);
-		--color-border: var(--notice-color-border, var(--color-quiet));
+		/* Identity */
+		--color-black: var(--notice-color-black, inherit);
+		--color-dark: var(--notice-color-dark, inherit);
+		--color-vivid: var(--notice-color-vivid, inherit);
+		--color-light: var(--notice-color-light, inherit);
+		--color-white: var(--notice-color-white, inherit);
 
 		/* Box */
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--notice-spacing, var(--spacing-paragraph));
 		border-radius: var(--notice-radius, var(--radius-xsmall));
-		border: var(--notice-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
+		border: var(--notice-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-vivid);
 		padding: var(--notice-padding, var(--space-small));
 
-		/* Style */
-		background: var(--color-surface);
-		color: var(--color-quiet);
+		/* Style — `bg=light / text=dark` (2-step pair). */
+		background: var(--color-light);
+		color: var(--color-dark);
 
 		/* Typography */
 		font-size: var(--notice-size, var(--size-normal));

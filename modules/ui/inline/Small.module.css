@@ -4,7 +4,7 @@
 	.small,
 	.prose small {
 		/* Style */
-		color: var(--color-quiet);
+		color: var(--color-dark);
 
 		/* Typography */
 		font-weight: var(--weight-normal);

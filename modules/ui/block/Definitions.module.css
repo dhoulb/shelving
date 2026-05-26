@@ -3,13 +3,10 @@
 @layer components {
 	.definitions,
 	.prose dl {
-		--color-text: var(--definitions-color, inherit);
-		--color-border: var(--definitions-color-border, inherit);
-
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--definitions-spacing, var(--spacing-paragraph));
-		color: var(--color-text);
+		color: var(--definitions-color, var(--color-dark));
 		text-align: var(--definitions-align, left);
 
 		/* Children */
@@ -21,13 +18,14 @@
 			/* Gap between successive pairs (first one starts at the top with no extra space). */
 			margin-block-start: var(--definitions-gap, var(--space-xsmall));
 			padding-block-start: var(--definitions-padding, var(--space-xsmall));
-			border-block-start: var(--definitions-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-border);
+			border-block-start: var(--definitions-thickness, var(--thickness, var(--stroke-normal))) solid
+				var(--definitions-color-border, var(--color-vivid));
 		}
 
 		.term {
 			display: block;
 			margin: 0;
-			color: var(--definitions-label-color, var(--color-quiet));
+			color: var(--definitions-label-color, var(--color-dark));
 			font-weight: var(--definitions-label-weight, var(--weight-strong));
 			font-size: var(--definitions-label-size, var(--size-small));
 		}

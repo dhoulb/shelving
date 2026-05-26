@@ -12,7 +12,7 @@ export interface DocumentationKindProps {
 const KIND_COLOR: { readonly [K in string]?: Color } = {
 	function: "blue",
 	class: "purple",
-	interface: "cyan",
+	interface: "aqua",
 	type: "pink",
 	constant: "green",
 	method: "orange",

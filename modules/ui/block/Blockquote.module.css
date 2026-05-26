@@ -3,17 +3,15 @@
 @layer components {
 	.blockquote,
 	.prose blockquote {
-		--color-text: var(--blockquote-color, inherit);
-		--color-border: var(--blockquote-color-border, inherit);
-
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--blockquote-spacing, var(--spacing-paragraph));
-		border-inline-start: var(--blockquote-thickness, var(--thickness, var(--stroke-focus))) solid var(--color-border);
+		border-inline-start: var(--blockquote-thickness, var(--thickness, var(--stroke-focus))) solid
+			var(--blockquote-color-border, var(--color-vivid));
 		padding-block: var(--blockquote-padding, var(--space-small));
 		padding-inline-start: var(--blockquote-indent, var(--space-normal));
 
-		color: var(--color-text);
+		color: var(--blockquote-color, var(--color-dark));
 		text-align: var(--blockquote-align, left);
 	}
 }
