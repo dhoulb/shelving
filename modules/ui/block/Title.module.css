@@ -12,7 +12,6 @@
 		font-family: var(--title-font, var(--font-body));
 		font-weight: var(--title-weight, var(--weight-strong));
 		line-height: var(--title-leading, var(--leading));
-		color: var(--title-color, var(--color-black));
 		font-size: var(--title-size, var(--size-xxxlarge));
 		text-align: var(--title-align, left);
 	}

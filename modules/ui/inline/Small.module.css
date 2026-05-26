@@ -3,10 +3,6 @@
 @layer components {
 	.small,
 	.prose small {
-		/* Style */
-		color: var(--color-dark);
-
-		/* Typography */
 		font-weight: var(--weight-normal);
 		font-size: inherit;
 	}

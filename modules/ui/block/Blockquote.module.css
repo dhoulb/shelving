@@ -11,7 +11,6 @@
 		padding-block: var(--blockquote-padding, var(--space-small));
 		padding-inline-start: var(--blockquote-indent, var(--space-normal));
 
-		color: var(--blockquote-color, var(--color-dark));
 		text-align: var(--blockquote-align, left);
 	}
 }

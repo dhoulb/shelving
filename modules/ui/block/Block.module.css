@@ -49,7 +49,6 @@
 		display: block;
 		margin-block: var(--caption-gap, var(--space-xsmall));
 		font-size: var(--caption-size, var(--size-small));
-		color: var(--caption-color, var(--color-dark));
 		text-align: var(--caption-align, left);
 	}
 

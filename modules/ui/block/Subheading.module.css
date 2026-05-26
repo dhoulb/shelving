@@ -12,7 +12,6 @@
 		font-family: var(--subheading-font, var(--font-body));
 		font-weight: var(--subheading-weight, var(--weight-strong));
 		line-height: var(--subheading-leading, var(--leading));
-		color: var(--subheading-color, var(--color-black));
 		font-size: var(--subheading-size, var(--size-large));
 		text-align: var(--subheading-align, left);
 	}

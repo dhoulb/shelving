@@ -5,6 +5,7 @@ import { Card } from "../modules/ui/block/Card.js";
 import { Heading } from "../modules/ui/block/Heading.js";
 import { Panel } from "../modules/ui/block/Panel.js";
 import { Paragraph } from "../modules/ui/block/Paragraph.js";
+import { Subheading } from "../modules/ui/block/Subheading.js";
 import { Title } from "../modules/ui/block/Title.js";
 import { Button } from "../modules/ui/form/Button.js";
 import { Code } from "../modules/ui/inline/Code.js";
@@ -256,7 +257,33 @@ function Page(): ReactElement {
 				</Card>
 			</div>
 
-			<Heading>7. Panel — full-width vertical regions</Heading>
+			<Heading>7. Text-colour variants</Heading>
+			<Paragraph>
+				Text block elements (<Code>&lt;Heading&gt;</Code>, <Code>&lt;Paragraph&gt;</Code>, etc.) no longer set <Code>color</Code> themselves
+				— they inherit from the page baseline or whatever <Code>text-X</Code> variant is applied to an ancestor (or the element itself).
+			</Paragraph>
+			<Card>
+				<Paragraph>
+					Plain card. No <Code>text-X</Code> anywhere — heading + paragraph both inherit the page baseline (<Code>--color-dark</Code>).
+				</Paragraph>
+				<Subheading>Inherited subheading</Subheading>
+			</Card>
+			<Card red text-vivid>
+				<Subheading>Red card, text-vivid on Card</Subheading>
+				<Paragraph>
+					Heading + paragraph inherit <Code>color: var(--color-vivid)</Code>, which the <Code>.red</Code> variant has set to{" "}
+					<Code>--vivid-red</Code>. Override on a single child to break out — the subheading below uses <Code>text-black</Code>.
+				</Paragraph>
+				<Subheading text-black>This one's text-black</Subheading>
+			</Card>
+			<Card green>
+				<Subheading text-vivid>Green card, text-vivid on Subheading only</Subheading>
+				<Paragraph>
+					Per-element variant — only this Subheading turns vivid green, the paragraph still inherits from the page baseline.
+				</Paragraph>
+			</Card>
+
+			<Heading>8. Panel — full-width vertical regions</Heading>
 			<Paragraph>
 				<Code>&lt;Panel&gt;</Code> is a full-width section with xxlarge padding and the current light/dark pair.
 			</Paragraph>
@@ -284,11 +311,12 @@ function FullWidthPanels(): ReactElement {
 					<Paragraph>Panel with status="success" — pure success green, no muddying.</Paragraph>
 				</Block>
 			</Panel>
-			<Panel as="aside" purple monospace>
+			<Panel as="aside" purple monospace text-vivid>
 				<Block narrow>
 					<Heading>Purple monospace aside</Heading>
 					<Paragraph>
-						Rendered as <Code>&lt;aside&gt;</Code> with <Code>purple</Code> + <Code>monospace</Code> typography variants.
+						Rendered as <Code>&lt;aside&gt;</Code> with <Code>purple</Code> + <Code>monospace</Code> + <Code>text-vivid</Code> variants —
+						heading and body both now inherit purple instead of the heading staying black.
 					</Paragraph>
 				</Block>
 			</Panel>

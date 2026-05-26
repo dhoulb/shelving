@@ -10,11 +10,10 @@
 		margin-block-start: var(--heading-spacing-before, var(--spacing-section));
 		margin-block-end: var(--heading-spacing, var(--spacing-paragraph));
 
-		/* Style */
+		/* Typography — inherits `color` from the page baseline or a `.text-X` variant on this element or an ancestor. */
 		font-family: var(--heading-font, var(--font-body));
 		font-weight: var(--heading-weight, var(--weight-strong));
 		line-height: var(--heading-leading, var(--leading));
-		color: var(--heading-color, var(--color-black));
 		font-size: var(--heading-size, var(--size-xxlarge));
 		text-align: var(--heading-align, left);
 	}

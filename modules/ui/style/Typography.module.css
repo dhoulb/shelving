@@ -47,4 +47,27 @@
 		font-size: var(--size-xxlarge);
 		line-height: var(--leading);
 	}
+
+	/* Text-colour variants — set `color` from a step of the 5-step scale.
+	 * Text block elements (Paragraph, Heading, etc.) don't set `color` themselves; they inherit from
+	 * the page baseline (`--color-dark`). Apply one of these on a container (Block, Panel) to tint
+	 * all the text inside it via inheritance, or on an individual text block to tint just that one. */
+	.text-black {
+		color: var(--color-black);
+	}
+	.text-dark {
+		color: var(--color-dark);
+	}
+	.text-vivid {
+		color: var(--color-vivid);
+	}
+	.text-light {
+		color: var(--color-light);
+	}
+	.text-white {
+		color: var(--color-white);
+	}
+	.text-inherit {
+		color: inherit;
+	}
 }

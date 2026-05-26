@@ -10,7 +10,6 @@
 
 		border-color: inherit;
 		border-collapse: collapse;
-		color: var(--table-color, var(--color-dark));
 		text-align: var(--table-align, left);
 
 		/* Children */
@@ -45,7 +44,6 @@
 		}
 		thead th,
 		tfoot th {
-			color: var(--table-label-color, var(--color-dark));
 			font-weight: var(--table-label-weight, var(--weight-strong));
 			font-size: var(--table-label-size, var(--size-small));
 		}

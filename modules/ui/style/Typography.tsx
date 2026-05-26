@@ -26,8 +26,26 @@ export type FontVariants = {
 	serif?: boolean | undefined;
 };
 
-/** Typography variants — combined font-family + font-size. */
-export type TypographyVariants = SizeVariants & FontVariants;
+/** Text-colour variants — set `color` to a step of the 5-step scale. Apply on a container (Block, Panel)
+ * to tint everything inside via inheritance, or on an individual text block (Heading, Paragraph) to tint
+ * just that one. */
+export type TextColorVariants = {
+	/** Maximum-contrast text — `color: var(--color-black)`. */
+	"text-black"?: boolean | undefined;
+	/** Dark text (body-text default) — `color: var(--color-dark)`. Picks up variant tint when wrapped in `.red`, `.success`, etc. */
+	"text-dark"?: boolean | undefined;
+	/** Vivid text — `color: var(--color-vivid)`. Picks up variant tint. */
+	"text-vivid"?: boolean | undefined;
+	/** Light text — `color: var(--color-light)`. Picks up variant tint. */
+	"text-light"?: boolean | undefined;
+	/** Page-background-coloured text (for use on dark/vivid surfaces) — `color: var(--color-white)`. */
+	"text-white"?: boolean | undefined;
+	/** Reset back to inherit so nested elements stop overriding. */
+	"text-inherit"?: boolean | undefined;
+};
+
+/** Typography variants — combined font-family + font-size + text-colour. */
+export type TypographyVariants = SizeVariants & FontVariants & TextColorVariants;
 
 export function getTypographyClass(variants: TypographyVariants): string | undefined {
 	return getModuleClass(TYPOGRAPHY_CSS, variants);

@@ -9,7 +9,6 @@
 
 		white-space: pre-line;
 		font-style: normal;
-		color: var(--address-color, var(--color-dark));
 		font-family: var(--address-font, inherit);
 		font-size: var(--address-size, inherit);
 		text-align: var(--address-align, left);

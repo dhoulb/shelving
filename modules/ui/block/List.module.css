@@ -9,7 +9,6 @@
 		margin-inline: 0;
 		margin-block: var(--list-spacing, var(--spacing-paragraph));
 
-		color: var(--list-color, var(--color-dark));
 		text-align: left;
 
 		/* Spacing between items — uses standard CSS `gap` (supported on block-level lists since 2024). */

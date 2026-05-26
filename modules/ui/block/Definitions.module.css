@@ -6,7 +6,6 @@
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--definitions-spacing, var(--spacing-paragraph));
-		color: var(--definitions-color, var(--color-dark));
 		text-align: var(--definitions-align, left);
 
 		/* Children */
@@ -25,7 +24,6 @@
 		.term {
 			display: block;
 			margin: 0;
-			color: var(--definitions-label-color, var(--color-dark));
 			font-weight: var(--definitions-label-weight, var(--weight-strong));
 			font-size: var(--definitions-label-size, var(--size-small));
 		}
