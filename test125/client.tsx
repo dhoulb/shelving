@@ -16,6 +16,7 @@ import "../modules/ui/style/base.css";
 // Theme file that sets per-component hooks (e.g. `--card-color-light`, `--button-color-dark`).
 // Plain CSS — token overrides at `:root` propagate via inheritance, no layer participation needed.
 import "./theme.css";
+import { Flex } from "../modules/ui/style/Flex.js";
 
 /** A swatch row showing all 5 scale steps at the current scope (variant or default). */
 function Scale({ label }: { label: string }): ReactElement {
@@ -82,14 +83,112 @@ function Page(): ReactElement {
 			</div>
 
 			<Heading>0b. Coloured buttons</Heading>
-			<Button red>Red button</Button>
-			<Button orange>Orange button</Button>
-			<Button yellow>Yellow button</Button>
-			<Button green>Green button</Button>
-			<Button aqua>Aqua button</Button>
-			<Button blue>Blue button</Button>
-			<Button purple>Purple button</Button>
-			<Button pink>Pink button</Button>
+			<Paragraph>
+				<Flex>
+					<Button red outline>
+						Button
+					</Button>
+					<Button red>Button</Button>
+					<Button red strong>
+						Button
+					</Button>
+				</Flex>
+			</Paragraph>
+			<Paragraph>
+				<Flex>
+					<Button orange outline>
+						Button
+					</Button>
+					<Button orange>Button</Button>
+					<Button orange strong>
+						Button
+					</Button>
+				</Flex>
+			</Paragraph>
+			<Paragraph>
+				<Flex>
+					<Button yellow outline>
+						Button
+					</Button>
+					<Button yellow>Button</Button>
+					<Button yellow strong>
+						Button
+					</Button>
+				</Flex>
+			</Paragraph>
+			<Paragraph>
+				<Flex>
+					<Button green outline>
+						Button
+					</Button>
+					<Button green>Button</Button>
+					<Button green strong>
+						Button
+					</Button>
+				</Flex>
+			</Paragraph>
+			<Paragraph>
+				<Flex>
+					<Button aqua outline>
+						Button
+					</Button>
+					<Button aqua>Button</Button>
+					<Button aqua strong>
+						Button
+					</Button>
+				</Flex>
+			</Paragraph>
+			<Paragraph>
+				<Flex>
+					<Button blue outline>
+						Button
+					</Button>
+					<Button blue>Button</Button>
+					<Button blue strong>
+						Button
+					</Button>
+				</Flex>
+			</Paragraph>
+			<Paragraph>
+				<Flex>
+					<Button purple outline>
+						Button
+					</Button>
+					<Button purple>Button</Button>
+					<Button purple strong>
+						Button
+					</Button>
+				</Flex>
+			</Paragraph>
+			<Paragraph>
+				<Flex>
+					<Button pink outline>
+						Button
+					</Button>
+					<Button pink>Button</Button>
+					<Button pink strong>
+						Button
+					</Button>
+				</Flex>
+			</Paragraph>
+			<Paragraph>
+				<Flex>
+					<Button gray outline>
+						Button
+					</Button>
+					<Button gray>Button</Button>
+					<Button gray strong>
+						Button
+					</Button>
+				</Flex>
+			</Paragraph>
+			<Paragraph>
+				<Flex>
+					<Button outline>Button</Button>
+					<Button>Button</Button>
+					<Button strong>Button</Button>
+				</Flex>
+			</Paragraph>
 
 			<Heading>0c. Strong (vivid) buttons</Heading>
 			<Paragraph>

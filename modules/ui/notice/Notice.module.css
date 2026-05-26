@@ -19,7 +19,7 @@
 
 		/* Style — `bg=light / text=dark` (2-step pair). */
 		background: var(--color-light);
-		color: var(--color-dark);
+		color: var(--color-vivid);
 
 		/* Typography */
 		font-size: var(--notice-size, var(--size-normal));

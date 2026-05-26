@@ -9,8 +9,6 @@ export interface ColorVariants {
 	secondary?: boolean | undefined;
 	/** Element has tertiary colors. */
 	tertiary?: boolean | undefined;
-	/** Element has quiet colors. */
-	quiet?: boolean | undefined;
 	/** Element has red colours. */
 	red?: boolean | undefined;
 	/** Element has orange colours. */
@@ -27,6 +25,8 @@ export interface ColorVariants {
 	purple?: boolean | undefined;
 	/** Element has pink colours. */
 	pink?: boolean | undefined;
+	/** Element has pink colours. */
+	gray?: boolean | undefined;
 }
 
 /** Possible colour strings. */

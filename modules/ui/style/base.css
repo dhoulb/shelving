@@ -133,15 +133,15 @@
 
 		/* Light palette — 20% vivid blended into white. Pastel surfaces; chroma reduces naturally so
 		 * the result isn't a high-saturation salmon/lime. */
-		--light-gray: color-mix(in oklch, var(--vivid-gray) 10%, white);
-		--light-red: color-mix(in oklch, var(--vivid-red) 20%, white);
-		--light-orange: color-mix(in oklch, var(--vivid-orange) 20%, white);
-		--light-yellow: color-mix(in oklch, var(--vivid-yellow) 20%, white);
-		--light-green: color-mix(in oklch, var(--vivid-green) 20%, white);
-		--light-aqua: color-mix(in oklch, var(--vivid-aqua) 20%, white);
-		--light-blue: color-mix(in oklch, var(--vivid-blue) 20%, white);
-		--light-purple: color-mix(in oklch, var(--vivid-purple) 20%, white);
-		--light-pink: color-mix(in oklch, var(--vivid-pink) 20%, white);
+		--light-gray: color-mix(in oklch, var(--vivid-gray) 15%, white);
+		--light-red: color-mix(in oklch, var(--vivid-red) 25%, white);
+		--light-orange: color-mix(in oklch, var(--vivid-orange) 25%, white);
+		--light-yellow: color-mix(in oklch, var(--vivid-yellow) 25%, white);
+		--light-green: color-mix(in oklch, var(--vivid-green) 25%, white);
+		--light-aqua: color-mix(in oklch, var(--vivid-aqua) 25%, white);
+		--light-blue: color-mix(in oklch, var(--vivid-blue) 25%, white);
+		--light-purple: color-mix(in oklch, var(--vivid-purple) 25%, white);
+		--light-pink: color-mix(in oklch, var(--vivid-pink) 25%, white);
 
 		/* Dark palette — same hue, lowered lightness for foregrounds. */
 		--dark-gray: oklch(from var(--vivid-gray) calc(l - 0.3) c h);
