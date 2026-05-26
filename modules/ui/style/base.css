@@ -122,14 +122,25 @@
 
 		/* Vivid palette — the saturated middle of the 5-step scale, one per hue. */
 		--vivid-gray: oklch(60% 0.01 240); /* Subtle blue tint so neutrals don't feel "dead". */
-		--vivid-red: oklch(62% 0.238 30);
+		--vivid-red: oklch(62% 0.2 30); /* Slightly desaturated from default — takes the edge off without losing red identity. */
 		--vivid-orange: oklch(70% 0.157 60);
 		--vivid-yellow: oklch(82% 0.16 92);
 		--vivid-green: oklch(72% 0.185 130);
 		--vivid-aqua: oklch(72% 0.121 185);
-		--vivid-blue: oklch(60% 0.131 240);
+		--vivid-blue: #156ef4; /* Hex preserves the exact requested electric-blue hue; `light` and `dark` derive from this via the same pipeline as the others. */
 		--vivid-purple: oklch(58% 0.25 300);
 		--vivid-pink: oklch(68% 0.239 350);
+
+		/* Brand aliases — themes can repoint these without renaming the named-palette tokens. */
+		--vivid-primary: var(--vivid-blue);
+		--vivid-secondary: var(--vivid-purple);
+		--vivid-tertiary: var(--vivid-aqua);
+		--light-primary: var(--light-blue);
+		--light-secondary: var(--light-purple);
+		--light-tertiary: var(--light-aqua);
+		--dark-primary: var(--dark-blue);
+		--dark-secondary: var(--dark-purple);
+		--dark-tertiary: var(--dark-aqua);
 
 		/* Light palette — 20% vivid blended into white. Pastel surfaces; chroma reduces naturally so
 		 * the result isn't a high-saturation salmon/lime. */

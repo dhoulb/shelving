@@ -51,6 +51,11 @@ const HTML = `<!DOCTYPE html>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Issue #125 — themed --card-color-bg defeats variants</title>
 	<link rel="stylesheet" href="/style.css" />
+	<style>
+		/* Reset the default body margin so full-width Panels reach the viewport edge without horizontal scroll.
+		   The library's Layout component does this for pages that use it; this test page renders raw blocks. */
+		html, body { margin: 0; padding: 0; }
+	</style>
 	<script>
 		new EventSource("/events").addEventListener("reload", () => location.reload());
 	</script>
