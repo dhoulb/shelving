@@ -183,7 +183,7 @@ function Page(): ReactElement {
 			<Button strong red>
 				Strong red
 			</Button>
-			<Button strong success>
+			<Button strong status="success">
 				Strong success
 			</Button>
 			<Button strong primary>
@@ -202,17 +202,13 @@ function Page(): ReactElement {
 			</Card>
 
 			<Heading>2. Notices inside cards</Heading>
-			<Paragraph>
-				Status-supporting components (Notice, Button, Card, Panel, Message) accept the status either as a string (
-				<Code>status="success"</Code>) or as a boolean variant (<Code>success</Code>) — both forms compose the same class.
-			</Paragraph>
 			<Card>
-				<Notice status="info">Notice status="info" — string form.</Notice>
-				<Notice success>Notice success — boolean form.</Notice>
-				<Notice error>Notice error — boolean form.</Notice>
+				<Notice status="info">Plain info notice inside plain card.</Notice>
+				<Notice status="success">Success notice inside plain card (should be green).</Notice>
+				<Notice status="error">Error notice inside plain card (should be red).</Notice>
 			</Card>
-			<Card error>
-				<Notice warning>Card error + Notice warning — boolean form on both, each keeps its own colour.</Notice>
+			<Card status="error">
+				<Notice status="warning">Warning notice inside error card — should be its own warning colour.</Notice>
 			</Card>
 
 			<Heading>3. Code chips inside cards</Heading>
@@ -228,11 +224,11 @@ function Page(): ReactElement {
 			</Card>
 
 			<Heading>4. Buttons in variant cards</Heading>
-			<Card error>
-				<Paragraph>Error card (boolean form `error`) containing buttons:</Paragraph>
-				<Button success>Button success — boolean form.</Button>
-				<Button status="warning">Button status="warning" — string form.</Button>
-				<Button primary>Button primary — Color variant beats theme.</Button>
+			<Card status="error">
+				<Paragraph>Error card containing buttons:</Paragraph>
+				<Button status="success">Success button — should be GREEN (variant beats theme).</Button>
+				<Button status="warning">Warning button — should be ORANGE.</Button>
+				<Button primary>Primary button — Color variant beats theme.</Button>
 			</Card>
 
 			<Heading>5. Custom ancestor that sets --color-light</Heading>

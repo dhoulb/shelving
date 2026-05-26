@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
-import { getStatusClass, type Status, type StatusVariants } from "../style/Status.js";
+import { getStatusClass, type Status } from "../style/Status.js";
 import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -11,16 +11,10 @@ import PANEL_CSS from "./Panel.module.css";
 /** Allowed semantic elements for a `<Panel>`. */
 export type PanelElement = "section" | "header" | "footer" | "nav" | "aside" | "article" | "div";
 
-export interface PanelProps
-	extends ColorVariants,
-		PaddingVariants,
-		StatusVariants,
-		ThicknessVariants,
-		TypographyVariants,
-		OptionalChildProps {
+export interface PanelProps extends ColorVariants, PaddingVariants, ThicknessVariants, TypographyVariants, OptionalChildProps {
 	/** Underlying HTML element. Defaults to `<section>`. */
 	as?: PanelElement | undefined;
-	/** Status colour for the panel. Accepts a string (`status="success"`) or a boolean variant (`success`) — both forms compose the same class. */
+	/** Status colour for the panel (e.g. `status="success"`). */
 	status?: Status | undefined;
 }
 
@@ -41,7 +35,6 @@ export function Panel({ children, as = "section", status, ...props }: PanelProps
 			className={getClass(
 				getModuleClass(PANEL_CSS, "panel"),
 				status && getStatusClass(status),
-				getStatusClass(props),
 				getColorClass(props),
 				getPaddingClass(props),
 				getThicknessClass(props),

@@ -1,13 +1,13 @@
 import type { ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
-import { getStatusClass, type Status, type StatusVariants } from "../style/Status.js";
+import { getStatusClass, type Status } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import BUTTON_CSS from "./Button.module.css";
 import { Clickable, type ClickableProps } from "./Clickable.js";
 
 /** Variants for buttons. */
-export interface ButtonVariants extends FlexVariants, StatusVariants, ColorVariants {
+export interface ButtonVariants extends FlexVariants, ColorVariants {
 	/** This is the default button in a form and should be displayed stronger. */
 	strong?: boolean | undefined;
 	/** Add plain styling (background only appears on hover or focus). */
@@ -18,7 +18,7 @@ export interface ButtonVariants extends FlexVariants, StatusVariants, ColorVaria
 	small?: boolean | undefined;
 	/** Make the button content-width. */
 	fit?: boolean | undefined;
-	/** Status colour for the button. Accepts a string (`status="success"`) or a boolean variant (`success`) — both forms compose the same class. */
+	/** Status colour for the button (e.g. `status="success"`). */
 	status?: Status | undefined;
 }
 
@@ -34,8 +34,7 @@ export function getButtonClass({ status, ...variants }: ButtonVariants): string 
 	return getClass(
 		getModuleClass(BUTTON_CSS, "button", variants),
 		getFlexClass(variants),
-		status && getStatusClass(status), // String form: `status="success"`.
-		getStatusClass(variants), // Boolean form: `success`.
-		getColorClass(variants), // Raw colour overrides.
+		status && getStatusClass(status),
+		getColorClass(variants),
 	);
 }

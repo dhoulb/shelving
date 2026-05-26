@@ -3,33 +3,36 @@ import { BLOCK_CLASS } from "../block/Block.js";
 import { StatusIcon } from "../misc/StatusIcon.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
-import { getStatus, getStatusClass, type Status, type StatusVariants } from "../style/Status.js";
+import { getStatusClass, type Status } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import NOTICE_CSS from "./Notice.module.css";
 
-export interface NoticeProps extends FlexVariants, ColorVariants, StatusVariants, OptionalChildProps {
-	/** Status for the notice. Accepts a string (`status="success"`) or a boolean variant (`success`) — both forms compose the same class. */
+export interface NoticeProps extends FlexVariants, ColorVariants, OptionalChildProps {
+	/** Status for the notice (e.g. `status="success"`). */
 	status?: Status | undefined;
 	/** Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). */
 	icon?: ReactElement | false | undefined;
 }
 
-export function Notice({ children, status, icon, ...variants }: NoticeProps) {
-	// Resolve the single status string: explicit `status=` prop wins, then a boolean variant, then a sensible default.
-	const resolved: Status = status ?? getStatus(variants) ?? (children ? "info" : "loading");
+export function Notice({
+	children,
+	status = children ? "info" : "loading",
+	icon = <StatusIcon status={status} />,
+	...variants
+}: NoticeProps) {
 	return (
 		<aside
-			role={resolved === "danger" || resolved === "error" ? "alert" : "status"}
+			role={status === "danger" || status === "error" ? "alert" : "status"}
 			className={getClass(
 				BLOCK_CLASS,
 				getModuleClass(NOTICE_CSS, "notice", variants),
 				getFlexClass(variants),
-				getStatusClass(resolved), // Notices have status colours.
+				getStatusClass(status), // Notices have status colours.
 				getColorClass(variants), // Notices can also have raw colour overrides.
 			)}
 		>
-			{icon ?? <StatusIcon status={resolved} />}
+			{icon}
 			{children}
 		</aside>
 	);
