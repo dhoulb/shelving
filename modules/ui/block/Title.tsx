@@ -1,5 +1,9 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
+import { getAlignClass } from "../style/Align.js";
+import { getColorClass } from "../style/Color.js";
+import { getSpacingClass } from "../style/Spacing.js";
+import { getTypographyClass } from "../style/Typography.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { HeadingProps } from "./Heading.js";
 import styles from "./Title.module.css";
 
@@ -12,5 +16,17 @@ export type TitleProps = HeadingProps;
  */
 export function Title({ level = "1", children, ...variants }: TitleProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;
-	return <Element className={getModuleClass(styles, "title", variants)}>{children}</Element>;
+	return (
+		<Element
+			className={getClass(
+				getModuleClass(styles, "title"),
+				getColorClass(variants),
+				getAlignClass(variants),
+				getSpacingClass(variants),
+				getTypographyClass(variants),
+			)}
+		>
+			{children}
+		</Element>
+	);
 }

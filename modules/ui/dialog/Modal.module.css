@@ -1,11 +1,15 @@
-.modal {
-	margin: auto;
-	max-width: 100%;
-	border-radius: var(--modal-radius, var(--radius-normal));
-	border: var(--modal-border, var(--stroke-normal)) solid var(--modal-color-border, var(--color-border));
-	background: var(--modal-color-bg, var(--color-bg));
-	padding: var(--modal-padding, var(--space-normal));
-	color: var(--modal-color-text, var(--color-text));
-	box-shadow: var(--modal-shadow, var(--shadow-normal));
-	width: var(--modal-width, var(--width-narrow));
+@import "../style/base.css";
+
+@layer components {
+	.modal {
+		margin: auto;
+		max-width: 100%;
+		border-radius: var(--modal-radius, var(--radius-normal));
+		border: var(--modal-border, var(--stroke-normal)) solid var(--modal-color-border, var(--color-vivid));
+		background: var(--modal-color-bg, var(--color-white));
+		padding: var(--modal-padding, var(--space-normal));
+		color: var(--modal-color-text, var(--color-black));
+		box-shadow: var(--modal-shadow, var(--shadow-normal));
+		width: var(--modal-width, var(--width-narrow));
+	}
 }

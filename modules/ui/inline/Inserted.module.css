@@ -1,9 +1,13 @@
-.inserted,
-.prose ins {
-	/* Style */
-	color: var(--success-text);
-	text-decoration: underline var(--stroke-normal);
+@import "../style/base.css";
 
-	/* Typography */
-	font-weight: var(--weight-strong);
+@layer components {
+	.inserted,
+	.prose ins {
+		/* Style */
+		color: var(--vivid-green);
+		text-decoration: underline var(--stroke-normal);
+
+		/* Typography */
+		font-weight: var(--weight-strong);
+	}
 }

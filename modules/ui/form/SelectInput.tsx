@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import type { ChoiceOptions } from "../../schema/ChoiceSchema.js";
 import { getProps } from "../../util/object.js";
-import { EMPTY_OPTION_INPUT_CLASS, SELECT_INPUT_CLASS, VALUE_OPTION_INPUT_CLASS, type ValueInputProps } from "./Input.js";
+import { EMPTY_OPTION_CLASS, SELECT_INPUT_CLASS, VALUE_OPTION_CLASS, type ValueInputProps } from "./Input.js";
 
 export interface SelectProps<T extends string> extends ValueInputProps<T> {
 	/** The options for the select. */
@@ -31,12 +31,12 @@ export function SelectInput({
 			required={required}
 		>
 			{!required || !value ? (
-				<option value="" className={EMPTY_OPTION_INPUT_CLASS}>
+				<option value="" className={EMPTY_OPTION_CLASS}>
 					{placeholder}
 				</option>
 			) : null}
 			{getProps(options).map(([k, t]) => (
-				<option key={k} value={k} className={VALUE_OPTION_INPUT_CLASS}>
+				<option key={k} value={k} className={VALUE_OPTION_CLASS}>
 					{t}
 				</option>
 			))}

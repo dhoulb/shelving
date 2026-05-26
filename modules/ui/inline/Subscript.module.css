@@ -1,9 +1,13 @@
-.subscript,
-.prose sub {
-	/* Style */
-	font-size: 80%;
-	line-height: 0;
-	position: relative;
-	vertical-align: baseline;
-	bottom: -0.25em;
+@import "../style/base.css";
+
+@layer components {
+	.subscript,
+	.prose sub {
+		/* Style */
+		font-size: 80%;
+		line-height: 0;
+		position: relative;
+		vertical-align: baseline;
+		bottom: -0.25em;
+	}
 }

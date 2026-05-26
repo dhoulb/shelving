@@ -1,21 +1,28 @@
-.blockquote,
-.prose blockquote {
-	/* Box */
-	display: block;
-	margin-inline: 0;
-	margin-block: var(--blockquote-spacing, var(--space-normal));
-	border-inline-start: var(--blockquote-border, var(--stroke-focus)) solid var(--blockquote-color-border, var(--color-border));
-	padding-block: var(--blockquote-padding, var(--space-small));
-	padding-inline-start: var(--blockquote-indent, var(--space-normal));
+@import "../style/base.css";
 
-	/* Style */
-	color: var(--blockquote-color-text, inherit);
+@layer components {
+	.blockquote,
+	.prose blockquote {
+		display: block;
+		margin-inline: 0;
+		margin-block: var(--blockquote-spacing, var(--spacing-paragraph));
+		border-inline-start: var(--blockquote-thickness, var(--thickness, var(--stroke-focus))) solid
+			var(--blockquote-color-border, var(--color-vivid));
+		padding-block: var(--blockquote-padding, var(--space-small));
+		padding-inline-start: var(--blockquote-indent, var(--space-normal));
 
-	/* Styles */
-	&:first-child {
-		margin-block-start: 0;
+		text-align: var(--blockquote-align, left);
 	}
-	&:last-child {
-		margin-block-end: 0;
+}
+
+@layer overrides {
+	.blockquote,
+	.prose blockquote {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
 	}
 }

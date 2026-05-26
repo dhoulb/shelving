@@ -1,20 +1,26 @@
-.image,
-.prose img {
-	/* Box */
-	display: block;
-	width: 100%;
-	margin-inline: 0;
-	margin-block: var(--image-spacing, var(--space-normal));
+@import "../style/base.css";
 
-	/* Style */
-	object-position: center center;
-	object-fit: cover; /* Don't distort when resized. */
+@layer components {
+	.image,
+	.prose img {
+		display: block;
+		inline-size: var(--image-width, 100%);
+		margin-inline: 0;
+		margin-block: var(--image-spacing, var(--spacing-paragraph));
 
-	/* Psuedo-classes */
-	&:first-child {
-		margin-block-start: 0;
+		object-position: center center;
+		object-fit: cover; /* Don't distort when resized. */
 	}
-	&:last-child {
-		margin-block-end: 0;
+}
+
+@layer overrides {
+	.image,
+	.prose img {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
 	}
 }

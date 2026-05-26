@@ -11,8 +11,8 @@ import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
+import { Flex } from "../style/Flex.js";
 import { TreeCards } from "../tree/TreeCards.js";
-import { Flex } from "../variant/Flex.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
 const DEFAULT_TYPE = "unknown";

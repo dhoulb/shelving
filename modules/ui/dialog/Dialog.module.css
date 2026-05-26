@@ -1,29 +1,36 @@
-.dialog {
-	display: none;
-	position: fixed;
-	inset: 0;
-	z-index: 1000;
-	margin: 0;
-	width: 100vw;
-	height: 100vh;
-	align-items: center;
-	justify-content: center;
-	background: var(--dialog-color-overlay, var(--color-overlay));
-	padding: var(--dialog-padding, var(--space-normal));
-	opacity: 0;
-	transition: opacity var(--dialog-transition-duration, var(--duration-fast)) ease-in-out;
+@import "../style/base.css";
 
-	&[open] {
-		opacity: 1;
-	}
+@layer components {
+	.dialog {
+		/* Box */
+		display: none;
+		position: fixed;
+		inset: 0;
+		z-index: 1000;
+		margin: 0;
+		width: 100vw;
+		height: 100vh;
+		align-items: center;
+		justify-content: center;
+		padding: var(--dialog-padding, var(--space-normal));
 
-	@starting-style {
+		/* Style */
+		background: var(--dialog-color-overlay, var(--color-shadow));
 		opacity: 0;
-	}
-}
+		transition: opacity var(--dialog-transition-duration, var(--duration-fast)) ease-in-out;
 
-.close {
-	position: fixed;
-	top: var(--dialog-close-offset, var(--space-small));
-	right: var(--dialog-close-offset, var(--space-small));
+		&[open] {
+			opacity: 1;
+		}
+
+		@starting-style {
+			opacity: 0;
+		}
+	}
+
+	.close {
+		position: fixed;
+		top: var(--dialog-close-offset, var(--space-small));
+		right: var(--dialog-close-offset, var(--space-small));
+	}
 }

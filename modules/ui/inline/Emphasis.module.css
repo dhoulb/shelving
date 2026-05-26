@@ -1,5 +1,9 @@
-.emphasis,
-.prose :is(em, i) {
-	/* Style */
-	font-style: italic;
+@import "../style/base.css";
+
+@layer components {
+	.emphasis,
+	.prose :is(em, i) {
+		/* Style */
+		font-style: italic;
+	}
 }

@@ -1,19 +1,24 @@
 import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
+import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getStatusClass, type Status } from "../style/Status.js";
+import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import { type ColorVariants, getColorClass } from "../variant/Color.js";
-import { getStatusClass, type Status } from "../variant/Status.js";
-import { SURFACE_CLASS } from "../variant/Surface.js";
 import CARD_CSS from "./Card.module.css";
 
-export interface CardProps extends ClickableProps, ColorVariants {
-	/** Constrain the card to narrow width (defaults to full-width). */
-	narrow?: boolean | undefined;
-
-	/** Constrain the card to wide width (defaults to full-width). */
-	wide?: boolean | undefined;
-
-	/** Status colour for the card (e.g. `"error"`, `"success"`). */
+export interface CardProps
+	extends ClickableProps,
+		ColorVariants,
+		PaddingVariants,
+		SpacingVariants,
+		ThicknessVariants,
+		TypographyVariants,
+		WidthVariants {
+	/** Status colour for the card (e.g. `status="success"`). */
 	status?: Status | undefined;
 }
 
@@ -25,17 +30,21 @@ export interface CardProps extends ClickableProps, ColorVariants {
  *
  * @example <Card><Subheading>Static</Subheading></Card>
  * @example <Card href="/foo" title="Open foo"><Subheading>Clickable</Subheading></Card>
- * @example <Card status="error"><StatusIcon status="error" xxlarge /><Subheading>Not found</Subheading></Card>
+ * @example <Card status="error"><Subheading>Not found</Subheading></Card>
  */
 export function Card({ children, href, onClick, title = "Open", status, ...props }: CardProps): ReactElement {
 	const overlay = (href || onClick) && <Clickable title={title} href={href} onClick={onClick} {...props} className={CARD_CSS.overlay} />;
 	return (
 		<article
 			className={getClass(
-				SURFACE_CLASS, // Card paints a surface — opt into the depth-tracking + auto-darkening chain.
-				getModuleClass(CARD_CSS, "card", props), //
-				status && getStatusClass(status), // Cards can have status colours.
-				getColorClass(props), // Cards can also have raw colour overrides.
+				getModuleClass(CARD_CSS, "card"),
+				status && getStatusClass(status),
+				getColorClass(props),
+				getPaddingClass(props),
+				getSpacingClass(props),
+				getThicknessClass(props),
+				getTypographyClass(props),
+				getWidthClass(props),
 			)}
 		>
 			{overlay}

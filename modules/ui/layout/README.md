@@ -38,7 +38,7 @@ Override the sidebar width and background with CSS custom properties:
 
 ```css
 --sidebar-layout-width: 280px;
---sidebar-layout-bg: var(--color-surface-2);
+--sidebar-layout-bg: var(--color-light);
 ```
 
 ## CenteredLayout

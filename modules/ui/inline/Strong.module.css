@@ -1,5 +1,9 @@
-.strong,
-.prose :is(strong, b) {
-	/* Style */
-	font-weight: var(--weight-strong);
+@import "../style/base.css";
+
+@layer components {
+	.strong,
+	.prose :is(strong, b) {
+		/* Style */
+		font-weight: var(--weight-strong);
+	}
 }

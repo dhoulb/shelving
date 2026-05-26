@@ -1,15 +1,21 @@
-.prose {
-	/* Box */
-	position: relative;
-	display: block;
-	margin-inline: 0;
-	margin-block: var(--prose-spacing, var(--space-normal));
+@import "../style/base.css";
 
-	/* Psuedo-classes */
-	&:first-child {
-		margin-block-start: 0;
+@layer components {
+	.prose {
+		position: relative;
+		display: block;
+		margin-inline: 0;
+		margin-block: var(--prose-spacing, var(--spacing-paragraph));
 	}
-	&:last-child {
-		margin-block-end: 0;
+}
+
+@layer overrides {
+	.prose {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
 	}
 }

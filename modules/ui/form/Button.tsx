@@ -1,14 +1,13 @@
 import type { ReactElement } from "react";
-import { type Classes, getClass, getModuleClass } from "../util/css.js";
-import { type ColorVariants, getColorClass } from "../variant/Color.js";
-import { FLEX_CSS, type FlexVariants } from "../variant/Flex.js";
-import { getStatusClass, type StatusVariants } from "../variant/Status.js";
-import { SURFACE_CLASS } from "../variant/Surface.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { type FlexVariants, getFlexClass } from "../style/Flex.js";
+import { getStatusClass, type Status } from "../style/Status.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import BUTTON_CSS from "./Button.module.css";
 import { Clickable, type ClickableProps } from "./Clickable.js";
 
 /** Variants for buttons. */
-export interface ButtonVariants extends FlexVariants, StatusVariants, ColorVariants {
+export interface ButtonVariants extends FlexVariants, ColorVariants {
 	/** This is the default button in a form and should be displayed stronger. */
 	strong?: boolean | undefined;
 	/** Add plain styling (background only appears on hover or focus). */
@@ -19,6 +18,8 @@ export interface ButtonVariants extends FlexVariants, StatusVariants, ColorVaria
 	small?: boolean | undefined;
 	/** Make the button content-width. */
 	fit?: boolean | undefined;
+	/** Status colour for the button (e.g. `status="success"`). */
+	status?: Status | undefined;
 }
 
 interface ButtonProps extends ButtonVariants, ClickableProps {}
@@ -29,12 +30,11 @@ export function Button(props: ButtonProps): ReactElement {
 }
 
 /** Get the full className for a button. */
-export function getButtonClass(variants: ButtonVariants): string {
+export function getButtonClass({ status, ...variants }: ButtonVariants): string {
 	return getClass(
-		SURFACE_CLASS, // Button paints a surface — opt into depth-tracking + auto-darkening.
-		getModuleClass(BUTTON_CSS, "button", variants as Classes),
-		getModuleClass(FLEX_CSS, "flex", "center", variants as Classes),
-		getStatusClass(variants), // Buttons have status colours.
-		getColorClass(variants), // Buttons can also have raw colour overrides.
+		getModuleClass(BUTTON_CSS, "button", variants),
+		getFlexClass(variants),
+		status && getStatusClass(status),
+		getColorClass(variants),
 	);
 }

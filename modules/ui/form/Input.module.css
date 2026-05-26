@@ -1,193 +1,213 @@
-.input {
-	/* Box */
-	box-sizing: border-box;
-	width: 100%; /* Buttons never go smaller than their contents. */
-	margin: var(--input-spacing, var(--space-small)) 0;
-	border-radius: var(--input-radius, var(--radius-xsmall));
-	border: var(--input-border, var(--stroke-normal)) solid var(--input-color-border, var(--color-border));
-	padding: var(--input-padding, var(--space-small)) var(--input-padding, var(--space-small));
-	flex-grow: var(--grow-greedy);
+@import "../style/base.css";
 
-	/* Style */
-	color: var(--input-color-text, var(--color-text));
-	background: var(--input-color-bg, var(--color-bg));
-	transition: all 120ms ease-in-out;
-	cursor: default;
-	outline: var(--input-border, var(--stroke-focus)) solid transparent;
-	outline-offset: calc(0px - var(--input-border, var(--stroke-normal)));
-	box-shadow: none;
+@layer components {
+	.input {
+		/* Identity */
+		--color-black: var(--input-color-black, inherit);
+		--color-dark: var(--input-color-dark, inherit);
+		--color-vivid: var(--input-color-vivid, inherit);
+		--color-light: var(--input-color-light, inherit);
+		--color-white: var(--input-color-white, inherit);
 
-	/* Typography */
-	font-family: var(--input-font, var(--font-body));
-	font-weight: var(--input-weight, var(--weight-normal));
-	font-size: var(--input-size, var(--size-normal));
-	line-height: var(--input-leading, var(--leading-normal));
+		/* Box */
+		box-sizing: border-box;
+		width: 100%;
+		margin: var(--input-spacing, var(--space-small)) 0;
+		border-radius: var(--input-radius, var(--radius-xsmall));
+		border: var(--input-border, var(--stroke-normal)) solid var(--color-vivid);
+		padding: var(--input-padding, var(--space-small)) var(--input-padding, var(--space-small));
+		flex-grow: var(--grow-greedy);
 
-	/* Psuedo-classes */
-	&:first-child {
-		margin-top: 0;
-	}
-	&:last-child {
-		margin-bottom: 0;
-	}
-
-	/* Variants. */
-	&.select {
-		/* Select inputs have pointer cursor, down arrow image. */
-		cursor: pointer;
-		appearance: none;
-		background-repeat: no-repeat;
-		background-size: var(--input-icon-size, var(--size-icon));
-		padding-right: 2.5em;
-		background-position: right var(--input-padding, var(--space-small)) center;
-		background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMS40NyA0LjcyYS43NS43NSAwIDAgMSAxLjA2IDBsMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDEuMDZMMTIgNi4zMSA4Ljc4IDkuNTNhLjc1Ljc1IDAgMCAxLTEuMDYtMS4wNmwzLjc1LTMuNzVabS0zLjc1IDkuNzVhLjc1Ljc1IDAgMCAxIDEuMDYgMEwxMiAxNy42OWwzLjIyLTMuMjJhLjc1Ljc1IDAgMSAxIDEuMDYgMS4wNmwtMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDBsLTMuNzUtMy43NWEuNzUuNzUgMCAwIDEgMC0xLjA2WiIgY2xpcC1ydWxlPSJldmVub2RkIiAvPjwvc3ZnPgo=");
-
-		/* Placeholder color if contains checked empty option. */
-		&:has(.empty:checked) {
-			color: var(--input-placeholder-color, var(--color-quiet));
-		}
-
-		/* Success if contains value checked option. */
-		&:has(.value:checked) {
-			border-color: var(--input-success-color, var(--success-text));
-		}
-	}
-	&.text {
-		/* Text inputs have text cursor, selection, placeholder. */
-		cursor: text;
-		resize: none;
-
-		&::selection {
-			color: var(--input-focus-color-contrast, var(--color-white));
-			/* biome-ignore lint/correctness/noUnknownFunction: contrast-color() is new so we provide a fallback. */
-			color: var(--input-focus-color-contrast, contrast-color(var(--color-focus)));
-			background-color: var(--input-focus-color, var(--color-focus));
-		}
-		&::placeholder {
-			color: var(--input-placeholder-color, var(--color-quiet));
-		}
-
-		/* Success if valid and has content. */
-		&:valid:not(:placeholder-shown) {
-			border-color: var(--input-success-color, var(--success-text));
-		}
-
-		/* Error if is invalid and is not empty. */
-		&:invalid:not(:placeholder-shown) {
-			border-color: var(--input-error-color, var(--error-text));
-		}
-
-		&.multiline {
-			/* Textarea has pre-spacing and field-sizing for auto-resizing. */
-			white-space: pre-wrap;
-			word-break: break-word;
-			field-sizing: content;
-			min-height: calc(1lh * attr(rows number, 2));
-		}
-	}
-	&.button,
-	&.label {
-		/* Button and label inputs have a pointer cursor and show their contents as flexbox. */
-		cursor: pointer;
-		overflow-wrap: normal;
-
-		/* Success if contains checked radio, checkbox, option. */
-		/* Success if contains text that is valid and is not empty. */
-		&:has(.checkbox:checked, .radio:checked, .option:checked, .text:valid:not(:placeholder-shown)) {
-			border-color: var(--input-success-color, var(--success-text));
-		}
-
-		/* Error if contains text that is invalid and is not empty. */
-		&:has(.text:invalid:not(:placeholder-shown)) {
-			border-color: var(--input-error-color, var(--error-text));
-		}
-	}
-
-	/* Error if aria invalid or contains aria invalid. */
-	&[aria-invalid="true"],
-	&:has([aria-invalid="true"]) {
-		border-color: var(--input-error-color, var(--error-text));
-	}
-
-	/* Important pseudo-classes */
-	&.disabled,
-	&:disabled,
-	&:has(.disabled, :disabled) {
-		opacity: var(--input-disabled-opacity, 0.5);
+		/* Style — Inputs always use the un-variant extremes: `bg=white / text=black` (4 steps apart,
+		 * maximum readability). Variant tints surface as borders and validity colours only. */
+		color: var(--color-black);
+		background: var(--color-white);
+		transition: all 120ms ease-in-out;
 		cursor: default;
-	}
-	&.focus,
-	&:focus,
-	&:focus-within,
-	&:has(.focus) {
-		border-color: var(--input-focus-color, var(--focus-text));
-		outline-color: var(--input-focus-color, var(--focus-text));
-	}
+		outline: var(--input-border, var(--stroke-focus)) solid transparent;
+		outline-offset: calc(0px - var(--input-border, var(--stroke-normal)));
+		box-shadow: none;
 
-	/* Children */
-	> .input {
-		/* Nested inputs don't double up border or padding. */
-		padding: 0;
-		border: 0;
-		margin: 0;
-		outline: 0;
-	}
-	&& > [data-slot="icon"] {
-		inline-size: var(--input-icon-size, var(--size-icon));
-		block-size: var(--input-icon-size, var(--size-icon));
-		flex: none;
-	}
+		/* Typography */
+		font-family: var(--input-font, var(--font-body));
+		font-weight: var(--input-weight, var(--weight-normal));
+		font-size: var(--input-size, var(--size-normal));
+		line-height: var(--input-leading, var(--leading-normal));
 
-	&.wrapper {
-		position: relative;
+		/* Content */
+		justify-content: start;
+		align-items: center;
 
-		/* Absolutely position any slotted element and center it vertically. */
-		& > [data-slot] {
-			position: absolute;
-			inset-block: 0;
-			display: flex;
-			align-items: center;
+		/* Variants. */
+		&.select {
+			/* Select inputs have pointer cursor, down arrow image. */
+			cursor: pointer;
+			appearance: none;
+			background-repeat: no-repeat;
+			background-size: var(--input-icon-size, var(--size-icon));
+			padding-right: 2.5em;
+			background-position: right var(--input-padding, var(--space-small)) center;
+			background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMS40NyA0LjcyYS43NS43NSAwIDAgMSAxLjA2IDBsMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDEuMDZMMTIgNi4zMSA4Ljc4IDkuNTNhLjc1Ljc1IDAgMCAxLTEuMDYtMS4wNmwzLjc1LTMuNzVabS0zLjc1IDkuNzVhLjc1Ljc1IDAgMCAxIDEuMDYgMEwxMiAxNy42OWwzLjIyLTMuMjJhLjc1Ljc1IDAgMSAxIDEuMDYgMS4wNmwtMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDBsLTMuNzUtMy43NWEuNzUuNzUgMCAwIDEgMC0xLjA2WiIgY2xpcC1ydWxlPSJldmVub2RkIiAvPjwvc3ZnPgo=");
+
+			/* Placeholder colour if contains checked empty option. */
+			&:has(.empty:checked) {
+				color: var(--color-dark);
+			}
+
+			/* Success border if contains a checked value option. */
+			&:has(.value:checked) {
+				border-color: var(--vivid-green);
+			}
+		}
+		&.text {
+			/* Text inputs have text cursor, selection, placeholder. */
+			cursor: text;
+			resize: none;
+
+			&::selection {
+				color: var(--color-white);
+				background-color: var(--color-focus);
+			}
+			&::placeholder {
+				color: var(--color-dark);
+			}
+
+			/* Success border if valid and has content. */
+			&:valid:not(:placeholder-shown) {
+				border-color: var(--vivid-green);
+			}
+
+			/* Error border if invalid and not empty. */
+			&:invalid:not(:placeholder-shown) {
+				border-color: var(--vivid-red);
+			}
+
+			&.multiline {
+				/* Textarea has pre-spacing and field-sizing for auto-resizing. */
+				white-space: pre-wrap;
+				word-break: break-word;
+				field-sizing: content;
+				min-height: calc(1lh * attr(rows number, 2));
+			}
+		}
+		&.button,
+		&.label {
+			/* Button and label inputs have a pointer cursor and clip overlong labels. */
+			cursor: pointer;
+			overflow: hidden;
+			white-space: nowrap;
+
+			/* Success border if contains a checked control or valid text. */
+			&:has(.checkbox:checked, .radio:checked, .option:checked, .text:valid:not(:placeholder-shown)) {
+				border-color: var(--vivid-green);
+			}
+
+			/* Error border if contains invalid text. */
+			&:has(.text:invalid:not(:placeholder-shown)) {
+				border-color: var(--vivid-red);
+			}
+		}
+		&.button {
 			justify-content: center;
-			inline-size: calc(var(--input-padding, var(--space-small)) + var(--input-icon-size, var(--size-icon)));
-			pointer-events: none;
 		}
 
-		/* First [data-slot] child anchors to the left. */
-		& > [data-slot]:first-child {
-			inset-inline-start: 0;
+		/* Error if aria invalid or contains aria invalid. */
+		&[aria-invalid="true"],
+		&:has([aria-invalid="true"]) {
+			border-color: var(--vivid-red);
 		}
 
-		/* Last [data-slot] child anchors to the right. */
-		& > [data-slot]:last-child {
-			inset-inline-end: 0;
+		/* Important pseudo-classes */
+		&.disabled,
+		&:disabled,
+		&:has(.disabled, :disabled) {
+			opacity: var(--input-disabled-opacity, 0.5);
+			cursor: default;
+		}
+		&.focus,
+		&:focus,
+		&:focus-within,
+		&:has(.focus) {
+			border-color: var(--color-focus);
+			outline-color: var(--color-focus);
 		}
 
-		/* Push the inner .input left padding to clear the left slot. */
-		&:has(> [data-slot]:first-child) > .input {
-			padding-inline-start: var(--input-icon-size, var(--size-icon));
+		/* Children */
+		> .input {
+			/* Nested inputs don't double up border or padding. */
+			padding: 0;
+			border: 0;
+			margin: 0;
+			outline: 0;
+		}
+		&& > [data-slot="icon"] {
+			inline-size: var(--input-icon-size, var(--size-icon));
+			block-size: var(--input-icon-size, var(--size-icon));
+			flex: none;
 		}
 
-		/* Push the inner .input right padding to clear the right slot. */
-		&:has(> [data-slot]:last-child) > .input {
-			padding-inline-end: var(--input-icon-size, var(--size-icon));
+		&.wrapper {
+			position: relative;
+
+			/* Absolutely position any slotted element and center it vertically. */
+			& > [data-slot] {
+				position: absolute;
+				inset-block: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				inline-size: calc(var(--input-padding, var(--space-small)) + var(--input-icon-size, var(--size-icon)));
+				pointer-events: none;
+			}
+
+			/* First [data-slot] child anchors to the left. */
+			& > [data-slot]:first-child {
+				inset-inline-start: 0;
+			}
+
+			/* Last [data-slot] child anchors to the right. */
+			& > [data-slot]:last-child {
+				inset-inline-end: 0;
+			}
+
+			/* Push the inner .input left padding to clear the left slot. */
+			&:has(> [data-slot]:first-child) > .input {
+				padding-inline-start: var(--input-icon-size, var(--size-icon));
+			}
+
+			/* Push the inner .input right padding to clear the right slot. */
+			&:has(> [data-slot]:last-child) > .input {
+				padding-inline-end: var(--input-icon-size, var(--size-icon));
+			}
 		}
+	}
+
+	.placeholder {
+		color: var(--color-dark);
+	}
+
+	.checkbox,
+	.radio {
+		display: block;
+		width: calc(var(--input-icon-size, var(--size-icon)) - 4px);
+		height: calc(var(--input-icon-size, var(--size-icon)) - 4px);
+		margin: 2px;
+		flex: 0 0 auto;
+		accent-color: var(--color-vivid);
+		cursor: inherit;
+		outline: none;
+		font-size: inherit;
+		line-height: inherit;
 	}
 }
 
-.placeholder {
-	color: var(--input-placeholder-color, var(--color-quiet));
-}
-
-.checkbox,
-.radio {
-	display: block;
-	width: calc(var(--input-icon-size, var(--size-icon)) - 4px);
-	height: calc(var(--input-icon-size, var(--size-icon)) - 4px);
-	margin: 2px;
-	flex: 0 0 auto;
-	accent-color: var(--input-color-accent, var(--primary-text));
-	cursor: inherit;
-	outline: none;
-	font-size: inherit;
-	line-height: inherit;
+@layer overrides {
+	.input {
+		&:first-child {
+			margin-top: 0;
+		}
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
 }

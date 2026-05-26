@@ -1,30 +1,54 @@
-.track {
-	position: relative;
-	inline-size: 100%;
-	height: var(--progress-height, 0.375rem);
-	border-radius: var(--progress-radius, 999px);
-	background: var(--progress-color-bg, var(--gray-20));
-	overflow: hidden;
-}
+@import "../style/base.css";
 
-.fill {
-	display: block;
-	block-size: 100%;
-	inline-size: var(--progress-value, 0%);
-	background: var(--progress-color-active, var(--primary-text));
-	transition:
-		inline-size 160ms ease-out,
-		background-color var(--duration-fast) ease-in-out;
-}
+@layer components {
+	/* Continuous progress bar — a single track that fills horizontally. */
+	.track {
+		position: relative;
+		inline-size: 100%;
+		height: var(--progress-height, 0.375rem);
+		border-radius: var(--progress-radius, 999px);
+		background: var(--progress-color-bg, var(--color-light));
+		overflow: hidden;
+	}
 
-.success {
-	background: var(--progress-success-color-active, var(--success-text));
-}
+	.fill {
+		display: block;
+		block-size: 100%;
+		inline-size: var(--progress-value, 0%);
+		background: var(--progress-color-active, var(--vivid-blue));
+		transition:
+			inline-size 160ms ease-out,
+			background-color var(--duration-fast) ease-in-out;
+	}
 
-.warning {
-	background: var(--progress-warning-color-active, var(--warning-text));
-}
+	/* Segmented progress — a grid of N items, of which some are `.active`. */
+	.segmented {
+		display: grid;
+		grid-template-columns: repeat(var(--progress-steps), minmax(0, 1fr));
+		gap: var(--progress-gap, 0.375rem);
+	}
 
-.danger {
-	background: var(--progress-danger-color-active, var(--danger-text));
+	.item {
+		height: var(--progress-height, 0.375rem);
+		border-radius: var(--progress-radius, 999px);
+		background: var(--progress-color-bg, var(--color-light));
+	}
+
+	.active {
+		background: var(--progress-color-active, var(--vivid-blue));
+	}
+
+	/* Status variants applied at the container level. */
+	.success .fill,
+	.success .active {
+		background: var(--progress-success-color-active, var(--vivid-green));
+	}
+	.warning .fill,
+	.warning .active {
+		background: var(--progress-warning-color-active, var(--vivid-orange));
+	}
+	.danger .fill,
+	.danger .active {
+		background: var(--progress-danger-color-active, var(--vivid-red));
+	}
 }

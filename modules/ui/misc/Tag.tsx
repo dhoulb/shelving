@@ -1,9 +1,8 @@
 import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import { type ColorVariants, getColorClass } from "../variant/Color.js";
-import { getStatusClass, type StatusVariants } from "../variant/Status.js";
-import { SURFACE_CLASS } from "../variant/Surface.js";
 import TAG_CSS from "./Tag.module.css";
 
 /** Variants for tags — accepts both status and raw colour variants. */
@@ -28,7 +27,6 @@ export function Tag(props: TagProps): ReactElement {
 
 export function getTagClass(variants: TagVariants): string {
 	return getClass(
-		SURFACE_CLASS, // Tag paints a surface — opt into depth-tracking + auto-darkening.
 		TAG_CSS.tag, //
 		getModuleClass(TAG_CSS, variants),
 		getStatusClass(variants),

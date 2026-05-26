@@ -1,16 +1,28 @@
-.paragraph,
-.prose p {
-	/* Box */
-	display: block;
-	inline-size: 100%;
-	margin-inline: 0;
-	margin-block: var(--paragraph-spacing, var(--space-normal));
+@import "../style/base.css";
 
-	/* Psuedo-classes */
-	&:first-child {
-		margin-block-start: 0;
+@layer components {
+	.paragraph,
+	.prose p {
+		display: block;
+		inline-size: 100%;
+		margin-inline: 0;
+		margin-block: var(--paragraph-spacing, var(--spacing-paragraph));
+
+		/* Typography — inherits `color` from the page baseline or a `.text-X` variant on this element or an ancestor. */
+		font-family: var(--paragraph-font, inherit);
+		font-size: var(--paragraph-size, inherit);
+		text-align: var(--paragraph-align, left);
 	}
-	&:last-child {
-		margin-block-end: 0;
+}
+
+@layer overrides {
+	.paragraph,
+	.prose p {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
 	}
 }

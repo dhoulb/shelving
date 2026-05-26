@@ -1,0 +1,32 @@
+@import "../style/base.css";
+
+/*
+ * Full-width vertical region that paints the current surface. Panels always have zero block-spacing
+ * (they butt up against each other vertically to create stacked page sections) but they do have
+ * vertical `padding-block` — `xxlarge` by default, overridable via PaddingVariants (`.padding-large`,
+ * `.padding-none`, etc.). Inline padding is fixed at `--space-normal`; if you want narrower content
+ * inside a wide panel, compose a `<Block narrow>` (or `<Block wide>`) inside it.
+ */
+@layer components {
+	.panel {
+		/* Identity */
+		--color-black: var(--panel-color-black, inherit);
+		--color-dark: var(--panel-color-dark, inherit);
+		--color-vivid: var(--panel-color-vivid, inherit);
+		--color-light: var(--panel-color-light, inherit);
+		--color-white: var(--panel-color-white, inherit);
+
+		/* Box */
+		display: block;
+		inline-size: 100%;
+		margin-inline: 0;
+		margin-block: 0;
+		border-top: var(--panel-thickness, var(--thickness, 0)) solid var(--color-vivid);
+		padding-block: var(--panel-padding, var(--space-xxlarge));
+		padding-inline: var(--space-normal);
+
+		/* Style — `bg=light / text=dark` (2-step pair). */
+		background-color: var(--color-light);
+		color: var(--color-dark);
+	}
+}

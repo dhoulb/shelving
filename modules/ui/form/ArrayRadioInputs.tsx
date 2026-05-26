@@ -1,7 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
 import type { ImmutableArray } from "../../util/array.js";
 import { formatValue } from "../../util/format.js";
-import { Flex } from "../variant/Flex.js";
+import { Flex } from "../style/Flex.js";
 import type { ValueInputProps } from "./Input.js";
 import { RadioInput } from "./RadioInput.js";
 

@@ -1,0 +1,30 @@
+@import "base.css";
+
+@layer variants {
+	/* Gap variants — sets `gap` directly. Used by flex/grid layouts and by Lists/Definitions for the */
+	/* spacing between their items. */
+	.gap-none {
+		gap: 0;
+	}
+	.gap-xxsmall {
+		gap: var(--space-xxsmall);
+	}
+	.gap-xsmall {
+		gap: var(--space-xsmall);
+	}
+	.gap-small {
+		gap: var(--space-small);
+	}
+	.gap-normal {
+		gap: var(--space-normal);
+	}
+	.gap-large {
+		gap: var(--space-large);
+	}
+	.gap-xlarge {
+		gap: var(--space-xlarge);
+	}
+	.gap-xxlarge {
+		gap: var(--space-xxlarge);
+	}
+}
