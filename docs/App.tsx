@@ -3,7 +3,7 @@ import { DocumentationPage } from "../modules/ui/docs/DocumentationPage.js";
 import { MetaContext } from "../modules/ui/misc/MetaContext.js";
 import { Navigation } from "../modules/ui/router/Navigation.js";
 import { TreeApp } from "../modules/ui/tree/TreeApp.js";
-import { TreePageMapping } from "../modules/ui/tree/TreePage.js";
+import { TreeRouterMapping } from "../modules/ui/tree/TreeRouter.js";
 import { createMeta, type PossibleMeta } from "../modules/ui/util/meta.js";
 import type { TreeElement } from "../modules/util/element.js";
 
@@ -29,9 +29,9 @@ export function App({ tree, meta }: AppProps): ReactElement {
 	return (
 		<MetaContext value={createMeta(meta)}>
 			<Navigation>
-				<TreePageMapping mapping={{ "tree-file": DocumentationPage }}>
+				<TreeRouterMapping mapping={{ "tree-file": DocumentationPage }}>
 					<TreeApp tree={tree} />
-				</TreePageMapping>
+				</TreeRouterMapping>
 			</Navigation>
 		</MetaContext>
 	);
