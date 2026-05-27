@@ -21,8 +21,8 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
  * TODO: switch click/popstate handling to the browser Navigation API when broadly supported.
  */
 export function Navigation({ children, ...meta }: NavigationProps): ReactElement {
-	const { url, root: base, ...merged } = requireMeta(meta);
-	const nav = useInstance(NavigationStore, url, base);
+	const { url, root, ...merged } = requireMeta(meta);
+	const nav = useInstance(NavigationStore, url, root);
 	useStore(nav);
 
 	useEffect(() => {
@@ -36,8 +36,8 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 				if (anchor instanceof HTMLAnchorElement && anchor.origin === window.location.origin && !anchor.hasAttribute("download")) {
 					e.preventDefault();
 					nav.forward(anchor.href);
-					return false;
-				} // `return false` stops iOS web app opening every link in a new window.
+					return false; // `return false` stops iOS web app opening every link in a new window.
+				}
 			}
 		};
 		const onPopState = () => {
@@ -55,7 +55,7 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 
 	return (
 		<NavigationContext value={nav}>
-			<MetaContext value={{ root: base, url: nav.value, ...merged }}>{children}</MetaContext>
+			<MetaContext value={{ url: nav.value, root, ...merged }}>{children}</MetaContext>
 		</NavigationContext>
 	);
 }
