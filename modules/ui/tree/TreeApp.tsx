@@ -3,17 +3,17 @@ import type { TreeElement } from "../../util/index.js";
 import { App } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { PageCatcher } from "../misc/Catcher.js";
-import { Router } from "../router/Router.js";
 import type { Routes } from "../router/Routes.js";
 import type { PossibleMeta } from "../util/index.js";
-import type { OptionalChildProps } from "../util/props.js";
-import { TreePage } from "./TreePage.js";
+import { TreeRouter } from "./TreeRouter.js";
 import { TreeSidebar } from "./TreeSidebar.js";
 
-export interface TreeAppProps extends PossibleMeta, OptionalChildProps {
+export interface TreeAppProps extends PossibleMeta {
 	/** The tree elements to display. */
 	tree: TreeElement;
-	/** Additional routes (merged with the default tree route). */
+	/**
+	 * Additional routes.
+	 */
 	routes?: Routes | undefined;
 }
 
@@ -25,18 +25,13 @@ export interface TreeAppProps extends PossibleMeta, OptionalChildProps {
  * - Element rendering uses the default mappings on `<TreePage>`, `<TreeMenu>`, `<TreeCards>`.
  *   Override by wrapping with `<TreePageMapping>`, `<TreeMenuMapping>`, or `<TreeCardMapping>`.
  */
-export function TreeApp({ tree, routes = {}, children, ...appProps }: TreeAppProps): ReactElement {
-	const allRoutes: Routes = {
-		...routes,
-		"/": () => <TreePage tree={tree} />,
-		// `{...path}` is a named catchall — captures any remaining segments (including empty) as `path`.
-		"/{...path}": ({ path = "" }) => <TreePage path={`/${path}`} tree={tree} />,
-	};
-
+export function TreeApp({ tree, routes: extraRoutes, ...meta }: TreeAppProps): ReactElement {
 	return (
-		<App {...appProps}>
+		<App {...meta}>
 			<PageCatcher>
-				<SidebarLayout sidebar={<TreeSidebar tree={tree} />}>{children ?? <Router routes={allRoutes} />}</SidebarLayout>
+				<SidebarLayout sidebar={<TreeSidebar tree={tree} />}>
+					<TreeRouter tree={tree} />
+				</SidebarLayout>
 			</PageCatcher>
 		</App>
 	);

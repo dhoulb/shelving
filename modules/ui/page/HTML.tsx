@@ -11,12 +11,12 @@ export interface HTMLProps extends PossibleMeta, ChildProps {}
  */
 export function HTML({ children, ...meta }: HTMLProps): ReactElement {
 	const merged = requireMeta(meta);
-	const { language, root: base, app } = merged;
+	const { language, root, app } = merged;
 	return (
 		<html lang={language}>
 			<head>
 				<meta charSet="utf-8" />
-				{base && <base href={base.href} />}
+				{root && <base href={root.href} />}
 				{app && <title>{app}</title>}
 			</head>
 			<body>

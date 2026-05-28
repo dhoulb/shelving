@@ -13,11 +13,11 @@ import { PackageExtractor } from "./PackageExtractor.js";
 async function _setup(
 	layout: (root: string) => Promise<void>,
 ): Promise<{ root: AbsolutePath; tree: DirectoryElement; cleanup: () => Promise<void> }> {
-	const root = await mkdtemp(join(tmpdir(), "shelving-pkgexttest-"));
+	const root = (await mkdtemp(join(tmpdir(), "shelving-pkgexttest-"))) as AbsolutePath;
 	await layout(root);
-	const tree = await new IndexFileExtractor(new MergingExtractor(new DirectoryExtractor())).extract(root as AbsolutePath);
+	const tree = await new IndexFileExtractor(new MergingExtractor(new DirectoryExtractor())).extract(root);
 	return {
-		root: root as AbsolutePath,
+		root,
 		tree,
 		cleanup: () => rm(root, { recursive: true, force: true }),
 	};
