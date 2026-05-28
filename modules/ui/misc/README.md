@@ -111,7 +111,7 @@ const [TreeMapping, TreeMapper] = createMapper({
 
 `requireMeta` reads the context and optionally merges in override props — use this in components that need to resolve URLs against the current page.
 
-`requireMetaParams` extracts route placeholder and query params from the current URL.
+`requireMetaURL` resolves the current `url` against the meta `root` and returns the meta extended with the site-root-relative `path` and the extracted query `params`. Throws if `url` is unset or sits on a different origin to `root`.
 
 ## See also
 

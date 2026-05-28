@@ -26,7 +26,7 @@ describe("TreeRouter", () => {
 	test("card links include an APP_URL subfolder exactly once", () => {
 		const html = renderToStaticMarkup(
 			<MetaContext value={createMeta({ root: "http://x.com/sub/", url: "./util" })}>
-				<TreeRouter path="/util" tree={tree} />
+				<TreeRouter tree={tree} />
 			</MetaContext>,
 		);
 		expect(html).toContain('href="http://x.com/sub/util/array"');
@@ -36,7 +36,7 @@ describe("TreeRouter", () => {
 	test("root page card links include an APP_URL subfolder exactly once", () => {
 		const html = renderToStaticMarkup(
 			<MetaContext value={createMeta({ root: "http://x.com/sub/", url: "./" })}>
-				<TreeRouter path="/" tree={tree} />
+				<TreeRouter tree={tree} />
 			</MetaContext>,
 		);
 		expect(html).toContain('href="http://x.com/sub/util"');

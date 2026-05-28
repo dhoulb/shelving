@@ -1,15 +1,16 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { RequiredError } from "../../error/RequiredError.js";
 import { createMeta } from "../util/meta.js";
-import { getMetaPath, MetaContext } from "./MetaContext.js";
+import { MetaContext, requireMetaURL } from "./MetaContext.js";
 
-/** Render `getMetaPath()` from inside a component so its `use(MetaContext)` call is valid. */
+/** Render `requireMetaURL().path` from inside a component so its `use(MetaContext)` call is valid. */
 function Probe(): ReactNode {
-	return getMetaPath() ?? "none";
+	return requireMetaURL().path;
 }
 
-describe("getMetaPath", () => {
+describe("requireMetaURL", () => {
 	test("returns the page path relative to the site root", () => {
 		const html = renderToStaticMarkup(
 			<MetaContext value={createMeta({ root: "http://x.com/sub/", url: "./util/array" })}>
@@ -28,16 +29,17 @@ describe("getMetaPath", () => {
 		expect(html).toBe("/");
 	});
 
-	test("returns undefined when url or root is unset", () => {
-		expect(renderToStaticMarkup(<Probe />)).toBe("none");
+	test("throws RequiredError when url is unset", () => {
+		expect(() => renderToStaticMarkup(<Probe />)).toThrow(RequiredError);
 	});
 
-	test("returns undefined when url and root are on different origins", () => {
-		const html = renderToStaticMarkup(
-			<MetaContext value={createMeta({ root: "http://x.com/", url: "http://y.com/foo" })}>
-				<Probe />
-			</MetaContext>,
-		);
-		expect(html).toBe("none");
+	test("throws RequiredError when url and root are on different origins", () => {
+		expect(() =>
+			renderToStaticMarkup(
+				<MetaContext value={createMeta({ root: "http://x.com/", url: "http://y.com/foo" })}>
+					<Probe />
+				</MetaContext>,
+			),
+		).toThrow(RequiredError);
 	});
 });
