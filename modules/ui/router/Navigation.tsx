@@ -1,10 +1,10 @@
-import { Fragment, type ReactElement, useEffect } from "react";
+import { type ReactElement, useEffect } from "react";
 import { useInstance } from "../../react/useInstance.js";
 import { useStore } from "../../react/useStore.js";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/index.js";
-import type { ChildProps, OptionalChildProps } from "../util/props.js";
-import { NavigationContext, requireNavigation } from "./NavigationContext.js";
+import type { OptionalChildProps } from "../util/props.js";
+import { NavigationContext } from "./NavigationContext.js";
 import { NavigationStore } from "./NavigationStore.js";
 
 export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
@@ -58,15 +58,4 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 			<MetaContext value={{ url: nav.value, root, ...merged }}>{children}</MetaContext>
 		</NavigationContext>
 	);
-}
-
-export interface NavigationIsolateProps extends ChildProps {}
-
-/**
- * Force a full remount of children whenever the navigation URL changes.
- * - Use to reset stateful sub-trees on navigation.
- */
-export function NavigationIsolate({ children }: NavigationIsolateProps): ReactElement {
-	const nav = useStore(requireNavigation());
-	return <Fragment key={nav.href}>{children}</Fragment>;
 }
