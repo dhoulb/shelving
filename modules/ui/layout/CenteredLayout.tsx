@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { MetaPathIsolate } from "../misc/MetaContext.js";
+import { requireMetaURL } from "../misc/MetaContext.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import CENTERED_LAYOUT_CSS from "./CenteredLayout.module.css";
@@ -14,10 +14,11 @@ export interface CenteredLayoutProps extends OptionalChildProps {
  * - Used for e.g. login/register/error/form pages where the content is the only focus.
  */
 export function CenteredLayout({ children, fullWidth = false }: CenteredLayoutProps): ReactElement {
+	const { path } = requireMetaURL();
 	return (
-		<main className={getClass(CENTERED_LAYOUT_CSS.main, LAYOUT_CLASS)}>
+		<main key={path} className={getClass(CENTERED_LAYOUT_CSS.main, LAYOUT_CLASS)}>
 			<div className={CENTERED_LAYOUT_CSS.mainInner} style={fullWidth ? { maxWidth: "none" } : undefined}>
-				<MetaPathIsolate>{children}</MetaPathIsolate>
+				{children}
 			</div>
 		</main>
 	);

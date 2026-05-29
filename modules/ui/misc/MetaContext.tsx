@@ -1,11 +1,10 @@
-import { createContext, Fragment, type ReactElement, use } from "react";
+import { createContext, use } from "react";
 import { RequiredError } from "../../error/RequiredError.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { getURIParams, type URIParams } from "../../util/uri.js";
 import { type ImmutableURL, matchURLPrefix } from "../../util/url.js";
 import { type Meta, mergeMeta, type PossibleMeta } from "../util/meta.js";
-import type { ChildProps } from "../util/props.js";
 
 /** Context to store the `Config` object. */
 export const MetaContext = createContext<Meta>({});
@@ -45,14 +44,4 @@ export function requireMetaURL(meta?: PossibleMeta, caller: AnyCaller = requireM
 	if (!path) throw new RequiredError("Meta URL and meta root must share an origin", { url, root, caller });
 	const params = getURIParams(url, caller);
 	return { ...combined, url, root, path, params };
-}
-
-/**
- * Force a full remount of children whenever the meta URL `path` changes.
- * - Wraps `children` in a `<Fragment key={path}>` so React unmounts the previous subtree and mounts a fresh one on every navigation.
- * - Use around the main content area of a layout to reset scroll position, focus, and any other DOM state that lives on the underlying nodes.
- */
-export function MetaPathIsolate({ children }: ChildProps): ReactElement {
-	const { path } = requireMetaURL();
-	return <Fragment key={path}>{children}</Fragment>;
 }

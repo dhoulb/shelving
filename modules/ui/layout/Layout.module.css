@@ -40,7 +40,6 @@
 		width: 100dvw;
 		overflow: hidden;
 		overflow-wrap: break-word; /* Break overlong words only as a last resort; `anywhere` would also break mid-word to fit narrow table/flex columns. */
-		overscroll-behavior: none;
 	}
 
 	body:has(.layout) {
@@ -61,6 +60,7 @@
 		/* Own the page's vertical scroll. */
 		overflow: hidden auto;
 		scroll-behavior: smooth;
-		overscroll-behavior: none;
+		/* `contain` keeps the elastic bounce on the layout itself but stops the scroll chain leaking up to the locked body. */
+		overscroll-behavior: contain;
 	}
 }
