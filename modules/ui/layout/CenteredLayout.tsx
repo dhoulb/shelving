@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { MetaPathIsolate } from "../misc/MetaContext.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import CENTERED_LAYOUT_CSS from "./CenteredLayout.module.css";
@@ -16,7 +17,7 @@ export function CenteredLayout({ children, fullWidth = false }: CenteredLayoutPr
 	return (
 		<main className={getClass(CENTERED_LAYOUT_CSS.main, LAYOUT_CLASS)}>
 			<div className={CENTERED_LAYOUT_CSS.mainInner} style={fullWidth ? { maxWidth: "none" } : undefined}>
-				{children}
+				<MetaPathIsolate>{children}</MetaPathIsolate>
 			</div>
 		</main>
 	);

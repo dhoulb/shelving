@@ -2,6 +2,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { type ReactElement, type ReactNode, use, useEffect, useState } from "react";
 import { useStore } from "../../react/useStore.js";
 import { Button } from "../form/Button.js";
+import { MetaPathIsolate } from "../misc/MetaContext.js";
 import { NavigationContext } from "../router/NavigationContext.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
@@ -44,7 +45,9 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 					{open ? <XMarkIcon /> : <Bars3Icon />}
 				</Button>
 			</div>
-			<div className={SIDEBAR_LAYOUT_CSS.contentInner}>{children}</div>
+			<div className={SIDEBAR_LAYOUT_CSS.contentInner}>
+				<MetaPathIsolate>{children}</MetaPathIsolate>
+			</div>
 		</div>
 	);
 	const overlayEl = open && (
