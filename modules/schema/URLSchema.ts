@@ -1,4 +1,5 @@
 import { formatURL } from "../util/format.js";
+import { sanitizeWord } from "../util/string.js";
 import { HTTP_SCHEMES, type URISchemes } from "../util/uri.js";
 import { getURL, type URLString } from "../util/url.js";
 import { NULLABLE } from "./NullableSchema.js";
@@ -39,6 +40,10 @@ export class URLSchema extends StringSchema {
 		if (!url) throw str ? `Invalid ${this.one} format` : "Required";
 		if (this.schemes && !this.schemes.includes(url.protocol)) throw `Invalid ${this.one} scheme`;
 		return url.href;
+	}
+	override sanitize(str: string): string {
+		// URLs never contain whitespace (a real space must be `%20`-encoded), so strip it entirely.
+		return sanitizeWord(str);
 	}
 	override format(value: string): string {
 		return formatURL(value, this.base, this.format);
