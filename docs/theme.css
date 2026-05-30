@@ -21,12 +21,16 @@
 	--color-quiet: var(--vivid-purple);
 
 	/*
-	* Cards — a soft mid peach with no border. Card now exposes a 5-step palette
-	* (`--card-color-light/vivid/dark/black/white`); the surface is its `light` step and the border is
-	* suppressed via `--card-thickness`. Content nested inside (code chips, tags) falls back to the
-	* prose-level `--color-surface` above, since the old card-specific nested surface step is gone.
+	* Cards — a soft peach surface with no border of their own (`--card-thickness: 0`). All three inner
+	* scale steps are set, not just `light`, so components nested inside a card (Preformatted, Tag,
+	* Notice…) inherit a coherent peach ramp instead of falling back to the grey page defaults. Each
+	* rebinds `--color-light/vivid/dark` from `var(--<name>-color-*, inherit)`, and that `inherit`
+	* resolves to the card's values: `light` = surface, `vivid` = border/accent (e.g. a nested code
+	* block's border), `dark` = text. `black`/`white` deliberately stay the page extremes.
 	*/
 	--card-color-light: color-mix(in srgb, var(--vivid-orange) 14%, white);
+	--card-color-vivid: color-mix(in srgb, var(--vivid-orange) 50%, white);
+	--card-color-dark: color-mix(in srgb, var(--vivid-orange) 30%, black);
 	--card-thickness: 0;
 
 	/* Interactive colours — brighter and more characterful, straight from the palette. */
