@@ -1,4 +1,4 @@
-import { MethodNotAllowedError, NotFoundError } from "../../error/RequestError.js";
+import { MethodNotAllowedError, NotFoundError, UnprocessableError } from "../../error/RequestError.js";
 import { ValueError } from "../../error/ValueError.js";
 import { requireDictionary } from "../../util/dictionary.js";
 import type { AnyCaller } from "../../util/function.js";
@@ -95,7 +95,17 @@ async function _handleEndpoint<P, R, C>(
 	const content = await parseRequestBody(request, caller);
 	const unsafePayload = content === undefined ? params : isPlainObject(content) ? { ...content, ...params } : content;
 
-	const payload = endpoint.payload.validate(unsafePayload);
+	// Validate the payload, upgrading the bare-string failure into a structured error that carries the received payload.
+	// This is the only place that holds both the parsed payload and the knowledge that validation failed, so consumers' error logging can surface what was actually sent.
+	// Note: `received` holds the unvalidated payload, which often contains personal data — it only reaches the client via `getErrorResponse(thrown, debug)` when `debug` is on.
+	let payload: P;
+	try {
+		payload = endpoint.payload.validate(unsafePayload);
+	} catch (thrown) {
+		if (typeof thrown === "string") throw new UnprocessableError(thrown, { received: unsafePayload, endpoint, cause: thrown, caller });
+		throw thrown;
+	}
+
 	const unsafeResult = await callback(payload, request, context);
 	if (unsafeResult instanceof Response) return unsafeResult;
 

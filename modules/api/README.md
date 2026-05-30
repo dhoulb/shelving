@@ -92,6 +92,8 @@ export default {
 }
 ```
 
+When payload validation fails, `handleEndpoints()` throws an [`UnprocessableError`](/error/RequestError) (HTTP `422`) whose `message` is the human-readable validation string and whose `received` field carries the unvalidated payload. This lets a central catch block log _what_ was actually sent without each handler re-parsing the request body. Because `received` often contains personal data, it only reaches the client through `getErrorResponse(thrown, debug)` when `debug` is enabled — redact it before logging if that matters for your app.
+
 ### Testing with `MockEndpointAPIProvider`
 
 Wires your handler array directly into a mock transport so you can test client and server code together without a real network:

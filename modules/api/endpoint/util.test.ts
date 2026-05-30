@@ -1,5 +1,16 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, handleEndpoints, INTEGER, MethodNotAllowedError, NotFoundError, POST, STRING, ValueError } from "../../index.js";
+import {
+	DATA,
+	GET,
+	handleEndpoints,
+	INTEGER,
+	MethodNotAllowedError,
+	NotFoundError,
+	POST,
+	STRING,
+	UnprocessableError,
+	ValueError,
+} from "../../index.js";
 
 const PAYLOAD = DATA({ id: INTEGER });
 
@@ -114,6 +125,30 @@ describe("handleEndpoints()", () => {
 			expect.unreachable();
 		} catch (thrown) {
 			expect(thrown).toBeInstanceOf(ValueError);
+		}
+	});
+
+	test("throws UnprocessableError carrying the received payload for invalid payloads", async () => {
+		const endpoint = POST("/test/{id}", DATA({ id: INTEGER, name: STRING }), STRING);
+		const handler = endpoint.handler(async ({ id, name }) => `${id}:${name}`);
+		const request = new Request("https://x.com/v1/test/456", {
+			method: "POST",
+			body: JSON.stringify({ name: ["not", "a", "string"] }),
+			headers: { "Content-Type": "application/json" },
+		});
+		try {
+			await handleEndpoints("https://x.com/v1/", [handler], request);
+			expect.unreachable();
+		} catch (thrown) {
+			expect(thrown).toBeInstanceOf(UnprocessableError);
+			if (thrown instanceof UnprocessableError) {
+				expect(thrown.code).toBe(422);
+				// The validation message string is preserved for the consumer/UI.
+				expect(typeof thrown.message).toBe("string");
+				expect(thrown.message).toContain("name");
+				// The received (unvalidated) payload is attached so failure logging can show what was sent.
+				expect(thrown.received).toEqual({ name: ["not", "a", "string"], id: "456" });
+			}
 		}
 	});
 
