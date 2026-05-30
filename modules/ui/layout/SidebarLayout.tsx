@@ -1,8 +1,7 @@
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
-import { type ReactElement, type ReactNode, use, useEffect, useState } from "react";
-import { useStore } from "../../react/useStore.js";
+import { type ReactElement, type ReactNode, useEffect, useState } from "react";
 import { Button } from "../form/Button.js";
-import { NavigationContext } from "../router/NavigationContext.js";
+import { requireMetaURL } from "../misc/MetaContext.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { LAYOUT_CLASS } from "./Layout.js";
@@ -24,13 +23,13 @@ export interface SidebarLayoutProps extends OptionalChildProps {
  * - Use the `--sidebar-layout-width`, `--sidebar-layout-bg`, `--sidebar-layout-border`, and `--sidebar-layout-color-border` custom properties to override defaults.
  */
 export function SidebarLayout({ sidebar, children, right = false }: SidebarLayoutProps): ReactElement {
+	const { path } = requireMetaURL();
 	const [open, setOpen] = useState(false);
 
 	// Close the drawer whenever navigation changes the URL — covers tapping a link inside the sidebar.
-	const href = useStore(use(NavigationContext))?.href;
 	useEffect(() => {
-		if (href) setOpen(false);
-	}, [href]);
+		if (path) setOpen(false);
+	}, [path]);
 
 	const sidebarEl = (
 		<nav key="sidebar" className={getClass(SIDEBAR_LAYOUT_CSS.sidebar, open && SIDEBAR_LAYOUT_CSS.open)}>
@@ -38,7 +37,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 		</nav>
 	);
 	const contentEl = (
-		<div key="content" className={getClass(LAYOUT_CLASS, SIDEBAR_LAYOUT_CSS.content)}>
+		<div key={path} className={getClass(LAYOUT_CLASS, SIDEBAR_LAYOUT_CSS.content)}>
 			<div className={SIDEBAR_LAYOUT_CSS.toggle}>
 				<Button fit title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
 					{open ? <XMarkIcon /> : <Bars3Icon />}

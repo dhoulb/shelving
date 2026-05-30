@@ -61,7 +61,7 @@ function _matchRoute(
 		if (typeof Route !== "function") return Route;
 
 		// Component — render with merged URL query params and route placeholders as props (placeholders win on conflict).
-		<Route key={path} {...meta.params} {...placeholders} />;
+		return <Route key={path} {...meta.params} {...placeholders} />;
 	}
 
 	// No match, try the fallback.
