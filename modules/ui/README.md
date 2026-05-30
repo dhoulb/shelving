@@ -155,6 +155,32 @@ Other tokens (`--*-padding`, `--*-spacing`, `--*-radius`, `--*-font`, `--*-size`
 
 This split is deliberate. The rebind is the right tool when an identity needs to propagate; for everything else, plain CSS inheritance (or no inheritance at all) is the right tool.
 
+### Retheming via the global scale
+
+The rebind pattern has a powerful consequence: because every surface component rebinds the scale from `inherit`, the page-level `:root` scale is the **cascade root they all fall back to**. Retinting it at `:root` repaints every surface component at once — and *identically*, so a standalone `<Preformatted>` matches one nested in a `<Card>`, and both match the `<Card>` itself. This is almost always preferable to overriding each component's own hook (`--card-color-light`, `--preformatted-color-light`, …) one by one, which only themes that single component and leaves its siblings on the grey defaults.
+
+A theme (e.g. `docs/theme.css`) repoints the scale at a hue family:
+
+```css
+:root {
+  /* Move the vivid anchor; the --light-*/--dark-* family derives from it in base.css. */
+  --vivid-orange: #ff7a1a;
+
+  /* Point the page scale at the orange family — every surface component inherits this. */
+  --color-light: var(--light-orange); /* surfaces (Card, Preformatted, chips) */
+  --color-vivid: var(--vivid-orange); /* borders and accents */
+  --color-dark: var(--dark-orange); /* text */
+  /* --color-black / --color-white stay the page extremes. */
+}
+```
+
+Two rules keep this clean:
+
+- **Move the anchor, not just the scale.** The `--light-<hue>` / `--dark-<hue>` tokens are defined in `base.css` as expressions over `--vivid-<hue>`, resolved lazily at use-time. Overriding `--vivid-orange` at `:root` re-tints the whole orange family for free, so `var(--light-orange)` and `var(--dark-orange)` stay coherent with the new anchor.
+- **Pin the exceptions back.** A component that should resist the global retint sets its own hook. The docs site keeps Buttons purple while everything else goes peach by pinning `--button-color-vivid: var(--vivid-purple)` — Button rebinds from the scale like everything else, so without the pin it would inherit the page orange too.
+
+Set the global scale to theme everything; set a per-component hook only for the deliberate exceptions.
+
 ### How `:first-child` / `:last-child` margin overrides work
 
 Every block-level component zeros its outer margins when it's the first or last child of its container — otherwise a Heading at the top of a Card would leave a strip of unwanted space. These rules live in `@layer overrides`, which beats every other layer including `variants`, so a `<Card space-large>` still collapses its abutting edges correctly.

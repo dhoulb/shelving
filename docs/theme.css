@@ -1,47 +1,42 @@
 /*
  * Documentation site theme.
  *
- * A token-only overlay on top of the base design tokens defined by `style/base.css`. Only CSS custom
- * properties (the `--variable` design tokens) are set here — never component selectors — so the docs
- * site gets a brighter, more colourful personality without forking a single component's styling.
+ * A token-only overlay on the base design tokens from `style/base.css`. Only CSS custom properties are
+ * set here at `:root` — never component selectors — so the docs site gets a warm peach personality
+ * purely through the cascade. Imported last in `client.tsx`, after the base tokens.
  *
- * Plain CSS, no layer participation: token overrides propagate via inheritance, not cascade competition.
- * Imported last in `client.tsx` so these `:root` declarations land after the base tokens and win on
- * source order (both are at `:root` specificity, both unlayered).
+ * Strategy: retheme the *global* 5-step colour scale rather than individual components. Every surface
+ * component (Card, Preformatted, Panel, Notice, Tag, Code, …) rebinds the scale from `inherit` (see
+ * `modules/ui/README.md` → "Retheming via the global scale"), so pointing the page-level
+ * `--color-light / --color-vivid / --color-dark` at the orange family repaints all of them at once —
+ * and identically, so a Preformatted matches a Card whether it's nested in one or standing alone.
  */
 :root {
-	/* Surfaces — warm cream page; soft peach `--color-surface` for prose-level chips, tags and code. */
-	--color-bg: color-mix(in srgb, var(--vivid-orange) 6%, white);
-	--color-surface: color-mix(in srgb, var(--vivid-orange) 13%, white);
+	/* Brand hues. The `--light-*` / `--dark-*` family members derive from these in `base.css`, so the
+	   whole orange/purple ramp re-tints automatically when the vivid anchor moves. */
+	--vivid-orange: #ff7a1a; /* warm brand anchor — surfaces land as a soft peach via --light-orange */
+	--vivid-purple: #7c3aed; /* brand violet — drives buttons */
 
-	/* Borders keep a gentle purple tint for tables, inputs and inline surfaces. */
-	--color-border: color-mix(in srgb, var(--vivid-purple) 22%, white);
+	/* Page colour scale → orange family. This is the cascade root every surface component inherits, so
+	   Cards, Preformatteds, Panels, Tags, Code chips, etc. all paint from the same peach ramp. */
+	--color-light: var(--light-orange); /* surfaces — Card / Preformatted / chip backgrounds */
+	--color-vivid: var(--vivid-orange); /* borders and accents */
+	--color-dark: var(--dark-orange); /* text */
+	/* --color-black / --color-white deliberately stay the page extremes (black text, white page). */
 
-	/* Quiet text — table headers, captions, definition labels — picks up the same purple personality. */
-	--color-quiet: var(--vivid-purple);
-
-	/*
-	* Cards — a soft peach surface with no border of their own (`--card-thickness: 0`). All three inner
-	* scale steps are set, not just `light`, so components nested inside a card (Preformatted, Tag,
-	* Notice…) inherit a coherent peach ramp instead of falling back to the grey page defaults. Each
-	* rebinds `--color-light/vivid/dark` from `var(--<name>-color-*, inherit)`, and that `inherit`
-	* resolves to the card's values: `light` = surface, `vivid` = border/accent (e.g. a nested code
-	* block's border), `dark` = text. `black`/`white` deliberately stay the page extremes.
-	*/
-	--card-color-light: color-mix(in srgb, var(--vivid-orange) 14%, white);
-	--card-color-vivid: color-mix(in srgb, var(--vivid-orange) 50%, white);
-	--card-color-dark: color-mix(in srgb, var(--vivid-orange) 30%, black);
-	--card-thickness: 0;
-
-	/* Interactive colours — brighter and more characterful, straight from the palette. */
+	/* Interactive accents. */
 	--color-link: var(--vivid-purple);
 	--color-focus: var(--vivid-pink);
 
+	/* Cards and Preformatteds: borderless, so the peach surfaces read as flat tinted blocks. Colour
+	   itself now comes from the global scale above, so the two match exactly. */
+	--card-thickness: 0;
+	--preformatted-thickness: 0;
+
 	/*
-	 * Buttons — bold purple blocks with white content; the site's signature interactive element.
-	 * Button's palette drives the `strong` variant as `bg=vivid / text=white`, so the brand purple
-	 * goes on `--button-color-vivid` (also the default variant's border/label) and white on
-	 * `--button-color-white`.
+	 * Buttons stay purple while everything else goes peach. Button also rebinds from the scale, so with
+	 * the page now orange it would inherit orange too — pin its `vivid` step back to the brand purple.
+	 * The `strong` variant paints bg=vivid (purple) / text=white.
 	 */
 	--button-color-vivid: var(--vivid-purple);
 	--button-color-white: var(--color-white);
