@@ -27,9 +27,14 @@
 	--color-focus: var(--vivid-pink);
 
 	/*
-	 * Buttons stay purple. Button rebinds its `vivid` step from the scale, so pin it to the brand
-	 * purple — that drives the `strong` variant's background and the default variant's border/label.
+	 * Buttons stay purple. Button rebinds the whole scale from its own hooks, so pin every step it
+	 * paints from — otherwise unpinned steps inherit the page's peach `--color-*`. The default variant
+	 * paints `bg=light / text+border=vivid`; the `strong` variant paints `bg=vivid / text=white`. So:
+	 *   - light → light-purple surface (default button background)
+	 *   - vivid → brand purple (default border/label, strong background)
+	 *   - white → label on the strong variant
 	 */
+	--button-color-light: var(--light-purple);
 	--button-color-vivid: var(--vivid-purple);
 	--button-color-white: var(--color-white);
 

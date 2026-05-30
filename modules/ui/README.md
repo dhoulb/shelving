@@ -184,7 +184,7 @@ The docs theme wants peach surfaces with normal near-black text, so it retints *
 Two more rules keep a theme clean:
 
 - **If you do move a whole hue, move the anchor.** The `--light-<hue>` / `--dark-<hue>` tokens are defined in `base.css` as expressions over `--vivid-<hue>`, resolved lazily at use-time. Overriding `--vivid-orange` at `:root` re-tints the whole orange family for free, so `var(--light-orange)` / `var(--dark-orange)` stay coherent.
-- **Pin the exceptions back.** A component that should resist a global retint sets its own hook. The docs site keeps Buttons purple by pinning `--button-color-vivid: var(--vivid-purple)` — Button rebinds from the scale like everything else, so without the pin it would inherit the page colour too.
+- **Pin the exceptions back — and pin *every* step the component paints.** A component that should resist a global retint sets its own hooks. But a component rebinds the *whole* scale, and any step you leave unpinned still inherits the page colour. The docs site keeps Buttons purple by pinning both steps the default variant paints — `--button-color-light: var(--light-purple)` (background) and `--button-color-vivid: var(--vivid-purple)` (border/label) — plus `--button-color-white` for the `strong` label. Pinning only `vivid` would leave the default button's `bg=light` background inheriting the page peach: a purple-bordered peach button. Check which steps the variant in use actually paints (default = `light`+`vivid`, `strong` = `vivid`+`white`) and pin all of them.
 
 ### How `:first-child` / `:last-child` margin overrides work
 
