@@ -1,42 +1,34 @@
 /*
  * Documentation site theme.
  *
- * A token-only overlay on the base design tokens from `style/base.css`. Only CSS custom properties are
- * set here at `:root` — never component selectors — so the docs site gets a warm peach personality
- * purely through the cascade. Imported last in `client.tsx`, after the base tokens.
+ * Token-only overlay on the base design tokens from `style/base.css`, set at `:root` (never component
+ * selectors). Imported last in `client.tsx`, after the base tokens.
  *
- * Strategy: retheme the *global* 5-step colour scale rather than individual components. Every surface
- * component (Card, Preformatted, Panel, Notice, Tag, Code, …) rebinds the scale from `inherit` (see
- * `modules/ui/README.md` → "Retheming via the global scale"), so pointing the page-level
- * `--color-light / --color-vivid / --color-dark` at the orange family repaints all of them at once —
- * and identically, so a Preformatted matches a Card whether it's nested in one or standing alone.
+ * Surfaces-only peach: we retint just the `--color-light` surface step of the global scale. Every
+ * surface component (Card, Preformatted, Panel, Tag, Code, …) inherits it for its background, so they
+ * all go peach and match each other — nested or standalone.
+ *
+ * Deliberately NOT retinted: `--color-dark` (text) and `--color-vivid` (borders/accents). The page
+ * `body` paints its baseline text with `--color-dark`, and all body copy (titles, headings, prose,
+ * lists) inherits that — so moving it would recolour every word on the page, not just text on cards.
+ * Keeping it at the default leaves page and card text the normal near-black.
  */
 :root {
-	/* Brand hues. The `--light-*` / `--dark-*` family members derive from these in `base.css`, so the
-	   whole orange/purple ramp re-tints automatically when the vivid anchor moves. */
-	--vivid-orange: #ff7a1a; /* warm brand anchor — surfaces land as a soft peach via --light-orange */
-	--vivid-purple: #7c3aed; /* brand violet — drives buttons */
+	/* Surfaces → soft peach. Global `--color-light` is the cascade root every surface component inherits
+	   for its background, so Cards, Preformatteds, Tags and Code chips all match. */
+	--color-light: color-mix(in srgb, #ff7a1a 14%, white);
 
-	/* Page colour scale → orange family. This is the cascade root every surface component inherits, so
-	   Cards, Preformatteds, Panels, Tags, Code chips, etc. all paint from the same peach ramp. */
-	--color-light: var(--light-orange); /* surfaces — Card / Preformatted / chip backgrounds */
-	--color-vivid: var(--vivid-orange); /* borders and accents */
-	--color-dark: var(--dark-orange); /* text */
-	/* --color-black / --color-white deliberately stay the page extremes (black text, white page). */
+	/* Cards and Preformatteds borderless, so the peach reads as a flat tinted block. */
+	--card-thickness: 0;
+	--preformatted-thickness: 0;
 
 	/* Interactive accents. */
 	--color-link: var(--vivid-purple);
 	--color-focus: var(--vivid-pink);
 
-	/* Cards and Preformatteds: borderless, so the peach surfaces read as flat tinted blocks. Colour
-	   itself now comes from the global scale above, so the two match exactly. */
-	--card-thickness: 0;
-	--preformatted-thickness: 0;
-
 	/*
-	 * Buttons stay purple while everything else goes peach. Button also rebinds from the scale, so with
-	 * the page now orange it would inherit orange too — pin its `vivid` step back to the brand purple.
-	 * The `strong` variant paints bg=vivid (purple) / text=white.
+	 * Buttons stay purple. Button rebinds its `vivid` step from the scale, so pin it to the brand
+	 * purple — that drives the `strong` variant's background and the default variant's border/label.
 	 */
 	--button-color-vivid: var(--vivid-purple);
 	--button-color-white: var(--color-white);

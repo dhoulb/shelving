@@ -157,29 +157,34 @@ This split is deliberate. The rebind is the right tool when an identity needs to
 
 ### Retheming via the global scale
 
-The rebind pattern has a powerful consequence: because every surface component rebinds the scale from `inherit`, the page-level `:root` scale is the **cascade root they all fall back to**. Retinting it at `:root` repaints every surface component at once — and *identically*, so a standalone `<Preformatted>` matches one nested in a `<Card>`, and both match the `<Card>` itself. This is almost always preferable to overriding each component's own hook (`--card-color-light`, `--preformatted-color-light`, …) one by one, which only themes that single component and leaves its siblings on the grey defaults.
+The rebind pattern has a powerful consequence: because every surface component rebinds the scale from `inherit`, the page-level `:root` scale is the **cascade root they all fall back to**. Retinting a step at `:root` repaints every surface component at once — and *identically*, so a standalone `<Preformatted>` matches one nested in a `<Card>`, and both match the `<Card>` itself. This is almost always preferable to overriding each component's own hook (`--card-color-light`, `--preformatted-color-light`, …) one by one, which only themes that single component and leaves its siblings on the grey defaults.
 
-A theme (e.g. `docs/theme.css`) repoints the scale at a hue family:
+**But retint one step at a time, and know what else reads it.** The global scale isn't surfaces-only — the page baseline reads from it too. In `base.css`:
+
+```css
+body { color: var(--color-dark); background: var(--color-white); }
+```
+
+All body copy (Titles, Headings, Paragraphs, lists) has no `color` of its own; it inherits this baseline. So moving `--color-dark` at `:root` recolours **every word on the page**, not just text sitting on a card. Likewise `--color-vivid` tints borders and accents app-wide. Retint only the step whose reach you actually want:
+
+- `--color-light` — **surfaces** (Card / Preformatted / Tag / Code backgrounds). Safe to retint broadly; nothing paints page text or the page background from it.
+- `--color-vivid` — borders and accents everywhere. Retint only if you want app-wide accent recolouring.
+- `--color-dark` — **the page text colour**, via the `body` baseline above. Retinting this is a whole-page text recolour; usually not what a "themed surfaces" look wants.
+- `--color-black` / `--color-white` — the page extremes (max-contrast text, page background). Leave unless inverting (e.g. dark mode).
+
+The docs theme wants peach surfaces with normal near-black text, so it retints **only** `--color-light`:
 
 ```css
 :root {
-  /* Move the vivid anchor; the --light-*/--dark-* family derives from it in base.css. */
-  --vivid-orange: #ff7a1a;
-
-  /* Point the page scale at the orange family — every surface component inherits this. */
-  --color-light: var(--light-orange); /* surfaces (Card, Preformatted, chips) */
-  --color-vivid: var(--vivid-orange); /* borders and accents */
-  --color-dark: var(--dark-orange); /* text */
-  /* --color-black / --color-white stay the page extremes. */
+  /* Surfaces go peach; text and the page background stay the library defaults. */
+  --color-light: color-mix(in srgb, #ff7a1a 14%, white);
 }
 ```
 
-Two rules keep this clean:
+Two more rules keep a theme clean:
 
-- **Move the anchor, not just the scale.** The `--light-<hue>` / `--dark-<hue>` tokens are defined in `base.css` as expressions over `--vivid-<hue>`, resolved lazily at use-time. Overriding `--vivid-orange` at `:root` re-tints the whole orange family for free, so `var(--light-orange)` and `var(--dark-orange)` stay coherent with the new anchor.
-- **Pin the exceptions back.** A component that should resist the global retint sets its own hook. The docs site keeps Buttons purple while everything else goes peach by pinning `--button-color-vivid: var(--vivid-purple)` — Button rebinds from the scale like everything else, so without the pin it would inherit the page orange too.
-
-Set the global scale to theme everything; set a per-component hook only for the deliberate exceptions.
+- **If you do move a whole hue, move the anchor.** The `--light-<hue>` / `--dark-<hue>` tokens are defined in `base.css` as expressions over `--vivid-<hue>`, resolved lazily at use-time. Overriding `--vivid-orange` at `:root` re-tints the whole orange family for free, so `var(--light-orange)` / `var(--dark-orange)` stay coherent.
+- **Pin the exceptions back.** A component that should resist a global retint sets its own hook. The docs site keeps Buttons purple by pinning `--button-color-vivid: var(--vivid-purple)` — Button rebinds from the scale like everything else, so without the pin it would inherit the page colour too.
 
 ### How `:first-child` / `:last-child` margin overrides work
 
