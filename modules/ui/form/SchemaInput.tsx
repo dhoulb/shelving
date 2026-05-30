@@ -115,7 +115,7 @@ export function BooleanSchemaInput({ schema, value, ...props }: BooleanSchemaInp
 export interface StringSchemaInputProps extends SchemaInputProps<StringSchema, unknown> {}
 
 export function StringSchemaInput({ schema, value, ...props }: StringSchemaInputProps): ReactElement {
-	return <TextInput {...schema} value={getString(value)} {...props} />;
+	return <TextInput {...schema} value={getString(value)} formatter={str => schema.format(schema.sanitize(str))} {...props} />;
 }
 
 export interface ArraySchemaInputProps extends SchemaInputProps<ArraySchema<unknown>, unknown> {}
