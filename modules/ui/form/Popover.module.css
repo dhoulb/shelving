@@ -20,7 +20,7 @@
 		z-index: 1000;
 		max-height: var(--popover-max-height, 30vh);
 		overflow-y: auto;
-		overscroll-behavior: none;
+		overscroll-behavior: contain;
 		border-radius: var(--popover-radius, var(--radius-xsmall));
 		border: var(--popover-border, var(--stroke-normal)) solid var(--popover-color-border, var(--color-vivid));
 		padding: var(--popover-padding, var(--space-small));
