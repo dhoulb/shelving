@@ -1,3 +1,4 @@
+import { sanitizeWord } from "../util/string.js";
 import { NULLABLE } from "./NullableSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
@@ -40,7 +41,8 @@ export class EmailSchema extends StringSchema {
 		});
 	}
 	override sanitize(str: string): string {
-		return super.sanitize(str).toLowerCase();
+		// Email addresses never contain whitespace, so strip it entirely, then lowercase (RFC says addresses should be case-insensitive).
+		return sanitizeWord(str).toLowerCase();
 	}
 }
 
