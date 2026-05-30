@@ -21,22 +21,26 @@
 	--color-quiet: var(--vivid-purple);
 
 	/*
-	* Cards — a soft mid peach with no border. Content nested inside (code chips, tags) uses the
-	* deeper opaque `--card-color-surface`, giving it its own depth distinct from the lighter
-	* prose-level `--color-surface`.
+	* Cards — a soft mid peach with no border. Card now exposes a 5-step palette
+	* (`--card-color-light/vivid/dark/black/white`); the surface is its `light` step and the border is
+	* suppressed via `--card-thickness`. Content nested inside (code chips, tags) falls back to the
+	* prose-level `--color-surface` above, since the old card-specific nested surface step is gone.
 	*/
-	--card-color-bg: color-mix(in srgb, var(--vivid-orange) 14%, white);
-	--card-border: 0;
-	--card-color-surface: color-mix(in srgb, var(--vivid-orange) 21%, white);
+	--card-color-light: color-mix(in srgb, var(--vivid-orange) 14%, white);
+	--card-thickness: 0;
 
 	/* Interactive colours — brighter and more characterful, straight from the palette. */
 	--color-link: var(--vivid-purple);
 	--color-focus: var(--vivid-pink);
 
-	/* Buttons — bold purple blocks with white content; the site's signature interactive element. */
-	--button-color-bg: var(--vivid-purple);
-	--button-color-text: var(--color-white);
-	--button-color-border: var(--vivid-purple);
+	/*
+	 * Buttons — bold purple blocks with white content; the site's signature interactive element.
+	 * Button's palette drives the `strong` variant as `bg=vivid / text=white`, so the brand purple
+	 * goes on `--button-color-vivid` (also the default variant's border/label) and white on
+	 * `--button-color-white`.
+	 */
+	--button-color-vivid: var(--vivid-purple);
+	--button-color-white: var(--color-white);
 
 	/*
 	 * Sidebar navigation — a soft lavender panel with the divider dropped. Inactive links are
