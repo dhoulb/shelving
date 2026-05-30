@@ -10,6 +10,7 @@ import {
 	requireStringLength,
 	sanitizeMultilineText,
 	sanitizeText,
+	sanitizeWord,
 	simplifyString,
 	splitString,
 	THINSP,
@@ -59,6 +60,16 @@ test("requireStringLength()", () => {
 	expect(() => requireStringLength("abcde", 0, 3)).toThrow(/characters/i);
 });
 
+describe("sanitizeWord()", () => {
+	test("Strip all whitespace entirely", () => {
+		expect(sanitizeWord("aaa\t\t\t   \r\r\rbbb")).toBe("aaabbb");
+		expect(sanitizeWord("  a b c  ")).toBe("abc");
+	});
+	test("Strip control characters", () => {
+		expect(sanitizeWord("aaa\0bbb")).toBe("aaabbb");
+		expect(sanitizeWord("a\x01b\x1Fcd\x7Fe\x9Ff")).toBe("abcdef");
+	});
+});
 describe("sanitizeString()", () => {
 	test("Normalise runs of whitespace to single ` ` space", () => {
 		expect(sanitizeText("aaa\t\t\t   \r\r\rbbb")).toBe("aaa bbb");

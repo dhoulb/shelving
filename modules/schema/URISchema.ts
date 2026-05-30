@@ -1,4 +1,5 @@
 import { formatURI } from "../util/format.js";
+import { sanitizeWord } from "../util/string.js";
 import { getURI, HTTP_SCHEMES, type URISchemes, type URIString } from "../util/uri.js";
 import { NULLABLE } from "./NullableSchema.js";
 import type { StringSchemaOptions } from "./StringSchema.js";
@@ -35,6 +36,10 @@ export class URISchema extends StringSchema {
 		if (!uri) throw str ? `Invalid ${this.one} format` : "Required";
 		if (this.schemes && !this.schemes.includes(uri.protocol)) throw `Invalid ${this.one} scheme`;
 		return uri.href;
+	}
+	override sanitize(str: string): string {
+		// URIs never contain whitespace (a real space must be `%20`-encoded), so strip it entirely.
+		return sanitizeWord(str);
 	}
 	override format(value: string): string {
 		return formatURI(value, this.format);

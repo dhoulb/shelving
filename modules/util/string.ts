@@ -91,6 +91,20 @@ export function sanitizeText(str: string): string {
 }
 
 /**
+ * Sanitize a single word of text.
+ * - Used when you're sanitising a value that can never contain whitespace, e.g. an email address or token.
+ * - Remove all control characters (like `sanitizeText()`).
+ * - Strip all whitespace entirely (rather than collapsing runs to a single space like `sanitizeText()`).
+ *
+ * @example sanitizeWord("\x00 a b c "); // Returns `"abc"`
+ */
+export function sanitizeWord(str: string): string {
+	return str
+		.replace(/[^\P{C}\s]/gu, "") // Strip control characters (except whitespace).
+		.replace(/\s+/gu, ""); // Strip all whitespace entirely.
+}
+
+/**
  * Sanitize multiple lines of text.
  * - Used when you're sanitising a multi-line input, e.g. a description for something.
  * - Remove all control characters except `\n` newline.

@@ -128,6 +128,10 @@ describe("validate()", () => {
 		test("Wwhitespace is trimmed from start/end", () => {
 			expect(schema.validate("    http://www.x.com/   ")).toBe("http://www.x.com/");
 		});
+		test("Whitespace anywhere in the URI is stripped", () => {
+			expect(schema.validate("http://www.x.com /path")).toBe("http://www.x.com/path");
+			expect(schema.validate("http :// www.x.com / path")).toBe("http://www.x.com/path");
+		});
 	});
 	describe("port", () => {
 		test("Valid ports are valid", () => {

@@ -78,6 +78,10 @@ describe("validate()", () => {
 		test("Domains have whitespace trimmed from start/end", () => {
 			expect(schema.validate("    jo@google.com   ")).toBe("jo@google.com");
 		});
+		test("Whitespace anywhere in the address is stripped", () => {
+			expect(schema.validate("jo @ google.com")).toBe("jo@google.com");
+			expect(schema.validate("j o @ g o o g l e . c o m")).toBe("jo@google.com");
+		});
 		test("Domains are lowercased", () => {
 			expect(schema.validate("JO@GOOGLE.COM")).toBe("jo@google.com");
 		});
