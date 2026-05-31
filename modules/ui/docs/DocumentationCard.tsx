@@ -7,7 +7,7 @@ import { Preformatted } from "../block/Preformatted.js";
 import { Subheading } from "../block/Subheading.js";
 import { Code } from "../inline/Code.js";
 import { Flex } from "../style/Flex.js";
-import { DocumentationKind } from "./DocumentationKind.js";
+import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 
 interface DocumentationCardProps extends DocumentationElementProps {
 	path: AbsolutePath;
@@ -16,8 +16,9 @@ interface DocumentationCardProps extends DocumentationElementProps {
 /** Card renderer for a `tree-documentation` element — a summary card showing the heading, signatures, and description. */
 export function DocumentationCard({ path, title, name, kind, description, signatures }: DocumentationCardProps): ReactNode {
 	const href = joinPath(path, name);
+	const color = kind ? getDocumentationKindColor(kind) : undefined;
 	return (
-		<Card href={href}>
+		<Card href={href} {...(color ? { [color]: true } : {})}>
 			<Subheading>
 				<Flex left wrap>
 					<Code>{title ?? name}</Code>
