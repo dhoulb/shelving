@@ -9,7 +9,7 @@ import { Code } from "../inline/Code.js";
 import { Tag } from "../misc/Tag.js";
 import { Flex } from "../style/Flex.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
-import { DocumentationKind } from "./DocumentationKind.js";
+import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 
 interface DocumentationCardProps extends DocumentationElementProps {
 	path: AbsolutePath;
@@ -27,8 +27,9 @@ export function DocumentationCard({
 	...props
 }: DocumentationCardProps): ReactNode {
 	const href = joinPath(path, name);
+	const color = kind ? getDocumentationKindColor(kind) : undefined;
 	return (
-		<Card href={href}>
+		<Card href={href} {...(color ? { [color]: true } : {})}>
 			<Subheading>
 				<Flex left wrap>
 					<Code>{title ?? name}</Code>
