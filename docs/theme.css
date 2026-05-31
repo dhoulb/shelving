@@ -1,42 +1,42 @@
 /*
  * Documentation site theme.
  *
- * A token-only overlay on top of the base design tokens defined by `style/base.css`. Only CSS custom
- * properties (the `--variable` design tokens) are set here — never component selectors — so the docs
- * site gets a brighter, more colourful personality without forking a single component's styling.
+ * Token-only overlay on the base design tokens from `style/base.css`, set at `:root` (never component
+ * selectors). Imported last in `client.tsx`, after the base tokens.
  *
- * Plain CSS, no layer participation: token overrides propagate via inheritance, not cascade competition.
- * Imported last in `client.tsx` so these `:root` declarations land after the base tokens and win on
- * source order (both are at `:root` specificity, both unlayered).
+ * Surfaces-only peach: we retint just the `--color-light` surface step of the global scale. Every
+ * surface component (Card, Preformatted, Panel, Tag, Code, …) inherits it for its background, so they
+ * all go peach and match each other — nested or standalone.
+ *
+ * Deliberately NOT retinted: `--color-dark` (text) and `--color-vivid` (borders/accents). The page
+ * `body` paints its baseline text with `--color-dark`, and all body copy (titles, headings, prose,
+ * lists) inherits that — so moving it would recolour every word on the page, not just text on cards.
+ * Keeping it at the default leaves page and card text the normal near-black.
  */
 :root {
-	/* Surfaces — warm cream page; soft peach `--color-surface` for prose-level chips, tags and code. */
-	--color-bg: color-mix(in srgb, var(--vivid-orange) 6%, white);
-	--color-surface: color-mix(in srgb, var(--vivid-orange) 13%, white);
+	/* Surfaces → soft peach. Global `--color-light` is the cascade root every surface component inherits
+	   for its background, so Cards, Preformatteds, Tags and Code chips all match. */
+	--color-light: color-mix(in srgb, #ff7a1a 14%, white);
 
-	/* Borders keep a gentle purple tint for tables, inputs and inline surfaces. */
-	--color-border: color-mix(in srgb, var(--vivid-purple) 22%, white);
+	/* Cards and Preformatteds borderless, so the peach reads as a flat tinted block. */
+	--card-thickness: 0;
+	--preformatted-thickness: 0;
 
-	/* Quiet text — table headers, captions, definition labels — picks up the same purple personality. */
-	--color-quiet: var(--vivid-purple);
-
-	/*
-	* Cards — a soft mid peach with no border. Content nested inside (code chips, tags) uses the
-	* deeper opaque `--card-color-surface`, giving it its own depth distinct from the lighter
-	* prose-level `--color-surface`.
-	*/
-	--card-color-bg: color-mix(in srgb, var(--vivid-orange) 14%, white);
-	--card-border: 0;
-	--card-color-surface: color-mix(in srgb, var(--vivid-orange) 21%, white);
-
-	/* Interactive colours — brighter and more characterful, straight from the palette. */
+	/* Interactive accents. */
 	--color-link: var(--vivid-purple);
 	--color-focus: var(--vivid-pink);
 
-	/* Buttons — bold purple blocks with white content; the site's signature interactive element. */
-	--button-color-bg: var(--vivid-purple);
-	--button-color-text: var(--color-white);
-	--button-color-border: var(--vivid-purple);
+	/*
+	 * Buttons stay purple. Button rebinds the whole scale from its own hooks, so pin every step it
+	 * paints from — otherwise unpinned steps inherit the page's peach `--color-*`. The default variant
+	 * paints `bg=light / text+border=vivid`; the `strong` variant paints `bg=vivid / text=white`. So:
+	 *   - light → light-purple surface (default button background)
+	 *   - vivid → brand purple (default border/label, strong background)
+	 *   - white → label on the strong variant
+	 */
+	--button-color-light: var(--light-purple);
+	--button-color-vivid: var(--vivid-purple);
+	--button-color-white: var(--color-white);
 
 	/*
 	 * Sidebar navigation — a soft lavender panel with the divider dropped. Inactive links are
