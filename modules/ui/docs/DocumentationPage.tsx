@@ -10,9 +10,12 @@ import { Prose } from "../block/Prose.js";
 import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
+import { Tag } from "../misc/Tag.js";
 import { Page } from "../page/Page.js";
 import { Flex } from "../style/Flex.js";
 import { TreeCards } from "../tree/TreeCards.js";
+import { DocumentationBreadcrumbs } from "./DocumentationBreadcrumbs.js";
+import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
 const DEFAULT_TYPE = "unknown";
@@ -35,7 +38,7 @@ interface DocumentationPageProps extends DocumentationElementProps {
 
 /**
  * Page renderer for a `tree-documentation` element (also used for `tree-file` elements, whose props are a compatible subset).
- * - Renders title, signatures (one per overload), content, parameters, returns, throws, and examples.
+ * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`, `overrides`), signatures (one per overload), content, parameters, returns, throws, and examples.
  * - Child symbols are grouped by `kind` into card sections (Functions, Classes, Methods, Properties, …), each under its own heading.
  * - All sections are conditional — only render when they have entries.
  */
@@ -52,15 +55,23 @@ export function DocumentationPage({
 	throws,
 	examples,
 	children,
+	class: cls,
+	readonly,
+	overrides,
+	extends: extendsName,
+	implements: implementsNames,
 }: DocumentationPageProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
+			<DocumentationBreadcrumbs path={path} />
 			<Title>
 				<Flex left wrap>
 					{title ?? name}
 					{kind && <DocumentationKind kind={kind} />}
+					{readonly && <Tag yellow>readonly</Tag>}
 				</Flex>
 			</Title>
+			<DocumentationButtons class={cls} overrides={overrides} extends={extendsName} implements={implementsNames} />
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
 			))}

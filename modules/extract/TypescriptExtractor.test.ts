@@ -70,8 +70,11 @@ export class Store {
 		expect(cls.props.name).toBe("Store");
 		expect(cls.props.title).toBe("Store");
 		expect(cls.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "property", name: "value", title: "value", signatures: ["string"] } },
-			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "set()" } },
+			{
+				type: "tree-documentation",
+				props: { kind: "property", name: "value", title: "Store.value", class: "Store", signatures: ["string"] },
+			},
+			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "Store.set()", class: "Store" } },
 		]);
 	});
 
@@ -190,12 +193,70 @@ export class Widget {
 					name: "Widget",
 					title: "Widget",
 					children: [
-						{ props: { kind: "property", name: "size", title: "size" } },
-						{ props: { kind: "method", name: "resize", title: "resize()" } },
+						{ props: { kind: "property", name: "size", title: "Widget.size" } },
+						{ props: { kind: "method", name: "resize", title: "Widget.resize()" } },
 					],
 				},
 			},
 		]);
+	});
+
+	test("extracts extends and implements from a class declaration", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A concrete store. */
+export class MemoryStore extends AbstractStore implements Serializable, Disposable {
+	value: string;
+}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{
+				type: "tree-documentation",
+				props: { kind: "class", name: "MemoryStore", extends: "AbstractStore", implements: ["Serializable", "Disposable"] },
+			},
+		]);
+	});
+
+	test("stamps the owning class onto members and qualifies overrides with the base class", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A store. */
+export class MemoryStore extends AbstractStore {
+	/** The current value. */
+	readonly value: string;
+	/** Get a thing. */
+	override get(): string { return ""; }
+}
+`),
+		);
+		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
+		expect(cls?.props.children).toMatchObject([
+			{ props: { kind: "property", name: "value", title: "MemoryStore.value", class: "MemoryStore", readonly: true } },
+			{ props: { kind: "method", name: "get", title: "MemoryStore.get()", class: "MemoryStore", overrides: "AbstractStore.get" } },
+		]);
+	});
+
+	test("treats a getter without a setter as readonly, and a getter+setter pair as writable", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A store. */
+export class Store {
+	/** Read-only size. */
+	get size(): number { return 0; }
+	/** Writable name. */
+	get name(): string { return ""; }
+	set name(v: string) {}
+}
+`),
+		);
+		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
+		expect(cls?.props.children).toMatchObject([
+			{ props: { kind: "property", name: "size", title: "Store.size", class: "Store", readonly: true, signatures: ["number"] } },
+			{ props: { kind: "property", name: "name", title: "Store.name", class: "Store", signatures: ["string"] } },
+		]);
+		// The getter+setter pair must NOT be flagged readonly.
+		expect((cls?.props.children[1]?.props as { readonly?: boolean }).readonly).toBeUndefined();
 	});
 
 	test("merges overloaded function declarations into one element with multiple signatures", async () => {

@@ -9,6 +9,7 @@ import { createMapper } from "../misc/Mapper.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
 
 import type { PossibleMeta } from "../util/index.js";
+import { TreeContext } from "./TreeContext.js";
 
 /** Extras threaded through `TreeRouterMapper` to the page renderer — the site-root-relative path of the page. */
 interface TreeRouterExtras {
@@ -50,6 +51,12 @@ export function TreeRouter({ tree, fallback, ...meta }: TreeRouterProps): ReactN
 
 	// We render either a mapped version of the tree element, or the fallback element.
 	const route = element ? <TreeRouterMapper path={path}>{element}</TreeRouterMapper> : fallback;
-	if (route !== undefined) return <MetaContext value={combined}>{route}</MetaContext>;
+	// Expose the root tree so descendants (e.g. `<DocumentationButton>`, breadcrumbs) can resolve cross-references to other pages.
+	if (route !== undefined)
+		return (
+			<MetaContext value={combined}>
+				<TreeContext value={tree}>{route}</TreeContext>
+			</MetaContext>
+		);
 	throw new NotFoundError("Tree route not found", { received: path });
 }

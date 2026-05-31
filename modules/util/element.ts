@@ -148,7 +148,15 @@ export interface DocumentationElementProps extends TreeElementProps {
 	readonly returns?: ImmutableArray<DocumentationReturn> | undefined;
 	readonly throws?: ImmutableArray<DocumentationThrow> | undefined;
 	readonly examples?: ImmutableArray<DocumentationExample> | undefined;
+	/** Name of the class/interface this member belongs to (e.g. `"Store"` for `Store.get()`). Set only on methods and properties. */
+	readonly class?: string | undefined;
+	/** Whether the property is read-only — a `readonly` field, or a getter with no matching setter. */
+	readonly readonly?: boolean | undefined;
+	/** Name of the base-class member this member overrides, qualified with the base class (e.g. `"AbstractStore.get"`). Raw string — resolved to a link at render time. */
+	readonly overrides?: string | undefined;
+	/** Name of the class/interface this class/interface extends (e.g. `"AbstractStore"`). Raw string — resolved to a link at render time. */
 	readonly extends?: string | undefined;
+	/** Names of the interfaces this class/interface implements (e.g. `["Serializable"]`). Raw strings — resolved to links at render time; builtins simply stay as text. */
 	readonly implements?: ImmutableArray<string> | undefined;
 }
 
@@ -305,6 +313,34 @@ function* _walkElementPaths(element: TreeElement, depth: number, path: readonly 
 		// Skip elements with no `name` prop (and their descendants).
 		const name = (child as TreeElement).props.name;
 		yield* _walkElementPaths(child as TreeElement, depth - 1, [...path, name]);
+	}
+}
+
+/**
+ * Build a flat lookup dictionary from a tree, mapping each documented symbol's reference name to its path segments.
+ * - Walks the whole tree once and records, for every element, its `name` → path (the segments from `root` down to it).
+ * - Documented members (those with a `class` prop) are *also* recorded under their qualified `"Class.member"` key, so a raw reference string like `"Store.get"` resolves directly.
+ * - On a name collision the first element encountered wins — qualified keys (`"Class.member"`) disambiguate members that share a bare name.
+ * - The point is render-time linking: an extracted raw reference (`overrides`, `extends`, `implements`) can be looked up here in O(1); references with no entry (e.g. builtins like `Serializable`) simply stay as plain text.
+ *
+ * @param root The root element to index. Its own name is treated as a container label, never a path segment (matching `getElementPaths()`).
+ * @returns A map from reference string to the path segments that `resolveElementPath()` / `joinPath()` can consume.
+ */
+export function getElementIndex(root: TreeElement): Map<string, readonly string[]> {
+	const index = new Map<string, readonly string[]>();
+	_indexElements(root, [], index);
+	return index;
+}
+function _indexElements(element: TreeElement, path: readonly string[], index: Map<string, readonly string[]>): void {
+	for (const child of walkElements(element.props.children)) {
+		const treeChild = child as TreeElement;
+		const { name } = treeChild.props;
+		const childPath = [...path, name];
+		// Record the bare name (first writer wins) and, for class/interface members, the qualified `Class.member` key.
+		if (!index.has(name)) index.set(name, childPath);
+		const cls = (treeChild.props as DocumentationElementProps).class;
+		if (cls) index.set(`${cls}.${name}`, childPath);
+		_indexElements(treeChild, childPath, index);
 	}
 }
 

@@ -1,7 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
-import type { Data, Element, Elements, TreeElement } from "../index.js";
-import { filterElements, getElementPaths, getElementText, queryElements, resolveElementPath, walkElements } from "../index.js";
+import type { Data, DocumentationElement, Element, Elements, TreeElement } from "../index.js";
+import {
+	filterElements,
+	getElementIndex,
+	getElementPaths,
+	getElementText,
+	queryElements,
+	resolveElementPath,
+	walkElements,
+} from "../index.js";
 
 const P: Element = {
 	key: null,
@@ -183,5 +191,35 @@ describe("getElementPaths()", () => {
 	test("yields the root as [] plus every descendant relative to it", () => {
 		const keys = Array.from(getElementPaths(RESOLVE_TREE));
 		expect(keys).toEqual([[], ["util"], ["util", "array"], ["util", "string"], ["README"]]);
+	});
+});
+
+const INDEX_MEMBERS: DocumentationElement[] = [
+	{ key: "get", type: "tree-documentation", props: { name: "get", kind: "method", class: "Store" } },
+	{ key: "set", type: "tree-documentation", props: { name: "set", kind: "method", class: "Store" } },
+];
+const INDEX_STORE: DocumentationElement = {
+	key: "store",
+	type: "tree-documentation",
+	props: { name: "Store", kind: "class", children: INDEX_MEMBERS },
+};
+const INDEX_TREE: TreeElement = {
+	key: "modules",
+	type: "tree-directory",
+	props: { name: "modules", children: [INDEX_STORE] },
+};
+
+describe("getElementIndex()", () => {
+	test("maps bare names and qualified Class.member keys to their path segments", () => {
+		const index = getElementIndex(INDEX_TREE);
+		expect(index.get("Store")).toEqual(["Store"]);
+		expect(index.get("get")).toEqual(["Store", "get"]);
+		expect(index.get("Store.get")).toEqual(["Store", "get"]);
+		expect(index.get("Store.set")).toEqual(["Store", "set"]);
+	});
+
+	test("returns undefined for names not in the tree", () => {
+		const index = getElementIndex(INDEX_TREE);
+		expect(index.get("Serializable")).toBeUndefined();
 	});
 });

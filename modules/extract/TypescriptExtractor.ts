@@ -1,4 +1,5 @@
 import ts from "typescript";
+import type { ImmutableArray } from "../util/array.js";
 import type {
 	DocumentationElement,
 	DocumentationElementProps,
@@ -19,7 +20,8 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`.
  * - Top-of-file JSDoc comment becomes the file's `content`.
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on the file and every `tree-documentation` child.
- * - Sets `title` on every `tree-documentation` child — `name()` for functions and methods, `name` for other kinds.
+ * - Sets `title` on every `tree-documentation` child — `name()` for functions, `Class.name()` for methods, `Class.name` for properties, bare `name` for other kinds.
+ * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `overrides`, `extends`, `implements`.
  * - The file element itself has no `title` — a TS source file has no confident title source; renderers fall back to `name`.
  */
 export class TypescriptExtractor extends FileExtractor {
@@ -102,7 +104,9 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 	const returns = _getReturns(statement, source, jsDoc?.returns);
 	const throws = jsDoc?.throws;
 	const examples = jsDoc?.examples;
-	const children = _getClassMembers(statement, source);
+	// Heritage (`extends` / `implements`) is only meaningful for classes and interfaces.
+	const heritage = _getHeritage(statement, source);
+	const children = _getClassMembers(statement, source, name, heritage?.extends);
 
 	return {
 		type: "tree-documentation",
@@ -119,9 +123,29 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 			returns,
 			throws,
 			examples,
+			extends: heritage?.extends,
+			implements: heritage?.implements,
 			children,
 		},
 	};
+}
+
+/** Extract the `extends` (single base type) and `implements` (interface list) names from a class or interface declaration. */
+function _getHeritage(
+	statement: ts.Statement,
+	source: ts.SourceFile,
+): { extends: string | undefined; implements: ImmutableArray<string> | undefined } | undefined {
+	if (!ts.isClassDeclaration(statement) && !ts.isInterfaceDeclaration(statement)) return;
+	let extendsName: string | undefined;
+	const implementsNames: string[] = [];
+	for (const clause of statement.heritageClauses ?? []) {
+		const names = clause.types.map(t => t.expression.getText(source));
+		// `extends` keeps the first base type; an interface extending several still surfaces its primary base.
+		if (clause.token === ts.SyntaxKind.ExtendsKeyword) extendsName ??= names[0];
+		else if (clause.token === ts.SyntaxKind.ImplementsKeyword) implementsNames.push(...names);
+	}
+	if (!extendsName && !implementsNames.length) return;
+	return { extends: extendsName, implements: implementsNames.length ? implementsNames : undefined };
 }
 
 /**
@@ -217,8 +241,18 @@ function _getReturns(
 	if (type && type !== "void") return [{ type }];
 }
 
-/** Extract class or interface members as child elements. */
-function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): DocumentationElement[] | undefined {
+/**
+ * Extract class or interface members as child elements.
+ * - `className` is stamped onto every member as its `class` prop, and prebaked into the member `title` (`Class.member` / `Class.member()`).
+ * - `baseName` (the class's `extends` target) qualifies the `overrides` reference of any `override` member.
+ * - Getters/setters fold into a single `property` element per name; a getter with no matching setter is `readonly`.
+ */
+function _getClassMembers(
+	statement: ts.Statement,
+	source: ts.SourceFile,
+	className: string,
+	baseName: string | undefined,
+): DocumentationElement[] | undefined {
 	if (!ts.isClassDeclaration(statement) && !ts.isInterfaceDeclaration(statement)) return;
 	const members: DocumentationElement[] = [];
 
@@ -226,13 +260,18 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 		// Skip private, protected, and _-prefixed members.
 		const name = member.name && ts.isIdentifier(member.name) ? member.name.text : undefined;
 		if (!name || name.startsWith("_")) continue;
-		if (ts.canHaveModifiers(member)) {
-			const modifiers = ts.getModifiers(member);
-			if (modifiers?.some(m => m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword)) continue;
-		}
+		const modifiers = ts.canHaveModifiers(member) ? ts.getModifiers(member) : undefined;
+		if (modifiers?.some(m => m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword)) continue;
 
 		const memberJSDoc = _getJSDoc(member, source);
 		const content = _buildJSDocContent(memberJSDoc?.description, memberJSDoc?.unhandled);
+		const description = extractMarkdownProps(memberJSDoc?.description ?? "").description;
+		// An `override` member overrides the same-named member on the base class — qualify with the base name when known.
+		const overrides = modifiers?.some(m => m.kind === ts.SyntaxKind.OverrideKeyword)
+			? baseName
+				? `${baseName}.${name}`
+				: name
+			: undefined;
 
 		if (ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) {
 			const params = member.parameters.map(p => p.getText(source)).join(", ");
@@ -252,28 +291,68 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile): Docum
 					key,
 					props: {
 						name,
-						title: `${name}()`,
-						description: extractMarkdownProps(memberJSDoc?.description ?? "").description,
+						title: `${className}.${name}()`,
+						description,
 						content,
 						kind: "method",
+						class: className,
+						overrides,
 						signatures: [signature],
 					},
 				});
 			}
 		} else if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
 			const type = member.type?.getText(source);
+			const readonly = modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword) || undefined;
 			members.push({
 				type: "tree-documentation",
 				key: requireSlug(name),
 				props: {
 					name,
-					title: name,
-					description: extractMarkdownProps(memberJSDoc?.description ?? "").description,
+					title: `${className}.${name}`,
+					description,
 					content,
 					kind: "property",
+					class: className,
+					readonly,
+					overrides,
 					signatures: type ? [type] : undefined,
 				},
 			});
+		} else if (ts.isGetAccessor(member) || ts.isSetAccessor(member)) {
+			// Getters/setters fold into one `property`. A getter alone (no setter) is read-only; a setter clears that.
+			const type = ts.isGetAccessor(member) ? member.type?.getText(source) : member.parameters[0]?.type?.getText(source);
+			const key = requireSlug(name);
+			const existingIndex = members.findIndex(m => m.key === key);
+			const existing = members[existingIndex];
+			if (existing) {
+				members[existingIndex] = {
+					...existing,
+					props: {
+						...existing.props,
+						// A setter pairs with a getter → no longer read-only.
+						readonly: ts.isSetAccessor(member) ? undefined : existing.props.readonly,
+						signatures: existing.props.signatures ?? (type ? [type] : undefined),
+						overrides: existing.props.overrides ?? overrides,
+					},
+				};
+			} else {
+				members.push({
+					type: "tree-documentation",
+					key,
+					props: {
+						name,
+						title: `${className}.${name}`,
+						description,
+						content,
+						kind: "property",
+						class: className,
+						readonly: ts.isGetAccessor(member) || undefined,
+						overrides,
+						signatures: type ? [type] : undefined,
+					},
+				});
+			}
 		}
 	}
 

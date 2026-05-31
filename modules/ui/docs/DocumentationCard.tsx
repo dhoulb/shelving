@@ -6,15 +6,29 @@ import { Paragraph } from "../block/Paragraph.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Subheading } from "../block/Subheading.js";
 import { Code } from "../inline/Code.js";
+import { Tag } from "../misc/Tag.js";
 import { Flex } from "../style/Flex.js";
+import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
 interface DocumentationCardProps extends DocumentationElementProps {
 	path: AbsolutePath;
 }
 
-/** Card renderer for a `tree-documentation` element — a summary card showing the heading, signatures, and description. */
-export function DocumentationCard({ path, title, name, kind, description, signatures }: DocumentationCardProps): ReactNode {
+/** Card renderer for a `tree-documentation` element — a summary card showing the heading, relational links, signatures, and description. */
+export function DocumentationCard({
+	path,
+	title,
+	name,
+	kind,
+	description,
+	signatures,
+	class: cls,
+	readonly,
+	overrides,
+	extends: extendsName,
+	implements: implementsNames,
+}: DocumentationCardProps): ReactNode {
 	const href = joinPath(path, name);
 	return (
 		<Card href={href}>
@@ -22,8 +36,10 @@ export function DocumentationCard({ path, title, name, kind, description, signat
 				<Flex left wrap>
 					<Code>{title ?? name}</Code>
 					{kind && <DocumentationKind kind={kind} />}
+					{readonly && <Tag yellow>readonly</Tag>}
 				</Flex>
 			</Subheading>
+			<DocumentationButtons class={cls} overrides={overrides} extends={extendsName} implements={implementsNames} />
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
 			))}
