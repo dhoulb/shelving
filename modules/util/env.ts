@@ -40,6 +40,3 @@ export function requireEnvBoolean(name: string, caller: AnyCaller = requireEnvBo
 	if (typeof env !== "boolean") throw new RequiredError(`Environment variable "${name}" must be boolean`, { caller });
 	return env;
 }
-
-/** The `NO_COLOR` environment variable is commonly used to indicate that ANSI output shouldn't have color. */
-export const NO_COLOR = getEnvBoolean("NO_COLOR") ?? false;
