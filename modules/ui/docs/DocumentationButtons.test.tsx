@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { DocumentationElement, TreeElement } from "../../util/element.js";
 import { MetaContext } from "../misc/MetaContext.js";
-import { TreeContext } from "../tree/TreeContext.js";
+import { TreeProvider } from "../tree/TreeContext.js";
 import { createMeta } from "../util/meta.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 
@@ -28,7 +28,7 @@ const tree: TreeElement = {
 function render(children: ReactNode): string {
 	return renderToStaticMarkup(
 		<MetaContext value={createMeta({ root: "http://x.com/", url: "./" })}>
-			<TreeContext value={tree}>{children}</TreeContext>
+			<TreeProvider tree={tree}>{children}</TreeProvider>
 		</MetaContext>,
 	);
 }

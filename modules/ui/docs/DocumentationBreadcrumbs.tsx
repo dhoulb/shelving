@@ -1,10 +1,9 @@
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { Fragment, type ReactElement } from "react";
-import { resolveElementPath, type TreeElement } from "../../util/element.js";
 import { type AbsolutePath, joinPath, splitPath } from "../../util/path.js";
 import { Button } from "../form/Button.js";
 import { Flex } from "../style/Flex.js";
-import { useTree } from "../tree/TreeContext.js";
+import { useTreeMap } from "../tree/TreeContext.js";
 
 /** Props for `DocumentationBreadcrumbs`. */
 export interface DocumentationBreadcrumbsProps {
@@ -14,25 +13,26 @@ export interface DocumentationBreadcrumbsProps {
 
 /**
  * Breadcrumb trail of links to a page's ancestors, separated by `›` arrow icons.
- * - Built from the page's own `path`: each ancestor segment links to its cumulative path, labelled from the tree element's title/name.
+ * - Built from the page's own `path`: each ancestor prefix is looked up in the tree map for its title, and links to its cumulative path.
+ * - Prefixes with no entry (e.g. the partial half of a `"util/string"` module name) are skipped, so composite names collapse to a single crumb.
  * - The current item is deliberately omitted — the page `<Title>` already names it.
- * - Renders nothing at the tree root (no ancestors) or when there's no `<TreeContext>` to resolve labels from.
+ * - Renders nothing at the tree root (no ancestors) or when there's no `<TreeProvider>` to resolve labels from.
  */
 export function DocumentationBreadcrumbs({ path }: DocumentationBreadcrumbsProps): ReactElement | null {
-	const tree = useTree();
+	const map = useTreeMap();
 	const segments = splitPath(path);
 	// Drop the final segment — that's the current page, named by the title itself.
 	const ancestors = segments.slice(0, -1);
-	if (!tree || !ancestors.length) return null;
 
 	const crumbs: { readonly href: AbsolutePath; readonly label: string }[] = [];
-	// The root itself is the first crumb (home).
-	crumbs.push({ href: "/", label: tree.props.title ?? tree.props.name });
+	// The root itself (joined-path key `""`) is the first crumb, when present.
+	const root = map.get("");
+	if (root) crumbs.push({ href: "/", label: root.title });
 	for (let i = 0; i < ancestors.length; i++) {
-		const segs = ancestors.slice(0, i + 1);
-		const element = resolveElementPath(tree, segs) as TreeElement | undefined;
-		crumbs.push({ href: joinPath("/", segs), label: element?.props.title ?? segs[i] ?? "" });
+		const entry = map.get(ancestors.slice(0, i + 1).join("/"));
+		if (entry) crumbs.push({ href: joinPath("/", entry.path), label: entry.title });
 	}
+	if (!crumbs.length) return null;
 
 	return (
 		<Flex left wrap>

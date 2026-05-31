@@ -23,11 +23,8 @@ export function DocumentationCard({
 	kind,
 	description,
 	signatures,
-	class: cls,
 	readonly,
-	overrides,
-	extends: extendsName,
-	implements: implementsNames,
+	...props
 }: DocumentationCardProps): ReactNode {
 	const href = joinPath(path, name);
 	return (
@@ -39,7 +36,7 @@ export function DocumentationCard({
 					{readonly && <Tag yellow>readonly</Tag>}
 				</Flex>
 			</Subheading>
-			<DocumentationButtons class={cls} overrides={overrides} extends={extendsName} implements={implementsNames} />
+			<DocumentationButtons {...props} />
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
 			))}

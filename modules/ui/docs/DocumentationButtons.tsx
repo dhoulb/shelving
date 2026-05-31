@@ -8,7 +8,7 @@ export interface DocumentationButtonsProps extends Pick<DocumentationElementProp
 
 /** One labelled relation — a sentence-case prefix plus the symbol it points at. */
 function* _relations({
-	class: cls,
+	class: className,
 	overrides,
 	extends: extendsName,
 	implements: implementsNames,
@@ -17,7 +17,7 @@ function* _relations({
 	if (extendsName) yield ["extends", extendsName];
 	for (const name of implementsNames ?? []) yield ["implements", name];
 	// `member of` comes last — it's the broadest relation, the others are more specific.
-	if (cls) yield ["member of", cls];
+	if (className) yield ["member of", className];
 }
 
 /**

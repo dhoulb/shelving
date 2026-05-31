@@ -24,7 +24,7 @@ Each renderer receives the props of its element type (title, name, description, 
 
 Three components turn the raw relational metadata the extractor records (`class`, `readonly`, `overrides`, `extends`, `implements`) into navigation:
 
-**`DocumentationButton`** links to another symbol by reference string — a bare name (`"Store"`) or a qualified member (`"Store.get"`). It resolves the reference against the flattened tree index from `<TreeContext>` (see [ui/tree](/ui/tree)): a hit becomes a link, a miss (e.g. a builtin like `Serializable`) renders as a non-linking label so the text still reads. Defaults to `small plain` button styling.
+**`DocumentationButton`** links to another symbol by reference string — a bare name (`"Store"`) or a qualified member (`"Store.get"`). It resolves the reference against the flattened tree map from `<TreeProvider>` (see [ui/tree](/ui/tree)): a hit becomes a link, a miss (e.g. a builtin like `Serializable`) renders as a non-linking label so the text still reads. Defaults to `small plain` button styling.
 
 **`DocumentationButtons`** renders a symbol's relations as a wrapping row of labelled `<DocumentationButton>`s — `overrides AbstractStore.get`, `implements Serializable`, `member of Store`, etc. Renders nothing when the symbol has no relations. Used by both `DocumentationPage` and `DocumentationCard`.
 

@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { joinPath } from "../../util/path.js";
 import { Button, type ButtonVariants } from "../form/Button.js";
-import { useTreeIndex } from "../tree/TreeContext.js";
+import { useTreeMap } from "../tree/TreeContext.js";
 
 /** Props for `DocumentationButton`. */
 export interface DocumentationButtonProps extends ButtonVariants {
@@ -16,7 +16,7 @@ export interface DocumentationButtonProps extends ButtonVariants {
 
 /**
  * Small button linking to a specific `tree-documentation` element, resolved by reference string.
- * - Looks `to` up in the flattened tree index (`useTreeIndex()`); a hit becomes an `<a>` link, a miss a disabled `<button>` so builtins still read as labels.
+ * - Looks `to` up in the flattened tree map (`useTreeMap()`); a hit becomes an `<a>` link, a miss a disabled `<button>` so builtins still read as labels.
  * - Defaults to `small plain` styling; pass other `ButtonVariants` to override.
  *
  * @example <DocumentationButton to="Store.get">Store.get()</DocumentationButton>
@@ -28,9 +28,8 @@ export function DocumentationButton({
 	plain = true,
 	...variants
 }: DocumentationButtonProps): ReactElement {
-	const index = useTreeIndex();
-	const segments = index.get(to);
-	const href = segments ? joinPath("/", segments) : undefined;
+	const entry = useTreeMap().get(to);
+	const href = entry ? joinPath("/", entry.path) : undefined;
 	return (
 		<Button small={small} plain={plain} {...variants} href={href} disabled={!href}>
 			{children}

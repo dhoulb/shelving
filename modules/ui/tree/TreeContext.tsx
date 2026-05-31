@@ -1,26 +1,28 @@
-import { createContext, use, useMemo } from "react";
-import { getElementIndex, type TreeElement } from "../../util/element.js";
+import { createContext, type ReactNode, use, useMemo } from "react";
+import { type ElementMapEntry, getElementMap, type TreeElement } from "../../util/element.js";
 
-/** The root tree element, shared so descendant components can resolve cross-references to other elements. */
-export const TreeContext = createContext<TreeElement | undefined>(undefined);
+/** Empty fallback so `useTreeMap()` always returns a map, even with no provider. */
+const EMPTY_MAP: ReadonlyMap<string, ElementMapEntry> = new Map();
+
+/** A flattened `name`/`path` → `{ path, title }` map of the surrounding tree(s), for fast cross-reference lookup. */
+export const TreeContext = createContext<ReadonlyMap<string, ElementMapEntry>>(EMPTY_MAP);
 TreeContext.displayName = "TreeContext";
 
 /**
- * Use the root tree element from context.
- * - Returns `undefined` when no `<TreeContext>` is present (e.g. an isolated card rendered outside the tree shell).
+ * Provide a tree to descendants as a flattened lookup map (see `getElementMap()`).
+ * - Flattens `tree` **once** (memoised) when set — not on every lookup in every element.
+ * - Merges onto any parent `<TreeProvider>`'s map, so cross-references resolve across an entire nested set of trees; the outer (parent) tree wins on collision.
  */
-export function useTree(): TreeElement | undefined {
-	return use(TreeContext);
+export function TreeProvider({ tree, children }: { readonly tree: TreeElement; readonly children: ReactNode }): ReactNode {
+	const parent = use(TreeContext);
+	const map = useMemo(() => getElementMap(tree, parent), [tree, parent]);
+	return <TreeContext value={map}>{children}</TreeContext>;
 }
 
 /**
- * Use a flattened `name` → path-segments index of the whole tree for fast cross-reference lookup.
- * - Memoised per root so repeated lookups (every `<DocumentationButton>` on a page) share one walk.
- * - Returns an empty map when there's no tree in context.
- *
- * @returns A map from reference string (`"Store"`, `"Store.get"`) to its path segments — feed to `joinPath()` to build an href.
+ * Use the flattened tree lookup map from context.
+ * - Returns an empty map when there's no `<TreeProvider>` above (e.g. an isolated card rendered outside the tree shell), so callers can look up freely and fall back to plain text on a miss.
  */
-export function useTreeIndex(): Map<string, readonly string[]> {
-	const tree = useTree();
-	return useMemo(() => (tree ? getElementIndex(tree) : new Map()), [tree]);
+export function useTreeMap(): ReadonlyMap<string, ElementMapEntry> {
+	return use(TreeContext);
 }

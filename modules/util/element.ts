@@ -316,32 +316,43 @@ function* _walkElementPaths(element: TreeElement, depth: number, path: readonly 
 	}
 }
 
-/**
- * Build a flat lookup dictionary from a tree, mapping each documented symbol's reference name to its path segments.
- * - Walks the whole tree once and records, for every element, its `name` → path (the segments from `root` down to it).
- * - Documented members (those with a `class` prop) are *also* recorded under their qualified `"Class.member"` key, so a raw reference string like `"Store.get"` resolves directly.
- * - On a name collision the first element encountered wins — qualified keys (`"Class.member"`) disambiguate members that share a bare name.
- * - The point is render-time linking: an extracted raw reference (`overrides`, `extends`, `implements`) can be looked up here in O(1); references with no entry (e.g. builtins like `Serializable`) simply stay as plain text.
- *
- * @param root The root element to index. Its own name is treated as a container label, never a path segment (matching `getElementPaths()`).
- * @returns A map from reference string to the path segments that `resolveElementPath()` / `joinPath()` can consume.
- */
-export function getElementIndex(root: TreeElement): Map<string, readonly string[]> {
-	const index = new Map<string, readonly string[]>();
-	_indexElements(root, [], index);
-	return index;
+/** An entry in the flat element map — enough to render a cross-link (its `path` builds the href, its `title` the label). */
+export interface ElementMapEntry {
+	/** Path segments from the root down to the element (consumable by `joinPath()` / `resolveElementPath()`). */
+	readonly path: readonly string[];
+	/** Display title for the element (`title ?? name`). */
+	readonly title: string;
 }
-function _indexElements(element: TreeElement, path: readonly string[], index: Map<string, readonly string[]>): void {
-	for (const child of walkElements(element.props.children)) {
-		const treeChild = child as TreeElement;
-		const { name } = treeChild.props;
-		const childPath = [...path, name];
-		// Record the bare name (first writer wins) and, for class/interface members, the qualified `Class.member` key.
-		if (!index.has(name)) index.set(name, childPath);
-		const cls = (treeChild.props as DocumentationElementProps).class;
-		if (cls) index.set(`${cls}.${name}`, childPath);
-		_indexElements(treeChild, childPath, index);
-	}
+
+/**
+ * Flatten a tree into a map for O(1) cross-reference lookup, optionally merged onto an existing `base` map.
+ * - Walks the whole tree once and records every element (including the root) under several keys pointing at one `{ path, title }` entry:
+ *   - its bare `name` (e.g. `"Store"`, `"get"`),
+ *   - its qualified `"Class.member"` key when it's a documented member (e.g. `"Store.get"`), so a raw reference resolves unambiguously,
+ *   - its joined path (e.g. `"store/Store/get"`, or `""` for the root), so an ancestor path resolves back to its title for breadcrumbs.
+ * - On a key collision the first writer wins — pass a `base` map (e.g. a parent context's map) to merge several trees into one lookup; the base always wins, so outer trees take precedence.
+ * - References with no entry (e.g. builtins like `Serializable`) are simply absent — callers fall back to plain text.
+ *
+ * @param root The root element to flatten. Its own name is treated as a container label, never a path segment (matching `getElementPaths()`).
+ * @param base An existing map to merge onto (copied, not mutated). Its entries take precedence on collision.
+ * @returns A map from reference/path key to its `{ path, title }` entry.
+ */
+export function getElementMap(root: TreeElement, base?: ReadonlyMap<string, ElementMapEntry>): Map<string, ElementMapEntry> {
+	const map = new Map<string, ElementMapEntry>(base);
+	_mapElement(root, [], map);
+	return map;
+}
+function _mapElement(element: TreeElement, path: readonly string[], map: Map<string, ElementMapEntry>): void {
+	const { name, title } = element.props;
+	const entry: ElementMapEntry = { path, title: title ?? name };
+	// Joined-path key (reverse lookup for breadcrumbs), bare name and qualified `Class.member` key — first writer wins for each.
+	for (const key of [path.join("/"), name, _qualifiedKey(element)]) if (key !== undefined && !map.has(key)) map.set(key, entry);
+	for (const child of walkElements(element.props.children))
+		_mapElement(child as TreeElement, [...path, (child as TreeElement).props.name], map);
+}
+function _qualifiedKey(element: TreeElement): string | undefined {
+	const { class: cls, name } = element.props as DocumentationElementProps;
+	return cls ? `${cls}.${name}` : undefined;
 }
 
 /** Combine two `Elements`, preserving both if both are set. */

@@ -3,7 +3,7 @@ import type { ReactElement, ReactNode } from "react";
 import type { Data, DocumentationElement, Element, Elements, TreeElement } from "../index.js";
 import {
 	filterElements,
-	getElementIndex,
+	getElementMap,
 	getElementPaths,
 	getElementText,
 	queryElements,
@@ -194,32 +194,42 @@ describe("getElementPaths()", () => {
 	});
 });
 
-const INDEX_MEMBERS: DocumentationElement[] = [
-	{ key: "get", type: "tree-documentation", props: { name: "get", kind: "method", class: "Store" } },
-	{ key: "set", type: "tree-documentation", props: { name: "set", kind: "method", class: "Store" } },
+const MAP_MEMBERS: DocumentationElement[] = [
+	{ key: "get", type: "tree-documentation", props: { name: "get", title: "Store.get()", kind: "method", class: "Store" } },
+	{ key: "set", type: "tree-documentation", props: { name: "set", title: "Store.set()", kind: "method", class: "Store" } },
 ];
-const INDEX_STORE: DocumentationElement = {
+const MAP_STORE: DocumentationElement = {
 	key: "store",
 	type: "tree-documentation",
-	props: { name: "Store", kind: "class", children: INDEX_MEMBERS },
+	props: { name: "Store", kind: "class", children: MAP_MEMBERS },
 };
-const INDEX_TREE: TreeElement = {
+const MAP_TREE: TreeElement = {
 	key: "modules",
 	type: "tree-directory",
-	props: { name: "modules", children: [INDEX_STORE] },
+	props: { name: "modules", title: "Modules", children: [MAP_STORE] },
 };
 
-describe("getElementIndex()", () => {
-	test("maps bare names and qualified Class.member keys to their path segments", () => {
-		const index = getElementIndex(INDEX_TREE);
-		expect(index.get("Store")).toEqual(["Store"]);
-		expect(index.get("get")).toEqual(["Store", "get"]);
-		expect(index.get("Store.get")).toEqual(["Store", "get"]);
-		expect(index.get("Store.set")).toEqual(["Store", "set"]);
+describe("getElementMap()", () => {
+	test("maps bare names, qualified Class.member keys, and joined paths to their entries", () => {
+		const map = getElementMap(MAP_TREE);
+		expect(map.get("Store")).toEqual({ path: ["Store"], title: "Store" });
+		expect(map.get("get")).toEqual({ path: ["Store", "get"], title: "Store.get()" });
+		expect(map.get("Store.get")).toEqual({ path: ["Store", "get"], title: "Store.get()" });
+		expect(map.get("Store.set")).toEqual({ path: ["Store", "set"], title: "Store.set()" });
+		// Joined-path key (reverse lookup for breadcrumbs), and the root under `""`.
+		expect(map.get("Store/get")).toEqual({ path: ["Store", "get"], title: "Store.get()" });
+		expect(map.get("")).toEqual({ path: [], title: "Modules" });
 	});
 
 	test("returns undefined for names not in the tree", () => {
-		const index = getElementIndex(INDEX_TREE);
-		expect(index.get("Serializable")).toBeUndefined();
+		expect(getElementMap(MAP_TREE).get("Serializable")).toBeUndefined();
+	});
+
+	test("merges onto a base map, with the base winning on collision", () => {
+		const base = new Map([["Store", { path: ["other", "Store"], title: "Other Store" }]]);
+		const map = getElementMap(MAP_TREE, base);
+		// Base entry wins for the colliding `Store` key, but new keys are still added.
+		expect(map.get("Store")).toEqual({ path: ["other", "Store"], title: "Other Store" });
+		expect(map.get("Store.get")).toEqual({ path: ["Store", "get"], title: "Store.get()" });
 	});
 });

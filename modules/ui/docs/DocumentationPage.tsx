@@ -55,11 +55,8 @@ export function DocumentationPage({
 	throws,
 	examples,
 	children,
-	class: cls,
 	readonly,
-	overrides,
-	extends: extendsName,
-	implements: implementsNames,
+	...props
 }: DocumentationPageProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
@@ -71,7 +68,7 @@ export function DocumentationPage({
 					{readonly && <Tag yellow>readonly</Tag>}
 				</Flex>
 			</Title>
-			<DocumentationButtons class={cls} overrides={overrides} extends={extendsName} implements={implementsNames} />
+			<DocumentationButtons {...props} />
 			{signatures?.map(sig => (
 				<Preformatted key={sig}>{sig}</Preformatted>
 			))}
