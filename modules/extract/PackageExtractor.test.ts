@@ -5,7 +5,7 @@ import { join } from "node:path";
 import type { AbsolutePath } from "../util/path.js";
 import type { TreeElement } from "../util/tree.js";
 import { DirectoryExtractor } from "./DirectoryExtractor.js";
-import { IndexFileExtractor } from "./IndexFileExtractor.js";
+import { IndexExtractor } from "./IndexExtractor.js";
 import { MergingExtractor } from "./MergingExtractor.js";
 import { PackageExtractor } from "./PackageExtractor.js";
 
@@ -15,7 +15,7 @@ async function _setup(
 ): Promise<{ root: AbsolutePath; tree: TreeElement; cleanup: () => Promise<void> }> {
 	const root = (await mkdtemp(join(tmpdir(), "shelving-pkgexttest-"))) as AbsolutePath;
 	await layout(root);
-	const tree = await new IndexFileExtractor(new MergingExtractor(new DirectoryExtractor())).extract(root);
+	const tree = await new IndexExtractor(new MergingExtractor(new DirectoryExtractor())).extract(root);
 	return {
 		root,
 		tree,
@@ -109,7 +109,7 @@ describe("PackageExtractor", () => {
 			await writeFile(join(r, "api", "mts-only.mts"), "export const X = 1;");
 		}).then(async ({ root, cleanup }) => {
 			// Re-extract with a custom DirectoryExtractor that recognises .mts files.
-			const tree = await new IndexFileExtractor(
+			const tree = await new IndexExtractor(
 				new MergingExtractor(new DirectoryExtractor({ extractors: { mts: new TypescriptExtractor() } })),
 			).extract(root);
 			return { root, tree, cleanup };

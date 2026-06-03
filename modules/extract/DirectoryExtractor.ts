@@ -49,7 +49,7 @@ export interface DirectoryExtractorOptions {
  * - Dispatches non-ignored files to a matching `FileExtractor` based on extension; files with no matching extractor are silently skipped.
  * - Keys on the produced elements are the verbatim filenames (e.g. `"string.ts"`, `"README.md"`) and directory names (e.g. `"util"`).
  * - This is a pure walker: same-key merging and README absorption are intentionally *not* applied here — wrap with `MergingExtractor`
- *   and/or `IndexFileExtractor` to opt in to those behaviours.
+ *   and/or `IndexExtractor` to opt in to those behaviours.
  */
 export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	private readonly _extractors: ImmutableDictionary<FileExtractor>;

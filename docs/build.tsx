@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { DirectoryExtractor } from "../modules/extract/DirectoryExtractor.js";
-import { IndexFileExtractor } from "../modules/extract/IndexFileExtractor.js";
+import { IndexExtractor } from "../modules/extract/IndexExtractor.js";
 import { MergingExtractor } from "../modules/extract/MergingExtractor.js";
 import { PackageExtractor } from "../modules/extract/PackageExtractor.js";
 import type { AbsolutePath } from "../modules/util/path.js";
@@ -38,7 +38,7 @@ export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePat
 	// Extract the source tree (merging `.md` siblings and absorbing README files), then build the module tree from
 	// package.json exports. Write the resulting tree for the browser to fetch and hydrate from.
 	console.warn("Extracting tree...");
-	const tree = await new IndexFileExtractor(new MergingExtractor(new DirectoryExtractor())).extract(sourceDir);
+	const tree = await new IndexExtractor(new MergingExtractor(new DirectoryExtractor())).extract(sourceDir);
 	const root = await new PackageExtractor({ tree }).extract(packageJson);
 	await Bun.write(join(outdir, "tree.json"), JSON.stringify(root));
 

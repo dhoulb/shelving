@@ -1,5 +1,6 @@
 import type { ImmutableDictionary } from "../util/dictionary.js";
 import { walkElements } from "../util/element.js";
+import { notNullish } from "../util/null.js";
 import { matchTemplate, renderTemplate } from "../util/template.js";
 import type { TreeElement } from "../util/tree.js";
 import type { Extractor } from "./Extractor.js";
@@ -30,7 +31,7 @@ export interface MergingExtractorOptions {
 
 /**
  * Through extractor that walks a tree of `tree-element` nodes and merges sibling tree elements whose keys match a `merges` template pair.
- * - Walks every directory recursively, applying the merge at each level.
+ * - Purely key-based: it doesn't care whether siblings are directories or files — any element with children is processed, at every level.
  * - The primary (winning) element keeps its `key`, `source`, and `type`; the secondary's `title`, `description`,
  *   `content`, and `children` are folded in via `mergeTreeElements()`.
  * - A secondary with no matching primary is left in place — pure prose files (e.g. `concepts.md` with no `concepts.ts`) stand alone.
@@ -45,16 +46,16 @@ export class MergingExtractor<I> extends ThroughExtractor<I, TreeElement> {
 
 	override async extract(input: I): Promise<TreeElement> {
 		const root = await this.source.extract(input);
-		return _mergeDirectory(root, this._merges);
+		return _mergeElement(root, this._merges);
 	}
 }
 
-/** Recursively merge same-template siblings inside `dir` and all nested directories. */
-function _mergeDirectory(dir: TreeElement, merges: ImmutableDictionary<readonly string[]>): TreeElement {
-	const children = Array.from(walkElements(dir.props.children)) as TreeElement[];
-	// Only recurse into directories (whose `key` equals their `name`); files carry a `.ext` suffix and have no sub-siblings to merge.
-	const merged = _mergeChildren(children, merges).map(child => (child.key === child.props.name ? _mergeDirectory(child, merges) : child));
-	return { ...dir, props: { ...dir.props, children: merged } };
+/** Recursively merge same-template siblings inside `element` and all of its descendants that have children. */
+function _mergeElement(element: TreeElement, merges: ImmutableDictionary<readonly string[]>): TreeElement {
+	const children = Array.from(walkElements(element.props.children)) as TreeElement[];
+	// Recurse into any child that has its own children; childless leaves (e.g. files) are left untouched.
+	const merged = _mergeChildren(children, merges).map(child => (notNullish(child.props.children) ? _mergeElement(child, merges) : child));
+	return { ...element, props: { ...element.props, children: merged } };
 }
 
 /** Merge same-template siblings at one directory level. */

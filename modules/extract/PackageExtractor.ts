@@ -18,7 +18,7 @@ interface PackageJson {
 export interface PackageExtractorOptions {
 	/**
 	 * Pre-extracted source tree the `package.json` exports resolve against — typically the result of
-	 * `IndexFileExtractor(MergingExtractor(DirectoryExtractor()))` over the source root.
+	 * `IndexExtractor(MergingExtractor(DirectoryExtractor()))` over the source root.
 	 */
 	readonly tree: TreeElement;
 	/**
@@ -124,39 +124,26 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 		if (suffix) throw new Error(`PackageExtractor: wildcard exports with a suffix are not supported ("${subpath}")`);
 		if (subpath.indexOf("*", wildcardIndex + 1) >= 0) throw new Error(`PackageExtractor: multiple wildcards not supported ("${subpath}")`);
 
-		// The parent directory of the wildcard.
+		// The parent element of the wildcard.
 		const prefixPath = prefix.endsWith("/") ? prefix.slice(0, -1) : prefix;
 		let parent: TreeElement;
 		if (!prefixPath) {
 			parent = this._tree;
 		} else {
 			const resolved = this._resolve(prefixPath);
-			// The wildcard parent must be a directory — a directory's key is its bare name, whereas a file's key carries a `.ext` suffix.
-			if (!resolved || resolved.key !== resolved.props.name) {
-				throw new Error(`PackageExtractor: wildcard parent "${prefixPath}" did not resolve to a directory`);
-			}
+			if (!resolved) throw new Error(`PackageExtractor: wildcard parent "${prefixPath}" did not resolve to an element in the tree`);
 			parent = resolved;
 		}
 
-		// One module per qualifying child of the parent directory.
+		// One module per qualifying child. A child's `name` is already its extension-stripped module name (e.g. `string.ts` → `string`, the `util` directory → `util`).
 		const modules: DocumentationElement[] = [];
 		for (const child of walkElements(parent.props.children)) {
 			const treeChild = child as TreeElement;
 			if (treeChild.type !== "tree-element") continue;
-			// A directory (key === name) always qualifies; a file qualifies only when it carries a known source extension.
-			let stem: string | undefined;
-			if (treeChild.key === treeChild.props.name) {
-				stem = treeChild.key;
-			} else {
-				for (const ext of this._extensions) {
-					if (treeChild.key.endsWith(`.${ext}`)) {
-						stem = treeChild.key.slice(0, -(ext.length + 1));
-						break;
-					}
-				}
-			}
-			if (!stem) continue;
-			modules.push(this._module.extract({ name: `${prefix}${stem}`, source: treeChild }));
+			// Skip non-source files (e.g. a standalone `.md`): a file's key ends in an extension that must be a known source one; directories carry no extension.
+			const dot = treeChild.key.lastIndexOf(".");
+			if (dot >= 0 && !this._extensions.includes(treeChild.key.slice(dot + 1))) continue;
+			modules.push(this._module.extract({ name: `${prefix}${treeChild.props.name}`, source: treeChild }));
 		}
 		return modules;
 	}
