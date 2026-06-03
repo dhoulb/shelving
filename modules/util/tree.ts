@@ -228,8 +228,8 @@ function* _walkTreePaths(element: TreeElement, depth: number, path: readonly str
 	if (depth <= 0) return;
 	for (const child of walkElements(element.props.children)) {
 		// Skip elements with no `name` prop (and their descendants).
-		const name = (child as TreeElement).props.name;
-		yield* _walkTreePaths(child as TreeElement, depth - 1, [...path, name]);
+		const name = child.props.name;
+		yield* _walkTreePaths(child, depth - 1, [...path, name]);
 	}
 }
 
@@ -267,7 +267,10 @@ function _flattenElement(element: TreeElement, path: readonly string[], map: Map
 	for (const child of walkElements(element.props.children))
 		_flattenElement(child as TreeElement, [...path, (child as TreeElement).props.name], map);
 }
-function _qualifiedKey(element: TreeElement): string | undefined {
-	const { class: cls, name } = element.props as DocumentationElementProps;
-	return cls ? `${cls}.${name}` : undefined;
+function _qualifiedKey(element: TreeElement | DocumentationElement): string | undefined {
+	if ("class" in element.props) {
+		const { class: className, name } = element.props;
+		if (className) return `${className}.${name}`;
+	}
+	return element.props.name;
 }
