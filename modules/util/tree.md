@@ -5,7 +5,7 @@ These types and helpers describe a **tree of elements** — a hierarchical struc
 **Things to know:**
 
 - `TreeElement` requires a non-null `key` (a slug string) and a `type` starting with `"tree-"`. Plain `Element` values can have `key: null`.
-- The JSX intrinsics (`tree-directory`, `tree-file`, `tree-documentation`) are declared here so TSX files get type-checked props.
+- The JSX intrinsics (`tree-element`, `tree-documentation`) are declared here so TSX files get type-checked props.
 - `resolveTreePath` treats the root element as a container: its own `name` is never matched. A child `name` may contain `/` (e.g. a module `"util/string"`), in which case it spans multiple path segments.
 - Element paths have no canonical string form, so `resolveTreePath` / `getTreePaths` work in raw `string[]` segments — join them however the caller needs.
 

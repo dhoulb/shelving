@@ -2,9 +2,8 @@ import type { ReactElement, ReactNode } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
 import { type AbsolutePath, splitPath } from "../../util/path.js";
 import { resolveTreePath, type TreeElement } from "../../util/tree.js";
-import { DirectoryPage } from "../docs/DirectoryPage.js";
 import { DocumentationPage } from "../docs/DocumentationPage.js";
-import { FilePage } from "../docs/FilePage.js";
+import { TreePage } from "../docs/TreePage.js";
 import { createMapper } from "../misc/Mapper.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
 
@@ -19,8 +18,7 @@ interface TreeRouterExtras {
 
 /** Mapping + Mapper pair for tree routers — wrap children in `<TreeRouterMapping>` to override. */
 export const [TreeRouterMapping, TreeRouterMapper] = createMapper<TreeRouterExtras>({
-	"tree-directory": DirectoryPage,
-	"tree-file": FilePage,
+	"tree-element": TreePage,
 	"tree-documentation": DocumentationPage,
 });
 

@@ -3,7 +3,7 @@ import { readdir } from "node:fs/promises";
 import type { ImmutableDictionary } from "../util/dictionary.js";
 import { splitFileExtension } from "../util/file.js";
 import { type AbsolutePath, anyMatch, type Matchables, type Path, requirePath, splitPath } from "../util/index.js";
-import type { DirectoryElement, TreeElement } from "../util/tree.js";
+import type { TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 import { FileExtractor } from "./FileExtractor.js";
 import { MarkupExtractor } from "./MarkupExtractor.js";
@@ -44,14 +44,14 @@ export interface DirectoryExtractorOptions {
 }
 
 /**
- * Extractor that walks a directory on disk and produces a `DirectoryElement` tree.
+ * Extractor that walks a directory on disk and produces a tree of `tree-element` nodes.
  * - Recursively descends into subdirectories.
  * - Dispatches non-ignored files to a matching `FileExtractor` based on extension; files with no matching extractor are silently skipped.
  * - Keys on the produced elements are the verbatim filenames (e.g. `"string.ts"`, `"README.md"`) and directory names (e.g. `"util"`).
  * - This is a pure walker: same-key merging and README absorption are intentionally *not* applied here — wrap with `MergingExtractor`
  *   and/or `IndexFileExtractor` to opt in to those behaviours.
  */
-export class DirectoryExtractor extends Extractor<Path, DirectoryElement> {
+export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	private readonly _extractors: ImmutableDictionary<FileExtractor>;
 	private readonly _base: AbsolutePath | undefined;
 	private readonly _ignore: Matchables;
@@ -63,11 +63,11 @@ export class DirectoryExtractor extends Extractor<Path, DirectoryElement> {
 		this._ignore = ignore;
 	}
 
-	override extract(source: Path): Promise<DirectoryElement> {
+	override extract(source: Path): Promise<TreeElement> {
 		return this._extractDirectory(requirePath(source, this._base, this.extract));
 	}
 
-	private async _extractDirectory(source: AbsolutePath): Promise<DirectoryElement> {
+	private async _extractDirectory(source: AbsolutePath): Promise<TreeElement> {
 		const name = splitPath(source).at(-1) ?? "";
 		const entries = await readdir(source, { withFileTypes: true });
 
@@ -79,7 +79,7 @@ export class DirectoryExtractor extends Extractor<Path, DirectoryElement> {
 		}
 
 		return {
-			type: "tree-directory",
+			type: "tree-element",
 			key: name,
 			props: {
 				source,

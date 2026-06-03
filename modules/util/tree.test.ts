@@ -4,33 +4,33 @@ import { flattenTree, getTreePaths, resolveTreePath } from "../index.js";
 
 const RESOLVE_TREE: TreeElement = {
 	key: "modules",
-	type: "tree-directory",
+	type: "tree-element",
 	props: {
 		name: "modules",
 		children: [
 			{
 				key: "util",
-				type: "tree-directory",
+				type: "tree-element",
 				props: {
 					name: "util",
 					children: [
-						{ key: "array", type: "tree-file", props: { name: "array", title: "Array" } },
-						{ key: "string", type: "tree-file", props: { name: "string", title: "String" } },
+						{ key: "array", type: "tree-element", props: { name: "array", title: "Array" } },
+						{ key: "string", type: "tree-element", props: { name: "string", title: "String" } },
 					],
 				},
 			},
-			{ key: "README", type: "tree-file", props: { name: "README", title: "README" } },
+			{ key: "README", type: "tree-element", props: { name: "README", title: "README" } },
 		],
 	},
 };
 
 describe("resolveTreePath()", () => {
 	test("returns the root itself for an empty path", () => {
-		expect(resolveTreePath(RESOLVE_TREE, [])).toMatchObject({ key: "modules", type: "tree-directory" });
+		expect(resolveTreePath(RESOLVE_TREE, [])).toMatchObject({ key: "modules", type: "tree-element" });
 	});
 
 	test("resolves a descendant by key", () => {
-		expect(resolveTreePath(RESOLVE_TREE, ["util"])).toMatchObject({ key: "util", type: "tree-directory" });
+		expect(resolveTreePath(RESOLVE_TREE, ["util"])).toMatchObject({ key: "util", type: "tree-element" });
 		expect(resolveTreePath(RESOLVE_TREE, ["util", "array"])).toMatchObject({ key: "array", props: { title: "Array" } });
 	});
 
@@ -62,7 +62,7 @@ const MAP_STORE: DocumentationElement = {
 };
 const MAP_TREE: TreeElement = {
 	key: "modules",
-	type: "tree-directory",
+	type: "tree-element",
 	props: { name: "modules", title: "Modules", children: [MAP_STORE] },
 };
 

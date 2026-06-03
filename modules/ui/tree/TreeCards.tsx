@@ -2,9 +2,8 @@ import type { ReactNode } from "react";
 import { walkElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import type { TreeElements } from "../../util/tree.js";
-import { DirectoryCard } from "../docs/DirectoryCard.js";
 import { DocumentationCard } from "../docs/DocumentationCard.js";
-import { FileCard } from "../docs/FileCard.js";
+import { TreeCard } from "../docs/TreeCard.js";
 import { createMapper } from "../misc/Mapper.js";
 
 /** Extras threaded through `TreeCardMapper` to every card — currently just the parent URL path. */
@@ -15,8 +14,7 @@ export interface TreeCardExtras {
 
 /** Mapping + Mapper pair for tree cards — wrap children in `<TreeCardMapping>` to override. */
 export const [TreeCardMapping, TreeCardMapper] = createMapper<TreeCardExtras>({
-	"tree-directory": DirectoryCard,
-	"tree-file": FileCard,
+	"tree-element": TreeCard,
 	"tree-documentation": DocumentationCard,
 });
 

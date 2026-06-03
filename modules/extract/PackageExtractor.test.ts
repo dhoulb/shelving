@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { AbsolutePath } from "../util/path.js";
-import type { DirectoryElement, TreeElement } from "../util/tree.js";
+import type { TreeElement } from "../util/tree.js";
 import { DirectoryExtractor } from "./DirectoryExtractor.js";
 import { IndexFileExtractor } from "./IndexFileExtractor.js";
 import { MergingExtractor } from "./MergingExtractor.js";
@@ -12,7 +12,7 @@ import { PackageExtractor } from "./PackageExtractor.js";
 /** Build a self-contained source tree on disk (independent per test, so concurrent runs don't collide). */
 async function _setup(
 	layout: (root: string) => Promise<void>,
-): Promise<{ root: AbsolutePath; tree: DirectoryElement; cleanup: () => Promise<void> }> {
+): Promise<{ root: AbsolutePath; tree: TreeElement; cleanup: () => Promise<void> }> {
 	const root = (await mkdtemp(join(tmpdir(), "shelving-pkgexttest-"))) as AbsolutePath;
 	await layout(root);
 	const tree = await new IndexFileExtractor(new MergingExtractor(new DirectoryExtractor())).extract(root);

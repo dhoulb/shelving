@@ -21,7 +21,7 @@ for (const el of walkElements(someElements)) {
 }
 
 // Filter by a match function.
-const files = Array.from(filterElements(root, el => el.type === "tree-file"));
+const files = Array.from(filterElements(root, el => el.type === "tree-element"));
 
 // Use query syntax for richer filtering, sorting, and limiting.
 const docs = Array.from(queryElements(root, { type: "tree-documentation" }));

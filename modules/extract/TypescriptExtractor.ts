@@ -8,7 +8,7 @@ import type {
 	DocumentationParam,
 	DocumentationReturn,
 	DocumentationThrow,
-	FileElementProps,
+	TreeElementProps,
 } from "../util/tree.js";
 import { FileExtractor } from "./FileExtractor.js";
 import { extractMarkdownProps } from "./MarkupExtractor.js";
@@ -25,7 +25,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - The file element itself has no `title` — a TS source file has no confident title source; renderers fall back to `name`.
  */
 export class TypescriptExtractor extends FileExtractor {
-	override extractProps(name: string, text: string): Partial<FileElementProps> & { name: string } {
+	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
 		const content = _getFileDocComment(source);
 

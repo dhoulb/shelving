@@ -92,15 +92,14 @@ This is the right tool when a component renders a tree of typed elements and cal
 import { createMapper } from "shelving/ui";
 
 const [TreeMapping, TreeMapper] = createMapper({
-  "tree-directory": DirectoryRow,
-  "tree-file": FileRow,
+  "tree-element": TreeRow,
 });
 
 // In a consumer:
 <TreeMapper>{walkElements(children)}</TreeMapper>
 
 // Override one entry in a subtree:
-<TreeMapping mapping={{ "tree-file": SpecialFileRow }}>
+<TreeMapping mapping={{ "tree-element": SpecialTreeRow }}>
   <TreeMapper>{walkElements(children)}</TreeMapper>
 </TreeMapping>
 ```

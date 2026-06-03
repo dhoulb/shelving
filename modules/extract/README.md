@@ -14,19 +14,18 @@ An `Extractor` converts an input into a `TreeElement`. Extractors are composable
 
 | Extractor | Input | Output |
 |---|---|---|
-| `DirectoryExtractor` | a directory path | `DirectoryElement`, recursing into subdirectories |
-| `FileExtractor` | a file | `FileElement` holding the raw text |
-| `MarkupExtractor` | a `.md` file | `FileElement` with `title` taken from the first `# heading` |
-| `TypescriptExtractor` | a `.ts` / `.tsx` file | `FileElement` whose children are the exported symbols |
+| `DirectoryExtractor` | a directory path | a `tree-element` node, recursing into subdirectories |
+| `FileExtractor` | a file | a `tree-element` node holding the raw text |
+| `MarkupExtractor` | a `.md` file | a `tree-element` node with `title` taken from the first `# heading` |
+| `TypescriptExtractor` | a `.ts` / `.tsx` file | a `tree-element` node whose children are the exported symbols |
 
 `DirectoryExtractor` is the entry point. It walks a directory, dispatches each file to a `FileExtractor` by extension, and recurses into subdirectories.
 
 ### The tree
 
-Every extractor produces a `TreeElement` (see [element](/util/element)). There are three element types:
+Every extractor produces a `TreeElement` (see [tree](/util/tree)). There are two element types:
 
-- `tree-directory` — a directory. Its content is absorbed from an index file.
-- `tree-file` — a file. For TypeScript, its children are the exported symbols.
+- `tree-element` — a directory or a file. A directory's content is absorbed from an index file; a file's children are its exported symbols (for TypeScript). Its `source` records the absolute path it came from.
 - `tree-documentation` — one documented symbol (function, class, type, constant), carrying the `signatures`, `params`, `returns`, `throws`, and `examples` parsed from its JSDoc.
 
 The tree is plain, JSON-serialisable data. The docs build writes it to `tree.json` so the browser can fetch it and hydrate.
@@ -53,7 +52,7 @@ import { DirectoryExtractor } from "shelving/extract";
 const root = await new DirectoryExtractor().extract("/path/to/modules");
 ```
 
-`root` is a `DirectoryElement` — the whole project as one tree.
+`root` is a `tree-element` node — the whole project as one tree.
 
 ### 2. Render with `<TreeApp>`
 
@@ -71,7 +70,7 @@ Internally `<TreeApp>` wires together:
 - [`<Router>`](/ui/router) — `/` renders the root; `/{...path}` catches every deeper path.
 - [`<TreePage>`](/ui/tree) — resolves the URL path to a tree element and renders it.
 
-`<TreePage>` dispatches on element type: `tree-directory` renders as [`<DirectoryPage>`](/ui/docs), `tree-file` as [`<FilePage>`](/ui/docs), and `tree-documentation` as [`<DocumentationPage>`](/ui/docs).
+`<TreePage>` dispatches on element type: `tree-element` renders as [`<TreePage>`](/ui/docs) and `tree-documentation` as [`<DocumentationPage>`](/ui/docs).
 
 ### 3. Build static pages
 
@@ -103,7 +102,7 @@ The tree components render through *mappings* — wrap a subtree to swap a rende
 - `<TreeCardMapping>` — the card renderer used in directory listings.
 
 ```tsx
-<TreePageMapping mapping={{ "tree-file": MyFilePage }}>
+<TreePageMapping mapping={{ "tree-element": MyTreePage }}>
   <TreeApp tree={root} />
 </TreePageMapping>
 ```

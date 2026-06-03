@@ -1,6 +1,6 @@
 import { walkElements } from "../util/element.js";
 import { type AbsolutePath, type Path, requirePath } from "../util/path.js";
-import type { DirectoryElement, DocumentationElement, FileElement, TreeElement } from "../util/tree.js";
+import type { DocumentationElement, TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 import { ModuleExtractor } from "./ModuleExtractor.js";
 
@@ -20,7 +20,7 @@ export interface PackageExtractorOptions {
 	 * Pre-extracted source tree the `package.json` exports resolve against — typically the result of
 	 * `IndexFileExtractor(MergingExtractor(DirectoryExtractor()))` over the source root.
 	 */
-	readonly tree: DirectoryElement;
+	readonly tree: TreeElement;
 	/**
 	 * Source-file extensions tried when resolving an export's last segment to a source file (e.g. `./util/string` → `string.ts`, `string.tsx`, …).
 	 * - Checked in declaration order; first match wins.
@@ -42,8 +42,8 @@ export interface PackageExtractorOptions {
  * - The `"."` root export is skipped — its content is the root tree element itself.
  * - Throws if a static export key has no matching source element in the tree.
  */
-export class PackageExtractor extends Extractor<Path, DirectoryElement> {
-	private readonly _tree: DirectoryElement;
+export class PackageExtractor extends Extractor<Path, TreeElement> {
+	private readonly _tree: TreeElement;
 	private readonly _extensions: readonly string[];
 	private readonly _module: ModuleExtractor;
 	private readonly _base: AbsolutePath | undefined;
@@ -56,7 +56,7 @@ export class PackageExtractor extends Extractor<Path, DirectoryElement> {
 		this._base = base;
 	}
 
-	override async extract(packageJson: Path): Promise<DirectoryElement> {
+	override async extract(packageJson: Path): Promise<TreeElement> {
 		const pkgPath = requirePath(packageJson, this._base, this.extract);
 		const pkg = (await Bun.file(pkgPath).json()) as PackageJson;
 		const exports = pkg.exports ?? {};
@@ -76,7 +76,7 @@ export class PackageExtractor extends Extractor<Path, DirectoryElement> {
 
 		const tree = this._tree;
 		return {
-			type: "tree-directory",
+			type: "tree-element",
 			key: pkg.name ?? tree.key,
 			props: {
 				source: tree.props.source,
@@ -90,7 +90,7 @@ export class PackageExtractor extends Extractor<Path, DirectoryElement> {
 	}
 
 	/** Resolve a static export subpath (e.g. `"firestore/client"`) to a file or directory element in the tree. */
-	private _resolve(subpath: string): FileElement | DirectoryElement | undefined {
+	private _resolve(subpath: string): TreeElement | undefined {
 		const segments = subpath.split("/");
 		let current: TreeElement = this._tree;
 		for (let i = 0; i < segments.length; i++) {
@@ -99,21 +99,21 @@ export class PackageExtractor extends Extractor<Path, DirectoryElement> {
 			let found: TreeElement | undefined;
 			for (const child of walkElements(current.props.children)) {
 				const treeChild = child as TreeElement;
-				if (treeChild.type === "tree-directory" && treeChild.key === segment) {
+				// A directory's key is the bare segment name — match at any level.
+				if (treeChild.key === segment) {
 					found = treeChild;
 					break;
 				}
-				if (isLast && treeChild.type === "tree-file") {
-					if (this._extensions.some(ext => treeChild.key === `${segment}.${ext}`)) {
-						found = treeChild;
-						break;
-					}
+				// A file's key is `${segment}.${ext}` — only valid as the final segment.
+				if (isLast && this._extensions.some(ext => treeChild.key === `${segment}.${ext}`)) {
+					found = treeChild;
+					break;
 				}
 			}
 			if (!found) return undefined;
 			current = found;
 		}
-		return current as FileElement | DirectoryElement;
+		return current;
 	}
 
 	/** Expand a wildcard export subpath (e.g. `"util/*"`) into one module per matching child. */
@@ -126,12 +126,13 @@ export class PackageExtractor extends Extractor<Path, DirectoryElement> {
 
 		// The parent directory of the wildcard.
 		const prefixPath = prefix.endsWith("/") ? prefix.slice(0, -1) : prefix;
-		let parent: DirectoryElement;
+		let parent: TreeElement;
 		if (!prefixPath) {
 			parent = this._tree;
 		} else {
 			const resolved = this._resolve(prefixPath);
-			if (!resolved || resolved.type !== "tree-directory") {
+			// The wildcard parent must be a directory — a directory's key is its bare name, whereas a file's key carries a `.ext` suffix.
+			if (!resolved || resolved.key !== resolved.props.name) {
 				throw new Error(`PackageExtractor: wildcard parent "${prefixPath}" did not resolve to a directory`);
 			}
 			parent = resolved;
@@ -141,10 +142,12 @@ export class PackageExtractor extends Extractor<Path, DirectoryElement> {
 		const modules: DocumentationElement[] = [];
 		for (const child of walkElements(parent.props.children)) {
 			const treeChild = child as TreeElement;
+			if (treeChild.type !== "tree-element") continue;
+			// A directory (key === name) always qualifies; a file qualifies only when it carries a known source extension.
 			let stem: string | undefined;
-			if (treeChild.type === "tree-directory") {
+			if (treeChild.key === treeChild.props.name) {
 				stem = treeChild.key;
-			} else if (treeChild.type === "tree-file") {
+			} else {
 				for (const ext of this._extensions) {
 					if (treeChild.key.endsWith(`.${ext}`)) {
 						stem = treeChild.key.slice(0, -(ext.length + 1));
@@ -153,7 +156,7 @@ export class PackageExtractor extends Extractor<Path, DirectoryElement> {
 				}
 			}
 			if (!stem) continue;
-			modules.push(this._module.extract({ name: `${prefix}${stem}`, source: treeChild as FileElement | DirectoryElement }));
+			modules.push(this._module.extract({ name: `${prefix}${stem}`, source: treeChild }));
 		}
 		return modules;
 	}

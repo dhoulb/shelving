@@ -7,15 +7,15 @@ import { TreeRouter } from "./TreeRouter.js";
 
 /** Minimal tree: root → `util` directory → `array` file. */
 const tree: TreeElement = {
-	type: "tree-directory",
+	type: "tree-element",
 	key: "root",
 	props: {
 		name: "shelving",
 		children: [
 			{
-				type: "tree-directory",
+				type: "tree-element",
 				key: "util",
-				props: { name: "util", children: [{ type: "tree-file", key: "array", props: { name: "array" } }] },
+				props: { name: "util", children: [{ type: "tree-element", key: "array", props: { name: "array" } }] },
 			},
 		],
 	},

@@ -38,7 +38,7 @@ interface DocumentationPageProps extends DocumentationElementProps {
 }
 
 /**
- * Page renderer for a `tree-documentation` element (also used for `tree-file` elements, whose props are a compatible subset).
+ * Page renderer for a `tree-documentation` element.
  * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`, `overrides`), signatures (one per overload), content, parameters, returns, throws, and examples.
  * - Child symbols are grouped by `kind` into card sections (Functions, Classes, Methods, Properties, …), each under its own heading.
  * - All sections are conditional — only render when they have entries.

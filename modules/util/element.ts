@@ -73,7 +73,7 @@ export function* walkElements(elements: Elements): Iterable<Element> {
 
 /**
  * Filter elements yielded by `walkElements()` using a `Query<Element>` object.
- * - Supports any property query (e.g. `{ type: "tree-file" }`, `{ type: ["tree-file", "tree-directory"] }`), sorting, limiting — anything `queryItems()` accepts.
+ * - Supports any property query (e.g. `{ type: "tree-element" }`, `{ type: ["tree-element", "tree-documentation"] }`), sorting, limiting — anything `queryItems()` accepts.
  */
 export function queryElements(elements: Elements, query: Query<Element>): Iterable<Element> {
 	return queryItems(walkElements(elements), query) as Iterable<Element>;

@@ -1,20 +1,20 @@
 import { describe, expect, test } from "bun:test";
 import type { AbsolutePath } from "../util/path.js";
-import type { DirectoryElement, DocumentationElement, FileElement, TreeElement } from "../util/tree.js";
+import type { DocumentationElement, TreeElement } from "../util/tree.js";
 import { ModuleExtractor } from "./ModuleExtractor.js";
 
-function _file(key: string, props: Partial<FileElement["props"]> = {}): FileElement {
+function _file(key: string, props: Partial<TreeElement["props"]> = {}): TreeElement {
 	const [name] = key.split(".");
 	return {
-		type: "tree-file",
+		type: "tree-element",
 		key,
 		props: { name: name ?? key, source: `/tmp/${key}` as AbsolutePath, ...props },
 	};
 }
 
-function _dir(key: string, children: TreeElement[], props: Partial<DirectoryElement["props"]> = {}): DirectoryElement {
+function _dir(key: string, children: TreeElement[], props: Partial<TreeElement["props"]> = {}): TreeElement {
 	return {
-		type: "tree-directory",
+		type: "tree-element",
 		key,
 		props: { name: key, source: `/tmp/${key}` as AbsolutePath, children, ...props },
 	};

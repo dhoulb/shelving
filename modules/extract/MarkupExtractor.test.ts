@@ -21,7 +21,7 @@ describe("MarkupExtractor", () => {
 
 	test("strips the title heading from the stored content", async () => {
 		const element = await extractor.extract(file("# Hello\n\nWorld."));
-		expect(element.type).toBe("tree-file");
+		expect(element.type).toBe("tree-element");
 		expect(element.props.title).toBe("Hello");
 		expect(element.props.content).toBe("World.");
 	});

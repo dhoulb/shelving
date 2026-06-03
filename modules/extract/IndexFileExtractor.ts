@@ -1,6 +1,6 @@
 import { mergeElements, walkElements } from "../util/element.js";
 import { anyMatch, type Matchables } from "../util/regexp.js";
-import type { DirectoryElement, TreeElement } from "../util/tree.js";
+import type { TreeElement } from "../util/tree.js";
 import type { Extractor } from "./Extractor.js";
 import { ThroughExtractor } from "./ThroughExtractor.js";
 
@@ -21,31 +21,32 @@ export interface IndexFileExtractorOptions {
 }
 
 /**
- * Through extractor that walks a `DirectoryElement` tree and absorbs each directory's index file into the directory itself.
+ * Through extractor that walks a tree of `tree-element` nodes and absorbs each directory's index file into the directory itself.
  * - For each directory: finds the first child whose `key` matches any `index` pattern.
  * - The matched child's `title`, `description`, `content`, and `children` are folded into the parent directory.
  * - The matched child is removed from the parent's children list.
  * - Recurses into subdirectories before absorbing — the deepest level happens first.
  */
-export class IndexFileExtractor<I> extends ThroughExtractor<I, DirectoryElement> {
+export class IndexFileExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	private readonly _index: Matchables;
 
-	constructor(source: Extractor<I, DirectoryElement>, { index = DEFAULT_INDEX }: IndexFileExtractorOptions = {}) {
+	constructor(source: Extractor<I, TreeElement>, { index = DEFAULT_INDEX }: IndexFileExtractorOptions = {}) {
 		super(source);
 		this._index = index;
 	}
 
-	override async extract(input: I): Promise<DirectoryElement> {
+	override async extract(input: I): Promise<TreeElement> {
 		const root = await this.source.extract(input);
 		return _absorbIndex(root, this._index);
 	}
 }
 
 /** Recursively absorb the index file in `dir` and all nested directories. */
-function _absorbIndex(dir: DirectoryElement, index: Matchables): DirectoryElement {
+function _absorbIndex(dir: TreeElement, index: Matchables): TreeElement {
 	// Recurse first so nested directories absorb their own indexes before we look at this level.
+	// Only descend into directories (whose `key` equals their `name`); files carry a `.ext` suffix and have no index to absorb.
 	const recursed = Array.from(walkElements(dir.props.children)).map(child =>
-		child.type === "tree-directory" ? _absorbIndex(child as DirectoryElement, index) : child,
+		child.key === child.props.name ? _absorbIndex(child, index) : child,
 	) as TreeElement[];
 
 	// Find the index child by key.

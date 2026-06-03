@@ -8,7 +8,7 @@ Shell components for a tree-based documentation site. Given a `TreeElement` from
 
 **`<TreePage>` resolves and dispatches.** It walks the tree by matching each URL path segment to a descendant's `key`, then hands the matched element to the right page renderer via `<TreePageMapper>`. It throws `NotFoundError` if nothing matches.
 
-**`<TreeMenu>` and `<TreeSidebar>` build navigation.** `<TreeSidebar>` renders a single home link for the root, then its children via `<TreeMenuMapper>`. `<TreeMenu>` renders a menu from a tree element's children directly. Only `tree-directory` and `tree-file` elements appear — code symbols are kept off the navigation.
+**`<TreeMenu>` and `<TreeSidebar>` build navigation.** `<TreeSidebar>` renders a single home link for the root, then its children via `<TreeMenuMapper>`. `<TreeMenu>` renders a menu from a tree element's children directly. Only generic `tree-element` nodes appear — code symbols are kept off the navigation.
 
 **`<TreeCards>` renders a card list.** It dispatches each child element to a card renderer via `<TreeCardMapper>`. Used by the page renderers in [ui/docs](/ui/docs) to fill out directory and file pages.
 
@@ -18,16 +18,16 @@ Shell components for a tree-based documentation site. Given a `TreeElement` from
 
 | Exported pair | Element types covered | What it overrides |
 |---|---|---|
-| `TreePageMapping` / `TreePageMapper` | `tree-directory`, `tree-file`, `tree-documentation` | Full-page renderer |
-| `TreeMenuMapping` / `TreeMenuMapper` | `tree-directory`, `tree-file` | Sidebar menu item |
-| `TreeCardMapping` / `TreeCardMapper` | `tree-directory`, `tree-file`, `tree-documentation` | Card in a listing |
+| `TreePageMapping` / `TreePageMapper` | `tree-element`, `tree-documentation` | Full-page renderer |
+| `TreeMenuMapping` / `TreeMenuMapper` | `tree-element`, `tree-documentation` | Sidebar menu item |
+| `TreeCardMapping` / `TreeCardMapper` | `tree-element`, `tree-documentation` | Card in a listing |
 
 ## Basic usage
 
 ```tsx
 import { TreeApp } from "shelving/ui";
 
-// tree is a DirectoryElement returned by DirectoryExtractor.
+// tree is a TreeElement returned by DirectoryExtractor.
 <TreeApp tree={tree} />
 ```
 
@@ -48,7 +48,7 @@ Wrap the app (or any subtree) with a `*Mapping` component to replace the rendere
 ```tsx
 import { TreeApp, TreePageMapping } from "shelving/ui";
 
-<TreePageMapping mapping={{ "tree-file": MyFilePage }}>
+<TreePageMapping mapping={{ "tree-element": MyTreePage }}>
   <TreeApp tree={tree} />
 </TreePageMapping>
 ```

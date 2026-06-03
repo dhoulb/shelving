@@ -19,7 +19,7 @@ const abstractStore: DocumentationElement = {
 	props: { name: "AbstractStore", kind: "class", children: [get] },
 };
 const tree: TreeElement = {
-	type: "tree-directory",
+	type: "tree-element",
 	key: "root",
 	props: { name: "shelving", children: [abstractStore] },
 };

@@ -1,6 +1,6 @@
 import { walkElements } from "../util/element.js";
 import { requireSlug } from "../util/string.js";
-import type { DirectoryElement, DocumentationElement, FileElement, TreeElement } from "../util/tree.js";
+import type { DocumentationElement, TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 
 /** Input for a `ModuleExtractor`. */
@@ -9,10 +9,10 @@ export interface ModuleExtractorInput {
 	readonly name: string;
 	/**
 	 * The source element this module is built from.
-	 * - `FileElement` — the module is backed by a single source file (with its `.md` sibling already merged in by `MergingExtractor`).
-	 * - `DirectoryElement` — the module is backed by a directory; its absorbed index file provides the content.
+	 * - A file-backed `tree-element` — the module is backed by a single source file (with its `.md` sibling already merged in by `MergingExtractor`).
+	 * - A directory-backed `tree-element` — the module is backed by a directory; its absorbed index file provides the content.
 	 */
-	readonly source: FileElement | DirectoryElement;
+	readonly source: TreeElement;
 }
 
 /**
@@ -47,7 +47,7 @@ function _collectChildren(element: TreeElement): DocumentationElement[] {
 		const treeChild = child as TreeElement;
 		if (treeChild.type === "tree-documentation") {
 			result.push(treeChild as DocumentationElement);
-		} else if (treeChild.type === "tree-directory" || treeChild.type === "tree-file") {
+		} else if (treeChild.type === "tree-element") {
 			result.push(..._collectChildren(treeChild));
 		}
 	}

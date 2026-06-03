@@ -30,6 +30,12 @@ export interface TreeElementProps extends ElementProps {
 	 * - For Markdown files this is the file's body (the title `# h1` is lifted into `title`); for TypeScript symbols this is the JSDoc description.
 	 */
 	readonly content?: string | undefined;
+	/**
+	 * Source location for the element — the absolute filesystem path it was extracted from.
+	 * - For directories this is the directory path; for files this is the file path.
+	 * - Optional: synthesised elements (e.g. `kind: "module"` documentation) have no single source.
+	 */
+	readonly source?: AbsolutePath | undefined;
 	/** Children of a tree element must be other tree elements. */
 	readonly children?: TreeElements | undefined;
 }
@@ -47,42 +53,6 @@ export interface TreeElement<P extends TreeElementProps = TreeElementProps> exte
 
 /** Collection of tree elements. */
 export type TreeElements = Elements<TreeElement>;
-
-/** Props for a directory element. */
-export interface DirectoryElementProps extends TreeElementProps {
-	/**
-	 * Source location for the element — the absolute filesystem path it was extracted from.
-	 * - For directories this is the directory path; for files this is the file path.
-	 */
-	readonly source: AbsolutePath;
-}
-
-/**
- * Element representing a directory in a file tree.
- * - Content is absorbed from an index file (e.g. `README.md` or `INDEX.md`) if present.
- * - Children are the files and subdirectories within this directory.
- */
-export interface DirectoryElement extends TreeElement<DirectoryElementProps> {
-	readonly type: "tree-directory";
-}
-
-/** Props for a file element. */
-export interface FileElementProps extends TreeElementProps {
-	/**
-	 * Source location for the element — the absolute filesystem path it was extracted from.
-	 * - For directories this is the directory path; for files this is the file path.
-	 */
-	readonly source: AbsolutePath;
-}
-
-/**
- * Element representing a file in a file tree.
- * - For TypeScript files, children are the exported code symbols.
- * - For Markdown files, children are typically empty (content is the parsed markdown).
- */
-export interface FileElement extends TreeElement<FileElementProps> {
-	readonly type: "tree-file";
-}
 
 /** A single parameter for a documented code symbol. */
 export interface DocumentationParam {
@@ -153,8 +123,7 @@ declare module "react" {
 	// biome-ignore lint/style/noNamespace: Required for JSX IntrinsicElements augmentation.
 	namespace JSX {
 		interface IntrinsicElements {
-			"tree-directory": DirectoryElementProps;
-			"tree-file": FileElementProps;
+			"tree-element": TreeElementProps;
 			"tree-documentation": DocumentationElementProps;
 		}
 	}
