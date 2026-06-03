@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { DirectoryElement, DocumentationElement, FileElement, TreeElement } from "../util/element.js";
 import type { AbsolutePath } from "../util/path.js";
+import type { DirectoryElement, DocumentationElement, FileElement, TreeElement } from "../util/tree.js";
 import { ModuleExtractor } from "./ModuleExtractor.js";
 
 function _file(key: string, props: Partial<FileElement["props"]> = {}): FileElement {

@@ -1,5 +1,6 @@
-import { type DirectoryElement, mergeElements, type TreeElement, walkElements } from "../util/element.js";
+import { mergeElements, walkElements } from "../util/element.js";
 import { anyMatch, type Matchables } from "../util/regexp.js";
+import type { DirectoryElement, TreeElement } from "../util/tree.js";
 import type { Extractor } from "./Extractor.js";
 import { ThroughExtractor } from "./ThroughExtractor.js";
 

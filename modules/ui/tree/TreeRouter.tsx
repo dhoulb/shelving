@@ -1,7 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
-import { resolveElementPath, type TreeElement } from "../../util/element.js";
 import { type AbsolutePath, splitPath } from "../../util/path.js";
+import { resolveTreePath, type TreeElement } from "../../util/tree.js";
 import { DirectoryPage } from "../docs/DirectoryPage.js";
 import { DocumentationPage } from "../docs/DocumentationPage.js";
 import { FilePage } from "../docs/FilePage.js";
@@ -37,7 +37,7 @@ export interface TreeRouterProps extends PossibleMeta {
 
 /**
  * Resolve a URL path to a tree element and render it as a full page.
- * - Walks the tree by matching each path segment to a descendant's `key` (via `resolveElementPath()`).
+ * - Walks the tree by matching each path segment to a descendant's `key` (via `resolveTreePath()`).
  * - `/` renders the root itself; deeper paths render the matching descendant.
  * - `path` is the site-root-relative path (already stripped of any `APP_URL` subfolder by `<Router>`); it is threaded to the page renderer so child cards build correct hrefs.
  * - Throws `NotFoundError` if no element matches at any level.
@@ -47,7 +47,7 @@ export function TreeRouter({ tree, fallback, ...meta }: TreeRouterProps): ReactN
 	const { path, ...combined } = requireMetaURL(meta);
 
 	// Find a `TreeElement` matching the current URL meta path.
-	const element = resolveElementPath(tree, splitPath(path));
+	const element = resolveTreePath(tree, splitPath(path));
 
 	// We render either a mapped version of the tree element, or the fallback element.
 	const route = element ? <TreeRouterMapper path={path}>{element}</TreeRouterMapper> : fallback;

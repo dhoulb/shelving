@@ -5,7 +5,7 @@ import { Navigation } from "../modules/ui/router/Navigation.js";
 import { TreeApp } from "../modules/ui/tree/TreeApp.js";
 import { TreeRouterMapping } from "../modules/ui/tree/TreeRouter.js";
 import { createMeta, type PossibleMeta } from "../modules/ui/util/meta.js";
-import type { TreeElement } from "../modules/util/element.js";
+import type { TreeElement } from "../modules/util/tree.js";
 
 export interface AppProps {
 	/** The documentation tree to render. */

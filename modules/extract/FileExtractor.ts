@@ -1,8 +1,8 @@
 import type { BunFile } from "bun";
 import { RequiredError } from "../error/RequiredError.js";
-import type { FileElement, FileElementProps } from "../util/element.js";
 import { splitFileExtension } from "../util/file.js";
 import { isAbsolutePath, splitPath } from "../util/index.js";
+import type { FileElement, FileElementProps } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 
 /**

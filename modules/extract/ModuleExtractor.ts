@@ -1,5 +1,6 @@
-import { type DirectoryElement, type DocumentationElement, type FileElement, type TreeElement, walkElements } from "../util/element.js";
+import { walkElements } from "../util/element.js";
 import { requireSlug } from "../util/string.js";
+import type { DirectoryElement, DocumentationElement, FileElement, TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 
 /** Input for a `ModuleExtractor`. */

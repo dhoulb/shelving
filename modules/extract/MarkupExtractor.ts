@@ -1,5 +1,6 @@
 import { MARKUP_PARSER } from "../markup/MarkupParser.js";
-import { type Element, type Elements, type FileElementProps, getElementText, walkElements } from "../util/element.js";
+import { type Element, type Elements, getElementText, walkElements } from "../util/element.js";
+import type { FileElementProps } from "../util/tree.js";
 import { FileExtractor } from "./FileExtractor.js";
 
 /**

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import type { FileElementProps } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
+import type { FileElementProps } from "../../util/tree.js";
 import { Prose } from "../block/Prose.js";
 import { Title } from "../block/Title.js";
 import { Markup } from "../misc/Markup.js";

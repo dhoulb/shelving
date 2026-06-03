@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import type { DocumentationElementProps } from "../../util/element.js";
+import type { DocumentationElementProps } from "../../util/tree.js";
 import { Flex } from "../style/Flex.js";
 import { DocumentationButton } from "./DocumentationButton.js";
 

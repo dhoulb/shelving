@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, use, useMemo } from "react";
-import { type ElementMapEntry, getElementMap, type TreeElement } from "../../util/element.js";
+import { type ElementMapEntry, flattenTree, type TreeElement } from "../../util/tree.js";
 
 /** Empty fallback so `useTreeMap()` always returns a map, even with no provider. */
 const EMPTY_MAP: ReadonlyMap<string, ElementMapEntry> = new Map();
@@ -9,13 +9,13 @@ export const TreeContext = createContext<ReadonlyMap<string, ElementMapEntry>>(E
 TreeContext.displayName = "TreeContext";
 
 /**
- * Provide a tree to descendants as a flattened lookup map (see `getElementMap()`).
+ * Provide a tree to descendants as a flattened lookup map (see `flattenTree()`).
  * - Flattens `tree` **once** (memoised) when set — not on every lookup in every element.
  * - Merges onto any parent `<TreeProvider>`'s map, so cross-references resolve across an entire nested set of trees; the outer (parent) tree wins on collision.
  */
 export function TreeProvider({ tree, children }: { readonly tree: TreeElement; readonly children: ReactNode }): ReactNode {
 	const parent = use(TreeContext);
-	const map = useMemo(() => getElementMap(tree, parent), [tree, parent]);
+	const map = useMemo(() => flattenTree(tree, parent), [tree, parent]);
 	return <TreeContext value={map}>{children}</TreeContext>;
 }
 

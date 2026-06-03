@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import type { DocumentationElementProps } from "../../util/element.js";
 import { type AbsolutePath, joinPath } from "../../util/path.js";
+import type { DocumentationElementProps } from "../../util/tree.js";
 import { Card } from "../block/Card.js";
 import { Paragraph } from "../block/Paragraph.js";
 import { Preformatted } from "../block/Preformatted.js";

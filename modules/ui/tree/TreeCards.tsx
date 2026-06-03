@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { type TreeElements, walkElements } from "../../util/element.js";
+import { walkElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
+import type { TreeElements } from "../../util/tree.js";
 import { DirectoryCard } from "../docs/DirectoryCard.js";
 import { DocumentationCard } from "../docs/DocumentationCard.js";
 import { FileCard } from "../docs/FileCard.js";

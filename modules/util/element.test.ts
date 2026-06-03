@@ -1,15 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
-import type { Data, DocumentationElement, Element, Elements, TreeElement } from "../index.js";
-import {
-	filterElements,
-	getElementMap,
-	getElementPaths,
-	getElementText,
-	queryElements,
-	resolveElementPath,
-	walkElements,
-} from "../index.js";
+import type { Data, Element, Elements } from "../index.js";
+import { filterElements, getElementText, queryElements, walkElements } from "../index.js";
 
 const P: Element = {
 	key: null,
@@ -142,94 +134,5 @@ describe("filterElements()", () => {
 		expect(Array.from(filterElements(null, el => el.type === "tree-file"))).toHaveLength(0);
 		expect(Array.from(filterElements(undefined, el => el.type === "tree-file"))).toHaveLength(0);
 		expect(Array.from(filterElements("hello", el => el.type === "tree-file"))).toHaveLength(0);
-	});
-});
-
-const RESOLVE_TREE: TreeElement = {
-	key: "modules",
-	type: "tree-directory",
-	props: {
-		name: "modules",
-		children: [
-			{
-				key: "util",
-				type: "tree-directory",
-				props: {
-					name: "util",
-					children: [
-						{ key: "array", type: "tree-file", props: { name: "array", title: "Array" } },
-						{ key: "string", type: "tree-file", props: { name: "string", title: "String" } },
-					],
-				},
-			},
-			{ key: "README", type: "tree-file", props: { name: "README", title: "README" } },
-		],
-	},
-};
-
-describe("resolveElementPath()", () => {
-	test("returns the root itself for an empty path", () => {
-		expect(resolveElementPath(RESOLVE_TREE, [])).toMatchObject({ key: "modules", type: "tree-directory" });
-	});
-
-	test("resolves a descendant by key", () => {
-		expect(resolveElementPath(RESOLVE_TREE, ["util"])).toMatchObject({ key: "util", type: "tree-directory" });
-		expect(resolveElementPath(RESOLVE_TREE, ["util", "array"])).toMatchObject({ key: "array", props: { title: "Array" } });
-	});
-
-	test("does not match the root's own key", () => {
-		expect(resolveElementPath(RESOLVE_TREE, ["modules"])).toBeUndefined();
-	});
-
-	test("returns undefined for non-existent keys", () => {
-		expect(resolveElementPath(RESOLVE_TREE, ["nonexistent"])).toBeUndefined();
-		expect(resolveElementPath(RESOLVE_TREE, ["util", "nonexistent"])).toBeUndefined();
-	});
-});
-
-describe("getElementPaths()", () => {
-	test("yields the root as [] plus every descendant relative to it", () => {
-		const keys = Array.from(getElementPaths(RESOLVE_TREE));
-		expect(keys).toEqual([[], ["util"], ["util", "array"], ["util", "string"], ["README"]]);
-	});
-});
-
-const MAP_MEMBERS: DocumentationElement[] = [
-	{ key: "get", type: "tree-documentation", props: { name: "get", title: "Store.get()", kind: "method", class: "Store" } },
-	{ key: "set", type: "tree-documentation", props: { name: "set", title: "Store.set()", kind: "method", class: "Store" } },
-];
-const MAP_STORE: DocumentationElement = {
-	key: "store",
-	type: "tree-documentation",
-	props: { name: "Store", kind: "class", children: MAP_MEMBERS },
-};
-const MAP_TREE: TreeElement = {
-	key: "modules",
-	type: "tree-directory",
-	props: { name: "modules", title: "Modules", children: [MAP_STORE] },
-};
-
-describe("getElementMap()", () => {
-	test("maps bare names, qualified Class.member keys, and joined paths to their entries", () => {
-		const map = getElementMap(MAP_TREE);
-		expect(map.get("Store")).toEqual({ path: ["Store"], title: "Store" });
-		expect(map.get("get")).toEqual({ path: ["Store", "get"], title: "Store.get()" });
-		expect(map.get("Store.get")).toEqual({ path: ["Store", "get"], title: "Store.get()" });
-		expect(map.get("Store.set")).toEqual({ path: ["Store", "set"], title: "Store.set()" });
-		// Joined-path key (reverse lookup for breadcrumbs), and the root under `""`.
-		expect(map.get("Store/get")).toEqual({ path: ["Store", "get"], title: "Store.get()" });
-		expect(map.get("")).toEqual({ path: [], title: "Modules" });
-	});
-
-	test("returns undefined for names not in the tree", () => {
-		expect(getElementMap(MAP_TREE).get("Serializable")).toBeUndefined();
-	});
-
-	test("merges onto a base map, with the base winning on collision", () => {
-		const base = new Map([["Store", { path: ["other", "Store"], title: "Other Store" }]]);
-		const map = getElementMap(MAP_TREE, base);
-		// Base entry wins for the colliding `Store` key, but new keys are still added.
-		expect(map.get("Store")).toEqual({ path: ["other", "Store"], title: "Other Store" });
-		expect(map.get("Store.get")).toEqual({ path: ["Store", "get"], title: "Store.get()" });
 	});
 });

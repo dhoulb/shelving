@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { DirectoryElement, FileElement, TreeElement } from "../util/element.js";
 import type { AbsolutePath } from "../util/path.js";
+import type { DirectoryElement, FileElement, TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 import { MergingExtractor } from "./MergingExtractor.js";
 

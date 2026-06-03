@@ -1,6 +1,7 @@
 import type { ImmutableDictionary } from "../util/dictionary.js";
-import { type DirectoryElement, type TreeElement, walkElements } from "../util/element.js";
+import { walkElements } from "../util/element.js";
 import { matchTemplate, renderTemplate } from "../util/template.js";
+import type { DirectoryElement, TreeElement } from "../util/tree.js";
 import type { Extractor } from "./Extractor.js";
 import { mergeTreeElements } from "./Extractor.js";
 import { ThroughExtractor } from "./ThroughExtractor.js";

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import type { FileElementProps } from "../../util/element.js";
 import { type AbsolutePath, joinPath } from "../../util/path.js";
+import type { FileElementProps } from "../../util/tree.js";
 import { Card } from "../block/Card.js";
 import { Paragraph } from "../block/Paragraph.js";
 import { Subheading } from "../block/Subheading.js";

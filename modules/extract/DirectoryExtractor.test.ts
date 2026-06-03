@@ -2,8 +2,8 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { TreeElement } from "../util/element.js";
 import type { AbsolutePath } from "../util/path.js";
+import type { TreeElement } from "../util/tree.js";
 import { DirectoryExtractor } from "./DirectoryExtractor.js";
 
 let root: string;

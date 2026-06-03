@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { TreeElement } from "../../util/element.js";
+import type { TreeElement } from "../../util/tree.js";
 import { MetaContext } from "../misc/MetaContext.js";
 import { createMeta } from "../util/meta.js";
 import { TreeRouter } from "./TreeRouter.js";

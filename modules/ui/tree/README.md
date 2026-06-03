@@ -12,7 +12,7 @@ Shell components for a tree-based documentation site. Given a `TreeElement` from
 
 **`<TreeCards>` renders a card list.** It dispatches each child element to a card renderer via `<TreeCardMapper>`. Used by the page renderers in [ui/docs](/ui/docs) to fill out directory and file pages.
 
-**`<TreeProvider>` exposes the tree for cross-linking.** It flattens the tree once (via `getElementMap()`) into a `name`/`path` → `{ path, title }` lookup and shares it on `TreeContext`; descendants read it with `useTreeMap()` to resolve cross-references (e.g. `<DocumentationButton>`, breadcrumbs) without re-walking the tree. Nested providers merge their maps, so links resolve across a combined set of trees.
+**`<TreeProvider>` exposes the tree for cross-linking.** It flattens the tree once (via `flattenTree()`) into a `name`/`path` → `{ path, title }` lookup and shares it on `TreeContext`; descendants read it with `useTreeMap()` to resolve cross-references (e.g. `<DocumentationButton>`, breadcrumbs) without re-walking the tree. Nested providers merge their maps, so links resolve across a combined set of trees.
 
 **Mappings — override any renderer.** Each dispatch layer is backed by a `[Mapping, Mapper]` pair created by `createMapper()`. Wrap any subtree with a `*Mapping` component to swap the renderer for a specific element type without touching anything else.
 

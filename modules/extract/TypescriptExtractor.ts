@@ -1,5 +1,6 @@
 import ts from "typescript";
 import type { ImmutableArray } from "../util/array.js";
+import { requireSlug } from "../util/string.js";
 import type {
 	DocumentationElement,
 	DocumentationElementProps,
@@ -8,8 +9,7 @@ import type {
 	DocumentationReturn,
 	DocumentationThrow,
 	FileElementProps,
-} from "../util/element.js";
-import { requireSlug } from "../util/string.js";
+} from "../util/tree.js";
 import { FileExtractor } from "./FileExtractor.js";
 import { extractMarkdownProps } from "./MarkupExtractor.js";
 

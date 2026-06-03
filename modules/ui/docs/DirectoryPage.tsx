@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { type DirectoryElementProps, walkElements } from "../../util/element.js";
+import { walkElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
+import type { DirectoryElementProps } from "../../util/tree.js";
 import { Heading } from "../block/Heading.js";
 import { Prose } from "../block/Prose.js";
 import { Title } from "../block/Title.js";

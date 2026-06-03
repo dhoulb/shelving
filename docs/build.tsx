@@ -5,8 +5,8 @@ import { DirectoryExtractor } from "../modules/extract/DirectoryExtractor.js";
 import { IndexFileExtractor } from "../modules/extract/IndexFileExtractor.js";
 import { MergingExtractor } from "../modules/extract/MergingExtractor.js";
 import { PackageExtractor } from "../modules/extract/PackageExtractor.js";
-import type { TreeElement } from "../modules/util/element.js";
 import type { AbsolutePath } from "../modules/util/path.js";
+import type { TreeElement } from "../modules/util/tree.js";
 import { MODULES_DIR, OUTPUT_DIR, PACKAGE_JSON_PATH } from "./env.js";
 
 /** Shape exposed by the bundled `docs/render.tsx` module. */

@@ -1,4 +1,4 @@
-import type { TreeElement } from "../util/element.js";
+import type { TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 
 /**

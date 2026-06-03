@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { type Element, filterElements, type TreeElement, type TreeElementProps } from "../../util/element.js";
+import { type Element, filterElements } from "../../util/element.js";
 import { type AbsolutePath, joinPath } from "../../util/path.js";
+import type { TreeElement, TreeElementProps } from "../../util/tree.js";
 import { Menu } from "../menu/Menu.js";
 import { MenuItem } from "../menu/MenuItem.js";
 import { createMapper } from "../misc/Mapper.js";

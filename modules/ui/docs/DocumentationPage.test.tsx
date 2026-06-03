@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { DocumentationElement } from "../../util/element.js";
+import type { DocumentationElement } from "../../util/tree.js";
 import { DocumentationPage } from "./DocumentationPage.js";
 
 /** Make a minimal `tree-documentation` child element of a given kind. */

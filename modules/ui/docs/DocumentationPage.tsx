@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
-import { type DocumentationElementProps, type Element, queryElements, type TreeElement } from "../../util/element.js";
+import { type Element, queryElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import type { Query } from "../../util/query.js";
+import type { DocumentationElementProps, TreeElement } from "../../util/tree.js";
 import { Section } from "../block/Block.js";
 import { Definition, Definitions } from "../block/Definitions.js";
 import { Heading } from "../block/Heading.js";
