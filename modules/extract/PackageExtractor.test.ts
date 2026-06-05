@@ -116,7 +116,7 @@ describe("PackageExtractor", () => {
 		});
 		try {
 			const pkg = await _writePackageJson(root, { "./api/mts-only": "./api/mts-only.mjs" });
-			const out = await new PackageExtractor({ tree, extensions: ["mts", "ts"] }).extract(pkg);
+			const out = await new PackageExtractor({ tree, extensions: { mjs: ["mts", "ts"] } }).extract(pkg);
 			const kids = Array.from(out.props.children as Iterable<TreeElement>);
 			expect(kids).toHaveLength(1);
 			expect(kids[0]?.props.name).toBe("api/mts-only");

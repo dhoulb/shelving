@@ -1,11 +1,18 @@
+import type { ImmutableDictionary } from "../util/dictionary.js";
 import { walkElements } from "../util/element.js";
 import { type AbsolutePath, type Path, requirePath } from "../util/path.js";
 import type { DocumentationElement, TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 import { ModuleExtractor } from "./ModuleExtractor.js";
 
-/** Default source-file extensions used when resolving exports back to source elements. */
-const DEFAULT_EXTENSIONS: readonly string[] = ["ts", "tsx", "js", "jsx"];
+/**
+ * Default extension mapping: maps an export *target* file extension to the *source* extensions to resolve against, in order.
+ * - `package.json` targets point at built output (e.g. `./util/*.js`), but the source tree holds source files (e.g. `string.ts`) — this bridges the two.
+ * - A `.js` target finds its `.ts` / `.tsx` / `.js` / `.jsx` source (first match wins).
+ */
+const DEFAULT_EXTENSIONS: ImmutableDictionary<readonly string[]> = {
+	js: ["ts", "tsx", "js", "jsx"],
+};
 
 /** Subset of `package.json` we read — just the bits PackageExtractor uses. */
 interface PackageJson {
@@ -22,11 +29,12 @@ export interface PackageExtractorOptions {
 	 */
 	readonly tree: TreeElement;
 	/**
-	 * Source-file extensions tried when resolving an export's last segment to a source file (e.g. `./util/string` → `string.ts`, `string.tsx`, …).
-	 * - Checked in declaration order; first match wins.
-	 * - Defaults to `["ts", "tsx", "js", "jsx"]`.
+	 * Maps an export *target* file extension (the right-hand side of an `exports` entry) to the *source* extensions to look for, in order.
+	 * - Bridges built output and source: `package.json` targets a `.js` file but the tree holds the `.ts` source.
+	 * - The first source extension that exists in the tree wins; a target extension with no mapping falls back to itself.
+	 * - Defaults to `{ js: ["ts", "tsx", "js", "jsx"] }`.
 	 */
-	readonly extensions?: readonly string[];
+	readonly extensions?: ImmutableDictionary<readonly string[]>;
 	/** `ModuleExtractor` used to build each module element. Defaults to a fresh `new ModuleExtractor()`. */
 	readonly module?: ModuleExtractor;
 	/** Absolute base path used to resolve a relative `package.json` path passed to `extract()`. */
@@ -37,14 +45,14 @@ export interface PackageExtractorOptions {
  * Extractor that reads a `package.json` and produces a flat tree of modules — one `kind: "module"`
  * `DocumentationElement` per export entry, in declaration order.
  * - Static export keys (e.g. `"./api"`, `"./firestore/client"`) become one module each.
- * - Wildcard export keys (e.g. `"./util/*"`) expand against the source tree — one module per matching child file (with
- *   an extension in `extensions`) or subdirectory.
+ * - Wildcard export keys (e.g. `"./util/*"`) expand against the source tree — one module per matching child file or subdirectory.
+ * - Each export's *target* extension (e.g. the `.js` in `"./util/*.js"`) is mapped to source extensions via `extensions`, so built `.js` paths resolve to their `.ts` sources.
  * - The `"."` root export is skipped — its content is the root tree element itself.
  * - Throws if a static export key has no matching source element in the tree.
  */
 export class PackageExtractor extends Extractor<Path, TreeElement> {
 	private readonly _tree: TreeElement;
-	private readonly _extensions: readonly string[];
+	private readonly _extensions: ImmutableDictionary<readonly string[]>;
 	private readonly _module: ModuleExtractor;
 	private readonly _base: AbsolutePath | undefined;
 
@@ -62,13 +70,16 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 		const exports = pkg.exports ?? {};
 
 		const modules: DocumentationElement[] = [];
-		for (const key of Object.keys(exports)) {
+		for (const [key, value] of Object.entries(exports)) {
 			if (key === ".") continue;
+			// `value` is the target (e.g. `"./util/*.js"`); conditional-export objects aren't supported.
+			if (typeof value !== "string") continue;
 			const subpath = key.startsWith("./") ? key.slice(2) : key;
+			const sourceExtensions = this._sourceExtensions(value);
 			if (subpath.includes("*")) {
-				modules.push(...this._expandWildcard(subpath));
+				modules.push(...this._expandWildcard(subpath, sourceExtensions));
 			} else {
-				const source = this._resolve(subpath);
+				const source = this._resolve(subpath, sourceExtensions);
 				if (!source) throw new Error(`PackageExtractor: export "${key}" has no matching source in the tree`);
 				modules.push(this._module.extract({ name: subpath, source }));
 			}
@@ -89,8 +100,15 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 		};
 	}
 
+	/** Source extensions to try for an export `target`, derived from the target's own extension via the `extensions` mapping. */
+	private _sourceExtensions(target: string): readonly string[] {
+		const dot = target.lastIndexOf(".");
+		const ext = dot >= 0 ? target.slice(dot + 1) : "";
+		return this._extensions[ext] ?? (ext ? [ext] : []);
+	}
+
 	/** Resolve a static export subpath (e.g. `"firestore/client"`) to a file or directory element in the tree. */
-	private _resolve(subpath: string): TreeElement | undefined {
+	private _resolve(subpath: string, sourceExtensions: readonly string[]): TreeElement | undefined {
 		const segments = subpath.split("/");
 		let current: TreeElement = this._tree;
 		for (let i = 0; i < segments.length; i++) {
@@ -104,8 +122,8 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 					found = treeChild;
 					break;
 				}
-				// A file's key is `${segment}.${ext}` — only valid as the final segment.
-				if (isLast && this._extensions.some(ext => treeChild.key === `${segment}.${ext}`)) {
+				// A file's key is `${segment}.${ext}` for one of the source extensions — only valid as the final segment.
+				if (isLast && sourceExtensions.some(ext => treeChild.key === `${segment}.${ext}`)) {
 					found = treeChild;
 					break;
 				}
@@ -117,7 +135,7 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 	}
 
 	/** Expand a wildcard export subpath (e.g. `"util/*"`) into one module per matching child. */
-	private _expandWildcard(subpath: string): DocumentationElement[] {
+	private _expandWildcard(subpath: string, sourceExtensions: readonly string[]): DocumentationElement[] {
 		const wildcardIndex = subpath.indexOf("*");
 		const prefix = subpath.slice(0, wildcardIndex);
 		const suffix = subpath.slice(wildcardIndex + 1);
@@ -130,7 +148,7 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 		if (!prefixPath) {
 			parent = this._tree;
 		} else {
-			const resolved = this._resolve(prefixPath);
+			const resolved = this._resolve(prefixPath, sourceExtensions);
 			if (!resolved) throw new Error(`PackageExtractor: wildcard parent "${prefixPath}" did not resolve to an element in the tree`);
 			parent = resolved;
 		}
@@ -140,9 +158,10 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 		for (const child of walkElements(parent.props.children)) {
 			const treeChild = child as TreeElement;
 			if (treeChild.type !== "tree-element") continue;
-			// Skip non-source files (e.g. a standalone `.md`): a file's key ends in an extension that must be a known source one; directories carry no extension.
+			// Include directories (no extension) and source files (extension in the mapped list); skip other files (e.g. a standalone `.md`).
 			const dot = treeChild.key.lastIndexOf(".");
-			if (dot >= 0 && !this._extensions.includes(treeChild.key.slice(dot + 1))) continue;
+			const ext = dot >= 0 ? treeChild.key.slice(dot + 1) : "";
+			if (ext && !sourceExtensions.includes(ext)) continue;
 			modules.push(this._module.extract({ name: `${prefix}${treeChild.props.name}`, source: treeChild }));
 		}
 		return modules;
