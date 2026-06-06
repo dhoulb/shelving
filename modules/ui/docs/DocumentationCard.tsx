@@ -24,6 +24,8 @@ export function DocumentationCard({
 	description,
 	signatures,
 	readonly,
+	// Drop `class` so cards omit the "member of" relation — a member card almost always sits on its own class's page already.
+	class: _memberOf,
 	...props
 }: DocumentationCardProps): ReactNode {
 	const href = joinPath(path, name);

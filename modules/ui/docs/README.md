@@ -33,7 +33,7 @@ Cards are compact link tiles used in `<TreeCards>` directory listings.
 
 **`TreeCard`** shows the title and prose lead-in inside a `<Card>` linked to the element's path — used for both directories and files.
 
-**`DocumentationCard`** shows the symbol name alongside its `<DocumentationKind>` tag (plus a `readonly` tag for read-only properties), its `<DocumentationButtons>` relations, the first signature block, and a prose lead-in.
+**`DocumentationCard`** shows the symbol name alongside its `<DocumentationKind>` tag (plus a `readonly` tag for read-only properties), its `<DocumentationButtons>` relations (excluding "member of" — a member card usually sits on its own class's page already), the first signature block, and a prose lead-in.
 
 ## DocumentationKind
 
