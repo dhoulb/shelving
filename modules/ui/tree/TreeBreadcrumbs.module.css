@@ -6,11 +6,3 @@
 		color: var(--color-light);
 	}
 }
-
-@layer overrides {
-	/* Spacing comes from the nav itself (its `space-*` variant outside, the flex `gap` between crumbs) — not from
-	 * the crumb buttons' own `margin-block`, which would otherwise leak inconsistent vertical space into the row. */
-	.breadcrumbs > * {
-		margin-block: 0;
-	}
-}

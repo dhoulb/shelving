@@ -1,9 +1,0 @@
-@import "../style/base.css";
-
-@layer overrides {
-	/* Spacing comes from the nav itself (its `space-*` variant outside, the flex `gap` between items) — not from
-	 * the child buttons' own `margin-block`, which would otherwise leak inconsistent space depending on count. */
-	.relations > * {
-		margin-block: 0;
-	}
-}

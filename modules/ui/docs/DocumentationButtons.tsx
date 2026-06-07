@@ -4,7 +4,6 @@ import { getFlexClass } from "../style/Flex.js";
 import { getSpacingClass } from "../style/Spacing.js";
 import { getClass } from "../util/css.js";
 import { DocumentationButton } from "./DocumentationButton.js";
-import styles from "./DocumentationButtons.module.css";
 
 /** Props for `DocumentationButtons` — the relational metadata of a documented symbol. */
 export interface DocumentationButtonsProps extends Pick<DocumentationElementProps, "class" | "overrides" | "extends" | "implements"> {}
@@ -34,7 +33,7 @@ export function DocumentationButtons(props: DocumentationButtonsProps): ReactEle
 	const relations = Array.from(_relations(props));
 	if (!relations.length) return null;
 	return (
-		<nav className={getClass(getFlexClass({ column: true, left: true }), getSpacingClass({ "space-normal": true }), styles.relations)}>
+		<nav className={getClass(getFlexClass({ column: true, left: true }), getSpacingClass({ "space-normal": true }))}>
 			{relations.map(([label, to]) => (
 				<DocumentationButton key={`${label}-${to}`} to={to}>
 					{`${label} ${to}`}
