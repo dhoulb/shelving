@@ -99,7 +99,7 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 	const kind = _getKind(statement);
 	if (!kind) return;
 
-	const signature = _getSignature(statement, source);
+	const signature = _getSignature(statement, source, name);
 	const params = _getParams(statement, source, jsDoc?.params);
 	const returns = _getReturns(statement, source, jsDoc?.returns);
 	const throws = jsDoc?.throws;
@@ -191,19 +191,19 @@ function _getKind(statement: ts.Statement): string | undefined {
 	if (ts.isVariableStatement(statement)) return "constant";
 }
 
-/** Get the text signature of a statement. */
-function _getSignature(statement: ts.Statement, source: ts.SourceFile): string | undefined {
+/** Get the text signature of a statement — a complete, name-prefixed declaration usable as a heading. */
+function _getSignature(statement: ts.Statement, source: ts.SourceFile, name: string): string | undefined {
 	if (ts.isFunctionDeclaration(statement)) {
 		const params = statement.parameters.map(p => p.getText(source)).join(", ");
 		const ret = statement.type ? statement.type.getText(source) : "void";
-		return `(${params}) => ${ret}`;
+		return `${name}(${params}): ${ret}`;
 	}
 	if (ts.isTypeAliasDeclaration(statement)) {
-		return statement.type.getText(source);
+		return `${name} = ${statement.type.getText(source)}`;
 	}
 	if (ts.isVariableStatement(statement)) {
 		const declaration = statement.declarationList.declarations[0];
-		if (declaration?.type) return declaration.type.getText(source);
+		if (declaration?.type) return `${name}: ${declaration.type.getText(source)}`;
 	}
 }
 
@@ -276,7 +276,7 @@ function _getClassMembers(
 		if (ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) {
 			const params = member.parameters.map(p => p.getText(source)).join(", ");
 			const ret = member.type ? member.type.getText(source) : "void";
-			const signature = `(${params}) => ${ret}`;
+			const signature = `${name}(${params}): ${ret}`;
 			const key = requireSlug(name);
 			const existingIndex = members.findIndex(m => m.key === key);
 			const existing = members[existingIndex];
@@ -316,7 +316,7 @@ function _getClassMembers(
 					class: className,
 					readonly,
 					overrides,
-					signatures: type ? [type] : undefined,
+					signatures: type ? [`${readonly ? "readonly " : ""}${name}: ${type}`] : undefined,
 				},
 			});
 		} else if (ts.isGetAccessor(member) || ts.isSetAccessor(member)) {
@@ -330,9 +330,9 @@ function _getClassMembers(
 					...existing,
 					props: {
 						...existing.props,
-						// A setter pairs with a getter → no longer read-only.
-						readonly: ts.isSetAccessor(member) ? undefined : existing.props.readonly,
-						signatures: existing.props.signatures ?? (type ? [type] : undefined),
+						// A getter + setter pair is writable — drop the read-only flag and the `readonly ` signature prefix.
+						readonly: undefined,
+						signatures: type ? [`${name}: ${type}`] : existing.props.signatures,
 						overrides: existing.props.overrides ?? overrides,
 					},
 				};
@@ -349,7 +349,7 @@ function _getClassMembers(
 						class: className,
 						readonly: ts.isGetAccessor(member) || undefined,
 						overrides,
-						signatures: type ? [type] : undefined,
+						signatures: type ? [`${ts.isGetAccessor(member) ? "readonly " : ""}${name}: ${type}`] : undefined,
 					},
 				});
 			}

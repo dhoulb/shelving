@@ -15,7 +15,7 @@ Each renderer receives the props of its element type (title, name, description, 
 
 **`TreePage`** renders a generic `tree-element` (a directory or file): its title, any absorbed prose content via `<Markup>`, then its children as a `<TreeCards>` listing. The `path` prop is threaded down so each child card links to the right path.
 
-**`DocumentationPage`** is the most detailed renderer. Before the title it renders `<TreeBreadcrumbs>` (a trail of links to the page's ancestors, from [ui/tree](/ui/tree)). The title carries a `<DocumentationKind>` tag and, for read-only properties, a `readonly` tag. Below the title `<DocumentationButtons>` lists the symbol's relations (`member of`, `extends`, `implements`, `overrides`) as links. Then it renders type signatures as preformatted blocks, prose content, and conditional sections for parameters, returns, throws, and examples. Child symbols follow as cards.
+**`DocumentationPage`** is the most detailed renderer. Before the title it renders `<TreeBreadcrumbs>` (a trail of links to the page's ancestors, from [ui/tree](/ui/tree)). The title carries a `<DocumentationKind>` tag. Below the title `<DocumentationButtons>` lists the symbol's relations (`member of`, `extends`, `implements`, `overrides`) as links. Then it renders the signature(s) as preformatted blocks (each carries the symbol's name, e.g. `refreshAll(maxAge?: number): Promise<void>`, with `readonly` folded into property signatures), prose content, and conditional sections for parameters, returns, throws, and examples. Child symbols follow as cards.
 
 ## Linking between symbols
 
@@ -33,7 +33,7 @@ Cards are compact link tiles used in `<TreeCards>` directory listings.
 
 **`TreeCard`** shows the title and prose lead-in inside a `<Card>` linked to the element's path — used for both directories and files.
 
-**`DocumentationCard`** shows the symbol name alongside its `<DocumentationKind>` tag (plus a `readonly` tag for read-only properties), its `<DocumentationButtons>` relations (excluding "member of" — a member card usually sits on its own class's page already), the first signature block, and a prose lead-in.
+**`DocumentationCard`** leads with the symbol's signature(s) as monospace `<Subheading>`s (one per overload) — the signature already carries the name (and `readonly` for properties), so there's no separate title or kind tag; the card's *colour* carries the kind. Symbols with no signature (classes, interfaces, modules) fall back to a plain-name heading. Below: its `<DocumentationButtons>` relations (excluding "member of"), and a prose lead-in.
 
 ## DocumentationKind
 

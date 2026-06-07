@@ -11,7 +11,6 @@ import { Prose } from "../block/Prose.js";
 import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
-import { Tag } from "../misc/Tag.js";
 import { Page } from "../page/Page.js";
 import { Flex } from "../style/Flex.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
@@ -56,7 +55,6 @@ export function DocumentationPage({
 	throws,
 	examples,
 	children,
-	readonly,
 	...props
 }: DocumentationPageProps): ReactNode {
 	return (
@@ -66,7 +64,6 @@ export function DocumentationPage({
 				<Flex left wrap>
 					{title ?? name}
 					{kind && <DocumentationKind kind={kind} />}
-					{readonly && <Tag yellow>readonly</Tag>}
 				</Flex>
 			</Title>
 			<DocumentationButtons {...props} />
