@@ -37,7 +37,7 @@ export function DocumentationBreadcrumbs({ path }: DocumentationBreadcrumbsProps
 	if (!crumbs.length) return null;
 
 	return (
-		<div className={getClass(getFlexClass({ left: true, wrap: true }), styles.breadcrumbs)}>
+		<nav aria-label="Breadcrumb" className={getClass(getFlexClass({ left: true, wrap: true }), styles.breadcrumbs)}>
 			{crumbs.map(({ href, label }, i) => (
 				<Fragment key={href}>
 					{i > 0 && <ChevronRightIcon />}
@@ -46,6 +46,6 @@ export function DocumentationBreadcrumbs({ path }: DocumentationBreadcrumbsProps
 					</Button>
 				</Fragment>
 			))}
-		</div>
+		</nav>
 	);
 }
