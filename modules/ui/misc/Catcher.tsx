@@ -93,7 +93,7 @@ export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
 	return (
 		<Notice status="error">
 			<p>{message}</p>
-			<RetryButton small fit />
+			<RetryButton small />
 		</Notice>
 	);
 }

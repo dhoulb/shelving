@@ -16,7 +16,6 @@
 		border-radius: var(--input-radius, var(--radius-xsmall));
 		border: var(--input-border, var(--stroke-normal)) solid var(--color-vivid);
 		padding: var(--input-padding, var(--space-small)) var(--input-padding, var(--space-small));
-		flex-grow: var(--grow-greedy);
 
 		/* Style — Inputs always use the un-variant extremes: `bg=white / text=black` (4 steps apart,
 		 * maximum readability). Variant tints surface as borders and validity colours only. */

@@ -10,9 +10,11 @@
 		--color-light: var(--button-color-light, inherit);
 		--color-white: var(--button-color-white, inherit);
 
-		/* Box */
+		/* Box — content-width by default (never grows). `min-inline-size` is the floor (a button is never
+		 * narrower than its label, even while shrinking); `max-inline-size: 100%` the ceiling. Use `full` to fill. */
 		box-sizing: border-box;
-		inline-size: 100%;
+		inline-size: fit-content;
+		min-inline-size: fit-content;
 		max-inline-size: 100%;
 		border-radius: var(--button-radius, var(--radius-xsmall));
 		border: var(--button-border, var(--stroke-normal)) solid color-mix(in oklch, var(--color-vivid) 50%, transparent);
@@ -20,7 +22,6 @@
 		padding-inline: var(--button-padding, var(--space-small));
 		margin-inline: 0;
 		margin-block: var(--button-spacing, var(--space-small));
-		flex-grow: var(--grow-timid); /* Inputs in flex rows expand timidly compared to other elements. */
 
 		/* Content */
 		white-space: nowrap;
@@ -63,8 +64,9 @@
 			padding-block: var(--button-small-padding, var(--space-xxsmall));
 			padding-inline: var(--button-small-padding, var(--space-xxsmall));
 		}
-		&.fit {
-			inline-size: fit-content;
+		&.full {
+			/* Fill the available width — basis becomes 100%, then shrinks (down to the content floor) to share a row. */
+			inline-size: 100%;
 		}
 		&.strong {
 			/* Strong appearance — `bg=vivid / text=white` (2-step pair). */

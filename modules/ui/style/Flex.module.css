@@ -8,10 +8,8 @@
 		justify-content: stretch;
 		align-items: center;
 
-		/* Children grow by default */
-		> * {
-			flex: var(--grow-normal) 1 auto;
-		}
+		/* Children are not stretched to fill: each sizes to its own `inline-size` (content by default, `100%`
+		 * for things like inputs that should fill). No default `flex-grow` — fill is a width, not a grow. */
 
 		/* Add default icon sizing. */
 		> [data-slot="icon"] {

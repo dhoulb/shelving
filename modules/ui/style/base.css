@@ -114,12 +114,6 @@
 		--duration-normal: 300ms;
 		--duration-slow: 600ms;
 
-		/* Grows */
-		--grow-greedy: 1000000; /* Take up as much space as possible. */
-		--grow-normal: 1000; /* Take up a normal amount of space. */
-		--grow-timid: 1; /* Take up minimal space. */
-		--grow-none: 0;
-
 		/* Vivid palette — the saturated middle of the 5-step scale, one per hue. */
 		--vivid-gray: oklch(60% 0.01 240); /* Subtle blue tint so neutrals don't feel "dead". */
 		--vivid-red: oklch(62% 0.2 30); /* Slightly desaturated from default — takes the edge off without losing red identity. */

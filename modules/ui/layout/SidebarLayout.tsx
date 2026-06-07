@@ -39,7 +39,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 	const contentEl = (
 		<div key={path} className={getClass(LAYOUT_CLASS, SIDEBAR_LAYOUT_CSS.content)}>
 			<div className={SIDEBAR_LAYOUT_CSS.toggle}>
-				<Button fit title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
+				<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
 					{open ? <XMarkIcon /> : <Bars3Icon />}
 				</Button>
 			</div>

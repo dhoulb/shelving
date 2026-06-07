@@ -2,11 +2,15 @@
 
 @layer components {
 	.field {
-		/* Box */
+		/* Box — full width by default (one field per row); `half` opts into 50% for two-up layouts. */
 		position: relative;
-		flex: 1 1 50%;
+		inline-size: 100%;
 		margin-inline: 0;
 		margin-block: var(--field-spacing, var(--spacing-paragraph));
+
+		&.half {
+			inline-size: 50%;
+		}
 
 		/* Contents */
 		display: flex;

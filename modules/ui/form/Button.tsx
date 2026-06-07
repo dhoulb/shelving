@@ -16,15 +16,18 @@ export interface ButtonVariants extends FlexVariants, ColorVariants {
 	outline?: boolean | undefined;
 	/** Make the button appear smaller. */
 	small?: boolean | undefined;
-	/** Make the button content-width. */
-	fit?: boolean | undefined;
+	/** Fill the available width instead of sizing to content (buttons are content-width by default). */
+	full?: boolean | undefined;
 	/** Status colour for the button (e.g. `status="success"`). */
 	status?: Status | undefined;
 }
 
 interface ButtonProps extends ButtonVariants, ClickableProps {}
 
-/** Return either a `<button>` or an `<a href="">` styled as an button, based on whether an `onClick` or `href` prop is provided. */
+/**
+ * Return either a `<button>` or an `<a href="">` styled as an button, based on whether an `onClick` or `href` prop is provided.
+ * - Content-width by default (never grows); it won't shrink below its label. Pass `full` to fill the available width.
+ */
 export function Button(props: ButtonProps): ReactElement {
 	return <Clickable {...props} className={getButtonClass(props)} />;
 }
