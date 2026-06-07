@@ -51,7 +51,7 @@
 			opacity: var(--button-disabled-opacity, 0.5);
 			cursor: default;
 		}
-		&:where(:enabled:hover, :focus:not(:focus-visible)) {
+		&:where(:enabled:hover, :any-link:hover, :focus:not(:focus-visible)) {
 			background: color-mix(in oklch, var(--color-light) 85%, var(--color-white));
 			border-color: var(--color-vivid);
 		}
@@ -69,20 +69,19 @@
 			inline-size: 100%;
 		}
 		&.strong {
-			/* Strong appearance — `bg=vivid / text=white` (2-step pair). */
 			background: var(--color-vivid);
-			border-color: var(--color-vivid);
+			border-color: transparent;
 			color: var(--color-white);
 
-			&:where(:enabled:hover, :focus:not(:focus-visible)) {
+			&:where(:enabled:hover, :any-link:hover, :focus:not(:focus-visible)) {
 				background: color-mix(in oklch, var(--color-vivid) 85%, var(--color-white));
 			}
 		}
-		&.plain:not(:hover, :focus) {
+		&.plain:not(:enabled:hover, :any-link:hover, :focus) {
 			border-color: transparent;
 			background: transparent;
 		}
-		&.outline:not(:hover, :focus) {
+		&.outline:not(:enabled:hover, :any-link:hover, :focus) {
 			background: transparent;
 		}
 	}
