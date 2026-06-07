@@ -17,7 +17,7 @@
 		td {
 			padding-block: var(--table-padding, var(--space-xsmall));
 			padding-inline: var(--table-padding, var(--space-xsmall));
-			border-block: var(--table-thickness, var(--thickness, var(--stroke-normal))) solid var(--table-color-border, var(--color-vivid));
+			border-block: var(--table-thickness, var(--thickness)) solid var(--table-color-border, var(--color-vivid));
 		}
 		th:first-child,
 		td:first-child {

@@ -13,7 +13,7 @@
 		position: relative;
 		margin-inline: 0;
 		margin-block: var(--card-spacing, var(--spacing-paragraph));
-		border: var(--card-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-vivid);
+		border: var(--card-thickness, var(--thickness)) solid var(--color-vivid);
 		padding: var(--card-padding, var(--space-normal));
 		border-radius: var(--card-radius, var(--radius-normal));
 

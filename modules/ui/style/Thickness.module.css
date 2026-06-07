@@ -1,10 +1,13 @@
 @import "base.css";
 
+@layer defaults {
+	:root {
+		/** Set a default thickness for all components that use the `--thickness` variable, which can be overridden by the `.thickness-{weight}` utility classes in this module. */
+		--thickness: var(--stroke-normal);
+	}
+}
+
 @layer variants {
-	/* Thickness variants — set the `--thickness` custom property which painted-border components read */
-	/* in their border declarations. Lets `<Card thickness-thick>` work for a Card with a top-level */
-	/* border, but also `<Table thickness-thick>` where the border lives on `<th>` / `<td>` (the Table */
-	/* component reads `--thickness` in its child rules). */
 	.thickness-none {
 		--thickness: 0;
 	}

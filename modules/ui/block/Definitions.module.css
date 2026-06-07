@@ -17,8 +17,7 @@
 			/* Gap between successive pairs (first one starts at the top with no extra space). */
 			margin-block-start: var(--definitions-gap, var(--space-xsmall));
 			padding-block-start: var(--definitions-padding, var(--space-xsmall));
-			border-block-start: var(--definitions-thickness, var(--thickness, var(--stroke-normal))) solid
-				var(--definitions-color-border, var(--color-vivid));
+			border-block-start: var(--definitions-thickness, var(--thickness)) solid var(--definitions-color-border, var(--color-vivid));
 		}
 
 		.term {

@@ -15,7 +15,7 @@
 		margin-inline: 0;
 		margin-block: var(--preformatted-spacing, var(--spacing-paragraph));
 		padding: var(--preformatted-padding, var(--space-xsmall));
-		border: var(--preformatted-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-vivid);
+		border: var(--preformatted-thickness, var(--thickness)) solid var(--color-vivid);
 		border-radius: var(--preformatted-radius, var(--radius-normal));
 
 		/* Style — `bg=light / text=dark` (2-step pair). */
