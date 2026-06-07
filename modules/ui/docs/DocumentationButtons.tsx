@@ -1,7 +1,10 @@
 import type { ReactElement } from "react";
 import type { DocumentationElementProps } from "../../util/tree.js";
-import { Flex } from "../style/Flex.js";
+import { getFlexClass } from "../style/Flex.js";
+import { getSpacingClass } from "../style/Spacing.js";
+import { getClass } from "../util/css.js";
 import { DocumentationButton } from "./DocumentationButton.js";
+import styles from "./DocumentationButtons.module.css";
 
 /** Props for `DocumentationButtons` — the relational metadata of a documented symbol. */
 export interface DocumentationButtonsProps extends Pick<DocumentationElementProps, "class" | "overrides" | "extends" | "implements"> {}
@@ -21,21 +24,22 @@ function* _relations({
 }
 
 /**
- * Render a symbol's relational metadata as a wrapping row of labelled links.
+ * Render a symbol's relational metadata as a `<nav>` column of labelled links.
  * - Each relation reads as `"{label} {Target}"` — e.g. `overrides AbstractStore.get`, `implements Serializable`, `member of Store`.
  * - The target is a `<DocumentationButton>`, so it links to the referenced page when it exists in the tree and stays a plain label otherwise.
+ * - Carries its own block spacing (`space-normal`); inner spacing is the flex gap, not the buttons' margins.
  * - Renders nothing when the symbol has no relations.
  */
 export function DocumentationButtons(props: DocumentationButtonsProps): ReactElement | null {
 	const relations = Array.from(_relations(props));
 	if (!relations.length) return null;
 	return (
-		<Flex left wrap>
+		<nav className={getClass(getFlexClass({ column: true, left: true }), getSpacingClass({ "space-normal": true }), styles.relations)}>
 			{relations.map(([label, to]) => (
 				<DocumentationButton key={`${label}-${to}`} to={to}>
 					{`${label} ${to}`}
 				</DocumentationButton>
 			))}
-		</Flex>
+		</nav>
 	);
 }

@@ -3,6 +3,7 @@ import { Fragment, type ReactElement } from "react";
 import { type AbsolutePath, joinPath, splitPath } from "../../util/path.js";
 import { Button } from "../form/Button.js";
 import { getFlexClass } from "../style/Flex.js";
+import { getSpacingClass } from "../style/Spacing.js";
 import { getClass } from "../util/css.js";
 import styles from "./TreeBreadcrumbs.module.css";
 import { useTreeMap } from "./TreeContext.js";
@@ -37,7 +38,10 @@ export function TreeBreadcrumbs({ path }: TreeBreadcrumbsProps): ReactElement | 
 	if (!crumbs.length) return null;
 
 	return (
-		<nav aria-label="Breadcrumb" className={getClass(getFlexClass({ left: true, wrap: true }), styles.breadcrumbs)}>
+		<nav
+			aria-label="Breadcrumb"
+			className={getClass(getFlexClass({ left: true, wrap: true }), getSpacingClass({ "space-normal": true }), styles.breadcrumbs)}
+		>
 			{crumbs.map(({ href, label }, i) => (
 				<Fragment key={href}>
 					{i > 0 && <ChevronRightIcon />}
