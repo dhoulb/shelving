@@ -2,8 +2,10 @@ import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { Fragment, type ReactElement } from "react";
 import { type AbsolutePath, joinPath, splitPath } from "../../util/path.js";
 import { Button } from "../form/Button.js";
-import { Flex } from "../style/Flex.js";
+import { getFlexClass } from "../style/Flex.js";
 import { useTreeMap } from "../tree/TreeContext.js";
+import { getClass } from "../util/css.js";
+import styles from "./DocumentationBreadcrumbs.module.css";
 
 /** Props for `DocumentationBreadcrumbs`. */
 export interface DocumentationBreadcrumbsProps {
@@ -35,7 +37,7 @@ export function DocumentationBreadcrumbs({ path }: DocumentationBreadcrumbsProps
 	if (!crumbs.length) return null;
 
 	return (
-		<Flex left wrap>
+		<div className={getClass(getFlexClass({ left: true, wrap: true }), styles.breadcrumbs)}>
 			{crumbs.map(({ href, label }, i) => (
 				<Fragment key={href}>
 					{i > 0 && <ChevronRightIcon />}
@@ -44,6 +46,6 @@ export function DocumentationBreadcrumbs({ path }: DocumentationBreadcrumbsProps
 					</Button>
 				</Fragment>
 			))}
-		</Flex>
+		</div>
 	);
 }
