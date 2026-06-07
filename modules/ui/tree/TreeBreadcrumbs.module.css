@@ -3,6 +3,9 @@
 @layer components {
 	/* Muted trail: the separator chevrons inherit this lighter grey (the crumb buttons set their own colour). */
 	.breadcrumbs {
-		color: var(--color-light);
+		color: var(--color-vivid);
+		justify-content: flex-start;
+		flex-wrap: wrap;
+		gap: 0;
 	}
 }

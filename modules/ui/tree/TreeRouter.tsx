@@ -3,12 +3,11 @@ import { NotFoundError } from "../../error/RequestError.js";
 import { type AbsolutePath, splitPath } from "../../util/path.js";
 import { resolveTreePath, type TreeElement } from "../../util/tree.js";
 import { DocumentationPage } from "../docs/DocumentationPage.js";
-import { TreePage } from "../docs/TreePage.js";
 import { createMapper } from "../misc/Mapper.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
-
 import type { PossibleMeta } from "../util/index.js";
 import { TreeProvider } from "./TreeContext.js";
+import { TreePage } from "./TreePage.js";
 
 /** Extras threaded through `TreeRouterMapper` to the page renderer — the site-root-relative path of the page. */
 interface TreeRouterExtras {

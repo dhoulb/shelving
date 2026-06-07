@@ -6,7 +6,7 @@ import { Prose } from "../block/Prose.js";
 import { Title } from "../block/Title.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
-import { TreeCards } from "../tree/TreeCards.js";
+import { TreeCards } from "./TreeCards.js";
 
 interface TreePageProps extends TreeElementProps {
 	/** Site-root-relative path of this page — threaded down so child cards build correct hrefs. */

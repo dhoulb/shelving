@@ -203,11 +203,11 @@ function* _walkTreePaths(element: TreeElement, depth: number, path: readonly str
 }
 
 /** An entry in the flattened tree map — enough to render a cross-link (its `path` builds the href, its `title` the label). */
-export interface ElementMapEntry {
+export interface TreeMapEntry {
 	/** Path segments from the root down to the element (consumable by `joinPath()` / `resolveTreePath()`). */
 	readonly path: readonly string[];
-	/** Display title for the element (`title ?? name`). */
-	readonly title: string;
+	/** The original tree element. */
+	readonly element: TreeElement;
 }
 
 /**
@@ -223,18 +223,17 @@ export interface ElementMapEntry {
  * @param base An existing map to merge onto (copied, not mutated). Its entries take precedence on collision.
  * @returns A map from reference/path key to its `{ path, title }` entry.
  */
-export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, ElementMapEntry>): Map<string, ElementMapEntry> {
-	const map = new Map<string, ElementMapEntry>(base);
+export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, TreeMapEntry>): Map<string, TreeMapEntry> {
+	const map = new Map<string, TreeMapEntry>(base);
 	_flattenElement(root, [], map);
 	return map;
 }
-function _flattenElement(element: TreeElement, path: readonly string[], map: Map<string, ElementMapEntry>): void {
-	const { name, title } = element.props;
-	const entry: ElementMapEntry = { path, title: title ?? name };
+function _flattenElement(element: TreeElement, path: readonly string[], map: Map<string, TreeMapEntry>): void {
+	const { name } = element.props;
+	const entry: TreeMapEntry = { path, element };
 	// Joined-path key (reverse lookup for breadcrumbs), bare name and qualified `Class.member` key — first writer wins for each.
 	for (const key of [path.join("/"), name, _qualifiedKey(element)]) if (key !== undefined && !map.has(key)) map.set(key, entry);
-	for (const child of walkElements(element.props.children))
-		_flattenElement(child as TreeElement, [...path, (child as TreeElement).props.name], map);
+	for (const child of walkElements(element.props.children)) _flattenElement(child, [...path, child.props.name], map);
 }
 function _qualifiedKey(element: TreeElement | DocumentationElement): string | undefined {
 	if ("class" in element.props) {

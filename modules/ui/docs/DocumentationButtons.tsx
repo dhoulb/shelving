@@ -3,8 +3,8 @@ import type { DocumentationElementProps } from "../../util/tree.js";
 import { PARAGRAPH_CLASS } from "../block/Paragraph.js";
 import { getFlexClass } from "../style/Flex.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { TreeButton } from "../tree/TreeButton.js";
 import { getClass } from "../util/css.js";
-import { DocumentationButton } from "./DocumentationButton.js";
 
 /** Props for `DocumentationButtons` — the relational metadata of a documented symbol, plus block-spacing overrides. */
 export interface DocumentationButtonsProps
@@ -38,9 +38,9 @@ export function DocumentationButtons(props: DocumentationButtonsProps): ReactEle
 	return (
 		<nav className={getClass(PARAGRAPH_CLASS, getFlexClass({ column: true, left: true }), getSpacingClass(props))}>
 			{relations.map(([label, to]) => (
-				<DocumentationButton key={`${label}-${to}`} to={to}>
+				<TreeButton key={`${label}-${to}`} name={to}>
 					{`${label} ${to}`}
-				</DocumentationButton>
+				</TreeButton>
 			))}
 		</nav>
 	);

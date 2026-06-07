@@ -1,11 +1,8 @@
 import { createContext, type ReactNode, use, useMemo } from "react";
-import { type ElementMapEntry, flattenTree, type TreeElement } from "../../util/tree.js";
-
-/** Empty fallback so `useTreeMap()` always returns a map, even with no provider. */
-const EMPTY_MAP: ReadonlyMap<string, ElementMapEntry> = new Map();
+import { flattenTree, type TreeElement, type TreeMapEntry } from "../../util/tree.js";
 
 /** A flattened `name`/`path` → `{ path, title }` map of the surrounding tree(s), for fast cross-reference lookup. */
-export const TreeContext = createContext<ReadonlyMap<string, ElementMapEntry>>(EMPTY_MAP);
+export const TreeContext = createContext<ReadonlyMap<string, TreeMapEntry>>(new Map());
 TreeContext.displayName = "TreeContext";
 
 /**
@@ -23,6 +20,6 @@ export function TreeProvider({ tree, children }: { readonly tree: TreeElement; r
  * Use the flattened tree lookup map from context.
  * - Returns an empty map when there's no `<TreeProvider>` above (e.g. an isolated card rendered outside the tree shell), so callers can look up freely and fall back to plain text on a miss.
  */
-export function useTreeMap(): ReadonlyMap<string, ElementMapEntry> {
+export function useTreeMap(): ReadonlyMap<string, TreeMapEntry> {
 	return use(TreeContext);
 }

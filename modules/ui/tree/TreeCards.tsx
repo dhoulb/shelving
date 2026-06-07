@@ -3,8 +3,8 @@ import { walkElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import type { TreeElements } from "../../util/tree.js";
 import { DocumentationCard } from "../docs/DocumentationCard.js";
-import { TreeCard } from "../docs/TreeCard.js";
 import { createMapper } from "../misc/Mapper.js";
+import { TreeCard } from "./TreeCard.js";
 
 /** Extras threaded through `TreeCardMapper` to every card — currently just the parent URL path. */
 export interface TreeCardExtras {
