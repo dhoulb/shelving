@@ -15,7 +15,7 @@ Each renderer receives the props of its element type (title, name, description, 
 
 **`TreePage`** renders a generic `tree-element` (a directory or file): its title, any absorbed prose content via `<Markup>`, then its children as a `<TreeCards>` listing. The `path` prop is threaded down so each child card links to the right path.
 
-**`DocumentationPage`** is the most detailed renderer. Before the title it renders `<DocumentationBreadcrumbs>` (a trail of links to the page's ancestors). The title carries a `<DocumentationKind>` tag and, for read-only properties, a `readonly` tag. Below the title `<DocumentationButtons>` lists the symbol's relations (`member of`, `extends`, `implements`, `overrides`) as links. Then it renders type signatures as preformatted blocks, prose content, and conditional sections for parameters, returns, throws, and examples. Child symbols follow as cards.
+**`DocumentationPage`** is the most detailed renderer. Before the title it renders `<TreeBreadcrumbs>` (a trail of links to the page's ancestors, from [ui/tree](/ui/tree)). The title carries a `<DocumentationKind>` tag and, for read-only properties, a `readonly` tag. Below the title `<DocumentationButtons>` lists the symbol's relations (`member of`, `extends`, `implements`, `overrides`) as links. Then it renders type signatures as preformatted blocks, prose content, and conditional sections for parameters, returns, throws, and examples. Child symbols follow as cards.
 
 ## Linking between symbols
 
@@ -25,7 +25,7 @@ Three components turn the raw relational metadata the extractor records (`class`
 
 **`DocumentationButtons`** renders a symbol's relations as a wrapping row of labelled `<DocumentationButton>`s — `overrides AbstractStore.get`, `implements Serializable`, `member of Store`, etc. Renders nothing when the symbol has no relations. Used by both `DocumentationPage` and `DocumentationCard`.
 
-**`DocumentationBreadcrumbs`** builds a trail of ancestor links from the page's own `path`, separated by `›` arrow icons, labelled from each ancestor's tree element. The current page is deliberately omitted — the `<Title>` already names it.
+(The ancestor breadcrumb trail rendered above the title is `<TreeBreadcrumbs>`, which lives in [ui/tree](/ui/tree) since it works with any tree, not just documentation.)
 
 ## Cards
 

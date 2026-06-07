@@ -14,8 +14,8 @@ import { Markup } from "../misc/Markup.js";
 import { Tag } from "../misc/Tag.js";
 import { Page } from "../page/Page.js";
 import { Flex } from "../style/Flex.js";
+import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
-import { DocumentationBreadcrumbs } from "./DocumentationBreadcrumbs.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind } from "./DocumentationKind.js";
 
@@ -61,7 +61,7 @@ export function DocumentationPage({
 }: DocumentationPageProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
-			<DocumentationBreadcrumbs path={path} />
+			<TreeBreadcrumbs path={path} />
 			<Title>
 				<Flex left wrap>
 					{title ?? name}
