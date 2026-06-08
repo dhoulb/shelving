@@ -51,7 +51,7 @@ Order, lowest to highest priority:
 |---|---|
 | `defaults` | `:root` design tokens, body baseline typography, any low-priority opt-in defaults |
 | `components` | Component-defining CSS — the bulk of the codebase: `.card`, `.button`, `.notice`, `.heading`, etc. |
-| `variants` | Cross-cutting opt-in modifiers (Color, Status, Align, Spacing, Padding, Gap, Thickness, Width, Typography, Flex). Always beat components. |
+| `variants` | Cross-cutting opt-in modifiers (Color, Status, Align, Spacing, Padding, Gap, Width, Typography, Flex). Always beat components. |
 | `overrides` | Top-priority structural overrides — `:first-child` / `:last-child` margin collapses, which need to beat variant-set margins |
 
 **Unlayered rules beat all layered rules.** A consumer theme that wraps its overrides in `@layer theme { … }` or just sets tokens at `:root` is fine; one that writes raw class selectors without participating in the layer system will silently dominate variants.
@@ -68,7 +68,6 @@ Order, lowest to highest priority:
 | [`Spacing`](./style/Spacing.tsx) | `.space-none` … `.space-xxlarge` | `margin-block` (top + bottom) |
 | [`Padding`](./style/Padding.tsx) | `.padding-none` … `.padding-xxlarge` | `padding-block` (top + bottom) |
 | [`Gap`](./style/Gap.tsx) | `.gap-none` … `.gap-xxlarge` | `gap` |
-| [`Thickness`](./style/Thickness.tsx) | `.thickness-none` … `.thickness-xxthick` | Sets `--thickness` for components that paint borders |
 | [`Width`](./style/Width.tsx) | `.narrow`, `.wide`, `.full` | `max-width` |
 | [`Typography`](./style/Typography.tsx) | `.body`, `.monospace`, `.sans`, `.serif`, `.code` + `.size-xxsmall` … `.size-xxlarge` | `font-family` + `font-size` |
 | [`Flex`](./style/Flex.tsx) | `.flex` + `.column`, `.left`, `.wrap`, etc. | Flex layout (composes `Gap`) |
@@ -76,7 +75,7 @@ Order, lowest to highest priority:
 A component using variants looks like:
 
 ```tsx
-export interface CardProps extends ColorVariants, PaddingVariants, ThicknessVariants, WidthVariants /* … */ {
+export interface CardProps extends ColorVariants, PaddingVariants, WidthVariants /* … */ {
   status?: Status | undefined;
 }
 
@@ -88,7 +87,6 @@ export function Card({ children, status, ...props }: CardProps): ReactElement {
         status && getStatusClass(status),
         getColorClass(props),
         getPaddingClass(props),
-        getThicknessClass(props),
         getWidthClass(props),
       )}
     >

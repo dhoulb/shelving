@@ -3,7 +3,6 @@ import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { type GapVariants, getGapClass } from "../style/Gap.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
-import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
@@ -17,7 +16,6 @@ export interface DefinitionsProps
 		ColorVariants,
 		GapVariants,
 		SpacingVariants,
-		ThicknessVariants,
 		TypographyVariants,
 		OptionalChildProps {}
 
@@ -35,7 +33,6 @@ export function Definitions({ children, ...variants }: DefinitionsProps): ReactE
 				getAlignClass(variants),
 				getGapClass(variants),
 				getSpacingClass(variants),
-				getThicknessClass(variants),
 				getTypographyClass(variants),
 			)}
 		>

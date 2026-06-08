@@ -7,7 +7,7 @@
  *      • `defaults`   — `:root` design tokens + body baseline + low-priority opt-in defaults.
  *      • `components` — component-defining CSS. The bulk of the codebase.
  *      • `variants`   — cross-cutting opt-in modifiers (Color, Status, Align, Spacing, Padding, Gap,
- *                       Thickness, Width, Typography, Flex). Always beat components.
+ *                       Width, Typography, Flex). Always beat components.
  *      • `overrides`  — top-priority structural overrides like `:first-child` / `:last-child` margin
  *                       collapses, which must beat variant-set margins.
  *
@@ -95,18 +95,13 @@
 		--radius-xlarge: calc(var(--radius) * 2); /* 32px */
 		--radius-xxlarge: calc(var(--radius) * 3); /* 48px */
 
-		/* Strokes — border thicknesses, also exposed via the Thickness variant utility. */
+		/* Strokes — border thicknesses. A single normal weight; components hard-code to it and expose
+		 * per-component `--x-border` / `--x-stroke` hooks to override (there are deliberately no thickness modifiers). */
 		--stroke: 2px;
-		--stroke-xxthin: calc(var(--stroke) * 0.25);
-		--stroke-xthin: calc(var(--stroke) * 0.5);
-		--stroke-thin: calc(var(--stroke) * 0.75);
 		--stroke-normal: calc(var(--stroke) * 1);
 		--stroke-thick: calc(var(--stroke) * 1.5);
-		--stroke-xthick: calc(var(--stroke) * 2);
-		--stroke-xxthick: calc(var(--stroke) * 3);
 
 		/* Semantic strokes */
-		--stroke-hairline: 1px;
 		--stroke-focus: var(--stroke-thick);
 
 		/* Durations */

@@ -5,6 +5,5 @@ export * from "./Gap.js";
 export * from "./Padding.js";
 export * from "./Spacing.js";
 export * from "./Status.js";
-export * from "./Thickness.js";
 export * from "./Typography.js";
 export * from "./Width.js";

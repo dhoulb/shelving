@@ -2,7 +2,6 @@ import type { ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getStatusClass, type Status } from "../style/Status.js";
-import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
@@ -11,7 +10,7 @@ import PANEL_CSS from "./Panel.module.css";
 /** Allowed semantic elements for a `<Panel>`. */
 export type PanelElement = "section" | "header" | "footer" | "nav" | "aside" | "article" | "div";
 
-export interface PanelProps extends ColorVariants, PaddingVariants, ThicknessVariants, TypographyVariants, OptionalChildProps {
+export interface PanelProps extends ColorVariants, PaddingVariants, TypographyVariants, OptionalChildProps {
 	/** Underlying HTML element. Defaults to `<section>`. */
 	as?: PanelElement | undefined;
 	/** Status colour for the panel (e.g. `status="success"`). */
@@ -37,7 +36,6 @@ export function Panel({ children, as = "section", status, ...props }: PanelProps
 				status && getStatusClass(status),
 				getColorClass(props),
 				getPaddingClass(props),
-				getThicknessClass(props),
 				getTypographyClass(props),
 			)}
 		>
