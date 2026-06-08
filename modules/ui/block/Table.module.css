@@ -17,7 +17,7 @@
 		td {
 			padding-block: var(--table-padding, var(--space-xsmall));
 			padding-inline: var(--table-padding, var(--space-xsmall));
-			border-block: var(--table-thickness, var(--thickness)) solid var(--table-color-border, var(--color-vivid));
+			border-block: var(--table-border, var(--table-stroke, var(--stroke-normal) solid var(--color-border)));
 		}
 		th:first-child,
 		td:first-child {
@@ -44,8 +44,9 @@
 		}
 		thead th,
 		tfoot th {
-			font-weight: var(--table-label-weight, var(--weight-strong));
-			font-size: var(--table-label-size, var(--size-small));
+			font-weight: var(--table-header-weight, var(--weight-strong));
+			font-size: var(--table-header-size, var(--size-small));
+			color: var(--table-header-color, var(--color-dark));
 		}
 	}
 }

@@ -1,70 +1,79 @@
 @import "base.css";
 
+@layer defaults {
+	:root {
+		/* Brand colours */
+		--color-primary: var(--color-blue);
+		--color-secondary: var(--color-purple);
+		--color-tertiary: var(--color-pink);
+	}
+}
+
 /* Variant classes go in `@layer variants` — the highest-priority layer, so they always win.
  * Each variant overrides the inner three steps of the 5-step scale at its scope; `--color-black`
  * and `--color-white` inherit from the page so the unchanging extremes stay available. */
 @layer variants {
-	/* Named colors */
+	.gray,
+	.red,
+	.orange,
+	.yellow,
+	.green,
+	.aqua,
+	.blue,
+	.purple,
+	.pink,
+	.primary,
+	.secondary,
+	.tertiary {
+		/* Color scale */
+		--color-black: black;
+		--color-dark: oklch(from var(--color-vivid) calc(l - 0.22) c h);
+		--color-light: color-mix(in oklch, var(--color-vivid) 20%, white);
+		--color-white: white;
+
+		/* Semantic colors */
+		--color-link: inherit;
+		--color-border: color-mix(in oklch, var(--color-vivid) 40%, white);
+		--color-shadow: color-mix(in oklch, var(--color-vivid) 40%, transparent);
+	}
+
+	/* Basic colors */
 	.gray {
-		--color-dark: var(--dark-gray);
-		--color-vivid: var(--vivid-gray);
-		--color-light: var(--light-gray);
+		--color-vivid: var(--color-gray);
 	}
 	.red {
-		--color-dark: var(--dark-red);
-		--color-vivid: var(--vivid-red);
-		--color-light: var(--light-red);
+		--color-vivid: var(--color-red);
 	}
 	.orange {
-		--color-dark: var(--dark-orange);
-		--color-vivid: var(--vivid-orange);
-		--color-light: var(--light-orange);
+		--color-vivid: var(--color-orange);
 	}
 	.yellow {
-		--color-dark: var(--dark-yellow);
-		--color-vivid: var(--vivid-yellow);
-		--color-light: var(--light-yellow);
+		--color-vivid: var(--color-yellow);
 	}
 	.green {
-		--color-dark: var(--dark-green);
-		--color-vivid: var(--vivid-green);
-		--color-light: var(--light-green);
+		--color-vivid: var(--color-green);
 	}
 	.aqua {
-		--color-dark: var(--dark-aqua);
-		--color-vivid: var(--vivid-aqua);
-		--color-light: var(--light-aqua);
+		--color-vivid: var(--color-aqua);
 	}
 	.blue {
-		--color-dark: var(--dark-blue);
-		--color-vivid: var(--vivid-blue);
-		--color-light: var(--light-blue);
+		--color-vivid: var(--color-blue);
 	}
 	.purple {
-		--color-dark: var(--dark-purple);
-		--color-vivid: var(--vivid-purple);
-		--color-light: var(--light-purple);
+		--color-vivid: var(--color-purple);
 	}
 	.pink {
-		--color-dark: var(--dark-pink);
-		--color-vivid: var(--vivid-pink);
-		--color-light: var(--light-pink);
+		--color-vivid: var(--color-pink);
 	}
 
 	/* Brand colors */
 	.primary {
-		--color-dark: var(--dark-primary);
-		--color-vivid: var(--vivid-primary);
-		--color-light: var(--light-primary);
+		--color-vivid: var(--color-primary);
 	}
 	.secondary {
-		--color-dark: var(--dark-secondary);
-		--color-vivid: var(--vivid-secondary);
-		--color-light: var(--light-secondary);
+		--color-vivid: var(--color-secondary);
 	}
 	.tertiary {
-		--color-dark: var(--dark-tertiary);
-		--color-vivid: var(--vivid-tertiary);
-		--color-light: var(--light-tertiary);
+		--color-vivid: var(--color-tertiary);
 	}
 }

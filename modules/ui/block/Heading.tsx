@@ -5,7 +5,10 @@ import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
-import styles from "./Heading.module.css";
+import HEADING_CSS from "./Heading.module.css";
+
+export const HEADING_CLASS = getModuleClass(HEADING_CSS, "heading");
+export const HEADING_PROSE_CLASS = getModuleClass(HEADING_CSS, "prose");
 
 /** Props shared by `Title`, `Heading`, and `Subheading`. */
 export interface HeadingProps extends AlignVariants, ColorVariants, SpacingVariants, TypographyVariants, ChildProps {
@@ -25,7 +28,7 @@ export function Heading({ level = "2", children, ...variants }: HeadingProps): R
 	return (
 		<Element
 			className={getClass(
-				getModuleClass(styles, "heading"),
+				HEADING_CLASS,
 				getColorClass(variants),
 				getAlignClass(variants),
 				getSpacingClass(variants),

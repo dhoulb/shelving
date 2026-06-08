@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import type { DocumentationElementProps } from "../../util/tree.js";
 import { PARAGRAPH_CLASS } from "../block/Paragraph.js";
 import { getFlexClass } from "../style/Flex.js";
+import { getGapClass } from "../style/Gap.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { TreeButton } from "../tree/TreeButton.js";
 import { getClass } from "../util/css.js";
@@ -36,7 +37,7 @@ export function DocumentationButtons(props: DocumentationButtonsProps): ReactEle
 	const relations = Array.from(_relations(props));
 	if (!relations.length) return null;
 	return (
-		<nav className={getClass(PARAGRAPH_CLASS, getFlexClass({ column: true, left: true }), getSpacingClass(props))}>
+		<nav className={getClass(PARAGRAPH_CLASS, getFlexClass({ wrap: true, left: true }), getSpacingClass(props), getGapClass("gap-none"))}>
 			{relations.map(([label, to]) => (
 				<TreeButton key={`${label}-${to}`} name={to}>
 					{`${label} ${to}`}

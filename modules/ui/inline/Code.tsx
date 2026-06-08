@@ -1,9 +1,10 @@
 import type { ReactElement } from "react";
-import { getClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
-import styles from "./Code.module.css";
+import { getModuleClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/index.js";
+import CODE_CSS from "./Code.module.css";
 
-const CODE_CLASS = getClass(styles.code);
+export const CODE_CLASS = getModuleClass(CODE_CSS, "code");
+export const CODE_PROSE_CLASS = getModuleClass(CODE_CSS, "prose");
 
 export interface CodeProps extends OptionalChildProps {}
 

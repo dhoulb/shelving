@@ -16,17 +16,24 @@
 
 	/* Scrollable region — keyboard-focusable horizontal scroll container. */
 	.scrollable,
-	.prose [role="region"][tabindex="0"] {
+	.prose [role="region"][tabindex] {
+		/* Scrolling */
+		overflow-y: hidden;
 		overflow-x: auto;
-		overscroll-behavior: contain;
+		overscroll-behavior-y: auto;
+		overscroll-behavior-x: none;
 
-		&:focus-visible {
-			outline: var(--focus-stroke, var(--stroke-thick)) solid var(--focus-color, var(--color-focus));
-			outline-offset: var(--focus-offset, var(--space-xxsmall));
+		/* Style */
+		outline: var(--block-focus-border, var(--stroke-thick) solid var(--color-focus));
+		outline-offset: calc(0px - var(--stroke-normal));
+
+		&:not(:focus-visible) {
+			outline-color: transparent;
 		}
 
 		/* Stretch the inner block to fill the scroll container so short content still spans the width. */
 		> :is(table, pre) {
+			box-sizing: border-box;
 			min-width: 100%;
 		}
 
@@ -47,29 +54,15 @@
 	.caption,
 	.prose figcaption {
 		display: block;
-		margin-block: var(--caption-gap, var(--space-xsmall));
+		margin-block: var(--caption-gap, var(--space-xxsmall));
 		font-size: var(--caption-size, var(--size-small));
 		text-align: var(--caption-align, left);
-	}
-
-	/* Captions have tighter margins than most block elements, so zero the abutting margin of any */
-	/* neighbouring sibling — otherwise margin collapse would let the bigger neighbour margin win, */
-	/* drifting the caption away from its content. */
-	.caption + *,
-	.prose figcaption + * {
-		margin-block-start: 0;
-	}
-	:has(+ .caption),
-	.prose :has(+ figcaption) {
-		margin-block-end: 0;
 	}
 }
 
 @layer overrides {
 	.block,
-	.prose :where(section, article, aside, nav, header, footer, figure),
-	.caption,
-	.prose figcaption {
+	.prose :where(section, article, aside, nav, header, footer, figure) {
 		&:first-child {
 			margin-block-start: 0;
 		}

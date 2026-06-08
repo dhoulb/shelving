@@ -2,14 +2,18 @@
 
 @layer components {
 	.modal {
+		/* Box */
 		margin: auto;
+		width: var(--modal-width, var(--width-narrow));
 		max-width: 100%;
+		border: var(--modal-border, var(--stroke-normal) solid color-mix(in oklch, var(--color-vivid) 50%, transparent));
 		border-radius: var(--modal-radius, var(--radius-normal));
-		border: var(--modal-border, var(--stroke-normal)) solid var(--modal-color-border, var(--color-vivid));
 		background: var(--modal-color-bg, var(--color-white));
 		padding: var(--modal-padding, var(--space-normal));
+
+		/* Style */
 		color: var(--modal-color-text, var(--color-black));
+		transition: var(--modal-transition, all var(--duration-fast));
 		box-shadow: var(--modal-shadow, var(--shadow-normal));
-		width: var(--modal-width, var(--width-narrow));
 	}
 }

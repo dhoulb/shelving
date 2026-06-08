@@ -2,19 +2,13 @@
 
 @layer components {
 	.tag {
-		/* Identity */
-		--color-black: var(--tag-color-black, inherit);
-		--color-dark: var(--tag-color-dark, inherit);
-		--color-vivid: var(--tag-color-vivid, inherit);
-		--color-light: var(--tag-color-light, inherit);
-		--color-white: var(--tag-color-white, inherit);
-
 		/* Box */
 		display: inline-block;
-		flex: 0 0 fit-content; /* Content-width; never grow or shrink, like icons. */
-		max-width: 100%;
+		inline-size: fit-content;
+		min-inline-size: fit-content;
+		max-inline-size: 100%;
 		padding: var(--tag-padding, 0 var(--space-xxsmall));
-		border: 0;
+		border: var(--tag-border, 0);
 		border-radius: var(--tag-radius, var(--radius-xxsmall));
 
 		/* Content */
@@ -23,8 +17,10 @@
 		white-space: nowrap;
 
 		/* Style — `bg=light / text=dark` (2-step pair). */
-		background: var(--color-light);
-		color: var(--color-dark);
+		background: var(--tag-background, var(--color-light));
+		color: var(--tag-color, var(--color-dark));
+		outline: var(--tag-focus-border, var(--stroke-focus) solid var(--color-focus));
+		outline-offset: calc(0px - var(--stroke-normal));
 
 		/* Typography */
 		font-family: var(--tag-font, var(--font-body));
@@ -33,20 +29,26 @@
 		line-height: var(--tag-leading, var(--leading));
 		text-transform: uppercase;
 		text-decoration: none;
-		letter-spacing: 0.05em;
 
+		/* Pseudo-classes */
+		&:hover {
+			background: var(--tag-hover-background, color-mix(in oklch, var(--color-light) 85%, white));
+		}
+		&:not(:focus-visible) {
+			outline-color: transparent;
+		}
+
+		/* Variants. */
 		&.small {
 			font-size: calc(var(--tag-size, var(--size-small)) * 0.85);
 			padding: 0 calc(var(--space-xxsmall) * 0.75);
 		}
+	}
+}
 
-		&:hover {
-			filter: brightness(0.95);
-		}
-
-		&:focus-visible {
-			outline: var(--stroke-focus) solid var(--color-focus);
-			outline-offset: 2px;
-		}
+@layer variants {
+	.tag {
+		background: var(--color-light);
+		color: var(--color-dark);
 	}
 }

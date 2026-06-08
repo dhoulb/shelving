@@ -17,26 +17,8 @@ import { STRING, DataSchema } from "shelving"
 import { MemoryDBProvider } from "shelving/db"
 ```
 
-## Modules
-
-| Module | Description |
-|---|---|
-| [schema](/schema) | Schema validation — the foundation of everything |
-| [db](/db) | Database provider abstraction (Collections, providers, queries) |
-| [api](/api) | API provider abstraction (Endpoints, providers, caching) |
-| [store](/store) | Observable state containers, Suspense-compatible |
-| [sequence](/sequence) | Async-iterable utilities (`DeferredSequence`) |
-| [react](/react) | React hooks for stores and sequences |
-| [ui](/ui) | React component library — forms, content, layout, routing |
-| [error](/error) | Typed error classes |
-| [util](/util) | Typed helpers for arrays, objects, strings, data, queries, updates |
-| [markup](/markup) | Markdown renderer for user-facing content |
-| [cloudflare](/cloudflare) | Cloudflare Workers providers (KV, D1) |
-| [firestore](/firestore) | Firestore providers (client, lite, server) |
-| [bun](/bun) | Bun PostgreSQL provider |
-| [extract](/extract) | Builds documentation trees from source files |
-| [test](/test) | Shared test fixtures and assertion helpers |
-
 ## Changelog
 
 See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
+
+## Modules

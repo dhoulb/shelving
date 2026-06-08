@@ -2,29 +2,38 @@
 
 @layer components {
 	.notice {
-		/* Identity */
+		/* Theme */
 		--color-black: var(--notice-color-black, inherit);
 		--color-dark: var(--notice-color-dark, inherit);
 		--color-vivid: var(--notice-color-vivid, inherit);
 		--color-light: var(--notice-color-light, inherit);
 		--color-white: var(--notice-color-white, inherit);
+		--color-border: var(--notice-color-border, inherit);
 
 		/* Box */
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--notice-spacing, var(--spacing-paragraph));
 		border-radius: var(--notice-radius, var(--radius-xsmall));
-		border: var(--notice-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-vivid);
+		border: var(--notice-border, var(--notice-stroke, var(--stroke-normal)) solid var(--color-border));
 		padding: var(--notice-padding, var(--space-small));
 
-		/* Style — `bg=light / text=dark` (2-step pair). */
-		background: var(--color-light);
-		color: var(--color-vivid);
+		/* Style */
+		background: var(--notice-background, var(--color-light));
+		color: var(--notice-color, var(--color-vivid));
 
 		/* Typography */
 		font-size: var(--notice-size, var(--size-normal));
 		font-weight: var(--notice-weight, var(--weight-strong));
 		text-align: start;
+	}
+}
+
+@layer variants {
+	.notice {
+		background: var(--color-light);
+		border: var(--notice-stroke, var(--stroke-normal)) solid var(--color-border);
+		color: var(--color-dark);
 	}
 }
 

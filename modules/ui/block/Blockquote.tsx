@@ -6,7 +6,10 @@ import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import styles from "./Blockquote.module.css";
+import BLOCKQUOTE_CSS from "./Blockquote.module.css";
+
+export const BLOCKQUOTE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "blockquote");
+export const BLOCKQUOTE_PROSE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "prose");
 
 export interface BlockquoteProps
 	extends AlignVariants,
@@ -20,7 +23,7 @@ export function Blockquote({ children, ...variants }: BlockquoteProps): ReactEle
 	return (
 		<blockquote
 			className={getClass(
-				getModuleClass(styles, "blockquote"),
+				BLOCKQUOTE_CLASS,
 				getColorClass(variants),
 				getAlignClass(variants),
 				getSpacingClass(variants),

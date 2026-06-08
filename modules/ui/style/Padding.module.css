@@ -1,9 +1,7 @@
 @import "base.css";
 
 @layer variants {
-	/* Block-padding variants — sets padding-block (top + bottom) only. Inline padding is left untouched */
-	/* deliberately: if you want narrower inline content inside a wide container (e.g. a Panel), compose */
-	/* a `<Block narrow>` (or `<Block wide>`) inside it rather than reducing the panel's inline padding. */
+	/* Block-padding variants. */
 	.padding-none {
 		padding-block: 0;
 	}

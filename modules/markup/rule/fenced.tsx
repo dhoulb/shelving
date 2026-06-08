@@ -26,18 +26,14 @@ export const FENCED_RULE = createMarkupRule<{
 		const caption = title?.trim();
 		// Scrollable region pattern: focusable, labelled <figure> wraps the code block so keyboard users can arrow-scroll wide lines.
 		return caption ? (
-			// biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region pattern needs keyboard focus
-			// biome-ignore lint/a11y/useSemanticElements: <figure> is the spec-blessed wrapper for self-contained code blocks
-			<figure key={key} tabIndex={0} role="region" aria-label="Scrollable region">
+			<figure key={key}>
 				<figcaption>{caption}</figcaption>
 				<pre>
 					<code>{code.trim()}</code>
 				</pre>
 			</figure>
 		) : (
-			// biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable region pattern needs keyboard focus
-			// biome-ignore lint/a11y/useSemanticElements: <figure> is the spec-blessed wrapper for self-contained code blocks
-			<figure key={key} tabIndex={0} role="region" aria-label="Scrollable region">
+			<figure key={key}>
 				<pre>
 					<code>{code.trim()}</code>
 				</pre>

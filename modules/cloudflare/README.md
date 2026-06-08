@@ -23,17 +23,13 @@ Items are stored as JSON under keys formatted as `collection:id`. `addItem()` ge
 npm install shelving
 ```
 
-**`wrangler.toml`:**
-
-```toml
+```wrangler.toml
 [[kv_namespaces]]
 binding = "MY_KV"
 id = "your-kv-namespace-id"
 ```
 
-**Worker:**
-
-```ts
+```worker.ts
 import { CloudflareKVProvider } from "shelving/cloudflare";
 
 export default {
@@ -52,18 +48,14 @@ D1 is Cloudflare's edge SQLite database. It supports collection queries with fil
 
 Tables must exist before the provider can read or write. Use `SQLiteMigrator` from `shelving/db` to create and migrate tables from your collection definitions.
 
-**`wrangler.toml`:**
-
-```toml
+```wrangler.toml
 [[d1_databases]]
 binding = "MY_DB"
 database_name = "my-database"
 database_id = "your-d1-database-id"
 ```
 
-**Worker:**
-
-```ts
+```worker.ts
 import { CloudflareD1Provider } from "shelving/cloudflare";
 import { SQLiteMigrator } from "shelving/db";
 import { USERS } from "./collections.js";

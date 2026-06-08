@@ -5,9 +5,9 @@
 	.prose hr {
 		display: block;
 		border: 0;
+		border-block-start: var(--divider-border, var(--divider-thickness, var(--stroke-normal)) solid var(--color-border));
 		margin-inline: 0;
 		margin-block: var(--divider-spacing, var(--spacing-paragraph));
-		border-block-start: var(--divider-thickness, var(--thickness)) solid var(--divider-color, var(--color-vivid));
 	}
 }
 

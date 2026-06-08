@@ -9,7 +9,10 @@ import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
-import styles from "./Address.module.css";
+import ADDRESS_CSS from "./Address.module.css";
+
+export const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
+export const ADDRESS_PROSE_CLASS = getModuleClass(ADDRESS_CSS, "prose");
 
 export interface AddressProps extends AlignVariants, ColorVariants, SpacingVariants, TypographyVariants, ChildProps {}
 
@@ -28,7 +31,7 @@ export function Address({ children, ...variants }: AddressProps) {
 	return (
 		<address
 			className={getClass(
-				getModuleClass(styles, "address"),
+				ADDRESS_CLASS,
 				getColorClass(variants),
 				getAlignClass(variants),
 				getSpacingClass(variants),

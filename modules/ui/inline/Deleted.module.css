@@ -4,7 +4,7 @@
 	.deleted,
 	.prose del {
 		/* Style */
-		color: var(--vivid-red);
+		color: var(--color-red);
 		text-decoration: line-through var(--stroke-normal);
 
 		/* Typography */

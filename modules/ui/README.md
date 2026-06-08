@@ -39,7 +39,7 @@ A useful mental model: **step distance encodes contrast strength**.
 
 Components pick whichever pair fits their content; variants only ever set the inner three steps, so a component that renders `bg=light` and `text=dark` automatically inherits the right tint when wrapped in `.red`, `.success`, etc.
 
-The base palette underneath the scale defines three shades per hue: `--vivid-red`, `--light-red`, `--dark-red` (and the same for orange, yellow, green, aqua, blue, purple, pink, plus `--*-gray` for the default neutrals). The default `:root` value of `--color-vivid` is `var(--vivid-gray)` and so on — grey is just the variant you get when no colour variant is applied.
+The base palette underneath the scale defines three shades per hue: `--color-red`, `--light-red`, `--dark-red` (and the same for orange, yellow, green, aqua, blue, purple, pink, plus `--*-gray` for the default neutrals). The default `:root` value of `--color-vivid` is `var(--color-gray)` and so on — grey is just the variant you get when no colour variant is applied.
 
 **`--color-black` and `--color-white` are theme-scoped, not literal.** They're the extremes of the active scale. In a dark theme they'd be a deep navy and a soft cream. For literal black or white pixels (neutral hover blends, etc.) use the CSS keywords `black` / `white` directly — they sit outside the scale entirely.
 
@@ -183,8 +183,8 @@ The docs theme wants peach surfaces with normal near-black text, so it retints *
 
 Two more rules keep a theme clean:
 
-- **If you do move a whole hue, move the anchor.** The `--light-<hue>` / `--dark-<hue>` tokens are defined in `base.css` as expressions over `--vivid-<hue>`, resolved lazily at use-time. Overriding `--vivid-orange` at `:root` re-tints the whole orange family for free, so `var(--light-orange)` / `var(--dark-orange)` stay coherent.
-- **Pin the exceptions back — and pin *every* step the component paints.** A component that should resist a global retint sets its own hooks. But a component rebinds the *whole* scale, and any step you leave unpinned still inherits the page colour. The docs site keeps Buttons purple by pinning both steps the default variant paints — `--button-color-light: var(--light-purple)` (background) and `--button-color-vivid: var(--vivid-purple)` (border/label) — plus `--button-color-white` for the `strong` label. Pinning only `vivid` would leave the default button's `bg=light` background inheriting the page peach: a purple-bordered peach button. Check which steps the variant in use actually paints (default = `light`+`vivid`, `strong` = `vivid`+`white`) and pin all of them.
+- **If you do move a whole hue, move the anchor.** The `--light-<hue>` / `--dark-<hue>` tokens are defined in `base.css` as expressions over `--color-<hue>`, resolved lazily at use-time. Overriding `--color-orange` at `:root` re-tints the whole orange family for free, so `var(--light-orange)` / `var(--dark-orange)` stay coherent.
+- **Pin the exceptions back — and pin *every* step the component paints.** A component that should resist a global retint sets its own hooks. But a component rebinds the *whole* scale, and any step you leave unpinned still inherits the page colour. The docs site keeps Buttons purple by pinning both steps the default variant paints — `--button-color-light: var(--light-purple)` (background) and `--button-color-vivid: var(--color-purple)` (border/label) — plus `--button-color-white` for the `strong` label. Pinning only `vivid` would leave the default button's `bg=light` background inheriting the page peach: a purple-bordered peach button. Check which steps the variant in use actually paints (default = `light`+`vivid`, `strong` = `vivid`+`white`) and pin all of them.
 
 ### How `:first-child` / `:last-child` margin overrides work
 

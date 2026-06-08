@@ -9,31 +9,49 @@
 		--color-vivid: var(--preformatted-color-vivid, inherit);
 		--color-light: var(--preformatted-color-light, inherit);
 		--color-white: var(--preformatted-color-white, inherit);
+		--color-button: var(--preformatted-color-button, inherit);
 
 		/* Box */
-		display: block;
+		position: relative;
 		margin-inline: 0;
 		margin-block: var(--preformatted-spacing, var(--spacing-paragraph));
-		padding: var(--preformatted-padding, var(--space-xsmall));
-		border: var(--preformatted-thickness, var(--thickness)) solid var(--color-vivid);
+		border: var(--preformatted-border, var(--preformatted-stroke, var(--stroke-normal)) solid var(--color-border));
+		padding: var(--preformatted-padding, var(--space-normal));
 		border-radius: var(--preformatted-radius, var(--radius-normal));
+		width: 100%;
+		box-sizing: border-box;
 
-		/* Style — `bg=light / text=dark` (2-step pair). */
+		/* Style */
 		background-color: var(--color-light);
-		color: var(--color-dark);
-		tab-size: 2;
+		color: var(--color-black);
+		box-shadow: var(--preformatted-shadow, none);
+		transition: var(--preformatted-transition, all var(--duration-fast));
+		outline: var(--preformatted-focus-border, var(--stroke-focus) solid transparent);
+		outline-offset: calc(0px - var(--preformatted-stroke, var(--stroke-normal)));
 
 		/* Typography */
 		font-family: var(--preformatted-font, var(--font-code));
+		font-size: var(--size-normal);
+		font-weight: var(--weight-normal);
+		color: var(--color-black);
+		tab-size: 2;
 
-		/* Wrap long lines by default. */
-		white-space: pre-wrap;
-		overflow-wrap: anywhere;
+		/* Contents */
+		white-space: preserve nowrap;
+		overflow-wrap: none;
+
+		/* Scrolling */
+		overflow-y: hidden;
+		overflow-x: auto;
+		overscroll-behavior-y: auto;
+		overscroll-behavior-x: none;
+		scroll-behavior: smooth;
 
 		/* Variants */
-		&.nowrap {
-			white-space: pre;
-			overflow-wrap: normal;
+		&.wrap {
+			text-wrap: wrap;
+			overflow-wrap: anywhere;
+			width: 100%;
 		}
 	}
 }

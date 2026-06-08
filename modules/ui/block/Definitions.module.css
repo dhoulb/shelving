@@ -3,48 +3,34 @@
 @layer components {
 	.definitions,
 	.prose dl {
+		/* Box */
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--definitions-spacing, var(--spacing-paragraph));
+
+		/* Typography */
 		text-align: var(--definitions-align, left);
+		font-family: var(--definitions-font, var(--font-body));
+		font-weight: var(--definitions-weight, var(--weight-normal));
+		font-size: var(--definitions-size, var(--size-normal));
+		color: var(--definitions-color, var(--color-black));
 
 		/* Children */
-		.pair {
-			display: block;
-			padding-block: var(--definitions-padding, var(--space-xsmall));
-		}
-		.pair + .pair {
-			/* Gap between successive pairs (first one starts at the top with no extra space). */
-			margin-block-start: var(--definitions-gap, var(--space-xsmall));
-			padding-block-start: var(--definitions-padding, var(--space-xsmall));
-			border-block-start: var(--definitions-thickness, var(--thickness)) solid var(--definitions-color-border, var(--color-vivid));
-		}
-
-		.term {
-			display: block;
-			margin: 0;
-			font-weight: var(--definitions-label-weight, var(--weight-strong));
-			font-size: var(--definitions-label-size, var(--size-small));
-		}
-
-		.value {
+		dt,
+		dd {
+			/* Box */
 			display: block;
 			margin: 0;
 		}
+		dt {
+			/* Box */
+			margin-block-start: var(--definitions-gap, var(--spacing-small));
 
-		/* Variants */
-		&.row .pair {
-			display: grid;
-			grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-			gap: var(--definitions-padding, var(--space-xsmall));
-			align-items: baseline;
-		}
-
-		/* Collapse row layout back to stacked on narrow viewports. */
-		@media (max-width: 40rem) {
-			&.row .pair {
-				display: block;
-			}
+			/* Typography */
+			font-family: var(--definitions-title-font, var(--font-body));
+			font-weight: var(--definitions-title-weight, var(--weight-strong));
+			font-size: var(--definitions-title-size, var(--size-normal));
+			color: var(--definitions-title-color, var(--color-dark));
 		}
 	}
 }
@@ -57,6 +43,10 @@
 		}
 		&:last-child {
 			margin-block-end: 0;
+		}
+
+		dt:first-child {
+			margin-block-start: 0;
 		}
 	}
 }

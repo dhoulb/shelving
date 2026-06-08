@@ -4,7 +4,11 @@ import { type GapVariants, getGapClass } from "../style/Gap.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import styles from "./List.module.css";
+import LIST_CSS from "./List.module.css";
+
+export const LIST_ORDERED_CLASS = getModuleClass(LIST_CSS, "ordered");
+export const LIST_UNORDERED_CLASS = getModuleClass(LIST_CSS, "unordered");
+export const LIST_PROSE_CLASS = getModuleClass(LIST_CSS, "prose");
 
 export interface ListProps extends ColorVariants, GapVariants, SpacingVariants, TypographyVariants {
 	children: ReactNode[];
@@ -14,7 +18,7 @@ export interface ListProps extends ColorVariants, GapVariants, SpacingVariants, 
 export function List({ children, ordered = false, ...variants }: ListProps): ReactElement {
 	const items = children.map((v, i) => <li key={i.toString()}>{v}</li>);
 	const className = getClass(
-		getModuleClass(styles, ordered ? "ordered" : "unordered"),
+		ordered ? LIST_ORDERED_CLASS : LIST_UNORDERED_CLASS,
 		getColorClass(variants),
 		getGapClass(variants),
 		getSpacingClass(variants),

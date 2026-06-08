@@ -3,6 +3,7 @@
 @layer components {
 	.blockquote,
 	.prose blockquote {
+		/* Box */
 		display: block;
 		margin-inline: 0;
 		margin-block: var(--blockquote-spacing, var(--spacing-paragraph));
@@ -11,6 +12,13 @@
 		padding-block: var(--blockquote-padding, var(--space-small));
 		padding-inline-start: var(--blockquote-indent, var(--space-normal));
 
+		/* Typography */
+		font-family: var(--preformatted-font, var(--font-code));
+		font-size: var(--size-normal);
+		font-weight: var(--weight-normal);
+		color: var(--color-black);
+
+		/* Contents */
 		text-align: var(--blockquote-align, left);
 	}
 }

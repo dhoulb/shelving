@@ -1,8 +1,7 @@
 @import "base.css";
 
 @layer variants {
-	/* Gap variants — sets `gap` directly. Used by flex/grid layouts and by Lists/Definitions for the */
-	/* spacing between their items. */
+	/* Gap variants — sets `gap` directly. Used by flex/grid layouts and by Lists/Definitions for the spacing between their items. */
 	.gap-none {
 		gap: 0;
 	}

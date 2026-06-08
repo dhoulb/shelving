@@ -32,15 +32,17 @@ export function DocumentationCard({
 	return (
 		<Card href={href} {...(color ? { [color]: true } : {})}>
 			{signatures?.length ? (
-				signatures.map(sig => (
-					<Subheading key={sig} monospace>
-						{sig}
+				signatures.map(s => (
+					<Subheading key={s} code space-none>
+						{s}
 					</Subheading>
 				))
 			) : (
-				<Subheading>{title ?? name}</Subheading>
+				<Subheading code space-none>
+					{title ?? name}
+				</Subheading>
 			)}
-			<DocumentationButtons {...props} />
+			<DocumentationButtons {...props} space-none />
 			{description && <Paragraph>{description}</Paragraph>}
 		</Card>
 	);

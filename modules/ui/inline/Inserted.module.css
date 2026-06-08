@@ -4,7 +4,7 @@
 	.inserted,
 	.prose ins {
 		/* Style */
-		color: var(--vivid-green);
+		color: var(--color-green);
 		text-decoration: underline var(--stroke-normal);
 
 		/* Typography */

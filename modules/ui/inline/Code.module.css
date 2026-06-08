@@ -12,18 +12,12 @@
 
 	.code,
 	.prose :is(code, kbd, samp, var):not(pre *) {
-		/* Identity */
-		--color-black: var(--code-color-black, inherit);
-		--color-dark: var(--code-color-dark, inherit);
-		--color-vivid: var(--code-color-vivid, inherit);
-		--color-light: var(--code-color-light, inherit);
-		--color-white: var(--code-color-white, inherit);
-
+		/* Box */
 		display: inline-block;
 		padding-inline: var(--code-padding, 0.375rem);
 		border-radius: var(--code-radius, var(--radius-xxsmall));
 
-		/* Style — `bg=light / text=dark` (2-step pair). */
+		/* Style */
 		background-color: var(--color-light);
 		color: var(--color-dark);
 	}

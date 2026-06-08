@@ -5,7 +5,10 @@ import { getSpacingClass } from "../style/Spacing.js";
 import { getTypographyClass } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { HeadingProps } from "./Heading.js";
-import styles from "./Title.module.css";
+import TITLE_CSS from "./Title.module.css";
+
+export const TITLE_CLASS = getModuleClass(TITLE_CSS, "divider");
+export const TITLE_PROSE_CLASS = getModuleClass(TITLE_CSS, "prose");
 
 /** Props for `Title` — identical to `HeadingProps`. */
 export type TitleProps = HeadingProps;
@@ -19,7 +22,7 @@ export function Title({ level = "1", children, ...variants }: TitleProps): React
 	return (
 		<Element
 			className={getClass(
-				getModuleClass(styles, "title"),
+				TITLE_CLASS,
 				getColorClass(variants),
 				getAlignClass(variants),
 				getSpacingClass(variants),

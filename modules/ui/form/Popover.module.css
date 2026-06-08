@@ -19,11 +19,15 @@
 		top: calc(100% + var(--popover-offset-y, var(--space-xsmall)));
 		z-index: 1000;
 		max-height: var(--popover-max-height, 30vh);
-		overflow-y: auto;
-		overscroll-behavior: contain;
 		border-radius: var(--popover-radius, var(--radius-xsmall));
-		border: var(--popover-border, var(--stroke-normal)) solid var(--popover-color-border, var(--color-vivid));
+		border: var(--popover-border, var(--stroke-normal) solid var(--color-vivid));
 		padding: var(--popover-padding, var(--space-small));
+
+		/* Scrolling */
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior-x: auto;
+		overscroll-behavior-y: contain;
 
 		/* Style */
 		background: var(--popover-color-bg, var(--color-white));

@@ -7,8 +7,8 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import PARAGRAPH_CSS from "./Paragraph.module.css";
 
-/** Resolved `.paragraph` class — for components (e.g. `Message`) that paint paragraph-shaped text without rendering a `<Paragraph>`. */
 export const PARAGRAPH_CLASS = getModuleClass(PARAGRAPH_CSS, "paragraph");
+export const PARAGRAPH_PROSE_CLASS = getModuleClass(PARAGRAPH_CSS, "prose");
 
 export interface ParagraphProps extends AlignVariants, ColorVariants, SpacingVariants, TypographyVariants, OptionalChildProps {}
 

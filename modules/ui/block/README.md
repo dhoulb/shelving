@@ -23,7 +23,7 @@ Wrap any block of mixed HTML content (paragraphs, lists, headings, code, tables)
 Some block components ship multiple pieces intended to compose:
 
 - `Video` + `VideoButtons` + `VideoButton` + `FullscreenVideoButton`
-- `Definitions` + `Definition` (term/value pairs inside a `<dl>`)
+- `Definitions` (term/value pairs inside a `<dl>`)
 - `Address`, `PhysicalAddress`, `EmailAddress`
 
 ## Canonical usage examples
@@ -46,14 +46,14 @@ import { Card, Paragraph, Subheading } from "shelving/ui";
 ### Structured page section
 
 ```tsx
-import { Section, Heading, Definitions, Definition } from "shelving/ui";
+import { Section, Heading, Definitions } from "shelving/ui";
 
 <Section narrow>
   <Heading>Account details</Heading>
-  <Definitions row>
-    <Definition term="Name">Alice Smith</Definition>
-    <Definition term="Email">alice@example.com</Definition>
-    <Definition term="Plan">Pro</Definition>
+  <Definitions>
+    <dt>Name</dt><dd>Alice Smith</dd>
+    <dt>Email</dt><dd>alice@example.com</dd>
+    <dt>Plan</dt><dd>Pro</dd>
   </Definitions>
 </Section>
 ```

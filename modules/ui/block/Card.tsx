@@ -4,20 +4,12 @@ import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getStatusClass, type Status } from "../style/Status.js";
-import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import CARD_CSS from "./Card.module.css";
 
-export interface CardProps
-	extends ClickableProps,
-		ColorVariants,
-		PaddingVariants,
-		SpacingVariants,
-		ThicknessVariants,
-		TypographyVariants,
-		WidthVariants {
+export interface CardProps extends ClickableProps, ColorVariants, PaddingVariants, SpacingVariants, TypographyVariants, WidthVariants {
 	/** Status colour for the card (e.g. `status="success"`). */
 	status?: Status | undefined;
 }
@@ -42,7 +34,6 @@ export function Card({ children, href, onClick, title = "Open", status, ...props
 				getColorClass(props),
 				getPaddingClass(props),
 				getSpacingClass(props),
-				getThicknessClass(props),
 				getTypographyClass(props),
 				getWidthClass(props),
 			)}

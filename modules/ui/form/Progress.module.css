@@ -15,7 +15,7 @@
 		display: block;
 		block-size: 100%;
 		inline-size: var(--progress-value, 0%);
-		background: var(--progress-color-active, var(--vivid-blue));
+		background: var(--progress-color-active, var(--color-blue));
 		transition:
 			inline-size 160ms ease-out,
 			background-color var(--duration-fast) ease-in-out;
@@ -35,20 +35,20 @@
 	}
 
 	.active {
-		background: var(--progress-color-active, var(--vivid-blue));
+		background: var(--progress-color-active, var(--color-blue));
 	}
 
 	/* Status variants applied at the container level. */
 	.success .fill,
 	.success .active {
-		background: var(--progress-success-color-active, var(--vivid-green));
+		background: var(--progress-success-color-active, var(--color-green));
 	}
 	.warning .fill,
 	.warning .active {
-		background: var(--progress-warning-color-active, var(--vivid-orange));
+		background: var(--progress-warning-color-active, var(--color-orange));
 	}
 	.danger .fill,
 	.danger .active {
-		background: var(--progress-danger-color-active, var(--vivid-red));
+		background: var(--progress-danger-color-active, var(--color-red));
 	}
 }

@@ -1,41 +1,48 @@
 @import "../style/base.css";
 
+@layer defaults {
+	.card {
+		/* Children — lift above the overlay so they remain clickable. */
+		a:any-link,
+		button:enabled {
+			position: relative;
+			z-index: 2;
+		}
+	}
+}
+
 @layer components {
 	.card {
-		/* Identity */
+		/* Theme */
 		--color-black: var(--card-color-black, inherit);
 		--color-dark: var(--card-color-dark, inherit);
 		--color-vivid: var(--card-color-vivid, inherit);
 		--color-light: var(--card-color-light, inherit);
 		--color-white: var(--card-color-white, inherit);
+		--color-border: var(--card-color-border, inherit);
 
 		/* Box */
 		position: relative;
 		margin-inline: 0;
 		margin-block: var(--card-spacing, var(--spacing-paragraph));
-		border: var(--card-thickness, var(--thickness)) solid var(--color-vivid);
+		border: var(--card-border, var(--card-stroke, var(--stroke-normal)) solid var(--color-border));
 		padding: var(--card-padding, var(--space-normal));
 		border-radius: var(--card-radius, var(--radius-normal));
 
-		/* Style — `bg=light / text=dark` (2-step pair). */
-		background-color: var(--color-light);
-		color: var(--color-dark);
+		/* Style */
+		background: var(--card-background, var(--color-light));
+		color: var(--card-color, var(--color-black));
 		box-shadow: var(--card-shadow, none);
-		transition: border-color var(--duration-fast);
+		transition: var(--card-transition, all var(--duration-fast));
+		outline: var(--card-focus-border, var(--stroke-focus) solid transparent);
+		outline-offset: calc(0px - var(--card-stroke, var(--stroke-normal)));
 
 		/* Hover/focus affordance driven by the overlay link/button. */
 		&:has(.overlay:hover) {
-			border-color: var(--color-focus);
+			background: color-mix(in oklch, var(--color-light) 85%, white);
 		}
 		&:has(.overlay:focus-visible) {
-			outline: var(--stroke-focus) solid var(--color-focus);
-			outline-offset: 2px;
-		}
-
-		/* Inline interactive elements lift above the overlay so they remain clickable. */
-		:where(& a:not(.overlay), & button:not(.overlay)) {
-			position: relative;
-			z-index: 2;
+			outline-color: var(--color-focus);
 		}
 	}
 
@@ -62,6 +69,14 @@
 		&:focus-visible {
 			outline: 0;
 		}
+	}
+}
+
+@layer variants {
+	.card {
+		background: var(--color-light);
+		border: var(--card-stroke, var(--stroke-normal)) solid var(--color-border);
+		color: var(--color-black);
 	}
 }
 

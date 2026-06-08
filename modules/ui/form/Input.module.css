@@ -2,29 +2,21 @@
 
 @layer components {
 	.input {
-		/* Identity */
-		--color-black: var(--input-color-black, inherit);
-		--color-dark: var(--input-color-dark, inherit);
-		--color-vivid: var(--input-color-vivid, inherit);
-		--color-light: var(--input-color-light, inherit);
-		--color-white: var(--input-color-white, inherit);
-
 		/* Box */
 		box-sizing: border-box;
 		width: 100%;
 		margin: var(--input-spacing, var(--space-small)) 0;
 		border-radius: var(--input-radius, var(--radius-xsmall));
-		border: var(--input-border, var(--stroke-normal)) solid var(--color-vivid);
+		border: var(--input-border, var(--input-stroke, var(--stroke-normal)) solid var(--color-vivid));
 		padding: var(--input-padding, var(--space-small)) var(--input-padding, var(--space-small));
 
-		/* Style — Inputs always use the un-variant extremes: `bg=white / text=black` (4 steps apart,
-		 * maximum readability). Variant tints surface as borders and validity colours only. */
-		color: var(--color-black);
-		background: var(--color-white);
-		transition: all 120ms ease-in-out;
+		/* Style */
+		background: var(--input-background, var(--color-white));
+		color: var(--input-color, var(--color-black));
+		transition: var(--input-transition, all var(--duration-fast));
 		cursor: default;
-		outline: var(--input-border, var(--stroke-focus)) solid transparent;
-		outline-offset: calc(0px - var(--input-border, var(--stroke-normal)));
+		outline: var(--input-focus-border, var(--stroke-focus) solid var(--color-focus));
+		outline-offset: calc(0px - var(--input-stroke, var(--stroke-normal)));
 		box-shadow: none;
 
 		/* Typography */
@@ -55,7 +47,7 @@
 
 			/* Success border if contains a checked value option. */
 			&:has(.value:checked) {
-				border-color: var(--vivid-green);
+				border-color: var(--color-green);
 			}
 		}
 		&.text {
@@ -73,12 +65,12 @@
 
 			/* Success border if valid and has content. */
 			&:valid:not(:placeholder-shown) {
-				border-color: var(--vivid-green);
+				border-color: var(--color-green);
 			}
 
 			/* Error border if invalid and not empty. */
 			&:invalid:not(:placeholder-shown) {
-				border-color: var(--vivid-red);
+				border-color: var(--color-red);
 			}
 
 			&.multiline {
@@ -98,12 +90,12 @@
 
 			/* Success border if contains a checked control or valid text. */
 			&:has(.checkbox:checked, .radio:checked, .option:checked, .text:valid:not(:placeholder-shown)) {
-				border-color: var(--vivid-green);
+				border-color: var(--color-green);
 			}
 
 			/* Error border if contains invalid text. */
 			&:has(.text:invalid:not(:placeholder-shown)) {
-				border-color: var(--vivid-red);
+				border-color: var(--color-red);
 			}
 		}
 		&.button {
@@ -113,22 +105,18 @@
 		/* Error if aria invalid or contains aria invalid. */
 		&[aria-invalid="true"],
 		&:has([aria-invalid="true"]) {
-			border-color: var(--vivid-red);
+			border-color: var(--color-red);
 		}
 
-		/* Important pseudo-classes */
+		/* Pseudo-classes */
 		&.disabled,
 		&:disabled,
 		&:has(.disabled, :disabled) {
 			opacity: var(--input-disabled-opacity, 0.5);
 			cursor: default;
 		}
-		&.focus,
-		&:focus,
-		&:focus-within,
-		&:has(.focus) {
-			border-color: var(--color-focus);
-			outline-color: var(--color-focus);
+		:not(&:focus, &:focus-within) {
+			outline-color: transparent;
 		}
 
 		/* Children */

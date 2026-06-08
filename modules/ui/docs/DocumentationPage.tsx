@@ -1,10 +1,10 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { type Element, queryElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import type { Query } from "../../util/query.js";
 import type { DocumentationElementProps, TreeElement } from "../../util/tree.js";
 import { Section } from "../block/Block.js";
-import { Definition, Definitions } from "../block/Definitions.js";
+import { Definitions } from "../block/Definitions.js";
 import { Heading } from "../block/Heading.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
@@ -59,7 +59,7 @@ export function DocumentationPage({
 }: DocumentationPageProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
-			<TreeBreadcrumbs path={path} />
+			<TreeBreadcrumbs />
 			<Title>
 				<Flex left wrap>
 					{title ?? name}
@@ -78,19 +78,15 @@ export function DocumentationPage({
 			{params?.length && (
 				<Section>
 					<Heading>Parameters</Heading>
-					<Definitions row>
+					<Definitions>
 						{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
-							<Definition
-								key={`${name}-${type}-${description}`}
-								term={
-									<>
-										<Code>{name}</Code>: <Code>{type}</Code>
-										{optional && <> (optional)</>}
-									</>
-								}
-							>
-								{description}
-							</Definition>
+							<Fragment key={`${name}-${type}-${description}`}>
+								<dt>
+									<Code>{name}</Code>: <Code>{type}</Code>
+									{optional && <> (optional)</>}
+								</dt>
+								<dd>{description}</dd>
+							</Fragment>
 						))}
 					</Definitions>
 				</Section>
@@ -98,11 +94,14 @@ export function DocumentationPage({
 			{returns?.length && (
 				<Section>
 					<Heading>Returns</Heading>
-					<Definitions row>
+					<Definitions>
 						{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
-							<Definition key={`${type}-${description}`} term={<Code>{type}</Code>}>
-								{description}
-							</Definition>
+							<Fragment key={`${type}-${description}`}>
+								<dt>
+									<Code>{type}</Code>
+								</dt>
+								<dd>{description}</dd>
+							</Fragment>
 						))}
 					</Definitions>
 				</Section>
@@ -110,11 +109,14 @@ export function DocumentationPage({
 			{throws?.length && (
 				<Section>
 					<Heading>Throws</Heading>
-					<Definitions row>
+					<Definitions>
 						{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
-							<Definition key={`${type}-${description}`} term={<Code>{type}</Code>}>
-								{description}
-							</Definition>
+							<Fragment key={`${type}-${description}`}>
+								<dt>
+									<Code>{type}</Code>
+								</dt>
+								<dd>{description}</dd>
+							</Fragment>
 						))}
 					</Definitions>
 				</Section>

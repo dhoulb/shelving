@@ -114,65 +114,29 @@
 		--duration-normal: 300ms;
 		--duration-slow: 600ms;
 
-		/* Vivid palette — the saturated middle of the 5-step scale, one per hue. */
-		--vivid-gray: oklch(60% 0.01 240); /* Subtle blue tint so neutrals don't feel "dead". */
-		--vivid-red: oklch(62% 0.2 30); /* Slightly desaturated from default — takes the edge off without losing red identity. */
-		--vivid-orange: oklch(74% 0.157 60);
-		--vivid-yellow: oklch(86% 0.16 92);
-		--vivid-green: oklch(72% 0.185 130);
-		--vivid-aqua: oklch(72% 0.121 185);
-		--vivid-blue: oklch(57% 0.216 260); /* OKLCH form of #156ef4 — warmer hue (260) than the previous 240. */
-		--vivid-purple: oklch(58% 0.25 300);
-		--vivid-pink: oklch(68% 0.239 350);
+		/* Basic colors */
+		--color-gray: oklch(60% 0.01 240); /* Subtle blue tint so neutrals don't feel "dead". */
+		--color-red: oklch(62% 0.2 30); /* Slightly desaturated from default — takes the edge off without losing red identity. */
+		--color-orange: oklch(74% 0.157 60);
+		--color-yellow: oklch(86% 0.16 92);
+		--color-green: oklch(72% 0.185 130);
+		--color-aqua: oklch(72% 0.121 185);
+		--color-blue: oklch(57% 0.216 260); /* OKLCH form of #156ef4 — warmer hue (260) than the previous 240. */
+		--color-purple: oklch(58% 0.25 300);
+		--color-pink: oklch(68% 0.239 350);
 
-		/* Brand aliases — themes can repoint these without renaming the named-palette tokens. */
-		--vivid-primary: var(--vivid-blue);
-		--vivid-secondary: var(--vivid-purple);
-		--vivid-tertiary: var(--vivid-aqua);
-		--light-primary: var(--light-blue);
-		--light-secondary: var(--light-purple);
-		--light-tertiary: var(--light-aqua);
-		--dark-primary: var(--dark-blue);
-		--dark-secondary: var(--dark-purple);
-		--dark-tertiary: var(--dark-aqua);
-
-		/* Light palette — 20% vivid blended into white. Pastel surfaces; chroma reduces naturally so
-		 * the result isn't a high-saturation salmon/lime. */
-		--light-gray: color-mix(in oklch, var(--vivid-gray) 15%, white);
-		--light-red: color-mix(in oklch, var(--vivid-red) 25%, white);
-		--light-orange: color-mix(in oklch, var(--vivid-orange) 25%, white);
-		--light-yellow: color-mix(in oklch, var(--vivid-yellow) 25%, white);
-		--light-green: color-mix(in oklch, var(--vivid-green) 25%, white);
-		--light-aqua: color-mix(in oklch, var(--vivid-aqua) 25%, white);
-		--light-blue: color-mix(in oklch, var(--vivid-blue) 25%, white);
-		--light-purple: color-mix(in oklch, var(--vivid-purple) 25%, white);
-		--light-pink: color-mix(in oklch, var(--vivid-pink) 25%, white);
-
-		/* Dark palette — same hue, lowered lightness for foregrounds. */
-		--dark-gray: oklch(from var(--vivid-gray) calc(l - 0.3) c h);
-		--dark-red: oklch(from var(--vivid-red) calc(l - 0.22) c h);
-		--dark-orange: oklch(from var(--vivid-orange) calc(l - 0.22) c h);
-		--dark-yellow: oklch(from var(--vivid-yellow) calc(l - 0.22) c h);
-		--dark-green: oklch(from var(--vivid-green) calc(l - 0.22) c h);
-		--dark-aqua: oklch(from var(--vivid-aqua) calc(l - 0.22) c h);
-		--dark-blue: oklch(from var(--vivid-blue) calc(l - 0.22) c h);
-		--dark-purple: oklch(from var(--vivid-purple) calc(l - 0.22) c h);
-		--dark-pink: oklch(from var(--vivid-pink) calc(l - 0.22) c h);
-
-		/* The 5-step scale — variant classes (.red, .success, etc.) override the middle three at their scope.
-		 * `--color-black` and `--color-white` aren't literal black/white in every theme — they're the darkest
-		 * and lightest *ends* of the active scale (a dark theme inverts them). For literal black/white pixels
-		 * (e.g. blending hover states neutrally) use the CSS keywords `black` / `white` directly. */
+		/* Color scale */
 		--color-black: black;
-		--color-dark: var(--dark-gray);
-		--color-vivid: var(--vivid-gray);
-		--color-light: var(--light-gray);
+		--color-dark: oklch(from var(--color-vivid) calc(l - 0.22) c h);
+		--color-vivid: var(--color-gray); /* Default to gray for things like buttons and borders. */
+		--color-light: color-mix(in oklch, var(--color-vivid) 20%, white);
 		--color-white: white;
 
-		/* Other semantic colour tokens (separate concerns from the scale). */
-		--color-link: var(--vivid-blue);
-		--color-focus: var(--vivid-blue);
-		--color-shadow: color-mix(in oklch, var(--vivid-gray) 40%, transparent);
+		/* Semantic colours */
+		--color-link: var(--color-blue);
+		--color-focus: var(--color-blue);
+		--color-shadow: color-mix(in oklch, var(--color-vivid) 40%, transparent);
+		--color-border: color-mix(in oklch, var(--color-vivid) 40%, white);
 
 		/* Shadows */
 		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem var(--color-shadow);
@@ -201,15 +165,15 @@
 	 * 3-step pairings (white+dark, light+black), so they don't need to move. */
 	@media (prefers-contrast: more) {
 		:root {
-			--vivid-gray: var(--dark-gray);
-			--vivid-red: var(--dark-red);
-			--vivid-orange: var(--dark-orange);
-			--vivid-yellow: var(--dark-yellow);
-			--vivid-green: var(--dark-green);
-			--vivid-aqua: var(--dark-aqua);
-			--vivid-blue: var(--dark-blue);
-			--vivid-purple: var(--dark-purple);
-			--vivid-pink: var(--dark-pink);
+			--color-gray: var(--dark-gray);
+			--color-red: var(--dark-red);
+			--color-orange: var(--dark-orange);
+			--color-yellow: var(--dark-yellow);
+			--color-green: var(--dark-green);
+			--color-aqua: var(--dark-aqua);
+			--color-blue: var(--dark-blue);
+			--color-purple: var(--dark-purple);
+			--color-pink: var(--dark-pink);
 		}
 	}
 }

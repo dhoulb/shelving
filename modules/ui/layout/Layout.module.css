@@ -32,17 +32,21 @@
  * - The .layout element grows to fill the body (flex: 1) and is the only scroll container.
  */
 	html:has(.layout) {
+		/* Box */
 		margin: 0;
 		padding: 0;
 		height: 100vh;
 		height: 100dvh; /** Make the height dynamically expand/contract as the address bar shows/hides on iOS. */
 		width: 100vw;
 		width: 100dvw;
+
+		/* Contents */
 		overflow: hidden;
 		overflow-wrap: break-word; /* Break overlong words only as a last resort; `anywhere` would also break mid-word to fit narrow table/flex columns. */
 	}
 
 	body:has(.layout) {
+		/* Box */
 		margin: 0;
 		padding: 0;
 		display: flex;
@@ -57,10 +61,11 @@
 	}
 
 	.layout {
-		/* Own the page's vertical scroll. */
-		overflow: hidden auto;
+		/* Scrolling */
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior-x: auto;
+		overscroll-behavior-y: contain;
 		scroll-behavior: smooth;
-		/* `contain` keeps the elastic bounce on the layout itself but stops the scroll chain leaking up to the locked body. */
-		overscroll-behavior: contain;
 	}
 }

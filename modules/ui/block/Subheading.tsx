@@ -5,7 +5,10 @@ import { getSpacingClass } from "../style/Spacing.js";
 import { getTypographyClass } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { HeadingProps } from "./Heading.js";
-import styles from "./Subheading.module.css";
+import SUBHEADING_CSS from "./Subheading.module.css";
+
+export const SUBHEADING_CLASS = getModuleClass(SUBHEADING_CSS, "subheading");
+export const SUBHEADING_PROSE_CLASS = getModuleClass(SUBHEADING_CSS, "prose");
 
 /** Props for `Subheading` — identical to `HeadingProps`. */
 export type SubheadingProps = HeadingProps;
@@ -19,7 +22,7 @@ export function Subheading({ level = "3", children, ...variants }: SubheadingPro
 	return (
 		<Element
 			className={getClass(
-				getModuleClass(styles, "subheading"),
+				SUBHEADING_CLASS,
 				getColorClass(variants),
 				getAlignClass(variants),
 				getSpacingClass(variants),

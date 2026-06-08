@@ -6,7 +6,10 @@ import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
-import styles from "./Table.module.css";
+import TABLE_CSS from "./Table.module.css";
+
+export const TABLE_CLASS = getModuleClass(TABLE_CSS, "divider");
+export const TABLE_PROSE_CLASS = getModuleClass(TABLE_CSS, "prose");
 
 export interface TableProps extends AlignVariants, ColorVariants, SpacingVariants, ThicknessVariants, TypographyVariants, ChildProps {}
 
@@ -19,7 +22,7 @@ export function Table({ children, ...variants }: TableProps): ReactElement {
 	return (
 		<table
 			className={getClass(
-				getModuleClass(styles, "table"),
+				TABLE_CLASS,
 				getColorClass(variants),
 				getAlignClass(variants),
 				getSpacingClass(variants),

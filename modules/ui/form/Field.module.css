@@ -40,7 +40,7 @@
 		display: block;
 		text-align: end;
 		font-weight: var(--field-message-weight, var(--weight-strong));
-		color: var(--field-color-message, var(--vivid-red));
+		color: var(--field-color-message, var(--color-red));
 	}
 }
 

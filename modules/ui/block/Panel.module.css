@@ -9,24 +9,35 @@
  */
 @layer components {
 	.panel {
-		/* Identity */
+		/* Theme */
 		--color-black: var(--panel-color-black, inherit);
 		--color-dark: var(--panel-color-dark, inherit);
 		--color-vivid: var(--panel-color-vivid, inherit);
 		--color-light: var(--panel-color-light, inherit);
 		--color-white: var(--panel-color-white, inherit);
+		--color-border: var(--panel-color-border, inherit);
 
 		/* Box */
 		display: block;
 		inline-size: 100%;
 		margin-inline: 0;
 		margin-block: 0;
-		border-top: var(--panel-thickness, var(--thickness, 0)) solid var(--color-vivid);
+		border-top: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--color-border));
+		border-bottom: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--color-border));
 		padding-block: var(--panel-padding, var(--space-xxlarge));
 		padding-inline: var(--space-normal);
 
 		/* Style — `bg=light / text=dark` (2-step pair). */
 		background-color: var(--color-light);
 		color: var(--color-dark);
+	}
+}
+
+@layer variants {
+	.card {
+		background: var(--color-light);
+		border-top: var(--panel-stroke, var(--stroke-normal)) solid var(--color-border);
+		border-bottom: var(--panel-stroke, var(--stroke-normal)) solid var(--color-border);
+		color: var(--color-black);
 	}
 }
