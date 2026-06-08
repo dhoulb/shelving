@@ -6,6 +6,7 @@ import { Paragraph } from "../block/Paragraph.js";
 import { Subheading } from "../block/Subheading.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { getDocumentationKindColor } from "./DocumentationKind.js";
+import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 interface DocumentationCardProps extends DocumentationElementProps {
 	path: AbsolutePath;
@@ -13,7 +14,7 @@ interface DocumentationCardProps extends DocumentationElementProps {
 
 /**
  * Card renderer for a `tree-documentation` element — a summary card.
- * - The heading is the symbol's signature(s) (each a monospace `<Subheading>`, one per overload), which already carry the name; falls back to the bare name for symbols with no signature (classes, interfaces, modules).
+ * - Leads with the symbol's signature(s) as calm code blocks (`<DocumentationSignatures>`, same as the detail page), which already carry the name; falls back to the bare name for symbols with no signature (classes, interfaces, modules).
  * - The card is tinted by `kind` (colour carries the method/property/etc. distinction — no separate tag).
  */
 export function DocumentationCard({
@@ -32,11 +33,7 @@ export function DocumentationCard({
 	return (
 		<Card href={href} {...(color ? { [color]: true } : {})}>
 			{signatures?.length ? (
-				signatures.map(s => (
-					<Subheading key={s} code space-none>
-						{s}
-					</Subheading>
-				))
+				<DocumentationSignatures signatures={signatures} />
 			) : (
 				<Subheading code space-none>
 					{title ?? name}

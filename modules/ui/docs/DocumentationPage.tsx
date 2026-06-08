@@ -17,6 +17,7 @@ import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind } from "./DocumentationKind.js";
+import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 const DEFAULT_TYPE = "unknown";
 
@@ -67,9 +68,7 @@ export function DocumentationPage({
 				</Flex>
 			</Title>
 			<DocumentationButtons {...props} />
-			{signatures?.map(sig => (
-				<Preformatted key={sig}>{sig}</Preformatted>
-			))}
+			<DocumentationSignatures signatures={signatures} />
 			{content && (
 				<Prose>
 					<Markup>{content}</Markup>
