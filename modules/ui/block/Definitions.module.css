@@ -6,14 +6,14 @@
 		/* Box */
 		display: block;
 		margin-inline: 0;
-		margin-block: var(--definitions-spacing, var(--spacing-paragraph));
+		margin-block: var(--definitions-space, var(--space-paragraph));
 
-		/* Typography */
+		/* Text */
 		text-align: var(--definitions-align, left);
 		font-family: var(--definitions-font, var(--font-body));
 		font-weight: var(--definitions-weight, var(--weight-normal));
 		font-size: var(--definitions-size, var(--size-normal));
-		color: var(--definitions-color, var(--color-black));
+		color: var(--definitions-color, var(--tint-00));
 
 		/* Children */
 		dt,
@@ -24,13 +24,13 @@
 		}
 		dt {
 			/* Box */
-			margin-block-start: var(--definitions-gap, var(--spacing-small));
+			margin-block-start: var(--definitions-gap, var(--space-small));
 
-			/* Typography */
+			/* Text */
 			font-family: var(--definitions-title-font, var(--font-body));
 			font-weight: var(--definitions-title-weight, var(--weight-strong));
 			font-size: var(--definitions-title-size, var(--size-normal));
-			color: var(--definitions-title-color, var(--color-dark));
+			color: var(--definitions-title-color, var(--tint-70));
 		}
 	}
 }

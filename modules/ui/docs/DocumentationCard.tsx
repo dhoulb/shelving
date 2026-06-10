@@ -4,8 +4,9 @@ import type { DocumentationElementProps } from "../../util/tree.js";
 import { Card } from "../block/Card.js";
 import { Paragraph } from "../block/Paragraph.js";
 import { Subheading } from "../block/Subheading.js";
+import { Flex } from "../style/Flex.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
-import { getDocumentationKindColor } from "./DocumentationKind.js";
+import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 interface DocumentationCardProps extends DocumentationElementProps {
@@ -32,15 +33,15 @@ export function DocumentationCard({
 	const color = kind ? getDocumentationKindColor(kind) : undefined;
 	return (
 		<Card href={href} {...(color ? { [color]: true } : {})}>
-			{signatures?.length ? (
-				<DocumentationSignatures signatures={signatures} />
-			) : (
-				<Subheading code space-none>
+			<Subheading code space-none>
+				<Flex left wrap gap-xsmall>
 					{title ?? name}
-				</Subheading>
-			)}
+					{kind && <DocumentationKind kind={kind} />}
+				</Flex>
+			</Subheading>
 			<DocumentationButtons {...props} space-none />
 			{description && <Paragraph>{description}</Paragraph>}
+			<DocumentationSignatures signatures={signatures} />
 		</Card>
 	);
 }

@@ -5,9 +5,9 @@
  * selectors). Imported last in `client.tsx`, after the base tokens.
  *
  * Experiment: surfaces are no longer globally retinted. Instead each `DocumentationCard` colours
- * itself from its symbol `kind` via the `ColorVariants` props on `Card` — picking the exact same hue
+ * itself from its symbol `kind` via the `ColorProps` props on `Card` — picking the exact same hue
  * as the `DocumentationKind` tag it carries (function → blue, class → purple, …). The card's `kind`
- * colour cascades into its own `--color-light/-dark/-vivid`, so its nested Preformatteds, Code chips
+ * colour cascades into its own `--tint-90/-dark/-vivid`, so its nested Preformatteds, Code chips
  * and tag all tint to match the card. Surfaces with no `kind` (directory/file cards, standalone
  * Preformatteds) fall back to the neutral base scale.
  */

@@ -2,19 +2,11 @@
 
 @layer components {
 	.video {
-		/* Theme */
-		--color-black: var(--video-black, black);
-		--color-dark: var(--video-dark, white);
-		--color-vivid: var(--video-vivid, white);
-		--color-light: var(--video-light, white);
-		--color-white: var(--video-white, white);
-		--color-border: var(--video-border, white);
-
 		/* Box */
 		aspect-ratio: 16 / 9;
 		margin-inline: 0;
-		margin-block: var(--video-spacing, var(--spacing-paragraph));
-		border: var(--video-border, var(--stroke-normal) solid var(--color-border));
+		margin-block: var(--video-space, var(--space-paragraph));
+		border: var(--video-border, var(--stroke-normal) solid black);
 		border-radius: var(--video-radius, var(--radius-normal));
 		padding: var(--video-padding, var(--space-normal));
 
@@ -27,8 +19,8 @@
 		position: relative;
 
 		/* Style */
-		background: var(--color-white);
-		color: var(--color-black);
+		background: white;
+		color: black;
 
 		/* Contents */
 		overflow: hidden;
@@ -54,13 +46,13 @@
 	.button {
 		/* Box */
 		display: block;
-		border: var(--video-button-border, var(--stroke-normal) solid var(--color-border));
+		border: var(--video-button-border, var(--stroke-normal) solid black);
 		border-radius: var(--video-button-radius, 100rem);
 		padding-inline: var(--video-button-padding-x, var(--space-xsmall));
 
 		/* Style */
-		color: var(--video-button-text, var(--color-white));
-		background: var(--video-button-bg, var(--color-black));
+		color: var(--video-button-text, white);
+		background: var(--video-button-bg, black);
 		transition: var(--video-button-transition, all var(--duration-fast));
 		outline: var(--video-button-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--stroke-normal));
@@ -79,7 +71,7 @@
 		&:enabled:hover,
 		&:any-link:hover,
 		&:focus:not(:focus-visible) {
-			background: color-mix(in oklch, var(--color-light) 85%, transparent);
+			background: color-mix(in oklch, white 85%, transparent);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 @import "base.css";
 
 @layer variants {
-	/* Block-spacing variants — opt-in margin-block modifiers for any block-level component. */
+	/* Block-space variants — opt-in margin-block modifiers for any block-level component. */
 	.space-none {
 		margin-block: 0;
 	}

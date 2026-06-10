@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { walkElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import type { TreeElementProps } from "../../util/tree.js";
 import { Prose } from "../block/Prose.js";
+import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
@@ -19,16 +19,21 @@ interface TreePageProps extends TreeElementProps {
  * - Child cards cover both nested directories/files and the code symbols of a source file.
  */
 export function TreePage({ path, title, name, description, content, children }: TreePageProps): ReactNode {
-	const cards = Array.from(walkElements(children));
 	return (
 		<Page title={title ?? name} description={description}>
-			<Title>{title ?? name}</Title>
-			{content && (
-				<Prose>
-					<Markup>{content}</Markup>
-				</Prose>
-			)}
-			{cards.length > 0 && <TreeCards path={path}>{cards}</TreeCards>}
+			<Header wide>
+				<Title>{title ?? name}</Title>
+			</Header>
+			<Section wide>
+				{content && (
+					<Prose>
+						<Markup>{content}</Markup>
+					</Prose>
+				)}
+			</Section>
+			<Section wide>
+				<TreeCards path={path}>{children}</TreeCards>
+			</Section>
 		</Page>
 	);
 }

@@ -40,32 +40,54 @@ export interface StylableClickableProps extends ClickableProps {
 
 /** Return either a `<button>` or an `<a href="">` based on whether an `onClick` or `href` prop is provided. */
 export function Clickable(props: StylableClickableProps): ReactElement {
-	return props.href ? <LinkClickable {...props} /> : <ButtonClickable {...props} />;
+	return "href" in props ? (
+		<LinkClickable {...props} />
+	) : "onClick" in props ? (
+		<ButtonClickable {...props} />
+	) : (
+		<SpanClickable {...props} />
+	);
 }
 
 /** Return an `<a href="">` element. */
 export function LinkClickable({
-	disabled = false,
 	href,
-	title,
+	disabled = !href,
 	target,
 	download,
+	title,
 	children = "Go",
 	className,
 }: StylableClickableProps): ReactElement {
 	// Resolve `href` against the current page URL and site root so site-absolute paths (`/foo`) honour the base subfolder.
 	const { url, root } = requireMeta();
 	const link = disabled ? undefined : getLink(href, url, root);
+
+	// Is this link "active" compared to the current URL?
 	const active = isURLActive(link, url);
+
 	return (
-		<a href={link?.href} title={title} download={download} target={target} className={className} aria-current={active ? "page" : undefined}>
+		<a //
+			href={link?.href}
+			title={title}
+			download={download}
+			target={target}
+			className={className}
+			aria-current={active ? "page" : undefined}
+		>
 			{children}
 		</a>
 	);
 }
 
 /** Return a `<button>` element. */
-export function ButtonClickable({ disabled = false, onClick, title, children = "Click", className }: StylableClickableProps): ReactElement {
+export function ButtonClickable({
+	onClick,
+	disabled = !onClick,
+	title,
+	children = "Click",
+	className,
+}: StylableClickableProps): ReactElement {
 	// Create a `BusyStore<undefined>` to keep track of the `onClick` call and any thrown errors.
 	const store = useInstance(BusyStore, undefined);
 
@@ -76,16 +98,35 @@ export function ButtonClickable({ disabled = false, onClick, title, children = "
 		<button //
 			type="button"
 			title={title}
-			onClick={e => {
-				if (!store.busy.value && onClick) {
-					const el = e.currentTarget;
-					store.run(callNotifiedElement, el, onClick, e);
-				}
-			}}
 			disabled={busy || disabled}
 			className={className}
+			onClick={
+				disabled
+					? undefined
+					: e => {
+							if (!store.busy.value && onClick) {
+								const el = e.currentTarget;
+								store.run(callNotifiedElement, el, onClick, e);
+							}
+						}
+			}
 		>
 			{busy ? LOADING : children}
 		</button>
+	);
+}
+
+export function SpanClickable({
+	title,
+	children = "Click", //
+	className,
+}: StylableClickableProps): ReactElement {
+	return (
+		<span //
+			title={title}
+			className={className}
+		>
+			{children}
+		</span>
 	);
 }

@@ -4,15 +4,12 @@
 /* with normal-specificity selectors without needing `:where()` tricks. */
 @layer defaults {
 	.layout {
-		/* Top/bottom use `layout-spacing` and left/right use `layout-padding` */
-		padding: var(--layout-spacing, var(--space-normal)) var(--layout-padding, var(--space-normal));
+		/* Top/bottom use `layout-space` and left/right use `layout-padding` */
+		padding: var(--layout-space, var(--space-normal)) var(--layout-padding, var(--space-normal));
 
 		/* Default page padding (with safe-area additions). */
-		padding-top: calc(var(--layout-spacing, var(--space-normal)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
-		padding-bottom: calc(
-			var(--layout-spacing, var(--space-normal)) +
-			max(var(--layout-inset-bottom, 0px), env(safe-area-inset-bottom, 0px))
-		);
+		padding-top: calc(var(--layout-space, var(--space-normal)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
+		padding-bottom: calc(var(--layout-space, var(--space-normal)) + max(var(--layout-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)));
 		padding-left: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-left, 0px), env(safe-area-inset-left, 0px)));
 		padding-right: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-right, 0px), env(safe-area-inset-right, 0px)));
 
@@ -57,10 +54,13 @@
 		inset: 0;
 
 		/* Layout-specific bg hook. Typography and page bg come from the body baseline in style/base.css. */
-		background: var(--layout-body-bg, var(--color-white));
+		background: var(--layout-body-bg, var(--tint-100));
 	}
 
 	.layout {
+		/* Box */
+		display: flow-root;
+
 		/* Scrolling */
 		overflow-x: hidden;
 		overflow-y: auto;

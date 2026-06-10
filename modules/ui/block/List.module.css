@@ -1,20 +1,29 @@
 @import "../style/base.css";
+@import "../style/Tint.module.css";
 
 @layer components {
 	.unordered,
 	.ordered,
 	.prose ul,
 	.prose ol {
+		/* Theme */
+		--tint-50: var(--list-tint, inherit);
+
 		display: block;
 		margin-inline: 0;
-		margin-block: var(--list-spacing, var(--spacing-paragraph));
+		margin-block: var(--list-space, var(--space-paragraph));
 
+		/* Text */
 		text-align: left;
 
-		/* Spacing between items — uses standard CSS `gap` (supported on block-level lists since 2024). */
+		/* Contents */
 		display: flex;
 		flex-direction: column;
 		gap: var(--list-gap, var(--space-xsmall));
+
+		li::marker {
+			color: var(--list-marker-color, var(--tint-80));
+		}
 	}
 
 	.unordered,

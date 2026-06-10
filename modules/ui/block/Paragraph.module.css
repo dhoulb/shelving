@@ -3,15 +3,14 @@
 @layer components {
 	.paragraph,
 	.prose p {
+		/* Theme */
+		--tint-50: var(--paragraph-tint, inherit);
+
+		/* Box */
 		display: block;
 		inline-size: 100%;
 		margin-inline: 0;
-		margin-block: var(--paragraph-spacing, var(--spacing-paragraph));
-
-		/* Typography — inherits `color` from the page baseline or a `.text-X` variant on this element or an ancestor. */
-		font-family: var(--paragraph-font, inherit);
-		font-size: var(--paragraph-size, inherit);
-		text-align: var(--paragraph-align, left);
+		margin-block: var(--paragraph-space, var(--space-paragraph));
 	}
 }
 

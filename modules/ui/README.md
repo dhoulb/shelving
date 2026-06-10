@@ -27,7 +27,7 @@ The styling system has four moving parts, all defined in [style/](./style/). Mos
 
 #### The 5-step colour scale
 
-Colours are organised as a **5-step scale**: `--color-black`, `--color-dark`, `--color-vivid`, `--color-light`, `--color-white`. The inner three steps (`dark` / `vivid` / `light`) are saturated tones of the active hue and change per variant scope; the extremes (`black` / `white`) are the page foreground/background and stay put unless the theme deliberately inverts them (e.g. dark mode).
+Colours are organised as a **5-step scale**: `--tint-0`, `--shade-dark`, `--tint`, `--tint-90`, `--tint-100`. The inner three steps (`dark` / `vivid` / `light`) are saturated tones of the active hue and change per variant scope; the extremes (`black` / `white`) are the page foreground/background and stay put unless the theme deliberately inverts them (e.g. dark mode).
 
 A useful mental model: **step distance encodes contrast strength**.
 
@@ -39,9 +39,9 @@ A useful mental model: **step distance encodes contrast strength**.
 
 Components pick whichever pair fits their content; variants only ever set the inner three steps, so a component that renders `bg=light` and `text=dark` automatically inherits the right tint when wrapped in `.red`, `.success`, etc.
 
-The base palette underneath the scale defines three shades per hue: `--color-red`, `--light-red`, `--dark-red` (and the same for orange, yellow, green, aqua, blue, purple, pink, plus `--*-gray` for the default neutrals). The default `:root` value of `--color-vivid` is `var(--color-gray)` and so on — grey is just the variant you get when no colour variant is applied.
+The base palette underneath the scale defines three shades per hue: `--color-red`, `--light-red`, `--dark-red` (and the same for orange, yellow, green, aqua, blue, purple, pink, plus `--*-gray` for the default neutrals). The default `:root` value of `--tint` is `var(--color-gray)` and so on — grey is just the variant you get when no colour variant is applied.
 
-**`--color-black` and `--color-white` are theme-scoped, not literal.** They're the extremes of the active scale. In a dark theme they'd be a deep navy and a soft cream. For literal black or white pixels (neutral hover blends, etc.) use the CSS keywords `black` / `white` directly — they sit outside the scale entirely.
+**`--tint-0` and `--tint-100` are theme-scoped, not literal.** They're the extremes of the active scale. In a dark theme they'd be a deep navy and a soft cream. For literal black or white pixels (neutral hover blends, etc.) use the CSS keywords `black` / `white` directly — they sit outside the scale entirely.
 
 ### Cascade layers
 
@@ -75,7 +75,7 @@ Order, lowest to highest priority:
 A component using variants looks like:
 
 ```tsx
-export interface CardProps extends ColorVariants, PaddingVariants, WidthVariants /* … */ {
+export interface CardProps extends ColorProps, PaddingVariants, WidthVariants /* … */ {
   status?: Status | undefined;
 }
 
@@ -111,42 +111,42 @@ Any component that paints a `background-color`, `border-color`, or `color` from 
 ```css
 .card {
   /* Rebind: per-component theme hook wins; otherwise inherit from variant or page scope. */
-  --color-black: var(--card-color-black, inherit);
-  --color-dark:  var(--card-color-dark, inherit);
-  --color-vivid: var(--card-color-vivid, inherit);
-  --color-light: var(--card-color-light, inherit);
-  --color-white: var(--card-color-white, inherit);
+  --tint-00: var(--card-color-black, inherit);
+  --shade-dark:  var(--card-color-dark, inherit);
+  --tint-50: var(--card-color-vivid, inherit);
+  --tint-90: var(--card-color-light, inherit);
+  --tint-100: var(--card-color-white, inherit);
 
   /* bg=light + text=dark is a 2-step pair, fine for the short text inside a card body. */
-  background-color: var(--color-light);
-  border-color:     var(--color-vivid);
-  color:            var(--color-dark);
+  background-color: var(--tint-90);
+  border-color:     var(--tint-50);
+  color:            var(--shade-dark);
 }
 ```
 
 The rebind serves three jobs at once:
 
 1. **Per-component theme hook.** A consumer setting `--card-color-light: peachpuff` at `:root` repaints the card surface without touching Buttons or Notices.
-2. **Variant inheritance.** When the card is `.red` (or `.success`, etc.), the variant has already set `--color-dark / --color-vivid / --color-light` at its scope. The rebind's `inherit` fallback picks those up — no explicit `.card.red` rule needed.
+2. **Variant inheritance.** When the card is `.red` (or `.success`, etc.), the variant has already set `--shade-dark / --tint / --tint-90` at its scope. The rebind's `inherit` fallback picks those up — no explicit `.card.red` rule needed.
 3. **Identity propagation.** Descendants (like a `<Code>` chip inside the card) inherit the rebound values, so they can compute their own surface relative to the card.
 
 For variants on appearance (`.strong`, `.outline`, `.plain` on Button) — just pick a different step pair from the already-rebound scale. No extra hook needed:
 
 ```css
-.button { background: var(--color-light); color: var(--color-dark); }
-.button.strong { background: var(--color-vivid); color: var(--color-white); }
+.button { background: var(--tint-90); color: var(--shade-dark); }
+.button.strong { background: var(--tint-50); color: var(--tint-100); }
 ```
 
 **What about components that only paint one colour?** Text-only blocks (Paragraph, Heading, Title, etc.) skip the rebind and read the relevant scale step directly with a single theme-hook fallback:
 
 ```css
-.paragraph { color: var(--paragraph-color, var(--color-dark)); }
-.heading   { color: var(--heading-color, var(--color-black)); }
+.paragraph { color: var(--paragraph-color, var(--shade-dark)); }
+.heading   { color: var(--heading-color, var(--tint-00)); }
 ```
 
 **What about Inputs?** Inputs sit outside the variant scope's middle three steps — they always use `bg=white + text=black` (a 4-step pair, maximum contrast) regardless of the surrounding variant. Variant scope still tints their border and validity states, but never the field surface.
 
-Other tokens (`--*-padding`, `--*-spacing`, `--*-radius`, `--*-font`, `--*-size`, etc.) are **not** rebound:
+Other tokens (`--*-padding`, `--*-space`, `--*-radius`, `--*-font`, `--*-size`, etc.) are **not** rebound:
 
 - `font-*` properties already inherit naturally via CSS, so just setting them is enough — children pick up the value automatically.
 - `padding`, `margin`, `gap`, `border-width`, `border-radius` are non-inheriting CSS properties. Each component sets its own; children should never read a parent's padding.
@@ -160,22 +160,22 @@ The rebind pattern has a powerful consequence: because every surface component r
 **But retint one step at a time, and know what else reads it.** The global scale isn't surfaces-only — the page baseline reads from it too. In `base.css`:
 
 ```css
-body { color: var(--color-dark); background: var(--color-white); }
+body { color: var(--shade-dark); background: var(--tint-100); }
 ```
 
-All body copy (Titles, Headings, Paragraphs, lists) has no `color` of its own; it inherits this baseline. So moving `--color-dark` at `:root` recolours **every word on the page**, not just text sitting on a card. Likewise `--color-vivid` tints borders and accents app-wide. Retint only the step whose reach you actually want:
+All body copy (Titles, Headings, Paragraphs, lists) has no `color` of its own; it inherits this baseline. So moving `--shade-dark` at `:root` recolours **every word on the page**, not just text sitting on a card. Likewise `--tint` tints borders and accents app-wide. Retint only the step whose reach you actually want:
 
-- `--color-light` — **surfaces** (Card / Preformatted / Tag / Code backgrounds). Safe to retint broadly; nothing paints page text or the page background from it.
-- `--color-vivid` — borders and accents everywhere. Retint only if you want app-wide accent recolouring.
-- `--color-dark` — **the page text colour**, via the `body` baseline above. Retinting this is a whole-page text recolour; usually not what a "themed surfaces" look wants.
-- `--color-black` / `--color-white` — the page extremes (max-contrast text, page background). Leave unless inverting (e.g. dark mode).
+- `--tint-90` — **surfaces** (Card / Preformatted / Tag / Code backgrounds). Safe to retint broadly; nothing paints page text or the page background from it.
+- `--tint` — borders and accents everywhere. Retint only if you want app-wide accent recolouring.
+- `--shade-dark` — **the page text colour**, via the `body` baseline above. Retinting this is a whole-page text recolour; usually not what a "themed surfaces" look wants.
+- `--tint-0` / `--tint-100` — the page extremes (max-contrast text, page background). Leave unless inverting (e.g. dark mode).
 
-The docs theme wants peach surfaces with normal near-black text, so it retints **only** `--color-light`:
+The docs theme wants peach surfaces with normal near-black text, so it retints **only** `--tint-90`:
 
 ```css
 :root {
   /* Surfaces go peach; text and the page background stay the library defaults. */
-  --color-light: color-mix(in srgb, #ff7a1a 14%, white);
+  --tint-90: color-mix(in srgb, #ff7a1a 14%, white);
 }
 ```
 
@@ -192,7 +192,7 @@ Pattern:
 
 ```css
 @layer components {
-  .card { margin-block: var(--card-spacing, var(--spacing-paragraph)); }
+  .card { margin-block: var(--card-space, var(--space-paragraph)); }
 }
 
 @layer overrides {
@@ -209,11 +209,10 @@ A typical new block-level component looks like:
 
 ```tsx
 // Address.tsx
-import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 
-export interface AddressProps extends AlignVariants, SpacingVariants, TypographyVariants, ChildProps {}
+export interface AddressProps extends SpacingVariants, TypographyVariants, ChildProps {}
 
 export function Address({ children, ...variants }: AddressProps) {
   return (
@@ -239,10 +238,10 @@ export function Address({ children, ...variants }: AddressProps) {
   .address {
     display: block;
     margin-inline: 0;
-    margin-block: var(--address-spacing, var(--spacing-paragraph));
+    margin-block: var(--address-space, var(--space-paragraph));
 
-    /* Single-colour text block — read --color-dark directly with a theme-hook fallback. */
-    color: var(--address-color, var(--color-dark));
+    /* Single-colour text block — read --shade-dark directly with a theme-hook fallback. */
+    color: var(--address-color, var(--shade-dark));
     font-family: var(--address-font, inherit);
     font-size: var(--address-size, inherit);
     text-align: var(--address-align, left);
@@ -265,7 +264,7 @@ Checklist:
 - [ ] If the component paints a surface (background + border + text), rebind all five scale steps at the top of the rule and pick a step pair for the painted properties.
 - [ ] If the component only paints one colour (a text-only block), skip the rebind and read the step directly with a single theme-hook fallback.
 - [ ] `:first-child` / `:last-child` overrides in a separate `@layer overrides { … }` block.
-- [ ] TSX extends the variant interfaces (`SpacingVariants`, `AlignVariants`, etc.) you want to expose; composes the matching `getXxxClass(props)` calls.
+- [ ] TSX extends the variant interfaces (`SpacingVariants`, `TypographyVariants`, etc.) you want to expose; composes the matching `getXxxClass(props)` calls.
 
 ## Module map
 

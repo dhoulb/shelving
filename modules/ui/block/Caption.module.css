@@ -3,12 +3,17 @@
 @layer components {
 	.caption,
 	.prose figcaption {
+		/* Box */
 		display: block;
+		padding: 0;
+		margin-inline: 0;
 		margin-block: var(--caption-gap, var(--space-xxsmall));
-		text-align: var(--caption-align, left);
+
+		/* Text */
+		font-weight: var(--caption-weight, var(--weight-normal));
 		font-size: var(--caption-size, var(--size-small));
-		font-weight: var(--caption-weight, var(--weight-strong));
-		color: var(--caption-color, var(--color-vivid));
+		line-height: var(--caption-leading, var(--leading));
+		text-align: var(--caption-align, left);
 	}
 }
 

@@ -1,4 +1,5 @@
 @import "base.css";
+@import "Tint.module.css";
 
 @layer variants {
 	/* Font-family variants. */
@@ -18,53 +19,109 @@
 		font-family: var(--font-serif);
 	}
 
-	/* Font-size variants (prefixed `size-` to avoid clashing with Spacing/Padding/Gap scales). */
-	.size-xxsmall {
+	/* Font-size variants. */
+	.xxsmall {
 		font-size: var(--size-xxsmall);
 		line-height: var(--leading);
 	}
-	.size-xsmall {
+	.xsmall {
 		font-size: var(--size-xsmall);
 		line-height: var(--leading);
 	}
-	.size-small {
+	.small {
 		font-size: var(--size-small);
 		line-height: var(--leading);
 	}
-	.size-normal {
+	.normal {
 		font-size: var(--size-normal);
 		line-height: var(--leading);
 	}
-	.size-large {
+	.large {
 		font-size: var(--size-large);
 		line-height: var(--leading);
 	}
-	.size-xlarge {
+	.xlarge {
 		font-size: var(--size-xlarge);
 		line-height: var(--leading);
 	}
-	.size-xxlarge {
+	.xxlarge {
 		font-size: var(--size-xxlarge);
 		line-height: var(--leading);
 	}
 
-	/* Text-colour variants — set `color` from a step of the 5-step scale.
-	 * Text block elements (Paragraph, Heading, etc.) don't set `color` themselves; they inherit from
-	 * the page baseline (`--color-dark`). Apply one of these on a container (Block, Panel) to tint
-	 * all the text inside it via inheritance, or on an individual text block to tint just that one. */
-	.black {
-		color: var(--color-black);
+	/* Text tint variants */
+	.tint-00 {
+		color: var(--tint-00);
 	}
-	.dark {
-		color: var(--color-dark);
+	.tint-05 {
+		color: var(--tint-05);
 	}
-	.vivid {
-		color: var(--color-vivid);
+	.tint-10 {
+		color: var(--tint-10);
 	}
-	.light {
-		color: var(--color-light);
+	.tint-15 {
+		color: var(--tint-15);
 	}
-	.white {
-		color: var(--color-white);
+	.tint-20 {
+		color: var(--tint-20);
+	}
+	.tint-25 {
+		color: var(--tint-25);
+	}
+	.tint-30 {
+		color: var(--tint-30);
+	}
+	.tint-35 {
+		color: var(--tint-35);
+	}
+	.tint-40 {
+		color: var(--tint-40);
+	}
+	.tint-45 {
+		color: var(--tint-45);
+	}
+	.tint-50 {
+		color: var(--tint-50);
+	}
+	.tint-55 {
+		color: var(--tint-55);
+	}
+	.tint-60 {
+		color: var(--tint-60);
+	}
+	.tint-65 {
+		color: var(--tint-65);
+	}
+	.tint-70 {
+		color: var(--tint-70);
+	}
+	.tint-75 {
+		color: var(--tint-75);
+	}
+	.tint-80 {
+		color: var(--tint-80);
+	}
+	.tint-85 {
+		color: var(--tint-85);
+	}
+	.tint-90 {
+		color: var(--tint-90);
+	}
+	.tint-95 {
+		color: var(--tint-95);
+	}
+	.tint-100 {
+		color: var(--tint-100);
+	}
+
+	/* Text-alignment variants. */
+	.left {
+		text-align: left;
+	}
+	.center {
+		text-align: center;
+	}
+	.right {
+		text-align: right;
 	}
 }

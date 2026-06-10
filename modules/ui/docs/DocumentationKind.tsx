@@ -1,9 +1,9 @@
 import type { ReactElement } from "react";
-import { Tag } from "../misc/Tag.js";
+import { Tag, type TagProps } from "../misc/Tag.js";
 import type { Color } from "../style/Color.js";
 
 /** Props for `DocumentationKind`. */
-export interface DocumentationKindProps {
+export interface DocumentationKindProps extends TagProps {
 	/** The documentation kind (e.g. `"function"`, `"class"`, `"interface"`, `"type"`, `"constant"`, `"method"`, `"property"`). */
 	readonly kind: string;
 }
@@ -34,7 +34,10 @@ export function getDocumentationKindColor(kind: string): Color | undefined {
  *
  * @example <DocumentationKind kind="function" />
  */
-export function DocumentationKind({ kind }: DocumentationKindProps): ReactElement {
-	const color = getDocumentationKindColor(kind);
-	return <Tag {...(color ? { [color]: true } : {})}>{kind}</Tag>;
+export function DocumentationKind({ kind = "unknown", ...props }: DocumentationKindProps): ReactElement {
+	return (
+		<Tag color={getDocumentationKindColor(kind)} {...props}>
+			{kind}
+		</Tag>
+	);
 }

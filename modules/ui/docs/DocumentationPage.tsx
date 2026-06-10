@@ -3,11 +3,12 @@ import { type Element, queryElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import type { Query } from "../../util/query.js";
 import type { DocumentationElementProps, TreeElement } from "../../util/tree.js";
-import { Section } from "../block/Block.js";
 import { Definitions } from "../block/Definitions.js";
 import { Heading } from "../block/Heading.js";
+import { Panel } from "../block/Panel.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
+import { Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
@@ -16,21 +17,21 @@ import { Flex } from "../style/Flex.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
-import { DocumentationKind } from "./DocumentationKind.js";
+import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 const DEFAULT_TYPE = "unknown";
 
 /** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. */
-const KIND_SECTIONS: ReadonlyArray<readonly [kind: string, label: string]> = [
-	["function", "Functions"],
-	["class", "Classes"],
-	["interface", "Interfaces"],
-	["type", "Types"],
-	["constant", "Constants"],
-	["method", "Methods"],
-	["property", "Properties"],
-];
+const KIND_SECTIONS = {
+	function: "Functions",
+	class: "Classes",
+	interface: "Interfaces",
+	type: "Types",
+	constant: "Constants",
+	method: "Methods",
+	property: "Properties",
+};
 
 interface DocumentationPageProps extends DocumentationElementProps {
 	/** Site-root-relative path of this page — threaded down so child cards build correct hrefs. */
@@ -47,7 +48,7 @@ export function DocumentationPage({
 	path,
 	title,
 	name,
-	kind,
+	kind = "unknown",
 	description,
 	content,
 	signatures,
@@ -60,22 +61,26 @@ export function DocumentationPage({
 }: DocumentationPageProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
-			<TreeBreadcrumbs />
-			<Title>
-				<Flex left wrap>
-					{title ?? name}
-					{kind && <DocumentationKind kind={kind} />}
-				</Flex>
-			</Title>
-			<DocumentationButtons {...props} />
-			<DocumentationSignatures signatures={signatures} />
+			<Panel color={getDocumentationKindColor(kind)} as="header" wide>
+				<TreeBreadcrumbs />
+				<Title>
+					<Flex left wrap>
+						<span>{title ?? name}</span>
+						{kind && <DocumentationKind kind={kind} normal />}
+					</Flex>
+				</Title>
+				<DocumentationButtons {...props} />
+				<DocumentationSignatures signatures={signatures} />
+			</Panel>
 			{content && (
-				<Prose>
-					<Markup>{content}</Markup>
-				</Prose>
+				<Section wide>
+					<Prose>
+						<Markup>{content}</Markup>
+					</Prose>
+				</Section>
 			)}
 			{params?.length && (
-				<Section>
+				<Section wide>
 					<Heading>Parameters</Heading>
 					<Definitions>
 						{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
@@ -91,7 +96,7 @@ export function DocumentationPage({
 				</Section>
 			)}
 			{returns?.length && (
-				<Section>
+				<Section wide>
 					<Heading>Returns</Heading>
 					<Definitions>
 						{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
@@ -106,7 +111,7 @@ export function DocumentationPage({
 				</Section>
 			)}
 			{throws?.length && (
-				<Section>
+				<Section wide>
 					<Heading>Throws</Heading>
 					<Definitions>
 						{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
@@ -121,18 +126,18 @@ export function DocumentationPage({
 				</Section>
 			)}
 			{examples?.length && (
-				<Section>
+				<Section wide>
 					<Heading>Examples</Heading>
 					{examples.map(({ description }) => (
 						<Preformatted key={description}>{description}</Preformatted>
 					))}
 				</Section>
 			)}
-			{KIND_SECTIONS.map(([kind, label]) => {
+			{Object.entries(KIND_SECTIONS).map(([kind, label]) => {
 				// Pre-filter the children for this kind; only render the section when it has cards.
 				const group = Array.from(queryElements(children, { "props.kind": kind } as Query<Element>)) as TreeElement[];
 				return group.length ? (
-					<Section key={kind}>
+					<Section wide key={kind}>
 						<Heading>{label}</Heading>
 						<TreeCards path={path}>{group}</TreeCards>
 					</Section>

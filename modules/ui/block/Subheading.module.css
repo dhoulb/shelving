@@ -3,17 +3,21 @@
 @layer components {
 	.subheading,
 	.prose :is(h3, h4, h5, h6) {
-		display: block;
-		inline-size: 100%;
-		margin-inline: 0;
-		margin-block-start: var(--subheading-spacing-before, var(--spacing-section));
-		margin-block-end: var(--subheading-spacing, var(--spacing-paragraph));
+		/* Theme */
+		--tint-50: var(--subheading-tint, inherit);
 
-		font-family: var(--subheading-font, var(--font-body));
+		/* Box */
+		display: block;
+		margin-inline: 0;
+		margin-block-start: var(--subheading-space-before, var(--space-section));
+		margin-block-end: var(--subheading-space, var(--space-paragraph));
+
+		/* Text */
+		font-family: var(--subheading-font, inherit);
 		font-weight: var(--subheading-weight, var(--weight-strong));
-		line-height: var(--subheading-leading, var(--leading));
 		font-size: var(--subheading-size, var(--size-large));
-		text-align: var(--subheading-align, left);
+		line-height: var(--subheading-leading, var(--leading));
+		color: var(--subheading-color, inherit);
 	}
 }
 

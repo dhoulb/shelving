@@ -3,42 +3,35 @@
 @layer components {
 	.preformatted,
 	.prose pre {
-		/* Identity */
-		--color-black: var(--preformatted-color-black, inherit);
-		--color-dark: var(--preformatted-color-dark, inherit);
-		--color-vivid: var(--preformatted-color-vivid, inherit);
-		--color-light: var(--preformatted-color-light, inherit);
-		--color-white: var(--preformatted-color-white, inherit);
-		--color-button: var(--preformatted-color-button, inherit);
+		/* Theme */
+		--tint-50: var(--preformatted-tint, inherit);
 
 		/* Box */
 		position: relative;
 		margin-inline: 0;
-		margin-block: var(--preformatted-spacing, var(--spacing-paragraph));
-		border: var(--preformatted-border, var(--preformatted-stroke, var(--stroke-normal)) solid var(--color-border));
+		margin-block: var(--preformatted-space, var(--space-paragraph));
+		border: var(--preformatted-border, var(--preformatted-stroke, var(--stroke-normal)) solid var(--tint-80));
 		padding: var(--preformatted-padding, var(--space-normal));
 		border-radius: var(--preformatted-radius, var(--radius-normal));
 		width: 100%;
 		box-sizing: border-box;
 
 		/* Style */
-		background-color: var(--color-light);
-		color: var(--color-black);
+		background: var(--preformatted-background, var(--tint-90));
+		color: var(--preformatted-color, var(--tint-00));
 		box-shadow: var(--preformatted-shadow, none);
 		transition: var(--preformatted-transition, all var(--duration-fast));
 		outline: var(--preformatted-focus-border, var(--stroke-focus) solid transparent);
 		outline-offset: calc(0px - var(--preformatted-stroke, var(--stroke-normal)));
 
-		/* Typography */
+		/* Text */
 		font-family: var(--preformatted-font, var(--font-code));
-		font-size: var(--size-normal);
-		font-weight: var(--weight-normal);
-		color: var(--color-black);
+		font-size: var(--preformatted-size, var(--size-normal));
+		line-height: var(--preformatted-leading, var(--leading));
+		font-weight: var(--preformatted-weight, var(--weight-code));
 		tab-size: 2;
-
-		/* Contents */
 		white-space: preserve nowrap;
-		overflow-wrap: none;
+		overflow-wrap: normal;
 
 		/* Scrolling */
 		overflow-y: hidden;

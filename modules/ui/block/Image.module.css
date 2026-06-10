@@ -6,7 +6,7 @@
 		display: block;
 		inline-size: var(--image-width, 100%);
 		margin-inline: 0;
-		margin-block: var(--image-spacing, var(--spacing-paragraph));
+		margin-block: var(--image-space, var(--space-paragraph));
 
 		object-position: center center;
 		object-fit: cover; /* Don't distort when resized. */

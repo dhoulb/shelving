@@ -3,11 +3,13 @@
 @layer components {
 	.divider,
 	.prose hr {
+		/* Box */
 		display: block;
+		padding: 0;
 		border: 0;
-		border-block-start: var(--divider-border, var(--divider-stroke, var(--stroke-normal)) solid var(--color-border));
+		border-block-start: var(--divider-border, var(--divider-stroke, var(--stroke-normal)) solid var(--tint-80));
 		margin-inline: 0;
-		margin-block: var(--divider-spacing, var(--spacing-paragraph));
+		margin-block: var(--divider-space, var(--space-paragraph));
 	}
 }
 

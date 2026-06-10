@@ -26,11 +26,11 @@ import { PageCatcher, Catcher, ErrorNotice } from "shelving/ui";
 
 ## Status and colour
 
-`Status` is the type (`"loading" | "info" | "success" | "warning" | "danger" | "error"`) and `StatusVariants` is the matching boolean-prop interface. Use these as the canonical vocabulary for component state everywhere in the UI.
+`Status` is the type (`"loading" | "info" | "success" | "warning" | "danger" | "error"`) and `StatusProps` is the matching boolean-prop interface. Use these as the canonical vocabulary for component state everywhere in the UI.
 
-`getStatusClass` maps a `Status` string or `StatusVariants` object to a CSS module class. Compose it with other class helpers when building components that need status colouring.
+`getStatusClass` maps a `Status` string or `StatusProps` object to a CSS module class. Compose it with other class helpers when building components that need status colouring.
 
-`Color` exports `ColorVariants` (raw hues: `red`, `blue`, `purple`, `green`, etc.) and `getColorClass`. Use status variants for semantic meaning and colour variants for purely decorative differentiation.
+`Color` exports `ColorProps` (raw hues: `red`, `blue`, `purple`, `green`, etc.) and `getColorClass`. Use status variants for semantic meaning and colour variants for purely decorative differentiation.
 
 `getTypographyClass` (from `Typography`) returns a class for font-size (`small`, `large`, `xxlarge`, …) or font-family (`code`, `sans`, `serif`, …) variants. Compose into components that need typography overrides without wrapping in an extra element.
 
@@ -58,7 +58,7 @@ import { StatusIcon } from "shelving/ui";
 
 ## Tag
 
-`Tag` is a small inline label. It accepts both `StatusVariants` and `ColorVariants`, plus `href` or `onClick` from `ClickableProps`, so it can be static or interactive.
+`Tag` is a small inline label. It accepts both `StatusProps` and `ColorProps`, plus `href` or `onClick` from `ClickableProps`, so it can be static or interactive.
 
 ```tsx
 import { Tag } from "shelving/ui";

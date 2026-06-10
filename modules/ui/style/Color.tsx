@@ -1,5 +1,6 @@
-import { getModuleClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import COLOR_CSS from "./Color.module.css";
+import { TINT_CLASS } from "./Tint.js";
 
 /** Variants for raw colours — pure hue overrides independent of semantic status. */
 export interface ColorVariants {
@@ -32,7 +33,13 @@ export interface ColorVariants {
 /** Possible colour strings. */
 export type Color = keyof ColorVariants;
 
+/** Props for colored elements (either a simple boolean variant e.g. `blue` or a specific `color="purple"`). */
+export interface ColorProps extends ColorVariants {
+	/** Specific color for the element. */
+	color?: Color | undefined;
+}
+
 /** Get a class for a colour. */
-export function getColorClass(color: Color | ColorVariants): string | undefined {
-	return getModuleClass(COLOR_CSS, color);
+export function getColorClass(color: ColorProps): string | undefined {
+	return getClass(TINT_CLASS, getModuleClass(COLOR_CSS, color?.color, color));
 }

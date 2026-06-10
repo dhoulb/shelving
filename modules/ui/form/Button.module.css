@@ -2,17 +2,21 @@
 
 @layer components {
 	.button {
+		/* Theme */
+		--tint-50: var(--button-tint, inherit);
+
 		/* Box */
+		display: block;
 		box-sizing: border-box;
 		inline-size: fit-content;
 		min-inline-size: fit-content;
 		max-inline-size: 100%;
 		border-radius: var(--button-radius, var(--radius-xsmall));
-		border: var(--button-border, var(--button-stroke, var(--stroke-normal)) solid var(--color-border));
+		border: var(--button-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-80));
 		padding-block: var(--button-padding, var(--space-small));
 		padding-inline: var(--button-padding, var(--space-small));
 		margin-inline: 0;
-		margin-block: var(--button-spacing, var(--space-small));
+		margin-block: var(--button-space, var(--space-small));
 
 		/* Content */
 		overflow: hidden;
@@ -20,15 +24,15 @@
 		justify-content: center;
 		align-items: center;
 
-		/* Style — default appearance is `bg=light / text=dark` (2-step pair, fine for short labels). */
-		background: var(--button-background, var(--color-light));
-		color: var(--button-text, var(--color-vivid));
+		/* Style. */
+		background: var(--button-background, var(--tint-90));
+		color: var(--button-text, var(--tint-50));
 		transition: var(--button-transition, all var(--duration-fast));
 		cursor: pointer;
 		outline: var(--button-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--button-stroke, var(--stroke-normal)));
 
-		/* Typography */
+		/* Text */
 		font-family: var(--button-font, var(--font-body));
 		font-weight: var(--button-weight, var(--weight-strong));
 		font-size: var(--button-size, var(--size-normal));
@@ -47,7 +51,7 @@
 		&:enabled:hover,
 		&:any-link:hover,
 		&:focus:not(:focus-visible) {
-			background: var(--button-hover-background, color-mix(in oklch, var(--color-light) 85%, white));
+			background: var(--button-hover-background, var(--tint-95));
 		}
 
 		/* Variants */
@@ -60,35 +64,14 @@
 			inline-size: 100%;
 		}
 		&.strong {
-			background: var(--button-strong-background, var(--color-vivid));
-			border: var(--button-strong-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
-			color: var(--button-strong-text, var(--color-white));
+			background: var(--button-strong-background, var(--tint-50));
+			border: var(--button-strong-border, var(--button-stroke, var(--stroke-normal) solid transparent));
+			color: var(--button-strong-text, var(--tint-100));
 
 			&:enabled:hover,
 			&:any-link:hover,
 			&:focus:not(:focus-visible) {
-				background: var(--button-strong-hover-background, color-mix(in oklch, var(--color-vivid) 85%, white));
-			}
-		}
-	}
-}
-
-@layer variants {
-	.button {
-		background: var(--color-light);
-		border: var(--button-stroke, var(--stroke-normal)) solid var(--color-border);
-		color: var(--color-vivid);
-
-		/* Variants */
-		&.strong {
-			background: var(--color-vivid);
-			border: var(--button-stroke, var(--stroke-normal)) solid transparent;
-			color: var(--color-white);
-
-			&:enabled:hover,
-			&:any-link:hover,
-			&:focus:not(:focus-visible) {
-				background: color-mix(in oklch, var(--color-vivid) 85%, white);
+				background: var(--button-strong-hover-background, var(--tint-55));
 			}
 		}
 	}

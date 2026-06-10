@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { type ColorProps, getColorClass } from "../style/Color.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
@@ -13,7 +13,7 @@ export const PREFORMATTED_PROSE_CLASS = getModuleClass(PREFORMATTED_CSS, "prose"
 
 export interface PreformattedProps
 	extends SpacingVariants,
-		ColorVariants,
+		ColorProps,
 		TypographyVariants,
 		WidthVariants,
 		PaddingVariants,

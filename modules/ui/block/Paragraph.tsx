@@ -1,6 +1,5 @@
 import type { ReactElement } from "react";
-import { type AlignVariants, getAlignClass } from "../style/Align.js";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { type ColorProps, getColorClass } from "../style/Color.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -10,17 +9,16 @@ import PARAGRAPH_CSS from "./Paragraph.module.css";
 export const PARAGRAPH_CLASS = getModuleClass(PARAGRAPH_CSS, "paragraph");
 export const PARAGRAPH_PROSE_CLASS = getModuleClass(PARAGRAPH_CSS, "prose");
 
-export interface ParagraphProps extends AlignVariants, ColorVariants, SpacingVariants, TypographyVariants, OptionalChildProps {}
+export interface ParagraphProps extends ColorProps, SpacingVariants, TypographyVariants, OptionalChildProps {}
 
-export function Paragraph({ children, ...variants }: ParagraphProps): ReactElement {
+export function Paragraph({ children, ...props }: ParagraphProps): ReactElement {
 	return (
 		<p
 			className={getClass(
-				PARAGRAPH_CLASS,
-				getColorClass(variants),
-				getAlignClass(variants),
-				getSpacingClass(variants),
-				getTypographyClass(variants),
+				PARAGRAPH_CLASS, //
+				getColorClass(props),
+				getSpacingClass(props),
+				getTypographyClass(props),
 			)}
 		>
 			{children}

@@ -7,7 +7,7 @@ import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { TreeButton } from "../tree/TreeButton.js";
 import { getClass } from "../util/css.js";
 
-/** Props for `DocumentationButtons` — the relational metadata of a documented symbol, plus block-spacing overrides. */
+/** Props for `DocumentationButtons` — the relational metadata of a documented symbol, plus block-space overrides. */
 export interface DocumentationButtonsProps
 	extends Pick<DocumentationElementProps, "class" | "overrides" | "extends" | "implements">,
 		SpacingVariants {}

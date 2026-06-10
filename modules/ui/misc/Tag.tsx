@@ -1,15 +1,13 @@
 import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getStatusClass, type StatusVariants } from "../style/Status.js";
+import { type ColorProps, getColorClass } from "../style/Color.js";
+import { getStatusClass, type StatusProps } from "../style/Status.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import TAG_CSS from "./Tag.module.css";
 
 /** Variants for tags — accepts both status and raw colour variants. */
-export interface TagVariants extends StatusVariants, ColorVariants {
-	/** Make the tag appear smaller. */
-	small?: boolean | undefined;
-}
+export interface TagVariants extends StatusProps, ColorProps, TypographyVariants {}
 
 export interface TagProps extends TagVariants, ClickableProps {}
 
@@ -25,11 +23,12 @@ export function Tag(props: TagProps): ReactElement {
 	return <Clickable {...props} className={getTagClass(props)} />;
 }
 
-export function getTagClass(variants: TagVariants): string {
+export function getTagClass(props: TagProps): string {
 	return getClass(
 		TAG_CSS.tag, //
-		getModuleClass(TAG_CSS, variants),
-		getStatusClass(variants),
-		getColorClass(variants),
+		getModuleClass(TAG_CSS, props),
+		getStatusClass(props),
+		getColorClass(props),
+		getTypographyClass(props),
 	);
 }

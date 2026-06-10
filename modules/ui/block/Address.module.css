@@ -3,22 +3,12 @@
 @layer components {
 	.address,
 	.prose address {
+		/* Box */
 		display: block;
 		margin-inline: 0;
-		margin-block: var(--address-spacing, var(--spacing-paragraph));
+		margin-block: var(--address-space, var(--space-paragraph));
 
-		font-style: normal;
-		font-family: var(--address-font, inherit);
-		font-size: var(--address-size, inherit);
-		text-align: var(--address-align, left);
-
-		/* Typography */
-		font-family: var(--preformatted-font, var(--font-code));
-		font-size: var(--size-normal);
-		font-weight: var(--weight-normal);
-		color: var(--color-black);
-
-		/* Contents. */
+		/* Text */
 		white-space: preserve wrap;
 	}
 }

@@ -1,44 +1,27 @@
 @import "base.css";
+@import "Tint.module.css";
 
 /* Status variant classes go in `@layer variants` — highest priority, always win.
  * Each variant overrides the inner three steps of the 5-step scale at its scope. */
 @layer variants {
-	.loading,
-	.info,
-	.success,
-	.warning,
-	.error,
-	.danger {
-		/* Color scale */
-		--color-black: black;
-		--color-dark: oklch(from var(--color-vivid) calc(l - 0.22) c h);
-		--color-light: color-mix(in oklch, var(--color-vivid) 20%, white);
-		--color-white: white;
-
-		/* Semantic colors */
-		--color-link: inherit;
-		--color-border: color-mix(in oklch, var(--color-vivid) 40%, white);
-		--color-shadow: color-mix(in oklch, var(--color-vivid) 40%, transparent);
-	}
-
 	.loading {
-		--color-vivid: var(--color-gray);
+		--tint-50: var(--color-gray);
 	}
 
 	.info {
-		--color-vivid: var(--color-blue);
+		--tint-50: var(--color-blue);
 	}
 
 	.success {
-		--color-vivid: var(--color-green);
+		--tint-50: var(--color-success);
 	}
 
 	.warning {
-		--color-vivid: var(--color-orange);
+		--tint-50: var(--color-warning);
 	}
 
 	.error,
 	.danger {
-		--color-vivid: var(--color-red);
+		--tint-50: var(--color-failure);
 	}
 }

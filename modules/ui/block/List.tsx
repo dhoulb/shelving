@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { type ColorProps, getColorClass } from "../style/Color.js";
 import { type GapVariants, getGapClass } from "../style/Gap.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
@@ -10,19 +10,19 @@ export const LIST_ORDERED_CLASS = getModuleClass(LIST_CSS, "ordered");
 export const LIST_UNORDERED_CLASS = getModuleClass(LIST_CSS, "unordered");
 export const LIST_PROSE_CLASS = getModuleClass(LIST_CSS, "prose");
 
-export interface ListProps extends ColorVariants, GapVariants, SpacingVariants, TypographyVariants {
+export interface ListProps extends ColorProps, GapVariants, SpacingVariants, TypographyVariants {
 	children: ReactNode[];
 	ordered?: boolean;
 }
 
-export function List({ children, ordered = false, ...variants }: ListProps): ReactElement {
+export function List({ children, ordered = false, ...props }: ListProps): ReactElement {
 	const items = children.map((v, i) => <li key={i.toString()}>{v}</li>);
 	const className = getClass(
 		ordered ? LIST_ORDERED_CLASS : LIST_UNORDERED_CLASS,
-		getColorClass(variants),
-		getGapClass(variants),
-		getSpacingClass(variants),
-		getTypographyClass(variants),
+		getColorClass(props),
+		getGapClass(props),
+		getSpacingClass(props),
+		getTypographyClass(props),
 	);
 	return ordered ? <ol className={className}>{items}</ol> : <ul className={className}>{items}</ul>;
 }

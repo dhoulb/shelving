@@ -1,79 +1,44 @@
 @import "base.css";
+@import "Tint.module.css";
 
-@layer defaults {
-	:root {
-		/* Brand colours */
-		--color-primary: var(--color-blue);
-		--color-secondary: var(--color-purple);
-		--color-tertiary: var(--color-pink);
-	}
-}
-
-/* Variant classes go in `@layer variants` — the highest-priority layer, so they always win.
- * Each variant overrides the inner three steps of the 5-step scale at its scope; `--color-black`
- * and `--color-white` inherit from the page so the unchanging extremes stay available. */
 @layer variants {
-	.gray,
-	.red,
-	.orange,
-	.yellow,
-	.green,
-	.aqua,
-	.blue,
-	.purple,
-	.pink,
-	.primary,
-	.secondary,
-	.tertiary {
-		/* Color scale */
-		--color-black: black;
-		--color-dark: oklch(from var(--color-vivid) calc(l - 0.22) c h);
-		--color-light: color-mix(in oklch, var(--color-vivid) 20%, white);
-		--color-white: white;
-
-		/* Semantic colors */
-		--color-link: inherit;
-		--color-border: color-mix(in oklch, var(--color-vivid) 40%, white);
-		--color-shadow: color-mix(in oklch, var(--color-vivid) 40%, transparent);
-	}
-
 	/* Basic colors */
 	.gray {
-		--color-vivid: var(--color-gray);
+		--tint-50: var(--color-gray);
 	}
 	.red {
-		--color-vivid: var(--color-red);
+		--tint-50: var(--color-red);
 	}
 	.orange {
-		--color-vivid: var(--color-orange);
+		--tint-50: var(--color-orange);
 	}
 	.yellow {
-		--color-vivid: var(--color-yellow);
+		--tint-50: var(--color-yellow);
 	}
 	.green {
-		--color-vivid: var(--color-green);
+		--tint-50: var(--color-green);
 	}
 	.aqua {
-		--color-vivid: var(--color-aqua);
+		--tint-50: var(--color-aqua);
 	}
 	.blue {
-		--color-vivid: var(--color-blue);
+		--tint-50: var(--color-blue);
 	}
 	.purple {
-		--color-vivid: var(--color-purple);
+		--tint-50: var(--color-purple);
 	}
 	.pink {
-		--color-vivid: var(--color-pink);
+		--tint-50: var(--color-pink);
 	}
 
 	/* Brand colors */
 	.primary {
-		--color-vivid: var(--color-primary);
+		--tint-50: var(--color-primary);
 	}
 	.secondary {
-		--color-vivid: var(--color-secondary);
+		--tint-50: var(--color-secondary);
 	}
 	.tertiary {
-		--color-vivid: var(--color-tertiary);
+		--tint-50: var(--color-tertiary);
 	}
 }

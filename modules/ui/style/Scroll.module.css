@@ -1,0 +1,38 @@
+@layer defaults {
+	.horizontal {
+		margin: 0;
+	}
+	.horizontal,
+	.vertical {
+		overflow: hidden;
+		overscroll-behavior: none;
+	}
+}
+
+@layer components {
+	/* Any scrollable region */
+	.horizontal,
+	.vertical {
+		/* Style */
+		outline: var(--scrollable-focus-border, var(--scrollable-focus-stroke, var(--stroke-focus)) solid var(--color-focus));
+		outline-offset: calc(0px - var(--stroke-normal));
+
+		&:not(:focus-visible) {
+			outline-color: transparent;
+		}
+	}
+
+	/* Vertical scrollable region. */
+	.vertical {
+		/* Scrolling */
+		overflow-y: auto;
+		overscroll-behavior-y: none;
+	}
+
+	/* Horizontal scrollable region. */
+	.horizontal {
+		/* Scrolling */
+		overflow-x: auto;
+		overscroll-behavior-x: none;
+	}
+}

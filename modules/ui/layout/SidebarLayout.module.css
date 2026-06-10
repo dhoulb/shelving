@@ -1,4 +1,5 @@
 @import "../style/base.css";
+@import "../style/Tint.module.css";
 
 /*
 * Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
@@ -14,6 +15,11 @@
 */
 
 @layer components {
+	body:has(.main) {
+		/* Style */
+		background: var(--sidebar-layout-background, var(--tint-100));
+	}
+
 	.main {
 		display: grid;
 		grid-template-columns: var(--sidebar-layout-width, 17.5rem) 1fr;
@@ -23,21 +29,31 @@
 	}
 
 	.sidebar {
+		/* Box */
+		display: flow-root;
+		border-right: var(--sidebar-layout-border, var(--stroke-normal) solid var(--tint-80));
+
+		/* Scrolling */
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		padding: var(--space-normal);
-		background: var(--sidebar-layout-bg, var(--color-light));
-		border-right: var(--sidebar-layout-border, var(--stroke-normal)) solid var(--sidebar-layout-color-border, var(--color-border));
+
+		/* Style */
+		background: var(--sidebar-layout-sidebar-background, var(--tint-90));
 	}
 
 	.content {
 		/* Combined with `.layout` (added at the JSX layer) for scroll/padding/safe-area behaviour. */
 		min-width: 0;
+		padding: 0;
+
+		/* Style */
+		background: var(--sidebar-layout-content-background, var(--tint-100));
 	}
 
 	.contentInner {
 		width: 100%;
-		max-width: var(--width-wide);
+		padding: 0;
 		margin: 0 auto;
 	}
 

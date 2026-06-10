@@ -4,7 +4,7 @@
 	.form {
 		display: block;
 		margin-inline: 0;
-		margin-block: var(--form-spacing, var(--spacing-paragraph));
+		margin-block: var(--form-space, var(--space-paragraph));
 
 		& > * + * {
 			margin: 0;

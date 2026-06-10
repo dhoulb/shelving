@@ -1,25 +1,27 @@
 import { PARAGRAPH_CLASS, type ParagraphProps } from "../block/Paragraph.js";
 import { LOADING } from "../misc/Loading.js";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getStatusClass, type Status } from "../style/Status.js";
+import { type ColorProps, getColorClass } from "../style/Color.js";
+import { getStatus, getStatusClass, type StatusProps } from "../style/Status.js";
+import { TINT_CLASS } from "../style/Tint.js";
 import { getClass } from "../util/css.js";
 import MESSAGE_CSS from "./Message.module.css";
 
-export interface MessageProps extends ParagraphProps, ColorVariants {
-	/** Status of the message (defaults to "info"). */
-	status?: Status | undefined;
-}
+export const MESSAGE_CLASS = getClass(MESSAGE_CSS.message);
+
+export interface MessageProps extends ParagraphProps, ColorProps, StatusProps {}
 
 /** Paragraph with status colours. */
-export function Message({ children, status = "info", ...variants }: MessageProps) {
+export function Message({ children, ...props }: MessageProps) {
+	const status = getStatus(props);
 	return (
 		<p
 			role={status === "error" || status === "danger" ? "alert" : "status"}
 			className={getClass(
 				PARAGRAPH_CLASS, //
-				MESSAGE_CSS.message,
+				MESSAGE_CLASS,
+				TINT_CLASS,
 				getStatusClass(status),
-				getColorClass(variants),
+				getColorClass(props),
 			)}
 		>
 			{children}

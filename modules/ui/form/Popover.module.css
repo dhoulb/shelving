@@ -20,7 +20,7 @@
 		z-index: 1000;
 		max-height: var(--popover-max-height, 30vh);
 		border-radius: var(--popover-radius, var(--radius-xsmall));
-		border: var(--popover-border, var(--stroke-normal) solid var(--color-vivid));
+		border: var(--popover-border, var(--stroke-normal) solid var(--tint-50));
 		padding: var(--popover-padding, var(--space-small));
 
 		/* Scrolling */
@@ -30,7 +30,7 @@
 		overscroll-behavior-y: contain;
 
 		/* Style */
-		background: var(--popover-color-bg, var(--color-white));
+		background: var(--popover-color-bg, var(--tint-100));
 		box-shadow: var(--popover-shadow, var(--shadow-small));
 	}
 }

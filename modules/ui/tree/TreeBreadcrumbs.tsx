@@ -27,10 +27,11 @@ export function TreeBreadcrumbs(variants: TreeBreadcrumbsProps): ReactElement | 
 			className={getClass(BLOCK_CLASS, getFlexClass(variants), getSpacingClass(variants), TREE_BREADCRUMBS_CSS.breadcrumbs)}
 		>
 			<TreeButton small plain name="" />
+			<ChevronRightIcon />
 			{ancestors.map(name => (
 				<Fragment key={name}>
-					<ChevronRightIcon />
 					<TreeButton small plain name={name} />
+					<ChevronRightIcon />
 				</Fragment>
 			))}
 		</nav>

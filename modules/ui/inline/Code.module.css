@@ -3,11 +3,11 @@
 @layer components {
 	.code,
 	.prose :is(code, kbd, samp, var) {
-		/* Typography */
+		/* Text */
 		font-family: var(--code-font, var(--font-code));
 		font-size: var(--code-size, var(--size-smaller));
-		line-height: var(--leading);
-		font-weight: inherit;
+		line-height: var(--code-leading, var(--leading));
+		font-weight: var(--code-weight, var(--weight-code));
 	}
 
 	.code,
@@ -18,7 +18,7 @@
 		border-radius: var(--code-radius, var(--radius-xxsmall));
 
 		/* Style */
-		background-color: var(--color-light);
-		color: var(--color-dark);
+		background-color: var(--tint-90);
+		color: var(--tint-00);
 	}
 }

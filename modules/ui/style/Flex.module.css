@@ -8,14 +8,16 @@
 		justify-content: stretch;
 		align-items: center;
 
-		/* Children are not stretched to fill: each sizes to its own `inline-size` (content by default, `100%`
-		 * for things like inputs that should fill). No default `flex-grow` — fill is a width, not a grow. */
-
-		/* Add default icon sizing. */
+		/* Children */
 		> [data-slot="icon"] {
 			inline-size: var(--flex-icon-size, var(--size-icon));
 			block-size: var(--flex-icon-size, var(--size-icon));
 			flex: none;
+		}
+
+		&.column {
+			justify-content: center;
+			align-items: stretch;
 		}
 	}
 }
@@ -29,26 +31,56 @@
 		&.wrap {
 			flex-wrap: wrap;
 		}
-		&.left {
-			justify-content: start;
+		&.between {
+			justify-content: space-between;
 		}
-		&.center {
-			justify-content: center;
+		&.around {
+			justify-content: space-around;
 		}
-		&.right {
-			justify-content: end;
-		}
-		&.stretch {
-			justify-content: stretch;
-		}
-		&.reverse {
-			flex-direction: row-reverse;
+		&:not(.column) {
+			&.reverse {
+				flex-direction: row-reverse;
+			}
+			&.left {
+				justify-content: start;
+			}
+			&.center {
+				justify-content: center;
+			}
+			&.right {
+				justify-content: end;
+			}
+			&.stretch {
+				justify-content: stretch;
+			}
+			&.top {
+				align-items: start;
+			}
+			&.middle {
+				align-items: center;
+			}
+			&.bottom {
+				align-items: end;
+			}
+			&.baseline {
+				align-items: baseline;
+			}
 		}
 		&.column {
 			flex-direction: column;
-			justify-content: center;
-			align-items: stretch;
 
+			&.reverse {
+				flex-direction: column-reverse;
+			}
+			&.top {
+				justify-content: start;
+			}
+			&.middle {
+				justify-content: center;
+			}
+			&.bottom {
+				justify-content: end;
+			}
 			&.left {
 				align-items: start;
 			}
@@ -57,12 +89,6 @@
 			}
 			&.right {
 				align-items: end;
-			}
-			&.stretch {
-				align-items: stretch;
-			}
-			&.reverse {
-				flex-direction: column-reverse;
 			}
 		}
 

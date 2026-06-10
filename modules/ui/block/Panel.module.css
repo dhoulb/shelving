@@ -1,7 +1,7 @@
 @import "../style/base.css";
 
 /*
- * Full-width vertical region that paints the current surface. Panels always have zero block-spacing
+ * Full-width vertical region that paints the current surface. Panels always have zero block-space
  * (they butt up against each other vertically to create stacked page sections) but they do have
  * vertical `padding-block` — `xxlarge` by default, overridable via PaddingVariants (`.padding-large`,
  * `.padding-none`, etc.). Inline padding is fixed at `--space-normal`; if you want narrower content
@@ -10,34 +10,37 @@
 @layer components {
 	.panel {
 		/* Theme */
-		--color-black: var(--panel-color-black, inherit);
-		--color-dark: var(--panel-color-dark, inherit);
-		--color-vivid: var(--panel-color-vivid, inherit);
-		--color-light: var(--panel-color-light, inherit);
-		--color-white: var(--panel-color-white, inherit);
-		--color-border: var(--panel-color-border, inherit);
+		--tint-50: var(--panel-tint, inherit);
 
 		/* Box */
 		display: block;
 		inline-size: 100%;
 		margin-inline: 0;
 		margin-block: 0;
-		border-top: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--color-border));
-		border-bottom: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--color-border));
+		border-top: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
+		border-bottom: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
 		padding-block: var(--panel-padding, var(--space-xxlarge));
-		padding-inline: var(--space-normal);
+		padding-inline: 0;
 
-		/* Style — `bg=light / text=dark` (2-step pair). */
-		background-color: var(--color-light);
-		color: var(--color-dark);
+		/* Style */
+		background: var(--panel-background, var(--tint-90));
+		color: var(--panel-color, var(--tint-00));
+	}
+
+	.inner {
+		/* Box */
+		max-inline-size: var(--panel-inner-max-width, var(--width-content));
+		margin: 0 auto;
 	}
 }
 
-@layer variants {
-	.card {
-		background: var(--color-light);
-		border-top: var(--panel-stroke, var(--stroke-normal)) solid var(--color-border);
-		border-bottom: var(--panel-stroke, var(--stroke-normal)) solid var(--color-border);
-		color: var(--color-black);
+@layer overrides {
+	.panel {
+		&:first-child {
+			border-top: none;
+		}
+		&:last-child {
+			border-bottom: none;
+		}
 	}
 }

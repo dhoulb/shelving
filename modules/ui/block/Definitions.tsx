@@ -1,6 +1,5 @@
 import type { ReactElement } from "react";
-import { type AlignVariants, getAlignClass } from "../style/Align.js";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { type ColorProps, getColorClass } from "../style/Color.js";
 import { type GapVariants, getGapClass } from "../style/Gap.js";
 import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
@@ -11,13 +10,7 @@ import DEFINITIONS_CSS from "./Definitions.module.css";
 export const DEFINITIONS_CLASS = getModuleClass(DEFINITIONS_CSS, "definitions");
 export const DEFINITIONS_PROSE_CLASS = getModuleClass(DEFINITIONS_CSS, "prose");
 
-export interface DefinitionsProps
-	extends AlignVariants,
-		ColorVariants,
-		GapVariants,
-		SpacingVariants,
-		TypographyVariants,
-		OptionalChildProps {}
+export interface DefinitionsProps extends ColorProps, GapVariants, SpacingVariants, TypographyVariants, OptionalChildProps {}
 
 /**
  * Description list — a sequence of term/value pairs rendered as a `<dl>`.
@@ -30,7 +23,6 @@ export function Definitions({ children, ...variants }: DefinitionsProps): ReactE
 			className={getClass(
 				DEFINITIONS_CLASS,
 				getColorClass(variants),
-				getAlignClass(variants),
 				getGapClass(variants),
 				getSpacingClass(variants),
 				getTypographyClass(variants),

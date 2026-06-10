@@ -1,25 +1,26 @@
 @import "../style/base.css";
+@import "../style/Shades.module.css";
 
 @layer components {
 	.input {
 		/* Box */
 		box-sizing: border-box;
 		width: 100%;
-		margin: var(--input-spacing, var(--space-small)) 0;
+		margin: var(--input-space, var(--space-small)) 0;
 		border-radius: var(--input-radius, var(--radius-xsmall));
-		border: var(--input-border, var(--input-stroke, var(--stroke-normal)) solid var(--color-vivid));
+		border: var(--input-border, var(--input-stroke, var(--stroke-normal)) solid var(--tint-80));
 		padding: var(--input-padding, var(--space-small)) var(--input-padding, var(--space-small));
 
 		/* Style */
-		background: var(--input-background, var(--color-white));
-		color: var(--input-color, var(--color-black));
+		background: var(--input-background, var(--tint-100));
+		color: var(--input-color, var(--tint-00));
 		transition: var(--input-transition, all var(--duration-fast));
 		cursor: default;
 		outline: var(--input-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--input-stroke, var(--stroke-normal)));
 		box-shadow: none;
 
-		/* Typography */
+		/* Text */
 		font-family: var(--input-font, var(--font-body));
 		font-weight: var(--input-weight, var(--weight-normal));
 		font-size: var(--input-size, var(--size-normal));
@@ -42,7 +43,7 @@
 
 			/* Placeholder colour if contains checked empty option. */
 			&:has(.empty:checked) {
-				color: var(--color-dark);
+				color: var(--tint-70);
 			}
 
 			/* Success border if contains a checked value option. */
@@ -56,25 +57,25 @@
 			resize: none;
 
 			&::selection {
-				color: var(--color-white);
+				color: var(--tint-100);
 				background-color: var(--color-focus);
 			}
 			&::placeholder {
-				color: var(--color-dark);
+				color: var(--tint-70);
 			}
 
 			/* Success border if valid and has content. */
 			&:valid:not(:placeholder-shown) {
-				border-color: var(--color-green);
+				border-color: var(--color-success);
 			}
 
-			/* Error border if invalid and not empty. */
+			/* Failure border if invalid and not empty. */
 			&:invalid:not(:placeholder-shown) {
-				border-color: var(--color-red);
+				border-color: var(--color-failure);
 			}
 
 			&.multiline {
-				/* Textarea has pre-spacing and field-sizing for auto-resizing. */
+				/* Textarea has pre-space and field-sizing for auto-resizing. */
 				white-space: pre-wrap;
 				word-break: break-word;
 				field-sizing: content;
@@ -95,7 +96,7 @@
 
 			/* Error border if contains invalid text. */
 			&:has(.text:invalid:not(:placeholder-shown)) {
-				border-color: var(--color-red);
+				border-color: var(--color-failure);
 			}
 		}
 		&.button {
@@ -105,7 +106,7 @@
 		/* Error if aria invalid or contains aria invalid. */
 		&[aria-invalid="true"],
 		&:has([aria-invalid="true"]) {
-			border-color: var(--color-red);
+			border-color: var(--color-failure);
 		}
 
 		/* Pseudo-classes */
@@ -170,7 +171,7 @@
 	}
 
 	.placeholder {
-		color: var(--color-dark);
+		color: var(--tint-70);
 	}
 
 	.checkbox,
@@ -180,7 +181,7 @@
 		height: calc(var(--input-icon-size, var(--size-icon)) - 4px);
 		margin: 2px;
 		flex: 0 0 auto;
-		accent-color: var(--color-vivid);
+		accent-color: var(--color-success);
 		cursor: inherit;
 		outline: none;
 		font-size: inherit;
