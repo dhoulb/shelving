@@ -16,5 +16,9 @@ export interface DocumentationSignaturesProps {
  */
 export function DocumentationSignatures({ signatures }: DocumentationSignaturesProps): ReactNode {
 	if (!signatures?.length) return null;
-	return signatures.map(signature => <Preformatted key={signature}>{signature}</Preformatted>);
+	return signatures.map(signature => (
+		<Preformatted key={signature} wrap>
+			{signature}
+		</Preformatted>
+	));
 }
