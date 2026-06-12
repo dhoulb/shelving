@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
-import { type ColorProps, getColorClass } from "../style/Color.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -12,7 +12,7 @@ export const SECTION_PROSE_CLASS = getModuleClass(SECTION_CSS, "prose");
 
 export type SectionElement = "section" | "header" | "footer" | "nav" | "aside" | "figure";
 
-export interface SectionProps extends ColorProps, SpacingVariants, TypographyVariants, WidthVariants, OptionalChildProps {
+export interface SectionProps extends ColorVariants, SpaceVariants, TypographyVariants, WidthVariants, OptionalChildProps {
 	as?: SectionElement | undefined;
 }
 
@@ -25,7 +25,7 @@ function renderSection(
 			className={getClass(
 				SECTION_CLASS,
 				getColorClass(variants),
-				getSpacingClass(variants),
+				getSpaceClass(variants),
 				getTypographyClass(variants),
 				getWidthClass(variants),
 			)}

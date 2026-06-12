@@ -6,18 +6,18 @@ import type { OptionalChildProps } from "../util/props.js";
 import { type ButtonVariants, getButtonClass } from "./Button.js";
 import { requireForm } from "./FormContext.js";
 
-/** <button> element that does an asyncronous form action (, getButtonClassdefaults to primary styling). */
+/** `<button>` element that does an asynchronous form action (defaults to strong, full-width, primary styling). */
 export function SubmitButton({
 	children = SUBMIT_CHILDREN,
 	strong = true,
-	primary = true,
+	color = "primary",
 	full = true,
 	...variants
 }: SubmitButtonProps): ReactElement {
 	const form = requireForm();
 	const busy = useStore(form.busy).value;
 	return (
-		<button type="submit" disabled={busy} className={getButtonClass({ strong, primary, full, ...variants })}>
+		<button type="submit" disabled={busy} className={getButtonClass({ strong, color, full, ...variants })}>
 			{busy ? <Loading /> : children}
 		</button>
 	);

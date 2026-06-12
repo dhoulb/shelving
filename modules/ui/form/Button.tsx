@@ -1,13 +1,14 @@
 import type { ReactElement } from "react";
-import { type ColorProps, getColorClass } from "../style/Color.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
-import { getStatusClass, type StatusProps } from "../style/Status.js";
+import { getStatusClass, type StatusVariants } from "../style/Status.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import BUTTON_CSS from "./Button.module.css";
 import { Clickable, type ClickableProps } from "./Clickable.js";
 
 /** Variants for buttons. */
-export interface ButtonVariants extends FlexVariants, ColorProps, StatusProps {
+export interface ButtonVariants extends FlexVariants, ColorVariants, StatusVariants, TypographyVariants {
 	/** This is the default button in a form and should be displayed stronger. */
 	strong?: boolean | undefined;
 	/** Add plain styling (background only appears on hover or focus). */
@@ -20,6 +21,17 @@ export interface ButtonVariants extends FlexVariants, ColorProps, StatusProps {
 	full?: boolean | undefined;
 }
 
+/** Get the full className for a button. */
+export function getButtonClass(variants: ButtonVariants): string {
+	return getClass(
+		getModuleClass(BUTTON_CSS, "button", variants),
+		getFlexClass(variants),
+		getStatusClass(variants),
+		getColorClass(variants),
+		getTypographyClass(variants),
+	);
+}
+
 interface ButtonProps extends ButtonVariants, ClickableProps {}
 
 /**
@@ -28,14 +40,4 @@ interface ButtonProps extends ButtonVariants, ClickableProps {}
  */
 export function Button(props: ButtonProps): ReactElement {
 	return <Clickable {...props} className={getButtonClass(props)} />;
-}
-
-/** Get the full className for a button. */
-export function getButtonClass(variants: ButtonVariants): string {
-	return getClass(
-		getModuleClass(BUTTON_CSS, "button", variants),
-		getFlexClass(variants),
-		getStatusClass(variants),
-		getColorClass(variants),
-	);
 }

@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { Tag, type TagProps } from "../misc/Tag.js";
-import type { Color } from "../style/Color.js";
+import type { UIColor } from "../style/Color.js";
 
 /** Props for `DocumentationKind`. */
 export interface DocumentationKindProps extends TagProps {
@@ -9,7 +9,7 @@ export interface DocumentationKindProps extends TagProps {
 }
 
 /** Mapping from a documented symbol's `kind` to its raw colour variant. */
-const KIND_COLOR: { readonly [K in string]?: Color } = {
+const KIND_COLOR: { readonly [K in string]?: UIColor } = {
 	module: "red",
 	function: "blue",
 	class: "purple",
@@ -24,7 +24,7 @@ const KIND_COLOR: { readonly [K in string]?: Color } = {
  * Get the raw colour variant for a documented symbol's `kind`, or `undefined` for an unknown kind.
  * - Shared source of truth so the kind tag and its surrounding card pick the same hue.
  */
-export function getDocumentationKindColor(kind: string): Color | undefined {
+export function getDocumentationKindColor(kind: string): UIColor | undefined {
 	return KIND_COLOR[kind];
 }
 

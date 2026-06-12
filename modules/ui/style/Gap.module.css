@@ -2,28 +2,28 @@
 
 @layer variants {
 	/* Gap variants — sets `gap` directly. Used by flex/grid layouts and by Lists/Definitions for the spacing between their items. */
-	.gap-none {
+	.none {
 		gap: 0;
 	}
-	.gap-xxsmall {
+	.xxsmall {
 		gap: var(--space-xxsmall);
 	}
-	.gap-xsmall {
+	.xsmall {
 		gap: var(--space-xsmall);
 	}
-	.gap-small {
+	.small {
 		gap: var(--space-small);
 	}
-	.gap-normal {
+	.normal {
 		gap: var(--space-normal);
 	}
-	.gap-large {
+	.large {
 		gap: var(--space-large);
 	}
-	.gap-xlarge {
+	.xlarge {
 		gap: var(--space-xlarge);
 	}
-	.gap-xxlarge {
+	.xxlarge {
 		gap: var(--space-xxlarge);
 	}
 }

@@ -3,8 +3,8 @@ import { type AddressData, formatAddress } from "../../schema/AddressSchema.js";
 import type { Nullish } from "../../util/null.js";
 import { Small } from "../inline/Small.js";
 import { Strong } from "../inline/Strong.js";
-import { type ColorProps, getColorClass } from "../style/Color.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { TINT_CLASS } from "../style/Tint.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -14,7 +14,7 @@ import ADDRESS_CSS from "./Address.module.css";
 export const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
 export const ADDRESS_PROSE_CLASS = getModuleClass(ADDRESS_CSS, "prose");
 
-export interface AddressProps extends ColorProps, SpacingVariants, TypographyVariants, ChildProps {}
+export interface AddressProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {}
 
 export interface PhysicalAddressProps {
 	name?: Nullish<string>;
@@ -34,7 +34,7 @@ export function Address({ children, ...props }: AddressProps) {
 				ADDRESS_CLASS, //
 				TINT_CLASS,
 				getColorClass(props),
-				getSpacingClass(props),
+				getSpaceClass(props),
 				getTypographyClass(props),
 			)}
 		>

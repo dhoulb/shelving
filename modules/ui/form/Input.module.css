@@ -6,10 +6,11 @@
 		/* Box */
 		box-sizing: border-box;
 		width: 100%;
-		margin: var(--input-space, var(--space-small)) 0;
+		margin-inline: 0;
+		margin-block: var(--input-space, var(--space-small));
 		border-radius: var(--input-radius, var(--radius-xsmall));
 		border: var(--input-border, var(--input-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding: var(--input-padding, var(--space-small)) var(--input-padding, var(--space-small));
+		padding: var(--input-padding, var(--space-small));
 
 		/* Style */
 		background: var(--input-background, var(--tint-100));
@@ -17,14 +18,14 @@
 		transition: var(--input-transition, all var(--duration-fast));
 		cursor: default;
 		outline: var(--input-focus-border, var(--stroke-focus) solid var(--color-focus));
-		outline-offset: calc(0px - var(--input-stroke, var(--stroke-normal)));
+		outline-offset: calc(0px - var(--stroke-normal));
 		box-shadow: none;
 
 		/* Text */
 		font-family: var(--input-font, var(--font-body));
 		font-weight: var(--input-weight, var(--weight-normal));
 		font-size: var(--input-size, var(--size-normal));
-		line-height: var(--input-leading, var(--leading-normal));
+		line-height: var(--input-leading, var(--leading));
 
 		/* Content */
 		justify-content: start;
@@ -116,9 +117,6 @@
 			opacity: var(--input-disabled-opacity, 0.5);
 			cursor: default;
 		}
-		:not(&:focus, &:focus-within) {
-			outline-color: transparent;
-		}
 
 		/* Children */
 		> .input {
@@ -192,10 +190,14 @@
 @layer overrides {
 	.input {
 		&:first-child {
-			margin-top: 0;
+			margin-block-start: 0;
 		}
 		&:last-child {
-			margin-bottom: 0;
+			margin-block-end: 0;
+		}
+
+		:not(&:focus, &:focus-within) {
+			outline-color: transparent;
 		}
 	}
 }

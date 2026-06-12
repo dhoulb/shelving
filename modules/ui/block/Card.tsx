@@ -1,9 +1,9 @@
 import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
-import { type ColorProps, getColorClass } from "../style/Color.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
-import { getStatusClass, type StatusProps } from "../style/Status.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
+import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -11,10 +11,10 @@ import CARD_CSS from "./Card.module.css";
 
 export interface CardProps
 	extends ClickableProps,
-		ColorProps,
-		StatusProps,
+		ColorVariants,
+		StatusVariants,
 		PaddingVariants,
-		SpacingVariants,
+		SpaceVariants,
 		TypographyVariants,
 		WidthVariants {}
 
@@ -37,7 +37,7 @@ export function Card({ children, href, onClick, title = "Open", ...props }: Card
 				getStatusClass(props),
 				getColorClass(props),
 				getPaddingClass(props),
-				getSpacingClass(props),
+				getSpaceClass(props),
 				getTypographyClass(props),
 				getWidthClass(props),
 			)}

@@ -2,28 +2,28 @@
 
 @layer variants {
 	/* Block-padding variants. */
-	.padding-none {
+	.none {
 		padding-block: 0;
 	}
-	.padding-xxsmall {
+	.xxsmall {
 		padding-block: var(--space-xxsmall);
 	}
-	.padding-xsmall {
+	.xsmall {
 		padding-block: var(--space-xsmall);
 	}
-	.padding-small {
+	.small {
 		padding-block: var(--space-small);
 	}
-	.padding-normal {
+	.normal {
 		padding-block: var(--space-normal);
 	}
-	.padding-large {
+	.large {
 		padding-block: var(--space-large);
 	}
-	.padding-xlarge {
+	.xlarge {
 		padding-block: var(--space-xlarge);
 	}
-	.padding-xxlarge {
+	.xxlarge {
 		padding-block: var(--space-xxlarge);
 	}
 }

@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
-import { type ColorProps, getColorClass } from "../style/Color.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -12,8 +12,8 @@ export const PREFORMATTED_CLASS = getModuleClass(PREFORMATTED_CSS, "preformatted
 export const PREFORMATTED_PROSE_CLASS = getModuleClass(PREFORMATTED_CSS, "prose");
 
 export interface PreformattedProps
-	extends SpacingVariants,
-		ColorProps,
+	extends SpaceVariants,
+		ColorVariants,
 		TypographyVariants,
 		WidthVariants,
 		PaddingVariants,
@@ -24,15 +24,15 @@ export interface PreformattedProps
 
 /**
  * Preformatted block of text — rendered as `<pre>`.
- * - Defaults to wrapping long lines (`white-space: pre-wrap`) so code fits the container width while preserving newlines and indentation within wrapped lines.
- * - Pass `nowrap` to restore strict `<pre>` behaviour when exact whitespace matters (ASCII art, fixed-column tables). Wrap in a `<Figure scrollable>` (or any `scrollable` block) to add horizontal scrolling.
+ * - Lines are not wrapped by default — overflowing content scrolls horizontally within the block.
+ * - Pass `wrap` to wrap long lines instead; newlines and indentation are preserved either way.
  */
 export function Preformatted({ children, ...variants }: PreformattedProps): ReactElement {
 	return (
 		<pre
 			className={getClass(
 				getModuleClass(PREFORMATTED_CSS, "preformatted", variants), //
-				getSpacingClass(variants),
+				getSpaceClass(variants),
 				getColorClass(variants),
 				getTypographyClass(variants),
 				getPaddingClass(variants),

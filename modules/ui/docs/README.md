@@ -23,7 +23,7 @@ Three components turn the raw relational metadata the extractor records (`class`
 
 **`DocumentationButton`** links to another symbol by reference string — a bare name (`"Store"`) or a qualified member (`"Store.get"`). It resolves the reference against the flattened tree map from `<TreeProvider>` (see [ui/tree](/ui/tree)): a hit becomes a link, a miss (e.g. a builtin like `Serializable`) renders as a non-linking label so the text still reads. Defaults to `small plain` button styling.
 
-**`DocumentationButtons`** renders a symbol's relations as a `<nav>` column of labelled `<DocumentationButton>`s — `overrides AbstractStore.get`, `implements Serializable`, `member of Store`, etc. Carries paragraph-level block spacing by default (composes `PARAGRAPH_CLASS`), overridable with `space-*` variants. Renders nothing when the symbol has no relations. Used by both `DocumentationPage` and `DocumentationCard`.
+**`DocumentationButtons`** renders a symbol's relations as a `<nav>` column of labelled `<DocumentationButton>`s — `overrides AbstractStore.get`, `implements Serializable`, `member of Store`, etc. Carries paragraph-level block spacing by default (composes `PARAGRAPH_CLASS`), overridable with the `space` prop. Renders nothing when the symbol has no relations. Used by both `DocumentationPage` and `DocumentationCard`.
 
 (The ancestor breadcrumb trail rendered above the title is `<TreeBreadcrumbs>`, which lives in [ui/tree](/ui/tree) since it works with any tree, not just documentation.)
 

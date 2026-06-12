@@ -14,7 +14,7 @@
 	.horizontal,
 	.vertical {
 		/* Style */
-		outline: var(--scrollable-focus-border, var(--scrollable-focus-stroke, var(--stroke-focus)) solid var(--color-focus));
+		outline: var(--scrollable-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--stroke-normal));
 
 		&:not(:focus-visible) {

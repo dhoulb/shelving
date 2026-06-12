@@ -14,7 +14,7 @@ Shell components for a tree-based documentation site. Given a `TreeElement` from
 
 **`<TreeProvider>` exposes the tree for cross-linking.** It flattens the tree once (via `flattenTree()`) into a `name`/`path` → `{ path, title }` lookup and shares it on `TreeContext`; descendants read it with `useTreeMap()` to resolve cross-references (e.g. `<DocumentationButton>`, breadcrumbs) without re-walking the tree. Nested providers merge their maps, so links resolve across a combined set of trees.
 
-**`<TreeBreadcrumbs>` renders an ancestor trail.** Given a page's `path`, it looks each ancestor prefix up in the tree map (so it needs a `<TreeProvider>` above) and renders a `<nav>` of links separated by `›` icons, with section-level block spacing (`BLOCK_CLASS`, overridable via `space-*` variants). Works with any tree — the current page is omitted (the page title already names it).
+**`<TreeBreadcrumbs>` renders an ancestor trail.** Given a page's `path`, it looks each ancestor prefix up in the tree map (so it needs a `<TreeProvider>` above) and renders a `<nav>` of links separated by `›` icons, with section-level block spacing (`BLOCK_CLASS`, overridable via the `space` prop). Works with any tree — the current page is omitted (the page title already names it).
 
 **Mappings — override any renderer.** Each dispatch layer is backed by a `[Mapping, Mapper]` pair created by `createMapper()`. Wrap any subtree with a `*Mapping` component to swap the renderer for a specific element type without touching anything else.
 

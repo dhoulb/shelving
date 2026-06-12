@@ -6,8 +6,8 @@
  *   1. Declares the cascade-layer order (lowest → highest priority):
  *      • `defaults`   — `:root` design tokens + body baseline + low-priority opt-in defaults.
  *      • `components` — component-defining CSS. The bulk of the codebase.
- *      • `variants`   — cross-cutting opt-in modifiers (Color, Status, Align, Spacing, Padding, Gap,
- *                       Width, Typography, Flex). Always beat components.
+ *      • `variants`   — cross-cutting opt-in modifiers (Color, Status, Spacing, Padding, Gap,
+ *                       Width, Typography, Flex, Scroll). Always beat components.
  *      • `overrides`  — top-priority structural overrides like `:first-child` / `:last-child` margin
  *                       collapses, which must beat variant-set margins.
  *
@@ -25,8 +25,8 @@
 		color-scheme: light;
 
 		/* Semantic widths */
-		--width-narrow: min(100%, 22.5rem);
-		--width-wide: min(100%, 33.75rem);
+		--width-narrow: 22.5rem;
+		--width-wide: 33.75rem;
 
 		/* Font weights */
 		--weight-normal: 400;
@@ -145,31 +145,13 @@
 		--shadow-xxlarge: 0 1.5rem 6rem -3rem #0006;
 	}
 
-	/* Typography reset — body uses `dark` text (1 step softer than pure black) on `white` bg so variant
-	 * scopes (e.g. `<aside red>`) can tint body text via `--shade-dark`. Components that want max contrast
-	 * (Inputs, Titles) reach for `--tint-0` explicitly. */
+	/* Typography reset — baseline fonts on body. Colours come from the tint ladder in
+	 * `Tint.module.css`, which paints body `--tint-00` text on a `--tint-100` background. */
 	body {
 		font-family: var(--font-body);
 		font-weight: var(--weight-normal);
 		font-size: var(--size-normal);
 		line-height: var(--leading);
 		text-align: start;
-	}
-
-	/* Darken vivid for higher contrast — 2-step pairings (vivid+white, light+vivid) gain readability
-	 * without any per-component changes. The light and dark ends already provide enough contrast for
-	 * 3-step pairings (white+dark, light+black), so they don't need to move. */
-	@media (prefers-contrast: more) {
-		:root {
-			--color-gray: var(--dark-gray);
-			--color-red: var(--dark-red);
-			--color-orange: var(--dark-orange);
-			--color-yellow: var(--dark-yellow);
-			--color-green: var(--dark-green);
-			--color-aqua: var(--dark-aqua);
-			--color-blue: var(--dark-blue);
-			--color-purple: var(--dark-purple);
-			--color-pink: var(--dark-pink);
-		}
 	}
 }

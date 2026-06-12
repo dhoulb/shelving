@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
-import { type ColorProps, getColorClass } from "../style/Color.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { TINT_CLASS } from "../style/Tint.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
@@ -13,7 +13,7 @@ export const BLOCK_PROSE_CLASS = getModuleClass(BLOCK_CSS, "prose");
 
 export type BlockElement = "div" | "section" | "header" | "footer" | "nav" | "aside" | "figure";
 
-export interface BlockProps extends ColorProps, SpacingVariants, TypographyVariants, WidthVariants, OptionalChildProps {
+export interface BlockProps extends ColorVariants, SpaceVariants, TypographyVariants, WidthVariants, OptionalChildProps {
 	as?: BlockElement | undefined;
 }
 
@@ -25,7 +25,7 @@ export function Block({ as: Component = "div", children, ...props }: BlockProps)
 				BLOCK_CLASS,
 				TINT_CLASS,
 				getColorClass(props),
-				getSpacingClass(props),
+				getSpaceClass(props),
 				getTypographyClass(props),
 				getWidthClass(props),
 			)}

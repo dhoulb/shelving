@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import type { ChoiceOptions } from "../../schema/ChoiceSchema.js";
 import { getProps } from "../../util/object.js";
-import { Flex } from "../style/Flex.js";
+import { Row } from "../style/Flex.js";
 import type { ValueInputProps } from "./Input.js";
 import { RadioInput } from "./RadioInput.js";
 
@@ -35,7 +35,7 @@ export function ChoiceRadioInputs({
 	const entries = getProps(options);
 	const hasMany = entries.length > MAX_ROW_OPTIONS;
 	return (
-		<Flex wrap={wrap} column={column ?? hasMany}>
+		<Row wrap={wrap} column={column ?? hasMany}>
 			{entries.map(([k, t]) => (
 				<RadioInput //
 					key={k}
@@ -55,6 +55,6 @@ export function ChoiceRadioInputs({
 					{...props}
 				/>
 			) : null}
-		</Flex>
+		</Row>
 	);
 }

@@ -18,15 +18,12 @@ const STATUS_ICONS: {
 
 export interface StatusIconProps {
 	status?: Status;
-	small?: boolean;
-	normal?: boolean;
-	large?: boolean;
-	xlarge?: boolean;
-	xxlarge?: boolean;
+	/** Size of the icon (defaults to the current line height). */
+	size?: "small" | "normal" | "large" | "xlarge" | "xxlarge" | undefined;
 }
 
 /** Output a status icon based on the current status of something. */
-export function StatusIcon({ status = "info", ...variants }: StatusIconProps): ReactElement {
+export function StatusIcon({ status = "info", size }: StatusIconProps): ReactElement {
 	const Icon = STATUS_ICONS[status] ?? InformationCircleIcon;
-	return <Icon className={`${getModuleClass(styles, "icon", variants)} ${getModuleClass(statusStyles, status)}`} />;
+	return <Icon className={`${getModuleClass(styles, "icon", size)} ${getModuleClass(statusStyles, status)}`} />;
 }

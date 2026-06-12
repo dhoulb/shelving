@@ -13,7 +13,7 @@ import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
-import { Flex } from "../style/Flex.js";
+import { Row } from "../style/Flex.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
@@ -64,10 +64,10 @@ export function DocumentationPage({
 			<Panel color={getDocumentationKindColor(kind)} as="header" wide>
 				<TreeBreadcrumbs />
 				<Title>
-					<Flex left wrap>
+					<Row left wrap>
 						<span>{title ?? name}</span>
-						{kind && <DocumentationKind kind={kind} normal />}
-					</Flex>
+						{kind && <DocumentationKind kind={kind} size="normal" />}
+					</Row>
 				</Title>
 				<DocumentationButtons {...props} />
 				<DocumentationSignatures signatures={signatures} />

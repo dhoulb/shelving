@@ -2,8 +2,7 @@ import type { ReactNode } from "react";
 import { filterElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import type { TreeElement } from "../../util/tree.js";
-import { Menu } from "../menu/Menu.js";
-import { MenuItem } from "../menu/MenuItem.js";
+import { Menu, MenuItem } from "../menu/Menu.js";
 import { matchMenuElement, TreeMenuMapper } from "./TreeMenu.js";
 
 export interface TreeSidebarProps {

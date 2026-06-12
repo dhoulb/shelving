@@ -6,7 +6,7 @@ import { omitDictionaryItem, withDictionaryItem } from "../../util/dictionary.js
 import { splitMessage } from "../../util/error.js";
 import { formatUnit } from "../../util/format.js";
 import { omitProp } from "../../util/object.js";
-import { Flex } from "../style/Flex.js";
+import { Row } from "../style/Flex.js";
 import { Button } from "./Button.js";
 import { ButtonInput } from "./ButtonInput.js";
 import type { ValueInputProps } from "./Input.js";
@@ -43,13 +43,13 @@ export function DictionaryInput({
 	const disableRemove = disabled || length <= min;
 	const addNewItem = () => onValue({ ...value, [one]: items.value });
 	return (
-		<Flex column>
+		<Row column>
 			{length ? (
 				Object.entries(value).map(([k, v], i) => {
 					const r = i.toString();
 					const message = messages[r];
 					return (
-						<Flex key={r}>
+						<Row key={r}>
 							<TextInput
 								name={`${r}-key`}
 								value={k}
@@ -77,7 +77,7 @@ export function DictionaryInput({
 							>
 								<XMarkIcon />
 							</Button>
-						</Flex>
+						</Row>
 					);
 				})
 			) : (
@@ -85,7 +85,7 @@ export function DictionaryInput({
 					{placeholder}
 				</ButtonInput>
 			)}
-			<Flex>
+			<Row>
 				<Button //
 					onClick={addNewItem}
 					disabled={disabled || (typeof max === "number" && length >= max)}
@@ -101,7 +101,7 @@ export function DictionaryInput({
 						<XMarkIcon /> Clear {many}
 					</Button>
 				) : null}
-			</Flex>
-		</Flex>
+			</Row>
+		</Row>
 	);
 }

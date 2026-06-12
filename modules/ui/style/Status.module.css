@@ -1,8 +1,9 @@
 @import "base.css";
 @import "Tint.module.css";
 
-/* Status variant classes go in `@layer variants` — highest priority, always win.
- * Each variant overrides the inner three steps of the 5-step scale at its scope. */
+/* Status variant classes go in `@layer variants` — always beat component rules.
+ * Each variant moves the tint anchor (`--tint-50`) at its scope; the accompanying `.tint`
+ * class recomputes the full ladder from it. */
 @layer variants {
 	.loading {
 		--tint-50: var(--color-gray);

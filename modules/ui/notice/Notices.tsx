@@ -1,11 +1,13 @@
 import { type ReactElement, useEffect } from "react";
 import { useStore } from "../../react/useStore.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import { subscribeNotices } from "../util/notice.js";
 import { Notice } from "./Notice.js";
 import NOTICES_CSS from "./Notices.module.css";
 import { NOTICES } from "./NoticesStore.js";
+
+const NOTICES_CLASS = getModuleClass(NOTICES_CSS, "notices");
 
 export interface NoticesProps extends FlexVariants {}
 
@@ -21,7 +23,7 @@ export function Notices(props: NoticesProps): ReactElement {
 		return subscribeNotices((message, status) => NOTICES.show(message, status));
 	});
 	return (
-		<aside className={getClass(NOTICES_CSS.notices, getFlexClass(props))}>
+		<aside className={getClass(NOTICES_CLASS, getFlexClass(props))}>
 			{notices.map(({ key, value }) => (
 				<Notice key={key} {...value} />
 			))}

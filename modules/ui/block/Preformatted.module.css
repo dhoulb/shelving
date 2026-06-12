@@ -21,7 +21,7 @@
 		color: var(--preformatted-color, var(--tint-00));
 		box-shadow: var(--preformatted-shadow, none);
 		transition: var(--preformatted-transition, all var(--duration-fast));
-		outline: var(--preformatted-focus-border, var(--stroke-focus) solid transparent);
+		outline: var(--preformatted-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--preformatted-stroke, var(--stroke-normal)));
 
 		/* Text */
@@ -57,6 +57,10 @@
 		}
 		&:last-child {
 			margin-block-end: 0;
+		}
+
+		&:not(:focus-visible) {
+			outline-color: transparent;
 		}
 	}
 }

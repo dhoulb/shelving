@@ -1,11 +1,11 @@
 import type { ReactElement } from "react";
 import { notNullish } from "../../util/null.js";
-import { type FlexProps, getFlexClass } from "../style/Flex.js";
+import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { LABEL_INPUT_CLASS, PLACEHOLDER_CLASS, RADIO_CLASS, type ValueInputProps } from "./Input.js";
 
-export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChildProps, FlexProps {}
+export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChildProps, FlexVariants {}
 
 /** A single `<input type="radio">` in a `<label>` wrapper styled as an `<Input>` */
 export function RadioInput({

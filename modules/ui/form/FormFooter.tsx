@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
-import { Footer } from "../block/Block.js";
-import { Flex } from "../style/Flex.js";
+import { Footer } from "../block/Section.js";
+import { Row } from "../style/Flex.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { FormMessage } from "./FormMessage.js";
 import { SubmitButton } from "./SubmitButton.js";
@@ -17,10 +17,10 @@ export interface FormFooterProps extends OptionalChildProps {
 export function FormFooter({ children, submit }: FormFooterProps): ReactElement {
 	return (
 		<Footer>
-			<Flex reverse>
+			<Row reverse>
 				<SubmitButton>{submit}</SubmitButton>
 				{children}
-			</Flex>
+			</Row>
 			<FormMessage />
 		</Footer>
 	);

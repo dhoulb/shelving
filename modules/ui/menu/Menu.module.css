@@ -13,8 +13,17 @@
 		/* Text */
 		font-family: var(--menu-font, var(--font-body));
 		font-size: var(--menu-size, var(--size-normal));
-		line-height: var(--menu-leading, var(--leading-normal));
-		color: var(--menu-color-text, var(--tint-00));
+		line-height: var(--menu-leading, var(--leading));
+		color: var(--menu-color, var(--tint-00));
+
+		/* Nested submenu — Blockquote-style left border to signal hierarchy. */
+		.menu {
+			margin-block: var(--menu-nested-space, var(--space-xxsmall));
+			/* Inset the border by the link's inline padding so it lines up with the parent item's label. */
+			margin-inline-start: var(--menu-padding, var(--space-xxsmall));
+			border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--tint-50));
+			padding-inline-start: var(--menu-nested-indent, var(--space-xsmall));
+		}
 	}
 
 	.item {
@@ -24,46 +33,36 @@
 	.link {
 		/* Box */
 		display: block;
-		padding-block: var(--menu-link-padding, var(--space-xxsmall));
-		padding-inline: var(--menu-link-padding, var(--space-xsmall));
-		border-radius: var(--menu-link-radius, var(--radius-xxsmall));
+		padding: var(--menu-padding, var(--space-xxsmall));
+		border-radius: var(--menu-radius, var(--radius-xxsmall));
 
 		/* Style */
 		color: inherit;
 		text-decoration: none;
 		transition: all 120ms ease-in-out;
-		outline: var(--menu-link-focus-border, var(--stroke-focus) solid transparent);
+		outline: var(--menu-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--stroke-normal));
 
 		/* Pseudo-classes */
 		&:hover,
 		&:focus:not(:focus-visible) {
-			background: var(--menu-link-color-hover-bg, color-mix(in oklch, var(--tint-90) 60%, transparent));
-			color: var(--menu-link-color-hover-text, var(--tint-00));
+			background: var(--menu-hover-background, var(--tint-90));
+			color: var(--menu-hover-color, var(--tint-00));
 		}
-		&:focus-visible {
-			outline: var(--menu-link-focus-border, var(--stroke-focus) solid var(--color-focus));
+		&:not(:focus-visible) {
+			outline-color: transparent;
 		}
-		&[aria-current="page"] {
-			background: var(--menu-link-color-active-bg, var(--tint-100));
-			color: var(--menu-link-color-active-text, var(--tint-00));
-			font-weight: var(--menu-link-active-weight, var(--weight-strong));
-		}
-	}
 
-	/* "Proud" item — an ancestor of the active page; emphasised with a strong weight, and reveals its nested children. */
-	/* The active page is excluded so its own `[aria-current]` styling wins instead of the proud styling. */
-	.proud > .link:not([aria-current="page"]) {
-		color: var(--menu-link-color-proud, var(--tint-00));
-		font-weight: var(--menu-link-proud-weight, var(--weight-strong));
-	}
-
-	/* Submenu — Blockquote-style left border to signal hierarchy. */
-	.menu .menu {
-		margin-block: var(--menu-nested-space, var(--space-xxsmall));
-		/* Inset the border by the link's inline padding so it lines up with the parent item's label. */
-		margin-inline-start: var(--menu-link-padding, var(--space-xsmall));
-		border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--tint-50));
-		padding-inline-start: var(--menu-nested-indent, var(--space-xsmall));
+		/* Variants */
+		&.proud {
+			background: var(--menu-proud-background, transparent);
+			color: var(--menu-proud, var(--tint-00));
+			font-weight: var(--menu-proud-weight, var(--weight-strong));
+		}
+		&.active {
+			background: var(--menu-active-background, var(--tint-100));
+			color: var(--menu-active-color, var(--tint-00));
+			font-weight: var(--menu-active-weight, var(--weight-strong));
+		}
 	}
 }

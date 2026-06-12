@@ -64,18 +64,21 @@ export interface FlexVariants extends GapVariants {
 	baseline?: boolean | undefined;
 }
 
-/** Get the flex class for a component. Composes Gap variants so `<Flex gap-large>` etc. just work. */
-export function getFlexClass(variants: FlexVariants): string {
-	return getClass(getModuleClass(FLEX_CSS, "flex", variants), getGapClass(variants));
+/** Get the flex class for a component. Composes the Gap prop so `<Flex gap="large">` etc. just works. */
+export function getFlexClass(props: FlexVariants): string {
+	return getClass(getModuleClass(FLEX_CSS, "flex", props), getGapClass(props));
 }
 
-export interface FlexProps extends FlexVariants, OptionalChildProps {}
+export interface RowProps extends FlexVariants, OptionalChildProps {}
 
-/**
- * Dumb flex box — wraps children in a `<div>` with the flex class applied. Carries no external
- * spacing of its own; if you need block-level margins around it, wrap in a `<Block>` or set them
- * on the parent. Other components can mix in flex layout directly via `getFlexClass(props)`.
- */
-export function Flex({ children, ...variants }: FlexProps): ReactElement {
-	return <div className={getFlexClass(variants)}>{children}</div>;
+/** Flex contents arranged as a row by default. */
+export function Row({ children, ...props }: RowProps): ReactElement {
+	return <div className={getFlexClass(props)}>{children}</div>;
+}
+
+export interface ColumnProps extends FlexVariants, OptionalChildProps {}
+
+/** Flex contents stacked as a column by default. */
+export function Column({ children, column = true, ...props }: ColumnProps): ReactElement {
+	return <div className={getFlexClass({ column, ...props })}>{children}</div>;
 }
