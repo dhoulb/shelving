@@ -106,7 +106,7 @@ export type NullableString = string | null;
 		expect(element.props.children).toMatchObject([
 			{
 				type: "tree-documentation",
-				props: { kind: "type", name: "NullableString", title: "NullableString", signatures: ["NullableString = string | null"] },
+				props: { kind: "type", name: "NullableString", title: "NullableString", signatures: ["string | null"] },
 			},
 		]);
 	});
@@ -453,6 +453,112 @@ export function first<T>(arr: T[]): T | undefined {
 		const element = await extractor.extract(file("export const X = 1;"));
 		const children = element.props.children as { props: { description?: string } }[];
 		expect(children[0]?.props.description).toBeUndefined();
+	});
+
+	test("emits only the type body for a type alias (no alias name)", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A pair of values. */
+export type Pair = { a: string; b: number };
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{ type: "tree-documentation", props: { kind: "type", name: "Pair", signatures: ["{ a: string; b: number }"] } },
+		]);
+	});
+
+	test("emits a brace-wrapped signature for an interface, matching the type body shape", async () => {
+		const element = await extractor.extract(
+			file(`
+/** Options for the thing. */
+export interface ThingOptions {
+	verbose?: boolean;
+	retries: number;
+}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{
+				type: "tree-documentation",
+				props: { kind: "interface", name: "ThingOptions", signatures: ["{ verbose?: boolean; retries: number }"] },
+			},
+		]);
+	});
+
+	test("de-duplicates identical overload signatures, keeping distinct ones", async () => {
+		const element = await extractor.extract(
+			file(`
+/** Add values. */
+export function add(a: number, b: number): number;
+/** Add values. */
+export function add(a: number, b: number): number;
+/** Add values. */
+export function add(a: string, b: string): string;
+export function add(a: any, b: any): any { return a + b; }
+`),
+		);
+		const props = (element.props.children as { props: { signatures: string[] } }[])[0]?.props;
+		expect(props?.signatures).toEqual([
+			"add(a: number, b: number): number",
+			"add(a: string, b: string): string",
+			"add(a: any, b: any): any",
+		]);
+	});
+
+	test("de-duplicates identical params and returns across overloads, keeping distinct ones", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Combine values.
+ * @returns {number} The combined value.
+ */
+export function combine(a: number, b: number): number;
+/**
+ * Combine values.
+ * @returns {number} The combined value.
+ */
+export function combine(a: number, b: number): number;
+export function combine(a: number, b: number): number { return a + b; }
+`),
+		);
+		const props = (element.props.children as { props: { params: unknown; returns: unknown } }[])[0]?.props;
+		// All three declarations share the same params — deduped to a single (a, b) pair.
+		expect(props?.params).toEqual([
+			{ name: "a", type: "number", description: undefined, optional: false },
+			{ name: "b", type: "number", description: undefined, optional: false },
+		]);
+		// The two documented overloads share a return; the implementation's bare `number` return differs by description and is kept.
+		expect(props?.returns).toEqual([
+			{ type: "number", description: "The combined value." },
+			{ type: "number", description: undefined },
+		]);
+	});
+
+	test("de-duplicates identical throws and examples across overloads, keeping distinct ones", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Do a thing.
+ * @throws {RangeError} Bad range.
+ * @example doThing(1)
+ */
+export function doThing(a: number): number;
+/**
+ * Do a thing.
+ * @throws {RangeError} Bad range.
+ * @throws {TypeError} Bad type.
+ * @example doThing(1)
+ * @example doThing(2)
+ */
+export function doThing(a: any): any { return a; }
+`),
+		);
+		const props = (element.props.children as { props: { throws: unknown; examples: unknown } }[])[0]?.props;
+		expect(props?.throws).toEqual([
+			{ type: "RangeError", description: "Bad range." },
+			{ type: "TypeError", description: "Bad type." },
+		]);
+		expect(props?.examples).toEqual([{ description: "doThing(1)" }, { description: "doThing(2)" }]);
 	});
 
 	test("strips directory path from filename when computing key/name", async () => {

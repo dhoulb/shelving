@@ -53,13 +53,13 @@ function _mergeOverloads(existing: DocumentationElement, next: DocumentationElem
 		...a,
 		// Keep first content encountered; fill in if `existing` had none.
 		content: a.content ?? b.content,
-		// Append signatures.
-		signatures: _concat(a.signatures, b.signatures),
-		// Append params, returns, throws, examples — never dedupe (per spec).
-		params: _concat(a.params, b.params),
-		returns: _concat(a.returns, b.returns),
-		throws: _concat(a.throws, b.throws),
-		examples: _concat(a.examples, b.examples),
+		// Append incoming entries, skipping any already present (by field identity), preserving insertion order.
+		// Identity: signatures/examples/throws by rendered string; params by (name, type, description, optional); returns by (type, description).
+		signatures: _concatUnique(a.signatures, b.signatures, s => s),
+		params: _concatUnique(a.params, b.params, p => `${p.name}\0${p.type}\0${p.description}\0${p.optional}`),
+		returns: _concatUnique(a.returns, b.returns, r => `${r.type}\0${r.description}`),
+		throws: _concatUnique(a.throws, b.throws, t => `${t.type}\0${t.description}`),
+		examples: _concatUnique(a.examples, b.examples, e => e.description ?? ""),
 	};
 	return { ...existing, props: merged };
 }
@@ -68,6 +68,26 @@ function _concat<T>(a: readonly T[] | undefined, b: readonly T[] | undefined): r
 	if (!a) return b;
 	if (!b) return a;
 	return [...a, ...b];
+}
+
+/** Concatenate `b` onto `a`, skipping entries whose identity already appears, preserving insertion order. */
+function _concatUnique<T>(
+	a: readonly T[] | undefined,
+	b: readonly T[] | undefined,
+	identity: (item: T) => string,
+): readonly T[] | undefined {
+	if (!a) return b;
+	if (!b) return a;
+	const seen = new Set(a.map(identity));
+	const result = [...a];
+	for (const item of b) {
+		const key = identity(item);
+		if (seen.has(key)) continue;
+		seen.add(key);
+		result.push(item);
+	}
+	// Preserve the original reference when nothing new was added.
+	return result.length === a.length ? a : result;
 }
 
 /** Get the leading JSDoc comment of the file (before the first statement). */
@@ -199,8 +219,14 @@ function _getSignature(statement: ts.Statement, source: ts.SourceFile, name: str
 		const ret = statement.type ? statement.type.getText(source) : "void";
 		return `${name}(${params}): ${ret}`;
 	}
+	if (ts.isInterfaceDeclaration(statement)) {
+		// Emit `{ member; member }` — the same shape a `type` object body produces, distinguished only by the `kind` badge.
+		const members = statement.members.map(m => m.getText(source).replace(/;\s*$/, "").trim()).join("; ");
+		return members ? `{ ${members} }` : "{}";
+	}
 	if (ts.isTypeAliasDeclaration(statement)) {
-		return `${name} = ${statement.type.getText(source)}`;
+		// Emit only the type body (e.g. `{ a: string }` or `string | null`) — the alias name is already the page title.
+		return statement.type.getText(source);
 	}
 	if (ts.isVariableStatement(statement)) {
 		const declaration = statement.declarationList.declarations[0];
