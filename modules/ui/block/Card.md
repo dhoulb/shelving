@@ -80,6 +80,6 @@ import { Card, Subheading } from "shelving/ui";
 
 ## See also
 
-- [ui/block](/ui/block) — the block-level content components a card holds.
-- [ui/block/Panel](/ui/block) — a card-like grouping for stacked sections rather than standalone content.
-- [ui](/ui) — the styling system: tint ladder, cascade layers, and theming.
+- [`Panel`](/ui/Panel) — a card-like grouping for stacked sections rather than standalone content.
+- [`Section`](/ui/Section) — a titled block; cards often hold one or more sections.
+- [`ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

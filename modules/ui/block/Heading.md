@@ -65,6 +65,6 @@ import { Heading } from "shelving/ui";
 
 ## See also
 
-- [ui/block](/ui/block) — `Title`, `Subheading`, and the rest of the block-level content family.
-- [ui/block/Section](/ui/block) — wraps a heading and its content as a titled section.
-- [ui](/ui) — the styling system: tint ladder, typography variants, and theming.
+- [`Title`](/ui/Title) — the top-level page heading that pairs with `Heading`.
+- [`Section`](/ui/Section) — wraps a heading and its content as a titled section.
+- [`ui`](/ui) — the styling system: tint ladder, typography variants, and theming.
