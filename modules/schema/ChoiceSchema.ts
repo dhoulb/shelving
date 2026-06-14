@@ -24,26 +24,26 @@ function _getChoiceOption<K extends string>(k: K): readonly [title: K, title: st
 }
 
 /** Allowed options for `ChoiceSchema` */
-export interface ChoiceSchemaOptions<K extends string> extends Omit<SchemaOptions, "value"> {
+export interface ChoiceSchemaOptions<O extends string, I = never> extends Omit<SchemaOptions, "value"> {
 	/** Specify correct options using a dictionary of entries. */
-	readonly options: PossibleChoiceOptions<K>;
+	readonly options: PossibleChoiceOptions<O>;
 	/** Default option for the value. */
-	readonly value?: K;
+	readonly value?: O | I;
 }
 
 /** Choose from an allowed set of values. */
-export class ChoiceSchema<K extends string> extends Schema<K> {
-	declare readonly value: K | undefined;
-	readonly options: ChoiceOptions<K>;
-	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, ...rest }: ChoiceSchemaOptions<K>) {
+export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
+	declare readonly value: O | I | undefined;
+	readonly options: ChoiceOptions<O>;
+	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, ...rest }: ChoiceSchemaOptions<O, I>) {
 		super({ one, title, value, placeholder, ...rest });
 		this.options = _getChoiceOptions(options);
 	}
-	validate(unsafeValue: unknown = this.value): K {
+	validate(unsafeValue: unknown = this.value): O {
 		if (typeof unsafeValue === "string" && isProp(this.options, unsafeValue)) return unsafeValue;
 		throw unsafeValue ? `Unknown ${this.one}` : "Required";
 	}
-	override format(value: K): string {
+	override format(value: O): string {
 		return this.options[value];
 	}
 }
