@@ -29,6 +29,7 @@ export interface CardProps
  * - Real interactive elements inside the card (e.g. inline `<a>` links) stay clickable thanks to `position: relative; z-index: 2` rules in the stylesheet.
  * - Accepts a `status` colour and raw `ColorProps` — the card styles the box; lay out its contents however the use case needs.
  *
+ * @kind component
  * @example <Card><Subheading>Static</Subheading></Card>
  * @example <Card href="/foo" title="Open foo"><Subheading>Clickable</Subheading></Card>
  * @example <Card status="error"><Subheading>Not found</Subheading></Card>

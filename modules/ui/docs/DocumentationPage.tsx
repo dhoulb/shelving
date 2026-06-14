@@ -25,6 +25,7 @@ const DEFAULT_TYPE = "unknown";
 
 /** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. */
 const KIND_SECTIONS = {
+	component: "Components",
 	function: "Functions",
 	class: "Classes",
 	interface: "Interfaces",

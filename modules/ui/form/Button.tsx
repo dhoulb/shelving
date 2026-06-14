@@ -50,6 +50,7 @@ interface ButtonProps extends ButtonVariants, ClickableProps {}
  * - Content-width by default (never grows); it won't shrink below its label. Pass `full` to fill the available width.
  * - Accepts all `ButtonVariants` styling props plus the `ClickableProps` (`onClick`, `href`, `disabled`, etc.).
  *
+ * @kind component
  * @example <Button onClick={save} color="primary">Save</Button>
  * @example <Button href="/about">About</Button>
  * @see https://dhoulb.github.io/shelving/ui/form/Button/Button

@@ -204,6 +204,33 @@ export class Widget {
 		]);
 	});
 
+	test("overrides the inferred kind with an @kind tag and drops the title parens", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * A card component.
+ * @kind component
+ * @example <Card />
+ */
+export function Card(props: CardProps): ReactElement { return null as never; }
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{
+				type: "tree-documentation",
+				props: {
+					kind: "component",
+					name: "Card",
+					// A non-function kind reads as a bare name, not `Card()`.
+					title: "Card",
+					// The `@kind` tag is consumed, not leaked into the rendered content.
+					content: "A card component.",
+					signatures: ["Card(props: CardProps): ReactElement"],
+				},
+			},
+		]);
+	});
+
 	test("extracts extends and implements from a class declaration", async () => {
 		const element = await extractor.extract(
 			file(`
