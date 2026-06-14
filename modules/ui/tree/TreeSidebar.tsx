@@ -5,6 +5,11 @@ import type { TreeElement } from "../../util/tree.js";
 import { Menu, MenuItem } from "../menu/Menu.js";
 import { matchMenuElement, TreeMenuMapper } from "./TreeMenu.js";
 
+/**
+ * Props for the `TreeSidebar` component — the root tree element plus its URL path.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/tree/TreeSidebar/TreeSidebarProps
+ */
 export interface TreeSidebarProps {
 	/** Root element of the tree. */
 	readonly tree: TreeElement;
@@ -14,9 +19,15 @@ export interface TreeSidebarProps {
 
 /**
  * Sidebar built from a tree element.
+ *
  * - Renders a single "home" `<MenuItem>` for the root element itself, then the root's children as a `<TreeMenuMapper>` underneath.
  * - The home link uses `path` as its href (defaulting to `/`). The children's hrefs are computed by appending their `name` to the root's path.
  * - To customise child renderers wrap in `<TreeMenuMapping mapping={…}>` (same context as `<TreeMenu>`).
+ *
+ * @param props The root `tree` element and optional root `path`.
+ * @returns A `<Menu>` with a home link plus the root's children as navigation items.
+ * @example <TreeSidebar tree={tree} />
+ * @see https://dhoulb.github.io/shelving/ui/tree/TreeSidebar/TreeSidebar
  */
 export function TreeSidebar({ tree, path = "/" as AbsolutePath }: TreeSidebarProps): ReactNode {
 	return (

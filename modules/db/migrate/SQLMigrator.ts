@@ -87,6 +87,14 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 		return migrations;
 	}
 
+	/**
+	 * Build the `CREATE TABLE` statement for a collection, including its ID, data, and generated columns.
+	 *
+	 * @param collection The collection to create a table for.
+	 * @returns The `CREATE TABLE` SQL statement.
+	 * @example migrator.getCreateTableQuery(users) // CREATE TABLE "users" (...)
+	 * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLMigrator/getCreateTableQuery
+	 */
 	getCreateTableQuery<T extends Data>(collection: Collection<string, number, T>): string {
 		const suffix = this.getCreateTableSuffix(collection);
 		return `CREATE TABLE ${this.quoteIdentifier(collection.name)} (\n${this.getCreateTableColumns(collection)
@@ -94,10 +102,26 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 			.join(",\n")}\n)${suffix};`;
 	}
 
+	/**
+	 * Get the full set of columns for a collection's table: the ID column, data column, and generated columns.
+	 *
+	 * @param collection The collection to get columns for.
+	 * @returns The ordered list of table columns.
+	 * @example migrator.getCreateTableColumns(users)
+	 * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLMigrator/getCreateTableColumns
+	 */
 	getCreateTableColumns<T extends Data>(collection: Collection<string, number, T>): readonly SQLTableColumn[] {
 		return [this.getIDColumn(collection), this.getDataColumn(), ...this.getGeneratedTableColumns(collection)];
 	}
 
+	/**
+	 * Get the generated (computed) columns for a collection's table, derived from its schema's scalar properties.
+	 *
+	 * @param collection The collection to get generated columns for.
+	 * @returns The list of generated table columns.
+	 * @example migrator.getGeneratedTableColumns(users)
+	 * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLMigrator/getGeneratedTableColumns
+	 */
 	getGeneratedTableColumns<T extends Data>(collection: Collection<string, number, T>): readonly SQLTableColumn[] {
 		return this.getGeneratedColumns(collection).map(column => this.getGeneratedColumn(column, collection));
 	}

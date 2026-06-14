@@ -32,6 +32,11 @@ export function getTagClass(variants: TagVariants) {
 	);
 }
 
+/**
+ * Props for `<Tag>` — `TagVariants` styling options plus `<Clickable>` props (`href`, `onClick`, `children`, etc.).
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Tag/TagProps
+ */
 export interface TagProps extends TagVariants, ClickableProps {}
 
 /**
@@ -39,8 +44,11 @@ export interface TagProps extends TagVariants, ClickableProps {}
  * - Delegates to `getClickable()` — renders as `<a>` when `href` is set, otherwise `<button>`.
  * - Accepts a status variant (`success`, `info`, `error`, etc.) _or_ a raw colour (`color="red"`, `color="purple"`, etc.).
  *
+ * @param props Tag styling variants and clickable props.
+ * @returns The tag element.
  * @example <Tag success>Active</Tag>
  * @example <Tag color="purple" href="/beta">Beta</Tag>
+ * @see https://dhoulb.github.io/shelving/ui/misc/Tag/Tag
  */
 export function Tag(props: TagProps): ReactElement {
 	return <Clickable {...props} className={getTagClass(props)} />;
