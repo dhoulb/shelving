@@ -26,5 +26,11 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
 	}
 }
 
-/** Make a property of a set of data optional, i.e. it can be the value or `undefined` */
-export const OPTIONAL = <T>(source: Schema<T>): OptionalSchema<T> => new OptionalSchema({ source });
+/**
+ * Make a property of a set of data optional, i.e. it can be the value or `undefined`
+ *
+ * *Factory for `OptionalSchema`.*
+ */
+export function OPTIONAL<T>(source: Schema<T>): OptionalSchema<T> {
+	return new OptionalSchema({ source });
+}

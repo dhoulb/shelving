@@ -45,7 +45,9 @@ export function assertPlainObject(value: unknown): asserts value is ImmutableObj
 }
 
 /** Is an unknown value the key for an own prop of an object. */
-export const isProp = <T extends ImmutableObject>(obj: T, key: PropertyKey): key is keyof T => Object.hasOwn(obj, key);
+export function isProp<T extends ImmutableObject>(obj: T, key: PropertyKey): key is keyof T {
+	return Object.hasOwn(obj, key);
+}
 
 /** Assert that an unknown value is the key for an own prop of an object. */
 export function assertProp<T extends ImmutableObject>(obj: T, key: PropertyKey): asserts key is keyof T {

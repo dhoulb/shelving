@@ -1,5 +1,7 @@
 /** Is an unknown value an iterable? */
-export const isIterable = (value: unknown): value is Iterable<unknown> => typeof value === "object" && !!value && Symbol.iterator in value;
+export function isIterable(value: unknown): value is Iterable<unknown> {
+	return typeof value === "object" && !!value && Symbol.iterator in value;
+}
 
 /** An iterable containing items or nested iterables of items. */
 export type DeepIterable<T> = T | Iterable<DeepIterable<T>>;

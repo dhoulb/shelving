@@ -86,5 +86,11 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	}
 }
 
-/** Valid array with specifed items. */
-export const ARRAY = <T>(items: Schema<T>): ArraySchema<T> => new ArraySchema({ items });
+/**
+ * Valid array with specifed items.
+ *
+ * *Factory for `ArraySchema`.*
+ */
+export function ARRAY<T>(items: Schema<T>): ArraySchema<T> {
+	return new ArraySchema({ items });
+}

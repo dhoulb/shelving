@@ -52,5 +52,11 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	}
 }
 
-/** Valid dictionary object with specifed items. */
-export const DICTIONARY = <T>(items: Schema<T>): DictionarySchema<T> => new DictionarySchema({ items });
+/**
+ * Valid dictionary object with specifed items.
+ *
+ * *Factory for `DictionarySchema`.*
+ */
+export function DICTIONARY<T>(items: Schema<T>): DictionarySchema<T> {
+	return new DictionarySchema({ items });
+}

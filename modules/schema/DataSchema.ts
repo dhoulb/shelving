@@ -51,13 +51,29 @@ function _getSchemaValue<T extends Data>([, { value }]: Prop<Schemas<T>>): Value
 	return value as Value<T>;
 }
 
-/** Create a `DataSchema` for a set of properties. */
-export const DATA = <T extends Data>(props: Schemas<T>): DataSchema<T> => new DataSchema({ props });
+/**
+ * Create a `DataSchema` for a set of properties.
+ *
+ * *Factory for `DataSchema`.*
+ */
+export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
+	return new DataSchema({ props });
+}
 
-/** Valid data object with specifed properties, or `null` */
-export const NULLABLE_DATA = <T extends Data>(props: Schemas<T>): NullableSchema<T> => NULLABLE(new DataSchema({ props }));
+/**
+ * Valid data object with specifed properties, or `null`
+ *
+ * *Factory for `NullableSchema`.*
+ */
+export function NULLABLE_DATA<T extends Data>(props: Schemas<T>): NullableSchema<T> {
+	return NULLABLE(new DataSchema({ props }));
+}
 
-/** Create a `DataSchema` that validates partially, i.e. properties can be their value, or `undefined` */
+/**
+ * Create a `DataSchema` that validates partially, i.e. properties can be their value, or `undefined`
+ *
+ * *Factory for `DataSchema`.*
+ */
 export function PARTIAL<T extends Data>(source: Schemas<T> | DataSchema<T>): DataSchema<PartialData<T>>;
 export function PARTIAL(source: Schemas<Data> | DataSchema<Data>): DataSchema<PartialData<Data>> {
 	const props: Schemas<Data> = source instanceof DataSchema ? source.props : source;
@@ -69,7 +85,11 @@ function _optionalProp([, v]: Prop<Schemas<Data>>): Schema<unknown> {
 	return OPTIONAL(v);
 }
 
-/** Create a `DataSchema` that validates a data item, i.e. it has a string or number `.id` identifier property. */
+/**
+ * Create a `DataSchema` that validates a data item, i.e. it has a string or number `.id` identifier property.
+ *
+ * *Factory for `DataSchema`.*
+ */
 export function ITEM<I extends Identifier, T extends Data>(id: Schema<I>, schemas: Schemas<T> | DataSchema<T>): DataSchema<Item<I, T>> {
 	const props: Schemas<T> = schemas instanceof DataSchema ? schemas.props : schemas;
 	return new DataSchema<Item<I, T>>({

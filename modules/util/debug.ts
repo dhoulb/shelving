@@ -28,7 +28,9 @@ export function debug(value: unknown, depth = 1): string {
 }
 
 /** Debug a string. */
-export const debugString = (value: string): string => `"${value.replace(ESCAPE_REGEXP, _escapeChar)}"`;
+export function debugString(value: string): string {
+	return `"${value.replace(ESCAPE_REGEXP, _escapeChar)}"`;
+}
 // biome-ignore lint/suspicious/noControlCharactersInRegex: Intentional.
 const ESCAPE_REGEXP = /[\x00-\x08\x0B-\x1F\x7F-\x9F"\\]/g; // Match control characters, `"` double quote, `\` backslash.
 const ESCAPE_LIST: { [key: string]: string } = {
