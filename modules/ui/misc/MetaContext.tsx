@@ -6,21 +6,35 @@ import { getURIParams, type URIParams } from "../../util/uri.js";
 import { type ImmutableURL, matchURLPrefix } from "../../util/url.js";
 import { type Meta, mergeMeta, type PossibleMeta } from "../util/meta.js";
 
-/** Context to store the `Config` object. */
+/**
+ * React context holding the current `Meta` object (page URL, site root, title, etc.).
+ *
+ * @example <MetaContext value={meta}>…</MetaContext>
+ * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/MetaContext
+ */
 export const MetaContext = createContext<Meta>({});
 MetaContext.displayName = "MetaContext";
 
 /**
- * Use the current meta context in a component.
+ * Read the current `Meta` context, optionally merging in additional meta data.
+ *
+ * - Must be called inside a component or hook (reads context via React's `use()`).
  *
  * @param meta A set of new possible meta data to combine into the current meta context.
+ * @returns The current `Meta`, with `meta` merged in when provided.
+ * @example const { title, url } = requireMeta();
+ * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/requireMeta
  */
 export function requireMeta(meta?: PossibleMeta): Meta {
 	const current = use(MetaContext);
 	return meta ? mergeMeta(current, meta) : current;
 }
 
-/** A `Meta` object with a defined `url` object, and `path` and `params` properties combined in. */
+/**
+ * A `Meta` object with a guaranteed `url`, plus derived `path` and `params` properties.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/MetaURL
+ */
 export interface MetaURL extends Meta {
 	url: ImmutableURL;
 	/** The path of `url` relative to `meta.root` (i.e. the _site-root-relative_ path). */

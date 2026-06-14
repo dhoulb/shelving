@@ -36,6 +36,11 @@ export function Progress({ value, success, warning, danger }: ProgressProps): Re
 	);
 }
 
+/**
+ * Props for `SegmentedProgress`, a stepped progress bar of discrete segments.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/Progress/SegmentedProgressProps
+ */
 export interface SegmentedProgressProps {
 	total: number;
 	current: number;
@@ -44,7 +49,14 @@ export interface SegmentedProgressProps {
 	danger?: boolean;
 }
 
-/** Show step progress as a horizontal bar of `total` segments, of which `current + 1` are filled. */
+/**
+ * Show step progress as a horizontal bar of `total` segments, of which `current + 1` are filled.
+ *
+ * @param props Props including `total` segment count, `current` index, and optional status flags.
+ * @returns A segmented progress bar element, or `null` when `total` is not positive.
+ * @example <SegmentedProgress total={4} current={1} />
+ * @see https://dhoulb.github.io/shelving/ui/form/Progress/SegmentedProgress
+ */
 export function SegmentedProgress({ total, current, success, warning, danger }: SegmentedProgressProps): ReactElement | null {
 	if (total <= 0) return null;
 	const progressStyle = { ["--progress-steps" as string]: total } as CSSProperties;

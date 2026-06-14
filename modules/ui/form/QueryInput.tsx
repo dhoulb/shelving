@@ -13,6 +13,11 @@ import type { ValueInputProps } from "./Input.js";
 import { Popover } from "./Popover.js";
 import { SchemaInput } from "./SchemaInput.js";
 
+/**
+ * Props for `QueryInput`, a combo box that queries items of type `O` from an input of type `I`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/QueryInput/QueryInputProps
+ */
 export interface QueryInputProps<I, O> extends ValueInputProps<O> {
 	/** Schema input */
 	schema: Schema<I>;
@@ -37,11 +42,15 @@ export interface QueryInputProps<I, O> extends ValueInputProps<O> {
 }
 
 /**
- * Combo box with query input.
- * - Show an input based on a `schema` of type `I`
- * - Values from the input are piped to an `onQuery()` callback.
- * - Show a `<Popover>` that has a radio list of items to allow a final option of type `O` to be picked.
- * - Errors / loading state / empty state are handled automatically.
+ * Combo box that queries a list of items and lets the user pick one from a popover.
+ * - Shows an input based on a `schema` of type `I`; its values are piped to the `onQuery()` callback.
+ * - Shows a `<Popover>` with a radio list of returned items to pick a final value of type `O`.
+ * - Errors, loading, and empty states are handled automatically.
+ *
+ * @param props Props including `schema`, `onQuery`, `value`, `onValue`, `formatter`, and `empty` message.
+ * @returns A combo box element wrapping the input and results popover.
+ * @example <QueryInput schema={SEARCH} onQuery={search} value={user} onValue={setUser} />
+ * @see https://dhoulb.github.io/shelving/ui/form/QueryInput/QueryInput
  */
 export function QueryInput<I, O>({
 	empty = "No results",

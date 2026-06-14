@@ -32,11 +32,23 @@ import { NumberInput } from "./NumberInput.js";
 import { SelectInput } from "./SelectInput.js";
 import { TextInput } from "./TextInput.js";
 
-/** A schema is required if it's not wrapped in an `OptionalSchema` or `NullableSchema` */
+/**
+ * Whether a schema is required, i.e. not wrapped in an `OptionalSchema` or `NullableSchema`.
+ *
+ * @param schema The schema to test.
+ * @returns `true` if the schema is required, `false` if it is optional or nullable.
+ * @example isSchemaRequired(STRING) // true
+ * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/isSchemaRequired
+ */
 export function isSchemaRequired(schema: Schema): boolean {
 	return !(schema instanceof OptionalSchema || schema instanceof NullableSchema);
 }
 
+/**
+ * Props for `SchemaInput` and its variants: a `schema` plus the value input props it drives.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/SchemaInputProps
+ */
 export interface SchemaInputProps<T extends Schema, I = never> extends ValueInputProps<ValidatorType<T>, I> {
 	schema: T;
 }

@@ -5,6 +5,11 @@ import { TEXT_INPUT_CLASS, type ValueInputProps } from "./Input.js";
 
 type NumberFormatter = (num: number) => string;
 
+/**
+ * Props for `NumberInput`, a text-based numeric input bound to a `number` value.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/NumberInput/NumberInputProps
+ */
 export interface NumberInputProps extends ValueInputProps<number> {
 	min?: number | undefined;
 	max?: number | undefined;
@@ -12,6 +17,15 @@ export interface NumberInputProps extends ValueInputProps<number> {
 	formatter?: NumberFormatter | undefined;
 }
 
+/**
+ * Numeric input bound to a `number` value, parsing typed text and reformatting it on blur.
+ * - Uses `type="text"` with `inputMode="decimal"` so a custom `formatter` can control display.
+ *
+ * @param props Props including `value`, `onValue`, optional `min`/`max`, and a `formatter`.
+ * @returns A numeric `<input>` element.
+ * @example <NumberInput name="age" value={age} onValue={setAge} />
+ * @see https://dhoulb.github.io/shelving/ui/form/NumberInput/NumberInput
+ */
 export function NumberInput({
 	name,
 	title = "",
