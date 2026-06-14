@@ -296,6 +296,24 @@ export function add(a: any, b: any): any { return a + b; }
 		});
 	});
 
+	test("skips `declare` members (ambient type-only re-declarations)", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A typed schema. */
+export class BooleanSchema extends Schema {
+	/** Narrowed value type. */
+	declare readonly value: boolean;
+	/** A real new method. */
+	check(): boolean { return true; }
+}
+`),
+		);
+		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
+		// The `declare` field is omitted; only the genuinely-new `check()` survives.
+		expect(cls?.props.children).toMatchObject([{ props: { kind: "method", name: "check", title: "check()" } }]);
+		expect(cls?.props.children).toHaveLength(1);
+	});
+
 	test("keeps case-distinct exports separate (Class vs FACTORY) with case-preserving keys", async () => {
 		// `Collection` and `COLLECTION` differ only in case — they must not collapse into one entity.
 		const element = await extractor.extract(

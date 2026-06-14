@@ -21,7 +21,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on the file and every `tree-documentation` child.
  * - Sets `title` on every `tree-documentation` child — `name()` for functions and methods, bare `name` for other kinds. Parent class context comes from the `class` prop ("member of …" affordance), never the title.
  * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends`, `implements`.
- * - Members declared with the `override` modifier are skipped — the base class already documents them.
+ * - Members declared with the `override` or `declare` modifier are skipped — the base class already documents overrides, and `declare` members are ambient type-only re-declarations rather than new API.
  * - Keys are the raw declared `name` (case-preserving) so case-distinct exports like `Collection` and `COLLECTION` stay separate.
  * - The file element itself has no `title` — a TS source file has no confident title source; renderers fall back to `name`.
  */
@@ -246,6 +246,7 @@ function _getReturns(
  * Extract class or interface members as child elements.
  * - `className` is stamped onto every member as its `class` prop (the source of the qualified flat key and the "member of …" affordance); the title stays the bare member `name` / `name()`.
  * - Members declared with the `override` modifier are skipped — the base class already documents them, so a subclass page lists only its newly-introduced API.
+ * - Members declared with the `declare` modifier are skipped — they're ambient type-only re-declarations (e.g. narrowing an inherited property's type), not new API.
  * - Getters/setters fold into a single `property` element per name; a getter with no matching setter is `readonly`.
  */
 function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, className: string): DocumentationElement[] | undefined {
@@ -260,6 +261,8 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 		if (modifiers?.some(m => m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword)) continue;
 		// Skip `override` members — the base class already documents them, so a subclass page lists only its newly-introduced API.
 		if (modifiers?.some(m => m.kind === ts.SyntaxKind.OverrideKeyword)) continue;
+		// Skip `declare` members — ambient type-only re-declarations (e.g. a subclass narrowing an inherited property's type), not new API.
+		if (modifiers?.some(m => m.kind === ts.SyntaxKind.DeclareKeyword)) continue;
 
 		const memberJSDoc = _getJSDoc(member, source);
 		const content = _buildJSDocContent(memberJSDoc?.description, memberJSDoc?.unhandled);
