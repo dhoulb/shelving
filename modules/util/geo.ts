@@ -2,7 +2,12 @@ import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 import { isProp } from "./object.js";
 
-/** List of countries by two-letter ISO code. */
+/**
+ * List of countries by two-letter ISO 3166-1 alpha-2 code.
+ * - Keys are uppercase two-letter codes; values are the full English country name.
+ *
+ * @see https://dhoulb.github.io/shelving/util/geo/COUNTRIES
+ */
 export const COUNTRIES = {
 	AF: "Afghanistan",
 	AX: "Aland Islands",
@@ -252,13 +257,30 @@ export const COUNTRIES = {
 	ZW: "Zimbabwe",
 } as const;
 
-/** Country code string. */
+/**
+ * Two-letter ISO 3166-1 alpha-2 country code string (a key of `COUNTRIES`).
+ *
+ * @see https://dhoulb.github.io/shelving/util/geo/Country
+ */
 export type Country = keyof typeof COUNTRIES;
 
-/** Things that can possibly be a country. */
+/**
+ * A value that can possibly be resolved to a `Country` — either a country code or the literal `"detect"`.
+ *
+ * @see https://dhoulb.github.io/shelving/util/geo/PossibleCountry
+ */
 export type PossibleCountry = Country | "detect";
 
-/** Parse a country string, or detect a browser country from `navigator.language`. */
+/**
+ * Parse a country string, or detect a browser country from `navigator.language`.
+ * - When `value` is `"detect"`, reads the last two characters of `navigator.language` (if available).
+ * - Matching is case-insensitive; the value is uppercased before lookup.
+ *
+ * @param value The country code to parse, or `"detect"` to read it from the browser. Defaults to `"detect"`.
+ * @returns The matching `Country` code, or `undefined` if it could not be resolved.
+ * @example getCountry("gb") // "GB"
+ * @see https://dhoulb.github.io/shelving/util/geo/getCountry
+ */
 export function getCountry(value: unknown = "detect"): Country | undefined {
 	if (value === "detect") {
 		if (typeof navigator === "object") {
@@ -271,20 +293,41 @@ export function getCountry(value: unknown = "detect"): Country | undefined {
 	}
 }
 
-/** Parse a country string, or detect a browser country from `navigator.language`, or throw `RequiredError` */
+/**
+ * Parse a country string, or detect a browser country from `navigator.language`, or throw `RequiredError`.
+ *
+ * @param value The country code to parse, or `"detect"` to read it from the browser.
+ * @param caller Identity of the calling function for error attribution.
+ * @returns The matching `Country` code.
+ * @throws RequiredError If a country could not be resolved.
+ * @example requireCountry("gb") // "GB"
+ * @see https://dhoulb.github.io/shelving/util/geo/requireCountry
+ */
 export function requireCountry(value?: unknown, caller: AnyCaller = requireCountry): Country {
 	const country = getCountry(value);
 	if (!country) throw new RequiredError("Must be country", { received: value, caller });
 	return country;
 }
 
-/** Format a country code into its full country name. */
+/**
+ * Format a country code into its full country name.
+ * - Matching is case-insensitive; unknown codes are returned unchanged.
+ *
+ * @param country The country code to format.
+ * @returns The full English country name, or the input unchanged if it is not a known code.
+ * @example formatCountry("GB") // "United Kingdom"
+ * @see https://dhoulb.github.io/shelving/util/geo/formatCountry
+ */
 export function formatCountry(country: string): string {
 	const code = country.toUpperCase();
 	return isProp(COUNTRIES, code) ? COUNTRIES[code] : country;
 }
 
-/** Valid shape for physical address data. */
+/**
+ * Valid shape for physical address data.
+ *
+ * @see https://dhoulb.github.io/shelving/util/geo/AddressData
+ */
 export type AddressData = {
 	readonly address1: string;
 	readonly address2: string;
@@ -294,7 +337,16 @@ export type AddressData = {
 	readonly country: Country;
 };
 
-/** Format address data into a single multiline string. */
+/**
+ * Format address data into a single multiline string.
+ * - Each field is placed on its own line; an empty `address2` is omitted.
+ * - The country code is expanded to its full name via `formatCountry`.
+ *
+ * @param address The address data to format.
+ * @returns A newline-separated address string.
+ * @example formatAddress({ address1: "1 High St", address2: "", city: "London", state: "", postcode: "SW1", country: "GB" })
+ * @see https://dhoulb.github.io/shelving/util/geo/formatAddress
+ */
 export function formatAddress({ address1, address2, city, state, postcode, country }: AddressData): string {
 	return `${address1}\n${address2 ? `${address2}\n` : ""}${city}\n${state}\n${postcode}\n${formatCountry(country)}`;
 }

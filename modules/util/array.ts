@@ -5,22 +5,46 @@ import { interleaveItems, isIterable, omitItems, pickItems } from "./iterate.js"
 /**
  * Mutable array: an array that can be changed.
  * - Consistency with `MutableObject<T>` and `ImmutableArray<T>`
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/MutableArray
  */
 export type MutableArray<T = unknown> = T[];
 
 /**
  * Immutable array: an array that cannot be changed.
  * - Consistency with `ImmutableObject<T>` and `MutableArray<T>`
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/ImmutableArray
  */
 export type ImmutableArray<T = unknown> = readonly T[];
 
-/** Get the type of the _items_ in an array. */
+/**
+ * Get the type of the _items_ in an array.
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/ArrayItem
+ */
 export type ArrayItem<T extends ImmutableArray> = T[number];
 
-/** Things that can be converted to arrays. */
+/**
+ * Things that can be converted to arrays.
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/PossibleArray
+ */
 export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
 
-/** Is an unknown value an array (optionally with specified min/max length). */
+/**
+ * Is an unknown value an array (optionally with specified min/max length)?
+ *
+ * @param value The value to test.
+ * @param min Minimum number of items the array must contain (defaults to `0`).
+ * @param max Maximum number of items the array may contain (defaults to `Infinity`).
+ * @returns `true` if `value` is an array within the length bounds, narrowing its type.
+ *
+ * @example isArray([1, 2, 3]); // true
+ * @example isArray([1], 2, 2); // false
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/isArray
+ */
 export function isArray<T>(arr: MutableArray<T>, min: 1, max: 1): arr is [T];
 export function isArray<T>(arr: MutableArray<T>, min: 2, max: 2): arr is [T, T];
 export function isArray<T>(arr: MutableArray<T>, min: 3, max: 3): arr is [T, T, T];
@@ -39,7 +63,20 @@ export function isArray(value: unknown, min = 0, max = Number.POSITIVE_INFINITY)
 	return Array.isArray(value) && value.length >= min && value.length <= max;
 }
 
-/** Assert that an unknown value is an array (optionally with specified min/max length). */
+/**
+ * Assert that an unknown value is an array (optionally with specified min/max length).
+ *
+ * @param value The value to assert.
+ * @param min Minimum number of items the array must contain (defaults to `0`).
+ * @param max Maximum number of items the array may contain (defaults to `Infinity`).
+ * @param caller Function to attribute a thrown error to (defaults to `assertArray` itself).
+ * @throws {RequiredError} If `value` is not an array within the length bounds.
+ *
+ * @example assertArray([1, 2, 3]); // (passes)
+ * @example assertArray("nope"); // throws RequiredError
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/assertArray
+ */
 export function assertArray<T>(arr: MutableArray<T>, min: 1, max: 1, caller?: AnyCaller): asserts arr is [T];
 export function assertArray<T>(arr: MutableArray<T>, min: 2, max: 2, caller?: AnyCaller): asserts arr is [T, T];
 export function assertArray<T>(arr: MutableArray<T>, min: 3, max: 3, caller?: AnyCaller): asserts arr is [T, T, T];
@@ -62,12 +99,36 @@ export function assertArray(value: unknown, min?: number, max?: number, caller: 
 		});
 }
 
-/** Convert a possible array to an array. */
+/**
+ * Convert a possible array to an array.
+ *
+ * @param list The value to convert (an array is returned as-is, an iterable is collected into a new array).
+ * @returns An array of the items, or `undefined` if `list` could not be converted.
+ *
+ * @example getArray(new Set([1, 2])); // [1, 2]
+ * @example getArray(123); // undefined
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/getArray
+ */
 export function getArray(list: unknown): ImmutableArray<unknown> | undefined {
 	return Array.isArray(list) ? list : isIterable(list) ? Array.from(list) : undefined;
 }
 
-/** Convert a possible array to an array (optionally with specified min/max length), or throw `RequiredError` if conversion fails. */
+/**
+ * Convert a possible array to an array (optionally with specified min/max length), or throw `RequiredError` if conversion fails.
+ *
+ * @param list The value to convert (an array or iterable of items).
+ * @param min Minimum number of items the array must contain (defaults to `0`).
+ * @param max Maximum number of items the array may contain (defaults to `Infinity`).
+ * @param caller Function to attribute a thrown error to (defaults to `requireArray` itself).
+ * @returns An array of the items within the length bounds.
+ * @throws {RequiredError} If `list` cannot be converted to an array within the length bounds.
+ *
+ * @example requireArray(new Set([1, 2])); // [1, 2]
+ * @example requireArray([], 1); // throws RequiredError
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/requireArray
+ */
 export function requireArray<T>(arr: MutableArray<T>, min: 1, max: 1, caller?: AnyCaller): [T];
 export function requireArray<T>(arr: MutableArray<T>, min: 2, max: 2, caller?: AnyCaller): [T, T];
 export function requireArray<T>(arr: MutableArray<T>, min: 3, max: 3, caller?: AnyCaller): [T, T, T];
@@ -88,19 +149,52 @@ export function requireArray<T>(list: PossibleArray<T>, min?: number, max?: numb
 	return arr;
 }
 
-/** Is an unknown value an item in a specified array or iterable? */
+/**
+ * Is an unknown value an item in a specified array or iterable?
+ *
+ * @param list The array or iterable to search.
+ * @param item The value to look for.
+ * @returns `true` if `item` exists in `list`, narrowing its type.
+ *
+ * @example isArrayItem([1, 2, 3], 2); // true
+ * @example isArrayItem([1, 2, 3], 9); // false
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/isArrayItem
+ */
 export function isArrayItem<T>(list: PossibleArray<T>, item: unknown): item is T {
 	if (isArray(list)) list.includes(item as T);
 	for (const i of list) if (i === item) return true;
 	return false;
 }
 
-/** Assert that an unknown value is an item in a specified array. */
+/**
+ * Assert that an unknown value is an item in a specified array.
+ *
+ * @param arr The array or iterable to search.
+ * @param item The value to look for.
+ * @param caller Function to attribute a thrown error to (defaults to `assertArrayItem` itself).
+ * @throws {RequiredError} If `item` does not exist in `arr`.
+ *
+ * @example assertArrayItem([1, 2, 3], 2); // (passes)
+ * @example assertArrayItem([1, 2, 3], 9); // throws RequiredError
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/assertArrayItem
+ */
 export function assertArrayItem<T>(arr: PossibleArray<T>, item: unknown, caller: AnyCaller = assertArrayItem): asserts item is T {
 	if (!isArrayItem(arr, item)) throw new RequiredError("Item must exist in array", { item, array: arr, caller });
 }
 
-/** Add multiple items to an array (immutably) and return a new array with those items (or the same array if no changes were made). */
+/**
+ * Add multiple items to an array (immutably) and return a new array with those items (or the same array if no changes were made).
+ *
+ * @param list The array or iterable to add to.
+ * @param add The items to add (items already present are skipped).
+ * @returns A new array including the added items, or the same array if nothing changed.
+ *
+ * @example withArrayItems([1, 2], 2, 3); // [1, 2, 3]
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/withArrayItems
+ */
 export function withArrayItems<T>(list: PossibleArray<T>, ...add: T[]): ImmutableArray<T> {
 	const arr = Array.from(list);
 	const extras = add.filter(_doesNotInclude, arr);
@@ -110,28 +204,88 @@ function _doesNotInclude<T>(this: T[], value: T) {
 	return !this.includes(value);
 }
 
-/** Add an item to an array (immutably) and return a new array with that item (or the same array if no changes were made). */
+/**
+ * Add an item to an array (immutably) and return a new array with that item (or the same array if no changes were made).
+ *
+ * @param items The array or iterable to add to.
+ * @param add The item to add (skipped if already present).
+ * @returns A new array including the added item, or the same array if nothing changed.
+ *
+ * @example withArrayItem([1, 2], 3); // [1, 2, 3]
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/withArrayItem
+ */
 export const withArrayItem: <T>(items: PossibleArray<T>, add: T) => ImmutableArray<T> = withArrayItems;
 
-/** Pick multiple items from an array (immutably) and return a new array with those items (or the same array if no changes were made). */
+/**
+ * Pick multiple items from an array (immutably) and return a new array with those items (or the same array if no changes were made).
+ *
+ * @param items The array or iterable to pick from.
+ * @param pick The items to keep.
+ * @returns A new array containing only the picked items, or the same array if nothing changed.
+ *
+ * @example pickArrayItems([1, 2, 3], 1, 3); // [1, 3]
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/pickArrayItems
+ */
 export function pickArrayItems<T>(items: PossibleArray<T>, ...pick: T[]): ImmutableArray<T> {
 	const arr = Array.from(pickItems(items, ...pick));
 	return isArray(items) && arr.length === items.length ? items : arr;
 }
 
-/** Pick an item from an array (immutably) and return a new array with that item (or the same array if no changes were made). */
+/**
+ * Pick an item from an array (immutably) and return a new array with that item (or the same array if no changes were made).
+ *
+ * @param items The array or iterable to pick from.
+ * @param pick The item to keep.
+ * @returns A new array containing only the picked item, or the same array if nothing changed.
+ *
+ * @example pickArrayItem([1, 2, 3], 2); // [2]
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/pickArrayItem
+ */
 export const pickArrayItem: <T>(items: PossibleArray<T>, pick: T) => ImmutableArray<T> = pickArrayItems;
 
-/** Remove multiple items from an array (immutably) and return a new array without those items (or the same array if no changes were made). */
+/**
+ * Remove multiple items from an array (immutably) and return a new array without those items (or the same array if no changes were made).
+ *
+ * @param items The array or iterable to remove from.
+ * @param omit The items to remove.
+ * @returns A new array without the omitted items, or the same array if nothing changed.
+ *
+ * @example omitArrayItems([1, 2, 3], 2); // [1, 3]
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/omitArrayItems
+ */
 export function omitArrayItems<T>(items: PossibleArray<T>, ...omit: T[]): ImmutableArray<T> {
 	const filtered = Array.from(omitItems(items, ...omit));
 	return isArray(items) && filtered.length === items.length ? items : filtered;
 }
 
-/** Remove an item from an array (immutably) and return a new array without those items (or the same array if no changes were made). */
+/**
+ * Remove an item from an array (immutably) and return a new array without that item (or the same array if no changes were made).
+ *
+ * @param items The array or iterable to remove from.
+ * @param omit The item to remove.
+ * @returns A new array without the omitted item, or the same array if nothing changed.
+ *
+ * @example omitArrayItem([1, 2, 3], 2); // [1, 3]
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/omitArrayItem
+ */
 export const omitArrayItem: <T>(items: PossibleArray<T>, omit: T) => ImmutableArray<T> = omitArrayItems;
 
-/** Toggle an item in and out of an array (immutably) and return a new array with or without the specified items (or the same array if no changes were made). */
+/**
+ * Toggle an item in and out of an array (immutably) and return a new array with or without the specified items (or the same array if no changes were made).
+ *
+ * @param items The array or iterable to toggle within.
+ * @param toggle The items to toggle (added if absent, removed if present).
+ * @returns A new array with the items toggled, or the same array if nothing changed.
+ *
+ * @example toggleArrayItems([1, 2], 2, 3); // [1, 3]
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/toggleArrayItems
+ */
 export function toggleArrayItems<T>(items: PossibleArray<T>, ...toggle: T[]): ImmutableArray<T> {
 	const arr = Array.from(items);
 	const extras = toggle.filter(_doesNotInclude, arr);
@@ -139,10 +293,29 @@ export function toggleArrayItems<T>(items: PossibleArray<T>, ...toggle: T[]): Im
 	return extras.length ? [...filtered, ...extras] : filtered.length !== arr.length ? filtered : isArray(items) ? items : arr;
 }
 
-/** Toggle an item in and out of an array (immutably) and return a new array with or without the specified item (or the same array if no changes were made). */
+/**
+ * Toggle an item in and out of an array (immutably) and return a new array with or without the specified item (or the same array if no changes were made).
+ *
+ * @param items The array or iterable to toggle within.
+ * @param toggle The item to toggle (added if absent, removed if present).
+ * @returns A new array with the item toggled, or the same array if nothing changed.
+ *
+ * @example toggleArrayItem([1, 2], 2); // [1]
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/toggleArrayItem
+ */
 export const toggleArrayItem: <T>(items: PossibleArray<T>, toggle: T) => ImmutableArray<T> = toggleArrayItems;
 
-/** Return a shuffled version of an array or iterable. */
+/**
+ * Return a shuffled version of an array or iterable.
+ *
+ * @param items The array or iterable to shuffle.
+ * @returns A new array containing the same items in random order.
+ *
+ * @example shuffleArray([1, 2, 3]); // e.g. [2, 3, 1]
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/shuffleArray
+ */
 export function shuffleArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 	const arr = Array.from(items);
 	for (let i = arr.length - 1; i > 0; i--) {
@@ -155,6 +328,14 @@ export function shuffleArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 /**
  * Add an item to an array (by reference) and return the item.
  * - Skip items that already exist.
+ *
+ * @param arr The array to add to (modified in place).
+ * @param item The item to add.
+ * @returns The added `item`.
+ *
+ * @example addArrayItem(arr, 3); // 3 (and `arr` now contains `3`)
+ *
+ * @see https://dhoulb.github.io/shelving/util/array/addArrayItem
  */
 export function addArrayItem<T>(arr: MutableArray<T>, item: T): T {
 	if (arr.indexOf(item) < 0) arr.push(item);

@@ -5,7 +5,11 @@ import { isAbsolutePath } from "./path.js";
 import { type ImmutableURI, isURI, type PossibleURI } from "./uri.js";
 import { getBasedURI, getURL, type ImmutableURL } from "./url.js";
 
-/** Anything that can be turned into an `<a href>` */
+/**
+ * Anything that can be turned into an `<a href>`.
+ *
+ * @see https://dhoulb.github.io/shelving/util/link/PossibleLink
+ */
 export type PossibleLink = PossibleURI;
 
 /**

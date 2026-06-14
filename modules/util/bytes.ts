@@ -1,18 +1,42 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 
-/** We store a sets of bytes as a `Uint8Array` byte sequence. */
+/**
+ * A set of bytes stored as a `Uint8Array` byte sequence backed by an `ArrayBuffer`.
+ *
+ * @see https://dhoulb.github.io/shelving/util/bytes/Bytes
+ */
 export type Bytes = Uint8Array<ArrayBuffer>;
 
-/** Types that can be converted to a `Uint8Array` byte sequence. */
+/**
+ * Types that can be converted to a `Uint8Array` byte sequence.
+ *
+ * @see https://dhoulb.github.io/shelving/util/bytes/PossibleBytes
+ */
 export type PossibleBytes = Bytes | ArrayBuffer | string;
 
-/** Is an unknown value a set of bytes? */
+/**
+ * Is an unknown value a set of bytes?
+ *
+ * @param value The value to test.
+ * @returns `true` if `value` is a `Uint8Array` backed by an `ArrayBuffer`, narrowing its type.
+ * @see https://dhoulb.github.io/shelving/util/bytes/isBytes
+ */
 export function isBytes(value: unknown): value is Bytes {
 	return value instanceof Uint8Array && value.buffer instanceof ArrayBuffer;
 }
 
-/** Assert that an unknown value is a `Uint8Array` byte sequence. */
+/**
+ * Assert that an unknown value is a `Uint8Array` byte sequence (optionally with a min/max length).
+ *
+ * @param value The value to assert.
+ * @param min Minimum allowed length (defaults to `0`).
+ * @param max Maximum allowed length (defaults to `Infinity`).
+ * @param caller Function to attribute a thrown error to (defaults to `assertBytes` itself).
+ * @throws {RequiredError} If `value` is not a byte sequence within the allowed length range.
+ * @example assertBytes(new Uint8Array([1, 2, 3]), 1, 8);
+ * @see https://dhoulb.github.io/shelving/util/bytes/assertBytes
+ */
 export function assertBytes(
 	value: unknown,
 	min = 0,
@@ -33,6 +57,11 @@ export function assertBytes(
  * - `ArrayBuffer` instances are converted to `Uint8Array`
  * - Strings are encoded as UTF-8 characters in a `Uint8Array`
  * - Everything else returns `undefined`
+ *
+ * @param value The value to convert.
+ * @returns The byte sequence, or `undefined` if `value` cannot be converted.
+ * @example getBytes("abc") // Uint8Array([97, 98, 99])
+ * @see https://dhoulb.github.io/shelving/util/bytes/getBytes
  */
 export function getBytes(value: unknown): Uint8Array<ArrayBuffer> | undefined {
 	if (isBytes(value)) return value;
@@ -43,6 +72,15 @@ export function getBytes(value: unknown): Uint8Array<ArrayBuffer> | undefined {
 
 /**
  * Convert a possible set of bytes to a `Uint8Array` byte sequence, or throw `RequiredError` if the value cannot be converted.
+ *
+ * @param value The possible bytes to convert.
+ * @param min Minimum allowed length (defaults to `0`).
+ * @param max Maximum allowed length (defaults to `Infinity`).
+ * @param caller Function to attribute a thrown error to (defaults to `requireBytes` itself).
+ * @returns The converted byte sequence.
+ * @throws {RequiredError} If `value` cannot be converted or is outside the allowed length range.
+ * @example requireBytes("abc") // Uint8Array([97, 98, 99])
+ * @see https://dhoulb.github.io/shelving/util/bytes/requireBytes
  */
 export function requireBytes(
 	value: PossibleBytes,

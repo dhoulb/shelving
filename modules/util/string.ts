@@ -10,26 +10,58 @@ import { isBetween } from "./number.js";
  * - `string` itself is iterable (iterating over its individual characters) and implements `Iterable<string>`
  * - Using `Iterable<string> & NotString` allows an iterable containing strings but not `string` itself.
  * - This helps catch this category of subtle errors.
+ *
+ * @see https://dhoulb.github.io/shelving/util/string/NotString
  */
 export type NotString = { toUpperCase?: never; toLowerCase?: never };
 
-/** Things that can be reliably converted to a string with no confusion. */
+/**
+ * Things that can be reliably converted to a string with no confusion.
+ *
+ * @see https://dhoulb.github.io/shelving/util/string/PossibleString
+ */
 export type PossibleString = boolean | string | number | Date;
 
-/** Series of string segments with at least one one (this is what you _actually_ get back when you split a string). */
+/**
+ * Series of string segments with at least one segment (this is what you _actually_ get back when you split a string).
+ *
+ * @see https://dhoulb.github.io/shelving/util/string/Segments
+ */
 export type Segments = readonly [string, ...string[]];
 
-/** Is a value a string? */
+/**
+ * Is an unknown value a string?
+ *
+ * @param value The value to check.
+ * @returns `true` if `value` is a `string`, otherwise `false`.
+ * @see https://dhoulb.github.io/shelving/util/string/isString
+ */
 export function isString(value: unknown): value is string {
 	return typeof value === "string";
 }
 
-/** Assert that a value is a string. */
+/**
+ * Assert that a value is a string.
+ *
+ * @param value The value to assert on.
+ * @param caller Function to attribute a thrown error to (defaults to `assertString`).
+ * @throws {RequiredError} If `value` is not a string.
+ * @example assertString("a"); // Passes.
+ * @see https://dhoulb.github.io/shelving/util/string/assertString
+ */
 export function assertString(value: unknown, caller: AnyCaller = assertString): asserts value is string {
 	if (!isString(value)) throw new RequiredError(`Must be string`, { received: value, caller });
 }
 
-/** Convert an unknown value to a string, or return `undefined` if conversion fails. */
+/**
+ * Convert an unknown value to a string, or return `undefined` if conversion fails.
+ * - Coerces numbers, booleans, and `Date` values, and joins arrays with `,` commas; returns `undefined` for anything else.
+ *
+ * @param value The value to convert.
+ * @returns The string representation of `value`, or `undefined` if it cannot be converted.
+ * @example getString(123) // "123"
+ * @see https://dhoulb.github.io/shelving/util/string/getString
+ */
 export function getString(value: unknown): string | undefined {
 	if (typeof value === "string") return value;
 	if (typeof value === "number") return value.toString();
@@ -39,37 +71,92 @@ export function getString(value: unknown): string | undefined {
 	return undefined;
 }
 
-/** Convert a possible string to a string (optionally with specified min/max length), or throw `RequiredError` if conversion fails. */
+/**
+ * Convert a possible string to a string, or throw `RequiredError` if conversion fails.
+ *
+ * @param value The value to convert.
+ * @param caller Function to attribute a thrown error to (defaults to `requireString`).
+ * @returns The string representation of `value`.
+ * @throws {RequiredError} If `value` cannot be converted to a string.
+ * @example requireString(123) // "123"
+ * @see https://dhoulb.github.io/shelving/util/string/requireString
+ */
 export function requireString(value: PossibleString, caller: AnyCaller = requireString): string {
 	const str = getString(value);
 	assertString(str, caller);
 	return str;
 }
 
-/** Is a value a string with min/max length? */
+/**
+ * Is a value a string with a length between `min` and `max`?
+ *
+ * @param value The value to check.
+ * @param min The minimum allowed length (defaults to `0`).
+ * @param max The maximum allowed length (defaults to `Infinity`).
+ * @returns `true` if `value` is a string within the length bounds, otherwise `false`.
+ * @see https://dhoulb.github.io/shelving/util/string/isStringLength
+ */
 export function isStringLength(value: unknown, min = 0, max = Number.POSITIVE_INFINITY): value is string {
 	return typeof value === "string" && value.length >= min && value.length <= max;
 }
 
-/** Assert that a value is a string with min/max length. */
+/**
+ * Assert that a value is a string with a length between `min` and `max`.
+ *
+ * @param value The value to assert on.
+ * @param min The minimum allowed length.
+ * @param max The maximum allowed length.
+ * @param caller Function to attribute a thrown error to (defaults to `assertString`).
+ * @throws {RequiredError} If `value` is not a string within the length bounds.
+ * @example assertStringLength("abc", 1, 5); // Passes.
+ * @see https://dhoulb.github.io/shelving/util/string/assertStringLength
+ */
 export function assertStringLength(value: unknown, min?: number, max?: number, caller: AnyCaller = assertString): asserts value is string {
 	if (!isStringLength(value, min, max))
 		throw new RequiredError(`Must be string with ${min ?? 0} to ${max ?? "∞"} characters`, { received: value, caller });
 }
 
-/** Convert a possible string to a string (optionally with specified min/max length), or throw `RequiredError` if conversion fails. */
+/**
+ * Convert a possible string to a string with min/max length, or throw `RequiredError` if conversion fails.
+ *
+ * @param value The value to convert.
+ * @param min The minimum allowed length.
+ * @param max The maximum allowed length.
+ * @param caller Function to attribute a thrown error to (defaults to `requireString`).
+ * @returns The string representation of `value`.
+ * @throws {RequiredError} If `value` cannot be converted to a string within the length bounds.
+ * @example requireStringLength("abc", 1, 5) // "abc"
+ * @see https://dhoulb.github.io/shelving/util/string/requireStringLength
+ */
 export function requireStringLength(value: PossibleString, min?: number, max?: number, caller: AnyCaller = requireString): string {
 	const str = getString(value);
 	assertStringLength(str, min, max, caller);
 	return str;
 }
 
-/** Does a string have a length between `min` and `max` */
+/**
+ * Does a string have a length between `min` and `max`?
+ *
+ * @param str The string to measure.
+ * @param min The minimum allowed length (defaults to `0`).
+ * @param max The maximum allowed length (defaults to `Infinity`).
+ * @returns `true` if `str` is within the length bounds, otherwise `false`.
+ * @see https://dhoulb.github.io/shelving/util/string/isStringBetween
+ */
 export function isStringBetween(str: string, min = 0, max = Number.POSITIVE_INFINITY): boolean {
 	return str.length >= min && str.length <= max;
 }
 
-/** Concatenate an iterable set of strings together. */
+/**
+ * Concatenate an iterable set of strings together.
+ *
+ * @param strs The iterable of strings to join (must not be a bare `string`).
+ * @param joiner The separator to insert between strings (defaults to `""`).
+ * @returns The joined string.
+ * @throws {RequiredError} If `strs` is not a valid array of strings.
+ * @example joinStrings(["a", "b"], "-") // "a-b"
+ * @see https://dhoulb.github.io/shelving/util/string/joinStrings
+ */
 export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): string {
 	return requireArray(strs, undefined, undefined, joinStrings).join(joiner);
 }
@@ -77,11 +164,14 @@ export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): st
 /**
  * Sanitize a single line of text.
  * - Used when you're sanitising a single-line input, e.g. a title for something.
- * - Remove allow control characters
- * - Normalise runs of whitespace to one ` ` space,
+ * - Remove all control characters.
+ * - Normalise runs of whitespace to one ` ` space.
  * - Trim whitespace from the start and end of the string.
  *
- * @example santizeString("\x00Nice!   "); // Returns `"Nice!"`
+ * @param str The string to sanitize.
+ * @returns The sanitized single-line string.
+ * @example sanitizeText("\x00Nice!   ") // "Nice!"
+ * @see https://dhoulb.github.io/shelving/util/string/sanitizeText
  */
 export function sanitizeText(str: string): string {
 	return str

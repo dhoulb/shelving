@@ -14,10 +14,16 @@ import { mapArray, mapProps } from "./transform.js";
 /**
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.
  * - We can't use `class.name` because we don't know that the name of the class will survive minification.
+ *
+ * @see https://dhoulb.github.io/shelving/util/hydrate/Hydrations
  */
 export type Hydrations = ImmutableDictionary<Class<unknown>>;
 
-/** A dehydrated object with a `$type` key. */
+/**
+ * A dehydrated object with a `$type` key.
+ *
+ * @see https://dhoulb.github.io/shelving/util/hydrate/DehydratedObject
+ */
 export type DehydratedObject = { readonly $type: string; readonly $value: unknown };
 
 /** Is an unknown value a dehydrated object with a `$type` key. */
@@ -31,6 +37,13 @@ function _isDehydrated(value: DehydratedObject | ImmutableObject): value is Dehy
  * - By its nature hydration is an unsafe operation.
  * - Deeply iterates into arrays and plain objects to hydrate their items and props too.
  * - Note: the recursion in this function does not currently protect against infinite loops.
+ *
+ * @param value The dehydrated value to hydrate.
+ * @param hydrations The set of `$type` keys mapped to the class constructors used to rebuild instances.
+ * @returns The hydrated value, with matched objects rebuilt as their class instances.
+ * @throws ValueError If a dehydrated object's `$type` is not matched by any constructor in `hydrations`.
+ * @example hydrate({ $type: "Date", $value: 0 }, {}) // Date instance
+ * @see https://dhoulb.github.io/shelving/util/hydrate/hydrate
  */
 export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 	if (isArray(value)) return mapArray(value, hydrate, hydrations);
@@ -59,8 +72,12 @@ function _hydrateProp([, v]: Entry, hydrations: Hydrations): unknown {
  * - Deeply iterates into arrays and plain objects to dehydrate their items and props too.
  * - Note: the recursion in this function does not currently protect against infinite loops.
  *
+ * @param value The value to dehydrate.
+ * @param hydrations The set of `$type` keys mapped to the class constructors used to recognise instances.
  * @returns The dehydrated version of the specified value.
- * @throws `Error` if the value is a class instance that cannot be dehydrated (i.e. is not matched by any constructor in `hydrations`).
+ * @throws ValueError If the value is a class instance that cannot be dehydrated (i.e. is not matched by any constructor in `hydrations`).
+ * @example dehydrate(new Date(0), {}) // { $type: "Date", $value: 0 }
+ * @see https://dhoulb.github.io/shelving/util/hydrate/dehydrate
  */
 export function dehydrate(value: unknown, hydrations: Hydrations): unknown {
 	if (isObject(value)) {

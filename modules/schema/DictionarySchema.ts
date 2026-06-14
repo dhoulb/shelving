@@ -5,7 +5,15 @@ import { validateDictionary } from "../util/validate.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
-/** Allowed options for `DictionarySchema` */
+/**
+ * Options for `DictionarySchema`.
+ *
+ * - `items` — schema every entry value in the dictionary must conform to.
+ * - `value` — default dictionary used when the input is `undefined`.
+ * - `min`/`max` — minimum and maximum number of entries.
+ *
+ * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchemaOptions
+ */
 export interface DictionarySchemaOptions<T> extends SchemaOptions {
 	readonly items: Schema<T>;
 	readonly value?: ImmutableDictionary | undefined;
@@ -13,12 +21,29 @@ export interface DictionarySchemaOptions<T> extends SchemaOptions {
 	readonly max?: number | undefined;
 }
 
-/** Validate a dictionary object (whose props are all the same with string keys). */
+/**
+ * Schema that validates a dictionary object whose entries all share the same value schema and have string keys.
+ *
+ * - Every entry value is validated by the `items` schema.
+ * - Entry count is checked against `min` and `max`.
+ *
+ * @example
+ *  const schema = new DictionarySchema({ items: NUMBER });
+ *  schema.validate({ a: 1, b: 2 }); // { a: 1, b: 2 }
+ *
+ * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchema
+ */
 export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	declare readonly value: ImmutableDictionary<T>;
 	readonly items: Schema<T>;
 	readonly min: number;
 	readonly max: number;
+
+	/**
+	 * Create a new `DictionarySchema`.
+	 *
+	 * @param options Options for the schema, including the `items` schema and `min`/`max` entry counts.
+	 */
 	constructor({
 		items,
 		one = items.one,
@@ -35,6 +60,16 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 		this.min = min;
 		this.max = max;
 	}
+
+	/**
+	 * Validate an unknown value as a dictionary whose entries all match the `items` schema.
+	 *
+	 * @param unsafeValue The unknown input value to validate (defaults to this schema's `value`).
+	 * @returns The valid dictionary with each entry value validated by the `items` schema.
+	 * @throws `string` `"Must be object"` if not a dictionary, `"Required"` or `` `Minimum ${min} ${many}` `` if too few entries, or `` `Maximum ${max} ${many}` `` if too many.
+	 * @example schema.validate({ a: 1, b: 2 }) // { a: 1, b: 2 }
+	 * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchema/validate
+	 */
 	override validate(unsafeValue: unknown = this.value): ImmutableDictionary<T> {
 		if (!isDictionary(unsafeValue)) throw "Must be object";
 		const validDictionary = validateDictionary(unsafeValue, this.items);
@@ -43,6 +78,15 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 		if (length > this.max) throw `Maximum ${this.max} ${this.many}`;
 		return validDictionary;
 	}
+
+	/**
+	 * Format a validated dictionary as a string for display.
+	 *
+	 * @param dict The valid dictionary to format.
+	 * @returns The dictionary's values formatted as a human-readable string.
+	 * @example schema.format({ a: 1, b: 2 }) // "1, 2"
+	 * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchema/format
+	 */
 	override format(dict: ImmutableDictionary<T>): string {
 		return formatArray(
 			Object.values(dict).map(v => this.items.format(v)),
@@ -53,9 +97,14 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 }
 
 /**
- * Valid dictionary object with specifed items.
+ * Create a schema for a valid dictionary object with specified entry values.
  *
  * *Factory for `DictionarySchema`.*
+ *
+ * @param items Schema every entry value in the dictionary must conform to.
+ * @returns A `DictionarySchema` validating dictionaries of the given item type.
+ * @example DICTIONARY(NUMBER) // DictionarySchema<number>
+ * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DICTIONARY
  */
 export function DICTIONARY<T>(items: Schema<T>): DictionarySchema<T> {
 	return new DictionarySchema({ items });

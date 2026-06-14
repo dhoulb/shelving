@@ -7,11 +7,12 @@ import { isDefined } from "./undefined.js";
 /**
  * Escape a string for safe inclusion in XML text content or attribute values.
  *
+ * - Replaces `&`, `<`, `>`, `"`, and `'` with their XML entity equivalents.
+ *
  * @param value The raw string value.
  * @returns The escaped XML-safe string.
- *
- * @example
- * escapeXML(`Tom & "Jerry"`)
+ * @example escapeXML(`Tom & "Jerry"`) // "Tom &amp; &quot;Jerry&quot;"
+ * @see https://dhoulb.github.io/shelving/util/xml/escapeXML
  */
 export function escapeXML(value: string): string {
 	return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
@@ -25,14 +26,12 @@ export function escapeXML(value: string): string {
  * - Nested data objects become nested XML elements.
  *
  * @param data The data object to serialize.
- * @param caller The calling function for error context.
+ * @param caller Function to attribute thrown errors to (defaults to `getXML`).
  * @returns The serialized XML string.
- *
- * @throws {RequiredError} If a key is not a valid XML element name.
- * @throws {RequiredError} If a value cannot be converted to XML.
- *
- * @example
- * getXML({ user: { name: "Alice", age: 30 } })
+ * @throws `RequiredError` if a key is not a valid XML element name.
+ * @throws `RequiredError` if a value cannot be converted to XML.
+ * @example getXML({ user: { name: "Alice", age: 30 } }) // "<user><name>Alice</name><age>30</age></user>"
+ * @see https://dhoulb.github.io/shelving/util/xml/getXML
  */
 export function getXML(data: Data, caller: AnyCaller = getXML): string {
 	return Array.from(_yieldXML(data, caller)).join("");

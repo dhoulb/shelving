@@ -4,7 +4,18 @@ import { awaitDispose } from "../util/dispose.js";
 import type { Nullable } from "../util/null.js";
 import { Sequence } from "./Sequence.js";
 
+/**
+ * Result representing a rejection in a `DeferredSequence`, carrying the thrown `reason`.
+ *
+ * @see https://dhoulb.github.io/shelving/sequence/DeferredSequence/DeferredErrorResult
+ */
 export type DeferredErrorResult = { readonly reason: unknown };
+
+/**
+ * Pending result of a `DeferredSequence` — either a standard `IteratorResult` or a `DeferredErrorResult` rejection.
+ *
+ * @see https://dhoulb.github.io/shelving/sequence/DeferredSequence/DeferredResult
+ */
 export type DeferredResult<T, R> = IteratorResult<T, R | undefined> | DeferredErrorResult;
 
 /**
@@ -13,6 +24,14 @@ export type DeferredResult<T, R> = IteratorResult<T, R | undefined> | DeferredEr
  * - Implements `Promise` so the next result can be awaited.
  * - Implements `AsyncIterable` so values can be iterated over using `for await...of`
  * - Call `resolve(value)` to publish the next value, `reject(reason?)` to publish an error, or `done(value?)` to signal completion.
+ *
+ * @example
+ * 	const seq = new DeferredSequence<number>();
+ * 	(async () => { for await (const n of seq) console.log(n); })();
+ * 	seq.resolve(1);
+ * 	seq.resolve(2);
+ * 	seq.done();
+ * @see https://dhoulb.github.io/shelving/sequence/DeferredSequence/DeferredSequence
  */
 export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, R, N> implements Deferred<T>, Promise<T> {
 	/** Lazy deferred that stores iterator values. */
@@ -23,7 +42,11 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 	/** Next iterator result to reject the deferred to (on next microtask). */
 	private _next: DeferredResult<T, R | undefined> | undefined;
 
-	/** Get the next promise to be resolved/rejected. */
+	/**
+	 * Next promise to be resolved/rejected with the upcoming value.
+	 *
+	 * @see https://dhoulb.github.io/shelving/sequence/DeferredSequence/DeferredSequence/promise
+	 */
 	get promise(): Promise<T> {
 		this._promiseDeferred ||= createDeferred();
 		return this._promiseDeferred.promise;
@@ -32,6 +55,10 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 	/**
 	 * Resolve the current deferred in the sequence with a value.
 	 * - Sends a `{ value: X }` to any iterators.
+	 *
+	 * @param value Value to publish to iterators and awaiting promises.
+	 * @example seq.resolve(123);
+	 * @see https://dhoulb.github.io/shelving/sequence/DeferredSequence/DeferredSequence/resolve
 	 */
 	resolve(value: T): void {
 		this._next = { value };
@@ -39,7 +66,12 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 	}
 
 	/**
-	 * Reject the current deferred in the sequence.
+	 * Reject the current deferred in the sequence with an error.
+	 * - Sends a `{ reason: X }` to any iterators, causing `for await` loops to throw.
+	 *
+	 * @param reason Error or other thrown value to publish to iterators and awaiting promises.
+	 * @example seq.reject(new Error("Stop"));
+	 * @see https://dhoulb.github.io/shelving/sequence/DeferredSequence/DeferredSequence/reject
 	 */
 	reject(reason: unknown): void {
 		this._next = { reason };
@@ -49,6 +81,10 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 	/**
 	 * Signal that the sequence is done, causing any active `for await` loops to exit cleanly.
 	 * - Sends a `{ done: true, value: R }` to any iterators.
+	 *
+	 * @param value Optional final return value for the sequence.
+	 * @example seq.done();
+	 * @see https://dhoulb.github.io/shelving/sequence/DeferredSequence/DeferredSequence/done
 	 */
 	done(value?: R | undefined): void {
 		this._next = { done: true, value };
@@ -58,6 +94,9 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 	/**
 	 * Cancel the current resolution or rejection.
 	 * - Iterators will contain to wait for a next value.
+	 *
+	 * @example seq.cancel();
+	 * @see https://dhoulb.github.io/shelving/sequence/DeferredSequence/DeferredSequence/cancel
 	 */
 	cancel(): void {
 		this._next = undefined;
@@ -82,7 +121,15 @@ export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, 
 		}
 	}
 
-	/** Resolve the current deferred from a sequence of values. */
+	/**
+	 * Resolve the current deferred from a sequence of values.
+	 * - Iterates `sequence`, republishing each value through this deferred sequence and yielding it on.
+	 *
+	 * @param sequence Source async iterable to forward values from.
+	 * @returns An async iterator yielding each forwarded value.
+	 * @example for await (const v of seq.through(source)) console.log(v);
+	 * @see https://dhoulb.github.io/shelving/sequence/DeferredSequence/DeferredSequence/through
+	 */
 	async *through(sequence: AsyncIterable<T>): AsyncIterator<T> {
 		for await (const item of sequence) {
 			this.resolve(item);

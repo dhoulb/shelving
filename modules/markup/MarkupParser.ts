@@ -9,7 +9,13 @@ import type { MarkupRule, MarkupRules } from "./MarkupRule.js";
 import type { Parser } from "./Parser.js";
 import { MARKUP_RULES } from "./rule/index.js";
 
-/** The current parsing options (represents the current state of the parsing). */
+/**
+ * Options configuring a `MarkupParser` (represents the current state of the parsing).
+ * - Every field is optional — an empty object yields a parser with the default rules and behaviour.
+ * - Link resolution honours `url`, `root`, and `schemes`; link safety hinges on `schemes`.
+ *
+ * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupOptions
+ */
 export type MarkupOptions = {
 	/**
 	 * The active list of parsing rules.
@@ -46,32 +52,47 @@ export type MarkupOptions = {
 	readonly context?: string;
 };
 
+/**
+ * Parses a Markdownish markup string and renders it as a React node using a tiered, masking rule engine.
+ * - The syntax isn't hardcoded — it's defined entirely by the `rules` supplied (defaults to `MARKUP_RULES`).
+ * - Rules are grouped into priority tiers and resolved highest tier first; a claimed region is masked so lower-priority rules can't match into or across it.
+ * - Rules own the recursion into their own children by calling `parse()` again, optionally with a different context.
+ *
+ * @example
+ * const node = new MarkupParser().parse("This is a *bold* string.");
+ * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser
+ */
 export class MarkupParser implements Parser<string, ReactNode> {
 	/**
 	 * The list of parsing rules this parser applies.
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/rules
 	 */
 	readonly rules: MarkupRules;
 
 	/**
 	 * Calculated list of priorities to iterate over (extracted from the rules), e.g. [10, 0, -10]
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/priorities
 	 */
 	readonly priorities: ImmutableArray<number>;
 
 	/**
 	 * Set the `rel=""` property used for any links (e.g. `rel="nofollow ugc"`).
 	 * @example "nofollow ugc"
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/rel
 	 */
 	readonly rel: string | undefined;
 
 	/**
 	 * Current page URL — used as the base for resolving relative refs (`./foo`, `#x`, bare segments) in link hrefs.
 	 * @default Falls back to `root` if not set.
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/url
 	 */
 	readonly url: ImmutableURL | undefined;
 
 	/**
 	 * Site root URL — used as the base for resolving site-absolute path hrefs (`/foo`), honoring its subfolder.
 	 * @default Falls back to `url` if not set.
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/root
 	 */
 	readonly root: ImmutableURL | undefined;
 
@@ -79,14 +100,23 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	 * Valid URI schemes/protocols for URLs and URIs.
 	 * @example ["http:", "https:"]
 	 * @default ["http:", "https:"]
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/schemes
 	 */
 	readonly schemes: URISchemes;
 
 	/**
 	 * Default context to use if one isn't set. Defaults to `"block"`
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/context
 	 */
 	readonly context: string;
 
+	/**
+	 * Create a new `MarkupParser` from a set of options.
+	 *
+	 * @param options Options configuring the rules, link resolution, and default context (all optional).
+	 * @returns A `MarkupParser` instance.
+	 * @example new MarkupParser({ rel: "nofollow ugc" })
+	 */
 	constructor({ rules = MARKUP_RULES, rel, url, root, schemes = HTTP_SCHEMES, context = "block" }: MarkupOptions = {}) {
 		this.rules = rules;
 		this.priorities = _getPriorities(rules);

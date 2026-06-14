@@ -5,12 +5,18 @@ import { getPrototype, isObject } from "./object.js";
 const R_QUOTE = /"/g;
 
 /**
- * Custom JSON.stringify()
+ * Serialise any value to a stable, consistent string (a `JSON.stringify()` that never loses information).
  * - Not optimised for performance. Optimised for consistency!
  * - Allows returned values to be used for fingerprinting values of any type.
  * - Non-JSON-friendly values (like `null`, explicit `undefined`, symbols, functions) are converted to `{ $type: "symbol" }` style constructions.
  * - Objects with custom `toString()` properties assume that string is useful and return a value like `{ $type: "Date", value: "Wed Feb 24 2021 20:59:57 GMT+0000 (Greenwich Mean Time)" }`
  * - Object properties are sorted (by key) before output so they're always consistent.
+ *
+ * @param value The value to serialise (any type is accepted).
+ * @returns A consistent string representation of `value`, suitable for fingerprinting or equality comparison.
+ * @throws {ValueError} If `value` cannot be serialised.
+ * @example serialise({ b: 2, a: 1 }) // `{"a":1,"b":2}`
+ * @see https://dhoulb.github.io/shelving/util/serialise/serialise
  */
 export function serialise(value: unknown): string {
 	if (value === true) return "true";

@@ -1,26 +1,62 @@
 import { UnexpectedError } from "../error/UnexpectedError.js";
 import { type Arguments, BLACKHOLE } from "./function.js";
 
-/** Callback function that starts something with multiple values and returns an optional stop callback. */
+/**
+ * Callback function that starts something with multiple values and returns an optional stop callback.
+ *
+ * @see https://dhoulb.github.io/shelving/util/start/StartCallback
+ */
 export type StartCallback<T extends Arguments = []> = (...values: T) => StopCallback | void;
 
-/** Callback function that stops something. */
+/**
+ * Callback function that stops something.
+ *
+ * @see https://dhoulb.github.io/shelving/util/start/StopCallback
+ */
 export type StopCallback = () => void;
 
-/** Callback function that does nothing and returns a blackhole stop callback. */
+/**
+ * Callback function that does nothing and returns a blackhole stop callback.
+ * - Useful as a no-op default where a `StartCallback` is expected.
+ *
+ * @example STOPHOLE() // BLACKHOLE
+ * @see https://dhoulb.github.io/shelving/util/start/STOPHOLE
+ */
 export const STOPHOLE: (...args: Arguments) => StopCallback = () => BLACKHOLE;
 
 /**
  * Wrapper class to handle state on start/stop callback process.
  * - If process has already started, `starter.start()` won't be called twice (including if `start()` didn't return a `stop()` callback).
+ * - Implements `Disposable` so it can be used with `using`, calling `stop()` on disposal.
+ *
+ * @example
+ * const starter = new Starter(() => { console.log("start"); return () => console.log("stop"); });
+ * starter.start();
+ * starter.stop();
+ * @see https://dhoulb.github.io/shelving/util/start/Starter
  */
 export class Starter<T extends Arguments = []> implements Disposable {
 	private readonly _start: StartCallback<T>;
 	private _started = false;
 	private _stop: StopCallback | void = undefined;
+	/**
+	 * Create a new `Starter` wrapping a start callback.
+	 *
+	 * @param start The callback to run on `start()`, which may return a stop callback.
+	 */
 	constructor(start: StartCallback<T>) {
 		this._start = start;
 	}
+	/**
+	 * Run the start callback (once).
+	 * - Does nothing if the process has already been started.
+	 *
+	 * @param values Values forwarded to the start callback.
+	 * @returns Nothing.
+	 * @throws {UnexpectedError} If the start callback throws.
+	 * @example starter.start();
+	 * @see https://dhoulb.github.io/shelving/util/start/Starter/start
+	 */
 	start(...values: T): void {
 		if (this._started) return;
 		try {
@@ -30,6 +66,15 @@ export class Starter<T extends Arguments = []> implements Disposable {
 			throw new UnexpectedError("Unexpected error in start callback", { cause: thrown, caller: this.start });
 		}
 	}
+	/**
+	 * Run the stop callback (if one was returned by the start callback).
+	 * - Does nothing if the process was never started.
+	 *
+	 * @returns Nothing.
+	 * @throws {UnexpectedError} If the stop callback throws.
+	 * @example starter.stop();
+	 * @see https://dhoulb.github.io/shelving/util/start/Starter/stop
+	 */
 	stop(): void {
 		if (!this._started) return;
 		try {
@@ -46,10 +91,22 @@ export class Starter<T extends Arguments = []> implements Disposable {
 	}
 }
 
-/** Something that can be made into a `Starter` */
+/**
+ * Something that can be made into a `Starter`.
+ *
+ * @see https://dhoulb.github.io/shelving/util/start/PossibleStarter
+ */
 export type PossibleStarter<T extends Arguments> = StartCallback<T> | Starter<T>;
 
-/** Get a `Starter` from a `PossibleStarter` */
+/**
+ * Get a `Starter` from a `PossibleStarter`.
+ * - Returns the input unchanged when it is already a `Starter`; otherwise wraps the callback in a new `Starter`.
+ *
+ * @param start A `StartCallback` or an existing `Starter`.
+ * @returns A `Starter` instance.
+ * @example getStarter(() => () => {}) // Starter instance
+ * @see https://dhoulb.github.io/shelving/util/start/getStarter
+ */
 export function getStarter<T extends Arguments>(start: StartCallback<T> | Starter<T>): Starter<T> {
 	return typeof start === "function" ? new Starter(start) : start;
 }

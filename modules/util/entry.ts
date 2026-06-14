@@ -7,45 +7,92 @@ import type { ImmutableSet } from "./set.js";
 import { isSet } from "./set.js";
 
 /**
- * Single entry from a map-like object.
+ * Single key/value entry from a map-like object.
  * - Consistency with `UnknownObject`
  * - Always readonly.
+ *
+ * @see https://dhoulb.github.io/shelving/util/entry/Entry
  */
 export type Entry<K = unknown, T = unknown> = readonly [K, T];
 
-/** Helper type to extract the type for the value of an entry. */
+/**
+ * Extract the key type from an `Entry`.
+ *
+ * @see https://dhoulb.github.io/shelving/util/entry/EntryKey
+ */
 export type EntryKey<X> = X extends Entry<infer Y, unknown> ? Y : never;
 
-/** Helper type to extract the type for the value of an entry. */
+/**
+ * Extract the value type from an `Entry`.
+ *
+ * @see https://dhoulb.github.io/shelving/util/entry/EntryValue
+ */
 export type EntryValue<X> = X extends Entry<unknown, infer Y> ? Y : never;
 
 /**
- * Helper type to turn an entry back into an object with one property.
+ * Turn an `Entry` type back into an object with a single property.
  * i.e. `EntryObject<Entry<"a", string>>` produces `{ a: string }`
+ *
+ * @see https://dhoulb.github.io/shelving/util/entry/EntryObject
  */
 export type EntryObject<T extends Entry<PropertyKey, unknown>> = { readonly [E in T as E[0]]: E[1] };
 
-/** Extract the key from an object entry. */
+/**
+ * Extract the key from an object entry.
+ *
+ * @param entry The `[key, value]` entry to read from.
+ * @returns The key (first element) of the entry.
+ * @example getEntryKey(["a", 1]) // "a"
+ * @see https://dhoulb.github.io/shelving/util/entry/getEntryKey
+ */
 export function getEntryKey<K, T>([k]: Entry<K, T>): K {
 	return k;
 }
 
-/** Extract the value from an object entry. */
+/**
+ * Extract the value from an object entry.
+ *
+ * @param entry The `[key, value]` entry to read from.
+ * @returns The value (second element) of the entry.
+ * @example getEntryValue(["a", 1]) // 1
+ * @see https://dhoulb.github.io/shelving/util/entry/getEntryValue
+ */
 export function getEntryValue<K, T>([, v]: Entry<K, T>): T {
 	return v;
 }
 
-/** Yield the keys of an iterable set of entries. */
+/**
+ * Yield the keys of an iterable set of entries.
+ *
+ * @param input Iterable of `[key, value]` entries.
+ * @returns Iterable yielding each entry's key.
+ * @example Array.from(getEntryKeys([["a", 1], ["b", 2]])) // ["a", "b"]
+ * @see https://dhoulb.github.io/shelving/util/entry/getEntryKeys
+ */
 export function* getEntryKeys<K, T>(input: Iterable<Entry<K, T>>): Iterable<K> {
 	for (const [k] of input) yield k;
 }
 
-/** Yield the values of an iterable set of entries. */
+/**
+ * Yield the values of an iterable set of entries.
+ *
+ * @param input Iterable of `[key, value]` entries.
+ * @returns Iterable yielding each entry's value.
+ * @example Array.from(getEntryValues([["a", 1], ["b", 2]])) // [1, 2]
+ * @see https://dhoulb.github.io/shelving/util/entry/getEntryValues
+ */
 export function* getEntryValues<K, T>(input: Iterable<Entry<K, T>>): Iterable<T> {
 	for (const [, v] of input) yield v;
 }
 
-/** Yield the entries in something that can yield entries. */
+/**
+ * Yield the entries from one or more entry-yielding sources (sets, objects, maps, arrays, or iterables of entries).
+ *
+ * @param input One or more sources that can yield `[key, value]` entries.
+ * @returns Iterable yielding the combined entries from every input.
+ * @example Array.from(getEntries({ a: 1, b: 2 })) // [["a", 1], ["b", 2]]
+ * @see https://dhoulb.github.io/shelving/util/entry/getEntries
+ */
 export function getEntries<K extends string, T = K>(
 	...input: (ImmutableSet<K & T> | Partial<ImmutableObject<K, T>> | Iterable<Entry<K, T>>)[]
 ): Iterable<Entry<K, T>>;

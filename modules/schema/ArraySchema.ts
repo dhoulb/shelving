@@ -5,7 +5,16 @@ import { validateArray } from "../util/validate.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
-/** Allowed options for `ArraySchema` */
+/**
+ * Options for `ArraySchema`.
+ *
+ * - `items` — schema every item in the array must conform to.
+ * - `min`/`max` — minimum and maximum number of items.
+ * - `unique` — deduplicate the items when set.
+ * - `separator` — string or `RegExp` used to split a string input into items.
+ *
+ * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ArraySchemaOptions
+ */
 export interface ArraySchemaOptions<T> extends SchemaOptions {
 	/** The default value */
 	readonly value?: ImmutableArray;
@@ -22,10 +31,10 @@ export interface ArraySchemaOptions<T> extends SchemaOptions {
 }
 
 /**
- * Define a valid array.
+ * Schema that validates an array and ensures every item matches a specified item schema.
  *
- * Validates arrays and ensures the array's items match a specified format.
- * Only returns a new instance of the object if it changes (for immutability).
+ * - A string input is split into items using `separator`.
+ * - Items are optionally deduplicated (`unique`), then the count is checked against `min` and `max`.
  *
  * @example
  *  const schema = new ArraySchema({ min: 1, max: 2, default: [10,11,12], required: true });
@@ -40,6 +49,8 @@ export interface ArraySchemaOptions<T> extends SchemaOptions {
  *  const schema = new ArraySchema({ schema: Array });
  *  schema.validate(["a", "a"], schema); // Returns ["a", "a"]
  *  schema.validate(["a", null], schema); // Throws Invalids({ "1": Invalid('Must be a string') });
+ *
+ * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ArraySchema
  */
 export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	declare readonly value: ImmutableArray<T>;
@@ -48,6 +59,12 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	readonly min: number;
 	readonly max: number;
 	readonly separator: string | RegExp;
+
+	/**
+	 * Create a new `ArraySchema`.
+	 *
+	 * @param options Options for the schema, including the `items` schema, `min`/`max` counts, `unique`, and `separator`.
+	 */
 	constructor({
 		items,
 		one = items.one,
@@ -68,6 +85,15 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		this.max = max;
 		this.separator = separator;
 	}
+	/**
+	 * Validate an unknown value as an array whose items all match the `items` schema.
+	 *
+	 * @param unsafeValue The unknown input value to validate; a string is split using `separator` (defaults to this schema's `value`).
+	 * @returns The valid array with each item validated by the `items` schema.
+	 * @throws `string` `"Must be array"` if not an array, `"Required"` or `` `Minimum ${min} ${many}` `` if too few items, or `` `Maximum ${max} ${many}` `` if too many.
+	 * @example schema.validate([1, 2, 3]) // [1, 2, 3]
+	 * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ArraySchema/validate
+	 */
 	override validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
 		const unsafeArray = typeof unsafeValue === "string" ? unsafeValue.split(this.separator).filter(Boolean) : unsafeValue;
 		if (!isArray(unsafeArray)) throw "Must be array";
@@ -77,6 +103,15 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 		if (uniqueArray.length > this.max) throw `Maximum ${this.max} ${this.many}`;
 		return uniqueArray;
 	}
+
+	/**
+	 * Format a validated array as a string for display.
+	 *
+	 * @param arr The valid array to format.
+	 * @returns The array's items formatted as a human-readable string.
+	 * @example schema.format([1, 2, 3]) // "1, 2, 3"
+	 * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ArraySchema/format
+	 */
 	override format(arr: ImmutableArray<T>): string {
 		return formatArray(
 			arr.map(v => this.items.format(v)),
@@ -87,9 +122,14 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 }
 
 /**
- * Valid array with specifed items.
+ * Create a schema for a valid array with specified items.
  *
  * *Factory for `ArraySchema`.*
+ *
+ * @param items Schema every item in the array must conform to.
+ * @returns An `ArraySchema` validating arrays of the given item type.
+ * @example ARRAY(NUMBER) // ArraySchema<number>
+ * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ARRAY
  */
 export function ARRAY<T>(items: Schema<T>): ArraySchema<T> {
 	return new ArraySchema({ items });

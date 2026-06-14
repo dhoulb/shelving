@@ -16,6 +16,12 @@ function _merge(left: unknown, right: unknown, recursor: MergeRecursor) {
 /**
  * Exact merge two unknown values.
  * - Always returns `right`.
+ *
+ * @param _left The left value (ignored).
+ * @param right The right value.
+ * @returns The `right` value, always.
+ * @example exactMerge(1, 2) // 2
+ * @see https://dhoulb.github.io/shelving/util/merge/exactMerge
  */
 export function exactMerge(_left: unknown, right: unknown): unknown {
 	return right;
@@ -28,9 +34,13 @@ export function exactMerge(_left: unknown, right: unknown): unknown {
  * - Two arrays: unique items are merged together (shallowly).
  * - Any other value: right value is returned.
  *
+ * @param left The left value to merge into.
+ * @param right The right value to merge in.
  * @returns Merged value.
  * - Will be `left` instance if no properties/items changed.
  * - Will be merged instance otherwise.
+ * @example shallowMerge({ a: 1 }, { b: 2 }) // { a: 1, b: 2 }
+ * @see https://dhoulb.github.io/shelving/util/merge/shallowMerge
  */
 export function shallowMerge<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R): L & R;
 export function shallowMerge<L, R>(left: ImmutableArray<L>, right: ImmutableArray<R>): ImmutableArray<L | R>;
@@ -46,9 +56,13 @@ export function shallowMerge(left: unknown, right: unknown): unknown {
  * - Two arrays: unique items are merged together (shallowly — arrays have no way to deep merge because array keys are not stable).
  * - Any other value: right value is returned.
  *
+ * @param left The left value to merge into.
+ * @param right The right value to merge in.
  * @returns Merged value.
  * - Will be `left` instance if no properties/items changed.
  * - Will be a new merged instance otherwise.
+ * @example deepMerge({ a: { b: 1 } }, { a: { c: 2 } }) // { a: { b: 1, c: 2 } }
+ * @see https://dhoulb.github.io/shelving/util/merge/deepMerge
  */
 export function deepMerge<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R): L & R;
 export function deepMerge<L, R>(left: ImmutableArray<L>, right: ImmutableArray<R>): ImmutableArray<L | R>;
@@ -63,10 +77,14 @@ export function deepMerge(left: unknown, right: unknown): unknown {
  * - Arrays have no concept of `deep merge` because array keys are not stable.
  * - Use an map/object data structure instead for values that need to be deeply mergeable (only use arrays for primitive values).
  *
+ * @param left The left array to merge into.
+ * @param right The right array whose unique items are merged in.
  * @returns Merged array.
  * - Values that appear in both arrays will not be added twice.
  * - Will be `left` instance if no items were added.
  * - Will be a new merged array otherwise.
+ * @example mergeArray([1, 2], [2, 3]) // [1, 2, 3]
+ * @see https://dhoulb.github.io/shelving/util/merge/mergeArray
  */
 export function mergeArray<L, R>(left: ImmutableArray<L>, right: ImmutableArray<R> | ImmutableArray<L>): ImmutableArray<L | R>;
 export function mergeArray(left: ImmutableArray, right: ImmutableArray): ImmutableArray {
@@ -84,6 +102,8 @@ export function mergeArray(left: ImmutableArray, right: ImmutableArray): Immutab
  * - Always returns a new object (or the `left` object if no changes were made).
  * - Resulting object is `cleaned`, i.e. properties in `left` or `right` that are `undefined` will be removed from the merged object.
  *
+ * @param left The left object to merge into.
+ * @param right The right object whose props replace or merge with `left`.
  * @param recursor Function that merges each property of the object.
  * - Defaults to `exactMerge()` to just swap the property for a newer one if it exists.
  * - Use `deepMerge()` as the recursor to merge objects deeply.
@@ -92,6 +112,8 @@ export function mergeArray(left: ImmutableArray, right: ImmutableArray): Immutab
  * - Returned instances will be the same if no changes were made.
  * - Will be `left` instance if no properties changed.
  * - Will be a new merged object otherwise.
+ * @example mergeObject({ a: 1 }, { b: 2 }) // { a: 1, b: 2 }
+ * @see https://dhoulb.github.io/shelving/util/merge/mergeObject
  */
 export function mergeObject<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R, recursor?: MergeRecursor): L & R;
 export function mergeObject(left: ImmutableObject, right: ImmutableObject, recursor: MergeRecursor = exactMerge): ImmutableObject {

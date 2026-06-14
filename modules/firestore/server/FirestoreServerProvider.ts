@@ -66,12 +66,27 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
 }
 
 /**
- * Firestore server database provider.
- * - Works with the Firebase Admin SDK for Node.JS
+ * Cloud Firestore database provider backed by the Firebase Admin SDK, implementing the `DBProvider` abstraction.
+ *
+ * - Runs server-side via `@google-cloud/firestore` (the Firebase Admin SDK for Node.JS).
+ * - Supports realtime subscriptions through Firestore `onSnapshot` listeners.
+ * - Collection writes (`setQuery`, `updateQuery`, `deleteQuery`) are batched through a Firestore `BulkWriter`.
+ *
+ * @example
+ * import { Firestore } from "@google-cloud/firestore";
+ * const provider = new FirestoreServerProvider(new Firestore());
+ *
+ * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider
  */
 export class FirestoreServerProvider<I extends string = string, T extends Data = Data> extends DBProvider<I, T> {
 	private readonly _firestore: Firestore;
 
+	/**
+	 * Create a provider wrapping a Firestore Admin SDK instance.
+	 *
+	 * @param firestore The `Firestore` instance to read and write through; defaults to a new `Firestore()`.
+	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider
+	 */
 	constructor(firestore = new Firestore()) {
 		super();
 		this._firestore = firestore;
@@ -118,10 +133,28 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 		await writer.close();
 	}
 
+	/**
+	 * Read a single item by ID from its Firestore document.
+	 *
+	 * @param collection The collection the item belongs to.
+	 * @param id The ID of the item to read.
+	 * @returns Promise resolving to the item, or `undefined` if the document does not exist.
+	 * @example await provider.getItem(users, "abc123")
+	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/getItem
+	 */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		return _getOptionalItem<II, TT>(await this._getCollection(collection).doc(id).get());
 	}
 
+	/**
+	 * Subscribe to realtime changes to a single item via a Firestore `onSnapshot` listener.
+	 *
+	 * @param c The collection the item belongs to.
+	 * @param id The ID of the item to subscribe to.
+	 * @returns An async sequence yielding the item (or `undefined` when absent) on every change.
+	 * @example for await (const item of provider.getItemSequence(users, "abc123")) console.log(item)
+	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/getItemSequence
+	 */
 	override getItemSequence<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		const ref = this._getCollection(c).doc(id);
 		const sequence = new DeferredSequence<OptionalItem<II, TT>>();
