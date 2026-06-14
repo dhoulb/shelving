@@ -75,9 +75,9 @@ export class Store {
 		expect(cls.props.children).toMatchObject([
 			{
 				type: "tree-documentation",
-				props: { kind: "property", name: "value", title: "Store.value", class: "Store", signatures: ["value: string"] },
+				props: { kind: "property", name: "value", title: "value", class: "Store", signatures: ["value: string"] },
 			},
-			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "Store.set()", class: "Store" } },
+			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "set()", class: "Store" } },
 		]);
 	});
 
@@ -196,8 +196,8 @@ export class Widget {
 					name: "Widget",
 					title: "Widget",
 					children: [
-						{ props: { kind: "property", name: "size", title: "Widget.size" } },
-						{ props: { kind: "method", name: "resize", title: "Widget.resize()" } },
+						{ props: { kind: "property", name: "size", title: "size" } },
+						{ props: { kind: "method", name: "resize", title: "resize()" } },
 					],
 				},
 			},
@@ -221,7 +221,7 @@ export class MemoryStore extends AbstractStore implements Serializable, Disposab
 		]);
 	});
 
-	test("stamps the owning class onto members and qualifies overrides with the base class", async () => {
+	test("stamps the owning class onto members and skips `override` members", async () => {
 		const element = await extractor.extract(
 			file(`
 /** A store. */
@@ -230,14 +230,17 @@ export class MemoryStore extends AbstractStore {
 	readonly value: string;
 	/** Get a thing. */
 	override get(): string { return ""; }
+	/** Override a property. */
+	override readonly size: number;
 }
 `),
 		);
 		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
+		// Only the directly-implemented `value` survives — `get()` and `size` carry `override` and are documented on the base class.
 		expect(cls?.props.children).toMatchObject([
-			{ props: { kind: "property", name: "value", title: "MemoryStore.value", class: "MemoryStore", readonly: true } },
-			{ props: { kind: "method", name: "get", title: "MemoryStore.get()", class: "MemoryStore", overrides: "AbstractStore.get" } },
+			{ props: { kind: "property", name: "value", title: "value", class: "MemoryStore", readonly: true } },
 		]);
+		expect(cls?.props.children).toHaveLength(1);
 	});
 
 	test("treats a getter without a setter as readonly, and a getter+setter pair as writable", async () => {
@@ -259,13 +262,13 @@ export class Store {
 				props: {
 					kind: "property",
 					name: "size",
-					title: "Store.size",
+					title: "size",
 					class: "Store",
 					readonly: true,
 					signatures: ["readonly size: number"],
 				},
 			},
-			{ props: { kind: "property", name: "name", title: "Store.name", class: "Store", signatures: ["name: string"] } },
+			{ props: { kind: "property", name: "name", title: "name", class: "Store", signatures: ["name: string"] } },
 		]);
 		// The getter+setter pair must NOT be flagged readonly.
 		expect((cls?.props.children[1]?.props as { readonly?: boolean }).readonly).toBeUndefined();
@@ -291,6 +294,25 @@ export function add(a: any, b: any): any { return a + b; }
 				signatures: ["add(a: number, b: number): number", "add(a: string, b: string): string", "add(a: any, b: any): any"],
 			},
 		});
+	});
+
+	test("keeps case-distinct exports separate (Class vs FACTORY) with case-preserving keys", async () => {
+		// `Collection` and `COLLECTION` differ only in case — they must not collapse into one entity.
+		const element = await extractor.extract(
+			file(`
+/** A collection. */
+export class Collection {
+	name: string;
+}
+/** Make a collection. */
+export function COLLECTION(): Collection { return new Collection(); }
+`),
+		);
+		const children = element.props.children as { key: string; props: { name: string; kind: string } }[];
+		expect(children).toHaveLength(2);
+		expect(children.map(c => c.key)).toEqual(["Collection", "COLLECTION"]);
+		expect(children.map(c => c.props.name)).toEqual(["Collection", "COLLECTION"]);
+		expect(children.map(c => c.props.kind)).toEqual(["class", "function"]);
 	});
 
 	test("parses @returns with type and description", async () => {
