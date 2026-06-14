@@ -3,15 +3,18 @@ import { type AddressData, formatAddress } from "../../schema/AddressSchema.js";
 import type { Nullish } from "../../util/null.js";
 import { Small } from "../inline/Small.js";
 import { Strong } from "../inline/Strong.js";
-import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
+import { TINT_CLASS } from "../style/Tint.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
-import styles from "./Address.module.css";
+import ADDRESS_CSS from "./Address.module.css";
 
-export interface AddressProps extends AlignVariants, ColorVariants, SpacingVariants, TypographyVariants, ChildProps {}
+export const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
+export const ADDRESS_PROSE_CLASS = getModuleClass(ADDRESS_CSS, "prose");
+
+export interface AddressProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {}
 
 export interface PhysicalAddressProps {
 	name?: Nullish<string>;
@@ -24,15 +27,15 @@ export interface EmailAddressProps {
 }
 
 /** Show any kind of contact data. */
-export function Address({ children, ...variants }: AddressProps) {
+export function Address({ children, ...props }: AddressProps) {
 	return (
 		<address
 			className={getClass(
-				getModuleClass(styles, "address"),
-				getColorClass(variants),
-				getAlignClass(variants),
-				getSpacingClass(variants),
-				getTypographyClass(variants),
+				ADDRESS_CLASS, //
+				TINT_CLASS,
+				getColorClass(props),
+				getSpaceClass(props),
+				getTypographyClass(props),
 			)}
 		>
 			{children}

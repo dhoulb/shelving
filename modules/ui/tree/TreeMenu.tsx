@@ -1,18 +1,18 @@
 import type { ReactNode } from "react";
-import { type Element, filterElements, type TreeElement, type TreeElementProps } from "../../util/element.js";
+import { type Element, filterElements } from "../../util/element.js";
 import { type AbsolutePath, joinPath } from "../../util/path.js";
-import { Menu } from "../menu/Menu.js";
-import { MenuItem } from "../menu/MenuItem.js";
+import type { TreeElement, TreeElementProps } from "../../util/tree.js";
+import { Menu, MenuItem } from "../menu/Menu.js";
 import { createMapper } from "../misc/Mapper.js";
 
 /**
  * Match an element that should appear in the sidebar menu.
- * - Directories and plain files always qualify.
+ * - Generic tree elements (directories and files) always qualify.
  * - For documentation elements, only `kind: "module"` qualifies — functions, classes, methods, properties, etc. are kept off the navigation.
  */
 export function matchMenuElement(element: Element): boolean {
 	const { type, props } = element;
-	if (type === "tree-directory" || type === "tree-file") return true;
+	if (type === "tree-element") return true;
 	if (type === "tree-documentation") return (props as { kind?: string }).kind === "module";
 	return false;
 }
@@ -45,8 +45,7 @@ export function TreeMenuItem({ path = "/", name, title, children }: TreeElementP
 
 /** Mapping + Mapper pair for the menu — wrap children in `<TreeMenuMapping>` to override. */
 export const [TreeMenuMapping, TreeMenuMapper] = createMapper<TreeMenuExtras>({
-	"tree-directory": TreeMenuItem,
-	"tree-file": TreeMenuItem,
+	"tree-element": TreeMenuItem,
 	"tree-documentation": TreeMenuItem,
 });
 
@@ -59,7 +58,7 @@ export interface TreeMenuProps {
 
 /**
  * Sidebar navigation menu built from the children of a root tree element.
- * - Renders each child via `<TreeMenuItem>` (the default mapping for `tree-directory` / `tree-file`).
+ * - Renders each child via `<TreeMenuItem>` (the default mapping for `tree-element`).
  * - To customise renderers for specific types, wrap in `<TreeMenuMapping mapping={…}>`.
  * - Only directories and files appear — code symbols are kept off the navigation.
  */

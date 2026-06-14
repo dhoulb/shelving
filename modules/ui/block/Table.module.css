@@ -3,21 +3,24 @@
 @layer components {
 	.table,
 	.prose table {
+		/* Box */
 		display: table;
 		margin-inline: 0;
-		margin-block: var(--table-spacing, var(--spacing-paragraph));
+		margin-block: var(--table-space, var(--space-paragraph));
 		text-indent: 0;
 
-		border-color: inherit;
+		/* Style */
 		border-collapse: collapse;
-		text-align: var(--table-align, left);
+
+		/* Text */
+		text-align: left;
 
 		/* Children */
 		th,
 		td {
 			padding-block: var(--table-padding, var(--space-xsmall));
 			padding-inline: var(--table-padding, var(--space-xsmall));
-			border-block: var(--table-thickness, var(--thickness, var(--stroke-normal))) solid var(--table-color-border, var(--color-vivid));
+			border-block: var(--table-border, var(--table-stroke, var(--stroke-normal) solid var(--tint-80)));
 		}
 		th:first-child,
 		td:first-child {
@@ -44,8 +47,11 @@
 		}
 		thead th,
 		tfoot th {
-			font-weight: var(--table-label-weight, var(--weight-strong));
-			font-size: var(--table-label-size, var(--size-small));
+			font-family: var(--table-label-font, var(--font-label));
+			font-weight: var(--table-label-weight, var(--weight-label));
+			font-size: var(--table-label-size, var(--size-label));
+			text-transform: var(--table-label-case, var(--case-label));
+			color: var(--table-label-color, var(--tint-70));
 		}
 	}
 }

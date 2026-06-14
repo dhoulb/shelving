@@ -4,15 +4,12 @@
 /* with normal-specificity selectors without needing `:where()` tricks. */
 @layer defaults {
 	.layout {
-		/* Top/bottom use `layout-spacing` and left/right use `layout-padding` */
-		padding: var(--layout-spacing, var(--space-normal)) var(--layout-padding, var(--space-normal));
+		/* Top/bottom use `layout-space` and left/right use `layout-padding` */
+		padding: var(--layout-space, var(--space-normal)) var(--layout-padding, var(--space-normal));
 
 		/* Default page padding (with safe-area additions). */
-		padding-top: calc(var(--layout-spacing, var(--space-normal)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
-		padding-bottom: calc(
-			var(--layout-spacing, var(--space-normal)) +
-			max(var(--layout-inset-bottom, 0px), env(safe-area-inset-bottom, 0px))
-		);
+		padding-top: calc(var(--layout-space, var(--space-normal)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
+		padding-bottom: calc(var(--layout-space, var(--space-normal)) + max(var(--layout-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)));
 		padding-left: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-left, 0px), env(safe-area-inset-left, 0px)));
 		padding-right: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-right, 0px), env(safe-area-inset-right, 0px)));
 
@@ -32,17 +29,21 @@
  * - The .layout element grows to fill the body (flex: 1) and is the only scroll container.
  */
 	html:has(.layout) {
+		/* Box */
 		margin: 0;
 		padding: 0;
 		height: 100vh;
 		height: 100dvh; /** Make the height dynamically expand/contract as the address bar shows/hides on iOS. */
 		width: 100vw;
 		width: 100dvw;
+
+		/* Contents */
 		overflow: hidden;
 		overflow-wrap: break-word; /* Break overlong words only as a last resort; `anywhere` would also break mid-word to fit narrow table/flex columns. */
 	}
 
 	body:has(.layout) {
+		/* Box */
 		margin: 0;
 		padding: 0;
 		display: flex;
@@ -53,14 +54,18 @@
 		inset: 0;
 
 		/* Layout-specific bg hook. Typography and page bg come from the body baseline in style/base.css. */
-		background: var(--layout-body-bg, var(--color-white));
+		background: var(--layout-body-bg, var(--tint-100));
 	}
 
 	.layout {
-		/* Own the page's vertical scroll. */
-		overflow: hidden auto;
+		/* Box */
+		display: flow-root;
+
+		/* Scrolling */
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior-x: auto;
+		overscroll-behavior-y: contain;
 		scroll-behavior: smooth;
-		/* `contain` keeps the elastic bounce on the layout itself but stops the scroll chain leaking up to the locked body. */
-		overscroll-behavior: contain;
 	}
 }

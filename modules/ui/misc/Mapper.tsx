@@ -44,16 +44,14 @@ type AnyMapping = Record<string, ComponentType<any> | undefined>;
  * @example
  * // No extras:
  * const [TreeCardMapping, TreeCardMapper] = createMapper({
- *   "tree-directory": DirectoryCard,
- *   "tree-file": FileCard,
+ *   "tree-element": TreeCard,
  * });
  * <TreeCardMapper>{walkElements(children)}</TreeCardMapper>
  *
  * @example
  * // With extras (`path` threaded into every dispatched child):
  * const [TreeMenuMapping, TreeMenuMapper] = createMapper<{ path?: AbsolutePath }>({
- *   "tree-directory": TreeMenuItem,
- *   "tree-file": TreeMenuItem,
+ *   "tree-element": TreeMenuItem,
  * });
  * <TreeMenuMapper path="/foo">{queryElements(children, query)}</TreeMenuMapper>
  */

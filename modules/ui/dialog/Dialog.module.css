@@ -17,7 +17,7 @@
 		/* Style */
 		background: var(--dialog-color-overlay, var(--color-shadow));
 		opacity: 0;
-		transition: opacity var(--dialog-transition-duration, var(--duration-fast)) ease-in-out;
+		transition: var(--dialog-transition, all var(--duration-fast));
 
 		&[open] {
 			opacity: 1;

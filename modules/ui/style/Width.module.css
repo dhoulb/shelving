@@ -1,19 +1,29 @@
 @import "base.css";
 
-@layer variants {
-	/* Width variants — constrain a block-level component's max-width. `.full` explicitly removes any */
-	/* constraint a component might apply by default. */
-	.narrow {
+@layer defaults {
+	.narrow,
+	.wide,
+	.full,
+	.fit {
+		box-sizing: border-box;
+		max-inline-size: 100%;
 		margin-inline: auto;
-		max-width: var(--width-narrow);
+	}
+}
+
+@layer variants {
+	/* Width variants — constrain a block-level component's max-inline-size. */
+	.narrow {
+		inline-size: var(--width-narrow);
 	}
 	.wide {
-		margin-inline: auto;
-		max-width: var(--width-wide);
+		inline-size: var(--width-wide);
 	}
 	.full {
 		margin-inline: 0;
-		max-width: none;
 		inline-size: 100%;
+	}
+	.fit {
+		inline-size: fit-content;
 	}
 }

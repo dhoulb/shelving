@@ -1,18 +1,24 @@
 @import "../style/base.css";
+@import "../style/Tint.module.css";
+
+/*
+* Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
+*
+* The outer `.layout` class (from Layout.module.css) owns the overall page scroll —
+* here we override its block-level behaviour so the sidebar and content each scroll independently.
+* The inner `.content` element reuses the `.layout` class too so it picks up the standard
+* layout padding, safe-area insets, and `overflow: hidden auto` scroll behaviour.
+*
+* On narrow viewports the sidebar becomes an off-canvas drawer that slides off the left edge of the
+* screen; the `.toggle` button opens/closes it and the `.overlay` dims the page behind the open
+* drawer (both are hidden entirely on wide viewports).
+*/
 
 @layer components {
-	/*
- * Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
- *
- * The outer `.layout` class (from Layout.module.css) owns the overall page scroll —
- * here we override its block-level behaviour so the sidebar and content each scroll independently.
- * The inner `.content` element reuses the `.layout` class too so it picks up the standard
- * layout padding, safe-area insets, and `overflow: hidden auto` scroll behaviour.
- *
- * On narrow viewports the sidebar becomes an off-canvas drawer that slides off the left edge of the
- * screen; the `.toggle` button opens/closes it and the `.overlay` dims the page behind the open
- * drawer (both are hidden entirely on wide viewports).
- */
+	body:has(.main) {
+		/* Style */
+		background: var(--sidebar-layout-background, var(--tint-100));
+	}
 
 	.main {
 		display: grid;
@@ -23,21 +29,31 @@
 	}
 
 	.sidebar {
+		/* Box */
+		display: flow-root;
+		border-right: var(--sidebar-layout-border, var(--stroke-normal) solid var(--tint-80));
+
+		/* Scrolling */
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		padding: var(--space-normal);
-		background: var(--sidebar-layout-bg, var(--color-light));
-		border-right: var(--sidebar-layout-border, 1px) solid var(--sidebar-layout-color-border, var(--color-vivid));
+
+		/* Style */
+		background: var(--sidebar-layout-sidebar-background, var(--tint-90));
 	}
 
 	.content {
 		/* Combined with `.layout` (added at the JSX layer) for scroll/padding/safe-area behaviour. */
 		min-width: 0;
+		padding: 0;
+
+		/* Style */
+		background: var(--sidebar-layout-content-background, var(--tint-100));
 	}
 
 	.contentInner {
 		width: 100%;
-		max-width: var(--width-wide);
+		padding: 0;
 		margin: 0 auto;
 	}
 
@@ -87,8 +103,9 @@
 		/* Pin the toggle button to the top-right so it stays reachable while the content column scrolls. */
 		.toggle {
 			display: block;
-			position: sticky;
-			top: 0;
+			position: absolute;
+			top: var(--space-normal);
+			right: var(--space-normal);
 			z-index: 110;
 		}
 		/* Dim the page behind the open drawer; clicking the overlay closes it. */

@@ -68,7 +68,7 @@
 		"test": "bun run --parallel test:*",
 		"test:lint": "biome check .",
 		"test:type": "tsgo --noEmit",
-		"test:unit": "bun test --concurrent --only-failures",
+		"test:unit": "bun test ./modules --concurrent --only-failures",
 		"fix": "bun run --sequential fix:*",
 		"fix:0:lint": "biome check --write .",
 		"docs:build": "bun ./docs/build.tsx",

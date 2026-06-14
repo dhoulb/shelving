@@ -1,36 +1,36 @@
 import { describe, expect, test } from "bun:test";
-import type { DirectoryElement, FileElement, TreeElement } from "../util/element.js";
 import type { AbsolutePath } from "../util/path.js";
+import type { TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 import { MergingExtractor } from "./MergingExtractor.js";
 
-/** Helper to build a `tree-file` element for tests. */
-function _file(key: string, props: Partial<FileElement["props"]> = {}): FileElement {
+/** Helper to build a file `tree-element` for tests. */
+function _file(key: string, props: Partial<TreeElement["props"]> = {}): TreeElement {
 	const [name] = key.split(".");
 	return {
-		type: "tree-file",
+		type: "tree-element",
 		key,
 		props: { name: name ?? key, source: `/tmp/${key}` as AbsolutePath, ...props },
 	};
 }
 
-/** Helper to build a `tree-directory` element for tests. */
-function _dir(key: string, children: TreeElement[], props: Partial<DirectoryElement["props"]> = {}): DirectoryElement {
+/** Helper to build a directory `tree-element` for tests. */
+function _dir(key: string, children: TreeElement[], props: Partial<TreeElement["props"]> = {}): TreeElement {
 	return {
-		type: "tree-directory",
+		type: "tree-element",
 		key,
 		props: { name: key, source: `/tmp/${key}` as AbsolutePath, children, ...props },
 	};
 }
 
 /** Minimal source extractor that just returns whatever it's constructed with — lets us test through-extractor behaviour in isolation. */
-class _StubExtractor extends Extractor<void, DirectoryElement> {
-	private readonly _root: DirectoryElement;
-	constructor(root: DirectoryElement) {
+class _StubExtractor extends Extractor<void, TreeElement> {
+	private readonly _root: TreeElement;
+	constructor(root: TreeElement) {
 		super();
 		this._root = root;
 	}
-	extract(): DirectoryElement {
+	extract(): TreeElement {
 		return this._root;
 	}
 }
@@ -44,7 +44,7 @@ describe("MergingExtractor", () => {
 		const out = await new MergingExtractor(new _StubExtractor(root)).extract(undefined);
 		const kids = Array.from(out.props.children as Iterable<TreeElement>);
 		expect(kids).toHaveLength(1);
-		const merged = kids[0] as FileElement;
+		const merged = kids[0] as TreeElement;
 		expect(merged.key).toBe("string.ts");
 		expect(merged.props.title).toBe("String utilities");
 		expect(merged.props.content).toBe("Notes about strings.");
@@ -75,7 +75,7 @@ describe("MergingExtractor", () => {
 	test("descends into subdirectories", async () => {
 		const root = _dir("modules", [_dir("util", [_file("string.ts", { content: "ts" }), _file("string.md", { content: "md" })])]);
 		const out = await new MergingExtractor(new _StubExtractor(root)).extract(undefined);
-		const subdir = Array.from(out.props.children as Iterable<TreeElement>)[0] as DirectoryElement;
+		const subdir = Array.from(out.props.children as Iterable<TreeElement>)[0] as TreeElement;
 		const kids = Array.from(subdir.props.children as Iterable<TreeElement>);
 		expect(kids).toHaveLength(1);
 		expect(kids[0]?.key).toBe("string.ts");

@@ -3,19 +3,21 @@
 @layer components {
 	.heading,
 	.prose h2 {
+		/* Theme */
+		--tint-50: var(--heading-tint, inherit);
+
 		/* Box */
 		display: block;
-		inline-size: 100%;
 		margin-inline: 0;
-		margin-block-start: var(--heading-spacing-before, var(--spacing-section));
-		margin-block-end: var(--heading-spacing, var(--spacing-paragraph));
+		margin-block-start: var(--heading-space-before, var(--space-section));
+		margin-block-end: var(--heading-space, var(--space-paragraph));
 
-		/* Typography — inherits `color` from the page baseline or a `.text-X` variant on this element or an ancestor. */
-		font-family: var(--heading-font, var(--font-body));
+		/* Text */
+		font-family: var(--heading-font, var(--font-title));
 		font-weight: var(--heading-weight, var(--weight-strong));
-		line-height: var(--heading-leading, var(--leading));
 		font-size: var(--heading-size, var(--size-xxlarge));
-		text-align: var(--heading-align, left);
+		line-height: var(--heading-leading, var(--leading));
+		color: var(--heading-color, inherit);
 	}
 }
 

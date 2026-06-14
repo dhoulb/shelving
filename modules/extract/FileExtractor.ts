@@ -1,8 +1,8 @@
 import type { BunFile } from "bun";
 import { RequiredError } from "../error/RequiredError.js";
-import type { FileElement, FileElementProps } from "../util/element.js";
 import { splitFileExtension } from "../util/file.js";
 import { isAbsolutePath, splitPath } from "../util/index.js";
+import type { TreeElement, TreeElementProps } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 
 /**
@@ -15,17 +15,17 @@ import { Extractor } from "./Extractor.js";
  * - Does NOT set `title` — `title` is only set by subclasses that have a confident source for one (e.g. `MarkupExtractor` uses the first `<h1>`). Renderers fall back to `name` when missing.
  * - Subclasses (e.g. `MarkupExtractor`, `TypescriptExtractor`) override `extractProps()` to parse the content into richer elements.
  */
-export class FileExtractor extends Extractor<BunFile, FileElement> {
-	async extract(file: BunFile): Promise<FileElement> {
+export class FileExtractor extends Extractor<BunFile, TreeElement> {
+	async extract(file: BunFile): Promise<TreeElement> {
 		const source = file.name;
 		if (!source || !isAbsolutePath(source)) throw new RequiredError("FileExtractor requires an absolute file path", { received: source });
 		const filename = splitPath(source).at(-1) ?? "unnamed";
 		const [base = filename] = splitFileExtension(filename);
 
 		const text = await file.text();
-		const props: FileElementProps = { ...this.extractProps(base, text), source };
+		const props: TreeElementProps = { ...this.extractProps(base, text), source };
 		return {
-			type: "tree-file",
+			type: "tree-element",
 			key: filename,
 			props,
 		};
@@ -37,7 +37,7 @@ export class FileExtractor extends Extractor<BunFile, FileElement> {
 	 * - Override to parse `text` into richer elements (content/children/description) and to set
 	 *   `title` if a confident title is available.
 	 */
-	extractProps(name: string, content: string): Partial<FileElementProps> & { name: string } {
+	extractProps(name: string, content: string): Partial<TreeElementProps> & { name: string } {
 		return { name, content };
 	}
 }

@@ -1,12 +1,12 @@
 import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
 import { type MouseEvent, type ReactElement, useEffect, useRef, useState } from "react";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Video.module.css";
 
-export interface VideoProps extends SpacingVariants, WidthVariants, OptionalChildProps {}
+export interface VideoProps extends SpaceVariants, WidthVariants, OptionalChildProps {}
 
 export interface VideoButtonsProps extends ChildProps {
 	left?: boolean;
@@ -28,7 +28,7 @@ export function Video({ children, ...variants }: VideoProps): ReactElement {
 	const ref = useRef<HTMLElement | null>(null);
 
 	return (
-		<figure ref={ref} className={getClass(getModuleClass(styles, "video"), getSpacingClass(variants), getWidthClass(variants))}>
+		<figure ref={ref} className={getClass(getModuleClass(styles, "video"), getSpaceClass(variants), getWidthClass(variants))}>
 			{children}
 		</figure>
 	);

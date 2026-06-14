@@ -1,89 +1,35 @@
 import type { ReactElement } from "react";
-import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
+import { TINT_CLASS } from "../style/Tint.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import styles from "./Block.module.css";
+import BLOCK_CSS from "./Block.module.css";
 
-export const BLOCK_CLASS = getModuleClass(styles, "block");
+export const BLOCK_CLASS = getModuleClass(BLOCK_CSS, "block");
 
-export interface BlockProps extends ColorVariants, SpacingVariants, TypographyVariants, WidthVariants, OptionalChildProps {
-	/** Mark as a keyboard-focusable horizontal scroll region — adds `tabindex="0"`, `role="region"`, an `aria-label`, and `overflow-x: auto`. */
-	scrollable?: boolean | undefined;
+export type BlockElement = "div" | "section" | "header" | "footer" | "nav" | "aside" | "figure";
+
+export interface BlockProps extends ColorVariants, SpaceVariants, TypographyVariants, WidthVariants, OptionalChildProps {
+	as?: BlockElement | undefined;
 }
 
-type BlockElement = "div" | "section" | "header" | "footer" | "nav" | "aside" | "figure";
-
-function renderBlock(Component: BlockElement, { children, ...variants }: BlockProps): ReactElement {
-	const className = getClass(
-		getModuleClass(styles, "block", variants),
-		variants.scrollable && getModuleClass(styles, "scrollable"),
-		getColorClass(variants),
-		getSpacingClass(variants),
-		getTypographyClass(variants),
-		getWidthClass(variants),
-	);
-	return variants.scrollable ? (
-		<Component className={className} tabIndex={0} role="region" aria-label="Scrollable region">
-			{children}
-		</Component>
-	) : (
-		<Component className={className}>{children}</Component>
-	);
-}
-
-/** Plain `<div>` block with block-level spacing. Base building block; use a semantic variant (`<Section>`, `<Figure>`, etc.) when the element matters. */
-export function Block(props: BlockProps): ReactElement {
-	return renderBlock("div", props);
-}
-
-/** `<section>` block with block-level spacing. */
-export function Section(props: BlockProps): ReactElement {
-	return renderBlock("section", props);
-}
-
-/** `<header>` block with block-level spacing. */
-export function Header(props: BlockProps): ReactElement {
-	return renderBlock("header", props);
-}
-
-/** `<footer>` block with block-level spacing. */
-export function Footer(props: BlockProps): ReactElement {
-	return renderBlock("footer", props);
-}
-
-/** `<nav>` block with block-level spacing. */
-export function Nav(props: BlockProps): ReactElement {
-	return renderBlock("nav", props);
-}
-
-/** `<aside>` block with block-level spacing. */
-export function Aside(props: BlockProps): ReactElement {
-	return renderBlock("aside", props);
-}
-
-/** `<figure>` block with block-level spacing. Pair with `<Caption>` for `<figcaption>` content. */
-export function Figure(props: BlockProps): ReactElement {
-	return renderBlock("figure", props);
-}
-
-export interface CaptionProps extends AlignVariants, ColorVariants, TypographyVariants, OptionalChildProps {}
-
-/** `<figcaption>` block — caption text for a `<Figure>`. */
-export function Caption({ children, ...variants }: CaptionProps): ReactElement {
+/** Plain `<div>` block with block-level spacing. */
+export function Block({ as: Component = "div", children, ...props }: BlockProps): ReactElement {
 	return (
-		<figcaption
+		<Component
 			className={getClass(
-				getModuleClass(styles, "caption"),
-				getColorClass(variants),
-				getAlignClass(variants),
-				getTypographyClass(variants),
+				BLOCK_CLASS,
+				TINT_CLASS,
+				getColorClass(props),
+				getSpaceClass(props),
+				getTypographyClass(props),
+				getWidthClass(props),
 			)}
 		>
 			{children}
-		</figcaption>
+		</Component>
 	);
 }

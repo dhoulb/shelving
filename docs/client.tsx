@@ -11,11 +11,9 @@
 
 import { hydrateRoot } from "react-dom/client";
 import type { PossibleMeta } from "../modules/ui/util/meta.js";
-import type { TreeElement } from "../modules/util/element.js";
 import { requireURL } from "../modules/util/index.js";
+import type { TreeElement } from "../modules/util/tree.js";
 import { App } from "./App.js";
-// Docs-site theme — token overrides layered after the base design tokens (must come last).
-import "./theme.css";
 
 async function hydrate(): Promise<void> {
 	const data = document.getElementById("docs-data")?.textContent;

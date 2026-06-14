@@ -6,13 +6,19 @@ Block-level components for structuring page content. Every component here maps t
 
 ### Semantic HTML, no custom markup
 
-Each component is a thin styled wrapper around a single HTML element: `<Card>` renders `<article>`, `<Section>` renders `<section>`, `<Table>` renders `<table>`, and so on. Pick the component whose HTML element fits the semantic meaning — do not reach for a `<Block>` or `<Flex>` when a `<Section>` or `<List>` is the right choice.
+Each component is a thin styled wrapper around a single HTML element: `<Card>` renders `<article>`, `<Section>` renders `<section>`, `<Table>` renders `<table>`, and so on. Pick the component whose HTML element fits the semantic meaning — do not reach for a `<Block>` when a `<Section>` or `<List>` is the right choice.
 
-`Section.tsx` exports all the standard landmark elements under the same variants (`narrow`, `wide`, `spacious`): `Section`, `Header`, `Footer`, `Nav`, and `Aside`.
+[Section.tsx](./Section.tsx) exports all the standard landmark elements with the same props: `Section`, `Header`, `Footer`, `Nav`, `Aside`, and `Figure`. `<Panel>` is the odd one out — a full-width region that paints the current surface colour, used to break a page into stacked bands.
 
-### Width and layout variants
+### Styling props
 
-Several layout components accept `narrow` and `wide` boolean props that constrain content width within the parent. `<Flex>` has richer layout control with `column`, `wrap`, `left`, `center`, `right`, `flush`, and `reverse` variants.
+Block components share the styling props defined in [ui/style](../style/) — see the [ui README](../README.md) for the full system. The ones you'll use most here:
+
+- `space="none"` … `space="xxlarge"` — block margin (top + bottom). Every block has a sensible default; first and last children collapse their outer margins automatically.
+- `color="red"`, `status="error"` — retint the component and everything nested inside it.
+- `size="large"`, `code`, `serif`, `center` — typography overrides.
+- `narrow` / `wide` / `full` — constrain or unconstrain content width within the parent.
+- `gap="small"` — item spacing on `<List>` and flex containers.
 
 ### `<Prose>` for longform text
 
@@ -22,8 +28,9 @@ Wrap any block of mixed HTML content (paragraphs, lists, headings, code, tables)
 
 Some block components ship multiple pieces intended to compose:
 
+- `Figure` + `Caption` (a `<figure>` with its `<figcaption>`)
 - `Video` + `VideoButtons` + `VideoButton` + `FullscreenVideoButton`
-- `Definitions` + `Definition` (term/value pairs inside a `<dl>`)
+- `Definitions` (raw `<dt>` / `<dd>` term/value pairs inside a styled `<dl>`)
 - `Address`, `PhysicalAddress`, `EmailAddress`
 
 ## Canonical usage examples
@@ -41,24 +48,41 @@ import { Card, Paragraph, Subheading } from "shelving/ui";
 
 `href` turns the card into a navigable overlay. Real interactive elements inside (like inline `<Link>` components) stay clickable via `position: relative; z-index: 2` rules in the stylesheet.
 
-`<Card>` also accepts a `status` colour and raw `ColorVariants` — e.g. `<Card status="error">` for a prominent error panel. The card styles the box; compose its contents however the use case needs.
+`<Card>` also accepts `status` and `color` — `<Card status="error">` for a prominent error panel, `<Card color="purple">` for decorative tinting. The card styles the box and its tint cascades into nested content; compose its contents however the use case needs.
 
 ### Structured page section
 
 ```tsx
-import { Section, Heading, Definitions, Definition } from "shelving/ui";
+import { Section, Heading, Definitions } from "shelving/ui";
 
 <Section narrow>
   <Heading>Account details</Heading>
-  <Definitions row>
-    <Definition term="Name">Alice Smith</Definition>
-    <Definition term="Email">alice@example.com</Definition>
-    <Definition term="Plan">Pro</Definition>
+  <Definitions>
+    <dt>Name</dt><dd>Alice Smith</dd>
+    <dt>Email</dt><dd>alice@example.com</dd>
+    <dt>Plan</dt><dd>Pro</dd>
   </Definitions>
 </Section>
 ```
 
 `<Title>`, `<Heading>`, and `<Subheading>` render `<h1>`, `<h2>`, and `<h3>` respectively — pick the component that matches the level rather than overriding it with the `level` prop. Use `<Subheading>` for card titles, in-section labels, and panel titles.
+
+### Page banded into panels
+
+```tsx
+import { Panel, Block, Title, Paragraph } from "shelving/ui";
+
+<Panel as="header" color="primary">
+  <Block narrow>
+    <Title>Welcome</Title>
+  </Block>
+</Panel>
+<Panel padding="large">
+  <Block narrow>
+    <Paragraph>Each panel is a full-width band; the inner block constrains the content.</Paragraph>
+  </Block>
+</Panel>
+```
 
 ### Prose content from a renderer
 
@@ -77,7 +101,7 @@ Wrap `<Markup>` (or any component that emits raw HTML elements) in `<Prose>` to 
 ```tsx
 import { Card, Flex, Subheading } from "shelving/ui";
 
-<Flex wrap>
+<Flex wrap gap="small">
   {products.map(p => (
     <Card key={p.id} href={`/products/${p.id}`}>
       <Subheading>{p.name}</Subheading>
@@ -86,13 +110,16 @@ import { Card, Flex, Subheading } from "shelving/ui";
 </Flex>
 ```
 
+`<Flex>` is a dumb flex box: `column` switches direction, `wrap` allows wrapping, and the justify/align booleans (`left`, `center`, `right`, `between`, `top`, `middle`, `bottom`, …) position children along each axis. It carries no outer spacing of its own.
+
 ### Figure with caption
 
 ```tsx
-import { Figure, Image } from "shelving/ui";
+import { Figure, Image, Caption } from "shelving/ui";
 
-<Figure caption="A golden retriever at the park">
+<Figure>
   <Image src="/images/dog.jpg" alt="Golden retriever" />
+  <Caption>A golden retriever at the park</Caption>
 </Figure>
 ```
 

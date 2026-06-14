@@ -1,29 +1,29 @@
 @import "base.css";
 
 @layer variants {
-	/* Block-spacing variants — opt-in margin-block modifiers for any block-level component. */
-	.space-none {
+	/* Block-space variants — opt-in margin-block modifiers for any block-level component. */
+	.none {
 		margin-block: 0;
 	}
-	.space-xxsmall {
+	.xxsmall {
 		margin-block: var(--space-xxsmall);
 	}
-	.space-xsmall {
+	.xsmall {
 		margin-block: var(--space-xsmall);
 	}
-	.space-small {
+	.small {
 		margin-block: var(--space-small);
 	}
-	.space-normal {
+	.normal {
 		margin-block: var(--space-normal);
 	}
-	.space-large {
+	.large {
 		margin-block: var(--space-large);
 	}
-	.space-xlarge {
+	.xlarge {
 		margin-block: var(--space-xlarge);
 	}
-	.space-xxlarge {
+	.xxlarge {
 		margin-block: var(--space-xxlarge);
 	}
 }

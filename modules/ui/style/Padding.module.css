@@ -1,31 +1,29 @@
 @import "base.css";
 
 @layer variants {
-	/* Block-padding variants — sets padding-block (top + bottom) only. Inline padding is left untouched */
-	/* deliberately: if you want narrower inline content inside a wide container (e.g. a Panel), compose */
-	/* a `<Block narrow>` (or `<Block wide>`) inside it rather than reducing the panel's inline padding. */
-	.padding-none {
+	/* Block-padding variants. */
+	.none {
 		padding-block: 0;
 	}
-	.padding-xxsmall {
+	.xxsmall {
 		padding-block: var(--space-xxsmall);
 	}
-	.padding-xsmall {
+	.xsmall {
 		padding-block: var(--space-xsmall);
 	}
-	.padding-small {
+	.small {
 		padding-block: var(--space-small);
 	}
-	.padding-normal {
+	.normal {
 		padding-block: var(--space-normal);
 	}
-	.padding-large {
+	.large {
 		padding-block: var(--space-large);
 	}
-	.padding-xlarge {
+	.xlarge {
 		padding-block: var(--space-xlarge);
 	}
-	.padding-xxlarge {
+	.xxlarge {
 		padding-block: var(--space-xxlarge);
 	}
 }

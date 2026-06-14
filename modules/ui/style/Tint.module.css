@@ -1,0 +1,44 @@
+@layer defaults {
+	:root {
+		/* Main tint color — the `50` tint is used to calculate all the other shades. */
+		--tint-50: var(--color-gray);
+	}
+
+	/* Create tint shades via the `--tint-XX` variables. */
+	:root,
+	.tint {
+		/* Scaled tints */
+		--tint-00: black;
+		--tint-05: color-mix(in oklch, var(--tint-50), black 90%);
+		--tint-10: color-mix(in oklch, var(--tint-50), black 80%);
+		--tint-15: color-mix(in oklch, var(--tint-50), black 70%);
+		--tint-20: color-mix(in oklch, var(--tint-50), black 60%);
+		--tint-25: color-mix(in oklch, var(--tint-50), black 50%);
+		--tint-30: color-mix(in oklch, var(--tint-50), black 40%);
+		--tint-35: color-mix(in oklch, var(--tint-50), black 30%);
+		--tint-40: color-mix(in oklch, var(--tint-50), black 20%);
+		--tint-45: color-mix(in oklch, var(--tint-50), black 10%);
+		/* --tint-50: var(--color-gray); // The middle tint is used to calculate the others. */
+		--tint-55: color-mix(in oklch, var(--tint-50), white 10%);
+		--tint-60: color-mix(in oklch, var(--tint-50), white 20%);
+		--tint-65: color-mix(in oklch, var(--tint-50), white 30%);
+		--tint-70: color-mix(in oklch, var(--tint-50), white 40%);
+		--tint-75: color-mix(in oklch, var(--tint-50), white 50%);
+		--tint-80: color-mix(in oklch, var(--tint-50), white 60%);
+		--tint-85: color-mix(in oklch, var(--tint-50), white 70%);
+		--tint-90: color-mix(in oklch, var(--tint-50), white 80%);
+		--tint-95: color-mix(in oklch, var(--tint-50), white 90%);
+		--tint-100: white;
+	}
+
+	body {
+		/* Apply default colours to body. */
+		color: var(--tint-00);
+		background: var(--tint-100);
+	}
+
+	.tint {
+		/* Neutralise bright colors in tinted areas. */
+		--color-link: inherit;
+	}
+}

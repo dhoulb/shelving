@@ -26,13 +26,13 @@ import { PageCatcher, Catcher, ErrorNotice } from "shelving/ui";
 
 ## Status and colour
 
-`Status` is the type (`"loading" | "info" | "success" | "warning" | "danger" | "error"`) and `StatusVariants` is the matching boolean-prop interface. Use these as the canonical vocabulary for component state everywhere in the UI.
+`Status` is the type (`"loading" | "info" | "success" | "warning" | "danger" | "error"`) and `StatusProps` is the matching props interface — a `status="error"` prop plus boolean aliases (`<Notice error>`). Use these as the canonical vocabulary for component state everywhere in the UI.
 
-`getStatusClass` maps a `Status` string or `StatusVariants` object to a CSS module class. Compose it with other class helpers when building components that need status colouring.
+`getStatusClass` maps a `Status` string or `StatusProps` object to a CSS module class. Compose it with other class helpers when building components that need status colouring.
 
-`Color` exports `ColorVariants` (raw hues: `red`, `blue`, `purple`, `green`, etc.) and `getColorClass`. Use status variants for semantic meaning and colour variants for purely decorative differentiation.
+`Color` (from [ui/style](../style/)) exports `ColorProps` — a `color` prop taking a raw hue (`"red"`, `"blue"`, `"purple"`, `"green"`, etc.) — and `getColorClass`. Use `status` for semantic meaning and `color` for purely decorative differentiation.
 
-`getTypographyClass` (from `Typography`) returns a class for font-size (`small`, `large`, `xxlarge`, …) or font-family (`code`, `sans`, `serif`, …) variants. Compose into components that need typography overrides without wrapping in an extra element.
+`getTypographyClass` (from `Typography`) returns a class for the `size` prop (`size="small"` … `size="xxlarge"`), the `tint` prop, and the font-family (`code`, `sans`, `serif`, …) and alignment variants. Compose into components that need typography overrides without wrapping in an extra element.
 
 ## Loading spinner
 
@@ -46,26 +46,26 @@ import { LOADING } from "shelving/ui";
 
 ## Status icon
 
-`StatusIcon` picks the right icon for a given status and sizes it via `small`, `normal`, `large`, `xlarge`, or `xxlarge` variants. `info` is the default when no `status` prop is set.
+`StatusIcon` picks the right icon for a given status and sizes it via the `size` prop (`"small"`, `"normal"`, `"large"`, `"xlarge"`, or `"xxlarge"`; defaults to the current line height). `info` is the default when no `status` prop is set.
 
 ```tsx
 import { StatusIcon } from "shelving/ui";
 
-<StatusIcon status="success" large />
+<StatusIcon status="success" size="large" />
 <StatusIcon status="error" />
-<StatusIcon status="loading" small />
+<StatusIcon status="loading" size="small" />
 ```
 
 ## Tag
 
-`Tag` is a small inline label. It accepts both `StatusVariants` and `ColorVariants`, plus `href` or `onClick` from `ClickableProps`, so it can be static or interactive.
+`Tag` is a small inline label. It accepts both `StatusProps` and `ColorProps`, plus `href` or `onClick` from `ClickableProps`, so it can be static or interactive.
 
 ```tsx
 import { Tag } from "shelving/ui";
 
 <Tag success>Active</Tag>
 <Tag warning href="/billing">Overdue</Tag>
-<Tag purple small>Beta</Tag>
+<Tag color="purple" size="small">Beta</Tag>
 ```
 
 ## Markup renderer
@@ -92,15 +92,14 @@ This is the right tool when a component renders a tree of typed elements and cal
 import { createMapper } from "shelving/ui";
 
 const [TreeMapping, TreeMapper] = createMapper({
-  "tree-directory": DirectoryRow,
-  "tree-file": FileRow,
+  "tree-element": TreeRow,
 });
 
 // In a consumer:
 <TreeMapper>{walkElements(children)}</TreeMapper>
 
 // Override one entry in a subtree:
-<TreeMapping mapping={{ "tree-file": SpecialFileRow }}>
+<TreeMapping mapping={{ "tree-element": SpecialTreeRow }}>
   <TreeMapper>{walkElements(children)}</TreeMapper>
 </TreeMapping>
 ```

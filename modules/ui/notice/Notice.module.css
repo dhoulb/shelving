@@ -2,29 +2,33 @@
 
 @layer components {
 	.notice {
-		/* Identity */
-		--color-black: var(--notice-color-black, inherit);
-		--color-dark: var(--notice-color-dark, inherit);
-		--color-vivid: var(--notice-color-vivid, inherit);
-		--color-light: var(--notice-color-light, inherit);
-		--color-white: var(--notice-color-white, inherit);
+		/* Theme */
+		--tint-50: var(--notice-tint, inherit);
 
 		/* Box */
 		display: block;
 		margin-inline: 0;
-		margin-block: var(--notice-spacing, var(--spacing-paragraph));
+		margin-block: var(--notice-space, var(--space-paragraph));
 		border-radius: var(--notice-radius, var(--radius-xsmall));
-		border: var(--notice-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-vivid);
+		border: var(--notice-border, var(--notice-stroke, var(--stroke-normal)) solid var(--tint-80));
 		padding: var(--notice-padding, var(--space-small));
 
-		/* Style — `bg=light / text=dark` (2-step pair). */
-		background: var(--color-light);
-		color: var(--color-vivid);
+		/* Style */
+		background: var(--notice-background, var(--tint-90));
+		color: var(--notice-color, var(--tint-50));
 
-		/* Typography */
+		/* Text */
 		font-size: var(--notice-size, var(--size-normal));
 		font-weight: var(--notice-weight, var(--weight-strong));
 		text-align: start;
+	}
+}
+
+@layer variants {
+	.notice {
+		background: var(--tint-90);
+		border: var(--notice-stroke, var(--stroke-normal)) solid var(--tint-80);
+		color: var(--shade-dark);
 	}
 }
 

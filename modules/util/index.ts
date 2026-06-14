@@ -55,6 +55,7 @@ export * from "./string.js";
 export * from "./template.js";
 export * from "./timeout.js";
 export * from "./transform.js";
+export * from "./tree.js";
 export * from "./undefined.js";
 export * from "./units.js";
 export * from "./update.js";

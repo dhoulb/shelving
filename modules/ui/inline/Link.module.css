@@ -1,4 +1,5 @@
 @import "../style/base.css";
+@import "../style/Tint.module.css";
 
 @layer components {
 	.link,
@@ -8,7 +9,7 @@
 		text-decoration: none;
 		cursor: inherit;
 
-		/* Typography */
+		/* Text */
 		font-weight: var(--link-weight, var(--weight-strong));
 
 		&:any-link {

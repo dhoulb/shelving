@@ -11,8 +11,8 @@ export interface WidthVariants {
 	full?: boolean | undefined;
 }
 
-export type Width = keyof WidthVariants;
+export type UIWidth = keyof WidthVariants;
 
-export function getWidthClass(width: Width | WidthVariants): string | undefined {
+export function getWidthClass(width: WidthVariants): string | undefined {
 	return getModuleClass(WIDTH_CSS, width);
 }

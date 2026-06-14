@@ -1,34 +1,42 @@
 import type { ReactNode } from "react";
-import type { DocumentationElementProps } from "../../util/element.js";
-import { type AbsolutePath, joinPath } from "../../util/path.js";
+import type { DocumentationElementProps } from "../../util/tree.js";
 import { Card } from "../block/Card.js";
 import { Paragraph } from "../block/Paragraph.js";
-import { Preformatted } from "../block/Preformatted.js";
 import { Subheading } from "../block/Subheading.js";
-import { Code } from "../inline/Code.js";
-import { Flex } from "../style/Flex.js";
+import { Row } from "../style/Flex.js";
+import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
+import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
-interface DocumentationCardProps extends DocumentationElementProps {
-	path: AbsolutePath;
-}
-
-/** Card renderer for a `tree-documentation` element — a summary card showing the heading, signatures, and description. */
-export function DocumentationCard({ path, title, name, kind, description, signatures }: DocumentationCardProps): ReactNode {
-	const href = joinPath(path, name);
+/**
+ * Card renderer for a `tree-documentation` element — a summary card.
+ * - Leads with the symbol's signature(s) as calm code blocks (`<DocumentationSignatures>`, same as the detail page), which already carry the name; falls back to the bare name for symbols with no signature (classes, interfaces, modules).
+ * - The card is tinted by `kind` (colour carries the method/property/etc. distinction — no separate tag).
+ */
+export function DocumentationCard({
+	path,
+	title,
+	name,
+	kind,
+	description,
+	signatures,
+	// Drop `class` so cards omit the "member of" relation — a member card almost always sits on its own class's page already.
+	class: _memberOf,
+	...props
+}: DocumentationElementProps): ReactNode {
+	// `path` is the symbol's own canonical URL, stamped by `flattenTree()` — link straight to it.
 	const color = kind ? getDocumentationKindColor(kind) : undefined;
 	return (
-		<Card href={href} {...(color ? { [color]: true } : {})}>
-			<Subheading>
-				<Flex left wrap>
-					<Code>{title ?? name}</Code>
+		<Card href={path} color={color}>
+			<Subheading space="none">
+				<Row left wrap gap="xsmall">
+					{title ?? name}
 					{kind && <DocumentationKind kind={kind} />}
-				</Flex>
+				</Row>
 			</Subheading>
-			{signatures?.map(sig => (
-				<Preformatted key={sig}>{sig}</Preformatted>
-			))}
+			<DocumentationButtons {...props} space="none" />
 			{description && <Paragraph>{description}</Paragraph>}
+			<DocumentationSignatures signatures={signatures} />
 		</Card>
 	);
 }

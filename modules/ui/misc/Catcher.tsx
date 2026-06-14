@@ -8,7 +8,7 @@ import { Button, type ButtonVariants } from "../form/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";
 import { Page } from "../page/Page.js";
-import { Flex } from "../style/Flex.js";
+import { Row } from "../style/Flex.js";
 import type { ChildProps, OptionalChildProps } from "../util/props.js";
 import { StatusIcon } from "./StatusIcon.js";
 
@@ -93,7 +93,7 @@ export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
 	return (
 		<Notice status="error">
 			<p>{message}</p>
-			<RetryButton small fit />
+			<RetryButton small />
 		</Notice>
 	);
 }
@@ -108,9 +108,9 @@ export function ErrorPage({ reason }: ErrorPageProps): ReactElement {
 			<CenteredLayout>
 				<Card status="error">
 					<Subheading>
-						<Flex left>
-							<StatusIcon status="error" xlarge /> {message}
-						</Flex>
+						<Row left>
+							<StatusIcon status="error" size="xlarge" /> {message}
+						</Row>
 						<RetryButton />
 					</Subheading>
 				</Card>

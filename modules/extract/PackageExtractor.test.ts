@@ -2,20 +2,20 @@ import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { DirectoryElement, TreeElement } from "../util/element.js";
 import type { AbsolutePath } from "../util/path.js";
+import type { TreeElement } from "../util/tree.js";
 import { DirectoryExtractor } from "./DirectoryExtractor.js";
-import { IndexFileExtractor } from "./IndexFileExtractor.js";
+import { IndexExtractor } from "./IndexExtractor.js";
 import { MergingExtractor } from "./MergingExtractor.js";
 import { PackageExtractor } from "./PackageExtractor.js";
 
 /** Build a self-contained source tree on disk (independent per test, so concurrent runs don't collide). */
 async function _setup(
 	layout: (root: string) => Promise<void>,
-): Promise<{ root: AbsolutePath; tree: DirectoryElement; cleanup: () => Promise<void> }> {
+): Promise<{ root: AbsolutePath; tree: TreeElement; cleanup: () => Promise<void> }> {
 	const root = (await mkdtemp(join(tmpdir(), "shelving-pkgexttest-"))) as AbsolutePath;
 	await layout(root);
-	const tree = await new IndexFileExtractor(new MergingExtractor(new DirectoryExtractor())).extract(root);
+	const tree = await new IndexExtractor(new MergingExtractor(new DirectoryExtractor())).extract(root);
 	return {
 		root,
 		tree,
@@ -109,14 +109,14 @@ describe("PackageExtractor", () => {
 			await writeFile(join(r, "api", "mts-only.mts"), "export const X = 1;");
 		}).then(async ({ root, cleanup }) => {
 			// Re-extract with a custom DirectoryExtractor that recognises .mts files.
-			const tree = await new IndexFileExtractor(
+			const tree = await new IndexExtractor(
 				new MergingExtractor(new DirectoryExtractor({ extractors: { mts: new TypescriptExtractor() } })),
 			).extract(root);
 			return { root, tree, cleanup };
 		});
 		try {
 			const pkg = await _writePackageJson(root, { "./api/mts-only": "./api/mts-only.mjs" });
-			const out = await new PackageExtractor({ tree, extensions: ["mts", "ts"] }).extract(pkg);
+			const out = await new PackageExtractor({ tree, extensions: { mjs: ["mts", "ts"] } }).extract(pkg);
 			const kids = Array.from(out.props.children as Iterable<TreeElement>);
 			expect(kids).toHaveLength(1);
 			expect(kids[0]?.props.name).toBe("api/mts-only");

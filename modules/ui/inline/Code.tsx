@@ -1,30 +1,28 @@
 import type { ReactElement } from "react";
-import { getClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
-import styles from "./Code.module.css";
+import type { ColorVariants } from "../style/Color.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getClass, getModuleClass } from "../util/css.js";
+import type { OptionalChildProps } from "../util/index.js";
+import CODE_CSS from "./Code.module.css";
 
-const CODE_CLASS = getClass(styles.code);
+export const CODE_CLASS = getModuleClass(CODE_CSS, "code");
+export const CODE_PLAIN_CLASS = getModuleClass(CODE_CSS, "plain");
+export const CODE_PROSE_CLASS = getModuleClass(CODE_CSS, "prose");
 
-export interface CodeProps extends OptionalChildProps {}
-
-export function Code({ children }: CodeProps): ReactElement {
-	return <code className={CODE_CLASS}>{children}</code>;
+export interface CodeProps extends ColorVariants, TypographyVariants, OptionalChildProps {
+	plain?: boolean | undefined;
 }
 
-export interface KeyboardProps extends OptionalChildProps {}
-
-export function Keyboard({ children }: KeyboardProps): ReactElement {
-	return <kbd className={CODE_CLASS}>{children}</kbd>;
-}
-
-export interface SampleProps extends OptionalChildProps {}
-
-export function Sample({ children }: SampleProps): ReactElement {
-	return <samp className={CODE_CLASS}>{children}</samp>;
-}
-
-export interface VariableProps extends OptionalChildProps {}
-
-export function Variable({ children }: VariableProps): ReactElement {
-	return <var className={CODE_CLASS}>{children}</var>;
+export function Code({ children, plain, ...props }: CodeProps): ReactElement {
+	return (
+		<code
+			className={getClass(
+				CODE_CLASS, //
+				plain && CODE_PLAIN_CLASS,
+				getTypographyClass(props),
+			)}
+		>
+			{children}
+		</code>
+	);
 }

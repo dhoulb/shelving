@@ -1,14 +1,16 @@
 import type { ReactElement } from "react";
-import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
-import styles from "./Heading.module.css";
+import HEADING_CSS from "./Heading.module.css";
+
+export const HEADING_CLASS = getModuleClass(HEADING_CSS, "heading");
+export const HEADING_PROSE_CLASS = getModuleClass(HEADING_CSS, "prose");
 
 /** Props shared by `Title`, `Heading`, and `Subheading`. */
-export interface HeadingProps extends AlignVariants, ColorVariants, SpacingVariants, TypographyVariants, ChildProps {
+export interface HeadingProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {
 	/**
 	 * Heading level (`1`–`6`) — sets the rendered `<h1>`–`<h6>` tag.
 	 * Avoid overriding this in practice: pick the component that matches the level — `Title` (`<h1>`), `Heading` (`<h2>`), or `Subheading` (`<h3>`) — so the visual size and the document outline stay in step.
@@ -20,16 +22,15 @@ export interface HeadingProps extends AlignVariants, ColorVariants, SpacingVaria
  * Section heading — renders an `<h2>`.
  * - Sits between `Title` (`<h1>`) and `Subheading` (`<h3>`) in the heading hierarchy.
  */
-export function Heading({ level = "2", children, ...variants }: HeadingProps): ReactElement {
+export function Heading({ level = "2", children, ...props }: HeadingProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;
 	return (
 		<Element
 			className={getClass(
-				getModuleClass(styles, "heading"),
-				getColorClass(variants),
-				getAlignClass(variants),
-				getSpacingClass(variants),
-				getTypographyClass(variants),
+				HEADING_CLASS, //
+				getColorClass(props),
+				getSpaceClass(props),
+				getTypographyClass(props),
 			)}
 		>
 			{children}

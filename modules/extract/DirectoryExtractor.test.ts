@@ -2,8 +2,8 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { TreeElement } from "../util/element.js";
 import type { AbsolutePath } from "../util/path.js";
+import type { TreeElement } from "../util/tree.js";
 import { DirectoryExtractor } from "./DirectoryExtractor.js";
 
 let root: string;
@@ -29,7 +29,7 @@ afterAll(async () => {
 describe("DirectoryExtractor", () => {
 	test("produces a directory element with the directory name as key", async () => {
 		const out = await new DirectoryExtractor().extract(root as AbsolutePath);
-		expect(out.type).toBe("tree-directory");
+		expect(out.type).toBe("tree-element");
 		expect(out.key).toBe(out.props.name);
 	});
 
@@ -44,7 +44,7 @@ describe("DirectoryExtractor", () => {
 	test("keys directories with the verbatim directory name", async () => {
 		const out = await new DirectoryExtractor().extract(root as AbsolutePath);
 		const kids = Array.from(out.props.children as Iterable<TreeElement>);
-		const utilDir = kids.find(k => k.type === "tree-directory" && k.key === "util");
+		const utilDir = kids.find(k => k.type === "tree-element" && k.key === "util");
 		expect(utilDir).toBeDefined();
 	});
 
@@ -77,7 +77,7 @@ describe("DirectoryExtractor", () => {
 		const kids = Array.from(out.props.children as Iterable<TreeElement>);
 		expect(kids).toHaveLength(1);
 		const sub = kids[0];
-		expect(sub?.type).toBe("tree-directory");
+		expect(sub?.type).toBe("tree-element");
 		expect(sub?.key).toBe("sub");
 		const subKids = Array.from((sub?.props.children ?? []) as Iterable<TreeElement>);
 		expect(subKids).toHaveLength(1);

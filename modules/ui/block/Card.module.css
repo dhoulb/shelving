@@ -1,41 +1,40 @@
 @import "../style/base.css";
 
+@layer defaults {
+	.card {
+		/* Children — lift above the overlay so they remain clickable. */
+		a:any-link,
+		button:enabled {
+			position: relative;
+			z-index: 2;
+		}
+	}
+}
+
 @layer components {
 	.card {
-		/* Identity */
-		--color-black: var(--card-color-black, inherit);
-		--color-dark: var(--card-color-dark, inherit);
-		--color-vivid: var(--card-color-vivid, inherit);
-		--color-light: var(--card-color-light, inherit);
-		--color-white: var(--card-color-white, inherit);
+		/* Theme */
+		--tint-50: var(--card-tint, inherit);
 
 		/* Box */
 		position: relative;
 		margin-inline: 0;
-		margin-block: var(--card-spacing, var(--spacing-paragraph));
-		border: var(--card-thickness, var(--thickness, var(--stroke-normal))) solid var(--color-vivid);
+		margin-block: var(--card-space, var(--space-paragraph));
+		border: var(--card-border, var(--card-stroke, var(--stroke-normal) solid var(--tint-80)));
 		padding: var(--card-padding, var(--space-normal));
 		border-radius: var(--card-radius, var(--radius-normal));
 
-		/* Style — `bg=light / text=dark` (2-step pair). */
-		background-color: var(--color-light);
-		color: var(--color-dark);
+		/* Style */
+		background: var(--card-background, var(--tint-90));
+		color: var(--card-color, var(--tint-00));
 		box-shadow: var(--card-shadow, none);
-		transition: border-color var(--duration-fast);
+		transition: var(--card-transition, all var(--duration-fast));
+		outline: var(--card-focus-border, var(--stroke-focus) solid var(--color-focus));
+		outline-offset: calc(0px - var(--card-stroke, var(--stroke-normal)));
 
 		/* Hover/focus affordance driven by the overlay link/button. */
 		&:has(.overlay:hover) {
-			border-color: var(--color-focus);
-		}
-		&:has(.overlay:focus-visible) {
-			outline: var(--stroke-focus) solid var(--color-focus);
-			outline-offset: 2px;
-		}
-
-		/* Inline interactive elements lift above the overlay so they remain clickable. */
-		:where(& a:not(.overlay), & button:not(.overlay)) {
-			position: relative;
-			z-index: 2;
+			background: var(--card-hover-background, var(--tint-95));
 		}
 	}
 
@@ -49,6 +48,7 @@
 		/* Style */
 		background: transparent;
 		cursor: pointer;
+		outline: 0;
 
 		/* Typography — hide the link's text visually but keep it in the accessibility tree. */
 		color: transparent;
@@ -57,21 +57,13 @@
 		text-decoration: none;
 		text-align: start;
 		white-space: nowrap;
-
-		/* The card itself shows the focus outline via :has() — the link doesn't need its own. */
-		&:focus-visible {
-			outline: 0;
-		}
 	}
 }
 
 @layer overrides {
 	.card {
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
+		&:has(.overlay:not(focus-visible)) {
+			outline-color: transparent;
 		}
 	}
 }

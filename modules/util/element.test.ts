@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
-import type { Data, Element, Elements, TreeElement } from "../index.js";
-import { filterElements, getElementPaths, getElementText, queryElements, resolveElementPath, walkElements } from "../index.js";
+import type { Data, Element, Elements } from "../index.js";
+import { filterElements, getElementText, queryElements, walkElements } from "../index.js";
 
 const P: Element = {
 	key: null,
@@ -91,10 +91,10 @@ describe("walkElements()", () => {
 
 const TREE: Element = {
 	key: "root",
-	type: "tree-directory",
+	type: "tree-element",
 	props: {
 		children: [
-			{ key: "file1", type: "tree-file", props: {} },
+			{ key: "file1", type: "tree-element", props: {} },
 			{ key: "func1", type: "tree-documentation", props: {} },
 		],
 	},
@@ -102,14 +102,14 @@ const TREE: Element = {
 
 describe("queryElements()", () => {
 	test("filters direct children by type string", () => {
-		const result = Array.from(queryElements(TREE.props.children, { type: "tree-file" }));
-		expect(result).toMatchObject([{ key: "file1", type: "tree-file" }]);
+		const result = Array.from(queryElements(TREE.props.children, { type: "tree-element" }));
+		expect(result).toMatchObject([{ key: "file1", type: "tree-element" }]);
 	});
 
 	test("filters direct children by type array", () => {
-		const result = Array.from(queryElements(TREE.props.children, { type: ["tree-file", "tree-documentation"] }));
+		const result = Array.from(queryElements(TREE.props.children, { type: ["tree-element", "tree-documentation"] }));
 		expect(result).toMatchObject([
-			{ key: "file1", type: "tree-file" },
+			{ key: "file1", type: "tree-element" },
 			{ key: "func1", type: "tree-documentation" },
 		]);
 	});
@@ -121,8 +121,8 @@ describe("queryElements()", () => {
 
 describe("filterElements()", () => {
 	test("yields only matching elements (one level)", () => {
-		const result = Array.from(filterElements(TREE.props.children, el => el.type === "tree-file"));
-		expect(result).toMatchObject([{ key: "file1", type: "tree-file" }]);
+		const result = Array.from(filterElements(TREE.props.children, el => el.type === "tree-element"));
+		expect(result).toMatchObject([{ key: "file1", type: "tree-element" }]);
 	});
 
 	test("yields nothing for no matches", () => {
@@ -131,57 +131,8 @@ describe("filterElements()", () => {
 	});
 
 	test("yields nothing for null/undefined/string input", () => {
-		expect(Array.from(filterElements(null, el => el.type === "tree-file"))).toHaveLength(0);
-		expect(Array.from(filterElements(undefined, el => el.type === "tree-file"))).toHaveLength(0);
-		expect(Array.from(filterElements("hello", el => el.type === "tree-file"))).toHaveLength(0);
-	});
-});
-
-const RESOLVE_TREE: TreeElement = {
-	key: "modules",
-	type: "tree-directory",
-	props: {
-		name: "modules",
-		children: [
-			{
-				key: "util",
-				type: "tree-directory",
-				props: {
-					name: "util",
-					children: [
-						{ key: "array", type: "tree-file", props: { name: "array", title: "Array" } },
-						{ key: "string", type: "tree-file", props: { name: "string", title: "String" } },
-					],
-				},
-			},
-			{ key: "README", type: "tree-file", props: { name: "README", title: "README" } },
-		],
-	},
-};
-
-describe("resolveElementPath()", () => {
-	test("returns the root itself for an empty path", () => {
-		expect(resolveElementPath(RESOLVE_TREE, [])).toMatchObject({ key: "modules", type: "tree-directory" });
-	});
-
-	test("resolves a descendant by key", () => {
-		expect(resolveElementPath(RESOLVE_TREE, ["util"])).toMatchObject({ key: "util", type: "tree-directory" });
-		expect(resolveElementPath(RESOLVE_TREE, ["util", "array"])).toMatchObject({ key: "array", props: { title: "Array" } });
-	});
-
-	test("does not match the root's own key", () => {
-		expect(resolveElementPath(RESOLVE_TREE, ["modules"])).toBeUndefined();
-	});
-
-	test("returns undefined for non-existent keys", () => {
-		expect(resolveElementPath(RESOLVE_TREE, ["nonexistent"])).toBeUndefined();
-		expect(resolveElementPath(RESOLVE_TREE, ["util", "nonexistent"])).toBeUndefined();
-	});
-});
-
-describe("getElementPaths()", () => {
-	test("yields the root as [] plus every descendant relative to it", () => {
-		const keys = Array.from(getElementPaths(RESOLVE_TREE));
-		expect(keys).toEqual([[], ["util"], ["util", "array"], ["util", "string"], ["README"]]);
+		expect(Array.from(filterElements(null, el => el.type === "tree-element"))).toHaveLength(0);
+		expect(Array.from(filterElements(undefined, el => el.type === "tree-element"))).toHaveLength(0);
+		expect(Array.from(filterElements("hello", el => el.type === "tree-element"))).toHaveLength(0);
 	});
 });

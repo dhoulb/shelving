@@ -1,31 +1,24 @@
 import type { ReactElement } from "react";
-import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
-import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import styles from "./Blockquote.module.css";
+import BLOCKQUOTE_CSS from "./Blockquote.module.css";
 
-export interface BlockquoteProps
-	extends AlignVariants,
-		ColorVariants,
-		SpacingVariants,
-		ThicknessVariants,
-		TypographyVariants,
-		OptionalChildProps {}
+export const BLOCKQUOTE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "blockquote");
+export const BLOCKQUOTE_PROSE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "prose");
 
-export function Blockquote({ children, ...variants }: BlockquoteProps): ReactElement {
+export interface BlockquoteProps extends ColorVariants, SpaceVariants, TypographyVariants, OptionalChildProps {}
+
+export function Blockquote({ children, ...props }: BlockquoteProps): ReactElement {
 	return (
 		<blockquote
 			className={getClass(
-				getModuleClass(styles, "blockquote"),
-				getColorClass(variants),
-				getAlignClass(variants),
-				getSpacingClass(variants),
-				getThicknessClass(variants),
-				getTypographyClass(variants),
+				BLOCKQUOTE_CLASS, //
+				getColorClass(props),
+				getSpaceClass(props),
+				getTypographyClass(props),
 			)}
 		>
 			{children}

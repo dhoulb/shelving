@@ -1,5 +1,6 @@
 import { MARKUP_PARSER } from "../markup/MarkupParser.js";
-import { type Element, type Elements, type FileElementProps, getElementText, walkElements } from "../util/element.js";
+import { type Element, type Elements, getElementText, walkElements } from "../util/element.js";
+import type { TreeElementProps } from "../util/tree.js";
 import { FileExtractor } from "./FileExtractor.js";
 
 /**
@@ -12,7 +13,7 @@ import { FileExtractor } from "./FileExtractor.js";
  * - Sets `description` to the first prose paragraph as a plain-text summary (used for card listings and `<meta>`).
  */
 export class MarkupExtractor extends FileExtractor {
-	override extractProps(name: string, text: string): Partial<FileElementProps> & { name: string } {
+	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const { title, description } = extractMarkdownProps(text);
 		// The title `# h1` is surfaced separately as `title`, so strip it from the body to avoid rendering it twice.
 		return { name, title, description, content: title ? _stripTitle(text) : text };

@@ -2,11 +2,14 @@
 
 @layer components {
 	.message {
-		/* Typography */
+		/* Theme */
+		--tint-50: var(--notice-tint, inherit);
+
+		/* Text */
 		text-align: var(--message-align, center);
 		font-weight: var(--message-weight, var(--weight-strong));
 
 		/* Style */
-		color: var(--message-color, var(--color-dark));
+		color: var(--message-color, var(--tint-50));
 	}
 }

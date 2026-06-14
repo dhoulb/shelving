@@ -1,4 +1,5 @@
-import { mergeElements, type TreeElement } from "../util/element.js";
+import { mergeElements } from "../util/element.js";
+import type { TreeElement } from "../util/tree.js";
 
 /**
  * Base class for an extractor that converts input into a tree element.

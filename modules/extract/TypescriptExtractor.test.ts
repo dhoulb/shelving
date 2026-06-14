@@ -31,7 +31,7 @@ export function add(a: number, b: number): number {
 					name: "add",
 					title: "add()",
 					content: "Add two numbers together.",
-					signatures: ["(a: number, b: number) => number"],
+					signatures: ["add(a: number, b: number): number"],
 				},
 			},
 		]);
@@ -45,7 +45,10 @@ export const MAX_RETRIES: number = 3;
 `),
 		);
 		expect(element.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "constant", name: "MAX_RETRIES", title: "MAX_RETRIES", signatures: ["number"] } },
+			{
+				type: "tree-documentation",
+				props: { kind: "constant", name: "MAX_RETRIES", title: "MAX_RETRIES", signatures: ["MAX_RETRIES: number"] },
+			},
 		]);
 	});
 
@@ -70,8 +73,11 @@ export class Store {
 		expect(cls.props.name).toBe("Store");
 		expect(cls.props.title).toBe("Store");
 		expect(cls.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "property", name: "value", title: "value", signatures: ["string"] } },
-			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "set()" } },
+			{
+				type: "tree-documentation",
+				props: { kind: "property", name: "value", title: "Store.value", class: "Store", signatures: ["value: string"] },
+			},
+			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "Store.set()", class: "Store" } },
 		]);
 	});
 
@@ -100,7 +106,7 @@ export type NullableString = string | null;
 		expect(element.props.children).toMatchObject([
 			{
 				type: "tree-documentation",
-				props: { kind: "type", name: "NullableString", title: "NullableString", signatures: ["string | null"] },
+				props: { kind: "type", name: "NullableString", title: "NullableString", signatures: ["NullableString = string | null"] },
 			},
 		]);
 	});
@@ -190,12 +196,79 @@ export class Widget {
 					name: "Widget",
 					title: "Widget",
 					children: [
-						{ props: { kind: "property", name: "size", title: "size" } },
-						{ props: { kind: "method", name: "resize", title: "resize()" } },
+						{ props: { kind: "property", name: "size", title: "Widget.size" } },
+						{ props: { kind: "method", name: "resize", title: "Widget.resize()" } },
 					],
 				},
 			},
 		]);
+	});
+
+	test("extracts extends and implements from a class declaration", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A concrete store. */
+export class MemoryStore extends AbstractStore implements Serializable, Disposable {
+	value: string;
+}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{
+				type: "tree-documentation",
+				props: { kind: "class", name: "MemoryStore", extends: "AbstractStore", implements: ["Serializable", "Disposable"] },
+			},
+		]);
+	});
+
+	test("stamps the owning class onto members and qualifies overrides with the base class", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A store. */
+export class MemoryStore extends AbstractStore {
+	/** The current value. */
+	readonly value: string;
+	/** Get a thing. */
+	override get(): string { return ""; }
+}
+`),
+		);
+		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
+		expect(cls?.props.children).toMatchObject([
+			{ props: { kind: "property", name: "value", title: "MemoryStore.value", class: "MemoryStore", readonly: true } },
+			{ props: { kind: "method", name: "get", title: "MemoryStore.get()", class: "MemoryStore", overrides: "AbstractStore.get" } },
+		]);
+	});
+
+	test("treats a getter without a setter as readonly, and a getter+setter pair as writable", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A store. */
+export class Store {
+	/** Read-only size. */
+	get size(): number { return 0; }
+	/** Writable name. */
+	get name(): string { return ""; }
+	set name(v: string) {}
+}
+`),
+		);
+		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
+		expect(cls?.props.children).toMatchObject([
+			{
+				props: {
+					kind: "property",
+					name: "size",
+					title: "Store.size",
+					class: "Store",
+					readonly: true,
+					signatures: ["readonly size: number"],
+				},
+			},
+			{ props: { kind: "property", name: "name", title: "Store.name", class: "Store", signatures: ["name: string"] } },
+		]);
+		// The getter+setter pair must NOT be flagged readonly.
+		expect((cls?.props.children[1]?.props as { readonly?: boolean }).readonly).toBeUndefined();
 	});
 
 	test("merges overloaded function declarations into one element with multiple signatures", async () => {
@@ -215,7 +288,7 @@ export function add(a: any, b: any): any { return a + b; }
 				name: "add",
 				title: "add()",
 				kind: "function",
-				signatures: ["(a: number, b: number) => number", "(a: string, b: string) => string", "(a: any, b: any) => any"],
+				signatures: ["add(a: number, b: number): number", "add(a: string, b: string): string", "add(a: any, b: any): any"],
 			},
 		});
 	});

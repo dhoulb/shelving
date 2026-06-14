@@ -1,24 +1,16 @@
 import { getModuleClass } from "../util/css.js";
 import PADDING_CSS from "./Padding.module.css";
 
-/**
- * Block-padding variants — opt-in modifiers for the `padding-block` (top + bottom) of a component.
- * Inline padding is left untouched; if you want narrower inline content inside a wide container
- * compose a `<Block narrow>` inside it instead of reducing the inline padding.
- */
+/** Possible padding strings to set the `padding-block` (top + bottom) of a component. */
+export type UIPadding = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+
+/** Variants for components with block-padding, e.g. `padding="large"`. */
 export interface PaddingVariants {
-	"padding-none"?: boolean | undefined;
-	"padding-xxsmall"?: boolean | undefined;
-	"padding-xsmall"?: boolean | undefined;
-	"padding-small"?: boolean | undefined;
-	"padding-normal"?: boolean | undefined;
-	"padding-large"?: boolean | undefined;
-	"padding-xlarge"?: boolean | undefined;
-	"padding-xxlarge"?: boolean | undefined;
+	/** Block-padding (top + bottom) of the element. */
+	padding?: UIPadding | undefined;
 }
 
-export type Padding = keyof PaddingVariants;
-
-export function getPaddingClass(padding: Padding | PaddingVariants): string | undefined {
-	return getModuleClass(PADDING_CSS, padding);
+/** Get a class for a padding. */
+export function getPaddingClass({ padding }: PaddingVariants): string | undefined {
+	return padding && getModuleClass(PADDING_CSS, padding);
 }

@@ -2,19 +2,17 @@
 
 @layer components {
 	.tag {
-		/* Identity */
-		--color-black: var(--tag-color-black, inherit);
-		--color-dark: var(--tag-color-dark, inherit);
-		--color-vivid: var(--tag-color-vivid, inherit);
-		--color-light: var(--tag-color-light, inherit);
-		--color-white: var(--tag-color-white, inherit);
+		/* Theme */
+		--tint-50: var(--tag-tint, inherit);
 
 		/* Box */
-		display: inline-block;
-		flex: 0 0 fit-content; /* Content-width; never grow or shrink, like icons. */
-		max-width: 100%;
+		display: block;
+		box-sizing: border-box;
+		inline-size: fit-content;
+		min-inline-size: fit-content;
+		max-inline-size: 100%;
 		padding: var(--tag-padding, 0 var(--space-xxsmall));
-		border: 0;
+		border: var(--tag-border, 0);
 		border-radius: var(--tag-radius, var(--radius-xxsmall));
 
 		/* Content */
@@ -22,31 +20,27 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 
-		/* Style — `bg=light / text=dark` (2-step pair). */
-		background: var(--color-light);
-		color: var(--color-dark);
+		/* Style. */
+		background: var(--tag-background, var(--tint-50));
+		color: var(--tag-color, var(--tint-100));
+		outline: var(--tag-focus-border, var(--stroke-focus) solid var(--color-focus));
+		outline-offset: calc(0px - var(--stroke-normal));
 
-		/* Typography */
+		/* Text */
 		font-family: var(--tag-font, var(--font-body));
 		font-size: var(--tag-size, var(--size-small));
 		font-weight: var(--tag-weight, var(--weight-strong));
 		line-height: var(--tag-leading, var(--leading));
-		text-transform: uppercase;
+		text-transform: var(--tag-case, var(--case-label));
 		text-decoration: none;
-		letter-spacing: 0.05em;
 
-		&.small {
-			font-size: calc(var(--tag-size, var(--size-small)) * 0.85);
-			padding: 0 calc(var(--space-xxsmall) * 0.75);
+		/* Pseudo-classes */
+		&:enabled:hover,
+		&:any-link:hover {
+			background: var(--tag-hover-background, var(--tint-55));
 		}
-
-		&:hover {
-			filter: brightness(0.95);
-		}
-
-		&:focus-visible {
-			outline: var(--stroke-focus) solid var(--color-focus);
-			outline-offset: 2px;
+		&:not(:focus-visible) {
+			outline-color: transparent;
 		}
 	}
 }

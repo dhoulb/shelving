@@ -1,52 +1,56 @@
 import type { ReactElement } from "react";
-import codeStyles from "../inline/Code.module.css";
-import deletedStyles from "../inline/Deleted.module.css";
-import emphasisStyles from "../inline/Emphasis.module.css";
-import insertedStyles from "../inline/Inserted.module.css";
-import linkStyles from "../inline/Link.module.css";
-import markStyles from "../inline/Mark.module.css";
-import smallStyles from "../inline/Small.module.css";
-import strongStyles from "../inline/Strong.module.css";
-import subscriptStyles from "../inline/Subscript.module.css";
-import superscriptStyles from "../inline/Superscript.module.css";
+import { CODE_PROSE_CLASS } from "../inline/Code.js";
+import { DELETED_PROSE_CLASS } from "../inline/Deleted.js";
+import { EMPHASIS_PROSE_CLASS } from "../inline/Emphasis.js";
+import { INSERTED_PROSE_CLASS } from "../inline/Inserted.js";
+import { LINK_PROSE_CLASS } from "../inline/Link.js";
+import { MARK_PROSE_CLASS } from "../inline/Mark.js";
+import { SMALL_PROSE_CLASS } from "../inline/Small.js";
+import { STRONG_PROSE_CLASS } from "../inline/Strong.js";
+import { SUBSCRIPT_PROSE_CLASS } from "../inline/Subscript.js";
+import { SUPERSCRIPT_PROSE_CLASS } from "../inline/Superscript.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import addressStyles from "./Address.module.css";
-import blockStyles from "./Block.module.css";
-import blockquoteStyles from "./Blockquote.module.css";
-import definitionsStyles from "./Definitions.module.css";
-import dividerStyles from "./Divider.module.css";
-import headingStyles from "./Heading.module.css";
-import imageStyles from "./Image.module.css";
-import listStyles from "./List.module.css";
-import paragraphStyles from "./Paragraph.module.css";
-import preformattedStyles from "./Preformatted.module.css";
-import subheadingStyles from "./Subheading.module.css";
-import tableStyles from "./Table.module.css";
+import { ADDRESS_PROSE_CLASS } from "./Address.js";
+import { BLOCKQUOTE_PROSE_CLASS } from "./Blockquote.js";
+import { CAPTION_PROSE_CLASS } from "./Caption.js";
+import { DEFINITIONS_PROSE_CLASS } from "./Definitions.js";
+import { DIVIDER_PROSE_CLASS } from "./Divider.js";
+import { HEADING_PROSE_CLASS } from "./Heading.js";
+import { IMAGE_PROSE_CLASS } from "./Image.js";
+import { LIST_PROSE_CLASS } from "./List.js";
+import { PARAGRAPH_PROSE_CLASS } from "./Paragraph.js";
+import { PREFORMATTED_PROSE_CLASS } from "./Preformatted.js";
+import { SECTION_PROSE_CLASS } from "./Section.js";
+import { SUBHEADING_PROSE_CLASS } from "./Subheading.js";
+import { TABLE_PROSE_CLASS } from "./Table.js";
+import { TITLE_PROSE_CLASS } from "./Title.js";
 
 const PROSE_STYLES = getClass(
-	paragraphStyles.prose,
-	headingStyles.prose,
-	subheadingStyles.prose,
-	addressStyles.prose,
-	blockStyles.prose,
-	blockquoteStyles.prose,
-	codeStyles.prose,
-	definitionsStyles.prose,
-	deletedStyles.prose,
-	emphasisStyles.prose,
-	imageStyles.prose,
-	insertedStyles.prose,
-	listStyles.prose,
-	linkStyles.prose,
-	markStyles.prose,
-	preformattedStyles.prose,
-	smallStyles.prose,
-	strongStyles.prose,
-	subscriptStyles.prose,
-	superscriptStyles.prose,
-	tableStyles.prose,
-	dividerStyles.prose,
+	PARAGRAPH_PROSE_CLASS,
+	HEADING_PROSE_CLASS,
+	SUBHEADING_PROSE_CLASS,
+	ADDRESS_PROSE_CLASS,
+	BLOCKQUOTE_PROSE_CLASS,
+	SECTION_PROSE_CLASS,
+	CODE_PROSE_CLASS,
+	DEFINITIONS_PROSE_CLASS,
+	DELETED_PROSE_CLASS,
+	EMPHASIS_PROSE_CLASS,
+	IMAGE_PROSE_CLASS,
+	INSERTED_PROSE_CLASS,
+	CAPTION_PROSE_CLASS,
+	LIST_PROSE_CLASS,
+	TITLE_PROSE_CLASS,
+	LINK_PROSE_CLASS,
+	MARK_PROSE_CLASS,
+	PREFORMATTED_PROSE_CLASS,
+	SMALL_PROSE_CLASS,
+	STRONG_PROSE_CLASS,
+	SUBSCRIPT_PROSE_CLASS,
+	SUPERSCRIPT_PROSE_CLASS,
+	TABLE_PROSE_CLASS,
+	DIVIDER_PROSE_CLASS,
 );
 
 export interface ProseProps extends OptionalChildProps {}

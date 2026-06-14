@@ -1,30 +1,29 @@
 import type { ReactElement } from "react";
-import { type AlignVariants, getAlignClass } from "../style/Align.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getSpacingClass, type SpacingVariants } from "../style/Spacing.js";
-import { getThicknessClass, type ThicknessVariants } from "../style/Thickness.js";
+import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
-import styles from "./Table.module.css";
+import TABLE_CSS from "./Table.module.css";
 
-export interface TableProps extends AlignVariants, ColorVariants, SpacingVariants, ThicknessVariants, TypographyVariants, ChildProps {}
+export const TABLE_CLASS = getModuleClass(TABLE_CSS, "divider");
+export const TABLE_PROSE_CLASS = getModuleClass(TABLE_CSS, "prose");
+
+export interface TableProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {}
 
 /**
  * Table block — rendered as `<table>`.
- * - Wrap in a `<Figure scrollable>` (or any `scrollable` block) if the table may exceed the container width on small screens.
- * - Thickness variants apply to the `<th>` / `<td>` borders (the `<table>` element itself has no border).
+ * - Wrap in a `<Scroll horizontal>` if the table may exceed the container width on small screens.
+ * - `<th>` / `<td>` cells draw the borders (the `<table>` element itself has none); override their weight via the `--table-border` / `--table-stroke` hooks.
  */
-export function Table({ children, ...variants }: TableProps): ReactElement {
+export function Table({ children, ...props }: TableProps): ReactElement {
 	return (
 		<table
 			className={getClass(
-				getModuleClass(styles, "table"),
-				getColorClass(variants),
-				getAlignClass(variants),
-				getSpacingClass(variants),
-				getThicknessClass(variants),
-				getTypographyClass(variants),
+				TABLE_CLASS, //
+				getColorClass(props),
+				getSpaceClass(props),
+				getTypographyClass(props),
 			)}
 		>
 			{children}

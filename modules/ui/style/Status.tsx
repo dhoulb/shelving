@@ -1,26 +1,26 @@
-import { getModuleClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import STATUS_CSS from "./Status.module.css";
-
-/** Variants for statuses. */
-export interface StatusVariants {
-	/** Element has loading status. */
-	loading?: boolean | undefined;
-	/** Element has info status. */
-	info?: boolean | undefined;
-	/** Element has danger status. */
-	danger?: boolean | undefined;
-	/** Element has error status. */
-	error?: boolean | undefined;
-	/** Element has warning status. */
-	warning?: boolean | undefined;
-	/** Element has success status. */
-	success?: boolean | undefined;
-}
+import { TINT_CLASS } from "./Tint.js";
 
 /** Possible status strings. */
-export type Status = keyof StatusVariants;
+export const STATUSES = ["loading", "info", "danger", "error", "warning", "success"] as const;
 
-/** Get a class for a status. */
-export function getStatusClass(status: Status | StatusVariants): string | undefined {
-	return getModuleClass(STATUS_CSS, status);
+/** Possible status strings. */
+export type Status = (typeof STATUSES)[number];
+
+/** Props for colored elements (either a simple boolean variant e.g. `blue` or a specific `color="purple"`). */
+export interface StatusVariants {
+	/** Specific status for the element. */
+	status?: Status | undefined;
+}
+
+/**
+ * CSS class that applies status tinting to an element.
+ *
+ * - Sets the key `.tint-50` color for an element (e.g. `--color-success` or `--color-failure`) based on e.g. `status="success"` or `status="error"`
+ * - Full set of shades e.g. `--tint-20` and `--tint-95` are created for the selected color.
+ * - Element can now compose these shades to style itself using the selected color.
+ */
+export function getStatusClass({ status }: StatusVariants): string | undefined {
+	if (status) return getClass(TINT_CLASS, getModuleClass(STATUS_CSS, status));
 }

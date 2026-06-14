@@ -1,20 +1,16 @@
 import { getModuleClass } from "../util/css.js";
 import GAP_CSS from "./Gap.module.css";
 
-/** Gap variants — sets `gap` on flex/grid containers and List/Definitions item spacing. */
+/** Possible gap strings — sets `gap` on flex/grid containers and List/Definitions item spacing. */
+export type CSSGap = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+
+/** Variants for components with a gap between their children, e.g. `gap="large"`. */
 export interface GapVariants {
-	"gap-none"?: boolean | undefined;
-	"gap-xxsmall"?: boolean | undefined;
-	"gap-xsmall"?: boolean | undefined;
-	"gap-small"?: boolean | undefined;
-	"gap-normal"?: boolean | undefined;
-	"gap-large"?: boolean | undefined;
-	"gap-xlarge"?: boolean | undefined;
-	"gap-xxlarge"?: boolean | undefined;
+	/** Gap between child elements. */
+	gap?: CSSGap | undefined;
 }
 
-export type Gap = keyof GapVariants;
-
-export function getGapClass(gap: Gap | GapVariants): string | undefined {
-	return getModuleClass(GAP_CSS, gap);
+/** Get a class for a gap. */
+export function getGapClass({ gap }: GapVariants): string | undefined {
+	return gap && getModuleClass(GAP_CSS, gap);
 }

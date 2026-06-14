@@ -11,9 +11,9 @@ import { dirname, join } from "node:path";
 import { renderToString } from "react-dom/server";
 import { HTML } from "../modules/ui/page/HTML.js";
 import type { PossibleMeta } from "../modules/ui/util/meta.js";
-import { getElementPaths, type TreeElement } from "../modules/util/element.js";
 import { requireURL } from "../modules/util/index.js";
-import { type AbsolutePath, joinPath } from "../modules/util/path.js";
+import { type AbsolutePath, isAbsolutePath } from "../modules/util/path.js";
+import { flattenTree, type TreeElement } from "../modules/util/tree.js";
 import { App } from "./App.js";
 import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
 
@@ -26,7 +26,8 @@ import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
  * @returns The number of pages written.
  */
 export async function renderApp(root: TreeElement, outdir: AbsolutePath, script: AbsolutePath, stylesheet: AbsolutePath): Promise<number> {
-	const paths: AbsolutePath[] = Array.from(getElementPaths(root)).map(segments => joinPath("/", segments));
+	// Flattening stamps a canonical `path` on every element and keys the map by it; the path-shaped keys are exactly the set of pages to render (one per element).
+	const paths: AbsolutePath[] = Array.from(flattenTree(root).keys()).filter(isAbsolutePath);
 
 	for (const path of paths) {
 		// Raw meta for this page — embedded in the HTML so the browser can rebuild the identical app while hydrating.

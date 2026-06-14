@@ -1,37 +1,26 @@
 import type { ReactNode } from "react";
-import { type TreeElements, walkElements } from "../../util/element.js";
-import type { AbsolutePath } from "../../util/path.js";
-import { DirectoryCard } from "../docs/DirectoryCard.js";
+import { walkElements } from "../../util/element.js";
+import type { TreeElements } from "../../util/tree.js";
 import { DocumentationCard } from "../docs/DocumentationCard.js";
-import { FileCard } from "../docs/FileCard.js";
 import { createMapper } from "../misc/Mapper.js";
-
-/** Extras threaded through `TreeCardMapper` to every card — currently just the parent URL path. */
-export interface TreeCardExtras {
-	/** URL path of the parent element. Each card computes its own path as `path + mapped.name`. Defaults to `/`. */
-	readonly path: AbsolutePath;
-}
+import { TreeCard } from "./TreeCard.js";
 
 /** Mapping + Mapper pair for tree cards — wrap children in `<TreeCardMapping>` to override. */
-export const [TreeCardMapping, TreeCardMapper] = createMapper<TreeCardExtras>({
-	"tree-directory": DirectoryCard,
-	"tree-file": FileCard,
+export const [TreeCardMapping, TreeCardMapper] = createMapper({
+	"tree-element": TreeCard,
 	"tree-documentation": DocumentationCard,
 });
 
 export interface TreeCardsProps {
 	/** The children to render as cards. */
 	readonly children?: TreeElements;
-	/** URL path of the parent element. Each card appends its own name to compute its href. */
-	readonly path?: AbsolutePath | undefined;
 }
 
 /**
  * Render a list of tree elements as a stack of cards.
- * - Each element is dispatched via `<TreeCardMapper>` to its registered renderer.
- * - `path` is threaded through to each card so it can compute its href as `path + name`.
+ * - Each element is dispatched via `<TreeCardMapper>` to its registered renderer; each card links to its own stamped `path`.
  * - To override the renderer for a specific element type, wrap in `<TreeCardMapping mapping={…}>`.
  */
-export function TreeCards({ path = "/", children }: TreeCardsProps): ReactNode {
-	return <TreeCardMapper path={path}>{walkElements(children)}</TreeCardMapper>;
+export function TreeCards({ children }: TreeCardsProps): ReactNode {
+	return <TreeCardMapper>{walkElements(children)}</TreeCardMapper>;
 }

@@ -2,17 +2,13 @@
 
 @layer components {
 	.video {
-		/* Identity */
-		--color-black: var(--video-color-black, inherit);
-		--color-dark: var(--video-color-dark, inherit);
-		--color-vivid: var(--video-color-vivid, inherit);
-		--color-light: var(--video-color-light, inherit);
-		--color-white: var(--video-color-white, inherit);
-
-		/* Block */
+		/* Box */
 		aspect-ratio: 16 / 9;
 		margin-inline: 0;
-		margin-block: var(--video-spacing, var(--spacing-paragraph));
+		margin-block: var(--video-space, var(--space-paragraph));
+		border: var(--video-border, var(--stroke-normal) solid black);
+		border-radius: var(--video-radius, var(--radius-normal));
+		padding: var(--video-padding, var(--space-normal));
 
 		/* Contents */
 		display: flex;
@@ -22,12 +18,12 @@
 		align-items: center;
 		position: relative;
 
-		/* Style — videos use the high-contrast `black + white` pair (a video frame is its own visual
-		 * surface, so it sits outside the lighter component scale). */
-		background: var(--color-black);
-		color: var(--color-white);
+		/* Style */
+		background: white;
+		color: black;
+
+		/* Contents */
 		overflow: hidden;
-		border-radius: var(--video-radius, var(--radius-xsmall));
 
 		&:fullscreen {
 			border-radius: 0;
@@ -36,59 +32,43 @@
 
 	.buttons {
 		position: absolute;
-		top: var(--video-controls-offset-y, var(--space-normal));
-		right: var(--video-controls-offset-x, var(--space-normal));
+		top: var(--video-buttons-offset-y, var(--space-normal));
+		right: var(--video-buttons-offset-x, var(--space-normal));
 		display: flex;
-		gap: var(--video-controls-gap, var(--space-small));
+		gap: var(--video-buttons-gap, var(--space-small));
 
 		&.left {
 			right: auto;
-			left: var(--video-controls-offset-x, var(--space-normal));
+			left: var(--video-buttons-offset-x, var(--space-normal));
 		}
 	}
 
 	.button {
-		display: inline-flex;
-		flex-direction: row;
-		gap: var(--video-control-gap, var(--space-small));
-		height: var(--video-control-size, 3rem);
-		min-width: var(--video-control-size, 3rem);
-		padding-inline: var(--video-control-padding-x, var(--space-xsmall));
-		align-items: center;
-		justify-content: center;
-		border-radius: var(--video-control-radius, 100rem);
-		border: var(--video-control-border, var(--stroke-normal)) solid transparent;
-		color: var(--video-color-control-text, var(--color-black));
-		background: var(--video-color-control-bg, var(--color-white));
-		transition:
-			box-shadow var(--duration-fast) ease-in-out,
-			background-color var(--duration-fast) ease-in-out,
-			border-color var(--duration-fast) ease-in-out;
+		/* Box */
+		display: block;
+		border: var(--video-button-border, var(--stroke-normal) solid black);
+		border-radius: var(--video-button-radius, 100rem);
+		padding-inline: var(--video-button-padding-x, var(--space-xsmall));
 
-		&:hover {
-			box-shadow: var(--video-control-shadow-hover, var(--shadow-small));
-			background: var(--video-color-control-hover-bg, color-mix(in oklch, var(--color-dark) 20%, transparent));
-		}
+		/* Style */
+		color: var(--video-button-text, white);
+		background: var(--video-button-bg, black);
+		transition: var(--video-button-transition, all var(--duration-fast));
+		outline: var(--video-button-focus-border, var(--stroke-focus) solid var(--color-focus));
+		outline-offset: calc(0px - var(--stroke-normal));
+		box-shadow: var(--video-button-shadow, var(--shadow-normal));
+		cursor: pointer;
 
-		&:disabled {
-			opacity: var(--video-control-disabled-opacity, 0.5);
+		/* Pseudo-classes */
+		&:disabled,
+		&:where(a:not(:any-link)) {
+			opacity: var(--video-button-disabled-opacity, 0.5);
 			cursor: default;
 		}
-
-		&.danger {
-			border-color: var(--video-color-danger-border, var(--vivid-red));
-			background: var(--video-color-danger-bg, var(--vivid-red));
-			color: var(--video-color-danger-text, var(--color-white));
-		}
-
-		&.danger:hover {
-			background: var(--video-color-danger-hover-bg, color-mix(in oklch, var(--vivid-red) 80%, white));
-			border-color: var(--video-color-danger-hover-border, color-mix(in oklch, var(--vivid-red) 80%, white));
-		}
-
-		& svg {
-			width: 1.5rem;
-			height: 1.5rem;
+		&:enabled:hover,
+		&:any-link:hover,
+		&:focus:not(:focus-visible) {
+			background: color-mix(in oklch, white 85%, transparent);
 		}
 	}
 }
@@ -100,6 +80,12 @@
 		}
 		&:last-child {
 			margin-block-end: 0;
+		}
+	}
+
+	.button {
+		&:not(:focus-visible) {
+			outline-color: transparent;
 		}
 	}
 }

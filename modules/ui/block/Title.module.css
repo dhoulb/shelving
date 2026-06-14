@@ -3,17 +3,21 @@
 @layer components {
 	.title,
 	.prose h1 {
-		display: block;
-		inline-size: 100%;
-		margin-inline: 0;
-		margin-block-start: var(--title-spacing-before, var(--spacing-section));
-		margin-block-end: var(--title-spacing, var(--spacing-paragraph));
+		/* Theme */
+		--tint-50: var(--title-tint, inherit);
 
-		font-family: var(--title-font, var(--font-body));
+		/* Box */
+		display: block;
+		margin-inline: 0;
+		margin-block-start: var(--title-space-before, var(--space-section));
+		margin-block-end: var(--title-space, var(--space-paragraph));
+
+		/* Text */
+		font-family: var(--title-font, var(--font-title));
 		font-weight: var(--title-weight, var(--weight-strong));
-		line-height: var(--title-leading, var(--leading));
 		font-size: var(--title-size, var(--size-xxxlarge));
-		text-align: var(--title-align, left);
+		line-height: var(--title-leading, var(--leading));
+		color: var(--title-color, inherit);
 	}
 }
 
