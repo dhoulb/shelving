@@ -9,12 +9,22 @@ import { NOTICES } from "./NoticesStore.js";
 
 const NOTICES_CLASS = getModuleClass(NOTICES_CSS, "notices");
 
+/**
+ * Props for `<Notices>` — flex styling variants for the notices container.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/notice/Notices/NoticesProps
+ */
 export interface NoticesProps extends FlexVariants {}
 
 /**
- * Output the global list of notices.
+ * Render the global list of notices and subscribe to incoming `"notice"` events.
  * - Listens for `"notice"` events on `window` (or that bubble up to `window`) and shows them in the global notice list.
  * - This is how e.g. `<Button>` and `<FormNotify>` components send notices into the global list.
+ *
+ * @param props Flex styling variants for the container.
+ * @returns The notices container element.
+ * @example <Notices column />
+ * @see https://dhoulb.github.io/shelving/ui/notice/Notices/Notices
  */
 export function Notices(props: NoticesProps): ReactElement {
 	const notices = useStore(NOTICES).value;

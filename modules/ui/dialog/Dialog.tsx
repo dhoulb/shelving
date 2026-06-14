@@ -6,10 +6,24 @@ import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Dialog.module.css";
 
+/**
+ * Props for `<Dialog>` — optional `children` content and an `onClose` callback.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/DialogProps
+ */
 export interface DialogProps extends OptionalChildProps {
 	onClose?: Callback;
 }
 
+/**
+ * Modal `<dialog>` element that opens on mount and includes a close button.
+ *
+ * - Opens via `showModal()` when mounted and closes on backdrop clicks, link/nav-button clicks, or the close button.
+ * - Wraps content in `<Suspense>` so lazy children can stream in.
+ *
+ * @example dialogs.show(<Dialog><p>Are you sure?</p></Dialog>);
+ * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/Dialog
+ */
 export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 	const ref = useRef<HTMLDialogElement>(null);
 
@@ -39,9 +53,22 @@ function _closeOnBackdropClick({ currentTarget, target }: MouseEvent<HTMLDialogE
 	if (target instanceof Element && target.closest("a:any-link, nav button:enabled")) currentTarget.close();
 }
 
+/**
+ * Props for `<DialogCloseButton>` — button styling variants and optional `children` to override the X icon.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/DialogCloseButtonProps
+ */
 export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildProps {}
 
-/** Button that closes its wrapping dialog with an X icon. */
+/**
+ * Button that closes its wrapping `<dialog>`, showing an X icon by default.
+ *
+ * @param children Optional button content (defaults to an X icon).
+ * @param variants Button styling variants.
+ * @returns The close button element.
+ * @example <DialogCloseButton plain />
+ * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/DialogCloseButton
+ */
 export function DialogCloseButton({ children = <XMarkIcon />, ...variants }: DialogCloseButtonProps): ReactElement {
 	return (
 		<button type="button" title="Close" className={getModuleClass(styles, "button", variants)} onClick={_closeOnButtonClick}>
