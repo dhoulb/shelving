@@ -69,7 +69,7 @@ export function DocumentationPage({
 						<TreeBreadcrumbs />
 						<Title>
 							<Row left wrap>
-								<span>{title ?? name}</span>
+								{title ?? name}
 								{kind && <DocumentationKind kind={kind} size="normal" />}
 							</Row>
 						</Title>

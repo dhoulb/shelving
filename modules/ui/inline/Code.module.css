@@ -11,7 +11,7 @@
 		text-transform: none;
 	}
 
-	.code,
+	.code:not(.plain),
 	.prose :is(code, kbd, samp, var):not(pre *) {
 		/* Box */
 		display: inline-block;

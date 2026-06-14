@@ -33,7 +33,7 @@ export function DocumentationCard({
 	const color = kind ? getDocumentationKindColor(kind) : undefined;
 	return (
 		<Card href={href} color={color}>
-			<Subheading code space="none">
+			<Subheading space="none">
 				<Row left wrap gap="xsmall">
 					{title ?? name}
 					{kind && <DocumentationKind kind={kind} />}

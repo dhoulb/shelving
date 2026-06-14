@@ -46,7 +46,7 @@ export function DocumentationButtons({ wrap = true, left = true, gap = "none", .
 		>
 			{relations.map(([label, to]) => (
 				<TreeButton key={`${label}-${to}`} name={to}>
-					{`${label} ${to}`}
+					{label} {to}
 				</TreeButton>
 			))}
 		</nav>

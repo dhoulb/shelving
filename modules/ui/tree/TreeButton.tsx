@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
 import { joinPath } from "../../util/path.js";
 import { Button, type ButtonVariants } from "../form/Button.js";
 import { useTreeMap } from "./TreeContext.js";
@@ -8,7 +8,7 @@ export interface TreeButtonProps extends ButtonVariants {
 	/** Name of an element in the tree, e.g. `"Store"` or `"Store.get"`. */
 	readonly name: string;
 	/** Visible label — defaults to `to`. */
-	readonly children?: string | undefined;
+	readonly children?: ReactNode | undefined;
 }
 
 /**
