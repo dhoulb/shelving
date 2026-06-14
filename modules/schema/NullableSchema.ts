@@ -22,5 +22,11 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
 	}
 }
 
-/** Create a new nullable schema from a source schema. */
-export const NULLABLE = <T>(source: Schema<T>): NullableSchema<T> => new NullableSchema({ source });
+/**
+ * Create a new nullable schema from a source schema.
+ *
+ * *Factory for `NullableSchema`.*
+ */
+export function NULLABLE<T>(source: Schema<T>): NullableSchema<T> {
+	return new NullableSchema({ source });
+}

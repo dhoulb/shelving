@@ -10,5 +10,11 @@ export class RequiredSchema<T> extends ThroughSchema<T> {
 	}
 }
 
-/** Create a new required schema from a source schema. */
-export const REQUIRED = <T>(source: Schema<T>): RequiredSchema<T> => new RequiredSchema({ source });
+/**
+ * Create a new required schema from a source schema.
+ *
+ * *Factory for `RequiredSchema`.*
+ */
+export function REQUIRED<T>(source: Schema<T>): RequiredSchema<T> {
+	return new RequiredSchema({ source });
+}

@@ -353,3 +353,23 @@ Conventions for the upcoming reusable component layer.
 - Each module has a `README.md` that acts as the module's guide page. It covers **purpose, key concepts, and integration examples** — how to combine the module's classes and functions to accomplish real tasks (and, for families like `error`, shared traits). When module behaviour changes, check whether the README needs updating
 - **Per-class / per-function usage examples** live in a sibling `MyClass.md` / `myFunction.md` next to the source file. `DirectoryExtractor` merges that markdown onto the symbol's own page (`MarkupExtractor` outranks `TypescriptExtractor`), so detailed usage belongs there rather than in the module README. `modules/util/template.md` is the precedent
 - Trust source and tests over README if they conflict — but fix the README rather than leaving it wrong
+
+### Factory functions
+
+A **factory** is a function (or constant) whose purpose is to call `new SomeClass(...)` with sensible defaults — e.g. `DATA` is a factory for `DataSchema`, `NULLABLE` for `NullableSchema`.
+
+- Write factories as regular `function` declarations, not arrow-consts. A `function` declaration classifies as `kind: "function"` on the docs site (an arrow-const wrongly shows as a `constant`), gives a named stack trace, and is the preferred form for public-API exports anyway (see the Functions section)
+- Mark a factory in its docblock with a short italic line naming the class it builds, on its own paragraph after the summary:
+
+  ```ts
+  /**
+   * Create a `DataSchema` for a set of properties.
+   *
+   * *Factory for `DataSchema`.*
+   */
+  export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
+  	return new DataSchema({ props });
+  }
+  ```
+
+- The canonical wording is exactly `*Factory for \`ClassName\`.*` (italicised, backtick-quoted class name). When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
