@@ -17,6 +17,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Uses the TypeScript compiler API to parse the AST.
  * - Extracts exported, public, non-`_`-prefixed declarations as `tree-documentation` children.
  * - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`.
+ * - Class declarations synthesise their `signatures`, `params`, and `returns` from the constructor — `new ClassName<…>(…)` including generics, one signature per constructor overload, with `returns` set to the class type. Param descriptions come from the constructor's `@param` first, then the class's `@param`.
  * - Top-of-file JSDoc comment becomes the file's `content`.
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on the file and every `tree-documentation` child.
  * - Sets `title` on every `tree-documentation` child — `name()` for functions and methods, bare `name` for other kinds. Parent class context comes from the `class` prop ("member of …" affordance), never the title.
@@ -120,9 +121,9 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 	const kind = _getKind(statement);
 	if (!kind) return;
 
-	const signature = _getSignature(statement, source, name);
+	const signatures = _getSignatures(statement, source, name);
 	const params = _getParams(statement, source, jsDoc?.params);
-	const returns = _getReturns(statement, source, jsDoc?.returns);
+	const returns = _getReturns(statement, source, jsDoc?.returns, name);
 	const throws = jsDoc?.throws;
 	const examples = jsDoc?.examples;
 	// Heritage (`extends` / `implements`) is only meaningful for classes and interfaces.
@@ -139,7 +140,7 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 			kind,
 			description: extractMarkdownProps(jsDoc?.description ?? "").description,
 			content: _buildJSDocContent(jsDoc?.description, jsDoc?.unhandled),
-			signatures: signature ? [signature] : undefined,
+			signatures,
 			params,
 			returns,
 			throws,
@@ -212,34 +213,64 @@ function _getKind(statement: ts.Statement): string | undefined {
 	if (ts.isVariableStatement(statement)) return "constant";
 }
 
-/** Get the text signature of a statement — a complete, name-prefixed declaration usable as a heading. */
-function _getSignature(statement: ts.Statement, source: ts.SourceFile, name: string): string | undefined {
+/** Get the text signature(s) of a statement — complete, name-prefixed declarations usable as headings. */
+function _getSignatures(statement: ts.Statement, source: ts.SourceFile, name: string): readonly string[] | undefined {
 	if (ts.isFunctionDeclaration(statement)) {
 		const params = statement.parameters.map(p => p.getText(source)).join(", ");
 		const ret = statement.type ? statement.type.getText(source) : "void";
-		return `${name}(${params}): ${ret}`;
+		return [`${name}(${params}): ${ret}`];
+	}
+	if (ts.isClassDeclaration(statement)) {
+		// Synthesise `new ClassName<…>(…)` constructor signatures so a class page reads like a function's.
+		return _getConstructorSignatures(statement, source, name);
 	}
 	if (ts.isInterfaceDeclaration(statement)) {
 		// Emit `{ member; member }` — the same shape a `type` object body produces, distinguished only by the `kind` badge.
 		const members = statement.members.map(m => m.getText(source).replace(/;\s*$/, "").trim()).join("; ");
-		return members ? `{ ${members} }` : "{}";
+		return [members ? `{ ${members} }` : "{}"];
 	}
 	if (ts.isTypeAliasDeclaration(statement)) {
 		// Emit only the type body (e.g. `{ a: string }` or `string | null`) — the alias name is already the page title.
-		return statement.type.getText(source);
+		return [statement.type.getText(source)];
 	}
 	if (ts.isVariableStatement(statement)) {
 		const declaration = statement.declarationList.declarations[0];
-		if (declaration?.type) return `${name}: ${declaration.type.getText(source)}`;
+		if (declaration?.type) return [`${name}: ${declaration.type.getText(source)}`];
 	}
 }
 
-/** Extract parameters from a function or method declaration, enriched with JSDoc `@param` descriptions. */
+/** Render a class's generic parameter names as `<P, R>` (names only, no constraints), or `""` when non-generic. */
+function _getTypeParamNames(statement: ts.ClassDeclaration, source: ts.SourceFile): string {
+	const { typeParameters } = statement;
+	if (!typeParameters?.length) return "";
+	return `<${typeParameters.map(t => t.name.getText(source)).join(", ")}>`;
+}
+
+/** Get a class's constructor declarations (overload signatures + implementation), in source order. */
+function _getConstructors(statement: ts.ClassDeclaration): readonly ts.ConstructorDeclaration[] {
+	return statement.members.filter(ts.isConstructorDeclaration);
+}
+
+/**
+ * Synthesise `new ClassName<…>(…)` signatures from a class's constructor declaration(s).
+ * - Generics are included so the reader sees how they're inferred from the arguments (e.g. `new MockAPIProvider<P, R>(…)`).
+ * - Multiple constructor overloads each become a signature, same as function overloads.
+ * - A class with no explicit constructor yields a single degenerate `new ClassName()` signature.
+ */
+function _getConstructorSignatures(statement: ts.ClassDeclaration, source: ts.SourceFile, name: string): readonly string[] {
+	const generics = _getTypeParamNames(statement, source);
+	const constructors = _getConstructors(statement);
+	if (!constructors.length) return [`new ${name}${generics}()`];
+	return constructors.map(c => `new ${name}${generics}(${c.parameters.map(p => p.getText(source)).join(", ")})`);
+}
+
+/** Extract parameters from a function or class declaration, enriched with JSDoc `@param` descriptions. */
 function _getParams(
 	statement: ts.Statement,
 	source: ts.SourceFile,
 	jsDocParams: readonly DocumentationParam[] | undefined,
 ): readonly DocumentationParam[] | undefined {
+	if (ts.isClassDeclaration(statement)) return _getConstructorParams(statement, source, jsDocParams);
 	if (!ts.isFunctionDeclaration(statement)) return;
 	const params: DocumentationParam[] = statement.parameters.map(p => {
 		const name = p.name.getText(source);
@@ -251,12 +282,45 @@ function _getParams(
 	return params.length ? params : undefined;
 }
 
+/**
+ * Extract a class's constructor parameters as `params`, mirroring the function shape.
+ * - Descriptions are sourced from the constructor's own `@param` first, falling back to the class-level `@param`.
+ * - Overloaded constructors contribute their parameters in source order, de-duplicated by identity (same as function overloads).
+ */
+function _getConstructorParams(
+	statement: ts.ClassDeclaration,
+	source: ts.SourceFile,
+	classJsDocParams: readonly DocumentationParam[] | undefined,
+): readonly DocumentationParam[] | undefined {
+	let params: readonly DocumentationParam[] | undefined;
+	for (const ctor of _getConstructors(statement)) {
+		const ctorJsDocParams = _getJSDoc(ctor, source)?.params;
+		const next: DocumentationParam[] = ctor.parameters.map(p => {
+			const name = p.name.getText(source);
+			const type = p.type?.getText(source);
+			const optional = !!p.questionToken || !!p.initializer;
+			// Constructor-level `@param` wins over the class-level `@param` on collision.
+			const description =
+				ctorJsDocParams?.find(d => d.name === name)?.description ?? classJsDocParams?.find(d => d.name === name)?.description;
+			return { name, type, description, optional };
+		});
+		params = _concatUnique(params, next, p => `${p.name}\0${p.type}\0${p.description}\0${p.optional}`);
+	}
+	return params?.length ? params : undefined;
+}
+
 /** Extract return entries — combines the signature return type with any `@returns` descriptions. */
 function _getReturns(
 	statement: ts.Statement,
 	source: ts.SourceFile,
 	jsDocReturns: readonly DocumentationReturn[] | undefined,
+	name: string,
 ): readonly DocumentationReturn[] | undefined {
+	if (ts.isClassDeclaration(statement)) {
+		// A constructor returns an instance of the class, including its generics (e.g. `ChoiceSchema<T>`).
+		const type = `${name}${_getTypeParamNames(statement, source)}`;
+		return [{ type, description: jsDocReturns?.[0]?.description }];
+	}
 	if (!ts.isFunctionDeclaration(statement)) return jsDocReturns;
 	const type = statement.type?.getText(source);
 	if (jsDocReturns?.length) {

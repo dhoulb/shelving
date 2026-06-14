@@ -333,6 +333,154 @@ export function COLLECTION(): Collection { return new Collection(); }
 		expect(children.map(c => c.props.kind)).toEqual(["class", "function"]);
 	});
 
+	test("synthesises a `new ClassName(...)` constructor signature, params, and returns for a simple class", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A boolean schema. */
+export class BooleanSchema {
+	constructor(options: BooleanSchemaOptions) {}
+}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{
+				type: "tree-documentation",
+				props: {
+					kind: "class",
+					name: "BooleanSchema",
+					signatures: ["new BooleanSchema(options: BooleanSchemaOptions)"],
+					params: [{ name: "options", type: "BooleanSchemaOptions", description: undefined, optional: false }],
+					returns: [{ type: "BooleanSchema", description: undefined }],
+				},
+			},
+		]);
+	});
+
+	test("includes generics in the constructor signature and returns type", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A mock API provider. */
+export class MockAPIProvider<P, R> {
+	constructor(handler: RequestHandler, source: APIProvider<P, R>) {}
+}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{
+				props: {
+					kind: "class",
+					name: "MockAPIProvider",
+					signatures: ["new MockAPIProvider<P, R>(handler: RequestHandler, source: APIProvider<P, R>)"],
+					params: [
+						{ name: "handler", type: "RequestHandler", optional: false },
+						{ name: "source", type: "APIProvider<P, R>", optional: false },
+					],
+					returns: [{ type: "MockAPIProvider<P, R>" }],
+				},
+			},
+		]);
+	});
+
+	test("emits multiple signatures for multiple constructor overloads", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A range. */
+export class Range {
+	constructor(max: number);
+	constructor(min: number, max: number);
+	constructor(min: number, max?: number) {}
+}
+`),
+		);
+		const props = (element.props.children as { props: { signatures: string[] } }[])[0]?.props;
+		expect(props?.signatures).toEqual([
+			"new Range(max: number)",
+			"new Range(min: number, max: number)",
+			"new Range(min: number, max?: number)",
+		]);
+	});
+
+	test("emits `new ClassName()` with no params for a class with no explicit constructor", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A choice schema. */
+export class ChoiceSchema<T> {
+	value: T;
+}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{
+				props: {
+					kind: "class",
+					name: "ChoiceSchema",
+					signatures: ["new ChoiceSchema<T>()"],
+					returns: [{ type: "ChoiceSchema<T>" }],
+				},
+			},
+		]);
+		// A no-arg constructor contributes no params.
+		const props = (element.props.children as { props: { params?: unknown } }[])[0]?.props;
+		expect(props?.params).toBeUndefined();
+	});
+
+	test("sources constructor param descriptions from the constructor's @param", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A user. */
+export class User {
+	/**
+	 * Create a user.
+	 * @param name The user's display name.
+	 */
+	constructor(name: string) {}
+}
+`),
+		);
+		const props = (element.props.children as { props: { params: unknown } }[])[0]?.props;
+		expect(props?.params).toEqual([{ name: "name", type: "string", description: "The user's display name.", optional: false }]);
+	});
+
+	test("falls back to the class's @param for constructor param descriptions, constructor winning on collision", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * A point.
+ * @param x The horizontal coordinate.
+ * @param y The vertical coordinate.
+ */
+export class Point {
+	/**
+	 * Create a point.
+	 * @param x The X position (constructor-level, wins).
+	 */
+	constructor(x: number, y: number) {}
+}
+`),
+		);
+		const props = (element.props.children as { props: { params: unknown } }[])[0]?.props;
+		expect(props?.params).toEqual([
+			{ name: "x", type: "number", description: "The X position (constructor-level, wins).", optional: false },
+			{ name: "y", type: "number", description: "The vertical coordinate.", optional: false },
+		]);
+	});
+
+	test("sources the returns description from the class's @returns when present", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * A token.
+ * @returns A freshly minted token.
+ */
+export class Token {
+	constructor(value: string) {}
+}
+`),
+		);
+		const props = (element.props.children as { props: { returns: unknown } }[])[0]?.props;
+		expect(props?.returns).toEqual([{ type: "Token", description: "A freshly minted token." }]);
+	});
+
 	test("parses @returns with type and description", async () => {
 		const element = await extractor.extract(
 			file(`
