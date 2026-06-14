@@ -13,7 +13,7 @@ export class BunPostgreSQLProvider<I extends Identifier = Identifier, T extends 
 	}
 
 	// Implement `SQLProvider` using `Bun.SQL` instance.
-	exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<X>> {
+	override exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<X>> {
 		return this._sql(strings, ...values);
 	}
 

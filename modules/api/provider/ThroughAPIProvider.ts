@@ -10,7 +10,7 @@ import { APIProvider } from "./APIProvider.js";
  * - Extend this when you want to intercept only selected API operations, such as injecting auth headers or logging.
  */
 export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourceable<APIProvider<P, R>> {
-	get url(): URL {
+	override get url(): URL {
 		return this.source.url;
 	}
 
@@ -21,11 +21,11 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 		this.source = source;
 	}
 
-	renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
+	override renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
 		return this.source.renderURL(endpoint, payload, caller);
 	}
 
-	createRequest<PP extends P, RR extends R>(
+	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
@@ -34,7 +34,7 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 		return this.source.createRequest(endpoint, payload, options, caller);
 	}
 
-	parseResponse<PP extends P, RR extends R>(
+	override parseResponse<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		response: Response,
 		caller: AnyCaller = this.parseResponse,

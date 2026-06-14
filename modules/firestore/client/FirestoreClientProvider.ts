@@ -126,11 +126,11 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 		return q ? query(this._collection(c), ..._getConstraints(q)) : this._collection(c);
 	}
 
-	async getItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
+	override async getItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const snapshot = await getDoc(this._doc(c, id));
 		return _getOptionalItem<II, TT>(snapshot);
 	}
-	getItemSequence<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
+	override getItemSequence<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		const sequence = new DeferredSequence<OptionalItem<II, TT>>();
 		return new LazySequence(sequence, () =>
 			onSnapshot(
@@ -140,27 +140,31 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 			),
 		);
 	}
-	async addItem<II extends I, TT extends T>(c: Collection<string, II, TT>, data: TT): Promise<II> {
+	override async addItem<II extends I, TT extends T>(c: Collection<string, II, TT>, data: TT): Promise<II> {
 		const reference = await addDoc(this._collection(c), data);
 		return reference.id as II; // `as II` needed: Firestore returns string, not II.
 	}
-	async setItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
+	override async setItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await setDoc(this._doc(c, id), data);
 	}
-	async updateItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II, updates: Updates<Item<II, TT>>): Promise<void> {
+	override async updateItem<II extends I, TT extends T>(
+		c: Collection<string, II, TT>,
+		id: II,
+		updates: Updates<Item<II, TT>>,
+	): Promise<void> {
 		await updateDoc(this._doc(c, id), _getFieldValues(updates));
 	}
-	async deleteItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): Promise<void> {
+	override async deleteItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): Promise<void> {
 		await deleteDoc(this._doc(c, id));
 	}
 	override async countQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<number> {
 		const snapshot = await getCountFromServer(this._query(c, q));
 		return snapshot.data().count;
 	}
-	async getQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
+	override async getQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
 		return _getItems<II, TT>(await getDocs(this._query(c, q)));
 	}
-	getQuerySequence<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
+	override getQuerySequence<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
 		const sequence = new DeferredSequence<Items<II, TT>>();
 		return new LazySequence(sequence, () =>
 			onSnapshot(
@@ -170,11 +174,11 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 			),
 		);
 	}
-	async setQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>, data: TT): Promise<void> {
+	override async setQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>, data: TT): Promise<void> {
 		const snapshot = await getDocs(this._query(c, q));
 		await Promise.all(snapshot.docs.map(s => setDoc(s.ref, data)));
 	}
-	async updateQuery<II extends I, TT extends T>(
+	override async updateQuery<II extends I, TT extends T>(
 		c: Collection<string, II, TT>,
 		q: Query<Item<II, TT>>,
 		updates: Updates<TT>,
@@ -183,7 +187,7 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 		const fieldValues = _getFieldValues(updates);
 		await Promise.all(snapshot.docs.map(s => updateDoc(s.ref, fieldValues)));
 	}
-	async deleteQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>): Promise<void> {
+	override async deleteQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>): Promise<void> {
 		const snapshot = await getDocs(this._query(c, q));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));
 	}

@@ -56,7 +56,7 @@ export interface ClientAPIProviderOptions {
  */
 export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, R> {
 	/** The common base URL for all rendered endpoint requests. */
-	readonly url: URL;
+	override readonly url: URL;
 
 	/** Default options used for HTTP requests created with `this.createRequest()` and `this.fetch()` */
 	readonly options: RequestOptions;
@@ -71,7 +71,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		this.timeout = timeout;
 	}
 
-	renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
+	override renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
 		// Construct the full URL from `this.url` and the rendered path.
 		// Adding the `.` turns the absolute path from `renderPath()` into a relative URL.
 		// `requireURL()` resolves that path relative to `this.url`
@@ -90,7 +90,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		return url;
 	}
 
-	createRequest<PP extends P, RR extends R>(
+	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
 		options?: RequestOptions,
@@ -135,11 +135,11 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	}
 
 	// Override to set default functionality of a client provider to send requests over the network with `fetch()` and parse responses with `parseResponse()`.
-	async fetch(request: Request): Promise<Response> {
+	override async fetch(request: Request): Promise<Response> {
 		return fetch(request);
 	}
 
-	async parseResponse<PP extends P, RR extends R>(
+	override async parseResponse<PP extends P, RR extends R>(
 		_endpoint: Endpoint<PP, RR>,
 		response: Response,
 		caller: AnyCaller = this.parseResponse,
