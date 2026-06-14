@@ -345,38 +345,88 @@ export function addArrayItem<T>(arr: MutableArray<T>, item: T): T {
 /**
  * Add multiple items to an array (by reference).
  * - Skip items that already exist.
+ *
+ * @param arr The array to add to (modified in place).
+ * @param items The items to add.
+ * @example addArrayItems(arr, 3, 4); // (`arr` now contains `3` and `4`)
+ * @see https://dhoulb.github.io/shelving/util/array/addArrayItems
  */
 export function addArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
 	for (const item of items) if (arr.indexOf(item) < 0) arr.push(item);
 }
 
-/** Remove multiple items from an array (by reference). */
+/**
+ * Remove multiple items from an array (by reference).
+ *
+ * @param arr The array to remove from (modified in place).
+ * @param items The items to remove.
+ * @example deleteArrayItems(arr, 2, 3); // (`arr` no longer contains `2` or `3`)
+ * @see https://dhoulb.github.io/shelving/util/array/deleteArrayItems
+ */
 export function deleteArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
 	for (let i = arr.length - 1; i >= 0; i--) if (i in arr && items.includes(arr[i] as T)) arr.splice(i, 1);
 }
 
-/** Remove an item from an array (by reference). */
+/**
+ * Remove an item from an array (by reference).
+ *
+ * @param arr The array to remove from (modified in place).
+ * @param item The item to remove.
+ * @example deleteArrayItem(arr, 2); // (`arr` no longer contains `2`)
+ * @see https://dhoulb.github.io/shelving/util/array/deleteArrayItem
+ */
 export const deleteArrayItem: <T>(arr: MutableArray<T>, item: T) => void = deleteArrayItems;
 
-/** Return an array of the unique items in an array. */
+/**
+ * Return an array of the unique items in an array.
+ *
+ * @param list The array or iterable to deduplicate.
+ * @returns A new array with duplicate items removed, or the same array if all items were already unique.
+ * @example getUniqueArray([1, 2, 2, 3]) // [1, 2, 3]
+ * @see https://dhoulb.github.io/shelving/util/array/getUniqueArray
+ */
 export function getUniqueArray<T>(list: PossibleArray<T>): ImmutableArray<T> {
 	const output: MutableArray<T> = [];
 	for (const item of list) if (!output.includes(item)) output.push(item);
 	return isArray(list) && list.length === output.length ? list : output;
 }
 
-/** Apply a limit to an array. */
+/**
+ * Apply a limit to an array.
+ *
+ * @param list The array or iterable to limit.
+ * @param limit The maximum number of items to keep.
+ * @returns An array of at most `limit` items, or the same array if it was already within the limit.
+ * @throws {RequiredError} If `list` cannot be converted to an array.
+ * @example limitArray([1, 2, 3, 4], 2) // [1, 2]
+ * @see https://dhoulb.github.io/shelving/util/array/limitArray
+ */
 export function limitArray<T>(list: PossibleArray<T>, limit: number): ImmutableArray<T> {
 	const arr = requireArray(list, undefined, undefined, limitArray);
 	return limit > arr.length ? arr : arr.slice(0, limit);
 }
 
-/** Count the items in an array. */
+/**
+ * Count the items in an array.
+ *
+ * @param arr The array to count.
+ * @returns The number of items in `arr`.
+ * @example countArray([1, 2, 3]) // 3
+ * @see https://dhoulb.github.io/shelving/util/array/countArray
+ */
 export function countArray<T>(arr: ImmutableArray<T>): number {
 	return arr.length;
 }
 
-/** Interleave array items with a separator */
+/**
+ * Interleave array items with a separator.
+ *
+ * @param items The array or iterable to interleave.
+ * @param separator The value to insert between each pair of items.
+ * @returns A new array with `separator` inserted between items, or the same array if it had fewer than two items.
+ * @example interleaveArray([1, 2, 3], 0) // [1, 0, 2, 0, 3]
+ * @see https://dhoulb.github.io/shelving/util/array/interleaveArray
+ */
 export function interleaveArray<T>(items: PossibleArray<T>, separator: T): ImmutableArray<T>;
 export function interleaveArray<A, B>(items: PossibleArray<A>, separator: B): ImmutableArray<A | B>;
 export function interleaveArray<A, B>(items: PossibleArray<A>, separator: B): ImmutableArray<A | B> {
@@ -384,32 +434,72 @@ export function interleaveArray<A, B>(items: PossibleArray<A>, separator: B): Im
 	return Array.from(interleaveItems(items, separator));
 }
 
-/** Return a new array with a new value replacing a specific index in the array (or the same array if the value was unchanged). */
+/**
+ * Return a new array with a new value replacing a specific index in the array (or the same array if the value was unchanged).
+ *
+ * @param arr The array to update.
+ * @param index The index to replace.
+ * @param value The new value to set at `index`.
+ * @returns A new array with `value` at `index`, or the same array if the value was unchanged.
+ * @example withArrayIndex([1, 2, 3], 1, 9) // [1, 9, 3]
+ * @see https://dhoulb.github.io/shelving/util/array/withArrayIndex
+ */
 export function withArrayIndex<T>(arr: ImmutableArray<T>, index: number, value: T): ImmutableArray<T> {
 	if (arr[index] === value) return arr;
 	return [...arr.slice(0, index), value, ...arr.slice(index + 1)];
 }
 
-/** Return a new array without a specific index in the array (or the same array if the value was unchanged). */
+/**
+ * Return a new array without a specific index in the array (or the same array if the value was unchanged).
+ *
+ * @param arr The array to update.
+ * @param index The index to remove.
+ * @returns A new array without `index`, or the same array if nothing changed.
+ * @example omitArrayIndex([1, 2, 3], 1) // [1, 3]
+ * @see https://dhoulb.github.io/shelving/util/array/omitArrayIndex
+ */
 export function omitArrayIndex<T>(arr: ImmutableArray<T>, index: number): ImmutableArray<T> {
 	const output = [...arr.slice(0, index), ...arr.slice(index + 1)];
 	return arr.length !== output.length ? output : arr;
 }
 
-/** Get the first item from an array or iterable, or `undefined` if it didn't exist. */
+/**
+ * Get the first item from an array or iterable, or `undefined` if it didn't exist.
+ *
+ * @param items The array or iterable to read from.
+ * @returns The first item, or `undefined` if `items` is empty.
+ * @example getFirst([1, 2, 3]) // 1
+ * @see https://dhoulb.github.io/shelving/util/array/getFirst
+ */
 export function getFirst<T>(items: PossibleArray<T>): T | undefined {
 	if (isArray(items)) return items[0];
 	for (const i of items) return i;
 }
 
-/** Get the first item from an array or iterable. */
+/**
+ * Get the first item from an array or iterable.
+ *
+ * @param items The array or iterable to read from.
+ * @param caller Function to attribute a thrown error to (defaults to `requireFirst` itself).
+ * @returns The first item.
+ * @throws {RequiredError} If `items` is empty.
+ * @example requireFirst([1, 2, 3]) // 1
+ * @see https://dhoulb.github.io/shelving/util/array/requireFirst
+ */
 export function requireFirst<T>(items: PossibleArray<T>, caller: AnyCaller = requireFirst): T {
 	const item = getFirst(items);
 	if (item === undefined) throw new RequiredError("First item is required", { items: items, caller });
 	return item;
 }
 
-/** Get the last item from an array or iterable, or `undefined` if it didn't exist. */
+/**
+ * Get the last item from an array or iterable, or `undefined` if it didn't exist.
+ *
+ * @param items The array or iterable to read from.
+ * @returns The last item, or `undefined` if `items` is empty.
+ * @example getLast([1, 2, 3]) // 3
+ * @see https://dhoulb.github.io/shelving/util/array/getLast
+ */
 export function getLast<T>(items: PossibleArray<T>): T | undefined {
 	if (isArray(items)) return items[items.length - 1];
 	let last: T | undefined;
@@ -419,14 +509,31 @@ export function getLast<T>(items: PossibleArray<T>): T | undefined {
 	return last;
 }
 
-/** Get the last item from an array or iterable. */
+/**
+ * Get the last item from an array or iterable.
+ *
+ * @param items The array or iterable to read from.
+ * @param caller Function to attribute a thrown error to (defaults to `requireLast` itself).
+ * @returns The last item.
+ * @throws {RequiredError} If `items` is empty.
+ * @example requireLast([1, 2, 3]) // 3
+ * @see https://dhoulb.github.io/shelving/util/array/requireLast
+ */
 export function requireLast<T>(items: PossibleArray<T>, caller: AnyCaller = requireLast): T {
 	const item = getLast(items);
 	if (item === undefined) throw new RequiredError("Last item is required", { items, caller });
 	return item;
 }
 
-/** Get the next item in an array or iterable. */
+/**
+ * Get the next item in an array or iterable.
+ *
+ * @param items The array or iterable to search.
+ * @param item The item to find the successor of.
+ * @returns The item following `item`, or `undefined` if `item` is missing or last.
+ * @example getNext([1, 2, 3], 2) // 3
+ * @see https://dhoulb.github.io/shelving/util/array/getNext
+ */
 export function getNext<T>(items: PossibleArray<T>, item: T): T | undefined {
 	let found = false;
 	for (const i of items) {
@@ -435,14 +542,32 @@ export function getNext<T>(items: PossibleArray<T>, item: T): T | undefined {
 	}
 }
 
-/** Get the next item from an array or iterable. */
+/**
+ * Get the next item from an array or iterable.
+ *
+ * @param items The array or iterable to search.
+ * @param item The item to find the successor of.
+ * @param caller Function to attribute a thrown error to (defaults to `requireNext` itself).
+ * @returns The item following `item`.
+ * @throws {RequiredError} If `item` is missing or has no successor.
+ * @example requireNext([1, 2, 3], 2) // 3
+ * @see https://dhoulb.github.io/shelving/util/array/requireNext
+ */
 export function requireNext<T>(items: PossibleArray<T>, item: T, caller: AnyCaller = requireNext): T {
 	const next = getNext(items, item);
 	if (next === undefined) throw new RequiredError("Next item is required", { item, items, caller });
 	return next;
 }
 
-/** Get the previous item in an array or iterable. */
+/**
+ * Get the previous item in an array or iterable.
+ *
+ * @param items The array or iterable to search.
+ * @param value The item to find the predecessor of.
+ * @returns The item preceding `value`, or `undefined` if `value` is missing or first.
+ * @example getPrev([1, 2, 3], 2) // 1
+ * @see https://dhoulb.github.io/shelving/util/array/getPrev
+ */
 export function getPrev<T>(items: PossibleArray<T>, value: T): T | undefined {
 	let last: T | undefined;
 	for (const i of items) {
@@ -451,7 +576,17 @@ export function getPrev<T>(items: PossibleArray<T>, value: T): T | undefined {
 	}
 }
 
-/** Get the previous item from an array or iterable. */
+/**
+ * Get the previous item from an array or iterable.
+ *
+ * @param items The array or iterable to search.
+ * @param item The item to find the predecessor of.
+ * @param caller Function to attribute a thrown error to (defaults to `requirePrev` itself).
+ * @returns The item preceding `item`.
+ * @throws {RequiredError} If `item` is missing or has no predecessor.
+ * @example requirePrev([1, 2, 3], 2) // 1
+ * @see https://dhoulb.github.io/shelving/util/array/requirePrev
+ */
 export function requirePrev<T>(items: PossibleArray<T>, item: T, caller: AnyCaller = requirePrev): T {
 	const prev = getPrev(items, item);
 	if (prev === undefined) throw new RequiredError("Previous item is required", { item, items, caller });

@@ -9,7 +9,7 @@ import { matchURLPrefix, type PossibleURL } from "../../util/url.js";
 import type { Endpoint } from "./Endpoint.js";
 
 /**
- * A function that handles an endpoint request, with a payload and returns a result.
+ * A function that handles an endpoint request, receiving a validated payload and returning a result.
  *
  * @param payload The payload for the callback combining the `{placeholders}`, `?search` params, and body content (this has been validated against the Endpoint's payload schema).
  * @param request The original incoming request object.
@@ -17,20 +17,35 @@ import type { Endpoint } from "./Endpoint.js";
  *
  * @returns {Response} Returning a `Response` object (this will pass back to the client without validation).
  * @returns {R} Returning the return type of the handler (this will be validated against the Endpoint's result schema).
+ *
+ * @see https://dhoulb.github.io/shelving/api/endpoint/util/EndpointCallback
  */
 export type EndpointCallback<P, R, C = void> = (payload: P, request: Request, context: C) => R | Response | Promise<R | Response>;
 
-/** A typed endpoint definition paired with its implementation callback. */
+/**
+ * A typed endpoint definition paired with its implementation callback.
+ * - Created with `Endpoint.handler()`; matched and invoked by `handleEndpoints()`.
+ *
+ * @see https://dhoulb.github.io/shelving/api/endpoint/util/EndpointHandler
+ */
 export interface EndpointHandler<P, R, C = void> {
 	readonly endpoint: Endpoint<P, R>;
 	readonly callback: EndpointCallback<P, R, C>;
 }
 
-/** Any endpoint handler. */
+/**
+ * An `EndpointHandler` with any payload and result type, for use where the specific types don't matter.
+ *
+ * @see https://dhoulb.github.io/shelving/api/endpoint/util/AnyEndpointHandler
+ */
 // biome-ignore lint/suspicious/noExplicitAny: Intentional.
 export type AnyEndpointHandler<C = any> = EndpointHandler<any, any, C>;
 
-/** A collection of endpoint handlers that can be matched and invoked by `handleEndpoints()`. */
+/**
+ * A collection of endpoint handlers that can be matched and invoked by `handleEndpoints()`.
+ *
+ * @see https://dhoulb.github.io/shelving/api/endpoint/util/EndpointHandlers
+ */
 export type EndpointHandlers<C = void> = Iterable<AnyEndpointHandler<C>>;
 
 /**
@@ -38,10 +53,17 @@ export type EndpointHandlers<C = void> = Iterable<AnyEndpointHandler<C>>;
  * - The original `Request` object is passed through to the callback unchanged.
  * - Path params and query params are merged before payload validation.
  *
- * @param request The input request to handle.
- *
  * @param base The base URL for the API, e.g. `https://myapi.com/a/b`
  * - `pathname` of this URL gets trimmed from `request.path` to form the target path when matching against endpoints, e.g. `/a/b/c/d` will produce `/c/d` for matching.
+ * @param handlers The iterable of `EndpointHandler` objects to match the request against, in order.
+ * @param request The input request to handle.
+ * @param context The additional context value passed through to the matched handler's callback.
+ * @param caller The function to attribute thrown errors to (defaults to this function).
+ * @returns A promise resolving to the `Response` produced by the matching handler.
+ * @throws {MethodNotAllowedError} if the request method is not a supported HTTP method.
+ * @throws {NotFoundError} if no base path matches, or no endpoint matches the target path.
+ * @example await handleEndpoints("https://myapi.com", [getUser.handler(loadUser)], request, undefined)
+ * @see https://dhoulb.github.io/shelving/api/endpoint/util/handleEndpoints
  */
 export function handleEndpoints<C>(
 	base: PossibleURL,

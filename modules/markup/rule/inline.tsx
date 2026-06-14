@@ -16,6 +16,9 @@ const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", _: "em
  * - Cannot occur in the middle of a word (e.g. `this*that*this` will not work).
  * - Closing characters must exactly match opening characters.
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
+ *
+ * @example new MarkupParser({ rules: [INLINE_RULE] }).parse("This is *bold* and _italic_")
+ * @see https://dhoulb.github.io/shelving/markup/rule/inline/INLINE_RULE
  */
 export const INLINE_RULE = createMarkupRule<{
 	char: keyof typeof INLINE_CHARS;

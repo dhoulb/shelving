@@ -34,6 +34,7 @@ export type PossibleLink = PossibleURI;
  * @example getLink("/schema", pageURL, siteRoot) // → "https://x.com/app/schema" when siteRoot is "https://x.com/app/"
  * @example getLink("./db", new URL("https://x.com/app/schema/")) // → "https://x.com/app/schema/db"
  * @example getLink("mailto:a@b") // → "mailto:a@b"
+ * @see https://dhoulb.github.io/shelving/util/link/getLink
  */
 export function getLink(href: Nullish<PossibleLink>, url?: ImmutableURL, root: ImmutableURL | undefined = url): ImmutableURI | undefined {
 	if (!href) return;
@@ -52,9 +53,11 @@ export function getLink(href: Nullish<PossibleLink>, url?: ImmutableURL, root: I
  * @param href The link to resolve.
  * @param url The current page URL — base for relative refs and scheme-prefixed URIs.
  * @param root The site root URL — base for absolute paths. Defaults to `url`.
- * @param caller Identity of the calling function for error attribution.
+ * @param caller Function to attribute a thrown error to (defaults to `requireLink` itself).
  * @returns An absolute URI string.
- * @throws `RequiredError` if `link` cannot be resolved.
+ * @throws {RequiredError} If `href` cannot be resolved.
+ * @example requireLink("mailto:a@b") // → "mailto:a@b"
+ * @see https://dhoulb.github.io/shelving/util/link/requireLink
  */
 export function requireLink(href: PossibleLink, url?: ImmutableURL, root?: ImmutableURL, caller: AnyCaller = requireLink): ImmutableURI {
 	const uri = getLink(href, url, root);

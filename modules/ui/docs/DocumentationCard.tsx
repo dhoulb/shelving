@@ -9,9 +9,14 @@ import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKin
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 /**
- * Card renderer for a `tree-documentation` element — a summary card.
+ * Card renderer for a `tree-documentation` element — a compact summary card linking to the symbol's detail page.
  * - Leads with the symbol's signature(s) as calm code blocks (`<DocumentationSignatures>`, same as the detail page), which already carry the name; falls back to the bare name for symbols with no signature (classes, interfaces, modules).
  * - The card is tinted by `kind` (colour carries the method/property/etc. distinction — no separate tag).
+ *
+ * @param props The documentation element's flattened props (`path`, `title`, `name`, `kind`, `description`, `signatures`, plus relational metadata); the `class` relation is dropped so member cards omit the redundant "member of" link.
+ * @returns A `<Card>` linking to the symbol's own page.
+ * @example <DocumentationCard {...element.props} />
+ * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationCard/DocumentationCard
  */
 export function DocumentationCard({
 	path,

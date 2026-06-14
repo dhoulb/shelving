@@ -15,7 +15,7 @@ import { compareAscending } from "./sort.js";
  * @param left The value to check and narrow.
  * @param right The value `left` must equal.
  * @param caller Function to attribute a thrown error to (defaults to `assertEqual`).
- * @throws `RequiredError` if the values are not equal.
+ * @throws {RequiredError} If the values are not equal.
  * @example assertEqual(1, 1); // passes
  * @see https://dhoulb.github.io/shelving/util/equal/assertEqual
  */
@@ -29,7 +29,7 @@ export function assertEqual<T>(left: unknown, right: T, caller: AnyCaller = asse
  * @param left The value to check and narrow.
  * @param right The value `left` must not equal.
  * @param caller Function to attribute a thrown error to (defaults to `assertNot`).
- * @throws `RequiredError` if the values are equal.
+ * @throws {RequiredError} If the values are equal.
  * @example assertNot(1, 2); // passes
  * @see https://dhoulb.github.io/shelving/util/equal/assertNot
  */
@@ -227,6 +227,7 @@ export function isArrayEqual<T extends ImmutableArray>(left: ImmutableArray, rig
  * @param left The value to look for and narrow.
  * @param right The array to search within.
  * @returns `true` if `left` is an item of `right`.
+ * @example isInArray(2, [1, 2, 3]) // true
  * @see https://dhoulb.github.io/shelving/util/equal/isInArray
  */
 export function isInArray<R>(left: unknown, right: ImmutableArray<R>): left is R {
@@ -239,6 +240,7 @@ export function isInArray<R>(left: unknown, right: ImmutableArray<R>): left is R
  * @param left The value to look for.
  * @param right The array to search within.
  * @returns `true` if `left` is not an item of `right`.
+ * @example notInArray(9, [1, 2, 3]) // true
  * @see https://dhoulb.github.io/shelving/util/equal/notInArray
  */
 export function notInArray(left: unknown, right: ImmutableArray): boolean {
@@ -251,6 +253,7 @@ export function notInArray(left: unknown, right: ImmutableArray): boolean {
  * @param left The value to check and narrow.
  * @param right The item the array must include.
  * @returns `true` if `left` is an array containing `right`.
+ * @example isArrayWith([1, 2, 3], 2) // true
  * @see https://dhoulb.github.io/shelving/util/equal/isArrayWith
  */
 export function isArrayWith<T>(left: unknown, right: T): left is ImmutableArray<T> {
@@ -263,6 +266,7 @@ export function isArrayWith<T>(left: unknown, right: T): left is ImmutableArray<
  * @param left The value to check.
  * @param right The item the array must include.
  * @returns `true` if `left` is not an array or does not include `right`.
+ * @example notArrayWith([1, 2, 3], 9) // true
  * @see https://dhoulb.github.io/shelving/util/equal/notArrayWith
  */
 export function notArrayWith(left: unknown, right: unknown): boolean {
@@ -323,6 +327,7 @@ export function isObjectMatch<L extends ImmutableObject, R extends ImmutableObje
  * @param left The value to check.
  * @param right The object whose props `left` must contain.
  * @returns `true` if `left` is an object containing every prop of `right`.
+ * @example isObjectWith({ a: 1, b: 2 }, { a: 1 }) // true
  * @see https://dhoulb.github.io/shelving/util/equal/isObjectWith
  */
 export function isObjectWith(left: unknown, right: ImmutableObject): boolean {
@@ -335,6 +340,7 @@ export function isObjectWith(left: unknown, right: ImmutableObject): boolean {
  * @param left The value to check.
  * @param right The object whose props `left` must contain.
  * @returns `true` if `left` is not an object or is missing one or more props of `right`.
+ * @example notObjectWith({ a: 1 }, { b: 2 }) // true
  * @see https://dhoulb.github.io/shelving/util/equal/notObjectWith
  */
 export function notObjectWith(left: unknown, right: ImmutableObject): boolean {

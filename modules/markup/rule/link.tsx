@@ -26,6 +26,9 @@ function _renderLink(key: string, { title, href }: LinkData, parser: MarkupParse
  * - Does not need space before/after the link.
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `MarkupOptions.schemes` will match (defaults to `http:` and `https:`).
+ *
+ * @example new MarkupParser({ rules: [LINK_RULE] }).parse("[Google Maps](http://google.com/maps)")
+ * @see https://dhoulb.github.io/shelving/markup/rule/link/LINK_RULE
  */
 export const LINK_RULE = createMarkupRule<LinkData>(
 	getRegExp(/\[(?<title>[^\]\n]*?)\]\((?<href>[^)\n]*?)\)/), //
@@ -39,6 +42,9 @@ export const LINK_RULE = createMarkupRule<LinkData>(
  * - If no title is specified a cleaned up version of the URL will be used, e.g. `google.com/maps`
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
  * - For security only schemes that appear in `MarkupOptions.schemes` will match (defaults to `http:` and `https:`).
+ *
+ * @example new MarkupParser({ rules: [AUTOLINK_RULE] }).parse("http://google.com/maps (Google Maps)")
+ * @see https://dhoulb.github.io/shelving/markup/rule/link/AUTOLINK_RULE
  */
 export const AUTOLINK_RULE = createMarkupRule<LinkData>(
 	getRegExp(/(?<href>[a-z]{3,}?:\S+)(?: +(?:\((?<title>[^)\n]*?)\)))?/), //

@@ -4,12 +4,28 @@ import type { Identifier, Item } from "../util/item.js";
 import { getIdentifiers } from "../util/item.js";
 import type { NotString } from "../util/string.js";
 
-/** Expect that an object matches `PromiseLike` */
+/**
+ * Asymmetric matcher that expects an object matching `PromiseLike` (i.e. has a `.then()` method).
+ *
+ * @example expect(value).toEqual(EXPECT_PROMISELIKE)
+ * @see https://dhoulb.github.io/shelving/test/util/EXPECT_PROMISELIKE
+ */
 export const EXPECT_PROMISELIKE = expect.objectContaining({
 	then: expect.any(Function),
 });
 
-/** Expect `Item` objects with an `.id` prop in any order. */
+/**
+ * Assert that a set of `Item` objects has exactly the expected `.id` values, in any order.
+ *
+ * - Sorts both sides before comparing, so iteration order is ignored.
+ * - On failure, rewrites the stack trace to point at the call site.
+ *
+ * @param items The items to check, each carrying an `.id` prop.
+ * @param keys The exact set of `.id` values expected (order ignored).
+ * @throws {Error} If the items' ids don't match `keys`.
+ * @example expectUnorderedItems(results, ["person1", "person2"])
+ * @see https://dhoulb.github.io/shelving/test/util/expectUnorderedItems
+ */
 export function expectUnorderedItems<I extends Identifier, T extends Data>(
 	items: Iterable<Item<I, T>>,
 	keys: Iterable<string> & NotString,
@@ -23,7 +39,18 @@ export function expectUnorderedItems<I extends Identifier, T extends Data>(
 	}
 }
 
-/** Expect `Item` objects with an `.id` prop in a specified order. */
+/**
+ * Assert that a set of `Item` objects has exactly the expected `.id` values, in the exact given order.
+ *
+ * - Compares ids positionally, so order is significant.
+ * - On failure, rewrites the stack trace to point at the call site.
+ *
+ * @param items The items to check, each carrying an `.id` prop.
+ * @param keys The exact ordered sequence of `.id` values expected.
+ * @throws {Error} If the items' ids don't match `keys` in order.
+ * @example expectOrderedItems(results, ["person1", "person2"])
+ * @see https://dhoulb.github.io/shelving/test/util/expectOrderedItems
+ */
 export function expectOrderedItems<I extends Identifier, T extends Data>(
 	items: Iterable<Item<I, T>>,
 	keys: Iterable<string> & NotString,

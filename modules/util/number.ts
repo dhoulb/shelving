@@ -267,14 +267,29 @@ export function getPercent(numerator: number, denumerator = 100) {
 	return denumerator === 100 ? numerator : (100 / denumerator) * numerator;
 }
 
-/** Sum an iterable set of numbers and return the total. */
+/**
+ * Sum an iterable set of numbers and return the total.
+ *
+ * @param nums The iterable of numbers to sum.
+ * @returns The total of all the numbers (`0` if `nums` is empty).
+ * @example sumNumbers([1, 2, 3]) // 6
+ * @see https://dhoulb.github.io/shelving/util/number/sumNumbers
+ */
 export function sumNumbers(nums: Iterable<number>): number {
 	let sum = 0;
 	for (const num of nums) sum += num;
 	return sum;
 }
 
-/** Find the number that's closest to a target in an iterable set of numbers. */
+/**
+ * Find the number that's closest to a target in an iterable set of numbers.
+ *
+ * @param nums The iterable of numbers to search.
+ * @param target The target number to find the closest match for.
+ * @returns The number closest to `target`, or `undefined` if `nums` is empty.
+ * @example getClosestNumber([1, 5, 10], 6) // 5
+ * @see https://dhoulb.github.io/shelving/util/number/getClosestNumber
+ */
 export function getClosestNumber<T extends number>(nums: Iterable<T>, target: number): T | undefined {
 	let closest: T | undefined;
 	for (const item of nums) if (closest === undefined || Math.abs(item - target) < Math.abs(closest - target)) closest = item;

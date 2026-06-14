@@ -3,7 +3,17 @@ import type { ImmutableArray } from "./array.js";
 import type { ImmutableMap } from "./map.js";
 import type { ImmutableSet } from "./set.js";
 
-/** Debug a random value as a string. */
+/**
+ * Convert any unknown value into a readable debug string.
+ * - Dispatches on the value's type to a specialised debugger (string, array, map, set, object, `Request`, `Response`, `Headers`, `Date`, `Error`, etc.).
+ * - Nested values are expanded down to `depth` levels; deeper values collapse to their container shape.
+ *
+ * @param value The value to debug.
+ * @param depth How many levels of nested containers to expand (defaults to `1`).
+ * @returns A human-readable string representation of `value`.
+ * @example debug({ a: 1, b: "two" }) // `{\n\t"a": 1,\n\t"b": "two"\n}`
+ * @see https://dhoulb.github.io/shelving/util/debug/debug
+ */
 export function debug(value: unknown, depth = 1): string {
 	if (value === null) return "null";
 	if (value === undefined) return "undefined";
@@ -27,7 +37,15 @@ export function debug(value: unknown, depth = 1): string {
 	return typeof value;
 }
 
-/** Debug a string. */
+/**
+ * Convert a string into a quoted, escaped debug string.
+ * - Wraps the value in double quotes and escapes control characters, quotes, and backslashes.
+ *
+ * @param value The string to debug.
+ * @returns The quoted and escaped string.
+ * @example debugString("a\tb") // `"a\\tb"`
+ * @see https://dhoulb.github.io/shelving/util/debug/debugString
+ */
 export function debugString(value: string): string {
 	return `"${value.replace(ESCAPE_REGEXP, _escapeChar)}"`;
 }
@@ -45,7 +63,15 @@ const ESCAPE_LIST: { [key: string]: string } = {
 };
 const _escapeChar = (char: string): string => ESCAPE_LIST[char] || `\\x${char.charCodeAt(0).toString(16).padStart(2, "00")}`;
 
-/** Debug a set of `Headers` as a string. */
+/**
+ * Convert a set of `Headers` into a debug string.
+ * - One `key: value` pair per line.
+ *
+ * @param headers The `Headers` object to debug.
+ * @returns A newline-separated string of `key: value` pairs.
+ * @example debugHeaders(new Headers({ "Content-Type": "text/plain" })) // "content-type: text/plain"
+ * @see https://dhoulb.github.io/shelving/util/debug/debugHeaders
+ */
 export function debugHeaders(headers: Headers): string {
 	return Array.from(headers, ([key, value]) => `${key}: ${value}`).join("\n");
 }
@@ -54,6 +80,11 @@ export function debugHeaders(headers: Headers): string {
  * Debug a full `Request` as a string including its body.
  * - Clones the request before reading the body so the original request can still be sent or parsed later.
  * - Omits the body section when the request body is empty.
+ *
+ * @param request The `Request` to debug.
+ * @returns A promise resolving to the request line, headers, and body as a string.
+ * @example await debugFullRequest(new Request("https://x.com")) // "GET https://x.com/"
+ * @see https://dhoulb.github.io/shelving/util/debug/debugFullRequest
  */
 export async function debugFullRequest(request: Request): Promise<string> {
 	return _debugFullMessage(debugRequest(request), request);
@@ -64,6 +95,11 @@ export async function debugFullRequest(request: Request): Promise<string> {
  * - Clones the response before reading the body so the original response can still be parsed later.
  * - Omits the headers section when there are no headers.
  * - Omits the body section when the response body is empty.
+ *
+ * @param response The `Response` to debug.
+ * @returns A promise resolving to the status line, headers, and body as a string.
+ * @example await debugFullResponse(new Response("hi", { status: 200 })) // "200 \n\nhi"
+ * @see https://dhoulb.github.io/shelving/util/debug/debugFullResponse
  */
 export async function debugFullResponse(response: Response): Promise<string> {
 	return _debugFullMessage(debugResponse(response), response);
@@ -104,17 +140,43 @@ async function _debugMessageBody(message: Request | Response): Promise<string> {
 	}
 }
 
-/** Debug a `Request` as a string. */
+/**
+ * Convert a `Request` into a one-line debug string.
+ * - Shows the method and URL only (no headers or body).
+ *
+ * @param request The `Request` to debug.
+ * @returns A string in `METHOD url` format.
+ * @example debugRequest(new Request("https://x.com")) // "GET https://x.com/"
+ * @see https://dhoulb.github.io/shelving/util/debug/debugRequest
+ */
 export function debugRequest(request: Request): string {
 	return `${request.method} ${request.url}`;
 }
 
-/** Debug a `Response` as a string. */
+/**
+ * Convert a `Response` into a one-line debug string.
+ * - Shows the status code and status text only (no headers or body).
+ *
+ * @param response The `Response` to debug.
+ * @returns A string in `status statusText` format.
+ * @example debugResponse(new Response("hi", { status: 404 })) // "404 Not Found"
+ * @see https://dhoulb.github.io/shelving/util/debug/debugResponse
+ */
 export function debugResponse(response: Response): string {
 	return `${response.status} ${response.statusText}`;
 }
 
-/** Debug an array. */
+/**
+ * Convert an array into a readable debug string.
+ * - Prefixes the constructor name for non-plain arrays.
+ * - Expands items down to `depth` levels.
+ *
+ * @param value The array to debug.
+ * @param depth How many levels of nested containers to expand (defaults to `1`).
+ * @returns A human-readable string representation of the array.
+ * @example debugArray([1, 2]) // `[\n\t1,\n\t2\n]`
+ * @see https://dhoulb.github.io/shelving/util/debug/debugArray
+ */
 export function debugArray(value: ImmutableArray, depth = 1): string {
 	const prototype = Object.getPrototypeOf(value) as typeof value;
 	const name = prototype === Array.prototype ? "" : prototype.constructor.name || "";
@@ -122,7 +184,17 @@ export function debugArray(value: ImmutableArray, depth = 1): string {
 	return `${name ? `${name} ` : ""}${value.length ? `[\n\t${items}\n]` : "[]"}`;
 }
 
-/** Debug a set. */
+/**
+ * Convert a `Set` into a readable debug string.
+ * - Prefixes the constructor name and item count.
+ * - Expands items down to `depth` levels.
+ *
+ * @param value The set to debug.
+ * @param depth How many levels of nested containers to expand (defaults to `1`).
+ * @returns A human-readable string representation of the set.
+ * @example debugSet(new Set([1, 2])) // `(value.size) {\n\t1,\n\t2\n}`
+ * @see https://dhoulb.github.io/shelving/util/debug/debugSet
+ */
 export function debugSet(value: ImmutableSet, depth = 1): string {
 	const prototype = Object.getPrototypeOf(value) as typeof value;
 	const name = prototype === Set.prototype ? "" : prototype.constructor.name || "Set";
@@ -135,7 +207,17 @@ export function debugSet(value: ImmutableSet, depth = 1): string {
 	return `${name}(value.size) ${items ? `{\n\t${items}\n}` : "{}"}`;
 }
 
-/** Debug a map. */
+/**
+ * Convert a `Map` into a readable debug string.
+ * - Prefixes the constructor name and entry count.
+ * - Expands keys and values down to `depth` levels.
+ *
+ * @param value The map to debug.
+ * @param depth How many levels of nested containers to expand (defaults to `1`).
+ * @returns A human-readable string representation of the map.
+ * @example debugMap(new Map([["a", 1]])) // `(value.size) {\n\t"a": 1\n}`
+ * @see https://dhoulb.github.io/shelving/util/debug/debugMap
+ */
 export function debugMap(value: ImmutableMap, depth = 1): string {
 	const prototype = Object.getPrototypeOf(value) as typeof value;
 	const name = prototype === Map.prototype ? "" : prototype.constructor.name || "Map";
@@ -148,7 +230,17 @@ export function debugMap(value: ImmutableMap, depth = 1): string {
 	return `${name}(value.size) ${entries ? `{\n\t${entries}\n}` : "{}"}`;
 }
 
-/** Debug an object. */
+/**
+ * Convert an object into a readable debug string.
+ * - Prefixes the constructor name for non-plain objects.
+ * - Expands entries down to `depth` levels.
+ *
+ * @param value The object to debug.
+ * @param depth How many levels of nested containers to expand (defaults to `1`).
+ * @returns A human-readable string representation of the object.
+ * @example debugObject({ a: 1 }) // `{\n\t"a": 1\n}`
+ * @see https://dhoulb.github.io/shelving/util/debug/debugObject
+ */
 export function debugObject(value: object, depth = 1): string {
 	const prototype = Object.getPrototypeOf(value) as typeof value;
 	const name = prototype === Object.prototype ? "" : prototype.constructor.name || "";
@@ -161,7 +253,16 @@ export function debugObject(value: object, depth = 1): string {
 	return `${name ? `${name} ` : ""}${entries ? `{\n\t${entries}\n}` : "{}"}`;
 }
 
-/** If a string is multiline, push it onto the next line and prepend a tab to each line.. */
+/**
+ * Indent a string for nested debug output.
+ * - Multiline strings are pushed onto a new line with a tab prepended to each line.
+ * - Single-line strings are simply prefixed with a space.
+ *
+ * @param str The string to indent.
+ * @returns The indented string.
+ * @example indent("a\nb") // `\na\n\tb`
+ * @see https://dhoulb.github.io/shelving/util/debug/indent
+ */
 export function indent(str: string): string {
 	const lines = str.split("\n");
 	return lines.length > 1 ? `\n${lines.join("\n\t")}` : ` ${str}`;

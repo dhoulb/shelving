@@ -56,7 +56,7 @@ export function getEntity(entity: Nullish<string>): [type: string, id: string] |
  * @param entity The entity string to split.
  * @param caller Function to attribute a thrown error to (defaults to `requireEntity`).
  * @returns A `[type, id]` tuple.
- * @throws `RequiredError` if the entity string is missing or invalid.
+ * @throws {RequiredError} If the entity string is missing or invalid.
  * @example requireEntity("challenge:a1b2c3") // ["challenge", "a1b2c3"]
  * @see https://dhoulb.github.io/shelving/util/entity/requireEntity
  */

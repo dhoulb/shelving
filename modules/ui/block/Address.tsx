@@ -11,22 +11,53 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import ADDRESS_CSS from "./Address.module.css";
 
+/**
+ * CSS class applied to the root `<address>` element of every `Address`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Address/ADDRESS_CLASS
+ */
 export const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
+
+/**
+ * CSS class that styles `<address>` elements when they appear inside `Prose`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Address/ADDRESS_PROSE_CLASS
+ */
 export const ADDRESS_PROSE_CLASS = getModuleClass(ADDRESS_CSS, "prose");
 
+/**
+ * Props for `Address` — colour, space, and typography variants plus required children.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Address/AddressProps
+ */
 export interface AddressProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {}
 
+/**
+ * Props for `PhysicalAddress` — an optional name and a nullable `AddressData` object.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Address/PhysicalAddressProps
+ */
 export interface PhysicalAddressProps {
 	name?: Nullish<string>;
 	address: Nullish<AddressData>;
 }
 
+/**
+ * Props for `EmailAddress` — an optional name and a nullable email string.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Address/EmailAddressProps
+ */
 export interface EmailAddressProps {
 	name?: Nullish<string>;
 	email: Nullish<string>;
 }
 
-/** Show any kind of contact data. */
+/**
+ * Show any kind of contact data, rendered as an `<address>`.
+ *
+ * @example <Address><Strong>Acme</Strong>{"\n"}1 Example St</Address>
+ * @see https://dhoulb.github.io/shelving/ui/block/Address/Address
+ */
 export function Address({ children, ...props }: AddressProps) {
 	return (
 		<address
@@ -43,7 +74,13 @@ export function Address({ children, ...props }: AddressProps) {
 	);
 }
 
-/** Show an optional `AddressData` object correctly on screen. */
+/**
+ * Show an optional `AddressData` object correctly on screen.
+ * - Renders an optional `name` in bold, followed by the formatted address; shows "No address" when `address` is empty.
+ *
+ * @example <PhysicalAddress name="Acme" address={addressData} />
+ * @see https://dhoulb.github.io/shelving/ui/block/Address/PhysicalAddress
+ */
 export function PhysicalAddress({ name, address }: PhysicalAddressProps): ReactElement {
 	return (
 		<Address>
@@ -54,7 +91,13 @@ export function PhysicalAddress({ name, address }: PhysicalAddressProps): ReactE
 	);
 }
 
-/** Show an optional email address string correctly on screen. */
+/**
+ * Show an optional email address string correctly on screen.
+ * - Renders an optional `name` in bold, followed by a `mailto:` link; shows "No email" when `email` is empty.
+ *
+ * @example <EmailAddress name="Acme" email="hi@example.com" />
+ * @see https://dhoulb.github.io/shelving/ui/block/Address/EmailAddress
+ */
 export function EmailAddress({ name, email }: EmailAddressProps): ReactElement {
 	return (
 		<Address>

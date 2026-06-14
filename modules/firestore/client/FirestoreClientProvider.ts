@@ -99,13 +99,27 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
 }
 
 /**
- * Firestore client database provider.
- * - Works with the Firebase JS SDK.
- * - Supports offline mode.
- * - Supports realtime subscriptions.
+ * Cloud Firestore database provider backed by the full Firebase JS SDK, implementing the `DBProvider` abstraction.
+ *
+ * - Works with the Firebase JS SDK via `firebase/firestore`.
+ * - Supports offline mode (local cache and write queueing).
+ * - Supports realtime subscriptions through Firestore `onSnapshot` listeners.
+ *
+ * @example
+ * import { getFirestore } from "firebase/firestore";
+ * const provider = new FirestoreClientProvider(getFirestore());
+ *
+ * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider
  */
 export class FirestoreClientProvider<I extends string = string, T extends Data = Data> extends DBProvider<I, T> {
 	private readonly _firestore: Firestore;
+
+	/**
+	 * Create a provider wrapping a Firebase `Firestore` instance.
+	 *
+	 * @param firestore The `Firestore` instance to read and write through.
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider
+	 */
 	constructor(firestore: Firestore) {
 		super();
 		this._firestore = firestore;
@@ -126,10 +140,28 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 		return q ? query(this._collection(c), ..._getConstraints(q)) : this._collection(c);
 	}
 
+	/**
+	 * Read a single item by ID from its Firestore document.
+	 *
+	 * @param c The collection the item belongs to.
+	 * @param id The ID of the item to read.
+	 * @returns Promise resolving to the item, or `undefined` if the document does not exist.
+	 * @example await provider.getItem(users, "abc123")
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/getItem
+	 */
 	override async getItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const snapshot = await getDoc(this._doc(c, id));
 		return _getOptionalItem<II, TT>(snapshot);
 	}
+	/**
+	 * Subscribe to realtime changes to a single item via a Firestore `onSnapshot` listener.
+	 *
+	 * @param c The collection the item belongs to.
+	 * @param id The ID of the item to subscribe to.
+	 * @returns An async sequence yielding the item (or `undefined` when absent) on every change.
+	 * @example for await (const item of provider.getItemSequence(users, "abc123")) console.log(item)
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/getItemSequence
+	 */
 	override getItemSequence<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		const sequence = new DeferredSequence<OptionalItem<II, TT>>();
 		return new LazySequence(sequence, () =>
@@ -140,13 +172,42 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 			),
 		);
 	}
+	/**
+	 * Add an item to a collection, letting Firestore generate its document ID.
+	 *
+	 * @param c The collection to add the item to.
+	 * @param data The data for the new item.
+	 * @returns Promise resolving to the generated ID of the new item.
+	 * @example const id = await provider.addItem(users, { name: "Dave" })
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/addItem
+	 */
 	override async addItem<II extends I, TT extends T>(c: Collection<string, II, TT>, data: TT): Promise<II> {
 		const reference = await addDoc(this._collection(c), data);
 		return reference.id as II; // `as II` needed: Firestore returns string, not II.
 	}
+	/**
+	 * Write an item by ID, overwriting any existing document.
+	 *
+	 * @param c The collection the item belongs to.
+	 * @param id The ID of the item to write.
+	 * @param data The data to store for the item.
+	 * @returns Promise resolving once the write completes.
+	 * @example await provider.setItem(users, "abc123", { name: "Dave" })
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/setItem
+	 */
 	override async setItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await setDoc(this._doc(c, id), data);
 	}
+	/**
+	 * Apply partial updates to a single item, translating them into Firestore `FieldValue` operations.
+	 *
+	 * @param c The collection the item belongs to.
+	 * @param id The ID of the item to update.
+	 * @param updates The updates to apply to the item.
+	 * @returns Promise resolving once the update completes.
+	 * @example await provider.updateItem(users, "abc123", { name: "Dave" })
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/updateItem
+	 */
 	override async updateItem<II extends I, TT extends T>(
 		c: Collection<string, II, TT>,
 		id: II,
@@ -154,16 +215,52 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 	): Promise<void> {
 		await updateDoc(this._doc(c, id), _getFieldValues(updates));
 	}
+	/**
+	 * Delete a single item by ID from its collection.
+	 *
+	 * @param c The collection the item belongs to.
+	 * @param id The ID of the item to delete.
+	 * @returns Promise resolving once the deletion completes.
+	 * @example await provider.deleteItem(users, "abc123")
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/deleteItem
+	 */
 	override async deleteItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): Promise<void> {
 		await deleteDoc(this._doc(c, id));
 	}
+	/**
+	 * Count the items matching a query using Firestore's server-side aggregation.
+	 *
+	 * @param c The collection to query.
+	 * @param q The query selecting which items to count; counts the whole collection when omitted.
+	 * @returns Promise resolving to the number of matching items.
+	 * @example const total = await provider.countQuery(users)
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/countQuery
+	 */
 	override async countQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<number> {
 		const snapshot = await getCountFromServer(this._query(c, q));
 		return snapshot.data().count;
 	}
+	/**
+	 * Read all items matching a query.
+	 *
+	 * @param c The collection to query.
+	 * @param q The query selecting which items to read; reads the whole collection when omitted.
+	 * @returns Promise resolving to the array of matching items.
+	 * @example const items = await provider.getQuery(users, { "name": "Dave" })
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/getQuery
+	 */
 	override async getQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
 		return _getItems<II, TT>(await getDocs(this._query(c, q)));
 	}
+	/**
+	 * Subscribe to realtime changes to a query via a Firestore `onSnapshot` listener.
+	 *
+	 * @param c The collection to query.
+	 * @param q The query selecting which items to subscribe to; subscribes to the whole collection when omitted.
+	 * @returns An async sequence yielding the matching items on every change.
+	 * @example for await (const items of provider.getQuerySequence(users)) console.log(items)
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/getQuerySequence
+	 */
 	override getQuerySequence<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
 		const sequence = new DeferredSequence<Items<II, TT>>();
 		return new LazySequence(sequence, () =>
@@ -174,10 +271,30 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 			),
 		);
 	}
+	/**
+	 * Write the same data to every item matching a query, one `setDoc` per matching document.
+	 *
+	 * @param c The collection to query.
+	 * @param q The query selecting which items to write.
+	 * @param data The data to write to each matching item.
+	 * @returns Promise resolving once all writes complete.
+	 * @example await provider.setQuery(users, { "name": "Dave" }, { active: false })
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/setQuery
+	 */
 	override async setQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>, data: TT): Promise<void> {
 		const snapshot = await getDocs(this._query(c, q));
 		await Promise.all(snapshot.docs.map(s => setDoc(s.ref, data)));
 	}
+	/**
+	 * Apply the same partial updates to every item matching a query, one `updateDoc` per matching document.
+	 *
+	 * @param c The collection to query.
+	 * @param q The query selecting which items to update.
+	 * @param updates The updates to apply to each matching item.
+	 * @returns Promise resolving once all updates complete.
+	 * @example await provider.updateQuery(users, { "active": true }, { name: "Dave" })
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/updateQuery
+	 */
 	override async updateQuery<II extends I, TT extends T>(
 		c: Collection<string, II, TT>,
 		q: Query<Item<II, TT>>,
@@ -187,6 +304,15 @@ export class FirestoreClientProvider<I extends string = string, T extends Data =
 		const fieldValues = _getFieldValues(updates);
 		await Promise.all(snapshot.docs.map(s => updateDoc(s.ref, fieldValues)));
 	}
+	/**
+	 * Delete every item matching a query, one `deleteDoc` per matching document.
+	 *
+	 * @param c The collection to query.
+	 * @param q The query selecting which items to delete.
+	 * @returns Promise resolving once all deletions complete.
+	 * @example await provider.deleteQuery(users, { "active": false })
+	 * @see https://dhoulb.github.io/shelving/firestore/client/FirestoreClientProvider/FirestoreClientProvider/deleteQuery
+	 */
 	override async deleteQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>): Promise<void> {
 		const snapshot = await getDocs(this._query(c, q));
 		await Promise.all(snapshot.docs.map(s => deleteDoc(s.ref)));

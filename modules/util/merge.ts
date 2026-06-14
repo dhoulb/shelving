@@ -108,7 +108,7 @@ export function mergeArray(left: ImmutableArray, right: ImmutableArray): Immutab
  * - Defaults to `exactMerge()` to just swap the property for a newer one if it exists.
  * - Use `deepMerge()` as the recursor to merge objects deeply.
  *
- * @return Merged object.
+ * @returns Merged object.
  * - Returned instances will be the same if no changes were made.
  * - Will be `left` instance if no properties changed.
  * - Will be a new merged object otherwise.

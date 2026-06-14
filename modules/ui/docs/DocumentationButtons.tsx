@@ -6,7 +6,11 @@ import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { TreeButton } from "../tree/TreeButton.js";
 import { getClass } from "../util/css.js";
 
-/** Props for `DocumentationButtons` — the relational metadata of a documented symbol, plus block-space overrides. */
+/**
+ * Props for `DocumentationButtons` — the relational metadata of a documented symbol (`class`, `extends`, `implements`), plus block-space and flex overrides.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationButtons/DocumentationButtonsProps
+ */
 export interface DocumentationButtonsProps
 	extends Pick<DocumentationElementProps, "class" | "extends" | "implements">,
 		SpaceVariants,

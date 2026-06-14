@@ -258,8 +258,17 @@ export function PATCH(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINE
 }
 
 /**
- * Represent a DELETE request to a specified path, with validated payload and return types.
- * "The DELETE method deletes the specified resource."
+ * Define a `DELETE` endpoint at a path, with validated payload and result types.
+ * - "The DELETE method deletes the specified resource."
+ *
+ * *Factory for `Endpoint`.*
+ *
+ * @param path The endpoint path, possibly including `{placeholders}`
+ * @param payload An optional `Schema` validating the request payload.
+ * @param result An optional `Schema` validating the response result.
+ * @returns An `Endpoint` configured for the `DELETE` method.
+ * @example DELETE("/users/{id}")
+ * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/DELETE
  */
 export function DELETE<P, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
 export function DELETE<P>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;

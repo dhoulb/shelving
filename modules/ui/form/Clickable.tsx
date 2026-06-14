@@ -11,14 +11,22 @@ import { requireMeta } from "../misc/MetaContext.js";
 import { callNotifiedElement } from "../util/notice.js";
 import type { OptionalChildProps } from "../util/props.js";
 
-/***
+/**
  * Handler for a clickable `onClick` event.
  * - Returned value (if defined) is notified to the user using `notifySuccess()`
  * - Thrown value is notified to the user using `notifyError()`
+ *
+ * @param event The `MouseEvent` from the underlying `<button>`.
+ * @returns A `ReactNode` (shown as a success notice), nothing, or a promise of either.
+ * @see https://dhoulb.github.io/shelving/ui/form/Clickable/ClickableCallback
  */
 export type ClickableCallback = (event: MouseEvent<HTMLButtonElement>) => ReactNode | void | PromiseLike<ReactNode | void>;
 
-/** Props for a thing that can be clicked, either has a string `href` link or an `onClick` callback handler. */
+/**
+ * Props for a thing that can be clicked — either has a string `href` link or an `onClick` callback handler.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/Clickable/ClickableProps
+ */
 export interface ClickableProps extends OptionalChildProps {
 	/** Whether the clickable is currently disabled. */
 	disabled?: boolean | undefined;
@@ -34,11 +42,23 @@ export interface ClickableProps extends OptionalChildProps {
 	title?: string | undefined;
 }
 
+/**
+ * Props for a clickable that also accepts a `className` for styling.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/Clickable/StylableClickableProps
+ */
 export interface StylableClickableProps extends ClickableProps {
 	className?: string | undefined;
 }
 
-/** Return either a `<button>` or an `<a href="">` based on whether an `onClick` or `href` prop is provided. */
+/**
+ * Render either a `<button>`, an `<a href="">`, or a plain `<span>` based on whether an `onClick` or `href` prop is provided.
+ * - `href` renders a `LinkClickable`; `onClick` renders a `ButtonClickable`; neither renders a `SpanClickable`.
+ *
+ * @example <Clickable href="/about">About</Clickable>
+ * @example <Clickable onClick={save}>Save</Clickable>
+ * @see https://dhoulb.github.io/shelving/ui/form/Clickable/Clickable
+ */
 export function Clickable(props: StylableClickableProps): ReactElement {
 	return "href" in props ? (
 		<LinkClickable {...props} />
@@ -49,7 +69,14 @@ export function Clickable(props: StylableClickableProps): ReactElement {
 	);
 }
 
-/** Return an `<a href="">` element. */
+/**
+ * Render an `<a href="">` element, resolving its `href` against the current page URL and marking it active when it matches.
+ * - The `href` is resolved against the current page URL and site root so site-absolute paths (`/foo`) honour the base subfolder.
+ * - Sets `aria-current="page"` when the link points at the current URL.
+ *
+ * @example <LinkClickable href="/about" className="link">About</LinkClickable>
+ * @see https://dhoulb.github.io/shelving/ui/form/Clickable/LinkClickable
+ */
 export function LinkClickable({
 	href,
 	disabled = !href,
@@ -80,7 +107,14 @@ export function LinkClickable({
 	);
 }
 
-/** Return a `<button>` element. */
+/**
+ * Render a `<button>` element that runs its `onClick` handler through a `BusyStore` and shows a loading spinner while busy.
+ * - Notifies the user of the handler's returned value (success) or thrown value (error).
+ * - Disabled and ignores clicks while a previous click is still pending.
+ *
+ * @example <ButtonClickable onClick={save} className="btn">Save</ButtonClickable>
+ * @see https://dhoulb.github.io/shelving/ui/form/Clickable/ButtonClickable
+ */
 export function ButtonClickable({
 	onClick,
 	disabled = !onClick,
@@ -116,6 +150,12 @@ export function ButtonClickable({
 	);
 }
 
+/**
+ * Render a non-interactive `<span>` element, used as the fallback when neither `href` nor `onClick` is provided.
+ *
+ * @example <SpanClickable className="label">Static</SpanClickable>
+ * @see https://dhoulb.github.io/shelving/ui/form/Clickable/SpanClickable
+ */
 export function SpanClickable({
 	title,
 	children = "Click", //

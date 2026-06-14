@@ -6,25 +6,53 @@ import type { Nullish } from "../../util/null.js";
 import { type ImmutableURI, type PossibleURI, type PossibleURIParams, withURIParams } from "../../util/uri.js";
 import { type ImmutableURL, type PossibleURL, requireURL } from "../../util/url.js";
 
-/** Set of named meta `<meta />` tags in `{ name: content }` format. */
+/**
+ * Set of named meta `<meta />` tags in `{ name: content }` format.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/meta/MetaTags
+ */
 export type MetaTags = ImmutableDictionary<string | boolean | null | undefined>;
 
-/** Set of named meta `<link />` tags in `{ rel: href }` format. */
+/**
+ * Set of resolved meta `<link />` tags in `{ rel: href }` format (hrefs already absolutified to `ImmutableURI`).
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/meta/MetaLinks
+ */
 export type MetaLinks = ImmutableDictionary<ImmutableURI>;
 
-/** Set of named meta `<link />` tags in `{ rel: href }` format. */
+/**
+ * Set of input meta `<link />` tags in `{ rel: href }` format, before hrefs are resolved.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/meta/PossibleMetaLinks
+ */
 export type PossibleMetaLinks = ImmutableDictionary<Nullish<PossibleLink>>;
 
-/** Set of linked assets in `(href)[]` format. */
+/**
+ * Set of resolved linked assets in `(href)[]` format (hrefs already absolutified to `ImmutableURI`).
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/meta/MetaAssets
+ */
 export type MetaAssets = ImmutableArray<ImmutableURI>;
 
-/** Set of linked assets in `(href)[]` format. */
+/**
+ * Set of input linked assets in `(href)[]` format, before hrefs are resolved.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/meta/PossibleMetaAssets
+ */
 export type PossibleMetaAssets = ImmutableArray<Nullish<PossibleLink>>;
 
-/** Type for a meta `Content-Security-Policy` tag in `{ resource: string[] }` format. */
+/**
+ * Type for a meta `Content-Security-Policy` tag in `{ resource: string[] }` format.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/meta/MetaCSP
+ */
 export type MetaCSP = { readonly [resource: string]: string[] };
 
-/** Combined meta data for a website page. */
+/**
+ * Combined meta data for a website page — title, URLs, description, CSP, tags, links, and assets.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/meta/Meta
+ */
 export interface Meta {
 	/** Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). */
 	readonly root?: ImmutableURL | undefined;

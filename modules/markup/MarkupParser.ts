@@ -116,6 +116,7 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	 * @param options Options configuring the rules, link resolution, and default context (all optional).
 	 * @returns A `MarkupParser` instance.
 	 * @example new MarkupParser({ rel: "nofollow ugc" })
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser
 	 */
 	constructor({ rules = MARKUP_RULES, rel, url, root, schemes = HTTP_SCHEMES, context = "block" }: MarkupOptions = {}) {
 		this.rules = rules;
@@ -128,30 +129,40 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	}
 
 	/**
-	 * Parse a text string as Markdownish markup syntax and render it as elements.
+	 * Parse a text string as Markdownish markup syntax and render it as a React node.
 	 * - Syntax is not defined by this code, but by the rules supplied to it.
 	 *
-	 * @param input The string content possibly containing markup syntax, e.g. "This is a *bold* string.
-	 * @param parser A markup parser instance.
+	 * @param input The string content possibly containing markup syntax, e.g. `"This is a *bold* string."`.
 	 * @param context The context to render in (defaults to `"block"`).
-	 *
 	 * @returns A React node — an element, a string, `null`, or an array of zero or more of those.
+	 * @example new MarkupParser().parse("This is a *bold* string.")
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/parse
 	 */
 	parse(input: string, context = "block"): ReactNode {
 		const nodes = _parseNodes(input, this, context);
 		return !nodes.length ? null : nodes.length === 1 ? nodes[0] : nodes;
 	}
 
-	/** Yield the rules active in `context` that sit in the given priority tier. */
+	/**
+	 * Yield the rules active in `context` that sit in the given priority tier.
+	 *
+	 * @param context The render context to filter rules by (e.g. `"block"`, `"inline"`).
+	 * @param priority The priority tier to filter rules by.
+	 * @returns An iterable of the matching `MarkupRule` instances.
+	 * @example for (const rule of parser.getRules("block", 0)) { ... }
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/getRules
+	 */
 	*getRules(context: string, priority: number): Iterable<MarkupRule> {
 		for (const r of this.rules) if (r.priority === priority && r.contexts.includes(context)) yield r;
 	}
 
 	/**
-	 * Get a HREF link with the correct context of our `options.url` and `options.root`
+	 * Resolve a link href against this parser's `url` and `root`, returning it only if its scheme is allowed.
 	 *
-	 * @returns `ImmutableURI` a (URL) object if the link matches and is parseable and has an allowed scheme.
-	 * @returns `undefined` if the link does not amtch the allowed `options.schemes`
+	 * @param href The raw link reference to resolve (relative or absolute), or a nullish value.
+	 * @returns An `ImmutableURI` if the link parses and its scheme is in `schemes`, otherwise `undefined`.
+	 * @example parser.getLink("/about") // ImmutableURI | undefined
+	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/getLink
 	 */
 	getLink(href: Nullish<PossibleLink>): ImmutableURI | undefined {
 		const link = getLink(href, this.url, this.root);
@@ -350,5 +361,11 @@ function _mask(text: string, start: number, end: number): string {
 	return `${text.slice(0, start)}${blanked}${text.slice(end)}`;
 }
 
-/** MarkupParser sentinel with the default markup rules */
+/**
+ * Shared `MarkupParser` instance configured with the default markup rules and behaviour.
+ * - Use this singleton when no custom rules, link resolution, or default context are needed.
+ *
+ * @example MARKUP_PARSER.parse("This is a *bold* string.")
+ * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MARKUP_PARSER
+ */
 export const MARKUP_PARSER = new MarkupParser();

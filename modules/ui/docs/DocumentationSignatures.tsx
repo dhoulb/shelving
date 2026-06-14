@@ -2,7 +2,11 @@ import type { ReactNode } from "react";
 import type { ImmutableArray } from "../../util/array.js";
 import { Preformatted } from "../block/Preformatted.js";
 
-/** Props for `DocumentationSignatures`. */
+/**
+ * Props for `DocumentationSignatures` — the type signatures to render, one block per overload.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationSignatures/DocumentationSignaturesProps
+ */
 export interface DocumentationSignaturesProps {
 	/** Type signatures to render — one block per overload. */
 	readonly signatures?: ImmutableArray<string> | undefined;
@@ -13,6 +17,11 @@ export interface DocumentationSignaturesProps {
  * - Shared by `DocumentationCard` and `DocumentationPage` so signatures render identically in both (calm code
  *   blocks, not a shouty heading).
  * - Renders nothing when there are no signatures.
+ *
+ * @param props The signatures to render — one block per overload.
+ * @returns One `<Preformatted>` block per signature, or `null` when there are none.
+ * @example <DocumentationSignatures signatures={["getArray<T>(arr: T[]): T"]} />
+ * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationSignatures/DocumentationSignatures
  */
 export function DocumentationSignatures({ signatures }: DocumentationSignaturesProps): ReactNode {
 	if (!signatures?.length) return null;

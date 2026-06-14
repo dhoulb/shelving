@@ -64,6 +64,7 @@ export type PossibleStringMap<K extends string, T> = PossibleMap<K, T> | { reado
  *
  * @param value The value to test.
  * @returns `true` if `value` is a `Map` instance, otherwise `false`.
+ * @example isMap(new Map()) // true
  * @see https://dhoulb.github.io/shelving/util/map/isMap
  */
 export function isMap(value: unknown): value is ImmutableMap {
@@ -76,7 +77,7 @@ export function isMap(value: unknown): value is ImmutableMap {
  * @param value The value to assert.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `value` to `ImmutableMap`.
- * @throws RequiredError if `value` is not a `Map` instance.
+ * @throws {RequiredError} If `value` is not a `Map` instance.
  * @example assertMap(new Map()); // passes
  * @see https://dhoulb.github.io/shelving/util/map/assertMap
  */
@@ -118,6 +119,7 @@ export function limitMap<T>(map: ImmutableMap<T>, limit: number): ImmutableMap<T
  * @param map The map to look in.
  * @param key The candidate key to test.
  * @returns `true` if `key` exists in `map`, otherwise `false`.
+ * @example isMapItem(new Map([["a", 1]]), "a") // true
  * @see https://dhoulb.github.io/shelving/util/map/isMapItem
  */
 export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K {
@@ -131,7 +133,7 @@ export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K
  * @param key The candidate key to assert.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `key` to the map's key type.
- * @throws RequiredError if `key` does not exist in `map`.
+ * @throws {RequiredError} If `key` does not exist in `map`.
  * @example assertMapItem(new Map([["a", 1]]), "a"); // passes
  * @see https://dhoulb.github.io/shelving/util/map/assertMapItem
  */
@@ -200,7 +202,7 @@ export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | undefined
  * @param key The key to look up.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns The value for `key`.
- * @throws RequiredError if `key` does not exist in `map`.
+ * @throws {RequiredError} If `key` does not exist in `map`.
  * @example requireMapItem(new Map([["a", 1]]), "a") // 1
  * @see https://dhoulb.github.io/shelving/util/map/requireMapItem
  */

@@ -225,18 +225,41 @@ function _datetime(date: Date): string {
 	return `${_date(date)}T${_time(date)}`;
 }
 
-/** Convert an unknown value to a local date string like "2015-09-12T18:30:00", or `undefined` if it couldn't be converted. */
+/**
+ * Convert an unknown value to a local date string like "2015-09-12T18:30:00", or `undefined` if it couldn't be converted.
+ *
+ * @param value Any value that we want to parse as a valid date.
+ * @returns The local datetime string, or `undefined` if `value` couldn't be converted.
+ * @example getDateTimeString("2015-09-12T18:30:00") // "2015-09-12T18:30:00"
+ * @see https://dhoulb.github.io/shelving/util/date/getDateTimeString
+ */
 export function getDateTimeString(value?: unknown): string | undefined {
 	const date = getDate(value);
 	if (date) return _datetime(date);
 }
 
-/** Convert a possible `Date` instance to a local YMD string like "2015-09-12T18:30:00", or throw `RequiredError` if it couldn't be converted.  */
+/**
+ * Convert a possible `Date` instance to a local YMD string like "2015-09-12T18:30:00", or throw `RequiredError` if it couldn't be converted.
+ *
+ * @param value Any value that we want to parse as a valid date (defaults to `"now"`).
+ * @param caller Function to attribute a thrown error to (defaults to `requireDateTimeString` itself).
+ * @returns The local datetime string.
+ * @throws {RequiredError} If `value` couldn't be converted to a valid date.
+ * @example requireDateTimeString("2015-09-12T18:30:00") // "2015-09-12T18:30:00"
+ * @see https://dhoulb.github.io/shelving/util/date/requireDateTimeString
+ */
 export function requireDateTimeString(value?: PossibleDate, caller: AnyCaller = requireDateTimeString): string {
 	return _datetime(requireDate(value, caller));
 }
 
-/** Convert an unknown value to a local date string like "2015-09-12", or `undefined` if it couldn't be converted. */
+/**
+ * Convert an unknown value to a local date string like "2015-09-12", or `undefined` if it couldn't be converted.
+ *
+ * @param value Any value that we want to parse as a valid date.
+ * @returns The local date string, or `undefined` if `value` couldn't be converted.
+ * @example getDateString("2015-09-12T18:30:00") // "2015-09-12"
+ * @see https://dhoulb.github.io/shelving/util/date/getDateString
+ */
 export function getDateString(value?: unknown): string | undefined {
 	const date = getDate(value);
 	if (date) return _date(date);

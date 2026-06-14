@@ -7,6 +7,9 @@ import { createLineRegExp } from "../util/regexp.js";
  * - Character must be repeated three (or more) times.
  * - Character must be the same every time (can't mix)
  * - Might have infinite number of spaces between the characters.
+ *
+ * @example new MarkupParser({ rules: [SEPARATOR_RULE] }).parse("---")
+ * @see https://dhoulb.github.io/shelving/markup/rule/separator/SEPARATOR_RULE
  */
 export const SEPARATOR_RULE = createMarkupRule(
 	createLineRegExp("([-*•+_=])(?: *\\1){2,}"), //

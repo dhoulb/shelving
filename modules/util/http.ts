@@ -82,7 +82,7 @@ function _parseMessageBody(
  * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
  * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
- * @throws RequestError if the content is not `text/plain`, or `application/json` with valid JSON.
+ * @throws {RequestError} If the content is not `text/plain`, or `application/json` with valid JSON.
  * @example const body = await parseRequestBody(request);
  * @see https://dhoulb.github.io/shelving/util/http/parseRequestBody
  */
@@ -96,7 +96,7 @@ export function parseRequestBody(request: Request, caller: AnyCaller = parseRequ
  * @param request The `Request` whose JSON body to parse.
  * @param caller Identity of the calling function for error attribution.
  * @returns The parsed JSON value, or `undefined` if the body is empty.
- * @throws RequestError If the request body is not valid JSON.
+ * @throws {RequestError} If the request body is not valid JSON.
  * @example const data = await parseRequestJSON(request);
  * @see https://dhoulb.github.io/shelving/util/http/parseRequestJSON
  */
@@ -110,7 +110,7 @@ export function parseRequestJSON(request: Request, caller: AnyCaller = parseRequ
  * @param request The `Request` whose form-data body to parse.
  * @param caller Identity of the calling function for error attribution.
  * @returns The parsed `FormData`.
- * @throws RequestError If the request body is not valid multipart form-data.
+ * @throws {RequestError} If the request body is not valid multipart form-data.
  * @example const form = await parseRequestFormData(request);
  * @see https://dhoulb.github.io/shelving/util/http/parseRequestFormData
  */
@@ -127,7 +127,7 @@ export function parseRequestFormData(request: Request, caller: AnyCaller = parse
  * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
  * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
- * @throws ResponseError if the content is not `text/plain` or `application/json` with valid JSON.
+ * @throws {ResponseError} If the content is not `text/plain` or `application/json` with valid JSON.
  * @example const body = await parseResponseBody(response);
  * @see https://dhoulb.github.io/shelving/util/http/parseResponseBody
  */
@@ -141,7 +141,7 @@ export function parseResponseBody(response: Response, caller: AnyCaller = parseR
  * @param response The `Response` whose JSON body to parse.
  * @param caller Identity of the calling function for error attribution.
  * @returns The parsed JSON value, or `undefined` if the body is empty.
- * @throws ResponseError If the response body is not valid JSON.
+ * @throws {ResponseError} If the response body is not valid JSON.
  * @example const data = await parseResponseJSON(response);
  * @see https://dhoulb.github.io/shelving/util/http/parseResponseJSON
  */
@@ -155,7 +155,7 @@ export function parseResponseJSON(response: Response, caller: AnyCaller = parseR
  * @param response The `Response` whose form-data body to parse.
  * @param caller Identity of the calling function for error attribution.
  * @returns The parsed `FormData`.
- * @throws ResponseError If the response body is not valid multipart form-data.
+ * @throws {ResponseError} If the response body is not valid multipart form-data.
  * @example const form = await parseResponseFormData(response);
  * @see https://dhoulb.github.io/shelving/util/http/parseResponseFormData
  */

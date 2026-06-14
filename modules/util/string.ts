@@ -186,7 +186,10 @@ export function sanitizeText(str: string): string {
  * - Remove all control characters (like `sanitizeText()`).
  * - Strip all whitespace entirely (rather than collapsing runs to a single space like `sanitizeText()`).
  *
+ * @param str The string to sanitize.
+ * @returns The sanitized single-word string.
  * @example sanitizeWord("\x00 a b c "); // Returns `"abc"`
+ * @see https://dhoulb.github.io/shelving/util/string/sanitizeWord
  */
 export function sanitizeWord(str: string): string {
 	return str
@@ -203,6 +206,11 @@ export function sanitizeWord(str: string): string {
  * - Normalise indentation to tabs (four or more spaces are a tab, three or fewer spaces are removed).
  * - Allow spaces at the start of each line (for indentation) but trim the end of each line.
  * - Trim excess newlines at the start and end of the string and runs of more than two newlines in a row.
+ *
+ * @param str The string to sanitize.
+ * @returns The sanitized multi-line string.
+ * @example sanitizeMultilineText("\x00Line one\n\n\n\nLine two   ") // "Line one\n\nLine two"
+ * @see https://dhoulb.github.io/shelving/util/string/sanitizeMultilineText
  */
 export function sanitizeMultilineText(str: string): string {
 	return str
@@ -222,7 +230,10 @@ export function sanitizeMultilineText(str: string): string {
  * - Normalizes the string by
  * - Useful when you're running a query against a string entered by a user.
  *
+ * @param str The string to simplify.
+ * @returns The simplified, lowercased string containing only numbers, letters, and single spaces.
  * @example simplifyString("Däve-is\nREALLY    éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
+ * @see https://dhoulb.github.io/shelving/util/string/simplifyString
  *
  * @todo Convert confusables (e.g. `ℵ` alef symbol or `℮` estimate symbol) to their letterlike equivalent (e.g. `N` and `e`).
  */
@@ -235,24 +246,56 @@ export function simplifyString(str: string): string {
 		.toLowerCase();
 }
 
-/** Convert a string to a `kebab-case` URL slug, or return `undefined` if conversion resulted in an empty ref. */
+/**
+ * Convert a string to a `kebab-case` URL slug, or return `undefined` if conversion resulted in an empty ref.
+ *
+ * @param str The string to convert.
+ * @returns The `kebab-case` slug, or `undefined` if conversion resulted in an empty string.
+ * @example getSlug("Hello World!") // "hello-world"
+ * @see https://dhoulb.github.io/shelving/util/string/getSlug
+ */
 export function getSlug(str: string): string | undefined {
 	return simplifyString(str).replaceAll(" ", "-") || undefined;
 }
 
-/** Convert a string to a `kebab-case` URL slug, or throw `RequiredError` if conversion resulted in an empty ref. */
+/**
+ * Convert a string to a `kebab-case` URL slug, or throw `RequiredError` if conversion resulted in an empty ref.
+ *
+ * @param str The string to convert.
+ * @param caller Function to attribute a thrown error to (defaults to `requireSlug` itself).
+ * @returns The `kebab-case` slug.
+ * @throws {RequiredError} If conversion resulted in an empty string.
+ * @example requireSlug("Hello World!") // "hello-world"
+ * @see https://dhoulb.github.io/shelving/util/string/requireSlug
+ */
 export function requireSlug(str: string, caller: AnyCaller = requireSlug): string {
 	const slug = getSlug(str);
 	if (!slug) throw new RequiredError("Invalid slug", { received: str, caller });
 	return slug;
 }
 
-/** Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty string. */
+/**
+ * Convert a string to a unique ref e.g. `abc123`, or return `undefined` if conversion resulted in an empty string.
+ *
+ * @param str The string to convert.
+ * @returns The ref, or `undefined` if conversion resulted in an empty string.
+ * @example getRef("Hello World!") // "helloworld"
+ * @see https://dhoulb.github.io/shelving/util/string/getRef
+ */
 export function getRef(str: string): string | undefined {
 	return simplifyString(str).replaceAll(" ", "") || undefined;
 }
 
-/** Convert a string to a unique ref e.g. `abc123`, or throw `RequiredError` if conversion resulted in an empty string. */
+/**
+ * Convert a string to a unique ref e.g. `abc123`, or throw `RequiredError` if conversion resulted in an empty string.
+ *
+ * @param str The string to convert.
+ * @param caller Function to attribute a thrown error to (defaults to `requireRef` itself).
+ * @returns The ref.
+ * @throws {RequiredError} If conversion resulted in an empty string.
+ * @example requireRef("Hello World!") // "helloworld"
+ * @see https://dhoulb.github.io/shelving/util/string/requireRef
+ */
 export function requireRef(str: string, caller: AnyCaller = requireRef): string {
 	const ref = getRef(str);
 	if (!ref) throw new RequiredError("Invalid string ref", { received: str, caller });
@@ -265,6 +308,11 @@ export function requireRef(str: string, caller: AnyCaller = requireRef): string 
  * - Performs no processing on the words, so control chars, punctuation, symbols, and case are all preserved.
  *
  * Note: this splits words based on spaces, so won't work well with logographic writing systems e.g. kanji.
+ *
+ * @param str The string to extract words from.
+ * @returns Array of the separate words and quoted phrases found in `str`.
+ * @example getWords(`a "b c" d`) // ["a", "b c", "d"]
+ * @see https://dhoulb.github.io/shelving/util/string/getWords
  */
 export function getWords(str: string): ImmutableArray<string> {
 	return Array.from(_getWords(str));
@@ -277,18 +325,37 @@ function* _getWords(str: string): Iterable<string> {
 }
 const WORD = /([^\s"]+)|"([^"]*)"|'([^']*)'/g; // Runs of characters without spaces, or "quoted phrases"
 
-/** Get the (trimmed) first full line of a string. */
+/**
+ * Get the (trimmed) first full line of a string.
+ *
+ * @param str The string to read the first line from.
+ * @returns The trimmed first line of `str` (everything before the first `\n` newline).
+ * @example getFirstLine("first\nsecond") // "first"
+ * @see https://dhoulb.github.io/shelving/util/string/getFirstLine
+ */
 export function getFirstLine(str: string): string {
 	const i = str.indexOf("\n");
 	return (i >= 0 ? str.substr(0, i) : str).trim();
 }
 
-/** Is the first character of a string an uppercase letter? */
+/**
+ * Is the first character of a string an uppercase letter?
+ *
+ * @param str The string whose first character is tested.
+ * @returns `true` if the first character of `str` is an uppercase A–Z letter, otherwise `false`.
+ * @see https://dhoulb.github.io/shelving/util/string/isUppercaseLetter
+ */
 export function isUppercaseLetter(str: string): boolean {
 	return isBetween(str.charCodeAt(0), 65, 90);
 }
 
-/** Is the first character of a string a lowercase letter? */
+/**
+ * Is the first character of a string a lowercase letter?
+ *
+ * @param str The string whose first character is tested.
+ * @returns `true` if the first character of `str` is a lowercase a–z letter, otherwise `false`.
+ * @see https://dhoulb.github.io/shelving/util/string/isLowercaseLetter
+ */
 export function isLowercaseLetter(str: string): boolean {
 	return isBetween(str.charCodeAt(0), 97, 122);
 }
@@ -297,6 +364,13 @@ export function isLowercaseLetter(str: string): boolean {
  * Limit a string to a given length.
  * - Stops at the last space inside `maxLength`
  * - Appends an `…` ellipses after the string (but only if a limit is applied).
+ *
+ * @param str The string to limit.
+ * @param maxLength The maximum length of the returned string (before `append` is added).
+ * @param append The string to append when a limit is applied (defaults to `"…"`).
+ * @returns `str` unchanged if it's shorter than `maxLength`, otherwise truncated with `append` added.
+ * @example limitString("the quick brown fox", 9) // "the quick…"
+ * @see https://dhoulb.github.io/shelving/util/string/limitString
  */
 export function limitString(str: string, maxLength: number, append = "…") {
 	if (str.length < maxLength) return str;
@@ -310,8 +384,15 @@ export function limitString(str: string, maxLength: number, append = "…") {
  * - Excess segments in `String.prototype.split()` is counterintuitive because further parts are thrown away.
  * - Excess segments in `splitString()` are concatenated onto the last segment (set `max` to `null` if you want infinite segments).
  *
- * @throws RequiredError if `min` isn't met.
- * @throws RequiredError if any of the segments are empty.
+ * @param str The string to divide.
+ * @param separator The separator to divide `str` on.
+ * @param min The minimum number of segments required (defaults to `1`).
+ * @param max The maximum number of segments (excess segments are concatenated onto the last; defaults to `Infinity`).
+ * @param caller Function to attribute a thrown error to (defaults to `splitString` itself).
+ * @returns Array of the divided segments.
+ * @throws {ValueError} If `min` isn't met, or if any of the segments are empty.
+ * @example splitString("a-b-c", "-", 2, 2) // ["a", "b-c"]
+ * @see https://dhoulb.github.io/shelving/util/string/splitString
  */
 export function splitString(str: string, separator: string, min: 1, max: 1, caller?: AnyCaller): readonly [string];
 export function splitString(str: string, separator: string, min: 2, max: 2, caller?: AnyCaller): readonly [string, string];
@@ -357,12 +438,25 @@ export function splitString(
 	return segments;
 }
 
-/** Trim a string (as a function, so it can be used in mapping. */
+/**
+ * Trim a string (as a function, so it can be used in mapping).
+ *
+ * @param str The string to trim.
+ * @returns `str` with whitespace trimmed from both ends.
+ * @example ["  a  ", " b "].map(trimString) // ["a", "b"]
+ * @see https://dhoulb.github.io/shelving/util/string/trimString
+ */
 export function trimString(str: string): string {
 	return str.trim();
 }
 
-/** Does a string have length? */
+/**
+ * Does a string have length?
+ *
+ * @param str The string to test.
+ * @returns `true` if `str` has a length greater than zero, otherwise `false`.
+ * @see https://dhoulb.github.io/shelving/util/string/isNonEmptyString
+ */
 export function isNonEmptyString(str: string): boolean {
 	return str.length > 0;
 }

@@ -4,9 +4,21 @@ import { Store, type StoreInput } from "./Store.js";
 
 /**
  * Store that tracks its busy status via a separate `this.busy` store.
- * - "busy" means the store is awaiting a new value.
+ * - "busy" means the store is awaiting a new (async) value.
+ * - `this.busy` becomes `true` when `await()` starts and `false` when `abort()` is called (which also happens whenever a value or `reason` is set).
+ *
+ * @example
+ * const store = new BusyStore(123);
+ * store.value = fetchValue();
+ * store.busy.value; // true while the promise is pending
+ * @see https://dhoulb.github.io/shelving/store/BusyStore/BusyStore
  */
 export class BusyStore<T, TT = T> extends Store<T, TT> {
+	/**
+	 * Boolean store that is `true` while this store is awaiting a new value.
+	 *
+	 * @see https://dhoulb.github.io/shelving/store/BusyStore/BusyStore/busy
+	 */
 	readonly busy = new BooleanStore(false);
 
 	// Overload to set `this.busy` to `true` when we start awaiting a value.
