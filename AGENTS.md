@@ -94,6 +94,7 @@ Before writing new code, find what already exists. The codebase deliberately exp
 ## Pull Requests
 
 - Every PR that resolves a tracked issue **must** link it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so GitHub closes the issue automatically when the PR merges. List every issue the PR resolves, one keyword each. This is mandatory: never rely on closing issues by hand after merge.
+- **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This is the normal way work is shared here, and it's especially important for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://dhoulb.github.io/shelving/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is generated.
 
 ## Naming
 
@@ -319,6 +320,7 @@ Conventions for the upcoming reusable component layer.
 - Inline arrow handlers in JSX are the default — even multi-line ones
 - Hoist a handler to a `function _name(...)` only when it's pure, doesn't close over state, and is reused
 - Components that wrap clickable elements delegate to `getClickable()` which returns `<a>` or `<button>` based on `href` vs `onClick`
+- Every reusable component carries a `@kind component` tag in its docblock so the docs extractor labels it as a `component` rather than a `function` (it's grouped and colour-coded separately on the docs site). See the Documentation section. Helper functions that happen to live in a component file (e.g. `getButtonClass`) stay plain functions — no `@kind`
 
 ### CSS Modules and variants
 
@@ -329,6 +331,7 @@ Conventions for the upcoming reusable component layer.
 - `:where()` is used to keep specificity low for default child styles
 - CSS modules are imported as default: `import styles from "./Foo.module.css"`, or with a `_CSS` suffix for named-export style: `import BUTTON_CSS from "./Button.module.css"`. CSS modules are the one exception to the named-exports-only rule
 - **CSS custom property naming.** Variables owned by a specific module file (theme hooks consumers can set, internal runtime variables the module writes and reads) must start with the file's kebab-case name. So `Card.module.css` owns `--card-tint`, `--card-background`, `--card-padding`, `--card-radius`; `Flex.module.css` owns `--flex-gap`, `--flex-icon-size`. This makes the originating file obvious from any `var(--...)` reference. Exempt: design-token constants declared at `:root` in `style/base.css` (`--color-*` / `--space-*` / `--size-*` etc.) and the tint ladder (`--tint-00` … `--tint-100`) computed in `style/Tint.module.css`.
+- **One tint anchor, then per-property hooks.** A painted component rebinds the ladder anchor once at the top of its rule (`--tint-50: var(--card-tint, inherit);`) and paints every property from a ladder step with a per-property hook in front (`background: var(--card-background, var(--tint-90))`). Do **not** reintroduce a per-component five-step colour scheme (`--card-color-black` / `-dark` / `-vivid` / `-light` / `-white` and the matching `*-color-bg` / `*-color-border` / `*-color-text` hooks). That scheme was tried and removed in favour of the single-anchor model; older issue comments describing it are stale. The tint ladder and the rebind pattern are documented in `modules/ui/README.md` — keep that the source of truth.
 
 ### Copy
 
@@ -351,8 +354,23 @@ Conventions for the upcoming reusable component layer.
 - Functions: one-sentence summary, 0–2 behaviour bullets for anything surprising, `@param` / `@returns` / `@throws`, one `@example`
 - When you add, remove, or meaningfully change a class or function, check and update its docblock in the same commit
 - Each module has a `README.md` that acts as the module's guide page. It covers **purpose, key concepts, and integration examples** — how to combine the module's classes and functions to accomplish real tasks (and, for families like `error`, shared traits). When module behaviour changes, check whether the README needs updating
-- **Per-class / per-function usage examples** live in a sibling `MyClass.md` / `myFunction.md` next to the source file. `DirectoryExtractor` merges that markdown onto the symbol's own page (`MarkupExtractor` outranks `TypescriptExtractor`), so detailed usage belongs there rather than in the module README. `modules/util/template.md` is the precedent
+- **Per-class / per-function usage examples** live in a sibling `MyClass.md` / `myFunction.md` next to the source file. `DirectoryExtractor` merges that markdown onto the symbol's own page (`MarkupExtractor` outranks `TypescriptExtractor`), so detailed usage belongs there rather than in the module README. `modules/util/template.md` is the precedent. This applies to UI components too — each reusable component gets a sibling `.md` (`Card.md` next to `Card.tsx`) with usage examples and a **Styling** section (see below)
 - Trust source and tests over README if they conflict — but fix the README rather than leaving it wrong
+
+### UI component pages and CSS-variable documentation
+
+Each reusable UI component's sibling `.md` (e.g. `modules/ui/block/Card.md`) follows the same shape as other per-symbol pages — a `# Name` heading, a short purpose paragraph, a "Things to know" bullet list, runnable `tsx` usage examples — plus a **Styling** section that documents the component's themeable surface. The CSS custom properties are written inline in the `.module.css` (`var(--card-background, …)`), so there's no declaration site for an extractor to read; the Styling table is the documented source of truth and must be kept in sync by hand.
+
+A Styling section has two parts:
+
+- A **table of the component's own hooks** — three columns: `Variable` | `Styles` | `Default`. List every `--component-*` custom property the `.module.css` reads, what painted property it controls, and its fallback value (resolve token references to a human-readable note, e.g. `var(--radius-normal)` (16px)).
+- A **list of the global tokens** the component reads (tint-ladder steps and `--space-*` / `--radius-*` / `--color-*` / etc.), so a theme writer knows which broad levers also move it.
+
+A component that exposes no own hooks and only inherits says so explicitly in one line rather than omitting the section. **When a component's `.module.css` gains, loses, or renames a `--variable`, update its `.md` Styling table in the same commit** — same rule as keeping a docblock in step with behaviour. `modules/ui/block/Card.md` is the precedent.
+
+### `@kind` docblock override
+
+The TypeScript extractor infers a symbol's `kind` from its declaration (`function`, `class`, `interface`, `type`, `constant`). A `@kind <name>` tag in the docblock overrides that. Its primary use is `@kind component` on every reusable React component so the docs site groups and colours components separately from plain functions. The tag is consumed by the extractor (it does not appear in the rendered page body), and a non-`function` kind renders the title as a bare name (`Card`, not `Card()`). New documented kinds need a colour in `DocumentationKind` and a section in `DocumentationPage`'s `KIND_SECTIONS`.
 
 ### Factory functions
 
