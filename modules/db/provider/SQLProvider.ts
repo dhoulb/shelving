@@ -23,7 +23,7 @@ type CountRow = {
 export abstract class SQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends DBProvider<I, T> {
 	abstract exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<X>>;
 
-	async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
+	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const rows = await this.exec<Item<II, TT>>`
 			SELECT * FROM ${this.sqlIdentifier(collection.name)}
 			WHERE ${this.sqlIdentifier("id")} = ${id}
@@ -32,11 +32,11 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		return rows[0];
 	}
 
-	getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
+	override getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
 		throw new UnimplementedError(`SQLProvider does not support realtime subscriptions`);
 	}
 
-	async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
+	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		const rows = await this.exec<{ id: II }>`
 			INSERT INTO ${this.sqlIdentifier(collection.name)} ${this.sqlValues(data)}
 			RETURNING ${this.sqlIdentifier("id")}
@@ -46,14 +46,14 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		return id;
 	}
 
-	async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
+	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await this.exec`
 			INSERT INTO ${this.sqlIdentifier(collection.name)} ${this.sqlValues({ id, ...data })}
 			ON CONFLICT (${this.sqlIdentifier("id")}) DO UPDATE SET ${this.sqlSetters(data)}
 		`;
 	}
 
-	async updateItem<II extends I, TT extends T>(
+	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		id: II,
 		updates: Updates<Item<II, TT>>,
@@ -65,7 +65,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		`;
 	}
 
-	async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
+	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		await this.exec`DELETE FROM ${this.sqlIdentifier(collection.name)} WHERE ${this.sqlIdentifier("id")} = ${id}`;
 	}
 
@@ -80,25 +80,32 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		return rows[0]?.count ?? 0;
 	}
 
-	async getQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
+	override async getQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): Promise<Items<II, TT>> {
 		return this.exec<Item<II, TT>>`
 			SELECT * FROM ${this.sqlIdentifier(collection.name)}
 			${query ? this.sqlClauses(query) : this.sql``}
 		`;
 	}
 
-	getQuerySequence<II extends I, TT extends T>(
+	override getQuerySequence<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_query?: Query<Item<II, TT>>,
 	): ItemsSequence<II, TT> {
 		throw new UnimplementedError(`SQLProvider does not support realtime subscriptions`);
 	}
 
-	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
+	override async setQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+		data: TT,
+	): Promise<void> {
 		await this.exec`UPDATE ${this.sqlIdentifier(collection.name)} SET ${this.sqlSetters(data)}${this.sqlClauses(query)}`;
 	}
 
-	async updateQuery<II extends I, TT extends T>(
+	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 		updates: Updates<TT>,
@@ -106,7 +113,10 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		await this.exec`UPDATE ${this.sqlIdentifier(collection.name)} SET ${this.sqlUpdates(updates)}${this.sqlClauses(query)}`;
 	}
 
-	async deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
+	override async deleteQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+	): Promise<void> {
 		await this.exec`DELETE FROM ${this.sqlIdentifier(collection.name)}${this.sqlClauses(query)}`;
 	}
 

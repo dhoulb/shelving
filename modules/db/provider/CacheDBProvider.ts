@@ -19,29 +19,29 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 		this.memory = cache;
 	}
 
-	async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
+	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const item = await this.source.getItem(collection, id);
 		const table = this.memory.getTable(collection);
 		item ? table.setItem(id, item) : table.deleteItem(id);
 		return item;
 	}
 
-	getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
+	override getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		return this.memory.getTable(collection).setItemSequence(id, this.source.getItemSequence(collection, id));
 	}
 
-	async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
+	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		const id = await this.source.addItem(collection, data);
 		this.memory.getTable(collection).setItem(id, data);
 		return id;
 	}
 
-	async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
+	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await this.source.setItem(collection, id, data);
 		this.memory.getTable(collection).setItem(id, data);
 	}
 
-	async updateItem<II extends I, TT extends T>(
+	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		id: II,
 		updates: Updates<Item<II, TT>>,
@@ -50,7 +50,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 		this.memory.getTable(collection).updateItem(id, updates);
 	}
 
-	async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
+	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		await this.source.deleteItem(collection, id);
 		this.memory.getTable(collection).deleteItem(id);
 	}
@@ -59,22 +59,32 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 		return this.source.countQuery(collection, query);
 	}
 
-	async getQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
+	override async getQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): Promise<Items<II, TT>> {
 		const items = await this.source.getQuery(collection, query);
 		this.memory.getTable(collection).setItems(items);
 		return items;
 	}
 
-	getQuerySequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
+	override getQuerySequence<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): ItemsSequence<II, TT> {
 		return this.memory.getTable(collection).setItemsSequence(this.source.getQuerySequence(collection, query));
 	}
 
-	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
+	override async setQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+		data: TT,
+	): Promise<void> {
 		await this.source.setQuery(collection, query, data);
 		this.memory.getTable(collection).setQuery(query, data);
 	}
 
-	async updateQuery<II extends I, TT extends T>(
+	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 		updates: Updates<TT>,
@@ -83,7 +93,10 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 		this.memory.getTable(collection).updateQuery(query, updates);
 	}
 
-	async deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
+	override async deleteQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+	): Promise<void> {
 		await this.source.deleteQuery(collection, query);
 		this.memory.getTable(collection).deleteQuery(query);
 	}

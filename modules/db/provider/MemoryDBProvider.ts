@@ -28,23 +28,26 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		return ((this._tables[collection.name] as MemoryTable<II, TT>) ||= new MemoryTable<II, TT>(collection));
 	}
 
-	async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
+	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		return this.getTable(collection).getItem(id);
 	}
 
-	async *getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
+	override async *getItemSequence<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		id: II,
+	): OptionalItemSequence<II, TT> {
 		yield* this.getTable(collection).getItemSequence(id);
 	}
 
-	async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
+	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		return this.getTable(collection).addItem(data);
 	}
 
-	async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
+	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		this.getTable(collection).setItem(id, data);
 	}
 
-	async updateItem<II extends I, TT extends T>(
+	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		id: II,
 		updates: Updates<Item<II, TT>>,
@@ -52,7 +55,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		this.getTable(collection).updateItem(id, updates);
 	}
 
-	async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
+	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		this.getTable(collection).deleteItem(id);
 	}
 
@@ -63,22 +66,29 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		return this.getTable(collection).countQuery(query);
 	}
 
-	async getQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
+	override async getQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): Promise<Items<II, TT>> {
 		return this.getTable(collection).getQuery(query);
 	}
 
-	async *getQuerySequence<II extends I, TT extends T>(
+	override async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
 	): ItemsSequence<II, TT> {
 		return yield* this.getTable(collection).getQuerySequence(query);
 	}
 
-	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
+	override async setQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+		data: TT,
+	): Promise<void> {
 		this.getTable(collection).setQuery(query, data);
 	}
 
-	async updateQuery<II extends I, TT extends T>(
+	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 		updates: Updates<TT>,
@@ -86,7 +96,10 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		this.getTable(collection).updateQuery(query, updates);
 	}
 
-	async deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
+	override async deleteQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+	): Promise<void> {
 		this.getTable(collection).deleteQuery(query);
 	}
 
