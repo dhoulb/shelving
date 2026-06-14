@@ -25,10 +25,11 @@
 		outline-offset: calc(0px - var(--preformatted-stroke, var(--stroke-normal)));
 
 		/* Text */
-		font-family: var(--preformatted-font, var(--font-code));
+		font-family: var(--preformatted-font, var(--font-preformatted));
+		font-weight: var(--preformatted-weight, var(--weight-preformatted));
 		font-size: var(--preformatted-size, var(--size-normal));
 		line-height: var(--preformatted-leading, var(--leading));
-		font-weight: var(--preformatted-weight, var(--weight-code));
+		text-transform: none;
 		tab-size: 2;
 		white-space: preserve nowrap;
 		overflow-wrap: normal;

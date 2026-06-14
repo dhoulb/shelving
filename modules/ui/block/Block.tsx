@@ -9,7 +9,6 @@ import type { OptionalChildProps } from "../util/props.js";
 import BLOCK_CSS from "./Block.module.css";
 
 export const BLOCK_CLASS = getModuleClass(BLOCK_CSS, "block");
-export const BLOCK_PROSE_CLASS = getModuleClass(BLOCK_CSS, "prose");
 
 export type BlockElement = "div" | "section" | "header" | "footer" | "nav" | "aside" | "figure";
 

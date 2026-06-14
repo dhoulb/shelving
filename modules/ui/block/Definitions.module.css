@@ -27,10 +27,11 @@
 			margin-block-start: var(--definitions-gap, var(--space-small));
 
 			/* Text */
-			font-family: var(--definitions-title-font, var(--font-body));
-			font-weight: var(--definitions-title-weight, var(--weight-strong));
-			font-size: var(--definitions-title-size, var(--size-normal));
-			color: var(--definitions-title-color, var(--tint-70));
+			font-family: var(--definitions-label-font, var(--font-label));
+			font-weight: var(--definitions-label-weight, var(--weight-label));
+			font-size: var(--definitions-label-size, var(--size-label));
+			text-transform: var(--definitions-label-case, var(--case-label));
+			color: var(--definitions-label-color, var(--tint-70));
 		}
 	}
 }

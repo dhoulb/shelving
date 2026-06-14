@@ -47,9 +47,10 @@
 		}
 		thead th,
 		tfoot th {
-			font-weight: var(--table-label-weight, var(--weight-strong));
-			font-size: var(--table-label-size, var(--size-small));
-			text-transform: var(--tag-case, var(--case-label));
+			font-family: var(--table-label-font, var(--font-label));
+			font-weight: var(--table-label-weight, var(--weight-label));
+			font-size: var(--table-label-size, var(--size-label));
+			text-transform: var(--table-label-case, var(--case-label));
 			color: var(--table-label-color, var(--tint-70));
 		}
 	}

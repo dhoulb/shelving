@@ -13,7 +13,7 @@
 		margin-block-end: var(--subheading-space, var(--space-paragraph));
 
 		/* Text */
-		font-family: var(--subheading-font, inherit);
+		font-family: var(--subheading-font, var(--font-title));
 		font-weight: var(--subheading-weight, var(--weight-strong));
 		font-size: var(--subheading-size, var(--size-large));
 		line-height: var(--subheading-leading, var(--leading));

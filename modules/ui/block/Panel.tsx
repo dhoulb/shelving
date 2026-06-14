@@ -1,23 +1,17 @@
 import type { ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
-import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import PANEL_CSS from "./Panel.module.css";
 
 const PANEL_CLASS = getModuleClass(PANEL_CSS, "panel");
-const PANEL_INNER_CLASS = getModuleClass(PANEL_CSS, "inner");
 
 /** Allowed semantic elements for a `<Panel>`. */
 export type PanelElement = "section" | "header" | "footer" | "nav" | "aside" | "article" | "div";
 
-export interface PanelProps extends ColorVariants, StatusVariants, PaddingVariants, TypographyVariants, OptionalChildProps, WidthVariants {
-	/** Underlying HTML element. Defaults to `<section>`. */
-	as?: PanelElement | undefined;
-}
+export interface PanelProps extends ColorVariants, StatusVariants, TypographyVariants, OptionalChildProps {}
 
 /**
  * Full-width vertical region that paints the current surface colour. Use to break a page into stacked
@@ -29,20 +23,17 @@ export interface PanelProps extends ColorVariants, StatusVariants, PaddingVarian
  * @example <Panel><Block narrow><Title>Welcome</Title></Block></Panel>
  * @example <Panel as="header" color="primary"><Title>Welcome</Title></Panel>
  */
-export function Panel({ children, as = "section", ...props }: PanelProps): ReactElement {
-	const Component = as;
+export function Panel({ children, ...props }: PanelProps): ReactElement {
 	return (
-		<Component
-			className={getClass(PANEL_CLASS, getStatusClass(props), getColorClass(props), getPaddingClass(props), getTypographyClass(props))}
+		<div
+			className={getClass(
+				PANEL_CLASS, //
+				getStatusClass(props),
+				getColorClass(props),
+				getTypographyClass(props),
+			)}
 		>
-			<div
-				className={getClass(
-					PANEL_INNER_CLASS, //
-					getWidthClass(props),
-				)}
-			>
-				{children}
-			</div>
-		</Component>
+			{children}
+		</div>
 	);
 }

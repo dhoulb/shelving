@@ -13,24 +13,17 @@
 		--tint-50: var(--panel-tint, inherit);
 
 		/* Box */
-		display: block;
+		position: relative;
+		display: flow-root;
 		inline-size: 100%;
 		margin-inline: 0;
 		margin-block: 0;
 		border-top: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
 		border-bottom: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding-block: var(--panel-padding, var(--space-xxlarge));
-		padding-inline: 0;
 
 		/* Style */
 		background: var(--panel-background, var(--tint-90));
 		color: var(--panel-color, var(--tint-00));
-	}
-
-	.inner {
-		/* Box */
-		max-inline-size: var(--panel-inner-max-width, var(--width-content));
-		margin: 0 auto;
 	}
 }
 

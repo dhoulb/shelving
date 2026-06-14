@@ -1,12 +1,11 @@
 @import "../style/base.css";
 
 @layer components {
-	.prose :where(section, article, aside, nav, header, footer, figure),
 	.block {
 		/* Box */
 		position: relative;
 		display: block;
-		margin-inline: 0;
-		margin-block: var(--block-space, var(--space-normal));
+		margin-inline: auto;
+		margin-block: 0;
 	}
 }

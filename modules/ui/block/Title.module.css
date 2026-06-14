@@ -13,7 +13,7 @@
 		margin-block-end: var(--title-space, var(--space-paragraph));
 
 		/* Text */
-		font-family: var(--title-font, inherit);
+		font-family: var(--title-font, var(--font-title));
 		font-weight: var(--title-weight, var(--weight-strong));
 		font-size: var(--title-size, var(--size-xxxlarge));
 		line-height: var(--title-leading, var(--leading));

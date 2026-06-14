@@ -17,7 +17,7 @@
 		inline-size: var(--width-narrow);
 	}
 	.wide {
-		max-inline-size: var(--width-wide);
+		inline-size: var(--width-wide);
 	}
 	.full {
 		margin-inline: 0;

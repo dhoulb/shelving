@@ -3,12 +3,14 @@ import { type Element, queryElements } from "../../util/element.js";
 import type { AbsolutePath } from "../../util/path.js";
 import type { Query } from "../../util/query.js";
 import type { DocumentationElementProps, TreeElement } from "../../util/tree.js";
+import { Block } from "../block/Block.js";
 import { Definitions } from "../block/Definitions.js";
 import { Heading } from "../block/Heading.js";
+import { Label } from "../block/Label.js";
 import { Panel } from "../block/Panel.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
-import { Section } from "../block/Section.js";
+import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
@@ -61,88 +63,98 @@ export function DocumentationPage({
 }: DocumentationPageProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
-			<Panel color={getDocumentationKindColor(kind)} as="header" wide>
-				<TreeBreadcrumbs />
-				<Title>
-					<Row left wrap>
-						<span>{title ?? name}</span>
-						{kind && <DocumentationKind kind={kind} size="normal" />}
-					</Row>
-				</Title>
-				<DocumentationButtons {...props} />
-				<DocumentationSignatures signatures={signatures} />
-			</Panel>
-			{content && (
-				<Section wide>
-					<Prose>
-						<Markup>{content}</Markup>
-					</Prose>
-				</Section>
-			)}
-			{params?.length && (
-				<Section wide>
-					<Heading>Parameters</Heading>
-					<Definitions>
-						{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
-							<Fragment key={`${name}-${type}-${description}`}>
-								<dt>
-									<Code>{name}</Code>: <Code>{type}</Code>
-									{optional && <> (optional)</>}
-								</dt>
-								<dd>{description}</dd>
-							</Fragment>
-						))}
-					</Definitions>
-				</Section>
-			)}
-			{returns?.length && (
-				<Section wide>
-					<Heading>Returns</Heading>
-					<Definitions>
-						{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
-							<Fragment key={`${type}-${description}`}>
-								<dt>
-									<Code>{type}</Code>
-								</dt>
-								<dd>{description}</dd>
-							</Fragment>
-						))}
-					</Definitions>
-				</Section>
-			)}
-			{throws?.length && (
-				<Section wide>
-					<Heading>Throws</Heading>
-					<Definitions>
-						{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
-							<Fragment key={`${type}-${description}`}>
-								<dt>
-									<Code>{type}</Code>
-								</dt>
-								<dd>{description}</dd>
-							</Fragment>
-						))}
-					</Definitions>
-				</Section>
-			)}
-			{examples?.length && (
-				<Section wide>
-					<Heading>Examples</Heading>
-					{examples.map(({ description }) => (
-						<Preformatted key={description}>{description}</Preformatted>
-					))}
-				</Section>
-			)}
-			{Object.entries(KIND_SECTIONS).map(([kind, label]) => {
-				// Pre-filter the children for this kind; only render the section when it has cards.
-				const group = Array.from(queryElements(children, { "props.kind": kind } as Query<Element>)) as TreeElement[];
-				return group.length ? (
-					<Section wide key={kind}>
-						<Heading>{label}</Heading>
-						<TreeCards path={path}>{group}</TreeCards>
+			<Block color={getDocumentationKindColor(kind)}>
+				<Panel>
+					<Header wide>
+						<TreeBreadcrumbs />
+						<Title>
+							<Row left wrap>
+								<span>{title ?? name}</span>
+								{kind && <DocumentationKind kind={kind} size="normal" />}
+							</Row>
+						</Title>
+						<DocumentationButtons {...props} />
+					</Header>
+				</Panel>
+				{signatures?.length || params?.length || returns?.length || throws?.length ? (
+					<Section wide>
+						<DocumentationSignatures signatures={signatures} />
+						{params?.length && (
+							<Section wide>
+								<Label>Parameters</Label>
+								<Definitions>
+									{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
+										<Fragment key={`${name}-${type}-${description}`}>
+											<dt>
+												<Code size="normal">
+													{name}
+													{optional ? "?" : ""}: {type}
+												</Code>
+											</dt>
+											<dd>{description}</dd>
+										</Fragment>
+									))}
+								</Definitions>
+							</Section>
+						)}
+						{returns?.length && (
+							<Section wide>
+								<Label>Returns</Label>
+								<Definitions>
+									{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
+										<Fragment key={`${type}-${description}`}>
+											<dt>
+												<Code size="normal">{type}</Code>
+											</dt>
+											<dd>{description}</dd>
+										</Fragment>
+									))}
+								</Definitions>
+							</Section>
+						)}
+						{throws?.length && (
+							<Section wide>
+								<Label>Throws</Label>
+								<Definitions>
+									{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
+										<Fragment key={`${type}-${description}`}>
+											<dt>
+												<Code size="normal">{type}</Code>
+											</dt>
+											<dd>{description}</dd>
+										</Fragment>
+									))}
+								</Definitions>
+							</Section>
+						)}
 					</Section>
-				) : null;
-			})}
+				) : null}
+				{content && (
+					<Section wide>
+						<Prose>
+							<Markup>{content}</Markup>
+						</Prose>
+					</Section>
+				)}
+				{examples?.length && (
+					<Section wide>
+						<Heading>Examples</Heading>
+						{examples.map(({ description }) => (
+							<Preformatted key={description}>{description}</Preformatted>
+						))}
+					</Section>
+				)}
+				{Object.entries(KIND_SECTIONS).map(([kind, label]) => {
+					// Pre-filter the children for this kind; only render the section when it has cards.
+					const group = Array.from(queryElements(children, { "props.kind": kind } as Query<Element>)) as TreeElement[];
+					return group.length ? (
+						<Section wide key={kind}>
+							<Heading>{label}</Heading>
+							<TreeCards path={path}>{group}</TreeCards>
+						</Section>
+					) : null;
+				})}
+			</Block>
 		</Page>
 	);
 }

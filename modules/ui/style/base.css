@@ -33,18 +33,21 @@
 		--weight-strong: 700;
 
 		/* Semantic font weights */
-		--weight-label: var(--weight-normal);
+		--weight-title: var(--weight-strong);
 		--weight-body: var(--weight-normal);
+		--weight-label: var(--weight-strong);
 		--weight-code: 500;
 
 		/* Font faces */
 		--font-sans: system-ui;
-		--font-mono: ui-monospace, "SF Mono", "Consolas", "Menlo", monospace;
+		--font-monospace: ui-monospace, "SF Mono", "Consolas", "Menlo", monospace;
 		--font-serif: "Palatino", "Garamond", serif;
 
 		/* Semantic font faces */
+		--font-title: var(--font-sans);
 		--font-body: var(--font-sans);
-		--font-code: var(--font-mono);
+		--font-label: var(--font-sans);
+		--font-code: var(--font-monospace);
 
 		/* Semantic cases */
 		--case-label: uppercase;
@@ -63,6 +66,7 @@
 
 		/* Semantic sizes */
 		--size-icon: var(--size-large);
+		--size-label: var(--size-small);
 
 		/* Relative sizes */
 		--size-smaller: 0.875em;

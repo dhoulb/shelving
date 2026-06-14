@@ -12,7 +12,6 @@ import { SUPERSCRIPT_PROSE_CLASS } from "../inline/Superscript.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { ADDRESS_PROSE_CLASS } from "./Address.js";
-import { BLOCK_PROSE_CLASS } from "./Block.js";
 import { BLOCKQUOTE_PROSE_CLASS } from "./Blockquote.js";
 import { CAPTION_PROSE_CLASS } from "./Caption.js";
 import { DEFINITIONS_PROSE_CLASS } from "./Definitions.js";
@@ -22,6 +21,7 @@ import { IMAGE_PROSE_CLASS } from "./Image.js";
 import { LIST_PROSE_CLASS } from "./List.js";
 import { PARAGRAPH_PROSE_CLASS } from "./Paragraph.js";
 import { PREFORMATTED_PROSE_CLASS } from "./Preformatted.js";
+import { SECTION_PROSE_CLASS } from "./Section.js";
 import { SUBHEADING_PROSE_CLASS } from "./Subheading.js";
 import { TABLE_PROSE_CLASS } from "./Table.js";
 import { TITLE_PROSE_CLASS } from "./Title.js";
@@ -31,8 +31,8 @@ const PROSE_STYLES = getClass(
 	HEADING_PROSE_CLASS,
 	SUBHEADING_PROSE_CLASS,
 	ADDRESS_PROSE_CLASS,
-	BLOCK_PROSE_CLASS,
 	BLOCKQUOTE_PROSE_CLASS,
+	SECTION_PROSE_CLASS,
 	CODE_PROSE_CLASS,
 	DEFINITIONS_PROSE_CLASS,
 	DELETED_PROSE_CLASS,

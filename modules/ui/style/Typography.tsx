@@ -4,6 +4,12 @@ import TYPOGRAPHY_CSS from "./Typography.module.css";
 /** Possible font-size strings. */
 export type UISize = "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
 
+/** Possible font-family strings. */
+export type UIFont = "title" | "body" | "label" | "code" | "serif" | "sans" | "monospace";
+
+/** Possible font weight strings. */
+export type UIWeight = "title" | "body" | "label" | "code" | "normal" | "strong";
+
 /** Possible tint strings — shades of the current tint colour from `"00"` (black) through `"50"` (the hue itself) to `"100"` (white). */
 export type UITint =
 	| "00"
@@ -28,20 +34,6 @@ export type UITint =
 	| "95"
 	| "100";
 
-/** Font-family variants. */
-export type FontVariants = {
-	/** Body font. */
-	body?: boolean | undefined;
-	/** Code font. */
-	code?: boolean | undefined;
-	/** Monospace font. */
-	monospace?: boolean | undefined;
-	/** Sans-serif font. */
-	sans?: boolean | undefined;
-	/** Serif font. */
-	serif?: boolean | undefined;
-};
-
 /** Text-alignment variants — opt-in modifiers any prose component can mix in via `getTypographyClass()`. */
 export type AlignVariants = {
 	/** Align text to the start of the line (LTR: left). */
@@ -53,13 +45,17 @@ export type AlignVariants = {
 };
 
 /** Typographic variants — font-family, alignment, size, and tint variants. */
-export interface TypographyVariants extends FontVariants, AlignVariants {
+export interface TypographyVariants extends AlignVariants {
+	/** Font family. */
+	font?: UIFont | undefined;
+	/** Font weight */
+	weight?: UIWeight | undefined;
 	/** Font size of the element. */
 	size?: UISize | undefined;
 	/** Set CSS text `color:` to one of the shades of the current tint colour (defaults to gray). */
 	tint?: UITint | undefined;
 }
 
-export function getTypographyClass({ size, tint, ...props }: TypographyVariants): string | undefined {
-	return getModuleClass(TYPOGRAPHY_CSS, size, tint && `tint-${tint}`, props);
+export function getTypographyClass({ tint, size, font, weight, ...props }: TypographyVariants): string | undefined {
+	return getModuleClass(TYPOGRAPHY_CSS, tint && `tint-${tint}`, weight && `weight-${weight}`, size, font, props);
 }

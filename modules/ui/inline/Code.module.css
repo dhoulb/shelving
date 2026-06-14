@@ -5,16 +5,17 @@
 	.prose :is(code, kbd, samp, var) {
 		/* Text */
 		font-family: var(--code-font, var(--font-code));
+		font-weight: var(--code-weight, var(--weight-code));
 		font-size: var(--code-size, var(--size-smaller));
 		line-height: var(--code-leading, var(--leading));
-		font-weight: var(--code-weight, var(--weight-code));
+		text-transform: none;
 	}
 
 	.code,
 	.prose :is(code, kbd, samp, var):not(pre *) {
 		/* Box */
 		display: inline-block;
-		padding-inline: var(--code-padding, 0.375rem);
+		padding-inline: var(--code-padding, var(--space-xxsmall));
 		border-radius: var(--code-radius, var(--radius-xxsmall));
 
 		/* Style */

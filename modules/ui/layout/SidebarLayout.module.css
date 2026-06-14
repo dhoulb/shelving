@@ -103,8 +103,9 @@
 		/* Pin the toggle button to the top-right so it stays reachable while the content column scrolls. */
 		.toggle {
 			display: block;
-			position: sticky;
-			top: 0;
+			position: absolute;
+			top: var(--space-normal);
+			right: var(--space-normal);
 			z-index: 110;
 		}
 		/* Dim the page behind the open drawer; clicking the overlay closes it. */

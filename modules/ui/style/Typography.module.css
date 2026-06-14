@@ -3,20 +3,37 @@
 
 @layer variants {
 	/* Font-family variants. */
+	.title {
+		font-family: var(--font-heading);
+	}
 	.body {
 		font-family: var(--font-body);
 	}
 	.code {
 		font-family: var(--font-code);
 	}
-	.monospace {
-		font-family: var(--font-mono);
+	.label {
+		font-family: var(--font-code);
 	}
-	.sans {
-		font-family: var(--font-sans);
+
+	/* Font weight variants. */
+	.weight-title {
+		font-weight: var(--weight-heading);
 	}
-	.serif {
-		font-family: var(--font-serif);
+	.weight-body {
+		font-weight: var(--weight-body);
+	}
+	.weight-code {
+		font-weight: var(--weight-code);
+	}
+	.weight-label {
+		font-weight: var(--weight-code);
+	}
+	.weight-normal {
+		font-weight: var(--weight-normal);
+	}
+	.weight-strong {
+		font-weight: var(--weight-strong);
 	}
 
 	/* Font-size variants. */
