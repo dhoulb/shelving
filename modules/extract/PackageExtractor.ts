@@ -21,7 +21,11 @@ interface PackageJson {
 	readonly exports?: { readonly [key: string]: unknown };
 }
 
-/** Options for a `PackageExtractor`. */
+/**
+ * Options for a `PackageExtractor`.
+ *
+ * @see https://dhoulb.github.io/shelving/extract/PackageExtractor/PackageExtractorOptions
+ */
 export interface PackageExtractorOptions {
 	/**
 	 * Pre-extracted source tree the `package.json` exports resolve against — typically the result of
@@ -49,6 +53,13 @@ export interface PackageExtractorOptions {
  * - Each export's *target* extension (e.g. the `.js` in `"./util/*.js"`) is mapped to source extensions via `extensions`, so built `.js` paths resolve to their `.ts` sources.
  * - The `"."` root export is skipped — its content is the root tree element itself.
  * - Throws if a static export key has no matching source element in the tree.
+ *
+ * @example
+ * ```ts
+ * const tree = await new PackageExtractor({ tree: sourceTree }).extract("package.json");
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/extract/PackageExtractor
  */
 export class PackageExtractor extends Extractor<Path, TreeElement> {
 	private readonly _tree: TreeElement;
@@ -56,6 +67,16 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 	private readonly _module: ModuleExtractor;
 	private readonly _base: AbsolutePath | undefined;
 
+	/**
+	 * Create a package extractor bound to a pre-extracted source tree.
+	 *
+	 * @param options Options including the source `tree`, `extensions` mapping, `module` extractor, and `base` path.
+	 *
+	 * @example
+	 * ```ts
+	 * const extractor = new PackageExtractor({ tree: sourceTree });
+	 * ```
+	 */
 	constructor({ tree, extensions = DEFAULT_EXTENSIONS, module = new ModuleExtractor(), base }: PackageExtractorOptions) {
 		super();
 		this._tree = tree;
@@ -64,6 +85,20 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 		this._base = base;
 	}
 
+	/**
+	 * Read a `package.json` and produce a flat tree of one module element per export entry.
+	 *
+	 * @param packageJson Path of the `package.json` to read — resolved against the configured `base`.
+	 * @returns Promise of the root `tree-element` whose children are the module elements.
+	 * @throws Error If a static export key has no matching source element in the tree, or a wildcard export is malformed.
+	 *
+	 * @example
+	 * ```ts
+	 * const tree = await new PackageExtractor({ tree: sourceTree }).extract("package.json");
+	 * ```
+	 *
+	 * @see https://dhoulb.github.io/shelving/extract/PackageExtractor/extract
+	 */
 	override async extract(packageJson: Path): Promise<TreeElement> {
 		const pkgPath = requirePath(packageJson, this._base, this.extract);
 		const pkg = (await Bun.file(pkgPath).json()) as PackageJson;

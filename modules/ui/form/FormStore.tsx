@@ -10,7 +10,14 @@ import { splitMessage } from "../../util/error.js";
 import type { Arguments } from "../../util/function.js";
 import { getRandomKey } from "../../util/random.js";
 
-/** Store the current value of a form. */
+/**
+ * Reactive store holding the current (possibly partial and invalid) value of a form, plus its field messages.
+ * - Extends `DataStore` with the form's `schema`, per-field error `messages`, and validate/submit helpers.
+ * - Assigning a string `reason` splits it into per-field messages rather than a global failure.
+ *
+ * @example const store = new FormStore(USER_SCHEMA, { name: "Dave" });
+ * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore
+ */
 export class FormStore<T extends Data> extends DataStore<Partial<T>> implements AsyncDisposable {
 	/** Unique ID for the form. */
 	readonly id = getRandomKey();
@@ -29,7 +36,12 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 	 */
 	readonly messages = new DictionaryStore<string>();
 
-	/** Get the current valid value for this form (throws string for invalid values). */
+	/**
+	 * The current value validated against the schema, also written back to `this.value`.
+	 *
+	 * @throws A `string` validation message if the current value is invalid.
+	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/validated
+	 */
 	get validated(): T {
 		return (this.value = this.schema.validate(this.value));
 	}
@@ -46,6 +58,15 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 		}
 	}
 
+	/**
+	 * Create a new `FormStore` for a schema, with optional initial data and messages.
+	 *
+	 * @param schema Schema describing the form's fields.
+	 * @param partialData Initial (possibly partial) data for the form.
+	 * @param messages Initial messages as a dictionary, or a string with `fieldName:` style lines.
+	 * @example new FormStore(USER_SCHEMA, { name: "Dave" })
+	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/constructor
+	 */
 	constructor(schema: DataSchema<T>, partialData: Partial<T> = {}, messages?: ImmutableDictionary<string> | string | undefined) {
 		super(partialData);
 		this.key = `${this.id}:${JSON.stringify(partialData)}`;
@@ -53,14 +74,32 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 		if (messages) this.messages.value = typeof messages === "string" ? splitMessage(messages) : messages;
 	}
 
-	/** Get a named schema for a field of this form. */
+	/**
+	 * Get the `Schema` for a named field of this form.
+	 *
+	 * @param name Name of the field to look up.
+	 * @returns The `Schema` for that field.
+	 * @throws `RequiredError` if no schema exists for the named field.
+	 * @example store.requireSchema("email")
+	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/requireSchema
+	 */
 	requireSchema<K extends DataKey<T>>(name: K): Schema<T[K]> {
 		const schema = this.schema.props[name];
 		if (schema instanceof Schema) return schema as Schema<T[K]>;
 		throw new RequiredError(`Schema "${name}" does not exist in form`, { received: name, caller: this.requireSchema });
 	}
 
-	/** Publish a value for a field of this form. */
+	/**
+	 * Validate and set a value for a named field of this form.
+	 * - Clears the main and field messages, then validates and stores the value.
+	 * - On a string validation error the message is recorded and the raw value is still persisted.
+	 *
+	 * @param name Name of the field to update.
+	 * @param unsafeValue The unvalidated value to store for the field.
+	 * @returns Nothing.
+	 * @example store.publish("email", "dave@shax.com")
+	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/publish
+	 */
 	publish<K extends DataKey<T>>(name: K, unsafeValue: T[K]): void {
 		this.abort();
 
@@ -82,9 +121,14 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 	}
 
 	/**
-	 * Validate and submit the current values of the form.
+	 * Validate the current form value and run an optional submit callback with it.
+	 * - On a validation failure the error is stored as the `reason` and `false` is returned.
 	 *
-	 * @param callback Optional callback that takes the current (validated) value of the form, processes it (possibly asynchronously) and returns any new values.
+	 * @param callback Optional callback that takes the validated value, processes it (possibly asynchronously) and returns any new values.
+	 * @param args Additional arguments forwarded to the callback.
+	 * @returns `true` on success, `false` on validation failure (or a `Promise` resolving to one).
+	 * @example store.submit(saveUser)
+	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/submit
 	 */
 	submit<A extends Arguments>(callback?: ((value: T, ...args: A) => void) | undefined, ...args: A): boolean | Promise<boolean> {
 		try {

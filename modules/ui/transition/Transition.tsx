@@ -5,19 +5,27 @@ import type { ChildProps } from "../util/props.js";
 import type { TransitionClasses } from "./util.js";
 import "./Transition.css";
 
-/** Variants that can be applied to any transition component. */
+/**
+ * Variant props shared by every transition component.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/transition/Transition/TransitionProps
+ */
 export interface TransitionProps extends ChildProps {
 	/** Render this transition above other transitions (z-index: 100 on the group). */
 	overlay?: boolean | undefined;
 }
 
 /**
- * Create a View Transition for children of this component.
+ * Wrap children in a React View Transition, applying the configured transition classes.
  *
- * - Allows known view transition types in `TransitionClasses` to be set to override.
+ * - Allows known view transition types in `TransitionClasses` (`default`/`forward`/`back`) to be overridden.
  *   - These must correspond to a `::view-transition(.className)` that is set in CSS.
+ * - Supports variant classes, e.g. `<Transition overlay>` applies `::view-transition(.overlay)` from `Transition.css`.
  *
- * - Supports variant classes, e.g. `<Transition overlay>` applies `::view-transition(.overlay)` from `Transition.css`
+ * @param props Transition class overrides (`default`/`forward`/`back`) plus `children` and variant props.
+ * @returns A `<ViewTransition>` element wrapping the children.
+ * @example <Transition default="fade">{content}</Transition>
+ * @see https://dhoulb.github.io/shelving/ui/transition/Transition/Transition
  */
 export function Transition({
 	children,

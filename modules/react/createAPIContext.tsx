@@ -8,6 +8,11 @@ import type { Nullish } from "../util/null.js";
 import { useInstance } from "./useInstance.js";
 import { useStore } from "./useStore.js";
 
+/**
+ * Bundle of hooks and a provider component returned by `createAPIContext()`.
+ *
+ * @see https://dhoulb.github.io/shelving/react/createAPIContext/APIContext
+ */
 export interface APIContext<P, R> {
 	/** Get an `EndpointStore` for the specified endpoint/payload in the current `APIProvider` context. */
 	useAPI<PP extends P, RR extends R>(this: void, endpoint: Endpoint<PP, RR>, payload: PP): EndpointStore<PP, RR>;
@@ -22,7 +27,17 @@ export interface APIContext<P, R> {
  * - Allows React elements to call `useAPI()` to access endpoint stores in an API provider.
  * - Each mounted `APIContext` gets its own in-memory store cache.
  *
+ * @param provider `APIProvider` the created context resolves endpoint stores against.
+ * @returns `APIContext` bundle containing the `useAPI()` hook and the `<APIContext>` wrapper component.
+ *
  * @todo Use and integreate our `EndpointCache` functionality and use it in this.
+ *
+ * @example
+ * ```tsx
+ * const { useAPI, APIContext } = createAPIContext(provider);
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/react/createAPIContext
  */
 export function createAPIContext<P, R>(provider: APIProvider<P, R>): APIContext<P, R> {
 	const CacheContext = createContext<APICache<P, R> | undefined>(undefined);

@@ -9,6 +9,11 @@ import { eventPreventDefault } from "../util/event.js";
 import { eventLoopFocus } from "../util/focus.js";
 import styles from "./Popover.module.css";
 
+/**
+ * Children tuple for `Popover`: a leading trigger node followed by the popover's contents.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/Popover/PopoverChildren
+ */
 export type PopoverChildren = [
 	/**
 	 * First child of the <Popover> is element that activates the popover.
@@ -21,6 +26,11 @@ export type PopoverChildren = [
 	...popover: ReactNode[],
 ];
 
+/**
+ * Props for `Popover`, a trigger element that reveals floating content.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/Popover/PopoverProps
+ */
 export interface PopoverProps {
 	/** Children for the popover. */
 	children: PopoverChildren;
@@ -31,8 +41,14 @@ export interface PopoverProps {
 }
 
 /**
- * An input button that, when clicked, shows a popover next to it when clicked or focused.
- * - The first element passed to `children` is used as the content for the button, the rest is the content of the popover.
+ * Trigger element that reveals a floating popover panel beside it when active or focused.
+ * - The first `children` node is the trigger; the rest become the popover contents.
+ * - Closes on blur away or `Escape`, calling `onClose`.
+ *
+ * @param props Props including the `children` tuple, optional `onClose`, and `open` override.
+ * @returns A wrapper element containing the trigger and (when open) the popover panel.
+ * @example <Popover>{trigger}{panelContent}</Popover>
+ * @see https://dhoulb.github.io/shelving/ui/form/Popover/Popover
  *
  * @todo DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
  */

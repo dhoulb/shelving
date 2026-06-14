@@ -165,7 +165,17 @@ export function callNotifiedElement<A extends Arguments>(
 	}
 }
 
-/** Await a value that publishes "success" or "error" notices to an element (defaults to the window) if it returns */
+/**
+ * Await a pending value and dispatch a success or error notice to a specific element based on its resolution.
+ *
+ * - A resolved truthy value becomes a `"success"` notice; a rejection becomes an `"error"` notice via `notifyThrown()`.
+ *
+ * @param el Element to dispatch the notice event on (defaults to `window` when `undefined`).
+ * @param pending The promise-like value to await.
+ * @returns `true` if the value resolved, `false` if it rejected.
+ * @example await awaitNotifiedElement(formEl, save());
+ * @see https://dhoulb.github.io/shelving/ui/util/notice/awaitNotifiedElement
+ */
 export async function awaitNotifiedElement(
 	el: EventTarget | undefined,
 	pending: PromiseLike<ReactNode | undefined | void>,

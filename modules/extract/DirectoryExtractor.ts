@@ -54,12 +54,29 @@ export interface DirectoryExtractorOptions {
  * - Keys on the produced elements are the verbatim filenames (e.g. `"string.ts"`, `"README.md"`) and directory names (e.g. `"util"`).
  * - This is a pure walker: same-key merging and README absorption are intentionally *not* applied here — wrap with `MergingExtractor`
  *   and/or `IndexExtractor` to opt in to those behaviours.
+ *
+ * @example
+ * ```ts
+ * const tree = await new DirectoryExtractor().extract("modules/util");
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/extract/DirectoryExtractor
  */
 export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	private readonly _extractors: ImmutableDictionary<FileExtractor>;
 	private readonly _base: AbsolutePath | undefined;
 	private readonly _ignore: Matchables;
 
+	/**
+	 * Create a directory extractor with optional extractor dispatch, base path, and ignore patterns.
+	 *
+	 * @param options Options including the `extractors` dispatch table, `base` path, and `ignore` patterns.
+	 *
+	 * @example
+	 * ```ts
+	 * const extractor = new DirectoryExtractor({ base: "/repo/modules" });
+	 * ```
+	 */
 	constructor({ extractors = DEFAULT_EXTRACTORS, base, ignore = DEFAULT_IGNORE }: DirectoryExtractorOptions = {}) {
 		super();
 		this._extractors = extractors;
@@ -67,6 +84,19 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 		this._ignore = ignore;
 	}
 
+	/**
+	 * Walk a directory on disk and produce a tree of `tree-element` nodes.
+	 *
+	 * @param source Path of the directory to walk — resolved against the configured `base`.
+	 * @returns Promise of the root `tree-element` for the walked directory.
+	 *
+	 * @example
+	 * ```ts
+	 * const tree = await new DirectoryExtractor().extract("modules/util");
+	 * ```
+	 *
+	 * @see https://dhoulb.github.io/shelving/extract/DirectoryExtractor/extract
+	 */
 	override extract(source: Path): Promise<TreeElement> {
 		return this._extractDirectory(requirePath(source, this._base, this.extract));
 	}

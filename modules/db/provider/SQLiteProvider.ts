@@ -13,6 +13,11 @@ import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
  * Note the following compatibility caveats:
  * - For `with` and `omit` updates this does not preserve ordering of the original array.
  * - For `with` and `omit` updates this does not guarantee equality for de-duplication when working with nested objects or arrays.
+ *
+ * @example
+ *  class MyProvider extends SQLiteProvider { async exec(strings, ...values) { ... } }
+ *  const item = await new MyProvider().getItem(collection, "abc");
+ * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider
  */
 export abstract class SQLiteProvider<I extends Identifier = Identifier, T extends Data = Data> extends SQLProvider<I, T> {
 	// Override `addItem` to support string (UUID) IDs in SQLite.

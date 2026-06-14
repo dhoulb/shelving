@@ -44,6 +44,16 @@ export interface FormProps<T extends Data> extends OptionalChildProps {
 	messages?: ImmutableDictionary<string> | string | undefined;
 }
 
+/**
+ * Schema-driven form that creates a `FormStore`, provides it via `FormContext`, and validates/submits on submit.
+ * - Renders its fields and footer by default, or custom `children` that read the form via hooks.
+ * - Closes a parent `<dialog>` automatically on successful submit.
+ *
+ * @param props Props including `schema`, initial `data`, `onSubmit`, `submit` content, and initial `messages`.
+ * @returns A `<form>` element wrapping the fields in a `FormContext` provider.
+ * @example <Form schema={USER_SCHEMA} onSubmit={save} />
+ * @see https://dhoulb.github.io/shelving/ui/form/Form/Form
+ */
 export function Form<T extends Data>(props: FormProps<T>): ReactElement;
 export function Form({
 	schema,
@@ -90,7 +100,20 @@ export function Form({
 	);
 }
 
-/** Callback that publishes notices to an element (defaults to the window) if it returns or throws "string" */
+/**
+ * Run a form submit callback and publish success/error notices based on its return or thrown value.
+ * - Strings returned are shown as success notices; thrown values are routed through `notifyThrownForm()`.
+ * - Async callbacks are awaited via `awaitNotifiedForm()`.
+ *
+ * @param value The validated form data passed to the callback.
+ * @param store The `FormStore` the form is bound to.
+ * @param form The underlying `HTMLFormElement` notices are anchored to.
+ * @param callback Optional callback to run with the value and extra args.
+ * @param args Additional arguments forwarded to the callback.
+ * @returns `true` on success, `false` on failure (or a `Promise` resolving to one).
+ * @example callNotifiedForm(data, store, formEl, onSubmit, event)
+ * @see https://dhoulb.github.io/shelving/ui/form/Form/callNotifiedForm
+ */
 export function callNotifiedForm<T extends Data, A extends Arguments>(
 	value: T,
 	store: FormStore<T>,
@@ -108,7 +131,16 @@ export function callNotifiedForm<T extends Data, A extends Arguments>(
 	}
 }
 
-/** Await a value that publishes "success" or "error" notices to a form */
+/**
+ * Await a pending submit result and publish a success or error notice to a form once it settles.
+ *
+ * @param store The `FormStore` the form is bound to.
+ * @param form The underlying `HTMLFormElement` notices are anchored to.
+ * @param pending The pending result to await.
+ * @returns A `Promise` resolving to `true` on success or `false` on failure.
+ * @example await awaitNotifiedForm(store, formEl, pending)
+ * @see https://dhoulb.github.io/shelving/ui/form/Form/awaitNotifiedForm
+ */
 export async function awaitNotifiedForm<T extends Data>(
 	store: FormStore<T>,
 	form: HTMLFormElement,
@@ -123,7 +155,17 @@ export async function awaitNotifiedForm<T extends Data>(
 	}
 }
 
-/** Notify the user about a thrown value during a submit (if thrown value is a string then save it as messages instead. */
+/**
+ * Notify the user about a value thrown during submit, storing string errors as form field messages.
+ * - Assigning a string `reason` to the store splits it into per-field messages instead of a global notice.
+ *
+ * @param store The `FormStore` the thrown value is recorded on.
+ * @param form The underlying `HTMLFormElement` notices are anchored to.
+ * @param thrown The value thrown during submit.
+ * @returns Always `false`, signalling the submit failed.
+ * @example notifyThrownForm(store, formEl, thrown)
+ * @see https://dhoulb.github.io/shelving/ui/form/Form/notifyThrownForm
+ */
 export function notifyThrownForm<T extends Data>(store: FormStore<T>, form: HTMLFormElement, thrown: unknown): false {
 	store.reason = thrown;
 	const reason = store.reason;

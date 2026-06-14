@@ -12,7 +12,11 @@ import { ThroughExtractor } from "./ThroughExtractor.js";
  */
 const DEFAULT_INDEX: Matchables = [/^readme\.txt$/i, /^readme\.md$/i, /^index\.md$/i, /^index\.ts$/i, /^index\.tsx$/i];
 
-/** Options for an `IndexExtractor`. */
+/**
+ * Options for an `IndexExtractor`.
+ *
+ * @see https://dhoulb.github.io/shelving/extract/IndexExtractor/IndexExtractorOptions
+ */
 export interface IndexExtractorOptions {
 	/**
 	 * Filename patterns treated as a parent's index. Matched case-insensitively against each child element's `key`.
@@ -27,15 +31,46 @@ export interface IndexExtractorOptions {
  * - The matched child's `title`, `description`, `content`, and `children` are folded into the parent.
  * - The matched child is removed from the parent's children list.
  * - Purely name-based: it doesn't care whether an element is a directory or a file — any element with children is processed, deepest level first.
+ *
+ * @example
+ * ```ts
+ * const extractor = new IndexExtractor(new DirectoryExtractor());
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/extract/IndexExtractor
  */
 export class IndexExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	private readonly _index: Matchables;
 
+	/**
+	 * Wrap a source extractor so each element's index child is absorbed into the element itself.
+	 *
+	 * @param source Upstream extractor that produces the `tree-element` tree to process.
+	 * @param options Options including the `index` filename patterns.
+	 *
+	 * @example
+	 * ```ts
+	 * const extractor = new IndexExtractor(new DirectoryExtractor());
+	 * ```
+	 */
 	constructor(source: Extractor<I, TreeElement>, { index = DEFAULT_INDEX }: IndexExtractorOptions = {}) {
 		super(source);
 		this._index = index;
 	}
 
+	/**
+	 * Extract the source tree and absorb each element's index child into its parent.
+	 *
+	 * @param input Input forwarded to the wrapped source extractor.
+	 * @returns The source tree with index children folded into their parents.
+	 *
+	 * @example
+	 * ```ts
+	 * const tree = await new IndexExtractor(source).extract(input);
+	 * ```
+	 *
+	 * @see https://dhoulb.github.io/shelving/extract/IndexExtractor/extract
+	 */
 	override async extract(input: I): Promise<TreeElement> {
 		const root = await this.source.extract(input);
 		return _absorbIndex(root, this._index);

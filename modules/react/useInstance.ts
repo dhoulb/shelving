@@ -6,6 +6,17 @@ import type { Arguments } from "../util/function.js";
  * Use a memoised class instance.
  * - Creates a new instance of `Constructor` using `args`
  * - Returns same instance for as long as `args` is equal to previous `args`.
+ *
+ * @param Constructor Class to instantiate with `args`.
+ * @param args Constructor arguments — a change in `args` constructs a fresh instance.
+ * @returns The memoised instance, reconstructed only when `args` changes.
+ *
+ * @example
+ * ```tsx
+ * const cache = useInstance(DBCache, provider);
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/react/useInstance
  */
 export function useInstance<T, A extends Arguments = []>(Constructor: new (...a: A) => T, ...args: A): T {
 	const _internals = (useRef<{ instance: T; args: A }>(undefined).current ??= {
