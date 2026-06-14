@@ -54,10 +54,16 @@ export interface SchemaInputProps<T extends Schema, I = never> extends ValueInpu
 }
 
 /**
- * Show the right control/input for a named property of a form.
+ * Show the appropriate input control for a schema, dispatching on the schema's concrete type.
+ * - Picks `DateInput`, `NumberInput`, choice radios/select, `CheckboxInput`, `TextInput`, `ArrayInput`, `DictionaryInput`, or `DataInput`.
+ * - `required` defaults to whether the schema is required.
  *
- * @example <FormControl name="email" /> // Outputs a `<StringInput>` for the "email" property.
- * @example <FormControl name="age" /> // Outputs a `<NumberInput>` for the "age" property.
+ * @param props Props including the `schema` plus value input props.
+ * @returns The matching input element for the schema.
+ * @throws `UnexpectedError` if no input matches the schema type.
+ * @example <SchemaInput name="email" schema={EMAIL} /> // Outputs a `<TextInput>` for the "email" property.
+ * @example <SchemaInput name="age" schema={AGE} /> // Outputs a `<NumberInput>` for the "age" property.
+ * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/SchemaInput
  */
 export function SchemaInput<T extends Schema>(props: SchemaInputProps<T>): ReactElement;
 export function SchemaInput({

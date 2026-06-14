@@ -8,8 +8,21 @@ import TAG_CSS from "./Tag.module.css";
 
 const TAG_CLASS = getModuleClass(TAG_CSS, "tag");
 
+/**
+ * Styling variants accepted by `<Tag>` — status, colour, and typography options.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Tag/TagVariants
+ */
 export interface TagVariants extends StatusVariants, ColorVariants, TypographyVariants {}
 
+/**
+ * Build the combined `className` string for a `<Tag>` from its styling variants.
+ *
+ * @param variants The status, colour, and typography variants to apply.
+ * @returns The merged tag `className` string.
+ * @example getTagClass({ success: true }) // "tag … status-success"
+ * @see https://dhoulb.github.io/shelving/ui/misc/Tag/getTagClass
+ */
 export function getTagClass(variants: TagVariants) {
 	return getClass(
 		TAG_CLASS, //

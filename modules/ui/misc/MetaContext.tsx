@@ -44,12 +44,15 @@ export interface MetaURL extends Meta {
 }
 
 /**
- * Use the current meta context in a component with some additional URL helpers.
+ * Read the current `Meta` context and derive URL helpers (`path` and `params`) from its `url`.
  *
  * @param meta A set of new possible meta data to combine into the current meta context.
- * @returns A `Meta` object with a defined `url` object, and `path` and `params` properties combined in.
- * @throws {RequiredError} if the current meta has no `url`
- * @throws {RequiredError} if the current meta `url` does not match the origin of the current meta `root`
+ * @param caller Function to attribute thrown `RequiredError`s to (defaults to `requireMetaURL`).
+ * @returns A `Meta` object with a defined `url`, plus `path` and `params` properties combined in.
+ * @throws RequiredError If the current meta has no `url`.
+ * @throws RequiredError If the current meta `url` does not share an origin with the meta `root`.
+ * @example const { path, params } = requireMetaURL();
+ * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/requireMetaURL
  */
 export function requireMetaURL(meta?: PossibleMeta, caller: AnyCaller = requireMetaURL): MetaURL {
 	const { url, root, ...combined } = requireMeta(meta);

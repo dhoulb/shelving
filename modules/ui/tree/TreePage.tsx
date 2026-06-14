@@ -9,8 +9,14 @@ import { TreeCards } from "./TreeCards.js";
 
 /**
  * Page renderer for a generic `tree-element` (a directory or file).
+ *
  * - Shows the title, any absorbed prose content, and the element's children as a stack of cards.
  * - Child cards cover both nested directories/files and the code symbols of a source file.
+ *
+ * @param props The tree element props (`title`, `name`, `description`, `content`, `children`).
+ * @returns A `<Page>` with the title, prose content, and a stack of child cards.
+ * @example <TreePage {...element.props} />
+ * @see https://dhoulb.github.io/shelving/ui/tree/TreePage/TreePage
  */
 export function TreePage({ title, name, description, content, children }: TreeElementProps): ReactNode {
 	return (
